@@ -51,7 +51,7 @@ mica.study
       var onError = function() {
         $scope.loading = true;
       };
-      
+
       function refreshPage() {
         if($scope.pagination.current !== 1) {
           $scope.pagination.current = 1; //pageChanged event triggers reload
@@ -205,7 +205,7 @@ mica.study
 
       var initializeStudy = function (study) {
         StudyModelUtil.updateModel(study);
-        
+
         if (study.logo) {
           $scope.logoUrl = 'ws/draft/study/' + study.id + '/file/' + study.logo.id + '/_download';
         }
@@ -217,7 +217,7 @@ mica.study
             $log.warn(e);
           }
         }
-        
+
         study.populations = study.populations || [];
         study.memberships = study.memberships || [];
 
@@ -292,7 +292,7 @@ mica.study
           $scope.tabs.push({lang: lang});
           var sfLanguages = {};
           sfLanguages[lang] = $filter('translate')('language.' + lang);
-          
+
           $scope.sfOptions[lang] = {
             formDefaults: {
               readonly: true,
@@ -310,7 +310,7 @@ mica.study
           form.definition = LocalizedSchemaFormService.translate(angular.fromJson(form.definition));
           $scope.sfForm = form;
         });
-        
+
         EntityFormResource.get({target: 'population'}, function(form) {
           form.schema = LocalizedSchemaFormService.translate(angular.fromJson(form.schema));
           form.definition = LocalizedSchemaFormService.translate(angular.fromJson(form.definition));
@@ -877,14 +877,14 @@ mica.study
       $scope.dataSourcesTabs = {};
       $scope.study = $routeParams.id ? DraftStudyResource.get({id: $routeParams.id}, function (study) {
         StudyModelUtil.updateModel(study);
-        
+
         if ($routeParams.pid) {
           $scope.population = study.populations.filter(function (p) {
             return p.id === $routeParams.pid;
           })[0];
-          
+
           $scope.newDCE = !$routeParams.dceId;
-          
+
           if ($routeParams.dceId) {
             $scope.dce = $scope.population.dataCollectionEvents.filter(function (d) {
               return d.id === $routeParams.dceId;
@@ -946,7 +946,7 @@ mica.study
           sfLanguages[lang] = $filter('translate')('language.' + lang);
           $scope.sfOptions[lang] = {
             formDefaults: {
-              languages: sfLanguages 
+              languages: sfLanguages
             }
           };
         });
@@ -1053,17 +1053,22 @@ mica.study
         $scope.tabs = [];
         $scope.languages = [];
         $scope.sfOptions = {};
+        var sfLanguages = {};
 
         micaConfig.languages.forEach(function (lang) {
           $scope.tabs.push({lang: lang});
           $scope.languages.push(lang);
-          var sfLanguages = {};
           sfLanguages[lang] = $filter('translate')('language.' + lang);
-          $scope.sfOptions[lang] = {
-            formDefaults: {
-              languages: sfLanguages 
-            }
-          };
+        });
+
+        $scope.sfOptions = {
+          formDefaults: {
+            languages: sfLanguages
+          }
+        };
+
+        $scope.$watch('activeTab', function () {
+          $scope.$broadcast('sfLocalizedStringLocaleChanged', $scope.tabs[$scope.activeTab].lang);
         });
 
         EntityFormResource.get({target: 'study'}, function(form) {
