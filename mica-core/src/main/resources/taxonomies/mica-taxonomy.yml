@@ -32,7 +32,7 @@
         "en": "Variable properties"
         "fr": "Propriétés de variable"
       "description":
-        "en": "Variable properties as defined in the catalog."
+        "en": "Variable properties as defined in the catalogue."
         "fr": "Propriétés des variables telles que définies dans le catalogue."
     - "name": "Mlstr_additional"
       "title":
@@ -90,7 +90,7 @@
       "en": "Datasets"
       "fr": "Jeux de données"
     "description":
-      "en": "Datasets properties as defined in the catalog."
+      "en": "Datasets properties as defined in the catalogue."
       "fr": "Propriétés des jeux de données telles que définies dans le catalogue."
 - "name": "study"
   "title":
@@ -105,7 +105,7 @@
       "en": "Studies"
       "fr": "Études"
     "description":
-      "en": "Studies properties as defined in the catalog."
+      "en": "Studies properties as defined in the catalogue."
       "fr": "Propriétés des études telles que définies dans le catalogue."
 - "name": "network"
   "title":
@@ -120,5 +120,5 @@
       "en": "Networks"
       "fr": "Réseaux"
     "description":
-      "en": "Network properties as defined in the catalog."
+      "en": "Network properties as defined in the catalogue."
       "fr": "Propriétés des réseaux telles que définies dans le catalogue."
