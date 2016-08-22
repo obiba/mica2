@@ -21,7 +21,7 @@
     "angular-translate": "2.11.0",
     "angular-sanitize": "1.5.5",
     "angular-cookies": "1.5.5",
-    "ng-obiba": "https://github.com/obiba/ng-obiba.git#1.4.0",
+    "ng-obiba": "https://github.com/obiba/ng-obiba.git#1.4.1",
     "filesize": "3.2.1",
     "angular-google-chart": "0.1.0",
     "rql-nodojo": "https://github.com/RAMP-PCAR/rql-nodojo.git#1.0.0"
@@ -31,11 +31,11 @@
     "angular-scenario": "1.5.5"
   },
   "homepage": "https://github.com/obiba/ng-obiba-mica",
-  "_release": "ba5c993bb1",
+  "_release": "b8b9addf0d",
   "_resolution": {
     "type": "branch",
     "branch": "master",
-    "commit": "ba5c993bb186fc4ced1f2a26c2250081e8780e97"
+    "commit": "b8b9addf0d460a241443d86c7990a5ac3ad0775a"
   },
   "_source": "https://github.com/obiba/ng-obiba-mica.git",
   "_target": "master",

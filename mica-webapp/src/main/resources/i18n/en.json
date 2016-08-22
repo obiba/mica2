@@ -25,10 +25,13 @@
     "false": "False",
     "title": "Title",
     "field": "Field",
+    "criterion": "Criterion",
     "criteria": "Criteria",
+    "term": "Term",
     "terms": "Terms",
-    "add-criterion": "Add Criterion",
-    "edit-criterion": "Edit Criterion"
+    "keywords": "Keywords",
+    "from": "From",
+    "to": "To"
   },
   "main": {
     "title": "Welcome to Mica!",
@@ -1161,11 +1164,30 @@
     "population-form-title": "Population",
     "data-collection-event-form-title": "Data Collection Event"
   },
-  "taxonomy-search": {
+  "taxonomy-config": {
     "title": "Search",
     "info": "The search criteria can be configured in accordance with the model.",
     "terms": {
       "info": "The terms describe the possible values of the criterion. In the case of a numerical type (integer or decimal), the terms represent some ranges of values."
+    },
+    "criterion-dialog":{
+      "add-criterion": "Add Criterion",
+      "edit-criterion": "Edit Criterion",
+      "name-help": "Unique name identifying this search criterion.",
+      "repeatable-help": "Search for exact match or contained value.",
+      "field-help": "Fully qualified field name in the document model (if different from the name).",
+      "type-help": "The type of search facet: range selection for a numerical type, open input for a text type etc."
+    },
+    "term-dialog": {
+      "add-term": "Add Term",
+      "edit-term": "Edit Term",
+      "name-help": "Unique name identifying this search criterion possible value.",
+      "keywords-help": "Optional list of keywords useful when building search requests."
+    },
+    "all-criteria": "All Criteria",
+    "delete-dialog": {
+      "title": "Delete {{arg0}}",
+      "message": "Are you sure you want to delete the {{arg0}} '{{arg1}}'?"
     }
   },
   "dataset-config" : {
