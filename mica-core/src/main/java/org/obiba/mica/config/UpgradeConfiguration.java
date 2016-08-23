@@ -5,17 +5,7 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
-import org.obiba.mica.core.upgrade.AttachmentsCleanupUpgrade;
-import org.obiba.mica.core.upgrade.AttachmentsMigration;
-import org.obiba.mica.core.upgrade.AttachmentsPathUpgrade;
-import org.obiba.mica.core.upgrade.AttachmentsRefactorUpgrade;
-import org.obiba.mica.core.upgrade.ContactsRefactorUpgrade;
-import org.obiba.mica.core.upgrade.DatasetStateUpgrade;
-import org.obiba.mica.core.upgrade.ElasticsearchUpgrade;
-import org.obiba.mica.core.upgrade.MicaVersionModifier;
-import org.obiba.mica.core.upgrade.NetworkLogoMigration;
-import org.obiba.mica.core.upgrade.NetworkStateUpgrade;
-import org.obiba.mica.core.upgrade.RuntimeVersionProvider;
+import org.obiba.mica.core.upgrade.*;
 import org.obiba.runtime.upgrade.UpgradeManager;
 import org.obiba.runtime.upgrade.UpgradeStep;
 import org.obiba.runtime.upgrade.support.DefaultUpgradeManager;
@@ -59,6 +49,7 @@ public class UpgradeConfiguration {
       applicationContext.getBean(AttachmentsCleanupUpgrade.class), //
       applicationContext.getBean(ContactsRefactorUpgrade.class), //
       applicationContext.getBean(DatasetStateUpgrade.class), //
-      applicationContext.getBean(ElasticsearchUpgrade.class));
+      applicationContext.getBean(ElasticsearchUpgrade.class),
+      applicationContext.getBean(ProjectsUpgrade.class));
   }
 }
