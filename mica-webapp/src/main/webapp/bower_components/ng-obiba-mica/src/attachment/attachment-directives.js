@@ -81,6 +81,7 @@ angular.module('obiba.mica.attachment')
                 attachment.id = tempFile.id;
                 attachment.md5 = tempFile.md5;
                 attachment.justUploaded = true;
+                attachment.timestamps = {created: new Date()};
                 // wait for 1 second before hiding progress bar
                 $timeout(function () { attachment.showProgressBar = false; }, 1000);
               }
