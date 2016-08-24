@@ -64,7 +64,7 @@ angular.module('obiba.notification')
 
       function getMessage() {
         return {
-          title: confirm.titleKey ? LocaleStringUtils.translate(confirm.titleKey) : confirm.title,
+          title: confirm.titleKey ? LocaleStringUtils.translate(confirm.titleKey, confirm.titleArgs) : confirm.title,
           message: confirm.messageKey ? LocaleStringUtils.translate(confirm.messageKey, confirm.messageArgs) : confirm.message
         };
       }

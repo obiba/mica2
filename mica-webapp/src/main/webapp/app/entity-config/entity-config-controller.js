@@ -19,7 +19,7 @@ function EntityState($q) {
       if (typeof listener.onSave === 'function') {
         listeners.push(listener);
       } else {
-        throw new Error("EntityState - listener must define onSave() method.");
+        throw new Error('EntityState - listener must define onSave() method.');
       }
     }
   };

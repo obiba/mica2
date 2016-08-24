@@ -39,7 +39,7 @@ mica.entitySfConfig
       var navigateToVocabulary = function(content) {
         $scope.model.content = content;
         $scope.model.children = content.terms ? content.terms : [];
-        $scope.model.type = 'vocabulary';
+        $scope.model.type = 'criterion';
       };
 
       var navigateToTaxonomy = function() {
@@ -100,13 +100,19 @@ mica.entitySfConfig
     }])
 
   .controller('entityTaxonomyConfigPropertiesViewController', [
+    '$rootScope',
     '$scope',
-    'VocabularyAttributeService',
     '$uibModal',
+    '$filter',
+    'VocabularyAttributeService',
+    'NOTIFICATION_EVENTS',
 
-    function ($scope,
+    function ($rootScope,
+              $scope,
+              $uibModal,
+              $filter,
               VocabularyAttributeService,
-              $uibModal) {
+              NOTIFICATION_EVENTS) {
 
       var edit = function() {
 
@@ -121,22 +127,35 @@ mica.entitySfConfig
           });
       };
 
-      var deleteCriterion = function() {
-
-        // TODO add confirmation dialog
-        var i = $scope.taxonomy.vocabularies.indexOf($scope.model.content);
+      function onDelete(event, criterion) {
+        $scope.unregisterOnDelete();
+        var i = $scope.taxonomy.vocabularies.indexOf(criterion);
         if (i > -1) {
           $scope.taxonomy.vocabularies.splice(i, 1);
-          // TODO add moveTo
           $scope.model.content = $scope.taxonomy;
           $scope.model.children = $scope.taxonomy.vocabularies;
           $scope.model.type = 'taxonomy';
         }
+      }
+
+      var deleteCriterion = function() {
+        $scope.unregisterOnDelete = $scope.$on(NOTIFICATION_EVENTS.confirmDialogAccepted, onDelete);
+        var criterionLabel = $filter('translate')('global.criterion');
+        var criterion = $scope.model.content;
+        $rootScope.$broadcast(NOTIFICATION_EVENTS.showConfirmDialog,
+          {
+            titleKey: 'taxonomy-config.delete-dialog.title',
+            titleArgs: [criterionLabel],
+            messageKey: 'taxonomy-config.delete-dialog.message',
+            messageArgs: [criterionLabel.toLowerCase(), criterion.name]
+          }, $scope.model.content
+        );
       };
 
       $scope.getField = VocabularyAttributeService.getField;
       $scope.getTypeMap = VocabularyAttributeService.getTypeMap;
       $scope.getLocalized = VocabularyAttributeService.getLocalized;
+      $scope.isStatic = VocabularyAttributeService.isStatic;
       $scope.deleteCriterion = deleteCriterion;
       $scope.edit = edit;
 
@@ -147,13 +166,17 @@ mica.entitySfConfig
     '$uibModal',
     'EntityTaxonomyService',
     'VocabularyAttributeService',
-    function ($scope, $uibModal, EntityTaxonomyService, VocabularyAttributeService) {
+    function ($scope,
+              $uibModal,
+              EntityTaxonomyService,
+              VocabularyAttributeService) {
 
       var addCriteria = function() {
+
         var model = {
           content: null,
           children: null,
-          type: 'vocabulary'
+          type: 'criterion'
         };
 
         $uibModal.open({
@@ -176,17 +199,84 @@ mica.entitySfConfig
 
     }])
 
+  .controller('entityTaxonomyConfigTermsViewController', [
+    '$rootScope',
+    '$scope',
+    '$filter',
+    '$uibModal',
+    'EntityTaxonomyService',
+    'VocabularyAttributeService',
+    'NOTIFICATION_EVENTS',
+    function ($rootScope,
+              $scope,
+              $filter,
+              $uibModal,
+              EntityTaxonomyService,
+              VocabularyAttributeService,
+              NOTIFICATION_EVENTS) {
+
+      var addTerm = function(vocabulary, term) {
+        var model = {
+          content: term || null,
+          children: null,
+          type: 'term',
+          valueType: VocabularyAttributeService.getType(vocabulary)
+        };
+
+        $uibModal.open({
+          templateUrl: 'app/entity-taxonomy-config/views/entity-taxonomy-config-properties-modal.html',
+          controller: 'entityTaxonomyConfigPropertiesModalController',
+          resolve: {
+            model: function() {
+              return model;
+            }
+          }
+        }).result.then(function(){
+          $scope.model.children = vocabulary.terms = vocabulary.terms || [];
+          vocabulary.terms.push(model.content);
+        });
+      };
+
+      function onDelete(event, args) {
+        $scope.unregisterOnDelete();
+        var i = args.vocabulary.terms.indexOf(args.term);
+        if (i > -1) {
+          args.vocabulary.terms.splice(i, 1);
+        }
+      }
+
+      var deleteTerm = function(vocabulary, term) {
+        $scope.unregisterOnDelete = $scope.$on(NOTIFICATION_EVENTS.confirmDialogAccepted, onDelete);
+        var termLabel = $filter('translate')('global.term');
+        $rootScope.$broadcast(NOTIFICATION_EVENTS.showConfirmDialog,
+          {
+            titleKey: 'taxonomy-config.delete-dialog.title',
+            titleArgs: [termLabel],
+            messageKey: 'taxonomy-config.delete-dialog.message',
+            messageArgs: [termLabel.toLowerCase(), term.name]
+          }, {vocabulary: vocabulary, term: term}
+        );
+      };
+
+      $scope.addTerm = addTerm;
+      $scope.deleteTerm = deleteTerm;
+      $scope.isStatic = VocabularyAttributeService.isStatic;
+      $scope.getTermsCount = EntityTaxonomyService.getTermsCount;
+    }])
+
   .controller('entityTaxonomyConfigPropertiesModalController', [
     '$scope',
     '$uibModalInstance',
     '$filter',
     'EntityTaxonomySchemaFormService',
+    'VocabularyAttributeService',
     'MicaConfigResource',
     'model',
     function ($scope,
               $uibModalInstance,
               $filter,
               EntityTaxonomySchemaFormService,
+              VocabularyAttributeService,
               MicaConfigResource,
               model) {
 
@@ -197,6 +287,7 @@ mica.entitySfConfig
         if($scope.form.$valid) {
           EntityTaxonomySchemaFormService.updateModel($scope.sfForm, $scope.model);
           $uibModalInstance.close($scope.sfForm.model);
+
         }
 
         $scope.form.saveAttempted = true;
@@ -204,6 +295,23 @@ mica.entitySfConfig
 
       var cancel = function () {
         $uibModalInstance.dismiss('cancel');
+      };
+
+      var getTitle = function() {
+        var key = 'taxonomy-config.' + $scope.model.type + '-dialog.' + ($scope.model.content ? 'edit-' : 'add-');
+        switch ($scope.model.type) {
+          case 'taxonomy':
+            key = 'edit';
+            break;
+          case 'criterion':
+            key += 'criterion';
+            break;
+          case 'term':
+            key += 'term';
+            break;
+        }
+
+        return $filter('translate')(key);
       };
 
       MicaConfigResource.get(function (micaConfig) {
@@ -218,15 +326,11 @@ mica.entitySfConfig
         });
 
         $scope.sfForm = EntityTaxonomySchemaFormService.getFormData($scope.model);
+        $scope.isStatic = VocabularyAttributeService.isStatic;
         $scope.apply = apply;
         $scope.cancel = cancel;
+        $scope.getTitle = getTitle;
       });
 
-    }])
-
-
-  .controller('entityTaxonomyConfigTermsViewController', [
-    '$scope',
-    function ($scope) {
     }]);
 

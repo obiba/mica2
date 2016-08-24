@@ -3,7 +3,7 @@
  * https://github.com/obiba/ng-obiba-mica
 
  * License: GNU Public License version 3
- * Date: 2016-08-15
+ * Date: 2016-08-23
  */
 'use strict';
 
@@ -8492,6 +8492,9 @@ angular.module("attachment/attachment-input-template.html", []).run(["$templateC
     "        {{file.progress}}%\n" +
     "      </uib-progressbar>\n" +
     "    </td>\n" +
+    "    <td ng-if=\"file.timestamps\" class=\"col-xs-2\">\n" +
+    "      <span class=\"pull-right\" title=\"{{ file.timestamps.created | amDateFormat: 'lll' }}\">{{file.timestamps.created | amCalendar }}</span>\n" +
+    "    </td>\n" +
     "    <td style=\"width:1%;\">\n" +
     "        <span class=\"pull-right\" style=\"white-space: nowrap;\">\n" +
     "          {{file.size | bytes}}\n" +
@@ -8523,6 +8526,7 @@ angular.module("attachment/attachment-list-template.html", []).run(["$templateCa
     "           download=\"{{attachment.fileName}}\">{{attachment.fileName}}\n" +
     "        </a>\n" +
     "      </th>\n" +
+    "      <td ng-if=\"attachment.timestamps\" class=\"col-xs-2\"><span class=\"pull-right\" title=\"{{ attachment.timestamps.created | amDateFormat: 'lll' }}\">{{attachment.timestamps.created | amCalendar }}</span></td>\n" +
     "      <td style=\"width:1%;\">\n" +
     "        <span class=\"pull-right\" style=\"white-space: nowrap;\">\n" +
     "          {{attachment.size | bytes}}\n" +

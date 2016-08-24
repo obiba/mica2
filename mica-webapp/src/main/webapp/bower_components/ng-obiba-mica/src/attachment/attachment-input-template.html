@@ -11,6 +11,9 @@
         {{file.progress}}%
       </uib-progressbar>
     </td>
+    <td ng-if="file.timestamps" class="col-xs-2">
+      <span class="pull-right" title="{{ file.timestamps.created | amDateFormat: 'lll' }}">{{file.timestamps.created | amCalendar }}</span>
+    </td>
     <td style="width:1%;">
         <span class="pull-right" style="white-space: nowrap;">
           {{file.size | bytes}}

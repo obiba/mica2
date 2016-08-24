@@ -74,11 +74,8 @@ mica.entityTaxonomyConfig
 
       this.setField = function(attributes, field) {
         setAttribute(attributes, 'field', field);
-        // TODO make it more efficient; add/remove alias depending on existance of DOTs
-        // if (field.indexOf('.') > 0) {
         var alias = field.replace(/\./, '-');
         setAttribute(attributes, 'alias', alias);
-        // }
       };
 
       this.getLocalized = function(content) {
@@ -91,6 +88,14 @@ mica.entityTaxonomyConfig
 
       this.setLocalized = function(attributes, localized) {
         setAttribute(attributes, 'localized', localized);
+      };
+
+      this.isStatic = function(content) {
+        if (content && content.attributes) {
+          return getAttribute(content.attributes, 'static', false);
+        }
+
+        return false;
       };
 
       return this;
@@ -123,7 +128,9 @@ mica.entityTaxonomyConfig
 
         if (content) {
           fields.forEach(function (field) {
-            model[field] = convert(content[field]);
+            if (content[field]) {
+              model[field] = convert(content[field]);
+            }
           });
         }
       }
@@ -140,7 +147,9 @@ mica.entityTaxonomyConfig
         }
 
         fields.forEach(function(field) {
-          content[field] = convert(model[field]);
+          if(model[field]) {
+            content[field] = convert(model[field]);
+          }
         });
 
       }
@@ -149,34 +158,34 @@ mica.entityTaxonomyConfig
 
         var data = {
           schema: {
-            "type": "object",
-            "properties": {
-              "title": {
-                "type": "object",
-                "format": "localizedString",
-                "title": $filter('translate')('title'),
-                "minLength": 2,
-                "required": true,
+            'type': 'object',
+            'properties': {
+              'title': {
+                'type': 'object',
+                'format': 'localizedString',
+                'title': $filter('translate')('title'),
+                'minLength': 2,
+                'required': true,
               },
-              "description": {
-                "type": "object",
-                "format": "localizedString",
-                "title": $filter('translate')('description'),
-                "required": true
+              'description': {
+                'type': 'object',
+                'format': 'localizedString',
+                'title': $filter('translate')('description'),
+                'required': true
               }
             }
           },
           definition: [
             {
-              "type":"localizedstring",
-              "key":"title",
-              "showLocales": true
+              'type':'localizedstring',
+              'key':'title',
+              'showLocales': true
             },
             {
-              "type":"localizedstring",
-              "key":"description",
-              "showLocales": true,
-              "rows": 10
+              'type':'localizedstring',
+              'key':'description',
+              'showLocales': true,
+              'rows': 10
             }
           ],
           model: {}
@@ -189,83 +198,98 @@ mica.entityTaxonomyConfig
       function getTypeMap() {
         return [
             {
-              "value": "string",
-              "name": $filter('translate')('global.types.string')
+              'value': 'string',
+              'name': $filter('translate')('global.types.string')
             },
             {
-              "value": "integer",
-              "name": $filter('translate')('global.types.integer')
+              'value': 'integer',
+              'name': $filter('translate')('global.types.integer')
             },
             {
-              "value": "decimal",
-              "name": $filter('translate')('global.types.decimal')
+              'value': 'decimal',
+              'name': $filter('translate')('global.types.decimal')
             }
           ];
       }
 
       function getVocabularyFormData(content) {
-
+        var isStatic = VocabularyAttributeService.isStatic(content);
         var data = {
           schema: {
-            "type": "object",
-            "properties": {
-              "name": {
-                "type": "string",
-                "title": $filter('translate')('name'),
-                "required": true
+            'type': 'object',
+            'properties': {
+              'name': {
+                'type': 'string',
+                'title': $filter('translate')('name'),
+                'required': true,
+                'readonly': isStatic
               },
-              "title": {
-                "type": "object",
-                "format": "localizedString",
-                "title": $filter('translate')('title'),
-                "minLength": 2,
-                "required": true
+              'title': {
+                'type': 'object',
+                'format': 'localizedString',
+                'title': $filter('translate')('global.title'),
+                'minLength': 2,
+                'required': true
               },
-              "description": {
-                "type": "object",
-                "format": "localizedString",
-                "title": $filter('translate')('description'),
-                "required": true
+              'description': {
+                'type': 'object',
+                'format': 'localizedString',
+                'title': $filter('translate')('description'),
+                'required': true
               },
-              "repeatable": {
-                "title": $filter('translate')('repeatable'),
-                "type": "boolean"
+              'repeatable': {
+                'title': $filter('translate')('global.repeatable'),
+                'type': 'boolean',
+                'readonly': isStatic
               },
-              "localized": {
-                "title": $filter('translate')('localized'),
-                "type": "boolean"
+              'localized': {
+                'title': $filter('translate')('global.localized'),
+                'type': 'boolean',
+                'readonly': isStatic
               },
-              "field": {
-                "title": $filter('translate')('field'),
-                "type": "string",
-                "required": true
+              'field': {
+                'title': $filter('translate')('global.field'),
+                'type': 'string',
+                'required': true,
+                'readonly': isStatic
               },
-              "type": {
-                "title": $filter('translate')('type'),
-                "type": "string"
+              'type': {
+                'title': $filter('translate')('type'),
+                'type': 'string',
+                'readonly': isStatic
               }
             }
           },
           definition: [
-            "name",
             {
-              "type":"localizedstring",
-              "key":"title",
-              "showLocales": true
+              'key': 'name',
+              'description': '<p class="help-block">' + $filter('translate')('taxonomy-config.criterion-dialog.name-help') + '</p>'
             },
             {
-              "type":"localizedstring",
-              "key":"description",
-              "showLocales": true,
-              "rows": 10
+              'type':'localizedstring',
+              'key':'title',
+              'showLocales': true
             },
-            "repeatable",
-            "localized",
-            "field",
             {
-              "key": "type",
-              "type": "select",
-              "titleMap": getTypeMap()
+              'type':'localizedstring',
+              'key':'description',
+              'showLocales': true,
+              'rows': 10
+            },
+            {
+              'key': 'repeatable',
+              'description': '<p class="help-block">' + $filter('translate')('taxonomy-config.criterion-dialog.repeatable-help') + '</p>'
+            },
+            'localized',
+            {
+              'key': 'field',
+              'description': '<p class="help-block">' + $filter('translate')('taxonomy-config.criterion-dialog.field-help') + '</p>'
+            },
+            {
+              'key': 'type',
+              'type': 'select',
+              'titleMap': getTypeMap(),
+              'description': '<p class="help-block">' + $filter('translate')('taxonomy-config.criterion-dialog.field-help') + '</p>'
             }
           ],
           model: {}
@@ -282,12 +306,126 @@ mica.entityTaxonomyConfig
         return data;
       }
 
+
+      function getTermFormData(content, valueType) {
+        var data = {
+          schema: {
+            'type': 'object',
+            'properties': {
+              'name': {
+                'type': 'string',
+                'title': $filter('translate')('name'),
+                'required': true
+              },
+              'from': {
+                'type': 'number',
+                'title': $filter('translate')('global.from'),
+                'required': true
+              },
+              'to': {
+                'type': 'number',
+                'title': $filter('translate')('global.to'),
+                'required': true
+              },
+              'title': {
+                'type': 'object',
+                'format': 'localizedString',
+                'title': $filter('translate')('global.title'),
+                'minLength': 2,
+                'required': true
+              },
+              'description': {
+                'type': 'object',
+                'format': 'localizedString',
+                'title': $filter('translate')('description'),
+                'required': true
+              },
+              'keywords': {
+                'type': 'object',
+                'format': 'localizedString',
+                'title': $filter('translate')('global.keywords')
+              }
+            }
+          },
+          definition: [
+            {
+              'key': 'name',
+              'condition': '!model.isRange',
+              'description': $filter('translate')('taxonomy-config.term-dialog.name-help')
+            },
+            {
+              'type': 'fieldset',
+              'condition': 'model.isRange',
+              'items': [
+                {
+                  'type': 'section',
+                  'htmlClass': 'row',
+                  'items': [
+                    {
+                      'type': 'section',
+                      'htmlClass': 'col-xs-6',
+                      'items': [
+                        {
+                          'key': 'from'
+                        }
+                      ]
+                    },
+                    {
+                      'type': 'section',
+                      'htmlClass': 'col-xs-6',
+                      'items': [
+                        {
+                          'key': 'to'
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              'type':'localizedstring',
+              'key':'title',
+              'showLocales': true
+            },
+            {
+              'type':'localizedstring',
+              'key':'description',
+              'showLocales': true,
+              'rows': 10
+            },
+            {
+              'type':'localizedstring',
+              'key':'keywords',
+              'showLocales': true,
+              'rows': 10,
+              'description': $filter('translate')('taxonomy-config.term-dialog.keywords-help')
+            }
+          ],
+          model: {isRange: valueType !== 'string'}
+        };
+
+        if (valueType !== 'string') {
+          if (content) {
+            var parts = content.name.split(':');
+            data.model.from = parseInt(parts[0]);
+            data.model.to = parseInt(parts[1]);
+          }
+        }
+
+        if (content) {
+          convertToLocalizedString(data.model, content, ['title', 'description', 'keywords']);
+          data.model.name = content.name;
+        }
+        return data;
+      }
+
       this.updateModel = function(data, model) {
         switch (model.type) {
           case 'taxonomy':
             convertFromLocalizedString(data.model, model.content, ['title', 'description']);
             break;
-          case 'vocabulary':
+          case 'criterion':
             model.content = model.content || {};
             convertFromLocalizedString(data.model, model.content, ['title', 'description']);
 
@@ -305,8 +443,20 @@ mica.entityTaxonomyConfig
             model.content.name = data.model.name;
             model.content.repeatable = data.model.repeatable;
             break;
+
+          case 'term':
+            model.content = model.content || {};
+            convertFromLocalizedString(data.model, model.content, ['title', 'description', 'keywords']);
+            if (model.valueType !== 'string' && data.model.isRange) {
+              model.content.name = data.model.from + ':' + data.model.to;
+            } else {
+              model.content.name = data.model.name;
+            }
+
+            break;
+
           default:
-            throw new Error("EntityTaxonomySchemaFormService - invalid type:" + model.type);
+            throw new Error('EntityTaxonomySchemaFormService - invalid type:' + model.type);
         }
 
       };
@@ -315,11 +465,13 @@ mica.entityTaxonomyConfig
         switch (model.type) {
           case 'taxonomy':
             return getTaxonomyFormData(model.content);
-          case 'vocabulary':
+          case 'criterion':
             return getVocabularyFormData(model.content);
+          case 'term':
+            return getTermFormData(model.content, model.valueType || 'string');
         }
 
-        throw new Error("EntityTaxonomySchemaFormService - invalid type:" + model.type);
+        throw new Error('EntityTaxonomySchemaFormService - invalid type:' + model.type);
       };
 
       return this;

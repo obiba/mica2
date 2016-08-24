@@ -1458,8 +1458,8 @@
     "fr": "Nombre de participants recrutés ou à recruter par l'étude."
   "attributes":
     "type": "integer"
-    "field": "numberOfParticipants.participant.number"
-    "alias": "numberOfParticipants-participant-number"
+    "field": "model.numberOfParticipants.participant.number"
+    "alias": "model-numberOfParticipants-participant-number"
   "terms": []
 - "name": "numberOfParticipants-participant-range"
   "title":

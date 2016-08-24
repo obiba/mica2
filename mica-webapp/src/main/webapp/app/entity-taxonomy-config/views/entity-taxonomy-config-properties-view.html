@@ -1,5 +1,4 @@
 <div>
-
   <h3 ng-if="model.type==='taxonomy'">
     <ol class="breadcrumb mica-breadcrumb">
       <li class="active">{{model.content.name}}</li>
@@ -9,13 +8,13 @@
     <div class="col-md-9">
       <h3>
         <ol class="breadcrumb mica-breadcrumb">
-          <li><a href ng-click="navigateToTaxonomy()" translate>all-criteria</a></li>
+          <li><a href ng-click="navigateToTaxonomy()" translate>taxonomy-config.all-criteria</a></li>
           <li class="active">{{model.content.name}}</li>
         </ol>
       </h3>
     </div>
     <div class="col-md-3">
-      <h3>
+      <h3 ng-if="!isStatic(model.content)">
         <a class="pull-right" href ng-click="deleteCriterion()"><i class="fa fa-trash"></i></a>
       </h3>
     </div>
@@ -71,7 +70,7 @@
           </td>
         </tr>
         <tr>
-          <th translate>field</th>
+          <th translate>global.field</th>
           <td>
             {{getField(model.content)}}
           </td>

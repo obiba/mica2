@@ -1,8 +1,7 @@
 <div class="modal-content">
   <div class="modal-header">
     <button type="button" class="close" aria-hidden="true" ng-click="cancel()">&times;</button>
-    <h4 ng-if="model.content" class="modal-title" translate>global.edit-criterion</h4>
-    <h4 ng-if="!model.content" class="modal-title" translate>global.add-criterion</h4>
+    <h4 class="modal-title">{{getTitle()}}</h4>
   </div>
 
   <div class="modal-body">
