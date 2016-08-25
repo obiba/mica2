@@ -2,11 +2,11 @@
     <table style="max-height: 400px;" class="table table-bordered table-striped" fixed-header="chartObject.getTable().data">
         <thead>
         <tr>
-        <th ng-repeat="header in chartObject.header">{{header}}</th>
+        <th ng-repeat="header in chartObject.header track by $index">{{header}}</th>
         </tr>
         </thead>
         <tbody>
-        <tr ng-repeat="row in chartObject.entries">
+        <tr ng-repeat="row in chartObject.entries track by $index">
             <td>{{row.title}}</td>
             <td><a href ng-click="updateCriteria(row.key, chartObject.vocabulary)">{{row.value}}</a></td>
             <td ng-if="row.participantsNbr">{{row.participantsNbr}}</td>
