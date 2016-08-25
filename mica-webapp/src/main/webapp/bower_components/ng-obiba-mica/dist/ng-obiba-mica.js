@@ -3,7 +3,7 @@
  * https://github.com/obiba/ng-obiba-mica
 
  * License: GNU Public License version 3
- * Date: 2016-08-15
+ * Date: 2016-08-25
  */
 'use strict';
 
@@ -1280,7 +1280,8 @@ angular.module('obiba.mica.access')
       documentsSectionHelpText: null,
       downloadButtonCaption: null,
       commentsEnabled: true,
-      userListPageTitle: null
+      userListPageTitle: null,
+      newRequestButtonHelpText: null
     };
 
     this.setOptions = function (newOptions) {
@@ -8145,6 +8146,8 @@ angular.module("access/views/data-access-request-list.html", []).run(["$template
     "    <i class=\"fa fa-plus\"></i> <span>{{config.newRequestButtonCaption || 'data-access-request.add' | translate}}</span>\n" +
     "  </a>\n" +
     "\n" +
+    "  <span ng-bind-html=\"config.newRequestButtonHelpText\"></span>\n" +
+    "\n" +
     "  <p class=\"help-block\" ng-if=\"requests.length == 0 && !loading\">\n" +
     "    <span translate>data-access-request.none</span>\n" +
     "  </p>\n" +
@@ -8490,6 +8493,9 @@ angular.module("attachment/attachment-input-template.html", []).run(["$templateC
     "        {{file.progress}}%\n" +
     "      </uib-progressbar>\n" +
     "    </td>\n" +
+    "    <td ng-if=\"file.timestamps\" class=\"col-xs-2\">\n" +
+    "      <span class=\"pull-right\" title=\"{{ file.timestamps.created | amDateFormat: 'lll' }}\">{{file.timestamps.created | amCalendar }}</span>\n" +
+    "    </td>\n" +
     "    <td style=\"width:1%;\">\n" +
     "        <span class=\"pull-right\" style=\"white-space: nowrap;\">\n" +
     "          {{file.size | bytes}}\n" +
@@ -8521,6 +8527,7 @@ angular.module("attachment/attachment-list-template.html", []).run(["$templateCa
     "           download=\"{{attachment.fileName}}\">{{attachment.fileName}}\n" +
     "        </a>\n" +
     "      </th>\n" +
+    "      <td ng-if=\"attachment.timestamps\" class=\"col-xs-2\"><span class=\"pull-right\" title=\"{{ attachment.timestamps.created | amDateFormat: 'lll' }}\">{{attachment.timestamps.created | amCalendar }}</span></td>\n" +
     "      <td style=\"width:1%;\">\n" +
     "        <span class=\"pull-right\" style=\"white-space: nowrap;\">\n" +
     "          {{attachment.size | bytes}}\n" +
@@ -8833,11 +8840,11 @@ angular.module("graphics/views/tables-directive.html", []).run(["$templateCache"
     "    <table style=\"max-height: 400px;\" class=\"table table-bordered table-striped\" fixed-header=\"chartObject.getTable().data\">\n" +
     "        <thead>\n" +
     "        <tr>\n" +
-    "        <th ng-repeat=\"header in chartObject.header\">{{header}}</th>\n" +
+    "        <th ng-repeat=\"header in chartObject.header track by $index\">{{header}}</th>\n" +
     "        </tr>\n" +
     "        </thead>\n" +
     "        <tbody>\n" +
-    "        <tr ng-repeat=\"row in chartObject.entries\">\n" +
+    "        <tr ng-repeat=\"row in chartObject.entries track by $index\">\n" +
     "            <td>{{row.title}}</td>\n" +
     "            <td><a href ng-click=\"updateCriteria(row.key, chartObject.vocabulary)\">{{row.value}}</a></td>\n" +
     "            <td ng-if=\"row.participantsNbr\">{{row.participantsNbr}}</td>\n" +
