@@ -3,7 +3,7 @@
  * https://github.com/obiba/ng-obiba-mica
 
  * License: GNU Public License version 3
- * Date: 2016-08-23
+ * Date: 2016-08-25
  */
 'use strict';
 
@@ -8840,11 +8840,11 @@ angular.module("graphics/views/tables-directive.html", []).run(["$templateCache"
     "    <table style=\"max-height: 400px;\" class=\"table table-bordered table-striped\" fixed-header=\"chartObject.getTable().data\">\n" +
     "        <thead>\n" +
     "        <tr>\n" +
-    "        <th ng-repeat=\"header in chartObject.header\">{{header}}</th>\n" +
+    "        <th ng-repeat=\"header in chartObject.header track by $index\">{{header}}</th>\n" +
     "        </tr>\n" +
     "        </thead>\n" +
     "        <tbody>\n" +
-    "        <tr ng-repeat=\"row in chartObject.entries\">\n" +
+    "        <tr ng-repeat=\"row in chartObject.entries track by $index\">\n" +
     "            <td>{{row.title}}</td>\n" +
     "            <td><a href ng-click=\"updateCriteria(row.key, chartObject.vocabulary)\">{{row.value}}</a></td>\n" +
     "            <td ng-if=\"row.participantsNbr\">{{row.participantsNbr}}</td>\n" +
