@@ -19,13 +19,21 @@ mica.projectConfig
     'AlertService',
     'ServerErrorUtils',
     'ProjectFormPermissionsResource',
+    'ProjectFormAccessesResource',
+    'MicaConfigResource',
     function ($rootScope, $location, $scope, $log,
               ProjectFormResource,
               EntitySchemaFormService,
               LocalizedSchemaFormService,
               AlertService,
               ServerErrorUtils,
-              ProjectFormPermissionsResource) {
+              ProjectFormPermissionsResource,
+              ProjectFormAccessesResource,
+              MicaConfigResource) {
+
+      MicaConfigResource.get(function (micaConfig) {
+        $scope.openAccess = micaConfig.openAccess;
+      });
 
       var saveForm = function() {
 
@@ -104,30 +112,37 @@ mica.projectConfig
         model: {}
       };
 
-      var addDraftPermission = function (acl) {
-        return ProjectFormPermissionsResource.save({draft: true}, acl);
-      };
-
-      var deleteDraftPermission = function (acl) {
-        return ProjectFormPermissionsResource.delete({draft: true}, acl);
-      };
-
       $scope.loadPermissions = function() {
         $scope.acls = ProjectFormPermissionsResource.get();
         return $scope.acls;
       };
 
       $scope.addPermission = function (acl) {
-        addDraftPermission(acl);
         return ProjectFormPermissionsResource.save(acl);
       };
 
       $scope.deletePermission = function (acl) {
-        deleteDraftPermission(acl);
         return ProjectFormPermissionsResource.delete(acl);
       };
 
-      $scope.loadPermissions();
+      $scope.loadAccesses =function () {
+        $scope.accesses = ProjectFormAccessesResource.get();
+        return $scope.accesses;
+      };
+
+      $scope.addAccess = function (acl) {
+        return ProjectFormAccessesResource.save(acl);
+      };
+
+      $scope.deleteAccess = function (acl) {
+        return ProjectFormAccessesResource.delete(acl);
+      };
+
+      $scope.titleInfo = {
+        'permissions': 'project-config.permissions.info',
+        'accesses': 'project-config.accesses.info'
+      };
+
       $scope.tab = {name: 'form'};
       $scope.saveForm = saveForm;
     }]);

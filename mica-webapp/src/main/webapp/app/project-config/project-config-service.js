@@ -31,4 +31,17 @@ mica.projectConfig
         'delete': {method: 'DELETE', params: {draft: '@draft', type: '@type', principal: '@principal'}, errorHandler: true},
         'get': {method: 'GET', params: {draft: '@draft'}, isArray: true}
       });
+    }])
+
+  .factory('ProjectFormAccessesResource', ['$resource',
+    function ($resource) {
+      return $resource('ws/config/project/accesses', {}, {
+        'save': {
+          method: 'PUT',
+          params: {draft: '@draft', type: '@type', principal: '@principal', role: '@role'},
+          errorHandler: true
+        },
+        'delete': {method: 'DELETE', params: {draft: '@draft', type: '@type', principal: '@principal'}, errorHandler: true},
+        'get': {method: 'GET', params: {draft: '@draft'}, isArray: true}
+      })
     }]);

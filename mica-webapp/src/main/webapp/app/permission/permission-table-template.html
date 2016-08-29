@@ -1,7 +1,7 @@
 <div class="row">
   <div class="{{openAccess ? 'col-md-12' : 'col-md-6'}}">
     <h4 ng-if="!openAccess" translate>draft</h4>
-    <p class="help-block" translate>permission.help</p>
+    <p class="help-block" ng-bind-html="customTitleInfo ? customTitleInfo.permissions : 'permission.help' | translate"></p>
 
     <div class="voffset2">
       <a href class="btn btn-info" ng-click="addPermission()">
@@ -72,7 +72,7 @@
 
   <div ng-if="!openAccess" class="col-md-6">
     <h4 translate>published</h4>
-    <p class="help-block" translate>access.help</p>
+    <p class="help-block" ng-bind-html="customTitleInfo ? customTitleInfo.accesses : 'access.help' | translate"></p>
 
     <div class="voffset2">
       <a href class="btn btn-info" ng-click="addAccess()">

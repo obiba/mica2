@@ -14,7 +14,10 @@ mica.permission
       onDelete: '=',
       onAccessAdd: '=',
       onAccessLoad: '=',
-      onAccessDelete: '='
+      onAccessDelete: '=',
+      permissionRoles: '=',
+      customTitleInfo: '='
+
     },
     templateUrl: 'app/permission/permission-table-template.html',
     controller: 'PermissionsController'
@@ -167,6 +170,9 @@ mica.permission
           },
           onLoad: function() {
             return $scope.onLoad;
+          },
+          permissionRoles: function () {
+            return $scope.permissionRoles;
           }
         }
       }).result.then(function(reload) {
