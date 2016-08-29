@@ -1378,7 +1378,10 @@
     },
     "permissions": {
       "title": "Permissions",
-      "info": "Grant permission to <code>Read</code> any draft of Research Project."
+      "info": "Grant permission to <code>Read</code>, <code>Edit</code> or <code>Review</code> any draft of Research Project."
+    },
+    "accesses": {
+      "info": "Grant <code>Read</code> access to any published Research Project."
     }
   },
   "comments": "Comments",
