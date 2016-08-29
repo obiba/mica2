@@ -1377,7 +1377,10 @@
     },
     "permissions": {
       "title": "Permissions",
-      "info": "Accorder l'autorisation de <code>Lire</code> tout les brouillons de projets de recherche."
+      "info": "Accorder l'autorisation de <code>Lire</code>, <code>Éditer</code> ou <code>Relire</code> tous les brouillons de projets de recherche."
+    },
+    "accesses": {
+      "info": "Accorder l'autorisation de <code>Lire</code> toutes les publications de projects de recherche."
     }
   },
   "comments": "Commentaires",

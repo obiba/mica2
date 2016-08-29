@@ -40,10 +40,10 @@
 
   <div ng-show="tab.name === 'permissions'">
     <h3 translate>project-config.permissions.title</h3>
-
-    <p class="help-block" translate>project-config.permissions.info</p>
-
-    <permission-config-table permissions="acls" on-load="loadPermissions" on-add="addPermission" on-delete="deletePermission" name="'research-projects'"></permission-config-table>
+    <permissions-table
+      permissions="acls" on-load="loadPermissions" on-add="addPermission" on-delete="deletePermission" name="'research-projects'"
+      accesses="accesses" on-access-load="loadAccesses" on-access-add="addAccess" on-access-delete="deleteAccess" open-access="openAccess"
+      permission-roles="permissionsRoles" custom-title-info="titleInfo"></permissions-table>
   </div>
 
   <div ng-show="tab.name !== 'permissions'" class="voffset4">
