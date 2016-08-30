@@ -89,9 +89,9 @@ public class CsvReportGeneratorTest {
 
     List<DataAccessRequest> dataAccessRequest = new ArrayList<>();
 
+    dataAccessRequest.add(openedDataAccessRequest());
     dataAccessRequest.add(submittedDataAccessRequest());
     dataAccessRequest.add(approvedDataAccessRequest());
-    dataAccessRequest.add(openedDataAccessRequest());
 
     new CsvReportGenerator(dataAccessRequest, csvSchema, "fr").write(byteArrayOutputStream);
 
@@ -114,7 +114,7 @@ public class CsvReportGeneratorTest {
   private DataAccessRequest submittedDataAccessRequest() {
     DataAccessRequest dataAccessRequest = DataAccessRequest.newBuilder()
       .status(Status.SUBMITTED.toString())
-      .content("{'title':'Opened request title'}")
+      .content("{'title':'Opened request title', 'isWaiting':true}")
       .build();
     dataAccessRequest.setId("refused id");
     dataAccessRequest.setCreatedDate(new DateTime(2016, 8, 20, 14, 36));
@@ -127,7 +127,7 @@ public class CsvReportGeneratorTest {
   private DataAccessRequest approvedDataAccessRequest() {
     DataAccessRequest dataAccessRequest = DataAccessRequest.newBuilder()
       .status(Status.APPROVED.toString())
-      .content("{'title':'Approved request title'}")
+      .content("{'title':'Approved request title', 'isWaiting':false}")
       .build();
     dataAccessRequest.setId("approved id");
     dataAccessRequest.setCreatedDate(new DateTime(2016, 8, 20, 14, 36));
@@ -205,6 +205,14 @@ public class CsvReportGeneratorTest {
       "    \"detailedOverview\": {\n" +
       "      \"en\": \"detailedOverview\",\n" +
       "      \"fr\": \"detailedOverview\"\n" +
+      "    },\n" +
+      "    \"true\": {\n" +
+      "      \"en\": \"YES\",\n" +
+      "      \"fr\": \"OUI\"\n" +
+      "    },\n" +
+      "    \"false\": {\n" +
+      "      \"en\": \"NO\",\n" +
+      "      \"fr\": \"NON\"\n" +
       "    }\n" +
       "  },\n" +
       "  \"table\": {\n" +
@@ -235,6 +243,10 @@ public class CsvReportGeneratorTest {
       "    \"title\": {\n" +
       "      \"en\": \"TITLE\",\n" +
       "      \"fr\": \"TITRE\"\n" +
+      "    },\n" +
+      "    \"isWaiting\": {\n" +
+      "      \"en\": \"WAITING\",\n" +
+      "      \"fr\": \"EN ATTENTE\"\n" +
       "    }\n" +
       "  }\n" +
       "}";
@@ -255,9 +267,10 @@ public class CsvReportGeneratorTest {
       "\"rejected\",\"0\"\n" +
       "\"\"\n" +
       "\"detailedOverview\"\n" +
-      "\"ID DE LA REQUETE D'ACCES\",\"STATUS\",\"DATE DE CREATION\",\"DATE DE SOUMISSION\",\"APPROVED / REJECTED DATE\",\"DAYS BETWEEN FIRST SUBMISSION DATE AND APPROVED/REJECTED DATE\",\"TITRE\"\n" +
-      "\"refused id\",\"submitted\",\"20/08/2016\",\"01/06/2016\",\"N/A\",\"N/A\",\"Opened request title\"\n" +
-      "\"approved id\",\"approved\",\"20/08/2016\",\"01/06/2016\",\"01/01/2017\",\"214\",\"Approved request title\"\n" +
-      "\"refused id\",\"Ouvert\",\"20/08/2016\",\"01/06/2016\",\"N/A\",\"N/A\",\"Opened request title\"\n";
+      "\"ID DE LA REQUETE D'ACCES\",\"STATUS\",\"DATE DE CREATION\",\"DATE DE SOUMISSION\",\"APPROVED / REJECTED DATE\",\"DAYS BETWEEN FIRST SUBMISSION DATE AND APPROVED/REJECTED DATE\",\"TITRE\",\"EN ATTENTE\"\n" +
+      "\"refused id\",\"Ouvert\",\"20/08/2016\",\"01/06/2016\",\"N/A\",\"N/A\",\"Opened request title\",\"N/A\"\n"+
+      "\"refused id\",\"submitted\",\"20/08/2016\",\"01/06/2016\",\"N/A\",\"N/A\",\"Opened request title\",\"OUI\"\n" +
+      "\"approved id\",\"approved\",\"20/08/2016\",\"01/06/2016\",\"01/01/2017\",\"214\",\"Approved request title\",\"NON\"\n";
   }
 }
+
