@@ -1,6 +1,6 @@
 {
   "name": "sf-localized-string",
-  "version": "1.1.0",
+  "version": "1.1.2",
   "license": "MIT",
   "author": "obiba",
   "main": [
@@ -28,13 +28,13 @@
     "angular-bootstrap": "1.3.2"
   },
   "homepage": "https://github.com/obiba/sf-localized-string",
-  "_release": "1.1.0",
+  "_release": "1.1.2",
   "_resolution": {
     "type": "version",
-    "tag": "1.1.0",
-    "commit": "1fc972103bf669929cfe6772615ba00ddcaeb52b"
+    "tag": "1.1.2",
+    "commit": "41b695257036f0d120d70057eedc311aa56abce4"
   },
   "_source": "https://github.com/obiba/sf-localized-string.git",
-  "_target": "1.1.0",
+  "_target": "1.1.2",
   "_originalSource": "https://github.com/obiba/sf-localized-string.git"
 }
