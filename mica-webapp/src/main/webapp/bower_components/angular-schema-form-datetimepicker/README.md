@@ -105,3 +105,12 @@ and all options availible to angular-strap datepicker and timepicker.
   }
 },
 ```
+
+Dev notes
+---------
+
+Gulp build dependencies:
+
+```
+sudo npm install --global gulp gulp-webserver gulp-angular-templatecache gulp-minify-html gulp-concat gulp-uglify streamqueue gulp-jscs
+```

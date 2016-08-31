@@ -22,6 +22,8 @@ angular.module('obiba.mica.access')
     'USER_ROLES',
     'ngObibaMicaAccessTemplateUrl',
     'DataAccessRequestConfig',
+    'ngObibaMicaUrl',
+    '$translate',
 
     function ($rootScope,
               $scope,
@@ -33,7 +35,9 @@ angular.module('obiba.mica.access')
               SessionProxy,
               USER_ROLES,
               ngObibaMicaAccessTemplateUrl,
-              DataAccessRequestConfig) {
+              DataAccessRequestConfig,
+              ngObibaMicaUrl,
+              $translate) {
 
       var onSuccess = function(reqs) {
         for (var i = 0; i < reqs.length; i++) {
@@ -115,6 +119,10 @@ angular.module('obiba.mica.access')
           }
         }
         return null;
+      };
+
+      $scope.getCsvExportHref = function () {
+        return ngObibaMicaUrl.getUrl('DataAccessRequestsExportCsvResource').replace(':lang', $translate.use());
       };
 
       $scope.$on(NOTIFICATION_EVENTS.confirmDialogAccepted, function (event, id) {
@@ -383,6 +391,11 @@ angular.module('obiba.mica.access')
         }
       };
 
+      var printForm = function() {
+        // let angular digest!
+        setTimeout(function(){ window.print(); }, 250);
+      };
+
       $scope.submit = function () {
         $scope.$broadcast('schemaFormValidate');
         if ($scope.forms.requestForm.$valid) {
@@ -436,6 +449,8 @@ angular.module('obiba.mica.access')
 
         return result && result.length > 0 ? result[0].value : null;
       };
+
+      $scope.printForm = printForm;
 
       $scope.getFullName = function (profile) {
         if (profile) {

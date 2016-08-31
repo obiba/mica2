@@ -31,7 +31,8 @@
     "terms": "Terms",
     "keywords": "Keywords",
     "from": "From",
-    "to": "To"
+    "to": "To",
+    "print": "Print"
   },
   "main": {
     "title": "Welcome to Mica!",

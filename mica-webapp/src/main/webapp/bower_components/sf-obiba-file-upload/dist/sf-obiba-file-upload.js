@@ -1,4 +1,5 @@
-angular.module("sfObibaFileUploadTemplates", []).run(["$templateCache", function($templateCache) {$templateCache.put("src/templates/sf-obiba-file-upload.html","<div class=\"form-group\"\n     ng-controller=\"sfObibaFileUploadController\"\n     ng-class=\"{\'has-error\': form.disableErrorState !== true && hasError(), \'has-success\': form.disableSuccessState !== true && hasSuccess(), \'has-feedback\': form.feedback !== false }\"\n     schema-validate=\"form\"\n     sf-field-model>\n  <label ng-if=\"!form.notitle\" class=\"control-label\" >{{form.title}}</label>\n\n  <div>\n    <attachment-input ng-if=\"!form.readonly\"\n                      sf-field-model=\"replaceAll\"\n                      files=\"$$value$$.obibaFiles\"\n                      multiple=\"form.schema.multiple\"></attachment-input>\n\n    <attachment-list ng-if=\"form.readonly\"\n                     empty-message=\"form.emptyMessage\"\n                     href-builder=\"getDownloadUrl\"\n                     files=\"$$value$$.obibaFiles\"\n                     sf-field-model=\"replaceAll\"></attachment-list>\n\n    <span class=\"help-block\" sf-message=\"form.helpvalue\"></span>\n  </div>\n</div>");}]);
+angular.module("sfObibaFileUploadTemplates", []).run(["$templateCache", function($templateCache) {$templateCache.put("src/templates/attachments-print-friendly.html","<label class=\"control-label\" >\n  <span ng-if=\"files && files.length > 0\"><i class=\"fa fa-check-square-o\"></i> </span>\n  <span ng-if=\"!files || files.length < 1\"><i class=\"fa fa-square-o\"></i> </span>\n  {{title}}\n</label>\n");
+$templateCache.put("src/templates/sf-obiba-file-upload.html","<div class=\"form-group\"\n     ng-controller=\"sfObibaFileUploadController\"\n     ng-class=\"{\'has-error\': form.disableErrorState !== true && hasError(), \'has-success\': form.disableSuccessState !== true && hasSuccess(), \'has-feedback\': form.feedback !== false }\"\n     schema-validate=\"form\"\n     sf-field-model>\n\n  <div class=\"visible-print\" attachments-print-friendly sf-field-model=\"replaceAll\" files=\"$$value$$.obibaFiles\" title=\"form.title\"></div>\n\n  <div class=\"hidden-print\">\n    <label ng-if=\"!form.notitle\" class=\"control-label\" >{{form.title}}</label>\n\n    <div>\n      <attachment-input ng-if=\"!form.readonly\"\n                        sf-field-model=\"replaceAll\"\n                        files=\"$$value$$.obibaFiles\"\n                        multiple=\"form.schema.multiple\"></attachment-input>\n\n      <attachment-list ng-if=\"form.readonly\"\n                       empty-message=\"form.emptyMessage\"\n                       href-builder=\"getDownloadUrl\"\n                       files=\"$$value$$.obibaFiles\"\n                       sf-field-model=\"replaceAll\"></attachment-list>\n\n      <span class=\"help-block\" sf-message=\"form.helpvalue\"></span>\n    </div>\n  </div>\n</div>");}]);
 /*
  * Copyright (c) 2016 OBiBa. All rights reserved.
  *
@@ -86,7 +87,6 @@ angular.module('sfObibaFileUpload', [
 
   .config(['schemaFormProvider', 'schemaFormDecoratorsProvider', 'sfPathProvider', 'sfBuilderProvider',
   function (schemaFormProvider, schemaFormDecoratorsProvider, sfPathProvider, sfBuilderProvider) {
-
     /**
      * OBiBa's Schema Form file upload decorator.
      * @param name
@@ -135,7 +135,6 @@ angular.module('sfObibaFileUpload', [
     'ngObibaMicaUrl',
     'sfObibaFileUploadOptions',
     function ($scope, ngObibaMicaUrl, sfObibaFileUploadOptions) {
-
       /**
        * Return the download url to the file.
        *
@@ -213,4 +212,16 @@ angular.module('sfObibaFileUpload', [
           $scope.ngModel.$setViewValue(ngModel.$viewValue);
         }
       }, true);
-    }]);
+    }])
+
+  .directive('attachmentsPrintFriendly', [function() {
+      return {
+        restrict: 'EA',
+        replace: true,
+        scope: {
+          title: '=',
+          files: '='
+        },
+        templateUrl: 'src/templates/attachments-print-friendly.html'
+      }
+  }]);

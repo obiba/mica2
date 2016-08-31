@@ -3,7 +3,7 @@
  * https://github.com/obiba/ng-obiba-mica
 
  * License: GNU Public License version 3
- * Date: 2016-08-25
+ * Date: 2016-08-30
  */
 'use strict';
 
@@ -906,6 +906,11 @@ angular.module('obiba.mica.access')
         }
       };
 
+      var printForm = function() {
+        // let angular digest!
+        setTimeout(function(){ window.print(); }, 250);
+      };
+
       $scope.submit = function () {
         $scope.$broadcast('schemaFormValidate');
         if ($scope.forms.requestForm.$valid) {
@@ -959,6 +964,8 @@ angular.module('obiba.mica.access')
 
         return result && result.length > 0 ? result[0].value : null;
       };
+
+      $scope.printForm = printForm;
 
       $scope.getFullName = function (profile) {
         if (profile) {
@@ -1488,6 +1495,26 @@ angular.module('obiba.mica.access')
     };
   });
 ;/*
+ * Copyright (c) 2016 OBiBa. All rights reserved.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the GNU Public License v3.0.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+'use strict';
+
+angular.module('obiba.mica.access')
+  .directive('printFriendlyView', [function(){
+    return {
+      restrict: 'EA',
+      replace: true,
+      scope: false,
+      templateUrl: 'access/views/data-access-request-print-preview.html'
+    };
+  }]);;/*
  * Copyright (c) 2016 OBiBa. All rights reserved.
  *
  * This program and the accompanying materials
@@ -7994,7 +8021,7 @@ angular.module('obiba.mica.fileBrowser')
       }
     };
   }]);
-;angular.module('templates-ngObibaMica', ['access/views/data-access-request-documents-view.html', 'access/views/data-access-request-form.html', 'access/views/data-access-request-history-view.html', 'access/views/data-access-request-list.html', 'access/views/data-access-request-profile-user-modal.html', 'access/views/data-access-request-submitted-modal.html', 'access/views/data-access-request-validation-modal.html', 'access/views/data-access-request-view.html', 'attachment/attachment-input-template.html', 'attachment/attachment-list-template.html', 'file-browser/views/document-detail-template.html', 'file-browser/views/documents-table-template.html', 'file-browser/views/file-browser-template.html', 'file-browser/views/toolbar-template.html', 'graphics/views/charts-directive.html', 'graphics/views/tables-directive.html', 'localized/localized-input-group-template.html', 'localized/localized-input-template.html', 'localized/localized-template.html', 'localized/localized-textarea-template.html', 'search/views/classifications.html', 'search/views/classifications/classifications-view.html', 'search/views/classifications/taxonomies-facets-view.html', 'search/views/classifications/taxonomies-view.html', 'search/views/classifications/taxonomy-accordion-group.html', 'search/views/classifications/taxonomy-panel-template.html', 'search/views/classifications/taxonomy-template.html', 'search/views/classifications/term-panel-template.html', 'search/views/classifications/vocabulary-accordion-group.html', 'search/views/classifications/vocabulary-panel-template.html', 'search/views/coverage/coverage-search-result-table-template.html', 'search/views/criteria/criteria-node-template.html', 'search/views/criteria/criteria-root-template.html', 'search/views/criteria/criteria-target-template.html', 'search/views/criteria/criterion-dropdown-template.html', 'search/views/criteria/criterion-header-template.html', 'search/views/criteria/criterion-match-template.html', 'search/views/criteria/criterion-numeric-template.html', 'search/views/criteria/criterion-string-terms-template.html', 'search/views/criteria/target-template.html', 'search/views/graphics/graphics-search-result-template.html', 'search/views/list/datasets-search-result-table-template.html', 'search/views/list/networks-search-result-table-template.html', 'search/views/list/pagination-template.html', 'search/views/list/search-result-pagination-template.html', 'search/views/list/studies-search-result-table-template.html', 'search/views/list/variables-search-result-table-template.html', 'search/views/search-result-coverage-template.html', 'search/views/search-result-graphics-template.html', 'search/views/search-result-list-dataset-template.html', 'search/views/search-result-list-network-template.html', 'search/views/search-result-list-study-template.html', 'search/views/search-result-list-template.html', 'search/views/search-result-list-variable-template.html', 'search/views/search-result-panel-template.html', 'search/views/search.html', 'views/pagination-template.html']);
+;angular.module('templates-ngObibaMica', ['access/views/data-access-request-documents-view.html', 'access/views/data-access-request-form.html', 'access/views/data-access-request-history-view.html', 'access/views/data-access-request-list.html', 'access/views/data-access-request-print-preview.html', 'access/views/data-access-request-profile-user-modal.html', 'access/views/data-access-request-submitted-modal.html', 'access/views/data-access-request-validation-modal.html', 'access/views/data-access-request-view.html', 'attachment/attachment-input-template.html', 'attachment/attachment-list-template.html', 'file-browser/views/document-detail-template.html', 'file-browser/views/documents-table-template.html', 'file-browser/views/file-browser-template.html', 'file-browser/views/toolbar-template.html', 'graphics/views/charts-directive.html', 'graphics/views/tables-directive.html', 'localized/localized-input-group-template.html', 'localized/localized-input-template.html', 'localized/localized-template.html', 'localized/localized-textarea-template.html', 'search/views/classifications.html', 'search/views/classifications/classifications-view.html', 'search/views/classifications/taxonomies-facets-view.html', 'search/views/classifications/taxonomies-view.html', 'search/views/classifications/taxonomy-accordion-group.html', 'search/views/classifications/taxonomy-panel-template.html', 'search/views/classifications/taxonomy-template.html', 'search/views/classifications/term-panel-template.html', 'search/views/classifications/vocabulary-accordion-group.html', 'search/views/classifications/vocabulary-panel-template.html', 'search/views/coverage/coverage-search-result-table-template.html', 'search/views/criteria/criteria-node-template.html', 'search/views/criteria/criteria-root-template.html', 'search/views/criteria/criteria-target-template.html', 'search/views/criteria/criterion-dropdown-template.html', 'search/views/criteria/criterion-header-template.html', 'search/views/criteria/criterion-match-template.html', 'search/views/criteria/criterion-numeric-template.html', 'search/views/criteria/criterion-string-terms-template.html', 'search/views/criteria/target-template.html', 'search/views/graphics/graphics-search-result-template.html', 'search/views/list/datasets-search-result-table-template.html', 'search/views/list/networks-search-result-table-template.html', 'search/views/list/pagination-template.html', 'search/views/list/search-result-pagination-template.html', 'search/views/list/studies-search-result-table-template.html', 'search/views/list/variables-search-result-table-template.html', 'search/views/search-result-coverage-template.html', 'search/views/search-result-graphics-template.html', 'search/views/search-result-list-dataset-template.html', 'search/views/search-result-list-network-template.html', 'search/views/search-result-list-study-template.html', 'search/views/search-result-list-template.html', 'search/views/search-result-list-variable-template.html', 'search/views/search-result-panel-template.html', 'search/views/search.html', 'views/pagination-template.html']);
 
 angular.module("access/views/data-access-request-documents-view.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("access/views/data-access-request-documents-view.html",
@@ -8258,6 +8285,28 @@ angular.module("access/views/data-access-request-list.html", []).run(["$template
     "");
 }]);
 
+angular.module("access/views/data-access-request-print-preview.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("access/views/data-access-request-print-preview.html",
+    "<div ng-if=\"validForm\">\n" +
+    "  <div class=\"clearfix\"></div>\n" +
+    "\n" +
+    "  <div class=\"voffset2\" ng-if=\"dataAccessRequest.project.permissions && dataAccessRequest.project.permissions.view\">\n" +
+    "    <div ng-if=\"dataAccessRequest.project\" class=\"pull-right\">\n" +
+    "      <small class=\"help-block inline\"> {{'research-project.label' | translate}} :\n" +
+    "        <a route-checker route-checker-hides-parent=\"true\" href ng-href=\"#/project/{{dataAccessRequest.project.id}}\">{{dataAccessRequest.project.id}}</a>\n" +
+    "      </small>\n" +
+    "    </div>\n" +
+    "  </div>\n" +
+    "\n" +
+    "  <div>\n" +
+    "    <form id=\"request-form\" name=\"forms.requestForm\">\n" +
+    "      <div sf-model=\"form.model\" sf-form=\"form.definition\" sf-schema=\"form.schema\"></div>\n" +
+    "    </form>\n" +
+    "  </div>\n" +
+    "</div>\n" +
+    "");
+}]);
+
 angular.module("access/views/data-access-request-profile-user-modal.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("access/views/data-access-request-profile-user-modal.html",
     "<div class=\"modal-content\">\n" +
@@ -8382,96 +8431,103 @@ angular.module("access/views/data-access-request-view.html", []).run(["$template
     "  -->\n" +
     "\n" +
     "<div>\n" +
-    "  <div ng-if=\"headerTemplateUrl\" ng-include=\"headerTemplateUrl\"></div>\n" +
+    "  <div class=\"visible-print\" print-friendly-view></div>\n" +
+    "  <div class=\"hidden-print\">\n" +
+    "    <div ng-if=\"headerTemplateUrl\" ng-include=\"headerTemplateUrl\"></div>\n" +
     "\n" +
-    "  <obiba-alert id=\"DataAccessRequestViewController\"></obiba-alert>\n" +
+    "    <obiba-alert id=\"DataAccessRequestViewController\"></obiba-alert>\n" +
     "\n" +
-    "  <div ng-if=\"validForm\">\n" +
+    "    <div ng-if=\"validForm\">\n" +
     "\n" +
-    "    <p class=\"help-block pull-left\"><span translate>created-by</span>\n" +
-    "       <span ng-if=\"actions.canViewProfile('mica-user')\">\n" +
-    "         {{getFullName(dataAccessRequest.profile) || dataAccessRequest.applicant}}\n" +
-    "      </span>\n" +
-    "      <a href ng-click=\"userProfile(dataAccessRequest.profile)\"\n" +
-    "          ng-if=\"actions.canViewProfile('mica-data-access-officer')\">\n" +
-    "        {{getFullName(dataAccessRequest.profile) || dataAccessRequest.applicant}}</a>,\n" +
-    "      <span title=\"{{dataAccessRequest.timestamps.created | amDateFormat: 'lll'}}\">{{dataAccessRequest.timestamps.created | amCalendar}}</span>\n" +
-    "      <span class=\"label label-success\">{{dataAccessRequest.status | translate}}</span></p>\n" +
+    "      <p class=\"help-block pull-left\"><span translate>created-by</span>\n" +
+    "         <span ng-if=\"actions.canViewProfile('mica-user')\">\n" +
+    "           {{getFullName(dataAccessRequest.profile) || dataAccessRequest.applicant}}\n" +
+    "        </span>\n" +
+    "        <a href ng-click=\"userProfile(dataAccessRequest.profile)\"\n" +
+    "            ng-if=\"actions.canViewProfile('mica-data-access-officer')\">\n" +
+    "          {{getFullName(dataAccessRequest.profile) || dataAccessRequest.applicant}}</a>,\n" +
+    "        <span title=\"{{dataAccessRequest.timestamps.created | amDateFormat: 'lll'}}\">{{dataAccessRequest.timestamps.created | amCalendar}}</span>\n" +
+    "        <span class=\"label label-success\">{{dataAccessRequest.status | translate}}</span></p>\n" +
     "\n" +
-    "    <div class=\"pull-right\">\n" +
-    "      <a ng-click=\"submit()\"\n" +
-    "        ng-if=\"actions.canEditStatus(dataAccessRequest) && nextStatus.canSubmit(dataAccessRequest)\"\n" +
-    "        class=\"btn btn-info\" translate>submit\n" +
-    "      </a>\n" +
-    "      <a ng-click=\"reopen()\"\n" +
-    "        ng-if=\"actions.canEditStatus(dataAccessRequest) && nextStatus.canReopen(dataAccessRequest)\"\n" +
-    "        class=\"btn btn-info\" translate>reopen\n" +
-    "      </a>\n" +
-    "      <a ng-click=\"review()\"\n" +
-    "        ng-if=\"actions.canEditStatus(dataAccessRequest) && nextStatus.canReview(dataAccessRequest)\"\n" +
-    "        class=\"btn btn-info\" translate>review\n" +
-    "      </a>\n" +
-    "      <a ng-click=\"conditionallyApprove()\"\n" +
-    "         ng-if=\"actions.canEditStatus(dataAccessRequest) && nextStatus.canConditionallyApprove(dataAccessRequest)\"\n" +
-    "         class=\"btn btn-info\" translate>conditionallyApprove\n" +
-    "      </a>\n" +
-    "      <a ng-click=\"approve()\"\n" +
-    "        ng-if=\"actions.canEditStatus(dataAccessRequest) && nextStatus.canApprove(dataAccessRequest)\"\n" +
-    "        class=\"btn btn-info\" translate>approve\n" +
-    "      </a>\n" +
-    "      <a ng-click=\"reject()\"\n" +
-    "        ng-if=\"actions.canEditStatus(dataAccessRequest) && nextStatus.canReject(dataAccessRequest)\"\n" +
-    "        class=\"btn btn-info\" translate>reject\n" +
-    "      </a>\n" +
-    "      <a ng-href=\"#/data-access-request/{{dataAccessRequest.id}}/edit\"\n" +
-    "        ng-if=\"actions.canEdit(dataAccessRequest)\"\n" +
-    "        class=\"btn btn-primary\" title=\"{{'edit' | translate}}\">\n" +
-    "        <i class=\"fa fa-pencil-square-o\"></i>\n" +
-    "      </a>\n" +
-    "      <a target=\"_self\" href=\"{{requestDownloadUrl}}\" class=\"btn btn-default\">\n" +
-    "        <i class=\"glyphicon glyphicon-download-alt\"></i> <span>{{config.downloadButtonCaption || 'download' | translate}}</span>\n" +
-    "      </a>\n" +
-    "      <a ng-click=\"delete()\"\n" +
-    "        ng-if=\"actions.canDelete(dataAccessRequest)\"\n" +
-    "        class=\"btn btn-danger\" title=\"{{'delete' | translate}}\">\n" +
-    "        <i class=\"fa fa-trash-o\"></i>\n" +
-    "      </a>\n" +
-    "    </div>\n" +
-    "\n" +
-    "    <div class=\"clearfix\"></div>\n" +
-    "\n" +
-    "    <div class=\"voffset2\" ng-if=\"dataAccessRequest.project.permissions && dataAccessRequest.project.permissions.view\">\n" +
-    "      <div ng-if=\"dataAccessRequest.project\" class=\"pull-right\">\n" +
-    "        <small class=\"help-block inline\"> {{'research-project.label' | translate}} :\n" +
-    "          <a route-checker route-checker-hides-parent=\"true\" href ng-href=\"#/project/{{dataAccessRequest.project.id}}\">{{dataAccessRequest.project.id}}</a>\n" +
-    "        </small>\n" +
+    "      <div class=\"pull-right\">\n" +
+    "        <a ng-click=\"submit()\"\n" +
+    "          ng-if=\"actions.canEditStatus(dataAccessRequest) && nextStatus.canSubmit(dataAccessRequest)\"\n" +
+    "          class=\"btn btn-info\" translate>submit\n" +
+    "        </a>\n" +
+    "        <a ng-click=\"reopen()\"\n" +
+    "          ng-if=\"actions.canEditStatus(dataAccessRequest) && nextStatus.canReopen(dataAccessRequest)\"\n" +
+    "          class=\"btn btn-info\" translate>reopen\n" +
+    "        </a>\n" +
+    "        <a ng-click=\"review()\"\n" +
+    "          ng-if=\"actions.canEditStatus(dataAccessRequest) && nextStatus.canReview(dataAccessRequest)\"\n" +
+    "          class=\"btn btn-info\" translate>review\n" +
+    "        </a>\n" +
+    "        <a ng-click=\"conditionallyApprove()\"\n" +
+    "           ng-if=\"actions.canEditStatus(dataAccessRequest) && nextStatus.canConditionallyApprove(dataAccessRequest)\"\n" +
+    "           class=\"btn btn-info\" translate>conditionallyApprove\n" +
+    "        </a>\n" +
+    "        <a ng-click=\"approve()\"\n" +
+    "          ng-if=\"actions.canEditStatus(dataAccessRequest) && nextStatus.canApprove(dataAccessRequest)\"\n" +
+    "          class=\"btn btn-info\" translate>approve\n" +
+    "        </a>\n" +
+    "        <a ng-click=\"reject()\"\n" +
+    "          ng-if=\"actions.canEditStatus(dataAccessRequest) && nextStatus.canReject(dataAccessRequest)\"\n" +
+    "          class=\"btn btn-info\" translate>reject\n" +
+    "        </a>\n" +
+    "        <a ng-href=\"#/data-access-request/{{dataAccessRequest.id}}/edit\"\n" +
+    "          ng-if=\"actions.canEdit(dataAccessRequest)\"\n" +
+    "          class=\"btn btn-primary\" title=\"{{'edit' | translate}}\">\n" +
+    "          <i class=\"fa fa-pencil-square-o\"></i>\n" +
+    "        </a>\n" +
+    "        <a ng-click=\"printForm()\"\n" +
+    "           class=\"btn btn-info\" title=\"{{'global.print' | translate}}\">\n" +
+    "          <i class=\"fa fa-print\"></i>\n" +
+    "        </a>\n" +
+    "        <a target=\"_self\" href=\"{{requestDownloadUrl}}\" class=\"btn btn-default\">\n" +
+    "          <i class=\"glyphicon glyphicon-download-alt\"></i> <span>{{config.downloadButtonCaption || 'download' | translate}}</span>\n" +
+    "        </a>\n" +
+    "        <a ng-click=\"delete()\"\n" +
+    "          ng-if=\"actions.canDelete(dataAccessRequest)\"\n" +
+    "          class=\"btn btn-danger\" title=\"{{'delete' | translate}}\">\n" +
+    "          <i class=\"fa fa-trash-o\"></i>\n" +
+    "        </a>\n" +
     "      </div>\n" +
-    "    </div>\n" +
     "\n" +
-    "    <uib-tabset class=\"voffset5\">\n" +
-    "      <uib-tab ng-click=\"selectTab('form')\" heading=\"{{'data-access-request.form' | translate}}\">\n" +
-    "        <form id=\"request-form\" name=\"forms.requestForm\">\n" +
-    "          <div sf-model=\"form.model\" sf-form=\"form.definition\" sf-schema=\"form.schema\"></div>\n" +
-    "        </form>\n" +
-    "      </uib-tab>\n" +
-    "      <uib-tab ng-click=\"selectTab('documents')\">\n" +
-    "        <uib-tab-heading>\n" +
-    "          {{config.documentsSectionTitle || 'data-access-request.documents' | translate}}\n" +
-    "          <span class=\"badge hoffset1\" ng-show=\"dataAccessRequest.attachments\"><small>{{dataAccessRequest.attachments.length}}</small></span>\n" +
-    "        </uib-tab-heading>\n" +
-    "        <div ng-include=\"'access/views/data-access-request-documents-view.html'\"></div>\n" +
-    "      </uib-tab>\n" +
-    "      <uib-tab ng-if=\"config.commentsEnabled\" ng-click=\"selectTab('comments')\" heading=\"{{'data-access-request.comments' | translate}}\">\n" +
-    "        <obiba-comments class=\"voffset2\" comments=\"form.comments\"\n" +
-    "                        on-update=\"updateComment\" on-delete=\"deleteComment\"\n" +
-    "                        name-resolver=\"userProfileService.getFullName\"\n" +
-    "                        edit-action=\"EDIT\" delete-action=\"DELETE\"></obiba-comments>\n" +
-    "        <obiba-comment-editor on-submit=\"submitComment\"></obiba-comment-editor>\n" +
-    "      </uib-tab>\n" +
-    "      <uib-tab ng-click=\"selectTab('history')\" heading=\"{{'data-access-request.history' | translate}}\">\n" +
-    "        <div ng-include=\"'access/views/data-access-request-history-view.html'\"></div>\n" +
-    "      </uib-tab>\n" +
-    "    </uib-tabset>\n" +
+    "      <div class=\"clearfix\"></div>\n" +
+    "\n" +
+    "      <div class=\"voffset2\" ng-if=\"dataAccessRequest.project.permissions && dataAccessRequest.project.permissions.view\">\n" +
+    "        <div ng-if=\"dataAccessRequest.project\" class=\"pull-right\">\n" +
+    "          <small class=\"help-block inline\"> {{'research-project.label' | translate}} :\n" +
+    "            <a route-checker route-checker-hides-parent=\"true\" href ng-href=\"#/project/{{dataAccessRequest.project.id}}\">{{dataAccessRequest.project.id}}</a>\n" +
+    "          </small>\n" +
+    "        </div>\n" +
+    "      </div>\n" +
+    "\n" +
+    "      <uib-tabset class=\"voffset5\">\n" +
+    "        <uib-tab ng-click=\"selectTab('form')\" heading=\"{{'data-access-request.form' | translate}}\">\n" +
+    "          <form id=\"request-form\" name=\"forms.requestForm\">\n" +
+    "            <div sf-model=\"form.model\" sf-form=\"form.definition\" sf-schema=\"form.schema\"></div>\n" +
+    "          </form>\n" +
+    "        </uib-tab>\n" +
+    "        <uib-tab ng-click=\"selectTab('documents')\">\n" +
+    "          <uib-tab-heading>\n" +
+    "            {{config.documentsSectionTitle || 'data-access-request.documents' | translate}}\n" +
+    "            <span class=\"badge hoffset1\" ng-show=\"dataAccessRequest.attachments\"><small>{{dataAccessRequest.attachments.length}}</small></span>\n" +
+    "          </uib-tab-heading>\n" +
+    "          <div ng-include=\"'access/views/data-access-request-documents-view.html'\"></div>\n" +
+    "        </uib-tab>\n" +
+    "        <uib-tab ng-if=\"config.commentsEnabled\" ng-click=\"selectTab('comments')\" heading=\"{{'data-access-request.comments' | translate}}\">\n" +
+    "          <obiba-comments class=\"voffset2\" comments=\"form.comments\"\n" +
+    "                          on-update=\"updateComment\" on-delete=\"deleteComment\"\n" +
+    "                          name-resolver=\"userProfileService.getFullName\"\n" +
+    "                          edit-action=\"EDIT\" delete-action=\"DELETE\"></obiba-comments>\n" +
+    "          <obiba-comment-editor on-submit=\"submitComment\"></obiba-comment-editor>\n" +
+    "        </uib-tab>\n" +
+    "        <uib-tab ng-click=\"selectTab('history')\" heading=\"{{'data-access-request.history' | translate}}\">\n" +
+    "          <div ng-include=\"'access/views/data-access-request-history-view.html'\"></div>\n" +
+    "        </uib-tab>\n" +
+    "      </uib-tabset>\n" +
+    "    </div>\n" +
     "  </div>\n" +
     "\n" +
     "</div>\n" +
