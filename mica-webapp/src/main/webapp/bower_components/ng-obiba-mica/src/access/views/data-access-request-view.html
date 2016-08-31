@@ -9,96 +9,103 @@
   -->
 
 <div>
-  <div ng-if="headerTemplateUrl" ng-include="headerTemplateUrl"></div>
+  <div class="visible-print" print-friendly-view></div>
+  <div class="hidden-print">
+    <div ng-if="headerTemplateUrl" ng-include="headerTemplateUrl"></div>
 
-  <obiba-alert id="DataAccessRequestViewController"></obiba-alert>
+    <obiba-alert id="DataAccessRequestViewController"></obiba-alert>
 
-  <div ng-if="validForm">
+    <div ng-if="validForm">
 
-    <p class="help-block pull-left"><span translate>created-by</span>
-       <span ng-if="actions.canViewProfile('mica-user')">
-         {{getFullName(dataAccessRequest.profile) || dataAccessRequest.applicant}}
-      </span>
-      <a href ng-click="userProfile(dataAccessRequest.profile)"
-          ng-if="actions.canViewProfile('mica-data-access-officer')">
-        {{getFullName(dataAccessRequest.profile) || dataAccessRequest.applicant}}</a>,
-      <span title="{{dataAccessRequest.timestamps.created | amDateFormat: 'lll'}}">{{dataAccessRequest.timestamps.created | amCalendar}}</span>
-      <span class="label label-success">{{dataAccessRequest.status | translate}}</span></p>
+      <p class="help-block pull-left"><span translate>created-by</span>
+         <span ng-if="actions.canViewProfile('mica-user')">
+           {{getFullName(dataAccessRequest.profile) || dataAccessRequest.applicant}}
+        </span>
+        <a href ng-click="userProfile(dataAccessRequest.profile)"
+            ng-if="actions.canViewProfile('mica-data-access-officer')">
+          {{getFullName(dataAccessRequest.profile) || dataAccessRequest.applicant}}</a>,
+        <span title="{{dataAccessRequest.timestamps.created | amDateFormat: 'lll'}}">{{dataAccessRequest.timestamps.created | amCalendar}}</span>
+        <span class="label label-success">{{dataAccessRequest.status | translate}}</span></p>
 
-    <div class="pull-right">
-      <a ng-click="submit()"
-        ng-if="actions.canEditStatus(dataAccessRequest) && nextStatus.canSubmit(dataAccessRequest)"
-        class="btn btn-info" translate>submit
-      </a>
-      <a ng-click="reopen()"
-        ng-if="actions.canEditStatus(dataAccessRequest) && nextStatus.canReopen(dataAccessRequest)"
-        class="btn btn-info" translate>reopen
-      </a>
-      <a ng-click="review()"
-        ng-if="actions.canEditStatus(dataAccessRequest) && nextStatus.canReview(dataAccessRequest)"
-        class="btn btn-info" translate>review
-      </a>
-      <a ng-click="conditionallyApprove()"
-         ng-if="actions.canEditStatus(dataAccessRequest) && nextStatus.canConditionallyApprove(dataAccessRequest)"
-         class="btn btn-info" translate>conditionallyApprove
-      </a>
-      <a ng-click="approve()"
-        ng-if="actions.canEditStatus(dataAccessRequest) && nextStatus.canApprove(dataAccessRequest)"
-        class="btn btn-info" translate>approve
-      </a>
-      <a ng-click="reject()"
-        ng-if="actions.canEditStatus(dataAccessRequest) && nextStatus.canReject(dataAccessRequest)"
-        class="btn btn-info" translate>reject
-      </a>
-      <a ng-href="#/data-access-request/{{dataAccessRequest.id}}/edit"
-        ng-if="actions.canEdit(dataAccessRequest)"
-        class="btn btn-primary" title="{{'edit' | translate}}">
-        <i class="fa fa-pencil-square-o"></i>
-      </a>
-      <a target="_self" href="{{requestDownloadUrl}}" class="btn btn-default">
-        <i class="glyphicon glyphicon-download-alt"></i> <span>{{config.downloadButtonCaption || 'download' | translate}}</span>
-      </a>
-      <a ng-click="delete()"
-        ng-if="actions.canDelete(dataAccessRequest)"
-        class="btn btn-danger" title="{{'delete' | translate}}">
-        <i class="fa fa-trash-o"></i>
-      </a>
-    </div>
-
-    <div class="clearfix"></div>
-
-    <div class="voffset2" ng-if="dataAccessRequest.project.permissions && dataAccessRequest.project.permissions.view">
-      <div ng-if="dataAccessRequest.project" class="pull-right">
-        <small class="help-block inline"> {{'research-project.label' | translate}} :
-          <a route-checker route-checker-hides-parent="true" href ng-href="#/project/{{dataAccessRequest.project.id}}">{{dataAccessRequest.project.id}}</a>
-        </small>
+      <div class="pull-right">
+        <a ng-click="submit()"
+          ng-if="actions.canEditStatus(dataAccessRequest) && nextStatus.canSubmit(dataAccessRequest)"
+          class="btn btn-info" translate>submit
+        </a>
+        <a ng-click="reopen()"
+          ng-if="actions.canEditStatus(dataAccessRequest) && nextStatus.canReopen(dataAccessRequest)"
+          class="btn btn-info" translate>reopen
+        </a>
+        <a ng-click="review()"
+          ng-if="actions.canEditStatus(dataAccessRequest) && nextStatus.canReview(dataAccessRequest)"
+          class="btn btn-info" translate>review
+        </a>
+        <a ng-click="conditionallyApprove()"
+           ng-if="actions.canEditStatus(dataAccessRequest) && nextStatus.canConditionallyApprove(dataAccessRequest)"
+           class="btn btn-info" translate>conditionallyApprove
+        </a>
+        <a ng-click="approve()"
+          ng-if="actions.canEditStatus(dataAccessRequest) && nextStatus.canApprove(dataAccessRequest)"
+          class="btn btn-info" translate>approve
+        </a>
+        <a ng-click="reject()"
+          ng-if="actions.canEditStatus(dataAccessRequest) && nextStatus.canReject(dataAccessRequest)"
+          class="btn btn-info" translate>reject
+        </a>
+        <a ng-href="#/data-access-request/{{dataAccessRequest.id}}/edit"
+          ng-if="actions.canEdit(dataAccessRequest)"
+          class="btn btn-primary" title="{{'edit' | translate}}">
+          <i class="fa fa-pencil-square-o"></i>
+        </a>
+        <a ng-click="printForm()"
+           class="btn btn-info" title="{{'global.print' | translate}}">
+          <i class="fa fa-print"></i>
+        </a>
+        <a target="_self" href="{{requestDownloadUrl}}" class="btn btn-default">
+          <i class="glyphicon glyphicon-download-alt"></i> <span>{{config.downloadButtonCaption || 'download' | translate}}</span>
+        </a>
+        <a ng-click="delete()"
+          ng-if="actions.canDelete(dataAccessRequest)"
+          class="btn btn-danger" title="{{'delete' | translate}}">
+          <i class="fa fa-trash-o"></i>
+        </a>
       </div>
-    </div>
 
-    <uib-tabset class="voffset5">
-      <uib-tab ng-click="selectTab('form')" heading="{{'data-access-request.form' | translate}}">
-        <form id="request-form" name="forms.requestForm">
-          <div sf-model="form.model" sf-form="form.definition" sf-schema="form.schema"></div>
-        </form>
-      </uib-tab>
-      <uib-tab ng-click="selectTab('documents')">
-        <uib-tab-heading>
-          {{config.documentsSectionTitle || 'data-access-request.documents' | translate}}
-          <span class="badge hoffset1" ng-show="dataAccessRequest.attachments"><small>{{dataAccessRequest.attachments.length}}</small></span>
-        </uib-tab-heading>
-        <div ng-include="'access/views/data-access-request-documents-view.html'"></div>
-      </uib-tab>
-      <uib-tab ng-if="config.commentsEnabled" ng-click="selectTab('comments')" heading="{{'data-access-request.comments' | translate}}">
-        <obiba-comments class="voffset2" comments="form.comments"
-                        on-update="updateComment" on-delete="deleteComment"
-                        name-resolver="userProfileService.getFullName"
-                        edit-action="EDIT" delete-action="DELETE"></obiba-comments>
-        <obiba-comment-editor on-submit="submitComment"></obiba-comment-editor>
-      </uib-tab>
-      <uib-tab ng-click="selectTab('history')" heading="{{'data-access-request.history' | translate}}">
-        <div ng-include="'access/views/data-access-request-history-view.html'"></div>
-      </uib-tab>
-    </uib-tabset>
+      <div class="clearfix"></div>
+
+      <div class="voffset2" ng-if="dataAccessRequest.project.permissions && dataAccessRequest.project.permissions.view">
+        <div ng-if="dataAccessRequest.project" class="pull-right">
+          <small class="help-block inline"> {{'research-project.label' | translate}} :
+            <a route-checker route-checker-hides-parent="true" href ng-href="#/project/{{dataAccessRequest.project.id}}">{{dataAccessRequest.project.id}}</a>
+          </small>
+        </div>
+      </div>
+
+      <uib-tabset class="voffset5">
+        <uib-tab ng-click="selectTab('form')" heading="{{'data-access-request.form' | translate}}">
+          <form id="request-form" name="forms.requestForm">
+            <div sf-model="form.model" sf-form="form.definition" sf-schema="form.schema"></div>
+          </form>
+        </uib-tab>
+        <uib-tab ng-click="selectTab('documents')">
+          <uib-tab-heading>
+            {{config.documentsSectionTitle || 'data-access-request.documents' | translate}}
+            <span class="badge hoffset1" ng-show="dataAccessRequest.attachments"><small>{{dataAccessRequest.attachments.length}}</small></span>
+          </uib-tab-heading>
+          <div ng-include="'access/views/data-access-request-documents-view.html'"></div>
+        </uib-tab>
+        <uib-tab ng-if="config.commentsEnabled" ng-click="selectTab('comments')" heading="{{'data-access-request.comments' | translate}}">
+          <obiba-comments class="voffset2" comments="form.comments"
+                          on-update="updateComment" on-delete="deleteComment"
+                          name-resolver="userProfileService.getFullName"
+                          edit-action="EDIT" delete-action="DELETE"></obiba-comments>
+          <obiba-comment-editor on-submit="submitComment"></obiba-comment-editor>
+        </uib-tab>
+        <uib-tab ng-click="selectTab('history')" heading="{{'data-access-request.history' | translate}}">
+          <div ng-include="'access/views/data-access-request-history-view.html'"></div>
+        </uib-tab>
+      </uib-tabset>
+    </div>
   </div>
 
 </div>

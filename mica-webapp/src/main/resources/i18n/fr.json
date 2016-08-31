@@ -13,7 +13,25 @@
       "language": "Langue"
     },
     "lastUpdate": "Mise à jour",
-    "order": "Ordre"
+    "order": "Ordre",
+    "types": {
+      "string": "String",
+      "integer": "Entier",
+      "decimal": "Décimal"
+    },
+    "localized": "Traduit",
+    "repeatable": "Répétable",
+    "true": "Vrai",
+    "false": "Faux",
+    "title": "Titre",
+    "field": "Champ",
+    "criteria": "Critères",
+    "term": "Terme",
+    "terms": "Termes",
+    "keywords": "Mots clés",
+    "from": "De",
+    "to": "À",
+    "print": "Imprimer"
   },
   "main": {
     "title": "Bienvenue chez Mica!",
@@ -409,6 +427,8 @@
     "timeline": "Chronologie de l'étude",
     "population": "Population",
     "populations": "Populations",
+    "maelstromAuthorization": "Maelstrom authorization",
+    "specificAuthorization": "Specific authorization",
     "authorization": {
       "label": "Autorisation",
       "authorized": {
@@ -592,7 +612,8 @@
     "add-ethnic-origin-help": "Ajouter une origine ethnique",
     "add-data-collection-event": "Ajouter un événement de collecte de données",
     "countries": "Pays ISO",
-    "numberOfParticipants-noLimit": "Aucune limite"
+    "numberOfParticipants-noLimit": "Aucune limite",
+    "recruitment": "Recrutement"
   },
   "data-collection-event": {
     "label-edit": "Éditer un événement de collecte de données",
@@ -949,6 +970,9 @@
       "logs": "Configurer les logs du server.",
       "caching": "Gérer les caches du serveur.",
       "indexing": "Gérer les index du serveur.",
+      "network-config": "Configure network form.",
+      "study-config": "Configure study form.",
+      "dataset-config": "Configure dataset form.",
       "data-access-config": "Configurer le formulaire de demande d'accès aux données.",
       "project-config": "Configurer le formulaire de projet de recherche.",
       "file-system": "Gérer le système de fichiers.",
@@ -1052,7 +1076,6 @@
         "A": {
           "title": "Nom, institution, et coordonnées du demandeur (demandeur principal)",
           "info": "Veuillez vous assurer qu'une adresse postale complète et une adresse courriel institutionnelle valide sont incluses. Dans le cas de plus d'une affiliation, les candidats doivent fournir leurs coordonnées se rapportant uniquement à l'institution à laquelle ils sont affiliés dans le cadre de ce projet de recherche."
-
 		  },
         "B": {
           "title": "Nom, institution et coordonnées du représentant institutionnel autorisé",
@@ -1095,6 +1118,106 @@
         "title": "Signature",
         "check": "J'ai rempli tous les champs obligatoires, inclus tous les documents nécessaires, et par la présente, soumets cette demande."
       }
+    }
+  },
+  "network-config" : {
+    "title" : "Network Configuration",
+    "schema-form": {
+      "title": "Form",
+      "info": "The research project form can be specified both in terms of data structure (schema) and data display and validation (definition). See <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>form schema documentation</a> for more details."
+    },
+    "permissions": {
+      "title": "Permissions",
+      "info": "Grant permission to <code>Read</code> any draft of Network."
+    },
+    "schema": {
+      "tab": "Schema",
+      "info": "The form schema specifies the data structure."
+    },
+    "definition": {
+      "tab": "Definition",
+      "info": "The form definition specifies how to display the schema and how to validate the data inputs."
+    },
+    "preview": {
+      "model-modal": "Model Preview",
+      "tab": "Preview",
+      "show-model": "Model",
+      "test": "Test Form Validation",
+      "tested": "Form is validated successfully."
+    },
+    "model": {
+      "tab": "Model",
+      "info": "The form model stores the valid input data, invalid values are excluded."
+    }
+  },
+  "study-config" : {
+    "title" : "Study Configuration",
+    "schema-form": {
+      "title": "Form",
+      "info": "The research project form can be specified both in terms of data structure (schema) and data display and validation (definition). See <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>form schema documentation</a> for more details."
+    },
+    "permissions": {
+      "title": "Permissions",
+      "info": "Grant permission to <code>Read</code> any draft of Study."
+    },
+    "study-form-title": "Study",
+    "population-form-title": "Population",
+    "data-collection-event-form-title": "Data Collection Event"
+  },
+  "taxonomy-config": {
+    "title": "Search",
+    "info": "The search criteria can be configured in accordance with the model.",
+    "terms": {
+      "info": "The terms describe the possible values of the criterion. In the case of a numerical type (integer or decimal), the terms represent some ranges of values."
+    },
+    "criterion-dialog": {
+      "add-criterion": "Ajouter Critère",
+      "edit-criterion": "Modifier Critère",
+      "name-help": "Nom unique identifiant ce critère de recherche.",
+      "repeatable-help": "Rechercher correspondance exacte ou valeur contenue.",
+      "field-help": "Nom du champ entièrement qualifié dans le modèle de document (si différent du nom).",
+      "type-help": "Le type de recherche par facette: sélection de la plage pour un type numérique, entrée ouverte pour un type de texte, etc."
+    },
+    "term-dialog": {
+      "add-term": "Ajouter Terme",
+      "edit-term": "Modifier Terme",
+      "name-help": "Nom unique identifiant ce critère de recherche.",
+      "keywords-help": "Liste optionnelle des mots-clés utiles lors de la construction des requêtes de recherche."
+    },
+    "all-criteria": "Tous les critères",
+    "delete-dialog": {
+      "title": "Supprimer {{arg0}}",
+      "message": "Êtes-vous sûr de vouloir supprimer le {{arg0}} '{{arg1}}'?"
+    }
+  },
+  "dataset-config" : {
+    "title" : "Dataset Configuration",
+    "schema-form": {
+      "title": "Form",
+      "info": "The custom dataset form can be specified both in terms of data structure (schema) and data display and validation (definition). See <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>form schema documentation</a> for more details."
+    },
+    "permissions": {
+      "title": "Permissions",
+      "info": "Grant permission to <code>Read</code> any draft of Dataset."
+    },
+    "schema": {
+      "tab": "Schema",
+      "info": "The form schema specifies the data structure."
+    },
+    "definition": {
+      "tab": "Definition",
+      "info": "The form definition specifies how to display the schema and how to validate the data inputs."
+    },
+    "preview": {
+      "model-modal": "Model Preview",
+      "tab": "Preview",
+      "show-model": "Model",
+      "test": "Test Form Validation",
+      "tested": "Form is validated successfully."
+    },
+    "model": {
+      "tab": "Model",
+      "info": "The form model stores the valid input data, invalid values are excluded."
     }
   },
   "data-access-config": {

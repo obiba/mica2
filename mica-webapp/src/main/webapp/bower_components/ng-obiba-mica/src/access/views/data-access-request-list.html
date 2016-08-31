@@ -47,6 +47,9 @@
         </div>
       </div>
       <div class="col-xs-6">
+        <a target="_self" download class="btn btn-info" ng-href="{{getCsvExportHref()}}">
+          <i class="fa fa-download"></i> {{'download' | translate}}
+        </a>
         <dir-pagination-controls class="pull-right"></dir-pagination-controls>
       </div>
     </div>

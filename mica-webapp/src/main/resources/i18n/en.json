@@ -13,7 +13,26 @@
       "language": "Language"
     },
     "lastUpdate": "Last Update",
-    "order": "Order"
+    "order": "Order",
+    "types": {
+      "string": "String",
+      "integer": "Integer",
+      "decimal": "Decimal"
+    },
+    "localized": "Localized",
+    "repeatable": "Repeatable",
+    "true": "True",
+    "false": "False",
+    "title": "Title",
+    "field": "Field",
+    "criterion": "Criterion",
+    "criteria": "Criteria",
+    "term": "Term",
+    "terms": "Terms",
+    "keywords": "Keywords",
+    "from": "From",
+    "to": "To",
+    "print": "Print"
   },
   "main": {
     "title": "Welcome to Mica!",
@@ -409,6 +428,8 @@
     "timeline": "Study Timeline",
     "population": "Population",
     "populations": "Populations",
+    "maelstromAuthorization": "Maelstrom authorization",
+    "specificAuthorization": "Specific authorization",
     "authorization": {
       "label": "Authorization",
       "authorized": {
@@ -592,7 +613,8 @@
     "add-ethnic-origin-help": "Add ethnic origin",
     "add-data-collection-event": "Add Data Collection Event",
     "countries": "Countries ISO",
-    "numberOfParticipants-noLimit": "No limit"
+    "numberOfParticipants-noLimit": "No limit",
+    "recruitment": "Recruitment"
   },
   "data-collection-event": {
     "label-edit": "Edit Data Collection Event",
@@ -949,6 +971,9 @@
       "logs": "Configure server logs.",
       "caching": "Manage server caches.",
       "indexing": "Manage server indices.",
+      "network-config": "Configure network form.",
+      "study-config": "Configure study form.",
+      "dataset-config": "Configure dataset form.",
       "data-access-config": "Configure Data Access Request form.",
       "project-config": "Configure Research Project form.",
       "file-system": "Manage file system.",
@@ -1094,6 +1119,106 @@
         "title": "Signature",
         "check": "I have completed all mandatory fields, included all necessary documents, and hereby submit this application."
       }
+    }
+  },
+  "network-config" : {
+    "title" : "Network Configuration",
+    "schema-form": {
+      "title": "Form",
+      "info": "The research project form can be specified both in terms of data structure (schema) and data display and validation (definition). See <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>form schema documentation</a> for more details."
+    },
+    "permissions": {
+      "title": "Permissions",
+      "info": "Grant permission to <code>Read</code> any draft of Network."
+    },
+    "schema": {
+      "tab": "Schema",
+      "info": "The form schema specifies the data structure."
+    },
+    "definition": {
+      "tab": "Definition",
+      "info": "The form definition specifies how to display the schema and how to validate the data inputs."
+    },
+    "preview": {
+      "model-modal": "Model Preview",
+      "tab": "Preview",
+      "show-model": "Model",
+      "test": "Test Form Validation",
+      "tested": "Form is validated successfully."
+    },
+    "model": {
+      "tab": "Model",
+      "info": "The form model stores the valid input data, invalid values are excluded."
+    }
+  },
+  "study-config" : {
+    "title" : "Study Configuration",
+    "schema-form": {
+      "title": "Form",
+      "info": "The research project form can be specified both in terms of data structure (schema) and data display and validation (definition). See <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>form schema documentation</a> for more details."
+    },
+    "permissions": {
+      "title": "Permissions",
+      "info": "Grant permission to <code>Read</code> any draft of Study."
+    },
+    "study-form-title": "Study",
+    "population-form-title": "Population",
+    "data-collection-event-form-title": "Data Collection Event"
+  },
+  "taxonomy-config": {
+    "title": "Search",
+    "info": "The search criteria can be configured in accordance with the model.",
+    "terms": {
+      "info": "The terms describe the possible values of the criterion. In the case of a numerical type (integer or decimal), the terms represent some ranges of values."
+    },
+    "criterion-dialog":{
+      "add-criterion": "Add Criterion",
+      "edit-criterion": "Edit Criterion",
+      "name-help": "Unique name identifying this search criterion.",
+      "repeatable-help": "Search for exact match or contained value.",
+      "field-help": "Fully qualified field name in the document model (if different from the name).",
+      "type-help": "The type of search facet: range selection for a numerical type, open input for a text type etc."
+    },
+    "term-dialog": {
+      "add-term": "Add Term",
+      "edit-term": "Edit Term",
+      "name-help": "Unique name identifying this search criterion possible value.",
+      "keywords-help": "Optional list of keywords useful when building search requests."
+    },
+    "all-criteria": "All Criteria",
+    "delete-dialog": {
+      "title": "Delete {{arg0}}",
+      "message": "Are you sure you want to delete the {{arg0}} '{{arg1}}'?"
+    }
+  },
+  "dataset-config" : {
+    "title" : "Dataset Configuration",
+    "schema-form": {
+      "title": "Form",
+      "info": "The custom dataset form can be specified both in terms of data structure (schema) and data display and validation (definition). See <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>form schema documentation</a> for more details."
+    },
+    "permissions": {
+      "title": "Permissions",
+      "info": "Grant permission to <code>Read</code> any draft of Dataset."
+    },
+    "schema": {
+      "tab": "Schema",
+      "info": "The form schema specifies the data structure."
+    },
+    "definition": {
+      "tab": "Definition",
+      "info": "The form definition specifies how to display the schema and how to validate the data inputs."
+    },
+    "preview": {
+      "model-modal": "Model Preview",
+      "tab": "Preview",
+      "show-model": "Model",
+      "test": "Test Form Validation",
+      "tested": "Form is validated successfully."
+    },
+    "model": {
+      "tab": "Model",
+      "info": "The form model stores the valid input data, invalid values are excluded."
     }
   },
   "data-access-config": {

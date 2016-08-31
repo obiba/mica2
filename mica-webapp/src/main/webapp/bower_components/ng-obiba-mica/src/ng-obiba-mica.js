@@ -4,6 +4,7 @@ function NgObibaMicaUrlProvider() {
   var registry = {
     'DataAccessFormConfigResource': 'ws/config/data-access-form',
     'DataAccessRequestsResource': 'ws/data-access-requests',
+    'DataAccessRequestsExportCsvResource': 'ws/data-access-requests/csv?lang=:lang',
     'DataAccessRequestResource': 'ws/data-access-request/:id',
     'DataAccessRequestAttachmentsUpdateResource': '/ws/data-access-request/:id/_attachments',
     'DataAccessRequestAttachmentDownloadResource': '/ws/data-access-request/:id/attachments/:attachmentId/_download',
