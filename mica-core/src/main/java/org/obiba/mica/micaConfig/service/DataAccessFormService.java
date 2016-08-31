@@ -17,6 +17,9 @@ import org.obiba.mica.micaConfig.repository.DataAccessFormRepository;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
+
+import static org.springframework.util.StringUtils.isEmpty;
 
 @Component
 public class DataAccessFormService {
@@ -30,7 +33,7 @@ public class DataAccessFormService {
   @Inject
   DataAccessFormRepository dataAccessFormRepository;
 
-  public void createOrUpdate(DataAccessForm dataAccessForm) {
+  public DataAccessForm createOrUpdate(DataAccessForm dataAccessForm) {
     validateForm(dataAccessForm);
     dataAccessForm.incrementRevisionsAhead();
     gitService.save(dataAccessForm);
@@ -42,16 +45,21 @@ public class DataAccessFormService {
       }
     });
 
-    dataAccessFormRepository.save(dataAccessForm);
+    return dataAccessFormRepository.save(dataAccessForm);
   }
 
   public Optional<DataAccessForm> find() {
     DataAccessForm form = dataAccessFormRepository.findOne(DataAccessForm.DEFAULT_ID);
-    if(form == null) {
+    if (form == null) {
       createOrUpdate(createDefaultDataAccessForm());
+      form = dataAccessFormRepository.findOne(DataAccessForm.DEFAULT_ID);
+    }
+    if (StringUtils.isEmpty(form.getCsvExportFormat())) {
+      form.setCsvExportFormat(getDefaultDataAccessFormResourceAsString("export-csv-schema.json"));
+      form = createOrUpdate(form);
     }
 
-    return Optional.ofNullable(form == null ? dataAccessFormRepository.findOne(DataAccessForm.DEFAULT_ID) : form);
+    return Optional.ofNullable(form);
   }
 
   public void publish() {
@@ -65,23 +73,25 @@ public class DataAccessFormService {
   }
 
   private void validateForm(DataAccessForm dataAccessForm) {
-    validateSchema(dataAccessForm.getSchema());
-    validateDefinition(dataAccessForm.getDefinition());
-  }
-
-  private void validateSchema(String json) {
-    try {
-      new JSONObject(json);
-    } catch(JSONException e) {
-      throw new InvalidFormSchemaException();
+    validateJsonObject(dataAccessForm.getSchema());
+    validateJsonArray(dataAccessForm.getDefinition());
+    if (!isEmpty(dataAccessForm.getCsvExportFormat())) {
+      validateJsonObject(dataAccessForm.getCsvExportFormat());
     }
   }
 
-  private void validateDefinition(String json) {
+  private void validateJsonObject(String json) {
+    try {
+      new JSONObject(json);
+    } catch(JSONException e) {
+      throw new InvalidFormSchemaException(e);
+    }
+  }
+  private void validateJsonArray(String json) {
     try {
       new JSONArray(json);
     } catch(JSONException e) {
-      throw new InvalidFormDefinitionException();
+      throw new InvalidFormSchemaException(e);
     }
   }
 
@@ -89,6 +99,7 @@ public class DataAccessFormService {
     DataAccessForm form = new DataAccessForm();
     form.setDefinition(getDefaultDataAccessFormResourceAsString("definition.json"));
     form.setSchema(getDefaultDataAccessFormResourceAsString("schema.json"));
+    form.setCsvExportFormat(getDefaultDataAccessFormResourceAsString("export-csv-schema.json"));
     form.setTitleFieldPath("projectTitle");
     form.setSummaryFieldPath("summary");
     return form;

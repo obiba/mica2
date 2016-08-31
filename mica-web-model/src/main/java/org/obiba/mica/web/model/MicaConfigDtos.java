@@ -22,6 +22,7 @@ import static java.util.stream.Collectors.toMap;
 
 @Component
 class MicaConfigDtos {
+
   @Inject
   private LocalizedStringDtos localizedStringDtos;
 
@@ -183,7 +184,8 @@ class MicaConfigDtos {
       .setApprovedFinal(dataAccessForm.isApprovedFinal()) //
       .setRejectedFinal(dataAccessForm.isRejectedFinal())
       .setWithConditionalApproval(dataAccessForm.isWithConditionalApproval())
-      .setNotifyConditionallyApproved(dataAccessForm.isNotifyConditionallyApproved());
+      .setNotifyConditionallyApproved(dataAccessForm.isNotifyConditionallyApproved())
+      .setCsvExportFormat(dataAccessForm.getCsvExportFormat());
 
     if(dataAccessForm.getSubmittedSubject() != null) builder.setSubmittedSubject(dataAccessForm.getSubmittedSubject());
 
@@ -209,6 +211,7 @@ class MicaConfigDtos {
     DataAccessForm dataAccessForm = new DataAccessForm();
     dataAccessForm.setSchema(dto.getSchema());
     dataAccessForm.setDefinition(dto.getDefinition());
+    dataAccessForm.setCsvExportFormat(dto.getCsvExportFormat());
 
     dataAccessForm.setProperties(dto.getPropertiesList().stream()
       .collect(toMap(e -> e.getName(), e -> localizedStringDtos.fromDto(e.getValueList()))));
