@@ -85,7 +85,6 @@ angular.module('sfObibaFileUpload', [
 
   .config(['schemaFormProvider', 'schemaFormDecoratorsProvider', 'sfPathProvider', 'sfBuilderProvider',
   function (schemaFormProvider, schemaFormDecoratorsProvider, sfPathProvider, sfBuilderProvider) {
-
     /**
      * OBiBa's Schema Form file upload decorator.
      * @param name
@@ -134,7 +133,6 @@ angular.module('sfObibaFileUpload', [
     'ngObibaMicaUrl',
     'sfObibaFileUploadOptions',
     function ($scope, ngObibaMicaUrl, sfObibaFileUploadOptions) {
-
       /**
        * Return the download url to the file.
        *
@@ -212,4 +210,16 @@ angular.module('sfObibaFileUpload', [
           $scope.ngModel.$setViewValue(ngModel.$viewValue);
         }
       }, true);
-    }]);
+    }])
+
+  .directive('attachmentsPrintFriendly', [function() {
+      return {
+        restrict: 'EA',
+        replace: true,
+        scope: {
+          title: '=',
+          files: '='
+        },
+        templateUrl: 'src/templates/attachments-print-friendly.html'
+      }
+  }]);

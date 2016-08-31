@@ -1,0 +1,17 @@
+<div ng-if="validForm">
+  <div class="clearfix"></div>
+
+  <div class="voffset2" ng-if="dataAccessRequest.project.permissions && dataAccessRequest.project.permissions.view">
+    <div ng-if="dataAccessRequest.project" class="pull-right">
+      <small class="help-block inline"> {{'research-project.label' | translate}} :
+        <a route-checker route-checker-hides-parent="true" href ng-href="#/project/{{dataAccessRequest.project.id}}">{{dataAccessRequest.project.id}}</a>
+      </small>
+    </div>
+  </div>
+
+  <div>
+    <form id="request-form" name="forms.requestForm">
+      <div sf-model="form.model" sf-form="form.definition" sf-schema="form.schema"></div>
+    </form>
+  </div>
+</div>

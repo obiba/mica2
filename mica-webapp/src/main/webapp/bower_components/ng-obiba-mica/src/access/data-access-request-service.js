@@ -27,6 +27,13 @@ angular.module('obiba.mica.access')
       });
     }])
 
+  .factory('DataAccessRequestsExportCsvResource', ['$resource', 'ngObibaMicaUrl',
+    function ($resource, ngObibaMicaUrl) {
+      return $resource(ngObibaMicaUrl.getUrl('DataAccessRequestsExportCsvResource'), {}, {
+        'get': {method: 'GET'}
+      });
+    }])
+
   .factory('DataAccessRequestResource', ['$resource', 'ngObibaMicaUrl',
     function ($resource, ngObibaMicaUrl) {
       return $resource(ngObibaMicaUrl.getUrl('DataAccessRequestResource'), {}, {

@@ -131,7 +131,7 @@
 
   <div ng-view=""></div>
 
-  <footer ng-hide="!authenticated">
+  <footer class="hidden-print" ng-hide="!authenticated">
     <div class="row">
       <div class="col-lg-12">
         <ul class="list-unstyled list-inline">
@@ -197,8 +197,8 @@
 <script src="bower_components/angular-schema-form-datetimepicker/schema-form-date-time-picker.min.js"></script>
 <script src="bower_components/angular-xeditable/dist/js/xeditable.js"></script>
 <script src="bower_components/angular-media-queries/match-media.js"></script>
-<script src="bower_components/sf-localized-string/dist/sf-localized-string.js"></script>
-<script src="bower_components/sf-obiba-file-upload/dist/sf-obiba-file-upload.min.js"></script>
+<script src="bower_components/sf-localized-string/dist/sf-localized-string.min.js"></script>
+<script src="bower_components/sf-obiba-file-upload/dist/sf-obiba-file-upload.js"></script>
 <script src="bower_components/sf-checkboxgroup/dist/sf-checkboxgroup.min.js"></script>
 <!-- endbower -->
 <script src="app/http-auth-interceptor.js"></script>
