@@ -1,22 +1,13 @@
 package org.obiba.mica.access.rest;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
-import javax.inject.Inject;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
-
+import com.codahale.metrics.annotation.Timed;
+import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.obiba.mica.access.domain.DataAccessRequest;
 import org.obiba.mica.access.service.DataAccessRequestService;
+import org.obiba.mica.micaConfig.domain.DataAccessForm;
+import org.obiba.mica.micaConfig.service.DataAccessFormService;
 import org.obiba.mica.security.Roles;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.web.model.Dtos;
@@ -24,7 +15,13 @@ import org.obiba.mica.web.model.Mica;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import com.codahale.metrics.annotation.Timed;
+import javax.inject.Inject;
+import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 @Scope("request")
@@ -40,13 +37,30 @@ public class DataAccessRequestsResource {
   @Inject
   private Dtos dtos;
 
+  @Inject
+  private DataAccessFormService dataAccessFormService;
+
   @GET
   @Timed
   public List<Mica.DataAccessRequestDto> listByStatus(@QueryParam("status") List<String> status) {
-    List<DataAccessRequest> reqs = dataAccessRequestService.findByStatus(status);
-    return reqs.stream() //
-      .filter(req -> subjectAclService.isPermitted("/data-access-request", "VIEW", req.getId())) //
-      .map(dtos::asDto).collect(Collectors.toList());
+    return listByStatusFilteringPermitted(status).stream()
+      .map(dtos::asDto)
+      .collect(Collectors.toList());
+  }
+
+  @GET
+  @Timed
+  @Path("/csv")
+  @Produces("text/csv")
+  public Response exportCsv(@QueryParam("lang") String lang) {
+
+    List<DataAccessRequest> dataAccessRequests = listByStatusFilteringPermitted(null);
+    DataAccessForm dataAccessForm = dataAccessFormService.find().get();
+
+    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+    new CsvReportGenerator(dataAccessRequests, dataAccessForm.getCsvExportFormat(), lang).write(byteArrayOutputStream);
+
+    return Response.ok(byteArrayOutputStream.toByteArray()).header("Content-Disposition","attachment; filename=\"request-data-access.csv\"").build();
   }
 
   @GET
@@ -80,4 +94,10 @@ public class DataAccessRequestsResource {
     return Response.created(uriInfo.getBaseUriBuilder().segment("data-access-request", request.getId()).build()).build();
   }
 
+  private List<DataAccessRequest> listByStatusFilteringPermitted(List<String> status) {
+    List<DataAccessRequest> reqs = dataAccessRequestService.findByStatus(status);
+    return reqs.stream() //
+      .filter(req -> subjectAclService.isPermitted("/data-access-request", "VIEW", req.getId())) //
+      .collect(Collectors.toList());
+  }
 }

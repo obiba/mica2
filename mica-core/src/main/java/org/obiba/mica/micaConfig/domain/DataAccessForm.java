@@ -25,6 +25,8 @@ public class DataAccessForm extends AbstractGitPersistable {
 
   private String definition;
 
+  private String csvExportFormat;
+
   private Map<Locale, Attachment> pdfTemplates;
 
   private Map<String, LocalizedString> properties;
@@ -103,6 +105,14 @@ public class DataAccessForm extends AbstractGitPersistable {
 
   public void setDefinition(String definition) {
     this.definition = definition;
+  }
+
+  public String getCsvExportFormat() {
+    return csvExportFormat;
+  }
+
+  public void setCsvExportFormat(String csvExportFormat) {
+    this.csvExportFormat = csvExportFormat;
   }
 
   public Map<String, LocalizedString> getProperties() {
