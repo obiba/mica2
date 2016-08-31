@@ -747,6 +747,7 @@ message DataAccessFormDto {
   optional string summaryFieldPath = 26;
   required bool notifyAttachment = 27;
   optional string attachmentSubject = 28;
+  optional string csvExportFormat = 29;
 }
 
 message ProjectFormDto {

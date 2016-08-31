@@ -65,7 +65,7 @@ public class ProjectConfigService {
     try {
       new JSONObject(json);
     } catch(JSONException e) {
-      throw new InvalidFormSchemaException();
+      throw new InvalidFormSchemaException(e);
     }
   }
 

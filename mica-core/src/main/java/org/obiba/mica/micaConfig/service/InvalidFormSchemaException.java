@@ -14,8 +14,8 @@ public class InvalidFormSchemaException extends RuntimeException {
 
   private static final long serialVersionUID = -8675643670421788807L;
 
-  public InvalidFormSchemaException() {
-    super("Invalid schema form exception.");
+  public InvalidFormSchemaException(Throwable cause) {
+    super("Invalid schema form exception.", cause);
   }
 
 }
