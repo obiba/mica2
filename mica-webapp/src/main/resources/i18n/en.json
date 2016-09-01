@@ -1235,9 +1235,17 @@
     "summary-field-help": "The lay summary of the request.",
     "general-config": "General Configuration",
     "saved": "Data Access Form is successfully updated.",
+    "pdf-download": {
+      "title": "PDF Download",
+      "info": "The data collected in the web application form can be rendered in a PDF file. Choose one of the following options:"
+    },
     "pdf-template": {
       "title": "PDF Template",
-      "info": "The data collected in the web application form can be rendered in a PDF file. A PDF template is to be provided with field names matching the application form schema."
+      "info": "A PDF template is to be provided with field names matching the application form schema."
+    },
+    "pdf-embedded": {
+      "title": "PDF Embedded Generator",
+      "info": "Mica's internal module is used to generate a PDF."
     },
     "schema-form": {
       "title": "Application Form",

@@ -1234,9 +1234,17 @@
     "summary-field-help": "Le résumé simplifié de la demande.",
     "general-config": "Configuration générale",
     "saved": "Formulaire d'accès aux données a été mis à jour avec succès.",
+    "pdf-download": {
+      "title": "Télécharger le PDF",
+      "info": "Les données collectées dans le formulaire d'application web peuvent être représentées dans un fichier PDF. Choisissez l'une des options suivantes:"
+    },
     "pdf-template": {
       "title": "Modèle PDF",
-      "info": "Les données collectées dans le formulaire d'application web peuvent être représentées dans un fichier PDF. Un modèle PDF doit être fourni avec les noms de champs correspondants au schéma du formulaire d'application."
+      "info": "Un modèle PDF doit être fourni avec les noms de champs correspondants au schéma du formulaire d'application."
+    },
+    "pdf-embedded": {
+      "title": "Generator embarqué de PDF",
+      "info": "Un module interne de Mica est utilisé pour générer un fichier PDF."
     },
     "schema-form": {
       "title": "Formulaire de demande",

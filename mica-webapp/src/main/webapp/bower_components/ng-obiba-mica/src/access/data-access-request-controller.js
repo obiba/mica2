@@ -313,6 +313,7 @@ angular.module('obiba.mica.access')
             function onSuccess(dataAccessForm) {
               $scope.form.definition = LocalizedSchemaFormService.translate(JsonUtils.parseJsonSafely(dataAccessForm.definition, []));
               $scope.form.schema = LocalizedSchemaFormService.translate(JsonUtils.parseJsonSafely(dataAccessForm.schema, {}));
+              $scope.form.downloadTemplate = dataAccessForm.pdfDownloadType === 'Template';
 
               if ($scope.form.definition.length === 0) {
                 $scope.validForm = false;

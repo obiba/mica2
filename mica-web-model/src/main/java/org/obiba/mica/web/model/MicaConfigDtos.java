@@ -9,6 +9,7 @@ import javax.validation.constraints.NotNull;
 
 import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.micaConfig.AuthType;
+import org.obiba.mica.micaConfig.PdfDownloadType;
 import org.obiba.mica.micaConfig.domain.DataAccessForm;
 import org.obiba.mica.micaConfig.domain.MicaConfig;
 import org.obiba.mica.micaConfig.domain.OpalCredential;
@@ -203,6 +204,7 @@ class MicaConfigDtos {
 
     if(dataAccessForm.getConditionallyApprovedSubject() != null) builder.setConditionallyApprovedSubject(dataAccessForm.getConditionallyApprovedSubject());
 
+    builder.setPdfDownloadType(Mica.DataAccessFormDto.PdfDownloadType.valueOf(dataAccessForm.getPdfDownloadType().name()));
     return builder.build();
   }
 
@@ -260,6 +262,7 @@ class MicaConfigDtos {
     dataAccessForm.setWithConditionalApproval(dto.getWithConditionalApproval());
     dataAccessForm.setNotifyConditionallyApproved(dto.getNotifyConditionallyApproved());
     dataAccessForm.setConditionallyApprovedSubject(dto.getConditionallyApprovedSubject());
+    dataAccessForm.setPdfDownloadType(PdfDownloadType.valueOf(dto.getPdfDownloadType().name()));
 
     return dataAccessForm;
   }

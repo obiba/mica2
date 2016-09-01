@@ -3,7 +3,7 @@
  * https://github.com/obiba/ng-obiba-mica
 
  * License: GNU Public License version 3
- * Date: 2016-08-30
+ * Date: 2016-09-01
  */
 'use strict';
 
@@ -11,6 +11,7 @@ function NgObibaMicaUrlProvider() {
   var registry = {
     'DataAccessFormConfigResource': 'ws/config/data-access-form',
     'DataAccessRequestsResource': 'ws/data-access-requests',
+    'DataAccessRequestsExportCsvResource': 'ws/data-access-requests/csv?lang=:lang',
     'DataAccessRequestResource': 'ws/data-access-request/:id',
     'DataAccessRequestAttachmentsUpdateResource': '/ws/data-access-request/:id/_attachments',
     'DataAccessRequestAttachmentDownloadResource': '/ws/data-access-request/:id/attachments/:attachmentId/_download',
@@ -545,6 +546,8 @@ angular.module('obiba.mica.access')
     'USER_ROLES',
     'ngObibaMicaAccessTemplateUrl',
     'DataAccessRequestConfig',
+    'ngObibaMicaUrl',
+    '$translate',
 
     function ($rootScope,
               $scope,
@@ -556,7 +559,9 @@ angular.module('obiba.mica.access')
               SessionProxy,
               USER_ROLES,
               ngObibaMicaAccessTemplateUrl,
-              DataAccessRequestConfig) {
+              DataAccessRequestConfig,
+              ngObibaMicaUrl,
+              $translate) {
 
       var onSuccess = function(reqs) {
         for (var i = 0; i < reqs.length; i++) {
@@ -638,6 +643,10 @@ angular.module('obiba.mica.access')
           }
         }
         return null;
+      };
+
+      $scope.getCsvExportHref = function () {
+        return ngObibaMicaUrl.getUrl('DataAccessRequestsExportCsvResource').replace(':lang', $translate.use());
       };
 
       $scope.$on(NOTIFICATION_EVENTS.confirmDialogAccepted, function (event, id) {
@@ -828,6 +837,7 @@ angular.module('obiba.mica.access')
             function onSuccess(dataAccessForm) {
               $scope.form.definition = LocalizedSchemaFormService.translate(JsonUtils.parseJsonSafely(dataAccessForm.definition, []));
               $scope.form.schema = LocalizedSchemaFormService.translate(JsonUtils.parseJsonSafely(dataAccessForm.schema, {}));
+              $scope.form.downloadTemplate = dataAccessForm.pdfDownloadType === 'Template';
 
               if ($scope.form.definition.length === 0) {
                 $scope.validForm = false;
@@ -1219,6 +1229,13 @@ angular.module('obiba.mica.access')
     function ($resource, ngObibaMicaUrl) {
       return $resource(ngObibaMicaUrl.getUrl('DataAccessRequestsResource'), {}, {
         'save': {method: 'POST', errorHandler: true},
+        'get': {method: 'GET'}
+      });
+    }])
+
+  .factory('DataAccessRequestsExportCsvResource', ['$resource', 'ngObibaMicaUrl',
+    function ($resource, ngObibaMicaUrl) {
+      return $resource(ngObibaMicaUrl.getUrl('DataAccessRequestsExportCsvResource'), {}, {
         'get': {method: 'GET'}
       });
     }])
@@ -8207,6 +8224,9 @@ angular.module("access/views/data-access-request-list.html", []).run(["$template
     "        </div>\n" +
     "      </div>\n" +
     "      <div class=\"col-xs-6\">\n" +
+    "        <a target=\"_self\" download class=\"btn btn-info\" ng-href=\"{{getCsvExportHref()}}\">\n" +
+    "          <i class=\"fa fa-download\"></i> {{'download' | translate}}\n" +
+    "        </a>\n" +
     "        <dir-pagination-controls class=\"pull-right\"></dir-pagination-controls>\n" +
     "      </div>\n" +
     "    </div>\n" +
@@ -8479,12 +8499,12 @@ angular.module("access/views/data-access-request-view.html", []).run(["$template
     "          class=\"btn btn-primary\" title=\"{{'edit' | translate}}\">\n" +
     "          <i class=\"fa fa-pencil-square-o\"></i>\n" +
     "        </a>\n" +
-    "        <a ng-click=\"printForm()\"\n" +
-    "           class=\"btn btn-info\" title=\"{{'global.print' | translate}}\">\n" +
-    "          <i class=\"fa fa-print\"></i>\n" +
+    "        <a ng-if=\"!form.downloadTemplate\" ng-click=\"printForm()\"\n" +
+    "           class=\"btn btn-default\" title=\"{{'global.print' | translate}}\">\n" +
+    "          <i class=\"fa fa-print\"></i> <span translate>global.print</span>\n" +
     "        </a>\n" +
-    "        <a target=\"_self\" href=\"{{requestDownloadUrl}}\" class=\"btn btn-default\">\n" +
-    "          <i class=\"glyphicon glyphicon-download-alt\"></i> <span>{{config.downloadButtonCaption || 'download' | translate}}</span>\n" +
+    "        <a ng-if=\"form.downloadTemplate\" target=\"_self\" href=\"{{requestDownloadUrl}}\" class=\"btn btn-default\">\n" +
+    "          <i class=\"fa fa-download\"></i> <span>{{config.downloadButtonCaption || 'download' | translate}}</span>\n" +
     "        </a>\n" +
     "        <a ng-click=\"delete()\"\n" +
     "          ng-if=\"actions.canDelete(dataAccessRequest)\"\n" +
