@@ -8712,7 +8712,7 @@ angular.module("file-browser/views/documents-table-template.html", []).run(["$te
     "        <th colspan=\"2\" translate>name</th>\n" +
     "        <th style=\"width: 100px\" translate>type</th>\n" +
     "        <th style=\"width: 100px\" translate>size</th>\n" +
-    "        <th style=\"width: 150px\" translate>modified</th>\n" +
+    "        <th style=\"width: 150px\" translate>global.modified</th>\n" +
     "        <th ng-if=\"data.search.active\" translate>folder</th>\n" +
     "      </tr>\n" +
     "      </thead>\n" +
