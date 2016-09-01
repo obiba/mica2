@@ -109,6 +109,7 @@
             <i class="fa fa-caret-down"></i></a>
           <ul class="dropdown-menu pull-right" ng-controller="LanguageController">
             <!--<li><a href="#/profile"><i class="fa fa-cog"></i> <span translate>global.menu.myProfile</span></a></li>-->
+            <!-- TODO make it more flexible in case user adds more locales -->
             <li ng-repeat="lang in ['en','fr']">
               <a href="#" ng-click="changeLanguage(lang)">
                 <span>{{'language.' + lang | translate}}</span> <i class="fa fa-check" aria-hidden="true" ng-show="getCurrentLanguage() === lang"></i></a>
@@ -177,6 +178,7 @@
 <script src="bower_components/marked/lib/marked.js"></script>
 <script src="bower_components/angular-marked/dist/angular-marked.js"></script>
 <script src="bower_components/moment/moment.js"></script>
+<script src="bower_components/moment/min/locales.js"></script>
 <script src="bower_components/angular-moment/angular-moment.js"></script>
 <script src="bower_components/ng-obiba/dist/ng-obiba.js"></script>
 <script src="bower_components/filesize/lib/filesize.min.js"></script>

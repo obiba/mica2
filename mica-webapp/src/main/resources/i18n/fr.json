@@ -1002,7 +1002,8 @@
     "search-results": {
       "current": "Résultats de recherche dans le dossier courant",
       "current-sub": "Résultats de recherche dans le dossier courant et ses sous-dossiers"
-    }
+    },
+    "show-details": "Afficher les détails"
   },
   "data-access-requests": "Demandes d'accès aux données",
   "data-access-request": {

@@ -1003,7 +1003,8 @@
     "search-results": {
       "current": "Search results in current folder",
       "current-sub": "Search results in current folder and sub-folders"
-    }
+    },
+    "show-details": "Show details"
   },
   "data-access-requests": "Data Access Requests",
   "data-access-request": {

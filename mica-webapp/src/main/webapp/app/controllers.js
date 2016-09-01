@@ -47,10 +47,11 @@ mica.controller('MainController', [
 
 mica.controller('AdminController', [function () {}]);
 
-mica.controller('LanguageController', ['$scope', '$translate',
-  function ($scope, $translate) {
+mica.controller('LanguageController', ['$scope', '$translate', 'amMoment',
+  function ($scope, $translate, amMoment) {
     $scope.changeLanguage = function (languageKey) {
       $translate.use(languageKey);
+      amMoment.changeLocale(languageKey);
     };
     $scope.getCurrentLanguage = $translate.use;
   }]);
