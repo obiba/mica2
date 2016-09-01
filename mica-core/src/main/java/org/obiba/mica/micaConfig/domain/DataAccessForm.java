@@ -9,6 +9,7 @@ import org.obiba.mica.core.domain.AbstractGitPersistable;
 import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.core.domain.RevisionStatus;
 import org.obiba.mica.file.Attachment;
+import org.obiba.mica.micaConfig.PdfDownloadType;
 import org.springframework.data.mongodb.core.index.Indexed;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -28,6 +29,8 @@ public class DataAccessForm extends AbstractGitPersistable {
   private String csvExportFormat;
 
   private Map<Locale, Attachment> pdfTemplates;
+
+  private PdfDownloadType pdfDownloadType = PdfDownloadType.Template;
 
   private Map<String, LocalizedString> properties;
 
@@ -129,6 +132,14 @@ public class DataAccessForm extends AbstractGitPersistable {
 
   public void setPdfTemplates(Map<Locale, Attachment> pdfTemplates) {
     this.pdfTemplates = pdfTemplates;
+  }
+
+  public PdfDownloadType getPdfDownloadType() {
+    return pdfDownloadType;
+  }
+
+  public void setPdfDownloadType(PdfDownloadType pdfDownloadType) {
+    this.pdfDownloadType = pdfDownloadType;
   }
 
   @JsonIgnore

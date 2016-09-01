@@ -724,6 +724,11 @@ message LocalizedPropertyDto {
 }
 
 message DataAccessFormDto {
+  enum PdfDownloadType {
+    Template = 1;
+    Embedded = 2;
+  }
+
   required string schema = 1;
   required string definition = 2;
   repeated AttachmentDto pdfTemplates = 3;
@@ -753,6 +758,7 @@ message DataAccessFormDto {
   required bool notifyAttachment = 27;
   optional string attachmentSubject = 28;
   optional string csvExportFormat = 29;
+  required PdfDownloadType pdfDownloadType = 30;
 }
 
 message ProjectFormDto {
