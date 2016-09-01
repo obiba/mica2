@@ -31,7 +31,8 @@
     "keywords": "Mots clés",
     "from": "De",
     "to": "À",
-    "print": "Imprimer"
+    "print": "Imprimer",
+    "modified": "Modifié"
   },
   "main": {
     "title": "Bienvenue chez Mica!",
