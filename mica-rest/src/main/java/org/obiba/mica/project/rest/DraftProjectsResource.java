@@ -71,7 +71,7 @@ public class DraftProjectsResource {
   @GET
   @Path("/projects")
   @Timed
-  public List<Mica.ProjectDto> list(@QueryParam("query") String query,
+  public Mica.ProjectsDto list(@QueryParam("query") String query,
                                     @QueryParam("from") @DefaultValue("0") Integer from,
                                     @QueryParam("limit") Integer limit, @Context HttpServletResponse response) {
     Stream<Project> result;
@@ -92,9 +92,15 @@ public class DraftProjectsResource {
       result = projectService.findAllProjects(projectDocuments.getList().stream().map(d -> d.getId()).collect(toList())).stream();
     }
 
-    response.addHeader("X-Total-Count", Long.toString(totalCount));
+    Mica.ProjectsDto.Builder builder = Mica.ProjectsDto.newBuilder();
+    builder.setFrom(from).setLimit(limit).setTotal(Long.valueOf(totalCount).intValue());
+    builder.addAllProjects(result.map(n -> dtos.asDto(n, true)).collect(toList()));
 
-    return result.map(n -> dtos.asDto(n, true)).collect(toList());
+    if (subjectAclService.isPermitted("/draft/project", "ADD")) {
+      builder.addActions("ADD");
+    }
+
+    return builder.build();
   }
 
   @POST

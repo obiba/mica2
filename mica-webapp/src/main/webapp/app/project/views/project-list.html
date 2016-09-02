@@ -14,7 +14,7 @@
     <span translate>research-projects</span>
   </h2>
 
-  <a ng-href="#/project/new" class="btn btn-info" ng-if="hasRole(['mica-administrator','mica-reviewer','mica-editor'])">
+  <a ng-href="#/project/new" class="btn btn-info" ng-if="canAdd">
     <i class="fa fa-plus"></i> <span translate>research-project.add</span>
   </a>
 

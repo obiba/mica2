@@ -49,7 +49,6 @@ public class UpgradeConfiguration {
       applicationContext.getBean(AttachmentsCleanupUpgrade.class), //
       applicationContext.getBean(ContactsRefactorUpgrade.class), //
       applicationContext.getBean(DatasetStateUpgrade.class), //
-      applicationContext.getBean(ElasticsearchUpgrade.class),
-      applicationContext.getBean(ProjectsUpgrade.class));
+      applicationContext.getBean(ElasticsearchUpgrade.class));
   }
 }
