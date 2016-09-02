@@ -47,8 +47,8 @@ mica.factory('Password', ['$resource',
     });
   }]);
 
-mica.factory('Session', ['SessionProxy','$cookieStore','$translate','UserProfileService',
-  function (SessionProxy, $cookieStore, $translate, UserProfileService) {
+mica.factory('Session', ['SessionProxy','$cookieStore','$translate','UserProfileService', 'amMoment',
+  function (SessionProxy, $cookieStore, $translate, UserProfileService, amMoment) {
     this.create = function (login, roles) {
       this.login = login;
       this.roles = roles;
@@ -66,7 +66,9 @@ mica.factory('Session', ['SessionProxy','$cookieStore','$translate','UserProfile
 
     this.setProfile = function(profile) {
       this.profile = profile;
-      $translate.use(this.getPreferredLanguage());
+      var preferredLanguage = this.getPreferredLanguage();
+      $translate.use(preferredLanguage);
+      amMoment.changeLocale(preferredLanguage);
       SessionProxy.update(this);
     };
 
