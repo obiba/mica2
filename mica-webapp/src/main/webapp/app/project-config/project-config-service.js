@@ -43,5 +43,5 @@ mica.projectConfig
         },
         'delete': {method: 'DELETE', params: {draft: '@draft', type: '@type', principal: '@principal'}, errorHandler: true},
         'get': {method: 'GET', params: {draft: '@draft'}, isArray: true}
-      })
+      });
     }]);
