@@ -35,14 +35,16 @@ mica.project
               DraftProjectsResource,
               DraftProjectResource
     ) {
-      var onSuccess = function(response, responseHeaders) {
-        $scope.projects = response;
-        $scope.totalCount = parseInt(responseHeaders('X-Total-Count'), 10);
+      var onSuccess = function(response) {
+        $scope.projects = response.projects;
+        $scope.totalCount = parseInt(response.total, 10);
         $scope.loading = false;
 
         if (!$scope.hasProjects) {
           $scope.hasProjects = $scope.totalCount && !$scope.pagination.searchText;
         }
+
+        $scope.canAdd = response.actions && response.actions.indexOf('ADD') > -1;
       };
 
       var onError = function() {
@@ -66,7 +68,7 @@ mica.project
           data.query = $scope.pagination.searchText + '*';
         }
 
-        DraftProjectsResource.query(data, onSuccess, onError);
+        DraftProjectsResource.get(data, onSuccess, onError);
       }
 
       $scope.loading = true;
