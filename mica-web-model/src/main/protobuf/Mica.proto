@@ -667,6 +667,7 @@ message ProjectsDto {
   required int32 from = 2;
   required int32 limit = 3;
   repeated ProjectDto projects = 4;
+  repeated string actions = 5;
 }
 
 message DataAccessRequestDto {
