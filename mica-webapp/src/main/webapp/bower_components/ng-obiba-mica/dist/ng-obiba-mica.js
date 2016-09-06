@@ -3,7 +3,7 @@
  * https://github.com/obiba/ng-obiba-mica
 
  * License: GNU Public License version 3
- * Date: 2016-09-01
+ * Date: 2016-09-06
  */
 'use strict';
 
@@ -8186,11 +8186,14 @@ angular.module("access/views/data-access-request-list.html", []).run(["$template
     "<div id=\"data-access-request-list\">\n" +
     "  <div ng-if=\"headerTemplateUrl\" ng-include=\"headerTemplateUrl\"></div>\n" +
     "\n" +
-    "  <a ng-href=\"#/data-access-request/new\" class=\"btn btn-info\">\n" +
-    "    <i class=\"fa fa-plus\"></i> <span>{{config.newRequestButtonCaption || 'data-access-request.add' | translate}}</span>\n" +
+    "  <a ng-href=\"#/data-access-request/new\" class=\"btn btn-info\" title=\"{{config.newRequestButtonHelpText}}\">\n" +
+    "    <i class=\"fa fa-plus\"></i>\n" +
+    "    <span>{{config.newRequestButtonCaption || 'data-access-request.add' | translate}}</span>\n" +
     "  </a>\n" +
     "\n" +
-    "  <span ng-bind-html=\"config.newRequestButtonHelpText\"></span>\n" +
+    "  <a target=\"_self\" download class=\"btn btn-info pull-right\" ng-href=\"{{getCsvExportHref()}}\">\n" +
+    "    <i class=\"fa fa-download\"></i> {{'download' | translate}}\n" +
+    "  </a>\n" +
     "\n" +
     "  <p class=\"help-block\" ng-if=\"requests.length == 0 && !loading\">\n" +
     "    <span translate>data-access-request.none</span>\n" +
@@ -8224,9 +8227,6 @@ angular.module("access/views/data-access-request-list.html", []).run(["$template
     "        </div>\n" +
     "      </div>\n" +
     "      <div class=\"col-xs-6\">\n" +
-    "        <a target=\"_self\" download class=\"btn btn-info\" ng-href=\"{{getCsvExportHref()}}\">\n" +
-    "          <i class=\"fa fa-download\"></i> {{'download' | translate}}\n" +
-    "        </a>\n" +
     "        <dir-pagination-controls class=\"pull-right\"></dir-pagination-controls>\n" +
     "      </div>\n" +
     "    </div>\n" +

@@ -11,11 +11,14 @@
 <div id="data-access-request-list">
   <div ng-if="headerTemplateUrl" ng-include="headerTemplateUrl"></div>
 
-  <a ng-href="#/data-access-request/new" class="btn btn-info">
-    <i class="fa fa-plus"></i> <span>{{config.newRequestButtonCaption || 'data-access-request.add' | translate}}</span>
+  <a ng-href="#/data-access-request/new" class="btn btn-info" title="{{config.newRequestButtonHelpText}}">
+    <i class="fa fa-plus"></i>
+    <span>{{config.newRequestButtonCaption || 'data-access-request.add' | translate}}</span>
   </a>
 
-  <span ng-bind-html="config.newRequestButtonHelpText"></span>
+  <a target="_self" download class="btn btn-info pull-right" ng-href="{{getCsvExportHref()}}">
+    <i class="fa fa-download"></i> {{'download' | translate}}
+  </a>
 
   <p class="help-block" ng-if="requests.length == 0 && !loading">
     <span translate>data-access-request.none</span>
@@ -49,9 +52,6 @@
         </div>
       </div>
       <div class="col-xs-6">
-        <a target="_self" download class="btn btn-info" ng-href="{{getCsvExportHref()}}">
-          <i class="fa fa-download"></i> {{'download' | translate}}
-        </a>
         <dir-pagination-controls class="pull-right"></dir-pagination-controls>
       </div>
     </div>
