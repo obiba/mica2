@@ -98,7 +98,7 @@ public class DataCollectionEvent extends AbstractAttributeModelAware
   }
 
   public void setStart(int year, @Nullable Integer month) {
-    start = PersistableYearMonth.of(year, month == null ? Month.JANUARY.getValue() : month);
+    start = (month == null || month == 0) ? PersistableYearMonth.of(year) : PersistableYearMonth.of(year, month);
   }
 
   public boolean hasEnd() {
@@ -114,7 +114,7 @@ public class DataCollectionEvent extends AbstractAttributeModelAware
   }
 
   public void setEnd(int year, @Nullable Integer month) {
-    end = PersistableYearMonth.of(year, month == null ? Month.DECEMBER.getValue() : month);
+    end = month == null || month == 0 ? PersistableYearMonth.of(year) : PersistableYearMonth.of(year, month);
   }
 
   public List<String> getDataSources() {
