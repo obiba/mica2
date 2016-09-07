@@ -34,8 +34,19 @@ public class PersistableYearMonth implements Serializable, Comparable<Persistabl
     return instance;
   }
 
+  public static PersistableYearMonth of(int y) {
+    PersistableYearMonth instance = new PersistableYearMonth();
+    YEAR_VALIDATOR.validate(y);
+    instance.yearMonth = format(y);
+    return instance;
+  }
+
   public static String format(int year, int month) {
     return String.format("%4d-%02d", year, month);
+  }
+
+  public static String format (int year) {
+    return String.format("%4d", year);
   }
 
   @JsonIgnore
@@ -46,12 +57,22 @@ public class PersistableYearMonth implements Serializable, Comparable<Persistabl
   public static YearMonthData parse(String text) {
     Pattern p = Pattern.compile("(\\d{4})-(\\d{1,2})");
     Matcher m = p.matcher(text);
-    if (!m.matches()) throw new IllegalArgumentException("Invalid YearMonth format, expectes YYYY-mm: " + text);
+    if (!m.matches()) {
+      p = Pattern.compile("(\\d{4})");
+      m = p.matcher(text);
+
+      if (!m.matches()) throw new IllegalArgumentException("Invalid YearMonth format, expectes YYYY-mm or YYYY: " + text);
+    }
 
     int year = Integer.valueOf(m.group(1));
-    int month = Integer.valueOf(m.group(2));
+    int month = 0;
+    if (m.groupCount() == 2) {
+      month = Integer.valueOf(m.group(2));
+      MONTH_VALIDATOR.validate(month);
+    }
     YEAR_VALIDATOR.validate(year);
-    MONTH_VALIDATOR.validate(month);
+
+    int finalMonth = month;
     return new YearMonthData() {
       @Override
       public int getYear() {
@@ -60,7 +81,7 @@ public class PersistableYearMonth implements Serializable, Comparable<Persistabl
 
       @Override
       public int getMonth() {
-        return month;
+        return finalMonth;
       }
     };
   }

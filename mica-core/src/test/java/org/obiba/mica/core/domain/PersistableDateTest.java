@@ -18,6 +18,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class PersistableDateTest {
 
+  @Test
+  public void test_year_creation_format() {
+    assertThat(PersistableYearMonth.of(2009).getYearMonth()).isEqualTo("2009");
+  }
 
   @Test
   public void test_year_month_creation_format() {
@@ -29,6 +33,12 @@ public class PersistableDateTest {
   public void test_year_month_invalid_year() {
     assertThat(test_invalid_year_month(19, 1)).isTrue();
     assertThat(test_invalid_year_month(1800, 1)).isTrue();
+  }
+
+  @Test
+  public void test_year_invalid_year() {
+    assertThat(test_invalid_year(12)).isTrue();
+    assertThat(test_invalid_year(10990)).isTrue();
   }
 
   @Test
@@ -45,6 +55,13 @@ public class PersistableDateTest {
   }
 
   @Test
+  public void test_get_year_data() {
+    PersistableYearMonth.YearMonthData data = PersistableYearMonth.of(2010).getYearMonthData();
+    assertThat(data.getYear()).isEqualTo(2010);
+    assertThat(data.getMonth()).isEqualTo(0);
+  }
+
+  @Test
   public void test_get_year_month_data() {
     PersistableYearMonth.YearMonthData data = PersistableYearMonth.of(1989, 1).getYearMonthData();
     assertThat(data.getYear()).isEqualTo(1989);
@@ -58,6 +75,15 @@ public class PersistableDateTest {
       return true;
     }
 
+    return false;
+  }
+
+  private boolean test_invalid_year(int year) {
+    try {
+      PersistableYearMonth.of(year);
+    } catch (IllegalArgumentException e) {
+      return true;
+    }
     return false;
   }
 }

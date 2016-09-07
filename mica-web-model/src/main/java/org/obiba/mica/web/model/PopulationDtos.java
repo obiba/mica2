@@ -187,11 +187,17 @@ class PopulationDtos {
     if(dce.getDescription() != null) builder.addAllDescription(localizedStringDtos.asDto(dce.getDescription()));
     if(dce.getStart() != null) {
       PersistableYearMonth.YearMonthData startData = dce.getStart().getYearMonthData();
-      builder.setStartYear(startData.getYear()).setStartMonth(startData.getMonth());
+      builder.setStartYear(startData.getYear());
+      if (startData.getMonth() != 0) {
+        builder.setStartMonth(startData.getMonth());
+      }
     }
     if(dce.getEnd() != null) {
       PersistableYearMonth.YearMonthData endData = dce.getEnd().getYearMonthData();
-      builder.setEndYear(endData.getYear()).setEndMonth(endData.getMonth());
+      builder.setEndYear(endData.getYear());
+      if (endData.getMonth() != 0) {
+        builder.setEndMonth(endData.getMonth());
+      }
     }
     if(dce.getDataSources() != null) dce.getDataSources().forEach(builder::addDataSources);
     if(dce.getAdministrativeDatabases() != null) {
