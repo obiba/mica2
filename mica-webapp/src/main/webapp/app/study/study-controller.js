@@ -1072,7 +1072,8 @@ mica.study
           $scope.tabs.push({lang: lang});
           $scope.languages.push(lang);
         });
-
+        
+        initializeTaxonomies();
       });
 
       function initializeTaxonomies() {
@@ -1086,7 +1087,6 @@ mica.study
       }
 
       function createNewStudy() {
-        initializeTaxonomies();
         return {attachments: [], maelstromAuthorization: {date: null}, specificAuthorization: {date: null}};
       }
 
@@ -1139,7 +1139,6 @@ mica.study
 
           // TODO remove the property below once the Study.methods.designs is replaced by Study.methods.design
           $scope.methods = {design: angular.isArray($scope.study.methods.designs) ? $scope.study.methods.designs.pop() : $scope.study.methods.designs};
-          initializeTaxonomies();
         }
       }) : createNewStudy();
 
