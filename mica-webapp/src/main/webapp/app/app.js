@@ -162,6 +162,7 @@ mica
     'ServerErrorUtils',
     'UserProfileService',
     'editableOptions',
+    'amMoment',
 
     function ($rootScope,
               $location,
@@ -172,7 +173,9 @@ mica
               USER_ROLES,
               ServerErrorUtils,
               UserProfileService,
-              editableOptions) {
+              editableOptions,
+              amMoment) {
+      amMoment.changeLocale('en');
       var isSessionInitialized = false;
 
       function updateRedirect() {
