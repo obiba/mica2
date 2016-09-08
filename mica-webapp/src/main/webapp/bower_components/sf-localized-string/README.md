@@ -32,12 +32,14 @@ Usage
 The schema:
 
 ```
-"myFiles": {
+"name": {
   "type": "object",
-  "format": "obibaFiles",
-  "title": "Title",      
-  "multiple": true,
-  "minItems": 3
+  "format": "localizedString",
+  "title": "Name",
+  "description": "Name or alias",
+  "maxLength": 10,
+  "minLength": 2,
+  "required": true
 }
 ```
 
@@ -51,3 +53,10 @@ The Definition:
 }
 ```
 
+Events
+------
+
+
+| Name          | Type          | What |
+| ------------- |:-------------:| -----|
+| sfLocalizedStringLocaleChanged| String        | changes the current locale|
