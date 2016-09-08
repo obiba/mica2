@@ -14,6 +14,7 @@ angular.module('obiba.mica.localized')
 
   .service('LocalizedValues',
     function () {
+      var self = this;
       this.for = function (values, lang, keyLang, keyValue) {
         if (angular.isArray(values)) {
           var result = values.filter(function (item) {
@@ -23,7 +24,12 @@ angular.module('obiba.mica.localized')
           if (result && result.length > 0) {
             return result[0][keyValue];
           }
+        } else if (angular.isObject(values)) {
+          return self.for(Object.keys(values).map(function(k) {
+            return {lang: k, value: values[k]};
+          }), lang, keyLang, keyValue);
         }
+        
         return '';
       };
 
