@@ -979,7 +979,7 @@
       "file-system": "Gérer le système de fichiers.",
       "search": "Chercher dans le catalogue publié.",
       "classifications": "Parcourir les taxonomies.",
-      "translations": "Gérer les traductions de d'étiquettes."
+      "translations": "Gérer les traductions des libellés."
     }
   },
   "server": {
