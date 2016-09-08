@@ -34,10 +34,10 @@
   "_release": "f8c5379f67",
   "_resolution": {
     "type": "branch",
-    "branch": "branch-1.2.x",
+    "branch": "branch-1.3.x",
     "commit": "f8c5379f6725efeac5a0ec6d2856e729fbd29648"
   },
   "_source": "https://github.com/obiba/ng-obiba-mica.git",
-  "_target": "branch-1.2.x",
+  "_target": "branch-1.3.x",
   "_originalSource": "https://github.com/obiba/ng-obiba-mica.git"
 }
