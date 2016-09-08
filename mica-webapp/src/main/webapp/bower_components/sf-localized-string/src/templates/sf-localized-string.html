@@ -13,6 +13,7 @@
   <div ng-if="!form.rows || form.rows <= 1"
        ng-class="{'form-group' : !$last}">
     <input type="text" class="form-control"
+           ng-disabled="form.readonly"
            sf-field-model="replaceAll" ng-model="$$value$$[locale]"
            ng-repeat="locale in form.locales"
            ng-show="locale === selectedLocale"/>
@@ -20,6 +21,7 @@
   <div ng-if="form.rows && form.rows > 1"
        ng-class="{'form-group' : !$last}">
     <textarea class="form-control"
+              ng-disabled="form.readonly"
               sf-field-model="replaceAll" ng-model="$$value$$[locale]"
               rows="{{form.rows ? form.rows : 5}}"
               ng-repeat="locale in form.locales"

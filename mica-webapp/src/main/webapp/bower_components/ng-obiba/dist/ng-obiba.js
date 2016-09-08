@@ -3,7 +3,7 @@
  * https://github.com/obiba/ng-obiba
 
  * License: GNU Public License version 3
- * Date: 2016-05-12
+ * Date: 2016-08-24
  */
 'use strict';
 
@@ -716,7 +716,7 @@ angular.module('obiba.notification')
 
       function getMessage() {
         return {
-          title: confirm.titleKey ? LocaleStringUtils.translate(confirm.titleKey) : confirm.title,
+          title: confirm.titleKey ? LocaleStringUtils.translate(confirm.titleKey, confirm.titleArgs) : confirm.title,
           message: confirm.messageKey ? LocaleStringUtils.translate(confirm.messageKey, confirm.messageArgs) : confirm.message
         };
       }
