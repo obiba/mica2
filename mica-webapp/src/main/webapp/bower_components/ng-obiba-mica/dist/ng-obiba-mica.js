@@ -3,7 +3,7 @@
  * https://github.com/obiba/ng-obiba-mica
 
  * License: GNU Public License version 3
- * Date: 2016-09-06
+ * Date: 2016-09-09
  */
 'use strict';
 
@@ -8191,7 +8191,7 @@ angular.module("access/views/data-access-request-list.html", []).run(["$template
     "    <span>{{config.newRequestButtonCaption || 'data-access-request.add' | translate}}</span>\n" +
     "  </a>\n" +
     "\n" +
-    "  <a target=\"_self\" download class=\"btn btn-info pull-right\" ng-href=\"{{getCsvExportHref()}}\">\n" +
+    "  <a ng-if=\"requests.length > 0\" target=\"_self\" download class=\"btn btn-info pull-right\" ng-href=\"{{getCsvExportHref()}}\">\n" +
     "    <i class=\"fa fa-download\"></i> {{'download' | translate}}\n" +
     "  </a>\n" +
     "\n" +
