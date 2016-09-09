@@ -16,7 +16,7 @@
     <span>{{config.newRequestButtonCaption || 'data-access-request.add' | translate}}</span>
   </a>
 
-  <a target="_self" download class="btn btn-info pull-right" ng-href="{{getCsvExportHref()}}">
+  <a ng-if="requests.length > 0" target="_self" download class="btn btn-info pull-right" ng-href="{{getCsvExportHref()}}">
     <i class="fa fa-download"></i> {{'download' | translate}}
   </a>
 
