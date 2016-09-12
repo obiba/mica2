@@ -1,5 +1,5 @@
 /*!
- * ng-obiba-mica - v1.3.0
+ * ng-obiba-mica - v1.3.x
  * https://github.com/obiba/ng-obiba-mica
 
  * License: GNU Public License version 3
@@ -8499,11 +8499,11 @@ angular.module("access/views/data-access-request-view.html", []).run(["$template
     "          class=\"btn btn-primary\" title=\"{{'edit' | translate}}\">\n" +
     "          <i class=\"fa fa-pencil-square-o\"></i>\n" +
     "        </a>\n" +
-    "        <a ng-if=\"!form.downloadTemplate\" ng-click=\"printForm()\"\n" +
+    "        <a ng-if=\"form.downloadTemplate === false\" ng-click=\"printForm()\"\n" +
     "           class=\"btn btn-default\" title=\"{{'global.print' | translate}}\">\n" +
     "          <i class=\"fa fa-print\"></i> <span translate>global.print</span>\n" +
     "        </a>\n" +
-    "        <a ng-if=\"form.downloadTemplate\" target=\"_self\" href=\"{{requestDownloadUrl}}\" class=\"btn btn-default\">\n" +
+    "        <a ng-if=\"form.downloadTemplate === true\" target=\"_self\" href=\"{{requestDownloadUrl}}\" class=\"btn btn-default\">\n" +
     "          <i class=\"fa fa-download\"></i> <span>{{config.downloadButtonCaption || 'download' | translate}}</span>\n" +
     "        </a>\n" +
     "        <a ng-click=\"delete()\"\n" +
