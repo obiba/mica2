@@ -1,5 +1,14 @@
-<label class="control-label" >
-  <span ng-if="files && files.length > 0"><i class="fa fa-check-square-o"></i> </span>
-  <span ng-if="!files || files.length < 1"><i class="fa fa-square-o"></i> </span>
-  {{title}}
-</label>
+<div>
+  <label class="control-label" >
+    <span ng-if="files && files.length > 0"><i class="fa fa-check-square-o"></i> </span>
+    <span ng-if="!files || files.length < 1"><i class="fa fa-square-o"></i> </span>
+    {{title}}
+  </label>
+  <br/>
+  <ul class="hoffset3 list-unstyled" ng-if="files.length > 0">
+    <li ng-repeat="file in files">
+      <span><strong>{{file.fileName}}</strong><small>, {{file.timestamps.created | amDateFormat:'dddd, MMMM Do YYYY'}}</small>
+      </span>
+    </li>
+  </ul>
+</div>
