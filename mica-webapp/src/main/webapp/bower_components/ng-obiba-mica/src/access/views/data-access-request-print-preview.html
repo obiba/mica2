@@ -14,4 +14,9 @@
       <div sf-model="form.model" sf-form="form.definition" sf-schema="form.schema"></div>
     </form>
   </div>
+
+  <div ng-if="lastSubmittedDate">
+    <h3 translate>data-access-request.submissionDate</h3>
+    <p>{{lastSubmittedDate | amDateFormat:'dddd, MMMM Do YYYY' | capitalizeFirstLetter}}</p>
+  </div>
 </div>

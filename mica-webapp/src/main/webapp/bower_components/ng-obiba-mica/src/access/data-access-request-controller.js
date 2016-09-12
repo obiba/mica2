@@ -248,6 +248,13 @@ angular.module('obiba.mica.access')
         });
       };
 
+      function findLastSubmittedDate() {
+        var history = $scope.dataAccessRequest.statusChangeHistory || [];
+        return history.filter(function(item) {
+          return item.to === DataAccessRequestService.status.SUBMITTED;
+        }).pop();
+      }
+
       $scope.form = {
         schema: null,
         definition: null,
@@ -340,6 +347,8 @@ angular.module('obiba.mica.access')
           );
 
           request.attachments = request.attachments || [];
+
+          $scope.lastSubmittedDate = findLastSubmittedDate();
 
           return request;
         });
