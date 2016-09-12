@@ -15,6 +15,7 @@
               ng-disabled="form.readonly"
               sf-field-model
               schema-validate="form"
+              rows="{{form.rows}}"
               name="{{form.key.slice(-1)[0]}}"></textarea>
 
     <div ng-if="form.fieldAddonLeft || form.fieldAddonRight"
@@ -29,6 +30,7 @@
                 ng-disabled="form.readonly"
                 sf-field-model
                 schema-validate="form"
+                rows="{{form.rows}}"
                 name="{{form.key.slice(-1)[0]}}"></textarea>
       <span ng-if="form.fieldAddonRight"
             class="input-group-addon"
