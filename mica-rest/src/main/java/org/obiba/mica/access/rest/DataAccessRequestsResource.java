@@ -14,6 +14,7 @@ import com.codahale.metrics.annotation.Timed;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.joda.time.DateTime;
 import org.obiba.mica.access.domain.DataAccessRequest;
 import org.obiba.mica.access.service.DataAccessRequestService;
 import org.obiba.mica.micaConfig.domain.DataAccessForm;
@@ -70,7 +71,8 @@ public class DataAccessRequestsResource {
     ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
     new CsvReportGenerator(dataAccessRequests, dataAccessForm.getCsvExportFormat(), lang).write(byteArrayOutputStream);
 
-    return Response.ok(byteArrayOutputStream.toByteArray()).header("Content-Disposition","attachment; filename=\"request-data-access.csv\"").build();
+    String date = new DateTime().toString("YYYY-MM-dd");
+    return Response.ok(byteArrayOutputStream.toByteArray()).header("Content-Disposition", String.format("attachment; filename=\"Access-Requests-Report_%s.csv\"", date)).build();
   }
 
   @GET
