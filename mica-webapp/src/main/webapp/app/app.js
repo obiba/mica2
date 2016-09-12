@@ -177,6 +177,7 @@ mica
     'UserProfileService',
     'editableOptions',
     'amMoment',
+    '$cookies',
 
     function ($rootScope,
               $location,
@@ -188,8 +189,10 @@ mica
               ServerErrorUtils,
               UserProfileService,
               editableOptions,
-              amMoment) {
-      amMoment.changeLocale('en');
+              amMoment,
+              $cookies) {
+
+      amMoment.changeLocale($cookies.get('NG_TRANSLATE_LANG_KEY').replace(/"/g, ''));
       var isSessionInitialized = false;
 
       function updateRedirect() {

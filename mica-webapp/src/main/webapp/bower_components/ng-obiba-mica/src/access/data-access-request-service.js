@@ -297,6 +297,7 @@ angular.module('obiba.mica.access')
 
       return this;
     }])
+
   .filter('filterProfileAttributes', function () {
     return function (attributes) {
       var exclude = ['email', 'firstName', 'lastName', 'createdDate', 'lastLogin', 'username'];
@@ -304,4 +305,10 @@ angular.module('obiba.mica.access')
         return exclude.indexOf(attribute.key) === - 1;
       });
     };
-  });
+  })
+
+  .filter('capitalizeFirstLetter', ['StringUtils', function(StringUtils){
+    return function(text) {
+      return StringUtils.capitaliseFirstLetter(text);
+    };
+  }]);

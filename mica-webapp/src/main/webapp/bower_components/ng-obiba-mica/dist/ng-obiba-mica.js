@@ -772,6 +772,13 @@ angular.module('obiba.mica.access')
         });
       };
 
+      function findLastSubmittedDate() {
+        var history = $scope.dataAccessRequest.statusChangeHistory || [];
+        return history.filter(function(item) {
+          return item.to === DataAccessRequestService.status.SUBMITTED;
+        }).pop();
+      }
+
       $scope.form = {
         schema: null,
         definition: null,
@@ -864,6 +871,8 @@ angular.module('obiba.mica.access')
           );
 
           request.attachments = request.attachments || [];
+
+          $scope.lastSubmittedDate = findLastSubmittedDate();
 
           return request;
         });
@@ -1503,6 +1512,7 @@ angular.module('obiba.mica.access')
 
       return this;
     }])
+
   .filter('filterProfileAttributes', function () {
     return function (attributes) {
       var exclude = ['email', 'firstName', 'lastName', 'createdDate', 'lastLogin', 'username'];
@@ -1510,7 +1520,13 @@ angular.module('obiba.mica.access')
         return exclude.indexOf(attribute.key) === - 1;
       });
     };
-  });
+  })
+
+  .filter('capitalizeFirstLetter', ['StringUtils', function(StringUtils){
+    return function(text) {
+      return StringUtils.capitaliseFirstLetter(text);
+    };
+  }]);
 ;/*
  * Copyright (c) 2016 OBiBa. All rights reserved.
  *
@@ -8322,6 +8338,11 @@ angular.module("access/views/data-access-request-print-preview.html", []).run(["
     "    <form id=\"request-form\" name=\"forms.requestForm\">\n" +
     "      <div sf-model=\"form.model\" sf-form=\"form.definition\" sf-schema=\"form.schema\"></div>\n" +
     "    </form>\n" +
+    "  </div>\n" +
+    "\n" +
+    "  <div ng-if=\"lastSubmittedDate\">\n" +
+    "    <h3 translate>data-access-request.submissionDate</h3>\n" +
+    "    <p>{{lastSubmittedDate | amDateFormat:'dddd, MMMM Do YYYY' | capitalizeFirstLetter}}</p>\n" +
     "  </div>\n" +
     "</div>\n" +
     "");
