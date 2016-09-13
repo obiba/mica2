@@ -577,7 +577,7 @@
     "table-description": "Description",
     "data-schema": {
       "title": "Schéma de données",
-	  "Info": "Les variables du schéma de données sont les variables de référence de l'ensemble de données harmonisé. Ceci est un dictionnaire de données simple: aucune donnée sommaire ne sera extraite de la table Opal."
+      "Info": "Les variables du schéma de données sont les variables de référence de l'ensemble de données harmonisé. Ceci est un dictionnaire de données simple: aucune donnée sommaire ne sera extraite de la table Opal."
     },
     "index": "Index",
     "add-study-table": "Ajouter une table d'étude",
@@ -700,7 +700,6 @@
   "save": "Sauvegarder",
   "validate": "Valider",
   "download": "Télécharger",
-  "report": "Rapport",
   "upload": "Téléverser",
   "apply": "Appliquer",
   "on": "Sur",
@@ -734,7 +733,7 @@
   "fullscreen": "Passer en mode plein écran",
   "status": "Statut",
   "changed-by": "Changée par",
-  "changed-on": "Changée sur",
+  "changed-on": "Changée le",
   "OPENED": "Ouverte",
   "SUBMITTED": "Soumise",
   "REVIEWED": "En révision",
@@ -1033,7 +1032,7 @@
       "reviewed":  "Révisée",
       "approved":  "Approvée",
       "rejected":  "Rejetée",
-      "conditionallyApproved": "Approuvé sous conditions"
+      "conditionallyApproved": "Approuvée sous conditions"
     },
     "delete-dialog": {
       "title": "Supprimer la demande d'accès aux données",
@@ -1045,8 +1044,8 @@
     "validation": {
       "title-success": "Formulaire valide",
       "title-error": "Formulaire invalide",
-      "success": "Votre formulaire de demande est complet et est prêt à être soumis.",
-      "error": "Votre formulaire de demande est incomplet, veuillez corriger les erreurs."
+      "success": "Votre formulaire est complet et est prêt à être soumis.",
+      "error": "Votre formulaire est incomplet, veuillez corriger les erreurs."
     },
     "status-change-confirmation": {
       "title": "Confirmation de changement d'état",
@@ -1055,7 +1054,7 @@
     },
     "submit-confirmation": {
       "title": "Formulaire Soumis",
-      "message": "Votre formulaire d'accès a été soumis avec succès."
+      "message": "Votre formulaire a été soumis avec succès."
     },
     "profile" :{
       "title" : "Profil utilisateur",
@@ -1079,7 +1078,7 @@
         "A": {
           "title": "Nom, institution, et coordonnées du demandeur (demandeur principal)",
           "info": "Veuillez vous assurer qu'une adresse postale complète et une adresse courriel institutionnelle valide sont incluses. Dans le cas de plus d'une affiliation, les candidats doivent fournir leurs coordonnées se rapportant uniquement à l'institution à laquelle ils sont affiliés dans le cadre de ce projet de recherche."
-		  },
+        },
         "B": {
           "title": "Nom, institution et coordonnées du représentant institutionnel autorisé",
           "info": "Veuillez inclure une adresse postale complète et une adresse courriel institutionnelle valide."
@@ -1317,7 +1316,7 @@
       "approved-final-help": "Si non final, une demande d'accès approuvée peut être rétablie à son état précédent.",
       "rejected-final": "Etat 'Rejetée' est final",
       "rejected-final-help": "Si non final, une demande d'accès rejetée peut être rétablie à son état précédent.",
-      "with-conditional-approval": "Avec l'état intermédiaire 'Approuvé sous conditions'",
+      "with-conditional-approval": "Avec l'état intermédiaire 'Approuvée sous conditions'",
       "with-conditional-approval-help": "Entre la soumission et l'approbation/rejet de la demande d'accès aux données, un état intermédiaire peut être utilisé pour permettre au requérant d'éditer sa demande."
     },
     "permissions": {
@@ -1336,7 +1335,7 @@
   "entity-sf-config": {
     "schema-form": {
       "title": "Formulaire",
-	    "info": "Le formulaire de projet de recherche peut être spécifié à la fois en termes de structure de données (schéma) et d'affichage des données et validation (définition). Voir <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>documentation du schema form</a> pour plus de détails."
+      "info": "Le formulaire de projet de recherche peut être spécifié à la fois en termes de structure de données (schéma) et d'affichage des données et validation (définition). Voir <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>documentation du schema form</a> pour plus de détails."
     },
     "schema": {
       "tab": "Schéma",
@@ -1366,7 +1365,7 @@
     "saved": "Le formulaire de projet de recherche a été mis à jour avec succès.",
     "schema-form": {
       "title": "Formulaire",
-	    "info": "Le formulaire de projet de recherche peut être spécifié à la fois en termes de structure de données (schéma) et d'affichage des données et validation (définition). Voir <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>documentation du schema form</a> pour plus de détails."
+      "info": "Le formulaire de projet de recherche peut être spécifié à la fois en termes de structure de données (schéma) et d'affichage des données et validation (définition). Voir <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>documentation du schema form</a> pour plus de détails."
     },
     "schema": {
       "tab": "Schéma",
