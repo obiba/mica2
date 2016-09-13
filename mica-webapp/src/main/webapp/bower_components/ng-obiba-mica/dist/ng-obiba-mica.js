@@ -3,7 +3,7 @@
  * https://github.com/obiba/ng-obiba-mica
 
  * License: GNU Public License version 3
- * Date: 2016-09-12
+ * Date: 2016-09-13
  */
 'use strict';
 
@@ -8167,7 +8167,7 @@ angular.module("access/views/data-access-request-history-view.html", []).run(["$
     "    <th class=\"status-icon\"></th>\n" +
     "    <th translate>status</th>\n" +
     "    <th translate>changed-by</th>\n" +
-    "    <th translate>Changed On</th>\n" +
+    "    <th translate>changed-on</th>\n" +
     "  </tr>\n" +
     "  </thead>\n" +
     "  <tbody>\n" +
@@ -8208,7 +8208,7 @@ angular.module("access/views/data-access-request-list.html", []).run(["$template
     "  </a>\n" +
     "\n" +
     "  <a ng-if=\"requests.length > 0\" target=\"_self\" download class=\"btn btn-info pull-right\" ng-href=\"{{getCsvExportHref()}}\">\n" +
-    "    <i class=\"fa fa-download\"></i> {{'download' | translate}}\n" +
+    "    <i class=\"fa fa-download\"></i> {{'report' | translate}}\n" +
     "  </a>\n" +
     "\n" +
     "  <p class=\"help-block\" ng-if=\"requests.length == 0 && !loading\">\n" +
@@ -10444,7 +10444,7 @@ angular.module("search/views/search-result-list-template.html", []).run(["$templ
     "      </a>\n" +
     "      <a href style=\"cursor: default;\" ng-if=\"resultTabsOrder.length === 1\">\n" +
     "      <span class=\"text-primary\">\n" +
-    "        {{targetTypeMap[res] | translate}} (<small>{{getTotalHits(res) | localizedNumber)}}</small>)\n" +
+    "        {{targetTypeMap[res] | translate}} (<small>{{getTotalHits(res) | localizedNumber}}</small>)\n" +
     "      </span>\n" +
     "      </a>\n" +
     "    </li>\n" +
