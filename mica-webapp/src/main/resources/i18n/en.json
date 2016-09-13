@@ -577,7 +577,7 @@
     "table-name": "Name",
     "table-description": "Description",
     "data-schema": {
-     "title": "Data Schema",
+      "title": "Data Schema",
       "info": "The variables of the Data Schema are the reference variables of the Harmonization dataset. This is a simple data dictionary: no data summaries will be extracted from the Opal table."
     },
     "index": "Index",
@@ -701,7 +701,6 @@
   "save": "Save",
   "validate": "Validate",
   "download": "Download",
-  "report": "Report",
   "upload": "Upload",
   "apply": "Apply",
   "on": "On",
@@ -1046,8 +1045,8 @@
     "validation": {
       "title-success": "Valid Form",
       "title-error": "Invalid Form",
-      "success": "Your request form is complete and ready to be submitted.",
-      "error": "Your request form is incomplete, please correct the errors."
+      "success": "Your form is complete and ready to be submitted.",
+      "error": "Your form is incomplete, please correct the errors."
     },
     "status-change-confirmation": {
       "title": "Status Change Confirmation",
@@ -1056,7 +1055,7 @@
     },
     "submit-confirmation": {
       "title": "Form Submitted",
-      "message": "Your access form was successfully submitted."
+      "message": "Your form was successfully submitted."
     },
     "profile" :{
       "title" : "User Profile",
