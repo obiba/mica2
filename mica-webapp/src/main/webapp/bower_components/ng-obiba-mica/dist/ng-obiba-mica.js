@@ -1159,10 +1159,13 @@ angular.module('obiba.mica.access')
               attachments: []
             };
           }
+          
+          $scope.loaded = true;
         },
         onError
         );
 
+      $scope.loaded = false;
       $scope.config = DataAccessRequestConfig.getOptions();
       $scope.validForm = true;
       $scope.requestId = $routeParams.id;
@@ -8124,7 +8127,7 @@ angular.module("access/views/data-access-request-form.html", []).run(["$template
     "\n" +
     "  <div ng-if=\"validForm\">\n" +
     "\n" +
-    "    <div class=\"pull-right\">\n" +
+    "    <div class=\"pull-right\" ng-if=\"loaded\">\n" +
     "      <a ng-click=\"cancel()\" type=\"button\" class=\"btn btn-default\">\n" +
     "        <span translate>cancel</span>\n" +
     "      </a>\n" +

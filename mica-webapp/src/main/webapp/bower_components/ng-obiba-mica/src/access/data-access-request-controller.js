@@ -635,10 +635,13 @@ angular.module('obiba.mica.access')
               attachments: []
             };
           }
+          
+          $scope.loaded = true;
         },
         onError
         );
 
+      $scope.loaded = false;
       $scope.config = DataAccessRequestConfig.getOptions();
       $scope.validForm = true;
       $scope.requestId = $routeParams.id;

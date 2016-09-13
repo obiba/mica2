@@ -16,7 +16,7 @@
 
   <div ng-if="validForm">
 
-    <div class="pull-right">
+    <div class="pull-right" ng-if="loaded">
       <a ng-click="cancel()" type="button" class="btn btn-default">
         <span translate>cancel</span>
       </a>
