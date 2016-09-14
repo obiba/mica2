@@ -6,7 +6,7 @@
  * @name app
  * @type {angular.Module}
  */
-var app = angular.module('app', ['schemaForm-datepicker', 'schemaForm-datetimepicker', 'schemaForm-timepicker'])
+var app = angular.module('app', ['schemaForm-datepicker', 'schemaForm-datetimepicker', 'schemaForm-timepicker', 'amMoment'])
 .controller('DateTimeController', function($scope){
   $scope.schema = {
     "type": "object",

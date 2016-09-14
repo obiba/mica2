@@ -1,6 +1,6 @@
 angular.module('schemaForm-datepicker', ['schemaForm', 'mgcrea.ngStrap.datepicker']).config(
-['schemaFormProvider', 'schemaFormDecoratorsProvider', 'sfPathProvider',
-  function(schemaFormProvider,  schemaFormDecoratorsProvider, sfPathProvider) {
+['schemaFormProvider', 'schemaFormDecoratorsProvider', 'sfPathProvider', '$provide',
+  function(schemaFormProvider,  schemaFormDecoratorsProvider, sfPathProvider, $provide) {
 
     var picker = function(name, schema, options) {
     if ((schema.type === 'string' || schema.type === 'number') && schema.format == 'datepicker') {
@@ -19,4 +19,10 @@ angular.module('schemaForm-datepicker', ['schemaForm', 'mgcrea.ngStrap.datepicke
     'directives/decorators/bootstrap/strap/datepicker.html');
     schemaFormDecoratorsProvider.createDirective('datepicker',
     'directives/decorators/bootstrap/strap/datepicker.html');
-  }]);
+  }])
+    .filter('sfDatePickerDefaultFormat', ['moment', function (moment) {
+      return function (dateStr, format) {
+        format = format || '';
+        return dateStr ? moment(dateStr, format.toUpperCase()).format('YYYY-MM-DD') : '';
+      };
+    }]);
