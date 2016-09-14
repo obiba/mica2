@@ -19,7 +19,7 @@
         <td>{{getProfileEmail(applicant)}}</td>
       </tr>
       <tr ng-repeat="attribute in applicant.attributes | filterProfileAttributes">
-        <th>{{attribute.key}}</th>
+        <th>{{attribute.key | translate}}</th>
         <td>{{attribute.value}}</td>
       </tr>
       </tbody>

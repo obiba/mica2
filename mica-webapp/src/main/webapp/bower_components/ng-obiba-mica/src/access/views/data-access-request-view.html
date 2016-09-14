@@ -18,7 +18,7 @@
     <div ng-if="validForm">
 
       <p class="help-block pull-left"><span translate>created-by</span>
-         <span ng-if="actions.canViewProfile('mica-user')">
+        <span ng-if="!actions.canViewProfile('mica-data-access-officer')">
            {{getFullName(dataAccessRequest.profile) || dataAccessRequest.applicant}}
         </span>
         <a href ng-click="userProfile(dataAccessRequest.profile)"
