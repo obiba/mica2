@@ -24,8 +24,8 @@
       data-date-type="{{form.dateOptions.dateType || 'string'}}"
       data-date-format="{{form.dateOptions.dateFormat || 'yyyy-MM-dd'}}"
       data-autoclose="{{form.dateOptions.autoclose}}"
-      data-min-date="{{form.dateOptions.minDateIsRef && (form.dateOptions.dateFormat === 'yyyy-MM-dd' || !form.dateOptions.dateFormat) ? model[form.dateOptions.minDate] : form.dateOptions.minDate}}"
-      data-max-date="{{form.dateOptions.maxDateIsRef && (form.dateOptions.dateFormat === 'yyyy-MM-dd' || !form.dateOptions.dateFormat) ? model[form.dateOptions.maxDate] : form.dateOptions.maxDate}}"
+      data-min-date="{{form.dateOptions.minDateIsRef ? (model[form.dateOptions.minDate] | sfDatePickerDefaultFormat : form.dateOptions.dateFormat) : form.dateOptions.minDate}}"
+      data-max-date="{{form.dateOptions.maxDateIsRef ? (model[form.dateOptions.maxDate] | sfDatePickerDefaultFormat : form.dateOptions.dateFormat) : form.dateOptions.maxDate}}"
       data-use-navitve="{{form.dateOptions.useNative || false}}"
       bs-datepicker />
     <span  ng-if="form.feedback !== false"
