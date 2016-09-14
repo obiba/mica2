@@ -28,7 +28,8 @@
     "coverage"
   ],
   "dependencies": {
-    "angular-strap": ">= 2.1.0"
+    "angular-strap": ">= 2.1.0",
+    "angular-moment": "0.10.3"
   },
   "devDependencies": {
     "angular-schema-form": ">= 0.7",
