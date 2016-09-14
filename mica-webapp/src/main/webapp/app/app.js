@@ -192,7 +192,9 @@ mica
               amMoment,
               $cookies) {
 
-      amMoment.changeLocale($cookies.get('NG_TRANSLATE_LANG_KEY').replace(/"/g, ''));
+      var langKey = $cookies.get('NG_TRANSLATE_LANG_KEY');
+      amMoment.changeLocale(langKey ? langKey.replace(/"/g, '') : 'en');
+
       var isSessionInitialized = false;
 
       function updateRedirect() {
