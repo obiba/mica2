@@ -194,11 +194,11 @@ class DatasetDtos {
 
   @NotNull
   Mica.DatasetVariableDto asDto(@NotNull DatasetVariable variable) {
-    return asDto(variable, Collections.emptyList());
+    return asDto(variable, Collections.emptyList(), "en");
   }
 
   @NotNull
-  Mica.DatasetVariableDto asDto(@NotNull DatasetVariable variable, @NotNull List<Taxonomy> taxonomies) {
+  Mica.DatasetVariableDto asDto(@NotNull DatasetVariable variable, @NotNull List<Taxonomy> taxonomies, String locale) {
     Mica.DatasetVariableDto.Builder builder = Mica.DatasetVariableDto.newBuilder() //
       .setId(variable.getId()) //
       .setDatasetId(variable.getDatasetId()) //
@@ -239,7 +239,7 @@ class DatasetDtos {
         .forEach(attribute -> builder.addAttributes(attributeDtos.asDto(attribute)));
       if(taxonomies != null) {
         taxonomies.forEach(taxonomy -> {
-          Mica.TermAttributesDto dto = asDto(taxonomy, variable.getAttributes());
+          Mica.TermAttributesDto dto = asDto(taxonomy, variable.getAttributes(), locale);
           if(dto.getVocabularyTermsCount() > 0) builder.addTermAttributes(dto);
         });
       }
@@ -267,9 +267,7 @@ class DatasetDtos {
     return builder.build();
   }
 
-  private Mica.TermAttributesDto asDto(Taxonomy taxonomy, Attributes attributes) {
-    // TODO Have a locale parameter
-    String locale = micaConfigService.getConfig().getLocalesAsString().get(0);
+  private Mica.TermAttributesDto asDto(Taxonomy taxonomy, Attributes attributes, String locale) {
     Mica.TermAttributesDto.Builder builder = Mica.TermAttributesDto.newBuilder() //
       .setTaxonomy(taxonomyDtos.asDto(taxonomy, locale));
 
