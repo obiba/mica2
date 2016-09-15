@@ -61,7 +61,7 @@ mica.study
       var onError = function() {
         $scope.loading = true;
       };
-      
+
       function refreshPage() {
         if($scope.pagination.current !== 1) {
           $scope.pagination.current = 1; //pageChanged event triggers reload
@@ -720,17 +720,17 @@ mica.study
         micaConfig.languages.forEach(function (lang) {
           $scope.tabs.push({lang: lang, labelKey: 'language.' + lang});
         });
-      });
 
-      StudyTaxonomyService.get(function() {
-        $scope.tabs.forEach(function (tab) {
-          $scope.selectionCriteriaGenders[tab.lang] = StudyTaxonomyService.getTerms('populations-selectionCriteria-gender', tab.lang).map(function (obj) {
-            return {id: obj.name, label: obj.label};
+        StudyTaxonomyService.get(function() {
+          $scope.tabs.forEach(function (tab) {
+            $scope.selectionCriteriaGenders[tab.lang] = StudyTaxonomyService.getTerms('populations-selectionCriteria-gender', tab.lang).map(function (obj) {
+              return {id: obj.name, label: obj.label};
+            });
+            $scope.availableSelectionCriteria[tab.lang] = StudyTaxonomyService.getTerms('populations-selectionCriteria-criteria', tab.lang);
+            $scope.recruitmentSourcesTypes[tab.lang] = StudyTaxonomyService.getTerms('populations-recruitment-dataSources', tab.lang);
+            $scope.generalPopulationTypes[tab.lang] = StudyTaxonomyService.getTerms('populations-recruitment-generalPopulationSources', tab.lang);
+            $scope.specificPopulationTypes[tab.lang] = StudyTaxonomyService.getTerms('populations-recruitment-specificPopulationSources', tab.lang);
           });
-          $scope.availableSelectionCriteria[tab.lang] = StudyTaxonomyService.getTerms('populations-selectionCriteria-criteria', tab.lang);
-          $scope.recruitmentSourcesTypes[tab.lang] = StudyTaxonomyService.getTerms('populations-recruitment-dataSources', tab.lang);
-          $scope.generalPopulationTypes[tab.lang] = StudyTaxonomyService.getTerms('populations-recruitment-generalPopulationSources', tab.lang);
-          $scope.specificPopulationTypes[tab.lang] = StudyTaxonomyService.getTerms('populations-recruitment-specificPopulationSources', tab.lang);
         });
       });
 
@@ -877,6 +877,9 @@ mica.study
               StudyTaxonomyService
     ) {
       $scope.dce = {};
+      $scope.bioSamples = {};
+      $scope.dataSources = {};
+      $scope.administrativeDatabases = {};
       $scope.fileTypes = '.doc, .docx, .odm, .odt, .gdoc, .pdf, .txt  .xml  .xls, .xlsx, .ppt';
       $scope.defaultMinYear = 1900;
       $scope.defaultMaxYear = new Date().getFullYear() + 200;
@@ -922,17 +925,9 @@ mica.study
 
             $scope.population.dataCollectionEvents.push($scope.dce);
           }
+
           $scope.attachments =
             $scope.dce.attachments && $scope.dce.attachments.length > 0 ? $scope.dce.attachments : [];
-
-
-          StudyTaxonomyService.get(function() {
-            var lang = $scope.tabs[$scope.activeTab].lang;
-            $scope.dataSources = StudyTaxonomyService.getTerms('populations-dataCollectionEvents-dataSources', lang);
-            $scope.bioSamples = StudyTaxonomyService.getTerms('populations-dataCollectionEvents-bioSamples', lang);
-            $scope.administrativeDatabases = StudyTaxonomyService.getTerms('populations-dataCollectionEvents-administrativeDatabases', lang);
-          });
-
         } else {
           // TODO add error popup
           $log.error('Failed to retrieve population.');
@@ -943,6 +938,13 @@ mica.study
         $scope.tabs = [];
         micaConfig.languages.forEach(function (lang) {
           $scope.tabs.push({lang: lang, labelKey: 'language.' + lang});
+        });
+
+        StudyTaxonomyService.get(function() {
+          var lang = $scope.tabs[$scope.activeTab].lang;
+          $scope.dataSources = StudyTaxonomyService.getTerms('populations-dataCollectionEvents-dataSources', lang);
+          $scope.bioSamples = StudyTaxonomyService.getTerms('populations-dataCollectionEvents-bioSamples', lang);
+          $scope.administrativeDatabases = StudyTaxonomyService.getTerms('populations-dataCollectionEvents-administrativeDatabases', lang);
         });
       });
 
@@ -1082,7 +1084,7 @@ mica.study
           $scope.tabs.push({lang: lang});
           $scope.languages.push(lang);
         });
-        
+
         initializeTaxonomies();
       });
 
