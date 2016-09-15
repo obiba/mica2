@@ -11,8 +11,10 @@
 package org.obiba.mica.dataset.search.rest.variable;
 
 import javax.inject.Inject;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.QueryParam;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.dataset.DatasetVariableResource;
@@ -43,7 +45,9 @@ public class PublishedDatasetVariableResource {
   private ApplicationContext applicationContext;
 
   @Path("/variable/{id}")
-  public DatasetVariableResource getVariable(@PathParam("id") String id) {
+  public DatasetVariableResource getVariable(@PathParam("id") String id,
+    @QueryParam("locale") @DefaultValue("en") String locale) {
+
     DatasetVariableResource resource = null;
     DatasetVariable.IdResolver resolver = DatasetVariable.IdResolver.from(id);
     switch(resolver.getType()) {
@@ -54,6 +58,7 @@ public class PublishedDatasetVariableResource {
       case Dataschema:
         if (!harmonizationDatasetService.isPublished(resolver.getDatasetId())) throw NoSuchDatasetException.withId(resolver.getDatasetId());
         resource = applicationContext.getBean(PublishedDataschemaDatasetVariableResource.class);
+        ((PublishedDataschemaDatasetVariableResource)resource).setLocale(locale);
         break;
       case Harmonized:
         if (!harmonizationDatasetService.isPublished(resolver.getDatasetId())) throw NoSuchDatasetException.withId(resolver.getDatasetId());
