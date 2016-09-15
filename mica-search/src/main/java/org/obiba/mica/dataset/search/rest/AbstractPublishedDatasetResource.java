@@ -72,6 +72,8 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
   @Inject
   protected OpalService opalService;
 
+  private String locale;
+
   protected T getDataset(Class<T> clazz, @NotNull String datasetId) throws NoSuchDatasetException {
     QueryBuilder query = QueryBuilders.queryStringQuery(clazz.getSimpleName()).field("className");
     query = QueryBuilders.boolQuery().must(query)
@@ -218,7 +220,8 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
   protected Mica.DatasetVariableDto getDatasetVariableDto(@NotNull String datasetId, @NotNull String variableName,
     DatasetVariable.Type variableType, @Nullable String studyId, @Nullable String project, @Nullable String table) {
     return dtos
-      .asDto(getDatasetVariable(datasetId, variableName, variableType, studyId, project, table), getTaxonomies());
+      .asDto(getDatasetVariable(datasetId, variableName, variableType, studyId, project, table), getTaxonomies(),
+        getLocale());
   }
 
   protected Mica.DatasetVariableSummaryDto getDatasetVariableSummaryDto(@NotNull String datasetId,
@@ -273,6 +276,14 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
       log.error("Failed retrieving {}", DatasetVariable.class.getSimpleName(), e);
       throw new NoSuchVariableException(variableName);
     }
+  }
+
+  public String getLocale() {
+    return locale;
+  }
+
+  public void setLocale(String value) {
+    locale = value;
   }
 
   protected static class QueryStringBuilder {
