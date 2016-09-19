@@ -12,14 +12,13 @@ package org.obiba.mica.core.domain;
 
 import java.io.Serializable;
 
-import javax.validation.constraints.NotNull;
-
 import com.google.common.base.MoreObjects;
 
 /**
- * Represents
+ * Represents a opal table that is associated to a {@link org.obiba.mica.study.domain.Study}
+ * {@link org.obiba.mica.study.domain.Population} {@link org.obiba.mica.study.domain.DataCollectionEvent}.
  */
-public class StudyTable implements Serializable {
+public class StudyTable extends OpalTable implements Serializable {
 
   private static final long serialVersionUID = -2466526849186256653L;
 
@@ -28,16 +27,6 @@ public class StudyTable implements Serializable {
   private String populationId;
 
   private String dataCollectionEventId;
-
-  @NotNull
-  private String project;
-
-  @NotNull
-  private String table;
-
-  private LocalizedString name;
-
-  private LocalizedString description;
 
   /**
    * {@link org.obiba.mica.study.domain.DataCollectionEvent} unique ID (including {@link org.obiba.mica.study.domain.Study} ID
@@ -82,40 +71,8 @@ public class StudyTable implements Serializable {
     this.dataCollectionEventId = dataCollectionEventId;
   }
 
-  public String getProject() {
-    return project;
-  }
-
-  public void setProject(String project) {
-    this.project = project;
-  }
-
-  public String getTable() {
-    return table;
-  }
-
-  public void setTable(String table) {
-    this.table = table;
-  }
-
-  public void setName(LocalizedString name) {
-    this.name = name;
-  }
-
-  public LocalizedString getName() {
-    return name;
-  }
-
-  public void setDescription(LocalizedString description) {
-    this.description = description;
-  }
-
-  public LocalizedString getDescription() {
-    return description;
-  }
-
   public boolean isFor(String studyId, String project, String table) {
-    return this.studyId.equals(studyId) && this.project.equals(project) && this.table.equals(table);
+    return this.studyId.equals(studyId) && getProject().equals(project) && getTable().equals(table);
   }
 
   public boolean appliesTo(String studyId, String populationId, String dataCollectionEventId) {
@@ -125,7 +82,7 @@ public class StudyTable implements Serializable {
 
   @Override
   public String toString() {
-    return MoreObjects.toStringHelper(this).add("project", project).add("table", table)
+    return MoreObjects.toStringHelper(this).add("project", getProject()).add("table", getTable())
       .add("dceId", getDataCollectionEventUId()).toString();
   }
 }
