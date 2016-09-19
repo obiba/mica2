@@ -10,14 +10,14 @@
 
 package org.obiba.mica.core.domain;
 
-import com.google.common.base.MoreObjects;
-
 import java.io.Serializable;
 
+import com.google.common.base.MoreObjects;
+
 /**
- * Represents a opal {@link Table} that is associated to a {@link org.obiba.mica.network.domain.Network}.
+ * Represents a opal {@link OpalTable} that is associated to a {@link org.obiba.mica.network.domain.Network}.
  */
-public class NetworkTable extends Table implements Serializable {
+public class NetworkTable extends OpalTable implements Serializable {
 
   private static final long serialVersionUID = -8902121703886344210L;
 

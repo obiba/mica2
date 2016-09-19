@@ -15,7 +15,7 @@ import javax.validation.constraints.NotNull;
 /**
  * Represents a table in opal.
  */
-public class Table {
+public class OpalTable {
 
     @NotNull
     private String project;
@@ -26,6 +26,8 @@ public class Table {
     private LocalizedString name;
 
     private LocalizedString description;
+
+    private int weight;
 
     public String getProject() {
         return project;
@@ -59,4 +61,11 @@ public class Table {
         return description;
     }
 
+  public int getWeight() {
+    return weight;
+  }
+
+  public void setWeight(int weight) {
+    this.weight = weight;
+  }
 }

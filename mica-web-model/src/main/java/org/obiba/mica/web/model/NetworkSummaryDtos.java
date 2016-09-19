@@ -45,6 +45,12 @@ class NetworkSummaryDtos {
   private EntityStateDtos entityStateDtos;
 
   @NotNull
+  public Mica.NetworkSummaryDto asDto(@NotNull String id, boolean asDraft) {
+    Network network = networkService.findById(id);
+    return asDto(network, asDraft);
+  }
+
+  @NotNull
   public Mica.NetworkSummaryDto asDto(@NotNull Network network, boolean asDraft) {
     Mica.NetworkSummaryDto.Builder builder = Mica.NetworkSummaryDto.newBuilder();
     NetworkState networkState = networkService.getEntityState(network.getId());
