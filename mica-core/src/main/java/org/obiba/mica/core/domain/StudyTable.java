@@ -12,15 +12,13 @@ package org.obiba.mica.core.domain;
 
 import java.io.Serializable;
 
-import javax.validation.constraints.NotNull;
-
 import com.google.common.base.MoreObjects;
 
 /**
  * Represents a opal table that is associated to a {@link org.obiba.mica.study.domain.Study}
  * {@link org.obiba.mica.study.domain.Population} {@link org.obiba.mica.study.domain.DataCollectionEvent}.
  */
-public class StudyTable extends Table implements Serializable {
+public class StudyTable extends OpalTable implements Serializable {
 
   private static final long serialVersionUID = -2466526849186256653L;
 

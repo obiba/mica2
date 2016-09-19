@@ -18,6 +18,7 @@ import java.util.Map;
 
 import javax.validation.constraints.NotNull;
 
+import org.obiba.mica.core.domain.NetworkTable;
 import org.obiba.mica.core.domain.StudyTable;
 
 /**
@@ -31,6 +32,8 @@ public class HarmonizationDataset extends Dataset {
    * Tables that implement the harmonization.
    */
   private List<StudyTable> studyTables;
+
+  private List<NetworkTable> networkTables;
 
   /**
    * Linked network.
@@ -60,6 +63,18 @@ public class HarmonizationDataset extends Dataset {
 
   public void setStudyTables(List<StudyTable> studyTables) {
     this.studyTables = studyTables;
+  }
+
+  public List<NetworkTable> getNetworkTables() {
+    return networkTables == null ? networkTables = new ArrayList<>() : networkTables;
+  }
+
+  public void setNetworkTables(List<NetworkTable> networkTables) {
+    this.networkTables = networkTables;
+  }
+
+  public void addNetworkTable(NetworkTable networkTable) {
+    getNetworkTables().add(networkTable);
   }
 
   public String getProject() {

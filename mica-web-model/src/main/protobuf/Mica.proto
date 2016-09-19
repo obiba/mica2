@@ -491,16 +491,29 @@ message DatasetDto {
 
   extensions 1000 to max;
 
+  message NetworkTableDto {
+    required string project = 1;
+    required string table = 2;
+    repeated LocalizedStringDto name = 3;
+    repeated LocalizedStringDto description = 4;
+
+    required string networkId = 5;
+    optional NetworkSummaryDto networkSummary = 6;
+    optional int32 weight = 7;
+  }
+
   message StudyTableDto {
-    required string studyId = 1;
-    required string populationId = 2;
-    required string dataCollectionEventId = 3;
-    required string project = 4;
-    required string table = 5;
-    optional string dceId = 6;
-    repeated LocalizedStringDto name = 7;
-    repeated LocalizedStringDto description = 8;
+    required string project = 1;
+    required string table = 2;
+    repeated LocalizedStringDto name = 3;
+    repeated LocalizedStringDto description = 4;
+
+    required string studyId = 5;
+    required string populationId = 6;
+    required string dataCollectionEventId = 7;
+    optional string dceId = 8;
     optional StudySummaryDto studySummary = 9;
+    optional int32 weight = 10;
   }
 }
 
@@ -518,6 +531,7 @@ message HarmonizationDatasetDto {
   required string table = 2;
   repeated DatasetDto.StudyTableDto studyTables = 3;
   optional string networkId = 4;
+  repeated DatasetDto.NetworkTableDto networkTables = 5;
   extensions 1000 to max;
 
   extend DatasetDto {
