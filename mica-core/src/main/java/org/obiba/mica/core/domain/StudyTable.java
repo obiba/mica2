@@ -71,10 +71,6 @@ public class StudyTable extends OpalTable implements Serializable {
     this.dataCollectionEventId = dataCollectionEventId;
   }
 
-  public boolean isFor(String studyId, String project, String table) {
-    return this.studyId.equals(studyId) && getProject().equals(project) && getTable().equals(table);
-  }
-
   public boolean appliesTo(String studyId, String populationId, String dataCollectionEventId) {
     return this.studyId.equals(studyId) && this.populationId.equals(populationId) &&
       this.dataCollectionEventId.equals(dataCollectionEventId);
@@ -84,5 +80,10 @@ public class StudyTable extends OpalTable implements Serializable {
   public String toString() {
     return MoreObjects.toStringHelper(this).add("project", getProject()).add("table", getTable())
       .add("dceId", getDataCollectionEventUId()).toString();
+  }
+
+  @Override
+  protected String getEntityId() {
+    return studyId;
   }
 }

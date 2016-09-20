@@ -15,51 +15,51 @@ import javax.validation.constraints.NotNull;
 /**
  * Represents a table in opal.
  */
-public class OpalTable {
+public abstract class OpalTable {
 
-    @NotNull
-    private String project;
+  @NotNull
+  private String project;
 
-    @NotNull
-    private String table;
+  @NotNull
+  private String table;
 
-    private LocalizedString name;
+  private LocalizedString name;
 
-    private LocalizedString description;
+  private LocalizedString description;
 
-    private int weight;
+  private int weight;
 
-    public String getProject() {
-        return project;
-    }
+  public String getProject() {
+    return project;
+  }
 
-    public void setProject(String project) {
-        this.project = project;
-    }
+  public void setProject(String project) {
+    this.project = project;
+  }
 
-    public String getTable() {
-        return table;
-    }
+  public String getTable() {
+    return table;
+  }
 
-    public void setTable(String table) {
-        this.table = table;
-    }
+  public void setTable(String table) {
+    this.table = table;
+  }
 
-    public void setName(LocalizedString name) {
-        this.name = name;
-    }
+  public void setName(LocalizedString name) {
+    this.name = name;
+  }
 
-    public LocalizedString getName() {
-        return name;
-    }
+  public LocalizedString getName() {
+    return name;
+  }
 
-    public void setDescription(LocalizedString description) {
-        this.description = description;
-    }
+  public void setDescription(LocalizedString description) {
+    this.description = description;
+  }
 
-    public LocalizedString getDescription() {
-        return description;
-    }
+  public LocalizedString getDescription() {
+    return description;
+  }
 
   public int getWeight() {
     return weight;
@@ -68,4 +68,10 @@ public class OpalTable {
   public void setWeight(int weight) {
     this.weight = weight;
   }
+
+  public boolean isFor(String entityId, String project, String table) {
+    return getEntityId().equals(entityId) && getProject().equals(project) && getTable().equals(table);
+  }
+
+  protected abstract String getEntityId();
 }

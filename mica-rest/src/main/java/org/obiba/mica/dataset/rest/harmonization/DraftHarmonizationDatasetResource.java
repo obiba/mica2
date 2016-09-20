@@ -27,10 +27,12 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
+import com.codahale.metrics.annotation.Timed;
+import com.google.common.collect.ImmutableList;
 import org.obiba.mica.AbstractGitPersistableResource;
+import org.obiba.mica.core.domain.OpalTable;
 import org.obiba.mica.core.domain.PublishCascadingScope;
 import org.obiba.mica.core.domain.RevisionStatus;
-import org.obiba.mica.core.domain.StudyTable;
 import org.obiba.mica.core.service.AbstractGitPersistableService;
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
@@ -44,9 +46,6 @@ import org.obiba.opal.web.model.Search;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-
-import com.codahale.metrics.annotation.Timed;
-import com.google.common.collect.ImmutableList;
 
 @Component
 @Scope("request")
@@ -159,7 +158,7 @@ public class DraftHarmonizationDatasetResource extends
     subjectAclService.checkPermission("/draft/harmonization-dataset", "VIEW", id);
     ImmutableList.Builder<Search.QueryResultDto> builder = ImmutableList.builder();
     HarmonizationDataset dataset = getDataset();
-    for(StudyTable table : dataset.getStudyTables()) {
+    for(OpalTable table : dataset.getAllOpalTables()) {
       builder.add(datasetService.getFacets(query, table));
     }
     return builder.build();

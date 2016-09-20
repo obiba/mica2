@@ -19,9 +19,12 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
+import com.google.common.base.Strings;
+import com.google.common.collect.Maps;
 import org.obiba.mica.JSONUtils;
 import org.obiba.mica.core.domain.Attributes;
 import org.obiba.mica.core.domain.NetworkTable;
+import org.obiba.mica.core.domain.OpalTable;
 import org.obiba.mica.core.domain.StudyTable;
 import org.obiba.mica.dataset.HarmonizationDatasetStateRepository;
 import org.obiba.mica.dataset.StudyDatasetStateRepository;
@@ -42,9 +45,6 @@ import org.obiba.opal.core.domain.taxonomy.Vocabulary;
 import org.obiba.opal.web.model.Math;
 import org.obiba.opal.web.model.Search;
 import org.springframework.stereotype.Component;
-
-import com.google.common.base.Strings;
-import com.google.common.collect.Maps;
 
 
 @Component
@@ -193,6 +193,9 @@ class DatasetDtos {
     if(resolver.hasStudyId()) {
       builder.setStudyId(resolver.getStudyId());
     }
+    if(resolver.hasNetworkId()) {
+      builder.setNetworkId(resolver.getNetworkId());
+    }
     if(resolver.hasProject()) {
       builder.setProject(resolver.getProject());
     }
@@ -264,7 +267,7 @@ class DatasetDtos {
   }
 
   @NotNull
-  Mica.DatasetVariableSummaryDto asSummaryDto(@NotNull DatasetVariable variable, StudyTable studyTable) {
+  Mica.DatasetVariableSummaryDto asSummaryDto(@NotNull DatasetVariable variable, OpalTable opalTable) {
     Mica.DatasetVariableSummaryDto.Builder builder = Mica.DatasetVariableSummaryDto.newBuilder() //
       .setResolver(asDto(DatasetVariable.IdResolver.from(variable.getId())));
 
@@ -273,7 +276,10 @@ class DatasetDtos {
         .forEach(attribute -> builder.addAttributes(attributeDtos.asDto(attribute)));
     }
 
-    builder.setStudyTable(asDto(studyTable));
+    if (opalTable instanceof StudyTable)
+      builder.setStudyTable(asDto((StudyTable) opalTable));
+    else if (opalTable instanceof NetworkTable)
+      builder.setNetworkTable(asDto((NetworkTable) opalTable));
 
     return builder.build();
   }
@@ -349,7 +355,7 @@ class DatasetDtos {
     return sbuilder;
   }
 
-  public Mica.DatasetVariableAggregationDto.Builder asDto(@NotNull StudyTable studyTable,
+  public Mica.DatasetVariableAggregationDto.Builder asDto(@NotNull OpalTable opalTable,
     @Nullable Math.SummaryStatisticsDto summary) {
     Mica.DatasetVariableAggregationDto.Builder aggDto = Mica.DatasetVariableAggregationDto.newBuilder();
 
@@ -369,7 +375,11 @@ class DatasetDtos {
       aggDto = asDto(summary.getExtension(Math.BinarySummaryDto.binarySummary));
     }
 
-    aggDto.setStudyTable(asDto(studyTable));
+    if(opalTable instanceof StudyTable)
+      aggDto.setStudyTable(asDto((StudyTable) opalTable));
+    else if (opalTable instanceof NetworkTable)
+      aggDto.setNetworkTable(asDto((NetworkTable) opalTable));
+
 
     return aggDto;
   }
@@ -393,10 +403,15 @@ class DatasetDtos {
     return sbuilder;
   }
 
-  public Mica.DatasetVariableContingencyDto.Builder asContingencyDto(@NotNull StudyTable studyTable,
+  public Mica.DatasetVariableContingencyDto.Builder asContingencyDto(@NotNull OpalTable opalTable,
     DatasetVariable variable, DatasetVariable crossVariable, @Nullable Search.QueryResultDto results) {
     Mica.DatasetVariableContingencyDto.Builder crossDto = Mica.DatasetVariableContingencyDto.newBuilder();
-    crossDto.setStudyTable(asDto(studyTable, true));
+
+    if(opalTable instanceof StudyTable)
+      crossDto.setStudyTable(asDto((StudyTable) opalTable, true));
+    else if (opalTable instanceof NetworkTable)
+      crossDto.setNetworkTable(asDto((NetworkTable) opalTable, true));
+
     Mica.DatasetVariableAggregationDto.Builder allAggBuilder = Mica.DatasetVariableAggregationDto.newBuilder();
 
     if(results == null) {
