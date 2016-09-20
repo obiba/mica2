@@ -38,6 +38,14 @@ mica.network
           return angular.toJson(network);
         }},
         'delete': {method: 'DELETE', params: {id: '@id'}, errorHandler: true},
+        'get': {method: 'GET', errorHandler: true},
+        'projects': {method: 'GET', params: {id: '@id'}, errorHandler: true}
+      });
+    }])
+
+  .factory('DraftNetworkProjectsResource', ['$resource',
+    function ($resource) {
+      return $resource('ws/draft/network/:id/projects', {}, {
         'get': {method: 'GET', errorHandler: true}
       });
     }])

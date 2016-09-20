@@ -22,56 +22,8 @@
     <div class="modal-body">
 
       <p class="alert alert-danger" ng-show="form.saveAttempted && form.$invalid" translate="">fix-error</p>
-
-      <p class="help-block" translate>dataset.study-table.info</p>
-
-      <h4 translate>dataset.study-dce.title</h4>
-
-      <p class="help-block" translate>dataset.study-dce.info</p>
-
-      <div class="form-group">
-        <label class="control-label">
-          <span translate>study.label</span>
-          <span>*</span>
-        </label>
-        <ui-select theme="bootstrap" ng-model="selected.study" reset-search-input="true" required="true">
-          <ui-select-match>{{$select.selected.id}}</ui-select-match>
-          <ui-select-choices repeat="study in studies| filter: {id: $select.search}">
-            <span ng-bind-html="study.id | highlight: $select.search"></span>
-          </ui-select-choices>
-        </ui-select>
-      </div>
-
-      <div class="row">
-        <div class="col-md-6">
-          <div class="form-group">
-            <label class="control-label">
-              <span translate>study.population</span>
-              <span>*</span>
-            </label>
-            <ui-select theme="bootstrap" ng-model="selected.study.population" reset-search-input="true" required="true">
-              <ui-select-match>{{$select.selected.id}}</ui-select-match>
-              <ui-select-choices repeat="population in selected.study.populationSummaries | filter: $select.search">
-                <span ng-bind-html="population.id | highlight: $select.search"></span> - <span ng-bind-html="population.name[0].value | highlight: $select.search"></span>
-              </ui-select-choices>
-            </ui-select>
-          </div>
-        </div>
-        <div class="col-md-6">
-          <div class="form-group">
-            <label class="control-label">
-              <span translate>study.data-collection-event</span>
-              <span>*</span>
-            </label>
-            <ui-select theme="bootstrap" ng-model="selected.study.population.dataCollectionEvent" reset-search-input="true" required="true">
-              <ui-select-match>{{$select.selected.id}}</ui-select-match>
-              <ui-select-choices repeat="population in selected.study.population.dataCollectionEventSummaries | filter: $select.search">
-                <span ng-bind-html="population.id | highlight: $select.search"></span> - <span ng-bind-html="population.name[0].value | highlight: $select.search"></span>
-              </ui-select-choices>
-            </ui-select>
-          </div>
-        </div>
-      </div>
+      <network-table-modal-form-section ng-if="type === 'networkTable'"></network-table-modal-form-section>
+      <study-table-modal-form-section ng-if="type === 'studyTable'"></study-table-modal-form-section>
 
       <h4 translate>dataset.datasource.title</h4>
 
@@ -110,9 +62,9 @@
 
       <h4 translate>dataset.options</h4>
 
-      <div localized-input name="studyTable.name" model="studyTable.name" label="dataset.table-name" lang="tab.lang"></div>
+      <div localized-input name="studyTable.name" model="table.name" label="dataset.table-name" lang="tab.lang"></div>
 
-      <div localized-textarea name="studyTable.description" model="studyTable.description" label="dataset.table-description" lang="tab.lang"></div>
+      <div localized-textarea name="studyTable.description" model="table.description" label="dataset.table-description" lang="tab.lang"></div>
 
     </div>
 

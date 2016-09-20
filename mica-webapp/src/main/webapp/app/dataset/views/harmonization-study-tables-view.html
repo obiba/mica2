@@ -1,0 +1,44 @@
+<div>
+  <h3 translate ng-show="dataset['obiba.mica.HarmonizationDatasetDto.type']">dataset.study-tables.title</h3>
+  <div class="table-responsive">
+    <table class="table table-bordered table-striped" ng-show="dataset['obiba.mica.HarmonizationDatasetDto.type']">
+      <thead>
+      <tr>
+        <th translate>study.label</th>
+        <th translate>type</th>
+        <th translate>dataset.project</th>
+        <th translate>dataset.table</th>
+        <th translate>dataset.table-name</th>
+        <th translate>dataset.table-description</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr ng-repeat="wrapper in opalTables">
+        <td>
+          <a ng-show="wrapper.type === 'studyTable'" ng-href="#/study/{{wrapper.table.studyId}}">
+            {{wrapper.table.studyId}}
+          </a>
+          <a ng-show="wrapper.type === 'networkTable'" ng-href="#/study/{{wrapper.table.networkId}}">
+            {{wrapper.table.networkId}}
+          </a>
+        </td>
+        <td>
+          {{(wrapper.type === 'studyTable' ? 'study.label' : 'network.label') | translate}}
+        </td>
+        <td>
+          {{wrapper.table.project}}
+        </td>
+        <td>
+          {{wrapper.table.table}}
+        </td>
+        <td>
+          <localized value="wrapper.table.name" lang="tab.lang"></localized>
+        </td>
+        <td>
+          <localized value="wrapper.table.description" lang="tab.lang"></localized>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

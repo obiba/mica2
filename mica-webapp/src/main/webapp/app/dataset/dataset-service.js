@@ -205,6 +205,37 @@ mica.dataset
       };
     }])
 
+  .service('OpalTablesService', [function() {
+
+    this.getTables = function getOpalTables(dataset) {
+      var tableWrappers = [];
+
+      if (dataset['obiba.mica.HarmonizationDatasetDto.type'].studyTables) {
+        tableWrappers = dataset['obiba.mica.HarmonizationDatasetDto.type'].studyTables.map(function (studyTable) {
+          return {type: mica.dataset.OPAL_TABLE_TYPES.STUDY_TABLE, table: studyTable};
+        });
+      }
+
+      if (dataset['obiba.mica.HarmonizationDatasetDto.type'].networkTables) {
+        tableWrappers = tableWrappers.concat(
+          dataset['obiba.mica.HarmonizationDatasetDto.type'].networkTables.map(function (networkTable) {
+            return {type: mica.dataset.OPAL_TABLE_TYPES.NETWORK_TABLE, table: networkTable};
+          })
+        );
+      }
+
+      return tableWrappers.sort(function(a,b){
+        return a.table.weight - b.table.weight;
+      });
+    };
+
+    this.updateWeights = function(opalTables) {
+      for (var i = 0; i < opalTables.length;  i++) {
+        opalTables[i].table.weight = i;
+      }
+    };
+  }])
+
   .service('DatasetModelService',[function() {
     this.serialize = function(dataset) {
       var datasetCopy = angular.copy(dataset);
@@ -212,12 +243,12 @@ mica.dataset
       delete datasetCopy.model; // NOTICE: must be removed to avoid protobuf exception in dto.
       return angular.toJson(datasetCopy);
     };
-    
+
     this.deserialize = function(data) {
       var dataset = angular.fromJson(data);
       dataset.model = dataset.content ? angular.fromJson(dataset.content) : {};
       return dataset;
     };
-    
+
     return this;
   }]);
