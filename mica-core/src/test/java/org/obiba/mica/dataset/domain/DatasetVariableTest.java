@@ -22,7 +22,7 @@ public class DatasetVariableTest {
         DatasetVariable.Type.Dataschema, null);
     checkIdResolver("53c3ef8804a61f0e17f6fe78:LAB_TSC:Study", "53c3ef8804a61f0e17f6fe78", "LAB_TSC",
         DatasetVariable.Type.Study, null);
-    checkIdResolver("53c3ef8804a61f0e17f6fe78:LAB_TSC:Harmonized:53c3ef8704a61f0e17f6fe72", "53c3ef8804a61f0e17f6fe78", "LAB_TSC",
+    checkIdResolver("53c3ef8804a61f0e17f6fe78:LAB_TSC:Harmonized:Study:53c3ef8704a61f0e17f6fe72", "53c3ef8804a61f0e17f6fe78", "LAB_TSC",
         DatasetVariable.Type.Harmonized, "53c3ef8704a61f0e17f6fe72");
   }
 

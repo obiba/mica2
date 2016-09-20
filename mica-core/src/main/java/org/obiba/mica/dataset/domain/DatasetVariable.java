@@ -16,6 +16,9 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import org.obiba.magma.Variable;
 import org.obiba.magma.support.VariableNature;
 import org.obiba.mica.core.domain.Attribute;
@@ -23,11 +26,10 @@ import org.obiba.mica.core.domain.AttributeAware;
 import org.obiba.mica.core.domain.Attributes;
 import org.obiba.mica.core.domain.Indexable;
 import org.obiba.mica.core.domain.LocalizedString;
+import org.obiba.mica.core.domain.NetworkTable;
+import org.obiba.mica.core.domain.OpalTable;
 import org.obiba.mica.core.domain.StudyTable;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
 
 public class DatasetVariable implements Indexable, AttributeAware {
 
@@ -38,6 +40,8 @@ public class DatasetVariable implements Indexable, AttributeAware {
   public static final String HMAPPING_NAME = "H" + MAPPING_NAME;
 
   private static final String ID_SEPARATOR = ":";
+  public static final String OPAL_STUDY_TABLE_PREFIX = "Study";
+  public static final String OPAL_NETWORK_TABLE_PREFIX = "Network";
 
   public enum Type {
     Study,       // variable extracted from a study dataset
@@ -45,14 +49,21 @@ public class DatasetVariable implements Indexable, AttributeAware {
     Harmonized   // variable that implements a Datashema variable
   }
 
+  public enum OpalTableType {
+    Study,
+    Network
+  }
+
   @NotNull
   private String datasetId;
 
   private String networkId;
 
-  private List<String> studyIds;
+  private List<String> networkTableIds = Lists.newArrayList();
 
-  private List<String> dceIds;
+  private List<String> studyIds = Lists.newArrayList();
+
+  private List<String> dceIds = Lists.newArrayList();
 
   private Type variableType;
 
@@ -84,6 +95,8 @@ public class DatasetVariable implements Indexable, AttributeAware {
 
   private String table;
 
+  private OpalTableType opalTableType;
+
   @NotNull
   private LocalizedString datasetAcronym;
 
@@ -100,26 +113,36 @@ public class DatasetVariable implements Indexable, AttributeAware {
 
   public DatasetVariable(HarmonizationDataset dataset, Variable variable) {
     this(dataset, Type.Dataschema, variable);
-    studyIds = Lists.newArrayList();
 
     dataset.getStudyTables().forEach(table -> {
       if(!studyIds.contains(table.getStudyId())) studyIds.add(table.getStudyId());
     });
 
+    dataset.getNetworkTables().forEach(table -> {
+      if(!networkTableIds.contains(table.getNetworkId())) networkTableIds.add(table.getNetworkId());
+    });
+
     networkId = dataset.getNetworkId();
 
-    dceIds = Lists.newArrayList();
     dataset.getStudyTables().forEach(table -> {
       if(!dceIds.contains(table.getDataCollectionEventUId())) dceIds.add(table.getDataCollectionEventUId());
     });
   }
 
-  public DatasetVariable(HarmonizationDataset dataset, Variable variable, StudyTable studyTable) {
+  public DatasetVariable(HarmonizationDataset dataset, Variable variable, OpalTable opalTable) {
     this(dataset, Type.Harmonized, variable);
-    studyIds = Lists.newArrayList(studyTable.getStudyId());
-    dceIds = Lists.newArrayList(studyTable.getDataCollectionEventUId());
-    project = studyTable.getProject();
-    table = studyTable.getTable();
+
+    if(opalTable instanceof StudyTable) {
+      studyIds = Lists.newArrayList(((StudyTable) opalTable).getStudyId());
+      dceIds = Lists.newArrayList(((StudyTable) opalTable).getDataCollectionEventUId());
+      opalTableType = OpalTableType.Study;
+    } else {
+      networkTableIds = Lists.newArrayList(((NetworkTable) opalTable).getNetworkId());
+      opalTableType = OpalTableType.Network;
+    }
+
+    project = opalTable.getProject();
+    table = opalTable.getTable();
   }
 
   private DatasetVariable(Dataset dataset, Type type, Variable variable) {
@@ -137,9 +160,11 @@ public class DatasetVariable implements Indexable, AttributeAware {
     occurrenceGroup = variable.getOccurrenceGroup();
     nature = VariableNature.getNature(variable).name();
     index = variable.getIndex();
+
     if(variable.hasCategories()) {
       categories = variable.getCategories().stream().map(DatasetCategory::new).collect(Collectors.toList());
     }
+
     if(variable.hasAttributes()) {
       for(org.obiba.magma.Attribute attr : variable.getAttributes()) {
         addAttribute(Attribute.Builder.newAttribute(attr).build());
@@ -150,18 +175,27 @@ public class DatasetVariable implements Indexable, AttributeAware {
   @Override
   public String getId() {
     String id = datasetId + ID_SEPARATOR + name + ID_SEPARATOR + variableType;
+
     if(Type.Harmonized == variableType) {
-      id = id + ID_SEPARATOR + studyIds.get(0) + ID_SEPARATOR + project + ID_SEPARATOR + table;
+      String entityId = opalTableType == OpalTableType.Study ? studyIds.get(0) : networkTableIds.get(0);
+      String tableType = opalTableType == OpalTableType.Study ? OPAL_STUDY_TABLE_PREFIX : OPAL_NETWORK_TABLE_PREFIX;
+
+      id = id + ID_SEPARATOR + tableType + ID_SEPARATOR + entityId + ID_SEPARATOR + project + ID_SEPARATOR + table;
     }
+
     return id;
   }
 
   public void setId(String id) {
     IdResolver resolver = IdResolver.from(id);
+
     variableType = resolver.getType();
     datasetId = resolver.getDatasetId();
     name = resolver.getName();
+    opalTableType = resolver.hasStudyId() ? OpalTableType.Study : OpalTableType.Network;
+
     if(resolver.hasStudyId()) studyIds = Lists.newArrayList(resolver.getStudyId());
+    if(resolver.hasNetworkId()) networkTableIds = Lists.newArrayList(resolver.getNetworkId());
     if(resolver.hasProject()) project = resolver.getProject();
     if(resolver.hasTable()) table = resolver.getTable();
   }
@@ -330,6 +364,8 @@ public class DatasetVariable implements Indexable, AttributeAware {
 
     private final String studyId;
 
+    private final String networkId;
+
     private final String project;
 
     private final String table;
@@ -343,19 +379,33 @@ public class DatasetVariable implements Indexable, AttributeAware {
     }
 
     public static String encode(String datasetId, String variableName, Type variableType, String studyId,
-      String project, String table) {
+      String project, String table, String networkId) {
       String id = datasetId + ID_SEPARATOR + variableName + ID_SEPARATOR + variableType;
-      if(Type.Harmonized == variableType && studyId != null) {
-        id = id + ID_SEPARATOR + studyId + ID_SEPARATOR + project + ID_SEPARATOR + table;
+
+      if(Type.Harmonized == variableType) {
+        String tableType;
+        String entityId;
+
+        if(studyId != null) {
+          tableType = OPAL_STUDY_TABLE_PREFIX;
+          entityId = studyId;
+        } else {
+          tableType = OPAL_NETWORK_TABLE_PREFIX;
+          entityId = networkId;
+        }
+
+        id = id + ID_SEPARATOR + tableType + ID_SEPARATOR + entityId + ID_SEPARATOR + project + ID_SEPARATOR + table;
       }
+
       return id;
     }
 
-    public static String encode(String datasetId, String variableName, Type variableType, StudyTable studyTable) {
-      return studyTable == null
-        ? encode(datasetId, variableName, variableType, null, null, null)
-        : encode(datasetId, variableName, variableType, studyTable.getStudyId(), studyTable.getProject(),
-          studyTable.getTable());
+    public static String encode(String datasetId, String variableName, Type variableType, OpalTable opalTable) {
+      return opalTable == null
+        ? encode(datasetId, variableName, variableType, null, null, null, null)
+        : opalTable instanceof StudyTable ? encode(datasetId, variableName, variableType, ((StudyTable) opalTable).getStudyId(), opalTable.getProject(),
+          opalTable.getTable(), null) : encode(datasetId, variableName, variableType, null, opalTable.getProject(),
+          opalTable.getTable(), ((NetworkTable) opalTable).getNetworkId());
     }
 
     private IdResolver(String id) {
@@ -368,9 +418,19 @@ public class DatasetVariable implements Indexable, AttributeAware {
       datasetId = tokens[0];
       name = tokens[1];
       type = Type.valueOf(tokens[2]);
-      studyId = tokens.length > 3 ? tokens[3] : null;
-      project = tokens.length > 4 ? tokens[4] : null;
-      table = tokens.length > 5 ? tokens[5] : null;
+
+      String tableType = tokens.length > 3 ? tokens[3] : null;
+
+      if(OPAL_NETWORK_TABLE_PREFIX.equals(tableType)) {
+        networkId = tokens.length > 4 ? tokens[4] : null;
+        studyId = null;
+      } else {
+        networkId = null;
+        studyId = tokens.length > 4 ? tokens[4] : null;
+      }
+
+      project = tokens.length > 5 ? tokens[5] : null;
+      table = tokens.length > 6 ? tokens[6] : null;
     }
 
     public String getId() {
@@ -397,6 +457,14 @@ public class DatasetVariable implements Indexable, AttributeAware {
       return !Strings.isNullOrEmpty(studyId);
     }
 
+    public String getNetworkId() {
+      return networkId;
+    }
+
+    public boolean hasNetworkId() {
+      return !Strings.isNullOrEmpty(networkId);
+    }
+
     public String getProject() {
       return project;
     }
@@ -415,7 +483,10 @@ public class DatasetVariable implements Indexable, AttributeAware {
 
     @Override
     public String toString() {
-      return "[" + datasetId + "," + name + "," + type + ", " + studyId + ", " + project + ", " + table + "]";
+      String tableType = networkId == null ? OPAL_NETWORK_TABLE_PREFIX : OPAL_STUDY_TABLE_PREFIX;
+      String entityId = networkId == null ? studyId : networkId;
+
+      return "[" + datasetId + "," + name + "," + type + ", " + tableType + ", " + entityId + ", " + project + ", " + table + "]";
     }
   }
 }

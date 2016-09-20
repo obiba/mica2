@@ -592,12 +592,14 @@ message DatasetVariableResolverDto {
   optional string networkId = 13;
   repeated LocalizedStringDto networkName = 14;
   repeated LocalizedStringDto networkAcronym = 15;
+  optional string networkTableId = 16;
 }
 
 message DatasetVariableSummaryDto {
   required DatasetVariableResolverDto resolver = 1;
   repeated AttributeDto attributes = 2;
   optional DatasetDto.StudyTableDto studyTable = 3;
+  optional DatasetDto.NetworkTableDto networkTable = 4;
 }
 
 message DatasetVariableHarmonizationDto {
@@ -636,6 +638,7 @@ message DatasetVariableAggregationDto {
   optional StatisticsDto statistics = 5;
   optional string term = 6;
   optional bool missing = 7;
+  optional DatasetDto.NetworkTableDto networkTable = 8;
 }
 
 message DatasetVariableAggregationsDto {
@@ -651,6 +654,7 @@ message DatasetVariableContingencyDto {
   repeated DatasetVariableAggregationDto aggregations = 2;
   optional DatasetVariableAggregationDto all = 3;
   optional int32 privacyThreshold = 4;
+  optional DatasetDto.NetworkTableDto networkTable = 5;
 }
 
 message DatasetVariableContingenciesDto {

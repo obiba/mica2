@@ -17,6 +17,10 @@ import java.util.stream.StreamSupport;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
+import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
+import com.google.common.eventbus.EventBus;
 import org.joda.time.DateTime;
 import org.obiba.magma.NoSuchValueTableException;
 import org.obiba.magma.NoSuchVariableException;
@@ -39,6 +43,7 @@ import org.obiba.mica.dataset.service.support.QueryTermsUtil;
 import org.obiba.mica.file.FileUtils;
 import org.obiba.mica.file.service.FileSystemService;
 import org.obiba.mica.micaConfig.service.OpalService;
+import org.obiba.mica.network.service.NetworkService;
 import org.obiba.mica.study.service.StudyService;
 import org.obiba.opal.rest.client.magma.RestValueTable;
 import org.obiba.opal.web.model.Search;
@@ -54,11 +59,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
-import com.google.common.eventbus.EventBus;
-
 import static java.util.stream.Collectors.toList;
 
 @Service
@@ -69,6 +69,10 @@ public class StudyDatasetService extends DatasetService<StudyDataset, StudyDatas
 
   @Inject
   private StudyService studyService;
+
+  @Inject
+  @Lazy
+  private NetworkService networkService;
 
   @Inject
   private OpalService opalService;
@@ -285,6 +289,11 @@ public class StudyDatasetService extends DatasetService<StudyDataset, StudyDatas
   @Override
   protected StudyService getStudyService() {
     return studyService;
+  }
+
+  @Override
+  protected NetworkService getNetworkService() {
+    return networkService;
   }
 
   @Override
