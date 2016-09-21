@@ -22,6 +22,13 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
+import com.google.common.base.Strings;
+import com.google.common.base.Throwables;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
+import com.google.common.eventbus.EventBus;
 import org.joda.time.DateTime;
 import org.obiba.magma.MagmaRuntimeException;
 import org.obiba.magma.NoSuchValueTableException;
@@ -29,6 +36,8 @@ import org.obiba.magma.NoSuchVariableException;
 import org.obiba.magma.ValueTable;
 import org.obiba.magma.Variable;
 import org.obiba.mica.NoSuchEntityException;
+import org.obiba.mica.core.domain.NetworkTable;
+import org.obiba.mica.core.domain.OpalTable;
 import org.obiba.mica.core.domain.PublishCascadingScope;
 import org.obiba.mica.core.domain.StudyTable;
 import org.obiba.mica.core.repository.EntityStateRepository;
@@ -47,6 +56,7 @@ import org.obiba.mica.dataset.service.support.QueryTermsUtil;
 import org.obiba.mica.file.FileUtils;
 import org.obiba.mica.file.service.FileSystemService;
 import org.obiba.mica.micaConfig.service.OpalService;
+import org.obiba.mica.network.service.NetworkService;
 import org.obiba.mica.study.NoSuchStudyException;
 import org.obiba.mica.study.service.StudyService;
 import org.obiba.opal.rest.client.magma.RestValueTable;
@@ -64,14 +74,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
-import com.google.common.base.Strings;
-import com.google.common.base.Throwables;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
-import com.google.common.eventbus.EventBus;
-
 import static java.util.stream.Collectors.toList;
 
 @Service
@@ -82,6 +84,10 @@ public class HarmonizationDatasetService extends DatasetService<HarmonizationDat
 
   @Inject
   private StudyService studyService;
+
+  @Inject
+  @Lazy
+  private NetworkService networkService;
 
   @Inject
   private OpalService opalService;
@@ -273,49 +279,49 @@ public class HarmonizationDatasetService extends DatasetService<HarmonizationDat
     return new DatasetVariable(dataset, getVariableValueSource(dataset, variableName).getVariable());
   }
 
-  public Iterable<DatasetVariable> getDatasetVariables(HarmonizationDataset dataset, StudyTable studyTable)
+  public Iterable<DatasetVariable> getDatasetVariables(HarmonizationDataset dataset, OpalTable opalTable)
     throws NoSuchStudyException, NoSuchValueTableException {
-    return StreamSupport.stream(getVariables(studyTable).spliterator(), false)
-      .map(input -> new DatasetVariable(dataset, input, studyTable)).collect(toList());
+    return StreamSupport.stream(getVariables(opalTable).spliterator(), false)
+      .map(input -> new DatasetVariable(dataset, input, opalTable)).collect(toList());
   }
 
-  public DatasetVariable getDatasetVariable(HarmonizationDataset dataset, String variableName, StudyTable studyTable)
+  public DatasetVariable getDatasetVariable(HarmonizationDataset dataset, String variableName, OpalTable opalTable)
     throws NoSuchStudyException, NoSuchValueTableException, NoSuchVariableException {
-    return new DatasetVariable(dataset, getTable(studyTable).getVariableValueSource(variableName).getVariable());
+    return new DatasetVariable(dataset, getTable(opalTable).getVariableValueSource(variableName).getVariable());
   }
 
   public DatasetVariable getDatasetVariable(HarmonizationDataset dataset, String variableName, String studyId,
-    String project, String table) throws NoSuchStudyException, NoSuchValueTableException, NoSuchVariableException {
+    String project, String table, String networkId) throws NoSuchStudyException, NoSuchValueTableException, NoSuchVariableException {
     return new DatasetVariable(dataset,
-      getTable(dataset, studyId, project, table).getVariableValueSource(variableName).getVariable());
+      getTable(dataset, studyId, project, table, networkId).getVariableValueSource(variableName).getVariable());
   }
 
   @Cacheable(value = "dataset-variables", cacheResolver = "datasetVariablesCacheResolver",
-    key = "#variableName + ':' + #studyId + ':' + #project + ':' + #table")
+    key = "#variableName + ':' + #studyId + ':' + #project + ':' + #table + ':' + #networkId")
   public SummaryStatisticsWrapper getVariableSummary(@NotNull HarmonizationDataset dataset, String variableName,
-    String studyId, String project, String table)
+    String studyId, String project, String table, String networkId)
     throws NoSuchStudyException, NoSuchValueTableException, NoSuchVariableException {
     log.info("Caching variable summary {} {} {} {} {}", dataset.getId(), variableName, studyId, project, table);
 
     return new SummaryStatisticsWrapper(
-      getVariableValueSource(dataset, variableName, studyId, project, table).getSummary());
+      getVariableValueSource(dataset, variableName, studyId, project, table, networkId).getSummary());
   }
 
   public Search.QueryResultDto getVariableFacet(@NotNull HarmonizationDataset dataset, String variableName,
-    String studyId, String project, String table)
+    String studyId, String project, String table, String networkId)
     throws NoSuchStudyException, NoSuchValueTableException, NoSuchVariableException {
     log.debug("Getting variable facet {} {}", dataset.getId(), variableName);
-    return getVariableValueSource(dataset, variableName, studyId, project, table).getFacet();
+    return getVariableValueSource(dataset, variableName, studyId, project, table, networkId).getFacet();
   }
 
-  public Search.QueryResultDto getFacets(Search.QueryTermsDto query, StudyTable studyTable)
+  public Search.QueryResultDto getFacets(Search.QueryTermsDto query, OpalTable opalTable)
     throws NoSuchStudyException, NoSuchValueTableException {
-    return getTable(studyTable).getFacets(query);
+    return getTable(opalTable).getFacets(query);
   }
 
-  public Search.QueryResultDto getContingencyTable(@NotNull StudyTable studyTable, DatasetVariable variable,
-    DatasetVariable crossVariable) throws NoSuchStudyException, NoSuchValueTableException {
-    return getFacets(QueryTermsUtil.getContingencyQuery(variable, crossVariable), studyTable);
+  public Search.QueryResultDto getContingencyTable(@NotNull OpalTable opalTable, DatasetVariable variable,
+                                                   DatasetVariable crossVariable) throws NoSuchStudyException, NoSuchValueTableException {
+    return getFacets(QueryTermsUtil.getContingencyQuery(variable, crossVariable), opalTable);
   }
 
   @Override
@@ -326,6 +332,11 @@ public class HarmonizationDatasetService extends DatasetService<HarmonizationDat
   @Override
   protected StudyService getStudyService() {
     return studyService;
+  }
+
+  @Override
+  protected NetworkService getNetworkService() {
+    return networkService;
   }
 
   @Override
@@ -384,48 +395,54 @@ public class HarmonizationDatasetService extends DatasetService<HarmonizationDat
     }
   }
 
-  private Iterable<Variable> getVariables(StudyTable studyTable)
+  private Iterable<Variable> getVariables(OpalTable opalTable)
     throws NoSuchDatasetException, NoSuchStudyException, NoSuchValueTableException {
-    return getTable(studyTable).getVariables();
+    return getTable(opalTable).getVariables();
   }
 
-  private RestValueTable getTable(@NotNull StudyTable studyTable)
+  private RestValueTable getTable(@NotNull OpalTable opalTable)
     throws NoSuchStudyException, NoSuchValueTableException {
-    return execute(studyTable, ds -> (RestValueTable) ds.getValueTable(studyTable.getTable()));
+    return execute(opalTable, ds -> (RestValueTable) ds.getValueTable(opalTable.getTable()));
   }
 
-  private ValueTable getTable(@NotNull HarmonizationDataset dataset, String studyId, String project, String table)
+  private ValueTable getTable(@NotNull HarmonizationDataset dataset, String studyId, String project, String table, String networkId)
     throws NoSuchStudyException, NoSuchValueTableException {
-    for(StudyTable studyTable : dataset.getStudyTables()) {
-      if(studyTable.isFor(studyId, project, table)) {
-        return getTable(studyTable);
+
+    for(OpalTable opalTable : dataset.getAllOpalTables()) {
+      String opalTableId = opalTable instanceof StudyTable ? studyId : networkId;
+
+      if(opalTable.isFor(opalTableId, project, table)) {
+        return getTable(opalTable);
       }
     }
+
     throw NoSuchStudyException.withId(studyId);
   }
 
   private RestValueTable.RestVariableValueSource getVariableValueSource(@NotNull HarmonizationDataset dataset,
-    String variableName, String studyId, String project, String table)
+    String variableName, String studyId, String project, String table, String networkId)
     throws NoSuchStudyException, NoSuchValueTableException, NoSuchVariableException {
-    for(StudyTable studyTable : dataset.getStudyTables()) {
-      if(studyTable.isFor(studyId, project, table)) {
-        return getVariableValueSource(variableName, studyTable);
+    for(OpalTable opalTable : dataset.getAllOpalTables()) {
+      String opalTableId = opalTable instanceof StudyTable ? studyId : networkId;
+
+      if(opalTable.isFor(opalTableId, project, table)) {
+        return getVariableValueSource(variableName, opalTable);
       }
     }
+
     throw NoSuchStudyException.withId(studyId);
   }
 
-  private RestValueTable.RestVariableValueSource getVariableValueSource(String variableName, StudyTable studyTable)
+  private RestValueTable.RestVariableValueSource getVariableValueSource(String variableName, OpalTable opalTable)
     throws NoSuchStudyException, NoSuchValueTableException, NoSuchVariableException {
-    return (RestValueTable.RestVariableValueSource) getTable(studyTable).getVariableValueSource(variableName);
+    return (RestValueTable.RestVariableValueSource) getTable(opalTable).getVariableValueSource(variableName);
   }
 
   protected Map<String, List<DatasetVariable>> populateHarmonizedVariablesMap(HarmonizationDataset dataset) {
     Map<String, List<DatasetVariable>> map = Maps.newHashMap();
 
-    if(!dataset.getStudyTables().isEmpty()) {
-
-      Iterable<DatasetVariable> res = dataset.getStudyTables().stream()
+    if(!dataset.getAllOpalTables().isEmpty()) {
+      Iterable<DatasetVariable> res = dataset.getAllOpalTables().stream()
         .map(s -> helper.asyncGetDatasetVariables(() -> getDatasetVariables(dataset, s))).map(f -> {
           try {
             return f.get();
@@ -470,13 +487,13 @@ public class HarmonizationDatasetService extends DatasetService<HarmonizationDat
   /**
    * Build or reuse the {@link org.obiba.opal.rest.client.magma.RestDatasource} and execute the callback with it.
    *
-   * @param studyTable
+   * @param opalTable
    * @param callback
    * @param <T>
    * @return
    */
-  private <T> T execute(StudyTable studyTable, DatasourceCallback<T> callback) {
-    return execute(getDatasource(studyTable), callback);
+  private <T> T execute(OpalTable opalTable, DatasourceCallback<T> callback) {
+    return execute(getDatasource(opalTable), callback);
   }
 
   @Override
@@ -528,9 +545,12 @@ public class HarmonizationDatasetService extends DatasetService<HarmonizationDat
       Map<String, List<DatasetVariable>> harmonizationVariables) {
       log.info("building variable summaries cache");
 
-      dataset.getStudyTables().forEach(st -> harmonizationVariables.forEach((k, v) -> v.forEach(var -> {
+      dataset.getAllOpalTables().forEach(st -> harmonizationVariables.forEach((k, v) -> v.forEach(var -> {
         try {
-          service.getVariableSummary(dataset, var.getName(), st.getStudyId(), st.getProject(), st.getTable());
+          String studyId = st instanceof StudyTable ? ((StudyTable) st).getStudyId() : null;
+          String networkId = studyId == null ? ((NetworkTable) st).getNetworkId() : null;
+
+          service.getVariableSummary(dataset, var.getName(), studyId, st.getProject(), st.getTable(), networkId);
         } catch(Exception e) {
           //ignoring
         }

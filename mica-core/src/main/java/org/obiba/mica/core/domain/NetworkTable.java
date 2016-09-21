@@ -32,6 +32,11 @@ public class NetworkTable extends OpalTable implements Serializable {
   }
 
   @Override
+  protected String getEntityId() {
+    return networkId;
+  }
+
+  @Override
   public String toString() {
     return MoreObjects.toStringHelper(this).add("project", getProject()).add("table", getTable())
         .add("networkId", networkId).toString();

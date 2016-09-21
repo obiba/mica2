@@ -21,6 +21,7 @@ import org.obiba.git.CommitInfo;
 import org.obiba.mica.access.domain.DataAccessRequest;
 import org.obiba.mica.core.domain.Comment;
 import org.obiba.mica.core.domain.LocalizedString;
+import org.obiba.mica.core.domain.OpalTable;
 import org.obiba.mica.core.domain.Person;
 import org.obiba.mica.core.domain.StudyTable;
 import org.obiba.mica.core.domain.Timestamped;
@@ -306,8 +307,8 @@ public class Dtos {
   }
 
   @NotNull
-  public Mica.DatasetVariableSummaryDto asSummaryDto(@NotNull DatasetVariable variable, StudyTable studyTable) {
-    return datasetDtos.asSummaryDto(variable, studyTable);
+  public Mica.DatasetVariableSummaryDto asSummaryDto(@NotNull DatasetVariable variable, OpalTable opalTable) {
+    return datasetDtos.asSummaryDto(variable, opalTable);
   }
 
   @NotNull
@@ -321,15 +322,15 @@ public class Dtos {
   }
 
   @NotNull
-  public Mica.DatasetVariableAggregationDto.Builder asDto(@NotNull StudyTable studyTable,
+  public Mica.DatasetVariableAggregationDto.Builder asDto(@NotNull OpalTable opalTable,
     @Nullable Math.SummaryStatisticsDto summary) {
-    return datasetDtos.asDto(studyTable, summary);
+    return datasetDtos.asDto(opalTable, summary);
   }
 
   @NotNull
-  public Mica.DatasetVariableContingencyDto.Builder asContingencyDto(StudyTable studyTable, DatasetVariable variable,
-    DatasetVariable crossVariable, @Nullable Search.QueryResultDto results) {
-    return datasetDtos.asContingencyDto(studyTable, variable, crossVariable, results);
+  public Mica.DatasetVariableContingencyDto.Builder asContingencyDto(OpalTable opalTable, DatasetVariable variable,
+                                                                     DatasetVariable crossVariable, @Nullable Search.QueryResultDto results) {
+    return datasetDtos.asContingencyDto(opalTable, variable, crossVariable, results);
   }
 
   @NotNull

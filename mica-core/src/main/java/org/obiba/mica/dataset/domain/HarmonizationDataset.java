@@ -15,10 +15,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotNull;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import org.obiba.mica.core.domain.NetworkTable;
+import org.obiba.mica.core.domain.OpalTable;
 import org.obiba.mica.core.domain.StudyTable;
 
 /**
@@ -115,5 +120,11 @@ public class HarmonizationDataset extends Dataset {
 
   public void setNetworkId(String networkId) {
     this.networkId = networkId;
+  }
+
+  @JsonIgnore
+  public List<OpalTable> getAllOpalTables() {
+    return Lists.newArrayList(Iterables.concat(getStudyTables(), getNetworkTables())).stream()//
+      .sorted((a, b) -> a.getWeight() - b.getWeight()).collect(Collectors.toList());
   }
 }

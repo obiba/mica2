@@ -17,20 +17,25 @@ import java.io.Serializable;
 import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
 
+import com.google.common.base.Strings;
+import com.google.common.eventbus.EventBus;
+import com.google.protobuf.GeneratedMessage;
 import net.sf.ehcache.pool.sizeof.annotations.IgnoreSizeOf;
-
 import org.obiba.magma.MagmaRuntimeException;
 import org.obiba.magma.NoSuchValueTableException;
 import org.obiba.magma.NoSuchVariableException;
 import org.obiba.magma.Variable;
 import org.obiba.mica.core.domain.EntityState;
 import org.obiba.mica.core.domain.LocalizedString;
+import org.obiba.mica.core.domain.NetworkTable;
+import org.obiba.mica.core.domain.OpalTable;
 import org.obiba.mica.core.domain.StudyTable;
 import org.obiba.mica.core.service.AbstractGitPersistableService;
 import org.obiba.mica.dataset.NoSuchDatasetException;
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.micaConfig.service.OpalService;
+import org.obiba.mica.network.service.NetworkService;
 import org.obiba.mica.study.service.StudyService;
 import org.obiba.opal.rest.client.magma.RestDatasource;
 import org.obiba.opal.rest.client.magma.RestValueTable;
@@ -38,10 +43,6 @@ import org.obiba.opal.web.model.Magma;
 import org.obiba.opal.web.model.Math;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Strings;
-import com.google.common.eventbus.EventBus;
-import com.google.protobuf.GeneratedMessage;
 
 /**
  * {@link org.obiba.mica.dataset.domain.Dataset} management service.
@@ -79,6 +80,8 @@ public abstract class DatasetService<T extends Dataset, T1 extends EntityState> 
   protected abstract RestValueTable getTable(@NotNull T dataset) throws NoSuchValueTableException;
 
   protected abstract StudyService getStudyService();
+
+  protected abstract NetworkService getNetworkService();
 
   protected abstract OpalService getOpalService();
 
@@ -178,9 +181,15 @@ public abstract class DatasetService<T extends Dataset, T1 extends EntityState> 
     return callback.doWithDatasource(datasource);
   }
 
-  protected RestDatasource getDatasource(@NotNull StudyTable studyTable) {
-    String opalUrl = getStudyService().findDraft(studyTable.getStudyId()).getOpal();
-    return getOpalService().getDatasource(opalUrl, studyTable.getProject());
+  protected RestDatasource getDatasource(@NotNull OpalTable opalTable) {
+    String opalUrl = null;
+
+    if(opalTable instanceof StudyTable)
+      opalUrl = getStudyService().findDraft(((StudyTable) opalTable).getStudyId()).getOpal();
+    else if (opalTable instanceof NetworkTable)
+      opalUrl = getNetworkService().findDraft(((NetworkTable) opalTable).getNetworkId()).getOpal();
+
+    return getOpalService().getDatasource(opalUrl, opalTable.getProject());
   }
 
   protected RestDatasource getDatasource(@NotNull String project) {
