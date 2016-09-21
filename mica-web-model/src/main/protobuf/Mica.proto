@@ -572,6 +572,7 @@ message DatasetVariableDto {
   repeated LocalizedStringDto datasetName = 17;
   repeated StudySummaryDto studySummaries = 18;
   repeated TermAttributesDto termAttributes = 19;
+  repeated NetworkSummaryDto networkSummaries = 20;
 }
 
 message DatasetVariablesDto {
