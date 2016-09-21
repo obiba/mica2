@@ -38,14 +38,10 @@ public class CacheConfiguration {
   @Inject
   private MetricRegistry metricRegistry;
 
-  @Inject
-  private net.sf.ehcache.CacheManager cacheManager;
-
   @PreDestroy
   public void destroy() {
     log.info("Remove Cache Manager metrics");
     metricRegistry.getNames().forEach(metricRegistry::remove);
-    cacheManager.shutdown();
   }
 
   @Bean
@@ -60,6 +56,7 @@ public class CacheConfiguration {
   @Bean
   public CacheManager springCacheManager() {
     log.debug("Starting Spring Cache");
+    net.sf.ehcache.CacheManager cacheManager = cacheManagerFactory().getObject();
     EhCacheCacheManager ehCacheManager = new EhCacheCacheManager();
     ehCacheManager.setCacheManager(cacheManager);
     String[] cacheNames = cacheManager.getCacheNames();

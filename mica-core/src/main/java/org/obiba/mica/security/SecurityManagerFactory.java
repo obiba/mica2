@@ -33,6 +33,7 @@ import org.apache.shiro.config.IniSecurityManagerFactory;
 import org.apache.shiro.mgt.DefaultSecurityManager;
 import org.apache.shiro.mgt.DefaultSubjectDAO;
 import org.apache.shiro.mgt.SecurityManager;
+import org.apache.shiro.mgt.SessionsSecurityManager;
 import org.apache.shiro.realm.Realm;
 import org.apache.shiro.realm.text.IniRealm;
 import org.apache.shiro.session.mgt.DefaultSessionManager;
@@ -46,7 +47,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.boot.bind.RelaxedPropertyResolver;
-import org.springframework.context.annotation.DependsOn;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.stereotype.Component;
@@ -57,8 +57,7 @@ import com.google.common.collect.ImmutableList;
 import static org.obiba.mica.security.AuthoritiesConstants.ADMIN;
 
 @Component
-@DependsOn("cacheConfiguration")
-public class SecurityManagerFactory implements FactoryBean<SecurityManager> {
+public class SecurityManagerFactory implements FactoryBean<SessionsSecurityManager> {
 
   public static final String INI_REALM = "mica-ini-realm";
 
@@ -87,10 +86,10 @@ public class SecurityManagerFactory implements FactoryBean<SecurityManager> {
   @Inject
   private CacheManager cacheManager;
 
-  private SecurityManager securityManager;
+  private SessionsSecurityManager securityManager;
 
   @Override
-  public SecurityManager getObject() throws Exception {
+  public SessionsSecurityManager getObject() throws Exception {
     if(securityManager == null) {
       securityManager = doCreateSecurityManager();
       SecurityUtils.setSecurityManager(securityManager);
@@ -100,7 +99,7 @@ public class SecurityManagerFactory implements FactoryBean<SecurityManager> {
 
   @Override
   public Class<?> getObjectType() {
-    return DefaultSecurityManager.class;
+    return SessionsSecurityManager.class;
   }
 
   @Override
@@ -117,8 +116,8 @@ public class SecurityManagerFactory implements FactoryBean<SecurityManager> {
     securityManager = null;
   }
 
-  private SecurityManager doCreateSecurityManager() {
-    return new CustomIniSecurityManagerFactory(getShiroIniPath()).createInstance();
+  private SessionsSecurityManager doCreateSecurityManager() {
+    return (SessionsSecurityManager) new CustomIniSecurityManagerFactory(getShiroIniPath()).createInstance();
   }
 
   private String getShiroIniPath() {

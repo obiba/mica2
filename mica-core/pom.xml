@@ -207,6 +207,10 @@
       <groupId>com.itextpdf</groupId>
       <artifactId>itextpdf</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-autoconfigure</artifactId>
+    </dependency>
 
   </dependencies>
 

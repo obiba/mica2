@@ -19,7 +19,7 @@ import java.util.stream.Stream;
 import javax.inject.Inject;
 
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.mgt.DefaultSecurityManager;
+import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -120,7 +120,7 @@ public class StudyServiceTest {
 
   @BeforeClass
   public static void init() {
-    SecurityUtils.setSecurityManager(new DefaultSecurityManager());
+    SecurityUtils.setSecurityManager(new DefaultWebSecurityManager());
   }
 
   @Before

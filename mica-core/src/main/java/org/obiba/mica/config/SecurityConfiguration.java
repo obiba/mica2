@@ -26,11 +26,6 @@ import org.springframework.context.annotation.ImportResource;
 public class SecurityConfiguration {
 
   @Bean
-  public SecurityManagerFactory securityManagerFactory() {
-    return new SecurityManagerFactory();
-  }
-
-  @Bean
   public LifecycleBeanPostProcessor lifecycleBeanPostProcessor() {
     return new LifecycleBeanPostProcessor();
   }

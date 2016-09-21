@@ -12,6 +12,7 @@ package org.obiba.mica.security.event;
 
 import javax.annotation.Nullable;
 
+import com.google.common.eventbus.Subscribe;
 import org.obiba.mica.security.domain.SubjectAcl;
 
 public class SubjectAclUpdatedEvent {
