@@ -195,7 +195,7 @@ class DatasetDtos {
       builder.setStudyId(resolver.getStudyId());
     }
     if(resolver.hasNetworkId()) {
-      builder.setNetworkId(resolver.getNetworkId());
+      builder.setNetworkTableId(resolver.getNetworkId());
     }
     if(resolver.hasProject()) {
       builder.setProject(resolver.getProject());

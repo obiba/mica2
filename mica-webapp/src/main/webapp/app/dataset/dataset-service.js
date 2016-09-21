@@ -230,8 +230,10 @@ mica.dataset
     };
 
     this.updateWeights = function(opalTables) {
-      for (var i = 0; i < opalTables.length;  i++) {
-        opalTables[i].table.weight = i;
+      if (opalTables) {
+        for (var i = 0; i < opalTables.length;  i++) {
+          opalTables[i].table.weight = i;
+        }
       }
     };
   }])
