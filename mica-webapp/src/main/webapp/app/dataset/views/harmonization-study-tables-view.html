@@ -1,4 +1,4 @@
-<div>
+<div ng-if="opalTables && opalTables.length">
   <h3 translate ng-show="dataset['obiba.mica.HarmonizationDatasetDto.type']">dataset.study-tables.title</h3>
   <div class="table-responsive">
     <table class="table table-bordered table-striped" ng-show="dataset['obiba.mica.HarmonizationDatasetDto.type']">
@@ -18,7 +18,7 @@
           <a ng-show="wrapper.type === 'studyTable'" ng-href="#/study/{{wrapper.table.studyId}}">
             {{wrapper.table.studyId}}
           </a>
-          <a ng-show="wrapper.type === 'networkTable'" ng-href="#/study/{{wrapper.table.networkId}}">
+          <a ng-show="wrapper.type === 'networkTable'" ng-href="#/network/{{wrapper.table.networkId}}">
             {{wrapper.table.networkId}}
           </a>
         </td>

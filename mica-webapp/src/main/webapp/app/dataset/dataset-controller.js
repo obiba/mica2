@@ -456,7 +456,7 @@ mica.dataset
       };
 
       $scope.deleteOpalTable = function (wrapper, wrapperIndex) {
-        var tablesName = wrapper.type === mica.dataset.OPAL_TABLE_TYPES.studyTable ? 'studyTables' : 'networkTables';
+        var tablesName = wrapper.type === mica.dataset.OPAL_TABLE_TYPES.STUDY_TABLE ? 'studyTables' : 'networkTables';
         var index = $scope.dataset['obiba.mica.HarmonizationDatasetDto.type'][tablesName].indexOf(wrapper.table);
 
         if (index > -1) {

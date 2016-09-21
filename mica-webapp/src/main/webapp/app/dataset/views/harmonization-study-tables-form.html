@@ -10,7 +10,7 @@
   <button type="button" class="btn btn-info btn-sm voffset2" ng-click="addNetworkTable(tab)">
     <i class="fa fa-plus"></i> <span translate>dataset.add-network-table</span>
   </button>
-  <div ng-show="opalTables">
+  <div ng-show="opalTables && opalTables.length">
     <table class="table table-bordered table-striped" ng-show="dataset['obiba.mica.HarmonizationDatasetDto.type']">
       <thead>
       <tr>
