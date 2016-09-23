@@ -77,12 +77,12 @@ public class UserProfileService extends AgateRestService {
     return Lists.newArrayList();
   }
 
-  public String getUserManagementTranslations(String locale) {
+  public String getUserProfileTranslations(String locale) {
 
     String serviceUrl = UriComponentsBuilder
       .fromHttpUrl(getAgateUrl())
       .path(DEFAULT_REST_PREFIX)
-      .path("/config/i18n/custom/" + locale + ".json")
+      .path("/users/i18n/" + locale + ".json")
       .build().toUriString();
 
     return executeQuery(serviceUrl, String.class);

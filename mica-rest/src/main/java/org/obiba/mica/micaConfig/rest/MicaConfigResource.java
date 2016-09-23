@@ -130,11 +130,11 @@ public class MicaConfigResource {
   @Produces("application/json")
   public Response getTranslation(@PathParam("locale") String locale, @QueryParam("default") boolean _default) throws IOException {
 
-    String userManagementTranslations = userProfileService.getUserManagementTranslations(locale);
+    String userProfileTranslations = userProfileService.getUserProfileTranslations(locale);
     String micaTranslations = micaConfigService.getTranslations(locale, _default);
 
     DocumentContext globalTranslations = JsonPath.parse(micaTranslations);
-    globalTranslations.put("$", "userManagement", JsonPath.parse(userManagementTranslations).read("$"));
+    globalTranslations.put("$", "userProfile", JsonPath.parse(userProfileTranslations).read("$"));
 
     return Response.ok(globalTranslations.jsonString(), "application/json").build();
   }
