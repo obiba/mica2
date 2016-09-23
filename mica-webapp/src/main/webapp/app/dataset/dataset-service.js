@@ -205,10 +205,69 @@ mica.dataset
       };
     }])
 
-  .service('OpalTablesService', [function() {
+  .factory('OpalTablesService', [function() {
+    var factory = {};
+    var tableWrappers = null;
 
-    this.getTables = function getOpalTables(dataset) {
-      var tableWrappers = [];
+    function findTargetTables(dataset, type) {
+      switch (type) {
+        case mica.dataset.OPAL_TABLE_TYPES.STUDY_TABLE:
+          return dataset['obiba.mica.HarmonizationDatasetDto.type'].studyTables;
+        case mica.dataset.OPAL_TABLE_TYPES.NETWORK_TABLE:
+          return dataset['obiba.mica.HarmonizationDatasetDto.type'].networkTables;
+      }
+
+      throw new Error("Invalid table type");
+    }
+
+    function createTargetTables(dataset, type) {
+      var tablesName;
+      switch (type) {
+        case mica.dataset.OPAL_TABLE_TYPES.STUDY_TABLE:
+          tablesName = 'studyTables';
+          break;
+        case mica.dataset.OPAL_TABLE_TYPES.NETWORK_TABLE:
+          tablesName = 'networkTables';
+          break;
+        default:
+          throw new Error("Invalid table type");
+      }
+
+      dataset['obiba.mica.HarmonizationDatasetDto.type'][tablesName] = dataset['obiba.mica.HarmonizationDatasetDto.type'][tablesName] || [];
+      return dataset['obiba.mica.HarmonizationDatasetDto.type'][tablesName];
+    }
+
+    factory.updateTable = function(dataset, wrapper, newTable) {
+      var tables = findTargetTables(dataset, wrapper.type);
+
+      var index = tables.indexOf(wrapper.table);
+      if (index === -1) {
+        throw new Error("Wrapper table is not found.");
+      }
+
+      tables[index] = newTable;
+      wrapper.table = newTable;
+    };
+
+    factory.addTable = function(dataset, type, newTable) {
+      var tables = createTargetTables(dataset, type);
+      tables.push(newTable);
+      tableWrappers = tableWrappers || [];
+      tableWrappers.push({type: type, table: newTable});
+    };
+
+    factory.addUpdateTable = function(dataset, tableType, wrapper, newTable) {
+      if (angular.isDefined(wrapper)) {
+        this.updateTable(dataset, wrapper, newTable);
+      } else {
+        this.addTable(dataset, tableType, newTable);
+      }
+
+      return tableWrappers;
+    };
+
+    factory.getTables = function getOpalTables(dataset) {
+      tableWrappers = [];
 
       if (dataset['obiba.mica.HarmonizationDatasetDto.type'].studyTables) {
         tableWrappers = dataset['obiba.mica.HarmonizationDatasetDto.type'].studyTables.map(function (studyTable) {
@@ -224,18 +283,38 @@ mica.dataset
         );
       }
 
-      return tableWrappers.sort(function(a,b){
+      tableWrappers = tableWrappers.sort(function(a,b){
         return a.table.weight - b.table.weight;
       });
+
+      return tableWrappers;
     };
 
-    this.updateWeights = function(opalTables) {
-      if (opalTables) {
-        for (var i = 0; i < opalTables.length;  i++) {
-          opalTables[i].table.weight = i;
+    factory.deleteTable = function(dataset, wrapper) {
+      var wrapperIndex = tableWrappers.indexOf(wrapper);
+      var tables = findTargetTables(dataset, wrapper.type);
+      var index = tables.indexOf(wrapper.table);
+
+      if (index > -1) {
+        tables.splice(index, 1);
+        if (tables.length === 0) {
+          var tablesName = wrapper.type === mica.dataset.OPAL_TABLE_TYPES.STUDY_TABLE ? 'studyTables' : 'networkTables';
+          dataset['obiba.mica.HarmonizationDatasetDto.type'][tablesName] = undefined;
+        }
+
+        tableWrappers.splice(wrapperIndex, 1);
+      }
+    };
+
+    factory.updateWeights = function() {
+      if (tableWrappers) {
+        for (var i = 0; i < tableWrappers.length;  i++) {
+          tableWrappers[i].table.weight = i;
         }
       }
     };
+
+    return factory;
   }])
 
   .service('DatasetModelService',[function() {

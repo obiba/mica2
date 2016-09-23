@@ -568,6 +568,10 @@
       "title": "Study Tables",
       "info": "The study tables define implementations of the Data Schema variables. The data summaries will be extracted from the corresponding Opal tables."
     },
+    "harmonized-tables": {
+      "title": "Harmonized Tables",
+      "info": "The study tables define implementations of the Data Schema variables by a study in the context of a population's data collection event. The network tables define implementations of the Data Schema variables by a network based on previously harmonized data. The data summaries will be extracted from the corresponding Opal tables."
+    },
     "restore-dialog": {
       "title": "Restoring Dataset from Revision",
       "message": "Are you sure you want to restore this revision from '{{arg0}}'?"
