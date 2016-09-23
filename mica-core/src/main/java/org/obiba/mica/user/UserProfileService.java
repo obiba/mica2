@@ -61,18 +61,15 @@ public class UserProfileService extends AgateRestService {
     return getProfileInternal(getProfileServiceUrlByApp(username, application, group));
   }
 
-  public synchronized List<Subject> getProfilesByApplication(@NotNull String application,
-    @Nullable String group) {
-    Assert.notNull(application, "Application name cannot be null");
-    try {
-      RestTemplate template = newRestTemplate();
-      HttpHeaders headers = new HttpHeaders();
-      headers.set(APPLICATION_AUTH_HEADER, getApplicationAuth());
-      HttpEntity<String> entity = new HttpEntity<>(null, headers);
-      ResponseEntity<Subject[]> response =
-        template.exchange(getProfileServiceUrlByApp(null, application, group), HttpMethod.GET, entity, Subject[].class);
+  public synchronized List<Subject> getProfilesByApplication(@NotNull String application, @Nullable String group) {
 
-      return Arrays.asList(response.getBody());
+    Assert.notNull(application, "Application name cannot be null");
+
+    try {
+
+      String profileServiceUrl = getProfileServiceUrlByApp(null, application, group);
+      return Arrays.asList(executeQuery(profileServiceUrl, Subject[].class));
+
     } catch(RestClientException e) {
       log.error("Agate connection failure: {}", e.getMessage());
     }
@@ -80,21 +77,36 @@ public class UserProfileService extends AgateRestService {
     return Lists.newArrayList();
   }
 
+  public String getUserManagementTranslations(String locale) {
+
+    String serviceUrl = UriComponentsBuilder
+      .fromHttpUrl(getAgateUrl())
+      .path(DEFAULT_REST_PREFIX)
+      .path("/config/i18n/" + locale + ".json")
+      .build().toUriString();
+
+    return executeQuery(serviceUrl, String.class);
+  }
+
   private synchronized Subject getProfileInternal(String serviceUrl) {
     try {
-      RestTemplate template = newRestTemplate();
-      HttpHeaders headers = new HttpHeaders();
-      headers.set(APPLICATION_AUTH_HEADER, getApplicationAuth());
-      HttpEntity<String> entity = new HttpEntity<>(null, headers);
-      ResponseEntity<Subject> response = template.exchange(serviceUrl, HttpMethod.GET, entity, Subject.class);
-
-      Subject subject = response.getBody();
-      return subject;
+      return executeQuery(serviceUrl, Subject.class);
     } catch(RestClientException e) {
       log.error("Agate connection failure: {}", e.getMessage());
     }
 
     return null;
+  }
+
+  private <T> T executeQuery(String serviceUrl, Class<T> returnType) {
+
+    RestTemplate template = newRestTemplate();
+    HttpHeaders headers = new HttpHeaders();
+    headers.set(APPLICATION_AUTH_HEADER, getApplicationAuth());
+    HttpEntity<String> entity = new HttpEntity<>(null, headers);
+    ResponseEntity<T> response = template.exchange(serviceUrl, HttpMethod.GET, entity, returnType);
+
+    return response.getBody();
   }
 
   private String getProfileServiceUrl(String username) {
@@ -117,5 +129,4 @@ public class UserProfileService extends AgateRestService {
 
     return urlBuilder.build().toUriString();
   }
-
 }

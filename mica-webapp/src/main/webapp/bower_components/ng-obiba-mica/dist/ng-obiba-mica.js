@@ -3,7 +3,7 @@
  * https://github.com/obiba/ng-obiba-mica
 
  * License: GNU Public License version 3
- * Date: 2016-09-14
+ * Date: 2016-09-20
  */
 'use strict';
 
@@ -8374,7 +8374,7 @@ angular.module("access/views/data-access-request-profile-user-modal.html", []).r
     "        <td>{{getProfileEmail(applicant)}}</td>\n" +
     "      </tr>\n" +
     "      <tr ng-repeat=\"attribute in applicant.attributes | filterProfileAttributes\">\n" +
-    "        <th>{{attribute.key | translate}}</th>\n" +
+    "        <th>{{attribute.key}}</th>\n" +
     "        <td>{{attribute.value}}</td>\n" +
     "      </tr>\n" +
     "      </tbody>\n" +
@@ -8484,7 +8484,7 @@ angular.module("access/views/data-access-request-view.html", []).run(["$template
     "    <div ng-if=\"validForm\">\n" +
     "\n" +
     "      <p class=\"help-block pull-left\"><span translate>created-by</span>\n" +
-    "        <span ng-if=\"!actions.canViewProfile('mica-data-access-officer')\">\n" +
+    "         <span ng-if=\"actions.canViewProfile('mica-user')\">\n" +
     "           {{getFullName(dataAccessRequest.profile) || dataAccessRequest.applicant}}\n" +
     "        </span>\n" +
     "        <a href ng-click=\"userProfile(dataAccessRequest.profile)\"\n" +

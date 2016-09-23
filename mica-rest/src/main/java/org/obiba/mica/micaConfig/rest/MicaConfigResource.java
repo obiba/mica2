@@ -34,6 +34,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
+import com.jayway.jsonpath.DocumentContext;
+import com.jayway.jsonpath.JsonPath;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.obiba.mica.contact.event.IndexContactsEvent;
@@ -49,6 +51,7 @@ import org.obiba.mica.micaConfig.service.TaxonomyService;
 import org.obiba.mica.network.event.IndexNetworksEvent;
 import org.obiba.mica.security.Roles;
 import org.obiba.mica.study.event.IndexStudiesEvent;
+import org.obiba.mica.user.UserProfileService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.opal.web.model.Opal;
@@ -89,6 +92,9 @@ public class MicaConfigResource {
   @Inject
   private EventBus eventBus;
 
+  @Inject
+  private UserProfileService userProfileService;
+
   @GET
   @Timed
   @RequiresAuthentication
@@ -123,8 +129,14 @@ public class MicaConfigResource {
   @Path("/i18n/{locale}.json")
   @Produces("application/json")
   public Response getTranslation(@PathParam("locale") String locale, @QueryParam("default") boolean _default) throws IOException {
-    return Response.ok(
-      micaConfigService.getTranslations(locale, _default), "application/json").build();
+
+    String userManagementTranslations = userProfileService.getUserManagementTranslations(locale);
+    String micaTranslations = micaConfigService.getTranslations(locale, _default);
+
+    DocumentContext globalTranslations = JsonPath.parse(micaTranslations);
+    globalTranslations.put("$", "userManagement", JsonPath.parse(userManagementTranslations).read("$"));
+
+    return Response.ok(globalTranslations.jsonString(), "application/json").build();
   }
 
   @PUT
