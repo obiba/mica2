@@ -28,14 +28,6 @@ mica.dataset
       templateUrl: 'app/dataset/views/network-table-modal-form-section.html'
     };
   }])
-  .directive('datasetStudyTablesView', [function() {
-    return {
-      restrict: 'EA',
-      replace: true,
-      scope: false,
-      templateUrl: 'app/dataset/views/harmonization-study-tables-view.html'
-    };
-  }])
   .directive('datasetStudyTablesForm', [function() {
   return {
     restrict: 'EA',

@@ -567,6 +567,10 @@
       "title": "Tables d'étude",
       "info": "Les tables d'étude définissent les implémentations des variables du schéma de données. Les sommaires de données seront extraites des tables Opal correspondantes."
     },
+    "harmonized-tables": {
+      "title": "Tables harmonisées",
+      "info": "Les tables d'étude définissent les implémentations des variables du schéma de données par une étude dans le cadre de l'événement de collecte de données d'une population. Les tables de réseau définissent les implémentations des variables du schéma de données par un réseau basé sur des données déjà harmonisées. Les résumés de données seront extraites des tables Opal correspondant."
+    },
     "restore-dialog": {
       "title": "Restaurer un ensemble de données à partir d'une révision",
       "message": "Etes-vous sûr vouloir restaurer cette révision de '{{arg0}}'?"
