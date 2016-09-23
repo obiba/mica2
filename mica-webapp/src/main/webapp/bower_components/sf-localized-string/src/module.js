@@ -14,11 +14,11 @@ angular.module('sfLocalizedString', [
         }
         f.locales = Object.keys(f.languages);
         f.validationMessage = {
-          completed: 'All localized fields must be completed'
+          completed: 'The field must be completed in all specified languages'
         };
         f.$validators = {
           completed: function (value) {
-            if (value && Object.keys(value).length > 0) {
+            if (f.required && value && Object.keys(value).length > 0) {
               return Object.keys(value).filter(function (key) {
                   return f.locales.indexOf(key) > -1 && value[key] && '' !== value[key];
                 }).length === f.locales.length;
@@ -42,7 +42,7 @@ angular.module('sfLocalizedString', [
     );
 
   }])
-  .controller('LocalizedStringController', ['$scope', function ($scope) {
+  .controller('LocalizedStringController', ['$scope', '$rootScope', function ($scope, $rootScope) {
     $scope.$watch('ngModel.$modelValue', function () {
       if ($scope.ngModel.$validate) {
         // Make sure that allowInvalid is always true so that the model is preserved when validation fails
@@ -65,7 +65,7 @@ angular.module('sfLocalizedString', [
     });
 
     $scope.selectLocale = function (locale) {
-      $scope.$parent.$broadcast('sfLocalizedStringLocaleChanged', locale);
+      $rootScope.$broadcast('sfLocalizedStringLocaleChanged', locale);
       $scope.open = false;
     };
 
