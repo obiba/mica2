@@ -15,9 +15,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotNull;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
+import org.obiba.mica.core.domain.NetworkTable;
+import org.obiba.mica.core.domain.OpalTable;
 import org.obiba.mica.core.domain.StudyTable;
 
 /**
@@ -31,6 +37,8 @@ public class HarmonizationDataset extends Dataset {
    * Tables that implement the harmonization.
    */
   private List<StudyTable> studyTables;
+
+  private List<NetworkTable> networkTables;
 
   /**
    * Linked network.
@@ -60,6 +68,18 @@ public class HarmonizationDataset extends Dataset {
 
   public void setStudyTables(List<StudyTable> studyTables) {
     this.studyTables = studyTables;
+  }
+
+  public List<NetworkTable> getNetworkTables() {
+    return networkTables == null ? networkTables = new ArrayList<>() : networkTables;
+  }
+
+  public void setNetworkTables(List<NetworkTable> networkTables) {
+    this.networkTables = networkTables;
+  }
+
+  public void addNetworkTable(NetworkTable networkTable) {
+    getNetworkTables().add(networkTable);
   }
 
   public String getProject() {
@@ -100,5 +120,11 @@ public class HarmonizationDataset extends Dataset {
 
   public void setNetworkId(String networkId) {
     this.networkId = networkId;
+  }
+
+  @JsonIgnore
+  public List<OpalTable> getAllOpalTables() {
+    return Lists.newArrayList(Iterables.concat(getStudyTables(), getNetworkTables())).stream()//
+      .sorted((a, b) -> a.getWeight() - b.getWeight()).collect(Collectors.toList());
   }
 }

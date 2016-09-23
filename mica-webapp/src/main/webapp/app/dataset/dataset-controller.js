@@ -10,6 +10,8 @@
 
 'use strict';
 
+mica.dataset.OPAL_TABLE_TYPES = {STUDY_TABLE: 'studyTable', NETWORK_TABLE: 'networkTable'};
+
 mica.dataset
 
   .controller('StudyDatasetListController', ['$rootScope', '$scope', '$timeout', 'StudyDatasetsResource',
@@ -32,7 +34,7 @@ mica.dataset
       $scope.pageChanged = function(page) {
         loadPage(page, $scope.pagination.searchText);
       };
-      
+
       function refreshPage() {
         if($scope.pagination.current !== 1) {
           $scope.pagination.current = 1; //pageChanged event triggers reload
@@ -69,7 +71,7 @@ mica.dataset
         if (!newVal && !oldVal) {
           return;
         }
-        
+
         if(currentSearch) {
           $timeout.cancel(currentSearch);
         }
@@ -88,6 +90,7 @@ mica.dataset
     '$log',
     '$locale',
     '$location',
+    '$filter',
     'StudyDatasetResource',
     'DraftStudyDatasetsResource',
     'StudyDatasetPublicationResource',
@@ -96,6 +99,8 @@ mica.dataset
     'StudyStatesResource',
     'StudyStateProjectsResource',
     'FormDirtyStateObserver',
+    'EntityFormResource',
+    'LocalizedSchemaFormService',
 
     function ($rootScope,
               $scope,
@@ -103,6 +108,7 @@ mica.dataset
               $log,
               $locale,
               $location,
+              $filter,
               StudyDatasetResource,
               DraftStudyDatasetsResource,
               StudyDatasetPublicationResource,
@@ -110,11 +116,41 @@ mica.dataset
               FormServerValidation,
               StudyStatesResource,
               StudyStateProjectsResource,
-              FormDirtyStateObserver) {
+              FormDirtyStateObserver,
+              EntityFormResource,
+              LocalizedSchemaFormService) {
       $scope.studies = [];
       $scope.projects = [];
       $scope.selected = {};
       $scope.studyTable = {};
+
+      var getTypeFromUrl = function() {
+        var matched = /\/(\w+-dataset)\//.exec($location.path());
+        return matched ? matched[1] : '';
+      };
+
+      var updateDataset = function () {
+        $scope.dataset.$save(
+          function (dataset) {
+            FormDirtyStateObserver.unobserve();
+            $location.path('/study-dataset/' + dataset.id).replace();
+          },
+          saveErrorHandler);
+      };
+
+      var createDataset = function () {
+        DraftStudyDatasetsResource.save($scope.dataset,
+          function (resource, getResponseHeaders) {
+            FormDirtyStateObserver.unobserve();
+            var parts = getResponseHeaders().location.split('/');
+            $location.path('/study-dataset/' + parts[parts.length - 1]).replace();
+          },
+          saveErrorHandler);
+      };
+
+      var saveErrorHandler = function (response) {
+        FormServerValidation.error(response, $scope.form, $scope.languages);
+      };
 
       var populateStudyTable = function (studyTable) {
         if (studyTable !== {}) {
@@ -149,11 +185,6 @@ mica.dataset
             }
           }
         });
-      };
-
-      var getTypeFromUrl = function() {
-        var matched = /\/(\w+-dataset)\//.exec($location.path());
-        return matched ? matched[1] : '';
       };
 
       $scope.type = getTypeFromUrl();
@@ -223,29 +254,6 @@ mica.dataset
         $location.path('/study-dataset' + ($scope.dataset.id ? '/' + $scope.dataset.id : '')).replace();
       };
 
-      var updateDataset = function () {
-        $scope.dataset.$save(
-          function (dataset) {
-            FormDirtyStateObserver.unobserve();
-            $location.path('/study-dataset/' + dataset.id).replace();
-          },
-          saveErrorHandler);
-      };
-
-      var createDataset = function () {
-        DraftStudyDatasetsResource.save($scope.dataset,
-          function (resource, getResponseHeaders) {
-            FormDirtyStateObserver.unobserve();
-            var parts = getResponseHeaders().location.split('/');
-            $location.path('/study-dataset/' + parts[parts.length - 1]).replace();
-          },
-          saveErrorHandler);
-      };
-
-      var saveErrorHandler = function (response) {
-        FormServerValidation.error(response, $scope.form, $scope.languages);
-      };
-
       FormDirtyStateObserver.observe($scope);
     }])
 
@@ -253,33 +261,31 @@ mica.dataset
     '$scope',
     '$routeParams',
     '$log',
-    '$locale',
     '$location',
-    '$uibModal',
+    '$filter',
     'HarmonizationDatasetResource',
     'DraftHarmonizationDatasetsResource',
-    'HarmonizationDatasetPublicationResource',
     'MicaConfigResource',
     'FormServerValidation',
     'DraftNetworksResource',
     'MicaConfigOpalProjectsResource',
     'FormDirtyStateObserver',
+    'OpalTablesService',
 
     function ($rootScope,
               $scope,
               $routeParams,
               $log,
-              $locale,
               $location,
-              $uibModal,
+              $filter,
               HarmonizationDatasetResource,
               DraftHarmonizationDatasetsResource,
-              HarmonizationDatasetPublicationResource,
               MicaConfigResource,
               FormServerValidation,
               DraftNetworksResource,
               MicaConfigOpalProjectsResource,
-              FormDirtyStateObserver) {
+              FormDirtyStateObserver,
+              OpalTablesService) {
 
       var getTypeFromUrl = function() {
         var matched = /\/(\w+-dataset)\//.exec($location.path());
@@ -302,6 +308,8 @@ mica.dataset
         $scope.dataset = HarmonizationDatasetResource.get({id: $routeParams.id});
         $scope.dataset.$promise.then(function (dataset) {
 
+          $scope.opalTables = OpalTablesService.getTables(dataset);
+
           $scope.networks.$promise.then(function (networks) {
             $scope.selected.network = networks.filter(function (n) {return n.id === dataset['obiba.mica.HarmonizationDatasetDto.type'].networkId; })[0];
           });
@@ -317,7 +325,6 @@ mica.dataset
               }).pop();
             }
           });
-
         });
       } else {
         getOpalProjects();
@@ -352,56 +359,6 @@ mica.dataset
           updateDataset();
         } else {
           createDataset();
-        }
-      };
-
-      $scope.addStudyTable = function (tab) {
-        $uibModal
-          .open({
-            templateUrl: 'app/dataset/views/study-table-modal-form.html',
-            controller: 'StudyTableModalController',
-            resolve: {
-              studyTable: function () {
-                return {};
-              },
-              tab : function () {
-                return tab;
-              }
-            }
-          })
-          .result.then(function (studyTable) {
-            if (!$scope.dataset['obiba.mica.HarmonizationDatasetDto.type'].studyTables) {
-              $scope.dataset['obiba.mica.HarmonizationDatasetDto.type'].studyTables = [];
-            }
-            $scope.dataset['obiba.mica.HarmonizationDatasetDto.type'].studyTables.push(studyTable);
-          }, function () {
-          });
-      };
-
-      $scope.editStudyTable = function (index, tab) {
-        $uibModal
-          .open({
-            templateUrl: 'app/dataset/views/study-table-modal-form.html',
-            controller: 'StudyTableModalController',
-            resolve: {
-              tab: function () {
-                return tab;
-              },
-              studyTable: function () {
-                return $scope.dataset['obiba.mica.HarmonizationDatasetDto.type'].studyTables[index];
-              }
-            }
-          })
-          .result.then(function (studyTable) {
-            $scope.dataset['obiba.mica.HarmonizationDatasetDto.type'].studyTables[index] = studyTable;
-          }, function () {
-          });
-      };
-
-      $scope.deleteStudyTable = function (index) {
-        $scope.dataset['obiba.mica.HarmonizationDatasetDto.type'].studyTables.splice(index, 1);
-        if ($scope.dataset['obiba.mica.HarmonizationDatasetDto.type'].studyTables.length === 0) {
-          $scope.dataset['obiba.mica.HarmonizationDatasetDto.type'].studyTables = undefined;
         }
       };
 
@@ -441,6 +398,8 @@ mica.dataset
     '$log',
     '$locale',
     '$location',
+    '$uibModal',
+    '$filter',
     'DatasetResource',
     'DatasetPublicationResource',
     'DraftDatasetStatusResource',
@@ -450,10 +409,11 @@ mica.dataset
     'DraftFileSystemSearchResource',
     'MicaConfigResource',
     'NOTIFICATION_EVENTS',
-    '$filter',
     'DatasetService',
     'DocumentPermissionsService',
     'DraftNetworkResource',
+    'OpalTablesService',
+    'HarmonizationDatasetResource',
 
     function ($rootScope,
               $scope,
@@ -461,6 +421,8 @@ mica.dataset
               $log,
               $locale,
               $location,
+              $uibModal,
+              $filter,
               DatasetResource,
               DatasetPublicationResource,
               DraftDatasetStatusResource,
@@ -470,10 +432,12 @@ mica.dataset
               DraftFileSystemSearchResource,
               MicaConfigResource,
               NOTIFICATION_EVENTS,
-              $filter,
               DatasetService,
               DocumentPermissionsService,
-              DraftNetworkResource) {
+              DraftNetworkResource,
+              OpalTablesService,
+              HarmonizationDatasetResource) {
+
       MicaConfigResource.get(function (micaConfig) {
         $scope.opal = micaConfig.opal;
         $scope.tabs = [];
@@ -482,6 +446,40 @@ mica.dataset
         });
         $scope.openAccess = micaConfig.openAccess;
       });
+
+      function addUpdateOpalTable(tableType, tab, wrapper) {
+        if (!tableType) {
+          throw new Error("Cannot add Opal table without specifying the table type.");
+        }
+
+        // var tablesName = tableType === mica.dataset.OPAL_TABLE_TYPES.STUDY_TABLE ? 'studyTables' : 'networkTables';
+        var controllerName = tableType === mica.dataset.OPAL_TABLE_TYPES.STUDY_TABLE ?
+          'StudyTableModalController' :
+          'NetworkTableModalController';
+
+        $uibModal
+          .open({
+            templateUrl: 'app/dataset/views/opal-table-modal-form.html',
+            controller: controllerName,
+            resolve: {
+              table: function() {
+                return angular.isDefined(wrapper) ? wrapper.table : {weight: $scope.opalTables.length};
+              },
+              tab : function () {
+                return tab;
+              }
+            }
+          })
+          .result.then(
+            function (table) {
+              OpalTablesService.addUpdateTable($scope.dataset, tableType, wrapper, table);
+              saveAndUpdateDataset();
+            },
+            function (what) {
+              $log.error(what);
+            }
+          );
+      }
 
       var initializeDataset = function(dataset) {
         $scope.permissions = DocumentPermissionsService.state(dataset['obiba.mica.EntityStateDto.datasetState']);
@@ -493,6 +491,113 @@ mica.dataset
           }
           $scope.datasetProject = dataset['obiba.mica.HarmonizationDatasetDto.type'].project;
           $scope.datasetTable = dataset['obiba.mica.HarmonizationDatasetDto.type'].table;
+          $scope.opalTables = OpalTablesService.getTables(dataset);
+
+          $scope.addStudyTable = function (tab) {
+            addUpdateOpalTable(mica.dataset.OPAL_TABLE_TYPES.STUDY_TABLE, tab);
+          };
+
+          $scope.addNetworkTable = function (tab) {
+            addUpdateOpalTable(mica.dataset.OPAL_TABLE_TYPES.NETWORK_TABLE, tab);
+          };
+
+          $scope.editOpalTable = function (wrapper, tab) {
+            addUpdateOpalTable(wrapper.type, tab, wrapper);
+          };
+
+          $scope.deleteOpalTable = function (wrapper) {
+            OpalTablesService.deleteTable($scope.dataset, wrapper);
+            saveAndUpdateDataset();
+          };
+
+          $scope.moveOpalTableDown = function (index) {
+            var studyToMoveDown = $scope.opalTables[index];
+            var studyToMoveUp = $scope.opalTables[index + 1];
+
+            $scope.opalTables[index] = studyToMoveUp;
+            $scope.opalTables[index + 1] = studyToMoveDown;
+
+            OpalTablesService.updateWeights($scope.opalTables);
+            saveAndUpdateDataset();
+          };
+
+          $scope.moveOpalTableUp = function (index) {
+            $scope.moveOpalTableDown(index - 1);
+          };
+
+        }
+      };
+
+      var getViewMode = function() {
+        var result = /\/(revision[s\/]*|files|permissions)/.exec($location.path());
+        if (result && result.length > 1) {
+          switch (result[1]) {
+            case 'revision':
+            case 'revisions':
+              return $scope.Mode.Revision;
+            case 'files':
+              return $scope.Mode.File;
+            case 'permissions':
+              return $scope.Mode.Permission;
+            case 'comments':
+              return $scope.Mode.Comment;
+          }
+        }
+
+        return $scope.Mode.View;
+      };
+
+      var viewRevision = function (datasetId, commitInfo) {
+        $scope.commitInfo = commitInfo;
+        $scope.dataset = DraftDatasetViewRevisionResource.view({
+          id: datasetId,
+          commitId: commitInfo.commitId,
+          type: $scope.type
+        });
+      };
+
+      var fetchDataset = function (datasetId) {
+        $scope.dataset = DatasetResource.get({id: datasetId, type: $scope.type}, initializeDataset);
+      };
+
+      var fetchRevisions = function (datasetId, onSuccess) {
+        DraftDatasetRevisionsResource.query({id: datasetId, type: $scope.type}, function (response) {
+          if (onSuccess) {
+            onSuccess(response);
+          }
+        });
+      };
+
+      function saveAndUpdateDataset() {
+        HarmonizationDatasetResource.save({id: $scope.dataset.id}, $scope.dataset).$promise.then(function() {
+          fetchDataset($scope.dataset.id);
+        });
+      }
+
+      var restoreRevision = function (datasetId, commitInfo, onSuccess) {
+        if (commitInfo && $scope.datasetId === datasetId) {
+          var args = {commitId: commitInfo.commitId, restoreSuccessCallback: onSuccess};
+
+          $rootScope.$broadcast(NOTIFICATION_EVENTS.showConfirmDialog,
+            {
+              titleKey: 'dataset.restore-dialog.title',
+              messageKey: 'dataset.restore-dialog.message',
+              messageArgs: [$filter('amDateFormat')(commitInfo.date, 'lll')]
+            }, args
+          );
+        }
+      };
+
+      var onRestore = function (event, args) {
+        if (args.commitId) {
+          DraftDatasetRestoreRevisionResource.restore({id: $scope.datasetId, commitId: args.commitId, type: $scope.type},
+            function () {
+              fetchDataset($routeParams.id);
+              $scope.datasetId = $routeParams.id;
+              if (args.restoreSuccessCallback) {
+                args.restoreSuccessCallback();
+              }
+            });
         }
       };
 
@@ -541,75 +646,7 @@ mica.dataset
         }, $scope.tabs[$scope.activeTab].lang);
       };
 
-      var getViewMode = function() {
-        var result = /\/(revision[s\/]*|files|permissions)/.exec($location.path());
-        if (result && result.length > 1) {
-          switch (result[1]) {
-            case 'revision':
-            case 'revisions':
-              return $scope.Mode.Revision;
-            case 'files':
-              return $scope.Mode.File;
-            case 'permissions':
-              return $scope.Mode.Permission;
-            case 'comments':
-              return $scope.Mode.Comment;
-          }
-        }
-
-        return $scope.Mode.View;
-      };
-
       $scope.viewMode = getViewMode();
-
-      var viewRevision = function (datasetId, commitInfo) {
-        $scope.commitInfo = commitInfo;
-        $scope.dataset = DraftDatasetViewRevisionResource.view({
-          id: datasetId,
-          commitId: commitInfo.commitId,
-          type: $scope.type
-        });
-      };
-
-      var fetchDataset = function (datasetId) {
-        $scope.dataset = DatasetResource.get({id: datasetId, type: $scope.type}, initializeDataset);
-      };
-
-      var fetchRevisions = function (datasetId, onSuccess) {
-        DraftDatasetRevisionsResource.query({id: datasetId, type: $scope.type}, function (response) {
-          if (onSuccess) {
-            onSuccess(response);
-          }
-        });
-      };
-
-      var restoreRevision = function (datasetId, commitInfo, onSuccess) {
-        if (commitInfo && $scope.datasetId === datasetId) {
-          var args = {commitId: commitInfo.commitId, restoreSuccessCallback: onSuccess};
-
-          $rootScope.$broadcast(NOTIFICATION_EVENTS.showConfirmDialog,
-            {
-              titleKey: 'dataset.restore-dialog.title',
-              messageKey: 'dataset.restore-dialog.message',
-              messageArgs: [$filter('amDateFormat')(commitInfo.date, 'lll')]
-            }, args
-          );
-        }
-      };
-
-      var onRestore = function (event, args) {
-        if (args.commitId) {
-          DraftDatasetRestoreRevisionResource.restore({id: $scope.datasetId, commitId: args.commitId, type: $scope.type},
-            function () {
-              fetchDataset($routeParams.id);
-              $scope.datasetId = $routeParams.id;
-              if (args.restoreSuccessCallback) {
-                args.restoreSuccessCallback();
-              }
-            });
-        }
-      };
-
       $scope.fetchDataset = fetchDataset;
       $scope.viewRevision = viewRevision;
       $scope.restoreRevision = restoreRevision;
@@ -729,6 +766,7 @@ mica.dataset
     'HarmonizationDatasetResource',
     'HarmonizationDatasetPublicationResource',
     'MicaConfigResource',
+    'OpalTablesService',
 
     function ($rootScope,
               $scope,
@@ -738,7 +776,9 @@ mica.dataset
               $location,
               HarmonizationDatasetResource,
               HarmonizationDatasetPublicationResource,
-              MicaConfigResource) {
+              MicaConfigResource,
+              OpalTablesService) {
+
       MicaConfigResource.get(function (micaConfig) {
         $scope.opal = micaConfig.opal;
         $scope.tabs = [];
@@ -750,6 +790,7 @@ mica.dataset
       $scope.dataset = HarmonizationDatasetResource.get({id: $routeParams.id}, function (dataset) {
         $scope.datasetProject = dataset['obiba.mica.HarmonizationDatasetDto.type'].project;
         $scope.datasetTable = dataset['obiba.mica.HarmonizationDatasetDto.type'].table;
+        $scope.opalTables = OpalTablesService.getTables(dataset);
       });
 
       $scope.activeTab = 0;
@@ -772,39 +813,57 @@ mica.dataset
 
     }])
 
-  .controller('StudyTableModalController', ['$scope', '$uibModalInstance', '$log', 'MicaConfigResource', 'StudyStatesResource', 'StudyStateProjectsResource', 'studyTable', 'tab',
-    function ($scope, $uibModalInstance, $log, MicaConfigResource, StudyStatesResource, StudyStateProjectsResource, studyTable, tab) {
+  .controller('StudyTableModalController', [
+    '$scope',
+    '$uibModalInstance',
+    '$log',
+    'MicaConfigResource',
+    'StudyStatesResource',
+    'StudyStateProjectsResource',
+    'table',
+    'tab',
+    function ($scope,
+              $uibModalInstance,
+              $log,
+              MicaConfigResource,
+              StudyStatesResource,
+              StudyStateProjectsResource,
+              table,
+              tab) {
+
       $scope.studies = [];
       $scope.projects = [];
       $scope.selected = {};
-      $scope.studyTable = $.extend(true, {}, studyTable);
+      $scope.table = $.extend(true, {}, table);
       $scope.tab = tab;
+      $scope.type = mica.dataset.OPAL_TABLE_TYPES.STUDY_TABLE;
 
-      if (studyTable && studyTable !== {}) {
+
+      if (table && table !== {}) {
         $scope.selected.study = {
-          id: studyTable.studyId,
+          id: table.studyId,
           population: {
-            id: studyTable.populationId,
-            dataCollectionEvent: {id: studyTable.dataCollectionEventId}
+            id: table.populationId,
+            dataCollectionEvent: {id: table.dataCollectionEventId}
           }
         };
 
-        $scope.selected.project = {name: studyTable.project, table: studyTable.table};
+        $scope.selected.project = {name: table.project, table: table.table};
       }
 
       StudyStatesResource.query().$promise.then(function (studies) {
         $scope.studies = studies.sort(function (a, b) { return a.id.localeCompare(b.id); });
 
-        var selectedPopulation, selectedDce, selectedStudy = $scope.studies.filter(function (s) {return s.id === studyTable.studyId; })[0];
+        var selectedPopulation, selectedDce, selectedStudy = $scope.studies.filter(function (s) {return s.id === table.studyId; })[0];
 
         if (selectedStudy) {
           $scope.selected.study = selectedStudy;
-          selectedPopulation = selectedStudy.populationSummaries.filter(function (p) { return p.id === studyTable.populationId; })[0];
+          selectedPopulation = selectedStudy.populationSummaries.filter(function (p) { return p.id === table.populationId; })[0];
 
           if (selectedPopulation) {
             $scope.selected.study.population = selectedPopulation;
 
-            selectedDce = selectedPopulation.dataCollectionEventSummaries.filter(function (dce) { return dce.id === studyTable.dataCollectionEventId; })[0];
+            selectedDce = selectedPopulation.dataCollectionEventSummaries.filter(function (dce) { return dce.id === table.dataCollectionEventId; })[0];
 
             if (selectedDce) {
               $scope.selected.study.population.dataCollectionEvent = selectedDce;
@@ -817,12 +876,12 @@ mica.dataset
         if ($scope.selected.study && $scope.selected.study.id) {
           StudyStateProjectsResource.query({id: $scope.selected.study.id}).$promise.then(function (projects) {
             $scope.projects = projects;
-            var selectedTable, selectedProject = $scope.projects.filter(function (p) {return p.name === studyTable.project; })[0];
+            var selectedTable, selectedProject = $scope.projects.filter(function (p) {return p.name === table.project; })[0];
 
             if (selectedProject) {
               $scope.selected.project = selectedProject;
 
-              selectedTable = selectedProject.datasource.table.filter(function (t) {return t === studyTable.table; })[0];
+              selectedTable = selectedProject.datasource.table.filter(function (t) {return t === table.table; })[0];
 
               if (selectedTable) {
                 $scope.selected.project.table = selectedTable;
@@ -835,7 +894,7 @@ mica.dataset
 
       $scope.save = function (form) {
         if (form.$valid) {
-          angular.extend($scope.studyTable, {
+          angular.extend($scope.table, {
             studyId: $scope.selected.study.id,
             populationId: $scope.selected.study.population.id,
             dataCollectionEventId: $scope.selected.study.population.dataCollectionEvent.id,
@@ -843,7 +902,92 @@ mica.dataset
             table: $scope.selected.project.table
           });
 
-          $uibModalInstance.close($scope.studyTable);
+          $uibModalInstance.close($scope.table);
+          return;
+        }
+
+        $scope.form = form;
+        $scope.form.saveAttempted = true;
+      };
+
+      $scope.cancel = function () {
+        $uibModalInstance.dismiss('cancel');
+      };
+
+    }])
+
+  .controller('NetworkTableModalController', [
+    '$scope',
+    '$uibModalInstance',
+    '$log',
+    'MicaConfigResource',
+    'DraftNetworksResource',
+    'DraftNetworkProjectsResource',
+    'table',
+    'tab',
+    function ($scope,
+              $uibModalInstance,
+              $log,
+              MicaConfigResource,
+              DraftNetworksResource,
+              DraftNetworkProjectsResource,
+              table,
+              tab) {
+
+      $scope.networks = [];
+      $scope.projects = [];
+      $scope.selected = {};
+      $scope.table = $.extend(true, {}, table);
+      $scope.tab = tab;
+      $scope.type = mica.dataset.OPAL_TABLE_TYPES.NETWORK_TABLE;
+
+      if (table && table !== {}) {
+        $scope.selected.network = {
+          id: table.networkId
+        };
+
+        $scope.selected.project = {name: table.project, table: table.table};
+      }
+
+      DraftNetworksResource.query().$promise.then(function (networks) {
+        $scope.networks = networks.sort(function (a, b) { return a.id.localeCompare(b.id); });
+
+        var selectedNetwork = $scope.networks.filter(function (n) {return n.id === table.networkId; })[0];
+
+        if (selectedNetwork) {
+          $scope.selected.study = selectedNetwork;
+        }
+      });
+
+      $scope.$watch('selected.network', function () {
+        if ($scope.selected.network && $scope.selected.network.id) {
+          DraftNetworkProjectsResource.query({id: $scope.selected.network.id}).$promise.then(function (projects) {
+            $scope.projects = projects;
+            var selectedTable, selectedProject = $scope.projects.filter(function (p) {return p.name === table.project; })[0];
+
+            if (selectedProject) {
+              $scope.selected.project = selectedProject;
+
+              selectedTable = selectedProject.datasource.table.filter(function (t) {return t === table.table; })[0];
+
+              if (selectedTable) {
+                $scope.selected.project.table = selectedTable;
+              }
+            }
+
+          });
+        }
+      });
+
+      $scope.save = function (form) {
+        if (form.$valid) {
+          angular.extend($scope.table, {
+            networkId: $scope.selected.network.id,
+            project: $scope.selected.project.name,
+            table: $scope.selected.project.table
+          });
+
+          $uibModalInstance.close($scope.table);
           return;
         }
 

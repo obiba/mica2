@@ -16,8 +16,11 @@ import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 
+import com.google.common.collect.ImmutableList;
 import org.obiba.magma.NoSuchValueTableException;
 import org.obiba.magma.NoSuchVariableException;
+import org.obiba.mica.core.domain.NetworkTable;
+import org.obiba.mica.core.domain.StudyTable;
 import org.obiba.mica.dataset.DatasetVariableResource;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.service.HarmonizationDatasetService;
@@ -27,8 +30,6 @@ import org.obiba.opal.web.model.Math;
 import org.obiba.opal.web.model.Search;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-
-import com.google.common.collect.ImmutableList;
 
 @Component
 @Scope("request")
@@ -54,10 +55,12 @@ public class DraftDataschemaDatasetVariableResource implements DatasetVariableRe
   public List<Math.SummaryStatisticsDto> getVariableSummaries() {
     ImmutableList.Builder<Math.SummaryStatisticsDto> builder = ImmutableList.builder();
     HarmonizationDataset dataset = getDataset();
-    dataset.getStudyTables().forEach(table -> {
+    dataset.getAllOpalTables().forEach(table -> {
       try {
+        String studyId = table instanceof StudyTable ? ((StudyTable)table).getStudyId() : null;
+        String networkId = studyId == null ? ((NetworkTable)table).getNetworkId() : null;
         builder.add(datasetService
-          .getVariableSummary(dataset, variableName, table.getStudyId(), table.getProject(), table.getTable())
+          .getVariableSummary(dataset, variableName, studyId, table.getProject(), table.getTable(), networkId)
           .getWrappedDto());
       } catch(NoSuchVariableException | NoSuchValueTableException e) {
         // ignore (case the study has not implemented this dataschema variable)
@@ -71,9 +74,11 @@ public class DraftDataschemaDatasetVariableResource implements DatasetVariableRe
   public List<Search.QueryResultDto> getVariableFacets() {
     ImmutableList.Builder<Search.QueryResultDto> builder = ImmutableList.builder();
     HarmonizationDataset dataset = getDataset();
-    dataset.getStudyTables().forEach(table -> {
+    dataset.getAllOpalTables().forEach(table -> {
       try {
-        builder.add(datasetService.getVariableFacet(dataset, variableName, table.getStudyId(), table.getProject(), table.getTable()));
+        String studyId = table instanceof StudyTable ? ((StudyTable)table).getStudyId() : null;
+        String networkId = studyId == null ? ((NetworkTable)table).getNetworkId() : null;
+        builder.add(datasetService.getVariableFacet(dataset, variableName, studyId, table.getProject(), table.getTable(), networkId));
       } catch(NoSuchVariableException | NoSuchValueTableException e) {
         // ignore (case the study has not implemented this dataschema variable)
       }
@@ -86,7 +91,7 @@ public class DraftDataschemaDatasetVariableResource implements DatasetVariableRe
   public List<Mica.DatasetVariableDto> getHarmonizedVariables() {
     ImmutableList.Builder<Mica.DatasetVariableDto> builder = ImmutableList.builder();
     HarmonizationDataset dataset = getDataset();
-    dataset.getStudyTables().forEach(table -> {
+    dataset.getAllOpalTables().forEach(table -> {
       try {
         builder.add(dtos.asDto(datasetService.getDatasetVariable(dataset, variableName, table)));
       } catch(NoSuchVariableException | NoSuchValueTableException e) {

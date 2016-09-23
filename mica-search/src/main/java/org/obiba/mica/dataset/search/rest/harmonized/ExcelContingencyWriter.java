@@ -16,10 +16,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
 
+import com.google.common.collect.Lists;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.ss.util.WorkbookUtil;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFColor;
@@ -29,8 +31,6 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.web.model.Mica;
-
-import com.google.common.collect.Lists;
 
 import static org.obiba.mica.dataset.search.rest.harmonized.ContingencyUtils.getTermsHeaders;
 import static org.obiba.mica.dataset.search.rest.harmonized.ContingencyUtils.getValuesHeaders;
@@ -106,9 +106,7 @@ public class ExcelContingencyWriter {
     List<String> values = getValuesHeaders(crossVariable, dto);
 
     for(Mica.DatasetVariableContingencyDto c : dto.getContingenciesList()) {
-      XSSFSheet sheet = workbook.createSheet(c.getStudyTable().getTable());
-      writeTable(sheet, c, String.format("%s %s", c.getStudyTable().getTable(), c.getStudyTable().getDceId()), terms,
-        values);
+      addOpalTableSheet(workbook, c, terms, values);
     }
 
     XSSFSheet sheet = workbook.createSheet("All");
@@ -120,9 +118,20 @@ public class ExcelContingencyWriter {
     List<String> terms = getTermsHeaders(variable, dto);
     List<String> values = getValuesHeaders(crossVariable, dto);
 
-    XSSFSheet sheet = workbook.createSheet(dto.getStudyTable().getTable());
-    writeTable(sheet, dto, String.format("%s %s", dto.getStudyTable().getTable(), dto.getStudyTable().getDceId()), terms,
-      values);
+    addOpalTableSheet(workbook, dto, terms, values);
+  }
+
+  private void addOpalTableSheet(XSSFWorkbook workbook, Mica.DatasetVariableContingencyDto dto, List<String> terms, List<String> values) {
+    String tableName;
+
+    if(dto.hasStudyTable()) {
+      tableName = String.format("%s %s", dto.getStudyTable().getTable(), dto.getStudyTable().getDceId());
+    } else {
+      tableName = String.format("%s %s", dto.getNetworkTable().getTable(), dto.getNetworkTable().getNetworkId());
+    }
+
+    XSSFSheet sheet = workbook.createSheet(WorkbookUtil.createSafeSheetName(tableName, '-'));
+    writeTable(sheet, dto, tableName, terms, values);
   }
 
   private void writeTable(XSSFSheet sheet, Mica.DatasetVariableContingencyDto c, String title, List<String> terms,

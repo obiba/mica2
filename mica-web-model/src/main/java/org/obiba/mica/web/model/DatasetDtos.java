@@ -19,7 +19,10 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
+import org.obiba.mica.JSONUtils;
 import org.obiba.mica.core.domain.Attributes;
+import org.obiba.mica.core.domain.NetworkTable;
+import org.obiba.mica.core.domain.OpalTable;
 import org.obiba.mica.core.domain.StudyTable;
 import org.obiba.mica.dataset.HarmonizationDatasetStateRepository;
 import org.obiba.mica.dataset.StudyDatasetStateRepository;
@@ -44,6 +47,7 @@ import org.springframework.stereotype.Component;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 
+
 @Component
 class DatasetDtos {
 
@@ -58,6 +62,9 @@ class DatasetDtos {
 
   @Inject
   private StudySummaryDtos studySummaryDtos;
+
+  @Inject
+  private NetworkSummaryDtos networkSummaryDtos;
 
   @Inject
   private PermissionsDtos permissionsDtos;
@@ -87,8 +94,7 @@ class DatasetDtos {
 
     if(dataset.hasStudyTable() && !Strings.isNullOrEmpty(dataset.getStudyTable().getStudyId())) {
       Mica.StudyDatasetDto.Builder sbuilder = Mica.StudyDatasetDto.newBuilder()//
-        .setStudyTable(asDto(dataset.getStudyTable())//
-          .setStudySummary(studySummaryDtos.asDto(dataset.getStudyTable().getStudyId())));
+        .setStudyTable(asDto(dataset.getStudyTable(), true));
       builder.setExtension(Mica.StudyDatasetDto.type, sbuilder.build());
     }
 
@@ -140,7 +146,13 @@ class DatasetDtos {
 
     if(!dataset.getStudyTables().isEmpty()) {
       dataset.getStudyTables().forEach(studyTable -> hbuilder
-        .addStudyTables(asDto(studyTable).setStudySummary(studySummaryDtos.asDto(studyTable.getStudyId()))));
+        .addStudyTables(asDto(studyTable, true)));
+    }
+
+
+    if(!dataset.getNetworkTables().isEmpty()) {
+      dataset.getNetworkTables().forEach(networkTable -> hbuilder
+        .addNetworkTables(asDto(networkTable, true)));
     }
 
     builder.setExtension(Mica.HarmonizationDatasetDto.type, hbuilder.build());
@@ -182,6 +194,9 @@ class DatasetDtos {
     if(resolver.hasStudyId()) {
       builder.setStudyId(resolver.getStudyId());
     }
+    if(resolver.hasNetworkId()) {
+      builder.setNetworkTableId(resolver.getNetworkId());
+    }
     if(resolver.hasProject()) {
       builder.setProject(resolver.getProject());
     }
@@ -215,6 +230,12 @@ class DatasetDtos {
       builder.addAllStudyIds(variable.getStudyIds());
       for(String studyId : variable.getStudyIds()) {
         builder.addStudySummaries(studySummaryDtos.asDto(studyId));
+      }
+    }
+
+    if(variable.getNetworkTableIds() != null) {
+      for(String networkId : variable.getNetworkTableIds()) {
+        builder.addNetworkSummaries(networkSummaryDtos.asDto(networkId));
       }
     }
 
@@ -253,7 +274,7 @@ class DatasetDtos {
   }
 
   @NotNull
-  Mica.DatasetVariableSummaryDto asSummaryDto(@NotNull DatasetVariable variable, StudyTable studyTable) {
+  Mica.DatasetVariableSummaryDto asSummaryDto(@NotNull DatasetVariable variable, OpalTable opalTable) {
     Mica.DatasetVariableSummaryDto.Builder builder = Mica.DatasetVariableSummaryDto.newBuilder() //
       .setResolver(asDto(DatasetVariable.IdResolver.from(variable.getId())));
 
@@ -262,7 +283,10 @@ class DatasetDtos {
         .forEach(attribute -> builder.addAttributes(attributeDtos.asDto(attribute)));
     }
 
-    builder.setStudyTable(asDto(studyTable));
+    if (opalTable instanceof StudyTable)
+      builder.setStudyTable(asDto((StudyTable) opalTable));
+    else if (opalTable instanceof NetworkTable)
+      builder.setNetworkTable(asDto((NetworkTable) opalTable));
 
     return builder.build();
   }
@@ -317,29 +341,28 @@ class DatasetDtos {
   }
 
   public Mica.DatasetDto.StudyTableDto.Builder asDto(StudyTable studyTable) {
-    Mica.DatasetDto.StudyTableDto.Builder builder = Mica.DatasetDto.StudyTableDto.newBuilder() //
-      .setStudyId(studyTable.getStudyId()) //
-      .setPopulationId(studyTable.getPopulationId()) //
-      .setDataCollectionEventId(studyTable.getDataCollectionEventId()) //
-      .setProject(studyTable.getProject()) //
-      .setTable(studyTable.getTable()) //
-      .setDceId(studyTable.getDataCollectionEventUId());
-
-    builder.addAllName(localizedStringDtos.asDto(studyTable.getName()));
-    builder.addAllDescription(localizedStringDtos.asDto(studyTable.getDescription()));
-
-    return builder;
+    return asDto(studyTable, false);
   }
 
   public Mica.DatasetDto.StudyTableDto.Builder asDto(StudyTable studyTable, boolean includeSummary) {
-    Mica.DatasetDto.StudyTableDto.Builder builder = asDto(studyTable);
+    Mica.DatasetDto.StudyTableDto.Builder sbuilder = Mica.DatasetDto.StudyTableDto.newBuilder() //
+      .setProject(studyTable.getProject())//
+      .setTable(studyTable.getTable()) //
+      .setWeight(studyTable.getWeight()) //
+      .setStudyId(studyTable.getStudyId()) //
+      .setPopulationId(studyTable.getPopulationId()) //
+      .setDataCollectionEventId(studyTable.getDataCollectionEventId()) //
+      .setDceId(studyTable.getDataCollectionEventUId());
 
-    if(includeSummary) builder.setStudySummary(studySummaryDtos.asDto(studyTable.getStudyId()));
+    if(includeSummary) sbuilder.setStudySummary(studySummaryDtos.asDto(studyTable.getStudyId()));
 
-    return builder;
+    sbuilder.addAllName(localizedStringDtos.asDto(studyTable.getName()));
+    sbuilder.addAllDescription(localizedStringDtos.asDto(studyTable.getDescription()));
+
+    return sbuilder;
   }
 
-  public Mica.DatasetVariableAggregationDto.Builder asDto(@NotNull StudyTable studyTable,
+  public Mica.DatasetVariableAggregationDto.Builder asDto(@NotNull OpalTable opalTable,
     @Nullable Math.SummaryStatisticsDto summary) {
     Mica.DatasetVariableAggregationDto.Builder aggDto = Mica.DatasetVariableAggregationDto.newBuilder();
 
@@ -359,15 +382,43 @@ class DatasetDtos {
       aggDto = asDto(summary.getExtension(Math.BinarySummaryDto.binarySummary));
     }
 
-    aggDto.setStudyTable(asDto(studyTable));
+    if(opalTable instanceof StudyTable)
+      aggDto.setStudyTable(asDto((StudyTable) opalTable));
+    else if (opalTable instanceof NetworkTable)
+      aggDto.setNetworkTable(asDto((NetworkTable) opalTable));
+
 
     return aggDto;
   }
 
-  public Mica.DatasetVariableContingencyDto.Builder asContingencyDto(@NotNull StudyTable studyTable,
+  public Mica.DatasetDto.NetworkTableDto.Builder asDto(NetworkTable networkTable) {
+    return asDto(networkTable, false);
+  }
+
+  public Mica.DatasetDto.NetworkTableDto.Builder asDto(NetworkTable networkTable, boolean includeSummary) {
+    Mica.DatasetDto.NetworkTableDto.Builder sbuilder = Mica.DatasetDto.NetworkTableDto.newBuilder() //
+      .setProject(networkTable.getProject())//
+      .setTable(networkTable.getTable()) //
+      .setWeight(networkTable.getWeight()) //
+      .setNetworkId(networkTable.getNetworkId());
+
+    if(includeSummary) sbuilder.setNetworkSummary(networkSummaryDtos.asDto(networkTable.getNetworkId(), false));
+
+    sbuilder.addAllName(localizedStringDtos.asDto(networkTable.getName()));
+    sbuilder.addAllDescription(localizedStringDtos.asDto(networkTable.getDescription()));
+
+    return sbuilder;
+  }
+
+  public Mica.DatasetVariableContingencyDto.Builder asContingencyDto(@NotNull OpalTable opalTable,
     DatasetVariable variable, DatasetVariable crossVariable, @Nullable Search.QueryResultDto results) {
     Mica.DatasetVariableContingencyDto.Builder crossDto = Mica.DatasetVariableContingencyDto.newBuilder();
-    crossDto.setStudyTable(asDto(studyTable, true));
+
+    if(opalTable instanceof StudyTable)
+      crossDto.setStudyTable(asDto((StudyTable) opalTable, true));
+    else if (opalTable instanceof NetworkTable)
+      crossDto.setNetworkTable(asDto((NetworkTable) opalTable, true));
+
     Mica.DatasetVariableAggregationDto.Builder allAggBuilder = Mica.DatasetVariableAggregationDto.newBuilder();
 
     if(results == null) {
@@ -587,6 +638,10 @@ class DatasetDtos {
         ext.getStudyTablesList().forEach(tableDto -> harmonizationDataset.addStudyTable(fromDto(tableDto)));
       }
 
+      if(ext.getNetworkTablesCount() > 0) {
+        ext.getNetworkTablesList().forEach(tableDto -> harmonizationDataset.addNetworkTable(fromDto(tableDto)));
+      }
+
       String networkId = ext.getNetworkId();
       harmonizationDataset.setNetworkId(Strings.isNullOrEmpty(networkId) ? null : networkId);
       dataset = harmonizationDataset;
@@ -615,6 +670,20 @@ class DatasetDtos {
     table.setDataCollectionEventId(dto.getDataCollectionEventId());
     table.setProject(dto.getProject());
     table.setTable(dto.getTable());
+    table.setWeight(dto.getWeight());
+
+    table.setName(localizedStringDtos.fromDto(dto.getNameList()));
+    table.setDescription(localizedStringDtos.fromDto(dto.getDescriptionList()));
+
+    return table;
+  }
+
+  private NetworkTable fromDto(Mica.DatasetDto.NetworkTableDto dto) {
+    NetworkTable table = new NetworkTable();
+    table.setNetworkId(dto.getNetworkId());
+    table.setProject(dto.getProject());
+    table.setTable(dto.getTable());
+    table.setWeight(dto.getWeight());
 
     table.setName(localizedStringDtos.fromDto(dto.getNameList()));
     table.setDescription(localizedStringDtos.fromDto(dto.getDescriptionList()));

@@ -486,16 +486,29 @@ message DatasetDto {
 
   extensions 1000 to max;
 
+  message NetworkTableDto {
+    required string project = 1;
+    required string table = 2;
+    repeated LocalizedStringDto name = 3;
+    repeated LocalizedStringDto description = 4;
+
+    required string networkId = 5;
+    optional NetworkSummaryDto networkSummary = 6;
+    optional int32 weight = 7;
+  }
+
   message StudyTableDto {
-    required string studyId = 1;
-    required string populationId = 2;
-    required string dataCollectionEventId = 3;
-    required string project = 4;
-    required string table = 5;
-    optional string dceId = 6;
-    repeated LocalizedStringDto name = 7;
-    repeated LocalizedStringDto description = 8;
+    required string project = 1;
+    required string table = 2;
+    repeated LocalizedStringDto name = 3;
+    repeated LocalizedStringDto description = 4;
+
+    required string studyId = 5;
+    required string populationId = 6;
+    required string dataCollectionEventId = 7;
+    optional string dceId = 8;
     optional StudySummaryDto studySummary = 9;
+    optional int32 weight = 10;
   }
 }
 
@@ -513,6 +526,7 @@ message HarmonizationDatasetDto {
   required string table = 2;
   repeated DatasetDto.StudyTableDto studyTables = 3;
   optional string networkId = 4;
+  repeated DatasetDto.NetworkTableDto networkTables = 5;
   extensions 1000 to max;
 
   extend DatasetDto {
@@ -553,6 +567,7 @@ message DatasetVariableDto {
   repeated LocalizedStringDto datasetName = 17;
   repeated StudySummaryDto studySummaries = 18;
   repeated TermAttributesDto termAttributes = 19;
+  repeated NetworkSummaryDto networkSummaries = 20;
 }
 
 message DatasetVariablesDto {
@@ -578,12 +593,14 @@ message DatasetVariableResolverDto {
   optional string networkId = 13;
   repeated LocalizedStringDto networkName = 14;
   repeated LocalizedStringDto networkAcronym = 15;
+  optional string networkTableId = 16;
 }
 
 message DatasetVariableSummaryDto {
   required DatasetVariableResolverDto resolver = 1;
   repeated AttributeDto attributes = 2;
   optional DatasetDto.StudyTableDto studyTable = 3;
+  optional DatasetDto.NetworkTableDto networkTable = 4;
 }
 
 message DatasetVariableHarmonizationDto {
@@ -622,6 +639,7 @@ message DatasetVariableAggregationDto {
   optional StatisticsDto statistics = 5;
   optional string term = 6;
   optional bool missing = 7;
+  optional DatasetDto.NetworkTableDto networkTable = 8;
 }
 
 message DatasetVariableAggregationsDto {
@@ -637,6 +655,7 @@ message DatasetVariableContingencyDto {
   repeated DatasetVariableAggregationDto aggregations = 2;
   optional DatasetVariableAggregationDto all = 3;
   optional int32 privacyThreshold = 4;
+  optional DatasetDto.NetworkTableDto networkTable = 5;
 }
 
 message DatasetVariableContingenciesDto {

@@ -17,11 +17,11 @@ import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.network.domain.NetworkState;
 import org.obiba.mica.network.service.NetworkService;
+import org.obiba.mica.network.service.PublishedNetworkService;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-
 
 @Component
 @SuppressWarnings("StaticMethodOnlyUsedInOneClass")
@@ -43,6 +43,15 @@ class NetworkSummaryDtos {
 
   @Inject
   private EntityStateDtos entityStateDtos;
+
+  @Inject
+  private PublishedNetworkService publishedNetworkService;
+
+  @NotNull
+  public Mica.NetworkSummaryDto asDto(@NotNull String id, boolean asDraft) {
+    Network network = networkService.findById(id);
+    return asDto(network, asDraft);
+  }
 
   @NotNull
   public Mica.NetworkSummaryDto asDto(@NotNull Network network, boolean asDraft) {
@@ -89,6 +98,18 @@ class NetworkSummaryDtos {
       });
 
     return builder.build();
+  }
+
+  @NotNull
+  Mica.NetworkSummaryDto asDto(String networkId) {
+    NetworkState networkState = networkService.getEntityState(networkId);
+
+    if(networkState.isPublished()) {
+      Network network = publishedNetworkService.findById(networkId);
+      if(network != null) return asDto(network, false);
+    }
+
+    return asDto(networkId, true);
   }
 
   @NotNull

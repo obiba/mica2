@@ -32,6 +32,13 @@ mica.network
       });
     }])
 
+  .factory('DraftNetworkProjectsResource', ['$resource',
+    function ($resource) {
+      return $resource('ws/draft/network/:id/projects', {}, {
+        'get': {method: 'GET', errorHandler: true}
+      });
+    }])
+
   .factory('DraftNetworkPermissionsResource', ['$resource',
     function ($resource) {
       return $resource('ws/draft/network/:id/permissions', {}, {
