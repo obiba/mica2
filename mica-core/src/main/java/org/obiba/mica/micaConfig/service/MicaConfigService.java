@@ -161,7 +161,7 @@ public class MicaConfigService {
     MicaConfig config = getOrCreateMicaConfig();
     JsonNode original = objectMapper.readTree(translations);
 
-    if (config.hasTranslations()) {
+    if (config.hasTranslations() && config.getTranslations().get(locale) != null) {
       JsonNode custom = objectMapper.readTree(config.getTranslations().get(locale));
       return mergeJson(original, custom).toString();
     }
