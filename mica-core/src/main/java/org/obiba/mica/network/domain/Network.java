@@ -85,6 +85,9 @@ public class Network extends AbstractGitPersistable implements AttributeAware, P
 
   private List<String> networkIds = Lists.newArrayList();
 
+  @URL
+  private String opal;
+
   //
   // Accessors
   //
@@ -360,6 +363,14 @@ public class Network extends AbstractGitPersistable implements AttributeAware, P
         put(self.getClass().getSimpleName(), self);
       }
     };
+  }
+
+  public String getOpal() {
+    return opal;
+  }
+
+  public void setOpal(String opal) {
+    this.opal = opal;
   }
 
   private void replaceExisting(List<Person> persons) {

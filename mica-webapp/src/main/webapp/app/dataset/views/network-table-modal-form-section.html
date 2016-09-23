@@ -1,0 +1,16 @@
+<div>
+  <p class="help-block" translate>dataset.network-table.info</p>
+
+  <div class="form-group">
+    <label class="control-label">
+      <span translate>network.label</span>
+      <span>*</span>
+    </label>
+    <ui-select theme="bootstrap" ng-model="selected.network" reset-search-input="true" required="true">
+      <ui-select-match>{{$select.selected.id}}</ui-select-match>
+      <ui-select-choices repeat="network in networks| filter: {id: $select.search}">
+        <span ng-bind-html="network.id | highlight: $select.search"></span>
+      </ui-select-choices>
+    </ui-select>
+  </div>
+</div>

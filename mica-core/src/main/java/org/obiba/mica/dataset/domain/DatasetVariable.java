@@ -16,9 +16,6 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
 import org.obiba.magma.Variable;
 import org.obiba.magma.support.VariableNature;
 import org.obiba.mica.core.domain.Attribute;
@@ -29,6 +26,10 @@ import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.core.domain.NetworkTable;
 import org.obiba.mica.core.domain.OpalTable;
 import org.obiba.mica.core.domain.StudyTable;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 
 
 public class DatasetVariable implements Indexable, AttributeAware {
@@ -214,6 +215,10 @@ public class DatasetVariable implements Indexable, AttributeAware {
 
   public List<String> getStudyIds() {
     return studyIds;
+  }
+
+  public List<String> getNetworkTableIds() {
+    return networkTableIds;
   }
 
   public List<String> getDceIds() {

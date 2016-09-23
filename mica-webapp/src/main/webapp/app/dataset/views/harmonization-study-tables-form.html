@@ -1,31 +1,21 @@
-<!DOCTYPE html>
-<!--
-  ~ Copyright (c) 2014 OBiBa. All rights reserved.
-  ~
-  ~ This program and the accompanying materials
-  ~ are made available under the terms of the GNU Public License v3.0.
-  ~
-  ~ You should have received a copy of the GNU General Public License
-  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
-  -->
-
 <div class="voffset4">
-  <h3 translate>dataset.study-tables.title</h3>
+  <h3 translate>dataset.harmonized-tables.title</h3>
 
-  <p class="help-block" translate>dataset.study-tables.info</p>
+  <p class="help-block" translate>dataset.harmonized-tables.info</p>
 
   <button type="button" class="btn btn-info btn-sm voffset2" ng-click="addStudyTable(tab)">
     <i class="fa fa-plus"></i> <span translate>dataset.add-study-table</span>
   </button>
 
-
-  <div ng-show="dataset['obiba.mica.HarmonizationDatasetDto.type'].studyTables">
+  <button type="button" class="btn btn-info btn-sm voffset2" ng-click="addNetworkTable(tab)">
+    <i class="fa fa-plus"></i> <span translate>dataset.add-network-table</span>
+  </button>
+  <div ng-show="opalTables && opalTables.length">
     <table class="table table-bordered table-striped" ng-show="dataset['obiba.mica.HarmonizationDatasetDto.type']">
       <thead>
       <tr>
         <th translate>study.label</th>
-        <th translate>study.population</th>
-        <th translate>study.data-collection-event</th>
+        <th translate>type</th>
         <th translate>dataset.project</th>
         <th translate>dataset.table</th>
         <th translate>dataset.table-name</th>
@@ -35,41 +25,41 @@
       </tr>
       </thead>
       <tbody>
-      <tr ng-repeat="studyTable in dataset['obiba.mica.HarmonizationDatasetDto.type'].studyTables">
-        <td>
-          <a ng-href="#/study/{{studyTable.studyId}}">
-            {{studyTable.studyId}}
+      <tr ng-repeat="wrapper in opalTables">
+        <td >
+          <a ng-show="wrapper.type === 'studyTable'" ng-href="#/study/{{wrapper.table.studyId}}">
+            {{wrapper.table.studyId}}
+          </a>
+          <a ng-show="wrapper.type === 'networkTable'" ng-href="#/network/{{wrapper.table.networkId}}">
+            {{wrapper.table.networkId}}
           </a>
         </td>
         <td>
-          {{studyTable.populationId}}
+          {{(wrapper.type === 'studyTable' ? 'study.label' : 'network.label') | translate}}
         </td>
         <td>
-          {{studyTable.dataCollectionEventId}}
+          {{wrapper.table.project}}
         </td>
         <td>
-          {{studyTable.project}}
+          {{wrapper.table.table}}
         </td>
         <td>
-          {{studyTable.table}}
+          <localized value="wrapper.table.name" lang="tab.lang"></localized>
         </td>
         <td>
-          <localized value="studyTable.name" lang="tab.lang"></localized>
+          <localized value="wrapper.table.description" lang="tab.lang"></localized>
         </td>
         <td>
-          <localized value="studyTable.description" lang="tab.lang"></localized>
+          <a href="" ng-click="editOpalTable(wrapper, tab)" class="action"><i class="fa fa-pencil"></i></a>
+          <a href="" ng-click="deleteOpalTable(wrapper)" class="action"><i class="fa fa-trash-o"></i></a>
         </td>
         <td>
-          <a href="" ng-click="editStudyTable($index, tab)" class="action"><i class="fa fa-pencil"></i></a>
-          <a href="" ng-click="deleteStudyTable($index)" class="action"><i class="fa fa-trash-o"></i></a>
-        </td>
-        <td>
-          <ul class="list-inline">
+          <ul class="list-inline no-wrap">
             <li ng-show="!$last">
-              <a href ng-click="moveStudyDown($index)" title="{{'down' | translate}}"><i class="fa fa-arrow-down"></i></a>
+              <a href ng-click="moveOpalTableDown($index)" title="{{'down' | translate}}"><i class="fa fa-arrow-down"></i></a>
             </li>
             <li ng-show="!$first">
-              <a href ng-click="moveStudyUp($index)" title="{{'up' | translate}}"><i class="fa fa-arrow-up"></i></a>
+              <a href ng-click="moveOpalTableUp($index)" title="{{'up' | translate}}"><i class="fa fa-arrow-up"></i></a>
             </li>
           </ul>
         </td>

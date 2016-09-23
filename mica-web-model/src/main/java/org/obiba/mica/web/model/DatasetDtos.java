@@ -19,8 +19,6 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.Maps;
 import org.obiba.mica.JSONUtils;
 import org.obiba.mica.core.domain.Attributes;
 import org.obiba.mica.core.domain.NetworkTable;
@@ -45,6 +43,9 @@ import org.obiba.opal.core.domain.taxonomy.Vocabulary;
 import org.obiba.opal.web.model.Math;
 import org.obiba.opal.web.model.Search;
 import org.springframework.stereotype.Component;
+
+import com.google.common.base.Strings;
+import com.google.common.collect.Maps;
 
 
 @Component
@@ -194,7 +195,7 @@ class DatasetDtos {
       builder.setStudyId(resolver.getStudyId());
     }
     if(resolver.hasNetworkId()) {
-      builder.setNetworkId(resolver.getNetworkId());
+      builder.setNetworkTableId(resolver.getNetworkId());
     }
     if(resolver.hasProject()) {
       builder.setProject(resolver.getProject());
@@ -229,6 +230,12 @@ class DatasetDtos {
       builder.addAllStudyIds(variable.getStudyIds());
       for(String studyId : variable.getStudyIds()) {
         builder.addStudySummaries(studySummaryDtos.asDto(studyId));
+      }
+    }
+
+    if(variable.getNetworkTableIds() != null) {
+      for(String networkId : variable.getNetworkTableIds()) {
+        builder.addNetworkSummaries(networkSummaryDtos.asDto(networkId));
       }
     }
 

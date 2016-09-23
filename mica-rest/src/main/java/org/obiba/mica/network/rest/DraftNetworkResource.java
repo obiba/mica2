@@ -11,6 +11,8 @@
 package org.obiba.mica.network.rest;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.List;
 
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
@@ -30,6 +32,7 @@ import org.obiba.mica.core.domain.RevisionStatus;
 import org.obiba.mica.core.service.AbstractGitPersistableService;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.rest.FileResource;
+import org.obiba.mica.micaConfig.service.OpalService;
 import org.obiba.mica.network.NoSuchNetworkException;
 import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.network.domain.NetworkState;
@@ -37,6 +40,7 @@ import org.obiba.mica.network.service.NetworkService;
 import org.obiba.mica.security.rest.SubjectAclResource;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
+import org.obiba.opal.web.model.Projects;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -56,6 +60,9 @@ public class DraftNetworkResource extends AbstractGitPersistableResource<Network
 
   @Inject
   private ApplicationContext applicationContext;
+
+  @Inject
+  private OpalService opalService;
 
   private String id;
 
@@ -158,6 +165,13 @@ public class DraftNetworkResource extends AbstractGitPersistableResource<Network
     subjectAclResource.setResourceInstance("/network", id);
     subjectAclResource.setFileResourceInstance("/file", "/network/" + id);
     return subjectAclResource;
+  }
+
+  @GET
+  @Path("/projects")
+  public List<Projects.ProjectDto> projects() throws URISyntaxException {
+    subjectAclService.checkPermission("/draft/network", "VIEW", id);
+    return opalService.getProjectDtos(networkService.findById(id).getOpal());
   }
 
   @Override

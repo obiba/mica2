@@ -560,9 +560,17 @@
       "title": "Study Table",
       "info": "A study table defines which study data collection event it applies to and which Opal table the variables and data summaries are to be extracted from."
     },
+    "network-table": {
+      "title": "Network Table",
+      "info": "A network table defines which network it applies to and which Opal table the variables and data summaries are to be extracted from."
+    },
     "study-tables": {
       "title": "Study Tables",
       "info": "The study tables define implementations of the Data Schema variables. The data summaries will be extracted from the corresponding Opal tables."
+    },
+    "harmonized-tables": {
+      "title": "Harmonized Tables",
+      "info": "The study tables define implementations of the Data Schema variables by a study in the context of a population's data collection event. The network tables define implementations of the Data Schema variables by a network based on previously harmonized data. The data summaries will be extracted from the corresponding Opal tables."
     },
     "restore-dialog": {
       "title": "Restoring Dataset from Revision",
@@ -582,6 +590,7 @@
     },
     "index": "Index",
     "add-study-table": "Add Study Table",
+    "add-network-table": "Add Network Table",
     "none": "No datasets.",
     "crosstab": {
       "title": "Contingency Table",

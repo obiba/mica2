@@ -559,9 +559,17 @@
       "title": "Table d'étude",
       "info": "La table d'étude définie à quel événement de collecte elle s'applique et à partir de quelle table Opal il faut extraire les variables et les données sommaires."
     },
+    "network-table": {
+      "title": "Table de réseau",
+      "info": "La table de réseau définie à quel événement de collecte elle s'applique et à partir de quelle table Opal il faut extraire les variables et les données sommaires."
+    },
     "study-tables": {
       "title": "Tables d'étude",
       "info": "Les tables d'étude définissent les implémentations des variables du schéma de données. Les sommaires de données seront extraites des tables Opal correspondantes."
+    },
+    "harmonized-tables": {
+      "title": "Tables harmonisées",
+      "info": "Les tables d'étude définissent les implémentations des variables du schéma de données par une étude dans le cadre de l'événement de collecte de données d'une population. Les tables de réseau définissent les implémentations des variables du schéma de données par un réseau basé sur des données déjà harmonisées. Les résumés de données seront extraites des tables Opal correspondant."
     },
     "restore-dialog": {
       "title": "Restaurer un ensemble de données à partir d'une révision",
@@ -581,6 +589,7 @@
     },
     "index": "Index",
     "add-study-table": "Ajouter une table d'étude",
+    "add-network-table": "Ajouter une table de réseau",
     "none": "Aucun ensemble de données.",
     "crosstab": {
       "title": "Table de contingence",
