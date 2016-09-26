@@ -99,8 +99,6 @@ mica.dataset
     'StudyStatesResource',
     'StudyStateProjectsResource',
     'FormDirtyStateObserver',
-    'EntityFormResource',
-    'LocalizedSchemaFormService',
 
     function ($rootScope,
               $scope,
@@ -116,9 +114,7 @@ mica.dataset
               FormServerValidation,
               StudyStatesResource,
               StudyStateProjectsResource,
-              FormDirtyStateObserver,
-              EntityFormResource,
-              LocalizedSchemaFormService) {
+              FormDirtyStateObserver) {
       $scope.studies = [];
       $scope.projects = [];
       $scope.selected = {};
