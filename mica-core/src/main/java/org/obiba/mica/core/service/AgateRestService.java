@@ -22,10 +22,8 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
 import org.apache.http.client.HttpClient;
-import org.apache.http.conn.scheme.Scheme;
-import org.apache.http.conn.scheme.SchemeSocketFactory;
-import org.apache.http.conn.ssl.SSLSocketFactory;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.shiro.codec.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,6 +37,8 @@ public abstract class AgateRestService {
   private static final Logger log = LoggerFactory.getLogger(AgateRestService.class);
 
   protected static final int DEFAULT_HTTPS_PORT = 443;
+
+  protected static final long MAX_IDLE_TIME = 30000L;
 
   protected static final String APPLICATION_AUTH_HEADER = "X-App-Auth";
 
@@ -101,15 +101,14 @@ public abstract class AgateRestService {
   }
 
   protected HttpClient createHttpClient() {
-    DefaultHttpClient httpClient = new DefaultHttpClient();
+    HttpClientBuilder builder = HttpClientBuilder.create();
     try {
-      httpClient.getConnectionManager().getSchemeRegistry()
-        .register(new Scheme("https", DEFAULT_HTTPS_PORT, getSocketFactory()));
+      builder.setSSLSocketFactory(getSocketFactory());
     } catch(NoSuchAlgorithmException | KeyManagementException e) {
       throw new RuntimeException(e);
     }
 
-    return httpClient;
+    return builder.build();
   }
 
   /**
@@ -119,7 +118,7 @@ public abstract class AgateRestService {
    * @throws NoSuchAlgorithmException
    * @throws KeyManagementException
    */
-  private SchemeSocketFactory getSocketFactory() throws NoSuchAlgorithmException, KeyManagementException {
+  private SSLConnectionSocketFactory getSocketFactory() throws NoSuchAlgorithmException, KeyManagementException {
     // Accepts any SSL certificate
     TrustManager tm = new X509TrustManager() {
 
@@ -141,6 +140,6 @@ public abstract class AgateRestService {
     SSLContext sslContext = SSLContext.getInstance("TLS");
     sslContext.init(null, new TrustManager[] { tm }, null);
 
-    return new SSLSocketFactory(sslContext, SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
+    return new SSLConnectionSocketFactory(sslContext, SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
   }
 }
