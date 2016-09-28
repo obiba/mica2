@@ -1256,8 +1256,8 @@
       "info": "A PDF template is to be provided with field names matching the application form schema."
     },
     "pdf-embedded": {
-      "title": "PDF Embedded Generator",
-      "info": "Mica's internal module is used to generate a PDF."
+      "title": "Printable Page",
+      "info": "Render the data access request form as a printable page."
     },
     "schema-form": {
       "title": "Application Form",
