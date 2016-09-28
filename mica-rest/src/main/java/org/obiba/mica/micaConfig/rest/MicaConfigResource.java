@@ -56,17 +56,22 @@ import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.opal.web.model.Opal;
 import org.obiba.opal.web.model.Projects;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.codahale.metrics.annotation.Timed;
 import com.google.common.collect.Sets;
 import com.google.common.eventbus.EventBus;
+import org.springframework.web.client.RestClientException;
 
 import static java.util.stream.Collectors.toList;
 
 @Component
 @Path("/config")
 public class MicaConfigResource {
+
+  private static final Logger logger = LoggerFactory.getLogger(MicaConfigResource.class);
 
   @Inject
   private MicaConfigService micaConfigService;
@@ -130,7 +135,7 @@ public class MicaConfigResource {
   @Produces("application/json")
   public Response getTranslation(@PathParam("locale") String locale, @QueryParam("default") boolean _default) throws IOException {
 
-    String userProfileTranslations = userProfileService.getUserProfileTranslations(locale);
+    String userProfileTranslations = getUserProfileTranslations(locale);
     String micaTranslations = micaConfigService.getTranslations(locale, _default);
 
     DocumentContext globalTranslations = JsonPath.parse(micaTranslations);
@@ -297,6 +302,15 @@ public class MicaConfigResource {
       keyStoreService.createOrUpdateCertificate(name, alias, keyForm.getPrivateImport(), keyForm.getPublicImport());
     } else {
       throw new WebApplicationException("Missing public key", Response.Status.BAD_REQUEST);
+    }
+  }
+
+  private String getUserProfileTranslations(String locale) {
+    try {
+      return userProfileService.getUserProfileTranslations(locale);
+    } catch (RestClientException e) {
+      logger.warn("Cannot get translations about userProfile (from agate)", e);
+      return "{}";
     }
   }
 
