@@ -30,13 +30,14 @@
     "angular-ui-sortable": ">=0.12.11",
     "bootstrap-vertical-tabs": "~1.2.0"
   },
-  "_release": "15ce20e759",
+  "version": "1.0.0",
+  "_release": "1.0.0",
   "_resolution": {
-    "type": "branch",
-    "branch": "master",
-    "commit": "15ce20e759568ee81465aa104dbca3aba7b07854"
+    "type": "version",
+    "tag": "1.0.0",
+    "commit": "59a759bc80f7d9660489e02f84513ccd839a1076"
   },
   "_source": "https://github.com/obiba/angular-schema-form-bootstrap.git",
-  "_target": "master",
+  "_target": "1.0.0",
   "_originalSource": "https://github.com/obiba/angular-schema-form-bootstrap.git"
 }

@@ -1,14 +1,16 @@
 /*!
- * ng-obiba-mica - v1.3.x
+ * ng-obiba-mica - v1.3.0
  * https://github.com/obiba/ng-obiba-mica
 
  * License: GNU Public License version 3
- * Date: 2016-09-14
+ * Date: 2016-09-28
  */
 'use strict';
 
 function NgObibaMicaUrlProvider() {
   var registry = {
+    'DataAccessClientDetailPath': '',
+    'DataAccessClientListPath': '',
     'DataAccessFormConfigResource': 'ws/config/data-access-form',
     'DataAccessRequestsResource': 'ws/data-access-requests',
     'DataAccessRequestsExportCsvResource': 'ws/data-access-requests/csv?lang=:lang',
@@ -649,6 +651,16 @@ angular.module('obiba.mica.access')
         return ngObibaMicaUrl.getUrl('DataAccessRequestsExportCsvResource').replace(':lang', $translate.use());
       };
 
+      $scope.getDataAccessRequestPageUrl = function () {
+        var DataAccessClientDetailPath = ngObibaMicaUrl.getUrl('DataAccessClientDetailPath');
+        if(DataAccessClientDetailPath){
+          return ngObibaMicaUrl.getUrl('BaseUrl') + ngObibaMicaUrl.getUrl('DataAccessClientDetailPath');
+        }
+        else{
+          return null;
+        }
+      };
+
       $scope.$on(NOTIFICATION_EVENTS.confirmDialogAccepted, function (event, id) {
         if ($scope.requestToDelete === id) {
           DataAccessRequestResource.delete({id: $scope.requestToDelete},
@@ -976,6 +988,8 @@ angular.module('obiba.mica.access')
         });
       };
 
+      $scope.getDataAccessListPageUrl = DataAccessRequestService.getListDataAccessRequestPageUrl();
+
       var getAttributeValue = function(attributes, key) {
         var result = attributes.filter(function (attribute) {
           return attribute.key === key;
@@ -1083,6 +1097,8 @@ angular.module('obiba.mica.access')
       };
 
       $scope.sfOptions = SfOptionsService.sfOptions;
+
+      $scope.getDataAccessListPageUrl = DataAccessRequestService.getListDataAccessRequestPageUrl();
 
       var validate = function() {
         $scope.$broadcast('schemaFormValidate');
@@ -1336,8 +1352,8 @@ angular.module('obiba.mica.access')
 
   })
 
-  .service('DataAccessRequestService', ['$translate', 'SessionProxy', 'USER_ROLES',
-    function ($translate, SessionProxy, USER_ROLES) {
+  .service('DataAccessRequestService', ['$translate', 'SessionProxy', 'USER_ROLES', 'ngObibaMicaUrl',
+    function ($translate, SessionProxy, USER_ROLES, ngObibaMicaUrl) {
       var statusList = {
         OPENED: 'OPENED',
         SUBMITTED: 'SUBMITTED',
@@ -1511,6 +1527,16 @@ angular.module('obiba.mica.access')
         }
 
         return id;
+      };
+
+      this.getListDataAccessRequestPageUrl = function () {
+        var DataAccessClientListPath = ngObibaMicaUrl.getUrl('DataAccessClientListPath');
+        if(DataAccessClientListPath){
+          return ngObibaMicaUrl.getUrl('BaseUrl') + ngObibaMicaUrl.getUrl('DataAccessClientListPath');
+        }
+        else{
+          return null;
+        }
       };
 
       return this;
@@ -8205,14 +8231,20 @@ angular.module("access/views/data-access-request-list.html", []).run(["$template
     "<div id=\"data-access-request-list\">\n" +
     "  <div ng-if=\"headerTemplateUrl\" ng-include=\"headerTemplateUrl\"></div>\n" +
     "\n" +
-    "  <a ng-href=\"#/data-access-request/new\" class=\"btn btn-info\" title=\"{{config.newRequestButtonHelpText}}\">\n" +
-    "    <i class=\"fa fa-plus\"></i>\n" +
-    "    <span>{{config.newRequestButtonCaption || 'data-access-request.add' | translate}}</span>\n" +
-    "  </a>\n" +
+    "  <div class=\"row\">\n" +
+    "    <div class=\"col-xs-12\">\n" +
+    "      <a ng-href=\"#/data-access-request/new\" class=\"btn btn-info\">\n" +
+    "        <i class=\"fa fa-plus\"></i>\n" +
+    "        <span>{{config.newRequestButtonCaption || 'data-access-request.add' | translate}}</span>\n" +
+    "      </a>\n" +
     "\n" +
-    "  <a ng-if=\"requests.length > 0\" target=\"_self\" download class=\"btn btn-info pull-right\" ng-href=\"{{getCsvExportHref()}}\">\n" +
-    "    <i class=\"fa fa-download\"></i> {{'report' | translate}}\n" +
-    "  </a>\n" +
+    "      <span ng-bind-html=\"config.newRequestButtonHelpText\"></span>\n" +
+    "\n" +
+    "      <a ng-if=\"requests.length > 0\" target=\"_self\" download class=\"btn btn-info pull-right\" ng-href=\"{{getCsvExportHref()}}\">\n" +
+    "        <i class=\"fa fa-download\"></i> {{'report' | translate}}\n" +
+    "      </a>\n" +
+    "    </div>\n" +
+    "  </div>\n" +
     "\n" +
     "  <p class=\"help-block\" ng-if=\"requests.length == 0 && !loading\">\n" +
     "    <span translate>data-access-request.none</span>\n" +
@@ -8267,7 +8299,7 @@ angular.module("access/views/data-access-request-list.html", []).run(["$template
     "        <tr\n" +
     "            dir-paginate=\"request in requests | filter:{status: searchStatus.filter} | filter:searchText | itemsPerPage: 20\">\n" +
     "          <td>\n" +
-    "            <a ng-href=\"#/data-access-request/{{request.id}}\"\n" +
+    "            <a ng-href=\"{{getDataAccessRequestPageUrl()}}#/data-access-request/{{request.id}}\"\n" +
     "                ng-if=\"actions.canView(request)\" translate>{{request.id}}</a>\n" +
     "            <span ng-if=\"!actions.canView(request)\">{{request.id}}</span>\n" +
     "          </td>\n" +
@@ -8374,8 +8406,13 @@ angular.module("access/views/data-access-request-profile-user-modal.html", []).r
     "        <td>{{getProfileEmail(applicant)}}</td>\n" +
     "      </tr>\n" +
     "      <tr ng-repeat=\"attribute in applicant.attributes | filterProfileAttributes\">\n" +
-    "        <th>{{attribute.key | translate}}</th>\n" +
-    "        <td>{{attribute.value}}</td>\n" +
+    "          <th>{{\n" +
+    "              ('userProfile.' + attribute.key | translate) !== ('userProfile.' + attribute.key) ?\n" +
+    "              ('userProfile.' + attribute.key | translate) :\n" +
+    "              (attribute.key)\n" +
+    "              }}\n" +
+    "          </th>\n" +
+    "          <td>{{attribute.value}}</td>\n" +
     "      </tr>\n" +
     "      </tbody>\n" +
     "    </table>\n" +
