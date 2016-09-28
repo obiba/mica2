@@ -1,6 +1,6 @@
 {
   "name": "ng-obiba-mica",
-  "version": "1.3.x",
+  "version": "1.3.0",
   "description": "OBiBa AngularJS Mica Components",
   "main": "Gruntfile.js",
   "repository": {
