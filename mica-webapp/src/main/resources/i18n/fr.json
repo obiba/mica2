@@ -920,7 +920,7 @@
   "item-selected": "item sélectionné",
   "files-selected": "fichiers sélectionnés",
   "file-selected": "fichier sélectionné",
-  "form": "De",
+  "form": "Formulaire",
   "settings": "Paramètres",
   "other-settings": "Autres paramètres",
   "revisions": "Révisions",
@@ -1246,8 +1246,8 @@
       "info": "Un modèle PDF doit être fourni avec les noms de champs correspondants au schéma du formulaire d'application."
     },
     "pdf-embedded": {
-      "title": "Generator embarqué de PDF",
-      "info": "Un module interne de Mica est utilisé pour générer un fichier PDF."
+      "title": "Page imprimable",
+      "info": "Le formulaire sera rendu comme une page imprimable."
     },
     "schema-form": {
       "title": "Formulaire de demande",
