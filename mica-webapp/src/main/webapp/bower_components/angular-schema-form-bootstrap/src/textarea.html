@@ -1,4 +1,5 @@
-<div class="form-group has-feedback {{form.htmlClass}} schema-form-textarea" ng-class="{'has-error': form.disableErrorState !== true && hasError(), 'has-success': form.disableSuccessState !== true &&  hasSuccess()}">
+<div class="form-group has-feedback {{form.htmlClass}} schema-form-textarea" ng-controller="TextAreaController"
+     ng-class="{'has-error': form.disableErrorState !== true && hasError(), 'has-success': form.disableSuccessState !== true &&  hasSuccess()}">
   <label class="control-label {{form.labelHtmlClass}}" ng-class="{'sr-only': !showTitle()}" for="{{form.key.slice(-1)[0]}}">{{form.title}}</label>
   <p class="visible-print" ng-show="form.key"
      class="{{form.fieldHtmlClass}}"
@@ -7,7 +8,9 @@
 
   <!-- TODO check marks are not shown, should be fixed -->
   <div class="hidden-print">
-    <textarea ng-if="!form.fieldAddonLeft && !form.fieldAddonRight"
+    <div sf-field-model="replaceAll" ng-if="form.readonly" ng-bind-html="render($$value$$)"></div>
+
+    <textarea ng-if="!form.fieldAddonLeft && !form.fieldAddonRight && !form.readonly"
               class="form-control {{form.fieldHtmlClass}}"
               id="{{form.key.slice(-1)[0]}}"
               sf-changed="form"
@@ -18,7 +21,7 @@
               rows="{{form.rows}}"
               name="{{form.key.slice(-1)[0]}}"></textarea>
 
-    <div ng-if="form.fieldAddonLeft || form.fieldAddonRight"
+    <div ng-if="(form.fieldAddonLeft || form.fieldAddonRight) && !form.readonly"
          ng-class="{'input-group': (form.fieldAddonLeft || form.fieldAddonRight)}">
       <span ng-if="form.fieldAddonLeft"
             class="input-group-addon"

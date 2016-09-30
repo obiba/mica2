@@ -21,6 +21,9 @@
     "test",
     "tests"
   ],
+  "dependencies": {
+    "angular-marked": "~1.2.2"
+  },
   "devDependencies": {
     "angular-schema-form": "^0.8.13",
     "angular-schema-form-bootstrap": "^0.2.0",

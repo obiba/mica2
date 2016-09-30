@@ -1,6 +1,6 @@
 {
   "name": "ng-obiba",
-  "version": "1.4.0",
+  "version": "1.4.2",
   "description": "OBiBa AngularJS commons",
   "main": "Gruntfile.js",
   "repository": {
