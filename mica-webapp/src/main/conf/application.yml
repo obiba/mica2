@@ -81,6 +81,10 @@ cache:
 endpoints.jolokia.enabled: false
 
 async:
-    corePoolSize: 2
+    corePoolSize: 10
     maxPoolSize: 50
-    queueCapacity: 10000
+    queueCapacity: 1000
+    opal:
+      corePoolSize: 10
+      maxPoolSize: 50
+      queueCapacity: 1000

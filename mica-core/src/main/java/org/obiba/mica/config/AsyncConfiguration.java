@@ -15,6 +15,8 @@ import java.util.concurrent.Executor;
 import org.obiba.mica.core.ExceptionHandlingAsyncTaskExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;
+import org.springframework.aop.interceptor.SimpleAsyncUncaughtExceptionHandler;
 import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
@@ -24,8 +26,6 @@ import org.springframework.scheduling.annotation.AsyncConfigurer;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
-import org.springframework.aop.interceptor.SimpleAsyncUncaughtExceptionHandler;
-import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;
 
 @Configuration
 @EnableAsync
@@ -36,9 +36,9 @@ public class AsyncConfiguration implements AsyncConfigurer, EnvironmentAware {
 
   private static final int DEFAULT_MAX_POOL_SIZE = 50;
 
-  private static final int DEFAULT_QUEUE_CAPACITY = 10000;
+  private static final int DEFAULT_QUEUE_CAPACITY = 1000;
 
-  private static final int DEFAULT_POOL_SIZE = 2;
+  private static final int DEFAULT_POOL_SIZE = 10;
 
   private RelaxedPropertyResolver propertyResolver;
 
@@ -52,15 +52,25 @@ public class AsyncConfiguration implements AsyncConfigurer, EnvironmentAware {
     return new SimpleAsyncUncaughtExceptionHandler();
   }
 
-  @Bean
   @Override
+  @Bean
   public Executor getAsyncExecutor() {
-    log.debug("Creating Async Task Executor");
     ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
     executor.setCorePoolSize(propertyResolver.getProperty("corePoolSize", Integer.class, DEFAULT_POOL_SIZE));
     executor.setMaxPoolSize(propertyResolver.getProperty("maxPoolSize", Integer.class, DEFAULT_MAX_POOL_SIZE));
     executor.setQueueCapacity(propertyResolver.getProperty("queueCapacity", Integer.class, DEFAULT_QUEUE_CAPACITY));
     executor.setThreadNamePrefix("mica-executor-");
+    return new ExceptionHandlingAsyncTaskExecutor(executor);
+  }
+
+  @Bean(name="opalExecutor")
+  public Executor getOpalAsyncExecutor() {
+    log.debug("Creating Async Task Executor");
+    ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+    executor.setCorePoolSize(propertyResolver.getProperty("opal.corePoolSize", Integer.class, DEFAULT_POOL_SIZE));
+    executor.setMaxPoolSize(propertyResolver.getProperty("opal.maxPoolSize", Integer.class, DEFAULT_MAX_POOL_SIZE));
+    executor.setQueueCapacity(propertyResolver.getProperty("queueCapacity", Integer.class, DEFAULT_QUEUE_CAPACITY));
+    executor.setThreadNamePrefix("mica-opal-executor-");
     return new ExceptionHandlingAsyncTaskExecutor(executor);
   }
 }
