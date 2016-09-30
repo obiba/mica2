@@ -22,13 +22,6 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
-import com.google.common.base.Strings;
-import com.google.common.base.Throwables;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
-import com.google.common.eventbus.EventBus;
 import org.joda.time.DateTime;
 import org.obiba.magma.MagmaRuntimeException;
 import org.obiba.magma.NoSuchValueTableException;
@@ -73,6 +66,14 @@ import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
+
+import com.google.common.base.Strings;
+import com.google.common.base.Throwables;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
+import com.google.common.eventbus.EventBus;
 
 import static java.util.stream.Collectors.toList;
 
@@ -352,21 +353,6 @@ public class HarmonizationDatasetService extends DatasetService<HarmonizationDat
   private void saveInternal(HarmonizationDataset dataset, String comment) {
     HarmonizationDataset saved = prepareSave(dataset);
 
-    Iterable<DatasetVariable> variables;
-    Map<String, List<DatasetVariable>> harmonizationVariables;
-
-    try {
-      //getting variables first to fail fast when dataset is being published
-      variables = wrappedGetDatasetVariables(dataset);
-      harmonizationVariables = populateHarmonizedVariablesMap(dataset);
-    } catch(DatasourceNotAvailableException | InvalidDatasetException e) {
-      if(e instanceof DatasourceNotAvailableException) {
-        log.warn("Datasource not available.", e);
-      }
-      variables = Lists.newArrayList();
-      harmonizationVariables = Maps.newHashMap();
-    }
-
     HarmonizationDatasetState harmonizationDatasetState = findEntityState(dataset, HarmonizationDatasetState::new);
 
     if(!dataset.isNew()) ensureGitRepository(harmonizationDatasetState);
@@ -377,7 +363,7 @@ public class HarmonizationDatasetService extends DatasetService<HarmonizationDat
     saved.setLastModifiedDate(DateTime.now());
     harmonizationDatasetRepository.save(saved);
     gitService.save(saved, comment);
-    eventBus.post(new DatasetUpdatedEvent(saved, variables, harmonizationVariables));
+    helper.getPublishedVariables(saved);
   }
 
   protected HarmonizationDataset prepareSave(HarmonizationDataset dataset) {
@@ -523,6 +509,8 @@ public class HarmonizationDatasetService extends DatasetService<HarmonizationDat
 
   @Component
   public static class Helper {
+    @Inject
+    private EventBus eventBus;
 
     private static final Logger log = LoggerFactory.getLogger(HarmonizationDatasetService.Helper.class);
 
@@ -534,7 +522,7 @@ public class HarmonizationDatasetService extends DatasetService<HarmonizationDat
       log.info("cleared dataset variables cache dataset-{}", dataset.getId());
     }
 
-    @Async
+    @Async("opalExecutor")
     public Future<Iterable<DatasetVariable>> asyncGetDatasetVariables(Supplier<Iterable<DatasetVariable>> supp) {
       log.info("Getting dataset variables asynchronously.");
       return new AsyncResult<>(supp.get());
@@ -557,6 +545,23 @@ public class HarmonizationDatasetService extends DatasetService<HarmonizationDat
       })));
 
       log.info("done building variable summaries cache");
+    }
+
+    @Async
+    public void getPublishedVariables(HarmonizationDataset dataset) {
+      Iterable<DatasetVariable> variables;
+      Map<String, List<DatasetVariable>> harmonizationVariables;
+
+      try {
+        //getting variables first to fail fast when dataset is being published
+        variables = service.wrappedGetDatasetVariables(dataset);
+        harmonizationVariables = service.populateHarmonizedVariablesMap(dataset);
+        eventBus.post(new DatasetUpdatedEvent(dataset, variables, harmonizationVariables));
+      } catch(DatasourceNotAvailableException | InvalidDatasetException e) {
+        if(e instanceof DatasourceNotAvailableException) {
+          log.warn("Datasource not available.", e);
+        }
+      }
     }
   }
 }
