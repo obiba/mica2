@@ -42,7 +42,7 @@ angular.module('sfLocalizedString', [
     );
 
   }])
-  .controller('LocalizedStringController', ['$scope', '$rootScope', function ($scope, $rootScope) {
+  .controller('LocalizedStringController', ['$scope', '$rootScope', 'marked', function ($scope, $rootScope, marked) {
     $scope.$watch('ngModel.$modelValue', function () {
       if ($scope.ngModel.$validate) {
         // Make sure that allowInvalid is always true so that the model is preserved when validation fails
@@ -76,6 +76,13 @@ angular.module('sfLocalizedString', [
     $scope.$on('sfLocalizedStringLocaleChanged', function (event, locale) {
       $scope.selectedLocale = locale;
     });
+    
+    $scope.render = function (text) {
+      if (text && text[$scope.selectedLocale]) {
+        return marked(text[$scope.selectedLocale]);
+      }
+      return text[$scope.selectedLocale];
+    };
 
     $scope.open = false;
 

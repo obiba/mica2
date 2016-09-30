@@ -52,4 +52,12 @@ function(decoratorsProvider, sfBuilderProvider, sfPathProvider) {
     'default': {template: base + 'default.html', builder: defaults}
   }, []);
 
-}]);
+}])
+    .controller('TextAreaController', ['$scope', 'marked', function ($scope, marked) {
+      $scope.render = function (text) {
+        if (text) {
+          return marked(text);
+        }
+        return text;
+      };
+    }]);
