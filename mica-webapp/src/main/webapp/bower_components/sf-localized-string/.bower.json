@@ -20,6 +20,9 @@
     "test",
     "tests"
   ],
+  "dependencies": {
+    "angular-marked": "~1.2.2"
+  },
   "devDependencies": {
     "angular-schema-form": "^0.8.13",
     "angular-schema-form-bootstrap": "^0.2.0",
@@ -27,11 +30,11 @@
     "angular-bootstrap": "1.3.2"
   },
   "homepage": "https://github.com/obiba/sf-localized-string",
-  "_release": "8eb341eb99",
+  "_release": "1f18c7452a",
   "_resolution": {
     "type": "branch",
     "branch": "master",
-    "commit": "8eb341eb99c46993594de3e3ecc27b08d6046fec"
+    "commit": "1f18c7452af561f408205b0f65e3d1b1a51a2bef"
   },
   "_source": "https://github.com/obiba/sf-localized-string.git",
   "_target": "master",

@@ -18,7 +18,8 @@
     "tests"
   ],
   "dependencies": {
-    "angular-schema-form": ">= 0.8.7"
+    "angular-schema-form": ">= 0.8.7",
+    "angular-marked": "~1.2.2"
   },
   "devDependencies": {
     "angular-ui-ace": "bower",
@@ -30,11 +31,11 @@
     "angular-ui-sortable": ">=0.12.11",
     "bootstrap-vertical-tabs": "~1.2.0"
   },
-  "_release": "15ce20e759",
+  "_release": "41051d0f74",
   "_resolution": {
     "type": "branch",
     "branch": "master",
-    "commit": "15ce20e759568ee81465aa104dbca3aba7b07854"
+    "commit": "41051d0f7435203bf28d26138d0e19e7607c4846"
   },
   "_source": "https://github.com/obiba/angular-schema-form-bootstrap.git",
   "_target": "master",

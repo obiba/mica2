@@ -125,6 +125,16 @@ angular.module('obiba.mica.access')
         return ngObibaMicaUrl.getUrl('DataAccessRequestsExportCsvResource').replace(':lang', $translate.use());
       };
 
+      $scope.getDataAccessRequestPageUrl = function () {
+        var DataAccessClientDetailPath = ngObibaMicaUrl.getUrl('DataAccessClientDetailPath');
+        if(DataAccessClientDetailPath){
+          return ngObibaMicaUrl.getUrl('BaseUrl') + ngObibaMicaUrl.getUrl('DataAccessClientDetailPath');
+        }
+        else{
+          return null;
+        }
+      };
+
       $scope.$on(NOTIFICATION_EVENTS.confirmDialogAccepted, function (event, id) {
         if ($scope.requestToDelete === id) {
           DataAccessRequestResource.delete({id: $scope.requestToDelete},
@@ -195,7 +205,9 @@ angular.module('obiba.mica.access')
         });
       };
 
-      $scope.sfOptions = SfOptionsService.sfOptions;
+      SfOptionsService.sfOptions.then(function(options) {
+        $scope.sfOptions = SfOptionsService.transform(options);
+      });
 
       var retrieveComments = function() {
         $scope.form.comments = DataAccessRequestCommentsResource.query({id: $routeParams.id});
@@ -452,6 +464,8 @@ angular.module('obiba.mica.access')
         });
       };
 
+      $scope.getDataAccessListPageUrl = DataAccessRequestService.getListDataAccessRequestPageUrl();
+
       var getAttributeValue = function(attributes, key) {
         var result = attributes.filter(function (attribute) {
           return attribute.key === key;
@@ -558,7 +572,11 @@ angular.module('obiba.mica.access')
         });
       };
 
-      $scope.sfOptions = SfOptionsService.sfOptions;
+      SfOptionsService.sfOptions.then(function(options) {
+        $scope.sfOptions = SfOptionsService.transform(options);
+      });
+
+      $scope.getDataAccessListPageUrl = DataAccessRequestService.getListDataAccessRequestPageUrl();
 
       var validate = function() {
         $scope.$broadcast('schemaFormValidate');
