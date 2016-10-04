@@ -190,7 +190,7 @@ public class MicaConfigService {
     return applicationContext.getResource(String.format("classpath:/i18n/%s.json", locale));
   }
 
-  private JsonNode mergeJson(JsonNode mainNode, JsonNode updateNode) {
+  public JsonNode mergeJson(JsonNode mainNode, JsonNode updateNode) {
     Iterator<String> fieldNames = updateNode.fieldNames();
     while (fieldNames.hasNext()) {
       String fieldName = fieldNames.next();

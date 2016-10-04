@@ -50,6 +50,14 @@ mica.config
     function ($resource) {
       return $resource('ws/config/i18n/:id.json');
     }])
+  .factory('CustomTranslationsResource', ['$resource',
+    function ($resource) {
+      return $resource('ws/config/i18n/custom/:locale.json', {locale: '@locale'}, {
+        'save': {method: 'PUT', params: {merge: false}},
+        'import': {method: 'PUT', url: 'ws/config/i18n/custom/import', params: {merge: false}},
+        'export': {method: 'GET', url: 'ws/config/i18n/custom/export'}
+      }, {});
+    }])
   .factory('StyleEditorService', [
     function () {
       return {
