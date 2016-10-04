@@ -358,6 +358,14 @@
       "add": "Add Translation",
       "new": {
         "title": "New Translation Entry"
+      },
+      "import": {
+        "label": "Import",
+        "help": "Use the json format to import custom translations."
+      },
+      "export": {
+        "label": "Export",
+        "help": "The custom translations will be exported in the json format."
       }
     }
   },
