@@ -58,6 +58,7 @@ import org.obiba.opal.web.model.Opal;
 import org.obiba.opal.web.model.Projects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 import com.codahale.metrics.annotation.Timed;
@@ -101,6 +102,9 @@ public class MicaConfigResource {
   @Inject
   private UserProfileService userProfileService;
 
+  @Inject
+  private ApplicationContext applicationContext;
+
   @GET
   @Timed
   @RequiresAuthentication
@@ -143,6 +147,11 @@ public class MicaConfigResource {
     globalTranslations.put("$", "userProfile", JsonPath.parse(userProfileTranslations).read("$"));
 
     return Response.ok(globalTranslations.jsonString(), "application/json").build();
+  }
+
+  @Path("/i18n/custom")
+  public CustomTranslationsResource customTranslations() {
+    return applicationContext.getBean(CustomTranslationsResource.class);
   }
 
   @PUT

@@ -357,6 +357,14 @@
       "add": "Ajouter une traduction",
       "new": {
         "title": "Nouvelle traduction"
+      },
+      "import": {
+        "label": "Importer",
+        "help": "Utiliser le format json pour importer vos traductions."
+      },
+      "export": {
+        "label": "Exporter",
+        "help": "Les traductions seront exportées sous format json."
       }
     }
   },

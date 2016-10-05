@@ -408,10 +408,12 @@ mica.config
 
     }])
   .controller('MicaConfigTranslationsEditController', ['$scope', '$q', '$resource', '$window', '$location', '$log', '$uibModal',
-    'MicaConfigResource', 'FormServerValidation', 'TranslationsResource',
-    function ($scope, $q, $resource, $window, $location, $log, $uibModal, MicaConfigResource, FormServerValidation, TranslationsResource) {
+    'MicaConfigResource', 'FormServerValidation', 'TranslationsResource', 'CustomTranslationsResource',
+    function ($scope, $q, $resource, $window, $location, $log, $uibModal, MicaConfigResource, FormServerValidation, TranslationsResource, CustomTranslationsResource) {
       var updates = {}, oldTranslations = {};
+      $scope.reader = new FileReader();
       $scope.micaConfig = MicaConfigResource.get();
+      $scope.importedFile = null;
       $scope.micaConfig.$promise.then(function() {
         var defaults = {};
         $scope.translations = {};
@@ -422,6 +424,27 @@ mica.config
           defaults[lang] = TranslationsResource.get({id: lang, default: true}).$promise;
           return {lang: lang};
         });
+
+        $scope.onFileSelect = function (file) {
+          // Compatible with ie 10+, ie9 has a File API Lab
+          if (file) {
+            $scope.file = file;
+            $scope.reader.readAsText(file, 'utf-8');
+
+            $scope.reader.onload = function (e) {
+              $scope.file.content = e.target.result;
+            };
+          }
+        };
+
+        $scope.import = function () {
+
+          if ($scope.reader.readyState === 2) {
+            CustomTranslationsResource.import({merge: true}, $scope.file.content, function () {
+              $window.location.reload();
+            });
+          }
+        };
 
         $q.all(defaults).then(function(res) {
           Object.keys(res).forEach(function(lang) {
