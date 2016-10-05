@@ -1014,7 +1014,8 @@
   "file": {
     "upload": {
       "button": "Choisir un fichier",
-      "message": "Aucun fichier choisi"
+      "message": "Aucun fichier choisi",
+      "date": "Date d'ajout"
     },
     "invalid-paste": "Vous ne pouvez pas coller dans le même chemin d'accès.",
     "search-results": {
