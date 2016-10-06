@@ -3455,32 +3455,6 @@ angular.module('obiba.mica.search')
       });
     }])
 
-    .factory('JoinQuerySearchCsvResource', ['$resource', 'ngObibaMicaUrl',
-    function ($resource, ngObibaMicaUrl) {
-      return $resource(ngObibaMicaUrl.getUrl('JoinQuerySearchCsvResource'), {}, {
-        'variables': {
-          method: 'GET',
-          errorHandler: true,
-          params: {type: 'variables'}
-        },
-        'studies': {
-          method: 'GET',
-          errorHandler: true,
-          params: {type: 'studies'}
-        },
-        'networks': {
-          method: 'GET',
-          errorHandler: true,
-          params: {type: 'networks'}
-        },
-        'datasets': {
-          method: 'GET',
-          errorHandler: true,
-          params: {type: 'datasets'}
-        }
-      });
-    }])
-
   .factory('JoinQueryCoverageResource', ['$resource', 'ngObibaMicaUrl',
     function ($resource, ngObibaMicaUrl) {
       return $resource(ngObibaMicaUrl.getUrl('JoinQueryCoverageResource'), {}, {
