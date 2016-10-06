@@ -21,12 +21,14 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Response;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.dataset.search.DatasetIndexer;
 import org.obiba.mica.search.JoinQueryExecutor;
+import org.obiba.mica.search.csvexport.GenericReportGenerator;
 import org.obiba.mica.search.queries.DatasetQuery;
 import org.obiba.mica.search.queries.protobuf.JoinQueryDtoWrapper;
 import org.obiba.mica.search.queries.protobuf.QueryDtoHelper;
@@ -50,6 +52,9 @@ public class PublishedDatasetSearchResource {
 
   @Inject
   private RQLQueryFactory rqlQueryFactory;
+
+  @Inject
+  private GenericReportGenerator genericReportGenerator;
 
   @GET
   @Path("/study/_search")
@@ -129,6 +134,14 @@ public class PublishedDatasetSearchResource {
     return joinQueryExecutor.query(JoinQueryExecutor.QueryType.DATASET, rqlQueryFactory.makeJoinQuery(query));
   }
 
+  @GET
+  @Path("/_rql_csv")
+  @Timed
+  public Response rqlQueryAsCsv(@QueryParam("query") String query, @QueryParam("columnsToHide") List<String> columnsToHide) throws IOException {
+    String csvContent = genericReportGenerator.generateCsv(JoinQueryExecutor.QueryType.DATASET, query, columnsToHide).toString();
+    return Response.ok(csvContent).header("Content-Disposition", "attachment; filename=\"SearchDatasets.csv\"").build();
+  }
+
   private static String createTypeQuery(String type) {
     return Strings.isNullOrEmpty(type) ? "" : String.format("(className:%s)", type);
   }
@@ -138,5 +151,4 @@ public class PublishedDatasetSearchResource {
       ? query
       : Strings.isNullOrEmpty(query) ? typeQuery : String.format("%s AND %s", typeQuery, query);
   }
-
 }

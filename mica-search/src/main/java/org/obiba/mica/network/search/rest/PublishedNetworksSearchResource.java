@@ -12,6 +12,7 @@ package org.obiba.mica.network.search.rest;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Stream;
 
 import javax.inject.Inject;
@@ -20,10 +21,12 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Response;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.network.search.NetworkIndexer;
 import org.obiba.mica.search.JoinQueryExecutor;
+import org.obiba.mica.search.csvexport.GenericReportGenerator;
 import org.obiba.mica.search.queries.NetworkQuery;
 import org.obiba.mica.search.queries.protobuf.JoinQueryDtoWrapper;
 import org.obiba.mica.search.queries.protobuf.QueryDtoHelper;
@@ -51,6 +54,9 @@ public class PublishedNetworksSearchResource {
 
   @Inject
   private RQLQueryFactory rqlQueryFactory;
+
+  @Inject
+  private GenericReportGenerator genericReportGenerator;
 
   @GET
   @Path("/_search")
@@ -97,5 +103,13 @@ public class PublishedNetworksSearchResource {
   @Timed
   public JoinQueryResultDto rqlQuery(@QueryParam("query") String query) throws IOException {
     return joinQueryExecutor.query(JoinQueryExecutor.QueryType.NETWORK, rqlQueryFactory.makeJoinQuery(query));
+  }
+
+  @GET
+  @Path("/_rql_csv")
+  @Timed
+  public Response rqlQueryAsCsv(@QueryParam("query") String query, @QueryParam("columnsToHide") List<String> columnsToHide) throws IOException {
+    String csvContent = genericReportGenerator.generateCsv(JoinQueryExecutor.QueryType.NETWORK, query, columnsToHide).toString();
+    return Response.ok(csvContent).header("Content-Disposition", "attachment; filename=\"SearchNetworks.csv\"").build();
   }
 }

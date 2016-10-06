@@ -11,6 +11,7 @@
 package org.obiba.mica.study.search.rest;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.stream.Stream;
 
 import javax.inject.Inject;
@@ -19,9 +20,11 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Response;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.search.JoinQueryExecutor;
+import org.obiba.mica.search.csvexport.GenericReportGenerator;
 import org.obiba.mica.search.queries.protobuf.JoinQueryDtoWrapper;
 import org.obiba.mica.search.queries.protobuf.QueryDtoHelper;
 import org.obiba.mica.search.queries.rql.RQLQueryFactory;
@@ -46,6 +49,9 @@ public class PublishedStudiesSearchResource {
 
   @Inject
   private RQLQueryFactory rqlQueryFactory;
+
+  @Inject
+  private GenericReportGenerator genericReportGenerator;
 
   @GET
   @Path("/_search")
@@ -75,5 +81,13 @@ public class PublishedStudiesSearchResource {
   @Timed
   public JoinQueryResultDto rqlQuery(@QueryParam("query") String query) throws IOException {
     return joinQueryExecutor.query(JoinQueryExecutor.QueryType.STUDY, rqlQueryFactory.makeJoinQuery(query));
+  }
+
+  @GET
+  @Path("/_rql_csv")
+  @Timed
+  public Response rqlQueryAsCsv(@QueryParam("query") String query, @QueryParam("columnsToHide") List<String> columnsToHide) throws IOException {
+    String csvContent = genericReportGenerator.generateCsv(JoinQueryExecutor.QueryType.STUDY, query, columnsToHide).toString();
+    return Response.ok(csvContent).header("Content-Disposition", "attachment; filename=\"SearchStudies.csv\"").build();
   }
 }
