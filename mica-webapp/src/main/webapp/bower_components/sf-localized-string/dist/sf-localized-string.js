@@ -1,4 +1,4 @@
-angular.module("sfLocalizedStringTemplates", []).run(["$templateCache", function($templateCache) {$templateCache.put("src/templates/sf-localized-string.html","<div class=\"form-group\"\n     ng-controller=\"LocalizedStringController\"\n     ng-class=\"{\'has-error\': form.disableErrorState !== true && hasError(), \'has-success\': form.disableSuccessState !== true && hasSuccess(), \'has-feedback\': form.feedback !== false }\"\n     schema-validate=\"form\" sf-field-model >\n  <!--<pre>{{form|json}}</pre>-->\n  <label class=\"control-label\" ng-show=\"showTitle()\">{{form.title}}</label>\n  <div class=\"pull-right dropdown\" ng-class=\"{\'open\': open}\" ng-if=\"form.locales && form.locales.length > 1\">\n    <a href class=\"dropdown-toggle badge\" ng-click=\"toggleDropdown()\">{{form.languages[selectedLocale]}} <span class=\"caret\"></span></a>\n    <ul class=\"dropdown-menu\">\n      <li ng-repeat=\"loc in form.locales\"><a href ng-click=\"selectLocale(loc)\">{{form.languages[loc]}}</a></li>\n    </ul>\n  </div>\n  <div ng-if=\"!form.rows || form.rows <= 1\"\n       ng-class=\"{\'form-group\' : !$last}\">\n    <input type=\"text\" class=\"form-control\"\n           ng-disabled=\"form.readonly\"\n           sf-field-model=\"replaceAll\" ng-model=\"$$value$$[locale]\"\n           ng-repeat=\"locale in form.locales\"\n           ng-show=\"locale === selectedLocale\"/>\n  </div>\n  <div ng-if=\"form.rows && form.rows > 1\"\n       ng-class=\"{\'form-group\' : !$last}\">\n    <textarea class=\"form-control\"\n              ng-disabled=\"form.readonly\"\n              sf-field-model=\"replaceAll\" ng-model=\"$$value$$[locale]\"\n              rows=\"{{form.rows ? form.rows : 5}}\"\n              ng-repeat=\"locale in form.locales\"\n              ng-show=\"locale === selectedLocale\"></textarea>\n  </div>\n  <span class=\"help-block\" sf-message=\"form.description\"></span>\n</div>\n");}]);
+angular.module("sfLocalizedStringTemplates", []).run(["$templateCache", function($templateCache) {$templateCache.put("src/templates/sf-localized-string.html","<div class=\"form-group\"\n     ng-controller=\"LocalizedStringController\"\n     ng-class=\"{\'has-error\': form.disableErrorState !== true && hasError(), \'has-success\': form.disableSuccessState !== true && hasSuccess(), \'has-feedback\': form.feedback !== false }\"\n     schema-validate=\"form\" sf-field-model >\n  <!--<pre>{{form|json}}</pre>-->\n  <label class=\"control-label\" ng-show=\"showTitle()\">{{form.title}}</label>\n  <div class=\"pull-right dropdown\" ng-class=\"{\'open\': open}\" ng-if=\"form.locales && form.locales.length > 1\">\n    <a href class=\"dropdown-toggle badge\" ng-click=\"toggleDropdown()\">{{form.languages[selectedLocale]}} <span class=\"caret\"></span></a>\n    <ul class=\"dropdown-menu\">\n      <li ng-repeat=\"loc in form.locales\"><a href ng-click=\"selectLocale(loc)\">{{form.languages[loc]}}</a></li>\n    </ul>\n  </div>\n  <div ng-if=\"!form.rows || form.rows <= 1\"\n       ng-class=\"{\'form-group\' : !$last}\">\n    <input type=\"text\" class=\"form-control\"\n           ng-disabled=\"form.readonly\"\n           sf-field-model=\"replaceAll\" ng-model=\"$$value$$[locale]\"\n           ng-repeat=\"locale in form.locales\"\n           ng-show=\"locale === selectedLocale\"/>\n  </div>\n  <div ng-if=\"form.rows && form.rows > 1\"\n       ng-class=\"{\'form-group\' : !$last}\">\n    <div sf-field-model=\"replaceAll\" ng-if=\"form.readonly\" ng-bind-html=\"render($$value$$)\"></div>\n    <textarea class=\"form-control\" ng-if=\"!form.readonly\"\n              ng-disabled=\"form.readonly\"\n              sf-field-model=\"replaceAll\" ng-model=\"$$value$$[locale]\"\n              rows=\"{{form.rows ? form.rows : 5}}\"\n              ng-repeat=\"locale in form.locales\"\n              ng-show=\"locale === selectedLocale\"></textarea>\n  </div>\n  <span class=\"help-block\" sf-message=\"form.description\"></span>\n</div>\n");}]);
 angular.module('sfLocalizedString', [
   'schemaForm',
   'sfLocalizedStringTemplates'
@@ -15,11 +15,11 @@ angular.module('sfLocalizedString', [
         }
         f.locales = Object.keys(f.languages);
         f.validationMessage = {
-          completed: 'All localized fields must be completed'
+          completed: 'The field must be completed in all specified languages'
         };
         f.$validators = {
           completed: function (value) {
-            if (value && Object.keys(value).length > 0) {
+            if (f.required && value && Object.keys(value).length > 0) {
               return Object.keys(value).filter(function (key) {
                   return f.locales.indexOf(key) > -1 && value[key] && '' !== value[key];
                 }).length === f.locales.length;
@@ -43,7 +43,7 @@ angular.module('sfLocalizedString', [
     );
 
   }])
-  .controller('LocalizedStringController', ['$scope', function ($scope) {
+  .controller('LocalizedStringController', ['$scope', '$rootScope', 'marked', function ($scope, $rootScope, marked) {
     $scope.$watch('ngModel.$modelValue', function () {
       if ($scope.ngModel.$validate) {
         // Make sure that allowInvalid is always true so that the model is preserved when validation fails
@@ -66,7 +66,7 @@ angular.module('sfLocalizedString', [
     });
 
     $scope.selectLocale = function (locale) {
-      $scope.$parent.$broadcast('sfLocalizedStringLocaleChanged', locale);
+      $rootScope.$broadcast('sfLocalizedStringLocaleChanged', locale);
       $scope.open = false;
     };
 
@@ -77,6 +77,13 @@ angular.module('sfLocalizedString', [
     $scope.$on('sfLocalizedStringLocaleChanged', function (event, locale) {
       $scope.selectedLocale = locale;
     });
+    
+    $scope.render = function (text) {
+      if (text && text[$scope.selectedLocale]) {
+        return marked(text[$scope.selectedLocale]);
+      }
+      return text[$scope.selectedLocale];
+    };
 
     $scope.open = false;
 

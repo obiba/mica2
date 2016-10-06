@@ -118,8 +118,8 @@ angular.module('obiba.mica.access')
 
   })
 
-  .service('DataAccessRequestService', ['$translate', 'SessionProxy', 'USER_ROLES',
-    function ($translate, SessionProxy, USER_ROLES) {
+  .service('DataAccessRequestService', ['$translate', 'SessionProxy', 'USER_ROLES', 'ngObibaMicaUrl',
+    function ($translate, SessionProxy, USER_ROLES, ngObibaMicaUrl) {
       var statusList = {
         OPENED: 'OPENED',
         SUBMITTED: 'SUBMITTED',
@@ -293,6 +293,16 @@ angular.module('obiba.mica.access')
         }
 
         return id;
+      };
+
+      this.getListDataAccessRequestPageUrl = function () {
+        var DataAccessClientListPath = ngObibaMicaUrl.getUrl('DataAccessClientListPath');
+        if(DataAccessClientListPath){
+          return ngObibaMicaUrl.getUrl('BaseUrl') + ngObibaMicaUrl.getUrl('DataAccessClientListPath');
+        }
+        else{
+          return null;
+        }
       };
 
       return this;

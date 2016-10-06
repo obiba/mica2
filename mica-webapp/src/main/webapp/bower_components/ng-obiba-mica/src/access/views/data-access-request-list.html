@@ -11,14 +11,20 @@
 <div id="data-access-request-list">
   <div ng-if="headerTemplateUrl" ng-include="headerTemplateUrl"></div>
 
-  <a ng-href="#/data-access-request/new" class="btn btn-info" title="{{config.newRequestButtonHelpText}}">
-    <i class="fa fa-plus"></i>
-    <span>{{config.newRequestButtonCaption || 'data-access-request.add' | translate}}</span>
-  </a>
+  <div class="row">
+    <div class="col-xs-12">
+      <a ng-href="#/data-access-request/new" class="btn btn-info">
+        <i class="fa fa-plus"></i>
+        <span>{{config.newRequestButtonCaption || 'data-access-request.add' | translate}}</span>
+      </a>
 
-  <a ng-if="requests.length > 0" target="_self" download class="btn btn-info pull-right" ng-href="{{getCsvExportHref()}}">
-    <i class="fa fa-download"></i> {{'report' | translate}}
-  </a>
+      <span ng-bind-html="config.newRequestButtonHelpText"></span>
+
+      <a ng-if="requests.length > 0" target="_self" download class="btn btn-info pull-right" ng-href="{{getCsvExportHref()}}">
+        <i class="fa fa-download"></i> {{'report' | translate}}
+      </a>
+    </div>
+  </div>
 
   <p class="help-block" ng-if="requests.length == 0 && !loading">
     <span translate>data-access-request.none</span>
@@ -73,7 +79,7 @@
         <tr
             dir-paginate="request in requests | filter:{status: searchStatus.filter} | filter:searchText | itemsPerPage: 20">
           <td>
-            <a ng-href="#/data-access-request/{{request.id}}"
+            <a ng-href="{{getDataAccessRequestPageUrl()}}#/data-access-request/{{request.id}}"
                 ng-if="actions.canView(request)" translate>{{request.id}}</a>
             <span ng-if="!actions.canView(request)">{{request.id}}</span>
           </td>

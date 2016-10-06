@@ -17,6 +17,6 @@
 
   <div ng-if="lastSubmittedDate">
     <h3 translate>data-access-request.submissionDate</h3>
-    <p>{{lastSubmittedDate | amDateFormat:'dddd, MMMM Do YYYY' | capitalizeFirstLetter}}</p>
+    <p>{{lastSubmittedDate.changedOn | amDateFormat:'dddd, MMMM Do YYYY' | capitalizeFirstLetter}}</p>
   </div>
 </div>
