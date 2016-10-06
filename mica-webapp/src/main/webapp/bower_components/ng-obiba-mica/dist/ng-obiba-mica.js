@@ -3,7 +3,7 @@
  * https://github.com/obiba/ng-obiba-mica
 
  * License: GNU Public License version 3
- * Date: 2016-09-29
+ * Date: 2016-10-06
  */
 'use strict';
 
@@ -29,6 +29,7 @@ function NgObibaMicaUrlProvider() {
     'TaxonomyResource': 'ws/taxonomy/:taxonomy/_filter',
     'VocabularyResource': 'ws/taxonomy/:taxonomy/vocabulary/:vocabulary/_filter',
     'JoinQuerySearchResource': 'ws/:type/_rql?query=:query',
+    'JoinQuerySearchCsvResource': 'ws/:type/_rql_csv?query=:query',
     'JoinQueryCoverageResource': 'ws/variables/_coverage?query=:query',
     'JoinQueryCoverageDownloadResource': 'ws/variables/_coverage_download?query=:query',
     'VariablePage': '',
@@ -142,6 +143,11 @@ angular.module('ngObibaMica', [
 
 angular.module('obiba.mica.utils', ['schemaForm'])
 
+  .factory('urlEncode', function() {
+    return function(input) {
+      return window.encodeURIComponent(input);
+    };
+  })
   .factory('UserProfileService',
     function () {
 
@@ -703,6 +709,7 @@ angular.module('obiba.mica.access')
       'DataAccessRequestConfig',
       'LocalizedSchemaFormService',
       'SfOptionsService',
+      'moment',
 
     function ($rootScope,
               $scope,
@@ -726,7 +733,8 @@ angular.module('obiba.mica.access')
               NOTIFICATION_EVENTS,
               DataAccessRequestConfig,
               LocalizedSchemaFormService,
-              SfOptionsService) {
+              SfOptionsService,
+              moment) {
 
       var onError = function (response) {
         AlertService.alert({
@@ -795,6 +803,18 @@ angular.module('obiba.mica.access')
         var history = $scope.dataAccessRequest.statusChangeHistory || [];
         return history.filter(function(item) {
           return item.to === DataAccessRequestService.status.SUBMITTED;
+        }).sort(function (a, b) {
+          if (moment(a).isBefore(b)) {
+            return -1;
+          }
+
+          if (moment(a).isSame(b)) {
+            return 0;
+          }
+
+          if (moment(a).isAfter(b)) {
+            return 1;
+          }
         }).pop();
       }
 
@@ -3435,6 +3455,32 @@ angular.module('obiba.mica.search')
       });
     }])
 
+    .factory('JoinQuerySearchCsvResource', ['$resource', 'ngObibaMicaUrl',
+    function ($resource, ngObibaMicaUrl) {
+      return $resource(ngObibaMicaUrl.getUrl('JoinQuerySearchCsvResource'), {}, {
+        'variables': {
+          method: 'GET',
+          errorHandler: true,
+          params: {type: 'variables'}
+        },
+        'studies': {
+          method: 'GET',
+          errorHandler: true,
+          params: {type: 'studies'}
+        },
+        'networks': {
+          method: 'GET',
+          errorHandler: true,
+          params: {type: 'networks'}
+        },
+        'datasets': {
+          method: 'GET',
+          errorHandler: true,
+          params: {type: 'datasets'}
+        }
+      });
+    }])
+
   .factory('JoinQueryCoverageResource', ['$resource', 'ngObibaMicaUrl',
     function ($resource, ngObibaMicaUrl) {
       return $resource(ngObibaMicaUrl.getUrl('JoinQueryCoverageResource'), {}, {
@@ -3467,28 +3513,28 @@ angular.module('obiba.mica.search')
     };
   })
 
-  .service('PageUrlService', ['ngObibaMicaUrl', 'StringUtils', function(ngObibaMicaUrl, StringUtils) {
+  .service('PageUrlService', ['ngObibaMicaUrl', 'StringUtils', 'urlEncode', function(ngObibaMicaUrl, StringUtils, urlEncode) {
 
     this.studyPage = function(id) {
-      return id ? StringUtils.replaceAll(ngObibaMicaUrl.getUrl('StudyPage'), {':study': id}) : '';
+      return id ? StringUtils.replaceAll(ngObibaMicaUrl.getUrl('StudyPage'), {':study': urlEncode(id)}) : '';
     };
 
     this.studyPopulationPage = function(id, populationId) {
-      return id ? StringUtils.replaceAll(ngObibaMicaUrl.getUrl('StudyPopulationsPage'), {':study': id, ':population': populationId}) : '';
+      return id ? StringUtils.replaceAll(ngObibaMicaUrl.getUrl('StudyPopulationsPage'), {':study': urlEncode(id), ':population': urlEncode(populationId)}) : '';
     };
 
     this.networkPage = function(id) {
-      return id ? StringUtils.replaceAll(ngObibaMicaUrl.getUrl('NetworkPage'), {':network': id}) : '';
+      return id ? StringUtils.replaceAll(ngObibaMicaUrl.getUrl('NetworkPage'), {':network': urlEncode(id)}) : '';
     };
 
     this.datasetPage = function(id, type) {
       var dsType = (type.toLowerCase() === 'study' ? 'study' : 'harmonization') + '-dataset';
-      var result = id ? StringUtils.replaceAll(ngObibaMicaUrl.getUrl('DatasetPage'), {':type': dsType, ':dataset': id}) : '';
+      var result = id ? StringUtils.replaceAll(ngObibaMicaUrl.getUrl('DatasetPage'), {':type': urlEncode(dsType), ':dataset': urlEncode(id)}) : '';
       return result;
     };
 
     this.variablePage = function(id) {
-      return id ? StringUtils.replaceAll(ngObibaMicaUrl.getUrl('VariablePage'), {':variable': id}) : '';
+      return id ? StringUtils.replaceAll(ngObibaMicaUrl.getUrl('VariablePage'), {':variable': urlEncode(id)}) : '';
     };
 
     this.downloadCoverage = function(query) {
@@ -3628,6 +3674,7 @@ angular.module('obiba.mica.search')
 /* global DISPLAY_TYPES */
 /* global CriteriaIdGenerator */
 /* global targetToType */
+/* global typeToTarget */
 /* global SORT_FIELDS */
 
 /**
@@ -5056,8 +5103,12 @@ angular.module('obiba.mica.search')
   .controller('SearchResultController', [
     '$scope',
     'ngObibaMicaSearch',
+    'ngObibaMicaUrl',
+    'RqlQueryUtils',
     function ($scope,
-              ngObibaMicaSearch) {
+              ngObibaMicaSearch,
+              ngObibaMicaUrl,
+              RqlQueryUtils) {
 
       function updateTarget(type) {
         Object.keys($scope.activeTarget).forEach(function (key) {
@@ -5086,6 +5137,23 @@ angular.module('obiba.mica.search')
           return '...';
         }
         return $scope.result.list[type + 'ResultDto'].totalHits;
+      };
+
+      $scope.getReportUrl = function () {
+
+        if ($scope.query === null) {
+          return $scope.query;
+        }
+
+        var parsedQuery = new RqlParser().parse($scope.query);
+        var target = typeToTarget($scope.type);
+        var targetQuery = parsedQuery.args.filter(function (query) {
+          return query.name === target;
+        }).pop();
+        RqlQueryUtils.addLimit(targetQuery, RqlQueryUtils.limit(0, 100000));
+        var queryWithoutLimit = new RqlQuery().serializeArgs(parsedQuery.args);
+
+        return ngObibaMicaUrl.getUrl('JoinQuerySearchCsvResource').replace(':type', $scope.type).replace(':query', queryWithoutLimit);
       };
 
       $scope.$watchCollection('result', function () {
@@ -8181,6 +8249,22 @@ angular.module("access/views/data-access-request-form.html", []).run(["$template
     "    <form name=\"form.requestForm\" ng-submit=\"submit(form.requestForm)\">\n" +
     "      <div sf-model=\"form.model\" sf-form=\"form.definition\" sf-schema=\"form.schema\" required=\"true\" sf-options=\"sfOptions\"></div>\n" +
     "    </form>\n" +
+    "\n" +
+    "    <div class=\"pull-right\" ng-if=\"loaded\">\n" +
+    "      <a ng-click=\"cancel()\" type=\"button\" class=\"btn btn-default\">\n" +
+    "        <span translate>cancel</span>\n" +
+    "      </a>\n" +
+    "\n" +
+    "      <a ng-click=\"save()\" type=\"button\" class=\"btn btn-primary\">\n" +
+    "        <span translate>save</span>\n" +
+    "      </a>\n" +
+    "\n" +
+    "      <a ng-click=\"validate()\" type=\"button\" class=\"btn btn-info\">\n" +
+    "        <span translate>validate</span>\n" +
+    "      </a>\n" +
+    "    </div>\n" +
+    "\n" +
+    "    <div class=\"clearfix voffet2\"></div>\n" +
     "  </div>\n" +
     "\n" +
     "</div>\n" +
@@ -8386,7 +8470,7 @@ angular.module("access/views/data-access-request-print-preview.html", []).run(["
     "\n" +
     "  <div ng-if=\"lastSubmittedDate\">\n" +
     "    <h3 translate>data-access-request.submissionDate</h3>\n" +
-    "    <p>{{lastSubmittedDate | amDateFormat:'dddd, MMMM Do YYYY' | capitalizeFirstLetter}}</p>\n" +
+    "    <p>{{lastSubmittedDate.changedOn | amDateFormat:'dddd, MMMM Do YYYY' | capitalizeFirstLetter}}</p>\n" +
     "  </div>\n" +
     "</div>\n" +
     "");
@@ -8631,6 +8715,14 @@ angular.module("attachment/attachment-input-template.html", []).run(["$templateC
     "</button>\n" +
     "\n" +
     "<table ng-show=\"files.length\" class=\"table table-bordered table-striped\">\n" +
+    "  <thead>\n" +
+    "  <tr>\n" +
+    "    <th translate>data-access-request.default.documents.title</th>\n" +
+    "    <th class=\"col-xs-2\"><span class=\"pull-right\" translate>file.upload.date</span></th>\n" +
+    "    <th translate>size</th>\n" +
+    "    <th translate>actions</th>\n" +
+    "  </tr>\n" +
+    "  </thead>\n" +
     "  <tbody>\n" +
     "  <tr ng-repeat=\"file in files\">\n" +
     "    <td>\n" +
@@ -8639,8 +8731,8 @@ angular.module("attachment/attachment-input-template.html", []).run(["$templateC
     "        {{file.progress}}%\n" +
     "      </uib-progressbar>\n" +
     "    </td>\n" +
-    "    <td ng-if=\"file.timestamps\" class=\"col-xs-2\">\n" +
-    "      <span class=\"pull-right\" title=\"{{ file.timestamps.created | amDateFormat: 'lll' }}\">{{file.timestamps.created | amCalendar }}</span>\n" +
+    "    <td>\n" +
+    "      <span class=\"pull-right\" ng-if=\"file.timestamps\" title=\"{{ file.timestamps.created | amDateFormat: 'lll' }}\">{{file.timestamps.created | amCalendar }}</span>\n" +
     "    </td>\n" +
     "    <td style=\"width:1%;\">\n" +
     "        <span class=\"pull-right\" style=\"white-space: nowrap;\">\n" +
@@ -8666,6 +8758,13 @@ angular.module("attachment/attachment-list-template.html", []).run(["$templateCa
     "<div>\n" +
     "  <span ng-if=\"!hasAttachments && emptyMessage\"><em>{{emptyMessage}}</em></span>\n" +
     "  <table ng-if=\"hasAttachments\" class=\"table table-bordered table-striped\" >\n" +
+    "    <thead>\n" +
+    "    <tr>\n" +
+    "      <th translate>data-access-request.default.documents.title</th>\n" +
+    "      <th class=\"col-xs-2\"><span class=\"pull-right\" translate>file.upload.date</span></th>\n" +
+    "      <th translate>size</th>\n" +
+    "    </tr>\n" +
+    "    </thead>\n" +
     "    <tbody>\n" +
     "    <tr ng-repeat=\"attachment in attachments\">\n" +
     "      <th>\n" +
@@ -8673,7 +8772,7 @@ angular.module("attachment/attachment-list-template.html", []).run(["$templateCa
     "           download=\"{{attachment.fileName}}\">{{attachment.fileName}}\n" +
     "        </a>\n" +
     "      </th>\n" +
-    "      <td ng-if=\"attachment.timestamps\" class=\"col-xs-2\"><span class=\"pull-right\" title=\"{{ attachment.timestamps.created | amDateFormat: 'lll' }}\">{{attachment.timestamps.created | amCalendar }}</span></td>\n" +
+    "      <td><span class=\"pull-right\" ng-if=\"attachment.timestamps\" title=\"{{ attachment.timestamps.created | amDateFormat: 'lll' }}\">{{attachment.timestamps.created | amCalendar }}</span></td>\n" +
     "      <td style=\"width:1%;\">\n" +
     "        <span class=\"pull-right\" style=\"white-space: nowrap;\">\n" +
     "          {{attachment.size | bytes}}\n" +
@@ -10502,6 +10601,11 @@ angular.module("search/views/search-result-list-template.html", []).run(["$templ
     "            target=\"activeTarget[targetTypeMap[res]].name\"\n" +
     "            total-hits=\"activeTarget[targetTypeMap[res]].totalHits\"\n" +
     "            on-change=\"onPaginate\"></span>\n" +
+    "    </li>\n" +
+    "    <li class=\"pull-right\">\n" +
+    "      <a target=\"_self\" download class=\"btn btn-info pull-right\" ng-href=\"{{getReportUrl()}}\">\n" +
+    "        <i class=\"fa fa-download\"></i> {{'download' | translate}}\n" +
+    "      </a>\n" +
     "    </li>\n" +
     "  </ul>\n" +
     "  <div class=\"tab-content\">\n" +

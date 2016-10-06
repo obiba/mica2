@@ -10,8 +10,17 @@
 
 package org.obiba.mica.dataset.search.rest.variable;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
+import com.codahale.metrics.annotation.Timed;
+import org.apache.shiro.authz.annotation.RequiresAuthentication;
+import org.obiba.mica.search.CoverageQueryExecutor;
+import org.obiba.mica.search.JoinQueryExecutor;
+import org.obiba.mica.search.csvexport.GenericReportGenerator;
+import org.obiba.mica.search.queries.protobuf.JoinQueryDtoWrapper;
+import org.obiba.mica.search.queries.protobuf.QueryDtoHelper;
+import org.obiba.mica.search.queries.rql.RQLQueryFactory;
+import org.obiba.mica.web.model.MicaSearch;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 import javax.ws.rs.DefaultValue;
@@ -21,18 +30,9 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
-
-import org.apache.shiro.authz.annotation.RequiresAuthentication;
-import org.obiba.mica.search.CoverageQueryExecutor;
-import org.obiba.mica.search.JoinQueryExecutor;
-import org.obiba.mica.search.queries.protobuf.JoinQueryDtoWrapper;
-import org.obiba.mica.search.queries.protobuf.QueryDtoHelper;
-import org.obiba.mica.search.queries.rql.RQLQueryFactory;
-import org.obiba.mica.web.model.MicaSearch;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
-
-import com.codahale.metrics.annotation.Timed;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.List;
 
 /**
  * Search for variables in the published variable index.
@@ -54,6 +54,9 @@ public class PublishedDatasetVariablesSearchResource {
 
   @Inject
   private CoverageByBucketFactory coverageByBucketFactory;
+
+  @Inject
+  private GenericReportGenerator genericReportGenerator;
 
   @GET
   @Timed
@@ -78,6 +81,16 @@ public class PublishedDatasetVariablesSearchResource {
   @Timed
   public MicaSearch.JoinQueryResultDto rqlQuery(@QueryParam("query") String query) throws IOException {
     return joinQueryExecutor.query(JoinQueryExecutor.QueryType.VARIABLE, rqlQueryFactory.makeJoinQuery(query));
+  }
+
+  @GET
+  @Path("/_rql_csv")
+  @Produces("text/csv")
+  @Timed
+  public Response rqlQueryAsCsv(@QueryParam("query") String query, @QueryParam("columnsToHide") List<String> columnsToHide) throws IOException {
+    String csvContent = genericReportGenerator.generateCsv(JoinQueryExecutor.QueryType.VARIABLE, query, columnsToHide).toString();
+    return Response.ok(csvContent).header("Content-Disposition", "attachment; filename=\"SearchVariables.csv\"").build();
+
   }
 
   @GET
