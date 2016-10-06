@@ -18,7 +18,8 @@
     "tests"
   ],
   "dependencies": {
-    "angular-schema-form": ">= 0.8.7"
+    "angular-schema-form": ">= 0.8.7",
+    "angular-marked": "~1.2.2"
   },
   "devDependencies": {
     "angular-ui-ace": "bower",
