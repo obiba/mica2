@@ -1,9 +1,9 @@
 /*!
- * ng-obiba-mica - v1.3.x
+ * ng-obiba-mica - v1.5.0
  * https://github.com/obiba/ng-obiba-mica
 
  * License: GNU Public License version 3
- * Date: 2016-09-21
+ * Date: 2016-10-06
  */
 'use strict';
 
@@ -142,6 +142,11 @@ angular.module('ngObibaMica', [
 
 angular.module('obiba.mica.utils', ['schemaForm'])
 
+  .factory('urlEncode', function() {
+    return function(input) {
+      return window.encodeURIComponent(input);
+    };
+  })
   .factory('UserProfileService',
     function () {
 
@@ -309,14 +314,19 @@ angular.module('obiba.mica.utils', ['schemaForm'])
     };
   }])
 
-  .service('SfOptionsService', ['$filter',
-    function ($filter) {
-      this.sfOptions = {
-        validationMessage: {
-          'default': $filter('translate')('errors.does-not-validate'),
-          302: $filter('translate')('required')
-        }
+  .service('SfOptionsService', ['$translate', '$q',
+    function ($translate, $q) {
+      this.transform = function (result) {
+        return {
+          validationMessage: {
+            302: result.required,
+            'default': result['errors.does-not-validate']
+          }
+        };
       };
+      var deferred = $q.defer();
+      deferred.resolve($translate(['errors.does-not-validate', 'required']));
+      this.sfOptions = deferred.promise;
     }])  
 
   .config(['schemaFormProvider',
@@ -698,6 +708,7 @@ angular.module('obiba.mica.access')
       'DataAccessRequestConfig',
       'LocalizedSchemaFormService',
       'SfOptionsService',
+      'moment',
 
     function ($rootScope,
               $scope,
@@ -721,7 +732,8 @@ angular.module('obiba.mica.access')
               NOTIFICATION_EVENTS,
               DataAccessRequestConfig,
               LocalizedSchemaFormService,
-              SfOptionsService) {
+              SfOptionsService,
+              moment) {
 
       var onError = function (response) {
         AlertService.alert({
@@ -731,7 +743,9 @@ angular.module('obiba.mica.access')
         });
       };
 
-      $scope.sfOptions = SfOptionsService.sfOptions;
+      SfOptionsService.sfOptions.then(function(options) {
+        $scope.sfOptions = SfOptionsService.transform(options);
+      });
 
       var retrieveComments = function() {
         $scope.form.comments = DataAccessRequestCommentsResource.query({id: $routeParams.id});
@@ -788,6 +802,18 @@ angular.module('obiba.mica.access')
         var history = $scope.dataAccessRequest.statusChangeHistory || [];
         return history.filter(function(item) {
           return item.to === DataAccessRequestService.status.SUBMITTED;
+        }).sort(function (a, b) {
+          if (moment(a).isBefore(b)) {
+            return -1;
+          }
+
+          if (moment(a).isSame(b)) {
+            return 0;
+          }
+
+          if (moment(a).isAfter(b)) {
+            return 1;
+          }
         }).pop();
       }
 
@@ -1096,7 +1122,9 @@ angular.module('obiba.mica.access')
         });
       };
 
-      $scope.sfOptions = SfOptionsService.sfOptions;
+      SfOptionsService.sfOptions.then(function(options) {
+        $scope.sfOptions = SfOptionsService.transform(options);
+      });
 
       $scope.getDataAccessListPageUrl = DataAccessRequestService.getListDataAccessRequestPageUrl();
 
@@ -3458,28 +3486,28 @@ angular.module('obiba.mica.search')
     };
   })
 
-  .service('PageUrlService', ['ngObibaMicaUrl', 'StringUtils', function(ngObibaMicaUrl, StringUtils) {
+  .service('PageUrlService', ['ngObibaMicaUrl', 'StringUtils', 'urlEncode', function(ngObibaMicaUrl, StringUtils, urlEncode) {
 
     this.studyPage = function(id) {
-      return id ? StringUtils.replaceAll(ngObibaMicaUrl.getUrl('StudyPage'), {':study': id}) : '';
+      return id ? StringUtils.replaceAll(ngObibaMicaUrl.getUrl('StudyPage'), {':study': urlEncode(id)}) : '';
     };
 
     this.studyPopulationPage = function(id, populationId) {
-      return id ? StringUtils.replaceAll(ngObibaMicaUrl.getUrl('StudyPopulationsPage'), {':study': id, ':population': populationId}) : '';
+      return id ? StringUtils.replaceAll(ngObibaMicaUrl.getUrl('StudyPopulationsPage'), {':study': urlEncode(id), ':population': urlEncode(populationId)}) : '';
     };
 
     this.networkPage = function(id) {
-      return id ? StringUtils.replaceAll(ngObibaMicaUrl.getUrl('NetworkPage'), {':network': id}) : '';
+      return id ? StringUtils.replaceAll(ngObibaMicaUrl.getUrl('NetworkPage'), {':network': urlEncode(id)}) : '';
     };
 
     this.datasetPage = function(id, type) {
       var dsType = (type.toLowerCase() === 'study' ? 'study' : 'harmonization') + '-dataset';
-      var result = id ? StringUtils.replaceAll(ngObibaMicaUrl.getUrl('DatasetPage'), {':type': dsType, ':dataset': id}) : '';
+      var result = id ? StringUtils.replaceAll(ngObibaMicaUrl.getUrl('DatasetPage'), {':type': urlEncode(dsType), ':dataset': urlEncode(id)}) : '';
       return result;
     };
 
     this.variablePage = function(id) {
-      return id ? StringUtils.replaceAll(ngObibaMicaUrl.getUrl('VariablePage'), {':variable': id}) : '';
+      return id ? StringUtils.replaceAll(ngObibaMicaUrl.getUrl('VariablePage'), {':variable': urlEncode(id)}) : '';
     };
 
     this.downloadCoverage = function(query) {
@@ -6940,6 +6968,7 @@ angular.module('obiba.mica.graphics')
                   }
                 });
 
+
                 $scope.updateCriteria = function(key, vocabulary) {
                   RqlQueryService.createCriteriaItem('study', 'Mica_study', vocabulary, key).then(function (item) {
                     var entity = GraphicChartsConfig.getOptions().entityType;
@@ -7012,8 +7041,8 @@ angular.module('obiba.mica.graphics')
         $scope.ready = true;
       });
 
-      $scope.$watchGroup(['chartType', 'ready'], function() {
-        if ($scope.chartType && $scope.ready) {
+      $scope.$watch('chartAggregationName', function() {
+        if ($scope.chartAggregationName) {
           initializeChartData();
         }
       });
@@ -8172,6 +8201,22 @@ angular.module("access/views/data-access-request-form.html", []).run(["$template
     "    <form name=\"form.requestForm\" ng-submit=\"submit(form.requestForm)\">\n" +
     "      <div sf-model=\"form.model\" sf-form=\"form.definition\" sf-schema=\"form.schema\" required=\"true\" sf-options=\"sfOptions\"></div>\n" +
     "    </form>\n" +
+    "\n" +
+    "    <div class=\"pull-right\" ng-if=\"loaded\">\n" +
+    "      <a ng-click=\"cancel()\" type=\"button\" class=\"btn btn-default\">\n" +
+    "        <span translate>cancel</span>\n" +
+    "      </a>\n" +
+    "\n" +
+    "      <a ng-click=\"save()\" type=\"button\" class=\"btn btn-primary\">\n" +
+    "        <span translate>save</span>\n" +
+    "      </a>\n" +
+    "\n" +
+    "      <a ng-click=\"validate()\" type=\"button\" class=\"btn btn-info\">\n" +
+    "        <span translate>validate</span>\n" +
+    "      </a>\n" +
+    "    </div>\n" +
+    "\n" +
+    "    <div class=\"clearfix voffet2\"></div>\n" +
     "  </div>\n" +
     "\n" +
     "</div>\n" +
@@ -8231,14 +8276,20 @@ angular.module("access/views/data-access-request-list.html", []).run(["$template
     "<div id=\"data-access-request-list\">\n" +
     "  <div ng-if=\"headerTemplateUrl\" ng-include=\"headerTemplateUrl\"></div>\n" +
     "\n" +
-    "  <a ng-href=\"#/data-access-request/new\" class=\"btn btn-info\" title=\"{{config.newRequestButtonHelpText}}\">\n" +
-    "    <i class=\"fa fa-plus\"></i>\n" +
-    "    <span>{{config.newRequestButtonCaption || 'data-access-request.add' | translate}}</span>\n" +
-    "  </a>\n" +
+    "  <div class=\"row\">\n" +
+    "    <div class=\"col-xs-12\">\n" +
+    "      <a ng-href=\"#/data-access-request/new\" class=\"btn btn-info\">\n" +
+    "        <i class=\"fa fa-plus\"></i>\n" +
+    "        <span>{{config.newRequestButtonCaption || 'data-access-request.add' | translate}}</span>\n" +
+    "      </a>\n" +
     "\n" +
-    "  <a ng-if=\"requests.length > 0\" target=\"_self\" download class=\"btn btn-info pull-right\" ng-href=\"{{getCsvExportHref()}}\">\n" +
-    "    <i class=\"fa fa-download\"></i> {{'report' | translate}}\n" +
-    "  </a>\n" +
+    "      <span ng-bind-html=\"config.newRequestButtonHelpText\"></span>\n" +
+    "\n" +
+    "      <a ng-if=\"requests.length > 0\" target=\"_self\" download class=\"btn btn-info pull-right\" ng-href=\"{{getCsvExportHref()}}\">\n" +
+    "        <i class=\"fa fa-download\"></i> {{'report' | translate}}\n" +
+    "      </a>\n" +
+    "    </div>\n" +
+    "  </div>\n" +
     "\n" +
     "  <p class=\"help-block\" ng-if=\"requests.length == 0 && !loading\">\n" +
     "    <span translate>data-access-request.none</span>\n" +
@@ -8371,7 +8422,7 @@ angular.module("access/views/data-access-request-print-preview.html", []).run(["
     "\n" +
     "  <div ng-if=\"lastSubmittedDate\">\n" +
     "    <h3 translate>data-access-request.submissionDate</h3>\n" +
-    "    <p>{{lastSubmittedDate | amDateFormat:'dddd, MMMM Do YYYY' | capitalizeFirstLetter}}</p>\n" +
+    "    <p>{{lastSubmittedDate.changedOn | amDateFormat:'dddd, MMMM Do YYYY' | capitalizeFirstLetter}}</p>\n" +
     "  </div>\n" +
     "</div>\n" +
     "");
@@ -8401,8 +8452,8 @@ angular.module("access/views/data-access-request-profile-user-modal.html", []).r
     "      </tr>\n" +
     "      <tr ng-repeat=\"attribute in applicant.attributes | filterProfileAttributes\">\n" +
     "          <th>{{\n" +
-    "              ('userManagement.' + attribute.key | translate) !== ('userManagement.' + attribute.key) ?\n" +
-    "              ('userManagement.' + attribute.key | translate) :\n" +
+    "              ('userProfile.' + attribute.key | translate) !== ('userProfile.' + attribute.key) ?\n" +
+    "              ('userProfile.' + attribute.key | translate) :\n" +
     "              (attribute.key)\n" +
     "              }}\n" +
     "          </th>\n" +
@@ -8616,6 +8667,14 @@ angular.module("attachment/attachment-input-template.html", []).run(["$templateC
     "</button>\n" +
     "\n" +
     "<table ng-show=\"files.length\" class=\"table table-bordered table-striped\">\n" +
+    "  <thead>\n" +
+    "  <tr>\n" +
+    "    <th translate>data-access-request.default.documents.title</th>\n" +
+    "    <th class=\"col-xs-2\"><span class=\"pull-right\" translate>file.upload.date</span></th>\n" +
+    "    <th translate>size</th>\n" +
+    "    <th translate>actions</th>\n" +
+    "  </tr>\n" +
+    "  </thead>\n" +
     "  <tbody>\n" +
     "  <tr ng-repeat=\"file in files\">\n" +
     "    <td>\n" +
@@ -8624,8 +8683,8 @@ angular.module("attachment/attachment-input-template.html", []).run(["$templateC
     "        {{file.progress}}%\n" +
     "      </uib-progressbar>\n" +
     "    </td>\n" +
-    "    <td ng-if=\"file.timestamps\" class=\"col-xs-2\">\n" +
-    "      <span class=\"pull-right\" title=\"{{ file.timestamps.created | amDateFormat: 'lll' }}\">{{file.timestamps.created | amCalendar }}</span>\n" +
+    "    <td>\n" +
+    "      <span class=\"pull-right\" ng-if=\"file.timestamps\" title=\"{{ file.timestamps.created | amDateFormat: 'lll' }}\">{{file.timestamps.created | amCalendar }}</span>\n" +
     "    </td>\n" +
     "    <td style=\"width:1%;\">\n" +
     "        <span class=\"pull-right\" style=\"white-space: nowrap;\">\n" +
@@ -8651,6 +8710,13 @@ angular.module("attachment/attachment-list-template.html", []).run(["$templateCa
     "<div>\n" +
     "  <span ng-if=\"!hasAttachments && emptyMessage\"><em>{{emptyMessage}}</em></span>\n" +
     "  <table ng-if=\"hasAttachments\" class=\"table table-bordered table-striped\" >\n" +
+    "    <thead>\n" +
+    "    <tr>\n" +
+    "      <th translate>data-access-request.default.documents.title</th>\n" +
+    "      <th class=\"col-xs-2\"><span class=\"pull-right\" translate>file.upload.date</span></th>\n" +
+    "      <th translate>size</th>\n" +
+    "    </tr>\n" +
+    "    </thead>\n" +
     "    <tbody>\n" +
     "    <tr ng-repeat=\"attachment in attachments\">\n" +
     "      <th>\n" +
@@ -8658,7 +8724,7 @@ angular.module("attachment/attachment-list-template.html", []).run(["$templateCa
     "           download=\"{{attachment.fileName}}\">{{attachment.fileName}}\n" +
     "        </a>\n" +
     "      </th>\n" +
-    "      <td ng-if=\"attachment.timestamps\" class=\"col-xs-2\"><span class=\"pull-right\" title=\"{{ attachment.timestamps.created | amDateFormat: 'lll' }}\">{{attachment.timestamps.created | amCalendar }}</span></td>\n" +
+    "      <td><span class=\"pull-right\" ng-if=\"attachment.timestamps\" title=\"{{ attachment.timestamps.created | amDateFormat: 'lll' }}\">{{attachment.timestamps.created | amCalendar }}</span></td>\n" +
     "      <td style=\"width:1%;\">\n" +
     "        <span class=\"pull-right\" style=\"white-space: nowrap;\">\n" +
     "          {{attachment.size | bytes}}\n" +

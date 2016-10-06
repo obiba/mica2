@@ -1,6 +1,13 @@
 <div>
   <span ng-if="!hasAttachments && emptyMessage"><em>{{emptyMessage}}</em></span>
   <table ng-if="hasAttachments" class="table table-bordered table-striped" >
+    <thead>
+    <tr>
+      <th translate>data-access-request.default.documents.title</th>
+      <th class="col-xs-2"><span class="pull-right" translate>file.upload.date</span></th>
+      <th translate>size</th>
+    </tr>
+    </thead>
     <tbody>
     <tr ng-repeat="attachment in attachments">
       <th>
@@ -8,7 +15,7 @@
            download="{{attachment.fileName}}">{{attachment.fileName}}
         </a>
       </th>
-      <td ng-if="attachment.timestamps" class="col-xs-2"><span class="pull-right" title="{{ attachment.timestamps.created | amDateFormat: 'lll' }}">{{attachment.timestamps.created | amCalendar }}</span></td>
+      <td><span class="pull-right" ng-if="attachment.timestamps" title="{{ attachment.timestamps.created | amDateFormat: 'lll' }}">{{attachment.timestamps.created | amCalendar }}</span></td>
       <td style="width:1%;">
         <span class="pull-right" style="white-space: nowrap;">
           {{attachment.size | bytes}}

@@ -2,6 +2,11 @@
 
 angular.module('obiba.mica.utils', ['schemaForm'])
 
+  .factory('urlEncode', function() {
+    return function(input) {
+      return window.encodeURIComponent(input);
+    };
+  })
   .factory('UserProfileService',
     function () {
 
@@ -169,14 +174,19 @@ angular.module('obiba.mica.utils', ['schemaForm'])
     };
   }])
 
-  .service('SfOptionsService', ['$filter',
-    function ($filter) {
-      this.sfOptions = {
-        validationMessage: {
-          'default': $filter('translate')('errors.does-not-validate'),
-          302: $filter('translate')('required')
-        }
+  .service('SfOptionsService', ['$translate', '$q',
+    function ($translate, $q) {
+      this.transform = function (result) {
+        return {
+          validationMessage: {
+            302: result.required,
+            'default': result['errors.does-not-validate']
+          }
+        };
       };
+      var deferred = $q.defer();
+      deferred.resolve($translate(['errors.does-not-validate', 'required']));
+      this.sfOptions = deferred.promise;
     }])  
 
   .config(['schemaFormProvider',
