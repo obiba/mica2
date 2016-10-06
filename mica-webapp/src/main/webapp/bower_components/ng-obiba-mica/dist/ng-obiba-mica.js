@@ -6991,6 +6991,7 @@ angular.module('obiba.mica.graphics')
                   }
                 });
 
+
                 $scope.updateCriteria = function(key, vocabulary) {
                   RqlQueryService.createCriteriaItem('study', 'Mica_study', vocabulary, key).then(function (item) {
                     var entity = GraphicChartsConfig.getOptions().entityType;
@@ -7063,8 +7064,8 @@ angular.module('obiba.mica.graphics')
         $scope.ready = true;
       });
 
-      $scope.$watchGroup(['chartType', 'ready'], function() {
-        if ($scope.chartType && $scope.ready) {
+      $scope.$watch('chartAggregationName', function() {
+        if ($scope.chartAggregationName) {
           initializeChartData();
         }
       });
