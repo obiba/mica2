@@ -29,6 +29,7 @@ function NgObibaMicaUrlProvider() {
     'TaxonomyResource': 'ws/taxonomy/:taxonomy/_filter',
     'VocabularyResource': 'ws/taxonomy/:taxonomy/vocabulary/:vocabulary/_filter',
     'JoinQuerySearchResource': 'ws/:type/_rql?query=:query',
+    'JoinQuerySearchCsvResource': 'ws/:type/_rql_csv?query=:query',
     'JoinQueryCoverageResource': 'ws/variables/_coverage?query=:query',
     'JoinQueryCoverageDownloadResource': 'ws/variables/_coverage_download?query=:query',
     'VariablePage': '',
@@ -3647,6 +3648,7 @@ angular.module('obiba.mica.search')
 /* global DISPLAY_TYPES */
 /* global CriteriaIdGenerator */
 /* global targetToType */
+/* global typeToTarget */
 /* global SORT_FIELDS */
 
 /**
@@ -5075,8 +5077,12 @@ angular.module('obiba.mica.search')
   .controller('SearchResultController', [
     '$scope',
     'ngObibaMicaSearch',
+    'ngObibaMicaUrl',
+    'RqlQueryUtils',
     function ($scope,
-              ngObibaMicaSearch) {
+              ngObibaMicaSearch,
+              ngObibaMicaUrl,
+              RqlQueryUtils) {
 
       function updateTarget(type) {
         Object.keys($scope.activeTarget).forEach(function (key) {
@@ -5105,6 +5111,23 @@ angular.module('obiba.mica.search')
           return '...';
         }
         return $scope.result.list[type + 'ResultDto'].totalHits;
+      };
+
+      $scope.getReportUrl = function () {
+
+        if ($scope.query === null) {
+          return $scope.query;
+        }
+
+        var parsedQuery = new RqlParser().parse($scope.query);
+        var target = typeToTarget($scope.type);
+        var targetQuery = parsedQuery.args.filter(function (query) {
+          return query.name === target;
+        }).pop();
+        RqlQueryUtils.addLimit(targetQuery, RqlQueryUtils.limit(0, 100000));
+        var queryWithoutLimit = new RqlQuery().serializeArgs(parsedQuery.args);
+
+        return ngObibaMicaUrl.getUrl('JoinQuerySearchCsvResource').replace(':type', $scope.type).replace(':query', queryWithoutLimit);
       };
 
       $scope.$watchCollection('result', function () {
@@ -10553,6 +10576,11 @@ angular.module("search/views/search-result-list-template.html", []).run(["$templ
     "            target=\"activeTarget[targetTypeMap[res]].name\"\n" +
     "            total-hits=\"activeTarget[targetTypeMap[res]].totalHits\"\n" +
     "            on-change=\"onPaginate\"></span>\n" +
+    "    </li>\n" +
+    "    <li class=\"pull-right\">\n" +
+    "      <a target=\"_self\" download class=\"btn btn-info pull-right\" ng-href=\"{{getReportUrl()}}\">\n" +
+    "        <i class=\"fa fa-download\"></i> {{'download' | translate}}\n" +
+    "      </a>\n" +
     "    </li>\n" +
     "  </ul>\n" +
     "  <div class=\"tab-content\">\n" +
