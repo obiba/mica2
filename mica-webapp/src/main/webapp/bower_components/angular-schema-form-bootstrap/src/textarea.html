@@ -40,6 +40,8 @@
             ng-bind-html="form.fieldAddonRight"></span>
     </div>
 
+    <span class="pull-right label label-primary voffset1" ng-if="!form.readonly && form.showWordCount">{{count}}</span>
+
     <span class="help-block" sf-message="form.description"></span>
   </div>
 </div>
