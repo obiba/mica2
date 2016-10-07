@@ -3,7 +3,6 @@
   "main": [
     "schema-form-date-time-picker.min.js"
   ],
-  "version": "0.1.5",
   "authors": [
     "Cheng Zhu",
     "Cheng Zhu<cheng@aqmin.com>"
@@ -36,13 +35,13 @@
     "angular-mocks": ">= 1.2"
   },
   "homepage": "https://github.com/obiba/angular-schema-form-datetimepicker",
-  "_release": "0.1.5",
+  "_release": "c17770e692",
   "_resolution": {
-    "type": "version",
-    "tag": "0.1.5",
-    "commit": "14ae0335c718098c51eb9e8710855b03e51732f1"
+    "type": "branch",
+    "branch": "master",
+    "commit": "c17770e692f05ae857753b573fa53e1d84e9205a"
   },
   "_source": "https://github.com/obiba/angular-schema-form-datetimepicker.git",
-  "_target": "~0.1.4",
+  "_target": "master",
   "_originalSource": "https://github.com/obiba/angular-schema-form-datetimepicker.git"
 }

@@ -53,11 +53,22 @@ function(decoratorsProvider, sfBuilderProvider, sfPathProvider) {
   }, []);
 
 }])
-    .controller('TextAreaController', ['$scope', 'marked', function ($scope, marked) {
-      $scope.render = function (text) {
-        if (text) {
-          return marked(text);
-        }
-        return text;
-      };
-    }]);
+  .controller('TextAreaController', ['$scope', 'marked', function ($scope, marked) {
+    $scope.render = function (text) {
+      if (text) {
+        return marked(text);
+      }
+      return text;
+    };
+
+    $scope.$watch('ngModel.$viewValue', function (val) {
+      $scope.count = countWords(val);
+    });
+
+    function countWords(text) {
+      if (!text || !text.length) {
+        return 0;
+      }
+      return (text.match(/\S+/g) || []).length;
+    }
+  }]);

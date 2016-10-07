@@ -3,6 +3,14 @@
 </button>
 
 <table ng-show="files.length" class="table table-bordered table-striped">
+  <thead>
+  <tr>
+    <th translate>data-access-request.default.documents.title</th>
+    <th class="col-xs-2"><span class="pull-right" translate>file.upload.date</span></th>
+    <th translate>size</th>
+    <th translate>actions</th>
+  </tr>
+  </thead>
   <tbody>
   <tr ng-repeat="file in files">
     <td>
@@ -11,8 +19,8 @@
         {{file.progress}}%
       </uib-progressbar>
     </td>
-    <td ng-if="file.timestamps" class="col-xs-2">
-      <span class="pull-right" title="{{ file.timestamps.created | amDateFormat: 'lll' }}">{{file.timestamps.created | amCalendar }}</span>
+    <td>
+      <span class="pull-right" ng-if="file.timestamps" title="{{ file.timestamps.created | amDateFormat: 'lll' }}">{{file.timestamps.created | amCalendar }}</span>
     </td>
     <td style="width:1%;">
         <span class="pull-right" style="white-space: nowrap;">
