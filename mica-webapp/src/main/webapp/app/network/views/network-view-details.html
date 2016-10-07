@@ -73,7 +73,7 @@
           </p>
 
           <span class="pull-right">
-            <dir-pagination-controls></dir-pagination-controls>
+            <dir-pagination-controls pagination-id="studySummaryPagination"></dir-pagination-controls>
           </span>
 
           <table class="table table-bordered table-striped" ng-show="studySummaries.length">
@@ -85,7 +85,7 @@
             </tr>
             </thead>
             <tbody>
-            <tr dir-paginate="studySummary in studySummaries | itemsPerPage: 10">
+            <tr pagination-id="studySummaryPagination" dir-paginate="studySummary in studySummaries | itemsPerPage: 10">
               <td>
                 <a ng-href="#/study/{{studySummary.id}}" ng-if="studySummary.permissions.view">
                   <localized value="studySummary.acronym" lang="tab.lang"></localized>
@@ -115,7 +115,7 @@
           </p>
 
           <span class="pull-right">
-            <dir-pagination-controls></dir-pagination-controls>
+            <dir-pagination-controls pagination-id="networkSummaryPagination"></dir-pagination-controls>
           </span>
 
           <table class="table table-bordered table-striped" ng-show="network.networkSummaries.length">
@@ -127,7 +127,7 @@
             </tr>
             </thead>
             <tbody>
-            <tr dir-paginate="networkSummary in network.networkSummaries | itemsPerPage: 10">
+            <tr pagination-id="networkSummaryPagination" dir-paginate="networkSummary in network.networkSummaries | itemsPerPage: 10">
               <td>
                 <a ng-href="#/network/{{networkSummary.id}}" ng-if="networkSummary.permissions.view">
                   <localized value="networkSummary.acronym" lang="tab.lang"></localized>
