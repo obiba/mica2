@@ -18,6 +18,7 @@
 /* global DISPLAY_TYPES */
 /* global CriteriaIdGenerator */
 /* global targetToType */
+/* global typeToTarget */
 /* global SORT_FIELDS */
 
 /**
@@ -1446,8 +1447,12 @@ angular.module('obiba.mica.search')
   .controller('SearchResultController', [
     '$scope',
     'ngObibaMicaSearch',
+    'ngObibaMicaUrl',
+    'RqlQueryUtils',
     function ($scope,
-              ngObibaMicaSearch) {
+              ngObibaMicaSearch,
+              ngObibaMicaUrl,
+              RqlQueryUtils) {
 
       function updateTarget(type) {
         Object.keys($scope.activeTarget).forEach(function (key) {
@@ -1476,6 +1481,23 @@ angular.module('obiba.mica.search')
           return '...';
         }
         return $scope.result.list[type + 'ResultDto'].totalHits;
+      };
+
+      $scope.getReportUrl = function () {
+
+        if ($scope.query === null) {
+          return $scope.query;
+        }
+
+        var parsedQuery = new RqlParser().parse($scope.query);
+        var target = typeToTarget($scope.type);
+        var targetQuery = parsedQuery.args.filter(function (query) {
+          return query.name === target;
+        }).pop();
+        RqlQueryUtils.addLimit(targetQuery, RqlQueryUtils.limit(0, 100000));
+        var queryWithoutLimit = new RqlQuery().serializeArgs(parsedQuery.args);
+
+        return ngObibaMicaUrl.getUrl('JoinQuerySearchCsvResource').replace(':type', $scope.type).replace(':query', queryWithoutLimit);
       };
 
       $scope.$watchCollection('result', function () {

@@ -3,7 +3,7 @@
  * https://github.com/obiba/ng-obiba-mica
 
  * License: GNU Public License version 3
- * Date: 2016-10-06
+ * Date: 2016-10-07
  */
 'use strict';
 
@@ -313,6 +313,52 @@ angular.module('obiba.mica.utils', ['schemaForm'])
         }
       }
     };
+  }])
+
+  .factory('FormDirtyStateObserver', ['$uibModal', '$location',
+    function ($uibModal, $location) {
+      var onLocationChangeOff;
+
+      return {
+        observe: function(scope) {
+
+          if (onLocationChangeOff) {
+            onLocationChangeOff();
+          }
+
+          onLocationChangeOff = scope.$on('$locationChangeStart', function (event, newUrl) {
+            if (scope.form.$dirty) {
+              $uibModal.open({
+                backdrop: 'static',
+                controller: ['$scope', '$uibModalInstance', function ($scope, $uibModalInstance) {
+                  $scope.ok = function () {
+                    $uibModalInstance.close(true);
+                  };
+                  $scope.cancel = function () {
+                    $uibModalInstance.dismiss('cancel');
+                  };
+                }],
+                templateUrl: 'utils/views/unsaved-modal.html'
+              }).result.then(function (answer) {
+                if (answer === true) {
+                  onLocationChangeOff();
+                  $location.path($location.url(newUrl).hash());
+                }
+              });
+
+              event.preventDefault();
+              return;
+            }
+
+            onLocationChangeOff();
+          });
+        },
+        unobserve: function() {
+          if(onLocationChangeOff) {
+            onLocationChangeOff();
+          }
+        }
+      };
   }])
 
   .service('SfOptionsService', ['$translate', '$q',
@@ -1096,6 +1142,7 @@ angular.module('obiba.mica.access')
     'ngObibaMicaAccessTemplateUrl',
     'DataAccessRequestConfig',
     'SfOptionsService',
+    'FormDirtyStateObserver',
 
     function ($log, $scope, $routeParams, $location, $uibModal, LocalizedSchemaFormService,
               DataAccessRequestsResource,
@@ -1108,9 +1155,11 @@ angular.module('obiba.mica.access')
               DataAccessRequestService,
               ngObibaMicaAccessTemplateUrl,
               DataAccessRequestConfig,
-              SfOptionsService) {
+              SfOptionsService,
+              FormDirtyStateObserver) {
 
       var onSuccess = function(response, getResponseHeaders) {
+        FormDirtyStateObserver.unobserve();
         var parts = getResponseHeaders().location.split('/');
         $location.path('/data-access-request/' + parts[parts.length - 1]).replace();
       };
@@ -1149,6 +1198,7 @@ angular.module('obiba.mica.access')
           DataAccessRequestsResource.save($scope.dataAccessRequest, onSuccess, onError);
         } else {
           DataAccessRequestResource.save($scope.dataAccessRequest, function() {
+            FormDirtyStateObserver.unobserve();
             $location.path('/data-access-request' + ($scope.dataAccessRequest.id ? '/' + $scope.dataAccessRequest.id : 's')).replace();
           }, onError);
         }
@@ -1226,6 +1276,12 @@ angular.module('obiba.mica.access')
         definition: null,
         model: {}
       };
+      
+      $scope.$watch('form.requestForm.$dirty', function (val) {
+        $scope.form.$dirty = val;
+      });
+
+      FormDirtyStateObserver.observe($scope);
 
     }]);
 ;/*
@@ -8135,7 +8191,7 @@ angular.module('obiba.mica.fileBrowser')
       }
     };
   }]);
-;angular.module('templates-ngObibaMica', ['access/views/data-access-request-documents-view.html', 'access/views/data-access-request-form.html', 'access/views/data-access-request-history-view.html', 'access/views/data-access-request-list.html', 'access/views/data-access-request-print-preview.html', 'access/views/data-access-request-profile-user-modal.html', 'access/views/data-access-request-submitted-modal.html', 'access/views/data-access-request-validation-modal.html', 'access/views/data-access-request-view.html', 'attachment/attachment-input-template.html', 'attachment/attachment-list-template.html', 'file-browser/views/document-detail-template.html', 'file-browser/views/documents-table-template.html', 'file-browser/views/file-browser-template.html', 'file-browser/views/toolbar-template.html', 'graphics/views/charts-directive.html', 'graphics/views/tables-directive.html', 'localized/localized-input-group-template.html', 'localized/localized-input-template.html', 'localized/localized-template.html', 'localized/localized-textarea-template.html', 'search/views/classifications.html', 'search/views/classifications/classifications-view.html', 'search/views/classifications/taxonomies-facets-view.html', 'search/views/classifications/taxonomies-view.html', 'search/views/classifications/taxonomy-accordion-group.html', 'search/views/classifications/taxonomy-panel-template.html', 'search/views/classifications/taxonomy-template.html', 'search/views/classifications/term-panel-template.html', 'search/views/classifications/vocabulary-accordion-group.html', 'search/views/classifications/vocabulary-panel-template.html', 'search/views/coverage/coverage-search-result-table-template.html', 'search/views/criteria/criteria-node-template.html', 'search/views/criteria/criteria-root-template.html', 'search/views/criteria/criteria-target-template.html', 'search/views/criteria/criterion-dropdown-template.html', 'search/views/criteria/criterion-header-template.html', 'search/views/criteria/criterion-match-template.html', 'search/views/criteria/criterion-numeric-template.html', 'search/views/criteria/criterion-string-terms-template.html', 'search/views/criteria/target-template.html', 'search/views/graphics/graphics-search-result-template.html', 'search/views/list/datasets-search-result-table-template.html', 'search/views/list/networks-search-result-table-template.html', 'search/views/list/pagination-template.html', 'search/views/list/search-result-pagination-template.html', 'search/views/list/studies-search-result-table-template.html', 'search/views/list/variables-search-result-table-template.html', 'search/views/search-result-coverage-template.html', 'search/views/search-result-graphics-template.html', 'search/views/search-result-list-dataset-template.html', 'search/views/search-result-list-network-template.html', 'search/views/search-result-list-study-template.html', 'search/views/search-result-list-template.html', 'search/views/search-result-list-variable-template.html', 'search/views/search-result-panel-template.html', 'search/views/search.html', 'views/pagination-template.html']);
+;angular.module('templates-ngObibaMica', ['access/views/data-access-request-documents-view.html', 'access/views/data-access-request-form.html', 'access/views/data-access-request-history-view.html', 'access/views/data-access-request-list.html', 'access/views/data-access-request-print-preview.html', 'access/views/data-access-request-profile-user-modal.html', 'access/views/data-access-request-submitted-modal.html', 'access/views/data-access-request-validation-modal.html', 'access/views/data-access-request-view.html', 'attachment/attachment-input-template.html', 'attachment/attachment-list-template.html', 'file-browser/views/document-detail-template.html', 'file-browser/views/documents-table-template.html', 'file-browser/views/file-browser-template.html', 'file-browser/views/toolbar-template.html', 'graphics/views/charts-directive.html', 'graphics/views/tables-directive.html', 'localized/localized-input-group-template.html', 'localized/localized-input-template.html', 'localized/localized-template.html', 'localized/localized-textarea-template.html', 'search/views/classifications.html', 'search/views/classifications/classifications-view.html', 'search/views/classifications/taxonomies-facets-view.html', 'search/views/classifications/taxonomies-view.html', 'search/views/classifications/taxonomy-accordion-group.html', 'search/views/classifications/taxonomy-panel-template.html', 'search/views/classifications/taxonomy-template.html', 'search/views/classifications/term-panel-template.html', 'search/views/classifications/vocabulary-accordion-group.html', 'search/views/classifications/vocabulary-panel-template.html', 'search/views/coverage/coverage-search-result-table-template.html', 'search/views/criteria/criteria-node-template.html', 'search/views/criteria/criteria-root-template.html', 'search/views/criteria/criteria-target-template.html', 'search/views/criteria/criterion-dropdown-template.html', 'search/views/criteria/criterion-header-template.html', 'search/views/criteria/criterion-match-template.html', 'search/views/criteria/criterion-numeric-template.html', 'search/views/criteria/criterion-string-terms-template.html', 'search/views/criteria/target-template.html', 'search/views/graphics/graphics-search-result-template.html', 'search/views/list/datasets-search-result-table-template.html', 'search/views/list/networks-search-result-table-template.html', 'search/views/list/pagination-template.html', 'search/views/list/search-result-pagination-template.html', 'search/views/list/studies-search-result-table-template.html', 'search/views/list/variables-search-result-table-template.html', 'search/views/search-result-coverage-template.html', 'search/views/search-result-graphics-template.html', 'search/views/search-result-list-dataset-template.html', 'search/views/search-result-list-network-template.html', 'search/views/search-result-list-study-template.html', 'search/views/search-result-list-template.html', 'search/views/search-result-list-variable-template.html', 'search/views/search-result-panel-template.html', 'search/views/search.html', 'utils/views/unsaved-modal.html', 'views/pagination-template.html']);
 
 angular.module("access/views/data-access-request-documents-view.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("access/views/data-access-request-documents-view.html",
@@ -10805,6 +10861,23 @@ angular.module("search/views/search.html", []).run(["$templateCache", function($
     "  </div>\n" +
     "\n" +
     "</div>");
+}]);
+
+angular.module("utils/views/unsaved-modal.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("utils/views/unsaved-modal.html",
+    "<div class=\"modal-content\">\n" +
+    "    <div class=\"modal-header\">\n" +
+    "        <h4 class=\"modal-title\" translate>unsaved-title</h4>\n" +
+    "    </div>\n" +
+    "    <div class=\"modal-body\" translate>\n" +
+    "        unsaved-prompt\n" +
+    "    </div>\n" +
+    "    <div class=\"modal-footer\">\n" +
+    "        <button class=\"btn btn-default\" type=\"button\" ng-click=\"cancel()\" translate>cancel</button>\n" +
+    "        <button class=\"btn btn-primary\" type=\"button\" ng-click=\"ok()\" translate>ok</button>\n" +
+    "    </div>\n" +
+    "</div>\n" +
+    "");
 }]);
 
 angular.module("views/pagination-template.html", []).run(["$templateCache", function($templateCache) {

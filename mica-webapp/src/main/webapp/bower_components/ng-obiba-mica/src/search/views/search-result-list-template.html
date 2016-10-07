@@ -20,6 +20,11 @@
             total-hits="activeTarget[targetTypeMap[res]].totalHits"
             on-change="onPaginate"></span>
     </li>
+    <li class="pull-right">
+      <a target="_self" download class="btn btn-info pull-right" ng-href="{{getReportUrl()}}">
+        <i class="fa fa-download"></i> {{'download' | translate}}
+      </a>
+    </li>
   </ul>
   <div class="tab-content">
     <ng-include include-replace ng-repeat="res in resultTabsOrder"

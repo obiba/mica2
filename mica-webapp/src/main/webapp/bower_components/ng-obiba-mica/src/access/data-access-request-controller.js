@@ -559,6 +559,7 @@ angular.module('obiba.mica.access')
     'ngObibaMicaAccessTemplateUrl',
     'DataAccessRequestConfig',
     'SfOptionsService',
+    'FormDirtyStateObserver',
 
     function ($log, $scope, $routeParams, $location, $uibModal, LocalizedSchemaFormService,
               DataAccessRequestsResource,
@@ -571,9 +572,11 @@ angular.module('obiba.mica.access')
               DataAccessRequestService,
               ngObibaMicaAccessTemplateUrl,
               DataAccessRequestConfig,
-              SfOptionsService) {
+              SfOptionsService,
+              FormDirtyStateObserver) {
 
       var onSuccess = function(response, getResponseHeaders) {
+        FormDirtyStateObserver.unobserve();
         var parts = getResponseHeaders().location.split('/');
         $location.path('/data-access-request/' + parts[parts.length - 1]).replace();
       };
@@ -612,6 +615,7 @@ angular.module('obiba.mica.access')
           DataAccessRequestsResource.save($scope.dataAccessRequest, onSuccess, onError);
         } else {
           DataAccessRequestResource.save($scope.dataAccessRequest, function() {
+            FormDirtyStateObserver.unobserve();
             $location.path('/data-access-request' + ($scope.dataAccessRequest.id ? '/' + $scope.dataAccessRequest.id : 's')).replace();
           }, onError);
         }
@@ -689,5 +693,11 @@ angular.module('obiba.mica.access')
         definition: null,
         model: {}
       };
+      
+      $scope.$watch('form.requestForm.$dirty', function (val) {
+        $scope.form.$dirty = val;
+      });
+
+      FormDirtyStateObserver.observe($scope);
 
     }]);
