@@ -1,9 +1,9 @@
 /*!
- * ng-obiba-mica - v1.3.0
+ * ng-obiba-mica - v1.4.0
  * https://github.com/obiba/ng-obiba-mica
 
  * License: GNU Public License version 3
- * Date: 2016-09-28
+ * Date: 2016-10-06
  */
 'use strict';
 
@@ -142,6 +142,11 @@ angular.module('ngObibaMica', [
 
 angular.module('obiba.mica.utils', ['schemaForm'])
 
+  .factory('urlEncode', function() {
+    return function(input) {
+      return window.encodeURIComponent(input);
+    };
+  })
   .factory('UserProfileService',
     function () {
 
@@ -309,14 +314,19 @@ angular.module('obiba.mica.utils', ['schemaForm'])
     };
   }])
 
-  .service('SfOptionsService', ['$filter',
-    function ($filter) {
-      this.sfOptions = {
-        validationMessage: {
-          'default': $filter('translate')('errors.does-not-validate'),
-          302: $filter('translate')('required')
-        }
+  .service('SfOptionsService', ['$translate', '$q',
+    function ($translate, $q) {
+      this.transform = function (result) {
+        return {
+          validationMessage: {
+            302: result.required,
+            'default': result['errors.does-not-validate']
+          }
+        };
       };
+      var deferred = $q.defer();
+      deferred.resolve($translate(['errors.does-not-validate', 'required']));
+      this.sfOptions = deferred.promise;
     }])  
 
   .config(['schemaFormProvider',
@@ -698,6 +708,7 @@ angular.module('obiba.mica.access')
       'DataAccessRequestConfig',
       'LocalizedSchemaFormService',
       'SfOptionsService',
+      'moment',
 
     function ($rootScope,
               $scope,
@@ -721,7 +732,8 @@ angular.module('obiba.mica.access')
               NOTIFICATION_EVENTS,
               DataAccessRequestConfig,
               LocalizedSchemaFormService,
-              SfOptionsService) {
+              SfOptionsService,
+              moment) {
 
       var onError = function (response) {
         AlertService.alert({
@@ -731,7 +743,9 @@ angular.module('obiba.mica.access')
         });
       };
 
-      $scope.sfOptions = SfOptionsService.sfOptions;
+      SfOptionsService.sfOptions.then(function(options) {
+        $scope.sfOptions = SfOptionsService.transform(options);
+      });
 
       var retrieveComments = function() {
         $scope.form.comments = DataAccessRequestCommentsResource.query({id: $routeParams.id});
@@ -788,6 +802,18 @@ angular.module('obiba.mica.access')
         var history = $scope.dataAccessRequest.statusChangeHistory || [];
         return history.filter(function(item) {
           return item.to === DataAccessRequestService.status.SUBMITTED;
+        }).sort(function (a, b) {
+          if (moment(a).isBefore(b)) {
+            return -1;
+          }
+
+          if (moment(a).isSame(b)) {
+            return 0;
+          }
+
+          if (moment(a).isAfter(b)) {
+            return 1;
+          }
         }).pop();
       }
 
@@ -1096,7 +1122,9 @@ angular.module('obiba.mica.access')
         });
       };
 
-      $scope.sfOptions = SfOptionsService.sfOptions;
+      SfOptionsService.sfOptions.then(function(options) {
+        $scope.sfOptions = SfOptionsService.transform(options);
+      });
 
       $scope.getDataAccessListPageUrl = DataAccessRequestService.getListDataAccessRequestPageUrl();
 
@@ -3458,28 +3486,28 @@ angular.module('obiba.mica.search')
     };
   })
 
-  .service('PageUrlService', ['ngObibaMicaUrl', 'StringUtils', function(ngObibaMicaUrl, StringUtils) {
+  .service('PageUrlService', ['ngObibaMicaUrl', 'StringUtils', 'urlEncode', function(ngObibaMicaUrl, StringUtils, urlEncode) {
 
     this.studyPage = function(id) {
-      return id ? StringUtils.replaceAll(ngObibaMicaUrl.getUrl('StudyPage'), {':study': id}) : '';
+      return id ? StringUtils.replaceAll(ngObibaMicaUrl.getUrl('StudyPage'), {':study': urlEncode(id)}) : '';
     };
 
     this.studyPopulationPage = function(id, populationId) {
-      return id ? StringUtils.replaceAll(ngObibaMicaUrl.getUrl('StudyPopulationsPage'), {':study': id, ':population': populationId}) : '';
+      return id ? StringUtils.replaceAll(ngObibaMicaUrl.getUrl('StudyPopulationsPage'), {':study': urlEncode(id), ':population': urlEncode(populationId)}) : '';
     };
 
     this.networkPage = function(id) {
-      return id ? StringUtils.replaceAll(ngObibaMicaUrl.getUrl('NetworkPage'), {':network': id}) : '';
+      return id ? StringUtils.replaceAll(ngObibaMicaUrl.getUrl('NetworkPage'), {':network': urlEncode(id)}) : '';
     };
 
     this.datasetPage = function(id, type) {
       var dsType = (type.toLowerCase() === 'study' ? 'study' : 'harmonization') + '-dataset';
-      var result = id ? StringUtils.replaceAll(ngObibaMicaUrl.getUrl('DatasetPage'), {':type': dsType, ':dataset': id}) : '';
+      var result = id ? StringUtils.replaceAll(ngObibaMicaUrl.getUrl('DatasetPage'), {':type': urlEncode(dsType), ':dataset': urlEncode(id)}) : '';
       return result;
     };
 
     this.variablePage = function(id) {
-      return id ? StringUtils.replaceAll(ngObibaMicaUrl.getUrl('VariablePage'), {':variable': id}) : '';
+      return id ? StringUtils.replaceAll(ngObibaMicaUrl.getUrl('VariablePage'), {':variable': urlEncode(id)}) : '';
     };
 
     this.downloadCoverage = function(query) {
@@ -8172,6 +8200,22 @@ angular.module("access/views/data-access-request-form.html", []).run(["$template
     "    <form name=\"form.requestForm\" ng-submit=\"submit(form.requestForm)\">\n" +
     "      <div sf-model=\"form.model\" sf-form=\"form.definition\" sf-schema=\"form.schema\" required=\"true\" sf-options=\"sfOptions\"></div>\n" +
     "    </form>\n" +
+    "\n" +
+    "    <div class=\"pull-right\" ng-if=\"loaded\">\n" +
+    "      <a ng-click=\"cancel()\" type=\"button\" class=\"btn btn-default\">\n" +
+    "        <span translate>cancel</span>\n" +
+    "      </a>\n" +
+    "\n" +
+    "      <a ng-click=\"save()\" type=\"button\" class=\"btn btn-primary\">\n" +
+    "        <span translate>save</span>\n" +
+    "      </a>\n" +
+    "\n" +
+    "      <a ng-click=\"validate()\" type=\"button\" class=\"btn btn-info\">\n" +
+    "        <span translate>validate</span>\n" +
+    "      </a>\n" +
+    "    </div>\n" +
+    "\n" +
+    "    <div class=\"clearfix voffet2\"></div>\n" +
     "  </div>\n" +
     "\n" +
     "</div>\n" +
@@ -8377,7 +8421,7 @@ angular.module("access/views/data-access-request-print-preview.html", []).run(["
     "\n" +
     "  <div ng-if=\"lastSubmittedDate\">\n" +
     "    <h3 translate>data-access-request.submissionDate</h3>\n" +
-    "    <p>{{lastSubmittedDate | amDateFormat:'dddd, MMMM Do YYYY' | capitalizeFirstLetter}}</p>\n" +
+    "    <p>{{lastSubmittedDate.changedOn | amDateFormat:'dddd, MMMM Do YYYY' | capitalizeFirstLetter}}</p>\n" +
     "  </div>\n" +
     "</div>\n" +
     "");
