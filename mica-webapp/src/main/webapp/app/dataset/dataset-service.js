@@ -217,7 +217,7 @@ mica.dataset
           return dataset['obiba.mica.HarmonizationDatasetDto.type'].networkTables;
       }
 
-      throw new Error("Invalid table type");
+      throw new Error('Invalid table type');
     }
 
     function createTargetTables(dataset, type) {
@@ -230,7 +230,7 @@ mica.dataset
           tablesName = 'networkTables';
           break;
         default:
-          throw new Error("Invalid table type");
+          throw new Error('Invalid table type');
       }
 
       dataset['obiba.mica.HarmonizationDatasetDto.type'][tablesName] = dataset['obiba.mica.HarmonizationDatasetDto.type'][tablesName] || [];
@@ -242,7 +242,7 @@ mica.dataset
 
       var index = tables.indexOf(wrapper.table);
       if (index === -1) {
-        throw new Error("Wrapper table is not found.");
+        throw new Error('Wrapper table is not found.');
       }
 
       tables[index] = newTable;
