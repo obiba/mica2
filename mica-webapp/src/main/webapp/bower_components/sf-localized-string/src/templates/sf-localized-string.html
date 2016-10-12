@@ -20,8 +20,8 @@
   </div>
   <div ng-if="form.rows && form.rows > 1"
        ng-class="{'form-group' : !$last}">
-    <div sf-field-model="replaceAll" ng-if="form.readonly" ng-bind-html="render($$value$$)"></div>
-    <textarea class="form-control" ng-if="!form.readonly"
+    <div sf-field-model="replaceAll" ng-if="form.readonly && form.marked" ng-bind-html="render($$value$$)"></div>
+    <textarea class="form-control" ng-if="!form.readonly || !form.marked"
               ng-disabled="form.readonly"
               sf-field-model="replaceAll" ng-model="$$value$$[locale]"
               rows="{{form.rows ? form.rows : 5}}"

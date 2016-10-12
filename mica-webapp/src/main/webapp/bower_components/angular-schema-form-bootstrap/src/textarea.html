@@ -8,9 +8,9 @@
 
   <!-- TODO check marks are not shown, should be fixed -->
   <div class="hidden-print">
-    <div sf-field-model="replaceAll" ng-if="form.readonly" ng-bind-html="render($$value$$)"></div>
+    <div sf-field-model="replaceAll" ng-if="form.readonly && form.marked" ng-bind-html="render($$value$$)"></div>
 
-    <textarea ng-if="!form.fieldAddonLeft && !form.fieldAddonRight && !form.readonly"
+    <textarea ng-if="!form.fieldAddonLeft && !form.fieldAddonRight && (!form.readonly || !form.marked)"
               class="form-control {{form.fieldHtmlClass}}"
               id="{{form.key.slice(-1)[0]}}"
               sf-changed="form"
@@ -21,7 +21,7 @@
               rows="{{form.rows}}"
               name="{{form.key.slice(-1)[0]}}"></textarea>
 
-    <div ng-if="(form.fieldAddonLeft || form.fieldAddonRight) && !form.readonly"
+    <div ng-if="(form.fieldAddonLeft || form.fieldAddonRight) && (!form.readonly || !form.marked)"
          ng-class="{'input-group': (form.fieldAddonLeft || form.fieldAddonRight)}">
       <span ng-if="form.fieldAddonLeft"
             class="input-group-addon"
