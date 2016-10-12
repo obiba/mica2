@@ -24,6 +24,7 @@
     "filesize": true,
     "jQuery": true,
     "$": true,
-    "ace": true
+    "ace": true,
+    "FileReader": true
   }
 }
