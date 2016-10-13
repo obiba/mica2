@@ -43,6 +43,6 @@
     "commit": "14ae0335c718098c51eb9e8710855b03e51732f1"
   },
   "_source": "https://github.com/obiba/angular-schema-form-datetimepicker.git",
-  "_target": "~0.1.5",
+  "_target": "0.1.5",
   "_originalSource": "https://github.com/obiba/angular-schema-form-datetimepicker.git"
 }
