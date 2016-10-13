@@ -1,7 +1,11 @@
-language: java
+language: java, node_js
+node_js:
+  - "4"
 jdk:
   - oraclejdk8
 sudo: false
+before_install:
+  - npm install -g bower
 addons:
   apt:
     packages:

@@ -445,10 +445,9 @@ mica.dataset
 
       function addUpdateOpalTable(tableType, tab, wrapper) {
         if (!tableType) {
-          throw new Error("Cannot add Opal table without specifying the table type.");
+          throw new Error('Cannot add Opal table without specifying the table type.');
         }
 
-        // var tablesName = tableType === mica.dataset.OPAL_TABLE_TYPES.STUDY_TABLE ? 'studyTables' : 'networkTables';
         var controllerName = tableType === mica.dataset.OPAL_TABLE_TYPES.STUDY_TABLE ?
           'StudyTableModalController' :
           'NetworkTableModalController';

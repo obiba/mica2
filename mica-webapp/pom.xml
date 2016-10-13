@@ -86,8 +86,56 @@
             <fileset>
               <directory>src/main/webapp/dist</directory>
             </fileset>
+            <fileset>
+              <directory>src/main/webapp/bower_components</directory>
+            </fileset>
+            <fileset>
+              <directory>node_modules</directory>
+            </fileset>
           </filesets>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>exec-npm-install</id>
+            <phase>generate-sources</phase>
+            <configuration>
+              <executable>npm</executable>
+              <arguments>
+                <argument>install</argument>
+              </arguments>
+            </configuration>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>exec-bower-install</id>
+            <phase>generate-sources</phase>
+            <configuration>
+              <executable>bower</executable>
+              <arguments>
+                <argument>install</argument>
+              </arguments>
+            </configuration>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>exec-grunt</id>
+            <phase>process-resources</phase>
+            <configuration>
+              <executable>grunt</executable>
+            </configuration>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>
