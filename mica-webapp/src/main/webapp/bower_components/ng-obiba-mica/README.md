@@ -1,1 +1,0 @@
-# ng-obiba-mica
