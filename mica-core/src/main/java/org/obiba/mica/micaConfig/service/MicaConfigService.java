@@ -10,16 +10,13 @@
 
 package org.obiba.mica.micaConfig.service;
 
-import java.io.File;
-import java.io.IOException;
-import java.security.Key;
-import java.util.ArrayList;
-import java.util.Iterator;
-
-import javax.inject.Inject;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
+import com.google.common.eventbus.EventBus;
 import org.apache.commons.io.FileUtils;
 import org.apache.shiro.codec.CodecSupport;
 import org.apache.shiro.codec.Hex;
@@ -30,6 +27,9 @@ import org.obiba.mica.micaConfig.domain.MicaConfig;
 import org.obiba.mica.micaConfig.event.MicaConfigUpdatedEvent;
 import org.obiba.mica.micaConfig.repository.MicaConfigRepository;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
+import org.obiba.opal.core.domain.taxonomy.TaxonomyEntity;
+import org.obiba.opal.core.domain.taxonomy.Term;
+import org.obiba.opal.core.domain.taxonomy.Vocabulary;
 import org.springframework.beans.BeanUtils;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -39,12 +39,17 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
-import com.google.common.eventbus.EventBus;
+import javax.inject.Inject;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import java.io.File;
+import java.io.IOException;
+import java.security.Key;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+import static org.springframework.util.CollectionUtils.isEmpty;
 
 @Service
 @Validated
@@ -159,14 +164,68 @@ public class MicaConfigService {
     }
 
     MicaConfig config = getOrCreateMicaConfig();
-    JsonNode original = objectMapper.readTree(translations);
+    JsonNode builtTranslations = objectMapper.readTree(translations);
+
+    builtTranslations = addStudyTaxonomy(builtTranslations, locale);
 
     if (config.hasTranslations() && config.getTranslations().get(locale) != null) {
       JsonNode custom = objectMapper.readTree(config.getTranslations().get(locale));
-      return mergeJson(original, custom).toString();
+      return mergeJson(builtTranslations, custom).toString();
     }
 
-    return original.toString();
+    return builtTranslations.toString();
+  }
+
+  private JsonNode addStudyTaxonomy(JsonNode original, String locale) {
+
+    JsonNode taxonomyNode = getTaxonomyNode(TaxonomyTarget.STUDY, locale);
+
+    ObjectNode containerNode = new ObjectNode(JsonNodeFactory.instance);
+    containerNode.set("study_taxonomy", taxonomyNode);
+
+    return mergeJson(original, containerNode);
+  }
+
+  private JsonNode getTaxonomyNode(TaxonomyTarget taxonomyTarget, String locale) {
+
+    Taxonomy taxonomy = taxonomyConfigService.findByTarget(taxonomyTarget);
+
+    ObjectNode vocabularies = new ObjectNode(JsonNodeFactory.instance);
+    for (Vocabulary vocabulary : taxonomy.getVocabularies()) {
+      ObjectNode vocabularyNode = createObjectNode(vocabulary, locale);
+      vocabularyNode = addTerms(vocabularyNode, vocabulary.getTerms(), locale);
+      vocabularies.set(vocabulary.getName(),vocabularyNode);
+    }
+
+    ObjectNode taxonomyNode = createObjectNode(taxonomy, locale);
+    taxonomyNode.set("vocabulary", vocabularies);
+
+    return taxonomyNode;
+  }
+
+  private ObjectNode addTerms(ObjectNode parentNode, List<Term> terms, String locale) {
+    if (!isEmpty(terms)) {
+      ObjectNode termsArrayNode = new ObjectNode(JsonNodeFactory.instance);
+      for (Term term : terms) {
+        ObjectNode termNode = createObjectNode(term, locale);
+        termNode = addTerms(termNode, term.getTerms(), locale);
+        termsArrayNode.set(term.getName(), termNode);
+      }
+      parentNode.set("term", termsArrayNode);
+    }
+    return parentNode;
+  }
+
+  private ObjectNode createObjectNode(TaxonomyEntity taxonomy, String locale) {
+    ObjectNode taxonomyNode = new ObjectNode(JsonNodeFactory.instance);
+    putFieldInNodeIfExists(taxonomyNode, "title", taxonomy.getTitle().get(locale));
+    putFieldInNodeIfExists(taxonomyNode, "description", taxonomy.getDescription().get(locale));
+    return taxonomyNode;
+  }
+
+  private void putFieldInNodeIfExists(ObjectNode node, String key, String value) {
+    if (value != null)
+      node.put(key, value);
   }
 
   private Resource getTranslationsResource(String locale) {
@@ -180,8 +239,7 @@ public class MicaConfigService {
       JsonNode jsonNode = mainNode.get(fieldName);
       if (jsonNode != null && jsonNode.isObject()) {
         mergeJson(jsonNode, updateNode.get(fieldName));
-      }
-      else {
+      } else {
         if (mainNode instanceof ObjectNode) {
           JsonNode value = updateNode.get(fieldName);
           ((ObjectNode) mainNode).replace(fieldName, value);
