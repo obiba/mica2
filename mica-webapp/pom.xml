@@ -86,6 +86,12 @@
             <fileset>
               <directory>src/main/webapp/dist</directory>
             </fileset>
+            <fileset>
+              <directory>src/main/webapp/bower_components</directory>
+            </fileset>
+            <fileset>
+              <directory>node_modules</directory>
+            </fileset>
           </filesets>
         </configuration>
       </plugin>
