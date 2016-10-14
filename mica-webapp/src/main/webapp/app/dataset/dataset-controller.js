@@ -552,6 +552,14 @@ mica.dataset
             saveAndUpdateDataset();
           };
 
+          $scope.deleteSelectedOpalTables = function () {
+            var wrappers = $scope.opalTables.filter(function (t) {
+              return t.selected;
+            });
+            OpalTablesService.deleteTables($scope.dataset, wrappers);
+            saveAndUpdateDataset();
+          };
+
           $scope.moveOpalTableDown = function (index) {
             var studyToMoveDown = $scope.opalTables[index];
             var studyToMoveUp = $scope.opalTables[index + 1];
