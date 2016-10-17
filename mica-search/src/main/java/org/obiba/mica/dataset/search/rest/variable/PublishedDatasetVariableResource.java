@@ -54,6 +54,7 @@ public class PublishedDatasetVariableResource {
       case Study:
         if (!studyDatasetService.isPublished(resolver.getDatasetId())) throw NoSuchDatasetException.withId(resolver.getDatasetId());
         resource = applicationContext.getBean(PublishedStudyDatasetVariableResource.class);
+        ((PublishedStudyDatasetVariableResource)resource).setLocale(locale);
         break;
       case Dataschema:
         if (!harmonizationDatasetService.isPublished(resolver.getDatasetId())) throw NoSuchDatasetException.withId(resolver.getDatasetId());
