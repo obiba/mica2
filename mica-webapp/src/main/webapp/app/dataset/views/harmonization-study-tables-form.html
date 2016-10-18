@@ -10,10 +10,15 @@
   <button type="button" class="btn btn-info btn-sm voffset2" ng-click="addNetworkTable(tab)">
     <i class="fa fa-plus"></i> <span translate>dataset.add-network-table</span>
   </button>
+
+  <button type="button" class="btn btn-danger btn-sm voffset2" ng-click="deleteSelectedOpalTables()">
+    <i class="fa fa-trash-o"></i> <span translate>global.delete-selected</span>
+  </button>
   <div ng-show="opalTables && opalTables.length">
     <table class="table table-bordered table-striped" ng-show="dataset['obiba.mica.HarmonizationDatasetDto.type']">
       <thead>
       <tr>
+        <th></th>
         <th translate>study.label</th>
         <th translate>type</th>
         <th translate>dataset.project</th>
@@ -26,6 +31,9 @@
       </thead>
       <tbody>
       <tr ng-repeat="wrapper in opalTables">
+        <td>
+          <input type="checkbox" ng-model="wrapper.selected">
+        </td>
         <td >
           <a ng-show="wrapper.type === 'studyTable'" ng-href="#/study/{{wrapper.table.studyId}}">
             {{wrapper.table.studyId}}

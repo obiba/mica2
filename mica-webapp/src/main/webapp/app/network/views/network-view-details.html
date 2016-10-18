@@ -72,6 +72,10 @@
             <span translate>study.none</span>
           </p>
 
+          <a class="btn btn-danger" ng-click="deleteSelectedStudiesEvent()">
+            <i class="fa fa-trash-o"></i> <span translate>global.delete-selected</span>
+          </a>
+
           <span class="pull-right">
             <dir-pagination-controls pagination-id="studySummaryPagination"></dir-pagination-controls>
           </span>
@@ -79,6 +83,7 @@
           <table class="table table-bordered table-striped" ng-show="studySummaries.length">
             <thead>
             <tr>
+              <th ng-if="inViewMode() && permissions.canEdit()"></th>
               <th translate>study.acronym</th>
               <th translate>study.name</th>
               <th ng-if="inViewMode() && permissions.canEdit()" translate>actions</th>
@@ -86,6 +91,9 @@
             </thead>
             <tbody>
             <tr pagination-id="studySummaryPagination" dir-paginate="studySummary in studySummaries | itemsPerPage: 10">
+              <td ng-if="inViewMode() && permissions.canEdit()">
+                <input type="checkbox" ng-model="studySummary.selected">
+              </td>
               <td>
                 <a ng-href="#/study/{{studySummary.id}}" ng-if="studySummary.permissions.view">
                   <localized value="studySummary.acronym" lang="tab.lang"></localized>
@@ -114,6 +122,10 @@
             <span translate>network.none</span>
           </p>
 
+          <a class="btn btn-danger" ng-click="deleteSelectedNetworksEvent()">
+            <i class="fa fa-trash-o"></i> <span translate>global.delete-selected</span>
+          </a>
+
           <span class="pull-right">
             <dir-pagination-controls pagination-id="networkSummaryPagination"></dir-pagination-controls>
           </span>
@@ -121,6 +133,7 @@
           <table class="table table-bordered table-striped" ng-show="network.networkSummaries.length">
             <thead>
             <tr>
+              <th ng-if="inViewMode() && permissions.canEdit()"></th>
               <th translate>network.acronym</th>
               <th translate>network.name</th>
               <th ng-if="inViewMode() && permissions.canEdit()" translate>actions</th>
@@ -128,6 +141,9 @@
             </thead>
             <tbody>
             <tr pagination-id="networkSummaryPagination" dir-paginate="networkSummary in network.networkSummaries | itemsPerPage: 10">
+              <td ng-if="inViewMode() && permissions.canEdit()">
+                <input type="checkbox" ng-model="networkSummary.selected">
+              </td>
               <td>
                 <a ng-href="#/network/{{networkSummary.id}}" ng-if="networkSummary.permissions.view">
                   <localized value="networkSummary.acronym" lang="tab.lang"></localized>
