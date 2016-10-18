@@ -33,7 +33,8 @@
     "from": "From",
     "to": "To",
     "print": "Print",
-    "modified": "Modified"
+    "modified": "Modified",
+    "delete-selected": "Delete Selected Items"
   },
   "main": {
     "title": "Welcome to Mica!",

@@ -32,7 +32,8 @@
     "from": "De",
     "to": "À",
     "print": "Imprimer",
-    "modified": "Modifié"
+    "modified": "Modifié",
+    "delete-selected": "Effacer les items selectionnés"
   },
   "main": {
     "title": "Bienvenue chez Mica!",

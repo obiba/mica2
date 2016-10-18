@@ -48,7 +48,7 @@ mica.network
         $scope.totalCount = parseInt(responseHeaders('X-Total-Count'), 10);
         $scope.networks = response;
         $scope.loading = false;
-        
+
         if (!$scope.hasNetworks) {
           $scope.hasNetworks = $scope.totalCount && !$scope.pagination.searchText;
         }
@@ -92,7 +92,7 @@ mica.network
           loadPage(1);
         }
       }
-      
+
       $scope.$watch('pagination.searchText', function(newVal, oldVal) {
         if (!newVal && !oldVal) {
           return;
@@ -636,6 +636,29 @@ mica.network
         );
       };
 
+      $scope.deleteSelectedStudiesEvent = function () {
+        var selectedSummaries = $scope.studySummaries.filter(function (s) {
+          return s.selected;
+        });
+
+        if (!selectedSummaries.length) {
+          return;
+        }
+
+        var currentLang = $translate.use();
+        var names = selectedSummaries.map(function (s) {
+          return LocalizedValues.forLang(s.name, currentLang);
+        }).join(', ');
+
+        $rootScope.$broadcast(NOTIFICATION_EVENTS.showConfirmDialog,
+          {
+            titleKey: 'network.study-delete-dialog.title',
+            messageKey:'network.study-delete-dialog.message',
+            messageArgs: [names]
+          }, {type: 'study', summary: selectedSummaries}
+        );
+      };
+
       $scope.addNetwork = function () {
         $uibModal.open({
           templateUrl: 'app/network/views/network-modal-add-links.html',
@@ -658,6 +681,29 @@ mica.network
             $scope.network.networkIds = ($scope.network.networkIds || []).concat(selectedIds);
             $scope.emitNetworkUpdated();
           });
+      };
+
+      $scope.deleteSelectedNetworksEvent = function () {
+        var selectedSummaries = $scope.network.networkSummaries.filter(function (s) {
+          return s.selected;
+        });
+
+        if (!selectedSummaries.length) {
+          return;
+        }
+
+        var currentLang = $translate.use();
+        var names = selectedSummaries.map(function (s) {
+          return LocalizedValues.forLang(s.name, currentLang);
+        }).join(', ');
+
+        $rootScope.$broadcast(NOTIFICATION_EVENTS.showConfirmDialog,
+          {
+            titleKey: 'network.network-delete-dialog.title',
+            messageKey:'network.network-delete-dialog.message',
+            messageArgs: [names]
+          }, {type: 'network', summary: selectedSummaries}
+        );
       };
 
       $scope.deleteNetwork = function (network, summary) {
@@ -685,7 +731,7 @@ mica.network
         });
       };
 
-      $scope.$on(NOTIFICATION_EVENTS.confirmDialogAccepted, function (event, data) {
+      var onConfirmSingleDeleteDialog = function (data) {
         var deleteIndex;
 
         if (!data.summary) { return; }
@@ -707,6 +753,41 @@ mica.network
             $scope.emitNetworkUpdated();
           } else {
             $log.error('The id was not found: ', data.summary.id);
+          }
+        }
+      };
+
+      $scope.$on(NOTIFICATION_EVENTS.confirmDialogAccepted, function (event, data) {
+        if (!data.summary) { return; }
+
+        if (!Array.isArray(data.summary)) {
+          onConfirmSingleDeleteDialog(data);
+        } else {
+          var someChanges;
+          if (data.type === 'study') {
+            data.summary.forEach(function (d) {
+              var delId = $scope.network.studyIds.indexOf(d.id);
+              if (delId > -1) {
+                $scope.network.studyIds.splice(delId, 1);
+                someChanges = someChanges || true;
+              } else {
+                $log.error('The id was not found: ', d.id);
+              }
+            });
+          } else {
+            data.summary.forEach(function (d) {
+              var delId = $scope.network.networkIds.indexOf(d.id);
+              if (delId > -1) {
+                $scope.network.networkIds.splice(delId, 1);
+                someChanges = someChanges || true;
+              } else {
+                $log.error('The id was not found: ', d.id);
+              }
+            });
+          }
+
+          if (someChanges) {
+            $scope.emitNetworkUpdated();
           }
         }
       });
