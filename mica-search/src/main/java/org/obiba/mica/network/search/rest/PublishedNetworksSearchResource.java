@@ -30,6 +30,7 @@ import org.obiba.mica.search.csvexport.GenericReportGenerator;
 import org.obiba.mica.search.queries.NetworkQuery;
 import org.obiba.mica.search.queries.protobuf.JoinQueryDtoWrapper;
 import org.obiba.mica.search.queries.protobuf.QueryDtoHelper;
+import org.obiba.mica.search.queries.rql.RQLQueryBuilder;
 import org.obiba.mica.search.queries.rql.RQLQueryFactory;
 import org.obiba.mica.web.model.MicaSearch;
 import org.springframework.context.annotation.Scope;
@@ -57,6 +58,20 @@ public class PublishedNetworksSearchResource {
 
   @Inject
   private GenericReportGenerator genericReportGenerator;
+
+  @GET
+  @Timed
+  public JoinQueryResultDto rqlList(@QueryParam("from") @DefaultValue("0") int from,
+    @QueryParam("limit") @DefaultValue("10") int limit, @QueryParam("sort") @DefaultValue("name") String sort,
+    @QueryParam("order") @DefaultValue("asc") String order, @QueryParam("locale") @DefaultValue("en") String locale)
+    throws IOException {
+
+    String rql = RQLQueryBuilder.newInstance().target(
+      RQLQueryBuilder.TargetQueryBuilder.networkInstance().exists("id").limit(from, limit).sort(sort, order).build())
+      .locale(locale).buildArgsAsString();
+
+    return joinQueryExecutor.query(JoinQueryExecutor.QueryType.NETWORK, rqlQueryFactory.makeJoinQuery(rql));
+  }
 
   @GET
   @Path("/_search")

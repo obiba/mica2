@@ -16,7 +16,6 @@ import javax.inject.Inject;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
@@ -25,11 +24,14 @@ import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.service.PublishedStudyService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
-import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import com.codahale.metrics.annotation.Timed;
 
-@Path("/")
+@Component
+@Path("/studies")
+@Scope("request")
 @RequiresAuthentication
 public class PublishedStudiesResource {
 
@@ -39,11 +41,8 @@ public class PublishedStudiesResource {
   @Inject
   private Dtos dtos;
 
-  @Inject
-  private ApplicationContext applicationContext;
-
   @GET
-  @Path("/studies")
+  @Path("/_list")
   @Timed
   public Mica.StudySummariesDto list(@QueryParam("from") @DefaultValue("0") int from,
       @QueryParam("limit") @DefaultValue("10") int limit, @QueryParam("sort") String sort,
@@ -57,13 +56,6 @@ public class PublishedStudiesResource {
     builder.addAllStudySummaries(studies.getList().stream().map(dtos::asSummaryDto).collect(Collectors.toList()));
 
     return builder.build();
-  }
-
-  @Path("/study/{id}")
-  public PublishedStudyResource study(@PathParam("id") String id) {
-    PublishedStudyResource studyResource = applicationContext.getBean(PublishedStudyResource.class);
-    studyResource.setId(id);
-    return studyResource;
   }
 
 }

@@ -41,6 +41,7 @@ import com.codahale.metrics.annotation.Timed;
  * REST controller for managing Study.
  */
 @Component
+@Path("/study/{id}")
 @Scope("request")
 @RequiresAuthentication
 public class PublishedStudyResource {
@@ -62,24 +63,18 @@ public class PublishedStudyResource {
   @Inject
   private SubjectAclService subjectAclService;
 
-  private String id;
-
-  public void setId(String id) {
-    this.id = id;
-  }
-
   @GET
   @Timed
-  public Mica.StudyDto get() {
-    checkAccess();
-    return dtos.asDto(getStudy());
+  public Mica.StudyDto get(@PathParam("id") String id) {
+    checkAccess(id);
+    return dtos.asDto(getStudy(id));
   }
 
   @Path("/file/{fileId}")
-  public FileResource study(@PathParam("fileId") String fileId) {
-    checkAccess();
+  public FileResource study(@PathParam("id") String id, @PathParam("fileId") String fileId) {
+    checkAccess(id);
     FileResource fileResource = applicationContext.getBean(FileResource.class);
-    Study study = getStudy();
+    Study study = getStudy(id);
     if(study.hasLogo() && study.getLogo().getId().equals(fileId)) {
       fileResource.setAttachment(study.getLogo());
     } else {
@@ -93,11 +88,11 @@ public class PublishedStudyResource {
     return fileResource;
   }
 
-  private void checkAccess() {
+  private void checkAccess(String id) {
     subjectAclService.checkAccess("/study", id);
   }
 
-  private Study getStudy() {
+  private Study getStudy(String id) {
     Study study = publishedStudyService.findById(id);
     log.debug("Study acronym {}", study.getAcronym());
 

@@ -32,6 +32,7 @@ import org.obiba.mica.search.csvexport.GenericReportGenerator;
 import org.obiba.mica.search.queries.DatasetQuery;
 import org.obiba.mica.search.queries.protobuf.JoinQueryDtoWrapper;
 import org.obiba.mica.search.queries.protobuf.QueryDtoHelper;
+import org.obiba.mica.search.queries.rql.RQLQueryBuilder;
 import org.obiba.mica.search.queries.rql.RQLQueryFactory;
 import org.obiba.mica.web.model.MicaSearch;
 import org.springframework.context.annotation.Scope;
@@ -76,6 +77,19 @@ public class PublishedDatasetSearchResource {
     @QueryParam("locale") @DefaultValue("en") String locale) throws IOException {
 
     return listInternal(from, limit, sort, order, query, locale, HarmonizationDataset.class.getSimpleName(), null);
+  }
+
+  @GET
+  @Timed
+  public MicaSearch.JoinQueryResultDto rqlList(@QueryParam("from") @DefaultValue("0") int from,
+    @QueryParam("limit") @DefaultValue("10") int limit, @QueryParam("sort") @DefaultValue("name") String sort,
+    @QueryParam("order") String order, @QueryParam("locale") @DefaultValue("en") String locale) throws IOException {
+
+    String rql = RQLQueryBuilder.newInstance().target(
+      RQLQueryBuilder.TargetQueryBuilder.datasetInstance().exists("id").limit(from, limit).sort(sort, order).build())
+      .locale(locale).buildArgsAsString();
+
+    return joinQueryExecutor.query(JoinQueryExecutor.QueryType.DATASET, rqlQueryFactory.makeJoinQuery(rql));
   }
 
   @GET
