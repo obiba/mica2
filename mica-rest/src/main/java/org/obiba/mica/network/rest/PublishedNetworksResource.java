@@ -16,7 +16,6 @@ import javax.inject.Inject;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
@@ -25,11 +24,14 @@ import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.network.service.PublishedNetworkService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
-import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import com.codahale.metrics.annotation.Timed;
 
-@Path("/")
+@Component
+@Path("/networks")
+@Scope("request")
 @RequiresAuthentication
 public class PublishedNetworksResource {
 
@@ -39,11 +41,8 @@ public class PublishedNetworksResource {
   @Inject
   private Dtos dtos;
 
-  @Inject
-  private ApplicationContext applicationContext;
-
   @GET
-  @Path("/networks")
+  @Path("/_list")
   @Timed
   public Mica.NetworksDto list(@QueryParam("from") @DefaultValue("0") int from,
       @QueryParam("limit") @DefaultValue("10") int limit, @QueryParam("sort") String sort,
@@ -59,12 +58,4 @@ public class PublishedNetworksResource {
 
     return builder.build();
   }
-
-  @Path("/network/{id}")
-  public PublishedNetworkResource network(@PathParam("id") String id) {
-    PublishedNetworkResource networkResource = applicationContext.getBean(PublishedNetworkResource.class);
-    networkResource.setId(id);
-    return networkResource;
-  }
-
 }

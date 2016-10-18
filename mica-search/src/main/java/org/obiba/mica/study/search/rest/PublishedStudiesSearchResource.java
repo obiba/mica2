@@ -27,6 +27,7 @@ import org.obiba.mica.search.JoinQueryExecutor;
 import org.obiba.mica.search.csvexport.GenericReportGenerator;
 import org.obiba.mica.search.queries.protobuf.JoinQueryDtoWrapper;
 import org.obiba.mica.search.queries.protobuf.QueryDtoHelper;
+import org.obiba.mica.search.queries.rql.RQLQueryBuilder;
 import org.obiba.mica.search.queries.rql.RQLQueryFactory;
 import org.obiba.mica.study.search.StudyIndexer;
 import org.obiba.mica.web.model.MicaSearch;
@@ -52,6 +53,21 @@ public class PublishedStudiesSearchResource {
 
   @Inject
   private GenericReportGenerator genericReportGenerator;
+
+
+  @GET
+  @Timed
+  public JoinQueryResultDto rqlList(@QueryParam("from") @DefaultValue("0") int from,
+    @QueryParam("limit") @DefaultValue("10") int limit, @QueryParam("sort") @DefaultValue("name") String sort,
+    @QueryParam("order") @DefaultValue("asc") String order, @QueryParam("locale") @DefaultValue("en") String locale)
+    throws IOException {
+
+    String rql = RQLQueryBuilder.newInstance().target(
+      RQLQueryBuilder.TargetQueryBuilder.studyInstance().exists("id").limit(from, limit).sort(sort, order).build())
+      .locale(locale).buildArgsAsString();
+
+    return joinQueryExecutor.query(JoinQueryExecutor.QueryType.STUDY, rqlQueryFactory.makeJoinQuery(rql));
+  }
 
   @GET
   @Path("/_search")

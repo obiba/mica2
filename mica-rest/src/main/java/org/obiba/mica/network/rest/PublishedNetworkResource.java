@@ -35,6 +35,7 @@ import com.codahale.metrics.annotation.Timed;
  * REST controller for managing Network.
  */
 @Component
+@Path("/network/{id}")
 @Scope("request")
 @RequiresAuthentication
 public class PublishedNetworkResource {
@@ -51,24 +52,18 @@ public class PublishedNetworkResource {
   @Inject
   private SubjectAclService subjectAclService;
 
-  private String id;
-
-  public void setId(String id) {
-    this.id = id;
-  }
-
   @GET
   @Timed
-  public Mica.NetworkDto get() {
-    checkAccess();
-    return dtos.asDto(getNetwork());
+  public Mica.NetworkDto get(@PathParam("id") String id) {
+    checkAccess(id);
+    return dtos.asDto(getNetwork(id));
   }
 
   @Path("/file/{fileId}")
-  public FileResource study(@PathParam("fileId") String fileId) {
-    checkAccess();
+  public FileResource study(@PathParam("id") String id, @PathParam("fileId") String fileId) {
+    checkAccess(id);
     FileResource fileResource = applicationContext.getBean(FileResource.class);
-    Network network = getNetwork();
+    Network network = getNetwork(id);
 
     if(network.getLogo() == null) throw NoSuchEntityException.withId(Attachment.class, fileId);
 
@@ -77,11 +72,11 @@ public class PublishedNetworkResource {
     return fileResource;
   }
 
-  private void checkAccess() {
+  private void checkAccess(String id) {
     subjectAclService.checkAccess("/network", id);
   }
 
-  private Network getNetwork() {
+  private Network getNetwork(String id) {
     Network network = publishedNetworkService.findById(id);
     if (network == null) throw NoSuchNetworkException.withId(id);
     return network;

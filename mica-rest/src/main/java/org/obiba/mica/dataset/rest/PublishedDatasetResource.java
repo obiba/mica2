@@ -12,6 +12,8 @@ package org.obiba.mica.dataset.rest;
 
 import javax.inject.Inject;
 import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.dataset.NoSuchDatasetException;
@@ -28,6 +30,7 @@ import com.codahale.metrics.annotation.Timed;
  * REST controller for managing Dataset.
  */
 @Component
+@Path("/dataset/{id}")
 @Scope("request")
 @RequiresAuthentication
 public class PublishedDatasetResource {
@@ -38,15 +41,9 @@ public class PublishedDatasetResource {
   @Inject
   private Dtos dtos;
 
-  private String id;
-
-  public void setId(String id) {
-    this.id = id;
-  }
-
   @GET
   @Timed
-  public Mica.DatasetDto get() {
+  public Mica.DatasetDto get(@PathParam("id") String id) {
     Dataset dataset = publishedDatasetService.findById(id);
     if (dataset == null) throw NoSuchDatasetException.withId(id);
     return dtos.asDto(dataset);
