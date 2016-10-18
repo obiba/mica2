@@ -168,7 +168,7 @@ mica.network
           sfLanguages[lang] = $filter('translate')('language.' + lang);
           $scope.sfOptions[lang] = {formDefaults: {languages: sfLanguages}};
         });
-        
+
         EntityFormResource.get({target: 'network'}, function(form) {
           form.schema = LocalizedSchemaFormService.translate(angular.fromJson(form.schema));
           form.definition = LocalizedSchemaFormService.translate(angular.fromJson(form.definition));
@@ -178,7 +178,7 @@ mica.network
 
       $scope.save = function () {
         $scope.network.logo = $scope.files.length > 0 ? $scope.files[0] : null;
-        
+
         if(!$scope.network.logo) {
           delete $scope.network.logo;
         }
@@ -427,7 +427,7 @@ mica.network
         micaConfig.languages.forEach(function (lang) {
           $scope.tabs.push({lang: lang});
         });
-        
+
         $scope.languages = micaConfig.languages;
         $scope.roles = micaConfig.roles;
         $scope.openAccess = micaConfig.openAccess;
@@ -442,7 +442,7 @@ mica.network
       $scope.networkId = $routeParams.id;
       $scope.studySummaries = [];
       $scope.network = DraftNetworkResource.get({id: $routeParams.id}, initializeNetwork);
-      
+
 
       $scope.publish = function (publish) {
         if (publish) {
@@ -679,6 +679,29 @@ mica.network
         );
       };
 
+      $scope.deleteSelectedStudiesEvent = function () {
+        var selectedSummaries = $scope.studySummaries.filter(function (s) {
+          return s.selected;
+        });
+
+        if (!selectedSummaries.length) {
+          return;
+        }
+
+        var currentLang = $translate.use();
+        var names = selectedSummaries.map(function (s) {
+          return LocalizedValues.forLang(s.name, currentLang);
+        }).join(', ');
+
+        $rootScope.$broadcast(NOTIFICATION_EVENTS.showConfirmDialog,
+          {
+            titleKey: 'network.study-delete-dialog.title',
+            messageKey:'network.study-delete-dialog.message',
+            messageArgs: [names]
+          }, {type: 'study', summary: selectedSummaries}
+        );
+      };
+
       $scope.addNetwork = function () {
         $uibModal.open({
           templateUrl: 'app/network/views/network-modal-add-links.html',
@@ -701,6 +724,29 @@ mica.network
             $scope.network.networkIds = ($scope.network.networkIds || []).concat(selectedIds);
             $scope.emitNetworkUpdated();
           });
+      };
+
+      $scope.deleteSelectedNetworksEvent = function () {
+        var selectedSummaries = $scope.network.networkSummaries.filter(function (s) {
+          return s.selected;
+        });
+
+        if (!selectedSummaries.length) {
+          return;
+        }
+
+        var currentLang = $translate.use();
+        var names = selectedSummaries.map(function (s) {
+          return LocalizedValues.forLang(s.name, currentLang);
+        }).join(', ');
+
+        $rootScope.$broadcast(NOTIFICATION_EVENTS.showConfirmDialog,
+          {
+            titleKey: 'network.network-delete-dialog.title',
+            messageKey:'network.network-delete-dialog.message',
+            messageArgs: [names]
+          }, {type: 'network', summary: selectedSummaries}
+        );
       };
 
       $scope.deleteNetwork = function (network, summary) {
@@ -728,11 +774,8 @@ mica.network
         });
       };
 
-      $scope.$on(NOTIFICATION_EVENTS.confirmDialogAccepted, function (event, data) {
+      var onConfirmSingleDeleteDialog = function (data) {
         var deleteIndex;
-
-        if (!data.summary) { return; }
-
         if (data.type === 'study') {
           deleteIndex = $scope.network.studyIds.indexOf(data.summary.id);
 
@@ -750,6 +793,43 @@ mica.network
             $scope.emitNetworkUpdated();
           } else {
             $log.error('The id was not found: ', data.summary.id);
+          }
+        }
+
+        return deleteIndex > -1;
+      };
+
+      $scope.$on(NOTIFICATION_EVENTS.confirmDialogAccepted, function (event, data) {
+        if (!data.summary) { return; }
+
+        if (!Array.isArray(data.summary)) {
+          onConfirmSingleDeleteDialog(data);
+        } else {
+          var someChanges;
+          if (data.type === 'study') {
+            data.summary.forEach(function (d) {
+              var delId = $scope.network.studyIds.indexOf(d.id);
+              if (delId > -1) {
+                $scope.network.studyIds.splice(delId, 1);
+                someChanges = someChanges || true;
+              } else {
+                $log.error('The id was not found: ', d.id);
+              }
+            });
+          } else {
+            data.summary.forEach(function (d) {
+              var delId = $scope.network.networkIds.indexOf(d.id);
+              if (delId > -1) {
+                $scope.network.networkIds.splice(delId, 1);
+                someChanges = someChanges || true;
+              } else {
+                $log.error('The id was not found: ', d.id);
+              }
+            });
+          }
+
+          if (someChanges) {
+            $scope.emitNetworkUpdated();
           }
         }
       });

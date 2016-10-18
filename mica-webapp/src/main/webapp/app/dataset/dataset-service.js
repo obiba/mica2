@@ -306,6 +306,14 @@ mica.dataset
       }
     };
 
+    factory.deleteTables = function (dataset, wrappers) {
+      if (Array.isArray(wrappers)) {
+        wrappers.forEach(function (w) {
+          factory.deleteTable(dataset, w);
+        });
+      }
+    };
+
     factory.updateWeights = function() {
       if (tableWrappers) {
         for (var i = 0; i < tableWrappers.length;  i++) {
