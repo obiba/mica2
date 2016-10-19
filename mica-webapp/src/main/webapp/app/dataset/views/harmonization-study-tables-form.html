@@ -11,7 +11,7 @@
     <i class="fa fa-plus"></i> <span translate>dataset.add-network-table</span>
   </button>
 
-  <button type="button" class="btn btn-danger btn-sm voffset2" ng-click="deleteSelectedOpalTables()">
+  <button type="button" class="btn btn-danger btn-sm voffset2" ng-click="deleteSelectedOpalTables()" ng-if="opalTables && opalTables.length">
     <i class="fa fa-trash-o"></i> <span translate>global.delete-selected</span>
   </button>
   <div ng-show="opalTables && opalTables.length">
