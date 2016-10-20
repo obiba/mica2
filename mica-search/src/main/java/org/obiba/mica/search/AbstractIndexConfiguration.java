@@ -91,7 +91,7 @@ public abstract class AbstractIndexConfiguration {
 
   protected void createMappingWithoutAnalyzer(XContentBuilder mapping, String name, String type) {
     try {
-      mapping.startObject(name).field("type", type).field("index", "not_analyzed").endObject();
+      mapping.startObject(name).field("type", resolveType(type)).field("index", "not_analyzed").endObject();
     } catch(IOException e) {
       log.error("Failed to create localized mappings: '{}'", e);
     }
@@ -151,7 +151,7 @@ public abstract class AbstractIndexConfiguration {
         if(TRUE.equals(v.getAttributeValue(LOCALIZED))) {
           createLocalizedMappingWithAnalyzers(mapping, node.getName());
         } else if(v.hasTerms() || TRUE.equals(v.getAttributeValue(STATIC))){
-          createMappingWithoutAnalyzer(mapping, node.getName(), resolveType(v.getAttributeValue(TYPE)));
+          createMappingWithoutAnalyzer(mapping, node.getName(), v.getAttributeValue(TYPE));
         }
       } else {
         mapping.startObject(node.getName()).startObject("properties");
