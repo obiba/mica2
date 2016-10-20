@@ -1470,8 +1470,8 @@
     "fr": "Le nombre de participants ciblé peut être inférieur au nombre effectivement atteint."
   "attributes":
     "type": "integer"
-    "field": "numberOfParticipants.participant.number"
-    "alias": "numberOfParticipants-participant-range"
+    "field": "model.numberOfParticipants.participant.number"
+    "alias": "model-numberOfParticipants-participant-range"
   "terms":
     - "name": "*:1000"
       "title":
