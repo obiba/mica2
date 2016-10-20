@@ -19,8 +19,7 @@ import java.util.stream.Stream;
 
 import javax.inject.Inject;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
+import org.elasticsearch.common.Strings;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.obiba.mica.core.domain.TaxonomyTarget;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
@@ -29,12 +28,17 @@ import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.obiba.opal.core.domain.taxonomy.Vocabulary;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+
 import sun.util.locale.LanguageTag;
 
 public abstract class AbstractIndexConfiguration {
   private static final Logger log = LoggerFactory.getLogger(AbstractIndexConfiguration.class);
   private static final String TRUE = "true";
   private static final String LOCALIZED = "localized";
+  private static final String TYPE = "type";
   private static final String STATIC = "static";
   private static final String FIELD = "field";
 
@@ -82,8 +86,12 @@ public abstract class AbstractIndexConfiguration {
   }
 
   protected void createMappingWithoutAnalyzer(XContentBuilder mapping, String name) {
+    createMappingWithoutAnalyzer(mapping, name, null);
+  }
+
+  protected void createMappingWithoutAnalyzer(XContentBuilder mapping, String name, String type) {
     try {
-      mapping.startObject(name).field("type", "string").field("index", "not_analyzed").endObject();
+      mapping.startObject(name).field("type", type).field("index", "not_analyzed").endObject();
     } catch(IOException e) {
       log.error("Failed to create localized mappings: '{}'", e);
     }
@@ -143,7 +151,7 @@ public abstract class AbstractIndexConfiguration {
         if(TRUE.equals(v.getAttributeValue(LOCALIZED))) {
           createLocalizedMappingWithAnalyzers(mapping, node.getName());
         } else if(v.hasTerms() || TRUE.equals(v.getAttributeValue(STATIC))){
-          createMappingWithoutAnalyzer(mapping, node.getName());
+          createMappingWithoutAnalyzer(mapping, node.getName(), resolveType(v.getAttributeValue(TYPE)));
         }
       } else {
         mapping.startObject(node.getName()).startObject("properties");
@@ -151,6 +159,19 @@ public abstract class AbstractIndexConfiguration {
         mapping.endObject().endObject();
       }
     }
+  }
+
+  private String resolveType(String type) {
+    if (!Strings.isNullOrEmpty(type)) {
+      switch(type.toLowerCase()) {
+        case "integer":
+          return "long";
+        case "decimal":
+          return "double";
+      }
+    }
+
+    return "string";
   }
 
   private void insertInSchema(SchemaNode schema, List<String> path, final Vocabulary vocabulary) {
