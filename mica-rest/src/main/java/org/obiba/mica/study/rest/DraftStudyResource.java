@@ -73,9 +73,9 @@ public class DraftStudyResource extends AbstractGitPersistableResource<StudyStat
 
   @GET
   @Timed
-  public Mica.StudyDto get() {
+  public Mica.StudyDto get(@QueryParam("locale") String locale) {
     subjectAclService.checkPermission("/draft/study", "VIEW", id);
-    return dtos.asDto(studyService.findDraft(id), true);
+    return dtos.asDto(studyService.findDraft(id, locale), true);
   }
 
   @PUT

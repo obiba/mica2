@@ -1,19 +1,18 @@
 package org.obiba.mica.search.csvexport;
 
+import org.obiba.core.translator.EmptyTranslator;
+import org.obiba.core.translator.JsonTranslator;
+import org.obiba.core.translator.Translator;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.search.JoinQueryExecutor;
 import org.obiba.mica.search.csvexport.generators.DatasetsCsvReportGenerator;
 import org.obiba.mica.search.csvexport.generators.NetworkCsvReportGenerator;
 import org.obiba.mica.search.csvexport.generators.StudiesCsvReportGenerator;
 import org.obiba.mica.search.csvexport.generators.VariablesCsvReportGenerator;
-import org.obiba.mica.search.csvexport.translator.EmptyTranslator;
-import org.obiba.mica.search.csvexport.translator.JsonTranslator;
-import org.obiba.mica.search.csvexport.translator.Translator;
 import org.obiba.mica.web.model.MicaSearch;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
-import java.io.IOException;
 import java.util.List;
 
 @Component
@@ -24,7 +23,7 @@ public class CsvReportGeneratorFactory {
 
   public CsvReportGenerator get(JoinQueryExecutor.QueryType type, MicaSearch.JoinQueryResultDto queryResult, List<String> columnsToHide, String locale) {
 
-    Translator translator = getTranslatorFor(locale);
+    Translator translator = JsonTranslator.buildSafeTranslator(() -> micaConfigService.getTranslations(locale, false));
 
     switch (type) {
       case STUDY:
@@ -37,14 +36,6 @@ public class CsvReportGeneratorFactory {
         return new VariablesCsvReportGenerator(queryResult, columnsToHide, translator);
       default:
         throw new IllegalStateException("No CsvReportGenerator available for type " + type);
-    }
-  }
-
-  private Translator getTranslatorFor(String locale) {
-    try {
-      return new JsonTranslator(micaConfigService.getTranslations(locale, false));
-    } catch (IOException e) {
-      return new EmptyTranslator();
     }
   }
 }
