@@ -16,12 +16,24 @@ mica.entityTaxonomyConfig
     return {
       restrict: 'EA',
       replace: true,
-      controller: 'EntityTaxonomyConfigController',
+      scope: {
+        targets: '=',
+        state: '='
+      },
+      templateUrl: 'app/entity-taxonomy-config/views/entity-taxonomy-config.html'
+    };
+  }])
+
+  .directive('entityTaxonomyConfigContent', [function(){
+    return {
+      restrict: 'EA',
+      replace: true,
+      controller: 'EntityTaxonomyConfigContentController',
       scope: {
         target: '=',
         state: '='
       },
-      templateUrl: 'app/entity-taxonomy-config/views/entity-taxonomy-config.html'
+      templateUrl: 'app/entity-taxonomy-config/views/entity-taxonomy-config-content.html'
     };
   }])
 
