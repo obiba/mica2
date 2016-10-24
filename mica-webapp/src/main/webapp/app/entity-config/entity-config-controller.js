@@ -11,7 +11,7 @@
 'use strict';
 
 
-function EntityState($q) {
+mica.entityConfig.EntityState = function($q) {
   var listeners = [];
 
   this.registerListener = function (listener) {
@@ -37,7 +37,7 @@ function EntityState($q) {
   };
 
   return this;
-}
+};
 
 mica.entityConfig
 
@@ -60,8 +60,9 @@ mica.entityConfig
         'study': ['study', 'population', 'data-collection-event'],
         'dataset': ['dataset']};
 
-      $scope.state = new EntityState($q);
+      $scope.state = new mica.entityConfig.EntityState($q);
       $scope.target = $routeParams.type.match(/(\w+)\-config/)[1];
+      $scope.taxonomyTargets = $scope.target === 'dataset' ? [$scope.target, 'variable'] : [$scope.target];
       $scope.tab = {name: 'form'};
       $scope.forms = [];
       $scope.permissions = [];

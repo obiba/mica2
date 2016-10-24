@@ -12,7 +12,7 @@
 
 mica.entitySfConfig
 
-  .controller('EntityTaxonomyConfigController', [
+  .controller('EntityTaxonomyConfigContentController', [
     '$scope',
     '$q',
     '$filter',
@@ -46,7 +46,6 @@ mica.entitySfConfig
         $scope.model.content = $scope.taxonomy;
         $scope.model.children = $scope.taxonomy.vocabularies;
         $scope.model.type = 'taxonomy';
-        console.log($scope.model);
       };
 
       var getTaxonomy = function() {

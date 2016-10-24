@@ -1,7 +1,14 @@
 <div>
-  <obiba-alert id="EntityTaxonomyConfigController"></obiba-alert>
-
-  <entity-taxonomy-config-properties-view navigate-to-taxonomy="navigateToTaxonomy"></entity-taxonomy-config-properties-view>
-
-  <div class="voffset4" entity-taxonomy-config-content-view navigate-to-vocabulary="navigateToVocabulary"></div>
+  <div ng-if="targets">
+    <div ng-if="targets.length === 1">
+      <entity-taxonomy-config-content target="targets[0]" state="state"></entity-taxonomy-config-content>
+    </div>
+    <div ng-if="targets.length > 1">
+      <uib-tabset active="activeTab">
+        <uib-tab ng-repeat="target in targets" heading="{{'taxonomy.target.' + target | translate}}">
+          <entity-taxonomy-config-content target="target" state="state"></entity-taxonomy-config-content>
+        </uib-tab>
+      </uib-tabset>
+    </div>
+  </div>
 </div>
