@@ -11,8 +11,8 @@
 package org.obiba.mica.search.csvexport.generators;
 
 import au.com.bytecode.opencsv.CSVWriter;
+import org.obiba.core.translator.Translator;
 import org.obiba.mica.search.csvexport.CsvReportGenerator;
-import org.obiba.mica.search.csvexport.translator.Translator;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.mica.web.model.MicaSearch;
 

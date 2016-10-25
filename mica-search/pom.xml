@@ -39,6 +39,10 @@
       <artifactId>opal-web-model</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.obiba.commons</groupId>
+      <artifactId>obiba-core</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.elasticsearch</groupId>
       <artifactId>elasticsearch</artifactId>
     </dependency>

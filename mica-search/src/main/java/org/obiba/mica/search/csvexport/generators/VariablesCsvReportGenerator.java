@@ -11,8 +11,8 @@
 package org.obiba.mica.search.csvexport.generators;
 
 import au.com.bytecode.opencsv.CSVWriter;
+import org.obiba.core.translator.Translator;
 import org.obiba.mica.search.csvexport.CsvReportGenerator;
-import org.obiba.mica.search.csvexport.translator.Translator;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.mica.web.model.MicaSearch;
 
@@ -25,7 +25,6 @@ import java.util.List;
 
 public class VariablesCsvReportGenerator implements CsvReportGenerator {
 
-  private static final String EXISTS = "X";
   private static final String NOT_EXISTS = "-";
 
   private List<String> columnsToHide;
@@ -103,9 +102,5 @@ public class VariablesCsvReportGenerator implements CsvReportGenerator {
 
   private boolean mustShow(String column) {
     return !columnsToHide.contains(column);
-  }
-
-  private String getNot0ValueOrDefault(int value) {
-    return value != 0 ? Integer.toString(value) : NOT_EXISTS;
   }
 }
