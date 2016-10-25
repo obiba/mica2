@@ -10,16 +10,10 @@
 
 package org.obiba.mica.study.rest;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
-import javax.inject.Inject;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-
+import com.codahale.metrics.annotation.Timed;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.NoSuchEntityException;
+import org.obiba.mica.core.ModelAwareTranslator;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.rest.FileResource;
 import org.obiba.mica.file.service.FileSystemService;
@@ -35,7 +29,13 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import com.codahale.metrics.annotation.Timed;
+import javax.inject.Inject;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.QueryParam;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * REST controller for managing Study.
@@ -63,11 +63,14 @@ public class PublishedStudyResource {
   @Inject
   private SubjectAclService subjectAclService;
 
+  @Inject
+  private ModelAwareTranslator modelAwareTranslator;
+
   @GET
   @Timed
-  public Mica.StudyDto get(@PathParam("id") String id) {
+  public Mica.StudyDto get(@PathParam("id") String id, @QueryParam("locale") String locale) {
     checkAccess(id);
-    return dtos.asDto(getStudy(id));
+    return dtos.asDto(getStudy(id, locale));
   }
 
   @Path("/file/{fileId}")
@@ -93,10 +96,19 @@ public class PublishedStudyResource {
   }
 
   private Study getStudy(String id) {
+    return getStudy(id, null);
+  }
+
+  private Study getStudy(String id, String locale) {
     Study study = publishedStudyService.findById(id);
+
+    if (study == null)
+      throw NoSuchStudyException.withId(id);
+
+    study = modelAwareTranslator.translateModel(locale, study);
+
     log.debug("Study acronym {}", study.getAcronym());
 
-    if(study == null) throw NoSuchStudyException.withId(id);
     return study;
   }
 }
