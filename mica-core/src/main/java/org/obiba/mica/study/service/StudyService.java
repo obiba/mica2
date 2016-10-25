@@ -20,11 +20,8 @@ import com.google.common.collect.Sets;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import org.joda.time.DateTime;
-import org.obiba.core.translator.JsonTranslator;
-import org.obiba.core.translator.TranslationUtils;
-import org.obiba.core.translator.Translator;
-import org.obiba.mica.JSONUtils;
 import org.obiba.mica.NoSuchEntityException;
+import org.obiba.mica.core.ModelAwareTranslator;
 import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.core.domain.Person;
 import org.obiba.mica.core.domain.PublishCascadingScope;
@@ -113,6 +110,9 @@ public class StudyService extends AbstractGitPersistableService<StudyState, Stud
   @Inject
   private MicaConfigService micaConfigService;
 
+  @Inject
+  private ModelAwareTranslator modelAwareTranslator;
+
   @CacheEvict(value = "studies-draft", key = "#study.id")
   public void save(@NotNull @Valid Study study) {
     saveInternal(study, null, true);
@@ -183,7 +183,7 @@ public class StudyService extends AbstractGitPersistableService<StudyState, Stud
     Study study = studyRepository.findOne(id);
 
     if (locale != null) {
-      translateStudyModel(locale, study);
+      study = modelAwareTranslator.translateModel(locale, study);
     }
 
     return study;
@@ -195,13 +195,6 @@ public class StudyService extends AbstractGitPersistableService<StudyState, Stud
     Study study = studyRepository.findOne(id);
     if (study == null) throw NoSuchEntityException.withId(Study.class, id);
     return study;
-  }
-
-  private void translateStudyModel(String locale, Study study) {
-    Translator translator = JsonTranslator.buildSafeTranslator(() -> micaConfigService.getTranslations(locale, false));
-    String jsonModel = JSONUtils.toJSON(study.getModel());
-    String translated = new TranslationUtils().translate(jsonModel, translator);
-    study.setModel(JSONUtils.toMap(translated));
   }
 
   public boolean isPublished(@NotNull String id) throws NoSuchEntityException {
