@@ -24,6 +24,7 @@ import org.obiba.mica.access.service.DataAccessRequestService;
 import org.obiba.mica.access.service.DataAccessRequestUtilService;
 import org.obiba.mica.config.JsonConfiguration;
 import org.obiba.mica.config.taxonomies.StudyTaxonomy;
+import org.obiba.mica.core.ModelAwareTranslator;
 import org.obiba.mica.core.domain.Attribute;
 import org.obiba.mica.core.domain.StudyTable;
 import org.obiba.mica.core.repository.AttachmentRepository;
@@ -287,6 +288,11 @@ public class DatasetDtosTest {
     @Bean
     public ProjectStateRepository projectStateRepository() {
       return mock(ProjectStateRepository.class);
+    }
+
+    @Bean
+    public ModelAwareTranslator modelAwareTranslator() {
+      return mock(ModelAwareTranslator.class);
     }
   }
 }

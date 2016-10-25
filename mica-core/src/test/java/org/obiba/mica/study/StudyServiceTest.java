@@ -36,6 +36,7 @@ import org.obiba.mica.config.taxonomies.NetworkTaxonomy;
 import org.obiba.mica.config.taxonomies.StudyTaxonomy;
 import org.obiba.mica.config.taxonomies.VariableTaxonomy;
 import org.obiba.mica.config.taxonomies.TaxonomyTaxonomy;
+import org.obiba.mica.core.ModelAwareTranslator;
 import org.obiba.mica.core.domain.Membership;
 import org.obiba.mica.core.domain.Person;
 import org.obiba.mica.core.notification.EntityPublicationFlowMailNotification;
@@ -96,7 +97,6 @@ import static org.obiba.mica.core.domain.LocalizedString.en;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class StudyServiceTest {
 
-//  private static final Logger log = LoggerFactory.getLogger(StudyServiceTest.class);
   @Rule
   public ExpectedException exception = ExpectedException.none();
 
@@ -466,6 +466,11 @@ public class StudyServiceTest {
       return mock(TaxonomyConfigService.class);
     }
 
+    @Bean
+    public ModelAwareTranslator modelAwareTranslator() {
+      return mock(ModelAwareTranslator.class);
+    }
+
     @Override
     protected String getDatabaseName() {
       return "mica-test";
@@ -490,5 +495,4 @@ public class StudyServiceTest {
     }
 
   }
-
 }
