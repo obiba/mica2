@@ -37,10 +37,10 @@
                 <localized value="study.objectives" lang="tab.lang"></localized>
               </td>
             </tr>
-            <tr ng-show="study.website">
-              <th translate>website</th>
+            <tr ng-show="study.opal">
+              <th translate>study.opal</th>
               <td>
-                <a href="{{study.website}}" target="_blank">{{study.website}}</a>
+                <a href="{{study.opal}}" target="_blank">{{study.opal}}</a>
               </td>
             </tr>
             <tr ng-repeat="role in roles">
@@ -153,7 +153,7 @@
 
       <div class="row">
         <div id="study-access" class="col-md-6" ng-show="study.model.access.length || study.model.otherAccess[tab.lang]">
-          <h3 translate>study.model.access.label</h3>
+          <h3 translate>study.access.label</h3>
           <table class="table table-bordered table-striped" ng-show="study.model.access.length || study.model.otherAccess[tab.lang]">
             <tbody>
             <tr>
