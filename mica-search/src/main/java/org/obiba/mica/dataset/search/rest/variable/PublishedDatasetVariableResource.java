@@ -68,6 +68,7 @@ public class PublishedDatasetVariableResource {
         ((PublishedHarmonizedDatasetVariableResource)resource).setNetworkId(resolver.getNetworkId());
         ((PublishedHarmonizedDatasetVariableResource)resource).setProject(resolver.getProject());
         ((PublishedHarmonizedDatasetVariableResource)resource).setTable(resolver.getTable());
+        ((PublishedHarmonizedDatasetVariableResource)resource).setLocale(locale);
         break;
     }
 
