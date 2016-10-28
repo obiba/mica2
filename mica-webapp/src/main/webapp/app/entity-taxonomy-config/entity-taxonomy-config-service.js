@@ -66,7 +66,7 @@ mica.entityTaxonomyConfig
 
       this.getField = function(content) {
         if (content && content.attributes) {
-          return getAttribute(content.attributes, 'field', '');
+          return getAttribute(content.attributes, 'field', content.name);
         }
 
         return '';
@@ -92,7 +92,7 @@ mica.entityTaxonomyConfig
 
       this.isStatic = function(content) {
         if (content && content.attributes) {
-          return getAttribute(content.attributes, 'static', false);
+          return 'true' === getAttribute(content.attributes, 'static', false);
         }
 
         return false;
@@ -154,6 +154,61 @@ mica.entityTaxonomyConfig
 
       }
 
+      function getTypeMap() {
+        return [
+          {
+            'value': 'string',
+            'name': $filter('translate')('global.types.string')
+          },
+          {
+            'value': 'integer',
+            'name': $filter('translate')('global.types.integer')
+          },
+          {
+            'value': 'decimal',
+            'name': $filter('translate')('global.types.decimal')
+          }
+        ];
+      }
+
+      function parseRangeValue(value) {
+        return  value && '*' !== value ? parseInt(value) : undefined;
+      }
+
+      function serializeRangeValue(from, to) {
+        return  (from || '*') + ':' + (to || '*');
+      }
+
+      function getSiblingNames(siblings) {
+        if (siblings) {
+          return siblings.map(function(s) {
+            return s.name;
+          });
+        }
+
+        return [];
+      }
+
+      function createNameFormField(helpTextKey, validationMessageKey, names, props) {
+        var nameFormField = {
+          key: 'name',
+          description: '<p class="help-block">' + $filter('translate')(helpTextKey) + '</p>',
+          validationMessage: {
+            unique: $filter('translate')(validationMessageKey)
+          },
+          $validators: {
+            unique: function (value) {
+              if (value && names) {
+                return names.indexOf(value) === -1;
+              }
+              return true;
+            }
+          }
+        };
+
+        return props ? angular.extend(nameFormField, props) : nameFormField;
+      }
+
       function getTaxonomyFormData(content) {
 
         var data = {
@@ -195,24 +250,7 @@ mica.entityTaxonomyConfig
         return data;
       }
 
-      function getTypeMap() {
-        return [
-            {
-              'value': 'string',
-              'name': $filter('translate')('global.types.string')
-            },
-            {
-              'value': 'integer',
-              'name': $filter('translate')('global.types.integer')
-            },
-            {
-              'value': 'decimal',
-              'name': $filter('translate')('global.types.decimal')
-            }
-          ];
-      }
-
-      function getVocabularyFormData(content) {
+      function getVocabularyFormData(content, siblings) {
         var isStatic = VocabularyAttributeService.isStatic(content);
         var data = {
           schema: {
@@ -250,6 +288,7 @@ mica.entityTaxonomyConfig
               'field': {
                 'title': $filter('translate')('global.field'),
                 'type': 'string',
+                'format':'typeahead',
                 'required': true,
                 'readonly': isStatic
               },
@@ -261,10 +300,7 @@ mica.entityTaxonomyConfig
             }
           },
           definition: [
-            {
-              'key': 'name',
-              'description': '<p class="help-block">' + $filter('translate')('taxonomy-config.criterion-dialog.name-help') + '</p>'
-            },
+            // name is added below
             {
               'type':'localizedstring',
               'key':'title',
@@ -283,6 +319,7 @@ mica.entityTaxonomyConfig
             'localized',
             {
               'key': 'field',
+              'type':'typeahead',
               'description': '<p class="help-block">' + $filter('translate')('taxonomy-config.criterion-dialog.field-help') + '</p>'
             },
             {
@@ -295,9 +332,17 @@ mica.entityTaxonomyConfig
           model: {}
         };
 
+        data.definition.unshift(
+          createNameFormField(
+            'taxonomy-config.criterion-dialog.name-help',
+            'taxonomy-config.criterion-dialog.unique-name',
+            getSiblingNames(siblings)
+          )
+        );
+
         convertToLocalizedString(data.model, content, ['title', 'description']);
         if (content) {
-          data.model.type = VocabularyAttributeService.getType(content).value;
+          data.model.type = VocabularyAttributeService.getType(content);
           data.model.name = content.name;
           data.model.field = VocabularyAttributeService.getField(content);
           data.model.repeatable = content.repeatable;
@@ -306,8 +351,7 @@ mica.entityTaxonomyConfig
         return data;
       }
 
-
-      function getTermFormData(content, valueType) {
+      function getTermFormData(content, valueType, siblings) {
         var data = {
           schema: {
             'type': 'object',
@@ -319,13 +363,11 @@ mica.entityTaxonomyConfig
               },
               'from': {
                 'type': 'number',
-                'title': $filter('translate')('global.from'),
-                'required': true
+                'title': $filter('translate')('global.from')
               },
               'to': {
                 'type': 'number',
-                'title': $filter('translate')('global.to'),
-                'required': true
+                'title': $filter('translate')('global.to')
               },
               'title': {
                 'type': 'object',
@@ -348,11 +390,7 @@ mica.entityTaxonomyConfig
             }
           },
           definition: [
-            {
-              'key': 'name',
-              'condition': '!model.isRange',
-              'description': $filter('translate')('taxonomy-config.term-dialog.name-help')
-            },
+            // name is added below
             {
               'type': 'fieldset',
               'condition': 'model.isRange',
@@ -405,11 +443,20 @@ mica.entityTaxonomyConfig
           model: {isRange: valueType !== 'string'}
         };
 
+        data.definition.unshift(
+          createNameFormField(
+            'taxonomy-config.term-dialog.name-help',
+            'taxonomy-config.term-dialog.unique-name',
+            getSiblingNames(siblings),
+            {condition: '!model.isRange'}
+          )
+        );
+
         if (valueType !== 'string') {
           if (content) {
             var parts = content.name.split(':');
-            data.model.from = parseInt(parts[0]);
-            data.model.to = parseInt(parts[1]);
+            data.model.from = parseRangeValue(parts[0]);
+            data.model.to = parseRangeValue(parts[1]);
           }
         }
 
@@ -448,7 +495,7 @@ mica.entityTaxonomyConfig
             model.content = model.content || {};
             convertFromLocalizedString(data.model, model.content, ['title', 'description', 'keywords']);
             if (model.valueType !== 'string' && data.model.isRange) {
-              model.content.name = data.model.from + ':' + data.model.to;
+              model.content.name = serializeRangeValue(data.model.from, data.model.to);
             } else {
               model.content.name = data.model.name;
             }
@@ -466,15 +513,83 @@ mica.entityTaxonomyConfig
           case 'taxonomy':
             return getTaxonomyFormData(model.content);
           case 'criterion':
-            return getVocabularyFormData(model.content);
+            return getVocabularyFormData(model.content, model.siblings);
           case 'term':
-            return getTermFormData(model.content, model.valueType || 'string');
+            return getTermFormData(model.content, model.valueType || 'string', model.siblings);
         }
 
         throw new Error('EntityTaxonomySchemaFormService - invalid type:' + model.type);
       };
 
       return this;
+    }])
+
+  .service('EntitySchemaFormFieldsService', [
+    function () {
+      function isObject(node) {
+        return Object.prototype.toString.call(node) === '[object Object]';
+      }
+
+      function isLeafObject(node) {
+        return Object.keys(node).every(function (k) {
+          return !isObject(node[k]);
+        });
+      }
+
+      function traverse(node, parentKey, paths, fields) {
+        if (isObject(node)) {
+          if (isLeafObject(node)) {
+            fields.push(paths.join('.'));
+          }
+
+          Object.keys(node).forEach(function (k) {
+            var v = node[k];
+            traverse(v, k, 'properties' === parentKey ? paths.concat(k) : paths, fields);
+          });
+        }
+      }
+
+      /**
+       * Combines the input schemas and returns one hierarchical one
+       * The order of schemas are significant in that the first contains the second and so on. Consider the schemas of
+       * a study, they schemas must be order as:
+       * {
+       *  id: 'studies', schema: {...},
+       *  id: 'populations', schema: {...},
+       *  id: 'dataCollectionEvents', schema: {...}
+       * }
+       *
+       * @param schemas
+       * @returns {*}
+       */
+      this.concatenateSchemas = function(schemas) {
+        if (!schemas) {
+          return [];
+        }
+
+        var result = {};
+        var parent = result;
+
+        schemas.forEach(function (item) {
+          parent[item.id] = {
+            properties: {
+              model: {
+                properties: item.schema.properties
+              }
+            }
+          };
+          parent = parent[item.id].properties;
+        });
+
+        // do not require the id of the parent schema
+        return result[Object.keys(result)[0]];
+      };
+
+      this.getFieldNames = function (schema) {
+        var fields = [];
+        // concatenateSchemas(schemas);
+        traverse(schema, null, [], fields);
+        return fields;
+      };
+
     }]);
-
-

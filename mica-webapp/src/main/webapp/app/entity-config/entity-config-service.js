@@ -32,7 +32,7 @@ mica.entityConfig
         'get': {method: 'GET', params: {target: '@target'}, isArray: true}
       });
     }])
-  
+
   .factory('EntityFormAccessesResource', ['$resource',
     function ($resource) {
       return $resource('ws/config/:target/accesses', {}, {

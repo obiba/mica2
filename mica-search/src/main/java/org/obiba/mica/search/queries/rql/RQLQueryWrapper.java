@@ -320,17 +320,19 @@ public class RQLQueryWrapper implements QueryWrapper {
       ranges.stream().forEach(range -> {
         RangeQueryBuilder builder = QueryBuilders.rangeQuery(data.getField());
         String[] values = range.split(":");
-        if(values.length < 2 || "*:*".equals(range)) {
+        if(values.length < 2) {
           throw new IllegalArgumentException("Invalid range format: " + range);
         }
 
-        if("*".equals(values[0])) {
-          builder.lt(Double.valueOf(values[1]));
-        } else if("*".equals(values[1])) {
-          builder.gte(Double.valueOf(values[0]));
-        } else {
-          builder.gte(Double.valueOf(values[0]));
-          builder.lt(Double.valueOf(values[1]));
+        if (!"*".equals(values[0]) || !"*".equals(values[1])) {
+          if("*".equals(values[0])) {
+            builder.lt(Double.valueOf(values[1]));
+          } else if("*".equals(values[1])) {
+            builder.gte(Double.valueOf(values[0]));
+          } else {
+            builder.gte(Double.valueOf(values[0]));
+            builder.lt(Double.valueOf(values[1]));
+          }
         }
 
         boolQueryBuilder.should(builder);

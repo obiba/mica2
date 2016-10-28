@@ -98,7 +98,7 @@ mica.permission
     };
 
     $scope.$on(NOTIFICATION_EVENTS.confirmDialogAccepted, function (event, acl) {
-      if ($scope.principalPermissionToDelete === acl.principal) {
+      if ($scope.principalPermissionToDelete && $scope.principalPermissionToDelete === acl.principal) {
         delete $scope.principalPermissionToDelete;
         $scope.onDelete(acl).$promise.then($scope.onLoad);
       }
@@ -213,7 +213,7 @@ mica.permission
     };
 
     $scope.$on(NOTIFICATION_EVENTS.confirmDialogAccepted, function (event, acl) {
-      if ($scope.principalPermissionToDelete === acl.principal) {
+      if ($scope.principalPermissionToDelete && $scope.principalPermissionToDelete === acl.principal) {
         delete $scope.principalPermissionToDelete;
         $scope.onDelete(acl).$promise.then($scope.onLoad);
       }
@@ -261,7 +261,7 @@ mica.permission
     };
 
     $scope.$on(NOTIFICATION_EVENTS.confirmDialogAccepted, function (event, acl) {
-      if ($scope.principalAccessToDelete === acl.principal) {
+      if ($scope.principalAccessToDelete && $scope.principalAccessToDelete === acl.principal) {
         delete $scope.principalAccessToDelete;
         $scope.onAccessDelete(acl).$promise.then($scope.onAccessLoad);
       }

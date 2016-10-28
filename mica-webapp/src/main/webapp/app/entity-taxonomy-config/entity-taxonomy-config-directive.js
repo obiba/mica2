@@ -18,6 +18,7 @@ mica.entityTaxonomyConfig
       replace: true,
       scope: {
         targets: '=',
+        schemas: '=',
         state: '='
       },
       templateUrl: 'app/entity-taxonomy-config/views/entity-taxonomy-config.html'
@@ -31,6 +32,7 @@ mica.entityTaxonomyConfig
       controller: 'EntityTaxonomyConfigContentController',
       scope: {
         target: '=',
+        schemas: '=',
         state: '='
       },
       templateUrl: 'app/entity-taxonomy-config/views/entity-taxonomy-config-content.html'
