@@ -14,8 +14,8 @@ package org.obiba.mica.core;
 
 import org.obiba.core.translator.JsonTranslator;
 import org.obiba.core.translator.TranslationUtils;
+import org.obiba.core.translator.Translator;
 import org.obiba.mica.JSONUtils;
-import org.obiba.mica.core.domain.AbstractModelAware;
 import org.obiba.mica.core.domain.ModelAware;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,9 +32,26 @@ public class ModelAwareTranslator {
     if (locale == null)
       return;
 
-    org.obiba.core.translator.Translator translator = JsonTranslator.buildSafeTranslator(() -> micaConfigService.getTranslations(locale, false));
-    String jsonModel = JSONUtils.toJSON(modelAwareObject.getModel());
-    String translated = new TranslationUtils().translate(jsonModel, translator);
-    modelAwareObject.setModel(JSONUtils.toMap(translated));
+    Translator translator = JsonTranslator.buildSafeTranslator(() -> micaConfigService.getTranslations(locale, false));
+    new ForLocale(translator).translateModel(modelAwareObject);
+  }
+
+  public ForLocale getModelAwareTranslatorForLocale(String locale) {
+    return new ForLocale(JsonTranslator.buildSafeTranslator(() -> micaConfigService.getTranslations(locale, false)));
+  }
+
+  public class ForLocale {
+
+    private Translator translator;
+
+    ForLocale(Translator translator) {
+      this.translator = translator;
+    }
+
+    public <T extends ModelAware> void translateModel(T modelAwareObject) {
+      String jsonModel = JSONUtils.toJSON(modelAwareObject.getModel());
+      String translated = new TranslationUtils().translate(jsonModel, translator);
+      modelAwareObject.setModel(JSONUtils.toMap(translated));
+    }
   }
 }
