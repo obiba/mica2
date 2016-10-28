@@ -16,6 +16,7 @@ import org.obiba.core.translator.JsonTranslator;
 import org.obiba.core.translator.TranslationUtils;
 import org.obiba.mica.JSONUtils;
 import org.obiba.mica.core.domain.AbstractModelAware;
+import org.obiba.mica.core.domain.ModelAware;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -26,15 +27,14 @@ public class ModelAwareTranslator {
   @Autowired
   private MicaConfigService micaConfigService;
 
-  public <T extends AbstractModelAware> T translateModel(String locale, T modelAwareObject) {
+  public <T extends ModelAware> void translateModel(String locale, T modelAwareObject) {
 
     if (locale == null)
-      return modelAwareObject;
+      return;
 
     org.obiba.core.translator.Translator translator = JsonTranslator.buildSafeTranslator(() -> micaConfigService.getTranslations(locale, false));
     String jsonModel = JSONUtils.toJSON(modelAwareObject.getModel());
     String translated = new TranslationUtils().translate(jsonModel, translator);
     modelAwareObject.setModel(JSONUtils.toMap(translated));
-    return modelAwareObject;
   }
 }

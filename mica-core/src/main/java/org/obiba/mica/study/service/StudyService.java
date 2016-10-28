@@ -183,7 +183,7 @@ public class StudyService extends AbstractGitPersistableService<StudyState, Stud
     Study study = studyRepository.findOne(id);
 
     if (locale != null) {
-      study = modelAwareTranslator.translateModel(locale, study);
+      modelAwareTranslator.translateModel(locale, study);
     }
 
     return study;

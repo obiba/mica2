@@ -105,7 +105,8 @@ public class PublishedStudyResource {
     if (study == null)
       throw NoSuchStudyException.withId(id);
 
-    study = modelAwareTranslator.translateModel(locale, study);
+    modelAwareTranslator.translateModel(locale, study);
+    study.getPopulations().forEach(population -> modelAwareTranslator.translateModel(locale, population));
 
     log.debug("Study acronym {}", study.getAcronym());
 
