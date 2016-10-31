@@ -105,10 +105,21 @@ public class PublishedStudyResource {
     if (study == null)
       throw NoSuchStudyException.withId(id);
 
-    study = modelAwareTranslator.translateModel(locale, study);
+    translateModels(locale, study);
 
     log.debug("Study acronym {}", study.getAcronym());
 
     return study;
+  }
+
+  private void translateModels(String locale, Study study) {
+
+    ModelAwareTranslator.ForLocale modelTranslator = modelAwareTranslator.getModelAwareTranslatorForLocale(locale);
+
+    modelTranslator.translateModel(study);
+    study.getPopulations().forEach(modelTranslator::translateModel);
+    study.getPopulations()
+      .forEach(population -> population.getDataCollectionEvents()
+        .forEach(modelTranslator::translateModel));
   }
 }
