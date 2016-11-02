@@ -1,6 +1,5 @@
 package org.obiba.mica.search.csvexport;
 
-import org.obiba.core.translator.EmptyTranslator;
 import org.obiba.core.translator.JsonTranslator;
 import org.obiba.core.translator.Translator;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
