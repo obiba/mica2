@@ -10,16 +10,6 @@
 
 package org.obiba.mica.micaConfig.rest;
 
-import java.util.Optional;
-
-import javax.inject.Inject;
-import javax.ws.rs.GET;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
-
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.micaConfig.domain.EntityConfig;
@@ -30,6 +20,16 @@ import org.obiba.mica.web.model.Mica;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
+import javax.inject.Inject;
+import javax.ws.rs.GET;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
+import java.util.Optional;
+
 @Component
 public abstract class EntityConfigResource<T extends EntityConfig> {
 
@@ -39,16 +39,23 @@ public abstract class EntityConfigResource<T extends EntityConfig> {
   @Inject
   Dtos dtos;
 
+  @Inject
+  EntityConfigTranslator entityConfigTranslator;
+
   protected abstract Mica.EntityFormDto asDto(T entityConfig);
 
   protected abstract T fromDto(Mica.EntityFormDto entityConfig);
 
   @GET
   @Path("/form")
-  public Mica.EntityFormDto get(@Context UriInfo uriInfo) {
+  public Mica.EntityFormDto get(@Context UriInfo uriInfo, @QueryParam("locale") String locale) {
     Optional<T> d = getConfigService().find();
     if(!d.isPresent()) throw NoSuchEntityException.withPath(EntityConfig.class, uriInfo.getPath());
-    return asDto(d.get());
+
+    T config = d.get();
+    entityConfigTranslator.translateSchema(locale, config);
+
+    return asDto(config);
   }
 
   @PUT
