@@ -21,7 +21,10 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Path("/config/" + DatasetConfigResource.TARGET_NAME)
-public class DatasetConfigResource extends EntityConfigResource<DatasetConfig> implements PermissionAwareResource {
+public class DatasetConfigResource
+  extends EntityConfigResource<DatasetConfig, Mica.EntityFormDto>
+  implements PermissionAwareResource {
+
   static final String TARGET_NAME = "dataset";
 
   @Inject

@@ -1,1 +1,20 @@
-[]
+[
+  {
+    "type": "fieldset",
+    "items": [
+      {
+        "type": "help",
+        "helpvalue": "t(research-project.main-section)"
+      },
+      {
+        "key": "_mica.title",
+        "type": "localizedstring"
+      },
+      {
+        "key": "_mica.summary",
+        "type": "localizedstring",
+        "rows": 5
+      }
+    ]
+  }
+]

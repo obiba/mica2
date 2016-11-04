@@ -10,18 +10,21 @@
 
 package org.obiba.mica.micaConfig.rest;
 
-import javax.inject.Inject;
-import javax.ws.rs.Path;
-
 import org.obiba.mica.micaConfig.domain.StudyConfig;
 import org.obiba.mica.micaConfig.service.StudyConfigService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.springframework.stereotype.Component;
 
+import javax.inject.Inject;
+import javax.ws.rs.Path;
+
 @Component
 @Path("/config/" + StudyConfigResource.TARGET_NAME)
-public class StudyConfigResource extends EntityConfigResource<StudyConfig> implements PermissionAwareResource  {
+public class StudyConfigResource
+  extends EntityConfigResource<StudyConfig, Mica.EntityFormDto>
+  implements PermissionAwareResource  {
+
   static final String TARGET_NAME = "study";
 
   @Inject

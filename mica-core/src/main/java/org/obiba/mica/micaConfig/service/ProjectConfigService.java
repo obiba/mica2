@@ -10,26 +10,17 @@
 
 package org.obiba.mica.micaConfig.service;
 
-import java.io.IOException;
-import java.util.Optional;
-import java.util.Scanner;
-
-import javax.inject.Inject;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.obiba.mica.core.domain.RevisionStatus;
 import org.obiba.mica.core.service.GitService;
 import org.obiba.mica.file.FileStoreService;
 import org.obiba.mica.micaConfig.domain.ProjectConfig;
 import org.obiba.mica.micaConfig.repository.ProjectConfigRepository;
-import org.springframework.core.io.DefaultResourceLoader;
-import org.springframework.core.io.Resource;
+import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Component;
 
+import javax.inject.Inject;
+
 @Component
-public class ProjectConfigService {
+public class ProjectConfigService extends EntityConfigService<ProjectConfig> {
 
   @Inject
   GitService gitService;
@@ -40,69 +31,38 @@ public class ProjectConfigService {
   @Inject
   ProjectConfigRepository projectConfigRepository;
 
-  public void createOrUpdate(ProjectConfig projectConfig) {
-    validateForm(projectConfig);
-    projectConfig.incrementRevisionsAhead();
-    gitService.save(projectConfig);
-    projectConfigRepository.save(projectConfig);
+  @Override
+  protected MongoRepository<ProjectConfig, String> getRepository() {
+    return projectConfigRepository;
   }
 
-  public Optional<ProjectConfig> find() {
-    ProjectConfig form = projectConfigRepository.findOne(ProjectConfig.DEFAULT_ID);
-    if(form == null) {
-      createOrUpdate(createDefaultProjectForm());
-    }
-
-    return Optional.ofNullable(form == null ? projectConfigRepository.findOne(ProjectConfig.DEFAULT_ID) : form);
+  @Override
+  protected String getDefaultId() {
+    return ProjectConfig.DEFAULT_ID;
   }
 
-  public void publish() {
-    Optional<ProjectConfig> projectForm = find();
-    projectForm.ifPresent(d -> {
-      d.setPublishedTag(gitService.tag(d).getFirst());
-      d.setRevisionsAhead(0);
-      d.setRevisionStatus(RevisionStatus.DRAFT);
-      projectConfigRepository.save(d);
-    });
+  @Override
+  protected ProjectConfig createEmptyForm() {
+    return new ProjectConfig();
   }
 
-  private void validateForm(ProjectConfig projectConfig) {
-    validateSchema(projectConfig.getSchema());
-    validateDefinition(projectConfig.getDefinition());
+  @Override
+  protected String getDefaultSchemaResourcePath() {
+    return "classpath:config/project-form/schema.json";
   }
 
-  private void validateSchema(String json) {
-    try {
-      new JSONObject(json);
-    } catch(JSONException e) {
-      throw new InvalidFormSchemaException(e);
-    }
+  @Override
+  protected String getMandatorySchemaResourcePath() {
+    return "classpath:config/project-form/schema-mandatory.json";
   }
 
-  private void validateDefinition(String json) {
-    try {
-      new JSONArray(json);
-    } catch(JSONException e) {
-      throw new InvalidFormDefinitionException();
-    }
+  @Override
+  protected String getDefaultDefinitionResourcePath() {
+    return "classpath:config/project-form/definition.json";
   }
 
-  private ProjectConfig createDefaultProjectForm() {
-    ProjectConfig form = new ProjectConfig();
-    form.setDefinition(getDefaultProjectFormResourceAsString("definition.json"));
-    form.setSchema(getDefaultProjectFormResourceAsString("schema.json"));
-    return form;
-  }
-
-  private Resource getDefaultProjectFormResource(String name) {
-    return new DefaultResourceLoader().getResource("classpath:config/project-form/" + name);
-  }
-
-  private String getDefaultProjectFormResourceAsString(String name) {
-    try(Scanner s = new Scanner(getDefaultProjectFormResource(name).getInputStream())) {
-      return s.useDelimiter("\\A").hasNext() ? s.next() : "";
-    } catch(IOException e) {
-      return "";
-    }
+  @Override
+  protected String getMandatoryDefinitionResourcePath() {
+    return "classpath:config/project-form/definition-mandatory.json";
   }
 }

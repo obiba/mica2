@@ -21,7 +21,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Path("/config/data-collection-event")
-public class DataCollectionEventConfigResource extends EntityConfigResource<DataCollectionEventConfig> {
+public class DataCollectionEventConfigResource extends EntityConfigResource<DataCollectionEventConfig, Mica.EntityFormDto> {
 
   @Inject
   DataCollectionEventConfigService dataCollectionEventConfigService;
