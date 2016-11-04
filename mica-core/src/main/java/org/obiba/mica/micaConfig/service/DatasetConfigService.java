@@ -10,17 +10,12 @@
 
 package org.obiba.mica.micaConfig.service;
 
-import java.io.IOException;
-import java.util.Scanner;
-
-import javax.inject.Inject;
-
 import org.obiba.mica.micaConfig.domain.DatasetConfig;
 import org.obiba.mica.micaConfig.repository.DatasetConfigRepository;
-import org.springframework.core.io.DefaultResourceLoader;
-import org.springframework.core.io.Resource;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Component;
+
+import javax.inject.Inject;
 
 @Component
 public class DatasetConfigService extends EntityConfigService<DatasetConfig> {
@@ -39,27 +34,27 @@ public class DatasetConfigService extends EntityConfigService<DatasetConfig> {
   }
 
   @Override
-  protected DatasetConfig createDefaultForm() {
-    return createDefaultDatasetForm();
+  protected DatasetConfig createEmptyForm() {
+    return new DatasetConfig();
   }
 
-  private DatasetConfig createDefaultDatasetForm() {
-    DatasetConfig form = new DatasetConfig();
-    form.setDefinition(getDefaultDatasetFormResourceAsString("definition.json"));
-    form.setSchema(getDefaultDatasetFormResourceAsString("schema.json"));
-    return form;
+  @Override
+  protected String getDefaultDefinitionResourcePath() {
+    return "classpath:config/dataset-form/definition.json";
   }
 
-  private Resource getDefaultDatasetFormResource(String name) {
-    return new DefaultResourceLoader().getResource("classpath:config/dataset-form/" + name);
+  @Override
+  protected String getMandatoryDefinitionResourcePath() {
+    return "classpath:config/dataset-form/definition-mandatory.json";
   }
 
-  private String getDefaultDatasetFormResourceAsString(String name) {
-    try(Scanner s = new Scanner(getDefaultDatasetFormResource(name).getInputStream())) {
-      return s.useDelimiter("\\A").hasNext() ? s.next() : "";
-    } catch(IOException e) {
-      return "";
-    }
+  @Override
+  protected String getDefaultSchemaResourcePath() {
+    return "classpath:config/dataset-form/schema.json";
   }
 
+  @Override
+  protected String getMandatorySchemaResourcePath() {
+    return "classpath:config/dataset-form/schema-mandatory.json";
+  }
 }

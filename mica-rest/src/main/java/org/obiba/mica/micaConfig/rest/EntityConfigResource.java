@@ -49,17 +49,32 @@ public abstract class EntityConfigResource<T extends EntityConfig> {
   @GET
   @Path("/form")
   public Mica.EntityFormDto get(@Context UriInfo uriInfo, @QueryParam("locale") String locale) {
-    Optional<T> d = getConfigService().find();
-    if(!d.isPresent()) throw NoSuchEntityException.withPath(EntityConfig.class, uriInfo.getPath());
 
-    T config = d.get();
+    Optional<T> optionalConfig = getConfigService().findComplete();
+
+    if (!optionalConfig.isPresent())
+      throw NoSuchEntityException.withPath(EntityConfig.class, uriInfo.getPath());
+
+    T config = optionalConfig.get();
     entityConfigTranslator.translateSchema(locale, config);
 
     return asDto(config);
   }
 
+  @GET
+  @Path("/form-custom")
+  public Mica.EntityFormDto getComplete(@Context UriInfo uriInfo) {
+
+    Optional<T> optionalConfig = getConfigService().findPartial();
+
+    if (!optionalConfig.isPresent())
+      throw NoSuchEntityException.withPath(EntityConfig.class, uriInfo.getPath());
+
+    return asDto(optionalConfig.get());
+  }
+
   @PUT
-  @Path("/form")
+  @Path("/form-custom")
   @RequiresRoles(Roles.MICA_ADMIN)
   public Response update(Mica.EntityFormDto dto) {
     getConfigService().createOrUpdate(fromDto(dto));

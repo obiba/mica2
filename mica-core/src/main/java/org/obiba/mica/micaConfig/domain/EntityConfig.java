@@ -19,7 +19,6 @@ import org.obiba.mica.core.domain.AbstractGitPersistable;
 import org.obiba.mica.core.domain.RevisionStatus;
 import org.springframework.data.mongodb.core.index.Indexed;
 
-
 public abstract class EntityConfig extends AbstractGitPersistable {
 
   public final static String DEFAULT_ID = "default";
