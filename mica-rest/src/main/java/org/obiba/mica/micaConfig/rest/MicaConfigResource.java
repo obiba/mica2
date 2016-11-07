@@ -319,7 +319,7 @@ public class MicaConfigResource {
     try {
       return userProfileService.getUserProfileTranslations(locale);
     } catch (RestClientException e) {
-      logger.warn("Cannot get translations about userProfile (from agate)", e);
+      logger.warn("Cannot get translations about userProfile (from agate): {}", e.getMessage());
       return "{}";
     }
   }
