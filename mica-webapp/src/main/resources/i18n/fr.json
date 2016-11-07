@@ -366,6 +366,14 @@
       "export": {
         "label": "Exporter",
         "help": "Les traductions seront exportées sous format json."
+      },
+      "export-json": {
+        "label": "JSON (toutes langues)",
+        "help": "Les traductions aditionnelles seront exportées au format JSON."
+      },
+      "export-gettext": {
+        "label": "Gettext",
+        "help": "Les traductions complètes seront exportées au format Gettext."
       }
     }
   },

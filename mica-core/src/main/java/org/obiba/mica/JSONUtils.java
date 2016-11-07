@@ -12,10 +12,15 @@ package org.obiba.mica;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.Properties;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.annotation.JsonAppend;
+import com.google.common.base.Strings;
+import com.jayway.jsonpath.DocumentContext;
+import com.jayway.jsonpath.JsonPath;
 
 public class JSONUtils {
 
@@ -48,6 +53,39 @@ public class JSONUtils {
     } catch(JsonProcessingException e) {
       throw new RuntimeException(e);
     }
+  }
+
+  /**
+   * Convert a JSON string to {@link Properties}.
+   *
+   * @param jsonStr
+   * @return
+   */
+  public static Properties toProperties(String jsonStr) {
+    return toProperties(toMap(jsonStr));
+  }
+
+  /**
+   * Convert a (JSON) map to {@link Properties}.
+   *
+   * @param map
+   * @return
+   */
+  public static Properties toProperties(Map<String, Object> map) {
+    Properties properties = new Properties();
+    appendProperties(properties, "", map);
+    return properties;
+  }
+
+  private static void appendProperties(Properties properties, String path, Map<String, Object> map) {
+    map.forEach((key, value) -> {
+      String currentPath = Strings.isNullOrEmpty(path) ? key : path + "." + key;
+      if (value instanceof Map) {
+        appendProperties(properties, currentPath, (Map<String, Object>)value);
+      } else {
+        properties.put(currentPath, value.toString());
+      }
+    });
   }
 
 }
