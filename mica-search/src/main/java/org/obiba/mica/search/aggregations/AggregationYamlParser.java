@@ -179,12 +179,15 @@ public class AggregationYamlParser {
               String[] values = range.split(":");
               Assert.isTrue(values.length == 2, "Range From and To are not defined");
 
-              if ("*".equals(values[0])) {
-                builder.addUnboundedTo(range, Double.valueOf(values[1]));
-              } else if ("*".equals(values[1])) {
-                builder.addUnboundedFrom(range, Double.valueOf(values[0]));
-              } else {
-                builder.addRange(range,Double.valueOf(values[0]), Double.valueOf(values[1]));
+              if (!"*".equals(values[0]) || !"*".equals(values[1])) {
+
+                if("*".equals(values[0])) {
+                  builder.addUnboundedTo(range, Double.valueOf(values[1]));
+                } else if("*".equals(values[1])) {
+                  builder.addUnboundedFrom(range, Double.valueOf(values[0]));
+                } else {
+                  builder.addRange(range, Double.valueOf(values[0]), Double.valueOf(values[1]));
+                }
               }
             });
             termsBuilders.add(builder);

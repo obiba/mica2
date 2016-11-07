@@ -43,6 +43,7 @@ var mica = angular.module('mica', [
   'sfLocalizedString',
   'sfObibaFileUpload',
   'sfCheckboxgroup',
+  'sfTypeahead',
   'hc.marked'
 ]);
 
