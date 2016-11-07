@@ -364,9 +364,13 @@
         "label": "Import",
         "help": "Use the json format to import custom translations."
       },
-      "export": {
-        "label": "Export",
-        "help": "The custom translations will be exported in the json format."
+      "export-json": {
+        "label": "JSON (all languages)",
+        "help": "The custom translations will be exported in the JSON format."
+      },
+      "export-gettext": {
+        "label": "Gettext",
+        "help": "The complete translations will be exported in the Gettext format."
       }
     }
   },
