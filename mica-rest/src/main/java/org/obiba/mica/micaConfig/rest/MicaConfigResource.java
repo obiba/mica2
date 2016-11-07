@@ -33,6 +33,7 @@ import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresRoles;
+import org.elasticsearch.common.Strings;
 import org.obiba.mica.JSONUtils;
 import org.obiba.mica.contact.event.IndexContactsEvent;
 import org.obiba.mica.dataset.event.IndexDatasetsEvent;
@@ -163,7 +164,11 @@ public class MicaConfigResource {
         writer.println();
         properties.keySet().stream().sorted().forEach(key -> {
           writer.println(String.format("msgid \"%s\"", key));
-          writer.println(String.format("msgstr \"%s\"", properties.getProperty(key.toString())));
+          String value = properties.getProperty(key.toString());
+          if (!Strings.isNullOrEmpty(value)) {
+            value = value.replaceAll("\\{\\{([\\w]+)\\}\\}", "@$1");
+          }
+          writer.println(String.format("msgstr \"%s\"", value));
           writer.println();
         });
         writer.flush();
