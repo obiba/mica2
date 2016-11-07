@@ -154,14 +154,16 @@ public class MicaConfigResource {
         writer.println("# Translations extracted from Mica");
         writer.println("msgid \"\"");
         writer.println("msgstr \"\"");
+        writer.println(String.format("\"Project-Id-Version: Mica %s\\n\"", micaConfigService.getConfig().getMicaVersion()));
+        writer.println(String.format("\"PO-Revision-Date: %s\\n\"", new Date()));
         writer.println("\"MIME-Version: 1.0\\n\"");
         writer.println("\"Content-Type: text/plain; charset=UTF-8\\n\"");
         writer.println("\"Content-Transfer-Encoding: 8bit\\n\"");
-        writer.println("\"Language: " + locale + "\\n\"");
+        writer.println(String.format("\"Language: %s\\n\"", locale));
         writer.println();
         properties.keySet().stream().sorted().forEach(key -> {
-          writer.println("msgid \"" + key + "\"");
-          writer.println("msgstr \"" + properties.getProperty(key.toString()) + "\"");
+          writer.println(String.format("msgid \"%s\"", key));
+          writer.println(String.format("msgstr \"%s\"", properties.getProperty(key.toString())));
           writer.println();
         });
         writer.flush();
