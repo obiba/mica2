@@ -11,7 +11,6 @@
 package org.obiba.mica.config;
 
 import java.util.concurrent.Executor;
-
 import org.obiba.mica.core.ExceptionHandlingAsyncTaskExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,9 +33,7 @@ public class AsyncConfiguration implements AsyncConfigurer, EnvironmentAware {
 
   private static final Logger log = LoggerFactory.getLogger(AsyncConfiguration.class);
 
-  private static final int DEFAULT_MAX_POOL_SIZE = 50;
-
-  private static final int DEFAULT_QUEUE_CAPACITY = 1000;
+  private static final int DEFAULT_QUEUE_CAPACITY = 10_000;
 
   private static final int DEFAULT_POOL_SIZE = 10;
 
@@ -55,9 +52,12 @@ public class AsyncConfiguration implements AsyncConfigurer, EnvironmentAware {
   @Override
   @Bean
   public Executor getAsyncExecutor() {
+
+    Integer poolSize = propertyResolver.getProperty("poolSize", Integer.class, DEFAULT_POOL_SIZE);
+
     ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-    executor.setCorePoolSize(propertyResolver.getProperty("corePoolSize", Integer.class, DEFAULT_POOL_SIZE));
-    executor.setMaxPoolSize(propertyResolver.getProperty("maxPoolSize", Integer.class, DEFAULT_MAX_POOL_SIZE));
+    executor.setCorePoolSize(poolSize);
+    executor.setMaxPoolSize(poolSize);
     executor.setQueueCapacity(propertyResolver.getProperty("queueCapacity", Integer.class, DEFAULT_QUEUE_CAPACITY));
     executor.setThreadNamePrefix("mica-executor-");
     return new ExceptionHandlingAsyncTaskExecutor(executor);
@@ -66,10 +66,13 @@ public class AsyncConfiguration implements AsyncConfigurer, EnvironmentAware {
   @Bean(name="opalExecutor")
   public Executor getOpalAsyncExecutor() {
     log.debug("Creating Async Task Executor");
+
+    Integer poolSize = propertyResolver.getProperty("opal.poolSize", Integer.class, DEFAULT_POOL_SIZE);
+
     ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-    executor.setCorePoolSize(propertyResolver.getProperty("opal.corePoolSize", Integer.class, DEFAULT_POOL_SIZE));
-    executor.setMaxPoolSize(propertyResolver.getProperty("opal.maxPoolSize", Integer.class, DEFAULT_MAX_POOL_SIZE));
-    executor.setQueueCapacity(propertyResolver.getProperty("queueCapacity", Integer.class, DEFAULT_QUEUE_CAPACITY));
+    executor.setCorePoolSize(poolSize);
+    executor.setMaxPoolSize(poolSize);
+    executor.setQueueCapacity(propertyResolver.getProperty("opal.queueCapacity", Integer.class, DEFAULT_QUEUE_CAPACITY));
     executor.setThreadNamePrefix("mica-opal-executor-");
     return new ExceptionHandlingAsyncTaskExecutor(executor);
   }
