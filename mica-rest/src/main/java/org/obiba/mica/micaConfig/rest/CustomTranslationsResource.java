@@ -4,6 +4,7 @@ import com.codahale.metrics.annotation.Timed;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.micaConfig.domain.MicaConfig;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.slf4j.Logger;
@@ -72,15 +73,19 @@ public class CustomTranslationsResource {
                                      @QueryParam("merge") @DefaultValue("false") boolean merge) throws IOException {
     MicaConfig config = micaConfigService.getConfig();
     JsonNode node = objectMapper.readTree(translations);
-
     List<String> locales = config.getLocalesAsString();
+
+    if (!config.hasTranslations()) {
+      config.setTranslations(new LocalizedString());
+    }
+
     if (merge) {
-      locales.stream().forEach(l -> {
+      locales.forEach(l -> {
         JsonNode merged = micaConfigService.mergeJson(getTranslations(l), node.get(l));
         config.getTranslations().put(l, merged.toString());
       });
     } else {
-      locales.stream().forEach(l -> config.getTranslations().put(l, node.get(l).toString()));
+      locales.forEach(l -> config.getTranslations().put(l, node.get(l).toString()));
     }
 
     micaConfigService.save(config);
