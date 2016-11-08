@@ -44,6 +44,7 @@ var mica = angular.module('mica', [
   'sfObibaFileUpload',
   'sfCheckboxgroup',
   'sfTypeahead',
+  'sfObibaCountriesUiSelect',
   'hc.marked'
 ]);
 

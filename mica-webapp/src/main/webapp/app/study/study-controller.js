@@ -676,7 +676,6 @@ mica.study
     'FormServerValidation',
     'StudyTaxonomyService',
     'MicaUtil',
-    'ObibaCountriesIsoCodes',
     'StudyModelUtil',
     function ($rootScope,
               $scope,
@@ -691,11 +690,9 @@ mica.study
               FormServerValidation,
               StudyTaxonomyService,
               MicaUtil,
-              ObibaCountriesIsoCodes,
               StudyModelUtil) {
 
 
-      $scope.getAvailableCountries = function (locale) { return ObibaCountriesIsoCodes[locale]; };
       $scope.selectionCriteriaGenders = {};
       $scope.availableSelectionCriteria = {};
       $scope.recruitmentSourcesTypes = {};
@@ -779,7 +776,6 @@ mica.study
 
       MicaConfigResource.get(function (micaConfig) {
         $scope.sfOptions = {};
-
         micaConfig.languages.forEach(function (lang) {
           var sfLanguages = {};
           sfLanguages[lang] = $filter('translate')('language.' + lang);
