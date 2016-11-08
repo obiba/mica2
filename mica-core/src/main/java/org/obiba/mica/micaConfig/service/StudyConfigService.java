@@ -10,16 +10,11 @@
 
 package org.obiba.mica.micaConfig.service;
 
-import java.io.IOException;
-import java.util.Scanner;
-
-import javax.inject.Inject;
-
 import org.obiba.mica.micaConfig.domain.StudyConfig;
 import org.obiba.mica.micaConfig.repository.StudyConfigRepository;
-import org.springframework.core.io.DefaultResourceLoader;
-import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
+
+import javax.inject.Inject;
 
 @Component
 public class StudyConfigService extends EntityConfigService<StudyConfig> {
@@ -38,26 +33,27 @@ public class StudyConfigService extends EntityConfigService<StudyConfig> {
   }
 
   @Override
-  protected StudyConfig createDefaultForm() {
-    return createDefaultStudyForm();
+  protected StudyConfig createEmptyForm() {
+    return new StudyConfig();
   }
 
-  private StudyConfig createDefaultStudyForm() {
-    StudyConfig form = new StudyConfig();
-    form.setDefinition(getDefaultStudyFormResourceAsString("definition.json"));
-    form.setSchema(getDefaultStudyFormResourceAsString("schema.json"));
-    return form;
+  @Override
+  protected String getDefaultSchemaResourcePath() {
+    return "classpath:config/study-form/schema.json";
   }
 
-  private Resource getDefaultStudyFormResource(String name) {
-    return new DefaultResourceLoader().getResource("classpath:config/study-form/" + name);
+  @Override
+  protected String getMandatorySchemaResourcePath() {
+    return "classpath:config/study-form/schema-mandatory.json";
   }
 
-  private String getDefaultStudyFormResourceAsString(String name) {
-    try(Scanner s = new Scanner(getDefaultStudyFormResource(name).getInputStream())) {
-      return s.useDelimiter("\\A").hasNext() ? s.next() : "";
-    } catch(IOException e) {
-      return "";
-    }
+  @Override
+  protected String getDefaultDefinitionResourcePath() {
+    return "classpath:config/study-form/definition.json";
+  }
+
+  @Override
+  protected String getMandatoryDefinitionResourcePath() {
+    return "classpath:config/study-form/definition-mandatory.json";
   }
 }

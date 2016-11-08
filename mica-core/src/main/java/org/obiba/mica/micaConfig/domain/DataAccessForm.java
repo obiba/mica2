@@ -10,31 +10,20 @@
 
 package org.obiba.mica.micaConfig.domain;
 
-import java.io.Serializable;
-import java.util.HashMap;
+import com.google.common.base.Strings;
+import com.google.common.collect.Maps;
+import org.obiba.mica.core.domain.LocalizedString;
+import org.obiba.mica.file.Attachment;
+import org.obiba.mica.micaConfig.PdfDownloadType;
+
 import java.util.Locale;
 import java.util.Map;
 
-import org.obiba.mica.core.domain.AbstractGitPersistable;
-import org.obiba.mica.core.domain.LocalizedString;
-import org.obiba.mica.core.domain.RevisionStatus;
-import org.obiba.mica.file.Attachment;
-import org.obiba.mica.micaConfig.PdfDownloadType;
-import org.springframework.data.mongodb.core.index.Indexed;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.google.common.base.Strings;
-import com.google.common.collect.Maps;
-
-public class DataAccessForm extends AbstractGitPersistable {
+public class DataAccessForm extends EntityConfig {
 
   public final static String DEFAULT_ID = "default";
 
   public final static int DEFAULT_ID_LENGTH = 6;
-
-  private String schema;
-
-  private String definition;
 
   private String csvExportFormat;
 
@@ -92,32 +81,8 @@ public class DataAccessForm extends AbstractGitPersistable {
 
   private boolean rejectedFinal = false;
 
-  @Indexed
-  private RevisionStatus revisionStatus = RevisionStatus.DRAFT;
-
-  @Indexed
-  private String publishedTag;
-
-  private int revisionsAhead = 0;
-
   public DataAccessForm() {
     setId(DEFAULT_ID);
-  }
-
-  public String getSchema() {
-    return schema;
-  }
-
-  public void setSchema(String schema) {
-    this.schema = schema;
-  }
-
-  public String getDefinition() {
-    return definition;
-  }
-
-  public void setDefinition(String definition) {
-    this.definition = definition;
   }
 
   public String getCsvExportFormat() {
@@ -152,53 +117,9 @@ public class DataAccessForm extends AbstractGitPersistable {
     this.pdfDownloadType = pdfDownloadType;
   }
 
-  @JsonIgnore
-  public RevisionStatus getRevisionStatus() {
-    return revisionStatus;
-  }
-
-  public void setRevisionStatus(RevisionStatus revisionStatus) {
-    this.revisionStatus = revisionStatus;
-  }
-
-  @JsonIgnore
-  public String getPublishedTag() {
-    return publishedTag;
-  }
-
-  public void setPublishedTag(String publishedTag) {
-    this.publishedTag = publishedTag;
-  }
-
-  @JsonIgnore
-  public int getRevisionsAhead() {
-    return revisionsAhead;
-  }
-
-  public void setRevisionsAhead(int revisionsAhead) {
-    this.revisionsAhead = revisionsAhead;
-  }
-
-  public void incrementRevisionsAhead() {
-    revisionsAhead++;
-  }
-
   @Override
   public String pathPrefix() {
     return "data-access-forms";
-  }
-
-  @Override
-  public Map<String, Serializable> parts() {
-    final DataAccessForm self = this;
-
-    return new HashMap<String, Serializable>(){
-      {
-        put(self.getClass().getSimpleName(), self);
-        put("definition", self.getDefinition());
-        put("schema", self.getSchema());
-      }
-    };
   }
 
   public boolean hasTitleFieldPath() {

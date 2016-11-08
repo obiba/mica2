@@ -16,7 +16,6 @@ import org.obiba.mica.micaConfig.domain.EntityConfig;
 import org.obiba.mica.micaConfig.service.EntityConfigService;
 import org.obiba.mica.security.Roles;
 import org.obiba.mica.web.model.Dtos;
-import org.obiba.mica.web.model.Mica;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
@@ -31,7 +30,7 @@ import javax.ws.rs.core.UriInfo;
 import java.util.Optional;
 
 @Component
-public abstract class EntityConfigResource<T extends EntityConfig> {
+public abstract class EntityConfigResource<T extends EntityConfig, U> {
 
   @Inject
   ApplicationContext applicationContext;
@@ -42,26 +41,41 @@ public abstract class EntityConfigResource<T extends EntityConfig> {
   @Inject
   EntityConfigTranslator entityConfigTranslator;
 
-  protected abstract Mica.EntityFormDto asDto(T entityConfig);
+  protected abstract U asDto(T entityConfig);
 
-  protected abstract T fromDto(Mica.EntityFormDto entityConfig);
+  protected abstract T fromDto(U entityConfig);
 
   @GET
   @Path("/form")
-  public Mica.EntityFormDto get(@Context UriInfo uriInfo, @QueryParam("locale") String locale) {
-    Optional<T> d = getConfigService().find();
-    if(!d.isPresent()) throw NoSuchEntityException.withPath(EntityConfig.class, uriInfo.getPath());
+  public U get(@Context UriInfo uriInfo, @QueryParam("locale") String locale) {
 
-    T config = d.get();
+    Optional<T> optionalConfig = getConfigService().findComplete();
+
+    if (!optionalConfig.isPresent())
+      throw NoSuchEntityException.withPath(EntityConfig.class, uriInfo.getPath());
+
+    T config = optionalConfig.get();
     entityConfigTranslator.translateSchema(locale, config);
 
     return asDto(config);
   }
 
+  @GET
+  @Path("/form-custom")
+  public U getComplete(@Context UriInfo uriInfo) {
+
+    Optional<T> optionalConfig = getConfigService().findPartial();
+
+    if (!optionalConfig.isPresent())
+      throw NoSuchEntityException.withPath(EntityConfig.class, uriInfo.getPath());
+
+    return asDto(optionalConfig.get());
+  }
+
   @PUT
-  @Path("/form")
+  @Path("/form-custom")
   @RequiresRoles(Roles.MICA_ADMIN)
-  public Response update(Mica.EntityFormDto dto) {
+  public Response update(U dto) {
     getConfigService().createOrUpdate(fromDto(dto));
     return Response.ok().build();
   }

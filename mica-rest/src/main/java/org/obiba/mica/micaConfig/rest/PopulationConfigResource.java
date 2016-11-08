@@ -22,7 +22,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Path("/config/population")
-public class PopulationConfigResource extends EntityConfigResource<PopulationConfig> {
+public class PopulationConfigResource extends EntityConfigResource<PopulationConfig, Mica.EntityFormDto> {
 
   @Inject
   PopulationConfigService populationConfigService;

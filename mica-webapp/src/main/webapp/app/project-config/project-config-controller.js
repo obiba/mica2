@@ -13,7 +13,7 @@
 mica.projectConfig
 
   .controller('ProjectConfigController', ['$rootScope', '$location', '$scope', '$log',
-    'ProjectFormResource',
+    'ProjectFormCustomResource',
     'EntitySchemaFormService',
     'LocalizedSchemaFormService',
     'AlertService',
@@ -22,7 +22,7 @@ mica.projectConfig
     'ProjectFormAccessesResource',
     'MicaConfigResource',
     function ($rootScope, $location, $scope, $log,
-              ProjectFormResource,
+              ProjectFormCustomResource,
               EntitySchemaFormService,
               LocalizedSchemaFormService,
               AlertService,
@@ -40,7 +40,7 @@ mica.projectConfig
           case EntitySchemaFormService.ParseResult.VALID:
             $scope.projectForm.definition = $scope.form.definition;
             $scope.projectForm.schema = $scope.form.schema;
-            ProjectFormResource.save($scope.projectForm,
+            ProjectFormCustomResource.save($scope.projectForm,
               function () {
                 $location.path('/admin').replace();
               },
@@ -71,7 +71,7 @@ mica.projectConfig
 
       $scope.projectForm = {schema: '', definition: ''};
 
-      ProjectFormResource.get(
+      ProjectFormCustomResource.get(
         function(projectForm){
           $scope.form.definitionJson = EntitySchemaFormService.parseJsonSafely(projectForm.definition, []);
           $scope.form.definition = EntitySchemaFormService.prettifyJson($scope.form.definitionJson);

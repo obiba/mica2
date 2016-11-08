@@ -21,7 +21,10 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Path("/config/" + NetworkConfigResource.TARGET_NAME)
-public class NetworkConfigResource extends EntityConfigResource<NetworkConfig> implements PermissionAwareResource {
+public class NetworkConfigResource
+  extends EntityConfigResource<NetworkConfig, Mica.EntityFormDto>
+  implements PermissionAwareResource {
+
   static final String TARGET_NAME = "network";
 
   @Inject

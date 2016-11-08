@@ -15,6 +15,13 @@ mica.entityConfig
   .factory('EntityFormResource', ['$resource',
     function ($resource) {
       return $resource('ws/config/:target/form', {}, {
+        'get': {method: 'GET', errorHandler: true}
+      });
+    }])
+
+  .factory('EntityFormCustomResource', ['$resource',
+    function ($resource) {
+      return $resource('ws/config/:target/form-custom', {}, {
         'get': {method: 'GET', errorHandler: true},
         'save': {method: 'PUT', errorHandler: true}
       });
