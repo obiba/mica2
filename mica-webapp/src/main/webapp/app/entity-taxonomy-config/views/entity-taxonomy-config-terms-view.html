@@ -3,7 +3,7 @@
 
   <p class="help-block">{{'taxonomy-config.terms.info' | translate}}</p>
 
-  <a ng-if="!isStatic(model.content)" ng-click="addTerm(model.content, null)" class="btn btn-info">
+  <a ng-if="target.editable && !isStatic(model.content)" ng-click="addTerm(model.content, null)" class="btn btn-info">
     <i class="fa fa-plus"></i> <span>{{'taxonomy-config.term-dialog.add-term'| translate}}</span>
   </a>
 
@@ -24,7 +24,7 @@
     <tr>
       <th translate>name</th>
       <th translate>global.title</th>
-      <th translate>actions</th>
+      <th ng-if="target.editable" translate>actions</th>
     </tr>
     </thead>
     <tbody>
@@ -35,7 +35,7 @@
       <td>
         <property-view property="child.title"></property-view>
       </td>
-      <td class="no-wrap">
+      <td ng-if="target.editable" class="no-wrap">
         <ul class="list-inline">
           <li>
             <a href ng-click="addTerm(model.content, child)" title="{{'edit' | translate}}"><i class="fa fa-pencil"></i></a>

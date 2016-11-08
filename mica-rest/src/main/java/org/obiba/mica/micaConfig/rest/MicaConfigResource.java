@@ -10,13 +10,10 @@
 
 package org.obiba.mica.micaConfig.rest;
 
-import java.io.IOException;
+import java.io.*;
 import java.net.URISyntaxException;
 import java.security.KeyStoreException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -29,15 +26,15 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.core.*;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresRoles;
+import org.elasticsearch.common.Strings;
+import org.obiba.mica.JSONUtils;
 import org.obiba.mica.contact.event.IndexContactsEvent;
 import org.obiba.mica.dataset.event.IndexDatasetsEvent;
 import org.obiba.mica.dataset.service.KeyStoreService;
@@ -137,16 +134,47 @@ public class MicaConfigResource {
 
   @GET
   @Path("/i18n/{locale}.json")
-  @Produces("application/json")
-  public Response getTranslation(@PathParam("locale") String locale, @QueryParam("default") boolean _default) throws IOException {
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response getJsonTranslations(@PathParam("locale") String locale, @QueryParam("default") boolean _default) throws IOException {
+    StreamingOutput stream = os -> {
+      try (Writer writer = new BufferedWriter(new OutputStreamWriter(os))) {
+        writer.write(getGlobalTranslationsAsJson(locale, _default));
+        writer.flush();
+      }
+    };
+    return Response.ok(stream).build();
+  }
 
-    String userProfileTranslations = getUserProfileTranslations(locale);
-    String micaTranslations = micaConfigService.getTranslations(locale, _default);
-
-    DocumentContext globalTranslations = JsonPath.parse(micaTranslations);
-    globalTranslations.put("$", "userProfile", JsonPath.parse(userProfileTranslations).read("$"));
-
-    return Response.ok(globalTranslations.jsonString(), "application/json").build();
+  @GET
+  @Path("/i18n/{locale}.po")
+  @Produces(MediaType.TEXT_PLAIN)
+  public Response getGettextTranslations(@PathParam("locale") String locale, @QueryParam("default") boolean _default) throws IOException {
+    StreamingOutput stream = os -> {
+      try (PrintWriter writer = new PrintWriter(new OutputStreamWriter(os, "UTF-8"))) {
+        Properties properties = getGlobalTranslationsAsProperties(locale, _default);
+        writer.println("# Translations extracted from Mica");
+        writer.println("msgid \"\"");
+        writer.println("msgstr \"\"");
+        writer.println(String.format("\"Project-Id-Version: Mica %s\\n\"", micaConfigService.getConfig().getMicaVersion()));
+        writer.println(String.format("\"PO-Revision-Date: %s\\n\"", new Date()));
+        writer.println("\"MIME-Version: 1.0\\n\"");
+        writer.println("\"Content-Type: text/plain; charset=UTF-8\\n\"");
+        writer.println("\"Content-Transfer-Encoding: 8bit\\n\"");
+        writer.println(String.format("\"Language: %s\\n\"", locale));
+        writer.println();
+        properties.keySet().stream().sorted().forEach(key -> {
+          writer.println(String.format("msgid \"%s\"", key));
+          String value = properties.getProperty(key.toString());
+          if (!Strings.isNullOrEmpty(value)) {
+            value = value.replaceAll("\\{\\{([\\w]+)\\}\\}", "@$1");
+          }
+          writer.println(String.format("msgstr \"%s\"", value));
+          writer.println();
+        });
+        writer.flush();
+      }
+    };
+    return Response.ok(stream).build();
   }
 
   @Path("/i18n/custom")
@@ -268,6 +296,24 @@ public class MicaConfigResource {
     return Response.noContent().build();
   }
 
+  private DocumentContext getGlobalTranslations(String locale, boolean _default) throws IOException {
+    String userProfileTranslations = getUserProfileTranslations(locale);
+    String micaTranslations = micaConfigService.getTranslations(locale, _default);
+
+    DocumentContext globalTranslations = JsonPath.parse(micaTranslations);
+    globalTranslations.put("$", "userProfile", JsonPath.parse(userProfileTranslations).read("$"));
+
+    return globalTranslations;
+  }
+
+  private String getGlobalTranslationsAsJson(String locale, boolean _default) throws IOException {
+    return getGlobalTranslations(locale, _default).jsonString();
+  }
+
+  private Properties getGlobalTranslationsAsProperties(String locale, boolean _default) throws IOException {
+    return JSONUtils.toProperties(getGlobalTranslationsAsJson(locale, _default));
+  }
+
   private void createOrUpdateCredential(Mica.OpalCredentialDto opalCredentialDto) {
     if(opalCredentialDto.getType() == Mica.OpalCredentialType.USERNAME) {
       opalCredentialService
@@ -319,7 +365,7 @@ public class MicaConfigResource {
     try {
       return userProfileService.getUserProfileTranslations(locale);
     } catch (RestClientException e) {
-      logger.warn("Cannot get translations about userProfile (from agate)", e);
+      logger.warn("Cannot get translations about userProfile (from agate): {}", e.getMessage());
       return "{}";
     }
   }

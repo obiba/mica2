@@ -49,7 +49,7 @@ mica.entitySfConfig
       };
 
       var getTaxonomy = function() {
-        EntityTaxonomyConfigResource.get({target: $scope.target}).$promise.then(
+        EntityTaxonomyConfigResource.get({target: $scope.target.name}).$promise.then(
           function (response) {
             $scope.taxonomy = response;
             navigateToTaxonomy(response);
@@ -77,7 +77,7 @@ mica.entitySfConfig
       };
 
       var onSave = function() {
-        return EntityTaxonomyConfigResource.save({target: $scope.target}, $scope.taxonomy);
+        return EntityTaxonomyConfigResource.save({target: $scope.target.name}, $scope.taxonomy);
       };
 
       $scope.model = {
@@ -114,10 +114,10 @@ mica.entitySfConfig
               NOTIFICATION_EVENTS) {
 
       var edit = function() {
-
           $uibModal.open({
             templateUrl: 'app/entity-taxonomy-config/views/entity-taxonomy-config-properties-modal.html',
             controller: 'entityTaxonomyConfigPropertiesModalController',
+            scope: $scope,
             resolve: {
               model: function() {
                 return $scope.model;
@@ -175,12 +175,14 @@ mica.entitySfConfig
         var model = {
           content: null,
           children: null,
+          siblings: $scope.taxonomy.vocabularies || [],
           type: 'criterion'
         };
 
         $uibModal.open({
           templateUrl: 'app/entity-taxonomy-config/views/entity-taxonomy-config-properties-modal.html',
           controller: 'entityTaxonomyConfigPropertiesModalController',
+          scope: $scope,
           resolve: {
             model: function() {
               return model;
@@ -218,6 +220,9 @@ mica.entitySfConfig
         var model = {
           content: term || null,
           children: null,
+          siblings: (vocabulary.terms || []).filter(function(t){
+            return term ? term.name !== t.name : t;
+          }),
           type: 'term',
           valueType: VocabularyAttributeService.getType(vocabulary)
         };
@@ -225,6 +230,7 @@ mica.entitySfConfig
         $uibModal.open({
           templateUrl: 'app/entity-taxonomy-config/views/entity-taxonomy-config-properties-modal.html',
           controller: 'entityTaxonomyConfigPropertiesModalController',
+          scope: $scope,
           resolve: {
             model: function() {
               return model;
@@ -232,7 +238,9 @@ mica.entitySfConfig
           }
         }).result.then(function(){
           $scope.model.children = vocabulary.terms = vocabulary.terms || [];
-          vocabulary.terms.push(model.content);
+          if (!term) {
+            vocabulary.terms.push(model.content);
+          }
         });
       };
 
@@ -270,6 +278,7 @@ mica.entitySfConfig
     'EntityTaxonomySchemaFormService',
     'VocabularyAttributeService',
     'MicaConfigResource',
+    'EntitySchemaFormFieldsService',
     'model',
     function ($scope,
               $uibModalInstance,
@@ -277,6 +286,7 @@ mica.entitySfConfig
               EntityTaxonomySchemaFormService,
               VocabularyAttributeService,
               MicaConfigResource,
+              EntitySchemaFormFieldsService,
               model) {
 
       $scope.model = model;
@@ -286,7 +296,6 @@ mica.entitySfConfig
         if($scope.form.$valid) {
           EntityTaxonomySchemaFormService.updateModel($scope.sfForm, $scope.model);
           $uibModalInstance.close($scope.sfForm.model);
-
         }
 
         $scope.form.saveAttempted = true;
@@ -315,6 +324,9 @@ mica.entitySfConfig
 
       MicaConfigResource.get(function (micaConfig) {
         $scope.sfOptions = {
+          validationMessage: {
+            '302': $filter('translate')('required')
+          },
           formDefaults: {
             languages: {}
           }
@@ -323,6 +335,12 @@ mica.entitySfConfig
         micaConfig.languages.forEach(function (lang) {
           $scope.sfOptions.formDefaults.languages[lang] = $filter('translate')('language.' + lang);
         });
+
+        if ('criterion' === $scope.model.type && $scope.schemas) {
+          $scope.sfOptions.formDefaults.values = EntitySchemaFormFieldsService.getFieldNames(
+            EntitySchemaFormFieldsService.concatenateSchemas($scope.schemas)
+          );
+        }
 
         $scope.sfForm = EntityTaxonomySchemaFormService.getFormData($scope.model);
         $scope.isStatic = VocabularyAttributeService.isStatic;

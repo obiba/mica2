@@ -364,9 +364,13 @@
         "label": "Import",
         "help": "Use the json format to import custom translations."
       },
-      "export": {
-        "label": "Export",
-        "help": "The custom translations will be exported in the json format."
+      "export-json": {
+        "label": "JSON (all languages)",
+        "help": "The custom translations will be exported in the JSON format."
+      },
+      "export-gettext": {
+        "label": "Gettext",
+        "help": "The complete translations will be exported in the Gettext format."
       }
     }
   },
@@ -1199,13 +1203,15 @@
       "name-help": "Unique name identifying this search criterion.",
       "repeatable-help": "Search for exact match or contained value.",
       "field-help": "Fully qualified field name in the document model (if different from the name).",
-      "type-help": "The type of search facet: range selection for a numerical type, open input for a text type etc."
+      "type-help": "The type of search facet: range selection for a numerical type, open input for a text type etc.",
+      "unique-name": "Criterion name must be unique."
     },
     "term-dialog": {
       "add-term": "Add Term",
       "edit-term": "Edit Term",
       "name-help": "Unique name identifying this search criterion possible value.",
-      "keywords-help": "Optional list of keywords useful when building search requests."
+      "keywords-help": "Optional list of keywords useful when building search requests.",
+      "unique-name": "The name of a criterion value must be unique."
     },
     "all-criteria": "All Criteria",
     "delete-dialog": {

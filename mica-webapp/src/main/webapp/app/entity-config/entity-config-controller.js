@@ -60,12 +60,36 @@ mica.entityConfig
         'study': ['study', 'population', 'data-collection-event'],
         'dataset': ['dataset']};
 
+      function mapTargetTypeToId(type) {
+        switch (type) {
+          case 'Study':
+            return 'studies';
+          case 'Population':
+            return 'populations';
+          case 'DataCollectionEvent':
+            return 'dataCollectionEvents';
+          case 'Dataset':
+            return 'datasets';
+          case 'Network':
+            return 'Networks';
+        }
+
+        throw new Error('Invalid target type ', type);
+      }
+
+      function initializeScopeTargets() {
+        $scope.target = $routeParams.type.match(/(\w+)\-config/)[1];
+        var names = $scope.target === 'dataset' ? [$scope.target, 'variable'] : [$scope.target];
+        $scope.taxonomyTargets = names.map(function(name){
+          return {name: name, editable: 'variable' !== name};
+        });
+      }
+
+      initializeScopeTargets();
       $scope.state = new mica.entityConfig.EntityState($q);
-      $scope.target = $routeParams.type.match(/(\w+)\-config/)[1];
-      $scope.taxonomyTargets = $scope.target === 'dataset' ? [$scope.target, 'variable'] : [$scope.target];
       $scope.tab = {name: 'form'};
-      $scope.forms = [];
       $scope.permissions = [];
+      $scope.targetSchemas = [];
       $scope.accesses = [];
       MicaConfigResource.get(function (micaConfig) {
         $scope.roles = micaConfig.roles;
@@ -115,6 +139,14 @@ mica.entityConfig
               msg: ServerErrorUtils.buildMessage(response)
             });
           })};
+      });
+
+      $q.all($scope.forms.map(function(item){
+        return item.form.$promise;
+      })).then(function(forms) {
+        $scope.targetSchemas = forms.map(function(entityForm){
+          return {id: mapTargetTypeToId(entityForm.type), schema: entityForm.schemaJson};
+        });
       });
 
       $scope.forms[0].active = true;

@@ -1,7 +1,7 @@
 <div>
   <h4 translate>global.criteria</h4>
 
-  <a ng-click="add()" class="btn btn-info">
+  <a ng-if="target.editable" ng-click="add()" class="btn btn-info">
     <i class="fa fa-plus"></i> <span>{{'taxonomy-config.criterion-dialog.add-criterion'| translate}}</span>
   </a>
 

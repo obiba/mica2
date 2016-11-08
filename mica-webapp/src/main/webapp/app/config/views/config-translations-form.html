@@ -24,7 +24,20 @@
       </a>
     </div>
     <div class="col-xs-8">
-      <a ng-href="ws/config/i18n/custom/export" target="_self" title="{{'config.translations.export.label' | translate}}" download="export.json" class="btn btn-info pull-right" translate>config.translations.export.label</a>
+      <div class="dropdown pull-right">
+        <button class="btn btn-default dropdown-toggle" type="button" id="downloadMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+          <i class="fa fa-download"></i> {{'download' | translate}}
+          <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="downloadMenu">
+          <li><a ng-href="ws/config/i18n/custom/export" target="_self" title="{{'config.translations.export-json.help' | translate}}" download="mica-all.json" translate>
+            config.translations.export-json.label</a></li>
+          <li ng-repeat="tab in tabs">
+            <a ng-href="{{'ws/config/i18n/' + tab.lang + '.po'}}" target="_self" title="{{'config.translations.export-gettext.help' | translate}}" download="{{'mica-' + tab.lang + '.po'}}">
+              {{'config.translations.export-gettext.label' | translate}} ({{'language.' + tab.lang | translate}})</a>
+          </li>
+        </ul>
+      </div>
     </div>
   </div>
 

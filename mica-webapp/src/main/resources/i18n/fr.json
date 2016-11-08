@@ -363,9 +363,13 @@
         "label": "Importer",
         "help": "Utiliser le format json pour importer vos traductions."
       },
-      "export": {
-        "label": "Exporter",
-        "help": "Les traductions seront exportées sous format json."
+      "export-json": {
+        "label": "JSON (toutes langues)",
+        "help": "Les traductions aditionnelles seront exportées au format JSON."
+      },
+      "export-gettext": {
+        "label": "Gettext",
+        "help": "Les traductions complètes seront exportées au format Gettext."
       }
     }
   },
@@ -1198,13 +1202,15 @@
       "name-help": "Nom unique identifiant ce critère de recherche.",
       "repeatable-help": "Rechercher correspondance exacte ou valeur contenue.",
       "field-help": "Nom du champ entièrement qualifié dans le modèle de document (si différent du nom).",
-      "type-help": "Le type de recherche par facette: sélection de la plage pour un type numérique, entrée ouverte pour un type de texte, etc."
+      "type-help": "Le type de recherche par facette: sélection de la plage pour un type numérique, entrée ouverte pour un type de texte, etc.",
+      "unique-name": "Le nom du critère doit être unique."
     },
     "term-dialog": {
       "add-term": "Ajouter Terme",
       "edit-term": "Modifier Terme",
       "name-help": "Nom unique identifiant ce critère de recherche.",
-      "keywords-help": "Liste optionnelle des mots-clés utiles lors de la construction des requêtes de recherche."
+      "keywords-help": "Liste optionnelle des mots-clés utiles lors de la construction des requêtes de recherche.",
+      "unique-name": "Le nom d'une valeur de critère doit être unique."
     },
     "all-criteria": "Tous les critères",
     "delete-dialog": {
