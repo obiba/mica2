@@ -49,12 +49,12 @@ mica.entityConfig
     'AlertService',
     'ServerErrorUtils',
     'EntitySchemaFormService',
-    'EntityFormResource',
+    'EntityFormCustomResource',
     'EntityFormPermissionsResource',
     'MicaConfigResource',
     'EntityFormAccessesResource',
     function ($scope, $q, $location, $routeParams, AlertService, ServerErrorUtils,
-              EntitySchemaFormService, EntityFormResource, EntityFormPermissionsResource, MicaConfigResource,
+              EntitySchemaFormService, EntityFormCustomResource, EntityFormPermissionsResource, MicaConfigResource,
               EntityFormAccessesResource) {
       var FORMS = {'network': ['network'],
         'study': ['study', 'population', 'data-collection-event'],
@@ -99,7 +99,7 @@ mica.entityConfig
       };
 
       $scope.forms = FORMS[$scope.target].map(function(name) {
-        return {name: name, form: EntityFormResource.get({target: name},
+        return {name: name, form: EntityFormCustomResource.get({target: name},
           function(entityForm){
             entityForm.definitionJson = EntitySchemaFormService.parseJsonSafely(entityForm.definition, []);
             entityForm.definition = EntitySchemaFormService.prettifyJson(entityForm.definitionJson);
@@ -136,7 +136,7 @@ mica.entityConfig
                 delete form.form.definitionJson;
                 delete form.form.schemaJson;
                 delete form.form.model;
-                EntityFormResource.save({target: form.name}, form.form, function() {
+                EntityFormCustomResource.save({target: form.name}, form.form, function() {
                   defer.resolve();
                 }, function(response) {
                   defer.reject(ServerErrorUtils.buildMessage(response));

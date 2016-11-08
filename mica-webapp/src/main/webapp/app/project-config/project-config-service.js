@@ -15,6 +15,13 @@ mica.projectConfig
   .factory('ProjectFormResource', ['$resource',
     function ($resource) {
       return $resource('ws/config/project/form', {}, {
+        'get': {method: 'GET', errorHandler: true}
+      });
+    }])
+
+  .factory('ProjectFormCustomResource', ['$resource',
+    function ($resource) {
+      return $resource('ws/config/project/form-custom', {}, {
         'get': {method: 'GET', errorHandler: true},
         'save': {method: 'PUT', errorHandler: true}
       });
