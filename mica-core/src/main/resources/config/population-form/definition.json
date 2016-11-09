@@ -42,10 +42,30 @@
             "htmlClass": "col-xs-6",
             "items": [
               {
-                "key": "selectionCriteria.healthStatus"
+                "key": "selectionCriteria.healthStatus",
+                "add": "t(study.selection-criteria.health-status.array-add)",
+                "style": {
+                  "add": "btn-info"
+                },
+                "items": [
+                  {
+                    "key": "selectionCriteria.healthStatus[]",
+                    "notitle": true
+                  }
+                ]
               },
               {
-                "key": "selectionCriteria.ethnicOrigin"
+                "key": "selectionCriteria.ethnicOrigin",
+                "add": "t(study.selection-criteria.ethnic-origin.array-add)",
+                "style": {
+                  "add": "btn-info"
+                },
+                "items": [
+                  {
+                    "key": "selectionCriteria.ethnicOrigin[]",
+                    "notitle": true
+                  }
+                ]
               },
               {
                 "key": "selectionCriteria.criteria"

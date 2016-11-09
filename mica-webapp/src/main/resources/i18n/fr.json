@@ -465,8 +465,14 @@
       "age": "Âge",
       "country": "Pays",
       "territory": "Territoire",
-      "ethnic-origin": "Origine ethnique",
-      "health-status": "État de santé"
+      "health-status": {
+          "array-add": "Ajouter un état de santé",
+          "label": "État de santé"
+      },
+      "ethnic-origin": {
+         "array-add": "Ajouter une origine ethnique",
+         "label": "Origine ethnique"
+      }
     },
     "recruitment-sources": {
       "label": "Sources de recrutement",
@@ -834,7 +840,8 @@
       "bio": "Bio",
       "others": "Autres",
       "design": "Conception de l'étude",
-      "participants": "Participants"
+      "participants": "Participants",
+      "other-design":"Autre conception"
     },
     "dataset": {
       "facet-label": "Ensemble de données",

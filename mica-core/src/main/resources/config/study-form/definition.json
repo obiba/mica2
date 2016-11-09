@@ -55,7 +55,16 @@
                       }
                     ]
                   },
-                  "methods.otherDesign",
+                  {
+                    "type": "section",
+                    "htmlClass": "hoffset3",
+                    "items": [
+                      {
+                        "key": "methods.otherDesign",
+                        "condition": "model.methods.design==\"other\""
+                      }
+                    ]
+                  },
                   {
                     "key": "methods.followUpInfo",
                     "type": "localizedstring"
