@@ -15,7 +15,7 @@ mica.entityConfig
   .factory('EntityFormResource', ['$resource',
     function ($resource) {
       return $resource('ws/config/:target/form', {}, {
-        'get': {method: 'GET', errorHandler: true}
+        'get': {method: 'GET', params: {locale: '@locale'}, errorHandler: true}
       });
     }])
 

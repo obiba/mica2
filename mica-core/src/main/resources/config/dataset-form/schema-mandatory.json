@@ -1,1 +1,29 @@
-{}
+{
+  "type": "object",
+  "properties": {
+    "_name": {
+      "title": "t(dataset.name)",
+      "type": "object",
+      "format": "localizedString"
+    },
+    "_acronym": {
+      "title": "t(dataset.acronym)",
+      "type": "object",
+      "format": "localizedString"
+    },
+    "_description": {
+      "title": "t(dataset.description)",
+      "type": "object",
+      "format": "localizedString"
+    },
+    "_entityType": {
+      "title": "t(dataset.entity-type)",
+      "type": "string"
+    }
+  },
+  "required": [
+    "_name",
+    "_acronym",
+    "_entityType"
+  ]
+}

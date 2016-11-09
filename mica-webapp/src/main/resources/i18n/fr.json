@@ -554,7 +554,7 @@
     "add": "Ajouter un ensemble de données",
     "details": "Ensemble de données",
     "label-edit": "Éditer l'ensemble de données",
-    "general-info": "Informations générales",
+    "general-info": "<h3>Informations générales</h3>",
     "description": "Description",
     "entity-type": "Type d'entité",
     "study-dce": {

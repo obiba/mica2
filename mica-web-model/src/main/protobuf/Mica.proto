@@ -518,7 +518,7 @@ message DatasetDto {
 }
 
 message StudyDatasetDto {
-  required DatasetDto.StudyTableDto studyTable = 1;
+  optional DatasetDto.StudyTableDto studyTable = 1;
   extensions 1000 to max;
 
   extend DatasetDto {
