@@ -43,7 +43,7 @@
             "items": [
               {
                 "key": "selectionCriteria.healthStatus",
-                "add": "t(study.selection-criteria.health-status.array-add)",
+                "add": "t(study.selection-criteria.add-health-status)",
                 "style": {
                   "add": "btn-info"
                 },
@@ -56,7 +56,7 @@
               },
               {
                 "key": "selectionCriteria.ethnicOrigin",
-                "add": "t(study.selection-criteria.ethnic-origin.array-add)",
+                "add": "t(study.selection-criteria.add-ethnic-origin)",
                 "style": {
                   "add": "btn-info"
                 },
@@ -107,7 +107,8 @@
                         "items": [
                           {
                             "key": "recruitment.generalPopulationSources",
-                            "notitle": true
+                            "notitle": true,
+                            "condition": "model.recruitment.dataSources.indexOf(\"general_population\")!=-1"
                           }
                         ]
                       },
@@ -116,7 +117,8 @@
                         "items": [
                           {
                             "key": "recruitment.specificPopulationSources",
-                            "notitle": true
+                            "notitle": true,
+                            "condition": "model.recruitment.dataSources.indexOf(\"specific_population\")!=-1"
                           }
                         ]
                       },
@@ -125,14 +127,28 @@
                         "items": [
                           {
                             "key": "recruitment.studies",
-                            "notitle": true
+                            "notitle": true,
+                            "add": "t(study.recruitment-sources.add-study)",
+                            "style": {
+                              "add": "btn-info"
+                            },
+                            "items": [
+                              {
+                                "key": "recruitment.studies[]",
+                                "notitle": true
+                              }
+                            ],
+                            "condition": "model.recruitment.dataSources.indexOf(\"exist_studies\")!=-1"
                           }
                         ]
                       },
                       {
                         "title": "t(study.recruitment-sources.other)",
                         "items": [
-                          "recruitment.otherSource"
+                          {
+                            "key": "recruitment.otherSource",
+                            "condition": "model.recruitment.dataSources.indexOf(\"other\")!=-1"
+                          }
                         ]
                       }
                     ]

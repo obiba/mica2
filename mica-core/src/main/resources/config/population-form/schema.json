@@ -58,6 +58,7 @@
         },
         "dataSources": {
           "type": "array",
+          "default": [],
           "items": {
             "type": "string",
             "enum": [
@@ -156,7 +157,7 @@
             "type": "object",
             "format": "localizedString"
           },
-          "title": "t(study.selection-criteria.ethnic-origin.label)"
+          "title": "t(study.selection-criteria.ethnic-origin)" 
         },
         "healthStatus": {
           "type": "array",
@@ -164,7 +165,7 @@
             "type": "object",
             "format": "localizedString"
           },
-          "title": "t(study.selection-criteria.health-status.label)"
+          "title": "t(study.selection-criteria.health-status)"
         },
         "criteria": {
           "type": "array",

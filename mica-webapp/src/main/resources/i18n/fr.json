@@ -465,14 +465,10 @@
       "age": "Âge",
       "country": "Pays",
       "territory": "Territoire",
-      "health-status": {
-          "array-add": "Ajouter un état de santé",
-          "label": "État de santé"
-      },
-      "ethnic-origin": {
-         "array-add": "Ajouter une origine ethnique",
-         "label": "Origine ethnique"
-      }
+      "ethnic-origin": "Origine ethnique",
+      "add-ethnic-origin": "Ajouter une origine ethnique",
+      "health-status": "État de santé",
+      "add-health-status": "Ajouter un état de santé"
     },
     "recruitment-sources": {
       "label": "Sources de recrutement",
