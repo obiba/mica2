@@ -182,7 +182,7 @@ mica.project
         $scope.roles = micaConfig.roles;
         $scope.openAccess = micaConfig.openAccess;
 
-        ProjectFormResource.get({ locale: $translate.use },
+        ProjectFormResource.get({ locale: $translate.use() },
           function onSuccess(projectForm) {
             $scope.form.definition = JsonUtils.parseJsonSafely(projectForm.definition, []);
             $scope.form.schema = JsonUtils.parseJsonSafely(projectForm.schema, {});
@@ -381,7 +381,7 @@ mica.project
           formLanguages[loc] = $filter('translate')('language.' + loc);
         });
         $scope.sfOptions = {formDefaults: { languages: formLanguages}};
-        ProjectFormResource.get({ locale: $translate.use },
+        ProjectFormResource.get({ locale: $translate.use() },
           function onSuccess(projectForm) {
             $scope.form.definition = JsonUtils.parseJsonSafely(projectForm.definition, []);
             $scope.form.schema = JsonUtils.parseJsonSafely(projectForm.schema, {});
