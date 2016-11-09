@@ -10,9 +10,6 @@
 
 'use strict';
 
-/* global PROJECT_SCHEMA */
-/* global PROJECT_DEFINITION */
-
 mica.project
 
   .constant('PROJECT_EVENTS', {
@@ -127,7 +124,6 @@ mica.project
     'DraftProjectRestoreRevisionResource',
     '$uibModal',
     'LocalizedValues',
-    'LocalizedSchemaFormService',
     '$filter',
     'DocumentPermissionsService',
 
@@ -154,7 +150,6 @@ mica.project
       DraftProjectRestoreRevisionResource,
       $uibModal,
       LocalizedValues,
-      LocalizedSchemaFormService,
       $filter,
       DocumentPermissionsService) {
 
@@ -163,10 +158,8 @@ mica.project
         $scope.permissions = DocumentPermissionsService.state(project['obiba.mica.EntityStateDto.projectState']);
         $scope.form.model = JsonUtils.parseJsonSafely(project.content, {});
         // project name/description is an array of map entries
-        $scope.form.model._mica = {
-          title: LocalizedValues.arrayToObject(project.title),
-          summary: LocalizedValues.arrayToObject(project.summary)
-        };
+        $scope.form.model._title = LocalizedValues.arrayToObject(project.title);
+        $scope.form.model._summary = LocalizedValues.arrayToObject(project.summary);
       };
 
       $scope.Mode = {View: 0, Revision: 1, File: 2, Permission: 3, Comment: 4};
@@ -189,15 +182,11 @@ mica.project
         $scope.roles = micaConfig.roles;
         $scope.openAccess = micaConfig.openAccess;
 
-        ProjectFormResource.get(
+        ProjectFormResource.get({ locale: $translate.use() },
           function onSuccess(projectForm) {
-            var definition = JsonUtils.parseJsonSafely(projectForm.definition, []);
-            definition.unshift(angular.copy(PROJECT_DEFINITION));
-            $scope.form.definition = LocalizedSchemaFormService.translate(definition);
-            var schema = JsonUtils.parseJsonSafely(projectForm.schema, {});
-            schema.properties._mica = angular.copy(PROJECT_SCHEMA);
-            schema.readonly = true;
-            $scope.form.schema = LocalizedSchemaFormService.translate(schema);
+            $scope.form.definition = JsonUtils.parseJsonSafely(projectForm.definition, []);
+            $scope.form.schema = JsonUtils.parseJsonSafely(projectForm.schema, {});
+            $scope.form.schema.readonly = true;
           });
       });
 
@@ -339,6 +328,7 @@ mica.project
     '$log',
     '$locale',
     '$location',
+    '$translate',
     '$filter',
     'DraftProjectResource',
     'DraftProjectsResource',
@@ -346,7 +336,6 @@ mica.project
     'MicaConfigResource',
     'ProjectFormResource',
     'LocalizedValues',
-    'LocalizedSchemaFormService',
     'JsonUtils',
     'FormServerValidation',
     'FormDirtyStateObserver',
@@ -356,6 +345,7 @@ mica.project
               $log,
               $locale,
               $location,
+              $translate,
               $filter,
               DraftProjectResource,
               DraftProjectsResource,
@@ -363,7 +353,6 @@ mica.project
               MicaConfigResource,
               ProjectFormResource,
               LocalizedValues,
-              LocalizedSchemaFormService,
               JsonUtils,
               FormServerValidation,
               FormDirtyStateObserver) {
@@ -376,10 +365,8 @@ mica.project
           $scope.files = response.logo ? [response.logo] : [];
           $scope.form.model = JsonUtils.parseJsonSafely(response.content, {});
           // project name/description is an array of map entries
-          $scope.form.model._mica = {
-            title: LocalizedValues.arrayToObject(response.title),
-            summary: LocalizedValues.arrayToObject(response.summary)
-          };
+          $scope.form.model._title = LocalizedValues.arrayToObject(response.title);
+          $scope.form.model._summary = LocalizedValues.arrayToObject(response.summary);
           return response;
         }) : {published: false};
 
@@ -394,14 +381,10 @@ mica.project
           formLanguages[loc] = $filter('translate')('language.' + loc);
         });
         $scope.sfOptions = {formDefaults: { languages: formLanguages}};
-        ProjectFormResource.get(
+        ProjectFormResource.get({ locale: $translate.use() },
           function onSuccess(projectForm) {
-            var definition = JsonUtils.parseJsonSafely(projectForm.definition, []);
-            definition.unshift(angular.copy(PROJECT_DEFINITION));
-            $scope.form.definition = LocalizedSchemaFormService.translate(definition);
-            var schema = JsonUtils.parseJsonSafely(projectForm.schema, {});
-            schema.properties._mica = angular.copy(PROJECT_SCHEMA);
-            $scope.form.schema = LocalizedSchemaFormService.translate(schema);
+            $scope.form.definition = JsonUtils.parseJsonSafely(projectForm.definition, []);
+            $scope.form.schema = JsonUtils.parseJsonSafely(projectForm.schema, {});
             if (!$routeParams.id) {
               $scope.form.model = {};
             }
@@ -411,11 +394,12 @@ mica.project
       $scope.save = function () {
         $scope.$broadcast('schemaFormValidate');
         if ($scope.form.$valid) {
-          $scope.project.title = LocalizedValues.objectToArray($scope.languages, $scope.form.model._mica.title);
-          $scope.project.summary = LocalizedValues.objectToArray($scope.languages, $scope.form.model._mica.summary);
-          // make a copy of the model to avoid validation errors after _mica object was removed.
+          $scope.project.title = LocalizedValues.objectToArray($scope.languages, $scope.form.model._title);
+          $scope.project.summary = LocalizedValues.objectToArray($scope.languages, $scope.form.model._summary);
+          // make a copy of the model to avoid validation errors after mandatory fields were removed.
           var model = angular.copy($scope.form.model);
-          delete model._mica;
+          delete model._title;
+          delete model._summary;
           $scope.project.content = JSON.stringify(model);
           if ($scope.project.id) {
             updateProject();

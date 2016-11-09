@@ -55,7 +55,7 @@ public abstract class EntityConfigResource<T extends EntityConfig, U> {
       throw NoSuchEntityException.withPath(EntityConfig.class, uriInfo.getPath());
 
     T config = optionalConfig.get();
-    entityConfigTranslator.translateSchema(locale, config);
+    entityConfigTranslator.translateSchemaForm(locale, config);
 
     return asDto(config);
   }

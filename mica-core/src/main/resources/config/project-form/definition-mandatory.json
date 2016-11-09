@@ -7,11 +7,11 @@
         "helpvalue": "t(research-project.main-section)"
       },
       {
-        "key": "_mica.title",
+        "key": "_title",
         "type": "localizedstring"
       },
       {
-        "key": "_mica.summary",
+        "key": "_summary",
         "type": "localizedstring",
         "rows": 5
       }

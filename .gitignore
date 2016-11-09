@@ -12,6 +12,7 @@ node_modules
 .DS_Store
 mica-webapp/src/main/webapp/dist
 mica-webapp/src/main/webapp/bower_components
+mica-webapp/src/main/webapp/styles/mica.css.map
 spring_loaded
 *.log
 .vagrant

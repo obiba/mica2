@@ -28,7 +28,14 @@ public class EntityConfigTranslator {
   @Autowired
   private MicaConfigService micaConfigService;
 
-  public <T extends EntityConfig> void translateSchema(String locale, T entityConfig) {
+  /**
+   * Translates both schema and definition JSON strings defined in the entity configuration.
+   *
+   * @param locale
+   * @param entityConfig
+   * @param <T>
+   */
+  public <T extends EntityConfig> void translateSchemaForm(String locale, T entityConfig) {
 
     if (StringUtils.isEmpty(locale))
       return;
@@ -36,7 +43,8 @@ public class EntityConfigTranslator {
     Translator translator = JsonTranslator.buildSafeTranslator(() -> micaConfigService.getTranslations(locale, false));
     translator = new PrefixedValueTranslator(translator);
 
-    String translated = new TranslationUtils().translate(entityConfig.getSchema(), translator);
-    entityConfig.setSchema(translated);
+    TranslationUtils translationUtils = new TranslationUtils();
+    entityConfig.setSchema(translationUtils.translate(entityConfig.getSchema(), translator));
+    entityConfig.setDefinition(translationUtils.translate(entityConfig.getDefinition(), translator));
   }
 }
