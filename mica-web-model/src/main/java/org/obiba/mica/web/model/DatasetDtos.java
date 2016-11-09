@@ -652,8 +652,10 @@ class DatasetDtos {
       dataset = harmonizationDataset;
     } else {
       StudyDataset studyDataset = new StudyDataset();
-      Mica.StudyDatasetDto ext = dto.getExtension(Mica.StudyDatasetDto.type);
-      studyDataset.setStudyTable(fromDto(ext.getStudyTable()));
+      if (dto.hasExtension(Mica.StudyDatasetDto.type)) {
+        Mica.StudyDatasetDto ext = dto.getExtension(Mica.StudyDatasetDto.type);
+        studyDataset.setStudyTable(fromDto(ext.getStudyTable()));
+      }
       dataset = studyDataset;
     }
     if(dto.hasId()) dataset.setId(dto.getId());

@@ -555,7 +555,7 @@
     "add": "Add Dataset",
     "details": "Dataset",
     "label-edit": "Edit Dataset",
-    "general-info": "General Information",
+    "general-info": "<h3>General Information</h3>",
     "description": "Description",
     "entity-type": "Entity Type",
     "study-dce": {

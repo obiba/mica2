@@ -233,8 +233,11 @@ public class StudyDatasetService extends DatasetService<StudyDataset, StudyDatas
 
   @Override
   public Iterable<DatasetVariable> getDatasetVariables(StudyDataset dataset) {
-    return StreamSupport.stream(getVariables(dataset).spliterator(), false)
-      .map(input -> new DatasetVariable(dataset, input)).collect(toList());
+    if (dataset.hasStudyTable()) {
+      return StreamSupport.stream(getVariables(dataset).spliterator(), false)
+          .map(input -> new DatasetVariable(dataset, input)).collect(toList());
+    }
+    return Lists.newArrayList();
   }
 
   @Override
@@ -320,16 +323,17 @@ public class StudyDatasetService extends DatasetService<StudyDataset, StudyDatas
   private void saveInternal(StudyDataset dataset, String comment) {
     StudyDataset saved = prepareSave(dataset);
 
-    Iterable<DatasetVariable> variables;
+    Iterable<DatasetVariable> variables = Lists.newArrayList();
 
-    try {
-      //getting variables first to fail fast when dataset is being published
-      variables = wrappedGetDatasetVariables(dataset);
-    } catch(DatasourceNotAvailableException | InvalidDatasetException e) {
-      if(e instanceof DatasourceNotAvailableException) {
-        log.warn("Datasource not available.", e);
+    if (saved.hasStudyTable()) {
+      try {
+        //getting variables first to fail fast when dataset is being published
+        variables = wrappedGetDatasetVariables(dataset);
+      } catch (DatasourceNotAvailableException | InvalidDatasetException e) {
+        if (e instanceof DatasourceNotAvailableException) {
+          log.warn("Datasource not available.", e);
+        }
       }
-      variables = Lists.newArrayList();
     }
 
     StudyDatasetState studyDatasetState = findEntityState(dataset, StudyDatasetState::new);

@@ -266,6 +266,13 @@ mica.dataset
       return tableWrappers;
     };
 
+    factory.setTable = function(dataset, newTable) {
+      if (!dataset['obiba.mica.StudyDatasetDto.type']) {
+        dataset['obiba.mica.StudyDatasetDto.type'] = {};
+      }
+      dataset['obiba.mica.StudyDatasetDto.type'].studyTable = newTable;
+    };
+
     factory.getTables = function getOpalTables(dataset) {
       tableWrappers = [];
 
@@ -325,9 +332,17 @@ mica.dataset
     return factory;
   }])
 
-  .service('DatasetModelService',[function() {
+  .service('DatasetModelService',['LocalizedValues', function(LocalizedValues) {
     this.serialize = function(dataset) {
       var datasetCopy = angular.copy(dataset);
+      datasetCopy.name = LocalizedValues.objectToArray(datasetCopy.model._name);
+      datasetCopy.acronym = LocalizedValues.objectToArray(datasetCopy.model._acronym);
+      datasetCopy.description = LocalizedValues.objectToArray(datasetCopy.model._description);
+      datasetCopy.entityType = datasetCopy.model._entityType;
+      delete datasetCopy.model._name;
+      delete datasetCopy.model._acronym;
+      delete datasetCopy.model._description;
+      delete datasetCopy.model._entityType;
       datasetCopy.content = datasetCopy.model ? angular.toJson(datasetCopy.model) : null;
       delete datasetCopy.model; // NOTICE: must be removed to avoid protobuf exception in dto.
       return angular.toJson(datasetCopy);
@@ -336,6 +351,10 @@ mica.dataset
     this.deserialize = function(data) {
       var dataset = angular.fromJson(data);
       dataset.model = dataset.content ? angular.fromJson(dataset.content) : {};
+      dataset.model._name = LocalizedValues.arrayToObject(dataset.name);
+      dataset.model._acronym = LocalizedValues.arrayToObject(dataset.acronym);
+      dataset.model._description = LocalizedValues.arrayToObject(dataset.description);
+      dataset.model._entityType = dataset.entityType;
       return dataset;
     };
 

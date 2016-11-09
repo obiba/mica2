@@ -394,8 +394,8 @@ mica.project
       $scope.save = function () {
         $scope.$broadcast('schemaFormValidate');
         if ($scope.form.$valid) {
-          $scope.project.title = LocalizedValues.objectToArray($scope.languages, $scope.form.model._title);
-          $scope.project.summary = LocalizedValues.objectToArray($scope.languages, $scope.form.model._summary);
+          $scope.project.title = LocalizedValues.objectToArray($scope.form.model._title, $scope.languages);
+          $scope.project.summary = LocalizedValues.objectToArray($scope.form.model._summary, $scope.languages);
           // make a copy of the model to avoid validation errors after mandatory fields were removed.
           var model = angular.copy($scope.form.model);
           delete model._title;
