@@ -156,7 +156,7 @@
             "type": "object",
             "format": "localizedString"
           },
-          "title": "t(study.selection-criteria.ethnic-origin)"
+          "title": "t(study.selection-criteria.ethnic-origin.label)"
         },
         "healthStatus": {
           "type": "array",
@@ -164,7 +164,7 @@
             "type": "object",
             "format": "localizedString"
           },
-          "title": "t(study.selection-criteria.health-status)"
+          "title": "t(study.selection-criteria.health-status.label)"
         },
         "criteria": {
           "type": "array",

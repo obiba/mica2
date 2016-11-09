@@ -59,7 +59,8 @@
         },
         "otherDesign": {
           "type": "object",
-          "format": "localizedString"
+          "format": "localizedString",
+          "title": "t(study.other-design)"
         },
         "followUpInfo": {
           "type": "object",
