@@ -1,18 +1,18 @@
 {
   "type": "object",
   "properties": {
-    "title": {
+    "_title": {
       "title": "t(research-project.title)",
       "type": "object",
       "format": "localizedString"
     },
-    "summary": {
+    "_summary": {
       "title": "t(research-project.summary)",
       "type": "object",
       "format": "localizedString"
     }
   },
   "required": [
-    "title"
+    "_title"
   ]
 }

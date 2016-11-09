@@ -15,7 +15,7 @@ mica.projectConfig
   .factory('ProjectFormResource', ['$resource',
     function ($resource) {
       return $resource('ws/config/project/form', {}, {
-        'get': {method: 'GET', errorHandler: true}
+        'get': {method: 'GET', params: {locale: '@locale'}, errorHandler: true}
       });
     }])
 
