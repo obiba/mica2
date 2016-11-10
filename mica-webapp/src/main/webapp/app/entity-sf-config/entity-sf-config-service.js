@@ -52,7 +52,16 @@ mica.entitySfConfig
 
         gotoFullScreen: function (id) {
           {
-            var view = document.getElementById(id);
+            var editors = document.querySelectorAll('#' + id);
+            var nav = document.querySelector('ul.nav.nav-pills').querySelectorAll('li');
+            var who = 0;
+            nav.forEach(function (n, i) {
+              if (n.className.indexOf('active') !== -1) {
+                who = i;
+              }
+            });
+
+            var view = editors[who];
 
             switch (BrowserDetector.detect()) {
               case 'ie':
