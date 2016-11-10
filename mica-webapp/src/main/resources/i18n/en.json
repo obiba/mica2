@@ -430,11 +430,13 @@
     "end-year": "End Year",
     "general-design": "General Design",
     "design": "Study Design",
+    "other-design": "Other design",
     "follow-up": "Follow Up",
-    "recruitment-target": "Recruitment target",
+    "recruitment-target": "Recruitment Target",
     "access": {
       "label": "Access",
-      "for": "Access to external researchers or third parties provided or foreseen for"
+      "for": "Access to external researchers or third parties provided or foreseen for",
+      "other": "Other access"
     },
     "marker-paper": "Marker Paper",
     "pubmed-id": "Pubmed ID",
@@ -473,14 +475,14 @@
       "add-health-status": "Add Health Status"
     },
     "recruitment-sources": {
-      "label": "Sources of recruitment",
+      "label": "Sources of Recruitment",
       "general-population": "General Population",
       "specific-population": "Specific Population",
       "studies": "Participants from existing studies",
-      "add-study": "Add study",
+      "add-study": "Add Study",
       "other": "Other sources",
       "other-specific-population": "Other specific population",
-      "info": "Supplementary information"
+      "info": "Supplementary Information"
     },
     "data-collection-event": "Data Collection Event",
     "data-collection-events": "Data Collection Events",
@@ -629,14 +631,14 @@
     "label-edit": "Edit Population",
     "id": "ID",
     "name": "Name",
-    "info": "Supplementary information",
+    "info": "Supplementary Information",
     "description": "Description",
     "gender": "Gender",
     "ageMin": "Minimum age",
     "ageMax": "Maximum age",
     "otherCriteria": "Other criteria",
-    "add-health-status-help": "Add health status",
-    "add-ethnic-origin-help": "Add ethnic origin",
+    "add-health-status-help": "Add Health Status",
+    "add-ethnic-origin-help": "Add Ethnic Origin",
     "add-data-collection-event": "Add Data Collection Event",
     "countries": "Countries ISO",
     "numberOfParticipants-noLimit": "No limit",
@@ -839,7 +841,7 @@
       "others": "Others",
       "design": "Study design",
       "participants": "Participants",
-      "other-design": "Other Design"
+      "other-design": "Other design"
     },
     "dataset": {
       "facet-label": "Dataset",
@@ -949,7 +951,7 @@
   "file-selected": "file selected",
   "form": "Form",
   "settings": "Settings",
-  "other-settings": "Other Settings",
+  "other-settings": "Other settings",
   "revisions": "Revisions",
   "revision": "Revision",
   "revision-date": "Revision Date",

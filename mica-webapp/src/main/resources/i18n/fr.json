@@ -429,11 +429,13 @@
     "end-year": "Année de fin",
     "general-design": "Conception générale",
     "design": "Conception de l'étude",
+    "other-design": "Autre conception",
     "follow-up": "Suivi",
     "recruitment-target": "Cible de recrutement",
     "access": {
       "label": "Accès",
-      "for": "Accès à des chercheurs externes ou des tiers fournis ou prévus."
+      "for": "Accès à des chercheurs externes ou des tiers fournis ou prévus.",
+      "other": "Other access"
     },
     "marker-paper": "Marker Paper",
     "pubmed-id": "ID de Pubmed",
@@ -442,17 +444,17 @@
     "timeline": "Chronologie de l'étude",
     "population": "Population",
     "populations": "Populations",
-    "maelstromAuthorization": "Maelstrom authorization",
-    "specificAuthorization": "Specific authorization",
+    "maelstromAuthorization": "Authorisation Maelstrom",
+    "specificAuthorization": "Authorisation spécifique",
     "authorization": {
       "label": "Autorisation",
       "authorized": {
         "true": "Autorisé",
         "false": "Non autorisé"
       },
-      "maelstrom": "Authorization from contributors to the Maelstrom catalogues",
-      "specific": "Authorization from contributors to the [specific network] catalogues",
-      "authorizer": "Authorizer",
+      "maelstrom": "Authorisation du collaborateur aux catalogues Maelstrom",
+      "specific": "Authorisation du collaborateur aux catalogues de [réseau spécifique]",
+      "authorizer": "Authorisateur",
       "date": "Date"
     },
     "selection-criteria": {
