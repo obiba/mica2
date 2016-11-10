@@ -408,12 +408,10 @@ mica.config
 
     }])
   .controller('MicaConfigTranslationsEditController', ['$scope', '$q', '$resource', '$window', '$location', '$log', '$uibModal',
-    'MicaConfigResource', 'FormServerValidation', 'TranslationsResource', 'CustomTranslationsResource',
-    function ($scope, $q, $resource, $window, $location, $log, $uibModal, MicaConfigResource, FormServerValidation, TranslationsResource, CustomTranslationsResource) {
+    'MicaConfigResource', 'FormServerValidation', 'TranslationsResource',
+    function ($scope, $q, $resource, $window, $location, $log, $uibModal, MicaConfigResource, FormServerValidation, TranslationsResource) {
       var updates = {}, oldTranslations = {};
-      $scope.reader = new FileReader();
       $scope.micaConfig = MicaConfigResource.get();
-      $scope.importedFile = null;
       $scope.micaConfig.$promise.then(function() {
         var defaults = {};
         $scope.translations = {};
@@ -425,25 +423,18 @@ mica.config
           return {lang: lang};
         });
 
-        $scope.onFileSelect = function (file) {
-          // Compatible with ie 10+, ie9 has a File API Lab
-          if (file) {
-            $scope.file = file;
-            $scope.reader.readAsText(file, 'utf-8');
-
-            $scope.reader.onload = function (e) {
-              $scope.file.content = e.target.result;
-            };
-          }
-        };
-
         $scope.import = function () {
 
-          if ($scope.reader.readyState === 2) {
-            CustomTranslationsResource.import({merge: true}, $scope.file.content, function () {
+          var modal = $uibModal.open({
+            templateUrl: 'app/config/views/config-modal-custom-translations-import.html',
+            controller: 'CustomTranslationsImportController'
+          });
+
+          modal.result.then(function (isDone) {
+            if (isDone) {
               $window.location.reload();
-            });
-          }
+            }
+          });
         };
 
         $q.all(defaults).then(function(res) {
@@ -611,6 +602,37 @@ mica.config
 
       $scope.accept = function () {
         $uibModalInstance.close($scope.entry);
+      };
+
+      $scope.cancel = function () {
+        $uibModalInstance.dismiss();
+      };
+    }])
+
+  .controller('CustomTranslationsImportController', ['$scope', '$uibModalInstance', 'CustomTranslationsResource',
+    function ($scope, $uibModalInstance,CustomTranslationsResource ) {
+
+      $scope.reader = new FileReader();
+
+      $scope.onFileSelect = function (file) {
+        // Compatible with ie 10+, ie9 has a File API Lab
+        if (file) {
+          $scope.file = file;
+          $scope.reader.readAsText(file, 'utf-8');
+
+          $scope.reader.onload = function (e) {
+            $scope.file.content = e.target.result;
+          };
+        }
+      };
+
+      $scope.import = function () {
+
+        if ($scope.reader.readyState === 2) {
+          CustomTranslationsResource.import({merge: true}, $scope.file.content, function () {
+            $uibModalInstance.close('done');
+          });
+        }
       };
 
       $scope.cancel = function () {

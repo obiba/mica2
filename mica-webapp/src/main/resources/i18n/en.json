@@ -357,11 +357,12 @@
       "value": "Value",
       "info": "Override the default translations or add new ones.",
       "add": "Add Translation",
+      "add-entry": "Add Entry",
       "new": {
         "title": "New Translation Entry"
       },
       "import": {
-        "label": "Import",
+        "label": "Import Translations",
         "help": "Use the json format to import custom translations."
       },
       "export-json": {
