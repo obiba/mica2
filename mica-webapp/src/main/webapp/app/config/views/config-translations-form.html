@@ -19,9 +19,21 @@
 
   <div class="row voffset2">
     <div class="col-xs-4">
-      <a href class="btn btn-info" ng-click="add()">
-        <i class="fa fa-plus"></i> {{'config.translations.add' | translate}}
-      </a>
+      <div class="dropdown">
+        <button class="btn btn-info dropdown-toggle" type="button"
+                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" id="addTranslationMenu">
+          <i class="fa fa-plus"></i> {{'config.translations.add' | translate}} <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="addTranslationMenu">
+          <li>
+            <a href ng-click="add()">{{'config.translations.add-entry' | translate}}</a>
+          </li>
+          <li>
+            <a ng-click="import()" translate>config.translations.import.label</a>
+          </li>
+        </ul>
+      </div>
+
     </div>
     <div class="col-xs-8">
       <div class="dropdown pull-right">
@@ -38,28 +50,6 @@
           </li>
         </ul>
       </div>
-    </div>
-  </div>
-
-  <div class="row voffset2">
-    <div class="col-xs-4">
-      <div class="pull-left">
-        <button type="button" class="btn btn-primary btn-xs"
-                aria-hidden="true" ngf-multiple="false" ngf-select
-                ngf-change="onFileSelect($file)" translate>file.upload.button
-        </button>
-        <table ng-if="file">
-          <tbody>
-          <tr>
-            <td>{{file.name}}</td>
-            <td>&nbsp;</td>
-            <td>{{file.size | bytes}}</td>
-          </tr>
-          </tbody>
-        </table>
-      </div>
-        <button ng-show="reader.readyState === 2" type="button" class="btn btn-default pull-right"
-                ng-click="import()" title="{{'config.translations.import.help' | translate}}"><i class="fa fa-plus"></i> {{'config.translations.import.label' | translate}}</button>
     </div>
   </div>
 

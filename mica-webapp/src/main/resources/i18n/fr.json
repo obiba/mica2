@@ -356,11 +356,12 @@
       "value": "Valeur",
       "info": "Remplacer les traductions par défaut ou ajouter de nouvelles traductions.",
       "add": "Ajouter une traduction",
+      "add-entry": "Ajouter une entrée de traduction",
       "new": {
         "title": "Nouvelle traduction"
       },
       "import": {
-        "label": "Importer",
+        "label": "Importer vos traductions",
         "help": "Utiliser le format json pour importer vos traductions."
       },
       "export-json": {
