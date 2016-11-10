@@ -789,11 +789,12 @@ message ProjectFormDto {
 
 message EntityFormDto {
   enum Type {
-    Dataset = 1;
-    Network = 2;
-    Study = 3;
-    Population=4;
-    DataCollectionEvent = 5;
+    Network = 1;
+    Study = 2;
+    Population = 3;
+    DataCollectionEvent = 4;
+    StudyDataset = 5;
+    HarmonizationDataset = 6;
   }
 
   required Type type = 1;

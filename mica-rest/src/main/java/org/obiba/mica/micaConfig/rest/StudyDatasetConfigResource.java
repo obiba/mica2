@@ -10,41 +10,41 @@
 
 package org.obiba.mica.micaConfig.rest;
 
-import javax.inject.Inject;
-import javax.ws.rs.Path;
-
-import org.obiba.mica.micaConfig.domain.DatasetConfig;
-import org.obiba.mica.micaConfig.service.DatasetConfigService;
+import org.obiba.mica.micaConfig.domain.StudyDatasetConfig;
+import org.obiba.mica.micaConfig.service.StudyDatasetConfigService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.springframework.stereotype.Component;
 
+import javax.inject.Inject;
+import javax.ws.rs.Path;
+
 @Component
-@Path("/config/" + DatasetConfigResource.TARGET_NAME)
-public class DatasetConfigResource
-  extends EntityConfigResource<DatasetConfig, Mica.EntityFormDto>
+@Path("/config/" + StudyDatasetConfigResource.TARGET_NAME)
+public class StudyDatasetConfigResource
+  extends EntityConfigResource<StudyDatasetConfig, Mica.EntityFormDto>
   implements PermissionAwareResource {
 
-  static final String TARGET_NAME = "dataset";
+  static final String TARGET_NAME = "study-dataset";
 
   @Inject
-  DatasetConfigService datasetConfigService;
+  StudyDatasetConfigService datasetConfigService;
 
   @Inject
   Dtos dtos;
 
   @Override
-  protected Mica.EntityFormDto asDto(DatasetConfig datasetConfig) {
+  protected Mica.EntityFormDto asDto(StudyDatasetConfig datasetConfig) {
     return dtos.asDto(datasetConfig);
   }
 
   @Override
-  protected DatasetConfig fromDto(Mica.EntityFormDto dto) {
+  protected StudyDatasetConfig fromDto(Mica.EntityFormDto dto) {
     return dtos.fromDto(dto);
   }
 
   @Override
-  protected DatasetConfigService getConfigService() {
+  protected StudyDatasetConfigService getConfigService() {
     return datasetConfigService;
   }
 

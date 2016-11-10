@@ -20,16 +20,7 @@ import javax.validation.constraints.NotNull;
 import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.micaConfig.AuthType;
 import org.obiba.mica.micaConfig.PdfDownloadType;
-import org.obiba.mica.micaConfig.domain.DataAccessForm;
-import org.obiba.mica.micaConfig.domain.DataCollectionEventConfig;
-import org.obiba.mica.micaConfig.domain.DatasetConfig;
-import org.obiba.mica.micaConfig.domain.EntityConfig;
-import org.obiba.mica.micaConfig.domain.MicaConfig;
-import org.obiba.mica.micaConfig.domain.NetworkConfig;
-import org.obiba.mica.micaConfig.domain.OpalCredential;
-import org.obiba.mica.micaConfig.domain.PopulationConfig;
-import org.obiba.mica.micaConfig.domain.ProjectConfig;
-import org.obiba.mica.micaConfig.domain.StudyConfig;
+import org.obiba.mica.micaConfig.domain.*;
 import org.springframework.stereotype.Component;
 
 import com.google.common.base.Strings;
@@ -311,8 +302,11 @@ class MicaConfigDtos {
       case Population:
         config = new PopulationConfig();
         break;
-      case Dataset:
-        config = new DatasetConfig();
+      case StudyDataset:
+        config = new StudyDatasetConfig();
+        break;
+      case HarmonizationDataset:
+        config = new HarmonizationDatasetConfig();
         break;
     }
 
@@ -328,7 +322,8 @@ class MicaConfigDtos {
 
   @NotNull
   Mica.EntityFormDto asDto(@NotNull DatasetConfig datasetConfig) {
-    return asDto(datasetConfig, Mica.EntityFormDto.Type.Dataset);
+    return asDto(datasetConfig, datasetConfig instanceof StudyDatasetConfig ?
+        Mica.EntityFormDto.Type.StudyDataset : Mica.EntityFormDto.Type.HarmonizationDataset);
   }
 
   @NotNull
