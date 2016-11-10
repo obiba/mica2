@@ -490,7 +490,11 @@ mica.dataset
             controller: controllerName,
             resolve: {
               table: function() {
-                return angular.isDefined(wrapper) ? wrapper.table : {weight: $scope.opalTables ? $scope.opalTables.length : 0};
+                if($scope.type === 'harmonization-dataset') {
+                  return angular.isDefined(wrapper) ? wrapper.table : {weight: $scope.opalTables ? $scope.opalTables.length : 0};
+                } else {
+                  return angular.isDefined($scope.dataset['obiba.mica.StudyDatasetDto.type']) ? $scope.dataset['obiba.mica.StudyDatasetDto.type'].studyTable : {};
+                }
               }
             }
           })
@@ -562,8 +566,12 @@ mica.dataset
           };
 
         } else {
-          $scope.addStudyTable = function () {
+          $scope.editStudyTable = function () {
             addUpdateOpalTable(mica.dataset.OPAL_TABLE_TYPES.STUDY_TABLE);
+          };
+          $scope.deleteStudyTable = function () {
+            delete $scope.dataset['obiba.mica.StudyDatasetDto.type'];
+            saveAndUpdateDataset();
           };
         }
       };
@@ -968,21 +976,20 @@ mica.dataset
     'DraftNetworksResource',
     'DraftNetworkProjectsResource',
     'table',
-    'tab',
     function ($scope,
               $uibModalInstance,
               $log,
               MicaConfigResource,
               DraftNetworksResource,
               DraftNetworkProjectsResource,
-              table,
-              tab) {
+              table) {
 
       $scope.networks = [];
       $scope.projects = [];
       $scope.selected = {};
       $scope.table = $.extend(true, {}, table);
-      $scope.tab = tab;
+      // multilang support to be added...
+      $scope.tab = { lang: 'en'};
       $scope.type = mica.dataset.OPAL_TABLE_TYPES.NETWORK_TABLE;
 
       if (table && table !== {}) {
