@@ -362,8 +362,9 @@
         "title": "New Translation Entry"
       },
       "import": {
-        "label": "Import Translations",
-        "help": "Use the json format to import custom translations."
+        "title": "Import Translations",
+        "label": "Import",
+        "help": "Use the JSON format to import custom translations."
       },
       "export-json": {
         "label": "JSON (all languages)",

@@ -361,8 +361,9 @@
         "title": "Nouvelle traduction"
       },
       "import": {
-        "label": "Importer vos traductions",
-        "help": "Utiliser le format json pour importer vos traductions."
+        "title": "Importer vos traductions",
+        "label": "Importer",
+        "help": "Utiliser le format JSON pour importer vos traductions."
       },
       "export-json": {
         "label": "JSON (toutes langues)",
