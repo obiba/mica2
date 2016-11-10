@@ -10,6 +10,9 @@
 
 'use strict';
 
+/* global OPAL_TABLE_SCHEMA */
+/* global OPAL_TABLE_DEFINITION */
+
 mica.dataset.OPAL_TABLE_TYPES = {STUDY_TABLE: 'studyTable', NETWORK_TABLE: 'networkTable'};
 
 mica.dataset
@@ -871,25 +874,45 @@ mica.dataset
     '$scope',
     '$uibModalInstance',
     '$log',
+    '$filter',
     'MicaConfigResource',
     'StudyStatesResource',
     'StudyStateProjectsResource',
+    'LocalizedValues',
+    'LocalizedSchemaFormService',
     'table',
     function ($scope,
               $uibModalInstance,
               $log,
+              $filter,
               MicaConfigResource,
               StudyStatesResource,
               StudyStateProjectsResource,
+              LocalizedValues,
+              LocalizedSchemaFormService,
               table) {
 
       $scope.studies = [];
       $scope.projects = [];
       $scope.selected = {};
-      $scope.table = $.extend(true, {}, table);
       $scope.type = mica.dataset.OPAL_TABLE_TYPES.STUDY_TABLE;
-      // multilang support to be added...
-      $scope.tab = { lang: 'en'};
+      $scope.table = $.extend(true, {}, table);
+      $scope.table.model = {
+        name: LocalizedValues.arrayToObject(table.name),
+        description: LocalizedValues.arrayToObject(table.description)
+      };
+
+      MicaConfigResource.get(function (micaConfig) {
+        var formLanguages = {};
+        micaConfig.languages.forEach(function(loc) {
+          formLanguages[loc] = $filter('translate')('language.' + loc);
+        });
+        $scope.sfOptions = {formDefaults: { languages: formLanguages}};
+        $scope.sfForm = {
+          schema: LocalizedSchemaFormService.translate(OPAL_TABLE_SCHEMA),
+          definition: LocalizedSchemaFormService.translate(OPAL_TABLE_DEFINITION)
+        };
+      });
 
       if (table && table !== {}) {
         $scope.selected.study = {
@@ -954,6 +977,10 @@ mica.dataset
             table: $scope.selected.project.table
           });
 
+          $scope.table.name = LocalizedValues.objectToArray($scope.table.model.name);
+          $scope.table.description = LocalizedValues.objectToArray($scope.table.model.description);
+          delete $scope.table.model;
+
           $uibModalInstance.close($scope.table);
           return;
         }
@@ -972,25 +999,45 @@ mica.dataset
     '$scope',
     '$uibModalInstance',
     '$log',
+    '$filter',
     'MicaConfigResource',
     'DraftNetworksResource',
     'DraftNetworkProjectsResource',
+    'LocalizedValues',
+    'LocalizedSchemaFormService',
     'table',
     function ($scope,
               $uibModalInstance,
               $log,
+              $filter,
               MicaConfigResource,
               DraftNetworksResource,
               DraftNetworkProjectsResource,
+              LocalizedValues,
+              LocalizedSchemaFormService,
               table) {
 
       $scope.networks = [];
       $scope.projects = [];
       $scope.selected = {};
-      $scope.table = $.extend(true, {}, table);
-      // multilang support to be added...
-      $scope.tab = { lang: 'en'};
       $scope.type = mica.dataset.OPAL_TABLE_TYPES.NETWORK_TABLE;
+      $scope.table = $.extend(true, {}, table);
+      $scope.table.model = {
+        name: LocalizedValues.arrayToObject(table.name),
+        description: LocalizedValues.arrayToObject(table.description)
+      };
+
+      MicaConfigResource.get(function (micaConfig) {
+        var formLanguages = {};
+        micaConfig.languages.forEach(function(loc) {
+          formLanguages[loc] = $filter('translate')('language.' + loc);
+        });
+        $scope.sfOptions = {formDefaults: { languages: formLanguages}};
+        $scope.sfForm = {
+          schema: LocalizedSchemaFormService.translate(OPAL_TABLE_SCHEMA),
+          definition: LocalizedSchemaFormService.translate(OPAL_TABLE_DEFINITION)
+        };
+      });
 
       if (table && table !== {}) {
         $scope.selected.network = {
@@ -1037,6 +1084,10 @@ mica.dataset
             project: $scope.selected.project.name,
             table: $scope.selected.project.table
           });
+
+          $scope.table.name = LocalizedValues.objectToArray($scope.table.model.name);
+          $scope.table.description = LocalizedValues.objectToArray($scope.table.model.description);
+          delete $scope.table.model;
 
           $uibModalInstance.close($scope.table);
           return;
