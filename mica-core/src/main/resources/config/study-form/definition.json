@@ -70,8 +70,24 @@
                     "type": "localizedstring"
                   },
                   "methods.info",
-                  "methods.recruitments",
-                  "methods.otherRecruitment"
+                  {
+                    "type": "help",
+                    "helpvalue": "<h4>t(study.recruitment-sources.label)</h4>"
+                  },
+                  {
+                    "key": "methods.recruitments",
+                    "notitle": true
+                  },
+                  {
+                    "type": "section",
+                    "htmlClass": "hoffset3",
+                    "items": [
+                      {
+                        "key": "methods.otherRecruitment",
+                        "condition": "model.methods.recruitments.indexOf(\"other\")>=0"
+                      }
+                    ]
+                  }
                 ]
               }
             ]
@@ -81,7 +97,12 @@
             "htmlClass": "col-xs-6",
             "items": [
               {
+                "type": "help",
+                "helpvalue": "<h4>t(numberOfParticipants.label)</h4>"
+              },
+              {
                 "key": "numberOfParticipants",
+                "notitle": true,
                 "items": [
                   {
                     "key": "numberOfParticipants.participant",
@@ -108,11 +129,25 @@
             "type": "section",
             "htmlClass": "col-xs-6",
             "items": [
-              "access",
               {
-                "key": "otherAccess",
-                "type": "localizedstring",
-                "rows": 2
+                "type": "help",
+                "helpvalue": "<h3>t(study.access.label)</h3><p class='help-block'>t(study.access.for)</p>"
+              },
+              {
+                "key": "access",
+                "notitle": true
+              },
+              {
+                "type": "section",
+                "htmlClass": "hoffset3",
+                "items": [
+                  {
+                    "key": "otherAccess",
+                    "type": "localizedstring",
+                    "rows": 2,
+                    "condition": "model.access.indexOf(\"other\")>=0"
+                  }
+                ]
               }
             ]
           },
@@ -121,56 +156,15 @@
             "htmlClass": "col-xs-6",
             "items": [
               {
+                "type": "help",
+                "helpvalue": "<h3>t(study.marker-paper)</h3>"
+              },
+              {
                 "key": "markerPaper",
-                "type": "textarea"
+                "type": "textarea",
+                "notitle": true
               },
               "pubmedId"
-            ]
-          }
-        ]
-      },
-      {
-        "type": "section",
-        "htmlClass": "row",
-        "items": [
-          {
-            "type": "section",
-            "htmlClass": "col-xs-6",
-            "items": [
-              {
-                "key": "maelstromAuthorization",
-                "items": [
-                  "maelstromAuthorization.authorized",
-                  {
-                    "key": "maelstromAuthorization.authorizer",
-                    "condition": "model.maelstromAuthorization.authorized"
-                  },
-                  {
-                    "key": "maelstromAuthorization.date",
-                    "condition": "model.maelstromAuthorization.authorized",
-                    "dateOptions": {
-                      "dateFormat": "yyyy-MM-dd"
-                    }
-                  }
-                ]
-              },
-              {
-                "key": "specificAuthorization",
-                "items": [
-                  "specificAuthorization.authorized",
-                  {
-                    "key": "specificAuthorization.authorizer",
-                    "condition": "model.specificAuthorization.authorized"
-                  },
-                  {
-                    "key": "specificAuthorization.date",
-                    "condition": "model.specificAuthorization.authorized",
-                    "dateOptions": {
-                      "dateFormat": "yyyy-MM-dd"
-                    }
-                  }
-                ]
-              }
             ]
           }
         ]

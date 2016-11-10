@@ -5,44 +5,6 @@
       "title": "t(website)",
       "type": "string"
     },
-    "maelstromAuthorization": {
-      "type": "object",
-      "properties": {
-        "authorized": {
-          "type": "boolean",
-          "title": "t(study.authorization.maelstrom)"
-        },
-        "authorizer": {
-          "type": "string",
-          "title": "t(authorizer)"
-        },
-        "date": {
-          "type": "string",
-          "format": "datepicker",
-          "title": "t(study.authorization.date)"
-        }
-      },
-      "title": "t(study.maelstromAuthorization)"
-    },
-    "specificAuthorization": {
-      "type": "object",
-      "properties": {
-        "authorized": {
-          "type": "boolean",
-          "title": "t(study.authorization.specific)"
-        },
-        "authorizer": {
-          "type": "string",
-          "title": "t(authorizer)"
-        },
-        "date": {
-          "type": "string",
-          "format": "datepicker",
-          "title": "t(study.authorization.date)"
-        }
-      },
-      "title": "t(study.specificAuthorization)"
-    },
     "methods": {
       "type": "object",
       "properties": {
@@ -98,26 +60,26 @@
         "participant": {
           "type": "object",
           "properties": {
-            "noLimit": {
-              "type": "boolean",
-              "title": "t(numberOfParticipants.no-limit)"
-            },
             "number": {
               "type": "number",
               "title": "t(numberOfParticipants.participants)"
+            },
+            "noLimit": {
+              "type": "boolean",
+              "title": "t(numberOfParticipants.no-limit)"
             }
           }
         },
         "sample": {
           "type": "object",
           "properties": {
-            "noLimit": {
-              "type": "boolean",
-              "title": "t(numberOfParticipants.no-limit)"
-            },
             "number": {
               "type": "number",
               "title": "t(numberOfParticipants.sample)"
+            },
+            "noLimit": {
+              "type": "boolean",
+              "title": "t(numberOfParticipants.no-limit)"
             }
           }
         },
@@ -152,7 +114,7 @@
     "otherAccess": {
       "type": "object",
       "format": "localizedString",
-      "title": "t(other)"
+      "title": "t(study.access.other)"
     },
     "markerPaper": {
       "type": "string",
