@@ -24,7 +24,7 @@
       </table>
       <div ng-if="micaConfig.isNetworkEnabled">
         <h3 translate ng-show="datasetNetwork">dataset.network.title</h3>
-        <p class="help-block" translate>dataset.network.info</p>
+        <p class="help-block" ng-show="datasetNetwork" translate>dataset.network.info</p>
         <table class="table table-bordered table-striped" ng-show="datasetNetwork">
           <tbody>
           <tr>
