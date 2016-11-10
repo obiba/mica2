@@ -10,21 +10,21 @@
 
 package org.obiba.mica.micaConfig.service;
 
-import org.obiba.mica.micaConfig.domain.DatasetConfig;
-import org.obiba.mica.micaConfig.repository.DatasetConfigRepository;
+import org.obiba.mica.micaConfig.domain.HarmonizationDatasetConfig;
+import org.obiba.mica.micaConfig.repository.HarmonizationDatasetConfigRepository;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 
 @Component
-public class DatasetConfigService extends EntityConfigService<DatasetConfig> {
+public class HarmonizationDatasetConfigService extends EntityConfigService<HarmonizationDatasetConfig> {
 
   @Inject
-  DatasetConfigRepository datasetConfigRepository;
+  HarmonizationDatasetConfigRepository datasetConfigRepository;
 
   @Override
-  protected MongoRepository<DatasetConfig, String> getRepository() {
+  protected MongoRepository<HarmonizationDatasetConfig, String> getRepository() {
     return datasetConfigRepository;
   }
 
@@ -34,8 +34,8 @@ public class DatasetConfigService extends EntityConfigService<DatasetConfig> {
   }
 
   @Override
-  protected DatasetConfig createEmptyForm() {
-    return new DatasetConfig();
+  protected HarmonizationDatasetConfig createEmptyForm() {
+    return new HarmonizationDatasetConfig();
   }
 
   @Override

@@ -10,6 +10,9 @@
 
 package org.obiba.mica.micaConfig.domain;
 
-public abstract class DatasetConfig extends EntityConfig {
-
+public class StudyDatasetConfig extends DatasetConfig {
+  @Override
+  public String pathPrefix() {
+    return "study-dataset-config";
+  }
 }

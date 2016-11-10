@@ -58,7 +58,9 @@ mica.entityConfig
               EntityFormAccessesResource) {
       var FORMS = {'network': ['network'],
         'study': ['study', 'population', 'data-collection-event'],
-        'dataset': ['dataset']};
+        'study-dataset': ['study-dataset'],
+        'harmonization-dataset': ['harmonization-dataset']
+      };
 
       function mapTargetTypeToId(type) {
         switch (type) {
@@ -68,7 +70,8 @@ mica.entityConfig
             return 'populations';
           case 'DataCollectionEvent':
             return 'dataCollectionEvents';
-          case 'Dataset':
+          case 'StudyDataset':
+          case 'HarmonizationDataset':
             return 'datasets';
           case 'Network':
             return 'Networks';
@@ -78,8 +81,8 @@ mica.entityConfig
       }
 
       function initializeScopeTargets() {
-        $scope.target = $routeParams.type.match(/(\w+)\-config/)[1];
-        var names = $scope.target === 'dataset' ? [$scope.target, 'variable'] : [$scope.target];
+        $scope.target = $routeParams.type.match(/([\w-]+)\-config/)[1];
+        var names = $scope.target.endsWith('dataset') ? ['dataset', 'variable'] : [$scope.target];
         $scope.taxonomyTargets = names.map(function(name){
           return {name: name, editable: 'variable' !== name};
         });

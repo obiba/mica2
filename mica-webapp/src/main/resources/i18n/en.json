@@ -1000,7 +1000,8 @@
       "indexing": "Manage server indices.",
       "network-config": "Configure network form.",
       "study-config": "Configure study form.",
-      "dataset-config": "Configure dataset form.",
+      "study-dataset-config": "Configure study dataset form.",
+      "harmonization-dataset-config": "Configure harmonization dataset form.",
       "data-access-config": "Configure Data Access Request form.",
       "project-config": "Configure Research Project form.",
       "file-system": "Manage file system.",
@@ -1222,15 +1223,45 @@
       "message": "Are you sure you want to delete the {{arg0}} '{{arg1}}'?"
     }
   },
-  "dataset-config" : {
-    "title" : "Dataset Configuration",
+  "study-dataset-config" : {
+    "title" : "Study Dataset Configuration",
     "schema-form": {
       "title": "Form",
-      "info": "The custom dataset form can be specified both in terms of data structure (schema) and data display and validation (definition). See <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>form schema documentation</a> for more details."
+      "info": "The custom study dataset form can be specified both in terms of data structure (schema) and data display and validation (definition). See <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>form schema documentation</a> for more details."
     },
     "permissions": {
       "title": "Permissions",
-      "info": "Grant permission to <code>Read</code> any draft of Dataset."
+      "info": "Grant permission to <code>Read</code> any draft of Study Dataset."
+    },
+    "schema": {
+      "tab": "Schema",
+      "info": "The form schema specifies the data structure."
+    },
+    "definition": {
+      "tab": "Definition",
+      "info": "The form definition specifies how to display the schema and how to validate the data inputs."
+    },
+    "preview": {
+      "model-modal": "Model Preview",
+      "tab": "Preview",
+      "show-model": "Model",
+      "test": "Test Form Validation",
+      "tested": "Form is validated successfully."
+    },
+    "model": {
+      "tab": "Model",
+      "info": "The form model stores the valid input data, invalid values are excluded."
+    }
+  },
+  "harmonization-dataset-config" : {
+    "title" : "Harmonization Dataset Configuration",
+    "schema-form": {
+      "title": "Form",
+      "info": "The custom harmonization dataset form can be specified both in terms of data structure (schema) and data display and validation (definition). See <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>form schema documentation</a> for more details."
+    },
+    "permissions": {
+      "title": "Permissions",
+      "info": "Grant permission to <code>Read</code> any draft of Harmonization Dataset."
     },
     "schema": {
       "tab": "Schema",

@@ -8,8 +8,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.obiba.mica.micaConfig.domain;
+package org.obiba.mica.micaConfig.repository;
 
-public abstract class DatasetConfig extends EntityConfig {
+import org.obiba.mica.micaConfig.domain.HarmonizationDatasetConfig;
+import org.springframework.data.mongodb.repository.MongoRepository;
 
-}
+public interface HarmonizationDatasetConfigRepository extends MongoRepository<HarmonizationDatasetConfig, String> {}

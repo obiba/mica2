@@ -233,7 +233,7 @@ mica.dataset
         });
         $scope.sfOptions = {formDefaults: { languages: formLanguages}};
 
-        EntityFormResource.get({target: 'dataset', locale: $translate.use()}, function(form) {
+        EntityFormResource.get({target: 'study-dataset', locale: $translate.use()}, function(form) {
           form.schema = angular.fromJson(form.schema);
           form.definition = angular.fromJson(form.definition);
           $scope.sfForm = form;
@@ -350,7 +350,7 @@ mica.dataset
         });
         $scope.sfOptions = {formDefaults: { languages: formLanguages}};
 
-        EntityFormResource.get({target: 'dataset', locale: $translate.use()}, function(form) {
+        EntityFormResource.get({target: 'harmonization-dataset', locale: $translate.use()}, function(form) {
           form.schema = angular.fromJson(form.schema);
           form.definition = angular.fromJson(form.definition);
           $scope.sfForm = form;
@@ -470,7 +470,7 @@ mica.dataset
 
         $scope.openAccess = micaConfig.openAccess;
 
-        EntityFormResource.get({target: 'dataset', locale: $translate.use()}, function(form) {
+        EntityFormResource.get({target: $scope.type, locale: $translate.use()}, function(form) {
           form.schema = angular.fromJson(form.schema);
           form.schema.readonly = true;
           form.definition = angular.fromJson(form.definition);
