@@ -29,9 +29,12 @@
 
     <p class="alert alert-danger" ng-show="form.saveAttempted && form.$invalid" translate="">fix-error</p>
 
-    <div sf-model="dataset.model" sf-form="sfForm.definition" sf-schema="sfForm.schema" sf-options="sfOptions"></div>
-
-    <div ng-show="dataset['obiba.mica.HarmonizationDatasetDto.type']">
+    <div class="row">
+      <div class="col-md-6">
+        <div sf-model="dataset.model" sf-form="sfForm.definition" sf-schema="sfForm.schema" sf-options="sfOptions"></div>
+      </div>
+      <div class="col-md-6">
+        <div ng-show="dataset['obiba.mica.HarmonizationDatasetDto.type']">
       <h3 translate>dataset.data-schema.title</h3>
 
       <p class="help-block" translate>dataset.data-schema.info</p>
@@ -77,7 +80,8 @@
         </ui-select>
       </div>
     </div>
-
+      </div>
+    </div>
     <div class="voffset4">
       <button type="button" class="btn btn-default" ng-click="cancel()">
         <span translate>cancel</span>

@@ -1,62 +1,67 @@
 <div class="voffset4">
+  <div class="row">
+    <div class="col-md-6">
+      <div sf-model="dataset.model" sf-form="sfForm.definition" sf-schema="sfForm.schema" sf-options="sfOptions"></div>
+    </div>
+    <div class="col-md-6">
+      <h3 translate>dataset.study-table.title</h3>
 
-  <div sf-model="dataset.model" sf-form="sfForm.definition" sf-schema="sfForm.schema" sf-options="sfOptions"></div>
+      <a href="" ng-click="editStudyTable()" class="action" ng-show="dataset['obiba.mica.StudyDatasetDto.type']"><i class="fa fa-pencil"></i></a>
 
-  <h3 translate>dataset.study-table.title</h3>
+      <button type="button" class="btn btn-info btn-sm voffset2" ng-click="addStudyTable()" ng-hide="dataset['obiba.mica.StudyDatasetDto.type']">
+        <i class="fa fa-plus"></i> <span translate>dataset.add-study-table</span>
+      </button>
 
-  <a href="" ng-click="editStudyTable()" class="action" ng-show="dataset['obiba.mica.StudyDatasetDto.type']"><i class="fa fa-pencil"></i></a>
+      <table class="table table-bordered table-striped" ng-show="dataset['obiba.mica.StudyDatasetDto.type']">
+        <tbody>
+        <tr>
+          <th translate>study.label</th>
+          <td>
+            <a ng-href="#/study/{{dataset['obiba.mica.StudyDatasetDto.type'].studyTable.studyId}}">
+              {{dataset['obiba.mica.StudyDatasetDto.type'].studyTable.studyId}}
+            </a>
+          </td>
+        </tr>
+        <tr>
+          <th translate>study.population</th>
+          <td>
+            {{dataset['obiba.mica.StudyDatasetDto.type'].studyTable.populationId}}
+          </td>
+        </tr>
+        <tr>
+          <th translate>study.data-collection-event</th>
+          <td>
+            {{dataset['obiba.mica.StudyDatasetDto.type'].studyTable.dataCollectionEventId}}
+          </td>
+        </tr>
+        <tr>
+          <th translate>dataset.project</th>
+          <td>
+            {{dataset['obiba.mica.StudyDatasetDto.type'].studyTable.project}}
+          </td>
+        </tr>
+        <tr>
+          <th translate>dataset.table</th>
+          <td>
+            {{dataset['obiba.mica.StudyDatasetDto.type'].studyTable.table}}
+          </td>
+        </tr>
+        <tr>
+          <th translate>dataset.table-name</th>
+          <td>
+            <localized value="dataset['obiba.mica.StudyDatasetDto.type'].studyTable.name" lang="tab.lang"></localized>
+          </td>
+        </tr>
+        <tr>
+          <th translate>dataset.table-description</th>
+          <td>
+            <localized value="dataset['obiba.mica.StudyDatasetDto.type'].studyTable.description" lang="tab.lang"></localized>
+          </td>
+        </tr>
+        </tbody>
+      </table>
 
-  <button type="button" class="btn btn-info btn-sm voffset2" ng-click="addStudyTable()" ng-hide="dataset['obiba.mica.StudyDatasetDto.type']">
-    <i class="fa fa-plus"></i> <span translate>dataset.add-study-table</span>
-  </button>
-
-  <table class="table table-bordered table-striped" ng-show="dataset['obiba.mica.StudyDatasetDto.type']">
-    <tbody>
-    <tr>
-      <th translate>study.label</th>
-      <td>
-        <a ng-href="#/study/{{dataset['obiba.mica.StudyDatasetDto.type'].studyTable.studyId}}">
-          {{dataset['obiba.mica.StudyDatasetDto.type'].studyTable.studyId}}
-        </a>
-      </td>
-    </tr>
-    <tr>
-      <th translate>study.population</th>
-      <td>
-        {{dataset['obiba.mica.StudyDatasetDto.type'].studyTable.populationId}}
-      </td>
-    </tr>
-    <tr>
-      <th translate>study.data-collection-event</th>
-      <td>
-        {{dataset['obiba.mica.StudyDatasetDto.type'].studyTable.dataCollectionEventId}}
-      </td>
-    </tr>
-    <tr>
-      <th translate>dataset.project</th>
-      <td>
-        {{dataset['obiba.mica.StudyDatasetDto.type'].studyTable.project}}
-      </td>
-    </tr>
-    <tr>
-      <th translate>dataset.table</th>
-      <td>
-        {{dataset['obiba.mica.StudyDatasetDto.type'].studyTable.table}}
-      </td>
-    </tr>
-    <tr>
-      <th translate>dataset.table-name</th>
-      <td>
-        <localized value="dataset['obiba.mica.StudyDatasetDto.type'].studyTable.name" lang="tab.lang"></localized>
-      </td>
-    </tr>
-    <tr>
-      <th translate>dataset.table-description</th>
-      <td>
-        <localized value="dataset['obiba.mica.StudyDatasetDto.type'].studyTable.description" lang="tab.lang"></localized>
-      </td>
-    </tr>
-    </tbody>
-  </table>
+    </div>
+  </div>
 
 </div>
