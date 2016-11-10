@@ -17,7 +17,8 @@
       {
         "key": "_description",
         "type": "localizedstring",
-        "rows": 5
+        "rows": 5,
+        "marked": true
       },
       {
         "key": "_entityType"
