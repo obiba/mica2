@@ -976,21 +976,20 @@ mica.dataset
     'DraftNetworksResource',
     'DraftNetworkProjectsResource',
     'table',
-    'tab',
     function ($scope,
               $uibModalInstance,
               $log,
               MicaConfigResource,
               DraftNetworksResource,
               DraftNetworkProjectsResource,
-              table,
-              tab) {
+              table) {
 
       $scope.networks = [];
       $scope.projects = [];
       $scope.selected = {};
       $scope.table = $.extend(true, {}, table);
-      $scope.tab = tab;
+      // multilang support to be added...
+      $scope.tab = { lang: 'en'};
       $scope.type = mica.dataset.OPAL_TABLE_TYPES.NETWORK_TABLE;
 
       if (table && table !== {}) {
