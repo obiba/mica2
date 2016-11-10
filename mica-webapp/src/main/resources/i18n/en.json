@@ -899,7 +899,7 @@
   "add-query": "Add to query",
   "permissions": "Permissions",
   "permission": {
-    "help": "Grant permission to <code>Read</code>, <code>Edit</code> or <code>Review</code> the current draft.",
+    "help": "Grant permission to <code>Read</code>, <code>Edit</code> or <code>Review</code> any current draft.",
     "none": "No permissions.",
     "label": "permission",
     "principal": "Name",
@@ -925,7 +925,7 @@
     }
   },
   "access": {
-    "help": "Grant <code>Read</code> access to the publication.",
+    "help": "Grant <code>Read</code> access to any publication.",
     "none": "No accesses.",
     "add": "Add Access",
     "principal-help": "User or group unique name. Use wildcard * for specifying anyone or any group.",
@@ -1187,10 +1187,6 @@
       "title": "Form",
       "info": "The research project form can be specified both in terms of data structure (schema) and data display and validation (definition). See <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>form schema documentation</a> for more details."
     },
-    "permissions": {
-      "title": "Permissions",
-      "info": "Grant permission to <code>Read</code> any draft of Study."
-    },
     "study-form-title": "Study",
     "population-form-title": "Population",
     "data-collection-event-form-title": "Data Collection Event"
@@ -1446,13 +1442,6 @@
     "model": {
       "tab": "Model",
       "info": "The form model stores the valid input data, invalid values are excluded."
-    },
-    "permissions": {
-      "title": "Permissions",
-      "info": "Grant permission to <code>Read</code>, <code>Edit</code> or <code>Review</code> any draft of Research Project."
-    },
-    "accesses": {
-      "info": "Grant <code>Read</code> access to any published Research Project."
     }
   },
   "comments": "Comments",

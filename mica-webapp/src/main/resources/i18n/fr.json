@@ -898,7 +898,7 @@
   "add-query": "Ajouter à la requête",
   "permissions": "Autorisations",
   "permission": {
-    "help": "Accorder l'autorisation de <code>Lire</code>, <code>Éditer</code> ou <code>Réviser</code> le brouillon actuel.",
+    "help": "Accorder l'autorisation de <code>Lire</code>, <code>Éditer</code> ou <code>Réviser</code> tous les brouillons actuels.",
     "none": "Aucune autorisation.",
     "label": "Autorisation",
     "principal": "Nom",
@@ -924,7 +924,7 @@
     }
   },
   "access": {
-    "help": "Accorder l'autorisation de <code>Lire</code> la publication.",
+    "help": "Accorder l'autorisation de <code>Lire</code> toutes les publications.",
     "none": "Aucun accès.",
     "add": "Ajouter un accès",
     "principal-help": "Nom unique d'utilisateur ou de groupe. Utiliser un astérisque * pour spécifier tout utilisateur ou groupe.",
@@ -1186,10 +1186,6 @@
       "title": "Form",
       "info": "The research project form can be specified both in terms of data structure (schema) and data display and validation (definition). See <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>form schema documentation</a> for more details."
     },
-    "permissions": {
-      "title": "Permissions",
-      "info": "Grant permission to <code>Read</code> any draft of Study."
-    },
     "study-form-title": "Study",
     "population-form-title": "Population",
     "data-collection-event-form-title": "Data Collection Event"
@@ -1381,7 +1377,7 @@
     },
     "permissions": {
       "title": "Autorisations d'accès des données",
-      "info": "Accorder l'autorisation de <code> Lire </code> toutes les demandes d'accès aux données."
+      "info": "Accorder l'autorisation de <code>Lire</code> toutes les demandes d'accès aux données."
     },
     "syntax-error": {
       "definition": "La définition du formulaire n'est pas un document valide, veuillez réviser et corriger les erreurs.",
@@ -1445,13 +1441,6 @@
     "model": {
       "tab": "Modèle",
       "info": "Le modèle du formulaire stocke les données entrées valides, les valeurs non valides sont exclus."
-    },
-    "permissions": {
-      "title": "Permissions",
-      "info": "Accorder l'autorisation de <code>Lire</code>, <code>Éditer</code> ou <code>Réviser</code> tous les brouillons de projets de recherche."
-    },
-    "accesses": {
-      "info": "Accorder l'autorisation de <code>Lire</code> toutes les publications de projects de recherche."
     }
   },
   "comments": "Commentaires",
