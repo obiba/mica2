@@ -137,8 +137,8 @@ mica.projectConfig
       };
 
       $scope.titleInfo = {
-        'permissions': 'project-config.permissions.info',
-        'accesses': 'project-config.accesses.info'
+        'permissions': 'permission.help',
+        'accesses': 'access.help'
       };
 
       $scope.tab = {name: 'form'};

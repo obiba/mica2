@@ -54,8 +54,7 @@
   </div>
 
   <div ng-show="tab.name === 'permissions'">
-    <h3>{{target + '-config.permissions.title' | translate}}</h3>
-    <p class="help-block">{{target + '-config.permissions.info' | translate}}</p>
+    <h3 translate>permissions</h3>
     <permissions-table permissions="permissions" accesses="accesses" open-access="openAccess" on-add="addPermission" on-load="loadPermissions" on-delete="deletePermission" on-access-add="addAccess" on-access-load="loadAccesses" on-access-delete="deleteAccess"></permissions-table>
   </div>
 
