@@ -94,6 +94,4 @@
 
 <h4 translate>dataset.options</h4>
 
-<div localized-input name="studyTable.name" model="dataset['obiba.mica.StudyDatasetDto.type'].studyTable.name" label="dataset.table-name" lang="tab.lang"></div>
-
-<div localized-textarea name="studyTable.description" model="dataset['obiba.mica.StudyDatasetDto.type'].studyTable.description" label="dataset.table-description" lang="tab.lang"></div>
+<div sf-model="dataset['obiba.mica.StudyDatasetDto.type'].studyTable.model" sf-form="sfForm.definition" sf-schema="sfForm.schema" sf-options="sfOptions"></div>
