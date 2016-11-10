@@ -198,7 +198,7 @@ public class StudyPackageImportServiceImpl extends AbstractProtobufProvider impl
   }
 
   private void importDataset(StudyDataset dataset, boolean publish) {
-    if(Strings.isNullOrEmpty(dataset.getStudyTable().getStudyId())) return;
+    if(!dataset.hasStudyTable() || Strings.isNullOrEmpty(dataset.getStudyTable().getStudyId())) return;
     try {
       studyDatasetService.findById(dataset.getId());
       studyDatasetService.save(dataset);
