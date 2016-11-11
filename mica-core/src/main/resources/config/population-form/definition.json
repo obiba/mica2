@@ -30,7 +30,8 @@
                 "key": "selectionCriteria.info"
               },
               {
-                "key": "selectionCriteria.countriesIso"
+                "key": "selectionCriteria.countriesIso",
+                "type":"obibaCountriesUiSelect"
               },
               {
                 "key": "selectionCriteria.territory"

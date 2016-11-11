@@ -21,7 +21,6 @@ import java.util.stream.Stream;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
-import com.google.common.collect.Lists;
 import org.obiba.mica.study.domain.DataCollectionEvent;
 import org.obiba.mica.study.domain.Population;
 import org.obiba.mica.study.domain.Study;
@@ -30,6 +29,8 @@ import org.obiba.mica.study.service.PublishedDatasetVariableService;
 import org.obiba.mica.study.service.PublishedStudyService;
 import org.obiba.mica.study.service.StudyService;
 import org.springframework.stereotype.Component;
+
+import com.google.common.collect.Lists;
 
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
@@ -128,9 +129,8 @@ class StudySummaryDtos {
         countries.addAll(populations.stream().filter(Population::hasModel) //
           .flatMap(p -> {
              if(p.getModel().get("selectionCriteria") instanceof Map) { //TODO: serialization should not include JsonTypeInfo to avoid this check.
-               return Optional.ofNullable((Map<String, Object>) p.getModel().get("selectionCriteria"))
-                 .flatMap(sc -> Optional.ofNullable(((List<String>) sc.get("countriesIso")).stream()))
-                 .orElseGet(() -> Stream.empty());
+               Map<String, Object> sc = (Map<String, Object>) p.getModel().get("selectionCriteria");
+               return sc.containsKey("countriesIso") ? ((List<String>) sc.get("countriesIso")).stream() : Stream.empty();
              } else {
                return Optional.ofNullable((Population.SelectionCriteria) p.getModel().get("selectionCriteria"))
                  .flatMap(sc -> Optional.ofNullable(sc.getCountriesIso().stream()))
