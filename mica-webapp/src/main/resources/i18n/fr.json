@@ -902,7 +902,8 @@
   "add-query": "Ajouter à la requête",
   "permissions": "Autorisations",
   "permission": {
-    "help": "Accorder l'autorisation de <code>Lire</code>, <code>Éditer</code> ou <code>Réviser</code> tous les brouillons actuels.",
+    "help": "Accorder l'autorisation de <code>Lire</code>, <code>Éditer</code> ou <code>Réviser</code> le brouillon actuel.",
+    "help-global": "Accorder l'autorisation de <code>Lire</code>, <code>Éditer</code> ou <code>Réviser</code> tous les brouillons.",
     "none": "Aucune autorisation.",
     "label": "Autorisation",
     "principal": "Nom",
@@ -928,7 +929,8 @@
     }
   },
   "access": {
-    "help": "Accorder l'autorisation de <code>Lire</code> toutes les publications.",
+    "help": "Accorder l'autorisation de <code>Lire</code> la publication.",
+    "help-global": "Accorder l'autorisation de <code>Lire</code> toutes les publications.",
     "none": "Aucun accès.",
     "add": "Ajouter un accès",
     "principal-help": "Nom unique d'utilisateur ou de groupe. Utiliser un astérisque * pour spécifier tout utilisateur ou groupe.",
