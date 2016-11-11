@@ -94,7 +94,7 @@ mica.entityConfig
       $scope.permissions = [];
       $scope.targetSchemas = [];
       $scope.accesses = [];
-      $scope.customDrafInfo = { permissions:'permission.help-global', accesses:'access.help-global' };
+      $scope.customTitleInfo = { permissions:'permission.help-global', accesses:'access.help-global' };
 
       MicaConfigResource.get(function (micaConfig) {
         $scope.roles = micaConfig.roles;
