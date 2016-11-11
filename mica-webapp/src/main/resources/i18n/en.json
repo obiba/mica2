@@ -903,7 +903,8 @@
   "add-query": "Add to query",
   "permissions": "Permissions",
   "permission": {
-    "help": "Grant permission to <code>Read</code>, <code>Edit</code> or <code>Review</code> any current draft.",
+    "help": "Grant permission to <code>Read</code>, <code>Edit</code> or <code>Review</code> the current draft.",
+    "help-global": "Grant permission to <code>Read</code>, <code>Edit</code> or <code>Review</code> any draft.",
     "none": "No permissions.",
     "label": "permission",
     "principal": "Name",
@@ -929,7 +930,8 @@
     }
   },
   "access": {
-    "help": "Grant <code>Read</code> access to any publication.",
+    "help": "Grant <code>Read</code> access to the current publication.",
+    "help-global": "Grant <code>Read</code> access to any publication.",
     "none": "No accesses.",
     "add": "Add Access",
     "principal-help": "User or group unique name. Use wildcard * for specifying anyone or any group.",
