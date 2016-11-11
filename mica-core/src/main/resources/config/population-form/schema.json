@@ -141,9 +141,7 @@
         },
         "countriesIso": {
           "type": "array",
-          "items": {
-            "type": "string"
-          },
+          "format": "obibaCountriesUiSelect",
           "title": "t(population.countries)"
         },
         "territory": {
@@ -157,7 +155,7 @@
             "type": "object",
             "format": "localizedString"
           },
-          "title": "t(study.selection-criteria.ethnic-origin)" 
+          "title": "t(study.selection-criteria.ethnic-origin)"
         },
         "healthStatus": {
           "type": "array",
