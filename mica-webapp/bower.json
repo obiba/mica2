@@ -2,6 +2,8 @@
   "name": "mica",
   "version": "0.0.1",
   "dependencies": {
+    "modernizr": "2.8.3",
+    "jquery": "2.2.3",
     "angular": "1.5.5",
     "angular-animate": "1.5.5",
     "angular-bootstrap": "1.3.2",
@@ -23,14 +25,12 @@
     "bootswatch": "3.3.6+1",
     "font-awesome": "4.6.1",
     "grunt-contrib-less": "1.3.0",
-    "jquery": "2.2.3",
     "jquery-ui": "1.11.4",
     "json3": "3.3.2",
     "mica-study-timeline": "https://github.com/obiba/mica-study-timeline.git#1.0",
     "ng-file-upload": "12.0.4",
     "ng-obiba": "https://github.com/obiba/ng-obiba.git#master",
     "ng-obiba-mica": "https://github.com/obiba/ng-obiba-mica.git#master",
-    "modernizr": "2.8.3",
     "swagger-ui": "2.1.4",
     "filesize": "3.2.1",
     "angular-utils-pagination": "0.11.1",
@@ -45,7 +45,8 @@
     "sf-localized-string": "https://github.com/obiba/sf-localized-string.git#master",
     "sf-obiba-file-upload": "https://github.com/obiba/sf-obiba-file-upload.git#master",
     "sf-checkboxgroup": "https://github.com/obiba/sf-checkboxgroup.git#1.0.0",
-    "sf-typeahead": "https://github.com/obiba/sf-typeahead.git#master"
+    "sf-typeahead": "https://github.com/obiba/sf-typeahead.git#master",
+    "sf-obiba-countries-ui-select": "https://github.com/obiba/sf-obiba-countries-ui-select.git#master"
   },
   "devDependencies": {
     "angular-mocks": "1.5.5",
