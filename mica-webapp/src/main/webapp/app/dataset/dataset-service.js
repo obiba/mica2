@@ -170,8 +170,7 @@ mica.dataset
   .factory('DatasetService', ['$rootScope',
     'HarmonizationDatasetResource',
     'NOTIFICATION_EVENTS',
-    'LocalizedValues',
-    function ($rootScope, HarmonizationDatasetResource, NOTIFICATION_EVENTS, LocalizedValues) {
+    function ($rootScope, HarmonizationDatasetResource, NOTIFICATION_EVENTS) {
 
       function getNames(name) {
         return name.map(function(entry) {
@@ -179,12 +178,8 @@ mica.dataset
         }).join('-');
       }
 
-      function getName(name, lang) {
-        return LocalizedValues.forLang(name, lang);
-      }
-
       return {
-        deleteDataset: function (dataset, onSuccess, lang) {
+        deleteDataset: function (dataset, onSuccess) {
           var datasetToDelete = dataset;
 
           var removeSubscriber = $rootScope.$on(NOTIFICATION_EVENTS.confirmDialogAccepted, function (event, id) {
@@ -198,7 +193,7 @@ mica.dataset
             {
               titleKey: 'dataset.delete-dialog.title',
               messageKey: 'dataset.delete-dialog.message',
-              messageArgs: [lang ? getName(dataset.name, lang) : getNames(dataset.name)]
+              messageArgs: [getNames(dataset.name)]
             }, dataset.id
           );
         }

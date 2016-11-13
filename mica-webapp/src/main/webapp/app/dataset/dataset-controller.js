@@ -700,7 +700,7 @@ mica.dataset
         $scope.dataset.type = $scope.type;
         DatasetService.deleteDataset($scope.dataset, function () {
           $location.path('/' + $scope.type);
-        }, $scope.tabs[$scope.activeTab].lang);
+        });
       };
 
       $scope.viewMode = getViewMode();
@@ -838,10 +838,6 @@ mica.dataset
 
       MicaConfigResource.get(function (micaConfig) {
         $scope.opal = micaConfig.opal;
-        $scope.tabs = [];
-        micaConfig.languages.forEach(function (lang) {
-          $scope.tabs.push({lang: lang});
-        });
       });
 
       $scope.dataset = HarmonizationDatasetResource.get({id: $routeParams.id}, function (dataset) {
