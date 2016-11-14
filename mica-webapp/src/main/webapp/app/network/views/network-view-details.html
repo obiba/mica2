@@ -73,7 +73,7 @@
           </p>
 
           <a class="btn btn-danger" ng-click="deleteSelectedStudiesEvent()"
-             ng-if="studySummaries && studySummaries.length">
+             ng-if="inViewMode() && permissions.canEdit() && studySummaries && studySummaries.length">
             <i class="fa fa-trash-o"></i> <span translate>global.delete-selected</span>
           </a>
 

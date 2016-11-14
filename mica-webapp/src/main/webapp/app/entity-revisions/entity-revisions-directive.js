@@ -11,7 +11,7 @@
 'use strict';
 
 mica.revisions
-  .directive('revisions', [function () {
+  .directive('entityRevisions', [function () {
     return {
       restrict: 'AE',
       replace: true,
@@ -23,7 +23,7 @@ mica.revisions
         onViewRevision: '&',
         onRestoreRevision: '&'
       },
-      templateUrl: 'app/study/revisions/revisions-template.html',
+      templateUrl: 'app/entity-revisions/entity-revisions-template.html',
       controller: 'RevisionsController'
     };
   }]);

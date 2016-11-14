@@ -160,10 +160,12 @@ mica.dataset
       });
     }])
 
-  .factory('DraftDatasetViewRevisionResource', ['$resource',
-    function ($resource) {
+  .factory('DraftDatasetViewRevisionResource', ['$resource', 'DatasetModelService',
+    function ($resource, DatasetModelService) {
       return $resource('ws/draft/:type/:id/commit/:commitId/view', {}, {
-        'view': {method: 'GET'}
+        'view': {method: 'GET', transformResponse: function(data) {
+          return DatasetModelService.deserialize(data);
+        }}
       });
     }])
 

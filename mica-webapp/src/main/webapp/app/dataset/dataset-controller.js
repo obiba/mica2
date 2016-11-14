@@ -580,7 +580,7 @@ mica.dataset
       };
 
       var getViewMode = function() {
-        var result = /\/(revision[s\/]*|files|permissions)/.exec($location.path());
+        var result = /\/(revision[s\/]*|files|permissions|comments)/.exec($location.path());
         if (result && result.length > 1) {
           switch (result[1]) {
             case 'revision':
@@ -704,6 +704,9 @@ mica.dataset
       };
 
       $scope.viewMode = getViewMode();
+      $scope.inViewMode = function () {
+        return $scope.viewMode === $scope.Mode.View;
+      };
       $scope.fetchDataset = fetchDataset;
       $scope.viewRevision = viewRevision;
       $scope.restoreRevision = restoreRevision;
