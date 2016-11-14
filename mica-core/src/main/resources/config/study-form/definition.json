@@ -30,28 +30,28 @@
                 "items": [
                   {
                     "key": "methods.design",
-                    "notitle": true,
                     "type": "radios",
+                    "description": "t(study_taxonomy.vocabulary.methods-designs.description)",
                     "titleMap": [
                       {
                         "value": "cohort_study",
-                        "name": "t(cohort-study)"
+                        "name": "t(study_taxonomy.vocabulary.methods-designs.term.cohort_study.title)"
                       },
                       {
                         "value": "case_control",
-                        "name": "t(case-control)"
+                        "name": "t(study_taxonomy.vocabulary.methods-designs.term.case_control.title)"
                       },
                       {
                         "value": "case_only",
-                        "name": "t(case-only)"
+                        "name": "t(study_taxonomy.vocabulary.methods-designs.term.case_only.title)"
                       },
                       {
                         "value": "clinical_trial",
-                        "name": "t(clinical-trial)"
+                        "name": "t(study_taxonomy.vocabulary.methods-designs.term.clinical_trial.title)"
                       },
                       {
                         "value": "other",
-                        "name": "t(other)"
+                        "name": "t(study_taxonomy.vocabulary.methods-designs.term.other.title)"
                       }
                     ]
                   },
@@ -61,6 +61,7 @@
                     "items": [
                       {
                         "key": "methods.otherDesign",
+                        "description": "t(study_taxonomy.vocabulary.methods-designs.term.other.description)",
                         "condition": "model.methods.design==\"other\""
                       }
                     ]
