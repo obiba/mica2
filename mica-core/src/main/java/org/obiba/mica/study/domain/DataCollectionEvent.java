@@ -14,11 +14,13 @@ import java.io.Serializable;
 import java.time.Month;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
 
+import com.google.common.collect.Maps;
 import org.obiba.mica.core.domain.AbstractAttributeModelAware;
 import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.file.Attachment;
@@ -238,5 +240,24 @@ public class DataCollectionEvent extends AbstractAttributeModelAware
     }
 
     return chain.compare(id, dce.id).result();
+  }
+
+  @Override
+  public Map<String, Object> getModel() {
+    if (!this.hasModel()) {
+      Map<String, Object> map = Maps.newHashMap();
+
+      if (this.getDescription() != null) map.put("description", this.getDescription());
+      if (this.getDataSources() != null) map.put("dataSources", this.getDataSources());
+      if (this.getAdministrativeDatabases() != null) map.put("administrativeDatabases", this.getAdministrativeDatabases());
+      if (this.getOtherDataSources() != null) map.put("otherDataSources", this.getOtherDataSources());
+      if (this.getBioSamples() != null) map.put("bioSamples", this.getBioSamples());
+      if (this.getTissueTypes() != null) map.put("tissueTypes", this.getTissueTypes());
+      if (this.getOtherBioSamples() != null) map.put("otherBioSamples", this.getOtherBioSamples());
+
+      this.setModel(map);
+    }
+
+    return super.getModel();
   }
 }
