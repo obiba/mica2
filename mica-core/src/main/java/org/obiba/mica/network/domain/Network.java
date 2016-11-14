@@ -289,6 +289,21 @@ public class Network extends AbstractModelAware implements AttributeAware, Perso
   }
 
   @Override
+  public Map<String, Object> getModel() {
+    if (!this.hasModel()) {
+      Map<String, Object> map = Maps.newHashMap();
+
+      if (this.getWebsite() != null) map.put("website", this.getWebsite());
+      if (this.getInfos() != null) map.put("infos", this.getInfos());
+      if (this.getMaelstromAuthorization() != null) map.put("maelstromAuthorization", this.getMaelstromAuthorization());
+
+      this.setModel(map);
+    }
+
+    return super.getModel();
+  }
+
+  @Override
   public void addAttribute(Attribute attribute) {
     if(attributes == null) attributes = new Attributes();
     attributes.addAttribute(attribute);

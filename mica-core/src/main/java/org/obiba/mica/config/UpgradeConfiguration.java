@@ -60,6 +60,9 @@ public class UpgradeConfiguration {
       applicationContext.getBean(ContactsRefactorUpgrade.class), //
       applicationContext.getBean(DatasetStateUpgrade.class), //
       applicationContext.getBean(ElasticsearchUpgrade.class), //
-      applicationContext.getBean(HarmonizationDatasetUpgrade.class));
+      applicationContext.getBean(HarmonizationDatasetUpgrade.class),
+      applicationContext.getBean(StudySchemaformMigration.class),
+      applicationContext.getBean(NetworkSchemaformMigration.class),
+      applicationContext.getBean(DatasetSchemaformMigration.class));
   }
 }

@@ -511,6 +511,31 @@ public class Study extends AbstractModelAware implements AttributeAware, PersonA
     }).collect(toList());
   }
 
+  @Override
+  public Map<String, Object> getModel() {
+    if (!this.hasModel()) {
+      Map<String, Object> map = Maps.newHashMap();
+
+      map.put("start", this.getStart());
+      map.put("end", this.getEnd());
+      if (this.getWebsite() != null) map.put("website", this.getWebsite());
+      if (this.getSpecificAuthorization() != null) map.put("specificAuthorization", this.getSpecificAuthorization());
+      if (this.getMaelstromAuthorization() != null) map.put("maelstromAuthorization", this.getMaelstromAuthorization());
+      if (this.getMethods() != null) map.put("methods", this.getMethods());
+      if (this.getNumberOfParticipants() != null) map.put("numberOfParticipants", this.getNumberOfParticipants());
+      if (this.getAccess() != null) map.put("access", this.getAccess());
+      if (this.getOtherAccess() != null) map.put("otherAccess", this.getOtherAccess());
+      if (this.getMarkerPaper() != null) map.put("markerPaper", this.getMarkerPaper());
+      if (this.getPubmedId() != null) map.put("pubmedId", this.getPubmedId());
+      if (this.getInfo() != null) map.put("info", this.getInfo());
+      if (this.getOpal() != null) map.put("opal", this.getOpal());
+
+      this.setModel(map);
+    }
+
+    return super.getModel();
+  }
+
   public static class StudyMethods implements Serializable {
 
     private static final long serialVersionUID = 5984119393358199672L;

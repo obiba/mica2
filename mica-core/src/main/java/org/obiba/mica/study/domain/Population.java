@@ -11,11 +11,7 @@
 package org.obiba.mica.study.domain;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import javax.validation.constraints.Min;
@@ -25,6 +21,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Strings;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import org.obiba.mica.core.domain.AbstractAttributeModelAware;
 import org.obiba.mica.core.domain.AttributeAware;
@@ -176,6 +173,22 @@ public class Population extends AbstractAttributeModelAware implements Serializa
     int result = Iterables.get(dataCollectionEvents, 0).compareTo(Iterables.get(pop.dataCollectionEvents, 0));
 
     return result != 0 ? result : this.getId().compareTo(pop.getId());
+  }
+
+  @Override
+  public Map<String, Object> getModel() {
+    if (!this.hasModel()) {
+      Map<String, Object> map = Maps.newHashMap();
+
+      if (this.getRecruitment() != null) map.put("recruitment", this.getRecruitment());
+      if (this.getSelectionCriteria() != null) map.put("selectionCriteria", this.getSelectionCriteria());
+      if (this.getNumberOfParticipants() != null) map.put("numberOfParticipants", this.getNumberOfParticipants());
+      if (this.getInfo() != null) map.put("info", this.getInfo());
+
+      this.setModel(map);
+    }
+
+    return super.getModel();
   }
 
   public static class Recruitment implements Serializable {
