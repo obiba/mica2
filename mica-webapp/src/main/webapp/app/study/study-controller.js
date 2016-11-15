@@ -214,7 +214,6 @@ mica.study
       };
 
       var initializeStudy = function (study) {
-        StudyModelUtil.updateModel(study);
 
         if (study.logo) {
           $scope.logoUrl = 'ws/draft/study/' + study.id + '/file/' + study.logo.id + '/_download';
@@ -255,6 +254,7 @@ mica.study
 
       var fetchStudy = function (studyId) {
         $scope.study = DraftStudyResource.get({id: studyId}, initializeStudy);
+        console.log($scope.study);
       };
 
       var fetchRevisions = function (studyId, onSuccess) {
@@ -295,41 +295,36 @@ mica.study
       $scope.$on(NOTIFICATION_EVENTS.confirmDialogAccepted, onRestore);
 
       MicaConfigResource.get(function (micaConfig) {
-        $scope.tabs = [];
-        $scope.sfOptions = {};
 
-        micaConfig.languages.forEach(function (lang) {
-          $scope.tabs.push({lang: lang});
-          var sfLanguages = {};
-          sfLanguages[lang] = $filter('translate')('language.' + lang);
-
-          $scope.sfOptions[lang] = {
-            formDefaults: {
-              readonly: true,
-              languages: sfLanguages
-            }
-          };
+        var formLanguages = {};
+        micaConfig.languages.forEach(function (loc) {
+          formLanguages[loc] = $filter('translate')('language.' + loc);
         });
+        $scope.sfOptions = {formDefaults: {
+          readonly: true,
+          languages: formLanguages
+        }};
 
         $scope.languages = micaConfig.languages;
         $scope.roles = micaConfig.roles;
         $scope.openAccess = micaConfig.openAccess;
 
-        EntityFormResource.get({target: 'study'}, function(form) {
-          form.schema = LocalizedSchemaFormService.translate(angular.fromJson(form.schema));
-          form.definition = LocalizedSchemaFormService.translate(angular.fromJson(form.definition));
+        EntityFormResource.get({target: 'study', locale: $translate.use()}, function(form) {
+          form.schema = angular.fromJson(form.schema);
+          form.definition = angular.fromJson(form.definition);
           $scope.sfForm = form;
+          console.log($scope.sfForm);
         });
 
-        EntityFormResource.get({target: 'population'}, function(form) {
-          form.schema = LocalizedSchemaFormService.translate(angular.fromJson(form.schema));
-          form.definition = LocalizedSchemaFormService.translate(angular.fromJson(form.definition));
+        EntityFormResource.get({target: 'population', locale: $translate.use()}, function(form) {
+          form.schema = angular.fromJson(form.schema);
+          form.definition = angular.fromJson(form.definition);
           $scope.populationSfForm = form;
         });
 
-        EntityFormResource.get({target: 'data-collection-event'}, function(form) {
-          form.schema = LocalizedSchemaFormService.translate(angular.fromJson(form.schema));
-          form.definition = LocalizedSchemaFormService.translate(angular.fromJson(form.definition));
+        EntityFormResource.get({target: 'data-collection-event', locale: $translate.use()}, function(form) {
+          form.schema = angular.fromJson(form.schema);
+          form.definition = angular.fromJson(form.definition);
           $scope.dceSfForm = form;
         });
       });
@@ -381,7 +376,7 @@ mica.study
       $scope.delete = function (study) {
         DraftStudyDeleteService.delete(study, function() {
           $location.path('/study').replace();
-        }, $scope.tabs[$scope.activeTab].lang);
+        }, $translate.use());
       };
 
       $scope.publish = function (doPublish) {
@@ -703,8 +698,8 @@ mica.study
       $scope.population = {model: {}, selectionCriteria: {healthStatus: [], ethnicOrigin: []}, recruitment: {dataSources: []}};
 
       $scope.study = $routeParams.id ? DraftStudyResource.get({id: $routeParams.id}, function (study) {
+
         var populationsIds;
-        StudyModelUtil.updateModel(study);
 
         if ($routeParams.pid) {
           $scope.population = study.populations.filter(function (p) {
@@ -882,7 +877,6 @@ mica.study
       $scope.defaultMaxYear = new Date().getFullYear() + 200;
       $scope.dataSourcesTabs = {};
       $scope.study = $routeParams.id ? DraftStudyResource.get({id: $routeParams.id}, function (study) {
-        StudyModelUtil.updateModel(study);
 
         if ($routeParams.pid) {
           $scope.population = study.populations.filter(function (p) {
@@ -1132,7 +1126,7 @@ mica.study
       $scope.files = [];
       $scope.newStudy = !$routeParams.id;
       $scope.study = $routeParams.id ? DraftStudyResource.get({id: $routeParams.id}, function (study) {
-        StudyModelUtil.updateModel(study);
+
         $scope.files = study.logo ? [study.logo] : [];
         $scope.study.attachments =
           study.attachments && study.attachments.length > 0 ? study.attachments : [];

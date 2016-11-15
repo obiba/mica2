@@ -30,32 +30,61 @@ mica.study
       });
     }])
 
-  .factory('DraftStudyResource', ['$resource',
-    function ($resource) {
+  .factory('DraftStudyResource', ['$resource', 'StudyModelService',
+    function ($resource, StudyModelService) {
       return $resource('ws/draft/study/:id', {}, {
         // override $resource.save method because it uses POST by default
-        'save': {method: 'PUT', params: {id: '@id'}, errorHandler: true, transformRequest: function(data) {
-          var study = angular.copy(data);
-          delete study.model;
-          
-          if(study.populations) {
-            study.populations.forEach(function(population) {
-              delete population.model;
-              
-              if(population.dataCollectionEvents) {
-                population.dataCollectionEvents.forEach(function(dce) {
-                  delete dce.model;
-                });
-              }
-            });
-          }
-          
-          return angular.toJson(study);
-        }},
+        'save': {method: 'PUT', params: {id: '@id'}, errorHandler: true, transformRequest: StudyModelService.serialize},
         'delete': {method: 'DELETE', params: {id: '@id'}, errorHandler: true},
-        'get': {method: 'GET'}
+        'get': {method: 'GET', transformResponse: StudyModelService.deserialize}
       });
     }])
+
+  .factory('StudyModelService', ['LocalizedValues', function (LocalizedValues) {
+
+    this.serialize = function (study) {
+
+      var studyCopy = angular.copy(study);
+
+      studyCopy.name = LocalizedValues.objectToArray(studyCopy.model._name);
+      studyCopy.acronym = LocalizedValues.objectToArray(studyCopy.model._acronym);
+      studyCopy.objectives = LocalizedValues.objectToArray(studyCopy.model._objectives);
+      studyCopy.opal = studyCopy.model._opal;
+      delete studyCopy.model._name;
+      delete studyCopy.model._acronym;
+      delete studyCopy.model._objectives;
+      delete studyCopy.model._opal;
+      studyCopy.content = studyCopy.model ? angular.toJson(studyCopy.model) : null;
+      delete studyCopy.model; // NOTICE: must be removed to avoid protobuf exception in dto.
+
+      if(studyCopy.populations) {
+        studyCopy.populations.forEach(function(population) {
+          delete population.model;
+
+          if(population.dataCollectionEvents) {
+            population.dataCollectionEvents.forEach(function(dce) {
+              delete dce.model;
+            });
+          }
+        });
+      }
+
+      return angular.toJson(studyCopy);
+    };
+
+    this.deserialize = function (studyData) {
+      var study = angular.fromJson(studyData);
+      study.model = study.content ? angular.fromJson(study.content) : {};
+      study.model._name = LocalizedValues.arrayToObject(study.name);
+      study.model._acronym = LocalizedValues.arrayToObject(study.acronym);
+      study.model._objectives = LocalizedValues.arrayToObject(study.objectives);
+      study.model._opal = study.opal;
+      console.log('TEST ',study);
+      return study;
+    };
+
+    return this;
+  }])
 
   .factory('DraftStudyPermissionsResource', ['$resource',
     function ($resource) {
@@ -144,7 +173,9 @@ mica.study
           return t.locale === lang;
         });
 
-        return (result || [{text: null}])[0].text;
+        //TODO
+        return result;
+        // return (result || [{text: null}])[0].text;
       }
 
       this.get = function(userSuccessCallback, userErrorCallback) {
@@ -301,22 +332,6 @@ mica.study
           if(population.dataCollectionEvents) {
             population.dataCollectionEvents.forEach(function(dce) {
               dce.content =  dce.model ? angular.toJson(dce.model): null;
-            });
-          }
-        });
-      }
-    };
-
-    this.updateModel = function(study) {
-      study.model = study.content ? angular.fromJson(study.content) : {};
-      
-      if(study.populations) {
-        study.populations.forEach(function(population) {
-          population.model = population.content ? angular.fromJson(population.content) : {};
-          
-          if(population.dataCollectionEvents) {
-            population.dataCollectionEvents.forEach(function(dce) {
-              dce.model = dce.content ? angular.fromJson(dce.content) : {};
             });
           }
         });
