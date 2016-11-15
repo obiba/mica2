@@ -1,1 +1,25 @@
-[]
+[
+  {
+    "type": "fieldset",
+    "items": [
+      {
+        "type": "help",
+        "helpvalue": "t(network.general-info)"
+      },
+      {
+        "key": "_name",
+        "type": "localizedstring"
+      },
+      {
+        "key": "_acronym",
+        "type": "localizedstring"
+      },
+      {
+        "key": "_description",
+        "type": "localizedstring",
+        "rows": 5,
+        "marked": true
+      }
+    ]
+  }
+]

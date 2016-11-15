@@ -119,10 +119,10 @@ mica.network
     '$q',
     '$locale',
     '$location',
+    '$translate',
     'DraftNetworkResource',
     'DraftNetworksResource',
     'DraftNetworkPublicationResource',
-    'LocalizedSchemaFormService',
     'MicaConfigResource',
     'EntityFormResource',
     'FormServerValidation',
@@ -135,43 +135,37 @@ mica.network
               $q,
               $locale,
               $location,
+              $translate,
               DraftNetworkResource,
               DraftNetworksResource,
               DraftNetworkPublicationResource,
-              LocalizedSchemaFormService,
               MicaConfigResource,
               EntityFormResource,
               FormServerValidation,
               FormDirtyStateObserver) {
 
-      $scope.activeTab = 0;
       $scope.files = [];
       $scope.newNetwork= !$routeParams.id;
       $scope.network = $routeParams.id ? DraftNetworkResource.get({id: $routeParams.id}, function(network) {
         $scope.files = network.logo ? [network.logo] : [];
-        network.model = network.content ? angular.fromJson(network.content) : {};
 
+        $scope.$broadcast('sfLocalizedStringLocaleChanged', $translate.use());
         return network;
+
       }) : {published: false, model:{}};
 
-      $scope.tabSelected = function(tab){
-        $scope.$broadcast('sfLocalizedStringLocaleChanged', tab.lang);
-      };
-
       MicaConfigResource.get(function (micaConfig) {
-        $scope.tabs = [];
         $scope.sfOptions = {};
 
-        micaConfig.languages.forEach(function (lang) {
-          $scope.tabs.push({lang: lang});
-          var sfLanguages = {};
-          sfLanguages[lang] = $filter('translate')('language.' + lang);
-          $scope.sfOptions[lang] = {formDefaults: {languages: sfLanguages}};
+        var formLanguages = {};
+        micaConfig.languages.forEach(function (loc) {
+          formLanguages[loc] = $filter('translate')('language.' + loc);
         });
+        $scope.sfOptions = {formDefaults: {languages: formLanguages}};
 
-        EntityFormResource.get({target: 'network'}, function(form) {
-          form.schema = LocalizedSchemaFormService.translate(angular.fromJson(form.schema));
-          form.definition = LocalizedSchemaFormService.translate(angular.fromJson(form.definition));
+        EntityFormResource.get({target: 'network', locale: $translate.use()}, function(form) {
+          form.schema = angular.fromJson(form.schema);
+          form.definition = angular.fromJson(form.definition);
           $scope.sfForm = form;
         });
       });
@@ -327,7 +321,6 @@ mica.network
     'DraftNetworkViewRevisionResource',
     'DraftNetworkRevisionsResource',
     'DraftNetworkRestoreRevisionResource',
-    'LocalizedSchemaFormService',
     'MicaConfigResource',
     'EntityFormResource',
     'CONTACT_EVENTS',
@@ -358,7 +351,6 @@ mica.network
               DraftNetworkViewRevisionResource,
               DraftNetworkRevisionsResource,
               DraftNetworkRestoreRevisionResource,
-              LocalizedSchemaFormService,
               MicaConfigResource,
               EntityFormResource,
               CONTACT_EVENTS,
@@ -372,8 +364,10 @@ mica.network
               $filter,
               NetworkService,
               DocumentPermissionsService) {
+
       var initializeNetwork = function(network){
-        $scope.activeTab = 0;
+
+        $scope.$broadcast('sfLocalizedStringLocaleChanged', $translate.use());
 
         if (network.logo) {
           $scope.logoUrl = 'ws/draft/network/'+network.id+'/file/'+network.logo.id+'/_download';
@@ -384,7 +378,6 @@ mica.network
         network.studyIds = network.studyIds || [];
         $scope.network.networkIds = $scope.network.networkIds || [];
         network.memberships = network.memberships || [];
-        network.model = network.content ? angular.fromJson(network.content) : {};
 
         $scope.memberships = network.memberships.map(function (m) {
           if (!m.members) {
@@ -416,25 +409,19 @@ mica.network
 
       $scope.Mode = {View: 0, Revision: 1, File: 2, Permission: 3, Comment: 4};
 
-      $scope.activeTab = 0;
-      $scope.tabSelected = function(tab){
-        $scope.$broadcast('sfLocalizedStringLocaleChanged', tab.lang);
-      };
-
       MicaConfigResource.get(function (micaConfig) {
-        $scope.tabs = [];
 
-        micaConfig.languages.forEach(function (lang) {
-          $scope.tabs.push({lang: lang});
+        var formLanguages = {};
+        micaConfig.languages.forEach(function (loc) {
+          formLanguages[loc] = $filter('translate')('language.' + loc);
         });
-
-        $scope.languages = micaConfig.languages;
+        $scope.sfOptions = {formDefaults: {languages: formLanguages}};
         $scope.roles = micaConfig.roles;
-        $scope.openAccess = micaConfig.openAccess;
 
-        EntityFormResource.get({target: 'network'}, function(form) {
-          form.schema = LocalizedSchemaFormService.translate(angular.fromJson(form.schema));
-          form.definition = LocalizedSchemaFormService.translate(angular.fromJson(form.definition));
+        EntityFormResource.get({target: 'network', locale: $translate.use()}, function (form) {
+          form.schema = angular.fromJson(form.schema);
+          form.definition = angular.fromJson(form.definition);
+          form.schema.readonly = true;
           $scope.sfForm = form;
         });
       });
@@ -442,7 +429,6 @@ mica.network
       $scope.networkId = $routeParams.id;
       $scope.studySummaries = [];
       $scope.network = DraftNetworkResource.get({id: $routeParams.id}, initializeNetwork);
-
 
       $scope.publish = function (publish) {
         if (publish) {
@@ -660,7 +646,7 @@ mica.network
               return $scope.network.studyIds;
             },
             lang: function() {
-              return $scope.tabs[$scope.activeTab].lang;
+              return $translate.use();
             }
           }
         }).result.then(function(selectedIds) {
@@ -717,7 +703,7 @@ mica.network
               return ($scope.network.networkIds || []).concat($scope.network.id);
             },
             lang: function() {
-              return $scope.tabs[$scope.activeTab].lang;
+              return $translate.use();
             }
           }
         }).result.then(function(selectedIds) {
@@ -768,7 +754,7 @@ mica.network
               return $scope.network;
             },
             lang: function() {
-              return $scope.tabs[$scope.activeTab].lang;
+              return $translate.use();
             }
           }
         });

@@ -20,15 +20,9 @@
 
     <p class="alert alert-danger" ng-show="form.saveAttempted && form.$invalid" translate="">fix-error</p>
 
-    <uib-tabset active="activeTab">
-      <uib-tab ng-repeat="tab in tabs" heading="{{'language.' + tab.lang | translate}}" disable="tab.disabled" select="tabSelected(tab)" >
-
-        <div ng-include="'app/network/views/network-general-info-form.html'"></div>
-
-        <div sf-model="network.model" sf-form="sfForm.definition" sf-schema="sfForm.schema" sf-options="sfOptions[tab.lang]"></div>
-
-      </uib-tab>
-    </uib-tabset>
+    <div sf-model="network.model" sf-form="sfForm.definition" sf-schema="sfForm.schema" sf-options="sfOptions"></div>
+    <label class="control-label" translate>logo</label>
+    <attachment-input files="files" accept="image/*" />
 
     <button type="button" class="btn btn-default" ng-click="cancel()">
       <span translate>cancel</span>

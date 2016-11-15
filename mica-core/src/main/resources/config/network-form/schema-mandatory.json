@@ -1,1 +1,25 @@
-{}
+{
+  "type": "object",
+  "properties": {
+    "_name": {
+      "title": "t(network.name)",
+      "type": "object",
+      "format": "localizedString"
+    },
+    "_acronym": {
+      "title": "t(network.acronym)",
+      "type": "object",
+      "format": "localizedString"
+    },
+    "_description": {
+      "title": "t(network.description)",
+      "type": "object",
+      "format": "localizedString"
+    }
+  },
+  "required": [
+    "_name",
+    "_acronym",
+    "_description"
+  ]
+}
