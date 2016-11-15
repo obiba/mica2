@@ -28,17 +28,12 @@ mica.network
       });
     }])
 
-  .factory('DraftNetworkResource', ['$resource',
-    function ($resource) {
+  .factory('DraftNetworkResource', ['$resource', 'NetworkModelService',
+    function ($resource, NetworkModelService) {
       return $resource('ws/draft/network/:id', {}, {
-        'save': {method: 'PUT', params: {id: '@id'}, errorHandler: true, transformRequest: function(data) {
-          var network = angular.copy(data);
-          network.content = angular.toJson(network.model);
-          delete network.model;
-          return angular.toJson(network);
-        }},
+        'save': {method: 'PUT', params: {id: '@id'}, errorHandler: true, transformRequest: NetworkModelService.serialize},
         'delete': {method: 'DELETE', params: {id: '@id'}, errorHandler: true},
-        'get': {method: 'GET', errorHandler: true},
+        'get': {method: 'GET', errorHandler: true, transformResponse: NetworkModelService.deserialize},
         'projects': {method: 'GET', params: {id: '@id'}, errorHandler: true}
       });
     }])
@@ -113,6 +108,32 @@ mica.network
         'view': {method: 'GET', params: {id: '@id', commitId: '@commitId'}}
       });
     }])
+
+  .factory('NetworkModelService', ['LocalizedValues', function (LocalizedValues) {
+    this.serialize = function (network) {
+      var networkCopy = angular.copy(network);
+      networkCopy.name = LocalizedValues.objectToArray(networkCopy.model._name);
+      networkCopy.acronym = LocalizedValues.objectToArray(networkCopy.model._acronym);
+      networkCopy.description = LocalizedValues.objectToArray(networkCopy.model._description);
+      delete networkCopy.model._name;
+      delete networkCopy.model._acronym;
+      delete networkCopy.model._description;
+      networkCopy.content = networkCopy.model ? angular.toJson(networkCopy.model) : null;
+      delete networkCopy.model; // NOTICE: must be removed to avoid protobuf exception in dto.
+      return angular.toJson(networkCopy);
+    };
+
+    this.deserialize = function (data) {
+      var network = angular.fromJson(data);
+      network.model = network.content ? angular.fromJson(network.content) : {};
+      network.model._name = LocalizedValues.arrayToObject(network.name);
+      network.model._acronym = LocalizedValues.arrayToObject(network.acronym);
+      network.model._description = LocalizedValues.arrayToObject(network.description);
+      return network;
+    };
+
+    return this;
+  }])
 
   .factory('NetworkService', ['$rootScope',
     '$translate',

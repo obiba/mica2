@@ -1,7 +1,4 @@
 <div class="voffset4">
-  <uib-tabset active="activeTab">
-
-    <uib-tab ng-repeat="tab in tabs" heading="{{'language.' + tab.lang | translate}}" disable="tab.disabled" select="tabSelected(tab)">
 
       <div class="voffset4">
         <img class="img-responsive desaturate" ng-show="network.logo" ng-src="{{logoUrl}}">
@@ -13,24 +10,14 @@
         <localized value="network.description" lang="tab.lang"></localized>
       </div>
 
-      <div class="row">
+  <div class="row">
         <div class="col-md-6">
           <h3 translate>network.general-info</h3>
 
+          <div sf-model="network.model" sf-form="sfForm.definition" sf-schema="sfForm.schema" sf-options="sfOptions"></div>
+
           <table class="table table-bordered table-striped">
             <tbody>
-            <tr>
-              <th translate>network.acronym</th>
-              <td>
-                <localized value="network.acronym" lang="tab.lang"></localized>
-              </td>
-            </tr>
-            <tr ng-show="network.model.website">
-              <th translate>website</th>
-              <td>
-                <a href="{{network.model.website}}" target="_blank">{{network.model.website}}</a>
-              </td>
-            </tr>
             <tr ng-repeat="role in roles">
               <th>{{'network.member-list' | translate: {type: role} }}</th>
               <td>
@@ -58,6 +45,7 @@
             </tr>
             </tbody>
           </table>
+
           <a ng-if="inViewMode() && (network.studyIds.length > 0 || network.networkIds.length > 0)" href class="btn btn-info" ng-click="showAllContacts()"><i class="fa fa-group"></i> <span translate>network.associated-people</span></a>
           <attributes-list attributes="network.attributes"></attributes-list>
         </div>
@@ -96,14 +84,22 @@
                 <input type="checkbox" ng-model="studySummary.selected">
               </td>
               <td>
-                <a ng-href="#/study/{{studySummary.id}}" ng-if="studySummary.permissions.view">
-                  <localized value="studySummary.acronym" lang="tab.lang"></localized>
-                </a>
-                <span ng-if="!studySummary.permissions.view">
-                  <localized value="studySummary.acronym" lang="tab.lang"></localized>
-                </span>
+                <ul class="list-unstyled">
+                  <li ng-repeat="text in studySummary.acronym">
+                    <span class="badge">{{text.lang}}</span>
+                    <a ng-href="#/study/{{studySummary.id}}" ng-if="studySummary.permissions.view">{{text.value}}</a>
+                    <span ng-if="!studySummary.permissions.view">{{text.value}}</span>
+                  </li>
+                </ul>
               </td>
               <td>
+                <ul class="list-unstyled">
+                  <li ng-repeat="text in studySummary.name">
+                    <span class="badge">{{text.lang}}</span>
+                    <span>{{text.value}}</span>
+                  </li>
+                </ul>
+
                 <localized value="studySummary.name" lang="tab.lang"></localized>
               </td>
               <td ng-if="inViewMode() && permissions.canEdit()">
@@ -147,15 +143,22 @@
                 <input type="checkbox" ng-model="networkSummary.selected">
               </td>
               <td>
-                <a ng-href="#/network/{{networkSummary.id}}" ng-if="networkSummary.permissions.view">
-                  <localized value="networkSummary.acronym" lang="tab.lang"></localized>
-                </a>
-                <span ng-if="!networkSummary.permissions.view">
-                  <localized value="networkSummary.acronym" lang="tab.lang"></localized>
-                </span>
+                <ul class="list-unstyled">
+                  <li ng-repeat="text in networkSummary.acronym">
+                    <span class="badge">{{text.lang}}</span>
+                    <a ng-href="#/network/{{networkSummary.id}}" ng-if="networkSummary.permissions.view">{{text.value}}</a>
+                    <span ng-if="!networkSummary.permissions.view">{{text.value}}</span>
+                  </li>
+                </ul>
               </td>
               <td>
                 <localized value="networkSummary.name" lang="tab.lang"></localized>
+                <ul class="list-unstyled">
+                  <li ng-repeat="text in networkSummary.name">
+                    <span class="badge">{{text.lang}}</span>
+                    <span>{{text.value}}</span>
+                  </li>
+                </ul>
               </td>
               <td ng-if="inViewMode() && permissions.canEdit()">
                 <a ng-click="deleteNetwork(network, networkSummary)" class="hand action"><i class="fa fa-trash-o"></i></a>
@@ -165,6 +168,4 @@
           </table>
         </div>
       </div>
-    </uib-tab>
-  </uib-tabset>
 </div>
