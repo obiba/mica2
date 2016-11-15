@@ -77,7 +77,22 @@
                   },
                   {
                     "key": "methods.recruitments",
-                    "notitle": true
+                    "notitle": true,
+                    "description": "t(study_taxonomy.vocabulary.methods-recruitments.description)",
+                    "titleMap": [
+                      {
+                        "value": "individuals",
+                        "name": "t(study_taxonomy.vocabulary.methods-recruitments.term.individuals.title)"
+                      },
+                      {
+                        "value": "families",
+                        "name": "t(study_taxonomy.vocabulary.methods-recruitments.term.families.title)"
+                      },
+                      {
+                        "value": "other",
+                        "name": "t(study_taxonomy.vocabulary.methods-recruitments.term.other.title)"
+                      }
+                    ]
                   },
                   {
                     "type": "section",
@@ -136,7 +151,22 @@
               },
               {
                 "key": "access",
-                "notitle": true
+                "notitle": true,
+                "description": "t(study_taxonomy.vocabulary.methods-recruitments.description)",
+                "titleMap": [
+                  {
+                    "value": "data",
+                    "name": "t(study_taxonomy.vocabulary.access.term.data.title)"
+                  },
+                  {
+                    "value": "biosamples",
+                    "name": "t(study_taxonomy.vocabulary.access.term.bio_samples.title)"
+                  },
+                  {
+                    "value": "other",
+                    "name": "t(study_taxonomy.vocabulary.access.term.other.title)"
+                  }
+                ]
               },
               {
                 "type": "section",

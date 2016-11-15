@@ -8,6 +8,7 @@
     },
     "dataSources": {
       "type": "array",
+      "default": [],
       "items": {
         "type": "string",
         "enum": [
@@ -39,6 +40,7 @@
     },
     "bioSamples": {
       "type": "array",
+      "default": [],
       "items": {
         "type": "string",
         "enum": [
@@ -56,7 +58,8 @@
     },
     "tissueTypes": {
       "type": "object",
-      "format": "localizedString"
+      "format": "localizedString",
+      "title": "t(data-collection-event.tissue-types)"
     },
     "otherBioSamples": {
       "type": "object",
