@@ -31,7 +31,7 @@
               },
               {
                 "key": "selectionCriteria.countriesIso",
-                "type":"obibaCountriesUiSelect"
+                "type": "obibaCountriesUiSelect"
               },
               {
                 "key": "selectionCriteria.territory"
@@ -69,7 +69,22 @@
                 ]
               },
               {
-                "key": "selectionCriteria.criteria"
+                "key": "selectionCriteria.criteria",
+                "description": "t(study_taxonomy.vocabulary.populations-selectionCriteria-criteria.description)",
+                "titleMap": [
+                  {
+                    "value": "gravidity",
+                    "name": "t(study_taxonomy.vocabulary.populations-selectionCriteria-criteria.term.gravidity.title)"
+                  },
+                  {
+                    "value": "newborn",
+                    "name": "t(study_taxonomy.vocabulary.populations-selectionCriteria-criteria.term.newborn.title)"
+                  },
+                  {
+                    "value": "twin",
+                    "name": "t(study_taxonomy.vocabulary.populations-selectionCriteria-criteria.term.twin.title)"
+                  }
+                ]
               }
             ]
           }
@@ -98,7 +113,26 @@
                   },
                   {
                     "key": "recruitment.dataSources",
-                    "notitle": true
+                    "description": "t(study_taxonomy.vocabulary.populations-recruitment-dataSources.description)",
+                    "notitle": true,
+                    "titleMap": [
+                      {
+                        "value": "general_population",
+                        "name": "t(study_taxonomy.vocabulary.populations-recruitment-dataSources.term.general_population.title)"
+                      },
+                      {
+                        "value": "specific_population",
+                        "name": "t(study_taxonomy.vocabulary.populations-recruitment-dataSources.term.specific_population.title)"
+                      },
+                      {
+                        "value": "exist_studies",
+                        "name": "t(study_taxonomy.vocabulary.populations-recruitment-dataSources.term.exist_studies.title)"
+                      },
+                      {
+                        "value": "other",
+                        "name": "t(study_taxonomy.vocabulary.populations-recruitment-dataSources.term.other.title)"
+                      }
+                    ]
                   },
                   {
                     "type": "tabs",
@@ -108,8 +142,23 @@
                         "items": [
                           {
                             "key": "recruitment.generalPopulationSources",
+                            "description": "t(study_taxonomy.vocabulary.populations-recruitment-generalPopulationSources.description)",
                             "notitle": true,
-                            "condition": "model.recruitment.dataSources.indexOf(\"general_population\")!=-1"
+                            "titleMap": [
+                              {
+                                "value": "volunteer",
+                                "name": "t(study_taxonomy.vocabulary.populations-recruitment-generalPopulationSources.term.volunteer.title)"
+                              },
+                              {
+                                "value": "selected_samples",
+                                "name": "t(study_taxonomy.vocabulary.populations-recruitment-generalPopulationSources.term.selected_samples.title)"
+                              },
+                              {
+                                "value": "random",
+                                "name": "t(study_taxonomy.vocabulary.populations-recruitment-generalPopulationSources.term.random.title)"
+                              }
+                            ],
+                            "condition": "model.recruitment.dataSources.indexOf(\"general_population\")>=0"
                           }
                         ]
                       },
@@ -118,8 +167,23 @@
                         "items": [
                           {
                             "key": "recruitment.specificPopulationSources",
+                            "description": "t(study_taxonomy.vocabulary.populations-recruitment-specificPopulationSources.description)",
                             "notitle": true,
-                            "condition": "model.recruitment.dataSources.indexOf(\"specific_population\")!=-1"
+                            "titleMap": [
+                              {
+                                "value": "clinic_patients",
+                                "name": "t(study_taxonomy.vocabulary.populations-recruitment-specificPopulationSources.term.clinic_patients.title)"
+                              },
+                              {
+                                "value": "specific_association",
+                                "name": "t(study_taxonomy.vocabulary.populations-recruitment-specificPopulationSources.term.specific_association.title)"
+                              },
+                              {
+                                "value": "other",
+                                "name": "t(study_taxonomy.vocabulary.populations-recruitment-specificPopulationSources.term.other.title)"
+                              }
+                            ],
+                            "condition": "model.recruitment.dataSources.indexOf(\"specific_population\")>=0"
                           }
                         ]
                       },
@@ -139,7 +203,7 @@
                                 "notitle": true
                               }
                             ],
-                            "condition": "model.recruitment.dataSources.indexOf(\"exist_studies\")!=-1"
+                            "condition": "model.recruitment.dataSources.indexOf(\"exist_studies\")>=0"
                           }
                         ]
                       },
@@ -148,7 +212,7 @@
                         "items": [
                           {
                             "key": "recruitment.otherSource",
-                            "condition": "model.recruitment.dataSources.indexOf(\"other\")!=-1"
+                            "condition": "model.recruitment.dataSources.indexOf(\"other\")>=0"
                           }
                         ]
                       }
