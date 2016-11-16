@@ -968,6 +968,7 @@
   "new-harmonization-dataset": "New Harmonization Dataset",
   "new-data-access-request": "New Data Access Request",
   "new-project": "New Research Project",
+  "title": "Title",
   "description": "Description",
   "help": "Help",
   "general": "General",
@@ -1004,10 +1005,10 @@
       "logs": "Configure server logs.",
       "caching": "Manage server caches.",
       "indexing": "Manage server indices.",
-      "network-config": "Configure network form.",
-      "study-config": "Configure study form.",
-      "study-dataset-config": "Configure study dataset form.",
-      "harmonization-dataset-config": "Configure harmonization dataset form.",
+      "network-config": "Configure Network form, permissions and search.",
+      "study-config": "Configure Study form, permissions and search.",
+      "study-dataset-config": "Configure Study Dataset form, permissions and search.",
+      "harmonization-dataset-config": "Configure Harmonization Dataset form, permissions and search.",
       "data-access-config": "Configure Data Access Request form.",
       "project-config": "Configure Research Project form.",
       "file-system": "Manage file system.",
@@ -1232,7 +1233,7 @@
     "saved": "Data Access Form is successfully updated.",
     "pdf-download": {
       "title": "PDF Download",
-      "info": "The data collected in the web application form can be rendered in a PDF file. Choose one of the following options:"
+      "info": "The data collected in the form can be rendered in a PDF file. Choose one of the following options:"
     },
     "pdf-template": {
       "title": "PDF Template",
@@ -1244,7 +1245,7 @@
     },
     "schema-form": {
       "title": "Application Form",
-      "info": "The web application form can be specified both in terms of data structure (schema) and data display and validation (definition). See <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>form schema documentation</a> for more details."
+      "info": "The form can be specified both in terms of data structure (schema) and data display and validation (definition). See <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>form schema documentation</a> for more details."
     },
     "schema" : {
       "tab": "Schema",
@@ -1329,7 +1330,7 @@
   "entity-sf-config": {
     "schema-form": {
       "title": "Form",
-      "info": "The web application form can be specified both in terms of data structure (schema) and data display and validation (definition). See <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>form schema documentation</a> for more details."
+      "info": "The form can be specified both in terms of data structure (schema) and data display and validation (definition). See <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>form schema documentation</a> for more details."
     },
     "schema": {
       "tab": "Schema",
