@@ -1157,22 +1157,10 @@
     }
   },
   "network-config" : {
-    "title" : "Network Configuration",
+    "title" : "Configuration de réseaux",
     "schema-form": {
-      "title": "Form",
-      "info": "The research project form can be specified both in terms of data structure (schema) and data display and validation (definition). See <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>form schema documentation</a> for more details."
-    },
-    "permissions": {
-      "title": "Permissions",
-      "info": "Grant permission to <code>Read</code> any draft of Network."
-    },
-    "schema": {
-      "tab": "Schema",
-      "info": "The form schema specifies the data structure."
-    },
-    "definition": {
-      "tab": "Definition",
-      "info": "The form definition specifies how to display the schema and how to validate the data inputs."
+      "title": "Formulaire",
+      "info": "Le formulaire de réseau peut être spécifié à la fois en termes de structure de données (schéma) et d'affichage des données et validation (définition). Voir <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>documentation du schema form</a> pour plus de détails."
     },
     "preview": {
       "model-modal": "Model Preview",
@@ -1187,20 +1175,20 @@
     }
   },
   "study-config" : {
-    "title" : "Study Configuration",
+    "title" : "Configuration d'études",
     "schema-form": {
-      "title": "Form",
-      "info": "The research project form can be specified both in terms of data structure (schema) and data display and validation (definition). See <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>form schema documentation</a> for more details."
+      "title": "Formulaire",
+      "info": "Le formulaire d'étude peut être spécifié à la fois en termes de structure de données (schéma) et d'affichage des données et validation (définition). Voir <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>documentation du schema form</a> pour plus de détails."
     },
-    "study-form-title": "Study",
+    "study-form-title": "Étude",
     "population-form-title": "Population",
-    "data-collection-event-form-title": "Data Collection Event"
+    "data-collection-event-form-title": "Événement de collecte de données"
   },
   "taxonomy-config": {
-    "title": "Search",
-    "info": "The search criteria can be configured in accordance with the model.",
+    "title": "Recherche",
+    "info": "Les critères de recherche peuvent être configurés en fonction du modèle.",
     "terms": {
-      "info": "The terms describe the possible values of the criterion. In the case of a numerical type (integer or decimal), the terms represent some ranges of values."
+      "info": "Les termes décrivent les valeurs possible d'un critère. Dans le cas d'un type numérique (entier ou décimal), les termes représentent des portées de valeurs."
     },
     "criterion-dialog": {
       "add-criterion": "Ajouter Critère",
@@ -1225,63 +1213,17 @@
     }
   },
   "study-dataset-config" : {
-    "title" : "Study Dataset Configuration",
+    "title" : "Configuration d'ensembles de données d'étude",
     "schema-form": {
-      "title": "Form",
-      "info": "The custom study dataset form can be specified both in terms of data structure (schema) and data display and validation (definition). See <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>form schema documentation</a> for more details."
-    },
-    "permissions": {
-      "title": "Permissions",
-      "info": "Grant permission to <code>Read</code> any draft of Study Dataset."
-    },
-    "schema": {
-      "tab": "Schema",
-      "info": "The form schema specifies the data structure."
-    },
-    "definition": {
-      "tab": "Definition",
-      "info": "The form definition specifies how to display the schema and how to validate the data inputs."
-    },
-    "preview": {
-      "model-modal": "Model Preview",
-      "tab": "Preview",
-      "show-model": "Model",
-      "test": "Test Form Validation",
-      "tested": "Form is validated successfully."
-    },
-    "model": {
-      "tab": "Model",
-      "info": "The form model stores the valid input data, invalid values are excluded."
+      "title": "Formulaire",
+      "info": "Le formulaire d'ensemble de données d'étude peut être spécifié à la fois en termes de structure de données (schéma) et d'affichage des données et validation (définition). Voir <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>documentation du schema form</a> pour plus de détails."
     }
   },
   "harmonization-dataset-config" : {
-    "title" : "Harmonization Dataset Configuration",
+    "title" : "Configuration d'ensemble de données harmonisées",
     "schema-form": {
-      "title": "Form",
-      "info": "The custom harmonization dataset form can be specified both in terms of data structure (schema) and data display and validation (definition). See <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>form schema documentation</a> for more details."
-    },
-    "permissions": {
-      "title": "Permissions",
-      "info": "Grant permission to <code>Read</code> any draft of Harmonization Dataset."
-    },
-    "schema": {
-      "tab": "Schema",
-      "info": "The form schema specifies the data structure."
-    },
-    "definition": {
-      "tab": "Definition",
-      "info": "The form definition specifies how to display the schema and how to validate the data inputs."
-    },
-    "preview": {
-      "model-modal": "Model Preview",
-      "tab": "Preview",
-      "show-model": "Model",
-      "test": "Test Form Validation",
-      "tested": "Form is validated successfully."
-    },
-    "model": {
-      "tab": "Model",
-      "info": "The form model stores the valid input data, invalid values are excluded."
+      "title": "Formulaire",
+      "info": "Le formulaire d'ensemble de données harmonisées peut être spécifié à la fois en termes de structure de données (schéma) et d'affichage des données et validation (définition). Voir <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>documentation du schema form</a> pour plus de détails."
     }
   },
   "data-access-config": {
@@ -1397,7 +1339,7 @@
   "entity-sf-config": {
     "schema-form": {
       "title": "Formulaire",
-      "info": "Le formulaire de projet de recherche peut être spécifié à la fois en termes de structure de données (schéma) et d'affichage des données et validation (définition). Voir <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>documentation du schema form</a> pour plus de détails."
+      "info": "Le formulaire d'application web peut être spécifié à la fois en termes de structure de données (schéma) et d'affichage des données et validation (définition). Voir <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>documentation du schema form</a> pour plus de détails."
     },
     "schema": {
       "tab": "Schéma",
