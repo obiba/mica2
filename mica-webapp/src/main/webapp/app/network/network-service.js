@@ -97,10 +97,10 @@ mica.network
       });
     }])
 
-  .factory('DraftNetworkViewRevisionResource', ['$resource',
-    function ($resource) {
+  .factory('DraftNetworkViewRevisionResource', ['$resource', 'NetworkModelService',
+    function ($resource, NetworkModelService) {
       return $resource('ws/draft/network/:id/commit/:commitId/view', {}, {
-        'view': {method: 'GET', params: {id: '@id', commitId: '@commitId'}}
+        'view': {method: 'GET', params: {id: '@id', commitId: '@commitId'}, transformResponse: NetworkModelService.deserialize}
       });
     }])
 
