@@ -4,7 +4,7 @@
     "items": [
       {
         "type": "help",
-        "helpvalue": "t(network.general-info)"
+        "helpvalue": "<h3>t(network.general-info)</h3>"
       },
       {
         "key": "_name",

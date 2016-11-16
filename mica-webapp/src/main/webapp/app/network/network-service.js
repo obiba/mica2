@@ -16,15 +16,10 @@ mica.network
       return $resource('ws/draft/networks');
     }])
 
-  .factory('DraftNetworksResource', ['$resource',
-    function ($resource) {
+  .factory('DraftNetworksResource', ['$resource', 'NetworkModelService',
+    function ($resource, NetworkModelService) {
       return $resource('ws/draft/networks', {}, {
-        'save': {method: 'POST', errorHandler: true, transformRequest: function(data) {
-          var network = angular.copy(data);
-          network.content = angular.toJson(network.model);
-          delete network.model;
-          return angular.toJson(network);
-        }}
+        'save': {method: 'POST', errorHandler: true, transformRequest: NetworkModelService.serialize}
       });
     }])
 

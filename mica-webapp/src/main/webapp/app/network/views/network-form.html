@@ -21,8 +21,11 @@
     <p class="alert alert-danger" ng-show="form.saveAttempted && form.$invalid" translate="">fix-error</p>
 
     <div sf-model="network.model" sf-form="sfForm.definition" sf-schema="sfForm.schema" sf-options="sfOptions"></div>
-    <label class="control-label" translate>logo</label>
-    <attachment-input files="files" accept="image/*" />
+
+    <div class="form-group">
+      <label class="control-label" translate>logo</label>
+      <attachment-input files="files" accept="image/*" />
+    </div>
 
     <button type="button" class="btn btn-default" ng-click="cancel()">
       <span translate>cancel</span>
