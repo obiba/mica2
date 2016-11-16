@@ -1161,37 +1161,14 @@
     "title" : "Network Configuration",
     "schema-form": {
       "title": "Form",
-      "info": "The research project form can be specified both in terms of data structure (schema) and data display and validation (definition). See <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>form schema documentation</a> for more details."
-    },
-    "permissions": {
-      "title": "Permissions",
-      "info": "Grant permission to <code>Read</code> any draft of Network."
-    },
-    "schema": {
-      "tab": "Schema",
-      "info": "The form schema specifies the data structure."
-    },
-    "definition": {
-      "tab": "Definition",
-      "info": "The form definition specifies how to display the schema and how to validate the data inputs."
-    },
-    "preview": {
-      "model-modal": "Model Preview",
-      "tab": "Preview",
-      "show-model": "Model",
-      "test": "Test Form Validation",
-      "tested": "Form is validated successfully."
-    },
-    "model": {
-      "tab": "Model",
-      "info": "The form model stores the valid input data, invalid values are excluded."
+      "info": "The custom network form can be specified both in terms of data structure (schema) and data display and validation (definition). See <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>form schema documentation</a> for more details."
     }
   },
   "study-config" : {
     "title" : "Study Configuration",
     "schema-form": {
       "title": "Form",
-      "info": "The research project form can be specified both in terms of data structure (schema) and data display and validation (definition). See <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>form schema documentation</a> for more details."
+      "info": "The custom study form can be specified both in terms of data structure (schema) and data display and validation (definition). See <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>form schema documentation</a> for more details."
     },
     "study-form-title": "Study",
     "population-form-title": "Population",
@@ -1230,29 +1207,6 @@
     "schema-form": {
       "title": "Form",
       "info": "The custom study dataset form can be specified both in terms of data structure (schema) and data display and validation (definition). See <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>form schema documentation</a> for more details."
-    },
-    "permissions": {
-      "title": "Permissions",
-      "info": "Grant permission to <code>Read</code> any draft of Study Dataset."
-    },
-    "schema": {
-      "tab": "Schema",
-      "info": "The form schema specifies the data structure."
-    },
-    "definition": {
-      "tab": "Definition",
-      "info": "The form definition specifies how to display the schema and how to validate the data inputs."
-    },
-    "preview": {
-      "model-modal": "Model Preview",
-      "tab": "Preview",
-      "show-model": "Model",
-      "test": "Test Form Validation",
-      "tested": "Form is validated successfully."
-    },
-    "model": {
-      "tab": "Model",
-      "info": "The form model stores the valid input data, invalid values are excluded."
     }
   },
   "harmonization-dataset-config" : {
@@ -1260,29 +1214,6 @@
     "schema-form": {
       "title": "Form",
       "info": "The custom harmonization dataset form can be specified both in terms of data structure (schema) and data display and validation (definition). See <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>form schema documentation</a> for more details."
-    },
-    "permissions": {
-      "title": "Permissions",
-      "info": "Grant permission to <code>Read</code> any draft of Harmonization Dataset."
-    },
-    "schema": {
-      "tab": "Schema",
-      "info": "The form schema specifies the data structure."
-    },
-    "definition": {
-      "tab": "Definition",
-      "info": "The form definition specifies how to display the schema and how to validate the data inputs."
-    },
-    "preview": {
-      "model-modal": "Model Preview",
-      "tab": "Preview",
-      "show-model": "Model",
-      "test": "Test Form Validation",
-      "tested": "Form is validated successfully."
-    },
-    "model": {
-      "tab": "Model",
-      "info": "The form model stores the valid input data, invalid values are excluded."
     }
   },
   "data-access-config": {
@@ -1398,7 +1329,7 @@
   "entity-sf-config": {
     "schema-form": {
       "title": "Form",
-      "info": "The form can be specified both in terms of data structure (schema) and data display and validation (definition). See <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>form schema documentation</a> for more details."
+      "info": "The web application form can be specified both in terms of data structure (schema) and data display and validation (definition). See <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>form schema documentation</a> for more details."
     },
     "schema": {
       "tab": "Schema",
