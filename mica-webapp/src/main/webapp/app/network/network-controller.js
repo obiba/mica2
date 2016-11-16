@@ -177,6 +177,7 @@ mica.network
           delete $scope.network.logo;
         }
 
+        $scope.$broadcast('schemaFormValidate');
         if (!$scope.form.$valid) {
           $scope.form.saveAttempted = true;
           return;
