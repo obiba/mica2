@@ -79,7 +79,21 @@ mica.study
       study.model._acronym = LocalizedValues.arrayToObject(study.acronym);
       study.model._objectives = LocalizedValues.arrayToObject(study.objectives);
       study.model._opal = study.opal;
-      console.log('TEST ',study);
+
+      if (study.populations) {
+        study.populations.forEach(function (population) {
+          population.model = population.content ? angular.fromJson(population.content) : {};
+          population.model._id = population.id;
+          population.model._name = LocalizedValues.arrayToObject(population.name);
+          population.model._description = LocalizedValues.arrayToObject(population.description);
+
+          if (population.dataCollectionEvents) {
+            population.dataCollectionEvents.forEach(function (dce) {
+              dce.model = dce.content ? angular.fromJson(dce.content) : {};
+            })
+          }
+        });
+      }
       return study;
     };
 
@@ -322,21 +336,7 @@ mica.study
     }])
 
   .service('StudyModelUtil', [function() {
-    this.updateContents = function(study) {
-      study.content = study.model ? angular.toJson(study.model) : null;
-
-      if(study.populations) {
-        study.populations.forEach(function(population) {
-          population.content = population.model ? angular.toJson(population.model) : null;
-
-          if(population.dataCollectionEvents) {
-            population.dataCollectionEvents.forEach(function(dce) {
-              dce.content =  dce.model ? angular.toJson(dce.model): null;
-            });
-          }
-        });
-      }
-    };
+    this.updateContents = function() {};
 
     return this;
   }]);

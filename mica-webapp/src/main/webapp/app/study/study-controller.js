@@ -178,6 +178,11 @@ mica.study
 
       $scope.Mode = {View: 0, Revision: 1, File: 2, Permission: 3, Comment: 4};
 
+      $scope.selectedLocale = $translate.use();
+      $scope.$on('sfLocalizedStringLocaleChanged', function (event, locale) {
+        $scope.selectedLocale = locale;
+      });
+
       var getViewMode = function() {
         var result = /\/(revision[s\/]*|files|permissions|comments)/.exec($location.path());
         if (result && result.length > 1) {
@@ -254,7 +259,6 @@ mica.study
 
       var fetchStudy = function (studyId) {
         $scope.study = DraftStudyResource.get({id: studyId}, initializeStudy);
-        console.log($scope.study);
       };
 
       var fetchRevisions = function (studyId, onSuccess) {
@@ -313,7 +317,6 @@ mica.study
           form.schema = angular.fromJson(form.schema);
           form.definition = angular.fromJson(form.definition);
           $scope.sfForm = form;
-          console.log($scope.sfForm);
         });
 
         EntityFormResource.get({target: 'population', locale: $translate.use()}, function(form) {
@@ -611,6 +614,7 @@ mica.study
     '$uibModalInstance',
     '$locale',
     '$location',
+    '$translate',
     'lang',
     'dce',
     'sfOptions',
@@ -622,6 +626,7 @@ mica.study
               $uibModalInstance,
               $locale,
               $location,
+              $translate,
               lang,
               dce,
               sfOptions,
@@ -652,7 +657,7 @@ mica.study
         }
 
         var result = terms.map(function(term){
-          return StudyTaxonomyService.getLabel(vocabularyName, term, $scope.tab.lang);
+          return StudyTaxonomyService.getLabel(vocabularyName, term, $translate.use());
         });
         return result.join(', ');
       };
@@ -664,6 +669,7 @@ mica.study
     '$location',
     '$log',
     '$filter',
+    '$translate',
     'DraftStudyResource',
     'EntityFormResource',
     'LocalizedSchemaFormService',
@@ -678,6 +684,7 @@ mica.study
               $location,
               $log,
               $filter,
+              $translate,
               DraftStudyResource,
               EntityFormResource,
               LocalizedSchemaFormService,
@@ -723,7 +730,6 @@ mica.study
         }
       }) : {};
 
-      $scope.activeTab = 0;
       $scope.newPopulation = !$routeParams.pid;
       $scope.$watch('population.recruitment.dataSources', function (newVal, oldVal) {
         if (oldVal === undefined || newVal === undefined) {
@@ -770,35 +776,27 @@ mica.study
       };
 
       MicaConfigResource.get(function (micaConfig) {
-        $scope.sfOptions = {};
-        micaConfig.languages.forEach(function (lang) {
-          var sfLanguages = {};
-          sfLanguages[lang] = $filter('translate')('language.' + lang);
-          $scope.tabs.push({lang: lang});
-          $scope.sfOptions[lang] = {
-            formDefaults: {
-              languages: sfLanguages
-            }
-          };
+        var formLanguages = {};
+        micaConfig.languages.forEach(function (loc) {
+          formLanguages[loc] = $filter('translate')('language.' + loc);
         });
+        $scope.sfOptions = {formDefaults: { languages: formLanguages }};
 
-        EntityFormResource.get({target: 'population'}, function(form) {
-          form.schema = LocalizedSchemaFormService.translate(angular.fromJson(form.schema));
-          form.definition = LocalizedSchemaFormService.translate(angular.fromJson(form.definition));
+        EntityFormResource.get({target: 'population', locale: $translate.use()}, function(form) {
+          form.schema = angular.fromJson(form.schema);
+          form.definition = angular.fromJson(form.definition);
           $scope.populationSfForm = form;
         });
       });
 
       StudyTaxonomyService.get(function() {
-        $scope.tabs.forEach(function (tab) {
-          $scope.selectionCriteriaGenders[tab.lang] = StudyTaxonomyService.getTerms('populations-selectionCriteria-gender', tab.lang).map(function (obj) {
-            return {id: obj.name, label: obj.label};
-          });
-          $scope.availableSelectionCriteria[tab.lang] = StudyTaxonomyService.getTerms('populations-selectionCriteria-criteria', tab.lang);
-          $scope.recruitmentSourcesTypes[tab.lang] = StudyTaxonomyService.getTerms('populations-recruitment-dataSources', tab.lang);
-          $scope.generalPopulationTypes[tab.lang] = StudyTaxonomyService.getTerms('populations-recruitment-generalPopulationSources', tab.lang);
-          $scope.specificPopulationTypes[tab.lang] = StudyTaxonomyService.getTerms('populations-recruitment-specificPopulationSources', tab.lang);
+        $scope.selectionCriteriaGenders = StudyTaxonomyService.getTerms('populations-selectionCriteria-gender', $translate.use()).map(function (obj) {
+          return {id: obj.name, label: obj.label};
         });
+        $scope.availableSelectionCriteria = StudyTaxonomyService.getTerms('populations-selectionCriteria-criteria', $translate.use());
+        $scope.recruitmentSourcesTypes = StudyTaxonomyService.getTerms('populations-recruitment-dataSources', $translate.use());
+        $scope.generalPopulationTypes = StudyTaxonomyService.getTerms('populations-recruitment-generalPopulationSources', $translate.use());
+        $scope.specificPopulationTypes = StudyTaxonomyService.getTerms('populations-recruitment-specificPopulationSources', $translate.use());
       });
 
       $scope.save = function (form) {
@@ -1050,26 +1048,15 @@ mica.study
               FormDirtyStateObserver,
               StudyModelUtil) {
       MicaConfigResource.get(function (micaConfig) {
-        $scope.tabs = [];
-        $scope.languages = [];
-        $scope.sfOptions = {};
         var sfLanguages = {};
-
         micaConfig.languages.forEach(function (lang) {
-          $scope.tabs.push({lang: lang});
-          $scope.languages.push(lang);
           sfLanguages[lang] = $filter('translate')('language.' + lang);
         });
-
         $scope.sfOptions = {
           formDefaults: {
             languages: sfLanguages
           }
         };
-
-        $scope.$watch('activeTab', function () {
-          $scope.$broadcast('sfLocalizedStringLocaleChanged', $scope.tabs[$scope.activeTab].lang);
-        });
 
         EntityFormResource.get({target: 'study'}, function(form) {
           form.schema = LocalizedSchemaFormService.translate(angular.fromJson(form.schema));
@@ -1078,34 +1065,12 @@ mica.study
         });
       });
 
-      function initializeTaxonomies() {
-        StudyTaxonomyService.get(function() {
-          $scope.tabs.forEach(function(tab) {
-            $scope.methodDesignTypes[tab.lang] = RadioGroupOptionBuilder.build('methods', StudyTaxonomyService.getTerms('methods-designs', tab.lang));
-            $scope.accessTypes[tab.lang] = StudyTaxonomyService.getTerms('access', tab.lang);
-            $scope.methodRecruitmentTypes[tab.lang] = StudyTaxonomyService.getTerms('methods-recruitments', tab.lang);
-          });
-        });
-      }
-
       function createNewStudy() {
-        initializeTaxonomies();
         return {attachments: [], maelstromAuthorization: {date: null}, specificAuthorization: {date: null}, model: {}};
       }
 
-      $scope.activeTab = 0;
       $scope.revision = {comment: null};
       $scope.today = new Date();
-      $scope.$watch('authorization.maelstrom.date', function (newVal) {
-        if (newVal !== $scope.today) {
-          $scope.study.maelstromAuthorization.date = newVal;
-        }
-      }, true);
-      $scope.$watch('authorization.specific.date', function (newVal) {
-        if (newVal !== $scope.today) {
-          $scope.study.specificAuthorization.date = newVal;
-        }
-      }, true);
       $scope.authorization = {maelstrom: {date: $scope.today}, specific: {date: $scope.today}};
       $scope.datePicker = {maelstrom: {opened: false}, specific: {opened: false}};
       $scope.openDatePicker = function ($event, id) {
@@ -1130,7 +1095,6 @@ mica.study
         $scope.files = study.logo ? [study.logo] : [];
         $scope.study.attachments =
           study.attachments && study.attachments.length > 0 ? study.attachments : [];
-        initializeTaxonomies();
       }) : createNewStudy();
 
 

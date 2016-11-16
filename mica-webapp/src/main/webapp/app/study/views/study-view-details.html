@@ -97,46 +97,9 @@
         </div>
       </div>
 
-      <div class="row">
-        <div id="study-paper" class="col-md-6">
-          <h3 translate ng-show="study.model.markerPaper || study.model.pubmedId">study.marker-paper</h3>
-          <table class="table table-bordered table-striped" ng-show="study.model.markerPaper || study.model.pubmedId">
-            <tbody>
-            <tr ng-show="study.model.markerPaper">
-              <th translate>study.marker-paper</th>
-              <td>{{study.markerPaper}}</td>
-            </tr>
-            <tr ng-show="study.model.pubmedId">
-              <th translate>study.pubmed-id</th>
-              <td>
-                <a ng-href="http://www.ncbi.nlm.nih.gov/pubmed/{{study.model.pubmedId}}" target="_blank">
-                  PUBMED {{study.model.pubmedId}}
-                </a>
-              </td>
-            </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="col-md-6">
-          <h3 translate ng-show="study.model.info[tab.lang]">suppl-info</h3>
-          <table class="table table-bordered table-striped" ng-show="study.model.info[tab.lang]">
-            <tbody>
-            <tr>
-              <td>
-                <localized value="study.model.info" lang="tab.lang"></localized>
-              </td>
-            </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
       <div id="study-timeline">
         <h3 translate ng-show="study.populations.length">study.timeline</h3>
-        <div id="timeline" width="20"></div>
+        <div id="timeline"></div>
       </div>
 
       <div id="study-populations">
