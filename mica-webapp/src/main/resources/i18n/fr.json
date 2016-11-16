@@ -672,7 +672,7 @@
     "acronym": "Acronyme",
     "add": "Ajouter un réseau",
     "label-edit": "Éditer un réseau",
-    "general-info": "Information générale",
+    "general-info": "<h3>Information générale</h3>",
     "description": "Description",
     "index": "Index",
     "label": "Réseau",
