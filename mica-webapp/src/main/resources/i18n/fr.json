@@ -1207,7 +1207,6 @@
       "keywords-help": "Liste optionnelle des mots-clés utiles lors de la construction des requêtes de recherche.",
       "unique-name": "Le nom d'une valeur de critère doit être unique."
     },
-    "all-criteria": "Tous les critères",
     "delete-dialog": {
       "title": "Supprimer {{arg0}}",
       "message": "Êtes-vous sûr de vouloir supprimer le {{arg0}} '{{arg1}}'?"
