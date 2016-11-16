@@ -29,6 +29,7 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.Lists;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
@@ -222,7 +223,12 @@ public class MicaConfigResource {
   @Timed
   @RequiresAuthentication
   public List<Projects.ProjectDto> getOpalProjects() throws URISyntaxException {
-    return opalService.getProjectDtos(null);
+    try {
+      return opalService.getProjectDtos(null);
+    } catch (Exception e) {
+      logger.warn("Failed at retrieving opal projects: {}", e.getMessage());
+      return Lists.newArrayList();
+    }
   }
 
   @GET
