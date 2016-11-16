@@ -604,7 +604,7 @@
     "table-description": "Description",
     "data-schema": {
       "title": "Schéma de données",
-      "Info": "Les variables du schéma de données sont les variables de référence de l'ensemble de données harmonisé. Ceci est un dictionnaire de données simple: aucune donnée sommaire ne sera extraite de la table Opal."
+      "Info": "Les variables du schéma de données sont les variables de référence de l'ensemble de données harmonisées. Ceci est un dictionnaire de données simple: aucune donnée sommaire ne sera extraite de la table Opal."
     },
     "index": "Index",
     "add-study-table": "Ajouter une table d'étude",
@@ -664,8 +664,8 @@
   },
   "study-datasets": "Ensembles de données d'étude",
   "study-dataset": "Ensemble de données d'étude",
-  "harmonization-datasets": "Ensembles de données harmonisé",
-  "harmonization-dataset": "Ensemble de données harmonisé",
+  "harmonization-datasets": "Ensembles de données harmonisées",
+  "harmonization-dataset": "Ensemble de données harmonisées",
   "network": {
     "name": "Nom",
     "logo": "Logo",
@@ -822,7 +822,7 @@
       "study" : "Étude",
       "dce" : "Événement de collecte de données (ECD)",
       "network" : "Réseau",
-      "dataschema": "Ensemble de données Harmonisé",
+      "dataschema": "Ensemble de données Harmonisées",
       "dataset": "Ensemble de données d'étude"
     },
     "coverage-select": {
@@ -964,9 +964,10 @@
   "new-network": "Nouveau réseau",
   "new-study": "Nouvelle étude",
   "new-study-dataset": "Nouvel ensemble de données d'étude",
-  "new-harmonization-dataset": "Nouvel ensemble de données harmonisé",
+  "new-harmonization-dataset": "Nouvel ensemble de données harmonisées",
   "new-data-access-request": "Nouvelle demande d'accès aux données",
   "new-project": "Nouveau projet de recherche",
+  "title": "Titre",
   "description": "Description",
   "help": "Aide",
   "general": "Général",
@@ -1003,10 +1004,10 @@
       "logs": "Configurer les logs du server.",
       "caching": "Gérer les caches du serveur.",
       "indexing": "Gérer les index du serveur.",
-      "network-config": "Configure network form.",
-      "study-config": "Configure study form.",
-      "study-dataset-config": "Configure study dataset form.",
-      "harmonization-dataset-config": "Configure harmonization dataset form.",
+      "network-config": "Configurer le formulaire, les permissions et la recherche de réseaux.",
+      "study-config": "Configurer le formulaire, les permissions et la recherche d'études.",
+      "study-dataset-config": "Configurer le formulaire, les permissions et la recherche d'ensembles de données d'études.",
+      "harmonization-dataset-config": "Configurer le formulaire, les permissions et la recherche d'ensembles de données harmonisées.",
       "data-access-config": "Configurer le formulaire de demande d'accès aux données.",
       "project-config": "Configurer le formulaire de projet de recherche.",
       "file-system": "Gérer le système de fichiers.",
@@ -1157,7 +1158,7 @@
     }
   },
   "network-config" : {
-    "title" : "Configuration de réseaux",
+    "title" : "Configuration des réseaux",
     "schema-form": {
       "title": "Formulaire",
       "info": "Le formulaire de réseau peut être spécifié à la fois en termes de structure de données (schéma) et d'affichage des données et validation (définition). Voir <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>documentation du schema form</a> pour plus de détails."
@@ -1175,7 +1176,7 @@
     }
   },
   "study-config" : {
-    "title" : "Configuration d'études",
+    "title" : "Configuration des études",
     "schema-form": {
       "title": "Formulaire",
       "info": "Le formulaire d'étude peut être spécifié à la fois en termes de structure de données (schéma) et d'affichage des données et validation (définition). Voir <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>documentation du schema form</a> pour plus de détails."
@@ -1213,14 +1214,14 @@
     }
   },
   "study-dataset-config" : {
-    "title" : "Configuration d'ensembles de données d'étude",
+    "title" : "Configuration des ensembles de données d'étude",
     "schema-form": {
       "title": "Formulaire",
       "info": "Le formulaire d'ensemble de données d'étude peut être spécifié à la fois en termes de structure de données (schéma) et d'affichage des données et validation (définition). Voir <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>documentation du schema form</a> pour plus de détails."
     }
   },
   "harmonization-dataset-config" : {
-    "title" : "Configuration d'ensemble de données harmonisées",
+    "title" : "Configuration des ensembles de données harmonisées",
     "schema-form": {
       "title": "Formulaire",
       "info": "Le formulaire d'ensemble de données harmonisées peut être spécifié à la fois en termes de structure de données (schéma) et d'affichage des données et validation (définition). Voir <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>documentation du schema form</a> pour plus de détails."
@@ -1242,7 +1243,7 @@
     "saved": "Formulaire d'accès aux données a été mis à jour avec succès.",
     "pdf-download": {
       "title": "Télécharger le PDF",
-      "info": "Les données collectées dans le formulaire d'application web peuvent être représentées dans un fichier PDF. Choisissez l'une des options suivantes:"
+      "info": "Les données collectées dans le formulaire peuvent être représentées dans un fichier PDF. Choisissez l'une des options suivantes:"
     },
     "pdf-template": {
       "title": "Modèle PDF",
@@ -1254,7 +1255,7 @@
     },
     "schema-form": {
       "title": "Formulaire de demande",
-      "info": "Le formulaire d'application web peut être spécifié à la fois en termes de structure de données (schéma) et d'affichage des données et validation (définition). Voir <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>documentation du Schema Form</a> pour plus de détails."
+      "info": "Le formulaire peut être spécifié à la fois en termes de structure de données (schéma) et d'affichage des données et validation (définition). Voir <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>documentation du Schema Form</a> pour plus de détails."
     },
     "schema" : {
       "tab": "Schéma",
@@ -1339,7 +1340,7 @@
   "entity-sf-config": {
     "schema-form": {
       "title": "Formulaire",
-      "info": "Le formulaire d'application web peut être spécifié à la fois en termes de structure de données (schéma) et d'affichage des données et validation (définition). Voir <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>documentation du schema form</a> pour plus de détails."
+      "info": "Le formulaire peut être spécifié à la fois en termes de structure de données (schéma) et d'affichage des données et validation (définition). Voir <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>documentation du schema form</a> pour plus de détails."
     },
     "schema": {
       "tab": "Schéma",
