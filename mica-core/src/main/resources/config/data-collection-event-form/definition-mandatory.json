@@ -1,1 +1,32 @@
-[]
+[
+  {
+    "type": "fieldset",
+    "items": [
+      {
+        "type": "help",
+        "helpvalue": "t(study.general-info)"
+      },
+      "_id",
+      {
+        "key": "_name",
+        "type": "localizedstring"
+      },
+      {
+        "key": "_startYear",
+        "type": "number"
+      },
+      {
+        "key": "_startMonth",
+        "type": "number"
+      },
+      {
+        "key": "_endYear",
+        "type": "number"
+      },
+      {
+        "key": "_endMonth",
+        "type": "number"
+      }
+    ]
+  }
+]

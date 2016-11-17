@@ -23,10 +23,10 @@ mica.study
       });
     }])
 
-  .factory('DraftStudiesResource', ['$resource',
-    function ($resource) {
+  .factory('DraftStudiesResource', ['$resource', 'StudyModelService',
+    function ($resource, StudyModelService) {
       return $resource('ws/draft/studies?comment:comment', {}, {
-        'save': {method: 'POST', errorHandler: true}
+        'save': {method: 'POST', errorHandler: true, transformRequest: StudyModelService.serialize}
       });
     }])
 
@@ -59,18 +59,39 @@ mica.study
 
       if(studyCopy.populations) {
         studyCopy.populations.forEach(function(population) {
-          delete population.model;
-
-          if(population.dataCollectionEvents) {
-            population.dataCollectionEvents.forEach(function(dce) {
-              delete dce.model;
-            });
-          }
+          populationSerialize(population);
         });
       }
 
       return angular.toJson(studyCopy);
     };
+
+    function populationSerialize(population) {
+      population.id = population.model._id;
+      population.name = LocalizedValues.objectToArray(population.model._name);
+      population.description = LocalizedValues.objectToArray(population.model._description);
+      population.content = population.model ? angular.toJson(population.model) : null;
+
+      delete population.model;
+
+      if(population.dataCollectionEvents) {
+        population.dataCollectionEvents.forEach(function(dce) {
+          dceSerialize(dce);
+        });
+      }
+    }
+
+    function dceSerialize(dce) {
+      dce.id = dce.model._id;
+      dce.name = LocalizedValues.objectToArray(dce.model._name);
+      dce.startYear = dce.model._startYear;
+      dce.startMonth = dce.model._startMonth;
+      dce.endYear = dce.model._endYear;
+      dce.endMonth = dce.model._endMonth;
+      dce.content = dce.model ? angular.toJson(dce.model) : null;
+
+      delete dce.model;
+    }
 
     this.deserialize = function (studyData) {
       var study = angular.fromJson(studyData);
@@ -82,20 +103,34 @@ mica.study
 
       if (study.populations) {
         study.populations.forEach(function (population) {
-          population.model = population.content ? angular.fromJson(population.content) : {};
-          population.model._id = population.id;
-          population.model._name = LocalizedValues.arrayToObject(population.name);
-          population.model._description = LocalizedValues.arrayToObject(population.description);
-
-          if (population.dataCollectionEvents) {
-            population.dataCollectionEvents.forEach(function (dce) {
-              dce.model = dce.content ? angular.fromJson(dce.content) : {};
-            })
-          }
+          populationDeserialize(population);
         });
       }
       return study;
     };
+
+    function populationDeserialize(population) {
+      population.model = population.content ? angular.fromJson(population.content) : {};
+      population.model._id = population.id;
+      population.model._name = LocalizedValues.arrayToObject(population.name);
+      population.model._description = LocalizedValues.arrayToObject(population.description);
+
+      if (population.dataCollectionEvents) {
+        population.dataCollectionEvents.forEach(function (dce) {
+          dceDeserialize(dce);
+        });
+      }
+    }
+
+    function dceDeserialize(dce) {
+      dce.model = dce.content ? angular.fromJson(dce.content) : {};
+      dce.model._id = dce.id;
+      dce.model._name = LocalizedValues.arrayToObject(dce.name);
+      dce.model._startYear = dce.startYear;
+      dce.model._startMonth = dce.startMonth;
+      dce.model._endYear = dce.endYear;
+      dce.model._endMonth = dce.endMonth;
+    }
 
     return this;
   }])
@@ -212,6 +247,8 @@ mica.study
       };
 
       this.getLabel = function (vocabulary, term, lang) {
+        console.log(arguments);
+
         if (!studyTaxonomy || !vocabulary || !term) {
           return;
         }

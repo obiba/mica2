@@ -208,8 +208,6 @@ mica.study
         return $scope.viewMode === $scope.Mode.View;
       };
 
-      $scope.activeTab = 0;
-
       var updateTimeline = function (study) {
         if (!$scope.timeline) {
           $scope.timeline = new $.MicaTimeline(new $.StudyDtoParser());
@@ -523,7 +521,7 @@ mica.study
           controller: 'StudyPopulationDceModalController',
           resolve: {
             lang: function() {
-              return $scope.tabs[$scope.activeTab].lang;
+              return $translate.use();
             },
             dce: function () {
               return dce;
@@ -846,6 +844,7 @@ mica.study
     '$location',
     '$log',
     '$filter',
+    '$translate',
     'DraftStudyResource',
     'EntityFormResource',
     'LocalizedSchemaFormService',
@@ -860,6 +859,7 @@ mica.study
               $location,
               $log,
               $filter,
+              $translate,
               DraftStudyResource,
               EntityFormResource,
               LocalizedSchemaFormService,
@@ -922,7 +922,7 @@ mica.study
             $scope.dce.attachments && $scope.dce.attachments.length > 0 ? $scope.dce.attachments : [];
 
           StudyTaxonomyService.get(function() {
-            var lang = $scope.tabs[$scope.activeTab].lang;
+            var lang = $translate.use();
             $scope.dataSources = StudyTaxonomyService.getTerms('populations-dataCollectionEvents-dataSources', lang);
             $scope.bioSamples = StudyTaxonomyService.getTerms('populations-dataCollectionEvents-bioSamples', lang);
             $scope.administrativeDatabases = StudyTaxonomyService.getTerms('populations-dataCollectionEvents-administrativeDatabases', lang);
@@ -935,23 +935,25 @@ mica.study
       }) : {};
 
       MicaConfigResource.get(function (micaConfig) {
-        $scope.tabs = [];
-        $scope.sfOptions = {};
-
+        var sfLanguages = {};
         micaConfig.languages.forEach(function (lang) {
-          $scope.tabs.push({lang: lang});
-          var sfLanguages = {};
           sfLanguages[lang] = $filter('translate')('language.' + lang);
-          $scope.sfOptions[lang] = {
-            formDefaults: {
-              languages: sfLanguages
-            }
-          };
         });
+        $scope.sfOptions = {
+          formDefaults: {
+            languages: sfLanguages
+          }
+        };
 
-        EntityFormResource.get({target: 'data-collection-event'}, function(form) {
+        EntityFormResource.get({target: 'study'}, function(form) {
           form.schema = LocalizedSchemaFormService.translate(angular.fromJson(form.schema));
           form.definition = LocalizedSchemaFormService.translate(angular.fromJson(form.definition));
+          $scope.sfForm = form;
+        });
+
+        EntityFormResource.get({target: 'data-collection-event', locale: $translate.use()}, function(form) {
+          form.schema = angular.fromJson(form.schema);
+          form.definition = angular.fromJson(form.definition);
           $scope.dceSfForm = form;
         });
       });

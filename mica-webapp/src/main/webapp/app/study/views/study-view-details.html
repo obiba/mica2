@@ -55,62 +55,65 @@
     <localized value="study.objectives" lang="tab.lang"></localized>
   </div>
 
-      <div class="row">
-        <div class="col-md-6">
-          <h3 translate>study.general-info</h3>
+    <div class="row">
+      <div class="col-md-6">
+        <h3 translate>study.general-info</h3>
 
-          <div class="table-responsive">
-            <table class="table table-bordered table-striped">
-            <tbody>
-            <tr ng-repeat="role in roles">
-              <th>{{'study.member-list' | translate: {type: role} }}</th>
-              <td>
-                <div ng-controller="ContactController">
-                  <ul ui-sortable="sortableOptions" ng-model="memberships[role]" class="list-unstyled sortable" ng-show="memberships[role].length">
-                    <li ng-repeat="person in memberships[role]">
-                      <a ng-click="viewContact(person)" title="{{'dnd-reorder' | translate}}">
-                        {{person.title}} {{person.firstName}} {{person.lastName}}
-                        {{person.academicLevel}}
-                      <span ng-show="person.institution.name.length">
-                        (<localized value="person.institution.name" lang="tab.lang"></localized>)
-                      </span>
-                      </a>
-                      <div class="inline" ng-if="inViewMode() && permissions.canEdit()">
-                        <a ng-click="editMember(study, person, role)" class="action"><i class="fa fa-pencil"></i></a>
-                        <a ng-click="deleteMember(study, person, role)" class="action"><i class="fa fa-trash-o"></i></a>
-                      </div>
-                    </li>
-                  </ul>
-                  <button type="button" class="btn btn-info btn-sm" ng-click="addMember(study, role)" ng-if="inViewMode() && permissions.canEdit()">
-                    <i class="fa fa-plus"></i> <span>{{ 'study.add-member' | translate: {type: role} }}</span>
-                  </button>
-                </div>
-              </td>
-            </tr>
-            <tr ng-show="study.networks.length">
-              <th translate>networks</th>
-              <td>{{study.networks}}</td>
-            </tr>
-            </tbody>
-          </table>
-          </div>
+        <div class="table-responsive">
+          <table class="table table-bordered table-striped">
+          <tbody>
+          <tr ng-repeat="role in roles">
+            <th>{{'study.member-list' | translate: {type: role} }}</th>
+            <td>
+              <div ng-controller="ContactController">
+                <ul ui-sortable="sortableOptions" ng-model="memberships[role]" class="list-unstyled sortable" ng-show="memberships[role].length">
+                  <li ng-repeat="person in memberships[role]">
+                    <a ng-click="viewContact(person)" title="{{'dnd-reorder' | translate}}">
+                      {{person.title}} {{person.firstName}} {{person.lastName}}
+                      {{person.academicLevel}}
+                    <span ng-show="person.institution.name.length">
+                      (<localized value="person.institution.name" lang="tab.lang"></localized>)
+                    </span>
+                    </a>
+                    <div class="inline" ng-if="inViewMode() && permissions.canEdit()">
+                      <a ng-click="editMember(study, person, role)" class="action"><i class="fa fa-pencil"></i></a>
+                      <a ng-click="deleteMember(study, person, role)" class="action"><i class="fa fa-trash-o"></i></a>
+                    </div>
+                  </li>
+                </ul>
+                <button type="button" class="btn btn-info btn-sm" ng-click="addMember(study, role)" ng-if="inViewMode() && permissions.canEdit()">
+                  <i class="fa fa-plus"></i> <span>{{ 'study.add-member' | translate: {type: role} }}</span>
+                </button>
+              </div>
+            </td>
+          </tr>
+          <tr ng-show="study.networks.length">
+            <th translate>networks</th>
+            <td>{{study.networks}}</td>
+          </tr>
+          </tbody>
+        </table>
         </div>
       </div>
+    </div>
 
-      <div id="study-timeline">
-        <h3 translate ng-show="study.populations.length">study.timeline</h3>
-        <div id="timeline"></div>
-      </div>
+    <div id="study-timeline">
+      <h3 translate ng-show="study.populations.length">study.timeline</h3>
+      <div id="timeline"></div>
+    </div>
 
-      <div id="study-populations">
-        <h3>
-          <span translate>study.populations</span>
-        </h3>
-        <a ng-click="addPopulation()" class="btn btn-info" ng-if="inViewMode() && permissions.canEdit()">
-          <i class="fa fa-plus"></i> <span translate>study.add-population</span>
-        </a>
-        <div ng-repeat="population in study.populations">
+    <div id="study-populations">
+      <h3>
+        <span translate>study.populations</span>
+      </h3>
+      <a ng-click="addPopulation()" class="btn btn-info" ng-if="inViewMode() && permissions.canEdit()">
+        <i class="fa fa-plus"></i> <span translate>study.add-population</span>
+      </a>
+
+      <uib-accordion close-others="true">
+        <div uib-accordion-group class="panel-default" ng-repeat="population in study.populations">
           <div ng-include="'app/study/views/population/population-view.html'"></div>
         </div>
-      </div>
+      </uib-accordion>
+    </div>
 </div>

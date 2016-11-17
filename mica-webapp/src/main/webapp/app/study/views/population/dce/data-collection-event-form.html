@@ -21,28 +21,10 @@
 
   <form name="form" role="form" novalidate ng-submit="save(form)">
     <p class="alert alert-danger" ng-show="form.saveAttempted && form.$invalid" translate="">fix-error</p>
-    <uib-tabset active="activeTab">
-      <uib-tab ng-repeat="tab in tabs" heading="{{'language.' + tab.lang | translate}}" disable="tab.disabled">
-        <div ng-if="population">
+      <div ng-if="population">
 
-          <h3 translate>study.general-info</h3>
-          <div class="row">
-            <div class="col-md-6">
-              <div form-input name="dce_id" model="dce.id" required="true" label="data-collection-event.id"></div>
-              <div localized-input name="data-collection-event.name" required="true" model="dce.name" lang="tab.lang" label="data-collection-event.name"></div>
-            </div>
-            <div class="col-md-6">
-              <div form-input type="number" name="data-collection-event.start-year" min="{{defaultMinYear}}" max="{{defaultMaxYear}}" required="true" model="dce.startYear" lang="tab.lang" label="data-collection-event.start-year"></div>
-              <div form-input type="number" name="data-collection-event.start-month" min="1" max="12" model="dce.startMonth" lang="tab.lang" label="data-collection-event.start-month"></div>
-              <div form-input type="number" min="{{dce.startYear}}" name="data-collection-event.end-year" max="{{dce.startYear + 200}}" model="dce.endYear" lang="tab.lang" label="data-collection-event.end-year"></div>
-              <div form-input type="number" name="data-collection-event.end-month" min="1" max="12" model="dce.endMonth" lang="tab.lang" label="data-collection-event.end-month"></div>
-            </div>
-          </div>
-
-          <div sf-model="dce.model" sf-form="dceSfForm.definition" sf-schema="dceSfForm.schema" sf-options="sfOptions[tab.lang]"></div>
-        </div>
-      </uib-tab>
-    </uib-tabset>
+        <div sf-model="dce.model" sf-form="dceSfForm.definition" sf-schema="dceSfForm.schema" sf-options="sfOptions"></div>
+      </div>
     <button type="button" class="btn btn-default" ng-click="cancel()">
       <span translate>cancel</span>
     </button>

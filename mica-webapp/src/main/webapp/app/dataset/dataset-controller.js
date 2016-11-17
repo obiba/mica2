@@ -191,7 +191,6 @@ mica.dataset
       };
 
       $scope.type = getTypeFromUrl();
-      $scope.activeTab = 0;
       $scope.newDataset = !$routeParams.id;
       if ($routeParams.id) {
         $scope.dataset = StudyDatasetResource.get({id: $routeParams.id}, function (dataset) {
@@ -303,7 +302,6 @@ mica.dataset
       $scope.selected = {network: {}};
       $scope.networks = DraftNetworksResource.query();
       $scope.type = getTypeFromUrl();
-      $scope.activeTab = 0;
       $scope.newDataset = !$routeParams.id;
 
       function getOpalProjects() {
@@ -666,7 +664,6 @@ mica.dataset
       $scope.Mode = {View: 0, Revision: 1, File: 2, Permission: 3, Comment: 4};
       $scope.type = getTypeFromUrl();
       $scope.datasetId = $routeParams.id;
-      $scope.activeTab = 0;
       $scope.dataset = DatasetResource.get({id: $routeParams.id, type: $scope.type}, initializeDataset);
 
       $scope.publish = function (publish) {
@@ -848,8 +845,6 @@ mica.dataset
         $scope.datasetTable = dataset['obiba.mica.HarmonizationDatasetDto.type'].table;
         $scope.opalTables = OpalTablesService.getTables(dataset);
       });
-
-      $scope.activeTab = 0;
 
       $scope.isPublished = function () {
         return $scope.dataset.published;
