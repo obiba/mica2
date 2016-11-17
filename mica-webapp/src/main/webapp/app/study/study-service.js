@@ -192,10 +192,10 @@ mica.study
       });
     }])
 
-  .factory('DraftStudyViewRevisionResource', ['$resource',
-    function ($resource) {
+  .factory('DraftStudyViewRevisionResource', ['$resource', 'StudyModelService',
+    function ($resource, StudyModelService) {
       return $resource('ws/draft/study/:id/commit/:commitId/view', {}, {
-        'view': {method: 'GET', params: {id: '@id', commitId: '@commitId'}}
+        'view': {method: 'GET', params: {id: '@id', commitId: '@commitId'}, transformResponse: StudyModelService.deserialize}
       });
     }])
 
@@ -247,8 +247,6 @@ mica.study
       };
 
       this.getLabel = function (vocabulary, term, lang) {
-        console.log(arguments);
-
         if (!studyTaxonomy || !vocabulary || !term) {
           return;
         }
