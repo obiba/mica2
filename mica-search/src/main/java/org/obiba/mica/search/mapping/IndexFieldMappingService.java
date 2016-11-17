@@ -12,6 +12,8 @@ package org.obiba.mica.search.mapping;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.function.Function;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -100,9 +102,10 @@ public class IndexFieldMappingService {
 
   private IndexFieldMapping getMapping(String name, String type) {
     IndexFieldMapping mapping = mappings.get(name);
+    Function<String, Boolean> indexExists = (n) -> client.admin().indices().prepareExists(n).get().isExists();
 
     if (mapping == null) {
-      mapping = new IndexFieldMappingImpl(getContext(name, type));
+      mapping = new IndexFieldMappingImpl(indexExists.apply(name) ? getContext(name, type) : null);
       mappings.put(name, mapping);
     }
 
@@ -120,16 +123,21 @@ public class IndexFieldMappingService {
 
   private static class IndexFieldMappingImpl implements IndexFieldMapping {
 
-    private final ReadContext context;
+    private Optional<ReadContext> context;
 
     IndexFieldMappingImpl(ReadContext ctx) {
-      context = ctx;
+      context = Optional.ofNullable(ctx);
     }
 
     @Override
     public boolean isAnalyzed(String fieldName) {
-      List<Object> result = context.read(String.format("$..%s..analyzed", fieldName.replaceAll("\\.", "..")));
-      return result.size() > 0;
+      boolean analyzed = false;
+      if (context.isPresent()) {
+        List<Object> result = context.get().read(String.format("$..%s..analyzed", fieldName.replaceAll("\\.", "..")));
+        analyzed = result.size() > 0;
+      }
+
+      return analyzed;
     }
 
   }
