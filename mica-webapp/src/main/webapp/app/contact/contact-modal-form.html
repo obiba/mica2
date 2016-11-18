@@ -29,42 +29,7 @@
           </ui-select-choices>
         </ui-select>
       </div>
-      <uib-tabset active="activeTab" class="voffset4">
-        <uib-tab ng-repeat="tab in tabs" heading="{{tab.labelKey | translate}}" disable="tab.disable">
-          <div form-input name="contact.title" model="selected.contact.title" label="contact.title"></div>
-
-          <div form-input name="contact.firstName" model="selected.contact.firstName" label="contact.firstName"></div>
-
-          <div form-input name="contact.lastName" model="selected.contact.lastName" label="contact.lastName" required="true"></div>
-
-          <div form-input name="contact.academicLevel" model="selected.contact.academicLevel" label="contact.academicLevel"></div>
-
-          <div form-input name="contact.email" model="selected.contact.email" label="contact.email"></div>
-
-          <div form-input name="contact.phone" model="selected.contact.phone" label="contact.phone"></div>
-
-          <fieldset>
-            <legend translate>contact.institution</legend>
-
-            <div localized-input name="contact.institution" model="selected.contact.institution.name" label="name" lang="tab.lang"></div>
-
-            <div localized-input name="contact.institution.department" model="selected.contact.institution.department" label="contact.department" lang="tab.lang"></div>
-
-            <div localized-input name="contact.institution.street" model="selected.contact.institution.address.street" label="address.label" lang="tab.lang"></div>
-
-            <div localized-input name="contact.institution.city" model="selected.contact.institution.address.city" label="address.city" lang="tab.lang"></div>
-
-            <div form-input name="contact.institution.zip" model="selected.contact.institution.address.zip" label="address.zip"></div>
-
-            <div form-input name="contact.institution.state" model="selected.contact.institution.address.state" label="address.state"></div>
-
-            <div form-input name="contact.institution.country" model="selected.contact.institution.address.country.iso" label="address.country"></div>
-
-          </fieldset>
-
-        </uib-tab>
-      </uib-tabset>
-
+      <div sf-model="selected.contact" sf-form="sfForm.definition" sf-schema="sfForm.schema" sf-options="sfOptions"></div>
     </div>
 
     <div class="modal-footer">

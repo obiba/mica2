@@ -10,6 +10,9 @@
 
 'use strict';
 
+/* global CONTACT_SCHEMA */
+/* global CONTACT_DEFINITION */
+
 mica.contact
 
   .constant('CONTACT_EVENTS', {
@@ -140,13 +143,17 @@ mica.contact
       };
     }])
 
-  .controller('ContactViewModalController', ['$scope', '$uibModalInstance', 'micaConfig', 'contact',
-    function ($scope, $uibModalInstance, micaConfig, contact) {
-      $scope.contact = contact;
-      $scope.tabs = (micaConfig.languages || []).map(function (lang) {
-        return {lang: lang, labelKey: 'language.' + lang};
+  .controller('ContactViewModalController', ['$scope', '$uibModalInstance', '$filter', 'ContactSerializationService', 'LocalizedSchemaFormService', 'micaConfig', 'contact',
+    function ($scope, $uibModalInstance, $filter, ContactSerializationService, LocalizedSchemaFormService, micaConfig, contact) {
+      var formLanguages = {};
+      micaConfig.languages.forEach(function (loc) {
+        formLanguages[loc] = $filter('translate')('language.' + loc);
       });
 
+      $scope.sfOptions = {formDefaults: {languages: formLanguages, readonly: true}};
+      $scope.sfForm = {schema: LocalizedSchemaFormService.translate(angular.copy(CONTACT_SCHEMA)),
+        definition: LocalizedSchemaFormService.translate(angular.copy(CONTACT_DEFINITION))};
+      $scope.contact = ContactSerializationService.deserialize(contact);
       $scope.close = function () {
         $uibModalInstance.dismiss('close');
       };
@@ -155,14 +162,17 @@ mica.contact
   .controller('ContactEditModalController', ['$scope',
     '$uibModalInstance',
     '$translate',
+    '$filter',
+    'ContactSerializationService',
+    'LocalizedSchemaFormService',
     'ContactsSearchResource',
     'micaConfig',
     'contact',
     'excludes',
     'type',
-    function ($scope, $uibModalInstance, $translate, ContactsSearchResource, micaConfig, contact, excludes, type) {
-      $translate(type).then(function(tranlation) {
-        $scope.type = tranlation;
+    function ($scope, $uibModalInstance, $translate, $filter, ContactSerializationService, LocalizedSchemaFormService, ContactsSearchResource, micaConfig, contact, excludes, type) {
+      $translate(type).then(function(translation) {
+        $scope.type = translation;
       });
 
       var newResult = function() {
@@ -170,8 +180,9 @@ mica.contact
       };
 
       var save = function (form) {
+        $scope.$broadcast('schemaFormValidate');
         if (form.$valid) {
-          $uibModalInstance.close($scope.selected.contact);
+          $uibModalInstance.close(ContactSerializationService.serialize(($scope.selected.contact)));
         } else {
           $scope.form = form;
           $scope.form.saveAttempted = true;
@@ -215,11 +226,16 @@ mica.contact
         }
       };
 
-      $scope.tabs = (micaConfig.languages || []).map(function (lang) {
-        return {lang: lang, labelKey: 'language.' + lang};
+      var formLanguages = {};
+      micaConfig.languages.forEach(function (loc) {
+        formLanguages[loc] = $filter('translate')('language.' + loc);
       });
+
+      $scope.sfOptions = {formDefaults: {languages: formLanguages}};
+      $scope.sfForm = {schema: LocalizedSchemaFormService.translate(angular.copy(CONTACT_SCHEMA)),
+        definition: LocalizedSchemaFormService.translate(angular.copy(CONTACT_DEFINITION))};
       $scope.isNew = Object.getOwnPropertyNames(contact).length === 0;
-      $scope.selected = {contact: contact};
+      $scope.selected = {contact: $scope.isNew ? contact : ContactSerializationService.deserialize(contact)};
       $scope.excludes = excludes;
       $scope.result = newResult();
       $scope.autoRefreshed = false;
