@@ -13,39 +13,6 @@
       <div class="row">
         <div class="col-md-6">
           <div sf-model="network.model" sf-form="sfForm.definition" sf-schema="sfForm.schema" sf-options="sfOptions"></div>
-
-          <table class="table table-bordered table-striped">
-            <tbody>
-            <tr ng-repeat="role in roles">
-              <th>{{'network.member-list' | translate: {type: role} }}</th>
-              <td>
-                <div ng-controller="ContactController">
-                  <ul ui-sortable="sortableOptions" ng-model="memberships[role]" class="list-unstyled sortable" ng-show="memberships[role].length">
-                    <li ng-repeat="person in memberships[role]">
-                      <a ng-click="viewContact(person)" title="{{'dnd-reorder' | translate}}">
-                        {{person.title}} {{person.firstName}} {{person.lastName}}
-                        {{person.academicLevel}}
-                      <span ng-show="person.institution.name.length">
-                        (<localized value="person.institution.name" lang="tab.lang"></localized>)
-                      </span>
-                      </a>
-                      <div class="inline" ng-if="inViewMode() && permissions.canEdit()">
-                        <a ng-click="editMember(network, person, role)" class="action"><i class="fa fa-pencil"></i></a>
-                        <a ng-click="deleteMember(network, person, role)" class="action"><i class="fa fa-trash-o"></i></a>
-                      </div>
-                    </li>
-                  </ul>
-                  <button type="button" class="btn btn-info btn-sm" ng-click="addMember(network, role)" ng-if="inViewMode() && permissions.canEdit()">
-                    <i class="fa fa-plus"></i> <span>{{ 'network.add-member' | translate: {type: role} }}</span>
-                  </button>
-                </div>
-              </td>
-            </tr>
-            </tbody>
-          </table>
-
-          <a ng-if="inViewMode() && (network.studyIds.length > 0 || network.networkIds.length > 0)" href class="btn btn-info" ng-click="showAllContacts()"><i class="fa fa-group"></i> <span translate>network.associated-people</span></a>
-          <attributes-list attributes="network.attributes"></attributes-list>
         </div>
         <div class="col-md-6">
           <h3 translate>studies</h3>
@@ -164,6 +131,40 @@
             </tr>
             </tbody>
           </table>
+
+          <h3 translate>members</h3>
+
+          <table class="table table-bordered table-striped">
+            <tbody>
+            <tr ng-repeat="role in roles">
+              <th>{{'network.member-list' | translate: {type: role} }}</th>
+              <td>
+                <div ng-controller="ContactController">
+                  <ul ui-sortable="sortableOptions" ng-model="memberships[role]" class="list-unstyled sortable" ng-show="memberships[role].length">
+                    <li ng-repeat="person in memberships[role]">
+                      <a ng-click="viewContact(person)" title="{{'dnd-reorder' | translate}}">
+                        {{person.title}} {{person.firstName}} {{person.lastName}}
+                        {{person.academicLevel}}
+                        <span ng-show="person.institution.name.length">
+                        (<localized value="person.institution.name" lang="tab.lang"></localized>)
+                      </span>
+                      </a>
+                      <div class="inline" ng-if="inViewMode() && permissions.canEdit()">
+                        <a ng-click="editMember(network, person, role)" class="action"><i class="fa fa-pencil"></i></a>
+                        <a ng-click="deleteMember(network, person, role)" class="action"><i class="fa fa-trash-o"></i></a>
+                      </div>
+                    </li>
+                  </ul>
+                  <button type="button" class="btn btn-info btn-sm" ng-click="addMember(network, role)" ng-if="inViewMode() && permissions.canEdit()">
+                    <i class="fa fa-plus"></i> <span>{{ 'network.add-member' | translate: {type: role} }}</span>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+
+          <a ng-if="inViewMode() && (network.studyIds.length > 0 || network.networkIds.length > 0)" href class="btn btn-info" ng-click="showAllContacts()"><i class="fa fa-group"></i> <span translate>network.associated-people</span></a>
         </div>
       </div>
 </div>
