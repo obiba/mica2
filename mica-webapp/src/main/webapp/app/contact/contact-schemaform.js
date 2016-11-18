@@ -1,3 +1,4 @@
+/* exported CONTACT_SCHEMA */
 var CONTACT_SCHEMA = {
   type: 'object',
   properties: {
@@ -74,6 +75,7 @@ var CONTACT_SCHEMA = {
   ]
 };
 
+/* exported CONTACT_DEFINITION */
 var CONTACT_DEFINITION = [
   {
     type: 'section',
