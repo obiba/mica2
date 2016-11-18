@@ -2,12 +2,6 @@
 
       <div class="voffset4">
         <img class="img-responsive desaturate" ng-show="network.logo" ng-src="{{logoUrl}}">
-
-        <h2>
-          <localized value="network.name" lang="tab.lang"></localized>
-        </h2>
-
-        <localized value="network.description" lang="tab.lang"></localized>
       </div>
 
       <div class="row">
@@ -64,8 +58,6 @@
                     <span>{{text.value}}</span>
                   </li>
                 </ul>
-
-                <localized value="studySummary.name" lang="tab.lang"></localized>
               </td>
               <td ng-if="inViewMode() && permissions.canEdit()">
                 <a ng-click="deleteStudyEvent(network, studySummary)" class="hand action"><i class="fa fa-trash-o"></i></a>
@@ -117,7 +109,6 @@
                 </ul>
               </td>
               <td>
-                <localized value="networkSummary.name" lang="tab.lang"></localized>
                 <ul class="list-unstyled">
                   <li ng-repeat="text in networkSummary.name">
                     <span class="badge">{{text.lang}}</span>
@@ -145,9 +136,6 @@
                       <a ng-click="viewContact(person)" title="{{'dnd-reorder' | translate}}">
                         {{person.title}} {{person.firstName}} {{person.lastName}}
                         {{person.academicLevel}}
-                        <span ng-show="person.institution.name.length">
-                        (<localized value="person.institution.name" lang="tab.lang"></localized>)
-                      </span>
                       </a>
                       <div class="inline" ng-if="inViewMode() && permissions.canEdit()">
                         <a ng-click="editMember(network, person, role)" class="action"><i class="fa fa-pencil"></i></a>
