@@ -134,10 +134,11 @@ class StudySummaryDtos {
              } else {
                return Optional.ofNullable((Population.SelectionCriteria) p.getModel().get("selectionCriteria"))
                  .flatMap(sc -> Optional.ofNullable(sc.getCountriesIso().stream()))
-                 .orElseGet(() -> Stream.empty());
+                 .orElseGet(Stream::empty);
              }
             }
-          ).collect(toSet()));
+          ).filter(country -> country != null)
+          .collect(toSet()));
 
         List<String> dataSources = Lists.newArrayList();
         populations.stream().filter(population -> population.getAllDataSources() != null)
