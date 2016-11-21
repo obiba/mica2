@@ -21,7 +21,7 @@ public abstract class AbstractAttributeModelAware implements AttributeAware, Mod
   private Map<String, Object> model;
 
   public boolean hasModel() {
-    return model != null;
+    return model != null && model.size() > 0;
   }
 
   public void setModel(Map<String, Object> model) {

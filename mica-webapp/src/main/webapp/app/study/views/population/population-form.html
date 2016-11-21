@@ -11,23 +11,10 @@
 
   <form name="form" role="form" ng-submit="save(form)">
     <p class="alert alert-danger" ng-show="form.saveAttempted && form.$invalid" translate="">fix-error</p>
-    <uib-tabset active="activeTab">
-      <uib-tab ng-repeat="tab in tabs" heading="{{'language.' + tab.lang | translate}}" disable="tab.disabled">
-        <div ng-if="study">
-          <h3 translate>study.general-info</h3>
-          <div class="row">
-            <div class="col-md-6">
-              <div form-input name="population_id" model="population.id" label="population.id" required="true"></div>
-              <div localized-input name="population.name" model="population.name" lang="tab.lang" required="true" label="population.name"></div>
-            </div>
-            <div class="col-md-6">
-              <div localized-textarea name="population.description" model="population.description" lang="tab.lang" label="population.description"></div>
-            </div>
-          </div>
-          <div sf-model="population.model" sf-form="populationSfForm.definition" sf-schema="populationSfForm.schema" sf-options="sfOptions[tab.lang]"></div>
-        </div>
-      </uib-tab>
-    </uib-tabset>
+      <div ng-if="study">
+        <h3 translate>study.general-info</h3>
+        <div sf-model="population.model" sf-form="populationSfForm.definition" sf-schema="populationSfForm.schema" sf-options="sfOptions"></div>
+      </div>
     <button type="button" class="btn btn-default" ng-click="cancel()">
       <span translate>cancel</span>
     </button>

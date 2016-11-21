@@ -1,1 +1,29 @@
-{}
+{
+  "type": "object",
+  "properties": {
+    "_name": {
+      "title": "t(study.name)",
+      "type": "object",
+      "format": "localizedString"
+    },
+    "_acronym": {
+      "title": "t(study.acronym)",
+      "type": "object",
+      "format": "localizedString"
+    },
+    "_objectives": {
+      "title": "t(study.objectives)",
+      "type": "object",
+      "format": "localizedString"
+    },
+    "_opal": {
+      "title": "t(study.opal)",
+      "type": "string"
+    }
+  },
+  "required": [
+    "_name",
+    "_acronym",
+    "_objectives"
+  ]
+}

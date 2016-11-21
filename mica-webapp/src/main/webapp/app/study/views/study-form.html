@@ -9,21 +9,7 @@
 
     <p class="alert alert-danger" ng-show="form.saveAttempted && form.$invalid" translate="">fix-error</p>
 
-    <uib-tabset active="activeTab">
-      <uib-tab ng-repeat="tab in tabs" heading="{{'language.' + tab.lang | translate}}" disable="tab.disabled">
-
-        <div class="row">
-          <div class="col-md-6">
-            <div ng-include="'app/study/views/study-general-info-form.html'"></div>
-          </div>
-          <div class="col-md-6">
-          </div>
-        </div>
-
-        <div sf-model="study.model" sf-form="sfForm.definition" sf-schema="sfForm.schema" sf-options="sfOptions"></div>
-
-      </uib-tab>
-    </uib-tabset>
+    <div sf-model="study.model" sf-form="sfForm.definition" sf-schema="sfForm.schema" sf-options="sfOptions"></div>
 
     <div class="row">
       <div class="col-md-6">
