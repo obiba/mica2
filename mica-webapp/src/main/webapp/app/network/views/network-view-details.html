@@ -77,7 +77,7 @@
           </p>
 
           <a class="btn btn-danger" ng-click="deleteSelectedNetworksEvent()"
-             ng-if="network.networkSummaries && network.networkSummaries.length">
+             ng-if="inViewMode() && permissions.canEdit() && network.networkSummaries && network.networkSummaries.length">
             <i class="fa fa-trash-o"></i> <span translate>global.delete-selected</span>
           </a>
 
