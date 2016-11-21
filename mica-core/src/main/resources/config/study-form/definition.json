@@ -31,6 +31,7 @@
                   {
                     "key": "methods.design",
                     "type": "radios",
+                    "notitle": true,
                     "description": "t(study_taxonomy.vocabulary.methods-designs.description)",
                     "titleMap": [
                       {
@@ -147,7 +148,7 @@
             "items": [
               {
                 "type": "help",
-                "helpvalue": "<h3>t(study.access.label)</h3><p class='help-block'>t(study.access.for)</p>"
+                "helpvalue": "<h3>t(study.access.label)</h3>"
               },
               {
                 "key": "access",
