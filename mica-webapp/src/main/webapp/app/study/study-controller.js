@@ -1067,6 +1067,16 @@ mica.study
         });
       });
 
+      function initializeTaxonomies() {
+        StudyTaxonomyService.get(function() {
+          $scope.tabs.forEach(function(tab) {
+            $scope.methodDesignTypes[tab.lang] = RadioGroupOptionBuilder.build('methods', StudyTaxonomyService.getTerms('methods-design', tab.lang));
+            $scope.accessTypes[tab.lang] = StudyTaxonomyService.getTerms('access', tab.lang);
+            $scope.methodRecruitmentTypes[tab.lang] = StudyTaxonomyService.getTerms('methods-recruitments', tab.lang);
+          });
+        });
+      }
+
       function createNewStudy() {
         return {attachments: [], maelstromAuthorization: {date: null}, specificAuthorization: {date: null}, model: {}};
       }
