@@ -31,7 +31,7 @@
     "alias": "objectives"
     "static": "true"
     "localized": "true"
-- "name": "methods-designs"
+- "name": "methods-design"
   "title":
     "en": "Study design"
     "fr": "Définitions d'étude"
@@ -40,7 +40,7 @@
     "fr": "La conception d'une étude observationnelle ou interventionnelle (e.g. cohorte, cas-témoins)."
   "attributes":
     "field": "model.methods.design"
-    "alias": "model-methods-designs"
+    "alias": "model-methods-design"
   "terms":
   - "name": "cohort_study"
     "title":
