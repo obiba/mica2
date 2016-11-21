@@ -84,7 +84,7 @@ mica.entityConfig
         $scope.target = $routeParams.type.match(/([\w-]+)\-config/)[1];
         var names = $scope.target.endsWith('dataset') ? ['dataset', 'variable'] : [$scope.target];
         $scope.taxonomyTargets = names.map(function(name){
-          return {name: name, editable: 'variable' !== name};
+          return {name: name, editable: true};
         });
       }
 

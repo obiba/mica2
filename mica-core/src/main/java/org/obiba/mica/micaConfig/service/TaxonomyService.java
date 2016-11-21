@@ -18,7 +18,6 @@ import java.util.stream.Stream;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
-import com.google.common.eventbus.Subscribe;
 import org.obiba.mica.dataset.event.DatasetPublishedEvent;
 import org.obiba.mica.dataset.event.DatasetUnpublishedEvent;
 import org.obiba.mica.micaConfig.domain.MicaConfig;
@@ -36,6 +35,8 @@ import org.obiba.opal.core.domain.taxonomy.Vocabulary;
 import org.springframework.beans.BeanUtils;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+
+import com.google.common.eventbus.Subscribe;
 
 @Service
 public class TaxonomyService {

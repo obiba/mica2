@@ -153,6 +153,7 @@ mica.entitySfConfig
 
       $scope.getField = VocabularyAttributeService.getField;
       $scope.getTypeMap = VocabularyAttributeService.getTypeMap;
+      $scope.getHidden = VocabularyAttributeService.getHidden;
       $scope.getLocalized = VocabularyAttributeService.getLocalized;
       $scope.isStatic = VocabularyAttributeService.isStatic;
       $scope.deleteCriterion = deleteCriterion;
@@ -220,6 +221,7 @@ mica.entitySfConfig
         var model = {
           content: term || null,
           children: null,
+          vocabulary: vocabulary,
           siblings: (vocabulary.terms || []).filter(function(t){
             return term ? term.name !== t.name : t;
           }),
