@@ -10,7 +10,7 @@
       "properties": {
         "design": {
           "type": "string",
-          "title": "t(study_taxonomy.vocabulary.methods-designs.title)",
+          "title": "t(study_taxonomy.vocabulary.methods-design.title)",
           "enum": [
             "cohort_study",
             "case_control",
@@ -23,7 +23,7 @@
         "otherDesign": {
           "type": "object",
           "format": "localizedString",
-          "title": "t(study_taxonomy.vocabulary.methods-designs.term.other.title)"
+          "title": "t(study.other-design)"
         },
         "followUpInfo": {
           "type": "object",

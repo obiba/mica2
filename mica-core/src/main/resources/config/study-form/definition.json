@@ -32,27 +32,27 @@
                     "key": "methods.design",
                     "type": "radios",
                     "notitle": true,
-                    "description": "t(study_taxonomy.vocabulary.methods-designs.description)",
+                    "description": "t(study_taxonomy.vocabulary.methods-design.description)",
                     "titleMap": [
                       {
                         "value": "cohort_study",
-                        "name": "t(study_taxonomy.vocabulary.methods-designs.term.cohort_study.title)"
+                        "name": "t(study_taxonomy.vocabulary.methods-design.term.cohort_study.title)"
                       },
                       {
                         "value": "case_control",
-                        "name": "t(study_taxonomy.vocabulary.methods-designs.term.case_control.title)"
+                        "name": "t(study_taxonomy.vocabulary.methods-design.term.case_control.title)"
                       },
                       {
                         "value": "case_only",
-                        "name": "t(study_taxonomy.vocabulary.methods-designs.term.case_only.title)"
+                        "name": "t(study_taxonomy.vocabulary.methods-design.term.case_only.title)"
                       },
                       {
                         "value": "clinical_trial",
-                        "name": "t(study_taxonomy.vocabulary.methods-designs.term.clinical_trial.title)"
+                        "name": "t(study_taxonomy.vocabulary.methods-design.term.clinical_trial.title)"
                       },
                       {
                         "value": "other",
-                        "name": "t(study_taxonomy.vocabulary.methods-designs.term.other.title)"
+                        "name": "t(study_taxonomy.vocabulary.methods-design.term.other.title)"
                       }
                     ]
                   },
@@ -62,7 +62,6 @@
                     "items": [
                       {
                         "key": "methods.otherDesign",
-                        "description": "t(study_taxonomy.vocabulary.methods-designs.term.other.description)",
                         "condition": "model.methods.design==\"other\""
                       }
                     ]
