@@ -4,7 +4,7 @@
     "items": [
       {
         "type": "help",
-        "helpvalue": "t(network.general-info)"
+        "helpvalue": "t(study.general-info)"
       },
       {
         "key": "_name",
@@ -15,7 +15,7 @@
         "type": "localizedstring"
       },
       {
-        "key": "__objectives",
+        "key": "_objectives",
         "type": "localizedstring",
         "rows": 3,
         "marked": true

@@ -798,6 +798,8 @@ mica.study
       });
 
       $scope.save = function (form) {
+        $scope.$broadcast('schemaFormValidate');
+
         if (!validate(form)) {
           form.saveAttempted = true;
           return;
@@ -969,6 +971,8 @@ mica.study
           delete $scope.dce.attachments;
         }
 
+        $scope.$broadcast('schemaFormValidate');
+
         if (!validate(form)) {
           form.saveAttempted = true;
           return;
@@ -1106,6 +1110,8 @@ mica.study
         if (!$scope.study.logo) { //protobuf doesnt like null values
           delete $scope.study.logo;
         }
+
+        $scope.$broadcast('schemaFormValidate');
 
         if (!$scope.form.$valid) {
           $scope.form.saveAttempted = true;
