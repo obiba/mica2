@@ -34,7 +34,8 @@
     "to": "To",
     "print": "Print",
     "modified": "Modified",
-    "delete-selected": "Delete Selected Items"
+    "delete-selected": "Delete Selected Items",
+    "server-error": "An unknown error has occurred, please contact your administrator for assistance."
   },
   "main": {
     "title": "Welcome to Mica!",
@@ -1020,6 +1021,9 @@
   },
   "server": {
     "error": {
+      "search": {
+        "failed": "Search failed, please revise your query and try again."
+      },
       "403": "Server rejected your request, please make sure you are logged in and try again.",
       "409": {
         "network": {

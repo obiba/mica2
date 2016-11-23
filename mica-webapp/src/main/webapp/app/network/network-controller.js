@@ -35,6 +35,7 @@ mica.network
     '$translate',
     'NetworksResource',
     'NetworkService',
+    'AlertBuilder',
 
     function ($rootScope,
               $scope,
@@ -42,7 +43,8 @@ mica.network
               $timeout,
               $translate,
               NetworksResource,
-              NetworkService
+              NetworkService,
+              AlertBuilder
     ) {
       var onSuccess = function(response, responseHeaders) {
         $scope.totalCount = parseInt(responseHeaders('X-Total-Count'), 10);
@@ -75,7 +77,7 @@ mica.network
           data.query = $scope.pagination.searchText + '*';
         }
 
-        NetworksResource.query(data, onSuccess, onError);
+        NetworksResource.query(data, onSuccess, AlertBuilder.newBuilder().onError(onError));
       }
 
       $scope.loading = true;
