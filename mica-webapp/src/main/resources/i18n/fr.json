@@ -1199,7 +1199,9 @@
       "repeatable-help": "Rechercher correspondance exacte ou valeur contenue.",
       "field-help": "Nom du champ entièrement qualifié dans le modèle de document (si différent du nom).",
       "type-help": "Le type de recherche par facette: sélection de la plage pour un type numérique, entrée ouverte pour un type de texte, etc.",
-      "unique-name": "Le nom du critère doit être unique."
+      "unique-name": "Le nom du critère doit être unique.",
+      "hidden": "Caché",
+      "hidden-help": "Un critère caché est exclu de la recherche."
     },
     "term-dialog": {
       "add-term": "Ajouter Terme",

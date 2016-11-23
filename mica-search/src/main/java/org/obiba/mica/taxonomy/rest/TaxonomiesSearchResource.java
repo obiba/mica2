@@ -22,16 +22,15 @@ import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
+import org.obiba.mica.core.domain.TaxonomyTarget;
 import org.obiba.mica.micaConfig.service.TaxonomyService;
 import org.obiba.mica.taxonomy.TaxonomyResolver;
-import org.obiba.mica.core.domain.TaxonomyTarget;
 import org.obiba.opal.web.model.Opal;
 import org.obiba.opal.web.taxonomy.Dtos;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import com.codahale.metrics.annotation.Timed;
-import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 
 @Component
@@ -50,11 +49,11 @@ public class TaxonomiesSearchResource extends AbstractTaxonomySearchResource {
     @QueryParam("query") String query, @QueryParam("locale") String locale) {
     TaxonomyTarget taxonomyTarget = getTaxonomyTarget(target);
 
-    if(Strings.isNullOrEmpty(query))
-      return getTaxonomies(taxonomyTarget).stream().map(Dtos::asDto).collect(Collectors.toList());
+    List<String> filteredVocabularies = filterVocabularies(taxonomyTarget, query, locale,
+      Lists.newArrayList(DEFAULT_EXCLUDE_FIELDS));
 
     Map<String, Map<String, List<String>>> taxoNamesMap = TaxonomyResolver
-      .asMap(filterVocabularies(taxonomyTarget, query, locale), filterTerms(taxonomyTarget, query, locale));
+      .asMap(filteredVocabularies, filterTerms(taxonomyTarget, query, locale, filteredVocabularies));
     List<Opal.TaxonomyDto> results = Lists.newArrayList();
     getTaxonomies(taxonomyTarget).stream().filter(t -> taxoNamesMap.containsKey(t.getName())).forEach(taxo -> {
       Opal.TaxonomyDto.Builder tBuilder = Dtos.asDto(taxo, false).toBuilder();
@@ -62,7 +61,7 @@ public class TaxonomiesSearchResource extends AbstractTaxonomySearchResource {
       results.add(tBuilder.build());
     });
 
-    return results;
+      return results;
   }
 
   @GET

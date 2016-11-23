@@ -14,7 +14,6 @@ import java.util.Optional;
 
 import javax.inject.Inject;
 
-import com.google.common.eventbus.EventBus;
 import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.config.taxonomies.DatasetTaxonomy;
 import org.obiba.mica.config.taxonomies.NetworkTaxonomy;
@@ -24,12 +23,15 @@ import org.obiba.mica.config.taxonomies.VariableTaxonomy;
 import org.obiba.mica.core.domain.TaxonomyEntityWrapper;
 import org.obiba.mica.core.domain.TaxonomyTarget;
 import org.obiba.mica.dataset.event.IndexDatasetsEvent;
+import org.obiba.mica.micaConfig.event.TaxonomiesUpdatedEvent;
 import org.obiba.mica.micaConfig.repository.TaxonomyConfigRepository;
 import org.obiba.mica.network.event.IndexNetworksEvent;
 import org.obiba.mica.study.event.IndexStudiesEvent;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Service;
+
+import com.google.common.eventbus.EventBus;
 
 @Service
 @EnableConfigurationProperties({ NetworkTaxonomy.class, StudyTaxonomy.class, DatasetTaxonomy.class, VariableTaxonomy.class, TaxonomyTaxonomy.class })
@@ -63,6 +65,7 @@ public class TaxonomyConfigService {
   public void update(TaxonomyTarget target, Taxonomy taxonomy) {
     updateInternal(target, taxonomy);
     getEvent(target).ifPresent(eventBus::post);
+    eventBus.post(new TaxonomiesUpdatedEvent());
   }
 
   private Taxonomy findByTargetInternal(TaxonomyTarget target) {

@@ -22,12 +22,12 @@ import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 
-import com.google.common.collect.Lists;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.index.IndexNotFoundException;
+import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.IdsQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -41,6 +41,9 @@ import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.collect.Lists;
+
 import sun.util.locale.LanguageTag;
 
 public abstract class AbstractDocumentService<T> implements DocumentService<T> {
@@ -87,6 +90,12 @@ public abstract class AbstractDocumentService<T> implements DocumentService<T> {
   @Override
   public Documents<T> find(int from, int limit, @Nullable String sort, @Nullable String order, @Nullable String studyId,
     @Nullable String queryString, @Nullable List<String> fields) {
+    return find(from, limit, sort, order, studyId, queryString, fields, null);
+  }
+
+  @Override
+  public Documents<T> find(int from, int limit, @Nullable String sort, @Nullable String order, @Nullable String studyId,
+    @Nullable String queryString, @Nullable List<String> fields, @Nullable List<String> excludedFields) {
     if(!indexExists()) return new Documents<>(0, from, limit);
 
     QueryStringQueryBuilder query = queryString != null ? QueryBuilders.queryStringQuery(queryString) : null;
@@ -96,6 +105,13 @@ public abstract class AbstractDocumentService<T> implements DocumentService<T> {
     QueryBuilder postFilter = getPostFilter(studyId);
 
     QueryBuilder execQuery = postFilter == null ? query : query == null ? postFilter : QueryBuilders.boolQuery().must(query).filter(postFilter);
+
+    if(excludedFields != null) {
+      BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
+      excludedFields.forEach(f -> boolQueryBuilder.mustNot(
+        QueryBuilders.boolQuery().must(QueryBuilders.termQuery(f, "true")).must(QueryBuilders.existsQuery(f))));
+      execQuery = boolQueryBuilder.must(execQuery);
+    }
 
     SearchRequestBuilder search = client.prepareSearch() //
       .setIndices(getIndexName()) //

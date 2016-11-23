@@ -19,11 +19,11 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 
 import org.elasticsearch.index.IndexNotFoundException;
+import org.obiba.mica.core.domain.TaxonomyTarget;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.micaConfig.service.TaxonomyService;
 import org.obiba.mica.taxonomy.EsTaxonomyTermService;
 import org.obiba.mica.taxonomy.EsTaxonomyVocabularyService;
-import org.obiba.mica.core.domain.TaxonomyTarget;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.obiba.opal.web.model.Opal;
 import org.obiba.opal.web.taxonomy.Dtos;
@@ -42,6 +42,8 @@ public class AbstractTaxonomySearchResource {
   private static final String[] VOCABULARY_FIELDS = { "title", "description" };
 
   private static final String[] TERM_FIELDS = { "title", "description", "keywords" };
+
+  protected static final String[] DEFAULT_EXCLUDE_FIELDS = { "attributes.hidden" };
 
   @Inject
   private EsTaxonomyTermService esTaxonomyTermService;
@@ -71,10 +73,10 @@ public class AbstractTaxonomySearchResource {
       });
   }
 
-  protected List<String> filterVocabularies(TaxonomyTarget target, String query, String locale) {
+  protected List<String> filterVocabularies(TaxonomyTarget target, String query, String locale, List<String> excludedFields) {
     try {
       return esTaxonomyVocabularyService.find(0, MAX_SIZE, DEFAULT_SORT, "asc", null, getTargettedQuery(target, query),
-        getFields(locale, VOCABULARY_FIELDS)).getList();
+        getFields(locale, VOCABULARY_FIELDS), excludedFields).getList();
     } catch(IndexNotFoundException e) {
       initTaxonomies();
       // for a 404 response
@@ -82,8 +84,16 @@ public class AbstractTaxonomySearchResource {
     }
   }
 
-  protected List<String> filterTerms(TaxonomyTarget target, String query, String locale) {
+  protected List<String> filterTerms(TaxonomyTarget target, String query, String locale, List<String> vocabularies) {
     try {
+      if (vocabularies != null && vocabularies.size() > 0) {
+        // filter on vocabulary names; remove taxonomy prefixes ('Mica_study:')
+        String vocabulariesQuery = vocabularies.stream()
+          .map(v -> String.format("vocabularyName:%s", v.replaceAll("^([^\\:]+):", "")))
+          .collect(Collectors.joining(" AND "));
+        query = Strings.isNullOrEmpty(query) ? vocabulariesQuery: query + " " + vocabulariesQuery;
+      }
+
       return esTaxonomyTermService
         .find(0, MAX_SIZE, DEFAULT_SORT, "asc", null, getTargettedQuery(target, query), getFields(locale, TERM_FIELDS))
         .getList();
@@ -134,7 +144,7 @@ public class AbstractTaxonomySearchResource {
   }
 
   private String getTargettedQuery(TaxonomyTarget target, String query) {
-    return String.format("target:%s AND (%s)", target.name(), query);
+    return String.format(Strings.isNullOrEmpty(query) ? "target:%s" : "target:%s AND (%s)", target.name(), query);
   }
 
   private List<String> getFields(String locale, String... fieldNames) {

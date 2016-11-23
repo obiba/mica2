@@ -1189,7 +1189,9 @@
       "repeatable-help": "Search for exact match or contained value.",
       "field-help": "Fully qualified field name in the document model (if different from the name).",
       "type-help": "The type of search facet: range selection for a numerical type, open input for a text type etc.",
-      "unique-name": "Criterion name must be unique."
+      "unique-name": "Criterion name must be unique.",
+      "hidden": "Hidden",
+      "hidden-help": "A hidden criterion is excluded from search."
     },
     "term-dialog": {
       "add-term": "Add Term",

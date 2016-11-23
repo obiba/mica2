@@ -1,4 +1,5 @@
-<div ng-show="!isStatic(model.content) || getTermsCount(model.content) > 0">
+<div ng-show="getTermsCount(model.content) > 0">
+
   <h4 translate>global.terms</h4>
 
   <p class="help-block">{{'taxonomy-config.terms.info' | translate}}</p>
@@ -40,7 +41,7 @@
           <li>
             <a href ng-click="addTerm(model.content, child)" title="{{'edit' | translate}}"><i class="fa fa-pencil"></i></a>
           </li>
-          <li>
+          <li ng-show="!isStatic(model.content)">
             <a href ng-click="deleteTerm(model.content, child)" title="{{'delete' | translate}}"><i class="fa fa-trash"></i></a>
           </li>
         </ul>

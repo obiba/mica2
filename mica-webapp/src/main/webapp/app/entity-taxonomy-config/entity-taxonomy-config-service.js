@@ -29,9 +29,12 @@ mica.entityTaxonomyConfig
           return attribute.key === key;
         }).pop();
 
-        attribute = attribute || {key: key, value: null};
+        if (!attribute) {
+          attribute = {key: key, value: null};
+          attributes.push(attribute);
+        }
+
         attribute.value = value;
-        attributes.push(attribute);
       }
 
       function getAttribute(attributes, key, defaultValue) {
@@ -78,21 +81,33 @@ mica.entityTaxonomyConfig
         setAttribute(attributes, 'alias', alias);
       };
 
+      this.setLocalized = function(attributes, localized) {
+        setAttribute(attributes, 'localized', localized+'');
+      };
+
       this.getLocalized = function(content) {
         if (content && content.attributes) {
-          return getAttribute(content.attributes, 'localized', false);
+          return 'true' === getAttribute(content.attributes, 'localized', 'false');
         }
 
         return false;
       };
 
-      this.setLocalized = function(attributes, localized) {
-        setAttribute(attributes, 'localized', localized);
+      this.setHidden = function(attributes, localized) {
+        setAttribute(attributes, 'hidden', localized+'');
+      };
+
+      this.getHidden = function(content) {
+        if (content && content.attributes) {
+          return 'true' === getAttribute(content.attributes, 'hidden', 'false');
+        }
+
+        return false;
       };
 
       this.isStatic = function(content) {
         if (content && content.attributes) {
-          return 'true' === getAttribute(content.attributes, 'static', false);
+          return 'true' === getAttribute(content.attributes, 'static', 'false');
         }
 
         return false;
@@ -280,6 +295,10 @@ mica.entityTaxonomyConfig
                 'type': 'boolean',
                 'readonly': isStatic
               },
+              'hidden': {
+                'title': $filter('translate')('taxonomy-config.criterion-dialog.hidden'),
+                'type': 'boolean'
+              },
               'localized': {
                 'title': $filter('translate')('global.localized'),
                 'type': 'boolean',
@@ -316,6 +335,10 @@ mica.entityTaxonomyConfig
               'key': 'repeatable',
               'description': '<p class="help-block">' + $filter('translate')('taxonomy-config.criterion-dialog.repeatable-help') + '</p>'
             },
+            {
+              'key': 'hidden',
+              'description': '<p class="help-block">' + $filter('translate')('taxonomy-config.criterion-dialog.hidden-help') + '</p>'
+            },
             'localized',
             {
               'key': 'field',
@@ -346,12 +369,14 @@ mica.entityTaxonomyConfig
           data.model.name = content.name;
           data.model.field = VocabularyAttributeService.getField(content);
           data.model.repeatable = content.repeatable;
+          data.model.hidden = VocabularyAttributeService.getHidden(content);
           data.model.localized = VocabularyAttributeService.getLocalized(content);
         }
         return data;
       }
 
-      function getTermFormData(content, valueType, siblings) {
+      function getTermFormData(content, valueType, siblings, vocabulary) {
+        var isStatic = VocabularyAttributeService.isStatic(vocabulary);
         var data = {
           schema: {
             'type': 'object',
@@ -359,15 +384,18 @@ mica.entityTaxonomyConfig
               'name': {
                 'type': 'string',
                 'title': $filter('translate')('name'),
-                'required': true
+                'required': true,
+                'readonly': isStatic
               },
               'from': {
                 'type': 'number',
-                'title': $filter('translate')('global.from')
+                'title': $filter('translate')('global.from'),
+                'readonly': isStatic
               },
               'to': {
                 'type': 'number',
-                'title': $filter('translate')('global.to')
+                'title': $filter('translate')('global.to'),
+                'readonly': isStatic
               },
               'title': {
                 'type': 'object',
@@ -482,7 +510,11 @@ mica.entityTaxonomyConfig
               VocabularyAttributeService.setType(model.content.attributes, data.model.type);
             }
 
-            if (data.model.localized) {
+            if (data.model.hasOwnProperty('hidden')) {
+              VocabularyAttributeService.setHidden(model.content.attributes, data.model.hidden);
+            }
+
+            if (data.model.hasOwnProperty('localized')) {
               VocabularyAttributeService.setLocalized(model.content.attributes, data.model.localized);
             }
 
@@ -515,7 +547,7 @@ mica.entityTaxonomyConfig
           case 'criterion':
             return getVocabularyFormData(model.content, model.siblings);
           case 'term':
-            return getTermFormData(model.content, model.valueType || 'string', model.siblings);
+            return getTermFormData(model.content, model.valueType || 'string', model.siblings, model.vocabulary);
         }
 
         throw new Error('EntityTaxonomySchemaFormService - invalid type:' + model.type);
