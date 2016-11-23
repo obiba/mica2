@@ -70,6 +70,10 @@
       <groupId>net.jazdw</groupId>
       <artifactId>rql-parser</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.obiba.commons</groupId>
+      <artifactId>obiba-jersey-protobuf</artifactId>
+    </dependency>
   </dependencies>
 
 </project>

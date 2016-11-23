@@ -80,12 +80,19 @@ mica
     '$httpProvider',
     '$translateProvider',
     'tmhDynamicLocaleProvider',
+    'AlertBuilderProvider',
     'USER_ROLES',
     function ($routeProvider,
               $httpProvider,
               $translateProvider,
               tmhDynamicLocaleProvider,
+              AlertBuilderProvider,
               USER_ROLES) {
+
+      AlertBuilderProvider.setMsgKey('global.server-error');
+      AlertBuilderProvider.setAlertId('MainController');
+      AlertBuilderProvider.setGrowlId('MainControllerGrowl');
+      AlertBuilderProvider.setModeGrowl();
 
       $routeProvider
         .when('/login', {
