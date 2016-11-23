@@ -61,8 +61,8 @@
                     <a ng-click="viewContact(person)" title="{{'dnd-reorder' | translate}}">
                       {{person.title}} {{person.firstName}} {{person.lastName}}
                       {{person.academicLevel}}
-                    <span ng-show="person.institution.name.length">
-                      (<localized value="person.institution.name" lang="tab.lang"></localized>)
+                    <span ng-show="person.institution.name">
+                      (<localized value="person.institution.name" lang="lang"></localized>)
                     </span>
                     </a>
                     <div class="inline" ng-if="inViewMode() && permissions.canEdit()">

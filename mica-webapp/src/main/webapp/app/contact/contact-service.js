@@ -24,13 +24,15 @@ mica.contact
 
       this.serialize = function(person) {
 
-        if(person.institution) {
+        if (person.institution) {
           person.institution.name = LocalizedValues.objectToArray(person.institution.name);
           person.institution.department = LocalizedValues.objectToArray(person.institution.department);
           if (person.institution.address) {
             person.institution.address.street = LocalizedValues.objectToArray(person.institution.address.street);
             person.institution.address.city = LocalizedValues.objectToArray(person.institution.address.city);
-            person.institution.address.country = {'iso':person.institution.address.country};
+            if (person.institution.address.country) {
+              person.institution.address.country = {'iso': person.institution.address.country};
+            }
           }
         }
 
@@ -60,7 +62,9 @@ mica.contact
           if (person.institution.address) {
             person.institution.address.street = LocalizedValues.arrayToObject(person.institution.address.street);
             person.institution.address.city = LocalizedValues.arrayToObject(person.institution.address.city);
-            person.institution.address.country = person.institution.address.country.iso;
+            if (person.institution.address.country) {
+              person.institution.address.country = person.institution.address.country.iso;
+            }
           }
         }
 

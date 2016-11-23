@@ -18,7 +18,8 @@
     },
     "_opal": {
       "title": "t(study.opal)",
-      "type": "string"
+      "type": "string",
+      "pattern": "^https?:\/\/[a-z0-9._\/?&=-]+$"
     }
   },
   "required": [

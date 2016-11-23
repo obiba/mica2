@@ -25,7 +25,9 @@ mica.contact
 
   .controller('ContactController', ['$rootScope', '$scope', '$uibModal', '$translate', 'MicaConfigResource', 'CONTACT_EVENTS', 'NOTIFICATION_EVENTS', 'ContactSerializationService',
     function ($rootScope, $scope, $uibModal, $translate, MicaConfigResource, CONTACT_EVENTS, NOTIFICATION_EVENTS, ContactSerializationService) {
+
       $scope.micaConfig = MicaConfigResource.get();
+      $scope.lang = $translate.use();
 
       $scope.viewContact = function (contact) {
         if(!$scope.isOrderingContacts) {

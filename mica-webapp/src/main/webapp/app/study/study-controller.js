@@ -144,7 +144,6 @@ mica.study
     'DraftStudyDeleteService',
     'EntityPathBuilder',
     'DocumentPermissionsService',
-    'StudyModelUtil',
 
     function ($rootScope,
               $scope,
@@ -173,8 +172,7 @@ mica.study
               $uibModal,
               DraftStudyDeleteService,
               EntityPathBuilder,
-              DocumentPermissionsService,
-              StudyModelUtil) {
+              DocumentPermissionsService) {
 
       $scope.Mode = {View: 0, Revision: 1, File: 2, Permission: 3, Comment: 4};
 
@@ -359,7 +357,6 @@ mica.study
       $scope.$on(STUDY_EVENTS.studyUpdated, function (event, studyUpdated) {
         if (studyUpdated === $scope.study) {
           $log.debug('save study', studyUpdated);
-          StudyModelUtil.updateContents($scope.study);
           $scope.study.$save(function () {
               $scope.study.content = $scope.study.model ? angular.toJson($scope.study.model) : null;
               $scope.studySummary = StudyStateResource.get({id: $scope.study.id}, initializeState);
@@ -675,7 +672,6 @@ mica.study
     'FormServerValidation',
     'StudyTaxonomyService',
     'MicaUtil',
-    'StudyModelUtil',
     function ($rootScope,
               $scope,
               $routeParams,
@@ -689,8 +685,7 @@ mica.study
               MicaConfigResource,
               FormServerValidation,
               StudyTaxonomyService,
-              MicaUtil,
-              StudyModelUtil) {
+              MicaUtil) {
 
 
       $scope.selectionCriteriaGenders = {};
@@ -708,7 +703,7 @@ mica.study
 
         if ($routeParams.pid) {
           $scope.population = study.populations.filter(function (p) {
-            return p.id === $routeParams.pid;
+            return p.model._id === $routeParams.pid;
           })[0];
 
         } else {
@@ -718,10 +713,10 @@ mica.study
 
           if (study.populations.length) {
             populationsIds = study.populations.map(function (p) {
-              return p.id;
+              return p.model._id;
             });
 
-            $scope.population.id = MicaUtil.generateNextId(populationsIds);
+            $scope.population.model._id = MicaUtil.generateNextId(populationsIds);
           }
 
           study.populations.push($scope.population);
@@ -814,13 +809,12 @@ mica.study
 
       var updateStudy = function () {
         $log.debug('Update study', $scope.study);
-        StudyModelUtil.updateContents($scope.study);
         $scope.study.$save(redirectToStudy, saveErrorHandler);
       };
 
       var validate = function (form) {
         if ($scope.study.populations.filter(function (p) {
-            return p.id === $scope.population.id;
+            return p.model._id === $scope.population.model._id;
           }).length > 1) {
           form.$setValidity('population_id', false);
         } else {
@@ -854,7 +848,6 @@ mica.study
     'FormServerValidation',
     'MicaUtil',
     'StudyTaxonomyService',
-    'StudyModelUtil',
     function ($rootScope,
               $scope,
               $routeParams,
@@ -868,8 +861,7 @@ mica.study
               MicaConfigResource,
               FormServerValidation,
               MicaUtil,
-              StudyTaxonomyService,
-              StudyModelUtil
+              StudyTaxonomyService
     ) {
       $scope.dce = {model: {}};
       $scope.fileTypes = '.doc, .docx, .odm, .odt, .gdoc, .pdf, .txt  .xml  .xls, .xlsx, .ppt';
@@ -880,14 +872,14 @@ mica.study
 
         if ($routeParams.pid) {
           $scope.population = study.populations.filter(function (p) {
-            return p.id === $routeParams.pid;
+            return p.model._id === $routeParams.pid;
           })[0];
 
           $scope.newDCE = !$routeParams.dceId;
 
           if ($routeParams.dceId) {
             $scope.dce = $scope.population.dataCollectionEvents.filter(function (d) {
-              return d.id === $routeParams.dceId;
+              return d.model._id === $routeParams.dceId;
             })[0];
           } else {
             var sourceDceId = $location.search().sourceDceId;
@@ -897,17 +889,17 @@ mica.study
             }
 
             var dceIds = $scope.population.dataCollectionEvents.map(function (dce) {
-              return dce.id;
+              return dce.model._id;
             });
 
             if (sourceDceId) {
               var sourceDce = $scope.population.dataCollectionEvents.filter(function (dce) {
-                return dce.id === sourceDceId;
+                return dce.model._id === sourceDceId;
               })[0];
 
               if (sourceDce) {
                 angular.copy(sourceDce, $scope.dce);
-                $scope.dce.id = MicaUtil.generateNextId(dceIds);
+                $scope.dce.model._id = MicaUtil.generateNextId(dceIds);
                 delete $scope.dce.attachments;
                 delete $scope.dce.startYear;
                 delete $scope.dce.startMonth;
@@ -915,7 +907,7 @@ mica.study
                 delete $scope.dce.endMonth;
               }
             } else if (dceIds.length) {
-              $scope.dce.id = MicaUtil.generateNextId(dceIds);
+              $scope.dce.model._id = MicaUtil.generateNextId(dceIds);
             }
 
             $scope.population.dataCollectionEvents.push($scope.dce);
@@ -983,7 +975,7 @@ mica.study
 
       var validate = function (form) {
         if ($scope.population.dataCollectionEvents.filter(function (d) {
-            return d.id === $scope.dce.id;
+            return d.model._id === $scope.dce.model._id;
           }).length > 1) {
           form.$setValidity('dce_id', false);
         } else {
@@ -995,7 +987,6 @@ mica.study
 
       var updateStudy = function () {
         $log.info('Update study', $scope.study);
-        StudyModelUtil.updateContents($scope.study);
         $scope.study.$save(redirectToStudy, saveErrorHandler);
       };
 
@@ -1034,7 +1025,6 @@ mica.study
     'FormServerValidation',
     'RadioGroupOptionBuilder',
     'FormDirtyStateObserver',
-    'StudyModelUtil',
     function ($rootScope,
               $scope,
               $routeParams,
@@ -1051,8 +1041,7 @@ mica.study
               StringUtils,
               FormServerValidation,
               RadioGroupOptionBuilder,
-              FormDirtyStateObserver,
-              StudyModelUtil) {
+              FormDirtyStateObserver) {
       MicaConfigResource.get(function (micaConfig) {
         var sfLanguages = {};
         micaConfig.languages.forEach(function (lang) {
@@ -1126,7 +1115,6 @@ mica.study
 
       var createStudy = function () {
         $log.debug('Create new study', $scope.study);
-        StudyModelUtil.updateContents($scope.study);
         DraftStudiesResource.save($scope.study,
           function (resource, getResponseHeaders) {
             FormDirtyStateObserver.unobserve();
@@ -1138,7 +1126,6 @@ mica.study
 
       var updateStudy = function () {
         $log.debug('Update study', $scope.study);
-        StudyModelUtil.updateContents($scope.study);
         $scope.study.$save({comment: $scope.revision.comment},
           function (study) {
             FormDirtyStateObserver.unobserve();

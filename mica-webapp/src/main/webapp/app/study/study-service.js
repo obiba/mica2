@@ -368,10 +368,4 @@ mica.study
 
       return factory;
 
-    }])
-
-  .service('StudyModelUtil', [function() {
-    this.updateContents = function() {};
-
-    return this;
-  }]);
+    }]);
