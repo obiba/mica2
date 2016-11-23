@@ -62,8 +62,9 @@ var CONTACT_SCHEMA = {
               type: 'string'
             },
             country: {
-              title: 't(address.country)',
-              type: 'string'
+              type: 'string',
+              format: 'obibaCountriesUiSelect',
+              title: 't(address.country)'
             }
           }
         }
@@ -116,7 +117,10 @@ var CONTACT_DEFINITION = [
           },
           'institution.address.zip',
           'institution.address.state',
-          'institution.address.country'
+          {
+            key: 'institution.address.country',
+            type: 'obibaCountriesUiSelect'
+          }
         ]
       }
     ]
