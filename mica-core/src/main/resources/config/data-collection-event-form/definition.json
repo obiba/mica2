@@ -8,7 +8,7 @@
         "items": [
           {
             "type": "section",
-            "htmlClass": "col-xs-6",
+            "htmlClass": "col-xs-12",
             "items": [
               {
                 "key": "description",

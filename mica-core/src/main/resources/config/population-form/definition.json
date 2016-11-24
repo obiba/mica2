@@ -166,21 +166,30 @@
                         "title": "t(study.recruitment-sources.specific-population)",
                         "items": [
                           {
-                            "key": "recruitment.specificPopulationSources",
-                            "description": "t(study_taxonomy.vocabulary.populations-recruitment-specificPopulationSources.description)",
-                            "notitle": true,
-                            "titleMap": [
+                            "type": "section",
+                            "items": [
                               {
-                                "value": "clinic_patients",
-                                "name": "t(study_taxonomy.vocabulary.populations-recruitment-specificPopulationSources.term.clinic_patients.title)"
+                                "key": "recruitment.specificPopulationSources",
+                                "description": "t(study_taxonomy.vocabulary.populations-recruitment-specificPopulationSources.description)",
+                                "notitle": true,
+                                "titleMap": [
+                                  {
+                                    "value": "clinic_patients",
+                                    "name": "t(study_taxonomy.vocabulary.populations-recruitment-specificPopulationSources.term.clinic_patients.title)"
+                                  },
+                                  {
+                                    "value": "specific_association",
+                                    "name": "t(study_taxonomy.vocabulary.populations-recruitment-specificPopulationSources.term.specific_association.title)"
+                                  },
+                                  {
+                                    "value": "other",
+                                    "name": "t(study_taxonomy.vocabulary.populations-recruitment-specificPopulationSources.term.other.title)"
+                                  }
+                                ]
                               },
                               {
-                                "value": "specific_association",
-                                "name": "t(study_taxonomy.vocabulary.populations-recruitment-specificPopulationSources.term.specific_association.title)"
-                              },
-                              {
-                                "value": "other",
-                                "name": "t(study_taxonomy.vocabulary.populations-recruitment-specificPopulationSources.term.other.title)"
+                                "key": "recruitment.otherSpecificPopulationSource",
+                                "condition": "model.recruitment.specificPopulationSources.indexOf(\"other\")>=0"
                               }
                             ],
                             "condition": "model.recruitment.dataSources.indexOf(\"specific_population\")>=0"
