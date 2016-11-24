@@ -222,9 +222,7 @@ mica.study
           return t.locale === lang;
         });
 
-        //TODO
-        return result;
-        // return (result || [{text: null}])[0].text;
+        return (result || [{text: null}])[0].text;
       }
 
       this.get = function(userSuccessCallback, userErrorCallback) {
