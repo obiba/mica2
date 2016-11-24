@@ -7,68 +7,9 @@
   </div>
 
   <div class="modal-body">
-    <div class="table-responsive">
-      <p>
-        <localized value="dce.model.description" lang="tab.lang"></localized>
-      </p>
+    <div sf-model="dce.model" sf-form="dceSfForm.definition" sf-schema="dceSfForm.schema" sf-options="sfOptions"></div>
+    <a href ng-click="viewFiles()"><span><i class="fa fa-file"></i> {{'view-files' | translate}}</span></a>
 
-      <table class="table table-bordered table-striped">
-        <tbody>
-        <tr ng-show="dce.startYear">
-          <th translate>study.start</th>
-          <td>
-            {{dce.startYear}} <span ng-show="dce.startMonth">({{months[dce.startMonth - 1]}})</span>
-          </td>
-        </tr>
-        <tr ng-show="dce.endYear">
-          <th translate>study.end</th>
-          <td>
-            {{dce.endYear}} <span ng-show="dce.endMonth">({{months[dce.endMonth - 1]}})</span>
-          </td>
-        </tr>
-        <tr ng-show="dce.model.dataSources">
-          <th translate>data-collection-event.data-sources</th>
-          <td>
-            <span>{{getTermLabels('populations-dataCollectionEvents-dataSources', dce.model.dataSources)}}</span>
-          </td>
-        </tr>
-
-        <tr ng-show="dce.model.otherDataSources && dce.model.dataSources.indexOf('others') > -1">
-          <th translate>data-collection-event.other-data-sources</th>
-          <td>
-            <localized value="dce.model.otherDataSources" lang="tab.lang"></localized>
-          </td>
-        </tr>
-
-        <tr ng-show="dce.model.administrativeDatabases && dce.model.dataSources.indexOf('administratives_databases') > -1">
-          <th translate>data-collection-event.admin-databases</th>
-          <td>
-            <span>{{getTermLabels('populations-dataCollectionEvents-administrativeDatabases',dce.model.administrativeDatabases)}}</span>
-          </td>
-        </tr>
-
-        <tr ng-show="dce.model.bioSamples && dce.model.dataSources.indexOf('biological_samples') > -1">
-          <th translate>data-collection-event.bio-samples</th>
-          <td>
-            <span>{{getTermLabels('populations-dataCollectionEvents-bioSamples', dce.model.bioSamples)}}</span>
-          </td>
-        </tr>
-        <tr ng-show="dce.model.tissueTypes && dce.model.dataSources.indexOf('biological_samples') > -1">
-          <th translate>data-collection-event.tissue-types</th>
-          <td>
-            <localized value="dce.model.tissueTypes" lang="tab.lang"></localized>
-          </td>
-        </tr>
-        <tr ng-show="dce.model.otherBioSamples && dce.model.dataSources.indexOf('biological_samples') > -1">
-          <th translate>data-collection-event.other-bio-samples</th>
-          <td>
-            <localized value="dce.model.otherBioSamples" lang="tab.lang"></localized>
-          </td>
-        </tr>
-        </tbody>
-      </table>
-      <a href ng-click="viewFiles()"><span><i class="fa fa-file"></i> {{'view-files' | translate}}</span></a>
-    </div>
   </div>
   <div class="modal-footer">
     <button type="button" class="btn btn-default" ng-click="cancel()">

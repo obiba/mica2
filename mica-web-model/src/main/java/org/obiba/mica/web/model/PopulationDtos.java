@@ -70,17 +70,6 @@ class PopulationDtos {
     }
 
     if(dto.hasContent() && !Strings.isNullOrEmpty(dto.getContent())) population.setModel(JSONUtils.toMap(dto.getContent()));
-    else {
-      Map<String, Object> model = Maps.newHashMap();
-
-      if (dto.hasRecruitment()) model.put("recruitment", fromDto(dto.getRecruitment()));
-      if (dto.hasSelectionCriteria()) model.put("selectionCriteria", fromDto(dto.getSelectionCriteria()));
-      if (dto.hasNumberOfParticipants()) {
-        model.put("numberOfParticipants", numberOfParticipantsDtos.fromDto(dto.getNumberOfParticipants()));
-      }
-
-      population.setModel(model);
-    }
 
     return population;
   }
@@ -174,24 +163,6 @@ class PopulationDtos {
     if(dto.hasEndYear()) dce.setEnd(dto.getEndYear(), dto.hasEndMonth() ? dto.getEndMonth() : null);
 
     if(dto.hasContent() && !Strings.isNullOrEmpty(dto.getContent())) dce.setModel(JSONUtils.toMap(dto.getContent()));
-    else {
-      Map<String, Object> model = Maps.newHashMap();
-
-      if (dto.getDescriptionCount() > 0) model.put("description", localizedStringDtos.fromDto(dto.getDescriptionList()));
-      if (dto.getDataSourcesCount() > 0) model.put("dataSources", dto.getDataSourcesList());
-      if (dto.getAdministrativeDatabasesCount() > 0)
-        model.put("administrativeDatabases", dto.getAdministrativeDatabasesList());
-      if (dto.getOtherDataSourcesCount() > 0) {
-        model.put("otherDataSources", localizedStringDtos.fromDto(dto.getOtherDataSourcesList()));
-      }
-      if (dto.getBioSamplesCount() > 0) model.put("bioSamples", dto.getBioSamplesList());
-      if (dto.getTissueTypesCount() > 0) model.put("tissueTypes", localizedStringDtos.fromDto(dto.getTissueTypesList()));
-      if (dto.getOtherBioSamplesCount() > 0) {
-        model.put("otherBioSamples", localizedStringDtos.fromDto(dto.getOtherBioSamplesList()));
-      }
-
-      dce.setModel(model);
-    }
 
     return dce;
   }

@@ -23,39 +23,117 @@ mica.study
       });
     }])
 
-  .factory('DraftStudiesResource', ['$resource',
-    function ($resource) {
+  .factory('DraftStudiesResource', ['$resource', 'StudyModelService',
+    function ($resource, StudyModelService) {
       return $resource('ws/draft/studies?comment:comment', {}, {
-        'save': {method: 'POST', errorHandler: true}
+        'save': {method: 'POST', errorHandler: true, transformRequest: StudyModelService.serialize}
       });
     }])
 
-  .factory('DraftStudyResource', ['$resource',
-    function ($resource) {
+  .factory('DraftStudyResource', ['$resource', 'StudyModelService',
+    function ($resource, StudyModelService) {
       return $resource('ws/draft/study/:id', {}, {
         // override $resource.save method because it uses POST by default
-        'save': {method: 'PUT', params: {id: '@id'}, errorHandler: true, transformRequest: function(data) {
-          var study = angular.copy(data);
-          delete study.model;
-          
-          if(study.populations) {
-            study.populations.forEach(function(population) {
-              delete population.model;
-              
-              if(population.dataCollectionEvents) {
-                population.dataCollectionEvents.forEach(function(dce) {
-                  delete dce.model;
-                });
-              }
-            });
-          }
-          
-          return angular.toJson(study);
-        }},
+        'save': {method: 'PUT', params: {id: '@id'}, errorHandler: true, transformRequest: StudyModelService.serialize},
         'delete': {method: 'DELETE', params: {id: '@id'}, errorHandler: true},
-        'get': {method: 'GET'}
+        'get': {method: 'GET', transformResponse: StudyModelService.deserialize}
       });
     }])
+
+  .factory('StudyModelService', ['LocalizedValues', function (LocalizedValues) {
+
+    this.serialize = function (study) {
+
+      var studyCopy = angular.copy(study);
+
+      studyCopy.name = LocalizedValues.objectToArray(studyCopy.model._name);
+      studyCopy.acronym = LocalizedValues.objectToArray(studyCopy.model._acronym);
+      studyCopy.objectives = LocalizedValues.objectToArray(studyCopy.model._objectives);
+      studyCopy.opal = studyCopy.model._opal;
+      delete studyCopy.model._name;
+      delete studyCopy.model._acronym;
+      delete studyCopy.model._objectives;
+      delete studyCopy.model._opal;
+      studyCopy.content = studyCopy.model ? angular.toJson(studyCopy.model) : null;
+      delete studyCopy.model; // NOTICE: must be removed to avoid protobuf exception in dto.
+
+      if(studyCopy.populations) {
+        studyCopy.populations.forEach(function(population) {
+          populationSerialize(population);
+        });
+      }
+
+      return angular.toJson(studyCopy);
+    };
+
+    function populationSerialize(population) {
+      population.id = population.model._id;
+      population.name = LocalizedValues.objectToArray(population.model._name);
+      population.description = LocalizedValues.objectToArray(population.model._description);
+      population.content = population.model ? angular.toJson(population.model) : null;
+
+      delete population.model;
+
+      if(population.dataCollectionEvents) {
+        population.dataCollectionEvents.forEach(function(dce) {
+          dceSerialize(dce);
+        });
+      }
+    }
+
+    function dceSerialize(dce) {
+      dce.id = dce.model._id;
+      dce.name = LocalizedValues.objectToArray(dce.model._name);
+      dce.startYear = dce.model._startYear;
+      dce.startMonth = dce.model._startMonth;
+      dce.endYear = dce.model._endYear;
+      dce.endMonth = dce.model._endMonth;
+      dce.content = dce.model ? angular.toJson(dce.model) : null;
+
+      delete dce.model;
+    }
+
+    this.deserialize = function (studyData) {
+      var study = angular.fromJson(studyData);
+      study.model = study.content ? angular.fromJson(study.content) : {};
+      study.model._name = LocalizedValues.arrayToObject(study.name);
+      study.model._acronym = LocalizedValues.arrayToObject(study.acronym);
+      study.model._objectives = LocalizedValues.arrayToObject(study.objectives);
+      study.model._opal = study.opal;
+
+      if (study.populations) {
+        study.populations.forEach(function (population) {
+          populationDeserialize(population);
+        });
+      }
+      return study;
+    };
+
+    function populationDeserialize(population) {
+      population.model = population.content ? angular.fromJson(population.content) : {};
+      population.model._id = population.id;
+      population.model._name = LocalizedValues.arrayToObject(population.name);
+      population.model._description = LocalizedValues.arrayToObject(population.description);
+
+      if (population.dataCollectionEvents) {
+        population.dataCollectionEvents.forEach(function (dce) {
+          dceDeserialize(dce);
+        });
+      }
+    }
+
+    function dceDeserialize(dce) {
+      dce.model = dce.content ? angular.fromJson(dce.content) : {};
+      dce.model._id = dce.id;
+      dce.model._name = LocalizedValues.arrayToObject(dce.name);
+      dce.model._startYear = dce.startYear;
+      dce.model._startMonth = dce.startMonth;
+      dce.model._endYear = dce.endYear;
+      dce.model._endMonth = dce.endMonth;
+    }
+
+    return this;
+  }])
 
   .factory('DraftStudyPermissionsResource', ['$resource',
     function ($resource) {
@@ -114,10 +192,10 @@ mica.study
       });
     }])
 
-  .factory('DraftStudyViewRevisionResource', ['$resource',
-    function ($resource) {
+  .factory('DraftStudyViewRevisionResource', ['$resource', 'StudyModelService',
+    function ($resource, StudyModelService) {
       return $resource('ws/draft/study/:id/commit/:commitId/view', {}, {
-        'view': {method: 'GET', params: {id: '@id', commitId: '@commitId'}}
+        'view': {method: 'GET', params: {id: '@id', commitId: '@commitId'}, transformResponse: StudyModelService.deserialize}
       });
     }])
 
@@ -288,40 +366,4 @@ mica.study
 
       return factory;
 
-    }])
-
-  .service('StudyModelUtil', [function() {
-    this.updateContents = function(study) {
-      study.content = study.model ? angular.toJson(study.model) : null;
-
-      if(study.populations) {
-        study.populations.forEach(function(population) {
-          population.content = population.model ? angular.toJson(population.model) : null;
-
-          if(population.dataCollectionEvents) {
-            population.dataCollectionEvents.forEach(function(dce) {
-              dce.content =  dce.model ? angular.toJson(dce.model): null;
-            });
-          }
-        });
-      }
-    };
-
-    this.updateModel = function(study) {
-      study.model = study.content ? angular.fromJson(study.content) : {};
-      
-      if(study.populations) {
-        study.populations.forEach(function(population) {
-          population.model = population.content ? angular.fromJson(population.content) : {};
-          
-          if(population.dataCollectionEvents) {
-            population.dataCollectionEvents.forEach(function(dce) {
-              dce.model = dce.content ? angular.fromJson(dce.content) : {};
-            });
-          }
-        });
-      }
-    };
-
-    return this;
-  }]);
+    }]);

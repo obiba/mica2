@@ -144,7 +144,6 @@ mica.study
     'DraftStudyDeleteService',
     'EntityPathBuilder',
     'DocumentPermissionsService',
-    'StudyModelUtil',
 
     function ($rootScope,
               $scope,
@@ -173,10 +172,14 @@ mica.study
               $uibModal,
               DraftStudyDeleteService,
               EntityPathBuilder,
-              DocumentPermissionsService,
-              StudyModelUtil) {
+              DocumentPermissionsService) {
 
       $scope.Mode = {View: 0, Revision: 1, File: 2, Permission: 3, Comment: 4};
+
+      $scope.selectedLocale = $translate.use();
+      $scope.$on('sfLocalizedStringLocaleChanged', function (event, locale) {
+        $scope.selectedLocale = locale;
+      });
 
       var getViewMode = function() {
         var result = /\/(revision[s\/]*|files|permissions|comments)/.exec($location.path());
@@ -203,8 +206,6 @@ mica.study
         return $scope.viewMode === $scope.Mode.View;
       };
 
-      $scope.activeTab = 0;
-
       var updateTimeline = function (study) {
         if (!$scope.timeline) {
           $scope.timeline = new $.MicaTimeline(new $.StudyDtoParser());
@@ -214,7 +215,6 @@ mica.study
       };
 
       var initializeStudy = function (study) {
-        StudyModelUtil.updateModel(study);
 
         if (study.logo) {
           $scope.logoUrl = 'ws/draft/study/' + study.id + '/file/' + study.logo.id + '/_download';
@@ -295,41 +295,35 @@ mica.study
       $scope.$on(NOTIFICATION_EVENTS.confirmDialogAccepted, onRestore);
 
       MicaConfigResource.get(function (micaConfig) {
-        $scope.tabs = [];
-        $scope.sfOptions = {};
 
-        micaConfig.languages.forEach(function (lang) {
-          $scope.tabs.push({lang: lang});
-          var sfLanguages = {};
-          sfLanguages[lang] = $filter('translate')('language.' + lang);
-
-          $scope.sfOptions[lang] = {
-            formDefaults: {
-              readonly: true,
-              languages: sfLanguages
-            }
-          };
+        var formLanguages = {};
+        micaConfig.languages.forEach(function (loc) {
+          formLanguages[loc] = $filter('translate')('language.' + loc);
         });
+        $scope.sfOptions = {formDefaults: {
+          readonly: true,
+          languages: formLanguages
+        }};
 
         $scope.languages = micaConfig.languages;
         $scope.roles = micaConfig.roles;
         $scope.openAccess = micaConfig.openAccess;
 
-        EntityFormResource.get({target: 'study'}, function(form) {
-          form.schema = LocalizedSchemaFormService.translate(angular.fromJson(form.schema));
-          form.definition = LocalizedSchemaFormService.translate(angular.fromJson(form.definition));
+        EntityFormResource.get({target: 'study', locale: $translate.use()}, function(form) {
+          form.schema = angular.fromJson(form.schema);
+          form.definition = angular.fromJson(form.definition);
           $scope.sfForm = form;
         });
 
-        EntityFormResource.get({target: 'population'}, function(form) {
-          form.schema = LocalizedSchemaFormService.translate(angular.fromJson(form.schema));
-          form.definition = LocalizedSchemaFormService.translate(angular.fromJson(form.definition));
+        EntityFormResource.get({target: 'population', locale: $translate.use()}, function(form) {
+          form.schema = angular.fromJson(form.schema);
+          form.definition = angular.fromJson(form.definition);
           $scope.populationSfForm = form;
         });
 
-        EntityFormResource.get({target: 'data-collection-event'}, function(form) {
-          form.schema = LocalizedSchemaFormService.translate(angular.fromJson(form.schema));
-          form.definition = LocalizedSchemaFormService.translate(angular.fromJson(form.definition));
+        EntityFormResource.get({target: 'data-collection-event', locale: $translate.use()}, function(form) {
+          form.schema = angular.fromJson(form.schema);
+          form.definition = angular.fromJson(form.definition);
           $scope.dceSfForm = form;
         });
       });
@@ -363,7 +357,6 @@ mica.study
       $scope.$on(STUDY_EVENTS.studyUpdated, function (event, studyUpdated) {
         if (studyUpdated === $scope.study) {
           $log.debug('save study', studyUpdated);
-          StudyModelUtil.updateContents($scope.study);
           $scope.study.$save(function () {
               $scope.study.content = $scope.study.model ? angular.toJson($scope.study.model) : null;
               $scope.studySummary = StudyStateResource.get({id: $scope.study.id}, initializeState);
@@ -381,7 +374,7 @@ mica.study
       $scope.delete = function (study) {
         DraftStudyDeleteService.delete(study, function() {
           $location.path('/study').replace();
-        }, $scope.tabs[$scope.activeTab].lang);
+        }, $translate.use());
       };
 
       $scope.publish = function (doPublish) {
@@ -525,7 +518,7 @@ mica.study
           controller: 'StudyPopulationDceModalController',
           resolve: {
             lang: function() {
-              return $scope.tabs[$scope.activeTab].lang;
+              return $translate.use();
             },
             dce: function () {
               return dce;
@@ -616,6 +609,7 @@ mica.study
     '$uibModalInstance',
     '$locale',
     '$location',
+    '$translate',
     'lang',
     'dce',
     'sfOptions',
@@ -627,6 +621,7 @@ mica.study
               $uibModalInstance,
               $locale,
               $location,
+              $translate,
               lang,
               dce,
               sfOptions,
@@ -657,7 +652,7 @@ mica.study
         }
 
         var result = terms.map(function(term){
-          return StudyTaxonomyService.getLabel(vocabularyName, term, $scope.tab.lang);
+          return StudyTaxonomyService.getLabel(vocabularyName, term, $translate.use());
         });
         return result.join(', ');
       };
@@ -669,6 +664,7 @@ mica.study
     '$location',
     '$log',
     '$filter',
+    '$translate',
     'DraftStudyResource',
     'EntityFormResource',
     'LocalizedSchemaFormService',
@@ -676,21 +672,20 @@ mica.study
     'FormServerValidation',
     'StudyTaxonomyService',
     'MicaUtil',
-    'StudyModelUtil',
     function ($rootScope,
               $scope,
               $routeParams,
               $location,
               $log,
               $filter,
+              $translate,
               DraftStudyResource,
               EntityFormResource,
               LocalizedSchemaFormService,
               MicaConfigResource,
               FormServerValidation,
               StudyTaxonomyService,
-              MicaUtil,
-              StudyModelUtil) {
+              MicaUtil) {
 
 
       $scope.selectionCriteriaGenders = {};
@@ -703,12 +698,12 @@ mica.study
       $scope.population = {model: {}, selectionCriteria: {healthStatus: [], ethnicOrigin: []}, recruitment: {dataSources: []}};
 
       $scope.study = $routeParams.id ? DraftStudyResource.get({id: $routeParams.id}, function (study) {
+
         var populationsIds;
-        StudyModelUtil.updateModel(study);
 
         if ($routeParams.pid) {
           $scope.population = study.populations.filter(function (p) {
-            return p.id === $routeParams.pid;
+            return p.model._id === $routeParams.pid;
           })[0];
 
         } else {
@@ -718,17 +713,16 @@ mica.study
 
           if (study.populations.length) {
             populationsIds = study.populations.map(function (p) {
-              return p.id;
+              return p.model._id;
             });
 
-            $scope.population.id = MicaUtil.generateNextId(populationsIds);
+            $scope.population.model._id = MicaUtil.generateNextId(populationsIds);
           }
 
           study.populations.push($scope.population);
         }
       }) : {};
 
-      $scope.activeTab = 0;
       $scope.newPopulation = !$routeParams.pid;
       $scope.$watch('population.recruitment.dataSources', function (newVal, oldVal) {
         if (oldVal === undefined || newVal === undefined) {
@@ -775,38 +769,32 @@ mica.study
       };
 
       MicaConfigResource.get(function (micaConfig) {
-        $scope.sfOptions = {};
-        micaConfig.languages.forEach(function (lang) {
-          var sfLanguages = {};
-          sfLanguages[lang] = $filter('translate')('language.' + lang);
-          $scope.tabs.push({lang: lang});
-          $scope.sfOptions[lang] = {
-            formDefaults: {
-              languages: sfLanguages
-            }
-          };
+        var formLanguages = {};
+        micaConfig.languages.forEach(function (loc) {
+          formLanguages[loc] = $filter('translate')('language.' + loc);
         });
+        $scope.sfOptions = {formDefaults: { languages: formLanguages }};
 
-        EntityFormResource.get({target: 'population'}, function(form) {
-          form.schema = LocalizedSchemaFormService.translate(angular.fromJson(form.schema));
-          form.definition = LocalizedSchemaFormService.translate(angular.fromJson(form.definition));
+        EntityFormResource.get({target: 'population', locale: $translate.use()}, function(form) {
+          form.schema = angular.fromJson(form.schema);
+          form.definition = angular.fromJson(form.definition);
           $scope.populationSfForm = form;
         });
       });
 
       StudyTaxonomyService.get(function() {
-        $scope.tabs.forEach(function (tab) {
-          $scope.selectionCriteriaGenders[tab.lang] = StudyTaxonomyService.getTerms('populations-selectionCriteria-gender', tab.lang).map(function (obj) {
-            return {id: obj.name, label: obj.label};
-          });
-          $scope.availableSelectionCriteria[tab.lang] = StudyTaxonomyService.getTerms('populations-selectionCriteria-criteria', tab.lang);
-          $scope.recruitmentSourcesTypes[tab.lang] = StudyTaxonomyService.getTerms('populations-recruitment-dataSources', tab.lang);
-          $scope.generalPopulationTypes[tab.lang] = StudyTaxonomyService.getTerms('populations-recruitment-generalPopulationSources', tab.lang);
-          $scope.specificPopulationTypes[tab.lang] = StudyTaxonomyService.getTerms('populations-recruitment-specificPopulationSources', tab.lang);
+        $scope.selectionCriteriaGenders = StudyTaxonomyService.getTerms('populations-selectionCriteria-gender', $translate.use()).map(function (obj) {
+          return {id: obj.name, label: obj.label};
         });
+        $scope.availableSelectionCriteria = StudyTaxonomyService.getTerms('populations-selectionCriteria-criteria', $translate.use());
+        $scope.recruitmentSourcesTypes = StudyTaxonomyService.getTerms('populations-recruitment-dataSources', $translate.use());
+        $scope.generalPopulationTypes = StudyTaxonomyService.getTerms('populations-recruitment-generalPopulationSources', $translate.use());
+        $scope.specificPopulationTypes = StudyTaxonomyService.getTerms('populations-recruitment-specificPopulationSources', $translate.use());
       });
 
       $scope.save = function (form) {
+        $scope.$broadcast('schemaFormValidate');
+
         if (!validate(form)) {
           form.saveAttempted = true;
           return;
@@ -821,13 +809,12 @@ mica.study
 
       var updateStudy = function () {
         $log.debug('Update study', $scope.study);
-        StudyModelUtil.updateContents($scope.study);
         $scope.study.$save(redirectToStudy, saveErrorHandler);
       };
 
       var validate = function (form) {
         if ($scope.study.populations.filter(function (p) {
-            return p.id === $scope.population.id;
+            return p.model._id === $scope.population.model._id;
           }).length > 1) {
           form.$setValidity('population_id', false);
         } else {
@@ -853,6 +840,7 @@ mica.study
     '$location',
     '$log',
     '$filter',
+    '$translate',
     'DraftStudyResource',
     'EntityFormResource',
     'LocalizedSchemaFormService',
@@ -860,21 +848,20 @@ mica.study
     'FormServerValidation',
     'MicaUtil',
     'StudyTaxonomyService',
-    'StudyModelUtil',
     function ($rootScope,
               $scope,
               $routeParams,
               $location,
               $log,
               $filter,
+              $translate,
               DraftStudyResource,
               EntityFormResource,
               LocalizedSchemaFormService,
               MicaConfigResource,
               FormServerValidation,
               MicaUtil,
-              StudyTaxonomyService,
-              StudyModelUtil
+              StudyTaxonomyService
     ) {
       $scope.dce = {model: {}};
       $scope.fileTypes = '.doc, .docx, .odm, .odt, .gdoc, .pdf, .txt  .xml  .xls, .xlsx, .ppt';
@@ -882,18 +869,17 @@ mica.study
       $scope.defaultMaxYear = new Date().getFullYear() + 200;
       $scope.dataSourcesTabs = {};
       $scope.study = $routeParams.id ? DraftStudyResource.get({id: $routeParams.id}, function (study) {
-        StudyModelUtil.updateModel(study);
 
         if ($routeParams.pid) {
           $scope.population = study.populations.filter(function (p) {
-            return p.id === $routeParams.pid;
+            return p.model._id === $routeParams.pid;
           })[0];
 
           $scope.newDCE = !$routeParams.dceId;
 
           if ($routeParams.dceId) {
             $scope.dce = $scope.population.dataCollectionEvents.filter(function (d) {
-              return d.id === $routeParams.dceId;
+              return d.model._id === $routeParams.dceId;
             })[0];
           } else {
             var sourceDceId = $location.search().sourceDceId;
@@ -903,17 +889,17 @@ mica.study
             }
 
             var dceIds = $scope.population.dataCollectionEvents.map(function (dce) {
-              return dce.id;
+              return dce.model._id;
             });
 
             if (sourceDceId) {
               var sourceDce = $scope.population.dataCollectionEvents.filter(function (dce) {
-                return dce.id === sourceDceId;
+                return dce.model._id === sourceDceId;
               })[0];
 
               if (sourceDce) {
                 angular.copy(sourceDce, $scope.dce);
-                $scope.dce.id = MicaUtil.generateNextId(dceIds);
+                $scope.dce.model._id = MicaUtil.generateNextId(dceIds);
                 delete $scope.dce.attachments;
                 delete $scope.dce.startYear;
                 delete $scope.dce.startMonth;
@@ -921,7 +907,7 @@ mica.study
                 delete $scope.dce.endMonth;
               }
             } else if (dceIds.length) {
-              $scope.dce.id = MicaUtil.generateNextId(dceIds);
+              $scope.dce.model._id = MicaUtil.generateNextId(dceIds);
             }
 
             $scope.population.dataCollectionEvents.push($scope.dce);
@@ -930,7 +916,7 @@ mica.study
             $scope.dce.attachments && $scope.dce.attachments.length > 0 ? $scope.dce.attachments : [];
 
           StudyTaxonomyService.get(function() {
-            var lang = $scope.tabs[$scope.activeTab].lang;
+            var lang = $translate.use();
             $scope.dataSources = StudyTaxonomyService.getTerms('populations-dataCollectionEvents-dataSources', lang);
             $scope.bioSamples = StudyTaxonomyService.getTerms('populations-dataCollectionEvents-bioSamples', lang);
             $scope.administrativeDatabases = StudyTaxonomyService.getTerms('populations-dataCollectionEvents-administrativeDatabases', lang);
@@ -943,23 +929,25 @@ mica.study
       }) : {};
 
       MicaConfigResource.get(function (micaConfig) {
-        $scope.tabs = [];
-        $scope.sfOptions = {};
-
+        var sfLanguages = {};
         micaConfig.languages.forEach(function (lang) {
-          $scope.tabs.push({lang: lang});
-          var sfLanguages = {};
           sfLanguages[lang] = $filter('translate')('language.' + lang);
-          $scope.sfOptions[lang] = {
-            formDefaults: {
-              languages: sfLanguages
-            }
-          };
         });
+        $scope.sfOptions = {
+          formDefaults: {
+            languages: sfLanguages
+          }
+        };
 
-        EntityFormResource.get({target: 'data-collection-event'}, function(form) {
+        EntityFormResource.get({target: 'study'}, function(form) {
           form.schema = LocalizedSchemaFormService.translate(angular.fromJson(form.schema));
           form.definition = LocalizedSchemaFormService.translate(angular.fromJson(form.definition));
+          $scope.sfForm = form;
+        });
+
+        EntityFormResource.get({target: 'data-collection-event', locale: $translate.use()}, function(form) {
+          form.schema = angular.fromJson(form.schema);
+          form.definition = angular.fromJson(form.definition);
           $scope.dceSfForm = form;
         });
       });
@@ -975,6 +963,8 @@ mica.study
           delete $scope.dce.attachments;
         }
 
+        $scope.$broadcast('schemaFormValidate');
+
         if (!validate(form)) {
           form.saveAttempted = true;
           return;
@@ -985,7 +975,7 @@ mica.study
 
       var validate = function (form) {
         if ($scope.population.dataCollectionEvents.filter(function (d) {
-            return d.id === $scope.dce.id;
+            return d.model._id === $scope.dce.model._id;
           }).length > 1) {
           form.$setValidity('dce_id', false);
         } else {
@@ -997,7 +987,6 @@ mica.study
 
       var updateStudy = function () {
         $log.info('Update study', $scope.study);
-        StudyModelUtil.updateContents($scope.study);
         $scope.study.$save(redirectToStudy, saveErrorHandler);
       };
 
@@ -1036,7 +1025,6 @@ mica.study
     'FormServerValidation',
     'RadioGroupOptionBuilder',
     'FormDirtyStateObserver',
-    'StudyModelUtil',
     function ($rootScope,
               $scope,
               $routeParams,
@@ -1053,29 +1041,17 @@ mica.study
               StringUtils,
               FormServerValidation,
               RadioGroupOptionBuilder,
-              FormDirtyStateObserver,
-              StudyModelUtil) {
+              FormDirtyStateObserver) {
       MicaConfigResource.get(function (micaConfig) {
-        $scope.tabs = [];
-        $scope.languages = [];
-        $scope.sfOptions = {};
         var sfLanguages = {};
-
         micaConfig.languages.forEach(function (lang) {
-          $scope.tabs.push({lang: lang});
-          $scope.languages.push(lang);
           sfLanguages[lang] = $filter('translate')('language.' + lang);
         });
-
         $scope.sfOptions = {
           formDefaults: {
             languages: sfLanguages
           }
         };
-
-        $scope.$watch('activeTab', function () {
-          $scope.$broadcast('sfLocalizedStringLocaleChanged', $scope.tabs[$scope.activeTab].lang);
-        });
 
         EntityFormResource.get({target: 'study'}, function(form) {
           form.schema = LocalizedSchemaFormService.translate(angular.fromJson(form.schema));
@@ -1084,34 +1060,12 @@ mica.study
         });
       });
 
-      function initializeTaxonomies() {
-        StudyTaxonomyService.get(function() {
-          $scope.tabs.forEach(function(tab) {
-            $scope.methodDesignTypes[tab.lang] = RadioGroupOptionBuilder.build('methods', StudyTaxonomyService.getTerms('methods-design', tab.lang));
-            $scope.accessTypes[tab.lang] = StudyTaxonomyService.getTerms('access', tab.lang);
-            $scope.methodRecruitmentTypes[tab.lang] = StudyTaxonomyService.getTerms('methods-recruitments', tab.lang);
-          });
-        });
-      }
-
       function createNewStudy() {
-        initializeTaxonomies();
         return {attachments: [], maelstromAuthorization: {date: null}, specificAuthorization: {date: null}, model: {}};
       }
 
-      $scope.activeTab = 0;
       $scope.revision = {comment: null};
       $scope.today = new Date();
-      $scope.$watch('authorization.maelstrom.date', function (newVal) {
-        if (newVal !== $scope.today) {
-          $scope.study.maelstromAuthorization.date = newVal;
-        }
-      }, true);
-      $scope.$watch('authorization.specific.date', function (newVal) {
-        if (newVal !== $scope.today) {
-          $scope.study.specificAuthorization.date = newVal;
-        }
-      }, true);
       $scope.authorization = {maelstrom: {date: $scope.today}, specific: {date: $scope.today}};
       $scope.datePicker = {maelstrom: {opened: false}, specific: {opened: false}};
       $scope.openDatePicker = function ($event, id) {
@@ -1132,11 +1086,10 @@ mica.study
       $scope.files = [];
       $scope.newStudy = !$routeParams.id;
       $scope.study = $routeParams.id ? DraftStudyResource.get({id: $routeParams.id}, function (study) {
-        StudyModelUtil.updateModel(study);
+
         $scope.files = study.logo ? [study.logo] : [];
         $scope.study.attachments =
           study.attachments && study.attachments.length > 0 ? study.attachments : [];
-        initializeTaxonomies();
       }) : createNewStudy();
 
 
@@ -1146,6 +1099,8 @@ mica.study
         if (!$scope.study.logo) { //protobuf doesnt like null values
           delete $scope.study.logo;
         }
+
+        $scope.$broadcast('schemaFormValidate');
 
         if (!$scope.form.$valid) {
           $scope.form.saveAttempted = true;
@@ -1160,7 +1115,6 @@ mica.study
 
       var createStudy = function () {
         $log.debug('Create new study', $scope.study);
-        StudyModelUtil.updateContents($scope.study);
         DraftStudiesResource.save($scope.study,
           function (resource, getResponseHeaders) {
             FormDirtyStateObserver.unobserve();
@@ -1172,7 +1126,6 @@ mica.study
 
       var updateStudy = function () {
         $log.debug('Update study', $scope.study);
-        StudyModelUtil.updateContents($scope.study);
         $scope.study.$save({comment: $scope.revision.comment},
           function (study) {
             FormDirtyStateObserver.unobserve();

@@ -177,6 +177,8 @@ public class Population extends AbstractAttributeModelAware implements Serializa
 
   @Override
   public Map<String, Object> getModel() {
+    //TODO migration script
+
     if (!this.hasModel()) {
       Map<String, Object> map = Maps.newHashMap();
 

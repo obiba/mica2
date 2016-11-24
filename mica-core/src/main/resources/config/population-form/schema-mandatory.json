@@ -1,1 +1,24 @@
-{}
+{
+  "type": "object",
+  "properties": {
+    "_id": {
+      "title": "t(population.id)",
+      "type": "string"
+    },
+    "_name": {
+      "title": "t(population.name)",
+      "type": "object",
+      "format": "localizedString"
+    },
+    "_description": {
+      "title": "t(population.description)",
+      "type": "object",
+      "format": "localizedString"
+    }
+  },
+  "required": [
+    "_id",
+    "_name",
+    "_description"
+  ]
+}

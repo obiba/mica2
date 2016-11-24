@@ -23,9 +23,12 @@ mica.contact
     contactDeleted: 'event:contact-deleted'
   })
 
-  .controller('ContactController', ['$rootScope', '$scope', '$uibModal', '$translate', 'MicaConfigResource', 'CONTACT_EVENTS', 'NOTIFICATION_EVENTS',
-    function ($rootScope, $scope, $uibModal, $translate, MicaConfigResource, CONTACT_EVENTS, NOTIFICATION_EVENTS) {
+  .controller('ContactController', ['$rootScope', '$scope', '$uibModal', '$translate', 'MicaConfigResource', 'CONTACT_EVENTS', 'NOTIFICATION_EVENTS', 'ContactSerializationService',
+    function ($rootScope, $scope, $uibModal, $translate, MicaConfigResource, CONTACT_EVENTS, NOTIFICATION_EVENTS, ContactSerializationService) {
+
       $scope.micaConfig = MicaConfigResource.get();
+      $scope.lang = $translate.use();
+
       $scope.viewContact = function (contact) {
         if(!$scope.isOrderingContacts) {
           $uibModal.open({
@@ -36,7 +39,7 @@ mica.contact
                 return $scope.micaConfig;
               },
               contact: function () {
-                return contact;
+                return ContactSerializationService.deserialize(contact);
               }
             }
           });
@@ -66,7 +69,7 @@ mica.contact
             controller: 'ContactEditModalController',
             resolve: {
               contact: function () {
-                return contact;
+                return ContactSerializationService.deserialize(contact);
               },
               excludes: function() {
                 return [];
@@ -153,7 +156,7 @@ mica.contact
       $scope.sfOptions = {formDefaults: {languages: formLanguages, readonly: true}};
       $scope.sfForm = {schema: LocalizedSchemaFormService.translate(angular.copy(CONTACT_SCHEMA)),
         definition: LocalizedSchemaFormService.translate(angular.copy(CONTACT_DEFINITION))};
-      $scope.contact = ContactSerializationService.deserialize(contact);
+      $scope.contact = contact;
       $scope.close = function () {
         $uibModalInstance.dismiss('close');
       };
@@ -182,7 +185,7 @@ mica.contact
       var save = function (form) {
         $scope.$broadcast('schemaFormValidate');
         if (form.$valid) {
-          $uibModalInstance.close(ContactSerializationService.serialize(($scope.selected.contact)));
+          $uibModalInstance.close(ContactSerializationService.serialize($scope.selected.contact));
         } else {
           $scope.form = form;
           $scope.form.saveAttempted = true;
@@ -235,10 +238,11 @@ mica.contact
       $scope.sfForm = {schema: LocalizedSchemaFormService.translate(angular.copy(CONTACT_SCHEMA)),
         definition: LocalizedSchemaFormService.translate(angular.copy(CONTACT_DEFINITION))};
       $scope.isNew = Object.getOwnPropertyNames(contact).length === 0;
-      $scope.selected = {contact: $scope.isNew ? contact : ContactSerializationService.deserialize(contact)};
+      $scope.selected = {contact: contact};
       $scope.excludes = excludes;
       $scope.result = newResult();
       $scope.autoRefreshed = false;
+      $scope.lang = $translate.use();
       $scope.save = save;
       $scope.cancel = cancel;
       $scope.findContacts = findContacts;

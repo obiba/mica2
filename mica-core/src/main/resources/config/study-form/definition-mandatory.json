@@ -1,1 +1,29 @@
-[]
+[
+  {
+    "type": "fieldset",
+    "items": [
+      {
+        "type": "help",
+        "helpvalue": "t(study.general-info)"
+      },
+      {
+        "key": "_name",
+        "type": "localizedstring"
+      },
+      {
+        "key": "_acronym",
+        "type": "localizedstring"
+      },
+      {
+        "key": "_objectives",
+        "type": "localizedstring",
+        "rows": 3,
+        "marked": true
+      },
+      {
+        "key": "_opal",
+        "type": "string"
+      }
+    ]
+  }
+]
