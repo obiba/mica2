@@ -150,6 +150,37 @@ class StudyDtos {
 
     if(dto.hasContent() && !Strings.isNullOrEmpty(dto.getContent())) {
       study.setModel(JSONUtils.toMap(dto.getContent()));
+    } else {
+      Map<String, Object> model = Maps.newHashMap();
+
+      if (dto.hasWebsite()) model.put("website", dto.getWebsite());
+      if (dto.hasStartYear()) model.put("startYear", dto.getStartYear());
+      if (dto.hasEndYear()) model.put("endYear", dto.getEndYear());
+      if (dto.getAccessCount() > 0) model.put("access", dto.getAccessList());
+      if (dto.getOtherAccessCount() > 0) model.put("otherAccess", localizedStringDtos.fromDto(dto.getOtherAccessList()));
+      if (dto.hasMarkerPaper()) model.put("markerPaper", dto.getMarkerPaper());
+      if (dto.hasPubmedId()) model.put("pubmedId", dto.getPubmedId());
+
+      if (dto.hasSpecificAuthorization()) model.put("specificAuthorization", AuthorizationDtos.fromDto(dto.getSpecificAuthorization()));
+
+      if (dto.hasMaelstromAuthorization()) model.put("maelstromAuthorization", AuthorizationDtos.fromDto(dto.getMaelstromAuthorization()));
+
+
+      if (dto.hasMethods()) {
+        Study.StudyMethods methods = fromDto(dto.getMethods());
+
+        if (methods.getDesigns() != null && methods.getDesigns().size() > 0) {
+          methods.setDesign(methods.getDesigns().get(0));
+          methods.setDesigns(null);
+        }
+
+        model.put("methods", methods);
+      }
+
+      if (dto.hasNumberOfParticipants()) model.put("numberOfParticipants", numberOfParticipantsDtos.fromDto(dto.getNumberOfParticipants()));
+      if (dto.getInfoCount() > 0) model.put("info", localizedStringDtos.fromDto(dto.getInfoList()));
+
+      study.setModel(model);
     }
 
     return study;
