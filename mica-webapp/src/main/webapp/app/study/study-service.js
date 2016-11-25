@@ -13,7 +13,9 @@
 mica.study
   .factory('StudyStatesResource', ['$resource',
     function ($resource) {
-      return $resource('ws/draft/study-states');
+      return $resource('ws/draft/study-states', {}, {
+        query: {method: 'GET', errorHandler: true, isArray: true}
+      });
     }])
 
   .factory('StudyStateResource', ['$resource',

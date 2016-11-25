@@ -13,7 +13,9 @@
 mica.network
   .factory('NetworksResource', ['$resource',
     function ($resource) {
-      return $resource('ws/draft/networks');
+      return $resource('ws/draft/networks', {}, {
+        query: {method: 'GET', isArray: true, errorHandler: true}
+      });
     }])
 
   .factory('DraftNetworksResource', ['$resource', 'NetworkModelService',
