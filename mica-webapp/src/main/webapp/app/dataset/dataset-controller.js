@@ -17,9 +17,18 @@ mica.dataset.OPAL_TABLE_TYPES = {STUDY_TABLE: 'studyTable', NETWORK_TABLE: 'netw
 
 mica.dataset
 
-  .controller('StudyDatasetListController', ['$rootScope', '$scope', '$timeout', 'StudyDatasetsResource',
+  .controller('StudyDatasetListController', ['$rootScope',
+    '$scope',
+    '$timeout',
+    'StudyDatasetsResource',
     'DatasetService',
-    function ($rootScope, $scope, $timeout, StudyDatasetsResource, DatasetService) {
+    'AlertBuilder',
+    function ($rootScope,
+              $scope,
+              $timeout,
+              StudyDatasetsResource,
+              DatasetService,
+              AlertBuilder) {
       var onSuccess = function(response, responseHeaders) {
         $scope.totalCount = parseInt(responseHeaders('X-Total-Count'), 10);
         $scope.studyDatasets = response;
@@ -53,7 +62,7 @@ mica.dataset
           data.query = $scope.pagination.searchText + '*';
         }
 
-        StudyDatasetsResource.query(data, onSuccess, onError);
+        StudyDatasetsResource.query(data, onSuccess, AlertBuilder.newBuilder().onError(onError));
       }
 
       $scope.loading = true;
@@ -744,8 +753,18 @@ mica.dataset
     };
   }])
 
-  .controller('HarmonizationDatasetListController', ['$rootScope', '$scope', '$timeout', 'HarmonizationDatasetsResource', 'DatasetService',
-    function ($rootScope, $scope, $timeout, HarmonizationDatasetsResource, DatasetService) {
+  .controller('HarmonizationDatasetListController', ['$rootScope',
+    '$scope',
+    '$timeout',
+    'HarmonizationDatasetsResource',
+    'DatasetService',
+    'AlertBuilder',
+    function ($rootScope,
+              $scope,
+              $timeout,
+              HarmonizationDatasetsResource,
+              DatasetService,
+              AlertBuilder) {
       var onSuccess = function(response, responseHeaders) {
         $scope.harmonizedDatasets = response;
         $scope.loading = false;
@@ -786,7 +805,7 @@ mica.dataset
           data.query = $scope.pagination.searchText + '*';
         }
 
-        HarmonizationDatasetsResource.query(data, onSuccess, onError);
+        HarmonizationDatasetsResource.query(data, onSuccess, AlertBuilder.newBuilder().onError(onError));
       }
 
       $scope.loading = true;

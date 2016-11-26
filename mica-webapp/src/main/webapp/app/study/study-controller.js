@@ -38,6 +38,7 @@ mica.study
     'DraftStudyResource',
     'NOTIFICATION_EVENTS',
     'DraftStudyDeleteService',
+    'AlertBuilder',
     function ($rootScope,
               $scope,
               $translate,
@@ -46,7 +47,8 @@ mica.study
               StudyStatesResource,
               DraftStudyResource,
               NOTIFICATION_EVENTS,
-              DraftStudyDeleteService) {
+              DraftStudyDeleteService,
+              AlertBuilder) {
 
       var onSuccess = function(response, responseHeaders) {
         $scope.totalCount = parseInt(responseHeaders('X-Total-Count'), 10);
@@ -59,7 +61,7 @@ mica.study
       };
 
       var onError = function() {
-        $scope.loading = true;
+        $scope.loading = false;
       };
 
       function refreshPage() {
@@ -81,7 +83,7 @@ mica.study
           data.query = $scope.pagination.searchText + '*';
         }
 
-        StudyStatesResource.query(data, onSuccess, onError);
+        StudyStatesResource.query(data, onSuccess, AlertBuilder.newBuilder().onError(onError));
       }
 
       $scope.loading = true;

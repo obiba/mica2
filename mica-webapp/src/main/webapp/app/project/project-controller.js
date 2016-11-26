@@ -23,6 +23,7 @@ mica.project
     '$timeout',
     'DraftProjectsResource',
     'DraftProjectResource',
+    'AlertBuilder',
 
     function ($rootScope,
               $scope,
@@ -30,8 +31,8 @@ mica.project
               $translate,
               $timeout,
               DraftProjectsResource,
-              DraftProjectResource
-    ) {
+              DraftProjectResource,
+              AlertBuilder) {
       var onSuccess = function(response) {
         $scope.projects = response.projects;
         $scope.totalCount = parseInt(response.total, 10);
@@ -65,7 +66,7 @@ mica.project
           data.query = $scope.pagination.searchText + '*';
         }
 
-        DraftProjectsResource.get(data, onSuccess, onError);
+        DraftProjectsResource.get(data, onSuccess, AlertBuilder.newBuilder().onError(onError));
       }
 
       $scope.loading = true;
