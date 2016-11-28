@@ -13,7 +13,9 @@ package org.obiba.mica.dataset;
 import java.util.List;
 
 import org.obiba.mica.dataset.domain.StudyDataset;
+import org.obiba.mica.network.domain.Network;
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.Query;
 
 /**
  * Spring Data MongoDB repository for the {@link org.obiba.mica.dataset.domain.StudyDataset} entity.
@@ -21,5 +23,8 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 public interface StudyDatasetRepository extends MongoRepository<StudyDataset, String> {
 
   List<StudyDataset> findByStudyTableStudyId(String studyId);
+
+  @Query("{'model' : { $exists : false }}")
+  List<StudyDataset> findWithoutModel();
 
 }
