@@ -14,6 +14,7 @@ import java.util.List;
 
 import org.obiba.mica.network.domain.Network;
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.Query;
 
 /**
  * Spring Data MongoDB repository for the {@link org.obiba.mica.network.domain.Network} entity.
@@ -24,4 +25,6 @@ public interface NetworkRepository extends MongoRepository<Network, String>, Net
 
   List<Network> findByNetworkIds(String networkId);
 
+  @Query("{'model' : { $exists : false }}")
+  List<Network> findWithoutModel();
 }
