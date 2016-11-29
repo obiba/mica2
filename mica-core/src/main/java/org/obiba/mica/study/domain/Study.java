@@ -542,14 +542,6 @@ public class Study extends AbstractModelAware implements AttributeAware, PersonA
 
     private List<String> designs;
 
-    public String getDesign() {
-      return design;
-    }
-
-    public void setDesign(String design) {
-      this.design = design;
-    }
-
     private String design;
 
     private LocalizedString otherDesign;
@@ -573,6 +565,14 @@ public class Study extends AbstractModelAware implements AttributeAware, PersonA
 
     public void setDesigns(List<String> designs) {
       this.designs = designs;
+    }
+
+    public String getDesign() {
+      return design;
+    }
+
+    public void setDesign(String design) {
+      this.design = design;
     }
 
     public LocalizedString getOtherDesign() {
