@@ -165,7 +165,6 @@ class StudyDtos {
 
       if (dto.hasMaelstromAuthorization()) model.put("maelstromAuthorization", AuthorizationDtos.fromDto(dto.getMaelstromAuthorization()));
 
-
       if (dto.hasMethods()) {
         Study.StudyMethods methods = fromDto(dto.getMethods());
 
