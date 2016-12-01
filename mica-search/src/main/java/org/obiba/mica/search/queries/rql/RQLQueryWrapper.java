@@ -419,7 +419,7 @@ public class RQLQueryWrapper implements QueryWrapper {
     private QueryBuilder visitMissing(ASTNode node) {
       String field = resolveField(node.getArgument(0).toString()).getField();
       visitField(field);
-      return QueryBuilders.missingQuery(field);
+      return QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery(field));
     }
 
     private void visitField(String field) {

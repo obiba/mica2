@@ -26,6 +26,7 @@ import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.IndicesAdminClient;
+import org.elasticsearch.cluster.metadata.IndexMetaData;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.search.SearchHit;
@@ -143,8 +144,8 @@ public class ElasticSearchIndexer {
         .setIndices(indexName) //
         .setTypes(type) //
         .setQuery(query) //
-        .setSize(MAX_SIZE) //
-        .setNoFields();
+        .setSize(MAX_SIZE);
+      // .setNoFields();
 
       log.debug("Request: {}", search.toString());
       response = search.execute().actionGet();
@@ -202,8 +203,8 @@ public class ElasticSearchIndexer {
 
       Settings settings = Settings.builder() //
         .put(elasticSearchConfiguration.getIndexSettings())
-        .put("number_of_shards", elasticSearchConfiguration.getNbShards()) //
-        .put("number_of_replicas", elasticSearchConfiguration.getNbReplicas()).build();
+        .put(IndexMetaData.SETTING_NUMBER_OF_SHARDS, elasticSearchConfiguration.getNbShards()) //
+        .put(IndexMetaData.SETTING_NUMBER_OF_REPLICAS, elasticSearchConfiguration.getNbReplicas()).build();
 
       indicesAdmin.prepareCreate(indexName).setSettings(settings).execute().actionGet();
 
