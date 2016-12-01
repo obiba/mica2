@@ -18,7 +18,6 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
@@ -28,6 +27,8 @@ import org.obiba.mica.study.domain.StudyState;
 import org.obiba.mica.study.service.DraftStudyService;
 import org.obiba.mica.study.service.StudyService;
 import org.springframework.stereotype.Service;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 public class EsDraftStudyService extends AbstractDocumentService<Study> implements DraftStudyService {
@@ -67,6 +68,6 @@ public class EsDraftStudyService extends AbstractDocumentService<Study> implemen
 
     return ids.isEmpty()
       ? QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("id"))
-      : QueryBuilders.idsQuery().ids(ids);
+      : QueryBuilders.idsQuery().addIds(ids.stream().toArray(String[]::new));
   }
 }

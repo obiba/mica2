@@ -18,7 +18,6 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
@@ -30,6 +29,8 @@ import org.obiba.mica.search.AbstractDocumentService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 class EsDraftHarmonizationDatasetService extends AbstractDocumentService<HarmonizationDataset> implements DraftHarmonizationDatasetService {
@@ -72,6 +73,6 @@ class EsDraftHarmonizationDatasetService extends AbstractDocumentService<Harmoni
 
     return ids.isEmpty()
       ? QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("id"))
-      : QueryBuilders.idsQuery().ids(ids);
+      : QueryBuilders.idsQuery().addIds(ids.stream().toArray(String[]::new));
   }
 }

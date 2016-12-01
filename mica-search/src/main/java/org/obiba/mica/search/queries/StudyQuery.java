@@ -74,7 +74,7 @@ public class StudyQuery extends AbstractDocumentQuery {
       .collect(Collectors.toList());
     return ids.isEmpty()
       ? QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("id"))
-      : QueryBuilders.idsQuery().ids(ids.toArray(new String[ids.size()]));
+      : QueryBuilders.idsQuery().addIds(ids.stream().toArray(String[]::new));
   }
 
   @Override

@@ -69,6 +69,6 @@ public class EsPublishedNetworkService extends AbstractDocumentService<Network>
       .collect(Collectors.toList());
     return ids.isEmpty()
       ? QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("id"))
-      : QueryBuilders.idsQuery().ids(ids);
+      : QueryBuilders.idsQuery().addIds(ids.stream().toArray(String[]::new));
   }
 }

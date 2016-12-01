@@ -72,6 +72,6 @@ class EsDraftStudyDatasetService extends AbstractEsDatasetService<StudyDataset> 
 
     return ids.isEmpty()
       ? QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("id"))
-      : QueryBuilders.idsQuery().ids(ids);
+      : QueryBuilders.idsQuery().addIds(ids.stream().toArray(String[]::new));
   }
 }

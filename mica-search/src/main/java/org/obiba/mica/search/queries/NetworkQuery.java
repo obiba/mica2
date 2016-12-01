@@ -91,7 +91,7 @@ public class NetworkQuery extends AbstractDocumentQuery {
       .map(NetworkState::getId).filter(s -> subjectAclService.isAccessible("/network", s)).collect(Collectors.toList());
     return ids.isEmpty()
       ? QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("id"))
-      : QueryBuilders.idsQuery().ids(ids);
+      : QueryBuilders.idsQuery().addIds(ids.stream().toArray(String[]::new));
   }
 
   @Override
@@ -152,9 +152,10 @@ public class NetworkQuery extends AbstractDocumentQuery {
   public Map<String, List<String>> getStudyCountsByNetwork() {
     SearchRequestBuilder requestBuilder = client.prepareSearch(getSearchIndex()) //
       .setTypes(getSearchType()) //
-      .setSearchType(SearchType.COUNT) //
-      .setQuery(hasQueryBuilder() ? getQueryBuilder() : QueryBuilders.matchAllQuery()) //
-      .setNoFields();
+      .setSearchType(SearchType.QUERY_THEN_FETCH) //
+      .setQuery(hasQueryBuilder() ? getQueryBuilder() : QueryBuilders.matchAllQuery())
+      .setSize(0); //
+//      .setNoFields();
 
     Properties props = new Properties();
     props.setProperty("id", "");

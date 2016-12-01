@@ -289,8 +289,8 @@ public abstract class AbstractDocumentQuery {
       .setSearchType(SearchType.QUERY_THEN_FETCH) //
       .setSize(0) //
       .setQuery(
-        accessFilter == null ? queryBuilder : QueryBuilders.boolQuery().must(queryBuilder).must(accessFilter)) //
-      .setNoFields();
+        accessFilter == null ? queryBuilder : QueryBuilders.boolQuery().must(queryBuilder).must(accessFilter));
+    // .setNoFields();
 
     aggregationYamlParser.getAggregations(getJoinFieldsAsProperties()).forEach(requestBuilder::addAggregation);
     log.info("Request /{}/{}", getSearchIndex(), getSearchType());
@@ -364,8 +364,8 @@ public abstract class AbstractDocumentQuery {
         ? QueryBuilders.matchAllQuery()
         : QueryBuilders.boolQuery().must(QueryBuilders.matchAllQuery()).must(accessFilter)) //
       .setFrom(from) //
-      .setSize(scope == DETAIL ? size : 0) //
-      .setNoFields().addAggregation(AggregationBuilders.global(AGG_TOTAL_COUNT)); //
+      .setSize(scope == DETAIL ? size : 0); //
+      //.setNoFields().addAggregation(AggregationBuilders.global(AGG_TOTAL_COUNT)); //
 
     SearchRequestBuilder requestBuilder = client.prepareSearch(getSearchIndex()) //
       .setTypes(getSearchType()) //
@@ -375,7 +375,7 @@ public abstract class AbstractDocumentQuery {
       .setSize(scope == DETAIL ? size : 0) //
       .addAggregation(AggregationBuilders.global(AGG_TOTAL_COUNT)); // ;
 
-    if(ignoreFields()) requestBuilder.setNoFields();
+//    if(ignoreFields()) requestBuilder.setNoFields();
 
     // apply default sort for VariableQuery before any user defined ones (order is important)
     if (this instanceof VariableQuery) {
@@ -459,7 +459,8 @@ public abstract class AbstractDocumentQuery {
         : QueryBuilders.boolQuery().must(QueryBuilders.matchAllQuery()).must(accessFilter)) //
       .setFrom(0) //
       .setSize(0) // no results needed for a coverage
-      .setNoFields().addAggregation(AggregationBuilders.global(AGG_TOTAL_COUNT));
+      .addAggregation(AggregationBuilders.global(AGG_TOTAL_COUNT));
+//      .setNoFields()
 
     SearchRequestBuilder requestBuilder = client.prepareSearch(getSearchIndex()) //
       .setTypes(getSearchType()) //
@@ -468,7 +469,8 @@ public abstract class AbstractDocumentQuery {
         accessFilter == null ? queryBuilder : QueryBuilders.boolQuery().must(queryBuilder).must(accessFilter)) //
       .setFrom(0) //
       .setSize(0) // no results needed for a coverage
-      .setNoFields().addAggregation(AggregationBuilders.global(AGG_TOTAL_COUNT));
+      .addAggregation(AggregationBuilders.global(AGG_TOTAL_COUNT));
+//      .setNoFields()
 
     if(sortBuilder != null) requestBuilder.addSort(sortBuilder);
 
