@@ -22,7 +22,6 @@ import javax.validation.constraints.NotNull;
 
 import org.elasticsearch.search.aggregations.Aggregation;
 import org.elasticsearch.search.aggregations.Aggregations;
-import org.elasticsearch.search.aggregations.InternalAggregation;
 import org.elasticsearch.search.aggregations.bucket.MultiBucketsAggregation;
 import org.elasticsearch.search.aggregations.bucket.global.Global;
 import org.elasticsearch.search.aggregations.bucket.range.Range;
@@ -69,7 +68,7 @@ public class EsQueryResultParser {
 
       AggregationResultDto.Builder aggResultBuilder = AggregationResultDto.newBuilder();
       aggResultBuilder.setAggregation(defaultAgg.getName());
-      String aggType = ((InternalAggregation) defaultAgg).type().name();
+      String aggType = defaultAgg.getName();
 
       switch(aggType) {
         case "stats":
@@ -185,7 +184,7 @@ public class EsQueryResultParser {
 
       AggregationResultDto.Builder aggResultBuilder = AggregationResultDto.newBuilder();
       aggResultBuilder.setAggregation(aggregation.getName());
-      String aggType = ((InternalAggregation) aggregation).type().name();
+      String aggType = aggregation.getName();
 
       switch(aggType) {
         case "stats":

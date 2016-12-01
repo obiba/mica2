@@ -22,8 +22,6 @@ import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.index.IndexNotFoundException;
@@ -54,6 +52,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 import static org.obiba.mica.search.CountStatsDtoBuilders.DatasetCountStatsBuilder;
 import static org.obiba.mica.web.model.MicaSearch.DatasetResultDto;
@@ -115,7 +116,7 @@ public class DatasetQuery extends AbstractDocumentQuery {
       .filter(s -> subjectAclService.isAccessible("/harmonization-dataset", s)).collect(Collectors.toList()));
     return ids.isEmpty()
       ? QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("id"))
-      : QueryBuilders.idsQuery().ids(ids);
+      : QueryBuilders.idsQuery().addIds(ids.stream().toArray(String[]::new));
   }
 
   @Override
@@ -209,8 +210,8 @@ public class DatasetQuery extends AbstractDocumentQuery {
     SearchRequestBuilder requestBuilder = client.prepareSearch(getSearchIndex()) //
       .setTypes(getSearchType()) //
       .setSize(0) //
-      .setQuery(accessFilter == null ? query : QueryBuilders.boolQuery().must(query).must(accessFilter)) //
-      .setNoFields();
+      .setQuery(accessFilter == null ? query : QueryBuilders.boolQuery().must(query).must(accessFilter)); //
+//      .setNoFields();
 
     Properties props = new Properties();
     props.setProperty("id", "");

@@ -22,14 +22,10 @@ import org.apache.commons.io.FileUtils;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
-import org.elasticsearch.cluster.ClusterName;
-import org.elasticsearch.cluster.metadata.IndexMetaData;
-import org.elasticsearch.cluster.node.DiscoveryNode;
 import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.common.util.concurrent.EsExecutors;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.node.Node;
-import org.elasticsearch.node.NodeBuilder;
+import org.elasticsearch.node.NodeValidationException;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -57,7 +53,7 @@ public class AggregationYamlParserTest {
   private static Path dataDirectory;
 
   @BeforeClass
-  public static void beforeClass() throws IOException {
+  public static void beforeClass() throws IOException, NodeValidationException {
     dataDirectory = Files.createTempDirectory("es-test", new FileAttribute<?>[] {});
     aggregationYamlParser.setLocales(Arrays.asList(Locale.ENGLISH, Locale.FRENCH));
     client = newNode(dataDirectory.toString()).client();
@@ -144,23 +140,28 @@ public class AggregationYamlParserTest {
     return getRequestAsJSon(requestBuilder).get("aggregations");
   }
 
-  private static Node newNode(String dataDirectory) {
-    Node build = NodeBuilder.nodeBuilder().local(true).data(false).settings(Settings.builder() //
-      .put(ClusterName.SETTING, nodeName()) //
+  private static Node newNode(String dataDirectory) throws NodeValidationException {
+    Node node = new Node(Settings.builder() //
+      .put("transport.type", "local")
+      .put("node.data", false)
+      .put("cluster.name", nodeName()) //
       .put("node.name", nodeName()) //
-      .put(IndexMetaData.SETTING_NUMBER_OF_SHARDS, 1) //
-      .put(IndexMetaData.SETTING_NUMBER_OF_REPLICAS, 0) //
-      .put(EsExecutors.PROCESSORS, 1) // limit the number of threads created
+//      .put(IndexMetaData.SETTING_NUMBER_OF_SHARDS, 1) //
+//      .put(IndexMetaData.SETTING_NUMBER_OF_REPLICAS, 0) //
+      .put("processors", 1) // limit the number of threads created
       .put("http.enabled", false) //
       .put("index.store.type", "ram") //
-      .put("config.ignore_system_properties", true) // make sure we get what we set :)
+//      .put("config.ignore_system_properties", true) // make sure we get what we set :)
       .put("path.home", "/tmp") //
-      .put("path.data", dataDirectory) //
-    ).build();
+      .put("path.data", dataDirectory)
+      .build()//
+    );
 
-    build.start();
-    assertThat(DiscoveryNode.localNode(build.settings())).isTrue();
-    return build;
+
+    //IndexSettings
+    node.start();
+//    assertThat(localNode(node.settings())).isTrue();
+    return node;
   }
 
   private JsonNode getRequestAsJSon(SearchRequestBuilder requestBuilder) throws IOException {

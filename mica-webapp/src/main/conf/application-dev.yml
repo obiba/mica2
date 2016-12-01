@@ -26,7 +26,9 @@ agate:
     key: changeit
 
 elasticsearch:
+  masterNode: true
   dataNode: true
+  ingestNode: true
   clusterName: mica
   shards: 5
   replicas: 1

@@ -10,6 +10,7 @@
 
 package org.obiba.mica.search;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -21,7 +22,8 @@ import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.node.Node;
-import org.elasticsearch.node.NodeBuilder;
+import org.elasticsearch.node.NodeValidationException;
+import org.elasticsearch.transport.client.PreBuiltTransportClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.bind.RelaxedPropertyResolver;
@@ -41,6 +43,8 @@ public class ElasticSearchConfiguration implements EnvironmentAware {
 
   private static final String ES_CONFIG_FILE = "elasticsearch.yml";
 
+  private static final String ES_INDEX_CONFIG_FILE = "index-elasticsearch.yml";
+
   public static final String PATH_DATA = "${MICA_HOME}/work/elasticsearch/data";
 
   public static final String PATH_WORK = "${MICA_HOME}/work/elasticsearch/work";
@@ -53,20 +57,23 @@ public class ElasticSearchConfiguration implements EnvironmentAware {
   }
 
   @Bean
-  public Client client() {
+  public Client client() throws NodeValidationException {
     return Boolean.parseBoolean(propertyResolver.getProperty("transportClient"))
       ? createTransportClient()
       : createNodeClient();
   }
 
   private Client createTransportClient() {
-    Settings.Builder settingsBuilder = Settings.settingsBuilder() //
+
+    Settings settings = Settings.builder()
       .put("cluster.name", propertyResolver.getProperty("clusterName")) //
-      .put("client.transport.sniff", Boolean.parseBoolean(propertyResolver.getProperty("transportSniff")));
+      .put("client.transport.sniff", Boolean.parseBoolean(propertyResolver.getProperty("transportSniff")))
+      .build();
+
     List<String> transportAddresses = Stream.of(propertyResolver.getProperty("transportAddress", "").split(","))
       .map(String::trim).collect(toList());
 
-    TransportClient client = TransportClient.builder().settings(settingsBuilder.build()).build();
+    TransportClient client = new PreBuiltTransportClient(settings);
 
     transportAddresses.forEach(ta -> {
       int port = 9300;
@@ -88,14 +95,15 @@ public class ElasticSearchConfiguration implements EnvironmentAware {
     return client;
   }
 
-  private Client createNodeClient() {
-    Node node = NodeBuilder.nodeBuilder() //
-      .client(!propertyResolver.getProperty("dataNode", Boolean.class, true)) //
-      .settings(getSettings()) //
-      .clusterName(propertyResolver.getProperty("clusterName", "mica")) //
-      .node();
+  private Client createNodeClient() throws NodeValidationException {
+    Settings settings = Settings.builder()
+      .put(getSettings())
+      .put("node.master", !propertyResolver.getProperty("masterNode", Boolean.class, true))
+      .put("node.data", !propertyResolver.getProperty("dataNode", Boolean.class, true))
+      .put("node.ingest", !propertyResolver.getProperty("ingestNode", Boolean.class, true))
+      .put("cluster.name", propertyResolver.getProperty("clusterName", "mica")).build();
 
-    return node.client();
+    return new Node(settings).start().client();
   }
 
   public int getNbShards() {
@@ -107,18 +115,26 @@ public class ElasticSearchConfiguration implements EnvironmentAware {
   }
 
   public Settings getIndexSettings () {
-    return getSettings().getByPrefix("index.");
+    InputStream is = getClass().getClassLoader().getResourceAsStream(ES_INDEX_CONFIG_FILE);
+    try {
+      return Settings.builder().loadFromStream(ES_INDEX_CONFIG_FILE, is).build();
+    } catch(IOException e) {
+      throw Throwables.propagate(e);
+    }
   }
 
   private Settings getSettings() {
     String micaHome = System.getProperty("MICA_HOME");
     InputStream is = getClass().getClassLoader().getResourceAsStream(ES_CONFIG_FILE);
 
-    return Settings.builder() //
-      .loadFromStream(ES_CONFIG_FILE, is) //
-      .put("path.data", PATH_DATA.replace("${MICA_HOME}", micaHome)) //
-      .put("path.home", micaHome) //
-      .put("path.work", PATH_WORK.replace("${MICA_HOME}", micaHome)) //
-      .loadFromSource(propertyResolver.getProperty("settings")).build();
+    try {
+      return  Settings.builder() //
+        .loadFromStream(ES_CONFIG_FILE, is) //
+        .put("path.data", PATH_DATA.replace("${MICA_HOME}", micaHome)) //
+        .put("path.home", micaHome) //
+        .loadFromSource(propertyResolver.getProperty("settings")).build();
+    } catch(IOException e) {
+      throw Throwables.propagate(e);
+    }
   }
 }
