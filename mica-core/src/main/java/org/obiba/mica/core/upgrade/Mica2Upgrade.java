@@ -28,10 +28,10 @@ import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.service.StudyService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 import java.util.List;
 
 @Component
@@ -39,24 +39,24 @@ public class Mica2Upgrade {
 
   private static final Logger logger = LoggerFactory.getLogger(Mica2Upgrade.class);
 
-  @Autowired
+  @Inject
   private NetworkRepository networkRepository;
-  @Autowired
+  @Inject
   private NetworkService networkService;
 
-  @Autowired
+  @Inject
   private StudyRepository studyRepository;
-  @Autowired
+  @Inject
   private StudyService studyService;
 
-  @Autowired
+  @Inject
   private StudyDatasetRepository studyDatasetRepository;
-  @Autowired
+  @Inject
   private StudyDatasetService studyDatasetService;
 
-  @Autowired
+  @Inject
   private HarmonizationDatasetRepository harmonizationDatasetRepository;
-  @Autowired
+  @Inject
   private HarmonizationDatasetService harmonizationDatasetService;
 
   @PostConstruct
