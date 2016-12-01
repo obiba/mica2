@@ -19,6 +19,7 @@ mica.entitySfConfig
       controller: 'EntitySfConfigController',
       scope: {
         form: '=',
+        dirtyObservable: '=',
         alertId: '@'
       },
       templateUrl: 'app/entity-sf-config/views/entity-sf-config-form.html'

@@ -11,33 +11,6 @@
 'use strict';
 
 
-mica.entityConfig.EntityState = function($q) {
-  var listeners = [];
-
-  this.registerListener = function (listener) {
-    if (listeners.indexOf(listener) < 0) {
-      if (typeof listener.onSave === 'function') {
-        listeners.push(listener);
-      } else {
-        throw new Error('EntityState - listener must define onSave() method.');
-      }
-    }
-  };
-
-  this.onSave = function () {
-    return listeners.map(function (listener) {
-      var defer = $q.defer();
-      listener.onSave().$promise.then(
-        function() {
-          defer.resolve();
-        }, function(response) {
-          defer.reject(response);
-        });
-    });
-  };
-
-  return this;
-};
 
 mica.entityConfig
 
@@ -46,16 +19,24 @@ mica.entityConfig
     '$q',
     '$location',
     '$routeParams',
-    'AlertService',
     'ServerErrorUtils',
     'EntitySchemaFormService',
     'EntityFormCustomResource',
     'EntityFormPermissionsResource',
     'MicaConfigResource',
     'EntityFormAccessesResource',
-    function ($scope, $q, $location, $routeParams, AlertService, ServerErrorUtils,
-              EntitySchemaFormService, EntityFormCustomResource, EntityFormPermissionsResource, MicaConfigResource,
-              EntityFormAccessesResource) {
+    'AlertBuilder',
+    function ($scope,
+              $q,
+              $location,
+              $routeParams,
+              ServerErrorUtils,
+              EntitySchemaFormService,
+              EntityFormCustomResource,
+              EntityFormPermissionsResource,
+              MicaConfigResource,
+              EntityFormAccessesResource,
+              AlertBuilder) {
       var FORMS = {'network': ['network'],
         'study': ['study', 'population', 'data-collection-event'],
         'study-dataset': ['study-dataset'],
@@ -89,7 +70,7 @@ mica.entityConfig
       }
 
       initializeScopeTargets();
-      $scope.state = new mica.entityConfig.EntityState($q);
+      $scope.state = new mica.commons.EntityState($q, $scope);
       $scope.tab = {name: 'form'};
       $scope.permissions = [];
       $scope.targetSchemas = [];
@@ -138,11 +119,7 @@ mica.entityConfig
             return entityForm;
           },
           function(response) {
-            AlertService.alert({
-              id: 'EntityConfigController',
-              type: 'danger',
-              msg: ServerErrorUtils.buildMessage(response)
-            });
+            AlertBuilder.newBuilder().response(response).build();
           })};
       });
 
@@ -185,26 +162,18 @@ mica.entityConfig
               case EntitySchemaFormService.ParseResult.DEFINITION:
                 defer.reject('entity-config.syntax-error.definition');
             }
-
             return defer.promise;
           });
 
           $q.all(res).then(function (res) {
-            $location.path('/admin').replace();
+            AlertBuilder.newBuilder().type('info').trMsg('entity-config.save-alert.success').build();
+            $scope.state.setDirty(false);
             return res;
           }).catch(function (res) {
-            AlertService.alert({
-              id: 'EntityConfigController',
-              type: 'danger',
-              msg: res
-            });
+            AlertBuilder.newBuilder().trMsg(res).build();
           });
         }).catch(function (res) {
-          AlertService.alert({
-            id: 'EntityConfigController',
-            type: 'danger',
-            msg: res
-          });
+          AlertBuilder.newBuilder().trMsg(res).build();
         });
 
       };

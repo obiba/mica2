@@ -1,4 +1,4 @@
-<div ng-show="getTermsCount(model.content) > 0">
+<div>
 
   <h4 translate>global.terms</h4>
 
@@ -8,45 +8,47 @@
     <i class="fa fa-plus"></i> <span>{{'taxonomy-config.term-dialog.add-term'| translate}}</span>
   </a>
 
-  <div class="row voffset2">
-    <div class="col-xs-4">
-      <span class="input-group input-group-sm no-padding-top">
-        <span class="input-group-addon" id="content-search"><i class="glyphicon glyphicon-search"></i></span>
-        <input ng-model="searchText" type="text" class="form-control" aria-describedby="content-search">
-      </span>
+  <div ng-show="getTermsCount(model.content) > 0">
+    <div class="row voffset2">
+      <div class="col-xs-4">
+        <span class="input-group input-group-sm no-padding-top">
+          <span class="input-group-addon" id="content-search"><i class="glyphicon glyphicon-search"></i></span>
+          <input ng-model="searchText" type="text" class="form-control" aria-describedby="content-search">
+        </span>
+      </div>
+      <div class="col-xs-8">
+        <dir-pagination-controls class="pull-right"></dir-pagination-controls>
+      </div>
     </div>
-    <div class="col-xs-8">
-      <dir-pagination-controls class="pull-right"></dir-pagination-controls>
-    </div>
-  </div>
 
-  <table class="table table-bordered table-striped">
-    <thead>
-    <tr>
-      <th translate>name</th>
-      <th translate>global.title</th>
-      <th ng-if="target.editable" translate>actions</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr dir-paginate="child in model.children | filter: searchText |itemsPerPage: 10">
-      <td>
-        {{child.name}}
-      </td>
-      <td>
-        <property-view property="child.title"></property-view>
-      </td>
-      <td ng-if="target.editable" class="no-wrap">
-        <ul class="list-inline">
-          <li>
-            <a href ng-click="addTerm(model.content, child)" title="{{'edit' | translate}}"><i class="fa fa-pencil"></i></a>
-          </li>
-          <li ng-show="!isStatic(model.content)">
-            <a href ng-click="deleteTerm(model.content, child)" title="{{'delete' | translate}}"><i class="fa fa-trash"></i></a>
-          </li>
-        </ul>
-      </td>
-    </tr>
-    </tbody>
-  </table>
+    <table class="table table-bordered table-striped">
+      <thead>
+      <tr>
+        <th translate>name</th>
+        <th translate>global.title</th>
+        <th ng-if="target.editable" translate>actions</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr dir-paginate="child in model.children | filter: searchText |itemsPerPage: 10">
+        <td>
+          {{child.name}}
+        </td>
+        <td>
+          <property-view property="child.title"></property-view>
+        </td>
+        <td ng-if="target.editable" class="no-wrap">
+          <ul class="list-inline">
+            <li>
+              <a href ng-click="addTerm(model.content, child)" title="{{'edit' | translate}}"><i class="fa fa-pencil"></i></a>
+            </li>
+            <li ng-show="!isStatic(model.content)">
+              <a href ng-click="deleteTerm(model.content, child)" title="{{'delete' | translate}}"><i class="fa fa-trash"></i></a>
+            </li>
+          </ul>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
 </div>

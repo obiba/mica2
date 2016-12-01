@@ -12,21 +12,27 @@
 
 mica.projectConfig
 
-  .controller('ProjectConfigController', ['$rootScope', '$location', '$scope', '$log',
+  .controller('ProjectConfigController', ['$rootScope',
+    '$q',
+    '$location',
+    '$scope',
+    '$log',
     'ProjectFormCustomResource',
     'EntitySchemaFormService',
     'LocalizedSchemaFormService',
-    'AlertService',
-    'ServerErrorUtils',
+    'AlertBuilder',
     'ProjectFormPermissionsResource',
     'ProjectFormAccessesResource',
     'MicaConfigResource',
-    function ($rootScope, $location, $scope, $log,
+    function ($rootScope,
+              $q,
+              $location,
+              $scope,
+              $log,
               ProjectFormCustomResource,
               EntitySchemaFormService,
               LocalizedSchemaFormService,
-              AlertService,
-              ServerErrorUtils,
+              AlertBuilder,
               ProjectFormPermissionsResource,
               ProjectFormAccessesResource,
               MicaConfigResource) {
@@ -45,30 +51,19 @@ mica.projectConfig
                 $location.path('/admin').replace();
               },
               function (response) {
-                AlertService.alert({
-                  id: 'ProjectConfigController',
-                  type: 'danger',
-                  msg: ServerErrorUtils.buildMessage(response)
-                });
+                AlertBuilder.newBuilder().response(response).build();
               });
             break;
           case EntitySchemaFormService.ParseResult.SCHEMA:
-          AlertService.alert({
-            id: 'ProjectConfigController',
-            type: 'danger',
-            msgKey: 'project-config.syntax-error.schema'
-          });
-          break;
-        case EntitySchemaFormService.ParseResult.DEFINITION:
-          AlertService.alert({
-            id: 'ProjectConfigController',
-            type: 'danger',
-            msgKey: 'project-config.syntax-error.definition'
-          });
-          break;
+            AlertBuilder.newBuilder().trMsg('entity-config.syntax-error.schema').build();
+            break;
+          case EntitySchemaFormService.ParseResult.DEFINITION:
+            AlertBuilder.newBuilder().trMsg('entity-config.syntax-error.definition').build();
+            break;
         }
       };
 
+      $scope.state = new mica.commons.EntityState($q, $scope);
       $scope.projectForm = {schema: '', definition: ''};
 
       ProjectFormCustomResource.get(
@@ -80,26 +75,14 @@ mica.projectConfig
           $scope.projectForm = projectForm;
 
           if ($scope.form.definitionJson.length === 0) {
-            AlertService.alert({
-              id: 'ProjectConfigController',
-              type: 'danger',
-              msgKey: 'project-config.parse-error.definition'
-            });
+            AlertBuilder.newBuilder().trMsg('entity-config.parse-error.definition').build();
           }
           if (Object.getOwnPropertyNames($scope.form.schemaJson).length === 0) {
-            AlertService.alert({
-              id: 'ProjectConfigController',
-              type: 'danger',
-              msgKey: 'project-config.parse-error.schema'
-            });
+            AlertBuilder.newBuilder().trMsg('entity-config.parse-error.schema').build();
           }
         },
         function(response) {
-          AlertService.alert({
-            id: 'ProjectConfigController',
-            type: 'danger',
-            msg: ServerErrorUtils.buildMessage(response)
-          });
+          AlertBuilder.newBuilder().response(response).build();
         });
 
       $scope.form = {
