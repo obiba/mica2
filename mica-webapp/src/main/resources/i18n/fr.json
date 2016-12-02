@@ -416,7 +416,7 @@
     "label-edit": "Editer l'étude",
     "details": "Étude",
     "definition": "Définition",
-    "general-info": "Information générale",
+    "general-info": "<h3>Information générale</h3>",
     "methods": "Méthodes",
     "name": "Nom",
     "name-help": "Nom officiel de l'étude.",

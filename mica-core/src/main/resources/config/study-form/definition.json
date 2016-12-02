@@ -10,9 +10,15 @@
             "type": "section",
             "htmlClass": "col-xs-6",
             "items": [
-              "website",
               "startYear",
               "endYear"
+            ]
+          },
+          {
+            "type": "section",
+            "htmlClass": "col-xs-6",
+            "items": [
+              "website"
             ]
           }
         ]
@@ -23,15 +29,30 @@
         "items": [
           {
             "type": "section",
+            "htmlClass": "col-xs-12",
+            "items": [
+              {
+                "type": "help",
+                "helpvalue": "<h3>t(study.general-design)</h3>"
+              }
+            ]
+          },
+          {
+            "type": "section",
             "htmlClass": "col-xs-6",
             "items": [
               {
                 "key": "methods",
+                "notitle": true,
                 "items": [
                   {
+                    "type": "help",
+                    "helpvalue": "<h4>t(study_taxonomy.vocabulary.methods-design.title)</h4>"
+                  },
+                  {
                     "key": "methods.design",
-                    "type": "radios",
                     "notitle": true,
+                    "type": "radios",
                     "description": "t(study_taxonomy.vocabulary.methods-design.description)",
                     "titleMap": [
                       {

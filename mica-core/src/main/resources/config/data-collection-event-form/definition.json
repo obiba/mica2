@@ -25,10 +25,21 @@
         "items": [
           {
             "type": "section",
+            "htmlClass": "col-xs-12",
+            "items": [
+              {
+                "type": "help",
+                "helpvalue": "<h3>t(data-collection-event.data-sources)</h3>"
+              }
+            ]
+          },
+          {
+            "type": "section",
             "htmlClass": "col-xs-6",
             "items": [
               {
                 "key": "dataSources",
+                "notitle": true,
                 "description": "t(study_taxonomy.vocabulary.populations-dataCollectionEvents-dataSources.description)",
                 "titleMap": [
                   {

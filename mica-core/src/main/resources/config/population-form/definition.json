@@ -8,6 +8,16 @@
         "items": [
           {
             "type": "section",
+            "htmlClass": "col-xs-12",
+            "items": [
+              {
+                "type": "help",
+                "helpvalue": "<h3>t(study.selection-criteria.label)</h3>"
+              }
+            ]
+          },
+          {
+            "type": "section",
             "htmlClass": "col-xs-6",
             "items": [
               {

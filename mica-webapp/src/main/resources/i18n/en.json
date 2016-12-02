@@ -416,7 +416,7 @@
     "label-edit": "Edit Study",
     "details": "Study",
     "definition": "Definition",
-    "general-info": "General Information",
+    "general-info": "<h3>General Information</h3>",
     "methods": "Methods",
     "name": "Name",
     "name-help": "Official study name",
@@ -461,7 +461,7 @@
       "date": "Date"
     },
     "selection-criteria": {
-      "label": "Selection criteria",
+      "label": "Selection Criteria",
       "criteria": "Criteria",
       "gender": {
         "label": "Gender",
