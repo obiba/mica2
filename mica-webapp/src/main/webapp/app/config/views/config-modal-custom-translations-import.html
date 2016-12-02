@@ -21,7 +21,6 @@
           <tbody>
           <tr>
             <td>{{file.name}}</td>
-            <td>&nbsp;</td>
             <td>{{file.size | bytes}}</td>
           </tr>
           </tbody>
@@ -34,7 +33,7 @@
     <button type="button" class="btn btn-default" ng-click="cancel()">
       <span translate>cancel</span>
     </button>
-    <button ng-disabled="reader.readyState !== 2" type="button"
+    <button ng-disabled="disabled" type="button"
             class="btn btn-sm btn-primary pull-right" ng-click="import()">
       {{'config.translations.import.label' | translate}}
     </button>
