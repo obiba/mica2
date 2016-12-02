@@ -613,14 +613,19 @@ mica.config
     function ($scope, $uibModalInstance,CustomTranslationsResource ) {
 
       $scope.reader = new FileReader();
+      $scope.disabled = true;
 
       $scope.onFileSelect = function (file) {
+        $scope.disabled = true;
         // Compatible with ie 10+, ie9 has a File API Lab
         if (file) {
           $scope.file = file;
           $scope.reader.readAsText(file, 'utf-8');
 
           $scope.reader.onload = function (e) {
+            $scope.$apply(function () {
+              $scope.disabled = false;
+            });
             $scope.file.content = e.target.result;
           };
         }
