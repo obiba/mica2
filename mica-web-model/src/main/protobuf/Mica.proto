@@ -97,27 +97,11 @@ message StudyDto {
   repeated LocalizedStringDto name = 3;
   repeated LocalizedStringDto acronym = 4;
   optional AttachmentDto logo = 5;
-  repeated PersonDto investigators = 6; // Deprecated
-  repeated PersonDto contacts = 7; // Deprecated
   repeated LocalizedStringDto objectives = 8;
-  optional string website = 9; // Deprecated
-  optional AuthorizationDto specificAuthorization = 10; // Deprecated
-  optional AuthorizationDto maelstromAuthorization = 11; // Deprecated
-  optional StudyMethodsDto methods = 12; // Deprecated
-  optional NumberOfParticipantsDto numberOfParticipants = 13; // Deprecated
-  optional int32 startYear = 14; // Deprecated
-  optional int32 endYear = 15; // Deprecated
-  repeated string access = 16; // Deprecated
-  repeated LocalizedStringDto otherAccess = 17; // Deprecated
-  optional string markerPaper = 18; // Deprecated
-  optional string pubmedId = 19; // Deprecated
   repeated AttachmentDto attachments = 20;
-  repeated LocalizedStringDto info = 21; // Deprecated
   repeated PopulationDto populations = 22;
   repeated AttributeDto attributes = 24; // Deprecated
   optional string opal = 25;
-  optional string opalUsername = 26; // Deprecated
-  optional string opalPassword = 27; // Deprecated
   optional PermissionsDto permissions = 28;
   repeated MembershipsDto memberships = 29;
   optional string content = 30;
@@ -141,10 +125,6 @@ message StudyDto {
     optional string id = 1;
     repeated LocalizedStringDto name = 2;
     repeated LocalizedStringDto description = 3;
-    optional RecruitmentDto recruitment = 4; // deprecated
-    optional SelectionCriteriaDto selectionCriteria = 5; // deprecated
-    optional NumberOfParticipantsDto numberOfParticipants = 6; // deprecated
-    repeated LocalizedStringDto info = 7; // deprecated
     repeated DataCollectionEventDto dataCollectionEvents = 8;
     repeated AttributeDto attributes = 9; // deprecated
     optional string content = 10;
@@ -179,19 +159,11 @@ message StudyDto {
     message DataCollectionEventDto {
       optional string id = 1;
       repeated LocalizedStringDto name = 2;
-      repeated LocalizedStringDto description = 3; // deprecated
       required int32 startYear = 4;
       optional int32 startMonth = 5;
       optional int32 endYear = 6;
       optional int32 endMonth = 7;
-      repeated string dataSources = 8; // deprecated
-      repeated string administrativeDatabases = 9; // deprecated
-      repeated LocalizedStringDto otherDataSources = 10; // deprecated
-      repeated string bioSamples = 11; // deprecated
-      repeated LocalizedStringDto tissueTypes = 12; // deprecated
-      repeated LocalizedStringDto otherBioSamples = 13; // deprecated
       repeated AttachmentDto attachments = 14;
-      repeated AttributeDto attributes = 15; // deprecated
       optional string content = 16;
     }
   }
@@ -269,10 +241,7 @@ message NetworkDto {
   repeated PersonDto investigators = 5;
   repeated PersonDto contacts = 6;
   repeated LocalizedStringDto description = 7;
-  optional string website = 8; //deprecated
-  optional AuthorizationDto maelstromAuthorization = 9; //deprecated
   repeated AttachmentDto attachments = 10;
-  repeated LocalizedStringDto info = 11; //deprecated
   repeated string studyIds = 12;
   repeated StudySummaryDto studySummaries = 13;
   optional bool published = 14;

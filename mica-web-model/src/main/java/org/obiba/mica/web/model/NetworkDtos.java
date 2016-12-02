@@ -10,6 +10,7 @@
 
 package org.obiba.mica.web.model;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -97,8 +98,7 @@ class NetworkDtos {
     builder.setId(network.getId()) //
       .addAllName(localizedStringDtos.asDto(network.getName())) //
       .addAllDescription(localizedStringDtos.asDto(network.getDescription())) //
-      .addAllAcronym(localizedStringDtos.asDto(network.getAcronym())) //
-      .addAllInfo(localizedStringDtos.asDto(network.getInfos()));
+      .addAllAcronym(localizedStringDtos.asDto(network.getAcronym()));
 
     Mica.PermissionsDto permissionsDto = permissionsDtos.asDto(network);
 
@@ -133,8 +133,6 @@ class NetworkDtos {
       builder.addAllMemberships(memberships);
     }
 
-    if(!isNullOrEmpty(network.getWebsite())) builder.setWebsite(network.getWebsite());
-
     List<Study> publishedStudies = publishedStudyService.findByIds(network.getStudyIds());
     Set<String> publishedStudyIds = publishedStudies.stream().map(AbstractGitPersistable::getId)
       .collect(Collectors.toSet());
@@ -163,10 +161,6 @@ class NetworkDtos {
         // ignore
       }
     });
-
-    if(network.getMaelstromAuthorization() != null) {
-      builder.setMaelstromAuthorization(AuthorizationDtos.asDto(network.getMaelstromAuthorization()));
-    }
 
     if(network.getLogo() != null) {
       builder.setLogo(attachmentDtos.asDto(network.getLogo()));
@@ -233,7 +227,7 @@ class NetworkDtos {
     }
 
     if(dto.getAttachmentsCount() > 0) {
-      dto.getAttachmentsList().stream().filter(a -> a.getJustUploaded()).findFirst()
+      dto.getAttachmentsList().stream().filter(Mica.AttachmentDto::getJustUploaded).findFirst()
         .ifPresent(a -> network.setLogo(attachmentDtos.fromDto(a)));
     }
 
@@ -245,17 +239,10 @@ class NetworkDtos {
       network.setNetworkIds(Lists.newArrayList(Sets.newHashSet(dto.getNetworkIdsList())));
     }
 
-    if(dto.hasContent() && !Strings.isNullOrEmpty(dto.getContent())) network.setModel(JSONUtils.toMap(dto.getContent()));
-    else {
-      Map<String, Object> model = Maps.newHashMap();
-
-      if(dto.getInfoCount() > 0) model.put("infos", localizedStringDtos.fromDto(dto.getInfoList()));
-      if(dto.hasWebsite()) model.put("website", dto.getWebsite());
-      if(dto.hasMaelstromAuthorization())
-        model.put("maelstromAuthorization", AuthorizationDtos.fromDto(dto.getMaelstromAuthorization()));
-
-      network.setModel(model);
-    }
+    if (dto.hasContent() && !Strings.isNullOrEmpty(dto.getContent()))
+      network.setModel(JSONUtils.toMap(dto.getContent()));
+    else
+      network.setModel(new HashMap<>());
 
     return network;
   }

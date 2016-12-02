@@ -10,13 +10,12 @@
 
 package org.obiba.mica.web.model;
 
-import java.util.Map;
+import java.util.HashMap;
 
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.Maps;
 import org.obiba.mica.JSONUtils;
 import org.obiba.mica.study.date.PersistableYearMonth;
 import org.obiba.mica.study.domain.DataCollectionEvent;
@@ -69,18 +68,10 @@ class PopulationDtos {
       dto.getDataCollectionEventsList().forEach(dceDto -> population.addDataCollectionEvent(fromDto(dceDto)));
     }
 
-    if(dto.hasContent() && !Strings.isNullOrEmpty(dto.getContent())) population.setModel(JSONUtils.toMap(dto.getContent()));
-    else {
-      Map<String, Object> model = Maps.newHashMap();
-
-      if (dto.hasRecruitment()) model.put("recruitment", fromDto(dto.getRecruitment()));
-      if (dto.hasSelectionCriteria()) model.put("selectionCriteria", fromDto(dto.getSelectionCriteria()));
-      if (dto.hasNumberOfParticipants()) {
-        model.put("numberOfParticipants", numberOfParticipantsDtos.fromDto(dto.getNumberOfParticipants()));
-      }
-
-      population.setModel(model);
-    }
+    if (dto.hasContent() && !Strings.isNullOrEmpty(dto.getContent()))
+      population.setModel(JSONUtils.toMap(dto.getContent()));
+    else
+      population.setModel(new HashMap<>());
 
     return population;
   }
@@ -110,31 +101,6 @@ class PopulationDtos {
   }
 
   @NotNull
-  private Population.Recruitment fromDto(@NotNull PopulationDto.RecruitmentDtoOrBuilder dto) {
-    Population.Recruitment recruitment = new Population.Recruitment();
-    if(dto.getDataSourcesCount() > 0) recruitment.setDataSources(dto.getDataSourcesList());
-    if(dto.getGeneralPopulationSourcesCount() > 0) {
-      recruitment.setGeneralPopulationSources(dto.getGeneralPopulationSourcesList());
-    }
-    if(dto.getSpecificPopulationSourcesCount() > 0) {
-      recruitment.setSpecificPopulationSources(dto.getSpecificPopulationSourcesList());
-    }
-    if(dto.getOtherSpecificPopulationSourceCount() > 0) {
-      recruitment
-          .setOtherSpecificPopulationSource(localizedStringDtos.fromDto(dto.getOtherSpecificPopulationSourceList()));
-    }
-    if(dto.getStudiesCount() > 0) {
-      recruitment.setStudies(localizedStringDtos.fromDtoList(dto.getStudiesList()));
-    }
-    if(dto.getOtherSourceCount() > 0) {
-      recruitment.setOtherSource(localizedStringDtos.fromDto(dto.getOtherSourceList()));
-    }
-    if(dto.getInfoCount() > 0) recruitment.setInfo(localizedStringDtos.fromDto(dto.getInfoList()));
-
-    return recruitment;
-  }
-
-  @NotNull
   PopulationDto.DataCollectionEventDto asDto(@NotNull DataCollectionEvent dce) {
     PopulationDto.DataCollectionEventDto.Builder builder = PopulationDto.DataCollectionEventDto.newBuilder();
 
@@ -143,8 +109,6 @@ class PopulationDtos {
     builder.setId(dce.getId());
 
     if(dce.getName() != null) builder.addAllName(localizedStringDtos.asDto(dce.getName()));
-
-    if(dce.getDescription() != null) builder.addAllDescription(localizedStringDtos.asDto(dce.getDescription()));
 
     if(dce.getStart() != null) {
       PersistableYearMonth.YearMonthData startData = dce.getStart().getYearMonthData();
@@ -173,25 +137,10 @@ class PopulationDtos {
     if(dto.hasStartYear()) dce.setStart(dto.getStartYear(), dto.hasStartMonth() ? dto.getStartMonth() : null);
     if(dto.hasEndYear()) dce.setEnd(dto.getEndYear(), dto.hasEndMonth() ? dto.getEndMonth() : null);
 
-    if(dto.hasContent() && !Strings.isNullOrEmpty(dto.getContent())) dce.setModel(JSONUtils.toMap(dto.getContent()));
-    else {
-      Map<String, Object> model = Maps.newHashMap();
-
-      if (dto.getDescriptionCount() > 0) model.put("description", localizedStringDtos.fromDto(dto.getDescriptionList()));
-      if (dto.getDataSourcesCount() > 0) model.put("dataSources", dto.getDataSourcesList());
-      if (dto.getAdministrativeDatabasesCount() > 0)
-        model.put("administrativeDatabases", dto.getAdministrativeDatabasesList());
-      if (dto.getOtherDataSourcesCount() > 0) {
-        model.put("otherDataSources", localizedStringDtos.fromDto(dto.getOtherDataSourcesList()));
-      }
-      if (dto.getBioSamplesCount() > 0) model.put("bioSamples", dto.getBioSamplesList());
-      if (dto.getTissueTypesCount() > 0) model.put("tissueTypes", localizedStringDtos.fromDto(dto.getTissueTypesList()));
-      if (dto.getOtherBioSamplesCount() > 0) {
-        model.put("otherBioSamples", localizedStringDtos.fromDto(dto.getOtherBioSamplesList()));
-      }
-
-      dce.setModel(model);
-    }
+    if(dto.hasContent() && !Strings.isNullOrEmpty(dto.getContent()))
+      dce.setModel(JSONUtils.toMap(dto.getContent()));
+    else
+      dce.setModel(new HashMap<>());
 
     return dce;
   }

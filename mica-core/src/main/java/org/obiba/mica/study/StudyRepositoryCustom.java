@@ -12,6 +12,9 @@ package org.obiba.mica.study;
 
 import org.obiba.mica.core.repository.DBRefAwareRepository;
 import org.obiba.mica.study.domain.Study;
+import org.springframework.data.mongodb.repository.Query;
+
+import java.util.List;
 
 public interface StudyRepositoryCustom extends DBRefAwareRepository<Study> {
 }

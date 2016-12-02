@@ -14,6 +14,7 @@ import java.util.List;
 
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.Query;
 
 /**
  * Spring Data MongoDB repository for the {@link HarmonizationDataset} entity.
@@ -23,4 +24,7 @@ public interface HarmonizationDatasetRepository extends MongoRepository<Harmoniz
   List<HarmonizationDataset> findByStudyTablesStudyId(String studyId);
 
   List<HarmonizationDataset> findByNetworkId(String networkId);
+
+  @Query("{'model' : { $exists : false }}")
+  List<HarmonizationDataset> findWithoutModel();
 }
