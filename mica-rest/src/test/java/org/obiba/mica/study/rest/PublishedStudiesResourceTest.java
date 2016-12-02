@@ -45,7 +45,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 /**
  * Test class for the StudyResource REST controller.
  *
- * @see StudiesResource
+ * @see PublishedStudiesResource
  */
 @Ignore
 @RunWith(SpringJUnit4ClassRunner.class)

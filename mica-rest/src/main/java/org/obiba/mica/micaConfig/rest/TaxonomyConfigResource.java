@@ -43,7 +43,7 @@ public class TaxonomyConfigResource {
   @GET
   public Response getTaxonomy(@NotNull @PathParam("target") String target) {
     try {
-      return Response.ok().entity(dtos.asDto(taxonomyConfigService.findByTarget(TaxonomyTarget.fromId(target)))).build();
+      return Response.ok().entity(Dtos.asDto(taxonomyConfigService.findByTarget(TaxonomyTarget.fromId(target)))).build();
     } catch(IllegalArgumentException e) {
       return Response.status(Response.Status.NOT_FOUND).build();
     }

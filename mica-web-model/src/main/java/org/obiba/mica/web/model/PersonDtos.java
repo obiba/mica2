@@ -103,11 +103,11 @@ class PersonDtos {
     if(dto.hasInstitution()) person.setInstitution(fromDto(dto.getInstitution()));
 
     if(dto.getNetworkMembershipsCount() > 0) {
-      person.setNetworkMemberships(dto.getNetworkMembershipsList().stream().map(m -> fromDto(m)).collect(toList()));
+      person.setNetworkMemberships(dto.getNetworkMembershipsList().stream().map(this::fromDto).collect(toList()));
     }
 
     if(dto.getStudyMembershipsCount() > 0) {
-      person.setStudyMemberships(dto.getStudyMembershipsList().stream().map(m -> fromDto(m)).collect(toList()));
+      person.setStudyMemberships(dto.getStudyMembershipsList().stream().map(this::fromDto).collect(toList()));
     }
 
     return person;

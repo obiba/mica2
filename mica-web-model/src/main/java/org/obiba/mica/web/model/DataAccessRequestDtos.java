@@ -19,7 +19,6 @@ import javax.validation.constraints.NotNull;
 import org.apache.shiro.SecurityUtils;
 import org.obiba.mica.access.domain.DataAccessRequest;
 import org.obiba.mica.access.service.DataAccessRequestUtilService;
-import org.obiba.mica.file.Attachment;
 import org.obiba.mica.project.domain.Project;
 import org.obiba.mica.project.service.NoSuchProjectException;
 import org.obiba.mica.project.service.ProjectService;
@@ -130,7 +129,7 @@ class DataAccessRequestDtos {
 
     if(dto.getAttachmentsCount() > 0) {
       request.setAttachments(
-        dto.getAttachmentsList().stream().map(attachmentDtos::fromDto).collect(Collectors.<Attachment>toList()));
+        dto.getAttachmentsList().stream().map(attachmentDtos::fromDto).collect(Collectors.toList()));
     }
     TimestampsDtos.fromDto(dto.getTimestamps(), request);
 

@@ -69,7 +69,7 @@ public class DataAccessResource {
 
     Map<String, LocalizedString> properties = dataAccessForm.getProperties().entrySet().stream()
       .map(e -> Maps.immutableEntry(e.getKey(), new LocalizedString().forLanguageTag(langTag, e.getValue().get(langTag))))
-      .collect(toMap(e -> e.getKey(), x -> x.getValue()));
+      .collect(toMap(Map.Entry::getKey, Map.Entry::getValue));
 
     builder.addAllProperties(dtos.asDtoList(properties));
 

@@ -433,11 +433,7 @@ mica.study
       $scope.$on(CONTACT_EVENTS.addContact, function (event, study, contact, type) {
         if (study === $scope.study) {
           var roleMemberships = $scope.study.memberships.filter(function(m) {
-            if (m.role === type) {
-              return true;
-            }
-
-            return false;
+            return m.role === type;
           })[0];
 
           if (!roleMemberships) {

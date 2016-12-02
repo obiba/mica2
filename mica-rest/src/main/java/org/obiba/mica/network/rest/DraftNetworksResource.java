@@ -30,6 +30,7 @@ import com.codahale.metrics.annotation.Timed;
 import com.google.common.base.Strings;
 import com.google.common.eventbus.EventBus;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.obiba.mica.core.domain.AbstractGitPersistable;
 import org.obiba.mica.core.service.DocumentService;
 import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.network.event.IndexNetworksEvent;
@@ -92,7 +93,7 @@ public class DraftNetworksResource {
     } else {
       DocumentService.Documents<Network> networkDocuments = draftNetworkService.find(from, limit, null, null, studyId, query);
       totalCount = networkDocuments.getTotal();
-      result = networkService.findAllNetworks(networkDocuments.getList().stream().map(d -> d.getId()).collect(toList())).stream();
+      result = networkService.findAllNetworks(networkDocuments.getList().stream().map(AbstractGitPersistable::getId).collect(toList())).stream();
     }
 
     response.addHeader("X-Total-Count", Long.toString(totalCount));

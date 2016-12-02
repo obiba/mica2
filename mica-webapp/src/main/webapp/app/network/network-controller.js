@@ -577,11 +577,9 @@ mica.network
       $scope.$on(CONTACT_EVENTS.addContact, function (event, network, contact, type) {
         if (network === $scope.network) {
           var roleMemberships = $scope.network.memberships.filter(function(m) {
-            if (m.role === type) {
-              return true;
-            }
+            return m.role === type;
 
-            return false;
+
           })[0];
 
           if (!roleMemberships) {

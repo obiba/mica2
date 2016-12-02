@@ -149,7 +149,7 @@ public class DataAccessRequestResource {
   public Response getFormAttachment(@PathParam("id") String id, @PathParam("attachmentName") String attachmentName,
       @PathParam("attachmentId") String attachmentId) throws IOException {
     subjectAclService.checkPermission("/data-access-request", "VIEW", id);
-    DataAccessRequest request = dataAccessRequestService.findById(id);
+    dataAccessRequestService.findById(id);
     return Response.ok(fileStoreService.getFile(attachmentId)).header("Content-Disposition",
       "attachment; filename=\"" + attachmentName + "\"")
       .build();

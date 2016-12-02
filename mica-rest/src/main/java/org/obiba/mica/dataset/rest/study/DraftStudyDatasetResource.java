@@ -117,8 +117,7 @@ public class DraftStudyDatasetResource extends
   @Path("/table")
   public Magma.TableDto getTable() {
     subjectAclService.checkPermission("/draft/study-dataset", "VIEW", id);
-    Magma.TableDto dto = datasetService.getTableDto(getDataset());
-    return dto;
+    return datasetService.getTableDto(getDataset());
   }
 
   @GET
