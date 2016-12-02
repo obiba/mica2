@@ -166,7 +166,7 @@ public class MicaConfigService {
     MicaConfig config = getOrCreateMicaConfig();
     JsonNode builtTranslations = objectMapper.readTree(translations);
 
-    builtTranslations = addStudyTaxonomy(builtTranslations, locale);
+    builtTranslations = addTaxonomies(builtTranslations, locale);
 
     if (config.hasTranslations() && config.getTranslations().get(locale) != null) {
       JsonNode custom = objectMapper.readTree(config.getTranslations().get(locale));
@@ -176,12 +176,18 @@ public class MicaConfigService {
     return builtTranslations.toString();
   }
 
-  private JsonNode addStudyTaxonomy(JsonNode original, String locale) {
+  private JsonNode addTaxonomies(JsonNode translations, String locale) {
+    translations = addTaxonomy(TaxonomyTarget.STUDY, "study_taxonomy", translations, locale);
+    translations = addTaxonomy(TaxonomyTarget.NETWORK, "network_taxonomy", translations, locale);
+    return addTaxonomy(TaxonomyTarget.DATASET, "dataset_taxonomy", translations, locale);
+  }
 
-    JsonNode taxonomyNode = getTaxonomyNode(TaxonomyTarget.STUDY, locale);
+  private JsonNode addTaxonomy(TaxonomyTarget taxonomyTarget, String taxonomyKey, JsonNode original, String locale) {
+
+    JsonNode taxonomyNode = getTaxonomyNode(taxonomyTarget, locale);
 
     ObjectNode containerNode = new ObjectNode(JsonNodeFactory.instance);
-    containerNode.set("study_taxonomy", taxonomyNode);
+    containerNode.set(taxonomyKey, taxonomyNode);
 
     return mergeJson(original, containerNode);
   }
