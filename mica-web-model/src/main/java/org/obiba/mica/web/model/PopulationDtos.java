@@ -31,12 +31,6 @@ class PopulationDtos {
   @Inject
   private LocalizedStringDtos localizedStringDtos;
 
-  @Inject
-  private NumberOfParticipantsDtos numberOfParticipantsDtos;
-
-  @Inject
-  private AttributeDtos attributeDtos;
-
   @NotNull
   PopulationDto asDto(Population population) {
     PopulationDto.Builder builder = PopulationDto.newBuilder();
@@ -74,30 +68,6 @@ class PopulationDtos {
       population.setModel(new HashMap<>());
 
     return population;
-  }
-
-  @NotNull
-  private Population.SelectionCriteria fromDto(PopulationDto.SelectionCriteriaDto dto) {
-    Population.SelectionCriteria selectionCriteria = new Population.SelectionCriteria();
-    if(dto.hasGender()) {
-      selectionCriteria.setGender(Population.SelectionCriteria.Gender.valueOf(dto.getGender().name()));
-    }
-    if(dto.hasAgeMin()) selectionCriteria.setAgeMin(dto.getAgeMin());
-    if(dto.hasAgeMax()) selectionCriteria.setAgeMax(dto.getAgeMax());
-    if(dto.getCountriesIsoCount() > 0) selectionCriteria.setCountriesIso(dto.getCountriesIsoList());
-    if(dto.getTerritoryCount() > 0) selectionCriteria.setTerritory(localizedStringDtos.fromDto(dto.getTerritoryList()));
-    if(dto.getCriteriaCount() > 0) selectionCriteria.setCriteria(dto.getCriteriaList());
-    if(dto.getEthnicOriginCount() > 0) {
-      selectionCriteria.setEthnicOrigin(localizedStringDtos.fromDtoList(dto.getEthnicOriginList()));
-    }
-    if(dto.getHealthStatusCount() > 0) {
-      selectionCriteria.setHealthStatus(localizedStringDtos.fromDtoList(dto.getHealthStatusList()));
-    }
-    if(dto.getOtherCriteriaCount() > 0) {
-      selectionCriteria.setOtherCriteria(localizedStringDtos.fromDto(dto.getOtherCriteriaList()));
-    }
-    if(dto.getInfoCount() > 0) selectionCriteria.setInfo(localizedStringDtos.fromDto(dto.getInfoList()));
-    return selectionCriteria;
   }
 
   @NotNull

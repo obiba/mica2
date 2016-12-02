@@ -28,7 +28,6 @@ import org.obiba.mica.JSONUtils;
 import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.core.domain.AbstractGitPersistable;
 import org.obiba.mica.core.domain.Membership;
-import org.obiba.mica.core.domain.Person;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.network.domain.NetworkState;
@@ -41,9 +40,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import static com.google.common.base.Strings.isNullOrEmpty;
 import static java.util.stream.Collectors.toList;
-import static org.obiba.mica.web.model.Mica.PersonDto;
 
 @Component
 class NetworkDtos {
@@ -116,12 +113,12 @@ class NetworkDtos {
 
     if(network.getInvestigators() != null && roles.contains(Membership.INVESTIGATOR)) {
       builder.addAllInvestigators(network.getInvestigators().stream().map(p -> personDtos.asDto(p, asDraft))
-        .collect(Collectors.<PersonDto>toList()));
+        .collect(Collectors.toList()));
     }
 
     if(network.getContacts() != null && roles.contains(Membership.CONTACT)) {
       builder.addAllContacts(
-        network.getContacts().stream().map(p -> personDtos.asDto(p, asDraft)).collect(Collectors.<PersonDto>toList()));
+        network.getContacts().stream().map(p -> personDtos.asDto(p, asDraft)).collect(Collectors.toList()));
     }
 
     if(network.getMemberships() != null) {
@@ -218,8 +215,8 @@ class NetworkDtos {
       network.setMemberships(memberships);
     } else { //backwards compatibility
       network.setInvestigators(
-        dto.getInvestigatorsList().stream().map(personDtos::fromDto).collect(Collectors.<Person>toList()));
-      network.setContacts(dto.getContactsList().stream().map(personDtos::fromDto).collect(Collectors.<Person>toList()));
+        dto.getInvestigatorsList().stream().map(personDtos::fromDto).collect(Collectors.toList()));
+      network.setContacts(dto.getContactsList().stream().map(personDtos::fromDto).collect(Collectors.toList()));
     }
 
     if(dto.getStudyIdsCount() > 0) {

@@ -433,11 +433,7 @@ mica.study
       $scope.$on(CONTACT_EVENTS.addContact, function (event, study, contact, type) {
         if (study === $scope.study) {
           var roleMemberships = $scope.study.memberships.filter(function(m) {
-            if (m.role === type) {
-              return true;
-            }
-
-            return false;
+            return m.role === type;
           })[0];
 
           if (!roleMemberships) {
@@ -691,13 +687,7 @@ mica.study
 
 
       $scope.selectionCriteriaGenders = {};
-      $scope.availableSelectionCriteria = {};
-      $scope.recruitmentSourcesTypes = {};
-      $scope.generalPopulationTypes = {};
-      $scope.specificPopulationTypes = {};
-      $scope.tabs = [];
-      $scope.recruitmentTabs = {};
-      $scope.population = {model: {}, selectionCriteria: {healthStatus: [], ethnicOrigin: []}, recruitment: {dataSources: []}};
+      $scope.population = {model: {}};
 
       $scope.study = $routeParams.id ? DraftStudyResource.get({id: $routeParams.id}, function (study) {
 
@@ -726,49 +716,6 @@ mica.study
       }) : {};
 
       $scope.newPopulation = !$routeParams.pid;
-      $scope.$watch('population.recruitment.dataSources', function (newVal, oldVal) {
-        if (oldVal === undefined || newVal === undefined) {
-          if(!$scope.population.recruitment) {
-            $scope.population.recruitment = {};
-          }
-          $scope.population.recruitment.dataSources = [];
-          return;
-        }
-
-        updateActiveDatasourceTab(newVal, oldVal);
-      }, true);
-
-      var updateActiveDatasourceTab = function (newVal, oldVal) {
-        function arrayDiff(source, target) {
-          for (var i = 0; i < source.length; i++) {
-            if (target.indexOf(source[i]) < 0) {
-              return source[i];
-            }
-          }
-        }
-
-        if (newVal.length < oldVal.length) {
-          var rem = arrayDiff(oldVal, newVal);
-
-          if (rem) {
-            if ($scope.recruitmentTabs[rem]) {
-              $scope.recruitmentTabs[newVal[0]] = true;
-            }
-
-            $scope.recruitmentTabs[rem] = false;
-          }
-        } else {
-          var added = arrayDiff(newVal, oldVal);
-
-          if (added) {
-            for (var k in $scope.recruitmentTabs) {
-              $scope.recruitmentTabs[k] = false;
-            }
-
-            $scope.recruitmentTabs[added] = true;
-          }
-        }
-      };
 
       MicaConfigResource.get(function (micaConfig) {
         var formLanguages = {};
@@ -782,16 +729,6 @@ mica.study
           form.definition = angular.fromJson(form.definition);
           $scope.populationSfForm = form;
         });
-      });
-
-      StudyTaxonomyService.get(function() {
-        $scope.selectionCriteriaGenders = StudyTaxonomyService.getTerms('populations-selectionCriteria-gender', $translate.use()).map(function (obj) {
-          return {id: obj.name, label: obj.label};
-        });
-        $scope.availableSelectionCriteria = StudyTaxonomyService.getTerms('populations-selectionCriteria-criteria', $translate.use());
-        $scope.recruitmentSourcesTypes = StudyTaxonomyService.getTerms('populations-recruitment-dataSources', $translate.use());
-        $scope.generalPopulationTypes = StudyTaxonomyService.getTerms('populations-recruitment-generalPopulationSources', $translate.use());
-        $scope.specificPopulationTypes = StudyTaxonomyService.getTerms('populations-recruitment-specificPopulationSources', $translate.use());
       });
 
       $scope.save = function (form) {
@@ -869,7 +806,6 @@ mica.study
       $scope.fileTypes = '.doc, .docx, .odm, .odt, .gdoc, .pdf, .txt  .xml  .xls, .xlsx, .ppt';
       $scope.defaultMinYear = 1900;
       $scope.defaultMaxYear = new Date().getFullYear() + 200;
-      $scope.dataSourcesTabs = {};
       $scope.study = $routeParams.id ? DraftStudyResource.get({id: $routeParams.id}, function (study) {
 
         if ($routeParams.pid) {

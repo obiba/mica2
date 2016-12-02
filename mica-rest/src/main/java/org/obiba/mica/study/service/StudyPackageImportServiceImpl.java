@@ -338,9 +338,7 @@ public class StudyPackageImportServiceImpl extends AbstractProtobufProvider impl
       Mica.NetworkDto.Builder builder = Mica.NetworkDto.newBuilder();
       Readable input = new InputStreamReader(inputStream, Charsets.UTF_8);
       JsonFormat.merge(input, builder);
-      Network network = dtos.fromDto(builder);
-
-      return network;
+      return dtos.fromDto(builder);
     }
 
     private Dataset readDataset(InputStream inputStream) throws IOException {

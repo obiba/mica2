@@ -18,6 +18,7 @@ import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
 import org.obiba.mica.core.domain.LocalizedString;
+import org.obiba.mica.file.Attachment;
 import org.obiba.mica.micaConfig.AuthType;
 import org.obiba.mica.micaConfig.PdfDownloadType;
 import org.obiba.mica.micaConfig.domain.*;
@@ -223,10 +224,10 @@ class MicaConfigDtos {
     dataAccessForm.setCsvExportFormat(dto.getCsvExportFormat());
 
     dataAccessForm.setProperties(dto.getPropertiesList().stream()
-      .collect(toMap(e -> e.getName(), e -> localizedStringDtos.fromDto(e.getValueList()))));
+      .collect(toMap(Mica.LocalizedPropertyDto::getName, e -> localizedStringDtos.fromDto(e.getValueList()))));
 
     dataAccessForm.setPdfTemplates(
-      dto.getPdfTemplatesList().stream().map(t -> attachmentDtos.fromDto(t)).collect(toMap(a -> a.getLang(), x -> x)));
+      dto.getPdfTemplatesList().stream().map(t -> attachmentDtos.fromDto(t)).collect(toMap(Attachment::getLang, x -> x)));
 
     if(dto.hasTitleFieldPath()) {
       dataAccessForm.setTitleFieldPath(dto.getTitleFieldPath());

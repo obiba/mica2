@@ -30,6 +30,7 @@ import com.codahale.metrics.annotation.Timed;
 import com.google.common.base.Strings;
 import com.google.common.eventbus.EventBus;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.obiba.mica.core.domain.AbstractGitPersistable;
 import org.obiba.mica.core.service.DocumentService;
 import org.obiba.mica.project.domain.Project;
 import org.obiba.mica.project.event.IndexProjectsEvent;
@@ -89,7 +90,7 @@ public class DraftProjectsResource {
     } else {
       DocumentService.Documents<Project> projectDocuments = draftProjectService.find(from, limit, null, null, null, query);
       totalCount = projectDocuments.getTotal();
-      result = projectService.findAllProjects(projectDocuments.getList().stream().map(d -> d.getId()).collect(toList())).stream();
+      result = projectService.findAllProjects(projectDocuments.getList().stream().map(AbstractGitPersistable::getId).collect(toList())).stream();
     }
 
     Mica.ProjectsDto.Builder builder = Mica.ProjectsDto.newBuilder();

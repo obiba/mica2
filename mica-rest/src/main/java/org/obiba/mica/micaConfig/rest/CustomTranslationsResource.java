@@ -44,7 +44,7 @@ public class CustomTranslationsResource {
   public Response exportTranslation() {
     List<String> locales = micaConfigService.getConfig().getLocalesAsString();
     ObjectNode node = objectMapper.createObjectNode();
-    locales.stream().forEach(l -> node.set(l, getTranslations(l)));
+    locales.forEach(l -> node.set(l, getTranslations(l)));
 
     return Response.ok(node.toString()).build();
   }

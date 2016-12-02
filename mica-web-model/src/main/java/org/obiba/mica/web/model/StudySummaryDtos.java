@@ -102,7 +102,7 @@ class StudySummaryDtos {
         Optional.ofNullable((Map<String, Object>) study.getModel().get("numberOfParticipants")) //
           .flatMap(n -> Optional.ofNullable((Map<String, Object>) n.get("participant"))) //
           .map(p -> Mica.TargetNumberDto.newBuilder().setNoLimit((boolean) p.get("noLimit")).setNumber((int) p.get("number")).build()) //
-          .ifPresent(t -> builder.setTargetNumber(t));
+          .ifPresent(builder::setTargetNumber);
       } catch (NullPointerException | ClassCastException e) {
       }
     }
