@@ -33,6 +33,11 @@
       "type": "number",
       "minimum": 1,
       "maximum": 12
+    },
+    "_description": {
+      "type": "object",
+      "format": "localizedString",
+      "title": "t(data-collection-event.description)"
     }
   },
   "required": [

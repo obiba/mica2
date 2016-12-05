@@ -90,12 +90,14 @@ mica.study
     function dceSerialize(dce) {
       dce.id = dce.model._id;
       dce.name = LocalizedValues.objectToArray(dce.model._name);
+      dce.description = LocalizedValues.objectToArray(dce.model._description);
       dce.startYear = dce.model._startYear;
       dce.startMonth = dce.model._startMonth;
       dce.endYear = dce.model._endYear;
       dce.endMonth = dce.model._endMonth;
       delete dce.model._id;
       delete dce.model._name;
+      delete dce.model._description;
       delete dce.model._startYear;
       delete dce.model._startMonth;
       delete dce.model._endYear;
@@ -138,6 +140,7 @@ mica.study
       dce.model = dce.content ? angular.fromJson(dce.content) : {};
       dce.model._id = dce.id;
       dce.model._name = LocalizedValues.arrayToObject(dce.name);
+      dce.model._description = LocalizedValues.arrayToObject(dce.description);
       dce.model._startYear = dce.startYear;
       dce.model._startMonth = dce.startMonth;
       dce.model._endYear = dce.endYear;
