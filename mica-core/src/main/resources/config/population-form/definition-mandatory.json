@@ -1,33 +1,28 @@
 [
   {
-    "type": "fieldset",
+    "type": "section",
+    "htmlClass": "row",
     "items": [
       {
         "type": "section",
-        "htmlClass": "row",
+        "htmlClass": "col-md-6",
+        "items": [
+          "_id",
+          {
+            "key": "_name",
+            "type": "localizedstring"
+          }
+        ]
+      },
+      {
+        "type": "section",
+        "htmlClass": "col-md-6",
         "items": [
           {
-            "type": "section",
-            "htmlClass": "col-md-6",
-            "items": [
-              "_id",
-              {
-                "key": "_name",
-                "type": "localizedstring"
-              }
-            ]
-          },
-          {
-            "type": "section",
-            "htmlClass": "col-md-6",
-            "items": [
-              {
-                "key": "_description",
-                "type": "localizedstring",
-                "rows": 5,
-                "marked": true
-              }
-            ]
+            "key": "_description",
+            "type": "localizedstring",
+            "rows": 5,
+            "marked": true
           }
         ]
       }

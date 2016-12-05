@@ -23,6 +23,7 @@
     },
     "administrativeDatabases": {
       "type": "array",
+      "title": "t(study_taxonomy.vocabulary.populations-dataCollectionEvents-dataSources.term.administratives_databases.title)",
       "items": {
         "type": "string",
         "enum": [
@@ -40,6 +41,7 @@
     },
     "bioSamples": {
       "type": "array",
+      "title": "t(data-collection-event.bio-samples)",
       "default": [],
       "items": {
         "type": "string",

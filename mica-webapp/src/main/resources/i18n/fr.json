@@ -431,7 +431,7 @@
     "start-year": "Année de début",
     "end-year": "Année de fin",
     "general-design": "Conception générale",
-    "design": "Conception de l'étude",
+    "design": "Conception",
     "other-design": "Autre conception",
     "follow-up": "Suivi",
     "recruitment-target": "Cible de recrutement",
@@ -498,7 +498,7 @@
       "revisions-ahead": "Nouvelles révisions"
     },
     "opal": "Serveur Opal",
-    "opal-help": "URL du serveur Opal pour cette étude",
+    "opal-help": "URL du serveur Opal pour cette étude (si différent de celui définit par défaut).",
     "delete-conflict": "Conflit à la suppression de l'étude",
     "delete-conflict-message": "Des conflits ont été trouvés lors de la tentative de suppression de l'étude. Supprimez les dépendances et essayez à nouveau.",
     "revisions":  "Révisions de l'étude",
@@ -513,8 +513,7 @@
       "title": "Restaurer une version",
       "message": "Etes-vous sûr de vouloir restaurer cette révision de '{{arg0}}'?"
     },
-    "none": "Aucune étude.",
-    "members-info": "Membres"
+    "none": "Aucune étude."
   },
   "contact": {
     "label": "Contact",

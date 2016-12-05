@@ -1,28 +1,45 @@
 [
   {
-    "type": "fieldset",
+    "type": "help",
+    "helpvalue": "<h3>t(study.general-info)</h3>"
+  },
+  {
+    "type": "section",
+    "htmlClass": "row",
     "items": [
       {
-        "type": "help",
-        "helpvalue": "<h3>t(study.general-info)</h3>"
+        "type": "section",
+        "htmlClass": "col-xs-6",
+        "items": [
+          {
+            "key": "_name",
+            "type": "localizedstring",
+            "description": "t(study.name-help)"
+          },
+          {
+            "key": "_acronym",
+            "type": "localizedstring",
+            "description": "t(study.acronym-help)"
+          },
+          {
+            "key": "_opal",
+            "type": "string",
+            "description": "t(study.opal-help)"
+          }
+        ]
       },
       {
-        "key": "_name",
-        "type": "localizedstring"
-      },
-      {
-        "key": "_acronym",
-        "type": "localizedstring"
-      },
-      {
-        "key": "_objectives",
-        "type": "localizedstring",
-        "rows": 3,
-        "marked": true
-      },
-      {
-        "key": "_opal",
-        "type": "string"
+        "type": "section",
+        "htmlClass": "col-xs-6",
+        "items": [
+          {
+            "key": "_objectives",
+            "type": "localizedstring",
+            "rows": 3,
+            "marked": true,
+            "description": "t(study.objectives-help)"
+          }
+        ]
       }
     ]
   }

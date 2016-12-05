@@ -1,170 +1,69 @@
 [
   {
-    "type": "fieldset",
+    "type": "section",
+    "htmlClass": "row",
     "items": [
       {
         "type": "section",
-        "htmlClass": "row",
+        "htmlClass": "col-xs-6",
         "items": [
-          {
-            "type": "section",
-            "htmlClass": "col-xs-6",
-            "items": [
-              "website",
-              "startYear",
-              "endYear"
-            ]
-          }
+          "startYear",
+          "endYear"
         ]
       },
       {
         "type": "section",
-        "htmlClass": "row",
+        "htmlClass": "col-xs-6",
+        "items": [
+          "website"
+        ]
+      }
+    ]
+  },
+  {
+    "type": "help",
+    "helpvalue": "<h3>t(study.general-design)</h3>"
+  },
+  {
+    "type": "section",
+    "htmlClass": "row",
+    "items": [
+      {
+        "type": "section",
+        "htmlClass": "col-xs-6",
         "items": [
           {
-            "type": "section",
-            "htmlClass": "col-xs-6",
-            "items": [
-              {
-                "key": "methods",
-                "items": [
-                  {
-                    "key": "methods.design",
-                    "type": "radios",
-                    "notitle": true,
-                    "description": "t(study_taxonomy.vocabulary.methods-design.description)",
-                    "titleMap": [
-                      {
-                        "value": "cohort_study",
-                        "name": "t(study_taxonomy.vocabulary.methods-design.term.cohort_study.title)"
-                      },
-                      {
-                        "value": "case_control",
-                        "name": "t(study_taxonomy.vocabulary.methods-design.term.case_control.title)"
-                      },
-                      {
-                        "value": "case_only",
-                        "name": "t(study_taxonomy.vocabulary.methods-design.term.case_only.title)"
-                      },
-                      {
-                        "value": "clinical_trial",
-                        "name": "t(study_taxonomy.vocabulary.methods-design.term.clinical_trial.title)"
-                      },
-                      {
-                        "value": "other",
-                        "name": "t(study_taxonomy.vocabulary.methods-design.term.other.title)"
-                      }
-                    ]
-                  },
-                  {
-                    "type": "section",
-                    "htmlClass": "hoffset3",
-                    "items": [
-                      {
-                        "key": "methods.otherDesign",
-                        "condition": "model.methods.design==\"other\""
-                      }
-                    ]
-                  },
-                  {
-                    "key": "methods.followUpInfo",
-                    "type": "localizedstring"
-                  },
-                  "methods.info",
-                  {
-                    "type": "help",
-                    "helpvalue": "<h4>t(study.recruitment-sources.label)</h4>"
-                  },
-                  {
-                    "key": "methods.recruitments",
-                    "notitle": true,
-                    "description": "t(study_taxonomy.vocabulary.methods-recruitments.description)",
-                    "titleMap": [
-                      {
-                        "value": "individuals",
-                        "name": "t(study_taxonomy.vocabulary.methods-recruitments.term.individuals.title)"
-                      },
-                      {
-                        "value": "families",
-                        "name": "t(study_taxonomy.vocabulary.methods-recruitments.term.families.title)"
-                      },
-                      {
-                        "value": "other",
-                        "name": "t(study_taxonomy.vocabulary.methods-recruitments.term.other.title)"
-                      }
-                    ]
-                  },
-                  {
-                    "type": "section",
-                    "htmlClass": "hoffset3",
-                    "items": [
-                      {
-                        "key": "methods.otherRecruitment",
-                        "condition": "model.methods.recruitments.indexOf(\"other\")>=0"
-                      }
-                    ]
-                  }
-                ]
-              }
-            ]
+            "type": "help",
+            "helpvalue": "<h4>t(study.design)</h4>"
           },
           {
-            "type": "section",
-            "htmlClass": "col-xs-6",
+            "key": "methods",
+            "notitle": true,
             "items": [
               {
-                "type": "help",
-                "helpvalue": "<h4>t(numberOfParticipants.label)</h4>"
-              },
-              {
-                "key": "numberOfParticipants",
-                "notitle": true,
-                "items": [
-                  {
-                    "key": "numberOfParticipants.participant",
-                    "notitle": true
-                  },
-                  {
-                    "key": "numberOfParticipants.sample",
-                    "notitle": true
-                  },
-                  {
-                    "key": "numberOfParticipants.info"
-                  }
-                ]
-              }
-            ]
-          }
-        ]
-      },
-      {
-        "type": "section",
-        "htmlClass": "row",
-        "items": [
-          {
-            "type": "section",
-            "htmlClass": "col-xs-6",
-            "items": [
-              {
-                "type": "help",
-                "helpvalue": "<h3>t(study.access.label)</h3>"
-              },
-              {
-                "key": "access",
-                "notitle": true,
-                "description": "t(study_taxonomy.vocabulary.methods-recruitments.description)",
+                "key": "methods.design",
+                "type": "radios",
+                "description": "t(study_taxonomy.vocabulary.methods-design.description)",
                 "titleMap": [
                   {
-                    "value": "data",
-                    "name": "t(study_taxonomy.vocabulary.access.term.data.title)"
+                    "value": "cohort_study",
+                    "name": "t(study_taxonomy.vocabulary.methods-design.term.cohort_study.title)"
                   },
                   {
-                    "value": "biosamples",
-                    "name": "t(study_taxonomy.vocabulary.access.term.bio_samples.title)"
+                    "value": "case_control",
+                    "name": "t(study_taxonomy.vocabulary.methods-design.term.case_control.title)"
+                  },
+                  {
+                    "value": "case_only",
+                    "name": "t(study_taxonomy.vocabulary.methods-design.term.case_only.title)"
+                  },
+                  {
+                    "value": "clinical_trial",
+                    "name": "t(study_taxonomy.vocabulary.methods-design.term.clinical_trial.title)"
                   },
                   {
                     "value": "other",
-                    "name": "t(study_taxonomy.vocabulary.access.term.other.title)"
+                    "name": "t(study_taxonomy.vocabulary.methods-design.term.other.title)"
                   }
                 ]
               },
@@ -173,31 +72,150 @@
                 "htmlClass": "hoffset3",
                 "items": [
                   {
-                    "key": "otherAccess",
-                    "type": "localizedstring",
-                    "rows": 2,
-                    "condition": "model.access.indexOf(\"other\")>=0"
+                    "key": "methods.otherDesign",
+                    "condition": "model.methods.design==\"other\""
                   }
                 ]
+              },
+              {
+                "key": "methods.followUpInfo",
+                "type": "localizedstring",
+                "rows": 3,
+                "marked": true,
+                "description": "t(study.follow-up-help)"
+              },
+              {
+                "key": "methods.info",
+                "type": "localizedstring",
+                "rows": 3,
+                "marked": true
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "section",
+        "htmlClass": "col-xs-6",
+        "items": [
+          {
+            "type": "help",
+            "helpvalue": "<h4>t(numberOfParticipants.label)</h4>"
+          },
+          {
+            "key": "numberOfParticipants",
+            "notitle": true,
+            "items": [
+              {
+                "key": "numberOfParticipants.participant",
+                "notitle": true
+              },
+              {
+                "key": "numberOfParticipants.sample",
+                "notitle": true
+              },
+              {
+                "key": "numberOfParticipants.info",
+                "rows": 3,
+                "marked": true
+              }
+            ]
+          },
+          {
+            "type": "help",
+            "helpvalue": "<h4>t(study.recruitment-sources.label)</h4>"
+          },
+          {
+            "key": "methods.recruitments",
+            "description": "t(study_taxonomy.vocabulary.methods-recruitments.description)",
+            "titleMap": [
+              {
+                "value": "individuals",
+                "name": "t(study_taxonomy.vocabulary.methods-recruitments.term.individuals.title)"
+              },
+              {
+                "value": "families",
+                "name": "t(study_taxonomy.vocabulary.methods-recruitments.term.families.title)"
+              },
+              {
+                "value": "other",
+                "name": "t(study_taxonomy.vocabulary.methods-recruitments.term.other.title)"
               }
             ]
           },
           {
             "type": "section",
-            "htmlClass": "col-xs-6",
+            "htmlClass": "hoffset3",
             "items": [
               {
-                "type": "help",
-                "helpvalue": "<h3>t(study.marker-paper)</h3>"
-              },
-              {
-                "key": "markerPaper",
-                "type": "textarea",
-                "notitle": true
-              },
-              "pubmedId"
+                "key": "methods.otherRecruitment",
+                "condition": "model.methods.recruitments.indexOf(\"other\")>=0"
+              }
             ]
           }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "section",
+    "htmlClass": "row",
+    "items": [
+      {
+        "type": "section",
+        "htmlClass": "col-xs-6",
+        "items": [
+          {
+            "type": "help",
+            "helpvalue": "<h3>t(study.access.label)</h3>"
+          },
+          {
+            "key": "access",
+            "notitle": true,
+            "description": "t(study_taxonomy.vocabulary.methods-recruitments.description)",
+            "titleMap": [
+              {
+                "value": "data",
+                "name": "t(study_taxonomy.vocabulary.access.term.data.title)"
+              },
+              {
+                "value": "biosamples",
+                "name": "t(study_taxonomy.vocabulary.access.term.bio_samples.title)"
+              },
+              {
+                "value": "other",
+                "name": "t(study_taxonomy.vocabulary.access.term.other.title)"
+              }
+            ]
+          },
+          {
+            "type": "section",
+            "htmlClass": "hoffset3",
+            "items": [
+              {
+                "key": "otherAccess",
+                "type": "localizedstring",
+                "rows": 2,
+                "condition": "model.access.indexOf(\"other\")>=0"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "section",
+        "htmlClass": "col-xs-6",
+        "items": [
+          {
+            "type": "help",
+            "helpvalue": "<h3>t(study.marker-paper)</h3>"
+          },
+          {
+            "key": "markerPaper",
+            "type": "textarea",
+            "notitle": true
+          },
+          "pubmedId"
         ]
       }
     ]

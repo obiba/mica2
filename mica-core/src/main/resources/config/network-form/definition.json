@@ -1,8 +1,3 @@
 [
-  {
-    "type": "fieldset",
-    "items": [
-      "website"
-    ]
-  }
+  "website"
 ]
