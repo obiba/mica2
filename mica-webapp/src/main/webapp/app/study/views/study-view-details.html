@@ -2,12 +2,6 @@
 
   <div class="voffset4">
     <img class="img-responsive desaturate" ng-show="study.logo" ng-src="{{logoUrl}}">
-
-    <h2>
-      <localized value="study.name" lang="tab.lang"></localized>
-    </h2>
-
-    <localized value="study.objectives" lang="tab.lang"></localized>
   </div>
 
   <div sf-model="study.model" sf-form="sfForm.definition" sf-schema="sfForm.schema" sf-options="sfOptions"></div>
@@ -66,6 +60,7 @@
       <a ng-click="addPopulation()" class="btn btn-info" ng-if="inViewMode() && permissions.canEdit()">
         <i class="fa fa-plus"></i> <span translate>study.add-population</span>
       </a>
+      <div class="voffset2"></div>
 
       <uib-accordion close-others="true">
         <div uib-accordion-group class="panel-default" ng-repeat="population in study.populations">

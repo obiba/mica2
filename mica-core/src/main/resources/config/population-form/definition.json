@@ -24,7 +24,9 @@
             "key": "selectionCriteria.otherCriteria"
           },
           {
-            "key": "selectionCriteria.info"
+            "key": "selectionCriteria.info",
+            "rows": 2,
+            "marked": true
           },
           {
             "key": "selectionCriteria.countriesIso",
@@ -95,6 +97,10 @@
         "type": "section",
         "htmlClass": "col-xs-6",
         "items": [
+          {
+            "type": "help",
+            "helpvalue": "<h4>t(numberOfParticipants.label)</h4>"
+          },
           "numberOfParticipants"
         ]
       },
@@ -103,15 +109,16 @@
         "htmlClass": "col-xs-6",
         "items": [
           {
+            "type": "help",
+            "helpvalue": "<h4>t(population.recruitment)</h4>"
+          },
+          {
             "key": "recruitment",
+            "notitle": true,
             "items": [
-              {
-                "key": "recruitment.info"
-              },
               {
                 "key": "recruitment.dataSources",
                 "description": "t(study_taxonomy.vocabulary.populations-recruitment-dataSources.description)",
-                "notitle": true,
                 "titleMap": [
                   {
                     "value": "general_population",
@@ -132,97 +139,69 @@
                 ]
               },
               {
-                "type": "tabs",
-                "tabs": [
+                "key": "recruitment.generalPopulationSources",
+                "description": "t(study_taxonomy.vocabulary.populations-recruitment-generalPopulationSources.description)",
+                "titleMap": [
                   {
-                    "title": "t(study.recruitment-sources.general-population)",
-                    "items": [
-                      {
-                        "key": "recruitment.generalPopulationSources",
-                        "description": "t(study_taxonomy.vocabulary.populations-recruitment-generalPopulationSources.description)",
-                        "notitle": true,
-                        "titleMap": [
-                          {
-                            "value": "volunteer",
-                            "name": "t(study_taxonomy.vocabulary.populations-recruitment-generalPopulationSources.term.volunteer.title)"
-                          },
-                          {
-                            "value": "selected_samples",
-                            "name": "t(study_taxonomy.vocabulary.populations-recruitment-generalPopulationSources.term.selected_samples.title)"
-                          },
-                          {
-                            "value": "random",
-                            "name": "t(study_taxonomy.vocabulary.populations-recruitment-generalPopulationSources.term.random.title)"
-                          }
-                        ],
-                        "condition": "model.recruitment.dataSources.indexOf(\"general_population\")>=0"
-                      }
-                    ]
+                    "value": "volunteer",
+                    "name": "t(study_taxonomy.vocabulary.populations-recruitment-generalPopulationSources.term.volunteer.title)"
                   },
                   {
-                    "title": "t(study.recruitment-sources.specific-population)",
-                    "items": [
-                      {
-                        "type": "section",
-                        "items": [
-                          {
-                            "key": "recruitment.specificPopulationSources",
-                            "description": "t(study_taxonomy.vocabulary.populations-recruitment-specificPopulationSources.description)",
-                            "notitle": true,
-                            "titleMap": [
-                              {
-                                "value": "clinic_patients",
-                                "name": "t(study_taxonomy.vocabulary.populations-recruitment-specificPopulationSources.term.clinic_patients.title)"
-                              },
-                              {
-                                "value": "specific_association",
-                                "name": "t(study_taxonomy.vocabulary.populations-recruitment-specificPopulationSources.term.specific_association.title)"
-                              },
-                              {
-                                "value": "other",
-                                "name": "t(study_taxonomy.vocabulary.populations-recruitment-specificPopulationSources.term.other.title)"
-                              }
-                            ]
-                          },
-                          {
-                            "key": "recruitment.otherSpecificPopulationSource",
-                            "condition": "model.recruitment.specificPopulationSources.indexOf(\"other\")>=0"
-                          }
-                        ],
-                        "condition": "model.recruitment.dataSources.indexOf(\"specific_population\")>=0"
-                      }
-                    ]
+                    "value": "selected_samples",
+                    "name": "t(study_taxonomy.vocabulary.populations-recruitment-generalPopulationSources.term.selected_samples.title)"
                   },
                   {
-                    "title": "t(study.recruitment-sources.studies)",
-                    "items": [
-                      {
-                        "key": "recruitment.studies",
-                        "notitle": true,
-                        "add": "t(study.recruitment-sources.add-study)",
-                        "style": {
-                          "add": "btn-info"
-                        },
-                        "items": [
-                          {
-                            "key": "recruitment.studies[]",
-                            "notitle": true
-                          }
-                        ],
-                        "condition": "model.recruitment.dataSources.indexOf(\"exist_studies\")>=0"
-                      }
-                    ]
-                  },
-                  {
-                    "title": "t(study.recruitment-sources.other)",
-                    "items": [
-                      {
-                        "key": "recruitment.otherSource",
-                        "condition": "model.recruitment.dataSources.indexOf(\"other\")>=0"
-                      }
-                    ]
+                    "value": "random",
+                    "name": "t(study_taxonomy.vocabulary.populations-recruitment-generalPopulationSources.term.random.title)"
                   }
-                ]
+                ],
+                "condition": "model.recruitment.dataSources.indexOf(\"general_population\")>=0"
+              },
+              {
+                "key": "recruitment.specificPopulationSources",
+                "description": "t(study_taxonomy.vocabulary.populations-recruitment-specificPopulationSources.description)",
+                "titleMap": [
+                  {
+                    "value": "clinic_patients",
+                    "name": "t(study_taxonomy.vocabulary.populations-recruitment-specificPopulationSources.term.clinic_patients.title)"
+                  },
+                  {
+                    "value": "specific_association",
+                    "name": "t(study_taxonomy.vocabulary.populations-recruitment-specificPopulationSources.term.specific_association.title)"
+                  },
+                  {
+                    "value": "other",
+                    "name": "t(study_taxonomy.vocabulary.populations-recruitment-specificPopulationSources.term.other.title)"
+                  }
+                ],
+                "condition": "model.recruitment.dataSources.indexOf(\"specific_population\")>=0"
+              },
+              {
+                "key": "recruitment.otherSpecificPopulationSource",
+                "condition": "model.recruitment.specificPopulationSources.indexOf(\"other\")>=0"
+              },
+              {
+                "key": "recruitment.studies",
+                "add": "t(study.recruitment-sources.add-study)",
+                "style": {
+                  "add": "btn-info"
+                },
+                "items": [
+                  {
+                    "key": "recruitment.studies[]",
+                    "notitle": true
+                  }
+                ],
+                "condition": "model.recruitment.dataSources.indexOf(\"exist_studies\")>=0"
+              },
+              {
+                "key": "recruitment.otherSource",
+                "condition": "model.recruitment.dataSources.indexOf(\"other\")>=0"
+              },
+              {
+                "key": "recruitment.info",
+                "rows": 2,
+                "marked": true
               }
             ]
           }
