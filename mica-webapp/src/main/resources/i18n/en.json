@@ -514,8 +514,7 @@
       "title": "Restoring Study from Revision",
       "message": "Are you sure you want to restore this revision from '{{arg0}}'?"
     },
-    "none": "No studies.",
-    "members-info": "Members"
+    "none": "No studies."
   },
   "contact": {
     "label": "Contact",

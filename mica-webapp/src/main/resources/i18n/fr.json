@@ -513,8 +513,7 @@
       "title": "Restaurer une version",
       "message": "Etes-vous sûr de vouloir restaurer cette révision de '{{arg0}}'?"
     },
-    "none": "Aucune étude.",
-    "members-info": "Membres"
+    "none": "Aucune étude."
   },
   "contact": {
     "label": "Contact",
