@@ -5,6 +5,11 @@
       "title": "t(website)",
       "type": "string"
     },
+    "info": {
+      "type": "object",
+      "format": "localizedString",
+      "title": "t(suppl-info)"
+    },
     "methods": {
       "type": "object",
       "title": "t(study.design)",
@@ -124,11 +129,6 @@
     "pubmedId": {
       "type": "string",
       "title": "t(study.pubmed-id)"
-    },
-    "info": {
-      "type": "object",
-      "format": "localizedString",
-      "title": "t(suppl-info)"
     }
   },
   "required": []

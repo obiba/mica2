@@ -15,7 +15,13 @@
         "type": "section",
         "htmlClass": "col-xs-6",
         "items": [
-          "website"
+          "website",
+          {
+            "key": "info",
+            "type": "localizedstring",
+            "rows": 3,
+            "marked": true
+          }
         ]
       }
     ]
