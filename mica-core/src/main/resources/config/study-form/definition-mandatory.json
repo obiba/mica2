@@ -4,7 +4,7 @@
     "items": [
       {
         "type": "help",
-        "helpvalue": "t(study.general-info)"
+        "helpvalue": "<h3>t(study.general-info)</h3>"
       },
       {
         "key": "_name",
