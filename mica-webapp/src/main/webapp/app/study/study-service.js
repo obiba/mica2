@@ -57,6 +57,7 @@ mica.study
       delete studyCopy.model._objectives;
       delete studyCopy.model._opal;
       studyCopy.content = studyCopy.model ? angular.toJson(studyCopy.model) : null;
+
       delete studyCopy.model; // NOTICE: must be removed to avoid protobuf exception in dto.
 
       if(studyCopy.populations) {
@@ -72,6 +73,9 @@ mica.study
       population.id = population.model._id;
       population.name = LocalizedValues.objectToArray(population.model._name);
       population.description = LocalizedValues.objectToArray(population.model._description);
+      delete population.model._id;
+      delete population.model._name;
+      delete population.model._description;
       population.content = population.model ? angular.toJson(population.model) : null;
 
       delete population.model;
@@ -86,10 +90,18 @@ mica.study
     function dceSerialize(dce) {
       dce.id = dce.model._id;
       dce.name = LocalizedValues.objectToArray(dce.model._name);
+      dce.description = LocalizedValues.objectToArray(dce.model._description);
       dce.startYear = dce.model._startYear;
       dce.startMonth = dce.model._startMonth;
       dce.endYear = dce.model._endYear;
       dce.endMonth = dce.model._endMonth;
+      delete dce.model._id;
+      delete dce.model._name;
+      delete dce.model._description;
+      delete dce.model._startYear;
+      delete dce.model._startMonth;
+      delete dce.model._endYear;
+      delete dce.model._endMonth;
       dce.content = dce.model ? angular.toJson(dce.model) : null;
 
       delete dce.model;
@@ -128,6 +140,7 @@ mica.study
       dce.model = dce.content ? angular.fromJson(dce.content) : {};
       dce.model._id = dce.id;
       dce.model._name = LocalizedValues.arrayToObject(dce.name);
+      dce.model._description = LocalizedValues.arrayToObject(dce.description);
       dce.model._startYear = dce.startYear;
       dce.model._startMonth = dce.startMonth;
       dce.model._endYear = dce.endYear;

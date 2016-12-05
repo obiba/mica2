@@ -1,11 +1,6 @@
 {
   "type": "object",
   "properties": {
-    "description": {
-      "type": "object",
-      "format": "localizedString",
-      "title": "t(data-collection-event.description)"
-    },
     "dataSources": {
       "type": "array",
       "default": [],

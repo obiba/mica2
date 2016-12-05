@@ -9,6 +9,11 @@
     "type": "localizedstring"
   },
   {
+    "key": "_description",
+    "type": "localizedstring",
+    "rows": 3
+  },
+  {
     "key": "_startYear",
     "type": "number"
   },
