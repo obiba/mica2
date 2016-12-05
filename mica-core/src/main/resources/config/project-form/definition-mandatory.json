@@ -1,21 +1,16 @@
 [
   {
-    "type": "fieldset",
-    "items": [
-      {
-        "type": "help",
-        "helpvalue": "t(research-project.main-section)"
-      },
-      {
-        "key": "_title",
-        "type": "localizedstring"
-      },
-      {
-        "key": "_summary",
-        "type": "localizedstring",
-        "rows": 5,
-        "marked": true
-      }
-    ]
+    "type": "help",
+    "helpvalue": "t(research-project.main-section)"
+  },
+  {
+    "key": "_title",
+    "type": "localizedstring"
+  },
+  {
+    "key": "_summary",
+    "type": "localizedstring",
+    "rows": 5,
+    "marked": true
   }
 ]

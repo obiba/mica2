@@ -1,19 +1,52 @@
 [
   {
-    "type": "fieldset",
+    "type": "section",
+    "htmlClass": "row",
     "items": [
       {
         "type": "section",
-        "htmlClass": "row",
+        "htmlClass": "col-xs-12",
         "items": [
           {
-            "type": "section",
-            "htmlClass": "col-xs-12",
-            "items": [
+            "key": "description",
+            "type": "localizedstring",
+            "rows": 2
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "section",
+    "htmlClass": "row",
+    "items": [
+      {
+        "type": "section",
+        "htmlClass": "col-xs-6",
+        "items": [
+          {
+            "key": "dataSources",
+            "description": "t(study_taxonomy.vocabulary.populations-dataCollectionEvents-dataSources.description)",
+            "titleMap": [
               {
-                "key": "description",
-                "type": "localizedstring",
-                "rows": 2
+                "value": "questionnaires",
+                "name": "t(study_taxonomy.vocabulary.populations-dataCollectionEvents-dataSources.term.questionnaires.title)"
+              },
+              {
+                "value": "physical_measures",
+                "name": "t(study_taxonomy.vocabulary.populations-dataCollectionEvents-dataSources.term.physical_measures.title)"
+              },
+              {
+                "value": "biological_samples",
+                "name": "t(study_taxonomy.vocabulary.populations-dataCollectionEvents-dataSources.term.biological_samples.title)"
+              },
+              {
+                "value": "administratives_databases",
+                "name": "t(study_taxonomy.vocabulary.populations-dataCollectionEvents-dataSources.term.administratives_databases.title)"
+              },
+              {
+                "value": "others",
+                "name": "t(study_taxonomy.vocabulary.populations-dataCollectionEvents-dataSources.term.others.title)"
               }
             ]
           }
@@ -21,147 +54,109 @@
       },
       {
         "type": "section",
-        "htmlClass": "row",
+        "htmlClass": "col-xs-6",
         "items": [
           {
-            "type": "section",
-            "htmlClass": "col-xs-6",
-            "items": [
+            "type": "tabs",
+            "tabs": [
               {
-                "key": "dataSources",
-                "description": "t(study_taxonomy.vocabulary.populations-dataCollectionEvents-dataSources.description)",
-                "titleMap": [
+                "title": "t(study_taxonomy.vocabulary.populations-dataCollectionEvents-dataSources.term.administratives_databases.title)",
+                "items": [
                   {
-                    "value": "questionnaires",
-                    "name": "t(study_taxonomy.vocabulary.populations-dataCollectionEvents-dataSources.term.questionnaires.title)"
-                  },
-                  {
-                    "value": "physical_measures",
-                    "name": "t(study_taxonomy.vocabulary.populations-dataCollectionEvents-dataSources.term.physical_measures.title)"
-                  },
-                  {
-                    "value": "biological_samples",
-                    "name": "t(study_taxonomy.vocabulary.populations-dataCollectionEvents-dataSources.term.biological_samples.title)"
-                  },
-                  {
-                    "value": "administratives_databases",
-                    "name": "t(study_taxonomy.vocabulary.populations-dataCollectionEvents-dataSources.term.administratives_databases.title)"
-                  },
-                  {
-                    "value": "others",
-                    "name": "t(study_taxonomy.vocabulary.populations-dataCollectionEvents-dataSources.term.others.title)"
+                    "key": "administrativeDatabases",
+                    "description": "t(study_taxonomy.vocabulary.populations-dataCollectionEvents-dataSources.term.administratives_databases.description)",
+                    "notitle": true,
+                    "titleMap": [
+                      {
+                        "value": "health_databases",
+                        "name": "t(study_taxonomy.vocabulary.populations-dataCollectionEvents-administrativeDatabases.term.health_databases.title)"
+                      },
+                      {
+                        "value": "vital_statistics_databases",
+                        "name": "t(study_taxonomy.vocabulary.populations-dataCollectionEvents-administrativeDatabases.term.vital_statistics_databases.title)"
+                      },
+                      {
+                        "value": "socioeconomic_databases",
+                        "name": "t(study_taxonomy.vocabulary.populations-dataCollectionEvents-administrativeDatabases.term.socioeconomic_databases.title)"
+                      },
+                      {
+                        "value": "environmental_databases",
+                        "name": "t(study_taxonomy.vocabulary.populations-dataCollectionEvents-administrativeDatabases.term.environmental_databases.title)"
+                      }
+                    ],
+                    "condition": "model.dataSources.indexOf(\"administratives_databases\")>=0"
                   }
                 ]
-              }
-            ]
-          },
-          {
-            "type": "section",
-            "htmlClass": "col-xs-6",
-            "items": [
+              },
               {
-                "type": "tabs",
-                "tabs": [
+                "title": "t(data-collection-event.bio-samples)",
+                "items": [
                   {
-                    "title": "t(study_taxonomy.vocabulary.populations-dataCollectionEvents-dataSources.term.administratives_databases.title)",
+                    "type": "section",
                     "items": [
                       {
-                        "key": "administrativeDatabases",
-                        "description": "t(study_taxonomy.vocabulary.populations-dataCollectionEvents-dataSources.term.administratives_databases.description)",
+                        "key": "bioSamples",
+                        "description": "t(study_taxonomy.vocabulary.populations-dataCollectionEvents-dataSources.term.biological_samples.description)",
                         "notitle": true,
                         "titleMap": [
                           {
-                            "value": "health_databases",
-                            "name": "t(study_taxonomy.vocabulary.populations-dataCollectionEvents-administrativeDatabases.term.health_databases.title)"
+                            "value": "blood",
+                            "name": "t(study_taxonomy.vocabulary.populations-dataCollectionEvents-bioSamples.term.blood.title)"
                           },
                           {
-                            "value": "vital_statistics_databases",
-                            "name": "t(study_taxonomy.vocabulary.populations-dataCollectionEvents-administrativeDatabases.term.vital_statistics_databases.title)"
+                            "value": "urine",
+                            "name": "t(study_taxonomy.vocabulary.populations-dataCollectionEvents-bioSamples.term.urine.title)"
                           },
                           {
-                            "value": "socioeconomic_databases",
-                            "name": "t(study_taxonomy.vocabulary.populations-dataCollectionEvents-administrativeDatabases.term.socioeconomic_databases.title)"
+                            "value": "saliva",
+                            "name": "t(study_taxonomy.vocabulary.populations-dataCollectionEvents-bioSamples.term.saliva.title)"
                           },
                           {
-                            "value": "environmental_databases",
-                            "name": "t(study_taxonomy.vocabulary.populations-dataCollectionEvents-administrativeDatabases.term.environmental_databases.title)"
+                            "value": "hair",
+                            "name": "t(study_taxonomy.vocabulary.populations-dataCollectionEvents-bioSamples.term.hair.title)"
+                          },
+                          {
+                            "value": "cord_blood",
+                            "name": "t(study_taxonomy.vocabulary.populations-dataCollectionEvents-bioSamples.term.cord_blood.title)"
+                          },
+                          {
+                            "value": "tissues",
+                            "name": "t(study_taxonomy.vocabulary.populations-dataCollectionEvents-bioSamples.term.tissues.title)"
+                          },
+                          {
+                            "value": "nail",
+                            "name": "t(study_taxonomy.vocabulary.populations-dataCollectionEvents-bioSamples.term.nail.title)"
+                          },
+                          {
+                            "value": "buccal_cells",
+                            "name": "t(study_taxonomy.vocabulary.populations-dataCollectionEvents-bioSamples.term.buccal_cells.title)"
+                          },
+                          {
+                            "value": "others",
+                            "name": "t(study_taxonomy.vocabulary.populations-dataCollectionEvents-bioSamples.term.others.title)"
                           }
-                        ],
-                        "condition": "model.dataSources.indexOf(\"administratives_databases\")>=0"
-                      }
-                    ]
-                  },
-                  {
-                    "title": "t(data-collection-event.bio-samples)",
-                    "items": [
+                        ]
+                      },
                       {
-                        "type": "section",
-                        "items": [
-                          {
-                            "key": "bioSamples",
-                            "description": "t(study_taxonomy.vocabulary.populations-dataCollectionEvents-dataSources.term.biological_samples.description)",
-                            "notitle": true,
-                            "titleMap": [
-                              {
-                                "value": "blood",
-                                "name": "t(study_taxonomy.vocabulary.populations-dataCollectionEvents-bioSamples.term.blood.title)"
-                              },
-                              {
-                                "value": "urine",
-                                "name": "t(study_taxonomy.vocabulary.populations-dataCollectionEvents-bioSamples.term.urine.title)"
-                              },
-                              {
-                                "value": "saliva",
-                                "name": "t(study_taxonomy.vocabulary.populations-dataCollectionEvents-bioSamples.term.saliva.title)"
-                              },
-                              {
-                                "value": "hair",
-                                "name": "t(study_taxonomy.vocabulary.populations-dataCollectionEvents-bioSamples.term.hair.title)"
-                              },
-                              {
-                                "value": "cord_blood",
-                                "name": "t(study_taxonomy.vocabulary.populations-dataCollectionEvents-bioSamples.term.cord_blood.title)"
-                              },
-                              {
-                                "value": "tissues",
-                                "name": "t(study_taxonomy.vocabulary.populations-dataCollectionEvents-bioSamples.term.tissues.title)"
-                              },
-                              {
-                                "value": "nail",
-                                "name": "t(study_taxonomy.vocabulary.populations-dataCollectionEvents-bioSamples.term.nail.title)"
-                              },
-                              {
-                                "value": "buccal_cells",
-                                "name": "t(study_taxonomy.vocabulary.populations-dataCollectionEvents-bioSamples.term.buccal_cells.title)"
-                              },
-                              {
-                                "value": "others",
-                                "name": "t(study_taxonomy.vocabulary.populations-dataCollectionEvents-bioSamples.term.others.title)"
-                              }
-                            ]
-                          },
-                          {
-                            "key": "otherBioSamples",
-                            "condition": "model.bioSamples.indexOf(\"others\")>=0"
-                          },
-                          {
-                            "key": "tissueTypes",
-                            "condition": "model.bioSamples.indexOf(\"tissues\")>=0"
-                          }
-                        ],
-                        "condition": "model.dataSources.indexOf(\"biological_samples\")>=0"
-                      }
-                    ]
-                  },
-                  {
-                    "title": "t(data-collection-event.other-data-sources)",
-                    "items": [
+                        "key": "otherBioSamples",
+                        "condition": "model.bioSamples.indexOf(\"others\")>=0"
+                      },
                       {
-                        "key": "otherDataSources",
-                        "description": "t(study_taxonomy.vocabulary.populations-dataCollectionEvents-dataSources.term.others.description)",
-                        "condition": "model.dataSources.indexOf(\"others\")>=0"
+                        "key": "tissueTypes",
+                        "condition": "model.bioSamples.indexOf(\"tissues\")>=0"
                       }
-                    ]
+                    ],
+                    "condition": "model.dataSources.indexOf(\"biological_samples\")>=0"
+                  }
+                ]
+              },
+              {
+                "title": "t(data-collection-event.other-data-sources)",
+                "items": [
+                  {
+                    "key": "otherDataSources",
+                    "description": "t(study_taxonomy.vocabulary.populations-dataCollectionEvents-dataSources.term.others.description)",
+                    "condition": "model.dataSources.indexOf(\"others\")>=0"
                   }
                 ]
               }

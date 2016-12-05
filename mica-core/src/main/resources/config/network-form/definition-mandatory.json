@@ -1,25 +1,20 @@
 [
   {
-    "type": "fieldset",
-    "items": [
-      {
-        "type": "help",
-        "helpvalue": "<h3>t(network.general-info)</h3>"
-      },
-      {
-        "key": "_name",
-        "type": "localizedstring"
-      },
-      {
-        "key": "_acronym",
-        "type": "localizedstring"
-      },
-      {
-        "key": "_description",
-        "type": "localizedstring",
-        "rows": 5,
-        "marked": true
-      }
-    ]
+    "type": "help",
+    "helpvalue": "<h3>t(network.general-info)</h3>"
+  },
+  {
+    "key": "_name",
+    "type": "localizedstring"
+  },
+  {
+    "key": "_acronym",
+    "type": "localizedstring"
+  },
+  {
+    "key": "_description",
+    "type": "localizedstring",
+    "rows": 5,
+    "marked": true
   }
 ]

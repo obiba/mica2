@@ -1,28 +1,23 @@
 [
   {
-    "type": "fieldset",
-    "items": [
-      {
-        "type": "help",
-        "helpvalue": "t(dataset.general-info)"
-      },
-      {
-        "key": "_name",
-        "type": "localizedstring"
-      },
-      {
-        "key": "_acronym",
-        "type": "localizedstring"
-      },
-      {
-        "key": "_description",
-        "type": "localizedstring",
-        "rows": 5,
-        "marked": true
-      },
-      {
-        "key": "_entityType"
-      }
-    ]
+    "type": "help",
+    "helpvalue": "t(dataset.general-info)"
+  },
+  {
+    "key": "_name",
+    "type": "localizedstring"
+  },
+  {
+    "key": "_acronym",
+    "type": "localizedstring"
+  },
+  {
+    "key": "_description",
+    "type": "localizedstring",
+    "rows": 5,
+    "marked": true
+  },
+  {
+    "key": "_entityType"
   }
 ]
