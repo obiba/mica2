@@ -3,6 +3,9 @@
   "properties": {
     "numberOfParticipants": {
       "type": "object",
+      "x-schema-form": {
+        "notitle": true
+      },
       "properties": {
         "participant": {
           "type": "object",
@@ -41,8 +44,7 @@
           "format": "localizedString",
           "title": "t(numberOfParticipants.suppl-info)"
         }
-      },
-      "title": "t(numberOfParticipants.label)"
+      }
     },
     "info": {
       "type": "object",
@@ -58,6 +60,7 @@
         },
         "dataSources": {
           "type": "array",
+          "title": "t(study_taxonomy.vocabulary.populations-recruitment-dataSources.title)",
           "default": [],
           "items": {
             "type": "string",
@@ -71,6 +74,7 @@
         },
         "generalPopulationSources": {
           "type": "array",
+          "title": "t(study.recruitment-sources.general-population)",
           "items": {
             "type": "string",
             "enum": [
@@ -82,6 +86,7 @@
         },
         "specificPopulationSources": {
           "type": "array",
+          "title": "t(study.recruitment-sources.specific-population)",
           "items": {
             "type": "string",
             "enum": [
@@ -98,6 +103,7 @@
         },
         "studies": {
           "type": "array",
+          "title": "t(study.recruitment-sources.studies)",
           "items": {
             "type": "object",
             "format": "localizedString"
@@ -108,8 +114,7 @@
           "format": "localizedString",
           "title": "t(study.recruitment-sources.other)"
         }
-      },
-      "title": "t(population.recruitment)"
+      }
     },
     "selectionCriteria": {
       "type": "object",
