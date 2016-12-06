@@ -434,6 +434,7 @@
     "design": "Conception",
     "other-design": "Autre conception",
     "follow-up": "Suivi",
+    "follow-up-help": "Informations générales sur le suivi (profil, fréquence).",
     "recruitment-target": "Cible de recrutement",
     "access": {
       "label": "Accès",
@@ -1168,17 +1169,6 @@
     "schema-form": {
       "title": "Formulaire",
       "info": "Le formulaire de réseau peut être spécifié à la fois en termes de structure de données (schéma) et d'affichage des données et validation (définition). Voir <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>documentation du schema form</a> pour plus de détails."
-    },
-    "preview": {
-      "model-modal": "Model Preview",
-      "tab": "Preview",
-      "show-model": "Model",
-      "test": "Test Form Validation",
-      "tested": "Form is validated successfully."
-    },
-    "model": {
-      "tab": "Model",
-      "info": "The form model stores the valid input data, invalid values are excluded."
     }
   },
   "study-config" : {
@@ -1334,6 +1324,19 @@
     "permissions": {
       "title": "Autorisations d'accès des données",
       "info": "Accorder l'autorisation de <code>Lire</code> toutes les demandes d'accès aux données."
+    },
+    "syntax-error": {
+      "definition": "La définition du formulaire n'est pas un document valide, veuillez réviser et corriger les erreurs.",
+      "schema": "Le Schema Form n'est pas un document valide, veuillez réviser et corriger les erreurs."
+    },
+    "parse-error": {
+      "definition": "La définition du formulaire est pas un document valide, veuillez contacter votre administrateur pour configurer la définition du formulaire.",
+      "schema": "Le Schema Form n'est pas un document valide, veuillez contacter votre administrateur pour configurer le formulaire schéma."
+    }
+  },
+  "entity-config": {
+    "save-alert": {
+      "success": "Toutes vos modifications ont été enregistrées avec succès."
     },
     "syntax-error": {
       "definition": "La définition du formulaire n'est pas un document valide, veuillez réviser et corriger les erreurs.",

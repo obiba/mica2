@@ -38,14 +38,15 @@ mica.entitySfConfig
           }
         },
 
-        getEditorOptions: function (onLoadCallback) {
+        getEditorOptions: function (onLoadCallback, onChangeCallback) {
           return {
             options: {
               theme: 'monokai',
               mode: 'json',
               displayIndentGuides: true,
               useElasticTabstops: true,
-              onLoad: onLoadCallback
+              onLoad: onLoadCallback,
+              onChange: onChangeCallback
             }
           };
         },

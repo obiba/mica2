@@ -12,22 +12,28 @@
 
 mica.dataAccessConfig
 
-  .controller('DataAccessConfigController', ['$rootScope', '$location', '$scope', '$log',
+  .controller('DataAccessConfigController', ['$rootScope',
+    '$q',
+    '$location',
+    '$scope',
+    '$log',
     'MicaConfigResource',
     'DataAccessFormResource',
     'EntitySchemaFormService',
     'DataAccessFormPermissionsResource',
     'LocalizedSchemaFormService',
-    'AlertService',
-    'ServerErrorUtils',
-    function ($rootScope, $location, $scope, $log,
+    'AlertBuilder',
+    function ($rootScope,
+              $q,
+              $location,
+              $scope,
+              $log,
               MicaConfigResource,
               DataAccessFormResource,
               EntitySchemaFormService,
               DataAccessFormPermissionsResource,
               LocalizedSchemaFormService,
-              AlertService,
-              ServerErrorUtils) {
+              AlertBuilder) {
 
       MicaConfigResource.get(function (micaConfig) {
         $scope.tabs = [];
@@ -36,6 +42,7 @@ mica.dataAccessConfig
         });
       });
 
+      $scope.state = new mica.commons.EntityState($q, $scope);
       $scope.pdfTemplates = {};
 
       var saveForm = function() {
@@ -47,11 +54,13 @@ mica.dataAccessConfig
             $scope.dataAccessForm.pdfTemplates = [];
 
             for (var lang in $scope.pdfTemplates) {
-              for (var i = $scope.pdfTemplates[lang].length; i--;) {
-                $scope.pdfTemplates[lang][i].lang = lang;
-              }
+              if ($scope.pdfTemplates) {
+                for (var i = $scope.pdfTemplates[lang].length; i--;) {
+                  $scope.pdfTemplates[lang][i].lang = lang;
+                }
 
-              $scope.dataAccessForm.pdfTemplates = $scope.dataAccessForm.pdfTemplates.concat($scope.pdfTemplates[lang]);
+                $scope.dataAccessForm.pdfTemplates = $scope.dataAccessForm.pdfTemplates.concat($scope.pdfTemplates[lang]);
+              }
             }
 
             DataAccessFormResource.save($scope.dataAccessForm,
@@ -59,35 +68,35 @@ mica.dataAccessConfig
                 $location.path('/admin').replace();
               },
               function (response) {
-                AlertService.alert({
-                  id: 'DataAccessConfigController',
-                  type: 'danger',
-                  msg: ServerErrorUtils.buildMessage(response)
-                });
+                AlertBuilder.newBuilder().response(response).build();
               });
             break;
           case EntitySchemaFormService.ParseResult.SCHEMA:
-          AlertService.alert({
-            id: 'DataAccessConfigController',
-            type: 'danger',
-            msgKey: 'data-access-config.syntax-error.schema'
-          });
-          break;
-        case EntitySchemaFormService.ParseResult.DEFINITION:
-          AlertService.alert({
-            id: 'DataAccessConfigController',
-            type: 'danger',
-            msgKey: 'data-access-config.syntax-error.definition'
-          });
-          break;
-        }
+            AlertBuilder.newBuilder().trMsg('data-access-config.syntax-error.schema').build();
+            break;
+          case EntitySchemaFormService.ParseResult.DEFINITION:
+            AlertBuilder.newBuilder().trMsg('data-access-config.syntax-error.definition').build();
+            break;
+          }
       };
 
       $scope.dataAccessForm = {schema: '', definition: '', pdfTemplates: []};
       $scope.fileTypes = '.pdf';
 
+      function startWatchForDirty(fieldName, watchState) {
+        var unwatch = $scope.$watch(fieldName, function(newValue, oldValue){
+          if (!watchState.firstTime && newValue !== oldValue) {
+            $scope.state.setDirty(true);
+            unwatch();
+          }
+          watchState.firstTime = false;
+        },true);
+
+      }
+
       DataAccessFormResource.get(
         function(dataAccessForm){
+          var watchState = {firstTime: true};
           $scope.form.definitionJson = EntitySchemaFormService.parseJsonSafely(dataAccessForm.definition, []);
           $scope.form.definition = EntitySchemaFormService.prettifyJson($scope.form.definitionJson);
           $scope.form.schemaJson = EntitySchemaFormService.parseJsonSafely(dataAccessForm.schema, {});
@@ -101,26 +110,17 @@ mica.dataAccessConfig
           }, {});
 
           if ($scope.form.definitionJson.length === 0) {
-            AlertService.alert({
-              id: 'DataAccessConfigController',
-              type: 'danger',
-              msgKey: 'data-access-config.parse-error.definition'
-            });
+            AlertBuilder.newBuilder().trMsg('data-access-config.parse-error.schema').build();
           }
           if (Object.getOwnPropertyNames($scope.form.schemaJson).length === 0) {
-            AlertService.alert({
-              id: 'DataAccessConfigController',
-              type: 'danger',
-              msgKey: 'data-access-config.parse-error.schema'
-            });
+            AlertBuilder.newBuilder().trMsg('data-access-config.parse-error.definition').build();
           }
+
+          startWatchForDirty('dataAccessForm', watchState);
+          startWatchForDirty('pdfTemplates', watchState);
         },
         function(response) {
-          AlertService.alert({
-            id: 'DataAccessConfigController',
-            type: 'danger',
-            msg: ServerErrorUtils.buildMessage(response)
-          });
+          AlertBuilder.newBuilder().response(response).build();
         });
 
       $scope.form = {

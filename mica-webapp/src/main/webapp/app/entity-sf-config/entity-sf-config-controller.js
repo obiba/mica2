@@ -18,11 +18,13 @@ mica.entitySfConfig
     'LocalizedSchemaFormService',
     'AlertService',
     'SfOptionsService',
+    'FormDirtyStateObserver',
     function ($scope,
               EntitySchemaFormService,
               LocalizedSchemaFormService,
               AlertService,
-              SfOptionsService) {
+              SfOptionsService,
+              FormDirtyStateObserver) {
 
       EntitySchemaFormService.configureAcePaths();
 
@@ -51,21 +53,23 @@ mica.entitySfConfig
         }
       };
 
-      var watchFormSchemaChanges = function(val,old){
-        if (val && val !== old) {
+      var watchFormChanges = function(val){
+        if (val) {
           $scope.dirty = true;
-        }
-      };
-
-      var watchFormDefinitionChanges = function(val,old){
-        if (val && val !== old) {
-          $scope.dirty = true;
+          $scope.ace = EntitySchemaFormService.getEditorOptions(aceEditorOnLoadCallback, aceEditorOnChangeCallback);
         }
       };
 
       var aceEditorOnLoadCallback = function(editor) {
         if (editor.container.id === 'form-model') {
           editor.setReadOnly(true);
+        }
+      };
+
+      var aceEditorOnChangeCallback = function(data) {
+        var editor = data[1];
+        if (editor.container.id === $scope.selectedTab && !editor.session.$modified) {
+          $scope.dirtyObservable.setDirty(true);
         }
       };
 
@@ -85,12 +89,11 @@ mica.entitySfConfig
       $scope.entityForm = {schema: '', definition: ''};
       $scope.dirty = false;
       $scope.selectedTab = 'form-schema';
-      $scope.ace = EntitySchemaFormService.getEditorOptions(aceEditorOnLoadCallback);
+      $scope.$watch('form', watchFormChanges);
       $scope.selectTab = selectTab;
       $scope.testPreview = testPreview;
       $scope.fullscreen = EntitySchemaFormService.gotoFullScreen;
-      $scope.$watch('form.definition', watchFormDefinitionChanges);
-      $scope.$watch('form.schema', watchFormSchemaChanges);
 
+      FormDirtyStateObserver.observe($scope.dirtyObservable);
       refreshPreview(true);
     }]);

@@ -35,7 +35,7 @@
 
     <p class="help-block" translate>project-config.schema-form.info</p>
 
-    <entity-sf-config form="form" alert-id="ProjectConfigController"></entity-sf-config>
+    <entity-sf-config form="form" alert-id="ProjectConfigController" dirty-observable="state.getDirtyObservable()"></entity-sf-config>
   </div>
 
   <div ng-show="tab.name === 'permissions'">

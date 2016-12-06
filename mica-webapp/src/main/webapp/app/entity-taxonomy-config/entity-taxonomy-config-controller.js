@@ -20,13 +20,15 @@ mica.entitySfConfig
     'EntityTaxonomyConfigResource',
     'ServerErrorUtils',
     'AlertService',
+    'FormDirtyStateObserver',
     function ($scope,
               $q,
               $filter,
               MicaConfigResource,
               EntityTaxonomyConfigResource,
               ServerErrorUtils,
-              AlertService) {
+              AlertService,
+              FormDirtyStateObserver) {
 
       var onError = function(response) {
         AlertService.alert({
@@ -59,6 +61,7 @@ mica.entitySfConfig
       };
 
       function swapVocabulary(from, to) {
+        $scope.state.setDirty(true);
         var tmp = $scope.taxonomy.vocabularies[from];
         $scope.taxonomy.vocabularies[from] = $scope.taxonomy.vocabularies[to];
         $scope.taxonomy.vocabularies[to] = tmp;
@@ -96,6 +99,7 @@ mica.entitySfConfig
 
       getTaxonomy();
 
+      FormDirtyStateObserver.observe($scope.state.getDirtyObservable());
     }])
 
   .controller('entityTaxonomyConfigPropertiesViewController', [
@@ -130,6 +134,7 @@ mica.entitySfConfig
         $scope.unregisterOnDelete();
         var i = $scope.taxonomy.vocabularies.indexOf(criterion);
         if (i > -1) {
+          $scope.state.setDirty(true);
           $scope.taxonomy.vocabularies.splice(i, 1);
           $scope.model.content = $scope.taxonomy;
           $scope.model.children = $scope.taxonomy.vocabularies;
@@ -250,6 +255,7 @@ mica.entitySfConfig
         $scope.unregisterOnDelete();
         var i = args.vocabulary.terms.indexOf(args.term);
         if (i > -1) {
+          $scope.state.setDirty(true);
           args.vocabulary.terms.splice(i, 1);
         }
       }
@@ -297,6 +303,7 @@ mica.entitySfConfig
 
         if($scope.form.$valid) {
           EntityTaxonomySchemaFormService.updateModel($scope.sfForm, $scope.model);
+          $scope.state.setDirty($scope.model.content !== null && $scope.form.$dirty);
           $uibModalInstance.close($scope.sfForm.model);
         }
 

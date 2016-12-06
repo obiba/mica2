@@ -1334,6 +1334,19 @@
       "schema": "Form schema is not a valid document, please contact your administrator to configure the form schema."
     }
   },
+  "entity-config": {
+    "save-alert": {
+      "success": "All your changes were successfully saved."
+    },
+    "syntax-error": {
+      "definition": "Form definition is not a valid document, please revise and correct the errors.",
+      "schema": "Form schema is not a valid document, please revise and correct the errors."
+    },
+    "parse-error": {
+      "definition": "Form definition is not a valid document, please contact your administrator to configure the form definition.",
+      "schema": "Form schema is not a valid document, please contact your administrator to configure the form schema."
+    }
+  },
   "entity-sf-config": {
     "schema-form": {
       "title": "Form",
