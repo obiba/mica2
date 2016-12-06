@@ -106,7 +106,20 @@
           </filesets>
         </configuration>
       </plugin>
-      <plugin>
+    </plugins>
+  </build>
+
+  <profiles>
+    <profile>
+      <id>generate-node-bower-modules</id>
+      <activation>
+        <file>
+          <missing>src/main/webapp/bower_components</missing>
+        </file>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>exec-maven-plugin</artifactId>
         <executions>
@@ -138,7 +151,7 @@
           </execution>
           <execution>
             <id>exec-grunt</id>
-            <phase>process-resources</phase>
+            <phase>generate-sources</phase>
             <configuration>
               <executable>grunt</executable>
             </configuration>
@@ -148,11 +161,9 @@
           </execution>
         </executions>
       </plugin>
-    </plugins>
-  </build>
-
-  <profiles>
-
+        </plugins>
+      </build>
+    </profile>
     <profile>
       <!--
         Add config files to classpath in order to run application from maven:
