@@ -80,6 +80,10 @@ class PopulationDtos {
 
     if(dce.getName() != null) builder.addAllName(localizedStringDtos.asDto(dce.getName()));
 
+    if(dce.getDescription() != null) {
+      builder.addAllDescription(localizedStringDtos.asDto(dce.getDescription()));
+    }
+
     if(dce.getStart() != null) {
       PersistableYearMonth.YearMonthData startData = dce.getStart().getYearMonthData();
       builder.setStartYear(startData.getYear());
@@ -104,6 +108,7 @@ class PopulationDtos {
     DataCollectionEvent dce = new DataCollectionEvent();
     dce.setId(dto.getId());
     if(dto.getNameCount() > 0) dce.setName(localizedStringDtos.fromDto(dto.getNameList()));
+    if(dto.getDescriptionCount() > 0) dce.setDescription(localizedStringDtos.fromDto(dto.getDescriptionList()));
     if(dto.hasStartYear()) dce.setStart(dto.getStartYear(), dto.hasStartMonth() ? dto.getStartMonth() : null);
     if(dto.hasEndYear()) dce.setEnd(dto.getEndYear(), dto.hasEndMonth() ? dto.getEndMonth() : null);
 

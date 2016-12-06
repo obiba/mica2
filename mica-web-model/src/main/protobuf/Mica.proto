@@ -159,12 +159,13 @@ message StudyDto {
     message DataCollectionEventDto {
       optional string id = 1;
       repeated LocalizedStringDto name = 2;
+      repeated LocalizedStringDto description = 3;
       required int32 startYear = 4;
       optional int32 startMonth = 5;
       optional int32 endYear = 6;
       optional int32 endMonth = 7;
-      repeated AttachmentDto attachments = 14;
-      optional string content = 16;
+      repeated AttachmentDto attachments = 8;
+      optional string content = 9;
     }
   }
 }
