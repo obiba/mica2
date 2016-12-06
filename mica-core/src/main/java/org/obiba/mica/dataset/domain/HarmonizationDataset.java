@@ -22,6 +22,7 @@ import javax.validation.constraints.NotNull;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import org.obiba.mica.core.domain.NetworkTable;
 import org.obiba.mica.core.domain.OpalTable;
 import org.obiba.mica.core.domain.StudyTable;
@@ -96,6 +97,15 @@ public class HarmonizationDataset extends Dataset {
 
   public void setTable(String table) {
     this.table = table;
+  }
+
+  @Override
+  public Map<String, Object> getModel() {
+    if (!this.hasModel()) {
+      Map<String, Object> map = Maps.newHashMap();
+      setModel(map);
+    }
+    return super.getModel();
   }
 
   @Override

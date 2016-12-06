@@ -14,6 +14,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.google.common.collect.Maps;
 import org.obiba.mica.core.domain.StudyTable;
 
 /**
@@ -35,6 +36,15 @@ public class StudyDataset extends Dataset {
 
   public void setStudyTable(StudyTable studyTable) {
     this.studyTable = studyTable;
+  }
+
+  @Override
+  public Map<String, Object> getModel() {
+    if (!this.hasModel()) {
+      Map<String, Object> map = Maps.newHashMap();
+      setModel(map);
+    }
+    return super.getModel();
   }
 
   @Override
