@@ -516,7 +516,7 @@ mica.study
           controller: 'StudyPopulationDceModalController',
           resolve: {
             lang: function() {
-              return $translate.use();
+              return $scope.selectedLocale;
             },
             dce: function () {
               return dce;
@@ -628,14 +628,14 @@ mica.study
               path,
               StudyTaxonomyService) {
       $scope.months = $locale.DATETIME_FORMATS.MONTH;
-      $scope.tab = {lang: lang};
+      $scope.selectedLocale = lang;
       $scope.dce = dce;
       $scope.study = study;
       $scope.path = path;
       $scope.sfOptions = sfOptions;
       $scope.dceSfForm = sfForm;
 
-      $scope.cancel = function () {
+      $scope.close = function () {
         $uibModalInstance.close();
       };
 
