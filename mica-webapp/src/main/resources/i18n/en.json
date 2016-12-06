@@ -531,6 +531,7 @@
       "member": "Find an existing {{type}}",
       "placeholder": "Search by first name, last name or institution..."
     },
+    "identification": "Identification",
     "title": "Title",
     "firstName": "First Name",
     "lastName": "Last Name",

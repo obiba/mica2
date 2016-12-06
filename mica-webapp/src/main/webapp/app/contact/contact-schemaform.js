@@ -79,11 +79,17 @@ var CONTACT_SCHEMA = {
 /* exported CONTACT_DEFINITION */
 var CONTACT_DEFINITION = [
   {
-    type: 'section',
-    items: [
+    'type': 'section',
+    'htmlClass': 'row',
+    'items': [
       {
-        type: 'fieldset',
-        items: [
+        'type': 'section',
+        'htmlClass': 'col-xs-6',
+        'items': [
+          {
+            type: 'help',
+            helpvalue: '<h4>t(contact.identification)</h4>'
+          },
           'title',
           'firstName',
           'lastName',
@@ -93,11 +99,12 @@ var CONTACT_DEFINITION = [
         ]
       },
       {
-        type: 'fieldset',
-        items: [
+        'type': 'section',
+        'htmlClass': 'col-xs-6',
+        'items': [
           {
             type: 'help',
-            helpvalue: '<h3>t(contact.institution)</h3>'
+            helpvalue: '<h4>t(contact.institution)</h4>'
           },
           {
             key: 'institution.name',
