@@ -1,32 +1,52 @@
 [
   {
-    "type": "help",
-    "helpvalue": "<h3>t(study.general-info)</h3>"
-  },
-  "_id",
-  {
-    "key": "_name",
-    "type": "localizedstring"
-  },
-  {
-    "key": "_description",
-    "type": "localizedstring",
-    "rows": 3
-  },
-  {
-    "key": "_startYear",
-    "type": "number"
-  },
-  {
-    "key": "_startMonth",
-    "type": "number"
-  },
-  {
-    "key": "_endYear",
-    "type": "number"
-  },
-  {
-    "key": "_endMonth",
-    "type": "number"
+    "type": "section",
+    "htmlClass": "row",
+    "items": [
+      {
+        "type": "section",
+        "htmlClass": "col-xs-6",
+        "items": [
+          "_id",
+          {
+            "key": "_name",
+            "type": "localizedstring"
+          },
+          {
+            "key": "_description",
+            "type": "localizedstring",
+            "rows": 3
+          }
+        ]
+      },
+      {
+        "type": "section",
+        "htmlClass": "col-xs-3",
+        "items": [
+          {
+            "key": "_startYear",
+            "type": "number"
+          },
+          {
+            "key": "_endYear",
+            "type": "number"
+          }
+        ]
+      },
+      {
+        "type": "section",
+        "htmlClass": "col-xs-3",
+        "items": [
+          {
+            "key": "_startMonth",
+            "type": "number"
+          },
+          {
+            "key": "_endMonth",
+            "type": "number"
+          }
+        ]
+      }
+    ]
   }
 ]

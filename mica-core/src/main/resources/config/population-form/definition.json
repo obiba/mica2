@@ -1,5 +1,9 @@
 [
   {
+    "type": "help",
+    "helpvalue": "<h4>t(study.selection-criteria.label)</h4>"
+  },
+  {
     "type": "section",
     "htmlClass": "row",
     "items": [

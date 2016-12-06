@@ -45,10 +45,18 @@
         {{dce.id}}
       </td>
       <td>
-        <localized value="dce.name" lang="selectedLocale"></localized>
+        <ul class="list-unstyled">
+          <li ng-repeat="label in dce.name">
+            <span class="badge">{{label.lang}}</span> {{label.value}}
+          </li>
+        </ul>
       </td>
       <td>
-        <localized value="dce.description" lang="selectedLocale"></localized>
+        <ul class="list-unstyled">
+          <li ng-repeat="label in dce.description">
+            <span class="badge">{{label.lang}}</span> {{label.value}}
+          </li>
+        </ul>
       </td>
       <td>
         {{dce.startYear}} <span ng-show="dce.startMonth">({{months[dce.startMonth - 1]}})</span>
