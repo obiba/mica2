@@ -61,59 +61,62 @@ public class Mica2Upgrade {
 
   @PostConstruct
   public void upgradeFromMica1_5ToMica2_0() {
-
-    logger.info("migration from mica 1.x to mica 2.x : START");
-
     migrateNetworks();
     migrateStudies();
     migrateStudyDataset();
     migrateHarmonizationDataset();
-
-    logger.info("migration from mica 1.x to mica 2.x : END");
   }
 
   private void migrateNetworks() {
-    logger.info("migration networks : START");
     List<Network> networksWithoutModel = networkRepository.findWithoutModel();
-    for (Network networkWithoutModel : networksWithoutModel) {
-      networkWithoutModel.getModel();
-      networkService.save(networkWithoutModel, "Upgrade from mica 1.x to mica 2.x");
+    if (!networksWithoutModel.isEmpty()) {
+      logger.info("Migrating networks from 1.x to 2.x: START");
+      for (Network networkWithoutModel : networksWithoutModel) {
+        networkWithoutModel.getModel();
+        networkService.save(networkWithoutModel, "Upgrade from mica 1.x to mica 2.x");
+      }
+      logger.info("Migrating networks: END");
     }
-    logger.info("migration networks : END");
   }
 
 
   private void migrateStudies() {
-    logger.info("migration studies : START");
     List<Study> studiesWithoutModel = studyRepository.findWithoutModel();
-    for (Study studyWithoutModel : studiesWithoutModel) {
-      studyWithoutModel.getModel();
-      if (studyWithoutModel.getMethods().getDesigns() != null && studyWithoutModel.getMethods().getDesigns().size() == 1 && studyWithoutModel.getMethods().getDesign() == null)
-        studyWithoutModel.getMethods().setDesign(studyWithoutModel.getMethods().getDesigns().get(0));
-      studyWithoutModel.getPopulations().forEach(Population::getModel);
-      studyWithoutModel.getPopulations().forEach(p -> p.getDataCollectionEvents().forEach(DataCollectionEvent::getModel));
-      studyService.save(studyWithoutModel, "Upgrade from mica 1.x to mica 2.x");
+    if (!studiesWithoutModel.isEmpty()) {
+      logger.info("Migrating studies 1.x to 2.x: START");
+      for (Study studyWithoutModel : studiesWithoutModel) {
+        studyWithoutModel.getModel();
+        if (studyWithoutModel.getMethods().getDesigns() != null && studyWithoutModel.getMethods().getDesigns().size() == 1 && studyWithoutModel.getMethods().getDesign() == null)
+          studyWithoutModel.getMethods().setDesign(studyWithoutModel.getMethods().getDesigns().get(0));
+        studyWithoutModel.getPopulations().forEach(Population::getModel);
+        studyWithoutModel.getPopulations().forEach(p -> p.getDataCollectionEvents().forEach(DataCollectionEvent::getModel));
+        studyService.save(studyWithoutModel, "Upgrade from mica 1.x to mica 2.x");
+      }
+      logger.info("Migrating studies: END");
     }
-    logger.info("migration studies : END");
   }
 
   private void migrateStudyDataset() {
-    logger.info("migration studyDataset : START");
     List<StudyDataset> studyDatasetsWithoutModel = studyDatasetRepository.findWithoutModel();
-    for (StudyDataset studyDatasetWithoutModel : studyDatasetsWithoutModel) {
-      studyDatasetWithoutModel.getModel();
-      studyDatasetService.save(studyDatasetWithoutModel, "Upgrade from mica 1.x to mica 2.x");
+    if (!studyDatasetsWithoutModel.isEmpty()) {
+      logger.info("Migrating study datasets 1.x to 2.x: START");
+      for (StudyDataset studyDatasetWithoutModel : studyDatasetsWithoutModel) {
+        studyDatasetWithoutModel.getModel();
+        studyDatasetService.save(studyDatasetWithoutModel, "Upgrade from mica 1.x to mica 2.x");
+      }
+      logger.info("Migrating study datasets: END");
     }
-    logger.info("migration studyDataset : END");
   }
 
   private void migrateHarmonizationDataset() {
-    logger.info("migration harmonizationDataset : START");
     List<HarmonizationDataset> harmonizationDatasetsWithoutModel = harmonizationDatasetRepository.findWithoutModel();
-    for (HarmonizationDataset harmonizationDatasetWithoutModel : harmonizationDatasetsWithoutModel) {
-      harmonizationDatasetWithoutModel.getModel();
-      harmonizationDatasetService.save(harmonizationDatasetWithoutModel);
+    if (!harmonizationDatasetsWithoutModel.isEmpty()) {
+      logger.info("Migrating harmonization datasets 1.x to 2.x: START");
+      for (HarmonizationDataset harmonizationDatasetWithoutModel : harmonizationDatasetsWithoutModel) {
+        harmonizationDatasetWithoutModel.getModel();
+        harmonizationDatasetService.save(harmonizationDatasetWithoutModel, "Upgrade from mica 1.x to mica 2.x");
+      }
+      logger.info("Migrating harmonization datasets: END");
     }
-    logger.info("migration harmonizationDataset : END");
   }
 }
