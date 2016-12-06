@@ -290,7 +290,7 @@ mica.network
           query: $scope.query,
           limit: 999
         }).$promise.then(function (result) {
-            $scope.persons = result.persons.filter(function (p) {
+            $scope.persons = (result.persons || []).filter(function (p) {
               return p.studyMemberships && p.studyMemberships.length > 0 || p.networkMemberships && p.networkMemberships.length > 0;
             });
           });
