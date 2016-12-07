@@ -16,14 +16,11 @@ import org.obiba.mica.search.csvexport.CsvReportGenerator;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.mica.web.model.MicaSearch;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.io.UncheckedIOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DatasetsCsvReportGenerator implements CsvReportGenerator {
+public class DatasetsCsvReportGenerator extends CsvReportGeneratorImpl {
 
   private static final String NOT_EXISTS = "-";
 
@@ -37,19 +34,8 @@ public class DatasetsCsvReportGenerator implements CsvReportGenerator {
     this.translator = translator;
   }
 
-  public void write(OutputStream outputStream) {
-
-    try (CSVWriter writer = new CSVWriter(new PrintWriter(outputStream))) {
-
-      writeHeader(writer);
-      writeEachLine(writer);
-
-    } catch (IOException e) {
-      throw new UncheckedIOException(e);
-    }
-  }
-
-  private void writeHeader(CSVWriter writer) {
+  @Override
+  protected void writeHeader(CSVWriter writer) {
 
     List<String> line = new ArrayList<>();
 
@@ -71,7 +57,8 @@ public class DatasetsCsvReportGenerator implements CsvReportGenerator {
     writer.writeNext(translatedLine);
   }
 
-  private void writeEachLine(CSVWriter writer) {
+  @Override
+  protected void writeEachLine(CSVWriter writer) {
 
     for (Mica.DatasetDto datasetDto : datasetDtos) {
       List<String> lineContent = generateLineContent(datasetDto);
