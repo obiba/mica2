@@ -97,7 +97,7 @@
           }
         },
         "otherSpecificPopulationSource": {
-          "type": "string",
+          "type": "object",
           "format": "localizedString",
           "title": "t(study.recruitment-sources.other-specific-population)"
         },
