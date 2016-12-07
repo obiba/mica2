@@ -22,6 +22,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.StreamingOutput;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.network.search.NetworkIndexer;
@@ -124,7 +125,7 @@ public class PublishedNetworksSearchResource {
   @Path("/_rql_csv")
   @Timed
   public Response rqlQueryAsCsv(@QueryParam("query") String query, @QueryParam("columnsToHide") List<String> columnsToHide) throws IOException {
-    String csvContent = genericReportGenerator.generateCsv(JoinQueryExecutor.QueryType.NETWORK, query, columnsToHide).toString();
-    return Response.ok(csvContent).header("Content-Disposition", "attachment; filename=\"SearchNetworks.csv\"").build();
+    StreamingOutput stream = os -> genericReportGenerator.generateCsv(JoinQueryExecutor.QueryType.NETWORK, query, columnsToHide, os);
+    return Response.ok(stream).header("Content-Disposition", "attachment; filename=\"SearchNetworks.csv\"").build();
   }
 }

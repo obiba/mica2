@@ -28,15 +28,10 @@ public class GenericReportGenerator {
   @Inject
   private CsvReportGeneratorFactory csvReportGeneratorFactory;
 
-  public OutputStream generateCsv(JoinQueryExecutor.QueryType exportType, String rqlQuery, List<String> columnsToHide) throws IOException {
+  public void generateCsv(JoinQueryExecutor.QueryType exportType, String rqlQuery, List<String> columnsToHide, OutputStream outputStream) throws IOException {
     JoinRQLQueryWrapper joinQueryWrapper = rqlQueryFactory.makeJoinQuery(rqlQuery);
     MicaSearch.JoinQueryResultDto queryResult = joinQueryExecutor.query(exportType, joinQueryWrapper);
-
     CsvReportGenerator csvReportGenerator = csvReportGeneratorFactory.get(exportType, queryResult, columnsToHide, joinQueryWrapper.getLocale());
-
-    ByteArrayOutputStream byteOutputStream = new ByteArrayOutputStream();
-    csvReportGenerator.write(byteOutputStream);
-
-    return byteOutputStream;
+    csvReportGenerator.write(outputStream);
   }
 }
