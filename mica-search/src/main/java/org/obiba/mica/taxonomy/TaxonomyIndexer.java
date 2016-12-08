@@ -70,10 +70,7 @@ public class TaxonomyIndexer {
       index(TaxonomyTarget.NETWORK, Lists.newArrayList(taxonomyService.getNetworkTaxonomy()));
     } else {
       QueryBuilder query = QueryBuilders.boolQuery().must(QueryBuilders.wildcardQuery("id", event.getTaxonomyName() + '*'));
-
-      elasticSearchIndexer.delete(TAXONOMY_INDEX, TAXONOMY_TYPE, query);
-      elasticSearchIndexer.delete(TAXONOMY_INDEX, TAXONOMY_VOCABULARY_TYPE, query);
-      elasticSearchIndexer.delete(TAXONOMY_INDEX, TAXONOMY_TERM_TYPE, query);
+      elasticSearchIndexer.delete(TAXONOMY_INDEX, new String[] {TAXONOMY_TYPE, TAXONOMY_VOCABULARY_TYPE, TAXONOMY_TERM_TYPE}, query);
 
       switch (event.getTaxonomyTarget()) {
         case STUDY:

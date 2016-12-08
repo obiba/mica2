@@ -10,8 +10,6 @@
 
 package org.obiba.mica.micaConfig.service;
 
-import java.util.Optional;
-
 import javax.inject.Inject;
 
 import org.obiba.mica.NoSuchEntityException;
@@ -22,11 +20,8 @@ import org.obiba.mica.config.taxonomies.TaxonomyTaxonomy;
 import org.obiba.mica.config.taxonomies.VariableTaxonomy;
 import org.obiba.mica.core.domain.TaxonomyEntityWrapper;
 import org.obiba.mica.core.domain.TaxonomyTarget;
-import org.obiba.mica.dataset.event.IndexDatasetsEvent;
 import org.obiba.mica.micaConfig.event.TaxonomiesUpdatedEvent;
 import org.obiba.mica.micaConfig.repository.TaxonomyConfigRepository;
-import org.obiba.mica.network.event.IndexNetworksEvent;
-import org.obiba.mica.study.event.IndexStudiesEvent;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Service;
@@ -64,7 +59,6 @@ public class TaxonomyConfigService {
 
   public void update(TaxonomyTarget target, Taxonomy taxonomy) {
     updateInternal(target, taxonomy);
-    getEvent(target).ifPresent(eventBus::post);
     eventBus.post(new TaxonomiesUpdatedEvent(taxonomy.getName(), target));
   }
 
@@ -85,24 +79,6 @@ public class TaxonomyConfigService {
     taxonomyEntityWrapper.setTarget(target.asId());
     taxonomyEntityWrapper.setTaxonomy(taxonomy);
     taxonomyConfigRepository.save(taxonomyEntityWrapper);
-  }
-
-  private Optional<Object> getEvent(TaxonomyTarget target) {
-    Object event = null;
-
-    switch (target) {
-      case STUDY:
-        event = new IndexStudiesEvent();
-        break;
-      case NETWORK:
-        event = new IndexNetworksEvent();
-        break;
-      case DATASET:
-        event = new IndexDatasetsEvent();
-        break;
-    }
-
-    return Optional.ofNullable(event);
   }
 
   private void createDefault(TaxonomyTarget target) {
