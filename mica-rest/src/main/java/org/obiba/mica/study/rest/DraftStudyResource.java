@@ -12,18 +12,13 @@ package org.obiba.mica.study.rest;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.QueryParam;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 
 import org.obiba.mica.AbstractGitPersistableResource;
@@ -76,6 +71,14 @@ public class DraftStudyResource extends AbstractGitPersistableResource<StudyStat
   public Mica.StudyDto get(@QueryParam("locale") String locale) {
     subjectAclService.checkPermission("/draft/study", "VIEW", id);
     return dtos.asDto(studyService.findDraft(id, locale), true);
+  }
+
+  @GET
+  @Path("/model")
+  @Produces("application/json")
+  public Map<String, Object> getModel() {
+    subjectAclService.checkPermission("/draft/study", "VIEW", id);
+    return studyService.findDraft(id).getModel();
   }
 
   @PUT
