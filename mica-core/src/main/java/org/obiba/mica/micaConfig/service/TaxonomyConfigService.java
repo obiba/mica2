@@ -65,7 +65,7 @@ public class TaxonomyConfigService {
   public void update(TaxonomyTarget target, Taxonomy taxonomy) {
     updateInternal(target, taxonomy);
     getEvent(target).ifPresent(eventBus::post);
-    eventBus.post(new TaxonomiesUpdatedEvent());
+    eventBus.post(new TaxonomiesUpdatedEvent(taxonomy.getName(), target));
   }
 
   private Taxonomy findByTargetInternal(TaxonomyTarget target) {
