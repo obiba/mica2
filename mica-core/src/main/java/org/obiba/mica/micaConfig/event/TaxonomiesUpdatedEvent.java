@@ -11,7 +11,26 @@
 
 package org.obiba.mica.micaConfig.event;
 
+import org.obiba.mica.core.domain.TaxonomyTarget;
+
 public class TaxonomiesUpdatedEvent {
 
   public TaxonomiesUpdatedEvent() {}
+
+  public TaxonomiesUpdatedEvent(String taxonomyName, TaxonomyTarget taxonomyTarget) {
+    this.taxonomyName = taxonomyName;
+    this.taxonomyTarget = taxonomyTarget;
+  }
+
+  private String taxonomyName;
+
+  private TaxonomyTarget taxonomyTarget;
+
+  public String getTaxonomyName() {
+    return taxonomyName;
+  }
+
+  public TaxonomyTarget getTaxonomyTarget() {
+    return taxonomyTarget;
+  }
 }
