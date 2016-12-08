@@ -13,11 +13,14 @@ package org.obiba.mica.core.repository;
 import java.util.List;
 
 import org.obiba.mica.contact.event.PersonUpdatedEvent;
+import org.obiba.mica.core.domain.Membership;
 import org.obiba.mica.core.domain.PersonAware;
 import org.obiba.mica.core.domain.Person;
 
 import com.google.common.collect.Sets;
 import com.google.common.eventbus.EventBus;
+
+import static java.util.stream.Collectors.toList;
 
 public interface PersonAwareRepository<T extends PersonAware> {
 
@@ -28,7 +31,7 @@ public interface PersonAwareRepository<T extends PersonAware> {
   default void saveContacts(T obj) {
     updateRemovedContacts(obj);
     obj.getAllMemberships().forEach(c -> obj.addToPerson(c));
-    List<Person> persons = obj.getAllPersons();
+    List<Person> persons = obj.getAllMemberships().stream().map(Membership::getPerson).collect(toList());;
     getPersonRepository().save(persons);
     persons.forEach(p -> getEventBus().post(new PersonUpdatedEvent(p)));
   }

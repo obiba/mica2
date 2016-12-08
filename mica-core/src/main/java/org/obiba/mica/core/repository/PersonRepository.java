@@ -17,6 +17,7 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 
 public interface PersonRepository extends MongoRepository<Person, String> {
+
   @Query(value = "{'studyMemberships.parentId' : ?0 }")
   List<Person> findByStudyMemberships(String studyId);
 
@@ -30,4 +31,7 @@ public interface PersonRepository extends MongoRepository<Person, String> {
   List<Person> findByNetworkMembershipsRole(String role);
 
   Person findOneByEmail(String email);
+
+  @Query("{$where: \"this.institution.address && this.institution.address.countryIso && this.institution.address.countryIso.length == 2\"}")
+  Iterable<Person> findAllWhenCountryIsoContainsTwoCharacters();
 }

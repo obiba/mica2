@@ -140,8 +140,6 @@ public class StudyPackageImportServiceImpl extends AbstractProtobufProvider impl
       }
     });
 
-    study.cleanContacts();
-
     studyService.save(study, "Imported");
 
     attachments.forEach(a -> {
@@ -174,7 +172,6 @@ public class StudyPackageImportServiceImpl extends AbstractProtobufProvider impl
       }
     }
 
-    updated.cleanContacts();
     networkService.save(updated);
 
     if(publish) networkService.publish(updated.getId(), true, PublishCascadingScope.ALL);

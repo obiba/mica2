@@ -46,6 +46,7 @@ import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
 
 /**
  * A Study.
@@ -61,10 +62,6 @@ public class Study extends AbstractModelAware implements AttributeAware, PersonA
   private LocalizedString acronym;
 
   private Attachment logo;
-
-  private List<Person> investigators = Lists.newArrayList();
-
-  private List<Person> contacts = Lists.newArrayList();
 
   private Map<String, List<Membership>> memberships = new HashMap<String, List<Membership>>() {
     {
@@ -140,38 +137,6 @@ public class Study extends AbstractModelAware implements AttributeAware, PersonA
     this.logo = logo;
   }
 
-  @JsonIgnore
-  public List<Person> getInvestigators() {
-    if(!investigators.isEmpty()) {
-      setInvestigators(investigators);
-      investigators.clear();
-    }
-
-    return memberships.getOrDefault(Membership.INVESTIGATOR, Lists.newArrayList()).stream().map(m -> m.getPerson())
-      .collect(toList());
-  }
-
-  @JsonProperty
-  public void setInvestigators(List<Person> investigators) {
-    if(investigators == null) investigators = Lists.newArrayList();
-
-    replaceExisting(investigators);
-
-    memberships.put(Membership.INVESTIGATOR,
-      investigators.stream().map(p -> new Membership(p, Membership.INVESTIGATOR)).collect(toList()));
-  }
-
-  @JsonIgnore
-  public List<Person> getContacts() {
-    if(!contacts.isEmpty()) {
-      setContacts(contacts);
-      contacts.clear();
-    }
-
-    return memberships.getOrDefault(Membership.CONTACT, Lists.newArrayList()).stream().map(m -> m.getPerson())
-      .collect(toList());
-  }
-
   @Override
   public void addToPerson(Membership membership) {
     membership.getPerson().addStudy(this, membership.getRole());
@@ -185,16 +150,6 @@ public class Study extends AbstractModelAware implements AttributeAware, PersonA
   @Override
   public void removeFromPerson(Person person) {
     person.removeStudy(this);
-  }
-
-  @JsonProperty
-  public void setContacts(List<Person> contacts) {
-    if(contacts == null) contacts = Lists.newArrayList();
-
-    replaceExisting(contacts);
-
-    memberships.put(Membership.CONTACT,
-      contacts.stream().map(p -> new Membership(p, Membership.CONTACT)).collect(toList()));
   }
 
   public LocalizedString getObjectives() {
@@ -211,7 +166,7 @@ public class Study extends AbstractModelAware implements AttributeAware, PersonA
 
   public void setWebsite(String website) {
     this.website = website;
-    if(!Strings.isNullOrEmpty(website) && !website.startsWith("http")) {
+    if (!Strings.isNullOrEmpty(website) && !website.startsWith("http")) {
       this.website = "http://" + website;
     }
   }
@@ -261,8 +216,8 @@ public class Study extends AbstractModelAware implements AttributeAware, PersonA
   }
 
   public void setStart(Integer value) {
-    if(value == null) return;
-    if(start == null) start = new PersitableYear();
+    if (value == null) return;
+    if (start == null) start = new PersitableYear();
     start.setYear(value);
   }
 
@@ -271,8 +226,8 @@ public class Study extends AbstractModelAware implements AttributeAware, PersonA
   }
 
   public void setEnd(Integer value) {
-    if(value == null) return;
-    if(end == null) end = new PersitableYear();
+    if (value == null) return;
+    if (end == null) end = new PersitableYear();
     end.setYear(value);
   }
 
@@ -281,7 +236,7 @@ public class Study extends AbstractModelAware implements AttributeAware, PersonA
   }
 
   public void addAccess(@NotNull String anAccess) {
-    if(access == null) access = new ArrayList<>();
+    if (access == null) access = new ArrayList<>();
     access.add(anAccess);
   }
 
@@ -314,9 +269,9 @@ public class Study extends AbstractModelAware implements AttributeAware, PersonA
   }
 
   /**
-   * @deprecated kept for backward compatibility.
    * @return
-     */
+   * @deprecated kept for backward compatibility.
+   */
   @Deprecated
   @JsonIgnore
   public List<Attachment> getAttachments() {
@@ -324,9 +279,9 @@ public class Study extends AbstractModelAware implements AttributeAware, PersonA
   }
 
   /**
-   * @deprecated kept for backward compatibility.
    * @param attachments
-     */
+   * @deprecated kept for backward compatibility.
+   */
   @Deprecated
   @JsonProperty
   public void setAttachments(List<Attachment> attachments) {
@@ -346,12 +301,12 @@ public class Study extends AbstractModelAware implements AttributeAware, PersonA
   }
 
   public void addPopulation(@NotNull Population population) {
-    if(populations == null) populations = new TreeSet<>();
-    if(population.isNew()) {
+    if (populations == null) populations = new TreeSet<>();
+    if (population.isNew()) {
       String newId = population.getName().asAcronym().asUrlSafeString().toLowerCase();
-      if(hasPopulation(newId)) {
-        for(int i = 1; i < 1000; i++) {
-          if(!hasPopulation(newId + "_" + i)) {
+      if (hasPopulation(newId)) {
+        for (int i = 1; i < 1000; i++) {
+          if (!hasPopulation(newId + "_" + i)) {
             population.setId(newId + "_" + i);
             break;
           }
@@ -362,9 +317,9 @@ public class Study extends AbstractModelAware implements AttributeAware, PersonA
   }
 
   public boolean hasPopulation(String populationId) {
-    if(populations == null) return false;
-    for(Population population : populations) {
-      if(population.getId().equals(populationId)) return true;
+    if (populations == null) return false;
+    for (Population population : populations) {
+      if (population.getId().equals(populationId)) return true;
     }
     return false;
   }
@@ -374,7 +329,7 @@ public class Study extends AbstractModelAware implements AttributeAware, PersonA
   }
 
   public void setPopulations(SortedSet<Population> newPopulations) {
-    if(newPopulations == null) {
+    if (newPopulations == null) {
       // during serialization input can be null
       populations = newPopulations;
       return;
@@ -385,22 +340,8 @@ public class Study extends AbstractModelAware implements AttributeAware, PersonA
     newPopulations.forEach(this::addPopulation);
   }
 
-  /**
-   * For each {@link org.obiba.mica.core.domain.Person} and investigators: trim strings, make sure institution is
-   * not repeated in contact name etc.
-   */
-  public void cleanContacts() {
-    cleanContacts(contacts);
-    cleanContacts(investigators);
-  }
-
   public Set<String> membershipRoles() {
     return this.memberships.keySet();
-  }
-
-  private void cleanContacts(List<Person> contactList) {
-    if(contactList == null) return;
-    contactList.forEach(Person::cleanPerson);
   }
 
   @Override
@@ -414,20 +355,20 @@ public class Study extends AbstractModelAware implements AttributeAware, PersonA
 
   @Override
   public void addAttribute(Attribute attribute) {
-    if(attributes == null) attributes = new Attributes();
+    if (attributes == null) attributes = new Attributes();
     attributes.addAttribute(attribute);
   }
 
   @Override
   public void removeAttribute(Attribute attribute) {
-    if(attributes != null) {
+    if (attributes != null) {
       attributes.removeAttribute(attribute);
     }
   }
 
   @Override
   public void removeAllAttributes() {
-    if(attributes != null) attributes.removeAllAttributes();
+    if (attributes != null) attributes.removeAllAttributes();
   }
 
   @Override
@@ -451,6 +392,39 @@ public class Study extends AbstractModelAware implements AttributeAware, PersonA
     };
   }
 
+  @JsonIgnore
+  @Deprecated
+  public List<Person> getInvestigators() {
+    return getMemberships().get(Membership.INVESTIGATOR).stream().map(Membership::getPerson).collect(toList());
+  }
+
+  @JsonProperty
+  @Deprecated
+  public void setInvestigators(List<Person> investigators) {
+
+    List<Membership> oldMemberships = memberships.get(Membership.INVESTIGATOR);
+    Set<Membership> newMemberships = investigators.stream().map(investigator -> new Membership(investigator, "investigator")).collect(toSet());
+    newMemberships.addAll(oldMemberships);
+
+    memberships.put(Membership.INVESTIGATOR, new ArrayList<>(newMemberships));
+  }
+
+  @JsonIgnore
+  @Deprecated
+  public List<Person> getContacts() {
+    return getMemberships().get(Membership.CONTACT).stream().map(Membership::getPerson).collect(toList());
+  }
+
+  @JsonProperty
+  @Deprecated
+  public void setContacts(List<Person> contacts) {
+    List<Membership> oldMemberships = memberships.get(Membership.CONTACT);
+    Set<Membership> newMemberships = contacts.stream().map(investigator -> new Membership(investigator, "investigator")).collect(toSet());
+    newMemberships.addAll(oldMemberships);
+
+    memberships.put(Membership.CONTACT, new ArrayList<>(newMemberships));
+  }
+
   @Override
   public List<Person> getAllPersons() {
     return getMemberships().values().stream().flatMap(List::stream).map(Membership::getPerson).distinct()
@@ -463,16 +437,6 @@ public class Study extends AbstractModelAware implements AttributeAware, PersonA
   }
 
   public Map<String, List<Membership>> getMemberships() {
-    if(!contacts.isEmpty()) {
-      setContacts(contacts);
-      contacts.clear();
-    }
-
-    if(!investigators.isEmpty()) {
-      setInvestigators(investigators);
-      investigators.clear();
-    }
-
     return memberships;
   }
 
@@ -481,9 +445,9 @@ public class Study extends AbstractModelAware implements AttributeAware, PersonA
     Map<String, Person> seen = Maps.newHashMap();
 
     this.memberships.entrySet().forEach(e -> e.getValue().forEach(m -> {
-      if(seen.containsKey(m.getPerson().getId())) {
+      if (seen.containsKey(m.getPerson().getId())) {
         m.setPerson(seen.get(m.getPerson().getId()));
-      } else if(!m.getPerson().isNew()) {
+      } else if (!m.getPerson().isNew()) {
         seen.put(m.getPerson().getId(), m.getPerson());
       }
     }));
@@ -494,7 +458,7 @@ public class Study extends AbstractModelAware implements AttributeAware, PersonA
       .collect(toList());
 
     ImmutableList.copyOf(persons).forEach(p -> {
-      if(existing.contains(p)) {
+      if (existing.contains(p)) {
         int idx = persons.indexOf(p);
         persons.remove(p);
         persons.add(idx, existing.get(existing.indexOf(p)));
@@ -559,7 +523,7 @@ public class Study extends AbstractModelAware implements AttributeAware, PersonA
     }
 
     public void addDesign(@NotNull String design) {
-      if(designs == null) designs = new ArrayList<>();
+      if (designs == null) designs = new ArrayList<>();
       designs.add(design);
     }
 
@@ -596,7 +560,7 @@ public class Study extends AbstractModelAware implements AttributeAware, PersonA
     }
 
     public void addRecruitment(@NotNull String recruitment) {
-      if(recruitments == null) recruitments = new ArrayList<>();
+      if (recruitments == null) recruitments = new ArrayList<>();
       recruitments.add(recruitment);
     }
 
@@ -620,5 +584,4 @@ public class Study extends AbstractModelAware implements AttributeAware, PersonA
       this.info = info;
     }
   }
-
 }

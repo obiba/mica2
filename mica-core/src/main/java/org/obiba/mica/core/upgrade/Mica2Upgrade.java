@@ -12,59 +12,84 @@
 
 package org.obiba.mica.core.upgrade;
 
+import org.obiba.mica.core.domain.Person;
+import org.obiba.mica.core.repository.PersonRepository;
 import org.obiba.mica.dataset.HarmonizationDatasetRepository;
 import org.obiba.mica.dataset.StudyDatasetRepository;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.domain.StudyDataset;
-import org.obiba.mica.dataset.service.HarmonizationDatasetService;
-import org.obiba.mica.dataset.service.StudyDatasetService;
 import org.obiba.mica.network.NetworkRepository;
 import org.obiba.mica.network.domain.Network;
-import org.obiba.mica.network.service.NetworkService;
 import org.obiba.mica.study.StudyRepository;
 import org.obiba.mica.study.domain.DataCollectionEvent;
 import org.obiba.mica.study.domain.Population;
 import org.obiba.mica.study.domain.Study;
-import org.obiba.mica.study.service.StudyService;
+import org.obiba.runtime.Version;
+import org.obiba.runtime.upgrade.UpgradeStep;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.util.List;
+import java.util.Locale;
 
 @Component
-public class Mica2Upgrade {
+public class Mica2Upgrade implements UpgradeStep {
 
   private static final Logger logger = LoggerFactory.getLogger(Mica2Upgrade.class);
 
   @Inject
-  private NetworkRepository networkRepository;
-  @Inject
-  private NetworkService networkService;
+  private MongoTemplate mongoTemplate;
 
+  @Inject
+  private NetworkRepository networkRepository;
   @Inject
   private StudyRepository studyRepository;
   @Inject
-  private StudyService studyService;
-
-  @Inject
   private StudyDatasetRepository studyDatasetRepository;
-  @Inject
-  private StudyDatasetService studyDatasetService;
-
   @Inject
   private HarmonizationDatasetRepository harmonizationDatasetRepository;
   @Inject
-  private HarmonizationDatasetService harmonizationDatasetService;
+  private PersonRepository personRepository;
 
-  @PostConstruct
-  public void upgradeFromMica1_5ToMica2_0() {
+  @Override
+  public String getDescription() {
+    return "Migrate data from mica 1.5.x to mica 2.0.0";
+  }
+
+  @Override
+  public Version getAppliesTo() {
+    return new Version("2.0.0");
+  }
+
+  @Override
+  public void execute(Version currentVersion) {
+
+    logger.info("migration from mica 1.x to mica 2.x : START");
+
+    logger.info("start upgrade memberships of studies and networks ");
+    upgradeMembershipsOfStudiesAndNetworks();
+    logger.info("end upgrade memberships of studies and networks ");
+
     migrateNetworks();
     migrateStudies();
     migrateStudyDataset();
     migrateHarmonizationDataset();
+
+    migrateContactCountries();
+  }
+
+  private void migrateContactCountries() {
+
+    for (Person person : personRepository.findAllWhenCountryIsoContainsTwoCharacters()) {
+      String countryIso2 = person.getInstitution().getAddress().getCountryIso();
+      countryIso2 = "UK".equals(countryIso2) ? "GB" : countryIso2;
+      String countryIso3 = new Locale("", countryIso2).getISO3Country();
+      person.getInstitution().getAddress().setCountryIso(countryIso3);
+      personRepository.save(person);
+    }
   }
 
   private void migrateNetworks() {
@@ -73,12 +98,11 @@ public class Mica2Upgrade {
       logger.info("Migrating networks from 1.x to 2.x: START");
       for (Network networkWithoutModel : networksWithoutModel) {
         networkWithoutModel.getModel();
-        networkService.save(networkWithoutModel, "Upgrade from mica 1.x to mica 2.x");
+        networkRepository.save(networkWithoutModel);
       }
       logger.info("Migrating networks: END");
     }
   }
-
 
   private void migrateStudies() {
     List<Study> studiesWithoutModel = studyRepository.findWithoutModel();
@@ -86,11 +110,15 @@ public class Mica2Upgrade {
       logger.info("Migrating studies 1.x to 2.x: START");
       for (Study studyWithoutModel : studiesWithoutModel) {
         studyWithoutModel.getModel();
-        if (studyWithoutModel.getMethods().getDesigns() != null && studyWithoutModel.getMethods().getDesigns().size() == 1 && studyWithoutModel.getMethods().getDesign() == null)
+        if (studyWithoutModel.getMethods() != null
+          && studyWithoutModel.getMethods().getDesigns() != null
+          && studyWithoutModel.getMethods().getDesigns().size() == 1)
+
           studyWithoutModel.getMethods().setDesign(studyWithoutModel.getMethods().getDesigns().get(0));
+
         studyWithoutModel.getPopulations().forEach(Population::getModel);
         studyWithoutModel.getPopulations().forEach(p -> p.getDataCollectionEvents().forEach(DataCollectionEvent::getModel));
-        studyService.save(studyWithoutModel, "Upgrade from mica 1.x to mica 2.x");
+        studyRepository.save(studyWithoutModel);
       }
       logger.info("Migrating studies: END");
     }
@@ -102,7 +130,7 @@ public class Mica2Upgrade {
       logger.info("Migrating study datasets 1.x to 2.x: START");
       for (StudyDataset studyDatasetWithoutModel : studyDatasetsWithoutModel) {
         studyDatasetWithoutModel.getModel();
-        studyDatasetService.save(studyDatasetWithoutModel, "Upgrade from mica 1.x to mica 2.x");
+        studyDatasetRepository.save(studyDatasetWithoutModel);
       }
       logger.info("Migrating study datasets: END");
     }
@@ -114,9 +142,73 @@ public class Mica2Upgrade {
       logger.info("Migrating harmonization datasets 1.x to 2.x: START");
       for (HarmonizationDataset harmonizationDatasetWithoutModel : harmonizationDatasetsWithoutModel) {
         harmonizationDatasetWithoutModel.getModel();
-        harmonizationDatasetService.save(harmonizationDatasetWithoutModel, "Upgrade from mica 1.x to mica 2.x");
+        harmonizationDatasetRepository.save(harmonizationDatasetWithoutModel);
       }
       logger.info("Migrating harmonization datasets: END");
     }
+  }
+
+  private void upgradeMembershipsOfStudiesAndNetworks() {
+    mongoTemplate.execute(db -> db.eval(queryToUpgradeMembershipsOfStudies()));
+    mongoTemplate.execute(db -> db.eval(queryToUpgradeMembershipsOfNetworks()));
+  }
+
+  private String queryToUpgradeMembershipsOfStudies() {
+    return upgradeMembershipsOfCollection("study");
+  }
+
+  private String queryToUpgradeMembershipsOfNetworks() {
+    return upgradeMembershipsOfCollection("network");
+  }
+
+  private String upgradeMembershipsOfCollection(String collectionName) {
+
+    return "db." + collectionName + ".find({memberships: {$exists: false}}).map(function (doc) {\n" +
+      "\n" +
+      "    memberships = {};\n" +
+      "\n" +
+      "    if (doc.contacts != undefined) {\n" +
+      "        if (doc.contacts.length > 0) {\n" +
+      "\n" +
+      "            var contactIndex = 0;\n" +
+      "            memberships.contact = [];\n" +
+      "\n" +
+      "            doc.contacts.forEach(function (person) {\n" +
+      "                memberships.contact[contactIndex] = {\n" +
+      "                    'role': 'contact',\n" +
+      "                    'person': person\n" +
+      "                };\n" +
+      "                contactIndex++;\n" +
+      "            });\n" +
+      "        }\n" +
+      "        delete doc.contacts;\n" +
+      "    }\n" +
+      "\n" +
+      "    if (doc.investigators != undefined) {\n" +
+      "        if (doc.investigators.length > 0) {\n" +
+      "\n" +
+      "            var investigatorsIndex = 0;\n" +
+      "            memberships.investigator = [];\n" +
+      "\n" +
+      "            doc.investigators.forEach(function (person) {\n" +
+      "                memberships.investigator[investigatorsIndex] = {\n" +
+      "                    'role': 'investigator',\n" +
+      "                    'person': person\n" +
+      "                };\n" +
+      "                investigatorsIndex++;\n" +
+      "            });\n" +
+      "        }\n" +
+      "        delete doc.investigators;\n" +
+      "    }\n" +
+      "\n" +
+      "    if (memberships.investigator !== undefined || memberships.contacts !== undefined)\n" +
+      "        doc.memberships = memberships;\n" +
+      "\n" +
+      "    printjson(doc);\n" +
+      "\n" +
+      "    return doc;\n" +
+      "}).forEach(function (doc) {\n" +
+      "    db." + collectionName + ".update({'_id': doc._id}, doc);\n" +
+      "});";
   }
 }
