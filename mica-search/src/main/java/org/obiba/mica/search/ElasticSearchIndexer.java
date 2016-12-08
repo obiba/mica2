@@ -11,10 +11,12 @@
 package org.obiba.mica.search;
 
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 
+import org.elasticsearch.action.ActionResponse;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexResponse;
 import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsRequest;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
@@ -132,38 +134,47 @@ public class ElasticSearchIndexer {
     return client.prepareDelete(indexName, getType(indexable), indexable.getId()).execute().actionGet();
   }
 
-  public DeleteResponse delete(String indexName, String type, QueryBuilder query) {
-    createIndexIfNeeded(indexName);
+  public ActionResponse delete(String indexName, String[] types, QueryBuilder query) {
+    ActionResponse lastResponse = null;
 
-    DeleteResponse lastResponse = null;
-    SearchResponse response = null;
+    if (types != null) {
+      createIndexIfNeeded(indexName);
 
-    while(response == null || response.getHits().totalHits() > 0) {
+      BulkRequestBuilder bulkRequest = client.prepareBulk();
+
       SearchRequestBuilder search = client.prepareSearch() //
         .setIndices(indexName) //
-        .setTypes(type) //
+        .setTypes(types) //
         .setQuery(query) //
         .setSize(MAX_SIZE) //
         .setNoFields();
 
-      log.debug("Request: {}", search.toString());
-      response = search.execute().actionGet();
+      SearchResponse response = search.execute().actionGet();
 
       for(SearchHit hit : response.getHits()) {
-        try {
+        for(String type: types) {
           DeleteRequestBuilder request = client.prepareDelete(indexName, type, hit.getId());
           if (hit.getFields() != null && hit.getFields().containsKey("_parent")) {
             String parent = hit.field("_parent").value();
             request.setParent(parent);
           }
-          lastResponse = request.execute().actionGet();
-        } catch(Exception e) {
-          //ignore
+
+          bulkRequest.add(request);
         }
+      }
+
+      try {
+        lastResponse = bulkRequest.execute().get();
+      } catch (InterruptedException | ExecutionException e) {
+        //
       }
     }
 
     return lastResponse;
+  }
+
+  public ActionResponse delete(String indexName, String type, QueryBuilder query) {
+    return delete(indexName, type != null ? new String[] {type} : null, query);
   }
 
   public boolean hasIndex(String indexName) {
