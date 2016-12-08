@@ -15,6 +15,9 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.obiba.mica.core.domain.TaxonomyTarget;
 import org.obiba.mica.micaConfig.event.TaxonomiesUpdatedEvent;
 import org.obiba.mica.micaConfig.service.TaxonomyService;
@@ -53,16 +56,44 @@ public class TaxonomyIndexer {
   @Async
   @Subscribe
   public void taxonomiesUpdated(TaxonomiesUpdatedEvent event) {
-    log.info("Taxonomies were updated");
-    if(elasticSearchIndexer.hasIndex(TAXONOMY_INDEX)) elasticSearchIndexer.dropIndex(TAXONOMY_INDEX);
-    index(TaxonomyTarget.VARIABLE,
-      ImmutableList.<Taxonomy>builder().addAll(taxonomyService.getOpalTaxonomies().stream() //
-        .filter(t -> taxonomyService.metaTaxonomyContains(t.getName())).collect(Collectors.toList())) //
-        .add(taxonomyService.getVariableTaxonomy()) //
-        .build());
-    index(TaxonomyTarget.STUDY, Lists.newArrayList(taxonomyService.getStudyTaxonomy()));
-    index(TaxonomyTarget.DATASET, Lists.newArrayList(taxonomyService.getDatasetTaxonomy()));
-    index(TaxonomyTarget.NETWORK, Lists.newArrayList(taxonomyService.getNetworkTaxonomy()));
+    // reindex all taxonomies if target is TAXONOMY or there is no target
+    if ((event.getTaxonomyTarget() == null && event.getTaxonomyName() == null) || event.getTaxonomyTarget() == TaxonomyTarget.TAXONOMY) {
+      log.info("All taxonomies were updated");
+      if(elasticSearchIndexer.hasIndex(TAXONOMY_INDEX)) elasticSearchIndexer.dropIndex(TAXONOMY_INDEX);
+      index(TaxonomyTarget.VARIABLE,
+        ImmutableList.<Taxonomy>builder().addAll(taxonomyService.getOpalTaxonomies().stream() //
+          .filter(t -> taxonomyService.metaTaxonomyContains(t.getName())).collect(Collectors.toList())) //
+          .add(taxonomyService.getVariableTaxonomy()) //
+          .build());
+      index(TaxonomyTarget.STUDY, Lists.newArrayList(taxonomyService.getStudyTaxonomy()));
+      index(TaxonomyTarget.DATASET, Lists.newArrayList(taxonomyService.getDatasetTaxonomy()));
+      index(TaxonomyTarget.NETWORK, Lists.newArrayList(taxonomyService.getNetworkTaxonomy()));
+    } else {
+      QueryBuilder query = QueryBuilders.boolQuery().must(QueryBuilders.wildcardQuery("id", event.getTaxonomyName() + '*'));
+
+      elasticSearchIndexer.delete(TAXONOMY_INDEX, TAXONOMY_TYPE, query);
+      elasticSearchIndexer.delete(TAXONOMY_INDEX, TAXONOMY_VOCABULARY_TYPE, query);
+      elasticSearchIndexer.delete(TAXONOMY_INDEX, TAXONOMY_TERM_TYPE, query);
+
+      switch (event.getTaxonomyTarget()) {
+        case STUDY:
+          log.info("Study taxonomies were updated");
+          index(TaxonomyTarget.STUDY, Lists.newArrayList(taxonomyService.getStudyTaxonomy()));
+          break;
+        case NETWORK:
+          log.info("Network taxonomies were updated");
+          index(TaxonomyTarget.NETWORK, Lists.newArrayList(taxonomyService.getNetworkTaxonomy()));
+          break;
+        case DATASET:
+          log.info("Dataset taxonomies were updated");
+          index(TaxonomyTarget.DATASET, Lists.newArrayList(taxonomyService.getDatasetTaxonomy()));
+          break;
+        case VARIABLE:
+          log.info("Variable taxonomies were updated");
+          index(TaxonomyTarget.VARIABLE, Lists.newArrayList(taxonomyService.getVariableTaxonomy()));
+          break;
+      }
+    }
   }
 
   private void index(TaxonomyTarget target, List<Taxonomy> taxonomies) {

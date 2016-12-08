@@ -26,6 +26,7 @@ mica.entityConfig
     'MicaConfigResource',
     'EntityFormAccessesResource',
     'AlertBuilder',
+    '$cacheFactory',
     function ($scope,
               $q,
               $location,
@@ -36,7 +37,8 @@ mica.entityConfig
               EntityFormPermissionsResource,
               MicaConfigResource,
               EntityFormAccessesResource,
-              AlertBuilder) {
+              AlertBuilder,
+              $cacheFactory) {
       var FORMS = {'network': ['network'],
         'study': ['study', 'population', 'data-collection-event'],
         'study-dataset': ['study-dataset'],
@@ -168,6 +170,10 @@ mica.entityConfig
           $q.all(res).then(function (res) {
             AlertBuilder.newBuilder().type('info').trMsg('entity-config.save-alert.success').build();
             $scope.state.setDirty(false);
+            var taxonomyResourceCache = $cacheFactory.get('taxonomyResource');
+            if (taxonomyResourceCache) {
+              taxonomyResourceCache.removeAll();
+            }
             return res;
           }).catch(function (res) {
             AlertBuilder.newBuilder().trMsg(res).build();
