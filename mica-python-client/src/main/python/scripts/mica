@@ -19,7 +19,7 @@ def add_mica_arguments(parser):
     """
     Add Mica access arguments
     """
-    parser.add_argument('--mica', '-mk', required=False, help='Mica server base url')
+    parser.add_argument('--mica', '-mk', required=False, default='http://localhost:8082', help='Mica server base url (default: http://localhost:8082)')
     parser.add_argument('--user', '-u', required=False, help='User name')
     parser.add_argument('--password', '-p', required=False, help='User password')
     parser.add_argument('--verbose', '-v', action='store_true', help='Verbose output')
