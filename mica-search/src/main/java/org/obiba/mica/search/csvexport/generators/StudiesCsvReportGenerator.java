@@ -10,15 +10,14 @@
 
 package org.obiba.mica.search.csvexport.generators;
 
-import au.com.bytecode.opencsv.CSVWriter;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.obiba.core.translator.Translator;
-import org.obiba.mica.search.csvexport.CsvReportGenerator;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.mica.web.model.MicaSearch;
 
-import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
+import au.com.bytecode.opencsv.CSVWriter;
 
 public class StudiesCsvReportGenerator extends CsvReportGeneratorImpl {
 
@@ -40,35 +39,38 @@ public class StudiesCsvReportGenerator extends CsvReportGeneratorImpl {
 
     List<String> line = new ArrayList<>();
 
-    line.add("study.acronym");
-    line.add("study.name");
+    line.add("acronym");
+    line.add("name");
     if (mustShow("showStudiesDesignColumn"))
-      line.add("study.design");
+      line.add("search.study.design");
 
     if (mustShow("showStudiesQuestionnaireColumn"))
-      line.add("study.dataSourcesAvailable.questionnaires");
+      line.add("study_taxonomy.vocabulary.populations-dataCollectionEvents-dataSources.term.questionnaires.title");
     if (mustShow("showStudiesPmColumn"))
-      line.add("study.dataSourcesAvailable.physicalMesures");
+      line.add("study_taxonomy.vocabulary.populations-dataCollectionEvents-dataSources.term.physical_measures.title");
     if (mustShow("showStudiesBioColumn"))
-      line.add("study.dataSourcesAvailable.biosamples");
+      line.add("study_taxonomy.vocabulary.populations-dataCollectionEvents-dataSources.term.biological_samples.title");
     if (mustShow("showStudiesOtherColumn"))
-      line.add("study.dataSourcesAvailable.others");
+      line.add("study_taxonomy.vocabulary.populations-dataCollectionEvents-dataSources.term.others.title");
 
     if (mustShow("showStudiesParticipantsColumn"))
-      line.add("study.participants");
+      line.add("search.study.participants");
     if (mustShow("showStudiesNetworksColumn"))
-      line.add("study.networks");
+      line.add("networks");
 
+    String datasetsLabel = translator.translate("datasets");
     if (mustShow("showStudiesStudyDatasetsColumn"))
-      line.add("study.datasets.study");
+      line.add(String.format("%s:%s", datasetsLabel, translator.translate("search.study.label")));
     if (mustShow("showStudiesHarmonizationDatasetsColumn"))
-      line.add("study.datasets.harmonization");
+      line.add(String.format("%s:%s", datasetsLabel, translator.translate("search.harmonization")));
 
     if (mustShow("showStudiesVariablesColumn")) {
+      String variablesLabel = translator.translate("variables");
       if (mustShow("showStudiesStudyVariablesColumn"))
-        line.add("study.variables.study");
-      if (mustShow("showStudiesDataschemaVariablesColumn"))
-        line.add("study.variables.dataSchema");
+        line.add(String.format("%s:%s", variablesLabel, translator.translate("search.variable.study")));
+      if (mustShow("showStudiesDataschemaVariablesColumn")) {
+        line.add(String.format("%s:%s", variablesLabel, translator.translate("search.variable.dataschema")));
+      }
     }
 
     String[] translatedLine = line.stream().map(key -> translator.translate(key)).toArray(String[]::new);
@@ -91,8 +93,12 @@ public class StudiesCsvReportGenerator extends CsvReportGeneratorImpl {
 
     line.add(studySummaryDto.getAcronym(0).getValue());
     line.add(studySummaryDto.getName(0).getValue());
-    if (mustShow("showStudiesDesignColumn"))
-      line.add(studySummaryDto.getDesigns(0));
+
+    if (mustShow("showStudiesDesignColumn")) {
+      line.add(translator.translate(studySummaryDto.getDesignsCount() > 0
+        ? String.format("study_taxonomy.vocabulary.methods-design.term.%s.title", studySummaryDto.getDesigns(0))
+        : ""));
+    }
 
     if (mustShow("showStudiesQuestionnaireColumn"))
       line.add(studySummaryDto.getDataSourcesList().contains("questionnaires") ? EXISTS : NOT_EXISTS);
