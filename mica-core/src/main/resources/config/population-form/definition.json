@@ -105,7 +105,11 @@
             "type": "help",
             "helpvalue": "<h4>t(numberOfParticipants.label)</h4>"
           },
-          "numberOfParticipants"
+          "numberOfParticipants.participant.number",
+          "numberOfParticipants.participant.noLimit",
+          "numberOfParticipants.sample.number",
+          "numberOfParticipants.sample.noLimit",
+          "numberOfParticipants.info"
         ]
       },
       {
