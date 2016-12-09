@@ -15,7 +15,8 @@
           {
             "key": "_description",
             "type": "localizedstring",
-            "rows": 3
+            "rows": 3,
+            "marked": true
           }
         ]
       },
