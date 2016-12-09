@@ -193,30 +193,34 @@ public class StudyDatasetService extends DatasetService<StudyDataset, StudyDatas
   }
 
   /**
-   * Index the dataset and associated variables.
+   * Index the dataset
    *
    * @param id
    */
   public void index(@NotNull String id) {
     StudyDataset dataset = findById(id);
-    eventBus.post(new DatasetUpdatedEvent(dataset, wrappedGetDatasetVariables(dataset)));
+    eventBus.post(new DatasetUpdatedEvent(dataset, null));
   }
 
   /**
    * Index or re-index all datasets with their variables.
    */
   public void indexAll() {
+    indexAll(true);
+  }
+
+  public void indexAll(boolean mustIndexVariables) {
     Set<StudyDataset> publishedDatasets = Sets.newHashSet(findAllPublishedDatasets());
 
     findAllDatasets()
       .forEach(dataset -> {
         try {
-          Iterable<DatasetVariable> variables = wrappedGetDatasetVariables(dataset);
+          Iterable<DatasetVariable> variables = mustIndexVariables && publishedDatasets.contains(dataset) ? wrappedGetDatasetVariables(dataset) : null;
           eventBus.post(new DatasetUpdatedEvent(dataset, variables));
 
-          if(publishedDatasets.contains(dataset))
+          if (publishedDatasets.contains(dataset))
             eventBus.post(new DatasetPublishedEvent(dataset, variables, getCurrentUsername()));
-        } catch(Exception e) {
+        } catch (Exception e) {
           log.error("Error indexing dataset {}", dataset, e);
         }
       });
@@ -323,19 +327,6 @@ public class StudyDatasetService extends DatasetService<StudyDataset, StudyDatas
   private void saveInternal(StudyDataset dataset, String comment) {
     StudyDataset saved = prepareSave(dataset);
 
-    Iterable<DatasetVariable> variables = Lists.newArrayList();
-
-    if (saved.hasStudyTable()) {
-      try {
-        //getting variables first to fail fast when dataset is being published
-        variables = wrappedGetDatasetVariables(dataset);
-      } catch (DatasourceNotAvailableException | InvalidDatasetException e) {
-        if (e instanceof DatasourceNotAvailableException) {
-          log.warn("Datasource not available.", e);
-        }
-      }
-    }
-
     StudyDatasetState studyDatasetState = findEntityState(dataset, StudyDatasetState::new);
 
     if(!dataset.isNew()) ensureGitRepository(studyDatasetState);
@@ -346,7 +337,7 @@ public class StudyDatasetService extends DatasetService<StudyDataset, StudyDatas
     saved.setLastModifiedDate(DateTime.now());
     studyDatasetRepository.save(saved);
     gitService.save(saved, comment);
-    eventBus.post(new DatasetUpdatedEvent(saved, variables, null));
+    eventBus.post(new DatasetUpdatedEvent(saved, null));
   }
 
   protected StudyDataset prepareSave(StudyDataset dataset) {

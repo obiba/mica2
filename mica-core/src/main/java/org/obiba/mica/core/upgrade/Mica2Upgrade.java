@@ -18,12 +18,16 @@ import org.obiba.mica.dataset.HarmonizationDatasetRepository;
 import org.obiba.mica.dataset.StudyDatasetRepository;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.domain.StudyDataset;
+import org.obiba.mica.dataset.service.HarmonizationDatasetService;
+import org.obiba.mica.dataset.service.StudyDatasetService;
 import org.obiba.mica.network.NetworkRepository;
 import org.obiba.mica.network.domain.Network;
+import org.obiba.mica.network.service.NetworkService;
 import org.obiba.mica.study.StudyRepository;
 import org.obiba.mica.study.domain.DataCollectionEvent;
 import org.obiba.mica.study.domain.Population;
 import org.obiba.mica.study.domain.Study;
+import org.obiba.mica.study.service.StudyService;
 import org.obiba.runtime.Version;
 import org.obiba.runtime.upgrade.UpgradeStep;
 import org.slf4j.Logger;
@@ -54,6 +58,15 @@ public class Mica2Upgrade implements UpgradeStep {
   @Inject
   private PersonRepository personRepository;
 
+  @Inject
+  private NetworkService networkService;
+  @Inject
+  private StudyService studyService;
+  @Inject
+  private StudyDatasetService studyDatasetService;
+  @Inject
+  private HarmonizationDatasetService harmonizationDatasetService;
+
   @Override
   public String getDescription() {
     return "Migrate data from mica 1.5.x to mica 2.0.0";
@@ -69,9 +82,7 @@ public class Mica2Upgrade implements UpgradeStep {
 
     logger.info("migration from mica 1.x to mica 2.x : START");
 
-    logger.info("start upgrade memberships of studies and networks ");
     upgradeMembershipsOfStudiesAndNetworks();
-    logger.info("end upgrade memberships of studies and networks ");
 
     migrateNetworks();
     migrateStudies();
@@ -79,17 +90,41 @@ public class Mica2Upgrade implements UpgradeStep {
     migrateHarmonizationDataset();
 
     migrateContactCountries();
+
+    reindexRequiredData();
+
+    logger.info("migration from mica 1.x to mica 2.x : END");
+  }
+
+  private void reindexRequiredData() {
+
+    logger.debug("Indexing all networks in the repository.");
+    networkService.indexAll();
+
+    logger.debug("Indexing all studies in the repository.");
+    studyService.indexAll();
+
+    logger.debug("Indexing all study datasets in the repository.");
+    studyDatasetService.indexAll(false);
+
+    logger.debug("Indexing all harmonization datasets in the repository.");
+    harmonizationDatasetService.indexAll(false);
   }
 
   private void migrateContactCountries() {
 
     for (Person person : personRepository.findAllWhenCountryIsoContainsTwoCharacters()) {
       String countryIso2 = person.getInstitution().getAddress().getCountryIso();
-      countryIso2 = "UK".equals(countryIso2) ? "GB" : countryIso2;
+      countryIso2 = cleanIso2Standart(countryIso2);
       String countryIso3 = new Locale("", countryIso2).getISO3Country();
       person.getInstitution().getAddress().setCountryIso(countryIso3);
       personRepository.save(person);
     }
+  }
+
+  private String cleanIso2Standart(String countryIso2) {
+    //UK doesn't exists in ISO 2 standart
+    return "UK".equals(countryIso2) ? "GB" : countryIso2;
   }
 
   private void migrateNetworks() {
@@ -149,8 +184,10 @@ public class Mica2Upgrade implements UpgradeStep {
   }
 
   private void upgradeMembershipsOfStudiesAndNetworks() {
+    logger.info("start upgrade memberships of studies and networks ");
     mongoTemplate.execute(db -> db.eval(queryToUpgradeMembershipsOfStudies()));
     mongoTemplate.execute(db -> db.eval(queryToUpgradeMembershipsOfNetworks()));
+    logger.info("end upgrade memberships of studies and networks ");
   }
 
   private String queryToUpgradeMembershipsOfStudies() {

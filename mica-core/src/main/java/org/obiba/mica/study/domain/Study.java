@@ -480,8 +480,8 @@ public class Study extends AbstractModelAware implements AttributeAware, PersonA
     if (!this.hasModel()) {
       Map<String, Object> map = Maps.newHashMap();
 
-      map.put("start", this.getStart());
-      map.put("end", this.getEnd());
+      if (this.getWebsite() != null) map.put("startYear", this.getStart());
+      if (this.getWebsite() != null) map.put("endYear", this.getEnd());
       if (this.getWebsite() != null) map.put("website", this.getWebsite());
       if (this.getSpecificAuthorization() != null) map.put("specificAuthorization", this.getSpecificAuthorization());
       if (this.getMaelstromAuthorization() != null) map.put("maelstromAuthorization", this.getMaelstromAuthorization());
