@@ -25,7 +25,7 @@
   <!--<logger name="org.apache.tomcat.util.descriptor.DigesterFactory" level="OFF"/>-->
   <!--<logger name="org.atmosphere" level="warn"/>-->
   <!--<logger name="org.thymeleaf" level="warn"/>-->
-  <!--<logger name="org.springframework" level="info"/>-->
+  <logger name="org.springframework.data" level="warn"/>
   <!--<logger name="org.bson" level="warn"/>-->
   <logger name="org.glassfish" level="warn"/>
   <!--<logger name="com.fasterxml" level="warn"/>-->
