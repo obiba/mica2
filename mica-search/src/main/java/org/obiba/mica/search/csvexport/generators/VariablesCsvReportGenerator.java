@@ -10,15 +10,14 @@
 
 package org.obiba.mica.search.csvexport.generators;
 
-import au.com.bytecode.opencsv.CSVWriter;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.obiba.core.translator.Translator;
-import org.obiba.mica.search.csvexport.CsvReportGenerator;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.mica.web.model.MicaSearch;
 
-import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
+import au.com.bytecode.opencsv.CSVWriter;
 
 public class VariablesCsvReportGenerator extends CsvReportGeneratorImpl {
 
@@ -39,14 +38,14 @@ public class VariablesCsvReportGenerator extends CsvReportGeneratorImpl {
 
     List<String> line = new ArrayList<>();
 
-    line.add("variables.name");
-    line.add("variables.label");
+    line.add("name");
+    line.add("search.variable.label");
     if (mustShow("showVariablesTypeColumn"))
-      line.add("variables.type");
+      line.add("type");
     if (mustShow("showVariablesStudiesColumn"))
-      line.add("variables.studyOrNetwork");
+      line.add("search.variable.studyNetwork");
     if (mustShow("showVariablesDatasetsColumn"))
-      line.add("variables.dataset");
+      line.add("search.dataset.label");
 
     String[] translatedLine = line.stream().map(key -> translator.translate(key)).toArray(String[]::new);
 
@@ -69,7 +68,9 @@ public class VariablesCsvReportGenerator extends CsvReportGeneratorImpl {
     line.add(datasetVariableDto.getName());
     line.add(datasetVariableDto.getVariableLabelCount()>0 ? datasetVariableDto.getVariableLabel(0).getValue() : "");
     if (mustShow("showVariablesTypeColumn"))
-      line.add(datasetVariableDto.getVariableType());
+      line.add(translator.translate(
+        String.format("variable_taxonomy.vocabulary.variableType.term.%s.title", datasetVariableDto.getVariableType())));
+
     if (mustShow("showVariablesStudiesColumn"))
       line.add(getStudyOrNetworkName(datasetVariableDto));
     if (mustShow("showVariablesDatasetsColumn"))
