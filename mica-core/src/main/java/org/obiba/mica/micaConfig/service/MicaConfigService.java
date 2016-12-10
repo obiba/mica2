@@ -10,13 +10,17 @@
 
 package org.obiba.mica.micaConfig.service;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
-import com.google.common.eventbus.EventBus;
+import java.io.File;
+import java.io.IOException;
+import java.security.Key;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+import javax.inject.Inject;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.shiro.codec.CodecSupport;
 import org.apache.shiro.codec.Hex;
@@ -39,15 +43,13 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
-import javax.inject.Inject;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import java.io.File;
-import java.io.IOException;
-import java.security.Key;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
+import com.google.common.eventbus.EventBus;
 
 import static org.springframework.util.CollectionUtils.isEmpty;
 
@@ -179,7 +181,8 @@ public class MicaConfigService {
   private JsonNode addTaxonomies(JsonNode translations, String locale) {
     translations = addTaxonomy(TaxonomyTarget.STUDY, "study_taxonomy", translations, locale);
     translations = addTaxonomy(TaxonomyTarget.NETWORK, "network_taxonomy", translations, locale);
-    return addTaxonomy(TaxonomyTarget.DATASET, "dataset_taxonomy", translations, locale);
+    translations = addTaxonomy(TaxonomyTarget.DATASET, "dataset_taxonomy", translations, locale);
+    return addTaxonomy(TaxonomyTarget.VARIABLE, "variable_taxonomy", translations, locale);
   }
 
   private JsonNode addTaxonomy(TaxonomyTarget taxonomyTarget, String taxonomyKey, JsonNode original, String locale) {

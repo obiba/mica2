@@ -10,15 +10,14 @@
 
 package org.obiba.mica.search.csvexport.generators;
 
-import au.com.bytecode.opencsv.CSVWriter;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.obiba.core.translator.Translator;
-import org.obiba.mica.search.csvexport.CsvReportGenerator;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.mica.web.model.MicaSearch;
 
-import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
+import au.com.bytecode.opencsv.CSVWriter;
 
 public class DatasetsCsvReportGenerator extends CsvReportGeneratorImpl {
 
@@ -40,17 +39,17 @@ public class DatasetsCsvReportGenerator extends CsvReportGeneratorImpl {
     List<String> line = new ArrayList<>();
 
     if (mustShow("showDatasetsAcronymColumn"))
-      line.add("dataset.acronym");
-    line.add("dataset.name");
+      line.add("acronym");
+    line.add("name");
     if (mustShow("showDatasetsTypeColumn"))
-      line.add("dataset.type");
+      line.add("type");
 
     if (mustShow("showDatasetsNetworkColumn"))
-      line.add("dataset.networks");
+      line.add("networks");
     if (mustShow("showDatasetsStudiesColumn"))
-      line.add("dataset.studies");
+      line.add("studies");
     if (mustShow("showDatasetsVariablesColumn"))
-      line.add("dataset.variables");
+      line.add("variables");
 
     String[] translatedLine = line.stream().map(key -> translator.translate(key)).toArray(String[]::new);
 
@@ -90,9 +89,9 @@ public class DatasetsCsvReportGenerator extends CsvReportGeneratorImpl {
 
   private String findType(Mica.DatasetDto datasetDto) {
     if (datasetDto.hasExtension(Mica.HarmonizationDatasetDto.type))
-      return translator.translate("dataset.type.harmonization");
+      return translator.translate("dataset_taxonomy.vocabulary.className.term.HarmonizationDataset.title");
     else if (datasetDto.hasExtension(Mica.StudyDatasetDto.type))
-      return translator.translate("dataset.type.study");
+      return translator.translate("dataset_taxonomy.vocabulary.className.term.StudyDataset.title");
     else
       return NOT_EXISTS;
   }

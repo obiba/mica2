@@ -168,7 +168,7 @@ mica.entityConfig
           });
 
           $q.all(res).then(function (res) {
-            AlertBuilder.newBuilder().type('info').trMsg('entity-config.save-alert.success').build();
+            AlertBuilder.newBuilder().delay(3000).type('success').trMsg('entity-config.save-alert.success').build();
             $scope.state.setDirty(false);
             var taxonomyResourceCache = $cacheFactory.get('taxonomyResource');
             if (taxonomyResourceCache) {

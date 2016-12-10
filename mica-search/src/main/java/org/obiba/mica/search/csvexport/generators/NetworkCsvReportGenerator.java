@@ -10,15 +10,14 @@
 
 package org.obiba.mica.search.csvexport.generators;
 
-import au.com.bytecode.opencsv.CSVWriter;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.obiba.core.translator.Translator;
-import org.obiba.mica.search.csvexport.CsvReportGenerator;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.mica.web.model.MicaSearch;
 
-import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
+import au.com.bytecode.opencsv.CSVWriter;
 
 public class NetworkCsvReportGenerator extends CsvReportGeneratorImpl {
 
@@ -39,22 +38,25 @@ public class NetworkCsvReportGenerator extends CsvReportGeneratorImpl {
 
     List<String> line = new ArrayList<>();
 
-    line.add("network.acronym");
-    line.add("network.name");
+    line.add("acronym");
+    line.add("name");
 
     if (mustShow("showNetworksStudiesColumn"))
-      line.add("network.study");
+      line.add("studies");
 
-    if (mustShow("showNetworksStudyDatasetColumn"))
-      line.add("network.datasets.study");
-    if (mustShow("showNetworksHarmonizationDatasetColumn"))
-      line.add("network.datasets.harmonization");
+    String datasetsLabel = translator.translate("datasets");
+    if (mustShow("showStudiesStudyDatasetsColumn"))
+      line.add(String.format("%s:%s", datasetsLabel, translator.translate("search.study.label")));
+    if (mustShow("showStudiesHarmonizationDatasetsColumn"))
+      line.add(String.format("%s:%s", datasetsLabel, translator.translate("search.harmonization")));
 
-    if (mustShow("showNetworksVariablesColumn")) {
-      if (mustShow("showNetworksStudyVariablesColumn"))
-        line.add("network.variables.study");
-      if (mustShow("showNetworksDataschemaVariablesColumn"))
-        line.add("network.variables.dataSchema");
+    if (mustShow("showStudiesVariablesColumn")) {
+      String variablesLabel = translator.translate("variables");
+      if (mustShow("showStudiesStudyVariablesColumn"))
+        line.add(String.format("%s:%s", variablesLabel, translator.translate("search.variable.study")));
+      if (mustShow("showStudiesDataschemaVariablesColumn")) {
+        line.add(String.format("%s:%s", variablesLabel, translator.translate("search.variable.dataschema")));
+      }
     }
 
     String[] translatedLine = line.stream().map(key -> translator.translate(key)).toArray(String[]::new);
