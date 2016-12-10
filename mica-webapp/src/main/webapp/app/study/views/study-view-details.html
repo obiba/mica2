@@ -62,10 +62,21 @@
       </a>
       <div class="voffset2"></div>
 
-      <uib-accordion close-others="true">
-        <div uib-accordion-group class="panel-default" ng-repeat="population in study.populations">
+      <div class="row" ng-show="study.populations.length>0">
+        <div class="col-lg-2 col-xs-12">
+          <ul class="nav nav-pills nav-stacked">
+            <li ng-repeat="population in study.populations" ng-class="population === selectedPopulation ? 'active' : ''">
+              <a href ng-click="selectPopulation(population)">
+                <span class="badge">{{population.id}}</span>
+                <localized value="population.name" lang="selectedLocale"></localized>
+              </a>
+            </li>
+          </ul>
+        </div>
+        <div class="col-lg-10 col-xs-12">
           <div ng-include="'app/study/views/population/population-view.html'"></div>
         </div>
-      </uib-accordion>
+      </div>
+
     </div>
 </div>

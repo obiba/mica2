@@ -1,46 +1,46 @@
-<uib-accordion-heading>
-  <div>
-    <span class="badge">{{population.id}}</span>
-    <localized value="population.name" lang="selectedLocale"></localized>
-    <div class="inline" ng-if="$parent.inViewMode() && permissions.canEdit()">
-      <a ng-click="editPopulation(study, population)" class="action"><i class="fa fa-pencil"></i></a>
-      <a ng-click="deletePopulation(population, $index)" class="action"><i class="fa fa-trash-o"></i></a>
-    </div>
-  </div>
-</uib-accordion-heading>
+<h3 class="no-margin-top pull-left">
+  <localized value="selectedPopulation.name" lang="selectedLocale"></localized>
+</h3>
+
+<div class="inline pull-right" ng-if="$parent.inViewMode() && permissions.canEdit()">
+  <a ng-click="editPopulation(study, selectedPopulation)" class="btn btn-primary"><i class="fa fa-pencil"></i></a>
+  <a ng-click="deletePopulation(study, selectedPopulation)" class="btn btn-danger"><i class="fa fa-trash-o"></i></a>
+</div>
+
+<div class="clearfix"/>
+
 
 <h4 translate>study.definition</h4>
 
-<div sf-model="population.model" sf-form="populationSfForm.definition" sf-schema="populationSfForm.schema"
+<div sf-model="selectedPopulation.model" sf-form="populationSfForm.definition" sf-schema="populationSfForm.schema"
      sf-options="sfOptions"></div>
 
 <h4 translate>study.data-collection-events</h4>
 
 <div>
-  <a ng-if="inViewMode() && permissions.canEdit()" ng-click="addDataCollectionEvent(study, population)"
+  <a ng-if="inViewMode() && permissions.canEdit()" ng-click="addDataCollectionEvent(study, selectedPopulation)"
      class="btn btn-info btn-sm voffset1">
     <i class="fa fa-plus"></i> <span translate>study.add-data-collection-event</span>
   </a>
-  <div ng-show="population.dataCollectionEvents.length > 1" class="label label-default pull-right voffset3">
+  <div ng-show="selectedPopulation.dataCollectionEvents.length > 1" class="label label-default pull-right voffset3">
     <span translate>total</span>
-    <span>{{population.dataCollectionEvents.length}}</span>
+    <span>{{selectedPopulation.dataCollectionEvents.length}}</span>
   </div>
 </div>
 <div class="clearfix"></div>
 <div class="clearfixtable-responsive">
-  <table class="table table-bordered table-striped" ng-show="population.dataCollectionEvents.length">
+  <table class="table table-bordered table-striped" ng-show="selectedPopulation.dataCollectionEvents.length">
     <thead>
     <tr>
       <th>#</th>
       <th translate>study.name</th>
-      <th translate>study.description</th>
       <th translate>study.start</th>
       <th translate>study.end</th>
       <th ng-if="inViewMode()" translate>actions</th>
     </tr>
     </thead>
     <tbody>
-    <tr ng-repeat="dce in population.dataCollectionEvents">
+    <tr ng-repeat="dce in selectedPopulation.dataCollectionEvents">
       <td>
         {{dce.id}}
       </td>
@@ -52,27 +52,20 @@
         </ul>
       </td>
       <td>
-        <ul class="list-unstyled">
-          <li ng-repeat="label in dce.description">
-            <span class="badge">{{label.lang}}</span> {{label.value}}
-          </li>
-        </ul>
-      </td>
-      <td>
         {{dce.startYear}} <span ng-show="dce.startMonth">({{months[dce.startMonth - 1]}})</span>
       </td>
       <td>
         {{dce.endYear}} <span ng-show="dce.endMonth">({{months[dce.endMonth - 1]}})</span>
       </td>
       <td ng-if="inViewMode()" class="action-column">
-        <a ng-click="showDataCollectionEvent(study, population, dce)" class="hand action"><i
+        <a ng-click="showDataCollectionEvent(study, selectedPopulation, dce)" class="hand action"><i
             class="fa fa-eye"></i></a>
         <div class="inline" ng-if="permissions.canEdit()">
-          <a ng-click="editDataCollectionEvent(study, population, dce)" class="hand action"><i
+          <a ng-click="editDataCollectionEvent(study, selectedPopulation, dce)" class="hand action"><i
               class="fa fa-pencil"></i></a>
-          <a ng-click="addDataCollectionEvent(study, population, dce)" class="hand action" translate
+          <a ng-click="addDataCollectionEvent(study, selectedPopulation, dce)" class="hand action" translate
              title="{{'clone' | translate}}"><i class="fa fa-files-o"></i></a>
-          <a ng-click="deleteDataCollectionEvent(population, dce)" class="hand action"><i
+          <a ng-click="deleteDataCollectionEvent(selectedPopulation, dce)" class="hand action"><i
               class="fa fa-trash-o"></i></a>
         </div>
       </td>

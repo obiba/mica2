@@ -231,6 +231,11 @@ mica.study
         }
 
         study.populations = study.populations || [];
+        if (study.populations.length>0) {
+          $scope.selectedPopulation = study.populations[0];
+        } else {
+          $scope.selectedPopulation = undefined;
+        }
         study.memberships = study.memberships || [];
 
         $scope.memberships = study.memberships.map(function (m) {
@@ -486,19 +491,23 @@ mica.study
         }
       });
 
+      $scope.selectPopulation = function (population) {
+        $scope.selectedPopulation = population;
+      };
+
       $scope.editPopulation = function (study, population) {
         $location.url($location.url() + '/population/' + population.id + '/edit');
       };
 
-      $scope.deletePopulation = function (population, index) {
+      $scope.deletePopulation = function (study, population) {
         $rootScope.$broadcast(NOTIFICATION_EVENTS.showConfirmDialog,
           {title: 'Delete population', message: 'Are you sure to delete the population?'}, population);
 
         $scope.$on(NOTIFICATION_EVENTS.confirmDialogAccepted, function (event, population) {
-          if ($scope.study.populations[index] === population) {
-            $scope.study.populations.splice(index, 1);
-            $scope.emitStudyUpdated();
-          }
+          $scope.study.populations = $scope.study.populations.filter(function(pop) {
+            return pop.id !== population.id;
+          })
+          $scope.emitStudyUpdated();
         });
       };
 
