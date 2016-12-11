@@ -506,7 +506,7 @@ mica.study
         $scope.$on(NOTIFICATION_EVENTS.confirmDialogAccepted, function (event, population) {
           $scope.study.populations = $scope.study.populations.filter(function(pop) {
             return pop.id !== population.id;
-          })
+          });
           $scope.emitStudyUpdated();
         });
       };
