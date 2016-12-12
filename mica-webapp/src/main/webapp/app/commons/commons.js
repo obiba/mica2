@@ -21,6 +21,9 @@ mica.commons.EntityState = function($q, parentScope) {
       $on: angular.bind(emitter, emitter.$on),
       setDirty: function (value) {
         this.form.$dirty = value;
+      },
+      isDirty: function() {
+        return this.form.$dirty;
       }
     };
   }
@@ -56,6 +59,10 @@ mica.commons.EntityState = function($q, parentScope) {
 
   this.setDirty = function(value) {
     dirtyObservable.setDirty(value);
+  };
+
+  this.isDirty = function(value) {
+    dirtyObservable.isDirty(value);
   };
 
   return this;

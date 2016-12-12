@@ -30,10 +30,9 @@ mica.entitySfConfig
 
       var refreshPreview = function(force) {
         try {
-          if ($scope.dirty || force) {
+          if ($scope.dirtyObservable.isDirty() || force) {
             $scope.form.schemaJson = LocalizedSchemaFormService.translate(JSON.parse($scope.form.schema));
             $scope.form.definitionJson = LocalizedSchemaFormService.translate(JSON.parse($scope.form.definition));
-            $scope.dirty = false;
           }
         } catch (e){
         }
@@ -55,7 +54,6 @@ mica.entitySfConfig
 
       var watchFormChanges = function(val){
         if (val) {
-          $scope.dirty = true;
           $scope.ace = EntitySchemaFormService.getEditorOptions(aceEditorOnLoadCallback, aceEditorOnChangeCallback);
         }
       };
@@ -87,7 +85,6 @@ mica.entitySfConfig
       };
 
       $scope.entityForm = {schema: '', definition: ''};
-      $scope.dirty = false;
       $scope.selectedTab = 'form-schema';
       $scope.$watch('form', watchFormChanges);
       $scope.selectTab = selectTab;
