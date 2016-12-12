@@ -213,7 +213,9 @@ mica.study
           $scope.timeline = new $.MicaTimeline(new $.StudyDtoParser());
         }
 
-        $scope.timeline.reset().create('#timeline', study).addLegend();
+        $timeout(function () {
+          $scope.timeline.reset().create('#timeline', study).addLegend();
+        });
       };
 
       var initializeStudy = function (study) {
