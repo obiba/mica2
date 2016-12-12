@@ -12,6 +12,8 @@
 
 package org.obiba.mica.core.upgrade;
 
+import com.google.common.eventbus.EventBus;
+import org.obiba.mica.contact.event.IndexContactsEvent;
 import org.obiba.mica.core.domain.Person;
 import org.obiba.mica.core.repository.PersonRepository;
 import org.obiba.mica.dataset.HarmonizationDatasetRepository;
@@ -33,11 +35,16 @@ import org.obiba.runtime.upgrade.UpgradeStep;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 @Component
 public class Mica2Upgrade implements UpgradeStep {
@@ -67,6 +74,9 @@ public class Mica2Upgrade implements UpgradeStep {
   @Inject
   private HarmonizationDatasetService harmonizationDatasetService;
 
+  @Inject
+  private EventBus eventBus;
+
   @Override
   public String getDescription() {
     return "Migrate data from mica 1.5.x to mica 2.0.0";
@@ -93,6 +103,8 @@ public class Mica2Upgrade implements UpgradeStep {
 
     reindexRequiredData();
 
+    eventBus.post(new IndexContactsEvent());
+
     logger.info("migration from mica 1.x to mica 2.x : END");
   }
 
@@ -113,6 +125,60 @@ public class Mica2Upgrade implements UpgradeStep {
 
   private void migrateContactCountries() {
 
+    logger.info("Migrate country names in contacts");
+    migrateIso2ToIso3();
+    migrateCustomCountryNames();
+    logger.info("Country names in contacts migrated");
+  }
+
+  private void migrateCustomCountryNames() {
+
+    for (Map.Entry<String, String> mappingForOneCountry : getMappingOfCustomCountryNames().entrySet()) {
+      mongoTemplate.updateMulti(
+        new Query().addCriteria(Criteria.where("institution.address.countryIso").is(mappingForOneCountry.getKey())),
+        new Update().set("institution.address.countryIso", mappingForOneCountry.getValue()),
+        Person.class);
+    }
+  }
+
+  private HashMap<String, String> getMappingOfCustomCountryNames() {
+    HashMap<String, String> mapping = new HashMap<>();
+    mapping.put("Canada", "CAN");
+    mapping.put("France", "FRA");
+    mapping.put("Australia", "AUS");
+    mapping.put("Germany", "DEU");
+    mapping.put("Sweden", "SWE");
+    mapping.put("Finland", "FIN");
+    mapping.put("United Kingdom", "GBR");
+    mapping.put("Switzerland", "CHE");
+    mapping.put("Poland", "POL");
+    mapping.put("Greece", "GRC");
+    mapping.put("Korea", "KOR");
+    mapping.put("France", "FRA");
+    mapping.put("P.R.China", "CHN");
+    mapping.put("Dominican Republic", "DOM");
+    mapping.put("Perú", "PER");
+    mapping.put("China", "CHN");
+    mapping.put("Puerto Rico", "PRI");
+    mapping.put("Cuba", "CUB");
+    mapping.put("Venezuela", "VEN");
+    mapping.put("Mexico", "NLD");
+    mapping.put("Netherlands", "NLD");
+    mapping.put("Japan", "JPN");
+    mapping.put("Russia", "RUS");
+    mapping.put("Czech Republic", "CZE");
+    mapping.put("Lithuania", "LTU");
+    mapping.put("New Zealand", "NZL");
+    mapping.put("Italia", "ITA");
+    mapping.put("Italy", "ITA");
+    mapping.put("United States of America", "USA");
+    mapping.put("Spain", "ESP");
+    mapping.put("Austria", "AUT");
+    mapping.put("United States", "USA");
+    return mapping;
+  }
+
+  private void migrateIso2ToIso3() {
     for (Person person : personRepository.findAllWhenCountryIsoContainsTwoCharacters()) {
       String countryIso2 = person.getInstitution().getAddress().getCountryIso();
       countryIso2 = cleanIso2Standart(countryIso2);
