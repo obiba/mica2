@@ -51,18 +51,16 @@ public class UpgradeConfiguration {
 
   @Bean(name = "upgradeSteps")
   public List<UpgradeStep> upgradeSteps(ApplicationContext applicationContext) {
-    return Lists.newArrayList(applicationContext.getBean(AttachmentsRefactorUpgrade.class), //
-      applicationContext.getBean(NetworkLogoMigration.class), //
-      applicationContext.getBean(NetworkStateUpgrade.class), //
-      applicationContext.getBean(AttachmentsMigration.class), //
-      applicationContext.getBean(AttachmentsPathUpgrade.class), //
-      applicationContext.getBean(AttachmentsCleanupUpgrade.class), //
-      applicationContext.getBean(ContactsRefactorUpgrade.class), //
-      applicationContext.getBean(DatasetStateUpgrade.class), //
-      applicationContext.getBean(ElasticsearchUpgrade.class), //
+    return Lists.newArrayList(applicationContext.getBean(AttachmentsRefactorUpgrade.class),
+      applicationContext.getBean(NetworkLogoMigration.class),
+      applicationContext.getBean(NetworkStateUpgrade.class),
+      applicationContext.getBean(AttachmentsMigration.class),
+      applicationContext.getBean(AttachmentsPathUpgrade.class),
+      applicationContext.getBean(AttachmentsCleanupUpgrade.class),
+      applicationContext.getBean(ContactsRefactorUpgrade.class),
+      applicationContext.getBean(DatasetStateUpgrade.class),
+      applicationContext.getBean(ElasticsearchUpgrade.class),
       applicationContext.getBean(HarmonizationDatasetUpgrade.class),
-      applicationContext.getBean(StudySchemaformMigration.class),
-      applicationContext.getBean(NetworkSchemaformMigration.class),
-      applicationContext.getBean(DatasetSchemaformMigration.class));
+      applicationContext.getBean(Mica2Upgrade.class));
   }
 }

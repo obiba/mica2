@@ -15,7 +15,6 @@ import java.util.List;
 import javax.inject.Inject;
 
 import org.obiba.mica.contact.event.PersonUpdatedEvent;
-import org.obiba.mica.core.domain.Person;
 import org.obiba.mica.core.domain.PublishCascadingScope;
 import org.obiba.mica.core.repository.PersonRepository;
 import org.obiba.mica.network.NetworkRepository;
@@ -46,9 +45,6 @@ public class ContactsRefactorUpgrade implements UpgradeStep {
   private StudyService studyService;
 
   @Inject
-  private PersonRepository personRepository;
-
-  @Inject
   private NetworkRepository networkRepository;
 
   @Inject
@@ -71,10 +67,8 @@ public class ContactsRefactorUpgrade implements UpgradeStep {
   public void execute(Version version) {
     log.info("Executing contacts upgrade");
     studyRepository.findAll().forEach(study -> {
-      study.getAllPersons().stream().forEach(p -> p.setEmail(Strings.emptyToNull(p.getEmail())));
+      study.getAllPersons().forEach(p -> p.setEmail(Strings.emptyToNull(p.getEmail())));
       StudyState studyState = studyService.findStateById(study.getId());
-      study.setContacts(replaceExistingPersons(study.getContacts()));
-      study.setInvestigators(replaceExistingPersons(study.getInvestigators()));
 
       studyRepository.saveWithReferences(study);
 
@@ -87,10 +81,7 @@ public class ContactsRefactorUpgrade implements UpgradeStep {
     });
 
     networkRepository.findAll().forEach(network -> {
-      network.getAllPersons().stream().forEach(p -> p.setEmail(Strings.emptyToNull(p.getEmail())));
-
-      network.setContacts(replaceExistingPersons(network.getContacts()));
-      network.setInvestigators(replaceExistingPersons(network.getInvestigators()));
+      network.getAllPersons().forEach(p -> p.setEmail(Strings.emptyToNull(p.getEmail())));
 
       networkService.save(network, "System upgrade.");
 
@@ -98,21 +89,5 @@ public class ContactsRefactorUpgrade implements UpgradeStep {
         networkService.publish(network.getId(), true);
       }
     });
-  }
-
-  private List<Person> replaceExistingPersons(List<Person> persons) {
-    ImmutableList.copyOf(persons).forEach(c -> {
-      if(c.getId() == null && !Strings.isNullOrEmpty(c.getEmail())) {
-        Person person = personRepository.findOneByEmail(c.getEmail());
-
-        if(person != null) {
-          int idx = persons.indexOf(c);
-          persons.remove(c);
-          persons.add(idx, person);
-        }
-      }
-    });
-
-    return persons;
   }
 }

@@ -13,7 +13,6 @@ package org.obiba.mica.study.service;
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -23,11 +22,9 @@ import org.joda.time.DateTime;
 import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.core.ModelAwareTranslator;
 import org.obiba.mica.core.domain.LocalizedString;
-import org.obiba.mica.core.domain.Person;
 import org.obiba.mica.core.domain.PublishCascadingScope;
 import org.obiba.mica.core.repository.AttachmentRepository;
 import org.obiba.mica.core.repository.EntityStateRepository;
-import org.obiba.mica.core.repository.PersonRepository;
 import org.obiba.mica.core.service.AbstractGitPersistableService;
 import org.obiba.mica.dataset.HarmonizationDatasetRepository;
 import org.obiba.mica.dataset.StudyDatasetRepository;
@@ -96,9 +93,6 @@ public class StudyService extends AbstractGitPersistableService<StudyState, Stud
   private NetworkRepository networkRepository;
 
   @Inject
-  private PersonRepository personRepository;
-
-  @Inject
   private StudyDatasetRepository studyDatasetRepository;
 
   @Inject
@@ -130,9 +124,6 @@ public class StudyService extends AbstractGitPersistableService<StudyState, Stud
       fileStoreService.save(study.getLogo().getId());
       study.getLogo().setJustUploaded(false);
     }
-
-    study.setContacts(replaceExistingPersons(study.getContacts()));
-    study.setInvestigators(replaceExistingPersons(study.getInvestigators()));
 
     ImmutableSet<String> invalidRoles = ImmutableSet
       .copyOf(Sets.difference(study.membershipRoles(), Sets.newHashSet(micaConfigService.getConfig().getRoles())));
@@ -294,23 +285,6 @@ public class StudyService extends AbstractGitPersistableService<StudyState, Stud
   //
   // Private methods
   //
-
-  private List<Person> replaceExistingPersons(List<Person> persons) {
-    ImmutableList.copyOf(persons).forEach(c -> {
-      if (c.getId() == null && !Strings.isNullOrEmpty(c.getEmail())) {
-        Person person = personRepository.findOneByEmail(c.getEmail());
-
-        if (person != null) {
-          int idx = persons.indexOf(c);
-          persons.remove(c);
-          persons.add(idx, person);
-        }
-      }
-    });
-
-    return persons;
-  }
-
   private void checkStudyConstraints(Study study) {
     List<String> harmonizationDatasetsIds = harmonizationDatasetRepository.findByStudyTablesStudyId(study.getId())
       .stream().map(h -> h.getId()).collect(toList());
@@ -320,7 +294,7 @@ public class StudyService extends AbstractGitPersistableService<StudyState, Stud
       .collect(toList());
 
     if (!harmonizationDatasetsIds.isEmpty() || !studyDatasetIds.isEmpty() || !networkIds.isEmpty()) {
-      Map<String, List<String>> conflicts = new HashMap() {{
+      Map<String, List<String>> conflicts = new HashMap<String, List<String>>() {{
         put("harmonizationDataset", harmonizationDatasetsIds);
         put("studyDataset", studyDatasetIds);
         put("network", networkIds);

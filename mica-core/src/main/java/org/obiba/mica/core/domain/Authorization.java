@@ -15,6 +15,7 @@ import java.time.LocalDate;
 import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Authorization implements Serializable {
 
@@ -46,6 +47,7 @@ public class Authorization implements Serializable {
     return date;
   }
 
+  @JsonProperty
   public void setDate(Date date) {
     this.date = date;
   }

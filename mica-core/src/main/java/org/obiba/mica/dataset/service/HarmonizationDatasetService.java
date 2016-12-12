@@ -183,24 +183,31 @@ public class HarmonizationDatasetService extends DatasetService<HarmonizationDat
    */
   public void index(@NotNull String id) {
     HarmonizationDataset dataset = findById(id);
-    eventBus.post(new DatasetUpdatedEvent(dataset, wrappedGetDatasetVariables(dataset), populateHarmonizedVariablesMap(dataset)));
+    eventBus.post(new DatasetUpdatedEvent(dataset, null, null));
   }
 
   /**
    * Index or re-index all datasets with their variables.
    */
   public void indexAll() {
+    indexAll(true);
+  }
+
+  public void indexAll(boolean mustIndexVariables) {
     Set<HarmonizationDataset> publishedDatasets = Sets.newHashSet(findAllPublishedDatasets());
 
     findAllDatasets().forEach(dataset -> {
       try {
-        Map<String, List<DatasetVariable>> harmonizationVariables = populateHarmonizedVariablesMap(dataset);
-        eventBus.post(new DatasetUpdatedEvent(dataset, wrappedGetDatasetVariables(dataset), harmonizationVariables));
 
-        if(publishedDatasets.contains(dataset))
-          eventBus.post(new DatasetPublishedEvent(dataset, wrappedGetDatasetVariables(dataset), harmonizationVariables, getCurrentUsername()));
+        Map<String, List<DatasetVariable>> harmonizationVariables = mustIndexVariables && publishedDatasets.contains(dataset) ? populateHarmonizedVariablesMap(dataset) : null;
+        Iterable<DatasetVariable> datasetVariables = mustIndexVariables && publishedDatasets.contains(dataset) ? wrappedGetDatasetVariables(dataset) : null;
 
-      } catch(Exception e) {
+        eventBus.post(new DatasetUpdatedEvent(dataset, datasetVariables, harmonizationVariables));
+
+        if (publishedDatasets.contains(dataset))
+          eventBus.post(new DatasetPublishedEvent(dataset, datasetVariables, harmonizationVariables, getCurrentUsername()));
+
+      } catch (Exception e) {
         log.error("Error indexing dataset {}", dataset, e);
       }
     });

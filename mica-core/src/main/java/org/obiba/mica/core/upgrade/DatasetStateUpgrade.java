@@ -35,7 +35,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import com.google.common.collect.Lists;
 import com.google.common.eventbus.EventBus;
 
 @Component
@@ -81,17 +80,11 @@ public class DatasetStateUpgrade implements UpgradeStep {
     log.info("Executing datasets published state upgrade");
 
     studyDatasetRepository.findAll().forEach(dataset -> {
-      migrateDataset(dataset, studyDatasetService, studyDatasetStateRepository, () -> {
-        StudyDatasetState defaultState = new StudyDatasetState();
-        return defaultState;
-      });
+      migrateDataset(dataset, studyDatasetService, studyDatasetStateRepository, StudyDatasetState::new);
     });
 
     harmonizationDatasetRepository.findAll().forEach(dataset -> {
-      migrateDataset(dataset, harmonizationDatasetService, harmonizationDatasetStateRepository, () -> {
-        HarmonizationDatasetState defaultState = new HarmonizationDatasetState();
-        return defaultState;
-      });
+      migrateDataset(dataset, harmonizationDatasetService, harmonizationDatasetStateRepository, HarmonizationDatasetState::new);
     });
   }
 
@@ -105,7 +98,7 @@ public class DatasetStateUpgrade implements UpgradeStep {
 
     gitService.save(dataset, "System upgrade");
 
-    if(dataset.isPublished()) {
+    if(state.isPublished()) {
       datasetService.publishState(dataset.getId());
       eventBus.post(new DatasetPublishedEvent(dataset, null, null));
     }

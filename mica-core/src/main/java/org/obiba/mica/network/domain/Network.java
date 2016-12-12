@@ -42,6 +42,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
 
 /**
  * A Network.
@@ -56,10 +57,6 @@ public class Network extends AbstractModelAware implements AttributeAware, Perso
   private LocalizedString acronym;
 
   private boolean published = false;
-
-  private List<Person> investigators = Lists.newArrayList();
-
-  private List<Person> contacts = Lists.newArrayList();
 
   private Map<String, List<Membership>> memberships = new HashMap<String, List<Membership>>() {
     {
@@ -128,40 +125,6 @@ public class Network extends AbstractModelAware implements AttributeAware, Perso
     this.published = published;
   }
 
-  @NotNull
-  @JsonIgnore
-  public List<Person> getInvestigators() {
-    if(!investigators.isEmpty()) {
-      setInvestigators(investigators);
-      investigators.clear();
-    }
-
-    return memberships.getOrDefault(Membership.INVESTIGATOR, Lists.newArrayList()).stream().map(m -> m.getPerson())
-      .collect(toList());
-  }
-
-  @JsonProperty
-  public void setInvestigators(List<Person> investigators) {
-    if(investigators == null) investigators = Lists.newArrayList();
-
-    replaceExisting(investigators);
-
-    memberships.put(Membership.INVESTIGATOR,
-      investigators.stream().map(p -> new Membership(p, Membership.INVESTIGATOR)).collect(toList()));
-  }
-
-  @NotNull
-  @JsonIgnore
-  public List<Person> getContacts() {
-    if(!contacts.isEmpty()) {
-      setContacts(contacts);
-      contacts.clear();
-    }
-
-    return memberships.getOrDefault(Membership.CONTACT, Lists.newArrayList()).stream().map(m -> m.getPerson())
-      .collect(toList());
-  }
-
   @Override
   public void addToPerson(Membership membership) {
     membership.getPerson().addNetwork(this, membership.getRole());
@@ -175,16 +138,6 @@ public class Network extends AbstractModelAware implements AttributeAware, Perso
   @Override
   public void removeFromPerson(Person person) {
     person.removeNetwork(this);
-  }
-
-  @JsonProperty
-  public void setContacts(List<Person> contacts) {
-    if(contacts == null) contacts = Lists.newArrayList();
-
-    replaceExisting(contacts);
-
-    memberships.put(Membership.CONTACT,
-      contacts.stream().map(p -> new Membership(p, Membership.CONTACT)).collect(toList()));
   }
 
   public LocalizedString getDescription() {
@@ -266,20 +219,6 @@ public class Network extends AbstractModelAware implements AttributeAware, Perso
     return this.memberships.keySet();
   }
 
-  /**
-   * For each {@link org.obiba.mica.core.domain.Person} and investigators: trim strings, make sure institution is
-   * not repeated in contact name etc.
-   */
-  public void cleanContacts() {
-    cleanContacts(contacts);
-    cleanContacts(investigators);
-  }
-
-  private void cleanContacts(List<Person> contactList) {
-    if(contactList == null) return;
-    contactList.forEach(Person::cleanPerson);
-  }
-
   public Attributes getAttributes() {
     return attributes;
   }
@@ -332,22 +271,45 @@ public class Network extends AbstractModelAware implements AttributeAware, Perso
       .collect(toList());
   }
 
+  @JsonIgnore
+  @Deprecated
+  public List<Person> getInvestigators() {
+    return getMemberships().get(Membership.INVESTIGATOR).stream().map(Membership::getPerson).collect(toList());
+  }
+
+  @JsonProperty
+  @Deprecated
+  public void setInvestigators(List<Person> investigators) {
+
+    List<Membership> oldMemberships = memberships.get(Membership.INVESTIGATOR);
+    Set<Membership> newMemberships = investigators.stream().map(investigator -> new Membership(investigator, "investigator")).collect(toSet());
+    newMemberships.addAll(oldMemberships);
+
+    memberships.put(Membership.INVESTIGATOR, new ArrayList<>(newMemberships));
+  }
+
+  @JsonIgnore
+  @Deprecated
+  public List<Person> getContacts() {
+    return getMemberships().get(Membership.CONTACT).stream().map(Membership::getPerson).collect(toList());
+  }
+
+  @JsonProperty
+  @Deprecated
+  public void setContacts(List<Person> contacts) {
+    List<Membership> oldMemberships = memberships.get(Membership.CONTACT);
+    Set<Membership> newMemberships = contacts.stream().map(investigator -> new Membership(investigator, "investigator")).collect(toSet());
+    newMemberships.addAll(oldMemberships);
+
+    memberships.put(Membership.CONTACT, new ArrayList<>(newMemberships));
+  }
+
   @Override
   public List<Membership> getAllMemberships() {
     return getMemberships().values().stream().flatMap(List::stream).collect(toList());
   }
 
   public Map<String, List<Membership>> getMemberships() {
-    if(!contacts.isEmpty()){
-      setContacts(contacts);
-      contacts.clear();
-    }
-
-    if(!investigators.isEmpty()) {
-      setInvestigators(investigators);
-      investigators.clear();
-    }
-
     return memberships;
   }
 

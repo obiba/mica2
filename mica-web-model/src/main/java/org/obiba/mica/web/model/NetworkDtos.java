@@ -111,16 +111,6 @@ class NetworkDtos {
 
     List<String> roles = micaConfigService.getConfig().getRoles();
 
-    if(network.getInvestigators() != null && roles.contains(Membership.INVESTIGATOR)) {
-      builder.addAllInvestigators(network.getInvestigators().stream().map(p -> personDtos.asDto(p, asDraft))
-        .collect(Collectors.toList()));
-    }
-
-    if(network.getContacts() != null && roles.contains(Membership.CONTACT)) {
-      builder.addAllContacts(
-        network.getContacts().stream().map(p -> personDtos.asDto(p, asDraft)).collect(Collectors.toList()));
-    }
-
     if(network.getMemberships() != null) {
       List<Mica.MembershipsDto> memberships = network.getMemberships().entrySet().stream()
         .filter(e -> roles.contains(e.getKey())).map(e -> Mica.MembershipsDto.newBuilder().setRole(e.getKey())
@@ -213,10 +203,6 @@ class NetworkDtos {
       dto.getMembershipsList().forEach(e -> memberships.put(e.getRole(),
         e.getMembersList().stream().map(p -> new Membership(personDtos.fromDto(p), e.getRole())).collect(toList())));
       network.setMemberships(memberships);
-    } else { //backwards compatibility
-      network.setInvestigators(
-        dto.getInvestigatorsList().stream().map(personDtos::fromDto).collect(Collectors.toList()));
-      network.setContacts(dto.getContactsList().stream().map(personDtos::fromDto).collect(Collectors.toList()));
     }
 
     if(dto.getStudyIdsCount() > 0) {

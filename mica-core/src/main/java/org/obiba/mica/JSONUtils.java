@@ -11,6 +11,7 @@
 package org.obiba.mica;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.Map;
 import java.util.Properties;
 
@@ -47,6 +48,7 @@ public class JSONUtils {
   public static String toJSON(Map<String, Object> map) {
     ObjectMapper mapper = new ObjectMapper();
     mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+    mapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd"));
     try {
       return mapper.writeValueAsString(map);
     } catch(JsonProcessingException e) {
@@ -86,5 +88,4 @@ public class JSONUtils {
       }
     });
   }
-
 }

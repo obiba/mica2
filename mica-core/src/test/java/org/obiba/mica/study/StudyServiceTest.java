@@ -14,6 +14,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.inject.Inject;
@@ -160,12 +161,13 @@ public class StudyServiceTest {
     person.setEmail("test@test.com");
     List<Person> persons = Lists.newArrayList();
     persons.add(person);
-    study.setContacts(persons);
+    study.getMemberships().get(Membership.CONTACT).addAll(persons.stream().map(e -> new Membership(e, "contact")).collect(Collectors.toList()));
 
     studyService.save(study);
     Study retrievedStudy = studyService.findDraft(study.getId());
 
-    assertThat(retrievedStudy.getContacts()).contains(person);
+    List<Person> retrievedPersons = retrievedStudy.getMemberships().get(Membership.CONTACT).stream().map(Membership::getPerson).collect(Collectors.toList());
+    assertThat(retrievedPersons).contains(person);
   }
 
   @Test
