@@ -12,10 +12,10 @@
 
 package org.obiba.mica.micaConfig.rest;
 
+import org.obiba.core.translator.PrefixedValueTranslator;
 import org.obiba.core.translator.JsonTranslator;
 import org.obiba.core.translator.TranslationUtils;
 import org.obiba.core.translator.Translator;
-import org.obiba.mica.PrefixedValueTranslator;
 import org.obiba.mica.micaConfig.domain.EntityConfig;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
