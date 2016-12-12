@@ -48,6 +48,7 @@ public class JSONUtils {
   public static String toJSON(Map<String, Object> map) {
     ObjectMapper mapper = new ObjectMapper();
     mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+    mapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd"));
     try {
       return mapper.writeValueAsString(map);
     } catch(JsonProcessingException e) {
