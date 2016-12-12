@@ -48,6 +48,7 @@
             "items": [
               {
                 "key": "methods.design",
+                "notitle": true,
                 "type": "radios",
                 "description": "t(study_taxonomy.vocabulary.methods-design.description)",
                 "titleMap": [
@@ -133,6 +134,7 @@
           },
           {
             "key": "methods.recruitments",
+            "notitle": true,
             "description": "t(study_taxonomy.vocabulary.methods-recruitments.description)",
             "titleMap": [
               {
