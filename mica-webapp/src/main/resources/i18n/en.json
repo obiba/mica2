@@ -887,7 +887,8 @@
     "facet": {
       "more": "More",
       "less": "Less"
-    }
+    },
+    "refresh-taxonomies": "Refresh Taxonomies"
   },
   "variables": "Variables",
   "classifications": {
