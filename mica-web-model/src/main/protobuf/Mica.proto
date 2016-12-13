@@ -98,6 +98,8 @@ message StudyDto {
   repeated LocalizedStringDto acronym = 4;
   optional AttachmentDto logo = 5;
   repeated LocalizedStringDto objectives = 8;
+  optional AuthorizationDto specificAuthorization = 10; // Deprecated
+  optional AuthorizationDto maelstromAuthorization = 11; // Deprecated
   repeated AttachmentDto attachments = 20;
   repeated PopulationDto populations = 22;
   repeated AttributeDto attributes = 24; // Deprecated
@@ -242,6 +244,7 @@ message NetworkDto {
   repeated PersonDto investigators = 5;
   repeated PersonDto contacts = 6;
   repeated LocalizedStringDto description = 7;
+  optional AuthorizationDto maelstromAuthorization = 9; //deprecated
   repeated AttachmentDto attachments = 10;
   repeated string studyIds = 12;
   repeated StudySummaryDto studySummaries = 13;

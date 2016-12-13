@@ -11,6 +11,7 @@
 package org.obiba.mica.web.model;
 
 import java.util.List;
+import java.util.Locale;
 
 import javax.inject.Inject;
 
@@ -187,7 +188,11 @@ class PersonDtos {
     address.setCity(localizedStringDtos.fromDto(dto.getCityList()));
     if(dto.hasZip()) address.setZip(dto.getZip());
     if(dto.hasState()) address.setState(dto.getState());
-    if(dto.hasCountry()) address.setCountryIso(dto.getCountry().getIso());
+    if(dto.hasCountry()) address.setCountryIso(extractIso3CountryCode(dto.getCountry().getIso()));
     return address;
+  }
+
+  private String extractIso3CountryCode(String iso) {
+    return iso != null && iso.length() == 2 ? new Locale("", iso).getISO3Country() : iso;
   }
 }

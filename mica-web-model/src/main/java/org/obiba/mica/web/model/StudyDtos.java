@@ -129,6 +129,11 @@ class StudyDtos {
     else
       study.setModel(new HashMap<>());
 
+    if (dto.hasMaelstromAuthorization())
+      study.getModel().put("maelstromAuthorization", AuthorizationDtos.fromDto(dto.getMaelstromAuthorization()));
+    if (dto.hasSpecificAuthorization())
+      study.getModel().put("specificAuthorization", AuthorizationDtos.fromDto(dto.getSpecificAuthorization()));
+
     return study;
   }
 }

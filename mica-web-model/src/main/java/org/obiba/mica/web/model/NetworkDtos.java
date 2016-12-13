@@ -227,6 +227,9 @@ class NetworkDtos {
     else
       network.setModel(new HashMap<>());
 
+    if (dto.hasMaelstromAuthorization())
+      network.getModel().put("maelstromAuthorization", AuthorizationDtos.fromDto(dto.getMaelstromAuthorization()));
+
     return network;
   }
 }
