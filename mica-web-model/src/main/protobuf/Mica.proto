@@ -100,7 +100,6 @@ message StudyDto {
   repeated LocalizedStringDto objectives = 8;
   repeated AttachmentDto attachments = 20;
   repeated PopulationDto populations = 22;
-  repeated AttributeDto attributes = 24; // Deprecated
   optional string opal = 25;
   optional PermissionsDto permissions = 28;
   repeated MembershipsDto memberships = 29;
@@ -126,7 +125,6 @@ message StudyDto {
     repeated LocalizedStringDto name = 2;
     repeated LocalizedStringDto description = 3;
     repeated DataCollectionEventDto dataCollectionEvents = 8;
-    repeated AttributeDto attributes = 9; // deprecated
     optional string content = 10;
 
     message RecruitmentDto {
@@ -247,7 +245,6 @@ message NetworkDto {
   repeated StudySummaryDto studySummaries = 13;
   optional bool published = 14;
   optional AttachmentDto logo = 15;
-  repeated AttributeDto attributes = 16; //deprecated
   repeated MembershipsDto memberships = 17;
   repeated string networkIds = 18;
   repeated NetworkSummaryDto networkSummaries = 19;

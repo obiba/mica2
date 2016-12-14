@@ -93,11 +93,6 @@ class StudyDtos {
       study.getPopulations().forEach(population -> builder.addPopulations(populationDtos.asDto(population)));
     }
 
-    if(study.getAttributes() != null) {
-      study.getAttributes().asAttributeList()
-        .forEach(attribute -> builder.addAttributes(attributeDtos.asDto(attribute)));
-    }
-
     return builder.build();
   }
 

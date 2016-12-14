@@ -11,6 +11,7 @@
 package org.obiba.mica.study.domain;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -483,8 +484,6 @@ public class Study extends AbstractModelAware implements AttributeAware, PersonA
       if (this.getWebsite() != null) map.put("startYear", this.getStart());
       if (this.getWebsite() != null) map.put("endYear", this.getEnd());
       if (this.getWebsite() != null) map.put("website", this.getWebsite());
-      if (this.getSpecificAuthorization() != null) map.put("specificAuthorization", this.getSpecificAuthorization());
-      if (this.getMaelstromAuthorization() != null) map.put("maelstromAuthorization", this.getMaelstromAuthorization());
       if (this.getMethods() != null) map.put("methods", this.getMethods());
       if (this.getNumberOfParticipants() != null) map.put("numberOfParticipants", this.getNumberOfParticipants());
       if (this.getAccess() != null) map.put("access", this.getAccess());
@@ -493,11 +492,55 @@ public class Study extends AbstractModelAware implements AttributeAware, PersonA
       if (this.getPubmedId() != null) map.put("pubmedId", this.getPubmedId());
       if (this.getInfo() != null) map.put("info", this.getInfo());
       if (this.getOpal() != null) map.put("opal", this.getOpal());
+      if (this.getMemberships() != null) map.put("memberships", this.getMemberships());
+      if (this.getSpecificAuthorization() != null) map.put("specificAuthorization", new AuthorizationModel(this.getSpecificAuthorization()));
+      if (this.getMaelstromAuthorization() != null) map.put("maelstromAuthorization", new AuthorizationModel(this.getMaelstromAuthorization()));
 
       this.setModel(map);
     }
 
     return super.getModel();
+  }
+
+  public static class AuthorizationModel {
+
+    private boolean authorized;
+    private String authorizer;
+    private String date;
+
+    public AuthorizationModel() {
+    }
+
+    public AuthorizationModel(Authorization authorization) {
+      this.authorized = authorization.isAuthorized();
+      this.authorizer = authorization.getAuthorizer();
+      if (authorization.getDate() != null)
+        this.date = new SimpleDateFormat("yyyy-MM-dd").format(authorization.getDate());
+    }
+
+    public boolean isAuthorized() {
+      return authorized;
+    }
+
+    public void setAuthorized(boolean authorized) {
+      this.authorized = authorized;
+    }
+
+    public String getAuthorizer() {
+      return authorizer;
+    }
+
+    public void setAuthorizer(String authorizer) {
+      this.authorizer = authorizer;
+    }
+
+    public String getDate() {
+      return date;
+    }
+
+    public void setDate(String date) {
+      this.date = date;
+    }
   }
 
   public static class StudyMethods implements Serializable {
