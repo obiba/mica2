@@ -93,11 +93,6 @@ class StudyDtos {
       study.getPopulations().forEach(population -> builder.addPopulations(populationDtos.asDto(population)));
     }
 
-    if(study.getAttributes() != null) {
-      study.getAttributes().asAttributeList()
-        .forEach(attribute -> builder.addAttributes(attributeDtos.asDto(attribute)));
-    }
-
     return builder.build();
   }
 
@@ -128,11 +123,6 @@ class StudyDtos {
       study.setModel(JSONUtils.toMap(dto.getContent()));
     else
       study.setModel(new HashMap<>());
-
-    if (dto.hasMaelstromAuthorization())
-      study.getModel().put("maelstromAuthorization", AuthorizationDtos.fromDto(dto.getMaelstromAuthorization()));
-    if (dto.hasSpecificAuthorization())
-      study.getModel().put("specificAuthorization", AuthorizationDtos.fromDto(dto.getSpecificAuthorization()));
 
     return study;
   }

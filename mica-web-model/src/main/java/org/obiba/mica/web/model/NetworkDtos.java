@@ -153,11 +153,6 @@ class NetworkDtos {
       builder.setLogo(attachmentDtos.asDto(network.getLogo()));
     }
 
-    if(network.getAttributes() != null) {
-      network.getAttributes().asAttributeList()
-        .forEach(attribute -> builder.addAttributes(attributeDtos.asDto(attribute)));
-    }
-
     network.getNetworkIds().stream()
       .filter(nId -> asDraft && subjectAclService.isPermitted("/draft/network", "VIEW", nId)
           || subjectAclService.isAccessible("/network", nId))
@@ -226,9 +221,6 @@ class NetworkDtos {
       network.setModel(JSONUtils.toMap(dto.getContent()));
     else
       network.setModel(new HashMap<>());
-
-    if (dto.hasMaelstromAuthorization())
-      network.getModel().put("maelstromAuthorization", AuthorizationDtos.fromDto(dto.getMaelstromAuthorization()));
 
     return network;
   }
