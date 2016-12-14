@@ -45,30 +45,32 @@ def write_dataset_variable_tags(client, dataset, writer, verbose=False):
     # send request to get total count
     ws = mica.core.UriBuilder(['study-dataset', dataset, 'variables']).query('from', 0).query('limit', 0).build()
     response = send_request(client, ws, verbose)
-    total = response['total']
+    total = response['total'] if 'total' in response else 0
     encoder = codecs.getincrementalencoder('utf-8')()
 
     f = 0
-    while f <= total:
+    while total > 0 and f < total:
         ws = mica.core.UriBuilder(['study-dataset', dataset, 'variables']).query('from', f).query('limit', 1000).build()
         response = send_request(client, ws, verbose)
         f = f + 1000
         # format response
-        for var in response['variables']:
-            label = ''
-            for attr in var['attributes']:
-                if attr['name'] == 'label':
-                    label = attr['values'][0]['value']
-            for attr in var['attributes']:
-                if 'namespace' in attr:
-                    tag = attr['namespace'] + '::' + attr['name'] + '.' + attr['values'][0]['value']
-                    writer.writerow({'study': var['studyIds'][0],
-                        'dataset': encoder.encode(var['datasetId']),
-                        'name': encoder.encode(var['name']),
-                        'index': str(var['index']),
-                        'label': encoder.encode(label),
-                        'tag': tag
-                        })
+        if 'variables' in response:
+            for var in response['variables']:
+                label = ''
+                if 'attributes' in var:
+                    for attr in var['attributes']:
+                        if attr['name'] == 'label':
+                            label = attr['values'][0]['value']
+                    for attr in var['attributes']:
+                        if 'namespace' in attr:
+                            tag = attr['namespace'] + '::' + attr['name'] + '.' + attr['values'][0]['value']
+                            writer.writerow({'study': var['studyIds'][0],
+                                'dataset': encoder.encode(var['datasetId']),
+                                'name': encoder.encode(var['name']),
+                                'index': str(var['index']),
+                                'label': encoder.encode(label),
+                                'tag': tag
+                                })
 
 def do_command(args):
     """
@@ -85,15 +87,16 @@ def do_command(args):
     if args.dataset == None:
         ws = mica.core.UriBuilder(['study-datasets']).query('from', 0).query('limit', 0).build()
         response = send_request(client, ws, args.verbose)
-        total = response['total']
+        total = response['total'] if 'total' in response else 0
         encoder = codecs.getincrementalencoder('utf-8')()
 
         f = 0
-        while f <= total:
+        while total > 0 and f < total:
             ws = mica.core.UriBuilder(['study-datasets']).query('from', f).query('limit', 100).build()
             response = send_request(client, ws, args.verbose)
             f = f + 100
-            for ds in response['datasets']:
-                write_dataset_variable_tags(client, encoder.encode(ds['id']), writer, args.verbose)
+            if 'datasets' in response:
+                for ds in response['datasets']:
+                    write_dataset_variable_tags(client, encoder.encode(ds['id']), writer, args.verbose)
     else:
         write_dataset_variable_tags(client, args.dataset, writer, args.verbose)
