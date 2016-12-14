@@ -52,6 +52,9 @@ search:
 proto:
 	cd mica-web-model && ${mvn_exec} install
 
+python:
+	cd mica-python-client && ${mvn_exec} install
+
 rest:
 	cd mica-rest && ${mvn_exec} install
 
