@@ -375,6 +375,11 @@
         "label": "Gettext",
         "help": "The complete translations will be exported in the Gettext format."
       }
+    },
+    "search": {
+      "title": "Search",
+      "refresh-button": "Refresh taxonomies button",
+      "refresh-button-help": "Shows/Hides the refresh taxonomies button on the search page."
     }
   },
   "publish": {
@@ -887,7 +892,8 @@
     "facet": {
       "more": "More",
       "less": "Less"
-    }
+    },
+    "refresh-taxonomies": "Refresh Taxonomies"
   },
   "variables": "Variables",
   "classifications": {

@@ -109,6 +109,8 @@ public class MicaConfig extends AbstractAuditableDocument {
 
   private LocalizedString translations;
 
+  private boolean searchRefreshButtonShown = false;
+
   public String getName() {
     return name;
   }
@@ -381,5 +383,13 @@ public class MicaConfig extends AbstractAuditableDocument {
 
   public boolean hasTranslations() {
     return translations != null && !translations.isEmpty();
+  }
+
+  public boolean isSearchRefreshButtonShown() {
+    return searchRefreshButtonShown;
+  }
+
+  public void setSearchRefreshButtonShown(boolean searchRefreshButtonShown) {
+    this.searchRefreshButtonShown = searchRefreshButtonShown;
   }
 }

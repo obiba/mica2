@@ -375,6 +375,11 @@
         "label": "Gettext",
         "help": "Les traductions complètes seront exportées au format Gettext."
       }
+    },
+    "search": {
+      "title": "Recherche",
+      "refresh-button": "Bouton de rafraîchissement de taxonomies",
+      "refresh-button-help": "Montrer ou cacher le bouton de rafraîchissement de taxonomies de la page de recherche."
     }
   },
   "publish": {
@@ -887,7 +892,8 @@
     "facet": {
       "more": "Plus",
       "less": "Mois"
-    }
+    },
+    "refresh-taxonomies": "Rafraîchir les taxonomies"
   },
   "variables": "Variables",
   "classifications": {

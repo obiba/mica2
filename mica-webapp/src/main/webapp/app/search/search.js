@@ -20,6 +20,7 @@ mica.search = angular.module('mica.search', [
 
         MicaConfigResource.get(function (micaConfig) {
           res.resolve(micaConfig.languages || $translate.use());
+          ngObibaMicaSearchProvider.setOptions({showSearchRefreshButton: micaConfig.isSearchRefreshButtonShown});
         });
 
         return res.promise;
