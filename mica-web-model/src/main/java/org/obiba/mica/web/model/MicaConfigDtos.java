@@ -99,7 +99,6 @@ class MicaConfigDtos {
     builder.setIsNetworkEnabled(config.isNetworkEnabled());
     builder.setIsStudyDatasetEnabled(config.isStudyDatasetEnabled());
     builder.setIsHarmonizationDatasetEnabled(config.isHarmonizationDatasetEnabled());
-    builder.setIsSearchRefreshButtonShown(config.isSearchRefreshButtonShown());
 
     if(config.hasStyle()) builder.setStyle(config.getStyle());
 
@@ -142,7 +141,6 @@ class MicaConfigDtos {
     config.setNetworkEnabled(dto.getIsNetworkEnabled());
     config.setStudyDatasetEnabled(dto.getIsStudyDatasetEnabled());
     config.setHarmonizationDatasetEnabled(dto.getIsHarmonizationDatasetEnabled());
-    config.setSearchRefreshButtonShown(dto.getIsSearchRefreshButtonShown());
 
     if(dto.hasStyle()) config.setStyle(dto.getStyle());
 
