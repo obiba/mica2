@@ -77,7 +77,7 @@ mica.entityTaxonomyConfig
 
       this.setField = function(attributes, field) {
         setAttribute(attributes, 'field', field);
-        var alias = field.replace(/\./, '-');
+        var alias = field.replace(/\./g, '-');
         setAttribute(attributes, 'alias', alias);
       };
 
