@@ -215,7 +215,7 @@ mica.study
 
         $timeout(function () {
           $scope.timeline.reset().create('#timeline', study).addLegend();
-        });
+        }, 250);
       };
 
       var initializeStudy = function (study) {
