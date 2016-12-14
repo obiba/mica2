@@ -84,7 +84,6 @@ public class NetworkIndexer {
   }
 
   private void reIndexAll(String indexName, Iterable<Network> networks) {
-    if(elasticSearchIndexer.hasIndex(indexName)) elasticSearchIndexer.dropIndex(indexName);
-    elasticSearchIndexer.indexAll(indexName, networks);
+    elasticSearchIndexer.reindexAll(indexName, networks);
   }
 }

@@ -81,6 +81,11 @@ public class ElasticSearchIndexer {
       .actionGet();
   }
 
+  synchronized public void reindexAll(String indexName, Iterable<? extends Persistable<String>> persistables) {
+    if(hasIndex(indexName)) dropIndex(indexName);
+    indexAll(indexName, persistables, null);
+  }
+
   public void indexAll(String indexName, Iterable<? extends Persistable<String>> persistables) {
     indexAll(indexName, persistables, null);
   }
