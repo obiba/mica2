@@ -20,11 +20,11 @@ mica.search = angular.module('mica.search', [
 
         MicaConfigResource.get(function (micaConfig) {
           res.resolve(micaConfig.languages || $translate.use());
-          ngObibaMicaSearchProvider.setOptions({showSearchRefreshButton: true});
         });
 
         return res.promise;
       }]);
+      ngObibaMicaSearchProvider.setOptions({showSearchRefreshButton: true});
       ngObibaMicaSearchTemplateUrlProvider.setHeaderUrl('search', 'app/search/views/search-view-header.html');
       ngObibaMicaSearchTemplateUrlProvider.setHeaderUrl('classifications', 'app/search/views/classifications-view-header.html');
     }]);
