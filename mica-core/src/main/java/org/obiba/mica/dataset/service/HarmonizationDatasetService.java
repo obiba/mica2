@@ -173,6 +173,7 @@ public class HarmonizationDatasetService extends DatasetService<HarmonizationDat
         return gitService.hasGitRepository(state) && !Strings.isNullOrEmpty(state.getPublishedTag()); //
       }) //
       .map(state -> gitService.readFromTag(state, state.getPublishedTag(), HarmonizationDataset.class)) //
+      .map(s -> { s.getModel(); return s; }) // make sure dynamic model is initialized
       .collect(toList());
   }
 

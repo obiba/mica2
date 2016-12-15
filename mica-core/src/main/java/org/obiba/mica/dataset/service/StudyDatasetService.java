@@ -137,6 +137,7 @@ public class StudyDatasetService extends DatasetService<StudyDataset, StudyDatas
         return gitService.hasGitRepository(state) && !Strings.isNullOrEmpty(state.getPublishedTag()); //
       }) //
       .map(state -> gitService.readFromTag(state, state.getPublishedTag(), StudyDataset.class)) //
+      .map(ds -> { ds.getModel(); return ds; }) // make sure dynamic model is initialized
       .collect(toList());
   }
 
