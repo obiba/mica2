@@ -11,7 +11,6 @@
 package org.obiba.mica.study.domain;
 
 import java.io.Serializable;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -505,47 +504,6 @@ public class Study extends AbstractModelAware implements AttributeAware, PersonA
     }
 
     return super.getModel();
-  }
-
-  public static class AuthorizationModel {
-
-    private boolean authorized;
-    private String authorizer;
-    private String date;
-
-    public AuthorizationModel() {
-    }
-
-    public AuthorizationModel(Authorization authorization) {
-      this.authorized = authorization.isAuthorized();
-      this.authorizer = authorization.getAuthorizer();
-      if (authorization.getDate() != null)
-        this.date = new SimpleDateFormat("yyyy-MM-dd").format(authorization.getDate());
-    }
-
-    public boolean isAuthorized() {
-      return authorized;
-    }
-
-    public void setAuthorized(boolean authorized) {
-      this.authorized = authorized;
-    }
-
-    public String getAuthorizer() {
-      return authorizer;
-    }
-
-    public void setAuthorizer(String authorizer) {
-      this.authorizer = authorizer;
-    }
-
-    public String getDate() {
-      return date;
-    }
-
-    public void setDate(String date) {
-      this.date = date;
-    }
   }
 
   public static class StudyMethods implements Serializable {
