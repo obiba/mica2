@@ -402,9 +402,9 @@ public class Study extends AbstractModelAware implements AttributeAware, PersonA
   @JsonProperty
   @Deprecated
   public void setInvestigators(List<Person> investigators) {
-
+    if (investigators == null) return;
     List<Membership> oldMemberships = memberships.get(Membership.INVESTIGATOR);
-    Set<Membership> newMemberships = investigators.stream().map(investigator -> new Membership(investigator, "investigator")).collect(toSet());
+    Set<Membership> newMemberships = investigators.stream().map(investigator -> new Membership(investigator, Membership.INVESTIGATOR)).collect(toSet());
     newMemberships.addAll(oldMemberships);
 
     memberships.put(Membership.INVESTIGATOR, new ArrayList<>(newMemberships));
@@ -419,8 +419,9 @@ public class Study extends AbstractModelAware implements AttributeAware, PersonA
   @JsonProperty
   @Deprecated
   public void setContacts(List<Person> contacts) {
+    if (contacts == null) return;
     List<Membership> oldMemberships = memberships.get(Membership.CONTACT);
-    Set<Membership> newMemberships = contacts.stream().map(investigator -> new Membership(investigator, "investigator")).collect(toSet());
+    Set<Membership> newMemberships = contacts.stream().map(contact -> new Membership(contact, Membership.CONTACT)).collect(toSet());
     newMemberships.addAll(oldMemberships);
 
     memberships.put(Membership.CONTACT, new ArrayList<>(newMemberships));
@@ -442,7 +443,11 @@ public class Study extends AbstractModelAware implements AttributeAware, PersonA
   }
 
   public void setMemberships(Map<String, List<Membership>> memberships) {
-    this.memberships = memberships;
+    if (memberships == null) {
+      this.memberships.clear();
+    } else {
+      this.memberships = memberships;
+    }
     Map<String, Person> seen = Maps.newHashMap();
 
     this.memberships.entrySet().forEach(e -> e.getValue().forEach(m -> {
