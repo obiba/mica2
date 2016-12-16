@@ -94,7 +94,6 @@ public class StudyIndexer {
   }
 
   private void reIndexAll(String indexName, Iterable<Study> studies) {
-    if(elasticSearchIndexer.hasIndex(indexName)) elasticSearchIndexer.dropIndex(indexName);
-    elasticSearchIndexer.indexAll(indexName, studies);
+    elasticSearchIndexer.reindexAll(indexName, studies);
   }
 }
