@@ -482,25 +482,30 @@ public class Study extends AbstractModelAware implements AttributeAware, PersonA
 
   @Override
   public Map<String, Object> getModel() {
-    if (!this.hasModel()) {
+    if (!hasModel()) {
       Map<String, Object> map = Maps.newHashMap();
 
-      if (this.getWebsite() != null) map.put("startYear", this.getStart());
-      if (this.getWebsite() != null) map.put("endYear", this.getEnd());
-      if (this.getWebsite() != null) map.put("website", this.getWebsite());
-      if (this.getMethods() != null) map.put("methods", this.getMethods());
-      if (this.getNumberOfParticipants() != null) map.put("numberOfParticipants", this.getNumberOfParticipants());
-      if (this.getAccess() != null) map.put("access", this.getAccess());
-      if (this.getOtherAccess() != null) map.put("otherAccess", this.getOtherAccess());
-      if (this.getMarkerPaper() != null) map.put("markerPaper", this.getMarkerPaper());
-      if (this.getPubmedId() != null) map.put("pubmedId", this.getPubmedId());
-      if (this.getInfo() != null) map.put("info", this.getInfo());
-      if (this.getOpal() != null) map.put("opal", this.getOpal());
-      if (this.getMemberships() != null) map.put("memberships", this.getMemberships());
-      if (this.getSpecificAuthorization() != null) map.put("specificAuthorization", new AuthorizationModel(this.getSpecificAuthorization()));
-      if (this.getMaelstromAuthorization() != null) map.put("maelstromAuthorization", new AuthorizationModel(this.getMaelstromAuthorization()));
+      if (getWebsite() != null) map.put("startYear", getStart());
+      if (getWebsite() != null) map.put("endYear", getEnd());
+      if (getWebsite() != null) map.put("website", getWebsite());
+      if (getMethods() != null) map.put("methods", getMethods());
+      if (getNumberOfParticipants() != null) map.put("numberOfParticipants", getNumberOfParticipants());
+      if (getAccess() != null) map.put("access", getAccess());
+      if (getOtherAccess() != null) map.put("otherAccess", getOtherAccess());
+      if (getMarkerPaper() != null) map.put("markerPaper", getMarkerPaper());
+      if (getPubmedId() != null) map.put("pubmedId", getPubmedId());
+      if (getInfo() != null) map.put("info", getInfo());
+      if (getOpal() != null) map.put("opal", getOpal());
+      if (getMemberships() != null) map.put("memberships", getMemberships());
+      if (getSpecificAuthorization() != null) map.put("specificAuthorization", new AuthorizationModel(getSpecificAuthorization()));
+      if (getMaelstromAuthorization() != null) map.put("maelstromAuthorization", new AuthorizationModel(getMaelstromAuthorization()));
+      if (getMethods() != null && getMethods().getDesigns() != null && getMethods().getDesigns().size() == 1) {
+        getMethods().setDesign(getMethods().getDesigns().get(0));
+      }
+      getPopulations().forEach(Population::getModel);
+      getPopulations().forEach(p -> p.getDataCollectionEvents().forEach(DataCollectionEvent::getModel));
 
-      this.setModel(map);
+      setModel(map);
     }
 
     return super.getModel();

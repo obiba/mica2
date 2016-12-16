@@ -12,7 +12,13 @@
 
 package org.obiba.mica.core.upgrade;
 
-import com.google.common.eventbus.EventBus;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
+import javax.inject.Inject;
+
 import org.obiba.mica.contact.event.IndexContactsEvent;
 import org.obiba.mica.core.domain.Person;
 import org.obiba.mica.core.repository.PersonRepository;
@@ -22,12 +28,12 @@ import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.dataset.service.HarmonizationDatasetService;
 import org.obiba.mica.dataset.service.StudyDatasetService;
+import org.obiba.mica.micaConfig.event.TaxonomiesUpdatedEvent;
+import org.obiba.mica.micaConfig.service.CacheService;
 import org.obiba.mica.network.NetworkRepository;
 import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.network.service.NetworkService;
 import org.obiba.mica.study.StudyRepository;
-import org.obiba.mica.study.domain.DataCollectionEvent;
-import org.obiba.mica.study.domain.Population;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.service.StudyService;
 import org.obiba.runtime.Version;
@@ -40,11 +46,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import com.google.common.eventbus.EventBus;
 
 @Component
 public class Mica2Upgrade implements UpgradeStep {
@@ -75,6 +77,9 @@ public class Mica2Upgrade implements UpgradeStep {
   private HarmonizationDatasetService harmonizationDatasetService;
 
   @Inject
+  CacheService cacheService;
+
+  @Inject
   private EventBus eventBus;
 
   @Override
@@ -92,6 +97,8 @@ public class Mica2Upgrade implements UpgradeStep {
 
     logger.info("migration from mica 1.x to mica 2.x : START");
 
+    cacheService.clearAllCaches();
+
     upgradeMembershipsOfStudiesAndNetworks();
 
     migrateNetworks();
@@ -102,8 +109,6 @@ public class Mica2Upgrade implements UpgradeStep {
     migrateContactCountries();
 
     reindexRequiredData();
-
-    eventBus.post(new IndexContactsEvent());
 
     logger.info("migration from mica 1.x to mica 2.x : END");
   }
@@ -121,6 +126,12 @@ public class Mica2Upgrade implements UpgradeStep {
 
     logger.debug("Indexing all harmonization datasets in the repository.");
     harmonizationDatasetService.indexAll(false);
+
+    logger.debug("Indexing all contacts.");
+    eventBus.post(new IndexContactsEvent());
+
+    logger.debug("Indexing all htaxonomies.");
+    eventBus.post(new TaxonomiesUpdatedEvent());
   }
 
   private void migrateContactCountries() {
@@ -211,14 +222,6 @@ public class Mica2Upgrade implements UpgradeStep {
       logger.info("Migrating studies 1.x to 2.x: START");
       for (Study studyWithoutModel : studiesWithoutModel) {
         studyWithoutModel.getModel();
-        if (studyWithoutModel.getMethods() != null
-          && studyWithoutModel.getMethods().getDesigns() != null
-          && studyWithoutModel.getMethods().getDesigns().size() == 1)
-
-          studyWithoutModel.getMethods().setDesign(studyWithoutModel.getMethods().getDesigns().get(0));
-
-        studyWithoutModel.getPopulations().forEach(Population::getModel);
-        studyWithoutModel.getPopulations().forEach(p -> p.getDataCollectionEvents().forEach(DataCollectionEvent::getModel));
         studyRepository.save(studyWithoutModel);
       }
       logger.info("Migrating studies: END");

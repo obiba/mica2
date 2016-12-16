@@ -18,7 +18,6 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
-import com.google.common.collect.Lists;
 import org.joda.time.DateTime;
 import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.core.domain.LocalizedString;
@@ -57,6 +56,7 @@ import org.springframework.validation.annotation.Validated;
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
@@ -217,6 +217,7 @@ public class NetworkService extends AbstractGitPersistableService<NetworkState, 
         return gitService.hasGitRepository(networkState) && !Strings.isNullOrEmpty(networkState.getPublishedTag()); //
       }) //
       .map(networkState -> gitService.readFromTag(networkState, networkState.getPublishedTag(), Network.class)) //
+      .map(n -> { n.getModel(); return n; }) // make sure dynamic model is initialized
       .collect(toList());
   }
 
