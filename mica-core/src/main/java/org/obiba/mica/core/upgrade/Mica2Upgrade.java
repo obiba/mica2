@@ -256,6 +256,7 @@ public class Mica2Upgrade implements UpgradeStep {
     logger.info("start upgrade memberships of studies and networks ");
     mongoTemplate.execute(db -> db.eval(queryToUpgradeMembershipsOfStudies()));
     mongoTemplate.execute(db -> db.eval(queryToUpgradeMembershipsOfNetworks()));
+    mongoTemplate.execute(db -> db.eval(queryToUpgradeRecruitmentDataSoureceAttributeName()));
     logger.info("end upgrade memberships of studies and networks ");
   }
 
@@ -265,6 +266,21 @@ public class Mica2Upgrade implements UpgradeStep {
 
   private String queryToUpgradeMembershipsOfNetworks() {
     return upgradeMembershipsOfCollection("network");
+  }
+
+  private String queryToUpgradeRecruitmentDataSoureceAttributeName() {
+    return "db.study.find({'populations.recruitment.dataSources': 'existing_studies'}).map(function (doc) {\n" +
+      "    doc.populations.forEach(function (population) {\n" +
+      "        index = population.recruitment.dataSources.indexOf('existing_studies');\n" +
+      "        if (index !== -1) {\n" +
+      "            population.recruitment.dataSources.splice(index, 1);\n" +
+      "            population.recruitment.dataSources.push('exist_studies');\n" +
+      "        }\n" +
+      "    });\n" +
+      "    return doc;\n" +
+      "}).forEach(function (doc) {\n" +
+      "    db.study.update({'_id': doc._id}, doc);\n" +
+      "});";
   }
 
   private String upgradeMembershipsOfCollection(String collectionName) {
