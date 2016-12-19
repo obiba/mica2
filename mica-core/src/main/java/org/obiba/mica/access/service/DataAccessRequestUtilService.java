@@ -89,9 +89,10 @@ public class DataAccessRequestUtilService {
    */
   public Iterable<DataAccessRequest.Status> nextStatus(DataAccessRequest request) {
     List<DataAccessRequest.Status> to = Lists.newArrayList();
+    if (!subjectAclService.isPermitted("/data-access-request/" + request.getId(), "EDIT", "_status")) return to;
     switch(request.getStatus()) {
       case OPENED:
-        if (subjectAclService.isCurrentUser(request.getApplicant())) addNextOpenedStatus(to);
+        addNextOpenedStatus(to);
         break;
       case SUBMITTED:
         addNextSubmittedStatus(to);
@@ -100,7 +101,7 @@ public class DataAccessRequestUtilService {
         addNextReviewedStatus(to);
         break;
       case CONDITIONALLY_APPROVED:
-        if (subjectAclService.isCurrentUser(request.getApplicant())) addNextConditionallyApprovedStatus(to);
+        addNextConditionallyApprovedStatus(to);
         break;
       case APPROVED:
         addNextApprovedStatus(to);
