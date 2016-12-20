@@ -36,7 +36,7 @@
     "en": "Study design"
     "fr": "Définitions d'étude"
   "description":
-    "en": "The design of an observational or exprimental study (e.g. cohort, case control)."
+    "en": "The design of an observational or experimental study (e.g. cohort, case control)."
     "fr": "La conception d'une étude observationnelle ou interventionnelle (e.g. cohorte, cas-témoins)."
   "attributes":
     "field": "model.methods.design"
