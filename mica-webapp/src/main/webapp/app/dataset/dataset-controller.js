@@ -369,6 +369,9 @@ mica.dataset
       });
 
       $scope.save = function () {
+
+        $scope.$broadcast('schemaFormValidate');
+
         if (!$scope.form.$valid) {
           $scope.form.saveAttempted = true;
           return;
