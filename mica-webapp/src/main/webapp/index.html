@@ -122,7 +122,7 @@
             <!--<li><a href="#/profile"><i class="fa fa-cog"></i> <span translate>global.menu.myProfile</span></a></li>-->
             <!-- TODO ask server for langs instead-->
             <li ng-repeat="lang in ['en','fr']">
-              <a href="{{getCurrentLocation()}}" ng-click="changeLanguage(lang)">
+              <a href ng-click="changeLanguage(lang)">
                 <span>{{'language.' + lang | translate}}</span> <i class="fa fa-check" aria-hidden="true" ng-show="getCurrentLanguage() === lang"></i></a>
             </li>
             <li class="divider"></li>
