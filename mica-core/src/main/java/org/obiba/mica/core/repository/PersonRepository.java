@@ -32,6 +32,6 @@ public interface PersonRepository extends MongoRepository<Person, String> {
 
   Person findOneByEmail(String email);
 
-  @Query("{$where: \"this.institution.address && this.institution.address.countryIso && this.institution.address.countryIso.length == 2\"}")
+  @Query("{$where: \"this.institution && this.institution.address && this.institution.address.countryIso && this.institution.address.countryIso.length == 2\"}")
   Iterable<Person> findAllWhenCountryIsoContainsTwoCharacters();
 }
