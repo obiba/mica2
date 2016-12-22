@@ -11,15 +11,6 @@ server:
 https:
     port: 8445
 
-# MongoDB: database engine
-mongodb:
-  url: localhost:27017
-  databaseName: mica
-  username:
-  password:
-  authSource:
-  options:
-
 # Opal: data dictionaries, summaries and taxonomies
 opal:
   url: https://localhost:8443
@@ -52,6 +43,11 @@ shiro:
 #
 
 spring:
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      database: mica
   profiles: prod
   thymeleaf:
     mode: XHTML

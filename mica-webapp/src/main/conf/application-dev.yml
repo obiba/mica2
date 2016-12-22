@@ -6,14 +6,6 @@ server:
 https:
     port: 8445
 
-mongodb:
-  url: localhost:27017
-  databaseName: mica
-  username:
-  password:
-  authSource:
-  options:
-
 opal:
   url: https://localhost:8443
   username: administrator
@@ -43,6 +35,11 @@ shiro:
 
 spring:
   profiles: dev
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      database: mica
   thymeleaf:
     mode: XHTML
     cache: false
