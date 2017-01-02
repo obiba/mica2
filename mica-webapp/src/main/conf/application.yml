@@ -45,9 +45,7 @@ shiro:
 spring:
   data:
     mongodb:
-      host: localhost
-      port: 27017
-      database: mica
+      uri: mongodb://localhost:27017/mica
   profiles: prod
   thymeleaf:
     mode: XHTML
