@@ -129,6 +129,7 @@ mica.network
     'EntityFormResource',
     'FormServerValidation',
     'FormDirtyStateObserver',
+    'SfOptionsService',
     function ($rootScope,
               $scope,
               $routeParams,
@@ -144,7 +145,8 @@ mica.network
               MicaConfigResource,
               EntityFormResource,
               FormServerValidation,
-              FormDirtyStateObserver) {
+              FormDirtyStateObserver,
+              SfOptionsService) {
 
       $scope.files = [];
       $scope.newNetwork= !$routeParams.id;
@@ -156,21 +158,27 @@ mica.network
 
       }) : {published: false, model:{}};
 
-      MicaConfigResource.get(function (micaConfig) {
-        $scope.sfOptions = {};
+      function initializeForm() {
+        MicaConfigResource.get(function (micaConfig) {
+          $scope.sfOptions = {};
 
-        var formLanguages = {};
-        micaConfig.languages.forEach(function (loc) {
-          formLanguages[loc] = $filter('translate')('language.' + loc);
-        });
-        $scope.sfOptions = {formDefaults: {languages: formLanguages}};
+          var formLanguages = {};
+          micaConfig.languages.forEach(function (loc) {
+            formLanguages[loc] = $filter('translate')('language.' + loc);
+          });
 
-        EntityFormResource.get({target: 'network', locale: $translate.use()}, function(form) {
-          form.schema = angular.fromJson(form.schema);
-          form.definition = angular.fromJson(form.definition);
-          $scope.sfForm = form;
+          SfOptionsService.transform().then(function(options) {
+            $scope.sfOptions = options;
+            $scope.sfOptions.formDefaults = {languages: formLanguages};
+          });
+
+          EntityFormResource.get({target: 'network', locale: $translate.use()}, function(form) {
+            form.schema = angular.fromJson(form.schema);
+            form.definition = angular.fromJson(form.definition);
+            $scope.sfForm = form;
+          });
         });
-      });
+      }
 
       $scope.save = function () {
         $scope.network.logo = $scope.files.length > 0 ? $scope.files[0] : null;
@@ -217,6 +225,13 @@ mica.network
       var saveErrorHandler = function (response) {
         FormServerValidation.error(response, $scope.form, $scope.languages);
       };
+
+
+      $rootScope.$on('$translateChangeSuccess', function () {
+        initializeForm();
+      });
+
+      initializeForm();
 
       FormDirtyStateObserver.observe($scope);
     }])
@@ -337,6 +352,7 @@ mica.network
     '$filter',
     'NetworkService',
     'DocumentPermissionsService',
+    'SfOptionsService',
 
     function ($rootScope,
               $scope,
@@ -366,7 +382,33 @@ mica.network
               LocalizedValues,
               $filter,
               NetworkService,
-              DocumentPermissionsService) {
+              DocumentPermissionsService,
+              SfOptionsService) {
+
+
+      function initializeForm() {
+        MicaConfigResource.get(function (micaConfig) {
+
+          var formLanguages = {};
+          micaConfig.languages.forEach(function (loc) {
+            formLanguages[loc] = $filter('translate')('language.' + loc);
+          });
+
+          SfOptionsService.transform().then(function(options) {
+            $scope.sfOptions = options;
+            $scope.sfOptions.formDefaults = {languages: formLanguages};
+          });
+
+          $scope.roles = micaConfig.roles;
+
+          EntityFormResource.get({target: 'network', locale: $translate.use()}, function (form) {
+            form.schema = angular.fromJson(form.schema);
+            form.definition = angular.fromJson(form.definition);
+            form.schema.readonly = true;
+            $scope.sfForm = form;
+          });
+        });
+      }
 
       var initializeNetwork = function(network){
 
@@ -395,9 +437,7 @@ mica.network
       };
 
       $scope.memberships = {};
-
       $scope.isOrderingContacts = false; //prevent opening contact modal on reordering (firefox)
-
       $scope.sortableOptions = {
         start: function() {
           $scope.isOrderingContacts = true;
@@ -411,24 +451,6 @@ mica.network
       };
 
       $scope.Mode = {View: 0, Revision: 1, File: 2, Permission: 3, Comment: 4};
-
-      MicaConfigResource.get(function (micaConfig) {
-
-        var formLanguages = {};
-        micaConfig.languages.forEach(function (loc) {
-          formLanguages[loc] = $filter('translate')('language.' + loc);
-        });
-        $scope.sfOptions = {formDefaults: {languages: formLanguages}};
-        $scope.roles = micaConfig.roles;
-
-        EntityFormResource.get({target: 'network', locale: $translate.use()}, function (form) {
-          form.schema = angular.fromJson(form.schema);
-          form.definition = angular.fromJson(form.definition);
-          form.schema.readonly = true;
-          $scope.sfForm = form;
-        });
-      });
-
       $scope.networkId = $routeParams.id;
       $scope.studySummaries = [];
       $scope.network = DraftNetworkResource.get({id: $routeParams.id}, initializeNetwork);
@@ -822,6 +844,12 @@ mica.network
       });
 
       $scope.viewMode = getViewMode();
+
+      $rootScope.$on('$translateChangeSuccess', function () {
+        initializeForm();
+      });
+
+      initializeForm();
     }])
 
   .controller('NetworkPermissionsController', ['$scope','$routeParams', 'DraftNetworkPermissionsResource', 'DraftNetworkAccessesResource',
