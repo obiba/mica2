@@ -57,13 +57,17 @@ mica.controller('MainController', [
 
 mica.controller('AdminController', [function () {}]);
 
-mica.controller('LanguageController', ['$scope', '$translate', 'amMoment',
-  function ($scope, $translate, amMoment) {
+mica.controller('LanguageController', ['$scope', '$translate', 'amMoment', 'MicaConfigResource',
+  function ($scope, $translate, amMoment, MicaConfigResource) {
     $scope.changeLanguage = function (languageKey) {
       $translate.use(languageKey);
       amMoment.changeLocale(languageKey);
     };
     $scope.getCurrentLanguage = $translate.use;
+
+    MicaConfigResource.get(function (config) {
+      $scope.languages = config.languages;
+    });
   }]);
 
 mica.controller('MenuController', [function () {}]);
