@@ -48,7 +48,8 @@ mica.projectConfig
             $scope.projectForm.schema = $scope.form.schema;
             ProjectFormCustomResource.save($scope.projectForm,
               function () {
-                $location.path('/admin').replace();
+                $scope.state.setDirty(false);
+                AlertBuilder.newBuilder().delay(3000).type('success').trMsg('entity-config.save-alert.success').build();
               },
               function (response) {
                 AlertBuilder.newBuilder().response(response).build();
@@ -66,18 +67,19 @@ mica.projectConfig
       $scope.state = new mica.commons.EntityState($q, $scope);
       $scope.projectForm = {schema: '', definition: ''};
 
-      ProjectFormCustomResource.get(
+      $scope.form = ProjectFormCustomResource.get(
         function(projectForm){
-          $scope.form.definitionJson = EntitySchemaFormService.parseJsonSafely(projectForm.definition, []);
-          $scope.form.definition = EntitySchemaFormService.prettifyJson($scope.form.definitionJson);
-          $scope.form.schemaJson = EntitySchemaFormService.parseJsonSafely(projectForm.schema, {});
-          $scope.form.schema = EntitySchemaFormService.prettifyJson($scope.form.schemaJson);
+          projectForm.model = {};
+          projectForm.definitionJson = EntitySchemaFormService.parseJsonSafely(projectForm.definition, []);
+          projectForm.definition = EntitySchemaFormService.prettifyJson(projectForm.definitionJson);
+          projectForm.schemaJson = EntitySchemaFormService.parseJsonSafely(projectForm.schema, {});
+          projectForm.schema = EntitySchemaFormService.prettifyJson($scope.form.schemaJson);
           $scope.projectForm = projectForm;
 
-          if ($scope.form.definitionJson.length === 0) {
+          if (projectForm.definitionJson.length === 0) {
             AlertBuilder.newBuilder().trMsg('entity-config.parse-error.definition').build();
           }
-          if (Object.getOwnPropertyNames($scope.form.schemaJson).length === 0) {
+          if (Object.getOwnPropertyNames(projectForm.schemaJson).length === 0) {
             AlertBuilder.newBuilder().trMsg('entity-config.parse-error.schema').build();
           }
         },
@@ -85,13 +87,6 @@ mica.projectConfig
           AlertBuilder.newBuilder().response(response).build();
         });
 
-      $scope.form = {
-        definitionJson: null,
-        definition: null,
-        schemaJson: null,
-        schema: null,
-        model: {}
-      };
 
       $scope.loadPermissions = function() {
         $scope.acls = ProjectFormPermissionsResource.get();

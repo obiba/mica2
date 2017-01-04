@@ -12,14 +12,15 @@
 
 mica.entitySfConfig
 
-  .controller('EntitySfConfigController', [
+  .controller('EntitySfConfigController', ['$rootScope',
     '$scope',
     'EntitySchemaFormService',
     'LocalizedSchemaFormService',
     'AlertService',
     'SfOptionsService',
     'FormDirtyStateObserver',
-    function ($scope,
+    function ($rootScope,
+              $scope,
               EntitySchemaFormService,
               LocalizedSchemaFormService,
               AlertService,
@@ -31,20 +32,24 @@ mica.entitySfConfig
       var refreshPreview = function(force) {
         try {
           if ($scope.dirtyObservable.isDirty() || force) {
-            $scope.form.schemaJson = LocalizedSchemaFormService.translate(JSON.parse($scope.form.schema));
-            $scope.form.definitionJson = LocalizedSchemaFormService.translate(JSON.parse($scope.form.definition));
+            $scope.form.$promise.then(function() {
+              $scope.form.schemaJson = LocalizedSchemaFormService.translate(JSON.parse($scope.form.schema));
+              $scope.form.definitionJson = LocalizedSchemaFormService.translate(JSON.parse($scope.form.definition));
+            });
           }
         } catch (e){
         }
       };
 
-      $scope.sfOptions = SfOptionsService.sfOptions;
+      SfOptionsService.transform().then(function(options){
+        $scope.sfOptions = options;
+      });
 
       var selectTab = function(id) {
         $scope.selectedTab = id;
         switch (id) {
           case 'form-preview':
-            refreshPreview();
+            refreshPreview(false);
             break;
           case 'form-model':
             $scope.modelPreview = EntitySchemaFormService.prettifyJson($scope.form.model);
@@ -54,6 +59,7 @@ mica.entitySfConfig
 
       var watchFormChanges = function(val){
         if (val) {
+          refreshPreview(false);
           $scope.ace = EntitySchemaFormService.getEditorOptions(aceEditorOnLoadCallback, aceEditorOnChangeCallback);
         }
       };
@@ -92,5 +98,10 @@ mica.entitySfConfig
       $scope.fullscreen = EntitySchemaFormService.gotoFullScreen;
 
       FormDirtyStateObserver.observe($scope.dirtyObservable);
-      refreshPreview(true);
+
+      $rootScope.$on('$translateChangeSuccess', function () {
+        refreshPreview(true);
+      });
+
+	  refreshPreview(true);
     }]);

@@ -69,6 +69,12 @@
     },
     "rql-nodojo": {
       "main": "./js/rql.js"
+    },
+    "moment": {
+      "main": [
+        "./moment.js",
+        "./min/locales.min.js"
+      ]
     }
   },
   "resolutions": {

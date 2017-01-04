@@ -19,6 +19,7 @@
       "integer": "Entier",
       "decimal": "Décimal"
     },
+    "search": "Chercher",
     "localized": "Traduit",
     "repeatable": "Répétable",
     "true": "Vrai",
@@ -35,7 +36,16 @@
     "print": "Imprimer",
     "modified": "Modifié",
     "delete-selected": "Effacer les items selectionnés",
-    "server-error": "Une erreur inconnue est survenue, veuillez contacter votre administrateur pour obtenir de l'aide."
+    "server-error": "Une erreur inconnue est survenue, veuillez contacter votre administrateur pour obtenir de l'aide.",
+    "new": "Nouveau",
+    "add": "Ajouter",
+    "documentation": "Documentation",
+    "sources": "Code sources",
+    "down": "Descendre",
+    "up": "Monter"
+  },
+  "pagination": {
+    "of": "de"
   },
   "main": {
     "title": "Bienvenue chez Mica!",
@@ -226,7 +236,10 @@
     "title": "Page d'erreur!",
     "403": "Vous n'avez pas les droits pour accéder à cette page.",
     "wordCount": "La limite de mots est dépassée.",
-    "does-not-validate": "Le champs n'est pas valide"
+    "does-not-validate": "Le champs n'est pas valide",
+    "localized": {
+      "completed": "Le champ doit être complété dans toutes les langues spécifiées."
+    }
   },
   "config": {
     "short-title": "Configuration",
@@ -638,8 +651,8 @@
     "info": "Informations supplementaires",
     "description": "Description",
     "gender": "Genre",
-    "ageMin": "Age minimum",
-    "ageMax": "Age maximum",
+    "ageMin": "Âge minimum",
+    "ageMax": "Âge maximum",
     "otherCriteria": "Autres critères",
     "add-health-status-help": "Ajouter un état de santé",
     "add-ethnic-origin-help": "Ajouter une origine ethnique",
