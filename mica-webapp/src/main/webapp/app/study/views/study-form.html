@@ -19,6 +19,12 @@
 
     <p class="alert alert-danger" ng-show="form.saveAttempted && form.$invalid" translate="">fix-error</p>
 
+    <h3 translate>logo</h3>
+
+    <div class="form-group">
+      <attachment-input files="files" accept="image/*" />
+    </div>
+
     <div sf-model="study.model" sf-form="sfForm.definition" sf-schema="sfForm.schema" sf-options="sfOptions"></div>
 
     <div class="row">
