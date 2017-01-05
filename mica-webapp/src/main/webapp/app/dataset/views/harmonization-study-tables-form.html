@@ -55,10 +55,18 @@
           {{wrapper.table.table}}
         </td>
         <td>
-          <localized value="wrapper.table.name" lang="tab.lang"></localized>
+          <ul class="list-unstyled">
+            <li ng-repeat="name in wrapper.table.name">
+              <span class="badge">{{name.lang}}</span> {{name.value}}
+            </li>
+          </ul>
         </td>
         <td>
-          <localized value="wrapper.table.description" lang="tab.lang"></localized>
+          <ul class="list-unstyled">
+            <li ng-repeat="description in wrapper.table.description">
+              <span class="badge">{{description.lang}}</span> {{description.value}}
+            </li>
+          </ul>
         </td>
         <td>
           <a href="" ng-click="editOpalTable(wrapper)" class="action"><i class="fa fa-pencil"></i></a>
