@@ -504,6 +504,7 @@ public class Study extends AbstractModelAware implements AttributeAware, PersonA
       }
       getPopulations().forEach(Population::getModel);
       getPopulations().forEach(p -> p.getDataCollectionEvents().forEach(DataCollectionEvent::getModel));
+      if (getAttributes() != null) getAttributes().forEach(map::put);
 
       setModel(map);
     }

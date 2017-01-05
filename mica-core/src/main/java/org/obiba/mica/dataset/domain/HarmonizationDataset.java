@@ -100,15 +100,6 @@ public class HarmonizationDataset extends Dataset {
   }
 
   @Override
-  public Map<String, Object> getModel() {
-    if (!this.hasModel()) {
-      Map<String, Object> map = Maps.newHashMap();
-      setModel(map);
-    }
-    return super.getModel();
-  }
-
-  @Override
   public String pathPrefix() {
     return "harmonizationDatasets";
   }

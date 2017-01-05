@@ -235,6 +235,7 @@ public class Network extends AbstractModelAware implements AttributeAware, Perso
       if (this.getWebsite() != null) map.put("website", this.getWebsite());
       if (this.getInfos() != null) map.put("infos", this.getInfos());
       if (this.getMaelstromAuthorization() != null) map.put("maelstromAuthorization", this.getMaelstromAuthorization());
+      if (getAttributes() != null) getAttributes().forEach(map::put);
 
       this.setModel(map);
     }
