@@ -21,7 +21,7 @@ NAME=mica2
 [ -r /etc/default/$NAME ] && . /etc/default/$NAME
 
 case "$1" in
-  1)
+  [1-2])
 
     # Create mica user if it doesn't exist.
     if ! id mica > /dev/null 2>&1 ; then
