@@ -146,6 +146,7 @@ mica.study
     'DraftStudyDeleteService',
     'EntityPathBuilder',
     'DocumentPermissionsService',
+    'moment',
 
     function ($rootScope,
               $scope,
@@ -174,7 +175,46 @@ mica.study
               $uibModal,
               DraftStudyDeleteService,
               EntityPathBuilder,
-              DocumentPermissionsService) {
+              DocumentPermissionsService,
+              moment) {
+
+
+      function initializeForm() {
+        MicaConfigResource.get(function (micaConfig) {
+          $scope.months = moment.months();
+
+          var formLanguages = {};
+          micaConfig.languages.forEach(function (loc) {
+            formLanguages[loc] = $filter('translate')('language.' + loc);
+          });
+          $scope.sfOptions = {formDefaults: {
+            readonly: true,
+            languages: formLanguages
+          }};
+
+          $scope.languages = micaConfig.languages;
+          $scope.roles = micaConfig.roles;
+          $scope.openAccess = micaConfig.openAccess;
+
+          EntityFormResource.get({target: 'study', locale: $translate.use()}, function(form) {
+            form.schema = angular.fromJson(form.schema);
+            form.definition = angular.fromJson(form.definition);
+            $scope.sfForm = form;
+          });
+
+          EntityFormResource.get({target: 'population', locale: $translate.use()}, function(form) {
+            form.schema = angular.fromJson(form.schema);
+            form.definition = angular.fromJson(form.definition);
+            $scope.populationSfForm = form;
+          });
+
+          EntityFormResource.get({target: 'data-collection-event', locale: $translate.use()}, function(form) {
+            form.schema = angular.fromJson(form.schema);
+            form.definition = angular.fromJson(form.definition);
+            $scope.dceSfForm = form;
+          });
+        });
+      }
 
       $scope.Mode = {View: 0, Revision: 1, File: 2, Permission: 3, Comment: 4};
 
@@ -303,39 +343,11 @@ mica.study
 
       $scope.$on(NOTIFICATION_EVENTS.confirmDialogAccepted, onRestore);
 
-      MicaConfigResource.get(function (micaConfig) {
-
-        var formLanguages = {};
-        micaConfig.languages.forEach(function (loc) {
-          formLanguages[loc] = $filter('translate')('language.' + loc);
-        });
-        $scope.sfOptions = {formDefaults: {
-          readonly: true,
-          languages: formLanguages
-        }};
-
-        $scope.languages = micaConfig.languages;
-        $scope.roles = micaConfig.roles;
-        $scope.openAccess = micaConfig.openAccess;
-
-        EntityFormResource.get({target: 'study', locale: $translate.use()}, function(form) {
-          form.schema = angular.fromJson(form.schema);
-          form.definition = angular.fromJson(form.definition);
-          $scope.sfForm = form;
-        });
-
-        EntityFormResource.get({target: 'population', locale: $translate.use()}, function(form) {
-          form.schema = angular.fromJson(form.schema);
-          form.definition = angular.fromJson(form.definition);
-          $scope.populationSfForm = form;
-        });
-
-        EntityFormResource.get({target: 'data-collection-event', locale: $translate.use()}, function(form) {
-          form.schema = angular.fromJson(form.schema);
-          form.definition = angular.fromJson(form.definition);
-          $scope.dceSfForm = form;
-        });
+      $rootScope.$on('$translateChangeSuccess', function () {
+        initializeForm();
       });
+
+      initializeForm();
 
       StudyTaxonomyService.get(function() {
         $scope.getLabel = StudyTaxonomyService.getLabel;
@@ -356,8 +368,6 @@ mica.study
       $scope.restoreRevision = restoreRevision;
       $scope.fetchRevisions = fetchRevisions;
       $scope.studySummary = StudyStateResource.get({id: $routeParams.id}, initializeState);
-
-      $scope.months = $locale.DATETIME_FORMATS.MONTH;
 
       $scope.emitStudyUpdated = function () {
         $scope.$emit(STUDY_EVENTS.studyUpdated, $scope.study);
@@ -626,6 +636,7 @@ mica.study
     'study',
     'path',
     'StudyTaxonomyService',
+    'moment',
     function ($scope,
               $uibModalInstance,
               $locale,
@@ -637,8 +648,9 @@ mica.study
               sfForm,
               study,
               path,
-              StudyTaxonomyService) {
-      $scope.months = $locale.DATETIME_FORMATS.MONTH;
+              StudyTaxonomyService,
+              moment) {
+      $scope.months = moment.months();
       $scope.selectedLocale = lang;
       $scope.dce = dce;
       $scope.study = study;
@@ -728,19 +740,28 @@ mica.study
 
       $scope.newPopulation = !$routeParams.pid;
 
-      MicaConfigResource.get(function (micaConfig) {
-        var formLanguages = {};
-        micaConfig.languages.forEach(function (loc) {
-          formLanguages[loc] = $filter('translate')('language.' + loc);
-        });
-        $scope.sfOptions = {formDefaults: { languages: formLanguages }};
+      function initializeForm() {
+        MicaConfigResource.get(function (micaConfig) {
+          var formLanguages = {};
+          micaConfig.languages.forEach(function (loc) {
+            formLanguages[loc] = $filter('translate')('language.' + loc);
+          });
+          $scope.sfOptions = {formDefaults: {languages: formLanguages}};
 
-        EntityFormResource.get({target: 'population', locale: $translate.use()}, function(form) {
-          form.schema = angular.fromJson(form.schema);
-          form.definition = angular.fromJson(form.definition);
-          $scope.populationSfForm = form;
+          EntityFormResource.get({target: 'population', locale: $translate.use()}, function (form) {
+            form.schema = angular.fromJson(form.schema);
+            form.definition = angular.fromJson(form.definition);
+            $scope.populationSfForm = form;
+          });
         });
+      }
+
+
+      $rootScope.$on('$translateChangeSuccess', function () {
+        initializeForm();
       });
+
+      initializeForm();
 
       $scope.save = function (form) {
         $scope.$broadcast('schemaFormValidate');
@@ -798,6 +819,7 @@ mica.study
     'FormServerValidation',
     'MicaUtil',
     'StudyTaxonomyService',
+    'SfOptionsService',
     function ($rootScope,
               $scope,
               $routeParams,
@@ -811,7 +833,8 @@ mica.study
               MicaConfigResource,
               FormServerValidation,
               MicaUtil,
-              StudyTaxonomyService
+              StudyTaxonomyService,
+              SfOptionsService
     ) {
       $scope.dce = {model: {}};
       $scope.fileTypes = '.doc, .docx, .odm, .odt, .gdoc, .pdf, .txt  .xml  .xls, .xlsx, .ppt';
@@ -877,29 +900,38 @@ mica.study
         }
       }) : {};
 
-      MicaConfigResource.get(function (micaConfig) {
-        var sfLanguages = {};
-        micaConfig.languages.forEach(function (lang) {
-          sfLanguages[lang] = $filter('translate')('language.' + lang);
-        });
-        $scope.sfOptions = {
-          formDefaults: {
-            languages: sfLanguages
-          }
-        };
+      function initializeForm() {
+        MicaConfigResource.get(function (micaConfig) {
+          var sfLanguages = {};
+          micaConfig.languages.forEach(function (lang) {
+            sfLanguages[lang] = $filter('translate')('language.' + lang);
+          });
 
-        EntityFormResource.get({target: 'study'}, function(form) {
-          form.schema = LocalizedSchemaFormService.translate(angular.fromJson(form.schema));
-          form.definition = LocalizedSchemaFormService.translate(angular.fromJson(form.definition));
-          $scope.sfForm = form;
-        });
+          SfOptionsService.transform().then(function(options) {
+            $scope.sfOptions = options;
+            $scope.sfOptions.formDefaults = { languages: sfLanguages };
+          });
 
-        EntityFormResource.get({target: 'data-collection-event', locale: $translate.use()}, function(form) {
-          form.schema = angular.fromJson(form.schema);
-          form.definition = angular.fromJson(form.definition);
-          $scope.dceSfForm = form;
+          EntityFormResource.get({target: 'study'}, function (form) {
+            form.schema = LocalizedSchemaFormService.translate(angular.fromJson(form.schema));
+            form.definition = LocalizedSchemaFormService.translate(angular.fromJson(form.definition));
+            $scope.sfForm = form;
+          });
+
+          EntityFormResource.get({target: 'data-collection-event', locale: $translate.use()}, function (form) {
+            form.schema = angular.fromJson(form.schema);
+            form.definition = angular.fromJson(form.definition);
+            $scope.dceSfForm = form;
+          });
+
         });
+      }
+
+      $rootScope.$on('$translateChangeSuccess', function () {
+        initializeForm();
       });
+
+      initializeForm();
 
       $scope.cancel = function () {
         redirectToStudy();
@@ -991,27 +1023,36 @@ mica.study
               FormServerValidation,
               RadioGroupOptionBuilder,
               FormDirtyStateObserver) {
-      MicaConfigResource.get(function (micaConfig) {
-        var sfLanguages = {};
-        micaConfig.languages.forEach(function (lang) {
-          sfLanguages[lang] = $filter('translate')('language.' + lang);
-        });
-        $scope.sfOptions = {
-          formDefaults: {
-            languages: sfLanguages
-          }
-        };
 
-        EntityFormResource.get({target: 'study'}, function(form) {
-          form.schema = LocalizedSchemaFormService.translate(angular.fromJson(form.schema));
-          form.definition = LocalizedSchemaFormService.translate(angular.fromJson(form.definition));
-          $scope.sfForm = form;
+      function initializeForm() {
+        MicaConfigResource.get(function (micaConfig) {
+          var sfLanguages = {};
+          micaConfig.languages.forEach(function (lang) {
+            sfLanguages[lang] = $filter('translate')('language.' + lang);
+          });
+          $scope.sfOptions = {
+            formDefaults: {
+              languages: sfLanguages
+            }
+          };
+
+          EntityFormResource.get({target: 'study'}, function (form) {
+            form.schema = LocalizedSchemaFormService.translate(angular.fromJson(form.schema));
+            form.definition = LocalizedSchemaFormService.translate(angular.fromJson(form.definition));
+            $scope.sfForm = form;
+          });
         });
-      });
+      }
 
       function createNewStudy() {
         return {attachments: [], maelstromAuthorization: {date: null}, specificAuthorization: {date: null}, model: {}};
       }
+
+      $rootScope.$on('$translateChangeSuccess', function () {
+        initializeForm();
+      });
+
+      initializeForm();
 
       $scope.revision = {comment: null};
       $scope.today = new Date();

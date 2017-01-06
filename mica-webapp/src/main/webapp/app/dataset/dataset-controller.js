@@ -113,6 +113,7 @@ mica.dataset
     'StudyStateProjectsResource',
     'FormDirtyStateObserver',
     'EntityFormResource',
+    'SfOptionsService',
 
     function ($rootScope,
               $scope,
@@ -130,11 +131,34 @@ mica.dataset
               StudyStatesResource,
               StudyStateProjectsResource,
               FormDirtyStateObserver,
-              EntityFormResource) {
+              EntityFormResource,
+              SfOptionsService) {
       $scope.studies = [];
       $scope.projects = [];
       $scope.selected = {};
       $scope.studyTable = {};
+
+
+      function initializeForm() {
+        MicaConfigResource.get(function (micaConfig) {
+          var formLanguages = {};
+          micaConfig.languages.forEach(function (loc) {
+            formLanguages[loc] = $filter('translate')('language.' + loc);
+          });
+
+          SfOptionsService.transform().then(function(options) {
+            $scope.sfOptions = options;
+            $scope.sfOptions.formDefaults = {languages: formLanguages};
+          });
+
+          EntityFormResource.get({target: 'study-dataset', locale: $translate.use()}, function (form) {
+            form.schema = angular.fromJson(form.schema);
+            form.definition = angular.fromJson(form.definition);
+            $scope.sfForm = form;
+          });
+
+        });
+      }
 
       var getTypeFromUrl = function() {
         var matched = /\/(\w+-dataset)\//.exec($location.path());
@@ -234,21 +258,6 @@ mica.dataset
         }
       });
 
-      MicaConfigResource.get(function (micaConfig) {
-        var formLanguages = {};
-        micaConfig.languages.forEach(function(loc) {
-          formLanguages[loc] = $filter('translate')('language.' + loc);
-        });
-        $scope.sfOptions = {formDefaults: { languages: formLanguages}};
-
-        EntityFormResource.get({target: 'study-dataset', locale: $translate.use()}, function(form) {
-          form.schema = angular.fromJson(form.schema);
-          form.definition = angular.fromJson(form.definition);
-          $scope.sfForm = form;
-        });
-
-      });
-
       $scope.save = function () {
         $scope.$broadcast('schemaFormValidate');
         if ($scope.form.$valid) {
@@ -265,6 +274,12 @@ mica.dataset
       $scope.cancel = function () {
         $location.path('/study-dataset' + ($scope.dataset.id ? '/' + $scope.dataset.id : '')).replace();
       };
+
+      $rootScope.$on('$translateChangeSuccess', function () {
+        initializeForm();
+      });
+
+      initializeForm();
 
       FormDirtyStateObserver.observe($scope);
     }])
@@ -285,6 +300,7 @@ mica.dataset
     'FormDirtyStateObserver',
     'EntityFormResource',
     'OpalTablesService',
+    'SfOptionsService',
 
     function ($rootScope,
               $scope,
@@ -301,7 +317,33 @@ mica.dataset
               MicaConfigOpalProjectsResource,
               FormDirtyStateObserver,
               EntityFormResource,
-              OpalTablesService) {
+              OpalTablesService,
+              SfOptionsService) {
+
+
+      function initializeForm() {
+        MicaConfigResource.get(function (micaConfig) {
+          var formLanguages = {};
+          micaConfig.languages.forEach(function (loc) {
+            formLanguages[loc] = $filter('translate')('language.' + loc);
+          });
+
+          SfOptionsService.transform().then(function(options) {
+            $scope.sfOptions = options;
+            $scope.sfOptions.formDefaults = {languages: formLanguages};
+          });
+
+          EntityFormResource.get({target: 'harmonization-dataset', locale: $translate.use()}, function (form) {
+            form.schema = angular.fromJson(form.schema);
+            form.definition = angular.fromJson(form.definition);
+            $scope.sfForm = form;
+          });
+
+          MicaConfigOpalProjectsResource.get().$promise.then(function (projects) {
+            $scope.projects = projects;
+          });
+        });
+      }
 
       var getTypeFromUrl = function() {
         var matched = /\/(\w+-dataset)\//.exec($location.path());
@@ -350,24 +392,6 @@ mica.dataset
         };
       }
 
-      MicaConfigResource.get(function (micaConfig) {
-        var formLanguages = {};
-        micaConfig.languages.forEach(function(loc) {
-          formLanguages[loc] = $filter('translate')('language.' + loc);
-        });
-        $scope.sfOptions = {formDefaults: { languages: formLanguages}};
-
-        EntityFormResource.get({target: 'harmonization-dataset', locale: $translate.use()}, function(form) {
-          form.schema = angular.fromJson(form.schema);
-          form.definition = angular.fromJson(form.definition);
-          $scope.sfForm = form;
-        });
-
-        MicaConfigOpalProjectsResource.get().$promise.then(function(projects){
-          $scope.projects = projects;
-        });
-      });
-
       $scope.save = function () {
 
         $scope.$broadcast('schemaFormValidate');
@@ -415,6 +439,11 @@ mica.dataset
         FormServerValidation.error(response, $scope.form, $scope.languages);
       };
 
+      $rootScope.$on('$translateChangeSuccess', function () {
+        initializeForm();
+      });
+
+      initializeForm();
       FormDirtyStateObserver.observe($scope);
     }])
 
@@ -443,6 +472,7 @@ mica.dataset
     'OpalTablesService',
     'StudyDatasetResource',
     'HarmonizationDatasetResource',
+    'SfOptionsService',
 
     function ($rootScope,
               $scope,
@@ -468,25 +498,32 @@ mica.dataset
               EntityFormResource,
               OpalTablesService,
               StudyDatasetResource,
-              HarmonizationDatasetResource) {
+              HarmonizationDatasetResource,
+              SfOptionsService) {
 
-      MicaConfigResource.get(function (micaConfig) {
-        $scope.opal = micaConfig.opal;
-        var formLanguages = {};
-        micaConfig.languages.forEach(function(loc) {
-          formLanguages[loc] = $filter('translate')('language.' + loc);
+      function initializeForm() {
+        MicaConfigResource.get(function (micaConfig) {
+          $scope.opal = micaConfig.opal;
+          var formLanguages = {};
+          micaConfig.languages.forEach(function (loc) {
+            formLanguages[loc] = $filter('translate')('language.' + loc);
+          });
+
+          SfOptionsService.transform().then(function(options) {
+            $scope.sfOptions = options;
+            $scope.sfOptions.formDefaults = {languages: formLanguages};
+          });
+
+          $scope.openAccess = micaConfig.openAccess;
+
+          EntityFormResource.get({target: $scope.type, locale: $translate.use()}, function (form) {
+            form.schema = angular.fromJson(form.schema);
+            form.schema.readonly = true;
+            form.definition = angular.fromJson(form.definition);
+            $scope.sfForm = form;
+          });
         });
-        $scope.sfOptions = {formDefaults: { languages: formLanguages}};
-
-        $scope.openAccess = micaConfig.openAccess;
-
-        EntityFormResource.get({target: $scope.type, locale: $translate.use()}, function(form) {
-          form.schema = angular.fromJson(form.schema);
-          form.schema.readonly = true;
-          form.definition = angular.fromJson(form.definition);
-          $scope.sfForm = form;
-        });
-      });
+      }
 
       function addUpdateOpalTable(tableType, wrapper) {
         if (!tableType) {
@@ -721,6 +758,12 @@ mica.dataset
       $scope.restoreRevision = restoreRevision;
       $scope.fetchRevisions = fetchRevisions;
 
+      $rootScope.$on('$translateChangeSuccess', function () {
+        initializeForm();
+      });
+
+      initializeForm();
+
       $scope.$on(NOTIFICATION_EVENTS.confirmDialogAccepted, onRestore);
     }])
 
@@ -836,55 +879,6 @@ mica.dataset
       loadPage($scope.pagination.current);
     }])
 
-  .controller('HarmonizationDatasetViewController', ['$rootScope',
-    '$scope',
-    '$routeParams',
-    '$log',
-    '$locale',
-    '$location',
-    'HarmonizationDatasetResource',
-    'HarmonizationDatasetPublicationResource',
-    'MicaConfigResource',
-    'OpalTablesService',
-
-    function ($rootScope,
-              $scope,
-              $routeParams,
-              $log,
-              $locale,
-              $location,
-              HarmonizationDatasetResource,
-              HarmonizationDatasetPublicationResource,
-              MicaConfigResource,
-              OpalTablesService) {
-
-      MicaConfigResource.get(function (micaConfig) {
-        $scope.opal = micaConfig.opal;
-      });
-
-      $scope.dataset = HarmonizationDatasetResource.get({id: $routeParams.id}, function (dataset) {
-        $scope.datasetProject = dataset['obiba.mica.HarmonizationDatasetDto.type'].project;
-        $scope.datasetTable = dataset['obiba.mica.HarmonizationDatasetDto.type'].table;
-        $scope.opalTables = OpalTablesService.getTables(dataset);
-      });
-
-      $scope.isPublished = function () {
-        return $scope.dataset.published;
-      };
-
-      $scope.publish = function () {
-        if ($scope.dataset.published) {
-          HarmonizationDatasetPublicationResource.unPublish({id: $scope.dataset.id}, function () {
-            $scope.dataset = HarmonizationDatasetResource.get({id: $routeParams.id});
-          });
-        } else {
-          HarmonizationDatasetPublicationResource.publish({id: $scope.dataset.id}, function () {
-            $scope.dataset = HarmonizationDatasetResource.get({id: $routeParams.id});
-          });
-        }
-      };
-
-    }])
 
   .controller('StudyTableModalController', [
     '$scope',

@@ -13,6 +13,7 @@ package org.obiba.mica.dataset.domain;
 import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
 
+import com.google.common.collect.Maps;
 import org.obiba.mica.core.domain.AbstractModelAware;
 import org.obiba.mica.core.domain.Attribute;
 import org.obiba.mica.core.domain.AttributeAware;
@@ -23,6 +24,8 @@ import org.obiba.mica.core.domain.LocalizedString;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.MoreObjects;
+
+import java.util.Map;
 
 /**
  * Proxy to Opal tables.
@@ -144,6 +147,16 @@ public abstract class Dataset extends AbstractModelAware implements AttributeAwa
   @JsonIgnore
   public String getParentId() {
     return null;
+  }
+
+  @Override
+  public Map<String, Object> getModel() {
+    if (!this.hasModel()) {
+      Map<String, Object> map = Maps.newHashMap();
+      if (getAttributes() != null) getAttributes().forEach(map::put);
+      setModel(map);
+    }
+    return super.getModel();
   }
 
   @Override

@@ -485,8 +485,8 @@ public class Study extends AbstractModelAware implements AttributeAware, PersonA
     if (!hasModel()) {
       Map<String, Object> map = Maps.newHashMap();
 
-      if (getWebsite() != null) map.put("startYear", getStart());
-      if (getWebsite() != null) map.put("endYear", getEnd());
+      if (getStart() != null) map.put("startYear", getStart());
+      if (getEnd() != null) map.put("endYear", getEnd());
       if (getWebsite() != null) map.put("website", getWebsite());
       if (getMethods() != null) map.put("methods", getMethods());
       if (getNumberOfParticipants() != null) map.put("numberOfParticipants", getNumberOfParticipants());
@@ -504,6 +504,7 @@ public class Study extends AbstractModelAware implements AttributeAware, PersonA
       }
       getPopulations().forEach(Population::getModel);
       getPopulations().forEach(p -> p.getDataCollectionEvents().forEach(DataCollectionEvent::getModel));
+      if (getAttributes() != null) getAttributes().forEach(map::put);
 
       setModel(map);
     }
