@@ -693,6 +693,7 @@ mica.study
     'FormServerValidation',
     'StudyTaxonomyService',
     'MicaUtil',
+    'SfOptionsService',
     function ($rootScope,
               $scope,
               $routeParams,
@@ -706,7 +707,8 @@ mica.study
               MicaConfigResource,
               FormServerValidation,
               StudyTaxonomyService,
-              MicaUtil) {
+              MicaUtil,
+              SfOptionsService) {
 
 
       $scope.selectionCriteriaGenders = {};
@@ -746,7 +748,10 @@ mica.study
           micaConfig.languages.forEach(function (loc) {
             formLanguages[loc] = $filter('translate')('language.' + loc);
           });
-          $scope.sfOptions = {formDefaults: {languages: formLanguages}};
+          SfOptionsService.transform().then(function(options) {
+            $scope.sfOptions = options;
+            $scope.sfOptions.formDefaults = {languages: formLanguages};
+          });
 
           EntityFormResource.get({target: 'population', locale: $translate.use()}, function (form) {
             form.schema = angular.fromJson(form.schema);
@@ -1006,6 +1011,7 @@ mica.study
     'FormServerValidation',
     'RadioGroupOptionBuilder',
     'FormDirtyStateObserver',
+    'SfOptionsService',
     function ($rootScope,
               $scope,
               $routeParams,
@@ -1022,7 +1028,8 @@ mica.study
               StringUtils,
               FormServerValidation,
               RadioGroupOptionBuilder,
-              FormDirtyStateObserver) {
+              FormDirtyStateObserver,
+              SfOptionsService) {
 
       function initializeForm() {
         MicaConfigResource.get(function (micaConfig) {
@@ -1030,11 +1037,10 @@ mica.study
           micaConfig.languages.forEach(function (lang) {
             sfLanguages[lang] = $filter('translate')('language.' + lang);
           });
-          $scope.sfOptions = {
-            formDefaults: {
-              languages: sfLanguages
-            }
-          };
+          SfOptionsService.transform().then(function(options) {
+            $scope.sfOptions = options;
+            $scope.sfOptions.formDefaults = {languages: sfLanguages};
+          });
 
           EntityFormResource.get({target: 'study'}, function (form) {
             form.schema = LocalizedSchemaFormService.translate(angular.fromJson(form.schema));
