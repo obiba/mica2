@@ -19,7 +19,7 @@ set -e
 
 
 case "$1" in
-	0)
+	[0-1])
     userdel -f mica || true
     rm -rf /var/lib/mica2 /var/log/mica2 /tmp/mica2 /etc/mica2 /usr/share/mica2*
   ;;
