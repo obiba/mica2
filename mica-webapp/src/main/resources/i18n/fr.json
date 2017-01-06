@@ -42,7 +42,9 @@
     "documentation": "Documentation",
     "sources": "Code sources",
     "down": "Descendre",
-    "up": "Monter"
+    "up": "Monter",
+    "detailed": "Détaillé",
+    "percentage": "Pourcentage"
   },
   "pagination": {
     "of": "de"
