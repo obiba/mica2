@@ -19,6 +19,7 @@
       "integer": "Integer",
       "decimal": "Decimal"
     },
+    "search": "Search",
     "localized": "Localized",
     "repeatable": "Repeatable",
     "true": "True",
@@ -35,7 +36,16 @@
     "print": "Print",
     "modified": "Modified",
     "delete-selected": "Delete Selected Items",
-    "server-error": "An unknown error has occurred, please contact your administrator for assistance."
+    "server-error": "An unknown error has occurred, please contact your administrator for assistance.",
+    "new": "New",
+    "add": "Add",
+    "documentation": "Documentation",
+    "sources": "Sources",
+    "down": "Down",
+    "up": "Up"
+  },
+  "pagination": {
+    "of": "of"
   },
   "main": {
     "title": "Welcome to Mica!",
@@ -226,7 +236,10 @@
     "title": "Error page!",
     "403": "You are not authorized to access the page.",
     "wordCount": "Word count limit exceeded.",
-    "does-not-validate": "The field does not validate."
+    "does-not-validate": "The field does not validate.",
+    "localized": {
+      "completed": "The field must be completed in all specified languages."
+    }
   },
   "config": {
     "short-title": "Configuration",

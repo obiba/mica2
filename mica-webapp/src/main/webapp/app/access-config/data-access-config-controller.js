@@ -46,7 +46,6 @@ mica.dataAccessConfig
       $scope.pdfTemplates = {};
 
       var saveForm = function() {
-
         switch (EntitySchemaFormService.isFormValid($scope.form)) {
           case EntitySchemaFormService.ParseResult.VALID:
             $scope.dataAccessForm.definition = $scope.form.definition;
@@ -65,7 +64,8 @@ mica.dataAccessConfig
 
             DataAccessFormResource.save($scope.dataAccessForm,
               function () {
-                $location.path('/admin').replace();
+                $scope.state.setDirty(false);
+                AlertBuilder.newBuilder().delay(3000).type('success').trMsg('entity-config.save-alert.success').build();
               },
               function (response) {
                 AlertBuilder.newBuilder().response(response).build();
@@ -94,13 +94,14 @@ mica.dataAccessConfig
 
       }
 
-      DataAccessFormResource.get(
+      $scope.form = DataAccessFormResource.get(
         function(dataAccessForm){
           var watchState = {firstTime: true};
-          $scope.form.definitionJson = EntitySchemaFormService.parseJsonSafely(dataAccessForm.definition, []);
-          $scope.form.definition = EntitySchemaFormService.prettifyJson($scope.form.definitionJson);
-          $scope.form.schemaJson = EntitySchemaFormService.parseJsonSafely(dataAccessForm.schema, {});
-          $scope.form.schema = EntitySchemaFormService.prettifyJson($scope.form.schemaJson);
+          dataAccessForm.model = {};
+          dataAccessForm.definitionJson = EntitySchemaFormService.parseJsonSafely(dataAccessForm.definition, []);
+          dataAccessForm.definition = EntitySchemaFormService.prettifyJson(dataAccessForm.definitionJson);
+          dataAccessForm.schemaJson = EntitySchemaFormService.parseJsonSafely(dataAccessForm.schema, {});
+          dataAccessForm.schema = EntitySchemaFormService.prettifyJson(dataAccessForm.schemaJson);
           $scope.dataAccessForm = dataAccessForm;
           $scope.dataAccessForm.pdfTemplates = $scope.dataAccessForm.pdfTemplates || [];
 
@@ -109,10 +110,10 @@ mica.dataAccessConfig
             return s;
           }, {});
 
-          if ($scope.form.definitionJson.length === 0) {
+          if (dataAccessForm.definitionJson.length === 0) {
             AlertBuilder.newBuilder().trMsg('data-access-config.parse-error.schema').build();
           }
-          if (Object.getOwnPropertyNames($scope.form.schemaJson).length === 0) {
+          if (Object.getOwnPropertyNames(dataAccessForm.schemaJson).length === 0) {
             AlertBuilder.newBuilder().trMsg('data-access-config.parse-error.definition').build();
           }
 
@@ -122,14 +123,6 @@ mica.dataAccessConfig
         function(response) {
           AlertBuilder.newBuilder().response(response).build();
         });
-
-      $scope.form = {
-        definitionJson: null,
-        definition: null,
-        schemaJson: null,
-        schema: null,
-        model: {}
-      };
 
       $scope.loadPermissions = function() {
         $scope.acls = DataAccessFormPermissionsResource.get();

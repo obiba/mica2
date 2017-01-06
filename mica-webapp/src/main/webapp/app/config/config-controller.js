@@ -11,14 +11,47 @@
 'use strict';
 
 mica.config
-  .controller('MicaConfigController', ['$rootScope', '$scope', '$resource', '$route', '$window', '$log', 'MicaConfigResource', '$uibModal', '$translate',
-    'OpalCredentialsResource', 'OpalCredentialResource', 'KeyStoreResource', 'FormServerValidation', 'NOTIFICATION_EVENTS',
+  .controller('MicaConfigController', ['$rootScope',
+    '$scope',
+    '$resource',
+    '$route',
+    '$window',
+    '$log',
+    'MicaConfigResource',
+    '$uibModal',
+    '$translate',
+    'OpalCredentialsResource',
+    'OpalCredentialResource',
+    'KeyStoreResource',
+    'FormServerValidation',
+    'NOTIFICATION_EVENTS',
 
-    function ($rootScope, $scope, $resource, $route, $window, $log, MicaConfigResource, $uibModal, $translate,
-              OpalCredentialsResource, OpalCredentialResource, KeyStoreResource, FormServerValidation,
+    function ($rootScope,
+              $scope,
+              $resource,
+              $route,
+              $window,
+              $log,
+              MicaConfigResource,
+              $uibModal,
+              $translate,
+              OpalCredentialsResource,
+              OpalCredentialResource,
+              KeyStoreResource,
+              FormServerValidation,
               NOTIFICATION_EVENTS) {
       $scope.micaConfig = MicaConfigResource.get();
-      $scope.availableLanguages = $resource('ws/config/languages').get();
+
+      function getAvailableLanguages() {
+        $scope.availableLanguages = $resource('ws/config/languages').get({locale: $translate.use()});
+      }
+
+      $rootScope.$on('$translateChangeSuccess', function () {
+        getAvailableLanguages();
+      });
+
+      getAvailableLanguages();
+
       $scope.opalCredentials = OpalCredentialsResource.query();
 
       $scope.status = {
@@ -318,13 +351,37 @@ mica.config
       };
     }])
 
-  .controller('MicaConfigEditController', ['$scope', '$resource', '$window', '$location', '$log',
-    'MicaConfigResource', 'FormServerValidation',
+  .controller('MicaConfigEditController', ['$rootScope',
+    '$scope',
+    '$resource',
+    '$window',
+    '$location',
+    '$log',
+    'MicaConfigResource',
+    'FormServerValidation',
+    '$translate',
 
-    function ($scope, $resource, $window, $location, $log, MicaConfigResource, FormServerValidation) {
+    function ($rootScope,
+              $scope,
+              $resource,
+              $window,
+              $location,
+              $log,
+              MicaConfigResource,
+              FormServerValidation,
+              $translate) {
       var reload = false;
       $scope.micaConfig = MicaConfigResource.get();
-      $scope.availableLanguages = $resource('ws/config/languages').get();
+
+      function getAvailableLanguages() {
+        $scope.availableLanguages = $resource('ws/config/languages').get({locale: $translate.use()});
+      }
+
+      $rootScope.$on('$translateChangeSuccess', function () {
+        getAvailableLanguages();
+      });
+
+      getAvailableLanguages();
 
       $scope.micaConfig.$promise.then(function() {
         $scope.$watchGroup(['name', 'isNetworkEnabled', 'isSingleNetworkEnabled',

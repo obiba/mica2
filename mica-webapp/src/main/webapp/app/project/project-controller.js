@@ -127,6 +127,7 @@ mica.project
     'LocalizedValues',
     '$filter',
     'DocumentPermissionsService',
+    'SfOptionsService',
 
     function ($rootScope,
       $scope,
@@ -152,16 +153,46 @@ mica.project
       $uibModal,
       LocalizedValues,
       $filter,
-      DocumentPermissionsService) {
+      DocumentPermissionsService,
+      SfOptionsService) {
 
-      var initializeProject = function(project){
+      function initializeForm() {
+        MicaConfigResource.get(function (micaConfig) {
+          $scope.tabs = [];
+          micaConfig.languages.forEach(function (lang) {
+            $scope.tabs.push({lang: lang});
+          });
+          $scope.languages = micaConfig.languages;
+          var formLanguages = {};
+          micaConfig.languages.forEach(function (loc) {
+            formLanguages[loc] = $filter('translate')('language.' + loc);
+          });
+
+          SfOptionsService.transform().then(function(options) {
+            $scope.sfOptions = options;
+            $scope.sfOptions.formDefaults = {languages: formLanguages};
+          });
+
+          $scope.roles = micaConfig.roles;
+          $scope.openAccess = micaConfig.openAccess;
+
+          ProjectFormResource.get({ locale: $translate.use() },
+            function onSuccess(projectForm) {
+              $scope.form.definition = JsonUtils.parseJsonSafely(projectForm.definition, []);
+              $scope.form.schema = JsonUtils.parseJsonSafely(projectForm.schema, {});
+              $scope.form.schema.readonly = true;
+            });
+        });
+      }
+
+      function initializeProject(project) {
         $scope.activeTab = 0;
         $scope.permissions = DocumentPermissionsService.state(project['obiba.mica.EntityStateDto.projectState']);
         $scope.form.model = JsonUtils.parseJsonSafely(project.content, {});
         // project name/description is an array of map entries
         $scope.form.model._title = LocalizedValues.arrayToObject(project.title);
         $scope.form.model._summary = LocalizedValues.arrayToObject(project.summary);
-      };
+      }
 
       $scope.Mode = {View: 0, Revision: 1, File: 2, Permission: 3, Comment: 4};
 
@@ -169,27 +200,7 @@ mica.project
 
       $scope.form = {};
 
-      MicaConfigResource.get(function (micaConfig) {
-        $scope.tabs = [];
-        micaConfig.languages.forEach(function (lang) {
-          $scope.tabs.push({lang: lang});
-        });
-        $scope.languages = micaConfig.languages;
-        var formLanguages = {};
-        micaConfig.languages.forEach(function (loc) {
-          formLanguages[loc] = $filter('translate')('language.' + loc);
-        });
-        $scope.sfOptions = {formDefaults: {languages: formLanguages}};
-        $scope.roles = micaConfig.roles;
-        $scope.openAccess = micaConfig.openAccess;
-
-        ProjectFormResource.get({ locale: $translate.use() },
-          function onSuccess(projectForm) {
-            $scope.form.definition = JsonUtils.parseJsonSafely(projectForm.definition, []);
-            $scope.form.schema = JsonUtils.parseJsonSafely(projectForm.schema, {});
-            $scope.form.schema.readonly = true;
-          });
-      });
+      initializeForm();
 
       $scope.projectId = $routeParams.id;
       $scope.project = DraftProjectResource.get({id: $routeParams.id}, initializeProject);
@@ -319,6 +330,10 @@ mica.project
         }
       });
 
+      $rootScope.$on('$translateChangeSuccess', function () {
+        initializeForm();
+      });
+
       $scope.viewMode = getViewMode();
     }])
 
@@ -340,6 +355,7 @@ mica.project
     'JsonUtils',
     'FormServerValidation',
     'FormDirtyStateObserver',
+    'SfOptionsService',
     function ($rootScope,
               $scope,
               $routeParams,
@@ -356,7 +372,8 @@ mica.project
               LocalizedValues,
               JsonUtils,
               FormServerValidation,
-              FormDirtyStateObserver) {
+              FormDirtyStateObserver,
+              SfOptionsService) {
 
       $scope.activeTab = 0;
       $scope.files = [];
@@ -371,26 +388,39 @@ mica.project
           return response;
         }) : {published: false};
 
-      MicaConfigResource.get(function (micaConfig) {
-        $scope.tabs = [];
-        micaConfig.languages.forEach(function (lang) {
-          $scope.tabs.push({lang: lang});
-        });
-        $scope.languages = micaConfig.languages;
-        var formLanguages = {};
-        micaConfig.languages.forEach(function(loc) {
-          formLanguages[loc] = $filter('translate')('language.' + loc);
-        });
-        $scope.sfOptions = {formDefaults: { languages: formLanguages}};
-        ProjectFormResource.get({ locale: $translate.use() },
-          function onSuccess(projectForm) {
-            $scope.form.definition = JsonUtils.parseJsonSafely(projectForm.definition, []);
-            $scope.form.schema = JsonUtils.parseJsonSafely(projectForm.schema, {});
-            if (!$routeParams.id) {
-              $scope.form.model = {};
-            }
+      function initializeForm() {
+        MicaConfigResource.get(function (micaConfig) {
+          $scope.tabs = [];
+          micaConfig.languages.forEach(function (lang) {
+            $scope.tabs.push({lang: lang});
           });
+
+          SfOptionsService.transform().then(function(options) {
+            $scope.sfOptions = options;
+            $scope.sfOptions.formDefaults = {languages: formLanguages};
+          });
+
+          var formLanguages = {};
+          micaConfig.languages.forEach(function (loc) {
+            formLanguages[loc] = $filter('translate')('language.' + loc);
+          });
+          $scope.sfOptions = {formDefaults: {languages: formLanguages}};
+          ProjectFormResource.get({locale: $translate.use()},
+            function onSuccess(projectForm) {
+              $scope.form.definition = JsonUtils.parseJsonSafely(projectForm.definition, []);
+              $scope.form.schema = JsonUtils.parseJsonSafely(projectForm.schema, {});
+              if (!$routeParams.id) {
+                $scope.form.model = {};
+              }
+            });
+        });
+      }
+
+      $rootScope.$on('$translateChangeSuccess', function () {
+        initializeForm();
       });
+
+      initializeForm();
 
       $scope.save = function () {
         $scope.$broadcast('schemaFormValidate');
