@@ -42,7 +42,9 @@
     "documentation": "Documentation",
     "sources": "Sources",
     "down": "Down",
-    "up": "Up"
+    "up": "Up",
+    "detailed": "Detailed",
+    "percentage": "Percentage"
   },
   "pagination": {
     "of": "of"
