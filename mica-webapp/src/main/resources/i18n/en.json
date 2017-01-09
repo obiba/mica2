@@ -1004,6 +1004,10 @@
   },
   "server": {
     "error": {
+      "search": {
+        "failed": "Search failed, please revise your query and try again.",
+        "timeout": "Too many search in progress, please retry later."
+      },
       "403": "Server rejected your request, please make sure you are logged in and try again.",
       "409": {
         "network": {

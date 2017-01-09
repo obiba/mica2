@@ -14,6 +14,9 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -21,6 +24,7 @@ import java.util.stream.Stream;
 
 import javax.inject.Inject;
 
+import com.google.common.util.concurrent.UncheckedTimeoutException;
 import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.micaConfig.service.TaxonomyService;
 import org.obiba.mica.search.queries.AbstractDocumentQuery;
@@ -41,6 +45,10 @@ import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.obiba.opal.core.domain.taxonomy.Vocabulary;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -53,12 +61,15 @@ import com.google.common.collect.Lists;
 import static org.obiba.mica.search.queries.AbstractDocumentQuery.Scope.DETAIL;
 import static org.obiba.mica.search.queries.AbstractDocumentQuery.Scope.DIGEST;
 
-
 @Component
 @Scope("request")
 public class JoinQueryExecutor {
 
   private static final Logger log = LoggerFactory.getLogger(AbstractDocumentQuery.class);
+
+  @Inject
+  @Qualifier("esJoinQueriesSemaphore")
+  private Semaphore esJoinQueriesSemaphore;
 
   public enum QueryType {
     VARIABLE,
@@ -136,6 +147,35 @@ public class JoinQueryExecutor {
   }
 
   private JoinQueryResultDto query(QueryType type, JoinQueryWrapper joinQueryWrapper,
+                                   CountStatsData.Builder countBuilder, AbstractDocumentQuery.Scope scope, AbstractDocumentQuery.Mode mode)
+    throws IOException {
+
+    boolean havePermit = false;
+    try {
+      havePermit = acquireSemaphorePermit();
+      if (havePermit)
+        return unsafeQuery(type, joinQueryWrapper, countBuilder, scope, mode);
+      else
+        throw new UncheckedTimeoutException("Too many queries in a short time. Please retry later.");
+    } finally {
+      if (havePermit)
+        releaseSemaphorePermit();
+    }
+  }
+
+  private boolean acquireSemaphorePermit() throws IOException {
+    try {
+      return esJoinQueriesSemaphore.tryAcquire(30, TimeUnit.SECONDS);
+    } catch (InterruptedException e) {
+      throw new IllegalStateException(e.getMessage(), e);
+    }
+  }
+
+  private void releaseSemaphorePermit() {
+    esJoinQueriesSemaphore.release();
+  }
+
+  private JoinQueryResultDto unsafeQuery(QueryType type, JoinQueryWrapper joinQueryWrapper,
       CountStatsData.Builder countBuilder, AbstractDocumentQuery.Scope scope, AbstractDocumentQuery.Mode mode)
       throws IOException {
     log.debug("Start query");
