@@ -31,6 +31,7 @@ elasticsearch:
   shards: 5
   replicas: 1
   settings: "http.enabled: false"
+  maxConcurrentJoinQueries: 4
 
 # Shiro: user directory configuration
 shiro:
