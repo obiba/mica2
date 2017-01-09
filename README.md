@@ -1,3 +1,11 @@
+# OBiBa acknowledgments
+
+If you are using OBiBa software, please cite our work in your code, websites, publications or reports.
+
+"The work presented herein was made possible using the OBiBa suite (www.obiba.org), a  software suite developed by Maelstrom Research (www.maelstrom-research.org)"
+
+The default Study model included in Mica was designed by [Maelstrom Research](https://www.maelstrom-research.org) under the [Creative Commons License with Non Commercial and No Derivative](https://creativecommons.org/licenses/by-nc-nd/4.0/) constraints.
+
 # Mica2 Server
 
 ## For developers
