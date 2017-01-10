@@ -62,6 +62,10 @@ mica.dataAccessConfig
               }
             }
 
+            delete $scope.dataAccessForm.definitionJson;
+            delete $scope.dataAccessForm.schemaJson;
+            delete $scope.dataAccessForm.model;
+
             DataAccessFormResource.save($scope.dataAccessForm,
               function () {
                 $scope.state.setDirty(false);
