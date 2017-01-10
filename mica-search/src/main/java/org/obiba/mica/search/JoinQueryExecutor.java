@@ -71,6 +71,9 @@ public class JoinQueryExecutor {
   @Qualifier("esJoinQueriesSemaphore")
   private Semaphore esJoinQueriesSemaphore;
 
+  @Value("${elasticsearch.concurrentJoinQueriesWaitTimeout:30000}")
+  private long concurrentJoinQueriesWaitTimeout;
+
   public enum QueryType {
     VARIABLE,
     DATASET,
@@ -165,7 +168,7 @@ public class JoinQueryExecutor {
 
   private boolean acquireSemaphorePermit() throws IOException {
     try {
-      return esJoinQueriesSemaphore.tryAcquire(30, TimeUnit.SECONDS);
+      return esJoinQueriesSemaphore.tryAcquire(concurrentJoinQueriesWaitTimeout, TimeUnit.MILLISECONDS);
     } catch (InterruptedException e) {
       throw new IllegalStateException(e.getMessage(), e);
     }

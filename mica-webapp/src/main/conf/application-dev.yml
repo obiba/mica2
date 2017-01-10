@@ -23,7 +23,8 @@ elasticsearch:
   shards: 5
   replicas: 1
   settings: "http.enabled: true"
-  maxConcurrentJoinQueries: 4
+  maxConcurrentJoinQueries: 2
+  concurrentJoinQueriesWaitTimeout: 15000
 
 shiro:
   password:
