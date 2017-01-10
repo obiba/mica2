@@ -32,6 +32,7 @@ elasticsearch:
   replicas: 1
   settings: "http.enabled: false"
   maxConcurrentJoinQueries: 4
+  concurrentJoinQueriesWaitTimeout: 30000
 
 # Shiro: user directory configuration
 shiro:
