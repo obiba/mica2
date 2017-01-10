@@ -250,7 +250,7 @@ mica.study
 
       var updateTimeline = function (study) {
         if (!$scope.timeline) {
-          $scope.timeline = new $.MicaTimeline(new $.StudyDtoParser());
+          $scope.timeline = new $.MicaTimeline(new $.StudyDtoParser($scope.selectedLocale));
         }
 
         $timeout(function () {
