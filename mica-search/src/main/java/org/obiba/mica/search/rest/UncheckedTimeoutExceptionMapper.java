@@ -14,7 +14,6 @@ package org.obiba.mica.search.rest;
 
 import com.google.common.util.concurrent.UncheckedTimeoutException;
 import com.google.protobuf.GeneratedMessage;
-import org.elasticsearch.ElasticsearchException;
 import org.obiba.jersey.exceptionmapper.AbstractErrorDtoExceptionMapper;
 import org.obiba.web.model.ErrorDtos;
 
@@ -26,7 +25,7 @@ public class UncheckedTimeoutExceptionMapper extends AbstractErrorDtoExceptionMa
 
   @Override
   protected Response.Status getStatus() {
-    return Response.Status.BAD_REQUEST;
+    return Response.Status.GATEWAY_TIMEOUT;
   }
 
   @Override
