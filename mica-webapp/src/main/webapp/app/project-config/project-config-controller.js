@@ -46,6 +46,11 @@ mica.projectConfig
           case EntitySchemaFormService.ParseResult.VALID:
             $scope.projectForm.definition = $scope.form.definition;
             $scope.projectForm.schema = $scope.form.schema;
+
+            delete $scope.projectForm.definitionJson;
+            delete $scope.projectForm.schemaJson;
+            delete $scope.projectForm.model;
+
             ProjectFormCustomResource.save($scope.projectForm,
               function () {
                 $scope.state.setDirty(false);
