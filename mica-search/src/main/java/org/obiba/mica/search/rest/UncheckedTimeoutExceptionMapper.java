@@ -13,27 +13,16 @@
 package org.obiba.mica.search.rest;
 
 import com.google.common.util.concurrent.UncheckedTimeoutException;
-import com.google.protobuf.GeneratedMessage;
-import org.obiba.jersey.exceptionmapper.AbstractErrorDtoExceptionMapper;
-import org.obiba.web.model.ErrorDtos;
 
 import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
 @Provider
-public class UncheckedTimeoutExceptionMapper extends AbstractErrorDtoExceptionMapper<UncheckedTimeoutException> {
+public class UncheckedTimeoutExceptionMapper implements ExceptionMapper<UncheckedTimeoutException> {
 
   @Override
-  protected Response.Status getStatus() {
-    return Response.Status.GATEWAY_TIMEOUT;
-  }
-
-  @Override
-  protected GeneratedMessage.ExtendableMessage<?> getErrorDto(UncheckedTimeoutException e) {
-    return ErrorDtos.ClientErrorDto.newBuilder()
-      .setCode(getStatus().getStatusCode())
-      .setMessageTemplate("server.error.search.timeout")
-      .setMessage(e.getMessage())
-      .build();
+  public Response toResponse(UncheckedTimeoutException exception) {
+    return Response.status(Response.Status.GATEWAY_TIMEOUT).entity(exception.getMessage()).build();
   }
 }
