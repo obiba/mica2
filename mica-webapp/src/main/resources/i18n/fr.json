@@ -1490,5 +1490,43 @@
         "institution": "Institution"
       }
     }
+  },
+  "client": {
+    "label": {
+      "countries": "Pays",
+      "dataschema-variable": "Variable de schéma de données",
+      "dataschema-variables": "Variables de schéma de données",
+      "study-variable": "Variable d'étude",
+      "study-variables": "Variable d'études",
+      "overview": "Aperçu",
+      "missing": "Manquant",
+      "dataset": {
+        "complete": "Complet",
+        "undetermined": "Indéterminé(e)",
+        "variable-crosstab": "Variable de tableau croisé",
+        "participants": "Participants"
+      },
+      "network": {
+        "summary-stats": "Statistiques de sommaire"
+      },
+      "study": {
+        "sample-size": "Taille de l'échantillon",
+        "target-number": "Nombre cible"
+      },
+      "variable": {
+        "value-type": "Type de valeur",
+        "unit": "Unité",
+        "variable-type": "Type de variable",
+        "categories": "Catégories",
+        "statistics": "Statistiques",
+        "harmonization": "Harmonisation",
+        "harmonized-variable": "Variable harmonisée",
+        "harmonization-algo": "Algorithmes d'harmonisation",
+        "show-harmo-algo": "Montrer les algorithmes d'harmonisation",
+        "cummulative-summary": "Sommaire cummulatif de toutes les études",
+        "script": "Scripte",
+        "status-detail": "Détail du statut"
+      }
+    }
   }
 }
