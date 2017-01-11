@@ -1490,5 +1490,43 @@
         "institution": "Institution"
       }
     }
+  },
+  "client": {
+    "label": {
+      "countries": "Countries",
+      "dataschema-variable": "DataSchema Variable",
+      "dataschema-variables": "DataSchema Variables",
+      "study-variable": "Study Variable",
+      "study-variables": "Study Variables",
+      "overview": "Overview",
+      "missing": "Missing",
+      "dataset": {
+        "complete": "Complete",
+        "undetermined": "Undetermined",
+        "variable-crosstab": "Variable Crosstab",
+        "participants": "Participants"
+      },
+      "network": {
+        "summary-stats": "Summary Statistics"
+      },
+      "study": {
+        "sample-size": "Sample Size",
+        "target-number": "Target Number"
+      },
+      "variable": {
+        "value-type": "Value Type",
+        "unit": "Unit",
+        "variable-type": "Variable Type",
+        "categories": "Categories",
+        "statistics": "Statistics",
+        "harmonization": "Harmonization",
+        "harmonized-variable": "Harmonized Variable",
+        "harmonization-algo": "Harmonization Algorithms",
+        "show-harmo-algo": "Show Harmonization Algorithms",
+        "cummulative-summary": "Cumulative Summary of all Studies",
+        "script": "Script",
+        "status-detail": "Status Detail"
+      }
+    }
   }
 }
