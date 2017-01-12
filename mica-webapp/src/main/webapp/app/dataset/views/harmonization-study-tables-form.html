@@ -3,7 +3,7 @@
 
   <p class="help-block" translate>dataset.harmonized-tables.info</p>
 
-  <div ng-show="inViewMode() && permissions.canEdit()">
+  <div ng-show="inViewMode() && permissions.canEdit()" class="hidden-print">
     <button type="button" class="btn btn-info btn-sm voffset2" ng-click="addStudyTable()">
       <i class="fa fa-plus"></i> <span translate>dataset.add-study-table</span>
     </button>
@@ -28,8 +28,8 @@
         <th translate>dataset.table</th>
         <th translate>dataset.table-name</th>
         <th translate>dataset.table-description</th>
-        <th translate>actions</th>
-        <th translate>global.order</th>
+        <th class="hidden-print" translate>actions</th>
+        <th class="hidden-print" translate>global.order</th>
       </tr>
       </thead>
       <tbody>
@@ -68,11 +68,11 @@
             </li>
           </ul>
         </td>
-        <td>
+        <td class="hidden-print">
           <a href="" ng-click="editOpalTable(wrapper)" class="action"><i class="fa fa-pencil"></i></a>
           <a href="" ng-click="deleteOpalTable(wrapper)" class="action"><i class="fa fa-trash-o"></i></a>
         </td>
-        <td>
+        <td class="hidden-print">
           <ul class="list-inline no-wrap">
             <li ng-show="!$last">
               <a href ng-click="moveOpalTableDown($index)" title="{{'global.down' | translate}}"><i class="fa fa-arrow-down"></i></a>

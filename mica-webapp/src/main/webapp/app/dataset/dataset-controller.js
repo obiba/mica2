@@ -511,6 +511,7 @@ mica.dataset
 
           SfOptionsService.transform().then(function(options) {
             $scope.sfOptions = options;
+            $scope.sfOptions.pristine = {errors: true, success: false};
             $scope.sfOptions.formDefaults = {languages: formLanguages};
           });
 
@@ -757,6 +758,10 @@ mica.dataset
       $scope.viewRevision = viewRevision;
       $scope.restoreRevision = restoreRevision;
       $scope.fetchRevisions = fetchRevisions;
+
+      $scope.print = function () {
+        setTimeout(function(){ window.print();}, 250);
+      };
 
       $rootScope.$on('$translateChangeSuccess', function () {
         initializeForm();

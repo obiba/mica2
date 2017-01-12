@@ -16,7 +16,7 @@
     <div class="col-md-6">
       <div>
         <h3 class="pull-left" translate>dataset.study-table.title</h3>
-        <div ng-show="inViewMode() && permissions.canEdit()" class="pull-right voffset3">
+        <div ng-show="inViewMode() && permissions.canEdit()" class="pull-right voffset3 hidden-print">
           <a href="" ng-click="editStudyTable()" class="action btn btn-primary btn-responsive" ng-show="dataset['obiba.mica.StudyDatasetDto.type']">
             <i class="fa fa-pencil-square-o"></i></a>
           <a href="" ng-click="deleteStudyTable()" class="action btn btn-danger btn-responsive" ng-show="dataset['obiba.mica.StudyDatasetDto.type']">

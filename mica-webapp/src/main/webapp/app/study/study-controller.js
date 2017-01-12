@@ -191,6 +191,7 @@ mica.study
             readonly: true,
             languages: formLanguages
           }};
+          $scope.sfOptions.pristine = {errors: true, success: false};
 
           $scope.languages = micaConfig.languages;
           $scope.roles = micaConfig.roles;
@@ -368,6 +369,10 @@ mica.study
       $scope.restoreRevision = restoreRevision;
       $scope.fetchRevisions = fetchRevisions;
       $scope.studySummary = StudyStateResource.get({id: $routeParams.id}, initializeState);
+
+      $scope.print = function () {
+        setTimeout(function(){ window.print();}, 250);
+      };
 
       $scope.emitStudyUpdated = function () {
         $scope.$emit(STUDY_EVENTS.studyUpdated, $scope.study);
