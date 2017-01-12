@@ -1039,6 +1039,9 @@
   },
   "server": {
     "error": {
+      "crosstab": {
+        "no-data": "No data available."
+      },
       "search": {
         "failed": "Search failed, please revise your query and try again.",
         "timeout": "Too many search in progress, please retry later."
