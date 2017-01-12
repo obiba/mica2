@@ -1507,7 +1507,9 @@
         "complete": "Complet",
         "undetermined": "Indéterminé(e)",
         "variable-crosstab": "Variable de tableau croisé",
-        "participants": "Participants"
+        "participants": "Participants",
+        "dataset-type": "Type d'ensemble de données",
+        "number-of-variables": "Nombre de variables"
       },
       "network": {
         "summary-stats": "Statistiques de sommaire"
