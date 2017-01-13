@@ -11,12 +11,18 @@
 <div>
   <div ng-include="'app/dataset/views/dataset-view-header.html'" ng-init="tabName='view'"></div>
 
-  <div ng-class="{'voffset3': !screen.is('lg')}" class="clearfix">
+  <div ng-class="{'voffset3': !screen.is('lg')}" class="clearfix hidden-print">
     <h3 class="pull-left no-margin-top" translate>view</h3>
     <div class="pull-right">
       <a ng-href="#/{{type}}/{{dataset.id}}/edit" class="btn btn-primary btn-responsive" ng-if="permissions.canEdit()">
         <i class="fa fa-pencil-square-o"></i> <span translate>edit</span>
       </a>
+
+      <a ng-click="print()"
+         class="btn btn-default" title="{{'global.print' | translate}}">
+        <i class="fa fa-print"></i> <span translate>global.print</span>
+      </a>
+
       <status-buttons class="inline" state="dataset['obiba.mica.EntityStateDto.datasetState']" on-publish="publish(true)" on-un-publish="publish(false)" on-delete="delete()" to-draft="toStatus('DRAFT')" to-under-review="toStatus('UNDER_REVIEW')" to-deleted="toStatus('DELETED')">
       </status-buttons>
     </div>

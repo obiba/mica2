@@ -396,6 +396,7 @@ mica.network
 
           SfOptionsService.transform().then(function(options) {
             $scope.sfOptions = options;
+            $scope.sfOptions.pristine = {errors: true, success: false};
             $scope.sfOptions.formDefaults = {languages: formLanguages};
           });
 
@@ -571,6 +572,10 @@ mica.network
       $scope.fetchRevisions = fetchRevisions;
 
       $scope.$on(NOTIFICATION_EVENTS.confirmDialogAccepted, onRestore);
+
+      $scope.print = function () {
+        setTimeout(function(){ window.print();}, 250);
+      };
 
       $scope.emitNetworkUpdated = function () {
         $scope.$emit(NETWORK_EVENTS.networkUpdated, $scope.network);

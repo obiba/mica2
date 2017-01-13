@@ -12,7 +12,7 @@
   <localized value="selectedPopulation.name" lang="selectedLocale"></localized>
 </h3>
 
-<div class="inline pull-right" ng-if="$parent.inViewMode() && permissions.canEdit()">
+<div class="inline pull-right hidden-print" ng-if="$parent.inViewMode() && permissions.canEdit()">
   <a ng-click="editPopulation(study, selectedPopulation)" class="btn btn-primary"><i class="fa fa-pencil"></i></a>
   <a ng-click="deletePopulation(study, selectedPopulation)" class="btn btn-danger"><i class="fa fa-trash-o"></i></a>
 </div>
@@ -27,7 +27,7 @@
 
 <h4 translate>study.data-collection-events</h4>
 
-<div>
+<div class="hidden-print">
   <a ng-if="inViewMode() && permissions.canEdit()" ng-click="addDataCollectionEvent(study, selectedPopulation)"
      class="btn btn-info btn-sm voffset1">
     <i class="fa fa-plus"></i> <span translate>study.add-data-collection-event</span>
@@ -46,7 +46,7 @@
       <th translate>study.name</th>
       <th translate>study.start</th>
       <th translate>study.end</th>
-      <th ng-if="inViewMode()" translate>actions</th>
+      <th ng-if="inViewMode()" class="hidden-print" translate>actions</th>
     </tr>
     </thead>
     <tbody>
@@ -67,7 +67,7 @@
       <td>
         {{dce.endYear}} <span ng-show="dce.endMonth">({{months[dce.endMonth - 1]}})</span>
       </td>
-      <td ng-if="inViewMode()" class="action-column">
+      <td ng-if="inViewMode()" class="action-column hidden-print">
         <a ng-click="showDataCollectionEvent(study, selectedPopulation, dce)" class="hand action"><i
             class="fa fa-eye"></i></a>
         <div class="inline" ng-if="permissions.canEdit()">
