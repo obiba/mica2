@@ -21,7 +21,7 @@
     <table class="table table-bordered table-striped" ng-show="dataset['obiba.mica.HarmonizationDatasetDto.type']">
       <thead>
       <tr>
-        <th></th>
+        <th class="hidden-print"></th>
         <th translate>study.label</th>
         <th translate>type</th>
         <th translate>dataset.project</th>
@@ -34,7 +34,7 @@
       </thead>
       <tbody>
       <tr ng-repeat="wrapper in opalTables">
-        <td>
+        <td class="hidden-print">
           <input type="checkbox" ng-model="wrapper.selected">
         </td>
         <td >

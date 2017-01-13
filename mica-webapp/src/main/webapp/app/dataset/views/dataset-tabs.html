@@ -8,7 +8,7 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<div ng-if="dataset.id" class="tabs-menu" ng-class="{'tabs-left': screen.is('lg')}">
+<div ng-if="dataset.id" class="tabs-menu hidden-print" ng-class="{'tabs-left': screen.is('lg')}">
   <ul class="nav nav-tabs">
     <li ng-class="{'active': tabName === 'view'}"><a href="#/{{type}}/{{dataset.id}}" title="{{'view' | translate}}"><i class="fa fa-eye"></i></a>
     </li>

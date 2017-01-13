@@ -43,7 +43,7 @@
           <table class="table table-bordered table-striped" ng-show="studySummaries.length">
             <thead>
             <tr>
-              <th ng-if="inViewMode() && permissions.canEdit()"></th>
+              <th ng-if="inViewMode() && permissions.canEdit()" class="hidden-print"></th>
               <th translate>study.acronym</th>
               <th translate>study.name</th>
               <th ng-if="inViewMode() && permissions.canEdit()" class="hidden-print" translate>actions</th>
@@ -51,7 +51,7 @@
             </thead>
             <tbody>
             <tr pagination-id="studySummaryPagination" dir-paginate="studySummary in studySummaries | itemsPerPage: 10">
-              <td ng-if="inViewMode() && permissions.canEdit()">
+              <td ng-if="inViewMode() && permissions.canEdit()" class="hidden-print">
                 <input type="checkbox" ng-model="studySummary.selected">
               </td>
               <td>
@@ -102,7 +102,7 @@
           <table class="table table-bordered table-striped" ng-show="network.networkSummaries.length">
             <thead>
             <tr>
-              <th ng-if="inViewMode() && permissions.canEdit()"></th>
+              <th ng-if="inViewMode() && permissions.canEdit()" class="hidden-print"></th>
               <th translate>network.acronym</th>
               <th translate>network.name</th>
               <th ng-if="inViewMode() && permissions.canEdit()" class="hidden-print" translate>actions</th>
@@ -110,7 +110,7 @@
             </thead>
             <tbody>
             <tr pagination-id="networkSummaryPagination" dir-paginate="networkSummary in network.networkSummaries | itemsPerPage: 10">
-              <td ng-if="inViewMode() && permissions.canEdit()">
+              <td ng-if="inViewMode() && permissions.canEdit()" class="hidden-print">
                 <input type="checkbox" ng-model="networkSummary.selected">
               </td>
               <td>
