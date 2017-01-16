@@ -120,10 +120,11 @@
       "type": "object",
       "properties": {
         "gender": {
-          "type": "string",
+          "type": ["string", null],
           "enum": [
             "men",
-            "women"
+            "women",
+            null
           ],
           "title": "t(population.gender)"
         },
