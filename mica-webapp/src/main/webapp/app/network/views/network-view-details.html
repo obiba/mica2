@@ -40,43 +40,47 @@
             </p>
           </div>
 
-          <table class="table table-bordered table-striped" ng-show="studySummaries.length">
-            <thead>
-            <tr>
-              <th ng-if="inViewMode() && permissions.canEdit()" class="hidden-print"></th>
-              <th translate>study.acronym</th>
-              <th translate>study.name</th>
-              <th ng-if="inViewMode() && permissions.canEdit()" class="hidden-print" translate>actions</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr pagination-id="studySummaryPagination" dir-paginate="studySummary in studySummaries | itemsPerPage: 10">
-              <td ng-if="inViewMode() && permissions.canEdit()" class="hidden-print">
-                <input type="checkbox" ng-model="studySummary.selected">
-              </td>
-              <td>
-                <ul class="list-unstyled">
-                  <li ng-repeat="text in studySummary.acronym">
-                    <span class="badge">{{text.lang}}</span>
-                    <a ng-href="#/study/{{studySummary.id}}" ng-if="studySummary.permissions.view">{{text.value}}</a>
-                    <span ng-if="!studySummary.permissions.view">{{text.value}}</span>
-                  </li>
-                </ul>
-              </td>
-              <td>
-                <ul class="list-unstyled">
-                  <li ng-repeat="text in studySummary.name">
-                    <span class="badge">{{text.lang}}</span>
-                    <span>{{text.value}}</span>
-                  </li>
-                </ul>
-              </td>
-              <td ng-if="inViewMode() && permissions.canEdit()" class="hidden-print">
-                <a ng-click="deleteStudyEvent(network, studySummary)" class="hand action"><i class="fa fa-trash-o"></i></a>
-              </td>
-            </tr>
-            </tbody>
-          </table>
+          <div class="row-fluid">
+            <div class="clearfix table-responsive">
+              <table class="table table-bordered table-striped" ng-show="studySummaries.length">
+                <thead>
+                <tr>
+                  <th ng-if="inViewMode() && permissions.canEdit()" class="hidden-print"></th>
+                  <th translate>study.acronym</th>
+                  <th translate>study.name</th>
+                  <th ng-if="inViewMode() && permissions.canEdit()" class="hidden-print" translate>actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr pagination-id="studySummaryPagination" dir-paginate="studySummary in studySummaries | itemsPerPage: 10">
+                  <td ng-if="inViewMode() && permissions.canEdit()" class="hidden-print">
+                    <input type="checkbox" ng-model="studySummary.selected">
+                  </td>
+                  <td>
+                    <ul class="list-unstyled">
+                      <li ng-repeat="text in studySummary.acronym">
+                        <span class="badge">{{text.lang}}</span>
+                        <a ng-href="#/study/{{studySummary.id}}" ng-if="studySummary.permissions.view">{{text.value}}</a>
+                        <span ng-if="!studySummary.permissions.view">{{text.value}}</span>
+                      </li>
+                    </ul>
+                  </td>
+                  <td>
+                    <ul class="list-unstyled">
+                      <li ng-repeat="text in studySummary.name">
+                        <span class="badge">{{text.lang}}</span>
+                        <span>{{text.value}}</span>
+                      </li>
+                    </ul>
+                  </td>
+                  <td ng-if="inViewMode() && permissions.canEdit()" class="hidden-print">
+                    <a ng-click="deleteStudyEvent(network, studySummary)" class="hand action"><i class="fa fa-trash-o"></i></a>
+                  </td>
+                </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
 
           <h3 translate>networks</h3>
 
@@ -99,72 +103,80 @@
             </span>
           </div>
 
-          <table class="table table-bordered table-striped" ng-show="network.networkSummaries.length">
-            <thead>
-            <tr>
-              <th ng-if="inViewMode() && permissions.canEdit()" class="hidden-print"></th>
-              <th translate>network.acronym</th>
-              <th translate>network.name</th>
-              <th ng-if="inViewMode() && permissions.canEdit()" class="hidden-print" translate>actions</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr pagination-id="networkSummaryPagination" dir-paginate="networkSummary in network.networkSummaries | itemsPerPage: 10">
-              <td ng-if="inViewMode() && permissions.canEdit()" class="hidden-print">
-                <input type="checkbox" ng-model="networkSummary.selected">
-              </td>
-              <td>
-                <ul class="list-unstyled">
-                  <li ng-repeat="text in networkSummary.acronym">
-                    <span class="badge">{{text.lang}}</span>
-                    <a ng-href="#/network/{{networkSummary.id}}" ng-if="networkSummary.permissions.view">{{text.value}}</a>
-                    <span ng-if="!networkSummary.permissions.view">{{text.value}}</span>
-                  </li>
-                </ul>
-              </td>
-              <td>
-                <ul class="list-unstyled">
-                  <li ng-repeat="text in networkSummary.name">
-                    <span class="badge">{{text.lang}}</span>
-                    <span>{{text.value}}</span>
-                  </li>
-                </ul>
-              </td>
-              <td ng-if="inViewMode() && permissions.canEdit()" class="hidden-print">
-                <a ng-click="deleteNetwork(network, networkSummary)" class="hand action"><i class="fa fa-trash-o"></i></a>
-              </td>
-            </tr>
-            </tbody>
-          </table>
+          <div class="row-fluid">
+            <div class="clearfix table-responsive">
+              <table class="table table-bordered table-striped" ng-show="network.networkSummaries.length">
+                <thead>
+                <tr>
+                  <th ng-if="inViewMode() && permissions.canEdit()" class="hidden-print"></th>
+                  <th translate>network.acronym</th>
+                  <th translate>network.name</th>
+                  <th ng-if="inViewMode() && permissions.canEdit()" class="hidden-print" translate>actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr pagination-id="networkSummaryPagination" dir-paginate="networkSummary in network.networkSummaries | itemsPerPage: 10">
+                  <td ng-if="inViewMode() && permissions.canEdit()" class="hidden-print">
+                    <input type="checkbox" ng-model="networkSummary.selected">
+                  </td>
+                  <td>
+                    <ul class="list-unstyled">
+                      <li ng-repeat="text in networkSummary.acronym">
+                        <span class="badge">{{text.lang}}</span>
+                        <a ng-href="#/network/{{networkSummary.id}}" ng-if="networkSummary.permissions.view">{{text.value}}</a>
+                        <span ng-if="!networkSummary.permissions.view">{{text.value}}</span>
+                      </li>
+                    </ul>
+                  </td>
+                  <td>
+                    <ul class="list-unstyled">
+                      <li ng-repeat="text in networkSummary.name">
+                        <span class="badge">{{text.lang}}</span>
+                        <span>{{text.value}}</span>
+                      </li>
+                    </ul>
+                  </td>
+                  <td ng-if="inViewMode() && permissions.canEdit()" class="hidden-print">
+                    <a ng-click="deleteNetwork(network, networkSummary)" class="hand action"><i class="fa fa-trash-o"></i></a>
+                  </td>
+                </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
 
           <h3 translate>members</h3>
 
-          <table class="table table-bordered table-striped">
-            <tbody>
-            <tr ng-repeat="role in roles">
-              <th>{{'network.member-list' | translate: {type: role} }}</th>
-              <td>
-                <div ng-controller="ContactController">
-                  <ul ui-sortable="sortableOptions" ng-model="memberships[role]" class="list-unstyled sortable" ng-show="memberships[role].length">
-                    <li ng-repeat="person in memberships[role]">
-                      <a ng-click="viewContact(person)" title="{{'dnd-reorder' | translate}}">
-                        {{person.title}} {{person.firstName}} {{person.lastName}}
-                        {{person.academicLevel}}
-                      </a>
-                      <div class="inline hidden-print" ng-if="inViewMode() && permissions.canEdit()">
-                        <a ng-click="editMember(network, person, role)" class="action"><i class="fa fa-pencil"></i></a>
-                        <a ng-click="deleteMember(network, person, role)" class="action"><i class="fa fa-trash-o"></i></a>
-                      </div>
-                    </li>
-                  </ul>
-                  <button type="button" class="btn btn-info btn-sm hidden-print" ng-click="addMember(network, role)" ng-if="inViewMode() && permissions.canEdit()">
-                    <i class="fa fa-plus"></i> <span>{{ 'network.add-member' | translate: {type: role} }}</span>
-                  </button>
-                </div>
-              </td>
-            </tr>
-            </tbody>
-          </table>
+          <div class="row-fluid">
+            <div class="clearfix table-responsive">
+              <table class="table table-bordered table-striped">
+                <tbody>
+                <tr ng-repeat="role in roles">
+                  <th>{{'network.member-list' | translate: {type: role} }}</th>
+                  <td>
+                    <div ng-controller="ContactController">
+                      <ul ui-sortable="sortableOptions" ng-model="memberships[role]" class="list-unstyled sortable" ng-show="memberships[role].length">
+                        <li ng-repeat="person in memberships[role]">
+                          <a ng-click="viewContact(person)" title="{{'dnd-reorder' | translate}}">
+                            {{person.title}} {{person.firstName}} {{person.lastName}}
+                            {{person.academicLevel}}
+                          </a>
+                          <div class="inline hidden-print" ng-if="inViewMode() && permissions.canEdit()">
+                            <a ng-click="editMember(network, person, role)" class="action"><i class="fa fa-pencil"></i></a>
+                            <a ng-click="deleteMember(network, person, role)" class="action"><i class="fa fa-trash-o"></i></a>
+                          </div>
+                        </li>
+                      </ul>
+                      <button type="button" class="btn btn-info btn-sm hidden-print" ng-click="addMember(network, role)" ng-if="inViewMode() && permissions.canEdit()">
+                        <i class="fa fa-plus"></i> <span>{{ 'network.add-member' | translate: {type: role} }}</span>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
 
           <a ng-if="inViewMode() && (network.studyIds.length > 0 || network.networkIds.length > 0)" href class="btn btn-info hidden-print" ng-click="showAllContacts()"><i class="fa fa-group"></i> <span translate>network.associated-people</span></a>
         </div>
