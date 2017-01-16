@@ -13,10 +13,11 @@
         "items": [
           {
             "key": "selectionCriteria.gender",
-            "titleMap": {
-              "men": "t(study.selection-criteria.gender.men)",
-              "women": "t(study.selection-criteria.gender.women)"
-            }
+            "titleMap": [
+              {"name": "t(global.not-applicable)", "value": null},
+              {"name": "t(study.selection-criteria.gender.men)", "value": "men"},
+              {"name": "t(study.selection-criteria.gender.women)", "value": "women"}
+            ]
           },
           {
             "key": "selectionCriteria.ageMin"

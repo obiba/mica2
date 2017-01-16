@@ -44,7 +44,8 @@
     "down": "Down",
     "up": "Up",
     "detailed": "Detailed",
-    "percentage": "Percentage"
+    "percentage": "Percentage",
+    "not-applicable": "N/A"
   },
   "pagination": {
     "of": "of"

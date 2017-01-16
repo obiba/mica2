@@ -44,7 +44,8 @@
     "down": "Descendre",
     "up": "Monter",
     "detailed": "Détaillé",
-    "percentage": "Pourcentage"
+    "percentage": "Pourcentage",
+    "not-applicable": "s.o."
   },
   "pagination": {
     "of": "de"
