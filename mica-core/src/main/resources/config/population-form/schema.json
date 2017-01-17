@@ -120,7 +120,7 @@
       "type": "object",
       "properties": {
         "gender": {
-          "type": ["string", null],
+          "type": ["null", "string"],
           "enum": [
             "men",
             "women",
