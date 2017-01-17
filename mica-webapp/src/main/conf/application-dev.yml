@@ -76,10 +76,6 @@ hotReload:
     watchdir:
       - target/classes
 
-# Disable Jolokia - An http/json bridge for remote JMX access
-endpoints.jolokia.enabled: false
-endpoints.health.sensitive: false
-
 async:
     poolSize: 30
     queueCapacity: 100000
