@@ -223,37 +223,7 @@ public class SecurityManagerFactory implements FactoryBean<SecurityManager> {
       realm.setResourcePath(getShiroIniPath());
       realm.setCredentialsMatcher(new PasswordMatcher());
       realm.setIni(ini);
-      configureUrl(realm.getIni().getSection("urls") == null
-          ? realm.getIni().addSection("urls")
-          : realm.getIni().getSection("urls"));
       return realm;
     }
-
-    @SuppressWarnings("OverlyLongMethod")
-    private void configureUrl(@SuppressWarnings("TypeMayBeWeakened") Ini.Section urls) {
-      urls.put("/ws/logs/**", ADMIN);
-      urls.put("/websocket/tracker", ADMIN);
-      urls.put("/jvm*", ADMIN);
-      urls.put("/jvm/**", ADMIN);
-      urls.put("/health*", ADMIN);
-      urls.put("/health/**", ADMIN);
-      urls.put("/trace*", ADMIN);
-      urls.put("/trace/**", ADMIN);
-      urls.put("/dump*", ADMIN);
-      urls.put("/dump/**", ADMIN);
-      urls.put("/shutdown*", ADMIN);
-      urls.put("/shutdown/**", ADMIN);
-      urls.put("/beans*", ADMIN);
-      urls.put("/beans/**", ADMIN);
-      urls.put("/info*", ADMIN);
-      urls.put("/info/**", ADMIN);
-      urls.put("/autoconfig*", ADMIN);
-      urls.put("/autoconfig/**", ADMIN);
-      urls.put("/env*", ADMIN);
-      urls.put("/env/**", ADMIN);
-      urls.put("/trace*", ADMIN);
-      urls.put("/trace/**", ADMIN);
-    }
   }
-
 }
