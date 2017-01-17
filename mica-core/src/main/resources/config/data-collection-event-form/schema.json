@@ -32,6 +32,7 @@
     "otherDataSources": {
       "type": "object",
       "format": "localizedString",
+      "required": true,
       "title": "t(data-collection-event.other-data-sources)"
     },
     "bioSamples": {
@@ -56,11 +57,13 @@
     "tissueTypes": {
       "type": "object",
       "format": "localizedString",
+      "required": true,
       "title": "t(data-collection-event.tissue-types)"
     },
     "otherBioSamples": {
       "type": "object",
       "format": "localizedString",
+      "required": true,
       "title": "t(data-collection-event.other-bio-samples)"
     }
   },

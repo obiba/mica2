@@ -98,6 +98,7 @@
         },
         "otherSpecificPopulationSource": {
           "type": "object",
+          "required": true,
           "format": "localizedString",
           "title": "t(study.recruitment-sources.other-specific-population)"
         },
@@ -111,6 +112,7 @@
         },
         "otherSource": {
           "type": "object",
+          "required": true,
           "format": "localizedString",
           "title": "t(study.recruitment-sources.other)"
         }
