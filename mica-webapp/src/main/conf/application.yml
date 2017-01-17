@@ -75,6 +75,7 @@ cache:
 
 # Disable Jolokia - An http/json bridge for remote JMX access
 endpoints.jolokia.enabled: false
+endpoints.enabled: false
 
 async:
     poolSize: 30
