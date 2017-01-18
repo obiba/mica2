@@ -308,6 +308,10 @@ mica.project
         });
       };
 
+      $scope.print = function () {
+        setTimeout(function(){ window.print();}, 250);
+      };
+
       $scope.fetchProject = fetchProject;
       $scope.viewRevision = viewRevision;
       $scope.restoreRevision = restoreRevision;
