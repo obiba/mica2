@@ -87,14 +87,14 @@
             "htmlClass": "hoffset3",
             "items": [
               {
-                "key": "otherBioSamples",
-                "condition": "model.bioSamples.indexOf(\"others\")>=0"
-              },
-              {
                 "key": "tissueTypes",
                 "condition": "model.bioSamples.indexOf(\"tissues\")>=0"
+              },
+              {
+                "key": "otherBioSamples",
+                "condition": "model.bioSamples.indexOf(\"others\")>=0"
               }
-             ]
+            ]
           },
           {
             "key": "administrativeDatabases",

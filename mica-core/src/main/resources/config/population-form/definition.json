@@ -181,7 +181,6 @@
                   },
                   {
                     "key": "recruitment.otherSource",
-                    "required": true,
                     "condition": "model.recruitment.dataSources.indexOf(\"other\")>=0"
                   }
                 ]

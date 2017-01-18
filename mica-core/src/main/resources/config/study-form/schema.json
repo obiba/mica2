@@ -28,7 +28,6 @@
         },
         "otherDesign": {
           "type": "object",
-          "required": true,
           "format": "localizedString",
           "title": "t(study.other-design)"
         },
@@ -51,7 +50,6 @@
         },
         "otherRecruitment": {
           "type": "object",
-          "required": true,
           "format": "localizedString",
           "title": "t(study.recruitment-sources.other)"
         },
@@ -121,7 +119,6 @@
     },
     "otherAccess": {
       "type": "object",
-      "required": true,
       "format": "localizedString",
       "title": "t(study.access.other)"
     },
