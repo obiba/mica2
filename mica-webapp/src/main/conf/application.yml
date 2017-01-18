@@ -73,9 +73,6 @@ metrics:
 cache:
     timeToLiveSeconds: 3600
 
-# Disable Jolokia - An http/json bridge for remote JMX access
-endpoints.jolokia.enabled: false
-
 async:
     poolSize: 30
     queueCapacity: 100000
