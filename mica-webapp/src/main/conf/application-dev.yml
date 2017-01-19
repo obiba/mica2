@@ -7,60 +7,55 @@ https:
     port: 8445
 
 opal:
-  url: https://localhost:8443
-  username: administrator
-  password: password
+    url: https://localhost:8443
+    username: administrator
+    password: password
 
 agate:
-  url: https://localhost:8444
-  application:
-    name: mica
-    key: changeit
+    url: https://localhost:8444
+    application:
+        name: mica
+        key: changeit
 
 elasticsearch:
-  dataNode: true
-  clusterName: mica
-  shards: 5
-  replicas: 1
-  settings: "http.enabled: true"
-  maxConcurrentJoinQueries: 2
-  concurrentJoinQueriesWaitTimeout: 15000
+    dataNode: true
+    clusterName: mica
+    shards: 5
+    replicas: 1
+    settings: "http.enabled: true"
+    maxConcurrentJoinQueries: 2
+    concurrentJoinQueriesWaitTimeout: 15000
 
 shiro:
-  password:
-    nbHashIterations: 10000
-    salt: mica
+    password:
+        nbHashIterations: 10000
+        salt: mica
 
 #
 # Other advanced settings
 #
 
 spring:
-  profiles: dev
-  data:
-    mongodb:
-      uri: mongodb://localhost:27017/mica
-  thymeleaf:
-    mode: XHTML
-    cache: false
-  mail:
-    host: localhost
-    port: 25
-    user:
-    password:
-    protocol: smtp
-    tls: false
-    auth: false
-  messageSource:
-    cacheSeconds: 1
+    profiles: dev
+    data:
+        mongodb:
+            uri: mongodb://localhost:27017/mica
+    mail:
+        host: localhost
+        port: 25
+        user:
+        password:
+        protocol: smtp
+        tls: false
+        auth: false
 
 # You can add as many as folders to watch
 # You just need to add a dash + the directory to watch
 hotReload:
     enabled: true
     package:
-      project: org.obiba.mica
-      domain: org.obiba.mica.domain
-      restdto: org.obiba.mica.web.rest.dto
+        project: org.obiba.mica
+        domain: org.obiba.mica.domain
+        restdto: org.obiba.mica.web.rest.dto
     watchdir:
-      - target/classes
+        - target/classes

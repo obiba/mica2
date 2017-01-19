@@ -1,4 +1,19 @@
 # default advanced settings
+spring:
+    mail:
+        host: localhost
+        port: 25
+        user:
+        password:
+        protocol: smtp
+        tls: false
+        auth: false
+    thymeleaf:
+        mode: XHTML
+        cache: true
+    messageSource:
+        cacheSeconds: 1
+
 metrics:
     jmx.enabled: true
     graphite:
@@ -13,5 +28,5 @@ async:
     poolSize: 30
     queueCapacity: 100000
     opal:
-      poolSize: 30
-      queueCapacity: 100000
+        poolSize: 30
+        queueCapacity: 100000
