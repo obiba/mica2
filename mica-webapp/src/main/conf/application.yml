@@ -13,52 +13,39 @@ https:
 
 # Opal: data dictionaries, summaries and taxonomies
 opal:
-  url: https://localhost:8443
-  username: administrator
-  password: password
+    url: https://localhost:8443
+    username: administrator
+    password: password
 
 # Agate: user realm and application services configuration
 agate:
-  url: https://localhost:8444
-  application:
-    name: mica
-    key: changeit
+    url: https://localhost:8444
+    application:
+        name: mica
+        key: changeit
 
 # Elasticsearch: search engine configuration
 elasticsearch:
-  dataNode: true
-  clusterName: mica
-  shards: 5
-  replicas: 1
-  settings: "http.enabled: false"
-  maxConcurrentJoinQueries: 4
-  concurrentJoinQueriesWaitTimeout: 30000
+    dataNode: true
+    clusterName: mica
+    shards: 5
+    replicas: 1
+    settings: "http.enabled: false"
+    maxConcurrentJoinQueries: 4
+    concurrentJoinQueriesWaitTimeout: 30000
 
 # Shiro: user directory configuration
 shiro:
-  password:
-    nbHashIterations: 10000
-    salt: mica
+    password:
+        nbHashIterations: 10000
+        salt: mica
 
 #
-# Other advanced settings
+# Database connection
 #
 
 spring:
-  data:
-    mongodb:
-      uri: mongodb://localhost:27017/mica
-  profiles: prod
-  thymeleaf:
-    mode: XHTML
-    cache: true
-  mail:
-    host: localhost
-    port: 25
-    user:
-    password:
-    protocol: smtp
-    tls: false
-    auth: false
-  messageSource:
-    cacheSeconds: 1
+    data:
+        mongodb:
+            uri: mongodb://localhost:27017/mica
+    profiles: prod
