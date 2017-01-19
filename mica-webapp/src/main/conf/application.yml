@@ -62,20 +62,3 @@ spring:
     auth: false
   messageSource:
     cacheSeconds: 1
-
-metrics:
-    jmx.enabled: true
-    graphite:
-        enabled: false
-        host: localhost
-        port: 2003
-
-cache:
-    timeToLiveSeconds: 3600
-
-async:
-    poolSize: 30
-    queueCapacity: 100000
-    opal:
-      poolSize: 30
-      queueCapacity: 100000
