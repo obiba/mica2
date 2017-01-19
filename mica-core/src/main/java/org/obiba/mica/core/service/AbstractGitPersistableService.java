@@ -26,6 +26,7 @@ import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
 import org.apache.commons.math3.util.Pair;
 import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.session.UnknownSessionException;
 import org.apache.shiro.subject.Subject;
 import org.joda.time.DateTime;
 import org.obiba.git.CommitInfo;
@@ -194,8 +195,15 @@ public abstract class AbstractGitPersistableService<T extends EntityState, T1 ex
 
   protected String getCurrentUsername() {
     Subject subject = SecurityUtils.getSubject();
-    return subject == null || subject.getPrincipal() == null
-      ? AbstractGitWriteCommand.DEFAULT_AUTHOR_NAME
-      : subject.getPrincipal().toString();
+    return extractAuthorName(subject, AbstractGitWriteCommand.DEFAULT_AUTHOR_NAME);
+  }
+
+  private String extractAuthorName(Subject subject, String defaultName) {
+    try {
+      if (subject != null && subject.getPrincipal() != null)
+        return subject.getPrincipal().toString();
+    } catch (UnknownSessionException ignore) {
+    }
+    return defaultName;
   }
 }
