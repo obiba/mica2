@@ -45,7 +45,8 @@
     "up": "Up",
     "detailed": "Detailed",
     "percentage": "Percentage",
-    "not-applicable": "N/A"
+    "not-applicable": "N/A",
+    "update-comment": "Add a comment to describe the changes."
   },
   "pagination": {
     "of": "of"
@@ -519,9 +520,6 @@
     "delete-conflict": "Conflict deleting study",
     "delete-conflict-message": "Found conflicts when trying to delete study. Remove dependencies and try again.",
     "revisions":  "Study Revisions",
-    "revision": {
-      "update-comment": "Add a comment to describe the changes."
-    },
     "delete-dialog":{
       "title": "Delete Study",
       "message": "Are you sure to delete the study '{{arg0}}'?"

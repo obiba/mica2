@@ -13,8 +13,8 @@
 </h3>
 
 <div class="inline pull-right hidden-print" ng-if="$parent.inViewMode() && permissions.canEdit()">
-  <a ng-click="editPopulation(study, selectedPopulation)" class="btn btn-primary"><i class="fa fa-pencil"></i></a>
-  <a ng-click="deletePopulation(study, selectedPopulation)" class="btn btn-danger"><i class="fa fa-trash-o"></i></a>
+  <a ng-click="editPopulation(study, selectedPopulation)" class="btn btn-responsive btn-primary"><i class="fa fa-pencil"></i></a>
+  <a ng-click="deletePopulation(study, selectedPopulation)" class="btn btn-responsive btn-danger"><i class="fa fa-trash-o"></i></a>
 </div>
 
 <div class="clearfix"/>
@@ -29,7 +29,7 @@
 
 <div class="hidden-print">
   <a ng-if="inViewMode() && permissions.canEdit()" ng-click="addDataCollectionEvent(study, selectedPopulation)"
-     class="btn btn-info btn-sm voffset1">
+     class="btn btn-responsive btn-info btn-sm voffset1">
     <i class="fa fa-plus"></i> <span translate>study.add-data-collection-event</span>
   </a>
   <div ng-show="selectedPopulation.dataCollectionEvents.length > 1" class="label label-default pull-right voffset3">

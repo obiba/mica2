@@ -13,6 +13,7 @@ package org.obiba.mica.project.rest;
 import java.io.IOException;
 import java.util.Map;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.DELETE;
@@ -80,13 +81,14 @@ public class DraftProjectResource extends AbstractGitPersistableResource<Project
   }
 
   @PUT
-  public Response update(@SuppressWarnings("TypeMayBeWeakened") Mica.ProjectDto projectDto) {
+  public Response update(@SuppressWarnings("TypeMayBeWeakened") Mica.ProjectDto projectDto,
+                         @Nullable @QueryParam("comment") String comment) {
     subjectAclService.checkPermission("/draft/project", "EDIT", id);
     // ensure network exists
     projectService.findById(id);
 
     Project project = dtos.fromDto(projectDto);
-    projectService.save(project);
+    projectService.save(project, comment);
     return Response.noContent().build();
   }
 

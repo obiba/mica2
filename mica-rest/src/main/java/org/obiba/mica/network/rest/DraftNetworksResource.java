@@ -13,6 +13,7 @@ package org.obiba.mica.network.rest;
 import java.util.List;
 import java.util.stream.Stream;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.DefaultValue;
@@ -105,10 +106,11 @@ public class DraftNetworksResource {
   @Path("/networks")
   @Timed
   @RequiresPermissions("/draft/network:ADD")
-  public Response create(Mica.NetworkDto networkDto, @Context UriInfo uriInfo) {
+  public Response create(Mica.NetworkDto networkDto, @Context UriInfo uriInfo,
+                         @Nullable @QueryParam("comment") String comment) {
     Network network = dtos.fromDto(networkDto);
 
-    networkService.save(network);
+    networkService.save(network, comment);
     return Response.created(uriInfo.getBaseUriBuilder().segment("draft", "network", network.getId()).build()).build();
   }
 

@@ -387,6 +387,7 @@ mica.project
 
       $scope.activeTab = 0;
       $scope.files = [];
+      $scope.revision = {comment: null};
       $scope.newProject= !$routeParams.id;
       $scope.project = $routeParams.id ?
         DraftProjectResource.get({id: $routeParams.id}, function(response) {
@@ -459,7 +460,7 @@ mica.project
       };
 
       var updateProject = function () {
-        $scope.project.$save(
+        $scope.project.$save({comment: $scope.revision.comment},
           function (project) {
             FormDirtyStateObserver.unobserve();
             $location.path('/project/' + project.id).replace();
