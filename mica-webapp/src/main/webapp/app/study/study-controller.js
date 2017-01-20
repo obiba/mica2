@@ -256,11 +256,11 @@ mica.study
 
         $timeout(function () {
           $scope.timeline.reset().create('#timeline', study).addLegend();
+          $scope.sfForm = angular.copy($scope.sfForm);
         }, 250);
       };
 
       var initializeStudy = function (study) {
-
         if (study.logo) {
           $scope.logoUrl = 'ws/draft/study/' + study.id + '/file/' + study.logo.id + '/_download';
         }
@@ -1017,6 +1017,7 @@ mica.study
     'RadioGroupOptionBuilder',
     'FormDirtyStateObserver',
     'SfOptionsService',
+    '$timeout',
     function ($rootScope,
               $scope,
               $routeParams,
@@ -1034,7 +1035,8 @@ mica.study
               FormServerValidation,
               RadioGroupOptionBuilder,
               FormDirtyStateObserver,
-              SfOptionsService) {
+              SfOptionsService,
+              $timeout) {
 
       function initializeForm() {
         MicaConfigResource.get(function (micaConfig) {
@@ -1051,6 +1053,8 @@ mica.study
             form.schema = LocalizedSchemaFormService.translate(angular.fromJson(form.schema));
             form.definition = LocalizedSchemaFormService.translate(angular.fromJson(form.definition));
             $scope.sfForm = form;
+
+            $timeout(function () { $scope.sfForm = angular.copy(form); }, 250);
           });
         });
       }
