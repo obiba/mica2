@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
@@ -81,13 +82,14 @@ public class DraftStudyDatasetResource extends
   }
 
   @PUT
-  public Response update(Mica.DatasetDto datasetDto, @Context UriInfo uriInfo) {
+  public Response update(Mica.DatasetDto datasetDto, @Context UriInfo uriInfo,
+                         @Nullable @QueryParam("comment") String comment) {
     subjectAclService.checkPermission("/draft/study-dataset", "EDIT", id);
     if (!datasetDto.hasId() || !datasetDto.getId().equals(id)) throw new IllegalArgumentException("Not the expected dataset id");
     Dataset dataset = dtos.fromDto(datasetDto);
     if(!(dataset instanceof StudyDataset)) throw new IllegalArgumentException("A study dataset is expected");
 
-    datasetService.save((StudyDataset) dataset);
+    datasetService.save((StudyDataset) dataset, comment);
     return Response.noContent().build();
   }
 

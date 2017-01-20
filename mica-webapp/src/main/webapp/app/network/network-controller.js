@@ -152,6 +152,7 @@ mica.network
 
       $scope.files = [];
       $scope.newNetwork= !$routeParams.id;
+      $scope.revision = {comment: null};
       $scope.network = $routeParams.id ? DraftNetworkResource.get({id: $routeParams.id}, function(network) {
         $scope.files = network.logo ? [network.logo] : [];
 
@@ -208,7 +209,7 @@ mica.network
       };
 
       var updateNetwork = function () {
-        $scope.network.$save(
+        $scope.network.$save({comment: $scope.revision.comment},
           function (network) {
             FormDirtyStateObserver.unobserve();
             $location.path('/network/' + network.id).replace();
