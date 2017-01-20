@@ -15,6 +15,7 @@ import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
@@ -80,13 +81,14 @@ public class DraftNetworkResource extends AbstractGitPersistableResource<Network
   }
 
   @PUT
-  public Response update(@SuppressWarnings("TypeMayBeWeakened") Mica.NetworkDto networkDto) {
+  public Response update(@SuppressWarnings("TypeMayBeWeakened") Mica.NetworkDto networkDto,
+                         @Nullable @QueryParam("comment") String comment) {
     subjectAclService.checkPermission("/draft/network", "EDIT", id);
     // ensure network exists
     networkService.findById(id);
 
     Network network = dtos.fromDto(networkDto);
-    networkService.save(network);
+    networkService.save(network, comment);
     return Response.noContent().build();
   }
 

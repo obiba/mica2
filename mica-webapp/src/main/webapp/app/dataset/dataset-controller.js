@@ -139,6 +139,7 @@ mica.dataset
       $scope.projects = [];
       $scope.selected = {};
       $scope.studyTable = {};
+      $scope.revision = {comment: null};
 
 
       function initializeForm() {
@@ -170,7 +171,7 @@ mica.dataset
       };
 
       var updateDataset = function () {
-        $scope.dataset.$save(
+        $scope.dataset.$save({comment: $scope.revision.comment},
           function (dataset) {
             FormDirtyStateObserver.unobserve();
             $location.path('/study-dataset/' + dataset.id).replace();
@@ -362,6 +363,7 @@ mica.dataset
       $scope.networks = DraftNetworksResource.query();
       $scope.type = getTypeFromUrl();
       $scope.newDataset = !$routeParams.id;
+      $scope.revision = {comment: null};
 
       function getOpalProjects() {
         return MicaConfigOpalProjectsResource.get().$promise.then(function(projects){
@@ -425,7 +427,7 @@ mica.dataset
       };
 
       var updateDataset = function () {
-        $scope.dataset.$save(
+        $scope.dataset.$save({comment: $scope.revision.comment},
           function (dataset) {
             FormDirtyStateObserver.unobserve();
             $location.path('/harmonization-dataset/' + dataset.id).replace();

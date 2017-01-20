@@ -28,9 +28,12 @@
     <div sf-model="study.model" sf-form="sfForm.definition" sf-schema="sfForm.schema" sf-options="sfOptions"></div>
 
     <div class="row">
-      <div class="col-md-6">
-        <input class="form-control" ng-model="revision.comment" placeholder="{{'study.revision.update-comment' | translate}}" type="text">
-        <div class="voffset1">
+      <div class="form-group">
+        <div class="col-xs-6 voffset">
+          <input class="form-control" ng-model="revision.comment" placeholder="{{'global.update-comment' | translate}}" type="text">
+        </div>
+
+        <div class="col-xs-6">
           <button type="button" class="btn btn-default" ng-click="cancel()">
             <span translate>cancel</span>
           </button>

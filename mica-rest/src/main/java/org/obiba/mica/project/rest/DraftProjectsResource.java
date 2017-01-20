@@ -13,6 +13,7 @@ package org.obiba.mica.project.rest;
 import java.util.List;
 import java.util.stream.Stream;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.DefaultValue;
@@ -108,10 +109,11 @@ public class DraftProjectsResource {
   @Path("/projects")
   @Timed
   @RequiresPermissions("/draft/project:ADD")
-  public Response create(Mica.ProjectDto projectDto, @Context UriInfo uriInfo) {
+  public Response create(Mica.ProjectDto projectDto, @Context UriInfo uriInfo,
+                         @Nullable @QueryParam("comment") String comment) {
     Project project = dtos.fromDto(projectDto);
 
-    projectService.save(project);
+    projectService.save(project, comment);
     return Response.created(uriInfo.getBaseUriBuilder().segment("draft", "project", project.getId()).build()).build();
   }
 
