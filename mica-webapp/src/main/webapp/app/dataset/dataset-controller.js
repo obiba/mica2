@@ -114,6 +114,7 @@ mica.dataset
     'FormDirtyStateObserver',
     'EntityFormResource',
     'SfOptionsService',
+    '$timeout',
 
     function ($rootScope,
               $scope,
@@ -132,7 +133,8 @@ mica.dataset
               StudyStateProjectsResource,
               FormDirtyStateObserver,
               EntityFormResource,
-              SfOptionsService) {
+              SfOptionsService,
+              $timeout) {
       $scope.studies = [];
       $scope.projects = [];
       $scope.selected = {};
@@ -155,6 +157,8 @@ mica.dataset
             form.schema = angular.fromJson(form.schema);
             form.definition = angular.fromJson(form.definition);
             $scope.sfForm = form;
+
+            $timeout(function () { $scope.sfForm = angular.copy(form); }, 250);
           });
 
         });
@@ -301,6 +305,7 @@ mica.dataset
     'EntityFormResource',
     'OpalTablesService',
     'SfOptionsService',
+    '$timeout',
 
     function ($rootScope,
               $scope,
@@ -318,7 +323,8 @@ mica.dataset
               FormDirtyStateObserver,
               EntityFormResource,
               OpalTablesService,
-              SfOptionsService) {
+              SfOptionsService,
+              $timeout) {
 
 
       function initializeForm() {
@@ -337,6 +343,8 @@ mica.dataset
             form.schema = angular.fromJson(form.schema);
             form.definition = angular.fromJson(form.definition);
             $scope.sfForm = form;
+
+            $timeout(function () { $scope.sfForm = angular.copy(form); }, 250);
           });
 
           MicaConfigOpalProjectsResource.get().$promise.then(function (projects) {
@@ -473,6 +481,7 @@ mica.dataset
     'StudyDatasetResource',
     'HarmonizationDatasetResource',
     'SfOptionsService',
+    '$timeout',
 
     function ($rootScope,
               $scope,
@@ -499,7 +508,8 @@ mica.dataset
               OpalTablesService,
               StudyDatasetResource,
               HarmonizationDatasetResource,
-              SfOptionsService) {
+              SfOptionsService,
+              $timeout) {
 
       function initializeForm() {
         MicaConfigResource.get(function (micaConfig) {
@@ -521,6 +531,8 @@ mica.dataset
             form.schema.readonly = true;
             form.definition = angular.fromJson(form.definition);
             $scope.sfForm = form;
+
+            $timeout(function () { $scope.sfForm = angular.copy(form); }, 250);
           });
         });
       }
