@@ -11,13 +11,19 @@
 <div>
   <div ng-include="'app/project/views/project-view-header.html'" ng-init="tabName='view'"></div>
 
-  <div ng-class="{'voffset3': !screen.is('lg')}" class="clearfix">
+  <div ng-class="{'voffset3': !screen.is('lg')}" class="clearfix hidden-print">
     <h3 class="pull-left no-margin-top" translate>view</h3>
     <div class="pull-right">
 
       <a ng-href="#/project/{{project.id}}/edit" class="btn btn-primary btn-responsive" ng-if="permissions.canEdit()">
         <i class="fa fa-pencil-square-o"></i> <span translate>edit</span>
       </a>
+
+      <a ng-click="print()"
+         class="btn btn-default" title="{{'global.print' | translate}}">
+        <i class="fa fa-print"></i> <span translate>global.print</span>
+      </a>
+
       <status-buttons class="inline"
         state="project['obiba.mica.EntityStateDto.projectState']"
         on-publish="publish(true)"

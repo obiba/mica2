@@ -128,6 +128,7 @@ mica.project
     '$filter',
     'DocumentPermissionsService',
     'SfOptionsService',
+    '$timeout',
 
     function ($rootScope,
       $scope,
@@ -154,7 +155,8 @@ mica.project
       LocalizedValues,
       $filter,
       DocumentPermissionsService,
-      SfOptionsService) {
+      SfOptionsService,
+      $timeout) {
 
       function initializeForm() {
         MicaConfigResource.get(function (micaConfig) {
@@ -181,6 +183,8 @@ mica.project
               $scope.form.definition = JsonUtils.parseJsonSafely(projectForm.definition, []);
               $scope.form.schema = JsonUtils.parseJsonSafely(projectForm.schema, {});
               $scope.form.schema.readonly = true;
+
+              $timeout(function () { $scope.form = angular.copy($scope.form); }, 250);
             });
         });
       }
@@ -308,6 +312,10 @@ mica.project
         });
       };
 
+      $scope.print = function () {
+        setTimeout(function(){ window.print();}, 250);
+      };
+
       $scope.fetchProject = fetchProject;
       $scope.viewRevision = viewRevision;
       $scope.restoreRevision = restoreRevision;
@@ -356,6 +364,7 @@ mica.project
     'FormServerValidation',
     'FormDirtyStateObserver',
     'SfOptionsService',
+    '$timeout',
     function ($rootScope,
               $scope,
               $routeParams,
@@ -373,7 +382,8 @@ mica.project
               JsonUtils,
               FormServerValidation,
               FormDirtyStateObserver,
-              SfOptionsService) {
+              SfOptionsService,
+              $timeout) {
 
       $scope.activeTab = 0;
       $scope.files = [];
@@ -412,6 +422,8 @@ mica.project
               if (!$routeParams.id) {
                 $scope.form.model = {};
               }
+
+              $timeout(function () { $scope.form = angular.copy($scope.form); }, 250);
             });
         });
       }
