@@ -10,17 +10,7 @@
 
 package org.obiba.mica.study.rest;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import javax.annotation.Nullable;
-import javax.inject.Inject;
-import javax.validation.constraints.NotNull;
-import javax.ws.rs.*;
-import javax.ws.rs.core.Response;
-
+import com.codahale.metrics.annotation.Timed;
 import org.obiba.mica.AbstractGitPersistableResource;
 import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.core.domain.PublishCascadingScope;
@@ -39,7 +29,15 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import com.codahale.metrics.annotation.Timed;
+import javax.annotation.Nullable;
+import javax.inject.Inject;
+import javax.validation.constraints.NotNull;
+import javax.ws.rs.*;
+import javax.ws.rs.core.Response;
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * REST controller for managing draft Study.
@@ -68,8 +66,8 @@ public class DraftStudyResource extends AbstractGitPersistableResource<StudyStat
 
   @GET
   @Timed
-  public Mica.StudyDto get(@QueryParam("locale") String locale) {
-    subjectAclService.checkPermission("/draft/study", "VIEW", id);
+  public Mica.StudyDto get(@QueryParam("locale") String locale, @QueryParam("key") String key) {
+    checkPermission("/draft/study", "VIEW", key);
     return dtos.asDto(studyService.findDraft(id, locale), true);
   }
 
@@ -77,7 +75,7 @@ public class DraftStudyResource extends AbstractGitPersistableResource<StudyStat
   @Path("/model")
   @Produces("application/json")
   public Map<String, Object> getModel() {
-    subjectAclService.checkPermission("/draft/study", "VIEW", id);
+    checkPermission("/draft/study", "VIEW");
     return studyService.findDraft(id).getModel();
   }
 
@@ -85,7 +83,7 @@ public class DraftStudyResource extends AbstractGitPersistableResource<StudyStat
   @Timed
   public Response update(@SuppressWarnings("TypeMayBeWeakened") Mica.StudyDto studyDto,
     @Nullable @QueryParam("comment") String comment) {
-    subjectAclService.checkPermission("/draft/study", "EDIT", id);
+    checkPermission("/draft/study", "EDIT");
     // ensure study exists
     studyService.findDraft(id);
 
@@ -98,7 +96,7 @@ public class DraftStudyResource extends AbstractGitPersistableResource<StudyStat
   @Path("/_publish")
   @Timed
   public Response publish(@QueryParam("cascading") @DefaultValue("UNDER_REVIEW") String cascadingScope) {
-    subjectAclService.checkPermission("/draft/study", "PUBLISH", id);
+    checkPermission("/draft/study", "PUBLISH");
     studyService.publish(id, true, PublishCascadingScope.valueOf(cascadingScope.toUpperCase()));
     return Response.noContent().build();
   }
@@ -106,7 +104,7 @@ public class DraftStudyResource extends AbstractGitPersistableResource<StudyStat
   @DELETE
   @Path("/_publish")
   public Response unPublish() {
-    subjectAclService.checkPermission("/draft/study", "PUBLISH", id);
+    checkPermission("/draft/study", "PUBLISH");
     studyService.publish(id, false);
     return Response.noContent().build();
   }
@@ -115,7 +113,7 @@ public class DraftStudyResource extends AbstractGitPersistableResource<StudyStat
   @Path("/_status")
   @Timed
   public Response toUnderReview(@QueryParam("value") String status) {
-    subjectAclService.checkPermission("/draft/study", "EDIT", id);
+    checkPermission("/draft/study", "EDIT");
     studyService.updateStatus(id, RevisionStatus.valueOf(status.toUpperCase()));
     return Response.noContent().build();
   }
@@ -126,14 +124,14 @@ public class DraftStudyResource extends AbstractGitPersistableResource<StudyStat
   @DELETE
   @Timed
   public Response delete() {
-    subjectAclService.checkPermission("/draft/study", "DELETE", id);
+    checkPermission("/draft/study", "DELETE");
     studyService.delete(id);
     return Response.noContent().build();
   }
 
   @Path("/file/{fileId}")
-  public FileResource study(@PathParam("fileId") String fileId) {
-    subjectAclService.checkPermission("/draft/study", "VIEW", id);
+  public FileResource file(@PathParam("fileId") String fileId, @QueryParam("key") String key) {
+    checkPermission("/draft/study", "VIEW", key);
     FileResource fileResource = applicationContext.getBean(FileResource.class);
     Study study = studyService.findDraft(id);
 
@@ -153,7 +151,7 @@ public class DraftStudyResource extends AbstractGitPersistableResource<StudyStat
   @GET
   @Path("/commit/{commitId}/view")
   public Mica.StudyDto getStudyFromCommit(@NotNull @PathParam("commitId") String commitId) throws IOException {
-    subjectAclService.checkPermission("/draft/study", "VIEW", id);
+    checkPermission("/draft/study", "VIEW");
     return dtos.asDto(studyService.getFromCommit(studyService.findDraft(id), commitId), true);
   }
 

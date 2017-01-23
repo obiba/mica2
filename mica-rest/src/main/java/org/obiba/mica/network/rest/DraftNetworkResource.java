@@ -10,16 +10,6 @@
 
 package org.obiba.mica.network.rest;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.util.List;
-import java.util.Map;
-
-import javax.inject.Inject;
-import javax.validation.constraints.NotNull;
-import javax.ws.rs.*;
-import javax.ws.rs.core.Response;
-
 import org.obiba.mica.AbstractGitPersistableResource;
 import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.core.domain.PublishCascadingScope;
@@ -39,6 +29,15 @@ import org.obiba.opal.web.model.Projects;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+
+import javax.inject.Inject;
+import javax.validation.constraints.NotNull;
+import javax.ws.rs.*;
+import javax.ws.rs.core.Response;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.List;
+import java.util.Map;
 
 /**
  * REST controller for managing draft Study.
@@ -66,8 +65,8 @@ public class DraftNetworkResource extends AbstractGitPersistableResource<Network
   }
 
   @GET
-  public Mica.NetworkDto get() {
-    subjectAclService.checkPermission("/draft/network", "VIEW", id);
+  public Mica.NetworkDto get(@QueryParam("key") String key) {
+    checkPermission("/draft/network", "VIEW", key);
     return dtos.asDto(networkService.findById(id), true);
   }
 
@@ -75,13 +74,13 @@ public class DraftNetworkResource extends AbstractGitPersistableResource<Network
   @Path("/model")
   @Produces("application/json")
   public Map<String, Object> getModel() {
-    subjectAclService.checkPermission("/draft/network", "VIEW", id);
+    checkPermission("/draft/network", "VIEW");
     return networkService.findById(id).getModel();
   }
 
   @PUT
   public Response update(@SuppressWarnings("TypeMayBeWeakened") Mica.NetworkDto networkDto) {
-    subjectAclService.checkPermission("/draft/network", "EDIT", id);
+    checkPermission("/draft/network", "EDIT");
     // ensure network exists
     networkService.findById(id);
 
@@ -93,7 +92,7 @@ public class DraftNetworkResource extends AbstractGitPersistableResource<Network
   @PUT
   @Path("/_index")
   public Response index() {
-    subjectAclService.checkPermission("/draft/network", "EDIT", id);
+    checkPermission("/draft/network", "EDIT");
     networkService.index(id);
     return Response.noContent().build();
   }
@@ -101,7 +100,7 @@ public class DraftNetworkResource extends AbstractGitPersistableResource<Network
   @PUT
   @Path("/_publish")
   public Response publish(@QueryParam("cascading") @DefaultValue("UNDER_REVIEW") String cascadingScope) {
-    subjectAclService.checkPermission("/draft/network", "PUBLISH", id);
+    checkPermission("/draft/network", "PUBLISH");
     networkService.publish(id, true, PublishCascadingScope.valueOf(cascadingScope.toUpperCase()));
     return Response.noContent().build();
   }
@@ -109,14 +108,14 @@ public class DraftNetworkResource extends AbstractGitPersistableResource<Network
   @DELETE
   @Path("/_publish")
   public Response unPublish() {
-    subjectAclService.checkPermission("/draft/network", "PUBLISH", id);
+    checkPermission("/draft/network", "PUBLISH");
     networkService.publish(id, false);
     return Response.noContent().build();
   }
 
   @DELETE
   public Response delete() {
-    subjectAclService.checkPermission("/draft/network", "DELETE", id);
+    checkPermission("/draft/network", "DELETE");
     try {
       networkService.delete(id);
     } catch (NoSuchNetworkException e) {
@@ -128,15 +127,15 @@ public class DraftNetworkResource extends AbstractGitPersistableResource<Network
   @PUT
   @Path("/_status")
   public Response toUnderReview(@QueryParam("value") String status) {
-    subjectAclService.checkPermission("/draft/network", "EDIT", id);
+    checkPermission("/draft/network", "EDIT");
     networkService.updateStatus(id, RevisionStatus.valueOf(status.toUpperCase()));
 
     return Response.noContent().build();
   }
 
   @Path("/file/{fileId}")
-  public FileResource network(@PathParam("fileId") String fileId) {
-    subjectAclService.checkPermission("/draft/network", "VIEW", id);
+  public FileResource file(@PathParam("fileId") String fileId, @QueryParam("key") String key) {
+    checkPermission("/draft/network", "VIEW", key);
     FileResource fileResource = applicationContext.getBean(FileResource.class);
     Network network = networkService.findById(id);
 
@@ -150,7 +149,7 @@ public class DraftNetworkResource extends AbstractGitPersistableResource<Network
   @GET
   @Path("/commit/{commitId}/view")
   public Mica.NetworkDto getFromCommit(@NotNull @PathParam("commitId") String commitId) throws IOException {
-    subjectAclService.checkPermission("/draft/network", "VIEW", id);
+    checkPermission("/draft/network", "VIEW");
     return dtos.asDto(networkService.getFromCommit(networkService.findDraft(id), commitId), true);
   }
 
@@ -173,7 +172,7 @@ public class DraftNetworkResource extends AbstractGitPersistableResource<Network
   @GET
   @Path("/projects")
   public List<Projects.ProjectDto> projects() throws URISyntaxException {
-    subjectAclService.checkPermission("/draft/network", "VIEW", id);
+    checkPermission("/draft/network", "VIEW");
     return opalService.getProjectDtos(networkService.findById(id).getOpal());
   }
 

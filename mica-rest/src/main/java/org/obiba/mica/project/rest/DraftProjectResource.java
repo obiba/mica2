@@ -10,21 +10,6 @@
 
 package org.obiba.mica.project.rest;
 
-import java.io.IOException;
-import java.util.Map;
-
-import javax.inject.Inject;
-import javax.validation.constraints.NotNull;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Response;
-
 import org.obiba.mica.AbstractGitPersistableResource;
 import org.obiba.mica.core.domain.PublishCascadingScope;
 import org.obiba.mica.core.domain.RevisionStatus;
@@ -40,6 +25,13 @@ import org.obiba.mica.web.model.Mica;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+
+import javax.inject.Inject;
+import javax.validation.constraints.NotNull;
+import javax.ws.rs.*;
+import javax.ws.rs.core.Response;
+import java.io.IOException;
+import java.util.Map;
 
 @Component
 @Scope("request")
@@ -66,8 +58,8 @@ public class DraftProjectResource extends AbstractGitPersistableResource<Project
   }
 
   @GET
-  public Mica.ProjectDto get() {
-    subjectAclService.checkPermission("/draft/project", "VIEW", id);
+  public Mica.ProjectDto get(@QueryParam("key") String key) {
+    checkPermission("/draft/project", "VIEW", key);
     return dtos.asDto(projectService.findById(id), true);
   }
 
@@ -75,13 +67,13 @@ public class DraftProjectResource extends AbstractGitPersistableResource<Project
   @Path("/model")
   @Produces("application/json")
   public Map<String, Object> getModel() {
-    subjectAclService.checkPermission("/draft/project", "VIEW", id);
+    checkPermission("/draft/project", "VIEW");
     return projectService.findById(id).getModel();
   }
 
   @PUT
   public Response update(@SuppressWarnings("TypeMayBeWeakened") Mica.ProjectDto projectDto) {
-    subjectAclService.checkPermission("/draft/project", "EDIT", id);
+    checkPermission("/draft/project", "EDIT");
     // ensure network exists
     projectService.findById(id);
 
@@ -93,7 +85,7 @@ public class DraftProjectResource extends AbstractGitPersistableResource<Project
   @PUT
   @Path("/_index")
   public Response index() {
-    subjectAclService.checkPermission("/draft/project", "EDIT", id);
+    checkPermission("/draft/project", "EDIT");
     projectService.index(id);
     return Response.noContent().build();
   }
@@ -101,7 +93,7 @@ public class DraftProjectResource extends AbstractGitPersistableResource<Project
   @PUT
   @Path("/_publish")
   public Response publish(@QueryParam("cascading") @DefaultValue("UNDER_REVIEW") String cascadingScope) {
-    subjectAclService.checkPermission("/draft/project", "PUBLISH", id);
+    checkPermission("/draft/project", "PUBLISH");
     projectService.publish(id, true, PublishCascadingScope.valueOf(cascadingScope.toUpperCase()));
     return Response.noContent().build();
   }
@@ -109,14 +101,14 @@ public class DraftProjectResource extends AbstractGitPersistableResource<Project
   @DELETE
   @Path("/_publish")
   public Response unPublish() {
-    subjectAclService.checkPermission("/draft/project", "PUBLISH", id);
+    checkPermission("/draft/project", "PUBLISH");
     projectService.publish(id, false);
     return Response.noContent().build();
   }
 
   @DELETE
   public Response delete() {
-    subjectAclService.checkPermission("/draft/project", "DELETE", id);
+    checkPermission("/draft/project", "DELETE");
     try {
       projectService.delete(id);
     } catch (NoSuchProjectException e) {
@@ -126,8 +118,8 @@ public class DraftProjectResource extends AbstractGitPersistableResource<Project
   }
 
   @Path("/file/{fileId}")
-  public FileResource network(@PathParam("fileId") String fileId) {
-    subjectAclService.checkPermission("/draft/project", "VIEW", id);
+  public FileResource file(@PathParam("fileId") String fileId, @QueryParam("key") String key) {
+    checkPermission("/draft/project", "VIEW", key);
     FileResource fileResource = applicationContext.getBean(FileResource.class);
     projectService.findById(id);
     return fileResource;
@@ -136,7 +128,7 @@ public class DraftProjectResource extends AbstractGitPersistableResource<Project
   @PUT
   @Path("/_status")
   public Response toUnderReview(@QueryParam("value") String status) {
-    subjectAclService.checkPermission("/draft/project", "EDIT", id);
+    checkPermission("/draft/project", "EDIT");
     projectService.updateStatus(id, RevisionStatus.valueOf(status.toUpperCase()));
 
     return Response.noContent().build();
@@ -145,7 +137,7 @@ public class DraftProjectResource extends AbstractGitPersistableResource<Project
   @GET
   @Path("/commit/{commitId}/view")
   public Mica.ProjectDto getFromCommit(@NotNull @PathParam("commitId") String commitId) throws IOException {
-    subjectAclService.checkPermission("/draft/project", "VIEW", id);
+    checkPermission("/draft/project", "VIEW");
     return dtos.asDto(projectService.getFromCommit(projectService.findDraft(id), commitId), true);
   }
 
