@@ -27,6 +27,8 @@ import org.obiba.mica.micaConfig.service.TaxonomyService;
 import org.obiba.mica.taxonomy.TaxonomyResolver;
 import org.obiba.opal.web.model.Opal;
 import org.obiba.opal.web.taxonomy.Dtos;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -38,6 +40,8 @@ import com.google.common.collect.Lists;
 @Path("/taxonomies")
 @RequiresAuthentication
 public class TaxonomiesSearchResource extends AbstractTaxonomySearchResource {
+
+  private static final Logger logger = LoggerFactory.getLogger(TaxonomiesSearchResource.class);
 
   @Inject
   private TaxonomyService taxonomyService;
@@ -69,6 +73,9 @@ public class TaxonomiesSearchResource extends AbstractTaxonomySearchResource {
   @Timed
   public List<Opal.TaxonomyBundleDto> search(@QueryParam("query") String query, @QueryParam("locale") String locale,
     @Nullable @QueryParam("target") String target) {
+
+    logger.debug("TaxonomiesSearchResource#search called with query [%s], locale [%s] and target [%s]", query, locale, target);
+
     List<Opal.TaxonomyBundleDto> results = Lists.newArrayList();
 
     List<TaxonomyTarget> targets = target == null

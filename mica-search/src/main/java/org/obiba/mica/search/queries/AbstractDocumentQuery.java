@@ -453,32 +453,28 @@ public abstract class AbstractDocumentQuery {
     log.info("Request /{}/{}", getSearchIndex(), getSearchType());
     log.debug("Request /{}/{}: {}", getSearchIndex(), getSearchType(), requestBuilder.toString());
 
-    try {
-      MultiSearchResponse.Item[] responses = client.prepareMultiSearch().add(defaultRequestBuilder).add(requestBuilder)
-        .execute().actionGet().getResponses();
+    MultiSearchResponse.Item[] responses = client.prepareMultiSearch().add(defaultRequestBuilder).add(requestBuilder)
+      .execute().actionGet().getResponses();
 
-      SearchResponse defaultResponse = responses[0].getResponse();
-      SearchResponse response = responses[1].getResponse();
+    SearchResponse defaultResponse = responses[0].getResponse();
+    SearchResponse response = responses[1].getResponse();
 
-      List<String> rval = null;
-      if(response != null) {
+    List<String> rval = null;
+    if (response != null) {
 
-        QueryResultDto.Builder builder = QueryResultDto.newBuilder()
-          .setTotalHits((int) response.getHits().getTotalHits());
+      QueryResultDto.Builder builder = QueryResultDto.newBuilder()
+        .setTotalHits((int) response.getHits().getTotalHits());
 
-        if(scope == DETAIL) processHits(builder, response.getHits(), scope, counts);
+      if (scope == DETAIL) processHits(builder, response.getHits(), scope, counts);
 
-        processAggregations(builder, defaultResponse.getAggregations(), response.getAggregations());
-        resultDto = builder.build();
-        rval = getResponseStudyIds(resultDto.getAggsList());
-      }
-
-      log.info("Response /{}/{}", getSearchIndex(), getSearchType());
-      log.debug("Response: {}", response);
-      return rval;
-    } catch(IndexNotFoundException e) {
-      return null; //ignoring
+      processAggregations(builder, defaultResponse.getAggregations(), response.getAggregations());
+      resultDto = builder.build();
+      rval = getResponseStudyIds(resultDto.getAggsList());
     }
+
+    log.info("Response /{}/{}", getSearchIndex(), getSearchType());
+    log.debug("Response: {}", response);
+    return rval;
   }
 
   private void appendAggregations(SearchRequestBuilder defaultRequestBuilder, SearchRequestBuilder requestBuilder,
