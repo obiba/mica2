@@ -130,6 +130,7 @@ mica.network
     'FormServerValidation',
     'FormDirtyStateObserver',
     'SfOptionsService',
+    '$timeout',
     function ($rootScope,
               $scope,
               $routeParams,
@@ -146,10 +147,12 @@ mica.network
               EntityFormResource,
               FormServerValidation,
               FormDirtyStateObserver,
-              SfOptionsService) {
+              SfOptionsService,
+              $timeout) {
 
       $scope.files = [];
       $scope.newNetwork= !$routeParams.id;
+      $scope.revision = {comment: null};
       $scope.network = $routeParams.id ? DraftNetworkResource.get({id: $routeParams.id}, function(network) {
         $scope.files = network.logo ? [network.logo] : [];
 
@@ -176,6 +179,8 @@ mica.network
             form.schema = angular.fromJson(form.schema);
             form.definition = angular.fromJson(form.definition);
             $scope.sfForm = form;
+
+            $timeout(function () { $scope.sfForm = angular.copy(form); }, 250);
           });
         });
       }
@@ -204,7 +209,7 @@ mica.network
       };
 
       var updateNetwork = function () {
-        $scope.network.$save(
+        $scope.network.$save({comment: $scope.revision.comment},
           function (network) {
             FormDirtyStateObserver.unobserve();
             $location.path('/network/' + network.id).replace();
@@ -407,6 +412,8 @@ mica.network
             form.definition = angular.fromJson(form.definition);
             form.schema.readonly = true;
             $scope.sfForm = form;
+
+            $timeout(function () { $scope.sfForm = angular.copy(form); }, 250);
           });
         });
       }

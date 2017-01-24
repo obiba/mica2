@@ -30,6 +30,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
@@ -79,13 +80,14 @@ public class DraftNetworkResource extends AbstractGitPersistableResource<Network
   }
 
   @PUT
-  public Response update(@SuppressWarnings("TypeMayBeWeakened") Mica.NetworkDto networkDto) {
+  public Response update(@SuppressWarnings("TypeMayBeWeakened") Mica.NetworkDto networkDto,
+                         @Nullable @QueryParam("comment") String comment) {
     checkPermission("/draft/network", "EDIT");
     // ensure network exists
     networkService.findById(id);
 
     Network network = dtos.fromDto(networkDto);
-    networkService.save(network);
+    networkService.save(network, comment);
     return Response.noContent().build();
   }
 

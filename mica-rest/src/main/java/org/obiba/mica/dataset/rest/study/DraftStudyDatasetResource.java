@@ -10,17 +10,7 @@
 
 package org.obiba.mica.dataset.rest.study;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-
-import javax.inject.Inject;
-import javax.validation.constraints.NotNull;
-import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
-
+import com.google.common.collect.ImmutableList;
 import org.obiba.mica.AbstractGitPersistableResource;
 import org.obiba.mica.core.domain.PublishCascadingScope;
 import org.obiba.mica.core.domain.RevisionStatus;
@@ -38,7 +28,16 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import com.google.common.collect.ImmutableList;
+import javax.annotation.Nullable;
+import javax.inject.Inject;
+import javax.validation.constraints.NotNull;
+import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 
 @Component
 @Scope("request")
@@ -81,13 +80,14 @@ public class DraftStudyDatasetResource extends
   }
 
   @PUT
-  public Response update(Mica.DatasetDto datasetDto, @Context UriInfo uriInfo) {
+  public Response update(Mica.DatasetDto datasetDto, @Context UriInfo uriInfo,
+                         @Nullable @QueryParam("comment") String comment) {
     checkPermission("/draft/study-dataset", "EDIT");
     if (!datasetDto.hasId() || !datasetDto.getId().equals(id)) throw new IllegalArgumentException("Not the expected dataset id");
     Dataset dataset = dtos.fromDto(datasetDto);
     if(!(dataset instanceof StudyDataset)) throw new IllegalArgumentException("A study dataset is expected");
 
-    datasetService.save((StudyDataset) dataset);
+    datasetService.save((StudyDataset) dataset, comment);
     return Response.noContent().build();
   }
 

@@ -50,7 +50,7 @@
             "key": "selectionCriteria.healthStatus",
             "add": "t(study.selection-criteria.add-health-status)",
             "style": {
-              "add": "btn-info"
+              "add": "btn-info btn-responsive"
             },
             "items": [
               {
@@ -63,7 +63,7 @@
             "key": "selectionCriteria.ethnicOrigin",
             "add": "t(study.selection-criteria.add-ethnic-origin)",
             "style": {
-              "add": "btn-info"
+              "add": "btn-info btn-responsive"
             },
             "items": [
               {

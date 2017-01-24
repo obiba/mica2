@@ -14,7 +14,7 @@ mica.project
 
   .factory('DraftProjectsResource', ['$resource',
     function ($resource) {
-      return $resource('ws/draft/projects', {}, {
+      return $resource('ws/draft/projects?comment:comment', {}, {
         'get' : {method: 'GET', errorHandler: true},
         'save': {method: 'POST', errorHandler: true}
       });

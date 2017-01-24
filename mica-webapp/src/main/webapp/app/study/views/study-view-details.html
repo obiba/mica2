@@ -42,7 +42,7 @@
                     </div>
                   </li>
                 </ul>
-                <button type="button" class="btn btn-info btn-sm hidden-print" ng-click="addMember(study, role)" ng-if="inViewMode() && permissions.canEdit()">
+                <button type="button" class="btn btn-info btn-responsive btn-sm hidden-print" ng-click="addMember(study, role)" ng-if="inViewMode() && permissions.canEdit()">
                   <i class="fa fa-plus"></i> <span>{{ 'study.add-member' | translate: {type: role} }}</span>
                 </button>
               </div>
@@ -67,7 +67,7 @@
       <h3>
         <span translate>study.populations</span>
       </h3>
-      <a ng-click="addPopulation()" class="btn btn-info hidden-print" ng-if="inViewMode() && permissions.canEdit()">
+      <a ng-click="addPopulation()" class="btn btn-responsive btn-info hidden-print" ng-if="inViewMode() && permissions.canEdit()">
         <i class="fa fa-plus"></i> <span translate>study.add-population</span>
       </a>
       <div class="voffset2"></div>

@@ -114,6 +114,7 @@ mica.dataset
     'FormDirtyStateObserver',
     'EntityFormResource',
     'SfOptionsService',
+    '$timeout',
 
     function ($rootScope,
               $scope,
@@ -132,11 +133,13 @@ mica.dataset
               StudyStateProjectsResource,
               FormDirtyStateObserver,
               EntityFormResource,
-              SfOptionsService) {
+              SfOptionsService,
+              $timeout) {
       $scope.studies = [];
       $scope.projects = [];
       $scope.selected = {};
       $scope.studyTable = {};
+      $scope.revision = {comment: null};
 
 
       function initializeForm() {
@@ -155,6 +158,8 @@ mica.dataset
             form.schema = angular.fromJson(form.schema);
             form.definition = angular.fromJson(form.definition);
             $scope.sfForm = form;
+
+            $timeout(function () { $scope.sfForm = angular.copy(form); }, 250);
           });
 
         });
@@ -166,7 +171,7 @@ mica.dataset
       };
 
       var updateDataset = function () {
-        $scope.dataset.$save(
+        $scope.dataset.$save({comment: $scope.revision.comment},
           function (dataset) {
             FormDirtyStateObserver.unobserve();
             $location.path('/study-dataset/' + dataset.id).replace();
@@ -301,6 +306,7 @@ mica.dataset
     'EntityFormResource',
     'OpalTablesService',
     'SfOptionsService',
+    '$timeout',
 
     function ($rootScope,
               $scope,
@@ -318,7 +324,8 @@ mica.dataset
               FormDirtyStateObserver,
               EntityFormResource,
               OpalTablesService,
-              SfOptionsService) {
+              SfOptionsService,
+              $timeout) {
 
 
       function initializeForm() {
@@ -337,6 +344,8 @@ mica.dataset
             form.schema = angular.fromJson(form.schema);
             form.definition = angular.fromJson(form.definition);
             $scope.sfForm = form;
+
+            $timeout(function () { $scope.sfForm = angular.copy(form); }, 250);
           });
 
           MicaConfigOpalProjectsResource.get().$promise.then(function (projects) {
@@ -354,6 +363,7 @@ mica.dataset
       $scope.networks = DraftNetworksResource.query();
       $scope.type = getTypeFromUrl();
       $scope.newDataset = !$routeParams.id;
+      $scope.revision = {comment: null};
 
       function getOpalProjects() {
         return MicaConfigOpalProjectsResource.get().$promise.then(function(projects){
@@ -417,7 +427,7 @@ mica.dataset
       };
 
       var updateDataset = function () {
-        $scope.dataset.$save(
+        $scope.dataset.$save({comment: $scope.revision.comment},
           function (dataset) {
             FormDirtyStateObserver.unobserve();
             $location.path('/harmonization-dataset/' + dataset.id).replace();
@@ -473,6 +483,7 @@ mica.dataset
     'StudyDatasetResource',
     'HarmonizationDatasetResource',
     'SfOptionsService',
+    '$timeout',
 
     function ($rootScope,
               $scope,
@@ -499,7 +510,8 @@ mica.dataset
               OpalTablesService,
               StudyDatasetResource,
               HarmonizationDatasetResource,
-              SfOptionsService) {
+              SfOptionsService,
+              $timeout) {
 
       function initializeForm() {
         MicaConfigResource.get(function (micaConfig) {
@@ -522,6 +534,8 @@ mica.dataset
             form.schema.readonly = true;
             form.definition = angular.fromJson(form.definition);
             $scope.sfForm = form;
+
+            $timeout(function () { $scope.sfForm = angular.copy(form); }, 250);
           });
         });
       }

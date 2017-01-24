@@ -13,6 +13,7 @@ package org.obiba.mica.dataset.rest.harmonization;
 import java.util.List;
 import java.util.stream.Stream;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.DefaultValue;
@@ -108,12 +109,13 @@ public class DraftHarmonizationDatasetsResource {
   @Path("/harmonization-datasets")
   @Timed
   @RequiresPermissions({ "/draft/harmonization-dataset:ADD" })
-  public Response create(Mica.DatasetDto datasetDto, @Context UriInfo uriInfo) {
+  public Response create(Mica.DatasetDto datasetDto, @Context UriInfo uriInfo,
+                         @Nullable @QueryParam("comment") String comment) {
     Dataset dataset = dtos.fromDto(datasetDto);
     if(!(dataset instanceof HarmonizationDataset))
       throw new IllegalArgumentException("An harmonization dataset is expected");
 
-    datasetService.save((HarmonizationDataset) dataset);
+    datasetService.save((HarmonizationDataset) dataset, comment);
     return Response
       .created(uriInfo.getBaseUriBuilder().segment("draft", "harmonization-dataset", dataset.getId()).build()).build();
   }
