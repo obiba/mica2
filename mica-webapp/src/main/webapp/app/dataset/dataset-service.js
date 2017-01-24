@@ -21,7 +21,7 @@ mica.dataset
 
   .factory('DraftStudyDatasetsResource', ['$resource', 'DatasetModelService',
     function ($resource, DatasetModelService) {
-      return $resource('ws/draft/study-datasets', {}, {
+      return $resource('ws/draft/study-datasets?comment:comment', {}, {
         'save': {method: 'POST', errorHandler: true, transformRequest: function(dataset) {
           return DatasetModelService.serialize(dataset);
         }}
@@ -57,7 +57,7 @@ mica.dataset
 
   .factory('HarmonizationDatasetsResource', ['$resource',
     function ($resource) {
-      return $resource('ws/draft/harmonization-datasets', {}, {
+      return $resource('ws/draft/harmonization-datasets?comment:comment', {}, {
         'query': {method: 'GET', errorHandler: true, isArray: true},
         'delete': {method: 'DELETE', url: 'ws/draft/harmonization-dataset/:id', params: {id: '@id'}, errorHandler: true}
       });

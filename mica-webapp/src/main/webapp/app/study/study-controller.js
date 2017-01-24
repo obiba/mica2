@@ -718,6 +718,7 @@ mica.study
 
       $scope.selectionCriteriaGenders = {};
       $scope.population = {model: {}};
+      $scope.revision = {comment: null};
 
       $scope.study = $routeParams.id ? DraftStudyResource.get({id: $routeParams.id}, function (study) {
 
@@ -790,7 +791,7 @@ mica.study
 
       var updateStudy = function () {
         $log.debug('Update study', $scope.study);
-        $scope.study.$save(redirectToStudy, saveErrorHandler);
+        $scope.study.$save({comment: $scope.revision.comment}, redirectToStudy, saveErrorHandler);
       };
 
       var validate = function (form) {
@@ -847,6 +848,7 @@ mica.study
               SfOptionsService
     ) {
       $scope.dce = {model: {}};
+      $scope.revision = {comment: null};
       $scope.fileTypes = '.doc, .docx, .odm, .odt, .gdoc, .pdf, .txt  .xml  .xls, .xlsx, .ppt';
       $scope.defaultMinYear = 1900;
       $scope.defaultMaxYear = new Date().getFullYear() + 200;
@@ -978,7 +980,7 @@ mica.study
 
       var updateStudy = function () {
         $log.info('Update study', $scope.study);
-        $scope.study.$save(redirectToStudy, saveErrorHandler);
+        $scope.study.$save({comment: $scope.revision.comment}, redirectToStudy, saveErrorHandler);
       };
 
       var saveErrorHandler = function (response) {

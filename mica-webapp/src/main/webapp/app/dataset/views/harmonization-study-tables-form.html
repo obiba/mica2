@@ -4,15 +4,15 @@
   <p class="help-block" translate>dataset.harmonized-tables.info</p>
 
   <div ng-show="inViewMode() && permissions.canEdit()" class="hidden-print">
-    <button type="button" class="btn btn-info btn-sm voffset2" ng-click="addStudyTable()">
+    <button type="button" class="btn btn-responsive btn-info btn-sm voffset2" ng-click="addStudyTable()">
       <i class="fa fa-plus"></i> <span translate>dataset.add-study-table</span>
     </button>
 
-    <button type="button" class="btn btn-info btn-sm voffset2" ng-click="addNetworkTable()">
+    <button type="button" class="btn btn-responsive btn-info btn-sm voffset2" ng-click="addNetworkTable()">
       <i class="fa fa-plus"></i> <span translate>dataset.add-network-table</span>
     </button>
 
-    <button type="button" class="btn btn-danger btn-sm voffset2" ng-click="deleteSelectedOpalTables()" ng-if="opalTables && opalTables.length">
+    <button type="button" class="btn btn-responsive btn-danger btn-sm voffset2" ng-click="deleteSelectedOpalTables()" ng-if="opalTables && opalTables.length">
       <i class="fa fa-trash-o"></i> <span translate>global.delete-selected</span>
     </button>
   </div>

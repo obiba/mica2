@@ -13,6 +13,7 @@ package org.obiba.mica.dataset.rest.study;
 import java.util.List;
 import java.util.stream.Stream;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.DefaultValue;
@@ -108,11 +109,12 @@ public class DraftStudyDatasetsResource {
   @Path("/study-datasets")
   @Timed
   @RequiresPermissions({ "/draft/study-dataset:ADD" })
-  public Response create(Mica.DatasetDto datasetDto, @Context UriInfo uriInfo) {
+  public Response create(Mica.DatasetDto datasetDto, @Context UriInfo uriInfo,
+                         @Nullable @QueryParam("comment") String comment) {
     Dataset dataset = dtos.fromDto(datasetDto);
     if(!(dataset instanceof StudyDataset)) throw new IllegalArgumentException("An study dataset is expected");
 
-    datasetService.save((StudyDataset) dataset);
+    datasetService.save((StudyDataset) dataset, comment);
     return Response.created(uriInfo.getBaseUriBuilder().segment("draft", "study-dataset", dataset.getId()).build())
       .build();
   }

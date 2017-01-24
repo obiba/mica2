@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
@@ -83,14 +84,15 @@ public class DraftHarmonizationDatasetResource extends
 
   @PUT
   @Timed
-  public Response update(Mica.DatasetDto datasetDto, @Context UriInfo uriInfo) {
+  public Response update(Mica.DatasetDto datasetDto, @Context UriInfo uriInfo,
+                         @Nullable @QueryParam("comment") String comment) {
     subjectAclService.checkPermission("/draft/harmonization-dataset", "EDIT", id);
     if(!datasetDto.hasId() || !datasetDto.getId().equals(id))
       throw new IllegalArgumentException("Not the expected dataset id");
     Dataset dataset = dtos.fromDto(datasetDto);
     if(!(dataset instanceof HarmonizationDataset)) throw new IllegalArgumentException("An harmonization dataset is expected");
 
-    datasetService.save((HarmonizationDataset) dataset);
+    datasetService.save((HarmonizationDataset) dataset, comment);
     return Response.noContent().build();
   }
 

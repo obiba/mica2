@@ -20,7 +20,7 @@ mica.network
 
   .factory('DraftNetworksResource', ['$resource', 'NetworkModelService',
     function ($resource, NetworkModelService) {
-      return $resource('ws/draft/networks', {}, {
+      return $resource('ws/draft/networks?comment:comment', {}, {
         'save': {method: 'POST', errorHandler: true, transformRequest: NetworkModelService.serialize}
       });
     }])
