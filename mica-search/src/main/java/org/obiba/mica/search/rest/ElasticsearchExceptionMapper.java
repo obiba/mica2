@@ -29,11 +29,11 @@ public class ElasticsearchExceptionMapper extends AbstractErrorDtoExceptionMappe
 
   @Override
   protected GeneratedMessage.ExtendableMessage<?> getErrorDto(ElasticsearchException e) {
-    return ErrorDtos.ClientErrorDto.newBuilder() //
-      .setCode(getStatus().getStatusCode()) //
-      .setMessageTemplate("server.error.search.failed") //
-      .setMessage(e.getMessage()) //
-      .addArguments(e.getRootCause().getMessage()) //
-      .build(); //
+    return ErrorDtos.ClientErrorDto.newBuilder()
+      .setCode(getStatus().getStatusCode())
+      .setMessageTemplate("server.error.search.failed")
+      .setMessage(e.getMessage())
+      .addArguments(e.getRootCause().getMessage())
+      .build();
   }
 }
