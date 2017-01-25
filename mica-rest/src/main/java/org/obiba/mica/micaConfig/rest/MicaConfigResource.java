@@ -47,17 +47,23 @@ import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.elasticsearch.common.Strings;
 import org.obiba.mica.JSONUtils;
 import org.obiba.mica.contact.event.IndexContactsEvent;
+import org.obiba.mica.dataset.domain.DatasetVariable;
+import org.obiba.mica.dataset.domain.HarmonizationDataset;
+import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.dataset.event.IndexDatasetsEvent;
 import org.obiba.mica.dataset.service.KeyStoreService;
 import org.obiba.mica.file.event.IndexFilesEvent;
 import org.obiba.mica.micaConfig.event.TaxonomiesUpdatedEvent;
 import org.obiba.mica.micaConfig.service.CacheService;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
+import org.obiba.mica.micaConfig.service.MicaMetricsService;
 import org.obiba.mica.micaConfig.service.OpalCredentialService;
 import org.obiba.mica.micaConfig.service.OpalService;
 import org.obiba.mica.micaConfig.service.TaxonomyService;
+import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.network.event.IndexNetworksEvent;
 import org.obiba.mica.security.Roles;
+import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.event.IndexStudiesEvent;
 import org.obiba.mica.user.UserProfileService;
 import org.obiba.mica.web.model.Dtos;
@@ -114,6 +120,9 @@ public class MicaConfigResource {
 
   @Inject
   private ApplicationContext applicationContext;
+
+  @Inject
+  private MicaMetricsService micaMetricsService;
 
   @GET
   @Timed
@@ -312,6 +321,78 @@ public class MicaConfigResource {
     eventBus.post(new IndexDatasetsEvent());
     eventBus.post(new TaxonomiesUpdatedEvent());
     return Response.noContent().build();
+  }
+
+  @GET
+  @Path("/metrics")
+  @RequiresRoles(Roles.MICA_ADMIN)
+  public Mica.MicaMetricsDto getMetrics() {
+
+    long studyDraftFiles = micaMetricsService.getDraftStudyFilesCount();
+    long studyPublishedFiles = micaMetricsService.getPublishedStudyFilesCount();
+
+    long networkDraftFiles = micaMetricsService.getDraftNetworkFilesCount();
+    long networkPublishedFiles = micaMetricsService.getPublishedNetworkFilesCount();
+
+    long studyDatasetDraftFiles = micaMetricsService.getDraftStudyDatasetFilesCount();
+    long studyDatasetPublishedFiles = micaMetricsService.getPublishedStudyDatasetFilesCount();
+
+    long harmonizationDatasetDraftFiles = micaMetricsService.getDraftHarmonizationDatasetFilesCount();
+    long harmonizationDatasetPublishedFiles = micaMetricsService.getPublishedHarmonizationDatasetFilesCount();
+
+
+    return Mica.MicaMetricsDto.newBuilder()
+      // Network
+      .addDocuments(
+        Mica.MicaMetricsDto.DocumentMetricsDto.newBuilder()
+          .setType(Network.class.getSimpleName())
+          .setTotal(micaMetricsService.getNetworksCount())
+          .setPublished(micaMetricsService.getPublishedNetworksCount()))
+      .addFiles(Mica.MicaMetricsDto.DocumentMetricsDto.newBuilder()
+        .setType(Network.class.getSimpleName())
+        .setTotal(networkDraftFiles+networkPublishedFiles)
+        .setPublished(networkPublishedFiles))
+      // Study
+      .addDocuments(
+        Mica.MicaMetricsDto.DocumentMetricsDto.newBuilder()
+          .setType(Study.class.getSimpleName())
+          .setTotal(micaMetricsService.getStudiesCount())
+          .setPublished(micaMetricsService.getPublishedStudiesCount()))
+      .addFiles(Mica.MicaMetricsDto.DocumentMetricsDto.newBuilder()
+        .setType(Study.class.getSimpleName())
+        .setTotal(studyDraftFiles+studyPublishedFiles)
+        .setPublished(studyPublishedFiles))
+      .addDocuments(Mica.MicaMetricsDto.DocumentMetricsDto.newBuilder()
+        .setType("StudiesWithVariables")
+        .setTotal(0)
+        .setPublished(micaMetricsService.getPublishedStudiesWithVariablesCount()))
+      // StudyDataset
+      .addDocuments(
+        Mica.MicaMetricsDto.DocumentMetricsDto.newBuilder()
+          .setType(StudyDataset.class.getSimpleName())
+          .setTotal(micaMetricsService.getStudyDatasetsCount())
+          .setPublished(micaMetricsService.getPublishedStudyDatasetsCount()))
+      .addFiles(Mica.MicaMetricsDto.DocumentMetricsDto.newBuilder()
+        .setType(StudyDataset.class.getSimpleName())
+        .setTotal(studyDatasetDraftFiles+studyDatasetPublishedFiles)
+        .setPublished(studyDatasetPublishedFiles))
+      // HarmonizarionDataset
+      .addDocuments(
+        Mica.MicaMetricsDto.DocumentMetricsDto.newBuilder()
+          .setType(HarmonizationDataset.class.getSimpleName())
+          .setTotal(micaMetricsService.getHarmonizarionDatasetsCount())
+          .setPublished(micaMetricsService.getPublishedHarmonizationDatasetsCount()))
+      .addFiles(Mica.MicaMetricsDto.DocumentMetricsDto.newBuilder()
+        .setType(HarmonizationDataset.class.getSimpleName())
+        .setTotal(harmonizationDatasetDraftFiles+harmonizationDatasetPublishedFiles)
+        .setPublished(harmonizationDatasetPublishedFiles))
+      // Variables
+      .addDocuments(
+        Mica.MicaMetricsDto.DocumentMetricsDto.newBuilder()
+          .setType(DatasetVariable.class.getSimpleName())
+          .setTotal(0)
+          .setPublished(micaMetricsService.getPublishedVariablesCount()))
+      .build();
   }
 
   private DocumentContext getGlobalTranslations(String locale, boolean _default) throws IOException {

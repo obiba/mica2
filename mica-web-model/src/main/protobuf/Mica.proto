@@ -819,3 +819,21 @@ message AttachmentStateDto {
   optional string publishedBy = 8;
   repeated AttachmentDto revisions = 9;
 }
+
+message MicaMetricsDto {
+
+    message DocumentMetricsDto {
+      required string type = 1;
+      required int64 total = 2;
+      required int64 published = 3;
+    }
+
+    message OpalServerStatusDto {
+      required string name = 1;
+      required bool up = 2;
+    }
+
+    repeated DocumentMetricsDto documents = 1;
+    repeated DocumentMetricsDto files = 2;
+    repeated OpalServerStatusDto opalServers = 3;
+}
