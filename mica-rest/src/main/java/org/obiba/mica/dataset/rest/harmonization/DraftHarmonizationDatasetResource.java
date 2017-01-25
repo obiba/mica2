@@ -10,18 +10,6 @@
 
 package org.obiba.mica.dataset.rest.harmonization;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.Nullable;
-import javax.inject.Inject;
-import javax.validation.constraints.NotNull;
-import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
-
 import com.codahale.metrics.annotation.Timed;
 import com.google.common.collect.ImmutableList;
 import org.obiba.mica.AbstractGitPersistableResource;
@@ -41,6 +29,17 @@ import org.obiba.opal.web.model.Search;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+
+import javax.annotation.Nullable;
+import javax.inject.Inject;
+import javax.validation.constraints.NotNull;
+import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 
 @Component
 @Scope("request")
@@ -63,8 +62,8 @@ public class DraftHarmonizationDatasetResource extends
   }
 
   @GET
-  public Mica.DatasetDto get() {
-    subjectAclService.checkPermission("/draft/harmonization-dataset", "VIEW", id);
+  public Mica.DatasetDto get(@QueryParam("key") String key) {
+    checkPermission("/draft/harmonization-dataset", "VIEW", key);
     return dtos.asDto(getDataset(), true);
   }
 
@@ -72,13 +71,13 @@ public class DraftHarmonizationDatasetResource extends
   @Path("/model")
   @Produces("application/json")
   public Map<String, Object> getModel() {
-    subjectAclService.checkPermission("/draft/harmonization-dataset", "VIEW", id);
+    checkPermission("/draft/harmonization-dataset", "VIEW");
     return getDataset().getModel();
   }
 
   @DELETE
   public void delete(){
-    subjectAclService.checkPermission("/draft/harmonization-dataset", "DELETE", id);
+    checkPermission("/draft/harmonization-dataset", "DELETE");
     datasetService.delete(id);
   }
 
@@ -86,7 +85,7 @@ public class DraftHarmonizationDatasetResource extends
   @Timed
   public Response update(Mica.DatasetDto datasetDto, @Context UriInfo uriInfo,
                          @Nullable @QueryParam("comment") String comment) {
-    subjectAclService.checkPermission("/draft/harmonization-dataset", "EDIT", id);
+    checkPermission("/draft/harmonization-dataset", "EDIT");
     if(!datasetDto.hasId() || !datasetDto.getId().equals(id))
       throw new IllegalArgumentException("Not the expected dataset id");
     Dataset dataset = dtos.fromDto(datasetDto);
@@ -100,7 +99,7 @@ public class DraftHarmonizationDatasetResource extends
   @Path("/_index")
   @Timed
   public Response index() {
-    subjectAclService.checkPermission("/draft/harmonization-dataset", "EDIT", id);
+    checkPermission("/draft/harmonization-dataset", "EDIT");
     datasetService.index(id);
     return Response.noContent().build();
   }
@@ -108,7 +107,7 @@ public class DraftHarmonizationDatasetResource extends
   @PUT
   @Path("/_publish")
   public Response publish(@QueryParam("cascading") @DefaultValue("UNDER_REVIEW") String cascadingScope) {
-    subjectAclService.checkPermission("/draft/harmonization-dataset", "PUBLISH", id);
+    checkPermission("/draft/harmonization-dataset", "PUBLISH");
     datasetService.publish(id, true, PublishCascadingScope.valueOf(cascadingScope.toUpperCase()));
     return Response.noContent().build();
   }
@@ -116,7 +115,7 @@ public class DraftHarmonizationDatasetResource extends
   @DELETE
   @Path("/_publish")
   public Response unPublish() {
-    subjectAclService.checkPermission("/draft/harmonization-dataset", "PUBLISH", id);
+    checkPermission("/draft/harmonization-dataset", "PUBLISH");
     datasetService.publish(id, false);
     return Response.noContent().build();
   }
@@ -124,14 +123,14 @@ public class DraftHarmonizationDatasetResource extends
   @GET
   @Path("/table")
   public Magma.TableDto getTable() {
-    subjectAclService.checkPermission("/draft/harmonization-dataset", "VIEW", id);
+    checkPermission("/draft/harmonization-dataset", "VIEW");
     return datasetService.getTableDto(getDataset());
   }
 
   @GET
   @Path("/variables")
   public List<Mica.DatasetVariableDto> getVariables() {
-    subjectAclService.checkPermission("/draft/harmonization-dataset", "VIEW", id);
+    checkPermission("/draft/harmonization-dataset", "VIEW");
     ImmutableList.Builder<Mica.DatasetVariableDto> builder = ImmutableList.builder();
     datasetService.getDatasetVariables(getDataset()).forEach(variable -> builder.add(dtos.asDto(variable)));
     return builder.build();
@@ -139,7 +138,7 @@ public class DraftHarmonizationDatasetResource extends
 
   @Path("/variable/{variable}")
   public DraftDataschemaDatasetVariableResource getVariable(@PathParam("variable") String variable) {
-    subjectAclService.checkPermission("/draft/harmonization-dataset", "VIEW", id);
+    checkPermission("/draft/harmonization-dataset", "VIEW");
     DraftDataschemaDatasetVariableResource resource = applicationContext.getBean(DraftDataschemaDatasetVariableResource.class);
     resource.setDatasetId(id);
     resource.setVariableName(variable);
@@ -148,7 +147,7 @@ public class DraftHarmonizationDatasetResource extends
 
   @Path("/study/{study}/variable/{variable}")
   public DraftHarmonizedDatasetVariableResource getVariable(@PathParam("study") String studyId, @PathParam("variable") String variable) {
-    subjectAclService.checkPermission("/draft/harmonization-dataset", "VIEW", id);
+    checkPermission("/draft/harmonization-dataset", "VIEW");
     DraftHarmonizedDatasetVariableResource resource = applicationContext.getBean(DraftHarmonizedDatasetVariableResource.class);
     resource.setDatasetId(id);
     resource.setVariableName(variable);
@@ -159,7 +158,7 @@ public class DraftHarmonizationDatasetResource extends
   @POST
   @Path("/facets")
   public List<Search.QueryResultDto> getFacets(Search.QueryTermsDto query) {
-    subjectAclService.checkPermission("/draft/harmonization-dataset", "VIEW", id);
+    checkPermission("/draft/harmonization-dataset", "VIEW");
     ImmutableList.Builder<Search.QueryResultDto> builder = ImmutableList.builder();
     HarmonizationDataset dataset = getDataset();
     for(OpalTable table : dataset.getAllOpalTables()) {
@@ -172,7 +171,7 @@ public class DraftHarmonizationDatasetResource extends
   @Path("/_status")
   @Timed
   public Response updateStatus(@QueryParam("value") String status) {
-    subjectAclService.checkPermission("/draft/harmonization-dataset", "EDIT", id);
+    checkPermission("/draft/harmonization-dataset", "EDIT");
     datasetService.updateStatus(id, RevisionStatus.valueOf(status.toUpperCase()));
 
     return Response.noContent().build();
@@ -181,7 +180,7 @@ public class DraftHarmonizationDatasetResource extends
   @GET
   @Path("/commit/{commitId}/view")
   public Mica.DatasetDto getFromCommit(@NotNull @PathParam("commitId") String commitId) throws IOException {
-    subjectAclService.checkPermission("/draft/harmonization-dataset", "VIEW", id);
+    checkPermission("/draft/harmonization-dataset", "VIEW");
     return dtos.asDto(datasetService.getFromCommit(datasetService.findDraft(id), commitId), true);
   }
 
