@@ -24,7 +24,7 @@
           <table class="table table-bordered table-striped">
           <tbody>
           <tr ng-repeat="role in roles">
-            <th>{{'study.member-list' | translate: {type: role} }}</th>
+            <th translate="study.member-list" translate-values="{{ {type: (role | translate)} }}"></th>
             <td>
               <div ng-controller="ContactController">
                 <ul ui-sortable="sortableOptions" ng-model="memberships[role]" class="list-unstyled sortable" ng-show="memberships[role].length">
@@ -43,7 +43,7 @@
                   </li>
                 </ul>
                 <button type="button" class="btn btn-info btn-responsive btn-sm hidden-print" ng-click="addMember(study, role)" ng-if="inViewMode() && permissions.canEdit()">
-                  <i class="fa fa-plus"></i> <span>{{ 'study.add-member' | translate: {type: role} }}</span>
+                  <i class="fa fa-plus"></i> <span translate="study.add-member" translate-values="{{ {type: (role | translate)} }}"></span>
                 </button>
               </div>
             </td>

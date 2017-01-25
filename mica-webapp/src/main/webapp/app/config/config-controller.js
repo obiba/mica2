@@ -307,10 +307,19 @@ mica.config
   .controller('RoleModalController', ['$scope', '$uibModalInstance', '$log', 'micaConfig', 'role',
     function ($scope, $uibModalInstance, $log, micaConfig, role) {
       var oldRole = role;
+      var hasSpecialCharacters = function (str) {
+        if (str && typeof str === 'string') {
+          var result = str.match(/[A-Z\s~!]/g);
+          return result;
+        }
+
+        return false;
+      };
       $scope.role = {id: role};
 
       $scope.save = function (form) {
         form.id.$setValidity('text', !micaConfig.roles || micaConfig.roles.indexOf($scope.role.id) < 0 || $scope.role.id === oldRole);
+        form.id.$setValidity('character', !hasSpecialCharacters($scope.role.id));
 
         if (form.$valid) {
           $uibModalInstance.close($scope.role.id);

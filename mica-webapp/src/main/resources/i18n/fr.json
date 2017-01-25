@@ -318,6 +318,7 @@
     "delete-role-confirm": "Cette opération va supprimer les membres avec ce rôle de tous les documents, à savoir les études et les réseaux. Etes-vous sûr de vouloir supprimer le rôle \"{{role}}\"?",
     "role-help": "Identifiant unique du rôle.",
     "role-error": "L'identifiant du rôle existe déjà.",
+    "role-character-error": "L'identifiant du rôle contient des charactères spéciaux. Veuillez éviter les caractères tel que les majuscules, espaces, '~' et '!'.",
     "notifications": {
       "title": "Notifications",
       "info": "Des courriels de notification peuvent être envoyés aux utilisateurs et aux groupes concernés.",
