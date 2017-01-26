@@ -801,6 +801,7 @@
     "help": "Search in the published repository.",
     "back": "Back to Search",
     "no-results": "No result found.",
+    "error": "Impossible to search for now. Please try again later.",
     "no-description": "No description.",
     "placeholder": {
       "all": "e.g. alcohol, cancer, gender, cohort, twin",
