@@ -320,7 +320,7 @@
     "harmonization-dataset-enabled": "Section ensemble de données d'harmonisation activée",
     "harmonization-dataset-enabled-help": "Des ensembles de données d'harmonisation sont présents dans Mica.",
     "roles": "Rôles des personnes membres",
-    "roles-help": "Une personne peut être membre d'une étude ou d'un réseau avec l'un des rôles énumérés.",
+    "roles-help": "Une personne peut être membre d'une étude ou d'un réseau avec l'un des rôles énumérés. * Utiliser le préfixe <a href='#/admin/translations/edit?filter=membership-role.'>'membership-role.'</a> pour changer la traduction.",
     "add-role": "Ajouter un rôle",
     "delete-role-title": "Supprimer le rôle",
     "delete-role-confirm": "Cette opération va supprimer les membres avec ce rôle de tous les documents, à savoir les études et les réseaux. Etes-vous sûr de vouloir supprimer le rôle \"{{role}}\"?",
@@ -1544,5 +1544,9 @@
         "status-detail": "Détail du statut"
       }
     }
+  },
+  "membership-role": {
+    "investigator": "enquêteur",
+    "contact": "contact"
   }
 }
