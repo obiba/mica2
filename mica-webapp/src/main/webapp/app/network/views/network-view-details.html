@@ -152,7 +152,7 @@
               <table class="table table-bordered table-striped">
                 <tbody>
                 <tr ng-repeat="role in roles">
-                  <th>{{'network.member-list' | translate: {type: role} }}</th>
+                  <th translate="network.member-list" translate-values="{{ {type: (role | translate)} }}"></th>
                   <td>
                     <div ng-controller="ContactController">
                       <ul ui-sortable="sortableOptions" ng-model="memberships[role]" class="list-unstyled sortable" ng-show="memberships[role].length">
@@ -168,7 +168,7 @@
                         </li>
                       </ul>
                       <button type="button" class="btn btn-responsive btn-info btn-sm hidden-print" ng-click="addMember(network, role)" ng-if="inViewMode() && permissions.canEdit()">
-                        <i class="fa fa-plus"></i> <span>{{ 'network.add-member' | translate: {type: role} }}</span>
+                        <i class="fa fa-plus"></i> <span translate="network.add-member" translate-values="{{ {type: (role | translate)} }}"></span>
                       </button>
                     </div>
                   </td>

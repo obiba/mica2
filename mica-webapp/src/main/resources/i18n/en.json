@@ -319,6 +319,7 @@
     "delete-role-confirm": "This operation will remove members with this role from all documents, i.e. studies, networks. Are you sure you want to delete role \"{{role}}\"?",
     "role-help": "Role unique identifier.",
     "role-error": "Role identifier already exists.",
+    "role-character-error": "Role identifier contains invalid characters. Please avoid characters such as uppercase, spaces, '~' and '!'.",
     "notifications": {
       "title": "Notifications",
       "info": "Notification emails can be sent to relevant users and groups.",

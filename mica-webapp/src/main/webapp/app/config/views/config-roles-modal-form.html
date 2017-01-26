@@ -21,6 +21,8 @@
     <div class="modal-body">
       <p class="alert alert-danger" ng-show="form.saveAttempted && form.id.$error.text" translate>
         config.role-error</p>
+      <p class="alert alert-danger" ng-show="form.saveAttempted && form.id.$error.character" translate>
+        config.role-character-error</p>
       <div form-input name="id" model="role.id" label="id" help="config.role-help" required="true"></div>
     </div>
 
