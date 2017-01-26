@@ -75,6 +75,14 @@
     }
   },
   "metrics": {
+    "mica": {
+      "networks": "Réseaux",
+      "studies": "Études",
+      "studies-with-variables": "Études avec des variables",
+      "study-datasets": "Ensemble de données d'étude",
+      "harmonization-datasets": "Ensemble de données harmonisées",
+      "variables": "Variables"
+    },
     "title": "Métriques de l'application",
     "refresh.button": "Rafraichir",
     "health": {
