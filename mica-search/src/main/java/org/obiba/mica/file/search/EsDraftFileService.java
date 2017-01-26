@@ -19,18 +19,18 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 
 import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.obiba.mica.file.AttachmentState;
+import org.obiba.mica.file.service.DraftFileService;
 import org.obiba.mica.search.AbstractDocumentService;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 
 @Component
-@Scope("request")
-public class EsDraftFileService extends AbstractDocumentService<AttachmentState> {
+public class EsDraftFileService extends AbstractDocumentService<AttachmentState> implements DraftFileService {
 
   @Inject
   private ObjectMapper objectMapper;
@@ -44,6 +44,11 @@ public class EsDraftFileService extends AbstractDocumentService<AttachmentState>
   protected AttachmentState processHit(SearchHit hit) throws IOException {
     InputStream inputStream = new ByteArrayInputStream(hit.getSourceAsString().getBytes());
     return objectMapper.readValue(inputStream, AttachmentState.class);
+  }
+
+  @Override
+  public long getCount(String path) {
+    return getCount(QueryBuilders.wildcardQuery("path", String.format("%s%s/*", basePath, path)));
   }
 
   @Override

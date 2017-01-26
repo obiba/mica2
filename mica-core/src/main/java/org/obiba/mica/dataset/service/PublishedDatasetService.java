@@ -14,5 +14,7 @@ import org.obiba.mica.core.service.PublishedDocumentService;
 import org.obiba.mica.dataset.domain.Dataset;
 
 public interface PublishedDatasetService extends PublishedDocumentService<Dataset> {
-
+  long getStudyDatasetsCount();
+  long getHarmonizationDatasetsCount();
+  long getStudiesWithVariablesCount();
 }

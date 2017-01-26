@@ -50,7 +50,7 @@ public abstract class AbstractDocumentService<T> implements DocumentService<T> {
 
   private static final Logger log = LoggerFactory.getLogger(AbstractDocumentService.class);
 
-  private static final int MAX_SIZE = 10000;
+  protected static final int MAX_SIZE = 10000;
 
   @Inject
   protected Client client;
@@ -141,6 +141,24 @@ public abstract class AbstractDocumentService<T> implements DocumentService<T> {
     });
 
     return documents;
+  }
+
+  @Override
+  public long getCount() {
+    return getCount(QueryBuilders.matchAllQuery());
+  }
+
+  protected long getCount(QueryBuilder builder) {
+    SearchRequestBuilder search = client.prepareSearch()
+      .setIndices(getIndexName())
+      .setTypes(getType())
+      .setQuery(builder)
+      .setFrom(0)
+      .setSize(0);
+
+    SearchResponse response = search.execute().actionGet();
+
+    return response.getHits().getTotalHits();
   }
 
   /**

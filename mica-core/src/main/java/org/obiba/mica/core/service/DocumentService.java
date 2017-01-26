@@ -61,6 +61,8 @@ public interface DocumentService<T> {
   Documents<T> find(int from, int limit, @Nullable String sort, @Nullable String order, @Nullable String studyId,
                     @Nullable String query, @Nullable List<String> fields, @Nullable List<String> excludedFields);
 
+  long getCount();
+
   /**
    * Documents query result container.
    */
