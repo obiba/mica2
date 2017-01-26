@@ -313,7 +313,7 @@
     "harmonization-dataset-enabled": "Harmonization datasets section enabled",
     "harmonization-dataset-enabled-help": "Harmonization datasets section is accessible.",
     "roles": "Membership Roles",
-    "roles-help": "A person can be member of a study or of a network with one of the listed roles.",
+    "roles-help": "A person can be member of a study or of a network with one of the listed roles. * Use the prefix <a href='#/admin/translations/edit?filter=membership-role.'>'membership-role.'</a> to change the translation.",
     "add-role": "Add Role",
     "delete-role-title": "Delete Role",
     "delete-role-confirm": "This operation will remove members with this role from all documents, i.e. studies, networks. Are you sure you want to delete role \"{{role}}\"?",
@@ -1533,5 +1533,9 @@
         "status-detail": "Status Detail"
       }
     }
+  },
+  "membership-role": {
+    "investigator": "investigator",
+    "contact": "contact"
   }
 }

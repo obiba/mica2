@@ -474,8 +474,10 @@ mica.config
 
     }])
   .controller('MicaConfigTranslationsEditController', ['$scope', '$q', '$resource', '$window', '$location', '$log', '$uibModal',
-    'MicaConfigResource', 'FormServerValidation', 'TranslationsResource',
-    function ($scope, $q, $resource, $window, $location, $log, $uibModal, MicaConfigResource, FormServerValidation, TranslationsResource) {
+    'MicaConfigResource', 'FormServerValidation', 'TranslationsResource', '$route',
+    function ($scope, $q, $resource, $window, $location, $log, $uibModal, MicaConfigResource, FormServerValidation, TranslationsResource, $route) {
+      $scope.filter = $route.current.params.filter;
+
       var updates = {}, oldTranslations = {};
       $scope.micaConfig = MicaConfigResource.get();
       $scope.micaConfig.$promise.then(function() {
