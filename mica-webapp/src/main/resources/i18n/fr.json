@@ -811,6 +811,7 @@
     "help": "Chercher dans le catalogue publié.",
     "back": "Retour à la recherche",
     "no-results": "Aucun résultat trouvé.",
+    "error": "Impossible d'effectuer la recherche pour l'instant. Veuillez réessayer plus tard.",
     "no-description": "Aucune description.",
     "placeholder": {
       "all": "ex. alcool, cancer, sexe, cohorte, jumeau",
