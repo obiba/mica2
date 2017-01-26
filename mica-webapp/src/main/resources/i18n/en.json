@@ -76,6 +76,14 @@
     }
   },
   "metrics": {
+    "mica": {
+      "networks": "Networks",
+      "studies": "Studies",
+      "studies-with-variables": "Studies with Variables",
+      "study-datasets": "Study Datasets",
+      "harmonization-datasets": "Harmonization Datasets",
+      "variables": "Variables"
+    },
     "title": "Application Metrics",
     "refresh.button": "Refresh",
     "health": {

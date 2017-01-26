@@ -363,7 +363,7 @@ public class MicaConfigResource {
         .setTotal(studyDraftFiles+studyPublishedFiles)
         .setPublished(studyPublishedFiles))
       .addDocuments(Mica.MicaMetricsDto.DocumentMetricsDto.newBuilder()
-        .setType("StudiesWithVariables")
+        .setType("StudyWithVariable")
         .setTotal(0)
         .setPublished(micaMetricsService.getPublishedStudiesWithVariablesCount()))
       // StudyDataset
