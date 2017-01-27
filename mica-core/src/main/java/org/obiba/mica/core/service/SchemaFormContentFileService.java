@@ -10,6 +10,7 @@
 
 package org.obiba.mica.core.service;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -121,12 +122,24 @@ public class SchemaFormContentFileService {
   }
 
   private Iterable<Object> saveAndDeleteFiles(JSONArray oldFiles, JSONArray newFiles, String entityPath) {
+    cleanFileJsonArrays(oldFiles, newFiles);
     Iterable<Object> toDelete = Sets.difference(Sets.newHashSet(oldFiles), Sets.newHashSet(newFiles));
     Iterable<Object> toSave = Sets.difference(Sets.newHashSet(newFiles), Sets.newHashSet(oldFiles));
 
     toDelete.forEach(file -> fileStoreService.delete(((LinkedHashMap)file).get("id").toString()));
     saveFiles(toSave, entityPath);
     return toDelete;
+  }
+
+  private void cleanFileJsonArrays(JSONArray... arrays) {
+    if (arrays != null) {
+      Arrays.stream(arrays).forEach(s -> s.forEach(a -> {
+        if (a instanceof LinkedHashMap) {
+          LinkedHashMap<String, String> jsonMap = (LinkedHashMap<String, String>) a;
+          jsonMap.keySet().stream().filter(k -> k.contains("$")).collect(Collectors.toList()).forEach(jsonMap::remove);
+        }
+      }));
+    }
   }
 
   private void saveFiles(Iterable files, String entityPath) {

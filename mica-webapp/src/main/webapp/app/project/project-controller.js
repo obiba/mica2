@@ -444,7 +444,7 @@ mica.project
           var model = angular.copy($scope.form.model);
           delete model._title;
           delete model._summary;
-          $scope.project.content = JSON.stringify(model);
+          $scope.project.content = angular.toJson(model);
           if ($scope.project.id) {
             updateProject();
           } else {
