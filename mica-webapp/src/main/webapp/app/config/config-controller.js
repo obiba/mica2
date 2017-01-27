@@ -639,7 +639,7 @@ mica.config
             return result;
           }).filter(notNull);
 
-          return {lang: lang, value: JSON.stringify(pathsToJson(changes))};
+          return {lang: lang, value: angular.toJson(pathsToJson(changes))};
         });
 
         $scope.micaConfig.$save(
