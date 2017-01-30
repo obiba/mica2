@@ -15,7 +15,6 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
-import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.obiba.mica.core.domain.TaxonomyTarget;
@@ -69,7 +68,7 @@ public class TaxonomyIndexer {
       index(TaxonomyTarget.DATASET, Lists.newArrayList(taxonomyService.getDatasetTaxonomy()));
       index(TaxonomyTarget.NETWORK, Lists.newArrayList(taxonomyService.getNetworkTaxonomy()));
     } else {
-      QueryBuilder query = QueryBuilders.boolQuery().must(QueryBuilders.wildcardQuery("id", event.getTaxonomyName() + '*'));
+      QueryBuilder query = QueryBuilders.boolQuery().must(QueryBuilders.termQuery("taxonomyName", event.getTaxonomyName()));
       elasticSearchIndexer.delete(TAXONOMY_INDEX, new String[] {TAXONOMY_TYPE, TAXONOMY_VOCABULARY_TYPE, TAXONOMY_TERM_TYPE}, query);
 
       switch (event.getTaxonomyTarget()) {

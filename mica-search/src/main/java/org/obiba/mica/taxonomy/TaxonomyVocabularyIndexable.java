@@ -46,6 +46,10 @@ public class TaxonomyVocabularyIndexable extends TaxonomyEntityIndexable<Vocabul
     return vocabulary;
   }
 
+  public String getTaxonomyName() {
+    return taxonomyName;
+  }
+
   public int getTermsCount() {
     return vocabulary.hasTerms() ? vocabulary.getTerms().size() : 0;
   }
