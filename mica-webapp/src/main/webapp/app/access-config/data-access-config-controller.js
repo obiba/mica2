@@ -87,9 +87,38 @@ mica.dataAccessConfig
       $scope.dataAccessForm = {schema: '', definition: '', pdfTemplates: []};
       $scope.fileTypes = '.pdf';
 
+      function isUndefinedOrNull(a) { return angular.isUndefined(a) || a === null; }
+
+      // return true if different and false otherwise
+      function diff(a, b) {
+        if (isUndefinedOrNull(a) && isUndefinedOrNull(b)) { return false; }
+        if ((!a && b) || (a && !b)) { return true; }
+
+        var omit = ['model', 'schemaJson', 'definitionJson'];
+        var aKeys = Object.keys(a).filter(function (k) { return k.indexOf('$') === -1 && omit.indexOf(k) === -1; }),
+            bKeys = Object.keys(b).filter(function (k) { return k.indexOf('$') === -1 && omit.indexOf(k) === -1; });
+
+        if (aKeys.length !== bKeys.length) { return true; }
+
+        var check = aKeys.reduce(function (acc, curr) {
+          if (typeof a[curr] !== typeof b[curr]) {
+            return acc.concat(curr);
+          }
+
+          // both are objects (array and object are both considered objects)
+          if (typeof a[curr] === 'object' && typeof b[curr] === 'object') {
+            return !diff(a[curr], b[curr]) ? acc : acc.concat(curr);
+          }
+
+          return a[curr] === b[curr] ? acc : acc.concat(curr);
+        }, []);
+
+        return check.length > 0;
+      }
+
       function startWatchForDirty(fieldName, watchState) {
         var unwatch = $scope.$watch(fieldName, function(newValue, oldValue){
-          if (!watchState.firstTime && newValue !== oldValue) {
+          if (!watchState.firstTime && diff(newValue, oldValue)) {
             $scope.state.setDirty(true);
             unwatch();
           }
