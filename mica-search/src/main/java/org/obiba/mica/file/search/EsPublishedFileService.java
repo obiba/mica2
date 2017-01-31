@@ -24,13 +24,20 @@ import org.elasticsearch.search.SearchHit;
 import org.obiba.mica.file.AttachmentState;
 import org.obiba.mica.file.service.PublishedFileService;
 import org.obiba.mica.search.AbstractDocumentService;
+import org.obiba.mica.search.queries.AbstractDocumentQuery;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 
 @Component
+@Scope(scopeName = "request", proxyMode = ScopedProxyMode.INTERFACES)
 public class EsPublishedFileService extends AbstractDocumentService<AttachmentState> implements PublishedFileService {
+  private static final Logger log = LoggerFactory.getLogger(AbstractDocumentQuery.class);
 
   @Inject
   private ObjectMapper objectMapper;
@@ -42,7 +49,7 @@ public class EsPublishedFileService extends AbstractDocumentService<AttachmentSt
 
   @Override
   public long getCount(String path) {
-    return getCount(QueryBuilders.wildcardQuery("path", String.format("%s%s/*", basePath, path)));
+    return getCount(QueryBuilders.wildcardQuery("path", String.format("/%s/*", path)));
   }
 
   @Override

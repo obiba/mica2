@@ -18,16 +18,9 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
-import org.elasticsearch.action.search.SearchRequestBuilder;
-import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.action.search.SearchType;
-import org.elasticsearch.index.IndexNotFoundException;
-import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
-import org.elasticsearch.search.aggregations.AggregationBuilders;
-import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.domain.HarmonizationDatasetState;
@@ -36,17 +29,12 @@ import org.obiba.mica.dataset.domain.StudyDatasetState;
 import org.obiba.mica.dataset.service.HarmonizationDatasetService;
 import org.obiba.mica.dataset.service.PublishedDatasetService;
 import org.obiba.mica.dataset.service.StudyDatasetService;
-import org.obiba.mica.search.AbstractDocumentService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
-class EsPublishedDatasetService extends AbstractDocumentService<Dataset> implements PublishedDatasetService {
-
-  private static final Logger log = LoggerFactory.getLogger(EsPublishedDatasetService.class);
+class EsPublishedDatasetService extends AbstractEsDatasetService<Dataset> implements PublishedDatasetService {
 
   @Inject
   private ObjectMapper objectMapper;
@@ -65,35 +53,6 @@ class EsPublishedDatasetService extends AbstractDocumentService<Dataset> impleme
   @Override
   public long getHarmonizationDatasetsCount() {
     return getCount(QueryBuilders.termQuery("className", HarmonizationDataset.class.getSimpleName()));
-  }
-
-  @Override
-  public long getStudiesWithVariablesCount() {
-    BoolQueryBuilder builder = QueryBuilders.boolQuery()
-      .should(QueryBuilders.existsQuery("studyTable.studyId"))
-      .should(QueryBuilders.existsQuery("studyTables.studyId"));
-
-    SearchRequestBuilder requestBuilder = client.prepareSearch(getIndexName()) //
-      .setTypes(getType()) //
-      .setSearchType(SearchType.DFS_QUERY_THEN_FETCH) //
-      .setQuery(builder)
-      .setFrom(0) //
-      .setSize(0);
-
-    requestBuilder.addAggregation(AggregationBuilders.terms("studyTable-studyId").field("studyTable.studyId"));
-    requestBuilder.addAggregation(AggregationBuilders.terms("studyTables-studyId").field("studyTables.studyId"));
-
-    try {
-      log.debug("Request /{}/{}: {}", getIndexName(), getType(), requestBuilder);
-      SearchResponse response = requestBuilder.execute().actionGet();
-      log.debug("Response /{}/{}: {}", getIndexName(), getType(), response);
-
-      return response.getAggregations().asList().stream().flatMap(a -> ((Terms) a).getBuckets().stream())
-        .map(a -> a.getKey().toString()).distinct().collect(Collectors.toList()).size();
-    } catch(IndexNotFoundException e) {
-      return 0;
-    }
-
   }
 
   @Override

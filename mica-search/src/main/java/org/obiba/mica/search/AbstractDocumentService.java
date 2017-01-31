@@ -22,6 +22,7 @@ import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 
+import org.elasticsearch.ElasticsearchException;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
@@ -149,16 +150,16 @@ public abstract class AbstractDocumentService<T> implements DocumentService<T> {
   }
 
   protected long getCount(QueryBuilder builder) {
-    SearchRequestBuilder search = client.prepareSearch()
-      .setIndices(getIndexName())
-      .setTypes(getType())
-      .setQuery(builder)
-      .setFrom(0)
-      .setSize(0);
+    try {
+      SearchRequestBuilder search = client.prepareSearch().setIndices(getIndexName()).setTypes(getType())
+        .setQuery(builder).setFrom(0).setSize(0);
 
-    SearchResponse response = search.execute().actionGet();
+      SearchResponse response = search.execute().actionGet();
 
-    return response.getHits().getTotalHits();
+      return response.getHits().getTotalHits();
+    } catch(ElasticsearchException e) {
+      return 0;
+    }
   }
 
   /**

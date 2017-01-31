@@ -13,7 +13,6 @@ package org.obiba.mica.dataset;
 import java.util.List;
 
 import org.obiba.mica.dataset.domain.StudyDataset;
-import org.obiba.mica.network.domain.Network;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 
@@ -26,5 +25,4 @@ public interface StudyDatasetRepository extends MongoRepository<StudyDataset, St
 
   @Query("{'model' : { $exists : false }}")
   List<StudyDataset> findWithoutModel();
-
 }

@@ -24,12 +24,15 @@ import org.elasticsearch.search.SearchHit;
 import org.obiba.mica.file.AttachmentState;
 import org.obiba.mica.file.service.DraftFileService;
 import org.obiba.mica.search.AbstractDocumentService;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 
 @Component
+@Scope(scopeName = "request", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class EsDraftFileService extends AbstractDocumentService<AttachmentState> implements DraftFileService {
 
   @Inject
@@ -48,7 +51,7 @@ public class EsDraftFileService extends AbstractDocumentService<AttachmentState>
 
   @Override
   public long getCount(String path) {
-    return getCount(QueryBuilders.wildcardQuery("path", String.format("%s%s/*", basePath, path)));
+    return getCount(QueryBuilders.wildcardQuery("path", String.format("/%s/*", path)));
   }
 
   @Override

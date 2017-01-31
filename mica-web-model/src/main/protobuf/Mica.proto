@@ -826,6 +826,7 @@ message MicaMetricsDto {
       required string type = 1;
       required int64 total = 2;
       required int64 published = 3;
+      optional int64 editing = 4;
     }
 
     message OpalServerStatusDto {
