@@ -10,7 +10,9 @@
 
 package org.obiba.mica.search.aggregations;
 
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -65,24 +67,47 @@ public abstract class ConfigurationTaxonomyMetaDataProvider implements Aggregati
   }
 
   private Map<String, LocalizedMetaData> getAllLocalizedMetadata(String aggregation) {
-    Map<String, LocalizedMetaData> r = Maps.newHashMap();
     Taxonomy taxonomy = getTaxonomy();
-    if(taxonomy.hasVocabulary(aggregation)) {
+    Vocabulary v = taxonomyVocabularyWithAlias(taxonomy, aggregation);
+
+    if(v == null && taxonomy.hasVocabulary(aggregation)) {
       log.debug("Found in taxonomy {} a vocabulary with name: {}", taxonomy.getName(), aggregation);
-      Vocabulary v = taxonomy.getVocabulary(aggregation);
-      if(v.hasTerms()) {
-        v.getTerms().forEach(t -> {
-          LocalizedString title = new LocalizedString();
-          title.putAll(t.getTitle());
-          LocalizedString description = new LocalizedString();
-          description.putAll(t.getDescription());
-          LocalizedMetaData md = new LocalizedMetaData(title, description, t.getAttributeValue("start"),
-            t.getAttributeValue("end"));
-          r.put(t.getName(), md);
-          r.put(t.getName().toLowerCase(), md);
-        });
-      }
+      v = taxonomy.getVocabulary(aggregation);
     }
-    return r;
+
+    return populateMetadataMap(v);
+  }
+
+  private Map<String, LocalizedMetaData> populateMetadataMap(Vocabulary vocabulary) {
+    Map<String, LocalizedMetaData> metaData = Maps.newHashMap();
+
+    if (vocabulary != null && vocabulary.hasTerms()) {
+      vocabulary.getTerms().forEach(t -> {
+        LocalizedString title = new LocalizedString();
+        title.putAll(t.getTitle());
+        LocalizedString description = new LocalizedString();
+        description.putAll(t.getDescription());
+        LocalizedMetaData md = new LocalizedMetaData(title, description, t.getAttributeValue("start"),
+          t.getAttributeValue("end"));
+        metaData.put(t.getName(), md);
+        metaData.put(t.getName().toLowerCase(), md);
+      });
+    }
+
+    return metaData;
+  }
+
+  private Vocabulary taxonomyVocabularyWithAlias(Taxonomy taxonomy, String aggregation) {
+    if (taxonomy.getVocabularies() == null) {
+      return null;
+    } else {
+      List<Vocabulary> filtered = taxonomy.getVocabularies().stream()
+        .filter(v -> aggregation != null && aggregation.equals(v.getAttributeValue("alias")))
+        .collect(Collectors.toList());
+
+      log.debug("Found in taxonomy {} {} vocabulary with alias: {}", taxonomy.getName(), filtered, aggregation);
+
+      return filtered.isEmpty() ? null : filtered.get(0);
+    }
   }
 }
