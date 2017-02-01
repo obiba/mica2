@@ -10,12 +10,10 @@
 
 package org.obiba.mica.security.service;
 
-import java.util.List;
-
-import javax.annotation.Nullable;
-import javax.inject.Inject;
-import javax.validation.constraints.NotNull;
-
+import com.codahale.metrics.annotation.Timed;
+import com.google.common.base.Strings;
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.AuthorizationException;
 import org.obiba.mica.dataset.event.DatasetDeletedEvent;
@@ -28,20 +26,32 @@ import org.obiba.mica.security.event.ResourceDeletedEvent;
 import org.obiba.mica.security.event.SubjectAclUpdatedEvent;
 import org.obiba.mica.security.repository.SubjectAclRepository;
 import org.obiba.mica.study.event.StudyDeletedEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
-import com.codahale.metrics.annotation.Timed;
-import com.google.common.base.Strings;
-import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
+import javax.annotation.Nullable;
+import javax.inject.Inject;
+import javax.validation.constraints.NotNull;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.function.Function;
 
 /**
  * Access control lists management: add, remove and check permissions on resources.
  */
 @Service
 public class SubjectAclService {
+
+  private static final Logger logger = LoggerFactory.getLogger(SubjectAclService.class);
+
+  private static final DateFormat iso8601 = new SimpleDateFormat("yyyy-MM-dd");
 
   @Inject
   private SubjectAclRepository subjectAclRepository;
@@ -105,31 +115,90 @@ public class SubjectAclService {
       .isPermitted(resource + ":" + action + (Strings.isNullOrEmpty(instance) ? "" : ":" + encode(instance)));
   }
 
-  /**
-   * Check if current user has the given permission.
-   *
-   * @param resource
-   * @param action
-   * @throws AuthorizationException
-   */
   @Timed
   public void checkPermission(@NotNull String resource, @NotNull String action) throws AuthorizationException {
     checkPermission(resource, action, null);
   }
 
+  @Timed
+  public void checkPermission(@NotNull String resource, @NotNull String action,
+                              @Nullable String instance) throws AuthorizationException {
+    checkPermission(resource, action, instance, null);
+  }
+
   /**
-   * Check if current user has the given permission on the given instance.
+   * Check the permission (action on a resource). If a key is provided and is valid, the permission check is by-passed.
+   * If the provided key is not valid, permission check is applied.
    *
    * @param resource
    * @param action
    * @param instance any instances if null
+   * @param shareKey
    * @throws AuthorizationException
    */
   @Timed
   public void checkPermission(@NotNull String resource, @NotNull String action,
-    @Nullable String instance) throws AuthorizationException {
+    @Nullable String instance, @Nullable String shareKey) throws AuthorizationException {
+
+    if (isAccessWithShareKeyAuthorized(resource, action, instance, shareKey)) {
+      if (validateShareKey(shareKey, draftRessourcesValidatorForShareKeyAccess(resource, instance)))
+        return;
+    }
     SecurityUtils.getSubject()
       .checkPermission(resource + ":" + action + (Strings.isNullOrEmpty(instance) ? "" : ":" + encode(instance)));
+  }
+
+  private Function<String, Boolean> draftRessourcesValidatorForShareKeyAccess(@NotNull String resource, @Nullable String instance) {
+    if (resource.equals("/draft/file"))
+      return ("/draft" + instance)::startsWith;
+    else
+      return (resource + "/" + instance)::startsWith;
+  }
+
+  private boolean isAccessWithShareKeyAuthorized(String resource, String action, String instance, String shareKey) {
+    return shareKey != null && instance != null && "VIEW".equals(action) && resource.startsWith("/draft/");
+  }
+
+  private boolean validateShareKey(String key, Function<String, Boolean> contentValidator) {
+
+    String decrypted = micaConfigService.decrypt(key);
+    String[] tokens = decrypted.split("\\|");
+
+    if (tokens.length != 3) return false;
+    if (isExpired(tokens[1])) return false;
+
+    String grantedPath = tokens[0];
+    Boolean isValid = contentValidator.apply(grantedPath);
+    if (isValid == null || !isValid)
+      return false;
+
+    logger.info("Using share key on file {} provided by {} expiring on {}",
+      tokens[0], tokens[2], StringUtils.isEmpty(tokens[1]) ? "<never>" : tokens[1]);
+    return true;
+  }
+
+  private boolean isExpired(String token) {
+    if (!StringUtils.isEmpty(token)) {
+      try {
+        if (!iso8601.parse(token).after(new Date())) return true;
+      } catch (ParseException e) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  public String createShareKey(String content, String expire) {
+    if(!Strings.isNullOrEmpty(expire)) {
+      try {
+        iso8601.parse(expire);
+      } catch (ParseException e) {
+        throw new IllegalArgumentException("Not a valid expiration date");
+      }
+    }
+
+    return micaConfigService.encrypt(String.format("%s|%s|%s",
+      content, Strings.isNullOrEmpty(expire) ? "" : expire, SecurityUtils.getSubject().getPrincipal()));
   }
 
   /**

@@ -17,6 +17,9 @@ agate:
         name: mica
         key: changeit
 
+portal:
+    url: http://localhost/drupal/mica
+
 elasticsearch:
     dataNode: true
     clusterName: mica
