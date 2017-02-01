@@ -431,9 +431,9 @@ public class SubjectAclService {
     return FileUtils.encode(instance);
   }
 
-  private Function<String, Boolean> draftRessourcesValidatorForShareKeyAccess(@NotNull String resource, @Nullable String instance) {
+  private Function<String, Boolean> draftRessourcesValidatorForShareKeyAccess(String resource, String instance) {
     if (resource.equals("/draft/file"))
-      return ("/draft" + instance)::startsWith;
+      return instance.startsWith("/draft") ? instance::startsWith : ("/draft" + instance)::startsWith;
     else
       return (resource + "/" + instance)::startsWith;
   }

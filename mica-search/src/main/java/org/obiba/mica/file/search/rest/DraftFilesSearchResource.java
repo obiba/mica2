@@ -26,7 +26,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 @Path("/draft/files-search")
-@RequiresAuthentication
 @Scope("request")
 @Component
 public class DraftFilesSearchResource extends AbstractFileSearchResource {
