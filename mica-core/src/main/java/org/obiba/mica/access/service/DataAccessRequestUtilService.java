@@ -13,11 +13,17 @@ package org.obiba.mica.access.service;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.validation.constraints.NotNull;
 
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.subject.Subject;
 import org.obiba.mica.access.domain.DataAccessRequest;
 import org.obiba.mica.micaConfig.domain.DataAccessForm;
 import org.obiba.mica.micaConfig.service.DataAccessFormService;
+import org.obiba.mica.security.Roles;
 import org.obiba.mica.security.service.SubjectAclService;
+import org.obiba.mica.user.UserProfileService;
+import org.obiba.shiro.realm.ObibaRealm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -43,6 +49,9 @@ public class DataAccessRequestUtilService {
 
   @Inject
   private SubjectAclService subjectAclService;
+
+  @Inject
+  private UserProfileService userProfileService;
 
   public String getRequestTitle(DataAccessRequest request) {
     DataAccessForm dataAccessForm = dataAccessFormService.find().get();
@@ -159,6 +168,11 @@ public class DataAccessRequestUtilService {
     DataAccessForm dataAccessForm = dataAccessFormService.find().get();
     if (dataAccessForm.isWithConditionalApproval()) to.add(DataAccessRequest.Status.CONDITIONALLY_APPROVED);
      else to.add(DataAccessRequest.Status.OPENED);
+
+    // check if current user role is admin to add DataAccessRequest.Status.SUBMITTED
+    if (userProfileService.currentUserIs(Roles.MICA_ADMIN)) {
+      to.add(DataAccessRequest.Status.SUBMITTED);
+    }
   }
 
   private void addNextConditionallyApprovedStatus(List<DataAccessRequest.Status> to) {
@@ -205,13 +219,17 @@ public class DataAccessRequestUtilService {
   private void checkReviewedStatusTransition(DataAccessRequest.Status to) {
     DataAccessForm dataAccessForm = dataAccessFormService.find().get();
     if (dataAccessForm.isWithConditionalApproval()) {
-      if (to != DataAccessRequest.Status.CONDITIONALLY_APPROVED && to != DataAccessRequest.Status.APPROVED &&
-        to != DataAccessRequest.Status.REJECTED)
-        throw new IllegalArgumentException("Reviewed data access request can only be conditionally approved or be approved/rejected");
+      if ((!userProfileService.currentUserIs(Roles.MICA_ADMIN) && to == DataAccessRequest.Status.SUBMITTED)
+        && to != DataAccessRequest.Status.CONDITIONALLY_APPROVED
+        && to != DataAccessRequest.Status.APPROVED
+        && to != DataAccessRequest.Status.REJECTED)
+        throw new IllegalArgumentException("Reviewed data access request can only be conditionally approved or be approved/rejected, only the admin can resubmit");
     } else {
-      if(to != DataAccessRequest.Status.OPENED && to != DataAccessRequest.Status.APPROVED &&
-        to != DataAccessRequest.Status.REJECTED)
-        throw new IllegalArgumentException("Reviewed data access request can only be reopened or be approved/rejected");
+      if((!userProfileService.currentUserIs(Roles.MICA_ADMIN) && to == DataAccessRequest.Status.SUBMITTED)
+        && to != DataAccessRequest.Status.OPENED
+        && to != DataAccessRequest.Status.APPROVED
+        && to != DataAccessRequest.Status.REJECTED)
+        throw new IllegalArgumentException("Reviewed data access request can only be reopened or be approved/rejected, only the admin can resubmit");
     }
   }
 
@@ -253,5 +271,4 @@ public class DataAccessRequestUtilService {
       throw new IllegalArgumentException("Rejected data access request can only go to submitted state");
     }
   }
-
 }
