@@ -18,7 +18,9 @@ import javax.validation.constraints.NotNull;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import org.apache.shiro.SecurityUtils;
 import org.obiba.mica.core.service.AgateRestService;
+import org.obiba.shiro.realm.ObibaRealm;
 import org.obiba.shiro.realm.ObibaRealm.Subject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -86,6 +88,20 @@ public class UserProfileService extends AgateRestService {
       .build().toUriString();
 
     return executeQuery(serviceUrl, String.class);
+  }
+
+  public boolean currentUserIs(@NotNull String role) {
+    org.apache.shiro.subject.Subject subject = SecurityUtils.getSubject();
+    if (subject == null || subject.getPrincipal() == null) {
+      return false;
+    }
+
+    String username = subject.getPrincipal().toString();
+
+    if (username.equals("administrator")) { return true; }
+
+    ObibaRealm.Subject profile = getProfile(username);
+    return profile != null && profile.getGroups() != null && profile.getGroups().stream().filter(g -> g.equals(role)).count() > 0;
   }
 
   private synchronized Subject getProfileInternal(String serviceUrl) {
