@@ -148,46 +148,14 @@ public class SubjectAclService {
       .checkPermission(resource + ":" + action + (Strings.isNullOrEmpty(instance) ? "" : ":" + encode(instance)));
   }
 
-  private Function<String, Boolean> draftRessourcesValidatorForShareKeyAccess(@NotNull String resource, @Nullable String instance) {
-    if (resource.equals("/draft/file"))
-      return ("/draft" + instance)::startsWith;
-    else
-      return (resource + "/" + instance)::startsWith;
-  }
 
-  private boolean isAccessWithShareKeyAuthorized(String resource, String action, String instance, String shareKey) {
-    return shareKey != null && instance != null && "VIEW".equals(action) && resource.startsWith("/draft/");
-  }
-
-  private boolean validateShareKey(String key, Function<String, Boolean> contentValidator) {
-
-    String decrypted = micaConfigService.decrypt(key);
-    String[] tokens = decrypted.split("\\|");
-
-    if (tokens.length != 3) return false;
-    if (isExpired(tokens[1])) return false;
-
-    String grantedPath = tokens[0];
-    Boolean isValid = contentValidator.apply(grantedPath);
-    if (isValid == null || !isValid)
-      return false;
-
-    logger.info("Using share key on file {} provided by {} expiring on {}",
-      tokens[0], tokens[2], StringUtils.isEmpty(tokens[1]) ? "<never>" : tokens[1]);
-    return true;
-  }
-
-  private boolean isExpired(String token) {
-    if (!StringUtils.isEmpty(token)) {
-      try {
-        if (!iso8601.parse(token).after(new Date())) return true;
-      } catch (ParseException e) {
-        return true;
-      }
-    }
-    return false;
-  }
-
+  /**
+   * Create share key usable to give access to draft resources.
+   *
+   * @param content used to define access granted by the key
+   * @param expire (Optional) expiration date
+   * @return
+   */
   public String createShareKey(String content, String expire) {
     if(!Strings.isNullOrEmpty(expire)) {
       try {
@@ -461,5 +429,45 @@ public class SubjectAclService {
 
   private String encode(String instance) {
     return FileUtils.encode(instance);
+  }
+
+  private Function<String, Boolean> draftRessourcesValidatorForShareKeyAccess(@NotNull String resource, @Nullable String instance) {
+    if (resource.equals("/draft/file"))
+      return ("/draft" + instance)::startsWith;
+    else
+      return (resource + "/" + instance)::startsWith;
+  }
+
+  private boolean isAccessWithShareKeyAuthorized(String resource, String action, String instance, String shareKey) {
+    return shareKey != null && instance != null && "VIEW".equals(action) && resource.startsWith("/draft/");
+  }
+
+  private boolean validateShareKey(String key, Function<String, Boolean> contentValidator) {
+
+    String decrypted = micaConfigService.decrypt(key);
+    String[] tokens = decrypted.split("\\|");
+
+    if (tokens.length != 3) return false;
+    if (isExpired(tokens[1])) return false;
+
+    String grantedPath = tokens[0];
+    Boolean isValid = contentValidator.apply(grantedPath);
+    if (isValid == null || !isValid)
+      return false;
+
+    logger.info("Using share key on file {} provided by {} expiring on {}",
+      tokens[0], tokens[2], StringUtils.isEmpty(tokens[1]) ? "<never>" : tokens[1]);
+    return true;
+  }
+
+  private boolean isExpired(String token) {
+    if (!StringUtils.isEmpty(token)) {
+      try {
+        if (!iso8601.parse(token).after(new Date())) return true;
+      } catch (ParseException e) {
+        return true;
+      }
+    }
+    return false;
   }
 }
