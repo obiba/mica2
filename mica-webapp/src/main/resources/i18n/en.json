@@ -426,10 +426,10 @@
   "studies": "Studies",
   "numberOfParticipants": {
     "label": "Number of participants",
-    "participants": "Target number of participants",
-    "sample": "Target number of participants with biological samples",
+    "participants": "Number of participants",
+    "sample": "Number of participants with biological samples",
     "no-limit": "No Limit",
-    "suppl-info": "Supplementary information about target number of participants"
+    "suppl-info": "Supplementary information about number of participants"
   },
   "study": {
     "input-placeholder": "Study name",
@@ -457,7 +457,7 @@
     "start-year": "Start Year",
     "end-year": "End Year",
     "general-design": "General Design",
-    "design": "Design",
+    "design": "Study Design",
     "other-design": "Other design",
     "follow-up": "Follow Up",
     "follow-up-help": "General information on follow up (profile, frequency).",
@@ -868,7 +868,7 @@
       "pm": "PM",
       "bio": "Bio",
       "others": "Others",
-      "design": "Study design",
+      "design": "Study Design",
       "participants": "Participants",
       "other-design": "Other design"
     },

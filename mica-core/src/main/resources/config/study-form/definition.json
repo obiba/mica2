@@ -43,13 +43,13 @@
         "htmlClass": "col-xs-6",
         "items": [
           {
-            "type": "help",
-            "helpvalue": "<h4>t(study.design)</h4>"
-          },
-          {
             "key": "methods",
             "notitle": true,
             "items": [
+              {
+                "type": "help",
+                "helpvalue": "<h4>t(study.design)</h4>"
+              },
               {
                 "key": "methods.design",
                 "notitle": true,
@@ -67,6 +67,10 @@
                   {
                     "value": "case_only",
                     "name": "t(study_taxonomy.vocabulary.methods-design.term.case_only.title)"
+                  },
+                  {
+                    "value": "cross_sectional",
+                    "name": "t(study_taxonomy.vocabulary.methods-design.term.cross_sectional.title)"
                   },
                   {
                     "value": "clinical_trial",
@@ -111,29 +115,6 @@
         "items": [
           {
             "type": "help",
-            "helpvalue": "<h4>t(numberOfParticipants.label)</h4>"
-          },
-          {
-            "key": "numberOfParticipants",
-            "notitle": true,
-            "items": [
-              {
-                "key": "numberOfParticipants.participant",
-                "notitle": true
-              },
-              {
-                "key": "numberOfParticipants.sample",
-                "notitle": true
-              },
-              {
-                "key": "numberOfParticipants.info",
-                "rows": 3,
-                "marked": true
-              }
-            ]
-          },
-          {
-            "type": "help",
             "helpvalue": "<h4>t(study.recruitment-sources.label)</h4>"
           },
           {
@@ -164,6 +145,29 @@
                 "condition": "model.methods.recruitments.indexOf(\"other\")>=0"
               }
             ]
+          },
+          {
+            "type": "help",
+            "helpvalue": "<h4>t(numberOfParticipants.label)</h4>"
+          },
+          {
+            "key": "numberOfParticipants",
+            "notitle": true,
+            "items": [
+              {
+                "key": "numberOfParticipants.participant",
+                "notitle": true
+              },
+              {
+                "key": "numberOfParticipants.sample",
+                "notitle": true
+              },
+              {
+                "key": "numberOfParticipants.info",
+                "rows": 3,
+                "marked": true
+              }
+            ]
           }
         ]
       }
@@ -179,12 +183,12 @@
         "items": [
           {
             "type": "help",
-            "helpvalue": "<h3>t(study.access.label)</h3>"
+            "helpvalue": "<h3>t(study.access.label)</h3"
           },
           {
             "key": "access",
             "notitle": true,
-            "description": "t(study_taxonomy.vocabulary.methods-recruitments.description)",
+            "description": "t(study_taxonomy.vocabulary.access.description)",
             "titleMap": [
               {
                 "value": "data",

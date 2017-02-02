@@ -425,10 +425,10 @@
   "studies": "Études",
   "numberOfParticipants": {
     "label": "Nombre de participants",
-    "participants": "Nombre cible de participants",
-    "sample": "Nombre cible de participants avec échantillons biologiques",
+    "participants": "Nombre de participants",
+    "sample": "Nombre de participants avec échantillons biologiques",
     "no-limit": "Pas de limite",
-    "suppl-info": "Informations supplémentaires sur le nombre cible de participants"
+    "suppl-info": "Informations supplémentaires sur le nombre de participants"
   },
   "study": {
     "input-placeholder": "Nom de l'étude",
@@ -456,7 +456,7 @@
     "start-year": "Année de début",
     "end-year": "Année de fin",
     "general-design": "Conception générale",
-    "design": "Conception",
+    "design": "Conception de l'étude",
     "other-design": "Autre conception",
     "follow-up": "Suivi",
     "follow-up-help": "Informations générales sur le suivi (profil, fréquence).",
