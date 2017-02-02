@@ -1420,6 +1420,7 @@
       "fr": "Femmes seulement"
     "description":
       "en": "Study recruits women only."
+
 - "name": "populations-selectionCriteria-criteria"
   "title":
     "en": "Selection criteria - Pregnancy/birth"
@@ -1449,6 +1450,67 @@
       "fr": "Jumeaux"
     "description":
       "en": "Study recruits individuals born at the same birth to the same mother."
+
+- "name": "populations-selectionCriteria-pregnantWomen"
+  "title":
+    "en": "Pregnant Women"
+    "fr": "Femmes enceintes"
+  "description":
+    "en": "The recruited individuals are pregnant women."
+    "fr": "Les individus recrutés sont des femmes enceintes."
+  "attributes":
+    "field": "populations.model.selectionCriteria.pregnantWomen"
+    "alias": "populations-model-selectionCriteria-pregnantWomen"
+  "terms":
+  - "name": "first_trimester"
+    "title":
+      "en": "First Trimester"
+      "fr": "Premier trimestre"
+    "description":
+      "en": "First trimester of pregnancy."
+      "fr": "Premier trimestre de grossesse."
+  - "name": second_trimester
+    "title":
+      "en": "Second Trimester"
+      "fr": "Deuxième trimestre"
+    "description":
+      "en": "First trimester of pregnancy."
+      "fr": "Deuxième trimestre de grossesse."
+  - "name": third_trimester
+    "title":
+      "en": "Third Trimester"
+      "fr": "Troisième trimestre"
+    "description":
+      "en": "Third trimester of pregnancy."
+      "fr": "Troisième trimestre de grossesse."
+
+
+- "name": "populations-selectionCriteria-newborn"
+  "title":
+    "en": "Newborn"
+    "fr": "Nouveaux nés"
+  "description":
+    "en": "The recruited individuals are Newborn."
+    "fr": "Les individus recrutés sont des nouveaux nés."
+  "attributes":
+    "field": "populations.model.selectionCriteria.newborn"
+    "alias": "populations-model-selectionCriteria-newborn"
+  "terms":
+  - "name": "true"
+    "title": 
+      "en": "Yes"
+      "fr": "Oui"
+    "description": 
+      "en": "Newborn have been recruited."
+      "fr": "Des nouveaux nés ont été recrutés."
+  - "name": "false"
+    "title": 
+      "en": "No"
+      "fr": "Non"
+    "description": 
+      "en": "No Newborn have been recruited."
+      "fr": "Des nouveaux nés non pas été recrutés."
+
 - "name": "numberOfParticipants-participant-number"
   "title":
     "en": "Target number of participants"

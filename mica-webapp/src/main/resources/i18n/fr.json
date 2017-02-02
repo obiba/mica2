@@ -426,10 +426,10 @@
   "studies": "Études",
   "numberOfParticipants": {
     "label": "Nombre de participants",
-    "participants": "Nombre cible de participants",
-    "sample": "Nombre cible de participants avec échantillons biologiques",
+    "participants": "Nombre de participants",
+    "sample": "Nombre de participants avec échantillons biologiques",
     "no-limit": "Pas de limite",
-    "suppl-info": "Informations supplémentaires sur le nombre cible de participants"
+    "suppl-info": "Informations supplémentaires sur le nombre de participants"
   },
   "study": {
     "input-placeholder": "Nom de l'étude",
@@ -456,9 +456,9 @@
     "member-list": "Liste de {{type}}s",
     "start-year": "Année de début",
     "end-year": "Année de fin",
-    "general-design": "Conception générale",
-    "design": "Conception",
-    "other-design": "Autre conception",
+    "general-design": "Devis général",
+    "design": "Devis de l'étude",
+    "other-design": "Autre devis",
     "follow-up": "Suivi",
     "follow-up-help": "Informations générales sur le suivi (profil, fréquence).",
     "recruitment-target": "Cible de recrutement",
@@ -804,6 +804,7 @@
   "user": "Utilisateur",
   "users": "Utilisateurs",
   "website": "Site web",
+  "funding": "Financement",
   "members": "Membres",
   "unsaved-title": "Modifications non sauvegardées",
   "unsaved-prompt": "Êtes-vous sûr de vouloir quitter cette page? toute modification non sauvegardée sera perdue.",
@@ -871,9 +872,9 @@
       "pm": "MP",
       "bio": "Bio",
       "others": "Autres",
-      "design": "Conception de l'étude",
+      "design": "Devis de l'étude",
       "participants": "Participants",
-      "other-design":"Autre conception"
+      "other-design":"Autre devis"
     },
     "dataset": {
       "facet-label": "Ensemble de données",
@@ -1468,10 +1469,10 @@
     "number-participants": "Participants",
     "country": "Pays",
     "geo-charts": "Distribution géographique",
-    "study-design": "Conception de l'étude",
+    "study-design": "Devis de l'étude",
     "bio-samples": "Échantillons biologiques recueillis",
     "geo-chart-title": "Répartition des études par pays de résidence",
-    "study-design-chart-title": "Répartition des études par conception d'étude",
+    "study-design-chart-title": "Répartition des études par devis d'étude",
     "bio-samples-chart-title": "Répartition des études par échantillons biologiques",
     "number-participants-chart-title": "Répartition des études par nombre de participants"
   },
