@@ -167,6 +167,7 @@ message CountStatsDto {
   optional int32 networks = 5;
   optional int32 studyVariables = 6;
   optional int32 dataschemaVariables = 7;
+  optional int32 studiesWithVariables = 8;
 
   extend StudySummaryDto {
     optional CountStatsDto studyCountStats = 1001;

@@ -129,17 +129,18 @@ public class CountStatsDtoBuilders {
       }
 
       harmonizationDatasets = harmonizationDatasets.stream().distinct().collect(Collectors.toList());
-      int variables = Sets.union(ImmutableSet.copyOf(studyDatasets), ImmutableSet.copyOf(harmonizationDatasets)) //
-        .stream().mapToInt(d -> countStatsData.getVariables(d)).sum();
-      int studyVariables = studyDatasets.stream().mapToInt(d -> countStatsData.getVariables(d)).sum();
+      int variables = Sets.union(ImmutableSet.copyOf(studyDatasets), ImmutableSet.copyOf(harmonizationDatasets))
+        .stream().mapToInt(countStatsData::getVariables).sum();
+      int studyVariables = studyDatasets.stream().mapToInt(countStatsData::getVariables).sum();
       int dataschemaVariables = countStatsData.getNetworkDataschemaVariables(networkId);
 
-      return CountStatsDto.newBuilder().setVariables(variables) //
-          .setStudyVariables(studyVariables) //
-          .setDataschemaVariables(dataschemaVariables) //
-          .setStudyDatasets((int) studyDatasets.stream().distinct().count()) //
+      return CountStatsDto.newBuilder().setVariables(variables)
+          .setStudyVariables(studyVariables)
+          .setDataschemaVariables(dataschemaVariables)
+          .setStudyDatasets((int) studyDatasets.stream().distinct().count())
           .setHarmonizationDatasets(countStatsData.getNetworkHarmonizationDatasets(networkId))
-          .setStudies(studies) //
+          .setStudies(studies)
+          .setStudiesWithVariables((int) ids.stream().filter(i -> countStatsData.getDataset(i).containsKey(DatasetQuery.STUDY_JOIN_FIELD)).count())
           .build();
     }
   }
