@@ -62,6 +62,7 @@ import org.obiba.mica.micaConfig.service.OpalService;
 import org.obiba.mica.micaConfig.service.TaxonomyService;
 import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.network.event.IndexNetworksEvent;
+import org.obiba.mica.project.domain.Project;
 import org.obiba.mica.security.Roles;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.event.IndexStudiesEvent;
@@ -327,65 +328,66 @@ public class MicaConfigResource {
   @Path("/metrics")
   @RequiresRoles(Roles.MICA_ADMIN)
   public Mica.MicaMetricsDto getMetrics() {
-
-    long studyDraftFiles = micaMetricsService.getDraftStudyFilesCount();
-    long studyPublishedFiles = micaMetricsService.getPublishedStudyFilesCount();
-
-    long networkDraftFiles = micaMetricsService.getDraftNetworkFilesCount();
-    long networkPublishedFiles = micaMetricsService.getPublishedNetworkFilesCount();
-
-    long studyDatasetDraftFiles = micaMetricsService.getDraftStudyDatasetFilesCount();
-    long studyDatasetPublishedFiles = micaMetricsService.getPublishedStudyDatasetFilesCount();
-
-    long harmonizationDatasetDraftFiles = micaMetricsService.getDraftHarmonizationDatasetFilesCount();
-    long harmonizationDatasetPublishedFiles = micaMetricsService.getPublishedHarmonizationDatasetFilesCount();
-
-
     return Mica.MicaMetricsDto.newBuilder()
       // Network
       .addDocuments(
         Mica.MicaMetricsDto.DocumentMetricsDto.newBuilder()
           .setType(Network.class.getSimpleName())
           .setTotal(micaMetricsService.getNetworksCount())
-          .setPublished(micaMetricsService.getPublishedNetworksCount()))
+          .setPublished(micaMetricsService.getPublishedNetworksCount())
+          .setEditing(micaMetricsService.getEditingNetworksCount()))
       .addFiles(Mica.MicaMetricsDto.DocumentMetricsDto.newBuilder()
         .setType(Network.class.getSimpleName())
-        .setTotal(networkDraftFiles+networkPublishedFiles)
-        .setPublished(networkPublishedFiles))
+        .setTotal(micaMetricsService.getDraftNetworkFilesCount())
+        .setPublished(micaMetricsService.getDraftHarmonizationDatasetFilesCount()))
       // Study
       .addDocuments(
         Mica.MicaMetricsDto.DocumentMetricsDto.newBuilder()
           .setType(Study.class.getSimpleName())
           .setTotal(micaMetricsService.getStudiesCount())
-          .setPublished(micaMetricsService.getPublishedStudiesCount()))
+          .setPublished(micaMetricsService.getPublishedStudiesCount())
+          .setEditing(micaMetricsService.getEditingStudiesCount()))
       .addFiles(Mica.MicaMetricsDto.DocumentMetricsDto.newBuilder()
         .setType(Study.class.getSimpleName())
-        .setTotal(studyDraftFiles+studyPublishedFiles)
-        .setPublished(studyPublishedFiles))
+        .setTotal(micaMetricsService.getDraftStudyFilesCount())
+        .setPublished(micaMetricsService.getPublishedStudyFilesCount()))
       .addDocuments(Mica.MicaMetricsDto.DocumentMetricsDto.newBuilder()
         .setType("StudyWithVariable")
-        .setTotal(0)
+        .setTotal(micaMetricsService.getStudiesWithVariablesCount())
         .setPublished(micaMetricsService.getPublishedStudiesWithVariablesCount()))
       // StudyDataset
       .addDocuments(
         Mica.MicaMetricsDto.DocumentMetricsDto.newBuilder()
           .setType(StudyDataset.class.getSimpleName())
           .setTotal(micaMetricsService.getStudyDatasetsCount())
-          .setPublished(micaMetricsService.getPublishedStudyDatasetsCount()))
+          .setPublished(micaMetricsService.getPublishedStudyDatasetsCount())
+          .setEditing(micaMetricsService.getEditingStudyDatasetsCount()))
       .addFiles(Mica.MicaMetricsDto.DocumentMetricsDto.newBuilder()
         .setType(StudyDataset.class.getSimpleName())
-        .setTotal(studyDatasetDraftFiles+studyDatasetPublishedFiles)
-        .setPublished(studyDatasetPublishedFiles))
+        .setTotal(micaMetricsService.getDraftStudyDatasetFilesCount())
+        .setPublished(micaMetricsService.getPublishedStudyDatasetFilesCount()))
       // HarmonizarionDataset
       .addDocuments(
         Mica.MicaMetricsDto.DocumentMetricsDto.newBuilder()
           .setType(HarmonizationDataset.class.getSimpleName())
           .setTotal(micaMetricsService.getHarmonizarionDatasetsCount())
-          .setPublished(micaMetricsService.getPublishedHarmonizationDatasetsCount()))
+          .setPublished(micaMetricsService.getPublishedHarmonizationDatasetsCount())
+          .setEditing(micaMetricsService.getEditingHarmonizationDatasetsCount()))
       .addFiles(Mica.MicaMetricsDto.DocumentMetricsDto.newBuilder()
         .setType(HarmonizationDataset.class.getSimpleName())
-        .setTotal(harmonizationDatasetDraftFiles+harmonizationDatasetPublishedFiles)
-        .setPublished(harmonizationDatasetPublishedFiles))
+        .setTotal(micaMetricsService.getDraftHarmonizationDatasetFilesCount())
+        .setPublished(micaMetricsService.getPublishedHarmonizationDatasetFilesCount()))
+      // Projects
+      .addDocuments(
+        Mica.MicaMetricsDto.DocumentMetricsDto.newBuilder()
+          .setType(Project.class.getSimpleName())
+          .setTotal(micaMetricsService.getProjectsCount())
+          .setPublished(micaMetricsService.getPublishedProjectsCount())
+          .setEditing(micaMetricsService.getEditingProjectsCount()))
+      .addFiles(Mica.MicaMetricsDto.DocumentMetricsDto.newBuilder()
+        .setType(Project.class.getSimpleName())
+        .setTotal(micaMetricsService.getProjectFilesCount())
+        .setPublished(micaMetricsService.getPublishedProjectFilesCount()))
       // Variables
       .addDocuments(
         Mica.MicaMetricsDto.DocumentMetricsDto.newBuilder()

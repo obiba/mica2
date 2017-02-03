@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 OBiBa. All rights reserved.
+ * Copyright (c) 2016 OBiBa. All rights reserved.
  *
  * This program and the accompanying materials
  * are made available under the terms of the GNU Public License v3.0.
@@ -10,9 +10,6 @@
 
 package org.obiba.mica.dataset.service;
 
-import org.obiba.mica.core.service.DraftDocumentService;
-import org.obiba.mica.dataset.domain.StudyDataset;
-
-public interface DraftStudyDatasetService extends DraftDocumentService<StudyDataset>, EsDatasetService {
-
+public interface EsDatasetService {
+  long getStudiesWithVariablesCount();
 }

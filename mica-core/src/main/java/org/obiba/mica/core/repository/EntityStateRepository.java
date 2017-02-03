@@ -18,4 +18,5 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 
 public interface EntityStateRepository<T extends EntityState> extends MongoRepository<T, String> {
   List<T> findByPublishedTagNotNull();
+  Long countByPublishedTagNotNullAndRevisionsAheadGreaterThanEqual(int value);
 }

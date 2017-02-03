@@ -13,14 +13,22 @@ package org.obiba.mica.micaConfig.service;
 import javax.inject.Inject;
 
 import org.obiba.mica.dataset.HarmonizationDatasetRepository;
+import org.obiba.mica.dataset.HarmonizationDatasetStateRepository;
 import org.obiba.mica.dataset.StudyDatasetRepository;
+import org.obiba.mica.dataset.StudyDatasetStateRepository;
+import org.obiba.mica.dataset.service.DraftStudyDatasetService;
 import org.obiba.mica.dataset.service.PublishedDatasetService;
 import org.obiba.mica.file.service.DraftFileService;
 import org.obiba.mica.file.service.PublishedFileService;
 import org.obiba.mica.network.NetworkRepository;
+import org.obiba.mica.network.NetworkStateRepository;
 import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.network.service.PublishedNetworkService;
+import org.obiba.mica.project.ProjectRepository;
+import org.obiba.mica.project.ProjectStateRepository;
+import org.obiba.mica.project.service.PublishedProjectService;
 import org.obiba.mica.study.StudyRepository;
+import org.obiba.mica.study.StudyStateRepository;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.service.PublishedDatasetVariableService;
 import org.obiba.mica.study.service.PublishedStudyService;
@@ -33,6 +41,9 @@ public class MicaMetricsService {
   private StudyRepository studyRepository;
 
   @Inject
+  private StudyStateRepository studyStateRepository;
+
+  @Inject
   private PublishedStudyService publishedStudyService;
 
   @Inject
@@ -42,16 +53,37 @@ public class MicaMetricsService {
   private PublishedNetworkService publishedNetworkService;
 
   @Inject
+  private NetworkStateRepository networkStateRepository;
+
+  @Inject
   private StudyDatasetRepository studyDatasetRepository;
+
+  @Inject
+  private DraftStudyDatasetService draftStudyDatasetService;
 
   @Inject
   private PublishedDatasetService publishedDatasetService;
 
   @Inject
+  private StudyDatasetStateRepository studyDatasetStateRepository;
+
+  @Inject
   private HarmonizationDatasetRepository harmonizationDatasetRepository;
 
   @Inject
+  private HarmonizationDatasetStateRepository harmonizationDatasetStateRepository;
+
+  @Inject
   private PublishedDatasetVariableService publishedDatasetVariableService;
+
+  @Inject
+  private ProjectRepository projectRepository;
+
+  @Inject
+  private PublishedProjectService publishedProjectService;
+
+  @Inject
+  private ProjectStateRepository projectStateRepository;
 
   @Inject
   private DraftFileService draftFileService;
@@ -72,8 +104,16 @@ public class MicaMetricsService {
     return draftFileService.getCount(Study.class.getSimpleName().toLowerCase());
   }
 
+  public long getEditingStudiesCount() {
+    return studyStateRepository.countByPublishedTagNotNullAndRevisionsAheadGreaterThanEqual(1);
+  }
+
   public long getPublishedStudyFilesCount() {
     return publishedFileService.getCount(Study.class.getSimpleName().toLowerCase());
+  }
+
+  public long getStudiesWithVariablesCount() {
+    return draftStudyDatasetService.getStudiesWithVariablesCount();
   }
 
   public long getPublishedStudiesWithVariablesCount() {
@@ -87,6 +127,10 @@ public class MicaMetricsService {
 
   public long getPublishedNetworksCount() {
     return publishedNetworkService.getCount();
+  }
+
+  public long getEditingNetworksCount() {
+    return networkStateRepository.countByPublishedTagNotNullAndRevisionsAheadGreaterThanEqual(1);
   }
 
   public long getDraftNetworkFilesCount() {
@@ -114,6 +158,10 @@ public class MicaMetricsService {
     return publishedFileService.getCount("study-dataset");
   }
 
+  public long getEditingStudyDatasetsCount() {
+    return studyDatasetStateRepository.countByPublishedTagNotNullAndRevisionsAheadGreaterThanEqual(1);
+  }
+
   // Harmonization Dataset
   public long getHarmonizarionDatasetsCount() {
     return harmonizationDatasetRepository.count();
@@ -123,12 +171,37 @@ public class MicaMetricsService {
     return publishedDatasetService.getHarmonizationDatasetsCount();
   }
 
+  public long getEditingHarmonizationDatasetsCount() {
+    return harmonizationDatasetStateRepository.countByPublishedTagNotNullAndRevisionsAheadGreaterThanEqual(1);
+  }
+
   public long getDraftHarmonizationDatasetFilesCount() {
     return draftFileService.getCount("harmonization-dataset");
   }
 
   public long getPublishedHarmonizationDatasetFilesCount() {
     return publishedFileService.getCount("harmonization-dataset");
+  }
+
+  // Project
+  public long getProjectsCount() {
+    return projectRepository.count();
+  }
+
+  public long getPublishedProjectsCount() {
+    return publishedProjectService.getCount();
+  }
+
+  public long getEditingProjectsCount() {
+    return projectStateRepository.countByPublishedTagNotNullAndRevisionsAheadGreaterThanEqual(1);
+  }
+
+  public long getProjectFilesCount() {
+    return draftFileService.getCount("project");
+  }
+
+  public long getPublishedProjectFilesCount() {
+    return publishedFileService.getCount("project");
   }
 
   // Variables
