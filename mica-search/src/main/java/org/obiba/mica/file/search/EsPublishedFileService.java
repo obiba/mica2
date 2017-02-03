@@ -35,7 +35,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 
 @Component
-@Scope(scopeName = "request", proxyMode = ScopedProxyMode.INTERFACES)
+@Scope(scopeName = "request", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class EsPublishedFileService extends AbstractDocumentService<AttachmentState> implements PublishedFileService {
   private static final Logger log = LoggerFactory.getLogger(AbstractDocumentQuery.class);
 
