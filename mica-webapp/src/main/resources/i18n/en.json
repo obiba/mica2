@@ -80,6 +80,7 @@
       "networks": "Networks",
       "studies": "Studies",
       "studies-with-variables": "Studies with Variables",
+      "study-with-variables": "Study with Variables",
       "study-datasets": "Study Datasets",
       "harmonization-datasets": "Harmonization Datasets",
       "variables": "Variables"
