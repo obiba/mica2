@@ -31,6 +31,7 @@ import javax.validation.constraints.NotNull;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.math3.util.Pair;
 import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.session.UnknownSessionException;
 import org.apache.shiro.subject.Subject;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
@@ -916,9 +917,16 @@ public class FileSystemService {
 
   private String getCurrentUsername() {
     Subject subject = SecurityUtils.getSubject();
-    return subject == null || subject.getPrincipal() == null
-        ? AbstractGitWriteCommand.DEFAULT_AUTHOR_NAME
-        : subject.getPrincipal().toString();
+
+    try {
+      if(subject != null && subject.getPrincipal() != null)
+        return subject.getPrincipal().toString();
+    } catch (UnknownSessionException ignore) {
+      log.debug(String.format(
+        "Impossible to get currentUsername, we are probably in an @Async method. Use DEFAULT_AUTHOR_NAME [%s]", AbstractGitWriteCommand.DEFAULT_AUTHOR_NAME), ignore);
+    }
+
+    return AbstractGitWriteCommand.DEFAULT_AUTHOR_NAME;
   }
 
   private void validateFileName(String name) {
