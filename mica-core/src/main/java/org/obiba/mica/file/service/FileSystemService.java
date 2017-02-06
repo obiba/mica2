@@ -922,6 +922,8 @@ public class FileSystemService {
       if(subject != null && subject.getPrincipal() != null)
         return subject.getPrincipal().toString();
     } catch (UnknownSessionException ignore) {
+      log.debug(String.format(
+        "Impossible to get currentUsername, we are probably in an @Async method. Use DEFAULT_AUTHOR_NAME [%s]", AbstractGitWriteCommand.DEFAULT_AUTHOR_NAME), ignore);
     }
 
     return AbstractGitWriteCommand.DEFAULT_AUTHOR_NAME;
