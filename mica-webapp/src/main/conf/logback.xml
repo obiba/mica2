@@ -16,7 +16,7 @@
   <!-- console log config -->
   <include resource="org/springframework/boot/logging/logback/base.xml"/>
 
-  <logger name="org.obiba" level="info"/>
+  <logger name="org.obiba" level="debug"/>
 
   <!--<logger name="com.codahale.metrics" level="warn"/>-->
   <!--<logger name="com.ryantenney" level="warn"/>-->
