@@ -8,6 +8,7 @@
         "type": "string",
         "enum": [
           "questionnaires",
+          "cognitive_measures",
           "physical_measures",
           "biological_samples",
           "administratives_databases",

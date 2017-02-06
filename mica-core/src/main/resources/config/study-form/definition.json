@@ -1,7 +1,7 @@
 [
   {
     "type": "help",
-    "helpvalue": "<div class='alert alert-info' role='alert'><strong>License Info.</strong>This model (version <a href='https://github.com/maelstrom-research/maelstrom-models/tree/1.0.1' target='_blank'>1.0.1</a>) was released by <a href='https://www.maelstrom-research.org/' target='_blank'>Maelstrom Research</a> under the <a href='https://creativecommons.org/licenses/by-nc-nd/4.0/' target='_blank'>Creative Commons License with Non Commercial and No Derivatives</a> constraints.</div>"
+    "helpvalue": "<div class='alert alert-info' role='alert'><strong>License Info.</strong>This model (version <a href='https://github.com/maelstrom-research/maelstrom-models/tree/1.1.0' target='_blank'>1.1.0</a>) was released by <a href='https://www.maelstrom-research.org/' target='_blank'>Maelstrom Research</a> under the <a href='https://creativecommons.org/licenses/by-nc-nd/4.0/' target='_blank'>Creative Commons License with Non Commercial and No Derivatives</a> constraints.</div>"
   },
   {
     "type": "section",
@@ -12,14 +12,15 @@
         "htmlClass": "col-xs-6",
         "items": [
           "startYear",
-          "endYear"
+          "endYear",
+          "website"
         ]
       },
       {
         "type": "section",
         "htmlClass": "col-xs-6",
         "items": [
-          "website",
+          "funding",
           {
             "key": "info",
             "type": "localizedstring",
@@ -43,13 +44,13 @@
         "htmlClass": "col-xs-6",
         "items": [
           {
-            "type": "help",
-            "helpvalue": "<h4>t(study.design)</h4>"
-          },
-          {
             "key": "methods",
             "notitle": true,
             "items": [
+              {
+                "type": "help",
+                "helpvalue": "<h4>t(study.design)</h4>"
+              },
               {
                 "key": "methods.design",
                 "notitle": true,
@@ -67,6 +68,10 @@
                   {
                     "value": "case_only",
                     "name": "t(study_taxonomy.vocabulary.methods-design.term.case_only.title)"
+                  },
+                  {
+                    "value": "cross_sectional",
+                    "name": "t(study_taxonomy.vocabulary.methods-design.term.cross_sectional.title)"
                   },
                   {
                     "value": "clinical_trial",
@@ -111,29 +116,6 @@
         "items": [
           {
             "type": "help",
-            "helpvalue": "<h4>t(numberOfParticipants.label)</h4>"
-          },
-          {
-            "key": "numberOfParticipants",
-            "notitle": true,
-            "items": [
-              {
-                "key": "numberOfParticipants.participant",
-                "notitle": true
-              },
-              {
-                "key": "numberOfParticipants.sample",
-                "notitle": true
-              },
-              {
-                "key": "numberOfParticipants.info",
-                "rows": 3,
-                "marked": true
-              }
-            ]
-          },
-          {
-            "type": "help",
             "helpvalue": "<h4>t(study.recruitment-sources.label)</h4>"
           },
           {
@@ -164,6 +146,29 @@
                 "condition": "model.methods.recruitments.indexOf(\"other\")>=0"
               }
             ]
+          },
+          {
+            "type": "help",
+            "helpvalue": "<h4>t(numberOfParticipants.label)</h4>"
+          },
+          {
+            "key": "numberOfParticipants",
+            "notitle": true,
+            "items": [
+              {
+                "key": "numberOfParticipants.participant",
+                "notitle": true
+              },
+              {
+                "key": "numberOfParticipants.sample",
+                "notitle": true
+              },
+              {
+                "key": "numberOfParticipants.info",
+                "rows": 3,
+                "marked": true
+              }
+            ]
           }
         ]
       }
@@ -184,7 +189,7 @@
           {
             "key": "access",
             "notitle": true,
-            "description": "t(study_taxonomy.vocabulary.methods-recruitments.description)",
+            "description": "t(study_taxonomy.vocabulary.access.description)",
             "titleMap": [
               {
                 "value": "data",
