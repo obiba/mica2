@@ -427,10 +427,10 @@
   "studies": "Studies",
   "numberOfParticipants": {
     "label": "Number of participants",
-    "participants": "Target number of participants",
-    "sample": "Target number of participants with biological samples",
+    "participants": "Number of participants",
+    "sample": "Number of participants with biological samples",
     "no-limit": "No Limit",
-    "suppl-info": "Supplementary information about target number of participants"
+    "suppl-info": "Supplementary information about number of participants"
   },
   "study": {
     "input-placeholder": "Study name",
@@ -802,6 +802,7 @@
   "user": "User",
   "users": "Users",
   "website": "Website",
+  "funding": "Funding",
   "members": "Members",
   "unsaved-title": "Unsaved Changes",
   "unsaved-prompt": "Are you sure you want to leave this page? Unsaved changes will be lost.",
