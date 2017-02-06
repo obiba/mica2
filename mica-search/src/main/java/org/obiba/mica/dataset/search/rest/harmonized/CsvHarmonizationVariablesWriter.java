@@ -77,15 +77,18 @@ public class CsvHarmonizationVariablesWriter {
         variableHarmonization -> {
           List<String> row = Lists.newArrayList();
           dataset.getAllOpalTables().forEach(
-            studyTable -> {
+            table -> {
               final boolean[] found = { false };
               variableHarmonization.getDatasetVariableSummariesList().forEach(
                 summary -> {
-                  String studyId = studyTable instanceof StudyTable ? ((StudyTable) studyTable).getStudyId() : null;
+                  String id = table instanceof StudyTable ? ((StudyTable) table).getStudyId() : ((NetworkTable) table).getNetworkId();
                   Mica.DatasetVariableResolverDto resolver = summary.getResolver();
-                  if (resolver.getStudyId().equals(studyId)
-                      && resolver.getProject().equals(studyTable.getProject())
-                      && resolver.getTable().equals(studyTable.getTable())) {
+                  if ((resolver.getStudyId().equals(id)
+                      && resolver.getProject().equals(table.getProject())
+                      && resolver.getTable().equals(table.getTable())) ||
+                    (table instanceof NetworkTable
+                      && resolver.getProject().equals(table.getProject())
+                      && resolver.getTable().equals(table.getTable()))) {
 
                     row.add(getStatus(summary, locale));
                     found[0] = true;
