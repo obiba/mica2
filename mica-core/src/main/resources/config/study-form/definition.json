@@ -189,7 +189,7 @@
           {
             "key": "access",
             "notitle": true,
-            "description": "t(study_taxonomy.vocabulary.access.description)",
+            "description": "t(study.access.for)",
             "titleMap": [
               {
                 "value": "data",

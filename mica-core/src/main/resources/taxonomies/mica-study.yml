@@ -1484,11 +1484,10 @@
       "en": "Third trimester of pregnancy."
       "fr": "Troisième trimestre de grossesse."
 
-
 - "name": "populations-selectionCriteria-newborn"
   "title":
     "en": "Newborn"
-    "fr": "Nouveaux nés"
+    "fr": "Nouveaux-nés"
   "description":
     "en": "The recruited individuals are Newborn."
     "fr": "Les individus recrutés sont des nouveaux nés."
@@ -1509,7 +1508,33 @@
       "fr": "Non"
     "description": 
       "en": "No Newborn have been recruited."
-      "fr": "Des nouveaux nés non pas été recrutés."
+      "fr": "Des nouveaux-nés non pas été recrutés."
+
+- "name": "populations-selectionCriteria-twins"
+  "title":
+    "en": "Twins"
+    "fr": "Jumeaux"
+  "description":
+    "en": "The recruited individuals are Newborn."
+    "fr": "Les individus recrutés sont des jumeaux."
+  "attributes":
+    "field": "populations.model.selectionCriteria.twins"
+    "alias": "populations-model-selectionCriteria-twins"
+  "terms":
+  - "name": "true"
+    "title": 
+      "en": "Yes"
+      "fr": "Oui"
+    "description": 
+      "en": "Twins have been recruited."
+      "fr": "Des jumeaux ont été recrutés."
+  - "name": "false"
+    "title": 
+      "en": "No"
+      "fr": "Non"
+    "description": 
+      "en": "No Twins have been recruited."
+      "fr": "Des jumeaux non pas été recrutés."
 
 - "name": "numberOfParticipants-participant-number"
   "title":
@@ -1735,13 +1760,20 @@
     "description":
       "en": "Questionnaires are used to collect information."
       "fr": "Des questionnaires sont utilisés dans la collecte d'information."
+  - "name": "cognitive_measures"
+    "title":
+      "en": "Cognitive measures"
+      "fr": "Mesures cognitives"
+    "description":
+      "en": "Information on cognitive measures is collected."
+      "fr": "De l'information sur les mesures cognitives est collectée."
   - "name": "physical_measures"
     "title":
       "en": "Physical measures"
       "fr": "Mesures physiques"
     "description":
       "en": "Information on physical measures is collected."
-      "fr": "De l'information sur les mesures physique est collectée."
+      "fr": "De l'information sur les mesures physiques est collectée."
   - "name": "biological_samples"
     "title":
       "en": "Biosamples"
