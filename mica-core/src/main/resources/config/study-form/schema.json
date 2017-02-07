@@ -5,6 +5,11 @@
       "title": "t(website)",
       "type": "string"
     },
+    "funding": {
+      "type": "object",
+      "format": "localizedString",
+      "title": "t(funding)"
+    },
     "info": {
       "type": "object",
       "format": "localizedString",
