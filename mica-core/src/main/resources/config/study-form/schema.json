@@ -2,9 +2,8 @@
   "type": "object",
   "properties": {
     "website": {
-      "type": "object",
-      "format": "localizedString",
-      "title": "t(website)"
+      "title": "t(website)",
+      "type": "string"
     },
     "funding": {
       "type": "object",

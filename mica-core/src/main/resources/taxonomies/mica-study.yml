@@ -1515,7 +1515,7 @@
     "en": "Twins"
     "fr": "Jumeaux"
   "description":
-    "en": "The recruited individuals are Newborn."
+    "en": "The recruited individuals are twins."
     "fr": "Les individus recrutés sont des jumeaux."
   "attributes":
     "field": "populations.model.selectionCriteria.twins"
