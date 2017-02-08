@@ -39,6 +39,8 @@ import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.Aggregations;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.sort.SortBuilder;
+import org.elasticsearch.search.sort.SortBuilders;
+import org.elasticsearch.search.sort.SortOrder;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.micaConfig.service.TaxonomyService;
 import org.obiba.mica.micaConfig.service.helper.AggregationMetaDataProvider;
@@ -369,6 +371,12 @@ public abstract class AbstractDocumentQuery {
       .addAggregation(AggregationBuilders.global(AGG_TOTAL_COUNT)); // ;
 
     if(ignoreFields()) requestBuilder.setNoFields();
+
+    // apply default sort for VariableQuery before any user defined ones (order is important)
+    if (this instanceof VariableQuery) {
+      requestBuilder.addSort(SortBuilders.fieldSort("datasetId").order(SortOrder.ASC));
+      requestBuilder.addSort(SortBuilders.fieldSort("index").order(SortOrder.ASC));
+    }
 
     if(sortBuilder != null) requestBuilder.addSort(sortBuilder);
 
