@@ -677,7 +677,7 @@
   "share-resource": {
     "button-label": "Partager",
     "modal": {
-      "title": "Partager un lien vers un Brouillon",
+      "title": "Partager un lien vers un brouillon",
       "share-link-to-copy": "Lien à copier",
       "share-link-help-text": "Toute personne ayant ce lien peut accéder à la dernière version du brouillon.",
       "expiration-date": "Date d'expiration",
