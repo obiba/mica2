@@ -29,4 +29,5 @@ mica.study = angular.module('mica.study', [
   'pascalprecht.translate',
   'obiba.mica.attachment',
   'mica.revisions',
+  'mica.shareResource'
 ]);

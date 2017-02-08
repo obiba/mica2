@@ -26,5 +26,6 @@ mica.project = angular.module('mica.project', [
   'ui.bootstrap',
   'ui',
   'pascalprecht.translate',
-  'mica.revisions'
+  'mica.revisions',
+  'mica.shareResource'
 ]);

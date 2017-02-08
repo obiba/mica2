@@ -27,5 +27,6 @@ mica.network = angular.module('mica.network', [
   'ui.bootstrap',
   'ui',
   'pascalprecht.translate',
-  'mica.revisions'
+  'mica.revisions',
+  'mica.shareResource'
 ]);

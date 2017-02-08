@@ -672,6 +672,16 @@
     "numberOfParticipants-noLimit": "No limit",
     "recruitment": "Recruitment"
   },
+  "share-resource": {
+    "button-label": "Share",
+    "modal": {
+      "title": "Share Link to Draft",
+      "share-link-to-copy": "Link to copy",
+      "share-link-help-text": "Every one having this link can access to the latest draft version.",
+      "expiration-date": "Expiration Date",
+      "expiration-date-help-text": "Share link will always be available when no expiration date is speficied."
+    }
+  },
   "data-collection-event": {
     "label-edit": "Edit Data Collection Event",
     "id": "ID",
