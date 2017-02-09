@@ -28,6 +28,7 @@ mica.shareResource
           method: 'PUT',
           params: {resourceType: '@resourceType', resourceId: '@resourceId', expire: '@expire'},
           responseType: 'text',
+          errorHandler: true,
           transformResponse: function (response) {
             return {body: response};
           }
@@ -35,8 +36,8 @@ mica.shareResource
       });
     }])
 
-  .controller('ShareModalController', ['$scope', '$uibModalInstance', 'ShareService', 'resourceType', 'resourceId', 'moment',
-    function ($scope, $uibModalInstance, ShareService, resourceType, resourceId, moment) {
+  .controller('ShareModalController', ['$scope', '$uibModalInstance', 'ShareService', 'AlertService', 'LocaleStringUtils', 'resourceType', 'resourceId', 'moment',
+    function ($scope, $uibModalInstance, ShareService, AlertService, LocaleStringUtils, resourceType, resourceId, moment) {
 
       $scope.resourceType = resourceType;
       $scope.resourceId = resourceId;
@@ -48,8 +49,18 @@ mica.shareResource
           resourceType: $scope.resourceType,
           resourceId: $scope.resourceId,
           expire: ($scope.expire !== null) ? moment($scope.expire).format('YYYY-MM-DD') : null
+
         }).$promise.then(function (response) {
           $scope.shareLink = response.body;
+
+        }, function (error) {
+
+          var errorKey = error.status === 409 ? 'share-resource.error-no-portal-url' : 'global.server-error';
+          AlertService.alert({
+            id: 'formAlert',
+            type: 'danger',
+            msg: LocaleStringUtils.translate(errorKey)
+          });
         });
       };
 

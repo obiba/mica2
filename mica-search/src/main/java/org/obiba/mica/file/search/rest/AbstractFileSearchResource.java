@@ -85,10 +85,12 @@ public abstract class AbstractFileSearchResource {
     @QueryParam("recursively") @DefaultValue("false") boolean recursively,
     @QueryParam("from") @DefaultValue("0") int from, @QueryParam("limit") @DefaultValue(MAX_SIZE) int limit,
     @QueryParam("sort") @DefaultValue(DEFAULT_SORT) String sort,
-    @QueryParam("order") @DefaultValue("desc") String order) {
+    @QueryParam("order") @DefaultValue("desc") String order,
+    @QueryParam("key") String shareKey) {
+
     basePath = normalizePath(path);
     if(!isPublishedFileSystem()) {
-      subjectAclService.checkPermission("/draft/file", "VIEW", normalizePath(path));
+      subjectAclService.checkPermission("/draft/file", "VIEW", normalizePath(path), shareKey);
     }
     String queryString = getQueryString(path, query, recursively);
 

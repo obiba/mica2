@@ -266,6 +266,8 @@
     "name-help": "Nom de votre organisation qui sera utilisé lors de l'envoi des courriels de notification.",
     "publicUrl": "URL publique",
     "publicUrl-help": "URL publique du serveur qui sera utilisée lors de l'envoi des courriels de notification.",
+    "publicUrl": "URL du portail",
+    "publicUrl-help": "URL publique du portail qui sera utilisée pour la génération de lien partageable.",
     "defaultCharSet": "Jeu de caractères par défaut",
     "languages": "Langues",
     "languages-help": "Langues dans lesquelles le contenu du site doit être saisie.",
@@ -682,7 +684,8 @@
       "share-link-help-text": "Toute personne ayant ce lien peut accéder à la dernière version du brouillon.",
       "expiration-date": "Date d'expiration",
       "expiration-date-help-text": "Si aucune date d'expiration n'est renseignée, le lien de partage sera toujours disponible."
-    }
+    },
+    "error-no-portal-url": "Impossible de générer un lien de partage car l'URL du portail n'a pas été configuré dans l'interface d'administration."
   },
   "data-collection-event": {
     "label-edit": "Éditer un événement de collecte de données",
