@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
 
+import org.apache.commons.lang.StringUtils;
 import org.obiba.magma.Variable;
 import org.obiba.magma.support.VariableNature;
 import org.obiba.mica.core.domain.Attribute;
@@ -98,6 +99,8 @@ public class DatasetVariable implements Indexable, AttributeAware {
 
   private OpalTableType opalTableType;
 
+  private String sortableDceIds;
+
   @NotNull
   private LocalizedString datasetAcronym;
 
@@ -110,6 +113,8 @@ public class DatasetVariable implements Indexable, AttributeAware {
     this(dataset, Type.Study, variable);
     studyIds = Lists.newArrayList(dataset.getStudyTable().getStudyId());
     dceIds = Lists.newArrayList(dataset.getStudyTable().getDataCollectionEventUId());
+
+    sortableDceIds = toSortableDceIds();
   }
 
   public DatasetVariable(HarmonizationDataset dataset, Variable variable) {
@@ -128,6 +133,8 @@ public class DatasetVariable implements Indexable, AttributeAware {
     dataset.getStudyTables().forEach(table -> {
       if(!dceIds.contains(table.getDataCollectionEventUId())) dceIds.add(table.getDataCollectionEventUId());
     });
+
+    sortableDceIds = toSortableDceIds();
   }
 
   public DatasetVariable(HarmonizationDataset dataset, Variable variable, OpalTable opalTable) {
@@ -355,6 +362,19 @@ public class DatasetVariable implements Indexable, AttributeAware {
 
   public void setNetworkId(String networkId) {
     this.networkId = networkId;
+  }
+
+  public String getSortableDceIds() {
+    return sortableDceIds;
+  }
+
+  private String toSortableDceIds() {
+    return Strings.emptyToNull(dceIds.stream()
+      .sorted()
+      .reduce("", (acc, curr) -> acc + curr)
+      .replaceAll("(\\d+)", StringUtils.leftPad("$1", 4, '0'))
+      .replaceAll("[:-]", "")
+    );
   }
 
   public static class IdResolver {
