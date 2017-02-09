@@ -25,6 +25,7 @@ import org.apache.shiro.crypto.AesCipherService;
 import org.apache.shiro.crypto.CryptoException;
 import org.apache.shiro.util.ByteSource;
 import org.obiba.mica.core.domain.TaxonomyTarget;
+import org.obiba.mica.micaConfig.MissingConfigurationException;
 import org.obiba.mica.micaConfig.domain.MicaConfig;
 import org.obiba.mica.micaConfig.event.MicaConfigUpdatedEvent;
 import org.obiba.mica.micaConfig.repository.MicaConfigRepository;
@@ -157,7 +158,10 @@ public class MicaConfigService {
 
   public String getPortalUrl() {
     MicaConfig config = getConfig();
-    return config.getPortalUrl() != null ? config.getPortalUrl() : "undefined";
+    if (config.getPortalUrl() != null)
+      return config.getPortalUrl();
+    else
+      throw new MissingConfigurationException("Empty portal url. Impossible to generate portal link.");
   }
 
   public String getTranslations(@NotNull String locale, boolean _default) throws IOException {
