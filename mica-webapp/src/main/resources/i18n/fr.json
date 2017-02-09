@@ -674,6 +674,16 @@
     "numberOfParticipants-noLimit": "Aucune limite",
     "recruitment": "Recrutement"
   },
+  "share-resource": {
+    "button-label": "Partager",
+    "modal": {
+      "title": "Partager un lien vers un brouillon",
+      "share-link-to-copy": "Lien à copier",
+      "share-link-help-text": "Toute personne ayant ce lien peut accéder à la dernière version du brouillon.",
+      "expiration-date": "Date d'expiration",
+      "expiration-date-help-text": "Si aucune date d'expiration n'est renseignée, le lien de partage sera toujours disponible."
+    }
+  },
   "data-collection-event": {
     "label-edit": "Éditer un événement de collecte de données",
     "id": "ID",
