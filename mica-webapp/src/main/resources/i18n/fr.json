@@ -266,6 +266,8 @@
     "name-help": "Nom de votre organisation qui sera utilisé lors de l'envoi des courriels de notification.",
     "publicUrl": "URL publique",
     "publicUrl-help": "URL publique du serveur qui sera utilisée lors de l'envoi des courriels de notification.",
+    "publicUrl": "URL du portail",
+    "publicUrl-help": "URL publique du portail qui sera utilisée pour la génération de lien partageable.",
     "defaultCharSet": "Jeu de caractères par défaut",
     "languages": "Langues",
     "languages-help": "Langues dans lesquelles le contenu du site doit être saisie.",

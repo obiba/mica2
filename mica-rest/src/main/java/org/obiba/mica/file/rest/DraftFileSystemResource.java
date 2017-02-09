@@ -53,10 +53,10 @@ public class DraftFileSystemResource extends AbstractFileSystemResource {
   @GET
   @Path("/file-dl/{path:.*}")
   public Response downloadFile(@PathParam("path") String path, @QueryParam("version") String version,
-    @QueryParam("inline") @DefaultValue("false") boolean inline) {
+    @QueryParam("inline") @DefaultValue("false") boolean inline, @QueryParam("key") String shareKey) {
 
     try {
-      Attachment attachment = doGetAttachment(path, version);
+      Attachment attachment = doGetAttachment(path, version, shareKey);
 
       if (inline) {
         String filename = attachment.getName();
@@ -78,8 +78,8 @@ public class DraftFileSystemResource extends AbstractFileSystemResource {
 
   @GET
   @Path("/file/{path:.*}")
-  public Mica.FileDto getFile(@PathParam("path") String path) {
-    return doGetFile(path);
+  public Mica.FileDto getFile(@PathParam("path") String path, @QueryParam("key") String shareKey) {
+    return doGetFile(path, shareKey);
   }
 
   @DELETE

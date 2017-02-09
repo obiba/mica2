@@ -10,23 +10,22 @@
 
 package org.obiba.mica.micaConfig.service;
 
-import java.io.File;
-import java.io.IOException;
-import java.security.Key;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.inject.Inject;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
+import com.google.common.eventbus.EventBus;
 import org.apache.commons.io.FileUtils;
+import org.apache.shiro.authz.AuthorizationException;
 import org.apache.shiro.codec.CodecSupport;
 import org.apache.shiro.codec.Hex;
 import org.apache.shiro.crypto.AesCipherService;
+import org.apache.shiro.crypto.CryptoException;
 import org.apache.shiro.util.ByteSource;
 import org.obiba.mica.core.domain.TaxonomyTarget;
+import org.obiba.mica.micaConfig.MissingConfigurationException;
 import org.obiba.mica.micaConfig.domain.MicaConfig;
 import org.obiba.mica.micaConfig.event.MicaConfigUpdatedEvent;
 import org.obiba.mica.micaConfig.repository.MicaConfigRepository;
@@ -34,6 +33,8 @@ import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.obiba.opal.core.domain.taxonomy.TaxonomyEntity;
 import org.obiba.opal.core.domain.taxonomy.Term;
 import org.obiba.opal.core.domain.taxonomy.Vocabulary;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -43,19 +44,23 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
-import com.google.common.eventbus.EventBus;
+import javax.inject.Inject;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import java.io.File;
+import java.io.IOException;
+import java.security.Key;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 import static org.springframework.util.CollectionUtils.isEmpty;
 
 @Service
 @Validated
 public class MicaConfigService {
+
+  private static final Logger logger = LoggerFactory.getLogger(MicaConfigService.class);
 
   @Inject
   private ApplicationContext applicationContext;
@@ -149,6 +154,14 @@ public class MicaConfigService {
       String port = env.getProperty("https.port");
       return "https://" + host + ":" + port;
     }
+  }
+
+  public String getPortalUrl() {
+    MicaConfig config = getConfig();
+    if (config.getPortalUrl() != null)
+      return config.getPortalUrl();
+    else
+      throw new MissingConfigurationException("Empty portal url. Impossible to generate portal link.");
   }
 
   public String getTranslations(@NotNull String locale, boolean _default) throws IOException {
@@ -265,8 +278,13 @@ public class MicaConfigService {
   }
 
   public String decrypt(String encrypted) {
-    ByteSource decrypted = cipherService.decrypt(Hex.decode(encrypted), getSecretKey());
-    return CodecSupport.toString(decrypted.getBytes());
+    try {
+      ByteSource decrypted = cipherService.decrypt(Hex.decode(encrypted), getSecretKey());
+      return CodecSupport.toString(decrypted.getBytes());
+    } catch (CryptoException e) {
+      logger.warn(String.format("Someone tried to use an invalid key [%s]", encrypted));
+      throw new IllegalArgumentException("Given key is invalid", e);
+    }
   }
 
   private String generateSecretKey() {
