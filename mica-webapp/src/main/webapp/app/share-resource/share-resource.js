@@ -1,13 +1,11 @@
 /*
+ * Copyright (c) 2017 OBiBa. All rights reserved.
  *
- *  * Copyright (c) 2017 OBiBa. All rights reserved.
- *  *
- *  * This program and the accompanying materials
- *  * are made available under the terms of the GNU Public License v3.0.
- *  *
- *  * You should have received a copy of the GNU General Public License
- *  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * This program and the accompanying materials
+ * are made available under the terms of the GNU Public License v3.0.
  *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 'use strict';
@@ -37,8 +35,8 @@ mica.shareResource
       });
     }])
 
-  .controller('ShareModalController', ['$scope', '$uibModalInstance', 'ShareService', 'resourceType', 'resourceId',
-    function ($scope, $uibModalInstance, ShareService, resourceType, resourceId) {
+  .controller('ShareModalController', ['$scope', '$uibModalInstance', 'ShareService', 'resourceType', 'resourceId', 'moment',
+    function ($scope, $uibModalInstance, ShareService, resourceType, resourceId, moment) {
 
       $scope.resourceType = resourceType;
       $scope.resourceId = resourceId;
@@ -49,7 +47,7 @@ mica.shareResource
         ShareService.getShareLink({
           resourceType: $scope.resourceType,
           resourceId: $scope.resourceId,
-          expire: ($scope.expire != null) ? moment($scope.expire).format('YYYY-MM-DD') : null
+          expire: ($scope.expire !== null) ? moment($scope.expire).format('YYYY-MM-DD') : null
         }).$promise.then(function (response) {
           $scope.shareLink = response.body;
         });
@@ -80,7 +78,7 @@ mica.shareResource
             }
           }
         });
-      }
+      };
     }])
 
   .directive('shareModal', [function () {
