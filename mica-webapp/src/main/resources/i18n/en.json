@@ -680,7 +680,8 @@
       "share-link-help-text": "Every one having this link can access to the latest draft version.",
       "expiration-date": "Expiration Date",
       "expiration-date-help-text": "Share link will always be available when no expiration date is speficied."
-    }
+    },
+    "error-no-portal-url": "Impossible to generate share link. Please go to configuration page to set a portal url."
   },
   "data-collection-event": {
     "label-edit": "Edit Data Collection Event",
