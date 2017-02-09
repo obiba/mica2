@@ -684,7 +684,8 @@
       "share-link-help-text": "Toute personne ayant ce lien peut accéder à la dernière version du brouillon.",
       "expiration-date": "Date d'expiration",
       "expiration-date-help-text": "Si aucune date d'expiration n'est renseignée, le lien de partage sera toujours disponible."
-    }
+    },
+    "error-no-portal-url": "Impossible de générer un lien de partage car l'URL du portail n'a pas été configuré dans l'interface d'administration."
   },
   "data-collection-event": {
     "label-edit": "Éditer un événement de collecte de données",
