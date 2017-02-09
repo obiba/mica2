@@ -42,8 +42,6 @@ import java.util.List;
 
 public abstract class AbstractGitPersistableResource<T extends EntityState, T1 extends GitPersistable> {
 
-  private static final Logger log = LoggerFactory.getLogger(AbstractGitPersistableResource.class);
-
   @Inject
   private MicaConfigService micaConfigService;
 
@@ -54,8 +52,6 @@ public abstract class AbstractGitPersistableResource<T extends EntityState, T1 e
 
   protected abstract AbstractGitPersistableService<T, T1> getService();
 
-  private final DateFormat iso8601 = new SimpleDateFormat("yyyy-MM-dd");
-
   @Inject
   Dtos dtos;
 
@@ -64,9 +60,6 @@ public abstract class AbstractGitPersistableResource<T extends EntityState, T1 e
 
   @Inject
   private CommentResource commentResource;
-
-  @Value("${portal.url}")
-  private String portalUrl;
 
   @GET
   @Path("/commits")
@@ -120,7 +113,7 @@ public abstract class AbstractGitPersistableResource<T extends EntityState, T1 e
   public Response getShareURL(@QueryParam("expire") String expire) {
     checkPermission("/draft/" + getService().getTypeName(), "EDIT");
     return Response.ok().entity(String.format("%s/%s/%s/draft/%s",
-      portalUrl, getService().getTypeName(), getId(), createShareKey(expire))).build();
+      micaConfigService.getPortalUrl(), getService().getTypeName(), getId(), createShareKey(expire))).build();
   }
 
   /**

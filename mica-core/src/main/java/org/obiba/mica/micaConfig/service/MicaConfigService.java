@@ -155,6 +155,11 @@ public class MicaConfigService {
     }
   }
 
+  public String getPortalUrl() {
+    MicaConfig config = getConfig();
+    return config.getPortalUrl() != null ? config.getPortalUrl() : "undefined";
+  }
+
   public String getTranslations(@NotNull String locale, boolean _default) throws IOException {
     File translations;
 
@@ -274,7 +279,7 @@ public class MicaConfigService {
       return CodecSupport.toString(decrypted.getBytes());
     } catch (CryptoException e) {
       logger.warn(String.format("Someone tried to use an invalid key [%s]", encrypted));
-      throw new AuthorizationException("Given key is invalid", e);
+      throw new IllegalArgumentException("Given key is invalid", e);
     }
   }
 

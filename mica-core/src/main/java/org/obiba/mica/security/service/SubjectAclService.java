@@ -140,7 +140,7 @@ public class SubjectAclService {
   public void checkPermission(@NotNull String resource, @NotNull String action,
     @Nullable String instance, @Nullable String shareKey) throws AuthorizationException {
 
-    if (isAccessWithShareKeyAuthorized(resource, action, instance, shareKey)) {
+    if (isAccessWithShareKeyApplicable(resource, action, instance, shareKey)) {
       if (validateShareKey(shareKey, draftRessourcesValidatorForShareKeyAccess(resource, instance)))
         return;
     }
@@ -438,7 +438,7 @@ public class SubjectAclService {
       return (resource + "/" + instance)::startsWith;
   }
 
-  private boolean isAccessWithShareKeyAuthorized(String resource, String action, String instance, String shareKey) {
+  private boolean isAccessWithShareKeyApplicable(String resource, String action, String instance, String shareKey) {
     return shareKey != null && instance != null && "VIEW".equals(action) && resource.startsWith("/draft/");
   }
 

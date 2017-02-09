@@ -24,9 +24,6 @@ agate:
         name: mica
         key: changeit
 
-portal:
-    url: http://localhost/drupal/mica
-
 # Elasticsearch: search engine configuration
 elasticsearch:
     dataNode: true

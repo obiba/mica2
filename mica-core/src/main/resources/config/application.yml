@@ -30,3 +30,7 @@ async:
     opal:
         poolSize: 30
         queueCapacity: 100000
+
+#portal:
+#  draftResource:
+#    urlPattern: {portalUrl}/mica/{resourceType}/{resourceId}/draft/{shareKey}

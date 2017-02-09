@@ -59,6 +59,8 @@ public class MicaConfig extends AbstractAuditableDocument {
 
   private String publicUrl;
 
+  private String portalUrl;
+
   private String secretKey;
 
   private Version micaVersion;
@@ -161,6 +163,14 @@ public class MicaConfig extends AbstractAuditableDocument {
     return !Strings.isNullOrEmpty(publicUrl);
   }
 
+  public String getPortalUrl() {
+    return portalUrl;
+  }
+
+  public void setPortalUrl(String portalUrl) {
+    this.portalUrl = portalUrl;
+  }
+
   public String getSecretKey() {
     return secretKey;
   }
@@ -171,10 +181,11 @@ public class MicaConfig extends AbstractAuditableDocument {
 
   @Override
   protected MoreObjects.ToStringHelper toStringHelper() {
-    return super.toStringHelper().add("name", name) //
-        .add("locales", locales) //
-        .add("defaultCharacterSet", defaultCharacterSet) //
-        .add("publicUrl", publicUrl);
+    return super.toStringHelper().add("name", name)
+      .add("locales", locales)
+      .add("defaultCharacterSet", defaultCharacterSet)
+      .add("publicUrl", publicUrl)
+      .add("portalUrl", portalUrl);
   }
 
   public Version getMicaVersion() {
