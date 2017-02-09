@@ -20,6 +20,7 @@ import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
+import org.springframework.beans.factory.annotation.Value;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -55,6 +56,9 @@ public abstract class AbstractGitPersistableResource<T extends EntityState, T1 e
 
   @Inject
   private CommentResource commentResource;
+
+  @Value("${portal.draftResource.urlPattern}")
+  private String portalUrlPattern;
 
   @GET
   @Path("/commits")
@@ -107,8 +111,7 @@ public abstract class AbstractGitPersistableResource<T extends EntityState, T1 e
   @Path("/_share")
   public Response getShareURL(@QueryParam("expire") String expire) {
     checkPermission("/draft/" + getService().getTypeName(), "EDIT");
-    return Response.ok().entity(String.format("%s/%s/%s/draft/%s",
-      micaConfigService.getPortalUrl(), getService().getTypeName(), getId(), createShareKey(expire))).build();
+    return Response.ok().entity(generatePortalLinkForDraftResource(createShareKey(expire))).build();
   }
 
   /**
@@ -146,5 +149,13 @@ public abstract class AbstractGitPersistableResource<T extends EntityState, T1 e
     String formatted =  date.format(DateTimeFormatter.ofPattern("MMM dd, yyyy h:mm a"));
 
     return String.format("Restored revision from '%s' (%s...)", formatted, commitInfo.getCommitId().substring(0,9));
+  }
+
+  private String generatePortalLinkForDraftResource(String shareKey) {
+    return portalUrlPattern
+      .replace("{portalUrl}", micaConfigService.getPortalUrl())
+      .replace("{resourceType}", getService().getTypeName())
+      .replace("{resourceId}", getId())
+      .replace("{shareKey}", shareKey);
   }
 }
