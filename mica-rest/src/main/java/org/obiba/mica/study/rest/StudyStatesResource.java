@@ -85,8 +85,8 @@ public class StudyStatesResource {
   }
 
   @Path("/study-state/{id}")
-  public StudyStateResource study(@PathParam("id") String id, @QueryParam("key") String key) {
-    subjectAclService.checkPermission("/draft/study", "VIEW", id, key);
+  public StudyStateResource study(@PathParam("id") String id) {
+    subjectAclService.checkPermission("/draft/study", "VIEW", id);
     StudyStateResource studyStateResource = applicationContext.getBean(StudyStateResource.class);
     studyStateResource.setId(id);
     return studyStateResource;

@@ -58,8 +58,10 @@ class NetworkSummaryDtos {
     Mica.NetworkSummaryDto.Builder builder = Mica.NetworkSummaryDto.newBuilder();
     NetworkState networkState = networkService.getEntityState(network.getId());
 
-    builder.setId(network.getId()).addAllAcronym(localizedStringDtos.asDto(network.getAcronym())) //
-      .addAllName(localizedStringDtos.asDto(network.getName())) //
+    builder
+      .setId(network.getId())
+      .addAllAcronym(localizedStringDtos.asDto(network.getAcronym()))
+      .addAllName(localizedStringDtos.asDto(network.getName()))
       .setPublished(networkState.isPublished());
 
     Mica.PermissionsDto permissionsDto = permissionsDtos.asDto(network);
