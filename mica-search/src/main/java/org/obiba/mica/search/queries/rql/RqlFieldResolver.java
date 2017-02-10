@@ -110,7 +110,8 @@ public class RqlFieldResolver {
       if(vocabulary.isPresent()) {
         builder.vocabulary(vocabulary.get());
         String f = vocabulary.get().getAttributeValue("field");
-        if(!Strings.isNullOrEmpty(f)) field = localize(vocabulary.get(), f, locale);
+        boolean localized = Boolean.valueOf(vocabulary.get().getAttributeValue("localized"));
+        if(!Strings.isNullOrEmpty(f)) field = localize(vocabulary.get(), localized ? f + TAXO_SEPARATOR + locale : f, locale);
         else field = localize(vocabulary.get(), vocabulary.get().getName(), locale);
       } else {
         field = localize(null, vocabularyName, locale);
