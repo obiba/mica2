@@ -25,13 +25,13 @@ import org.obiba.mica.JSONUtils;
 import org.obiba.mica.core.domain.Membership;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.study.domain.Study;
+import org.obiba.mica.study.service.StudyService;
 import org.springframework.stereotype.Component;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
 import static java.util.stream.Collectors.toList;
 
 @Component
-@SuppressWarnings("OverlyLongMethod")
 class StudyDtos {
 
   @Inject
@@ -47,13 +47,13 @@ class StudyDtos {
   private AttachmentDtos attachmentDtos;
 
   @Inject
-  private AttributeDtos attributeDtos;
-
-  @Inject
   private PermissionsDtos permissionsDtos;
 
   @Inject
   private MicaConfigService micaConfigService;
+
+  @Inject
+  private StudyService studyService;
 
   @NotNull
   Mica.StudyDto asDto(@NotNull Study study, boolean asDraft) {
@@ -92,6 +92,8 @@ class StudyDtos {
     if(study.getPopulations() != null) {
       study.getPopulations().forEach(population -> builder.addPopulations(populationDtos.asDto(population)));
     }
+
+    builder.setPublished(studyService.isPublished(study.getId()));
 
     return builder.build();
   }

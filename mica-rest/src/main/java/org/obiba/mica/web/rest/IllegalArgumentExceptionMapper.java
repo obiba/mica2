@@ -10,6 +10,9 @@
 
 package org.obiba.mica.web.rest;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
@@ -17,8 +20,11 @@ import javax.ws.rs.ext.Provider;
 @Provider
 public class IllegalArgumentExceptionMapper implements ExceptionMapper<IllegalArgumentException> {
 
+  private static final Logger logger = LoggerFactory.getLogger(IllegalArgumentExceptionMapper.class);
+
   @Override
   public Response toResponse(IllegalArgumentException exception) {
+    logger.warn("IllegalArgumentException catched in IllegalArgumentExceptionMapper", exception);
     return Response.status(Response.Status.BAD_REQUEST).entity(exception.getMessage()).build();
   }
 }

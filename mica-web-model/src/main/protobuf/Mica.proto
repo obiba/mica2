@@ -104,6 +104,7 @@ message StudyDto {
   optional PermissionsDto permissions = 28;
   repeated MembershipsDto memberships = 29;
   optional string content = 30;
+  optional bool published = 31;
 
   message StudyMethodsDto {
     repeated string designs = 1;
