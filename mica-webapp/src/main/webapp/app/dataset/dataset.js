@@ -15,7 +15,6 @@ mica.dataset = angular.module('mica.dataset', [
   'obiba.form',
   'obiba.mica.localized',
   'mica.publish',
-  'mica.attributes',
   'mica.commons',
   'obiba.notification',
   'ngResource',
