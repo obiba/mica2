@@ -17,7 +17,6 @@ mica.project = angular.module('mica.project', [
   'obiba.mica.localized',
   'obiba.mica.attachment',
   'mica.publish',
-  'mica.attributes',
   'mica.status',
   'mica.commons',
   'obiba.notification',
