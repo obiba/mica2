@@ -41,14 +41,48 @@ mica.shareResource
 
       $scope.resourceType = resourceType;
       $scope.resourceId = resourceId;
-      $scope.expire = moment().add(1, 'month').toDate();
       $scope.shareLink = '';
+      $scope.format = 'YYYY-MM-DD';
+      $scope.showDatePicker = false;
+
+      $scope.expireDate = moment().add(1, 'month').toDate();
+      $scope.expireTimePicker = $scope.expireDate;
+      $scope.expireAsString = moment($scope.expireTimePicker).format('YYYY-MM-DD');
+
+      $scope.$watch('expireDate', function (newValue, oldValue) {
+        if (newValue !== oldValue) {
+          $scope.updateShareLink();
+        }
+      });
+
+      $scope.updatedExpireTimePicker = function () {
+        $scope.expireAsString = ($scope.expireTimePicker !== null) ? moment($scope.expireTimePicker).format('YYYY-MM-DD') : null;
+        $scope.expireDate = $scope.expireTimePicker;
+      };
+
+      $scope.updatedExpireAsString = function () {
+
+        if ($scope.expireAsString === '') {
+          $scope.expireTimePicker = null;
+          $scope.expireDate = null;
+          return;
+        }
+
+        var dateAsMoment = moment($scope.expireAsString, 'YYYY-MM-DD');
+        if (dateAsMoment.isValid()) {
+          $scope.expireTimePicker = dateAsMoment.toDate();
+          $scope.expireDate = dateAsMoment;
+        }
+      };
 
       $scope.updateShareLink = function () {
+
+        $scope.showDatePicker = false;
+
         ShareService.getShareLink({
           resourceType: $scope.resourceType,
           resourceId: $scope.resourceId,
-          expire: ($scope.expire !== null) ? moment($scope.expire).format('YYYY-MM-DD') : null
+          expire: ($scope.expireDate !== null) ? moment($scope.expireDate).format('YYYY-MM-DD') : null
 
         }).$promise.then(function (response) {
           $scope.shareLink = response.body;
@@ -69,7 +103,6 @@ mica.shareResource
       };
 
       $scope.updateShareLink();
-
     }])
 
   .controller('ShareButtonController', ['$scope', '$uibModal',
