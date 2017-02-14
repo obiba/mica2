@@ -1538,8 +1538,8 @@
 
 - "name": "numberOfParticipants-participant-number"
   "title":
-    "en": "Target number of participants"
-    "fr": "Nombre de participants ciblé"
+    "en": "Number of participants"
+    "fr": "Nombre de participants"
   "description":
     "en": "Number of participants recruited or to be recruited by the study."
     "fr": "Nombre de participants recrutés ou à recruter par l'étude."
@@ -1550,11 +1550,11 @@
   "terms": []
 - "name": "numberOfParticipants-participant-range"
   "title":
-    "en": "Target number of participants (ranges)"
-    "fr": "Nombre de participants ciblé (intervalles)"
+    "en": "Number of participants (ranges)"
+    "fr": "Nombre de participants (intervalles)"
   "description":
-    "en": "The target number of participants can be lower than the actual number."
-    "fr": "Le nombre de participants ciblé peut être inférieur au nombre effectivement atteint."
+    "en": "The number of participants can be lower than the actual number."
+    "fr": "Le nombre de participants peut être inférieur au nombre effectivement atteint."
   "attributes":
     "type": "integer"
     "field": "model.numberOfParticipants.participant.number"
@@ -1604,8 +1604,8 @@
       "keywords": {}
 - "name": "numberOfParticipants-sample-number"
   "title":
-    "en": "Target number of participants with samples"
-    "fr": "Nombre de participants avec échantillon ciblé"
+    "en": "Number of participants with samples"
+    "fr": "Nombre de participants avec échantillon"
   "description":
     "en": "Number of participants that provided or will provide biosamples."
     "fr": "Nombre de participants qui ont fourni ou qui fourniront des échantillons biologiques."
@@ -1616,11 +1616,11 @@
   "terms": []
 - "name": "numberOfParticipants-sample-range"
   "title":
-    "en": "Target number of participants with samples (ranges)"
-    "fr": "Nombre de participants avec échantillon ciblé (intervalles)"
+    "en": "Number of participants with samples (ranges)"
+    "fr": "Nombre de participants avec échantillon (intervalles)"
   "description":
-    "en": "The target number of participants with samples can be lower than the actual number."
-    "fr": "Le nombre de participants avec échantillon ciblé peut être inférieur au nombre effectivement atteint."
+    "en": "The number of participants with samples can be lower than the actual number."
+    "fr": "Le nombre de participants avec échantillons peut être inférieur au nombre effectivement atteint."
   "attributes":
     "type": "integer"
     "field": "numberOfParticipants.sample.number"
