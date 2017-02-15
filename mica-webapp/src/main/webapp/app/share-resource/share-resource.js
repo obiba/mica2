@@ -36,8 +36,8 @@ mica.shareResource
       });
     }])
 
-  .controller('ShareModalController', ['$scope', '$uibModalInstance', 'ShareService', 'AlertService', 'LocaleStringUtils', 'resourceType', 'resourceId', 'moment',
-    function ($scope, $uibModalInstance, ShareService, AlertService, LocaleStringUtils, resourceType, resourceId, moment) {
+  .controller('ShareModalController', ['$scope', '$uibModalInstance', '$timeout', 'ShareService', 'AlertService', 'LocaleStringUtils', 'resourceType', 'resourceId', 'moment',
+    function ($scope, $uibModalInstance, $timeout, ShareService, AlertService, LocaleStringUtils, resourceType, resourceId, moment) {
 
       $scope.resourceType = resourceType;
       $scope.resourceId = resourceId;
@@ -48,6 +48,15 @@ mica.shareResource
       $scope.expireDate = moment().add(1, 'month').toDate();
       $scope.expireTimePicker = $scope.expireDate;
       $scope.expireAsString = moment($scope.expireTimePicker).format('YYYY-MM-DD');
+
+      $scope.showCopiedTooltipStatus = false;
+
+      $scope.showCopiedTooltip = function () {
+        $scope.showCopiedTooltipStatus = true;
+        $timeout(function () {
+          $scope.showCopiedTooltipStatus = false;
+        }, 1000);
+      };
 
       $scope.$watch('expireDate', function (newValue, oldValue) {
         if (newValue !== oldValue) {

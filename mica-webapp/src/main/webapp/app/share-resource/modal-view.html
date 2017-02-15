@@ -23,9 +23,11 @@
         <div class="form-group">
           <label class="control-label" translate>share-resource.modal.share-link-to-copy</label>
           <div class="input-group">
-            <input id="shareLink" type="text" class="form-control" ng-model="shareLink"/>
+            <input id="shareLink" type="text" class="form-control" ng-model="shareLink"
+                   tooltip-is-open="showCopiedTooltipStatus" uib-tooltip="{{'global.copied' | translate}}" tooltip-trigger="'none'"/>
             <span class="input-group-btn">
-              <button class="btn" ngclipboard data-clipboard-target="#shareLink">
+              <button class="btn" ng-click="showCopiedTooltip()"
+                      ngclipboard data-clipboard-target="#shareLink" uib-tooltip="{{'global.copy-to-clipboard' | translate}}">
                 <span class="glyphicon glyphicon-copy" alt="Copy to clipboard"/>
               </button>
             </span>
@@ -37,7 +39,8 @@
       <div class="col-md-12">
         <div class="form-group">
           <label for="expire-date-as-string" class="control-label" translate>share-resource.modal.expiration-date</label>
-          <input id="expire-date-as-string" type="text" class="form-control" ng-model="expireAsString" ng-click="showDatePicker = !showDatePicker" ng-change="updatedExpireAsString()"/>
+          <input id="expire-date-as-string" type="text" class="form-control"
+                 ng-model="expireAsString" ng-click="showDatePicker = !showDatePicker" ng-change="updatedExpireAsString()"/>
           <div uib-datepicker ng-model="expireTimePicker" ng-show="showDatePicker" ng-change="updatedExpireTimePicker()"></div>
         </div>
         <span class="help-block" translate>share-resource.modal.expiration-date-help-text</span>
