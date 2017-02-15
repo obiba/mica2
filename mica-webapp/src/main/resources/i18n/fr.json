@@ -45,7 +45,9 @@
     "up": "Monter",
     "detailed": "Détaillé",
     "percentage": "Pourcentage",
-    "not-applicable": "s.o."
+    "not-applicable": "s.o.",
+    "copied": "Copié",
+    "copy-to-clipboard": "Copier dans le presse-papier"
   },
   "pagination": {
     "of": "de"

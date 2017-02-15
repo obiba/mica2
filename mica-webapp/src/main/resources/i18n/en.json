@@ -46,7 +46,9 @@
     "detailed": "Detailed",
     "percentage": "Percentage",
     "not-applicable": "N/A",
-    "update-comment": "Add a comment to describe the changes."
+    "update-comment": "Add a comment to describe the changes.",
+    "copied": "Copied",
+    "copy-to-clipboard": "Copy to clipboard"
   },
   "pagination": {
     "of": "of"
