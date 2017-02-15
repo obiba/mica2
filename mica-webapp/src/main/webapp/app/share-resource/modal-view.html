@@ -36,8 +36,9 @@
 
       <div class="col-md-12">
         <div class="form-group">
-          <label class="control-label" translate>share-resource.modal.expiration-date</label>
-          <input type="date" class="form-control" ng-model="expire" ng-change="updateShareLink()">
+          <label for="expire-date-as-string" class="control-label" translate>share-resource.modal.expiration-date</label>
+          <input id="expire-date-as-string" type="text" class="form-control" ng-model="expireAsString" ng-click="showDatePicker = !showDatePicker" ng-change="updatedExpireAsString()"/>
+          <div uib-datepicker ng-model="expireTimePicker" ng-show="showDatePicker" ng-change="updatedExpireTimePicker()"></div>
         </div>
         <span class="help-block" translate>share-resource.modal.expiration-date-help-text</span>
       </div>
