@@ -30,10 +30,10 @@
                ng-if="inViewMode() && permissions.canEdit() && studySummaries && studySummaries.length">
               <i class="fa fa-trash-o"></i> <span translate>global.delete-selected</span>
             </a>
+          </div>
 
-            <span class="pull-right">
-              <dir-pagination-controls pagination-id="studySummaryPagination"></dir-pagination-controls>
-            </span>
+          <div class="hidden-print row">
+            <dir-pagination-controls class="pull-right " pagination-id="studySummaryPagination"></dir-pagination-controls>
 
             <p class="help-block" ng-if="!studySummaries || studySummaries.length === 0">
               <span translate>study.none</span>
@@ -93,14 +93,14 @@
                ng-if="inViewMode() && permissions.canEdit() && network.networkSummaries && network.networkSummaries.length">
               <i class="fa fa-trash-o"></i> <span translate>global.delete-selected</span>
             </a>
+          </div>
 
+          <div class="row">
             <p class="help-block" ng-if="!network.networkSummaries || network.networkSummaries.length === 0">
               <span translate>network.none</span>
             </p>
 
-            <span class="pull-right">
-              <dir-pagination-controls pagination-id="networkSummaryPagination"></dir-pagination-controls>
-            </span>
+            <dir-pagination-controls class="pull-right" pagination-id="networkSummaryPagination"></dir-pagination-controls>
           </div>
 
           <div class="row-fluid">
