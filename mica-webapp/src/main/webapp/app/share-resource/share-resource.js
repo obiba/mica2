@@ -140,7 +140,8 @@ mica.shareResource
       templateUrl: 'app/share-resource/modal-button.html',
       scope: {
         resourceType: '=',
-        resourceId: '='
+        resourceId: '=',
+        permissions: '='
       },
       controller: 'ShareButtonController'
     };
