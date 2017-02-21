@@ -12,20 +12,20 @@
 
 mica.project
 
-  .factory('DraftProjectsResource', ['$resource',
-    function ($resource) {
+  .factory('DraftProjectsResource', ['$resource', 'ProjectModelFactory',
+    function ($resource, ProjectModelFactory) {
       return $resource('ws/draft/projects?comment:comment', {}, {
         'get' : {method: 'GET', errorHandler: true},
-        'save': {method: 'POST', errorHandler: true}
+        'save': {method: 'POST', errorHandler: true, transformRequest: ProjectModelFactory.serialize}
       });
     }])
 
-  .factory('DraftProjectResource', ['$resource',
-    function ($resource) {
+  .factory('DraftProjectResource', ['$resource', 'ProjectModelFactory',
+    function ($resource, ProjectModelFactory) {
       return $resource('ws/draft/project/:id', {}, {
-        'save': {method: 'PUT', params: {id: '@id'}, errorHandler: true},
+        'save': {method: 'PUT', params: {id: '@id'}, errorHandler: true, transformRequest: ProjectModelFactory.serialize},
         'delete': {method: 'DELETE', params: {id: '@id'}, errorHandler: true},
-        'get': {method: 'GET', errorHandler: true}
+        'get': {method: 'GET', errorHandler: true, transformResponse: ProjectModelFactory.deserialize}
       });
     }])
 
@@ -91,4 +91,33 @@ mica.project
         'get': {method: 'GET'},
         'query': {method: 'GET', params: {id: '@id'}, isArray: true}
       });
+    }])
+
+  .factory('ProjectModelFactory', ['LocalizedValues',
+    function (LocalizedValues) {
+      this.serialize = function (project) {
+        console.log('serialize begin', project);
+        var projectCopy = angular.copy(project);
+        projectCopy.title = LocalizedValues.objectToArray(projectCopy.model._title);
+        projectCopy.summary = LocalizedValues.objectToArray(projectCopy.model._summary);
+        delete projectCopy.model._title;
+        delete projectCopy.model._summary;
+        projectCopy.content = projectCopy.model ? angular.toJson(projectCopy.model) : null;
+        delete projectCopy.model;
+        return angular.toJson(projectCopy);
+      };
+
+      this.deserialize = function (data) {
+        if (!data) {
+          return {model: {}};
+        }
+
+        var project = angular.fromJson(data);
+        project.model = project.content ? angular.fromJson(project.content) : {};
+        project.model._title = LocalizedValues.arrayToObject(project.title);
+        project.model._summary = LocalizedValues.arrayToObject(project.summary);
+        return project;
+      };
+
+      return this;
     }]);
