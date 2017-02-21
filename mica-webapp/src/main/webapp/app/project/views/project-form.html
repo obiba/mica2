@@ -16,11 +16,11 @@
     <i class="fa fa-chevron-left"> </i>
   </a> {{'edit' | translate}}</h3>
 
-  <form name="form" role="form" novalidate class="ng-scope ng-invalid ng-invalid-required ng-dirty" ng-submit="save()">
+  <form name="projectForm" role="form" novalidate class="ng-scope ng-invalid ng-invalid-required ng-dirty" ng-submit="save()">
 
     <p class="alert alert-danger" ng-show="form.saveAttempted && form.$invalid" translate="">fix-error</p>
 
-    <div sf-model="form.model" sf-form="form.definition" sf-schema="form.schema" sf-options="sfOptions" required="true"></div>
+    <div sf-model="project.model" sf-form="form.definition" sf-schema="form.schema" sf-options="sfOptions"></div>
 
     <div class="row">
       <div class="col-md-6">

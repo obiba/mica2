@@ -190,17 +190,10 @@ mica.project
       }
 
       function initializeProject(project) {
-        $scope.activeTab = 0;
         $scope.permissions = DocumentPermissionsService.state(project['obiba.mica.EntityStateDto.projectState']);
-        $scope.form.model = JsonUtils.parseJsonSafely(project.content, {});
-        // project name/description is an array of map entries
-        $scope.form.model._title = LocalizedValues.arrayToObject(project.title);
-        $scope.form.model._summary = LocalizedValues.arrayToObject(project.summary);
       }
 
       $scope.Mode = {View: 0, Revision: 1, File: 2, Permission: 3, Comment: 4};
-
-      $scope.activeTab = 0;
 
       $scope.form = {};
 
@@ -385,19 +378,12 @@ mica.project
               SfOptionsService,
               $timeout) {
 
-      $scope.activeTab = 0;
+      $scope.form = {};
       $scope.files = [];
       $scope.revision = {comment: null};
       $scope.newProject= !$routeParams.id;
       $scope.project = $routeParams.id ?
-        DraftProjectResource.get({id: $routeParams.id}, function(response) {
-          $scope.files = response.logo ? [response.logo] : [];
-          $scope.form.model = JsonUtils.parseJsonSafely(response.content, {});
-          // project name/description is an array of map entries
-          $scope.form.model._title = LocalizedValues.arrayToObject(response.title);
-          $scope.form.model._summary = LocalizedValues.arrayToObject(response.summary);
-          return response;
-        }) : {published: false};
+        DraftProjectResource.get({id: $routeParams.id}) : {published: false, model:{}};
 
       function initializeForm() {
         MicaConfigResource.get(function (micaConfig) {
@@ -420,9 +406,6 @@ mica.project
             function onSuccess(projectForm) {
               $scope.form.definition = JsonUtils.parseJsonSafely(projectForm.definition, []);
               $scope.form.schema = JsonUtils.parseJsonSafely(projectForm.schema, {});
-              if (!$routeParams.id) {
-                $scope.form.model = {};
-              }
 
               $timeout(function () { $scope.form = angular.copy($scope.form); }, 250);
             });
@@ -437,14 +420,7 @@ mica.project
 
       $scope.save = function () {
         $scope.$broadcast('schemaFormValidate');
-        if ($scope.form.$valid) {
-          $scope.project.title = LocalizedValues.objectToArray($scope.form.model._title, $scope.languages);
-          $scope.project.summary = LocalizedValues.objectToArray($scope.form.model._summary, $scope.languages);
-          // make a copy of the model to avoid validation errors after mandatory fields were removed.
-          var model = angular.copy($scope.form.model);
-          delete model._title;
-          delete model._summary;
-          $scope.project.content = angular.toJson(model);
+        if ($scope.projectForm.$valid) {
           if ($scope.project.id) {
             updateProject();
           } else {
