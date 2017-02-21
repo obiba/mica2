@@ -110,8 +110,7 @@ public class RqlFieldResolver {
       if(vocabulary.isPresent()) {
         builder.vocabulary(vocabulary.get());
         String f = vocabulary.get().getAttributeValue("field");
-        boolean localized = Boolean.valueOf(vocabulary.get().getAttributeValue("localized"));
-        if(!Strings.isNullOrEmpty(f)) field = localize(vocabulary.get(), localized ? f + TAXO_SEPARATOR + locale : f, locale);
+        if(!Strings.isNullOrEmpty(f)) field = localize(vocabulary.get(), f, locale);
         else field = localize(vocabulary.get(), vocabulary.get().getName(), locale);
       } else {
         field = localize(null, vocabularyName, locale);
@@ -125,13 +124,21 @@ public class RqlFieldResolver {
   }
 
   private String localize(Vocabulary vocabulary, String field, String locale) {
-    boolean process = vocabulary == null || (!vocabulary.hasTerms() && new VocabularyWrapper(vocabulary).isString());
+    boolean process = true;
+    boolean localized = false;
+
+    if (vocabulary != null) {
+      localized = Boolean.valueOf(vocabulary.getAttributeValue("localized"));
+      process = localized || !vocabulary.hasTerms() && new VocabularyWrapper(vocabulary).isString();
+    }
 
     if (process) {
       Pattern pattern = Pattern.compile("\\." + LanguageTag.UNDETERMINED + "$");
       Matcher matcher = pattern.matcher(field);
 
-      field = matcher.find() ? field.replace(LanguageTag.UNDETERMINED, locale) : getSafeLocalizedField(field);
+      field = matcher.find()
+        ? field.replace(LanguageTag.UNDETERMINED, locale)
+        : localized ? field + TAXO_SEPARATOR + locale : getSafeLocalizedField(field);
 
       return indexFieldMapping.isAnalyzed(field) ? field + POSFIX_ANALYZED : field;
     }
