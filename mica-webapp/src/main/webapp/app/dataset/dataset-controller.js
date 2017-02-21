@@ -359,7 +359,7 @@ mica.dataset
         return matched ? matched[1] : '';
       };
 
-      $scope.selected = {network: {}};
+      $scope.selected = {};
       $scope.networks = DraftNetworksResource.query();
       $scope.type = getTypeFromUrl();
       $scope.newDataset = !$routeParams.id;

@@ -35,51 +35,55 @@
       </div>
       <div class="col-md-6">
         <div ng-show="dataset['obiba.mica.HarmonizationDatasetDto.type']">
-      <h3 translate>dataset.data-schema.title</h3>
+          <h3 translate>dataset.data-schema.title</h3>
 
-      <p class="help-block" translate>dataset.data-schema.info</p>
+          <p class="help-block" translate>dataset.data-schema.info</p>
 
-      <div class="form-group">
-        <label class="control-label">
-          <span translate>dataset.project</span>
-          <span>*</span>
-        </label>
-        <ui-select theme="bootstrap" ng-model="selected.project" reset-search-input="true" required="true">
-          <ui-select-match>{{$select.selected.name}}</ui-select-match>
-          <ui-select-choices repeat="project in projects | filter: {name: $select.search}">
-            <span ng-bind-html="project.name | highlight: $select.search"></span>
-          </ui-select-choices>
-        </ui-select>
-        <p class="help-block" translate>dataset.project-dataschema-help</p>
-      </div>
+          <div class="form-group"
+            ng-class="{'has-error': (form['project'].$dirty || form.saveAttempted) && form['project'].$invalid}">
+            <label class="control-label">
+              <span translate>dataset.project</span>
+              <span>*</span>
+            </label>
+            <ui-select theme="bootstrap" name="project" ng-model="selected.project" reset-search-input="true" required="true">
+              <ui-select-match>{{$select.selected.name}}</ui-select-match>
+              <ui-select-choices repeat="project in projects | filter: {name: $select.search}">
+                <span ng-bind-html="project.name | highlight: $select.search"></span>
+              </ui-select-choices>
+            </ui-select>
+            <p class="help-block" translate>dataset.project-dataschema-help</p>
+          </div>
 
-      <div class="form-group">
-        <label class="control-label">
-          <span translate>dataset.table</span>
-          <span>*</span>
-        </label>
-        <ui-select theme="bootstrap" ng-model="selected.project.table" reset-search-input="true" required="true">
-          <ui-select-match>{{$select.selected}}</ui-select-match>
-          <ui-select-choices repeat="table in selected.project.datasource.table | filter: $select.search">
-            <span ng-bind-html="table | highlight: $select.search"></span>
-          </ui-select-choices>
-        </ui-select>
-        <p class="help-block" translate>dataset.table-dataschema-help</p>
-      </div>
+          <div class="form-group"
+            ng-class="{'has-error': (form['table'].$dirty || form.saveAttempted) && form['table'].$invalid}">
+            <label class="control-label">
+              <span translate>dataset.table</span>
+              <span>*</span>
+            </label>
+            <ui-select theme="bootstrap" name="table" ng-model="selected.project.table" reset-search-input="true" required="true">
+              <ui-select-match>{{$select.selected}}</ui-select-match>
+              <ui-select-choices repeat="table in selected.project.datasource.table | filter: $select.search">
+                <span ng-bind-html="table | highlight: $select.search"></span>
+              </ui-select-choices>
+            </ui-select>
+            <p class="help-block" translate>dataset.table-dataschema-help</p>
+          </div>
 
-      <div ng-if="micaConfig.isNetworkEnabled">
-        <h3 translate>dataset.network.title</h3>
+          <div ng-if="micaConfig.isNetworkEnabled"
+              ng-class="{'has-error': (form['network'].$dirty || form.saveAttempted) && form['network'].$invalid}">
 
-        <p class="help-block" translate>dataset.network.info</p>
+            <h3 translate>dataset.network.title</h3>
 
-        <ui-select theme="bootstrap" ng-model="selected.network" reset-search-input="true">
-          <ui-select-match allow-clear="true">{{$select.selected.id}}</ui-select-match>
-          <ui-select-choices repeat="network in networks| filter: {id: $select.search}">
-            <span ng-bind-html="network.id | highlight: $select.search"></span>
-          </ui-select-choices>
-        </ui-select>
-      </div>
-    </div>
+            <p class="help-block" translate>dataset.network.info</p>
+
+            <ui-select theme="bootstrap" name="network" ng-model="selected.network" reset-search-input="true" required="true">
+              <ui-select-match>{{$select.selected.id}}</ui-select-match>
+              <ui-select-choices repeat="network in networks| filter: {id: $select.search}">
+                <span ng-bind-html="network.id | highlight: $select.search"></span>
+              </ui-select-choices>
+            </ui-select>
+          </div>
+        </div>
       </div>
     </div>
 
