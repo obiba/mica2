@@ -943,7 +943,7 @@ mica.dataset
         };
       });
 
-      if (table && table !== {}) {
+      if (table && Object.keys(table) > 0) {
         $scope.selected.study = {
           id: table.studyId,
           population: {
@@ -1068,7 +1068,7 @@ mica.dataset
         };
       });
 
-      if (table && table !== {}) {
+      if (table && Object.keys(table) > 0) {
         $scope.selected.network = {
           id: table.networkId
         };
