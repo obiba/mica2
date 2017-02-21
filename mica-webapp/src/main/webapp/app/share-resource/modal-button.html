@@ -7,8 +7,7 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
-
-<a ng-click="openShareModal(resourceType, resourceId)"
+<a ng-click="openShareModal(resourceType, resourceId)" ng-if="permissions.canEdit()"
    class="btn btn-default btn-responsive" title="{{'share-resource.button-label' | translate}}">
   <i class="fa fa-share-alt"></i> <span translate>share-resource.button-label</span>
 </a>
