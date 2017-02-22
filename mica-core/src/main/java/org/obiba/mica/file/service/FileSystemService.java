@@ -619,7 +619,7 @@ public class FileSystemService {
    * @return
      */
   public String zipDirectory(String path, boolean publishedFS) {
-    List<AttachmentState> attachmentStates = listDirectoryAttachmentStates(path, publishedFS);
+    List<AttachmentState> attachmentStates = getAllowedStates(path, publishedFS);
     String zipName = Paths.get(path).getFileName().toString() + ".zip";
 
     FileOutputStream fos = null;
@@ -660,6 +660,22 @@ public class FileSystemService {
     }
 
     return zipName;
+  }
+
+  private List<AttachmentState> getAllowedStates(String path, boolean publishedFS) {
+    List<AttachmentState> attachmentStates = listDirectoryAttachmentStates(path, publishedFS);
+    List<AttachmentState> allowed = attachmentStates.stream()
+      .filter(s -> s.getName().equals("."))
+      .filter(s -> subjectAclService.isPermitted(publishedFS ? "/file" : "/draft/file", "VIEW", s.getFullPath()))
+      .collect(toList());
+
+    List<AttachmentState> allowedFiles = attachmentStates.stream()
+      .filter(s -> allowed.stream().anyMatch(a -> s.getPath().equals(a.getFullPath()) && !s.getName().equals(".")))
+      .collect(toList());
+
+    allowed.addAll(allowedFiles);
+
+    return allowed;
   }
 
   //
