@@ -158,6 +158,7 @@ mica.entitySfConfig
 
       $scope.getField = VocabularyAttributeService.getField;
       $scope.getTypeMap = VocabularyAttributeService.getTypeMap;
+      $scope.getTermsSortKeyMap = VocabularyAttributeService.getTermsSortKeyMap;
       $scope.getHidden = VocabularyAttributeService.getHidden;
       $scope.getLocalized = VocabularyAttributeService.getLocalized;
       $scope.isStatic = VocabularyAttributeService.isStatic;

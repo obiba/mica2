@@ -58,7 +58,7 @@ mica.entityTaxonomyConfig
 
         return {
           value: type,
-          title: $filter('translate')('types.'+type)
+          title: $filter('translate')('global.types.'+type)
         };
 
       };
@@ -91,6 +91,40 @@ mica.entityTaxonomyConfig
         }
 
         return false;
+      };
+
+      this.getTermsSortKeyMap = function(content) {
+        var termsSortKey = self.getTermsSortKey(content);
+
+        return {
+          value: termsSortKey,
+          title: $filter('translate')('global.'+(termsSortKey ? termsSortKey : 'default'))
+        };
+
+      };
+
+      this.getTermsSortKey = function(content) {
+        if (content && content.attributes) {
+          return getAttribute(content.attributes, 'termsSortKey', null);
+        }
+
+        return null;
+      };
+
+      this.setTermsSortKey = function(attributes, value) {
+        if (null === value) {
+          // remove null value
+          var index = attributes.map(function(attribute){
+            return attribute.key;
+          }).indexOf('termsSortKey');
+
+          if (-1 !== index) {
+            attributes.splice(index, 1);
+          }
+
+        } else {
+          setAttribute(attributes, 'termsSortKey', value);
+        }
       };
 
       this.setHidden = function(attributes, localized) {
@@ -182,6 +216,23 @@ mica.entityTaxonomyConfig
           {
             'value': 'decimal',
             'name': $filter('translate')('global.types.decimal')
+          }
+        ];
+      }
+
+      function getTermsSortKeyMap() {
+        return [
+          {
+            'value': null,
+            'name': $filter('translate')('global.default')
+          },
+          {
+            'value': 'name',
+            'name': $filter('translate')('global.name')
+          },
+          {
+            'value': 'title',
+            'name': $filter('translate')('global.title')
           }
         ];
       }
@@ -315,6 +366,15 @@ mica.entityTaxonomyConfig
                 'title': $filter('translate')('type'),
                 'type': 'string',
                 'readonly': isStatic
+              },
+              'termsSortKey': {
+                'title': $filter('translate')('taxonomy-config.criterion-dialog.terms-sort-key'),
+                'default': null,
+                'type': [
+                  'null',
+                  'string'
+                ],
+                'readonly': isStatic,
               }
             }
           },
@@ -350,6 +410,12 @@ mica.entityTaxonomyConfig
               'type': 'select',
               'titleMap': getTypeMap(),
               'description': '<p class="help-block">' + $filter('translate')('taxonomy-config.criterion-dialog.field-help') + '</p>'
+            },
+            {
+              'key': 'termsSortKey',
+              'type': 'select',
+              'titleMap': getTermsSortKeyMap(),
+              'description': '<p class="help-block">' + $filter('translate')('taxonomy-config.criterion-dialog.term-sort-key-help') + '</p>'
             }
           ],
           model: {}
@@ -371,6 +437,7 @@ mica.entityTaxonomyConfig
           data.model.repeatable = content.repeatable;
           data.model.hidden = VocabularyAttributeService.getHidden(content);
           data.model.localized = VocabularyAttributeService.getLocalized(content);
+          data.model.termsSortKey = VocabularyAttributeService.getTermsSortKey(content);
         }
         return data;
       }
@@ -516,6 +583,10 @@ mica.entityTaxonomyConfig
 
             if (data.model.hasOwnProperty('localized')) {
               VocabularyAttributeService.setLocalized(model.content.attributes, data.model.localized);
+            }
+
+            if (data.model.hasOwnProperty('termsSortKey')) {
+              VocabularyAttributeService.setTermsSortKey(model.content.attributes, data.model.termsSortKey);
             }
 
             VocabularyAttributeService.setField(model.content.attributes, data.model.field);

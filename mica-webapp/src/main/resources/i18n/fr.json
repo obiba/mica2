@@ -46,8 +46,12 @@
     "detailed": "Détaillé",
     "percentage": "Pourcentage",
     "not-applicable": "s.o.",
+    "update-comment": "Ajoutez un commentaire pour décrire les modifications.",
     "copied": "Copié",
-    "copy-to-clipboard": "Copier dans le presse-papier"
+    "copy-to-clipboard": "Copier dans le presse-papier",
+    "title": "Titre",
+    "name": "Nom",
+    "default": "Par défaut"
   },
   "pagination": {
     "of": "de"
@@ -533,9 +537,6 @@
     "delete-conflict": "Conflit à la suppression de l'étude",
     "delete-conflict-message": "Des conflits ont été trouvés lors de la tentative de suppression de l'étude. Supprimez les dépendances et essayez à nouveau.",
     "revisions":  "Révisions de l'étude",
-    "revision": {
-      "update-comment": "Ajouter un commentaire pour décrire les changements."
-    },
     "delete-dialog":{
       "title": "Supprimer l'étude",
       "message": "Etes-vous sûr de supprimer l'étude '{{arg0}}'?"
@@ -1245,7 +1246,9 @@
       "type-help": "Le type de recherche par facette: sélection de la plage pour un type numérique, entrée ouverte pour un type de texte, etc.",
       "unique-name": "Le nom du critère doit être unique.",
       "hidden": "Caché",
-      "hidden-help": "Un critère caché est exclu de la recherche."
+      "hidden-help": "Un critère caché est exclu de la recherche.",
+      "term-sort-key-help": "L'ordre dans lequel les termes du critère sont affichés.",
+      "terms-sort-key": "L'ordre d'affichage des termes"
     },
     "term-dialog": {
       "add-term": "Ajouter Terme",
