@@ -101,7 +101,8 @@ public class DataAccessRequestUtilService {
     if (!subjectAclService.isPermitted("/data-access-request/" + request.getId(), "EDIT", "_status")) return to;
     switch(request.getStatus()) {
       case OPENED:
-        addNextOpenedStatus(to);
+        if (SecurityUtils.getSubject().getPrincipal().toString().equals(request.getApplicant()))
+          addNextOpenedStatus(to);
         break;
       case SUBMITTED:
         addNextSubmittedStatus(to);
