@@ -99,8 +99,9 @@ class NetworkDtos {
 
     Mica.PermissionsDto permissionsDto = permissionsDtos.asDto(network);
 
+    NetworkState networkState = networkService.getEntityState(network.getId());
+    builder.setPublished(networkState.isPublished());
     if(asDraft) {
-      NetworkState networkState = networkService.getEntityState(network.getId());
       builder.setTimestamps(TimestampsDtos.asDto(network)) //
         .setPublished(networkState.isPublished()) //
         .setExtension(Mica.EntityStateDto.state,
