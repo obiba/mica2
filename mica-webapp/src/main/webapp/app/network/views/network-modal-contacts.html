@@ -52,7 +52,7 @@
               <a ng-href="#/study/{{m.parentId}}" ng-click="cancel()">
                 <localized value="m.parentAcronym" lang="lang"></localized>
               </a>
-              (<em>{{m.role}}</em>)<span ng-if="!$last">,</span>
+              (<em>{{'membership-role.' + m.role | translate}}</em>)<span ng-if="!$last">,</span>
             </span>
           </td>
           <td>
@@ -60,7 +60,7 @@
               <a ng-href="#/network/{{m.parentId}}" ng-click="cancel()">
                 <localized value="m.parentAcronym" lang="lang"></localized>
               </a>
-              (<em>{{m.role}}</em>)<span ng-if="!$last">,</span>
+              (<em>{{'membership-role.' + m.role | translate}}</em>)<span ng-if="!$last">,</span>
             </span>
           </td>
         </tr>
