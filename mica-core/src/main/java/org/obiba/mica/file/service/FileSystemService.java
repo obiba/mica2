@@ -56,6 +56,7 @@ import org.obiba.mica.file.event.FilePublishedEvent;
 import org.obiba.mica.file.event.FileUnPublishedEvent;
 import org.obiba.mica.file.event.FileUpdatedEvent;
 import org.obiba.mica.file.notification.FilePublicationFlowMailNotification;
+import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.network.event.NetworkPublishedEvent;
 import org.obiba.mica.network.event.NetworkUnpublishedEvent;
 import org.obiba.mica.network.event.NetworkUpdatedEvent;
@@ -105,6 +106,9 @@ public class FileSystemService {
 
   @Inject
   private TempFileService tempFileService;
+
+  @Inject
+  private MicaConfigService micaConfigService;
 
   @Inject
   protected SubjectAclService subjectAclService;
@@ -663,10 +667,11 @@ public class FileSystemService {
   }
 
   private List<AttachmentState> getAllowedStates(String path, boolean publishedFS) {
+    boolean isOpenAccess = micaConfigService.getConfig().isOpenAccess();
     List<AttachmentState> attachmentStates = listDirectoryAttachmentStates(path, publishedFS);
     List<AttachmentState> allowed = attachmentStates.stream()
       .filter(s -> s.getName().equals("."))
-      .filter(s -> subjectAclService.isPermitted(publishedFS ? "/file" : "/draft/file", "VIEW", s.getFullPath()))
+      .filter(s -> (isOpenAccess && publishedFS) || subjectAclService.isPermitted(publishedFS ? "/file" : "/draft/file", "VIEW", s.getFullPath()))
       .collect(toList());
 
     List<AttachmentState> allowedFiles = attachmentStates.stream()
