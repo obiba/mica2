@@ -24,7 +24,7 @@ public interface PermissionAwareResource {
   default SubjectAclResource permissions() {
     SubjectAclResource subjectAclResource = getApplicationContext().getBean(SubjectAclResource.class);
     subjectAclResource.setResourceInstance(String.format("/draft/%s", getTarget()), "*");
-    subjectAclResource.setFileResourceInstance("/file", String.format("/draft/%s", getTarget()));
+    subjectAclResource.setFileResourceInstance("/draft/file", String.format("/%s", getTarget()));
     return subjectAclResource;
   }
 
