@@ -81,7 +81,13 @@
       <tr>
         <th translate>type</th>
         <td>
-          {{'global.'+getTypeMap(model.content).title | translate}}
+          {{getTypeMap(model.content).title}}
+        </td>
+      </tr>
+      <tr>
+        <th translate>taxonomy-config.criterion-dialog.terms-sort-key</th>
+        <td>
+          {{getTermsSortKeyMap(model.content).title}}
         </td>
       </tr>
       </tbody>

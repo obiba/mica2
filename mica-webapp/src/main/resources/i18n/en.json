@@ -48,7 +48,10 @@
     "not-applicable": "N/A",
     "update-comment": "Add a comment to describe the changes.",
     "copied": "Copied",
-    "copy-to-clipboard": "Copy to clipboard"
+    "copy-to-clipboard": "Copy to clipboard",
+    "title": "Title",
+    "name": "Name",
+    "default": "Default"
   },
   "pagination": {
     "of": "of"
@@ -1243,7 +1246,9 @@
       "type-help": "The type of search facet: range selection for a numerical type, open input for a text type etc.",
       "unique-name": "Criterion name must be unique.",
       "hidden": "Hidden",
-      "hidden-help": "A hidden criterion is excluded from search."
+      "hidden-help": "A hidden criterion is excluded from search.",
+      "term-sort-key-help": "The order by which terms of the citerion are listed.",
+      "terms-sort-key": "Terms Listing Order"
     },
     "term-dialog": {
       "add-term": "Add Term",
