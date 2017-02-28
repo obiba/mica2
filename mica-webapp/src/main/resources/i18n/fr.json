@@ -1085,6 +1085,16 @@
     }
   },
   "file": {
+    "errors" : {
+      "UPLOAD_ERR_INI_SIZE" : "Le fichier uploadé dépasse la directive upload_max_filesize dans php.ini.",
+      "UPLOAD_ERR_FORM_SIZE" : "Le fichier uploadé dépasse l'attribue HTML MAX_FILE_SIZE.",
+      "UPLOAD_ERR_PARTIAL" : "Le fichier est partiellement uploadé.",
+      "UPLOAD_ERR_NO_FILE" : "Aucun fichier uploadé.",
+      "UPLOAD_ERR_NO_TMP_DIR" : "Dossier temporaire non existante, introduit dans PHP 5.0.3.",
+      "UPLOAD_ERR_CANT_WRITE" : "Écriture du fichier impossible, introduit dans PHP 5.1.0.",
+      "UPLOAD_ERR_EXTENSION" : "Une extension PHP empêche l'upload du fichier",
+      "UNKNOWN_UPLOAD_ERROR" : "Erreur inconnue"
+    },
     "upload": {
       "button": "Choisir un fichier",
       "message": "Aucun fichier choisi",
