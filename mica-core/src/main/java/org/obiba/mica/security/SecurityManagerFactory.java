@@ -20,6 +20,7 @@ import net.sf.ehcache.CacheManager;
 
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.credential.PasswordMatcher;
+import org.apache.shiro.authc.pam.AtLeastOneSuccessfulStrategy;
 import org.apache.shiro.authc.pam.FirstSuccessfulStrategy;
 import org.apache.shiro.authc.pam.ModularRealmAuthenticator;
 import org.apache.shiro.authz.ModularRealmAuthorizer;
@@ -192,7 +193,7 @@ public class SecurityManagerFactory implements FactoryBean<SessionsSecurityManag
     @Override
     protected void applyRealmsToSecurityManager(Collection<Realm> shiroRealms, @SuppressWarnings(
         "ParameterHidesMemberVariable") SecurityManager securityManager) {
-      ImmutableList.Builder<Realm> builder = ImmutableList.<Realm>builder().addAll(realms).addAll(shiroRealms);
+      ImmutableList.Builder<Realm> builder = ImmutableList.<Realm>builder().addAll(shiroRealms).addAll(realms);
       RelaxedPropertyResolver propertyResolver = new RelaxedPropertyResolver(env, "agate.");
       String obibaRealmUrl = propertyResolver.getProperty("url");
       String serviceName = propertyResolver.getProperty("application.name");
