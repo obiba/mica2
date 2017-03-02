@@ -29,7 +29,7 @@ public class CombinedStatistics {
   private final List<Integer> counts = Lists.newArrayList();
 
   CombinedStatistics(Collection<Mica.DatasetVariableAggregationDto> aggDtos) {
-    aggDtos.stream().filter(Mica.DatasetVariableAggregationDto::hasStatistics).forEach(a -> {
+    aggDtos.stream().filter(aggDto -> aggDto.getN() > 0 && aggDto.hasStatistics()).forEach(a -> {
       stats.add(a.getStatistics());
       counts.add(a.getN());
     });
