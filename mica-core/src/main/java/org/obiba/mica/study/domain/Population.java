@@ -343,12 +343,11 @@ public class Population extends AbstractAttributeModelAware implements Serializa
     }
 
     public List<String> getCountriesIso() {
-      return countriesIso;
+      return countriesIso != null ? countriesIso : new ArrayList<>();
     }
 
     public void addCountryIso(@NotNull String countryIso) {
-      if(countriesIso == null) countriesIso = new ArrayList<>();
-      countriesIso.add(countryIso);
+      getCountriesIso().add(countryIso);
     }
 
     public void setCountriesIso(List<String> countriesIso) {

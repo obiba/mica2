@@ -15,6 +15,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.stream.Stream;
 
@@ -126,19 +127,7 @@ class StudySummaryDtos {
         }
 
       } else {
-        countries.addAll(populations.stream().filter(Population::hasModel) //
-          .flatMap(p -> {
-             if(p.getModel().get("selectionCriteria") instanceof Map) { //TODO: serialization should not include JsonTypeInfo to avoid this check.
-               Map<String, Object> sc = (Map<String, Object>) p.getModel().get("selectionCriteria");
-               return sc.containsKey("countriesIso") ? ((List<String>) sc.get("countriesIso")).stream() : Stream.empty();
-             } else {
-               return Optional.ofNullable((Population.SelectionCriteria) p.getModel().get("selectionCriteria"))
-                 .flatMap(sc -> Optional.ofNullable(sc.getCountriesIso().stream()))
-                 .orElseGet(Stream::empty);
-             }
-            }
-          ).filter(country -> country != null)
-          .collect(toSet()));
+        countries.addAll(extractCountries(populations));
 
         List<String> dataSources = Lists.newArrayList();
         populations.stream().filter(population -> population.getAllDataSources() != null)
@@ -157,6 +146,24 @@ class StudySummaryDtos {
     builder.addAllCountries(countries);
 
     return builder;
+  }
+
+  Set<String> extractCountries(Collection<Population> populations) {
+
+    return populations.stream().filter(Population::hasModel)
+      .flatMap(p -> {
+         if(p.getModel().get("selectionCriteria") instanceof Map) { //TODO: serialization should not include JsonTypeInfo to avoid this check.
+           Map<String, Object> sc = (Map<String, Object>) p.getModel().get("selectionCriteria");
+           List<String> countriesIso = sc.containsKey("countriesIso") ? (List<String>)sc.get("countriesIso") : null;
+           return countriesIso != null ? countriesIso.stream() : Stream.empty();
+         } else {
+           return Optional.ofNullable((Population.SelectionCriteria) p.getModel().get("selectionCriteria"))
+             .flatMap(sc -> Optional.ofNullable(sc.getCountriesIso().stream()))
+             .orElseGet(Stream::empty);
+         }
+        }
+      ).filter(country -> country != null)
+      .collect(toSet());
   }
 
   @NotNull
