@@ -473,7 +473,10 @@
     "access": {
       "label": "Accès",
       "for": "Accès à des chercheurs externes ou des tiers fournis ou prévus.",
-      "other": "Autres accès"
+      "none": "Accès à des chercheurs externes ou des tiers non fournis ni prévus.",
+      "other": "Autres accès",
+      "data" : "Données (dérivées du questionnaire, mesurées...)",
+      "biosamples": "Échantillons biologiques"
     },
     "marker-paper": "Marker Paper",
     "pubmed-id": "ID de Pubmed",
