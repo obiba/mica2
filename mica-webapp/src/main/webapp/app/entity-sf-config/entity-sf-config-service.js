@@ -56,7 +56,8 @@ mica.entitySfConfig
             var editors = document.querySelectorAll('#' + id);
             var nav = document.querySelector('ul.nav.nav-pills').querySelectorAll('li');
             var who = 0;
-            nav.forEach(function (n, i) {
+
+            angular.forEach(nav, function (n, i) {
               if (n.className.indexOf('active') !== -1) {
                 who = i;
               }
