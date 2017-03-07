@@ -46,7 +46,8 @@
     "sf-obiba-file-upload": "https://github.com/obiba/sf-obiba-file-upload.git#master",
     "sf-checkboxgroup": "https://github.com/obiba/sf-checkboxgroup.git#master",
     "sf-typeahead": "https://github.com/obiba/sf-typeahead.git#master",
-    "sf-obiba-countries-ui-select": "https://github.com/obiba/sf-obiba-countries-ui-select.git#master"
+    "sf-obiba-countries-ui-select": "https://github.com/obiba/sf-obiba-countries-ui-select.git#master",
+    "obiba-shims": "https://github.com/obiba/obiba-shims.git#master"
   },
   "devDependencies": {
     "angular-mocks": "1.5.8",

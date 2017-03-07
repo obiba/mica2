@@ -14,6 +14,7 @@
 
 
 var mica = angular.module('mica', [
+  'obibaShims',
   'angular-loading-bar',
   'http-auth-interceptor',
   'localytics.directives',
