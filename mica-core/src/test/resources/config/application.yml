@@ -7,9 +7,11 @@ server:
 jhipster.security.rememberme.key: mica
 
 async:
-    corePoolSize: 2
-    maxPoolSize: 50
-    queueCapacity: 10000
+    poolSize: 1
+    queueCapacity: 100000
+    opal:
+        poolSize: 30
+        queueCapacity: 100000
 
 spring:
   profiles: dev
