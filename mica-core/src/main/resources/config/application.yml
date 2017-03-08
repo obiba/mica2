@@ -25,7 +25,7 @@ cache:
     timeToLiveSeconds: 3600
 
 async:
-    poolSize: 30
+    poolSize: 1
     queueCapacity: 100000
     opal:
         poolSize: 30
