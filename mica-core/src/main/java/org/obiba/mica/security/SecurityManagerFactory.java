@@ -62,7 +62,7 @@ public class SecurityManagerFactory implements FactoryBean<SessionsSecurityManag
 
   public static final String INI_REALM = "mica-ini-realm";
 
-  private static final long SESSION_VALIDATION_INTERVAL = 3600000l; // 1 hour
+  private static final long SESSION_VALIDATION_INTERVAL = 300000l; // 5 minutes
 
   private static final Logger log = LoggerFactory.getLogger(SecurityManagerFactory.class);
 
