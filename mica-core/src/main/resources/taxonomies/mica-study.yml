@@ -1429,36 +1429,6 @@
     "description":
       "en": "Study recruits women only."
 
-- "name": "populations-selectionCriteria-criteria"
-  "title":
-    "en": "Selection criteria - Pregnancy/birth"
-    "fr": "Critères de sélection - Grossesse/naissance"
-  "description":
-    "en": "Participants recruited are pregnant women, newborns or twins."
-    "fr": "Les participants recrutés sont des femmes enceintes, des nouveaux-nés ou des jumeaux."
-  "attributes":
-    "field": "populations.model.selectionCriteria.criteria"
-    "alias": "populations-model-selectionCriteria-criteria"
-  "terms":
-  - "name": "gravidity"
-    "title":
-      "en": "Pregnant women"
-      "fr": "Femmes enceintes"
-    "description":
-      "en": "Study recruits pregnant women."
-  - "name": "newborn"
-    "title":
-      "en": "Newborns"
-      "fr": "Nouveaux-nés"
-    "description":
-      "en": "Study recruits recently born children."
-  - "name": "twin"
-    "title":
-      "en": "Twins"
-      "fr": "Jumeaux"
-    "description":
-      "en": "Study recruits individuals born at the same birth to the same mother."
-
 - "name": "populations-selectionCriteria-pregnantWomen"
   "title":
     "en": "Pregnant Women"
@@ -1494,11 +1464,11 @@
 
 - "name": "populations-selectionCriteria-newborn"
   "title":
-    "en": "Newborn"
+    "en": "Newborns"
     "fr": "Nouveaux-nés"
   "description":
-    "en": "The recruited individuals are Newborn."
-    "fr": "Les individus recrutés sont des nouveaux nés."
+    "en": "Study recruits recently born children."
+    "fr": "L'étude a recruté des nouveaux-nés."
   "attributes":
     "field": "populations.model.selectionCriteria.newborn"
     "alias": "populations-model-selectionCriteria-newborn"
@@ -1508,14 +1478,14 @@
       "en": "Yes"
       "fr": "Oui"
     "description": 
-      "en": "Newborn have been recruited."
+      "en": "Newborns have been recruited."
       "fr": "Des nouveaux nés ont été recrutés."
   - "name": "false"
     "title": 
       "en": "No"
       "fr": "Non"
     "description": 
-      "en": "No Newborn have been recruited."
+      "en": "No Newborns have been recruited."
       "fr": "Des nouveaux-nés non pas été recrutés."
 
 - "name": "populations-selectionCriteria-twins"
@@ -1523,8 +1493,8 @@
     "en": "Twins"
     "fr": "Jumeaux"
   "description":
-    "en": "The recruited individuals are twins."
-    "fr": "Les individus recrutés sont des jumeaux."
+    "en": "Study recruits individuals born at the same birth to the same mother."
+    "fr": "L'étude a recruté des individus nés à la même naissance à la même mère."
   "attributes":
     "field": "populations.model.selectionCriteria.twins"
     "alias": "populations-model-selectionCriteria-twins"
