@@ -686,12 +686,12 @@
     "button-label": "Share",
     "modal": {
       "title": "Share Link to Draft",
-      "share-link-to-copy": "Link to copy",
-      "share-link-help-text": "Every one having this link can access to the latest draft version.",
+      "share-link-to-copy": "Link to Copy",
+      "share-link-help-text": "Shared link gives access to the latest draft version",
       "expiration-date": "Expiration Date",
-      "expiration-date-help-text": "Share link will always be available when no expiration date is speficied."
+      "expiration-date-help-text": "Shared link is permanently available when no expiration date is specified."
     },
-    "error-no-portal-url": "Impossible to generate share link. Please go to configuration page to set a portal url."
+    "error-no-portal-url": "Impossible to generate a share link. A Portal URL should be set in the section Administration/General."
   },
   "data-collection-event": {
     "label-edit": "Edit Data Collection Event",
