@@ -12,6 +12,7 @@ package org.obiba.mica.dataset.search.rest.variable;
 
 import com.codahale.metrics.annotation.Timed;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
+import org.obiba.mica.core.DebugMethod;
 import org.obiba.mica.search.CoverageQueryExecutor;
 import org.obiba.mica.search.JoinQueryExecutor;
 import org.obiba.mica.search.csvexport.GenericReportGenerator;
@@ -94,6 +95,7 @@ public class PublishedDatasetVariablesSearchResource {
   }
 
   @GET
+  @DebugMethod
   @Path("/_coverage")
   @Timed
   public MicaSearch.BucketsCoverageDto rqlCoverageAsBucket(@QueryParam("query") String query) throws IOException {
@@ -101,6 +103,7 @@ public class PublishedDatasetVariablesSearchResource {
   }
 
   @GET
+  @DebugMethod
   @Path("/legacy/_coverage")
   @Timed
   public MicaSearch.TaxonomiesCoverageDto rqlCoverageAsDto(@QueryParam("query") String query,
@@ -110,6 +113,7 @@ public class PublishedDatasetVariablesSearchResource {
 
   @GET
   @Timed
+  @DebugMethod
   @Path("/_coverage")
   @Produces("text/csv")
   public Response rqlCoverageCsv(@QueryParam("query") String query) throws IOException {
@@ -121,6 +125,7 @@ public class PublishedDatasetVariablesSearchResource {
 
   @GET
   @Timed
+  @DebugMethod
   @Path("/_coverage_download")
   @Produces("text/csv")
   public Response rqlCoverageDownload(@QueryParam("query") String query) throws IOException {
@@ -137,6 +142,7 @@ public class PublishedDatasetVariablesSearchResource {
    */
   @POST
   @Timed
+  @DebugMethod
   @Path("/_coverage")
   @Produces("text/csv")
   public Response coverageCsv(@QueryParam("strict") @DefaultValue("true") boolean strict,
@@ -164,6 +170,7 @@ public class PublishedDatasetVariablesSearchResource {
    */
   @POST
   @Timed
+  @DebugMethod
   @Path("/_coverage")
   public MicaSearch.TaxonomiesCoverageDto coverage(@QueryParam("strict") @DefaultValue("true") boolean strict,
     MicaSearch.JoinQueryDto joinQueryDto) throws IOException {
