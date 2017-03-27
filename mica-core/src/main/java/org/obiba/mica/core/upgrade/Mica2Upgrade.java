@@ -128,7 +128,7 @@ public class Mica2Upgrade implements UpgradeStep {
     logger.debug("Indexing all contacts.");
     eventBus.post(new IndexContactsEvent());
 
-    logger.debug("Indexing all htaxonomies.");
+    logger.debug("Indexing all taxonomies.");
     eventBus.post(new TaxonomiesUpdatedEvent());
   }
 
