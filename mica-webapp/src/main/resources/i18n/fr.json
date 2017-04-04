@@ -460,8 +460,6 @@
     "description": "Description",
     "objectives-help": "Principaux objectifs de l'étude.",
     "add-data-collection-event": "Ajouter un événement de collecte de données",
-    "add-member": "Ajouter un {{type}}",
-    "member-list": "Liste de {{type}}s",
     "start-year": "Année de début",
     "end-year": "Année de fin",
     "general-design": "Devis général",
@@ -551,6 +549,14 @@
     "none": "Aucune étude."
   },
   "contact": {
+    "add": {
+      "contact": "Ajouter un contact",
+      "investigator": "Ajouter un enquêteur"
+    },
+    "list": {
+      "contact":"Liste des contacts",
+      "investigator":"Liste d'enquêteurs"
+    },
     "label": "Contact",
     "delete": {
       "member": {
@@ -728,8 +734,6 @@
     "add-study": "Ajouter une étude",
     "contacts": "Contacts",
     "associated-people": "Membres affiliés",
-    "add-member": "Ajouter {{type}}",
-    "member-list": "Liste de {{type}}s",
     "delete-dialog": {
       "title": "Supprimer un réseau",
       "message": "Etes-vous sûr de vouloir supprimer le réseau '{{arg0}}'?"

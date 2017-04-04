@@ -460,8 +460,6 @@
     "description": "Description",
     "objectives-help": "Main objectives of the study.",
     "add-data-collection-event": "Add Data Collection Event",
-    "add-member": "Add {{type}}",
-    "member-list": "List of {{type}}s",
     "start-year": "Start Year",
     "end-year": "End Year",
     "general-design": "General Design",
@@ -551,6 +549,14 @@
     "none": "No studies."
   },
   "contact": {
+    "add": {
+      "contact": "Add contact",
+      "investigator": "Add investigator"
+    },
+    "list": {
+      "contact":"List of contacts",
+      "investigator":"List of investigators"
+    },
     "label": "Contact",
     "delete": {
       "member": {
@@ -728,8 +734,6 @@
     "add-study": "Add Study",
     "contacts": "Contacts",
     "associated-people": "Affiliated Members",
-    "add-member": "Add {{type}}",
-    "member-list": "List of {{type}}s",
     "delete-dialog": {
       "title": "Delete Network",
       "message": "Are you sure you want to delete the network '{{arg0}}'?"
