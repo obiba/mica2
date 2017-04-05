@@ -86,7 +86,7 @@
 - "name": "investigator"
   "title":
     "en": "Investigator name"
-    "fr": "Nom de l'investigateur"    
+    "fr": "Nom de l'investigateur"
   "description":
     "en": "Investigator full name."
     "fr": "Nom complet de l'investigateur."
@@ -1428,7 +1428,6 @@
       "fr": "Femmes seulement"
     "description":
       "en": "Study recruits women only."
-
 - "name": "populations-selectionCriteria-pregnantWomen"
   "title":
     "en": "Pregnant Women"
@@ -1461,7 +1460,6 @@
     "description":
       "en": "Third trimester of pregnancy."
       "fr": "Troisième trimestre de grossesse."
-
 - "name": "populations-selectionCriteria-newborn"
   "title":
     "en": "Newborns"
@@ -1474,20 +1472,19 @@
     "alias": "populations-model-selectionCriteria-newborn"
   "terms":
   - "name": "true"
-    "title": 
+    "title":
       "en": "Yes"
       "fr": "Oui"
-    "description": 
+    "description":
       "en": "Newborns have been recruited."
       "fr": "Des nouveaux nés ont été recrutés."
   - "name": "false"
-    "title": 
+    "title":
       "en": "No"
       "fr": "Non"
-    "description": 
+    "description":
       "en": "No Newborns have been recruited."
       "fr": "Des nouveaux-nés non pas été recrutés."
-
 - "name": "populations-selectionCriteria-twins"
   "title":
     "en": "Twins"
@@ -1500,20 +1497,19 @@
     "alias": "populations-model-selectionCriteria-twins"
   "terms":
   - "name": "true"
-    "title": 
+    "title":
       "en": "Yes"
       "fr": "Oui"
-    "description": 
+    "description":
       "en": "Twins have been recruited."
       "fr": "Des jumeaux ont été recrutés."
   - "name": "false"
-    "title": 
+    "title":
       "en": "No"
       "fr": "Non"
-    "description": 
+    "description":
       "en": "No Twins have been recruited."
       "fr": "Des jumeaux non pas été recrutés."
-
 - "name": "numberOfParticipants-participant-number"
   "title":
     "en": "Number of participants"
@@ -1838,6 +1834,9 @@
   "description":
     "en": "Whether access to study data, biological samples or other study material by external researchers or third parties is provided."
     "fr": "Indique si l'accès aux donnés, aux échantillons biologiques ou à tout autre matériel d'étude est permis à des chercheurs externes ou des tiers."
+  "attributes":
+      "field": "model.access"
+      "alias": "model-access"
   "repeatable": "true"
   "terms":
   - "name": "data"
@@ -1961,6 +1960,8 @@
     "fr": "Année à laquelle l'étude a commencé."
   "attributes":
     "type": "integer"
+    "field": "model.startYear"
+    "alias": "model-startYear"
 - "name": "end"
   "title":
     "en": "End year"
@@ -1970,3 +1971,5 @@
     "fr": "Année à laquelle l'étude a fini ou finira."
   "attributes":
     "type": "integer"
+    "field": "model.endYear"
+    "alias": "model-endYear"
