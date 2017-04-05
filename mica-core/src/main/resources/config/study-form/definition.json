@@ -1,7 +1,7 @@
 [
   {
     "type": "help",
-    "helpvalue": "<div class='alert alert-info' role='alert'><strong>License Info.</strong>This model (version <a href='https://github.com/maelstrom-research/maelstrom-models/tree/1.1.1' target='_blank'>1.1.1</a>) was released by <a href='https://www.maelstrom-research.org/' target='_blank'>Maelstrom Research</a> under the <a href='https://creativecommons.org/licenses/by-nc-nd/4.0/' target='_blank'>Creative Commons License with Non Commercial and No Derivatives</a> constraints.</div>"
+    "helpvalue": "<div class='alert alert-info' role='alert'><strong>License Info.</strong>This model (version <a href='https://github.com/maelstrom-research/maelstrom-models/tree/1.1.2' target='_blank'>1.1.2</a>) was released by <a href='https://www.maelstrom-research.org/' target='_blank'>Maelstrom Research</a> under the <a href='https://creativecommons.org/licenses/by-nc-nd/4.0/' target='_blank'>Creative Commons License with Non Commercial and No Derivatives</a> constraints.</div>"
   },
   {
     "type": "section",
@@ -196,7 +196,7 @@
                 "name": "t(study_taxonomy.vocabulary.access.term.data.title)"
               },
               {
-                "value": "biosamples",
+                "value": "bio_samples",
                 "name": "t(study_taxonomy.vocabulary.access.term.bio_samples.title)"
               },
               {

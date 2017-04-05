@@ -116,7 +116,7 @@
         "type": "string",
         "enum": [
           "data",
-          "biosamples",
+          "bio_samples",
           "other"
         ]
       },
