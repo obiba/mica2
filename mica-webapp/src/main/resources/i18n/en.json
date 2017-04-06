@@ -557,6 +557,10 @@
       "contact":"List of contacts",
       "investigator":"List of investigators"
     },
+    "label-plurial": {
+      "contact": "Contacts",
+      "investigator": "Investigators"
+    },
     "label": "Contact",
     "delete": {
       "member": {
@@ -1574,9 +1578,5 @@
         "status-detail": "Status Detail"
       }
     }
-  },
-  "membership-role": {
-    "investigator": "investigator",
-    "contact": "contact"
   }
 }
