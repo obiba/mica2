@@ -11,6 +11,7 @@
 package org.obiba.mica.dataset.domain;
 
 import java.util.List;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
@@ -39,6 +40,8 @@ public class DatasetVariable implements Indexable, AttributeAware {
   public static final String MAPPING_NAME = "Variable";
 
   public static final String HMAPPING_NAME = "H" + MAPPING_NAME;
+
+  private static final Pattern INVALID_ATTRIBUTE_NAME_CHARS = Pattern.compile("[.]");
 
   private static final String ID_SEPARATOR = ":";
   public static final String OPAL_STUDY_TABLE_PREFIX = "Study";
@@ -167,9 +170,9 @@ public class DatasetVariable implements Indexable, AttributeAware {
     }
 
     if(variable.hasAttributes()) {
-      for(org.obiba.magma.Attribute attr : variable.getAttributes()) {
-        addAttribute(Attribute.Builder.newAttribute(attr).build());
-      }
+      variable.getAttributes().stream()
+        .filter(a -> !INVALID_ATTRIBUTE_NAME_CHARS.matcher(a.getName()).find())
+        .forEach(a -> addAttribute(Attribute.Builder.newAttribute(a).build()));
     }
   }
 
