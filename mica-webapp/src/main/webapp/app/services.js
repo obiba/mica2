@@ -87,7 +87,6 @@ mica.factory('Session', ['SessionProxy','$cookieStore','$translate','UserProfile
       this.roles = null;
       this.profile = null;
       $cookieStore.remove('micasid');
-      $cookieStore.remove('obibaid');
       SessionProxy.update(this);
     };
 
