@@ -176,6 +176,7 @@ public class RQLQueryWrapper implements QueryWrapper {
 
   @Override
   public List<String> getAggregations() {
+    if (aggregations == null) aggregations = Lists.newArrayList();
     return aggregations;
   }
 
