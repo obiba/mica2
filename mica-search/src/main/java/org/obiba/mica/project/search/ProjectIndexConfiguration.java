@@ -48,6 +48,7 @@ public class ProjectIndexConfiguration extends AbstractIndexConfiguration
     mapping.startObject("properties");
     mapping.startObject("id").field("type", "string").field("index", "not_analyzed").endObject();
     appendMembershipProperties(mapping);
+    createLocalizedMappingWithAnalyzers(mapping, "title");
     Stream.of(ProjectIndexer.LOCALIZED_ANALYZED_FIELDS)
       .forEach(field -> createLocalizedMappingWithAnalyzers(mapping, field));
     mapping.endObject();
