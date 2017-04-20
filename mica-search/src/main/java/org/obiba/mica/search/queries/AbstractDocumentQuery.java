@@ -287,8 +287,10 @@ public abstract class AbstractDocumentQuery {
     log.debug("Request /{}/{}: {}", getSearchIndex(), getSearchType(), requestBuilder);
     try {
       SearchResponse response = requestBuilder.execute().actionGet();
-      List<String> ids = Lists.newArrayList();
+      log.info("Response /{}/{}", getSearchIndex(), getSearchType());
+      log.debug("Response /{}/{}: totalHits={}", getSearchIndex(), getSearchType(), response.getHits().getTotalHits());
 
+      List<String> ids = Lists.newArrayList();
       response.getAggregations().forEach(aggregation -> ((Terms) aggregation).getBuckets().stream().forEach(bucket -> {
         if(bucket.getDocCount() > 0) {
           ids.add(bucket.getKeyAsString());
@@ -296,8 +298,6 @@ public abstract class AbstractDocumentQuery {
       }));
 
       List<String> rval = ids.stream().distinct().collect(Collectors.toList());
-      log.info("Response /{}/{}", getSearchIndex(), getSearchType());
-      log.debug("Response /{}/{}", getSearchIndex(), getSearchType(), response);
       return rval;
     } catch(IndexNotFoundException e) {
       return Collections.emptyList(); //ignoring
@@ -382,6 +382,7 @@ public abstract class AbstractDocumentQuery {
 
     appendAggregations(defaultRequestBuilder, requestBuilder, aggregationGroupBy);
 
+    log.info("Request /{}/{}", getSearchIndex(), getSearchType());
     log.debug("Request /{}/{}: {}", getSearchIndex(), getSearchType(), requestBuilder.toString());
 
     try {
@@ -393,11 +394,12 @@ public abstract class AbstractDocumentQuery {
       SearchResponse aggResponse = responses.get(0);
       SearchResponse response = responses.get(1);
 
-      log.debug("Response: {}", response);
-
+      log.info("Response /{}/{}", getSearchIndex(), getSearchType());
       if(response == null) {
+        log.debug("Response /{}/{}: totalHits=null", getSearchIndex(), getSearchType());
         return null;
       }
+      log.debug("Response /{}/{}: totalHits={}", getSearchIndex(), getSearchType(), response.getHits().totalHits());
 
       QueryResultDto.Builder builder = QueryResultDto.newBuilder()
         .setTotalHits((int) response.getHits().getTotalHits());
@@ -467,21 +469,18 @@ public abstract class AbstractDocumentQuery {
     SearchResponse defaultResponse = responses[0].getResponse();
     SearchResponse response = responses[1].getResponse();
 
+    log.info("Response /{}/{}", getSearchIndex(), getSearchType());
+    log.debug("Response /{}/{}: totalHits={}", getSearchIndex(), getSearchType(), response.getHits().getTotalHits());
+
     List<String> rval = null;
     if (response != null) {
-
       QueryResultDto.Builder builder = QueryResultDto.newBuilder()
         .setTotalHits((int) response.getHits().getTotalHits());
-
       if (scope == DETAIL) processHits(builder, response.getHits(), scope, counts);
-
       processAggregations(builder, defaultResponse.getAggregations(), response.getAggregations());
       resultDto = builder.build();
       rval = getResponseStudyIds(resultDto.getAggsList());
     }
-
-    log.info("Response /{}/{}", getSearchIndex(), getSearchType());
-    log.debug("Response: {}", response);
     return rval;
   }
 
