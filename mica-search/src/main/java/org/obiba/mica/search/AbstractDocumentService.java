@@ -221,7 +221,7 @@ public abstract class AbstractDocumentService<T> implements DocumentService<T> {
     try {
       log.debug("Request /{}/{}: {}", getIndexName(), getType(), requestBuilder);
       SearchResponse response = requestBuilder.execute().actionGet();
-      log.debug("Response /{}/{}: {}", getIndexName(), getType(), response);
+      log.debug("Response /{}/{}: totalHits={}", getIndexName(), getType(), response.getHits().getTotalHits());
 
       SearchHits hits = response.getHits();
       return ids == null || ids.size() != hits.totalHits()
