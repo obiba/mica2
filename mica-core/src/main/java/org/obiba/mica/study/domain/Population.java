@@ -26,6 +26,7 @@ import com.google.common.collect.Sets;
 import org.obiba.mica.core.domain.AbstractAttributeModelAware;
 import org.obiba.mica.core.domain.AttributeAware;
 import org.obiba.mica.core.domain.LocalizedString;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 public class Population extends AbstractAttributeModelAware implements Serializable, Comparable<Population>, AttributeAware {
 
@@ -42,6 +43,7 @@ public class Population extends AbstractAttributeModelAware implements Serializa
 
   private SelectionCriteria selectionCriteria;
 
+  @Field("PopulationNumberOfParticipant")
   private NumberOfParticipants numberOfParticipants;
 
   private LocalizedString info;
