@@ -374,7 +374,7 @@ public abstract class AbstractDocumentQuery {
 
     // apply default sort for VariableQuery before any user defined ones (order is important)
     if (this instanceof VariableQuery) {
-      requestBuilder.addSort(SortBuilders.fieldSort("datasetId").order(SortOrder.ASC));
+      requestBuilder.addSort(SortBuilders.fieldSort("sortableDceIds").order(SortOrder.ASC).missing("_last").unmappedType("string"));
       requestBuilder.addSort(SortBuilders.fieldSort("index").order(SortOrder.ASC));
     }
 
