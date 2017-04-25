@@ -26,6 +26,7 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
+import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -43,7 +44,8 @@ import org.obiba.mica.micaConfig.service.OpalService;
 import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.network.service.PublishedNetworkService;
 import org.obiba.mica.search.CountStatsData;
-import org.obiba.mica.search.DatasetIdProvider;
+import org.obiba.mica.search.DocumentQueryHelper;
+import org.obiba.mica.search.DocumentQueryIdProvider;
 import org.obiba.mica.micaConfig.service.helper.AggregationMetaDataProvider;
 import org.obiba.mica.search.aggregations.DataCollectionEventAggregationMetaDataProvider;
 import org.obiba.mica.search.aggregations.DatasetAggregationMetaDataProvider;
@@ -119,7 +121,7 @@ public class VariableQuery extends AbstractDocumentQuery {
   @Inject
   private HarmonizationDatasetService harmonizationDatasetService;
 
-  private DatasetIdProvider datasetIdProvider;
+  private DocumentQueryIdProvider datasetIdProvider;
 
   @Override
   public String getSearchIndex() {
@@ -157,7 +159,7 @@ public class VariableQuery extends AbstractDocumentQuery {
     return Stream.of(VariableIndexer.ANALYZED_FIELDS);
   }
 
-  public void setDatasetIdProvider(DatasetIdProvider provider) {
+  public void setDatasetIdProvider(DocumentQueryIdProvider provider) {
     datasetIdProvider = provider;
   }
 
@@ -258,16 +260,26 @@ public class VariableQuery extends AbstractDocumentQuery {
   }
 
   @Override
+  protected QueryBuilder updateJoinKeyQuery(QueryBuilder queryBuilder) {
+    return DocumentQueryHelper.updateDatasetJoinKeysQuery(queryBuilder, DATASET_ID, datasetIdProvider);
+  }
+
+  @Override
+  protected DocumentQueryJoinKeys processJoinKeys(SearchResponse response) {
+    return DocumentQueryHelper.processDatasetJoinKeys(response, DATASET_ID, datasetIdProvider);
+  }
+
+  @Override
   public List<String> query(List<String> studyIds, CountStatsData counts, Scope scope) throws IOException {
     updateDatasetQuery();
     List<String> ids = super.query(studyIds, null, scope == DETAIL ? DETAIL : NONE);
-    if(datasetIdProvider != null) datasetIdProvider.setDatasetIds(getDatasetIds());
+    if(datasetIdProvider != null) datasetIdProvider.setIds(getDatasetIds());
     return ids;
   }
 
   private void updateDatasetQuery() {
     if(datasetIdProvider == null) return;
-    List<String> datasetIds = datasetIdProvider.getDatasetIds();
+    List<String> datasetIds = datasetIdProvider.getIds();
     if(datasetIds.size() > 0) {
       TermsQueryBuilder termsQueryBuilder = QueryBuilders.termsQuery(DATASET_ID, datasetIds);
       setQueryBuilder(hasQueryBuilder()
@@ -316,7 +328,7 @@ public class VariableQuery extends AbstractDocumentQuery {
 
   @Override
   protected List<String> getJoinFields() {
-    return Arrays.asList(JOIN_FIELD);
+    return Arrays.asList(JOIN_FIELD, DATASET_ID);
   }
 
   @NotNull

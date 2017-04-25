@@ -44,7 +44,8 @@ import org.obiba.mica.dataset.service.PublishedDatasetService;
 import org.obiba.mica.dataset.service.StudyDatasetService;
 import org.obiba.mica.micaConfig.service.helper.AggregationMetaDataProvider;
 import org.obiba.mica.search.CountStatsData;
-import org.obiba.mica.search.DatasetIdProvider;
+import org.obiba.mica.search.DocumentQueryHelper;
+import org.obiba.mica.search.DocumentQueryIdProvider;
 import org.obiba.mica.search.aggregations.AggregationYamlParser;
 import org.obiba.mica.search.aggregations.DatasetTaxonomyMetaDataProvider;
 import org.obiba.mica.web.model.Dtos;
@@ -94,7 +95,7 @@ public class DatasetQuery extends AbstractDocumentQuery {
   @Inject
   private HarmonizationDatasetService harmonizationDatasetService;
 
-  private DatasetIdProvider datasetIdProvider;
+  private DocumentQueryIdProvider datasetIdProvider;
 
   @Override
   public String getSearchIndex() {
@@ -123,15 +124,26 @@ public class DatasetQuery extends AbstractDocumentQuery {
     return Stream.of(DatasetIndexer.LOCALIZED_ANALYZED_FIELDS);
   }
 
-  public void setDatasetIdProvider(DatasetIdProvider provider) {
+  public void setDatasetIdProvider(DocumentQueryIdProvider provider) {
     datasetIdProvider = provider;
+  }
+
+
+  @Override
+  protected QueryBuilder updateJoinKeyQuery(QueryBuilder queryBuilder) {
+    return DocumentQueryHelper.updateDatasetJoinKeysQuery(queryBuilder, ID, datasetIdProvider);
+  }
+
+  @Override
+  protected DocumentQueryJoinKeys processJoinKeys(SearchResponse response) {
+    return DocumentQueryHelper.processDatasetJoinKeys(response, ID, datasetIdProvider);
   }
 
   @Override
   public List<String> query(List<String> studyIds, CountStatsData counts, Scope scope) throws IOException {
     updateDatasetQuery();
     List<String> ids = super.query(studyIds, counts, scope);
-    if(datasetIdProvider != null) datasetIdProvider.setDatasetIds(getDatasetIds());
+    if(datasetIdProvider != null) datasetIdProvider.setIds(getDatasetIds());
     return ids;
   }
 
@@ -175,7 +187,7 @@ public class DatasetQuery extends AbstractDocumentQuery {
 
   private void updateDatasetQuery() {
     if(datasetIdProvider == null) return;
-    List<String> datasetIds = datasetIdProvider.getDatasetIds();
+    List<String> datasetIds = datasetIdProvider.getIds();
     if(datasetIds.size() > 0) {
       TermsQueryBuilder termsQueryBuilder = QueryBuilders.termsQuery("id", datasetIds);
       setQueryBuilder(hasQueryBuilder()
@@ -199,7 +211,7 @@ public class DatasetQuery extends AbstractDocumentQuery {
 
   @Override
   protected List<String> getJoinFields() {
-    return Arrays.asList(STUDY_JOIN_FIELD, HARMONIZATION_JOIN_FIELD);
+    return Arrays.asList(STUDY_JOIN_FIELD, HARMONIZATION_JOIN_FIELD, ID);
   }
 
   public Map<String, Map<String, List<String>>> getStudyCountsByDataset() {

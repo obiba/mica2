@@ -8,26 +8,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.obiba.mica.search;
+package org.obiba.mica.search.queries;
 
 import java.util.List;
 
 import com.google.common.collect.Lists;
 
-public class DatasetIdProvider {
+public class DocumentQueryJoinKeys {
 
-  private List<String> datasetIds = Lists.newArrayList();
+  public final List<String> studyIds;
+  public final List<String> datasetIds;
 
-  public void setDatasetIds(List<String> ids) {
-    if (ids != null) datasetIds = ids;
-  }
-
-  public List<String> getDatasetIds() {
-    return datasetIds;
-  }
-
-  public void resetDatasetIds() {
-    datasetIds.clear();
+  public DocumentQueryJoinKeys() {
+    studyIds = Lists.newArrayList();
+    datasetIds = Lists.newArrayList();
   }
 
 }
