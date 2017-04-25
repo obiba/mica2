@@ -137,8 +137,8 @@ public abstract class AbstractDocumentQuery {
     return queryWrapper.getSize();
   }
 
-  private SortBuilder getSortBuilder() {
-    return queryWrapper.getSortBuilder();
+  private List<SortBuilder> getSortBuilders() {
+    return queryWrapper.getSortBuilders();
   }
 
   public void initialize(QueryDto query, String locale, Mode mode) {
@@ -327,7 +327,7 @@ public abstract class AbstractDocumentQuery {
     QueryBuilder tempQuery = newStudyIdQuery(studyIds);
     return mode == COVERAGE
       ? executeCoverage(tempQuery, null, DIGEST, counts, getAggregationGroupBy())
-      : execute(tempQuery, getSortBuilder(), getFrom(), getSize(), scope, counts, getAggregationGroupBy());
+      : execute(tempQuery, getSortBuilders(), getFrom(), getSize(), scope, counts, getAggregationGroupBy());
   }
 
   /**
@@ -343,7 +343,7 @@ public abstract class AbstractDocumentQuery {
    * @return
    * @throws IOException
    */
-  protected List<String> execute(QueryBuilder query, SortBuilder sortBuilder, int from, int size, Scope scope,
+  protected List<String> execute(QueryBuilder query, List<SortBuilder> sortBuilder, int from, int size, Scope scope,
     CountStatsData counts, List<String> aggregationGroupBy) throws IOException {
     if(query == null) return null;
 
@@ -378,7 +378,7 @@ public abstract class AbstractDocumentQuery {
       requestBuilder.addSort(SortBuilders.fieldSort("index").order(SortOrder.ASC));
     }
 
-    if(sortBuilder != null) requestBuilder.addSort(sortBuilder);
+    if(sortBuilder != null) sortBuilder.forEach(requestBuilder::addSort);
 
     appendAggregations(defaultRequestBuilder, requestBuilder, aggregationGroupBy);
 

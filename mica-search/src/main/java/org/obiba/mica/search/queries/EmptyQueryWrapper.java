@@ -42,7 +42,7 @@ public class EmptyQueryWrapper implements QueryWrapper {
   }
 
   @Override
-  public SortBuilder getSortBuilder() {
+  public List<SortBuilder> getSortBuilders() {
     return null;
   }
 

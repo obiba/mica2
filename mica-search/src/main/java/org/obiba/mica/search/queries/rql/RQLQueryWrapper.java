@@ -27,6 +27,7 @@ import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.QueryStringQueryBuilder;
 import org.elasticsearch.index.query.RangeQueryBuilder;
+import org.elasticsearch.search.sort.FieldSortBuilder;
 import org.elasticsearch.search.sort.SortBuilder;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
@@ -56,7 +57,7 @@ public class RQLQueryWrapper implements QueryWrapper {
 
   private QueryBuilder queryBuilder;
 
-  private SortBuilder sortBuilder;
+  private List<SortBuilder> sortBuilders;
 
   private List<String> aggregations;
 
@@ -121,7 +122,7 @@ public class RQLQueryWrapper implements QueryWrapper {
   private void parseSort(ASTNode node) {
     this.node = node;
     RQLSortBuilder sort = new RQLSortBuilder(rqlFieldResolver);
-    sortBuilder = node.accept(sort);
+    sortBuilders = node.accept(sort);
   }
 
   private void parseAggregate(ASTNode node) {
@@ -154,8 +155,8 @@ public class RQLQueryWrapper implements QueryWrapper {
   }
 
   @Override
-  public SortBuilder getSortBuilder() {
-    return sortBuilder;
+  public List<SortBuilder> getSortBuilders() {
+    return sortBuilders;
   }
 
   @Override
@@ -487,28 +488,37 @@ public class RQLQueryWrapper implements QueryWrapper {
     }
   }
 
-  private class RQLSortBuilder extends RQLBuilder<SortBuilder> {
+  private class RQLSortBuilder extends RQLBuilder<List<SortBuilder>> {
     RQLSortBuilder(RqlFieldResolver rqlFieldResolver) {
       super(rqlFieldResolver);
     }
 
     @Override
-    public SortBuilder visit(ASTNode node) {
+    public List<SortBuilder> visit(ASTNode node) {
       try {
         RQLNode type = RQLNode.getType(node.getName());
         switch(type) {
           case SORT:
-            String arg = node.getArgument(0).toString();
-            if(arg.startsWith("-"))
-              return SortBuilders.fieldSort(resolveFieldUnanalyzed(arg.substring(1)).getField()).order(SortOrder.DESC);
-            else if(arg.startsWith("+"))
-              return SortBuilders.fieldSort(resolveFieldUnanalyzed(arg.substring(1)).getField()).order(SortOrder.ASC);
-            else return SortBuilders.fieldSort(resolveFieldUnanalyzed(arg).getField()).order(SortOrder.ASC);
+            List<SortBuilder> sortBuilders = Lists.newArrayList();
+            if (node.getArgumentsSize() >= 1) {
+              for(int i = 0; i < node.getArgumentsSize(); i++) {
+                sortBuilders.add(processArgument(node.getArgument(i).toString()));
+              }
+            }
+            return sortBuilders;
         }
       } catch(IllegalArgumentException e) {
         // ignore
       }
       return null;
+    }
+
+    private SortBuilder processArgument(String arg) {
+      if(arg.startsWith("-"))
+        return SortBuilders.fieldSort(resolveFieldUnanalyzed(arg.substring(1)).getField()).order(SortOrder.DESC);
+      else if(arg.startsWith("+"))
+        return SortBuilders.fieldSort(resolveFieldUnanalyzed(arg.substring(1)).getField()).order(SortOrder.ASC);
+      else return SortBuilders.fieldSort(resolveFieldUnanalyzed(arg).getField()).order(SortOrder.ASC);
     }
 
   }

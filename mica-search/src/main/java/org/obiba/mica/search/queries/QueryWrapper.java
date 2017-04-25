@@ -36,7 +36,7 @@ public interface QueryWrapper {
   void setQueryBuilder(QueryBuilder queryBuilder);
 
   @Nullable
-  SortBuilder getSortBuilder();
+  List<SortBuilder> getSortBuilders();
 
   int getFrom();
 

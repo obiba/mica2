@@ -30,7 +30,7 @@ public class QueryDtoWrapper implements QueryWrapper {
 
   private QueryBuilder queryBuilder;
 
-  private final SortBuilder sortBuilder;
+  private final List<SortBuilder> sortBuilders;
 
   private List<String> aggregations;
 
@@ -38,7 +38,7 @@ public class QueryDtoWrapper implements QueryWrapper {
     this.queryDto = queryDto;
     QueryDtoParser queryDtoParser = QueryDtoParser.newParser();
     queryBuilder = queryDtoParser.parse(queryDto);
-    sortBuilder = queryDtoParser.parseSort(queryDto);
+    sortBuilders = queryDtoParser.parseSort(queryDto);
   }
 
   @Override
@@ -57,8 +57,8 @@ public class QueryDtoWrapper implements QueryWrapper {
   }
 
   @Override
-  public SortBuilder getSortBuilder() {
-    return sortBuilder;
+  public List<SortBuilder> getSortBuilders() {
+    return sortBuilders;
   }
 
   @Override
