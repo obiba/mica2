@@ -345,7 +345,7 @@ public class RQLQueryWrapperTest {
       "\"name\"{\n" +
       "  \"order\" : \"desc\"\n" +
       "}";
-    assertThat(rqlQueryWrapper.getSortBuilder().toString()).isEqualTo(expectedSort);
+    assertThat(rqlQueryWrapper.getSortBuilders().get(0).toString()).isEqualTo(expectedSort);
   }
 
   @Test

@@ -10,6 +10,7 @@
 
 package org.obiba.mica.search.queries.protobuf;
 
+import java.util.List;
 import java.util.stream.Stream;
 
 import org.elasticsearch.index.query.BoolQueryBuilder;
@@ -21,6 +22,8 @@ import org.elasticsearch.search.sort.SortBuilder;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
 import org.obiba.mica.web.model.MicaSearch;
+
+import com.google.common.collect.Lists;
 
 public class QueryDtoParser {
 
@@ -46,15 +49,18 @@ public class QueryDtoParser {
     return queryDto.hasFilteredQuery() ? parseFilterQuery(query, queryDto.getFilteredQuery()) : query;
   }
 
-  public SortBuilder parseSort(MicaSearch.QueryDto queryDto) {
+  public List<SortBuilder> parseSort(MicaSearch.QueryDto queryDto) {
     if(queryDto == null || !queryDto.hasSort()) return null;
 
     MicaSearch.QueryDto.SortDto sortDto = queryDto.getSort();
 
-    return sortDto.hasScript()
+    List<SortBuilder> sortBuilders = Lists.newArrayList();
+    sortBuilders.add(sortDto.hasScript()
       ? SortBuilders.scriptSort(sortDto.getScript(), sortDto.getType())
       .order(SortOrder.valueOf(sortDto.getOrder().name()))
-      : SortBuilders.fieldSort(sortDto.getField()).order(SortOrder.valueOf(sortDto.getOrder().name()));
+      : SortBuilders.fieldSort(sortDto.getField()).order(SortOrder.valueOf(sortDto.getOrder().name())));
+
+    return sortBuilders;
   }
 
   private QueryBuilder parseFilterQuery(QueryBuilder query, MicaSearch.FilteredQueryDto filteredQueryDto) {
