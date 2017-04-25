@@ -37,7 +37,6 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.Aggregations;
-import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.sort.SortBuilder;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
@@ -45,6 +44,7 @@ import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.micaConfig.service.TaxonomyService;
 import org.obiba.mica.micaConfig.service.helper.AggregationMetaDataProvider;
 import org.obiba.mica.search.CountStatsData;
+import org.obiba.mica.search.DocumentQueryHelper;
 import org.obiba.mica.search.aggregations.AggregationMetaDataResolver;
 import org.obiba.mica.search.aggregations.AggregationYamlParser;
 import org.obiba.mica.search.queries.protobuf.QueryDtoHelper;
@@ -182,6 +182,14 @@ public abstract class AbstractDocumentQuery {
     return false;
   }
 
+  protected QueryBuilder updateJoinKeyQuery(QueryBuilder queryBuilder) {
+    return queryBuilder;
+  }
+
+  protected DocumentQueryJoinKeys processJoinKeys(SearchResponse response) {
+    return DocumentQueryHelper.processStudyJoinKey(response);
+  }
+
   public Stream<String> getQueryStringFields() {
     return null;
   }
@@ -272,6 +280,7 @@ public abstract class AbstractDocumentQuery {
   protected List<String> queryStudyIds(QueryBuilder queryBuilder) throws IOException {
     if(queryBuilder == null) return null;
 
+    queryBuilder = updateJoinKeyQuery(queryBuilder);
     QueryBuilder accessFilter = getAccessFilter();
 
     SearchRequestBuilder requestBuilder = client.prepareSearch(getSearchIndex()) //
@@ -290,14 +299,9 @@ public abstract class AbstractDocumentQuery {
       log.info("Response /{}/{}", getSearchIndex(), getSearchType());
       log.debug("Response /{}/{}: totalHits={}", getSearchIndex(), getSearchType(), response.getHits().getTotalHits());
 
-      List<String> ids = Lists.newArrayList();
-      response.getAggregations().forEach(aggregation -> ((Terms) aggregation).getBuckets().stream().forEach(bucket -> {
-        if(bucket.getDocCount() > 0) {
-          ids.add(bucket.getKeyAsString());
-        }
-      }));
+      DocumentQueryJoinKeys joinKeys = processJoinKeys(response);
 
-      List<String> rval = ids.stream().distinct().collect(Collectors.toList());
+      List<String> rval = joinKeys.studyIds.stream().distinct().collect(Collectors.toList());
       return rval;
     } catch(IndexNotFoundException e) {
       return Collections.emptyList(); //ignoring
