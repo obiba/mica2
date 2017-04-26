@@ -49,7 +49,7 @@ import static java.util.stream.Collectors.toSet;
  */
 public class Network extends AbstractModelAware implements AttributeAware, PersonAware {
 
-  private static final long serialVersionUID = -4271967393906681773L;
+  private static final long serialVersionUID = -4271967393906681775L;
 
   @NotNull
   private LocalizedString name;
@@ -187,6 +187,10 @@ public class Network extends AbstractModelAware implements AttributeAware, Perso
 
   public Authorization getMaelstromAuthorization() {
     return maelstromAuthorization;
+  }
+
+  public long getNumberOfStudies() {
+    return studyIds != null ? studyIds.size() : 0L;
   }
 
   public void setMaelstromAuthorization(Authorization maelstromAuthorization) {
