@@ -1,0 +1,234 @@
+{
+  "license": "CC BY-NC 4.0",
+  "vocabularies": [
+    {
+      "repeatable": false,
+      "terms": [
+        {
+          "terms": [
+            {
+              "name": "Mlstr_area",
+              "title": {
+                "en": "Areas of Information",
+                "fr": "Aires d'information"
+              },
+              "description": {
+                "en": "Information classification developed by Maelstrom.",
+                "fr": "Classification des informations développée par Maelstrom."
+              },
+              "keywords": {},
+              "attributes": {}
+            },
+            {
+              "name": "Mica_variable",
+              "title": {
+                "en": "Variable properties",
+                "fr": "Propriétés de variable"
+              },
+              "description": {
+                "en": "Variable properties as defined in the catalogue.",
+                "fr": "Propriétés des variables telles que définies dans le catalogue."
+              },
+              "keywords": {},
+              "attributes": {}
+            },
+            {
+              "name": "Mlstr_additional",
+              "title": {
+                "en": "Source & target",
+                "fr": "Source & cible"
+              },
+              "description": {
+                "en": "Information about data collection methods and individuals targeted.",
+                "fr": "Information sur les méthodes de collecte de données et les individus ciblés."
+              },
+              "keywords": {},
+              "attributes": {}
+            }
+          ],
+          "name": "Variable_chars",
+          "title": {
+            "en": "Variables",
+            "fr": "Variables"
+          },
+          "description": {},
+          "keywords": {},
+          "attributes": {}
+        },
+        {
+          "terms": [
+            {
+              "name": "Mlstr_cogscale",
+              "title": {
+                "en": "Constructs for cognitive functioning and mental health",
+                "fr": "Information au sujet de mesures composées (échelles) du fonctionnement cognitif et de la santé mentale"
+              },
+              "description": {
+                "en": "Constructs for cognitive functioning and mental health",
+                "fr": "Information au sujet de mesures composées (échelles) du fonctionnement cognitif et de la santé mentale"
+              },
+              "keywords": {},
+              "attributes": {}
+            },
+            {
+              "name": "Mlstr_genhealth",
+              "title": {
+                "en": "Constructs for general health",
+                "fr": "Information au sujet de mesures composées (échelles) de la santé générale"
+              },
+              "description": {
+                "en": "Refers constructs used to measure general health",
+                "fr": "Information au sujet de mesures composées (échelles) de la santé générale"
+              },
+              "keywords": {},
+              "attributes": {}
+            },
+            {
+              "name": "Mlstr_habits",
+              "title": {
+                "en": "Constructs for life habits",
+                "fr": "Échelles utilisées pour les habitudes de vie"
+              },
+              "description": {
+                "en": "Refers to constructs used to measure life habits",
+                "fr": "Information au sujet de mesures composites d'habitudes de vie"
+              },
+              "keywords": {},
+              "attributes": {}
+            },
+            {
+              "name": "Mlstr_social",
+              "title": {
+                "en": "Constructs for the social domain",
+                "fr": "Échelles utilisées dans le domaine social"
+              },
+              "description": {
+                "en": "Refers to constructs used in the social domain",
+                "fr": "Information au sujet de mesures composites (échelles) utilisées dans le domaine social"
+              },
+              "keywords": {},
+              "attributes": {}
+            }
+          ],
+          "name": "Scales",
+          "title": {
+            "en": "Scales/Measures",
+            "fr": "Échelles/Mesures"
+          },
+          "description": {
+            "en": "Information about constructs.",
+            "fr": "Information au sujet de mesures composées (échelles)."
+          },
+          "keywords": {},
+          "attributes": {}
+        }
+      ],
+      "name": "variable",
+      "title": {
+        "en": "Variables",
+        "fr": "Variables"
+      },
+      "description": {
+        "en": "Variables classifications.",
+        "fr": "Classifications des variables."
+      },
+      "keywords": {},
+      "attributes": {}
+    },
+    {
+      "repeatable": false,
+      "terms": [
+        {
+          "name": "Mica_dataset",
+          "title": {
+            "en": "Datasets",
+            "fr": "Jeux de données"
+          },
+          "description": {
+            "en": "Datasets properties as defined in the catalogue.",
+            "fr": "Propriétés des jeux de données telles que définies dans le catalogue."
+          },
+          "keywords": {},
+          "attributes": {}
+        }
+      ],
+      "name": "dataset",
+      "title": {
+        "en": "Datasets",
+        "fr": "Jeux de données"
+      },
+      "description": {
+        "en": "Dataset classifications.",
+        "fr": "Classifications des jeux de données."
+      },
+      "keywords": {},
+      "attributes": {}
+    },
+    {
+      "repeatable": false,
+      "terms": [
+        {
+          "name": "Mica_study",
+          "title": {
+            "en": "Studies",
+            "fr": "Études"
+          },
+          "description": {
+            "en": "Studies properties as defined in the catalogue.",
+            "fr": "Propriétés des études telles que définies dans le catalogue."
+          },
+          "keywords": {},
+          "attributes": {}
+        }
+      ],
+      "name": "study",
+      "title": {
+        "en": "Studies",
+        "fr": "Études"
+      },
+      "description": {
+        "en": "Study classifications.",
+        "fr": "Classifications des études."
+      },
+      "keywords": {},
+      "attributes": {}
+    },
+    {
+      "repeatable": false,
+      "terms": [
+        {
+          "name": "Mica_network",
+          "title": {
+            "en": "Networks",
+            "fr": "Réseaux"
+          },
+          "description": {
+            "en": "Network properties as defined in the catalogue.",
+            "fr": "Propriétés des réseaux telles que définies dans le catalogue."
+          },
+          "keywords": {},
+          "attributes": {}
+        }
+      ],
+      "name": "network",
+      "title": {
+        "en": "Networks",
+        "fr": "Réseaux"
+      },
+      "description": {
+        "en": "Network classifications.",
+        "fr": "Classifications des réseaux."
+      },
+      "keywords": {},
+      "attributes": {}
+    }
+  ],
+  "name": "Mica_taxonomy",
+  "title": {
+    "en": "Classifications",
+    "fr": "Classifications"
+  },
+  "description": {},
+  "keywords": {},
+  "attributes": {}
+}

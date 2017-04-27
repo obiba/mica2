@@ -179,7 +179,13 @@ mica.entityConfig
             AlertBuilder.newBuilder().trMsg(res).build();
           });
         }).catch(function (res) {
-          AlertBuilder.newBuilder().trMsg(res).build();
+          var builder = AlertBuilder.newBuilder();
+          if (res.data) {
+            builder.trMsg(res.data.messageTemplate || res.data.message , res.data.arguments);
+          } else {
+            builder.trMsg(res).build();
+          }
+          builder.build();
         });
 
       };

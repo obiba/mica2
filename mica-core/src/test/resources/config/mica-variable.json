@@ -1,0 +1,459 @@
+{
+  "license": "CC BY-NC 4.0",
+  "vocabularies": [
+    {
+      "repeatable": false,
+      "name": "name",
+      "title": {
+        "en": "Name",
+        "fr": "Nom"
+      },
+      "description": {
+        "en": "Variable name.",
+        "fr": "Nom de la variable."
+      },
+      "keywords": {},
+      "attributes": {
+        "static": "true"
+      }
+    },
+    {
+      "repeatable": false,
+      "name": "label",
+      "title": {
+        "en": "Label",
+        "fr": "Libellé"
+      },
+      "description": {
+        "en": "Variable label.",
+        "fr": "Libellé de la variable."
+      },
+      "keywords": {},
+      "attributes": {
+        "static": "true",
+        "field": "attributes.label.und",
+        "alias": "attributes-label-und"
+      }
+    },
+    {
+      "repeatable": false,
+      "name": "studyIds",
+      "title": {
+        "en": "Study",
+        "fr": "Étude"
+      },
+      "description": {
+        "en": "Study in which the variable appears.",
+        "fr": "Étude dans laquelle est définie la variable."
+      },
+      "keywords": {},
+      "attributes": {
+        "static": "true"
+      }
+    },
+    {
+      "repeatable": false,
+      "name": "dceIds",
+      "title": {
+        "en": "Data Collection Event",
+        "fr": "Événement de collecte"
+      },
+      "description": {
+        "en": "Event during which variable's data were collected.",
+        "fr": "Événement durant lequel des données ont été collectées."
+      },
+      "keywords": {},
+      "attributes": {
+        "static": "true"
+      }
+    },
+    {
+      "repeatable": false,
+      "name": "datasetId",
+      "title": {
+        "en": "Dataset",
+        "fr": "Jeux de données"
+      },
+      "description": {
+        "en": "Dataset in which the variable appears.",
+        "fr": "Jeux de données dans lequel est définie la variable."
+      },
+      "keywords": {},
+      "attributes": {
+        "static": "true"
+      }
+    },
+    {
+      "repeatable": false,
+      "name": "networkId",
+      "title": {
+        "en": "Network",
+        "fr": "Réseau"
+      },
+      "description": {
+        "en": "Network associated to the harmonised dataset.",
+        "fr": "Réseau associé à ce jeux de données harmonisé."
+      },
+      "keywords": {},
+      "attributes": {
+        "static": "true"
+      }
+    },
+    {
+      "repeatable": false,
+      "terms": [
+        {
+          "name": "Study",
+          "title": {
+            "en": "Study",
+            "fr": "Étude"
+          },
+          "description": {
+            "en": "A study variable holds metadata about data collected within a data collection event.",
+            "fr": "Variables d'un jeux de données spécifique à une étude."
+          },
+          "keywords": {},
+          "attributes": {}
+        },
+        {
+          "name": "Dataschema",
+          "title": {
+            "en": "DataSchema",
+            "fr": "Schéma de données"
+          },
+          "description": {
+            "en": "A dataschema variable is part of a harmonization dataset and is a construct from multiple study variables."
+          },
+          "keywords": {},
+          "attributes": {}
+        }
+      ],
+      "name": "variableType",
+      "title": {
+        "en": "Type of variable",
+        "fr": "Type de variable"
+      },
+      "description": {},
+      "keywords": {},
+      "attributes": {
+        "static": "true"
+      }
+    },
+    {
+      "repeatable": false,
+      "terms": [
+        {
+          "name": "Participant",
+          "title": {
+            "en": "Participant",
+            "fr": "Participant"
+          },
+          "description": {},
+          "keywords": {},
+          "attributes": {}
+        },
+        {
+          "name": "Sample",
+          "title": {
+            "en": "Sample",
+            "fr": "Échantillon"
+          },
+          "description": {},
+          "keywords": {},
+          "attributes": {}
+        }
+      ],
+      "name": "entityType",
+      "title": {
+        "en": "Type of entity",
+        "fr": "Type d'entité"
+      },
+      "description": {
+        "en": "What entity is measured by the variable.",
+        "fr": "Quel type d'entité est mesurée par cette variable."
+      },
+      "keywords": {},
+      "attributes": {
+        "static": "true"
+      }
+    },
+    {
+      "repeatable": false,
+      "name": "mimeType",
+      "title": {
+        "en": "Media type",
+        "fr": "Type de média"
+      },
+      "description": {
+        "en": "Data format.",
+        "fr": "Format des données."
+      },
+      "keywords": {},
+      "attributes": {
+        "static": "true"
+      }
+    },
+    {
+      "repeatable": false,
+      "terms": [
+        {
+          "name": "boolean",
+          "title": {
+            "en": "Boolean",
+            "fr": "Logique"
+          },
+          "description": {
+            "en": "True or False.",
+            "fr": "Vrai ou faux."
+          },
+          "keywords": {},
+          "attributes": {}
+        },
+        {
+          "name": "integer",
+          "title": {
+            "en": "Integer",
+            "fr": "Entier"
+          },
+          "description": {
+            "en": "Integer number.",
+            "fr": "Nombre entier."
+          },
+          "keywords": {},
+          "attributes": {}
+        },
+        {
+          "name": "decimal",
+          "title": {
+            "en": "Decimal",
+            "fr": "Décimal"
+          },
+          "description": {
+            "en": "Number with floating point.",
+            "fr": "Nombre à point flottant."
+          },
+          "keywords": {},
+          "attributes": {}
+        },
+        {
+          "name": "text",
+          "title": {
+            "en": "Textual",
+            "fr": "Textuel"
+          },
+          "description": {},
+          "keywords": {},
+          "attributes": {}
+        },
+        {
+          "name": "locale",
+          "title": {
+            "en": "Locale",
+            "fr": "Locale"
+          },
+          "description": {},
+          "keywords": {},
+          "attributes": {}
+        },
+        {
+          "name": "binary",
+          "title": {
+            "en": "Binary",
+            "fr": "Binaire"
+          },
+          "description": {
+            "en": "A binary value can be an image, a video, an audio document, a PDF file etc.",
+            "fr": "Une valeur binaire peut représenter une image, une video, un document audio, un fichier PDF etc."
+          },
+          "keywords": {},
+          "attributes": {}
+        },
+        {
+          "name": "datetime",
+          "title": {
+            "en": "Datetime",
+            "fr": "Date avec temps"
+          },
+          "description": {
+            "en": "Day in the year and time in the day.",
+            "fr": "Jour dans l'année et moment dans le jour."
+          },
+          "keywords": {},
+          "attributes": {}
+        },
+        {
+          "name": "date",
+          "title": {
+            "en": "Date",
+            "fr": "Date"
+          },
+          "description": {
+            "en": "Day in the year.",
+            "fr": "Jour dans l'année."
+          },
+          "keywords": {},
+          "attributes": {}
+        },
+        {
+          "name": "point",
+          "title": {
+            "en": "Point",
+            "fr": "Point"
+          },
+          "description": {
+            "en": "Geographical position defined by a latitude and a longitude.",
+            "fr": "Position géographique définie par une latitude et une longitude."
+          },
+          "keywords": {},
+          "attributes": {}
+        },
+        {
+          "name": "linestring",
+          "title": {
+            "en": "Linestring",
+            "fr": "Ligne"
+          },
+          "description": {
+            "en": "List of geographical points defining a line.",
+            "fr": "Liste de points définissant une ligne."
+          },
+          "keywords": {},
+          "attributes": {}
+        },
+        {
+          "name": "polygon",
+          "title": {
+            "en": "Polygon",
+            "fr": "Polygone"
+          },
+          "description": {
+            "en": "List of lignes defining a geographical area.",
+            "fr": "Liste de lignes définissant une aire geographique."
+          },
+          "keywords": {},
+          "attributes": {}
+        }
+      ],
+      "name": "valueType",
+      "title": {
+        "en": "Type of value",
+        "fr": "Type de valeur"
+      },
+      "description": {
+        "en": "Raw type of variable's values.",
+        "fr": "Type primitif des valeurs de la variable."
+      },
+      "keywords": {},
+      "attributes": {
+        "static": "true"
+      }
+    },
+    {
+      "repeatable": false,
+      "terms": [
+        {
+          "name": "CATEGORICAL",
+          "title": {
+            "en": "Categorical",
+            "fr": "Catégorielle"
+          },
+          "description": {
+            "en": "Values are predefined by categories.",
+            "fr": "Les valeurs sont pré-définies par des catégories."
+          },
+          "keywords": {},
+          "attributes": {}
+        },
+        {
+          "name": "CONTINUOUS",
+          "title": {
+            "en": "Continuous",
+            "fr": "Continue"
+          },
+          "description": {
+            "en": "Any values corresponding to the value type.",
+            "fr": "N'importe quelles valeurs dans le type déclaré."
+          },
+          "keywords": {},
+          "attributes": {}
+        },
+        {
+          "name": "TEMPORAL",
+          "title": {
+            "en": "Temporal",
+            "fr": "Temporelle"
+          },
+          "description": {
+            "en": "Value type can be date or datetime.",
+            "fr": "Le type de valeurs est date ou date avec temps"
+          },
+          "keywords": {},
+          "attributes": {}
+        },
+        {
+          "name": "GEO",
+          "title": {
+            "en": "Geographical",
+            "fr": "Géographique"
+          },
+          "description": {
+            "en": "Value type can be point, linestring or polygon.",
+            "fr": "Le type de valeurs est point, ligne ou polygone."
+          },
+          "keywords": {},
+          "attributes": {}
+        },
+        {
+          "name": "BINARY",
+          "title": {
+            "en": "Binary",
+            "fr": "Binaire"
+          },
+          "description": {
+            "en": "Value type is binary.",
+            "fr": "Le type de valeurs est binaire"
+          },
+          "keywords": {},
+          "attributes": {}
+        },
+        {
+          "name": "UNDETERMINED",
+          "title": {
+            "en": "Other",
+            "fr": "Autre"
+          },
+          "description": {
+            "en": "Other variable's nature.",
+            "fr": "Autres natures de variable."
+          },
+          "keywords": {},
+          "attributes": {}
+        }
+      ],
+      "name": "nature",
+      "title": {
+        "en": "Nature",
+        "fr": "Nature"
+      },
+      "description": {
+        "en": "The nature of the variable affects the type of data summary that can be extracted.",
+        "fr": "La nature de la variable affecte le type de sommaire des données pouvant être extrait."
+      },
+      "keywords": {},
+      "attributes": {
+        "static": "true"
+      }
+    }
+  ],
+  "name": "Mica_variable",
+  "title": {
+    "en": "Variable properties",
+    "fr": "Propriétés des variables"
+  },
+  "description": {
+    "en": "Variables properties as defined in the catalogue.",
+    "fr": "Propriétés des variables telles que définies dans le catalogue."
+  },
+  "keywords": {},
+  "attributes": {}
+}

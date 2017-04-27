@@ -43,13 +43,7 @@ mica.commons.EntityState = function($q, parentScope) {
 
   this.onSave = function () {
     return listeners.map(function (listener) {
-      var defer = $q.defer();
-      listener.onSave().$promise.then(
-        function() {
-          defer.resolve();
-        }, function(response) {
-          defer.reject(response);
-        });
+      return listener.onSave().$promise;
     });
   };
 

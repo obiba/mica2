@@ -50,8 +50,7 @@ public class TaxonomySearchResource extends AbstractTaxonomySearchResource {
     TaxonomyTarget taxonomyTarget = getTaxonomyTarget(target);
     if(taxonomyTarget.equals(TaxonomyTarget.TAXONOMY)) return Dtos.asDto(getTaxonomy(taxonomyTarget, name));
 
-    List<String> filteredVocabularies = filterVocabularies(taxonomyTarget, query, locale,
-      Lists.newArrayList(DEFAULT_EXCLUDE_FIELDS));
+    List<String> filteredVocabularies = filterVocabularies(taxonomyTarget, query, locale);
 
     Map<String, Map<String, List<String>>> taxoNamesMap = asMap(filteredVocabularies, filterTerms(taxonomyTarget, query, locale, filteredVocabularies));
 
@@ -72,8 +71,7 @@ public class TaxonomySearchResource extends AbstractTaxonomySearchResource {
     TaxonomyTarget taxonomyTarget = getTaxonomyTarget(target);
     if(taxonomyTarget.equals(TaxonomyTarget.TAXONOMY))  return Dtos.asDto(getTaxonomy(taxonomyTarget, name).getVocabulary(vocabularyName));
 
-    List<String> foundVocabularies = filterVocabularies(taxonomyTarget, String.format("name:%s", vocabularyName),
-      locale, Lists.newArrayList(DEFAULT_EXCLUDE_FIELDS));
+    List<String> foundVocabularies = filterVocabularies(taxonomyTarget, String.format("name:%s", vocabularyName), locale);
 
     if (foundVocabularies.isEmpty()) {
       throw new NoSuchVocabularyException(name, vocabularyName);

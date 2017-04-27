@@ -1532,7 +1532,8 @@
   "attributes":
     "type": "integer"
     "field": "model.numberOfParticipants.participant.number"
-    "alias": "model-numberOfParticipants-participant-range"
+    "alias": "model-numberOfParticipants-participant-number-range"
+    "range": "true"
   "terms":
     - "name": "*:1000"
       "title":
@@ -1598,7 +1599,8 @@
   "attributes":
     "type": "integer"
     "field": "model.numberOfParticipants.sample.number"
-    "alias": "model-numberOfParticipants-sample-range"
+    "alias": "model-numberOfParticipants-sample-number-range"
+    "range": "true"
   "terms":
     - "name": "*:1000"
       "title":
