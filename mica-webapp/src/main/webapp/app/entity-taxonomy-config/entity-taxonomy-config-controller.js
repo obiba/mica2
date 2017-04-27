@@ -21,6 +21,7 @@ mica.entitySfConfig
     'ServerErrorUtils',
     'AlertService',
     'FormDirtyStateObserver',
+    'VocabularyAttributeService',
     function ($scope,
               $q,
               $filter,
@@ -28,7 +29,8 @@ mica.entitySfConfig
               EntityTaxonomyConfigResource,
               ServerErrorUtils,
               AlertService,
-              FormDirtyStateObserver) {
+              FormDirtyStateObserver,
+              VocabularyAttributeService) {
 
       var onError = function(response) {
         AlertService.alert({
@@ -42,6 +44,7 @@ mica.entitySfConfig
         $scope.model.content = content;
         $scope.model.children = content.terms ? content.terms : [];
         $scope.model.type = 'criterion';
+        $scope.model.aliases = VocabularyAttributeService.getAliases($scope.taxonomy.vocabularies, content);
       };
 
       var navigateToTaxonomy = function() {
@@ -158,6 +161,7 @@ mica.entitySfConfig
 
       $scope.getField = VocabularyAttributeService.getField;
       $scope.getTypeMap = VocabularyAttributeService.getTypeMap;
+      $scope.getRange = VocabularyAttributeService.getRange;
       $scope.getTermsSortKeyMap = VocabularyAttributeService.getTermsSortKeyMap;
       $scope.getHidden = VocabularyAttributeService.getHidden;
       $scope.getLocalized = VocabularyAttributeService.getLocalized;
@@ -179,11 +183,13 @@ mica.entitySfConfig
 
       var addCriteria = function() {
 
+        var vocabularies = $scope.taxonomy.vocabularies || [];
         var model = {
           content: null,
           children: null,
-          siblings: $scope.taxonomy.vocabularies || [],
-          type: 'criterion'
+          siblings: vocabularies,
+          type: 'criterion',
+          aliases: VocabularyAttributeService.getAliases(vocabularies, null)
         };
 
         $uibModal.open({
@@ -346,10 +352,32 @@ mica.entitySfConfig
           $scope.sfOptions.formDefaults.languages[lang] = $filter('translate')('language.' + lang);
         });
 
-        if ('criterion' === $scope.model.type && $scope.schemas) {
-          $scope.sfOptions.formDefaults.values = EntitySchemaFormFieldsService.getFieldNames(
-            EntitySchemaFormFieldsService.concatenateSchemas($scope.schemas)
-          );
+        if ('criterion' === $scope.model.type) {
+          $scope.sfOptions.validationMessage['duplicate-criterion-alias'] =
+            $filter('translate')('taxonomy-config.criterion-dialog.error.duplicate-criterion-alias');
+
+          $scope.sfOptions.validators = {
+            'duplicate-criterion-alias': function (value) {
+              if (value) {
+                return EntityTaxonomySchemaFormService.validateModel($scope.sfForm, $scope.model);
+              }
+              return true;
+            }
+          };
+
+          $scope.model.onRangeChange = function() {
+            if (!EntityTaxonomySchemaFormService.validateModel($scope.sfForm, $scope.model)) {
+              $scope.$broadcast('schemaForm.error.field', 'duplicate-criterion-alias', false);
+            } else {
+              $scope.$broadcast('schemaForm.error.field', 'duplicate-criterion-alias', true);
+            }
+          };
+
+          if ($scope.schemas) {
+            $scope.sfOptions.formDefaults.values = EntitySchemaFormFieldsService.getFieldNames(
+              EntitySchemaFormFieldsService.concatenateSchemas($scope.schemas)
+            );
+          }
         }
 
         $scope.sfForm = EntityTaxonomySchemaFormService.getFormData($scope.model);
@@ -360,4 +388,3 @@ mica.entitySfConfig
       });
 
     }]);
-

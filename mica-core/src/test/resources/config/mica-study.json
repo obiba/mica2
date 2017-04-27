@@ -1,0 +1,197 @@
+{
+  "license": "CC BY-NC 4.0",
+  "vocabularies": [
+    {
+      "repeatable": false,
+      "terms": [
+        {
+          "name": "*:1000",
+          "title": {
+            "en": "less than 1,000",
+            "fr": "moins de 1 000"
+          },
+          "description": {},
+          "keywords": {},
+          "attributes": {}
+        },
+        {
+          "name": "1000:5000",
+          "title": {
+            "en": "1,000 to 4,999",
+            "fr": "1 000 à 4 999"
+          },
+          "description": {},
+          "keywords": {},
+          "attributes": {}
+        },
+        {
+          "name": "5000:10000",
+          "title": {
+            "en": "5,000 to 9,999",
+            "fr": "5 000 à 9 999"
+          },
+          "description": {},
+          "keywords": {},
+          "attributes": {}
+        },
+        {
+          "name": "10000:50000",
+          "title": {
+            "en": "10,000 to 49,999",
+            "fr": "10 000 à 49 999"
+          },
+          "description": {},
+          "keywords": {},
+          "attributes": {}
+        },
+        {
+          "name": "50000:100000",
+          "title": {
+            "en": "50,000 to 99,999",
+            "fr": "50 000 à 99 999"
+          },
+          "description": {},
+          "keywords": {},
+          "attributes": {}
+        },
+        {
+          "name": "100000:500000",
+          "title": {
+            "en": "100,000 to 499,999",
+            "fr": "100 000 à 499 999"
+          },
+          "description": {},
+          "keywords": {},
+          "attributes": {}
+        },
+        {
+          "name": "500000:*",
+          "title": {
+            "en": "500,000 and more",
+            "fr": "500 000 et plus"
+          },
+          "description": {},
+          "keywords": {},
+          "attributes": {}
+        }
+      ],
+      "name": "numberOfParticipants-participant-range",
+      "title": {
+        "en": "Number of participants (ranges)",
+        "fr": "Nombre de participants (intervalles)"
+      },
+      "description": {
+        "en": "The number of participants can be lower than the actual number.",
+        "fr": "Le nombre de participants peut être inférieur au nombre effectivement atteint."
+      },
+      "keywords": {},
+      "attributes": {
+        "field": "model.numberOfParticipants.participant.number",
+        "alias": "model-numberOfParticipants-participant-range",
+        "type": "integer"
+      }
+    },
+    {
+      "repeatable": false,
+      "terms": [
+        {
+          "name": "*:1000",
+          "title": {
+            "en": "less than 1,000",
+            "fr": "moins de 1 000"
+          },
+          "description": {},
+          "keywords": {},
+          "attributes": {}
+        },
+        {
+          "name": "1000:5000",
+          "title": {
+            "en": "1,000 to 4,999",
+            "fr": "1 000 à 4 999"
+          },
+          "description": {},
+          "keywords": {},
+          "attributes": {}
+        },
+        {
+          "name": "5000:10000",
+          "title": {
+            "en": "5,000 to 9,999",
+            "fr": "5 000 à 9 999"
+          },
+          "description": {},
+          "keywords": {},
+          "attributes": {}
+        },
+        {
+          "name": "10000:50000",
+          "title": {
+            "en": "10,000 to 49,999",
+            "fr": "10 000 à 49 999"
+          },
+          "description": {},
+          "keywords": {},
+          "attributes": {}
+        },
+        {
+          "name": "50000:100000",
+          "title": {
+            "en": "50,000 to 99,999",
+            "fr": "50 000 à 99 999"
+          },
+          "description": {},
+          "keywords": {},
+          "attributes": {}
+        },
+        {
+          "name": "100000:500000",
+          "title": {
+            "en": "100,000 to 499,999",
+            "fr": "100 000 à 499 999"
+          },
+          "description": {},
+          "keywords": {},
+          "attributes": {}
+        },
+        {
+          "name": "500000:*",
+          "title": {
+            "en": "500,000 and more",
+            "fr": "500 000 et plus"
+          },
+          "description": {},
+          "keywords": {},
+          "attributes": {}
+        }
+      ],
+      "name": "numberOfParticipants-sample-range",
+      "title": {
+        "en": "Number of participants with samples (ranges)",
+        "fr": "Nombre de participants avec échantillon (intervalles)"
+      },
+      "description": {
+        "en": "The number of participants with samples can be lower than the actual number.",
+        "fr": "Le nombre de participants avec échantillons peut être inférieur au nombre effectivement atteint."
+      },
+      "keywords": {},
+      "attributes": {
+        "field": "numberOfParticipants.sample.number",
+        "alias": "numberOfParticipants-sample-range",
+        "type": "integer"
+      }
+    }
+  ],
+  "name": "Mica_study",
+  "title": {
+    "en": "Study properties",
+    "fr": "Propriétés des étude"
+  },
+  "description": {
+    "en": "Study properties as defined in the catalogue.",
+    "fr": "Propriétés des études telles que définies dans le catalogue."
+  },
+  "keywords": {},
+  "attributes": {}
+}
+

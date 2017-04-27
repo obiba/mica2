@@ -43,8 +43,6 @@ public class AbstractTaxonomySearchResource {
 
   private static final String[] TERM_FIELDS = { "title", "description", "keywords" };
 
-  protected static final String[] DEFAULT_EXCLUDE_FIELDS = { "attributes.hidden" };
-
   @Inject
   private EsTaxonomyTermService esTaxonomyTermService;
 
@@ -73,10 +71,10 @@ public class AbstractTaxonomySearchResource {
       });
   }
 
-  protected List<String> filterVocabularies(TaxonomyTarget target, String query, String locale, List<String> excludedFields) {
+  protected List<String> filterVocabularies(TaxonomyTarget target, String query, String locale) {
     try {
       return esTaxonomyVocabularyService.find(0, MAX_SIZE, DEFAULT_SORT, "asc", null, getTargettedQuery(target, query),
-        getFields(locale, VOCABULARY_FIELDS), excludedFields).getList();
+        getFields(locale, VOCABULARY_FIELDS), null).getList();
     } catch(IndexNotFoundException e) {
       initTaxonomies();
       // for a 404 response

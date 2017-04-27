@@ -10,6 +10,8 @@
 
 package org.obiba.mica.micaConfig.service;
 
+import java.util.Map;
+
 import javax.inject.Inject;
 
 import org.obiba.mica.NoSuchEntityException;
@@ -22,10 +24,13 @@ import org.obiba.mica.core.domain.TaxonomyEntityWrapper;
 import org.obiba.mica.core.domain.TaxonomyTarget;
 import org.obiba.mica.micaConfig.event.TaxonomiesUpdatedEvent;
 import org.obiba.mica.micaConfig.repository.TaxonomyConfigRepository;
+import org.obiba.mica.micaConfig.service.helper.AggregationAliasHelper;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Service;
 
+import com.google.common.base.Strings;
+import com.google.common.collect.Maps;
 import com.google.common.eventbus.EventBus;
 
 @Service
@@ -75,10 +80,39 @@ public class TaxonomyConfigService {
   }
 
   private void updateInternal(TaxonomyTarget target, Taxonomy taxonomy) {
+    validateTaxonomy(taxonomy);
     TaxonomyEntityWrapper taxonomyEntityWrapper = new TaxonomyEntityWrapper();
     taxonomyEntityWrapper.setTarget(target.asId());
     taxonomyEntityWrapper.setTaxonomy(taxonomy);
     taxonomyConfigRepository.save(taxonomyEntityWrapper);
+  }
+
+  void validateTaxonomy(Taxonomy taxonomy) {
+    Map<String, Boolean> aliases = Maps.newHashMap();
+    taxonomy.getVocabularies().forEach(v -> {
+      String field = v.getAttributeValue("field");
+
+      if (!Strings.isNullOrEmpty(field)) {
+        String type = v.getAttributeValue("type");
+        if (Strings.isNullOrEmpty(type)) type = "string";
+
+        String alias = v.getAttributeValue("alias");
+        if(Strings.isNullOrEmpty(alias)) alias = AggregationAliasHelper.formatName(field);
+
+        String range = v.getAttributeValue("range");
+        boolean isRange = Strings.isNullOrEmpty(range) ? false : "true".equals(range);
+
+        if(aliases.containsKey(alias)) throw new VocabularyDuplicateAliasException(v);
+        aliases.put(alias, true);
+
+        if("integer".equals(type) || "decimal".equals(type)) {
+          if (v.hasTerms() != isRange) {
+            if (isRange) throw new VocabularyMissingRangeTermsException(v);
+            if (!isRange) throw new VocabularyMissingRangeAttributeException(v);
+          }
+        }
+      }
+    });
   }
 
   private void createDefault(TaxonomyTarget target) {

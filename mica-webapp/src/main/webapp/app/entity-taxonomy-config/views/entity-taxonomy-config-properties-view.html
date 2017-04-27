@@ -84,6 +84,12 @@
           {{getTypeMap(model.content).title}}
         </td>
       </tr>
+      <tr ng-if="'string' !== getTypeMap(model.content).value">
+        <th translate>taxonomy-config.criterion-dialog.range-aggregation</th>
+        <td>
+          {{getRange(model.content)}}
+        </td>
+      </tr>
       <tr>
         <th translate>taxonomy-config.criterion-dialog.terms-sort-key</th>
         <td>

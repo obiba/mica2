@@ -77,8 +77,31 @@ mica.entityTaxonomyConfig
 
       this.setField = function(attributes, field) {
         setAttribute(attributes, 'field', field);
-        var alias = field.replace(/\./g, '-');
-        setAttribute(attributes, 'alias', alias);
+      };
+
+      this.generateAlias = function(field, isRangeAgg) {
+        if (!field) {
+          return '';
+        }
+
+        var postfix = isRangeAgg ? '-range' : '';
+        return field.replace(/\./g, '-') + postfix;
+      };
+
+      this.setRange = function(attributes, range) {
+        setAttribute(attributes, 'range', range+'');
+      };
+
+      this.getRange = function(content) {
+        if (content && content.attributes) {
+          return 'true' === getAttribute(content.attributes, 'range', false);
+        }
+
+        return false;
+      };
+
+      this.setAlias = function(attributes, content) {
+        setAttribute(attributes, 'alias', self.generateAlias(content.field, content.rangeAggregation));
       };
 
       this.setLocalized = function(attributes, localized) {
@@ -145,6 +168,20 @@ mica.entityTaxonomyConfig
         }
 
         return false;
+      };
+
+      this.getAliases = function(vocabularies, excludeVocabulary) {
+        var aliasList = [];
+        (vocabularies || []).filter(function (vocabulary) {
+          return vocabulary !== excludeVocabulary;
+        }).forEach(function(vocabulary) {
+          var alias = getAttribute(vocabulary.attributes, 'alias', null);
+          if (alias && vocabulary) {
+            aliasList.push(alias);
+          }
+        });
+
+        return aliasList;
       };
 
       return this;
@@ -316,7 +353,7 @@ mica.entityTaxonomyConfig
         return data;
       }
 
-      function getVocabularyFormData(content, siblings) {
+      function getVocabularyFormData(content, siblings, onRangeChange) {
         var isStatic = VocabularyAttributeService.isStatic(content);
         var data = {
           schema: {
@@ -365,6 +402,7 @@ mica.entityTaxonomyConfig
               'type': {
                 'title': $filter('translate')('type'),
                 'type': 'string',
+                'default': 'string',
                 'readonly': isStatic
               },
               'termsSortKey': {
@@ -375,6 +413,11 @@ mica.entityTaxonomyConfig
                   'string'
                 ],
                 'readonly': isStatic,
+              },
+              'rangeAggregation': {
+                'title': $filter('translate')('taxonomy-config.criterion-dialog.range-aggregation'),
+                'type': 'boolean',
+                'readonly': isStatic
               }
             }
           },
@@ -409,7 +452,13 @@ mica.entityTaxonomyConfig
               'key': 'type',
               'type': 'select',
               'titleMap': getTypeMap(),
-              'description': '<p class="help-block">' + $filter('translate')('taxonomy-config.criterion-dialog.field-help') + '</p>'
+              'description': '<p class="help-block">' + $filter('translate')('taxonomy-config.criterion-dialog.type-help') + '</p>'
+            },
+            {
+              'key': 'rangeAggregation',
+              'condition': 'model.type && model.type !== \'string\'',
+              'description': '<p class="help-block">' + $filter('translate')('taxonomy-config.criterion-dialog.range-aggregation-help') + '</p>',
+              'onChange': onRangeChange
             },
             {
               'key': 'termsSortKey',
@@ -438,6 +487,7 @@ mica.entityTaxonomyConfig
           data.model.hidden = VocabularyAttributeService.getHidden(content);
           data.model.localized = VocabularyAttributeService.getLocalized(content);
           data.model.termsSortKey = VocabularyAttributeService.getTermsSortKey(content);
+          data.model.rangeAggregation = VocabularyAttributeService.getRange(content);
         }
         return data;
       }
@@ -562,6 +612,15 @@ mica.entityTaxonomyConfig
         return data;
       }
 
+      this.validateModel = function(data, model) {
+        if ('criterion' === model.type) {
+          var alias = VocabularyAttributeService.generateAlias(data.model.field, data.model.rangeAggregation);
+          return (model.aliases || []).indexOf(alias) === -1;
+        }
+
+        return true;
+      };
+
       this.updateModel = function(data, model) {
         switch (model.type) {
           case 'taxonomy':
@@ -590,6 +649,8 @@ mica.entityTaxonomyConfig
             }
 
             VocabularyAttributeService.setField(model.content.attributes, data.model.field);
+            VocabularyAttributeService.setRange(model.content.attributes, data.model.rangeAggregation);
+            VocabularyAttributeService.setAlias(model.content.attributes, data.model);
             model.content.name = data.model.name;
             model.content.repeatable = data.model.repeatable;
             break;
@@ -616,7 +677,7 @@ mica.entityTaxonomyConfig
           case 'taxonomy':
             return getTaxonomyFormData(model.content);
           case 'criterion':
-            return getVocabularyFormData(model.content, model.siblings);
+            return getVocabularyFormData(model.content, model.siblings, model.onRangeChange);
           case 'term':
             return getTermFormData(model.content, model.valueType || 'string', model.siblings, model.vocabulary);
         }

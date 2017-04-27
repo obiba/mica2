@@ -1098,6 +1098,11 @@
           "delete-conflict": "Conflict deleting network",
           "delete-conflict-message": "Found conflicts when trying to delete network. Remove all references from the following networks: {{arg0}}"
         }
+      },
+      "taxonomy": {
+        "range-criterion-missing-terms": "The criterion '{{arg0}}' must have terms to define its range intervals.",
+        "range-criterion-missing-range-attribute": "The criterion '{{arg0}}' with terms must be marked as having range intervals.",
+        "duplicate-criterion-alias": "The field '{{arg0}}' already has an associated criterion. Only a numerical field can have two criteria, a discrete and a range criterion."
       }
     }
   },
@@ -1265,7 +1270,12 @@
       "hidden": "Hidden",
       "hidden-help": "A hidden criterion is excluded from search.",
       "term-sort-key-help": "The order by which terms of the citerion are listed.",
-      "terms-sort-key": "Terms Listing Order"
+      "terms-sort-key": "Terms Listing Order",
+      "range-aggregation": "Has Range Intervals",
+      "range-aggregation-help": "Numerical criterion with terms as range intervals.",
+      "error": {
+        "duplicate-criterion-alias": "This field is already associated with a criterion. Only a numerical field can have two criteria, a discrete and a range criterion."
+      }
     },
     "term-dialog": {
       "add-term": "Add Term",
