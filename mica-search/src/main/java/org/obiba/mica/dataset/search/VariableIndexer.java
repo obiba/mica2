@@ -19,10 +19,12 @@ import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.DatasetVariable;
+import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.dataset.event.DatasetDeletedEvent;
 import org.obiba.mica.dataset.event.DatasetPublishedEvent;
 import org.obiba.mica.dataset.event.DatasetUnpublishedEvent;
 import org.obiba.mica.dataset.event.DatasetUpdatedEvent;
+import org.obiba.mica.dataset.service.StudyDatasetService;
 import org.obiba.mica.search.ElasticSearchIndexer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,6 +55,9 @@ public class VariableIndexer {
   @Inject
   private ElasticSearchIndexer elasticSearchIndexer;
 
+  @Inject
+  private StudyDatasetService studyDatasetService;
+
   @Async
   @Subscribe
   public void datasetUpdated(DatasetUpdatedEvent event) {
@@ -74,7 +79,13 @@ public class VariableIndexer {
 
     if(event.getVariables() != null) {
       deleteDatasetVariables(PUBLISHED_VARIABLE_INDEX, event.getPersistable());
-      indexDatasetVariables(PUBLISHED_VARIABLE_INDEX, event.getVariables());
+
+      if (event.getPersistable() instanceof StudyDataset) {
+        indexDatasetVariables(PUBLISHED_VARIABLE_INDEX, studyDatasetService.processVariablesForStudyDataset(
+          (StudyDataset) event.getPersistable(), event.getVariables()));
+      } else {
+        indexDatasetVariables(PUBLISHED_VARIABLE_INDEX, event.getVariables());
+      }
     }
 
     if(event.hasHarmonizationVariables())

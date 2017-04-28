@@ -193,6 +193,10 @@ public class Population extends AbstractAttributeModelAware implements Serializa
     return super.getModel();
   }
 
+  public DataCollectionEvent findDataCollectionEvent(String id) {
+    return dataCollectionEvents.stream().filter(dce -> id.equals(dce.getId())).findFirst().orElse(null);
+  }
+
   public static class Recruitment implements Serializable {
 
     private static final long serialVersionUID = 7949265355598902080L;

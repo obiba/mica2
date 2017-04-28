@@ -27,6 +27,7 @@ import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.core.domain.NetworkTable;
 import org.obiba.mica.core.domain.OpalTable;
 import org.obiba.mica.core.domain.StudyTable;
+import org.obiba.mica.study.date.PersistableYearMonth;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Strings;
@@ -107,12 +108,17 @@ public class DatasetVariable implements Indexable, AttributeAware {
   @NotNull
   private LocalizedString datasetName;
 
+  private String earliestStart;
+
+  private String containerId;
+
   public DatasetVariable() {}
 
   public DatasetVariable(StudyDataset dataset, Variable variable) {
     this(dataset, Type.Study, variable);
     studyIds = Lists.newArrayList(dataset.getStudyTable().getStudyId());
     dceIds = Lists.newArrayList(dataset.getStudyTable().getDataCollectionEventUId());
+    setContainerId(studyIds.get(0));
   }
 
   public DatasetVariable(HarmonizationDataset dataset, Variable variable) {
@@ -127,6 +133,7 @@ public class DatasetVariable implements Indexable, AttributeAware {
     });
 
     networkId = dataset.getNetworkId();
+    setContainerId(networkId);
 
     dataset.getStudyTables().forEach(table -> {
       if(!dceIds.contains(table.getDataCollectionEventUId())) dceIds.add(table.getDataCollectionEventUId());
@@ -139,9 +146,11 @@ public class DatasetVariable implements Indexable, AttributeAware {
     if(opalTable instanceof StudyTable) {
       studyIds = Lists.newArrayList(((StudyTable) opalTable).getStudyId());
       dceIds = Lists.newArrayList(((StudyTable) opalTable).getDataCollectionEventUId());
+      setContainerId(studyIds.get(0));
       opalTableType = OpalTableType.Study;
     } else {
       networkTableIds = Lists.newArrayList(((NetworkTable) opalTable).getNetworkId());
+      setContainerId(networkId);
       opalTableType = OpalTableType.Network;
     }
 
@@ -322,6 +331,22 @@ public class DatasetVariable implements Indexable, AttributeAware {
     return getClass().getSimpleName();
   }
 
+  public String getEarliestStart() {
+    return earliestStart;
+  }
+
+  public void setEarliestStart(String earliestStart) {
+    this.earliestStart = earliestStart;
+  }
+
+  public String getContainerId() {
+    return containerId;
+  }
+
+  public void setContainerId(String containerId) {
+    this.containerId = cleanStringForSearch(containerId);
+  }
+
   /**
    * For Json deserialization.
    *
@@ -358,6 +383,10 @@ public class DatasetVariable implements Indexable, AttributeAware {
 
   public void setNetworkId(String networkId) {
     this.networkId = networkId;
+  }
+
+  private String cleanStringForSearch(String string) {
+    return string.replace("-", "");
   }
 
   public static class IdResolver {
