@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -510,6 +511,10 @@ public class Study extends AbstractModelAware implements AttributeAware, PersonA
     }
 
     return super.getModel();
+  }
+
+  public Population findPopulation(String id) {
+    return populations.stream().filter(p -> p.getId().equals(id)).findFirst().orElse(null);
   }
 
   public static class StudyMethods implements Serializable {

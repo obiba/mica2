@@ -27,6 +27,7 @@ import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.core.domain.NetworkTable;
 import org.obiba.mica.core.domain.OpalTable;
 import org.obiba.mica.core.domain.StudyTable;
+import org.obiba.mica.study.date.PersistableYearMonth;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Strings;
@@ -66,6 +67,8 @@ public class DatasetVariable implements Indexable, AttributeAware {
   private List<String> networkTableIds = Lists.newArrayList();
 
   private List<String> studyIds = Lists.newArrayList();
+
+  private List<String> populationIds = Lists.newArrayList();
 
   private List<String> dceIds = Lists.newArrayList();
 
@@ -107,12 +110,18 @@ public class DatasetVariable implements Indexable, AttributeAware {
   @NotNull
   private LocalizedString datasetName;
 
+  private String earliestStart;
+
+  private String containerId;
+
   public DatasetVariable() {}
 
   public DatasetVariable(StudyDataset dataset, Variable variable) {
     this(dataset, Type.Study, variable);
     studyIds = Lists.newArrayList(dataset.getStudyTable().getStudyId());
+    populationIds = Lists.newArrayList(dataset.getStudyTable().getPopulationId());
     dceIds = Lists.newArrayList(dataset.getStudyTable().getDataCollectionEventUId());
+    setContainerId(studyIds.get(0));
   }
 
   public DatasetVariable(HarmonizationDataset dataset, Variable variable) {
@@ -120,6 +129,8 @@ public class DatasetVariable implements Indexable, AttributeAware {
 
     dataset.getStudyTables().forEach(table -> {
       if(!studyIds.contains(table.getStudyId())) studyIds.add(table.getStudyId());
+      if(!populationIds.contains(table.getPopulationId())) populationIds.add(table.getPopulationId());
+      if(!dceIds.contains(table.getDataCollectionEventUId())) dceIds.add(table.getDataCollectionEventUId());
     });
 
     dataset.getNetworkTables().forEach(table -> {
@@ -127,10 +138,7 @@ public class DatasetVariable implements Indexable, AttributeAware {
     });
 
     networkId = dataset.getNetworkId();
-
-    dataset.getStudyTables().forEach(table -> {
-      if(!dceIds.contains(table.getDataCollectionEventUId())) dceIds.add(table.getDataCollectionEventUId());
-    });
+    setContainerId(networkId);
   }
 
   public DatasetVariable(HarmonizationDataset dataset, Variable variable, OpalTable opalTable) {
@@ -138,10 +146,13 @@ public class DatasetVariable implements Indexable, AttributeAware {
 
     if(opalTable instanceof StudyTable) {
       studyIds = Lists.newArrayList(((StudyTable) opalTable).getStudyId());
+      populationIds = Lists.newArrayList(((StudyTable) opalTable).getPopulationId());
       dceIds = Lists.newArrayList(((StudyTable) opalTable).getDataCollectionEventUId());
+      setContainerId(studyIds.get(0));
       opalTableType = OpalTableType.Study;
     } else {
       networkTableIds = Lists.newArrayList(((NetworkTable) opalTable).getNetworkId());
+      setContainerId(networkId);
       opalTableType = OpalTableType.Network;
     }
 
@@ -218,6 +229,10 @@ public class DatasetVariable implements Indexable, AttributeAware {
 
   public List<String> getStudyIds() {
     return studyIds;
+  }
+
+  public List<String> getPopulationIds() {
+    return populationIds;
   }
 
   public List<String> getNetworkTableIds() {
@@ -322,6 +337,22 @@ public class DatasetVariable implements Indexable, AttributeAware {
     return getClass().getSimpleName();
   }
 
+  public String getEarliestStart() {
+    return earliestStart;
+  }
+
+  public void setEarliestStart(String earliestStart) {
+    this.earliestStart = earliestStart;
+  }
+
+  public String getContainerId() {
+    return containerId;
+  }
+
+  public void setContainerId(String containerId) {
+    this.containerId = cleanStringForSearch(containerId);
+  }
+
   /**
    * For Json deserialization.
    *
@@ -358,6 +389,10 @@ public class DatasetVariable implements Indexable, AttributeAware {
 
   public void setNetworkId(String networkId) {
     this.networkId = networkId;
+  }
+
+  private String cleanStringForSearch(String string) {
+    return string.replace("-", "");
   }
 
   public static class IdResolver {
