@@ -510,7 +510,10 @@
       "ethnic-origin": "Ethnic Origin",
       "add-ethnic-origin": "Add Ethnic Origin",
       "health-status": "Health Status",
-      "add-health-status": "Add Health Status"
+      "add-health-status": "Add Health Status",
+      "pregnant-women": "Pregnant women",
+      "newborn": "Newborns",
+      "twins": "Twins"
     },
     "recruitment-sources": {
       "label": "Sources of Recruitment",
