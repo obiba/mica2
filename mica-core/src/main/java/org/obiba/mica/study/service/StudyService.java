@@ -17,6 +17,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -43,6 +44,9 @@ import org.obiba.mica.network.NetworkRepository;
 import org.obiba.mica.study.ConstraintException;
 import org.obiba.mica.study.StudyRepository;
 import org.obiba.mica.study.StudyStateRepository;
+import org.obiba.mica.study.date.PersistableYearMonth;
+import org.obiba.mica.study.domain.DataCollectionEvent;
+import org.obiba.mica.study.domain.Population;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.domain.StudyState;
 import org.obiba.mica.study.event.DraftStudyUpdatedEvent;
@@ -180,6 +184,19 @@ public class StudyService extends AbstractGitPersistableService<StudyState, Stud
     }
 
     return study;
+  }
+
+  public PersistableYearMonth getPersistableYearMonthFor(Study study, String populationId, String dceId) {
+    if (study != null) {
+      Population population = study.getPopulations().stream().filter(p -> p.getId().equals(populationId)).findFirst()
+        .orElse(null);
+
+      return population != null ? population
+        .getDataCollectionEvents().stream().filter(dce -> dce.getId().equals(dceId)).findFirst()
+        .map(DataCollectionEvent::getStart).orElse(null) : null;
+    }
+
+    return null;
   }
 
   @NotNull

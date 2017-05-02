@@ -378,6 +378,8 @@ public abstract class AbstractDocumentQuery {
 
     // apply default sort for VariableQuery before any user defined ones (order is important)
     if (this instanceof VariableQuery) {
+      requestBuilder.addSort(SortBuilders.fieldSort("containerId").order(SortOrder.ASC)); // either study or network id
+      requestBuilder.addSort(SortBuilders.fieldSort("earliestStart").order(SortOrder.ASC).unmappedType("string")); // only for study variable
       requestBuilder.addSort(SortBuilders.fieldSort("datasetId").order(SortOrder.ASC));
       requestBuilder.addSort(SortBuilders.fieldSort("index").order(SortOrder.ASC));
     }
