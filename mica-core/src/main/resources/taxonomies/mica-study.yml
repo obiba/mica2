@@ -1430,8 +1430,8 @@
       "en": "Study recruits women only."
 - "name": "populations-selectionCriteria-pregnantWomen"
   "title":
-    "en": "Pregnant Women"
-    "fr": "Femmes enceintes"
+    "en": "Selection criteria - Pregnant Women"
+    "fr": "Critères de sélection - Femmes enceintes"
   "description":
     "en": "The recruited individuals are pregnant women."
     "fr": "Les individus recrutés sont des femmes enceintes."
@@ -1462,8 +1462,8 @@
       "fr": "Troisième trimestre de grossesse."
 - "name": "populations-selectionCriteria-newborn"
   "title":
-    "en": "Newborns"
-    "fr": "Nouveaux-nés"
+    "en": "Selection criteria - Newborns"
+    "fr": "Critères de sélection - Nouveaux-nés"
   "description":
     "en": "Study recruits recently born children."
     "fr": "L'étude a recruté des nouveaux-nés."
@@ -1487,8 +1487,8 @@
       "fr": "Des nouveaux-nés non pas été recrutés."
 - "name": "populations-selectionCriteria-twins"
   "title":
-    "en": "Twins"
-    "fr": "Jumeaux"
+    "en": "Selection criteria - Twins"
+    "fr": "Critères de sélection - Jumeaux"
   "description":
     "en": "Study recruits individuals born at the same birth to the same mother."
     "fr": "L'étude a recruté des individus nés à la même naissance à la même mère."

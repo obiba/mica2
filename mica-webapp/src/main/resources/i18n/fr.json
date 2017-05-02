@@ -510,7 +510,10 @@
       "ethnic-origin": "Origine ethnique",
       "add-ethnic-origin": "Ajouter une origine ethnique",
       "health-status": "État de santé",
-      "add-health-status": "Ajouter un état de santé"
+      "add-health-status": "Ajouter un état de santé",
+      "pregnant-women": "Femmes enceintes",
+      "newborn": "Nouveaux-nés",
+      "twins": "Jumeaux"
     },
     "recruitment-sources": {
       "label": "Sources de recrutement",
@@ -956,7 +959,7 @@
   "all-study-classifications": "Toutes les classifications d'étude",
   "all-network-classifications": "Toutes les classifications de réseau",
   "no-classifications": "Aucune classification trouvée",
-  "variable-classifications": "Classifications de variables",
+  "variable-classifications": "Classification de variables",
   "dataset-classifications": "Classifications d'ensemble de données",
   "study-classifications": "Classifications d'étude",
   "network-classifications": "Classifications de réseau",

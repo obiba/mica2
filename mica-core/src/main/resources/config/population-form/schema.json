@@ -197,15 +197,15 @@
               "third_trimester"
             ]
           },
-          "title": "t(study_taxonomy.vocabulary.populations-selectionCriteria-pregnantWomen.title)"
+          "title": "t(study.selection-criteria.pregnant-women)"
         },
         "newborn": {
           "type": "boolean",
-          "title": "t(study_taxonomy.vocabulary.populations-selectionCriteria-newborn.title)"
+          "title": "t(study.selection-criteria.newborn)"
         },
         "twins": {
           "type": "boolean",
-          "title": "t(study_taxonomy.vocabulary.populations-selectionCriteria-twins.title)"
+          "title": "t(study.selection-criteria.twins)"
         }
       }
     }
