@@ -1585,8 +1585,8 @@
     "fr": "Nombre de participants qui ont fourni ou qui fourniront des échantillons biologiques."
   "attributes":
     "type": "integer"
-    "field": "numberOfParticipants.sample.number"
-    "alias": "numberOfParticipants-sample-number"
+    "field": "model.numberOfParticipants.sample.number"
+    "alias": "model-numberOfParticipants-sample-number"
   "terms": []
 - "name": "numberOfParticipants-sample-range"
   "title":
@@ -1597,8 +1597,8 @@
     "fr": "Le nombre de participants avec échantillons peut être inférieur au nombre effectivement atteint."
   "attributes":
     "type": "integer"
-    "field": "numberOfParticipants.sample.number"
-    "alias": "numberOfParticipants-sample-range"
+    "field": "model.numberOfParticipants.sample.number"
+    "alias": "model-numberOfParticipants-sample-range"
   "terms":
     - "name": "*:1000"
       "title":

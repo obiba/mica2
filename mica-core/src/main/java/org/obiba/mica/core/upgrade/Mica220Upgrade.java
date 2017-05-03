@@ -4,8 +4,12 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.obiba.mica.core.domain.TaxonomyEntityWrapper;
 import org.obiba.mica.micaConfig.domain.StudyConfig;
 import org.obiba.mica.micaConfig.repository.StudyConfigRepository;
+import org.obiba.mica.micaConfig.repository.TaxonomyConfigRepository;
+import org.obiba.opal.core.domain.taxonomy.TaxonomyEntity;
+import org.obiba.opal.core.domain.taxonomy.Vocabulary;
 import org.obiba.runtime.Version;
 import org.obiba.runtime.upgrade.UpgradeStep;
 import org.slf4j.Logger;
@@ -29,6 +33,9 @@ public class Mica220Upgrade implements UpgradeStep {
   @Inject
   private StudyConfigRepository studyConfigRepository;
 
+  @Inject
+  TaxonomyConfigRepository taxonomyConfigRepository;
+
   @Override
   public String getDescription() {
     return "Migrate data to mica 2.2.0";
@@ -46,9 +53,37 @@ public class Mica220Upgrade implements UpgradeStep {
       updateBioSamplesAttributes();
     } catch (IOException e) {
       logger.info("Don't need migration to mica 2.2.0", e);
+    } catch (Exception e) {
+      logger.error("Error when trying to updateBioSamplesAttributes.", e);
     }
 
-    updateStudyTaxonomyMissingFields();
+    try {
+      updateStudyTaxonomyMissingFields();
+    } catch (Exception e) {
+      logger.error("Error when trying to updateStudyTaxonomyMissingFields.", e);
+    }
+
+    try {
+    updateFixWrongKeysInStudyTaxonomy();
+    } catch (Exception e) {
+      logger.error("Error when trying to updateFixWrongKeysInStudyTaxonomy.", e);
+    }
+  }
+
+  private void updateFixWrongKeysInStudyTaxonomy() {
+
+    TaxonomyEntityWrapper studyTaxonomy = taxonomyConfigRepository.findOne("study");
+    List<Vocabulary> vocabularies = studyTaxonomy.getTaxonomy().getVocabularies();
+
+    vocabularies.stream()
+      .filter(vocabulary -> vocabulary.getName().equals("numberOfParticipants-sample-number") || vocabulary.getName().equals("numberOfParticipants-sample-range"))
+      .map(TaxonomyEntity::getAttributes)
+      .forEach(attributes -> {
+        attributes.put("field", "model." + attributes.get("field"));
+        attributes.put("alias", "model-" + attributes.get("alias"));
+      });
+
+    taxonomyConfigRepository.save(studyTaxonomy);
   }
 
   private void updateStudyTaxonomyMissingFields() {
