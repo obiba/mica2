@@ -80,7 +80,7 @@ public class Mica220Upgrade implements UpgradeStep {
       .map(TaxonomyEntity::getAttributes)
       .forEach(attributes -> {
         attributes.put("field", "model." + attributes.get("field"));
-        attributes.put("alias", attributes.get("field").replace(".", "-"));
+        attributes.put("alias", "model-" + attributes.get("alias"));
       });
 
     taxonomyConfigRepository.save(studyTaxonomy);
