@@ -36,21 +36,26 @@ public class Mica220Upgrade implements UpgradeStep {
 
   @Override
   public Version getAppliesTo() {
-    return new Version(2, 4, 0);
+    return new Version(2, 2, 0);
   }
 
   @Override
   public void execute(Version currentVersion) {
 
     try {
-      execute();
+      updateBioSamplesAttributes();
     } catch (IOException e) {
       logger.info("Don't need migration to mica 2.2.0", e);
     }
 
+    updateStudyTaxonomyMissingFields();
   }
 
-  private void execute() throws IOException {
+  private void updateStudyTaxonomyMissingFields() {
+    mongoTemplate.execute(db -> db.eval(addMissingAttributesInStudyTaxonomy()));
+  }
+
+  private void updateBioSamplesAttributes() throws IOException {
 
     List<StudyConfig> studyConfigs = studyConfigRepository.findAll();
     if (studyConfigs.size() != 1)
@@ -79,14 +84,6 @@ public class Mica220Upgrade implements UpgradeStep {
   private void updateAttributeNameInStudies() {
     mongoTemplate.execute(db -> db.eval(addBioSamplesAttributeIfNeededQuery()));
     mongoTemplate.execute(db -> db.eval(removeOutdatedBioSamplesAttributeQuery()));
-  }
-
-  private String addBioSamplesAttributeIfNeededQuery() {
-    return "db.study.updateMany({\"model.access\":\"biosamples\"}, {$push:{\"model.access\":\"bio_samples\"}})";
-  }
-
-  private String removeOutdatedBioSamplesAttributeQuery() {
-    return "db.study.updateMany({\"model.access\":\"biosamples\"}, {$pull:{\"model.access\":\"biosamples\"}})";
   }
 
   private void replacePropertyInSchema(JsonNode schemaNode) {
@@ -142,5 +139,46 @@ public class Mica220Upgrade implements UpgradeStep {
     }
 
     return false;
+  }
+
+  private String addBioSamplesAttributeIfNeededQuery() {
+    return "db.study.updateMany({\"model.access\":\"biosamples\"}, {$push:{\"model.access\":\"bio_samples\"}})";
+  }
+
+  private String removeOutdatedBioSamplesAttributeQuery() {
+    return "db.study.updateMany({\"model.access\":\"biosamples\"}, {$pull:{\"model.access\":\"biosamples\"}})";
+  }
+
+  private String addMissingAttributesInStudyTaxonomy() {
+    return "db.taxonomyEntityWrapper.find({" +
+      "    \"_id\": \"study\"," +
+      "    \"taxonomy.vocabularies.name\": \"access\"," +
+      "    \"taxonomy.vocabularies.name\": \"start\"," +
+      "    \"taxonomy.vocabularies.name\": \"end\"" +
+      "}).forEach(function (studyTaxo) {" +
+      "" +
+      "    studyTaxo.taxonomy.vocabularies.forEach(function (vocabulary) {" +
+      "" +
+      "        if (vocabulary.attributes.field == undefined) {" +
+      "" +
+      "            if (vocabulary.name == 'access') {" +
+      "                vocabulary.attributes.field = \"model.access\";" +
+      "                vocabulary.attributes.alias = \"model-access\";" +
+      "            }" +
+      "" +
+      "            if (vocabulary.name == 'start') {" +
+      "                vocabulary.attributes.field = \"model.startYear\";" +
+      "                vocabulary.attributes.alias = \"model-startYear\";" +
+      "            }" +
+      "" +
+      "            if (vocabulary.name == 'end') {" +
+      "                vocabulary.attributes.field = \"model.endYear\";" +
+      "                vocabulary.attributes.alias = \"model-endYear\";" +
+      "            }" +
+      "        }" +
+      "    });" +
+      "" +
+      "    db.taxonomyEntityWrapper.update({'_id': studyTaxo._id}, studyTaxo);" +
+      "});";
   }
 }
