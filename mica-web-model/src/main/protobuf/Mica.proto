@@ -67,26 +67,16 @@ message EntityStateDto {
     optional EntityStateDto networkSummaryState = 1000;
   }
 
+  extend StudySummaryDto {
+    optional EntityStateDto studySummaryState = 1000;
+  }
+
   extend DatasetDto {
     optional EntityStateDto datasetState = 1002;
   }
 
   extend ProjectDto {
     optional EntityStateDto projectState = 1000;
-  }
-}
-
-message StudyStateDto {
-  optional string publishedTag = 1;
-  required int32 revisionsAhead = 2;
-  optional string revisionStatus = 3;
-  optional string publicationDate = 4;
-  optional string publishedBy = 5;
-  optional string publishedId = 6;
-  optional PermissionsDto permissions = 7;
-
-  extend StudySummaryDto {
-    optional StudyStateDto state = 1000;
   }
 }
 

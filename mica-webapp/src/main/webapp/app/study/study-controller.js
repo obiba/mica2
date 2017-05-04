@@ -361,7 +361,7 @@ mica.study
       }
 
       var initializeState = function(studyState) {
-        $scope.permissions = DocumentPermissionsService.state(studyState['obiba.mica.StudyStateDto.state']);
+        $scope.permissions = DocumentPermissionsService.state(studyState['obiba.mica.EntityStateDto.studySummaryState']);
       };
 
       $scope.fetchStudy = fetchStudy;
