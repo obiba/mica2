@@ -26,6 +26,8 @@ public class StudyDataset extends Dataset {
 
   private StudyTable studyTable;
 
+  private String start;
+
   public StudyTable getStudyTable() {
     return studyTable;
   }
@@ -52,5 +54,13 @@ public class StudyDataset extends Dataset {
         put(self.getClass().getSimpleName(), self);
       }
     };
+  }
+
+  public String getStart() {
+    return start;
+  }
+
+  public void setStart(String start) {
+    this.start = start;
   }
 }

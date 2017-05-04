@@ -12,6 +12,7 @@ package org.obiba.mica.dataset.service;
 
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import javax.inject.Inject;
@@ -44,6 +45,8 @@ import org.obiba.mica.file.FileUtils;
 import org.obiba.mica.file.service.FileSystemService;
 import org.obiba.mica.micaConfig.service.OpalService;
 import org.obiba.mica.network.service.NetworkService;
+import org.obiba.mica.study.date.PersistableYearMonth;
+import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.service.StudyService;
 import org.obiba.opal.rest.client.magma.RestValueTable;
 import org.obiba.opal.web.model.Search;
@@ -229,6 +232,32 @@ public class StudyDatasetService extends DatasetService<StudyDataset, StudyDatas
     eventBus.post(new StudyDatasetIndexedEvent());
   }
 
+  public List<DatasetVariable> processVariablesForStudyDataset(StudyDataset dataset, Iterable<DatasetVariable> variables) {
+    Study study = studyService.findStudy(dataset.getStudyTable().getStudyId());
+
+    PersistableYearMonth persistableYearMonth = studyService
+      .getPersistableYearMonthFor(study, dataset.getStudyTable().getPopulationId(),
+        dataset.getStudyTable().getDataCollectionEventId());
+
+    if (persistableYearMonth != null) {
+      dataset.setStart(persistableYearMonth.getSortableYearMonth());
+      return processVariablesForStudyDataset(persistableYearMonth, variables);
+    } else {
+      return Lists.newArrayList(variables);
+    }
+  }
+
+  private List<DatasetVariable> processVariablesForStudyDataset(
+    PersistableYearMonth persistableYearMonthFor, Iterable<DatasetVariable> variables) {
+    return StreamSupport.stream(variables.spliterator(), false)
+      .map(datasetVariable -> {
+        if(persistableYearMonthFor != null)
+          datasetVariable.setEarliestStart(persistableYearMonthFor.getSortableYearMonth());
+
+        return datasetVariable;
+      }).collect(toList());
+  }
+
   @Override
   @NotNull
   protected RestValueTable getTable(@NotNull StudyDataset dataset) throws NoSuchValueTableException {
@@ -240,7 +269,7 @@ public class StudyDatasetService extends DatasetService<StudyDataset, StudyDatas
   public Iterable<DatasetVariable> getDatasetVariables(StudyDataset dataset) {
     if (dataset.hasStudyTable()) {
       return StreamSupport.stream(getVariables(dataset).spliterator(), false)
-          .map(input -> new DatasetVariable(dataset, input)).collect(toList());
+        .map(input -> new DatasetVariable(dataset, input)).collect(toList());
     }
     return Lists.newArrayList();
   }
