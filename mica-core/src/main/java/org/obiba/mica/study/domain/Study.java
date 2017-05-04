@@ -10,68 +10,35 @@
 
 package org.obiba.mica.study.domain;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
-import javax.annotation.Nullable;
-import javax.validation.constraints.NotNull;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Strings;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import org.hibernate.validator.constraints.URL;
-import org.obiba.mica.core.domain.AbstractModelAware;
-import org.obiba.mica.core.domain.Attribute;
-import org.obiba.mica.core.domain.AttributeAware;
-import org.obiba.mica.core.domain.Attributes;
-import org.obiba.mica.core.domain.Authorization;
-import org.obiba.mica.core.domain.LocalizedString;
-import org.obiba.mica.core.domain.Membership;
-import org.obiba.mica.core.domain.Person;
-import org.obiba.mica.core.domain.PersonAware;
+import org.obiba.mica.core.domain.*;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.study.date.PersitableYear;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import javax.annotation.Nullable;
+import javax.validation.constraints.NotNull;
+import java.io.Serializable;
+import java.util.*;
+
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 
 /**
- * A Study.
+ * A collection Study: a study that describes the context (research objectives, populations and more) of collected data.
  */
 @Document
-public class Study extends AbstractModelAware implements AttributeAware, PersonAware {
+public class Study extends BaseStudy implements AttributeAware {
 
   private static final long serialVersionUID = 6559914069652243954L;
-
-  @NotNull
-  private LocalizedString name;
-
-  private LocalizedString acronym;
-
-  private Attachment logo;
-
-  private Map<String, List<Membership>> memberships = new HashMap<String, List<Membership>>() {
-    {
-      put(Membership.CONTACT, Lists.newArrayList());
-      put(Membership.INVESTIGATOR, Lists.newArrayList());
-    }
-  };
-
-  private LocalizedString objectives;
 
   @URL
   private String website;
@@ -105,61 +72,8 @@ public class Study extends AbstractModelAware implements AttributeAware, PersonA
 
   private SortedSet<Population> populations = Sets.newTreeSet();
 
-  @URL
-  private String opal;
-
   private Attributes attributes;
 
-  public LocalizedString getName() {
-    return name;
-  }
-
-  public void setName(LocalizedString name) {
-    this.name = name;
-  }
-
-  public LocalizedString getAcronym() {
-    return acronym;
-  }
-
-  public void setAcronym(LocalizedString acronym) {
-    this.acronym = acronym;
-  }
-
-  public Attachment getLogo() {
-    return logo;
-  }
-
-  public boolean hasLogo() {
-    return logo != null;
-  }
-
-  public void setLogo(Attachment logo) {
-    this.logo = logo;
-  }
-
-  @Override
-  public void addToPerson(Membership membership) {
-    membership.getPerson().addStudy(this, membership.getRole());
-  }
-
-  @Override
-  public void removeFromPerson(Membership membership) {
-    membership.getPerson().removeStudy(this, membership.getRole());
-  }
-
-  @Override
-  public void removeFromPerson(Person person) {
-    person.removeStudy(this);
-  }
-
-  public LocalizedString getObjectives() {
-    return objectives;
-  }
-
-  public void setObjectives(LocalizedString objectives) {
-    this.objectives = objectives;
-  }
 
   public String getWebsite() {
     return website;
@@ -170,14 +84,6 @@ public class Study extends AbstractModelAware implements AttributeAware, PersonA
     if (!Strings.isNullOrEmpty(website) && !website.startsWith("http")) {
       this.website = "http://" + website;
     }
-  }
-
-  public String getOpal() {
-    return opal;
-  }
-
-  public void setOpal(String opal) {
-    this.opal = opal;
   }
 
   public Authorization getSpecificAuthorization() {
@@ -341,13 +247,10 @@ public class Study extends AbstractModelAware implements AttributeAware, PersonA
     newPopulations.forEach(this::addPopulation);
   }
 
-  public Set<String> membershipRoles() {
-    return this.memberships.keySet();
-  }
 
   @Override
   protected MoreObjects.ToStringHelper toStringHelper() {
-    return super.toStringHelper().add("name", name);
+    return super.toStringHelper().add("name", getName());
   }
 
   public Attributes getAttributes() {
@@ -403,11 +306,11 @@ public class Study extends AbstractModelAware implements AttributeAware, PersonA
   @Deprecated
   public void setInvestigators(List<Person> investigators) {
     if (investigators == null) return;
-    List<Membership> oldMemberships = memberships.get(Membership.INVESTIGATOR);
+    List<Membership> oldMemberships = getMemberships().get(Membership.INVESTIGATOR);
     Set<Membership> newMemberships = investigators.stream().map(investigator -> new Membership(investigator, Membership.INVESTIGATOR)).collect(toSet());
     newMemberships.addAll(oldMemberships);
 
-    memberships.put(Membership.INVESTIGATOR, new ArrayList<>(newMemberships));
+    getMemberships().put(Membership.INVESTIGATOR, new ArrayList<>(newMemberships));
   }
 
   @JsonIgnore
@@ -420,65 +323,11 @@ public class Study extends AbstractModelAware implements AttributeAware, PersonA
   @Deprecated
   public void setContacts(List<Person> contacts) {
     if (contacts == null) return;
-    List<Membership> oldMemberships = memberships.get(Membership.CONTACT);
+    List<Membership> oldMemberships = getMemberships().get(Membership.CONTACT);
     Set<Membership> newMemberships = contacts.stream().map(contact -> new Membership(contact, Membership.CONTACT)).collect(toSet());
     newMemberships.addAll(oldMemberships);
 
-    memberships.put(Membership.CONTACT, new ArrayList<>(newMemberships));
-  }
-
-  @Override
-  public List<Person> getAllPersons() {
-    return getMemberships().values().stream().flatMap(List::stream).map(Membership::getPerson).distinct()
-      .collect(toList());
-  }
-
-  @Override
-  public List<Membership> getAllMemberships() {
-    return getMemberships().values().stream().flatMap(List::stream).collect(toList());
-  }
-
-  public Map<String, List<Membership>> getMemberships() {
-    return memberships;
-  }
-
-  public void setMemberships(Map<String, List<Membership>> memberships) {
-    if (memberships == null) {
-      this.memberships.clear();
-    } else {
-      this.memberships = memberships;
-    }
-    Map<String, Person> seen = Maps.newHashMap();
-
-    this.memberships.entrySet().forEach(e -> e.getValue().forEach(m -> {
-      if (seen.containsKey(m.getPerson().getId())) {
-        m.setPerson(seen.get(m.getPerson().getId()));
-      } else if (!m.getPerson().isNew()) {
-        seen.put(m.getPerson().getId(), m.getPerson());
-      }
-    }));
-  }
-
-  private void replaceExisting(List<Person> persons) {
-    List<Person> existing = this.memberships.values().stream().flatMap(List::stream).map(Membership::getPerson)
-      .collect(toList());
-
-    ImmutableList.copyOf(persons).forEach(p -> {
-      if (existing.contains(p)) {
-        int idx = persons.indexOf(p);
-        persons.remove(p);
-        persons.add(idx, existing.get(existing.indexOf(p)));
-      }
-    });
-  }
-
-  public List<Person> removeRole(String role) {
-    List<Membership> members = this.memberships.getOrDefault(role, Lists.newArrayList());
-    this.memberships.remove(role);
-    return members.stream().map(m -> {
-      m.getPerson().removeStudy(this, role);
-      return m.getPerson();
-    }).collect(toList());
+    getMemberships().put(Membership.CONTACT, new ArrayList<>(newMemberships));
   }
 
   @Override
@@ -544,49 +393,21 @@ public class Study extends AbstractModelAware implements AttributeAware, PersonA
       designs.add(design);
     }
 
-    public void setDesigns(List<String> designs) {
-      this.designs = designs;
-    }
-
-    public String getDesign() {
-      return design;
-    }
-
     public void setDesign(String design) {
       this.design = design;
-    }
-
-    public LocalizedString getOtherDesign() {
-      return otherDesign;
     }
 
     public void setOtherDesign(LocalizedString otherDesign) {
       this.otherDesign = otherDesign;
     }
 
-    public LocalizedString getFollowUpInfo() {
-      return followUpInfo;
-    }
-
     public void setFollowUpInfo(LocalizedString followUpInfo) {
       this.followUpInfo = followUpInfo;
-    }
-
-    public List<String> getRecruitments() {
-      return recruitments;
     }
 
     public void addRecruitment(@NotNull String recruitment) {
       if (recruitments == null) recruitments = new ArrayList<>();
       recruitments.add(recruitment);
-    }
-
-    public void setRecruitments(List<String> recruitments) {
-      this.recruitments = recruitments;
-    }
-
-    public LocalizedString getOtherRecruitment() {
-      return otherRecruitment;
     }
 
     public void setOtherRecruitment(LocalizedString otherRecruitment) {
