@@ -360,19 +360,6 @@ public class Network extends AbstractModelAware implements AttributeAware, Perso
     this.opal = opal;
   }
 
-  private void replaceExisting(List<Person> persons) {
-    List<Person> existing = this.memberships.values().stream().flatMap(List::stream).map(Membership::getPerson)
-      .distinct().collect(toList());
-
-    ImmutableList.copyOf(persons).forEach(p -> {
-      if(existing.contains(p)) {
-        int idx = persons.indexOf(p);
-        persons.remove(p);
-        persons.add(idx, existing.get(existing.indexOf(p)));
-      }
-    });
-  }
-
   public List<String> getNetworkIds() {
     return networkIds;
   }

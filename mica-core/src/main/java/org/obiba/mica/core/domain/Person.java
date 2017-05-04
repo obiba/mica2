@@ -18,7 +18,7 @@ import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.NotBlank;
 import org.obiba.mica.network.domain.Network;
-import org.obiba.mica.study.domain.Study;
+import org.obiba.mica.study.domain.BaseStudy;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.domain.Persistable;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -192,17 +192,17 @@ public class Person implements Persistable<String> {
     this.studyMemberships = studyMemberships;
   }
 
-  public void addStudy(@NotNull Study study, @NotNull String role) {
+  public void addStudy(@NotNull BaseStudy study, @NotNull String role) {
     Membership membership = Membership.withIdAndRole(study.getId(), role);
 
     if(!studyMemberships.contains(membership)) this.studyMemberships.add(membership);
   }
 
-  public void removeStudy(@NotNull Study study) {
+  public void removeStudy(@NotNull BaseStudy study) {
     studyMemberships = studyMemberships.stream().filter(m -> !m.getParentId().equals(study.getId())).collect(toList());
   }
 
-  public void removeStudy(@NotNull Study study, @NotNull String role) {
+  public void removeStudy(@NotNull BaseStudy study, @NotNull String role) {
     Membership membership = Membership.withIdAndRole(study.getId(), role);
 
     if(studyMemberships.contains(membership)) this.studyMemberships.remove(membership);
