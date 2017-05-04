@@ -25,7 +25,7 @@
         <i class="fa fa-print"></i> <span translate>global.print</span>
       </a>
 
-      <status-buttons class="inline" state="studySummary['obiba.mica.StudyStateDto.state']" on-publish="publish(true)" on-un-publish="publish(false)" on-delete="delete(study)" to-draft="toStatus('DRAFT')" to-under-review="toStatus('UNDER_REVIEW')" to-deleted="toStatus('DELETED')">
+      <status-buttons class="inline" state="studySummary['obiba.mica.EntityStateDto.studySummaryState']" on-publish="publish(true)" on-un-publish="publish(false)" on-delete="delete(study)" to-draft="toStatus('DRAFT')" to-under-review="toStatus('UNDER_REVIEW')" to-deleted="toStatus('DELETED')">
       </status-buttons>
 
     </div>
@@ -35,7 +35,7 @@
     <small class="help-block inline">{{'global.lastUpdate' | translate}}: {{studySummary.timestamps.lastUpdate |
       amDateFormat : 'lll'}}
     </small>
-    <publish-status class="inline" state="studySummary['obiba.mica.StudyStateDto.state']"></publish-status>
+    <publish-status class="inline" state="studySummary['obiba.mica.EntityStateDto.studySummaryState']"></publish-status>
   </p>
 
   <div ng-include="'app/study/views/study-view-details.html'"></div>

@@ -193,7 +193,7 @@ class StudySummaryDtos {
 
   @NotNull
   Mica.StudySummaryDto asDto(@NotNull Study study, @NotNull StudyState studyState) {
-    Mica.StudyStateDto.Builder stateBuilder = Mica.StudyStateDto.newBuilder()
+    Mica.EntityStateDto.Builder stateBuilder = Mica.EntityStateDto.newBuilder()
       .setRevisionsAhead(studyState.getRevisionsAhead()) //
       .setRevisionStatus(studyState.getRevisionStatus().name());
 
@@ -223,7 +223,7 @@ class StudySummaryDtos {
 
     builder.setPublished(studyState.isPublished());
 
-    return builder.setExtension(Mica.StudyStateDto.state, stateBuilder.build()).build();
+    return builder.setExtension(Mica.EntityStateDto.studySummaryState, stateBuilder.build()).build();
   }
 
   @NotNull

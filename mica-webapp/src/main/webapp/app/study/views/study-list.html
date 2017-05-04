@@ -71,20 +71,20 @@
             </ul>
           </td>
           <td>
-            <div publish-status state="study['obiba.mica.StudyStateDto.state']"></div>
+            <div publish-status state="study['obiba.mica.EntityStateDto.studySummaryState']"></div>
           </td>
           <td>
-            {{'publish.status.' + study['obiba.mica.StudyStateDto.state'].revisionStatus | translate}}
+            {{'publish.status.' + study['obiba.mica.EntityStateDto.studySummaryState'].revisionStatus | translate}}
           </td>
           <td>
             <ul class="list-inline">
-              <li ng-if="study['obiba.mica.StudyStateDto.state'].permissions.edit && study['obiba.mica.StudyStateDto.state'].revisionStatus === 'DRAFT'">
+              <li ng-if="study['obiba.mica.EntityStateDto.studySummaryState'].permissions.edit && study['obiba.mica.EntityStateDto.studySummaryState'].revisionStatus === 'DRAFT'">
                 <a ng-href="#/study/{{study.id}}/edit" title="{{'edit' | translate}}"><i class="fa fa-pencil"></i></a>
               </li>
-              <li ng-if="study['obiba.mica.StudyStateDto.state'].permissions.delete && study['obiba.mica.StudyStateDto.state'].revisionStatus === 'DELETED'">
+              <li ng-if="study['obiba.mica.EntityStateDto.studySummaryState'].permissions.delete && study['obiba.mica.EntityStateDto.studySummaryState'].revisionStatus === 'DELETED'">
                 <a href ng-click="deleteStudy(study)" title="{{'delete' | translate}}"><i class="fa fa-trash-o"></i></a>
               </li>
-              <li ng-if="study['obiba.mica.StudyStateDto.state'].revisionStatus === 'UNDER_REVIEW'">
+              <li ng-if="study['obiba.mica.EntityStateDto.studySummaryState'].revisionStatus === 'UNDER_REVIEW'">
                 <a ng-href="#/study/{{study.id}}" title="{{'view' | translate}}"><i class="fa fa-eye"></i></a>
               </li>
             </ul>
