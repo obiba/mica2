@@ -33,6 +33,7 @@ import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.bucket.range.RangeBuilder;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.bucket.terms.TermsBuilder;
+import org.obiba.mica.micaConfig.service.helper.AggregationAliasHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.YamlPropertiesFactoryBean;
@@ -48,31 +49,27 @@ public class AggregationYamlParser {
 
   private static final Logger log = LoggerFactory.getLogger(AggregationYamlParser.class);
 
-  private static final String FIELD_SEPARATOR = ".";
-
-  private static final String NAME_SEPARATOR = "-";
-
   private static final String UND_LOCALE = Locale.forLanguageTag("und").toLanguageTag();
 
-  private static final String UND_LOCALE_FIELD = FIELD_SEPARATOR + UND_LOCALE;
+  private static final String UND_LOCALE_FIELD = AggregationAliasHelper.FIELD_SEPARATOR + UND_LOCALE;
 
-  private static final String UND_LOCALE_NAME = NAME_SEPARATOR + UND_LOCALE;
+  private static final String UND_LOCALE_NAME = AggregationAliasHelper.NAME_SEPARATOR + UND_LOCALE;
 
   private static final String DEFAULT_LOCALE = Locale.ENGLISH.getLanguage();
 
-  private static final String DEFAULT_LOCALE_FIELD = FIELD_SEPARATOR + DEFAULT_LOCALE;
+  private static final String DEFAULT_LOCALE_FIELD = AggregationAliasHelper.FIELD_SEPARATOR + DEFAULT_LOCALE;
 
-  private static final String DEFAULT_LOCALE_NAME = NAME_SEPARATOR + DEFAULT_LOCALE;
+  private static final String DEFAULT_LOCALE_NAME = AggregationAliasHelper.NAME_SEPARATOR + DEFAULT_LOCALE;
 
-  private static final String PROPERTIES = FIELD_SEPARATOR + "properties";
+  private static final String PROPERTIES = AggregationAliasHelper.FIELD_SEPARATOR + "properties";
 
-  public static final String TYPE = PROPERTIES + FIELD_SEPARATOR + "type";
+  public static final String TYPE = PROPERTIES + AggregationAliasHelper.FIELD_SEPARATOR + "type";
 
-  public static final String RANGES = PROPERTIES + FIELD_SEPARATOR + "ranges";
+  public static final String RANGES = PROPERTIES + AggregationAliasHelper.FIELD_SEPARATOR + "ranges";
 
-  public static final String ALIAS = PROPERTIES + FIELD_SEPARATOR + "alias";
+  public static final String ALIAS = PROPERTIES + AggregationAliasHelper.FIELD_SEPARATOR + "alias";
 
-  public static final String LOCALIZED = PROPERTIES + FIELD_SEPARATOR + "localized";
+  public static final String LOCALIZED = PROPERTIES + AggregationAliasHelper.FIELD_SEPARATOR + "localized";
 
   public static final String AGG_TERMS = "terms";
 
@@ -200,14 +197,15 @@ public class AggregationYamlParser {
   }
 
   private Map<String, String> getFields(String field, String alias, Boolean localized) {
-    String name = formatName(Strings.isNullOrEmpty(alias) ? field : alias);
+    String name = AggregationAliasHelper.formatName(Strings.isNullOrEmpty(alias) ? field : alias);
     final Map<String, String> fields = new HashMap<>();
     if(localized) {
       fields.put(name + UND_LOCALE_NAME, field + UND_LOCALE_FIELD);
 
       if(locales != null) {
         locales.stream()
-          .forEach(locale -> fields.put(name + NAME_SEPARATOR + locale, field + FIELD_SEPARATOR + locale));
+          .forEach(locale -> fields.put(name + AggregationAliasHelper.NAME_SEPARATOR + locale,
+            field + AggregationAliasHelper.FIELD_SEPARATOR + locale));
       } else {
         fields.put(name + DEFAULT_LOCALE_NAME, field + DEFAULT_LOCALE_FIELD);
       }
@@ -229,13 +227,5 @@ public class AggregationYamlParser {
     return !localized && !Strings.isNullOrEmpty(type) && type.matches(String.format("^(%s|%s|%s)$", AGG_STATS, AGG_TERMS, AGG_RANGE))
       ? type
       : AGG_TERMS;
-  }
-
-  public static String formatName(String name) {
-    return name.replaceAll("\\" + FIELD_SEPARATOR, NAME_SEPARATOR);
-  }
-
-  public static String unformatName(String name) {
-    return name.replaceAll(NAME_SEPARATOR, FIELD_SEPARATOR);
   }
 }

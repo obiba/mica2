@@ -42,6 +42,7 @@ import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.micaConfig.service.TaxonomyService;
+import org.obiba.mica.micaConfig.service.helper.AggregationAliasHelper;
 import org.obiba.mica.micaConfig.service.helper.AggregationMetaDataProvider;
 import org.obiba.mica.search.CountStatsData;
 import org.obiba.mica.search.DocumentQueryHelper;
@@ -217,10 +218,10 @@ public abstract class AbstractDocumentQuery {
           properties.put(field, "");
           String type = vocabulary.getAttributeValue("type");
           if("integer".equals(type) || "decimal".equals(type)) {
-            if(vocabulary.hasTerms()) {
+            if("true".equals(vocabulary.getAttributeValue("range"))) {
               addProperty(properties, field + AggregationYamlParser.TYPE, AggregationYamlParser.AGG_RANGE, multipleTypes);
-              properties.put(field + AggregationYamlParser.RANGES, vocabulary.getTerms().stream().map(
-                TaxonomyEntity::getName).collect(Collectors.joining(",")));
+              properties.put(field + AggregationYamlParser.RANGES,
+                vocabulary.getTerms().stream().map(TaxonomyEntity::getName).collect(Collectors.joining(",")));
             } else {
               addProperty(properties, field + AggregationYamlParser.TYPE, AggregationYamlParser.AGG_STATS, multipleTypes);
             }
@@ -585,7 +586,7 @@ public abstract class AbstractDocumentQuery {
   protected Map<String, Integer> getDocumentCounts(String joinField) {
     if(resultDto == null) return Maps.newHashMap();
     return resultDto.getAggsList().stream() //
-      .filter(agg -> joinField.equals(AggregationYamlParser.unformatName(agg.getAggregation()))) //
+      .filter(agg -> joinField.equals(AggregationAliasHelper.unformatName(agg.getAggregation()))) //
       .map(d -> d.getExtension(MicaSearch.TermsAggregationResultDto.terms)) //
       .flatMap(Collection::stream) //
       .filter(s -> s.getCount() > 0) //
@@ -595,13 +596,13 @@ public abstract class AbstractDocumentQuery {
   protected Map<String, Integer> getDocumentBucketCounts(String joinField, String bucketField, String bucketValue) {
     if(resultDto == null) return Maps.newHashMap();
     return resultDto.getAggsList().stream() //
-        .filter(agg -> bucketField.equals(AggregationYamlParser.unformatName(agg.getAggregation()))) //
+        .filter(agg -> bucketField.equals(AggregationAliasHelper.unformatName(agg.getAggregation()))) //
         .map(d -> d.getExtension(MicaSearch.TermsAggregationResultDto.terms)) //
         .flatMap(Collection::stream) //
         .filter(t -> bucketValue.equals(t.getKey())) //
         .map(t -> t.getAggsList())
         .flatMap(Collection::stream)
-        .filter(agg -> joinField.equals(AggregationYamlParser.unformatName(agg.getAggregation()))) //
+        .filter(agg -> joinField.equals(AggregationAliasHelper.unformatName(agg.getAggregation()))) //
         .map(d -> d.getExtension(MicaSearch.TermsAggregationResultDto.terms)) //
         .flatMap(Collection::stream) //
         .filter(s -> s.getCount() > 0) //
@@ -611,7 +612,7 @@ public abstract class AbstractDocumentQuery {
   protected List<String> getResponseDocumentIds(List<String> fields, List<MicaSearch.AggregationResultDto> aggDtos) {
     log.debug("start getResponseDocumentIds");
     List<String> ids = aggDtos.stream() //
-      .filter(agg -> fields.contains(AggregationYamlParser.unformatName(agg.getAggregation()))) //
+      .filter(agg -> fields.contains(AggregationAliasHelper.unformatName(agg.getAggregation()))) //
       .map(d -> d.getExtension(MicaSearch.TermsAggregationResultDto.terms)) //
       .flatMap((d) -> d.stream()) //
       .filter(s -> s.getCount() > 0) //

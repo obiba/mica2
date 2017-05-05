@@ -53,8 +53,7 @@ public class TaxonomiesSearchResource extends AbstractTaxonomySearchResource {
     @QueryParam("query") String query, @QueryParam("locale") String locale) {
     TaxonomyTarget taxonomyTarget = getTaxonomyTarget(target);
 
-    List<String> filteredVocabularies = filterVocabularies(taxonomyTarget, query, locale,
-      Lists.newArrayList(DEFAULT_EXCLUDE_FIELDS));
+    List<String> filteredVocabularies = filterVocabularies(taxonomyTarget, query, locale);
 
     Map<String, Map<String, List<String>>> taxoNamesMap = TaxonomyResolver
       .asMap(filteredVocabularies, filterTerms(taxonomyTarget, query, locale, filteredVocabularies));

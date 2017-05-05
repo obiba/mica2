@@ -21,6 +21,8 @@ import javax.inject.Inject;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Stream;
 
 @Component
 public class Mica220Upgrade implements UpgradeStep {
@@ -64,15 +66,44 @@ public class Mica220Upgrade implements UpgradeStep {
     }
 
     try {
-    updateFixWrongKeysInStudyTaxonomy();
+      updateFixWrongKeysInStudyTaxonomy();
     } catch (Exception e) {
       logger.error("Error when trying to updateFixWrongKeysInStudyTaxonomy.", e);
     }
+
+    try {
+      updateTaxonomiesWithRangeCriteria();
+    } catch (Exception e) {
+      logger.error("Error when trying to updateTaxonomiesWithRangeCriteria.", e);
+    }
+
+  }
+
+  private void updateTaxonomiesWithRangeCriteria() {
+    Stream.of("network", "study", "dataset", "variable", "taxonomy")
+      .forEach(name -> updateTaxonomyWithRangeCriteria(name));
+  }
+
+  void updateTaxonomyWithRangeCriteria(String name) {
+    TaxonomyEntityWrapper taxonomy = taxonomyConfigRepository.findOne(name);
+    if (taxonomy == null) return;
+
+    taxonomy.getTaxonomy().getVocabularies().stream()
+      .filter(v -> v.getName().endsWith("-range"))
+      .map(TaxonomyEntity::getAttributes)
+      .forEach(attributes -> {
+        attributes.put("alias", attributes.get("field").replaceAll("\\.", "-") + "-range");
+        attributes.put("range", "true");
+      });
+
+    taxonomyConfigRepository.save(taxonomy);
   }
 
   private void updateFixWrongKeysInStudyTaxonomy() {
 
     TaxonomyEntityWrapper studyTaxonomy = taxonomyConfigRepository.findOne("study");
+    if (studyTaxonomy == null) return;
+
     List<Vocabulary> vocabularies = studyTaxonomy.getTaxonomy().getVocabularies();
 
     vocabularies.stream()

@@ -1102,6 +1102,11 @@
           "delete-conflict": "Conflit lors de la suppression du réseau",
           "delete-conflict-message": "Conflits lors de suppression de réseau. Supprimez toutes les références vers les réseaux suivants: {{arg0}}"
         }
+      },
+      "taxonomy": {
+        "range-criterion-missing-terms": "Le critère '{{arg0}} doit avoir des termes pour définir ses intervalles de portée.",
+        "range-criterion-missing-range-attribute": "Le critère '{{arg0}}' avec des termes doit être marqué comme ayant des intervalles de portée.",
+        "duplicate-criterion-alias": "Le champ '{{arg0}}' a déjà un critère associé. Seul un champ numérique peut avoir deux critères, un critère discret et un critère de portée."
       }
     }
   },
@@ -1269,7 +1274,12 @@
       "hidden": "Caché",
       "hidden-help": "Un critère caché est exclu de la recherche.",
       "term-sort-key-help": "L'ordre dans lequel les termes du critère sont affichés.",
-      "terms-sort-key": "L'ordre d'affichage des termes"
+      "terms-sort-key": "L'ordre d'affichage des termes",
+      "range-aggregation": "A des intervalles de portées",
+      "range-aggregation-help": "Critère numérique avec des termes comme intervalles de portées.",
+      "error": {
+        "duplicate-criterion-alias": "Ce champ est déjà associé à un critère. Seul un champ numérique peut comporter deux critères, un critère discret et un critère de portée."
+      }
     },
     "term-dialog": {
       "add-term": "Ajouter Terme",
