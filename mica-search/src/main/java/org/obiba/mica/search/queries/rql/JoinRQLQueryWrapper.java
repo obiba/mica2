@@ -10,6 +10,7 @@
 
 package org.obiba.mica.search.queries.rql;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -27,6 +28,8 @@ import org.obiba.mica.search.queries.QueryWrapper;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+
+import static java.util.Arrays.asList;
 
 @Component
 @Scope("prototype")
@@ -51,6 +54,8 @@ public class JoinRQLQueryWrapper implements JoinQueryWrapper {
   private RQLQueryWrapper studyQueryWrapper;
 
   private RQLQueryWrapper networkQueryWrapper;
+
+  private List<RQLNode> nodeTypes = new ArrayList<>();
 
   public JoinRQLQueryWrapper() {}
 
@@ -81,6 +86,7 @@ public class JoinRQLQueryWrapper implements JoinQueryWrapper {
 
   private void initialize(ASTNode node) {
     RQLNode rqlNode = RQLNode.valueOf(node.getName().toUpperCase());
+    nodeTypes.add(rqlNode);
     switch(rqlNode) {
       case VARIABLE:
         variableQueryWrapper = new RQLQueryWrapper(node, new RqlFieldResolver(rqlNode, getVariableTaxonomies(), locale,
@@ -148,6 +154,12 @@ public class JoinRQLQueryWrapper implements JoinQueryWrapper {
   @Override
   public QueryWrapper getNetworkQueryWrapper() {
     return networkQueryWrapper;
+  }
+
+  @Override
+  public boolean searchOnNetworksOnly() {
+    return nodeTypes.contains(RQLNode.NETWORK) &&
+      nodeTypes.stream().noneMatch(rqlNode -> asList(RQLNode.STUDY, RQLNode.DATASET, RQLNode.VARIABLE).contains(rqlNode));
   }
 
   //
