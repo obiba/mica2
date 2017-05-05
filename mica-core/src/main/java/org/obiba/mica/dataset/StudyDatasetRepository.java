@@ -23,6 +23,9 @@ public interface StudyDatasetRepository extends MongoRepository<StudyDataset, St
 
   List<StudyDataset> findByStudyTableStudyId(String studyId);
 
+  List<StudyDataset> findByStudyTableStudyIdAndStudyTablePopulationIdAndStudyTableDataCollectionEventId(
+    String studyId, String populationId, String dataCollectionEventId);
+
   @Query("{'model' : { $exists : false }}")
   List<StudyDataset> findWithoutModel();
 }

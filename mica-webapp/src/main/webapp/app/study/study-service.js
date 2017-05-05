@@ -307,8 +307,9 @@ mica.study
     '$interpolate',
     'NOTIFICATION_EVENTS',
     'DraftStudyResource',
+    'StudyUpdateWarningService',
 
-    function($rootScope, $translate, $interpolate, NOTIFICATION_EVENTS, DraftStudyResource) {
+    function($rootScope, $translate, $interpolate, NOTIFICATION_EVENTS, DraftStudyResource, StudyUpdateWarningService) {
 
       var factory = {};
 
@@ -348,25 +349,7 @@ mica.study
               }
             }, function (response) {
               if (response.status === 409) {
-                var conflicts = '{{network ? networks + ": " + network + ". " : "" }}' +
-                  '{{harmonizationDataset ? harmonizationDatasets + ": " + harmonizationDataset + ". " : "" }}' +
-                  '{{studyDataset ? studyDatasets + ": " + studyDataset : "" }}';
-
-                $translate(['study.delete-conflict-message', 'networks', 'study-datasets', 'harmonization-datasets'])
-                  .then(function (translation) {
-                    $rootScope.$broadcast(NOTIFICATION_EVENTS.showNotificationDialog, {
-                      titleKey: 'study.delete-conflict',
-                      message: translation['study.delete-conflict-message'] + ' ' + $interpolate(conflicts)(
-                        {
-                          networks: translation.networks,
-                          harmonizationDatasets: translation['harmonization-datasets'],
-                          studyDatasets: translation['study-datasets'],
-                          network: response.data.network.join(', '),
-                          harmonizationDataset: response.data.harmonizationDataset.join(', '),
-                          studyDataset: response.data.studyDataset.join(', ')
-                        })
-                    });
-                  });
+                StudyUpdateWarningService.popup(response.data, 'study.delete-conflict', 'study.delete-conflict-message');
               } else {
                 $rootScope.$broadcast(NOTIFICATION_EVENTS.showNotificationDialog, {
                   titleKey: 'form-server-error',
@@ -381,4 +364,29 @@ mica.study
 
       return factory;
 
+    }])
+
+  .service('StudyUpdateWarningService', ['$rootScope', '$translate', '$interpolate', 'NOTIFICATION_EVENTS',
+    function ($rootScope, $translate, $interpolate, NOTIFICATION_EVENTS) {
+      this.popup = function (data, title, message) {
+        var conflicts = '{{network ? networks + ": " + network + ". " : "" }}' +
+          '{{harmonizationDataset ? harmonizationDatasets + ": " + harmonizationDataset + ". " : "" }}' +
+          '{{studyDataset ? studyDatasets + ": " + studyDataset : "" }}';
+
+        $translate([message, 'networks', 'study-datasets', 'harmonization-datasets'])
+          .then(function (translation) {
+            $rootScope.$broadcast(NOTIFICATION_EVENTS.showNotificationDialog, {
+              titleKey: title,
+              message: translation[message] + ' ' + $interpolate(conflicts)(
+                {
+                  networks: translation.networks,
+                  harmonizationDatasets: translation['harmonization-datasets'],
+                  studyDatasets: translation['study-datasets'],
+                  network: data.network.join(', '),
+                  harmonizationDataset: data.harmonizationDataset.join(', '),
+                  studyDataset: data.studyDataset.join(', ')
+                })
+            });
+          });
+      }
     }]);
