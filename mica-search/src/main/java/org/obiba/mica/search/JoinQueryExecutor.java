@@ -12,6 +12,7 @@ package org.obiba.mica.search;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Semaphore;
@@ -196,8 +197,8 @@ public class JoinQueryExecutor {
       List<String> joinedIds = executeJoin(type);
       CountStatsData countStats = countBuilder != null ? getCountStatsData(type) : null;
 
-      if(joinedIds != null && joinedIds.size() > 0) {
-       getDocumentQuery(type).query(joinedIds, countStats, scope);
+      if (joinQueryWrapper.searchOnNetworksOnly() || joinedIds != null && joinedIds.size() > 0) {
+        getDocumentQuery(type).query(joinQueryWrapper.searchOnNetworksOnly() ? Collections.emptyList() : joinedIds, countStats, scope);
       }
     } else {
       execute(type, scope, countBuilder);

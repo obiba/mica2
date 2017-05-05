@@ -25,4 +25,8 @@ public interface JoinQueryWrapper {
   QueryWrapper getStudyQueryWrapper();
 
   QueryWrapper getNetworkQueryWrapper();
+
+  default boolean searchOnNetworksOnly() {
+    return false;
+  }
 }
