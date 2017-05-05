@@ -17,7 +17,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -27,6 +26,7 @@ import javax.validation.constraints.NotNull;
 import org.joda.time.DateTime;
 import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.core.ModelAwareTranslator;
+import org.obiba.mica.core.domain.AbstractGitPersistable;
 import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.core.domain.PublishCascadingScope;
 import org.obiba.mica.core.repository.AttachmentRepository;
@@ -80,6 +80,8 @@ public class StudyService extends AbstractGitPersistableService<StudyState, Stud
 
   private static final Logger log = LoggerFactory.getLogger(StudyService.class);
 
+  private static final String SEPARATOR = ":";
+
   @Inject
   private StudyStateRepository studyStateRepository;
 
@@ -125,6 +127,14 @@ public class StudyService extends AbstractGitPersistableService<StudyState, Stud
 
   private void saveInternal(final Study study, String comment, boolean cascade) {
     log.info("Saving study: {}", study.getId());
+
+    // checks if population and dce are still the same
+    if (study.getId() != null) {
+      List<String> list = populationsOrDceAffected(study, studyRepository.findOne(study.getId()));
+      if (list != null && list.size() > 0) {
+        checkPopulationOrDceMissingConstraints(list);
+      }
+    }
 
     if (study.getLogo() != null && study.getLogo().isJustUploaded()) {
       fileStoreService.save(study.getLogo().getId());
@@ -301,9 +311,55 @@ public class StudyService extends AbstractGitPersistableService<StudyState, Stud
       findAllDraftStudies().forEach(s -> removeRoles(s, event.getRemovedRoles()));
   }
 
+  public Map<String, List<String>> getPotentialConflicts(Study study) {
+    List<String> dceUIDs = toListOfDceUids(study, true);
+
+    List<String> studyDatasetIds = findStudyDatasetDependencies(dceUIDs);
+    List<String> harmoDatasetIds = findHarmonizedDatasetDependencies(dceUIDs);
+    List<String> networkIds = networkRepository.findByStudyIds(study.getId()).stream()
+      .map(AbstractGitPersistable::getId).collect(toList());
+
+    if (!harmoDatasetIds.isEmpty() || !studyDatasetIds.isEmpty() || !networkIds.isEmpty()) {
+      return new HashMap<String, List<String>>() {{
+        put("harmonizationDataset", harmoDatasetIds);
+        put("studyDataset", studyDatasetIds);
+        put("network", networkIds);
+      }};
+    }
+
+    return null;
+  }
+
   //
   // Private methods
   //
+  private List<String> populationsOrDceAffected(Study study, Study oldStudy) {
+    if (oldStudy != null) {
+      List<String> newDceUIDs = toListOfDceUids(study, false);
+      List<String> oldDceUIDs = toListOfDceUids(oldStudy, false);
+
+      boolean isChangeSignificant = newDceUIDs.size() <= oldDceUIDs.size() && !newDceUIDs.containsAll(oldDceUIDs);
+      if(isChangeSignificant) {
+        oldDceUIDs.removeAll(newDceUIDs);
+        return oldDceUIDs;
+      } else return null;
+    } else return null;
+  }
+
+  private void checkPopulationOrDceMissingConstraints(List<String> dceUIDs) {
+    List<String> studyDatasetIds = findStudyDatasetDependencies(dceUIDs);
+    List<String> harmoDatasetIds = findHarmonizedDatasetDependencies(dceUIDs);
+
+    if (!harmoDatasetIds.isEmpty() || !studyDatasetIds.isEmpty()) {
+      Map<String, List<String>> conflicts = new HashMap<String, List<String>>() {{
+        put("harmonizationDataset", harmoDatasetIds);
+        put("studyDataset", studyDatasetIds);
+      }};
+
+      throw new ConstraintException(conflicts);
+    }
+  }
+
   private void checkStudyConstraints(Study study) {
     List<String> harmonizationDatasetsIds = harmonizationDatasetRepository.findByStudyTablesStudyId(study.getId())
       .stream().map(h -> h.getId()).collect(toList());
@@ -387,5 +443,42 @@ public class StudyService extends AbstractGitPersistableService<StudyState, Stud
     if (study.getAcronym() == null || study.getAcronym().isEmpty()) {
       study.setAcronym(study.getName().asAcronym());
     }
+  }
+
+  // from dataCollectionEventUIDs
+  private List<String> findStudyDatasetDependencies(List<String> concatenatedIds) {
+    return concatenatedIds.stream()
+      .map(o -> {
+        String[] split = o.split(SEPARATOR);
+        return studyDatasetRepository.findByStudyTableStudyIdAndStudyTablePopulationIdAndStudyTableDataCollectionEventId(
+          split[0], split[1], split[2]);
+      })
+      .reduce(Lists.newArrayList(), this::listAddAll).stream()
+      .map(AbstractGitPersistable::getId).distinct().collect(toList());
+  }
+
+  // from dataCollectionEventUIDs
+  private List<String> findHarmonizedDatasetDependencies(List<String> concatenatedIds) {
+    return concatenatedIds.stream()
+      .map(o -> {
+        String[] split = o.split(SEPARATOR);
+        return harmonizationDatasetRepository.findByStudyTablesStudyIdAndStudyTablesPopulationIdAndStudyTablesDataCollectionEventId(
+          split[0], split[1], split[2]);
+      })
+      .reduce(Lists.newArrayList(), this::listAddAll).stream()
+      .map(AbstractGitPersistable::getId).distinct().collect(toList());
+  }
+
+  private List<String> toListOfDceUids(Study study, boolean withDceStartField) {
+    return study.getPopulations().stream()
+      .map(p -> p.getDataCollectionEvents().stream()
+        .map(dce -> study.getId() + SEPARATOR + p.getId() + SEPARATOR + dce.getId() + (withDceStartField ? SEPARATOR + dce.getStart().getSortableYearMonth() : ""))
+        .collect(toList()))
+      .reduce(Lists.newArrayList(), this::listAddAll);
+  }
+
+  private <E> List<E> listAddAll(List<E> accumulator, List<E> list) {
+    accumulator.addAll(list);
+    return accumulator;
   }
 }

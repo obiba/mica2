@@ -23,6 +23,9 @@ public interface HarmonizationDatasetRepository extends MongoRepository<Harmoniz
 
   List<HarmonizationDataset> findByStudyTablesStudyId(String studyId);
 
+  List<HarmonizationDataset> findByStudyTablesStudyIdAndStudyTablesPopulationIdAndStudyTablesDataCollectionEventId(
+    String studyId, String populationId, String dataCollectionEventId);
+
   List<HarmonizationDataset> findByNetworkId(String networkId);
 
   @Query("{'model' : { $exists : false }}")

@@ -538,8 +538,12 @@
     },
     "opal": "Serveur Opal",
     "opal-help": "URL du serveur Opal pour cette étude (si différent de celui définit par défaut).",
+    "potential-conflicts": "Conflits potentiels",
+    "potential-conflicts-message": "Des conflits potentiels peuvent subvenir.",
     "delete-conflict": "Conflit à la suppression de l'étude",
     "delete-conflict-message": "Des conflits ont été trouvés lors de la tentative de suppression de l'étude. Supprimez les dépendances et essayez à nouveau.",
+    "population-or-dce-delete-conflict": "Conflit à la suppression d'une population ou d'un événement de collecte de données",
+    "population-or-dce-delete-conflict-message": "Des conflits ont été trouvés lors de la tentative de suppression d'une population ou d'un événement de collecte de données. Supprimez les dépendances et essayez à nouveau.",
     "revisions":  "Révisions de l'étude",
     "delete-dialog":{
       "title": "Supprimer l'étude",

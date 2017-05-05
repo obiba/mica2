@@ -147,6 +147,7 @@ mica.study
     'EntityPathBuilder',
     'DocumentPermissionsService',
     'moment',
+    '$interpolate',
 
     function ($rootScope,
               $scope,
@@ -176,7 +177,8 @@ mica.study
               DraftStudyDeleteService,
               EntityPathBuilder,
               DocumentPermissionsService,
-              moment) {
+              moment,
+              $interpolate) {
 
 
       function initializeForm() {
@@ -388,9 +390,30 @@ mica.study
             },
             function (response) {
               $log.error('Error on study save:', response);
-              $rootScope.$broadcast(NOTIFICATION_EVENTS.showNotificationDialog, {
-                message: response.data ? response.data : angular.fromJson(response)
-              });
+              if (response.status === 409) {
+                var conflicts = '{{harmonizationDataset ? harmonizationDatasets + ": " + harmonizationDataset + ". " : "" }}' +
+                  '{{studyDataset ? studyDatasets + ": " + studyDataset : "" }}';
+
+                $translate(['study.population-or-dce-delete-conflict-message', 'study-datasets', 'harmonization-datasets'])
+                  .then(function (translation) {
+                    $rootScope.$broadcast(NOTIFICATION_EVENTS.showNotificationDialog, {
+                      titleKey: 'study.population-or-dce-delete-conflict',
+                      message: translation['study.population-or-dce-delete-conflict-message'] + ' ' + $interpolate(conflicts)(
+                        {
+                          harmonizationDatasets: translation['harmonization-datasets'],
+                          studyDatasets: translation['study-datasets'],
+                          harmonizationDataset: response.data.harmonizationDataset.join(', '),
+                          studyDataset: response.data.studyDataset.join(', ')
+                        })
+                    }, function () {
+                      fetchStudy($routeParams.id);
+                    });
+                  });
+              } else {
+                $rootScope.$broadcast(NOTIFICATION_EVENTS.showNotificationDialog, {
+                  message: response.data ? response.data : angular.fromJson(response)
+                });
+              }
             });
         }
       });
@@ -699,6 +722,7 @@ mica.study
     'StudyTaxonomyService',
     'MicaUtil',
     'SfOptionsService',
+    'StudyUpdateWarningService',
     function ($rootScope,
               $scope,
               $routeParams,
@@ -713,7 +737,8 @@ mica.study
               FormServerValidation,
               StudyTaxonomyService,
               MicaUtil,
-              SfOptionsService) {
+              SfOptionsService,
+              StudyUpdateWarningService) {
 
 
       $scope.selectionCriteriaGenders = {};
@@ -810,8 +835,11 @@ mica.study
         FormServerValidation.error(response, $scope.form, $scope.languages);
       };
 
-      var redirectToStudy = function () {
-        $location.path('/study/' + $scope.study.id).replace();
+      var redirectToStudy = function (response) {
+        $location.path('/study/' + response.study.id).replace();
+        if (response.potentialConflicts) {
+          StudyUpdateWarningService.popup(response.potentialConflicts, 'study.potential-conflicts', 'study.potential-conflicts-message');
+        }
       };
     }])
 
@@ -831,6 +859,7 @@ mica.study
     'MicaUtil',
     'StudyTaxonomyService',
     'SfOptionsService',
+    'StudyUpdateWarningService',
     function ($rootScope,
               $scope,
               $routeParams,
@@ -845,7 +874,8 @@ mica.study
               FormServerValidation,
               MicaUtil,
               StudyTaxonomyService,
-              SfOptionsService
+              SfOptionsService,
+              StudyUpdateWarningService
     ) {
       $scope.dce = {model: {}};
       $scope.revision = {comment: null};
@@ -987,9 +1017,12 @@ mica.study
         FormServerValidation.error(response, $scope.form, $scope.languages);
       };
 
-      var redirectToStudy = function () {
+      var redirectToStudy = function (response) {
         $location.search('sourceDceId', null);
-        $location.path('/study/' + $scope.study.id).replace();
+        $location.path('/study/' + response.study.id).replace();
+        if (response.potentialConflicts) {
+          StudyUpdateWarningService.popup(response.potentialConflicts, 'study.potential-conflicts', 'study.potential-conflicts-message');
+        }
       };
 
     }])
@@ -1020,6 +1053,7 @@ mica.study
     'FormDirtyStateObserver',
     'SfOptionsService',
     '$timeout',
+    'StudyUpdateWarningService',
     function ($rootScope,
               $scope,
               $routeParams,
@@ -1038,7 +1072,8 @@ mica.study
               RadioGroupOptionBuilder,
               FormDirtyStateObserver,
               SfOptionsService,
-              $timeout) {
+              $timeout,
+              StudyUpdateWarningService) {
 
       function initializeForm() {
         MicaConfigResource.get(function (micaConfig) {
@@ -1134,9 +1169,12 @@ mica.study
       var updateStudy = function () {
         $log.debug('Update study', $scope.study);
         $scope.study.$save({comment: $scope.revision.comment},
-          function (study) {
+          function (response) {
             FormDirtyStateObserver.unobserve();
-            $location.path('/study/' + study.id).replace();
+            $location.path('/study/' + response.study.id).replace();
+            if (response.potentialConflicts) {
+              StudyUpdateWarningService.popup(response.potentialConflicts, 'study.potential-conflicts', 'study.potential-conflicts-message');
+            }
           },
           saveErrorHandler);
       };
