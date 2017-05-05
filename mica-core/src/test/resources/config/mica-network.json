@@ -1,0 +1,115 @@
+{
+  "license": "CC BY-NC 4.0",
+  "vocabularies": [
+    {
+      "repeatable": false,
+      "name": "id",
+      "title": {
+        "en": "Acronym",
+        "fr": "Acronyme"
+      },
+      "description": {
+        "en": "Network acronym.",
+        "fr": "Acronyme du réseau."
+      },
+      "keywords": {},
+      "attributes": {
+        "static": "true",
+        "alias": "networkId"
+      }
+    },
+    {
+      "repeatable": false,
+      "name": "studyIds",
+      "title": {
+        "en": "Study",
+        "fr": "Étude"
+      },
+      "description": {
+        "en": "Studies that are members of a network.",
+        "fr": "Études qui sont membres d'un réseau."
+      },
+      "keywords": {},
+      "attributes": {
+        "static": "true"
+      }
+    },
+    {
+      "repeatable": false,
+      "name": "investigator",
+      "title": {
+        "en": "Investigator name"
+      },
+      "description": {
+        "en": "Investigator full name."
+      },
+      "keywords": {},
+      "attributes": {
+        "static": "true",
+        "field": "memberships.investigator.person.fullName",
+        "alias": "memberships-investigator-person-fullName"
+      }
+    },
+    {
+      "repeatable": false,
+      "name": "investigator-institution",
+      "title": {
+        "en": "Investigator institution"
+      },
+      "description": {
+        "en": "Investigator institution name."
+      },
+      "keywords": {},
+      "attributes": {
+        "static": "true",
+        "field": "memberships.investigator.person.institution.name.und",
+        "localized": "true",
+        "alias": "memberships-investigator-person-institution-name"
+      }
+    },
+    {
+      "repeatable": false,
+      "name": "contact",
+      "title": {
+        "en": "Contact name"
+      },
+      "description": {
+        "en": "Contact full name."
+      },
+      "keywords": {},
+      "attributes": {
+        "static": "true",
+        "field": "memberships.contact.person.fullName",
+        "alias": "memberships-contact-person-fullName"
+      }
+    },
+    {
+      "repeatable": false,
+      "name": "contact-institution",
+      "title": {
+        "en": "Contact institution"
+      },
+      "description": {
+        "en": "Contact institution name."
+      },
+      "keywords": {},
+      "attributes": {
+        "static": "true",
+        "field": "memberships.contact.person.institution.name.und",
+        "localized": "true",
+        "alias": "memberships-contact-person-institution-name"
+      }
+    }
+  ],
+  "name": "Mica_network",
+  "title": {
+    "en": "Network properties",
+    "fr": "Propriétés des réseaux"
+  },
+  "description": {
+    "en": "Network properties as defined in the catalogue.",
+    "fr": "Propriétés des réseaux telles que définies dans le catalogue."
+  },
+  "keywords": {},
+  "attributes": {}
+}

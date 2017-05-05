@@ -1,0 +1,90 @@
+{
+  "license": "CC BY-NC 4.0",
+  "vocabularies": [
+    {
+      "repeatable": false,
+      "name": "id",
+      "title": {
+        "en": "Acronym",
+        "fr": "Acronyme"
+      },
+      "description": {
+        "en": "Dataset acronym.",
+        "fr": "Acronyme du jeux de données"
+      },
+      "keywords": {},
+      "attributes": {
+        "static": "true"
+      }
+    },
+    {
+      "repeatable": false,
+      "terms": [
+        {
+          "name": "StudyDataset",
+          "title": {
+            "en": "Study",
+            "fr": "Étude"
+          },
+          "description": {
+            "en": "A study dataset holds metadata about the variables collected within a data collection event.",
+            "fr": "Jeux de données spécifique à une étude."
+          },
+          "keywords": {},
+          "attributes": {}
+        },
+        {
+          "name": "HarmonizationDataset",
+          "title": {
+            "en": "Harmonization",
+            "fr": "Harmonisation"
+          },
+          "description": {
+            "en": "A harmonization dataset holds metadata about core variables constructed from multiple study datasets."
+          },
+          "keywords": {},
+          "attributes": {}
+        }
+      ],
+      "name": "className",
+      "title": {
+        "en": "Dataset type",
+        "fr": "Type de jeux de données"
+      },
+      "description": {
+        "en": "Type of dataset (e.g. study or harmonization)"
+      },
+      "keywords": {},
+      "attributes": {
+        "static": "true"
+      }
+    },
+    {
+      "repeatable": false,
+      "name": "networkId",
+      "title": {
+        "en": "Network",
+        "fr": "Réseau"
+      },
+      "description": {
+        "en": "Network associated to the harmonized dataset.",
+        "fr": "Réseau associé à ce jeux de données harmonisé."
+      },
+      "keywords": {},
+      "attributes": {
+        "static": "true"
+      }
+    }
+  ],
+  "name": "Mica_dataset",
+  "title": {
+    "en": "Dataset properties",
+    "fr": "Propriétés des jeux de données"
+  },
+  "description": {
+    "en": "Datasets properties as defined in the catalogue.",
+    "fr": "Propriétés des jeux de données telles que définies dans le catalogue."
+  },
+  "keywords": {},
+  "attributes": {}
+}
