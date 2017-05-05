@@ -11,6 +11,8 @@
 package org.obiba.mica.study.rest;
 
 import com.codahale.metrics.annotation.Timed;
+import com.google.common.collect.Maps;
+
 import org.obiba.mica.AbstractGitPersistableResource;
 import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.core.domain.PublishCascadingScope;
@@ -33,8 +35,10 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -89,7 +93,11 @@ public class DraftStudyResource extends AbstractGitPersistableResource<StudyStat
 
     Study study = dtos.fromDto(studyDto);
     studyService.save(study, comment);
-    return Response.noContent().build();
+
+    HashMap<Object, Object> response = Maps.newHashMap();
+    response.put("study", study);
+    response.put("potentialConflicts", studyService.getPotentialConflicts(study));
+    return Response.ok(response, MediaType.APPLICATION_JSON_TYPE).build();
   }
 
   @PUT
@@ -106,7 +114,7 @@ public class DraftStudyResource extends AbstractGitPersistableResource<StudyStat
   public Response unPublish() {
     checkPermission("/draft/study", "PUBLISH");
     studyService.publish(id, false);
-    return Response.noContent().build();
+    return Response.ok(studyService.getPotentialConflicts(studyService.findStudy(id)), MediaType.APPLICATION_JSON_TYPE).build();
   }
 
   @PUT
