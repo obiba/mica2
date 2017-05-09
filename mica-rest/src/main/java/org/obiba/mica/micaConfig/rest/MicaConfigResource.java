@@ -42,9 +42,9 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
 import javax.ws.rs.core.UriInfo;
 
+import com.google.common.base.Strings;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresRoles;
-import org.elasticsearch.common.Strings;
 import org.obiba.mica.JSONUtils;
 import org.obiba.mica.contact.event.IndexContactsEvent;
 import org.obiba.mica.dataset.domain.DatasetVariable;

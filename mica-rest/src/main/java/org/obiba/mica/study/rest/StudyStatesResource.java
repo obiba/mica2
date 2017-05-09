@@ -23,7 +23,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 
 import com.codahale.metrics.annotation.Timed;
-import org.elasticsearch.common.Strings;
+import com.google.common.base.Strings;
 import org.obiba.mica.core.service.DocumentService;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.study.domain.Study;
