@@ -17,6 +17,34 @@
   "attributes":
     "alias": "networkId"
     "static": "true"
+- "name": "name"
+  "title":
+    "en": "Name"
+    "fr": "Nom"
+  "description":
+    "en": "Official network name."
+    "fr": "Nom officiel du réseau."
+  "terms": []
+  "attributes":
+    "field": "name"
+    "alias": "name"
+    "static": "true"
+    "localized": "true"
+    "hidden": "true"
+- "name": "description"
+  "title":
+    "en": "Description"
+    "fr": "Description"
+  "description":
+    "en": "Description of the network."
+    "fr": "Description du réseau."
+  "terms": []
+  "attributes":
+    "field": "description"
+    "alias": "description"
+    "static": "true"
+    "localized": "true"
+    "hidden": "true"
 - "name": "studyIds"
   "title":
     "en": "Study"
