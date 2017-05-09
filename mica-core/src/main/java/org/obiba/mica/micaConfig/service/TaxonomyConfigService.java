@@ -26,6 +26,7 @@ import org.obiba.mica.micaConfig.event.TaxonomiesUpdatedEvent;
 import org.obiba.mica.micaConfig.repository.TaxonomyConfigRepository;
 import org.obiba.mica.micaConfig.service.helper.AggregationAliasHelper;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
+import org.obiba.opal.core.domain.taxonomy.Vocabulary;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Service;
 
@@ -67,6 +68,13 @@ public class TaxonomyConfigService {
     eventBus.post(new TaxonomiesUpdatedEvent(taxonomy.getName(), target));
   }
 
+  public void mergeWithDefault(TaxonomyTarget target) {
+    Taxonomy targetTaxonomy = findByTarget(target);
+    mergeVocabulariesTerms(targetTaxonomy, getDefault(target));
+
+    updateInternal(target, targetTaxonomy);
+  }
+
   private Taxonomy findByTargetInternal(TaxonomyTarget target) {
     String id = target.asId();
     TaxonomyEntityWrapper taxonomyEntityWrapper = taxonomyConfigRepository.findOne(id);
@@ -77,6 +85,23 @@ public class TaxonomyConfigService {
     }
 
     return taxonomyEntityWrapper.getTaxonomy();
+  }
+
+  void mergeVocabulariesTerms(Taxonomy taxonomy, Taxonomy defaultTaxonomy) {
+    defaultTaxonomy.getVocabularies().forEach(v -> {
+      if (!taxonomy.hasVocabulary(v.getName())) {
+        taxonomy.addVocabulary(v);
+      } else {
+        Vocabulary defaultTaxonomyVocabulary = defaultTaxonomy.getVocabulary(v.getName());
+        Vocabulary taxonomyVocabulary = taxonomy.getVocabulary(v.getName());
+
+        if (defaultTaxonomyVocabulary.hasTerms()) {
+          defaultTaxonomyVocabulary.getTerms().forEach(t -> {
+            if (!taxonomyVocabulary.hasTerm(t.getName())) taxonomyVocabulary.addTerm(t);
+          });
+        }
+      }
+    });
   }
 
   private void updateInternal(TaxonomyTarget target, Taxonomy taxonomy) {

@@ -86,6 +86,51 @@ public class TaxonomyConfigServiceTest {
     new TaxonomyConfigService().validateTaxonomy(taxonomy);
   }
 
+  @Test
+  public void merge_taxonomy_with_one_having_extra_vocabulary() {
+    Taxonomy tax001 = new Taxonomy("tax001");
+    Taxonomy tax002 = new Taxonomy("tax002");
+    tax002.addVocabulary(createVocabulary("voc002", null, null));
+    new TaxonomyConfigService().mergeVocabulariesTerms(tax001, tax002);
+
+    assert tax001.hasVocabulary("voc002");
+  }
+
+  @Test
+  public void merge_taxonomy_with_one_missing_vocabulary() {
+    Taxonomy tax001 = new Taxonomy("tax001");
+    tax001.addVocabulary(createVocabulary("voc001", null, null));
+
+    Taxonomy tax002 = new Taxonomy("tax002");
+    new TaxonomyConfigService().mergeVocabulariesTerms(tax001, tax002);
+
+    assert tax001.hasVocabulary("voc001");
+  }
+
+  @Test
+  public void merge_taxonomy_with_one_having_same_vocabulary_but_extra_term() {
+    Taxonomy tax001 = new Taxonomy("tax001");
+    tax001.addVocabulary(createVocabulary("voc001", null, null));
+
+    Taxonomy tax002 = new Taxonomy("tax002");
+    tax002.addVocabulary(createVocabulary("voc001", createTerms("term001"), null));
+    new TaxonomyConfigService().mergeVocabulariesTerms(tax001, tax002);
+
+    assert tax001.getVocabulary("voc001").hasTerm("term001");
+  }
+
+  @Test
+  public void merge_taxonomy_with_vocabulary_having_one_term_with_one_having_same_vocabulary_without_term() {
+    Taxonomy tax001 = new Taxonomy("tax001");
+    tax001.addVocabulary(createVocabulary("voc001", createTerms("term001"), null));
+
+    Taxonomy tax002 = new Taxonomy("tax002");
+    tax002.addVocabulary(createVocabulary("voc001", null, null));
+    new TaxonomyConfigService().mergeVocabulariesTerms(tax001, tax002);
+
+    assert tax001.getVocabulary("voc001").hasTerm("term001");
+  }
+
   private Vocabulary createVocabulary(String name, List<Term> terms, Map<String,String> attributes) {
     Vocabulary vocabulary = new Vocabulary(name);
     vocabulary.setTitle(LocalizedString.en(name + "-title"));

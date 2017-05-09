@@ -18,6 +18,20 @@
   "terms": []
   "attributes":
     "static": "true"
+- "name": "name"
+  "title":
+    "en": "Name"
+    "fr": "Nom"
+  "description":
+    "en": "Official study name."
+    "fr": "Nom officiel de l'étude."
+  "terms": []
+  "attributes":
+    "field": "name"
+    "alias": "name"
+    "static": "true"
+    "localized": "true"
+    "hidden": "true"
 - "name": "objectives"
   "title":
     "en": "Objectives"
@@ -31,6 +45,18 @@
     "alias": "objectives"
     "static": "true"
     "localized": "true"
+- "name": "opal"
+  "title":
+    "en": "Opal Server"
+    "fr": "Serveur Opal"
+  "description":
+    "en": "URL of the opal server for this study (if different from the default one)."
+    "fr": "URL du serveur Opal pour cette étude (si différent de celui définit par défaut)."
+  "terms": []
+  "attributes":
+    "field": "opal"
+    "alias": "opal"
+    "static": "true"
 - "name": "methods-design"
   "title":
     "en": "Study design"
@@ -1384,6 +1410,44 @@
       "en": "Zimbabwe"
       "fr": "Zimbabwe"
     "description": {}
+- "name": "populations-id"
+  "title":
+    "en": "Population ID"
+    "fr": "Identifiant d'une population"
+  "description":
+    "en": "A population's ID."
+    "fr": "L'identifiant d'une population."
+  "attributes":
+    "field": "populations.id"
+    "alias": "populations-id"
+    "static": "true"
+    "hidden": "true"
+- "name": "populations-name"
+  "title":
+    "en": "Population Name"
+    "fr": "Nom d'une population"
+  "description":
+    "en": "A population's name."
+    "fr": "Le nom d'une population."
+  "attributes":
+    "hidden": "true"
+    "field": "populations.name"
+    "alias": "populations-name"
+    "static": "true"
+    "localized": "true"
+- "name": "populations-description"
+  "title":
+    "en": "Population Description"
+    "fr": "Description d'une population"
+  "description":
+    "en": "A population's description."
+    "fr": "La description d'une population."
+  "attributes":
+    "hidden": "true"
+    "field": "populations.description"
+    "alias": "populations-description"
+    "static": "true"
+    "localized": "true"
 - "name": "populations-selectionCriteria-ageMin"
   "title":
     "en": "Selection criteria - Minimum age"
@@ -1975,3 +2039,65 @@
     "type": "integer"
     "field": "model.endYear"
     "alias": "model-endYear"
+- "name": "populations-dataCollectionEvents-id"
+  "title":
+    "en": "Data Collection Event ID"
+    "fr": "Identifiant d'un événement de collecte de données"
+  "description":
+    "en": "A data collection event's ID."
+    "fr": "L'indentifiant d'un événement de collecte de données."
+  "attributes":
+    "hidden": "true"
+    "field": "populations.dataCollectionEvents.id"
+    "alias": "populations-dataCollectionEvents-id"
+    "static": "true"
+- "name": "populations-dataCollectionEvents-name"
+  "title":
+    "en": "Data Collection Event Name"
+    "fr": "Nom d'un événement de collecte de données"
+  "description":
+    "en": "A data collection event's name."
+    "fr": "Le nom d'un événement de collecte de données."
+  "attributes":
+    "field": "populations.dataCollectionEvents.name"
+    "alias": "populations-dataCollectionEvents-name"
+    "static": "true"
+    "hidden": "true"
+    "localized": "true"
+- "name": "populations-dataCollectionEvents-start"
+  "title":
+    "en": "Data Collection Event Start Date"
+    "fr": "Date de début d'un événement de collecte de données"
+  "description":
+    "en": "A data collection event's initiation date."
+    "fr": "La date de commencement d'un événement de collecte de données."
+  "attributes":
+    "hidden": "true"
+    "field": "populations.dataCollectionEvents.start.yearMonth"
+    "alias": "populations-dataCollectionEvents-start-yearMonth"
+    "static": "true"
+- "name": "populations-dataCollectionEvents-end"
+  "title":
+    "en": "Data Collection Event End Date"
+    "fr": "Date de fin d'un événement de collecte de données"
+  "description":
+    "en": "A data collection event's end date."
+    "fr": "La date de fin d'un événement de collecte de données."
+  "attributes":
+    "hidden": "true"
+    "field": "populations.dataCollectionEvents.end.yearMonth"
+    "alias": "populations-dataCollectionEvents-end-yearMonth"
+    "static": "true"
+- "name": "populations-dataCollectionEvents-description"
+  "title":
+    "en": "Data Collection Event Description"
+    "fr": "Description d'un événement de collecte de données"
+  "description":
+    "en": "A data collection event's description."
+    "fr": "La description d'un événement de collecte de données."
+  "attributes":
+    "hidden": "true"
+    "field": "populations.dataCollectionEvents.description"
+    "alias": "populations-dataCollectionEvents-description"
+    "static": "true"
+    "localized": "true"

@@ -5,9 +5,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.obiba.mica.core.domain.TaxonomyEntityWrapper;
+import org.obiba.mica.core.domain.TaxonomyTarget;
 import org.obiba.mica.micaConfig.domain.StudyConfig;
 import org.obiba.mica.micaConfig.repository.StudyConfigRepository;
 import org.obiba.mica.micaConfig.repository.TaxonomyConfigRepository;
+import org.obiba.mica.micaConfig.service.TaxonomyConfigService;
 import org.obiba.opal.core.domain.taxonomy.TaxonomyEntity;
 import org.obiba.opal.core.domain.taxonomy.Vocabulary;
 import org.obiba.runtime.Version;
@@ -37,6 +39,9 @@ public class Mica220Upgrade implements UpgradeStep {
 
   @Inject
   TaxonomyConfigRepository taxonomyConfigRepository;
+
+  @Inject
+  TaxonomyConfigService taxonomyConfigService;
 
   @Override
   public String getDescription() {
@@ -77,11 +82,21 @@ public class Mica220Upgrade implements UpgradeStep {
       logger.error("Error when trying to updateTaxonomiesWithRangeCriteria.", e);
     }
 
+    try {
+      mergeDefaultTaxonomyWithCurrent();
+    } catch(Exception e) {
+      logger.error("Error when trying to mergeDefaultTaxonomyWithCurrent.", e);
+    }
   }
 
   private void updateTaxonomiesWithRangeCriteria() {
     Stream.of("network", "study", "dataset", "variable", "taxonomy")
       .forEach(name -> updateTaxonomyWithRangeCriteria(name));
+  }
+
+  private void mergeDefaultTaxonomyWithCurrent() {
+    Stream.of("network", "study", "dataset", "variable", "taxonomy")
+      .forEach(name -> taxonomyConfigService.mergeWithDefault(TaxonomyTarget.fromId(name)));
   }
 
   void updateTaxonomyWithRangeCriteria(String name) {
