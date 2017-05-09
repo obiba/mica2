@@ -18,6 +18,8 @@ import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.QueryStringQueryBuilder;
 import org.elasticsearch.index.query.RangeQueryBuilder;
+import org.elasticsearch.script.Script;
+import org.elasticsearch.search.sort.ScriptSortBuilder;
 import org.elasticsearch.search.sort.SortBuilder;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
@@ -56,7 +58,7 @@ public class QueryDtoParser {
 
     List<SortBuilder> sortBuilders = Lists.newArrayList();
     sortBuilders.add(sortDto.hasScript()
-      ? SortBuilders.scriptSort(sortDto.getScript(), sortDto.getType())
+      ? SortBuilders.scriptSort(new Script(sortDto.getScript()), ScriptSortBuilder.ScriptSortType.valueOf(sortDto.getType()))
       .order(SortOrder.valueOf(sortDto.getOrder().name()))
       : SortBuilders.fieldSort(sortDto.getField()).order(SortOrder.valueOf(sortDto.getOrder().name())));
 
