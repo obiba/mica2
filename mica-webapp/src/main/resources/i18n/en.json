@@ -49,9 +49,9 @@
     "update-comment": "Add a comment to describe the changes.",
     "copied": "Copied",
     "copy-to-clipboard": "Copy to clipboard",
-    "title": "Title",
     "name": "Name",
-    "default": "Default"
+    "default": "Default",
+    "chronological": "Chronological"
   },
   "pagination": {
     "of": "of"

@@ -51,7 +51,8 @@
     "copy-to-clipboard": "Copier dans le presse-papier",
     "title": "Titre",
     "name": "Nom",
-    "default": "Par défaut"
+    "default": "Par défaut",
+    "chronological": "Chronologique"
   },
   "pagination": {
     "of": "de"

@@ -377,21 +377,6 @@ public abstract class AbstractDocumentQuery {
 
     if(ignoreFields()) requestBuilder.setNoFields();
 
-    // apply default sort for VariableQuery before any user defined ones (order is important)
-    if (this instanceof VariableQuery) {
-      requestBuilder.addSort(SortBuilders.fieldSort("containerId").order(SortOrder.ASC).unmappedType("string")); // either study or network id
-      requestBuilder.addSort(SortBuilders.fieldSort("populationIds").order(SortOrder.ASC).unmappedType("string"));
-      requestBuilder.addSort(SortBuilders.fieldSort("earliestStart").order(SortOrder.ASC).unmappedType("string")); // only for study variable
-      requestBuilder.addSort(SortBuilders.fieldSort("datasetId").order(SortOrder.ASC));
-      requestBuilder.addSort(SortBuilders.fieldSort("index").order(SortOrder.ASC));
-    }
-
-    if (this instanceof DatasetQuery) {
-      requestBuilder.addSort(SortBuilders.fieldSort("studyTable.studyId").order(SortOrder.ASC).unmappedType("string"));
-      requestBuilder.addSort(SortBuilders.fieldSort("studyTable.populationId").order(SortOrder.ASC).unmappedType("string"));
-      requestBuilder.addSort(SortBuilders.fieldSort("start").order(SortOrder.ASC).unmappedType("string").unmappedType("string"));
-    }
-
     if(sortBuilder != null) sortBuilder.forEach(requestBuilder::addSort);
 
     appendAggregations(defaultRequestBuilder, requestBuilder, aggregationGroupBy);
