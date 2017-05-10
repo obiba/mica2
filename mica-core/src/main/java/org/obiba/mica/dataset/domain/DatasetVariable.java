@@ -392,7 +392,7 @@ public class DatasetVariable implements Indexable, AttributeAware {
   }
 
   private String cleanStringForSearch(String string) {
-    return string.replace("-", "");
+    return string != null ? string.replace("-", "") : null;
   }
 
   public static class IdResolver {
