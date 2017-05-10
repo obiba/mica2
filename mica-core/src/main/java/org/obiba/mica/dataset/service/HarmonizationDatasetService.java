@@ -209,7 +209,7 @@ public class HarmonizationDatasetService extends DatasetService<HarmonizationDat
           eventBus.post(new DatasetPublishedEvent(dataset, datasetVariables, harmonizationVariables, getCurrentUsername()));
 
       } catch (Exception e) {
-        log.error("Error indexing dataset {}", dataset, e);
+        log.error(String.format("Error indexing dataset %s", dataset), e);
       }
     });
 

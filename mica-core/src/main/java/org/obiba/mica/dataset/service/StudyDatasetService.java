@@ -225,7 +225,7 @@ public class StudyDatasetService extends DatasetService<StudyDataset, StudyDatas
           if (publishedDatasets.contains(dataset))
             eventBus.post(new DatasetPublishedEvent(dataset, variables, getCurrentUsername()));
         } catch (Exception e) {
-          log.error("Error indexing dataset {}", dataset, e);
+          log.error(String.format("Error indexing dataset %s", dataset), e);
         }
       });
 
