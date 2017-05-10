@@ -12,7 +12,6 @@ package org.obiba.mica.dataset.service;
 
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import javax.inject.Inject;
@@ -163,12 +162,12 @@ public class StudyDatasetService extends DatasetService<StudyDataset, StudyDatas
   public void publish(@NotNull String id, boolean published) {
     publish(id, published, PublishCascadingScope.NONE);
   }
-    /**
-     * Apply dataset publication flag.
-     *
-     * @param id
-     * @param published
-     */
+  /**
+   * Apply dataset publication flag.
+   *
+   * @param id
+   * @param published
+   */
   @Caching(evict = { @CacheEvict(value = "aggregations-metadata", key = "'dataset'") })
   public void publish(@NotNull String id, boolean published, PublishCascadingScope cascadingScope) {
     StudyDataset dataset = findById(id);
@@ -177,6 +176,7 @@ public class StudyDatasetService extends DatasetService<StudyDataset, StudyDatas
     if(published) {
       Iterable<DatasetVariable> variables = wrappedGetDatasetVariables(dataset);
       publishState(id);
+      prepareForIndex(dataset);
       eventBus.post(new DatasetPublishedEvent(dataset, variables, getCurrentUsername(), cascadingScope));
       //helper.asyncBuildDatasetVariablesCache(dataset, variables);
     } else {
@@ -203,7 +203,13 @@ public class StudyDatasetService extends DatasetService<StudyDataset, StudyDatas
    */
   public void index(@NotNull String id) {
     StudyDataset dataset = findById(id);
+    prepareForIndex(dataset);
     eventBus.post(new DatasetUpdatedEvent(dataset, null));
+  }
+
+  private void prepareForIndex(StudyDataset dataset) {
+    PersistableYearMonth studyPersistableYearMonthForDataset = getStudyPersistableYearMonthForDataset(dataset);
+    if (studyPersistableYearMonthForDataset != null) dataset.setStart(studyPersistableYearMonthForDataset.getSortableYearMonth());
   }
 
   /**
@@ -222,8 +228,10 @@ public class StudyDatasetService extends DatasetService<StudyDataset, StudyDatas
           Iterable<DatasetVariable> variables = mustIndexVariables && publishedDatasets.contains(dataset) ? wrappedGetDatasetVariables(dataset) : null;
           eventBus.post(new DatasetUpdatedEvent(dataset, variables));
 
-          if (publishedDatasets.contains(dataset))
+          if (publishedDatasets.contains(dataset)) {
+            prepareForIndex(dataset);
             eventBus.post(new DatasetPublishedEvent(dataset, variables, getCurrentUsername()));
+          }
         } catch (Exception e) {
           log.error(String.format("Error indexing dataset %s", dataset), e);
         }
@@ -233,11 +241,7 @@ public class StudyDatasetService extends DatasetService<StudyDataset, StudyDatas
   }
 
   public List<DatasetVariable> processVariablesForStudyDataset(StudyDataset dataset, Iterable<DatasetVariable> variables) {
-    Study study = studyService.findStudy(dataset.getStudyTable().getStudyId());
-
-    PersistableYearMonth persistableYearMonth = studyService
-      .getPersistableYearMonthFor(study, dataset.getStudyTable().getPopulationId(),
-        dataset.getStudyTable().getDataCollectionEventId());
+    PersistableYearMonth persistableYearMonth = getStudyPersistableYearMonthForDataset(dataset);
 
     if (persistableYearMonth != null) {
       dataset.setStart(persistableYearMonth.getSortableYearMonth());
@@ -245,6 +249,14 @@ public class StudyDatasetService extends DatasetService<StudyDataset, StudyDatas
     } else {
       return Lists.newArrayList(variables);
     }
+  }
+
+  public PersistableYearMonth getStudyPersistableYearMonthForDataset(StudyDataset dataset) {
+    Study study = studyService.findStudy(dataset.getStudyTable().getStudyId());
+
+    return studyService
+      .getPersistableYearMonthFor(study, dataset.getStudyTable().getPopulationId(),
+        dataset.getStudyTable().getDataCollectionEventId());
   }
 
   private List<DatasetVariable> processVariablesForStudyDataset(
