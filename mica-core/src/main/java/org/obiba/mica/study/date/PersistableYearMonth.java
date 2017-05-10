@@ -24,7 +24,6 @@ public class PersistableYearMonth implements Serializable, Comparable<Persistabl
   private static final MonthValidator MONTH_VALIDATOR = new MonthValidator();
 
   private String yearMonth;
-  private String sortableYearMonth;
 
   public interface YearMonthData {
     int getYear();
@@ -37,8 +36,9 @@ public class PersistableYearMonth implements Serializable, Comparable<Persistabl
     return yearMonth;
   }
 
+  @JsonIgnore
   public String getSortableYearMonth() {
-    return sortableYearMonth;
+    return yearMonth != null ? yearMonth.replace("-", "") : null;
   }
 
   public static PersistableYearMonth of(int y, int m) {
@@ -46,7 +46,6 @@ public class PersistableYearMonth implements Serializable, Comparable<Persistabl
     YEAR_VALIDATOR.validate(y);
     MONTH_VALIDATOR.validate(m);
     instance.yearMonth = format(y, m);
-    instance.sortableYearMonth = instance.yearMonth.replace("-", "");
     return instance;
   }
 
@@ -54,7 +53,6 @@ public class PersistableYearMonth implements Serializable, Comparable<Persistabl
     PersistableYearMonth instance = new PersistableYearMonth();
     YEAR_VALIDATOR.validate(y);
     instance.yearMonth = format(y);
-    instance.sortableYearMonth = instance.yearMonth;
     return instance;
   }
 

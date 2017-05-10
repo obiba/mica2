@@ -837,14 +837,15 @@ mica.study
       };
 
       var saveErrorHandler = function (response) {
-        FormServerValidation.error(response, $scope.form, $scope.languages);
+        if (response.status === 409) {
+          StudyUpdateWarningService.popup(response.data, 'study.population-or-dce-delete-conflict', 'study.population-or-dce-delete-conflict-message');
+        } else {
+          FormServerValidation.error(response, $scope.form, $scope.languages);
+        }
       };
 
-      var redirectToStudy = function (response) {
-        $location.path('/study/' + response.study.id).replace();
-        if (response.potentialConflicts) {
-          StudyUpdateWarningService.popup(response.potentialConflicts, 'study.potential-conflicts', 'study.potential-conflicts-message');
-        }
+      var redirectToStudy = function () {
+        $location.path('/study/' + $scope.study.id).replace();
       };
     }])
 
@@ -1019,15 +1020,16 @@ mica.study
       };
 
       var saveErrorHandler = function (response) {
-        FormServerValidation.error(response, $scope.form, $scope.languages);
+        if (response.status === 409) {
+          StudyUpdateWarningService.popup(response.data, 'study.population-or-dce-delete-conflict', 'study.population-or-dce-delete-conflict-message');
+        } else {
+          FormServerValidation.error(response, $scope.form, $scope.languages);
+        }
       };
 
-      var redirectToStudy = function (response) {
+      var redirectToStudy = function () {
         $location.search('sourceDceId', null);
-        $location.path('/study/' + response.study.id).replace();
-        if (response.potentialConflicts) {
-          StudyUpdateWarningService.popup(response.potentialConflicts, 'study.potential-conflicts', 'study.potential-conflicts-message');
-        }
+        $location.path('/study/' + $scope.study.id).replace();
       };
 
     }])
