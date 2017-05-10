@@ -382,9 +382,9 @@ mica.study
                   networks: translation.networks,
                   harmonizationDatasets: translation['harmonization-datasets'],
                   studyDatasets: translation['study-datasets'],
-                  network: data.network.join(', '),
-                  harmonizationDataset: data.harmonizationDataset.join(', '),
-                  studyDataset: data.studyDataset.join(', ')
+                  network: data.network ? data.network.join(', ') : null,
+                  harmonizationDataset: data.harmonizationDataset ? data.harmonizationDataset.join(', ') : null,
+                  studyDataset: data.studyDataset ? data.studyDataset.join(', ') : null
                 })
             });
           });
