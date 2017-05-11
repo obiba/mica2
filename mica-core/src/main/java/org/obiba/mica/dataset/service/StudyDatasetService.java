@@ -252,6 +252,7 @@ public class StudyDatasetService extends DatasetService<StudyDataset, StudyDatas
   }
 
   public PersistableYearMonth getStudyPersistableYearMonthForDataset(StudyDataset dataset) {
+    if (!dataset.hasStudyTable()) return null;
     Study study = studyService.findStudy(dataset.getStudyTable().getStudyId());
 
     return studyService
@@ -273,7 +274,7 @@ public class StudyDatasetService extends DatasetService<StudyDataset, StudyDatas
   @Override
   @NotNull
   protected RestValueTable getTable(@NotNull StudyDataset dataset) throws NoSuchValueTableException {
-    StudyTable studyTable = dataset.getStudyTable();
+    StudyTable studyTable = dataset.getSafeStudyTable();
     return execute(studyTable, datasource -> (RestValueTable) datasource.getValueTable(studyTable.getTable()));
   }
 

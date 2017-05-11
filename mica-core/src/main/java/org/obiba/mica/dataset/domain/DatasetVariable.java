@@ -118,9 +118,10 @@ public class DatasetVariable implements Indexable, AttributeAware {
 
   public DatasetVariable(StudyDataset dataset, Variable variable) {
     this(dataset, Type.Study, variable);
-    studyIds = Lists.newArrayList(dataset.getStudyTable().getStudyId());
-    populationIds = Lists.newArrayList(dataset.getStudyTable().getPopulationId());
-    dceIds = Lists.newArrayList(dataset.getStudyTable().getDataCollectionEventUId());
+    boolean hasStudyTable = dataset.hasStudyTable();
+    studyIds = hasStudyTable ? Lists.newArrayList(dataset.getStudyTable().getStudyId()) : Lists.newArrayList();
+    populationIds = hasStudyTable ? Lists.newArrayList(dataset.getStudyTable().getPopulationId()) : Lists.newArrayList();
+    dceIds = hasStudyTable ? Lists.newArrayList(dataset.getStudyTable().getDataCollectionEventUId()) : Lists.newArrayList();
     setContainerId(studyIds.get(0));
   }
 
