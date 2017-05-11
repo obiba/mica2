@@ -14,8 +14,9 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.google.common.collect.Maps;
 import org.obiba.mica.core.domain.StudyTable;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * Dataset that relies on Study Opal server to extract variables and summaries.
@@ -29,6 +30,12 @@ public class StudyDataset extends Dataset {
   private String start;
 
   public StudyTable getStudyTable() {
+    return studyTable;
+  }
+
+  @JsonIgnore
+  public StudyTable getSafeStudyTable() {
+    if (!hasStudyTable()) throw new IllegalArgumentException("Dataset does not have a study table.");
     return studyTable;
   }
 

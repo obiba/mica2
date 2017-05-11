@@ -80,7 +80,7 @@ public class PublishedStudyDatasetVariableResource extends AbstractPublishedData
   @Timed
   public Mica.DatasetVariableAggregationDto getVariableAggregations() {
     StudyDataset dataset = getDataset(StudyDataset.class, datasetId);
-    StudyTable studyTable = dataset.getStudyTable();
+    StudyTable studyTable = dataset.getSafeStudyTable();
     Mica.DatasetVariableAggregationDto.Builder aggDto = Mica.DatasetVariableAggregationDto.newBuilder() //
       .setStudyTable(dtos.asDto(studyTable));
     try {
@@ -102,7 +102,7 @@ public class PublishedStudyDatasetVariableResource extends AbstractPublishedData
 
   private Mica.DatasetVariableContingencyDto getContingencyDto(DatasetVariable var, DatasetVariable crossVar) {
     StudyDataset dataset = getDataset(StudyDataset.class, datasetId);
-    StudyTable studyTable = dataset.getStudyTable();
+    StudyTable studyTable = dataset.getSafeStudyTable();
 
     try {
       return dtos
