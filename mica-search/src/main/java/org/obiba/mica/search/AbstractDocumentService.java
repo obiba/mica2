@@ -126,12 +126,12 @@ public abstract class AbstractDocumentService<T> implements DocumentService<T> {
         SortBuilders.fieldSort(sort).order(order == null ? SortOrder.ASC : SortOrder.valueOf(order.toUpperCase())));
     }
 
-    log.debug("Request: {}", search.toString());
+    log.info("Request /{}/{}", getIndexName(), getType());
+    log.debug("Request /{}/{}: {}", getIndexName(), getType(), search.toString());
     SearchResponse response = search.execute().actionGet();
-
     Documents<T> documents = new Documents<>(Long.valueOf(response.getHits().getTotalHits()).intValue(), from, limit);
-
-    log.debug("found {} hits", response.getHits().getTotalHits());
+    log.info("Response /{}/{}", getIndexName(), getType());
+    log.debug("Response /{}/{}: totalHits={}", getIndexName(), getType(), response.getHits().getTotalHits());
 
     response.getHits().forEach(hit -> {
       try {
@@ -219,8 +219,10 @@ public abstract class AbstractDocumentService<T> implements DocumentService<T> {
       .setSize(size);
 
     try {
+      log.info("Request /{}/{}", getIndexName(), getType());
       log.debug("Request /{}/{}: {}", getIndexName(), getType(), requestBuilder);
       SearchResponse response = requestBuilder.execute().actionGet();
+      log.info("Response /{}/{}", getIndexName(), getType());
       log.debug("Response /{}/{}: totalHits={}", getIndexName(), getType(), response.getHits().getTotalHits());
 
       SearchHits hits = response.getHits();
