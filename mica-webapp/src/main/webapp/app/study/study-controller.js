@@ -844,8 +844,8 @@ mica.study
         }
       };
 
-      var redirectToStudy = function () {
-        $location.path('/study/' + $scope.study.id).replace();
+      var redirectToStudy = function (response) {
+        $location.path('/study/' + response.study.id).replace();
       };
     }])
 
@@ -1027,9 +1027,9 @@ mica.study
         }
       };
 
-      var redirectToStudy = function () {
+      var redirectToStudy = function (response) {
         $location.search('sourceDceId', null);
-        $location.path('/study/' + $scope.study.id).replace();
+        $location.path('/study/' + response.study.id).replace();
       };
 
     }])
