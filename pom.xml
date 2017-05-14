@@ -66,7 +66,7 @@
     <metrics-spring.version>3.0.0</metrics-spring.version>
     <nosqlunit.version>0.7.9</nosqlunit.version>
     <obiba-commons.version>1.8.8</obiba-commons.version>
-    <opal.version>2.9.4</opal.version>
+    <opal.version>2.9.5</opal.version>
     <opencsv.version>2.3</opencsv.version>
     <poi.version>3.9</poi.version>
     <protobuf.version>2.5.0</protobuf.version>
