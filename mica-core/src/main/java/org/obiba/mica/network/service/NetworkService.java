@@ -44,6 +44,7 @@ import org.obiba.mica.network.event.NetworkPublishedEvent;
 import org.obiba.mica.network.event.NetworkUnpublishedEvent;
 import org.obiba.mica.network.event.NetworkUpdatedEvent;
 import org.obiba.mica.study.ConstraintException;
+import org.obiba.mica.study.service.StudyService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -95,6 +96,9 @@ public class NetworkService extends AbstractGitPersistableService<NetworkState, 
 
   @Inject
   private HarmonizationDatasetService harmonizationDatasetService;
+
+  @Inject
+  private StudyService studyService;
 
   /**
    * Create or update provided {@link Network}.
@@ -217,7 +221,7 @@ public class NetworkService extends AbstractGitPersistableService<NetworkState, 
         return gitService.hasGitRepository(networkState) && !Strings.isNullOrEmpty(networkState.getPublishedTag()); //
       }) //
       .map(networkState -> gitService.readFromTag(networkState, networkState.getPublishedTag(), Network.class)) //
-      .map(n -> { n.getModel(); return n; }) // make sure dynamic model is initialized
+      .map(n -> { n.getModel(); return processNetworkForPublishedNumberOfStudies(n); }) // make sure dynamic model is initialized
       .collect(toList());
   }
 
@@ -244,6 +248,7 @@ public class NetworkService extends AbstractGitPersistableService<NetworkState, 
     Network network = networkRepository.findOne(id);
     if (network == null) return;
     if (publish) {
+      processNetworkForPublishedNumberOfStudies(network);
       publishState(id);
       eventBus.post(new NetworkPublishedEvent(network, getCurrentUsername(), cascadingScope));
     } else {
@@ -264,8 +269,14 @@ public class NetworkService extends AbstractGitPersistableService<NetworkState, 
 
     eventBus.post(new NetworkUpdatedEvent(network));
 
+    processNetworkForPublishedNumberOfStudies(network);
     if(networkState.isPublished()) eventBus.post(new NetworkPublishedEvent(network, getCurrentUsername()));
     else eventBus.post(new NetworkUnpublishedEvent(network));
+  }
+
+  private Network processNetworkForPublishedNumberOfStudies(Network network) {
+    network.setNumberOfStudies(network.getStudyIds().stream().filter(s -> studyService.isPublished(s)).count());
+    return network;
   }
 
   /**
@@ -370,6 +381,7 @@ public class NetworkService extends AbstractGitPersistableService<NetworkState, 
     NetworkState state = findStateById(network.getId());
 
     if(state.isPublished()) {
+      processNetworkForPublishedNumberOfStudies(network);
       publishState(network.getId());
       eventBus.post(new NetworkPublishedEvent(network, getCurrentUsername(), PublishCascadingScope.NONE));
     }

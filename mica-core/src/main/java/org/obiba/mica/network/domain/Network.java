@@ -37,7 +37,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Strings;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
@@ -81,6 +80,8 @@ public class Network extends AbstractModelAware implements AttributeAware, Perso
   private Attributes attributes;
 
   private List<String> networkIds = Lists.newArrayList();
+
+  private long numberOfStudies;
 
   @URL
   private String opal;
@@ -189,8 +190,12 @@ public class Network extends AbstractModelAware implements AttributeAware, Perso
     return maelstromAuthorization;
   }
 
+  public void setNumberOfStudies(long numberOfStudies) {
+    this.numberOfStudies = numberOfStudies;
+  }
+
   public long getNumberOfStudies() {
-    return studyIds != null ? studyIds.size() : 0L;
+    return numberOfStudies;
   }
 
   public void setMaelstromAuthorization(Authorization maelstromAuthorization) {
