@@ -84,9 +84,19 @@ public class Mica220Upgrade implements UpgradeStep {
 
     try {
       mergeDefaultTaxonomyWithCurrent();
-    } catch(Exception e) {
+    } catch (Exception e) {
       logger.error("Error when trying to mergeDefaultTaxonomyWithCurrent.", e);
     }
+
+    try {
+      removeUselessClassAttributeInModel();
+    } catch (Exception e) {
+      logger.error("Error when trying to removeUselessClassAttributeInModel.", e);
+    }
+  }
+
+  private void removeUselessClassAttributeInModel() {
+    mongoTemplate.execute(db -> db.eval("db.study.updateMany({\"model.methods._class\":{$exists:true}}, {$unset:{\"model.methods._class\":\"\"}})"));
   }
 
   private void updateTaxonomiesWithRangeCriteria() {
