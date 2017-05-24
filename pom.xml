@@ -32,7 +32,7 @@
   </modules>
 
   <properties>
-    <mica.deploy.dir>unstable</mica.deploy.dir>
+    <obiba.deploy.dir>unstable</obiba.deploy.dir>
 
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>

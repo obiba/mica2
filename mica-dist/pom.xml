@@ -306,7 +306,7 @@
                   <target>
                     <property name="deb.version" value="${project.version}-b${buildNumber}" />
                     <!-- Deploy deb file in deb repo -->
-                    <copy file="target/mica2_${deb.version}_all.deb" todir="${obiba.deb.dir}/${mica.deploy.dir}" />
+                    <copy file="target/mica2_${deb.version}_all.deb" todir="${obiba.deb.dir}/${obiba.deploy.dir}" />
                   </target>
                 </configuration>
               </execution>
@@ -319,7 +319,7 @@
                 <configuration>
                   <target>
                     <!-- Deploy Mica Server package file in download repo -->
-                    <copy file="target/mica-dist-${project.version}-dist.zip" tofile="${obiba.download.dir}/mica/${mica.deploy.dir}/mica2-${project.version}-dist.zip" />
+                    <copy file="target/mica-dist-${project.version}-dist.zip" tofile="${obiba.download.dir}/mica/${obiba.deploy.dir}/mica2-${project.version}-dist.zip" />
                   </target>
                 </configuration>
               </execution>
@@ -332,7 +332,7 @@
                 <configuration>
                   <target>
                     <!-- Deploy rpm file in rpm repo -->
-                    <copy todir="${obiba.rpm.dir}/${mica.deploy.dir}">
+                    <copy todir="${obiba.rpm.dir}/${obiba.deploy.dir}">
                       <fileset dir="target/rpm/mica2/RPMS/noarch" />
                     </copy>
                   </target>
