@@ -87,7 +87,7 @@
       "en": "Case only"
       "fr": "Cas"
     "description":
-      "en": "Observational study that describes and investigates a population pesenting a specific disease or outcome (cases)."
+      "en": "Observational study that describes and investigates a population presenting a specific disease or outcome (cases)."
       "fr": "Étude observationnelle qui décrit et étudie une population présentant une maladie ou un résultat spécifique (cas)."
   - "name": "cross_sectional"
     "title":
@@ -1515,7 +1515,7 @@
       "en": "Second Trimester"
       "fr": "Deuxième trimestre"
     "description":
-      "en": "First trimester of pregnancy."
+      "en": "Second trimester of pregnancy."
       "fr": "Deuxième trimestre de grossesse."
   - "name": third_trimester
     "title":
@@ -1765,7 +1765,7 @@
       "en": "Specific population"
       "fr": "Population spécifique"
     "description":
-      "en": "Participants are recruited rom a specific sub-population."
+      "en": "Participants are recruited from a specific sub-population."
       "fr": "Les participants sont recrutés à partir d'une sous-population spécifique."
   - "name": "exist_studies"
     "title":
@@ -1779,7 +1779,7 @@
       "en": "Other"
       "fr": "Autre"
     "description":
-      "en": "Participants are recruited from an another source."
+      "en": "Participants are recruited from another source."
       "fr": "Les participants sont recrutés à partir d'une autre source."
 - "name": "populations-dataCollectionEvents-dataSources"
   "title":
@@ -1917,7 +1917,7 @@
       "en": "Biosamples"
       "fr": "Échantillons biologiques"
     "description":
-      "en": "Access to particpant biological samples could be allowed."
+      "en": "Access to participant biological samples could be allowed."
       "fr": "L'accès aux échantillons biologiques des participants pourrait être autorisé."
   - "name": "other"
     "title":
