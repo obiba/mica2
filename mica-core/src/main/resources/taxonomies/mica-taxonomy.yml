@@ -61,7 +61,7 @@
         "en": "Constructs for general health"
         "fr": "Information au sujet de mesures composées (échelles) de la santé générale"
       "description":
-        "en": "Refers constructs used to measure general health"
+        "en": "Refers to constructs used to measure general health"
         "fr": "Information au sujet de mesures composées (échelles) de la santé générale"
     - "name": "Mlstr_habits"
       "title":
