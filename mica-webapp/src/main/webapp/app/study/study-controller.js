@@ -443,7 +443,7 @@ mica.study
         } else {
           DraftStudyPublicationResource.unPublish({id: $scope.study.id}, function (response) {
             $scope.studySummary = StudyStateResource.get({id: $routeParams.id}, initializeState);
-            if (response) {
+            if (response && (response.harmonizationDataset || response.network || response.studyDataset)) {
               StudyUpdateWarningService.popup(response, 'study.potential-conflicts', 'study.potential-conflicts-message');
             }
           });
