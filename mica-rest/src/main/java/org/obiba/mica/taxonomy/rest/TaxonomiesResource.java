@@ -67,7 +67,7 @@ public class TaxonomiesResource {
   @RequiresRoles(Roles.MICA_ADMIN)
   public Response updateIndices() {
     cacheService.clearOpalTaxonomiesCache();
-    eventBus.post(new TaxonomiesUpdatedEvent());
+    new Thread(() -> opalService.getTaxonomies()).start();
     return Response.noContent().build();
   }
 }
