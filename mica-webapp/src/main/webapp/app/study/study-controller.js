@@ -728,6 +728,7 @@ mica.study
     'MicaUtil',
     'SfOptionsService',
     'StudyUpdateWarningService',
+    'FormDirtyStateObserver',
     function ($rootScope,
               $scope,
               $routeParams,
@@ -743,7 +744,8 @@ mica.study
               StudyTaxonomyService,
               MicaUtil,
               SfOptionsService,
-              StudyUpdateWarningService) {
+              StudyUpdateWarningService,
+              FormDirtyStateObserver) {
 
 
       $scope.selectionCriteriaGenders = {};
@@ -821,7 +823,12 @@ mica.study
 
       var updateStudy = function () {
         $log.debug('Update study', $scope.study);
-        $scope.study.$save({comment: $scope.revision.comment}, redirectToStudy, saveErrorHandler);
+        $scope.study.$save({comment: $scope.revision.comment},
+          function onSuccess(response) {
+            FormDirtyStateObserver.unobserve();
+            redirectToStudy(response);
+          },
+          saveErrorHandler);
       };
 
       var validate = function (form) {
@@ -847,6 +854,8 @@ mica.study
       var redirectToStudy = function (response) {
         $location.path('/study/' + (response ? response.study.id : $scope.study.id)).replace();
       };
+
+      FormDirtyStateObserver.observe($scope);
     }])
 
   .controller('StudyPopulationDceController', [
@@ -866,6 +875,7 @@ mica.study
     'StudyTaxonomyService',
     'SfOptionsService',
     'StudyUpdateWarningService',
+    'FormDirtyStateObserver',
     function ($rootScope,
               $scope,
               $routeParams,
@@ -881,7 +891,8 @@ mica.study
               MicaUtil,
               StudyTaxonomyService,
               SfOptionsService,
-              StudyUpdateWarningService
+              StudyUpdateWarningService,
+              FormDirtyStateObserver
     ) {
       $scope.dce = {model: {}};
       $scope.revision = {comment: null};
@@ -1016,7 +1027,12 @@ mica.study
 
       var updateStudy = function () {
         $log.info('Update study', $scope.study);
-        $scope.study.$save({comment: $scope.revision.comment}, redirectToStudy, saveErrorHandler);
+        $scope.study.$save({comment: $scope.revision.comment},
+          function onSuccess(response) {
+            FormDirtyStateObserver.unobserve();
+            redirectToStudy(response);
+          },
+          saveErrorHandler);
       };
 
       var saveErrorHandler = function (response) {
@@ -1032,6 +1048,7 @@ mica.study
         $location.path('/study/' + (response ? response.study.id : $scope.study.id)).replace();
       };
 
+      FormDirtyStateObserver.observe($scope);
     }])
 
   .controller('StudyFileSystemController', ['$scope', '$log', '$routeParams',
