@@ -20,10 +20,14 @@ import javax.ws.rs.core.Response;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.obiba.mica.micaConfig.service.CacheService;
 import org.obiba.mica.security.Roles;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Path("/")
 @RequiresRoles(Roles.MICA_ADMIN)
 public class CacheResource {
+
+  private static final Logger logger = LoggerFactory.getLogger(IllegalArgumentExceptionMapper.class);
 
   @Inject
   private CacheService cacheService;
@@ -38,6 +42,9 @@ public class CacheResource {
   @Path("/cache/{id}")
   @DELETE
   public Response deleteCache(@PathParam("id") String id) {
+
+    logger.info("clear cache [{}]", id);
+
     switch(id) {
       case "micaConfig" :
         cacheService.clearMicaConfigCache();

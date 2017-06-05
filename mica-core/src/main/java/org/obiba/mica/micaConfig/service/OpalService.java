@@ -293,7 +293,7 @@ public class OpalService implements EnvironmentAware {
   // Private methods
   //
 
-  private Map<String, Taxonomy> getTaxonomiesInternal() {
+  private synchronized Map<String, Taxonomy> getTaxonomiesInternal() {
     try {
       return opalServiceHelper.getTaxonomies(getOpalJavaClient());
     } catch(URISyntaxException e) {
