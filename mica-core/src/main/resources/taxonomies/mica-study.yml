@@ -1494,7 +1494,7 @@
       "en": "Study recruits women only."
 - "name": "populations-selectionCriteria-pregnantWomen"
   "title":
-    "en": "Selection criteria - Pregnant Women"
+    "en": "Selection criteria - Pregnant women"
     "fr": "Critères de sélection - Femmes enceintes"
   "description":
     "en": "The recruited individuals are pregnant women."
@@ -1505,21 +1505,21 @@
   "terms":
   - "name": "first_trimester"
     "title":
-      "en": "First Trimester"
+      "en": "First trimester"
       "fr": "Premier trimestre"
     "description":
       "en": "First trimester of pregnancy."
       "fr": "Premier trimestre de grossesse."
   - "name": second_trimester
     "title":
-      "en": "Second Trimester"
+      "en": "Second trimester"
       "fr": "Deuxième trimestre"
     "description":
       "en": "Second trimester of pregnancy."
       "fr": "Deuxième trimestre de grossesse."
   - "name": third_trimester
     "title":
-      "en": "Third Trimester"
+      "en": "Third trimester"
       "fr": "Troisième trimestre"
     "description":
       "en": "Third trimester of pregnancy."
