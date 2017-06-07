@@ -24,7 +24,9 @@ import com.google.common.collect.Maps;
 import org.obiba.mica.JSONUtils;
 import org.obiba.mica.core.domain.Membership;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
+import org.obiba.mica.study.domain.HarmonizationStudy;
 import org.obiba.mica.study.domain.Study;
+import org.obiba.mica.study.service.HarmonizationStudyService;
 import org.obiba.mica.study.service.StudyService;
 import org.springframework.stereotype.Component;
 
@@ -54,6 +56,9 @@ class StudyDtos {
 
   @Inject
   private StudyService studyService;
+
+  @Inject
+  private HarmonizationStudyService harmonizationStudyService;
 
   @NotNull
   Mica.StudyDto asDto(@NotNull Study study, boolean asDraft) {
@@ -119,6 +124,79 @@ class StudyDtos {
     if (dto.getPopulationsCount() > 0) {
       study.setPopulations(dto.getPopulationsList().stream().map(populationDtos::fromDto)
         .collect(Collectors.toCollection(TreeSet<org.obiba.mica.study.domain.Population>::new)));
+    }
+
+    if (dto.hasContent() && !Strings.isNullOrEmpty(dto.getContent()))
+      study.setModel(JSONUtils.toMap(dto.getContent()));
+    else
+      study.setModel(new HashMap<>());
+
+    return study;
+  }
+
+
+  @NotNull
+  Mica.HarmonizationStudyDto asDto(@NotNull HarmonizationStudy study, boolean asDraft) {
+    Mica.HarmonizationStudyDto.Builder builder = Mica.HarmonizationStudyDto.newBuilder();
+    builder.setId(study.getId()) //
+      .addAllName(localizedStringDtos.asDto(study.getName())) //
+      .addAllObjectives(localizedStringDtos.asDto(study.getObjectives()));
+
+    if(study.hasModel()) builder.setContent(JSONUtils.toJSON(study.getModel()));
+
+    if(asDraft) {
+      builder.setTimestamps(TimestampsDtos.asDto(study));
+    }
+
+    builder.setPermissions(permissionsDtos.asDto(study));
+
+    if(study.getLogo() != null) builder.setLogo(attachmentDtos.asDto(study.getLogo()));
+
+    if(study.getAcronym() != null) builder.addAllAcronym(localizedStringDtos.asDto(study.getAcronym()));
+
+    List<String> roles = micaConfigService.getConfig().getRoles();
+
+    if(study.getMemberships() != null) {
+      List<Mica.MembershipsDto> memberships = study.getMemberships().entrySet().stream()
+        .filter(e -> roles.contains(e.getKey())).map(e -> //
+          Mica.MembershipsDto.newBuilder() //
+            .setRole(e.getKey()).addAllMembers(e.getValue().stream().map(m -> //
+            personDtos.asDto(m.getPerson(), asDraft)).collect(toList())).build()) //
+        .collect(toList());
+
+      builder.addAllMemberships(memberships);
+    }
+
+//
+//    if(study.getPopulations() != null) {
+//      study.getPopulations().forEach(population -> builder.addPopulations(populationDtos.asDto(population)));
+//    }
+
+    builder.setPublished(harmonizationStudyService.isPublished(study.getId()));
+
+    return builder.build();
+  }
+
+  @NotNull
+  HarmonizationStudy fromDto(@NotNull Mica.HarmonizationStudyDtoOrBuilder dto) {
+    HarmonizationStudy study = new HarmonizationStudy();
+    if(dto.hasId()) study.setId(dto.getId());
+    if(dto.getNameCount() > 0) study.setName(localizedStringDtos.fromDto(dto.getNameList()));
+    if(dto.getAcronymCount() > 0) study.setAcronym(localizedStringDtos.fromDto(dto.getAcronymList()));
+    if(dto.hasLogo()) study.setLogo(attachmentDtos.fromDto(dto.getLogo()));
+    if(dto.hasTimestamps()) TimestampsDtos.fromDto(dto.getTimestamps(), study);
+    if(dto.getObjectivesCount() > 0) study.setObjectives(localizedStringDtos.fromDto(dto.getObjectivesList()));
+
+    if(dto.getMembershipsCount() > 0) {
+      Map<String, List<Membership>> memberships = Maps.newHashMap();
+      dto.getMembershipsList().forEach(e -> memberships.put(e.getRole(),
+        e.getMembersList().stream().map(p -> new Membership(personDtos.fromDto(p), e.getRole())).collect(toList())));
+      study.setMemberships(memberships);
+    }
+
+    if (dto.getPopulationsCount() > 0) {
+//      study.setPopulations(dto.getPopulationsList().stream().map(populationDtos::fromDto)
+//        .collect(Collectors.toCollection(TreeSet<org.obiba.mica.study.domain.Population>::new)));
     }
 
     if (dto.hasContent() && !Strings.isNullOrEmpty(dto.getContent()))

@@ -8,15 +8,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.obiba.mica.study.event;
+package org.obiba.mica.study;
 
-import org.obiba.mica.core.event.PersistableDeletedEvent;
-import org.obiba.mica.study.domain.BaseStudy;
-import org.obiba.mica.study.domain.Study;
+import org.obiba.mica.core.repository.EntityStateRepository;
+import org.obiba.mica.study.domain.HarmonizationStudyState;
+import org.obiba.mica.study.domain.StudyState;
 
-public class StudyDeletedEvent extends PersistableDeletedEvent<BaseStudy> {
-
-  public StudyDeletedEvent(BaseStudy study) {
-    super(study);
-  }
+public interface HarmonizationStudyStateRepository extends EntityStateRepository<HarmonizationStudyState> {
 }

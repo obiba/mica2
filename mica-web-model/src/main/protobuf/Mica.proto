@@ -159,6 +159,29 @@ message StudyDto {
   }
 }
 
+message HarmonizationStudyDto {
+  optional string id = 1;
+  optional TimestampsDto timestamps = 2;
+
+  repeated LocalizedStringDto name = 3;
+  repeated LocalizedStringDto acronym = 4;
+  optional AttachmentDto logo = 5;
+  repeated LocalizedStringDto objectives = 6;
+  repeated AttachmentDto attachments = 7;
+  repeated HarmonizationPopulationDto populations = 8;
+  optional PermissionsDto permissions = 9;
+  repeated MembershipsDto memberships = 10;
+  optional string content = 11;
+  optional bool published = 12;
+
+  message HarmonizationPopulationDto {
+    optional string id = 1;
+    repeated LocalizedStringDto name = 2;
+    repeated LocalizedStringDto description = 3;
+    optional string content = 4;
+  }
+}
+
 enum OpalCredentialType {
   USERNAME = 0;
   PUBLIC_KEY_CERTIFICATE = 1;

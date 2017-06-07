@@ -20,6 +20,7 @@ import org.obiba.mica.file.AttachmentState;
 import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.project.domain.Project;
 import org.obiba.mica.security.service.SubjectAclService;
+import org.obiba.mica.study.domain.HarmonizationStudy;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.domain.StudyState;
 import org.springframework.stereotype.Component;
@@ -40,6 +41,10 @@ class PermissionsDtos {
 
   public Mica.PermissionsDto asDto(@NotNull Study study) {
     return asDto("/draft/study", study.getId());
+  }
+
+  public Mica.PermissionsDto asDto(@NotNull HarmonizationStudy study) {
+    return asDto("/draft/harmonization-study", study.getId());
   }
 
   public Mica.PermissionsDto asDto(StudyState studyState) {

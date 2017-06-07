@@ -8,15 +8,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.obiba.mica.study.event;
+package org.obiba.mica.study;
 
-import org.obiba.mica.core.event.PersistableUpdatedEvent;
-import org.obiba.mica.study.domain.BaseStudy;
+import org.obiba.mica.core.repository.DBRefAwareRepository;
+import org.obiba.mica.study.domain.HarmonizationStudy;
 import org.obiba.mica.study.domain.Study;
 
-public class DraftStudyUpdatedEvent extends PersistableUpdatedEvent<BaseStudy> {
-
-  public DraftStudyUpdatedEvent(BaseStudy study) {
-    super(study);
-  }
+public interface HarmonizationStudyRepositoryCustom extends DBRefAwareRepository<HarmonizationStudy> {
 }

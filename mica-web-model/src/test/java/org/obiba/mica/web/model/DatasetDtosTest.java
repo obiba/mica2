@@ -48,8 +48,11 @@ import org.obiba.mica.project.ProjectStateRepository;
 import org.obiba.mica.project.service.ProjectService;
 import org.obiba.mica.security.repository.SubjectAclRepository;
 import org.obiba.mica.security.service.SubjectAclService;
+import org.obiba.mica.study.HarmonizationStudyRepository;
+import org.obiba.mica.study.HarmonizationStudyStateRepository;
 import org.obiba.mica.study.StudyRepository;
 import org.obiba.mica.study.domain.StudyState;
+import org.obiba.mica.study.service.HarmonizationStudyService;
 import org.obiba.mica.study.service.PublishedDatasetVariableService;
 import org.obiba.mica.study.service.PublishedStudyService;
 import org.obiba.mica.study.service.StudyService;
@@ -191,6 +194,16 @@ public class DatasetDtosTest {
     }
 
     @Bean
+    public HarmonizationStudyRepository harmonizationStudyRepository() {
+      return Mockito.mock(HarmonizationStudyRepository.class);
+    }
+
+    @Bean
+    public HarmonizationStudyStateRepository harmonizationStudyStateRepository() {
+      return Mockito.mock(HarmonizationStudyStateRepository.class);
+    }
+
+    @Bean
     public StudyDatasetStateRepository studyDatasetStaetRepository() {
       return mock(StudyDatasetStateRepository.class);
     }
@@ -203,6 +216,11 @@ public class DatasetDtosTest {
     @Bean
     public StudyService studyService() {
       return Mockito.mock(StudyService.class);
+    }
+
+    @Bean
+    public HarmonizationStudyService harmonizationStudyService() {
+      return Mockito.mock(HarmonizationStudyService.class);
     }
 
     @Bean
