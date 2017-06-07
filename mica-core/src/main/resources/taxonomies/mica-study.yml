@@ -2101,3 +2101,26 @@
     "alias": "populations-dataCollectionEvents-description"
     "static": "true"
     "localized": "true"
+- "name": "className"
+  "title":
+    "en": "Study Type"
+    "fr": "Type d'étude"
+  "description":
+    "en": "Type of study (e.g. study or harmonization)."
+    "fr": "Type de l'étude (par exemple, étude ou étude d'harmonization)."
+  "terms":
+  - "name": "Study"
+    "title":
+      "en": "Study"
+      "fr": "Étude"
+    "description":
+      "en": "A collection study"
+  - "name": "HarmonizationStudy"
+    "title":
+      "en": "Harmonization Study"
+      "fr": "Étude d'harmonization"
+    "description":
+      "en": "A harmonization study."
+      "fr": "Une étude d'harmonization."
+  "attributes":
+    "static": "true"
