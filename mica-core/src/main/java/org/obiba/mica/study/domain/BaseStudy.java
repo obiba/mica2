@@ -12,6 +12,7 @@ package org.obiba.mica.study.domain;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import org.hibernate.validator.constraints.URL;
 import org.obiba.mica.core.domain.*;
 import org.obiba.mica.file.Attachment;
@@ -21,6 +22,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import static java.util.stream.Collectors.toList;
 
@@ -47,6 +50,8 @@ public abstract class BaseStudy extends AbstractModelAware implements PersonAwar
 
   @URL
   private String opal;
+
+  private SortedSet<Population> populations = Sets.newTreeSet();
 
   //
   // Accessors
@@ -111,7 +116,7 @@ public abstract class BaseStudy extends AbstractModelAware implements PersonAwar
   @Override
   public List<Person> getAllPersons() {
     return getMemberships().values().stream().flatMap(List::stream).map(Membership::getPerson).distinct()
-        .collect(toList());
+      .collect(toList());
   }
 
   @Override
@@ -158,6 +163,54 @@ public abstract class BaseStudy extends AbstractModelAware implements PersonAwar
       m.getPerson().removeStudy(this, role);
       return m.getPerson();
     }).collect(toList());
+  }
+
+  public SortedSet<Population> getPopulations() {
+    return populations;
+  }
+
+  public void addPopulation(@NotNull Population population) {
+    if (populations == null) populations = new TreeSet<>();
+    if (population.isNew()) {
+      String newId = population.getName().asAcronym().asUrlSafeString().toLowerCase();
+      if (hasPopulation(newId)) {
+        for (int i = 1; i < 1000; i++) {
+          if (!hasPopulation(newId + "_" + i)) {
+            population.setId(newId + "_" + i);
+            break;
+          }
+        }
+      } else population.setId(newId);
+    }
+    populations.add(population);
+  }
+
+  public boolean hasPopulation(String populationId) {
+    if (populations == null) return false;
+    for (Population population : populations) {
+      if (population.getId().equals(populationId)) return true;
+    }
+    return false;
+  }
+
+  public boolean hasPopulations() {
+    return populations != null && !populations.isEmpty();
+  }
+
+  public void setPopulations(SortedSet<Population> newPopulations) {
+    if (newPopulations == null) {
+      // during serialization input can be null
+      populations = null;
+      return;
+    }
+
+    // make sure we don't keep old entries
+    populations = new TreeSet<>();
+    newPopulations.forEach(this::addPopulation);
+  }
+
+  public Population findPopulation(String id) {
+    return populations.stream().filter(p -> p.getId().equals(id)).findFirst().orElse(null);
   }
 
   //

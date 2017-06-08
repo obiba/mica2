@@ -16,7 +16,6 @@ import com.google.common.base.MoreObjects;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import org.hibernate.validator.constraints.URL;
 import org.obiba.mica.core.domain.*;
 import org.obiba.mica.file.Attachment;
@@ -69,8 +68,6 @@ public class Study extends BaseStudy implements AttributeAware {
   private List<Attachment> attachments = Lists.newArrayList();
 
   private LocalizedString info;
-
-  private SortedSet<Population> populations = Sets.newTreeSet();
 
   private Attributes attributes;
 
@@ -203,51 +200,6 @@ public class Study extends BaseStudy implements AttributeAware {
     this.info = info;
   }
 
-  public SortedSet<Population> getPopulations() {
-    return populations;
-  }
-
-  public void addPopulation(@NotNull Population population) {
-    if (populations == null) populations = new TreeSet<>();
-    if (population.isNew()) {
-      String newId = population.getName().asAcronym().asUrlSafeString().toLowerCase();
-      if (hasPopulation(newId)) {
-        for (int i = 1; i < 1000; i++) {
-          if (!hasPopulation(newId + "_" + i)) {
-            population.setId(newId + "_" + i);
-            break;
-          }
-        }
-      } else population.setId(newId);
-    }
-    populations.add(population);
-  }
-
-  public boolean hasPopulation(String populationId) {
-    if (populations == null) return false;
-    for (Population population : populations) {
-      if (population.getId().equals(populationId)) return true;
-    }
-    return false;
-  }
-
-  public boolean hasPopulations() {
-    return populations != null && !populations.isEmpty();
-  }
-
-  public void setPopulations(SortedSet<Population> newPopulations) {
-    if (newPopulations == null) {
-      // during serialization input can be null
-      populations = newPopulations;
-      return;
-    }
-
-    // make sure we don't keep old entries
-    populations = new TreeSet<>();
-    newPopulations.forEach(this::addPopulation);
-  }
-
-
   @Override
   protected MoreObjects.ToStringHelper toStringHelper() {
     return super.toStringHelper().add("name", getName());
@@ -360,10 +312,6 @@ public class Study extends BaseStudy implements AttributeAware {
     }
 
     return super.getModel();
-  }
-
-  public Population findPopulation(String id) {
-    return populations.stream().filter(p -> p.getId().equals(id)).findFirst().orElse(null);
   }
 
   public static class StudyMethods implements Serializable {
