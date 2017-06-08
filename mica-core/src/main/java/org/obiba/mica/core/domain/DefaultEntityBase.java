@@ -5,7 +5,7 @@ import org.joda.time.DateTime;
 public class DefaultEntityBase implements EntityBase {
 
   private String id;
-  private DateTime createdDate;
+  private DateTime createdDate = DateTime.now();
   private DateTime lastModifiedDate;
 
   @Override
