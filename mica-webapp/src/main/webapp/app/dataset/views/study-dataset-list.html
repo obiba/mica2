@@ -18,14 +18,14 @@
     <i class="fa fa-plus"></i> <span translate>dataset.add</span>
   </a>
 
-  <p class="help-block" ng-if="!hasDatasets && !loading">
+  <p class="help-block" ng-if="!hasDocuments && !loading">
     <span translate>dataset.none</span>
   </p>
 
   <p ng-if="loading" class="voffset2 loading">
   </p>
 
-  <div ng-show="hasDatasets">
+  <div ng-show="hasDocuments">
     <div class="row voffset2">
       <div class="col-xs-4">
       <span class="input-group input-group-sm no-padding-top">
@@ -51,7 +51,7 @@
         </tr>
         </thead>
         <tbody>
-        <tr dir-paginate="dataset in studyDatasets | itemsPerPage: limit" total-items="totalCount" current-page="pagination.current">
+        <tr dir-paginate="dataset in documents | itemsPerPage: limit" total-items="totalCount" current-page="pagination.current">
           <td>
             <a ng-href="#/study-dataset/{{dataset.id}}" translate>{{dataset.id}}</a>
           </td>
@@ -81,7 +81,7 @@
                 <a ng-href="#/study-dataset/{{dataset.id}}/edit" title="{{'edit' | translate}}"><i class="fa fa-pencil"></i></a>
               </li>
               <li ng-if="dataset['obiba.mica.EntityStateDto.datasetState'].permissions.delete && dataset['obiba.mica.EntityStateDto.datasetState'].revisionStatus === 'DELETED'">
-                <a href ng-click="deleteStudyDataset(dataset)" title="{{'delete' | translate}}"><i class="fa fa-trash-o"></i></a>
+                <a href ng-click="deleteDocument(dataset)" title="{{'delete' | translate}}"><i class="fa fa-trash-o"></i></a>
               </li>
               <li ng-if="dataset['obiba.mica.EntityStateDto.datasetState'].revisionStatus === 'UNDER_REVIEW'">
                 <a ng-href="#/study-dataset/{{dataset.id}}" title="{{'view' | translate}}"><i class="fa fa-eye"></i></a>

@@ -15,7 +15,10 @@ mica.entityConfig
   .factory('EntityFormResource', ['$resource',
     function ($resource) {
       return $resource('ws/config/:target/form', {}, {
-        'get': {method: 'GET', params: {locale: '@locale'}, errorHandler: true}
+        'get': {method: 'GET', params: {locale: '@locale'}, errorHandler: true, transformResponse: function (response) {
+          var form = angular.fromJson(response);
+          return {schema: angular.fromJson(form.schema), definition: angular.fromJson(form.definition)};
+        }}
       });
     }])
 
