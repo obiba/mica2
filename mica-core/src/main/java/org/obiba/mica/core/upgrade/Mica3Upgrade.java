@@ -1,17 +1,14 @@
 package org.obiba.mica.core.upgrade;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
-import javax.inject.Inject;
-
-import org.obiba.mica.core.domain.AbstractGitPersistable;
+import org.obiba.mica.core.domain.DefaultEntityBase;
 import org.obiba.mica.study.service.StudyService;
 import org.obiba.runtime.Version;
 import org.obiba.runtime.upgrade.UpgradeStep;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+
+import javax.inject.Inject;
 
 @Component
 public class Mica3Upgrade implements UpgradeStep {
@@ -45,7 +42,7 @@ public class Mica3Upgrade implements UpgradeStep {
   private void republishStudies() {
     studyService.findPublishedStates().stream()
       .filter(s -> s.getRevisionsAhead() == 0)
-      .map(AbstractGitPersistable::getId)
+      .map(DefaultEntityBase::getId)
       .forEach(s -> studyService.publish(s, true));
   }
 }
