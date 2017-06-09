@@ -33,6 +33,7 @@ import org.obiba.git.CommitInfo;
 import org.obiba.git.command.AbstractGitWriteCommand;
 import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.core.domain.EntityState;
+import org.obiba.mica.core.domain.GitIdentifier;
 import org.obiba.mica.core.domain.GitPersistable;
 import org.obiba.mica.core.domain.RevisionStatus;
 import org.obiba.mica.core.notification.EntityPublicationFlowMailNotification;

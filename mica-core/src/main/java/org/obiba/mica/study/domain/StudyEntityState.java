@@ -8,12 +8,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.obiba.mica.core.domain;
+package org.obiba.mica.study.domain;
 
-import java.io.Serializable;
-import java.util.Map;
+import org.obiba.mica.core.domain.EntityState;
 
-public interface GitPersistable extends EntityBase, GitIdentifier {
+public abstract class StudyEntityState extends EntityState {
 
-  Map<String, Serializable> parts();
+  @Override
+  public String pathPrefix() {
+    return "studies";
+  }
+
 }

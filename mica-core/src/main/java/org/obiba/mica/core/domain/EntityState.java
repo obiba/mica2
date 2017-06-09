@@ -10,18 +10,12 @@
 
 package org.obiba.mica.core.domain;
 
-import java.io.Serializable;
-import java.util.Map;
-
 import org.joda.time.DateTime;
 import org.springframework.data.mongodb.core.index.Indexed;
 
-import com.google.common.base.MoreObjects;
 import com.google.common.base.Strings;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-
-public abstract class EntityState extends AbstractGitPersistable {
+public abstract class EntityState extends DefaultEntityBase implements GitIdentifier {
 
   @Indexed
   private RevisionStatus revisionStatus = RevisionStatus.DRAFT;
@@ -103,17 +97,5 @@ public abstract class EntityState extends AbstractGitPersistable {
 
   public void setPublishedBy(String publishedBy) {
     this.publishedBy = publishedBy;
-  }
-
-  @Override
-  protected MoreObjects.ToStringHelper toStringHelper() {
-    return super.toStringHelper().add("id", getId()) //
-      .add("revisionStatus", revisionStatus) //
-      .add("publishedTag", publishedTag);
-  }
-
-  @Override
-  public Map<String, Serializable> parts() {
-    throw new NotImplementedException();
   }
 }

@@ -41,6 +41,7 @@ import org.obiba.git.command.FetchBlobCommand;
 import org.obiba.git.command.GitCommandHandler;
 import org.obiba.git.command.LogsCommand;
 import org.obiba.git.command.ReadFileCommand;
+import org.obiba.mica.core.domain.GitIdentifier;
 import org.obiba.mica.core.domain.GitPersistable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -95,7 +96,7 @@ public class GitService {
     this.clonesRoot = clonesRoot;
   }
 
-  public boolean hasGitRepository(GitPersistable persistable) {
+  public boolean hasGitRepository(GitIdentifier persistable) {
     return FileUtils.fileExists(getRepositoryPath(persistable).getAbsolutePath()) ||
       FileUtils.fileExists(getCloneRepositoryPath(persistable).getAbsolutePath());
   }
@@ -177,11 +178,11 @@ public class GitService {
     return new ByteArrayInputStream(objectMapper.writeValueAsBytes(persistable));
   }
 
-  public <T> T readFromTag(GitPersistable persistable, String tag, Class<T> clazz) {
+  public <T> T readFromTag(GitIdentifier persistable, String tag, Class<T> clazz) {
     return read(persistable, tag, clazz);
   }
 
-  private <T> T read(GitPersistable persistable, @Nullable String tag, Class<T> clazz) {
+  private <T> T read(GitIdentifier persistable, @Nullable String tag, Class<T> clazz) {
     try {
       try(InputStream inputStream = gitCommandHandler.execute(
         new ReadFileCommand.Builder(getRepositoryPath(persistable), getJsonFileName(clazz.getSimpleName())).tag(tag)
@@ -212,19 +213,19 @@ public class GitService {
     return ATTACHMENTS_PATH + attachmentId;
   }
 
-  public Pair<String, String> tag(GitPersistable persistable) {
-    IncrementTagCommand command = new IncrementTagCommand(getRepositoryPath(persistable),
-      new File(clonesRoot, persistable.pathPrefix()));
+  public Pair<String, String> tag(GitIdentifier gitIdentifier) {
+    IncrementTagCommand command = new IncrementTagCommand(getRepositoryPath(gitIdentifier),
+      new File(clonesRoot, gitIdentifier.pathPrefix()));
     gitCommandHandler.execute(command);
 
     return Pair.create(String.valueOf(command.getNewTag()), command.getHeadCommitId());
   }
 
-  private File getRepositoryPath(GitPersistable persistable) {
+  private File getRepositoryPath(GitIdentifier persistable) {
     return new File(repositoriesRoot, Paths.get(persistable.pathPrefix(), persistable.getId() + ".git").toString());
   }
 
-  private File getCloneRepositoryPath(GitPersistable persistable) {
+  private File getCloneRepositoryPath(GitIdentifier persistable) {
     return new File(clonesRoot, Paths.get(persistable.pathPrefix(), persistable.getId()).toString());
   }
 
