@@ -79,6 +79,52 @@ message EntityStateDto {
     optional EntityStateDto projectState = 1000;
   }
 }
+message PopulationDto {
+  optional string id = 1;
+  repeated LocalizedStringDto name = 2;
+  repeated LocalizedStringDto description = 3;
+  repeated DataCollectionEventDto dataCollectionEvents = 8;
+  optional string content = 10;
+
+  message RecruitmentDto {
+    repeated string dataSources = 1;
+    repeated string generalPopulationSources = 2;
+    repeated string specificPopulationSources = 3;
+    repeated LocalizedStringDto otherSpecificPopulationSource = 4;
+    repeated LocalizedStringDtos studies = 5;
+    repeated LocalizedStringDto otherSource = 6;
+    repeated LocalizedStringDto info = 7;
+  }
+
+  message SelectionCriteriaDto {
+    enum Gender {
+      men = 0;
+      women = 1;
+    }
+    optional Gender gender = 1;
+    optional double ageMin = 2;
+    optional double ageMax = 3;
+    repeated string countriesIso = 4;
+    repeated LocalizedStringDto territory = 5;
+    repeated string criteria = 6;
+    repeated LocalizedStringDtos ethnicOrigin = 7;
+    repeated LocalizedStringDtos healthStatus = 8;
+    repeated LocalizedStringDto otherCriteria = 9;
+    repeated LocalizedStringDto info = 10;
+  }
+
+  message DataCollectionEventDto {
+    optional string id = 1;
+    repeated LocalizedStringDto name = 2;
+    repeated LocalizedStringDto description = 3;
+    required int32 startYear = 4;
+    optional int32 startMonth = 5;
+    optional int32 endYear = 6;
+    optional int32 endMonth = 7;
+    repeated AttachmentDto attachments = 8;
+    optional string content = 9;
+  }
+}
 
 message StudyDto {
   optional string id = 1;
@@ -110,53 +156,6 @@ message StudyDto {
     optional TargetNumberDto sample = 2;
     repeated LocalizedStringDto info = 3;
   }
-
-  message PopulationDto {
-    optional string id = 1;
-    repeated LocalizedStringDto name = 2;
-    repeated LocalizedStringDto description = 3;
-    repeated DataCollectionEventDto dataCollectionEvents = 8;
-    optional string content = 10;
-
-    message RecruitmentDto {
-      repeated string dataSources = 1;
-      repeated string generalPopulationSources = 2;
-      repeated string specificPopulationSources = 3;
-      repeated LocalizedStringDto otherSpecificPopulationSource = 4;
-      repeated LocalizedStringDtos studies = 5;
-      repeated LocalizedStringDto otherSource = 6;
-      repeated LocalizedStringDto info = 7;
-    }
-
-    message SelectionCriteriaDto {
-      enum Gender {
-        men = 0;
-        women = 1;
-      }
-      optional Gender gender = 1;
-      optional double ageMin = 2;
-      optional double ageMax = 3;
-      repeated string countriesIso = 4;
-      repeated LocalizedStringDto territory = 5;
-      repeated string criteria = 6;
-      repeated LocalizedStringDtos ethnicOrigin = 7;
-      repeated LocalizedStringDtos healthStatus = 8;
-      repeated LocalizedStringDto otherCriteria = 9;
-      repeated LocalizedStringDto info = 10;
-    }
-
-    message DataCollectionEventDto {
-      optional string id = 1;
-      repeated LocalizedStringDto name = 2;
-      repeated LocalizedStringDto description = 3;
-      required int32 startYear = 4;
-      optional int32 startMonth = 5;
-      optional int32 endYear = 6;
-      optional int32 endMonth = 7;
-      repeated AttachmentDto attachments = 8;
-      optional string content = 9;
-    }
-  }
 }
 
 message HarmonizationStudyDto {
@@ -168,18 +167,12 @@ message HarmonizationStudyDto {
   optional AttachmentDto logo = 5;
   repeated LocalizedStringDto objectives = 6;
   repeated AttachmentDto attachments = 7;
-  repeated HarmonizationPopulationDto populations = 8;
-  optional PermissionsDto permissions = 9;
-  repeated MembershipsDto memberships = 10;
-  optional string content = 11;
-  optional bool published = 12;
-
-  message HarmonizationPopulationDto {
-    optional string id = 1;
-    repeated LocalizedStringDto name = 2;
-    repeated LocalizedStringDto description = 3;
-    optional string content = 4;
-  }
+  repeated PopulationDto populations = 8;
+  optional string opal = 9;
+  optional PermissionsDto permissions = 10;
+  repeated MembershipsDto memberships = 11;
+  optional string content = 12;
+  optional bool published = 13;
 }
 
 enum OpalCredentialType {

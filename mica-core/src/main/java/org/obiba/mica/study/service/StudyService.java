@@ -59,6 +59,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
+import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -76,7 +77,7 @@ import static java.util.stream.Collectors.toList;
 
 @Service
 @Validated
-public class StudyService extends AbstractGitPersistableService<StudyState, Study> {
+public class StudyService extends AbstractStudyService<StudyState, Study> {
 
   private static final Logger log = LoggerFactory.getLogger(StudyService.class);
 
@@ -89,13 +90,7 @@ public class StudyService extends AbstractGitPersistableService<StudyState, Stud
   private StudyRepository studyRepository;
 
   @Inject
-  private AttachmentRepository attachmentRepository;
-
-  @Inject
   private FileStoreService fileStoreService;
-
-  @Inject
-  private FileSystemService fileSystemService;
 
   @Inject
   private NetworkRepository networkRepository;
@@ -107,25 +102,10 @@ public class StudyService extends AbstractGitPersistableService<StudyState, Stud
   private HarmonizationDatasetRepository harmonizationDatasetRepository;
 
   @Inject
-  private EventBus eventBus;
-
-  @Inject
   private MicaConfigService micaConfigService;
 
-  @Inject
-  private ModelAwareTranslator modelAwareTranslator;
-
-  @CacheEvict(value = "studies-draft", key = "#study.id")
-  public void save(@NotNull @Valid Study study) {
-    saveInternal(study, null, true);
-  }
-
-  @CacheEvict(value = "studies-draft", key = "#study.id")
-  public void save(@NotNull @Valid Study study, @Nullable String comment) {
-    saveInternal(study, comment, true);
-  }
-
-  private void saveInternal(final Study study, String comment, boolean cascade) {
+  @Override
+  protected void saveInternal(final Study study, String comment, boolean cascade) {
     log.info("Saving study: {}", study.getId());
 
     // checks if population and dce are still the same
@@ -148,17 +128,13 @@ public class StudyService extends AbstractGitPersistableService<StudyState, Stud
 
     StudyState studyState = findEntityState(study, () -> {
       StudyState defaultState = new StudyState();
-      defaultState.setName(study.getName());
       return defaultState;
     });
 
     if (!study.isNew()) ensureGitRepository(studyState);
 
-    studyState.setName(study.getName());
     studyState.incrementRevisionsAhead();
     studyStateRepository.save(studyState);
-
-    study.setName(studyState.getName());
     study.setLastModifiedDate(DateTime.now());
 
     if(cascade) studyRepository.saveWithReferences(study);
@@ -166,34 +142,6 @@ public class StudyService extends AbstractGitPersistableService<StudyState, Stud
 
     gitService.save(study, comment);
     eventBus.post(new DraftStudyUpdatedEvent(study));
-  }
-
-  /**
-   * Index all {@link Study}s.
-   */
-  public void indexAll() {
-    eventBus.post(new IndexStudiesEvent());
-  }
-
-  @NotNull
-  @Cacheable(value = "studies-draft", key = "#id")
-  public Study findDraft(@NotNull String id) throws NoSuchEntityException {
-    return findDraft(id, null);
-  }
-
-  @NotNull
-  public Study findDraft(@NotNull String id, String locale) throws NoSuchEntityException {
-
-    // ensure study exists
-    getEntityState(id);
-
-    Study study = studyRepository.findOne(id);
-
-    if (locale != null) {
-      modelAwareTranslator.translateModel(locale, study);
-    }
-
-    return study;
   }
 
   public PersistableYearMonth getPersistableYearMonthFor(Study study, String populationId, String dceId) {
@@ -208,73 +156,8 @@ public class StudyService extends AbstractGitPersistableService<StudyState, Stud
     return null;
   }
 
-  @NotNull
-  public Study findStudy(@NotNull String id) throws NoSuchEntityException {
-    // ensure study exists
-    Study study = studyRepository.findOne(id);
-    if (study == null) throw NoSuchEntityException.withId(Study.class, id);
-    return study;
-  }
-
-  public boolean isPublished(@NotNull String id) throws NoSuchEntityException {
-    return getEntityState(id).isPublished();
-  }
-
-  public List<Study> findAllPublishedStudies() {
-    return findPublishedStates().stream() //
-      .filter(studyState -> { //
-        return gitService.hasGitRepository(studyState) && !Strings.isNullOrEmpty(studyState.getPublishedTag()); //
-      }) //
-      .map(studyState -> gitService.readFromTag(studyState, studyState.getPublishedTag(), Study.class))
-      .map(s -> { s.getModel(); return s; }) // make sure dynamic model is initialized
-      .collect(toList());
-  }
-
-  public List<Study> findAllDraftStudies() {
-    return studyRepository.findAll();
-  }
-
   public List<Study> findAllDraftStudies(Iterable<String> ids) {
     return Lists.newArrayList(studyRepository.findAll(ids));
-  }
-
-  @Caching(evict = {@CacheEvict(value = "aggregations-metadata", allEntries = true),
-    @CacheEvict(value = {"studies-draft", "studies-published"}, key = "#id")})
-  public void delete(@NotNull String id) {
-    Study study = studyRepository.findOne(id);
-
-    if (study == null) {
-      throw NoSuchEntityException.withId(Study.class, id);
-    }
-
-    checkStudyConstraints(study);
-
-    fileSystemService.delete(FileUtils.getEntityPath(study));
-    studyStateRepository.delete(id);
-    studyRepository.deleteWithReferences(study);
-    gitService.deleteGitRepository(study);
-    eventBus.post(new StudyDeletedEvent(study));
-  }
-
-  @Caching(evict = {@CacheEvict(value = "aggregations-metadata", allEntries = true),
-    @CacheEvict(value = {"studies-draft", "studies-published"}, key = "#id")})
-  public void publish(@NotNull String id, boolean publish) throws NoSuchEntityException {
-    publish(id, publish, PublishCascadingScope.NONE);
-  }
-
-  @Caching(evict = {@CacheEvict(value = "aggregations-metadata", allEntries = true),
-    @CacheEvict(value = {"studies-draft", "studies-published"}, key = "#id")})
-  public void publish(@NotNull String id, boolean publish, PublishCascadingScope cascadingScope) throws NoSuchEntityException {
-    log.info("Publish study: {}", id);
-    Study study = studyRepository.findOne(id);
-
-    if (publish) {
-      publishState(id);
-      eventBus.post(new StudyPublishedEvent(study, getCurrentUsername(), cascadingScope));
-    } else {
-      unPublishState(id);
-      eventBus.post(new StudyUnpublishedEvent(study));
-    }
   }
 
   @Override
@@ -301,14 +184,6 @@ public class StudyService extends AbstractGitPersistableService<StudyState, Stud
         .format("/study/%s/population/%s/data-collection-event/%s", restoredStudy.getId(), p.getId(), d.getId())))));
 
     return restoredStudy;
-  }
-
-  @Async
-  @Subscribe
-  public void micaConfigUpdated(MicaConfigUpdatedEvent event) {
-    log.info("Mica config updated. Removing roles.");
-    if(!event.getRemovedRoles().isEmpty())
-      findAllDraftStudies().forEach(s -> removeRoles(s, event.getRemovedRoles()));
   }
 
   public Map<String, List<String>> getPotentialConflicts(Study study, boolean publishing) {
@@ -367,7 +242,7 @@ public class StudyService extends AbstractGitPersistableService<StudyState, Stud
     }
   }
 
-  private void checkStudyConstraints(Study study) {
+  protected void checkStudyConstraints(Study study) {
     List<String> harmonizationDatasetsIds = harmonizationDatasetRepository.findByStudyTablesStudyId(study.getId())
       .stream().map(h -> h.getId()).collect(toList());
     List<String> studyDatasetIds = studyDatasetRepository.findByStudyTableStudyId(study.getId()).stream()
@@ -386,29 +261,9 @@ public class StudyService extends AbstractGitPersistableService<StudyState, Stud
     }
   }
 
-  @Nullable
   @Override
-  protected String generateId(@NotNull Study study) {
-    ensureAcronym(study);
-    return getNextId(study.getAcronym());
-  }
-
-  @Nullable
-  private String getNextId(LocalizedString suggested) {
-    if (suggested == null) return null;
-    String prefix = suggested.asUrlSafeString().toLowerCase();
-    if (Strings.isNullOrEmpty(prefix)) return null;
-    String next = prefix;
-    try {
-      getEntityState(next);
-      for (int i = 1; i <= 1000; i++) {
-        next = prefix + "-" + i;
-        getEntityState(next);
-      }
-      return null;
-    } catch (NoSuchEntityException e) {
-      return next;
-    }
+  protected MongoRepository<Study, String> getRepository() {
+    return studyRepository;
   }
 
   @Override
@@ -419,37 +274,6 @@ public class StudyService extends AbstractGitPersistableService<StudyState, Stud
   @Override
   protected Class<Study> getType() {
     return Study.class;
-  }
-
-  private void removeRoles(@NotNull Study study, Iterable<String> roles) {
-    saveInternal(study, String.format("Removed roles: %s", Joiner.on(", ").join(roles)), false);
-    StudyState state = findStateById(study.getId());
-
-    if(state.isPublished()) {
-      publishState(study.getId());
-      eventBus.post(new StudyPublishedEvent(study, getCurrentUsername(), PublishCascadingScope.NONE));
-    }
-  }
-
-  private void ensureAttachmentState(Attachment a, String path) {
-    if (!fileSystemService.hasAttachmentState(a.getPath(), a.getName(), false)) {
-      Attachment existingAttachment = attachmentRepository.findOne(a.getId());
-
-      if (existingAttachment != null) {
-        if (!fileSystemService.hasAttachmentState(existingAttachment.getPath(), existingAttachment.getName(), false)) {
-          existingAttachment.setPath(path);
-          fileSystemService.reinstate(existingAttachment);
-        }
-      } else {
-        log.warn("Missing attachment from git. Ignoring.", a);
-      }
-    }
-  }
-
-  private void ensureAcronym(@NotNull Study study) {
-    if (study.getAcronym() == null || study.getAcronym().isEmpty()) {
-      study.setAcronym(study.getName().asAcronym());
-    }
   }
 
   // from dataCollectionEventUIDs

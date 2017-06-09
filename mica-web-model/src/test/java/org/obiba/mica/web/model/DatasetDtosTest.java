@@ -136,7 +136,6 @@ public class DatasetDtosTest {
 
     StudyState state = new StudyState();
     state.setId("1111111111111111");
-    state.setName(en("S1").forFr("S1"));
     when(studyService.getEntityState("1111111111111111")).thenReturn(state);
 
     return studyDataset;
@@ -158,7 +157,6 @@ public class DatasetDtosTest {
 
     StudyState state = new StudyState();
     state.setId("222222222222222");
-    state.setName(en("S2").forFr("S2"));
     when(studyService.getEntityState("222222222222222")).thenReturn(state);
 
     return harmonizationDataset;

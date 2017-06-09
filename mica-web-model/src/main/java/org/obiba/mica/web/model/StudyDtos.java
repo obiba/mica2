@@ -167,10 +167,10 @@ class StudyDtos {
       builder.addAllMemberships(memberships);
     }
 
-//
-//    if(study.getPopulations() != null) {
-//      study.getPopulations().forEach(population -> builder.addPopulations(populationDtos.asDto(population)));
-//    }
+
+    if(study.getPopulations() != null) {
+      study.getPopulations().forEach(population -> builder.addPopulations(populationDtos.asDto(population)));
+    }
 
     builder.setPublished(harmonizationStudyService.isPublished(study.getId()));
 
@@ -195,8 +195,8 @@ class StudyDtos {
     }
 
     if (dto.getPopulationsCount() > 0) {
-//      study.setPopulations(dto.getPopulationsList().stream().map(populationDtos::fromDto)
-//        .collect(Collectors.toCollection(TreeSet<org.obiba.mica.study.domain.Population>::new)));
+      study.setPopulations(dto.getPopulationsList().stream().map(populationDtos::fromDto)
+        .collect(Collectors.toCollection(TreeSet<org.obiba.mica.study.domain.Population>::new)));
     }
 
     if (dto.hasContent() && !Strings.isNullOrEmpty(dto.getContent()))

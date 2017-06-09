@@ -10,8 +10,11 @@
 
 package org.obiba.mica.study.domain;
 
-import org.springframework.data.mongodb.core.mapping.Document;
+import org.obiba.mica.core.domain.EntityState;
 
-@Document
-public class StudyState extends StudyEntityState {
+public class HarmonizationStudyEntityState extends EntityState {
+  @Override
+  public String pathPrefix() {
+    return "harmonizationStudies";
+  }
 }

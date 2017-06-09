@@ -316,10 +316,10 @@ public class StudyPackageImportServiceImpl extends AbstractProtobufProvider impl
         atts.add(a);
       });
       int pIdx = 1;
-      for (Mica.StudyDto.PopulationDto.Builder pBuilder : builder.getPopulationsBuilderList()) {
+      for (Mica.PopulationDto.Builder pBuilder : builder.getPopulationsBuilderList()) {
         pBuilder.setId("" + pIdx++);
         int dceIdx = 1;
-        for (Mica.StudyDto.PopulationDto.DataCollectionEventDto.Builder dceBuilder : pBuilder.getDataCollectionEventsBuilderList()) {
+        for (Mica.PopulationDto.DataCollectionEventDto.Builder dceBuilder : pBuilder.getDataCollectionEventsBuilderList()) {
           dceBuilder.setId("" + dceIdx++);
           dceBuilder.getAttachmentsList().stream().map(dtos::fromDto).forEach(a -> {
             a.setPath("/study/%s/population/" + pBuilder.getId() + "/data-collection-event/" + dceBuilder.getId());

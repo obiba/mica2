@@ -214,9 +214,8 @@ class StudySummaryDtos {
 
     if(study == null) {
       builder = Mica.StudySummaryDto.newBuilder();
-      builder.setId(studyState.getId()) //
-        .setTimestamps(TimestampsDtos.asDto(studyState)) //
-        .addAllName(localizedStringDtos.asDto(studyState.getName()));
+      builder.setId(studyState.getId())
+        .setTimestamps(TimestampsDtos.asDto(studyState));
     } else {
       builder = asDtoBuilder(study, studyState.isPublished(), 0);
     }
