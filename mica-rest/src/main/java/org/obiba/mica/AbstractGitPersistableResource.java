@@ -36,7 +36,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-public abstract class AbstractGitPersistableResource<EntityStateGeneric extends EntityState, T1 extends GitPersistable> {
+public abstract class AbstractGitPersistableResource<T extends EntityState, T1 extends GitPersistable> {
 
   @Inject
   private MicaConfigService micaConfigService;
@@ -46,7 +46,7 @@ public abstract class AbstractGitPersistableResource<EntityStateGeneric extends 
 
   protected abstract String getId();
 
-  protected abstract AbstractGitPersistableService<EntityStateGeneric, T1> getService();
+  protected abstract AbstractGitPersistableService<T, T1> getService();
 
   @Inject
   Dtos dtos;
