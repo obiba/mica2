@@ -9,6 +9,4 @@ before_install:
 addons:
   apt:
     packages:
-    - php5-dev
-    - php5-cli
-    - php-pear
+      - oracle-java8-installer
