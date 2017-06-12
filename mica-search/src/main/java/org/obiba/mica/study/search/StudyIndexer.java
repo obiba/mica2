@@ -36,7 +36,9 @@ public class StudyIndexer {
 
   public static final String PUBLISHED_STUDY_INDEX = "study-published";
 
-  public static final String STUDY_TYPE = "Study";
+  public static final String COLLECTION_STUDY_TYPE = "CollectionStudy";
+
+  public static final String HARMONIZATION_STUDY_TYPE = "HarmonizationStudy";
 
   public static final String[] LOCALIZED_ANALYZED_FIELDS = {"acronym", "name", "objectives"};
 

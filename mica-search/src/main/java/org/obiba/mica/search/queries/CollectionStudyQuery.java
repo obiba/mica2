@@ -29,6 +29,7 @@ import org.obiba.mica.micaConfig.service.helper.AggregationMetaDataProvider;
 import org.obiba.mica.search.aggregations.StudyTaxonomyMetaDataProvider;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.domain.StudyState;
+import org.obiba.mica.study.search.EsPublishedCollectionStudyService;
 import org.obiba.mica.study.search.StudyIndexer;
 import org.obiba.mica.study.service.PublishedStudyService;
 import org.obiba.mica.web.model.Dtos;
@@ -43,10 +44,10 @@ import static org.obiba.mica.web.model.MicaSearch.StudyResultDto;
 
 @Component
 @Scope("request")
-public class StudyQuery extends AbstractDocumentQuery {
+public class CollectionStudyQuery extends AbstractDocumentQuery {
 
   @Inject
-  PublishedStudyService publishedStudyService;
+  EsPublishedCollectionStudyService publishedStudyService;
 
   @Inject
   Dtos dtos;
@@ -63,7 +64,7 @@ public class StudyQuery extends AbstractDocumentQuery {
 
   @Override
   public String getSearchType() {
-    return StudyIndexer.STUDY_TYPE;
+    return StudyIndexer.COLLECTION_STUDY_TYPE;
   }
 
   @Override

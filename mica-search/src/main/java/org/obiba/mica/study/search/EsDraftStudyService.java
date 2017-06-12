@@ -56,7 +56,7 @@ public class EsDraftStudyService extends AbstractDocumentService<Study> implemen
 
   @Override
   protected String getType() {
-    return StudyIndexer.STUDY_TYPE;
+    return StudyIndexer.COLLECTION_STUDY_TYPE;
   }
 
   @Override

@@ -10,65 +10,41 @@
 
 package org.obiba.mica.study.search;
 
+import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.SearchHit;
+import org.obiba.mica.core.domain.DefaultEntityBase;
+import org.obiba.mica.core.domain.EntityState;
+import org.obiba.mica.search.AbstractDocumentService;
+import org.obiba.mica.study.domain.BaseStudy;
+import org.obiba.mica.study.service.PublishedStudyService;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.inject.Inject;
-
-import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.search.SearchHit;
-import org.obiba.mica.search.AbstractDocumentService;
-import org.obiba.mica.study.domain.Study;
-import org.obiba.mica.study.domain.StudyState;
-import org.obiba.mica.study.service.PublishedStudyService;
-import org.obiba.mica.study.service.StudyService;
-import org.springframework.stereotype.Service;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-@Service
-public class EsPublishedStudyService extends AbstractDocumentService<Study> implements PublishedStudyService {
-
-  @Inject
-  private ObjectMapper objectMapper;
-
-  @Inject
-  private StudyService studyService;
+public abstract class EsPublishedStudyService<K extends EntityState, V extends BaseStudy> extends AbstractDocumentService<V> implements PublishedStudyService<K, V> {
 
   @Override
-  public StudyService getStudyService() {
-    return studyService;
-  }
-
-  @Override
-  protected Study processHit(SearchHit hit) throws IOException {
+  protected V processHit(SearchHit hit) throws IOException {
     InputStream inputStream = new ByteArrayInputStream(hit.getSourceAsString().getBytes());
-    return objectMapper.readValue(inputStream, Study.class);
-  }
-
-  @Override
-  protected String getIndexName() {
-    return StudyIndexer.PUBLISHED_STUDY_INDEX;
-  }
-
-  @Override
-  protected String getType() {
-    return StudyIndexer.STUDY_TYPE;
+    return mapStreamToObject(inputStream);
   }
 
   @Override
   protected QueryBuilder filterByAccess() {
-    if(micaConfigService.getConfig().isOpenAccess()) return null;
-    List<String> ids = studyService.findPublishedStates().stream().map(StudyState::getId)
-      .filter(s -> subjectAclService.isAccessible("/study", s))
+    if (micaConfigService.getConfig().isOpenAccess()) return null;
+    List<String> ids = getStudyService().findPublishedStates().stream().map(DefaultEntityBase::getId)
+      .filter(this::isAccessible)
       .collect(Collectors.toList());
     return ids.isEmpty()
       ? QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("id"))
       : QueryBuilders.idsQuery().ids(ids);
   }
 
+  protected abstract boolean isAccessible(String studyId);
+
+  protected abstract V mapStreamToObject(InputStream inputStream) throws IOException;
 }

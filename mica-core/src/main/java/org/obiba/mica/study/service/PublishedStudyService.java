@@ -10,11 +10,12 @@
 
 package org.obiba.mica.study.service;
 
+import org.obiba.mica.core.domain.EntityState;
 import org.obiba.mica.core.service.PublishedDocumentService;
-import org.obiba.mica.study.domain.Study;
+import org.obiba.mica.study.domain.BaseStudy;
 
-public interface PublishedStudyService extends PublishedDocumentService<Study> {
+public interface PublishedStudyService<K extends EntityState, V extends BaseStudy> extends PublishedDocumentService<V> {
 
-  StudyService getStudyService();
+  AbstractStudyService<K, V> getStudyService();
 
 }
