@@ -29,6 +29,7 @@ import java.util.Arrays;
 import java.util.Locale;
 
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.obiba.mica.assertj.Assertions.assertThat;
 import static org.obiba.mica.core.domain.LocalizedString.en;
@@ -39,17 +40,15 @@ public class StudyDtosTest {
   @InjectMocks
   private StudyDtos studyDtos;
 
+  @SuppressWarnings("unused")
+  @Spy
+  private LocalizedStringDtos localizedStringDtos;
+
   @Mock
   private MicaConfigService micaConfigService;
 
   @Mock
-  private Dtos dtos;
-
-  @Mock
   private StudyService studyService;
-
-  @Spy
-  private LocalizedStringDtos localizedStringDtos;
 
   @Mock
   private PermissionsDtos permissionsDtos;
@@ -57,20 +56,14 @@ public class StudyDtosTest {
   @Mock
   private AttachmentDtos attachmentDtos;
 
-  @Mock
-  private PersonDtos personDtos;
-
-  @Mock
-  private PopulationDtos populationDtos;
-
   @Before
   public void before() {
-
-    when(permissionsDtos.asDto(any(Study.class))).thenReturn(Mica.PermissionsDto.getDefaultInstance());
-
     MicaConfig config = new MicaConfig();
     config.setLocales(Arrays.asList(Locale.ENGLISH, Locale.FRENCH));
     when(micaConfigService.getConfig()).thenReturn(config);
+
+    when(permissionsDtos.asDto(any(Study.class))).thenReturn(Mica.PermissionsDto.getDefaultInstance());
+    when(studyService.isPublished(anyString())).thenReturn(true);
   }
 
   @Test

@@ -18,13 +18,11 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.obiba.mica.dataset.HarmonizationDatasetStateRepository;
-import org.obiba.mica.dataset.StudyDatasetStateRepository;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.domain.HarmonizationDatasetState;
 import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.micaConfig.domain.MicaConfig;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
-import org.obiba.mica.study.service.StudyService;
 
 import java.util.Arrays;
 import java.util.Locale;
@@ -41,14 +39,15 @@ public class DatasetDtosTest {
   @InjectMocks
   private DatasetDtos datasetDtos;
 
+  @SuppressWarnings("unused")
+  @Spy
+  private LocalizedStringDtos localizedStringDtos;
+
   @Mock
   private MicaConfigService micaConfigService;
 
   @Mock
   private HarmonizationDatasetStateRepository harmonizationDatasetStateRepository;
-
-  @Spy
-  private LocalizedStringDtos localizedStringDtos;
 
   @Mock
   private StudySummaryDtos studySummaryDtos;
