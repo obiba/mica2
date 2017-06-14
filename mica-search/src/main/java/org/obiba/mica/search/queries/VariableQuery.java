@@ -53,6 +53,7 @@ import org.obiba.mica.search.aggregations.StudyAggregationMetaDataProvider;
 import org.obiba.mica.search.aggregations.TaxonomyAggregationMetaDataProvider;
 import org.obiba.mica.search.aggregations.VariableTaxonomyMetaDataProvider;
 import org.obiba.mica.study.NoSuchStudyException;
+import org.obiba.mica.study.domain.BaseStudy;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.service.PublishedStudyService;
 import org.obiba.mica.web.model.Dtos;
@@ -110,7 +111,7 @@ public class VariableQuery extends AbstractDocumentQuery {
   private DataCollectionEventAggregationMetaDataProvider dceAggregationMetaDataProvider;
 
   @Inject
-  StudyAggregationMetaDataProvider studyAggregationMetaDataProvider;
+  private StudyAggregationMetaDataProvider studyAggregationMetaDataProvider;
 
   @Inject
   private ObjectMapper objectMapper;
@@ -167,7 +168,7 @@ public class VariableQuery extends AbstractDocumentQuery {
   protected void processHits(MicaSearch.QueryResultDto.Builder builder, SearchHits hits, Scope scope,
     CountStatsData counts) throws IOException {
     MicaSearch.DatasetVariableResultDto.Builder resBuilder = MicaSearch.DatasetVariableResultDto.newBuilder();
-    Map<String, Study> studyMap = Maps.newHashMap();
+    Map<String, BaseStudy> studyMap = Maps.newHashMap();
     Map<String, Network> networkMap = Maps.newHashMap();
 
     for(SearchHit hit : hits) {
@@ -202,7 +203,7 @@ public class VariableQuery extends AbstractDocumentQuery {
    * @return
    */
   private Mica.DatasetVariableResolverDto processHit(DatasetVariable.IdResolver resolver, DatasetVariable variable,
-    Map<String, Study> studyMap, Map<String, Network> networkMap) {
+    Map<String, BaseStudy> studyMap, Map<String, Network> networkMap) {
     Mica.DatasetVariableResolverDto.Builder builder = dtos.asDto(resolver);
 
     String studyId = resolver.hasStudyId() ? resolver.getStudyId() : null;
@@ -233,7 +234,7 @@ public class VariableQuery extends AbstractDocumentQuery {
       builder.setStudyId(studyId);
 
       try {
-        Study study;
+        BaseStudy study;
         if(studyMap.containsKey(studyId)) {
           study = studyMap.get(studyId);
         } else {
@@ -344,7 +345,7 @@ public class VariableQuery extends AbstractDocumentQuery {
             ? vocabulary.getAttributeValue("field")
             : "attributes." + AttributeKey.getMapKey(vocabulary.getName(), taxonomy.getName()) + "." +
               LanguageTag.UNDETERMINED;
-          if(patterns.isEmpty() || patterns.stream().filter(p -> p.matcher(field).find()).findFirst().isPresent())
+          if(patterns.isEmpty() || patterns.stream().anyMatch(p -> p.matcher(field).find()))
             properties.put(field, "");
         }));
 
@@ -352,7 +353,7 @@ public class VariableQuery extends AbstractDocumentQuery {
         String field = vocabulary.getAttributes().containsKey("field")
           ? vocabulary.getAttributeValue("field")
           : vocabulary.getName().replace('-', '.');
-        if(patterns.isEmpty() || patterns.stream().filter(p -> p.matcher(field).matches()).findFirst().isPresent())
+        if(patterns.isEmpty() || patterns.stream().anyMatch(p -> p.matcher(field).matches()))
           properties.put(field, "");
       });
     }

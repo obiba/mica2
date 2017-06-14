@@ -14,6 +14,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.SortedSet;
@@ -22,7 +23,9 @@ import java.util.stream.Stream;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
+import org.obiba.mica.study.domain.BaseStudy;
 import org.obiba.mica.study.domain.DataCollectionEvent;
+import org.obiba.mica.study.domain.HarmonizationStudy;
 import org.obiba.mica.study.domain.Population;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.domain.StudyState;
@@ -83,30 +86,60 @@ class StudySummaryDtos {
 
     if(study.getLogo() != null) builder.setLogo(attachmentDtos.asDto(study.getLogo()));
 
-    if(study.getMethods() != null && study.getMethods().getDesigns() != null) {
-      builder.addAllDesigns(study.getMethods().getDesigns());
-    } else { // NOTICE: schemaform backwards compatibility
-      try {
-        Map<String, Object> methods = (Map<String, Object>) study.getModel().get("methods");
+    Collection<String> countries = new HashSet<>();
+    SortedSet<Population> populations = study.getPopulations();
 
-        if (methods != null && methods.get("design") != null) {
-          builder.addAllDesigns(Lists.newArrayList((String) methods.get("design")));
+    if(populations != null) {
+      if(!study.hasModel()) {
+        populations.stream() //
+          .filter(population -> population.getSelectionCriteria() != null &&
+            population.getSelectionCriteria().getCountriesIso() != null)
+          .forEach(population -> countries.addAll(population.getSelectionCriteria().getCountriesIso()));
+
+        List<String> dataSources = Lists.newArrayList();
+        populations.stream().filter(population -> population.getAllDataSources() != null)
+          .forEach(population -> dataSources.addAll(population.getAllDataSources()));
+
+        if (dataSources.size() > 0) {
+          builder.addAllDataSources(dataSources.stream().distinct().collect(toList()));
         }
-      } catch (NullPointerException | ClassCastException e) {
+
+      } else {
+        countries.addAll(extractCountries(populations));
+
+        List<String> dataSources = Lists.newArrayList();
+        populations.stream().filter(population -> population.getAllDataSources() != null)
+          .forEach(population -> dataSources.addAll(population.getAllDataSources()));
+
+        if (dataSources.size() > 0) {
+          builder.addAllDataSources(dataSources.stream().distinct().collect(toList()));
+        }
       }
+
+      populations.forEach(population -> builder.addPopulationSummaries(asDto(population)));
     }
 
-    if(study.getNumberOfParticipants() != null && study.getNumberOfParticipants().getParticipant() != null) {
-      builder.setTargetNumber(TargetNumberDtos.asDto(study.getNumberOfParticipants().getParticipant()));
-    } else { // NOTICE: schemaform backwards compatibility
-      try {
-        Optional.ofNullable((Map<String, Object>) study.getModel().get("numberOfParticipants")) //
-          .flatMap(n -> Optional.ofNullable((Map<String, Object>) n.get("participant"))) //
-          .map(p -> Mica.TargetNumberDto.newBuilder().setNoLimit((boolean) p.get("noLimit")).setNumber((int) p.get("number")).build()) //
-          .ifPresent(builder::setTargetNumber);
-      } catch (NullPointerException | ClassCastException e) {
-      }
-    }
+    builder.setPermissions(permissionsDtos.asDto(study));
+
+    builder.addAllCountries(countries);
+
+    return builder;
+  }
+
+  @NotNull
+  public Mica.StudySummaryDto.Builder asDtoBuilder(@NotNull HarmonizationStudy study, boolean isPublished, long variablesCount) {
+    Mica.StudySummaryDto.Builder builder = Mica.StudySummaryDto.newBuilder();
+    builder.setPublished(isPublished);
+
+    builder.setId(study.getId()) //
+      .setTimestamps(TimestampsDtos.asDto(study)) //
+      .addAllName(localizedStringDtos.asDto(study.getName())) //
+      .addAllAcronym(localizedStringDtos.asDto(study.getAcronym())) //
+      .addAllObjectives(localizedStringDtos.asDto(study.getObjectives()))
+      .setVariables(isPublished ? variablesCount : 0);
+
+    if(study.getLogo() != null)
+      builder.setLogo(attachmentDtos.asDto(study.getLogo()));
 
     Collection<String> countries = new HashSet<>();
     SortedSet<Population> populations = study.getPopulations();
@@ -162,7 +195,7 @@ class StudySummaryDtos {
              .orElseGet(Stream::empty);
          }
         }
-      ).filter(country -> country != null)
+      ).filter(Objects::nonNull)
       .collect(toSet());
   }
 
@@ -234,9 +267,13 @@ class StudySummaryDtos {
   Mica.StudySummaryDto asDto(String studyId) {
     StudyState studyState = studyService.getEntityState(studyId);
 
-    if(studyState.isPublished()) {
-      Study study = publishedStudyService.findById(studyId);
-      if(study != null) return asDtoBuilder(study, true, datasetVariableService.getCountByStudyId(studyId)).build();
+    if (studyState.isPublished()) {
+      BaseStudy study = publishedStudyService.findById(studyId);
+      if (study != null)
+        if (study instanceof Study)
+          return asDtoBuilder((Study) study, true, datasetVariableService.getCountByStudyId(studyId)).build();
+        else
+          return asDtoBuilder((HarmonizationStudy) study, true, datasetVariableService.getCountByStudyId(studyId)).build();
     }
 
     return asDto(studyState);

@@ -311,10 +311,6 @@ public class StudyPackageImportServiceImpl extends AbstractProtobufProvider impl
      */
     private List<Attachment> extractAttachments(Mica.StudyDto.Builder builder) {
       List<Attachment> atts = Lists.newArrayList();
-      builder.getAttachmentsList().stream().map(dtos::fromDto).forEach(a -> {
-        a.setPath("/study/%s");
-        atts.add(a);
-      });
       int pIdx = 1;
       for (Mica.PopulationDto.Builder pBuilder : builder.getPopulationsBuilderList()) {
         pBuilder.setId("" + pIdx++);
@@ -351,6 +347,5 @@ public class StudyPackageImportServiceImpl extends AbstractProtobufProvider impl
       entryOut.close();
       return entryOut.toByteArray();
     }
-
   }
 }

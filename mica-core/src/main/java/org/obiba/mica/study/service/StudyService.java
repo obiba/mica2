@@ -10,35 +10,16 @@
 
 package org.obiba.mica.study.service;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.Nullable;
-import javax.inject.Inject;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-
+import com.google.common.base.Throwables;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import org.joda.time.DateTime;
-import org.obiba.mica.NoSuchEntityException;
-import org.obiba.mica.core.ModelAwareTranslator;
 import org.obiba.mica.core.domain.AbstractGitPersistable;
-import org.obiba.mica.core.domain.LocalizedString;
-import org.obiba.mica.core.domain.PublishCascadingScope;
-import org.obiba.mica.core.repository.AttachmentRepository;
 import org.obiba.mica.core.repository.EntityStateRepository;
-import org.obiba.mica.core.service.AbstractGitPersistableService;
 import org.obiba.mica.dataset.HarmonizationDatasetRepository;
 import org.obiba.mica.dataset.StudyDatasetRepository;
-import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.FileStoreService;
-import org.obiba.mica.file.FileUtils;
-import org.obiba.mica.file.service.FileSystemService;
-import org.obiba.mica.micaConfig.event.MicaConfigUpdatedEvent;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.network.NetworkRepository;
 import org.obiba.mica.study.ConstraintException;
@@ -50,28 +31,21 @@ import org.obiba.mica.study.domain.Population;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.domain.StudyState;
 import org.obiba.mica.study.event.DraftStudyUpdatedEvent;
-import org.obiba.mica.study.event.IndexStudiesEvent;
-import org.obiba.mica.study.event.StudyDeletedEvent;
-import org.obiba.mica.study.event.StudyPublishedEvent;
-import org.obiba.mica.study.event.StudyUnpublishedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.cache.annotation.Caching;
 import org.springframework.data.mongodb.repository.MongoRepository;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
-import com.google.common.base.Joiner;
-import com.google.common.base.Strings;
-import com.google.common.base.Throwables;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
-import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
+import javax.inject.Inject;
+import javax.validation.constraints.NotNull;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static java.util.stream.Collectors.toList;
 
@@ -124,12 +98,9 @@ public class StudyService extends AbstractStudyService<StudyState, Study> {
     ImmutableSet<String> invalidRoles = ImmutableSet
       .copyOf(Sets.difference(study.membershipRoles(), Sets.newHashSet(micaConfigService.getConfig().getRoles())));
 
-    invalidRoles.forEach(r -> study.removeRole(r));
+    invalidRoles.forEach(study::removeRole);
 
-    StudyState studyState = findEntityState(study, () -> {
-      StudyState defaultState = new StudyState();
-      return defaultState;
-    });
+    StudyState studyState = findEntityState(study, StudyState::new);
 
     if (!study.isNew()) ensureGitRepository(studyState);
 
@@ -176,12 +147,6 @@ public class StudyService extends AbstractStudyService<StudyState, Study> {
     } catch(IOException e) {
       throw Throwables.propagate(e);
     }
-
-    restoredStudy.getAttachments().stream()
-      .forEach(a -> ensureAttachmentState(a, String.format("/study/%s", restoredStudy.getId())));
-    restoredStudy.getPopulations().stream().forEach(p -> p.getDataCollectionEvents().stream().forEach(
-      d -> d.getAttachments().stream().forEach(a -> ensureAttachmentState(a, String
-        .format("/study/%s/population/%s/data-collection-event/%s", restoredStudy.getId(), p.getId(), d.getId())))));
 
     return restoredStudy;
   }

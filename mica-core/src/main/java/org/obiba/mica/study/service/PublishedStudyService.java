@@ -14,8 +14,7 @@ import org.obiba.mica.core.domain.EntityState;
 import org.obiba.mica.core.service.PublishedDocumentService;
 import org.obiba.mica.study.domain.BaseStudy;
 
-public interface PublishedStudyService<K extends EntityState, V extends BaseStudy> extends PublishedDocumentService<V> {
-
-  AbstractStudyService<K, V> getStudyService();
-
+public interface PublishedStudyService extends PublishedDocumentService<BaseStudy> {
+  long getCollectionStudyCount();
+  long getHarmonizationStudyCount();
 }

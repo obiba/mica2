@@ -58,7 +58,7 @@ public class CsvPersonsWriter {
     row.add(person.hasEmail() ? person.getEmail() : "");
     row.add(person.hasPhone() ? person.getPhone() : "");
     addInstitution(row, person);
-    addMemberships(row, person.getStudyMembershipsList());
+    addMemberships(row, person.getCollectionStudyMembershipsList());
     addMemberships(row, person.getNetworkMembershipsList());
 
     writer.writeNext(row.toArray(new String[row.size()]));

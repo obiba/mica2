@@ -58,7 +58,9 @@ public class Person implements Persistable<String> {
 
   private Institution institution;
 
-  private List<Membership> studyMemberships = Lists.newArrayList();
+  private List<Membership> collectionStudyMemberships = Lists.newArrayList();
+
+  private List<Membership> harmonizationStudyMemberships = Lists.newArrayList();
 
   private List<Membership> networkMemberships = Lists.newArrayList();
 
@@ -162,7 +164,8 @@ public class Person implements Persistable<String> {
 
   public void removeAllMemberships(String role) {
     networkMemberships = networkMemberships.stream().filter(m -> !role.equals(m.getRole())).collect(toList());
-    studyMemberships = studyMemberships.stream().filter(m -> !role.equals(m.getRole())).collect(toList());
+    collectionStudyMemberships = collectionStudyMemberships.stream().filter(m -> !role.equals(m.getRole())).collect(toList());
+    harmonizationStudyMemberships = harmonizationStudyMemberships.stream().filter(m -> !role.equals(m.getRole())).collect(toList());
   }
 
   public Institution getInstitution() {
@@ -184,28 +187,36 @@ public class Person implements Persistable<String> {
     return id == null;
   }
 
-  public List<Membership> getStudyMemberships() {
-    return studyMemberships;
+  public List<Membership> getCollectionStudyMemberships() {
+    return collectionStudyMemberships;
   }
 
-  public void setStudyMemberships(List<Membership> studyMemberships) {
-    this.studyMemberships = studyMemberships;
+  public void setCollectionStudyMemberships(List<Membership> collectionStudyMemberships) {
+    this.collectionStudyMemberships = collectionStudyMemberships;
   }
 
   public void addStudy(@NotNull BaseStudy study, @NotNull String role) {
     Membership membership = Membership.withIdAndRole(study.getId(), role);
 
-    if(!studyMemberships.contains(membership)) this.studyMemberships.add(membership);
+    if(!collectionStudyMemberships.contains(membership)) this.collectionStudyMemberships.add(membership);
   }
 
   public void removeStudy(@NotNull BaseStudy study) {
-    studyMemberships = studyMemberships.stream().filter(m -> !m.getParentId().equals(study.getId())).collect(toList());
+    collectionStudyMemberships = collectionStudyMemberships.stream().filter(m -> !m.getParentId().equals(study.getId())).collect(toList());
   }
 
   public void removeStudy(@NotNull BaseStudy study, @NotNull String role) {
     Membership membership = Membership.withIdAndRole(study.getId(), role);
 
-    if(studyMemberships.contains(membership)) this.studyMemberships.remove(membership);
+    if(collectionStudyMemberships.contains(membership)) this.collectionStudyMemberships.remove(membership);
+  }
+
+  public List<Membership> getHarmonizationStudyMemberships() {
+    return harmonizationStudyMemberships;
+  }
+
+  public void setHarmonizationStudyMemberships(List<Membership> harmonizationStudyMemberships) {
+    this.harmonizationStudyMemberships = harmonizationStudyMemberships;
   }
 
   public List<Membership> getNetworkMemberships() {
@@ -237,7 +248,7 @@ public class Person implements Persistable<String> {
     return this == object || (object != null && this.getClass().equals(object.getClass()) &&
       (getId() != null
         ? Objects.equals(getId(), ((Person) object).getId())
-        : !Strings.isNullOrEmpty(getEmail()) ? Objects.equals(getEmail(), ((Person) object).getEmail()) : false));
+        : !Strings.isNullOrEmpty(getEmail()) && Objects.equals(getEmail(), ((Person) object).getEmail())));
   }
 
   @Override

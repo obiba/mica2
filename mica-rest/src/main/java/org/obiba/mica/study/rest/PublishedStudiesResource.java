@@ -20,6 +20,7 @@ import javax.ws.rs.QueryParam;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.core.service.PublishedDocumentService;
+import org.obiba.mica.study.domain.BaseStudy;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.service.PublishedStudyService;
 import org.obiba.mica.web.model.Dtos;
@@ -48,14 +49,13 @@ public class PublishedStudiesResource {
       @QueryParam("limit") @DefaultValue("10") int limit, @QueryParam("sort") String sort,
       @QueryParam("order") String order, @QueryParam("query") String query) {
 
-    PublishedDocumentService.Documents<Study> studies = publishedStudyService.find(from, limit, sort, order, null, query);
+    PublishedDocumentService.Documents<BaseStudy> studies = publishedStudyService.find(from, limit, sort, order, null, query);
 
     Mica.StudySummariesDto.Builder builder = Mica.StudySummariesDto.newBuilder();
 
     builder.setFrom(studies.getFrom()).setLimit(studies.getLimit()).setTotal(studies.getTotal());
-    builder.addAllStudySummaries(studies.getList().stream().map(dtos::asSummaryDto).collect(Collectors.toList()));
+    builder.addAllStudySummaries(studies.getList().stream().map(baseStudy -> dtos.asSummaryDto((Study) baseStudy)).collect(Collectors.toList()));
 
     return builder.build();
   }
-
 }

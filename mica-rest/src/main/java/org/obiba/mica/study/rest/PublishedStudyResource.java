@@ -100,7 +100,7 @@ public class PublishedStudyResource {
   }
 
   private Study getStudy(String id, String locale) {
-    Study study = publishedStudyService.findById(id);
+    Study study = (Study) publishedStudyService.findById(id);
 
     if (study == null)
       throw NoSuchStudyException.withId(id);

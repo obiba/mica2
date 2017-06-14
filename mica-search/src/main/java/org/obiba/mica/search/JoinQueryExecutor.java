@@ -32,7 +32,7 @@ import org.obiba.mica.search.queries.AbstractDocumentQuery.Mode;
 import org.obiba.mica.search.queries.DatasetQuery;
 import org.obiba.mica.search.queries.JoinQueryWrapper;
 import org.obiba.mica.search.queries.NetworkQuery;
-import org.obiba.mica.search.queries.CollectionStudyQuery;
+import org.obiba.mica.search.queries.StudyQuery;
 import org.obiba.mica.search.queries.VariableQuery;
 import org.obiba.mica.search.queries.protobuf.JoinQueryDtoWrapper;
 import org.obiba.mica.web.model.Dtos;
@@ -89,7 +89,7 @@ public class JoinQueryExecutor {
   private DatasetQuery datasetQuery;
 
   @Inject
-  private CollectionStudyQuery collectionStudyQuery;
+  private StudyQuery studyQuery;
 
   @Inject
   private NetworkQuery networkQuery;
@@ -120,7 +120,7 @@ public class JoinQueryExecutor {
     JoinQueryResultDto.Builder builder = JoinQueryResultDto.newBuilder();
     if(variableQuery.getResultQuery() != null) builder.setVariableResultDto(variableQuery.getResultQuery());
     if(datasetQuery.getResultQuery() != null) builder.setDatasetResultDto(datasetQuery.getResultQuery());
-    if(collectionStudyQuery.getResultQuery() != null) builder.setStudyResultDto(collectionStudyQuery.getResultQuery());
+    if(studyQuery.getResultQuery() != null) builder.setStudyResultDto(studyQuery.getResultQuery());
     if(networkQuery.getResultQuery() != null) builder.setNetworkResultDto(networkQuery.getResultQuery());
 
     return builder.build();
@@ -186,7 +186,7 @@ public class JoinQueryExecutor {
 
   private JoinQueryResultDto doQueries(QueryType type, JoinQueryWrapper joinQueryWrapper,
       CountStatsData.Builder countBuilder, AbstractDocumentQuery.Scope scope) throws IOException {
-    boolean queriesHaveFilters = Stream.of(variableQuery, datasetQuery, collectionStudyQuery, networkQuery)
+    boolean queriesHaveFilters = Stream.of(variableQuery, datasetQuery, studyQuery, networkQuery)
         .filter(AbstractDocumentQuery::hasQueryBuilder).findFirst().isPresent();
 
     if(queriesHaveFilters) {
@@ -216,7 +216,7 @@ public class JoinQueryExecutor {
 
     variableQuery.initialize(joinQueryWrapper.getVariableQueryWrapper(), locale, mode);
     datasetQuery.initialize(joinQueryWrapper.getDatasetQueryWrapper(), locale, mode);
-    collectionStudyQuery.initialize(joinQueryWrapper.getStudyQueryWrapper(), locale, mode);
+    studyQuery.initialize(joinQueryWrapper.getStudyQueryWrapper(), locale, mode);
     networkQuery.initialize(joinQueryWrapper.getNetworkQueryWrapper(), locale, mode);
   }
 
@@ -235,9 +235,9 @@ public class JoinQueryExecutor {
         : removeAggregations(datasetQuery.getResultQuery()));
 
     builder.setStudyResultDto(joinQueryDto.isWithFacets()
-        ? addAggregationTitles(collectionStudyQuery.getResultQuery(), Lists.newArrayList(taxonomyService.getStudyTaxonomy()),
+        ? addAggregationTitles(studyQuery.getResultQuery(), Lists.newArrayList(taxonomyService.getStudyTaxonomy()),
         null)
-        : removeAggregations(collectionStudyQuery.getResultQuery()));
+        : removeAggregations(studyQuery.getResultQuery()));
 
     builder.setNetworkResultDto(joinQueryDto.isWithFacets()
         ? addAggregationTitles(networkQuery.getResultQuery(), Lists.newArrayList(taxonomyService.getNetworkTaxonomy()),
@@ -344,22 +344,22 @@ public class JoinQueryExecutor {
 
     switch(type) {
       case VARIABLE:
-        queryAggregations(null, collectionStudyQuery, datasetQuery, networkQuery);
+        queryAggregations(null, studyQuery, datasetQuery, networkQuery);
         countStats = countBuilder != null ? getCountStatsData(type) : null;
         variableQuery.query(null, countStats, scope);
         break;
       case DATASET:
-        queryAggregations(null, variableQuery, collectionStudyQuery, networkQuery);
+        queryAggregations(null, variableQuery, studyQuery, networkQuery);
         countStats = countBuilder != null ? getCountStatsData(type) : null;
         datasetQuery.query(null, countStats, scope);
         break;
       case STUDY:
         queryAggregations(null, variableQuery, datasetQuery, networkQuery);
         countStats = countBuilder != null ? getCountStatsData(type) : null;
-        collectionStudyQuery.query(null, countStats, scope);
+        studyQuery.query(null, countStats, scope);
         break;
       case NETWORK:
-        queryAggregations(null, variableQuery, datasetQuery, collectionStudyQuery);
+        queryAggregations(null, variableQuery, datasetQuery, studyQuery);
         countStats = countBuilder != null ? getCountStatsData(type) : null;
         networkQuery.query(null, countStats, scope);
         break;
@@ -371,20 +371,20 @@ public class JoinQueryExecutor {
 
     switch(type) {
       case VARIABLE:
-        joinedIds = execute(variableQuery, collectionStudyQuery, datasetQuery, networkQuery);
+        joinedIds = execute(variableQuery, studyQuery, datasetQuery, networkQuery);
         break;
       case DATASET:
-        joinedIds = execute(datasetQuery, variableQuery, collectionStudyQuery, networkQuery);
+        joinedIds = execute(datasetQuery, variableQuery, studyQuery, networkQuery);
         break;
       case STUDY:
         joinedIds = datasetQuery.hasPrimaryKeyCriteria()
-          ? execute(collectionStudyQuery, datasetQuery, variableQuery, networkQuery)
-          : execute(collectionStudyQuery, variableQuery, datasetQuery, networkQuery);
+          ? execute(studyQuery, datasetQuery, variableQuery, networkQuery)
+          : execute(studyQuery, variableQuery, datasetQuery, networkQuery);
         break;
       case NETWORK:
         joinedIds = datasetQuery.hasPrimaryKeyCriteria()
-            ? execute(networkQuery, datasetQuery, variableQuery, collectionStudyQuery)
-            : execute(networkQuery, variableQuery, datasetQuery, collectionStudyQuery);
+            ? execute(networkQuery, datasetQuery, variableQuery, studyQuery)
+            : execute(networkQuery, variableQuery, datasetQuery, studyQuery);
         break;
     }
 
@@ -398,7 +398,7 @@ public class JoinQueryExecutor {
       case DATASET:
         return datasetQuery;
       case STUDY:
-        return collectionStudyQuery;
+        return studyQuery;
       case NETWORK:
         return networkQuery;
     }
@@ -413,7 +413,7 @@ public class JoinQueryExecutor {
         countStats = CountStatsData.newBuilder().variables(variableQuery.getDatasetCounts()) //
             .studyVariables(variableQuery.getStudyVariableByDatasetCounts()) //
             .dataschemaVariables(variableQuery.getDataschemaVariableByDatasetCounts()) //
-            .studies(collectionStudyQuery.getStudyCounts()) //
+            .studies(studyQuery.getStudyCounts()) //
             .networksMap(networkQuery.getStudyCountsByNetwork()).build();
         break;
       case STUDY:
@@ -429,7 +429,7 @@ public class JoinQueryExecutor {
             .datasetsMap(datasetQuery.getStudyCountsByDataset()) //
             .networkHarmonizationDatasets(datasetQuery.getNetworkCounts()) //
             .networkDataschemaVariables(variableQuery.getNetworkCounts()) //
-            .studies(collectionStudyQuery.getStudyCounts()).build();
+            .studies(studyQuery.getStudyCounts()).build();
         break;
     }
 
@@ -478,10 +478,6 @@ public class JoinQueryExecutor {
           studyIds.retainAll(query.queryStudyIds());
         } catch(IOException e) {
           log.error("Failed to query study IDs '{}'", e);
-        }
-
-        if(studyIds.isEmpty()) {
-          return;
         }
       }
     });

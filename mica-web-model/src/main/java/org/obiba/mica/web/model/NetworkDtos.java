@@ -33,6 +33,8 @@ import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.network.domain.NetworkState;
 import org.obiba.mica.network.service.NetworkService;
 import org.obiba.mica.security.service.SubjectAclService;
+import org.obiba.mica.study.domain.BaseStudy;
+import org.obiba.mica.study.domain.HarmonizationStudy;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.service.PublishedDatasetVariableService;
 import org.obiba.mica.study.service.PublishedStudyService;
@@ -121,7 +123,7 @@ class NetworkDtos {
       builder.addAllMemberships(memberships);
     }
 
-    List<Study> publishedStudies = publishedStudyService.findByIds(network.getStudyIds());
+    List<BaseStudy> publishedStudies = publishedStudyService.findByIds(network.getStudyIds());
     Set<String> publishedStudyIds = publishedStudies.stream().map(AbstractGitPersistable::getId)
       .collect(Collectors.toSet());
     Sets.SetView<String> unpublishedStudyIds = Sets.difference(ImmutableSet.copyOf(
@@ -136,7 +138,10 @@ class NetworkDtos {
 
       publishedStudies.forEach(study -> {
         builder.addStudyIds(study.getId());
-        builder.addStudySummaries(studySummaryDtos.asDtoBuilder(study, true, datasetVariableCounts.get(study.getId())));
+        if (study instanceof Study)
+          builder.addStudySummaries(studySummaryDtos.asDtoBuilder((Study) study, true, datasetVariableCounts.get(study.getId())));
+        else
+          builder.addStudySummaries(studySummaryDtos.asDtoBuilder((HarmonizationStudy) study, true, datasetVariableCounts.get(study.getId())));
       });
     }
 

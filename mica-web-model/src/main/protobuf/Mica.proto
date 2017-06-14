@@ -134,28 +134,12 @@ message StudyDto {
   repeated LocalizedStringDto acronym = 4;
   optional AttachmentDto logo = 5;
   repeated LocalizedStringDto objectives = 8;
-  repeated AttachmentDto attachments = 20;
   repeated PopulationDto populations = 22;
   optional string opal = 25;
   optional PermissionsDto permissions = 28;
   repeated MembershipsDto memberships = 29;
   optional string content = 30;
   optional bool published = 31;
-
-  message StudyMethodsDto {
-    repeated string designs = 1;
-    repeated LocalizedStringDto otherDesign = 2;
-    repeated LocalizedStringDto followUpInfo = 3;
-    repeated string recruitments = 4;
-    repeated LocalizedStringDto otherRecruitment = 5;
-    repeated LocalizedStringDto info = 6;
-  }
-
-  message NumberOfParticipantsDto {
-    optional TargetNumberDto participant = 1;
-    optional TargetNumberDto sample = 2;
-    repeated LocalizedStringDto info = 3;
-  }
 }
 
 message HarmonizationStudyDto {
@@ -320,6 +304,8 @@ message PersonDto {
   optional string id = 9;
   repeated MembershipDto studyMemberships = 10;
   repeated MembershipDto networkMemberships = 11;
+  repeated MembershipDto collectionStudyMemberships = 12;
+  repeated MembershipDto harmonizationStudyMemberships = 13;
 
   message InstitutionDto {
     repeated LocalizedStringDto name = 1;

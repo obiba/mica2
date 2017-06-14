@@ -178,7 +178,6 @@ public class StudyDtosTest {
       "The Canadian Longitudinal Study on Aging (CLSA) is a large, national, long-term study that will follow approximately 50,000 men and women between the ages of 45 and 85 for at least 20 years. The study will collect information on the changing biological, medical, psychological, social, lifestyle and economic aspects of people’s lives. These factors will be studied in order to understand how, individually and in combination, they have an impact in both maintaining health and in the development of disease and disability as people age.")
       .forFr(
         "L’Étude longitudinale canadienne sur le vieillissement (ÉLCV) est une vaste étude nationale à long terme qui permettra de suivre environ 50 000 Canadiennes et Canadiens âgé(e)s de 45 à 85 ans pendant une période d’au moins 20 ans. L’ÉLCV recueillera des renseignements sur les changements biologiques, médicaux, psychologiques, sociaux et sur les habitudes de vie qui se produisent chez les gens. On étudiera ces facteurs pour comprendre la façon dont ils influencent, individuellement et collectivement, le maintien en santé et le développement de maladies et d’incapacités au fur et à mesure que les gens vieillissent. L’ÉLCV sera l’une des études les plus complètes du genre entreprises jusqu’à ce jour, non seulement au Canada, mais aussi au niveau international."));
-    study.setWebsite("http://www.clsa-elcv.ca");
 
     Person person = createPerson();
     study.setMemberships(new HashMap<String, List<Membership>>() {
@@ -188,29 +187,7 @@ public class StudyDtosTest {
       }
     });
 
-    study.setStart(2002);
-    study.setEnd(2050);
-
-    study.setMethods(createMethods());
-    study.setNumberOfParticipants(createNumberOfParticipants());
-
-    study.addAccess("data");
-    study.addAccess("bio_samples");
-    study.addAccess("other");
-    study.setOtherAccess(en("Other access"));
-
-    study
-      .addAttribute(Attribute.Builder.newAttribute("att1").namespace("mica").value(Locale.FRENCH, "value fr").build());
-    study
-      .addAttribute(Attribute.Builder.newAttribute("att1").namespace("mica").value(Locale.ENGLISH, "value en").build());
-
-    study.setMarkerPaper(
-      "Raina PS, Wolfson C, Kirkland SA, Griffith LE, Oremus M, Patterson C, Tuokko H, Penning M, Balion CM, Hogan D, Wister A, Payette H, Shannon H, and Brazil K, The Canadian longitudinal study on aging (CLSA). Can J Aging, 2009. 28(3): p. 221-9.");
-    study.setPubmedId("PUBMED 19860977");
-
     study.addPopulation(createPopulation());
-    study.setSpecificAuthorization(createAuthorization("mica-server"));
-    study.setMaelstromAuthorization(createAuthorization("mica"));
     study.setLogo(createAttachment());
 
     return study;
@@ -243,21 +220,6 @@ public class StudyDtosTest {
     numberOfParticipants.setSample(new NumberOfParticipants.TargetNumber());
     numberOfParticipants.getSample().setNumber(30_000);
     return numberOfParticipants;
-  }
-
-  private Study.StudyMethods createMethods() {
-    Study.StudyMethods methods = new Study.StudyMethods();
-    methods.addDesign("case_control");
-    methods.addDesign("clinical_trial");
-    methods.addDesign("other");
-    methods.setOtherDesign(en("Cross-sectional prevalence study"));
-
-    methods.addRecruitment("individuals");
-    methods.addRecruitment("other");
-    methods.setOtherRecruitment(en("Specific individuals"));
-    methods.setFollowUpInfo(en("General Information on Follow Up (profile and frequency)"));
-    methods.setInfo(en("Supplementary information about study design"));
-    return methods;
   }
 
   private Person createPerson() {

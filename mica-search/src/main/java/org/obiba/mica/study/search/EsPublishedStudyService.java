@@ -10,41 +10,78 @@
 
 package org.obiba.mica.study.search;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.obiba.mica.core.domain.DefaultEntityBase;
-import org.obiba.mica.core.domain.EntityState;
-import org.obiba.mica.search.AbstractDocumentService;
+import org.obiba.mica.dataset.search.AbstractEsStudyService;
 import org.obiba.mica.study.domain.BaseStudy;
+import org.obiba.mica.study.domain.HarmonizationStudy;
+import org.obiba.mica.study.domain.Study;
+import org.obiba.mica.study.service.HarmonizationStudyService;
 import org.obiba.mica.study.service.PublishedStudyService;
+import org.obiba.mica.study.service.StudyService;
+import org.springframework.stereotype.Service;
 
+import javax.inject.Inject;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public abstract class EsPublishedStudyService<K extends EntityState, V extends BaseStudy> extends AbstractDocumentService<V> implements PublishedStudyService<K, V> {
+@Service
+public class EsPublishedStudyService extends AbstractEsStudyService<BaseStudy> implements PublishedStudyService {
+
+  @Inject
+  private ObjectMapper objectMapper;
+
+  @Inject
+  private StudyService collectionStudyService;
+
+  @Inject
+  private HarmonizationStudyService harmonizationStudyService;
 
   @Override
-  protected V processHit(SearchHit hit) throws IOException {
+  public long getCollectionStudyCount() {
+    return getCount(QueryBuilders.termQuery("className", Study.class.getSimpleName()));
+  }
+
+  @Override
+  public long getHarmonizationStudyCount() {
+    return getCount(QueryBuilders.termQuery("className", HarmonizationStudy.class.getSimpleName()));
+  }
+
+  @Override
+  protected BaseStudy processHit(SearchHit hit) throws IOException {
     InputStream inputStream = new ByteArrayInputStream(hit.getSourceAsString().getBytes());
-    return mapStreamToObject(inputStream);
+    return (BaseStudy) objectMapper.readValue(inputStream, getClass((String) hit.getSource().get("className")));
+  }
+
+  @Override
+  protected String getIndexName() {
+    return StudyIndexer.PUBLISHED_STUDY_INDEX;
+  }
+
+  @Override
+  protected String getType() {
+    return StudyIndexer.COLLECTION_STUDY_TYPE;
   }
 
   @Override
   protected QueryBuilder filterByAccess() {
     if (micaConfigService.getConfig().isOpenAccess()) return null;
-    List<String> ids = getStudyService().findPublishedStates().stream().map(DefaultEntityBase::getId)
-      .filter(this::isAccessible)
-      .collect(Collectors.toList());
+    List<String> ids = collectionStudyService.findPublishedStates().stream().map(DefaultEntityBase::getId)
+      .filter(s -> subjectAclService.isAccessible("/collection-study", s)).collect(Collectors.toList());
+    ids.addAll(harmonizationStudyService.findPublishedStates().stream().map(DefaultEntityBase::getId)
+      .filter(s -> subjectAclService.isAccessible("/harmonization-study", s)).collect(Collectors.toList()));
     return ids.isEmpty()
       ? QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("id"))
       : QueryBuilders.idsQuery().ids(ids);
   }
 
-  protected abstract boolean isAccessible(String studyId);
-
-  protected abstract V mapStreamToObject(InputStream inputStream) throws IOException;
+  private Class getClass(String className) {
+    return Study.class.getSimpleName().equals(className) ? Study.class : HarmonizationStudy.class;
+  }
 }

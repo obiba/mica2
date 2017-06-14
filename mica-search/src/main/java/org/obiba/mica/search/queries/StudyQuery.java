@@ -29,9 +29,9 @@ import org.obiba.mica.micaConfig.service.helper.AggregationMetaDataProvider;
 import org.obiba.mica.search.aggregations.StudyTaxonomyMetaDataProvider;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.domain.StudyState;
-import org.obiba.mica.study.search.EsPublishedCollectionStudyService;
 import org.obiba.mica.study.search.StudyIndexer;
 import org.obiba.mica.study.service.PublishedStudyService;
+import org.obiba.mica.study.service.StudyService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.mica.web.model.MicaSearch;
@@ -44,13 +44,16 @@ import static org.obiba.mica.web.model.MicaSearch.StudyResultDto;
 
 @Component
 @Scope("request")
-public class CollectionStudyQuery extends AbstractDocumentQuery {
+public class StudyQuery extends AbstractDocumentQuery {
 
   @Inject
-  EsPublishedCollectionStudyService publishedStudyService;
+  private PublishedStudyService publishedStudyService;
 
   @Inject
-  Dtos dtos;
+  private StudyService collectionStudyService;
+
+  @Inject
+  private Dtos dtos;
 
   @Inject
   private StudyTaxonomyMetaDataProvider studyTaxonomyMetaDataProvider;
@@ -70,7 +73,7 @@ public class CollectionStudyQuery extends AbstractDocumentQuery {
   @Override
   public QueryBuilder getAccessFilter() {
     if(micaConfigService.getConfig().isOpenAccess()) return null;
-    List<String> ids = publishedStudyService.getStudyService().findPublishedStates().stream().map(StudyState::getId)
+    List<String> ids = collectionStudyService.findPublishedStates().stream().map(StudyState::getId)
       .filter(s -> subjectAclService.isAccessible("/study", s))
       .collect(Collectors.toList());
     return ids.isEmpty()
@@ -94,9 +97,9 @@ public class CollectionStudyQuery extends AbstractDocumentQuery {
     StudyCountStatsBuilder studyCountStatsBuilder = counts == null ? null : StudyCountStatsBuilder.newBuilder(counts);
 
     Consumer<Study> addDto = getStudyConsumer(scope, resBuilder, studyCountStatsBuilder);
-    List<Study> publishedStudies = publishedStudyService
-      .findByIds(Stream.of(hits.hits()).map(h -> h.getId()).collect(Collectors.toList()));
-    publishedStudies.forEach(addDto::accept);
+    List<String> hitsIds = Stream.of(hits.hits()).map(h -> h.getId()).collect(Collectors.toList());
+    List<Study> publishedStudies = publishedStudyService.findByIds(hitsIds).stream().map(study -> (Study) study).collect(Collectors.toList());
+    publishedStudies.forEach(addDto);
     builder.setExtension(StudyResultDto.result, resBuilder.build());
   }
 
