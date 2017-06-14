@@ -12,6 +12,7 @@ package org.obiba.mica.study.search;
 
 import javax.inject.Inject;
 
+import org.obiba.mica.core.domain.Indexable;
 import org.obiba.mica.search.ElasticSearchIndexer;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.event.DraftStudyUpdatedEvent;
@@ -36,7 +37,7 @@ public class StudyIndexer {
 
   public static final String PUBLISHED_STUDY_INDEX = "study-published";
 
-  public static final String COLLECTION_STUDY_TYPE = "CollectionStudy";
+  public static final String COLLECTION_STUDY_TYPE = "Study";
 
   public static final String HARMONIZATION_STUDY_TYPE = "HarmonizationStudy";
 
@@ -54,30 +55,30 @@ public class StudyIndexer {
   @Subscribe
   public void studyUpdated(DraftStudyUpdatedEvent event) {
     log.info("Study {} was updated", event.getPersistable());
-    elasticSearchIndexer.index(DRAFT_STUDY_INDEX, event.getPersistable());
+    elasticSearchIndexer.index(DRAFT_STUDY_INDEX, (Indexable)event.getPersistable());
   }
 
   @Async
   @Subscribe
   public void studyPublished(StudyPublishedEvent event) {
     log.info("Study {} was published", event.getPersistable());
-    elasticSearchIndexer.index(PUBLISHED_STUDY_INDEX, event.getPersistable());
+    elasticSearchIndexer.index(PUBLISHED_STUDY_INDEX, (Indexable) event.getPersistable());
   }
 
   @Async
   @Subscribe
   public void studyUnpublished(StudyUnpublishedEvent event) {
     log.info("Study {} was unpublished", event.getPersistable());
-    elasticSearchIndexer.delete(PUBLISHED_STUDY_INDEX, event.getPersistable());
-    elasticSearchIndexer.index(DRAFT_STUDY_INDEX, event.getPersistable());
+    elasticSearchIndexer.delete(PUBLISHED_STUDY_INDEX, (Indexable)event.getPersistable());
+    elasticSearchIndexer.index(DRAFT_STUDY_INDEX, (Indexable)event.getPersistable());
   }
 
   @Async
   @Subscribe
   public void studyDeleted(StudyDeletedEvent event) {
     log.info("Study {} was deleted", event.getPersistable());
-    elasticSearchIndexer.delete(DRAFT_STUDY_INDEX, event.getPersistable());
-    elasticSearchIndexer.delete(PUBLISHED_STUDY_INDEX, event.getPersistable());
+    elasticSearchIndexer.delete(DRAFT_STUDY_INDEX, (Indexable)event.getPersistable());
+    elasticSearchIndexer.delete(PUBLISHED_STUDY_INDEX, (Indexable)event.getPersistable());
   }
 
   @Async

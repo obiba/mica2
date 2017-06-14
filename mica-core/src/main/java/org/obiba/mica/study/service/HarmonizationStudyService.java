@@ -10,6 +10,7 @@
 
 package org.obiba.mica.study.service;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,16 +20,12 @@ import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
 import org.joda.time.DateTime;
-import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.core.ModelAwareTranslator;
 import org.obiba.mica.core.domain.AbstractGitPersistable;
-import org.obiba.mica.core.domain.PublishCascadingScope;
 import org.obiba.mica.core.repository.AttachmentRepository;
 import org.obiba.mica.core.repository.EntityStateRepository;
 import org.obiba.mica.file.FileStoreService;
-import org.obiba.mica.file.FileUtils;
 import org.obiba.mica.file.service.FileSystemService;
-import org.obiba.mica.micaConfig.event.MicaConfigUpdatedEvent;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.network.NetworkRepository;
 import org.obiba.mica.study.ConstraintException;
@@ -37,30 +34,15 @@ import org.obiba.mica.study.HarmonizationStudyStateRepository;
 import org.obiba.mica.study.domain.HarmonizationStudy;
 import org.obiba.mica.study.domain.HarmonizationStudyState;
 import org.obiba.mica.study.domain.Population;
-import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.event.DraftStudyUpdatedEvent;
-import org.obiba.mica.study.event.IndexStudiesEvent;
-import org.obiba.mica.study.event.StudyDeletedEvent;
-import org.obiba.mica.study.event.StudyPublishedEvent;
-import org.obiba.mica.study.event.StudyUnpublishedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.cache.annotation.Caching;
 import org.springframework.data.mongodb.repository.MongoRepository;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
-import com.google.common.base.Joiner;
-import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
-import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
-
-import static java.util.stream.Collectors.toList;
 
 @Service
 @Validated
@@ -159,11 +141,6 @@ public class HarmonizationStudyService extends AbstractStudyService<Harmonizatio
     }
 
     return null;
-  }
-
-  @Override
-  protected String getIdPrefix() {
-    return "hs";
   }
 
   private List<String> populationsAffected(HarmonizationStudy study, HarmonizationStudy oldStudy) {

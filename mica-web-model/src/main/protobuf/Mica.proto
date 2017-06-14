@@ -493,7 +493,14 @@ message HarmonizationDatasetDto {
   repeated DatasetDto.StudyTableDto studyTables = 3;
   optional string networkId = 4;
   repeated DatasetDto.NetworkTableDto networkTables = 5;
+  optional HarmonizationStudyReferenceDto studyReference = 6;
   extensions 1000 to max;
+
+  message HarmonizationStudyReferenceDto {
+    required string studyId = 1;
+    required string populationId = 2;
+    optional StudySummaryDto studySummary = 3;
+  }
 
   extend DatasetDto {
     optional HarmonizationDatasetDto type = 1001;

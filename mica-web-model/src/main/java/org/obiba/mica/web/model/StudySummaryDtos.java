@@ -23,12 +23,15 @@ import java.util.stream.Stream;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
+import org.obiba.mica.core.domain.EntityState;
 import org.obiba.mica.study.domain.BaseStudy;
 import org.obiba.mica.study.domain.DataCollectionEvent;
 import org.obiba.mica.study.domain.HarmonizationStudy;
 import org.obiba.mica.study.domain.Population;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.domain.StudyState;
+import org.obiba.mica.study.service.AbstractStudyService;
+import org.obiba.mica.study.service.HarmonizationStudyService;
 import org.obiba.mica.study.service.PublishedDatasetVariableService;
 import org.obiba.mica.study.service.PublishedStudyService;
 import org.obiba.mica.study.service.StudyService;
@@ -61,6 +64,9 @@ class StudySummaryDtos {
   @Inject
   private StudyService studyService;
 
+  @Inject
+  private HarmonizationStudyService harmonizationStudyService;
+
   @NotNull
   public Mica.StudySummaryDto.Builder asDtoBuilder(@NotNull Study study) {
     StudyState studyState = studyService.getEntityState(study.getId());
@@ -73,7 +79,7 @@ class StudySummaryDtos {
   }
 
   @NotNull
-  public Mica.StudySummaryDto.Builder asDtoBuilder(@NotNull Study study, boolean isPublished, long variablesCount) {
+  public Mica.StudySummaryDto.Builder asDtoBuilder(@NotNull BaseStudy study, boolean isPublished, long variablesCount) {
     Mica.StudySummaryDto.Builder builder = Mica.StudySummaryDto.newBuilder();
     builder.setPublished(isPublished);
 
@@ -138,45 +144,14 @@ class StudySummaryDtos {
       .addAllObjectives(localizedStringDtos.asDto(study.getObjectives()))
       .setVariables(isPublished ? variablesCount : 0);
 
-    if(study.getLogo() != null)
-      builder.setLogo(attachmentDtos.asDto(study.getLogo()));
-
-    Collection<String> countries = new HashSet<>();
+    if(study.getLogo() != null) builder.setLogo(attachmentDtos.asDto(study.getLogo()));
     SortedSet<Population> populations = study.getPopulations();
 
     if(populations != null) {
-      if(!study.hasModel()) {
-        populations.stream() //
-          .filter(population -> population.getSelectionCriteria() != null &&
-            population.getSelectionCriteria().getCountriesIso() != null)
-          .forEach(population -> countries.addAll(population.getSelectionCriteria().getCountriesIso()));
-
-        List<String> dataSources = Lists.newArrayList();
-        populations.stream().filter(population -> population.getAllDataSources() != null)
-          .forEach(population -> dataSources.addAll(population.getAllDataSources()));
-
-        if (dataSources.size() > 0) {
-          builder.addAllDataSources(dataSources.stream().distinct().collect(toList()));
-        }
-
-      } else {
-        countries.addAll(extractCountries(populations));
-
-        List<String> dataSources = Lists.newArrayList();
-        populations.stream().filter(population -> population.getAllDataSources() != null)
-          .forEach(population -> dataSources.addAll(population.getAllDataSources()));
-
-        if (dataSources.size() > 0) {
-          builder.addAllDataSources(dataSources.stream().distinct().collect(toList()));
-        }
-      }
-
       populations.forEach(population -> builder.addPopulationSummaries(asDto(population)));
     }
 
     builder.setPermissions(permissionsDtos.asDto(study));
-
-    builder.addAllCountries(countries);
 
     return builder;
   }
@@ -225,7 +200,7 @@ class StudySummaryDtos {
   }
 
   @NotNull
-  Mica.StudySummaryDto asDto(@NotNull Study study, @NotNull StudyState studyState) {
+  Mica.StudySummaryDto asDto(@NotNull BaseStudy study, @NotNull EntityState studyState) {
     Mica.EntityStateDto.Builder stateBuilder = Mica.EntityStateDto.newBuilder()
       .setRevisionsAhead(studyState.getRevisionsAhead()) //
       .setRevisionStatus(studyState.getRevisionStatus().name());
@@ -259,19 +234,27 @@ class StudySummaryDtos {
   }
 
   @NotNull
-  Mica.StudySummaryDto asDto(@NotNull StudyState studyState) {
-    Study study = studyService.findStudy(studyState.getId());
-    return asDto(study, studyState);
+  Mica.StudySummaryDto asDto(@NotNull EntityState studyState) {
+    return asDto((studyState instanceof StudyState ? studyService : harmonizationStudyService)
+      .findStudy(studyState.getId()), studyState);
   }
 
   Mica.StudySummaryDto asDto(String studyId) {
-    StudyState studyState = studyService.getEntityState(studyId);
+    return asDto(studyId, studyService);
+  }
+
+  Mica.StudySummaryDto asHarmoStudyDto(String studyId) {
+    return asDto(studyId, harmonizationStudyService);
+  }
+
+  private Mica.StudySummaryDto asDto(String studyId, AbstractStudyService studyService) {
+    EntityState studyState = studyService.getEntityState(studyId);
 
     if (studyState.isPublished()) {
       BaseStudy study = publishedStudyService.findById(studyId);
       if (study != null)
         if (study instanceof Study)
-          return asDtoBuilder((Study) study, true, datasetVariableService.getCountByStudyId(studyId)).build();
+          return asDtoBuilder(study, true, datasetVariableService.getCountByStudyId(studyId)).build();
         else
           return asDtoBuilder((HarmonizationStudy) study, true, datasetVariableService.getCountByStudyId(studyId)).build();
     }

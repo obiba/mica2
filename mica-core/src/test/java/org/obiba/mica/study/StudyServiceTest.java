@@ -45,6 +45,7 @@ import org.obiba.mica.core.repository.AttachmentRepository;
 import org.obiba.mica.core.repository.AttachmentStateRepository;
 import org.obiba.mica.core.service.GitService;
 import org.obiba.mica.core.service.MailService;
+import org.obiba.mica.core.service.StudyIdGeneratorService;
 import org.obiba.mica.file.FileStoreService;
 import org.obiba.mica.file.impl.GridFsService;
 import org.obiba.mica.file.notification.FilePublicationFlowMailNotification;
@@ -447,6 +448,11 @@ public class StudyServiceTest {
     @Bean
     public TaxonomyTaxonomy taxonomyConfiguration() {
       return mock(TaxonomyTaxonomy.class);
+    }
+
+    @Bean
+    public StudyIdGeneratorService studyIdGeneratorService() {
+      return mock(StudyIdGeneratorService.class);
     }
 
     @Bean
