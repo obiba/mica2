@@ -112,13 +112,7 @@ public class ElasticSearchIndexer {
   }
 
   public void indexAllIndexables(String indexName, Iterable<? extends Indexable> indexables) {
-    indexAllIndexables(indexName, indexables, (String) null);
-  }
-
-  public void indexAllIndexables(String indexName, Iterable<? extends Indexable> indexables,
-    @Nullable Indexable parent) {
-    String parentId = parent == null ? null : parent.getId();
-    indexAllIndexables(indexName, indexables, parentId);
+    indexAllIndexables(indexName, indexables, null);
   }
 
   public void indexAllIndexables(String indexName, Iterable<? extends Indexable> indexables, @Nullable String parentId) {

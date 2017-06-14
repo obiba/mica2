@@ -231,12 +231,7 @@ public class DatasetQuery extends AbstractDocumentQuery {
     getJoinFields().forEach(joinField -> subProps.setProperty(joinField, ""));
     Map<String, Properties> subAggregations = Maps.newHashMap();
     subAggregations.put("id", subProps);
-    try {
-      aggregationYamlParser.getAggregations(props, subAggregations).forEach(requestBuilder::addAggregation);
-    } catch(IOException e) {
-      log.error("Failed to add Study By dataset aggregations");
-      return Maps.newHashMap();
-    }
+    aggregationYamlParser.getAggregations(props, subAggregations).forEach(requestBuilder::addAggregation);
 
     Map<String, Map<String, List<String>>> map = Maps.newHashMap();
     try {

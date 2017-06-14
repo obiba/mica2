@@ -162,12 +162,7 @@ public class NetworkQuery extends AbstractDocumentQuery {
     subProps.setProperty(JOIN_FIELD, "");
     Map<String, Properties> subAggregations = Maps.newHashMap();
     subAggregations.put("id", subProps);
-    try {
-      aggregationYamlParser.getAggregations(props, subAggregations).forEach(requestBuilder::addAggregation);
-    } catch(IOException e) {
-      log.error("Failed to add Study By Network aggregations");
-      return Maps.newHashMap();
-    }
+    aggregationYamlParser.getAggregations(props, subAggregations).forEach(requestBuilder::addAggregation);
 
     Map<String, List<String>> map = Maps.newHashMap();
     try {
@@ -196,5 +191,4 @@ public class NetworkQuery extends AbstractDocumentQuery {
   public Map<String, Integer> getStudyCounts() {
     return getDocumentCounts(JOIN_FIELD);
   }
-
 }

@@ -1,16 +1,16 @@
 package org.obiba.mica.micaConfig.service;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import org.assertj.core.util.Maps;
 import org.junit.Test;
 import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.obiba.opal.core.domain.taxonomy.Term;
 import org.obiba.opal.core.domain.taxonomy.Vocabulary;
+
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class TaxonomyConfigServiceTest {
 
@@ -152,7 +152,7 @@ public class TaxonomyConfigServiceTest {
   }
 
   private static class AttributeBuilder {
-    private Map<String, String> attributes = Maps.newHashMap();
+    private Map<String, String> attributes = new HashMap<>();
 
     static AttributeBuilder newBuilder() {
       return new AttributeBuilder();
