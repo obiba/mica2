@@ -330,15 +330,6 @@ public class Network extends AbstractModelAware implements AttributeAware, Perso
     } else {
       this.memberships = memberships;
     }
-    Map<String, Person> seen = Maps.newHashMap();
-
-    this.memberships.entrySet().forEach(e -> e.getValue().forEach(m -> {
-      if(seen.containsKey(m.getPerson().getId())) {
-        m.setPerson(seen.get(m.getPerson().getId()));
-      } else if(!m.getPerson().isNew()) {
-        seen.put(m.getPerson().getId(), m.getPerson());
-      }
-    }));
   }
 
   @Override

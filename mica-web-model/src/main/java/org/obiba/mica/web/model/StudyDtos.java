@@ -13,6 +13,7 @@ package org.obiba.mica.web.model;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
@@ -25,6 +26,7 @@ import org.obiba.mica.JSONUtils;
 import org.obiba.mica.core.domain.Membership;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.study.domain.HarmonizationStudy;
+import org.obiba.mica.study.domain.Population;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.service.HarmonizationStudyService;
 import org.obiba.mica.study.service.StudyService;
@@ -83,10 +85,15 @@ class StudyDtos {
 
     if(study.getMemberships() != null) {
       List<Mica.MembershipsDto> memberships = study.getMemberships().entrySet().stream()
-        .filter(e -> roles.contains(e.getKey())).map(e -> //
-          Mica.MembershipsDto.newBuilder() //
-            .setRole(e.getKey()).addAllMembers(e.getValue().stream().map(m -> //
-            personDtos.asDto(m.getPerson(), asDraft)).collect(toList())).build()) //
+        .filter(membershipEntry -> roles.contains(membershipEntry.getKey()))
+        .map(membershipEntry ->Mica.MembershipsDto.newBuilder()
+            .setRole(membershipEntry.getKey())
+            .addAllMembers(
+              membershipEntry.getValue().stream()
+                .map(membership ->
+                  personDtos.asDto(membership.getPerson(), asDraft))
+                .collect(toList()))
+            .build())
         .collect(toList());
 
       builder.addAllMemberships(memberships);
@@ -122,7 +129,9 @@ class StudyDtos {
     }
 
     if (dto.getPopulationsCount() > 0) {
-      study.setPopulations(dto.getPopulationsList().stream().map(populationDtos::fromDto)
+      study.setPopulations(dto.getPopulationsList().stream()
+        .map(populationDtos::fromDto)
+        .filter(Objects::nonNull)
         .collect(Collectors.toCollection(TreeSet<org.obiba.mica.study.domain.Population>::new)));
     }
 
