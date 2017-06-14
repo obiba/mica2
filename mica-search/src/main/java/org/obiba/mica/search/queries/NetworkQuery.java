@@ -117,7 +117,7 @@ public class NetworkQuery extends AbstractDocumentQuery {
     Consumer<Network> addDto = getNetworkConsumer(scope, resBuilder, networkCountStatsBuilder);
     List<Network> networks = publishedNetworkService
       .findByIds(Stream.of(hits.hits()).map(h -> h.getId()).collect(Collectors.toList()));
-    networks.forEach(addDto::accept);
+    networks.forEach(addDto);
     builder.setExtension(NetworkResultDto.result, resBuilder.build());
   }
 

@@ -47,7 +47,7 @@ public class CombinedStatistics {
     Optional<Double> result = stats.stream().filter(Mica.StatisticsDto::hasSum)
       .map(Mica.StatisticsDto::getSum).reduce((prev, curr) -> prev + curr);
 
-    return result.isPresent() ? result.get() : 0D;
+    return result.orElse(0D);
   }
 
   public boolean hasMean() {
@@ -69,7 +69,7 @@ public class CombinedStatistics {
     Optional<Double> result = stats.stream().filter(s -> s.hasMin() && s.getMin() != Double.POSITIVE_INFINITY)
       .map(Mica.StatisticsDto::getMin).reduce(Math::min);
 
-    return result.isPresent() ? result.get() : 0D;
+    return result.orElse(0D);
   }
 
   public boolean hasMax() {
@@ -83,7 +83,7 @@ public class CombinedStatistics {
     Optional<Double> result = stats.stream().filter(s -> s.hasMax() && s.getMax() != Double.NEGATIVE_INFINITY)
       .map(Mica.StatisticsDto::getMax).reduce(Math::max);
 
-    return result.isPresent() ? result.get() : 0D;
+    return result.orElse(0D);
   }
 
   public boolean hasSumOfSquares() {
@@ -97,7 +97,7 @@ public class CombinedStatistics {
     Optional<Double> result = stats.stream().filter(Mica.StatisticsDto::hasSumOfSquares)
       .map(Mica.StatisticsDto::getSumOfSquares).reduce((prev, curr) -> prev + curr);
 
-    return result.isPresent() ? result.get() : 0D;
+    return result.orElse(0D);
   }
 
   public double getVariance() {
@@ -149,7 +149,7 @@ public class CombinedStatistics {
   private static void mergeFrequencies(Mica.DatasetVariableAggregationDto.Builder aggDto,
     Collection<Mica.DatasetVariableAggregationDto> aggDtos) {
 
-    aggDtos.stream().forEach(a -> a.getFrequenciesList().forEach(f -> {
+    aggDtos.forEach(a -> a.getFrequenciesList().forEach(f -> {
       boolean found = false;
       for(int i = 0; i < aggDto.getFrequenciesCount(); i++) {
         Mica.FrequencyDto freq = aggDto.getFrequencies(i);

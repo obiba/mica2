@@ -318,7 +318,7 @@ public class RQLQueryWrapper implements QueryWrapper {
         .map(Object::toString).collect(Collectors.toList()) : Collections.singleton(rangesArgument.toString());
 
       BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
-      ranges.stream().forEach(range -> {
+      ranges.forEach(range -> {
         RangeQueryBuilder builder = QueryBuilders.rangeQuery(data.getField());
         String[] values = range.split(":");
         if(values.length < 2) {

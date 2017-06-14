@@ -113,12 +113,9 @@ public class HarmonizationStudyService extends AbstractStudyService<Harmonizatio
     ImmutableSet<String> invalidRoles = ImmutableSet
       .copyOf(Sets.difference(study.membershipRoles(), Sets.newHashSet(micaConfigService.getConfig().getRoles())));
 
-    invalidRoles.forEach(r -> study.removeRole(r));
+    invalidRoles.forEach(study::removeRole);
 
-    HarmonizationStudyState studyState = findEntityState(study, () -> {
-      HarmonizationStudyState defaultState = new HarmonizationStudyState();
-      return defaultState;
-    });
+    HarmonizationStudyState studyState = findEntityState(study, HarmonizationStudyState::new);
 
     if(!study.isNew()) ensureGitRepository(studyState);
 

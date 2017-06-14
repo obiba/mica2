@@ -27,7 +27,7 @@ class GZipServletResponseWrapper extends HttpServletResponseWrapper {
 
   private boolean disableFlushBuffer = false;
 
-  GZipServletResponseWrapper(HttpServletResponse response, GZIPOutputStream gzout) throws IOException {
+  GZipServletResponseWrapper(HttpServletResponse response, GZIPOutputStream gzout) {
     super(response);
     gzipOutputStream = new GZipServletOutputStream(gzout);
   }

@@ -11,6 +11,7 @@
 package org.obiba.mica.file.search.rest;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 import javax.inject.Inject;
@@ -67,7 +68,8 @@ public abstract class AbstractFileSearchResource {
     }
 
     String queryString = Joiner.on(" AND ").join(
-      Stream.of(pathPart, Strings.isNullOrEmpty(query) ? null : String.format("(%s)", query)).filter(s -> s != null)
+      Stream.of(pathPart, Strings.isNullOrEmpty(query) ? null : String.format("(%s)", query))
+        .filter(Objects::nonNull)
         .iterator());
 
     return queryString;

@@ -229,7 +229,7 @@ public class EsQueryResultParser {
           break;
 
         case "range":
-          ((Range) aggregation).getBuckets().stream().forEach(bucket -> {
+          ((Range) aggregation).getBuckets().forEach(bucket -> {
             AggregationMetaDataProvider.MetaData metaData = aggregationTitleResolver
               .getTitle(aggregation.getName(), bucket.getKeyAsString(), locale);
 

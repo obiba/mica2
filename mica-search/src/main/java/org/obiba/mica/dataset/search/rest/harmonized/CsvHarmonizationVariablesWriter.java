@@ -13,6 +13,7 @@ package org.obiba.mica.dataset.search.rest.harmonized;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -112,7 +113,7 @@ public class CsvHarmonizationVariablesWriter {
 
     Optional<Mica.LocalizedStringDto> result = summary.getAttributesList().stream()
         .filter(attribute -> namespaces.contains(attribute.getNamespace()) && attribute.getName().equals("status"))
-        .map(Mica.AttributeDto::getValuesList).flatMap((values) -> values.stream()).filter(value -> {
+        .map(Mica.AttributeDto::getValuesList).flatMap(Collection::stream).filter(value -> {
           String lang = value.getLang();
           return locale.equals(lang) || LanguageTag.UNDETERMINED.equals(lang);
         }).findFirst();

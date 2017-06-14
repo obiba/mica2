@@ -192,7 +192,7 @@ public class FileSystemService {
   public void delete(String path) {
     List<AttachmentState> states = findAttachmentStates(String.format("^%s$", path), false);
     states.addAll(findAttachmentStates(String.format("^%s/", path), false));
-    states.stream().forEach(this::delete);
+    states.forEach(this::delete);
   }
 
   /**
@@ -292,7 +292,7 @@ public class FileSystemService {
       List<AttachmentState> states = findAttachmentStates(String.format("^%s$", path), false);
       states.addAll(findAttachmentStates(String.format("^%s/", path), false));
       Map<String, AttachmentState> statesToProcess = Maps.newHashMap();
-      states.stream().forEach(s -> publish(s, publish, statesToProcess));
+      states.forEach(s -> publish(s, publish, statesToProcess));
       batchPublish(statesToProcess.values(), publisher, publish);
     } finally {
       fsLock.unlock();
@@ -300,7 +300,7 @@ public class FileSystemService {
   }
 
   private void batchPublish(Collection<AttachmentState> states, String publisher, boolean publish) {
-    states.stream().forEach(state -> {
+    states.forEach(state -> {
       if (publish) {
         state.publish(publisher);
         state.setRevisionStatus(RevisionStatus.DRAFT);
@@ -485,7 +485,7 @@ public class FileSystemService {
         .orElseThrow(() -> NoSuchEntityException.withPath(AttachmentState.class, path));
     RevisionStatus currentStatus = state.getRevisionStatus();
     states.addAll(findAttachmentStates(String.format("^%s/", path), false));
-    states.stream().forEach(s -> updateStatus(s, status));
+    states.forEach(s -> updateStatus(s, status));
     filePublicationFlowNotification.send(path, currentStatus, status);
   }
 

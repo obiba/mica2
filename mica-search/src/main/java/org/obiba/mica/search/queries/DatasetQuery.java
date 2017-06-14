@@ -169,7 +169,7 @@ public class DatasetQuery extends AbstractDocumentQuery {
     Consumer<Dataset> addDto = getDatasetConsumer(scope, resBuilder, datasetCountStatsBuilder);
     List<Dataset> datasets = publishedDatasetService
       .findByIds(Stream.of(hits.hits()).map(h -> h.getId()).collect(Collectors.toList()));
-    datasets.forEach(addDto::accept);
+    datasets.forEach(addDto);
     builder.setExtension(DatasetResultDto.result, resBuilder.build());
   }
 

@@ -57,11 +57,11 @@ public class SchemaFormContentFileService {
         saveAndDelete(oldPaths, newPaths, entityPath);
       } else {
         // schema and definition now have files
-        newPaths.values().stream().forEach(v -> saveFiles(v, entityPath));
+        newPaths.values().forEach(v -> saveFiles(v, entityPath));
       }
 
     } else {
-      newPaths.values().stream().forEach(v -> saveFiles(v, entityPath));
+      newPaths.values().forEach(v -> saveFiles(v, entityPath));
     }
 
     cleanup(newPaths, newContext);
@@ -90,7 +90,7 @@ public class SchemaFormContentFileService {
    * @param newContext
    */
   private void cleanup(Map<String, JSONArray> newPaths, DocumentContext newContext) {
-    newPaths.keySet().stream().forEach(p -> {
+    newPaths.keySet().forEach(p -> {
       if (newPaths.get(p).isEmpty()) {
         newContext.delete(p.replace("['obibaFiles']", ""));
       }

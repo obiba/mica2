@@ -10,20 +10,11 @@
 
 package org.obiba.mica.search.queries;
 
-import java.io.IOException;
-import java.io.StringReader;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import javax.annotation.Nullable;
-import javax.inject.Inject;
-
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.jayway.jsonpath.Configuration;
+import com.jayway.jsonpath.Option;
+import com.jayway.jsonpath.ReadContext;
 import org.elasticsearch.action.search.MultiSearchResponse;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
@@ -38,8 +29,6 @@ import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.Aggregations;
 import org.elasticsearch.search.sort.SortBuilder;
-import org.elasticsearch.search.sort.SortBuilders;
-import org.elasticsearch.search.sort.SortOrder;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.micaConfig.service.TaxonomyService;
 import org.obiba.mica.micaConfig.service.helper.AggregationAliasHelper;
@@ -57,11 +46,18 @@ import org.obiba.opal.core.domain.taxonomy.TaxonomyEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.jayway.jsonpath.Configuration;
-import com.jayway.jsonpath.Option;
-import com.jayway.jsonpath.ReadContext;
+import javax.annotation.Nullable;
+import javax.inject.Inject;
+import java.io.IOException;
+import java.io.StringReader;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.jayway.jsonpath.JsonPath.using;
 import static org.obiba.mica.search.queries.AbstractDocumentQuery.Mode.COVERAGE;
@@ -213,7 +209,7 @@ public abstract class AbstractDocumentQuery {
           ? vocabulary.getAttributeValue("field")
           : vocabulary.getName().replace('-', '.');
 
-        if(patterns.isEmpty() || patterns.stream().filter(p -> p.matcher(field).matches()).findFirst().isPresent()) {
+        if(patterns.isEmpty() || patterns.stream().anyMatch(p -> p.matcher(field).matches())) {
           boolean multipleTypes = null != properties.get(field);
           properties.put(field, "");
           String type = vocabulary.getAttributeValue("type");
@@ -263,7 +259,7 @@ public abstract class AbstractDocumentQuery {
    * @return List of study IDs
    * @throws IOException
    */
-  public List<String> queryStudyIds() throws IOException {
+  public List<String> queryStudyIds() {
     return queryStudyIds(queryWrapper.getQueryBuilder());
   }
 
@@ -274,11 +270,11 @@ public abstract class AbstractDocumentQuery {
    * @return
    * @throws IOException
    */
-  public List<String> queryStudyIds(List<String> studyIds) throws IOException {
+  public List<String> queryStudyIds(List<String> studyIds) {
     return queryStudyIds(newStudyIdQuery(studyIds));
   }
 
-  protected List<String> queryStudyIds(QueryBuilder queryBuilder) throws IOException {
+  protected List<String> queryStudyIds(QueryBuilder queryBuilder) {
     if(queryBuilder == null) return null;
 
     queryBuilder = updateJoinKeyQuery(queryBuilder);
@@ -302,8 +298,7 @@ public abstract class AbstractDocumentQuery {
 
       DocumentQueryJoinKeys joinKeys = processJoinKeys(response);
 
-      List<String> rval = joinKeys.studyIds.stream().distinct().collect(Collectors.toList());
-      return rval;
+      return joinKeys.studyIds.stream().distinct().collect(Collectors.toList());
     } catch(IndexNotFoundException e) {
       return Collections.emptyList(); //ignoring
     }

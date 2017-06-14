@@ -111,12 +111,12 @@ public class AggregationYamlParser {
     return getAggregations(yamlPropertiesCache.get(descriptionUri), subProperties);
   }
 
-  public Iterable<AbstractAggregationBuilder> getAggregations(@Nullable Properties properties) throws IOException {
+  public Iterable<AbstractAggregationBuilder> getAggregations(@Nullable Properties properties) {
     return getAggregations(properties, null);
   }
 
   public Iterable<AbstractAggregationBuilder> getAggregations(@Nullable Properties properties,
-    @Nullable Map<String, Properties> subProperties) throws IOException {
+    @Nullable Map<String, Properties> subProperties) {
     if(properties == null) return Collections.emptyList();
 
     Map<String, Iterable<AbstractAggregationBuilder>> subAggregations = Maps.newHashMap();
@@ -203,7 +203,7 @@ public class AggregationYamlParser {
       fields.put(name + UND_LOCALE_NAME, field + UND_LOCALE_FIELD);
 
       if(locales != null) {
-        locales.stream()
+        locales
           .forEach(locale -> fields.put(name + AggregationAliasHelper.NAME_SEPARATOR + locale,
             field + AggregationAliasHelper.FIELD_SEPARATOR + locale));
       } else {

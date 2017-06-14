@@ -193,7 +193,7 @@ public abstract class AbstractIndexConfiguration {
   protected void addTaxonomyFields(XContentBuilder mapping, Taxonomy taxonomy, List<String> ignore) throws IOException {
     if(getTarget() != null) {
       SchemaNode root = new SchemaNode();
-      taxonomy.getVocabularies().stream().forEach(v -> {
+      taxonomy.getVocabularies().forEach(v -> {
         String fieldName = v.getAttributeValue(FIELD);
         if(!ignore.contains(fieldName)) {
           fieldName = fieldName != null ? fieldName : v.getName();
