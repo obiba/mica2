@@ -64,7 +64,7 @@ public class IndexFieldMappingService {
   }
 
   public IndexFieldMapping getStudyIndexMapping() {
-    return getMapping(StudyIndexer.DRAFT_STUDY_INDEX, StudyIndexer.COLLECTION_STUDY_TYPE);
+    return getMapping(StudyIndexer.DRAFT_STUDY_INDEX, StudyIndexer.STUDY_TYPE);
   }
 
   public IndexFieldMapping getNetworkIndexMapping() {

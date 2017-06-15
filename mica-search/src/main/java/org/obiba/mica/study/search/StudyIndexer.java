@@ -14,13 +14,13 @@ import javax.inject.Inject;
 
 import org.obiba.mica.core.domain.Indexable;
 import org.obiba.mica.search.ElasticSearchIndexer;
-import org.obiba.mica.study.domain.Study;
+import org.obiba.mica.study.domain.BaseStudy;
 import org.obiba.mica.study.event.DraftStudyUpdatedEvent;
 import org.obiba.mica.study.event.IndexStudiesEvent;
 import org.obiba.mica.study.event.StudyDeletedEvent;
 import org.obiba.mica.study.event.StudyPublishedEvent;
 import org.obiba.mica.study.event.StudyUnpublishedEvent;
-import org.obiba.mica.study.service.CollectionStudyService;
+import org.obiba.mica.study.service.StudyService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
@@ -37,9 +37,7 @@ public class StudyIndexer {
 
   public static final String PUBLISHED_STUDY_INDEX = "study-published";
 
-  public static final String COLLECTION_STUDY_TYPE = "Study";
-
-  public static final String HARMONIZATION_STUDY_TYPE = "HarmonizationStudy";
+  public static final String STUDY_TYPE = "Study";
 
   public static final String[] LOCALIZED_ANALYZED_FIELDS = {"acronym", "name", "objectives"};
 
@@ -49,7 +47,7 @@ public class StudyIndexer {
   private ElasticSearchIndexer elasticSearchIndexer;
 
   @Inject
-  private CollectionStudyService collectionStudyService;
+  private StudyService studyService;
 
   @Async
   @Subscribe
@@ -84,19 +82,19 @@ public class StudyIndexer {
   @Async
   @Subscribe
   public void reIndexStudies(IndexStudiesEvent event) {
-    reIndexAllPublished(collectionStudyService.findAllPublishedStudies());
-    reIndexAllDraft(collectionStudyService.findAllDraftStudies());
+    reIndexAllPublished(studyService.findAllPublishedStudies());
+    reIndexAllDraft(studyService.findAllDraftStudies());
   }
 
-  public void reIndexAllDraft(Iterable<Study> studies) {
+  public void reIndexAllDraft(Iterable<BaseStudy> studies) {
     reIndexAll(DRAFT_STUDY_INDEX, studies);
   }
 
-  public void reIndexAllPublished(Iterable<Study> studies) {
+  public void reIndexAllPublished(Iterable<BaseStudy> studies) {
     reIndexAll(PUBLISHED_STUDY_INDEX, studies);
   }
 
-  private void reIndexAll(String indexName, Iterable<Study> studies) {
-    elasticSearchIndexer.reindexAll(indexName, studies);
+  private void reIndexAll(String indexName, Iterable<BaseStudy> studies) {
+    elasticSearchIndexer.reIndexAllIndexables(indexName, studies);
   }
 }

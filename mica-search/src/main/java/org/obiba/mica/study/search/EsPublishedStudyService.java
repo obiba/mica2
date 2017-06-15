@@ -66,7 +66,7 @@ public class EsPublishedStudyService extends AbstractEsStudyService<BaseStudy> i
 
   @Override
   protected String getType() {
-    return StudyIndexer.COLLECTION_STUDY_TYPE;
+    return StudyIndexer.STUDY_TYPE;
   }
 
   @Override

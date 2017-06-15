@@ -20,16 +20,26 @@ import javax.validation.constraints.NotNull;
 import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.study.domain.BaseStudy;
 import org.obiba.mica.study.domain.Study;
+import org.obiba.mica.study.event.IndexStudiesEvent;
 import org.springframework.stereotype.Component;
+
+import com.google.common.eventbus.EventBus;
 
 @Component
 public class StudyService {
+
+  @Inject
+  protected EventBus eventBus;
 
   @Inject
   private CollectionStudyService collectionStudyService;
 
   @Inject
   private HarmonizationStudyService harmonizationStudyService;
+
+  public void indexAll() {
+    eventBus.post(new IndexStudiesEvent());
+  }
 
   public boolean isCollectionStudy(String id) {
     try {

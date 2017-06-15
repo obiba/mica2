@@ -67,7 +67,7 @@ public class StudyQuery extends AbstractDocumentQuery {
 
   @Override
   public String getSearchType() {
-    return StudyIndexer.COLLECTION_STUDY_TYPE;
+    return StudyIndexer.STUDY_TYPE;
   }
 
   @Override

@@ -35,7 +35,7 @@ public class StudyIndexConfiguration extends AbstractIndexConfiguration
     if(StudyIndexer.DRAFT_STUDY_INDEX.equals(indexName) || StudyIndexer.PUBLISHED_STUDY_INDEX.equals(indexName)) {
 
       try {
-        client.admin().indices().preparePutMapping(indexName).setType(StudyIndexer.COLLECTION_STUDY_TYPE)
+        client.admin().indices().preparePutMapping(indexName).setType(StudyIndexer.STUDY_TYPE)
           .setSource(createMappingProperties()).execute().actionGet();
       } catch(IOException e) {
         throw new RuntimeException(e);
@@ -44,7 +44,7 @@ public class StudyIndexConfiguration extends AbstractIndexConfiguration
   }
 
   private XContentBuilder createMappingProperties() throws IOException {
-    XContentBuilder mapping = XContentFactory.jsonBuilder().startObject().startObject(StudyIndexer.COLLECTION_STUDY_TYPE);
+    XContentBuilder mapping = XContentFactory.jsonBuilder().startObject().startObject(StudyIndexer.STUDY_TYPE);
     mapping.startObject("properties");
     appendMembershipProperties(mapping);
     Taxonomy taxonomy = getTaxonomy();
