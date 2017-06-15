@@ -12,6 +12,7 @@ package org.obiba.mica.web.model;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Stream;
 
 import javax.inject.Inject;
 
@@ -29,6 +30,7 @@ import org.obiba.mica.study.domain.StudyState;
 import org.obiba.mica.study.service.HarmonizationStudyService;
 import org.obiba.mica.study.service.PublishedStudyService;
 import org.obiba.mica.study.service.CollectionStudyService;
+import org.obiba.mica.study.service.StudyService;
 import org.springframework.stereotype.Component;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
@@ -55,6 +57,9 @@ class PersonDtos {
 
   @Inject
   private SubjectAclService subjectAclService;
+
+  @Inject
+  private StudyService studyService;
 
   @Inject
   private CollectionStudyService collectionStudyService;
@@ -84,9 +89,9 @@ class PersonDtos {
         return subjectAclService.isPermitted("/draft/collection-study", "VIEW", m.getParentId());
       } else {
         StudyState state = collectionStudyService.findStateById(m.getParentId());
-        return state != null && state.isPublished() && subjectAclService.isAccessible("/study", m.getParentId());
+        return state != null && state.isPublished() && subjectAclService.isAccessible("/collection-study", m.getParentId());
       }
-    }).map(m -> asCollectionStudyMembershipDto(m, asDraft)).collect(toList()));
+    }).map(m -> asStudyMembershipDto(m, asDraft)).collect(toList()));
     builder.addAllStudyMemberships(builder.getStudyMembershipsList());
     builder.addAllHarmonizationStudyMemberships(person.getHarmonizationStudyMemberships().stream().filter(m -> {
       if(!roles.contains(m.getRole())) return false;
@@ -97,7 +102,7 @@ class PersonDtos {
         HarmonizationStudyState state = harmonizationStudyService.findStateById(m.getParentId());
         return state != null && state.isPublished() && subjectAclService.isAccessible("/harmonization-study", m.getParentId());
       }
-    }).map(m -> asHarmonizationStudyMembershipDto(m, asDraft)).collect(toList()));
+    }).map(m -> asStudyMembershipDto(m, asDraft)).collect(toList()));
     builder.addAllNetworkMemberships(person.getNetworkMemberships().stream().filter(m -> {
       if(!roles.contains(m.getRole())) return false;
 
@@ -149,35 +154,16 @@ class PersonDtos {
     }
     if(institution.getAddress() != null) builder.setAddress(asDto(institution.getAddress()));
     return builder.build();
+
   }
 
-  private Mica.PersonDto.MembershipDto asCollectionStudyMembershipDto(Person.Membership membership, boolean asDraft) {
+  private Mica.PersonDto.MembershipDto asStudyMembershipDto(Person.Membership membership, boolean asDraft) {
     Mica.PersonDto.MembershipDto.Builder builder = Mica.PersonDto.MembershipDto.newBuilder();
     builder.setRole(membership.getRole());
     builder.setParentId(membership.getParentId());
 
     if(membership.getParentId() != null) {
-      BaseStudy study = asDraft
-        ? collectionStudyService.findStudy(membership.getParentId())
-        : publishedStudyService.findById(membership.getParentId());
-      if(study != null) {
-        builder.addAllParentAcronym(localizedStringDtos.asDto(study.getAcronym()));
-        builder.addAllParentName(localizedStringDtos.asDto(study.getName()));
-      }
-    }
-
-    return builder.build();
-  }
-
-  private Mica.PersonDto.MembershipDto asHarmonizationStudyMembershipDto(Person.Membership membership, boolean asDraft) {
-    Mica.PersonDto.MembershipDto.Builder builder = Mica.PersonDto.MembershipDto.newBuilder();
-    builder.setRole(membership.getRole());
-    builder.setParentId(membership.getParentId());
-
-    if(membership.getParentId() != null) {
-      BaseStudy study = asDraft
-        ? harmonizationStudyService.findStudy(membership.getParentId())
-        : publishedStudyService.findById(membership.getParentId());
+      BaseStudy study = studyService.findStudy(membership.getParentId());
       if(study != null) {
         builder.addAllParentAcronym(localizedStringDtos.asDto(study.getAcronym()));
         builder.addAllParentName(localizedStringDtos.asDto(study.getName()));

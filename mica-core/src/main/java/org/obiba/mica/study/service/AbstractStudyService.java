@@ -27,7 +27,6 @@ import org.obiba.mica.core.repository.AttachmentRepository;
 import org.obiba.mica.core.repository.DBRefAwareRepository;
 import org.obiba.mica.core.repository.EntityStateRepository;
 import org.obiba.mica.core.service.AbstractGitPersistableService;
-import org.obiba.mica.core.service.StudyIdGeneratorService;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.FileUtils;
 import org.obiba.mica.file.service.FileSystemService;
@@ -67,11 +66,9 @@ public abstract class AbstractStudyService<S extends EntityState, T extends Base
   @Inject
   protected FileSystemService fileSystemService;
 
-  @Inject
-  protected AttachmentRepository attachmentRepository;
 
   @Inject
-  protected StudyIdGeneratorService studyIdGeneratorService;
+  protected AttachmentRepository attachmentRepository;
 
   @Override
   @NotNull
@@ -208,7 +205,7 @@ public abstract class AbstractStudyService<S extends EntityState, T extends Base
   @Override
   protected String generateId(@NotNull T study) {
     ensureAcronym(study);
-    return studyIdGeneratorService.generateId(study.getAcronym());
+    return getNextId(study.getAcronym());
   }
 
   protected abstract void checkStudyConstraints(T study);
