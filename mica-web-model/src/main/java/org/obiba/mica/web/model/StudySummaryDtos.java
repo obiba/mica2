@@ -31,10 +31,9 @@ import org.obiba.mica.study.domain.Population;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.domain.StudyState;
 import org.obiba.mica.study.service.AbstractStudyService;
-import org.obiba.mica.study.service.HarmonizationStudyService;
 import org.obiba.mica.study.service.PublishedDatasetVariableService;
 import org.obiba.mica.study.service.PublishedStudyService;
-import org.obiba.mica.study.service.CollectionStudyService;
+import org.obiba.mica.study.service.StudyService;
 import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Lists;
@@ -62,14 +61,11 @@ class StudySummaryDtos {
   private PublishedDatasetVariableService datasetVariableService;
 
   @Inject
-  private CollectionStudyService collectionStudyService;
-
-  @Inject
-  private HarmonizationStudyService harmonizationStudyService;
+  private StudyService studyService;
 
   @NotNull
-  public Mica.StudySummaryDto.Builder asDtoBuilder(@NotNull Study study) {
-    StudyState studyState = collectionStudyService.getEntityState(study.getId());
+  public Mica.StudySummaryDto.Builder asDtoBuilder(@NotNull BaseStudy study) {
+    EntityState studyState = studyService.getEntityState(study.getId());
 
     if(studyState.isPublished()) {
       return asDtoBuilder(study, studyState.isPublished(), datasetVariableService.getCountByStudyId(study.getId()));
@@ -195,7 +191,7 @@ class StudySummaryDtos {
   }
 
   @NotNull
-  Mica.StudySummaryDto asDto(@NotNull Study study) {
+  Mica.StudySummaryDto asDto(@NotNull BaseStudy study) {
     return asDtoBuilder(study).build();
   }
 
@@ -235,19 +231,14 @@ class StudySummaryDtos {
 
   @NotNull
   Mica.StudySummaryDto asDto(@NotNull EntityState studyState) {
-    return asDto((studyState instanceof StudyState ? collectionStudyService : harmonizationStudyService)
-      .findStudy(studyState.getId()), studyState);
-  }
-
-  Mica.StudySummaryDto asDto(String studyId) {
-    return asDto(studyId, collectionStudyService);
+    return asDto(studyService.findStudy(studyState.getId()), studyState);
   }
 
   Mica.StudySummaryDto asHarmoStudyDto(String studyId) {
-    return asDto(studyId, harmonizationStudyService);
+    return asDto(studyId);
   }
 
-  private Mica.StudySummaryDto asDto(String studyId, AbstractStudyService studyService) {
+  Mica.StudySummaryDto asDto(String studyId) {
     EntityState studyState = studyService.getEntityState(studyId);
 
     if (studyState.isPublished()) {

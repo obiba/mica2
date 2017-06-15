@@ -18,6 +18,7 @@ import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
 import org.obiba.mica.NoSuchEntityException;
+import org.obiba.mica.core.domain.EntityState;
 import org.obiba.mica.study.domain.BaseStudy;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.event.IndexStudiesEvent;
@@ -51,6 +52,14 @@ public class StudyService {
 
   public boolean isHarmonizationStudy(String id) {
     return !isCollectionStudy(id);
+  }
+
+  public EntityState getEntityState(String id) throws NoSuchEntityException {
+    try {
+      return collectionStudyService.getEntityState(id);
+    } catch(NoSuchEntityException ex) {
+      return harmonizationStudyService.getEntityState(id);
+    }
   }
 
   public BaseStudy findDraft(String id) throws NoSuchEntityException {

@@ -44,6 +44,7 @@ import org.obiba.mica.micaConfig.domain.ProjectConfig;
 import org.obiba.mica.micaConfig.domain.StudyConfig;
 import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.project.domain.Project;
+import org.obiba.mica.study.domain.BaseStudy;
 import org.obiba.mica.study.domain.HarmonizationStudy;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.domain.StudyState;
@@ -176,12 +177,12 @@ public class Dtos {
   }
 
   @NotNull
-  public StudySummaryDto asSummaryDto(@NotNull Study study) {
+  public StudySummaryDto asSummaryDto(@NotNull BaseStudy study) {
     return studySummaryDtos.asDto(study);
   }
 
   @NotNull
-  public StudySummaryDto asSummaryDto(@NotNull Study study, @NotNull StudyState studyState) {
+  public StudySummaryDto asSummaryDto(@NotNull BaseStudy study, @NotNull StudyState studyState) {
     return studySummaryDtos.asDto(study, studyState);
   }
 

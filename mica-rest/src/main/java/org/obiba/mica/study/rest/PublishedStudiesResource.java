@@ -54,7 +54,7 @@ public class PublishedStudiesResource {
     Mica.StudySummariesDto.Builder builder = Mica.StudySummariesDto.newBuilder();
 
     builder.setFrom(studies.getFrom()).setLimit(studies.getLimit()).setTotal(studies.getTotal());
-    builder.addAllStudySummaries(studies.getList().stream().map(baseStudy -> dtos.asSummaryDto((Study) baseStudy)).collect(Collectors.toList()));
+    builder.addAllStudySummaries(studies.getList().stream().map(baseStudy -> dtos.asSummaryDto(baseStudy)).collect(Collectors.toList()));
 
     return builder.build();
   }
