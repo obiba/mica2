@@ -51,7 +51,7 @@ import org.obiba.mica.file.service.FileSystemService;
 import org.obiba.mica.micaConfig.service.OpalService;
 import org.obiba.mica.network.service.NetworkService;
 import org.obiba.mica.study.NoSuchStudyException;
-import org.obiba.mica.study.service.StudyService;
+import org.obiba.mica.study.service.CollectionStudyService;
 import org.obiba.opal.rest.client.magma.RestValueTable;
 import org.obiba.opal.web.model.Search;
 import org.slf4j.Logger;
@@ -84,7 +84,7 @@ public class HarmonizationDatasetService extends DatasetService<HarmonizationDat
   private static final Logger log = LoggerFactory.getLogger(HarmonizationDatasetService.class);
 
   @Inject
-  private StudyService studyService;
+  private CollectionStudyService collectionStudyService;
 
   @Inject
   @Lazy
@@ -339,8 +339,8 @@ public class HarmonizationDatasetService extends DatasetService<HarmonizationDat
   }
 
   @Override
-  protected StudyService getStudyService() {
-    return studyService;
+  protected CollectionStudyService getCollectionStudyService() {
+    return collectionStudyService;
   }
 
   @Override

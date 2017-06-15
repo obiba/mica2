@@ -26,7 +26,7 @@ import org.obiba.mica.search.AbstractDocumentService;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.domain.StudyState;
 import org.obiba.mica.study.service.DraftStudyService;
-import org.obiba.mica.study.service.StudyService;
+import org.obiba.mica.study.service.CollectionStudyService;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -36,11 +36,11 @@ public class EsDraftStudyService extends AbstractDocumentService<Study> implemen
   private ObjectMapper objectMapper;
 
   @Inject
-  private StudyService studyService;
+  private CollectionStudyService collectionStudyService;
 
   @Override
-  public StudyService getStudyService() {
-    return studyService;
+  public CollectionStudyService getCollectionStudyService() {
+    return collectionStudyService;
   }
 
   @Override
@@ -61,7 +61,7 @@ public class EsDraftStudyService extends AbstractDocumentService<Study> implemen
 
   @Override
   protected QueryBuilder filterByAccess() {
-    List<String> ids = studyService.findAllStates().stream().map(StudyState::getId)
+    List<String> ids = collectionStudyService.findAllStates().stream().map(StudyState::getId)
       .filter(s -> subjectAclService.isPermitted("/draft/study", "VIEW", s))
       .collect(Collectors.toList());
 

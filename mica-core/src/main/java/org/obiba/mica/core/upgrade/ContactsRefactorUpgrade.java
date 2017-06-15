@@ -10,20 +10,17 @@
 
 package org.obiba.mica.core.upgrade;
 
-import java.util.List;
-
 import javax.inject.Inject;
 
 import org.obiba.mica.contact.event.PersonUpdatedEvent;
 import org.obiba.mica.core.domain.PublishCascadingScope;
-import org.obiba.mica.core.repository.PersonRepository;
 import org.obiba.mica.network.NetworkRepository;
 import org.obiba.mica.network.service.NetworkService;
 import org.obiba.mica.study.StudyRepository;
 import org.obiba.mica.study.domain.StudyState;
 import org.obiba.mica.study.event.DraftStudyUpdatedEvent;
 import org.obiba.mica.study.event.StudyPublishedEvent;
-import org.obiba.mica.study.service.StudyService;
+import org.obiba.mica.study.service.CollectionStudyService;
 import org.obiba.runtime.Version;
 import org.obiba.runtime.upgrade.UpgradeStep;
 import org.slf4j.Logger;
@@ -31,7 +28,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.EventBus;
 
 @Component
@@ -42,7 +38,7 @@ public class ContactsRefactorUpgrade implements UpgradeStep {
   private StudyRepository studyRepository;
 
   @Inject
-  private StudyService studyService;
+  private CollectionStudyService collectionStudyService;
 
   @Inject
   private NetworkRepository networkRepository;
@@ -68,7 +64,7 @@ public class ContactsRefactorUpgrade implements UpgradeStep {
     log.info("Executing contacts upgrade");
     studyRepository.findAll().forEach(study -> {
       study.getAllPersons().forEach(p -> p.setEmail(Strings.emptyToNull(p.getEmail())));
-      StudyState studyState = studyService.findStateById(study.getId());
+      StudyState studyState = collectionStudyService.findStateById(study.getId());
 
       studyRepository.saveWithReferences(study);
 

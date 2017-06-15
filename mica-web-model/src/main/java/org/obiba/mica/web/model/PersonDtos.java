@@ -28,7 +28,7 @@ import org.obiba.mica.study.domain.HarmonizationStudyState;
 import org.obiba.mica.study.domain.StudyState;
 import org.obiba.mica.study.service.HarmonizationStudyService;
 import org.obiba.mica.study.service.PublishedStudyService;
-import org.obiba.mica.study.service.StudyService;
+import org.obiba.mica.study.service.CollectionStudyService;
 import org.springframework.stereotype.Component;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
@@ -57,7 +57,7 @@ class PersonDtos {
   private SubjectAclService subjectAclService;
 
   @Inject
-  private StudyService collectionStudyService;
+  private CollectionStudyService collectionStudyService;
 
   @Inject
   private HarmonizationStudyService harmonizationStudyService;

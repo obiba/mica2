@@ -51,9 +51,9 @@ import static java.util.stream.Collectors.toList;
 
 @Service
 @Validated
-public class StudyService extends AbstractStudyService<StudyState, Study> {
+public class CollectionStudyService extends AbstractStudyService<StudyState, Study> {
 
-  private static final Logger log = LoggerFactory.getLogger(StudyService.class);
+  private static final Logger log = LoggerFactory.getLogger(CollectionStudyService.class);
 
   private static final String SEPARATOR = ":";
 

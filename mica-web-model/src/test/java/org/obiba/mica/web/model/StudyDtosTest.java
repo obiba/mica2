@@ -23,7 +23,7 @@ import org.obiba.mica.file.Attachment;
 import org.obiba.mica.micaConfig.domain.MicaConfig;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.study.domain.Study;
-import org.obiba.mica.study.service.StudyService;
+import org.obiba.mica.study.service.CollectionStudyService;
 
 import java.util.Arrays;
 import java.util.Locale;
@@ -48,7 +48,7 @@ public class StudyDtosTest {
   private MicaConfigService micaConfigService;
 
   @Mock
-  private StudyService studyService;
+  private CollectionStudyService collectionStudyService;
 
   @Mock
   private PermissionsDtos permissionsDtos;
@@ -63,7 +63,7 @@ public class StudyDtosTest {
     when(micaConfigService.getConfig()).thenReturn(config);
 
     when(permissionsDtos.asDto(any(Study.class))).thenReturn(Mica.PermissionsDto.getDefaultInstance());
-    when(studyService.isPublished(anyString())).thenReturn(true);
+    when(collectionStudyService.isPublished(anyString())).thenReturn(true);
   }
 
   @Test

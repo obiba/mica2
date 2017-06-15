@@ -71,7 +71,7 @@ public class StudyPackageImportServiceImpl extends AbstractProtobufProvider impl
   private TempFileService tempFileService;
 
   @Inject
-  private StudyService studyService;
+  private CollectionStudyService collectionStudyService;
 
   @Inject
   private NetworkService networkService;
@@ -140,7 +140,7 @@ public class StudyPackageImportServiceImpl extends AbstractProtobufProvider impl
       }
     });
 
-    studyService.save(study, "Imported");
+    collectionStudyService.save(study, "Imported");
 
     attachments.forEach(a -> {
       a.setPath(String.format(a.getPath(), study.getId()));
@@ -148,7 +148,7 @@ public class StudyPackageImportServiceImpl extends AbstractProtobufProvider impl
     });
 
     if(publish) {
-      studyService.publish(study.getId(), true, PublishCascadingScope.ALL);
+      collectionStudyService.publish(study.getId(), true, PublishCascadingScope.ALL);
     }
   }
 

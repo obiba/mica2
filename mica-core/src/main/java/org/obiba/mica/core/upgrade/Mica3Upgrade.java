@@ -1,7 +1,7 @@
 package org.obiba.mica.core.upgrade;
 
 import org.obiba.mica.core.domain.DefaultEntityBase;
-import org.obiba.mica.study.service.StudyService;
+import org.obiba.mica.study.service.CollectionStudyService;
 import org.obiba.runtime.Version;
 import org.obiba.runtime.upgrade.UpgradeStep;
 import org.slf4j.Logger;
@@ -16,7 +16,7 @@ public class Mica3Upgrade implements UpgradeStep {
   private static final Logger logger = LoggerFactory.getLogger(Mica3Upgrade.class);
 
   @Inject
-  private StudyService studyService;
+  private CollectionStudyService collectionStudyService;
 
   @Override
   public String getDescription() {
@@ -40,9 +40,9 @@ public class Mica3Upgrade implements UpgradeStep {
   }
 
   private void republishStudies() {
-    studyService.findPublishedStates().stream()
+    collectionStudyService.findPublishedStates().stream()
       .filter(s -> s.getRevisionsAhead() == 0)
       .map(DefaultEntityBase::getId)
-      .forEach(s -> studyService.publish(s, true));
+      .forEach(s -> collectionStudyService.publish(s, true));
   }
 }

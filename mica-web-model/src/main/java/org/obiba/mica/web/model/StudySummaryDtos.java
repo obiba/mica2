@@ -34,7 +34,7 @@ import org.obiba.mica.study.service.AbstractStudyService;
 import org.obiba.mica.study.service.HarmonizationStudyService;
 import org.obiba.mica.study.service.PublishedDatasetVariableService;
 import org.obiba.mica.study.service.PublishedStudyService;
-import org.obiba.mica.study.service.StudyService;
+import org.obiba.mica.study.service.CollectionStudyService;
 import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Lists;
@@ -62,14 +62,14 @@ class StudySummaryDtos {
   private PublishedDatasetVariableService datasetVariableService;
 
   @Inject
-  private StudyService studyService;
+  private CollectionStudyService collectionStudyService;
 
   @Inject
   private HarmonizationStudyService harmonizationStudyService;
 
   @NotNull
   public Mica.StudySummaryDto.Builder asDtoBuilder(@NotNull Study study) {
-    StudyState studyState = studyService.getEntityState(study.getId());
+    StudyState studyState = collectionStudyService.getEntityState(study.getId());
 
     if(studyState.isPublished()) {
       return asDtoBuilder(study, studyState.isPublished(), datasetVariableService.getCountByStudyId(study.getId()));
@@ -235,12 +235,12 @@ class StudySummaryDtos {
 
   @NotNull
   Mica.StudySummaryDto asDto(@NotNull EntityState studyState) {
-    return asDto((studyState instanceof StudyState ? studyService : harmonizationStudyService)
+    return asDto((studyState instanceof StudyState ? collectionStudyService : harmonizationStudyService)
       .findStudy(studyState.getId()), studyState);
   }
 
   Mica.StudySummaryDto asDto(String studyId) {
-    return asDto(studyId, studyService);
+    return asDto(studyId, collectionStudyService);
   }
 
   Mica.StudySummaryDto asHarmoStudyDto(String studyId) {

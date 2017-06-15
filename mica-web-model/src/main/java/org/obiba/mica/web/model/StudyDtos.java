@@ -26,10 +26,9 @@ import org.obiba.mica.JSONUtils;
 import org.obiba.mica.core.domain.Membership;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.study.domain.HarmonizationStudy;
-import org.obiba.mica.study.domain.Population;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.service.HarmonizationStudyService;
-import org.obiba.mica.study.service.StudyService;
+import org.obiba.mica.study.service.CollectionStudyService;
 import org.springframework.stereotype.Component;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
@@ -57,7 +56,7 @@ class StudyDtos {
   private MicaConfigService micaConfigService;
 
   @Inject
-  private StudyService studyService;
+  private CollectionStudyService collectionStudyService;
 
   @Inject
   private HarmonizationStudyService harmonizationStudyService;
@@ -105,7 +104,7 @@ class StudyDtos {
       study.getPopulations().forEach(population -> builder.addPopulations(populationDtos.asDto(population)));
     }
 
-    builder.setPublished(studyService.isPublished(study.getId()));
+    builder.setPublished(collectionStudyService.isPublished(study.getId()));
 
     return builder.build();
   }

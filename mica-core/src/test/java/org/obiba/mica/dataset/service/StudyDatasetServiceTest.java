@@ -27,7 +27,7 @@ import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.dataset.domain.StudyDatasetState;
 import org.obiba.mica.micaConfig.service.OpalService;
 import org.obiba.mica.study.domain.Study;
-import org.obiba.mica.study.service.StudyService;
+import org.obiba.mica.study.service.CollectionStudyService;
 import org.obiba.opal.rest.client.magma.RestDatasource;
 
 import com.google.common.eventbus.EventBus;
@@ -44,7 +44,7 @@ public class StudyDatasetServiceTest {
   private StudyDatasetService studyDatasetService;
 
   @Mock
-  private StudyService studyService;
+  private CollectionStudyService collectionStudyService;
 
   @Mock
   private OpalService opalService;
@@ -82,7 +82,7 @@ public class StudyDatasetServiceTest {
     RestDatasource r = mock(RestDatasource.class);
     when(r.getValueTable(anyString())).thenThrow(new MagmaRuntimeException());
     when(opalService.getDatasource(anyString(), anyString())).thenReturn(r);
-    when(studyService.findDraft(anyString())).thenReturn(study);
+    when(collectionStudyService.findDraft(anyString())).thenReturn(study);
     when(studyDatasetStateRepository.findOne(anyString())).thenReturn(state);
 
     studyDatasetService.save(dataset);

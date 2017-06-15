@@ -44,7 +44,7 @@ import org.obiba.mica.network.event.NetworkPublishedEvent;
 import org.obiba.mica.network.event.NetworkUnpublishedEvent;
 import org.obiba.mica.network.event.NetworkUpdatedEvent;
 import org.obiba.mica.study.ConstraintException;
-import org.obiba.mica.study.service.StudyService;
+import org.obiba.mica.study.service.CollectionStudyService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -98,7 +98,7 @@ public class NetworkService extends AbstractGitPersistableService<NetworkState, 
   private HarmonizationDatasetService harmonizationDatasetService;
 
   @Inject
-  private StudyService studyService;
+  private CollectionStudyService collectionStudyService;
 
   /**
    * Create or update provided {@link Network}.
@@ -273,7 +273,7 @@ public class NetworkService extends AbstractGitPersistableService<NetworkState, 
   }
 
   private Network processNetworkForPublishedNumberOfStudies(Network network) {
-    network.setNumberOfStudies(network.getStudyIds().stream().filter(s -> studyService.isPublished(s)).count());
+    network.setNumberOfStudies(network.getStudyIds().stream().filter(s -> collectionStudyService.isPublished(s)).count());
     return network;
   }
 

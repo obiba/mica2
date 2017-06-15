@@ -13,12 +13,9 @@ package org.obiba.mica.core.service;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
-import org.jvnet.hk2.annotations.Service;
 import org.obiba.mica.core.domain.LocalizedString;
-import org.obiba.mica.study.HarmonizationStudyRepository;
 import org.obiba.mica.study.HarmonizationStudyStateRepository;
 import org.obiba.mica.study.StudyStateRepository;
-import org.obiba.mica.study.domain.HarmonizationStudy;
 import org.obiba.mica.study.domain.HarmonizationStudyState;
 import org.obiba.mica.study.domain.StudyState;
 import org.springframework.stereotype.Component;

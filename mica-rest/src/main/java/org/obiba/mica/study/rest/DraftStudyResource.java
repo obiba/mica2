@@ -24,7 +24,7 @@ import org.obiba.mica.file.service.FileSystemService;
 import org.obiba.mica.security.rest.SubjectAclResource;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.domain.StudyState;
-import org.obiba.mica.study.service.StudyService;
+import org.obiba.mica.study.service.CollectionStudyService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.springframework.context.ApplicationContext;
@@ -51,7 +51,7 @@ import java.util.stream.Collectors;
 public class DraftStudyResource extends AbstractGitPersistableResource<StudyState, Study> {
 
   @Inject
-  private StudyService studyService;
+  private CollectionStudyService collectionStudyService;
 
   @Inject
   private FileSystemService fileSystemService;
@@ -72,7 +72,7 @@ public class DraftStudyResource extends AbstractGitPersistableResource<StudyStat
   @Timed
   public Mica.StudyDto get(@QueryParam("locale") String locale, @QueryParam("key") String key) {
     checkPermission("/draft/study", "VIEW", key);
-    return dtos.asDto(studyService.findDraft(id, locale), true);
+    return dtos.asDto(collectionStudyService.findDraft(id, locale), true);
   }
 
   @GET
@@ -80,7 +80,7 @@ public class DraftStudyResource extends AbstractGitPersistableResource<StudyStat
   @Produces("application/json")
   public Map<String, Object> getModel() {
     checkPermission("/draft/study", "VIEW");
-    return studyService.findDraft(id).getModel();
+    return collectionStudyService.findDraft(id).getModel();
   }
 
   @PUT
@@ -89,15 +89,15 @@ public class DraftStudyResource extends AbstractGitPersistableResource<StudyStat
     @Nullable @QueryParam("comment") String comment) {
     checkPermission("/draft/study", "EDIT");
     // ensure study exists
-    studyService.findDraft(id);
+    collectionStudyService.findDraft(id);
 
     Study study = dtos.fromDto(studyDto);
 
     HashMap<Object, Object> response = Maps.newHashMap();
     response.put("study", study);
-    response.put("potentialConflicts", studyService.getPotentialConflicts(study, false));
+    response.put("potentialConflicts", collectionStudyService.getPotentialConflicts(study, false));
 
-    studyService.save(study, comment);
+    collectionStudyService.save(study, comment);
     return Response.ok(response, MediaType.APPLICATION_JSON_TYPE).build();
   }
 
@@ -106,7 +106,7 @@ public class DraftStudyResource extends AbstractGitPersistableResource<StudyStat
   @Timed
   public Response publish(@QueryParam("cascading") @DefaultValue("UNDER_REVIEW") String cascadingScope) {
     checkPermission("/draft/study", "PUBLISH");
-    studyService.publish(id, true, PublishCascadingScope.valueOf(cascadingScope.toUpperCase()));
+    collectionStudyService.publish(id, true, PublishCascadingScope.valueOf(cascadingScope.toUpperCase()));
     return Response.noContent().build();
   }
 
@@ -114,8 +114,8 @@ public class DraftStudyResource extends AbstractGitPersistableResource<StudyStat
   @Path("/_publish")
   public Response unPublish() {
     checkPermission("/draft/study", "PUBLISH");
-    studyService.publish(id, false);
-    return Response.ok(studyService.getPotentialConflicts(studyService.findStudy(id), true), MediaType.APPLICATION_JSON_TYPE).build();
+    collectionStudyService.publish(id, false);
+    return Response.ok(collectionStudyService.getPotentialConflicts(collectionStudyService.findStudy(id), true), MediaType.APPLICATION_JSON_TYPE).build();
   }
 
   @PUT
@@ -123,7 +123,7 @@ public class DraftStudyResource extends AbstractGitPersistableResource<StudyStat
   @Timed
   public Response toUnderReview(@QueryParam("value") String status) {
     checkPermission("/draft/study", "EDIT");
-    studyService.updateStatus(id, RevisionStatus.valueOf(status.toUpperCase()));
+    collectionStudyService.updateStatus(id, RevisionStatus.valueOf(status.toUpperCase()));
     return Response.noContent().build();
   }
 
@@ -134,7 +134,7 @@ public class DraftStudyResource extends AbstractGitPersistableResource<StudyStat
   @Timed
   public Response delete() {
     checkPermission("/draft/study", "DELETE");
-    studyService.delete(id);
+    collectionStudyService.delete(id);
     return Response.noContent().build();
   }
 
@@ -142,7 +142,7 @@ public class DraftStudyResource extends AbstractGitPersistableResource<StudyStat
   public FileResource file(@PathParam("fileId") String fileId, @QueryParam("key") String key) {
     checkPermission("/draft/study", "VIEW", key);
     FileResource fileResource = applicationContext.getBean(FileResource.class);
-    Study study = studyService.findDraft(id);
+    Study study = collectionStudyService.findDraft(id);
 
     if(study.hasLogo() && study.getLogo().getId().equals(fileId)) {
       fileResource.setAttachment(study.getLogo());
@@ -161,7 +161,7 @@ public class DraftStudyResource extends AbstractGitPersistableResource<StudyStat
   @Path("/commit/{commitId}/view")
   public Mica.StudyDto getStudyFromCommit(@NotNull @PathParam("commitId") String commitId) throws IOException {
     checkPermission("/draft/study", "VIEW");
-    return dtos.asDto(studyService.getFromCommit(studyService.findDraft(id), commitId), true);
+    return dtos.asDto(collectionStudyService.getFromCommit(collectionStudyService.findDraft(id), commitId), true);
   }
 
   @Path("/permissions")
@@ -187,6 +187,6 @@ public class DraftStudyResource extends AbstractGitPersistableResource<StudyStat
 
   @Override
   protected AbstractGitPersistableService<StudyState, Study> getService() {
-    return studyService;
+    return collectionStudyService;
   }
 }

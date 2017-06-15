@@ -31,7 +31,7 @@ import org.obiba.mica.project.domain.ProjectState;
 import org.obiba.mica.project.service.ProjectService;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.study.domain.StudyState;
-import org.obiba.mica.study.service.StudyService;
+import org.obiba.mica.study.service.CollectionStudyService;
 import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Lists;
@@ -54,7 +54,7 @@ public class FileFilterHelper {
   private NetworkService networkService;
 
   @Inject
-  private StudyService studyService;
+  private CollectionStudyService collectionStudyService;
 
   @Inject
   private StudyDatasetService studyDatasetService;
@@ -121,9 +121,9 @@ public class FileFilterHelper {
   private List<String> getStudyIds(String basePath, boolean draft) {
     if("/".equals(basePath) || "/study".equals(basePath)) {
       return draft
-        ? studyService.findAllStates().stream().map(StudyState::getId)
+        ? collectionStudyService.findAllStates().stream().map(StudyState::getId)
         .filter(s -> subjectAclService.isPermitted("/draft/study", "VIEW", s)).collect(Collectors.toList())
-        : studyService.findPublishedStates().stream().map(StudyState::getId)
+        : collectionStudyService.findPublishedStates().stream().map(StudyState::getId)
           .filter(s -> subjectAclService.isAccessible("/study", s)).collect(Collectors.toList());
     }
     if(basePath.startsWith("/study/")) {

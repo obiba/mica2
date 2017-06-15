@@ -31,7 +31,7 @@ import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.domain.StudyState;
 import org.obiba.mica.study.search.StudyIndexer;
 import org.obiba.mica.study.service.PublishedStudyService;
-import org.obiba.mica.study.service.StudyService;
+import org.obiba.mica.study.service.CollectionStudyService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.mica.web.model.MicaSearch;
@@ -50,7 +50,7 @@ public class StudyQuery extends AbstractDocumentQuery {
   private PublishedStudyService publishedStudyService;
 
   @Inject
-  private StudyService collectionStudyService;
+  private CollectionStudyService collectionStudyService;
 
   @Inject
   private Dtos dtos;

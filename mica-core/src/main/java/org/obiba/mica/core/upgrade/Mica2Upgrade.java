@@ -33,7 +33,7 @@ import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.network.service.NetworkService;
 import org.obiba.mica.study.StudyRepository;
 import org.obiba.mica.study.domain.Study;
-import org.obiba.mica.study.service.StudyService;
+import org.obiba.mica.study.service.CollectionStudyService;
 import org.obiba.runtime.Version;
 import org.obiba.runtime.upgrade.UpgradeStep;
 import org.slf4j.Logger;
@@ -68,7 +68,7 @@ public class Mica2Upgrade implements UpgradeStep {
   @Inject
   private NetworkService networkService;
   @Inject
-  private StudyService studyService;
+  private CollectionStudyService collectionStudyService;
   @Inject
   private StudyDatasetService studyDatasetService;
   @Inject
@@ -117,7 +117,7 @@ public class Mica2Upgrade implements UpgradeStep {
     networkService.indexAll();
 
     logger.debug("Indexing all studies in the repository.");
-    studyService.indexAll();
+    collectionStudyService.indexAll();
 
     logger.debug("Indexing all study datasets in the repository.");
     studyDatasetService.indexAll(false);

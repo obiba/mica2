@@ -20,7 +20,7 @@ import org.obiba.mica.study.event.IndexStudiesEvent;
 import org.obiba.mica.study.event.StudyDeletedEvent;
 import org.obiba.mica.study.event.StudyPublishedEvent;
 import org.obiba.mica.study.event.StudyUnpublishedEvent;
-import org.obiba.mica.study.service.StudyService;
+import org.obiba.mica.study.service.CollectionStudyService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
@@ -49,7 +49,7 @@ public class StudyIndexer {
   private ElasticSearchIndexer elasticSearchIndexer;
 
   @Inject
-  private StudyService studyService;
+  private CollectionStudyService collectionStudyService;
 
   @Async
   @Subscribe
@@ -84,8 +84,8 @@ public class StudyIndexer {
   @Async
   @Subscribe
   public void reIndexStudies(IndexStudiesEvent event) {
-    reIndexAllPublished(studyService.findAllPublishedStudies());
-    reIndexAllDraft(studyService.findAllDraftStudies());
+    reIndexAllPublished(collectionStudyService.findAllPublishedStudies());
+    reIndexAllDraft(collectionStudyService.findAllDraftStudies());
   }
 
   public void reIndexAllDraft(Iterable<Study> studies) {

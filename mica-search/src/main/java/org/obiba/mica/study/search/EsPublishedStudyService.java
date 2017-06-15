@@ -21,7 +21,7 @@ import org.obiba.mica.study.domain.HarmonizationStudy;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.service.HarmonizationStudyService;
 import org.obiba.mica.study.service.PublishedStudyService;
-import org.obiba.mica.study.service.StudyService;
+import org.obiba.mica.study.service.CollectionStudyService;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -38,7 +38,7 @@ public class EsPublishedStudyService extends AbstractEsStudyService<BaseStudy> i
   private ObjectMapper objectMapper;
 
   @Inject
-  private StudyService collectionStudyService;
+  private CollectionStudyService collectionStudyService;
 
   @Inject
   private HarmonizationStudyService harmonizationStudyService;

@@ -36,7 +36,7 @@ import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.micaConfig.service.OpalService;
 import org.obiba.mica.network.service.NetworkService;
-import org.obiba.mica.study.service.StudyService;
+import org.obiba.mica.study.service.CollectionStudyService;
 import org.obiba.opal.rest.client.magma.RestDatasource;
 import org.obiba.opal.rest.client.magma.RestValueTable;
 import org.obiba.opal.web.model.Magma;
@@ -79,7 +79,7 @@ public abstract class DatasetService<T extends Dataset, T1 extends EntityState> 
   @NotNull
   protected abstract RestValueTable getTable(@NotNull T dataset) throws NoSuchValueTableException;
 
-  protected abstract StudyService getStudyService();
+  protected abstract CollectionStudyService getCollectionStudyService();
 
   protected abstract NetworkService getNetworkService();
 
@@ -185,7 +185,7 @@ public abstract class DatasetService<T extends Dataset, T1 extends EntityState> 
     String opalUrl = null;
 
     if(opalTable instanceof StudyTable)
-      opalUrl = getStudyService().findDraft(((StudyTable) opalTable).getStudyId()).getOpal();
+      opalUrl = getCollectionStudyService().findDraft(((StudyTable) opalTable).getStudyId()).getOpal();
     else if (opalTable instanceof NetworkTable)
       opalUrl = getNetworkService().findDraft(((NetworkTable) opalTable).getNetworkId()).getOpal();
 
