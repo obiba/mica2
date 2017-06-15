@@ -183,7 +183,7 @@ mica.dataset
       }
 
       return {
-        deleteDataset: function (dataset, onSuccess) {
+        delete: function (dataset, onSuccess) {
           var datasetToDelete = dataset;
 
           var removeSubscriber = $rootScope.$on(NOTIFICATION_EVENTS.confirmDialogAccepted, function (event, id) {

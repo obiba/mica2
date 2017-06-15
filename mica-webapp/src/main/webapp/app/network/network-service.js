@@ -147,7 +147,7 @@ mica.network
       LocalizedValues) {
 
       return {
-        deleteNetwork: function (network, onSuccess) {
+        delete: function (network, onSuccess) {
           var networkToDelete;
 
           function onError(response) {

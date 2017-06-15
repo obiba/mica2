@@ -368,7 +368,7 @@ mica.study
 
   .service('StudyUpdateWarningService', ['$rootScope', '$translate', '$interpolate', 'NOTIFICATION_EVENTS',
     function ($rootScope, $translate, $interpolate, NOTIFICATION_EVENTS) {
-      this.popup = function (data, title, message) {
+      this.popup = function (data, title, message, callback) {
         var conflicts = '{{network ? networks + ": " + network + ". " : "" }}' +
           '{{harmonizationDataset ? harmonizationDatasets + ": " + harmonizationDataset + ". " : "" }}' +
           '{{studyDataset ? studyDatasets + ": " + studyDataset : "" }}';
@@ -386,6 +386,10 @@ mica.study
                   harmonizationDataset: data.harmonizationDataset ? data.harmonizationDataset.join(', ') : null,
                   studyDataset: data.studyDataset ? data.studyDataset.join(', ') : null
                 })
+            }, function () {
+              if (callback) {
+                callback();
+              }
             });
           });
       };

@@ -18,14 +18,14 @@
     <i class="fa fa-plus"></i> <span translate>network.add</span>
   </a>
 
-  <p class="help-block" ng-if="!hasNetworks && !loading">
+  <p class="help-block" ng-if="!hasDocuments && !loading">
     <span translate>network.none</span>
   </p>
 
   <p ng-if="loading" class="voffset2 loading">
   </p>
 
-  <div ng-show="hasNetworks">
+  <div ng-show="hasDocuments">
     <div class="row voffset2">
       <div class="col-xs-4">
       <span class="input-group input-group-sm no-padding-top">
@@ -52,7 +52,7 @@
         </thead>
         <tbody>
 
-        <tr dir-paginate="network in networks | itemsPerPage: limit" total-items="totalCount" current-page="pagination.current">
+        <tr dir-paginate="network in documents | itemsPerPage: limit" total-items="totalCount" current-page="pagination.current">
           <td>
             <a ng-href="#/network/{{network.id}}" translate>{{network.id}}</a>
           </td>
@@ -82,7 +82,7 @@
                 <a ng-href="#/network/{{network.id}}/edit" title="{{'edit' | translate}}"><i class="fa fa-pencil"></i></a>
               </li>
               <li ng-if="network['obiba.mica.EntityStateDto.networkSummaryState'].permissions.delete && network['obiba.mica.EntityStateDto.networkSummaryState'].revisionStatus === 'DELETED'">
-                <a href ng-click="deleteNetwork(network)" title="{{'delete' | translate}}"><i class="fa fa-trash-o"></i></a>
+                <a href ng-click="deleteDocument(network)" title="{{'delete' | translate}}"><i class="fa fa-trash-o"></i></a>
               </li>
               <li ng-if="network['obiba.mica.EntityStateDto.networkSummaryState'].revisionStatus === 'UNDER_REVIEW'">
                 <a ng-href="#/network/{{network.id}}" title="{{'view' | translate}}"><i class="fa fa-eye"></i></a>

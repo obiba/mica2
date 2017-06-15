@@ -28,89 +28,8 @@ mica.network
       }
     }])
 
-  .controller('NetworkListController', ['$rootScope',
-    '$scope',
-    '$filter',
-    '$timeout',
-    '$translate',
-    'NetworksResource',
-    'NetworkService',
-    'AlertBuilder',
-
-    function ($rootScope,
-              $scope,
-              $filter,
-              $timeout,
-              $translate,
-              NetworksResource,
-              NetworkService,
-              AlertBuilder
-    ) {
-      var onSuccess = function(response, responseHeaders) {
-        $scope.totalCount = parseInt(responseHeaders('X-Total-Count'), 10);
-        $scope.networks = response;
-        $scope.loading = false;
-
-        if (!$scope.hasNetworks) {
-          $scope.hasNetworks = $scope.totalCount && !$scope.pagination.searchText;
-        }
-      };
-
-      var onError = function() {
-        $scope.loading = false;
-      };
-
-      $scope.deleteNetwork = function(network) {
-        NetworkService.deleteNetwork(network, function() {
-          refreshPage();
-        });
-      };
-
-      $scope.pageChanged = function(page) {
-        loadPage(page, $scope.pagination.searchText);
-      };
-
-      function loadPage(page) {
-        var data = {from:(page - 1) * $scope.limit, limit: $scope.limit};
-
-        if($scope.pagination.searchText) {
-          data.query = $scope.pagination.searchText + '*';
-        }
-
-        NetworksResource.query(data, onSuccess, AlertBuilder.newBuilder().onError(onError));
-      }
-
-      $scope.loading = true;
-      $scope.pagination = {current: 1, searchText: ''};
-      $scope.totalCount = 0;
-      $scope.limit = 20;
-
-      var currentSearch = null;
-
-      function refreshPage() {
-        if($scope.pagination.current !== 1) {
-          $scope.pagination.current = 1; //pageChanged event triggers reload
-        } else {
-          loadPage(1);
-        }
-      }
-
-      $scope.$watch('pagination.searchText', function(newVal, oldVal) {
-        if (!newVal && !oldVal) {
-          return;
-        }
-
-        if(currentSearch) {
-          $timeout.cancel(currentSearch);
-        }
-
-        currentSearch = $timeout(function() {
-          refreshPage();
-        }, 500);
-      });
-
-      loadPage($scope.pagination.current);
-    }])
+  .controller('NetworkListController', [
+    '$scope', '$timeout', 'NetworksResource', 'NetworkService', 'AlertBuilder', mica.commons.ListController])
 
   .controller('NetworkEditController', [
     '$rootScope',
@@ -491,7 +410,7 @@ mica.network
       };
 
       $scope.delete = function () {
-        NetworkService.deleteNetwork($scope.network, function() {
+        NetworkService.delete($scope.network, function() {
           $location.path('/network');
         });
       };
@@ -864,34 +783,6 @@ mica.network
       initializeForm();
     }])
 
-  .controller('NetworkPermissionsController', ['$scope','$routeParams', 'DraftNetworkPermissionsResource', 'DraftNetworkAccessesResource',
-    function ($scope, $routeParams, DraftNetworkPermissionsResource, DraftNetworkAccessesResource) {
-    $scope.permissions = [];
-    $scope.accesses = [];
-
-    $scope.loadPermissions = function () {
-      $scope.permissions = DraftNetworkPermissionsResource.query({id: $routeParams.id});
-      return $scope.permissions;
-    };
-
-    $scope.deletePermission = function (permission) {
-      return DraftNetworkPermissionsResource.delete({id: $routeParams.id}, permission);
-    };
-
-    $scope.addPermission = function (permission) {
-      return DraftNetworkPermissionsResource.save({id: $routeParams.id}, permission);
-    };
-
-    $scope.loadAccesses = function () {
-      $scope.accesses = DraftNetworkAccessesResource.query({id: $routeParams.id});
-      return $scope.accesses;
-    };
-
-    $scope.deleteAccess = function (access) {
-      return DraftNetworkAccessesResource.delete({id: $routeParams.id}, access);
-    };
-
-    $scope.addAccess = function (access) {
-      return DraftNetworkAccessesResource.save({id: $routeParams.id}, access);
-    };
-  }]);
+  .controller('NetworkPermissionsController', [
+    '$scope', '$routeParams', 'DraftNetworkPermissionsResource', 'DraftNetworkAccessesResource', mica.commons.PermissionsController
+  ]);
