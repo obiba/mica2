@@ -38,7 +38,7 @@ import org.springframework.context.ApplicationContext;
 import com.codahale.metrics.annotation.Timed;
 
 @Path("/draft")
-public class DraftStudiesResource {
+public class DraftCollectionStudiesResource {
 
   @Inject
   private CollectionStudyService collectionStudyService;
@@ -89,13 +89,13 @@ public class DraftStudiesResource {
     @Nullable @QueryParam("comment") String comment) {
     Study study = dtos.fromDto(studyDto);
     collectionStudyService.save(study, comment);
-    return Response.created(uriInfo.getBaseUriBuilder().path(DraftStudiesResource.class, "study").build(study.getId()))
+    return Response.created(uriInfo.getBaseUriBuilder().path(DraftCollectionStudiesResource.class, "study").build(study.getId()))
       .build();
   }
 
   @Path("/study/{id}")
-  public DraftStudyResource study(@PathParam("id") String id) {
-    DraftStudyResource studyResource = applicationContext.getBean(DraftStudyResource.class);
+  public DraftCollectionStudyResource study(@PathParam("id") String id) {
+    DraftCollectionStudyResource studyResource = applicationContext.getBean(DraftCollectionStudyResource.class);
     studyResource.setId(id);
     return studyResource;
   }

@@ -48,7 +48,7 @@ import java.util.stream.Collectors;
  */
 @Component
 @Scope("request")
-public class DraftStudyResource extends AbstractGitPersistableResource<StudyState, Study> {
+public class DraftCollectionStudyResource extends AbstractGitPersistableResource<StudyState, Study> {
 
   @Inject
   private CollectionStudyService collectionStudyService;
