@@ -18,15 +18,11 @@ mica.study.ViewController = function (
   LocalizedSchemaFormService,
   MicaConfigResource,
   DocumentPermissionsService,
-  StudyStateResource,
+  StudyStatesResource,
   DraftFileSystemSearchResource,
   DraftStudyResource,
   DraftStudyDeleteService,
-  DraftStudyStatusResource,
-  DraftStudyPublicationResource,
   DraftStudyRevisionsResource,
-  DraftStudyViewRevisionResource,
-  DraftStudyRestoreRevisionResource,
   StudyUpdateWarningService,
   EntityPathBuilder) {
 
@@ -40,8 +36,8 @@ mica.study.ViewController = function (
   self.dceSfForm = {};
 
   self.toStatus = function (value) {
-    DraftStudyStatusResource.toStatus({id: $routeParams.id, value: value}, function () {
-      $scope.studySummary = StudyStateResource.get({id: $routeParams.id}, initializeState);
+    DraftStudyResource.toStatus({id: $routeParams.id, value: value}, function () {
+      $scope.studySummary = StudyStatesResource.get({id: $routeParams.id}, initializeState);
     });
   };
 
@@ -55,18 +51,18 @@ mica.study.ViewController = function (
     if (doPublish) {
       DraftFileSystemSearchResource.searchUnderReview({path: '/study/' + $routeParams.id},
       function onSuccess(response) {
-        DraftStudyPublicationResource.publish({id: $routeParams.id, cascading: response.length > 0 ? 'UNDER_REVIEW' : 'NONE'},
+        DraftStudyResource.publish({id: $routeParams.id, cascading: response.length > 0 ? 'UNDER_REVIEW' : 'NONE'},
         function () {
-          $scope.studySummary = StudyStateResource.get({id: $routeParams.id}, initializeState);
+          $scope.studySummary = StudyStatesResource.get({id: $routeParams.id}, initializeState);
         });
       },
       function onError() {
         $log.error('Failed to search for Under Review files.');
       });
     } else {
-      DraftStudyPublicationResource.unPublish({id: $routeParams.id},
+      DraftStudyResource.unPublish({id: $routeParams.id},
       function (response) {
-        $scope.studySummary = StudyStateResource.get({id: $routeParams.id}, initializeState);
+        $scope.studySummary = StudyStatesResource.get({id: $routeParams.id}, initializeState);
         $log.debug(response);
       });
     }
@@ -142,7 +138,7 @@ mica.study.ViewController = function (
 
   function onRestore(event, args) {
     if (args.commitId) {
-      DraftStudyRestoreRevisionResource.restore({id: $routeParams.id, commitId: args.commitId}, function () {
+      DraftStudyRevisionsResource.restore({id: $routeParams.id, commitId: args.commitId}, function () {
         $scope.study = fetchStudy($routeParams.id);
         $scope.studyId = $routeParams.id;
         if (args.restoreSuccessCallback) {
@@ -162,7 +158,7 @@ mica.study.ViewController = function (
     $scope.studyId = $routeParams.id;
   }
 
-  $scope.studySummary = StudyStateResource.get({id: $routeParams.id}, initializeState);
+  $scope.studySummary = StudyStatesResource.get({id: $routeParams.id}, initializeState);
   $scope.$on(NOTIFICATION_EVENTS.confirmDialogAccepted, onRestore);
   $scope.$on(STUDY_EVENTS.studyUpdated, function (event, studyUpdated) {
     if (studyUpdated) {
@@ -170,7 +166,7 @@ mica.study.ViewController = function (
 
       $scope.study.$save(function onSuccess(response) {
         $scope.study.content = $scope.study.model ? angular.toJson(response.study.model) : null;
-        $scope.studySummary = StudyStateResource.get({id: $routeParams.id}, initializeState);
+        $scope.studySummary = StudyStatesResource.get({id: $routeParams.id}, initializeState);
         $scope.study = fetchStudy($routeParams.id);
       }, function onError(response) {
         $log.error('Error on study save:', response);
@@ -193,7 +189,7 @@ mica.study.ViewController = function (
   populationManagement($rootScope, $scope, $location, NOTIFICATION_EVENTS);
   populationDceManagement($rootScope, $scope, $location, $translate, $uibModal, EntityPathBuilder, NOTIFICATION_EVENTS);
   contactManagement($scope, $routeParams, CONTACT_EVENTS, fetchStudy);
-  revisionManagement($rootScope, $scope, $filter, DraftStudyRevisionsResource, DraftStudyViewRevisionResource, NOTIFICATION_EVENTS, initializeStudy);
+  revisionManagement($rootScope, $scope, $filter, DraftStudyRevisionsResource, NOTIFICATION_EVENTS, initializeStudy);
 };
 
 mica.study.ViewController.prototype = Object.create(mica.commons.ViewController.prototype);
@@ -358,7 +354,7 @@ function contactManagement($scope, $routeParams, CONTACT_EVENTS, fetchStudy) {
   });
 }
 
-function revisionManagement($rootScope, $scope, $filter, DraftStudyRevisionsResource, DraftStudyViewRevisionResource, NOTIFICATION_EVENTS, initializeStudy) {
+function revisionManagement($rootScope, $scope, $filter, DraftStudyRevisionsResource, NOTIFICATION_EVENTS, initializeStudy) {
   $scope.fetchRevisions = function (id, onSuccess) {
     DraftStudyRevisionsResource.query({id: id}, function (response) {
       if (onSuccess) {
@@ -369,7 +365,7 @@ function revisionManagement($rootScope, $scope, $filter, DraftStudyRevisionsReso
 
   $scope.viewRevision = function (id, commitInfo) {
     $scope.commitInfo = commitInfo;
-    $scope.study = DraftStudyViewRevisionResource.view({id: id, commitId: commitInfo.commitId}, initializeStudy);
+    $scope.study = DraftStudyRevisionsResource.view({id: id, commitId: commitInfo.commitId}, initializeStudy);
   };
 
   $scope.restoreRevision = function (id, commitInfo, onSuccess) {

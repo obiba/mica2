@@ -1,5 +1,47 @@
 'use strict';
 
+mica.study.BaseEditController = function (
+  $scope,
+  $routeParams,
+  $location,
+  $log,
+  FormServerValidation,
+  FormDirtyStateObserver,
+  StudyUpdateWarningService) {
+
+  mica.commons.EditController.call(this);
+
+  var self = this;
+
+  self.save = function () { };
+
+  self.cancel = function () {
+    $location.path('/study' + ($routeParams.id ? '/' + $routeParams.id : '')).replace();
+  };
+
+  self.updateStudy = function () {
+    $log.debug('Updating study', $scope.study);
+    $scope.study.$save({comment: $scope.revision.comment}, function () {
+      FormDirtyStateObserver.unobserve();
+      $location.path('/study/' + $routeParams.id).replace();
+    }, self.saveErrorHandler);
+  };
+
+  self.saveErrorHandler = function (response) {
+    if (response.status === 409) {
+      StudyUpdateWarningService.popup(response.data, 'study.population-or-dce-delete-conflict', 'study.population-or-dce-delete-conflict-message');
+    } else {
+      FormServerValidation.error(response, $scope.form, $scope.languages);
+    }
+  };
+
+  self.initializeForm = function () { };
+
+};
+
+mica.study.BaseEditController.prototype = Object.create(mica.commons.EditController.prototype);
+mica.study.BaseEditController.prototype.constructor = mica.study.BaseEditController;
+
 mica.study.EditController = function (
   $scope,
   $rootScope,
@@ -18,7 +60,7 @@ mica.study.EditController = function (
   FormDirtyStateObserver,
   StudyUpdateWarningService) {
 
-  mica.commons.EditController.call(this);
+  mica.study.BaseEditController.call(this, $scope, $routeParams, $location, $log, FormServerValidation, FormDirtyStateObserver, StudyUpdateWarningService);
 
   var self = this;
   self.study = {model: {}};
@@ -33,18 +75,30 @@ mica.study.EditController = function (
     if (!$scope.form.$valid) { $scope.form.saveAttempted = true; }
     else {
       if ($routeParams.id) {
-        updateStudy();
+        self.updateStudy();
       } else {
         createStudy();
       }
     }
   };
 
-  self.cancel = function () {
-    $location.path('/study' + ($routeParams.id ? '/' + $routeParams.id : '')).replace();
+  self.updateStudy = function () {
+    $log.debug('Updating study', $scope.study);
+    $scope.study.$save({comment: $scope.revision.comment}, function (response) {
+      FormDirtyStateObserver.unobserve();
+      $location.path('/study/' + response.study.id).replace();
+
+      if (response.potentialConflicts) {
+        StudyUpdateWarningService.popup(response.potentialConflicts, 'study.potential-conflicts', 'study.potential-conflicts-message');
+      }
+    }, self.saveErrorHandler);
   };
 
-  function initializeForm() {
+  self.saveErrorHandler = function (response) {
+    FormServerValidation.error(response, $scope.form, $scope.languages);
+  };
+
+  self.initializeForm = function() {
     $q.all([
       MicaConfigResource.get().$promise,
       SfOptionsService.transform(),
@@ -71,7 +125,7 @@ mica.study.EditController = function (
       angular.extend($scope, self);
       FormDirtyStateObserver.observe($scope);
     });
-  }
+  };
 
   function createStudy() {
     $log.debug('Creating new study', $scope.study);
@@ -79,30 +133,14 @@ mica.study.EditController = function (
       FormDirtyStateObserver.unobserve();
       var parts = getResponseHeaders().location.split('/');
       $location.path('/study/' + parts[parts.length - 1]).replace();
-    }, saveErrorHandler);
+    }, self.saveErrorHandler);
   }
 
-  function updateStudy() {
-    $log.debug('Updating study', $scope.study);
-    $scope.study.$save({comment: $scope.revision.comment}, function (response) {
-      FormDirtyStateObserver.unobserve();
-      $location.path('/study/' + response.study.id).replace();
-
-      if (response.potentialConflicts) {
-        StudyUpdateWarningService.popup(response.potentialConflicts, 'study.potential-conflicts', 'study.potential-conflicts-message');
-      }
-    }, saveErrorHandler);
-  }
-
-  function saveErrorHandler(response) {
-    FormServerValidation.error(response, $scope.form, $scope.languages);
-  }
-
-  $rootScope.$on('$translateChangeSuccess', function () { initializeForm(); });
-  initializeForm();
+  $rootScope.$on('$translateChangeSuccess', function () { self.initializeForm(); });
+  self.initializeForm();
 };
 
-mica.study.EditController.prototype = Object.create(mica.commons.EditController.prototype);
+mica.study.EditController.prototype = Object.create(mica.study.BaseEditController.prototype);
 mica.study.EditController.prototype.constructor = mica.study.EditController;
 
 mica.study.PopulationEditController = function (
@@ -124,7 +162,7 @@ mica.study.PopulationEditController = function (
   MicaUtil
 ) {
 
-  mica.commons.EditController.call(this);
+  mica.study.BaseEditController.call(this, $scope, $routeParams, $location, $log, FormServerValidation, FormDirtyStateObserver, StudyUpdateWarningService);
 
   var self = this;
   self.population = {model: {}};
@@ -132,14 +170,10 @@ mica.study.PopulationEditController = function (
 
   self.save = function (form) {
     if (!validate(form)) { form.saveAttempted = true; }
-    else { updateStudy(); }
+    else { self.updateStudy(); }
   };
 
-  self.cancel = function () {
-    $location.path('/study' + ($routeParams.id ? '/' + $routeParams.id : '')).replace();
-  };
-
-  function initializeForm() {
+  self.initializeForm = function() {
     $q.all([
       MicaConfigResource.get().$promise,
       SfOptionsService.transform(),
@@ -172,7 +206,7 @@ mica.study.PopulationEditController = function (
       angular.extend($scope, self);
       FormDirtyStateObserver.observe($scope);
     });
-  }
+  };
 
   function validate(form) {
     if ($scope.study.populations.filter(function (p) {
@@ -186,24 +220,8 @@ mica.study.PopulationEditController = function (
     return form.$valid;
   }
 
-  function updateStudy() {
-    $log.debug('Updating study', $scope.study);
-    $scope.study.$save({comment: $scope.revision.comment}, function (response) {
-      FormDirtyStateObserver.unobserve();
-      $location.path('/study/' + response.study.id).replace();
-    }, saveErrorHandler);
-  }
-
-  function saveErrorHandler(response) {
-    if (response.status === 409) {
-      StudyUpdateWarningService.popup(response.data, 'study.population-or-dce-delete-conflict', 'study.population-or-dce-delete-conflict-message');
-    } else {
-      FormServerValidation.error(response, $scope.form, $scope.languages);
-    }
-  }
-
-  $rootScope.$on('$translateChangeSuccess', function () { initializeForm(); });
-  initializeForm();
+  $rootScope.$on('$translateChangeSuccess', function () { self.initializeForm(); });
+  self.initializeForm();
 };
 
 mica.study.PopulationEditController.prototype = Object.create(mica.commons.EditController.prototype);
@@ -228,7 +246,7 @@ mica.study.DataCollectionEventEditController = function (
   MicaUtil
 ) {
 
-  mica.commons.EditController.call(this);
+  mica.study.BaseEditController.call(this, $scope, $routeParams, $location, $log, FormServerValidation, FormDirtyStateObserver, StudyUpdateWarningService);
 
   var self = this;
   self.dce = {model: {}};
@@ -236,14 +254,10 @@ mica.study.DataCollectionEventEditController = function (
 
   self.save = function (form) {
     if (!validate(form)) { form.saveAttempted = true; }
-    else { updateStudy(); }
+    else { self.updateStudy(); }
   };
 
-  self.cancel = function () {
-    $location.path('/study' + ($routeParams.id ? '/' + $routeParams.id : '')).replace();
-  };
-
-  function initializeForm() {
+  self.initializeForm = function () {
     $q.all([
       MicaConfigResource.get().$promise,
       SfOptionsService.transform(),
@@ -288,15 +302,7 @@ mica.study.DataCollectionEventEditController = function (
       angular.extend($scope, self);
       FormDirtyStateObserver.observe($scope);
     });
-  }
-
-  function updateStudy() {
-    $log.debug('Updating study', $scope.study);
-    $scope.study.$save({comment: $scope.revision.comment}, function (response) {
-      FormDirtyStateObserver.unobserve();
-      $location.path('/study/' + response.study.id).replace();
-    }, saveErrorHandler);
-  }
+  };
 
   function findDataCollectionEvent(dataCollectionEventId) {
     return self.population && self.population.dataCollectionEvents ?
@@ -316,17 +322,9 @@ mica.study.DataCollectionEventEditController = function (
     return form.$valid;
   }
 
-  function saveErrorHandler(response) {
-    if (response.status === 409) {
-      StudyUpdateWarningService.popup(response.data, 'study.population-or-dce-delete-conflict', 'study.population-or-dce-delete-conflict-message');
-    } else {
-      FormServerValidation.error(response, $scope.form, $scope.languages);
-    }
-  }
-
-  $rootScope.$on('$translateChangeSuccess', function () { initializeForm(); });
-  initializeForm();
+  $rootScope.$on('$translateChangeSuccess', function () { self.initializeForm(); });
+  self.initializeForm();
 };
 
-mica.study.DataCollectionEventEditController.prototype = Object.create(mica.commons.EditController.prototype);
+mica.study.DataCollectionEventEditController.prototype = Object.create(mica.study.BaseEditController.prototype);
 mica.study.DataCollectionEventEditController.prototype.constructor = mica.study.DataCollectionEventEditController;
