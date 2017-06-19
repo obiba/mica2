@@ -24,12 +24,14 @@ import javax.inject.Inject;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHits;
+import org.obiba.mica.core.domain.DefaultEntityBase;
 import org.obiba.mica.search.CountStatsData;
 import org.obiba.mica.micaConfig.service.helper.AggregationMetaDataProvider;
 import org.obiba.mica.search.aggregations.StudyTaxonomyMetaDataProvider;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.domain.StudyState;
 import org.obiba.mica.study.search.StudyIndexer;
+import org.obiba.mica.study.service.HarmonizationStudyService;
 import org.obiba.mica.study.service.PublishedStudyService;
 import org.obiba.mica.study.service.CollectionStudyService;
 import org.obiba.mica.web.model.Dtos;
@@ -53,6 +55,9 @@ public class StudyQuery extends AbstractDocumentQuery {
   private CollectionStudyService collectionStudyService;
 
   @Inject
+  private HarmonizationStudyService harmonizationStudyService;
+
+  @Inject
   private Dtos dtos;
 
   @Inject
@@ -73,9 +78,10 @@ public class StudyQuery extends AbstractDocumentQuery {
   @Override
   public QueryBuilder getAccessFilter() {
     if(micaConfigService.getConfig().isOpenAccess()) return null;
-    List<String> ids = collectionStudyService.findPublishedStates().stream().map(StudyState::getId)
-      .filter(s -> subjectAclService.isAccessible("/study", s))
-      .collect(Collectors.toList());
+    List<String> ids = collectionStudyService.findPublishedStates().stream().map(DefaultEntityBase::getId)
+      .filter(s -> subjectAclService.isAccessible("/study", s)).collect(Collectors.toList());
+    ids.addAll(harmonizationStudyService.findPublishedStates().stream().map(DefaultEntityBase::getId)
+      .filter(s -> subjectAclService.isAccessible("/harmonization-study", s)).collect(Collectors.toList()));
     return ids.isEmpty()
       ? QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("id"))
       : QueryBuilders.idsQuery().ids(ids.toArray(new String[ids.size()]));

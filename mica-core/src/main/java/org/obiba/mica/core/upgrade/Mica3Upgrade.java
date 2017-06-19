@@ -6,6 +6,7 @@ import org.obiba.runtime.Version;
 import org.obiba.runtime.upgrade.UpgradeStep;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
@@ -17,6 +18,9 @@ public class Mica3Upgrade implements UpgradeStep {
 
   @Inject
   private CollectionStudyService collectionStudyService;
+
+  @Inject
+  private MongoTemplate mongoTemplate;
 
   @Override
   public String getDescription() {
@@ -37,6 +41,18 @@ public class Mica3Upgrade implements UpgradeStep {
     } catch (Exception e) {
       logger.error("Error occurred when republishing studies");
     }
+
+    try {
+      updateStudyResourcePathReferences();
+    } catch (Exception e) {
+      logger.error("Error occurred when updating Study path resources (/study -> /collection-study).");
+    }
+  }
+
+
+  private void updateStudyResourcePathReferences() {
+    logger.info("Replacing all references to /study by /collection-study...");
+    mongoTemplate.execute(db -> db.eval(replaceStudyByCollectionStudy()));
   }
 
   private void republishStudies() {
@@ -44,5 +60,24 @@ public class Mica3Upgrade implements UpgradeStep {
       .filter(s -> s.getRevisionsAhead() == 0)
       .map(DefaultEntityBase::getId)
       .forEach(s -> collectionStudyService.publish(s, true));
+  }
+
+  private String replaceStudyByCollectionStudy() {
+    return "" +
+      "bulkUpdateAttachmentPath(db.attachment, [\"path\"], /^\\/study/);\n" +
+      "bulkUpdateAttachmentPath(db.attachmentState, [\"path\"], /^\\/study/);\n" +
+      "bulkUpdateAttachmentPath(db.subjectAcl, [\"resource\", \"instance\"], /\\/study/);\n" +
+      "" +
+      "function bulkUpdateAttachmentPath(collection, fields, regexp) {\n" +
+      "  var bulk = collection.initializeOrderedBulkOp();\n" + "  fields.forEach(function (field) {\n" +
+      "    var findQuery = {};\n" + "    findQuery[field] = regexp;\n" +
+      "    collection.find(findQuery).forEach(function (doc) {\n" + "      var replaceQuery = {};\n" +
+      "      replaceQuery[field] = doc[field].replace(regexp, \"/collection-study\");\n" +
+      "      bulk.find({\"_id\": doc._id}).updateOne({\"$set\": replaceQuery});\n" +
+      "    });\n" +
+      "  });\n" +
+      "" +
+      "  bulk.execute();\n" +
+      "}";
   }
 }

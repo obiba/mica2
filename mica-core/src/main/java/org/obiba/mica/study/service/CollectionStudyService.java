@@ -46,6 +46,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 
@@ -224,6 +225,11 @@ public class CollectionStudyService extends AbstractStudyService<StudyState, Stu
 
       throw new ConstraintException(conflicts);
     }
+  }
+
+  @Override
+  public List<String> findAllExistingIds(Iterable<String> ids) {
+    return studyRepository.findAllExistingIds(ids).stream().map(Study::getId).collect(Collectors.toList());
   }
 
   @Override

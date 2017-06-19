@@ -91,6 +91,9 @@ public abstract class AbstractStudyService<S extends EntityState, T extends Base
   }
 
   @NotNull
+  public abstract List<String> findAllExistingIds(Iterable<String> ids);
+
+  @NotNull
   public T findStudy(@NotNull String id) throws NoSuchEntityException {
     // ensure study exists
     T study = getRepository().findOne(id);

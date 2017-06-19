@@ -30,15 +30,18 @@ import org.obiba.mica.network.service.NetworkService;
 import org.obiba.mica.project.domain.ProjectState;
 import org.obiba.mica.project.service.ProjectService;
 import org.obiba.mica.security.service.SubjectAclService;
+import org.obiba.mica.study.domain.HarmonizationStudyState;
 import org.obiba.mica.study.domain.StudyState;
 import org.obiba.mica.study.service.CollectionStudyService;
+import org.obiba.mica.study.service.HarmonizationStudyService;
 import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Lists;
 
 /**
- * {@link FilterBuilder} factory for files. Check the associated document ({@link org.obiba.mica.network.domain.Study},
- * {@link org.obiba.mica.network.domain.Network} etc.) is visible in order to have only (potentially) visible files in
+ * {@link FileFilterHelper} factory for files. Check the associated documents ({@link org.obiba.mica.study.domain.Study},
+ * ({@link org.obiba.mica.study.domain.HarmonizationStudy}, {@link org.obiba.mica.network.domain.Network} etc.) is
+ * visible in order to have only (potentially) visible files in
  * the search result.
  */
 @Component
@@ -57,6 +60,9 @@ public class FileFilterHelper {
   private CollectionStudyService collectionStudyService;
 
   @Inject
+  private HarmonizationStudyService harmonizationStudyService;
+
+  @Inject
   private StudyDatasetService studyDatasetService;
 
   @Inject
@@ -72,29 +78,36 @@ public class FileFilterHelper {
    */
   public static boolean appliesToFile(String path) {
     return path != null &&
-      (path.startsWith("/network/") || path.startsWith("/study/") || path.startsWith("/study-dataset/") ||
-        path.startsWith("/harmonization-dataset/") || path.startsWith("/project/"));
+      (path.startsWith("/network/") ||
+        path.startsWith("/study/") ||
+        path.startsWith("/harmonization-study/") ||
+        path.startsWith("/study-dataset/") ||
+        path.startsWith("/harmonization-dataset/") ||
+        path.startsWith("/project/"));
   }
 
   public QueryBuilder makeDraftFilesFilter(@NotNull String basePath) {
     List<String> networkIds = getNetworkIds(basePath, true);
-    List<String> studyIds = getStudyIds(basePath, true);
+    List<String> collectionStudyIds = getCollectionStudyIds(basePath, true);
+    List<String> harmonizationStudyIds = getHarmonizationStudyIds(basePath, true);
     List<String> studyDatasetIds = getStudyDatasetIds(basePath, true);
     List<String> harmonizationDatasetIds = getHarmonizationDatasetIds(basePath, true);
     List<String> projectIds = getProjectIds(basePath, true);
 
-    return makeFilterBuilder(networkIds, studyIds, studyDatasetIds, harmonizationDatasetIds, projectIds);
+    return makeFilterBuilder(networkIds, collectionStudyIds, harmonizationStudyIds, studyDatasetIds,
+      harmonizationDatasetIds, projectIds);
   }
 
   public QueryBuilder makePublishedFilesFilter(String basePath) {
     if(micaConfigService.getConfig().isOpenAccess()) return null;
     List<String> networkIds = getNetworkIds(basePath, false);
-    List<String> studyIds = getStudyIds(basePath, false);
+    List<String> collectionStudyIds = getCollectionStudyIds(basePath, false);
+    List<String> harmonizationStudyIds = getHarmonizationStudyIds(basePath, true);
     List<String> studyDatasetIds = getStudyDatasetIds(basePath, false);
     List<String> harmonizationDatasetIds = getHarmonizationDatasetIds(basePath, false);
     List<String> projectIds = getProjectIds(basePath, false);
 
-    return makeFilterBuilder(networkIds, studyIds, studyDatasetIds, harmonizationDatasetIds, projectIds);
+    return makeFilterBuilder(networkIds, collectionStudyIds, harmonizationStudyIds, studyDatasetIds, harmonizationDatasetIds, projectIds);
   }
 
   //
@@ -118,7 +131,7 @@ public class FileFilterHelper {
     return Lists.newArrayList();
   }
 
-  private List<String> getStudyIds(String basePath, boolean draft) {
+  private List<String> getCollectionStudyIds(String basePath, boolean draft) {
     if("/".equals(basePath) || "/study".equals(basePath)) {
       return draft
         ? collectionStudyService.findAllStates().stream().map(StudyState::getId)
@@ -131,6 +144,23 @@ public class FileFilterHelper {
       if(draft
         ? subjectAclService.isPermitted("/draft/study", "VIEW", id)
         : subjectAclService.isAccessible("/study", id)) return Lists.newArrayList(id);
+    }
+    return Lists.newArrayList();
+  }
+
+  private List<String> getHarmonizationStudyIds(String basePath, boolean draft) {
+    if("/".equals(basePath) || "/harmonization-study".equals(basePath)) {
+      return draft
+        ? harmonizationStudyService.findAllStates().stream().map(HarmonizationStudyState::getId)
+        .filter(s -> subjectAclService.isPermitted("/draft/harmonization-study", "VIEW", s)).collect(Collectors.toList())
+        : harmonizationStudyService.findPublishedStates().stream().map(HarmonizationStudyState::getId)
+          .filter(s -> subjectAclService.isAccessible("/harmonization-study", s)).collect(Collectors.toList());
+    }
+    if(basePath.startsWith("/harmonization-study/")) {
+      String id = extractId(basePath,"/harmonization-study/");
+      if(draft
+        ? subjectAclService.isPermitted("/draft/harmonization-study", "VIEW", id)
+        : subjectAclService.isAccessible("/harmonization-study", id)) return Lists.newArrayList(id);
     }
     return Lists.newArrayList();
   }
@@ -199,13 +229,16 @@ public class FileFilterHelper {
     return idx <= 0 ? p : p.substring(0, idx);
   }
 
-  private QueryBuilder makeFilterBuilder(List<String> networkIds, List<String> studyIds, List<String> studyDatasetIds,
-    List<String> harmonizationDatasetIds, List<String> projectIds) {
+  private QueryBuilder makeFilterBuilder(List<String> networkIds, List<String> collectionStudyIds,
+    List<String> harmonizationStudyIds, List<String> studyDatasetIds, List<String> harmonizationDatasetIds,
+    List<String> projectIds) {
+
     List<QueryBuilder> excludes = Lists.newArrayList();
     List<QueryBuilder> includes = Lists
       .newArrayList(QueryBuilders.termQuery("path", "/user"), QueryBuilders.prefixQuery("path", "/user/"));
     addFilter(excludes, includes, "/network", networkIds);
-    addFilter(excludes, includes, "/study", studyIds);
+    addFilter(excludes, includes, "/study", collectionStudyIds);
+    addFilter(excludes, includes, "/harmonization-study", harmonizationStudyIds);
     addFilter(excludes, includes, "/study-dataset", studyDatasetIds);
     addFilter(excludes, includes, "/harmonization-dataset", harmonizationDatasetIds);
     addFilter(excludes, includes, "/project", projectIds);

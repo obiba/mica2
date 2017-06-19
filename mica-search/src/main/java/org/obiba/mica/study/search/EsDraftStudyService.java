@@ -22,11 +22,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
+import org.obiba.mica.core.domain.DefaultEntityBase;
 import org.obiba.mica.search.AbstractDocumentService;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.domain.StudyState;
 import org.obiba.mica.study.service.DraftStudyService;
 import org.obiba.mica.study.service.CollectionStudyService;
+import org.obiba.mica.study.service.HarmonizationStudyService;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -37,6 +39,9 @@ public class EsDraftStudyService extends AbstractDocumentService<Study> implemen
 
   @Inject
   private CollectionStudyService collectionStudyService;
+
+  @Inject
+  private HarmonizationStudyService harmonizationStudyService;
 
   @Override
   public CollectionStudyService getCollectionStudyService() {
@@ -64,6 +69,8 @@ public class EsDraftStudyService extends AbstractDocumentService<Study> implemen
     List<String> ids = collectionStudyService.findAllStates().stream().map(StudyState::getId)
       .filter(s -> subjectAclService.isPermitted("/draft/study", "VIEW", s))
       .collect(Collectors.toList());
+    ids.addAll(harmonizationStudyService.findPublishedStates().stream().map(DefaultEntityBase::getId)
+      .filter(s -> subjectAclService.isAccessible("/harmonization-study", s)).collect(Collectors.toList()));
 
     return ids.isEmpty()
       ? QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("id"))

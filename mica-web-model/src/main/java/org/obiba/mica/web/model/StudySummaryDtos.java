@@ -29,8 +29,6 @@ import org.obiba.mica.study.domain.DataCollectionEvent;
 import org.obiba.mica.study.domain.HarmonizationStudy;
 import org.obiba.mica.study.domain.Population;
 import org.obiba.mica.study.domain.Study;
-import org.obiba.mica.study.domain.StudyState;
-import org.obiba.mica.study.service.AbstractStudyService;
 import org.obiba.mica.study.service.PublishedDatasetVariableService;
 import org.obiba.mica.study.service.PublishedStudyService;
 import org.obiba.mica.study.service.StudyService;

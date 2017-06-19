@@ -25,6 +25,8 @@ import org.obiba.mica.security.domain.SubjectAcl;
 import org.obiba.mica.security.event.ResourceDeletedEvent;
 import org.obiba.mica.security.event.SubjectAclUpdatedEvent;
 import org.obiba.mica.security.repository.SubjectAclRepository;
+import org.obiba.mica.study.domain.BaseStudy;
+import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.event.StudyDeletedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -354,7 +356,8 @@ public class SubjectAclService {
   @Async
   @Subscribe
   public void studyDeleted(StudyDeletedEvent event) {
-    removeInstance("/study", event.getPersistable().getId());
+    BaseStudy persistable = event.getPersistable();
+    removeInstance(persistable instanceof Study ? "/study" : "harmonization-study", persistable.getId());
   }
 
   @Async

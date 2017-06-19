@@ -695,10 +695,11 @@ class DatasetDtos {
 
     String networkId = dto.getNetworkId();
     harmonizationDataset.setNetworkId(Strings.isNullOrEmpty(networkId) ? null : networkId);
-    Optional.ofNullable(dto.getStudyReference()).ifPresent(studyInfoDto -> {
+    if (dto.hasStudyReference()) {
+      Mica.HarmonizationDatasetDto.HarmonizationStudyReferenceDto studyInfoDto = dto.getStudyReference();
       harmonizationDataset.setStudyId(studyInfoDto.getStudyId());
       harmonizationDataset.setPopulationId(studyInfoDto.getPopulationId());
-    });
+    };
     return harmonizationDataset;
   }
 

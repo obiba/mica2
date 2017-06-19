@@ -34,6 +34,7 @@ import org.obiba.mica.study.HarmonizationStudyStateRepository;
 import org.obiba.mica.study.domain.HarmonizationStudy;
 import org.obiba.mica.study.domain.HarmonizationStudyState;
 import org.obiba.mica.study.domain.Population;
+import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.event.DraftStudyUpdatedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -154,6 +155,11 @@ public class HarmonizationStudyService extends AbstractStudyService<Harmonizatio
         return oldPopIDs;
       } else return null;
     } else return null;
+  }
+
+  @Override
+  public List<String> findAllExistingIds(Iterable<String> ids) {
+    return studyRepository.findAllExistingIds(ids).stream().map(Study::getId).collect(Collectors.toList());
   }
 
   @Override

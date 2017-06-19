@@ -684,7 +684,7 @@ mica.dataset
 
       $scope.delete = function () {
         $scope.dataset.type = $scope.type;
-        DatasetService.deleteDataset($scope.dataset, function () {
+        DatasetService.delete($scope.dataset, function () {
           $location.path('/' + $scope.type);
         });
       };
