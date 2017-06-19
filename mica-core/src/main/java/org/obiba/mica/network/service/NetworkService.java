@@ -217,7 +217,7 @@ public class NetworkService extends AbstractGitPersistableService<NetworkState, 
    */
   public List<Network> findAllPublishedNetworks() {
     return findPublishedStates().stream()
-      .filter(networkState -> gitService.hasGitRepository(new Network()) && !Strings.isNullOrEmpty(networkState.getPublishedTag()))
+      .filter(networkState -> gitService.hasGitRepository(networkState) && !Strings.isNullOrEmpty(networkState.getPublishedTag()))
       .map(networkState -> gitService.readFromTag(networkState, networkState.getPublishedTag(), Network.class))
       .map(n -> { n.getModel(); return processNetworkForPublishedNumberOfStudies(n); }) // make sure dynamic model is initialized
       .collect(toList());
