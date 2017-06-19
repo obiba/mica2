@@ -62,7 +62,9 @@ public class UpgradeConfiguration {
       applicationContext.getBean(ElasticsearchUpgrade.class),
       applicationContext.getBean(HarmonizationDatasetUpgrade.class),
       applicationContext.getBean(Mica2Upgrade.class),
+      applicationContext.getBean(SchemaFormUpgrade.class),
       applicationContext.getBean(Mica220Upgrade.class),
-      applicationContext.getBean(SchemaFormUpgrade.class));
+      applicationContext.getBean(Mica222PrepareMica3Upgrade.class)
+    );
   }
 }
