@@ -66,7 +66,7 @@ public class ElasticSearchIndexer {
 
   public IndexResponse index(String indexName, Persistable<String> persistable, Persistable<String> parent) {
 
-    log.info("Indexing for indexName [{}] indexableObject [{}]", indexName, persistable);
+    log.debug("Indexing for indexName [{}] indexableObject [{}]", indexName, persistable);
 
     createIndexIfNeeded(indexName);
     String parentId = parent == null ? null : parent.getId();
@@ -80,7 +80,7 @@ public class ElasticSearchIndexer {
 
   public IndexResponse index(String indexName, Indexable indexable, Indexable parent) {
 
-    log.info("Indexing for indexName [{}] indexableObject [{}]", indexName, indexable);
+    log.debug("Indexing for indexName [{}] indexableObject [{}]", indexName, indexable);
 
     createIndexIfNeeded(indexName);
     String parentId = parent == null ? null : parent.getId();
@@ -100,7 +100,7 @@ public class ElasticSearchIndexer {
   public void indexAll(String indexName, Iterable<? extends Persistable<String>> persistables,
     Persistable<String> parent) {
 
-    log.info("Indexing all for indexName [{}] persistableObjectNumber [{}]", indexName, Iterables.size(persistables));
+    log.debug("Indexing all for indexName [{}] persistableObjectNumber [{}]", indexName, Iterables.size(persistables));
 
     createIndexIfNeeded(indexName);
     String parentId = parent == null ? null : parent.getId();
@@ -123,7 +123,7 @@ public class ElasticSearchIndexer {
 
   public void indexAllIndexables(String indexName, Iterable<? extends Indexable> indexables, @Nullable String parentId) {
 
-    log.info("Indexing all indexables for indexName [{}] persistableObjectNumber [{}]", indexName, Iterables.size(indexables));
+    log.debug("Indexing all indexables for indexName [{}] persistableObjectNumber [{}]", indexName, Iterables.size(indexables));
 
     createIndexIfNeeded(indexName);
     BulkRequestBuilder bulkRequest = client.prepareBulk();
