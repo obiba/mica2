@@ -15,16 +15,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import org.obiba.mica.core.domain.StudyTable;
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.search.queries.DatasetQuery;
-import org.obiba.mica.study.domain.Study;
+import org.obiba.mica.study.domain.BaseStudy;
+
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 import static org.obiba.mica.web.model.MicaSearch.CountStatsDto;
 
@@ -155,7 +156,7 @@ public class CountStatsDtoBuilders {
       return new StudyCountStatsBuilder(countStatsData);
     }
 
-    public CountStatsDto build(Study study) {
+    public CountStatsDto build(BaseStudy study) {
       String id = study.getId();
       return CountStatsDto.newBuilder().setVariables(countStatsData.getVariables(id))
           .setStudyVariables(countStatsData.getStudyVariables(id))

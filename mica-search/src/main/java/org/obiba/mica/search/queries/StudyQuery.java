@@ -25,15 +25,14 @@ import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHits;
 import org.obiba.mica.core.domain.DefaultEntityBase;
-import org.obiba.mica.search.CountStatsData;
 import org.obiba.mica.micaConfig.service.helper.AggregationMetaDataProvider;
+import org.obiba.mica.search.CountStatsData;
 import org.obiba.mica.search.aggregations.StudyTaxonomyMetaDataProvider;
-import org.obiba.mica.study.domain.Study;
-import org.obiba.mica.study.domain.StudyState;
+import org.obiba.mica.study.domain.BaseStudy;
 import org.obiba.mica.study.search.StudyIndexer;
+import org.obiba.mica.study.service.CollectionStudyService;
 import org.obiba.mica.study.service.HarmonizationStudyService;
 import org.obiba.mica.study.service.PublishedStudyService;
-import org.obiba.mica.study.service.CollectionStudyService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.mica.web.model.MicaSearch;
@@ -102,14 +101,14 @@ public class StudyQuery extends AbstractDocumentQuery {
     StudyResultDto.Builder resBuilder = StudyResultDto.newBuilder();
     StudyCountStatsBuilder studyCountStatsBuilder = counts == null ? null : StudyCountStatsBuilder.newBuilder(counts);
 
-    Consumer<Study> addDto = getStudyConsumer(scope, resBuilder, studyCountStatsBuilder);
+    Consumer<BaseStudy> addDto = getStudyConsumer(scope, resBuilder, studyCountStatsBuilder);
     List<String> hitsIds = Stream.of(hits.hits()).map(h -> h.getId()).collect(Collectors.toList());
-    List<Study> publishedStudies = publishedStudyService.findByIds(hitsIds).stream().map(study -> (Study) study).collect(Collectors.toList());
+    List<BaseStudy> publishedStudies = publishedStudyService.findByIds(hitsIds);
     publishedStudies.forEach(addDto);
     builder.setExtension(StudyResultDto.result, resBuilder.build());
   }
 
-  private Consumer<Study> getStudyConsumer(Scope scope, StudyResultDto.Builder resBuilder,
+  private Consumer<BaseStudy> getStudyConsumer(Scope scope, StudyResultDto.Builder resBuilder,
     StudyCountStatsBuilder studyCountStatsBuilder) {
 
     return scope == Scope.DETAIL ? (study) -> {

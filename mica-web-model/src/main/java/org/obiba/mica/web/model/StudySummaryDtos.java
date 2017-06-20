@@ -74,6 +74,15 @@ class StudySummaryDtos {
 
   @NotNull
   public Mica.StudySummaryDto.Builder asDtoBuilder(@NotNull BaseStudy study, boolean isPublished, long variablesCount) {
+    if (study instanceof Study) {
+      return asCollectionStudyDtoBuilder((Study) study, isPublished, variablesCount);
+    } else {
+      return asHarmonizationStudyDtoBuilder((HarmonizationStudy) study, true, variablesCount);
+    }
+  }
+
+  @NotNull
+  public Mica.StudySummaryDto.Builder asCollectionStudyDtoBuilder(@NotNull Study study, boolean isPublished, long variablesCount) {
     Mica.StudySummaryDto.Builder builder = Mica.StudySummaryDto.newBuilder();
     builder.setPublished(isPublished);
 
@@ -127,7 +136,9 @@ class StudySummaryDtos {
   }
 
   @NotNull
-  public Mica.StudySummaryDto.Builder asDtoBuilder(@NotNull HarmonizationStudy study, boolean isPublished, long variablesCount) {
+  public Mica.StudySummaryDto.Builder asHarmonizationStudyDtoBuilder(@NotNull HarmonizationStudy study,
+    boolean isPublished, long variablesCount) {
+
     Mica.StudySummaryDto.Builder builder = Mica.StudySummaryDto.newBuilder();
     builder.setPublished(isPublished);
 
@@ -241,11 +252,9 @@ class StudySummaryDtos {
 
     if (studyState.isPublished()) {
       BaseStudy study = publishedStudyService.findById(studyId);
-      if (study != null)
-        if (study instanceof Study)
-          return asDtoBuilder(study, true, datasetVariableService.getCountByStudyId(studyId)).build();
-        else
-          return asDtoBuilder((HarmonizationStudy) study, true, datasetVariableService.getCountByStudyId(studyId)).build();
+      if (study != null) {
+        return asDtoBuilder(study, true, datasetVariableService.getCountByStudyId(studyId)).build();
+      }
     }
 
     return asDto(studyState);

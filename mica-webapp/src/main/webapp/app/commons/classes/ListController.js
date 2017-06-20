@@ -32,7 +32,7 @@ mica.commons.ListController = function (
   };
 
   self.hasDocuments = function () {
-    return $scope.totalCount && !$scope.pagination.searchText;
+    return $scope.totalCount && angular.isDefined($scope.pagination.searchText);
   };
 
   self.pageChanged = function (page) {
@@ -46,8 +46,9 @@ mica.commons.ListController = function (
   };
 
   function onSuccess(response, responseHeaders) {
+    self.searching = angular.isDefined($scope.pagination) && "" !== $scope.pagination.searchText;
     self.documents = response;
-    self.totalCount = parseInt(responseHeaders('X-Total-Count'), 10) || self.documents.length;
+    self.totalCount = parseInt(responseHeaders('X-Total-Count'), 10) || self.documents.length; // TODO remove last condition when harmo study is completed
     self.loading = false;
 
     angular.extend($scope, self); // update scope

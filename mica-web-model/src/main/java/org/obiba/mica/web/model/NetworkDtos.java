@@ -138,10 +138,8 @@ class NetworkDtos {
 
       publishedStudies.forEach(study -> {
         builder.addStudyIds(study.getId());
-        if (study instanceof Study)
-          builder.addStudySummaries(studySummaryDtos.asDtoBuilder((Study) study, true, datasetVariableCounts.get(study.getId())));
-        else
-          builder.addStudySummaries(studySummaryDtos.asDtoBuilder((HarmonizationStudy) study, true, datasetVariableCounts.get(study.getId())));
+        builder.addStudySummaries(
+          studySummaryDtos.asDtoBuilder(study, true, datasetVariableCounts.get(study.getId())));
       });
     }
 

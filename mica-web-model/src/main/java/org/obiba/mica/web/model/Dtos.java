@@ -153,7 +153,7 @@ public class Dtos {
   }
 
   @NotNull
-  public DocumentDigestDto.Builder asDigestDtoBuilder(@NotNull Study study) {
+  public DocumentDigestDto.Builder asDigestDtoBuilder(@NotNull BaseStudy study) {
     return documentDigestDtos.asDtoBuilder(study);
   }
 
@@ -173,7 +173,7 @@ public class Dtos {
   }
 
   @NotNull
-  public StudySummaryDto.Builder asSummaryDtoBuilder(@NotNull Study study) {
+  public StudySummaryDto.Builder asSummaryDtoBuilder(@NotNull BaseStudy study) {
     return studySummaryDtos.asDtoBuilder(study);
   }
 

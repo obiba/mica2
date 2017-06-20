@@ -12,8 +12,8 @@ mica.commons.PermissionsController = function (
   self.accesses = [];
 
   self.loadPermissions = function () {
-    self.permissions = DraftDocumentPermissionsResource.query({id: $routeParams.id});
-    return self.permissions;
+    $scope.permissions = DraftDocumentPermissionsResource.query({id: $routeParams.id});
+    return $scope.permissions;
   };
 
   self.deletePermission = function (permission) {
@@ -25,8 +25,8 @@ mica.commons.PermissionsController = function (
   };
 
   self.loadAccesses = function () {
-    self.accesses = DraftDocumentAccessesResource.query({id: $routeParams.id});
-    return self.accesses;
+    $scope.accesses = DraftDocumentAccessesResource.query({id: $routeParams.id});
+    return $scope.accesses;
   };
 
   self.deleteAccess = function (access) {
