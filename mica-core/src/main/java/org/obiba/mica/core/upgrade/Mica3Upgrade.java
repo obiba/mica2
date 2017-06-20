@@ -37,12 +37,6 @@ public class Mica3Upgrade implements UpgradeStep {
     logger.info("Executing Mica upgrade to version 3.0.0");
 
     try {
-      republishStudies();
-    } catch (Exception e) {
-      logger.error("Error occurred when republishing studies");
-    }
-
-    try {
       updateStudyResourcePathReferences();
     } catch (Exception e) {
       logger.error("Error occurred when updating Study path resources (/study -> /collection-study).");
@@ -53,13 +47,6 @@ public class Mica3Upgrade implements UpgradeStep {
   private void updateStudyResourcePathReferences() {
     logger.info("Replacing all references to /study by /collection-study...");
     mongoTemplate.execute(db -> db.eval(replaceStudyByCollectionStudy()));
-  }
-
-  private void republishStudies() {
-    collectionStudyService.findPublishedStates().stream()
-      .filter(s -> s.getRevisionsAhead() == 0)
-      .map(DefaultEntityBase::getId)
-      .forEach(s -> collectionStudyService.publish(s, true));
   }
 
   private String replaceStudyByCollectionStudy() {
