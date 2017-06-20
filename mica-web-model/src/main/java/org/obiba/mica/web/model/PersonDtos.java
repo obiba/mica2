@@ -12,11 +12,11 @@ package org.obiba.mica.web.model;
 
 import java.util.List;
 import java.util.Locale;
-import java.util.stream.Stream;
 
 import javax.inject.Inject;
 
 import org.obiba.mica.core.domain.Address;
+import org.obiba.mica.core.domain.EntityState;
 import org.obiba.mica.core.domain.Person;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.network.domain.Network;
@@ -25,11 +25,8 @@ import org.obiba.mica.network.service.NetworkService;
 import org.obiba.mica.network.service.PublishedNetworkService;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.study.domain.BaseStudy;
-import org.obiba.mica.study.domain.HarmonizationStudyState;
 import org.obiba.mica.study.domain.StudyState;
-import org.obiba.mica.study.service.HarmonizationStudyService;
 import org.obiba.mica.study.service.PublishedStudyService;
-import org.obiba.mica.study.service.CollectionStudyService;
 import org.obiba.mica.study.service.StudyService;
 import org.springframework.stereotype.Component;
 
@@ -62,12 +59,6 @@ class PersonDtos {
   private StudyService studyService;
 
   @Inject
-  private CollectionStudyService collectionStudyService;
-
-  @Inject
-  private HarmonizationStudyService harmonizationStudyService;
-
-  @Inject
   private MicaConfigService micaConfigService;
 
   Mica.PersonDto asDto(Person person, boolean asDraft) {
@@ -82,25 +73,16 @@ class PersonDtos {
 
     List<String> roles = micaConfigService.getConfig().getRoles();
 
-    builder.addAllCollectionStudyMemberships(person.getCollectionStudyMemberships().stream().filter(m -> {
+    builder.addAllStudyMemberships(person.getStudyMemberships().stream().filter(m -> {
       if(!roles.contains(m.getRole())) return false;
 
       if(asDraft) {
-        return subjectAclService.isPermitted("/draft/collection-study", "VIEW", m.getParentId());
+        return subjectAclService.isPermitted("/draft/study", "VIEW", m.getParentId());
       } else {
-        StudyState state = collectionStudyService.findStateById(m.getParentId());
-        return state != null && state.isPublished() && subjectAclService.isAccessible("/collection-study", m.getParentId());
-      }
-    }).map(m -> asStudyMembershipDto(m, asDraft)).collect(toList()));
-    builder.addAllStudyMemberships(builder.getStudyMembershipsList());
-    builder.addAllHarmonizationStudyMemberships(person.getHarmonizationStudyMemberships().stream().filter(m -> {
-      if(!roles.contains(m.getRole())) return false;
-
-      if(asDraft) {
-        return subjectAclService.isPermitted("/draft/harmonization-study", "VIEW", m.getParentId());
-      } else {
-        HarmonizationStudyState state = harmonizationStudyService.findStateById(m.getParentId());
-        return state != null && state.isPublished() && subjectAclService.isAccessible("/harmonization-study", m.getParentId());
+        EntityState state = studyService.findStateById(m.getParentId());
+        return state != null &&
+          state.isPublished() &&
+          subjectAclService.isAccessible(state instanceof StudyState ? "/study" : "/harmonization-study", m.getParentId());
       }
     }).map(m -> asStudyMembershipDto(m, asDraft)).collect(toList()));
     builder.addAllNetworkMemberships(person.getNetworkMemberships().stream().filter(m -> {
@@ -132,15 +114,8 @@ class PersonDtos {
       person.setNetworkMemberships(dto.getNetworkMembershipsList().stream().map(this::fromDto).collect(toList()));
     }
 
-    if (dto.getCollectionStudyMembershipsCount() > 0) {
-      person.setCollectionStudyMemberships(dto.getCollectionStudyMembershipsList().stream().map(this::fromDto).collect(toList()));
-    }
-    if (dto.getHarmonizationStudyMembershipsCount() > 0) {
-      person.setCollectionStudyMemberships(dto.getHarmonizationStudyMembershipsList().stream().map(this::fromDto).collect(toList()));
-    }
-    if (dto.getStudyMembershipsCount() > 0) {
-      person.setCollectionStudyMemberships(dto.getStudyMembershipsList().stream().map(this::fromDto).collect(toList()));
-      person.setCollectionStudyMemberships(dto.getCollectionStudyMembershipsList().stream().map(this::fromDto).collect(toList()));
+    if(dto.getStudyMembershipsCount() > 0) {
+      person.setStudyMemberships(dto.getStudyMembershipsList().stream().map(this::fromDto).collect(toList()));
     }
 
     return person;
@@ -154,7 +129,6 @@ class PersonDtos {
     }
     if(institution.getAddress() != null) builder.setAddress(asDto(institution.getAddress()));
     return builder.build();
-
   }
 
   private Mica.PersonDto.MembershipDto asStudyMembershipDto(Person.Membership membership, boolean asDraft) {
@@ -163,7 +137,10 @@ class PersonDtos {
     builder.setParentId(membership.getParentId());
 
     if(membership.getParentId() != null) {
-      BaseStudy study = studyService.findStudy(membership.getParentId());
+      BaseStudy study = asDraft
+        ? studyService.findStudy(membership.getParentId())
+        : publishedStudyService.findById(membership.getParentId());
+
       if(study != null) {
         builder.addAllParentAcronym(localizedStringDtos.asDto(study.getAcronym()));
         builder.addAllParentName(localizedStringDtos.asDto(study.getName()));

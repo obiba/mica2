@@ -11,6 +11,7 @@
 package org.obiba.mica.study.service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -60,6 +61,12 @@ public class StudyService {
     } catch(NoSuchEntityException ex) {
       return harmonizationStudyService.getEntityState(id);
     }
+  }
+
+  public EntityState findStateById(String id) throws NoSuchEntityException {
+    EntityState state = collectionStudyService.findStateById(id);
+    if (state == null) state = harmonizationStudyService.findStateById(id);
+    return state;
   }
 
   public BaseStudy findDraft(String id) throws NoSuchEntityException {

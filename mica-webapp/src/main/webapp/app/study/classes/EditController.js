@@ -209,6 +209,8 @@ mica.study.PopulationEditController = function (
   };
 
   function validate(form) {
+    $scope.$broadcast('schemaFormValidate');
+
     if ($scope.study.populations.filter(function (p) {
         return p.model._id === $scope.population.model._id;
       }).length > 1) {
@@ -311,6 +313,8 @@ mica.study.DataCollectionEventEditController = function (
   }
 
   function validate(form) {
+    $scope.$broadcast('schemaFormValidate');
+
     if ($scope.population.dataCollectionEvents.filter(function (d) {
         return d.model._id === $scope.dce.model._id;
       }).length > 1) {

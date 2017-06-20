@@ -10,7 +10,6 @@
 
 package org.obiba.mica.study.service;
 
-import org.obiba.mica.core.domain.EntityState;
 import org.obiba.mica.core.service.PublishedDocumentService;
 import org.obiba.mica.study.domain.BaseStudy;
 
