@@ -69,10 +69,14 @@
             <span>{{micaConfig.isSingleNetworkEnabled ? 'network.label' : 'networks' | translate}}</span>
           </a>
         </li>
-        <li ng-if="authenticated">
-          <a href="#/study">
-            <span>{{micaConfig.isSingleStudyEnabled ? 'study.label' : 'studies' | translate}}</span>
-          </a>
+        <li class="dropdown clearfix" ng-if="authenticated">
+          <a href="" class="dropdown-toggle" data-toggle="dropdown">
+            <span translate>studies</span>
+            <i class="fa fa-caret-down"></i></a>
+          <ul class="dropdown-menu pull-left">
+            <li><a href="#/study">{{micaConfig.isSingleStudyEnabled ? 'study.label' : 'studies' | translate}}</a></li>
+            <li><a href="#/harmonization-study">{{'harmonization-studies' | translate}}</a></li>
+          </ul>
         </li>
         <li class="dropdown clearfix" ng-if="authenticated && (micaConfig.isStudyDatasetEnabled || micaConfig.isHarmonizationDatasetEnabled)">
           <a href="" class="dropdown-toggle" data-toggle="dropdown">

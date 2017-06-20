@@ -11,21 +11,21 @@
 <div>
 
   <h2>
-    <span translate>studies</span>
+    <span>{{path.indexOf('harmonization') > -1 ? 'harmonization-studies' : 'studies' | translate}}</span>
   </h2>
 
-  <a ng-href="#/study/new" class="btn btn-info" ng-if="hasRole(['mica-administrator','mica-reviewer','mica-editor'])">
+  <a ng-href="{{path}}/new" class="btn btn-info" ng-if="hasRole(['mica-administrator','mica-reviewer','mica-editor'])">
     <i class="fa fa-plus"></i> <span translate>study.add</span>
   </a>
 
-  <p class="help-block" ng-if="!hasDocuments && !loading">
+  <p class="help-block" ng-if="!hasDocuments() && !loading">
     <span translate>study.none</span>
   </p>
 
   <p ng-if="loading" class="voffset2 loading">
   </p>
 
-  <div ng-show="hasDocuments">
+  <div ng-show="hasDocuments()">
     <div class="row voffset2">
       <div class="col-xs-4">
       <span class="input-group input-group-sm no-padding-top">
@@ -54,7 +54,7 @@
 
         <tr dir-paginate="study in documents | itemsPerPage: limit" total-items="totalCount" current-page="pagination.current">
           <td>
-            <a ng-href="#/study/{{study.id}}" translate>{{study.id}}</a>
+            <a ng-href="{{path}}/{{study.id}}" translate>{{study.id}}</a>
           </td>
           <td>
             <ul class="list-unstyled">
@@ -79,13 +79,13 @@
           <td>
             <ul class="list-inline">
               <li ng-if="study['obiba.mica.EntityStateDto.studySummaryState'].permissions.edit && study['obiba.mica.EntityStateDto.studySummaryState'].revisionStatus === 'DRAFT'">
-                <a ng-href="#/study/{{study.id}}/edit" title="{{'edit' | translate}}"><i class="fa fa-pencil"></i></a>
+                <a ng-href="{{path}}/{{study.id}}/edit" title="{{'edit' | translate}}"><i class="fa fa-pencil"></i></a>
               </li>
               <li ng-if="study['obiba.mica.EntityStateDto.studySummaryState'].permissions.delete && study['obiba.mica.EntityStateDto.studySummaryState'].revisionStatus === 'DELETED'">
                 <a href ng-click="deleteDocument(study)" title="{{'delete' | translate}}"><i class="fa fa-trash-o"></i></a>
               </li>
               <li ng-if="study['obiba.mica.EntityStateDto.studySummaryState'].revisionStatus === 'UNDER_REVIEW'">
-                <a ng-href="#/study/{{study.id}}" title="{{'view' | translate}}"><i class="fa fa-eye"></i></a>
+                <a ng-href="{{path}}/{{study.id}}" title="{{'view' | translate}}"><i class="fa fa-eye"></i></a>
               </li>
             </ul>
           </td>

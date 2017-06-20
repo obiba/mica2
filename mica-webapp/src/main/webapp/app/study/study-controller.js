@@ -18,6 +18,8 @@ mica.study
 
   .controller('StudyMainController', ['$scope', '$location', 'StudyStatesResource',
     function($scope, $location, StudyStatesResource) {
+      $scope.path = '#/study';
+
       if($scope.micaConfig.isSingleStudyEnabled) {
         $scope.studies = StudyStatesResource.query({}, function(res) {
           if(res.length) {
@@ -28,8 +30,26 @@ mica.study
       }
   }])
 
+  .controller('HarmonizationStudyMainController', ['$scope', '$location', 'HarmonizationStudyStatesResource',
+    function($scope, $location, StudyStatesResource) {
+      $scope.path = '#/harmonization-study';
+
+      if($scope.micaConfig.isSingleStudyEnabled) {
+        $scope.studies = StudyStatesResource.query({}, function(res) {
+          if(res.length) {
+            $location.path('/harmonization-study/' + res[0].id);
+            $location.replace();
+          }
+        });
+      }
+    }])
+
   .controller('StudyListController', [
     '$scope', '$timeout', 'StudyStatesResource', 'DraftStudyDeleteService', 'AlertBuilder', mica.commons.ListController
+  ])
+
+  .controller('HarmonizationStudyListController', [
+    '$scope', '$timeout', 'HarmonizationStudyStatesResource', 'DraftHarmonizationStudyDeleteService', 'AlertBuilder', mica.commons.ListController
   ])
 
   .controller('StudyViewController', [
@@ -59,8 +79,39 @@ mica.study
     mica.study.ViewController
   ])
 
+  .controller('HarmonizationStudyViewController', [
+    '$scope',
+    '$rootScope',
+    '$location',
+    '$routeParams',
+    '$translate',
+    '$uibModal',
+    '$timeout',
+    '$filter',
+    '$q',
+    '$log',
+    'NOTIFICATION_EVENTS',
+    'CONTACT_EVENTS',
+    'EntityFormResource',
+    'LocalizedSchemaFormService',
+    'MicaConfigResource',
+    'DocumentPermissionsService',
+    'HarmonizationStudyStatesResource',
+    'DraftFileSystemSearchResource',
+    'DraftHarmonizationStudyResource',
+    'DraftHarmonizationStudyDeleteService',
+    'DraftHarmonizationStudyRevisionsResource',
+    'StudyUpdateWarningService',
+    'EntityPathBuilder',
+    mica.study.ViewController
+  ])
+
   .controller('StudyPermissionsController', [
     '$scope', '$routeParams', 'DraftStudyPermissionsResource', 'DraftStudyAccessesResource', mica.commons.PermissionsController
+  ])
+
+  .controller('HarmonizationStudyPermissionsController', [
+    '$scope', '$routeParams', 'DraftHarmonizationStudyPermissionsResource', 'DraftHarmonizationStudyAccessesResource', mica.commons.PermissionsController
   ])
 
   .controller('StudyPopulationDceModalController', [
@@ -139,6 +190,26 @@ mica.study
     mica.study.PopulationEditController
   ])
 
+  .controller('HarmonizationStudyPopulationController', [
+    '$scope',
+    '$rootScope',
+    '$routeParams',
+    '$location',
+    '$filter',
+    '$translate',
+    '$q',
+    '$log',
+    'MicaConfigResource',
+    'SfOptionsService',
+    'EntityFormResource',
+    'DraftHarmonizationStudyResource',
+    'FormServerValidation',
+    'FormDirtyStateObserver',
+    'StudyUpdateWarningService',
+    'MicaUtil',
+    mica.study.PopulationEditController
+  ])
+
   .controller('StudyPopulationDceController', [
     '$scope',
     '$rootScope',
@@ -173,6 +244,26 @@ mica.study
     'EntityFormResource',
     'DraftStudiesResource',
     'DraftStudyResource',
+    'FormServerValidation',
+    'FormDirtyStateObserver',
+    'StudyUpdateWarningService',
+    mica.study.EditController
+  ])
+
+  .controller('HarmonizationStudyEditController', [
+    '$scope',
+    '$rootScope',
+    '$routeParams',
+    '$location',
+    '$filter',
+    '$translate',
+    '$q',
+    '$log',
+    'MicaConfigResource',
+    'SfOptionsService',
+    'EntityFormResource',
+    'DraftHarmonizationStudiesResource',
+    'DraftHarmonizationStudyResource',
     'FormServerValidation',
     'FormDirtyStateObserver',
     'StudyUpdateWarningService',

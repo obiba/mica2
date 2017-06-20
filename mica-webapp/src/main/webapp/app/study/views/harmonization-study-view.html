@@ -1,0 +1,43 @@
+<!--
+  ~ Copyright (c) 2017 OBiBa. All rights reserved.
+  ~
+  ~ This program and the accompanying materials
+  ~ are made available under the terms of the GNU Public License v3.0.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<div>
+  <div ng-include="'app/study/views/harmonization-study-view-header.html'" ng-init="tabName='view'"></div>
+
+  <div ng-class="{'voffset3': !screen.is('lg')}" class="clearfix hidden-print">
+    <h3 class="pull-left no-margin-top" translate>view</h3>
+    <div class="pull-right">
+      <a ng-href="#/study/{{study.id}}/edit" class="btn btn-primary btn-responsive" ng-if="permissions.canEdit()">
+        <i class="fa fa-pencil-square-o"></i> <span translate>edit</span>
+      </a>
+
+      <a share-modal resource-type="'study'" resource-id="study.id" permissions="permissions"/>
+
+      <a ng-click="print()"
+         class="btn btn-responsive btn-default" title="{{'global.print' | translate}}">
+        <i class="fa fa-print"></i> <span translate>global.print</span>
+      </a>
+
+      <status-buttons class="inline" state="studySummary['obiba.mica.EntityStateDto.studySummaryState']" on-publish="publish(true)" on-un-publish="publish(false)" on-delete="delete(study)" to-draft="toStatus('DRAFT')" to-under-review="toStatus('UNDER_REVIEW')" to-deleted="toStatus('DELETED')">
+      </status-buttons>
+
+    </div>
+  </div>
+
+  <p>
+    <small class="help-block inline">{{'global.lastUpdate' | translate}}: {{studySummary.timestamps.lastUpdate |
+      amDateFormat : 'lll'}}
+    </small>
+    <publish-status class="inline" state="studySummary['obiba.mica.EntityStateDto.studySummaryState']"></publish-status>
+  </p>
+
+  <div ng-include="'app/study/views/study-view-details.html'"></div>
+
+</div>

@@ -337,6 +337,71 @@ mica.study
 
     }])
 
+  .factory('DraftHarmonizationStudyDeleteService', [
+    '$rootScope',
+    '$translate',
+    '$interpolate',
+    'NOTIFICATION_EVENTS',
+    'DraftHarmonizationStudyResource',
+    'StudyUpdateWarningService',
+
+    function($rootScope, $translate, $interpolate, NOTIFICATION_EVENTS, DraftHarmonizationStudyResource, StudyUpdateWarningService) {
+
+      var factory = {};
+
+      var getNames = function(study) {
+        return study.name.map(function(entry) {
+          return entry.value;
+        }).join('-');
+      };
+
+      var getName = function(study, lang) {
+        return study.name.filter(function(value) {
+          return value.lang === lang;
+        })[0].value;
+      };
+
+      factory.delete = function(study, onSuccess, lang) {
+        factory.studyToDelete = study.id;
+        factory.onSuccess = onSuccess;
+
+        var messageArgs = lang ? getName(study, lang) : getNames(study);
+
+        $rootScope.$broadcast(NOTIFICATION_EVENTS.showConfirmDialog,
+          {
+            titleKey: 'study.restore-dialog.title',
+            messageKey: 'study.delete-dialog.message',
+            messageArgs: [messageArgs]
+          }, study.id
+        );
+      };
+
+      $rootScope.$on(NOTIFICATION_EVENTS.confirmDialogAccepted, function (event, id) {
+        if (factory.studyToDelete === id) {
+          DraftHarmonizationStudyResource.delete({id: id},
+            function () {
+              if (factory.onSuccess) {
+                factory.onSuccess();
+              }
+            }, function (response) {
+              if (response.status === 409) {
+                StudyUpdateWarningService.popup(response.data, 'study.delete-conflict', 'study.delete-conflict-message');
+              } else {
+                $rootScope.$broadcast(NOTIFICATION_EVENTS.showNotificationDialog, {
+                  titleKey: 'form-server-error',
+                  message: angular.toJson(response)
+                });
+              }
+            });
+        }
+
+        delete factory.studyToDelete;
+      });
+
+      return factory;
+
+    }])
+
   .service('StudyUpdateWarningService', ['$rootScope', '$translate', '$interpolate', 'NOTIFICATION_EVENTS',
     function ($rootScope, $translate, $interpolate, NOTIFICATION_EVENTS) {
       this.popup = function (data, title, message, callback) {
@@ -364,4 +429,84 @@ mica.study
             });
           });
       };
+    }])
+
+  .factory('HarmonizationStudyStatesResource', ['$resource',
+    function ($resource) {
+      return $resource('ws/draft/harmonization-studies', {}, {
+        'query': {method: 'GET', errorHandler: true, isArray: true},
+        'get': {method: 'GET', url: 'ws/draft/harmonization-study/:id', params: {id: '@id'}}
+      });
+    }])
+
+  .factory('DraftHarmonizationStudiesResource', ['$resource', 'StudyModelService',
+    function ($resource, StudyModelService) {
+      return $resource('ws/draft/harmonization-studies?comment:comment', {}, {
+        'save': {method: 'POST', errorHandler: true, transformRequest: StudyModelService.serialize}
+      });
+    }])
+
+  .factory('DraftHarmonizationStudyResource', ['$resource', 'StudyModelService',
+    function ($resource, StudyModelService) {
+      return $resource('ws/draft/harmonization-study/:id', {id: '@id'}, {
+        // override $resource.save method because it uses POST by default
+        'save': {method: 'PUT', errorHandler: true, transformRequest: StudyModelService.serialize},
+        'delete': {method: 'DELETE', errorHandler: true},
+        'get': {method: 'GET', transformResponse: StudyModelService.deserialize},
+        'publish': {method: 'PUT', url: 'ws/draft/study/:id/_publish', params: {id: '@id', cascading: '@cascading'}},
+        'unPublish': {method: 'DELETE', url: 'ws/draft/harmonization-study/:id/_publish'},
+        'toStatus': {method: 'PUT', url: 'ws/draft/harmonization-study/:id/_status', params: {id: '@id', value: '@value'}}
+      });
+    }])
+
+  .factory('DraftHarmonizationStudyPermissionsResource', ['$resource',
+    function ($resource) {
+      return $resource('ws/draft/harmonization-study/:id/permissions', {}, {
+        'save': {
+          method: 'PUT',
+          params: {id: '@id', type: '@type', principal: '@principal', role: '@role'},
+          errorHandler: true
+        },
+        'delete': {method: 'DELETE', params: {id: '@id', type: '@type', principal: '@principal'}, errorHandler: true},
+        'get': {method: 'GET'},
+        'query': {method: 'GET', params: {id: '@id'}, isArray: true}
+      });
+    }])
+
+  .factory('DraftHarmonizationStudyAccessesResource', ['$resource',
+    function ($resource) {
+      return $resource('ws/draft/harmonization-study/:id/accesses', {}, {
+        'save': {
+          method: 'PUT',
+          params: {id: '@id', type: '@type', principal: '@principal', file: '@file'},
+          errorHandler: true
+        },
+        'delete': {method: 'DELETE', params: {id: '@id', type: '@type', principal: '@principal'}, errorHandler: true},
+        'get': {method: 'GET'},
+        'query': {method: 'GET', params: {id: '@id'}, isArray: true}
+      });
+    }])
+
+  .factory('DraftHarmonizationStudyRevisionsResource', ['$resource', 'StudyModelService',
+    function ($resource, StudyModelService) {
+      return $resource('ws/draft/harmonization-study/:id/commits', {}, {
+        'get': {method: 'GET', params: {id: '@id'}},
+        'restore': {method: 'PUT', url: 'ws/draft/harmonization-study/:id/commit/:commitId/restore', params: {id: '@id', commitId: '@commitId'}},
+        'view': {method: 'GET', url: 'ws/draft/harmonization-study/:id/commit/:commitId/view', params: {id: '@id', commitId: '@commitId'},
+          transformResponse: StudyModelService.deserialize}
+      });
+    }])
+
+  .factory('MicaHarmonizationStudiesConfigResource', ['$resource',
+    function ($resource) {
+      return $resource('ws/taxonomies/_filter', {target: 'study'}, {
+        'get': {method: 'GET', isArray: true}
+      });
+    }])
+
+  .factory('DraftHarmonizationStudiesSummariesResource', ['$resource',
+    function ($resource) {
+      return $resource('ws/draft/studies/summaries?', {}, {
+        'summaries': {method: 'GET', isArray: true, params: {id: '@id'}}
+      });
     }]);

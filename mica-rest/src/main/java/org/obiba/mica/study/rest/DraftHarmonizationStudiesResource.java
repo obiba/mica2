@@ -43,7 +43,7 @@ import com.google.common.eventbus.EventBus;
 public class DraftHarmonizationStudiesResource {
 
   @Inject
-  private HarmonizationStudyService studyService;
+  private HarmonizationStudyService harmonizationStudyService;
 
   @Inject
   private SubjectAclService subjectAclService;
@@ -61,7 +61,7 @@ public class DraftHarmonizationStudiesResource {
   @Path("/harmonization-studies")
   @Timed
   public List<Mica.HarmonizationStudyDto> list() {
-    return studyService.findAllDraftStudies().stream()
+    return harmonizationStudyService.findAllDraftStudies().stream()
       .filter(s -> subjectAclService.isPermitted("/draft/harmonization-study", "VIEW", s.getId()))
       .sorted(Comparator.comparing(AbstractGitPersistable::getId)).map(s -> dtos.asDto(s, true)).collect(Collectors.toList());
   }
@@ -73,7 +73,7 @@ public class DraftHarmonizationStudiesResource {
   public Response create(@SuppressWarnings("TypeMayBeWeakened") Mica.HarmonizationStudyDto studyDto, @Context UriInfo uriInfo,
     @Nullable @QueryParam("comment") String comment) {
     HarmonizationStudy study = dtos.fromDto(studyDto);
-    studyService.save(study, comment);
+    harmonizationStudyService.save(study, comment);
     return Response.created(uriInfo.getBaseUriBuilder().path(DraftHarmonizationStudiesResource.class, "study").build(study.getId()))
       .build();
   }

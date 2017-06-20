@@ -32,7 +32,7 @@ mica.commons.ListController = function (
   };
 
   self.hasDocuments = function () {
-    return self.totalCount && !self.pagination.searchText;
+    return $scope.totalCount && !$scope.pagination.searchText;
   };
 
   self.pageChanged = function (page) {
@@ -46,8 +46,8 @@ mica.commons.ListController = function (
   };
 
   function onSuccess(response, responseHeaders) {
-    self.totalCount = parseInt(responseHeaders('X-Total-Count'), 10);
     self.documents = response;
+    self.totalCount = parseInt(responseHeaders('X-Total-Count'), 10) || self.documents.length;
     self.loading = false;
 
     angular.extend($scope, self); // update scope

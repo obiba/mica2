@@ -30,6 +30,7 @@ import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.domain.StudyState;
 import org.obiba.mica.study.service.DraftStudyService;
 import org.obiba.mica.study.service.CollectionStudyService;
+import org.obiba.mica.study.service.StudyService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.springframework.context.ApplicationContext;
@@ -43,6 +44,9 @@ public class StudyStatesResource {
 
   @Inject
   private CollectionStudyService collectionStudyService;
+
+  @Inject
+  private StudyService studyService;
 
   @Inject
   private SubjectAclService subjectAclService;
