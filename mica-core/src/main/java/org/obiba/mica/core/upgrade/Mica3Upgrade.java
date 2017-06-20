@@ -1,7 +1,5 @@
 package org.obiba.mica.core.upgrade;
 
-import org.obiba.mica.core.domain.DefaultEntityBase;
-import org.obiba.mica.study.service.CollectionStudyService;
 import org.obiba.runtime.Version;
 import org.obiba.runtime.upgrade.UpgradeStep;
 import org.slf4j.Logger;
@@ -15,9 +13,6 @@ import javax.inject.Inject;
 public class Mica3Upgrade implements UpgradeStep {
 
   private static final Logger logger = LoggerFactory.getLogger(Mica3Upgrade.class);
-
-  @Inject
-  private CollectionStudyService collectionStudyService;
 
   @Inject
   private MongoTemplate mongoTemplate;
@@ -39,10 +34,9 @@ public class Mica3Upgrade implements UpgradeStep {
     try {
       updateStudyResourcePathReferences();
     } catch (Exception e) {
-      logger.error("Error occurred when updating Study path resources (/study -> /collection-study).");
+      logger.error("Error occurred when updating Study path resources (/study -> /collection-study).", e);
     }
   }
-
 
   private void updateStudyResourcePathReferences() {
     logger.info("Replacing all references to /study by /collection-study...");
@@ -50,21 +44,20 @@ public class Mica3Upgrade implements UpgradeStep {
   }
 
   private String replaceStudyByCollectionStudy() {
-    return "" +
-      "bulkUpdateAttachmentPath(db.attachment, [\"path\"], /^\\/study/);\n" +
-      "bulkUpdateAttachmentPath(db.attachmentState, [\"path\"], /^\\/study/);\n" +
-      "bulkUpdateAttachmentPath(db.subjectAcl, [\"resource\", \"instance\"], /\\/study/);\n" +
-      "" +
+    return
       "function bulkUpdateAttachmentPath(collection, fields, regexp) {\n" +
-      "  var bulk = collection.initializeOrderedBulkOp();\n" + "  fields.forEach(function (field) {\n" +
-      "    var findQuery = {};\n" + "    findQuery[field] = regexp;\n" +
-      "    collection.find(findQuery).forEach(function (doc) {\n" + "      var replaceQuery = {};\n" +
-      "      replaceQuery[field] = doc[field].replace(regexp, \"/collection-study\");\n" +
-      "      bulk.find({\"_id\": doc._id}).updateOne({\"$set\": replaceQuery});\n" +
-      "    });\n" +
-      "  });\n" +
-      "" +
-      "  bulk.execute();\n" +
-      "}";
+        "  var bulk = collection.initializeOrderedBulkOp();\n" + "  fields.forEach(function (field) {\n" +
+        "    var findQuery = {};\n" + "    findQuery[field] = regexp;\n" +
+        "    collection.find(findQuery).forEach(function (doc) {\n" + "      var replaceQuery = {};\n" +
+        "      replaceQuery[field] = doc[field].replace(regexp, \"/collection-study\");\n" +
+        "      bulk.find({\"_id\": doc._id}).updateOne({\"$set\": replaceQuery});\n" +
+        "    });\n" +
+        "  });\n" +
+        "" +
+        "  bulk.execute();\n" +
+        "};\n" +
+        "bulkUpdateAttachmentPath(db.attachment, [\"path\"], /^\\/study/);\n" +
+        "bulkUpdateAttachmentPath(db.attachmentState, [\"path\"], /^\\/study/);\n" +
+        "bulkUpdateAttachmentPath(db.subjectAcl, [\"resource\", \"instance\"], /^\\/study/);";
   }
 }

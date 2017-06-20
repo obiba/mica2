@@ -71,10 +71,10 @@ public class UpgradeConfiguration {
       applicationContext.getBean(DatasetStateUpgrade.class),
       applicationContext.getBean(ElasticsearchUpgrade.class),
       applicationContext.getBean(HarmonizationDatasetUpgrade.class),
+      applicationContext.getBean(SchemaFormUpgrade.class),
       applicationContext.getBean(Mica2Upgrade.class),
       applicationContext.getBean(Mica220Upgrade.class),
-      applicationContext.getBean(SchemaFormUpgrade.class));
-//  TODO uncomment when MK-1378 is completed
-//      applicationContext.getBean(Mica3Upgrade.class));
+      applicationContext.getBean(Mica3Upgrade.class)
+    );
   }
 }
