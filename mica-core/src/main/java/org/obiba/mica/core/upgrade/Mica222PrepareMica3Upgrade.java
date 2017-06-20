@@ -1,5 +1,6 @@
 package org.obiba.mica.core.upgrade;
 
+import org.obiba.mica.core.domain.AbstractGitPersistable;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.domain.HarmonizationDatasetState;
 import org.obiba.mica.dataset.domain.StudyDataset;
@@ -19,6 +20,8 @@ import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 import java.util.List;
+
+import static java.util.stream.Collectors.toList;
 
 @Component
 public class Mica222PrepareMica3Upgrade implements UpgradeStep {
@@ -92,6 +95,11 @@ public class Mica222PrepareMica3Upgrade implements UpgradeStep {
         studyService.save(draftStudy);
       }
     }
+
+    List<String> publishedStudiesIds = publishedStudies.stream().map(AbstractGitPersistable::getId).collect(toList());
+    studyService.findAllDraftStudies().stream()
+      .filter(unknownStateStudy -> !publishedStudiesIds.contains(unknownStateStudy.getId()))
+      .forEach(unpublishedStudy -> studyService.save(unpublishedStudy));
   }
 
   private void republishNetworks() {
@@ -109,6 +117,11 @@ public class Mica222PrepareMica3Upgrade implements UpgradeStep {
         networkService.save(draftNetwork);
       }
     }
+
+    List<String> publishedNetworksIds = publishedNetworks.stream().map(AbstractGitPersistable::getId).collect(toList());
+    networkService.findAllNetworks().stream()
+      .filter(unknownStateNetwork -> !publishedNetworksIds.contains(unknownStateNetwork.getId()))
+      .forEach(unpublishedNetwork -> networkService.save(unpublishedNetwork));
   }
 
   private void republishHarmonizationDatasets() {
@@ -127,6 +140,11 @@ public class Mica222PrepareMica3Upgrade implements UpgradeStep {
         harmonizationDatasetService.save(draftHarmonizationDataset);
       }
     }
+
+    List<String> publishedHarmonizationDatasetsIds = publishedHarmonizationDatasets.stream().map(AbstractGitPersistable::getId).collect(toList());
+    harmonizationDatasetService.findAllDatasets().stream()
+      .filter(unknownStateHarmonizationDataset -> !publishedHarmonizationDatasetsIds.contains(unknownStateHarmonizationDataset.getId()))
+      .forEach(unpublishedHarmonizationDataset -> harmonizationDatasetService.save(unpublishedHarmonizationDataset));
   }
 
   private void republishStudyDatasets() {
@@ -144,5 +162,10 @@ public class Mica222PrepareMica3Upgrade implements UpgradeStep {
         studyDatasetService.save(draftStudyDataset);
       }
     }
+
+    List<String> publishedStudyDatasetsIds = publishedStudyDatasets.stream().map(AbstractGitPersistable::getId).collect(toList());
+    studyDatasetService.findAllDatasets().stream()
+      .filter(unknownStateStudyDataset -> !publishedStudyDatasetsIds.contains(unknownStateStudyDataset.getId()))
+      .forEach(unpublishedStudyDataset -> studyDatasetService.save(unpublishedStudyDataset));
   }
 }
