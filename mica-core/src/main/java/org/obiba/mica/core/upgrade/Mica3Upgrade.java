@@ -64,7 +64,7 @@ public class Mica3Upgrade implements UpgradeStep {
     mongoTemplate.execute(db -> db.eval(replaceStudyByCollectionStudy()));
   }
 
-  public String replaceStudyByCollectionStudy() {
+  private String replaceStudyByCollectionStudy() {
     return
       "function bulkUpdateAttachmentPath(collection, fields, regexp, replace) {\n" +
         "    var bulk = collection.initializeOrderedBulkOp();\n" +
