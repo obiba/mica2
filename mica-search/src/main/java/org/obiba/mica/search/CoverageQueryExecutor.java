@@ -154,7 +154,7 @@ public class CoverageQueryExecutor {
 
   private List<MicaSearch.AggregationResultDto> ungroupAggregations(List<MicaSearch.AggregationResultDto> aggsList) {
     List<MicaSearch.AggregationResultDto> newList = Lists.newArrayList();
-    aggsList.stream().forEach(agg -> {
+    aggsList.forEach(agg -> {
       if(agg.getChildrenCount() > 0) {
         newList.addAll(agg.getChildrenList());
       } else {

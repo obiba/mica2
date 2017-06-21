@@ -17,6 +17,7 @@ import javax.validation.constraints.NotNull;
 
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.network.domain.Network;
+import org.obiba.mica.study.domain.BaseStudy;
 import org.obiba.mica.study.domain.Study;
 import org.springframework.stereotype.Component;
 
@@ -41,7 +42,7 @@ public class DocumentDigestDtos {
   }
 
   @NotNull
-  public DocumentDigestDto.Builder asDtoBuilder(@NotNull Study study) {
+  public DocumentDigestDto.Builder asDtoBuilder(@NotNull BaseStudy study) {
     return DocumentDigestDto.newBuilder().setId(study.getId()) //
         .addAllName(localizedStringDtos.asDto(study.getName()));
   }

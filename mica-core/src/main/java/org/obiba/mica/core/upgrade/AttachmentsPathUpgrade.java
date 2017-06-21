@@ -50,7 +50,7 @@ public class AttachmentsPathUpgrade implements UpgradeStep {
 
     Pattern pattern = Pattern.compile("[\\$%/#]");
 
-    attachmentRepository.findAll().stream().forEach(a -> {
+    attachmentRepository.findAll().forEach(a -> {
       boolean isModified = false;
 
       if(a.getPath() != null && a.getPath().contains("/attachment/")) {

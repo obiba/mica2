@@ -88,6 +88,11 @@ public class ElasticSearchIndexer {
       .actionGet();
   }
 
+  synchronized public void reIndexAllIndexables(String indexName, Iterable<? extends Indexable> persistables) {
+    if(hasIndex(indexName)) dropIndex(indexName);
+    indexAllIndexables(indexName, persistables, null);
+  }
+
   synchronized public void reindexAll(String indexName, Iterable<? extends Persistable<String>> persistables) {
     if(hasIndex(indexName)) dropIndex(indexName);
     indexAll(indexName, persistables, null);
@@ -112,13 +117,7 @@ public class ElasticSearchIndexer {
   }
 
   public void indexAllIndexables(String indexName, Iterable<? extends Indexable> indexables) {
-    indexAllIndexables(indexName, indexables, (String) null);
-  }
-
-  public void indexAllIndexables(String indexName, Iterable<? extends Indexable> indexables,
-    @Nullable Indexable parent) {
-    String parentId = parent == null ? null : parent.getId();
-    indexAllIndexables(indexName, indexables, parentId);
+    indexAllIndexables(indexName, indexables, null);
   }
 
   public void indexAllIndexables(String indexName, Iterable<? extends Indexable> indexables, @Nullable String parentId) {

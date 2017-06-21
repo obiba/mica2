@@ -12,8 +12,9 @@ package org.obiba.mica.study.search;
 
 import javax.inject.Inject;
 
+import org.obiba.mica.core.domain.Indexable;
 import org.obiba.mica.search.ElasticSearchIndexer;
-import org.obiba.mica.study.domain.Study;
+import org.obiba.mica.study.domain.BaseStudy;
 import org.obiba.mica.study.event.DraftStudyUpdatedEvent;
 import org.obiba.mica.study.event.IndexStudiesEvent;
 import org.obiba.mica.study.event.StudyDeletedEvent;
@@ -52,30 +53,30 @@ public class StudyIndexer {
   @Subscribe
   public void studyUpdated(DraftStudyUpdatedEvent event) {
     log.info("Study {} was updated", event.getPersistable());
-    elasticSearchIndexer.index(DRAFT_STUDY_INDEX, event.getPersistable());
+    elasticSearchIndexer.index(DRAFT_STUDY_INDEX, (Indexable)event.getPersistable());
   }
 
   @Async
   @Subscribe
   public void studyPublished(StudyPublishedEvent event) {
     log.info("Study {} was published", event.getPersistable());
-    elasticSearchIndexer.index(PUBLISHED_STUDY_INDEX, event.getPersistable());
+    elasticSearchIndexer.index(PUBLISHED_STUDY_INDEX, (Indexable) event.getPersistable());
   }
 
   @Async
   @Subscribe
   public void studyUnpublished(StudyUnpublishedEvent event) {
     log.info("Study {} was unpublished", event.getPersistable());
-    elasticSearchIndexer.delete(PUBLISHED_STUDY_INDEX, event.getPersistable());
-    elasticSearchIndexer.index(DRAFT_STUDY_INDEX, event.getPersistable());
+    elasticSearchIndexer.delete(PUBLISHED_STUDY_INDEX, (Indexable)event.getPersistable());
+    elasticSearchIndexer.index(DRAFT_STUDY_INDEX, (Indexable)event.getPersistable());
   }
 
   @Async
   @Subscribe
   public void studyDeleted(StudyDeletedEvent event) {
     log.info("Study {} was deleted", event.getPersistable());
-    elasticSearchIndexer.delete(DRAFT_STUDY_INDEX, event.getPersistable());
-    elasticSearchIndexer.delete(PUBLISHED_STUDY_INDEX, event.getPersistable());
+    elasticSearchIndexer.delete(DRAFT_STUDY_INDEX, (Indexable)event.getPersistable());
+    elasticSearchIndexer.delete(PUBLISHED_STUDY_INDEX, (Indexable)event.getPersistable());
   }
 
   @Async
@@ -85,15 +86,15 @@ public class StudyIndexer {
     reIndexAllDraft(studyService.findAllDraftStudies());
   }
 
-  public void reIndexAllDraft(Iterable<Study> studies) {
+  public void reIndexAllDraft(Iterable<BaseStudy> studies) {
     reIndexAll(DRAFT_STUDY_INDEX, studies);
   }
 
-  public void reIndexAllPublished(Iterable<Study> studies) {
+  public void reIndexAllPublished(Iterable<BaseStudy> studies) {
     reIndexAll(PUBLISHED_STUDY_INDEX, studies);
   }
 
-  private void reIndexAll(String indexName, Iterable<Study> studies) {
-    elasticSearchIndexer.reindexAll(indexName, studies);
+  private void reIndexAll(String indexName, Iterable<BaseStudy> studies) {
+    elasticSearchIndexer.reIndexAllIndexables(indexName, studies);
   }
 }

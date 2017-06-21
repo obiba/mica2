@@ -79,6 +79,52 @@ message EntityStateDto {
     optional EntityStateDto projectState = 1000;
   }
 }
+message PopulationDto {
+  optional string id = 1;
+  repeated LocalizedStringDto name = 2;
+  repeated LocalizedStringDto description = 3;
+  repeated DataCollectionEventDto dataCollectionEvents = 8;
+  optional string content = 10;
+
+  message RecruitmentDto {
+    repeated string dataSources = 1;
+    repeated string generalPopulationSources = 2;
+    repeated string specificPopulationSources = 3;
+    repeated LocalizedStringDto otherSpecificPopulationSource = 4;
+    repeated LocalizedStringDtos studies = 5;
+    repeated LocalizedStringDto otherSource = 6;
+    repeated LocalizedStringDto info = 7;
+  }
+
+  message SelectionCriteriaDto {
+    enum Gender {
+      men = 0;
+      women = 1;
+    }
+    optional Gender gender = 1;
+    optional double ageMin = 2;
+    optional double ageMax = 3;
+    repeated string countriesIso = 4;
+    repeated LocalizedStringDto territory = 5;
+    repeated string criteria = 6;
+    repeated LocalizedStringDtos ethnicOrigin = 7;
+    repeated LocalizedStringDtos healthStatus = 8;
+    repeated LocalizedStringDto otherCriteria = 9;
+    repeated LocalizedStringDto info = 10;
+  }
+
+  message DataCollectionEventDto {
+    optional string id = 1;
+    repeated LocalizedStringDto name = 2;
+    repeated LocalizedStringDto description = 3;
+    required int32 startYear = 4;
+    optional int32 startMonth = 5;
+    optional int32 endYear = 6;
+    optional int32 endMonth = 7;
+    repeated AttachmentDto attachments = 8;
+    optional string content = 9;
+  }
+}
 
 message StudyDto {
   optional string id = 1;
@@ -88,75 +134,29 @@ message StudyDto {
   repeated LocalizedStringDto acronym = 4;
   optional AttachmentDto logo = 5;
   repeated LocalizedStringDto objectives = 8;
-  repeated AttachmentDto attachments = 20;
   repeated PopulationDto populations = 22;
   optional string opal = 25;
   optional PermissionsDto permissions = 28;
   repeated MembershipsDto memberships = 29;
   optional string content = 30;
   optional bool published = 31;
+}
 
-  message StudyMethodsDto {
-    repeated string designs = 1;
-    repeated LocalizedStringDto otherDesign = 2;
-    repeated LocalizedStringDto followUpInfo = 3;
-    repeated string recruitments = 4;
-    repeated LocalizedStringDto otherRecruitment = 5;
-    repeated LocalizedStringDto info = 6;
-  }
+message HarmonizationStudyDto {
+  optional string id = 1;
+  optional TimestampsDto timestamps = 2;
 
-  message NumberOfParticipantsDto {
-    optional TargetNumberDto participant = 1;
-    optional TargetNumberDto sample = 2;
-    repeated LocalizedStringDto info = 3;
-  }
-
-  message PopulationDto {
-    optional string id = 1;
-    repeated LocalizedStringDto name = 2;
-    repeated LocalizedStringDto description = 3;
-    repeated DataCollectionEventDto dataCollectionEvents = 8;
-    optional string content = 10;
-
-    message RecruitmentDto {
-      repeated string dataSources = 1;
-      repeated string generalPopulationSources = 2;
-      repeated string specificPopulationSources = 3;
-      repeated LocalizedStringDto otherSpecificPopulationSource = 4;
-      repeated LocalizedStringDtos studies = 5;
-      repeated LocalizedStringDto otherSource = 6;
-      repeated LocalizedStringDto info = 7;
-    }
-
-    message SelectionCriteriaDto {
-      enum Gender {
-        men = 0;
-        women = 1;
-      }
-      optional Gender gender = 1;
-      optional double ageMin = 2;
-      optional double ageMax = 3;
-      repeated string countriesIso = 4;
-      repeated LocalizedStringDto territory = 5;
-      repeated string criteria = 6;
-      repeated LocalizedStringDtos ethnicOrigin = 7;
-      repeated LocalizedStringDtos healthStatus = 8;
-      repeated LocalizedStringDto otherCriteria = 9;
-      repeated LocalizedStringDto info = 10;
-    }
-
-    message DataCollectionEventDto {
-      optional string id = 1;
-      repeated LocalizedStringDto name = 2;
-      repeated LocalizedStringDto description = 3;
-      required int32 startYear = 4;
-      optional int32 startMonth = 5;
-      optional int32 endYear = 6;
-      optional int32 endMonth = 7;
-      repeated AttachmentDto attachments = 8;
-      optional string content = 9;
-    }
-  }
+  repeated LocalizedStringDto name = 3;
+  repeated LocalizedStringDto acronym = 4;
+  optional AttachmentDto logo = 5;
+  repeated LocalizedStringDto objectives = 6;
+  repeated AttachmentDto attachments = 7;
+  repeated PopulationDto populations = 8;
+  optional string opal = 9;
+  optional PermissionsDto permissions = 10;
+  repeated MembershipsDto memberships = 11;
+  optional string content = 12;
+  optional bool published = 13;
 }
 
 enum OpalCredentialType {
@@ -491,7 +491,14 @@ message HarmonizationDatasetDto {
   repeated DatasetDto.StudyTableDto studyTables = 3;
   optional string networkId = 4;
   repeated DatasetDto.NetworkTableDto networkTables = 5;
+  optional HarmonizationStudyReferenceDto studyReference = 6;
   extensions 1000 to max;
+
+  message HarmonizationStudyReferenceDto {
+    required string studyId = 1;
+    required string populationId = 2;
+    optional StudySummaryDto studySummary = 3;
+  }
 
   extend DatasetDto {
     optional HarmonizationDatasetDto type = 1001;

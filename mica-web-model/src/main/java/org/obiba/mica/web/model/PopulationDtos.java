@@ -22,7 +22,7 @@ import org.obiba.mica.study.domain.DataCollectionEvent;
 import org.obiba.mica.study.domain.Population;
 import org.springframework.stereotype.Component;
 
-import static org.obiba.mica.web.model.Mica.StudyDto.PopulationDto;
+import static org.obiba.mica.web.model.Mica.PopulationDto;
 
 @Component
 @SuppressWarnings({ "OverlyLongMethod", "OverlyCoupledClass" })
@@ -53,7 +53,7 @@ class PopulationDtos {
   }
 
   @NotNull
-  Population fromDto(Mica.StudyDto.PopulationDtoOrBuilder dto) {
+  Population fromDto(Mica.PopulationDtoOrBuilder dto) {
     Population population = new Population();
     population.setId(dto.getId());
     if(dto.getNameCount() > 0) population.setName(localizedStringDtos.fromDto(dto.getNameList()));

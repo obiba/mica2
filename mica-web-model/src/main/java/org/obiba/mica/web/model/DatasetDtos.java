@@ -14,9 +14,11 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
+import javax.swing.text.html.Option;
 import javax.validation.constraints.NotNull;
 
 import org.obiba.mica.JSONUtils;
@@ -37,12 +39,14 @@ import org.obiba.mica.micaConfig.domain.MicaConfig;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.network.service.PublishedNetworkService;
 import org.obiba.mica.security.service.SubjectAclService;
+import org.obiba.mica.study.service.PublishedStudyService;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.obiba.opal.core.domain.taxonomy.Term;
 import org.obiba.opal.core.domain.taxonomy.Vocabulary;
 import org.obiba.opal.web.model.Math;
 import org.obiba.opal.web.model.Search;
 import org.springframework.stereotype.Component;
+import org.springframework.util.Assert;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
@@ -83,6 +87,9 @@ class DatasetDtos {
 
   @Inject
   private PublishedNetworkService publishedNetworkService;
+
+  @Inject
+  private PublishedStudyService publishedStudyService;
 
   @Inject
   private SubjectAclService subjectAclService;
@@ -144,11 +151,29 @@ class DatasetDtos {
       }
     }
 
+    Optional.ofNullable(dataset.getStudyId())
+      .ifPresent(studyId -> Optional.ofNullable(dataset.getPopulationId())
+        .ifPresent(populationId -> {
+          Mica.HarmonizationDatasetDto.HarmonizationStudyReferenceDto.Builder sRefBuilder
+            = Mica.HarmonizationDatasetDto.HarmonizationStudyReferenceDto.newBuilder();
+
+          if(asDraft) {
+            if(subjectAclService.isPermitted("/draft/harmonization-study", "VIEW", studyId)) {
+              sRefBuilder.setStudyId(studyId);
+              sRefBuilder.setPopulationId(populationId);
+            }
+          } else if(publishedStudyService.findById(studyId) != null) {
+            sRefBuilder.setStudyId(studyId);
+            sRefBuilder.setPopulationId(populationId);
+          }
+          sRefBuilder.setStudySummary(studySummaryDtos.asHarmoStudyDto(studyId));
+          hbuilder.setStudyReference(sRefBuilder);
+        }));
+
     if(!dataset.getStudyTables().isEmpty()) {
       dataset.getStudyTables().forEach(studyTable -> hbuilder
         .addStudyTables(asDto(studyTable, true)));
     }
-
 
     if(!dataset.getNetworkTables().isEmpty()) {
       dataset.getNetworkTables().forEach(networkTable -> hbuilder
@@ -632,32 +657,12 @@ class DatasetDtos {
 
   @NotNull
   public Dataset fromDto(Mica.DatasetDtoOrBuilder dto) {
-    Dataset dataset;
-    if(dto.hasExtension(Mica.HarmonizationDatasetDto.type)) {
-      HarmonizationDataset harmonizationDataset = new HarmonizationDataset();
-      Mica.HarmonizationDatasetDto ext = dto.getExtension(Mica.HarmonizationDatasetDto.type);
-      harmonizationDataset.setProject(ext.getProject());
-      harmonizationDataset.setTable(ext.getTable());
+    Dataset dataset = dto.hasExtension(Mica.HarmonizationDatasetDto.type)
+      ? fromDto(dto.getExtension(Mica.HarmonizationDatasetDto.type))
+      : dto.hasExtension(Mica.StudyDatasetDto.type)
+        ? fromDto(dto.getExtension(Mica.StudyDatasetDto.type))
+        : new StudyDataset();
 
-      if(ext.getStudyTablesCount() > 0) {
-        ext.getStudyTablesList().forEach(tableDto -> harmonizationDataset.addStudyTable(fromDto(tableDto)));
-      }
-
-      if(ext.getNetworkTablesCount() > 0) {
-        ext.getNetworkTablesList().forEach(tableDto -> harmonizationDataset.addNetworkTable(fromDto(tableDto)));
-      }
-
-      String networkId = ext.getNetworkId();
-      harmonizationDataset.setNetworkId(Strings.isNullOrEmpty(networkId) ? null : networkId);
-      dataset = harmonizationDataset;
-    } else {
-      StudyDataset studyDataset = new StudyDataset();
-      if (dto.hasExtension(Mica.StudyDatasetDto.type)) {
-        Mica.StudyDatasetDto ext = dto.getExtension(Mica.StudyDatasetDto.type);
-        studyDataset.setStudyTable(fromDto(ext.getStudyTable()));
-      }
-      dataset = studyDataset;
-    }
     if(dto.hasId()) dataset.setId(dto.getId());
     dataset.setAcronym(localizedStringDtos.fromDto(dto.getAcronymList()));
     dataset.setName(localizedStringDtos.fromDto(dto.getNameList()));
@@ -670,7 +675,39 @@ class DatasetDtos {
     if (dto.hasContent()) {
       dataset.setModel(JSONUtils.toMap(dto.getContent()));
     }
+
     return dataset;
+  }
+
+  private Dataset fromDto(@NotNull Mica.HarmonizationDatasetDto dto) {
+    Assert.notNull(dto, "HarmonizationDataset dt cannot be null.");
+    HarmonizationDataset harmonizationDataset = new HarmonizationDataset();
+    harmonizationDataset.setProject(dto.getProject());
+    harmonizationDataset.setTable(dto.getTable());
+
+    if(dto.getStudyTablesCount() > 0) {
+      dto.getStudyTablesList().forEach(tableDto -> harmonizationDataset.addStudyTable(fromDto(tableDto)));
+    }
+
+    if(dto.getNetworkTablesCount() > 0) {
+      dto.getNetworkTablesList().forEach(tableDto -> harmonizationDataset.addNetworkTable(fromDto(tableDto)));
+    }
+
+    String networkId = dto.getNetworkId();
+    harmonizationDataset.setNetworkId(Strings.isNullOrEmpty(networkId) ? null : networkId);
+    if (dto.hasStudyReference()) {
+      Mica.HarmonizationDatasetDto.HarmonizationStudyReferenceDto studyInfoDto = dto.getStudyReference();
+      harmonizationDataset.setStudyId(studyInfoDto.getStudyId());
+      harmonizationDataset.setPopulationId(studyInfoDto.getPopulationId());
+    };
+    return harmonizationDataset;
+  }
+
+  private Dataset fromDto(@NotNull Mica.StudyDatasetDto dto) {
+    Assert.notNull(dto, "StudyDataset dt cannot be null.");
+    StudyDataset studyDataset = new StudyDataset();
+    Optional.ofNullable(dto).ifPresent(ext -> studyDataset.setStudyTable(fromDto(ext.getStudyTable())));
+    return studyDataset;
   }
 
   private StudyTable fromDto(Mica.DatasetDto.StudyTableDto dto) {

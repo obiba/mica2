@@ -118,9 +118,7 @@ public class JoinRQLQueryWrapper implements JoinQueryWrapper {
       Optional<Object> localeNode = node.getArguments().stream()
         .filter(a -> a instanceof ASTNode && RQLNode.LOCALE == RQLNode.getType(((ASTNode) a).getName())).findFirst();
 
-      if (localeNode.isPresent()) {
-        initialize((ASTNode)localeNode.get());
-      }
+      localeNode.ifPresent(o -> initialize((ASTNode) o));
     } else if (RQLNode.LOCALE == RQLNode.getType(node.getName())){
       initialize(node);
     }

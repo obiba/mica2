@@ -169,7 +169,7 @@ public class DatasetQuery extends AbstractDocumentQuery {
     Consumer<Dataset> addDto = getDatasetConsumer(scope, resBuilder, datasetCountStatsBuilder);
     List<Dataset> datasets = publishedDatasetService
       .findByIds(Stream.of(hits.hits()).map(h -> h.getId()).collect(Collectors.toList()));
-    datasets.forEach(addDto::accept);
+    datasets.forEach(addDto);
     builder.setExtension(DatasetResultDto.result, resBuilder.build());
   }
 
@@ -231,12 +231,7 @@ public class DatasetQuery extends AbstractDocumentQuery {
     getJoinFields().forEach(joinField -> subProps.setProperty(joinField, ""));
     Map<String, Properties> subAggregations = Maps.newHashMap();
     subAggregations.put("id", subProps);
-    try {
-      aggregationYamlParser.getAggregations(props, subAggregations).forEach(requestBuilder::addAggregation);
-    } catch(IOException e) {
-      log.error("Failed to add Study By dataset aggregations");
-      return Maps.newHashMap();
-    }
+    aggregationYamlParser.getAggregations(props, subAggregations).forEach(requestBuilder::addAggregation);
 
     Map<String, Map<String, List<String>>> map = Maps.newHashMap();
     try {

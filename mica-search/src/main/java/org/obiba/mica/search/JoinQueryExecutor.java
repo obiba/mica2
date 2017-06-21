@@ -164,7 +164,7 @@ public class JoinQueryExecutor {
     }
   }
 
-  private boolean acquireSemaphorePermit() throws IOException {
+  private boolean acquireSemaphorePermit() {
     try {
       return esJoinQueriesSemaphore.tryAcquire(concurrentJoinQueriesWaitTimeout, TimeUnit.MILLISECONDS);
     } catch (InterruptedException e) {
@@ -187,7 +187,7 @@ public class JoinQueryExecutor {
   private JoinQueryResultDto doQueries(QueryType type, JoinQueryWrapper joinQueryWrapper,
       CountStatsData.Builder countBuilder, AbstractDocumentQuery.Scope scope) throws IOException {
     boolean queriesHaveFilters = Stream.of(variableQuery, datasetQuery, studyQuery, networkQuery)
-        .filter(AbstractDocumentQuery::hasQueryBuilder).findFirst().isPresent();
+        .anyMatch(AbstractDocumentQuery::hasQueryBuilder);
 
     if(queriesHaveFilters) {
       DocumentQueryIdProvider datasetIdProvider = new DocumentQueryIdProvider();
@@ -437,8 +437,9 @@ public class JoinQueryExecutor {
   }
 
   private List<String> execute(AbstractDocumentQuery docQuery, AbstractDocumentQuery... subQueries) throws IOException {
-    List<AbstractDocumentQuery> queries = Arrays.asList(subQueries).stream()
-        .filter(AbstractDocumentQuery::hasQueryBuilder).collect(Collectors.toList());
+    List<AbstractDocumentQuery> queries = Arrays.stream(subQueries)
+      .filter(AbstractDocumentQuery::hasQueryBuilder)
+      .collect(Collectors.toList());
 
     List<String> studyIds = null;
     List<String> docQueryStudyIds = null;
@@ -473,16 +474,8 @@ public class JoinQueryExecutor {
     List<String> studyIds = queries.get(0).queryStudyIds();
 
     queries.stream().skip(1).forEach(query -> {
-      if(studyIds.size() > 0) {
-        try {
-          studyIds.retainAll(query.queryStudyIds());
-        } catch(IOException e) {
-          log.error("Failed to query study IDs '{}'", e);
-        }
-
-        if(studyIds.isEmpty()) {
-          return;
-        }
+      if (studyIds.size() > 0) {
+        studyIds.retainAll(query.queryStudyIds());
       }
     });
 

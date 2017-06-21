@@ -96,5 +96,4 @@ public abstract class AbstractPersonsSearchResource {
 
     return queryCSV(from, limit, sort, order, query, excludes);
   }
-
 }

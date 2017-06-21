@@ -46,7 +46,7 @@ public class StudySeedService {
   private static final String PATH_SEED = "${MICA_HOME}/seed";
 
   @Inject
-  private StudyService studyService;
+  private CollectionStudyService collectionStudyService;
 
   @Inject
   private StudyPackageImportService studyPackageImportService;
@@ -155,8 +155,8 @@ public class StudySeedService {
     InputStream inputStream = new FileInputStream(json);
     List<Study> studies = objectMapper.readValue(inputStream, new TypeReference<List<Study>>() {});
     for(Study study : studies) {
-      studyService.save(study);
-      studyService.publish(study.getId(), true);
+      collectionStudyService.save(study);
+      collectionStudyService.publish(study.getId(), true);
     }
   }
 
@@ -169,8 +169,8 @@ public class StudySeedService {
     log.info("Seeding study with file: {}", json.getAbsolutePath());
     InputStream inputStream = new FileInputStream(json);
     Study study = objectMapper.readValue(inputStream, Study.class);
-    studyService.save(study);
-    studyService.publish(study.getId(), true);
+    collectionStudyService.save(study);
+    collectionStudyService.publish(study.getId(), true);
   }
 
 }

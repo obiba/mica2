@@ -11,11 +11,12 @@
 package org.obiba.mica.study.event;
 
 import org.obiba.mica.core.event.PersistablePublishedEvent;
+import org.obiba.mica.study.domain.BaseStudy;
 import org.obiba.mica.study.domain.Study;
 
-public class StudyUnpublishedEvent extends PersistablePublishedEvent<Study> {
+public class StudyUnpublishedEvent extends PersistablePublishedEvent<BaseStudy> {
 
-  public StudyUnpublishedEvent(Study study) {
+  public StudyUnpublishedEvent(BaseStudy study) {
     super(study);
   }
 }

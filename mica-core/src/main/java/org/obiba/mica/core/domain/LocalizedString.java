@@ -159,7 +159,7 @@ public class LocalizedString extends TreeMap<String, String> {
    */
   public static LocalizedString from(@NotNull List<Locale> locales, @NotNull String str) {
     LocalizedString string = new LocalizedString();
-    locales.stream().forEach(locale -> string.put(locale, str));
+    locales.forEach(locale -> string.put(locale, str));
     return string;
   }
 }

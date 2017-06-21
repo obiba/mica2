@@ -16,11 +16,12 @@ import java.util.Map;
 
 import org.obiba.mica.JSONUtils;
 import org.obiba.mica.core.domain.AbstractGitPersistable;
+import org.obiba.mica.core.domain.Indexable;
 import org.obiba.mica.core.domain.LocalizedString;
 
 import com.google.common.base.Strings;
 
-public class Project extends AbstractGitPersistable {
+public class Project extends AbstractGitPersistable implements Indexable {
 
   private LocalizedString title;
 
@@ -98,6 +99,21 @@ public class Project extends AbstractGitPersistable {
 
   public void setSummary(LocalizedString summary) {
     this.summary = summary;
+  }
+
+  @Override
+  public String getClassName() {
+    return getClass().getSimpleName();
+  }
+
+  @Override
+  public String getMappingName() {
+    return null;
+  }
+
+  @Override
+  public String getParentId() {
+    return getId();
   }
 
   public static class Builder {

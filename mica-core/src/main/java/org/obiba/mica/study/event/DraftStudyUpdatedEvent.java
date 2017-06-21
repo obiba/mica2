@@ -11,11 +11,12 @@
 package org.obiba.mica.study.event;
 
 import org.obiba.mica.core.event.PersistableUpdatedEvent;
+import org.obiba.mica.study.domain.BaseStudy;
 import org.obiba.mica.study.domain.Study;
 
-public class DraftStudyUpdatedEvent extends PersistableUpdatedEvent<Study> {
+public class DraftStudyUpdatedEvent extends PersistableUpdatedEvent<BaseStudy> {
 
-  public DraftStudyUpdatedEvent(Study study) {
+  public DraftStudyUpdatedEvent(BaseStudy study) {
     super(study);
   }
 }

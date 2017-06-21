@@ -42,7 +42,14 @@ import com.google.common.eventbus.Subscribe;
 @Component
 public class MicaAuthorizingRealm extends AuthorizingRealm implements RolePermissionResolver {
 
-  private static final String[] ALL_RESOURCES = { "network", "study", "study-dataset", "harmonization-dataset", "project" };
+  private static final String[] ALL_RESOURCES = {
+    "network",
+    "harmonization-study",
+    "study",
+    "study-dataset",
+    "harmonization-dataset",
+    "project"
+  };
 
   @Inject
   private SubjectAclService subjectAclService;

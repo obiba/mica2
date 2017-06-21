@@ -313,6 +313,8 @@ mica.network
       function initializeForm() {
         MicaConfigResource.get(function (micaConfig) {
 
+          $scope.openAccess = micaConfig.openAccess;
+          
           var formLanguages = {};
           micaConfig.languages.forEach(function (loc) {
             formLanguages[loc] = $filter('translate')('language.' + loc);

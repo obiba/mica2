@@ -62,5 +62,48 @@ mica.study
         .when('/study/:id/population/:pid/dce/:dceId/edit', {
           templateUrl: 'app/study/views/population/dce/data-collection-event-form.html',
           controller: 'StudyPopulationDceController'
+        })
+
+        // harmonization-study
+        .when('/harmonization-study', {
+          templateUrl: 'app/study/views/harmonization-study-main.html',
+          controller: 'HarmonizationStudyMainController'
+        })
+        .when('/harmonization-study/new', {
+          templateUrl: 'app/study/views/harmonization-study-form.html',
+          controller: 'HarmonizationStudyEditController'
+        })
+        .when('/harmonization-study/:id', {
+          templateUrl: 'app/study/views/harmonization-study-view.html',
+          controller: 'HarmonizationStudyViewController'
+        })
+        .when('/harmonization-study/:id/edit', {
+          templateUrl: 'app/study/views/harmonization-study-form.html',
+          controller: 'HarmonizationStudyEditController'
+        })
+        .when('/harmonization-study/:id/revisions', {
+          templateUrl: 'app/study/views/harmonization-study-view-revisions.html',
+          controller: 'HarmonizationStudyViewController'
+        })
+        .when('/harmonization-study/:id/files', {
+          templateUrl: 'app/study/views/harmonization-study-view-files.html',
+          controller: 'HarmonizationStudyViewController',
+          reloadOnSearch: false
+        })
+        .when('/harmonization-study/:id/permissions', {
+          templateUrl: 'app/study/views/harmonization-study-view-permissions.html',
+          controller: 'HarmonizationStudyViewController'
+        })
+        .when('/harmonization-study/:id/comments', {
+          templateUrl: 'app/study/views/harmonization-study-view-comments.html',
+          controller: 'HarmonizationStudyViewController'
+        })
+        .when('/harmonization-study/:id/population/add', {
+          templateUrl: 'app/study/views/population/population-form.html',
+          controller: 'HarmonizationStudyPopulationController'
+        })
+        .when('/harmonization-study/:id/population/:pid/edit', {
+          templateUrl: 'app/study/views/population/population-form.html',
+          controller: 'HarmonizationStudyPopulationController'
         });
     }]);

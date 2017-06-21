@@ -21,7 +21,7 @@ import javax.ws.rs.Path;
 import org.obiba.mica.micaConfig.service.OpalService;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.study.domain.Study;
-import org.obiba.mica.study.service.StudyService;
+import org.obiba.mica.study.service.CollectionStudyService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.opal.web.model.Projects;
@@ -38,7 +38,7 @@ import com.codahale.metrics.annotation.Timed;
 public class StudyStateResource {
 
   @Inject
-  private StudyService studyService;
+  private CollectionStudyService collectionStudyService;
 
   @Inject
   private SubjectAclService subjectAclService;
@@ -59,14 +59,14 @@ public class StudyStateResource {
   @Timed
   public Mica.StudySummaryDto get() {
     subjectAclService.checkPermission("/draft/study", "VIEW", id);
-    return dtos.asDto(studyService.getEntityState(id));
+    return dtos.asDto(collectionStudyService.getEntityState(id));
   }
 
   @GET
   @Path("/projects")
   public List<Projects.ProjectDto> projects() throws URISyntaxException {
     subjectAclService.checkPermission("/draft/study", "VIEW", id);
-    String opalUrl = Optional.ofNullable(studyService.findStudy(id)).map(Study::getOpal).orElse(null);
+    String opalUrl = Optional.ofNullable(collectionStudyService.findStudy(id)).map(Study::getOpal).orElse(null);
 
     return opalService.getProjectDtos(opalUrl);
   }

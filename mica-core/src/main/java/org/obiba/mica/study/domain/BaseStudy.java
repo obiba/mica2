@@ -30,9 +30,11 @@ import static java.util.stream.Collectors.toList;
 /**
  * Base class for representing all type of studies.
  */
-public abstract class BaseStudy extends AbstractModelAware implements PersonAware {
+public abstract class BaseStudy extends AbstractModelAware implements PersonAware, Indexable {
 
   private Attachment logo;
+
+  private final static String MAPPING_NAME = "Study";
 
   @NotNull
   private LocalizedString name;
@@ -145,15 +147,6 @@ public abstract class BaseStudy extends AbstractModelAware implements PersonAwar
     } else {
       this.memberships = memberships;
     }
-    Map<String, Person> seen = Maps.newHashMap();
-
-    this.memberships.entrySet().forEach(e -> e.getValue().forEach(m -> {
-      if (seen.containsKey(m.getPerson().getId())) {
-        m.setPerson(seen.get(m.getPerson().getId()));
-      } else if (!m.getPerson().isNew()) {
-        seen.put(m.getPerson().getId(), m.getPerson());
-      }
-    }));
   }
 
   public List<Person> removeRole(String role) {
@@ -221,6 +214,18 @@ public abstract class BaseStudy extends AbstractModelAware implements PersonAwar
     return getClass().getSimpleName();
   }
 
+  @Override
+  public String getMappingName() {
+    return MAPPING_NAME;
+  }
+
+  @Override
+  public String getParentId() {
+    return null;
+  }
+
   // for JSON deserial
   public void setClassName(String className) {}
+
+
 }

@@ -11,10 +11,9 @@
 package org.obiba.mica.study.service;
 
 import org.obiba.mica.core.service.PublishedDocumentService;
-import org.obiba.mica.study.domain.Study;
+import org.obiba.mica.study.domain.BaseStudy;
 
-public interface PublishedStudyService extends PublishedDocumentService<Study> {
-
-  StudyService getStudyService();
-
+public interface PublishedStudyService extends PublishedDocumentService<BaseStudy> {
+  long getCollectionStudyCount();
+  long getHarmonizationStudyCount();
 }

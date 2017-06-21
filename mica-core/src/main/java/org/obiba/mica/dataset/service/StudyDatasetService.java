@@ -46,7 +46,7 @@ import org.obiba.mica.micaConfig.service.OpalService;
 import org.obiba.mica.network.service.NetworkService;
 import org.obiba.mica.study.date.PersistableYearMonth;
 import org.obiba.mica.study.domain.Study;
-import org.obiba.mica.study.service.StudyService;
+import org.obiba.mica.study.service.CollectionStudyService;
 import org.obiba.opal.rest.client.magma.RestValueTable;
 import org.obiba.opal.web.model.Search;
 import org.slf4j.Logger;
@@ -70,7 +70,7 @@ public class StudyDatasetService extends DatasetService<StudyDataset, StudyDatas
   private static final Logger log = LoggerFactory.getLogger(StudyDatasetService.class);
 
   @Inject
-  private StudyService studyService;
+  private CollectionStudyService collectionStudyService;
 
   @Inject
   @Lazy
@@ -253,9 +253,9 @@ public class StudyDatasetService extends DatasetService<StudyDataset, StudyDatas
 
   public PersistableYearMonth getStudyPersistableYearMonthForDataset(StudyDataset dataset) {
     if (!dataset.hasStudyTable()) return null;
-    Study study = studyService.findStudy(dataset.getStudyTable().getStudyId());
+    Study study = collectionStudyService.findStudy(dataset.getStudyTable().getStudyId());
 
-    return studyService
+    return collectionStudyService
       .getPersistableYearMonthFor(study, dataset.getStudyTable().getPopulationId(),
         dataset.getStudyTable().getDataCollectionEventId());
   }
@@ -337,8 +337,8 @@ public class StudyDatasetService extends DatasetService<StudyDataset, StudyDatas
   }
 
   @Override
-  protected StudyService getStudyService() {
-    return studyService;
+  protected CollectionStudyService getCollectionStudyService() {
+    return collectionStudyService;
   }
 
   @Override

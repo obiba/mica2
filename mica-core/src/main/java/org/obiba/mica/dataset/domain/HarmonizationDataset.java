@@ -47,6 +47,16 @@ public class HarmonizationDataset extends Dataset {
   private String networkId;
 
   /**
+   * Linked study.
+   */
+  private String studyId;
+
+  /**
+   * Linked population.
+   */
+  private String populationId;
+
+  /**
    * Project in which the table is located.
    */
   @NotNull
@@ -127,5 +137,21 @@ public class HarmonizationDataset extends Dataset {
   public List<OpalTable> getAllOpalTables() {
     return Lists.newArrayList(Iterables.concat(getStudyTables(), getNetworkTables())).stream()//
       .sorted((a, b) -> a.getWeight() - b.getWeight()).collect(Collectors.toList());
+  }
+
+  public String getStudyId() {
+    return studyId;
+  }
+
+  public void setStudyId(String studyId) {
+    this.studyId = studyId;
+  }
+
+  public String getPopulationId() {
+    return populationId;
+  }
+
+  public void setPopulationId(String populationId) {
+    this.populationId = populationId;
   }
 }

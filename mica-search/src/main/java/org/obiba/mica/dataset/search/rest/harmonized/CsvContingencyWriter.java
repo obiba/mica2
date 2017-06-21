@@ -107,8 +107,7 @@ public class CsvContingencyWriter {
     List<List<Integer>> tmp = ContingencyUtils.getCategoricalRows(c, values, terms);
 
     IntStream.range(0, values.size()).forEach(i -> writer.writeNext(
-      Lists.asList(values.get(i), tmp.get(i).stream().map(x -> x.toString()).toArray()).stream()
-        .toArray(String[]::new)));
+      Lists.asList(values.get(i), tmp.get(i).stream().map(x -> x.toString()).toArray()).toArray(new String[0])));
 
     writer.writeNext(Lists.asList("Total", tmp.get(tmp.size() - 1).stream().map(x -> x.toString()).toArray()).stream()
       .toArray(String[]::new));

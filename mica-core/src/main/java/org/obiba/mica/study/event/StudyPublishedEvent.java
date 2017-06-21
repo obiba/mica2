@@ -12,17 +12,18 @@ package org.obiba.mica.study.event;
 
 import org.obiba.mica.core.domain.PublishCascadingScope;
 import org.obiba.mica.core.event.PersistableCascadingPublishedEvent;
+import org.obiba.mica.study.domain.BaseStudy;
 import org.obiba.mica.study.domain.Study;
 
-public class StudyPublishedEvent extends PersistableCascadingPublishedEvent<Study> {
+public class StudyPublishedEvent extends PersistableCascadingPublishedEvent<BaseStudy> {
 
   private final String publisher;
 
-  public StudyPublishedEvent(Study study, String publisher) {
+  public StudyPublishedEvent(BaseStudy study, String publisher) {
     this(study, publisher, PublishCascadingScope.NONE);
   }
 
-  public StudyPublishedEvent(Study study, String publisher, PublishCascadingScope cascadingScope) {
+  public StudyPublishedEvent(BaseStudy study, String publisher, PublishCascadingScope cascadingScope) {
     super(study, cascadingScope);
     this.publisher = publisher;
   }

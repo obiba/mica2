@@ -10,12 +10,13 @@
 
 package org.obiba.mica.core.domain;
 
+import java.util.HashMap;
 import java.util.Map;
 
 
 public abstract class AbstractModelAware extends AbstractGitPersistable implements ModelAware{
 
-  private Map<String, Object> model;
+  private Map<String, Object> model = new HashMap<>();
 
   public boolean hasModel() {
     return model != null;

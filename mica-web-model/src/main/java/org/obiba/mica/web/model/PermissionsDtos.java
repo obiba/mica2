@@ -14,12 +14,15 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
+import org.obiba.mica.core.domain.EntityState;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.file.AttachmentState;
 import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.project.domain.Project;
 import org.obiba.mica.security.service.SubjectAclService;
+import org.obiba.mica.study.domain.BaseStudy;
+import org.obiba.mica.study.domain.HarmonizationStudy;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.domain.StudyState;
 import org.springframework.stereotype.Component;
@@ -38,11 +41,15 @@ class PermissionsDtos {
     return asDto("/draft/network", network.getId());
   }
 
-  public Mica.PermissionsDto asDto(@NotNull Study study) {
+  public Mica.PermissionsDto asDto(@NotNull BaseStudy study) {
     return asDto("/draft/study", study.getId());
   }
 
-  public Mica.PermissionsDto asDto(StudyState studyState) {
+  public Mica.PermissionsDto asDto(@NotNull HarmonizationStudy study) {
+    return asDto("/draft/harmonization-study", study.getId());
+  }
+
+  public Mica.PermissionsDto asDto(EntityState studyState) {
     return asDto("/draft/study", studyState.getId());
   }
 

@@ -29,6 +29,7 @@ import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.domain.StudyState;
 import org.obiba.mica.study.service.DraftStudyService;
+import org.obiba.mica.study.service.CollectionStudyService;
 import org.obiba.mica.study.service.StudyService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
@@ -40,6 +41,9 @@ import static java.util.stream.Collectors.toList;
 public class StudyStatesResource {
 
   private static final int MAX_LIMIT = 10000; //default ElasticSearch limit
+
+  @Inject
+  private CollectionStudyService collectionStudyService;
 
   @Inject
   private StudyService studyService;
@@ -69,14 +73,14 @@ public class StudyStatesResource {
     if(limit < 0) throw new IllegalArgumentException("limit cannot be negative");
 
     if(Strings.isNullOrEmpty(query)) {
-      List<StudyState> studyStates = studyService.findAllStates().stream()
+      List<StudyState> studyStates = collectionStudyService.findAllStates().stream()
         .filter(s -> subjectAclService.isPermitted("/draft/study", "VIEW", s.getId())).collect(toList());
       totalCount = studyStates.size();
       result = studyStates.stream().sorted((o1, o2) -> o1.getId().compareTo(o2.getId())).skip(from).limit(limit);
     } else {
       DocumentService.Documents<Study> studyDocuments = draftStudyService.find(from, limit, null, null, null, query);
       totalCount = studyDocuments.getTotal();
-      result = studyService.findAllStates(studyDocuments.getList().stream().map(Study::getId).collect(toList())).stream();
+      result = collectionStudyService.findAllStates(studyDocuments.getList().stream().map(Study::getId).collect(toList())).stream();
     }
 
     response.addHeader("X-Total-Count", Long.toString(totalCount));

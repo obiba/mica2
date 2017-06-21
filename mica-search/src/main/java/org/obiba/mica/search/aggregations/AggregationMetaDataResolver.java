@@ -69,7 +69,7 @@ public class AggregationMetaDataResolver {
 
   public void refresh() {
     aggregationProviderMap = Maps.newHashMap();
-    providers.stream().forEach(AggregationMetaDataProvider::refresh);
+    providers.forEach(AggregationMetaDataProvider::refresh);
   }
 
   public void registerProviders(List<AggregationMetaDataProvider> aggregationMetaDataProviders) {

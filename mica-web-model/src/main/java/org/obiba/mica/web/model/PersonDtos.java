@@ -16,6 +16,7 @@ import java.util.Locale;
 import javax.inject.Inject;
 
 import org.obiba.mica.core.domain.Address;
+import org.obiba.mica.core.domain.EntityState;
 import org.obiba.mica.core.domain.Person;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.network.domain.Network;
@@ -23,9 +24,10 @@ import org.obiba.mica.network.domain.NetworkState;
 import org.obiba.mica.network.service.NetworkService;
 import org.obiba.mica.network.service.PublishedNetworkService;
 import org.obiba.mica.security.service.SubjectAclService;
-import org.obiba.mica.study.domain.Study;
+import org.obiba.mica.study.domain.BaseStudy;
 import org.obiba.mica.study.domain.StudyState;
 import org.obiba.mica.study.service.PublishedStudyService;
+import org.obiba.mica.study.service.StudyService;
 import org.springframework.stereotype.Component;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
@@ -54,6 +56,9 @@ class PersonDtos {
   private SubjectAclService subjectAclService;
 
   @Inject
+  private StudyService studyService;
+
+  @Inject
   private MicaConfigService micaConfigService;
 
   Mica.PersonDto asDto(Person person, boolean asDraft) {
@@ -74,8 +79,10 @@ class PersonDtos {
       if(asDraft) {
         return subjectAclService.isPermitted("/draft/study", "VIEW", m.getParentId());
       } else {
-        StudyState state = publishedStudyService.getStudyService().findStateById(m.getParentId());
-        return state != null && state.isPublished() && subjectAclService.isAccessible("/study", m.getParentId());
+        EntityState state = studyService.findStateById(m.getParentId());
+        return state != null &&
+          state.isPublished() &&
+          subjectAclService.isAccessible(state instanceof StudyState ? "/study" : "/harmonization-study", m.getParentId());
       }
     }).map(m -> asStudyMembershipDto(m, asDraft)).collect(toList()));
     builder.addAllNetworkMemberships(person.getNetworkMemberships().stream().filter(m -> {
@@ -130,9 +137,10 @@ class PersonDtos {
     builder.setParentId(membership.getParentId());
 
     if(membership.getParentId() != null) {
-      Study study = asDraft
-        ? publishedStudyService.getStudyService().findStudy(membership.getParentId())
+      BaseStudy study = asDraft
+        ? studyService.findStudy(membership.getParentId())
         : publishedStudyService.findById(membership.getParentId());
+
       if(study != null) {
         builder.addAllParentAcronym(localizedStringDtos.asDto(study.getAcronym()));
         builder.addAllParentName(localizedStringDtos.asDto(study.getName()));

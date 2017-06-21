@@ -117,7 +117,7 @@ public class NetworkQuery extends AbstractDocumentQuery {
     Consumer<Network> addDto = getNetworkConsumer(scope, resBuilder, networkCountStatsBuilder);
     List<Network> networks = publishedNetworkService
       .findByIds(Stream.of(hits.hits()).map(h -> h.getId()).collect(Collectors.toList()));
-    networks.forEach(addDto::accept);
+    networks.forEach(addDto);
     builder.setExtension(NetworkResultDto.result, resBuilder.build());
   }
 
@@ -162,12 +162,7 @@ public class NetworkQuery extends AbstractDocumentQuery {
     subProps.setProperty(JOIN_FIELD, "");
     Map<String, Properties> subAggregations = Maps.newHashMap();
     subAggregations.put("id", subProps);
-    try {
-      aggregationYamlParser.getAggregations(props, subAggregations).forEach(requestBuilder::addAggregation);
-    } catch(IOException e) {
-      log.error("Failed to add Study By Network aggregations");
-      return Maps.newHashMap();
-    }
+    aggregationYamlParser.getAggregations(props, subAggregations).forEach(requestBuilder::addAggregation);
 
     Map<String, List<String>> map = Maps.newHashMap();
     try {
@@ -196,5 +191,4 @@ public class NetworkQuery extends AbstractDocumentQuery {
   public Map<String, Integer> getStudyCounts() {
     return getDocumentCounts(JOIN_FIELD);
   }
-
 }

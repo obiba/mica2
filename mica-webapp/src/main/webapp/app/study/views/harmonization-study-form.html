@@ -1,0 +1,46 @@
+<!--
+  ~ Copyright (c) 2017 OBiBa. All rights reserved.
+  ~
+  ~ This program and the accompanying materials
+  ~ are made available under the terms of the GNU Public License v3.0.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<div>
+  <div ng-include="'app/study/views/harmonization-study-form-header.html'" ng-init="tabName='view'"></div>
+
+  <h3 ng-if="study.id"><a ng-click="cancel()">
+    <i class="fa fa-chevron-left"> </i>
+  </a> {{'edit' | translate}}</h3>
+
+  <form name="form" role="form" novalidate class="ng-scope ng-invalid ng-invalid-required ng-dirty" ng-submit="save()">
+
+    <p class="alert alert-danger" ng-show="form.saveAttempted && form.$invalid" translate="">fix-error</p>
+
+    <h3 translate>logo</h3>
+
+    <div class="form-group">
+      <attachment-input files="files" accept="image/*" />
+    </div>
+
+    <div sf-model="study.model" sf-form="sfForm.definition" sf-schema="sfForm.schema" sf-options="sfOptions"></div>
+
+    <div class="row">
+      <div class="col-md-6">
+        <input class="form-control" ng-model="revision.comment" placeholder="{{'global.update-comment' | translate}}" type="text">
+        <div class="voffset1">
+          <button type="button" class="btn btn-responsive btn-default" ng-click="cancel()">
+            <span translate>cancel</span>
+          </button>
+          <button type="submit" class="btn btn-responsive btn-primary">
+            <span translate>save</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </form>
+
+</div>

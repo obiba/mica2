@@ -35,7 +35,7 @@ public final class DocumentQueryHelper {
 
   public static DocumentQueryJoinKeys processStudyJoinKey(SearchResponse response) {
     DocumentQueryJoinKeys joinKeys = new DocumentQueryJoinKeys();
-    response.getAggregations().forEach(aggregation -> ((Terms) aggregation).getBuckets().stream().forEach(bucket -> {
+    response.getAggregations().forEach(aggregation -> ((Terms) aggregation).getBuckets().forEach(bucket -> {
       if(bucket.getDocCount() > 0) {
         joinKeys.studyIds.add(bucket.getKeyAsString());
       }
@@ -46,10 +46,13 @@ public final class DocumentQueryHelper {
 
   public static DocumentQueryJoinKeys processDatasetJoinKeys(SearchResponse response, String datasetId, DocumentQueryIdProvider idProvider) {
     DocumentQueryJoinKeys joinKeys = new DocumentQueryJoinKeys();
-    response.getAggregations().forEach(aggregation -> ((Terms) aggregation).getBuckets().stream().forEach(bucket -> {
-      List<String> list = datasetId.equals(aggregation.getName()) ? joinKeys.datasetIds : joinKeys.studyIds;
-      if (bucket.getDocCount() > 0) list.add(bucket.getKeyAsString());
-    }));
+    response.getAggregations().forEach(
+      aggregation -> ((Terms) aggregation).getBuckets().forEach(
+        bucket -> {
+          List<String> list = datasetId.equals(aggregation.getName()) ? joinKeys.datasetIds : joinKeys.studyIds;
+          if (bucket.getDocCount() > 0)
+            list.add(bucket.getKeyAsString());
+        }));
 
     if(idProvider != null) idProvider.setIds(joinKeys.datasetIds);
     return joinKeys;

@@ -149,7 +149,7 @@ public class EsPublishedDatasetVariableService extends AbstractDocumentService<D
     if(ids.isEmpty()) return QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("id"));
 
     BoolQueryBuilder orFilter = QueryBuilders.boolQuery();
-    ids.stream().forEach(id -> orFilter.should(QueryBuilders.termQuery("datasetId", id)));
+    ids.forEach(id -> orFilter.should(QueryBuilders.termQuery("datasetId", id)));
 
     return orFilter;
   }

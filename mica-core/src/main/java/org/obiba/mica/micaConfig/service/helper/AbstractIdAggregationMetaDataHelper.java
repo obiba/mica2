@@ -26,9 +26,7 @@ public abstract class AbstractIdAggregationMetaDataHelper {
     Optional<Vocabulary> idVocabulary = taxonomy.getVocabularies().stream()
       .filter(v -> v.getName().equals(idVocabularyName) && !v.hasTerms()).findFirst();
 
-    if (idVocabulary.isPresent()) {
-      applyTerms(idVocabulary.get());
-    }
+    idVocabulary.ifPresent(this::applyTerms);
   }
 
   protected abstract Map<String, AggregationMetaDataProvider.LocalizedMetaData> getIdAggregationMap();
@@ -45,10 +43,7 @@ public abstract class AbstractIdAggregationMetaDataHelper {
     Term term = new Term(id);
     term.setTitle(metaData.getTitle());
     term.setDescription(metaData.getDescription());
-    if(metaData.getStart() != null) term.addAttribute("start", metaData.getStart());
-    if(metaData.getEnd() != null) term.addAttribute("end", metaData.getEnd());
 
     return term;
   }
-
 }

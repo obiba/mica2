@@ -18,6 +18,7 @@ import javax.inject.Inject;
 
 import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.core.domain.StudyTable;
+import org.obiba.mica.study.domain.BaseStudy;
 import org.obiba.mica.study.domain.DataCollectionEvent;
 import org.obiba.mica.study.domain.Population;
 import org.obiba.mica.study.domain.Study;
@@ -37,7 +38,7 @@ public class DceIdAggregationMetaDataHelper extends AbstractIdAggregationMetaDat
 
   @Cacheable(value = "aggregations-metadata", key = "'dce'")
   public Map<String, AggregationMetaDataProvider.LocalizedMetaData> getDces() {
-    List<Study> studies = sudo(() -> publishedStudyService.findAll());
+    List<BaseStudy> studies = sudo(() -> publishedStudyService.findAll());
     Map<String, AggregationMetaDataProvider.LocalizedMetaData> res = Maps.newHashMap();
 
     studies.forEach(study -> {
@@ -73,10 +74,6 @@ public class DceIdAggregationMetaDataHelper extends AbstractIdAggregationMetaDat
     return getDces();
   }
 
-  private String yearToString(Integer year) {
-    return year == null ? null : year.toString();
-  }
-
   static class MonikerData {
     LocalizedString studyAcronym;
     LocalizedString populationName;
@@ -101,5 +98,4 @@ public class DceIdAggregationMetaDataHelper extends AbstractIdAggregationMetaDat
         dceDescription != null ? dceDescription.getOrDefault(locale, "") : "");
     }
   }
-
 }

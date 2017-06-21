@@ -71,7 +71,7 @@ public class StudyPackageImportServiceImpl extends AbstractProtobufProvider impl
   private TempFileService tempFileService;
 
   @Inject
-  private StudyService studyService;
+  private CollectionStudyService collectionStudyService;
 
   @Inject
   private NetworkService networkService;
@@ -140,7 +140,7 @@ public class StudyPackageImportServiceImpl extends AbstractProtobufProvider impl
       }
     });
 
-    studyService.save(study, "Imported");
+    collectionStudyService.save(study, "Imported");
 
     attachments.forEach(a -> {
       a.setPath(String.format(a.getPath(), study.getId()));
@@ -148,7 +148,7 @@ public class StudyPackageImportServiceImpl extends AbstractProtobufProvider impl
     });
 
     if(publish) {
-      studyService.publish(study.getId(), true, PublishCascadingScope.ALL);
+      collectionStudyService.publish(study.getId(), true, PublishCascadingScope.ALL);
     }
   }
 
@@ -311,15 +311,11 @@ public class StudyPackageImportServiceImpl extends AbstractProtobufProvider impl
      */
     private List<Attachment> extractAttachments(Mica.StudyDto.Builder builder) {
       List<Attachment> atts = Lists.newArrayList();
-      builder.getAttachmentsList().stream().map(dtos::fromDto).forEach(a -> {
-        a.setPath("/study/%s");
-        atts.add(a);
-      });
       int pIdx = 1;
-      for (Mica.StudyDto.PopulationDto.Builder pBuilder : builder.getPopulationsBuilderList()) {
+      for (Mica.PopulationDto.Builder pBuilder : builder.getPopulationsBuilderList()) {
         pBuilder.setId("" + pIdx++);
         int dceIdx = 1;
-        for (Mica.StudyDto.PopulationDto.DataCollectionEventDto.Builder dceBuilder : pBuilder.getDataCollectionEventsBuilderList()) {
+        for (Mica.PopulationDto.DataCollectionEventDto.Builder dceBuilder : pBuilder.getDataCollectionEventsBuilderList()) {
           dceBuilder.setId("" + dceIdx++);
           dceBuilder.getAttachmentsList().stream().map(dtos::fromDto).forEach(a -> {
             a.setPath("/study/%s/population/" + pBuilder.getId() + "/data-collection-event/" + dceBuilder.getId());
@@ -351,6 +347,5 @@ public class StudyPackageImportServiceImpl extends AbstractProtobufProvider impl
       entryOut.close();
       return entryOut.toByteArray();
     }
-
   }
 }

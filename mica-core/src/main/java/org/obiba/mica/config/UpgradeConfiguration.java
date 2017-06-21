@@ -15,7 +15,19 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
-import org.obiba.mica.core.upgrade.*;
+import org.obiba.mica.core.upgrade.AttachmentsCleanupUpgrade;
+import org.obiba.mica.core.upgrade.AttachmentsPathUpgrade;
+import org.obiba.mica.core.upgrade.ContactsRefactorUpgrade;
+import org.obiba.mica.core.upgrade.DatasetStateUpgrade;
+import org.obiba.mica.core.upgrade.ElasticsearchUpgrade;
+import org.obiba.mica.core.upgrade.HarmonizationDatasetUpgrade;
+import org.obiba.mica.core.upgrade.Mica220Upgrade;
+import org.obiba.mica.core.upgrade.Mica2Upgrade;
+import org.obiba.mica.core.upgrade.Mica3Upgrade;
+import org.obiba.mica.core.upgrade.MicaVersionModifier;
+import org.obiba.mica.core.upgrade.NetworkStateUpgrade;
+import org.obiba.mica.core.upgrade.RuntimeVersionProvider;
+import org.obiba.mica.core.upgrade.SchemaFormUpgrade;
 import org.obiba.runtime.upgrade.UpgradeManager;
 import org.obiba.runtime.upgrade.UpgradeStep;
 import org.obiba.runtime.upgrade.support.DefaultUpgradeManager;
@@ -51,18 +63,18 @@ public class UpgradeConfiguration {
 
   @Bean(name = "upgradeSteps")
   public List<UpgradeStep> upgradeSteps(ApplicationContext applicationContext) {
-    return Lists.newArrayList(applicationContext.getBean(AttachmentsRefactorUpgrade.class),
-      applicationContext.getBean(NetworkLogoMigration.class),
+    return Lists.newArrayList(
       applicationContext.getBean(NetworkStateUpgrade.class),
-      applicationContext.getBean(AttachmentsMigration.class),
       applicationContext.getBean(AttachmentsPathUpgrade.class),
       applicationContext.getBean(AttachmentsCleanupUpgrade.class),
       applicationContext.getBean(ContactsRefactorUpgrade.class),
       applicationContext.getBean(DatasetStateUpgrade.class),
       applicationContext.getBean(ElasticsearchUpgrade.class),
       applicationContext.getBean(HarmonizationDatasetUpgrade.class),
+      applicationContext.getBean(SchemaFormUpgrade.class),
       applicationContext.getBean(Mica2Upgrade.class),
       applicationContext.getBean(Mica220Upgrade.class),
-      applicationContext.getBean(SchemaFormUpgrade.class));
+      applicationContext.getBean(Mica3Upgrade.class)
+    );
   }
 }

@@ -46,8 +46,9 @@ public class DatasetCacheResolver implements CacheResolver{
   public Collection<? extends Cache> resolveCaches(CacheOperationInvocationContext<?> cacheOperationInvocationContext) {
     Collection<Cache> res = Lists.newArrayList();
 
-    Optional<Object> dataset = Arrays.asList(cacheOperationInvocationContext.getArgs()).stream()
-      .filter(o -> o instanceof Dataset).findFirst();
+    Optional<Object> dataset = Arrays.stream(cacheOperationInvocationContext.getArgs())
+      .filter(o -> o instanceof Dataset)
+      .findFirst();
 
     if(dataset.isPresent()) {
       String cacheName = "dataset-" + ((Dataset) dataset.get()).getId();

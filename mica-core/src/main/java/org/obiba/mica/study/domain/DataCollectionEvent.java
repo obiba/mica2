@@ -62,9 +62,6 @@ public class DataCollectionEvent extends AbstractAttributeModelAware
 
   private LocalizedString otherBioSamples;
 
-  @Transient
-  private List<Attachment> attachments = Lists.newArrayList();
-
   @Override
   public String getId() {
     return id;
@@ -190,26 +187,6 @@ public class DataCollectionEvent extends AbstractAttributeModelAware
 
   public void setOtherBioSamples(LocalizedString otherBioSamples) {
     this.otherBioSamples = otherBioSamples;
-  }
-
-  /**
-   * @deprecated kept for backward compatibility.
-   * @return
-     */
-  @Deprecated
-  @JsonIgnore
-  public List<Attachment> getAttachments() {
-    return attachments;
-  }
-
-  /**
-   * @deprecated kept for backward compatibility.
-   * @param attachments
-     */
-  @Deprecated
-  @JsonProperty
-  public void setAttachments(@NotNull List<Attachment> attachments) {
-    this.attachments = attachments == null ? Lists.newArrayList() : attachments;
   }
 
   @Override
