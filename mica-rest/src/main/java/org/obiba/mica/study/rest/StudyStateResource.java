@@ -58,14 +58,14 @@ public class StudyStateResource {
   @GET
   @Timed
   public Mica.StudySummaryDto get() {
-    subjectAclService.checkPermission("/draft/study", "VIEW", id);
+    subjectAclService.checkPermission("/draft/collection-study", "VIEW", id);
     return dtos.asDto(collectionStudyService.getEntityState(id));
   }
 
   @GET
   @Path("/projects")
   public List<Projects.ProjectDto> projects() throws URISyntaxException {
-    subjectAclService.checkPermission("/draft/study", "VIEW", id);
+    subjectAclService.checkPermission("/draft/collection-study", "VIEW", id);
     String opalUrl = Optional.ofNullable(collectionStudyService.findStudy(id)).map(Study::getOpal).orElse(null);
 
     return opalService.getProjectDtos(opalUrl);

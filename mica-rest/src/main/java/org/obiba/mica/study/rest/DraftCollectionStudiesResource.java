@@ -60,7 +60,7 @@ public class DraftCollectionStudiesResource {
   @Timed
   public List<Mica.StudyDto> list() {
     return collectionStudyService.findAllDraftStudies().stream()
-      .filter(s -> subjectAclService.isPermitted("/draft/study", "VIEW", s.getId()))
+      .filter(s -> subjectAclService.isPermitted("/draft/collection-study", "VIEW", s.getId()))
       .sorted((o1, o2) -> o1.getId().compareTo(o2.getId())).map(s -> dtos.asDto(s, true)).collect(Collectors.toList());
   }
 
@@ -69,7 +69,7 @@ public class DraftCollectionStudiesResource {
   @Timed
   public List<Mica.StudySummaryDto> listSummaries(@QueryParam("id") List<String> ids) {
     List<Study> studies = ids.isEmpty() ? collectionStudyService.findAllDraftStudies() : collectionStudyService.findAllDraftStudies(ids);
-    return studies.stream().filter(s -> subjectAclService.isPermitted("/draft/study", "VIEW", s.getId()))
+    return studies.stream().filter(s -> subjectAclService.isPermitted("/draft/collection-study", "VIEW", s.getId()))
       .map(dtos::asSummaryDto).collect(Collectors.toList());
   }
 
@@ -78,13 +78,13 @@ public class DraftCollectionStudiesResource {
   @Timed
   public List<Mica.DocumentDigestDto> listDigests(@QueryParam("id") List<String> ids) {
     List<Study> studies = ids.isEmpty() ? collectionStudyService.findAllDraftStudies() : collectionStudyService.findAllDraftStudies(ids);
-    return studies.stream().filter(s -> subjectAclService.isPermitted("/draft/study", "VIEW", s.getId())).map(dtos::asDigestDto).collect(Collectors.toList());
+    return studies.stream().filter(s -> subjectAclService.isPermitted("/draft/collection-study", "VIEW", s.getId())).map(dtos::asDigestDto).collect(Collectors.toList());
   }
 
   @POST
   @Path("/studies")
   @Timed
-  @RequiresPermissions({"/draft/study:ADD"})
+  @RequiresPermissions({"/draft/collection-study:ADD"})
   public Response create(@SuppressWarnings("TypeMayBeWeakened") Mica.StudyDto studyDto, @Context UriInfo uriInfo,
     @Nullable @QueryParam("comment") String comment) {
     Study study = dtos.fromDto(studyDto);
@@ -103,7 +103,7 @@ public class DraftCollectionStudiesResource {
   @PUT
   @Path("/studies/_index")
   @Timed
-  @RequiresPermissions("/draft/study:PUBLISH")
+  @RequiresPermissions("/draft/collection-study:PUBLISH")
   public Response reIndex() {
     eventBus.post(new IndexStudiesEvent());
     return Response.noContent().build();

@@ -77,12 +77,12 @@ class PersonDtos {
       if(!roles.contains(m.getRole())) return false;
 
       if(asDraft) {
-        return subjectAclService.isPermitted("/draft/study", "VIEW", m.getParentId());
+        return subjectAclService.isPermitted("/draft/collection-study", "VIEW", m.getParentId());
       } else {
         EntityState state = studyService.findStateById(m.getParentId());
         return state != null &&
           state.isPublished() &&
-          subjectAclService.isAccessible(state instanceof StudyState ? "/study" : "/harmonization-study", m.getParentId());
+          subjectAclService.isAccessible(state instanceof StudyState ? "/collection-study" : "/harmonization-study", m.getParentId());
       }
     }).map(m -> asStudyMembershipDto(m, asDraft)).collect(toList()));
     builder.addAllNetworkMemberships(person.getNetworkMemberships().stream().filter(m -> {

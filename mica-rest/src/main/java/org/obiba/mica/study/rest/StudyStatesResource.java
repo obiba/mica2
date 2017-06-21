@@ -74,7 +74,7 @@ public class StudyStatesResource {
 
     if(Strings.isNullOrEmpty(query)) {
       List<StudyState> studyStates = collectionStudyService.findAllStates().stream()
-        .filter(s -> subjectAclService.isPermitted("/draft/study", "VIEW", s.getId())).collect(toList());
+        .filter(s -> subjectAclService.isPermitted("/draft/collection-study", "VIEW", s.getId())).collect(toList());
       totalCount = studyStates.size();
       result = studyStates.stream().sorted((o1, o2) -> o1.getId().compareTo(o2.getId())).skip(from).limit(limit);
     } else {
@@ -90,7 +90,7 @@ public class StudyStatesResource {
 
   @Path("/study-state/{id}")
   public StudyStateResource study(@PathParam("id") String id) {
-    subjectAclService.checkPermission("/draft/study", "VIEW", id);
+    subjectAclService.checkPermission("/draft/collection-study", "VIEW", id);
     StudyStateResource studyStateResource = applicationContext.getBean(StudyStateResource.class);
     studyStateResource.setId(id);
     return studyStateResource;
