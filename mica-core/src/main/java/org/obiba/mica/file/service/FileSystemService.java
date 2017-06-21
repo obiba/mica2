@@ -694,7 +694,7 @@ public class FileSystemService {
     PublishCascadingScope cascadingScope = event.getCascadingScope();
     if(cascadingScope != PublishCascadingScope.NONE) {
       publishWithCascading( //
-          String.format("/study/%s", event.getPersistable().getId()), //
+          String.format("/collection-study/%s", event.getPersistable().getId()), //
           true, //
           event.getPublisher(), //
           cascadingScope); //
@@ -705,7 +705,7 @@ public class FileSystemService {
   @Subscribe
   public void studyUnpublished(StudyUnpublishedEvent event) {
     log.debug("Study {} was unpublished", event.getPersistable());
-    publish(String.format("/study/%s", event.getPersistable().getId()), false);
+    publish(String.format("/collection-study/%s", event.getPersistable().getId()), false);
   }
 
   @Async
@@ -714,7 +714,7 @@ public class FileSystemService {
     log.debug("Study {} was updated", event.getPersistable());
     fsLock.lock();
     try {
-      mkdirs(String.format("/study/%s", event.getPersistable().getId()));
+      mkdirs(String.format("/collection-study/%s", event.getPersistable().getId()));
 
       if(event.getPersistable().hasPopulations()) {
         event.getPersistable().getPopulations().stream().filter(Population::hasDataCollectionEvents).forEach(

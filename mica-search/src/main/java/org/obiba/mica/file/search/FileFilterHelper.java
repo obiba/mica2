@@ -79,7 +79,7 @@ public class FileFilterHelper {
   public static boolean appliesToFile(String path) {
     return path != null &&
       (path.startsWith("/network/") ||
-        path.startsWith("/study/") ||
+        path.startsWith("/collection-study/") ||
         path.startsWith("/harmonization-study/") ||
         path.startsWith("/study-dataset/") ||
         path.startsWith("/harmonization-dataset/") ||
@@ -132,18 +132,18 @@ public class FileFilterHelper {
   }
 
   private List<String> getCollectionStudyIds(String basePath, boolean draft) {
-    if("/".equals(basePath) || "/study".equals(basePath)) {
+    if("/".equals(basePath) || "/collection-study".equals(basePath)) {
       return draft
         ? collectionStudyService.findAllStates().stream().map(StudyState::getId)
-        .filter(s -> subjectAclService.isPermitted("/draft/study", "VIEW", s)).collect(Collectors.toList())
+        .filter(s -> subjectAclService.isPermitted("/draft/collection-study", "VIEW", s)).collect(Collectors.toList())
         : collectionStudyService.findPublishedStates().stream().map(StudyState::getId)
-          .filter(s -> subjectAclService.isAccessible("/study", s)).collect(Collectors.toList());
+          .filter(s -> subjectAclService.isAccessible("/collection-study", s)).collect(Collectors.toList());
     }
-    if(basePath.startsWith("/study/")) {
-      String id = extractId(basePath,"/study/");
+    if(basePath.startsWith("/collection-study/")) {
+      String id = extractId(basePath,"/collection-study/");
       if(draft
-        ? subjectAclService.isPermitted("/draft/study", "VIEW", id)
-        : subjectAclService.isAccessible("/study", id)) return Lists.newArrayList(id);
+        ? subjectAclService.isPermitted("/draft/collection-study", "VIEW", id)
+        : subjectAclService.isAccessible("/collection-study", id)) return Lists.newArrayList(id);
     }
     return Lists.newArrayList();
   }
@@ -237,7 +237,7 @@ public class FileFilterHelper {
     List<QueryBuilder> includes = Lists
       .newArrayList(QueryBuilders.termQuery("path", "/user"), QueryBuilders.prefixQuery("path", "/user/"));
     addFilter(excludes, includes, "/network", networkIds);
-    addFilter(excludes, includes, "/study", collectionStudyIds);
+    addFilter(excludes, includes, "/collection-study", collectionStudyIds);
     addFilter(excludes, includes, "/harmonization-study", harmonizationStudyIds);
     addFilter(excludes, includes, "/study-dataset", studyDatasetIds);
     addFilter(excludes, includes, "/harmonization-dataset", harmonizationDatasetIds);

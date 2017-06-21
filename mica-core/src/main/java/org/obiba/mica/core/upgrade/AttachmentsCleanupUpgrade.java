@@ -58,7 +58,7 @@ public class AttachmentsCleanupUpgrade implements UpgradeStep {
   @Override
   public void execute(Version version) {
     log.info("Executing orphaned attachments cleanup");
-    deleteOrphaned(studyRepository, "^/study/([^/]+)/");
+    deleteOrphaned(studyRepository, "^/collection-study/([^/]+)/");
     deleteOrphaned(dataAccessRequestRepository, "^/data-access-request/([^/]+)/");
   }
 

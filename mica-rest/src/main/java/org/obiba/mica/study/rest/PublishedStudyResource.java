@@ -82,7 +82,7 @@ public class PublishedStudyResource {
       fileResource.setAttachment(study.getLogo());
     } else {
       List<Attachment> attachments = fileSystemService
-        .findAttachments(String.format("^/study/%s", study.getId()), true).stream()
+        .findAttachments(String.format("^/collection-study/%s", study.getId()), true).stream()
         .filter(a -> a.getId().equals(fileId)).collect(Collectors.toList());
       if(attachments.isEmpty()) throw NoSuchEntityException.withId(Attachment.class, fileId);
       fileResource.setAttachment(attachments.get(0));
@@ -92,7 +92,7 @@ public class PublishedStudyResource {
   }
 
   private void checkAccess(String id) {
-    subjectAclService.checkAccess("/study", id);
+    subjectAclService.checkAccess("/collection-study", id);
   }
 
   private Study getStudy(String id) {
