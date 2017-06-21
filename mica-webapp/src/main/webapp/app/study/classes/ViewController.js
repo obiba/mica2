@@ -1,6 +1,106 @@
 'use strict';
 /* global processMemberships, STUDY_EVENTS, moment */
 
+/**
+ * Basic study view controller class
+ * Must be overridden before use
+ *
+ * @param $scope
+ * @param $location
+ * @param $routeParams
+ * @param DocumentPermissionsService
+ * @param StudyStatesResource
+ * @param DraftStudyResource
+ * @param DraftStudyRevisionsResource
+ * @constructor
+ */
+mica.study.BaseViewController = function (
+  $scope,
+  $location,
+  $routeParams,
+  DocumentPermissionsService,
+  StudyStatesResource,
+  DraftStudyResource,
+  DraftStudyRevisionsResource) {
+
+  mica.commons.ViewController.call(this, $location);
+
+  var self = this;
+  self.months = moment.months();
+  self.languages = [];
+  self.roles = [];
+
+  self.toStatus = function (value) {
+    DraftStudyResource.toStatus({id: $routeParams.id, value: value}, function () {
+      $scope.studySummary = StudyStatesResource.get({id: $routeParams.id}, self.initializeState);
+    });
+  };
+
+  self.delete = function (study) { };
+
+  self.publish = function (doPublish) { };
+
+  self.emitStudyUpdated = function () {
+    $scope.$emit(STUDY_EVENTS.studyUpdated, $scope.study);
+  };
+
+  self.initializeForm = function () { };
+
+  self.initializeStudy = function (study) { };
+
+  self.fetchStudy = function (id) {
+    return DraftStudyResource.get({id: id}, self.initializeStudy);
+  };
+
+  self.initializeState = function (state) {
+    $scope.permissions = DocumentPermissionsService.state(state['obiba.mica.EntityStateDto.studySummaryState']);
+  };
+
+  self.onRestore = function (event, args) {
+    if (args.commitId) {
+      DraftStudyRevisionsResource.restore({id: $routeParams.id, commitId: args.commitId}, function () {
+        $scope.study = self.fetchStudy($routeParams.id);
+        $scope.studyId = $routeParams.id;
+        if (args.restoreSuccessCallback) {
+          args.restoreSuccessCallback();
+        }
+      });
+    }
+  };
+};
+
+mica.study.BaseViewController.prototype = Object.create(mica.commons.ViewController.prototype);
+mica.study.BaseViewController.prototype.constructor = mica.study.BaseViewController;
+
+
+/**
+ * Collection Study view controller
+ *
+ * @param $scope
+ * @param $rootScope
+ * @param $location
+ * @param $routeParams
+ * @param $translate
+ * @param $uibModal
+ * @param $timeout
+ * @param $filter
+ * @param $q
+ * @param $log
+ * @param NOTIFICATION_EVENTS
+ * @param CONTACT_EVENTS
+ * @param EntityFormResource
+ * @param LocalizedSchemaFormService
+ * @param MicaConfigResource
+ * @param DocumentPermissionsService
+ * @param StudyStatesResource
+ * @param DraftFileSystemSearchResource
+ * @param DraftStudyResource
+ * @param DraftStudyDeleteService
+ * @param DraftStudyRevisionsResource
+ * @param StudyUpdateWarningService
+ * @param EntityPathBuilder
+ * @constructor
+ */
 mica.study.ViewController = function (
   $scope,
   $rootScope,
@@ -26,20 +126,11 @@ mica.study.ViewController = function (
   StudyUpdateWarningService,
   EntityPathBuilder) {
 
-  mica.commons.ViewController.call(this, $location);
+  mica.study.BaseViewController.call(this, $scope, $location, $routeParams, DocumentPermissionsService, StudyStatesResource, DraftStudyResource, DraftStudyRevisionsResource);
 
   var self = this;
-  self.months = moment.months();
-  self.languages = [];
-  self.roles = [];
   self.populationSfForm = {};
   self.dceSfForm = {};
-
-  self.toStatus = function (value) {
-    DraftStudyResource.toStatus({id: $routeParams.id, value: value}, function () {
-      $scope.studySummary = StudyStatesResource.get({id: $routeParams.id}, initializeState);
-    });
-  };
 
   self.delete = function (study) {
     DraftStudyDeleteService.delete(study, function() {
@@ -53,7 +144,7 @@ mica.study.ViewController = function (
       function onSuccess(response) {
         DraftStudyResource.publish({id: $routeParams.id, cascading: response.length > 0 ? 'UNDER_REVIEW' : 'NONE'},
         function () {
-          $scope.studySummary = StudyStatesResource.get({id: $routeParams.id}, initializeState);
+          $scope.studySummary = StudyStatesResource.get({id: $routeParams.id}, self.initializeState);
         });
       },
       function onError() {
@@ -62,17 +153,13 @@ mica.study.ViewController = function (
     } else {
       DraftStudyResource.unPublish({id: $routeParams.id},
       function (response) {
-        $scope.studySummary = StudyStatesResource.get({id: $routeParams.id}, initializeState);
+        $scope.studySummary = StudyStatesResource.get({id: $routeParams.id}, self.initializeState);
         $log.debug(response);
       });
     }
   };
 
-  self.emitStudyUpdated = function () {
-    $scope.$emit(STUDY_EVENTS.studyUpdated, $scope.study);
-  };
-
-  function initializeForm() {
+  self.initializeForm = function () {
     $q.all([
       MicaConfigResource.get().$promise,
       EntityFormResource.get({target: 'study', locale: $translate.use()}).$promise,
@@ -96,20 +183,9 @@ mica.study.ViewController = function (
 
       angular.extend($scope, self); // update scope
     });
-  }
+  };
 
-  function updateTimeline(study) {
-    if (!$scope.timeline) {
-      $scope.timeline = new $.MicaTimeline(new $.StudyDtoParser($translate.use()));
-    }
-
-    $timeout(function () {
-      $scope.timeline.reset().create('#timeline', study).addLegend();
-      $scope.sfForm = angular.copy(self.sfForm);
-    }, 250);
-  }
-
-  function initializeStudy(study) {
+  self.initializeStudy = function (study) {
     if (study.logo) {
       self.logoUrl = 'ws/draft/study/' + study.id + '/file/' + study.logo.id + '/_download';
     }
@@ -130,49 +206,40 @@ mica.study.ViewController = function (
     }
 
     $scope.memberships = processMemberships(study);
-  }
+  };
 
-  function fetchStudy(id) {
-    return DraftStudyResource.get({id: id}, initializeStudy);
-  }
-
-  function onRestore(event, args) {
-    if (args.commitId) {
-      DraftStudyRevisionsResource.restore({id: $routeParams.id, commitId: args.commitId}, function () {
-        $scope.study = fetchStudy($routeParams.id);
-        $scope.studyId = $routeParams.id;
-        if (args.restoreSuccessCallback) {
-          args.restoreSuccessCallback();
-        }
-      });
+  function updateTimeline(study) {
+    if (!$scope.timeline) {
+      $scope.timeline = new $.MicaTimeline(new $.StudyDtoParser($translate.use()));
     }
-  }
 
-  function initializeState(state) {
-    $scope.permissions = DocumentPermissionsService.state(state['obiba.mica.EntityStateDto.studySummaryState']);
+    $timeout(function () {
+      $scope.timeline.reset().create('#timeline', study).addLegend();
+      $scope.sfForm = angular.copy(self.sfForm);
+    }, 250);
   }
 
   if (self.getViewMode() !== self.Mode.Revision) {
-    $scope.study = fetchStudy($routeParams.id);
+    $scope.study = self.fetchStudy($routeParams.id);
   } else {
     $scope.studyId = $routeParams.id;
   }
 
-  $scope.studySummary = StudyStatesResource.get({id: $routeParams.id}, initializeState);
-  $scope.$on(NOTIFICATION_EVENTS.confirmDialogAccepted, onRestore);
+  $scope.studySummary = StudyStatesResource.get({id: $routeParams.id}, self.initializeState);
+  $scope.$on(NOTIFICATION_EVENTS.confirmDialogAccepted, self.onRestore);
   $scope.$on(STUDY_EVENTS.studyUpdated, function (event, studyUpdated) {
     if (studyUpdated) {
       $log.debug('save study', studyUpdated);
 
       $scope.study.$save(function onSuccess(response) {
         $scope.study.content = $scope.study.model ? angular.toJson(response.study.model) : null;
-        $scope.studySummary = StudyStatesResource.get({id: $routeParams.id}, initializeState);
-        $scope.study = fetchStudy($routeParams.id);
+        $scope.studySummary = StudyStatesResource.get({id: $routeParams.id}, self.initializeState);
+        $scope.study = self.fetchStudy($routeParams.id);
       }, function onError(response) {
         $log.error('Error on study save:', response);
         if (response.status === 409) {
           StudyUpdateWarningService.popup(response, 'study.population-or-dce-delete-conflict', 'study.population-or-dce-delete-conflict-message', function () {
-            $scope.study = fetchStudy($routeParams.id);
+            $scope.study = self.fetchStudy($routeParams.id);
           });
         } else {
           $rootScope.$broadcast(NOTIFICATION_EVENTS.showNotificationDialog, {
@@ -183,16 +250,16 @@ mica.study.ViewController = function (
     }
   });
 
-  $rootScope.$on('$translateChangeSuccess', function () { initializeForm(); });
-  initializeForm();
+  $rootScope.$on('$translateChangeSuccess', function () { self.initializeForm(); });
+  self.initializeForm();
 
   populationManagement($rootScope, $scope, $location, NOTIFICATION_EVENTS);
   populationDceManagement($rootScope, $scope, $location, $translate, $uibModal, EntityPathBuilder, NOTIFICATION_EVENTS);
-  contactManagement($scope, $routeParams, CONTACT_EVENTS, fetchStudy);
-  revisionManagement($rootScope, $scope, $filter, DraftStudyRevisionsResource, NOTIFICATION_EVENTS, initializeStudy);
+  contactManagement($scope, $routeParams, CONTACT_EVENTS, self.fetchStudy);
+  revisionManagement($rootScope, $scope, $filter, DraftStudyRevisionsResource, NOTIFICATION_EVENTS, self.initializeStudy);
 };
 
-mica.study.ViewController.prototype = Object.create(mica.commons.ViewController.prototype);
+mica.study.ViewController.prototype = Object.create(mica.study.BaseViewController.prototype);
 mica.study.ViewController.prototype.constructor = mica.study.ViewController;
 
 function populationManagement($rootScope, $scope, $location, NOTIFICATION_EVENTS) {
@@ -380,3 +447,164 @@ function revisionManagement($rootScope, $scope, $filter, DraftStudyRevisionsReso
     }
   };
 }
+
+/**
+ * Harmonization Study view controller
+ *
+ * @param $scope
+ * @param $rootScope
+ * @param $location
+ * @param $routeParams
+ * @param $translate
+ * @param $uibModal
+ * @param $timeout
+ * @param $filter
+ * @param $q
+ * @param $log
+ * @param NOTIFICATION_EVENTS
+ * @param CONTACT_EVENTS
+ * @param EntityFormResource
+ * @param LocalizedSchemaFormService
+ * @param MicaConfigResource
+ * @param DocumentPermissionsService
+ * @param StudyStatesResource
+ * @param DraftFileSystemSearchResource
+ * @param DraftStudyResource
+ * @param DraftStudyDeleteService
+ * @param DraftStudyRevisionsResource
+ * @param StudyUpdateWarningService
+ * @param EntityPathBuilder
+ * @constructor
+ */
+mica.study.HarmonizationStudyViewController = function (
+  $scope,
+  $rootScope,
+  $location,
+  $routeParams,
+  $translate,
+  $uibModal,
+  $timeout,
+  $filter,
+  $q,
+  $log,
+  NOTIFICATION_EVENTS,
+  CONTACT_EVENTS,
+  EntityFormResource,
+  LocalizedSchemaFormService,
+  MicaConfigResource,
+  DocumentPermissionsService,
+  StudyStatesResource,
+  DraftFileSystemSearchResource,
+  DraftStudyResource,
+  DraftStudyDeleteService,
+  DraftStudyRevisionsResource,
+  StudyUpdateWarningService) {
+
+  mica.study.BaseViewController.call(this, $scope, $location, $routeParams, DocumentPermissionsService, StudyStatesResource, DraftStudyResource, DraftStudyRevisionsResource);
+
+  var self = this;
+  self.populationSfForm = {};
+
+  self.delete = function (study) {
+    DraftStudyDeleteService.delete(study, function() {
+      $location.path('/harmonization-study').replace();
+    }, $translate.use());
+  };
+
+  self.publish = function (doPublish) {
+    if (doPublish) {
+      DraftFileSystemSearchResource.searchUnderReview({path: '/harmonization-study/' + $routeParams.id},
+        function onSuccess(response) {
+          DraftStudyResource.publish({id: $routeParams.id, cascading: response.length > 0 ? 'UNDER_REVIEW' : 'NONE'},
+            function () {
+              $scope.studySummary = StudyStatesResource.get({id: $routeParams.id}, self.initializeState);
+            });
+        },
+        function onError() {
+          $log.error('Failed to search for Under Review files.');
+        });
+    } else {
+      DraftStudyResource.unPublish({id: $routeParams.id},
+      function (response) {
+        $scope.studySummary = StudyStatesResource.get({id: $routeParams.id}, self.initializeState);
+        $log.debug(response);
+      });
+    }
+  };
+
+  self.initializeForm = function () {
+    $q.all([
+      MicaConfigResource.get().$promise,
+      EntityFormResource.get({target: 'harmonization-study', locale: $translate.use()}).$promise,
+      EntityFormResource.get({target: 'population', locale: $translate.use()}).$promise
+    ]).then(function (data) {
+      var micaConfig = data[0];
+      var formLanguages = {};
+
+      micaConfig.languages.forEach(function (loc) {
+        formLanguages[loc] = $filter('translate')('language.' + loc);
+      });
+
+      self.languages = micaConfig.languages;
+      self.roles = micaConfig.roles;
+      self.openAccess = micaConfig.openAccess;
+      self.sfOptions.formDefaults = {readonly: true, languages: formLanguages};
+      self.sfForm = data[1];
+      self.populationSfForm = data[2];
+
+      angular.extend($scope, self); // update scope
+    });
+  };
+
+  self.initializeStudy = function (study) {
+    if (study.logo) {
+      self.logoUrl = 'ws/draft/harmonization-study/' + study.id + '/file/' + study.logo.id + '/_download';
+    }
+
+    study.populations = study.populations || [];
+    if (study.populations.length > 0) {
+      $scope.selectedPopulation = study.populations[0];
+    } else {
+      $scope.selectedPopulation = undefined;
+    }
+
+    $scope.memberships = processMemberships(study);
+  };
+
+  if (self.getViewMode() !== self.Mode.Revision) {
+    $scope.study = self.fetchStudy($routeParams.id);
+  } else {
+    $scope.studyId = $routeParams.id;
+  }
+
+  $scope.studySummary = StudyStatesResource.get({id: $routeParams.id}, self.initializeState);
+  $scope.$on(NOTIFICATION_EVENTS.confirmDialogAccepted, self.onRestore);
+  $scope.$on(STUDY_EVENTS.studyUpdated, function (event, studyUpdated) {
+    if (studyUpdated) {
+      $log.debug('save study', studyUpdated);
+
+      $scope.study.$save(function onSuccess(response) {
+        $scope.study.content = $scope.study.model ? angular.toJson(response.study.model) : null;
+        $scope.studySummary = StudyStatesResource.get({id: $routeParams.id}, self.initializeState);
+        $scope.study = self.fetchStudy($routeParams.id);
+      }, function onError(response) {
+        $log.error('Error on study save:', response);
+        if (response.status === 409) {
+          StudyUpdateWarningService.popup(response, 'study.population-or-dce-delete-conflict', 'study.population-or-dce-delete-conflict-message', function () {
+            $scope.study = self.fetchStudy($routeParams.id);
+          });
+        } else {
+          $rootScope.$broadcast(NOTIFICATION_EVENTS.showNotificationDialog, {
+            message: response.data ? response.data : angular.fromJson(response)
+          });
+        }
+      });
+    }
+  });
+
+  $rootScope.$on('$translateChangeSuccess', function () { self.initializeForm(); });
+  self.initializeForm();
+};
+
+mica.study.HarmonizationStudyViewController.prototype = Object.create(mica.study.BaseViewController.prototype);
+mica.study.HarmonizationStudyViewController.prototype.constructor = mica.study.HarmonizationStudyViewController;

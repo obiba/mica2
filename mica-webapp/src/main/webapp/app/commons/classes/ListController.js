@@ -1,6 +1,16 @@
 'use strict';
 
-// can not override due to a call to loadPage
+/**
+ * Basic document list controller
+ * Must not be overridden because of private function calls
+ *
+ * @param $scope
+ * @param $timeout
+ * @param StatesResource
+ * @param DraftDeleteService
+ * @param AlertBuilder
+ * @constructor
+ */
 mica.commons.ListController = function (
   $scope,
   $timeout,
