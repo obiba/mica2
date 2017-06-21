@@ -102,8 +102,7 @@ mica.study
     'DraftHarmonizationStudyDeleteService',
     'DraftHarmonizationStudyRevisionsResource',
     'StudyUpdateWarningService',
-    'EntityPathBuilder',
-    mica.study.ViewController
+    mica.study.HarmonizationStudyViewController
   ])
 
   .controller('StudyPermissionsController', [
@@ -267,5 +266,5 @@ mica.study
     'FormServerValidation',
     'FormDirtyStateObserver',
     'StudyUpdateWarningService',
-    mica.study.EditController
+    mica.study.HarmonizationStudyEditController
   ]);
