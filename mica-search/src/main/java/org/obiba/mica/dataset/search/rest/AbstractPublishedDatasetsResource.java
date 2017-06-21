@@ -130,7 +130,7 @@ public abstract class AbstractPublishedDatasetsResource<T extends Dataset> {
     List<String> ids;
     if("StudyDataset".equals(clazz.getSimpleName()))
       ids = studyDatasetService.findPublishedStates().stream().map(StudyDatasetState::getId)
-        .filter(s -> subjectAclService.isAccessible("/study-dataset", s)).collect(Collectors.toList());
+        .filter(s -> subjectAclService.isAccessible("/collection-dataset", s)).collect(Collectors.toList());
     else ids = harmonizationDatasetService.findPublishedStates().stream().map(HarmonizationDatasetState::getId)
       .filter(s -> subjectAclService.isAccessible("/harmonization-dataset", s)).collect(Collectors.toList());
 

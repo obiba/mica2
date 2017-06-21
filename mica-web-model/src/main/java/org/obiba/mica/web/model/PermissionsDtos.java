@@ -52,7 +52,7 @@ class PermissionsDtos {
   }
 
   public Mica.PermissionsDto asDto(StudyDataset  dataset) {
-    return asDto("/draft/study-dataset", dataset.getId());
+    return asDto("/draft/collection-dataset", dataset.getId());
   }
 
   public Mica.PermissionsDto asDto(HarmonizationDataset dataset) {
