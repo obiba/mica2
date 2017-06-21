@@ -76,10 +76,13 @@ class PersonDtos {
     builder.addAllStudyMemberships(person.getStudyMemberships().stream().filter(m -> {
       if(!roles.contains(m.getRole())) return false;
 
+      EntityState state = studyService.findStateById(m.getParentId());
       if(asDraft) {
-        return subjectAclService.isPermitted("/draft/study", "VIEW", m.getParentId());
+        return subjectAclService.isPermitted(
+          state instanceof StudyState ? "/draft/study" : "/draft/harmonization-study",
+          "VIEW",
+          m.getParentId());
       } else {
-        EntityState state = studyService.findStateById(m.getParentId());
         return state != null &&
           state.isPublished() &&
           subjectAclService.isAccessible(state instanceof StudyState ? "/study" : "/harmonization-study", m.getParentId());
