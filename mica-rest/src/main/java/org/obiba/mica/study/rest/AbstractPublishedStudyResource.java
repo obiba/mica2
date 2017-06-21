@@ -10,8 +10,11 @@
 
 package org.obiba.mica.study.rest;
 
-import com.codahale.metrics.annotation.Timed;
-import org.apache.shiro.authz.annotation.RequiresAuthentication;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import javax.inject.Inject;
+
 import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.core.ModelAwareTranslator;
 import org.obiba.mica.file.Attachment;
@@ -19,34 +22,18 @@ import org.obiba.mica.file.rest.FileResource;
 import org.obiba.mica.file.service.FileSystemService;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.study.NoSuchStudyException;
-import org.obiba.mica.study.domain.Study;
+import org.obiba.mica.study.domain.BaseStudy;
 import org.obiba.mica.study.service.PublishedStudyService;
+import org.obiba.mica.study.service.StudyService;
 import org.obiba.mica.web.model.Dtos;
-import org.obiba.mica.web.model.Mica;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.QueryParam;
-import java.util.List;
-import java.util.stream.Collectors;
 
-/**
- * REST controller for managing Study.
- */
-@Component
-@Path("/study/{id}")
-@Scope("request")
-@RequiresAuthentication
-public class PublishedStudyResource {
+public abstract class AbstractPublishedStudyResource {
 
-  private static final Logger log = LoggerFactory.getLogger(PublishedStudyResource.class);
+  private static final Logger log = LoggerFactory.getLogger(AbstractPublishedStudyResource.class);
 
   @Inject
   private FileSystemService fileSystemService;
@@ -55,10 +42,13 @@ public class PublishedStudyResource {
   private PublishedStudyService publishedStudyService;
 
   @Inject
+  private StudyService studyService;
+
+  @Inject
   private ApplicationContext applicationContext;
 
   @Inject
-  private Dtos dtos;
+  protected Dtos dtos;
 
   @Inject
   private SubjectAclService subjectAclService;
@@ -66,23 +56,15 @@ public class PublishedStudyResource {
   @Inject
   private ModelAwareTranslator modelAwareTranslator;
 
-  @GET
-  @Timed
-  public Mica.StudyDto get(@PathParam("id") String id, @QueryParam("locale") String locale) {
-    checkAccess(id);
-    return dtos.asDto(getStudy(id, locale));
-  }
-
-  @Path("/file/{fileId}")
-  public FileResource study(@PathParam("id") String id, @PathParam("fileId") String fileId) {
+  protected FileResource getStudyFileResource(String id, String fileId) {
     checkAccess(id);
     FileResource fileResource = applicationContext.getBean(FileResource.class);
-    Study study = getStudy(id);
+    BaseStudy study = getStudy(id);
     if(study.hasLogo() && study.getLogo().getId().equals(fileId)) {
       fileResource.setAttachment(study.getLogo());
     } else {
       List<Attachment> attachments = fileSystemService
-        .findAttachments(String.format("^/collection-study/%s", study.getId()), true).stream()
+        .findAttachments(String.format("^/%s/%s", getStudyPath(id), id), true).stream()
         .filter(a -> a.getId().equals(fileId)).collect(Collectors.toList());
       if(attachments.isEmpty()) throw NoSuchEntityException.withId(Attachment.class, fileId);
       fileResource.setAttachment(attachments.get(0));
@@ -91,16 +73,21 @@ public class PublishedStudyResource {
     return fileResource;
   }
 
-  private void checkAccess(String id) {
-    subjectAclService.checkAccess("/collection-study", id);
+  // TODO: this will be refractored in another like StudyService...
+  protected String getStudyPath(String id) {
+    return studyService.isCollectionStudy(id) ? "study" : "harmonization-study";
   }
 
-  private Study getStudy(String id) {
+  protected void checkAccess(String id) {
+    subjectAclService.checkAccess("/"+getStudyPath(id), id);
+  }
+
+  protected BaseStudy getStudy(String id) {
     return getStudy(id, null);
   }
 
-  private Study getStudy(String id, String locale) {
-    Study study = (Study) publishedStudyService.findById(id);
+  protected BaseStudy getStudy(String id, String locale) {
+    BaseStudy study = publishedStudyService.findById(id);
 
     if (study == null)
       throw NoSuchStudyException.withId(id);
@@ -112,7 +99,7 @@ public class PublishedStudyResource {
     return study;
   }
 
-  private void translateModels(String locale, Study study) {
+  protected void translateModels(String locale, BaseStudy study) {
 
     ModelAwareTranslator.ForLocale modelTranslator = modelAwareTranslator.getModelAwareTranslatorForLocale(locale);
 

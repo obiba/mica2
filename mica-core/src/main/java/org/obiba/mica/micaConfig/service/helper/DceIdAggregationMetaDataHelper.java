@@ -23,6 +23,7 @@ import org.obiba.mica.study.domain.DataCollectionEvent;
 import org.obiba.mica.study.domain.Population;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.service.PublishedStudyService;
+import org.obiba.opal.core.domain.taxonomy.Term;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
@@ -38,7 +39,7 @@ public class DceIdAggregationMetaDataHelper extends AbstractIdAggregationMetaDat
 
   @Cacheable(value = "aggregations-metadata", key = "'dce'")
   public Map<String, AggregationMetaDataProvider.LocalizedMetaData> getDces() {
-    List<BaseStudy> studies = sudo(() -> publishedStudyService.findAll());
+    List<BaseStudy> studies = sudo(() -> publishedStudyService.findAllByClassName(Study.class.getSimpleName()));
     Map<String, AggregationMetaDataProvider.LocalizedMetaData> res = Maps.newHashMap();
 
     studies.forEach(study -> {
@@ -67,6 +68,14 @@ public class DceIdAggregationMetaDataHelper extends AbstractIdAggregationMetaDat
     });
 
     return res;
+  }
+
+  @Override
+  protected Term createTermFromMetaData(String id, AggregationMetaDataProvider.LocalizedMetaData metaData) {
+    Term term = super.createTermFromMetaData(id, metaData);
+    if(metaData.getStart() != null) term.addAttribute("start", metaData.getStart());
+    if(metaData.getEnd() != null) term.addAttribute("end", metaData.getEnd());
+    return term;
   }
 
   @Override
