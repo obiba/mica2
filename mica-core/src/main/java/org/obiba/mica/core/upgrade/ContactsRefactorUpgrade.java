@@ -10,13 +10,10 @@
 
 package org.obiba.mica.core.upgrade;
 
-import java.util.List;
-
-import javax.inject.Inject;
-
+import com.google.common.base.Strings;
+import com.google.common.eventbus.EventBus;
 import org.obiba.mica.contact.event.PersonUpdatedEvent;
 import org.obiba.mica.core.domain.PublishCascadingScope;
-import org.obiba.mica.core.repository.PersonRepository;
 import org.obiba.mica.network.NetworkRepository;
 import org.obiba.mica.network.service.NetworkService;
 import org.obiba.mica.study.StudyRepository;
@@ -30,9 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.ImmutableList;
-import com.google.common.eventbus.EventBus;
+import javax.inject.Inject;
 
 @Component
 public class ContactsRefactorUpgrade implements UpgradeStep {
