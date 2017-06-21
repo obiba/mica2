@@ -32,7 +32,7 @@ public class Study extends BaseStudy {
 
   @Override
   public String pathPrefix() {
-    return "studies";
+    return "collectionStudies";
   }
 
   @Override

@@ -16,7 +16,6 @@ public abstract class StudyEntityState extends EntityState {
 
   @Override
   public String pathPrefix() {
-    return "studies";
+    return "collectionStudies";
   }
-
 }
