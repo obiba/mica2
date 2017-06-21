@@ -221,6 +221,10 @@ public class GitService {
     return Pair.create(String.valueOf(command.getNewTag()), command.getHeadCommitId());
   }
 
+  public File getRepositoriesRoot() {
+    return repositoriesRoot;
+  }
+
   private File getRepositoryPath(GitIdentifier persistable) {
     return new File(repositoriesRoot, Paths.get(persistable.pathPrefix(), persistable.getId() + ".git").toString());
   }
