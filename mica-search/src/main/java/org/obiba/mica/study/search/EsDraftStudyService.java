@@ -10,14 +10,6 @@
 
 package org.obiba.mica.study.search;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import javax.inject.Inject;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -25,11 +17,18 @@ import org.elasticsearch.search.SearchHit;
 import org.obiba.mica.core.domain.DefaultEntityBase;
 import org.obiba.mica.search.AbstractDocumentService;
 import org.obiba.mica.study.domain.Study;
-import org.obiba.mica.study.domain.StudyState;
-import org.obiba.mica.study.service.DraftStudyService;
 import org.obiba.mica.study.service.CollectionStudyService;
+import org.obiba.mica.study.service.DraftStudyService;
 import org.obiba.mica.study.service.HarmonizationStudyService;
 import org.springframework.stereotype.Service;
+
+import javax.inject.Inject;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class EsDraftStudyService extends AbstractDocumentService<Study> implements DraftStudyService {
@@ -66,14 +65,27 @@ public class EsDraftStudyService extends AbstractDocumentService<Study> implemen
 
   @Override
   protected QueryBuilder filterByAccess() {
-    List<String> ids = collectionStudyService.findAllStates().stream().map(StudyState::getId)
-      .filter(s -> subjectAclService.isPermitted("/draft/study", "VIEW", s))
-      .collect(Collectors.toList());
-    ids.addAll(harmonizationStudyService.findPublishedStates().stream().map(DefaultEntityBase::getId)
-      .filter(s -> subjectAclService.isAccessible("/harmonization-study", s)).collect(Collectors.toList()));
 
-    return ids.isEmpty()
+    List<String> authorizedStudyIds = new ArrayList<>();
+    authorizedStudyIds.addAll(findAuthorizedCollectionStudyIds());
+    authorizedStudyIds.addAll(findAuthorizedHarmonizationStudyIds());
+
+    return authorizedStudyIds.isEmpty()
       ? QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("id"))
-      : QueryBuilders.idsQuery().ids(ids);
+      : QueryBuilders.idsQuery().ids(authorizedStudyIds);
+  }
+
+  private List<String> findAuthorizedHarmonizationStudyIds() {
+    return harmonizationStudyService.findAllStates().stream()
+      .map(DefaultEntityBase::getId)
+      .filter(studyId -> subjectAclService.isPermitted("/draft/harmonization-study", "VIEW", studyId))
+      .collect(Collectors.toList());
+  }
+
+  private List<String> findAuthorizedCollectionStudyIds() {
+    return collectionStudyService.findAllStates().stream()
+      .map(DefaultEntityBase::getId)
+      .filter(studyId -> subjectAclService.isPermitted("/draft/collection-study", "VIEW", studyId))
+      .collect(Collectors.toList());
   }
 }

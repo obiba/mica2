@@ -40,7 +40,7 @@ class PermissionsDtos {
   }
 
   public Mica.PermissionsDto asDto(@NotNull Study study) {
-    return asDto("/draft/study", study.getId());
+    return asDto("/draft/collection-study", study.getId());
   }
 
   public Mica.PermissionsDto asDto(@NotNull HarmonizationStudy study) {
@@ -48,7 +48,7 @@ class PermissionsDtos {
   }
 
   public Mica.PermissionsDto asDto(EntityState studyState) {
-    return asDto("/draft/study", studyState.getId());
+    return asDto("/draft/collection-study", studyState.getId());
   }
 
   public Mica.PermissionsDto asDto(StudyDataset  dataset) {

@@ -68,9 +68,6 @@ public abstract class AbstractStudyService<S extends EntityState, T extends Base
   protected FileSystemService fileSystemService;
 
   @Inject
-  protected AttachmentRepository attachmentRepository;
-
-  @Inject
   protected StudyIdGeneratorService studyIdGeneratorService;
 
   @Override
@@ -225,40 +222,6 @@ public abstract class AbstractStudyService<S extends EntityState, T extends Base
     if(state.isPublished()) {
       publishState(study.getId());
       eventBus.post(new StudyPublishedEvent(study, getCurrentUsername(), PublishCascadingScope.NONE));
-    }
-  }
-
-
-  protected void ensureAttachmentState(Attachment a, String path) {
-    if (!fileSystemService.hasAttachmentState(a.getPath(), a.getName(), false)) {
-      Attachment existingAttachment = attachmentRepository.findOne(a.getId());
-
-      if (existingAttachment != null) {
-        if (!fileSystemService.hasAttachmentState(existingAttachment.getPath(), existingAttachment.getName(), false)) {
-          existingAttachment.setPath(path);
-          fileSystemService.reinstate(existingAttachment);
-        }
-      } else {
-        log.warn("Missing attachment from git. Ignoring.", a);
-      }
-    }
-  }
-
-  @Nullable
-  String getNextId(LocalizedString suggested) {
-    if (suggested == null) return null;
-    String prefix = suggested.asUrlSafeString().toLowerCase();
-    if (Strings.isNullOrEmpty(prefix)) return null;
-    String next = prefix;
-    try {
-      getEntityState(next);
-      for (int i = 1; i <= 1000; i++) {
-        next = prefix + "-" + i;
-        getEntityState(next);
-      }
-      return null;
-    } catch (NoSuchEntityException e) {
-      return next;
     }
   }
 }

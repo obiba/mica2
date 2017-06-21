@@ -76,8 +76,8 @@ class NetworkSummaryDtos {
     builder.setPermissions(permissionsDto);
 
     network.getStudyIds().stream()
-      .filter(sId -> asDraft && subjectAclService.isPermitted("/draft/study", "VIEW", sId)
-        || subjectAclService.isAccessible("/study", sId))
+      .filter(sId -> asDraft && subjectAclService.isPermitted("/draft/collection-study", "VIEW", sId)
+        || subjectAclService.isAccessible("/collection-study", sId))
       .forEach(sId -> {
         try {
           builder.addStudyIds(sId);

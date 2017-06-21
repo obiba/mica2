@@ -27,12 +27,12 @@ public class FileSystemTest {
     assertThat(rval.getKey()).isEqualTo("");
     assertThat(rval.getValue()).isEqualTo("SOP.pdf");
 
-    rval = FileSystemService.extractPathName("population/2/data-collection-event/3/SOP.pdf", "/study/x");
-    assertThat(rval.getKey()).isEqualTo("/study/x/population/2/data-collection-event/3");
+    rval = FileSystemService.extractPathName("population/2/data-collection-event/3/SOP.pdf", "/collection-study/x");
+    assertThat(rval.getKey()).isEqualTo("/collection-study/x/population/2/data-collection-event/3");
     assertThat(rval.getValue()).isEqualTo("SOP.pdf");
 
-    rval = FileSystemService.extractPathName("SOP.pdf", "/study/x");
-    assertThat(rval.getKey()).isEqualTo("/study/x");
+    rval = FileSystemService.extractPathName("SOP.pdf", "/collection-study/x");
+    assertThat(rval.getKey()).isEqualTo("/collection-study/x");
     assertThat(rval.getValue()).isEqualTo("SOP.pdf");
   }
 
