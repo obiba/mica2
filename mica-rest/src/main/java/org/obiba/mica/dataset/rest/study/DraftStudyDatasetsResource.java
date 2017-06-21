@@ -91,7 +91,7 @@ public class DraftStudyDatasetsResource {
 
     if(Strings.isNullOrEmpty(query)) {
       List<StudyDataset> datasets = datasetService.findAllDatasets(studyId).stream()
-        .filter(s -> subjectAclService.isPermitted("/draft/study-dataset", "VIEW", s.getId())).collect(toList());
+        .filter(s -> subjectAclService.isPermitted("/draft/collection-dataset", "VIEW", s.getId())).collect(toList());
       totalCount = datasets.size();
       result = datasets.stream().map(d -> dtos.asDto(d, true)).skip(from).limit(limit);
     } else {
@@ -108,7 +108,7 @@ public class DraftStudyDatasetsResource {
   @POST
   @Path("/study-datasets")
   @Timed
-  @RequiresPermissions({ "/draft/study-dataset:ADD" })
+  @RequiresPermissions({ "/draft/collection-dataset:ADD" })
   public Response create(Mica.DatasetDto datasetDto, @Context UriInfo uriInfo,
                          @Nullable @QueryParam("comment") String comment) {
     Dataset dataset = dtos.fromDto(datasetDto);
@@ -122,7 +122,7 @@ public class DraftStudyDatasetsResource {
   @PUT
   @Path("/study-datasets/_index")
   @Timed
-  @RequiresPermissions({ "/draft/study-dataset:PUBLISH" })
+  @RequiresPermissions({ "/draft/collection-dataset:PUBLISH" })
   public Response reIndex() {
     helper.indexAll();
     return Response.noContent().build();

@@ -81,7 +81,7 @@ public class FileFilterHelper {
       (path.startsWith("/network/") ||
         path.startsWith("/collection-study/") ||
         path.startsWith("/harmonization-study/") ||
-        path.startsWith("/study-dataset/") ||
+        path.startsWith("/collection-dataset/") ||
         path.startsWith("/harmonization-dataset/") ||
         path.startsWith("/project/"));
   }
@@ -166,18 +166,18 @@ public class FileFilterHelper {
   }
 
   private List<String> getStudyDatasetIds(String basePath, boolean draft) {
-    if("/".equals(basePath) || "/study-dataset".equals(basePath)) {
+    if("/".equals(basePath) || "/collection-dataset".equals(basePath)) {
       return draft
         ? studyDatasetService.findAllStates().stream().map(StudyDatasetState::getId)
-        .filter(s -> subjectAclService.isPermitted("/draft/study-dataset", "VIEW", s)).collect(Collectors.toList())
+        .filter(s -> subjectAclService.isPermitted("/draft/collection-dataset", "VIEW", s)).collect(Collectors.toList())
         : studyDatasetService.findPublishedStates().stream().map(StudyDatasetState::getId)
-          .filter(s -> subjectAclService.isAccessible("/study-dataset", s)).collect(Collectors.toList());
+          .filter(s -> subjectAclService.isAccessible("/collection-dataset", s)).collect(Collectors.toList());
     }
-    if(basePath.startsWith("/study-dataset/")) {
-      String id = extractId(basePath,"/study-dataset/");
+    if(basePath.startsWith("/collection-dataset/")) {
+      String id = extractId(basePath,"/collection-dataset/");
       if(draft
-        ? subjectAclService.isPermitted("/draft/study-dataset", "VIEW", id)
-        : subjectAclService.isAccessible("/study-dataset", id)) return Lists.newArrayList(id);
+        ? subjectAclService.isPermitted("/draft/collection-dataset", "VIEW", id)
+        : subjectAclService.isAccessible("/collection-dataset", id)) return Lists.newArrayList(id);
     }
     return Lists.newArrayList();
   }
@@ -239,7 +239,7 @@ public class FileFilterHelper {
     addFilter(excludes, includes, "/network", networkIds);
     addFilter(excludes, includes, "/collection-study", collectionStudyIds);
     addFilter(excludes, includes, "/harmonization-study", harmonizationStudyIds);
-    addFilter(excludes, includes, "/study-dataset", studyDatasetIds);
+    addFilter(excludes, includes, "/collection-dataset", studyDatasetIds);
     addFilter(excludes, includes, "/harmonization-dataset", harmonizationDatasetIds);
     addFilter(excludes, includes, "/project", projectIds);
 

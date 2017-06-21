@@ -32,7 +32,7 @@ public class DraftDatasetsResource {
 
   @PUT
   @Path("/_index")
-  @RequiresPermissions({ "/draft/study-dataset:EDIT", "/draft/harmonization-dataset:EDIT" })
+  @RequiresPermissions({ "/draft/collection-dataset:EDIT", "/draft/harmonization-dataset:EDIT" })
   public Response indexAll() {
     eventBus.post(new IndexDatasetsEvent());
     return Response.noContent().build();
