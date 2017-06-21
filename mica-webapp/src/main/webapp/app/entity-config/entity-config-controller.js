@@ -10,8 +10,6 @@
 
 'use strict';
 
-
-
 mica.entityConfig
 
   .controller('EntityConfigController', [
@@ -42,11 +40,13 @@ mica.entityConfig
       var FORMS = {'network': ['network'],
         'study': ['study', 'population', 'data-collection-event'],
         'study-dataset': ['study-dataset'],
-        'harmonization-dataset': ['harmonization-dataset']
+        'harmonization-dataset': ['harmonization-dataset'],
+        'harmonization-study': ['harmonization-study']
       };
 
       function mapTargetTypeToId(type) {
         switch (type) {
+          case 'HarmonizationStudy':
           case 'Study':
             return 'studies';
           case 'Population':
@@ -65,7 +65,14 @@ mica.entityConfig
 
       function initializeScopeTargets() {
         $scope.target = $routeParams.type.match(/([\w-]+)\-config/)[1];
-        var names = $scope.target.endsWith('dataset') ? ['dataset', 'variable'] : [$scope.target];
+        var names = [$scope.target];
+
+        if ($scope.target.endsWith('dataset')) {
+          names = ['dataset', 'variable'];
+        } else if ($scope.target.endsWith('study')) {
+          names = ['study'];
+        }
+
         $scope.taxonomyTargets = names.map(function(name){
           return {name: name, editable: true};
         });

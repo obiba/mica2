@@ -1076,6 +1076,7 @@
       "indexing": "Manage server indices.",
       "network-config": "Configure Network form, permissions and search.",
       "study-config": "Configure Study form, permissions and search.",
+      "harmonization-study-config": "Configure Harmonization Study form, permissions and search.",
       "study-dataset-config": "Configure Study Dataset form, permissions and search.",
       "harmonization-dataset-config": "Configure Harmonization Dataset form, permissions and search.",
       "data-access-config": "Configure Data Access Request form.",
@@ -1247,6 +1248,13 @@
     "schema-form": {
       "title": "Form",
       "info": "The custom network form can be specified both in terms of data structure (schema) and data display and validation (definition). See <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>form schema documentation</a> for more details."
+    }
+  },
+  "harmonization-study-config" : {
+    "title" : "Harmonization Study Configuration",
+    "schema-form": {
+      "title": "Form",
+      "info": "The custom harmonization study form can be specified both in terms of data structure (schema) and data display and validation (definition). See <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>form schema documentation</a> for more details."
     }
   },
   "study-config" : {

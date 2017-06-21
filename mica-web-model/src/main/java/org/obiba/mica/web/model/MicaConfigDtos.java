@@ -20,6 +20,7 @@ import javax.validation.constraints.NotNull;
 import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.micaConfig.AuthType;
+import org.obiba.mica.micaConfig.HarmonizationStudyConfig;
 import org.obiba.mica.micaConfig.PdfDownloadType;
 import org.obiba.mica.micaConfig.domain.*;
 import org.springframework.stereotype.Component;
@@ -313,6 +314,9 @@ class MicaConfigDtos {
       case HarmonizationDataset:
         config = new HarmonizationDatasetConfig();
         break;
+      case HarmonizationStudy:
+        config = new HarmonizationStudyConfig();
+        break;
     }
 
     config.setSchema(dto.getSchema());
@@ -334,6 +338,11 @@ class MicaConfigDtos {
   @NotNull
   Mica.EntityFormDto asDto(@NotNull StudyConfig studyConfig) {
     return asDto(studyConfig, Mica.EntityFormDto.Type.Study);
+  }
+
+  @NotNull
+  Mica.EntityFormDto asDto(@NotNull HarmonizationStudyConfig harmonizationStudyConfig) {
+    return asDto(harmonizationStudyConfig, Mica.EntityFormDto.Type.HarmonizationStudy);
   }
 
   @NotNull

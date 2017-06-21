@@ -556,6 +556,7 @@
     },
     "none": "Aucune étude."
   },
+  "harmonization-studies": "Études harmonisées",
   "contact": {
     "add": {
       "contact": "Ajouter un contact",
@@ -1076,6 +1077,7 @@
       "indexing": "Gérer les index du serveur.",
       "network-config": "Configurer le formulaire, les permissions et la recherche de réseaux.",
       "study-config": "Configurer le formulaire, les permissions et la recherche d'études.",
+      "harmonization-study-config": "Configurer le formulaire, les permissions et la recherche d'études harmonisées.",
       "study-dataset-config": "Configurer le formulaire, les permissions et la recherche d'ensembles de données d'études.",
       "harmonization-dataset-config": "Configurer le formulaire, les permissions et la recherche d'ensembles de données harmonisées.",
       "data-access-config": "Configurer le formulaire de demande d'accès aux données.",
@@ -1247,6 +1249,13 @@
     "schema-form": {
       "title": "Formulaire",
       "info": "Le formulaire de réseau peut être spécifié à la fois en termes de structure de données (schéma) et d'affichage des données et validation (définition). Voir <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>documentation du schema form</a> pour plus de détails."
+    }
+  },
+  "harmonization-study-config" : {
+    "title" : "Configuration des études harmonisée",
+    "schema-form": {
+      "title": "Formulaire",
+      "info": "Le formulaire d'étude harmonisée peut être spécifié à la fois en termes de structure de données (schéma) et d'affichage des données et validation (définition). Voir <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>documentation du schema form</a> pour plus de détails."
     }
   },
   "study-config" : {
