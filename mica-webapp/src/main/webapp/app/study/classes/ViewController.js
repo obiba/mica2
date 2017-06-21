@@ -36,8 +36,10 @@ mica.study.BaseViewController = function (
     });
   };
 
+  /* jshint unused:vars */
   self.delete = function (study) { };
 
+  /* jshint unused:vars */
   self.publish = function (doPublish) { };
 
   self.emitStudyUpdated = function () {
@@ -46,6 +48,7 @@ mica.study.BaseViewController = function (
 
   self.initializeForm = function () { };
 
+  /* jshint unused:vars */
   self.initializeStudy = function (study) { };
 
   self.fetchStudy = function (id) {
@@ -604,6 +607,10 @@ mica.study.HarmonizationStudyViewController = function (
 
   $rootScope.$on('$translateChangeSuccess', function () { self.initializeForm(); });
   self.initializeForm();
+
+  populationManagement($rootScope, $scope, $location, NOTIFICATION_EVENTS);
+  contactManagement($scope, $routeParams, CONTACT_EVENTS, self.fetchStudy);
+  revisionManagement($rootScope, $scope, $filter, DraftStudyRevisionsResource, NOTIFICATION_EVENTS, self.initializeStudy);
 };
 
 mica.study.HarmonizationStudyViewController.prototype = Object.create(mica.study.BaseViewController.prototype);
