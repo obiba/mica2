@@ -46,7 +46,7 @@ mica.commons.ListController = function (
   };
 
   function onSuccess(response, responseHeaders) {
-    self.searching = angular.isDefined($scope.pagination) && "" !== $scope.pagination.searchText;
+    self.searching = angular.isDefined($scope.pagination) && '' !== $scope.pagination.searchText;
     self.documents = response;
     self.totalCount = parseInt(responseHeaders('X-Total-Count'), 10) || self.documents.length; // TODO remove last condition when harmo study is completed
     self.loading = false;
