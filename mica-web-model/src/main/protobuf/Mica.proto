@@ -762,6 +762,7 @@ message EntityFormDto {
     StudyDataset = 5;
     HarmonizationDataset = 6;
     HarmonizationStudy = 7;
+    HarmonizationPopulation = 8;
   }
 
   required Type type = 1;

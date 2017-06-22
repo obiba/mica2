@@ -41,7 +41,7 @@ mica.entityConfig
         'study': ['study', 'population', 'data-collection-event'],
         'study-dataset': ['study-dataset'],
         'harmonization-dataset': ['harmonization-dataset'],
-        'harmonization-study': ['harmonization-study']
+        'harmonization-study': ['harmonization-study', 'harmonization-population']
       };
 
       function mapTargetTypeToId(type) {
@@ -49,6 +49,7 @@ mica.entityConfig
           case 'HarmonizationStudy':
           case 'Study':
             return 'studies';
+          case 'HarmonizationPopulation':
           case 'Population':
             return 'populations';
           case 'DataCollectionEvent':
