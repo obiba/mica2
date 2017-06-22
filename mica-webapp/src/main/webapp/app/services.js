@@ -233,7 +233,7 @@ mica.factory('IndexService', ['$resource',
       networks: $resource('ws/draft/networks/_index', {}, {
         'build': {method: 'PUT'}
       }),
-      studies: $resource('ws/draft/studies/_index', {}, {
+      studies: $resource('ws/draft/collection-studies/_index', {}, {
         'build': {method: 'PUT'}
       }),
       datasets: $resource('ws/draft/datasets/_index', {}, {

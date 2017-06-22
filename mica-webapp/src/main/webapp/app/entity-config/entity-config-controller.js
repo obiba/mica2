@@ -38,7 +38,7 @@ mica.entityConfig
               AlertBuilder,
               $cacheFactory) {
       var FORMS = {'network': ['network'],
-        'study': ['study', 'population', 'data-collection-event'],
+        'collection-study': ['collection-study', 'population', 'data-collection-event'],
         'study-dataset': ['study-dataset'],
         'harmonization-dataset': ['harmonization-dataset'],
         'harmonization-study': ['harmonization-study', 'harmonization-population']

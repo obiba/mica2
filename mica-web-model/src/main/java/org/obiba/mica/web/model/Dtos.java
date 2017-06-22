@@ -51,7 +51,6 @@ import org.obiba.mica.study.domain.HarmonizationStudy;
 import org.obiba.mica.study.domain.HarmonizationStudyState;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.domain.StudyState;
-import org.obiba.mica.web.model.Mica.HarmonizationStudyDto;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.obiba.opal.core.domain.taxonomy.Term;
 import org.obiba.opal.core.domain.taxonomy.Vocabulary;
@@ -130,17 +129,24 @@ public class Dtos {
   }
 
   @NotNull
+  public StudyDto asDto(@NotNull BaseStudy study, boolean asDraft) {
+    return study instanceof Study
+      ? studyDtos.asDto((Study)study, asDraft)
+      : studyDtos.asDto((HarmonizationStudy)study, asDraft);
+  }
+
+  @NotNull
   public StudyDto asDto(@NotNull Study study, boolean asDraft) {
     return studyDtos.asDto(study, asDraft);
   }
 
   @NotNull
-  public HarmonizationStudyDto asDto(@NotNull HarmonizationStudy study) {
+  public StudyDto asDto(@NotNull HarmonizationStudy study) {
     return asDto(study, false);
   }
 
   @NotNull
-  public HarmonizationStudyDto asDto(@NotNull HarmonizationStudy study, boolean asDraft) {
+  public StudyDto asDto(@NotNull HarmonizationStudy study, boolean asDraft) {
     return studyDtos.asDto(study, asDraft);
   }
 
@@ -200,12 +206,7 @@ public class Dtos {
   }
 
   @NotNull
-  public Study fromDto(@NotNull StudyDtoOrBuilder dto) {
-    return studyDtos.fromDto(dto);
-  }
-
-  @NotNull
-  public HarmonizationStudy fromDto(@NotNull Mica.HarmonizationStudyDtoOrBuilder dto) {
+  public BaseStudy fromDto(@NotNull StudyDtoOrBuilder dto) {
     return studyDtos.fromDto(dto);
   }
 

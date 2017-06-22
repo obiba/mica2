@@ -78,7 +78,7 @@ public class DraftHarmonizationStudyResource extends AbstractGitPersistableResou
 
   @GET
   @Timed
-  public Mica.HarmonizationStudyDto get(@QueryParam("locale") String locale, @QueryParam("key") String key) {
+  public Mica.StudyDto get(@QueryParam("locale") String locale, @QueryParam("key") String key) {
     checkPermission("/draft/harmonization-study", "VIEW", key);
     return dtos.asDto(studyService.findDraft(id, locale), true);
   }
@@ -93,13 +93,13 @@ public class DraftHarmonizationStudyResource extends AbstractGitPersistableResou
 
   @PUT
   @Timed
-  public Response update(@SuppressWarnings("TypeMayBeWeakened") Mica.HarmonizationStudyDto studyDto,
+  public Response update(@SuppressWarnings("TypeMayBeWeakened") Mica.StudyDto studyDto,
     @Nullable @QueryParam("comment") String comment) {
     checkPermission("/draft/harmonization-study", "EDIT");
     // ensure study exists
     studyService.findDraft(id);
 
-    HarmonizationStudy study = dtos.fromDto(studyDto);
+    HarmonizationStudy study = (HarmonizationStudy)dtos.fromDto(studyDto);
 
     HashMap<Object, Object> response = Maps.newHashMap();
     response.put("study", study);
@@ -170,7 +170,7 @@ public class DraftHarmonizationStudyResource extends AbstractGitPersistableResou
 
   @GET
   @Path("/commit/{commitId}/view")
-  public Mica.HarmonizationStudyDto getStudyFromCommit(@NotNull @PathParam("commitId") String commitId) throws IOException {
+  public Mica.StudyDto getStudyFromCommit(@NotNull @PathParam("commitId") String commitId) throws IOException {
     checkPermission("/draft/harmonization-study", "VIEW");
     return dtos.asDto(studyService.getFromCommit(studyService.findDraft(id), commitId), true);
   }

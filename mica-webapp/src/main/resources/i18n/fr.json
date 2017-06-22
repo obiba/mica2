@@ -49,7 +49,6 @@
     "update-comment": "Ajoutez un commentaire pour décrire les modifications.",
     "copied": "Copié",
     "copy-to-clipboard": "Copier dans le presse-papier",
-    "title": "Titre",
     "name": "Nom",
     "default": "Par défaut",
     "chronological": "Chronologique"
@@ -61,7 +60,7 @@
     "title": "Bienvenue chez Mica!",
     "subtitle": "Mica vous permet de gérer les études et les ensembles de données du portail de données.",
     "logged": {
-      "message": "Vous êtes connecté en tant que \"{{username}}\".",
+      "userMessage": "Vous êtes connecté en tant que \"{{username}}\".",
       "adminMessage": "Vous êtes connecté en tant que \"{{username}}\" avec les droits d'administrateur."
     }
   },
@@ -273,8 +272,8 @@
     "name-help": "Nom de votre organisation qui sera utilisé lors de l'envoi des courriels de notification.",
     "publicUrl": "URL publique",
     "publicUrl-help": "URL publique du serveur qui sera utilisée lors de l'envoi des courriels de notification.",
-    "publicUrl": "URL du portail",
-    "publicUrl-help": "URL publique du portail qui sera utilisée pour la génération de lien partageable.",
+    "portalUrl": "URL du portail",
+    "portalUrl-help": "URL publique du portail qui sera utilisée pour la génération de lien partageable.",
     "defaultCharSet": "Jeu de caractères par défaut",
     "languages": "Langues",
     "languages-help": "Langues dans lesquelles le contenu du site doit être saisie.",
@@ -661,7 +660,7 @@
     "table-description": "Description",
     "data-schema": {
       "title": "Schéma de données",
-      "Info": "Les variables du schéma de données sont les variables de référence de l'ensemble de données harmonisées. Ceci est un dictionnaire de données simple: aucune donnée sommaire ne sera extraite de la table Opal."
+      "info": "Les variables du schéma de données sont les variables de référence de l'ensemble de données harmonisées. Ceci est un dictionnaire de données simple: aucune donnée sommaire ne sera extraite de la table Opal."
     },
     "index": "Index",
     "add-study-table": "Ajouter une table d'étude",
@@ -783,9 +782,9 @@
   "ok": "OK",
   "confirmation": "Confirmation",
   "submit": "Soumettre",
-  "review": "Révision",
-  "reopen": "Rouvrir",
+  "review": "Révision",  
   "conditionallyApprove": "Approuver sous conditions",
+  "reopen": "Rouvrir",
   "approve": "Approuver",
   "reject": "Rejeter",
   "close": "Fermer",
@@ -1076,7 +1075,7 @@
       "caching": "Gérer les caches du serveur.",
       "indexing": "Gérer les index du serveur.",
       "network-config": "Configurer le formulaire, les permissions et la recherche de réseaux.",
-      "study-config": "Configurer le formulaire, les permissions et la recherche d'études.",
+      "collection-study-config": "Configurer le formulaire, les permissions et la recherche d'études.",
       "harmonization-study-config": "Configurer le formulaire, les permissions et la recherche d'études harmonisées.",
       "study-dataset-config": "Configurer le formulaire, les permissions et la recherche d'ensembles de données d'études.",
       "harmonization-dataset-config": "Configurer le formulaire, les permissions et la recherche d'ensembles de données harmonisées.",
@@ -1260,13 +1259,13 @@
     "harmonization-study-form-title": "Étude harmonisée",
     "harmonization-population-form-title": "Population harmonisée"
   },
-  "study-config" : {
-    "title" : "Configuration des études",
+  "collection-study-config" : {
+    "title" : "Configuration des études de collecte",
     "schema-form": {
       "title": "Formulaire",
       "info": "Le formulaire d'étude peut être spécifié à la fois en termes de structure de données (schéma) et d'affichage des données et validation (définition). Voir <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>documentation du schema form</a> pour plus de détails."
     },
-    "study-form-title": "Étude",
+    "collection-study-form-title": "Étude",
     "population-form-title": "Population",
     "data-collection-event-form-title": "Événement de collecte de données"
   },

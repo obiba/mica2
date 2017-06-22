@@ -10,8 +10,8 @@
 
 package org.obiba.mica.study.domain;
 
+import com.google.common.base.CaseFormat;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import org.hibernate.validator.constraints.URL;
 import org.obiba.mica.core.domain.*;
@@ -58,6 +58,10 @@ public abstract class BaseStudy extends AbstractModelAware implements PersonAwar
   //
   // Accessors
   //
+
+  public String getResourcePath() {
+    return CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_HYPHEN, getClass().getSimpleName());
+  }
 
   public Attachment getLogo() {
     return logo;

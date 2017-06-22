@@ -140,23 +140,21 @@ message StudyDto {
   repeated MembershipsDto memberships = 29;
   optional string content = 30;
   optional bool published = 31;
+
+  extensions 1000 to max;
+}
+
+
+message CollectionStudyDto {
+  extend StudyDto {
+    optional CollectionStudyDto type = 1000;
+  }
 }
 
 message HarmonizationStudyDto {
-  optional string id = 1;
-  optional TimestampsDto timestamps = 2;
-
-  repeated LocalizedStringDto name = 3;
-  repeated LocalizedStringDto acronym = 4;
-  optional AttachmentDto logo = 5;
-  repeated LocalizedStringDto objectives = 6;
-  repeated AttachmentDto attachments = 7;
-  repeated PopulationDto populations = 8;
-  optional string opal = 9;
-  optional PermissionsDto permissions = 10;
-  repeated MembershipsDto memberships = 11;
-  optional string content = 12;
-  optional bool published = 13;
+  extend StudyDto {
+    optional HarmonizationStudyDto type = 1001;
+  }
 }
 
 enum OpalCredentialType {

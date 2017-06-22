@@ -115,7 +115,7 @@ mica.study.EditController = function (
     $q.all([
       MicaConfigResource.get().$promise,
       SfOptionsService.transform(),
-      EntityFormResource.get({target: 'study', locale: $translate.use()}).$promise,
+      EntityFormResource.get({target: 'collection-study', locale: $translate.use()}).$promise,
       $routeParams.id ? DraftStudyResource.get({id: $routeParams.id}).$promise : null
     ]).then(function (data) {
       var micaConfig = data[0];
@@ -142,6 +142,7 @@ mica.study.EditController = function (
 
   function createStudy() {
     $log.debug('Creating new study', $scope.study);
+    $scope.study['obiba.mica.CollectionStudyDto.type'] = {};
     DraftStudiesResource.save($scope.study, function (resource, getResponseHeaders) {
       FormDirtyStateObserver.unobserve();
       var parts = getResponseHeaders().location.split('/');
@@ -244,6 +245,7 @@ mica.study.HarmonizationStudyEditController = function (
 
   function createStudy() {
     $log.debug('Creating new study', $scope.study);
+    $scope.study['obiba.mica.HarmonizationStudyDto.type'] = {};
     DraftStudiesResource.save($scope.study, function (resource, getResponseHeaders) {
       FormDirtyStateObserver.unobserve();
       var parts = getResponseHeaders().location.split('/');

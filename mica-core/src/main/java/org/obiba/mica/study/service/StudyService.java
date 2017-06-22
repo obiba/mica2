@@ -15,12 +15,16 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.core.domain.EntityState;
+import org.obiba.mica.core.domain.PublishCascadingScope;
 import org.obiba.mica.study.domain.BaseStudy;
+import org.obiba.mica.study.domain.HarmonizationStudy;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.event.IndexStudiesEvent;
 import org.springframework.stereotype.Component;
@@ -48,6 +52,24 @@ public class StudyService {
       return findStudy(id) instanceof Study;
     } catch(NoSuchEntityException ex) {
       return false;
+    }
+  }
+
+  public void save(@NotNull @Valid BaseStudy study, @Nullable String comment) {
+    if (study instanceof Study) {
+      collectionStudyService.save((Study)study, comment);
+    } else {
+      harmonizationStudyService.save((HarmonizationStudy)study, comment);
+    }
+  }
+
+  public void publish(@NotNull String id, boolean publish, PublishCascadingScope cascadingScope)
+    throws NoSuchEntityException {
+
+    if (isCollectionStudy(id)) {
+      collectionStudyService.publish(id, publish, cascadingScope);
+    } else {
+      harmonizationStudyService.publish(id, publish, cascadingScope);
     }
   }
 

@@ -694,7 +694,7 @@ public class FileSystemService {
     PublishCascadingScope cascadingScope = event.getCascadingScope();
     if(cascadingScope != PublishCascadingScope.NONE) {
       publishWithCascading( //
-          String.format("/collection-study/%s", event.getPersistable().getId()), //
+        String.format("/%s/%s", event.getPersistable().getResourcePath(), event.getPersistable().getId()), //
           true, //
           event.getPublisher(), //
           cascadingScope); //
@@ -705,7 +705,9 @@ public class FileSystemService {
   @Subscribe
   public void studyUnpublished(StudyUnpublishedEvent event) {
     log.debug("Study {} was unpublished", event.getPersistable());
-    publish(String.format("/collection-study/%s", event.getPersistable().getId()), false);
+    publish(
+      String.format("/%s/%s", event.getPersistable().getResourcePath(), event.getPersistable().getId()), false
+    );
   }
 
   @Async
@@ -714,13 +716,15 @@ public class FileSystemService {
     log.debug("Study {} was updated", event.getPersistable());
     fsLock.lock();
     try {
-      mkdirs(String.format("/collection-study/%s", event.getPersistable().getId()));
+      mkdirs(String.format("/%s/%s", event.getPersistable().getResourcePath(), event.getPersistable().getId()));
 
       if(event.getPersistable().hasPopulations()) {
         event.getPersistable().getPopulations().stream().filter(Population::hasDataCollectionEvents).forEach(
             p -> p.getDataCollectionEvents().forEach(dce -> mkdirs(String
-                .format("/study/%s/population/%s/data-collection-event/%s", event.getPersistable().getId(), p.getId(),
-                    dce.getId()))));
+                .format("/collection-study/%s/population/%s/data-collection-event/%s",
+                  event.getPersistable().getId(),
+                  p.getId(),
+                  dce.getId()))));
       }
     } finally {
       fsLock.unlock();

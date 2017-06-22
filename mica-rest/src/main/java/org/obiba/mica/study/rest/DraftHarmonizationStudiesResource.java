@@ -60,7 +60,7 @@ public class DraftHarmonizationStudiesResource {
   @GET
   @Path("/harmonization-studies")
   @Timed
-  public List<Mica.HarmonizationStudyDto> list() {
+  public List<Mica.StudyDto> list() {
     return harmonizationStudyService.findAllDraftStudies().stream()
       .filter(s -> subjectAclService.isPermitted("/draft/harmonization-study", "VIEW", s.getId()))
       .sorted(Comparator.comparing(AbstractGitPersistable::getId)).map(s -> dtos.asDto(s, true)).collect(Collectors.toList());
@@ -70,9 +70,9 @@ public class DraftHarmonizationStudiesResource {
   @Path("/harmonization-studies")
   @Timed
   @RequiresPermissions({"/draft/harmonization-study:ADD"})
-  public Response create(@SuppressWarnings("TypeMayBeWeakened") Mica.HarmonizationStudyDto studyDto, @Context UriInfo uriInfo,
+  public Response create(@SuppressWarnings("TypeMayBeWeakened") Mica.StudyDto studyDto, @Context UriInfo uriInfo,
     @Nullable @QueryParam("comment") String comment) {
-    HarmonizationStudy study = dtos.fromDto(studyDto);
+    HarmonizationStudy study = (HarmonizationStudy)dtos.fromDto(studyDto);
     harmonizationStudyService.save(study, comment);
     return Response.created(uriInfo.getBaseUriBuilder().path(DraftHarmonizationStudiesResource.class, "study").build(study.getId()))
       .build();
