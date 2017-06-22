@@ -32,7 +32,8 @@ import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.AttachmentState;
 import org.obiba.mica.file.TempFile;
-import org.obiba.mica.micaConfig.HarmonizationStudyConfig;
+import org.obiba.mica.micaConfig.domain.HarmonizationPopulationConfig;
+import org.obiba.mica.micaConfig.domain.HarmonizationStudyConfig;
 import org.obiba.mica.micaConfig.domain.DataAccessForm;
 import org.obiba.mica.micaConfig.domain.DataCollectionEventConfig;
 import org.obiba.mica.micaConfig.domain.DatasetConfig;
@@ -447,6 +448,11 @@ public class Dtos {
   @NotNull
   public Mica.EntityFormDto asDto(@NotNull PopulationConfig populationConfig) {
     return micaConfigDtos.asDto(populationConfig);
+  }
+
+  @NotNull
+  public Mica.EntityFormDto asDto(@NotNull HarmonizationPopulationConfig harmonizationPopulationConfig) {
+    return micaConfigDtos.asDto(harmonizationPopulationConfig);
   }
 
   @NotNull

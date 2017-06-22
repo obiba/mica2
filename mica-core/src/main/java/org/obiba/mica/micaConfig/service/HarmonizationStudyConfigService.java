@@ -2,8 +2,8 @@ package org.obiba.mica.micaConfig.service;
 
 import javax.inject.Inject;
 
-import org.obiba.mica.micaConfig.HarmonizationStudyConfig;
-import org.obiba.mica.micaConfig.repository.HarmonizationConfigRepository;
+import org.obiba.mica.micaConfig.domain.HarmonizationStudyConfig;
+import org.obiba.mica.micaConfig.repository.HarmonizationStudyConfigRepository;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Component;
 
@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 public class HarmonizationStudyConfigService extends EntityConfigService<HarmonizationStudyConfig> {
 
   @Inject
-  HarmonizationConfigRepository harmonizationConfigRepository;
+  HarmonizationStudyConfigRepository harmonizationConfigRepository;
 
   @Override
   protected MongoRepository<HarmonizationStudyConfig, String> getRepository() {

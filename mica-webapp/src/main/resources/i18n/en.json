@@ -1255,7 +1255,9 @@
     "schema-form": {
       "title": "Form",
       "info": "The custom harmonization study form can be specified both in terms of data structure (schema) and data display and validation (definition). See <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>form schema documentation</a> for more details."
-    }
+    },
+    "harmonization-study-form-title": "Harmonization Study",
+    "harmonization-population-form-title": "Harmonization Population"
   },
   "study-config" : {
     "title" : "Study Configuration",

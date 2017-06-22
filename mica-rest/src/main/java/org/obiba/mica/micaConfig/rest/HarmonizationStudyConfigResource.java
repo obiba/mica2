@@ -3,7 +3,7 @@ package org.obiba.mica.micaConfig.rest;
 import javax.inject.Inject;
 import javax.ws.rs.Path;
 
-import org.obiba.mica.micaConfig.HarmonizationStudyConfig;
+import org.obiba.mica.micaConfig.domain.HarmonizationStudyConfig;
 import org.obiba.mica.micaConfig.service.EntityConfigService;
 import org.obiba.mica.micaConfig.service.HarmonizationStudyConfigService;
 import org.obiba.mica.web.model.Dtos;

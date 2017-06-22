@@ -1,6 +1,4 @@
-package org.obiba.mica.micaConfig;
-
-import org.obiba.mica.micaConfig.domain.EntityConfig;
+package org.obiba.mica.micaConfig.domain;
 
 public class HarmonizationStudyConfig extends EntityConfig {
 

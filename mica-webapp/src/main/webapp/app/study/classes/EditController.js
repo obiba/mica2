@@ -344,6 +344,92 @@ mica.study.PopulationEditController = function (
 mica.study.PopulationEditController.prototype = Object.create(mica.commons.EditController.prototype);
 mica.study.PopulationEditController.prototype.constructor = mica.study.PopulationEditController;
 
+mica.study.HarmonizationPopulationEditController = function (
+  $scope,
+  $rootScope,
+  $routeParams,
+  $location,
+  $filter,
+  $translate,
+  $q,
+  $log,
+  MicaConfigResource,
+  SfOptionsService,
+  EntityFormResource,
+  DraftStudyResource,
+  FormServerValidation,
+  FormDirtyStateObserver,
+  StudyUpdateWarningService,
+  MicaUtil
+) {
+
+  mica.study.BaseEditController.call(this, $scope, $routeParams, $location, $log, FormServerValidation, FormDirtyStateObserver, StudyUpdateWarningService);
+
+  var self = this;
+  self.population = {model: {}};
+  self.populationSfForm = {};
+
+  self.save = function (form) {
+    if (!validate(form)) { form.saveAttempted = true; }
+    else { self.updateStudy(); }
+  };
+
+  self.initializeForm = function() {
+    $q.all([
+      MicaConfigResource.get().$promise,
+      SfOptionsService.transform(),
+      EntityFormResource.get({target: 'harmonization-population', locale: $translate.use()}).$promise,
+      DraftStudyResource.get({id: $routeParams.id}).$promise
+    ]).then(function (data) {
+      var micaConfig = data[0];
+      var sfLanguages = {};
+
+      micaConfig.languages.forEach(function (loc) {
+        sfLanguages[loc] = $filter('translate')('language.' + loc);
+      });
+
+      self.languages = micaConfig.languages;
+      self.sfOptions = data[1];
+      self.sfOptions.formDefaults = {languages: sfLanguages};
+      self.populationSfForm = data[2];
+
+      self.study = data[3];
+      if (!self.study.populations) { self.study.populations = []; }
+      if ($routeParams.pid) {
+        self.population = self.study.populations.filter(function (p) { return p.model._id === $routeParams.pid; })[0] || self.population;
+      } else {
+        var currentPopulationIds = self.study.populations.map(function (p) { return p.model._id; });
+        self.population.model._id = MicaUtil.generateNextId(currentPopulationIds);
+
+        self.study.populations.push(self.population);
+      }
+
+      angular.extend($scope, self);
+      FormDirtyStateObserver.observe($scope);
+    });
+  };
+
+  function validate(form) {
+    $scope.$broadcast('schemaFormValidate');
+
+    if ($scope.study.populations.filter(function (p) {
+        return p.model._id === $scope.population.model._id;
+      }).length > 1) {
+      form.$setValidity('population_id', false);
+    } else {
+      form.$setValidity('population_id', true);
+    }
+
+    return form.$valid;
+  }
+
+  $rootScope.$on('$translateChangeSuccess', function () { self.initializeForm(); });
+  self.initializeForm();
+};
+
+mica.study.HarmonizationPopulationEditController.prototype = Object.create(mica.commons.EditController.prototype);
+mica.study.HarmonizationPopulationEditController.prototype.constructor = mica.study.HarmonizationPopulationEditController;
+
 mica.study.DataCollectionEventEditController = function (
   $scope,
   $rootScope,
