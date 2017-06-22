@@ -195,7 +195,7 @@ public abstract class AbstractDocumentService<T> implements DocumentService<T> {
     return null;
   }
 
-  private List<T> executeQuery(QueryBuilder queryBuilder, int from, int size) {
+  protected List<T> executeQuery(QueryBuilder queryBuilder, int from, int size) {
     return executeQueryInternal(queryBuilder, from, size, null);
   }
 

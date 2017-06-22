@@ -25,11 +25,15 @@ import org.obiba.mica.study.service.CollectionStudyService;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+import javax.validation.constraints.NotNull;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import io.jsonwebtoken.lang.Assert;
 
 @Service
 public class EsPublishedStudyService extends AbstractEsStudyService<BaseStudy> implements PublishedStudyService {
@@ -51,6 +55,14 @@ public class EsPublishedStudyService extends AbstractEsStudyService<BaseStudy> i
   @Override
   public long getHarmonizationStudyCount() {
     return getCount(QueryBuilders.termQuery("className", HarmonizationStudy.class.getSimpleName()));
+  }
+
+  @Override
+  public List<BaseStudy> findAllByClassName(@NotNull String className) {
+    Assert.notNull("ClassName query cannot be null");
+    Assert.isTrue(Study.class.getSimpleName().equals(className) ||
+      HarmonizationStudy.class.getSimpleName().equals(className));
+    return executeQuery(QueryBuilders.queryStringQuery(className).defaultField("className"), 0, MAX_SIZE);
   }
 
   @Override

@@ -39,7 +39,7 @@ public abstract class AbstractIdAggregationMetaDataHelper {
     );
   }
 
-  private Term createTermFromMetaData(String id, AggregationMetaDataProvider.LocalizedMetaData metaData) {
+  protected Term createTermFromMetaData(String id, AggregationMetaDataProvider.LocalizedMetaData metaData) {
     Term term = new Term(id);
     term.setTitle(metaData.getTitle());
     term.setDescription(metaData.getDescription());

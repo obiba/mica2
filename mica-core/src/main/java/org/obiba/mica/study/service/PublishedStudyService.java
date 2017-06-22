@@ -10,10 +10,13 @@
 
 package org.obiba.mica.study.service;
 
+import java.util.List;
+
 import org.obiba.mica.core.service.PublishedDocumentService;
 import org.obiba.mica.study.domain.BaseStudy;
 
 public interface PublishedStudyService extends PublishedDocumentService<BaseStudy> {
   long getCollectionStudyCount();
   long getHarmonizationStudyCount();
+  List<BaseStudy> findAllByClassName(String className);
 }
