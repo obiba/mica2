@@ -289,9 +289,11 @@ public abstract class AbstractDocumentQuery {
       .setNoFields();
 
     aggregationYamlParser.getAggregations(getJoinFieldsAsProperties()).forEach(requestBuilder::addAggregation);
+    log.info("Request /{}/{}", getSearchIndex(), getSearchType());
     log.debug("Request /{}/{}: {}", getSearchIndex(), getSearchType(), requestBuilder);
     try {
       SearchResponse response = requestBuilder.execute().actionGet();
+      log.info("Response /{}/{}", getSearchIndex(), getSearchType());
       log.debug("Response /{}/{}: totalHits={}", getSearchIndex(), getSearchType(), response.getHits().getTotalHits());
 
       DocumentQueryJoinKeys joinKeys = processJoinKeys(response);
