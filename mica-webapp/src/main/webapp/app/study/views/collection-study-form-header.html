@@ -11,7 +11,7 @@
 <div>
   <h2>
     <ol class="breadcrumb mica-breadcrumb">
-      <li ng-if="!micaConfig.isSingleNetworkEnabled"><a href="/#/study" translate>studies</a></li>
+      <li ng-if="!micaConfig.isSingleNetworkEnabled"><a href="/#/collection-study" translate>collection-studies</a></li>
       <li class="active">
         <span ng-if="study.id">{{study.id}}</span>
         <span ng-if="!study.id" translate>new-study</span>
@@ -19,5 +19,5 @@
     </ol>
   </h2>
 
-  <div ng-if="study.id" ng-include="'app/study/views/study-tabs.html'"></div>
+  <div ng-if="study.id" ng-include="'app/study/views/collection-study-tabs.html'"></div>
 </div>

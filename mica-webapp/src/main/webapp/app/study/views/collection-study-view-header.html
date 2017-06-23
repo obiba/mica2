@@ -9,10 +9,12 @@
   -->
 
 <div>
-  <div ng-include="'app/study/views/study-view-header.html'" ng-init="tabName='files'"></div>
+  <h2>
+    <ol class="breadcrumb mica-breadcrumb">
+      <li ng-if="!micaConfig.isSingleStudyEnabled"><a href="/#/collection-study" translate>collection-studies</a></li>
+      <li class="active">{{study.id}}</li>
+    </ol>
+  </h2>
 
-
-  <h3 translate>files</h3>
-
-  <div files-list doc-path="/collection-study" doc-id="{{study.id}}" subject="subject"></div>
+  <div ng-include="'app/study/views/collection-study-tabs.html'"></div>
 </div>

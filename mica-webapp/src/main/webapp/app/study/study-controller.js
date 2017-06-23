@@ -18,12 +18,12 @@ mica.study
 
   .controller('StudyMainController', ['$scope', '$location', 'StudyStatesResource',
     function($scope, $location, StudyStatesResource) {
-      $scope.path = '#/study';
+      $scope.path = '#/collection-study';
 
       if($scope.micaConfig.isSingleStudyEnabled) {
         $scope.studies = StudyStatesResource.query({}, function(res) {
           if(res.length) {
-            $location.path('/study/' + res[0].id);
+            $location.path('/collection-study/' + res[0].id);
             $location.replace();
           }
         });

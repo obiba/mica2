@@ -14,52 +14,53 @@ mica.study
   .config(['$routeProvider',
     function ($routeProvider) {
       $routeProvider
-        .when('/study', {
-          templateUrl: 'app/study/views/study-main.html',
+        // collection-study
+        .when('/collection-study', {
+          templateUrl: 'app/study/views/collection-study-main.html',
           controller: 'StudyMainController'
         })
-        .when('/study/new', {
-          templateUrl: 'app/study/views/study-form.html',
+        .when('/collection-study/new', {
+          templateUrl: 'app/study/views/collection-study-form.html',
           controller: 'StudyEditController'
         })
-        .when('/study/:id', {
-          templateUrl: 'app/study/views/study-view.html',
+        .when('/collection-study/:id', {
+          templateUrl: 'app/study/views/collection-study-view.html',
           controller: 'StudyViewController'
         })
-        .when('/study/:id/edit', {
-          templateUrl: 'app/study/views/study-form.html',
+        .when('/collection-study/:id/edit', {
+          templateUrl: 'app/study/views/collection-study-form.html',
           controller: 'StudyEditController'
         })
-        .when('/study/:id/revisions', {
-          templateUrl: 'app/study/views/study-view-revisions.html',
+        .when('/collection-study/:id/revisions', {
+          templateUrl: 'app/study/views/collection-study-view-revisions.html',
           controller: 'StudyViewController'
         })
-        .when('/study/:id/files', {
-          templateUrl: 'app/study/views/study-view-files.html',
+        .when('/collection-study/:id/files', {
+          templateUrl: 'app/study/views/collection-study-view-files.html',
           controller: 'StudyViewController',
           reloadOnSearch: false
         })
-        .when('/study/:id/permissions', {
-          templateUrl: 'app/study/views/study-view-permissions.html',
+        .when('/collection-study/:id/permissions', {
+          templateUrl: 'app/study/views/collection-study-view-permissions.html',
           controller: 'StudyViewController'
         })
-        .when('/study/:id/comments', {
-          templateUrl: 'app/study/views/study-view-comments.html',
+        .when('/collection-study/:id/comments', {
+          templateUrl: 'app/study/views/collection-study-view-comments.html',
           controller: 'StudyViewController'
         })
-        .when('/study/:id/population/add', {
+        .when('/collection-study/:id/population/add', {
           templateUrl: 'app/study/views/population/population-form.html',
           controller: 'StudyPopulationController'
         })
-        .when('/study/:id/population/:pid/edit', {
+        .when('/collection-study/:id/population/:pid/edit', {
           templateUrl: 'app/study/views/population/population-form.html',
           controller: 'StudyPopulationController'
         })
-        .when('/study/:id/population/:pid/dce/add', {
+        .when('/collection-study/:id/population/:pid/dce/add', {
           templateUrl: 'app/study/views/population/dce/data-collection-event-form.html',
           controller: 'StudyPopulationDceController'
         })
-        .when('/study/:id/population/:pid/dce/:dceId/edit', {
+        .when('/collection-study/:id/population/:pid/dce/:dceId/edit', {
           templateUrl: 'app/study/views/population/dce/data-collection-event-form.html',
           controller: 'StudyPopulationDceController'
         })
