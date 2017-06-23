@@ -9,7 +9,7 @@
   -->
 
 <div>
-  <div ng-include="'app/study/views/study-view-header.html'" ng-init="tabName='revisions'"></div>
+  <div ng-include="'app/study/views/collection-study-view-header.html'" ng-init="tabName='revisions'"></div>
 
   <entity-revisions id="{{studyId}}" title="{{'revisions' | translate}}" state="studySummary['obiba.mica.EntityStateDto.studySummaryState']" on-fetch-revisions="fetchRevisions" on-restore-revision="restoreRevision" on-view-revision="viewRevision"></entity-revisions>
   <h3 class="voffset5" translate>study.label</h3>
@@ -19,7 +19,7 @@
   </small>
   <div class="panel panel-default">
     <div class="panel-body">
-      <div ng-include="'app/study/views/study-view-details.html'"></div>
+      <div ng-include="'app/study/views/collection-study-view-details.html'"></div>
     </div>
   </div>
 

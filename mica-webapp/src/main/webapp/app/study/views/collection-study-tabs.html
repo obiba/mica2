@@ -12,19 +12,19 @@
 
   <ul class="nav nav-tabs">
     <li ng-class="{'active': tabName === 'view'}">
-      <a href="#/study/{{study.id}}" title="{{'view' | translate}}"><i class="fa fa-eye"></i></a>
+      <a href="#/collection-study/{{study.id}}" title="{{'view' | translate}}"><i class="fa fa-eye"></i></a>
     </li>
     <li ng-class="{'active': tabName === 'revisions'}">
-      <a href="#/study/{{study.id}}/revisions" title="{{'revisions' | translate}}"><i class="fa fa-list-ol"></i></a>
+      <a href="#/collection-study/{{study.id}}/revisions" title="{{'revisions' | translate}}"><i class="fa fa-list-ol"></i></a>
     </li>
     <li ng-class="{'active': tabName === 'files'}">
-      <a href="#/study/{{study.id}}/files" title="{{'files' | translate}}"><i class="fa fa-file"></i></a>
+      <a href="#/collection-study/{{study.id}}/files" title="{{'files' | translate}}"><i class="fa fa-file"></i></a>
     </li>
     <li ng-class="{'active': tabName === 'comments'}">
-      <a href="#/study/{{study.id}}/comments" title="{{'comments' | translate}}"><i class="fa fa-comments"></i></a>
+      <a href="#/collection-study/{{study.id}}/comments" title="{{'comments' | translate}}"><i class="fa fa-comments"></i></a>
     </li>
     <li ng-class="{'active': tabName === 'permissions'}" ng-if="study.permissions.publish">
-      <a href="#/study/{{study.id}}/permissions" title="{{'permissions' | translate}}"><i class="fa fa-lock"></i></a>
+      <a href="#/collection-study/{{study.id}}/permissions" title="{{'permissions' | translate}}"><i class="fa fa-lock"></i></a>
     </li>
   </ul>
 </div>

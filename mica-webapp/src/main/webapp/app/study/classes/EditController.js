@@ -28,15 +28,17 @@ mica.study.BaseEditController = function (
 
   self.save = function () { };
 
+  self.type = '';
+
   self.cancel = function () {
-    $location.path('/study' + ($routeParams.id ? '/' + $routeParams.id : '')).replace();
+    $location.path('/' + self.type + '-study' + ($routeParams.id ? '/' + $routeParams.id : '')).replace();
   };
 
   self.updateStudy = function () {
     $log.debug('Updating study', $scope.study);
     $scope.study.$save({comment: $scope.revision.comment}, function () {
       FormDirtyStateObserver.unobserve();
-      $location.path('/study/' + $routeParams.id).replace();
+      $location.path('/' + self.type + '-study/' + $routeParams.id).replace();
     }, self.saveErrorHandler);
   };
 
@@ -95,11 +97,13 @@ mica.study.EditController = function (
     }
   };
 
+  self.type = 'collection';
+
   self.updateStudy = function () {
     $log.debug('Updating study', $scope.study);
     $scope.study.$save({comment: $scope.revision.comment}, function (response) {
       FormDirtyStateObserver.unobserve();
-      $location.path('/study/' + response.study.id).replace();
+      $location.path('/collection-study/' + response.study.id).replace();
 
       if (response.potentialConflicts) {
         StudyUpdateWarningService.popup(response.potentialConflicts, 'study.potential-conflicts', 'study.potential-conflicts-message');
@@ -146,7 +150,7 @@ mica.study.EditController = function (
     DraftStudiesResource.save($scope.study, function (resource, getResponseHeaders) {
       FormDirtyStateObserver.unobserve();
       var parts = getResponseHeaders().location.split('/');
-      $location.path('/study/' + parts[parts.length - 1]).replace();
+      $location.path('/collection-study/' + parts[parts.length - 1]).replace();
     }, self.saveErrorHandler);
   }
 
@@ -197,6 +201,8 @@ mica.study.HarmonizationStudyEditController = function (
       }
     }
   };
+
+  self.type = 'harmonization';
 
   self.updateStudy = function () {
     $log.debug('Updating study', $scope.study);
@@ -290,6 +296,8 @@ mica.study.PopulationEditController = function (
     else { self.updateStudy(); }
   };
 
+  self.type = 'collection';
+
   self.initializeForm = function() {
     $q.all([
       MicaConfigResource.get().$promise,
@@ -376,6 +384,8 @@ mica.study.HarmonizationPopulationEditController = function (
     else { self.updateStudy(); }
   };
 
+  self.type = 'harmonization';
+
   self.initializeForm = function() {
     $q.all([
       MicaConfigResource.get().$promise,
@@ -461,6 +471,8 @@ mica.study.DataCollectionEventEditController = function (
     if (!validate(form)) { form.saveAttempted = true; }
     else { self.updateStudy(); }
   };
+
+  self.type = 'collection';
 
   self.initializeForm = function () {
     $q.all([
