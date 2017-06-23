@@ -922,7 +922,7 @@
       "label": "Étiquette",
       "studyNetwork": "Étude/Réseau",
       "noResults": "Aucune variable trouvée",
-      "study": "Étude",
+      "collection": "Collecte",
       "dataschema": "Schéma de données"
     },
     "network": {

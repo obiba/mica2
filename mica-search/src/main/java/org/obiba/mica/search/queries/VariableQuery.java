@@ -207,7 +207,7 @@ public class VariableQuery extends AbstractDocumentQuery {
 
     String studyId = resolver.hasStudyId() ? resolver.getStudyId() : null;
 
-    if(resolver.getType() == DatasetVariable.Type.Study || resolver.getType() == DatasetVariable.Type.Harmonized) {
+    if(resolver.getType() == DatasetVariable.Type.Collection || resolver.getType() == DatasetVariable.Type.Harmonized) {
       studyId = variable.getStudyIds().get(0);
     }
 
@@ -293,7 +293,7 @@ public class VariableQuery extends AbstractDocumentQuery {
   }
 
   public Map<String, Integer> getStudyVariableByDatasetCounts() {
-    return getDocumentBucketCounts(DATASET_ID, VARIABLE_TYPE, DatasetVariable.Type.Study.name());
+    return getDocumentBucketCounts(DATASET_ID, VARIABLE_TYPE, DatasetVariable.Type.Collection.name());
   }
 
   public Map<String, Integer> getDataschemaVariableByDatasetCounts() {

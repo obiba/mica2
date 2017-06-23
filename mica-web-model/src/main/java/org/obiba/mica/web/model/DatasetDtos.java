@@ -97,7 +97,7 @@ class DatasetDtos {
   @NotNull
   Mica.DatasetDto.Builder asDtoBuilder(@NotNull StudyDataset dataset, boolean asDraft) {
     Mica.DatasetDto.Builder builder = asBuilder(dataset);
-    builder.setVariableType(DatasetVariable.Type.Study.name());
+    builder.setVariableType(DatasetVariable.Type.Collection.name());
 
     if(dataset.hasStudyTable() && !Strings.isNullOrEmpty(dataset.getStudyTable().getStudyId())) {
       Mica.CollectionDatasetDto.Builder sbuilder = Mica.CollectionDatasetDto.newBuilder()//

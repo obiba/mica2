@@ -73,7 +73,7 @@ public class PublishedStudyDatasetResource extends AbstractPublishedDatasetResou
     @QueryParam("from") @DefaultValue("0") int from, @QueryParam("limit") @DefaultValue("10") int limit,
     @QueryParam("sort") String sort, @QueryParam("order") String order) {
     checkAccess(id);
-    return getDatasetVariableDtos(queryString, id, DatasetVariable.Type.Study, from, limit, sort, order);
+    return getDatasetVariableDtos(queryString, id, DatasetVariable.Type.Collection, from, limit, sort, order);
   }
 
   /**
@@ -88,7 +88,7 @@ public class PublishedStudyDatasetResource extends AbstractPublishedDatasetResou
     @QueryParam("from") @DefaultValue("0") int from, @QueryParam("limit") @DefaultValue("10") int limit,
     @QueryParam("sort") String sort, @QueryParam("order") String order) {
     checkAccess(id);
-    return getDatasetVariableDtos(id, DatasetVariable.Type.Study, from, limit, sort, order);
+    return getDatasetVariableDtos(id, DatasetVariable.Type.Collection, from, limit, sort, order);
   }
 
   @Path("/variable/{variable}")

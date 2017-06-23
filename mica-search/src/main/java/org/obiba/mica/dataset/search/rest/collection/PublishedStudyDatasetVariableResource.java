@@ -58,7 +58,7 @@ public class PublishedStudyDatasetVariableResource extends AbstractPublishedData
 
   @GET
   public Mica.DatasetVariableDto getVariable() {
-    return getDatasetVariableDto(datasetId, variableName, DatasetVariable.Type.Study);
+    return getDatasetVariableDto(datasetId, variableName, DatasetVariable.Type.Collection);
   }
 
   @GET
@@ -154,8 +154,8 @@ public class PublishedStudyDatasetVariableResource extends AbstractPublishedData
     if(Strings.isNullOrEmpty(crossVariable))
       throw new BadRequestException("Cross variable name is required for the contingency table");
 
-    DatasetVariable var = getDatasetVariable(datasetId, variableName, DatasetVariable.Type.Study, null);
-    DatasetVariable crossVar = getDatasetVariable(datasetId, crossVariable, DatasetVariable.Type.Study, null);
+    DatasetVariable var = getDatasetVariable(datasetId, variableName, DatasetVariable.Type.Collection, null);
+    DatasetVariable crossVar = getDatasetVariable(datasetId, crossVariable, DatasetVariable.Type.Collection, null);
 
     return Pair.create(var, crossVar);
   }

@@ -70,13 +70,13 @@
     "fr": "Type de variable"
   "description": {}
   "terms":
-  - "name": "Study"
+  - "name": "Collection"
     "title":
-      "en": "Study"
-      "fr": "Étude"
+      "en": "Collection"
+      "fr": "Collecte"
     "description":
-      "en": "A study variable holds metadata about data collected within a data collection event."
-      "fr": "Variables d'un jeux de données spécifique à une étude."
+      "en": "A collection variable holds metadata about data collected within a data collection event."
+      "fr": "Variables d'un jeux de données spécifique à une étude de collecte."
   - "name": "Dataschema"
     "title":
       "en": "DataSchema"

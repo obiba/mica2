@@ -51,7 +51,7 @@ public class PublishedDatasetVariableResource {
     DatasetVariableResource resource = null;
     DatasetVariable.IdResolver resolver = DatasetVariable.IdResolver.from(id);
     switch(resolver.getType()) {
-      case Study:
+      case Collection:
         if (!collectionDatasetService.isPublished(resolver.getDatasetId())) throw NoSuchDatasetException.withId(resolver.getDatasetId());
         resource = applicationContext.getBean(PublishedStudyDatasetVariableResource.class);
         ((PublishedStudyDatasetVariableResource)resource).setLocale(locale);

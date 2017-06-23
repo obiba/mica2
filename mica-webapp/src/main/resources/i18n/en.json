@@ -922,7 +922,7 @@
       "label": "Label",
       "studyNetwork": "Study/Network",
       "noResults": "No variable found",
-      "study": "Study",
+      "collection": "Collection",
       "dataschema": "DataSchema"
     },
     "network": {
