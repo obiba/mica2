@@ -39,7 +39,7 @@ import org.obiba.mica.dataset.domain.HarmonizationDatasetState;
 import org.obiba.mica.dataset.domain.StudyDatasetState;
 import org.obiba.mica.dataset.search.VariableIndexer;
 import org.obiba.mica.dataset.service.HarmonizationDatasetService;
-import org.obiba.mica.dataset.service.StudyDatasetService;
+import org.obiba.mica.dataset.service.CollectionDatasetService;
 import org.obiba.mica.micaConfig.service.OpalService;
 import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.network.service.PublishedNetworkService;
@@ -54,7 +54,6 @@ import org.obiba.mica.search.aggregations.TaxonomyAggregationMetaDataProvider;
 import org.obiba.mica.search.aggregations.VariableTaxonomyMetaDataProvider;
 import org.obiba.mica.study.NoSuchStudyException;
 import org.obiba.mica.study.domain.BaseStudy;
-import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.service.PublishedStudyService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
@@ -117,7 +116,7 @@ public class VariableQuery extends AbstractDocumentQuery {
   private ObjectMapper objectMapper;
 
   @Inject
-  private StudyDatasetService studyDatasetService;
+  private CollectionDatasetService collectionDatasetService;
 
   @Inject
   private HarmonizationDatasetService harmonizationDatasetService;
@@ -137,7 +136,7 @@ public class VariableQuery extends AbstractDocumentQuery {
   @Override
   public QueryBuilder getAccessFilter() {
     if(micaConfigService.getConfig().isOpenAccess()) return null;
-    List<String> ids = studyDatasetService.findPublishedStates().stream().map(StudyDatasetState::getId)
+    List<String> ids = collectionDatasetService.findPublishedStates().stream().map(StudyDatasetState::getId)
       .filter(s -> subjectAclService.isAccessible("/collection-dataset", s)).collect(Collectors.toList());
     ids.addAll(harmonizationDatasetService.findPublishedStates().stream().map(HarmonizationDatasetState::getId)
       .filter(s -> subjectAclService.isAccessible("/harmonization-dataset", s)).collect(Collectors.toList()));
@@ -208,7 +207,7 @@ public class VariableQuery extends AbstractDocumentQuery {
 
     String studyId = resolver.hasStudyId() ? resolver.getStudyId() : null;
 
-    if(resolver.getType() == DatasetVariable.Type.Study || resolver.getType() == DatasetVariable.Type.Harmonized) {
+    if(resolver.getType() == DatasetVariable.Type.Collection || resolver.getType() == DatasetVariable.Type.Harmonized) {
       studyId = variable.getStudyIds().get(0);
     }
 
@@ -294,7 +293,7 @@ public class VariableQuery extends AbstractDocumentQuery {
   }
 
   public Map<String, Integer> getStudyVariableByDatasetCounts() {
-    return getDocumentBucketCounts(DATASET_ID, VARIABLE_TYPE, DatasetVariable.Type.Study.name());
+    return getDocumentBucketCounts(DATASET_ID, VARIABLE_TYPE, DatasetVariable.Type.Collection.name());
   }
 
   public Map<String, Integer> getDataschemaVariableByDatasetCounts() {

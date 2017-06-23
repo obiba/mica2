@@ -20,11 +20,11 @@ import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.dataset.DatasetVariableResource;
 import org.obiba.mica.dataset.NoSuchDatasetException;
 import org.obiba.mica.dataset.domain.DatasetVariable;
-import org.obiba.mica.dataset.search.rest.harmonized.PublishedDataschemaDatasetVariableResource;
-import org.obiba.mica.dataset.search.rest.harmonized.PublishedHarmonizedDatasetVariableResource;
-import org.obiba.mica.dataset.search.rest.study.PublishedStudyDatasetVariableResource;
+import org.obiba.mica.dataset.search.rest.harmonization.PublishedDataschemaDatasetVariableResource;
+import org.obiba.mica.dataset.search.rest.harmonization.PublishedHarmonizedDatasetVariableResource;
+import org.obiba.mica.dataset.search.rest.collection.PublishedStudyDatasetVariableResource;
 import org.obiba.mica.dataset.service.HarmonizationDatasetService;
-import org.obiba.mica.dataset.service.StudyDatasetService;
+import org.obiba.mica.dataset.service.CollectionDatasetService;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -36,7 +36,7 @@ import org.springframework.stereotype.Component;
 public class PublishedDatasetVariableResource {
 
   @Inject
-  private StudyDatasetService studyDatasetService;
+  private CollectionDatasetService collectionDatasetService;
 
   @Inject
   private HarmonizationDatasetService harmonizationDatasetService;
@@ -51,8 +51,8 @@ public class PublishedDatasetVariableResource {
     DatasetVariableResource resource = null;
     DatasetVariable.IdResolver resolver = DatasetVariable.IdResolver.from(id);
     switch(resolver.getType()) {
-      case Study:
-        if (!studyDatasetService.isPublished(resolver.getDatasetId())) throw NoSuchDatasetException.withId(resolver.getDatasetId());
+      case Collection:
+        if (!collectionDatasetService.isPublished(resolver.getDatasetId())) throw NoSuchDatasetException.withId(resolver.getDatasetId());
         resource = applicationContext.getBean(PublishedStudyDatasetVariableResource.class);
         ((PublishedStudyDatasetVariableResource)resource).setLocale(locale);
         break;

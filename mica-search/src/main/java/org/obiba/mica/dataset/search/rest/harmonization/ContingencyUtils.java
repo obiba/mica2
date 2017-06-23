@@ -8,7 +8,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.obiba.mica.dataset.search.rest.harmonized;
+package org.obiba.mica.dataset.search.rest.harmonization;
 
 import java.util.List;
 import java.util.Map;

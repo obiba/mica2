@@ -8,7 +8,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.obiba.mica.dataset.search.rest.study;
+package org.obiba.mica.dataset.search.rest.collection;
 
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
@@ -28,7 +28,7 @@ import com.codahale.metrics.annotation.Timed;
 
 @Component
 @Scope("request")
-@Path("/study-datasets")
+@Path("/collection-datasets")
 @RequiresAuthentication
 public class PublishedStudyDatasetsResource extends AbstractPublishedDatasetsResource<StudyDataset> {
 

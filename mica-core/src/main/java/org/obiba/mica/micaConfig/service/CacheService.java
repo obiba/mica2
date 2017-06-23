@@ -18,7 +18,7 @@ import org.obiba.mica.core.domain.NetworkTable;
 import org.obiba.mica.core.domain.StudyTable;
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.service.HarmonizationDatasetService;
-import org.obiba.mica.dataset.service.StudyDatasetService;
+import org.obiba.mica.dataset.service.CollectionDatasetService;
 import org.obiba.mica.security.event.SubjectAclUpdatedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,7 +38,7 @@ public class CacheService {
   private HarmonizationDatasetService harmonizationDatasetService;
 
   @Inject
-  private StudyDatasetService studyDatasetService;
+  private CollectionDatasetService collectionDatasetService;
 
   @Inject
   private EventBus eventBus;
@@ -64,7 +64,7 @@ public class CacheService {
 
   public void clearDatasetVariablesCache() {
     harmonizationDatasetService.findAllDatasets().forEach(dataset -> helper.clearDatasetVariablesCache(dataset));
-    studyDatasetService.findAllDatasets().forEach(dataset -> helper.clearDatasetVariablesCache(dataset));
+    collectionDatasetService.findAllDatasets().forEach(dataset -> helper.clearDatasetVariablesCache(dataset));
   }
 
   public void clearAuthorizationCache() {
@@ -93,7 +93,7 @@ public class CacheService {
     private HarmonizationDatasetService harmonizationDatasetService;
 
     @Inject
-    private StudyDatasetService studyDatasetService;
+    private CollectionDatasetService collectionDatasetService;
 
     @CacheEvict(value = "dataset-variables", cacheResolver = "datasetVariablesCacheResolver", allEntries = true, beforeInvocation = true)
     public void clearDatasetVariablesCache(Dataset dataset) {
@@ -118,10 +118,10 @@ public class CacheService {
             }
           })));
 
-      studyDatasetService.findAllDatasets()
-        .forEach(dataset -> studyDatasetService.getDatasetVariables(dataset).forEach(v -> {
+      collectionDatasetService.findAllDatasets()
+        .forEach(dataset -> collectionDatasetService.getDatasetVariables(dataset).forEach(v -> {
           try {
-            studyDatasetService.getVariableSummary(dataset, v.getName());
+            collectionDatasetService.getVariableSummary(dataset, v.getName());
           } catch(NoSuchVariableException ex) {
             //ignore
           } catch(Exception e) {

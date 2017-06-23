@@ -25,7 +25,7 @@ public class StudyDatasetConfigResource
   extends EntityConfigResource<StudyDatasetConfig, Mica.EntityFormDto>
   implements PermissionAwareResource {
 
-  static final String TARGET_NAME = "study-dataset";
+  static final String TARGET_NAME = "collection-dataset";
 
   @Inject
   StudyDatasetConfigService datasetConfigService;

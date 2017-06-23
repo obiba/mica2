@@ -8,7 +8,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.obiba.mica.dataset.search.rest.harmonized;
+package org.obiba.mica.dataset.search.rest.harmonization;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -32,8 +32,8 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.web.model.Mica;
 
-import static org.obiba.mica.dataset.search.rest.harmonized.ContingencyUtils.getTermsHeaders;
-import static org.obiba.mica.dataset.search.rest.harmonized.ContingencyUtils.getValuesHeaders;
+import static org.obiba.mica.dataset.search.rest.harmonization.ContingencyUtils.getTermsHeaders;
+import static org.obiba.mica.dataset.search.rest.harmonization.ContingencyUtils.getValuesHeaders;
 
 public class ExcelContingencyWriter {
   private static List<String> CONTINUOUS_VALUES = Lists.newArrayList("Min", "Max", "Mean", "Standard Deviation", "N");

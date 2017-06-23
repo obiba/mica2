@@ -8,7 +8,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.obiba.mica.dataset.search.rest.harmonized;
+package org.obiba.mica.dataset.search.rest.harmonization;
 
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;

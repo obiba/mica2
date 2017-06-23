@@ -44,9 +44,9 @@ public class MicaAuthorizingRealm extends AuthorizingRealm implements RolePermis
 
   private static final String[] ALL_RESOURCES = {
     "network",
+    "collection-study",
     "harmonization-study",
-    "study",
-    "study-dataset",
+    "collection-dataset",
     "harmonization-dataset",
     "project"
   };

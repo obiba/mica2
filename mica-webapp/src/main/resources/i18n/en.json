@@ -86,7 +86,7 @@
       "studies": "Studies",
       "studies-with-variables": "Studies with Variables",
       "study-with-variables": "Study with Variables",
-      "study-datasets": "Study Datasets",
+      "collection-datasets": "Collection Datasets",
       "harmonization-datasets": "Harmonization Datasets",
       "variables": "Variables"
     },
@@ -209,8 +209,8 @@
     "studies-help": "Index that allows to search for studies.",
     "datasets": "All datasets",
     "datasets-help": "Index that allows to search for datasets of any type and associated variables.",
-    "study-datasets": "Study datasets",
-    "study-datasets-help": "Index that allows to search for study datasets and associated variables.",
+    "collection-datasets": "Collection datasets",
+    "collection-datasets-help": "Index that allows to search for collection datasets and associated variables.",
     "harmonization-datasets": "Harmonization datasets",
     "harmonization-datasets-help": "Index that allows to search for harmonization datasets and associated variables.",
     "taxonomies": "Taxonomies",
@@ -324,8 +324,8 @@
     "single-study-enabled-help": "Only one study is present in Mica.",
     "network-enabled": "Network section enabled",
     "network-enabled-help": "Network section is accessible.",
-    "study-dataset-enabled": "Study datasets section enabled",
-    "study-dataset-enabled-help": "Study datasets section is accessible.",
+    "collection-dataset-enabled": "Collection datasets section enabled",
+    "collection-dataset-enabled-help": "Collection datasets section is accessible.",
     "harmonization-dataset-enabled": "Harmonization datasets section enabled",
     "harmonization-dataset-enabled-help": "Harmonization datasets section is accessible.",
     "roles": "Membership Roles",
@@ -351,12 +351,12 @@
       "network-subject": "Subject of network status notification",
       "network-help": "Send email notifications when network status changes to Deleted, to Under review or to Draft.",
       "network-subject-help-long": "Email subject can contain the following placeholders: ${organization}, ${documentType}, ${documentId}, ${status}.",
-      "study-dataset-title": "Study Dataset Updates",
-      "study-dataset-info": "Recipients of study dataset updates notifications have at least <code>Editor</code> permission (when status is Draft) or <code>Reviewer</code> permission (when status is Deleted or Under Review).",
-      "study-dataset": "On study dataset status changed notification",
-      "study-dataset-subject": "Subject of study dataset status notification",
-      "study-dataset-help": "Send email notifications when study dataset status changes to Deleted, to Under review or to Draft.",
-      "study-dataset-subject-help-long": "Email subject can contain the following placeholders: ${organization}, ${documentType}, ${documentId}, ${status}.",
+      "collection-dataset-title": "Collection Dataset Updates",
+      "collection-dataset-info": "Recipients of collection dataset updates notifications have at least <code>Editor</code> permission (when status is Draft) or <code>Reviewer</code> permission (when status is Deleted or Under Review).",
+      "collection-dataset": "On collection dataset status changed notification",
+      "collection-dataset-subject": "Subject of collection dataset status notification",
+      "collection-dataset-help": "Send email notifications when collection dataset status changes to Deleted, to Under review or to Draft.",
+      "collection-dataset-subject-help-long": "Email subject can contain the following placeholders: ${organization}, ${documentType}, ${documentId}, ${status}.",
       "harmonization-dataset-title": "Harmonization Dataset Updates",
       "harmonization-dataset-info": "Recipients of harmonization dataset updates notifications have at least <code>Editor</code> permission (when status is Draft) or <code>Reviewer</code> permission (when status is Deleted or Under Review).",
       "harmonization-dataset": "On harmonization dataset status changed notification",
@@ -555,6 +555,7 @@
     },
     "none": "No studies."
   },
+  "collection-studies": "Collection Studies",
   "harmonization-studies": "Harmonization Studies",
   "contact": {
     "add": {
@@ -729,8 +730,8 @@
     "delete-dialog-title": "Delete Data Collection Event",
     "delete-dialog-message": "Are you sure you want to delete the collection event?"
   },
-  "study-datasets": "Study Datasets",
-  "study-dataset": "Study Dataset",
+  "collection-datasets": "Collection Datasets",
+  "collection-dataset": "Collection Dataset",
   "harmonization-datasets": "Harmonization Datasets",
   "harmonization-dataset": "Harmonization Dataset",
   "network": {
@@ -891,7 +892,7 @@
       "dce" : "Data Collection Event (DCE)",
       "network" : "Network",
       "dataschema": "Harmonization Dataset",
-      "dataset": "Study Dataset"
+      "dataset": "Collection Dataset"
     },
     "coverage-select": {
       "all": "All",
@@ -921,7 +922,7 @@
       "label": "Label",
       "studyNetwork": "Study/Network",
       "noResults": "No variable found",
-      "study": "Study",
+      "collection": "Collection",
       "dataschema": "DataSchema"
     },
     "network": {
@@ -1033,7 +1034,7 @@
   "new-folder": "New Folder",
   "new-network": "New Network",
   "new-study": "New Study",
-  "new-study-dataset": "New Study Dataset",
+  "new-collection-dataset": "New Collection Dataset",
   "new-harmonization-dataset": "New Harmonization Dataset",
   "new-data-access-request": "New Data Access Request",
   "new-project": "New Research Project",
@@ -1077,7 +1078,7 @@
       "network-config": "Configure Network form, permissions and search.",
       "collection-study-config": "Configure Study form, permissions and search.",
       "harmonization-study-config": "Configure Harmonization Study form, permissions and search.",
-      "study-dataset-config": "Configure Study Dataset form, permissions and search.",
+      "collection-dataset-config": "Configure Collection Dataset form, permissions and search.",
       "harmonization-dataset-config": "Configure Harmonization Dataset form, permissions and search.",
       "data-access-config": "Configure Data Access Request form.",
       "project-config": "Configure Research Project form.",
@@ -1305,11 +1306,11 @@
       "message": "Are you sure you want to delete the {{arg0}} '{{arg1}}'?"
     }
   },
-  "study-dataset-config" : {
-    "title" : "Study Dataset Configuration",
+  "collection-dataset-config" : {
+    "title" : "Collection Dataset Configuration",
     "schema-form": {
       "title": "Form",
-      "info": "The custom study dataset form can be specified both in terms of data structure (schema) and data display and validation (definition). See <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>form schema documentation</a> for more details."
+      "info": "The custom collection dataset form can be specified both in terms of data structure (schema) and data display and validation (definition). See <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>form schema documentation</a> for more details."
     }
   },
   "harmonization-dataset-config" : {

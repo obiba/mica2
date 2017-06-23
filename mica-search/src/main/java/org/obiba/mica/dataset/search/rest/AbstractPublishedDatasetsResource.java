@@ -31,7 +31,7 @@ import org.obiba.mica.dataset.domain.HarmonizationDatasetState;
 import org.obiba.mica.dataset.domain.StudyDatasetState;
 import org.obiba.mica.dataset.search.DatasetIndexer;
 import org.obiba.mica.dataset.service.HarmonizationDatasetService;
-import org.obiba.mica.dataset.service.StudyDatasetService;
+import org.obiba.mica.dataset.service.CollectionDatasetService;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.web.model.Dtos;
@@ -66,7 +66,7 @@ public abstract class AbstractPublishedDatasetsResource<T extends Dataset> {
   private SubjectAclService subjectAclService;
 
   @Inject
-  private StudyDatasetService studyDatasetService;
+  private CollectionDatasetService collectionDatasetService;
 
   @Inject
   private HarmonizationDatasetService harmonizationDatasetService;
@@ -129,7 +129,7 @@ public abstract class AbstractPublishedDatasetsResource<T extends Dataset> {
     if(micaConfigService.getConfig().isOpenAccess()) return null;
     List<String> ids;
     if("StudyDataset".equals(clazz.getSimpleName()))
-      ids = studyDatasetService.findPublishedStates().stream().map(StudyDatasetState::getId)
+      ids = collectionDatasetService.findPublishedStates().stream().map(StudyDatasetState::getId)
         .filter(s -> subjectAclService.isAccessible("/collection-dataset", s)).collect(Collectors.toList());
     else ids = harmonizationDatasetService.findPublishedStates().stream().map(HarmonizationDatasetState::getId)
       .filter(s -> subjectAclService.isAccessible("/harmonization-dataset", s)).collect(Collectors.toList());

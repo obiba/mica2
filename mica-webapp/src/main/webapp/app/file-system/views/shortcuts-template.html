@@ -74,7 +74,7 @@
           <span><i class="i-obiba-study"></i> {{docId}}</span>
         </a>
       </li>
-      <li ng-if="docPath === '/study-dataset'">
+      <li ng-if="docPath === '/collection-dataset'">
         <a href ng-click="navigateToPath(docPath + '/' + docId)">
           <span><i class="i-obiba-dataset"></i> {{docId}}</span>
         </a>
@@ -93,13 +93,18 @@
         </a>
       </li>
       <li>
-        <a href ng-click="navigateToPath('/study')">
-          <span><i class="i-obiba-study"></i> {{'studies' | translate}}</span>
+        <a href ng-click="navigateToPath('/collection-study')">
+          <span><i class="i-obiba-study"></i> {{'collection-studies' | translate}}</span>
         </a>
       </li>
-      <li ng-if="isStudyDatasetEnabled">
-        <a href ng-click="navigateToPath('/study-dataset')">
-          <span><i class="i-obiba-dataset"></i> {{'study-datasets' | translate}}</span>
+      <li>
+        <a href ng-click="navigateToPath('/harmonization-study')">
+          <span><i class="i-obiba-study"></i> {{'harmonization-studies' | translate}}</span>
+        </a>
+      </li>
+      <li ng-if="isCollectionDatasetEnabled">
+        <a href ng-click="navigateToPath('/collection-dataset')">
+          <span><i class="i-obiba-dataset"></i> {{'collection-datasets' | translate}}</span>
         </a>
       </li>
       <li ng-if="isHarmonizationDatasetEnabled">

@@ -49,7 +49,7 @@ public class DatasetVariable implements Indexable, AttributeAware {
   public static final String OPAL_NETWORK_TABLE_PREFIX = "Network";
 
   public enum Type {
-    Study,       // variable extracted from a study dataset
+    Collection,  // variable extracted from a collection dataset
     Dataschema,  // variable extracted from a harmonization dataset
     Harmonized   // variable that implements a Datashema variable
   }
@@ -117,7 +117,7 @@ public class DatasetVariable implements Indexable, AttributeAware {
   public DatasetVariable() {}
 
   public DatasetVariable(StudyDataset dataset, Variable variable) {
-    this(dataset, Type.Study, variable);
+    this(dataset, Type.Collection, variable);
     boolean hasStudyTable = dataset.hasStudyTable();
     studyIds = hasStudyTable ? Lists.newArrayList(dataset.getStudyTable().getStudyId()) : Lists.newArrayList();
     populationIds = hasStudyTable ? Lists.newArrayList(dataset.getStudyTable().getPopulationId()) : Lists.newArrayList();

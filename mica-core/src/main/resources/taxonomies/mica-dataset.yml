@@ -62,15 +62,15 @@
     "en": "Dataset type"
     "fr": "Type de jeux de données"
   "description":
-    "en": "Type of dataset (e.g. study or harmonization)"
+    "en": "Type of dataset (e.g. data collection or harmonization)"
   "terms":
   - "name": "StudyDataset"
     "title":
-      "en": "Study"
-      "fr": "Étude"
+      "en": "Collection"
+      "fr": "Collected"
     "description":
-      "en": "A study dataset holds metadata about the variables collected within a data collection event."
-      "fr": "Jeux de données spécifique à une étude."
+      "en": "A collection dataset holds metadata about the variables collected within a data collection event."
+      "fr": "Jeux de données spécifique à une étude de collecte."
   - "name": "HarmonizationDataset"
     "title":
       "en": "Harmonization"
@@ -85,6 +85,6 @@
     "fr": "Réseau"
   "description":
     "en": "Network associated to the harmonized dataset."
-    "fr": "Réseau associé à ce jeux de données harmonisé."
+    "fr": "Réseau associé à ce jeux de données harmonisées."
   "attributes":
     "static": "true"

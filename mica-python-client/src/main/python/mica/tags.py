@@ -43,14 +43,14 @@ def send_request(client, ws, verbose=False):
 
 def write_dataset_variable_tags(client, dataset, writer, verbose=False):
     # send request to get total count
-    ws = mica.core.UriBuilder(['study-dataset', dataset, 'variables']).query('from', 0).query('limit', 0).build()
+    ws = mica.core.UriBuilder(['collection-dataset', dataset, 'variables']).query('from', 0).query('limit', 0).build()
     response = send_request(client, ws, verbose)
     total = response['total'] if 'total' in response else 0
     encoder = codecs.getincrementalencoder('utf-8')()
 
     f = 0
     while total > 0 and f < total:
-        ws = mica.core.UriBuilder(['study-dataset', dataset, 'variables']).query('from', f).query('limit', 1000).build()
+        ws = mica.core.UriBuilder(['collection-dataset', dataset, 'variables']).query('from', f).query('limit', 1000).build()
         response = send_request(client, ws, verbose)
         f = f + 1000
         # format response
@@ -85,14 +85,14 @@ def do_command(args):
     client = mica.core.MicaClient.build(mica.core.MicaClient.LoginInfo.parse(args))
 
     if args.dataset == None:
-        ws = mica.core.UriBuilder(['study-datasets']).query('from', 0).query('limit', 0).build()
+        ws = mica.core.UriBuilder(['collection-datasets']).query('from', 0).query('limit', 0).build()
         response = send_request(client, ws, args.verbose)
         total = response['total'] if 'total' in response else 0
         encoder = codecs.getincrementalencoder('utf-8')()
 
         f = 0
         while total > 0 and f < total:
-            ws = mica.core.UriBuilder(['study-datasets']).query('from', f).query('limit', 100).build()
+            ws = mica.core.UriBuilder(['collection-datasets']).query('from', f).query('limit', 100).build()
             response = send_request(client, ws, args.verbose)
             f = f + 100
             if 'datasets' in response:

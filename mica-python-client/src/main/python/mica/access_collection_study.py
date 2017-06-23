@@ -11,7 +11,7 @@ def add_arguments(parser):
     Add command specific options
     """
     mica.access.add_permission_arguments(parser, True)
-    parser.add_argument('id', help='Study ID')
+    parser.add_argument('id', help='Collection Study ID')
 
 def do_command(args):
     """

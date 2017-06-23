@@ -8,7 +8,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.obiba.mica.dataset.rest.study;
+package org.obiba.mica.dataset.rest.collection;
 
 import javax.inject.Inject;
 import javax.ws.rs.GET;
@@ -16,7 +16,7 @@ import javax.ws.rs.Path;
 
 import org.obiba.mica.dataset.DatasetVariableResource;
 import org.obiba.mica.dataset.domain.StudyDataset;
-import org.obiba.mica.dataset.service.StudyDatasetService;
+import org.obiba.mica.dataset.service.CollectionDatasetService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.opal.web.model.Math;
@@ -26,14 +26,14 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Scope("request")
-public class DraftStudyDatasetVariableResource implements DatasetVariableResource {
+public class DraftCollectionDatasetVariableResource implements DatasetVariableResource {
 
   private String datasetId;
 
   private String variableName;
 
   @Inject
-  private StudyDatasetService datasetService;
+  private CollectionDatasetService datasetService;
 
   @Inject
   private Dtos dtos;

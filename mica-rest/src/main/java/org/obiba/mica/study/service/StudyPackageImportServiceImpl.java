@@ -34,7 +34,7 @@ import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.dataset.service.HarmonizationDatasetService;
-import org.obiba.mica.dataset.service.StudyDatasetService;
+import org.obiba.mica.dataset.service.CollectionDatasetService;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.TempFile;
 import org.obiba.mica.file.service.FileSystemService;
@@ -79,7 +79,7 @@ public class StudyPackageImportServiceImpl extends AbstractProtobufProvider impl
   private NetworkService networkService;
 
   @Inject
-  private StudyDatasetService studyDatasetService;
+  private CollectionDatasetService collectionDatasetService;
 
   @Inject
   private HarmonizationDatasetService harmonizationDatasetService;
@@ -199,12 +199,12 @@ public class StudyPackageImportServiceImpl extends AbstractProtobufProvider impl
   private void importDataset(StudyDataset dataset, boolean publish) {
     if(!dataset.hasStudyTable() || Strings.isNullOrEmpty(dataset.getStudyTable().getStudyId())) return;
     try {
-      studyDatasetService.findById(dataset.getId());
-      studyDatasetService.save(dataset);
+      collectionDatasetService.findById(dataset.getId());
+      collectionDatasetService.save(dataset);
     } catch(NoSuchDatasetException e) {
-      studyDatasetService.save(dataset);
+      collectionDatasetService.save(dataset);
     }
-    if(publish) studyDatasetService.publish(dataset.getId(), publish, PublishCascadingScope.ALL);
+    if(publish) collectionDatasetService.publish(dataset.getId(), publish, PublishCascadingScope.ALL);
   }
 
   private void importDataset(HarmonizationDataset dataset, boolean publish) {

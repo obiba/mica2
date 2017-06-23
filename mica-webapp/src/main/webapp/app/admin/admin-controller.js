@@ -220,9 +220,9 @@ mica.admin
         });
       };
 
-      $scope.indexStudyDatasets = function () {
+      $scope.indexCollectionDatasets = function () {
         withConfirm(function () {
-          IndexService.studyDatasets.build();
+          IndexService.CollectionDatasets.build();
         });
       };
 

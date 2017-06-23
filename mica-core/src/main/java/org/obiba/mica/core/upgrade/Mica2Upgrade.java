@@ -25,7 +25,7 @@ import org.obiba.mica.dataset.StudyDatasetRepository;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.dataset.service.HarmonizationDatasetService;
-import org.obiba.mica.dataset.service.StudyDatasetService;
+import org.obiba.mica.dataset.service.CollectionDatasetService;
 import org.obiba.mica.micaConfig.event.TaxonomiesUpdatedEvent;
 import org.obiba.mica.micaConfig.service.CacheService;
 import org.obiba.mica.network.NetworkRepository;
@@ -70,7 +70,7 @@ public class Mica2Upgrade implements UpgradeStep {
   @Inject
   private CollectionStudyService collectionStudyService;
   @Inject
-  private StudyDatasetService studyDatasetService;
+  private CollectionDatasetService collectionDatasetService;
   @Inject
   private HarmonizationDatasetService harmonizationDatasetService;
 
@@ -120,7 +120,7 @@ public class Mica2Upgrade implements UpgradeStep {
     collectionStudyService.indexAll();
 
     logger.debug("Indexing all study datasets in the repository.");
-    studyDatasetService.indexAll(false);
+    collectionDatasetService.indexAll(false);
 
     logger.debug("Indexing all harmonization datasets in the repository.");
     harmonizationDatasetService.indexAll(false);

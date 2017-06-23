@@ -50,18 +50,18 @@
 
     <div ng-class="{'voffset4': screen.is('lg')}" class="row">
       <div class="col-md-6">
-        <h4 translate>config.notifications.study-dataset-title</h4>
+        <h4 translate>config.notifications.collection-dataset-title</h4>
 
-        <p class="help-block" translate>config.notifications.study-dataset-info</p>
+        <p class="help-block" translate>config.notifications.collection-dataset-info</p>
 
-        <div form-checkbox name="isStudyDatasetNotificationsEnabled"
-            model="micaConfig.isStudyDatasetNotificationsEnabled" label="config.notifications.study-dataset"
-            help="config.notifications.study-dataset-help"></div>
-        <div form-input name="studyDatasetNotificationsSubject" model="micaConfig.studyDatasetNotificationsSubject"
-            label="config.notifications.study-dataset-subject"
-            help="config.notifications.study-dataset-subject-help-long"
+        <div form-checkbox name="isCollectionDatasetNotificationsEnabled"
+            model="micaConfig.isCollectionDatasetNotificationsEnabled" label="config.notifications.collection-dataset"
+            help="config.notifications.collection-dataset-help"></div>
+        <div form-input name="collectionDatasetNotificationsSubject" model="micaConfig.collectionDatasetNotificationsSubject"
+            label="config.notifications.collection-dataset-subject"
+            help="config.notifications.collection-dataset-subject-help-long"
             placeholder="[${organization}] ${documentId}: Study Dataset status has changed" required="false"
-            disable="!micaConfig.isStudyDatasetNotificationsEnabled"></div>
+            disable="!micaConfig.isCollectionDatasetNotificationsEnabled"></div>
       </div>
       <div class="col-md-6">
         <h4 translate>config.notifications.harmonization-dataset-title</h4>

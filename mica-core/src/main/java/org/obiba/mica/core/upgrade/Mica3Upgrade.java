@@ -48,7 +48,7 @@ public class Mica3Upgrade implements UpgradeStep {
     try {
       updateStudyResourcePathReferences();
     } catch (RuntimeException e) {
-      logger.error("Error occurred when updating Study path resources (/study -> /collection-study).", e);
+      logger.error("Error occurred when updating Study path resources (/study -> /collection-study and /study-dataset -> /collection-dataset).", e);
     }
   }
 
@@ -60,11 +60,11 @@ public class Mica3Upgrade implements UpgradeStep {
   }
 
   private void updateStudyResourcePathReferences() {
-    logger.info("Replacing all references to /study by /collection-study...");
-    mongoTemplate.execute(db -> db.eval(replaceStudyByCollectionStudy()));
+    logger.info("Replacing all references to /study by /collection-study and /study-dataset by /collection-dataset...");
+    mongoTemplate.execute(db -> db.eval(replaceStudyByCollection()));
   }
 
-  private String replaceStudyByCollectionStudy() {
+  private String replaceStudyByCollection() {
     return
       "function bulkUpdateAttachmentPath(collection, fields, regexp, replace) {\n" +
         "    var bulk = collection.initializeOrderedBulkOp();\n" +

@@ -49,7 +49,9 @@ core:
 search:
 	cd mica-search && ${mvn_exec} install
 
-proto:
+proto: model
+
+model:
 	cd mica-web-model && ${mvn_exec} install
 
 python:
@@ -57,6 +59,12 @@ python:
 
 rest:
 	cd mica-rest && ${mvn_exec} install
+
+log:
+	tail -f ${mica_home}/logs/mica.log
+
+restlog:
+	tail -f ${mica_home}/logs/rest.log
 
 seed:
 	mkdir -p mica-webapp/target/mica_home/seed/in && \

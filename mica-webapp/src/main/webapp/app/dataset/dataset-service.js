@@ -11,26 +11,26 @@
 'use strict';
 
 mica.dataset
-  .factory('StudyDatasetsResource', ['$resource',
+  .factory('CollectionDatasetsResource', ['$resource',
     function ($resource) {
-      return $resource('ws/draft/study-datasets', {}, {
+      return $resource('ws/draft/collection-datasets', {}, {
         'query': {method: 'GET', errorHandler: true, isArray: true},
-        'delete': {method: 'DELETE', url: 'ws/draft/study-dataset/:id', params: {id: '@id'}, errorHandler: true}
+        'delete': {method: 'DELETE', url: 'ws/draft/collection-dataset/:id', params: {id: '@id'}, errorHandler: true}
       });
     }])
 
-  .factory('DraftStudyDatasetsResource', ['$resource', 'DatasetModelService',
+  .factory('DraftCollectionDatasetsResource', ['$resource', 'DatasetModelService',
     function ($resource, DatasetModelService) {
-      return $resource('ws/draft/study-datasets?comment:comment', {}, {
+      return $resource('ws/draft/collection-datasets?comment:comment', {}, {
         'save': {method: 'POST', errorHandler: true, transformRequest: function(dataset) {
           return DatasetModelService.serialize(dataset);
         }}
       });
     }])
 
-  .factory('StudyDatasetResource', ['$resource', 'DatasetModelService',
+  .factory('CollectionDatasetResource', ['$resource', 'DatasetModelService',
     function ($resource, DatasetModelService) {
-      return $resource('ws/draft/study-dataset/:id', {}, {
+      return $resource('ws/draft/collection-dataset/:id', {}, {
         'save': {method: 'PUT', params: {id: '@id'}, errorHandler: true, transformRequest: function(dataset) {
           return DatasetModelService.serialize(dataset);
         }},
@@ -40,9 +40,9 @@ mica.dataset
       });
     }])
 
-  .factory('StudyDatasetPublicationResource', ['$resource',
+  .factory('CollectionDatasetPublicationResource', ['$resource',
     function ($resource) {
-      return $resource('ws/draft/study-dataset/:id/_publish', {}, {
+      return $resource('ws/draft/collection-dataset/:id/_publish', {}, {
         'publish': {method: 'PUT', params: {id: '@id'}},
         'unPublish': {method: 'DELETE', params: {id: '@id'}}
       });
@@ -266,10 +266,10 @@ mica.dataset
     };
 
     factory.setTable = function(dataset, newTable) {
-      if (!dataset['obiba.mica.StudyDatasetDto.type']) {
-        dataset['obiba.mica.StudyDatasetDto.type'] = {};
+      if (!dataset['obiba.mica.CollectionDatasetDto.type']) {
+        dataset['obiba.mica.CollectionDatasetDto.type'] = {};
       }
-      dataset['obiba.mica.StudyDatasetDto.type'].studyTable = newTable;
+      dataset['obiba.mica.CollectionDatasetDto.type'].studyTable = newTable;
     };
 
     factory.getTables = function getOpalTables(dataset) {
