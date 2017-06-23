@@ -289,12 +289,12 @@ public abstract class AbstractDocumentQuery {
       .setNoFields();
 
     aggregationYamlParser.getAggregations(getJoinFieldsAsProperties()).forEach(requestBuilder::addAggregation);
-    log.info("Request /{}/{}", getSearchIndex(), getSearchType());
-    log.debug("Request /{}/{}: {}", getSearchIndex(), getSearchType(), requestBuilder);
+    log.debug("Request /{}/{}", getSearchIndex(), getSearchType());
+    if(log.isTraceEnabled()) log.trace("Request /{}/{}: {}", getSearchIndex(), getSearchType(), requestBuilder);
     try {
       SearchResponse response = requestBuilder.execute().actionGet();
-      log.info("Response /{}/{}", getSearchIndex(), getSearchType());
-      log.debug("Response /{}/{}: totalHits={}", getSearchIndex(), getSearchType(), response.getHits().getTotalHits());
+      log.debug("Response /{}/{}", getSearchIndex(), getSearchType());
+      if(log.isTraceEnabled()) log.trace("Response /{}/{}: totalHits={}", getSearchIndex(), getSearchType(), response.getHits().getTotalHits());
 
       DocumentQueryJoinKeys joinKeys = processJoinKeys(response);
 
@@ -376,8 +376,8 @@ public abstract class AbstractDocumentQuery {
 
     appendAggregations(defaultRequestBuilder, requestBuilder, aggregationGroupBy);
 
-    log.info("Request /{}/{}", getSearchIndex(), getSearchType());
-    log.debug("Request /{}/{}: {}", getSearchIndex(), getSearchType(), requestBuilder.toString());
+    log.debug("Request /{}/{}", getSearchIndex(), getSearchType());
+    if(log.isTraceEnabled()) log.trace("Request /{}/{}: {}", getSearchIndex(), getSearchType(), requestBuilder.toString());
 
     try {
       List<SearchResponse> responses = Stream
@@ -388,12 +388,12 @@ public abstract class AbstractDocumentQuery {
       SearchResponse aggResponse = responses.get(0);
       SearchResponse response = responses.get(1);
 
-      log.info("Response /{}/{}", getSearchIndex(), getSearchType());
+      log.debug("Response /{}/{}", getSearchIndex(), getSearchType());
       if(response == null) {
-        log.debug("Response /{}/{}: totalHits=null", getSearchIndex(), getSearchType());
+        if(log.isTraceEnabled()) log.trace("Response /{}/{}: totalHits=null", getSearchIndex(), getSearchType());
         return null;
       }
-      log.debug("Response /{}/{}: totalHits={}", getSearchIndex(), getSearchType(), response.getHits().totalHits());
+      if(log.isTraceEnabled()) log.trace("Response /{}/{}: totalHits={}", getSearchIndex(), getSearchType(), response.getHits().totalHits());
 
       QueryResultDto.Builder builder = QueryResultDto.newBuilder()
         .setTotalHits((int) response.getHits().getTotalHits());
@@ -454,8 +454,8 @@ public abstract class AbstractDocumentQuery {
 
     appendAggregations(defaultRequestBuilder, requestBuilder, aggregationGroupBy);
 
-    log.info("Request /{}/{}", getSearchIndex(), getSearchType());
-    log.debug("Request /{}/{}: {}", getSearchIndex(), getSearchType(), requestBuilder.toString());
+    log.debug("Request /{}/{}", getSearchIndex(), getSearchType());
+    if(log.isTraceEnabled()) log.trace("Request /{}/{}: {}", getSearchIndex(), getSearchType(), requestBuilder.toString());
 
     MultiSearchResponse.Item[] responses = client.prepareMultiSearch().add(defaultRequestBuilder).add(requestBuilder)
       .execute().actionGet().getResponses();
@@ -463,8 +463,8 @@ public abstract class AbstractDocumentQuery {
     SearchResponse defaultResponse = responses[0].getResponse();
     SearchResponse response = responses[1].getResponse();
 
-    log.info("Response /{}/{}", getSearchIndex(), getSearchType());
-    log.debug("Response /{}/{}: totalHits={}", getSearchIndex(), getSearchType(), response.getHits().getTotalHits());
+    log.debug("Response /{}/{}", getSearchIndex(), getSearchType());
+    if(log.isTraceEnabled()) log.trace("Response /{}/{}: totalHits={}", getSearchIndex(), getSearchType(), response.getHits().getTotalHits());
 
     List<String> rval = null;
     if (response != null) {
