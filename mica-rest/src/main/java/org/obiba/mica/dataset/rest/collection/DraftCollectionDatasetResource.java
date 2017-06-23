@@ -8,7 +8,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.obiba.mica.dataset.rest.study;
+package org.obiba.mica.dataset.rest.collection;
 
 import com.google.common.collect.ImmutableList;
 import org.obiba.mica.AbstractGitPersistableResource;
@@ -18,7 +18,7 @@ import org.obiba.mica.core.service.AbstractGitPersistableService;
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.dataset.domain.StudyDatasetState;
-import org.obiba.mica.dataset.service.StudyDatasetService;
+import org.obiba.mica.dataset.service.CollectionDatasetService;
 import org.obiba.mica.security.rest.SubjectAclResource;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
@@ -41,14 +41,14 @@ import java.util.Map;
 
 @Component
 @Scope("request")
-public class DraftStudyDatasetResource extends
+public class DraftCollectionDatasetResource extends
   AbstractGitPersistableResource<StudyDatasetState,StudyDataset> {
 
   @Inject
   private ApplicationContext applicationContext;
 
   @Inject
-  private StudyDatasetService datasetService;
+  private CollectionDatasetService datasetService;
 
   @Inject
   private Dtos dtos;
@@ -132,9 +132,9 @@ public class DraftStudyDatasetResource extends
   }
 
   @Path("/variable/{variable}")
-  public DraftStudyDatasetVariableResource getVariable(@PathParam("variable") String variable) {
+  public DraftCollectionDatasetVariableResource getVariable(@PathParam("variable") String variable) {
     checkPermission("/draft/collection-dataset", "VIEW");
-    DraftStudyDatasetVariableResource resource = applicationContext.getBean(DraftStudyDatasetVariableResource.class);
+    DraftCollectionDatasetVariableResource resource = applicationContext.getBean(DraftCollectionDatasetVariableResource.class);
     resource.setDatasetId(id);
     resource.setVariableName(variable);
     return resource;

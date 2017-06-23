@@ -151,11 +151,11 @@ public class MicaMetricsService {
   }
 
   public long getDraftStudyDatasetFilesCount() {
-    return draftFileService.getCount("study-dataset");
+    return draftFileService.getCount("collection-dataset");
   }
 
   public long getPublishedStudyDatasetFilesCount() {
-    return publishedFileService.getCount("study-dataset");
+    return publishedFileService.getCount("collection-dataset");
   }
 
   public long getEditingStudyDatasetsCount() {

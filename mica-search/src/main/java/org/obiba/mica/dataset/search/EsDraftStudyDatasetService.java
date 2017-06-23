@@ -24,7 +24,7 @@ import org.elasticsearch.search.SearchHit;
 import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.dataset.domain.StudyDatasetState;
 import org.obiba.mica.dataset.service.DraftStudyDatasetService;
-import org.obiba.mica.dataset.service.StudyDatasetService;
+import org.obiba.mica.dataset.service.CollectionDatasetService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -40,7 +40,7 @@ class EsDraftStudyDatasetService extends AbstractEsDatasetService<StudyDataset> 
   private ObjectMapper objectMapper;
 
   @Inject
-  private StudyDatasetService studyDatasetService;
+  private CollectionDatasetService collectionDatasetService;
 
   @Override
   protected StudyDataset processHit(SearchHit hit) throws IOException {
@@ -67,7 +67,7 @@ class EsDraftStudyDatasetService extends AbstractEsDatasetService<StudyDataset> 
 
   @Override
   protected QueryBuilder filterByAccess() {
-    List<String> ids = studyDatasetService.findAllStates().stream().map(StudyDatasetState::getId)
+    List<String> ids = collectionDatasetService.findAllStates().stream().map(StudyDatasetState::getId)
       .filter(s -> subjectAclService.isPermitted("/draft/collection-dataset", "VIEW", s)).collect(Collectors.toList());
 
     return ids.isEmpty()

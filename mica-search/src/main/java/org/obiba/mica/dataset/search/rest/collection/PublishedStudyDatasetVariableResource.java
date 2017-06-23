@@ -8,7 +8,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.obiba.mica.dataset.search.rest.study;
+package org.obiba.mica.dataset.search.rest.collection;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -28,9 +28,9 @@ import org.obiba.mica.dataset.DatasetVariableResource;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.dataset.search.rest.AbstractPublishedDatasetResource;
-import org.obiba.mica.dataset.search.rest.harmonized.CsvContingencyWriter;
-import org.obiba.mica.dataset.search.rest.harmonized.ExcelContingencyWriter;
-import org.obiba.mica.dataset.service.StudyDatasetService;
+import org.obiba.mica.dataset.search.rest.harmonization.CsvContingencyWriter;
+import org.obiba.mica.dataset.search.rest.harmonization.ExcelContingencyWriter;
+import org.obiba.mica.dataset.service.CollectionDatasetService;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.opal.web.model.Search;
 import org.slf4j.Logger;
@@ -54,7 +54,7 @@ public class PublishedStudyDatasetVariableResource extends AbstractPublishedData
   private String variableName;
 
   @Inject
-  private StudyDatasetService datasetService;
+  private CollectionDatasetService datasetService;
 
   @GET
   public Mica.DatasetVariableDto getVariable() {

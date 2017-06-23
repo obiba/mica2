@@ -35,7 +35,7 @@ import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.HarmonizationDatasetState;
 import org.obiba.mica.dataset.domain.StudyDatasetState;
 import org.obiba.mica.dataset.service.HarmonizationDatasetService;
-import org.obiba.mica.dataset.service.StudyDatasetService;
+import org.obiba.mica.dataset.service.CollectionDatasetService;
 import org.obiba.mica.search.AbstractDocumentService;
 import org.obiba.mica.study.service.PublishedDatasetVariableService;
 import org.slf4j.Logger;
@@ -60,7 +60,7 @@ public class EsPublishedDatasetVariableService extends AbstractDocumentService<D
   private ObjectMapper objectMapper;
 
   @Inject
-  private StudyDatasetService studyDatasetService;
+  private CollectionDatasetService collectionDatasetService;
 
   @Inject
   private HarmonizationDatasetService harmonizationDatasetService;
@@ -141,7 +141,7 @@ public class EsPublishedDatasetVariableService extends AbstractDocumentService<D
   @Override
   protected QueryBuilder filterByAccess() {
     if(micaConfigService.getConfig().isOpenAccess()) return null;
-    List<String> ids = studyDatasetService.findPublishedStates().stream().map(StudyDatasetState::getId)
+    List<String> ids = collectionDatasetService.findPublishedStates().stream().map(StudyDatasetState::getId)
       .filter(s -> subjectAclService.isAccessible("/collection-dataset", s)).collect(Collectors.toList());
     ids.addAll(harmonizationDatasetService.findPublishedStates().stream().map(HarmonizationDatasetState::getId)
       .filter(s -> subjectAclService.isAccessible("/harmonization-dataset", s)).collect(Collectors.toList()));

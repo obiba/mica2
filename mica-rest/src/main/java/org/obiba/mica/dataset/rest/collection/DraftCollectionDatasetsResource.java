@@ -8,7 +8,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.obiba.mica.dataset.rest.study;
+package org.obiba.mica.dataset.rest.collection;
 
 import java.util.List;
 import java.util.stream.Stream;
@@ -34,7 +34,7 @@ import org.obiba.mica.core.service.DocumentService;
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.dataset.service.DraftStudyDatasetService;
-import org.obiba.mica.dataset.service.StudyDatasetService;
+import org.obiba.mica.dataset.service.CollectionDatasetService;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
@@ -48,12 +48,12 @@ import static java.util.stream.Collectors.toList;
 @Component
 @Scope("request")
 @Path("/draft")
-public class DraftStudyDatasetsResource {
+public class DraftCollectionDatasetsResource {
 
   private static final int MAX_LIMIT = 10000; //default ElasticSearch limit
 
   @Inject
-  private StudyDatasetService datasetService;
+  private CollectionDatasetService datasetService;
 
   @Inject
   private SubjectAclService subjectAclService;
@@ -77,7 +77,7 @@ public class DraftStudyDatasetsResource {
    * @return
    */
   @GET
-  @Path("/study-datasets")
+  @Path("/collection-datasets")
   @Timed
   public List<Mica.DatasetDto> list(@QueryParam("study") String studyId, @QueryParam("query") String query,
                                     @QueryParam("from") @DefaultValue("0") Integer from,
@@ -106,7 +106,7 @@ public class DraftStudyDatasetsResource {
   }
 
   @POST
-  @Path("/study-datasets")
+  @Path("/collection-datasets")
   @Timed
   @RequiresPermissions({ "/draft/collection-dataset:ADD" })
   public Response create(Mica.DatasetDto datasetDto, @Context UriInfo uriInfo,
@@ -115,12 +115,12 @@ public class DraftStudyDatasetsResource {
     if(!(dataset instanceof StudyDataset)) throw new IllegalArgumentException("An study dataset is expected");
 
     datasetService.save((StudyDataset) dataset, comment);
-    return Response.created(uriInfo.getBaseUriBuilder().segment("draft", "study-dataset", dataset.getId()).build())
+    return Response.created(uriInfo.getBaseUriBuilder().segment("draft", "collection-dataset", dataset.getId()).build())
       .build();
   }
 
   @PUT
-  @Path("/study-datasets/_index")
+  @Path("/collection-datasets/_index")
   @Timed
   @RequiresPermissions({ "/draft/collection-dataset:PUBLISH" })
   public Response reIndex() {
@@ -128,9 +128,9 @@ public class DraftStudyDatasetsResource {
     return Response.noContent().build();
   }
 
-  @Path("/study-dataset/{id}")
-  public DraftStudyDatasetResource dataset(@PathParam("id") String id) {
-    DraftStudyDatasetResource resource = applicationContext.getBean(DraftStudyDatasetResource.class);
+  @Path("/collection-dataset/{id}")
+  public DraftCollectionDatasetResource dataset(@PathParam("id") String id) {
+    DraftCollectionDatasetResource resource = applicationContext.getBean(DraftCollectionDatasetResource.class);
     resource.setId(id);
     return resource;
   }
@@ -139,11 +139,11 @@ public class DraftStudyDatasetsResource {
   public static class Helper {
 
     @Inject
-    private StudyDatasetService studyDatasetService;
+    private CollectionDatasetService collectionDatasetService;
 
     @Async
     public void indexAll() {
-      studyDatasetService.indexAll();
+      collectionDatasetService.indexAll();
     }
   }
 

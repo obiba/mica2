@@ -554,7 +554,7 @@ mica.fileSystem
           $scope.languages.push(lang);
         });
         $scope.isNetworkEnabled = micaConfig.isNetworkEnabled;
-        $scope.isStudyDatasetEnabled = micaConfig.isStudyDatasetEnabled;
+        $scope.isCollectionDatasetEnabled = micaConfig.isCollectionDatasetEnabled;
         $scope.isHarmonizationDatasetEnabled = micaConfig.isHarmonizationDatasetEnabled;
       });
 

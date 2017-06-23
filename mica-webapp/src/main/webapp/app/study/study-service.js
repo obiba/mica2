@@ -407,9 +407,9 @@ mica.study
       this.popup = function (data, title, message, callback) {
         var conflicts = '{{network ? networks + ": " + network + ". " : "" }}' +
           '{{harmonizationDataset ? harmonizationDatasets + ": " + harmonizationDataset + ". " : "" }}' +
-          '{{studyDataset ? studyDatasets + ": " + studyDataset : "" }}';
+          '{{collectionDataset ? collectionDatasets + ": " + collectionDataset : "" }}';
 
-        $translate([message, 'networks', 'study-datasets', 'harmonization-datasets'])
+        $translate([message, 'networks', 'collection-datasets', 'harmonization-datasets'])
           .then(function (translation) {
             $rootScope.$broadcast(NOTIFICATION_EVENTS.showNotificationDialog, {
               titleKey: title,
@@ -417,10 +417,10 @@ mica.study
                 {
                   networks: translation.networks,
                   harmonizationDatasets: translation['harmonization-datasets'],
-                  studyDatasets: translation['study-datasets'],
+                  collectionDatasets: translation['collection-datasets'],
                   network: data.network ? data.network.join(', ') : null,
                   harmonizationDataset: data.harmonizationDataset ? data.harmonizationDataset.join(', ') : null,
-                  studyDataset: data.studyDataset ? data.studyDataset.join(', ') : null
+                  collectionDataset: data.collectionDataset ? data.collectionDataset.join(', ') : null
                 })
             }, function () {
               if (callback) {

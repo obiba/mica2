@@ -8,7 +8,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.obiba.mica.dataset.search.rest.harmonized;
+package org.obiba.mica.dataset.search.rest.harmonization;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -25,8 +25,8 @@ import com.google.common.collect.Lists;
 import au.com.bytecode.opencsv.CSVWriter;
 
 import static java.util.stream.Stream.concat;
-import static org.obiba.mica.dataset.search.rest.harmonized.ContingencyUtils.getTermsHeaders;
-import static org.obiba.mica.dataset.search.rest.harmonized.ContingencyUtils.getValuesHeaders;
+import static org.obiba.mica.dataset.search.rest.harmonization.ContingencyUtils.getTermsHeaders;
+import static org.obiba.mica.dataset.search.rest.harmonization.ContingencyUtils.getValuesHeaders;
 
 public class CsvContingencyWriter {
 

@@ -39,7 +39,7 @@ mica.entityConfig
               $cacheFactory) {
       var FORMS = {'network': ['network'],
         'collection-study': ['collection-study', 'population', 'data-collection-event'],
-        'study-dataset': ['study-dataset'],
+        'collection-dataset': ['collection-dataset'],
         'harmonization-dataset': ['harmonization-dataset'],
         'harmonization-study': ['harmonization-study', 'harmonization-population']
       };
@@ -54,7 +54,7 @@ mica.entityConfig
             return 'populations';
           case 'DataCollectionEvent':
             return 'dataCollectionEvents';
-          case 'StudyDataset':
+          case 'CollectionDataset':
           case 'HarmonizationDataset':
             return 'datasets';
           case 'Network':

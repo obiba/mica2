@@ -89,8 +89,8 @@ class MicaConfigDtos {
     builder.setIsStudyNotificationsEnabled(config.isStudyNotificationsEnabled());
     if(config.getStudyNotificationsSubject() != null) builder.setStudyNotificationsSubject(config.getStudyNotificationsSubject());
 
-    builder.setIsStudyDatasetNotificationsEnabled(config.isStudyDatasetNotificationsEnabled());
-    if(config.getStudyDatasetNotificationsSubject() != null) builder.setStudyDatasetNotificationsSubject(config.getStudyDatasetNotificationsSubject());
+    builder.setIsCollectionDatasetNotificationsEnabled(config.isStudyDatasetNotificationsEnabled());
+    if(config.getStudyDatasetNotificationsSubject() != null) builder.setCollectionDatasetNotificationsSubject(config.getStudyDatasetNotificationsSubject());
 
     builder.setIsHarmonizationDatasetNotificationsEnabled(config.isHarmonizationDatasetNotificationsEnabled());
     if(config.getHarmonizationDatasetNotificationsSubject() != null) builder.setHarmonizationDatasetNotificationsSubject(config.getHarmonizationDatasetNotificationsSubject());
@@ -101,7 +101,7 @@ class MicaConfigDtos {
     builder.setIsSingleNetworkEnabled(config.isSingleNetworkEnabled());
     builder.setIsSingleStudyEnabled(config.isSingleStudyEnabled());
     builder.setIsNetworkEnabled(config.isNetworkEnabled());
-    builder.setIsStudyDatasetEnabled(config.isStudyDatasetEnabled());
+    builder.setIsCollectionDatasetEnabled(config.isStudyDatasetEnabled());
     builder.setIsHarmonizationDatasetEnabled(config.isHarmonizationDatasetEnabled());
 
     if(config.hasStyle()) builder.setStyle(config.getStyle());
@@ -134,8 +134,8 @@ class MicaConfigDtos {
     if(dto.hasStudyNotificationsSubject()) config.setStudyNotificationsSubject(dto.getStudyNotificationsSubject());
     config.setNetworkNotificationsEnabled(dto.getIsNetworkNotificationsEnabled());
     if(dto.hasNetworkNotificationsSubject()) config.setNetworkNotificationsSubject(dto.getNetworkNotificationsSubject());
-    config.setStudyDatasetNotificationsEnabled(dto.getIsStudyDatasetNotificationsEnabled());
-    if(dto.hasStudyDatasetNotificationsSubject()) config.setStudyDatasetNotificationsSubject(dto.getStudyDatasetNotificationsSubject());
+    config.setStudyDatasetNotificationsEnabled(dto.getIsCollectionDatasetNotificationsEnabled());
+    if(dto.hasCollectionDatasetNotificationsSubject()) config.setStudyDatasetNotificationsSubject(dto.getCollectionDatasetNotificationsSubject());
     config.setHarmonizationDatasetNotificationsEnabled(dto.getIsHarmonizationDatasetNotificationsEnabled());
     if(dto.hasHarmonizationDatasetNotificationsSubject()) config.setHarmonizationDatasetNotificationsSubject(dto.getHarmonizationDatasetNotificationsSubject());
     config.setProjectNotificationsEnabled(dto.getIsProjectNotificationsEnabled());
@@ -144,7 +144,7 @@ class MicaConfigDtos {
     config.setSingleNetworkEnabled(dto.getIsSingleNetworkEnabled());
     config.setSingleStudyEnabled(dto.getIsSingleStudyEnabled());
     config.setNetworkEnabled(dto.getIsNetworkEnabled());
-    config.setStudyDatasetEnabled(dto.getIsStudyDatasetEnabled());
+    config.setStudyDatasetEnabled(dto.getIsCollectionDatasetEnabled());
     config.setHarmonizationDatasetEnabled(dto.getIsHarmonizationDatasetEnabled());
 
     if(dto.hasStyle()) config.setStyle(dto.getStyle());
@@ -308,7 +308,7 @@ class MicaConfigDtos {
       case Population:
         config = new PopulationConfig();
         break;
-      case StudyDataset:
+      case CollectionDataset:
         config = new StudyDatasetConfig();
         break;
       case HarmonizationDataset:
@@ -335,7 +335,7 @@ class MicaConfigDtos {
   @NotNull
   Mica.EntityFormDto asDto(@NotNull DatasetConfig datasetConfig) {
     return asDto(datasetConfig, datasetConfig instanceof StudyDatasetConfig ?
-        Mica.EntityFormDto.Type.StudyDataset : Mica.EntityFormDto.Type.HarmonizationDataset);
+        Mica.EntityFormDto.Type.CollectionDataset : Mica.EntityFormDto.Type.HarmonizationDataset);
   }
 
   @NotNull

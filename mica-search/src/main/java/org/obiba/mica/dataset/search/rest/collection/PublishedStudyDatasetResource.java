@@ -8,7 +8,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.obiba.mica.dataset.search.rest.study;
+package org.obiba.mica.dataset.search.rest.collection;
 
 import javax.inject.Inject;
 import javax.ws.rs.DefaultValue;
@@ -29,11 +29,11 @@ import org.springframework.stereotype.Component;
 import com.codahale.metrics.annotation.Timed;
 
 /**
- * Study variable resource: variable describing a study dataset.
+ * Study variable resource: variable describing a collection dataset.
  */
 @Component
 @Scope("request")
-@Path("/study-dataset/{id}")
+@Path("/collection-dataset/{id}")
 @RequiresAuthentication
 public class PublishedStudyDatasetResource extends AbstractPublishedDatasetResource<StudyDataset> {
 
@@ -103,6 +103,6 @@ public class PublishedStudyDatasetResource extends AbstractPublishedDatasetResou
   }
 
   private void checkAccess(String id) {
-    subjectAclService.checkAccess("/study-dataset", id);
+    subjectAclService.checkAccess("/collection-dataset", id);
   }
 }

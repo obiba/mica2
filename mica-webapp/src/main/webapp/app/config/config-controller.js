@@ -394,7 +394,7 @@ mica.config
 
       $scope.micaConfig.$promise.then(function() {
         $scope.$watchGroup(['name', 'isNetworkEnabled', 'isSingleNetworkEnabled',
-          'isSingleStudyEnabled', 'isStudyDatasetEnabled', 'isHarmonizationDatasetEnabled', 'languages'].map(function(p) { return 'micaConfig.' + p; }), function(value, oldValue) {
+          'isSingleStudyEnabled', 'isCollectionDatasetEnabled', 'isHarmonizationDatasetEnabled', 'languages'].map(function(p) { return 'micaConfig.' + p; }), function(value, oldValue) {
           if(!angular.equals(value,oldValue)) {
             reload = true;
           }
