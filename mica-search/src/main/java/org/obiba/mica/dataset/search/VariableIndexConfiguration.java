@@ -26,8 +26,7 @@ public class VariableIndexConfiguration extends AbstractIndexConfiguration
 
   @Override
   public void onIndexCreated(Client client, String indexName) {
-    if(VariableIndexer.DRAFT_VARIABLE_INDEX.equals(indexName) ||
-      VariableIndexer.PUBLISHED_VARIABLE_INDEX.equals(indexName)) {
+    if(VariableIndexer.PUBLISHED_VARIABLE_INDEX.equals(indexName)) {
       setMappingProperties(client, indexName);
     }
   }
