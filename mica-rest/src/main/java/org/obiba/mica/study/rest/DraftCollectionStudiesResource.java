@@ -56,7 +56,7 @@ public class DraftCollectionStudiesResource {
   private EventBus eventBus;
 
   @GET
-  @Path("/studies")
+  @Path("/collection-studies")
   @Timed
   public List<Mica.StudyDto> list() {
     return collectionStudyService.findAllDraftStudies().stream()
@@ -65,7 +65,7 @@ public class DraftCollectionStudiesResource {
   }
 
   @GET
-  @Path("/studies/summaries")
+  @Path("/collection-studies/summaries")
   @Timed
   public List<Mica.StudySummaryDto> listSummaries(@QueryParam("id") List<String> ids) {
     List<Study> studies = ids.isEmpty() ? collectionStudyService.findAllDraftStudies() : collectionStudyService.findAllDraftStudies(ids);
@@ -74,7 +74,7 @@ public class DraftCollectionStudiesResource {
   }
 
   @GET
-  @Path("/studies/digests")
+  @Path("/collection-studies/digests")
   @Timed
   public List<Mica.DocumentDigestDto> listDigests(@QueryParam("id") List<String> ids) {
     List<Study> studies = ids.isEmpty() ? collectionStudyService.findAllDraftStudies() : collectionStudyService.findAllDraftStudies(ids);
@@ -82,18 +82,18 @@ public class DraftCollectionStudiesResource {
   }
 
   @POST
-  @Path("/studies")
+  @Path("/collection-studies")
   @Timed
   @RequiresPermissions({"/draft/collection-study:ADD"})
   public Response create(@SuppressWarnings("TypeMayBeWeakened") Mica.StudyDto studyDto, @Context UriInfo uriInfo,
     @Nullable @QueryParam("comment") String comment) {
-    Study study = dtos.fromDto(studyDto);
+    Study study = (Study)dtos.fromDto(studyDto);
     collectionStudyService.save(study, comment);
     return Response.created(uriInfo.getBaseUriBuilder().path(DraftCollectionStudiesResource.class, "study").build(study.getId()))
       .build();
   }
 
-  @Path("/study/{id}")
+  @Path("/collection-study/{id}")
   public DraftCollectionStudyResource study(@PathParam("id") String id) {
     DraftCollectionStudyResource studyResource = applicationContext.getBean(DraftCollectionStudyResource.class);
     studyResource.setId(id);
@@ -101,7 +101,7 @@ public class DraftCollectionStudiesResource {
   }
 
   @PUT
-  @Path("/studies/_index")
+  @Path("/collection-studies/_index")
   @Timed
   @RequiresPermissions("/draft/collection-study:PUBLISH")
   public Response reIndex() {

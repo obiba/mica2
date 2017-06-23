@@ -74,7 +74,7 @@ public class StudyDtosTest {
     study.setObjectives(en("The Canadian Longitudinal Study on Aging (CLSA) is a large, national, long-term study"));
 
     Mica.StudyDto dto = studyDtos.asDto(study, true);
-    Study fromDto = studyDtos.fromDto(dto);
+    Study fromDto = (Study)studyDtos.fromDto(dto);
     assertTimestamps(study, dto);
     assertThat(fromDto).areFieldsEqualToEachOther(study);
   }
@@ -88,7 +88,7 @@ public class StudyDtosTest {
     Study study = createStudy();
 
     Mica.StudyDto dto = studyDtos.asDto(study, true);
-    Study fromDto = studyDtos.fromDto(dto);
+    Study fromDto = (Study)studyDtos.fromDto(dto);
     assertTimestamps(study, dto);
     assertThat(fromDto).isEqualTo(study);
   }

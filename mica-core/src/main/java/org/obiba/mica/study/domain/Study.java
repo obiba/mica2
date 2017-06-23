@@ -10,6 +10,7 @@
 
 package org.obiba.mica.study.domain;
 
+import com.google.common.base.CaseFormat;
 import com.google.common.base.MoreObjects;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -43,4 +44,10 @@ public class Study extends BaseStudy {
       put(self.getClass().getSimpleName(), self);
     }};
   }
+
+  @Override
+  public String getResourcePath() {
+    return CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_HYPHEN, "CollectionStudy");
+  }
+
 }

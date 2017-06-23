@@ -24,16 +24,6 @@ import java.util.zip.ZipInputStream;
 
 import javax.inject.Inject;
 
-import com.google.common.base.Charsets;
-import com.google.common.base.Strings;
-import com.google.common.base.Throwables;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
-import com.google.common.hash.Hashing;
-import com.google.common.io.ByteSource;
-import com.google.common.io.ByteStreams;
-import com.googlecode.protobuf.format.JsonFormat;
 import org.apache.commons.math3.util.Pair;
 import org.bson.types.ObjectId;
 import org.obiba.jersey.protobuf.AbstractProtobufProvider;
@@ -52,12 +42,24 @@ import org.obiba.mica.file.service.TempFileService;
 import org.obiba.mica.network.NoSuchNetworkException;
 import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.network.service.NetworkService;
-import org.obiba.mica.study.domain.Study;
+import org.obiba.mica.study.domain.BaseStudy;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+
+import com.google.common.base.Charsets;
+import com.google.common.base.Strings;
+import com.google.common.base.Throwables;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
+import com.google.common.hash.Hashing;
+import com.google.common.io.ByteSource;
+import com.google.common.io.ByteStreams;
+import com.google.protobuf.ExtensionRegistry;
+import com.googlecode.protobuf.format.JsonFormat;
 
 @Service
 public class StudyPackageImportServiceImpl extends AbstractProtobufProvider implements StudyPackageImportService {
@@ -71,7 +73,7 @@ public class StudyPackageImportServiceImpl extends AbstractProtobufProvider impl
   private TempFileService tempFileService;
 
   @Inject
-  private CollectionStudyService collectionStudyService;
+  private StudyService studyService;
 
   @Inject
   private NetworkService networkService;
@@ -129,7 +131,7 @@ public class StudyPackageImportServiceImpl extends AbstractProtobufProvider impl
     }
   }
 
-  private void importStudy(Study study, List<Attachment> attachments, boolean publish) {
+  private void importStudy(BaseStudy study, List<Attachment> attachments, boolean publish) {
     if(study.getAcronym() == null) {
       study.setAcronym(study.getName().asAcronym());
     }
@@ -140,7 +142,7 @@ public class StudyPackageImportServiceImpl extends AbstractProtobufProvider impl
       }
     });
 
-    collectionStudyService.save(study, "Imported");
+    studyService.save(study, "Imported");
 
     attachments.forEach(a -> {
       a.setPath(String.format(a.getPath(), study.getId()));
@@ -148,7 +150,7 @@ public class StudyPackageImportServiceImpl extends AbstractProtobufProvider impl
     });
 
     if(publish) {
-      collectionStudyService.publish(study.getId(), true, PublishCascadingScope.ALL);
+      studyService.publish(study.getId(), true, PublishCascadingScope.ALL);
     }
   }
 
@@ -218,7 +220,7 @@ public class StudyPackageImportServiceImpl extends AbstractProtobufProvider impl
 
   private final class StudyPackage {
 
-    private Study study = null;
+    private BaseStudy study = null;
 
     private List<Attachment> studyAttachments = null;
 
@@ -261,7 +263,7 @@ public class StudyPackageImportServiceImpl extends AbstractProtobufProvider impl
         log.debug("Reading {}...", name);
 
         if(name.startsWith("study-")) {
-          Pair<Study, List<Attachment>> studyInput = readStudy(zipIn);
+          Pair<BaseStudy, List<Attachment>> studyInput = readStudy(zipIn);
           study = studyInput.getFirst();
           studyAttachments = studyInput.getSecond();
         } else if(name.startsWith("dataset-")) {
@@ -294,12 +296,15 @@ public class StudyPackageImportServiceImpl extends AbstractProtobufProvider impl
       return acronym;
     }
 
-    private Pair<Study, List<Attachment>> readStudy(InputStream inputStream) throws IOException {
+    private Pair<BaseStudy, List<Attachment>> readStudy(InputStream inputStream) throws IOException {
       Mica.StudyDto.Builder builder = Mica.StudyDto.newBuilder();
       Readable input = new InputStreamReader(inputStream, Charsets.UTF_8);
-      JsonFormat.merge(input, builder);
+      ExtensionRegistry extensionRegistry = ExtensionRegistry.newInstance();
+      extensionRegistry .add(Mica.CollectionStudyDto.type);
+      extensionRegistry .add(Mica.HarmonizationStudyDto.type);
+      JsonFormat.merge(input, extensionRegistry, builder);
       List<Attachment> atts = extractAttachments(builder);
-      Study study = dtos.fromDto(builder);
+      BaseStudy study = dtos.fromDto( builder);
       return Pair.create(study, atts);
     }
 

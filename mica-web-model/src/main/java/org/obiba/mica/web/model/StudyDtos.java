@@ -13,28 +13,32 @@ package org.obiba.mica.web.model;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.Maps;
 import org.obiba.mica.JSONUtils;
 import org.obiba.mica.core.domain.Membership;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
+import org.obiba.mica.study.domain.BaseStudy;
 import org.obiba.mica.study.domain.HarmonizationStudy;
 import org.obiba.mica.study.domain.Study;
-import org.obiba.mica.study.service.HarmonizationStudyService;
 import org.obiba.mica.study.service.CollectionStudyService;
+import org.obiba.mica.study.service.HarmonizationStudyService;
 import org.springframework.stereotype.Component;
+
+import com.google.common.base.Strings;
+import com.google.common.collect.Maps;
+
+import io.jsonwebtoken.lang.Assert;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
 import static java.util.stream.Collectors.toList;
 
 @Component
+@SuppressWarnings("OverlyLongMethod")
 class StudyDtos {
 
   @Inject
@@ -63,89 +67,24 @@ class StudyDtos {
 
   @NotNull
   Mica.StudyDto asDto(@NotNull Study study, boolean asDraft) {
-    Mica.StudyDto.Builder builder = Mica.StudyDto.newBuilder();
-    builder.setId(study.getId()) //
-      .addAllName(localizedStringDtos.asDto(study.getName())) //
-      .addAllObjectives(localizedStringDtos.asDto(study.getObjectives()));
-
-    if(study.hasModel()) builder.setContent(JSONUtils.toJSON(study.getModel()));
-
-    if(asDraft) {
-      builder.setTimestamps(TimestampsDtos.asDto(study));
-    }
-
-    builder.setPermissions(permissionsDtos.asDto(study));
-
-    if(study.getLogo() != null) builder.setLogo(attachmentDtos.asDto(study.getLogo()));
-
-    if(study.getAcronym() != null) builder.addAllAcronym(localizedStringDtos.asDto(study.getAcronym()));
-
-    List<String> roles = micaConfigService.getConfig().getRoles();
-
-    if(study.getMemberships() != null) {
-      List<Mica.MembershipsDto> memberships = study.getMemberships().entrySet().stream()
-        .filter(membershipEntry -> roles.contains(membershipEntry.getKey()))
-        .map(membershipEntry ->Mica.MembershipsDto.newBuilder()
-            .setRole(membershipEntry.getKey())
-            .addAllMembers(
-              membershipEntry.getValue().stream()
-                .map(membership ->
-                  personDtos.asDto(membership.getPerson(), asDraft))
-                .collect(toList()))
-            .build())
-        .collect(toList());
-
-      builder.addAllMemberships(memberships);
-    }
-
-    if(!isNullOrEmpty(study.getOpal())) builder.setOpal(study.getOpal());
-
-    if(study.getPopulations() != null) {
-      study.getPopulations().forEach(population -> builder.addPopulations(populationDtos.asDto(population)));
-    }
-
+    Mica.StudyDto.Builder builder = asDtoBuilder(study, asDraft);
+    builder.setExtension(Mica.CollectionStudyDto.type, Mica.CollectionStudyDto.newBuilder().build());
     builder.setPublished(collectionStudyService.isPublished(study.getId()));
 
     return builder.build();
   }
 
   @NotNull
-  Study fromDto(@NotNull Mica.StudyDtoOrBuilder dto) {
-    Study study = new Study();
-    if(dto.hasId()) study.setId(dto.getId());
-    if(dto.getNameCount() > 0) study.setName(localizedStringDtos.fromDto(dto.getNameList()));
-    if(dto.getAcronymCount() > 0) study.setAcronym(localizedStringDtos.fromDto(dto.getAcronymList()));
-    if(dto.hasLogo()) study.setLogo(attachmentDtos.fromDto(dto.getLogo()));
-    if(dto.hasTimestamps()) TimestampsDtos.fromDto(dto.getTimestamps(), study);
-    if(dto.getObjectivesCount() > 0) study.setObjectives(localizedStringDtos.fromDto(dto.getObjectivesList()));
-    if(dto.hasOpal()) study.setOpal(dto.getOpal());
+  Mica.StudyDto asDto(@NotNull HarmonizationStudy study, boolean asDraft) {
+    Mica.StudyDto.Builder builder = asDtoBuilder(study, asDraft);
+    builder.setExtension(Mica.HarmonizationStudyDto.type, Mica.HarmonizationStudyDto.newBuilder().build());
+    builder.setPublished(harmonizationStudyService.isPublished(study.getId()));
 
-    if(dto.getMembershipsCount() > 0) {
-      Map<String, List<Membership>> memberships = Maps.newHashMap();
-      dto.getMembershipsList().forEach(e -> memberships.put(e.getRole(),
-        e.getMembersList().stream().map(p -> new Membership(personDtos.fromDto(p), e.getRole())).collect(toList())));
-      study.setMemberships(memberships);
-    }
-
-    if (dto.getPopulationsCount() > 0) {
-      study.setPopulations(dto.getPopulationsList().stream()
-        .map(populationDtos::fromDto)
-        .filter(Objects::nonNull)
-        .collect(Collectors.toCollection(TreeSet<org.obiba.mica.study.domain.Population>::new)));
-    }
-
-    if (dto.hasContent() && !Strings.isNullOrEmpty(dto.getContent()))
-      study.setModel(JSONUtils.toMap(dto.getContent()));
-    else
-      study.setModel(new HashMap<>());
-
-    return study;
+    return builder.build();
   }
 
-
-  @NotNull
-  Mica.HarmonizationStudyDto asDto(@NotNull HarmonizationStudy study, boolean asDraft) {
-    Mica.HarmonizationStudyDto.Builder builder = Mica.HarmonizationStudyDto.newBuilder();
+  private Mica.StudyDto.Builder asDtoBuilder(@NotNull BaseStudy study, boolean asDraft) {
+    Mica.StudyDto.Builder builder = Mica.StudyDto.newBuilder();
     builder.setId(study.getId()) //
       .addAllName(localizedStringDtos.asDto(study.getName())) //
       .addAllObjectives(localizedStringDtos.asDto(study.getObjectives()));
@@ -175,25 +114,29 @@ class StudyDtos {
       builder.addAllMemberships(memberships);
     }
 
+    if(!isNullOrEmpty(study.getOpal())) builder.setOpal(study.getOpal());
 
     if(study.getPopulations() != null) {
       study.getPopulations().forEach(population -> builder.addPopulations(populationDtos.asDto(population)));
     }
 
-    builder.setPublished(harmonizationStudyService.isPublished(study.getId()));
-
-    return builder.build();
+    return builder;
   }
 
   @NotNull
-  HarmonizationStudy fromDto(@NotNull Mica.HarmonizationStudyDtoOrBuilder dto) {
-    HarmonizationStudy study = new HarmonizationStudy();
+  BaseStudy fromDto(@NotNull Mica.StudyDtoOrBuilder dto) {
+    Assert.isTrue(dto.hasExtension(Mica.CollectionStudyDto.type)
+      || dto.hasExtension(Mica.HarmonizationStudyDto.type), "StudyDto must of a type extension.");
+
+    BaseStudy study = dto.hasExtension(Mica.CollectionStudyDto.type) ? new Study() : new HarmonizationStudy();
+
     if(dto.hasId()) study.setId(dto.getId());
     if(dto.getNameCount() > 0) study.setName(localizedStringDtos.fromDto(dto.getNameList()));
     if(dto.getAcronymCount() > 0) study.setAcronym(localizedStringDtos.fromDto(dto.getAcronymList()));
     if(dto.hasLogo()) study.setLogo(attachmentDtos.fromDto(dto.getLogo()));
     if(dto.hasTimestamps()) TimestampsDtos.fromDto(dto.getTimestamps(), study);
     if(dto.getObjectivesCount() > 0) study.setObjectives(localizedStringDtos.fromDto(dto.getObjectivesList()));
+    if(dto.hasOpal()) study.setOpal(dto.getOpal());
 
     if(dto.getMembershipsCount() > 0) {
       Map<String, List<Membership>> memberships = Maps.newHashMap();

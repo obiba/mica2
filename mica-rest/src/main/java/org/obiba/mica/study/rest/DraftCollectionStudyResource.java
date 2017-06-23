@@ -91,7 +91,7 @@ public class DraftCollectionStudyResource extends AbstractGitPersistableResource
     // ensure study exists
     collectionStudyService.findDraft(id);
 
-    Study study = dtos.fromDto(studyDto);
+    Study study = (Study)dtos.fromDto(studyDto);
 
     HashMap<Object, Object> response = Maps.newHashMap();
     response.put("study", study);

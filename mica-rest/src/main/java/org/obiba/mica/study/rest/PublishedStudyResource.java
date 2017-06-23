@@ -17,7 +17,9 @@ import javax.ws.rs.QueryParam;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.file.rest.FileResource;
+import org.obiba.mica.study.domain.BaseStudy;
 import org.obiba.mica.study.domain.HarmonizationStudy;
+import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.web.model.Mica;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -28,20 +30,22 @@ import com.codahale.metrics.annotation.Timed;
  * REST controller for managing Study.
  */
 @Component
-@Path("/harmonization-study/{id}")
+@Path("/study/{id}")
 @Scope("request")
 @RequiresAuthentication
-public class PublishedHarmonizationStudyResource extends AbstractPublishedStudyResource {
+public class PublishedStudyResource extends AbstractPublishedStudyResource {
 
   @GET
   @Timed
   public Mica.StudyDto getStudyDto(@PathParam("id") String id, @QueryParam("locale") String locale) {
     checkAccess(id);
-    return dtos.asDto((HarmonizationStudy) getStudy(id, locale));
+    BaseStudy study = getStudy(id, locale);
+    return study instanceof Study ? dtos.asDto((Study)study) : dtos.asDto((HarmonizationStudy)study);
   }
 
 
   @Path("/file/{fileId}")
   public FileResource study(@PathParam("id") String id, @PathParam("fileId") String fileId) {
     return super.getStudyFileResource(id, fileId);
-  }}
+  }
+}
