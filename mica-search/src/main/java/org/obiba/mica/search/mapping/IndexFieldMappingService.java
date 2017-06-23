@@ -56,7 +56,7 @@ public class IndexFieldMappingService {
   }
 
   public IndexFieldMapping getVariableIndexMapping() {
-    return getMapping(VariableIndexer.DRAFT_VARIABLE_INDEX, VariableIndexer.VARIABLE_TYPE);
+    return getMapping(VariableIndexer.PUBLISHED_VARIABLE_INDEX, VariableIndexer.VARIABLE_TYPE);
   }
 
   public IndexFieldMapping getDatasetIndexMapping() {
@@ -97,7 +97,7 @@ public class IndexFieldMappingService {
 
   private void clearDatasetIndexMapping() {
     mappings.remove(DatasetIndexer.DRAFT_DATASET_INDEX);
-    mappings.remove(VariableIndexer.DRAFT_VARIABLE_INDEX);
+    mappings.remove(VariableIndexer.PUBLISHED_VARIABLE_INDEX);
   }
 
   private IndexFieldMapping getMapping(String name, String type) {

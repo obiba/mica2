@@ -60,23 +60,9 @@ public class VariableIndexer {
 
   @Async
   @Subscribe
-  public void datasetUpdated(DatasetUpdatedEvent event) {
-    log.debug("{} {} was updated", event.getPersistable().getClass().getSimpleName(), event.getPersistable());
-
-    if(event.getVariables() != null) {
-      deleteDatasetVariables(DRAFT_VARIABLE_INDEX, event.getPersistable());
-      indexDatasetVariables(DRAFT_VARIABLE_INDEX, event.getVariables());
-    }
-
-    if(event.hasHarmonizationVariables())
-      indexHarmonizedVariables(DRAFT_VARIABLE_INDEX, event.getHarmonizationVariables());
-  }
-
-  @Async
-  @Subscribe
   public void datasetPublished(DatasetPublishedEvent event) {
     log.debug("{} {} was published", event.getPersistable().getClass().getSimpleName(), event.getPersistable());
-
+    clearDraftVariablesIndex();
     if(event.getVariables() != null) {
       deleteDatasetVariables(PUBLISHED_VARIABLE_INDEX, event.getPersistable());
 
@@ -96,6 +82,7 @@ public class VariableIndexer {
   @Subscribe
   public void datasetUnpublished(DatasetUnpublishedEvent event) {
     log.debug("{} {} was unpublished", event.getPersistable().getClass().getSimpleName(), event.getPersistable());
+    clearDraftVariablesIndex();
     deleteDatasetVariables(PUBLISHED_VARIABLE_INDEX, event.getPersistable());
   }
 
@@ -103,7 +90,7 @@ public class VariableIndexer {
   @Subscribe
   public void datasetDeleted(DatasetDeletedEvent event) {
     log.debug("{} {} was deleted", event.getPersistable().getClass().getSimpleName(), event.getPersistable());
-    deleteDatasetVariables(DRAFT_VARIABLE_INDEX, event.getPersistable());
+    clearDraftVariablesIndex();
     deleteDatasetVariables(PUBLISHED_VARIABLE_INDEX, event.getPersistable());
   }
 
@@ -111,13 +98,18 @@ public class VariableIndexer {
   // Private methods
   //
 
+  // legacy index, cleanup
+  private void clearDraftVariablesIndex() {
+    if(elasticSearchIndexer.hasIndex(VariableIndexer.DRAFT_VARIABLE_INDEX)) elasticSearchIndexer.dropIndex(VariableIndexer.DRAFT_VARIABLE_INDEX);
+  }
+
   private void indexDatasetVariables(String indexName, Iterable<DatasetVariable> variables) {
     elasticSearchIndexer.indexAllIndexables(indexName, variables);
   }
 
-  protected void indexHarmonizedVariables(String indexName, Map<String, List<DatasetVariable>> harmonizedVariables) {
-    harmonizedVariables.keySet().forEach(
-      parentId -> elasticSearchIndexer.indexAllIndexables(indexName, harmonizedVariables.get(parentId), parentId));
+  protected void indexHarmonizedVariables(String indexName, Map<String, List<DatasetVariable>> harmonizationVariables) {
+    harmonizationVariables.keySet().forEach(
+      parentId -> elasticSearchIndexer.indexAllIndexables(indexName, harmonizationVariables.get(parentId), parentId));
   }
 
   private void deleteDatasetVariables(String indexName, Dataset dataset) {
