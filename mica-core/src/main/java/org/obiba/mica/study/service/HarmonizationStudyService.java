@@ -116,7 +116,7 @@ public class HarmonizationStudyService extends AbstractStudyService<Harmonizatio
 
   @Override
   public String getTypeName() {
-    return "harmonizationStudy";
+    return "harmonization-study";
   }
 
   /**

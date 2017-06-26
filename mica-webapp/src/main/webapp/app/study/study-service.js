@@ -13,7 +13,7 @@
 mica.study
   .factory('StudyStatesResource', ['$resource',
     function ($resource) {
-      return $resource('ws/draft/study-states', {}, {
+      return $resource('ws/draft/study-states?type=collection-study', {}, {
         'query': {method: 'GET', errorHandler: true, isArray: true},
         'get': {method: 'GET', url: 'ws/draft/study-state/:id', params: {id: '@id'}}
       });
@@ -433,9 +433,9 @@ mica.study
 
   .factory('HarmonizationStudyStatesResource', ['$resource',
     function ($resource) {
-      return $resource('ws/draft/harmonization-studies', {}, {
+      return $resource('ws/draft/study-states?type=harmonization-study', {}, {
         'query': {method: 'GET', errorHandler: true, isArray: true},
-        'get': {method: 'GET', url: 'ws/draft/harmonization-study/:id', params: {id: '@id'}}
+        'get': {method: 'GET', url: 'ws/draft/study-state/:id', params: {id: '@id'}}
       });
     }])
 

@@ -15,6 +15,7 @@ import java.util.stream.Stream;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.constraints.NotNull;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -24,12 +25,18 @@ import javax.ws.rs.core.Context;
 
 import com.codahale.metrics.annotation.Timed;
 import com.google.common.base.Strings;
+
+import org.obiba.mica.core.domain.EntityState;
 import org.obiba.mica.core.service.DocumentService;
 import org.obiba.mica.security.service.SubjectAclService;
+import org.obiba.mica.study.domain.BaseStudy;
+import org.obiba.mica.study.domain.HarmonizationStudyState;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.domain.StudyState;
+import org.obiba.mica.study.service.AbstractStudyService;
 import org.obiba.mica.study.service.DraftStudyService;
 import org.obiba.mica.study.service.CollectionStudyService;
+import org.obiba.mica.study.service.HarmonizationStudyService;
 import org.obiba.mica.study.service.StudyService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
@@ -43,10 +50,13 @@ public class StudyStatesResource {
   private static final int MAX_LIMIT = 10000; //default ElasticSearch limit
 
   @Inject
+  private StudyService studyService;
+
+  @Inject
   private CollectionStudyService collectionStudyService;
 
   @Inject
-  private StudyService studyService;
+  private HarmonizationStudyService harmonizationStudyService;
 
   @Inject
   private SubjectAclService subjectAclService;
@@ -63,9 +73,9 @@ public class StudyStatesResource {
   @GET
   @Path("/study-states")
   @Timed
-  public List<Mica.StudySummaryDto> list(@QueryParam("query") String query, @QueryParam("from") @DefaultValue("0") Integer from,
-                                         @QueryParam("limit") Integer limit, @Context HttpServletResponse response) {
-    Stream<StudyState> result;
+  public List<Mica.StudySummaryDto> listCollectionStudyStates(@QueryParam("query") String query, @QueryParam("from") @DefaultValue("0") Integer from,
+                                         @QueryParam("limit") Integer limit, @QueryParam("type") String type, @Context HttpServletResponse response) {
+    Stream<? extends EntityState> result;
     long totalCount;
 
     if(limit == null) limit = MAX_LIMIT;
@@ -73,14 +83,20 @@ public class StudyStatesResource {
     if(limit < 0) throw new IllegalArgumentException("limit cannot be negative");
 
     if(Strings.isNullOrEmpty(query)) {
-      List<StudyState> studyStates = collectionStudyService.findAllStates().stream()
-        .filter(s -> subjectAclService.isPermitted("/draft/collection-study", "VIEW", s.getId())).collect(toList());
+      List<? extends EntityState> studyStates =
+        (!Strings.isNullOrEmpty(type) ? getStudyServiceByType(type).findAllStates() : studyService.findAllStates()).stream()
+        .filter(s -> subjectAclService.isPermitted("/draft/collection-study", "VIEW", s.getId())
+          || subjectAclService.isPermitted("/draft/harmonization-study", "VIEW", s.getId()))
+          .collect(toList());
       totalCount = studyStates.size();
       result = studyStates.stream().sorted((o1, o2) -> o1.getId().compareTo(o2.getId())).skip(from).limit(limit);
     } else {
       DocumentService.Documents<Study> studyDocuments = draftStudyService.find(from, limit, null, null, null, query);
       totalCount = studyDocuments.getTotal();
-      result = collectionStudyService.findAllStates(studyDocuments.getList().stream().map(Study::getId).collect(toList())).stream();
+      result = (!Strings.isNullOrEmpty(type)
+        ? getStudyServiceByType(type).findAllStates(studyDocuments.getList().stream().map(Study::getId).collect(toList()))
+        : studyService.findAllStates(studyDocuments.getList().stream().map(Study::getId).collect(toList())))
+        .stream();
     }
 
     response.addHeader("X-Total-Count", Long.toString(totalCount));
@@ -90,9 +106,12 @@ public class StudyStatesResource {
 
   @Path("/study-state/{id}")
   public StudyStateResource study(@PathParam("id") String id) {
-    subjectAclService.checkPermission("/draft/collection-study", "VIEW", id);
     StudyStateResource studyStateResource = applicationContext.getBean(StudyStateResource.class);
     studyStateResource.setId(id);
     return studyStateResource;
+  }
+
+  private AbstractStudyService<? extends EntityState, ? extends BaseStudy> getStudyServiceByType(@NotNull String type) {
+    return "collection-study".equals(type) ? collectionStudyService : harmonizationStudyService;
   }
 }

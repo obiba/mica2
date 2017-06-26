@@ -128,10 +128,6 @@ public class CollectionStudyService extends AbstractStudyService<StudyState, Stu
     return null;
   }
 
-  public List<Study> findAllDraftStudies(Iterable<String> ids) {
-    return Lists.newArrayList(studyRepository.findAll(ids));
-  }
-
   @Override
   public String getTypeName() {
     return "collection-study";
