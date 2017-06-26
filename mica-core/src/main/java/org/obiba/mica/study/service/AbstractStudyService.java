@@ -48,6 +48,7 @@ import org.springframework.scheduling.annotation.Async;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
@@ -119,6 +120,9 @@ public abstract class AbstractStudyService<S extends EntityState, T extends Base
     return getRepository().findAll();
   }
 
+  public List<T> findAllDraftStudies(Iterable<String> ids) {
+    return Lists.newArrayList(getRepository().findAll(ids));
+  }
 
   @Caching(evict = {@CacheEvict(value = "aggregations-metadata", allEntries = true),
     @CacheEvict(value = {"studies-draft", "studies-published"}, key = "#id")})

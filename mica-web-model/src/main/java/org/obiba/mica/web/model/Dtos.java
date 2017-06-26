@@ -20,6 +20,7 @@ import javax.validation.constraints.NotNull;
 import org.obiba.git.CommitInfo;
 import org.obiba.mica.access.domain.DataAccessRequest;
 import org.obiba.mica.core.domain.Comment;
+import org.obiba.mica.core.domain.EntityState;
 import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.core.domain.OpalTable;
 import org.obiba.mica.core.domain.Person;
@@ -193,6 +194,11 @@ public class Dtos {
   @NotNull
   public StudySummaryDto asSummaryDto(@NotNull BaseStudy study, @NotNull StudyState studyState) {
     return studySummaryDtos.asDto(study, studyState);
+  }
+
+  @NotNull
+  public StudySummaryDto asDto(@NotNull EntityState studyState) {
+    return studySummaryDtos.asDto(studyState);
   }
 
   @NotNull

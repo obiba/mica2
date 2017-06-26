@@ -66,6 +66,15 @@ public class DraftHarmonizationStudiesResource {
       .sorted(Comparator.comparing(AbstractGitPersistable::getId)).map(s -> dtos.asDto(s, true)).collect(Collectors.toList());
   }
 
+  @GET
+  @Path("/harmonization-studies/summaries")
+  @Timed
+  public List<Mica.StudySummaryDto> listSummaries(@QueryParam("id") List<String> ids) {
+    List<HarmonizationStudy> studies = ids.isEmpty() ? harmonizationStudyService.findAllDraftStudies() : harmonizationStudyService.findAllDraftStudies(ids);
+    return studies.stream().filter(s -> subjectAclService.isPermitted("/draft/harmonization-study", "VIEW", s.getId()))
+      .map(dtos::asSummaryDto).collect(Collectors.toList());
+  }
+
   @POST
   @Path("/harmonization-studies")
   @Timed
