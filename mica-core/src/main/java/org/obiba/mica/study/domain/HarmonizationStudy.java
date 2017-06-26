@@ -26,4 +26,9 @@ public class HarmonizationStudy extends BaseStudy {
       }
     };
   }
+
+  @Override
+  public String getResourcePath() {
+    return "harmonization-study";
+  }
 }

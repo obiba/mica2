@@ -47,7 +47,6 @@ public class Study extends BaseStudy {
 
   @Override
   public String getResourcePath() {
-    return CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_HYPHEN, "CollectionStudy");
+    return "collection-study";
   }
-
 }

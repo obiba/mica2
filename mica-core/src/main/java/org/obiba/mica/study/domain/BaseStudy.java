@@ -59,9 +59,7 @@ public abstract class BaseStudy extends AbstractModelAware implements PersonAwar
   // Accessors
   //
 
-  public String getResourcePath() {
-    return CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_HYPHEN, getClass().getSimpleName());
-  }
+  public abstract String getResourcePath();
 
   public Attachment getLogo() {
     return logo;
