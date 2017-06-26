@@ -50,6 +50,7 @@
               <th width="10px"></th>
               <th translate>study.acronym</th>
               <th translate>study.name</th>
+              <th translate>type</th>
             </tr>
           </thead>
           <tbody>
@@ -63,6 +64,7 @@
               <td>
                 <localized value="entity.name" lang="lang"></localized>
               </td>
+              <td>{{'global.' + entity.studyResourcePath | translate}}</td>
             </tr>
           </tbody>
         </table>

@@ -51,7 +51,9 @@
     "copy-to-clipboard": "Copy to clipboard",
     "name": "Name",
     "default": "Default",
-    "chronological": "Chronological"
+    "chronological": "Chronological",
+    "collection-study": "Collection Study",
+    "harmonization-study": "Harmonization Study"
   },
   "pagination": {
     "of": "of"

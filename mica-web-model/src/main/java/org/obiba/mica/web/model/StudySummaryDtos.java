@@ -74,11 +74,16 @@ class StudySummaryDtos {
 
   @NotNull
   public Mica.StudySummaryDto.Builder asDtoBuilder(@NotNull BaseStudy study, boolean isPublished, long variablesCount) {
+    Mica.StudySummaryDto.Builder builder;
+
     if (study instanceof Study) {
-      return asCollectionStudyDtoBuilder((Study) study, isPublished, variablesCount);
+      builder = asCollectionStudyDtoBuilder((Study) study, isPublished, variablesCount);
     } else {
-      return asHarmonizationStudyDtoBuilder((HarmonizationStudy) study, true, variablesCount);
+      builder = asHarmonizationStudyDtoBuilder((HarmonizationStudy) study, true, variablesCount);
     }
+
+    builder.setStudyResourcePath(study.getResourcePath());
+    return builder;
   }
 
   @NotNull

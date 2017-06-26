@@ -23,11 +23,9 @@ import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.core.domain.PublishCascadingScope;
 import org.obiba.mica.core.repository.EntityStateRepository;
-import org.obiba.mica.core.repository.PersonRepository;
 import org.obiba.mica.core.service.AbstractGitPersistableService;
 import org.obiba.mica.dataset.HarmonizationDatasetRepository;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
-import org.obiba.mica.dataset.service.HarmonizationDatasetService;
 import org.obiba.mica.file.FileStoreService;
 import org.obiba.mica.file.FileUtils;
 import org.obiba.mica.file.service.FileSystemService;
@@ -44,7 +42,7 @@ import org.obiba.mica.network.event.NetworkPublishedEvent;
 import org.obiba.mica.network.event.NetworkUnpublishedEvent;
 import org.obiba.mica.network.event.NetworkUpdatedEvent;
 import org.obiba.mica.study.ConstraintException;
-import org.obiba.mica.study.service.CollectionStudyService;
+import org.obiba.mica.study.service.StudyService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -89,16 +87,10 @@ public class NetworkService extends AbstractGitPersistableService<NetworkState, 
   private MicaConfigService micaConfigService;
 
   @Inject
-  private PersonRepository personRepository;
-
-  @Inject
   private HarmonizationDatasetRepository harmonizationDatasetRepository;
 
   @Inject
-  private HarmonizationDatasetService harmonizationDatasetService;
-
-  @Inject
-  private CollectionStudyService collectionStudyService;
+  private StudyService studyService;
 
   /**
    * Create or update provided {@link Network}.
@@ -273,7 +265,7 @@ public class NetworkService extends AbstractGitPersistableService<NetworkState, 
   }
 
   private Network processNetworkForPublishedNumberOfStudies(Network network) {
-    network.setNumberOfStudies(network.getStudyIds().stream().filter(s -> collectionStudyService.isPublished(s)).count());
+    network.setNumberOfStudies(network.getStudyIds().stream().filter(s -> studyService.isPublished(s)).count());
     return network;
   }
 

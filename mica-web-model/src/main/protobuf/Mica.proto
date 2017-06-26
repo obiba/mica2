@@ -29,6 +29,7 @@ message StudySummaryDto {
   required bool published = 12;
   optional int64 variables = 13;
   optional PermissionsDto permissions = 14;
+  optional string studyResourcePath = 15;
   extensions 1000 to max;
 }
 
@@ -140,6 +141,7 @@ message StudyDto {
   repeated MembershipsDto memberships = 29;
   optional string content = 30;
   optional bool published = 31;
+  optional string studyResourcePath = 32;
 
   extensions 1000 to max;
 }
