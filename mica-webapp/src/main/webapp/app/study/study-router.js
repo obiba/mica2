@@ -49,11 +49,11 @@ mica.study
           controller: 'StudyViewController'
         })
         .when('/collection-study/:id/population/add', {
-          templateUrl: 'app/study/views/population/population-form.html',
+          templateUrl: 'app/study/views/population/collection-population-form.html',
           controller: 'StudyPopulationController'
         })
         .when('/collection-study/:id/population/:pid/edit', {
-          templateUrl: 'app/study/views/population/population-form.html',
+          templateUrl: 'app/study/views/population/collection-population-form.html',
           controller: 'StudyPopulationController'
         })
         .when('/collection-study/:id/population/:pid/dce/add', {
@@ -100,11 +100,11 @@ mica.study
           controller: 'HarmonizationStudyViewController'
         })
         .when('/harmonization-study/:id/population/add', {
-          templateUrl: 'app/study/views/population/population-form.html',
+          templateUrl: 'app/study/views/population/harmonization-population-form.html',
           controller: 'HarmonizationStudyPopulationController'
         })
         .when('/harmonization-study/:id/population/:pid/edit', {
-          templateUrl: 'app/study/views/population/population-form.html',
+          templateUrl: 'app/study/views/population/harmonization-population-form.html',
           controller: 'HarmonizationStudyPopulationController'
         });
     }]);
