@@ -52,6 +52,7 @@
     "name": "Name",
     "default": "Default",
     "chronological": "Chronological",
+    "network": "Network",
     "collection-study": "Collection Study",
     "harmonization-study": "Harmonization Study"
   },

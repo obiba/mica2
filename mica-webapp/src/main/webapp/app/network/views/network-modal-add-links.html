@@ -64,7 +64,7 @@
               <td>
                 <localized value="entity.name" lang="lang"></localized>
               </td>
-              <td>{{'global.' + entity.studyResourcePath | translate}}</td>
+              <td>{{'global.' + (entity.studyResourcePath ? entity.studyResourcePath : 'network')  | translate}}</td>
             </tr>
           </tbody>
         </table>
