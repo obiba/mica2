@@ -13,7 +13,7 @@
 mica.study
   .factory('StudyStatesResource', ['$resource',
     function ($resource) {
-      return $resource('ws/draft/study-states', {}, {
+      return $resource('ws/draft/study-states?type=collection-study', {}, {
         'query': {method: 'GET', errorHandler: true, isArray: true},
         'get': {method: 'GET', url: 'ws/draft/study-state/:id', params: {id: '@id'}}
       });

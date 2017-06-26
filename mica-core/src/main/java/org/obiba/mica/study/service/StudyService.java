@@ -11,7 +11,6 @@
 package org.obiba.mica.study.service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -29,6 +28,7 @@ import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.event.IndexStudiesEvent;
 import org.springframework.stereotype.Component;
 
+import com.google.common.collect.Lists;
 import com.google.common.eventbus.EventBus;
 
 @Component
@@ -135,6 +135,18 @@ public class StudyService {
     return Stream
       .concat(collectionStudyService.findAllDraftStudies().stream(),
         harmonizationStudyService.findAllDraftStudies().stream())
+      .collect(Collectors.toList());
+  }
+
+  public List<? extends EntityState> findAllStates() {
+    return Stream.concat(collectionStudyService.findAllStates().stream(),
+      harmonizationStudyService.findAllStates().stream())
+      .collect(Collectors.toList());
+  }
+
+  public List<? extends EntityState> findAllStates(Iterable<String> ids) {
+    return Stream.concat(collectionStudyService.findAllStates(ids).stream(),
+      harmonizationStudyService.findAllStates(ids).stream())
       .collect(Collectors.toList());
   }
 }
