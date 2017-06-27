@@ -17,6 +17,8 @@ import org.obiba.core.translator.Translator;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.mica.web.model.MicaSearch;
 
+import com.google.common.base.Strings;
+
 import au.com.bytecode.opencsv.CSVWriter;
 
 public class StudiesCsvReportGenerator extends CsvReportGeneratorImpl {
@@ -95,8 +97,8 @@ public class StudiesCsvReportGenerator extends CsvReportGeneratorImpl {
     line.add(studySummaryDto.getName(0).getValue());
 
     if (mustShow("showStudiesDesignColumn")) {
-      line.add(translator.translate(studySummaryDto.getDesignsCount() > 0
-        ? String.format("study_taxonomy.vocabulary.methods-design.term.%s.title", studySummaryDto.getDesigns(0))
+      line.add(translator.translate(!Strings.isNullOrEmpty(studySummaryDto.getDesign())
+        ? String.format("study_taxonomy.vocabulary.methods-design.term.%s.title", studySummaryDto.getDesign())
         : ""));
     }
 
