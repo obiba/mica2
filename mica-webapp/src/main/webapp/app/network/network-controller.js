@@ -166,7 +166,7 @@ mica.network
       $scope.lang = lang;
       $scope.entities = [];
 
-      entityStatesResource.query().$promise.then(function(entities) {
+      entityStatesResource.query({type: ''}).$promise.then(function(entities) {
         $scope.entities = entities.filter(function(s) {
           return currentLinks === undefined || currentLinks.indexOf(s.id) < 0;
         });
@@ -314,7 +314,7 @@ mica.network
         MicaConfigResource.get(function (micaConfig) {
 
           $scope.openAccess = micaConfig.openAccess;
-          
+
           var formLanguages = {};
           micaConfig.languages.forEach(function (loc) {
             formLanguages[loc] = $filter('translate')('language.' + loc);

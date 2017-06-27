@@ -206,7 +206,7 @@ mica.study
     'FormDirtyStateObserver',
     'StudyUpdateWarningService',
     'MicaUtil',
-    mica.study.PopulationEditController
+    mica.study.HarmonizationPopulationEditController
   ])
 
   .controller('StudyPopulationDceController', [

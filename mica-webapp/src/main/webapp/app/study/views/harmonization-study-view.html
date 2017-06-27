@@ -14,7 +14,7 @@
   <div ng-class="{'voffset3': !screen.is('lg')}" class="clearfix hidden-print">
     <h3 class="pull-left no-margin-top" translate>view</h3>
     <div class="pull-right">
-      <a ng-href="#/study/{{study.id}}/edit" class="btn btn-primary btn-responsive" ng-if="permissions.canEdit()">
+      <a ng-href="#/harmonization-study/{{study.id}}/edit" class="btn btn-primary btn-responsive" ng-if="permissions.canEdit()">
         <i class="fa fa-pencil-square-o"></i> <span translate>edit</span>
       </a>
 
@@ -38,6 +38,6 @@
     <publish-status class="inline" state="studySummary['obiba.mica.EntityStateDto.studySummaryState']"></publish-status>
   </p>
 
-  <div ng-include="'app/study/views/study-view-details.html'"></div>
+  <div ng-include="'app/study/views/harmonization-study-view-details.html'"></div>
 
 </div>

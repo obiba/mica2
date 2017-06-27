@@ -1,0 +1,44 @@
+<!--
+  ~ Copyright (c) 2017 OBiBa. All rights reserved.
+  ~
+  ~ This program and the accompanying materials
+  ~ are made available under the terms of the GNU Public License v3.0.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<div>
+  <div ng-include="'app/study/views/harmonization-study-form-header.html'" ng-init="tabName='view'"></div>
+
+  <h3>
+    <a ng-click="cancel()">
+      <i class="fa fa-chevron-left"> </i>
+    </a>
+    <span ng-if="newPopulation" translate>study.add-population</span>
+    <span ng-if="!newPopulation">{{'study.edit-population' | translate}} [{{population.id}}]</span>
+  </h3>
+
+  <form name="form" role="form" ng-submit="save(form)">
+    <p class="alert alert-danger" ng-show="form.saveAttempted && form.$invalid" translate="">fix-error</p>
+
+    <div ng-if="study">
+      <h3 translate>study.general-info</h3>
+      <div sf-model="population.model" sf-form="populationSfForm.definition" sf-schema="populationSfForm.schema" sf-options="sfOptions"></div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-6">
+        <input class="form-control" ng-model="revision.comment" placeholder="{{'global.update-comment' | translate}}" type="text">
+        <div class="voffset1">
+          <button type="button" class="btn btn-responsive btn-default" ng-click="cancel()">
+            <span translate>cancel</span>
+          </button>
+          <button type="submit" class="btn btn-responsive btn-primary">
+            <span translate>save</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>

@@ -51,7 +51,10 @@
     "copy-to-clipboard": "Copier dans le presse-papier",
     "name": "Nom",
     "default": "Par défaut",
-    "chronological": "Chronologique"
+    "chronological": "Chronologique",
+    "network": "Réseau",
+    "collection-study": "Étude de collecte",
+    "harmonization-study": "Étude d'harmonisation"
   },
   "pagination": {
     "of": "de"
@@ -783,7 +786,7 @@
   "ok": "OK",
   "confirmation": "Confirmation",
   "submit": "Soumettre",
-  "review": "Révision",  
+  "review": "Révision",
   "conditionallyApprove": "Approuver sous conditions",
   "reopen": "Rouvrir",
   "approve": "Approuver",

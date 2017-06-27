@@ -95,6 +95,7 @@ class StudyDtos {
       builder.setTimestamps(TimestampsDtos.asDto(study));
     }
 
+    builder.setStudyResourcePath(study.getResourcePath());
     builder.setPermissions(permissionsDtos.asDto(study));
 
     if(study.getLogo() != null) builder.setLogo(attachmentDtos.asDto(study.getLogo()));
