@@ -94,7 +94,7 @@ public class DatasetStateUpgrade implements UpgradeStep {
 
     state.incrementRevisionsAhead();
     stateRepository.save(state);
-    eventBus.post(new DatasetUpdatedEvent(dataset, null));
+    eventBus.post(new DatasetUpdatedEvent(dataset));
 
     gitService.save(dataset, "System upgrade");
 

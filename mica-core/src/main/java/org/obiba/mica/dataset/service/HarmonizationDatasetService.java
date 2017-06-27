@@ -184,7 +184,7 @@ public class HarmonizationDatasetService extends DatasetService<HarmonizationDat
    */
   public void index(@NotNull String id) {
     HarmonizationDataset dataset = findById(id);
-    eventBus.post(new DatasetUpdatedEvent(dataset, null, null));
+    eventBus.post(new DatasetUpdatedEvent(dataset));
   }
 
   /**
@@ -200,13 +200,14 @@ public class HarmonizationDatasetService extends DatasetService<HarmonizationDat
     findAllDatasets().forEach(dataset -> {
       try {
 
-        Map<String, List<DatasetVariable>> harmonizationVariables = mustIndexVariables && publishedDatasets.contains(dataset) ? populateHarmonizedVariablesMap(dataset) : null;
-        Iterable<DatasetVariable> datasetVariables = mustIndexVariables && publishedDatasets.contains(dataset) ? wrappedGetDatasetVariables(dataset) : null;
 
-        eventBus.post(new DatasetUpdatedEvent(dataset, datasetVariables, harmonizationVariables));
+        eventBus.post(new DatasetUpdatedEvent(dataset));
 
-        if (publishedDatasets.contains(dataset))
+        if (publishedDatasets.contains(dataset)) {
+          Map<String, List<DatasetVariable>> harmonizationVariables = mustIndexVariables && publishedDatasets.contains(dataset) ? populateHarmonizedVariablesMap(dataset) : null;
+          Iterable<DatasetVariable> datasetVariables = mustIndexVariables && publishedDatasets.contains(dataset) ? wrappedGetDatasetVariables(dataset) : null;
           eventBus.post(new DatasetPublishedEvent(dataset, datasetVariables, harmonizationVariables, getCurrentUsername()));
+        }
 
       } catch (Exception e) {
         log.error(String.format("Error indexing dataset %s", dataset), e);
@@ -557,19 +558,7 @@ public class HarmonizationDatasetService extends DatasetService<HarmonizationDat
 
     @Async
     public void getPublishedVariables(HarmonizationDataset dataset) {
-      Iterable<DatasetVariable> variables;
-      Map<String, List<DatasetVariable>> harmonizationVariables;
-
-      try {
-        //getting variables first to fail fast when dataset is being published
-        variables = service.wrappedGetDatasetVariables(dataset);
-        harmonizationVariables = service.populateHarmonizedVariablesMap(dataset);
-        eventBus.post(new DatasetUpdatedEvent(dataset, variables, harmonizationVariables));
-      } catch(DatasourceNotAvailableException | InvalidDatasetException e) {
-        if(e instanceof DatasourceNotAvailableException) {
-          log.warn("Datasource not available.", e);
-        }
-      }
+      eventBus.post(new DatasetUpdatedEvent(dataset));
     }
   }
 }

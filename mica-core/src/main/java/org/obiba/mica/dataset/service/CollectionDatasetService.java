@@ -204,7 +204,7 @@ public class CollectionDatasetService extends DatasetService<StudyDataset, Study
   public void index(@NotNull String id) {
     StudyDataset dataset = findById(id);
     prepareForIndex(dataset);
-    eventBus.post(new DatasetUpdatedEvent(dataset, null));
+    eventBus.post(new DatasetUpdatedEvent(dataset));
   }
 
   private void prepareForIndex(StudyDataset dataset) {
@@ -225,11 +225,11 @@ public class CollectionDatasetService extends DatasetService<StudyDataset, Study
     findAllDatasets()
       .forEach(dataset -> {
         try {
-          Iterable<DatasetVariable> variables = mustIndexVariables && publishedDatasets.contains(dataset) ? wrappedGetDatasetVariables(dataset) : null;
-          eventBus.post(new DatasetUpdatedEvent(dataset, variables));
+          eventBus.post(new DatasetUpdatedEvent(dataset));
 
           if (publishedDatasets.contains(dataset)) {
             prepareForIndex(dataset);
+            Iterable<DatasetVariable> variables = mustIndexVariables && publishedDatasets.contains(dataset) ? wrappedGetDatasetVariables(dataset) : null;
             eventBus.post(new DatasetPublishedEvent(dataset, variables, getCurrentUsername()));
           }
         } catch (Exception e) {
@@ -380,7 +380,7 @@ public class CollectionDatasetService extends DatasetService<StudyDataset, Study
     saved.setLastModifiedDate(DateTime.now());
     studyDatasetRepository.save(saved);
     gitService.save(saved, comment);
-    eventBus.post(new DatasetUpdatedEvent(saved, null));
+    eventBus.post(new DatasetUpdatedEvent(saved));
   }
 
   protected StudyDataset prepareSave(StudyDataset dataset) {
