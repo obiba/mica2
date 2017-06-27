@@ -11,5 +11,4 @@
 package org.obiba.mica.micaConfig.domain;
 
 public abstract class DatasetConfig extends EntityConfig {
-
 }

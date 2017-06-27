@@ -11,8 +11,4 @@
 package org.obiba.mica.micaConfig.domain;
 
 public class StudyDatasetConfig extends DatasetConfig {
-  @Override
-  public String pathPrefix() {
-    return "collection-dataset-config";
-  }
 }

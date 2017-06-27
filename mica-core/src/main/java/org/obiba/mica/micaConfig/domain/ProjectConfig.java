@@ -19,20 +19,11 @@ public class ProjectConfig extends EntityConfig {
 
   private Map<String, LocalizedString> properties;
 
-  public ProjectConfig() {
-    setId(DEFAULT_ID);
-  }
-
   public Map<String, LocalizedString> getProperties() {
     return properties == null ? properties = Maps.newHashMap() : properties;
   }
 
   public void setProperties(Map<String, LocalizedString> properties) {
     this.properties = properties;
-  }
-
-  @Override
-  public String pathPrefix() {
-    return "project-forms";
   }
 }
