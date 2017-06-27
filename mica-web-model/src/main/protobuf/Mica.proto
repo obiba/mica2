@@ -19,7 +19,7 @@ message StudySummaryDto {
   optional TimestampsDto timestamps = 2;
   repeated LocalizedStringDto name = 3;
   repeated LocalizedStringDto acronym = 4;
-  repeated string designs = 5;
+  optional string design = 5;
   optional TargetNumberDto targetNumber = 6;
   repeated string countries = 7;
   optional AttachmentDto logo = 8;

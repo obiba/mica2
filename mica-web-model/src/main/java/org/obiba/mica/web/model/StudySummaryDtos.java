@@ -11,6 +11,7 @@
 package org.obiba.mica.web.model;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -100,36 +101,18 @@ class StudySummaryDtos {
 
     if(study.getLogo() != null) builder.setLogo(attachmentDtos.asDto(study.getLogo()));
 
+    builder.setDesign(extractStudyDesignFromModel(study.getModel()));
+
+    Map<String, Object> numberOfParticipantsParticipant = extractStudyNumberOfParticipantsParticipantFromModel(study.getModel());
+    builder.setTargetNumber(Mica.TargetNumberDto.newBuilder()
+      .setNumber((Integer) numberOfParticipantsParticipant.get("number"))
+      .setNoLimit((Boolean) numberOfParticipantsParticipant.get("noLimit")));
+
     Collection<String> countries = new HashSet<>();
     SortedSet<Population> populations = study.getPopulations();
 
     if(populations != null) {
-      if(!study.hasModel()) {
-        populations.stream() //
-          .filter(population -> population.getSelectionCriteria() != null &&
-            population.getSelectionCriteria().getCountriesIso() != null)
-          .forEach(population -> countries.addAll(population.getSelectionCriteria().getCountriesIso()));
-
-        List<String> dataSources = Lists.newArrayList();
-        populations.stream().filter(population -> population.getAllDataSources() != null)
-          .forEach(population -> dataSources.addAll(population.getAllDataSources()));
-
-        if (dataSources.size() > 0) {
-          builder.addAllDataSources(dataSources.stream().distinct().collect(toList()));
-        }
-
-      } else {
-        countries.addAll(extractCountries(populations));
-
-        List<String> dataSources = Lists.newArrayList();
-        populations.stream().filter(population -> population.getAllDataSources() != null)
-          .forEach(population -> dataSources.addAll(population.getAllDataSources()));
-
-        if (dataSources.size() > 0) {
-          builder.addAllDataSources(dataSources.stream().distinct().collect(toList()));
-        }
-      }
-
+      countries.addAll(extractCountries(populations));
       populations.forEach(population -> builder.addPopulationSummaries(asDto(population)));
     }
 
@@ -182,6 +165,21 @@ class StudySummaryDtos {
         }
       ).filter(Objects::nonNull)
       .collect(toSet());
+  }
+
+  private String extractStudyDesignFromModel(Map<String, Object> model) {
+    if (model != null && model.containsKey("methods"))
+      return (String) ((Map<String, Object>) model.get("methods")).get("design");
+    else
+      return "";
+  }
+
+  private Map<String, Object> extractStudyNumberOfParticipantsParticipantFromModel(Map<String, Object> model) {
+    if (model != null && model.containsKey("numberOfParticipants")) {
+      return (Map<String, Object>) ((Map<String, Object>) model.get("numberOfParticipants")).getOrDefault("participant", new HashMap<>());
+    } else {
+      return new HashMap<>();
+    }
   }
 
   @NotNull
