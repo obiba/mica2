@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 
 @Component
-public class StudyConfigService extends EntityConfigService<StudyConfig> {
+public class CollectionStudyConfigService extends EntityConfigService<StudyConfig> {
 
   @Inject
   StudyConfigRepository studyConfigRepository;
@@ -39,7 +39,7 @@ public class StudyConfigService extends EntityConfigService<StudyConfig> {
 
   @Override
   protected String getDefaultSchemaResourcePath() {
-    return "classpath:config/study-form/schema.json";
+    return "classpath:config/study-form/collection-schema.json";
   }
 
   @Override
@@ -49,7 +49,7 @@ public class StudyConfigService extends EntityConfigService<StudyConfig> {
 
   @Override
   protected String getDefaultDefinitionResourcePath() {
-    return "classpath:config/study-form/definition.json";
+    return "classpath:config/study-form/collection-definition.json";
   }
 
   @Override
