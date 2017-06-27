@@ -75,7 +75,7 @@ public abstract class AbstractPublishedStudyResource {
 
   // TODO: this will be refractored in another like StudyService...
   protected String getStudyPath(String id) {
-    return studyService.isCollectionStudy(id) ? "study" : "harmonization-study";
+    return studyService.isCollectionStudy(id) ? "collection-study" : "harmonization-study";
   }
 
   protected void checkAccess(String id) {
