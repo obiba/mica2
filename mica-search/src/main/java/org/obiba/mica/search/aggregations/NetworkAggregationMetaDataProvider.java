@@ -34,8 +34,10 @@ public class NetworkAggregationMetaDataProvider implements AggregationMetaDataPr
   public MetaData getMetadata(String aggregation, String termKey, String locale) {
     Map<String, LocalizedMetaData> networks = helper.getNetworks();
     return AGGREGATION_NAME.equals(aggregation) && networks.containsKey(termKey)
-      ? MetaData.newBuilder().title(networks.get(termKey).getTitle().get(locale))
-      .description(networks.get(termKey).getDescription().get(locale)).build()
+      ? MetaData.newBuilder()
+        .title(networks.get(termKey).getTitle().get(locale))
+        .description(networks.get(termKey).getDescription().get(locale))
+        .className(networks.get(termKey).getClassName()).build()
       : null;
   }
 

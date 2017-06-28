@@ -33,6 +33,7 @@ public class DataCollectionEventAggregationMetaDataProvider implements Aggregati
     return AGGREGATION_NAME.equals(aggregation) && dceDictionary.containsKey(termKey) ? MetaData.newBuilder() //
       .title(dceDictionary.get(termKey).getTitle().get(locale)) //
       .description(dceDictionary.get(termKey).getDescription().get(locale)) //
+      .className(dceDictionary.get(termKey).getClassName()) //
       .start(dceDictionary.get(termKey).getStart()) //
       .end(dceDictionary.get(termKey).getEnd()) //
       .build() : null;

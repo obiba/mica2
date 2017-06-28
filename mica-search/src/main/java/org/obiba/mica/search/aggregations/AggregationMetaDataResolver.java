@@ -42,7 +42,7 @@ public class AggregationMetaDataResolver {
     aggregationProviderMap = Maps.newHashMap();
   }
 
-  public AggregationMetaDataProvider.MetaData getTitle(String aggregation, String termKey, String locale) {
+  public AggregationMetaDataProvider.MetaData getMetaData(String aggregation, String termKey, String locale) {
     if (!aggregationProviderMap.containsKey(aggregation)) {
       boolean found = false;
 

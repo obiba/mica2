@@ -34,7 +34,7 @@ public class DatasetIdAggregationMetaDataHelper extends AbstractIdAggregationMet
     List<Dataset> datasets = sudo(() -> publishedDatasetService.findAll());
     return datasets.stream()
       .collect(
-        Collectors.toMap(Dataset::getId, d -> new AggregationMetaDataProvider.LocalizedMetaData(d.getAcronym(), d.getName())));
+        Collectors.toMap(Dataset::getId, d -> new AggregationMetaDataProvider.LocalizedMetaData(d.getAcronym(), d.getName(), d.getClassName())));
   }
 
   @Override

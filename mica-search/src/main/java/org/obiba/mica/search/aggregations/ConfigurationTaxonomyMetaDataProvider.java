@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import com.google.common.base.Strings;
 import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.micaConfig.service.TaxonomyService;
 import org.obiba.mica.micaConfig.service.helper.AggregationMetaDataProvider;
@@ -48,11 +49,12 @@ public abstract class ConfigurationTaxonomyMetaDataProvider implements Aggregati
     if(md == null) return null;
 
     return MetaData.newBuilder()
-      .title(md.getTitle().get(locale))
-      .description(md.getDescription().get(locale))
-      .start(md.getStart())
-      .end(md.getEnd())
-      .build();
+        .title(md.getTitle().get(locale))
+        .description(md.getDescription().get(locale))
+        .className(md.getClassName())
+        .start(md.getStart())
+        .end(md.getEnd())
+        .build();
   }
 
   @Override
@@ -91,7 +93,11 @@ public abstract class ConfigurationTaxonomyMetaDataProvider implements Aggregati
         title.putAll(t.getTitle());
         LocalizedString description = new LocalizedString();
         description.putAll(t.getDescription());
-        LocalizedMetaData md = new LocalizedMetaData(title, description, t.getAttributeValue("start"),
+        String className = t.getAttributeValue("className");
+        if (Strings.isNullOrEmpty(className)) {
+          className = t.getClass().getSimpleName();
+        }
+        LocalizedMetaData md = new LocalizedMetaData(title, description, className, t.getAttributeValue("start"),
           t.getAttributeValue("end"));
         metaData.put(t.getName(), md);
         metaData.put(t.getName().toLowerCase(), md);

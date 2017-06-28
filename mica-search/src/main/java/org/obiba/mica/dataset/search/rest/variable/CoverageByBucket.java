@@ -178,6 +178,8 @@ class CoverageByBucket {
 
     final String description;
 
+    final String className;
+
     final String start;
 
     final String end;
@@ -196,6 +198,7 @@ class CoverageByBucket {
       value = bucketCoverage.getValue();
       title = bucketCoverage.hasTitle() ? bucketCoverage.getTitle() : value;
       description = bucketCoverage.hasDescription() ? bucketCoverage.getDescription() : "";
+      className = bucketCoverage.hasClassName() ? bucketCoverage.getClassName() : "";
       start = bucketCoverage.hasStart() ? bucketCoverage.getStart() : "";
       end = bucketCoverage.hasEnd() ? bucketCoverage.getEnd() : "";
     }

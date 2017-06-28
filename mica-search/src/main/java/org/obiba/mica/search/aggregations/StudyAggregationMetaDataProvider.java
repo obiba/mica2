@@ -32,6 +32,7 @@ public class StudyAggregationMetaDataProvider implements AggregationMetaDataProv
     return AGGREGATION_NAME.equals(aggregation) && studiesDictionary.containsKey(termKey) ? MetaData.newBuilder() //
       .title(studiesDictionary.get(termKey).getTitle().get(locale)) //
       .description(studiesDictionary.get(termKey).getDescription().get(locale)) //
+      .className(studiesDictionary.get(termKey).getClassName())
       .start(studiesDictionary.get(termKey).getStart()) //
       .end(studiesDictionary.get(termKey).getEnd()) //
       .build() : null;

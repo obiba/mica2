@@ -22,7 +22,7 @@ public class DefaultAggregationMetaDataProvider implements AggregationMetaDataPr
 
   @Override
   public MetaData getMetadata(String aggregation, String termKey, String locale) {
-    return MetaData.newBuilder().title(termKey).description("").build();
+    return MetaData.newBuilder().title(termKey).description("").className("").build();
   }
 
   @Override

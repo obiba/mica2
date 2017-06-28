@@ -62,7 +62,7 @@ public class DceIdAggregationMetaDataHelper extends AbstractIdAggregationMetaDat
           String end = dce.hasEnd() ? dce.getEnd().getYearMonth() : null;
 
           res.put(StudyTable.getDataCollectionEventUId(study.getId(), population.getId(), dce.getId()),
-            new AggregationMetaDataProvider.LocalizedMetaData(title, description, start, end));
+            new AggregationMetaDataProvider.LocalizedMetaData(title, description, dce.getClass().getSimpleName(), start, end));
         });
       });
     });

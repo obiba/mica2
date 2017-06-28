@@ -43,12 +43,12 @@ public class EsQueryResultParser {
 
   private final String locale;
 
-  private final AggregationMetaDataResolver aggregationTitleResolver;
+  private final AggregationMetaDataResolver aggregationMetaDataResolver;
 
   private long totalCount;
 
-  private EsQueryResultParser(AggregationMetaDataResolver titleResolver, String localeName) {
-    aggregationTitleResolver = titleResolver;
+  private EsQueryResultParser(AggregationMetaDataResolver metaDataResolver, String localeName) {
+    aggregationMetaDataResolver = metaDataResolver;
     locale = localeName;
   }
 
@@ -117,10 +117,11 @@ public class EsQueryResultParser {
 
             String key = defaultBucket.getKeyAsString();
 
-            AggregationMetaDataProvider.MetaData metaData = aggregationTitleResolver
-              .getTitle(defaultAgg.getName(), key, locale);
+            AggregationMetaDataProvider.MetaData metaData = aggregationMetaDataResolver
+              .getMetaData(defaultAgg.getName(), key, locale);
             if(metaData.hasTitle()) termsBuilder.setTitle(metaData.getTitle());
             if(metaData.hasDescription()) termsBuilder.setDescription(metaData.getDescription());
+            if(metaData.hasClassName()) termsBuilder.setClassName(metaData.getClassName());
             if(metaData.hasStart()) termsBuilder.setStart(metaData.getStart());
             if(metaData.hasEnd()) termsBuilder.setEnd(metaData.getEnd());
 
@@ -139,8 +140,8 @@ public class EsQueryResultParser {
             Range.Bucket defaultBucket = defaultRangeBuckets.get(j);
             Range.Bucket queriedBucket = queriedRangeBuckets.get(j);
 
-            AggregationMetaDataProvider.MetaData metaData = aggregationTitleResolver
-              .getTitle(queriedAgg.getName(), defaultBucket.getKeyAsString(), locale);
+            AggregationMetaDataProvider.MetaData metaData = aggregationMetaDataResolver
+              .getMetaData(queriedAgg.getName(), defaultBucket.getKeyAsString(), locale);
             RangeAggregationResultDto.Builder rangeBuilder = RangeAggregationResultDto.newBuilder();
             rangeBuilder.setDefault(defaultBucket.getDocCount());
             rangeBuilder.setCount(queriedBucket.getDocCount());
@@ -148,6 +149,7 @@ public class EsQueryResultParser {
             rangeBuilder.setTitle(metaData.getTitle());
 
             if (metaData.hasDescription()) rangeBuilder.setDescription(metaData.getDescription());
+            if (metaData.hasClassName()) rangeBuilder.setClassName(metaData.getClassName());
 
             Double from = (Double)queriedBucket.getFrom();
             Double to = (Double)queriedBucket.getTo();
@@ -216,10 +218,11 @@ public class EsQueryResultParser {
               termsBuilder.addAllAggs(parseAggregations(bucket.getAggregations()));
             }
 
-            AggregationMetaDataProvider.MetaData metaData = aggregationTitleResolver
-              .getTitle(aggregation.getName(), bucket.getKeyAsString(), locale);
+            AggregationMetaDataProvider.MetaData metaData = aggregationMetaDataResolver
+              .getMetaData(aggregation.getName(), bucket.getKeyAsString(), locale);
             if(metaData.hasTitle()) termsBuilder.setTitle(metaData.getTitle());
             if(metaData.hasDescription()) termsBuilder.setDescription(metaData.getDescription());
+            if (metaData.hasClassName()) termsBuilder.setClassName(metaData.getClassName());
             if(metaData.hasStart()) termsBuilder.setStart(metaData.getStart());
             if(metaData.hasEnd()) termsBuilder.setEnd(metaData.getEnd());
 
@@ -230,8 +233,8 @@ public class EsQueryResultParser {
 
         case "range":
           ((Range) aggregation).getBuckets().forEach(bucket -> {
-            AggregationMetaDataProvider.MetaData metaData = aggregationTitleResolver
-              .getTitle(aggregation.getName(), bucket.getKeyAsString(), locale);
+            AggregationMetaDataProvider.MetaData metaData = aggregationMetaDataResolver
+              .getMetaData(aggregation.getName(), bucket.getKeyAsString(), locale);
 
             RangeAggregationResultDto.Builder rangeBuilder =
               RangeAggregationResultDto.newBuilder()
@@ -241,6 +244,7 @@ public class EsQueryResultParser {
                 .setTitle(metaData.getTitle());
 
             if (metaData.hasDescription()) rangeBuilder.setDescription(metaData.getDescription());
+            if (metaData.hasClassName()) rangeBuilder.setClassName(metaData.getClassName());
 
             Double from = (Double)bucket.getFrom();
             Double to = (Double)bucket.getTo();

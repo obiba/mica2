@@ -112,7 +112,6 @@ public class CoverageQueryExecutor {
   /**
    * Extract hits from aggregations and merge them into the taxonomies descriptions.
    *
-   * @param taxonomyNames
    * @param aggregations
    * @return
    */
@@ -356,6 +355,7 @@ public class CoverageQueryExecutor {
 
     if(term.hasTitle()) builder.setTitle(term.getTitle());
     if(term.hasDescription()) builder.setDescription(term.getDescription());
+    if(term.hasClassName()) builder.setClassName(term.getClassName());
     if(term.hasStart()) builder.setStart(term.getStart());
     if(term.hasEnd()) builder.setEnd(term.getEnd());
 

@@ -43,7 +43,7 @@ public abstract class AbstractIdAggregationMetaDataHelper {
     Term term = new Term(id);
     term.setTitle(metaData.getTitle());
     term.setDescription(metaData.getDescription());
-
+    term.addAttribute("className", metaData.getClassName());
     return term;
   }
 }

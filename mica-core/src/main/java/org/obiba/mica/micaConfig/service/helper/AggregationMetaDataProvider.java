@@ -36,17 +36,20 @@ public interface AggregationMetaDataProvider {
 
     private LocalizedString title;
     private LocalizedString description;
+    private String className;
     private String start;
     private String end;
 
-    public LocalizedMetaData(LocalizedString title, LocalizedString description) {
+    public LocalizedMetaData(LocalizedString title, LocalizedString description, String className) {
       this.title = title;
       this.description = description;
+      this.className = className;
     }
 
-    public LocalizedMetaData(LocalizedString title, LocalizedString description, String start, String end) {
+    public LocalizedMetaData(LocalizedString title, LocalizedString description, String className, String start, String end) {
       this.title = title;
       this.description = description;
+      this.className = className;
       this.start = start;
       this.end = end;
     }
@@ -57,6 +60,10 @@ public interface AggregationMetaDataProvider {
 
     public LocalizedString getDescription() {
       return description;
+    }
+
+    public String getClassName() {
+      return className;
     }
 
     public String getStart() {
@@ -71,6 +78,7 @@ public interface AggregationMetaDataProvider {
   class MetaData {
     private String title;
     private String description;
+    private String className;
     private String start;
     private String end;
 
@@ -95,6 +103,14 @@ public interface AggregationMetaDataProvider {
 
     public String getDescription() {
       return description;
+    }
+
+    public boolean hasClassName() {
+      return !Strings.isNullOrEmpty(className);
+    }
+
+    public String getClassName() {
+      return className;
     }
 
     public boolean hasStart() {
@@ -130,6 +146,11 @@ public interface AggregationMetaDataProvider {
 
       public Builder description(String value) {
         metaData.description = value;
+        return this;
+      }
+
+      public Builder className(String value) {
+        metaData.className = value;
         return this;
       }
 
