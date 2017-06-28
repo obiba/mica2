@@ -59,15 +59,6 @@ public class DataAccessFormResource {
     return Response.ok().build();
   }
 
-  @PUT
-  @Path("/_publish")
-  @RequiresRoles(Roles.MICA_ADMIN)
-  public Response publish() {
-    dataAccessFormService.publish();
-
-    return Response.ok().build();
-  }
-
   @Path("/permissions")
   @RequiresRoles(Roles.MICA_ADMIN)
   public SubjectAclResource permissions() {

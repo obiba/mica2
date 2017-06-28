@@ -11,8 +11,4 @@
 package org.obiba.mica.micaConfig.domain;
 
 public class HarmonizationDatasetConfig extends DatasetConfig {
-  @Override
-  public String pathPrefix() {
-    return "harmonization-dataset-config";
-  }
 }

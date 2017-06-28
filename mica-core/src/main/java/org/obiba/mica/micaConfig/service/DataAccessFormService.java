@@ -10,17 +10,9 @@
 
 package org.obiba.mica.micaConfig.service;
 
-import java.io.IOException;
-import java.util.Optional;
-import java.util.Scanner;
-
-import javax.inject.Inject;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.obiba.mica.core.domain.RevisionStatus;
-import org.obiba.mica.core.service.GitService;
 import org.obiba.mica.file.FileStoreService;
 import org.obiba.mica.micaConfig.domain.DataAccessForm;
 import org.obiba.mica.micaConfig.repository.DataAccessFormRepository;
@@ -29,13 +21,15 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import javax.inject.Inject;
+import java.io.IOException;
+import java.util.Optional;
+import java.util.Scanner;
+
 import static org.springframework.util.StringUtils.isEmpty;
 
 @Component
 public class DataAccessFormService {
-
-  @Inject
-  GitService gitService;
 
   @Inject
   FileStoreService fileStoreService;
@@ -45,8 +39,6 @@ public class DataAccessFormService {
 
   public DataAccessForm createOrUpdate(DataAccessForm dataAccessForm) {
     validateForm(dataAccessForm);
-    dataAccessForm.incrementRevisionsAhead();
-    gitService.save(dataAccessForm);
 
     dataAccessForm.getPdfTemplates().forEach((k,v)-> {
       if(v.isJustUploaded()) {
@@ -70,16 +62,6 @@ public class DataAccessFormService {
     }
 
     return Optional.ofNullable(form);
-  }
-
-  public void publish() {
-    Optional<DataAccessForm> dataAccessForm = find();
-    dataAccessForm.ifPresent(d -> {
-      d.setPublishedTag(gitService.tag(d).getFirst());
-      d.setRevisionsAhead(0);
-      d.setRevisionStatus(RevisionStatus.DRAFT);
-      dataAccessFormRepository.save(d);
-    });
   }
 
   private void validateForm(DataAccessForm dataAccessForm) {

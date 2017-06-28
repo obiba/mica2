@@ -117,11 +117,6 @@ public class DataAccessForm extends EntityConfig {
     this.pdfDownloadType = pdfDownloadType;
   }
 
-  @Override
-  public String pathPrefix() {
-    return "data-access-forms";
-  }
-
   public boolean hasTitleFieldPath() {
     return !Strings.isNullOrEmpty(titleFieldPath);
   }

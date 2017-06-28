@@ -18,16 +18,12 @@ import com.google.common.collect.Lists;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.obiba.mica.core.domain.RevisionStatus;
-import org.obiba.mica.core.service.GitService;
-import org.obiba.mica.file.FileStoreService;
 import org.obiba.mica.micaConfig.domain.EntityConfig;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.util.StringUtils;
 
-import javax.inject.Inject;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.ArrayList;
@@ -37,20 +33,12 @@ import java.util.Scanner;
 
 public abstract class EntityConfigService<T extends EntityConfig> {
 
-  @Inject
-  GitService gitService;
-
-  @Inject
-  FileStoreService fileStoreService;
-
   protected abstract MongoRepository<T, String> getRepository();
 
   protected abstract String getDefaultId();
 
   public void createOrUpdate(T configuration) {
     validateForm(configuration);
-    configuration.incrementRevisionsAhead();
-    gitService.save(configuration);
     getRepository().save(configuration);
   }
 
@@ -68,12 +56,7 @@ public abstract class EntityConfigService<T extends EntityConfig> {
 
   public void publish() {
     Optional<T> networkForm = findPartial();
-    networkForm.ifPresent(d -> {
-      d.setPublishedTag(gitService.tag(d).getFirst());
-      d.setRevisionsAhead(0);
-      d.setRevisionStatus(RevisionStatus.DRAFT);
-      getRepository().save(d);
-    });
+    networkForm.ifPresent(d -> getRepository().save(d));
   }
 
   private void validateForm(T configuration) {
@@ -114,10 +97,6 @@ public abstract class EntityConfigService<T extends EntityConfig> {
     form.setDefinition(getResourceAsString(getDefaultDefinitionResourcePath(), "[]"));
     form.setSchema(getResourceAsString(getDefaultSchemaResourcePath(), "{}"));
     return form;
-  }
-
-  private String getResourceAsString(String path) {
-    return getResourceAsString(path, "");
   }
 
   private String getResourceAsString(String path, String defaultValue) {
