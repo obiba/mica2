@@ -34,7 +34,7 @@ public class NetworkIdAggregationMetaDataHelper extends AbstractIdAggregationMet
     List<Network> networks = sudo(() -> publishedNetworkService.findAll());
     return networks.stream()
       .collect(Collectors
-        .toMap(Network::getId, d -> new AggregationMetaDataProvider.LocalizedMetaData(d.getAcronym(), d.getName())));
+        .toMap(Network::getId, d -> new AggregationMetaDataProvider.LocalizedMetaData(d.getAcronym(), d.getName(), d.getClass().getSimpleName())));
   }
 
   @Override

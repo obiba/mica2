@@ -210,11 +210,12 @@ message TermsAggregationResultDto {
   required string key = 1;
   optional string title = 2;
   optional string description = 3;
-  required int32 default = 4;
-  required int32 count = 5;
-  repeated AggregationResultDto aggs = 6;
-  optional string start = 7;
-  optional string end = 8;
+  optional string className = 4;
+  required int32 default = 5;
+  required int32 count = 6;
+  repeated AggregationResultDto aggs = 7;
+  optional string start = 8;
+  optional string end = 9;
 
   extend AggregationResultDto {
     repeated TermsAggregationResultDto terms = 1000;
@@ -242,10 +243,11 @@ message RangeAggregationResultDto {
   required string key = 1;
   optional string title = 2;
   optional string description = 3;
-  required int64 default = 4;
-  required int64 count = 5;
-  optional double from = 6;
-  optional double to = 7;
+  optional string className = 4;
+  required int64 default = 5;
+  required int64 count = 6;
+  optional double from = 7;
+  optional double to = 8;
 
   extend AggregationResultDto {
     repeated RangeAggregationResultDto ranges = 1002;
@@ -259,8 +261,9 @@ message BucketCoverageDto {
   optional int32 count = 4;
   optional string title = 5;
   optional string description = 6;
-  optional string start = 7;
-  optional string end = 8;
+  optional string className = 7;
+  optional string start = 8;
+  optional string end = 9;
 }
 
 message TermCoverageDto {
@@ -303,10 +306,11 @@ message BucketsCoverageDto {
     required string value = 2;
     optional string title = 3;
     optional string description = 4;
-    repeated int32 hits = 5;
-    repeated int32 counts = 6;
-    optional string start = 7;
-    optional string end = 8;
+    optional string className = 5;
+    repeated int32 hits = 6;
+    repeated int32 counts = 7;
+    optional string start = 8;
+    optional string end = 9;
   }
   repeated HeaderDto taxonomyHeaders = 1;
   repeated HeaderDto vocabularyHeaders = 2;

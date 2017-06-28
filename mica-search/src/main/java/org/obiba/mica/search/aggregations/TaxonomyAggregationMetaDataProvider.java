@@ -69,6 +69,7 @@ public class TaxonomyAggregationMetaDataProvider implements AggregationMetaDataP
     return MetaData.newBuilder()
       .title(md.getTitle().get(locale))
       .description(md.getDescription().get(locale))
+      .className(md.getClassName())
       .build();
   }
 
@@ -83,9 +84,12 @@ public class TaxonomyAggregationMetaDataProvider implements AggregationMetaDataP
         title.putAll(t.getTitle());
         LocalizedString description = new LocalizedString();
         description.putAll(t.getDescription());
-
+        String className = t.getAttributeValue("className");
+        if (Strings.isNullOrEmpty(className)) {
+          className = t.getClass().getSimpleName();
+        }
         if(!r.containsKey(t.getName())) {
-          r.put(t.getName(), new LocalizedMetaData(title, description));
+          r.put(t.getName(), new LocalizedMetaData(title, description, className));
         }
       }
 

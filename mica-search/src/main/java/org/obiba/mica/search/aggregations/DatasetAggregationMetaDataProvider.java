@@ -39,8 +39,10 @@ public class DatasetAggregationMetaDataProvider implements AggregationMetaDataPr
 
     return AGGREGATION_NAME.equals(aggregation) && datasetsDictionary.containsKey(termKey)
       && datasetsDictionary.get(termKey).getTitle() != null
-      ? MetaData.newBuilder().title(datasetsDictionary.get(termKey).getTitle().get(locale))
-      .description(datasetsDictionary.get(termKey).getDescription().get(locale)).build()
+      ? MetaData.newBuilder()
+        .title(datasetsDictionary.get(termKey).getTitle().get(locale))
+        .description(datasetsDictionary.get(termKey).getDescription().get(locale))
+        .className(datasetsDictionary.get(termKey).getClassName()).build()
       : null;
   }
 
