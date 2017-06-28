@@ -617,6 +617,10 @@
     "general-info": "<h3>Informations générales</h3>",
     "description": "Description",
     "entity-type": "Type d'entité",
+    "study-population": {
+      "title": "Population d'une étude",
+      "info": ""
+    },
     "study-dce": {
       "title": "Événement de collecte de données de l'étude",
       "info": ""
@@ -637,6 +641,10 @@
     "study-table": {
       "title": "Table d'étude",
       "info": "La table d'étude définie à quel événement de collecte elle s'applique et à partir de quelle table Opal il faut extraire les variables et les données sommaires."
+    },
+    "harmonization-study-table": {
+      "title": "Table d'étude harmonisée",
+      "info": "La table d'étude harmonisée définie à quel événement de collecte elle s'applique et à partir de quelle table Opal il faut extraire les variables et les données sommaires."
     },
     "network-table": {
       "title": "Table de réseau",

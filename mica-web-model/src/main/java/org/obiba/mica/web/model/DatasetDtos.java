@@ -23,6 +23,7 @@ import javax.validation.constraints.NotNull;
 
 import org.obiba.mica.JSONUtils;
 import org.obiba.mica.core.domain.Attributes;
+import org.obiba.mica.core.domain.HarmonizationTable;
 import org.obiba.mica.core.domain.NetworkTable;
 import org.obiba.mica.core.domain.OpalTable;
 import org.obiba.mica.core.domain.StudyTable;
@@ -173,6 +174,11 @@ class DatasetDtos {
     if(!dataset.getStudyTables().isEmpty()) {
       dataset.getStudyTables().forEach(studyTable -> hbuilder
         .addStudyTables(asDto(studyTable, true)));
+    }
+
+    if (!dataset.getHarmonizationTables().isEmpty()) {
+      dataset.getHarmonizationTables().forEach(harmonizationTable -> hbuilder
+        .addHarmonizationTables(asDto(harmonizationTable, true)));
     }
 
     if(!dataset.getNetworkTables().isEmpty()) {
@@ -385,6 +391,26 @@ class DatasetDtos {
     sbuilder.addAllDescription(localizedStringDtos.asDto(studyTable.getDescription()));
 
     return sbuilder;
+  }
+
+  public Mica.DatasetDto.HarmonizationTableDto.Builder asDto(HarmonizationTable harmonizationTable) {
+    return asDto(harmonizationTable, false);
+  }
+
+  public Mica.DatasetDto.HarmonizationTableDto.Builder asDto(HarmonizationTable harmonizationTable, boolean includeSummary) {
+    Mica.DatasetDto.HarmonizationTableDto.Builder hBuilder = Mica.DatasetDto.HarmonizationTableDto.newBuilder()
+      .setProject(harmonizationTable.getProject())
+      .setTable(harmonizationTable.getTable())
+      .setWeight(harmonizationTable.getWeight())
+      .setStudyId(harmonizationTable.getHarmonizationStudyId())
+      .setPopulationId(harmonizationTable.getPopulationId());
+
+    if (includeSummary) hBuilder.setStudySummary(studySummaryDtos.asDto(harmonizationTable.getHarmonizationStudyId()));
+
+    hBuilder.addAllName(localizedStringDtos.asDto(harmonizationTable.getName()));
+    hBuilder.addAllDescription(localizedStringDtos.asDto(harmonizationTable.getDescription()));
+
+    return hBuilder;
   }
 
   public Mica.DatasetVariableAggregationDto.Builder asDto(@NotNull OpalTable opalTable,
@@ -689,6 +715,10 @@ class DatasetDtos {
       dto.getStudyTablesList().forEach(tableDto -> harmonizationDataset.addStudyTable(fromDto(tableDto)));
     }
 
+    if (dto.getHarmonizationTablesCount() > 0) {
+      dto.getHarmonizationTablesList().forEach(tableDto -> harmonizationDataset.addHarmonizationTable(fromDto(tableDto)));
+    }
+
     if(dto.getNetworkTablesCount() > 0) {
       dto.getNetworkTablesList().forEach(tableDto -> harmonizationDataset.addNetworkTable(fromDto(tableDto)));
     }
@@ -715,6 +745,21 @@ class DatasetDtos {
     table.setStudyId(dto.getStudyId());
     table.setPopulationId(dto.getPopulationId());
     table.setDataCollectionEventId(dto.getDataCollectionEventId());
+    table.setProject(dto.getProject());
+    table.setTable(dto.getTable());
+    table.setWeight(dto.getWeight());
+
+    table.setName(localizedStringDtos.fromDto(dto.getNameList()));
+    table.setDescription(localizedStringDtos.fromDto(dto.getDescriptionList()));
+
+    return table;
+  }
+
+  private HarmonizationTable fromDto(Mica.DatasetDto.HarmonizationTableDto dto) {
+    HarmonizationTable table = new HarmonizationTable();
+    table.setHarmonizationStudyId(dto.getStudyId());
+    table.setPopulationId(dto.getPopulationId());
+    table.setPopulationId(dto.getPopulationId());
     table.setProject(dto.getProject());
     table.setTable(dto.getTable());
     table.setWeight(dto.getWeight());

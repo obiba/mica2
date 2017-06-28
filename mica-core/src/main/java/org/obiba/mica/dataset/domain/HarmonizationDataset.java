@@ -23,6 +23,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+
+import org.obiba.mica.core.domain.HarmonizationTable;
 import org.obiba.mica.core.domain.NetworkTable;
 import org.obiba.mica.core.domain.OpalTable;
 import org.obiba.mica.core.domain.StudyTable;
@@ -38,6 +40,8 @@ public class HarmonizationDataset extends Dataset {
    * Tables that implement the harmonization.
    */
   private List<StudyTable> studyTables;
+
+  private List<HarmonizationTable> harmonizationTables;
 
   private List<NetworkTable> networkTables;
 
@@ -79,6 +83,18 @@ public class HarmonizationDataset extends Dataset {
 
   public void setStudyTables(List<StudyTable> studyTables) {
     this.studyTables = studyTables;
+  }
+
+  public List<HarmonizationTable> getHarmonizationTables() {
+    return harmonizationTables == null ? harmonizationTables = new ArrayList<>() : harmonizationTables;
+  }
+
+  public void addHarmonizationTable(HarmonizationTable harmonizationTable) {
+    getHarmonizationTables().add(harmonizationTable);
+  }
+
+  public void setHarmonizationTables(List<HarmonizationTable> harmonizationTables) {
+    this.harmonizationTables = harmonizationTables;
   }
 
   public List<NetworkTable> getNetworkTables() {
@@ -135,7 +151,7 @@ public class HarmonizationDataset extends Dataset {
 
   @JsonIgnore
   public List<OpalTable> getAllOpalTables() {
-    return Lists.newArrayList(Iterables.concat(getStudyTables(), getNetworkTables())).stream()//
+    return Lists.newArrayList(Iterables.concat(getStudyTables(), getHarmonizationTables(), getNetworkTables())).stream()//
       .sorted((a, b) -> a.getWeight() - b.getWeight()).collect(Collectors.toList());
   }
 
