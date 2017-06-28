@@ -58,7 +58,7 @@ public class EntityConfigServiceTest {
       "}";
 
     // Execute
-    String mergeSchema = new StudyConfigService().mergeSchema(customSchema, mandatorySchema);
+    String mergeSchema = new CollectionStudyConfigService().mergeSchema(customSchema, mandatorySchema);
 
     // Verify
     DocumentContext parse = JsonPath.parse(mergeSchema);
@@ -87,7 +87,7 @@ public class EntityConfigServiceTest {
       "]";
 
     // Execute
-    String mergeSchema = new StudyConfigService().mergeDefinition(customDefinition, mandatoryDefinition);
+    String mergeSchema = new CollectionStudyConfigService().mergeDefinition(customDefinition, mandatoryDefinition);
 
     // Verify
     DocumentContext parse = JsonPath.parse(mergeSchema);
