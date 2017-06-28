@@ -638,6 +638,14 @@
       "title": "Network",
       "info": "A network linked to this dataset."
     },
+    "harmonization-study": {
+      "title": "Harmonization Study",
+      "info": "A harmonization study linked to this dataset."
+    },
+    "harmonization-study-population": {
+      "title": "Harmonization Study Population",
+      "info": "A harmonization study's population linked to this dataset."
+    },
     "study-table": {
       "title": "Study Table",
       "info": "A study table defines which study data collection event it applies to and which Opal table the variables and data summaries are to be extracted from."

@@ -638,6 +638,14 @@
       "title": "Réseau",
       "info": "Un réseau lié a cet ensemble de données."
     },
+    "harmonization-study": {
+      "title": "Étude harmonisée",
+      "info": "Une étude harmonisée liée a cet ensemble de données."
+    },
+    "harmonization-study-population": {
+      "title": "Population d'une étude harmonisée",
+      "info": "Une population d'étude harmonisée liée a cet ensemble de données."
+    },
     "study-table": {
       "title": "Table d'étude",
       "info": "La table d'étude définie à quel événement de collecte elle s'applique et à partir de quelle table Opal il faut extraire les variables et les données sommaires."
