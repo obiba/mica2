@@ -11,10 +11,10 @@
 package org.obiba.mica.web.model;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -33,16 +33,17 @@ import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.service.PublishedDatasetVariableService;
 import org.obiba.mica.study.service.PublishedStudyService;
 import org.obiba.mica.study.service.StudyService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import com.google.common.collect.Lists;
-
-import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 
 @Component
 @SuppressWarnings("StaticMethodOnlyUsedInOneClass")
 class StudySummaryDtos {
+
+  private static final Logger logger = LoggerFactory.getLogger(StudySummaryDtos.class);
 
   @Inject
   private LocalizedStringDtos localizedStringDtos;
@@ -101,12 +102,8 @@ class StudySummaryDtos {
 
     if(study.getLogo() != null) builder.setLogo(attachmentDtos.asDto(study.getLogo()));
 
-    builder.setDesign(extractStudyDesignFromModel(study.getModel()));
-
-    Map<String, Object> numberOfParticipantsParticipant = extractStudyNumberOfParticipantsParticipantFromModel(study.getModel());
-    builder.setTargetNumber(Mica.TargetNumberDto.newBuilder()
-      .setNumber((Integer) numberOfParticipantsParticipant.get("number"))
-      .setNoLimit((Boolean) numberOfParticipantsParticipant.get("noLimit")));
+    addDesignInBuilderIfPossible(study.getModel(), builder);
+    addTargetNumberInBuilderIfPossible(study.getModel(), builder);
 
     Collection<String> countries = new HashSet<>();
     SortedSet<Population> populations = study.getPopulations();
@@ -167,18 +164,40 @@ class StudySummaryDtos {
       .collect(toSet());
   }
 
-  private String extractStudyDesignFromModel(Map<String, Object> model) {
-    if (model != null && model.containsKey("methods"))
-      return (String) ((Map<String, Object>) model.get("methods")).get("design");
-    else
-      return "";
+  void addTargetNumberInBuilderIfPossible(Map<String, Object> studyModel, Mica.StudySummaryDto.Builder builder) {
+    try {
+      extractStudyNumberOfParticipantsParticipantFromModel(studyModel)
+        .ifPresent(numberOfParticipants ->
+          builder.setTargetNumber(Mica.TargetNumberDto.newBuilder()
+            .setNumber((Integer) numberOfParticipants.get("number"))
+            .setNoLimit((Boolean) numberOfParticipants.get("noLimit")))
+        );
+    } catch (NullPointerException | ClassCastException | NoSuchElementException e) {
+      logger.debug(String.format("Impossible to extract numberOfParticipant in model [%s]", studyModel), e);
+    }
   }
 
-  private Map<String, Object> extractStudyNumberOfParticipantsParticipantFromModel(Map<String, Object> model) {
+  void addDesignInBuilderIfPossible(Map<String, Object> studyModel, Mica.StudySummaryDto.Builder builder) {
+    try {
+      extractStudyDesignFromModel(studyModel)
+        .ifPresent(builder::setDesign);
+    } catch (NullPointerException | ClassCastException e) {
+      logger.debug(String.format("Impossible to extract studyDesign in model [%s]", studyModel), e);
+    }
+  }
+
+  private Optional<String> extractStudyDesignFromModel(Map<String, Object> model) {
+    if (model != null && model.containsKey("methods"))
+      return Optional.ofNullable((String) ((Map<String, Object>) model.get("methods")).get("design"));
+    else
+      return Optional.empty();
+  }
+
+  private Optional<Map<String, Object>> extractStudyNumberOfParticipantsParticipantFromModel(Map<String, Object> model) {
     if (model != null && model.containsKey("numberOfParticipants")) {
-      return (Map<String, Object>) ((Map<String, Object>) model.get("numberOfParticipants")).getOrDefault("participant", new HashMap<>());
+      return Optional.ofNullable((Map<String, Object>) ((Map<String, Object>) model.get("numberOfParticipants")).get("participant"));
     } else {
-      return new HashMap<>();
+      return Optional.empty();
     }
   }
 
