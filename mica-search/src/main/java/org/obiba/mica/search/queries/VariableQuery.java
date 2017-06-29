@@ -209,6 +209,8 @@ public class VariableQuery extends AbstractDocumentQuery {
 
     if(resolver.getType() == DatasetVariable.Type.Collection || resolver.getType() == DatasetVariable.Type.Harmonized) {
       studyId = variable.getStudyIds().get(0);
+    } else if (resolver.getType() == DatasetVariable.Type.Dataschema) {
+      studyId = variable.getHarmonizationStudyId();
     }
 
     String networkId = variable.getNetworkId();

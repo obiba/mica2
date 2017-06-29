@@ -27,7 +27,6 @@ import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.core.domain.NetworkTable;
 import org.obiba.mica.core.domain.OpalTable;
 import org.obiba.mica.core.domain.StudyTable;
-import org.obiba.mica.study.date.PersistableYearMonth;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Strings;
@@ -46,6 +45,7 @@ public class DatasetVariable implements Indexable, AttributeAware {
 
   private static final String ID_SEPARATOR = ":";
   public static final String OPAL_STUDY_TABLE_PREFIX = "Study";
+  public static final String OPAL_HARMONIZATION_TABLE_PREFIX = "Harmonization";
   public static final String OPAL_NETWORK_TABLE_PREFIX = "Network";
 
   public enum Type {
@@ -56,6 +56,7 @@ public class DatasetVariable implements Indexable, AttributeAware {
 
   public enum OpalTableType {
     Study,
+    Harmonization,
     Network
   }
 
@@ -63,6 +64,10 @@ public class DatasetVariable implements Indexable, AttributeAware {
   private String datasetId;
 
   private String networkId;
+
+  private String harmonizationStudyId;
+
+  private String harmonizationPopulationId;
 
   private List<String> networkTableIds = Lists.newArrayList();
 
@@ -134,10 +139,17 @@ public class DatasetVariable implements Indexable, AttributeAware {
       if(!dceIds.contains(table.getDataCollectionEventUId())) dceIds.add(table.getDataCollectionEventUId());
     });
 
+    dataset.getHarmonizationTables().forEach(table -> {
+      if(!studyIds.contains(table.getStudyId())) studyIds.add(table.getStudyId());
+      if(!populationIds.contains(table.getPopulationId())) populationIds.add(table.getPopulationId());
+    });
+
     dataset.getNetworkTables().forEach(table -> {
       if(!networkTableIds.contains(table.getNetworkId())) networkTableIds.add(table.getNetworkId());
     });
 
+    harmonizationStudyId = dataset.getHarmonizationLink().getStudyId();
+    harmonizationPopulationId = dataset.getHarmonizationLink().getPopulationId();
     networkId = dataset.getNetworkId();
     setContainerId(networkId);
   }
@@ -392,6 +404,22 @@ public class DatasetVariable implements Indexable, AttributeAware {
     this.networkId = networkId;
   }
 
+  public String getHarmonizationStudyId() {
+    return harmonizationStudyId;
+  }
+
+  public void setHarmonizationStudyId(String harmonizationStudyId) {
+    this.harmonizationStudyId = harmonizationStudyId;
+  }
+
+  public String getHarmonizationPopulationId() {
+    return harmonizationPopulationId;
+  }
+
+  public void setHarmonizationPopulationId(String harmonizationPopulationId) {
+    this.harmonizationPopulationId = harmonizationPopulationId;
+  }
+
   private String cleanStringForSearch(String string) {
     return string != null ? string.replace("-", "") : null;
   }
@@ -527,7 +555,12 @@ public class DatasetVariable implements Indexable, AttributeAware {
 
     @Override
     public String toString() {
-      String tableType = networkId == null ? OPAL_NETWORK_TABLE_PREFIX : OPAL_STUDY_TABLE_PREFIX;
+      String tableType = type == Type.Dataschema ? OPAL_HARMONIZATION_TABLE_PREFIX : OPAL_STUDY_TABLE_PREFIX;
+
+      if (networkId != null) {
+        tableType = OPAL_NETWORK_TABLE_PREFIX;
+      }
+
       String entityId = networkId == null ? studyId : networkId;
 
       return "[" + datasetId + "," + name + "," + type + ", " + tableType + ", " + entityId + ", " + project + ", " + table + "]";
