@@ -22,7 +22,6 @@ import javax.validation.constraints.NotNull;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 
 import org.obiba.mica.core.domain.HarmonizationTable;
 import org.obiba.mica.core.domain.NetworkTable;
@@ -35,6 +34,11 @@ import org.obiba.mica.core.domain.StudyTable;
 public class HarmonizationDataset extends Dataset {
 
   private static final long serialVersionUID = -658603952811380458L;
+
+  /**
+   * Linked Harmonization Table
+   */
+  private HarmonizationTable harmonizationLink;
 
   /**
    * Tables that implement the harmonization.
@@ -50,27 +54,23 @@ public class HarmonizationDataset extends Dataset {
    */
   private String networkId;
 
-  /**
-   * Linked study.
-   */
-  private String studyId;
+  public HarmonizationTable getHarmonizationLink() {
+    return harmonizationLink;
+  }
 
-  /**
-   * Linked population.
-   */
-  private String populationId;
+  public boolean hasHarmonizationTable() {
+    return harmonizationLink != null;
+  }
 
-  /**
-   * Project in which the table is located.
-   */
-  @NotNull
-  private String project;
+  @JsonIgnore
+  public HarmonizationTable getSafeHarmonizationLink() {
+    if (!hasHarmonizationTable()) throw new IllegalArgumentException("Harmonization Dataset is missing a harmonization table");
+    return harmonizationLink;
+  }
 
-  /**
-   * Table that holds the variables in the primary Opal.
-   */
-  @NotNull
-  private String table;
+  public void setHarmonizationLink(HarmonizationTable harmonizationLink) {
+    this.harmonizationLink = harmonizationLink;
+  }
 
   @NotNull
   public List<StudyTable> getStudyTables() {
@@ -109,22 +109,6 @@ public class HarmonizationDataset extends Dataset {
     getNetworkTables().add(networkTable);
   }
 
-  public String getProject() {
-    return project;
-  }
-
-  public void setProject(String project) {
-    this.project = project;
-  }
-
-  public String getTable() {
-    return table;
-  }
-
-  public void setTable(String table) {
-    this.table = table;
-  }
-
   @Override
   public String pathPrefix() {
     return "harmonizationDatasets";
@@ -153,21 +137,5 @@ public class HarmonizationDataset extends Dataset {
   public List<OpalTable> getAllOpalTables() {
     return Lists.newArrayList(Iterables.concat(getStudyTables(), getHarmonizationTables(), getNetworkTables())).stream()//
       .sorted((a, b) -> a.getWeight() - b.getWeight()).collect(Collectors.toList());
-  }
-
-  public String getStudyId() {
-    return studyId;
-  }
-
-  public void setStudyId(String studyId) {
-    this.studyId = studyId;
-  }
-
-  public String getPopulationId() {
-    return populationId;
-  }
-
-  public void setPopulationId(String populationId) {
-    this.populationId = populationId;
   }
 }

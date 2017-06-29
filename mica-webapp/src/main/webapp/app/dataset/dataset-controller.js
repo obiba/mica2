@@ -304,25 +304,25 @@ mica.dataset
 
           $scope.harmonizationStudies.$promise.then(function (harmonizationStudies) {
             $scope.selected.study = harmonizationStudies.filter(function (s) {
-              return dataset['obiba.mica.HarmonizationDatasetDto.type'].studyReference &&
-                s.id === dataset['obiba.mica.HarmonizationDatasetDto.type'].studyReference.studyId;
+              return dataset['obiba.mica.HarmonizationDatasetDto.type'].harmonizationLink &&
+                s.id === dataset['obiba.mica.HarmonizationDatasetDto.type'].harmonizationLink.studyId;
             })[0];
 
             if ($scope.selected.study) {
               $scope.selected.study.selectedPopulation = $scope.selected.study.populationSummaries.filter(function (p) {
-                return p.id === dataset['obiba.mica.HarmonizationDatasetDto.type'].studyReference.populationId;
+                return p.id === dataset['obiba.mica.HarmonizationDatasetDto.type'].harmonizationLink.populationId;
               })[0];
             }
           });
 
           getOpalProjects().then(function() {
             $scope.selected.project = $scope.projects.filter(function (p) {
-              return p.name === dataset['obiba.mica.HarmonizationDatasetDto.type'].project;
+              return p.name === dataset['obiba.mica.HarmonizationDatasetDto.type'].harmonizationLink.project;
             }).pop();
 
             if ($scope.selected.project) {
               $scope.selected.project.table = $scope.selected.project.datasource.table.filter(function (t) {
-                return t === dataset['obiba.mica.HarmonizationDatasetDto.type'].table;
+                return t === dataset['obiba.mica.HarmonizationDatasetDto.type'].harmonizationLink.table;
               }).pop();
             }
           });
@@ -345,11 +345,11 @@ mica.dataset
           return;
         }
 
-        $scope.dataset['obiba.mica.HarmonizationDatasetDto.type'].project = $scope.selected.project.name;
-        $scope.dataset['obiba.mica.HarmonizationDatasetDto.type'].table = $scope.selected.project.table;
-        $scope.dataset['obiba.mica.HarmonizationDatasetDto.type'].studyReference = $scope.dataset['obiba.mica.HarmonizationDatasetDto.type'].studyReference || {};
-        $scope.dataset['obiba.mica.HarmonizationDatasetDto.type'].studyReference.studyId = $scope.selected.study ? $scope.selected.study.id : null;
-        $scope.dataset['obiba.mica.HarmonizationDatasetDto.type'].studyReference.populationId = $scope.selected.study.selectedPopulation ? $scope.selected.study.selectedPopulation.id : null;
+        $scope.dataset['obiba.mica.HarmonizationDatasetDto.type'].harmonizationLink = $scope.dataset['obiba.mica.HarmonizationDatasetDto.type'].harmonizationLink || {};
+        $scope.dataset['obiba.mica.HarmonizationDatasetDto.type'].harmonizationLink.project = $scope.selected.project.name;
+        $scope.dataset['obiba.mica.HarmonizationDatasetDto.type'].harmonizationLink.table = $scope.selected.project.table;
+        $scope.dataset['obiba.mica.HarmonizationDatasetDto.type'].harmonizationLink.studyId = $scope.selected.study ? $scope.selected.study.id : null;
+        $scope.dataset['obiba.mica.HarmonizationDatasetDto.type'].harmonizationLink.populationId = $scope.selected.study.selectedPopulation ? $scope.selected.study.selectedPopulation.id : null;
 
         if ($scope.dataset.id) {
           updateDataset();
@@ -518,13 +518,13 @@ mica.dataset
       var initializeDataset = function(dataset) {
         $scope.permissions = DocumentPermissionsService.state(dataset['obiba.mica.EntityStateDto.datasetState']);
         if($scope.type === 'harmonization-dataset') {
-          if(dataset['obiba.mica.HarmonizationDatasetDto.type'].studyReference) {
-            StudyStatesResource.get({id: dataset['obiba.mica.HarmonizationDatasetDto.type'].studyReference.studyId}).$promise.then(function (harmonizationStudy) {
+          if(dataset['obiba.mica.HarmonizationDatasetDto.type'].harmonizationLink) {
+            StudyStatesResource.get({id: dataset['obiba.mica.HarmonizationDatasetDto.type'].harmonizationLink.studyId}).$promise.then(function (harmonizationStudy) {
               $scope.datasetStudy = harmonizationStudy.id;
             }).catch(function () {});
           }
-          $scope.datasetProject = dataset['obiba.mica.HarmonizationDatasetDto.type'].project;
-          $scope.datasetTable = dataset['obiba.mica.HarmonizationDatasetDto.type'].table;
+          $scope.datasetProject = dataset['obiba.mica.HarmonizationDatasetDto.type'].harmonizationLink.project;
+          $scope.datasetTable = dataset['obiba.mica.HarmonizationDatasetDto.type'].harmonizationLink.table;
           $scope.opalTables = OpalTablesService.getTables(dataset);
 
           $scope.addStudyTable = function () {

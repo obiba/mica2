@@ -18,7 +18,6 @@ import java.util.Optional;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
-import javax.swing.text.html.Option;
 import javax.validation.constraints.NotNull;
 
 import org.obiba.mica.JSONUtils;
@@ -137,8 +136,6 @@ class DatasetDtos {
     builder.setVariableType(DatasetVariable.Type.Dataschema.name());
 
     Mica.HarmonizationDatasetDto.Builder hbuilder = Mica.HarmonizationDatasetDto.newBuilder();
-    hbuilder.setProject(dataset.getProject());
-    hbuilder.setTable(dataset.getTable());
 
     String networkId = dataset.getNetworkId();
     if(!Strings.isNullOrEmpty(networkId)) {
@@ -152,24 +149,9 @@ class DatasetDtos {
       }
     }
 
-    Optional.ofNullable(dataset.getStudyId())
-      .ifPresent(studyId -> Optional.ofNullable(dataset.getPopulationId())
-        .ifPresent(populationId -> {
-          Mica.HarmonizationDatasetDto.HarmonizationStudyReferenceDto.Builder sRefBuilder
-            = Mica.HarmonizationDatasetDto.HarmonizationStudyReferenceDto.newBuilder();
-
-          if(asDraft) {
-            if(subjectAclService.isPermitted("/draft/harmonization-study", "VIEW", studyId)) {
-              sRefBuilder.setStudyId(studyId);
-              sRefBuilder.setPopulationId(populationId);
-            }
-          } else if(publishedStudyService.findById(studyId) != null) {
-            sRefBuilder.setStudyId(studyId);
-            sRefBuilder.setPopulationId(populationId);
-          }
-          sRefBuilder.setStudySummary(studySummaryDtos.asHarmoStudyDto(studyId));
-          hbuilder.setStudyReference(sRefBuilder);
-        }));
+    if (dataset.getHarmonizationLink() != null) {
+      hbuilder.setHarmonizationLink(createHarmonizationLinkDtoFromHarmonizationTable(dataset.getHarmonizationLink(), asDraft));
+    }
 
     if(!dataset.getStudyTables().isEmpty()) {
       dataset.getStudyTables().forEach(studyTable -> hbuilder
@@ -402,10 +384,10 @@ class DatasetDtos {
       .setProject(harmonizationTable.getProject())
       .setTable(harmonizationTable.getTable())
       .setWeight(harmonizationTable.getWeight())
-      .setStudyId(harmonizationTable.getHarmonizationStudyId())
+      .setStudyId(harmonizationTable.getStudyId())
       .setPopulationId(harmonizationTable.getPopulationId());
 
-    if (includeSummary) hBuilder.setStudySummary(studySummaryDtos.asDto(harmonizationTable.getHarmonizationStudyId()));
+    if (includeSummary) hBuilder.setStudySummary(studySummaryDtos.asDto(harmonizationTable.getStudyId()));
 
     hBuilder.addAllName(localizedStringDtos.asDto(harmonizationTable.getName()));
     hBuilder.addAllDescription(localizedStringDtos.asDto(harmonizationTable.getDescription()));
@@ -708,8 +690,6 @@ class DatasetDtos {
   private Dataset fromDto(@NotNull Mica.HarmonizationDatasetDto dto) {
     Assert.notNull(dto, "HarmonizationDataset dt cannot be null.");
     HarmonizationDataset harmonizationDataset = new HarmonizationDataset();
-    harmonizationDataset.setProject(dto.getProject());
-    harmonizationDataset.setTable(dto.getTable());
 
     if(dto.getStudyTablesCount() > 0) {
       dto.getStudyTablesList().forEach(tableDto -> harmonizationDataset.addStudyTable(fromDto(tableDto)));
@@ -725,11 +705,15 @@ class DatasetDtos {
 
     String networkId = dto.getNetworkId();
     harmonizationDataset.setNetworkId(Strings.isNullOrEmpty(networkId) ? null : networkId);
-    if (dto.hasStudyReference()) {
-      Mica.HarmonizationDatasetDto.HarmonizationStudyReferenceDto studyInfoDto = dto.getStudyReference();
-      harmonizationDataset.setStudyId(studyInfoDto.getStudyId());
-      harmonizationDataset.setPopulationId(studyInfoDto.getPopulationId());
-    };
+    if (dto.hasHarmonizationLink()) {
+      HarmonizationTable harmonizationLink = new HarmonizationTable();
+      harmonizationLink.setProject(dto.getHarmonizationLink().getProject());
+      harmonizationLink.setTable(dto.getHarmonizationLink().getTable());
+      harmonizationLink.setStudyId(dto.getHarmonizationLink().getStudyId());
+      harmonizationLink.setPopulationId(dto.getHarmonizationLink().getPopulationId());
+
+      harmonizationDataset.setHarmonizationLink(harmonizationLink);
+    }
     return harmonizationDataset;
   }
 
@@ -757,7 +741,7 @@ class DatasetDtos {
 
   private HarmonizationTable fromDto(Mica.DatasetDto.HarmonizationTableDto dto) {
     HarmonizationTable table = new HarmonizationTable();
-    table.setHarmonizationStudyId(dto.getStudyId());
+    table.setStudyId(dto.getStudyId());
     table.setPopulationId(dto.getPopulationId());
     table.setPopulationId(dto.getPopulationId());
     table.setProject(dto.getProject());
@@ -781,5 +765,31 @@ class DatasetDtos {
     table.setDescription(localizedStringDtos.fromDto(dto.getDescriptionList()));
 
     return table;
+  }
+
+  private Mica.DatasetDto.HarmonizationTableDto.Builder createHarmonizationLinkDtoFromHarmonizationTable(HarmonizationTable harmonizationLink, boolean asDraft) {
+    Mica.DatasetDto.HarmonizationTableDto.Builder harmonizationLinkBuilder = Mica.DatasetDto.HarmonizationTableDto.newBuilder();
+
+    if (!Strings.isNullOrEmpty(harmonizationLink.getProject()))
+      harmonizationLinkBuilder.setProject(harmonizationLink.getProject());
+
+    if (!Strings.isNullOrEmpty(harmonizationLink.getTable()))
+      harmonizationLinkBuilder.setTable(harmonizationLink.getTable());
+
+    String studyId = harmonizationLink.getStudyId();
+
+    if (asDraft) {
+      if(studyId != null && subjectAclService.isPermitted("/draft/harmonization-study", "VIEW", studyId)) {
+        harmonizationLinkBuilder.setStudyId(harmonizationLink.getStudyId());
+        harmonizationLinkBuilder.setPopulationId(harmonizationLink.getPopulationId());
+      }
+    } else if (studyId != null && publishedStudyService.findById(studyId) != null) {
+      harmonizationLinkBuilder.setStudyId(harmonizationLink.getStudyId());
+      harmonizationLinkBuilder.setPopulationId(harmonizationLink.getPopulationId());
+    }
+
+    if (studyId != null) harmonizationLinkBuilder.setStudySummary(studySummaryDtos.asHarmoStudyDto(studyId));
+
+    return harmonizationLinkBuilder;
   }
 }
