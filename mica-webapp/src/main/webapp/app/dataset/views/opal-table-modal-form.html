@@ -15,16 +15,14 @@
     <div class="modal-header">
       <button type="button" class="close" aria-hidden="true" ng-click="cancel()">&times;</button>
       <h4 class="modal-title" id="myStudyLabel">
-        <span ng-if="type === 'studyTable'" translate>dataset.study-table.title</span>
-        <span ng-if="type === 'networkTable'" translate>dataset.network-table.title</span>
+        <span translate>dataset.study-table.title</span>
       </h4>
     </div>
 
     <div class="modal-body">
 
       <p class="alert alert-danger" ng-show="form.saveAttempted && form.$invalid" translate="">fix-error</p>
-      <network-table-modal-form-section ng-if="type === 'networkTable'"></network-table-modal-form-section>
-      <study-table-modal-form-section ng-if="type === 'studyTable'"></study-table-modal-form-section>
+      <study-table-modal-form-section></study-table-modal-form-section>
 
       <h4 translate>dataset.datasource.title</h4>
 

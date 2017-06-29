@@ -212,8 +212,8 @@ mica.dataset
       switch (type) {
         case mica.dataset.OPAL_TABLE_TYPES.STUDY_TABLE:
           return dataset['obiba.mica.HarmonizationDatasetDto.type'].studyTables;
-        case mica.dataset.OPAL_TABLE_TYPES.NETWORK_TABLE:
-          return dataset['obiba.mica.HarmonizationDatasetDto.type'].networkTables;
+        case mica.dataset.OPAL_TABLE_TYPES.HARMONIZATION_TABLE:
+          return dataset['obiba.mica.HarmonizationDatasetDto.type'].harmonizationTables;
       }
 
       throw new Error('Invalid table type');
@@ -225,8 +225,8 @@ mica.dataset
         case mica.dataset.OPAL_TABLE_TYPES.STUDY_TABLE:
           tablesName = 'studyTables';
           break;
-        case mica.dataset.OPAL_TABLE_TYPES.NETWORK_TABLE:
-          tablesName = 'networkTables';
+        case mica.dataset.OPAL_TABLE_TYPES.HARMONIZATION_TABLE:
+          tablesName = 'harmonizationTables';
           break;
         default:
           throw new Error('Invalid table type');
@@ -281,10 +281,10 @@ mica.dataset
         });
       }
 
-      if (dataset['obiba.mica.HarmonizationDatasetDto.type'].networkTables) {
+      if (dataset['obiba.mica.HarmonizationDatasetDto.type'].harmonizationTables) {
         tableWrappers = tableWrappers.concat(
-          dataset['obiba.mica.HarmonizationDatasetDto.type'].networkTables.map(function (networkTable) {
-            return {type: mica.dataset.OPAL_TABLE_TYPES.NETWORK_TABLE, table: networkTable};
+          dataset['obiba.mica.HarmonizationDatasetDto.type'].harmonizationTables.map(function (harmonizationTable) {
+            return {type: mica.dataset.OPAL_TABLE_TYPES.HARMONIZATION_TABLE, table: harmonizationTable};
           })
         );
       }
@@ -304,7 +304,7 @@ mica.dataset
       if (index > -1) {
         tables.splice(index, 1);
         if (tables.length === 0) {
-          var tablesName = wrapper.type === mica.dataset.OPAL_TABLE_TYPES.STUDY_TABLE ? 'studyTables' : 'networkTables';
+          var tablesName = wrapper.type === mica.dataset.OPAL_TABLE_TYPES.STUDY_TABLE ? 'studyTables' : 'harmonizationTables';
           dataset['obiba.mica.HarmonizationDatasetDto.type'][tablesName] = undefined;
         }
 

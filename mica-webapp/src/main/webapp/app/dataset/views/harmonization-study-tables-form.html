@@ -8,10 +8,6 @@
       <i class="fa fa-plus"></i> <span translate>dataset.add-study-table</span>
     </button>
 
-    <button type="button" class="btn btn-responsive btn-info btn-sm voffset2" ng-click="addNetworkTable()">
-      <i class="fa fa-plus"></i> <span translate>dataset.add-network-table</span>
-    </button>
-
     <button type="button" class="btn btn-responsive btn-danger btn-sm voffset2" ng-click="deleteSelectedOpalTables()" ng-if="opalTables && opalTables.length">
       <i class="fa fa-trash-o"></i> <span translate>global.delete-selected</span>
     </button>
@@ -39,15 +35,18 @@
             <input type="checkbox" ng-model="wrapper.selected">
           </td>
           <td >
-            <a ng-show="wrapper.type === 'studyTable'" ng-href="#/study/{{wrapper.table.studyId}}">
+            <a ng-show="wrapper.type === 'studyTable'" ng-href="#/collection-study/{{wrapper.table.studyId}}">
               {{wrapper.table.studyId}}
             </a>
             <a ng-show="wrapper.type === 'networkTable'" ng-href="#/network/{{wrapper.table.networkId}}">
               {{wrapper.table.networkId}}
             </a>
+            <a ng-show="wrapper.type === 'harmonizationTable'" ng-href="#/harmonization-study/{{wrapper.table.studyId}}">
+              {{wrapper.table.studyId}}
+            </a>
           </td>
           <td>
-            {{(wrapper.type === 'studyTable' ? 'study.label' : 'network.label') | translate}}
+            {{(wrapper.type === 'studyTable' ? 'global.collection-study' : 'global.harmonization-study') | translate}}
           </td>
           <td>
             {{wrapper.table.project}}

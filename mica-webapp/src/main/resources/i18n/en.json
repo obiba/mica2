@@ -617,6 +617,10 @@
     "general-info": "<h3>General Information</h3>",
     "description": "Description",
     "entity-type": "Entity Type",
+    "study-population": {
+      "title": "Study Population",
+      "info": ""
+    },
     "study-dce": {
       "title": "Study Data Collection Event",
       "info": ""
@@ -634,9 +638,21 @@
       "title": "Network",
       "info": "A network linked to this dataset."
     },
+    "harmonization-study": {
+      "title": "Harmonization Study",
+      "info": "A harmonization study linked to this dataset."
+    },
+    "harmonization-study-population": {
+      "title": "Harmonization Study Population",
+      "info": "A harmonization study's population linked to this dataset."
+    },
     "study-table": {
       "title": "Study Table",
       "info": "A study table defines which study data collection event it applies to and which Opal table the variables and data summaries are to be extracted from."
+    },
+    "harmonization-study-table": {
+      "title": "Harmonization Study Table",
+      "info": "A harmonization study table defines which harmonization study population it applies to and which Opal table the variables and data summaries are to be extracted from."
     },
     "network-table": {
       "title": "Network Table",

@@ -32,16 +32,16 @@
         </tr>
         </tbody>
       </table>
-      <div ng-if="micaConfig.isNetworkEnabled">
-        <h3 translate ng-show="datasetNetwork">dataset.network.title</h3>
-        <p class="help-block" ng-show="datasetNetwork" translate>dataset.network.info</p>
-        <table class="table table-bordered table-striped" ng-show="datasetNetwork">
+      <div>
+        <h3 translate ng-show="datasetStudy">dataset.harmonization-study.title</h3>
+        <p class="help-block" ng-show="harmonizationDatasetStudy" translate>dataset.harmonization-study.info</p>
+        <table class="table table-bordered table-striped" ng-show="datasetStudy">
           <tbody>
           <tr>
-            <th translate>dataset.network.title</th>
+            <th translate>dataset.harmonization-study.title</th>
             <td>
-              <a ng-href="#/network/{{datasetNetwork}}">
-                {{datasetNetwork}}
+              <a ng-href="#/harmonization-study/{{datasetStudy}}">
+                {{datasetStudy}}
               </a>
             </td>
           </tr>

@@ -474,6 +474,18 @@ message DatasetDto {
     optional StudySummaryDto studySummary = 9;
     optional int32 weight = 10;
   }
+
+  message HarmonizationTableDto {
+    required string project = 1;
+    required string table = 2;
+    repeated LocalizedStringDto name = 3;
+    repeated LocalizedStringDto description = 4;
+
+    required string studyId = 5;
+    required string populationId = 6;
+    optional StudySummaryDto studySummary = 7;
+    optional int32 weight = 8;
+  }
 }
 
 message CollectionDatasetDto {
@@ -492,6 +504,7 @@ message HarmonizationDatasetDto {
   optional string networkId = 4;
   repeated DatasetDto.NetworkTableDto networkTables = 5;
   optional HarmonizationStudyReferenceDto studyReference = 6;
+  repeated DatasetDto.HarmonizationTableDto harmonizationTables = 7;
   extensions 1000 to max;
 
   message HarmonizationStudyReferenceDto {

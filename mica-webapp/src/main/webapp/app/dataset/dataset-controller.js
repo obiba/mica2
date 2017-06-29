@@ -13,7 +13,7 @@
 /* global OPAL_TABLE_SCHEMA */
 /* global OPAL_TABLE_DEFINITION */
 
-mica.dataset.OPAL_TABLE_TYPES = {STUDY_TABLE: 'studyTable', NETWORK_TABLE: 'networkTable'};
+mica.dataset.OPAL_TABLE_TYPES = {STUDY_TABLE: 'studyTable', HARMONIZATION_TABLE: 'harmonizationTable', NETWORK_TABLE: 'networkTable'};
 
 mica.dataset
 
@@ -225,7 +225,7 @@ mica.dataset
     'DraftHarmonizationDatasetsResource',
     'MicaConfigResource',
     'FormServerValidation',
-    'DraftNetworksResource',
+    'StudyStatesResource',
     'MicaConfigOpalProjectsResource',
     'FormDirtyStateObserver',
     'EntityFormResource',
@@ -244,7 +244,7 @@ mica.dataset
               DraftHarmonizationDatasetsResource,
               MicaConfigResource,
               FormServerValidation,
-              DraftNetworksResource,
+              StudyStatesResource,
               MicaConfigOpalProjectsResource,
               FormDirtyStateObserver,
               EntityFormResource,
@@ -285,7 +285,7 @@ mica.dataset
       };
 
       $scope.selected = {};
-      $scope.networks = DraftNetworksResource.query();
+      $scope.harmonizationStudies = StudyStatesResource.query({type: 'harmonization-study'});
       $scope.type = getTypeFromUrl();
       $scope.newDataset = !$routeParams.id;
       $scope.revision = {comment: null};
@@ -302,8 +302,17 @@ mica.dataset
 
           $scope.opalTables = OpalTablesService.getTables(dataset);
 
-          $scope.networks.$promise.then(function (networks) {
-            $scope.selected.network = networks.filter(function (n) {return n.id === dataset['obiba.mica.HarmonizationDatasetDto.type'].networkId; })[0];
+          $scope.harmonizationStudies.$promise.then(function (harmonizationStudies) {
+            $scope.selected.study = harmonizationStudies.filter(function (s) {
+              return dataset['obiba.mica.HarmonizationDatasetDto.type'].studyReference &&
+                s.id === dataset['obiba.mica.HarmonizationDatasetDto.type'].studyReference.studyId;
+            })[0];
+
+            if ($scope.selected.study) {
+              $scope.selected.study.selectedPopulation = $scope.selected.study.populationSummaries.filter(function (p) {
+                return p.id === dataset['obiba.mica.HarmonizationDatasetDto.type'].studyReference.populationId;
+              })[0];
+            }
           });
 
           getOpalProjects().then(function() {
@@ -338,7 +347,9 @@ mica.dataset
 
         $scope.dataset['obiba.mica.HarmonizationDatasetDto.type'].project = $scope.selected.project.name;
         $scope.dataset['obiba.mica.HarmonizationDatasetDto.type'].table = $scope.selected.project.table;
-        $scope.dataset['obiba.mica.HarmonizationDatasetDto.type'].networkId = $scope.selected.network ? $scope.selected.network.id : null;
+        $scope.dataset['obiba.mica.HarmonizationDatasetDto.type'].studyReference = $scope.dataset['obiba.mica.HarmonizationDatasetDto.type'].studyReference || {};
+        $scope.dataset['obiba.mica.HarmonizationDatasetDto.type'].studyReference.studyId = $scope.selected.study ? $scope.selected.study.id : null;
+        $scope.dataset['obiba.mica.HarmonizationDatasetDto.type'].studyReference.populationId = $scope.selected.study.selectedPopulation ? $scope.selected.study.selectedPopulation.id : null;
 
         if ($scope.dataset.id) {
           updateDataset();
@@ -402,7 +413,7 @@ mica.dataset
     'NOTIFICATION_EVENTS',
     'DatasetService',
     'DocumentPermissionsService',
-    'DraftNetworkResource',
+    'StudyStatesResource',
     'EntityFormResource',
     'OpalTablesService',
     'CollectionDatasetResource',
@@ -430,7 +441,7 @@ mica.dataset
               NOTIFICATION_EVENTS,
               DatasetService,
               DocumentPermissionsService,
-              DraftNetworkResource,
+              StudyStatesResource,
               EntityFormResource,
               OpalTablesService,
               CollectionDatasetResource,
@@ -465,19 +476,12 @@ mica.dataset
         });
       }
 
-      function addUpdateOpalTable(tableType, wrapper) {
-        if (!tableType) {
-          throw new Error('Cannot add Opal table without specifying the table type.');
-        }
-
-        var controllerName = tableType === mica.dataset.OPAL_TABLE_TYPES.STUDY_TABLE ?
-          'StudyTableModalController' :
-          'NetworkTableModalController';
+      function addUpdateOpalTable(wrapper) {
 
         $uibModal
           .open({
             templateUrl: 'app/dataset/views/opal-table-modal-form.html',
-            controller: controllerName,
+            controller: 'StudyTableModalController',
             resolve: {
               table: function() {
                 if($scope.type === 'harmonization-dataset') {
@@ -485,15 +489,23 @@ mica.dataset
                 } else {
                   return angular.isDefined($scope.dataset['obiba.mica.CollectionDatasetDto.type']) ? $scope.dataset['obiba.mica.CollectionDatasetDto.type'].studyTable : {};
                 }
-              }
+              },
+              tableType: function () {
+                if($scope.type === 'harmonization-dataset') {
+                  return wrapper ? wrapper.type : mica.dataset.OPAL_TABLE_TYPES.STUDY_TABLE;
+                } else {
+                  return mica.dataset.OPAL_TABLE_TYPES.STUDY_TABLE;
+                }
+              },
+              isHarmonizationDatasetScope: $scope.type === 'harmonization-dataset'
             }
           })
           .result.then(
-            function (table) {
+            function (data) {
               if($scope.type === 'harmonization-dataset') {
-                OpalTablesService.addUpdateTable($scope.dataset, tableType, wrapper, table);
+                OpalTablesService.addUpdateTable($scope.dataset, data.type, wrapper, data.table);
               } else {
-                OpalTablesService.setTable($scope.dataset, table);
+                OpalTablesService.setTable($scope.dataset, data.table);
               }
               saveAndUpdateDataset();
             },
@@ -506,9 +518,9 @@ mica.dataset
       var initializeDataset = function(dataset) {
         $scope.permissions = DocumentPermissionsService.state(dataset['obiba.mica.EntityStateDto.datasetState']);
         if($scope.type === 'harmonization-dataset') {
-          if(dataset['obiba.mica.HarmonizationDatasetDto.type'].networkId) {
-            DraftNetworkResource.get({id: dataset['obiba.mica.HarmonizationDatasetDto.type'].networkId}).$promise.then(function (network) {
-              $scope.datasetNetwork = network.id;
+          if(dataset['obiba.mica.HarmonizationDatasetDto.type'].studyReference) {
+            StudyStatesResource.get({id: dataset['obiba.mica.HarmonizationDatasetDto.type'].studyReference.studyId}).$promise.then(function (harmonizationStudy) {
+              $scope.datasetStudy = harmonizationStudy.id;
             }).catch(function () {});
           }
           $scope.datasetProject = dataset['obiba.mica.HarmonizationDatasetDto.type'].project;
@@ -516,15 +528,11 @@ mica.dataset
           $scope.opalTables = OpalTablesService.getTables(dataset);
 
           $scope.addStudyTable = function () {
-            addUpdateOpalTable(mica.dataset.OPAL_TABLE_TYPES.STUDY_TABLE);
-          };
-
-          $scope.addNetworkTable = function () {
-            addUpdateOpalTable(mica.dataset.OPAL_TABLE_TYPES.NETWORK_TABLE);
+            addUpdateOpalTable();
           };
 
           $scope.editOpalTable = function (wrapper) {
-            addUpdateOpalTable(wrapper.type, wrapper);
+            addUpdateOpalTable(wrapper);
           };
 
           $scope.deleteOpalTable = function (wrapper) {
@@ -557,7 +565,7 @@ mica.dataset
 
         } else {
           $scope.editStudyTable = function () {
-            addUpdateOpalTable(mica.dataset.OPAL_TABLE_TYPES.STUDY_TABLE);
+            addUpdateOpalTable();
           };
           $scope.deleteStudyTable = function () {
             delete $scope.dataset['obiba.mica.CollectionDatasetDto.type'];
@@ -758,6 +766,8 @@ mica.dataset
     'LocalizedValues',
     'LocalizedSchemaFormService',
     'table',
+    'tableType',
+    'isHarmonizationDatasetScope',
     function ($scope,
               $uibModalInstance,
               $log,
@@ -767,12 +777,25 @@ mica.dataset
               StudyStateProjectsResource,
               LocalizedValues,
               LocalizedSchemaFormService,
-              table) {
+              table,
+              tableType,
+              isHarmonizationDatasetScope) {
 
       $scope.studies = [];
       $scope.projects = [];
-      $scope.selected = {};
-      $scope.type = mica.dataset.OPAL_TABLE_TYPES.STUDY_TABLE;
+      $scope.isHarmonizationDatasetScope = isHarmonizationDatasetScope;
+      $scope.selected = {
+        get isHarmonizationTable() {
+          return this._isHarmonizationTable;
+        },
+        set isHarmonizationTable(value) {
+          this._isHarmonizationTable = value;
+          $scope.selected.study = null;
+          $scope.type = value ? mica.dataset.OPAL_TABLE_TYPES.HARMONIZATION_TABLE : mica.dataset.OPAL_TABLE_TYPES.STUDY_TABLE;
+        }
+      };
+      $scope.type = tableType;
+      $scope.selected.isHarmonizationTable = tableType === mica.dataset.OPAL_TABLE_TYPES.HARMONIZATION_TABLE;
       $scope.table = $.extend(true, {}, table);
       $scope.table.model = {
         name: LocalizedValues.arrayToObject(table.name),
@@ -824,6 +847,21 @@ mica.dataset
         }
       });
 
+      StudyStatesResource.query({type: 'harmonization-study'}).$promise.then(function (studies) {
+        $scope.harmonizationStudies = studies.sort(function (a, b) { return a.id.localeCompare(b.id); });
+
+        var selectedPopulation, selectedStudy = $scope.harmonizationStudies.filter(function (s) {return s.id === table.studyId; })[0];
+
+        if (selectedStudy) {
+          $scope.selected.study = selectedStudy;
+          selectedPopulation = selectedStudy.populationSummaries.filter(function (p) { return p.id === table.populationId; })[0];
+
+          if (selectedPopulation) {
+            $scope.selected.study.population = selectedPopulation;
+          }
+        }
+      });
+
       $scope.$watch('selected.study', function () {
         if ($scope.selected.study && $scope.selected.study.id) {
           StudyStateProjectsResource.query({id: $scope.selected.study.id}).$promise.then(function (projects) {
@@ -849,7 +887,7 @@ mica.dataset
           angular.extend($scope.table, {
             studyId: $scope.selected.study.id,
             populationId: $scope.selected.study.population.id,
-            dataCollectionEventId: $scope.selected.study.population.dataCollectionEvent.id,
+            dataCollectionEventId: $scope.selected.isHarmonizationTable ? null : $scope.selected.study.population.dataCollectionEvent.id,
             project: $scope.selected.project.name,
             table: $scope.selected.project.table
           });
@@ -858,115 +896,7 @@ mica.dataset
           $scope.table.description = LocalizedValues.objectToArray($scope.table.model.description);
           delete $scope.table.model;
 
-          $uibModalInstance.close($scope.table);
-          return;
-        }
-
-        $scope.form = form;
-        $scope.form.saveAttempted = true;
-      };
-
-      $scope.cancel = function () {
-        $uibModalInstance.dismiss('cancel');
-      };
-
-    }])
-
-  .controller('NetworkTableModalController', [
-    '$scope',
-    '$uibModalInstance',
-    '$log',
-    '$filter',
-    'MicaConfigResource',
-    'DraftNetworksResource',
-    'DraftNetworkProjectsResource',
-    'LocalizedValues',
-    'LocalizedSchemaFormService',
-    'table',
-    function ($scope,
-              $uibModalInstance,
-              $log,
-              $filter,
-              MicaConfigResource,
-              DraftNetworksResource,
-              DraftNetworkProjectsResource,
-              LocalizedValues,
-              LocalizedSchemaFormService,
-              table) {
-
-      $scope.networks = [];
-      $scope.projects = [];
-      $scope.selected = {};
-      $scope.type = mica.dataset.OPAL_TABLE_TYPES.NETWORK_TABLE;
-      $scope.table = $.extend(true, {}, table);
-      $scope.table.model = {
-        name: LocalizedValues.arrayToObject(table.name),
-        description: LocalizedValues.arrayToObject(table.description)
-      };
-
-      MicaConfigResource.get(function (micaConfig) {
-        var formLanguages = {};
-        micaConfig.languages.forEach(function(loc) {
-          formLanguages[loc] = $filter('translate')('language.' + loc);
-        });
-        $scope.sfOptions = {formDefaults: { languages: formLanguages}};
-        $scope.sfForm = {
-          schema: LocalizedSchemaFormService.translate(OPAL_TABLE_SCHEMA),
-          definition: LocalizedSchemaFormService.translate(OPAL_TABLE_DEFINITION)
-        };
-      });
-
-      if (table && Object.keys(table) > 0) {
-        $scope.selected.network = {
-          id: table.networkId
-        };
-
-        $scope.selected.project = {name: table.project, table: table.table};
-      }
-
-      DraftNetworksResource.query().$promise.then(function (networks) {
-        $scope.networks = networks.sort(function (a, b) { return a.id.localeCompare(b.id); });
-
-        var selectedNetwork = $scope.networks.filter(function (n) {return n.id === table.networkId; })[0];
-
-        if (selectedNetwork) {
-          $scope.selected.study = selectedNetwork;
-        }
-      });
-
-      $scope.$watch('selected.network', function () {
-        if ($scope.selected.network && $scope.selected.network.id) {
-          DraftNetworkProjectsResource.query({id: $scope.selected.network.id}).$promise.then(function (projects) {
-            $scope.projects = projects;
-            var selectedTable, selectedProject = $scope.projects.filter(function (p) {return p.name === table.project; })[0];
-
-            if (selectedProject) {
-              $scope.selected.project = selectedProject;
-
-              selectedTable = selectedProject.datasource.table.filter(function (t) {return t === table.table; })[0];
-
-              if (selectedTable) {
-                $scope.selected.project.table = selectedTable;
-              }
-            }
-
-          });
-        }
-      });
-
-      $scope.save = function (form) {
-        if (form.$valid) {
-          angular.extend($scope.table, {
-            networkId: $scope.selected.network.id,
-            project: $scope.selected.project.name,
-            table: $scope.selected.project.table
-          });
-
-          $scope.table.name = LocalizedValues.objectToArray($scope.table.model.name);
-          $scope.table.description = LocalizedValues.objectToArray($scope.table.model.description);
-          delete $scope.table.model;
-
-          $uibModalInstance.close($scope.table);
+          $uibModalInstance.close({table: $scope.table, type: $scope.type});
           return;
         }
 
