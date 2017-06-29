@@ -908,10 +908,18 @@
     "coverage-buckets": {
       "datasetNav": "Ensemble de données",
       "study" : "Étude",
+      "study-collection": "Étude de collecte",
+      "study-harmonization": "Étude d'harmonisation",
       "dce" : "Événement de collecte de données (ECD)",
+      "dce-collection" : "Événement de collecte de données (ECD)",
+      "dce-harmonization" : "Population",
       "network" : "Réseau",
       "dataschema": "Ensemble de données Harmonisées",
-      "dataset": "Ensemble de données de collecte"
+      "dataset": "Ensemble de données",
+      "dataset-collection": "Ensemble de données de collecte",
+      "dataset-harmonization": "Ensemble de données d'harmonisation",
+      "collection": "Collecte",
+      "harmonization": "Harmonisation"
     },
     "coverage-select": {
       "all": "Tous",
@@ -934,7 +942,9 @@
     "dataset": {
       "facet-label": "Ensemble de données",
       "label": "Ensemble de données",
-      "noResults": "Aucun ensemble de données trouvé"
+      "noResults": "Aucun ensemble de données trouvé",
+      "collection": "Collecte",
+      "harmonization": "Harmonisation"
     },
     "variable": {
       "facet-label": "Variable",

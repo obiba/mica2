@@ -59,7 +59,7 @@
     "hidden": "true"
 - "name": "className"
   "title":
-    "en": "Dataset type"
+    "en": "Type of Dataset"
     "fr": "Type de jeux de données"
   "description":
     "en": "Type of dataset (e.g. data collection or harmonization)"
