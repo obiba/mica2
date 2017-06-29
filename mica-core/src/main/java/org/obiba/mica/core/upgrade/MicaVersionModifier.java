@@ -28,7 +28,7 @@ public class MicaVersionModifier implements VersionModifier {
 
   @Override
   public Version getVersion() {
-    return Optional.ofNullable(micaConfigService.getConfig().getMicaVersion()).orElse(new Version(0, 8));
+    return micaConfigService.getConfig().getMicaVersion();
   }
 
   @Override
