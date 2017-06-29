@@ -8,16 +8,16 @@ public class HarmonizationTable extends OpalTable implements Serializable {
 
   private static final long serialVersionUID = -7165136303147086535L;
 
-  private String harmonizationStudyId;
+  private String studyId;
 
   private String populationId;
 
-  public String getHarmonizationStudyId() {
-    return harmonizationStudyId;
+  public String getStudyId() {
+    return studyId;
   }
 
-  public void setHarmonizationStudyId(String harmonizationStudyId) {
-    this.harmonizationStudyId = harmonizationStudyId;
+  public void setStudyId(String studyId) {
+    this.studyId = studyId;
   }
 
   public String getPopulationId() {
@@ -31,12 +31,12 @@ public class HarmonizationTable extends OpalTable implements Serializable {
   @Override
   public String toString() {
     return MoreObjects.toStringHelper(this).add("project", getProject()).add("table", getTable())
-      .add("harmonizationStudyId", getHarmonizationStudyId()).add("populationId", getPopulationId())
+      .add("studyId", getStudyId()).add("populationId", getPopulationId())
       .toString();
   }
 
   @Override
   protected String getEntityId() {
-    return harmonizationStudyId;
+    return studyId;
   }
 }

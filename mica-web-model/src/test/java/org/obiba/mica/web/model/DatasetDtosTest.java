@@ -11,19 +11,22 @@
 package org.obiba.mica.web.model;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.obiba.mica.core.domain.HarmonizationTable;
 import org.obiba.mica.dataset.HarmonizationDatasetStateRepository;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.domain.HarmonizationDatasetState;
 import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.micaConfig.domain.MicaConfig;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
+import org.obiba.mica.security.service.SubjectAclService;
+import org.obiba.mica.study.domain.HarmonizationStudy;
+import org.obiba.mica.study.service.PublishedStudyService;
 
 import java.util.Arrays;
 import java.util.Locale;
@@ -48,6 +51,12 @@ public class DatasetDtosTest {
   private MicaConfigService micaConfigService;
 
   @Mock
+  private SubjectAclService subjectAclService;
+
+  @Mock
+  private PublishedStudyService publishedStudyService;
+
+  @Mock
   private HarmonizationDatasetStateRepository harmonizationDatasetStateRepository;
 
   @Mock
@@ -62,6 +71,10 @@ public class DatasetDtosTest {
     config.setLocales(Arrays.asList(Locale.ENGLISH, Locale.FRENCH));
     when(micaConfigService.getConfig()).thenReturn(config);
 
+    when(subjectAclService.isPermitted(anyString(), anyString(), anyString())).thenReturn(true);
+    when(publishedStudyService.findById(anyString())).thenReturn(new HarmonizationStudy());
+
+    when(studySummaryDtos.asHarmoStudyDto(anyString())).thenReturn(Mica.StudySummaryDto.newBuilder().setId("123").setPublished(true).build());
     when(studySummaryDtos.asDto(anyString())).thenReturn(Mica.StudySummaryDto.newBuilder().setId("123").setPublished(true).build());
     when(permissionsDtos.asDto(any(StudyDataset.class))).thenReturn(Mica.PermissionsDto.getDefaultInstance());
     when(permissionsDtos.asDto(any(HarmonizationDataset.class))).thenReturn(Mica.PermissionsDto.getDefaultInstance());
@@ -93,8 +106,12 @@ public class DatasetDtosTest {
   private HarmonizationDataset createHarmonizedDataset() {
     HarmonizationDataset harmonizationDataset = new HarmonizationDataset();
     harmonizationDataset.setId("123");
-    harmonizationDataset.setProject("project123");
-    harmonizationDataset.setTable("table123");
+    HarmonizationTable harmonizationLink = new HarmonizationTable();
+    harmonizationLink.setProject("project123");
+    harmonizationLink.setTable("table123");
+    harmonizationLink.setStudyId("study123");
+    harmonizationLink.setPopulationId("population123");
+    harmonizationDataset.setHarmonizationLink(harmonizationLink);
     return harmonizationDataset;
   }
 }

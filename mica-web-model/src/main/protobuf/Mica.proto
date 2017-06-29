@@ -498,20 +498,12 @@ message CollectionDatasetDto {
 }
 
 message HarmonizationDatasetDto {
-  required string project = 1;
-  required string table = 2;
-  repeated DatasetDto.StudyTableDto studyTables = 3;
+  optional DatasetDto.HarmonizationTableDto harmonizationLink = 1;
+  repeated DatasetDto.StudyTableDto studyTables = 2;
+  repeated DatasetDto.HarmonizationTableDto harmonizationTables = 3;
+
   optional string networkId = 4;
   repeated DatasetDto.NetworkTableDto networkTables = 5;
-  optional HarmonizationStudyReferenceDto studyReference = 6;
-  repeated DatasetDto.HarmonizationTableDto harmonizationTables = 7;
-  extensions 1000 to max;
-
-  message HarmonizationStudyReferenceDto {
-    required string studyId = 1;
-    required string populationId = 2;
-    optional StudySummaryDto studySummary = 3;
-  }
 
   extend DatasetDto {
     optional HarmonizationDatasetDto type = 1001;

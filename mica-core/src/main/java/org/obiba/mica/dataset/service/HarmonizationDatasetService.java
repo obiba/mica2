@@ -274,7 +274,8 @@ public class HarmonizationDatasetService extends DatasetService<HarmonizationDat
   @Override
   @NotNull
   protected RestValueTable getTable(@NotNull HarmonizationDataset dataset) throws NoSuchValueTableException {
-    return execute(dataset.getProject(), datasource -> (RestValueTable) datasource.getValueTable(dataset.getTable()));
+    return execute(dataset.getSafeHarmonizationLink().getProject(),
+      datasource -> (RestValueTable) datasource.getValueTable(dataset.getSafeHarmonizationLink().getTable()));
   }
 
   @Override
