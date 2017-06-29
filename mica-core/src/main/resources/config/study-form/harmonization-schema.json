@@ -1,5 +1,11 @@
 {
   "type": "object",
-  "properties": { },
+  "properties": {
+    "harmonizationDesign": {
+      "type": "object",
+      "format": "localizedString",
+      "title": "t(harmonization-study.design)"
+    }
+  },
   "required": []
 }
