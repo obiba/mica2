@@ -2107,7 +2107,7 @@
     "fr": "Type d'étude"
   "description":
     "en": "Type of study (e.g. study or harmonization)."
-    "fr": "Type de l'étude (par exemple, étude ou étude d'harmonization)."
+    "fr": "Type de l'étude (par exemple, étude ou étude d'harmonisation)."
   "terms":
   - "name": "Study"
     "title":
@@ -2119,9 +2119,9 @@
   - "name": "HarmonizationStudy"
     "title":
       "en": "Harmonization"
-      "fr": "Harmonization"
+      "fr": "Harmonisation"
     "description":
       "en": "A harmonization study."
-      "fr": "Une étude d'harmonization de données."
+      "fr": "Une étude d'harmonisation de données."
   "attributes":
     "static": "true"
