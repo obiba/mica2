@@ -2103,7 +2103,7 @@
     "localized": "true"
 - "name": "className"
   "title":
-    "en": "Study Type"
+    "en": "Type of Study"
     "fr": "Type d'étude"
   "description":
     "en": "Type of study (e.g. study or harmonization)."
@@ -2111,16 +2111,17 @@
   "terms":
   - "name": "Study"
     "title":
-      "en": "Study"
-      "fr": "Étude"
+      "en": "Collection"
+      "fr": "Collecte"
     "description":
       "en": "A collection study"
+      "fr": "Une étude de collecte de données."
   - "name": "HarmonizationStudy"
     "title":
-      "en": "Harmonization Study"
-      "fr": "Étude d'harmonization"
+      "en": "Harmonization"
+      "fr": "Harmonization"
     "description":
       "en": "A harmonization study."
-      "fr": "Une étude d'harmonization."
+      "fr": "Une étude d'harmonization de données."
   "attributes":
     "static": "true"

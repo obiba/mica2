@@ -908,10 +908,18 @@
     "coverage-buckets": {
       "datasetNav": "Dataset",
       "study" : "Study",
+      "study-collection": "Collection Study",
+      "study-harmonization": "Harmonization Study",
       "dce" : "Data Collection Event (DCE)",
+      "dce-collection" : "Data Collection Event (DCE)",
+      "dce-harmonization" : "Population",
       "network" : "Network",
       "dataschema": "Harmonization Dataset",
-      "dataset": "Collection Dataset"
+      "dataset": "Dataset",
+      "dataset-collection": "Collection Dataset",
+      "dataset-harmonization": "Harmonization Dataset",
+      "collection": "Collection",
+      "harmonization": "Harmonization"
     },
     "coverage-select": {
       "all": "All",
@@ -934,7 +942,9 @@
     "dataset": {
       "facet-label": "Dataset",
       "label": "Dataset",
-      "noResults": "No dataset found"
+      "noResults": "No dataset found",
+      "collection": "Collection",
+      "harmonization": "Harmonization"
     },
     "variable": {
       "facet-label": "Variable",
