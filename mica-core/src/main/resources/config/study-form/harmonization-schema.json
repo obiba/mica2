@@ -4,7 +4,7 @@
     "harmonizationDesign": {
       "type": "object",
       "format": "localizedString",
-      "title": "t(harmonization-study.design)"
+      "title": "t(study_taxonomy.vocabulary.harmonizationDesign.title)"
     }
   },
   "required": []
