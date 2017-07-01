@@ -54,7 +54,8 @@
     "chronological": "Chronologique",
     "network": "Réseau",
     "collection-study": "Étude de collecte",
-    "harmonization-study": "Étude d'harmonisation"
+    "harmonization-study": "Étude harmonisée",
+    "harmonization-study-population": "Population de l'étude harmonisée"
   },
   "pagination": {
     "of": "de"

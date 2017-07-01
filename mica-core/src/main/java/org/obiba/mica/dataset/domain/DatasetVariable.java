@@ -22,6 +22,7 @@ import org.obiba.magma.support.VariableNature;
 import org.obiba.mica.core.domain.Attribute;
 import org.obiba.mica.core.domain.AttributeAware;
 import org.obiba.mica.core.domain.Attributes;
+import org.obiba.mica.core.domain.HarmonizationTable;
 import org.obiba.mica.core.domain.Indexable;
 import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.core.domain.NetworkTable;
@@ -151,7 +152,7 @@ public class DatasetVariable implements Indexable, AttributeAware {
     harmonizationStudyId = dataset.getHarmonizationLink().getStudyId();
     harmonizationPopulationId = dataset.getHarmonizationLink().getPopulationId();
     networkId = dataset.getNetworkId();
-    setContainerId(networkId);
+    setContainerId(dataset.getHarmonizationLink().getStudyId());
   }
 
   public DatasetVariable(HarmonizationDataset dataset, Variable variable, OpalTable opalTable) {
@@ -163,6 +164,11 @@ public class DatasetVariable implements Indexable, AttributeAware {
       dceIds = Lists.newArrayList(((StudyTable) opalTable).getDataCollectionEventUId());
       setContainerId(studyIds.get(0));
       opalTableType = OpalTableType.Study;
+    } else if (opalTable instanceof HarmonizationTable) {
+      setContainerId(dataset.getHarmonizationLink().getStudyId());
+      studyIds = Lists.newArrayList(((HarmonizationTable) opalTable).getStudyId());
+      populationIds = Lists.newArrayList(((HarmonizationTable) opalTable).getPopulationId());
+      opalTableType = OpalTableType.Harmonization;
     } else {
       networkTableIds = Lists.newArrayList(((NetworkTable) opalTable).getNetworkId());
       setContainerId(networkId);
@@ -205,8 +211,8 @@ public class DatasetVariable implements Indexable, AttributeAware {
     String id = datasetId + ID_SEPARATOR + name + ID_SEPARATOR + variableType;
 
     if(Type.Harmonized == variableType) {
-      String entityId = opalTableType == OpalTableType.Study ? studyIds.get(0) : networkTableIds.get(0);
-      String tableType = opalTableType == OpalTableType.Study ? OPAL_STUDY_TABLE_PREFIX : OPAL_NETWORK_TABLE_PREFIX;
+      String entityId = studyIds.get(0);
+      String tableType = opalTableType == OpalTableType.Study ? OPAL_STUDY_TABLE_PREFIX : OPAL_HARMONIZATION_TABLE_PREFIX;
 
       id = id + ID_SEPARATOR + tableType + ID_SEPARATOR + entityId + ID_SEPARATOR + project + ID_SEPARATOR + table;
     }
@@ -220,7 +226,7 @@ public class DatasetVariable implements Indexable, AttributeAware {
     variableType = resolver.getType();
     datasetId = resolver.getDatasetId();
     name = resolver.getName();
-    opalTableType = resolver.hasStudyId() ? OpalTableType.Study : OpalTableType.Network;
+    opalTableType = resolver.getType() == Type.Dataschema ? OpalTableType.Study : OpalTableType.Harmonization;
 
     if(resolver.hasStudyId()) studyIds = Lists.newArrayList(resolver.getStudyId());
     if(resolver.hasNetworkId()) networkTableIds = Lists.newArrayList(resolver.getNetworkId());
@@ -454,18 +460,16 @@ public class DatasetVariable implements Indexable, AttributeAware {
       String project, String table, String networkId) {
       String id = datasetId + ID_SEPARATOR + variableName + ID_SEPARATOR + variableType;
 
-      if(Type.Harmonized == variableType) {
-        String tableType;
-        String entityId;
+      String tableType;
+      String entityId;
 
-        if(studyId != null) {
+      if(Type.Harmonized == variableType) {
           tableType = OPAL_STUDY_TABLE_PREFIX;
           entityId = studyId;
-        } else {
-          tableType = OPAL_NETWORK_TABLE_PREFIX;
-          entityId = networkId;
-        }
-
+        id = id + ID_SEPARATOR + tableType + ID_SEPARATOR + entityId + ID_SEPARATOR + project + ID_SEPARATOR + table;
+      } else if (Type.Dataschema == variableType) {
+        tableType = OPAL_HARMONIZATION_TABLE_PREFIX;
+        entityId = studyId;
         id = id + ID_SEPARATOR + tableType + ID_SEPARATOR + entityId + ID_SEPARATOR + project + ID_SEPARATOR + table;
       }
 
@@ -476,8 +480,8 @@ public class DatasetVariable implements Indexable, AttributeAware {
       return opalTable == null
         ? encode(datasetId, variableName, variableType, null, null, null, null)
         : opalTable instanceof StudyTable ? encode(datasetId, variableName, variableType, ((StudyTable) opalTable).getStudyId(), opalTable.getProject(),
-          opalTable.getTable(), null) : encode(datasetId, variableName, variableType, null, opalTable.getProject(),
-          opalTable.getTable(), ((NetworkTable) opalTable).getNetworkId());
+          opalTable.getTable(), null) : encode(datasetId, variableName, variableType, ((HarmonizationTable) opalTable).getStudyId(), opalTable.getProject(),
+          opalTable.getTable(), null);
     }
 
     private IdResolver(String id) {

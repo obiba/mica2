@@ -516,11 +516,16 @@ mica.dataset
       }
 
       var initializeDataset = function(dataset) {
+        $scope.selectedLocale = $translate.use();
+
         $scope.permissions = DocumentPermissionsService.state(dataset['obiba.mica.EntityStateDto.datasetState']);
         if($scope.type === 'harmonization-dataset') {
           if(dataset['obiba.mica.HarmonizationDatasetDto.type'].harmonizationLink) {
             StudyStatesResource.get({id: dataset['obiba.mica.HarmonizationDatasetDto.type'].harmonizationLink.studyId}).$promise.then(function (harmonizationStudy) {
               $scope.datasetStudy = harmonizationStudy.id;
+              $scope.datasetPopulation = harmonizationStudy.populationSummaries.filter(function (population) {
+                return population.id === dataset['obiba.mica.HarmonizationDatasetDto.type'].harmonizationLink.populationId;
+              })[0];
             }).catch(function () {});
           }
           $scope.datasetProject = dataset['obiba.mica.HarmonizationDatasetDto.type'].harmonizationLink.project;
