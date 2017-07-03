@@ -33,6 +33,7 @@ import org.apache.commons.math3.util.Pair;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.magma.NoSuchValueTableException;
 import org.obiba.magma.NoSuchVariableException;
+import org.obiba.mica.core.domain.BaseStudyTable;
 import org.obiba.mica.core.domain.NetworkTable;
 import org.obiba.mica.core.domain.OpalTable;
 import org.obiba.mica.core.domain.StudyTable;
@@ -86,10 +87,9 @@ public class PublishedDataschemaDatasetVariableResource extends AbstractPublishe
     HarmonizationDataset dataset = getDataset(HarmonizationDataset.class, datasetId);
     dataset.getAllOpalTables().forEach(table -> {
       try {
-        String studyId = table instanceof StudyTable ? ((StudyTable)table).getStudyId() : null;
-        String networkId = studyId == null ? ((NetworkTable) table).getNetworkId() : null;
+        String studyId = ((BaseStudyTable)table).getStudyId();
         builder.add(datasetService
-          .getVariableSummary(dataset, variableName, studyId, table.getProject(), table.getTable(), networkId)
+          .getVariableSummary(dataset, variableName, studyId, table.getProject(), table.getTable())
           .getWrappedDto());
       } catch(NoSuchVariableException | NoSuchValueTableException e) {
         // case the study has not implemented this dataschema variable
@@ -107,10 +107,9 @@ public class PublishedDataschemaDatasetVariableResource extends AbstractPublishe
     HarmonizationDataset dataset = getDataset(HarmonizationDataset.class, datasetId);
     dataset.getAllOpalTables().forEach(table -> {
       try {
-        String studyId = table instanceof StudyTable ? ((StudyTable)table).getStudyId() : null;
-        String networkId = studyId == null ? ((NetworkTable)table).getNetworkId() : null;
+        String studyId = ((BaseStudyTable)table).getStudyId();
         builder.add(datasetService
-          .getVariableFacet(dataset, variableName, studyId, table.getProject(), table.getTable(), networkId));
+          .getVariableFacet(dataset, variableName, studyId, table.getProject(), table.getTable()));
       } catch(NoSuchVariableException | NoSuchValueTableException e) {
         // case the study has not implemented this dataschema variable
         builder.add(Search.QueryResultDto.newBuilder().setTotalHits(0).build());
@@ -278,7 +277,7 @@ public class PublishedDataschemaDatasetVariableResource extends AbstractPublishe
         String networkId = studyId == null ? ((NetworkTable)table).getNetworkId() : null;
 
         return new AsyncResult<>(datasetService
-          .getVariableSummary(dataset, variableName, studyId, table.getProject(), table.getTable(), networkId)
+          .getVariableSummary(dataset, variableName, studyId, table.getProject(), table.getTable())
           .getWrappedDto());
       } catch(Exception e) {
         log.warn("Unable to retrieve statistics: " + e.getMessage(), e);

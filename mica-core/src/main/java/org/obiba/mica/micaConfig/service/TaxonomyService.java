@@ -183,10 +183,9 @@ public class TaxonomyService {
   private void initializeVariableTaxonomy() {
     if(variableTaxonomy != null) return;
     variableTaxonomy = copy(micaConfigService.getVariableTaxonomy());
-    studyHelper.applyIdTerms(variableTaxonomy, "studyIds");
+    studyHelper.applyIdTerms(variableTaxonomy, "studyId");
     datasetHelper.applyIdTerms(variableTaxonomy, "datasetId");
-    networkHelper.applyIdTerms(variableTaxonomy, "networkId");
-    dceHelper.applyIdTerms(variableTaxonomy, "dceIds");
+    dceHelper.applyIdTerms(variableTaxonomy, "dceId");
   }
 
   private Taxonomy copy(Taxonomy source) {

@@ -950,7 +950,6 @@
     "variable": {
       "facet-label": "Variable",
       "label": "Étiquette",
-      "studyNetwork": "Étude/Réseau",
       "noResults": "Aucune variable trouvée",
       "collection": "Collecte",
       "dataschema": "Schéma de données"

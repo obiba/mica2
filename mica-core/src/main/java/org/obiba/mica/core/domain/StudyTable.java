@@ -18,13 +18,9 @@ import com.google.common.base.MoreObjects;
  * Represents a opal table that is associated to a {@link org.obiba.mica.study.domain.Study}
  * {@link org.obiba.mica.study.domain.Population} {@link org.obiba.mica.study.domain.DataCollectionEvent}.
  */
-public class StudyTable extends OpalTable implements Serializable {
+public class StudyTable extends BaseStudyTable implements Serializable {
 
   private static final long serialVersionUID = -2466526849186256653L;
-
-  private String studyId;
-
-  private String populationId;
 
   private String dataCollectionEventId;
 
@@ -38,29 +34,8 @@ public class StudyTable extends OpalTable implements Serializable {
     return getDataCollectionEventUId(getStudyId(), getPopulationId(), getDataCollectionEventId());
   }
 
-  public static String getDataCollectionEventUId(String studyId, String populationId, String dataCollectionEventId) {
-    return new StringBuilder(studyId).append(":").append(populationId).append(":").append(dataCollectionEventId)
-      .toString();
-  }
-
   public void setDataCollectionEventUId(String ignored) {
     // for jackson serializer
-  }
-
-  public String getStudyId() {
-    return studyId;
-  }
-
-  public void setStudyId(String studyId) {
-    this.studyId = studyId;
-  }
-
-  public String getPopulationId() {
-    return populationId;
-  }
-
-  public void setPopulationId(String populationId) {
-    this.populationId = populationId;
   }
 
   public String getDataCollectionEventId() {
@@ -82,8 +57,4 @@ public class StudyTable extends OpalTable implements Serializable {
       .add("dceId", getDataCollectionEventUId()).toString();
   }
 
-  @Override
-  protected String getEntityId() {
-    return studyId;
-  }
 }

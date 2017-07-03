@@ -51,7 +51,6 @@ public class DraftDatasetVariableResource {
       case Harmonized:
         subjectAclService.isPermitted("/draft/harmonization-dataset", "VIEW", resolver.getDatasetId());
         resource = applicationContext.getBean(DraftHarmonizedDatasetVariableResource.class);
-        ((DraftHarmonizedDatasetVariableResource) resource).setNetworkId(resolver.getNetworkId());
         ((DraftHarmonizedDatasetVariableResource) resource).setStudyId(resolver.getStudyId());
         ((DraftHarmonizedDatasetVariableResource) resource).setProject(resolver.getProject());
         ((DraftHarmonizedDatasetVariableResource) resource).setTable(resolver.getTable());

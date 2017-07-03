@@ -54,7 +54,7 @@ public class EsPublishedDatasetVariableService extends AbstractDocumentService<D
 
   private static final String VARIABLE_TYPE = "Variable";
 
-  private static final String STUDY_IDS_FIELD = "studyIds";
+  private static final String STUDY_ID_FIELD = "studyId";
 
   @Inject
   private ObjectMapper objectMapper;
@@ -78,13 +78,13 @@ public class EsPublishedDatasetVariableService extends AbstractDocumentService<D
 
   public Map<String, Long> getCountByStudyIds(List<String> studyIds) {
     SearchResponse response = executeCountQuery(buildStudiesFilteredQuery(studyIds),
-      AggregationBuilders.terms(STUDY_IDS_FIELD).field(STUDY_IDS_FIELD).size(0));
+      AggregationBuilders.terms(STUDY_ID_FIELD).field(STUDY_ID_FIELD).size(0));
 
     if(response == null) {
       return studyIds.stream().collect(Collectors.toMap(s -> s, s -> 0L));
     }
 
-    Terms aggregation = response.getAggregations().get(STUDY_IDS_FIELD);
+    Terms aggregation = response.getAggregations().get(STUDY_ID_FIELD);
     return studyIds.stream().collect(Collectors.toMap(s -> s,
       s -> Optional.ofNullable(aggregation.getBucketByKey(s)).map(Terms.Bucket::getDocCount).orElse(0L)));
   }
@@ -106,12 +106,12 @@ public class EsPublishedDatasetVariableService extends AbstractDocumentService<D
   }
 
   private QueryBuilder buildStudiesFilteredQuery(List<String> ids) {
-    BoolQueryBuilder boolFilter = QueryBuilders.boolQuery().must(QueryBuilders.termsQuery(STUDY_IDS_FIELD, ids));
+    BoolQueryBuilder boolFilter = QueryBuilders.boolQuery().must(QueryBuilders.termsQuery(STUDY_ID_FIELD, ids));
     return QueryBuilders.boolQuery().must(QueryBuilders.matchAllQuery()).must(boolFilter);
   }
 
   private QueryBuilder buildStudyFilteredQuery(String id) {
-    BoolQueryBuilder boolFilter = QueryBuilders.boolQuery().must(QueryBuilders.termQuery(STUDY_IDS_FIELD, id));
+    BoolQueryBuilder boolFilter = QueryBuilders.boolQuery().must(QueryBuilders.termQuery(STUDY_ID_FIELD, id));
     return QueryBuilders.boolQuery().must(QueryBuilders.matchAllQuery()).must(boolFilter);
   }
 
@@ -135,6 +135,11 @@ public class EsPublishedDatasetVariableService extends AbstractDocumentService<D
     } catch(IndexNotFoundException e) {
       return null; //ignoring
     }
+  }
+
+  @Override
+  protected QueryBuilder filterByStudy(String studyId) {
+    return QueryBuilders.termQuery("studyId", studyId);
   }
 
   @Nullable

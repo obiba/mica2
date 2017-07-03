@@ -274,8 +274,8 @@ public class HarmonizationDatasetService extends DatasetService<HarmonizationDat
   @Override
   @NotNull
   protected RestValueTable getTable(@NotNull HarmonizationDataset dataset) throws NoSuchValueTableException {
-    return execute(dataset.getSafeHarmonizationLink().getProject(),
-      datasource -> (RestValueTable) datasource.getValueTable(dataset.getSafeHarmonizationLink().getTable()));
+    return execute(dataset.getSafeHarmonizationTable().getProject(),
+      datasource -> (RestValueTable) datasource.getValueTable(dataset.getSafeHarmonizationTable().getTable()));
   }
 
   @Override
@@ -302,27 +302,27 @@ public class HarmonizationDatasetService extends DatasetService<HarmonizationDat
   }
 
   public DatasetVariable getDatasetVariable(HarmonizationDataset dataset, String variableName, String studyId,
-    String project, String table, String networkId) throws NoSuchStudyException, NoSuchValueTableException, NoSuchVariableException {
+    String project, String table) throws NoSuchStudyException, NoSuchValueTableException, NoSuchVariableException {
     return new DatasetVariable(dataset,
-      getTable(dataset, studyId, project, table, networkId).getVariableValueSource(variableName).getVariable());
+      getTable(dataset, studyId, project, table).getVariableValueSource(variableName).getVariable());
   }
 
   @Cacheable(value = "dataset-variables", cacheResolver = "datasetVariablesCacheResolver",
-    key = "#variableName + ':' + #studyId + ':' + #project + ':' + #table + ':' + #networkId")
+    key = "#variableName + ':' + #studyId + ':' + #project + ':' + #table")
   public SummaryStatisticsWrapper getVariableSummary(@NotNull HarmonizationDataset dataset, String variableName,
-    String studyId, String project, String table, String networkId)
+    String studyId, String project, String table)
     throws NoSuchStudyException, NoSuchValueTableException, NoSuchVariableException {
     log.info("Caching variable summary {} {} {} {} {}", dataset.getId(), variableName, studyId, project, table);
 
     return new SummaryStatisticsWrapper(
-      getVariableValueSource(dataset, variableName, studyId, project, table, networkId).getSummary());
+      getVariableValueSource(dataset, variableName, studyId, project, table).getSummary());
   }
 
   public Search.QueryResultDto getVariableFacet(@NotNull HarmonizationDataset dataset, String variableName,
-    String studyId, String project, String table, String networkId)
+    String studyId, String project, String table)
     throws NoSuchStudyException, NoSuchValueTableException, NoSuchVariableException {
     log.debug("Getting variable facet {} {}", dataset.getId(), variableName);
-    return getVariableValueSource(dataset, variableName, studyId, project, table, networkId).getFacet();
+    return getVariableValueSource(dataset, variableName, studyId, project, table).getFacet();
   }
 
   public Search.QueryResultDto getFacets(Search.QueryTermsDto query, OpalTable opalTable)
@@ -401,11 +401,11 @@ public class HarmonizationDatasetService extends DatasetService<HarmonizationDat
     return execute(opalTable, ds -> (RestValueTable) ds.getValueTable(opalTable.getTable()));
   }
 
-  private ValueTable getTable(@NotNull HarmonizationDataset dataset, String studyId, String project, String table, String networkId)
+  private ValueTable getTable(@NotNull HarmonizationDataset dataset, String studyId, String project, String table)
     throws NoSuchStudyException, NoSuchValueTableException {
 
     for(OpalTable opalTable : dataset.getAllOpalTables()) {
-      String opalTableId = opalTable instanceof StudyTable ? studyId : networkId;
+      String opalTableId = studyId;
 
       if(opalTable.isFor(opalTableId, project, table)) {
         return getTable(opalTable);
@@ -416,10 +416,10 @@ public class HarmonizationDatasetService extends DatasetService<HarmonizationDat
   }
 
   private RestValueTable.RestVariableValueSource getVariableValueSource(@NotNull HarmonizationDataset dataset,
-    String variableName, String studyId, String project, String table, String networkId)
+    String variableName, String studyId, String project, String table)
     throws NoSuchStudyException, NoSuchValueTableException, NoSuchVariableException {
     for(OpalTable opalTable : dataset.getAllOpalTables()) {
-      String opalTableId = opalTable instanceof StudyTable ? studyId : networkId;
+      String opalTableId = studyId;
 
       if(opalTable.isFor(opalTableId, project, table)) {
         return getVariableValueSource(variableName, opalTable);
@@ -548,7 +548,7 @@ public class HarmonizationDatasetService extends DatasetService<HarmonizationDat
           String studyId = st instanceof StudyTable ? ((StudyTable) st).getStudyId() : null;
           String networkId = studyId == null ? ((NetworkTable) st).getNetworkId() : null;
 
-          service.getVariableSummary(dataset, var.getName(), studyId, st.getProject(), st.getTable(), networkId);
+          service.getVariableSummary(dataset, var.getName(), studyId, st.getProject(), st.getTable());
         } catch(Exception e) {
           //ignoring
         }

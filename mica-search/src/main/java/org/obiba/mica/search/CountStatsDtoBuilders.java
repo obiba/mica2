@@ -59,7 +59,6 @@ public class CountStatsDtoBuilders {
 
     private CountStatsDto calculateCounts(Dataset dataset, List<String> ids) {
       int studies = 0;
-      int variables = countStatsData.getVariables(dataset.getId());
 
       List<String> networks = Lists.newArrayList();
       for(String id : ids) {
@@ -67,10 +66,10 @@ public class CountStatsDtoBuilders {
         networks.addAll(countStatsData.getNetworks(id));
       }
 
-      CountStatsDto.Builder builder = CountStatsDto.newBuilder().setVariables(variables) //
-        .setStudies(studies);
-      int networksCount = dataset instanceof StudyDataset ? (int) networks.stream().distinct().count() :
-        ((HarmonizationDataset) dataset).getNetworkId() != null ? 1 : 0;
+      CountStatsDto.Builder builder = CountStatsDto.newBuilder()
+          .setVariables(countStatsData.getVariables(dataset.getId())) //
+          .setStudies(studies);
+      int networksCount = (int) networks.stream().distinct().count();
       builder.setNetworks(networksCount);
 
       return builder.build();
@@ -122,8 +121,8 @@ public class CountStatsDtoBuilders {
           studyDatasets.addAll(datasets.get(DatasetQuery.STUDY_JOIN_FIELD));
         }
 
-        if(datasets.containsKey(DatasetQuery.HARMONIZATION_JOIN_FIELD)) {
-          harmonizationDatasets.addAll(datasets.get(DatasetQuery.HARMONIZATION_JOIN_FIELD));
+        if(datasets.containsKey(DatasetQuery.HARMONIZATION_STUDY_JOIN_FIELD)) {
+          harmonizationDatasets.addAll(datasets.get(DatasetQuery.HARMONIZATION_STUDY_JOIN_FIELD));
         }
 
         studies += countStatsData.getStudies(id);
@@ -141,7 +140,8 @@ public class CountStatsDtoBuilders {
           .setStudyDatasets((int) studyDatasets.stream().distinct().count())
           .setHarmonizationDatasets(countStatsData.getNetworkHarmonizationDatasets(networkId))
           .setStudies(studies)
-          .setStudiesWithVariables((int) ids.stream().filter(i -> countStatsData.getDataset(i).containsKey(DatasetQuery.STUDY_JOIN_FIELD)).count())
+          .setStudiesWithVariables((int) ids.stream()
+              .filter(i -> countStatsData.getDataset(i).containsKey(DatasetQuery.STUDY_JOIN_FIELD)).count())
           .build();
     }
   }

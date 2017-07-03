@@ -11,10 +11,7 @@
 package org.obiba.mica.dataset.domain;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotNull;
@@ -23,7 +20,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
-import org.obiba.mica.core.domain.HarmonizationTable;
+import org.obiba.mica.core.domain.HarmonizationStudyTable;
 import org.obiba.mica.core.domain.NetworkTable;
 import org.obiba.mica.core.domain.OpalTable;
 import org.obiba.mica.core.domain.StudyTable;
@@ -38,38 +35,35 @@ public class HarmonizationDataset extends Dataset {
   /**
    * Linked Harmonization Table
    */
-  private HarmonizationTable harmonizationLink;
+  private HarmonizationStudyTable harmonizationTable;
 
   /**
    * Tables that implement the harmonization.
    */
   private List<StudyTable> studyTables;
 
-  private List<HarmonizationTable> harmonizationTables;
+  private List<HarmonizationStudyTable> harmonizationTables;
 
   private List<NetworkTable> networkTables;
 
-  /**
-   * Linked network.
-   */
   private String networkId;
 
-  public HarmonizationTable getHarmonizationLink() {
-    return harmonizationLink;
+  public HarmonizationStudyTable getHarmonizationTable() {
+    return harmonizationTable;
   }
 
   public boolean hasHarmonizationTable() {
-    return harmonizationLink != null;
+    return harmonizationTable != null;
   }
 
   @JsonIgnore
-  public HarmonizationTable getSafeHarmonizationLink() {
+  public HarmonizationStudyTable getSafeHarmonizationTable() {
     if (!hasHarmonizationTable()) throw new IllegalArgumentException("Harmonization Dataset is missing a harmonization table");
-    return harmonizationLink;
+    return harmonizationTable;
   }
 
-  public void setHarmonizationLink(HarmonizationTable harmonizationLink) {
-    this.harmonizationLink = harmonizationLink;
+  public void setHarmonizationTable(HarmonizationStudyTable harmonizationTable) {
+    this.harmonizationTable = harmonizationTable;
   }
 
   @NotNull
@@ -85,24 +79,20 @@ public class HarmonizationDataset extends Dataset {
     this.studyTables = studyTables;
   }
 
-  public List<HarmonizationTable> getHarmonizationTables() {
+  public List<HarmonizationStudyTable> getHarmonizationTables() {
     return harmonizationTables == null ? harmonizationTables = new ArrayList<>() : harmonizationTables;
   }
 
-  public void addHarmonizationTable(HarmonizationTable harmonizationTable) {
+  public void addHarmonizationTable(HarmonizationStudyTable harmonizationTable) {
     getHarmonizationTables().add(harmonizationTable);
   }
 
-  public void setHarmonizationTables(List<HarmonizationTable> harmonizationTables) {
+  public void setHarmonizationTables(List<HarmonizationStudyTable> harmonizationTables) {
     this.harmonizationTables = harmonizationTables;
   }
 
   public List<NetworkTable> getNetworkTables() {
     return networkTables == null ? networkTables = new ArrayList<>() : networkTables;
-  }
-
-  public void setNetworkTables(List<NetworkTable> networkTables) {
-    this.networkTables = networkTables;
   }
 
   public void addNetworkTable(NetworkTable networkTable) {
@@ -125,17 +115,9 @@ public class HarmonizationDataset extends Dataset {
     };
   }
 
-  public String getNetworkId() {
-    return networkId;
-  }
-
-  public void setNetworkId(String networkId) {
-    this.networkId = networkId;
-  }
-
   @JsonIgnore
   public List<OpalTable> getAllOpalTables() {
-    return Lists.newArrayList(Iterables.concat(getStudyTables(), getHarmonizationTables(), getNetworkTables())).stream()//
-      .sorted((a, b) -> a.getWeight() - b.getWeight()).collect(Collectors.toList());
+    return Lists.newArrayList(Iterables.concat(getStudyTables(), getHarmonizationTables())).stream()//
+      .sorted(Comparator.comparingInt(OpalTable::getWeight)).collect(Collectors.toList());
   }
 }

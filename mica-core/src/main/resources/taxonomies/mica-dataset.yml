@@ -79,12 +79,3 @@
       "en": "A harmonization dataset holds metadata about core variables constructed from multiple study datasets."
   "attributes":
     "static": "true"
-- "name": "networkId"
-  "title":
-    "en": "Network"
-    "fr": "Réseau"
-  "description":
-    "en": "Network associated to the harmonized dataset."
-    "fr": "Réseau associé à ce jeux de données harmonisées."
-  "attributes":
-    "static": "true"

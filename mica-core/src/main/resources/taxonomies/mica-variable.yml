@@ -28,7 +28,7 @@
     "field": "attributes.label.und"
     "alias": "attributes-label-und"
     "static": "true"
-- "name": "studyIds"
+- "name": "studyId"
   "title":
     "en": "Study"
     "fr": "Étude"
@@ -37,7 +37,7 @@
     "fr": "Étude dans laquelle est définie la variable."
   "attributes":
     "static": "true"
-- "name": "dceIds"
+- "name": "dceId"
   "title":
     "en": "Data Collection Event"
     "fr": "Événement de collecte"

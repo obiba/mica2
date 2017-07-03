@@ -182,11 +182,10 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
   protected DatasetVariable getDatasetVariable(@NotNull String datasetId, @NotNull String variableName,
     DatasetVariable.Type variableType, OpalTable opalTable) {
     String studyId = opalTable != null && opalTable instanceof StudyTable ? ((StudyTable) opalTable).getStudyId() : null;
-    String networkId = opalTable != null && opalTable instanceof NetworkTable ? ((NetworkTable) opalTable).getNetworkId() : null;
     String project = opalTable != null ? opalTable.getProject() : null;
     String table = opalTable != null ? opalTable.getTable() : null;
 
-    return getDatasetVariable(datasetId, variableName, variableType, studyId, project, table, networkId);
+    return getDatasetVariable(datasetId, variableName, variableType, studyId, project, table);
   }
 
   /**
@@ -202,11 +201,11 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
    * @throws NoSuchVariableException
    */
   protected DatasetVariable getDatasetVariable(@NotNull String datasetId, @NotNull String variableName,
-    DatasetVariable.Type variableType, @Nullable String studyId, @Nullable String project, @Nullable String table, @Nullable String networkId)
+    DatasetVariable.Type variableType, @Nullable String studyId, @Nullable String project, @Nullable String table)
     throws NoSuchVariableException {
 
     String variableId = DatasetVariable.IdResolver
-      .encode(datasetId, variableName, variableType, studyId, project, table, networkId);
+      .encode(datasetId, variableName, variableType, studyId, project, table);
 
     if(variableType.equals(DatasetVariable.Type.Harmonized)) {
       return getHarmonizedDatasetVariable(datasetId, variableId, variableName);
@@ -217,13 +216,13 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
 
   protected Mica.DatasetVariableDto getDatasetVariableDto(@NotNull String datasetId, @NotNull String variableName,
     DatasetVariable.Type variableType) {
-    return getDatasetVariableDto(datasetId, variableName, variableType, null, null, null, null);
+    return getDatasetVariableDto(datasetId, variableName, variableType, null, null, null);
   }
 
   protected Mica.DatasetVariableDto getDatasetVariableDto(@NotNull String datasetId, @NotNull String variableName,
-    DatasetVariable.Type variableType, @Nullable String studyId, @Nullable String project, @Nullable String table, @Nullable String networkId) {
+    DatasetVariable.Type variableType, @Nullable String studyId, @Nullable String project, @Nullable String table) {
     return dtos
-      .asDto(getDatasetVariable(datasetId, variableName, variableType, studyId, project, table, networkId), getTaxonomies(),
+      .asDto(getDatasetVariable(datasetId, variableName, variableType, studyId, project, table), getTaxonomies(),
         getLocale());
   }
 
@@ -246,7 +245,7 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
 
   private DatasetVariable getHarmonizedDatasetVariable(String datasetId, String variableId, String variableName) {
     String dataSchemaVariableId = DatasetVariable.IdResolver
-      .encode(datasetId, variableName, DatasetVariable.Type.Dataschema, null, null, null, null);
+      .encode(datasetId, variableName, DatasetVariable.Type.Dataschema, null, null, null);
     DatasetVariable harmonizedDatasetVariable = getDatasetVariableInternal(VariableIndexer.HARMONIZED_VARIABLE_TYPE,
       variableId, variableName);
     DatasetVariable dataSchemaVariable = getDatasetVariableInternal(VariableIndexer.VARIABLE_TYPE,

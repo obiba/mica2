@@ -22,7 +22,7 @@ import javax.validation.constraints.NotNull;
 
 import org.obiba.mica.JSONUtils;
 import org.obiba.mica.core.domain.Attributes;
-import org.obiba.mica.core.domain.HarmonizationTable;
+import org.obiba.mica.core.domain.HarmonizationStudyTable;
 import org.obiba.mica.core.domain.NetworkTable;
 import org.obiba.mica.core.domain.OpalTable;
 import org.obiba.mica.core.domain.StudyTable;
@@ -137,20 +137,8 @@ class DatasetDtos {
 
     Mica.HarmonizationDatasetDto.Builder hbuilder = Mica.HarmonizationDatasetDto.newBuilder();
 
-    String networkId = dataset.getNetworkId();
-    if(!Strings.isNullOrEmpty(networkId)) {
-
-      if (asDraft) {
-        if (subjectAclService.isPermitted("/draft/network", "VIEW", networkId)) {
-          hbuilder.setNetworkId(networkId);
-        }
-      } else if (publishedNetworkService.findById(networkId) != null) {
-        hbuilder.setNetworkId(networkId);
-      }
-    }
-
-    if (dataset.getHarmonizationLink() != null) {
-      hbuilder.setHarmonizationLink(createHarmonizationLinkDtoFromHarmonizationTable(dataset.getHarmonizationLink(), asDraft));
+    if (dataset.getHarmonizationTable() != null) {
+      hbuilder.setHarmonizationLink(createHarmonizationLinkDtoFromHarmonizationTable(dataset.getHarmonizationTable(), asDraft));
     }
 
     if(!dataset.getStudyTables().isEmpty()) {
@@ -161,11 +149,6 @@ class DatasetDtos {
     if (!dataset.getHarmonizationTables().isEmpty()) {
       dataset.getHarmonizationTables().forEach(harmonizationTable -> hbuilder
         .addHarmonizationTables(asDto(harmonizationTable, true)));
-    }
-
-    if(!dataset.getNetworkTables().isEmpty()) {
-      dataset.getNetworkTables().forEach(networkTable -> hbuilder
-        .addNetworkTables(asDto(networkTable, true)));
     }
 
     builder.setExtension(Mica.HarmonizationDatasetDto.type, hbuilder.build());
@@ -207,9 +190,6 @@ class DatasetDtos {
     if(resolver.hasStudyId()) {
       builder.setStudyId(resolver.getStudyId());
     }
-    if(resolver.hasNetworkId()) {
-      builder.setNetworkTableId(resolver.getNetworkId());
-    }
     if(resolver.hasProject()) {
       builder.setProject(resolver.getProject());
     }
@@ -239,17 +219,9 @@ class DatasetDtos {
       .setNature(variable.getNature()) //
       .setIndex(variable.getIndex());
 
-    if(variable.getStudyIds() != null) {
-      builder.addAllStudyIds(variable.getStudyIds());
-      for(String studyId : variable.getStudyIds()) {
-        builder.addStudySummaries(studySummaryDtos.asDto(studyId));
-      }
-    }
-
-    if(variable.getNetworkTableIds() != null) {
-      for(String networkId : variable.getNetworkTableIds()) {
-        builder.addNetworkSummaries(networkSummaryDtos.asDto(networkId));
-      }
+    if(variable.getStudyId() != null) {
+      builder.addStudyIds(variable.getStudyId());
+      builder.addStudySummaries(studySummaryDtos.asDto(variable.getStudyId()));
     }
 
     if(!Strings.isNullOrEmpty(variable.getOccurrenceGroup())) {
@@ -375,11 +347,11 @@ class DatasetDtos {
     return sbuilder;
   }
 
-  public Mica.DatasetDto.HarmonizationTableDto.Builder asDto(HarmonizationTable harmonizationTable) {
+  public Mica.DatasetDto.HarmonizationTableDto.Builder asDto(HarmonizationStudyTable harmonizationTable) {
     return asDto(harmonizationTable, false);
   }
 
-  public Mica.DatasetDto.HarmonizationTableDto.Builder asDto(HarmonizationTable harmonizationTable, boolean includeSummary) {
+  public Mica.DatasetDto.HarmonizationTableDto.Builder asDto(HarmonizationStudyTable harmonizationTable, boolean includeSummary) {
     Mica.DatasetDto.HarmonizationTableDto.Builder hBuilder = Mica.DatasetDto.HarmonizationTableDto.newBuilder()
       .setProject(harmonizationTable.getProject())
       .setTable(harmonizationTable.getTable())
@@ -699,20 +671,13 @@ class DatasetDtos {
       dto.getHarmonizationTablesList().forEach(tableDto -> harmonizationDataset.addHarmonizationTable(fromDto(tableDto)));
     }
 
-    if(dto.getNetworkTablesCount() > 0) {
-      dto.getNetworkTablesList().forEach(tableDto -> harmonizationDataset.addNetworkTable(fromDto(tableDto)));
-    }
-
-    String networkId = dto.getNetworkId();
-    harmonizationDataset.setNetworkId(Strings.isNullOrEmpty(networkId) ? null : networkId);
     if (dto.hasHarmonizationLink()) {
-      HarmonizationTable harmonizationLink = new HarmonizationTable();
+      HarmonizationStudyTable harmonizationLink = new HarmonizationStudyTable();
       harmonizationLink.setProject(dto.getHarmonizationLink().getProject());
       harmonizationLink.setTable(dto.getHarmonizationLink().getTable());
       harmonizationLink.setStudyId(dto.getHarmonizationLink().getStudyId());
       harmonizationLink.setPopulationId(dto.getHarmonizationLink().getPopulationId());
-
-      harmonizationDataset.setHarmonizationLink(harmonizationLink);
+      harmonizationDataset.setHarmonizationTable(harmonizationLink);
     }
     return harmonizationDataset;
   }
@@ -739,8 +704,8 @@ class DatasetDtos {
     return table;
   }
 
-  private HarmonizationTable fromDto(Mica.DatasetDto.HarmonizationTableDto dto) {
-    HarmonizationTable table = new HarmonizationTable();
+  private HarmonizationStudyTable fromDto(Mica.DatasetDto.HarmonizationTableDto dto) {
+    HarmonizationStudyTable table = new HarmonizationStudyTable();
     table.setStudyId(dto.getStudyId());
     table.setPopulationId(dto.getPopulationId());
     table.setPopulationId(dto.getPopulationId());
@@ -767,7 +732,7 @@ class DatasetDtos {
     return table;
   }
 
-  private Mica.DatasetDto.HarmonizationTableDto.Builder createHarmonizationLinkDtoFromHarmonizationTable(HarmonizationTable harmonizationLink, boolean asDraft) {
+  private Mica.DatasetDto.HarmonizationTableDto.Builder createHarmonizationLinkDtoFromHarmonizationTable(HarmonizationStudyTable harmonizationLink, boolean asDraft) {
     Mica.DatasetDto.HarmonizationTableDto.Builder harmonizationLinkBuilder = Mica.DatasetDto.HarmonizationTableDto.newBuilder();
 
     if (!Strings.isNullOrEmpty(harmonizationLink.getProject()))

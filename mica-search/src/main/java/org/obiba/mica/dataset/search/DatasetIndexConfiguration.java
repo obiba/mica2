@@ -44,8 +44,7 @@ public class DatasetIndexConfiguration extends AbstractIndexConfiguration
     XContentBuilder mapping = XContentFactory.jsonBuilder().startObject().startObject(DatasetIndexer.DATASET_TYPE);
     mapping.startObject("properties");
     Taxonomy taxonomy = getTaxonomy();
-    addStaticVocabularies(taxonomy, "studyTable.id", "studyTable.studyId", //
-      "studyTables.id", "studyTables.studyId");
+    addStaticVocabularies(taxonomy, "studyTable.studyId", "studyTables.studyId", "harmonizationTable.studyId", "harmonizationTables.studyId");
     addLocalizedVocabularies(taxonomy, "name", "acronym", "description");
     addTaxonomyFields(mapping, taxonomy, Lists.newArrayList());
     mapping.endObject().endObject();
