@@ -911,7 +911,7 @@
       "study" : "Étude",
       "study-collection": "Étude de collecte",
       "study-harmonization": "Étude d'harmonisation",
-      "dce" : "Événement de collecte de données (ECD)",
+      "dce" : "Population/Événement de collecte de données (ECD)",
       "dce-collection" : "Événement de collecte de données (ECD)",
       "dce-harmonization" : "Population",
       "network" : "Réseau",
