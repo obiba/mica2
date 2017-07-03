@@ -128,17 +128,18 @@ public class CountStatsDtoBuilders {
         studies += countStatsData.getStudies(id);
       }
 
+      studyDatasets = studyDatasets.stream().distinct().collect(Collectors.toList());
       harmonizationDatasets = harmonizationDatasets.stream().distinct().collect(Collectors.toList());
       int variables = Sets.union(ImmutableSet.copyOf(studyDatasets), ImmutableSet.copyOf(harmonizationDatasets))
         .stream().mapToInt(countStatsData::getVariables).sum();
       int studyVariables = studyDatasets.stream().mapToInt(countStatsData::getVariables).sum();
-      int dataschemaVariables = countStatsData.getNetworkDataschemaVariables(networkId);
+      int dataschemaVariables = harmonizationDatasets.stream().mapToInt(countStatsData::getVariables).sum();
 
       return CountStatsDto.newBuilder().setVariables(variables)
           .setStudyVariables(studyVariables)
           .setDataschemaVariables(dataschemaVariables)
-          .setStudyDatasets((int) studyDatasets.stream().distinct().count())
-          .setHarmonizationDatasets(countStatsData.getNetworkHarmonizationDatasets(networkId))
+          .setStudyDatasets(studyDatasets.size())
+          .setHarmonizationDatasets(harmonizationDatasets.size())
           .setStudies(studies)
           .setStudiesWithVariables((int) ids.stream()
               .filter(i -> countStatsData.getDataset(i).containsKey(DatasetQuery.STUDY_JOIN_FIELD)).count())

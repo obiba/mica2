@@ -27,8 +27,6 @@ public class CountStatsData {
   private Map<String, Integer> harmonizationDatasets;
   private Map<String, Integer> studies;
   private Map<String, Integer> networks;
-  private Map<String, Integer> networkDatasets;
-  private Map<String, Integer> networkDataschemaVariables;
   private Map<String, List<String>> networksMap;
   private Map<String, Map<String, List<String>>> datasetsMap;
 
@@ -54,10 +52,6 @@ public class CountStatsData {
 
   public int getHarmonizationDatasets(String studyId) {
     return getCount(harmonizationDatasets, studyId);
-  }
-
-  public int getNetworkHarmonizationDatasets(String networkId) {
-    return getCount(networkDatasets, networkId);
   }
 
   public int getStudies(String studyId) {
@@ -98,10 +92,6 @@ public class CountStatsData {
     );
 
     return map;
-  }
-
-  public int getNetworkDataschemaVariables(String networkId) {
-    return getCount(networkDataschemaVariables, networkId);
   }
 
   public static class Builder {
