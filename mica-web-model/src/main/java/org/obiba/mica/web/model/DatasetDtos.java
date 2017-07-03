@@ -138,7 +138,7 @@ class DatasetDtos {
     Mica.HarmonizationDatasetDto.Builder hbuilder = Mica.HarmonizationDatasetDto.newBuilder();
 
     if (dataset.getHarmonizationTable() != null) {
-      hbuilder.setHarmonizationLink(createHarmonizationLinkDtoFromHarmonizationTable(dataset.getHarmonizationTable(), asDraft));
+      hbuilder.setHarmonizationTable(createHarmonizationLinkDtoFromHarmonizationTable(dataset.getHarmonizationTable(), asDraft));
     }
 
     if(!dataset.getStudyTables().isEmpty()) {
@@ -220,8 +220,8 @@ class DatasetDtos {
       .setIndex(variable.getIndex());
 
     if(variable.getStudyId() != null) {
-      builder.addStudyIds(variable.getStudyId());
-      builder.addStudySummaries(studySummaryDtos.asDto(variable.getStudyId()));
+      builder.setStudyId(variable.getStudyId());
+      builder.setStudySummary(studySummaryDtos.asDto(variable.getStudyId()));
     }
 
     if(!Strings.isNullOrEmpty(variable.getOccurrenceGroup())) {
@@ -671,12 +671,12 @@ class DatasetDtos {
       dto.getHarmonizationTablesList().forEach(tableDto -> harmonizationDataset.addHarmonizationTable(fromDto(tableDto)));
     }
 
-    if (dto.hasHarmonizationLink()) {
+    if (dto.hasHarmonizationTable()) {
       HarmonizationStudyTable harmonizationLink = new HarmonizationStudyTable();
-      harmonizationLink.setProject(dto.getHarmonizationLink().getProject());
-      harmonizationLink.setTable(dto.getHarmonizationLink().getTable());
-      harmonizationLink.setStudyId(dto.getHarmonizationLink().getStudyId());
-      harmonizationLink.setPopulationId(dto.getHarmonizationLink().getPopulationId());
+      harmonizationLink.setProject(dto.getHarmonizationTable().getProject());
+      harmonizationLink.setTable(dto.getHarmonizationTable().getTable());
+      harmonizationLink.setStudyId(dto.getHarmonizationTable().getStudyId());
+      harmonizationLink.setPopulationId(dto.getHarmonizationTable().getPopulationId());
       harmonizationDataset.setHarmonizationTable(harmonizationLink);
     }
     return harmonizationDataset;

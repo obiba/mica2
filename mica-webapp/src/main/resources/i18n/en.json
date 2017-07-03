@@ -55,7 +55,7 @@
     "network": "Network",
     "collection-study": "Collection Study",
     "harmonization-study": "Harmonization Study",
-    "harmonization-study-population": "Harmonization Study's Population"
+    "harmonization-study-population": "Population"
   },
   "pagination": {
     "of": "of"

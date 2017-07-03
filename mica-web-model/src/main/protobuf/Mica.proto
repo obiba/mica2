@@ -498,7 +498,7 @@ message CollectionDatasetDto {
 }
 
 message HarmonizationDatasetDto {
-  optional DatasetDto.HarmonizationTableDto harmonizationLink = 1;
+  optional DatasetDto.HarmonizationTableDto harmonizationTable = 1;
   repeated DatasetDto.StudyTableDto studyTables = 2;
   repeated DatasetDto.HarmonizationTableDto harmonizationTables = 3;
 
@@ -526,7 +526,7 @@ message DatasetCategoryDto {
 message DatasetVariableDto {
   required string id = 1;
   required string datasetId = 2;
-  repeated string studyIds = 3;
+  required string studyId = 3;
   required string variableType = 4;
   required string name = 5;
   required string entityType = 6;
@@ -541,7 +541,7 @@ message DatasetVariableDto {
   repeated AttributeDto attributes = 15;
   repeated DatasetCategoryDto categories = 16;
   repeated LocalizedStringDto datasetName = 17;
-  repeated StudySummaryDto studySummaries = 18;
+  optional StudySummaryDto studySummary = 18;
   repeated TermAttributesDto termAttributes = 19;
   repeated NetworkSummaryDto networkSummaries = 20;
 }
