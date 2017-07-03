@@ -118,12 +118,12 @@ public class PublishedDatasetSearchResource {
         if(type.equals(StudyDataset.class.getSimpleName())) {
           filters.add(QueryDtoHelper.createTermFilter(DatasetQuery.STUDY_JOIN_FIELD, Arrays.asList(studyId)));
         } else {
-          filters.add(QueryDtoHelper.createTermFilter(DatasetQuery.HARMONIZATION_JOIN_FIELD, Arrays.asList(studyId)));
+          filters.add(QueryDtoHelper.createTermFilter(DatasetQuery.HARMONIZATION_STUDY_JOIN_FIELD, Arrays.asList(studyId)));
         }
         queryDto = QueryDtoHelper.addTermFilters(queryDto, filters, QueryDtoHelper.BoolQueryType.MUST);
       } else {
         filters.add(QueryDtoHelper.createTermFilter(DatasetQuery.STUDY_JOIN_FIELD, Arrays.asList(studyId)));
-        filters.add(QueryDtoHelper.createTermFilter(DatasetQuery.HARMONIZATION_JOIN_FIELD, Arrays.asList(studyId)));
+        filters.add(QueryDtoHelper.createTermFilter(DatasetQuery.HARMONIZATION_STUDY_JOIN_FIELD, Arrays.asList(studyId)));
         queryDto = QueryDtoHelper.addTermFilters(queryDto, filters, QueryDtoHelper.BoolQueryType.SHOULD);
       }
     }

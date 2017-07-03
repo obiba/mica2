@@ -81,8 +81,6 @@ public class VariableQuery extends AbstractDocumentQuery {
 
   private static final String DATASET_ID = "datasetId";
 
-  private static final String NETWORK_ID = "networkId";
-
   private static final String VARIABLE_TYPE = "variableType";
 
   @Inject
@@ -91,8 +89,6 @@ public class VariableQuery extends AbstractDocumentQuery {
   @Inject
   private PublishedStudyService publishedStudyService;
 
-  @Inject
-  private PublishedNetworkService publishedNetworkService;
 
   @Inject
   private Dtos dtos;
@@ -207,28 +203,8 @@ public class VariableQuery extends AbstractDocumentQuery {
 
     String studyId = resolver.hasStudyId() ? resolver.getStudyId() : null;
 
-    if(resolver.getType() == DatasetVariable.Type.Collection || resolver.getType() == DatasetVariable.Type.Harmonized) {
+    if(resolver.getType() == DatasetVariable.Type.Collection || resolver.getType() == DatasetVariable.Type.Dataschema || resolver.getType() == DatasetVariable.Type.Harmonized) {
       studyId = variable.getStudyIds().get(0);
-    } else if (resolver.getType() == DatasetVariable.Type.Dataschema) {
-      studyId = variable.getHarmonizationStudyId();
-    }
-
-    String networkId = variable.getNetworkId();
-
-    if (networkId != null) { // harmonized
-      Network network;
-
-      if(networkMap.containsKey(networkId)) network = networkMap.get(networkId);
-      else {
-        network = publishedNetworkService.findById(networkId);
-        networkMap.put(networkId, network);
-      }
-
-      if(network != null) {
-        builder.setNetworkId(networkId);
-        builder.addAllNetworkName(dtos.asDto(network.getName()));
-        builder.addAllNetworkAcronym(dtos.asDto(network.getAcronym()));
-      }
     }
 
     if(studyId != null) {
@@ -316,10 +292,6 @@ public class VariableQuery extends AbstractDocumentQuery {
     return getDocumentCounts(JOIN_FIELD);
   }
 
-  public Map<String, Integer> getNetworkCounts() {
-    return getDocumentCounts(NETWORK_ID);
-  }
-
   public Map<String, Integer> getStudyVariableByStudyCounts() {
     return getDocumentBucketCounts(JOIN_FIELD, VARIABLE_TYPE, "Study");
   }
@@ -362,7 +334,6 @@ public class VariableQuery extends AbstractDocumentQuery {
     // required for the counts to work
     if(!properties.containsKey(JOIN_FIELD)) properties.put(JOIN_FIELD, "");
     if(!properties.containsKey(DATASET_ID)) properties.put(DATASET_ID, "");
-    if(!properties.containsKey(NETWORK_ID)) properties.put(NETWORK_ID, "");
 
     return properties;
   }

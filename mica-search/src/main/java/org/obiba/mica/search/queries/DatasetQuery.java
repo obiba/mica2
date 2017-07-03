@@ -71,15 +71,7 @@ public class DatasetQuery extends AbstractDocumentQuery {
 
   public static final String STUDY_JOIN_FIELD = "studyTable.studyId";
 
-  public static final String HARMONIZATION_JOIN_FIELD = "studyTables.studyId";
-
-  public static final String NETWORK_JOIN_FIELD = "networkId";
-
-  private enum DatasetType {
-    STUDY,
-    HARMONIZATION,
-    DATASET
-  }
+  public static final String HARMONIZATION_STUDY_JOIN_FIELD = "harmonizationTable.studyId";
 
   @Inject
   Dtos dtos;
@@ -153,8 +145,7 @@ public class DatasetQuery extends AbstractDocumentQuery {
   protected Properties getAggregationsProperties(List<String> filter) {
     Properties properties = getAggregationsProperties(filter, taxonomyService.getDatasetTaxonomy());
     if(!properties.containsKey(STUDY_JOIN_FIELD)) properties.put(STUDY_JOIN_FIELD, "");
-    if(!properties.containsKey(HARMONIZATION_JOIN_FIELD)) properties.put(HARMONIZATION_JOIN_FIELD, "");
-    if(!properties.containsKey(NETWORK_JOIN_FIELD)) properties.put(NETWORK_JOIN_FIELD, "");
+    if(!properties.containsKey(HARMONIZATION_STUDY_JOIN_FIELD)) properties.put(HARMONIZATION_STUDY_JOIN_FIELD, "");
     if(!properties.containsKey(ID)) properties.put(ID,"");
     return properties;
   }
@@ -212,7 +203,7 @@ public class DatasetQuery extends AbstractDocumentQuery {
 
   @Override
   protected List<String> getJoinFields() {
-    return Arrays.asList(STUDY_JOIN_FIELD, HARMONIZATION_JOIN_FIELD, ID);
+    return Arrays.asList(STUDY_JOIN_FIELD, HARMONIZATION_STUDY_JOIN_FIELD, ID);
   }
 
   public Map<String, Map<String, List<String>>> getStudyCountsByDataset() {
@@ -255,16 +246,13 @@ public class DatasetQuery extends AbstractDocumentQuery {
     return map;
   }
 
-  public Map<String, Integer> getNetworkCounts() {
-    return getDocumentCounts(NETWORK_JOIN_FIELD);
-  }
-
+  @Override
   public Map<String, Integer> getStudyCounts() {
     return getDocumentCounts(STUDY_JOIN_FIELD);
   }
 
   public Map<String, Integer> getHarmonizationStudyCounts() {
-    return getDocumentCounts(HARMONIZATION_JOIN_FIELD);
+    return getDocumentCounts(HARMONIZATION_STUDY_JOIN_FIELD);
   }
 
 }

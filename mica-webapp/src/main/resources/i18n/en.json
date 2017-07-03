@@ -950,7 +950,6 @@
     "variable": {
       "facet-label": "Variable",
       "label": "Label",
-      "studyNetwork": "Study/Network",
       "noResults": "No variable found",
       "collection": "Collection",
       "dataschema": "DataSchema"

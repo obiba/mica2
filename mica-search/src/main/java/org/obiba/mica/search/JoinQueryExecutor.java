@@ -421,14 +421,13 @@ public class JoinQueryExecutor {
             .studyVariables(variableQuery.getStudyVariableByStudyCounts()) //
             .dataschemaVariables(variableQuery.getDataschemaVariableByStudyCounts()) //
             .studyDatasets(datasetQuery.getStudyCounts()) //
-            .harmonizationDatasets(datasetQuery.getHarmonizationStudyCounts()).networks(networkQuery.getStudyCounts())
+            .harmonizationDatasets(datasetQuery.getHarmonizationStudyCounts()) //
+            .networks(networkQuery.getStudyCounts()) //
             .build();
         break;
       case NETWORK:
         countStats = CountStatsData.newBuilder().variables(variableQuery.getDatasetCounts()) //
             .datasetsMap(datasetQuery.getStudyCountsByDataset()) //
-            .networkHarmonizationDatasets(datasetQuery.getNetworkCounts()) //
-            .networkDataschemaVariables(variableQuery.getNetworkCounts()) //
             .studies(studyQuery.getStudyCounts()).build();
         break;
     }

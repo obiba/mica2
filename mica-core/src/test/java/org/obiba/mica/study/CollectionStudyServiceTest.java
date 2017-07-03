@@ -112,9 +112,6 @@ public class CollectionStudyServiceTest {
   private StudyRepository studyRepository;
 
   @Inject
-  private HarmonizationStudyRepository harmonizationStudyRepository;
-
-  @Inject
   private NetworkRepository networkRepository;
 
   @Inject

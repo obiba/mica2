@@ -55,6 +55,6 @@ public class PublishedHarmonizationDatasetsResource extends AbstractPublishedDat
 
   @Override
   protected String getStudyIdField() {
-    return "studyTables.studyId";
+    return "studyTable.studyId";
   }
 }

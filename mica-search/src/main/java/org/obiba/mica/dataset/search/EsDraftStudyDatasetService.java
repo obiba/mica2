@@ -61,8 +61,7 @@ class EsDraftStudyDatasetService extends AbstractEsDatasetService<StudyDataset> 
   @Override
   protected QueryBuilder filterByStudy(String studyId) {
     return QueryBuilders.boolQuery() //
-      .should(QueryBuilders.termQuery("studyTable.studyId", studyId))
-      .should(QueryBuilders.termQuery("studyTables.studyId", studyId));
+      .should(QueryBuilders.termQuery("studyTable.studyId", studyId));
   }
 
   @Override
