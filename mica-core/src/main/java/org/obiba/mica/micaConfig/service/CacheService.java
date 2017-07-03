@@ -14,6 +14,7 @@ import javax.inject.Inject;
 
 import com.google.common.eventbus.EventBus;
 import org.obiba.magma.NoSuchVariableException;
+import org.obiba.mica.core.domain.BaseStudyTable;
 import org.obiba.mica.core.domain.NetworkTable;
 import org.obiba.mica.core.domain.StudyTable;
 import org.obiba.mica.dataset.domain.Dataset;
@@ -105,11 +106,10 @@ public class CacheService {
       harmonizationDatasetService.findAllPublishedDatasets().forEach(
         dataset -> harmonizationDatasetService.getDatasetVariables(dataset)
           .forEach(v -> dataset.getAllOpalTables().forEach(st -> {
-            String studyId = st instanceof StudyTable ? ((StudyTable)st).getStudyId() : null;
-            String networkId = studyId == null ? ((NetworkTable)st).getNetworkId() : null;
+            String studyId = ((BaseStudyTable)st).getStudyId();
             try {
               harmonizationDatasetService
-                .getVariableSummary(dataset, v.getName(), studyId, st.getProject(), st.getTable(), networkId);
+                .getVariableSummary(dataset, v.getName(), studyId, st.getProject(), st.getTable());
             } catch(NoSuchVariableException ex) {
               //ignore
             } catch(Exception e) {

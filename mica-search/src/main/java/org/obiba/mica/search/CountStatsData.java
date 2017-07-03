@@ -156,14 +156,5 @@ public class CountStatsData {
       return data;
     }
 
-    public Builder networkHarmonizationDatasets(Map<String, Integer> networkCounts) {
-      data.networkDatasets = networkCounts;
-      return this;
-    }
-
-    public Builder networkDataschemaVariables(Map<String, Integer> networkCounts) {
-      data.networkDataschemaVariables = networkCounts;
-      return this;
-    }
   }
 }

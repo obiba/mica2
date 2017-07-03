@@ -190,9 +190,6 @@ class DatasetDtos {
     if(resolver.hasStudyId()) {
       builder.setStudyId(resolver.getStudyId());
     }
-    if(resolver.hasNetworkId()) {
-      builder.setNetworkTableId(resolver.getNetworkId());
-    }
     if(resolver.hasProject()) {
       builder.setProject(resolver.getProject());
     }
@@ -222,11 +219,9 @@ class DatasetDtos {
       .setNature(variable.getNature()) //
       .setIndex(variable.getIndex());
 
-    if(variable.getStudyIds() != null) {
-      builder.addAllStudyIds(variable.getStudyIds());
-      for(String studyId : variable.getStudyIds()) {
-        builder.addStudySummaries(studySummaryDtos.asDto(studyId));
-      }
+    if(variable.getStudyId() != null) {
+      builder.addStudyIds(variable.getStudyId());
+      builder.addStudySummaries(studySummaryDtos.asDto(variable.getStudyId()));
     }
 
     if(!Strings.isNullOrEmpty(variable.getOccurrenceGroup())) {

@@ -26,6 +26,7 @@ import com.google.common.base.Strings;
 import org.apache.commons.math3.util.Pair;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.magma.NoSuchValueTableException;
+import org.obiba.mica.core.domain.BaseStudyTable;
 import org.obiba.mica.core.domain.OpalTable;
 import org.obiba.mica.core.domain.StudyTable;
 import org.obiba.mica.dataset.DatasetVariableResource;
@@ -57,8 +58,6 @@ public class PublishedHarmonizedDatasetVariableResource extends AbstractPublishe
 
   private String studyId;
 
-  private String networkId;
-
   private String project;
 
   private String table;
@@ -69,7 +68,7 @@ public class PublishedHarmonizedDatasetVariableResource extends AbstractPublishe
   @GET
   @Timed
   public Mica.DatasetVariableDto getVariable() {
-    return getDatasetVariableDto(datasetId, variableName, DatasetVariable.Type.Harmonized, studyId, project, table, networkId);
+    return getDatasetVariableDto(datasetId, variableName, DatasetVariable.Type.Harmonized, studyId, project, table);
   }
 
   @GET
@@ -77,7 +76,7 @@ public class PublishedHarmonizedDatasetVariableResource extends AbstractPublishe
   @Timed
   public org.obiba.opal.web.model.Math.SummaryStatisticsDto getVariableSummary() {
     return datasetService
-      .getVariableSummary(getDataset(HarmonizationDataset.class, datasetId), variableName, studyId, project, table, networkId)
+      .getVariableSummary(getDataset(HarmonizationDataset.class, datasetId), variableName, studyId, project, table)
       .getWrappedDto();
   }
 
@@ -86,7 +85,7 @@ public class PublishedHarmonizedDatasetVariableResource extends AbstractPublishe
   @Timed
   public Search.QueryResultDto getVariableFacet() {
     return datasetService
-      .getVariableFacet(getDataset(HarmonizationDataset.class, datasetId), variableName, studyId, project, table, networkId);
+      .getVariableFacet(getDataset(HarmonizationDataset.class, datasetId), variableName, studyId, project, table);
   }
 
   @GET
@@ -95,12 +94,12 @@ public class PublishedHarmonizedDatasetVariableResource extends AbstractPublishe
   public Mica.DatasetVariableAggregationDto getVariableAggregations() {
     HarmonizationDataset dataset = getDataset(HarmonizationDataset.class, datasetId);
     for(OpalTable opalTable : dataset.getAllOpalTables()) {
-      String opalTableId = opalTable instanceof StudyTable ? studyId : networkId;
+      String opalTableId = studyId;
 
       if(opalTable.isFor(opalTableId, project, table)) {
         try {
           return dtos.asDto(opalTable,
-            datasetService.getVariableSummary(dataset, variableName, studyId, project, table, networkId).getWrappedDto()).build();
+            datasetService.getVariableSummary(dataset, variableName, studyId, project, table).getWrappedDto()).build();
         } catch(Exception e) {
           log.warn("Unable to retrieve statistics: " + e.getMessage(), e);
           return dtos.asDto(opalTable, null).build();
@@ -124,7 +123,7 @@ public class PublishedHarmonizedDatasetVariableResource extends AbstractPublishe
     HarmonizationDataset dataset = getDataset(HarmonizationDataset.class, datasetId);
 
     for(OpalTable opalTable : dataset.getAllOpalTables()) {
-      String opalTableId = opalTable instanceof StudyTable ? studyId : networkId;
+      String opalTableId = studyId;
 
       if(opalTable.isFor(opalTableId, project, table)) {
         try {
@@ -192,13 +191,10 @@ public class PublishedHarmonizedDatasetVariableResource extends AbstractPublishe
     if(Strings.isNullOrEmpty(crossVariable))
       throw new BadRequestException("Cross variable name is required for the contingency table");
 
-    DatasetVariable var = getDatasetVariable(datasetId, variableName, DatasetVariable.Type.Harmonized, studyId, project, table, networkId);
-    DatasetVariable crossVar = getDatasetVariable(datasetId, crossVariable, DatasetVariable.Type.Harmonized, studyId, project, table, networkId);
+    DatasetVariable var = getDatasetVariable(datasetId, variableName, DatasetVariable.Type.Harmonized, studyId, project, table);
+    DatasetVariable crossVar = getDatasetVariable(datasetId, crossVariable, DatasetVariable.Type.Harmonized, studyId, project, table);
 
     return Pair.create(var, crossVar);
   }
 
-  public void setNetworkId(String networkId) {
-    this.networkId = networkId;
-  }
 }

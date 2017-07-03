@@ -61,7 +61,7 @@ public class CsvCoverageWriter {
   }
 
   private boolean hasStartEndHeaders() {
-    return distinctFields.contains("dceIds") || distinctFields.contains("studyIds");
+    return distinctFields.contains("dceId") || distinctFields.contains("studyId");
   }
 
   private boolean hasSingletonField() {
@@ -69,7 +69,7 @@ public class CsvCoverageWriter {
   }
 
   private boolean isDCEField() {
-    return distinctFields.contains("dceIds");
+    return distinctFields.contains("dceId");
   }
 
   private void writeHeaders(CSVWriter writer) {

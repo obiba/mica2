@@ -10,22 +10,10 @@
 
 package org.obiba.mica.search.queries;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import javax.annotation.Nullable;
-import javax.inject.Inject;
-import javax.validation.constraints.NotNull;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
@@ -38,20 +26,15 @@ import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.HarmonizationDatasetState;
 import org.obiba.mica.dataset.domain.StudyDatasetState;
 import org.obiba.mica.dataset.search.VariableIndexer;
-import org.obiba.mica.dataset.service.HarmonizationDatasetService;
 import org.obiba.mica.dataset.service.CollectionDatasetService;
+import org.obiba.mica.dataset.service.HarmonizationDatasetService;
 import org.obiba.mica.micaConfig.service.OpalService;
+import org.obiba.mica.micaConfig.service.helper.AggregationMetaDataProvider;
 import org.obiba.mica.network.domain.Network;
-import org.obiba.mica.network.service.PublishedNetworkService;
 import org.obiba.mica.search.CountStatsData;
 import org.obiba.mica.search.DocumentQueryHelper;
 import org.obiba.mica.search.DocumentQueryIdProvider;
-import org.obiba.mica.micaConfig.service.helper.AggregationMetaDataProvider;
-import org.obiba.mica.search.aggregations.DataCollectionEventAggregationMetaDataProvider;
-import org.obiba.mica.search.aggregations.DatasetAggregationMetaDataProvider;
-import org.obiba.mica.search.aggregations.StudyAggregationMetaDataProvider;
-import org.obiba.mica.search.aggregations.TaxonomyAggregationMetaDataProvider;
-import org.obiba.mica.search.aggregations.VariableTaxonomyMetaDataProvider;
+import org.obiba.mica.search.aggregations.*;
 import org.obiba.mica.study.NoSuchStudyException;
 import org.obiba.mica.study.domain.BaseStudy;
 import org.obiba.mica.study.service.PublishedStudyService;
@@ -62,13 +45,18 @@ import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.obiba.opal.core.domain.taxonomy.Vocabulary;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-
 import sun.util.locale.LanguageTag;
+
+import javax.annotation.Nullable;
+import javax.inject.Inject;
+import javax.validation.constraints.NotNull;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.*;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.obiba.mica.search.queries.AbstractDocumentQuery.Scope.DETAIL;
 import static org.obiba.mica.search.queries.AbstractDocumentQuery.Scope.NONE;
@@ -77,7 +65,7 @@ import static org.obiba.mica.search.queries.AbstractDocumentQuery.Scope.NONE;
 @Scope("request")
 public class VariableQuery extends AbstractDocumentQuery {
 
-  private static final String JOIN_FIELD = "studyIds";
+  private static final String JOIN_FIELD = "studyId";
 
   private static final String DATASET_ID = "datasetId";
 
@@ -204,7 +192,7 @@ public class VariableQuery extends AbstractDocumentQuery {
     String studyId = resolver.hasStudyId() ? resolver.getStudyId() : null;
 
     if(resolver.getType() == DatasetVariable.Type.Collection || resolver.getType() == DatasetVariable.Type.Dataschema || resolver.getType() == DatasetVariable.Type.Harmonized) {
-      studyId = variable.getStudyIds().get(0);
+      studyId = variable.getStudyId();
     }
 
     if(studyId != null) {
@@ -293,11 +281,11 @@ public class VariableQuery extends AbstractDocumentQuery {
   }
 
   public Map<String, Integer> getStudyVariableByStudyCounts() {
-    return getDocumentBucketCounts(JOIN_FIELD, VARIABLE_TYPE, "Study");
+    return getDocumentBucketCounts(JOIN_FIELD, VARIABLE_TYPE, DatasetVariable.Type.Collection.name());
   }
 
   public Map<String, Integer> getDataschemaVariableByStudyCounts() {
-    return getDocumentBucketCounts(JOIN_FIELD, VARIABLE_TYPE, "Dataschema");
+    return getDocumentBucketCounts(JOIN_FIELD, VARIABLE_TYPE, DatasetVariable.Type.Dataschema.name());
   }
 
   @Override

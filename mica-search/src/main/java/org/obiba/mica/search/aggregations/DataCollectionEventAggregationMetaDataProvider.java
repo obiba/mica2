@@ -21,7 +21,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class DataCollectionEventAggregationMetaDataProvider implements AggregationMetaDataProvider {
 
-  private static final String AGGREGATION_NAME = "dceIds";
+  private static final String AGGREGATION_NAME = "dceId";
 
   @Inject
   DceIdAggregationMetaDataHelper helper;

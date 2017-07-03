@@ -19,6 +19,7 @@ import javax.ws.rs.Path;
 import com.google.common.collect.ImmutableList;
 import org.obiba.magma.NoSuchValueTableException;
 import org.obiba.magma.NoSuchVariableException;
+import org.obiba.mica.core.domain.BaseStudyTable;
 import org.obiba.mica.core.domain.NetworkTable;
 import org.obiba.mica.core.domain.StudyTable;
 import org.obiba.mica.dataset.DatasetVariableResource;
@@ -57,10 +58,9 @@ public class DraftDataschemaDatasetVariableResource implements DatasetVariableRe
     HarmonizationDataset dataset = getDataset();
     dataset.getAllOpalTables().forEach(table -> {
       try {
-        String studyId = table instanceof StudyTable ? ((StudyTable)table).getStudyId() : null;
-        String networkId = studyId == null ? ((NetworkTable)table).getNetworkId() : null;
+        String studyId = ((BaseStudyTable)table).getStudyId();
         builder.add(datasetService
-          .getVariableSummary(dataset, variableName, studyId, table.getProject(), table.getTable(), networkId)
+          .getVariableSummary(dataset, variableName, studyId, table.getProject(), table.getTable())
           .getWrappedDto());
       } catch(NoSuchVariableException | NoSuchValueTableException e) {
         // ignore (case the study has not implemented this dataschema variable)
@@ -76,9 +76,8 @@ public class DraftDataschemaDatasetVariableResource implements DatasetVariableRe
     HarmonizationDataset dataset = getDataset();
     dataset.getAllOpalTables().forEach(table -> {
       try {
-        String studyId = table instanceof StudyTable ? ((StudyTable)table).getStudyId() : null;
-        String networkId = studyId == null ? ((NetworkTable)table).getNetworkId() : null;
-        builder.add(datasetService.getVariableFacet(dataset, variableName, studyId, table.getProject(), table.getTable(), networkId));
+        String studyId = ((BaseStudyTable)table).getStudyId();
+        builder.add(datasetService.getVariableFacet(dataset, variableName, studyId, table.getProject(), table.getTable()));
       } catch(NoSuchVariableException | NoSuchValueTableException e) {
         // ignore (case the study has not implemented this dataschema variable)
       }

@@ -39,27 +39,25 @@ public class DraftHarmonizedDatasetVariableResource implements DatasetVariableRe
 
   private String studyId;
 
-  private String networkId;
-
   private String project;
 
   private String table;
 
   @GET
   public Mica.DatasetVariableDto getVariable() {
-    return dtos.asDto(datasetService.getDatasetVariable(getDataset(), variableName, studyId, project, table, networkId));
+    return dtos.asDto(datasetService.getDatasetVariable(getDataset(), variableName, studyId, project, table));
   }
 
   @GET
   @Path("/summary")
   public org.obiba.opal.web.model.Math.SummaryStatisticsDto getVariableSummary() {
-    return datasetService.getVariableSummary(getDataset(), variableName, studyId, project, table, networkId).getWrappedDto();
+    return datasetService.getVariableSummary(getDataset(), variableName, studyId, project, table).getWrappedDto();
   }
 
   @GET
   @Path("/facet")
   public Search.QueryResultDto getVariableFacet() {
-    return datasetService.getVariableFacet(getDataset(), variableName, studyId, project, table, networkId);
+    return datasetService.getVariableFacet(getDataset(), variableName, studyId, project, table);
   }
 
   public void setStudyId(String studyId) {
@@ -88,7 +86,4 @@ public class DraftHarmonizedDatasetVariableResource implements DatasetVariableRe
     this.variableName = variableName;
   }
 
-  public void setNetworkId(String networkId) {
-    this.networkId = networkId;
-  }
 }
