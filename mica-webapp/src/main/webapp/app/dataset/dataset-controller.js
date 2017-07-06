@@ -272,10 +272,6 @@ mica.dataset
 
             $timeout(function () { $scope.sfForm = angular.copy(form); }, 250);
           });
-
-          MicaConfigOpalProjectsResource.get().$promise.then(function (projects) {
-            $scope.projects = projects;
-          });
         });
       }
 
@@ -600,10 +596,13 @@ mica.dataset
 
       var viewRevision = function (datasetId, commitInfo) {
         $scope.commitInfo = commitInfo;
-        $scope.dataset = DraftDatasetViewRevisionResource.view({
+        DraftDatasetViewRevisionResource.view({
           id: datasetId,
           commitId: commitInfo.commitId,
           type: $scope.type
+        }).$promise.then(function (dataset) {
+          $scope.dataset = dataset;
+          $scope.opalTables = OpalTablesService.getTables(dataset);
         });
       };
 
