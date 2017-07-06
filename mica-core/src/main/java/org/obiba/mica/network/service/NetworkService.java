@@ -25,7 +25,6 @@ import org.obiba.mica.core.domain.PublishCascadingScope;
 import org.obiba.mica.core.repository.EntityStateRepository;
 import org.obiba.mica.core.service.AbstractGitPersistableService;
 import org.obiba.mica.dataset.HarmonizationDatasetRepository;
-import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.file.FileStoreService;
 import org.obiba.mica.file.FileUtils;
 import org.obiba.mica.file.service.FileSystemService;
@@ -320,11 +319,6 @@ public class NetworkService extends AbstractGitPersistableService<NetworkState, 
       .collect(toList());
 
     if(!networkIds.isEmpty()) conflicts.put("network", networkIds);
-
-    List<String> datasetIds = harmonizationDatasetRepository.findByNetworkId(network.getId()).stream()
-      .map(HarmonizationDataset::getId).collect(toList());
-
-    if(!datasetIds.isEmpty()) conflicts.put("dataset", datasetIds);
 
     if(!conflicts.isEmpty()) {
       throw new ConstraintException(conflicts);

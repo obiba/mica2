@@ -10,10 +10,18 @@
 
 package org.obiba.mica.study.service;
 
-import com.google.common.base.Throwables;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import javax.inject.Inject;
+import javax.validation.constraints.NotNull;
+
 import org.joda.time.DateTime;
 import org.obiba.mica.core.domain.AbstractGitPersistable;
 import org.obiba.mica.core.repository.EntityStateRepository;
@@ -25,9 +33,6 @@ import org.obiba.mica.network.NetworkRepository;
 import org.obiba.mica.study.ConstraintException;
 import org.obiba.mica.study.StudyRepository;
 import org.obiba.mica.study.StudyStateRepository;
-import org.obiba.mica.study.date.PersistableYearMonth;
-import org.obiba.mica.study.domain.DataCollectionEvent;
-import org.obiba.mica.study.domain.Population;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.domain.StudyState;
 import org.obiba.mica.study.event.DraftStudyUpdatedEvent;
@@ -37,16 +42,10 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
-import javax.inject.Inject;
-import javax.validation.constraints.NotNull;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import com.google.common.base.Throwables;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 import static java.util.stream.Collectors.toList;
 
@@ -114,18 +113,6 @@ public class CollectionStudyService extends AbstractStudyService<StudyState, Stu
 
     gitService.save(study, comment);
     eventBus.post(new DraftStudyUpdatedEvent(study));
-  }
-
-  public PersistableYearMonth getPersistableYearMonthFor(Study study, String populationId, String dceId) {
-    if (study != null) {
-      Population population = study.findPopulation(populationId);
-
-      return population != null ? population
-        .getDataCollectionEvents().stream().filter(dce -> dce.getId().equals(dceId)).findFirst()
-        .map(DataCollectionEvent::getStart).orElse(null) : null;
-    }
-
-    return null;
   }
 
   @Override

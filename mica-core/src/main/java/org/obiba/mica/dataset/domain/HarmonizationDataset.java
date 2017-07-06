@@ -21,7 +21,6 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
 import org.obiba.mica.core.domain.HarmonizationStudyTable;
-import org.obiba.mica.core.domain.NetworkTable;
 import org.obiba.mica.core.domain.OpalTable;
 import org.obiba.mica.core.domain.StudyTable;
 
@@ -43,10 +42,6 @@ public class HarmonizationDataset extends Dataset {
   private List<StudyTable> studyTables;
 
   private List<HarmonizationStudyTable> harmonizationTables;
-
-  private List<NetworkTable> networkTables;
-
-  private String networkId;
 
   public HarmonizationStudyTable getHarmonizationTable() {
     return harmonizationTable;
@@ -89,14 +84,6 @@ public class HarmonizationDataset extends Dataset {
 
   public void setHarmonizationTables(List<HarmonizationStudyTable> harmonizationTables) {
     this.harmonizationTables = harmonizationTables;
-  }
-
-  public List<NetworkTable> getNetworkTables() {
-    return networkTables == null ? networkTables = new ArrayList<>() : networkTables;
-  }
-
-  public void addNetworkTable(NetworkTable networkTable) {
-    getNetworkTables().add(networkTable);
   }
 
   @Override

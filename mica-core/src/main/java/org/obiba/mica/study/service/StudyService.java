@@ -22,8 +22,11 @@ import javax.validation.constraints.NotNull;
 import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.core.domain.EntityState;
 import org.obiba.mica.core.domain.PublishCascadingScope;
+import org.obiba.mica.study.date.PersistableYearMonth;
 import org.obiba.mica.study.domain.BaseStudy;
+import org.obiba.mica.study.domain.DataCollectionEvent;
 import org.obiba.mica.study.domain.HarmonizationStudy;
+import org.obiba.mica.study.domain.Population;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.event.IndexStudiesEvent;
 import org.springframework.stereotype.Component;
@@ -148,5 +151,17 @@ public class StudyService {
     return Stream.concat(collectionStudyService.findAllStates(ids).stream(),
       harmonizationStudyService.findAllStates(ids).stream())
       .collect(Collectors.toList());
+  }
+
+  public static PersistableYearMonth getPersistableYearMonthFor(BaseStudy study, String populationId, String dceId) {
+    if (study != null) {
+      Population population = study.findPopulation(populationId);
+
+      return population != null ? population
+        .getDataCollectionEvents().stream().filter(dce -> dce.getId().equals(dceId)).findFirst()
+        .map(DataCollectionEvent::getStart).orElse(null) : null;
+    }
+
+    return null;
   }
 }

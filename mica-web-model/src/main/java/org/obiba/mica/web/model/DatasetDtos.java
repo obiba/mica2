@@ -23,7 +23,6 @@ import javax.validation.constraints.NotNull;
 import org.obiba.mica.JSONUtils;
 import org.obiba.mica.core.domain.Attributes;
 import org.obiba.mica.core.domain.HarmonizationStudyTable;
-import org.obiba.mica.core.domain.NetworkTable;
 import org.obiba.mica.core.domain.OpalTable;
 import org.obiba.mica.core.domain.StudyTable;
 import org.obiba.mica.dataset.HarmonizationDatasetStateRepository;
@@ -37,7 +36,6 @@ import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.dataset.domain.StudyDatasetState;
 import org.obiba.mica.micaConfig.domain.MicaConfig;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
-import org.obiba.mica.network.service.PublishedNetworkService;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.study.service.PublishedStudyService;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
@@ -68,9 +66,6 @@ class DatasetDtos {
   private StudySummaryDtos studySummaryDtos;
 
   @Inject
-  private NetworkSummaryDtos networkSummaryDtos;
-
-  @Inject
   private PermissionsDtos permissionsDtos;
 
   @Inject
@@ -84,9 +79,6 @@ class DatasetDtos {
 
   @Inject
   private HarmonizationDatasetStateRepository harmonizationDatasetStateRepository;
-
-  @Inject
-  private PublishedNetworkService publishedNetworkService;
 
   @Inject
   private PublishedStudyService publishedStudyService;
@@ -270,8 +262,10 @@ class DatasetDtos {
 
     if (opalTable instanceof StudyTable)
       builder.setStudyTable(asDto((StudyTable) opalTable));
-    else if (opalTable instanceof NetworkTable)
-      builder.setNetworkTable(asDto((NetworkTable) opalTable));
+    else if (opalTable instanceof HarmonizationStudyTable) {
+      builder.setHarmonizationStudyTable(asDto((HarmonizationStudyTable) opalTable));
+    }
+
 
     return builder.build();
   }
@@ -389,31 +383,13 @@ class DatasetDtos {
 
     if(opalTable instanceof StudyTable)
       aggDto.setStudyTable(asDto((StudyTable) opalTable));
-    else if (opalTable instanceof NetworkTable)
-      aggDto.setNetworkTable(asDto((NetworkTable) opalTable));
+    else if (opalTable instanceof HarmonizationStudyTable)
+      aggDto.setHarmonizationStudyTable(asDto((HarmonizationStudyTable) opalTable));
 
 
     return aggDto;
   }
 
-  public Mica.DatasetDto.NetworkTableDto.Builder asDto(NetworkTable networkTable) {
-    return asDto(networkTable, false);
-  }
-
-  public Mica.DatasetDto.NetworkTableDto.Builder asDto(NetworkTable networkTable, boolean includeSummary) {
-    Mica.DatasetDto.NetworkTableDto.Builder sbuilder = Mica.DatasetDto.NetworkTableDto.newBuilder() //
-      .setProject(networkTable.getProject())//
-      .setTable(networkTable.getTable()) //
-      .setWeight(networkTable.getWeight()) //
-      .setNetworkId(networkTable.getNetworkId());
-
-    if(includeSummary) sbuilder.setNetworkSummary(networkSummaryDtos.asDto(networkTable.getNetworkId(), false));
-
-    sbuilder.addAllName(localizedStringDtos.asDto(networkTable.getName()));
-    sbuilder.addAllDescription(localizedStringDtos.asDto(networkTable.getDescription()));
-
-    return sbuilder;
-  }
 
   public Mica.DatasetVariableContingencyDto.Builder asContingencyDto(@NotNull OpalTable opalTable,
     DatasetVariable variable, DatasetVariable crossVariable, @Nullable Search.QueryResultDto results) {
@@ -421,8 +397,8 @@ class DatasetDtos {
 
     if(opalTable instanceof StudyTable)
       crossDto.setStudyTable(asDto((StudyTable) opalTable, true));
-    else if (opalTable instanceof NetworkTable)
-      crossDto.setNetworkTable(asDto((NetworkTable) opalTable, true));
+    else if (opalTable instanceof HarmonizationStudyTable)
+      crossDto.setHarmonizationStudyTable(asDto((HarmonizationStudyTable) opalTable));
 
     Mica.DatasetVariableAggregationDto.Builder allAggBuilder = Mica.DatasetVariableAggregationDto.newBuilder();
 
@@ -709,19 +685,6 @@ class DatasetDtos {
     table.setStudyId(dto.getStudyId());
     table.setPopulationId(dto.getPopulationId());
     table.setPopulationId(dto.getPopulationId());
-    table.setProject(dto.getProject());
-    table.setTable(dto.getTable());
-    table.setWeight(dto.getWeight());
-
-    table.setName(localizedStringDtos.fromDto(dto.getNameList()));
-    table.setDescription(localizedStringDtos.fromDto(dto.getDescriptionList()));
-
-    return table;
-  }
-
-  private NetworkTable fromDto(Mica.DatasetDto.NetworkTableDto dto) {
-    NetworkTable table = new NetworkTable();
-    table.setNetworkId(dto.getNetworkId());
     table.setProject(dto.getProject());
     table.setTable(dto.getTable());
     table.setWeight(dto.getWeight());

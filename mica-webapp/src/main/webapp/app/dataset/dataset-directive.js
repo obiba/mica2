@@ -20,14 +20,6 @@ mica.dataset
       templateUrl: 'app/dataset/views/study-table-modal-form-section.html'
     };
   }])
-  .directive('networkTableModalFormSection', [function() {
-    return {
-      restrict: 'EA',
-      replace: true,
-      scope: false,
-      templateUrl: 'app/dataset/views/network-table-modal-form-section.html'
-    };
-  }])
   .directive('datasetStudyTablesForm', [function() {
   return {
     restrict: 'EA',

@@ -29,7 +29,7 @@ import org.obiba.magma.NoSuchVariableException;
 import org.obiba.magma.ValueTable;
 import org.obiba.magma.Variable;
 import org.obiba.mica.NoSuchEntityException;
-import org.obiba.mica.core.domain.NetworkTable;
+import org.obiba.mica.core.domain.HarmonizationStudyTable;
 import org.obiba.mica.core.domain.OpalTable;
 import org.obiba.mica.core.domain.PublishCascadingScope;
 import org.obiba.mica.core.domain.StudyTable;
@@ -52,6 +52,7 @@ import org.obiba.mica.micaConfig.service.OpalService;
 import org.obiba.mica.network.service.NetworkService;
 import org.obiba.mica.study.NoSuchStudyException;
 import org.obiba.mica.study.service.CollectionStudyService;
+import org.obiba.mica.study.service.StudyService;
 import org.obiba.opal.rest.client.magma.RestValueTable;
 import org.obiba.opal.web.model.Search;
 import org.slf4j.Logger;
@@ -84,7 +85,7 @@ public class HarmonizationDatasetService extends DatasetService<HarmonizationDat
   private static final Logger log = LoggerFactory.getLogger(HarmonizationDatasetService.class);
 
   @Inject
-  private CollectionStudyService collectionStudyService;
+  private StudyService studyService;
 
   @Inject
   @Lazy
@@ -341,8 +342,8 @@ public class HarmonizationDatasetService extends DatasetService<HarmonizationDat
   }
 
   @Override
-  protected CollectionStudyService getCollectionStudyService() {
-    return collectionStudyService;
+  protected StudyService getStudyService() {
+    return studyService;
   }
 
   @Override
@@ -545,8 +546,13 @@ public class HarmonizationDatasetService extends DatasetService<HarmonizationDat
 
       dataset.getAllOpalTables().forEach(st -> harmonizationVariables.forEach((k, v) -> v.forEach(var -> {
         try {
-          String studyId = st instanceof StudyTable ? ((StudyTable) st).getStudyId() : null;
-          String networkId = studyId == null ? ((NetworkTable) st).getNetworkId() : null;
+          String studyId = null;
+
+          if (st instanceof StudyTable) {
+            studyId = ((StudyTable) st).getStudyId();
+          } else if (st instanceof HarmonizationStudyTable) {
+            studyId = ((HarmonizationStudyTable) st).getStudyId();
+          }
 
           service.getVariableSummary(dataset, var.getName(), studyId, st.getProject(), st.getTable());
         } catch(Exception e) {

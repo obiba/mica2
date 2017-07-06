@@ -23,18 +23,12 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
-import com.codahale.metrics.annotation.Timed;
-import com.google.common.base.Strings;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.LinkedListMultimap;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Multimap;
 import org.apache.commons.math3.util.Pair;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.magma.NoSuchValueTableException;
 import org.obiba.magma.NoSuchVariableException;
 import org.obiba.mica.core.domain.BaseStudyTable;
-import org.obiba.mica.core.domain.NetworkTable;
+import org.obiba.mica.core.domain.HarmonizationStudyTable;
 import org.obiba.mica.core.domain.OpalTable;
 import org.obiba.mica.core.domain.StudyTable;
 import org.obiba.mica.dataset.DatasetVariableResource;
@@ -51,6 +45,13 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Component;
+
+import com.codahale.metrics.annotation.Timed;
+import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.LinkedListMultimap;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Multimap;
 
 /**
  * Dataschema variable resource: variable describing an harmonization dataset.
@@ -273,8 +274,13 @@ public class PublishedDataschemaDatasetVariableResource extends AbstractPublishe
     private Future<Math.SummaryStatisticsDto> getVariableFacet(HarmonizationDataset dataset, String variableName,
       OpalTable table) {
       try {
-        String studyId = table instanceof StudyTable ? ((StudyTable)table).getStudyId() : null;
-        String networkId = studyId == null ? ((NetworkTable)table).getNetworkId() : null;
+        String studyId = null;
+
+        if (table instanceof StudyTable) {
+          studyId = ((StudyTable)table).getStudyId();
+        } else if (table instanceof HarmonizationStudyTable) {
+          studyId = ((HarmonizationStudyTable)table).getStudyId();
+        }
 
         return new AsyncResult<>(datasetService
           .getVariableSummary(dataset, variableName, studyId, table.getProject(), table.getTable())

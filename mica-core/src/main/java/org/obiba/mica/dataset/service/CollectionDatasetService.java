@@ -17,10 +17,6 @@ import java.util.stream.StreamSupport;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
-import com.google.common.eventbus.EventBus;
 import org.joda.time.DateTime;
 import org.obiba.magma.NoSuchValueTableException;
 import org.obiba.magma.NoSuchVariableException;
@@ -45,8 +41,8 @@ import org.obiba.mica.file.service.FileSystemService;
 import org.obiba.mica.micaConfig.service.OpalService;
 import org.obiba.mica.network.service.NetworkService;
 import org.obiba.mica.study.date.PersistableYearMonth;
-import org.obiba.mica.study.domain.Study;
-import org.obiba.mica.study.service.CollectionStudyService;
+import org.obiba.mica.study.domain.BaseStudy;
+import org.obiba.mica.study.service.StudyService;
 import org.obiba.opal.rest.client.magma.RestValueTable;
 import org.obiba.opal.web.model.Search;
 import org.slf4j.Logger;
@@ -61,6 +57,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
+import com.google.common.eventbus.EventBus;
+
 import static java.util.stream.Collectors.toList;
 
 @Service
@@ -70,7 +71,7 @@ public class CollectionDatasetService extends DatasetService<StudyDataset, Study
   private static final Logger log = LoggerFactory.getLogger(CollectionDatasetService.class);
 
   @Inject
-  private CollectionStudyService collectionStudyService;
+  private StudyService studyService;
 
   @Inject
   @Lazy
@@ -253,9 +254,9 @@ public class CollectionDatasetService extends DatasetService<StudyDataset, Study
 
   public PersistableYearMonth getStudyPersistableYearMonthForDataset(StudyDataset dataset) {
     if (!dataset.hasStudyTable()) return null;
-    Study study = collectionStudyService.findStudy(dataset.getStudyTable().getStudyId());
+    BaseStudy study = studyService.findStudy(dataset.getStudyTable().getStudyId());
 
-    return collectionStudyService
+    return StudyService
       .getPersistableYearMonthFor(study, dataset.getStudyTable().getPopulationId(),
         dataset.getStudyTable().getDataCollectionEventId());
   }
@@ -337,8 +338,8 @@ public class CollectionDatasetService extends DatasetService<StudyDataset, Study
   }
 
   @Override
-  protected CollectionStudyService getCollectionStudyService() {
-    return collectionStudyService;
+  protected StudyService getStudyService() {
+    return studyService;
   }
 
   @Override

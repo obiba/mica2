@@ -127,7 +127,7 @@ public class ExcelContingencyWriter {
     if(dto.hasStudyTable()) {
       tableName = String.format("%s %s", dto.getStudyTable().getTable(), dto.getStudyTable().getDceId());
     } else {
-      tableName = String.format("%s %s", dto.getNetworkTable().getTable(), dto.getNetworkTable().getNetworkId());
+      tableName = String.format("%s %s", dto.getHarmonizationStudyTable().getTable(), dto.getHarmonizationStudyTable().getPopulationId());
     }
 
     XSSFSheet sheet = workbook.createSheet(WorkbookUtil.createSafeSheetName(tableName, '-'));

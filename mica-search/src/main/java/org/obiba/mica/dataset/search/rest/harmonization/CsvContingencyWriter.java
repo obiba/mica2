@@ -86,9 +86,9 @@ public class CsvContingencyWriter {
     if(c.hasStudyTable()) writer.writeNext(new String[] { String
       .format("%s - %s - %s", c.getStudyTable().getProject(), c.getStudyTable().getTable(),
         c.getStudyTable().getDceId()) });
-    else if(c.hasNetworkTable()) writer.writeNext(new String[] { String
-      .format("%s - %s - %s", c.getNetworkTable().getProject(), c.getNetworkTable().getTable(),
-      c.getNetworkTable().getNetworkId())});
+    else if(c.hasHarmonizationStudyTable()) writer.writeNext(new String[] { String
+      .format("%s - %s - %s", c.getHarmonizationStudyTable().getProject(), c.getHarmonizationStudyTable().getTable(),
+      c.getHarmonizationStudyTable().getPopulationId())});
     writer.writeNext(concat(concat(Stream.of(""), terms.stream()), Stream.of("Total")).toArray(String[]::new));
   }
 
