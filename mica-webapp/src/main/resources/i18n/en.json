@@ -90,7 +90,7 @@
       "studies": "Studies",
       "studies-with-variables": "Studies with Variables",
       "study-with-variables": "Study with Variables",
-      "collection-datasets": "Collection Datasets",
+      "collected-datasets": "Collected Datasets",
       "harmonization-datasets": "Harmonization Datasets",
       "variables": "Variables"
     },
@@ -213,8 +213,8 @@
     "studies-help": "Index that allows to search for studies.",
     "datasets": "All datasets",
     "datasets-help": "Index that allows to search for datasets of any type and associated variables.",
-    "collection-datasets": "Collection datasets",
-    "collection-datasets-help": "Index that allows to search for collection datasets and associated variables.",
+    "collected-datasets": "Collected datasets",
+    "collected-datasets-help": "Index that allows to search for collected datasets and associated variables.",
     "harmonization-datasets": "Harmonization datasets",
     "harmonization-datasets-help": "Index that allows to search for harmonization datasets and associated variables.",
     "taxonomies": "Taxonomies",
@@ -328,8 +328,8 @@
     "single-study-enabled-help": "Only one study is present in Mica.",
     "network-enabled": "Network section enabled",
     "network-enabled-help": "Network section is accessible.",
-    "collection-dataset-enabled": "Collection datasets section enabled",
-    "collection-dataset-enabled-help": "Collection datasets section is accessible.",
+    "collected-dataset-enabled": "Collected datasets section enabled",
+    "collected-dataset-enabled-help": "Collected datasets section is accessible.",
     "harmonization-dataset-enabled": "Harmonization datasets section enabled",
     "harmonization-dataset-enabled-help": "Harmonization datasets section is accessible.",
     "roles": "Membership Roles",
@@ -355,12 +355,12 @@
       "network-subject": "Subject of network status notification",
       "network-help": "Send email notifications when network status changes to Deleted, to Under review or to Draft.",
       "network-subject-help-long": "Email subject can contain the following placeholders: ${organization}, ${documentType}, ${documentId}, ${status}.",
-      "collection-dataset-title": "Collection Dataset Updates",
-      "collection-dataset-info": "Recipients of collection dataset updates notifications have at least <code>Editor</code> permission (when status is Draft) or <code>Reviewer</code> permission (when status is Deleted or Under Review).",
-      "collection-dataset": "On collection dataset status changed notification",
-      "collection-dataset-subject": "Subject of collection dataset status notification",
-      "collection-dataset-help": "Send email notifications when collection dataset status changes to Deleted, to Under review or to Draft.",
-      "collection-dataset-subject-help-long": "Email subject can contain the following placeholders: ${organization}, ${documentType}, ${documentId}, ${status}.",
+      "collected-dataset-title": "Collected Dataset Updates",
+      "collected-dataset-info": "Recipients of collected dataset updates notifications have at least <code>Editor</code> permission (when status is Draft) or <code>Reviewer</code> permission (when status is Deleted or Under Review).",
+      "collected-dataset": "On collected dataset status changed notification",
+      "collected-dataset-subject": "Subject of collected dataset status notification",
+      "collected-dataset-help": "Send email notifications when collected dataset status changes to Deleted, to Under review or to Draft.",
+      "collected-dataset-subject-help-long": "Email subject can contain the following placeholders: ${organization}, ${documentType}, ${documentId}, ${status}.",
       "harmonization-dataset-title": "Harmonization Dataset Updates",
       "harmonization-dataset-info": "Recipients of harmonization dataset updates notifications have at least <code>Editor</code> permission (when status is Draft) or <code>Reviewer</code> permission (when status is Deleted or Under Review).",
       "harmonization-dataset": "On harmonization dataset status changed notification",
@@ -745,8 +745,8 @@
     "delete-dialog-title": "Delete Data Collection Event",
     "delete-dialog-message": "Are you sure you want to delete the collection event?"
   },
-  "collection-datasets": "Collection Datasets",
-  "collection-dataset": "Collection Dataset",
+  "collected-datasets": "Collected Datasets",
+  "collected-dataset": "Collected Dataset",
   "harmonization-datasets": "Harmonization Datasets",
   "harmonization-dataset": "Harmonization Dataset",
   "network": {
@@ -912,7 +912,7 @@
       "network" : "Network",
       "dataschema": "Harmonization Dataset",
       "dataset": "Dataset",
-      "dataset-collection": "Collection Dataset",
+      "dataset-collection": "Collected Dataset",
       "dataset-harmonization": "Harmonization Dataset",
       "collection": "Collection",
       "harmonization": "Harmonization"
@@ -1058,7 +1058,7 @@
   "new-folder": "New Folder",
   "new-network": "New Network",
   "new-study": "New Study",
-  "new-collection-dataset": "New Collection Dataset",
+  "new-collected-dataset": "New Collected Dataset",
   "new-harmonization-dataset": "New Harmonization Dataset",
   "new-data-access-request": "New Data Access Request",
   "new-project": "New Research Project",
@@ -1102,7 +1102,7 @@
       "network-config": "Configure Network form, permissions and search.",
       "collection-study-config": "Configure Study form, permissions and search.",
       "harmonization-study-config": "Configure Harmonization Study form, permissions and search.",
-      "collection-dataset-config": "Configure Collection Dataset form, permissions and search.",
+      "collected-dataset-config": "Configure Collected Dataset form, permissions and search.",
       "harmonization-dataset-config": "Configure Harmonization Dataset form, permissions and search.",
       "data-access-config": "Configure Data Access Request form.",
       "project-config": "Configure Research Project form.",
@@ -1330,11 +1330,11 @@
       "message": "Are you sure you want to delete the {{arg0}} '{{arg1}}'?"
     }
   },
-  "collection-dataset-config" : {
-    "title" : "Collection Dataset Configuration",
+  "collected-dataset-config" : {
+    "title" : "Collected Dataset Configuration",
     "schema-form": {
       "title": "Form",
-      "info": "The custom collection dataset form can be specified both in terms of data structure (schema) and data display and validation (definition). See <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>form schema documentation</a> for more details."
+      "info": "The custom collected dataset form can be specified both in terms of data structure (schema) and data display and validation (definition). See <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>form schema documentation</a> for more details."
     }
   },
   "harmonization-dataset-config" : {

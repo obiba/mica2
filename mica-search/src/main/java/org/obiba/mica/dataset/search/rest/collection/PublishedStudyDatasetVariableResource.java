@@ -30,7 +30,7 @@ import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.dataset.search.rest.AbstractPublishedDatasetResource;
 import org.obiba.mica.dataset.search.rest.harmonization.CsvContingencyWriter;
 import org.obiba.mica.dataset.search.rest.harmonization.ExcelContingencyWriter;
-import org.obiba.mica.dataset.service.CollectionDatasetService;
+import org.obiba.mica.dataset.service.CollectedDatasetService;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.opal.web.model.Search;
 import org.slf4j.Logger;
@@ -54,7 +54,7 @@ public class PublishedStudyDatasetVariableResource extends AbstractPublishedData
   private String variableName;
 
   @Inject
-  private CollectionDatasetService datasetService;
+  private CollectedDatasetService datasetService;
 
   @GET
   public Mica.DatasetVariableDto getVariable() {

@@ -24,7 +24,7 @@ import org.obiba.mica.dataset.search.rest.harmonization.PublishedDataschemaDatas
 import org.obiba.mica.dataset.search.rest.harmonization.PublishedHarmonizedDatasetVariableResource;
 import org.obiba.mica.dataset.search.rest.collection.PublishedStudyDatasetVariableResource;
 import org.obiba.mica.dataset.service.HarmonizationDatasetService;
-import org.obiba.mica.dataset.service.CollectionDatasetService;
+import org.obiba.mica.dataset.service.CollectedDatasetService;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -36,7 +36,7 @@ import org.springframework.stereotype.Component;
 public class PublishedDatasetVariableResource {
 
   @Inject
-  private CollectionDatasetService collectionDatasetService;
+  private CollectedDatasetService collectedDatasetService;
 
   @Inject
   private HarmonizationDatasetService harmonizationDatasetService;
@@ -52,7 +52,7 @@ public class PublishedDatasetVariableResource {
     DatasetVariable.IdResolver resolver = DatasetVariable.IdResolver.from(id);
     switch(resolver.getType()) {
       case Collection:
-        if (!collectionDatasetService.isPublished(resolver.getDatasetId())) throw NoSuchDatasetException.withId(resolver.getDatasetId());
+        if (!collectedDatasetService.isPublished(resolver.getDatasetId())) throw NoSuchDatasetException.withId(resolver.getDatasetId());
         resource = applicationContext.getBean(PublishedStudyDatasetVariableResource.class);
         ((PublishedStudyDatasetVariableResource)resource).setLocale(locale);
         break;

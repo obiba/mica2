@@ -58,7 +58,7 @@ public class EntityPublicationFlowMailNotification extends PublicationFlowMailNo
         return micaConfigService.getConfig().isStudyNotificationsEnabled();
       case "network":
         return micaConfigService.getConfig().isNetworkNotificationsEnabled();
-      case "collection-dataset":
+      case "collected-dataset":
         return micaConfigService.getConfig().isStudyDatasetNotificationsEnabled();
       case "harmonization-dataset":
         return micaConfigService.getConfig().isHarmonizationDatasetNotificationsEnabled();

@@ -66,9 +66,9 @@ import static java.util.stream.Collectors.toList;
 
 @Service
 @Validated
-public class CollectionDatasetService extends DatasetService<StudyDataset, StudyDatasetState> {
+public class CollectedDatasetService extends DatasetService<StudyDataset, StudyDatasetState> {
 
-  private static final Logger log = LoggerFactory.getLogger(CollectionDatasetService.class);
+  private static final Logger log = LoggerFactory.getLogger(CollectedDatasetService.class);
 
   @Inject
   private StudyService studyService;
@@ -411,7 +411,7 @@ public class CollectionDatasetService extends DatasetService<StudyDataset, Study
 
   @Override
   public String getTypeName() {
-    return "collection-dataset";
+    return "collected-dataset";
   }
 
   @Override
@@ -429,7 +429,7 @@ public class CollectionDatasetService extends DatasetService<StudyDataset, Study
     private static final Logger log = LoggerFactory.getLogger(Helper.class);
 
     @Inject
-    CollectionDatasetService service;
+    CollectedDatasetService service;
 
     @CacheEvict(value = "dataset-variables", cacheResolver = "datasetVariablesCacheResolver", allEntries = true, beforeInvocation = true)
     public void evictCache(StudyDataset dataset) {

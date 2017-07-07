@@ -28,7 +28,7 @@ import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.dataset.domain.StudyDatasetState;
 import org.obiba.mica.dataset.service.HarmonizationDatasetService;
 import org.obiba.mica.dataset.service.PublishedDatasetService;
-import org.obiba.mica.dataset.service.CollectionDatasetService;
+import org.obiba.mica.dataset.service.CollectedDatasetService;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -40,7 +40,7 @@ class EsPublishedDatasetService extends AbstractEsDatasetService<Dataset> implem
   private ObjectMapper objectMapper;
 
   @Inject
-  private CollectionDatasetService collectionDatasetService;
+  private CollectedDatasetService collectedDatasetService;
 
   @Inject
   private HarmonizationDatasetService harmonizationDatasetService;
@@ -84,8 +84,8 @@ class EsPublishedDatasetService extends AbstractEsDatasetService<Dataset> implem
   @Override
   protected QueryBuilder filterByAccess() {
     if(micaConfigService.getConfig().isOpenAccess()) return null;
-    List<String> ids = collectionDatasetService.findPublishedStates().stream().map(StudyDatasetState::getId)
-      .filter(s -> subjectAclService.isAccessible("/collection-dataset", s)).collect(Collectors.toList());
+    List<String> ids = collectedDatasetService.findPublishedStates().stream().map(StudyDatasetState::getId)
+      .filter(s -> subjectAclService.isAccessible("/collected-dataset", s)).collect(Collectors.toList());
     ids.addAll(harmonizationDatasetService.findPublishedStates().stream().map(HarmonizationDatasetState::getId)
       .filter(s -> subjectAclService.isAccessible("/harmonization-dataset", s)).collect(Collectors.toList()));
     return ids.isEmpty()

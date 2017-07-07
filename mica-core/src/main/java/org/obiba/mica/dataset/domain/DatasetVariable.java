@@ -39,7 +39,7 @@ public class DatasetVariable implements Indexable, AttributeAware {
   public static final String OPAL_HARMONIZATION_TABLE_PREFIX = "Harmonization";
 
   public enum Type {
-    Collection,  // variable extracted from a collection dataset
+    Collection,  // variable extracted from a collected dataset
     Dataschema,  // variable extracted from a harmonization dataset
     Harmonized   // variable that implements a Datashema variable
   }

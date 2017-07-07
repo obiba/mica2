@@ -16,7 +16,7 @@ import javax.ws.rs.Path;
 
 import org.obiba.mica.dataset.DatasetVariableResource;
 import org.obiba.mica.dataset.domain.StudyDataset;
-import org.obiba.mica.dataset.service.CollectionDatasetService;
+import org.obiba.mica.dataset.service.CollectedDatasetService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.opal.web.model.Math;
@@ -26,14 +26,14 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Scope("request")
-public class DraftCollectionDatasetVariableResource implements DatasetVariableResource {
+public class DraftCollectedDatasetVariableResource implements DatasetVariableResource {
 
   private String datasetId;
 
   private String variableName;
 
   @Inject
-  private CollectionDatasetService datasetService;
+  private CollectedDatasetService datasetService;
 
   @Inject
   private Dtos dtos;

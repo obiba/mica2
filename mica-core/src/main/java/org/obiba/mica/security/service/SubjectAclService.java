@@ -369,7 +369,7 @@ public class SubjectAclService {
   @Async
   @Subscribe
   public void datasetDeleted(DatasetDeletedEvent event) {
-    removeInstance(event.isStudyDataset() ? "/collection-dataset" : "/harmonization-dataset",
+    removeInstance(event.isStudyDataset() ? "/collected-dataset" : "/harmonization-dataset",
       event.getPersistable().getId());
   }
 

@@ -34,7 +34,7 @@ import org.obiba.mica.core.service.DocumentService;
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.dataset.service.DraftStudyDatasetService;
-import org.obiba.mica.dataset.service.CollectionDatasetService;
+import org.obiba.mica.dataset.service.CollectedDatasetService;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
@@ -48,12 +48,12 @@ import static java.util.stream.Collectors.toList;
 @Component
 @Scope("request")
 @Path("/draft")
-public class DraftCollectionDatasetsResource {
+public class DraftCollectedDatasetsResource {
 
   private static final int MAX_LIMIT = 10000; //default ElasticSearch limit
 
   @Inject
-  private CollectionDatasetService datasetService;
+  private CollectedDatasetService datasetService;
 
   @Inject
   private SubjectAclService subjectAclService;
@@ -77,7 +77,7 @@ public class DraftCollectionDatasetsResource {
    * @return
    */
   @GET
-  @Path("/collection-datasets")
+  @Path("/collected-datasets")
   @Timed
   public List<Mica.DatasetDto> list(@QueryParam("study") String studyId, @QueryParam("query") String query,
                                     @QueryParam("from") @DefaultValue("0") Integer from,
@@ -91,7 +91,7 @@ public class DraftCollectionDatasetsResource {
 
     if(Strings.isNullOrEmpty(query)) {
       List<StudyDataset> datasets = datasetService.findAllDatasets(studyId).stream()
-        .filter(s -> subjectAclService.isPermitted("/draft/collection-dataset", "VIEW", s.getId())).collect(toList());
+        .filter(s -> subjectAclService.isPermitted("/draft/collected-dataset", "VIEW", s.getId())).collect(toList());
       totalCount = datasets.size();
       result = datasets.stream().map(d -> dtos.asDto(d, true)).skip(from).limit(limit);
     } else {
@@ -106,31 +106,31 @@ public class DraftCollectionDatasetsResource {
   }
 
   @POST
-  @Path("/collection-datasets")
+  @Path("/collected-datasets")
   @Timed
-  @RequiresPermissions({ "/draft/collection-dataset:ADD" })
+  @RequiresPermissions({ "/draft/collected-dataset:ADD" })
   public Response create(Mica.DatasetDto datasetDto, @Context UriInfo uriInfo,
                          @Nullable @QueryParam("comment") String comment) {
     Dataset dataset = dtos.fromDto(datasetDto);
     if(!(dataset instanceof StudyDataset)) throw new IllegalArgumentException("An study dataset is expected");
 
     datasetService.save((StudyDataset) dataset, comment);
-    return Response.created(uriInfo.getBaseUriBuilder().segment("draft", "collection-dataset", dataset.getId()).build())
+    return Response.created(uriInfo.getBaseUriBuilder().segment("draft", "collected-dataset", dataset.getId()).build())
       .build();
   }
 
   @PUT
-  @Path("/collection-datasets/_index")
+  @Path("/collected-datasets/_index")
   @Timed
-  @RequiresPermissions({ "/draft/collection-dataset:PUBLISH" })
+  @RequiresPermissions({ "/draft/collected-dataset:PUBLISH" })
   public Response reIndex() {
     helper.indexAll();
     return Response.noContent().build();
   }
 
-  @Path("/collection-dataset/{id}")
-  public DraftCollectionDatasetResource dataset(@PathParam("id") String id) {
-    DraftCollectionDatasetResource resource = applicationContext.getBean(DraftCollectionDatasetResource.class);
+  @Path("/collected-dataset/{id}")
+  public DraftCollectedDatasetResource dataset(@PathParam("id") String id) {
+    DraftCollectedDatasetResource resource = applicationContext.getBean(DraftCollectedDatasetResource.class);
     resource.setId(id);
     return resource;
   }
@@ -139,11 +139,11 @@ public class DraftCollectionDatasetsResource {
   public static class Helper {
 
     @Inject
-    private CollectionDatasetService collectionDatasetService;
+    private CollectedDatasetService collectedDatasetService;
 
     @Async
     public void indexAll() {
-      collectionDatasetService.indexAll();
+      collectedDatasetService.indexAll();
     }
   }
 
