@@ -252,6 +252,11 @@ class DatasetDtos {
 
   @NotNull
   Mica.DatasetVariableSummaryDto asSummaryDto(@NotNull DatasetVariable variable, OpalTable opalTable) {
+    return asSummaryDto(variable, opalTable, false);
+  }
+
+  @NotNull
+  Mica.DatasetVariableSummaryDto asSummaryDto(@NotNull DatasetVariable variable, OpalTable opalTable, boolean includeSummaries) {
     Mica.DatasetVariableSummaryDto.Builder builder = Mica.DatasetVariableSummaryDto.newBuilder() //
       .setResolver(asDto(DatasetVariable.IdResolver.from(variable.getId())));
 
@@ -261,11 +266,10 @@ class DatasetDtos {
     }
 
     if (opalTable instanceof StudyTable)
-      builder.setStudyTable(asDto((StudyTable) opalTable));
+      builder.setStudyTable(asDto((StudyTable) opalTable, includeSummaries));
     else if (opalTable instanceof HarmonizationStudyTable) {
-      builder.setHarmonizationStudyTable(asDto((HarmonizationStudyTable) opalTable));
+      builder.setHarmonizationStudyTable(asDto((HarmonizationStudyTable) opalTable, includeSummaries));
     }
-
 
     return builder.build();
   }
