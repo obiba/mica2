@@ -18,8 +18,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.obiba.mica.core.domain.HarmonizationStudyTable;
 import org.obiba.mica.core.domain.LocalizedString;
-import org.obiba.mica.core.domain.NetworkTable;
 import org.obiba.mica.core.domain.StudyTable;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.web.model.Mica;
@@ -61,7 +61,7 @@ public class CsvHarmonizationVariablesWriter {
     List<String> headers = Lists.newArrayList(dataset.getAllOpalTables()).stream()
         .map(table -> {
           LocalizedString name = table.getName();
-          String id = table instanceof StudyTable ? ((StudyTable)table).getStudyId() : ((NetworkTable) table).getNetworkId();
+          String id = table instanceof StudyTable ? ((StudyTable)table).getStudyId() : ((HarmonizationStudyTable) table).getStudyId();
 
           return id + (name != null ?  " (" + name.get(locale) +")" : "");
         })
@@ -82,12 +82,9 @@ public class CsvHarmonizationVariablesWriter {
               final boolean[] found = { false };
               variableHarmonization.getDatasetVariableSummariesList().forEach(
                 summary -> {
-                  String id = table instanceof StudyTable ? ((StudyTable) table).getStudyId() : ((NetworkTable) table).getNetworkId();
+                  String id = table instanceof StudyTable ? ((StudyTable) table).getStudyId() : ((HarmonizationStudyTable) table).getStudyId();
                   Mica.DatasetVariableResolverDto resolver = summary.getResolver();
                   if ((resolver.getStudyId().equals(id)
-                      && resolver.getProject().equals(table.getProject())
-                      && resolver.getTable().equals(table.getTable())) ||
-                    (table instanceof NetworkTable
                       && resolver.getProject().equals(table.getProject())
                       && resolver.getTable().equals(table.getTable()))) {
 

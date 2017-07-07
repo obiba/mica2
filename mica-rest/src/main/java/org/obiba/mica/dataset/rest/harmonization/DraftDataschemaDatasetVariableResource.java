@@ -16,12 +16,9 @@ import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 
-import com.google.common.collect.ImmutableList;
 import org.obiba.magma.NoSuchValueTableException;
 import org.obiba.magma.NoSuchVariableException;
 import org.obiba.mica.core.domain.BaseStudyTable;
-import org.obiba.mica.core.domain.NetworkTable;
-import org.obiba.mica.core.domain.StudyTable;
 import org.obiba.mica.dataset.DatasetVariableResource;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.service.HarmonizationDatasetService;
@@ -31,6 +28,8 @@ import org.obiba.opal.web.model.Math;
 import org.obiba.opal.web.model.Search;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+
+import com.google.common.collect.ImmutableList;
 
 @Component
 @Scope("request")

@@ -37,7 +37,6 @@ public class DatasetVariable implements Indexable, AttributeAware {
   private static final String ID_SEPARATOR = ":";
   public static final String OPAL_STUDY_TABLE_PREFIX = "Study";
   public static final String OPAL_HARMONIZATION_TABLE_PREFIX = "Harmonization";
-  public static final String OPAL_NETWORK_TABLE_PREFIX = "Network";
 
   public enum Type {
     Collection,  // variable extracted from a collection dataset

@@ -655,10 +655,6 @@
       "title": "Harmonization Study Table",
       "info": "A harmonization study table defines which harmonization study population it applies to and which Opal table the variables and data summaries are to be extracted from."
     },
-    "network-table": {
-      "title": "Network Table",
-      "info": "A network table defines which network it applies to and which Opal table the variables and data summaries are to be extracted from."
-    },
     "study-tables": {
       "title": "Study Tables",
       "info": "The study tables define implementations of the Data Schema variables. The data summaries will be extracted from the corresponding Opal tables."
@@ -685,7 +681,6 @@
     },
     "index": "Index",
     "add-study-table": "Add Study Table",
-    "add-network-table": "Add Network Table",
     "none": "No datasets.",
     "crosstab": {
       "title": "Contingency Table",

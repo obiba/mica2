@@ -13,7 +13,7 @@
 /* global OPAL_TABLE_SCHEMA */
 /* global OPAL_TABLE_DEFINITION */
 
-mica.dataset.OPAL_TABLE_TYPES = {STUDY_TABLE: 'studyTable', HARMONIZATION_TABLE: 'harmonizationTable', NETWORK_TABLE: 'networkTable'};
+mica.dataset.OPAL_TABLE_TYPES = {STUDY_TABLE: 'studyTable', HARMONIZATION_TABLE: 'harmonizationTable'};
 
 mica.dataset
 

@@ -12,20 +12,19 @@ package org.obiba.mica.micaConfig.service;
 
 import javax.inject.Inject;
 
-import com.google.common.eventbus.EventBus;
 import org.obiba.magma.NoSuchVariableException;
 import org.obiba.mica.core.domain.BaseStudyTable;
-import org.obiba.mica.core.domain.NetworkTable;
-import org.obiba.mica.core.domain.StudyTable;
 import org.obiba.mica.dataset.domain.Dataset;
-import org.obiba.mica.dataset.service.HarmonizationDatasetService;
 import org.obiba.mica.dataset.service.CollectionDatasetService;
+import org.obiba.mica.dataset.service.HarmonizationDatasetService;
 import org.obiba.mica.security.event.SubjectAclUpdatedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+
+import com.google.common.eventbus.EventBus;
 
 @Component
 public class CacheService {

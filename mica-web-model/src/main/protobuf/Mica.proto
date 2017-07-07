@@ -450,17 +450,6 @@ message DatasetDto {
 
   extensions 1000 to max;
 
-  message NetworkTableDto {
-    required string project = 1;
-    required string table = 2;
-    repeated LocalizedStringDto name = 3;
-    repeated LocalizedStringDto description = 4;
-
-    required string networkId = 5;
-    optional NetworkSummaryDto networkSummary = 6;
-    optional int32 weight = 7;
-  }
-
   message StudyTableDto {
     required string project = 1;
     required string table = 2;
@@ -503,7 +492,6 @@ message HarmonizationDatasetDto {
   repeated DatasetDto.HarmonizationTableDto harmonizationTables = 3;
 
   optional string networkId = 4;
-  repeated DatasetDto.NetworkTableDto networkTables = 5;
 
   extend DatasetDto {
     optional HarmonizationDatasetDto type = 1001;
@@ -576,7 +564,7 @@ message DatasetVariableSummaryDto {
   required DatasetVariableResolverDto resolver = 1;
   repeated AttributeDto attributes = 2;
   optional DatasetDto.StudyTableDto studyTable = 3;
-  optional DatasetDto.NetworkTableDto networkTable = 4;
+  optional DatasetDto.HarmonizationTableDto harmonizationStudyTable = 4;
 }
 
 message DatasetVariableHarmonizationDto {
@@ -615,7 +603,7 @@ message DatasetVariableAggregationDto {
   optional StatisticsDto statistics = 5;
   optional string term = 6;
   optional bool missing = 7;
-  optional DatasetDto.NetworkTableDto networkTable = 8;
+  optional DatasetDto.HarmonizationTableDto harmonizationStudyTable = 8;
 }
 
 message DatasetVariableAggregationsDto {
@@ -631,7 +619,7 @@ message DatasetVariableContingencyDto {
   repeated DatasetVariableAggregationDto aggregations = 2;
   optional DatasetVariableAggregationDto all = 3;
   optional int32 privacyThreshold = 4;
-  optional DatasetDto.NetworkTableDto networkTable = 5;
+  optional DatasetDto.HarmonizationTableDto harmonizationStudyTable = 5;
 }
 
 message DatasetVariableContingenciesDto {
