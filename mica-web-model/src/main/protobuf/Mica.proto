@@ -380,14 +380,14 @@ message MicaConfigDto {
   optional string studyNotificationsSubject = 15;
   optional bool isNetworkNotificationsEnabled = 16;
   optional string networkNotificationsSubject = 17;
-  optional bool isCollectionDatasetNotificationsEnabled = 18;
-  optional string collectionDatasetNotificationsSubject = 19;
+  optional bool isCollectedDatasetNotificationsEnabled = 18;
+  optional string collectedDatasetNotificationsSubject = 19;
   optional bool isHarmonizationDatasetNotificationsEnabled = 20;
   optional string harmonizationDatasetNotificationsSubject = 21;
   optional bool isSingleStudyEnabled = 22;
   optional bool isNetworkEnabled = 23;
   optional bool isSingleNetworkEnabled = 24;
-  optional bool isCollectionDatasetEnabled = 25;
+  optional bool isCollectedDatasetEnabled = 25;
   optional bool isHarmonizationDatasetEnabled = 26;
   optional string style = 27;
   repeated LocalizedStringDto translations = 28;
@@ -477,12 +477,12 @@ message DatasetDto {
   }
 }
 
-message CollectionDatasetDto {
+message CollectedDatasetDto {
   optional DatasetDto.StudyTableDto studyTable = 1;
   extensions 1000 to max;
 
   extend DatasetDto {
-    optional CollectionDatasetDto type = 1000;
+    optional CollectedDatasetDto type = 1000;
   }
 }
 
@@ -752,7 +752,7 @@ message EntityFormDto {
     Study = 2;
     Population = 3;
     DataCollectionEvent = 4;
-    CollectionDataset = 5;
+    CollectedDataset = 5;
     HarmonizationDataset = 6;
     HarmonizationStudy = 7;
     HarmonizationPopulation = 8;

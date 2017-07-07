@@ -14,17 +14,17 @@ mica.dataset
   .config(['$routeProvider',
     function ($routeProvider) {
       $routeProvider
-        .when('/collection-dataset', {
-          templateUrl: 'app/dataset/views/collection-dataset-list.html',
-          controller: 'CollectionDatasetListController'
+        .when('/collected-dataset', {
+          templateUrl: 'app/dataset/views/collected-dataset-list.html',
+          controller: 'CollectedDatasetListController'
         })
-        .when('/collection-dataset/new', {
-          templateUrl: 'app/dataset/views/collection-dataset-form.html',
-          controller: 'CollectionDatasetEditController'
+        .when('/collected-dataset/new', {
+          templateUrl: 'app/dataset/views/collected-dataset-form.html',
+          controller: 'CollectedDatasetEditController'
         })
-        .when('/collection-dataset/:id/edit', {
-          templateUrl: 'app/dataset/views/collection-dataset-form.html',
-          controller: 'CollectionDatasetEditController'
+        .when('/collected-dataset/:id/edit', {
+          templateUrl: 'app/dataset/views/collected-dataset-form.html',
+          controller: 'CollectedDatasetEditController'
         })
         .when('/harmonization-dataset', {
           templateUrl: 'app/dataset/views/harmonization-dataset-list.html',
@@ -39,7 +39,7 @@ mica.dataset
           controller: 'HarmonizationDatasetEditController'
         });
 
-      ['collection-dataset', 'harmonization-dataset'].forEach(
+      ['collected-dataset', 'harmonization-dataset'].forEach(
         function (type) {
           $routeProvider
             .when('/' + type + '/:id', {

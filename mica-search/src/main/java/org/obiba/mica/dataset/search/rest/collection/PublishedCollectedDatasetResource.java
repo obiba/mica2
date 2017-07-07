@@ -29,13 +29,13 @@ import org.springframework.stereotype.Component;
 import com.codahale.metrics.annotation.Timed;
 
 /**
- * Study variable resource: variable describing a collection dataset.
+ * Study variable resource: variable describing a collected dataset.
  */
 @Component
 @Scope("request")
-@Path("/collection-dataset/{id}")
+@Path("/collected-dataset/{id}")
 @RequiresAuthentication
-public class PublishedStudyDatasetResource extends AbstractPublishedDatasetResource<StudyDataset> {
+public class PublishedCollectedDatasetResource extends AbstractPublishedDatasetResource<StudyDataset> {
 
   @Inject
   private SubjectAclService subjectAclService;
@@ -103,6 +103,6 @@ public class PublishedStudyDatasetResource extends AbstractPublishedDatasetResou
   }
 
   private void checkAccess(String id) {
-    subjectAclService.checkAccess("/collection-dataset", id);
+    subjectAclService.checkAccess("/collected-dataset", id);
   }
 }

@@ -10,7 +10,7 @@
 
 package org.obiba.mica.micaConfig.rest;
 
-import org.obiba.mica.micaConfig.domain.StudyDatasetConfig;
+import org.obiba.mica.micaConfig.domain.CollectedDatasetConfig;
 import org.obiba.mica.micaConfig.service.StudyDatasetConfigService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
@@ -20,12 +20,12 @@ import javax.inject.Inject;
 import javax.ws.rs.Path;
 
 @Component
-@Path("/config/" + StudyDatasetConfigResource.TARGET_NAME)
-public class StudyDatasetConfigResource
-  extends EntityConfigResource<StudyDatasetConfig, Mica.EntityFormDto>
+@Path("/config/" + CollectedDatasetConfigResource.TARGET_NAME)
+public class CollectedDatasetConfigResource
+  extends EntityConfigResource<CollectedDatasetConfig, Mica.EntityFormDto>
   implements PermissionAwareResource {
 
-  static final String TARGET_NAME = "collection-dataset";
+  static final String TARGET_NAME = "collected-dataset";
 
   @Inject
   StudyDatasetConfigService datasetConfigService;
@@ -34,12 +34,12 @@ public class StudyDatasetConfigResource
   Dtos dtos;
 
   @Override
-  protected Mica.EntityFormDto asDto(StudyDatasetConfig datasetConfig) {
+  protected Mica.EntityFormDto asDto(CollectedDatasetConfig datasetConfig) {
     return dtos.asDto(datasetConfig);
   }
 
   @Override
-  protected StudyDatasetConfig fromDto(Mica.EntityFormDto dto) {
+  protected CollectedDatasetConfig fromDto(Mica.EntityFormDto dto) {
     return dtos.fromDto(dto);
   }
 

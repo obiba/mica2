@@ -28,7 +28,7 @@ import org.obiba.mica.dataset.domain.StudyDatasetState;
 import org.obiba.mica.dataset.event.DatasetPublishedEvent;
 import org.obiba.mica.dataset.event.DatasetUpdatedEvent;
 import org.obiba.mica.dataset.service.HarmonizationDatasetService;
-import org.obiba.mica.dataset.service.CollectionDatasetService;
+import org.obiba.mica.dataset.service.CollectedDatasetService;
 import org.obiba.runtime.Version;
 import org.obiba.runtime.upgrade.UpgradeStep;
 import org.slf4j.Logger;
@@ -48,7 +48,7 @@ public class DatasetStateUpgrade implements UpgradeStep {
   private HarmonizationDatasetRepository harmonizationDatasetRepository;
 
   @Inject
-  private CollectionDatasetService collectionDatasetService;
+  private CollectedDatasetService collectedDatasetService;
 
   @Inject
   private HarmonizationDatasetService harmonizationDatasetService;
@@ -80,7 +80,7 @@ public class DatasetStateUpgrade implements UpgradeStep {
     log.info("Executing datasets published state upgrade");
 
     studyDatasetRepository.findAll().forEach(dataset -> {
-      migrateDataset(dataset, collectionDatasetService, studyDatasetStateRepository, StudyDatasetState::new);
+      migrateDataset(dataset, collectedDatasetService, studyDatasetStateRepository, StudyDatasetState::new);
     });
 
     harmonizationDatasetRepository.findAll().forEach(dataset -> {

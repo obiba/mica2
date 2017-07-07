@@ -20,7 +20,7 @@ import org.obiba.mica.dataset.event.DatasetUnpublishedEvent;
 import org.obiba.mica.dataset.event.DatasetUpdatedEvent;
 import org.obiba.mica.dataset.event.IndexDatasetsEvent;
 import org.obiba.mica.dataset.service.HarmonizationDatasetService;
-import org.obiba.mica.dataset.service.CollectionDatasetService;
+import org.obiba.mica.dataset.service.CollectedDatasetService;
 import org.obiba.mica.search.ElasticSearchIndexer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,7 +49,7 @@ public class DatasetIndexer {
   private HarmonizationDatasetService harmonizationDatasetService;
 
   @Inject
-  private CollectionDatasetService collectionDatasetService;
+  private CollectedDatasetService collectedDatasetService;
 
   @Async
   @Subscribe
@@ -90,6 +90,6 @@ public class DatasetIndexer {
     if(elasticSearchIndexer.hasIndex(VariableIndexer.PUBLISHED_VARIABLE_INDEX)) elasticSearchIndexer.dropIndex(VariableIndexer.PUBLISHED_VARIABLE_INDEX);
 
     harmonizationDatasetService.indexAll();
-    collectionDatasetService.indexAll();
+    collectedDatasetService.indexAll();
   }
 }

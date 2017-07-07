@@ -38,10 +38,10 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class CollectionDatasetServiceTest {
+public class CollectedDatasetServiceTest {
 
   @InjectMocks
-  private CollectionDatasetService collectionDatasetService;
+  private CollectedDatasetService collectedDatasetService;
 
   @Mock
   private CollectionStudyService collectionStudyService;
@@ -85,7 +85,7 @@ public class CollectionDatasetServiceTest {
     when(collectionStudyService.findDraft(anyString())).thenReturn(study);
     when(studyDatasetStateRepository.findOne(anyString())).thenReturn(state);
 
-    collectionDatasetService.save(dataset);
+    collectedDatasetService.save(dataset);
   }
 
   private StudyDataset buildStudyDataset() {

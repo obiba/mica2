@@ -92,9 +92,9 @@ class DatasetDtos {
     builder.setVariableType(DatasetVariable.Type.Collection.name());
 
     if(dataset.hasStudyTable() && !Strings.isNullOrEmpty(dataset.getStudyTable().getStudyId())) {
-      Mica.CollectionDatasetDto.Builder sbuilder = Mica.CollectionDatasetDto.newBuilder()//
+      Mica.CollectedDatasetDto.Builder sbuilder = Mica.CollectedDatasetDto.newBuilder()//
         .setStudyTable(asDto(dataset.getStudyTable(), true));
-      builder.setExtension(Mica.CollectionDatasetDto.type, sbuilder.build());
+      builder.setExtension(Mica.CollectedDatasetDto.type, sbuilder.build());
     }
 
     Mica.PermissionsDto permissionsDto = permissionsDtos.asDto(dataset);
@@ -615,8 +615,8 @@ class DatasetDtos {
   public Dataset fromDto(Mica.DatasetDtoOrBuilder dto) {
     Dataset dataset = dto.hasExtension(Mica.HarmonizationDatasetDto.type)
       ? fromDto(dto.getExtension(Mica.HarmonizationDatasetDto.type))
-      : dto.hasExtension(Mica.CollectionDatasetDto.type)
-        ? fromDto(dto.getExtension(Mica.CollectionDatasetDto.type))
+      : dto.hasExtension(Mica.CollectedDatasetDto.type)
+        ? fromDto(dto.getExtension(Mica.CollectedDatasetDto.type))
         : new StudyDataset();
 
     if(dto.hasId()) dataset.setId(dto.getId());
@@ -658,7 +658,7 @@ class DatasetDtos {
     return harmonizationDataset;
   }
 
-  private Dataset fromDto(@NotNull Mica.CollectionDatasetDto dto) {
+  private Dataset fromDto(@NotNull Mica.CollectedDatasetDto dto) {
     Assert.notNull(dto, "StudyDataset dt cannot be null.");
     StudyDataset studyDataset = new StudyDataset();
     Optional.ofNullable(dto).ifPresent(ext -> studyDataset.setStudyTable(fromDto(ext.getStudyTable())));

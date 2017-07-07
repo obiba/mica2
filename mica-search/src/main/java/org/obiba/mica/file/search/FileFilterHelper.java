@@ -23,7 +23,7 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.obiba.mica.dataset.domain.HarmonizationDatasetState;
 import org.obiba.mica.dataset.domain.StudyDatasetState;
 import org.obiba.mica.dataset.service.HarmonizationDatasetService;
-import org.obiba.mica.dataset.service.CollectionDatasetService;
+import org.obiba.mica.dataset.service.CollectedDatasetService;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.network.domain.NetworkState;
 import org.obiba.mica.network.service.NetworkService;
@@ -63,7 +63,7 @@ public class FileFilterHelper {
   private HarmonizationStudyService harmonizationStudyService;
 
   @Inject
-  private CollectionDatasetService collectionDatasetService;
+  private CollectedDatasetService collectedDatasetService;
 
   @Inject
   private HarmonizationDatasetService harmonizationDatasetService;
@@ -81,7 +81,7 @@ public class FileFilterHelper {
       (path.startsWith("/network/") ||
         path.startsWith("/collection-study/") ||
         path.startsWith("/harmonization-study/") ||
-        path.startsWith("/collection-dataset/") ||
+        path.startsWith("/collected-dataset/") ||
         path.startsWith("/harmonization-dataset/") ||
         path.startsWith("/project/"));
   }
@@ -166,18 +166,18 @@ public class FileFilterHelper {
   }
 
   private List<String> getStudyDatasetIds(String basePath, boolean draft) {
-    if("/".equals(basePath) || "/collection-dataset".equals(basePath)) {
+    if("/".equals(basePath) || "/collected-dataset".equals(basePath)) {
       return draft
-        ? collectionDatasetService.findAllStates().stream().map(StudyDatasetState::getId)
-        .filter(s -> subjectAclService.isPermitted("/draft/collection-dataset", "VIEW", s)).collect(Collectors.toList())
-        : collectionDatasetService.findPublishedStates().stream().map(StudyDatasetState::getId)
-          .filter(s -> subjectAclService.isAccessible("/collection-dataset", s)).collect(Collectors.toList());
+        ? collectedDatasetService.findAllStates().stream().map(StudyDatasetState::getId)
+        .filter(s -> subjectAclService.isPermitted("/draft/collected-dataset", "VIEW", s)).collect(Collectors.toList())
+        : collectedDatasetService.findPublishedStates().stream().map(StudyDatasetState::getId)
+          .filter(s -> subjectAclService.isAccessible("/collected-dataset", s)).collect(Collectors.toList());
     }
-    if(basePath.startsWith("/collection-dataset/")) {
-      String id = extractId(basePath,"/collection-dataset/");
+    if(basePath.startsWith("/collected-dataset/")) {
+      String id = extractId(basePath,"/collected-dataset/");
       if(draft
-        ? subjectAclService.isPermitted("/draft/collection-dataset", "VIEW", id)
-        : subjectAclService.isAccessible("/collection-dataset", id)) return Lists.newArrayList(id);
+        ? subjectAclService.isPermitted("/draft/collected-dataset", "VIEW", id)
+        : subjectAclService.isAccessible("/collected-dataset", id)) return Lists.newArrayList(id);
     }
     return Lists.newArrayList();
   }
@@ -239,7 +239,7 @@ public class FileFilterHelper {
     addFilter(excludes, includes, "/network", networkIds);
     addFilter(excludes, includes, "/collection-study", collectionStudyIds);
     addFilter(excludes, includes, "/harmonization-study", harmonizationStudyIds);
-    addFilter(excludes, includes, "/collection-dataset", studyDatasetIds);
+    addFilter(excludes, includes, "/collected-dataset", studyDatasetIds);
     addFilter(excludes, includes, "/harmonization-dataset", harmonizationDatasetIds);
     addFilter(excludes, includes, "/project", projectIds);
 

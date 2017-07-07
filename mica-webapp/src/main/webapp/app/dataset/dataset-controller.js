@@ -17,11 +17,11 @@ mica.dataset.OPAL_TABLE_TYPES = {STUDY_TABLE: 'studyTable', HARMONIZATION_TABLE:
 
 mica.dataset
 
-  .controller('CollectionDatasetListController', [
-    '$scope', '$timeout', 'CollectionDatasetsResource', 'DatasetService', 'AlertBuilder', mica.commons.ListController
+  .controller('CollectedDatasetListController', [
+    '$scope', '$timeout', 'CollectedDatasetsResource', 'DatasetService', 'AlertBuilder', mica.commons.ListController
   ])
 
-  .controller('CollectionDatasetEditController', ['$rootScope',
+  .controller('CollectedDatasetEditController', ['$rootScope',
     '$scope',
     '$routeParams',
     '$log',
@@ -29,9 +29,9 @@ mica.dataset
     '$location',
     '$translate',
     '$filter',
-    'CollectionDatasetResource',
-    'DraftCollectionDatasetsResource',
-    'CollectionDatasetPublicationResource',
+    'CollectedDatasetResource',
+    'DraftCollectedDatasetsResource',
+    'CollectedDatasetPublicationResource',
     'MicaConfigResource',
     'FormServerValidation',
     'StudyStatesResource',
@@ -49,9 +49,9 @@ mica.dataset
               $location,
               $translate,
               $filter,
-              CollectionDatasetResource,
-              DraftCollectionDatasetsResource,
-              CollectionDatasetPublicationResource,
+              CollectedDatasetResource,
+              DraftCollectedDatasetsResource,
+              CollectedDatasetPublicationResource,
               MicaConfigResource,
               FormServerValidation,
               StudyStatesResource,
@@ -79,7 +79,7 @@ mica.dataset
             $scope.sfOptions.formDefaults = {languages: formLanguages};
           });
 
-          EntityFormResource.get({target: 'collection-dataset', locale: $translate.use()}, function (form) {
+          EntityFormResource.get({target: 'collected-dataset', locale: $translate.use()}, function (form) {
             form.schema = angular.fromJson(form.schema);
             form.definition = angular.fromJson(form.definition);
             $scope.sfForm = form;
@@ -99,17 +99,17 @@ mica.dataset
         $scope.dataset.$save({comment: $scope.revision.comment},
           function (dataset) {
             FormDirtyStateObserver.unobserve();
-            $location.path('/collection-dataset/' + dataset.id).replace();
+            $location.path('/collected-dataset/' + dataset.id).replace();
           },
           saveErrorHandler);
       };
 
       var createDataset = function () {
-        DraftCollectionDatasetsResource.save($scope.dataset,
+        DraftCollectedDatasetsResource.save($scope.dataset,
           function (resource, getResponseHeaders) {
             FormDirtyStateObserver.unobserve();
             var parts = getResponseHeaders().location.split('/');
-            $location.path('/collection-dataset/' + parts[parts.length - 1]).replace();
+            $location.path('/collected-dataset/' + parts[parts.length - 1]).replace();
           },
           saveErrorHandler);
       };
@@ -156,8 +156,8 @@ mica.dataset
       $scope.type = getTypeFromUrl();
       $scope.newDataset = !$routeParams.id;
       if ($routeParams.id) {
-        $scope.dataset = CollectionDatasetResource.get({id: $routeParams.id}, function (dataset) {
-          $scope.studyTable = dataset['obiba.mica.CollectionDatasetDto.type'].studyTable;
+        $scope.dataset = CollectedDatasetResource.get({id: $routeParams.id}, function (dataset) {
+          $scope.studyTable = dataset['obiba.mica.CollectedDatasetDto.type'].studyTable;
           populateStudyTable($scope.studyTable);
         });
       } else {
@@ -202,7 +202,7 @@ mica.dataset
       };
 
       $scope.cancel = function () {
-        $location.path('/collection-dataset' + ($scope.dataset.id ? '/' + $scope.dataset.id : '')).replace();
+        $location.path('/collected-dataset' + ($scope.dataset.id ? '/' + $scope.dataset.id : '')).replace();
       };
 
       $rootScope.$on('$translateChangeSuccess', function () {
@@ -412,7 +412,7 @@ mica.dataset
     'StudyStatesResource',
     'EntityFormResource',
     'OpalTablesService',
-    'CollectionDatasetResource',
+    'CollectedDatasetResource',
     'HarmonizationDatasetResource',
     'SfOptionsService',
     '$timeout',
@@ -440,7 +440,7 @@ mica.dataset
               StudyStatesResource,
               EntityFormResource,
               OpalTablesService,
-              CollectionDatasetResource,
+              CollectedDatasetResource,
               HarmonizationDatasetResource,
               SfOptionsService,
               $timeout) {
@@ -483,7 +483,7 @@ mica.dataset
                 if($scope.type === 'harmonization-dataset') {
                   return angular.isDefined(wrapper) ? wrapper.table : {weight: $scope.opalTables ? $scope.opalTables.length : 0};
                 } else {
-                  return angular.isDefined($scope.dataset['obiba.mica.CollectionDatasetDto.type']) ? $scope.dataset['obiba.mica.CollectionDatasetDto.type'].studyTable : {};
+                  return angular.isDefined($scope.dataset['obiba.mica.CollectedDatasetDto.type']) ? $scope.dataset['obiba.mica.CollectedDatasetDto.type'].studyTable : {};
                 }
               },
               tableType: function () {
@@ -569,7 +569,7 @@ mica.dataset
             addUpdateOpalTable();
           };
           $scope.deleteStudyTable = function () {
-            delete $scope.dataset['obiba.mica.CollectionDatasetDto.type'];
+            delete $scope.dataset['obiba.mica.CollectedDatasetDto.type'];
             saveAndUpdateDataset();
           };
         }
@@ -624,7 +624,7 @@ mica.dataset
             fetchDataset($scope.dataset.id);
           });
         } else {
-          CollectionDatasetResource.save({id: $scope.dataset.id}, $scope.dataset).$promise.then(function () {
+          CollectedDatasetResource.save({id: $scope.dataset.id}, $scope.dataset).$promise.then(function () {
             fetchDataset($scope.dataset.id);
           });
         }

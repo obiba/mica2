@@ -239,7 +239,7 @@ mica.factory('IndexService', ['$resource',
       datasets: $resource('ws/draft/datasets/_index', {}, {
         'build': {method: 'PUT'}
       }),
-      collectionDatasets: $resource('ws/draft/collection-datasets/_index', {}, {
+      collectedDatasets: $resource('ws/draft/collected-datasets/_index', {}, {
         'build': {method: 'PUT'}
       }),
       harmonizationDatasets: $resource('ws/draft/harmonization-datasets/_index', {}, {

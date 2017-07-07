@@ -11,7 +11,7 @@ def add_arguments(parser):
     Add command specific options
     """
     mica.access.add_permission_arguments(parser, True)
-    parser.add_argument('id', help='Collection dataset ID')
+    parser.add_argument('id', help='Collected dataset ID')
 
 def do_command(args):
     """
@@ -33,7 +33,7 @@ def do_command(args):
             request.put()
 
         try:
-            response = request.resource(mica.access.do_ws(args, ['draft','collection-dataset', args.id, 'accesses'])).send()
+            response = request.resource(mica.access.do_ws(args, ['draft','collected-dataset', args.id, 'accesses'])).send()
         except Exception, e:
             print Exception, e
 
