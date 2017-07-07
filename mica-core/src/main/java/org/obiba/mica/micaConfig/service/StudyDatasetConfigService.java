@@ -10,7 +10,7 @@
 
 package org.obiba.mica.micaConfig.service;
 
-import org.obiba.mica.micaConfig.domain.CollectedDatasetConfig;
+import org.obiba.mica.micaConfig.domain.CollectionDatasetConfig;
 import org.obiba.mica.micaConfig.repository.StudyDatasetConfigRepository;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Component;
@@ -18,13 +18,13 @@ import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 
 @Component
-public class StudyDatasetConfigService extends EntityConfigService<CollectedDatasetConfig> {
+public class StudyDatasetConfigService extends EntityConfigService<CollectionDatasetConfig> {
 
   @Inject
   StudyDatasetConfigRepository datasetConfigRepository;
 
   @Override
-  protected MongoRepository<CollectedDatasetConfig, String> getRepository() {
+  protected MongoRepository<CollectionDatasetConfig, String> getRepository() {
     return datasetConfigRepository;
   }
 
@@ -34,8 +34,8 @@ public class StudyDatasetConfigService extends EntityConfigService<CollectedData
   }
 
   @Override
-  protected CollectedDatasetConfig createEmptyForm() {
-    return new CollectedDatasetConfig();
+  protected CollectionDatasetConfig createEmptyForm() {
+    return new CollectionDatasetConfig();
   }
 
   @Override

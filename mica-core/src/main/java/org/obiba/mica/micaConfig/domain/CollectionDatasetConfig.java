@@ -10,5 +10,5 @@
 
 package org.obiba.mica.micaConfig.domain;
 
-public class CollectedDatasetConfig extends DatasetConfig {
+public class CollectionDatasetConfig extends DatasetConfig {
 }

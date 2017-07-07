@@ -10,7 +10,7 @@
 
 package org.obiba.mica.micaConfig.repository;
 
-import org.obiba.mica.micaConfig.domain.CollectedDatasetConfig;
+import org.obiba.mica.micaConfig.domain.CollectionDatasetConfig;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
-public interface StudyDatasetConfigRepository extends MongoRepository<CollectedDatasetConfig, String> {}
+public interface StudyDatasetConfigRepository extends MongoRepository<CollectionDatasetConfig, String> {}

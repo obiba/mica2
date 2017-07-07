@@ -10,7 +10,7 @@
 
 package org.obiba.mica.micaConfig.rest;
 
-import org.obiba.mica.micaConfig.domain.CollectedDatasetConfig;
+import org.obiba.mica.micaConfig.domain.CollectionDatasetConfig;
 import org.obiba.mica.micaConfig.service.StudyDatasetConfigService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
@@ -22,7 +22,7 @@ import javax.ws.rs.Path;
 @Component
 @Path("/config/" + CollectedDatasetConfigResource.TARGET_NAME)
 public class CollectedDatasetConfigResource
-  extends EntityConfigResource<CollectedDatasetConfig, Mica.EntityFormDto>
+  extends EntityConfigResource<CollectionDatasetConfig, Mica.EntityFormDto>
   implements PermissionAwareResource {
 
   static final String TARGET_NAME = "collected-dataset";
@@ -34,12 +34,12 @@ public class CollectedDatasetConfigResource
   Dtos dtos;
 
   @Override
-  protected Mica.EntityFormDto asDto(CollectedDatasetConfig datasetConfig) {
+  protected Mica.EntityFormDto asDto(CollectionDatasetConfig datasetConfig) {
     return dtos.asDto(datasetConfig);
   }
 
   @Override
-  protected CollectedDatasetConfig fromDto(Mica.EntityFormDto dto) {
+  protected CollectionDatasetConfig fromDto(Mica.EntityFormDto dto) {
     return dtos.fromDto(dto);
   }
 
