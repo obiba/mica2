@@ -340,8 +340,8 @@ public class Dtos {
   }
 
   @NotNull
-  public Mica.DatasetVariableSummaryDto asSummaryDto(@NotNull DatasetVariable variable, OpalTable opalTable) {
-    return datasetDtos.asSummaryDto(variable, opalTable);
+  public Mica.DatasetVariableSummaryDto asSummaryDto(@NotNull DatasetVariable variable, OpalTable opalTable, boolean includeSummaries) {
+    return datasetDtos.asSummaryDto(variable, opalTable, includeSummaries);
   }
 
   @NotNull

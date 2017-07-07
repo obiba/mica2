@@ -229,7 +229,7 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
   protected Mica.DatasetVariableSummaryDto getDatasetVariableSummaryDto(@NotNull String datasetId,
     @NotNull String variableName, DatasetVariable.Type variableType, @Nullable OpalTable opalTable) {
     DatasetVariable variable = getDatasetVariable(datasetId, variableName, variableType, opalTable);
-    return dtos.asSummaryDto(variable, opalTable);
+    return dtos.asSummaryDto(variable, opalTable, true);
   }
 
   @NotNull
