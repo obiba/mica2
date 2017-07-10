@@ -33,7 +33,7 @@ import com.codahale.metrics.annotation.Timed;
  */
 @Component
 @Scope("request")
-@Path("/collection-dataset/{id}")
+@Path("/collected-dataset/{id}")
 @RequiresAuthentication
 public class PublishedStudyDatasetResource extends AbstractPublishedDatasetResource<StudyDataset> {
 
@@ -73,7 +73,7 @@ public class PublishedStudyDatasetResource extends AbstractPublishedDatasetResou
     @QueryParam("from") @DefaultValue("0") int from, @QueryParam("limit") @DefaultValue("10") int limit,
     @QueryParam("sort") String sort, @QueryParam("order") String order) {
     checkAccess(id);
-    return getDatasetVariableDtos(queryString, id, DatasetVariable.Type.Collection, from, limit, sort, order);
+    return getDatasetVariableDtos(queryString, id, DatasetVariable.Type.Collected, from, limit, sort, order);
   }
 
   /**
@@ -88,7 +88,7 @@ public class PublishedStudyDatasetResource extends AbstractPublishedDatasetResou
     @QueryParam("from") @DefaultValue("0") int from, @QueryParam("limit") @DefaultValue("10") int limit,
     @QueryParam("sort") String sort, @QueryParam("order") String order) {
     checkAccess(id);
-    return getDatasetVariableDtos(id, DatasetVariable.Type.Collection, from, limit, sort, order);
+    return getDatasetVariableDtos(id, DatasetVariable.Type.Collected, from, limit, sort, order);
   }
 
   @Path("/variable/{variable}")
@@ -103,6 +103,6 @@ public class PublishedStudyDatasetResource extends AbstractPublishedDatasetResou
   }
 
   private void checkAccess(String id) {
-    subjectAclService.checkAccess("/collection-dataset", id);
+    subjectAclService.checkAccess("/collected-dataset", id);
   }
 }

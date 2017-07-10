@@ -69,7 +69,7 @@
       "en": "Collection"
       "fr": "Collected"
     "description":
-      "en": "A collection dataset holds metadata about the variables collected within a data collection event."
+      "en": "A collected dataset holds metadata about the variables collected within a data collection event."
       "fr": "Jeux de données spécifique à une étude de collecte."
   - "name": "HarmonizationDataset"
     "title":

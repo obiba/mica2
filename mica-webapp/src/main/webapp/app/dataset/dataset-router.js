@@ -14,15 +14,15 @@ mica.dataset
   .config(['$routeProvider',
     function ($routeProvider) {
       $routeProvider
-        .when('/collection-dataset', {
+        .when('/collected-dataset', {
           templateUrl: 'app/dataset/views/collection-dataset-list.html',
           controller: 'CollectionDatasetListController'
         })
-        .when('/collection-dataset/new', {
+        .when('/collected-dataset/new', {
           templateUrl: 'app/dataset/views/collection-dataset-form.html',
           controller: 'CollectionDatasetEditController'
         })
-        .when('/collection-dataset/:id/edit', {
+        .when('/collected-dataset/:id/edit', {
           templateUrl: 'app/dataset/views/collection-dataset-form.html',
           controller: 'CollectionDatasetEditController'
         })
@@ -39,7 +39,7 @@ mica.dataset
           controller: 'HarmonizationDatasetEditController'
         });
 
-      ['collection-dataset', 'harmonization-dataset'].forEach(
+      ['collected-dataset', 'harmonization-dataset'].forEach(
         function (type) {
           $routeProvider
             .when('/' + type + '/:id', {

@@ -121,7 +121,7 @@ public class VariableQuery extends AbstractDocumentQuery {
   public QueryBuilder getAccessFilter() {
     if(micaConfigService.getConfig().isOpenAccess()) return null;
     List<String> ids = collectionDatasetService.findPublishedStates().stream().map(StudyDatasetState::getId)
-      .filter(s -> subjectAclService.isAccessible("/collection-dataset", s)).collect(Collectors.toList());
+      .filter(s -> subjectAclService.isAccessible("/collected-dataset", s)).collect(Collectors.toList());
     ids.addAll(harmonizationDatasetService.findPublishedStates().stream().map(HarmonizationDatasetState::getId)
       .filter(s -> subjectAclService.isAccessible("/harmonization-dataset", s)).collect(Collectors.toList()));
 
@@ -191,7 +191,7 @@ public class VariableQuery extends AbstractDocumentQuery {
 
     String studyId = resolver.hasStudyId() ? resolver.getStudyId() : null;
 
-    if(resolver.getType() == DatasetVariable.Type.Collection || resolver.getType() == DatasetVariable.Type.Dataschema || resolver.getType() == DatasetVariable.Type.Harmonized) {
+    if(resolver.getType() == DatasetVariable.Type.Collected || resolver.getType() == DatasetVariable.Type.Dataschema || resolver.getType() == DatasetVariable.Type.Harmonized) {
       studyId = variable.getStudyId();
     }
 
@@ -259,7 +259,7 @@ public class VariableQuery extends AbstractDocumentQuery {
   }
 
   public Map<String, Integer> getStudyVariableByDatasetCounts() {
-    return getDocumentBucketCounts(DATASET_ID, VARIABLE_TYPE, DatasetVariable.Type.Collection.name());
+    return getDocumentBucketCounts(DATASET_ID, VARIABLE_TYPE, DatasetVariable.Type.Collected.name());
   }
 
   public Map<String, Integer> getDataschemaVariableByDatasetCounts() {
@@ -281,7 +281,7 @@ public class VariableQuery extends AbstractDocumentQuery {
   }
 
   public Map<String, Integer> getStudyVariableByStudyCounts() {
-    return getDocumentBucketCounts(JOIN_FIELD, VARIABLE_TYPE, DatasetVariable.Type.Collection.name());
+    return getDocumentBucketCounts(JOIN_FIELD, VARIABLE_TYPE, DatasetVariable.Type.Collected.name());
   }
 
   public Map<String, Integer> getDataschemaVariableByStudyCounts() {

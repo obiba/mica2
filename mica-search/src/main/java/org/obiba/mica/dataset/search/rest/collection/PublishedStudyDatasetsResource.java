@@ -28,7 +28,7 @@ import com.codahale.metrics.annotation.Timed;
 
 @Component
 @Scope("request")
-@Path("/collection-datasets")
+@Path("/collected-datasets")
 @RequiresAuthentication
 public class PublishedStudyDatasetsResource extends AbstractPublishedDatasetsResource<StudyDataset> {
 

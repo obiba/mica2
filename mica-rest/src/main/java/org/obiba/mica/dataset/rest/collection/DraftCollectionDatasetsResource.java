@@ -77,7 +77,7 @@ public class DraftCollectionDatasetsResource {
    * @return
    */
   @GET
-  @Path("/collection-datasets")
+  @Path("/collected-datasets")
   @Timed
   public List<Mica.DatasetDto> list(@QueryParam("study") String studyId, @QueryParam("query") String query,
                                     @QueryParam("from") @DefaultValue("0") Integer from,
@@ -91,7 +91,7 @@ public class DraftCollectionDatasetsResource {
 
     if(Strings.isNullOrEmpty(query)) {
       List<StudyDataset> datasets = datasetService.findAllDatasets(studyId).stream()
-        .filter(s -> subjectAclService.isPermitted("/draft/collection-dataset", "VIEW", s.getId())).collect(toList());
+        .filter(s -> subjectAclService.isPermitted("/draft/collected-dataset", "VIEW", s.getId())).collect(toList());
       totalCount = datasets.size();
       result = datasets.stream().map(d -> dtos.asDto(d, true)).skip(from).limit(limit);
     } else {
@@ -106,29 +106,29 @@ public class DraftCollectionDatasetsResource {
   }
 
   @POST
-  @Path("/collection-datasets")
+  @Path("/collected-datasets")
   @Timed
-  @RequiresPermissions({ "/draft/collection-dataset:ADD" })
+  @RequiresPermissions({ "/draft/collected-dataset:ADD" })
   public Response create(Mica.DatasetDto datasetDto, @Context UriInfo uriInfo,
                          @Nullable @QueryParam("comment") String comment) {
     Dataset dataset = dtos.fromDto(datasetDto);
     if(!(dataset instanceof StudyDataset)) throw new IllegalArgumentException("An study dataset is expected");
 
     datasetService.save((StudyDataset) dataset, comment);
-    return Response.created(uriInfo.getBaseUriBuilder().segment("draft", "collection-dataset", dataset.getId()).build())
+    return Response.created(uriInfo.getBaseUriBuilder().segment("draft", "collected-dataset", dataset.getId()).build())
       .build();
   }
 
   @PUT
-  @Path("/collection-datasets/_index")
+  @Path("/collected-datasets/_index")
   @Timed
-  @RequiresPermissions({ "/draft/collection-dataset:PUBLISH" })
+  @RequiresPermissions({ "/draft/collected-dataset:PUBLISH" })
   public Response reIndex() {
     helper.indexAll();
     return Response.noContent().build();
   }
 
-  @Path("/collection-dataset/{id}")
+  @Path("/collected-dataset/{id}")
   public DraftCollectionDatasetResource dataset(@PathParam("id") String id) {
     DraftCollectionDatasetResource resource = applicationContext.getBean(DraftCollectionDatasetResource.class);
     resource.setId(id);

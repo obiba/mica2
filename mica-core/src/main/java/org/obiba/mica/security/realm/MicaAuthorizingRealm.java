@@ -46,7 +46,7 @@ public class MicaAuthorizingRealm extends AuthorizingRealm implements RolePermis
     "network",
     "collection-study",
     "harmonization-study",
-    "collection-dataset",
+    "collected-dataset",
     "harmonization-dataset",
     "project"
   };

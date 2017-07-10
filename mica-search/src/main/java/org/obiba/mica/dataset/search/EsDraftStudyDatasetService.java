@@ -67,7 +67,7 @@ class EsDraftStudyDatasetService extends AbstractEsDatasetService<StudyDataset> 
   @Override
   protected QueryBuilder filterByAccess() {
     List<String> ids = collectionDatasetService.findAllStates().stream().map(StudyDatasetState::getId)
-      .filter(s -> subjectAclService.isPermitted("/draft/collection-dataset", "VIEW", s)).collect(Collectors.toList());
+      .filter(s -> subjectAclService.isPermitted("/draft/collected-dataset", "VIEW", s)).collect(Collectors.toList());
 
     return ids.isEmpty()
       ? QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("id"))

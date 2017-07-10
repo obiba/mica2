@@ -20,8 +20,8 @@ public class DatasetVariableTest {
   public void test_id_resolver() throws Exception {
     checkIdResolver("53c3ef8804a61f0e17f6fe78:LAB_TSC:Dataschema", "53c3ef8804a61f0e17f6fe78", "LAB_TSC",
         DatasetVariable.Type.Dataschema, null);
-    checkIdResolver("53c3ef8804a61f0e17f6fe78:LAB_TSC:Collection", "53c3ef8804a61f0e17f6fe78", "LAB_TSC",
-        DatasetVariable.Type.Collection, null);
+    checkIdResolver("53c3ef8804a61f0e17f6fe78:LAB_TSC:Collected", "53c3ef8804a61f0e17f6fe78", "LAB_TSC",
+        DatasetVariable.Type.Collected, null);
     checkIdResolver("53c3ef8804a61f0e17f6fe78:LAB_TSC:Harmonized:Study:53c3ef8704a61f0e17f6fe72", "53c3ef8804a61f0e17f6fe78", "LAB_TSC",
         DatasetVariable.Type.Harmonized, "53c3ef8704a61f0e17f6fe72");
   }

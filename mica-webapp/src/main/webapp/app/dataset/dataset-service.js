@@ -13,15 +13,15 @@
 mica.dataset
   .factory('CollectionDatasetsResource', ['$resource',
     function ($resource) {
-      return $resource('ws/draft/collection-datasets', {}, {
+      return $resource('ws/draft/collected-datasets', {}, {
         'query': {method: 'GET', errorHandler: true, isArray: true},
-        'delete': {method: 'DELETE', url: 'ws/draft/collection-dataset/:id', params: {id: '@id'}, errorHandler: true}
+        'delete': {method: 'DELETE', url: 'ws/draft/collected-dataset/:id', params: {id: '@id'}, errorHandler: true}
       });
     }])
 
   .factory('DraftCollectionDatasetsResource', ['$resource', 'DatasetModelService',
     function ($resource, DatasetModelService) {
-      return $resource('ws/draft/collection-datasets?comment:comment', {}, {
+      return $resource('ws/draft/collected-datasets?comment:comment', {}, {
         'save': {method: 'POST', errorHandler: true, transformRequest: function(dataset) {
           return DatasetModelService.serialize(dataset);
         }}
@@ -30,7 +30,7 @@ mica.dataset
 
   .factory('CollectionDatasetResource', ['$resource', 'DatasetModelService',
     function ($resource, DatasetModelService) {
-      return $resource('ws/draft/collection-dataset/:id', {}, {
+      return $resource('ws/draft/collected-dataset/:id', {}, {
         'save': {method: 'PUT', params: {id: '@id'}, errorHandler: true, transformRequest: function(dataset) {
           return DatasetModelService.serialize(dataset);
         }},
@@ -42,7 +42,7 @@ mica.dataset
 
   .factory('CollectionDatasetPublicationResource', ['$resource',
     function ($resource) {
-      return $resource('ws/draft/collection-dataset/:id/_publish', {}, {
+      return $resource('ws/draft/collected-dataset/:id/_publish', {}, {
         'publish': {method: 'PUT', params: {id: '@id'}},
         'unPublish': {method: 'DELETE', params: {id: '@id'}}
       });
@@ -266,10 +266,10 @@ mica.dataset
     };
 
     factory.setTable = function(dataset, newTable) {
-      if (!dataset['obiba.mica.CollectionDatasetDto.type']) {
-        dataset['obiba.mica.CollectionDatasetDto.type'] = {};
+      if (!dataset['obiba.mica.CollectedDatasetDto.type']) {
+        dataset['obiba.mica.CollectedDatasetDto.type'] = {};
       }
-      dataset['obiba.mica.CollectionDatasetDto.type'].studyTable = newTable;
+      dataset['obiba.mica.CollectedDatasetDto.type'].studyTable = newTable;
     };
 
     factory.getTables = function getOpalTables(dataset) {

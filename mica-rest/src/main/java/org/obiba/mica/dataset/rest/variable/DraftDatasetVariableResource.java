@@ -40,8 +40,8 @@ public class DraftDatasetVariableResource {
     DatasetVariableResource resource = null;
     DatasetVariable.IdResolver resolver = DatasetVariable.IdResolver.from(id);
     switch(resolver.getType()) {
-      case Collection:
-        subjectAclService.isPermitted("/draft/collection-dataset", "VIEW", resolver.getDatasetId());
+      case Collected:
+        subjectAclService.isPermitted("/draft/collected-dataset", "VIEW", resolver.getDatasetId());
         resource = applicationContext.getBean(DraftCollectionDatasetVariableResource.class);
         break;
       case Dataschema:
