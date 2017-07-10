@@ -409,7 +409,7 @@ mica.study
           '{{harmonizationDataset ? harmonizationDatasets + ": " + harmonizationDataset + ". " : "" }}' +
           '{{collectionDataset ? collectionDatasets + ": " + collectionDataset : "" }}';
 
-        $translate([message, 'networks', 'collection-datasets', 'harmonization-datasets'])
+        $translate([message, 'networks', 'collected-datasets', 'harmonization-datasets'])
           .then(function (translation) {
             $rootScope.$broadcast(NOTIFICATION_EVENTS.showNotificationDialog, {
               titleKey: title,
@@ -417,10 +417,10 @@ mica.study
                 {
                   networks: translation.networks,
                   harmonizationDatasets: translation['harmonization-datasets'],
-                  collectionDatasets: translation['collection-datasets'],
+                  collectionDatasets: translation['collected-datasets'],
                   network: data.network ? data.network.join(', ') : null,
                   harmonizationDataset: data.harmonizationDataset ? data.harmonizationDataset.join(', ') : null,
-                  collectionDataset: data.collectionDataset ? data.collectionDataset.join(', ') : null
+                  collectionDataset: data.collectedDataset ? data.collectedDataset.join(', ') : null
                 })
             }, function () {
               if (callback) {

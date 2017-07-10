@@ -12,7 +12,6 @@ package org.obiba.mica.dataset.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
 import org.obiba.magma.Variable;
 import org.obiba.magma.support.VariableNature;
 import org.obiba.mica.core.domain.*;
@@ -39,7 +38,7 @@ public class DatasetVariable implements Indexable, AttributeAware {
   public static final String OPAL_HARMONIZATION_TABLE_PREFIX = "Harmonization";
 
   public enum Type {
-    Collection,  // variable extracted from a collection dataset
+    Collected,  // variable extracted from a collection dataset
     Dataschema,  // variable extracted from a harmonization dataset
     Harmonized   // variable that implements a Datashema variable
   }
@@ -104,7 +103,7 @@ public class DatasetVariable implements Indexable, AttributeAware {
   }
 
   public DatasetVariable(StudyDataset dataset, Variable variable) {
-    this(dataset, Type.Collection, variable);
+    this(dataset, Type.Collected, variable);
     boolean hasStudyTable = dataset.hasStudyTable();
     studyId = hasStudyTable ? dataset.getStudyTable().getStudyId() : null;
     populationId = hasStudyTable ? dataset.getStudyTable().getPopulationUId() : null;
@@ -183,7 +182,7 @@ public class DatasetVariable implements Indexable, AttributeAware {
     variableType = resolver.getType();
     datasetId = resolver.getDatasetId();
     name = resolver.getName();
-    opalTableType = variableType == Type.Collection ? OpalTableType.Study : OpalTableType.Harmonization;
+    opalTableType = variableType == Type.Collected ? OpalTableType.Study : OpalTableType.Harmonization;
 
     if (resolver.hasStudyId()) studyId = resolver.getStudyId();
     if (resolver.hasProject()) project = resolver.getProject();

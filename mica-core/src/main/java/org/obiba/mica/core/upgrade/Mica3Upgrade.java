@@ -48,7 +48,7 @@ public class Mica3Upgrade implements UpgradeStep {
     try {
       updateStudyResourcePathReferences();
     } catch (RuntimeException e) {
-      logger.error("Error occurred when updating Study path resources (/study -> /collection-study and /study-dataset -> /collection-dataset).", e);
+      logger.error("Error occurred when updating Study path resources (/study -> /collection-study and /study-dataset -> /collected-dataset).", e);
     }
   }
 
@@ -60,7 +60,7 @@ public class Mica3Upgrade implements UpgradeStep {
   }
 
   private void updateStudyResourcePathReferences() {
-    logger.info("Replacing all references to /study by /collection-study and /study-dataset by /collection-dataset...");
+    logger.info("Replacing all references to /study by /collection-study and /study-dataset by /collected-dataset...");
     mongoTemplate.execute(db -> db.eval(replaceStudyByCollection()));
   }
 
@@ -79,12 +79,12 @@ public class Mica3Upgrade implements UpgradeStep {
         "    });\n" +
         "    bulk.execute();\n" +
         "};\n" +
-        "bulkUpdateAttachmentPath(db.attachment, [\"path\"], /^\\/study-dataset\\//, '/collection-dataset/');\n" +
-        "bulkUpdateAttachmentPath(db.attachmentState, [\"path\"], /^\\/study-dataset\\//, '/collection-dataset/');\n" +
-        "bulkUpdateAttachmentPath(db.subjectAcl, [\"resource\", \"instance\"], /^\\/study-dataset$/, '/collection-dataset');\n" +
-        "bulkUpdateAttachmentPath(db.subjectAcl, [\"resource\", \"instance\"], /^\\/study-dataset\\//, '/collection-dataset/');\n" +
-        "bulkUpdateAttachmentPath(db.subjectAcl, [\"resource\", \"instance\"], /^\\/draft\\/study-dataset$/, '/draft/collection-dataset');\n" +
-        "bulkUpdateAttachmentPath(db.subjectAcl, [\"resource\", \"instance\"], /^\\/draft\\/study-dataset\\//, '/draft/collection-dataset/');\n" +
+        "bulkUpdateAttachmentPath(db.attachment, [\"path\"], /^\\/study-dataset\\//, '/collected-dataset/');\n" +
+        "bulkUpdateAttachmentPath(db.attachmentState, [\"path\"], /^\\/study-dataset\\//, '/collected-dataset/');\n" +
+        "bulkUpdateAttachmentPath(db.subjectAcl, [\"resource\", \"instance\"], /^\\/study-dataset$/, '/collected-dataset');\n" +
+        "bulkUpdateAttachmentPath(db.subjectAcl, [\"resource\", \"instance\"], /^\\/study-dataset\\//, '/collected-dataset/');\n" +
+        "bulkUpdateAttachmentPath(db.subjectAcl, [\"resource\", \"instance\"], /^\\/draft\\/study-dataset$/, '/draft/collected-dataset');\n" +
+        "bulkUpdateAttachmentPath(db.subjectAcl, [\"resource\", \"instance\"], /^\\/draft\\/study-dataset\\//, '/draft/collected-dataset/');\n" +
         "\n" +
         "bulkUpdateAttachmentPath(db.attachment, [\"path\"], /^\\/study\\//, '/collection-study/');\n" +
         "bulkUpdateAttachmentPath(db.attachmentState, [\"path\"], /^\\/study\\//, '/collection-study/');\n" +

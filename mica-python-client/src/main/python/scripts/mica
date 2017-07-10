@@ -7,11 +7,11 @@ import mica.rest
 import mica.import_zip
 import mica.perm_network
 import mica.perm_collection_study
-import mica.perm_collection_dataset
+import mica.perm_collected_dataset
 import mica.perm_harmonization_dataset
 import mica.access_network
 import mica.access_collection_study
-import mica.access_collection_dataset
+import mica.access_collected_dataset
 import mica.access_harmonization_dataset
 import mica.access_file
 import mica.tags
@@ -52,8 +52,8 @@ add_subcommand('perm-network', 'Apply permission on a network.',
                mica.perm_network.add_arguments, mica.perm_network.do_command)
 add_subcommand('perm-collection-study', 'Apply permission on a collection study.',
                mica.perm_collection_study.add_arguments, mica.perm_collection_study.do_command)
-add_subcommand('perm-collection-dataset', 'Apply permission on a collection dataset.',
-               mica.perm_collection_dataset.add_arguments, mica.perm_collection_dataset.do_command)
+add_subcommand('perm-collected-dataset', 'Apply permission on a collected dataset.',
+               mica.perm_collected_dataset.add_arguments, mica.perm_collected_dataset.do_command)
 add_subcommand('perm-harmonization-dataset', 'Apply permission on a harmonization dataset.',
                mica.perm_harmonization_dataset.add_arguments, mica.perm_harmonization_dataset.do_command)
 
@@ -61,8 +61,8 @@ add_subcommand('access-network', 'Apply access on a network.',
                mica.access_network.add_arguments, mica.access_network.do_command)
 add_subcommand('access-collection-study', 'Apply access on a collection study.',
                mica.access_collection_study.add_arguments, mica.access_collection_study.do_command)
-add_subcommand('access-collection-dataset', 'Apply access on a collection dataset.',
-               mica.access_collection_dataset.add_arguments, mica.access_collection_dataset.do_command)
+add_subcommand('access-collected-dataset', 'Apply access on a collected dataset.',
+               mica.access_collected_dataset.add_arguments, mica.access_collected_dataset.do_command)
 add_subcommand('access-harmonization-dataset', 'Apply access on a harmonization dataset.',
                mica.access_harmonization_dataset.add_arguments, mica.access_harmonization_dataset.do_command)
 add_subcommand('access-file', 'Apply access on a file.',
