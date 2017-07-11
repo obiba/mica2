@@ -128,8 +128,8 @@ class NetworkDtos {
       .collect(Collectors.toSet());
     Sets.SetView<String> unpublishedStudyIds = Sets.difference(ImmutableSet.copyOf(
       network.getStudyIds().stream()
-        .filter(sId -> asDraft && subjectAclService.isPermitted("/draft/collection-study", "VIEW", sId)
-            || subjectAclService.isAccessible("/collection-study", sId))
+        .filter(sId -> asDraft && subjectAclService.isPermitted("/draft/individual-study", "VIEW", sId)
+            || subjectAclService.isAccessible("/individual-study", sId))
         .collect(toList())), publishedStudyIds);
 
     if(!publishedStudies.isEmpty()) {

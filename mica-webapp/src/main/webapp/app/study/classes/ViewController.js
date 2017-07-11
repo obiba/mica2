@@ -77,7 +77,7 @@ mica.study.BaseViewController.prototype.constructor = mica.study.BaseViewControl
 
 
 /**
- * Collection Study view controller
+ * Individual Study view controller
  *
  * @param $scope
  * @param $rootScope
@@ -165,7 +165,7 @@ mica.study.ViewController = function (
   self.initializeForm = function () {
     $q.all([
       MicaConfigResource.get().$promise,
-      EntityFormResource.get({target: 'collection-study', locale: $translate.use()}).$promise,
+      EntityFormResource.get({target: 'individual-study', locale: $translate.use()}).$promise,
       EntityFormResource.get({target: 'population', locale: $translate.use()}).$promise,
       EntityFormResource.get({target: 'data-collection-event', locale: $translate.use()}).$promise
     ]).then(function (data) {
@@ -190,7 +190,7 @@ mica.study.ViewController = function (
 
   self.initializeStudy = function (study) {
     if (study.logo) {
-      self.logoUrl = 'ws/draft/collection-study/' + study.id + '/file/' + study.logo.id + '/_download';
+      self.logoUrl = 'ws/draft/individual-study/' + study.id + '/file/' + study.logo.id + '/_download';
     }
 
     if (self.getViewMode() === self.Mode.View || self.getViewMode() === self.Mode.Revision) {

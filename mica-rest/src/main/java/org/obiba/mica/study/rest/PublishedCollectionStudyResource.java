@@ -28,7 +28,7 @@ import com.codahale.metrics.annotation.Timed;
  * REST controller for managing Study.
  */
 @Component
-@Path("/collection-study/{id}")
+@Path("/individual-study/{id}")
 @Scope("request")
 @RequiresAuthentication
 public class PublishedCollectionStudyResource extends AbstractPublishedStudyResource {

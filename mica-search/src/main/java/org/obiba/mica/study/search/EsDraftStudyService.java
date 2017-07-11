@@ -85,7 +85,7 @@ public class EsDraftStudyService extends AbstractDocumentService<Study> implemen
   private List<String> findAuthorizedCollectionStudyIds() {
     return collectionStudyService.findAllStates().stream()
       .map(DefaultEntityBase::getId)
-      .filter(studyId -> subjectAclService.isPermitted("/draft/collection-study", "VIEW", studyId))
+      .filter(studyId -> subjectAclService.isPermitted("/draft/individual-study", "VIEW", studyId))
       .collect(Collectors.toList());
   }
 }

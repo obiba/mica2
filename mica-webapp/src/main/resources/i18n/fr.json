@@ -53,7 +53,7 @@
     "default": "Par défaut",
     "chronological": "Chronologique",
     "network": "Réseau",
-    "collection-study": "Étude de collecte",
+    "individual-study": "Étude individuelle",
     "harmonization-study": "Étude harmonisée",
     "harmonization-study-population": "Population"
   },
@@ -559,7 +559,7 @@
     },
     "none": "Aucune étude."
   },
-  "collection-studies": "Études de collecte",
+  "individual-studies": "Études individuelles",
   "harmonization-studies": "Études harmonisées",
   "contact": {
     "add": {
@@ -904,7 +904,7 @@
     "coverage-buckets": {
       "datasetNav": "Ensemble de données",
       "study" : "Étude",
-      "study-collection": "Étude de collecte",
+      "study-individual": "Étude individuelle",
       "study-harmonization": "Étude d'harmonisation",
       "dce" : "Population/Événement de collecte de données (ECD)",
       "dce-collection" : "Événement de collecte de données (ECD)",
@@ -1100,7 +1100,7 @@
       "caching": "Gérer les caches du serveur.",
       "indexing": "Gérer les index du serveur.",
       "network-config": "Configurer le formulaire, les permissions et la recherche de réseaux.",
-      "collection-study-config": "Configurer le formulaire, les permissions et la recherche d'études.",
+      "individual-study-config": "Configurer le formulaire, les permissions et la recherche d'études.",
       "harmonization-study-config": "Configurer le formulaire, les permissions et la recherche d'études harmonisées.",
       "collected-dataset-config": "Configurer le formulaire, les permissions et la recherche d'ensembles de données de collectes.",
       "harmonization-dataset-config": "Configurer le formulaire, les permissions et la recherche d'ensembles de données harmonisées.",
@@ -1284,13 +1284,13 @@
     "harmonization-study-form-title": "Étude harmonisée",
     "harmonization-population-form-title": "Population harmonisée"
   },
-  "collection-study-config" : {
-    "title" : "Configuration des études de collecte",
+  "individual-study-config" : {
+    "title" : "Configuration des études individuelles",
     "schema-form": {
       "title": "Formulaire",
       "info": "Le formulaire d'étude peut être spécifié à la fois en termes de structure de données (schéma) et d'affichage des données et validation (définition). Voir <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>documentation du schema form</a> pour plus de détails."
     },
-    "collection-study-form-title": "Étude",
+    "individual-study-form-title": "Étude",
     "population-form-title": "Population",
     "data-collection-event-form-title": "Événement de collecte de données"
   },

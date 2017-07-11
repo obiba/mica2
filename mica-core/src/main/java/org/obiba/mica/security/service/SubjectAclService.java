@@ -357,7 +357,7 @@ public class SubjectAclService {
   @Subscribe
   public void studyDeleted(StudyDeletedEvent event) {
     BaseStudy persistable = event.getPersistable();
-    removeInstance(persistable instanceof Study ? "/collection-study" : "/harmonization-study", persistable.getId());
+    removeInstance(persistable instanceof Study ? "/individual-study" : "/harmonization-study", persistable.getId());
   }
 
   @Async

@@ -85,7 +85,7 @@ public class StudyStatesResource {
     if(Strings.isNullOrEmpty(query)) {
       List<? extends EntityState> studyStates =
         (!Strings.isNullOrEmpty(type) ? getStudyServiceByType(type).findAllStates() : studyService.findAllStates()).stream()
-        .filter(s -> subjectAclService.isPermitted("/draft/collection-study", "VIEW", s.getId())
+        .filter(s -> subjectAclService.isPermitted("/draft/individual-study", "VIEW", s.getId())
           || subjectAclService.isPermitted("/draft/harmonization-study", "VIEW", s.getId()))
           .collect(toList());
       totalCount = studyStates.size();
@@ -112,6 +112,6 @@ public class StudyStatesResource {
   }
 
   private AbstractStudyService<? extends EntityState, ? extends BaseStudy> getStudyServiceByType(@NotNull String type) {
-    return "collection-study".equals(type) ? collectionStudyService : harmonizationStudyService;
+    return "individual-study".equals(type) ? collectionStudyService : harmonizationStudyService;
   }
 }

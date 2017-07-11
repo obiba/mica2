@@ -56,35 +56,35 @@ public class DraftCollectionStudiesResource {
   private EventBus eventBus;
 
   @GET
-  @Path("/collection-studies")
+  @Path("/individual-studies")
   @Timed
   public List<Mica.StudyDto> list() {
     return collectionStudyService.findAllDraftStudies().stream()
-      .filter(s -> subjectAclService.isPermitted("/draft/collection-study", "VIEW", s.getId()))
+      .filter(s -> subjectAclService.isPermitted("/draft/individual-study", "VIEW", s.getId()))
       .sorted((o1, o2) -> o1.getId().compareTo(o2.getId())).map(s -> dtos.asDto(s, true)).collect(Collectors.toList());
   }
 
   @GET
-  @Path("/collection-studies/summaries")
+  @Path("/individual-studies/summaries")
   @Timed
   public List<Mica.StudySummaryDto> listSummaries(@QueryParam("id") List<String> ids) {
     List<Study> studies = ids.isEmpty() ? collectionStudyService.findAllDraftStudies() : collectionStudyService.findAllDraftStudies(ids);
-    return studies.stream().filter(s -> subjectAclService.isPermitted("/draft/collection-study", "VIEW", s.getId()))
+    return studies.stream().filter(s -> subjectAclService.isPermitted("/draft/individual-study", "VIEW", s.getId()))
       .map(dtos::asSummaryDto).collect(Collectors.toList());
   }
 
   @GET
-  @Path("/collection-studies/digests")
+  @Path("/individual-studies/digests")
   @Timed
   public List<Mica.DocumentDigestDto> listDigests(@QueryParam("id") List<String> ids) {
     List<Study> studies = ids.isEmpty() ? collectionStudyService.findAllDraftStudies() : collectionStudyService.findAllDraftStudies(ids);
-    return studies.stream().filter(s -> subjectAclService.isPermitted("/draft/collection-study", "VIEW", s.getId())).map(dtos::asDigestDto).collect(Collectors.toList());
+    return studies.stream().filter(s -> subjectAclService.isPermitted("/draft/individual-study", "VIEW", s.getId())).map(dtos::asDigestDto).collect(Collectors.toList());
   }
 
   @POST
-  @Path("/collection-studies")
+  @Path("/individual-studies")
   @Timed
-  @RequiresPermissions({"/draft/collection-study:ADD"})
+  @RequiresPermissions({"/draft/individual-study:ADD"})
   public Response create(@SuppressWarnings("TypeMayBeWeakened") Mica.StudyDto studyDto, @Context UriInfo uriInfo,
     @Nullable @QueryParam("comment") String comment) {
     Study study = (Study)dtos.fromDto(studyDto);
@@ -93,7 +93,7 @@ public class DraftCollectionStudiesResource {
       .build();
   }
 
-  @Path("/collection-study/{id}")
+  @Path("/individual-study/{id}")
   public DraftCollectionStudyResource study(@PathParam("id") String id) {
     DraftCollectionStudyResource studyResource = applicationContext.getBean(DraftCollectionStudyResource.class);
     studyResource.setId(id);
@@ -101,9 +101,9 @@ public class DraftCollectionStudiesResource {
   }
 
   @PUT
-  @Path("/collection-studies/_index")
+  @Path("/individual-studies/_index")
   @Timed
-  @RequiresPermissions("/draft/collection-study:PUBLISH")
+  @RequiresPermissions("/draft/individual-study:PUBLISH")
   public Response reIndex() {
     eventBus.post(new IndexStudiesEvent());
     return Response.noContent().build();

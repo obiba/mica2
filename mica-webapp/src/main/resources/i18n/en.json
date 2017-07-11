@@ -53,7 +53,7 @@
     "default": "Default",
     "chronological": "Chronological",
     "network": "Network",
-    "collection-study": "Collection Study",
+    "individual-study": "Individual Study",
     "harmonization-study": "Harmonization Study",
     "harmonization-study-population": "Population"
   },
@@ -559,7 +559,7 @@
     },
     "none": "No studies."
   },
-  "collection-studies": "Collection Studies",
+  "individual-studies": "Individual Studies",
   "harmonization-studies": "Harmonization Studies",
   "contact": {
     "add": {
@@ -904,7 +904,7 @@
     "coverage-buckets": {
       "datasetNav": "Dataset",
       "study" : "Study",
-      "study-collection": "Collection Study",
+      "study-individual": "Individual Study",
       "study-harmonization": "Harmonization Study",
       "dce" : "Population/Data Collection Event (DCE)",
       "dce-collection" : "Data Collection Event (DCE)",
@@ -1100,7 +1100,7 @@
       "caching": "Manage server caches.",
       "indexing": "Manage server indices.",
       "network-config": "Configure Network form, permissions and search.",
-      "collection-study-config": "Configure Study form, permissions and search.",
+      "individual-study-config": "Configure Study form, permissions and search.",
       "harmonization-study-config": "Configure Harmonization Study form, permissions and search.",
       "collected-dataset-config": "Configure Collected Dataset form, permissions and search.",
       "harmonization-dataset-config": "Configure Harmonization Dataset form, permissions and search.",
@@ -1284,13 +1284,13 @@
     "harmonization-study-form-title": "Harmonization Study",
     "harmonization-population-form-title": "Harmonization Population"
   },
-  "collection-study-config" : {
-    "title" : "Collection Study Configuration",
+  "individual-study-config" : {
+    "title" : "Individual Study Configuration",
     "schema-form": {
       "title": "Form",
       "info": "The custom study form can be specified both in terms of data structure (schema) and data display and validation (definition). See <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>form schema documentation</a> for more details."
     },
-    "collection-study-form-title": "Study",
+    "individual-study-form-title": "Study",
     "population-form-title": "Population",
     "data-collection-event-form-title": "Data Collection Event"
   },

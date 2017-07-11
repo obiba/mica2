@@ -53,7 +53,7 @@ public class EntityPublicationFlowMailNotification extends PublicationFlowMailNo
     }
 
     switch(typeName) {
-      case "collection-study":
+      case "individual-study":
       case "harmonization-study":
         return micaConfigService.getConfig().isStudyNotificationsEnabled();
       case "network":

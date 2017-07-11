@@ -56,7 +56,7 @@ public class StudyStateResource {
 
   public void setId(String id) {
     this.id = id;
-    this.resource = studyService.isCollectionStudy(id) ? "/draft/collection-study" : "/draft/harmonization-study";
+    this.resource = studyService.isCollectionStudy(id) ? "/draft/individual-study" : "/draft/harmonization-study";
   }
 
   @GET

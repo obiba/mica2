@@ -97,13 +97,13 @@ mica.study.EditController = function (
     }
   };
 
-  self.type = 'collection';
+  self.type = 'individual';
 
   self.updateStudy = function () {
     $log.debug('Updating study', $scope.study);
     $scope.study.$save({comment: $scope.revision.comment}, function (response) {
       FormDirtyStateObserver.unobserve();
-      $location.path('/collection-study/' + response.study.id).replace();
+      $location.path('/individual-study/' + response.study.id).replace();
 
       if (response.potentialConflicts) {
         StudyUpdateWarningService.popup(response.potentialConflicts, 'study.potential-conflicts', 'study.potential-conflicts-message');
@@ -119,7 +119,7 @@ mica.study.EditController = function (
     $q.all([
       MicaConfigResource.get().$promise,
       SfOptionsService.transform(),
-      EntityFormResource.get({target: 'collection-study', locale: $translate.use()}).$promise,
+      EntityFormResource.get({target: 'individual-study', locale: $translate.use()}).$promise,
       $routeParams.id ? DraftStudyResource.get({id: $routeParams.id}).$promise : null
     ]).then(function (data) {
       var micaConfig = data[0];
@@ -150,7 +150,7 @@ mica.study.EditController = function (
     DraftStudiesResource.save($scope.study, function (resource, getResponseHeaders) {
       FormDirtyStateObserver.unobserve();
       var parts = getResponseHeaders().location.split('/');
-      $location.path('/collection-study/' + parts[parts.length - 1]).replace();
+      $location.path('/individual-study/' + parts[parts.length - 1]).replace();
     }, self.saveErrorHandler);
   }
 
@@ -296,7 +296,7 @@ mica.study.PopulationEditController = function (
     else { self.updateStudy(); }
   };
 
-  self.type = 'collection';
+  self.type = 'individual';
 
   self.initializeForm = function() {
     $q.all([
@@ -472,7 +472,7 @@ mica.study.DataCollectionEventEditController = function (
     else { self.updateStudy(); }
   };
 
-  self.type = 'collection';
+  self.type = 'individual';
 
   self.initializeForm = function () {
     $q.all([

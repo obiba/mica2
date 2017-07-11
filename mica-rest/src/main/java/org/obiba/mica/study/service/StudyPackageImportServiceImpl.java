@@ -323,7 +323,7 @@ public class StudyPackageImportServiceImpl extends AbstractProtobufProvider impl
         for (Mica.PopulationDto.DataCollectionEventDto.Builder dceBuilder : pBuilder.getDataCollectionEventsBuilderList()) {
           dceBuilder.setId("" + dceIdx++);
           dceBuilder.getAttachmentsList().stream().map(dtos::fromDto).forEach(a -> {
-            a.setPath("/collection-study/%s/population/" + pBuilder.getId() + "/data-collection-event/" + dceBuilder.getId());
+            a.setPath("/individual-study/%s/population/" + pBuilder.getId() + "/data-collection-event/" + dceBuilder.getId());
             atts.add(a);
           });
         }
