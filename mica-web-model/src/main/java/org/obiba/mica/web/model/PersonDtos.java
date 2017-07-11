@@ -79,7 +79,7 @@ class PersonDtos {
       EntityState state = studyService.findStateById(m.getParentId());
       if(asDraft) {
         return subjectAclService.isPermitted(
-          state instanceof StudyState ? "/draft/collection-study" : "/draft/harmonization-study",
+          state instanceof StudyState ? "/draft/individual-study" : "/draft/harmonization-study",
           "VIEW",
           m.getParentId());
       } else {

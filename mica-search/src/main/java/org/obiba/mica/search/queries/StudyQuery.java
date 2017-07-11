@@ -78,7 +78,7 @@ public class StudyQuery extends AbstractDocumentQuery {
   public QueryBuilder getAccessFilter() {
     if(micaConfigService.getConfig().isOpenAccess()) return null;
     List<String> ids = collectionStudyService.findPublishedStates().stream().map(DefaultEntityBase::getId)
-      .filter(s -> subjectAclService.isAccessible("/collection-study", s)).collect(Collectors.toList());
+      .filter(s -> subjectAclService.isAccessible("/individual-study", s)).collect(Collectors.toList());
     ids.addAll(harmonizationStudyService.findPublishedStates().stream().map(DefaultEntityBase::getId)
       .filter(s -> subjectAclService.isAccessible("/harmonization-study", s)).collect(Collectors.toList()));
     return ids.isEmpty()

@@ -10,16 +10,16 @@
 
 package org.obiba.mica.study.domain;
 
-import com.google.common.base.CaseFormat;
-import com.google.common.base.MoreObjects;
-import org.springframework.data.mongodb.core.mapping.Document;
-
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.data.mongodb.core.mapping.Document;
+
+import com.google.common.base.MoreObjects;
+
 /**
- * A collection Study: a study that describes the context (research objectives, populations and more) of collected data.
+ * An individual Study: a study that describes the context (research objectives, populations and more) of collected data.
  */
 @Document
 public class Study extends BaseStudy {
@@ -47,6 +47,6 @@ public class Study extends BaseStudy {
 
   @Override
   public String getResourcePath() {
-    return "collection-study";
+    return "individual-study";
   }
 }

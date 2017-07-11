@@ -71,7 +71,7 @@ public class DraftCollectionStudyResource extends AbstractGitPersistableResource
   @GET
   @Timed
   public Mica.StudyDto get(@QueryParam("locale") String locale, @QueryParam("key") String key) {
-    checkPermission("/draft/collection-study", "VIEW", key);
+    checkPermission("/draft/individual-study", "VIEW", key);
     return dtos.asDto(collectionStudyService.findDraft(id, locale), true);
   }
 
@@ -79,7 +79,7 @@ public class DraftCollectionStudyResource extends AbstractGitPersistableResource
   @Path("/model")
   @Produces("application/json")
   public Map<String, Object> getModel() {
-    checkPermission("/draft/collection-study", "VIEW");
+    checkPermission("/draft/individual-study", "VIEW");
     return collectionStudyService.findDraft(id).getModel();
   }
 
@@ -87,7 +87,7 @@ public class DraftCollectionStudyResource extends AbstractGitPersistableResource
   @Timed
   public Response update(@SuppressWarnings("TypeMayBeWeakened") Mica.StudyDto studyDto,
     @Nullable @QueryParam("comment") String comment) {
-    checkPermission("/draft/collection-study", "EDIT");
+    checkPermission("/draft/individual-study", "EDIT");
     // ensure study exists
     collectionStudyService.findDraft(id);
 
@@ -105,7 +105,7 @@ public class DraftCollectionStudyResource extends AbstractGitPersistableResource
   @Path("/_publish")
   @Timed
   public Response publish(@QueryParam("cascading") @DefaultValue("UNDER_REVIEW") String cascadingScope) {
-    checkPermission("/draft/collection-study", "PUBLISH");
+    checkPermission("/draft/individual-study", "PUBLISH");
     collectionStudyService.publish(id, true, PublishCascadingScope.valueOf(cascadingScope.toUpperCase()));
     return Response.noContent().build();
   }
@@ -113,7 +113,7 @@ public class DraftCollectionStudyResource extends AbstractGitPersistableResource
   @DELETE
   @Path("/_publish")
   public Response unPublish() {
-    checkPermission("/draft/collection-study", "PUBLISH");
+    checkPermission("/draft/individual-study", "PUBLISH");
     collectionStudyService.publish(id, false);
     return Response.ok(collectionStudyService.getPotentialConflicts(collectionStudyService.findStudy(id), true), MediaType.APPLICATION_JSON_TYPE).build();
   }
@@ -122,7 +122,7 @@ public class DraftCollectionStudyResource extends AbstractGitPersistableResource
   @Path("/_status")
   @Timed
   public Response toUnderReview(@QueryParam("value") String status) {
-    checkPermission("/draft/collection-study", "EDIT");
+    checkPermission("/draft/individual-study", "EDIT");
     collectionStudyService.updateStatus(id, RevisionStatus.valueOf(status.toUpperCase()));
     return Response.noContent().build();
   }
@@ -133,14 +133,14 @@ public class DraftCollectionStudyResource extends AbstractGitPersistableResource
   @DELETE
   @Timed
   public Response delete() {
-    checkPermission("/draft/collection-study", "DELETE");
+    checkPermission("/draft/individual-study", "DELETE");
     collectionStudyService.delete(id);
     return Response.noContent().build();
   }
 
   @Path("/file/{fileId}")
   public FileResource file(@PathParam("fileId") String fileId, @QueryParam("key") String key) {
-    checkPermission("/draft/collection-study", "VIEW", key);
+    checkPermission("/draft/individual-study", "VIEW", key);
     FileResource fileResource = applicationContext.getBean(FileResource.class);
     Study study = collectionStudyService.findDraft(id);
 
@@ -148,7 +148,7 @@ public class DraftCollectionStudyResource extends AbstractGitPersistableResource
       fileResource.setAttachment(study.getLogo());
     } else {
       List<Attachment> attachments = fileSystemService
-        .findAttachments(String.format("^/collection-study/%s", study.getId()), false).stream()
+        .findAttachments(String.format("^/individual-study/%s", study.getId()), false).stream()
         .filter(a -> a.getId().equals(fileId)).collect(Collectors.toList());
       if(attachments.isEmpty()) throw NoSuchEntityException.withId(Attachment.class, fileId);
       fileResource.setAttachment(attachments.get(0));
@@ -160,23 +160,23 @@ public class DraftCollectionStudyResource extends AbstractGitPersistableResource
   @GET
   @Path("/commit/{commitId}/view")
   public Mica.StudyDto getStudyFromCommit(@NotNull @PathParam("commitId") String commitId) throws IOException {
-    checkPermission("/draft/collection-study", "VIEW");
+    checkPermission("/draft/individual-study", "VIEW");
     return dtos.asDto(collectionStudyService.getFromCommit(collectionStudyService.findDraft(id), commitId), true);
   }
 
   @Path("/permissions")
   public SubjectAclResource permissions() {
     SubjectAclResource subjectAclResource = applicationContext.getBean(SubjectAclResource.class);
-    subjectAclResource.setResourceInstance("/draft/collection-study", id);
-    subjectAclResource.setFileResourceInstance("/draft/file", "/collection-study/" + id);
+    subjectAclResource.setResourceInstance("/draft/individual-study", id);
+    subjectAclResource.setFileResourceInstance("/draft/file", "/individual-study/" + id);
     return subjectAclResource;
   }
 
   @Path("/accesses")
   public SubjectAclResource accesses() {
     SubjectAclResource subjectAclResource = applicationContext.getBean(SubjectAclResource.class);
-    subjectAclResource.setResourceInstance("/collection-study", id);
-    subjectAclResource.setFileResourceInstance("/file", "/collection-study/" + id);
+    subjectAclResource.setResourceInstance("/individual-study", id);
+    subjectAclResource.setFileResourceInstance("/file", "/individual-study/" + id);
     return subjectAclResource;
   }
 

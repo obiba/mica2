@@ -117,7 +117,7 @@ public class CollectionStudyService extends AbstractStudyService<StudyState, Stu
 
   @Override
   public String getTypeName() {
-    return "collection-study";
+    return "individual-study";
   }
 
   @Override

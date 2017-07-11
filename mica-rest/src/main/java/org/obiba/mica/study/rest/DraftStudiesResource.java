@@ -20,7 +20,6 @@ import javax.ws.rs.Path;
 
 import org.obiba.mica.core.domain.AbstractGitPersistable;
 import org.obiba.mica.security.service.SubjectAclService;
-import org.obiba.mica.study.service.CollectionStudyService;
 import org.obiba.mica.study.service.StudyService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
@@ -29,9 +28,6 @@ import com.codahale.metrics.annotation.Timed;
 
 @Path("/draft")
 public class DraftStudiesResource {
-
-  @Inject
-  private CollectionStudyService collectionStudyService;
 
   @Inject
   private StudyService studyService;

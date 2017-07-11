@@ -721,7 +721,7 @@ public class FileSystemService {
       if(event.getPersistable().hasPopulations()) {
         event.getPersistable().getPopulations().stream().filter(Population::hasDataCollectionEvents).forEach(
             p -> p.getDataCollectionEvents().forEach(dce -> mkdirs(String
-                .format("/collection-study/%s/population/%s/data-collection-event/%s",
+                .format("/individual-study/%s/population/%s/data-collection-event/%s",
                   event.getPersistable().getId(),
                   p.getId(),
                   dce.getId()))));

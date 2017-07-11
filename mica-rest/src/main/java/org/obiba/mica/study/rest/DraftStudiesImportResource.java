@@ -39,7 +39,7 @@ public class DraftStudiesImportResource {
 
   @POST
   @Consumes(MediaType.MULTIPART_FORM_DATA)
-  @RequiresPermissions("/draft/collection-study:ADD")
+  @RequiresPermissions("/draft/individual-study:ADD")
   public Response importZip(@Context HttpServletRequest request,
     @QueryParam("publish") @DefaultValue("false") boolean publish) throws FileUploadException, IOException {
     FileItem uploadedFile = getUploadedFile(request);

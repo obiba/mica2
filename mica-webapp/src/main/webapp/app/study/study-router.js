@@ -14,53 +14,53 @@ mica.study
   .config(['$routeProvider',
     function ($routeProvider) {
       $routeProvider
-        // collection-study
-        .when('/collection-study', {
+        // individual-study
+        .when('/individual-study', {
           templateUrl: 'app/study/views/collection-study-main.html',
           controller: 'StudyMainController'
         })
-        .when('/collection-study/new', {
+        .when('/individual-study/new', {
           templateUrl: 'app/study/views/collection-study-form.html',
           controller: 'StudyEditController'
         })
-        .when('/collection-study/:id', {
+        .when('/individual-study/:id', {
           templateUrl: 'app/study/views/collection-study-view.html',
           controller: 'StudyViewController'
         })
-        .when('/collection-study/:id/edit', {
+        .when('/individual-study/:id/edit', {
           templateUrl: 'app/study/views/collection-study-form.html',
           controller: 'StudyEditController'
         })
-        .when('/collection-study/:id/revisions', {
+        .when('/individual-study/:id/revisions', {
           templateUrl: 'app/study/views/collection-study-view-revisions.html',
           controller: 'StudyViewController'
         })
-        .when('/collection-study/:id/files', {
+        .when('/individual-study/:id/files', {
           templateUrl: 'app/study/views/collection-study-view-files.html',
           controller: 'StudyViewController',
           reloadOnSearch: false
         })
-        .when('/collection-study/:id/permissions', {
+        .when('/individual-study/:id/permissions', {
           templateUrl: 'app/study/views/collection-study-view-permissions.html',
           controller: 'StudyViewController'
         })
-        .when('/collection-study/:id/comments', {
+        .when('/individual-study/:id/comments', {
           templateUrl: 'app/study/views/collection-study-view-comments.html',
           controller: 'StudyViewController'
         })
-        .when('/collection-study/:id/population/add', {
+        .when('/individual-study/:id/population/add', {
           templateUrl: 'app/study/views/population/collection-population-form.html',
           controller: 'StudyPopulationController'
         })
-        .when('/collection-study/:id/population/:pid/edit', {
+        .when('/individual-study/:id/population/:pid/edit', {
           templateUrl: 'app/study/views/population/collection-population-form.html',
           controller: 'StudyPopulationController'
         })
-        .when('/collection-study/:id/population/:pid/dce/add', {
+        .when('/individual-study/:id/population/:pid/dce/add', {
           templateUrl: 'app/study/views/population/dce/data-collection-event-form.html',
           controller: 'StudyPopulationDceController'
         })
-        .when('/collection-study/:id/population/:pid/dce/:dceId/edit', {
+        .when('/individual-study/:id/population/:pid/dce/:dceId/edit', {
           templateUrl: 'app/study/views/population/dce/data-collection-event-form.html',
           controller: 'StudyPopulationDceController'
         })

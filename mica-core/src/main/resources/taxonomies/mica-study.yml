@@ -2111,10 +2111,10 @@
   "terms":
   - "name": "Study"
     "title":
-      "en": "Collection"
-      "fr": "Collecte"
+      "en": "Individual"
+      "fr": "Individuelle"
     "description":
-      "en": "A collection study"
+      "en": "An individual study"
       "fr": "Une étude de collecte de données."
   - "name": "HarmonizationStudy"
     "title":

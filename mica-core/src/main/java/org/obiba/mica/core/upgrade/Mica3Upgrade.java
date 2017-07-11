@@ -42,25 +42,25 @@ public class Mica3Upgrade implements UpgradeStep {
     try {
       moveGitRepositoryOfStudies();
     } catch (IOException e) {
-      logger.error("Error occurred when moving git repository from studies to collectionStudies.", e);
+      logger.error("Error occurred when moving git repository from studies to individualStudies.", e);
     }
 
     try {
       updateStudyResourcePathReferences();
     } catch (RuntimeException e) {
-      logger.error("Error occurred when updating Study path resources (/study -> /collection-study and /study-dataset -> /collected-dataset).", e);
+      logger.error("Error occurred when updating Study path resources (/study -> /individual-study and /study-dataset -> /collected-dataset).", e);
     }
   }
 
   private void moveGitRepositoryOfStudies() throws IOException {
     File repositoriesRoot = gitService.getRepositoriesRoot();
     Path oldGitPath = new File(repositoriesRoot, "/studies").toPath();
-    Path newGitPath = new File(repositoriesRoot, "/collectionStudies").toPath();
+    Path newGitPath = new File(repositoriesRoot, "/individualStudies").toPath();
     Files.move(oldGitPath, newGitPath);
   }
 
   private void updateStudyResourcePathReferences() {
-    logger.info("Replacing all references to /study by /collection-study and /study-dataset by /collected-dataset...");
+    logger.info("Replacing all references to /study by /individual-study and /study-dataset by /collected-dataset...");
     mongoTemplate.execute(db -> db.eval(replaceStudyByCollection()));
   }
 
@@ -86,12 +86,12 @@ public class Mica3Upgrade implements UpgradeStep {
         "bulkUpdateAttachmentPath(db.subjectAcl, [\"resource\", \"instance\"], /^\\/draft\\/study-dataset$/, '/draft/collected-dataset');\n" +
         "bulkUpdateAttachmentPath(db.subjectAcl, [\"resource\", \"instance\"], /^\\/draft\\/study-dataset\\//, '/draft/collected-dataset/');\n" +
         "\n" +
-        "bulkUpdateAttachmentPath(db.attachment, [\"path\"], /^\\/study\\//, '/collection-study/');\n" +
-        "bulkUpdateAttachmentPath(db.attachmentState, [\"path\"], /^\\/study\\//, '/collection-study/');\n" +
-        "bulkUpdateAttachmentPath(db.subjectAcl, [\"resource\", \"instance\"], /^\\/study$/, '/collection-study');\n" +
-        "bulkUpdateAttachmentPath(db.subjectAcl, [\"resource\", \"instance\"], /^\\/study\\//, '/collection-study/');\n" +
-        "bulkUpdateAttachmentPath(db.subjectAcl, [\"resource\", \"instance\"], /^\\/draft\\/study$/, '/draft/collection-study');\n" +
-        "bulkUpdateAttachmentPath(db.subjectAcl, [\"resource\", \"instance\"], /^\\/draft\\/study\\//, '/draft/collection-study/');" +
+        "bulkUpdateAttachmentPath(db.attachment, [\"path\"], /^\\/study\\//, '/individual-study/');\n" +
+        "bulkUpdateAttachmentPath(db.attachmentState, [\"path\"], /^\\/study\\//, '/individual-study/');\n" +
+        "bulkUpdateAttachmentPath(db.subjectAcl, [\"resource\", \"instance\"], /^\\/study$/, '/individual-study');\n" +
+        "bulkUpdateAttachmentPath(db.subjectAcl, [\"resource\", \"instance\"], /^\\/study\\//, '/individual-study/');\n" +
+        "bulkUpdateAttachmentPath(db.subjectAcl, [\"resource\", \"instance\"], /^\\/draft\\/study$/, '/draft/individual-study');\n" +
+        "bulkUpdateAttachmentPath(db.subjectAcl, [\"resource\", \"instance\"], /^\\/draft\\/study\\//, '/draft/individual-study/');" +
         "";
   }
 }
