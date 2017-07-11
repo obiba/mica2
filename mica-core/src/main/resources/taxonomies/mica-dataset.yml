@@ -64,10 +64,10 @@
   "description":
     "en": "Type of dataset (e.g. data collection or harmonization)"
   "terms":
-  - "name": "StudyDataset"
+  - "name": "CollectedDataset"
     "title":
-      "en": "Collection"
-      "fr": "Collected"
+      "en": "Collected"
+      "fr": "Collecte"
     "description":
       "en": "A collected dataset holds metadata about the variables collected within a data collection event."
       "fr": "Jeux de données spécifique à une étude de collecte."

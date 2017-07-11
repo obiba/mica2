@@ -939,14 +939,14 @@
       "facet-label": "Ensemble de données",
       "label": "Ensemble de données",
       "noResults": "Aucun ensemble de données trouvé",
-      "collection": "Collecte",
+      "collected": "Collecte",
       "harmonization": "Harmonisation"
     },
     "variable": {
       "facet-label": "Variable",
       "label": "Étiquette",
       "noResults": "Aucune variable trouvée",
-      "collection": "Collecte",
+      "collected": "Collecte",
       "dataschema": "Schéma de données"
     },
     "network": {
