@@ -28,7 +28,7 @@ import com.codahale.metrics.annotation.Timed;
 
 @Component
 @Scope("request")
-@Path("/harmonization-datasets")
+@Path("/harmonized-datasets")
 @RequiresAuthentication
 public class PublishedHarmonizationDatasetsResource extends AbstractPublishedDatasetsResource<HarmonizationDataset> {
 

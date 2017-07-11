@@ -57,15 +57,15 @@ mica.dataset
 
   .factory('HarmonizationDatasetsResource', ['$resource',
     function ($resource) {
-      return $resource('ws/draft/harmonization-datasets?comment:comment', {}, {
+      return $resource('ws/draft/harmonized-datasets?comment:comment', {}, {
         'query': {method: 'GET', errorHandler: true, isArray: true},
-        'delete': {method: 'DELETE', url: 'ws/draft/harmonization-dataset/:id', params: {id: '@id'}, errorHandler: true}
+        'delete': {method: 'DELETE', url: 'ws/draft/harmonized-dataset/:id', params: {id: '@id'}, errorHandler: true}
       });
     }])
 
   .factory('DraftHarmonizationDatasetsResource', ['$resource', 'DatasetModelService',
     function ($resource, DatasetModelService) {
-      return $resource('ws/draft/harmonization-datasets', {}, {
+      return $resource('ws/draft/harmonized-datasets', {}, {
         'save': {method: 'POST', errorHandler: true, transformRequest: function(dataset) {
           return DatasetModelService.serialize(dataset);
         }}
@@ -74,7 +74,7 @@ mica.dataset
 
   .factory('HarmonizationDatasetResource', ['$resource', 'DatasetModelService',
     function ($resource, DatasetModelService) {
-      return $resource('ws/draft/harmonization-dataset/:id', {}, {
+      return $resource('ws/draft/harmonized-dataset/:id', {}, {
         'save': {method: 'PUT', params: {id: '@id'}, errorHandler: true, transformRequest: function(dataset) {
           return DatasetModelService.serialize(dataset);
         }},
@@ -86,7 +86,7 @@ mica.dataset
 
   .factory('HarmonizationDatasetPublicationResource', ['$resource',
     function ($resource) {
-      return $resource('ws/draft/harmonization-dataset/:id/_publish', {}, {
+      return $resource('ws/draft/harmonized-dataset/:id/_publish', {}, {
         'publish': {method: 'PUT', params: {id: '@id'}},
         'unPublish': {method: 'DELETE', params: {id: '@id'}}
       });

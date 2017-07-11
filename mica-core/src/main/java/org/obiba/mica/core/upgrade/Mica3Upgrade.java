@@ -60,11 +60,11 @@ public class Mica3Upgrade implements UpgradeStep {
   }
 
   private void updateStudyResourcePathReferences() {
-    logger.info("Replacing all references to /study by /individual-study and /study-dataset by /collected-dataset...");
-    mongoTemplate.execute(db -> db.eval(replaceStudyByCollection()));
+    logger.info("Replacing all references to /study by /individual-study and /study-dataset by /collected-dataset and harmonization-dataset by harmonized-study...");
+    mongoTemplate.execute(db -> db.eval(renameDocuments()));
   }
 
-  private String replaceStudyByCollection() {
+  private String renameDocuments() {
     return
       "function bulkUpdateAttachmentPath(collection, fields, regexp, replace) {\n" +
         "    var bulk = collection.initializeOrderedBulkOp();\n" +
@@ -85,6 +85,13 @@ public class Mica3Upgrade implements UpgradeStep {
         "bulkUpdateAttachmentPath(db.subjectAcl, [\"resource\", \"instance\"], /^\\/study-dataset\\//, '/collected-dataset/');\n" +
         "bulkUpdateAttachmentPath(db.subjectAcl, [\"resource\", \"instance\"], /^\\/draft\\/study-dataset$/, '/draft/collected-dataset');\n" +
         "bulkUpdateAttachmentPath(db.subjectAcl, [\"resource\", \"instance\"], /^\\/draft\\/study-dataset\\//, '/draft/collected-dataset/');\n" +
+        "\n" +
+        "bulkUpdateAttachmentPath(db.attachment, [\"path\"], /^\\/harmonization-dataset\\//, '/harmonized-dataset/');\n" +
+        "bulkUpdateAttachmentPath(db.attachmentState, [\"path\"], /^\\/harmonization-dataset\\//, '/harmonized-dataset/');\n" +
+        "bulkUpdateAttachmentPath(db.subjectAcl, [\"resource\", \"instance\"], /^\\/harmonization-dataset$/, '/harmonized-dataset');\n" +
+        "bulkUpdateAttachmentPath(db.subjectAcl, [\"resource\", \"instance\"], /^\\/harmonization-dataset\\//, '/harmonized-dataset/');\n" +
+        "bulkUpdateAttachmentPath(db.subjectAcl, [\"resource\", \"instance\"], /^\\/draft\\/harmonization-dataset$/, '/draft/harmonized-dataset');\n" +
+        "bulkUpdateAttachmentPath(db.subjectAcl, [\"resource\", \"instance\"], /^\\/draft\\/harmonization-dataset\\//, '/draft/harmonized-dataset/');\n" +
         "\n" +
         "bulkUpdateAttachmentPath(db.attachment, [\"path\"], /^\\/study\\//, '/individual-study/');\n" +
         "bulkUpdateAttachmentPath(db.attachmentState, [\"path\"], /^\\/study\\//, '/individual-study/');\n" +

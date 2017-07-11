@@ -91,7 +91,7 @@
       "studies-with-variables": "Studies with Variables",
       "study-with-variables": "Study with Variables",
       "collected-datasets": "Collected Datasets",
-      "harmonization-datasets": "Harmonization Datasets",
+      "harmonized-datasets": "Harmonized Datasets",
       "variables": "Variables"
     },
     "title": "Application Metrics",
@@ -215,8 +215,8 @@
     "datasets-help": "Index that allows to search for datasets of any type and associated variables.",
     "collected-datasets": "Collected datasets",
     "collected-datasets-help": "Index that allows to search for collected datasets and associated variables.",
-    "harmonization-datasets": "Harmonization datasets",
-    "harmonization-datasets-help": "Index that allows to search for harmonization datasets and associated variables.",
+    "harmonized-datasets": "Harmonized datasets",
+    "harmonized-datasets-help": "Index that allows to search for harmonized datasets and associated variables.",
     "taxonomies": "Taxonomies",
     "taxonomies-help": "Index that allows to search for taxonomy terms (i.e. the search criteria)."
   },
@@ -330,8 +330,8 @@
     "network-enabled-help": "Network section is accessible.",
     "collected-dataset-enabled": "Collected datasets section enabled",
     "collected-dataset-enabled-help": "Collected datasets section is accessible.",
-    "harmonization-dataset-enabled": "Harmonization datasets section enabled",
-    "harmonization-dataset-enabled-help": "Harmonization datasets section is accessible.",
+    "harmonized-dataset-enabled": "Harmonized datasets section enabled",
+    "harmonized-dataset-enabled-help": "Harmonized datasets section is accessible.",
     "roles": "Membership Roles",
     "roles-help": "A person can be member of a study or of a network with one of the listed roles. * Use the prefix <a href='#/admin/translations/edit?filter=contact.label.'>'contact.label.'</a> to change the translation.",
     "add-role": "Add Role",
@@ -361,12 +361,12 @@
       "collected-dataset-subject": "Subject of collected dataset status notification",
       "collected-dataset-help": "Send email notifications when collected dataset status changes to Deleted, to Under review or to Draft.",
       "collected-dataset-subject-help-long": "Email subject can contain the following placeholders: ${organization}, ${documentType}, ${documentId}, ${status}.",
-      "harmonization-dataset-title": "Harmonization Dataset Updates",
-      "harmonization-dataset-info": "Recipients of harmonization dataset updates notifications have at least <code>Editor</code> permission (when status is Draft) or <code>Reviewer</code> permission (when status is Deleted or Under Review).",
-      "harmonization-dataset": "On harmonization dataset status changed notification",
-      "harmonization-dataset-subject": "Subject of harmonization dataset status notification",
-      "harmonization-dataset-help": "Send email notifications when harmonization dataset status changes to Deleted, to Under review or to Draft.",
-      "harmonization-dataset-subject-help-long": "Email subject can contain the following placeholders: ${organization}, ${documentType}, ${documentId}, ${status}.",
+      "harmonized-dataset-title": "Harmonized Dataset Updates",
+      "harmonized-dataset-info": "Recipients of harmonized dataset updates notifications have at least <code>Editor</code> permission (when status is Draft) or <code>Reviewer</code> permission (when status is Deleted or Under Review).",
+      "harmonized-dataset": "On harmonized dataset status changed notification",
+      "harmonized-dataset-subject": "Subject of harmonized dataset status notification",
+      "harmonized-dataset-help": "Send email notifications when harmonized dataset status changes to Deleted, to Under review or to Draft.",
+      "harmonized-dataset-subject-help-long": "Email subject can contain the following placeholders: ${organization}, ${documentType}, ${documentId}, ${status}.",
       "file-title": "File Updates",
       "file-info": "Recipients of file updates notifications have at least <code>Editor</code> permission (when status is Draft) or <code>Reviewer</code> permission (when status is Deleted or Under Review).",
       "file": "On file status changed notification",
@@ -747,8 +747,8 @@
   },
   "collected-datasets": "Collected Datasets",
   "collected-dataset": "Collected Dataset",
-  "harmonization-datasets": "Harmonization Datasets",
-  "harmonization-dataset": "Harmonization Dataset",
+  "harmonized-datasets": "Harmonized Datasets",
+  "harmonized-dataset": "Harmonized Dataset",
   "network": {
     "name": "Name",
     "logo": "Logo",
@@ -910,10 +910,10 @@
       "dce-collection" : "Data Collection Event (DCE)",
       "dce-harmonization" : "Population",
       "network" : "Network",
-      "dataschema": "Harmonization Dataset",
+      "dataschema": "Harmonized Dataset",
       "dataset": "Dataset",
       "dataset-collection": "Collected Dataset",
-      "dataset-harmonization": "Harmonization Dataset",
+      "dataset-harmonization": "Harmonized Dataset",
       "collection": "Collection",
       "harmonization": "Harmonization"
     },
@@ -1059,7 +1059,7 @@
   "new-network": "New Network",
   "new-study": "New Study",
   "new-collected-dataset": "New Collected Dataset",
-  "new-harmonization-dataset": "New Harmonization Dataset",
+  "new-harmonized-dataset": "New Harmonized Dataset",
   "new-data-access-request": "New Data Access Request",
   "new-project": "New Research Project",
   "title": "Title",
@@ -1103,7 +1103,7 @@
       "individual-study-config": "Configure Study form, permissions and search.",
       "harmonization-study-config": "Configure Harmonization Study form, permissions and search.",
       "collected-dataset-config": "Configure Collected Dataset form, permissions and search.",
-      "harmonization-dataset-config": "Configure Harmonization Dataset form, permissions and search.",
+      "harmonized-dataset-config": "Configure Harmonized Dataset form, permissions and search.",
       "data-access-config": "Configure Data Access Request form.",
       "project-config": "Configure Research Project form.",
       "file-system": "Manage file system.",
@@ -1337,11 +1337,11 @@
       "info": "The custom collected dataset form can be specified both in terms of data structure (schema) and data display and validation (definition). See <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>form schema documentation</a> for more details."
     }
   },
-  "harmonization-dataset-config" : {
-    "title" : "Harmonization Dataset Configuration",
+  "harmonized-dataset-config" : {
+    "title" : "Harmonized Dataset Configuration",
     "schema-form": {
       "title": "Form",
-      "info": "The custom harmonization dataset form can be specified both in terms of data structure (schema) and data display and validation (definition). See <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>form schema documentation</a> for more details."
+      "info": "The custom harmonized dataset form can be specified both in terms of data structure (schema) and data display and validation (definition). See <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>form schema documentation</a> for more details."
     }
   },
   "data-access-config": {

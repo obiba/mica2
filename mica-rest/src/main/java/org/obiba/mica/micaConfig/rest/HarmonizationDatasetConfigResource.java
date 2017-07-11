@@ -25,7 +25,7 @@ public class HarmonizationDatasetConfigResource
   extends EntityConfigResource<HarmonizationDatasetConfig, Mica.EntityFormDto>
   implements PermissionAwareResource {
 
-  static final String TARGET_NAME = "harmonization-dataset";
+  static final String TARGET_NAME = "harmonized-dataset";
 
   @Inject
   HarmonizationDatasetConfigService datasetConfigService;

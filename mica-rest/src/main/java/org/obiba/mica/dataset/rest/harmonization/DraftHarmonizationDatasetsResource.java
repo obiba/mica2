@@ -76,7 +76,7 @@ public class DraftHarmonizationDatasetsResource {
    * @return
    */
   @GET
-  @Path("/harmonization-datasets")
+  @Path("/harmonized-datasets")
   @Timed
   public List<Mica.DatasetDto> list(@QueryParam("study") String studyId, @QueryParam("query") String query,
                                     @QueryParam("from") @DefaultValue("0") Integer from,
@@ -90,7 +90,7 @@ public class DraftHarmonizationDatasetsResource {
 
     if(Strings.isNullOrEmpty(query)) {
       List<HarmonizationDataset> datasets = datasetService.findAllDatasets(studyId).stream()
-        .filter(s -> subjectAclService.isPermitted("/draft/harmonization-dataset", "VIEW", s.getId())).collect(toList());
+        .filter(s -> subjectAclService.isPermitted("/draft/harmonized-dataset", "VIEW", s.getId())).collect(toList());
       totalCount = datasets.size();
       result = datasets.stream().map(d -> dtos.asDto(d, true)).skip(from).limit(limit);
     } else {
@@ -106,9 +106,9 @@ public class DraftHarmonizationDatasetsResource {
   }
 
   @POST
-  @Path("/harmonization-datasets")
+  @Path("/harmonized-datasets")
   @Timed
-  @RequiresPermissions({ "/draft/harmonization-dataset:ADD" })
+  @RequiresPermissions({ "/draft/harmonized-dataset:ADD" })
   public Response create(Mica.DatasetDto datasetDto, @Context UriInfo uriInfo,
                          @Nullable @QueryParam("comment") String comment) {
     Dataset dataset = dtos.fromDto(datasetDto);
@@ -117,19 +117,19 @@ public class DraftHarmonizationDatasetsResource {
 
     datasetService.save((HarmonizationDataset) dataset, comment);
     return Response
-      .created(uriInfo.getBaseUriBuilder().segment("draft", "harmonization-dataset", dataset.getId()).build()).build();
+      .created(uriInfo.getBaseUriBuilder().segment("draft", "harmonized-dataset", dataset.getId()).build()).build();
   }
 
   @PUT
-  @Path("/harmonization-datasets/_index")
+  @Path("/harmonized-datasets/_index")
   @Timed
-  @RequiresPermissions({ "/draft/harmonization-dataset:PUBLISH" })
+  @RequiresPermissions({ "/draft/harmonized-dataset:PUBLISH" })
   public Response reIndex() {
     helper.indexAll();
     return Response.noContent().build();
   }
 
-  @Path("/harmonization-dataset/{id}")
+  @Path("/harmonized-dataset/{id}")
   public DraftHarmonizationDatasetResource dataset(@PathParam("id") String id) {
     DraftHarmonizationDatasetResource resource = applicationContext.getBean(DraftHarmonizationDatasetResource.class);
     resource.setId(id);
