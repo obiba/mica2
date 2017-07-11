@@ -64,7 +64,7 @@
   "description":
     "en": "Type of dataset (e.g. data collection or harmonization)"
   "terms":
-  - "name": "CollectedDataset"
+  - "name": "StudyDataset"
     "title":
       "en": "Collected"
       "fr": "Collecte"
