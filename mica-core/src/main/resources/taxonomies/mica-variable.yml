@@ -70,9 +70,9 @@
     "fr": "Type de variable"
   "description": {}
   "terms":
-  - "name": "Collection"
+  - "name": "Collected"
     "title":
-      "en": "Collection"
+      "en": "Collected"
       "fr": "Collecte"
     "description":
       "en": "A collection variable holds metadata about data collected within a data collection event."

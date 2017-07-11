@@ -939,14 +939,14 @@
       "facet-label": "Dataset",
       "label": "Dataset",
       "noResults": "No dataset found",
-      "collection": "Collection",
+      "collected": "Collected",
       "harmonization": "Harmonization"
     },
     "variable": {
       "facet-label": "Variable",
       "label": "Label",
       "noResults": "No variable found",
-      "collection": "Collection",
+      "collected": "Collected",
       "dataschema": "DataSchema"
     },
     "network": {
