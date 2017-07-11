@@ -105,10 +105,10 @@ public class CountStatsDtoBuilders {
     }
 
     public CountStatsDto build(Network network) {
-      return calculateCounts(network.getId(), network.getStudyIds());
+      return calculateCounts(network.getStudyIds());
     }
 
-    private CountStatsDto calculateCounts(String networkId, List<String> ids) {
+    private CountStatsDto calculateCounts(List<String> ids) {
       List<String> studyDatasets = Lists.newArrayList();
       List<String> harmonizationDatasets = Lists.newArrayList();
 

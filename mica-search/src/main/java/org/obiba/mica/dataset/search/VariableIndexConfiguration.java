@@ -52,9 +52,9 @@ public class VariableIndexConfiguration extends AbstractIndexConfiguration
     mapping.startObject("properties");
     createMappingWithoutAnalyzer(mapping, "id");
     createMappingWithoutAnalyzer(mapping, "studyId");
+    createMappingWithoutAnalyzer(mapping, "populationId");
     createMappingWithoutAnalyzer(mapping, "dceId");
     createMappingWithoutAnalyzer(mapping, "datasetId");
-    createMappingWithoutAnalyzer(mapping, "networkId");
     createMappingWithAndWithoutAnalyzer(mapping, "name");
     createMappingWithoutAnalyzer(mapping, "entityType");
     createMappingWithoutAnalyzer(mapping, "variableType");
