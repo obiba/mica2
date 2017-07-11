@@ -202,8 +202,13 @@ public class DatasetQuery extends AbstractDocumentQuery {
   }
 
   @Override
-  protected List<String> getJoinFields() {
+  protected List<String> getAggJoinFields() {
     return Arrays.asList(STUDY_JOIN_FIELD, HARMONIZATION_STUDY_JOIN_FIELD, ID);
+  }
+
+  @Override
+  protected List<String> getJoinFields() {
+    return Arrays.asList(STUDY_JOIN_FIELD, HARMONIZATION_STUDY_JOIN_FIELD);
   }
 
   public Map<String, Map<String, List<String>>> getStudyCountsByDataset() {

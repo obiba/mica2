@@ -308,7 +308,7 @@ public abstract class AbstractDocumentQuery {
     Properties props = new Properties();
 
     try {
-      props.load(new StringReader(getJoinFields().stream().reduce((t, s) -> t + "=\r" + s).get()));
+      props.load(new StringReader(getAggJoinFields().stream().reduce((t, s) -> t + "=\r" + s).get()));
     } catch(IOException e) {
       log.error("Failed to create properties from query join fields: {}", e);
     }
@@ -530,6 +530,10 @@ public abstract class AbstractDocumentQuery {
    *
    * @return
    */
+  protected List<String> getAggJoinFields() {
+    return getJoinFields();
+  }
+
   protected abstract List<String> getJoinFields();
 
   private QueryBuilder newStudyIdQuery(List<String> studyIds) {
