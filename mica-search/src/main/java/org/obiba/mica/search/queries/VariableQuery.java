@@ -289,8 +289,13 @@ public class VariableQuery extends AbstractDocumentQuery {
   }
 
   @Override
-  protected List<String> getJoinFields() {
+  protected List<String> getAggJoinFields() {
     return Arrays.asList(JOIN_FIELD, DATASET_ID);
+  }
+
+  @Override
+  protected List<String> getJoinFields() {
+    return Arrays.asList(JOIN_FIELD);
   }
 
   @NotNull
