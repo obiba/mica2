@@ -26,6 +26,8 @@ public class CountStatsData {
   private Map<String, Integer> studyDatasets;
   private Map<String, Integer> harmonizationDatasets;
   private Map<String, Integer> studies;
+  private Map<String, Integer> individualStudies;
+  private Map<String, Integer> harmonizationStudies;
   private Map<String, Integer> networks;
   private Map<String, List<String>> networksMap;
   private Map<String, Map<String, List<String>>> datasetsMap;
@@ -56,6 +58,14 @@ public class CountStatsData {
 
   public int getStudies(String studyId) {
     return getCount(studies, studyId);
+  }
+
+  public int getIndividualStudies(String studyId) {
+    return getCount(individualStudies, studyId);
+  }
+
+  public int getHarmonizationStudies(String studyId) {
+    return getCount(harmonizationStudies, studyId);
   }
 
   public int getNetworkCount(String studyId) {
@@ -129,6 +139,16 @@ public class CountStatsData {
 
     public Builder studies(Map<String, Integer> value) {
       data.studies = value;
+      return this;
+    }
+
+    public Builder individualStudies(Map<String, Integer> value) {
+      data.individualStudies = value;
+      return this;
+    }
+
+    public Builder harmonizationStudies(Map<String, Integer> value) {
+      data.harmonizationStudies = value;
       return this;
     }
 

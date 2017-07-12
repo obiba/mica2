@@ -569,12 +569,22 @@ public abstract class AbstractDocumentQuery {
 
   protected Map<String, Integer> getDocumentCounts(String joinField) {
     if(resultDto == null) return Maps.newHashMap();
-    return resultDto.getAggsList().stream() //
-      .filter(agg -> joinField.equals(AggregationAliasHelper.unformatName(agg.getAggregation()))) //
-      .map(d -> d.getExtension(MicaSearch.TermsAggregationResultDto.terms)) //
-      .flatMap(Collection::stream) //
-      .filter(s -> s.getCount() > 0) //
-      .collect(Collectors.toMap(MicaSearch.TermsAggregationResultDto::getKey, term -> term.getCount()));
+    return getDocumentCountsFilteredByClassName(joinField, null);
+  }
+
+  protected Map<String, Integer> getDocumentCountsFilteredByClassName(String joinField, String className) {
+    if(resultDto == null) return Maps.newHashMap();
+
+    return
+      resultDto.getAggsList().stream()
+        .filter(agg -> joinField.equals(AggregationAliasHelper.unformatName(agg.getAggregation())))
+        .map(d -> d.getExtension(MicaSearch.TermsAggregationResultDto.terms)).flatMap(Collection::stream)
+        .filter(s -> s.getCount() > 0)
+        .filter(s -> Strings.isNullOrEmpty(className) || className.equals(s.getClassName()))
+        .collect(Collectors.toMap(
+          MicaSearch.TermsAggregationResultDto::getKey,
+          MicaSearch.TermsAggregationResultDto::getCount)
+      );
   }
 
   protected Map<String, Integer> getDocumentBucketCounts(String joinField, String bucketField, String bucketValue) {

@@ -29,6 +29,8 @@ import org.obiba.mica.micaConfig.service.helper.AggregationMetaDataProvider;
 import org.obiba.mica.search.CountStatsData;
 import org.obiba.mica.search.aggregations.StudyTaxonomyMetaDataProvider;
 import org.obiba.mica.study.domain.BaseStudy;
+import org.obiba.mica.study.domain.HarmonizationStudy;
+import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.search.StudyIndexer;
 import org.obiba.mica.study.service.CollectionStudyService;
 import org.obiba.mica.study.service.HarmonizationStudyService;
@@ -135,6 +137,14 @@ public class StudyQuery extends AbstractDocumentQuery {
   @Override
   public Map<String, Integer> getStudyCounts() {
     return getDocumentCounts(JOIN_FIELD);
+  }
+
+  public Map<String, Integer> getHarmonizationStudyCounts() {
+    return getDocumentCountsFilteredByClassName(JOIN_FIELD, HarmonizationStudy.class.getSimpleName());
+  }
+
+  public Map<String, Integer> getIndividualStudyCounts() {
+    return getDocumentCountsFilteredByClassName(JOIN_FIELD, Study.class.getSimpleName());
   }
 
   @Override
