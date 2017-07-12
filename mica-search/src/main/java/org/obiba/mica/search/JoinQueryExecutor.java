@@ -426,8 +426,10 @@ public class JoinQueryExecutor {
             .build();
         break;
       case NETWORK:
-        countStats = CountStatsData.newBuilder().variables(variableQuery.getDatasetCounts()) //
-            .datasetsMap(datasetQuery.getStudyCountsByDataset()) //
+        countStats = CountStatsData.newBuilder().variables(variableQuery.getDatasetCounts())
+            .datasetsMap(datasetQuery.getStudyCountsByDataset())
+            .individualStudies(datasetQuery.getStudyCounts())
+            .harmonizationStudies(datasetQuery.getHarmonizationStudyCounts())
             .studies(studyQuery.getStudyCounts()).build();
         break;
     }

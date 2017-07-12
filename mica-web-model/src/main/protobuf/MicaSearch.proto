@@ -164,10 +164,13 @@ message CountStatsDto {
   optional int32 studyDatasets = 2;
   optional int32 harmonizationDatasets = 3;
   optional int32 studies = 4;
-  optional int32 networks = 5;
-  optional int32 studyVariables = 6;
-  optional int32 dataschemaVariables = 7;
-  optional int32 studiesWithVariables = 8;
+  optional int32 individualStudies = 5;
+  optional int32 harmonizationStudies = 6;
+  optional int32 networks = 7;
+  optional int32 studyVariables = 8;
+  optional int32 dataschemaVariables = 9;
+  optional int32 studiesWithVariables = 10;
+  optional int32 harmonizationStudiesWithVariables = 11;
 
   extend StudySummaryDto {
     optional CountStatsDto studyCountStats = 1001;
