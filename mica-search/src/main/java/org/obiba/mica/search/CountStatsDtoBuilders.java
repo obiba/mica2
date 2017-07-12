@@ -112,7 +112,8 @@ public class CountStatsDtoBuilders {
       List<String> studyDatasets = Lists.newArrayList();
       List<String> harmonizationDatasets = Lists.newArrayList();
 
-      int studies = 0;
+      int individualStudies = 0;
+      int harmonizationStudies = 0;
 
       for(String id : ids) {
         Map<String, List<String>> datasets = countStatsData.getDataset(id);
@@ -125,7 +126,8 @@ public class CountStatsDtoBuilders {
           harmonizationDatasets.addAll(datasets.get(DatasetQuery.HARMONIZATION_STUDY_JOIN_FIELD));
         }
 
-        studies += countStatsData.getStudies(id);
+        individualStudies += countStatsData.getIndividualStudies(id);
+        harmonizationStudies += countStatsData.getHarmonizationStudies(id);
       }
 
       studyDatasets = studyDatasets.stream().distinct().collect(Collectors.toList());
@@ -140,9 +142,13 @@ public class CountStatsDtoBuilders {
           .setDataschemaVariables(dataschemaVariables)
           .setStudyDatasets(studyDatasets.size())
           .setHarmonizationDatasets(harmonizationDatasets.size())
-          .setStudies(studies)
+          .setStudies(individualStudies + harmonizationStudies)
+          .setIndividualStudies(individualStudies)
+          .setHarmonizationStudies(harmonizationStudies)
           .setStudiesWithVariables((int) ids.stream()
-              .filter(i -> countStatsData.getDataset(i).containsKey(DatasetQuery.STUDY_JOIN_FIELD)).count())
+              .filter(i -> countStatsData.getDataset(i).containsKey(DatasetQuery.STUDY_JOIN_FIELD)).count()) // only collected study variables
+          .setHarmonizationStudiesWithVariables((int) ids.stream()
+            .filter(i -> countStatsData.getDataset(i).containsKey(DatasetQuery.HARMONIZATION_STUDY_JOIN_FIELD)).count()) // only harmonized study variables
           .build();
     }
   }

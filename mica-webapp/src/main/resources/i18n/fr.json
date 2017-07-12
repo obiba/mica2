@@ -88,11 +88,17 @@
     "mica": {
       "networks": "Réseaux",
       "studies": "Études",
-      "studies-with-variables": "Études avec des variables",
-      "study-with-variables": "Étude avec des variables",
+      "studies-with-variables": "Études individuelles avec des variables",
+      "study-with-variables": "Étude individuelle avec des variables",
+      "harmonization-studies-with-variables": "Études harmonisées avec des variables",
+      "harmonization-study-with-variables": "Étude harmonisée avec des variables",
       "collected-datasets": "Ensemble de données de collecte",
       "harmonized-datasets": "Ensemble de données harmonisées",
-      "variables": "Variables"
+      "variables": "Variables",
+      "study-variables": "Variables d'études individuelles",
+      "study-variable": "Variable d'étude individuelle",
+      "harmonization-study-variables": "Variables d'études harmonisées",
+      "harmonization-study-variable": "Variable d'études harmonisées"
     },
     "title": "Métriques de l'application",
     "refresh.button": "Rafraichir",
