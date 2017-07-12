@@ -67,7 +67,7 @@ class EsDraftHarmonizationDatasetService extends AbstractDocumentService<Harmoni
   @Override
   protected QueryBuilder filterByAccess() {
     List<String> ids = harmonizationDatasetService.findAllStates().stream().map(HarmonizationDatasetState::getId)
-      .filter(s -> subjectAclService.isPermitted("/draft/harmonization-dataset", "VIEW", s)).collect(Collectors.toList());
+      .filter(s -> subjectAclService.isPermitted("/draft/harmonized-dataset", "VIEW", s)).collect(Collectors.toList());
 
     return ids.isEmpty()
       ? QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("id"))

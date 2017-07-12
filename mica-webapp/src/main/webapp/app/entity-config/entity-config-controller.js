@@ -40,7 +40,7 @@ mica.entityConfig
       var FORMS = {'network': ['network'],
         'individual-study': ['individual-study', 'population', 'data-collection-event'],
         'collected-dataset': ['collected-dataset'],
-        'harmonization-dataset': ['harmonization-dataset'],
+        'harmonized-dataset': ['harmonized-dataset'],
         'harmonization-study': ['harmonization-study', 'harmonization-population']
       };
 

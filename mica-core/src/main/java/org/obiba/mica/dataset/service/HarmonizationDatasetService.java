@@ -505,7 +505,7 @@ public class HarmonizationDatasetService extends DatasetService<HarmonizationDat
 
   @Override
   public String getTypeName() {
-    return "harmonization-dataset";
+    return "harmonized-dataset";
   }
 
   @Override

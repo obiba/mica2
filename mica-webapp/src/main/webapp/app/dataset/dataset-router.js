@@ -26,20 +26,20 @@ mica.dataset
           templateUrl: 'app/dataset/views/collection-dataset-form.html',
           controller: 'CollectionDatasetEditController'
         })
-        .when('/harmonization-dataset', {
+        .when('/harmonized-dataset', {
           templateUrl: 'app/dataset/views/harmonization-dataset-list.html',
           controller: 'HarmonizationDatasetListController'
         })
-        .when('/harmonization-dataset/new', {
+        .when('/harmonized-dataset/new', {
           templateUrl: 'app/dataset/views/harmonization-dataset-form.html',
           controller: 'HarmonizationDatasetEditController'
         })
-        .when('/harmonization-dataset/:id/edit', {
+        .when('/harmonized-dataset/:id/edit', {
           templateUrl: 'app/dataset/views/harmonization-dataset-form.html',
           controller: 'HarmonizationDatasetEditController'
         });
 
-      ['collected-dataset', 'harmonization-dataset'].forEach(
+      ['collected-dataset', 'harmonized-dataset'].forEach(
         function (type) {
           $routeProvider
             .when('/' + type + '/:id', {

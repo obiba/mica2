@@ -45,11 +45,11 @@ public class DraftDatasetVariableResource {
         resource = applicationContext.getBean(DraftCollectionDatasetVariableResource.class);
         break;
       case Dataschema:
-        subjectAclService.isPermitted("/draft/harmonization-dataset", "VIEW", resolver.getDatasetId());
+        subjectAclService.isPermitted("/draft/harmonized-dataset", "VIEW", resolver.getDatasetId());
         resource = applicationContext.getBean(DraftDataschemaDatasetVariableResource.class);
         break;
       case Harmonized:
-        subjectAclService.isPermitted("/draft/harmonization-dataset", "VIEW", resolver.getDatasetId());
+        subjectAclService.isPermitted("/draft/harmonized-dataset", "VIEW", resolver.getDatasetId());
         resource = applicationContext.getBean(DraftHarmonizedDatasetVariableResource.class);
         ((DraftHarmonizedDatasetVariableResource) resource).setStudyId(resolver.getStudyId());
         ((DraftHarmonizedDatasetVariableResource) resource).setProject(resolver.getProject());

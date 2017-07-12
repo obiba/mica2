@@ -832,9 +832,9 @@ public class FileSystemService {
   }
 
   private String getDatasetTypeFolder(Dataset dataset) {
-    String type = "collection-dataset";
+    String type = "collected-dataset";
     if(dataset instanceof HarmonizationDataset) {
-      type = "harmonization-dataset";
+      type = "harmonized-dataset";
     }
     return type;
   }

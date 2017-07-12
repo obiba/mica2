@@ -40,7 +40,7 @@ import com.google.common.collect.Lists;
 
 @Component
 @Scope("request")
-@Path("/harmonization-dataset/{id}")
+@Path("/harmonized-dataset/{id}")
 @RequiresAuthentication
 public class PublishedHarmonizationDatasetResource extends AbstractPublishedDatasetResource<HarmonizationDataset> {
 
@@ -192,6 +192,6 @@ public class PublishedHarmonizationDatasetResource extends AbstractPublishedData
   }
 
   private void checkAccess(String id) {
-    subjectAclService.checkAccess("/harmonization-dataset", id);
+    subjectAclService.checkAccess("/harmonized-dataset", id);
   }
 }

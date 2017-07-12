@@ -265,7 +265,7 @@ mica.dataset
             $scope.sfOptions.formDefaults = {languages: formLanguages};
           });
 
-          EntityFormResource.get({target: 'harmonization-dataset', locale: $translate.use()}, function (form) {
+          EntityFormResource.get({target: 'harmonized-dataset', locale: $translate.use()}, function (form) {
             form.schema = angular.fromJson(form.schema);
             form.definition = angular.fromJson(form.definition);
             $scope.sfForm = form;
@@ -355,14 +355,14 @@ mica.dataset
       };
 
       $scope.cancel = function () {
-        $location.path('/harmonization-dataset' + ($scope.dataset.id ? '/' + $scope.dataset.id : '')).replace();
+        $location.path('/harmonized-dataset' + ($scope.dataset.id ? '/' + $scope.dataset.id : '')).replace();
       };
 
       var updateDataset = function () {
         $scope.dataset.$save({comment: $scope.revision.comment},
           function (dataset) {
             FormDirtyStateObserver.unobserve();
-            $location.path('/harmonization-dataset/' + dataset.id).replace();
+            $location.path('/harmonized-dataset/' + dataset.id).replace();
           },
           saveErrorHandler);
       };
@@ -372,7 +372,7 @@ mica.dataset
           function (resource, getResponseHeaders) {
             FormDirtyStateObserver.unobserve();
             var parts = getResponseHeaders().location.split('/');
-            $location.path('/harmonization-dataset/' + parts[parts.length - 1]).replace();
+            $location.path('/harmonized-dataset/' + parts[parts.length - 1]).replace();
           },
           saveErrorHandler);
       };
@@ -480,25 +480,25 @@ mica.dataset
             controller: 'StudyTableModalController',
             resolve: {
               table: function() {
-                if($scope.type === 'harmonization-dataset') {
+                if($scope.type === 'harmonized-dataset') {
                   return angular.isDefined(wrapper) ? wrapper.table : {weight: $scope.opalTables ? $scope.opalTables.length : 0};
                 } else {
                   return angular.isDefined($scope.dataset['obiba.mica.CollectedDatasetDto.type']) ? $scope.dataset['obiba.mica.CollectedDatasetDto.type'].studyTable : {};
                 }
               },
               tableType: function () {
-                if($scope.type === 'harmonization-dataset') {
+                if($scope.type === 'harmonized-dataset') {
                   return wrapper ? wrapper.type : mica.dataset.OPAL_TABLE_TYPES.STUDY_TABLE;
                 } else {
                   return mica.dataset.OPAL_TABLE_TYPES.STUDY_TABLE;
                 }
               },
-              isHarmonizationDatasetScope: $scope.type === 'harmonization-dataset'
+              isHarmonizationDatasetScope: $scope.type === 'harmonized-dataset'
             }
           })
           .result.then(
             function (data) {
-              if($scope.type === 'harmonization-dataset') {
+              if($scope.type === 'harmonized-dataset') {
                 OpalTablesService.addUpdateTable($scope.dataset, data.type, wrapper, data.table);
               } else {
                 OpalTablesService.setTable($scope.dataset, data.table);
@@ -515,7 +515,7 @@ mica.dataset
         $scope.selectedLocale = $translate.use();
 
         $scope.permissions = DocumentPermissionsService.state(dataset['obiba.mica.EntityStateDto.datasetState']);
-        if($scope.type === 'harmonization-dataset') {
+        if($scope.type === 'harmonized-dataset') {
           if(dataset['obiba.mica.HarmonizationDatasetDto.type'].harmonizationTable) {
             StudyStatesResource.get({id: dataset['obiba.mica.HarmonizationDatasetDto.type'].harmonizationTable.studyId}).$promise.then(function (harmonizationStudy) {
               $scope.datasetStudy = harmonizationStudy.id;
@@ -619,7 +619,7 @@ mica.dataset
       };
 
       function saveAndUpdateDataset() {
-        if($scope.type === 'harmonization-dataset') {
+        if($scope.type === 'harmonized-dataset') {
           HarmonizationDatasetResource.save({id: $scope.dataset.id}, $scope.dataset).$promise.then(function () {
             fetchDataset($scope.dataset.id);
           });

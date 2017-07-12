@@ -79,7 +79,7 @@
           <span><i class="i-obiba-dataset"></i> {{docId}}</span>
         </a>
       </li>
-      <li ng-if="docPath === '/harmonization-dataset'">
+      <li ng-if="docPath === '/harmonized-dataset'">
         <a href ng-click="navigateToPath(docPath + '/' + docId)">
           <span><i class="i-obiba-harmo-dataset"></i> {{docId}}</span>
         </a>
@@ -108,8 +108,8 @@
         </a>
       </li>
       <li ng-if="isHarmonizationDatasetEnabled">
-        <a href ng-click="navigateToPath('/harmonization-dataset')">
-          <span><i class="i-obiba-harmo-dataset"></i> {{'harmonization-datasets' | translate}}</span>
+        <a href ng-click="navigateToPath('/harmonized-dataset')">
+          <span><i class="i-obiba-harmo-dataset"></i> {{'harmonized-datasets' | translate}}</span>
         </a>
       </li>
       <li>

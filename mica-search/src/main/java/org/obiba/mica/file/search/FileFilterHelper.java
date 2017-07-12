@@ -82,7 +82,7 @@ public class FileFilterHelper {
         path.startsWith("/individual-study/") ||
         path.startsWith("/harmonization-study/") ||
         path.startsWith("/collected-dataset/") ||
-        path.startsWith("/harmonization-dataset/") ||
+        path.startsWith("/harmonized-dataset/") ||
         path.startsWith("/project/"));
   }
 
@@ -183,19 +183,19 @@ public class FileFilterHelper {
   }
 
   private List<String> getHarmonizationDatasetIds(String basePath, boolean draft) {
-    if("/".equals(basePath) || "/harmonization-dataset".equals(basePath)) {
+    if("/".equals(basePath) || "/harmonized-dataset".equals(basePath)) {
       return draft
         ? harmonizationDatasetService.findAllStates().stream().map(HarmonizationDatasetState::getId)
-        .filter(s -> subjectAclService.isPermitted("/draft/harmonization-dataset", "VIEW", s))
+        .filter(s -> subjectAclService.isPermitted("/draft/harmonized-dataset", "VIEW", s))
         .collect(Collectors.toList())
         : harmonizationDatasetService.findPublishedStates().stream().map(HarmonizationDatasetState::getId)
-          .filter(s -> subjectAclService.isAccessible("/harmonization-dataset", s)).collect(Collectors.toList());
+          .filter(s -> subjectAclService.isAccessible("/harmonized-dataset", s)).collect(Collectors.toList());
     }
-    if(basePath.startsWith("/harmonization-dataset/")) {
-      String id = extractId(basePath,"/harmonization-dataset/");
+    if(basePath.startsWith("/harmonized-dataset/")) {
+      String id = extractId(basePath,"/harmonized-dataset/");
       if(draft
-        ? subjectAclService.isPermitted("/draft/harmonization-dataset", "VIEW", id)
-        : subjectAclService.isAccessible("/harmonization-dataset", id)) return Lists.newArrayList(id);
+        ? subjectAclService.isPermitted("/draft/harmonized-dataset", "VIEW", id)
+        : subjectAclService.isAccessible("/harmonized-dataset", id)) return Lists.newArrayList(id);
     }
     return Lists.newArrayList();
   }
@@ -240,7 +240,7 @@ public class FileFilterHelper {
     addFilter(excludes, includes, "/individual-study", collectionStudyIds);
     addFilter(excludes, includes, "/harmonization-study", harmonizationStudyIds);
     addFilter(excludes, includes, "/collected-dataset", studyDatasetIds);
-    addFilter(excludes, includes, "/harmonization-dataset", harmonizationDatasetIds);
+    addFilter(excludes, includes, "/harmonized-dataset", harmonizationDatasetIds);
     addFilter(excludes, includes, "/project", projectIds);
 
     BoolQueryBuilder includedFilter = QueryBuilders.boolQuery();

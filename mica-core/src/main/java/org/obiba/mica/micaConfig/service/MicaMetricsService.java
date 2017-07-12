@@ -176,11 +176,11 @@ public class MicaMetricsService {
   }
 
   public long getDraftHarmonizationDatasetFilesCount() {
-    return draftFileService.getCount("harmonization-dataset");
+    return draftFileService.getCount("harmonized-dataset");
   }
 
   public long getPublishedHarmonizationDatasetFilesCount() {
-    return publishedFileService.getCount("harmonization-dataset");
+    return publishedFileService.getCount("harmonized-dataset");
   }
 
   // Project
