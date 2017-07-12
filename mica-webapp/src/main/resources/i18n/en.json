@@ -88,11 +88,17 @@
     "mica": {
       "networks": "Networks",
       "studies": "Studies",
-      "studies-with-variables": "Studies with Variables",
-      "study-with-variables": "Study with Variables",
+      "studies-with-variables": "Individual Studies with Variables",
+      "study-with-variables": "Individual Study with Variables",
+      "harmonization-studies-with-variables": "Harmonization Studies with Variables",
+      "harmonization-study-with-variables": "Harmonization Study with Variables",
       "collected-datasets": "Collected Datasets",
       "harmonized-datasets": "Harmonized Datasets",
-      "variables": "Variables"
+      "variables": "Variables",
+      "study-variables": "Individual Study Variables",
+      "study-variable": "Individual Study Variable",
+      "harmonization-study-variables": "Harmonization Study Variables",
+      "harmonization-study-variable": "Harmonization Study Variable"
     },
     "title": "Application Metrics",
     "refresh.button": "Refresh",
