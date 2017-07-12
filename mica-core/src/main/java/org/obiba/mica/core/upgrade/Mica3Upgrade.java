@@ -9,10 +9,6 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 
 @Component
 public class Mica3Upgrade implements UpgradeStep {
@@ -40,23 +36,10 @@ public class Mica3Upgrade implements UpgradeStep {
     logger.info("Executing Mica upgrade to version 3.0.0");
 
     try {
-      moveGitRepositoryOfStudies();
-    } catch (IOException e) {
-      logger.error("Error occurred when moving git repository from studies to individualStudies.", e);
-    }
-
-    try {
       updateStudyResourcePathReferences();
     } catch (RuntimeException e) {
       logger.error("Error occurred when updating Study path resources (/study -> /individual-study and /study-dataset -> /collected-dataset).", e);
     }
-  }
-
-  private void moveGitRepositoryOfStudies() throws IOException {
-    File repositoriesRoot = gitService.getRepositoriesRoot();
-    Path oldGitPath = new File(repositoriesRoot, "/studies").toPath();
-    Path newGitPath = new File(repositoriesRoot, "/individualStudies").toPath();
-    Files.move(oldGitPath, newGitPath);
   }
 
   private void updateStudyResourcePathReferences() {
