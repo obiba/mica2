@@ -410,10 +410,12 @@ public class JoinQueryExecutor {
     CountStatsData countStats = null;
     switch(type) {
       case DATASET:
-        countStats = CountStatsData.newBuilder().variables(variableQuery.getDatasetCounts()) //
-            .studyVariables(variableQuery.getStudyVariableByDatasetCounts()) //
-            .dataschemaVariables(variableQuery.getDataschemaVariableByDatasetCounts()) //
-            .studies(studyQuery.getStudyCounts()) //
+        countStats = CountStatsData.newBuilder().variables(variableQuery.getDatasetCounts())
+            .studyVariables(variableQuery.getStudyVariableByDatasetCounts())
+            .dataschemaVariables(variableQuery.getDataschemaVariableByDatasetCounts())
+            .studies(studyQuery.getStudyCounts())
+            .individualStudies(studyQuery.getIndividualStudyCounts())
+            .harmonizationStudies(studyQuery.getHarmonizationStudyCounts())
             .networksMap(networkQuery.getStudyCountsByNetwork()).build();
         break;
       case STUDY:

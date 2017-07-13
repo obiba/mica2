@@ -10,12 +10,11 @@
 
 package org.obiba.mica.search;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.obiba.mica.core.domain.StudyTable;
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.domain.StudyDataset;
@@ -58,17 +57,21 @@ public class CountStatsDtoBuilders {
     }
 
     private CountStatsDto calculateCounts(Dataset dataset, List<String> ids) {
-      int studies = 0;
+      int individualStudies = 0;
+      int harmonizationStudies = 0;
 
       List<String> networks = Lists.newArrayList();
       for(String id : ids) {
-        studies += countStatsData.getStudies(id);
+        individualStudies += countStatsData.getIndividualStudies(id);
+        harmonizationStudies += countStatsData.getHarmonizationStudies(id);
         networks.addAll(countStatsData.getNetworks(id));
       }
 
       CountStatsDto.Builder builder = CountStatsDto.newBuilder()
-          .setVariables(countStatsData.getVariables(dataset.getId())) //
-          .setStudies(studies);
+        .setVariables(countStatsData.getVariables(dataset.getId()))
+        .setStudies(individualStudies + harmonizationStudies)
+        .setIndividualStudies(individualStudies)
+        .setHarmonizationStudies(harmonizationStudies);
       int networksCount = (int) networks.stream().distinct().count();
       builder.setNetworks(networksCount);
 
@@ -76,20 +79,20 @@ public class CountStatsDtoBuilders {
     }
 
     private List<String> getStudyIds(Dataset dataset) {
+      List<String> ids = new ArrayList<>();
       if(dataset instanceof StudyDataset) {
         StudyDataset sDataset = (StudyDataset) dataset;
         if(sDataset.hasStudyTable()) {
-          return Arrays.asList(sDataset.getStudyTable().getStudyId());
+          ids.add(sDataset.getStudyTable().getStudyId());
         }
       } else {
         HarmonizationDataset hDataset = (HarmonizationDataset) dataset;
-        List<StudyTable> tables = hDataset.getStudyTables();
-        if(tables.size() > 0) {
-          return tables.stream().map(StudyTable::getStudyId).distinct().collect(Collectors.toList());
+        if (hDataset.hasHarmonizationTable()) {
+          ids.add(hDataset.getHarmonizationTable().getStudyId());
         }
       }
 
-      return Lists.newArrayList();
+      return ids;
     }
 
   }
