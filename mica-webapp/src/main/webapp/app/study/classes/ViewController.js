@@ -190,7 +190,7 @@ mica.study.ViewController = function (
 
   self.initializeStudy = function (study) {
     if (study.logo) {
-      self.logoUrl = 'ws/draft/individual-study/' + study.id + '/file/' + study.logo.id + '/_download';
+      $scope.logoUrl = 'ws/draft/individual-study/' + study.id + '/file/' + study.logo.id + '/_download';
     }
 
     if (self.getViewMode() === self.Mode.View || self.getViewMode() === self.Mode.Revision) {
