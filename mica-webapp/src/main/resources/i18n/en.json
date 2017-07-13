@@ -939,14 +939,16 @@
       "others": "Others",
       "design": "Study design",
       "participants": "Participants",
-      "other-design": "Other design"
+      "other-design": "Other design",
+      "individual": "Individual",
+      "harmonization": "Harmonization"
     },
     "dataset": {
       "facet-label": "Dataset",
       "label": "Dataset",
       "noResults": "No dataset found",
       "collected": "Collected",
-      "harmonization": "Harmonization"
+      "harmonized": "Harmonized"
     },
     "variable": {
       "facet-label": "Variable",
