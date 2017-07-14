@@ -1,6 +1,7 @@
 package org.obiba.mica.core.upgrade;
 
-import org.obiba.mica.core.service.GitService;
+import org.obiba.mica.dataset.HarmonizationDatasetStateRepository;
+import org.obiba.mica.dataset.service.HarmonizationDatasetService;
 import org.obiba.runtime.Version;
 import org.obiba.runtime.upgrade.UpgradeStep;
 import org.slf4j.Logger;
@@ -19,7 +20,10 @@ public class Mica3Upgrade implements UpgradeStep {
   private MongoTemplate mongoTemplate;
 
   @Inject
-  private GitService gitService;
+  private HarmonizationDatasetService harmonizationDatasetService;
+
+  @Inject
+  private HarmonizationDatasetStateRepository harmonizationDatasetStateRepository;
 
   @Override
   public String getDescription() {
@@ -40,6 +44,14 @@ public class Mica3Upgrade implements UpgradeStep {
     } catch (RuntimeException e) {
       logger.error("Error occurred when updating Study path resources (/study -> /individual-study and /study-dataset -> /collected-dataset).", e);
     }
+
+    unpublishAllHarmonizationDataset();
+  }
+
+  private void unpublishAllHarmonizationDataset() {
+    harmonizationDatasetStateRepository.findByPublishedTagNotNull().forEach(
+      harmonizationDatasetState -> harmonizationDatasetService.unPublishState(harmonizationDatasetState.getId())
+    );
   }
 
   private void updateStudyResourcePathReferences() {
