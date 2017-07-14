@@ -711,7 +711,7 @@ class DatasetDtos {
     String studyId = harmonizationLink.getStudyId();
 
     if (asDraft) {
-      if(studyId != null && subjectAclService.isPermitted("/draft/harmonization-study", "VIEW", studyId)) {
+      if(studyId != null) {
         harmonizationLinkBuilder.setStudyId(harmonizationLink.getStudyId());
         harmonizationLinkBuilder.setPopulationId(harmonizationLink.getPopulationId());
       }

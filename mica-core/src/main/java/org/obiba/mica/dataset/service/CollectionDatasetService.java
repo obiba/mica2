@@ -411,7 +411,7 @@ public class CollectionDatasetService extends DatasetService<StudyDataset, Study
 
   @Override
   public String getTypeName() {
-    return "collection-dataset";
+    return "collected-dataset";
   }
 
   @Override
