@@ -1602,6 +1602,11 @@
     }
   },
   "client": {
+    "message": {
+      "variable": {
+        "no-harmonization-algo": "No harmonization algorithms found for this variable."
+      }
+    },
     "label": {
       "countries": "Countries",
       "dataschema-variable": "DataSchema Variable",
