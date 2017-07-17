@@ -580,7 +580,10 @@
       "contact": "Contacts",
       "investigator": "Enquêteurs"
     },
-    "label": "Contact",
+    "label": {
+      "contact": "Contact",
+      "investigator": "Enquêteur"
+    },
     "delete": {
       "member": {
         "title": "Supprimer {{type}}",
@@ -918,9 +921,9 @@
       "network" : "Réseau",
       "dataschema": "Ensemble de données Harmonisées",
       "dataset": "Ensemble de données",
-      "dataset-collection": "Ensemble de données de collecte",
-      "dataset-harmonization": "Ensemble de données d'harmonisation",
-      "collection": "Collecte",
+      "dataset-collection": "Collecte",
+      "dataset-harmonization": "Harmonisée",
+      "collection": "Individuel",
       "harmonization": "Harmonisation"
     },
     "coverage-select": {

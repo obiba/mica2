@@ -580,7 +580,10 @@
       "contact": "Contacts",
       "investigator": "Investigators"
     },
-    "label": "Contact",
+    "label": {
+      "contact": "Contact",
+      "investigator": "Investigator"
+    },
     "delete": {
       "member": {
         "title": "Delete {{type}}",
@@ -918,9 +921,9 @@
       "network" : "Network",
       "dataschema": "Harmonized Dataset",
       "dataset": "Dataset",
-      "dataset-collection": "Collected Dataset",
-      "dataset-harmonization": "Harmonized Dataset",
-      "collection": "Collection",
+      "dataset-collection": "Collected ",
+      "dataset-harmonization": "Harmonized",
+      "collection": "Individual",
       "harmonization": "Harmonization"
     },
     "coverage-select": {

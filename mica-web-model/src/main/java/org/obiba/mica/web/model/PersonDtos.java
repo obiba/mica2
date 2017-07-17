@@ -149,7 +149,7 @@ class PersonDtos {
         builder.addAllParentName(localizedStringDtos.asDto(study.getName()));
         builder.setExtension(
           Mica.PersonDto.StudyMembershipDto.meta,
-          Mica.PersonDto.StudyMembershipDto.newBuilder().setClassName(study.getClassName()).build()
+          Mica.PersonDto.StudyMembershipDto.newBuilder().setType(study.getResourcePath()).build()
         );
       }
     }

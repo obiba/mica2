@@ -231,16 +231,6 @@ mica.network
         }).$promise.then(function (result) {
             $scope.persons = (result.persons || []).filter(function (p) {
               return p.studyMemberships && p.studyMemberships.length > 0 || p.networkMemberships && p.networkMemberships.length > 0;
-            }).map(function (membership){
-              if (angular.isDefined(membership.studyMemberships)) {
-                membership.studyMemberships.forEach(function(studyMembership) {
-                  studyMembership['url'] =
-                    studyMembership['obiba.mica.PersonDto.StudyMembershipDto.meta'].className === 'Study'
-                      ? 'individual-study'
-                      : 'harmonization-study';
-                });
-              }
-              return membership;
             });
           });
       }

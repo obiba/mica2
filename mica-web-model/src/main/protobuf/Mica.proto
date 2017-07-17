@@ -320,7 +320,7 @@ message PersonDto {
   }
 
   message StudyMembershipDto {
-    required string className = 1;
+    required string type = 1;
 
     extend MembershipDto {
       optional StudyMembershipDto meta = 1000;
