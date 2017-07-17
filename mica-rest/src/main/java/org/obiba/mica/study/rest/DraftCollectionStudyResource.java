@@ -115,7 +115,9 @@ public class DraftCollectionStudyResource extends AbstractGitPersistableResource
   public Response unPublish() {
     checkPermission("/draft/individual-study", "PUBLISH");
     collectionStudyService.publish(id, false);
-    return Response.ok(collectionStudyService.getPotentialConflicts(collectionStudyService.findStudy(id), true), MediaType.APPLICATION_JSON_TYPE).build();
+    HashMap<Object, Object> response = Maps.newHashMap();
+    response.put("conflicts", collectionStudyService.getPotentialConflicts(collectionStudyService.findStudy(id), true));
+    return Response.ok(response, MediaType.APPLICATION_JSON_TYPE).build();
   }
 
   @PUT

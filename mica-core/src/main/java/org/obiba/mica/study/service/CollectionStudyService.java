@@ -238,7 +238,7 @@ public class CollectionStudyService extends AbstractStudyService<StudyState, Stu
         return studyDatasetRepository.findByStudyTableStudyIdAndStudyTablePopulationIdAndStudyTableDataCollectionEventId(
           split[0], split[1], split[2]);
       })
-      .reduce(Lists.newArrayList(), this::listAddAll).stream()
+      .reduce(Lists.newArrayList(), StudyService::listAddAll).stream()
       .map(AbstractGitPersistable::getId).distinct().collect(toList());
   }
 
@@ -250,7 +250,7 @@ public class CollectionStudyService extends AbstractStudyService<StudyState, Stu
         return harmonizationDatasetRepository.findByStudyTablesStudyIdAndStudyTablesPopulationIdAndStudyTablesDataCollectionEventId(
           split[0], split[1], split[2]);
       })
-      .reduce(Lists.newArrayList(), this::listAddAll).stream()
+      .reduce(Lists.newArrayList(), StudyService::listAddAll).stream()
       .map(AbstractGitPersistable::getId).distinct().collect(toList());
   }
 
@@ -259,11 +259,6 @@ public class CollectionStudyService extends AbstractStudyService<StudyState, Stu
       .map(p -> p.getDataCollectionEvents().stream()
         .map(dce -> study.getId() + SEPARATOR + p.getId() + SEPARATOR + dce.getId() + (withDceStartField ? SEPARATOR + dce.getStart().getSortableYearMonth() : ""))
         .collect(toList()))
-      .reduce(Lists.newArrayList(), this::listAddAll);
-  }
-
-  private <E> List<E> listAddAll(List<E> accumulator, List<E> list) {
-    accumulator.addAll(list);
-    return accumulator;
+      .reduce(Lists.newArrayList(), StudyService::listAddAll);
   }
 }

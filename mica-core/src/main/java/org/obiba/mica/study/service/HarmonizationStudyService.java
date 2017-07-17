@@ -10,22 +10,17 @@
 
 package org.obiba.mica.study.service;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import javax.inject.Inject;
-import javax.validation.constraints.NotNull;
 
 import org.joda.time.DateTime;
-import org.obiba.mica.core.ModelAwareTranslator;
 import org.obiba.mica.core.domain.AbstractGitPersistable;
-import org.obiba.mica.core.repository.AttachmentRepository;
 import org.obiba.mica.core.repository.EntityStateRepository;
+import org.obiba.mica.dataset.HarmonizationDatasetRepository;
 import org.obiba.mica.file.FileStoreService;
-import org.obiba.mica.file.service.FileSystemService;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.network.NetworkRepository;
 import org.obiba.mica.study.ConstraintException;
@@ -43,7 +38,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+
+import static java.util.stream.Collectors.toList;
 
 @Service
 @Validated
@@ -51,11 +49,16 @@ public class HarmonizationStudyService extends AbstractStudyService<Harmonizatio
 
   private static final Logger log = LoggerFactory.getLogger(HarmonizationStudyService.class);
 
-  @Inject
-  private HarmonizationStudyRepository studyRepository;
+  private static final String SEPARATOR = ":";
 
   @Inject
-  private HarmonizationStudyStateRepository studyStateRepository;
+  private HarmonizationStudyRepository harmonizationStudyRepository;
+
+  @Inject
+  private HarmonizationStudyStateRepository harmonizationStudyStateRepository;
+
+  @Inject
+  private HarmonizationDatasetRepository harmonizationDatasetRepository;
 
   @Inject
   private NetworkRepository networkRepository;
@@ -64,16 +67,7 @@ public class HarmonizationStudyService extends AbstractStudyService<Harmonizatio
   private FileStoreService fileStoreService;
 
   @Inject
-  private FileSystemService fileSystemService;
-
-  @Inject
-  private AttachmentRepository attachmentRepository;
-
-  @Inject
   private MicaConfigService micaConfigService;
-
-  @Inject
-  private ModelAwareTranslator modelAwareTranslator;
 
   @Override
   protected void saveInternal(final HarmonizationStudy study, String comment, boolean cascade) {
@@ -81,10 +75,9 @@ public class HarmonizationStudyService extends AbstractStudyService<Harmonizatio
 
     // checks if population and dce are still the same
     if(study.getId() != null) {
-      List<String> list = populationsAffected(study, studyRepository.findOne(study.getId()));
+      List<String> list = populationsAffected(study, harmonizationStudyRepository.findOne(study.getId()));
       if(list != null && list.size() > 0) {
-        log.info("TBI checkPopulationMissingConstraints()");
-//        checkPopulationMissingConstraints(list);
+        checkPopulationMissingConstraints(list);
       }
     }
 
@@ -103,12 +96,12 @@ public class HarmonizationStudyService extends AbstractStudyService<Harmonizatio
     if(!study.isNew()) ensureGitRepository(studyState);
 
     studyState.incrementRevisionsAhead();
-    studyStateRepository.save(studyState);
+    harmonizationStudyStateRepository.save(studyState);
 
     study.setLastModifiedDate(DateTime.now());
 
-    if(cascade) studyRepository.saveWithReferences(study);
-    else studyRepository.save(study);
+    if(cascade) harmonizationStudyRepository.saveWithReferences(study);
+    else harmonizationStudyRepository.save(study);
 
     gitService.save(study, comment);
     eventBus.post(new DraftStudyUpdatedEvent(study));
@@ -128,15 +121,21 @@ public class HarmonizationStudyService extends AbstractStudyService<Harmonizatio
    */
   public Map<String, List<String>> getPotentialConflicts(HarmonizationStudy study, boolean publishing) {
     if(study.getId() != null) {
-      HarmonizationStudy oldStudy = publishing ? study : studyRepository.findOne(study.getId());
+      HarmonizationStudy oldStudy = publishing ? study : harmonizationStudyRepository.findOne(study.getId());
       if(oldStudy != null) {
-        List<String> networkIds = networkRepository.findByStudyIds(study.getId()).stream()
-          .map(AbstractGitPersistable::getId).collect(Collectors.toList());
+        List<String> populationUIDs = publishing ? toListOfPopulationUids(study) : populationsAffected(study, oldStudy);
 
-        if(!networkIds.isEmpty()) {
-          return new HashMap<String, List<String>>() {{
-            put("network", networkIds);
-          }};
+        if (populationUIDs != null) {
+          List<String> networkIds = networkRepository.findByStudyIds(study.getId()).stream()
+            .map(AbstractGitPersistable::getId).collect(toList());
+          List<String> harmoDatasetIds = findHarmonizedDatasetDependencies(populationUIDs);
+
+          if(!harmoDatasetIds.isEmpty() || !networkIds.isEmpty()) {
+            return new HashMap<String, List<String>>() {{
+              put("harmonizationDataset", harmoDatasetIds);
+              put("network", networkIds);
+            }};
+          }
         }
       }
     }
@@ -146,8 +145,8 @@ public class HarmonizationStudyService extends AbstractStudyService<Harmonizatio
 
   private List<String> populationsAffected(HarmonizationStudy study, HarmonizationStudy oldStudy) {
     if(oldStudy != null) {
-      List<String> newPopIDs = study.getPopulations().stream().map(Population::getId).collect(Collectors.toList());
-      List<String> oldPopIDs = oldStudy.getPopulations().stream().map(Population::getId).collect(Collectors.toList());
+      List<String> newPopIDs = study.getPopulations().stream().map(Population::getId).collect(toList());
+      List<String> oldPopIDs = oldStudy.getPopulations().stream().map(Population::getId).collect(toList());
 
       boolean isChangeSignificant = newPopIDs.size() <= oldPopIDs.size() && !newPopIDs.containsAll(oldPopIDs);
       if(isChangeSignificant) {
@@ -159,17 +158,17 @@ public class HarmonizationStudyService extends AbstractStudyService<Harmonizatio
 
   @Override
   public List<String> findAllExistingIds(Iterable<String> ids) {
-    return studyRepository.findAllExistingIds(ids).stream().map(Study::getId).collect(Collectors.toList());
+    return harmonizationStudyRepository.findAllExistingIds(ids).stream().map(Study::getId).collect(toList());
   }
 
   @Override
   protected MongoRepository<HarmonizationStudy, String> getRepository() {
-    return studyRepository;
+    return harmonizationStudyRepository;
   }
 
   @Override
   protected EntityStateRepository<HarmonizationStudyState> getEntityStateRepository() {
-    return studyStateRepository;
+    return harmonizationStudyStateRepository;
   }
 
   @Override
@@ -178,39 +177,36 @@ public class HarmonizationStudyService extends AbstractStudyService<Harmonizatio
   }
 
 
-// TODO account for HarmonizationDataset constraint once the link between the HarmonizationStudy and HarmonizationDataset is made
-//  private List<String> findHarmonizedDatasetDependencies(List<String> concatenatedIds) {
-//    return concatenatedIds.stream()
-//      .map(o -> {
-//        String[] split = o.split(SEPARATOR);
-//        return harmonizationDatasetRepository.findByStudyTablesStudyIdAndStudyTablesPopulationIdAndStudyTablesDataCollectionEventId(
-//          split[0], split[1], split[2]);
-//      })
-//      .reduce(Lists.newArrayList(), this::listAddAll).stream()
-//      .map(AbstractGitPersistable::getId).distinct().collect(toList());
-//  }
-//
-//  private void checkPopulationMissingConstraints(List<String> popIDs) {
-//    List<String> harmoDatasetIds = findHarmonizedDatasetDependencies(popIDs);
-//
-//    if (!harmoDatasetIds.isEmpty()) {
-//      Map<String, List<String>> conflicts = new HashMap<String, List<String>>() {{
-//        put("harmonizationDataset", harmoDatasetIds);
-//      }};
-//
-//      throw new ConstraintException(conflicts);
-//    }
-//  }
-//
+  private List<String> findHarmonizedDatasetDependencies(List<String> concatenatedIds) {
+    return concatenatedIds.stream()
+      .map(o -> {
+        String[] split = o.split(SEPARATOR);
+        return harmonizationDatasetRepository.findByHarmonizationTableStudyIdAndHarmonizationTablePopulationId(
+          split[0], split[1]);
+      })
+      .reduce(Lists.newArrayList(), StudyService::listAddAll).stream()
+      .map(AbstractGitPersistable::getId).distinct().collect(toList());
+  }
+
+  private void checkPopulationMissingConstraints(List<String> popIDs) {
+    List<String> harmoDatasetIds = findHarmonizedDatasetDependencies(popIDs);
+
+    if (!harmoDatasetIds.isEmpty()) {
+      Map<String, List<String>> conflicts = new HashMap<String, List<String>>() {{
+        put("harmonizationDataset", harmoDatasetIds);
+      }};
+
+      throw new ConstraintException(conflicts);
+    }
+  }
 
   /**
-   * TODO account for HarmonizationDataset constraint
    *
    * @param study
    */
   protected void checkStudyConstraints(HarmonizationStudy study) {
     List<String> networkIds = networkRepository.findByStudyIds(study.getId()).stream().map(n -> n.getId())
-      .collect(Collectors.toList());
+      .collect(toList());
 
     if(!networkIds.isEmpty()) {
       Map<String, List<String>> conflicts = new HashMap<String, List<String>>() {{
@@ -219,6 +215,14 @@ public class HarmonizationStudyService extends AbstractStudyService<Harmonizatio
 
       throw new ConstraintException(conflicts);
     }
+  }
+
+  private List<String> toListOfPopulationUids(HarmonizationStudy study) {
+    return study.getPopulations().stream()
+      .map(p -> p.getDataCollectionEvents().stream()
+        .map(dce -> study.getId() + SEPARATOR + p.getId() + SEPARATOR + dce.getId())
+        .collect(toList()))
+      .reduce(Lists.newArrayList(), StudyService::listAddAll);
   }
 
 }

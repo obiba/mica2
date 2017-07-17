@@ -157,7 +157,10 @@ mica.study.ViewController = function (
       DraftStudyResource.unPublish({id: $routeParams.id},
       function (response) {
         $scope.studySummary = StudyStatesResource.get({id: $routeParams.id}, self.initializeState);
-        $log.debug(response);
+        if (response.conflicts) {
+          StudyUpdateWarningService.popup(response.conflicts, 'study.potential-conflicts', 'study.potential-conflicts-message');
+          $log.warn('potential conflicts for individual study', $routeParams.id, response);
+        }
       });
     }
   };
@@ -530,7 +533,10 @@ mica.study.HarmonizationStudyViewController = function (
       DraftStudyResource.unPublish({id: $routeParams.id},
       function (response) {
         $scope.studySummary = StudyStatesResource.get({id: $routeParams.id}, self.initializeState);
-        $log.debug(response);
+        if (response.conflicts) {
+          StudyUpdateWarningService.popup(response.conflicts, 'study.potential-conflicts', 'study.potential-conflicts-message');
+          $log.warn('potential conflicts for harmonization study', $routeParams.id, response);
+        }
       });
     }
   };
