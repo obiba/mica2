@@ -103,8 +103,7 @@ public class DraftHarmonizationStudyResource extends AbstractGitPersistableResou
 
     HashMap<Object, Object> response = Maps.newHashMap();
     response.put("study", study);
-    // TODO implement getPotentialConflicts
-//    response.put("potentialConflicts", studyService.getPotentialConflicts(study, false));
+    response.put("potentialConflicts", studyService.getPotentialConflicts(study, false));
 
     studyService.save(study, comment);
     return Response.ok(response, MediaType.APPLICATION_JSON_TYPE).build();
@@ -124,9 +123,9 @@ public class DraftHarmonizationStudyResource extends AbstractGitPersistableResou
   public Response unPublish() {
     checkPermission("/draft/harmonization-study", "PUBLISH");
     studyService.publish(id, false);
-    // TODO implement getPotentialConflicts
-//    return Response.ok(studyService.getPotentialConflicts(studyService.findStudy(id), true), MediaType.APPLICATION_JSON_TYPE).build();
-    return Response.ok(studyService.findStudy(id), MediaType.APPLICATION_JSON_TYPE).build();
+    HashMap<Object, Object> response = Maps.newHashMap();
+    response.put("conflicts", studyService.getPotentialConflicts(studyService.findStudy(id), true));
+    return Response.ok(response, MediaType.APPLICATION_JSON_TYPE).build();
   }
 
   @PUT

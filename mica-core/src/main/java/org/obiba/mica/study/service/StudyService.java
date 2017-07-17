@@ -164,4 +164,9 @@ public class StudyService {
 
     return null;
   }
+
+  public static <E> List<E> listAddAll(List<E> accumulator, List<E> list) {
+    accumulator.addAll(list);
+    return accumulator;
+  }
 }
