@@ -147,6 +147,10 @@ class PersonDtos {
       if(study != null) {
         builder.addAllParentAcronym(localizedStringDtos.asDto(study.getAcronym()));
         builder.addAllParentName(localizedStringDtos.asDto(study.getName()));
+        builder.setExtension(
+          Mica.PersonDto.StudyMembershipDto.meta,
+          Mica.PersonDto.StudyMembershipDto.newBuilder().setClassName(study.getClassName()).build()
+        );
       }
     }
 

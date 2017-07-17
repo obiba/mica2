@@ -316,6 +316,15 @@ message PersonDto {
     required string parentId = 2;
     repeated LocalizedStringDto parentAcronym = 3;
     repeated LocalizedStringDto parentName = 4;
+    extensions 1000 to max;
+  }
+
+  message StudyMembershipDto {
+    required string className = 1;
+
+    extend MembershipDto {
+      optional StudyMembershipDto meta = 1000;
+    }
   }
 }
 

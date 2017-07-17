@@ -49,7 +49,7 @@
           </td>
           <td>
             <span ng-repeat="m in person.studyMemberships">
-              <a ng-href="#/study/{{m.parentId}}" ng-click="cancel()">
+              <a ng-href="#/{{m.url}}/{{m.parentId}}" ng-click="cancel()">
                 <localized value="m.parentAcronym" lang="lang"></localized>
               </a>
               (<em>{{'membership-role.' + m.role | translate}}</em>)<span ng-if="!$last">,</span>
