@@ -44,7 +44,7 @@ mica.study.BaseEditController = function (
 
   self.saveErrorHandler = function (response) {
     if (response.status === 409) {
-      StudyUpdateWarningService.popup(response.data, 'study.population-or-dce-delete-conflict', 'study.population-or-dce-delete-conflict-message');
+      StudyUpdateWarningService.popup(response.data, 'study.delete-conflict', self.getConflictMessageKey());
     } else {
       FormServerValidation.error(response, $scope.form, $scope.languages);
     }
@@ -56,6 +56,9 @@ mica.study.BaseEditController = function (
 
 mica.study.BaseEditController.prototype = Object.create(mica.commons.EditController.prototype);
 mica.study.BaseEditController.prototype.constructor = mica.study.BaseEditController;
+mica.study.BaseEditController.prototype.getConflictMessageKey = function () {
+  return 'study.delete-conflict-message';
+};
 
 mica.study.EditController = function (
   $scope,
@@ -351,8 +354,11 @@ mica.study.PopulationEditController = function (
   self.initializeForm();
 };
 
-mica.study.PopulationEditController.prototype = Object.create(mica.commons.EditController.prototype);
+mica.study.PopulationEditController.prototype = Object.create(mica.study.BaseEditController.prototype);
 mica.study.PopulationEditController.prototype.constructor = mica.study.PopulationEditController;
+mica.study.PopulationEditController.prototype.getConflictMessageKey = function () {
+  return 'study.population-or-dce-delete-conflict-message';
+};
 
 mica.study.HarmonizationPopulationEditController = function (
   $scope,
@@ -439,8 +445,11 @@ mica.study.HarmonizationPopulationEditController = function (
   self.initializeForm();
 };
 
-mica.study.HarmonizationPopulationEditController.prototype = Object.create(mica.commons.EditController.prototype);
+mica.study.HarmonizationPopulationEditController.prototype = Object.create(mica.study.BaseEditController.prototype);
 mica.study.HarmonizationPopulationEditController.prototype.constructor = mica.study.HarmonizationPopulationEditController;
+mica.study.HarmonizationPopulationEditController.prototype.getConflictMessageKey = function () {
+  return 'study.population-delete-conflict-message';
+};
 
 mica.study.DataCollectionEventEditController = function (
   $scope,
@@ -547,3 +556,6 @@ mica.study.DataCollectionEventEditController = function (
 
 mica.study.DataCollectionEventEditController.prototype = Object.create(mica.study.BaseEditController.prototype);
 mica.study.DataCollectionEventEditController.prototype.constructor = mica.study.DataCollectionEventEditController;
+mica.study.DataCollectionEventEditController.prototype.getConflictMessageKey = function () {
+  return 'study.population-or-dce-delete-conflict-message';
+};

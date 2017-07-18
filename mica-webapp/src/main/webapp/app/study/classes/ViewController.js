@@ -244,7 +244,7 @@ mica.study.ViewController = function (
       }, function onError(response) {
         $log.error('Error on study save:', response);
         if (response.status === 409) {
-          StudyUpdateWarningService.popup(response, 'study.population-or-dce-delete-conflict', 'study.population-or-dce-delete-conflict-message', function () {
+          StudyUpdateWarningService.popup(response, 'study.delete-conflict', 'study.population-or-dce-delete-conflict-message', function () {
             $scope.study = self.fetchStudy($routeParams.id);
           });
         } else {
@@ -279,7 +279,7 @@ function populationManagement($rootScope, $scope, $location, NOTIFICATION_EVENTS
 
   $scope.deletePopulation = function (study, population) {
     $rootScope.$broadcast(NOTIFICATION_EVENTS.showConfirmDialog,
-      {title: 'Delete population', message: 'Are you sure to delete the population?'}, population);
+      {titleKey: 'population.delete-dialog.title', messageKey: 'population.delete-dialog.message'}, population);
 
     $scope.$on(NOTIFICATION_EVENTS.confirmDialogAccepted, function (event, population) {
       $scope.study.populations = $scope.study.populations.filter(function(pop) {
@@ -338,8 +338,8 @@ function populationDceManagement($rootScope, $scope, $location, $translate, $uib
   };
 
   $scope.deleteDataCollectionEvent = function (population, dce) {
-    var titleKey = 'data-collection-event.delete-dialog-title';
-    var messageKey = 'data-collection-event.delete-dialog-message';
+    var titleKey = 'data-collection-event.delete-dialog.title';
+    var messageKey = 'data-collection-event.delete-dialog.message';
     $translate([titleKey, messageKey])
       .then(function (translation) {
         $rootScope.$broadcast(NOTIFICATION_EVENTS.showConfirmDialog,
@@ -599,7 +599,7 @@ mica.study.HarmonizationStudyViewController = function (
       }, function onError(response) {
         $log.error('Error on study save:', response);
         if (response.status === 409) {
-          StudyUpdateWarningService.popup(response, 'study.population-or-dce-delete-conflict', 'study.population-or-dce-delete-conflict-message', function () {
+          StudyUpdateWarningService.popup(response, 'study.delete-conflict', 'study.population-delete-conflict-message', function () {
             $scope.study = self.fetchStudy($routeParams.id);
           });
         } else {

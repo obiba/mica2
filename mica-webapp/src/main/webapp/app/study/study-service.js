@@ -304,7 +304,7 @@ mica.study
 
         $rootScope.$broadcast(NOTIFICATION_EVENTS.showConfirmDialog,
           {
-            titleKey: 'study.restore-dialog.title',
+            titleKey: 'study.delete-dialog.title',
             messageKey: 'study.delete-dialog.message',
             messageArgs: [messageArgs]
           }, study.id
@@ -369,7 +369,7 @@ mica.study
 
         $rootScope.$broadcast(NOTIFICATION_EVENTS.showConfirmDialog,
           {
-            titleKey: 'study.restore-dialog.title',
+            titleKey: 'study.delete-dialog.title',
             messageKey: 'study.delete-dialog.message',
             messageArgs: [messageArgs]
           }, study.id
