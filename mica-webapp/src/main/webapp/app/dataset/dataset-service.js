@@ -109,6 +109,7 @@ mica.dataset
     function ($resource) {
       return $resource('ws/draft/:type/:id/_publish', {id: '@id', type: '@type'}, {
         'publish': {method: 'PUT', params: {cascading: '@cascading'}},
+        'handledPublish': {method: 'PUT', params: {cascading: '@cascading'}, errorHandler: true},
         'unPublish': {method: 'DELETE'}
       });
     }])

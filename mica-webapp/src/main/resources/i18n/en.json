@@ -701,6 +701,9 @@
       "chi-squared": {
         "test": "Chi-Squared Test"
       }
+    },
+    "harmonization":{
+      "missing-attributes":"In harmonization table, these attributes are mandatory : project, table, studyId, populationId"
     }
   },
   "attributes": "Attributes",
