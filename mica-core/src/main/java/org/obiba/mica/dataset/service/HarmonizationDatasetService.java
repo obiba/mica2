@@ -51,7 +51,8 @@ import org.obiba.mica.file.service.FileSystemService;
 import org.obiba.mica.micaConfig.service.OpalService;
 import org.obiba.mica.network.service.NetworkService;
 import org.obiba.mica.study.NoSuchStudyException;
-import org.obiba.mica.study.service.CollectionStudyService;
+import org.obiba.mica.study.domain.HarmonizationStudy;
+import org.obiba.mica.study.service.HarmonizationStudyService;
 import org.obiba.mica.study.service.StudyService;
 import org.obiba.opal.rest.client.magma.RestValueTable;
 import org.obiba.opal.web.model.Search;
@@ -99,6 +100,9 @@ public class HarmonizationDatasetService extends DatasetService<HarmonizationDat
 
   @Inject
   private HarmonizationDatasetStateRepository harmonizationDatasetStateRepository;
+
+  @Inject
+  private HarmonizationStudyService harmonizationStudyService;
 
   @Inject
   private EventBus eventBus;
@@ -235,6 +239,7 @@ public class HarmonizationDatasetService extends DatasetService<HarmonizationDat
     helper.evictCache(dataset);
 
     if(published) {
+      checkIsPublishable(dataset);
       publishState(id);
       Map<String, List<DatasetVariable>> harmonizationVariables = populateHarmonizedVariablesMap(dataset);
       eventBus.post(new DatasetPublishedEvent(dataset, wrappedGetDatasetVariables(dataset), harmonizationVariables,
@@ -243,6 +248,21 @@ public class HarmonizationDatasetService extends DatasetService<HarmonizationDat
     } else {
       unPublishState(id);
       eventBus.post(new DatasetUnpublishedEvent(dataset));
+    }
+  }
+
+  private void checkIsPublishable(HarmonizationDataset dataset) {
+    if (dataset == null
+      || dataset.getHarmonizationTable() == null
+      || dataset.getHarmonizationTable().getProject() == null
+      || dataset.getHarmonizationTable().getTable() == null
+      || dataset.getHarmonizationTable().getStudyId() == null
+      || dataset.getHarmonizationTable().getPopulationId() == null) {
+      throw new IllegalArgumentException("dataset.harmonization.missing-attributes");
+    }
+
+    if (!harmonizationStudyService.isPublished(dataset.getHarmonizationTable().getStudyId())) {
+      throw new IllegalArgumentException("dataset.harmonization.study-not-published");
     }
   }
 
