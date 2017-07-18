@@ -108,6 +108,7 @@ public class DraftHarmonizationDatasetResource extends
   @Path("/_publish")
   public Response publish(@QueryParam("cascading") @DefaultValue("UNDER_REVIEW") String cascadingScope) {
     checkPermission("/draft/harmonized-dataset", "PUBLISH");
+    checkIsValid();
     datasetService.publish(id, true, PublishCascadingScope.valueOf(cascadingScope.toUpperCase()));
     return Response.noContent().build();
   }
@@ -212,5 +213,17 @@ public class DraftHarmonizationDatasetResource extends
   @Override
   protected AbstractGitPersistableService<HarmonizationDatasetState, HarmonizationDataset> getService() {
     return datasetService;
+  }
+
+  private void checkIsValid() {
+    HarmonizationDataset dataset = getDataset();
+    if (dataset == null
+      || dataset.getHarmonizationTable() == null
+      || dataset.getHarmonizationTable().getProject() == null
+      || dataset.getHarmonizationTable().getTable() == null
+      || dataset.getHarmonizationTable().getStudyId() == null
+      || dataset.getHarmonizationTable().getPopulationId() == null) {
+      throw new IllegalArgumentException("dataset.harmonization.missing-attributes");
+    }
   }
 }

@@ -415,6 +415,7 @@ mica.dataset
     'CollectionDatasetResource',
     'HarmonizationDatasetResource',
     'SfOptionsService',
+    'AlertBuilder',
     '$timeout',
 
     function ($rootScope,
@@ -443,6 +444,7 @@ mica.dataset
               CollectionDatasetResource,
               HarmonizationDatasetResource,
               SfOptionsService,
+              AlertBuilder,
               $timeout) {
 
       function initializeForm() {
@@ -671,10 +673,14 @@ mica.dataset
         if (publish) {
           DraftFileSystemSearchResource.searchUnderReview({path: '/' + $scope.type + '/' + $scope.dataset.id},
             function onSuccess(response) {
-              DatasetPublicationResource.publish(
+              var requestResource = $scope.type === 'harmonized-dataset' ? DatasetPublicationResource.handledPublish : DatasetPublicationResource.publish;
+              requestResource(
                 {id: $scope.dataset.id, type: $scope.type, cascading: response.length > 0 ? 'UNDER_REVIEW' : 'NONE'},
                 function () {
                   $scope.dataset = DatasetResource.get({id: $routeParams.id, type: $scope.type}, initializeDataset);
+                },
+                function (error) {
+                  AlertBuilder.newBuilder().trMsg(error.data).build();
                 });
             },
             function onError() {
