@@ -216,12 +216,13 @@ public class DraftHarmonizationDatasetResource extends
   }
 
   private void checkIsValid() {
-    if (getDataset() == null
-      || getDataset().getHarmonizationTable() == null
-      || getDataset().getHarmonizationTable().getProject() == null
-      || getDataset().getHarmonizationTable().getTable() == null
-      || getDataset().getHarmonizationTable().getStudyId() == null
-      || getDataset().getHarmonizationTable().getPopulationId() == null) {
+    HarmonizationDataset dataset = getDataset();
+    if (dataset == null
+      || dataset.getHarmonizationTable() == null
+      || dataset.getHarmonizationTable().getProject() == null
+      || dataset.getHarmonizationTable().getTable() == null
+      || dataset.getHarmonizationTable().getStudyId() == null
+      || dataset.getHarmonizationTable().getPopulationId() == null) {
       throw new IllegalArgumentException("dataset.harmonization.missing-attributes");
     }
   }
