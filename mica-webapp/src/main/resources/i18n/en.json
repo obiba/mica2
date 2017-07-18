@@ -703,7 +703,8 @@
       }
     },
     "harmonization":{
-      "missing-attributes":"In harmonization table, these attributes are mandatory : project, table, studyId, populationId"
+      "missing-attributes":"In harmonization table, these attributes are mandatory : project, table, studyId, populationId",
+      "study-not-published":"Before publishing a harmonized dataset, its linked harmonised study must already be published"
     }
   },
   "attributes": "Attributes",

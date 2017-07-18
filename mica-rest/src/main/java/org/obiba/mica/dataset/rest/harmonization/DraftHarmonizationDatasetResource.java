@@ -33,7 +33,15 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
-import javax.ws.rs.*;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
@@ -108,7 +116,6 @@ public class DraftHarmonizationDatasetResource extends
   @Path("/_publish")
   public Response publish(@QueryParam("cascading") @DefaultValue("UNDER_REVIEW") String cascadingScope) {
     checkPermission("/draft/harmonized-dataset", "PUBLISH");
-    checkIsValid();
     datasetService.publish(id, true, PublishCascadingScope.valueOf(cascadingScope.toUpperCase()));
     return Response.noContent().build();
   }
@@ -213,17 +220,5 @@ public class DraftHarmonizationDatasetResource extends
   @Override
   protected AbstractGitPersistableService<HarmonizationDatasetState, HarmonizationDataset> getService() {
     return datasetService;
-  }
-
-  private void checkIsValid() {
-    HarmonizationDataset dataset = getDataset();
-    if (dataset == null
-      || dataset.getHarmonizationTable() == null
-      || dataset.getHarmonizationTable().getProject() == null
-      || dataset.getHarmonizationTable().getTable() == null
-      || dataset.getHarmonizationTable().getStudyId() == null
-      || dataset.getHarmonizationTable().getPopulationId() == null) {
-      throw new IllegalArgumentException("dataset.harmonization.missing-attributes");
-    }
   }
 }
