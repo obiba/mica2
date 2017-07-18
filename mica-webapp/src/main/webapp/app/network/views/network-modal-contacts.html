@@ -48,19 +48,19 @@
             {{person.email}}
           </td>
           <td>
-            <span ng-repeat="m in person.studyMemberships">
-              <a ng-href="#/study/{{m.parentId}}" ng-click="cancel()">
-                <localized value="m.parentAcronym" lang="lang"></localized>
+            <span ng-repeat="membership in person.studyMemberships">
+              <a ng-href="#/{{membership['obiba.mica.PersonDto.StudyMembershipDto.meta'].type}}/{{membership.parentId}}" ng-click="cancel()">
+                <localized value="membership.parentAcronym" lang="lang"></localized>
               </a>
-              (<em>{{'membership-role.' + m.role | translate}}</em>)<span ng-if="!$last">,</span>
+              (<em>{{'contact.label.' + membership.role | translate}}</em>)<span ng-if="!$last">,</span>
             </span>
           </td>
           <td>
-            <span ng-repeat="m in person.networkMemberships">
-              <a ng-href="#/network/{{m.parentId}}" ng-click="cancel()">
-                <localized value="m.parentAcronym" lang="lang"></localized>
+            <span ng-repeat="membership in person.networkMemberships">
+              <a ng-href="#/network/{{membership.parentId}}" ng-click="cancel()">
+                <localized value="membership.parentAcronym" lang="lang"></localized>
               </a>
-              (<em>{{'membership-role.' + m.role | translate}}</em>)<span ng-if="!$last">,</span>
+              (<em>{{'contact.label.' + membership.role | translate}}</em>)<span ng-if="!$last">,</span>
             </span>
           </td>
         </tr>

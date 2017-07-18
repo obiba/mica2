@@ -10,7 +10,6 @@
 
 package org.obiba.mica.study.domain;
 
-import com.google.common.base.CaseFormat;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import org.hibernate.validator.constraints.URL;
