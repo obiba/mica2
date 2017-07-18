@@ -552,7 +552,7 @@
     "potential-conflicts-message": "Des conflits potentiels peuvent subvenir.",
     "delete-conflict": "Conflit à la suppression de l'étude",
     "delete-conflict-message": "Des conflits ont été trouvés lors de la tentative de suppression de l'étude. Supprimez les dépendances et essayez à nouveau.",
-    "population-or-dce-delete-conflict": "Conflit à la suppression d'une population ou d'un événement de collecte de données",
+    "population-delete-conflict": "Conflit à la suppression d'une population ou d'un événement de collecte de données",
     "population-or-dce-delete-conflict-message": "Des conflits ont été trouvés lors de la tentative de suppression d'une population ou d'un événement de collecte de données. Supprimez les dépendances et essayez à nouveau.",
     "revisions":  "Révisions de l'étude",
     "delete-dialog":{
@@ -726,7 +726,11 @@
     "add-data-collection-event": "Ajouter un événement de collecte de données",
     "countries": "Pays ISO",
     "numberOfParticipants-noLimit": "Aucune limite",
-    "recruitment": "Recrutement"
+    "recruitment": "Recrutement",
+    "delete-dialog": {
+      "title": "Supprimer la population",
+      "message": "Êtes-vous sûr de supprimer la population?"
+    }
   },
   "share-resource": {
     "button-label": "Partager",
@@ -754,8 +758,10 @@
     "other-bio-samples": "Autres échantillons biologiques",
     "admin-databases": "Bases de données administratives",
     "tissue-types": "Types de tissus",
-    "delete-dialog-title": "Supprimer un événement de collecte de données",
-    "delete-dialog-message": "Êtes-vous sûr de vouloir supprimer l'événement de collecte?"
+    "delete-dialog": {
+      "title": "Supprimer un événement de collecte de données",
+      "message": "Êtes-vous sûr de vouloir supprimer l'événement de collecte?"
+    }
   },
   "collected-datasets": "Ensembles de données de collecte",
   "collected-dataset": "Ensemble de données de collecte",

@@ -550,10 +550,10 @@
     "opal-help": "URL of the opal server for this study (if different from the default one).",
     "potential-conflicts": "Potential Conflicts",
     "potential-conflicts-message": "There may be potential conflicts.",
-    "delete-conflict": "Conflict deleting study",
-    "delete-conflict-message": "Found conflicts when trying to delete study. Remove dependencies and try again.",
-    "population-or-dce-delete-conflict": "Found conflicts when trying to delete a population or data collection event",
-    "population-or-dce-delete-conflict-message": "Found conflicts when trying to remove a population or data collection event. Remove dependencies and try again.",
+    "delete-conflict": "Delete Conflict",
+    "delete-conflict-message": "Found conflicts when trying to remove the study. Remove dependencies and try again.",
+    "population-delete-conflict-message": "Found conflicts when trying to remove a population. Remove dependencies and try again.",
+    "population-or-dce-delete-conflict-message": "Found conflicts when trying to remove a population or a data collection event. Remove dependencies and try again.",
     "revisions":  "Study Revisions",
     "delete-dialog":{
       "title": "Delete Study",
@@ -726,7 +726,11 @@
     "add-data-collection-event": "Add Data Collection Event",
     "countries": "Countries ISO",
     "numberOfParticipants-noLimit": "No limit",
-    "recruitment": "Recruitment"
+    "recruitment": "Recruitment",
+    "delete-dialog": {
+      "title": "Delete Population",
+      "message": "Are you sure to delete the population?"
+    }
   },
   "share-resource": {
     "button-label": "Share",
@@ -754,8 +758,10 @@
     "other-bio-samples": "Other biological samples",
     "admin-databases": "Administrative databases",
     "tissue-types": "Tissue types",
-    "delete-dialog-title": "Delete Data Collection Event",
-    "delete-dialog-message": "Are you sure you want to delete the collection event?"
+    "delete-dialog": {
+      "title": "Delete Data Collection Event",
+      "message": "Are you sure you want to delete the data collection event?"
+    }
   },
   "collected-datasets": "Collected Datasets",
   "collected-dataset": "Collected Dataset",
