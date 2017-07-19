@@ -932,8 +932,8 @@
       "network" : "Réseau",
       "dataschema": "Ensemble de données Harmonisées",
       "dataset": "Ensemble de données",
-      "dataset-collection": "Collecte",
-      "dataset-harmonization": "Harmonisée",
+      "dataset-collected": "Collecte",
+      "dataset-harmonized": "Harmonisée",
       "collection": "Individuel",
       "harmonization": "Harmonisation"
     },
