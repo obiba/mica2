@@ -10,6 +10,8 @@
 
 'use strict';
 
+/* global obiba */
+
 mica.entitySfConfig
 
   .controller('EntityTaxonomyConfigContentController', [
@@ -133,8 +135,10 @@ mica.entitySfConfig
           });
       };
 
+      var listenerRegistry = new obiba.utils.EventListenerRegistry();
+
       function onDelete(event, criterion) {
-        $scope.unregisterOnDelete();
+        listenerRegistry.unregisterAll();
         var i = $scope.taxonomy.vocabularies.indexOf(criterion);
         if (i > -1) {
           $scope.state.setDirty(true);
@@ -146,7 +150,10 @@ mica.entitySfConfig
       }
 
       var deleteCriterion = function() {
-        $scope.unregisterOnDelete = $scope.$on(NOTIFICATION_EVENTS.confirmDialogAccepted, onDelete);
+        listenerRegistry.register($scope.$on(NOTIFICATION_EVENTS.confirmDialogRejected, function () {
+          listenerRegistry.unregisterAll();
+        }));
+        listenerRegistry.register($scope.$on(NOTIFICATION_EVENTS.confirmDialogAccepted, onDelete));
         var criterionLabel = $filter('translate')('global.criterion');
         var criterion = $scope.model.content;
         $rootScope.$broadcast(NOTIFICATION_EVENTS.showConfirmDialog,
@@ -258,8 +265,10 @@ mica.entitySfConfig
         });
       };
 
+      var listenerRegistry = new obiba.utils.EventListenerRegistry();
+
       function onDelete(event, args) {
-        $scope.unregisterOnDelete();
+        listenerRegistry.unregisterAll();
         var i = args.vocabulary.terms.indexOf(args.term);
         if (i > -1) {
           $scope.state.setDirty(true);
@@ -268,7 +277,10 @@ mica.entitySfConfig
       }
 
       var deleteTerm = function(vocabulary, term) {
-        $scope.unregisterOnDelete = $scope.$on(NOTIFICATION_EVENTS.confirmDialogAccepted, onDelete);
+        listenerRegistry.register($scope.$on(NOTIFICATION_EVENTS.confirmDialogRejected, function () {
+          listenerRegistry.unregisterAll();
+        }));
+        listenerRegistry.register($scope.$on(NOTIFICATION_EVENTS.confirmDialogAccepted, onDelete));
         var termLabel = $filter('translate')('global.term');
         $rootScope.$broadcast(NOTIFICATION_EVENTS.showConfirmDialog,
           {

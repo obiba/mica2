@@ -1,5 +1,6 @@
 'use strict';
 /* global processMemberships, STUDY_EVENTS, moment */
+/* global obiba */
 
 /**
  * Basic study view controller class
@@ -74,6 +75,9 @@ mica.study.BaseViewController = function (
 
 mica.study.BaseViewController.prototype = Object.create(mica.commons.ViewController.prototype);
 mica.study.BaseViewController.prototype.constructor = mica.study.BaseViewController;
+mica.study.BaseEditController.prototype.getConflictMessageKey = function () {
+  return 'study.delete-conflict-message';
+};
 
 
 /**
@@ -235,8 +239,6 @@ mica.study.ViewController = function (
   $scope.$on(NOTIFICATION_EVENTS.confirmDialogAccepted, self.onRestore);
   $scope.$on(STUDY_EVENTS.studyUpdated, function (event, studyUpdated) {
     if (studyUpdated) {
-      $log.debug('save study', studyUpdated);
-
       $scope.study.$save(function onSuccess(response) {
         $scope.study.content = $scope.study.model ? angular.toJson(response.study.model) : null;
         $scope.studySummary = StudyStatesResource.get({id: $routeParams.id}, self.initializeState);
@@ -277,16 +279,20 @@ function populationManagement($rootScope, $scope, $location, NOTIFICATION_EVENTS
     $location.url($location.url() + '/population/' + population.id + '/edit');
   };
 
+  var listenerRegistry = new obiba.utils.EventListenerRegistry();
   $scope.deletePopulation = function (study, population) {
     $rootScope.$broadcast(NOTIFICATION_EVENTS.showConfirmDialog,
       {titleKey: 'population.delete-dialog.title', messageKey: 'population.delete-dialog.message'}, population);
-
-    $scope.$on(NOTIFICATION_EVENTS.confirmDialogAccepted, function (event, population) {
+    listenerRegistry.register($scope.$on(NOTIFICATION_EVENTS.confirmDialogRejected, function () {
+      listenerRegistry.unregisterAll();
+    }));
+    listenerRegistry.register($scope.$on(NOTIFICATION_EVENTS.confirmDialogAccepted, function (event, population) {
+      listenerRegistry.unregisterAll();
       $scope.study.populations = $scope.study.populations.filter(function(pop) {
         return pop.id !== population.id;
       });
       $scope.emitStudyUpdated();
-    });
+    }));
   };
 
   $scope.addPopulation = function () {
@@ -337,6 +343,7 @@ function populationDceManagement($rootScope, $scope, $location, $translate, $uib
     $location.url($location.url() + '/population/' + population.id + '/dce/' + dce.id + '/edit');
   };
 
+  var listenerRegistry = new obiba.utils.EventListenerRegistry();
   $scope.deleteDataCollectionEvent = function (population, dce) {
     var titleKey = 'data-collection-event.delete-dialog.title';
     var messageKey = 'data-collection-event.delete-dialog.message';
@@ -345,18 +352,24 @@ function populationDceManagement($rootScope, $scope, $location, $translate, $uib
         $rootScope.$broadcast(NOTIFICATION_EVENTS.showConfirmDialog,
           {title: translation[titleKey], message: translation[messageKey]}, {dce: dce, population: population});
       });
+
+    listenerRegistry.register($scope.$on(NOTIFICATION_EVENTS.confirmDialogRejected, function () {
+      listenerRegistry.unregisterAll();
+    }));
+    listenerRegistry.register($scope.$on(NOTIFICATION_EVENTS.confirmDialogAccepted, function (event, data) {
+      listenerRegistry.unregisterAll();
+      var popIndex = $scope.study.populations.indexOf(data.population);
+      if (popIndex > -1) {
+        var dceIndex = data.population.dataCollectionEvents.indexOf(data.dce);
+        if (dceIndex > -1) {
+          data.population.dataCollectionEvents.splice(dceIndex, 1);
+          $scope.emitStudyUpdated();
+        }
+      }
+    }));
   };
 
-  $scope.$on(NOTIFICATION_EVENTS.confirmDialogAccepted, function (event, data) {
-    var popIndex = $scope.study.populations.indexOf(data.population);
-    if (popIndex > -1) {
-      var dceIndex = data.population.dataCollectionEvents.indexOf(data.dce);
-      if (dceIndex > -1) {
-        data.population.dataCollectionEvents.splice(dceIndex, 1);
-        $scope.emitStudyUpdated();
-      }
-    }
-  });
+
 }
 
 function contactManagement($scope, $routeParams, CONTACT_EVENTS, fetchStudy) {

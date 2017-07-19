@@ -357,7 +357,7 @@ mica.study.PopulationEditController = function (
 mica.study.PopulationEditController.prototype = Object.create(mica.study.BaseEditController.prototype);
 mica.study.PopulationEditController.prototype.constructor = mica.study.PopulationEditController;
 mica.study.PopulationEditController.prototype.getConflictMessageKey = function () {
-  return 'study.population-or-dce-delete-conflict-message';
+  return 'study.population-delete-conflict-message';
 };
 
 mica.study.HarmonizationPopulationEditController = function (
@@ -557,5 +557,5 @@ mica.study.DataCollectionEventEditController = function (
 mica.study.DataCollectionEventEditController.prototype = Object.create(mica.study.BaseEditController.prototype);
 mica.study.DataCollectionEventEditController.prototype.constructor = mica.study.DataCollectionEventEditController;
 mica.study.DataCollectionEventEditController.prototype.getConflictMessageKey = function () {
-  return 'study.population-or-dce-delete-conflict-message';
+  return 'study.population-dce-delete-conflict-message';
 };
