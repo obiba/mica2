@@ -124,7 +124,7 @@ public class HarmonizationStudyService extends AbstractStudyService<Harmonizatio
     if(study.getId() != null) {
       HarmonizationStudy oldStudy = publishing ? study : harmonizationStudyRepository.findOne(study.getId());
       if(oldStudy != null) {
-        List<String> populationUIDs = populationsAffected(study, oldStudy);
+        List<String> populationUIDs = publishing ? toListOfPopulationUids(study) : populationsAffected(study, oldStudy);
 
         if (populationUIDs != null) {
           List<String> networkIds = networkRepository.findByStudyIds(study.getId()).stream()
@@ -216,4 +216,9 @@ public class HarmonizationStudyService extends AbstractStudyService<Harmonizatio
       throw new ConstraintException(conflicts);
     }
   }
+
+  private List<String> toListOfPopulationUids(HarmonizationStudy study) {
+    return study.getPopulations().stream().map(Population::getId).collect(toList());
+  }
+
 }

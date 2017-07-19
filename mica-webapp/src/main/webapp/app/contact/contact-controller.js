@@ -12,6 +12,7 @@
 
 /* global CONTACT_SCHEMA */
 /* global CONTACT_DEFINITION */
+/* global obiba */
 
 mica.contact
 
@@ -23,8 +24,22 @@ mica.contact
     contactDeleted: 'event:contact-deleted'
   })
 
-  .controller('ContactController', ['$rootScope', '$scope', '$uibModal', '$translate', 'MicaConfigResource', 'CONTACT_EVENTS', 'NOTIFICATION_EVENTS', 'ContactSerializationService',
-    function ($rootScope, $scope, $uibModal, $translate, MicaConfigResource, CONTACT_EVENTS, NOTIFICATION_EVENTS, ContactSerializationService) {
+  .controller('ContactController', ['$rootScope',
+    '$scope',
+    '$uibModal',
+    '$translate',
+    'MicaConfigResource',
+    'CONTACT_EVENTS',
+    'NOTIFICATION_EVENTS',
+    'ContactSerializationService',
+    function ($rootScope,
+              $scope,
+              $uibModal,
+              $translate,
+              MicaConfigResource,
+              CONTACT_EVENTS,
+              NOTIFICATION_EVENTS,
+              ContactSerializationService) {
 
       $scope.micaConfig = MicaConfigResource.get();
       $scope.lang = $translate.use();
@@ -124,6 +139,7 @@ mica.contact
         $scope.deleteInvestigatorOrContact(contactable, contact, type);
       };
 
+      var listenerRegistry = new obiba.utils.EventListenerRegistry();
       $scope.deleteInvestigatorOrContact = function (contactable, contact, type) {
         var titleKey = 'contact.delete.member.title';
         var messageKey = 'contact.delete.member.confirm';
@@ -138,11 +154,15 @@ mica.contact
               contact);
           });
 
-        $scope.$on(NOTIFICATION_EVENTS.confirmDialogAccepted, function (event, contactConfirmed) {
+        listenerRegistry.register($scope.$on(NOTIFICATION_EVENTS.confirmDialogRejected, function () {
+          listenerRegistry.unregisterAll();
+        }));
+        listenerRegistry.register($scope.$on(NOTIFICATION_EVENTS.confirmDialogAccepted, function (event, contactConfirmed) {
+          listenerRegistry.unregisterAll();
           if (contactConfirmed === contact) {
             $scope.$emit(CONTACT_EVENTS.contactDeleted, contactable, contact, type);
           }
-        });
+        }));
       };
     }])
 

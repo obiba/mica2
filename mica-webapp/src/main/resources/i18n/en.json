@@ -553,6 +553,7 @@
     "delete-conflict": "Delete Conflict",
     "delete-conflict-message": "Found conflicts when trying to remove the study. Remove dependencies and try again.",
     "population-delete-conflict-message": "Found conflicts when trying to remove a population. Remove dependencies and try again.",
+    "population-dce-delete-conflict-message": "Found conflicts when trying to remove a data collection event. Remove dependencies and try again.",
     "population-or-dce-delete-conflict-message": "Found conflicts when trying to remove a population or a data collection event. Remove dependencies and try again.",
     "revisions":  "Study Revisions",
     "delete-dialog":{
