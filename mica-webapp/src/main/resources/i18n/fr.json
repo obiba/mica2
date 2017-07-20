@@ -706,6 +706,9 @@
     "harmonization":{
       "missing-attributes":"Dans une table d'harmonization, ces attributes sont obligatoires : project, table, studyId, populationId",
       "study-not-published":"Pour publier un ensemble de données harmonisées, l'étude harmonisée qui lui est liée doit aussi être publiée"
+    },
+    "collection":{
+      "study-not-published":"Pour publier un ensemble de données collectées, l'étude de collecte qui lui est liée doit aussi être publiée"
     }
   },
   "attributes": "Attributs",
