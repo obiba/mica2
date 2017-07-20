@@ -42,6 +42,7 @@ import org.obiba.mica.micaConfig.service.OpalService;
 import org.obiba.mica.network.service.NetworkService;
 import org.obiba.mica.study.date.PersistableYearMonth;
 import org.obiba.mica.study.domain.BaseStudy;
+import org.obiba.mica.study.service.CollectionStudyService;
 import org.obiba.mica.study.service.StudyService;
 import org.obiba.opal.rest.client.magma.RestValueTable;
 import org.obiba.opal.web.model.Search;
@@ -88,6 +89,9 @@ public class CollectionDatasetService extends DatasetService<StudyDataset, Study
 
   @Inject
   private StudyDatasetStateRepository studyDatasetStateRepository;
+
+  @Inject
+  private CollectionStudyService collectionStudyService;
 
   @Inject
   private EventBus eventBus;
@@ -175,6 +179,7 @@ public class CollectionDatasetService extends DatasetService<StudyDataset, Study
     helper.evictCache(dataset);
 
     if(published) {
+      checkIsPublishable(dataset);
       Iterable<DatasetVariable> variables = wrappedGetDatasetVariables(dataset);
       publishState(id);
       prepareForIndex(dataset);
@@ -183,6 +188,12 @@ public class CollectionDatasetService extends DatasetService<StudyDataset, Study
     } else {
       unPublishState(id);
       eventBus.post(new DatasetUnpublishedEvent(dataset));
+    }
+  }
+
+  private void checkIsPublishable(StudyDataset dataset) {
+    if (dataset.hasStudyTable() && !collectionStudyService.isPublished(dataset.getStudyTable().getStudyId())) {
+      throw new IllegalArgumentException("dataset.collection.study-not-published");
     }
   }
 

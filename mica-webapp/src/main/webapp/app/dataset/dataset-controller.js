@@ -673,8 +673,7 @@ mica.dataset
         if (publish) {
           DraftFileSystemSearchResource.searchUnderReview({path: '/' + $scope.type + '/' + $scope.dataset.id},
             function onSuccess(response) {
-              var requestResource = $scope.type === 'harmonized-dataset' ? DatasetPublicationResource.handledPublish : DatasetPublicationResource.publish;
-              requestResource(
+              DatasetPublicationResource.handledPublish(
                 {id: $scope.dataset.id, type: $scope.type, cascading: response.length > 0 ? 'UNDER_REVIEW' : 'NONE'},
                 function () {
                   $scope.dataset = DatasetResource.get({id: $routeParams.id, type: $scope.type}, initializeDataset);

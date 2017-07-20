@@ -44,6 +44,7 @@ mica.dataset
     function ($resource) {
       return $resource('ws/draft/collected-dataset/:id/_publish', {}, {
         'publish': {method: 'PUT', params: {id: '@id'}},
+        'handledPublish': {method: 'PUT', params: {id: '@id'}, errorHandler: true},
         'unPublish': {method: 'DELETE', params: {id: '@id'}}
       });
     }])
