@@ -930,7 +930,7 @@
       "study-individual": "Étude individuelle",
       "study-harmonization": "Étude d'harmonisation",
       "dce" : "Population/Événement de collecte de données (ECD)",
-      "dce-collection" : "Événement de collecte de données (ECD)",
+      "dce-individual" : "Événement de collecte de données (ECD)",
       "dce-harmonization" : "Population",
       "network" : "Réseau",
       "dataschema": "Ensemble de données Harmonisées",
@@ -938,6 +938,7 @@
       "dataset-collected": "Collecte",
       "dataset-harmonized": "Harmonisée",
       "collection": "Individuel",
+      "individual": "Individuel",
       "harmonization": "Harmonisation"
     },
     "coverage-select": {

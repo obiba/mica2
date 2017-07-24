@@ -930,7 +930,7 @@
       "study-individual": "Individual Study",
       "study-harmonization": "Harmonization Study",
       "dce" : "Population/Data Collection Event (DCE)",
-      "dce-collection" : "Data Collection Event (DCE)",
+      "dce-individual" : "Data Collection Event (DCE)",
       "dce-harmonization" : "Population",
       "network" : "Network",
       "dataschema": "Harmonized Dataset",
@@ -938,6 +938,7 @@
       "dataset-collected": "Collected ",
       "dataset-harmonized": "Harmonized",
       "collection": "Individual",
+      "individual": "Individual",
       "harmonization": "Harmonization"
     },
     "coverage-select": {
