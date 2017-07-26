@@ -1,7 +1,11 @@
 package org.obiba.mica.core.upgrade;
 
+import java.util.stream.Stream;
+
+import org.obiba.mica.core.domain.TaxonomyTarget;
 import org.obiba.mica.dataset.HarmonizationDatasetStateRepository;
 import org.obiba.mica.dataset.service.HarmonizationDatasetService;
+import org.obiba.mica.micaConfig.service.TaxonomyConfigService;
 import org.obiba.runtime.Version;
 import org.obiba.runtime.upgrade.UpgradeStep;
 import org.slf4j.Logger;
@@ -25,6 +29,9 @@ public class Mica3Upgrade implements UpgradeStep {
   @Inject
   private HarmonizationDatasetStateRepository harmonizationDatasetStateRepository;
 
+  @Inject
+  private TaxonomyConfigService taxonomyConfigService;
+
   @Override
   public String getDescription() {
     return "Mica 3.0.0 upgrade";
@@ -43,6 +50,12 @@ public class Mica3Upgrade implements UpgradeStep {
       updateStudyResourcePathReferences();
     } catch (RuntimeException e) {
       logger.error("Error occurred when updating Study path resources (/study -> /individual-study and /study-dataset -> /collected-dataset).", e);
+    }
+
+    try {
+      mergeDefaultTaxonomyWithCurrent();
+    } catch (Exception e) {
+      logger.error("Error when trying to mergeDefaultTaxonomyWithCurrent.", e);
     }
 
     unpublishAllHarmonizationDataset();
@@ -95,5 +108,10 @@ public class Mica3Upgrade implements UpgradeStep {
         "bulkUpdateAttachmentPath(db.subjectAcl, [\"resource\", \"instance\"], /^\\/draft\\/study$/, '/draft/individual-study');\n" +
         "bulkUpdateAttachmentPath(db.subjectAcl, [\"resource\", \"instance\"], /^\\/draft\\/study\\//, '/draft/individual-study/');" +
         "";
+  }
+
+  private void mergeDefaultTaxonomyWithCurrent() {
+    Stream.of("network", "study", "dataset", "variable", "taxonomy")
+      .forEach(name -> taxonomyConfigService.mergeWithDefault(TaxonomyTarget.fromId(name)));
   }
 }
