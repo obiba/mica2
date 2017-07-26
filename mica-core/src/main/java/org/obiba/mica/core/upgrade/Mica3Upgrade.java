@@ -58,6 +58,12 @@ public class Mica3Upgrade implements UpgradeStep {
       logger.error("Error when trying to mergeDefaultTaxonomyWithCurrent.", e);
     }
 
+    try {
+      forceStudyClassNameVocabularyInStudyTaxonomy();
+    } catch (RuntimeException e) {
+      logger.error("Error occurred when trying to forceStudyClassNameVocabularyInStudyTaxonomy.", e);
+    }
+
     unpublishAllHarmonizationDataset();
   }
 
@@ -113,5 +119,58 @@ public class Mica3Upgrade implements UpgradeStep {
   private void mergeDefaultTaxonomyWithCurrent() {
     Stream.of("network", "study", "dataset", "variable", "taxonomy")
       .forEach(name -> taxonomyConfigService.mergeWithDefault(TaxonomyTarget.fromId(name)));
+  }
+
+  private void forceStudyClassNameVocabularyInStudyTaxonomy() {
+    logger.info("Checking presence of \"className\" vocabulary in current Mica_study taxonomy");
+    mongoTemplate.execute(db -> db.eval(addClassNameVocabularyToStudyTaxonomyIfMissing()));
+  }
+
+  private String addClassNameVocabularyToStudyTaxonomyIfMissing() {
+    return
+      "var classNameVocabulary = {\n" +
+      "  \"repeatable\": false,\n" +
+      "  \"terms\": [\n" +
+      "    {\n" +
+      "      \"name\": \"Study\",\n" +
+      "      \"title\": {\"en\": \"Individual\", \"fr\": \"Individuelle\"},\n" +
+      "      \"description\": {\n" +
+      "        \"en\": \"An individual study.\",\n" +
+      "        \"fr\": \"Une étude de collecte de données.\",\n" +
+      "        \"terms\": [],\n" +
+      "        \"keywords\": {},\n" +
+      "        \"attributes\": {}\n" +
+      "      }\n" +
+      "    },\n" +
+      "    {\n" +
+      "      \"name\": \"HarmonizationStudy\",\n" +
+      "      \"title\": {\"en\": \"Harmonization\", \"fr\": \"Harmonisation\"},\n" +
+      "      \"description\": {\n" +
+      "        \"en\": \"A harmonization study.\",\n" +
+      "        \"fr\": \"Une étude d'harmonisation de données.\",\n" +
+      "        \"terms\": [],\n" +
+      "        \"keywords\": {},\n" +
+      "        \"attributes\": {}\n" +
+      "      }\n" +
+      "    }\n" +
+      "  ],\n" +
+      "  \"name\": \"className\",\n" +
+      "  \"title\": {\n" +
+      "    \"en\": \"Type of Study\",\n" +
+      "    \"fr\": \"Type d'étude\"\n" +
+      "  },\n" +
+      "  \"description\": {\n" +
+      "    \"en\": \"Type of study (e.g. study or harmonization).\",\n" +
+      "    \"fr\": \"Type de l'étude (par exemple, étude ou étude d'harmonisation).\"\n" +
+      "  },\n" +
+      "  \"keywords\": {},\n" +
+      "  \"attributes\": {\n" +
+      "    \"static\": \"true\"\n" +
+      "  }\n" +
+      "};\n" +
+      "\n" +
+      "if (db.taxonomyEntityWrapper.find({\"_id\": \"study\", \"taxonomy.vocabularies\": {$elemMatch : {\"name\": \"className\"}}}).count() === 0) {\n" +
+      "  db.taxonomyEntityWrapper.update({\"_id\": \"study\"}, {$push: {\"taxonomy.vocabularies\": classNameVocabulary}});\n" +
+      "}\n";
   }
 }
