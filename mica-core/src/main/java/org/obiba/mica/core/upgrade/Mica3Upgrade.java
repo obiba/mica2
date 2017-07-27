@@ -1,7 +1,11 @@
 package org.obiba.mica.core.upgrade;
 
+import java.util.stream.Stream;
+
+import org.obiba.mica.core.domain.TaxonomyTarget;
 import org.obiba.mica.dataset.HarmonizationDatasetStateRepository;
 import org.obiba.mica.dataset.service.HarmonizationDatasetService;
+import org.obiba.mica.micaConfig.service.TaxonomyConfigService;
 import org.obiba.runtime.Version;
 import org.obiba.runtime.upgrade.UpgradeStep;
 import org.slf4j.Logger;
@@ -25,6 +29,9 @@ public class Mica3Upgrade implements UpgradeStep {
   @Inject
   private HarmonizationDatasetStateRepository harmonizationDatasetStateRepository;
 
+  @Inject
+  private TaxonomyConfigService taxonomyConfigService;
+
   @Override
   public String getDescription() {
     return "Mica 3.0.0 upgrade";
@@ -43,6 +50,18 @@ public class Mica3Upgrade implements UpgradeStep {
       updateStudyResourcePathReferences();
     } catch (RuntimeException e) {
       logger.error("Error occurred when updating Study path resources (/study -> /individual-study and /study-dataset -> /collected-dataset).", e);
+    }
+
+    try {
+      mergeDefaultTaxonomyWithCurrent();
+    } catch (Exception e) {
+      logger.error("Error when trying to mergeDefaultTaxonomyWithCurrent.", e);
+    }
+
+    try {
+      forceStudyClassNameVocabularyInStudyTaxonomy();
+    } catch (RuntimeException e) {
+      logger.error("Error occurred when trying to forceStudyClassNameVocabularyInStudyTaxonomy.", e);
     }
 
     unpublishAllHarmonizationDataset();
@@ -95,5 +114,63 @@ public class Mica3Upgrade implements UpgradeStep {
         "bulkUpdateAttachmentPath(db.subjectAcl, [\"resource\", \"instance\"], /^\\/draft\\/study$/, '/draft/individual-study');\n" +
         "bulkUpdateAttachmentPath(db.subjectAcl, [\"resource\", \"instance\"], /^\\/draft\\/study\\//, '/draft/individual-study/');" +
         "";
+  }
+
+  private void mergeDefaultTaxonomyWithCurrent() {
+    Stream.of("network", "study", "dataset", "variable", "taxonomy")
+      .forEach(name -> taxonomyConfigService.mergeWithDefault(TaxonomyTarget.fromId(name)));
+  }
+
+  private void forceStudyClassNameVocabularyInStudyTaxonomy() {
+    logger.info("Checking presence of \"className\" vocabulary in current Mica_study taxonomy");
+    mongoTemplate.execute(db -> db.eval(addClassNameVocabularyToStudyTaxonomyIfMissing()));
+  }
+
+  private String addClassNameVocabularyToStudyTaxonomyIfMissing() {
+    return
+      "var classNameVocabulary = {\n" +
+      "  \"repeatable\": false,\n" +
+      "  \"terms\": [\n" +
+      "    {\n" +
+      "      \"name\": \"Study\",\n" +
+      "      \"title\": {\"en\": \"Individual\", \"fr\": \"Individuelle\"},\n" +
+      "      \"description\": {\n" +
+      "        \"en\": \"An individual study.\",\n" +
+      "        \"fr\": \"Une étude de collecte de données.\",\n" +
+      "        \"terms\": [],\n" +
+      "        \"keywords\": {},\n" +
+      "        \"attributes\": {}\n" +
+      "      }\n" +
+      "    },\n" +
+      "    {\n" +
+      "      \"name\": \"HarmonizationStudy\",\n" +
+      "      \"title\": {\"en\": \"Harmonization\", \"fr\": \"Harmonisation\"},\n" +
+      "      \"description\": {\n" +
+      "        \"en\": \"A harmonization study.\",\n" +
+      "        \"fr\": \"Une étude d'harmonisation de données.\",\n" +
+      "        \"terms\": [],\n" +
+      "        \"keywords\": {},\n" +
+      "        \"attributes\": {}\n" +
+      "      }\n" +
+      "    }\n" +
+      "  ],\n" +
+      "  \"name\": \"className\",\n" +
+      "  \"title\": {\n" +
+      "    \"en\": \"Type of Study\",\n" +
+      "    \"fr\": \"Type d'étude\"\n" +
+      "  },\n" +
+      "  \"description\": {\n" +
+      "    \"en\": \"Type of study (e.g. study or harmonization).\",\n" +
+      "    \"fr\": \"Type de l'étude (par exemple, étude ou étude d'harmonisation).\"\n" +
+      "  },\n" +
+      "  \"keywords\": {},\n" +
+      "  \"attributes\": {\n" +
+      "    \"static\": \"true\"\n" +
+      "  }\n" +
+      "};\n" +
+      "\n" +
+      "if (db.taxonomyEntityWrapper.find({\"_id\": \"study\", \"taxonomy.vocabularies\": {$elemMatch : {\"name\": \"className\"}}}).count() === 0) {\n" +
+      "  db.taxonomyEntityWrapper.update({\"_id\": \"study\"}, {$push: {\"taxonomy.vocabularies\": classNameVocabulary}});\n" +
+      "}\n";
   }
 }

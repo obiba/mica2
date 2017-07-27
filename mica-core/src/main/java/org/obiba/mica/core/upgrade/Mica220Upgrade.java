@@ -1,9 +1,12 @@
 package org.obiba.mica.core.upgrade;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import java.io.IOException;
+import java.util.Iterator;
+import java.util.List;
+import java.util.stream.Stream;
+
+import javax.inject.Inject;
+
 import org.obiba.mica.core.domain.TaxonomyEntityWrapper;
 import org.obiba.mica.core.domain.TaxonomyTarget;
 import org.obiba.mica.micaConfig.domain.StudyConfig;
@@ -19,12 +22,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
-import java.io.IOException;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Stream;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 @Component
 public class Mica220Upgrade implements UpgradeStep {
