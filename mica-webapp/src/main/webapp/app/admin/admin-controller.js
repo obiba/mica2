@@ -222,7 +222,7 @@ mica.admin
 
       $scope.indexCollectionDatasets = function () {
         withConfirm(function () {
-          IndexService.CollectionDatasets.build();
+          IndexService.collectionDatasets.build();
         });
       };
 
