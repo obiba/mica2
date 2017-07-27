@@ -49,7 +49,7 @@ public class Mica3Upgrade implements UpgradeStep {
     try {
       updateStudyResourcePathReferences();
     } catch (RuntimeException e) {
-      logger.error("Error occurred when updating Study path resources (/study -> /individual-study and /study-dataset -> /collected-dataset).", e);
+      logger.error("Error occurred when updating Study path resources (/study -> /individual-study, /study-dataset -> /collected-dataset and /harmonization-dataset -> /harmonized-dataset).", e);
     }
 
     try {
@@ -74,7 +74,7 @@ public class Mica3Upgrade implements UpgradeStep {
   }
 
   private void updateStudyResourcePathReferences() {
-    logger.info("Replacing all references to /study by /individual-study and /study-dataset by /collected-dataset and harmonization-dataset by harmonized-study...");
+    logger.info("Replacing all references to /study by /individual-study and /study-dataset by /collected-dataset and harmonization-dataset by harmonized-dataset...");
     mongoTemplate.execute(db -> db.eval(renameDocuments()));
   }
 
@@ -93,22 +93,22 @@ public class Mica3Upgrade implements UpgradeStep {
         "    });\n" +
         "    bulk.execute();\n" +
         "};\n" +
-        "bulkUpdateAttachmentPath(db.attachment, [\"path\"], /^\\/study-dataset\\//, '/collected-dataset/');\n" +
-        "bulkUpdateAttachmentPath(db.attachmentState, [\"path\"], /^\\/study-dataset\\//, '/collected-dataset/');\n" +
+        "bulkUpdateAttachmentPath(db.attachment, [\"path\"], /^\\/study-dataset/, '/collected-dataset');\n" +
+        "bulkUpdateAttachmentPath(db.attachmentState, [\"path\"], /^\\/study-dataset/, '/collected-dataset');\n" +
         "bulkUpdateAttachmentPath(db.subjectAcl, [\"resource\", \"instance\"], /^\\/study-dataset$/, '/collected-dataset');\n" +
         "bulkUpdateAttachmentPath(db.subjectAcl, [\"resource\", \"instance\"], /^\\/study-dataset\\//, '/collected-dataset/');\n" +
         "bulkUpdateAttachmentPath(db.subjectAcl, [\"resource\", \"instance\"], /^\\/draft\\/study-dataset$/, '/draft/collected-dataset');\n" +
         "bulkUpdateAttachmentPath(db.subjectAcl, [\"resource\", \"instance\"], /^\\/draft\\/study-dataset\\//, '/draft/collected-dataset/');\n" +
         "\n" +
-        "bulkUpdateAttachmentPath(db.attachment, [\"path\"], /^\\/harmonization-dataset\\//, '/harmonized-dataset/');\n" +
-        "bulkUpdateAttachmentPath(db.attachmentState, [\"path\"], /^\\/harmonization-dataset\\//, '/harmonized-dataset/');\n" +
+        "bulkUpdateAttachmentPath(db.attachment, [\"path\"], /^\\/harmonization-dataset/, '/harmonized-dataset');\n" +
+        "bulkUpdateAttachmentPath(db.attachmentState, [\"path\"], /^\\/harmonization-dataset/, '/harmonized-dataset');\n" +
         "bulkUpdateAttachmentPath(db.subjectAcl, [\"resource\", \"instance\"], /^\\/harmonization-dataset$/, '/harmonized-dataset');\n" +
         "bulkUpdateAttachmentPath(db.subjectAcl, [\"resource\", \"instance\"], /^\\/harmonization-dataset\\//, '/harmonized-dataset/');\n" +
         "bulkUpdateAttachmentPath(db.subjectAcl, [\"resource\", \"instance\"], /^\\/draft\\/harmonization-dataset$/, '/draft/harmonized-dataset');\n" +
         "bulkUpdateAttachmentPath(db.subjectAcl, [\"resource\", \"instance\"], /^\\/draft\\/harmonization-dataset\\//, '/draft/harmonized-dataset/');\n" +
         "\n" +
-        "bulkUpdateAttachmentPath(db.attachment, [\"path\"], /^\\/study\\//, '/individual-study/');\n" +
-        "bulkUpdateAttachmentPath(db.attachmentState, [\"path\"], /^\\/study\\//, '/individual-study/');\n" +
+        "bulkUpdateAttachmentPath(db.attachment, [\"path\"], /^\\/study/, '/individual-study');\n" +
+        "bulkUpdateAttachmentPath(db.attachmentState, [\"path\"], /^\\/study/, '/individual-study');\n" +
         "bulkUpdateAttachmentPath(db.subjectAcl, [\"resource\", \"instance\"], /^\\/study$/, '/individual-study');\n" +
         "bulkUpdateAttachmentPath(db.subjectAcl, [\"resource\", \"instance\"], /^\\/study\\//, '/individual-study/');\n" +
         "bulkUpdateAttachmentPath(db.subjectAcl, [\"resource\", \"instance\"], /^\\/draft\\/study$/, '/draft/individual-study');\n" +
