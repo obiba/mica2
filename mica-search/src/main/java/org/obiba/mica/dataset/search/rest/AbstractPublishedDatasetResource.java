@@ -182,15 +182,21 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
 
   protected DatasetVariable getDatasetVariable(@NotNull String datasetId, @NotNull String variableName,
     DatasetVariable.Type variableType, OpalTable opalTable) {
-    String studyId = opalTable != null && opalTable instanceof BaseStudyTable ? ((BaseStudyTable) opalTable).getStudyId() : null;
-    String project = opalTable != null ? opalTable.getProject() : null;
-    String table = opalTable != null ? opalTable.getTable() : null;
-    String tableType = opalTable == null ? null :
-      opalTable instanceof  StudyTable
-        ? DatasetVariable.OPAL_STUDY_TABLE_PREFIX
-        : DatasetVariable.OPAL_HARMONIZATION_TABLE_PREFIX;
 
-    return getDatasetVariable(datasetId, variableName, variableType, studyId, project, table, tableType);
+    if (opalTable != null) {
+      return getDatasetVariable(datasetId,
+        variableName,
+        variableType,
+        opalTable instanceof BaseStudyTable ? ((BaseStudyTable) opalTable).getStudyId() : null,
+        opalTable.getProject(),
+        opalTable.getTable(),
+        opalTable instanceof StudyTable
+          ? DatasetVariable.OPAL_STUDY_TABLE_PREFIX
+          : DatasetVariable.OPAL_HARMONIZATION_TABLE_PREFIX);
+
+    }
+
+    return getDatasetVariable(datasetId, variableName, variableType, null, null, null, null);
   }
 
   /**

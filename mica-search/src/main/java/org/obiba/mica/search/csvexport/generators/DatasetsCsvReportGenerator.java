@@ -88,7 +88,7 @@ public class DatasetsCsvReportGenerator extends CsvReportGeneratorImpl {
   }
 
   private String findType(Mica.DatasetDto datasetDto) {
-    if (datasetDto.hasExtension(Mica.HarmonizationDatasetDto.type))
+    if (datasetDto.hasExtension(Mica.HarmonizedDatasetDto.type))
       return translator.translate("dataset_taxonomy.vocabulary.className.term.HarmonizationDataset.title");
     else if (datasetDto.hasExtension(Mica.CollectedDatasetDto.type))
       return translator.translate("dataset_taxonomy.vocabulary.className.term.StudyDataset.title");
