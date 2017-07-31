@@ -25,6 +25,7 @@ import javax.ws.rs.core.Response;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.obiba.mica.core.domain.StudyTable;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.search.rest.AbstractPublishedDatasetResource;
@@ -185,8 +186,9 @@ public class PublishedHarmonizationDatasetResource extends AbstractPublishedData
     resource.setStudyId(studyId);
     HarmonizationDataset dataset = getDataset(HarmonizationDataset.class, id);
     dataset.getStudyTables().stream().filter(t -> t.appliesTo(studyId, populationId, dceId)).forEach(t -> {
-      resource.setProject(t.getProject());
-      resource.setTable(t.getTable());
+      resource.setTableType(t instanceof StudyTable
+        ? DatasetVariable.OPAL_STUDY_TABLE_PREFIX
+        : DatasetVariable.OPAL_HARMONIZATION_TABLE_PREFIX);
     });
     return resource;
   }
