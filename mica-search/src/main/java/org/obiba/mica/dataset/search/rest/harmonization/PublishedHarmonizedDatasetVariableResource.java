@@ -62,13 +62,16 @@ public class PublishedHarmonizedDatasetVariableResource extends AbstractPublishe
 
   private String table;
 
+  private String tableType;
+
   @Inject
   private HarmonizationDatasetService datasetService;
 
   @GET
   @Timed
   public Mica.DatasetVariableDto getVariable() {
-    return getDatasetVariableDto(datasetId, variableName, DatasetVariable.Type.Harmonized, studyId, project, table);
+    return getDatasetVariableDto(datasetId, variableName, DatasetVariable.Type.Harmonized, studyId, project, table,
+      tableType);
   }
 
   @GET
@@ -187,12 +190,18 @@ public class PublishedHarmonizedDatasetVariableResource extends AbstractPublishe
     this.table = table;
   }
 
+  public void setTableType(String tableType) {
+    this.tableType = tableType;
+  }
+
   private Pair<DatasetVariable, DatasetVariable> getContingencyVariables(String crossVariable) {
     if(Strings.isNullOrEmpty(crossVariable))
       throw new BadRequestException("Cross variable name is required for the contingency table");
 
-    DatasetVariable var = getDatasetVariable(datasetId, variableName, DatasetVariable.Type.Harmonized, studyId, project, table);
-    DatasetVariable crossVar = getDatasetVariable(datasetId, crossVariable, DatasetVariable.Type.Harmonized, studyId, project, table);
+    DatasetVariable var = getDatasetVariable(datasetId, variableName, DatasetVariable.Type.Harmonized, studyId, project,
+      table, tableType);
+    DatasetVariable crossVar = getDatasetVariable(datasetId, crossVariable, DatasetVariable.Type.Harmonized, studyId,
+      project, table, tableType);
 
     return Pair.create(var, crossVar);
   }
