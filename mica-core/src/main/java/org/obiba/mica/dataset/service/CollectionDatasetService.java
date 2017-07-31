@@ -42,7 +42,9 @@ import org.obiba.mica.micaConfig.service.OpalService;
 import org.obiba.mica.network.service.NetworkService;
 import org.obiba.mica.study.date.PersistableYearMonth;
 import org.obiba.mica.study.domain.BaseStudy;
+import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.service.CollectionStudyService;
+import org.obiba.mica.study.service.PublishedStudyService;
 import org.obiba.mica.study.service.StudyService;
 import org.obiba.opal.rest.client.magma.RestValueTable;
 import org.obiba.opal.web.model.Search;
@@ -92,6 +94,9 @@ public class CollectionDatasetService extends DatasetService<StudyDataset, Study
 
   @Inject
   private CollectionStudyService collectionStudyService;
+
+  @Inject
+  private PublishedStudyService publishedStudyService;
 
   @Inject
   private EventBus eventBus;
@@ -192,9 +197,27 @@ public class CollectionDatasetService extends DatasetService<StudyDataset, Study
   }
 
   private void checkIsPublishable(StudyDataset dataset) {
-    if (dataset.hasStudyTable() && !collectionStudyService.isPublished(dataset.getStudyTable().getStudyId())) {
+
+    if (!dataset.hasStudyTable())
+      return;
+
+    if (!collectionStudyService.isPublished(dataset.getStudyTable().getStudyId())) {
       throw new IllegalArgumentException("dataset.collection.study-not-published");
     }
+
+    BaseStudy study = publishedStudyService.findById(dataset.getStudyTable().getStudyId());
+
+    if (study == null || !(study instanceof Study))
+      throw new IllegalArgumentException("Wrong study type found");
+
+    if (!isPublishedPopulation(study, dataset.getStudyTable().getPopulationId()))
+      throw new IllegalArgumentException("dataset.collection.population-not-published");
+  }
+
+  private boolean isPublishedPopulation(BaseStudy study, String populationId) {
+    return study.getPopulations()
+      .stream()
+      .anyMatch(population -> population.getId().equals(populationId));
   }
 
   /**

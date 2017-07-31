@@ -46,7 +46,10 @@ import org.obiba.mica.file.service.FileSystemService;
 import org.obiba.mica.micaConfig.service.OpalService;
 import org.obiba.mica.network.service.NetworkService;
 import org.obiba.mica.study.NoSuchStudyException;
+import org.obiba.mica.study.domain.BaseStudy;
+import org.obiba.mica.study.domain.HarmonizationStudy;
 import org.obiba.mica.study.service.HarmonizationStudyService;
+import org.obiba.mica.study.service.PublishedStudyService;
 import org.obiba.mica.study.service.StudyService;
 import org.obiba.opal.rest.client.magma.RestValueTable;
 import org.obiba.opal.web.model.Search;
@@ -100,6 +103,9 @@ public class HarmonizationDatasetService extends DatasetService<HarmonizationDat
 
   @Inject
   private HarmonizationStudyService harmonizationStudyService;
+
+  @Inject
+  private PublishedStudyService publishedStudyService;
 
   @Inject
   private EventBus eventBus;
@@ -258,9 +264,21 @@ public class HarmonizationDatasetService extends DatasetService<HarmonizationDat
       throw new IllegalArgumentException("dataset.harmonization.missing-attributes");
     }
 
-    if (!harmonizationStudyService.isPublished(dataset.getHarmonizationTable().getStudyId())) {
+    BaseStudy study = publishedStudyService.findById(dataset.getHarmonizationTable().getStudyId());
+    if (study == null || !(study instanceof HarmonizationStudy))
+      throw new IllegalArgumentException("Wrong study type found");
+
+    if (!harmonizationStudyService.isPublished(dataset.getHarmonizationTable().getStudyId()))
       throw new IllegalArgumentException("dataset.harmonization.study-not-published");
-    }
+
+    if (!isPublishedPopulation(study, dataset.getHarmonizationTable().getPopulationId()))
+      throw new IllegalArgumentException("dataset.harmonization.population-not-published");
+  }
+
+  private boolean isPublishedPopulation(BaseStudy study, String populationId) {
+    return study.getPopulations()
+      .stream()
+      .anyMatch(population -> population.getId().equals(populationId));
   }
 
   /**
