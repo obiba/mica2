@@ -889,6 +889,7 @@
     "help": "Search in the published repository.",
     "back": "Back to Search",
     "no-results": "No result found.",
+    "no-graphic-result": "No graphics for current query.",
     "error": "Impossible to search for now. Please try again later.",
     "no-description": "No description.",
     "placeholder": {

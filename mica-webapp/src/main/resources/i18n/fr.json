@@ -889,6 +889,7 @@
     "help": "Chercher dans le catalogue publié.",
     "back": "Retour à la recherche",
     "no-results": "Aucun résultat trouvé.",
+    "no-graphic-result": "Aucun graphique pour la requête actuelle.",
     "error": "Impossible d'effectuer la recherche pour l'instant. Veuillez réessayer plus tard.",
     "no-description": "Aucune description.",
     "placeholder": {
