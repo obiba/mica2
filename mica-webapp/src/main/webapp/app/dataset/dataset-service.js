@@ -213,9 +213,9 @@ mica.dataset
     function findTargetTables(dataset, type) {
       switch (type) {
         case mica.dataset.OPAL_TABLE_TYPES.STUDY_TABLE:
-          return dataset['obiba.mica.HarmonizationDatasetDto.type'].studyTables;
+          return dataset['obiba.mica.HarmonizedDatasetDto.type'].studyTables;
         case mica.dataset.OPAL_TABLE_TYPES.HARMONIZATION_TABLE:
-          return dataset['obiba.mica.HarmonizationDatasetDto.type'].harmonizationTables;
+          return dataset['obiba.mica.HarmonizedDatasetDto.type'].harmonizationTables;
       }
 
       throw new Error('Invalid table type');
@@ -234,8 +234,8 @@ mica.dataset
           throw new Error('Invalid table type');
       }
 
-      dataset['obiba.mica.HarmonizationDatasetDto.type'][tablesName] = dataset['obiba.mica.HarmonizationDatasetDto.type'][tablesName] || [];
-      return dataset['obiba.mica.HarmonizationDatasetDto.type'][tablesName];
+      dataset['obiba.mica.HarmonizedDatasetDto.type'][tablesName] = dataset['obiba.mica.HarmonizedDatasetDto.type'][tablesName] || [];
+      return dataset['obiba.mica.HarmonizedDatasetDto.type'][tablesName];
     }
 
     factory.updateTable = function(dataset, wrapper, newTable) {
@@ -277,15 +277,15 @@ mica.dataset
     factory.getTables = function getOpalTables(dataset) {
       tableWrappers = [];
 
-      if (dataset['obiba.mica.HarmonizationDatasetDto.type'].studyTables) {
-        tableWrappers = dataset['obiba.mica.HarmonizationDatasetDto.type'].studyTables.map(function (studyTable) {
+      if (dataset['obiba.mica.HarmonizedDatasetDto.type'].studyTables) {
+        tableWrappers = dataset['obiba.mica.HarmonizedDatasetDto.type'].studyTables.map(function (studyTable) {
           return {type: mica.dataset.OPAL_TABLE_TYPES.STUDY_TABLE, table: studyTable};
         });
       }
 
-      if (dataset['obiba.mica.HarmonizationDatasetDto.type'].harmonizationTables) {
+      if (dataset['obiba.mica.HarmonizedDatasetDto.type'].harmonizationTables) {
         tableWrappers = tableWrappers.concat(
-          dataset['obiba.mica.HarmonizationDatasetDto.type'].harmonizationTables.map(function (harmonizationTable) {
+          dataset['obiba.mica.HarmonizedDatasetDto.type'].harmonizationTables.map(function (harmonizationTable) {
             return {type: mica.dataset.OPAL_TABLE_TYPES.HARMONIZATION_TABLE, table: harmonizationTable};
           })
         );
@@ -307,7 +307,7 @@ mica.dataset
         tables.splice(index, 1);
         if (tables.length === 0) {
           var tablesName = wrapper.type === mica.dataset.OPAL_TABLE_TYPES.STUDY_TABLE ? 'studyTables' : 'harmonizationTables';
-          dataset['obiba.mica.HarmonizationDatasetDto.type'][tablesName] = undefined;
+          dataset['obiba.mica.HarmonizedDatasetDto.type'][tablesName] = undefined;
         }
 
         tableWrappers.splice(wrapperIndex, 1);

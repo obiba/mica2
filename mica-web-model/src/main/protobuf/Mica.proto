@@ -495,7 +495,7 @@ message CollectedDatasetDto {
   }
 }
 
-message HarmonizationDatasetDto {
+message HarmonizedDatasetDto {
   optional DatasetDto.HarmonizationTableDto harmonizationTable = 1;
   repeated DatasetDto.StudyTableDto studyTables = 2;
   repeated DatasetDto.HarmonizationTableDto harmonizationTables = 3;
@@ -503,7 +503,7 @@ message HarmonizationDatasetDto {
   optional string networkId = 4;
 
   extend DatasetDto {
-    optional HarmonizationDatasetDto type = 1001;
+    optional HarmonizedDatasetDto type = 1001;
   }
 }
 
