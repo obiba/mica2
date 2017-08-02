@@ -264,12 +264,13 @@ public class HarmonizationDatasetService extends DatasetService<HarmonizationDat
       throw new IllegalArgumentException("dataset.harmonization.missing-attributes");
     }
 
+    if (!harmonizationStudyService.isPublished(dataset.getHarmonizationTable().getStudyId())) {
+      throw new IllegalArgumentException("dataset.harmonization.study-not-published");
+    }
+
     BaseStudy study = publishedStudyService.findById(dataset.getHarmonizationTable().getStudyId());
     if (study == null || !(study instanceof HarmonizationStudy))
       throw new IllegalArgumentException("Wrong study type found");
-
-    if (!harmonizationStudyService.isPublished(dataset.getHarmonizationTable().getStudyId()))
-      throw new IllegalArgumentException("dataset.harmonization.study-not-published");
 
     if (!isPublishedPopulation(study, dataset.getHarmonizationTable().getPopulationId()))
       throw new IllegalArgumentException("dataset.harmonization.population-not-published");
