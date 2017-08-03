@@ -20,10 +20,9 @@ import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.core.domain.StudyTable;
 import org.obiba.mica.study.domain.BaseStudy;
 import org.obiba.mica.study.domain.DataCollectionEvent;
+import org.obiba.mica.study.domain.HarmonizationStudy;
 import org.obiba.mica.study.domain.Population;
 import org.obiba.mica.study.domain.Study;
-import org.obiba.mica.study.service.CollectionStudyService;
-import org.obiba.mica.study.service.HarmonizationStudyService;
 import org.obiba.mica.study.service.PublishedStudyService;
 import org.obiba.opal.core.domain.taxonomy.Term;
 import org.springframework.cache.annotation.Cacheable;
@@ -39,18 +38,9 @@ public class DceIdAggregationMetaDataHelper extends AbstractIdAggregationMetaDat
   @Inject
   PublishedStudyService publishedStudyService;
 
-  @Inject
-  private CollectionStudyService studyService;
-
-  @Inject
-  private HarmonizationStudyService harmonizationStudyService;
-
   @Cacheable(value = "aggregations-metadata", key = "'dce'")
   public Map<String, AggregationMetaDataProvider.LocalizedMetaData> getDces() {
     List<BaseStudy> studies = sudo(() -> publishedStudyService.findAllByClassName(Study.class.getSimpleName()));
-    List<Study> unpublishedStudies = sudo(() -> studyService.findAllUnpublishedStudies());
-
-    studies.addAll(unpublishedStudies);
     Map<String, AggregationMetaDataProvider.LocalizedMetaData> map = Maps.newHashMap();
 
     studies.forEach(study -> {
@@ -63,7 +53,7 @@ public class DceIdAggregationMetaDataHelper extends AbstractIdAggregationMetaDat
       });
     });
 
-    sudo(() -> harmonizationStudyService.findAllDraftStudies())
+    sudo(() -> publishedStudyService.findAllByClassName(HarmonizationStudy.class.getSimpleName()))
       .stream()
       .forEach(hStudy -> hStudy.getPopulations().stream()
         .forEach(population -> mapIdToMetadata(map, hStudy, population, null)));
