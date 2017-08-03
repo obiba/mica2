@@ -54,7 +54,9 @@
     "chronological": "Chronological",
     "network": "Network",
     "individual-study": "Individual Study",
+    "individual-studies": "Individual Studies",
     "harmonization-study": "Harmonization Study",
+    "harmonization-studies": "Harmonization Studies",
     "harmonization-study-population": "Population"
   },
   "pagination": {
@@ -566,8 +568,6 @@
     },
     "none": "No studies."
   },
-  "individual-studies": "Individual Studies",
-  "harmonization-studies": "Harmonization Studies",
   "contact": {
     "add": {
       "contact": "Add contact",
