@@ -108,10 +108,16 @@ public abstract class AbstractStudyService<S extends EntityState, T extends Base
 
   public List<T> findAllPublishedStudies() {
     return findPublishedStates().stream() //
-      .filter(studyState -> {
-        return gitService.hasGitRepository(studyState) && !Strings.isNullOrEmpty(studyState.getPublishedTag());
-      })
+      .filter(studyState ->
+        gitService.hasGitRepository(studyState) && !Strings.isNullOrEmpty(studyState.getPublishedTag()))
       .map(studyState -> gitService.readFromTag(studyState, studyState.getPublishedTag(), getType()))
+      .map(s -> { s.getModel(); return s; }) // make sure dynamic model is initialized
+      .collect(toList());
+  }
+
+  public List<T> findAllUnpublishedStudies() {
+    return findUnpublishedStates().stream() //
+      .map(studyState -> findDraft(studyState.getId()))
       .map(s -> { s.getModel(); return s; }) // make sure dynamic model is initialized
       .collect(toList());
   }

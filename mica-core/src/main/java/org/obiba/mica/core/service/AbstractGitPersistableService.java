@@ -145,6 +145,10 @@ public abstract class AbstractGitPersistableService<T extends EntityState, T1 ex
     return getEntityStateRepository().findByPublishedTagNotNull();
   }
 
+  public List<T> findUnpublishedStates() {
+    return getEntityStateRepository().findByPublishedTagIsNull();
+  }
+
   public List<T> findAllStates() {
     return getEntityStateRepository().findAll();
   }
