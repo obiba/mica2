@@ -710,14 +710,15 @@ class DatasetDtos {
 
     String studyId = harmonizationLink.getStudyId();
 
-    if (asDraft) {
-      if(studyId != null) {
+    if (asDraft && studyId != null) {
         harmonizationLinkBuilder.setStudyId(harmonizationLink.getStudyId());
         harmonizationLinkBuilder.setPopulationId(harmonizationLink.getPopulationId());
-      }
-    } else if (studyId != null && publishedStudyService.findById(studyId) != null) {
+    } else if (!asDraft && studyId != null && publishedStudyService.findById(studyId) != null) {
       harmonizationLinkBuilder.setStudyId(harmonizationLink.getStudyId());
       harmonizationLinkBuilder.setPopulationId(harmonizationLink.getPopulationId());
+    } else {
+      harmonizationLinkBuilder.setStudyId("-");
+      harmonizationLinkBuilder.setPopulationId("-");
     }
 
     if (studyId != null) harmonizationLinkBuilder.setStudySummary(studySummaryDtos.asHarmoStudyDto(studyId));
