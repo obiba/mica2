@@ -64,6 +64,12 @@ public class Mica3Upgrade implements UpgradeStep {
       logger.error("Error occurred when trying to forceStudyClassNameVocabularyInStudyTaxonomy.", e);
     }
 
+    try {
+      forceStudyHarmonizationDesignVocabularyInStudyTaxonomy();
+    } catch (RuntimeException e) {
+      logger.error("Error occurred when trying to forceStudyHarmonizationDesignVocabularyInStudyTaxonomy.", e);
+    }
+
     unpublishAllHarmonizationDataset();
   }
 
@@ -126,6 +132,11 @@ public class Mica3Upgrade implements UpgradeStep {
     mongoTemplate.execute(db -> db.eval(addClassNameVocabularyToStudyTaxonomyIfMissing()));
   }
 
+  private void forceStudyHarmonizationDesignVocabularyInStudyTaxonomy() {
+    logger.info("Checking presence of \"harmonizationDesign\" vocabulary in current Mica_study taxonomy");
+    mongoTemplate.execute(db -> db.eval(addHarmonizationDesignToStudyTaxonomyIfMissing()));
+  }
+
   private String addClassNameVocabularyToStudyTaxonomyIfMissing() {
     return
       "var classNameVocabulary = {\n" +
@@ -171,6 +182,32 @@ public class Mica3Upgrade implements UpgradeStep {
       "\n" +
       "if (db.taxonomyEntityWrapper.find({\"_id\": \"study\", \"taxonomy.vocabularies\": {$elemMatch : {\"name\": \"className\"}}}).count() === 0) {\n" +
       "  db.taxonomyEntityWrapper.update({\"_id\": \"study\"}, {$push: {\"taxonomy.vocabularies\": classNameVocabulary}});\n" +
+      "}\n";
+  }
+
+  public String addHarmonizationDesignToStudyTaxonomyIfMissing() {
+    return
+      "var harmonizationDesignVocabulary = {\n" +
+      "  \"repeatable\": false,\n" +
+      "  \"name\": \"harmonizationDesign\",\n" +
+      "  \"title\": {\n" +
+      "    \"en\": \"Harmonization Study Design\",\n" +
+      "    \"fr\": \"Conception de l'étude d'harmonisation\"\n" +
+      "  },\n" +
+      "  \"description\": {\n" +
+      "    \"en\": \"Harmonization Study Design.\",\n" +
+      "    \"fr\": \"Conception de l'étude d'harmonisation.\"\n" +
+      "  },\n" +
+      "  \"keywords\": {},\n" +
+      "  \"attributes\": {\n" +
+      "    \"field\": \"model.harmonizationDesign\",\n" +
+      "    \"localized\": \"true\",\n" +
+      "    \"alias\": \"model-harmonizationDesign\",\n" +
+      "  }\n" +
+      "};\n" +
+      "\n" +
+      "if (db.taxonomyEntityWrapper.find({\"_id\": \"study\", \"taxonomy.vocabularies\": {$elemMatch : {\"name\": \"harmonizationDesign\"}}}).count() === 0) {\n" +
+      "  db.taxonomyEntityWrapper.update({\"_id\": \"study\"}, {$push: {\"taxonomy.vocabularies\": harmonizationDesignVocabulary}});\n" +
       "}\n";
   }
 }
