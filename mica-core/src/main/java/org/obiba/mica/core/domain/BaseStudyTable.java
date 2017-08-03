@@ -33,6 +33,10 @@ public class BaseStudyTable extends OpalTable {
   }
 
   public String getPopulationUId() {
+    return BaseStudyTable.getPopulationUId(studyId, populationId);
+  }
+
+  public static String getPopulationUId(String studyId, String populationId) {
     return new StringBuilder(studyId).append(":").append(populationId).toString();
   }
 
@@ -43,6 +47,10 @@ public class BaseStudyTable extends OpalTable {
   public static String getDataCollectionEventUId(String studyId, String populationId, String dataCollectionEventId) {
     return new StringBuilder(studyId).append(":").append(populationId).append(":").append(dataCollectionEventId)
         .toString();
+  }
+
+  public static String getDataCollectionEventUId(String studyId, String populationId) {
+    return new StringBuilder(studyId).append(":").append(populationId).append(":.").toString();
   }
 
   public void setPopulationId(String populationId) {
