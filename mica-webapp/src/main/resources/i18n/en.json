@@ -709,7 +709,7 @@
       "population-not-published":"Before publishing a harmonized dataset, its linked population must already be published"
     },
     "collection":{
-      "study-not-published":"Before publishing a harmonized dataset, its linked harmonization study must already be published",
+      "study-not-published":"Before publishing a collected dataset, its linked individual study must already be published",
       "population-not-published":"Before publishing a collected dataset, its linked population must already be published"
     }
   },
