@@ -34,7 +34,7 @@ mica.study
         'delete': {method: 'DELETE', errorHandler: true},
         'get': {method: 'GET', transformResponse: StudyModelService.deserialize},
         'publish': {method: 'PUT', url: 'ws/draft/individual-study/:id/_publish', params: {id: '@id', cascading: '@cascading'}},
-        'unPublish': {method: 'DELETE', url: 'ws/draft/individual-study/:id/_publish'},
+        'unPublish': {method: 'DELETE', url: 'ws/draft/individual-study/:id/_publish', errorHandler: true},
         'toStatus': {method: 'PUT', url: 'ws/draft/individual-study/:id/_status', params: {id: '@id', value: '@value'}}
       });
     }])
@@ -420,7 +420,7 @@ mica.study
                   collectionDatasets: translation['collected-datasets'],
                   network: data.network ? data.network.join(', ') : null,
                   harmonizationDataset: data.harmonizationDataset ? data.harmonizationDataset.join(', ') : null,
-                  collectionDataset: data.collectedDataset ? data.collectedDataset.join(', ') : null
+                  collectionDataset: data.studyDataset ? data.studyDataset.join(', ') : null
                 })
             }, function () {
               if (callback) {
@@ -454,7 +454,7 @@ mica.study
         'delete': {method: 'DELETE', errorHandler: true},
         'get': {method: 'GET', transformResponse: StudyModelService.deserialize},
         'publish': {method: 'PUT', url: 'ws/draft/harmonization-study/:id/_publish', params: {id: '@id', cascading: '@cascading'}},
-        'unPublish': {method: 'DELETE', url: 'ws/draft/harmonization-study/:id/_publish'},
+        'unPublish': {method: 'DELETE', url: 'ws/draft/harmonization-study/:id/_publish', errorHandler: true},
         'toStatus': {method: 'PUT', url: 'ws/draft/harmonization-study/:id/_status', params: {id: '@id', value: '@value'}}
       });
     }])

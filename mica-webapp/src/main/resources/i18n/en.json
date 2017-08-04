@@ -552,6 +552,8 @@
     "opal-help": "URL of the opal server for this study (if different from the default one).",
     "potential-conflicts": "Potential Conflicts",
     "potential-conflicts-message": "There may be potential conflicts.",
+    "unpublish-conflicts": "Unpublish Conflict",
+    "unpublish-conflicts-message": "The study has dependent published datasets. Please unpublish these datasets and try again.",
     "delete-conflict": "Delete Conflict",
     "delete-conflict-message": "Found conflicts when trying to remove the study. Remove dependencies and try again.",
     "population-delete-conflict-message": "Found conflicts when trying to remove a population. Remove dependencies and try again.",

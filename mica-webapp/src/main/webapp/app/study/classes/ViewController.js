@@ -159,11 +159,17 @@ mica.study.ViewController = function (
       });
     } else {
       DraftStudyResource.unPublish({id: $routeParams.id},
-      function (response) {
+      function () {
         $scope.studySummary = StudyStatesResource.get({id: $routeParams.id}, self.initializeState);
-        if (response.conflicts) {
-          StudyUpdateWarningService.popup(response.conflicts, 'study.potential-conflicts', 'study.potential-conflicts-message');
-          $log.warn('potential conflicts for individual study', $routeParams.id, response);
+      },
+      function onError(response){
+        if (response.status === 409) {
+          StudyUpdateWarningService.popup(response.data, 'study.unpublish-conflicts', 'study.unpublish-conflicts-message');
+        } else {
+          $rootScope.$broadcast(NOTIFICATION_EVENTS.showNotificationDialog, {
+            titleKey: 'form-server-error',
+            message: angular.toJson(response)
+          });
         }
       });
     }
@@ -544,11 +550,17 @@ mica.study.HarmonizationStudyViewController = function (
         });
     } else {
       DraftStudyResource.unPublish({id: $routeParams.id},
-      function (response) {
+      function () {
         $scope.studySummary = StudyStatesResource.get({id: $routeParams.id}, self.initializeState);
-        if (response.conflicts) {
-          StudyUpdateWarningService.popup(response.conflicts, 'study.potential-conflicts', 'study.potential-conflicts-message');
-          $log.warn('potential conflicts for harmonization study', $routeParams.id, response);
+      },
+      function onError(response){
+        if (response.status === 409) {
+          StudyUpdateWarningService.popup(response.data, 'study.unpublish-conflicts', 'study.unpublish-conflicts-message');
+        } else {
+          $rootScope.$broadcast(NOTIFICATION_EVENTS.showNotificationDialog, {
+            titleKey: 'form-server-error',
+            message: angular.toJson(response)
+          });
         }
       });
     }

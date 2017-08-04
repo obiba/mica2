@@ -39,6 +39,7 @@ import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.rest.FileResource;
 import org.obiba.mica.file.service.FileSystemService;
 import org.obiba.mica.security.rest.SubjectAclResource;
+import org.obiba.mica.study.ConstraintException;
 import org.obiba.mica.study.domain.HarmonizationStudy;
 import org.obiba.mica.study.domain.HarmonizationStudyState;
 import org.obiba.mica.study.service.HarmonizationStudyService;
@@ -122,10 +123,16 @@ public class DraftHarmonizationStudyResource extends AbstractGitPersistableResou
   @Path("/_publish")
   public Response unPublish() {
     checkPermission("/draft/harmonization-study", "PUBLISH");
+
+    Map<String, List<String>> conflicts =
+      studyService.getPotentialUnpublishingConflicts(studyService.findStudy(id));
+
+    if (!conflicts.isEmpty()) {
+      throw new ConstraintException(conflicts);
+    }
+
     studyService.publish(id, false);
-    HashMap<Object, Object> response = Maps.newHashMap();
-    response.put("conflicts", studyService.getPotentialConflicts(studyService.findStudy(id), true));
-    return Response.ok(response, MediaType.APPLICATION_JSON_TYPE).build();
+    return Response.ok().build();
   }
 
   @PUT

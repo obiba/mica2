@@ -21,6 +21,8 @@ import org.springframework.data.mongodb.repository.Query;
  */
 public interface HarmonizationDatasetRepository extends MongoRepository<HarmonizationDataset, String> {
 
+  List<HarmonizationDataset> findByHarmonizationTableStudyId(String studyId);
+
   List<HarmonizationDataset> findByStudyTablesStudyId(String studyId);
 
   List<HarmonizationDataset> findByStudyTablesStudyIdAndStudyTablesPopulationIdAndStudyTablesDataCollectionEventId(

@@ -27,6 +27,8 @@ import org.obiba.mica.core.domain.AbstractGitPersistable;
 import org.obiba.mica.core.repository.EntityStateRepository;
 import org.obiba.mica.dataset.HarmonizationDatasetRepository;
 import org.obiba.mica.dataset.StudyDatasetRepository;
+import org.obiba.mica.dataset.StudyDatasetStateRepository;
+import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.file.FileStoreService;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.network.NetworkRepository;
@@ -45,6 +47,7 @@ import org.springframework.validation.annotation.Validated;
 import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 import static java.util.stream.Collectors.toList;
@@ -68,6 +71,9 @@ public class CollectionStudyService extends AbstractStudyService<StudyState, Stu
 
   @Inject
   private NetworkRepository networkRepository;
+
+  @Inject
+  private StudyDatasetStateRepository studyDatasetStateRepository;
 
   @Inject
   private StudyDatasetRepository studyDatasetRepository;
@@ -133,6 +139,30 @@ public class CollectionStudyService extends AbstractStudyService<StudyState, Stu
     }
 
     return restoredStudy;
+  }
+
+  public Map<String, List<String>> getPotentialUnpublishingConflicts(Study study) {
+    List<StudyDataset> datasets = findAllPublishedDatasetsByStudy(study.getId());
+    if (!datasets.isEmpty()) {
+      return new HashMap<String, List<String>>() {{
+        put("studyDataset", datasets.stream().map(StudyDataset::getId).collect(Collectors.toList()));
+      }};
+    }
+
+    return Maps.newHashMap();
+  }
+
+  /**
+   * Get all published {@link StudyDataset}s of a given {@link Study}.
+   *
+   * @return List of {@link StudyDataset}s
+   */
+  public List<StudyDataset> findAllPublishedDatasetsByStudy(@NotNull String studyId) {
+    return studyDatasetRepository
+      .findByStudyTableStudyId(studyId)
+      .stream()
+      .filter(ds -> studyDatasetStateRepository.findOne(ds.getId()).isPublished())
+      .collect(Collectors.toList());
   }
 
   public Map<String, List<String>> getPotentialConflicts(Study study, boolean publishing) {

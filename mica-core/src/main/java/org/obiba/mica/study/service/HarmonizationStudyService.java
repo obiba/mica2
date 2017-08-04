@@ -13,13 +13,18 @@ package org.obiba.mica.study.service;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
+import javax.validation.constraints.NotNull;
 
 import org.joda.time.DateTime;
 import org.obiba.mica.core.domain.AbstractGitPersistable;
 import org.obiba.mica.core.repository.EntityStateRepository;
 import org.obiba.mica.dataset.HarmonizationDatasetRepository;
+import org.obiba.mica.dataset.HarmonizationDatasetStateRepository;
+import org.obiba.mica.dataset.domain.HarmonizationDataset;
+import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.file.FileStoreService;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.network.NetworkRepository;
@@ -39,6 +44,7 @@ import org.springframework.validation.annotation.Validated;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 import static java.util.stream.Collectors.toList;
@@ -56,6 +62,9 @@ public class HarmonizationStudyService extends AbstractStudyService<Harmonizatio
 
   @Inject
   private HarmonizationStudyStateRepository harmonizationStudyStateRepository;
+
+  @Inject
+  private HarmonizationDatasetStateRepository harmonizationDatasetStateRepository;
 
   @Inject
   private HarmonizationDatasetRepository harmonizationDatasetRepository;
@@ -113,9 +122,31 @@ public class HarmonizationStudyService extends AbstractStudyService<Harmonizatio
     return "harmonization-study";
   }
 
+  public Map<String, List<String>> getPotentialUnpublishingConflicts(HarmonizationStudy study) {
+    List<HarmonizationDataset> datasets = findAllPublishedDatasetsByStudy(study.getId());
+    if (!datasets.isEmpty()) {
+      return new HashMap<String, List<String>>() {{
+        put("harmonizationDataset", datasets.stream().map(HarmonizationDataset::getId).collect(Collectors.toList()));
+      }};
+    }
+
+    return Maps.newHashMap();
+  }
+
   /**
-   * TODO account for HarmonizationDataset constraint
+   * Get all published {@link StudyDataset}s of a given {@link Study}.
    *
+   * @return List of {@link StudyDataset}s
+   */
+  public List<HarmonizationDataset> findAllPublishedDatasetsByStudy(@NotNull String studyId) {
+    return harmonizationDatasetRepository
+      .findByHarmonizationTableStudyId(studyId)
+      .stream()
+      .filter(ds -> harmonizationDatasetStateRepository.findOne(ds.getId()).isPublished())
+      .collect(Collectors.toList());
+  }
+
+  /**
    * @param study
    * @param publishing
    * @return
