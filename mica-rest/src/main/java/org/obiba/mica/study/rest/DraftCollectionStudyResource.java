@@ -22,6 +22,7 @@ import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.rest.FileResource;
 import org.obiba.mica.file.service.FileSystemService;
 import org.obiba.mica.security.rest.SubjectAclResource;
+import org.obiba.mica.study.ConstraintException;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.domain.StudyState;
 import org.obiba.mica.study.service.CollectionStudyService;
@@ -114,10 +115,17 @@ public class DraftCollectionStudyResource extends AbstractGitPersistableResource
   @Path("/_publish")
   public Response unPublish() {
     checkPermission("/draft/individual-study", "PUBLISH");
+
+    Map<String, List<String>> conflicts =
+      collectionStudyService.getPotentialUnpublishingConflicts(collectionStudyService.findStudy(id));
+
+    if (!conflicts.isEmpty()) {
+      throw new ConstraintException(conflicts);
+    }
+
     collectionStudyService.publish(id, false);
-    HashMap<Object, Object> response = Maps.newHashMap();
-    response.put("conflicts", collectionStudyService.getPotentialConflicts(collectionStudyService.findStudy(id), true));
-    return Response.ok(response, MediaType.APPLICATION_JSON_TYPE).build();
+
+    return Response.ok().build();
   }
 
   @PUT
