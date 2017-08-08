@@ -7,7 +7,12 @@
         "type": "section",
         "htmlClass": "col-xs-6",
         "items": [
-          "_id",
+          {
+            "key": "_id",
+            "validationMessage": {
+              "uniqueId": "t(global.messages.error.unique-id)"
+            }
+          },
           {
             "key": "_name",
             "type": "localizedstring"
