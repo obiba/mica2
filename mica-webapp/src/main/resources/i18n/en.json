@@ -333,7 +333,7 @@
     "single-network-enabled": "Single network enabled",
     "single-network-enabled-help": "Only one network is present in Mica.",
     "single-study-enabled": "Single study enabled",
-    "single-study-enabled-help": "Only one study is present in Mica.",
+    "single-study-enabled-help": "Only one individual study is present in Mica.",
     "network-enabled": "Network section enabled",
     "network-enabled-help": "Network section is accessible.",
     "collected-dataset-enabled": "Collected datasets section enabled",

@@ -8,15 +8,7 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<div ng-if="micaConfig.isSingleStudyEnabled && !studies.length">
-  <p class="help-block">
-    <span translate>study.none</span>
-  </p>
-  <a ng-href="{{path}}/new" class="btn btn-info" ng-if="hasRole(['mica-administrator','mica-reviewer','mica-editor'])">
-    <i class="fa fa-plus"></i> <span translate>study.add</span>
-  </a>
-</div>
-<div ng-if="!micaConfig.isSingleStudyEnabled">
+<div ng-init="path='#/harmonization-study'">
   <div ng-controller="HarmonizationStudyListController">
     <ng-include src="'app/study/views/study-list.html'"></ng-include>
   </div>
