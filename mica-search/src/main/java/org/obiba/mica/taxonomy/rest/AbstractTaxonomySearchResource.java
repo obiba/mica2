@@ -21,6 +21,7 @@ import javax.inject.Inject;
 import org.elasticsearch.index.IndexNotFoundException;
 import org.obiba.mica.core.domain.TaxonomyTarget;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
+import org.obiba.mica.micaConfig.service.TaxonomyNotFoundException;
 import org.obiba.mica.micaConfig.service.TaxonomyService;
 import org.obiba.mica.taxonomy.EsTaxonomyTermService;
 import org.obiba.mica.taxonomy.EsTaxonomyVocabularyService;
@@ -128,8 +129,14 @@ public class AbstractTaxonomySearchResource {
       case TAXONOMY:
         return taxonomyService.getTaxonomyTaxonomy();
       default:
-        return taxonomyService.getVariableTaxonomies().stream().filter(taxonomy -> taxonomy.getName().equals(name))
+        Taxonomy foundTaxonomy = taxonomyService.getVariableTaxonomies().stream().filter(taxonomy -> taxonomy.getName().equals(name))
           .findFirst().orElse(null);
+
+        if (foundTaxonomy == null) {
+          throw new TaxonomyNotFoundException(name);
+        }
+
+        return foundTaxonomy;
     }
   }
 

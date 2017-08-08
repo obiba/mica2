@@ -1163,6 +1163,7 @@
         }
       },
       "taxonomy": {
+        "name-not-found": "The taxonomy with the name '{{arg0}}' is not found.",
         "range-criterion-missing-terms": "The criterion '{{arg0}}' must have terms to define its range intervals.",
         "range-criterion-missing-range-attribute": "The criterion '{{arg0}}' with terms must be marked as having range intervals.",
         "duplicate-criterion-alias": "The field '{{arg0}}' already has an associated criterion. Only a numerical field can have two criteria, a discrete and a range criterion."

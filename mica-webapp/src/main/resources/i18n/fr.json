@@ -1163,6 +1163,7 @@
         }
       },
       "taxonomy": {
+        "name-not-found": "La taxonomie ayant le nom '{{arg0}}' est introuvable.",
         "range-criterion-missing-terms": "Le critère '{{arg0}} doit avoir des termes pour définir ses intervalles de portée.",
         "range-criterion-missing-range-attribute": "Le critère '{{arg0}}' avec des termes doit être marqué comme ayant des intervalles de portée.",
         "duplicate-criterion-alias": "Le champ '{{arg0}}' a déjà un critère associé. Seul un champ numérique peut avoir deux critères, un critère discret et un critère de portée."
