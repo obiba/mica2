@@ -68,7 +68,7 @@ mica.study
         // harmonization-study
         .when('/harmonization-study', {
           templateUrl: 'app/study/views/harmonization-study-main.html',
-          controller: 'HarmonizationStudyMainController'
+          controller: 'HarmonizationStudyListController'
         })
         .when('/harmonization-study/new', {
           templateUrl: 'app/study/views/harmonization-study-form.html',

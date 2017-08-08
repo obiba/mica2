@@ -30,20 +30,6 @@ mica.study
       }
   }])
 
-  .controller('HarmonizationStudyMainController', ['$scope', '$location', 'HarmonizationStudyStatesResource',
-    function($scope, $location, StudyStatesResource) {
-      $scope.path = '#/harmonization-study';
-
-      if($scope.micaConfig.isSingleStudyEnabled) {
-        $scope.studies = StudyStatesResource.query({}, function(res) {
-          if(res.length) {
-            $location.path('/harmonization-study/' + res[0].id);
-            $location.replace();
-          }
-        });
-      }
-    }])
-
   .controller('StudyListController', [
     '$scope', '$timeout', 'StudyStatesResource', 'DraftStudyDeleteService', 'AlertBuilder', mica.commons.ListController
   ])

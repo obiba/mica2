@@ -331,7 +331,7 @@
     "single-network-enabled": "Réseau unique activé",
     "single-network-enabled-help": "Un seul réseau est présent dans Mica.",
     "single-study-enabled": "Etude unique activée",
-    "single-study-enabled-help": "Une seule étude est présente dans Mica.",
+    "single-study-enabled-help": "Une seule étude individuelle est présente dans Mica.",
     "network-enabled": "Section réseaux activée",
     "network-enabled-help": "Un ou plusieurs réseaux sont présents dans Mica.",
     "collected-dataset-enabled": "Section ensemble de données de collecte activée",
