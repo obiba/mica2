@@ -47,5 +47,4 @@ public class StudyIdGeneratorService {
 
     return count < 1000 ? getNextId(prefix, ++count) : null;
   }
-
 }
