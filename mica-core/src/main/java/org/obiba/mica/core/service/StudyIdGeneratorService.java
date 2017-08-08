@@ -37,14 +37,15 @@ public class StudyIdGeneratorService {
     return getNextId(acronym.asUrlSafeString().toLowerCase(), 0);
   }
 
-  private String getNextId(String id, int count) {
+  private String getNextId(String prefix, int count) {
+    String id = prefix + (count > 0 ? "-" + count : "");
     StudyState studyState = studyStateRepository.findOne(id);
     HarmonizationStudyState harmonizationStudyState = harmonizationStudyStateRepository.findOne(id);
     if (studyState == null && harmonizationStudyState == null) {
       return id;
     }
 
-    return count < 1000 ? getNextId(id + "-" + count, count++) : null;
+    return count < 1000 ? getNextId(prefix, ++count) : null;
   }
 
 }
