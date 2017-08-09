@@ -55,7 +55,12 @@
     "network": "Réseau",
     "individual-study": "Étude individuelle",
     "harmonization-study": "Étude harmonisée",
-    "harmonization-study-population": "Population"
+    "harmonization-study-population": "Population",
+    "messages": {
+      "error": {
+          "unique-id": "L'ID doit être unique"
+      }
+    }
   },
   "pagination": {
     "of": "de"

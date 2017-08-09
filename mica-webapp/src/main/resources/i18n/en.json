@@ -57,7 +57,12 @@
     "individual-studies": "Individual Studies",
     "harmonization-study": "Harmonization Study",
     "harmonization-studies": "Harmonization Studies",
-    "harmonization-study-population": "Population"
+    "harmonization-study-population": "Population",
+    "messages": {
+      "error": {
+        "unique-id": "ID must be unique"
+      }
+    }
   },
   "pagination": {
     "of": "of"
