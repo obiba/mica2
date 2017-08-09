@@ -141,13 +141,13 @@ mica.study.ViewController = function (
 
   self.delete = function (study) {
     DraftStudyDeleteService.delete(study, function() {
-      $location.path('/study').replace();
+      $location.path('/individual-study').replace();
     }, $translate.use());
   };
 
   self.publish = function (doPublish) {
     if (doPublish) {
-      DraftFileSystemSearchResource.searchUnderReview({path: '/study/' + $routeParams.id},
+      DraftFileSystemSearchResource.searchUnderReview({path: '/individual-study/' + $routeParams.id},
       function onSuccess(response) {
         DraftStudyResource.publish({id: $routeParams.id, cascading: response.length > 0 ? 'UNDER_REVIEW' : 'NONE'},
         function () {
