@@ -33,12 +33,12 @@ import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.AttachmentState;
 import org.obiba.mica.file.TempFile;
-import org.obiba.mica.micaConfig.domain.HarmonizationPopulationConfig;
-import org.obiba.mica.micaConfig.domain.HarmonizationStudyConfig;
 import org.obiba.mica.micaConfig.domain.DataAccessForm;
 import org.obiba.mica.micaConfig.domain.DataCollectionEventConfig;
 import org.obiba.mica.micaConfig.domain.DatasetConfig;
 import org.obiba.mica.micaConfig.domain.EntityConfig;
+import org.obiba.mica.micaConfig.domain.HarmonizationPopulationConfig;
+import org.obiba.mica.micaConfig.domain.HarmonizationStudyConfig;
 import org.obiba.mica.micaConfig.domain.MicaConfig;
 import org.obiba.mica.micaConfig.domain.NetworkConfig;
 import org.obiba.mica.micaConfig.domain.OpalCredential;
@@ -139,6 +139,11 @@ public class Dtos {
   @NotNull
   public StudyDto asDto(@NotNull Study study, boolean asDraft) {
     return studyDtos.asDto(study, asDraft);
+  }
+
+  @NotNull
+  public StudyDto asDto(@NotNull HarmonizationStudy study, boolean asDraft, List<HarmonizationDataset> datasets) {
+    return datasets.isEmpty() ? studyDtos.asDto(study, asDraft) : studyDtos.asDto(study, asDraft, datasets);
   }
 
   @NotNull

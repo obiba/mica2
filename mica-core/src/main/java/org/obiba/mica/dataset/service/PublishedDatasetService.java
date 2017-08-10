@@ -10,10 +10,14 @@
 
 package org.obiba.mica.dataset.service;
 
+import java.util.List;
+
 import org.obiba.mica.core.service.PublishedDocumentService;
 import org.obiba.mica.dataset.domain.Dataset;
+import org.obiba.mica.dataset.domain.HarmonizationDataset;
 
 public interface PublishedDatasetService extends PublishedDocumentService<Dataset>, EsDatasetService {
   long getStudyDatasetsCount();
   long getHarmonizationDatasetsCount();
+  List<HarmonizationDataset> getHarmonizationDatasetsByStudy(String studyId);
 }
