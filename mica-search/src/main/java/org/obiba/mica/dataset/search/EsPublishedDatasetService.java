@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
@@ -26,9 +27,9 @@ import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.domain.HarmonizationDatasetState;
 import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.dataset.domain.StudyDatasetState;
+import org.obiba.mica.dataset.service.CollectionDatasetService;
 import org.obiba.mica.dataset.service.HarmonizationDatasetService;
 import org.obiba.mica.dataset.service.PublishedDatasetService;
-import org.obiba.mica.dataset.service.CollectionDatasetService;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -53,6 +54,17 @@ class EsPublishedDatasetService extends AbstractEsDatasetService<Dataset> implem
   @Override
   public long getHarmonizationDatasetsCount() {
     return getCount(QueryBuilders.termQuery("className", HarmonizationDataset.class.getSimpleName()));
+  }
+
+  @Override
+  public List<HarmonizationDataset> getHarmonizationDatasetsByStudy(String studyId) {
+    BoolQueryBuilder query = QueryBuilders.boolQuery()
+      .must(QueryBuilders.termQuery("className", HarmonizationDataset.class.getSimpleName()))
+      .must(QueryBuilders.termQuery("harmonizationTable.studyId", studyId));
+
+    return executeQuery(query, 0, MAX_SIZE)
+      .stream()
+      .map(ds -> (HarmonizationDataset) ds).collect(Collectors.toList());
   }
 
   @Override

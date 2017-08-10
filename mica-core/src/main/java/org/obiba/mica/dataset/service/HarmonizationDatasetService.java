@@ -64,6 +64,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 import org.springframework.validation.annotation.Validated;
 
 import javax.annotation.Nullable;
@@ -141,6 +142,11 @@ public class HarmonizationDatasetService extends DatasetService<HarmonizationDat
     return dataset;
   }
 
+  public List<HarmonizationDataset> findAllDatasetsByHarmonizationStudy(@NotNull String studyId) {
+    Assert.isTrue(!Strings.isNullOrEmpty(studyId), "Harmonization Study ID cannot be null or empty");
+    return harmonizationDatasetRepository.findByHarmonizationTableStudyId(studyId);
+  }
+
   /**
    * Get all {@link HarmonizationDataset}s.
    *
@@ -159,12 +165,12 @@ public class HarmonizationDatasetService extends DatasetService<HarmonizationDat
     return Lists.newArrayList(harmonizationDatasetRepository.findAll(ids));
   }
 
-    /**
-     * Get all {@link HarmonizationDataset}s having a reference to the given study.
-     *
-     * @param studyId
-     * @return
-     */
+  /**
+   * Get all {@link HarmonizationDataset}s having a reference to the given study.
+   *
+   * @param studyId
+   * @return
+   */
   public List<HarmonizationDataset> findAllDatasets(@Nullable String studyId) {
     if(Strings.isNullOrEmpty(studyId)) return findAllDatasets();
     return harmonizationDatasetRepository.findByStudyTablesStudyId(studyId);

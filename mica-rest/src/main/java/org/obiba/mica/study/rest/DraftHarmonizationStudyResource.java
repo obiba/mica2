@@ -35,6 +35,8 @@ import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.core.domain.PublishCascadingScope;
 import org.obiba.mica.core.domain.RevisionStatus;
 import org.obiba.mica.core.service.AbstractGitPersistableService;
+import org.obiba.mica.dataset.domain.HarmonizationDataset;
+import org.obiba.mica.dataset.service.HarmonizationDatasetService;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.rest.FileResource;
 import org.obiba.mica.file.service.FileSystemService;
@@ -50,6 +52,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import com.codahale.metrics.annotation.Timed;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 /**
@@ -61,6 +64,9 @@ public class DraftHarmonizationStudyResource extends AbstractGitPersistableResou
 
   @Inject
   private HarmonizationStudyService studyService;
+
+  @Inject
+  private HarmonizationDatasetService harmonizationDatasetService;
 
   @Inject
   private FileSystemService fileSystemService;
@@ -79,9 +85,14 @@ public class DraftHarmonizationStudyResource extends AbstractGitPersistableResou
 
   @GET
   @Timed
-  public Mica.StudyDto get(@QueryParam("locale") String locale, @QueryParam("key") String key) {
+  public Mica.StudyDto get(@QueryParam("locale") String locale, @QueryParam("key") String key,
+    @QueryParam("participatingStudies") @DefaultValue("false") boolean participatingStudies) {
     checkPermission("/draft/harmonization-study", "VIEW", key);
-    return dtos.asDto(studyService.findDraft(id, locale), true);
+    List<HarmonizationDataset> datasets = participatingStudies
+      ? harmonizationDatasetService.findAllDatasetsByHarmonizationStudy(id)
+      : Lists.newArrayList();
+
+    return dtos.asDto(studyService.findDraft(id, locale), true, datasets);
   }
 
   @GET

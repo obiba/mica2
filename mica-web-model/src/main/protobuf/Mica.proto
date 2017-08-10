@@ -154,6 +154,9 @@ message CollectionStudyDto {
 }
 
 message HarmonizationStudyDto {
+  repeated DatasetDto.StudyTableDto studyTables = 1;
+  repeated DatasetDto.HarmonizationTableDto harmonizationTables = 2;
+
   extend StudyDto {
     optional HarmonizationStudyDto type = 1001;
   }

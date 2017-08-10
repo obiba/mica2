@@ -21,6 +21,8 @@ import javax.validation.constraints.NotNull;
 
 import org.obiba.mica.JSONUtils;
 import org.obiba.mica.core.domain.Membership;
+import org.obiba.mica.dataset.domain.HarmonizationDataset;
+import org.obiba.mica.dataset.support.HarmonizationDatasetHelper;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.study.domain.BaseStudy;
 import org.obiba.mica.study.domain.HarmonizationStudy;
@@ -51,6 +53,9 @@ class StudyDtos {
   private PopulationDtos populationDtos;
 
   @Inject
+  private DatasetDtos datasetDtos;
+
+  @Inject
   private AttachmentDtos attachmentDtos;
 
   @Inject
@@ -70,6 +75,20 @@ class StudyDtos {
     Mica.StudyDto.Builder builder = asDtoBuilder(study, asDraft);
     builder.setExtension(Mica.CollectionStudyDto.type, Mica.CollectionStudyDto.newBuilder().build());
     builder.setPublished(collectionStudyService.isPublished(study.getId()));
+
+    return builder.build();
+  }
+
+  @NotNull
+  Mica.StudyDto asDto(@NotNull HarmonizationStudy study, boolean asDraft, List<HarmonizationDataset> datasets) {
+    Mica.HarmonizationStudyDto.Builder hStudyBuilder = Mica.HarmonizationStudyDto.newBuilder();
+    HarmonizationDatasetHelper.TablesMerger tableMerger = HarmonizationDatasetHelper.newTablesMerger(datasets);
+    tableMerger.getStudyTables().forEach(st -> hStudyBuilder.addStudyTables(datasetDtos.asDto(st, true)));
+    tableMerger.getHarmonizationStudyTables().forEach(st -> hStudyBuilder.addHarmonizationTables(datasetDtos.asDto(st, true)));
+
+    Mica.StudyDto.Builder builder = asDtoBuilder(study, asDraft);
+    builder.setExtension(Mica.HarmonizationStudyDto.type, hStudyBuilder.build());
+    builder.setPublished(harmonizationStudyService.isPublished(study.getId()));
 
     return builder.build();
   }

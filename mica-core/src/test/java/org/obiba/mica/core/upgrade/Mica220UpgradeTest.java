@@ -2,9 +2,6 @@ package org.obiba.mica.core.upgrade;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,8 +17,6 @@ import org.obiba.opal.core.domain.taxonomy.Vocabulary;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import static org.mockito.Matchers.argThat;
-import static org.mockito.Mockito.atMost;
-import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
