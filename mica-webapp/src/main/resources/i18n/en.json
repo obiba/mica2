@@ -58,6 +58,8 @@
     "harmonization-study": "Harmonization Study",
     "harmonization-studies": "Harmonization Studies",
     "harmonization-study-population": "Population",
+    "participant-harmonization-study": "Harmonization Study",
+    "participant-harmonization-studies": "Harmonization Studies",
     "messages": {
       "error": {
         "unique-id": "ID must be unique"

@@ -55,7 +55,10 @@
     "network": "Réseau",
     "individual-study": "Étude individuelle",
     "harmonization-study": "Étude harmonisée",
+    "harmonization-studies": "Études harmonisées",
     "harmonization-study-population": "Population",
+    "participant-harmonization-study": "Étude harmonisée",
+    "participant-harmonization-studies": "Études harmonisées",
     "messages": {
       "error": {
           "unique-id": "L'ID doit être unique"
