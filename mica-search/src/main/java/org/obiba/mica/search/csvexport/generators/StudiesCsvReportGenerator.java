@@ -43,6 +43,7 @@ public class StudiesCsvReportGenerator extends CsvReportGeneratorImpl {
 
     line.add("acronym");
     line.add("name");
+    line.add("type");
     if (mustShow("showStudiesDesignColumn"))
       line.add("search.study.design");
 
@@ -60,18 +61,18 @@ public class StudiesCsvReportGenerator extends CsvReportGeneratorImpl {
     if (mustShow("showStudiesNetworksColumn"))
       line.add("networks");
 
-    String datasetsLabel = translator.translate("datasets");
+    String individualLabel = translator.translate("search.study.individual");
     if (mustShow("showStudiesStudyDatasetsColumn"))
-      line.add(String.format("%s:%s", datasetsLabel, translator.translate("search.study.label")));
+      line.add(String.format("%s:%s", individualLabel, translator.translate("datasets")));
     if (mustShow("showStudiesHarmonizationDatasetsColumn"))
-      line.add(String.format("%s:%s", datasetsLabel, translator.translate("search.harmonization")));
+      line.add(String.format("%s:%s", individualLabel, translator.translate("variables")));
 
     if (mustShow("showStudiesVariablesColumn")) {
-      String variablesLabel = translator.translate("variables");
+      String harmonizationLabel = translator.translate("search.study.harmonization");
       if (mustShow("showStudiesStudyVariablesColumn"))
-        line.add(String.format("%s:%s", variablesLabel, translator.translate("search.variable.study")));
+        line.add(String.format("%s:%s", harmonizationLabel, translator.translate("datasets")));
       if (mustShow("showStudiesDataschemaVariablesColumn")) {
-        line.add(String.format("%s:%s", variablesLabel, translator.translate("search.variable.dataschema")));
+        line.add(String.format("%s:%s", harmonizationLabel, translator.translate("variables")));
       }
     }
 
@@ -90,11 +91,58 @@ public class StudiesCsvReportGenerator extends CsvReportGeneratorImpl {
   }
 
   private List<String> generateLineContent(Mica.StudySummaryDto studySummaryDto) {
+    return "harmonization-study".equals(studySummaryDto.getStudyResourcePath())
+      ? generateHarmonizationStudyLineContent(studySummaryDto)
+      : generateIndividualStudyLineContent(studySummaryDto);
+  }
+
+  private List<String> generateHarmonizationStudyLineContent(Mica.StudySummaryDto studySummaryDto) {
+    List<String> line = new ArrayList<>();
+
+    line.add(studySummaryDto.getAcronym(0).getValue());
+    line.add(studySummaryDto.getName(0).getValue());
+    line.add(translator.translate("search.study.harmonization"));
+
+    if (mustShow("showStudiesDesignColumn")) {
+      line.add(NOT_EXISTS);
+    }
+
+    if (mustShow("showStudiesQuestionnaireColumn"))
+      line.add(NOT_EXISTS);
+    if (mustShow("showStudiesPmColumn"))
+      line.add(NOT_EXISTS);
+    if (mustShow("showStudiesBioColumn"))
+      line.add(NOT_EXISTS);
+    if (mustShow("showStudiesOtherColumn"))
+      line.add(NOT_EXISTS);
+
+    if (mustShow("showStudiesParticipantsColumn"))
+      line.add(NOT_EXISTS);
+    if (mustShow("showStudiesNetworksColumn"))
+      line.add(getNot0ValueOrDefault(studySummaryDto.getExtension(MicaSearch.CountStatsDto.studyCountStats).getNetworks()));
+
+    if (mustShow("showStudiesStudyDatasetsColumn"))
+      line.add(getNot0ValueOrDefault(studySummaryDto.getExtension(MicaSearch.CountStatsDto.studyCountStats).getStudyDatasets()));
+    if (mustShow("showStudiesHarmonizationDatasetsColumn"))
+      line.add(getNot0ValueOrDefault(studySummaryDto.getExtension(MicaSearch.CountStatsDto.studyCountStats).getHarmonizationDatasets()));
+
+    if (mustShow("showStudiesVariablesColumn")) {
+      if (mustShow("showStudiesStudyVariablesColumn"))
+        line.add(getNot0ValueOrDefault(studySummaryDto.getExtension(MicaSearch.CountStatsDto.studyCountStats).getStudyVariables()));
+      if (mustShow("showStudiesDataschemaVariablesColumn"))
+        line.add(getNot0ValueOrDefault(studySummaryDto.getExtension(MicaSearch.CountStatsDto.studyCountStats).getDataschemaVariables()));
+    }
+
+    return line;
+  }
+
+  private List<String> generateIndividualStudyLineContent(Mica.StudySummaryDto studySummaryDto) {
 
     List<String> line = new ArrayList<>();
 
     line.add(studySummaryDto.getAcronym(0).getValue());
     line.add(studySummaryDto.getName(0).getValue());
+    line.add(translator.translate("search.study.individual"));
 
     if (mustShow("showStudiesDesignColumn")) {
       line.add(translator.translate(!Strings.isNullOrEmpty(studySummaryDto.getDesign())

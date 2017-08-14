@@ -18,6 +18,7 @@ import javax.inject.Inject;
 
 import org.obiba.mica.core.domain.AbstractGitPersistable;
 import org.obiba.mica.study.domain.BaseStudy;
+import org.obiba.mica.study.domain.HarmonizationStudy;
 import org.obiba.mica.study.service.PublishedStudyService;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
@@ -25,7 +26,7 @@ import org.springframework.stereotype.Component;
 import static org.obiba.mica.security.SubjectUtils.sudo;
 
 @Component
-public class StudyIdAggregationMetaDataHelper extends AbstractIdAggregationMetaDataHelper {
+public class StudyIdAggregationMetaDataHelper extends AbstractStudyAggregationMetaDataHelper {
 
   @Inject
   private PublishedStudyService publishedStudyService;
@@ -34,8 +35,18 @@ public class StudyIdAggregationMetaDataHelper extends AbstractIdAggregationMetaD
   public Map<String, AggregationMetaDataProvider.LocalizedMetaData> getStudies() {
     List<BaseStudy> studies = sudo(() -> publishedStudyService.findAll());
 
-    return studies.stream().collect(Collectors.toMap(AbstractGitPersistable::getId,
-      m -> new AggregationMetaDataProvider.LocalizedMetaData(m.getAcronym(), m.getName(), m.getClassName())));
+    return studies.stream().collect(Collectors.toMap(AbstractGitPersistable::getId, study -> {
+      if (study instanceof HarmonizationStudy) {
+        return new AggregationMetaDataProvider.LocalizedMetaData(study.getAcronym(), study.getName(), study.getClassName());
+      }
+
+      return new AggregationMetaDataProvider.LocalizedMetaData(study.getAcronym(), study.getName(), study.getClassName(),
+          yearToString(study.getModel().get("start")), yearToString(study.getModel().get("end")));
+    }));
+  }
+
+  private String yearToString(Object year) {
+    return year == null ? null : year+"";
   }
 
   @Override

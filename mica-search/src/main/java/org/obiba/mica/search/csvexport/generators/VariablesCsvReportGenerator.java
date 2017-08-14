@@ -43,7 +43,7 @@ public class VariablesCsvReportGenerator extends CsvReportGeneratorImpl {
     if (mustShow("showVariablesTypeColumn"))
       line.add("type");
     if (mustShow("showVariablesStudiesColumn"))
-      line.add("search.variable.studyNetwork");
+      line.add("search.study.label");
     if (mustShow("showVariablesDatasetsColumn"))
       line.add("search.dataset.label");
 
