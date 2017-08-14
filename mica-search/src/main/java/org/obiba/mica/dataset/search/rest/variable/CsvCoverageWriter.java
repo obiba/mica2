@@ -143,7 +143,7 @@ public class CsvCoverageWriter {
         String[] title = bucketRow.title.split(":");
         row.add(title[0]);
         row.add(title[1]);
-        row.add(title[2]);
+        row.add(title.length > 2 ? title[2] : "");
       } else {
         row.add(bucketRow.title);
       }

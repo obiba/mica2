@@ -988,6 +988,7 @@
       "dataschema": "DataSchema"
     },
     "network": {
+      "label": "Network",
       "facet-label": "Network",
       "noResults": "No network found"
     },

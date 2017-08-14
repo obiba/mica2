@@ -989,6 +989,7 @@
       "dataschema": "Schéma de données"
     },
     "network": {
+      "label": "Réseau",
       "facet-label": "Réseau",
       "noResults": "Aucun réseau trouvé"
     },

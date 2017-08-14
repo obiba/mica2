@@ -24,7 +24,6 @@ import org.obiba.mica.study.domain.HarmonizationStudy;
 import org.obiba.mica.study.domain.Population;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.service.PublishedStudyService;
-import org.obiba.opal.core.domain.taxonomy.Term;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
@@ -33,7 +32,7 @@ import com.google.common.collect.Maps;
 import static org.obiba.mica.security.SubjectUtils.sudo;
 
 @Component
-public class DceIdAggregationMetaDataHelper extends AbstractIdAggregationMetaDataHelper {
+public class DceIdAggregationMetaDataHelper extends AbstractStudyAggregationMetaDataHelper {
 
   @Inject
   PublishedStudyService publishedStudyService;
@@ -59,14 +58,6 @@ public class DceIdAggregationMetaDataHelper extends AbstractIdAggregationMetaDat
         .forEach(population -> mapIdToMetadata(map, hStudy, population, null)));
 
     return map;
-  }
-
-  @Override
-  protected Term createTermFromMetaData(String id, AggregationMetaDataProvider.LocalizedMetaData metaData) {
-    Term term = super.createTermFromMetaData(id, metaData);
-    if(metaData.getStart() != null) term.addAttribute("start", metaData.getStart());
-    if(metaData.getEnd() != null) term.addAttribute("end", metaData.getEnd());
-    return term;
   }
 
   @Override

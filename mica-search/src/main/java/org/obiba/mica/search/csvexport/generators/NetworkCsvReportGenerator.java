@@ -46,14 +46,14 @@ public class NetworkCsvReportGenerator extends CsvReportGeneratorImpl {
 
     String datasetsLabel = translator.translate("datasets");
     if (mustShow("showStudiesStudyDatasetsColumn"))
-      line.add(String.format("%s:%s", datasetsLabel, translator.translate("search.study.label")));
+      line.add(String.format("%s:%s", datasetsLabel, translator.translate("search.dataset.collected")));
     if (mustShow("showStudiesHarmonizationDatasetsColumn"))
-      line.add(String.format("%s:%s", datasetsLabel, translator.translate("search.harmonization")));
+      line.add(String.format("%s:%s", datasetsLabel, translator.translate("search.dataset.harmonized")));
 
     if (mustShow("showStudiesVariablesColumn")) {
       String variablesLabel = translator.translate("variables");
       if (mustShow("showStudiesStudyVariablesColumn"))
-        line.add(String.format("%s:%s", variablesLabel, translator.translate("search.variable.study")));
+        line.add(String.format("%s:%s", variablesLabel, translator.translate("search.variable.collected")));
       if (mustShow("showStudiesDataschemaVariablesColumn")) {
         line.add(String.format("%s:%s", variablesLabel, translator.translate("search.variable.dataschema")));
       }
