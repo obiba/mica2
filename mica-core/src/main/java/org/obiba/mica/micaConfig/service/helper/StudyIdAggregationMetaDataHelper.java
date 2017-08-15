@@ -41,7 +41,7 @@ public class StudyIdAggregationMetaDataHelper extends AbstractStudyAggregationMe
       }
 
       return new AggregationMetaDataProvider.LocalizedMetaData(study.getAcronym(), study.getName(), study.getClassName(),
-          yearToString(study.getModel().get("start")), yearToString(study.getModel().get("end")));
+          yearToString(study.getModel().get("startYear")), yearToString(study.getModel().get("endYear")));
     }));
   }
 
