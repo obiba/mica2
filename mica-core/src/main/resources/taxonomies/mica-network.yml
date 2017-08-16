@@ -69,7 +69,7 @@
   "description":
     "en": "Investigator institution name."
   "attributes":
-    "field": "memberships.investigator.person.institution.name.und"
+    "field": "memberships.investigator.person.institution.name"
     "alias": "memberships-investigator-person-institution-name"
     "static": "true"
     "localized": "true"
@@ -88,7 +88,7 @@
   "description":
     "en": "Contact institution name."
   "attributes":
-    "field": "memberships.contact.person.institution.name.und"
+    "field": "memberships.contact.person.institution.name"
     "alias": "memberships-contact-person-institution-name"
     "static": "true"
     "localized": "true"

@@ -41,7 +41,7 @@
     "fr": "Objectifs de l'étude."
   "terms": []
   "attributes":
-    "field": "objectives.und"
+    "field": "objectives"
     "alias": "objectives"
     "static": "true"
     "localized": "true"
@@ -128,7 +128,7 @@
     "en": "Investigator institution name."
     "fr": "Nom de l'institution de l'investigateur."
   "attributes":
-    "field": "memberships.investigator.person.institution.name.und"
+    "field": "memberships.investigator.person.institution.name"
     "alias": "memberships-investigator-person-institution-name"
     "static": "true"
     "localized": "true"
@@ -151,8 +151,9 @@
     "en": "Contact institution name."
     "fr": "Nom de l'institution du contact."
   "attributes":
-    "field": "memberships.contact.person.institution.name.und"
+    "field": "memberships.contact.person.institution.name"
     "alias": "memberships-contact-person-institution-name"
+    "static": "true"
     "localized": "true"
 - "name": "populations-selectionCriteria-countriesIso"
   "title":
