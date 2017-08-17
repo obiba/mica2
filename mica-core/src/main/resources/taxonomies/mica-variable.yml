@@ -25,9 +25,10 @@
     "en": "Variable label."
     "fr": "Libellé de la variable."
   "attributes":
-    "field": "attributes.label.und"
-    "alias": "attributes-label-und"
+    "field": "attributes.label"
+    "alias": "attributes-label"
     "static": "true"
+    "localized": "true"
 - "name": "studyId"
   "title":
     "en": "Study"
