@@ -253,7 +253,7 @@ class StudySummaryDtos {
       }
     }
 
-    stateBuilder.setPermissions(permissionsDtos.asDto(studyState));
+    stateBuilder.setPermissions(permissionsDtos.asDto(study));
 
     Mica.StudySummaryDto.Builder builder;
 
