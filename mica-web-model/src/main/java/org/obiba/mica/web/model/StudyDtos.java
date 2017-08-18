@@ -83,8 +83,13 @@ class StudyDtos {
   Mica.StudyDto asDto(@NotNull HarmonizationStudy study, boolean asDraft, List<HarmonizationDataset> datasets) {
     Mica.HarmonizationStudyDto.Builder hStudyBuilder = Mica.HarmonizationStudyDto.newBuilder();
     HarmonizationDatasetHelper.TablesMerger tableMerger = HarmonizationDatasetHelper.newTablesMerger(datasets);
-    tableMerger.getStudyTables().forEach(st -> hStudyBuilder.addStudyTables(datasetDtos.asDto(st, true)));
-    tableMerger.getHarmonizationStudyTables().forEach(st -> hStudyBuilder.addHarmonizationTables(datasetDtos.asDto(st, true)));
+    tableMerger.getStudyTables()
+      .stream().filter(studyTable -> datasetDtos.isStudyTablePermitted(asDraft, "individual", studyTable.getStudyId()))
+      .forEach(st -> hStudyBuilder.addStudyTables(datasetDtos.asDto(st, true)));
+
+    tableMerger.getHarmonizationStudyTables()
+      .stream().filter(studyTable -> datasetDtos.isStudyTablePermitted(asDraft, "harmonization", studyTable.getStudyId()))
+      .forEach(st -> hStudyBuilder.addHarmonizationTables(datasetDtos.asDto(st, true)));
 
     Mica.StudyDto.Builder builder = asDtoBuilder(study, asDraft);
     builder.setExtension(Mica.HarmonizationStudyDto.type, hStudyBuilder.build());
