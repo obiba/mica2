@@ -91,8 +91,10 @@ class DatasetDtos {
     Mica.DatasetDto.Builder builder = asBuilder(dataset);
     builder.setVariableType(DatasetVariable.Type.Collected.name());
 
-    if(dataset.hasStudyTable() && !Strings.isNullOrEmpty(dataset.getStudyTable().getStudyId())) {
-      Mica.CollectedDatasetDto.Builder sbuilder = Mica.CollectedDatasetDto.newBuilder()//
+    if(dataset.hasStudyTable() &&
+      !Strings.isNullOrEmpty(dataset.getStudyTable().getStudyId()) &&
+      isStudyTablePermitted(asDraft, "individual", dataset.getStudyTable().getStudyId())) {
+      Mica.CollectedDatasetDto.Builder sbuilder = Mica.CollectedDatasetDto.newBuilder()
         .setStudyTable(asDto(dataset.getStudyTable(), true));
       builder.setExtension(Mica.CollectedDatasetDto.type, sbuilder.build());
     }
@@ -129,7 +131,9 @@ class DatasetDtos {
 
     Mica.HarmonizedDatasetDto.Builder hbuilder = Mica.HarmonizedDatasetDto.newBuilder();
 
-    if (dataset.getHarmonizationTable() != null) {
+    if (dataset.hasHarmonizationTable() &&
+      !Strings.isNullOrEmpty(dataset.getHarmonizationTable().getStudyId()) &&
+      isStudyTablePermitted(asDraft, "harmonization", dataset.getHarmonizationTable().getStudyId())) {
       hbuilder.setHarmonizationTable(createHarmonizationLinkDtoFromHarmonizationTable(dataset.getHarmonizationTable(), asDraft));
     }
 
