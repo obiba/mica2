@@ -134,12 +134,16 @@ class DatasetDtos {
     }
 
     if(!dataset.getStudyTables().isEmpty()) {
-      dataset.getStudyTables().forEach(studyTable -> hbuilder
+      dataset.getStudyTables()
+        .stream().filter(studyTable -> isStudyTablePermitted(asDraft, "individual", studyTable.getStudyId()))
+        .forEach(studyTable -> hbuilder
         .addStudyTables(asDto(studyTable, true)));
     }
 
     if (!dataset.getHarmonizationTables().isEmpty()) {
-      dataset.getHarmonizationTables().forEach(harmonizationTable -> hbuilder
+      dataset.getHarmonizationTables()
+        .stream().filter(studyTable -> isStudyTablePermitted(asDraft, "harmonization", studyTable.getStudyId()))
+        .forEach(harmonizationTable -> hbuilder
         .addHarmonizationTables(asDto(harmonizationTable, true)));
     }
 
@@ -158,6 +162,11 @@ class DatasetDtos {
     builder.setPermissions(permissionsDto);
 
     return builder;
+  }
+
+  public boolean isStudyTablePermitted(boolean asDraft, String type, String id) {
+    return (asDraft && subjectAclService.isPermitted(String.format("/draft/%s-study", type), "VIEW", id)) ||
+      subjectAclService.isAccessible(String.format("/%s-study", type), id);
   }
 
   @NotNull
