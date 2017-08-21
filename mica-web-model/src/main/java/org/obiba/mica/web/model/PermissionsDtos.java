@@ -42,10 +42,6 @@ class PermissionsDtos {
     return asDto(String.format("/draft/%s", study.getResourcePath()), study.getId());
   }
 
-  public Mica.PermissionsDto asDto(EntityState studyState) {
-    return asDto("/draft/individual-study", studyState.getId());
-  }
-
   public Mica.PermissionsDto asDto(StudyDataset  dataset) {
     return asDto("/draft/collected-dataset", dataset.getId());
   }
