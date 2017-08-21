@@ -20,6 +20,8 @@ import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 
 import javax.annotation.Nullable;
@@ -59,6 +61,8 @@ public abstract class AbstractGitPersistableResource<T extends EntityState, T1 e
 
   @Value("${portal.draftResource.urlPattern}")
   private String portalUrlPattern;
+
+  private static final Logger log = LoggerFactory.getLogger(AbstractGitPersistableResource.class);
 
   @GET
   @Path("/commits")
@@ -111,6 +115,7 @@ public abstract class AbstractGitPersistableResource<T extends EntityState, T1 e
   @Path("/_share")
   public Response getShareURL(@QueryParam("expire") String expire) {
     checkPermission("/draft/" + getService().getTypeName(), "EDIT");
+    log.debug("Get share url for {}", getService().getTypeName());
     return Response.ok().entity(generatePortalLinkForDraftResource(createShareKey(expire))).build();
   }
 
