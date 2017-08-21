@@ -46,7 +46,9 @@ mica.commons.ListController = function (
   };
 
   self.pageChanged = function (page) {
-    loadPage(page);
+    if (page !== $scope.pagination.current) {
+      loadPage(page);
+    }
   };
 
   self.deleteDocument = function (doc) {

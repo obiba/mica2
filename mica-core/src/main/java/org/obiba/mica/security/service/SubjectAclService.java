@@ -167,6 +167,7 @@ public class SubjectAclService {
       }
     }
 
+    logger.debug("createShareKey, encrypting...");
     return micaConfigService.encrypt(String.format("%s|%s|%s",
       content, Strings.isNullOrEmpty(expire) ? "" : expire, SecurityUtils.getSubject().getPrincipal()));
   }
