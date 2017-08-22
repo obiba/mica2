@@ -45,8 +45,8 @@ mica.commons.ListController = function (
     return $scope.totalCount && angular.isDefined($scope.pagination.searchText);
   };
 
-  self.pageChanged = function (page) {
-    if (page !== $scope.pagination.current) {
+  self.pageChanged = function (page, oldPage) {
+    if (page !== oldPage) {
       loadPage(page);
     }
   };
