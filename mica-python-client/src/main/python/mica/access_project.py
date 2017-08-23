@@ -1,25 +1,25 @@
 """
-Apply permissions on an individual study.
+Apply access on a research project.
 """
 
 import sys
 import mica.core
-import mica.perm
+import mica.access
 
 def add_arguments(parser):
     """
     Add command specific options
     """
-    mica.perm.add_permission_arguments(parser)
-    parser.add_argument('id', help='Individual Study ID')
+    mica.access.add_permission_arguments(parser, True)
+    parser.add_argument('id', help='Research Project ID')
 
 def do_command(args):
     """
-    Execute permission command
+    Execute access command
     """
     # Build and send requests
     try:
-        mica.perm.validate_args(args)
+        mica.access.validate_args(args)
 
         request = mica.core.MicaClient.build(mica.core.MicaClient.LoginInfo.parse(args)).new_request()
 
@@ -33,7 +33,7 @@ def do_command(args):
             request.put()
 
         try:
-            response = request.resource(mica.perm.do_ws(args, ['draft','individual-study', args.id, 'permissions'])).send()
+            response = request.resource(mica.access.do_ws(args, ['draft','project', args.id, 'accesses'])).send()
         except Exception, e:
             print Exception, e
 

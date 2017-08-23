@@ -214,6 +214,10 @@
                     </move>
                     <exec executable="debuild" dir="${deb.dir}" failonerror="true" osfamily="unix">
                       <arg value="-b" />
+                      <!-- Uncomment to build locally -->
+                      <!--<arg value="-i" />-->
+                      <!--<arg value="-us" />-->
+                      <!--<arg value="-uc" />-->
                     </exec>
                     <move todir="${basedir}/target">
                       <fileset dir="${deb.dir}">

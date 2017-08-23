@@ -1,5 +1,5 @@
 """
-Apply permissions on an individual study.
+Apply permissions on a research project.
 """
 
 import sys
@@ -11,7 +11,7 @@ def add_arguments(parser):
     Add command specific options
     """
     mica.perm.add_permission_arguments(parser)
-    parser.add_argument('id', help='Individual Study ID')
+    parser.add_argument('id', help='Research Project ID')
 
 def do_command(args):
     """
@@ -33,7 +33,7 @@ def do_command(args):
             request.put()
 
         try:
-            response = request.resource(mica.perm.do_ws(args, ['draft','individual-study', args.id, 'permissions'])).send()
+            response = request.resource(mica.perm.do_ws(args, ['draft','project', args.id, 'permissions'])).send()
         except Exception, e:
             print Exception, e
 
