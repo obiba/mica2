@@ -1,5 +1,5 @@
 """
-Apply access on a study.
+Apply access on an individual study.
 """
 
 import sys
@@ -33,7 +33,7 @@ def do_command(args):
             request.put()
 
         try:
-            response = request.resource(mica.access.do_ws(args, ['draft','study', args.id, 'accesses'])).send()
+            response = request.resource(mica.access.do_ws(args, ['draft','individual-study', args.id, 'accesses'])).send()
         except Exception, e:
             print Exception, e
 
