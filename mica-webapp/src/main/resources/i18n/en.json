@@ -58,8 +58,10 @@
     "harmonization-study": "Harmonization Study",
     "harmonization-studies": "Harmonization Studies",
     "harmonization-study-population": "Population",
-    "participant-harmonization-study": "Harmonization Study",
-    "participant-harmonization-studies": "Harmonization Studies",
+    "participant-harmonization-study": "Harmonization Study Included",
+    "participant-harmonization-studies": "Harmonization Studies Included",
+    "included-individual-studies": "Individual Studies Included",
+    "included-individual-study": "Individual Study Included",
     "messages": {
       "error": {
         "unique-id": "ID must be unique"
@@ -985,7 +987,7 @@
       "label": "Label",
       "noResults": "No variable found",
       "collected": "Collected",
-      "dataschema": "DataSchema"
+      "dataschema": "Harmonized"
     },
     "network": {
       "label": "Network",
@@ -1634,6 +1636,14 @@
     }
   },
   "client": {
+    "variable": {
+      "type": {
+        "DataSchema": "Harmonized",
+        "Dataschema": "Harmonized",
+        "Harmonized": "Study Specific Harmonized",
+        "Collected": "Collected"
+      }
+    },
     "message": {
       "variable": {
         "no-harmonization-algo": "No harmonization algorithms found for this variable."
@@ -1641,8 +1651,8 @@
     },
     "label": {
       "countries": "Countries",
-      "dataschema-variable": "DataSchema Variable",
-      "dataschema-variables": "DataSchema Variables",
+      "dataschema-variable": "Harmonized Variable",
+      "dataschema-variables": "Harmonized Variables",
       "study-variable": "Study Variable",
       "study-variables": "Study Variables",
       "overview": "Overview",
