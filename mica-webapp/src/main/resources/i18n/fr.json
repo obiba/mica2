@@ -57,8 +57,10 @@
     "harmonization-study": "Étude harmonisée",
     "harmonization-studies": "Études harmonisées",
     "harmonization-study-population": "Population",
-    "participant-harmonization-study": "Étude harmonisée",
-    "participant-harmonization-studies": "Études harmonisées",
+    "participant-harmonization-study": "Étude harmonisée inclue",
+    "participant-harmonization-studies": "Études harmonisées inclues",
+    "included-individual-studies": "Étude individuelle inclue",
+    "included-individual-study": "Études individuelles inclues",
     "messages": {
       "error": {
           "unique-id": "L'ID doit être unique"
@@ -986,7 +988,7 @@
       "label": "Étiquette",
       "noResults": "Aucune variable trouvée",
       "collected": "Collecte",
-      "dataschema": "Schéma de données"
+      "dataschema": "Harmonisé"
     },
     "network": {
       "label": "Réseau",
@@ -1635,6 +1637,14 @@
     }
   },
   "client": {
+    "variable": {
+      "type": {
+        "DataSchema": "Harmonisée",
+        "Dataschema": "Harmonisée",
+        "Harmonized": "Étude spécifique harmonisée",
+        "Collected": "Collectée"
+      }
+    },
     "message": {
       "variable": {
         "no-harmonization-algo": "Aucun algorithme d'harmonisation trouvé pour cette variable."
@@ -1642,8 +1652,8 @@
     },
     "label": {
       "countries": "Pays",
-      "dataschema-variable": "Variable de schéma de données",
-      "dataschema-variables": "Variables de schéma de données",
+      "dataschema-variable": "Variable harmonisée",
+      "dataschema-variables": "Variables harmonisée",
       "study-variable": "Variable d'étude",
       "study-variables": "Variable d'études",
       "overview": "Aperçu",
