@@ -57,10 +57,10 @@
     "harmonization-study": "Étude harmonisée",
     "harmonization-studies": "Études harmonisées",
     "harmonization-study-population": "Population",
-    "participant-harmonization-study": "Étude harmonisée inclue",
-    "participant-harmonization-studies": "Études harmonisées inclues",
-    "included-individual-studies": "Étude individuelle inclue",
-    "included-individual-study": "Études individuelles inclues",
+    "participant-harmonization-study": "Étude harmonisée incluse",
+    "participant-harmonization-studies": "Études harmonisées incluse",
+    "included-individual-studies": "Étude individuelle incluse",
+    "included-individual-study": "Études individuelles incluse",
     "messages": {
       "error": {
           "unique-id": "L'ID doit être unique"
