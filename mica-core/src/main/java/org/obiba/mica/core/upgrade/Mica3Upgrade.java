@@ -40,93 +40,115 @@ public class Mica3Upgrade implements UpgradeStep {
     logger.info("Executing Mica upgrade to version 3.0.0");
 
     try {
-      updateStudyResourcePathReferences();
+      executeMongoScript(renameDocuments(),
+        "Replacing all references to /study by /individual-study and /study-dataset by /collected-dataset and harmonization-dataset by harmonized-dataset...");
     } catch (RuntimeException e) {
       logger.error("Error occurred when updating Study path resources (/study -> /individual-study, /study-dataset -> /collected-dataset and /harmonization-dataset -> /harmonized-dataset).", e);
     }
 
     try {
-      forceStudyClassNameVocabularyInStudyTaxonomy();
+      executeMongoScript(addClassNameVocabularyToStudyTaxonomyIfMissing(),
+        "Checking presence of \"className\" vocabulary in current Mica_study taxonomy");
     } catch (RuntimeException e) {
-      logger.error("Error occurred when trying to forceStudyClassNameVocabularyInStudyTaxonomy.", e);
+      logger.error("Error occurred when trying to addClassNameVocabularyToStudyTaxonomyIfMissing.", e);
     }
 
     try {
-      forceStudyHarmonizationDesignVocabularyInStudyTaxonomy();
+      executeMongoScript(addHarmonizationDesignVocabularyToStudyTaxonomyIfMissing(),
+        "Checking presence of \"harmonizationDesign\" vocabulary in current Mica_study taxonomy");
     } catch (RuntimeException e) {
-      logger.error("Error occurred when trying to forceStudyHarmonizationDesignVocabularyInStudyTaxonomy.", e);
+      logger.error("Error occurred when trying to addHarmonizationDesignVocabularyToStudyTaxonomyIfMissing.", e);
     }
 
     try {
-      forcePopulationsIdVocabularyInStudyTaxonomy();
+      executeMongoScript(addPopulationsIdVocabularyToStudyTaxonomyIfMissing(),
+        "Checking presence of \"populations-id\" vocabulary in current Mica_study taxonomy");
     } catch (RuntimeException e) {
-      logger.error("Error occurred when trying to forcePopulationsIdVocabularyInStudyTaxonomy.", e);
+      logger.error("Error occurred when trying to addPopulationsIdVocabularyToStudyTaxonomyIfMissing.", e);
     }
 
     try {
-      forcePopulationsNameVocabularyInStudyTaxonomy();
+      executeMongoScript(addPopulationsNameVocabularyToStudyTaxonomyIfMissing(),
+        "Checking presence of \"populations-name\" vocabulary in current Mica_study taxonomy");
     } catch (RuntimeException e) {
-      logger.error("Error occurred when trying to forcePopulationsNameVocabularyInStudyTaxonomy.", e);
+      logger.error("Error occurred when trying to addPopulationsNameVocabularyToStudyTaxonomyIfMissing.", e);
     }
 
     try {
-      forcePopulationsDescriptionVocabularyInStudyTaxonomy();
+      executeMongoScript(addPopulationsDescriptionVocabularyToStudyTaxonomyIfMissing(),
+        "Checking presence of \"populations-description\" vocabulary in current Mica_study taxonomy");
     } catch (RuntimeException e) {
-      logger.error("Error occurred when trying to forcePopulationsDescriptionVocabularyInStudyTaxonomy.", e);
+      logger.error("Error occurred when trying to addPopulationsDescriptionVocabularyToStudyTaxonomyIfMissing.", e);
     }
 
     try {
-      forcePopulationsDataCollectionEventsIdVocabularyInStudyTaxonomy();
+      executeMongoScript(addPopulationsDataCollectionEventsIdVocabularyToStudyTaxonomyIfMissing(),
+        "Checking presence of \"populations-dataCollectionEvents-id\" vocabulary in current Mica_study taxonomy");
     } catch (RuntimeException e) {
-      logger.error("Error occurred when trying to forcePopulationsDataCollectionEventsIdVocabularyInStudyTaxonomy.", e);
+      logger.error("Error occurred when trying to addPopulationsDataCollectionEventsIdVocabularyToStudyTaxonomyIfMissing.", e);
     }
 
     try {
-      forcePopulationsDataCollectionEventsNameVocabularyInStudyTaxonomy();
+      executeMongoScript(addPopulationsDataCollectionEventsNameVocabularyToStudyTaxonomyIfMissing(),
+        "Checking presence of \"populations-dataCollectionEvents-name\" vocabulary in current Mica_study taxonomy");
     } catch (RuntimeException e) {
-      logger.error("Error occurred when trying to forcePopulationsDataCollectionEventsNameVocabularyInStudyTaxonomy.", e);
+      logger.error("Error occurred when trying to addPopulationsDataCollectionEventsNameVocabularyToStudyTaxonomyIfMissing.", e);
     }
 
     try {
-      forcePopulationsDataCollectionEventsStartVocabularyInStudyTaxonomy();
+      executeMongoScript(addPopulationsDataCollectionEventsStartVocabularyToStudyTaxonomyIfMissing(),
+        "Checking presence of \"populations-dataCollectionEvents-start\" vocabulary in current Mica_study taxonomy");
     } catch (RuntimeException e) {
-      logger.error("Error occurred when trying to forcePopulationsDataCollectionEventsStartVocabularyInStudyTaxonomy.", e);
+      logger.error("Error occurred when trying to addPopulationsDataCollectionEventsStartVocabularyToStudyTaxonomyIfMissing.", e);
     }
 
     try {
-      forcePopulationsDataCollectionEventsEndVocabularyInStudyTaxonomy();
+      executeMongoScript(addPopulationsDataCollectionEventsEndVocabularyToStudyTaxonomyIfMissing(),
+        "Checking presence of \"populations-dataCollectionEvents-end\" vocabulary in current Mica_study taxonomy");
     } catch (RuntimeException e) {
-      logger.error("Error occurred when trying to forcePopulationsDataCollectionEventsEndVocabularyInStudyTaxonomy.", e);
+      logger.error("Error occurred when trying to addPopulationsDataCollectionEventsEndVocabularyToStudyTaxonomyIfMissing.", e);
     }
 
     try {
-      forcePopulationsDataCollectionEventsDescriptionVocabularyInStudyTaxonomy();
+      executeMongoScript(addPopulationsDataCollectionEventsDescriptionVocabularyToStudyTaxonomyIfMissing(),
+        "Checking presence of \"populations-dataCollectionEvents-description\" vocabulary in current Mica_study taxonomy");
     } catch (RuntimeException e) {
-      logger.error("Error occurred when trying to forcePopulationsDataCollectionEventsDescriptionVocabularyInStudyTaxonomy.", e);
+      logger.error("Error occurred when trying to addPopulationsDataCollectionEventsDescriptionVocabularyToStudyTaxonomyIfMissing.", e);
     }
 
     try {
-      forceStudyIdVocabularyInVariableTaxonomy();
+      executeMongoScript(addStudyIdVocabularyToVariableTaxonomyIfMissing(),
+        "Checking presence of \"studyId\" vocabulary in current Mica_variable taxonomy");
     } catch (RuntimeException e) {
-      logger.error("Error occurred when trying to forceStudyIdVocabularyInVariableTaxonomy.", e);
+      logger.error("Error occurred when trying to addStudyIdVocabularyToVariableTaxonomyIfMissing.", e);
     }
 
     try {
-      forcePopulationIdVocabularyInVariableTaxonomy();
+      executeMongoScript(addPopulationIdVocabularyToVariableTaxonomyIfMissing(),
+        "Checking presence of \"populationId\" vocabulary in current Mica_variable taxonomy");
     } catch (RuntimeException e) {
-      logger.error("Error occurred when trying to forcePopulationIdVocabularyInVariableTaxonomy.", e);
+      logger.error("Error occurred when trying to addPopulationIdVocabularyToVariableTaxonomyIfMissing.", e);
     }
 
     try {
-      forceVocabularyInVariableTaxonomy();
+      executeMongoScript(addDceIdVocabularyToVariableTaxonomyIfMissing(),
+        "Checking presence of \"dceId\" vocabulary in current Mica_variable taxonomy");
     } catch (RuntimeException e) {
-      logger.error("Error occurred when trying to forceVocabularyInVariableTaxonomy.", e);
+      logger.error("Error occurred when trying to addDceIdVocabularyToVariableTaxonomyIfMissing.", e);
     }
 
     try {
-      removeUndFromTaxonomyVocabularyFieldAndAlias();
+      executeMongoScript(removeUndFromTaxonomyVocabularyFieldAndAliasValuesWhileAlsoSettingStaticAttributeToTrue(),
+        "Removing \"und\" from taxonomy vocabulary attribute field and alias");
     } catch(RuntimeException e) {
       logger.error("Error occurred when trying to removeUndFromTaxonomyVocabularyFieldAndAlias.", e);
+    }
+
+    try {
+      executeMongoScript(updateDatasetClassNameVocabularyDescriptionAndTermTitleAndTermDescription(),
+        "Updating dataset taxonomy vocabulary \"className\" such that its description and term title and description don't use \"harmonization\" or \"study\".");
+    } catch(RuntimeException e) {
+      logger.error("Error occurred when trying to updateDatasetClassNameVocabularyDescriptionAndTermTitleAndTermDescription.", e);
     }
 
     unpublishAllHarmonizationDataset();
@@ -138,9 +160,9 @@ public class Mica3Upgrade implements UpgradeStep {
     );
   }
 
-  private void updateStudyResourcePathReferences() {
-    logger.info("Replacing all references to /study by /individual-study and /study-dataset by /collected-dataset and harmonization-dataset by harmonized-dataset...");
-    mongoTemplate.execute(db -> db.eval(renameDocuments()));
+  private void executeMongoScript(String script, String infoLog) {
+    logger.info(infoLog);
+    mongoTemplate.execute(db -> db.eval(script));
   }
 
   private String renameDocuments() {
@@ -179,77 +201,6 @@ public class Mica3Upgrade implements UpgradeStep {
         "bulkUpdateAttachmentPath(db.subjectAcl, [\"resource\", \"instance\"], /^\\/draft\\/study$/, '/draft/individual-study');\n" +
         "bulkUpdateAttachmentPath(db.subjectAcl, [\"resource\", \"instance\"], /^\\/draft\\/study\\//, '/draft/individual-study/');" +
         "";
-  }
-
-  private void forceStudyClassNameVocabularyInStudyTaxonomy() {
-    logger.info("Checking presence of \"className\" vocabulary in current Mica_study taxonomy");
-    mongoTemplate.execute(db -> db.eval(addClassNameVocabularyToStudyTaxonomyIfMissing()));
-  }
-
-  private void forceStudyHarmonizationDesignVocabularyInStudyTaxonomy() {
-    logger.info("Checking presence of \"harmonizationDesign\" vocabulary in current Mica_study taxonomy");
-    mongoTemplate.execute(db -> db.eval(addHarmonizationDesignVocabularyToStudyTaxonomyIfMissing()));
-  }
-
-  private void forcePopulationsIdVocabularyInStudyTaxonomy() {
-    logger.info("Checking presence of \"populations-id\" vocabulary in current Mica_study taxonomy");
-    mongoTemplate.execute(db -> db.eval(addPopulationsIdVocabularyToStudyTaxonomyIfMissing()));
-  }
-
-  private void forcePopulationsNameVocabularyInStudyTaxonomy() {
-    logger.info("Checking presence of \"populations-name\" vocabulary in current Mica_study taxonomy");
-    mongoTemplate.execute(db -> db.eval(addPopulationsNameVocabularyToStudyTaxonomyIfMissing()));
-  }
-
-  private void forcePopulationsDescriptionVocabularyInStudyTaxonomy() {
-    logger.info("Checking presence of \"populations-description\" vocabulary in current Mica_study taxonomy");
-    mongoTemplate.execute(db -> db.eval(addPopulationsDescriptionVocabularyToStudyTaxonomyIfMissing()));
-  }
-
-  private void forcePopulationsDataCollectionEventsIdVocabularyInStudyTaxonomy() {
-    logger.info("Checking presence of \"populations-dataCollectionEvents-id\" vocabulary in current Mica_study taxonomy");
-    mongoTemplate.execute(db -> db.eval(addPopulationsDataCollectionEventsIdVocabularyToStudyTaxonomyIfMissing()));
-  }
-
-  private void forcePopulationsDataCollectionEventsNameVocabularyInStudyTaxonomy() {
-    logger.info("Checking presence of \"populations-dataCollectionEvents-name\" vocabulary in current Mica_study taxonomy");
-    mongoTemplate.execute(db -> db.eval(addPopulationsDataCollectionEventsNameVocabularyToStudyTaxonomyIfMissing()));
-  }
-
-  private void forcePopulationsDataCollectionEventsStartVocabularyInStudyTaxonomy() {
-    logger.info("Checking presence of \"populations-dataCollectionEvents-start\" vocabulary in current Mica_study taxonomy");
-    mongoTemplate.execute(db -> db.eval(addPopulationsDataCollectionEventsStartVocabularyToStudyTaxonomyIfMissing()));
-  }
-
-  private void forcePopulationsDataCollectionEventsEndVocabularyInStudyTaxonomy() {
-    logger.info("Checking presence of \"populations-dataCollectionEvents-end\" vocabulary in current Mica_study taxonomy");
-    mongoTemplate.execute(db -> db.eval(addPopulationsDataCollectionEventsEndVocabularyToStudyTaxonomyIfMissing()));
-  }
-
-  private void forcePopulationsDataCollectionEventsDescriptionVocabularyInStudyTaxonomy() {
-    logger.info("Checking presence of \"populations-dataCollectionEvents-description\" vocabulary in current Mica_study taxonomy");
-    mongoTemplate.execute(db -> db.eval(addPopulationsDataCollectionEventsDescriptionVocabularyToStudyTaxonomyIfMissing()));
-  }
-
-  private void forceStudyIdVocabularyInVariableTaxonomy() {
-    logger.info("Checking presence of \"studyId\" vocabulary in current Mica_variable taxonomy");
-    mongoTemplate.execute(db -> db.eval(addStudyIdVocabularyToVariableTaxonomyIfMissing()));
-  }
-
-  private void forcePopulationIdVocabularyInVariableTaxonomy() {
-    logger.info("Checking presence of \"populationId\" vocabulary in current Mica_variable taxonomy");
-    mongoTemplate.execute(db -> db.eval(addPopulationIdVocabularyToVariableTaxonomyIfMissing()));
-  }
-
-  private void forceVocabularyInVariableTaxonomy() {
-    logger.info("Checking presence of \"dceId\" vocabulary in current Mica_variable taxonomy");
-    mongoTemplate.execute(db -> db.eval(addDceIdVocabularyToVariableTaxonomyIfMissing()));
-  }
-
-  private void removeUndFromTaxonomyVocabularyFieldAndAlias() {
-    logger.info("Removing \"und\" from taxonomy vocabulary attribute field and alias");
-    mongoTemplate.execute(db -> db.eval(
-      removeUndFromTaxonomyVocabularyFieldAndAliasValuesWhileAlsoSettingStaticAttributeToTrue()));
   }
 
   private String addClassNameVocabularyToStudyTaxonomyIfMissing() {
@@ -632,5 +583,38 @@ public class Mica3Upgrade implements UpgradeStep {
       "    );\n" +
       "  });\n" +
       "});";
+  }
+
+  private String updateDatasetClassNameVocabularyDescriptionAndTermTitleAndTermDescription() {
+    return
+      "var classNameVocabulary = db.taxonomyEntityWrapper.findOne({_id: \"dataset\"}).taxonomy.vocabularies.filter(function (vocabulary) {return vocabulary.name === \"className\";})[0];\n" +
+      "\n" +
+      "if (classNameVocabulary) {\n" +
+      "  if (classNameVocabulary.description && classNameVocabulary.description.en) {\n" +
+      "    classNameVocabulary.description.en = classNameVocabulary.description.en.replace(\"study\", \"collected\").replace(\"harmonization\", \"harmonized\");\n" +
+      "  }\n" +
+      "\n" +
+      "  if (classNameVocabulary.terms && classNameVocabulary.terms.length > 0) {\n" +
+      "    classNameVocabulary.terms.forEach(function (term) { \n" +
+      "      if (term.title.en) {\n" +
+      "        term.title.en = term.title.en.replace(\"Study\", \"Collected\").replace(\"Harmonization\", \"Harmonized\");\n" +
+      "      }\n" +
+      "\n" +
+      "      if (term.title.fr) {\n" +
+      "        term.title.fr = term.title.fr.replace(\"Étude\", \"Collecte\").replace(\"Harmonisation\", \"Harmonisée\");\n" +
+      "      }\n" +
+      "\n" +
+      "      if (term.description.en) {\n" +
+      "        term.description.en = term.description.en.replace(\"study dataset\", \"collected dataset\").replace(\"harmonization dataset\", \"harmonized dataset\");\n" +
+      "      }\n" +
+      "\n" +
+      "      if (term.description.fr) {\n" +
+      "        term.description.fr = term.description.fr.replace(\"une étude.\", \"une étude de collecte.\");\n" +
+      "      }\n" +
+      "    });\n" +
+      "\n" +
+      "    db.taxonomyEntityWrapper.update({_id: \"dataset\", \"taxonomy.vocabularies.name\": \"className\"}, {$set: {\"taxonomy.vocabularies.$\": classNameVocabulary}});\n" +
+      "  }\n" +
+      "}";
   }
 }
