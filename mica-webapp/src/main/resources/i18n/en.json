@@ -678,11 +678,11 @@
     },
     "study-tables": {
       "title": "Study Tables",
-      "info": "The study tables define implementations of the Data Schema variables. The data summaries will be extracted from the corresponding Opal tables."
+      "info": "The study tables define implementations of the harmonized variables. The data summaries will be extracted from the corresponding Opal tables."
     },
     "harmonized-tables": {
       "title": "Harmonized Tables",
-      "info": "The study tables define implementations of the Data Schema variables by a study in the context of a population's data collection event. The network tables define implementations of the Data Schema variables by a network based on previously harmonized data. The data summaries will be extracted from the corresponding Opal tables."
+      "info": "The study tables define implementations of the harmonized variables by an individual study in the context of a population's data collection event or a harmonization study based on previously harmonized data. The data summaries will be extracted from the corresponding Opal tables."
     },
     "restore-dialog": {
       "title": "Restoring Dataset from Revision",
@@ -697,8 +697,8 @@
     "table-name": "Name",
     "table-description": "Description",
     "data-schema": {
-      "title": "Data Schema",
-      "info": "The variables of the Data Schema are the reference variables of the Harmonization dataset. This is a simple data dictionary: no data summaries will be extracted from the Opal table."
+      "title": "Harmonized Dataset",
+      "info": "The variables of the harmonized dataset are the reference variables. This is a simple data dictionary: no data summaries will be extracted from the Opal table."
     },
     "index": "Index",
     "add-study-table": "Add Study Table",
@@ -1653,8 +1653,8 @@
       "countries": "Countries",
       "dataschema-variable": "Harmonized Variable",
       "dataschema-variables": "Harmonized Variables",
-      "study-variable": "Study Variable",
-      "study-variables": "Study Variables",
+      "study-variable": "Collected Variable",
+      "study-variables": "Collected Variables",
       "overview": "Overview",
       "missing": "Missing",
       "dataset": {
