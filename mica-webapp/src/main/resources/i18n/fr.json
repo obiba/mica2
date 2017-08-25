@@ -54,6 +54,7 @@
     "chronological": "Chronologique",
     "network": "Réseau",
     "individual-study": "Étude individuelle",
+    "individual-studies": "Étude individuelles",
     "harmonization-study": "Étude harmonisée",
     "harmonization-studies": "Études harmonisées",
     "harmonization-study-population": "Population",
@@ -578,8 +579,6 @@
     },
     "none": "Aucune étude."
   },
-  "individual-studies": "Études individuelles",
-  "harmonization-studies": "Études harmonisées",
   "contact": {
     "add": {
       "contact": "Ajouter un contact",
@@ -679,11 +678,11 @@
     },
     "study-tables": {
       "title": "Tables d'étude",
-      "info": "Les tables d'étude définissent les implémentations des variables du schéma de données. Les sommaires de données seront extraites des tables Opal correspondantes."
+      "info": "Les tables d'étude définissent les implémentations des variables de l'ensemble de données harmonisées. Les sommaires de données seront extraites des tables Opal correspondantes."
     },
     "harmonized-tables": {
       "title": "Tables harmonisées",
-      "info": "Les tables d'étude définissent les implémentations des variables du schéma de données par une étude dans le cadre de l'événement de collecte de données d'une population. Les tables de réseau définissent les implémentations des variables du schéma de données par un réseau basé sur des données déjà harmonisées. Les résumés de données seront extraites des tables Opal correspondant."
+      "info": "Les tables d'étude définissent les implémentations des variables de l'ensemble de données harmonisées par une étude individuelle dans le cadre de l'événement de collecte de données d'une population ou par une étude harmonisée basée sur des données précédement harmonisées. Les résumés de données seront extraites des tables Opal correspondantes."
     },
     "restore-dialog": {
       "title": "Restaurer un ensemble de données à partir d'une révision",
@@ -698,8 +697,8 @@
     "table-name": "Nom",
     "table-description": "Description",
     "data-schema": {
-      "title": "Schéma de données",
-      "info": "Les variables du schéma de données sont les variables de référence de l'ensemble de données harmonisées. Ceci est un dictionnaire de données simple: aucune donnée sommaire ne sera extraite de la table Opal."
+      "title": "Ensemble de données harmonisées",
+      "info": "Les variables de l'ensemble de données harmonisées sont les variables de référence. Ceci est un dictionnaire de données simple: aucune donnée sommaire ne sera extraite de la table Opal."
     },
     "index": "Index",
     "add-study-table": "Ajouter une table d'étude",
@@ -1654,8 +1653,8 @@
       "countries": "Pays",
       "dataschema-variable": "Variable harmonisée",
       "dataschema-variables": "Variables harmonisée",
-      "study-variable": "Variable d'étude",
-      "study-variables": "Variable d'études",
+      "study-variable": "Variable collectée",
+      "study-variables": "Variable collectées",
       "overview": "Aperçu",
       "missing": "Manquant",
       "dataset": {
