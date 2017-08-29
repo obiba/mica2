@@ -48,6 +48,8 @@ public class Population extends AbstractAttributeModelAware implements Serializa
 
   private SortedSet<DataCollectionEvent> dataCollectionEvents = Sets.newTreeSet();
 
+  private int weight;
+
   @JsonIgnore
   public boolean isNew() {
     return Strings.isNullOrEmpty(id);
@@ -191,6 +193,14 @@ public class Population extends AbstractAttributeModelAware implements Serializa
     }
 
     return super.getModel();
+  }
+
+  public int getWeight() {
+    return weight;
+  }
+
+  public void setWeight(int weight) {
+    this.weight = weight;
   }
 
   public static class Recruitment implements Serializable {

@@ -13,6 +13,11 @@
 </h3>
 
 <div class="inline pull-right hidden-print" ng-if="$parent.inViewMode() && permissions.canEdit()">
+  <span ng-if="study.populations.length > 1">
+    <a href="" ng-hide="study.populations.indexOf(selectedPopulation) === study.populations.length - 1" title="Down"><i ng-click="updateCollectionItemWeight(selectedPopulation, selectedPopulation.weight + 1, study.populations)" class="fa fa-arrow-down"></i></a>
+    <a href="" ng-hide="study.populations.indexOf(selectedPopulation) === 0" title="Up"><i ng-click="updateCollectionItemWeight(selectedPopulation, selectedPopulation.weight - 1, study.populations)" class="fa fa-arrow-up"></i></a>
+  </span>
+
   <a ng-click="editPopulation(study, selectedPopulation)" class="btn btn-responsive btn-primary"><i class="fa fa-pencil"></i></a>
   <a ng-click="deletePopulation(study, selectedPopulation)" class="btn btn-responsive btn-danger"><i class="fa fa-trash-o"></i></a>
 </div>
@@ -50,7 +55,7 @@
     </tr>
     </thead>
     <tbody>
-    <tr ng-repeat="dce in selectedPopulation.dataCollectionEvents">
+    <tr ng-class="{'info': dce._active}" ng-repeat="dce in selectedPopulation.dataCollectionEvents | orderBy: 'weight'">
       <td>
         {{dce.id}}
       </td>
@@ -68,6 +73,10 @@
         {{dce.endYear}} <span ng-show="dce.endMonth">({{months[dce.endMonth - 1]}})</span>
       </td>
       <td ng-if="inViewMode()" class="action-column hidden-print">
+        <span ng-if="selectedPopulation.dataCollectionEvents.length > 1">
+          <a href="" ng-hide="$last" title="Down"><i ng-click="updateCollectionItemWeight(dce, dce.weight + 1, selectedPopulation.dataCollectionEvents)" class="fa fa-arrow-down"></i></a>
+          <a href="" ng-hide="$first" title="Up"><i ng-click="updateCollectionItemWeight(dce, dce.weight - 1, selectedPopulation.dataCollectionEvents)" class="fa fa-arrow-up"></i></a>
+        </span>
         <a ng-click="showDataCollectionEvent(study, selectedPopulation, dce)" class="hand action"><i
             class="fa fa-eye"></i></a>
         <div class="inline" ng-if="permissions.canEdit()">

@@ -49,6 +49,8 @@ class PopulationDtos {
       population.getDataCollectionEvents().forEach(dce -> builder.addDataCollectionEvents(asDto(dce)));
     }
 
+    builder.setWeight(population.getWeight());
+
     return builder.build();
   }
 
@@ -66,6 +68,10 @@ class PopulationDtos {
       population.setModel(JSONUtils.toMap(dto.getContent()));
     else
       population.setModel(new HashMap<>());
+
+    if (dto.hasWeight()) {
+      population.setWeight(dto.getWeight());
+    }
 
     return population;
   }
@@ -100,6 +106,8 @@ class PopulationDtos {
       }
     }
 
+    builder.setWeight(dce.getWeight());
+
     return builder.build();
   }
 
@@ -116,6 +124,10 @@ class PopulationDtos {
       dce.setModel(JSONUtils.toMap(dto.getContent()));
     else
       dce.setModel(new HashMap<>());
+
+    if (dto.hasWeight()) {
+      dce.setWeight(dto.getWeight());
+    }
 
     return dce;
   }

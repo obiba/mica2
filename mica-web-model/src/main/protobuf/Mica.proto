@@ -86,6 +86,7 @@ message PopulationDto {
   repeated LocalizedStringDto description = 3;
   repeated DataCollectionEventDto dataCollectionEvents = 8;
   optional string content = 10;
+  optional int32 weight = 11;
 
   message RecruitmentDto {
     repeated string dataSources = 1;
@@ -124,6 +125,7 @@ message PopulationDto {
     optional int32 endMonth = 7;
     repeated AttachmentDto attachments = 8;
     optional string content = 9;
+    optional int32 weight = 10;
   }
 }
 
