@@ -456,7 +456,7 @@
   "numberOfParticipants": {
     "label": "Number of participants",
     "participants": "Number of participants",
-    "sample": "Number of participants with biological samples",
+    "sample": "Number of participants with biosamples",
     "no-limit": "No Limit",
     "suppl-info": "Supplementary information about number of participants"
   },
@@ -495,7 +495,7 @@
       "none": "Access to external researchers or third parties neither provided nor foreseen.",
       "other": "Other access",
       "data" : "Data (questionnaire-derived, measured...)",
-      "biosamples": "Biological Samples"
+      "biosamples": "Biosamples"
     },
     "marker-paper": "Marker Paper",
     "pubmed-id": "Pubmed ID",
@@ -772,8 +772,8 @@
     "end-month": "End Month",
     "data-sources": "Data sources",
     "other-data-sources": "Other data sources",
-    "bio-samples": "Biological samples",
-    "other-bio-samples": "Other biological samples",
+    "bio-samples": "Biosamples",
+    "other-bio-samples": "Other biosamples",
     "admin-databases": "Administrative databases",
     "tissue-types": "Tissue types",
     "delete-dialog": {
@@ -1598,10 +1598,10 @@
     "country": "Country",
     "geo-charts": "Geographical Distribution",
     "study-design": "Study Design",
-    "bio-samples": "Collected Biological Samples",
+    "bio-samples": "Collected Biosamples",
     "geo-chart-title": "Distribution of studies by country of residence",
     "study-design-chart-title": "Distribution of studies by study design",
-    "bio-samples-chart-title": "Distribution of studies by biological samples",
+    "bio-samples-chart-title": "Distribution of studies by biosamples",
     "number-participants-chart-title": "Distribution of studies by number of participants"
   },
   "research-projects": "Research Projects",

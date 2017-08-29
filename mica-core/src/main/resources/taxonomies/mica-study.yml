@@ -1820,7 +1820,7 @@
       "en": "Biosamples"
       "fr": "Échantillons biologiques"
     "description":
-      "en": "Biological samples are collected."
+      "en": "Biosamples are collected."
       "fr": "Des échantillons biologiques sont collectés."
   - "name": "administratives_databases"
     "title":
@@ -1899,7 +1899,7 @@
     "en": "Access"
     "fr": "Accès"
   "description":
-    "en": "Whether access to study data, biological samples or other study material by external researchers or third parties is provided."
+    "en": "Whether access to study data, biosamples or other study material by external researchers or third parties is provided."
     "fr": "Indique si l'accès aux donnés, aux échantillons biologiques ou à tout autre matériel d'étude est permis à des chercheurs externes ou des tiers."
   "attributes":
       "field": "model.access"
@@ -1918,7 +1918,7 @@
       "en": "Biosamples"
       "fr": "Échantillons biologiques"
     "description":
-      "en": "Access to participant biological samples could be allowed."
+      "en": "Access to participant biosamples could be allowed."
       "fr": "L'accès aux échantillons biologiques des participants pourrait être autorisé."
   - "name": "other"
     "title":
