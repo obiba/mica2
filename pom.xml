@@ -5,14 +5,14 @@
   ~ are made available under the terms of the GNU Public License v3.0.
   ~
   ~ You should have received a copy of the GNU General Public License
-  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses />.
   -->
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.obiba.mica</groupId>
   <artifactId>mica</artifactId>
-  <version>3.0-SNAPSHOT</version>
+  <version>3.0.0</version>
   <packaging>pom</packaging>
 
   <parent>
@@ -130,7 +130,7 @@
     <connection>scm:git:git://github.com/obiba/mica2.git</connection>
     <developerConnection>scm:git:https://github.com/obiba/mica2.git</developerConnection>
     <url>https://github.com/obiba/mica2</url>
-    <tag>HEAD</tag>
+    <tag>3.0.0</tag>
   </scm>
 
   <issueManagement>
