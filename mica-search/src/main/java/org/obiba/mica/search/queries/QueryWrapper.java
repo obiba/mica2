@@ -42,6 +42,8 @@ public interface QueryWrapper {
 
   int getSize();
 
+  List<String> getSourceFields();
+
   @NotNull
   List<String> getAggregationBuckets();
 

@@ -44,7 +44,7 @@ public class DtoParserTest {
       .setExtension(TermsFilterQueryDto.terms,
         TermsFilterQueryDto.newBuilder().addAllValues(Arrays.asList("data", "bio-samples")).build()).build();
 
-    FieldFilterQueryDto termsDto2 = FieldFilterQueryDto.newBuilder().setField("start")
+    FieldFilterQueryDto termsDto2 = FieldFilterQueryDto.newBuilder().setField("init")
       .setExtension(TermsFilterQueryDto.terms,
         TermsFilterQueryDto.newBuilder().addAllValues(Arrays.asList("2002")).build()).build();
 
@@ -60,7 +60,7 @@ public class DtoParserTest {
 
     ObjectMapper mapper = new ObjectMapper();
     JsonNode expected = mapper.readTree(
-      "{\"bool\":{\"must\":[{\"match_all\":{}},{\"bool\":{\"must\":[{\"terms\":{\"access\":[\"data\",\"bio-samples\"]}},{\"terms\":{\"start\":[\"2002\"]}}]}}]}}");
+      "{\"bool\":{\"must\":[{\"match_all\":{}},{\"bool\":{\"must\":[{\"terms\":{\"access\":[\"data\",\"bio-samples\"]}},{\"terms\":{\"init\":[\"2002\"]}}]}}]}}");
     JsonNode actual = mapper.readTree(parser.parse(queryDto).toString());
     assertThat(actual).isEqualTo(expected);
   }

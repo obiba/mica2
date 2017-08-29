@@ -37,9 +37,8 @@ import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.HarmonizationDatasetState;
 import org.obiba.mica.dataset.domain.StudyDatasetState;
 import org.obiba.mica.dataset.search.DatasetIndexer;
-import org.obiba.mica.dataset.service.HarmonizationDatasetService;
-import org.obiba.mica.dataset.service.PublishedDatasetService;
 import org.obiba.mica.dataset.service.CollectionDatasetService;
+import org.obiba.mica.dataset.service.HarmonizationDatasetService;
 import org.obiba.mica.micaConfig.service.helper.AggregationAliasHelper;
 import org.obiba.mica.micaConfig.service.helper.AggregationMetaDataProvider;
 import org.obiba.mica.search.CountStatsData;
@@ -49,8 +48,6 @@ import org.obiba.mica.search.aggregations.DatasetTaxonomyMetaDataProvider;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.mica.web.model.MicaSearch;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -65,8 +62,6 @@ import static org.obiba.mica.web.model.MicaSearch.QueryResultDto;
 @Scope("request")
 public class DatasetQuery extends AbstractDocumentQuery {
 
-  private static final Logger log = LoggerFactory.getLogger(DatasetQuery.class);
-
   public static final String ID  = "id";
 
   public static final String STUDY_JOIN_FIELD = "studyTable.studyId";
@@ -75,9 +70,6 @@ public class DatasetQuery extends AbstractDocumentQuery {
 
   @Inject
   Dtos dtos;
-
-  @Inject
-  PublishedDatasetService publishedDatasetService;
 
   @Inject
   private CollectionDatasetService collectionDatasetService;
@@ -128,6 +120,14 @@ public class DatasetQuery extends AbstractDocumentQuery {
   }
 
   @Override
+  protected List<String> getMandatorySourceFields() {
+    return Lists.newArrayList(
+      "id",
+      "className"
+    );
+  }
+
+  @Override
   protected DocumentQueryJoinKeys processJoinKeys(SearchResponse response) {
     return DocumentQueryHelper.processDatasetJoinKeys(response, ID, datasetIdProvider);
   }
@@ -158,9 +158,8 @@ public class DatasetQuery extends AbstractDocumentQuery {
       : DatasetCountStatsBuilder.newBuilder(counts);
 
     Consumer<Dataset> addDto = getDatasetConsumer(scope, resBuilder, datasetCountStatsBuilder);
-    List<Dataset> datasets = publishedDatasetService
-      .findByIds(Stream.of(hits.hits()).map(h -> h.getId()).collect(Collectors.toList()));
-    datasets.forEach(addDto);
+    List<Dataset> published = getPublishedDocumentsFromHitsByClassName(hits, Dataset.class);
+    published.forEach(addDto::accept);
     builder.setExtension(DatasetResultDto.result, resBuilder.build());
   }
 

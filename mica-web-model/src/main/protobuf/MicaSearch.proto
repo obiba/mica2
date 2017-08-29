@@ -214,7 +214,6 @@ message TermsAggregationResultDto {
   optional string title = 2;
   optional string description = 3;
   optional string className = 4;
-  required int32 default = 5;
   required int32 count = 6;
   repeated AggregationResultDto aggs = 7;
   optional string start = 8;
@@ -234,7 +233,6 @@ message StatsAggregationResultDataDto {
 }
 
 message StatsAggregationResultDto {
-  required StatsAggregationResultDataDto default = 1;
   required StatsAggregationResultDataDto data = 2;
 
   extend AggregationResultDto {

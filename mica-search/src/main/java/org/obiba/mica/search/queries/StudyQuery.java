@@ -10,6 +10,7 @@
 
 package org.obiba.mica.search.queries;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -34,12 +35,13 @@ import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.search.StudyIndexer;
 import org.obiba.mica.study.service.CollectionStudyService;
 import org.obiba.mica.study.service.HarmonizationStudyService;
-import org.obiba.mica.study.service.PublishedStudyService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.mica.web.model.MicaSearch;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+
+import com.google.common.collect.Lists;
 
 import static org.obiba.mica.search.CountStatsDtoBuilders.StudyCountStatsBuilder;
 import static org.obiba.mica.web.model.MicaSearch.QueryResultDto;
@@ -48,9 +50,6 @@ import static org.obiba.mica.web.model.MicaSearch.StudyResultDto;
 @Component
 @Scope("request")
 public class StudyQuery extends AbstractDocumentQuery {
-
-  @Inject
-  private PublishedStudyService publishedStudyService;
 
   @Inject
   private CollectionStudyService collectionStudyService;
@@ -99,14 +98,23 @@ public class StudyQuery extends AbstractDocumentQuery {
   }
 
   @Override
-  public void processHits(QueryResultDto.Builder builder, SearchHits hits, Scope scope, CountStatsData counts) {
+  protected List<String> getMandatorySourceFields() {
+    return Lists.newArrayList(
+      "id",
+      "className",
+      "populations.id",
+      "populations.dataCollectionEvents.id"
+    );
+  }
+
+  @Override
+  public void processHits(QueryResultDto.Builder builder, SearchHits hits, Scope scope, CountStatsData counts)
+    throws IOException {
     StudyResultDto.Builder resBuilder = StudyResultDto.newBuilder();
     StudyCountStatsBuilder studyCountStatsBuilder = counts == null ? null : StudyCountStatsBuilder.newBuilder(counts);
-
     Consumer<BaseStudy> addDto = getStudyConsumer(scope, resBuilder, studyCountStatsBuilder);
-    List<String> hitsIds = Stream.of(hits.hits()).map(h -> h.getId()).collect(Collectors.toList());
-    List<BaseStudy> publishedStudies = publishedStudyService.findByIds(hitsIds);
-    publishedStudies.forEach(addDto);
+    List<BaseStudy> publishedStudies = getPublishedDocumentsFromHitsByClassName(hits, BaseStudy.class);
+    publishedStudies.forEach(addDto::accept);
     builder.setExtension(StudyResultDto.result, resBuilder.build());
   }
 

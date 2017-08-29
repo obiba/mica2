@@ -12,7 +12,9 @@ package org.obiba.mica.search.queries.rql;
 
 import java.io.IOException;
 
+import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.junit.Test;
+import org.obiba.mica.support.TestElasticSearchClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -379,4 +381,57 @@ public class RQLQueryWrapperTest {
     assertThat(rqlQueryWrapper.hasQueryBuilder()).isTrue();
     assertThat(rqlQueryWrapper.getNode().getArgument(1)).isEqualTo("3d");
   }
+
+  @Test
+  public void test_query_fields_empty() throws IOException {
+    String rql = "study(fields())";
+    RQLQueryWrapper rqlQueryWrapper = new RQLQueryWrapper(rql);
+    assertThat(rqlQueryWrapper.getSourceFields()).isNotNull();
+    assertThat(rqlQueryWrapper.getSourceFields().size()).isEqualTo(0);
+  }
+
+  @Test
+  public void test_query_fields_empty_list() throws IOException {
+    String rql = "study(fields(()))";
+    RQLQueryWrapper rqlQueryWrapper = new RQLQueryWrapper(rql);
+    assertThat(rqlQueryWrapper.getSourceFields()).isNotNull();
+    assertThat(rqlQueryWrapper.getSourceFields().size()).isEqualTo(0);
+  }
+
+  @Test
+  public void test_query_fields_with_one_field() throws IOException {
+    String rql = "study(fields(name.*))";
+    RQLQueryWrapper rqlQueryWrapper = new RQLQueryWrapper(rql);
+    assertThat(rqlQueryWrapper.getSourceFields()).isNotNull();
+    assertThat(rqlQueryWrapper.getSourceFields().size()).isEqualTo(1);
+    assertThat(rqlQueryWrapper.getSourceFields().get(0)).isEqualTo("name.*");
+  }
+
+  @Test
+  public void test_query_fields_with_query() throws IOException {
+    String rql = "study(exists(id),fields(name.*))";
+    RQLQueryWrapper rqlQueryWrapper = new RQLQueryWrapper(rql);
+    assertThat(rqlQueryWrapper.getSourceFields()).isNotNull();
+    assertThat(rqlQueryWrapper.getSourceFields().size()).isEqualTo(1);
+    assertThat(rqlQueryWrapper.getSourceFields().get(0)).isEqualTo("name.*");
+    assertThat(rqlQueryWrapper.hasQueryBuilder()).isTrue();
+    String expected = "{\n" +
+      "  \"query\" : {\n" +
+      "    \"exists\" : {\n" +
+      "      \"field\" : \"id\"\n" +
+      "    }\n" + "  },\n" +
+      "  \"_source\" : {\n" +
+      "    \"includes\" : [ \"name.*\" ],\n" +
+      "    \"excludes\" : [ ]\n" +
+      "  }\n"
+      + "}";
+
+    TestElasticSearchClient client = new TestElasticSearchClient();
+    client.init();
+    SearchRequestBuilder searchRequestBuilder = client.preSearchRequest(rqlQueryWrapper.getQueryBuilder());
+    searchRequestBuilder.setFetchSource(rqlQueryWrapper.getSourceFields().toArray(new String[0]), null);
+    assertThat(searchRequestBuilder.toString()).isEqualTo(expected);
+    client.cleanup();
+  }
+
 }

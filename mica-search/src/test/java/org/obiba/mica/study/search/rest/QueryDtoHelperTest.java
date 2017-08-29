@@ -114,7 +114,7 @@ public class QueryDtoHelperTest {
       .setExtension(TermsFilterQueryDto.terms,
         TermsFilterQueryDto.newBuilder().addAllValues(Arrays.asList("data", "bio-samples")).build()).build();
 
-    MicaSearch.FieldFilterQueryDto termsDto2 = MicaSearch.FieldFilterQueryDto.newBuilder().setField("start")
+    MicaSearch.FieldFilterQueryDto termsDto2 = MicaSearch.FieldFilterQueryDto.newBuilder().setField("init")
       .setExtension(TermsFilterQueryDto.terms,
         TermsFilterQueryDto.newBuilder().addAllValues(Arrays.asList("2002")).build()).build();
 

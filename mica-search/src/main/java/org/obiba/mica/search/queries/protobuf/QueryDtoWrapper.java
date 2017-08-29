@@ -72,6 +72,11 @@ public class QueryDtoWrapper implements QueryWrapper {
   }
 
   @Override
+  public List<String> getSourceFields() {
+    return Lists.newArrayList();
+  }
+
+  @Override
   public List<String> getAggregationBuckets() {
     return queryDto != null ? queryDto.getAggsByList() : Lists.newArrayList();
   }

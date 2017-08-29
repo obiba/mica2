@@ -24,7 +24,6 @@ import java.util.stream.Stream;
 
 import javax.inject.Inject;
 
-import com.google.common.util.concurrent.UncheckedTimeoutException;
 import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.micaConfig.service.TaxonomyService;
 import org.obiba.mica.search.queries.AbstractDocumentQuery;
@@ -55,7 +54,9 @@ import com.google.common.base.Function;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import com.google.common.util.concurrent.UncheckedTimeoutException;
 
+import static org.obiba.mica.search.queries.AbstractDocumentQuery.Scope.AGGREGATION;
 import static org.obiba.mica.search.queries.AbstractDocumentQuery.Scope.DETAIL;
 import static org.obiba.mica.search.queries.AbstractDocumentQuery.Scope.DIGEST;
 
@@ -469,7 +470,7 @@ public class JoinQueryExecutor {
 
   private void queryAggregations(List<String> studyIds, AbstractDocumentQuery... queries) throws IOException {
     for(AbstractDocumentQuery query : queries) {
-      query.query(studyIds, null, DIGEST);
+      query.query(studyIds, null, AGGREGATION);
     }
   }
 
