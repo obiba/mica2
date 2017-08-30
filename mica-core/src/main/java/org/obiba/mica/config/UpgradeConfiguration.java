@@ -23,6 +23,7 @@ import org.obiba.mica.core.upgrade.ElasticsearchUpgrade;
 import org.obiba.mica.core.upgrade.HarmonizationDatasetUpgrade;
 import org.obiba.mica.core.upgrade.Mica220Upgrade;
 import org.obiba.mica.core.upgrade.Mica2Upgrade;
+import org.obiba.mica.core.upgrade.Mica310Upgrade;
 import org.obiba.mica.core.upgrade.Mica3Upgrade;
 import org.obiba.mica.core.upgrade.MicaVersionModifier;
 import org.obiba.mica.core.upgrade.NetworkStateUpgrade;
@@ -74,7 +75,8 @@ public class UpgradeConfiguration {
       applicationContext.getBean(SchemaFormUpgrade.class),
       applicationContext.getBean(Mica2Upgrade.class),
       applicationContext.getBean(Mica220Upgrade.class),
-      applicationContext.getBean(Mica3Upgrade.class)
+      applicationContext.getBean(Mica3Upgrade.class),
+      applicationContext.getBean(Mica310Upgrade.class)
     );
   }
 }

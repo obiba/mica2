@@ -40,8 +40,9 @@ import org.obiba.mica.file.FileUtils;
 import org.obiba.mica.file.service.FileSystemService;
 import org.obiba.mica.micaConfig.service.OpalService;
 import org.obiba.mica.network.service.NetworkService;
-import org.obiba.mica.study.date.PersistableYearMonth;
 import org.obiba.mica.study.domain.BaseStudy;
+import org.obiba.mica.study.domain.DataCollectionEvent;
+import org.obiba.mica.study.domain.Population;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.service.CollectionStudyService;
 import org.obiba.mica.study.service.PublishedStudyService;
@@ -243,8 +244,23 @@ public class CollectionDatasetService extends DatasetService<StudyDataset, Study
   }
 
   private void prepareForIndex(StudyDataset dataset) {
-    PersistableYearMonth studyPersistableYearMonthForDataset = getStudyPersistableYearMonthForDataset(dataset);
-    if (studyPersistableYearMonthForDataset != null) dataset.setStart(studyPersistableYearMonthForDataset.getSortableYearMonth());
+    if (dataset.hasStudyTable()) {
+      StudyTable studyTable = dataset.getStudyTable();
+
+      BaseStudy study = studyService.findStudy(dataset.getStudyTable().getStudyId());
+      Population population = study.findPopulation(studyTable.getPopulationId());
+      if (population != null) {
+        studyTable.setPopulationWeight(population.getWeight());
+        DataCollectionEvent dataCollectionEvent = population
+          .findDataCollectionEvent(studyTable.getDataCollectionEventId());
+
+        if (dataCollectionEvent != null) {
+          studyTable.setDataCollectionEventWeight(
+            dataCollectionEvent.getWeight());
+        }
+      }
+
+    }
   }
 
   /**
@@ -276,34 +292,36 @@ public class CollectionDatasetService extends DatasetService<StudyDataset, Study
   }
 
   public List<DatasetVariable> processVariablesForStudyDataset(StudyDataset dataset, Iterable<DatasetVariable> variables) {
-    PersistableYearMonth persistableYearMonth = getStudyPersistableYearMonthForDataset(dataset);
-
-    if (persistableYearMonth != null) {
-      dataset.setStart(persistableYearMonth.getSortableYearMonth());
-      return processVariablesForStudyDataset(persistableYearMonth, variables);
-    } else {
+    if (!dataset.hasStudyTable()) {
       return Lists.newArrayList(variables);
     }
-  }
 
-  public PersistableYearMonth getStudyPersistableYearMonthForDataset(StudyDataset dataset) {
-    if (!dataset.hasStudyTable()) return null;
+    StudyTable studyTable = dataset.getStudyTable();
+
     BaseStudy study = studyService.findStudy(dataset.getStudyTable().getStudyId());
+    Population population = study.findPopulation(studyTable.getPopulationId());
 
-    return StudyService
-      .getPersistableYearMonthFor(study, dataset.getStudyTable().getPopulationId(),
-        dataset.getStudyTable().getDataCollectionEventId());
-  }
+    if (population == null) {
+      return Lists.newArrayList(variables);
+    }
 
-  private List<DatasetVariable> processVariablesForStudyDataset(
-    PersistableYearMonth persistableYearMonthFor, Iterable<DatasetVariable> variables) {
-    return StreamSupport.stream(variables.spliterator(), false)
-      .map(datasetVariable -> {
-        if(persistableYearMonthFor != null)
-          datasetVariable.setEarliestStart(persistableYearMonthFor.getSortableYearMonth());
+    int populationWeight = population.getWeight();
 
-        return datasetVariable;
-      }).collect(toList());
+    DataCollectionEvent dataCollectionEvent = population
+      .findDataCollectionEvent(studyTable.getDataCollectionEventId());
+
+    if (dataCollectionEvent == null) {
+      return Lists.newArrayList(variables);
+    }
+
+    int dataCollectionEventWeight =  dataCollectionEvent.getWeight();
+
+    return StreamSupport.stream(variables.spliterator(), false).map(datasetVariable -> {
+      datasetVariable.setPopulationWeight(populationWeight);
+      datasetVariable.setDataCollectionEventWeight(dataCollectionEventWeight);
+
+      return datasetVariable;
+    }).collect(toList());
   }
 
   @Override

@@ -75,7 +75,7 @@
       <div class="row hidden-print" ng-show="study.populations.length>0">
         <div class="col-lg-2 col-xs-12">
           <ul class="nav nav-pills nav-stacked">
-            <li ng-repeat="population in study.populations" ng-class="population === selectedPopulation ? 'active' : ''">
+            <li ng-repeat="population in study.populations | orderBy: 'weight'" ng-class="population === selectedPopulation ? 'active' : ''">
               <a href ng-click="selectPopulation(population)">
                 <span class="badge">{{population.id}}</span>
                 <localized value="population.name" lang="selectedLocale"></localized>

@@ -71,6 +71,35 @@ mica.study.BaseViewController = function (
       });
     }
   };
+
+  self.updateCollectionItemWeight = function (item, newWeight, collection) {
+    var itemIndex = collection.indexOf(item);
+
+    if (itemIndex > -1) {
+      item = collection[collection.indexOf(item)];
+
+      if (collection[newWeight]) {
+        collection[newWeight].weight = item.weight;
+      }
+      item._active = true;
+      item.weight = newWeight;
+
+      collection.sort(function (a, b) {
+        return a.weight - b.weight;
+      }).forEach(function (collectionItem, index) {
+        collectionItem.weight = index;
+      });
+
+      DraftStudyResource.save(null, $scope.study,
+        function () {
+          $scope.studySummary = StudyStatesResource.get({id: $routeParams.id}, self.initializeState);
+        },
+        function () {
+          $scope.fetchStudy($scope.study.id);
+        }
+      );
+    }
+  };
 };
 
 mica.study.BaseViewController.prototype = Object.create(mica.commons.ViewController.prototype);
@@ -216,7 +245,7 @@ mica.study.ViewController = function (
 
     study.populations = study.populations || [];
     if (study.populations.length > 0) {
-      $scope.selectedPopulation = study.populations[0];
+      $scope.selectedPopulation = study.populations.sort(function (a, b) { return a.weight - b.weight; })[0];
     } else {
       $scope.selectedPopulation = undefined;
     }

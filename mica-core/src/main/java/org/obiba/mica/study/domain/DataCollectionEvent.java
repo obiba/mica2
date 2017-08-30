@@ -62,6 +62,8 @@ public class DataCollectionEvent extends AbstractAttributeModelAware
 
   private LocalizedString otherBioSamples;
 
+  private int weight;
+
   @Override
   public String getId() {
     return id;
@@ -236,5 +238,13 @@ public class DataCollectionEvent extends AbstractAttributeModelAware
     }
 
     return super.getModel();
+  }
+
+  public int getWeight() {
+    return weight;
+  }
+
+  public void setWeight(int weight) {
+    this.weight = weight;
   }
 }
