@@ -143,6 +143,10 @@ public class Population extends AbstractAttributeModelAware implements Serializa
     return false;
   }
 
+  public DataCollectionEvent findDataCollectionEvent(String id) {
+    return dataCollectionEvents.stream().filter(dce -> dce.getId().equals(id)).findFirst().orElse(null);
+  }
+
   public List<String> getAllDataSources() {
     if(dataCollectionEvents != null) {
       return dataCollectionEvents.stream().filter(DataCollectionEvent::hasModel).flatMap(dce ->

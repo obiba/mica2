@@ -160,18 +160,6 @@ public class StudyService {
       .collect(Collectors.toList());
   }
 
-  public static PersistableYearMonth getPersistableYearMonthFor(BaseStudy study, String populationId, String dceId) {
-    if (study != null) {
-      Population population = study.findPopulation(populationId);
-
-      return population != null ? population
-        .getDataCollectionEvents().stream().filter(dce -> dce.getId().equals(dceId)).findFirst()
-        .map(DataCollectionEvent::getStart).orElse(null) : null;
-    }
-
-    return null;
-  }
-
   public static <E> List<E> listAddAll(List<E> accumulator, List<E> list) {
     accumulator.addAll(list);
     return accumulator;

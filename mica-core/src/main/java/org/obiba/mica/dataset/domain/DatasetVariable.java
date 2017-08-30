@@ -99,6 +99,10 @@ public class DatasetVariable implements Indexable, AttributeAware {
 
   private String containerId;
 
+  private int populationWeight;
+
+  private int dataCollectionEventWeight;
+
   public DatasetVariable() {
   }
 
@@ -353,6 +357,22 @@ public class DatasetVariable implements Indexable, AttributeAware {
     return variableType.equals(Type.Harmonized)
         ? datasetId + ID_SEPARATOR + name + ID_SEPARATOR + Type.Dataschema
         : null;
+  }
+
+  public int getPopulationWeight() {
+    return populationWeight;
+  }
+
+  public void setPopulationWeight(int populationWeight) {
+    this.populationWeight = populationWeight;
+  }
+
+  public int getDataCollectionEventWeight() {
+    return dataCollectionEventWeight;
+  }
+
+  public void setDataCollectionEventWeight(int dataCollectionEventWeight) {
+    this.dataCollectionEventWeight = dataCollectionEventWeight;
   }
 
   private String cleanStringForSearch(String string) {

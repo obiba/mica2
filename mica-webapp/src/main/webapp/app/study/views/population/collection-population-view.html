@@ -14,8 +14,8 @@
 
 <div class="inline pull-right hidden-print" ng-if="$parent.inViewMode() && permissions.canEdit()">
   <span ng-if="study.populations.length > 1">
-    <a href="" ng-hide="study.populations.indexOf(selectedPopulation) === study.populations.length - 1" title="Down"><i ng-click="updateCollectionItemWeight(selectedPopulation, selectedPopulation.weight + 1, study.populations)" class="fa fa-arrow-down"></i></a>
-    <a href="" ng-hide="study.populations.indexOf(selectedPopulation) === 0" title="Up"><i ng-click="updateCollectionItemWeight(selectedPopulation, selectedPopulation.weight - 1, study.populations)" class="fa fa-arrow-up"></i></a>
+    <a href="" class="btn btn-responsive btn-info" ng-hide="study.populations.indexOf(selectedPopulation) === study.populations.length - 1" title="Down" ng-click="updateCollectionItemWeight(selectedPopulation, selectedPopulation.weight + 1, study.populations)"><i class="fa fa-arrow-down"></i></a>
+    <a href="" class="btn btn-responsive btn-info" ng-hide="study.populations.indexOf(selectedPopulation) === 0" title="Up" ng-click="updateCollectionItemWeight(selectedPopulation, selectedPopulation.weight - 1, study.populations)"><i class="fa fa-arrow-up"></i></a>
   </span>
 
   <a ng-click="editPopulation(study, selectedPopulation)" class="btn btn-responsive btn-primary"><i class="fa fa-pencil"></i></a>
@@ -55,7 +55,7 @@
     </tr>
     </thead>
     <tbody>
-    <tr ng-class="{'info': dce._active}" ng-repeat="dce in selectedPopulation.dataCollectionEvents | orderBy: 'weight'">
+    <tr ng-class="{'active-row': dce._active}" ng-repeat="dce in selectedPopulation.dataCollectionEvents | orderBy: 'weight'">
       <td>
         {{dce.id}}
       </td>

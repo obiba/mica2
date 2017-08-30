@@ -20,6 +20,8 @@ public class BaseStudyTable extends OpalTable {
 
   protected String populationId;
 
+  protected int populationWeight;
+
   public String getStudyId() {
     return studyId;
   }
@@ -55,6 +57,14 @@ public class BaseStudyTable extends OpalTable {
 
   public void setPopulationId(String populationId) {
     this.populationId = populationId;
+  }
+
+  public int getPopulationWeight() {
+    return populationWeight;
+  }
+
+  public void setPopulationWeight(int populationWeight) {
+    this.populationWeight = populationWeight;
   }
 
   @Override

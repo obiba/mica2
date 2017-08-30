@@ -24,6 +24,8 @@ public class StudyTable extends BaseStudyTable implements Serializable {
 
   private String dataCollectionEventId;
 
+  private int dataCollectionEventWeight;
+
   /**
    * {@link org.obiba.mica.study.domain.DataCollectionEvent} unique ID (including {@link org.obiba.mica.study.domain.Study} ID
    * and {@link org.obiba.mica.study.domain.Population} ID.
@@ -44,6 +46,14 @@ public class StudyTable extends BaseStudyTable implements Serializable {
 
   public void setDataCollectionEventId(String dataCollectionEventId) {
     this.dataCollectionEventId = dataCollectionEventId;
+  }
+
+  public int getDataCollectionEventWeight() {
+    return dataCollectionEventWeight;
+  }
+
+  public void setDataCollectionEventWeight(int dataCollectionEventWeight) {
+    this.dataCollectionEventWeight = dataCollectionEventWeight;
   }
 
   public boolean appliesTo(String studyId, String populationId, String dataCollectionEventId) {
