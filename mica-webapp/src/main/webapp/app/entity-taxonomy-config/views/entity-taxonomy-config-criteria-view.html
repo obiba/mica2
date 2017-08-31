@@ -28,7 +28,7 @@
     </tr>
     </thead>
     <tbody>
-    <tr dir-paginate="child in model.children | filter: searchText |itemsPerPage: 10" pagination-id="target.name">
+    <tr dir-paginate="child in model.children | filter: searchText | itemsPerPage: 10" pagination-id="target.name">
       <td>
         <a href ng-click="navigateToVocabulary(child)">{{child.name}}</a>
       </td>
@@ -43,10 +43,10 @@
       </td>
       <td class="no-wrap">
         <ul class="list-inline">
-          <li ng-show="!$last">
+          <li ng-hide="model.children.indexOf(child) === model.children.length - 1">
             <a href ng-click="moveVocabularyDown(child)" title="{{'down' | translate}}"><i class="fa fa-arrow-down"></i></a>
           </li>
-          <li ng-show="!$first">
+          <li ng-hide="model.children.indexOf(child) === 0">
             <a href ng-click="moveVocabularyUp(child)" title="{{'up' | translate}}"><i class="fa fa-arrow-up"></i></a>
           </li>
         </ul>

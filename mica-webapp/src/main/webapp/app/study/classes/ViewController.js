@@ -81,7 +81,10 @@ mica.study.BaseViewController = function (
       if (collection[newWeight]) {
         collection[newWeight].weight = item.weight;
       }
+
+      collection.forEach(function (collectionItem) { collectionItem._active = false; });
       item._active = true;
+
       item.weight = newWeight;
 
       collection.sort(function (a, b) {
