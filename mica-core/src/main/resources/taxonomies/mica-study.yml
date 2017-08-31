@@ -1644,8 +1644,8 @@
       "keywords": {}
 - "name": "numberOfParticipants-sample-number"
   "title":
-    "en": "Number of participants with samples"
-    "fr": "Nombre de participants avec échantillon"
+    "en": "Number of participants with biosamples"
+    "fr": "Nombre de participants avec échantillons biologiques"
   "description":
     "en": "Number of participants that provided or will provide biosamples."
     "fr": "Nombre de participants qui ont fourni ou qui fourniront des échantillons biologiques."
@@ -1656,10 +1656,10 @@
   "terms": []
 - "name": "numberOfParticipants-sample-range"
   "title":
-    "en": "Number of participants with samples (ranges)"
-    "fr": "Nombre de participants avec échantillon (intervalles)"
+    "en": "Number of participants with biosamples (ranges)"
+    "fr": "Nombre de participants avec échantillons biologiques (intervalles)"
   "description":
-    "en": "The number of participants with samples can be lower than the actual number."
+    "en": "The number of participants with biosamples can be lower than the actual number."
     "fr": "Le nombre de participants avec échantillons peut être inférieur au nombre effectivement atteint."
   "attributes":
     "type": "integer"
