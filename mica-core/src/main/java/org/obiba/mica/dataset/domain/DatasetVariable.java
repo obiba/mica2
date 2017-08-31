@@ -95,8 +95,6 @@ public class DatasetVariable implements Indexable, AttributeAware {
   @NotNull
   private LocalizedString datasetName;
 
-  private String earliestStart;
-
   private String containerId;
 
   private int populationWeight;
@@ -310,14 +308,6 @@ public class DatasetVariable implements Indexable, AttributeAware {
   @Override
   public String getClassName() {
     return getClass().getSimpleName();
-  }
-
-  public String getEarliestStart() {
-    return earliestStart;
-  }
-
-  public void setEarliestStart(String earliestStart) {
-    this.earliestStart = earliestStart;
   }
 
   public String getContainerId() {

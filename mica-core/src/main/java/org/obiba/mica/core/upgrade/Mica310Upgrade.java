@@ -2,6 +2,7 @@ package org.obiba.mica.core.upgrade;
 
 import javax.inject.Inject;
 
+import org.obiba.mica.dataset.service.CollectionDatasetService;
 import org.obiba.runtime.Version;
 import org.obiba.runtime.upgrade.UpgradeStep;
 import org.slf4j.Logger;
@@ -14,6 +15,9 @@ public class Mica310Upgrade implements UpgradeStep {
 
   @Inject
   private MongoTemplate mongoTemplate;
+
+  @Inject
+  private CollectionDatasetService collectionDatasetService;
 
   private static final Logger logger = LoggerFactory.getLogger(Mica310Upgrade.class);
 
@@ -37,6 +41,9 @@ public class Mica310Upgrade implements UpgradeStep {
     } catch(RuntimeException e) {
       logger.error("Error occurred when trying to addPopulationAndDataCollectionEventWeightPropertyBasedOnIndex.", e);
     }
+
+    logger.info("Indexing all Collected Datasets");
+    collectionDatasetService.indexAll();
   }
 
   private String addPopulationAndDataCollectionEventWeightPropertyBasedOnIndex() {
