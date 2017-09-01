@@ -256,6 +256,10 @@ mica.study.ViewController = function (
     $scope.memberships = processMemberships(study);
   };
 
+  $scope.$watch('studySummary', function () {
+    updateTimeline($scope.study);
+  });
+
   function updateTimeline(study) {
     if (!$scope.timeline) {
       $scope.timeline = new $.MicaTimeline(new $.StudyDtoParser($translate.use()));
