@@ -30,6 +30,10 @@
                ng-if="inViewMode() && permissions.canEdit() && studySummaries && studySummaries.length">
               <i class="fa fa-trash-o"></i> <span translate>global.delete-selected</span>
             </a>
+
+            <a ng-href="{{getStudyReportByNetworkUrl()}}" class="btn btn-responsive btn-info" ng-if="inViewMode() && permissions.canEdit()">
+              <i class="fa fa-plus"></i> <span translate>report</span>
+            </a>
           </div>
 
           <div class="hidden-print row">

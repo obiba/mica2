@@ -10,22 +10,12 @@
 
 package org.obiba.mica.study.search.rest;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.stream.Stream;
-
-import javax.inject.Inject;
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.StreamingOutput;
-
+import com.codahale.metrics.annotation.Timed;
+import com.google.common.base.Strings;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.search.JoinQueryExecutor;
 import org.obiba.mica.search.csvexport.GenericReportGenerator;
+import org.obiba.mica.search.csvexport.SpecificStudyReportGenerator;
 import org.obiba.mica.search.queries.protobuf.JoinQueryDtoWrapper;
 import org.obiba.mica.search.queries.protobuf.QueryDtoHelper;
 import org.obiba.mica.search.queries.rql.RQLQueryBuilder;
@@ -35,8 +25,17 @@ import org.obiba.mica.web.model.MicaSearch;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import com.codahale.metrics.annotation.Timed;
-import com.google.common.base.Strings;
+import javax.inject.Inject;
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.StreamingOutput;
+import java.io.IOException;
+import java.util.List;
+import java.util.stream.Stream;
 
 import static org.obiba.mica.web.model.MicaSearch.JoinQueryResultDto;
 
@@ -55,6 +54,8 @@ public class PublishedStudiesSearchResource {
   @Inject
   private GenericReportGenerator genericReportGenerator;
 
+  @Inject
+  private SpecificStudyReportGenerator specificStudyReportGenerator;
 
   @GET
   @Timed
@@ -106,5 +107,21 @@ public class PublishedStudiesSearchResource {
   public Response rqlQueryAsCsv(@QueryParam("query") String query, @QueryParam("columnsToHide") List<String> columnsToHide) throws IOException {
     StreamingOutput stream = os -> genericReportGenerator.generateCsv(JoinQueryExecutor.QueryType.STUDY, query, columnsToHide, os);
     return Response.ok(stream).header("Content-Disposition", "attachment; filename=\"SearchStudies.csv\"").build();
+  }
+
+  @GET
+  @Path("/_report")
+  @Timed
+  public Response report(@QueryParam("query") String query) throws IOException {
+    StreamingOutput stream = os -> specificStudyReportGenerator.report(query, os);
+    return Response.ok(stream).header("Content-Disposition", "attachment; filename=\"Studies.csv\"").build();
+  }
+
+  @GET
+  @Path("/_report_by_network")
+  @Timed
+  public Response report(@QueryParam("networkId") String networkId, @QueryParam("locale") @DefaultValue("en") String locale) throws IOException {
+    StreamingOutput stream = os -> specificStudyReportGenerator.report(networkId, locale, os);
+    return Response.ok(stream).header("Content-Disposition", "attachment; filename=\"Studies.csv\"").build();
   }
 }
