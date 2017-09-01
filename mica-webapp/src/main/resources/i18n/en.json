@@ -929,6 +929,7 @@
     "advanced-help": "Show logical operators",
     "basic": "Basic",
     "basic-help": "Hide logical operators",
+    "coverage-end-date-ongoing": "Ongoing",
     "no-coverage": "Select some variable search criteria to see their corresponding coverage.",
     "coverage-dce-cols": {
       "study": "Study",

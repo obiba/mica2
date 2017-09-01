@@ -929,6 +929,7 @@
     "advanced-help": "Afficher les opérateurs logiques",
     "basic": "Basique",
     "basic-help": "Cacher les opérateurs logiques",
+    "coverage-end-date-ongoing": "En cours",
     "no-coverage": "Sélectionnez des critères de recherche de variables pour voir leur couverture correspondante.",
     "coverage-dce-cols": {
       "study": "Étude",
