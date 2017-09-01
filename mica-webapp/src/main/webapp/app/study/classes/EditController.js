@@ -327,6 +327,7 @@ mica.study.PopulationEditController = function (
       } else {
         var currentPopulationIds = self.study.populations.map(function (p) { return p.model._id; });
         self.population.model._id = MicaUtil.generateNextId(currentPopulationIds);
+        self.population.weight = self.study.populations.length;
 
         self.study.populations.push(self.population);
       }
@@ -345,7 +346,7 @@ mica.study.PopulationEditController = function (
       }).length > 1) {
       $scope.$broadcast('schemaForm.error._id','uniqueId',false);
     }
-    
+
     return form.$valid;
   }
 
@@ -521,6 +522,7 @@ mica.study.DataCollectionEventEditController = function (
         }
 
         self.dce.model._id = MicaUtil.generateNextId(currentDceIds);
+        self.dce.weight = self.population.dataCollectionEvents.length;
         self.population.dataCollectionEvents.push(self.dce);
       }
 
