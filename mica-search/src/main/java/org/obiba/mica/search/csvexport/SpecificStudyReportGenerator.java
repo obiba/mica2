@@ -127,22 +127,29 @@ public class SpecificStudyReportGenerator extends CsvReportGeneratorImpl {
         List<String> firstLineForThisStudy = generatePublishedStudyDetails(publishedStudy);
 
         Iterator<Population> populationIterator = publishedStudy.getPopulations().iterator();
-        if (populationIterator.hasNext()) {
-          firstLineForThisStudy.addAll(generatePopulationDetails(populationIterator.next()));
+
+        if (!populationIterator.hasNext()) {
           writer.writeNext(firstLineForThisStudy.toArray(new String[firstLineForThisStudy.size()]));
         }
 
-        while (populationIterator.hasNext()) {
-          List<String> lineWithoutStudyDetails = generateEmptyStudyDetails();
-          Population next = populationIterator.next();
-          lineWithoutStudyDetails.addAll(generatePopulationDetails(next));
-          writer.writeNext(lineWithoutStudyDetails.toArray(new String[lineWithoutStudyDetails.size()]));
+        if (populationIterator.hasNext()) {
+          firstLineForThisStudy.addAll(generatePopulationDetails(populationIterator.next()));
+          writer.writeNext(firstLineForThisStudy.toArray(new String[firstLineForThisStudy.size()]));
+
+          while (populationIterator.hasNext()) {
+            List<String> lineWithoutStudyDetails = generateEmptyStudyDetails();
+            Population next = populationIterator.next();
+            lineWithoutStudyDetails.addAll(generatePopulationDetails(next));
+            writer.writeNext(lineWithoutStudyDetails.toArray(new String[lineWithoutStudyDetails.size()]));
+          }
         }
       } else {
 
         BaseStudy draftStudy = draftStudyService.findById(studyId);
-        List<String> lineOfDratStudy = generateDraftStudyDetails(draftStudy);
-        writer.writeNext(lineOfDratStudy.toArray(new String[lineOfDratStudy.size()]));
+        if (draftStudy != null) {
+          List<String> lineOfDratStudy = generateDraftStudyDetails(draftStudy);
+          writer.writeNext(lineOfDratStudy.toArray(new String[lineOfDratStudy.size()]));
+        }
       }
     }
   }

@@ -1691,6 +1691,7 @@
   },
   "report-group": {
     "study": {
+      "button-name": "Report",
       "name": "Study Name",
       "acronym": "Acronym",
       "country": "Country",
