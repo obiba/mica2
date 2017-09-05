@@ -10,11 +10,24 @@
 
 package org.obiba.mica.search.queries;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import javax.annotation.Nullable;
+import javax.inject.Inject;
+import javax.validation.constraints.NotNull;
+
 import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.common.Strings;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -34,7 +47,11 @@ import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.search.CountStatsData;
 import org.obiba.mica.search.DocumentQueryHelper;
 import org.obiba.mica.search.DocumentQueryIdProvider;
-import org.obiba.mica.search.aggregations.*;
+import org.obiba.mica.search.aggregations.DataCollectionEventAggregationMetaDataProvider;
+import org.obiba.mica.search.aggregations.DatasetAggregationMetaDataProvider;
+import org.obiba.mica.search.aggregations.StudyAggregationMetaDataProvider;
+import org.obiba.mica.search.aggregations.TaxonomyAggregationMetaDataProvider;
+import org.obiba.mica.search.aggregations.VariableTaxonomyMetaDataProvider;
 import org.obiba.mica.study.NoSuchStudyException;
 import org.obiba.mica.study.domain.BaseStudy;
 import org.obiba.mica.study.service.PublishedStudyService;
@@ -45,18 +62,12 @@ import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.obiba.opal.core.domain.taxonomy.Vocabulary;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import sun.util.locale.LanguageTag;
 
-import javax.annotation.Nullable;
-import javax.inject.Inject;
-import javax.validation.constraints.NotNull;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.*;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+
+import sun.util.locale.LanguageTag;
 
 import static org.obiba.mica.search.queries.AbstractDocumentQuery.Scope.DETAIL;
 import static org.obiba.mica.search.queries.AbstractDocumentQuery.Scope.NONE;
@@ -95,9 +106,6 @@ public class VariableQuery extends AbstractDocumentQuery {
 
   @Inject
   private StudyAggregationMetaDataProvider studyAggregationMetaDataProvider;
-
-  @Inject
-  private ObjectMapper objectMapper;
 
   @Inject
   private CollectionDatasetService collectionDatasetService;
@@ -156,9 +164,12 @@ public class VariableQuery extends AbstractDocumentQuery {
 
     for(SearchHit hit : hits) {
       DatasetVariable.IdResolver resolver = DatasetVariable.IdResolver.from(hit.getId());
-      InputStream inputStream = new ByteArrayInputStream(hit.getSourceAsString().getBytes());
-      DatasetVariable variable = objectMapper.readValue(inputStream, DatasetVariable.class);
-      resBuilder.addSummaries(processHit(resolver, variable, studyMap, networkMap));
+      String sourceAsString = hit.getSourceAsString();
+      if (!Strings.isNullOrEmpty(sourceAsString)) {
+        InputStream inputStream = new ByteArrayInputStream(sourceAsString.getBytes());
+        DatasetVariable variable = objectMapper.readValue(inputStream, DatasetVariable.class);
+        resBuilder.addSummaries(processHit(resolver, variable, studyMap, networkMap));
+      }
     }
 
     builder.setExtension(MicaSearch.DatasetVariableResultDto.result, resBuilder.build());
@@ -172,9 +183,11 @@ public class VariableQuery extends AbstractDocumentQuery {
   }
 
   @Override
-  protected boolean ignoreFields() {
-    // always needs actual documents
-    return false;
+  protected List<String> getMandatorySourceFields() {
+    return Lists.newArrayList(
+      "id",
+      "studyId"
+    );
   }
 
   /**

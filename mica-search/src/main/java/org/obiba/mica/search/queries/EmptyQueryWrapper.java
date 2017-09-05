@@ -57,6 +57,11 @@ public class EmptyQueryWrapper implements QueryWrapper {
   }
 
   @Override
+  public List<String> getSourceFields() {
+    return Lists.newArrayList();
+  }
+
+  @Override
   public List<String> getAggregationBuckets() {
     return Lists.newArrayList();
   }

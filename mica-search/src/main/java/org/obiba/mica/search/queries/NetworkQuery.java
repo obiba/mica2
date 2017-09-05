@@ -10,7 +10,9 @@
 
 package org.obiba.mica.search.queries;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -25,9 +27,11 @@ import javax.inject.Inject;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
+import org.elasticsearch.common.Strings;
 import org.elasticsearch.index.IndexNotFoundException;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.aggregations.Aggregations;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
@@ -108,15 +112,24 @@ public class NetworkQuery extends AbstractDocumentQuery {
   }
 
   @Override
-  public void processHits(QueryResultDto.Builder builder, SearchHits hits, Scope scope, CountStatsData counts) {
+  public void processHits(QueryResultDto.Builder builder, SearchHits hits, Scope scope, CountStatsData counts)
+    throws IOException {
     NetworkResultDto.Builder resBuilder = NetworkResultDto.newBuilder();
     NetworkCountStatsBuilder networkCountStatsBuilder = counts == null
       ? null
       : NetworkCountStatsBuilder.newBuilder(counts);
 
     Consumer<Network> addDto = getNetworkConsumer(scope, resBuilder, networkCountStatsBuilder);
-    List<Network> networks = publishedNetworkService
-      .findByIds(Stream.of(hits.hits()).map(h -> h.getId()).collect(Collectors.toList()));
+    List<Network> networks = Lists.newArrayList();
+
+    for(SearchHit hit : hits) {
+      String sourceAsString = hit.getSourceAsString();
+      if (!Strings.isNullOrEmpty(sourceAsString)) {
+        InputStream inputStream = new ByteArrayInputStream(sourceAsString.getBytes());
+        networks.add(objectMapper.readValue(inputStream, Network.class));
+      }
+    }
+
     networks.forEach(addDto);
     builder.setExtension(NetworkResultDto.result, resBuilder.build());
   }
@@ -137,6 +150,13 @@ public class NetworkQuery extends AbstractDocumentQuery {
       }
       resBuilder.addNetworks(networkBuilder.build());
     } : (network) -> resBuilder.addDigests(dtos.asDigestDtoBuilder(network).build());
+  }
+
+  @Override
+  protected List<String> getMandatorySourceFields() {
+    return Lists.newArrayList(
+      "id"
+    );
   }
 
   @Override

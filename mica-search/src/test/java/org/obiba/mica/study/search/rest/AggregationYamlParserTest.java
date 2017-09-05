@@ -12,60 +12,41 @@ package org.obiba.mica.study.search.rest;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.attribute.FileAttribute;
 import java.util.Arrays;
 import java.util.Locale;
 
-import org.apache.commons.io.FileUtils;
 import org.elasticsearch.action.search.SearchRequestBuilder;
-import org.elasticsearch.action.search.SearchType;
-import org.elasticsearch.client.Client;
-import org.elasticsearch.cluster.ClusterName;
-import org.elasticsearch.cluster.metadata.IndexMetaData;
-import org.elasticsearch.cluster.node.DiscoveryNode;
-import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.common.util.concurrent.EsExecutors;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.node.Node;
-import org.elasticsearch.node.NodeBuilder;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.runners.MockitoJUnitRunner;
 import org.obiba.mica.search.aggregations.AggregationYamlParser;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
+import org.obiba.mica.support.TestElasticSearchClient;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { AggregationYamlParserTest.Config.class })
+@RunWith(MockitoJUnitRunner.class)
 public class AggregationYamlParserTest {
 
-  private static Client client;
+  private static TestElasticSearchClient client = new TestElasticSearchClient();
 
   private static AggregationYamlParser aggregationYamlParser = new AggregationYamlParser();
 
-  private static Path dataDirectory;
-
   @BeforeClass
   public static void beforeClass() throws IOException {
-    dataDirectory = Files.createTempDirectory("es-test", new FileAttribute<?>[] {});
+    client.init();
     aggregationYamlParser.setLocales(Arrays.asList(Locale.ENGLISH, Locale.FRENCH));
-    client = newNode(dataDirectory.toString()).client();
   }
 
   @AfterClass
   public static void afterClass() throws IOException {
-    FileUtils.deleteDirectory(dataDirectory.toFile());
+    client.cleanup();
   }
 
   @Test
@@ -133,46 +114,14 @@ public class AggregationYamlParserTest {
   }
 
   private JsonNode getJsonNode(String resource) throws IOException {
-    SearchRequestBuilder requestBuilder = client.prepareSearch("test_index") //
-      .setTypes("test_type") //
-      .setSearchType(SearchType.DFS_QUERY_THEN_FETCH) //
-      .setQuery(QueryBuilders.matchAllQuery());
-
+    SearchRequestBuilder requestBuilder = client.preSearchRequest(QueryBuilders.matchAllQuery());
     aggregationYamlParser.getAggregations(new ClassPathResource(resource), null)
       .forEach(requestBuilder::addAggregation);
 
     return getRequestAsJSon(requestBuilder).get("aggregations");
   }
 
-  private static Node newNode(String dataDirectory) {
-    Node build = NodeBuilder.nodeBuilder().local(true).data(false).settings(Settings.builder() //
-      .put(ClusterName.SETTING, nodeName()) //
-      .put("node.name", nodeName()) //
-      .put(IndexMetaData.SETTING_NUMBER_OF_SHARDS, 1) //
-      .put(IndexMetaData.SETTING_NUMBER_OF_REPLICAS, 0) //
-      .put(EsExecutors.PROCESSORS, 1) // limit the number of threads created
-      .put("http.enabled", false) //
-      .put("index.store.type", "ram") //
-      .put("config.ignore_system_properties", true) // make sure we get what we set :)
-      .put("path.home", "/tmp") //
-      .put("path.data", dataDirectory) //
-    ).build();
-
-    build.start();
-    assertThat(DiscoveryNode.localNode(build.settings())).isTrue();
-    return build;
-  }
-
   private JsonNode getRequestAsJSon(SearchRequestBuilder requestBuilder) throws IOException {
     return new ObjectMapper().readTree(requestBuilder.toString());
   }
-
-  private static String nodeName() {
-    return AggregationYamlParserTest.class.getName();
-  }
-
-  @Configuration
-  @ComponentScan("org.obiba.mica.study.search.rest")
-  static class Config {}
-
 }

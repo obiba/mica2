@@ -27,7 +27,6 @@ import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.QueryStringQueryBuilder;
 import org.elasticsearch.index.query.RangeQueryBuilder;
-import org.elasticsearch.search.sort.FieldSortBuilder;
 import org.elasticsearch.search.sort.SortBuilder;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
@@ -63,6 +62,8 @@ public class RQLQueryWrapper implements QueryWrapper {
 
   private List<String> aggregationBuckets;
 
+  private List<String> sourceFields = null;
+
   private final Map<String, Map<String, List<String>>> taxonomyTermsMap = Maps.newHashMap();
 
   @VisibleForTesting
@@ -89,10 +90,22 @@ public class RQLQueryWrapper implements QueryWrapper {
         case STUDY:
         case NETWORK:
           node.getArguments().stream().map(a -> (ASTNode) a).forEach(n -> {
-            if(n.getName().equals(RQLNode.LIMIT.name().toLowerCase())) parseLimit(n);
-            else if(n.getName().equals(RQLNode.SORT.name().toLowerCase())) parseSort(n);
-            else if(n.getName().equals(RQLNode.AGGREGATE.name().toLowerCase())) parseAggregate(n);
-            else parseQuery(n);
+            switch (RQLNode.valueOf(n.getName().toUpperCase())) {
+              case LIMIT:
+                parseLimit(n);
+                break;
+              case SORT:
+                parseSort(n);
+                break;
+              case AGGREGATE:
+                parseAggregate(n);
+                break;
+              case FIELDS:
+                parseFields(n);
+                break;
+              default:
+                parseQuery(n);
+            }
           });
           break;
         default:
@@ -134,6 +147,20 @@ public class RQLQueryWrapper implements QueryWrapper {
     }
   }
 
+  private void parseFields(ASTNode node) {
+    sourceFields = Lists.newArrayList();
+
+    if (node.getArgumentsSize() > 0) {
+      if(node.getArgument(0) instanceof ArrayList) {
+        ArrayList<Object> fields = (ArrayList<Object>) node.getArgument(0);
+        fields.stream().map(Object::toString).forEach(sourceFields::add);
+
+      } else {
+        sourceFields.add(node.getArgument(0).toString());
+      }
+    }
+  }
+
   @VisibleForTesting
   ASTNode getNode() {
     return node;
@@ -167,6 +194,11 @@ public class RQLQueryWrapper implements QueryWrapper {
   @Override
   public int getSize() {
     return size;
+  }
+
+  @Override
+  public List<String> getSourceFields() {
+    return sourceFields;
   }
 
   @Override
