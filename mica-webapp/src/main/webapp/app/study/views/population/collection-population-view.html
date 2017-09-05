@@ -70,7 +70,13 @@
         {{dce.startYear}} <span ng-show="dce.startMonth">({{months[dce.startMonth - 1]}})</span>
       </td>
       <td>
-        {{dce.endYear}} <span ng-show="dce.endMonth">({{months[dce.endMonth - 1]}})</span>
+        <span ng-if="dce.endYear">
+          {{dce.endYear}} <span ng-show="dce.endMonth">({{months[dce.endMonth - 1]}})</span>
+        </span>
+
+        <span ng-if="!dce.endYear">
+          {{'search.coverage-end-date-ongoing' | translate}}
+        </span>
       </td>
       <td ng-if="inViewMode()" class="action-column hidden-print">
         <span ng-if="selectedPopulation.dataCollectionEvents.length > 1">
