@@ -277,6 +277,7 @@ mica.network
     'NetworkService',
     'DocumentPermissionsService',
     'SfOptionsService',
+    'ngObibaMicaUrl',
 
     function ($rootScope,
               $scope,
@@ -307,7 +308,8 @@ mica.network
               $filter,
               NetworkService,
               DocumentPermissionsService,
-              SfOptionsService) {
+              SfOptionsService,
+              ngObibaMicaUrl) {
 
 
       function initializeForm() {
@@ -609,6 +611,13 @@ mica.network
             $scope.network.studyIds = ($scope.network.studyIds || []).concat(selectedIds);
             $scope.emitNetworkUpdated();
           });
+      };
+
+      $scope.getStudyReportByNetworkUrl = function () {
+        return (ngObibaMicaUrl.getUrl('BaseUrl') + ngObibaMicaUrl.getUrl('JoinQuerySearchCsvReportByNetworkResource'))
+          .replace(':type', 'studies')
+          .replace(':networkId', $scope.network.id)
+          .replace(':locale', $translate.use());
       };
 
       $scope.deleteStudyEvent = function (network, summary) {

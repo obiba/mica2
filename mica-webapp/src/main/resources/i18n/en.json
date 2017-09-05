@@ -1688,5 +1688,30 @@
         "status-detail": "Status Detail"
       }
     }
+  },
+  "report-group": {
+    "study": {
+      "button-name": "Report",
+      "name": "Study Name",
+      "acronym": "Acronym",
+      "country": "Country",
+      "start-year": "Start Year",
+      "years-of-follow-up": "Years of Follow-up",
+      "study-design": "Study Design",
+      "recruitment-target": "Recruitment Target",
+      "number-of-participants": "Number of Participants",
+      "status": "Status",
+      "type": "Type",
+      "type-individual":"Individual",
+      "type-harmonization":"Harmonization",
+      "population": {
+        "name": "Population",
+        "source-of-recruitment": "Sources of Recruitment",
+        "minimum-age": "Minimum Age",
+        "maximum-age": "Maximum Age",
+        "number-of-participants": "Number of Participants",
+        "number-of-data-collection-events": "Number of Data Collection Events"
+      }
+    }
   }
 }

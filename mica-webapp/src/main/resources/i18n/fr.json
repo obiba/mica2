@@ -1688,5 +1688,29 @@
         "status-detail": "Détail du statut"
       }
     }
+  },
+  "report-group": {
+    "study": {
+      "name": "Nom de l'étude",
+      "acronym": "Acronyme",
+      "country": "Pays",
+      "start-year": "Année de début",
+      "years-of-follow-up": "Année de suivie",
+      "study-design": "Conception de l'étude",
+      "recruitment-target": "Cible de recrutement",
+      "number-of-participants": "Nombre de participants",
+      "status": "Statut",
+      "type": "Type",
+      "type-individual": "Individuelle",
+      "type-harmonization": "Harmonisée",
+      "population": {
+        "name": "Population",
+        "source-of-recruitment": "Source de recrutement",
+        "minimum-age": "Age minimum",
+        "maximum-age": "Age maximum",
+        "number-of-participants": "Nombre de participants",
+        "number-of-data-collection-events": "Nombre d'événements de collecte de données"
+      }
+    }
   }
 }
