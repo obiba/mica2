@@ -158,7 +158,12 @@ public class SpecificStudyReportGenerator extends CsvReportGeneratorImpl {
   }
 
   private String getCountryName(String iso3Country) {
-    return getCountries().get(iso3Country).getDisplayCountry(new Locale(this.locale));
+    try {
+      return getCountries().get(iso3Country).getDisplayCountry(new Locale(this.locale));
+    } catch (RuntimeException e) {
+      logger.debug("Translation of country %s is not available in java database", e);
+      return iso3Country;
+    }
   }
 
   private List<String> generateDraftStudyDetails(BaseStudy study) {
@@ -182,13 +187,13 @@ public class SpecificStudyReportGenerator extends CsvReportGeneratorImpl {
     line.add(arrayField(() -> study.getPopulations().stream().flatMap(population -> {
       Map<String, List<String>> selectionCriteria = (Map<String, List<String>>) population.getModel().get("selectionCriteria");
       return selectionCriteria.get("countriesIso").stream().map(this::getCountryName);
-    }).distinct().collect(toList())));
+    }).distinct().sorted().collect(toList())));
     line.add(field(() -> study.getModel().get("start").toString()));
     line.add(field(() -> calculateYearsOfFollowUp(study)));
     line.add(field(() -> tr("study_taxonomy.vocabulary.methods-design.term." + ((Map<String, Object>) study.getModel().get("methods")).get("design").toString() + ".title")));
     line.add(arrayField(() -> ((List<String>) ((Map<String, Object>)
       study.getModel().get("methods")).get("recruitments"))
-      .stream().map(m -> tr("study_taxonomy.vocabulary.methods-recruitments.term." + m + ".title")).collect(toList())));
+      .stream().map(m -> tr("study_taxonomy.vocabulary.methods-recruitments.term." + m + ".title")).sorted().collect(toList())));
     line.add(field(() -> ((Map<String, Object>) ((Map<String, Object>)
       study.getModel().get("numberOfParticipants")).get("participant")).get("number").toString()));
 
@@ -201,7 +206,7 @@ public class SpecificStudyReportGenerator extends CsvReportGeneratorImpl {
 
     line.add(localizedField(() -> population.getName()));
     line.add(arrayField(() -> ((List<String>) ((Map<String, Object>) population.getModel().get("recruitment")).get("dataSources"))
-      .stream().map(source -> tr("study_taxonomy.vocabulary.populations-recruitment-dataSources.term." + source + ".title")).collect(toList())));
+      .stream().map(source -> tr("study_taxonomy.vocabulary.populations-recruitment-dataSources.term." + source + ".title")).sorted().collect(toList())));
     line.add(field(() -> ((Map<String, Object>) population.getModel().get("selectionCriteria")).get("ageMin").toString()));
     line.add(field(() -> ((Map<String, Object>) population.getModel().get("selectionCriteria")).get("ageMax").toString()));
     line.add(field(() -> ((Map<String, Object>) ((Map<String, Object>)
