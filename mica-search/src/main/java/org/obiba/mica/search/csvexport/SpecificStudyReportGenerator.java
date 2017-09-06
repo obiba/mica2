@@ -195,7 +195,7 @@ public class SpecificStudyReportGenerator extends CsvReportGeneratorImpl {
       Map<String, List<String>> selectionCriteria = (Map<String, List<String>>) population.getModel().get("selectionCriteria");
       return selectionCriteria.get("countriesIso").stream().map(this::getCountryName);
     }).distinct().sorted().collect(toList())));
-    line.add(field(() -> study.getModel().get("start").toString()));
+    line.add(field(() -> study.getModel().get("startYear").toString()));
     line.add(field(() -> calculateYearsOfFollowUp(study)));
     line.add(field(() -> tr("study_taxonomy.vocabulary.methods-design.term." + ((Map<String, Object>) study.getModel().get("methods")).get("design").toString() + ".title")));
     line.add(arrayField(() -> ((List<String>) ((Map<String, Object>)
@@ -228,10 +228,10 @@ public class SpecificStudyReportGenerator extends CsvReportGeneratorImpl {
   }
 
   private String calculateYearsOfFollowUp(BaseStudy studySummaryDto) {
-    if (studySummaryDto.getModel().get("start") == null)
+    if (studySummaryDto.getModel().get("startYear") == null)
       return "";
-    int startYear = (int) studySummaryDto.getModel().get("start");
-    int endYear = studySummaryDto.getModel().get("end") != null ? (int) studySummaryDto.getModel().get("end") : Calendar.getInstance().get(Calendar.YEAR);
+    int startYear = (int) studySummaryDto.getModel().get("startYear");
+    int endYear = studySummaryDto.getModel().get("endYear") != null ? (int) studySummaryDto.getModel().get("endYear") : Calendar.getInstance().get(Calendar.YEAR);
     return Integer.toString(endYear - startYear);
   }
 
