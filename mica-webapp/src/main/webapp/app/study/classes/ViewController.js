@@ -73,6 +73,12 @@ mica.study.BaseViewController = function (
   };
 
   self.updateCollectionItemWeight = function (item, newWeight, collection) {
+    function weightSortComparator(a, b) {
+      var aWeight = a.weight || 0, bWeight = b.weight || 0;
+      return aWeight - bWeight;
+    }
+
+    collection.sort(weightSortComparator);
     var itemIndex = collection.indexOf(item);
 
     if (itemIndex > -1) {
@@ -87,13 +93,11 @@ mica.study.BaseViewController = function (
 
       item.weight = newWeight;
 
-      collection.sort(function (a, b) {
-        return a.weight - b.weight;
-      }).forEach(function (collectionItem, index) {
+      collection.sort(weightSortComparator).forEach(function (collectionItem, index) {
         collectionItem.weight = index;
       });
 
-      DraftStudyResource.save(null, $scope.study,
+      DraftStudyResource.save({weightChanged: true}, $scope.study,
         function () {
           $scope.studySummary = StudyStatesResource.get({id: $routeParams.id}, self.initializeState);
         },
@@ -238,13 +242,7 @@ mica.study.ViewController = function (
       $scope.logoUrl = 'ws/draft/individual-study/' + study.id + '/file/' + study.logo.id + '/_download';
     }
 
-    if (self.getViewMode() === self.Mode.View || self.getViewMode() === self.Mode.Revision) {
-      try {
-        updateTimeline(study);
-      } catch (e) {
-        $log.warn(e);
-      }
-    }
+    safeUpdateStudyTimeline(study);
 
     study.populations = study.populations || [];
     if (study.populations.length > 0) {
@@ -257,8 +255,18 @@ mica.study.ViewController = function (
   };
 
   $scope.$watch('studySummary', function () {
-    updateTimeline($scope.study);
+    safeUpdateStudyTimeline($scope.study);
   });
+
+  function safeUpdateStudyTimeline(study) {
+    if (self.getViewMode() === self.Mode.View || self.getViewMode() === self.Mode.Revision) {
+      try {
+        updateTimeline(study);
+      } catch (e) {
+        $log.warn(e);
+      }
+    }
+  }
 
   function updateTimeline(study) {
     if (!$scope.timeline) {

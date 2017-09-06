@@ -14,4 +14,14 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document
 public class StudyState extends StudyEntityState {
+
+  private boolean populationOrDceWeightChange;
+
+  public boolean isPopulationOrDceWeightChange() {
+    return populationOrDceWeightChange;
+  }
+
+  public void setPopulationOrDceWeightChange(boolean populationOrDceWeightChange) {
+    this.populationOrDceWeightChange = populationOrDceWeightChange;
+  }
 }

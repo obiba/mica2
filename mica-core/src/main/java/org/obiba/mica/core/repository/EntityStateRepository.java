@@ -20,4 +20,5 @@ public interface EntityStateRepository<T extends EntityState> extends MongoRepos
   List<T> findByPublishedTagNotNull();
   List<T> findByPublishedTagIsNull();
   Long countByPublishedTagNotNullAndRevisionsAheadGreaterThanEqual(int value);
+  List<T> findByPublishedTagNotNullAndIdIn(Iterable<String> datasetIds);
 }

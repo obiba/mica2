@@ -10,6 +10,7 @@
 
 package org.obiba.mica.dataset.service;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.StreamSupport;
@@ -21,6 +22,7 @@ import org.joda.time.DateTime;
 import org.obiba.magma.NoSuchValueTableException;
 import org.obiba.magma.NoSuchVariableException;
 import org.obiba.mica.NoSuchEntityException;
+import org.obiba.mica.core.domain.AbstractGitPersistable;
 import org.obiba.mica.core.domain.PublishCascadingScope;
 import org.obiba.mica.core.domain.StudyTable;
 import org.obiba.mica.core.repository.EntityStateRepository;
@@ -44,6 +46,7 @@ import org.obiba.mica.study.domain.BaseStudy;
 import org.obiba.mica.study.domain.DataCollectionEvent;
 import org.obiba.mica.study.domain.Population;
 import org.obiba.mica.study.domain.Study;
+import org.obiba.mica.study.domain.StudyState;
 import org.obiba.mica.study.service.CollectionStudyService;
 import org.obiba.mica.study.service.PublishedStudyService;
 import org.obiba.mica.study.service.StudyService;
@@ -154,6 +157,16 @@ public class CollectionDatasetService extends DatasetService<StudyDataset, Study
       .collect(toList());
   }
 
+  public List<StudyDataset> findPublishedDatasets(List<String> datasetIds) {
+    return studyDatasetStateRepository.findByPublishedTagNotNullAndIdIn(datasetIds).stream()
+      .filter(state -> { //
+        return gitService.hasGitRepository(state) && !Strings.isNullOrEmpty(state.getPublishedTag()); //
+      }) //
+      .map(state -> gitService.readFromTag(state, state.getPublishedTag(), StudyDataset.class)) //
+      .map(ds -> { ds.getModel(); return ds; }) // make sure dynamic model is initialized
+      .collect(toList());
+  }
+
   /**
    * Get all {@link StudyDataset}s of a study.
    *
@@ -247,7 +260,7 @@ public class CollectionDatasetService extends DatasetService<StudyDataset, Study
     if (dataset.hasStudyTable()) {
       StudyTable studyTable = dataset.getStudyTable();
 
-      BaseStudy study = studyService.findStudy(dataset.getStudyTable().getStudyId());
+      BaseStudy study = publishedStudyService.findById(dataset.getStudyTable().getStudyId());
       Population population = study.findPopulation(studyTable.getPopulationId());
       if (population != null) {
         studyTable.setPopulationWeight(population.getWeight());
@@ -271,24 +284,20 @@ public class CollectionDatasetService extends DatasetService<StudyDataset, Study
   }
 
   public void indexAll(boolean mustIndexVariables) {
-    Set<StudyDataset> publishedDatasets = Sets.newHashSet(findAllPublishedDatasets());
-
-    findAllDatasets()
-      .forEach(dataset -> {
-        try {
-          eventBus.post(new DatasetUpdatedEvent(dataset));
-
-          if (publishedDatasets.contains(dataset)) {
-            prepareForIndex(dataset);
-            Iterable<DatasetVariable> variables = mustIndexVariables && publishedDatasets.contains(dataset) ? wrappedGetDatasetVariables(dataset) : null;
-            eventBus.post(new DatasetPublishedEvent(dataset, variables, getCurrentUsername()));
-          }
-        } catch (Exception e) {
-          log.error(String.format("Error indexing dataset %s", dataset), e);
-        }
-      });
-
+    indexDatasets(Sets.newHashSet(findAllPublishedDatasets()), findAllDatasets(), mustIndexVariables);
     eventBus.post(new StudyDatasetIndexedEvent());
+  }
+
+  public void indexAllDatasetsForStudyId(String studyId) {
+    if (collectionStudyService.getEntityState(studyId).isPopulationOrDceWeightChange()) {
+      List<StudyDataset> datasets = findAllDatasets(studyId);
+      HashSet<StudyDataset> publishedDatasets = Sets
+        .newHashSet(findPublishedDatasets(datasets.stream().map(AbstractGitPersistable::getId).collect(toList())));
+
+      indexDatasets(publishedDatasets, datasets, true);
+
+      resetCollectionStudyStatePopulationDceWeightChangeStatus(studyId);
+    }
   }
 
   public List<DatasetVariable> processVariablesForStudyDataset(StudyDataset dataset, Iterable<DatasetVariable> variables) {
@@ -420,6 +429,15 @@ public class CollectionDatasetService extends DatasetService<StudyDataset, Study
     return execute(getDatasource(studyTable), callback);
   }
 
+  private void resetCollectionStudyStatePopulationDceWeightChangeStatus(String studyId) {
+    StudyState studyState = collectionStudyService.getEntityState(studyId);
+
+    if (!studyState.hasRevisionsAhead()) {
+      studyState.setPopulationOrDceWeightChange(false);
+      collectionStudyService.saveState(studyState);
+    }
+  }
+
   private void saveInternal(StudyDataset dataset, String comment) {
     StudyDataset saved = prepareSave(dataset);
 
@@ -436,7 +454,7 @@ public class CollectionDatasetService extends DatasetService<StudyDataset, Study
     eventBus.post(new DatasetUpdatedEvent(saved));
   }
 
-  protected StudyDataset prepareSave(StudyDataset dataset) {
+  private StudyDataset prepareSave(StudyDataset dataset) {
     if(dataset.isNew()) {
       dataset.setId(generateDatasetId(dataset));
       return dataset;
@@ -449,6 +467,23 @@ public class CollectionDatasetService extends DatasetService<StudyDataset, Study
       }
       return dataset;
     }
+  }
+
+  private void indexDatasets(Set<StudyDataset> publishedDatasets, List<StudyDataset> datasets, boolean mustIndexVariables) {
+    datasets
+      .forEach(dataset -> {
+        try {
+          eventBus.post(new DatasetUpdatedEvent(dataset));
+
+          if (publishedDatasets.contains(dataset)) {
+            prepareForIndex(dataset);
+            Iterable<DatasetVariable> variables = mustIndexVariables && publishedDatasets.contains(dataset) ? wrappedGetDatasetVariables(dataset) : null;
+            eventBus.post(new DatasetPublishedEvent(dataset, variables, getCurrentUsername()));
+          }
+        } catch (Exception e) {
+          log.error(String.format("Error indexing dataset %s", dataset), e);
+        }
+      });
   }
 
   @Override
