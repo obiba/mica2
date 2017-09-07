@@ -247,7 +247,7 @@ public class CollectionDatasetService extends DatasetService<StudyDataset, Study
     if (dataset.hasStudyTable()) {
       StudyTable studyTable = dataset.getStudyTable();
 
-      BaseStudy study = studyService.findStudy(dataset.getStudyTable().getStudyId());
+      BaseStudy study = publishedStudyService.findById(dataset.getStudyTable().getStudyId());
       Population population = study.findPopulation(studyTable.getPopulationId());
       if (population != null) {
         studyTable.setPopulationWeight(population.getWeight());
