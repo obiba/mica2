@@ -68,7 +68,8 @@ public class StudyIndexer {
     elasticSearchIndexer.index(PUBLISHED_STUDY_INDEX, (Indexable) event.getPersistable());
 
     if (event.getPersistable() instanceof Study) {
-      collectionDatasetService.indexAllDatasetsForStudyId(event.getPersistable().getId());
+      log.info("Call indexAllDatasetsForStudyIdIfPopulationOrDceWeightChanged for Study {}", event.getPersistable());
+      collectionDatasetService.indexAllDatasetsForStudyIdIfPopulationOrDceWeightChanged(event.getPersistable().getId());
     }
   }
 

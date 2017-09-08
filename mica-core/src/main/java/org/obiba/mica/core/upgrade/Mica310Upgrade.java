@@ -47,7 +47,7 @@ public class Mica310Upgrade implements UpgradeStep {
       logger.error("Error occurred when trying to addPopulationAndDataCollectionEventWeightPropertyBasedOnIndex.", e);
     }
 
-    logger.info("Republishing all studies");
+    logger.info("Republishing all publishable studies");
     studyService.findAllStates().stream().filter(state -> state.getRevisionsAhead() == 0)
       .forEach(publishable -> studyService.publish(publishable.getId(), true, null));
 

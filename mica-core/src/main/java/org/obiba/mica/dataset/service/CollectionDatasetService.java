@@ -13,6 +13,7 @@ package org.obiba.mica.dataset.service;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import javax.inject.Inject;
@@ -148,23 +149,17 @@ public class CollectionDatasetService extends DatasetService<StudyDataset, Study
    * @return
    */
   public List<StudyDataset> findAllPublishedDatasets() {
-    return studyDatasetStateRepository.findByPublishedTagNotNull().stream()
-      .filter(state -> { //
-        return gitService.hasGitRepository(state) && !Strings.isNullOrEmpty(state.getPublishedTag()); //
-      }) //
-      .map(state -> gitService.readFromTag(state, state.getPublishedTag(), StudyDataset.class)) //
-      .map(ds -> { ds.getModel(); return ds; }) // make sure dynamic model is initialized
-      .collect(toList());
+    return mapPublishedDatasets(studyDatasetStateRepository.findByPublishedTagNotNull().stream()
+      .filter(state -> {
+        return gitService.hasGitRepository(state) && !Strings.isNullOrEmpty(state.getPublishedTag());
+      }));
   }
 
   public List<StudyDataset> findPublishedDatasets(List<String> datasetIds) {
-    return studyDatasetStateRepository.findByPublishedTagNotNullAndIdIn(datasetIds).stream()
-      .filter(state -> { //
-        return gitService.hasGitRepository(state) && !Strings.isNullOrEmpty(state.getPublishedTag()); //
-      }) //
-      .map(state -> gitService.readFromTag(state, state.getPublishedTag(), StudyDataset.class)) //
-      .map(ds -> { ds.getModel(); return ds; }) // make sure dynamic model is initialized
-      .collect(toList());
+    return mapPublishedDatasets(studyDatasetStateRepository.findByPublishedTagNotNullAndIdIn(datasetIds).stream()
+      .filter(state -> {
+        return gitService.hasGitRepository(state) && !Strings.isNullOrEmpty(state.getPublishedTag());
+      }));
   }
 
   /**
@@ -208,6 +203,13 @@ public class CollectionDatasetService extends DatasetService<StudyDataset, Study
       unPublishState(id);
       eventBus.post(new DatasetUnpublishedEvent(dataset));
     }
+  }
+
+  private List<StudyDataset> mapPublishedDatasets(Stream<StudyDatasetState> studyDatasetStateStream) {
+    return studyDatasetStateStream
+      .map(state -> gitService.readFromTag(state, state.getPublishedTag(), StudyDataset.class))
+      .map(ds -> { ds.getModel(); return ds; }) // make sure dynamic model is initialized
+      .collect(toList());
   }
 
   private void checkIsPublishable(StudyDataset dataset) {
@@ -288,7 +290,7 @@ public class CollectionDatasetService extends DatasetService<StudyDataset, Study
     eventBus.post(new StudyDatasetIndexedEvent());
   }
 
-  public void indexAllDatasetsForStudyId(String studyId) {
+  public void indexAllDatasetsForStudyIdIfPopulationOrDceWeightChanged(String studyId) {
     if (collectionStudyService.getEntityState(studyId).isPopulationOrDceWeightChange()) {
       List<StudyDataset> datasets = findAllDatasets(studyId);
       HashSet<StudyDataset> publishedDatasets = Sets
