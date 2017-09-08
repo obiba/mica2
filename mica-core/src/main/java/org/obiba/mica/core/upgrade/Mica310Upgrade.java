@@ -58,10 +58,10 @@ public class Mica310Upgrade implements UpgradeStep {
 
     for (Study publishedStudy : publishedStudies) {
 
-      if (!containsExistingStudies(publishedStudy))
+      if (!containsInvalidData(publishedStudy))
         continue;
 
-      publishedStudy = replaceExistingStudiesByExistStudies(publishedStudy);
+      publishedStudy = transformToValidStudy(publishedStudy);
 
       EntityState studyState = collectionStudyService.getEntityState(publishedStudy.getId());
       if (studyState.getRevisionsAhead() == 0) {
@@ -69,7 +69,7 @@ public class Mica310Upgrade implements UpgradeStep {
         collectionStudyService.publish(publishedStudy.getId(), true);
       } else {
         Study draftStudy = collectionStudyService.findStudy(publishedStudy.getId());
-        draftStudy = replaceExistingStudiesByExistStudies(draftStudy);
+        draftStudy = transformToValidStudy(draftStudy);
         collectionStudyService.save(publishedStudy);
         collectionStudyService.publish(publishedStudy.getId(), true);
         collectionStudyService.save(draftStudy);
@@ -79,23 +79,46 @@ public class Mica310Upgrade implements UpgradeStep {
     List<String> publishedStudiesIds = publishedStudies.stream().map(AbstractGitPersistable::getId).collect(toList());
     collectionStudyService.findAllDraftStudies().stream()
       .filter(unknownStateStudy -> !publishedStudiesIds.contains(unknownStateStudy.getId()))
-      .filter(this::containsExistingStudies)
-      .map(this::replaceExistingStudiesByExistStudies)
+      .filter(this::containsInvalidData)
+      .map(this::transformToValidStudy)
       .forEach(collectionStudyService::save);
   }
 
-  private boolean containsExistingStudies(Study study) {
+  private boolean containsInvalidData(Study study) {
+    return containsInvalidMethodsDesign(study) || containsInvalidExistingStudies(study);
+  }
+
+  private boolean containsInvalidMethodsDesign(Study study) {
     try {
-      for (Population population : study.getPopulations()) {
-        if (((List<String>) ((Map<String, Object>) population.getModel().get("recruitment")).get("dataSources")).contains("existing_studies"))
-          return true;
-      }
+      Map<String, Object> methods = (Map<String, Object>) study.getModel().get("methods");
+      if (methods.containsKey("designs") && !methods.containsKey("design"))
+        return true;
     } catch (RuntimeException ignore) {
     }
     return false;
   }
 
-  private Study replaceExistingStudiesByExistStudies(Study study) {
+  private boolean containsInvalidExistingStudies(Study study) {
+    if (study.getPopulations() == null)
+      return false;
+
+    for (Population population : study.getPopulations()) {
+      try {
+        if (((List<String>) ((Map<String, Object>) population.getModel().get("recruitment")).get("dataSources")).contains("existing_studies"))
+          return true;
+      } catch (RuntimeException ignore) {
+      }
+    }
+    return false;
+  }
+
+  private Study transformToValidStudy(Study study) {
+    transformMethodsDesign(study);
+    transformExistingStudies(study);
+    return study;
+  }
+
+  private void transformExistingStudies(Study study) {
     try {
       for (Population population : study.getPopulations()) {
         List<String> dataSources = (List<String>) ((Map<String, Object>) population.getModel().get("recruitment")).get("dataSources");
@@ -104,8 +127,17 @@ public class Mica310Upgrade implements UpgradeStep {
       }
     } catch (RuntimeException ignore) {
     }
+  }
 
-    return study;
+  private void transformMethodsDesign(Study study) {
+    try {
+      if (containsInvalidMethodsDesign(study)) {
+        Map<String, Object> methods = (Map<String, Object>) study.getModel().get("methods");
+        String methodsDesign = ((List<String>) methods.get("designs")).get(0);
+        methods.put("design", methodsDesign);
+      }
+    } catch (RuntimeException ignore) {
+    }
   }
 
   private void setupDatasetOrders() {
