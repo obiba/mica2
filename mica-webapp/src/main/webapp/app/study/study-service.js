@@ -33,6 +33,7 @@ mica.study
         'save': {method: 'PUT', errorHandler: true, transformRequest: StudyModelService.serialize},
         'delete': {method: 'DELETE', errorHandler: true},
         'get': {method: 'GET', transformResponse: StudyModelService.deserialize},
+        'indexDatasets': {method: 'PUT', url: 'ws/draft/individual-study/:id/index-datasets'},
         'publish': {method: 'PUT', url: 'ws/draft/individual-study/:id/_publish', params: {id: '@id', cascading: '@cascading'}},
         'unPublish': {method: 'DELETE', url: 'ws/draft/individual-study/:id/_publish', errorHandler: true},
         'toStatus': {method: 'PUT', url: 'ws/draft/individual-study/:id/_status', params: {id: '@id', value: '@value'}}

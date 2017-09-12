@@ -19,10 +19,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
+import org.apache.commons.math3.util.Pair;
 import org.joda.time.DateTime;
+import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.core.domain.AbstractGitPersistable;
 import org.obiba.mica.core.repository.EntityStateRepository;
 import org.obiba.mica.dataset.HarmonizationDatasetRepository;
@@ -51,6 +54,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 import static java.util.stream.Collectors.toList;
+import static org.obiba.mica.core.domain.RevisionStatus.DRAFT;
 
 @Service
 @Validated
@@ -86,6 +90,10 @@ public class CollectionStudyService extends AbstractStudyService<StudyState, Stu
 
   @Override
   protected void saveInternal(final Study study, String comment, boolean cascade) {
+    saveInternal(study, comment, cascade, false);
+  }
+
+  public void saveInternal(final Study study, String comment, boolean cascade, boolean weightChanged) {
     log.info("Saving study: {}", study.getId());
 
     // checks if population and dce are still the same
@@ -111,6 +119,11 @@ public class CollectionStudyService extends AbstractStudyService<StudyState, Stu
     if (!study.isNew()) ensureGitRepository(studyState);
 
     studyState.incrementRevisionsAhead();
+
+    if (weightChanged) {
+      studyState.setPopulationOrDceWeightChange(true);
+    }
+
     studyStateRepository.save(studyState);
     study.setLastModifiedDate(DateTime.now());
 
@@ -119,6 +132,10 @@ public class CollectionStudyService extends AbstractStudyService<StudyState, Stu
 
     gitService.save(study, comment);
     eventBus.post(new DraftStudyUpdatedEvent(study));
+  }
+
+  public void save(Study study, @Nullable String comment, boolean weightChanged) {
+    saveInternal(study, comment, true, weightChanged);
   }
 
   @Override

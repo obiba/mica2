@@ -157,6 +157,10 @@ public abstract class AbstractGitPersistableService<T extends EntityState, T1 ex
     return Lists.newArrayList(getEntityStateRepository().findAll(ids));
   }
 
+  public T saveState(@NotNull T entityState) {
+    return getEntityStateRepository().save(entityState);
+  }
+
   public T publishState(@NotNull String id) throws NoSuchEntityException {
     T entityState = findStateById(id);
     if(entityState != null) {

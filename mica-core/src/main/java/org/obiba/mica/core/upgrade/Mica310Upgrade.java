@@ -3,6 +3,8 @@ package org.obiba.mica.core.upgrade;
 import javax.inject.Inject;
 
 import org.obiba.mica.dataset.service.CollectionDatasetService;
+import org.obiba.mica.study.service.CollectionStudyService;
+import org.obiba.mica.study.service.StudyService;
 import org.obiba.runtime.Version;
 import org.obiba.runtime.upgrade.UpgradeStep;
 import org.slf4j.Logger;
@@ -18,6 +20,9 @@ public class Mica310Upgrade implements UpgradeStep {
 
   @Inject
   private CollectionDatasetService collectionDatasetService;
+
+  @Inject
+  private CollectionStudyService studyService;
 
   private static final Logger logger = LoggerFactory.getLogger(Mica310Upgrade.class);
 
@@ -41,6 +46,10 @@ public class Mica310Upgrade implements UpgradeStep {
     } catch(RuntimeException e) {
       logger.error("Error occurred when trying to addPopulationAndDataCollectionEventWeightPropertyBasedOnIndex.", e);
     }
+
+    logger.info("Republishing all publishable studies");
+    studyService.findAllStates().stream().filter(state -> state.getRevisionsAhead() == 0)
+      .forEach(publishable -> studyService.publish(publishable.getId(), true, null));
 
     logger.info("Indexing all Collected Datasets");
     collectionDatasetService.indexAll();
