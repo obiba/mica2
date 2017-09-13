@@ -66,10 +66,8 @@ public class Mica310Upgrade implements UpgradeStep {
 
     for (Study publishedStudy : publishedStudies) {
 
-      if (!containsInvalidData(publishedStudy))
-        continue;
-
-      publishedStudy = transformToValidStudy(publishedStudy);
+      if (containsInvalidData(publishedStudy))
+        publishedStudy = transformToValidStudy(publishedStudy);
 
       EntityState studyState = collectionStudyService.getEntityState(publishedStudy.getId());
       if (studyState.getRevisionsAhead() == 0) {
