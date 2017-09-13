@@ -23,6 +23,8 @@ import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
 import org.joda.time.DateTime;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.obiba.mica.core.domain.AbstractGitPersistable;
 import org.obiba.mica.core.repository.EntityStateRepository;
 import org.obiba.mica.dataset.HarmonizationDatasetRepository;
@@ -139,6 +141,15 @@ public class CollectionStudyService extends AbstractStudyService<StudyState, Stu
     }
 
     return restoredStudy;
+  }
+
+  public JSONObject getFromCommitAsJson(@NotNull Study study, @NotNull String commitId) {
+    String studyBlob = gitService.getBlob(study, commitId, Study.class);
+    try {
+      return new JSONObject(studyBlob);
+    } catch (JSONException e) {
+      throw Throwables.propagate(e);
+    }
   }
 
   public Map<String, List<String>> getPotentialUnpublishingConflicts(Study study) {
