@@ -326,7 +326,7 @@ public class MicaConfigResource {
 
   @GET
   @Path("/metrics")
-  @RequiresRoles(Roles.MICA_ADMIN)
+  @RequiresAuthentication
   public Mica.MicaMetricsDto getMetrics() {
     return Mica.MicaMetricsDto.newBuilder()
       // Network
