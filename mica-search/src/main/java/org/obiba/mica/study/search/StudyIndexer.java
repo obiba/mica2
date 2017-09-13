@@ -13,8 +13,10 @@ package org.obiba.mica.study.search;
 import javax.inject.Inject;
 
 import org.obiba.mica.core.domain.Indexable;
+import org.obiba.mica.dataset.service.CollectionDatasetService;
 import org.obiba.mica.search.ElasticSearchIndexer;
 import org.obiba.mica.study.domain.BaseStudy;
+import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.event.DraftStudyUpdatedEvent;
 import org.obiba.mica.study.event.IndexStudiesEvent;
 import org.obiba.mica.study.event.StudyDeletedEvent;
@@ -49,6 +51,9 @@ public class StudyIndexer {
   @Inject
   private StudyService studyService;
 
+  @Inject
+  private CollectionDatasetService collectionDatasetService;
+
   @Async
   @Subscribe
   public void studyUpdated(DraftStudyUpdatedEvent event) {
@@ -61,6 +66,11 @@ public class StudyIndexer {
   public void studyPublished(StudyPublishedEvent event) {
     log.info("Study {} was published", event.getPersistable());
     elasticSearchIndexer.index(PUBLISHED_STUDY_INDEX, (Indexable) event.getPersistable());
+
+    if (event.getPersistable() instanceof Study) {
+      log.info("Call indexAllDatasetsForStudyIdIfPopulationOrDceWeightChanged for Study {}", event.getPersistable());
+      collectionDatasetService.indexAllDatasetsForStudyIdIfPopulationOrDceWeightChanged(event.getPersistable().getId());
+    }
   }
 
   @Async

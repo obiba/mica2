@@ -10,8 +10,25 @@
 
 package org.obiba.mica.study.rest;
 
-import com.codahale.metrics.annotation.Timed;
-import com.google.common.collect.Maps;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import javax.annotation.Nullable;
+import javax.inject.Inject;
+import javax.validation.constraints.NotNull;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.GET;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import org.obiba.mica.AbstractGitPersistableResource;
 import org.obiba.mica.NoSuchEntityException;
@@ -32,17 +49,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.Nullable;
-import javax.inject.Inject;
-import javax.validation.constraints.NotNull;
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import com.codahale.metrics.annotation.Timed;
+import com.google.common.collect.Maps;
 
 /**
  * REST controller for managing draft Study.
@@ -87,7 +95,7 @@ public class DraftCollectionStudyResource extends AbstractGitPersistableResource
   @PUT
   @Timed
   public Response update(@SuppressWarnings("TypeMayBeWeakened") Mica.StudyDto studyDto,
-    @Nullable @QueryParam("comment") String comment) {
+    @Nullable @QueryParam("comment") String comment, @QueryParam("weightChanged") boolean weightChanged) {
     checkPermission("/draft/individual-study", "EDIT");
     // ensure study exists
     collectionStudyService.findDraft(id);
@@ -98,7 +106,7 @@ public class DraftCollectionStudyResource extends AbstractGitPersistableResource
     response.put("study", study);
     response.put("potentialConflicts", collectionStudyService.getPotentialConflicts(study, false));
 
-    collectionStudyService.save(study, comment);
+    collectionStudyService.save(study, comment, weightChanged);
     return Response.ok(response, MediaType.APPLICATION_JSON_TYPE).build();
   }
 
