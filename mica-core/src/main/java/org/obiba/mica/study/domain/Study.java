@@ -421,5 +421,25 @@ public class Study extends BaseStudy implements AttributeAware {
     public void setInfo(LocalizedString info) {
       this.info = info;
     }
+
+    public String getDesign() {
+      return design;
+    }
+
+    public LocalizedString getOtherDesign() {
+      return otherDesign;
+    }
+
+    public LocalizedString getFollowUpInfo() {
+      return followUpInfo;
+    }
+
+    public List<String> getRecruitments() {
+      return recruitments;
+    }
+
+    public LocalizedString getOtherRecruitment() {
+      return otherRecruitment;
+    }
   }
 }
