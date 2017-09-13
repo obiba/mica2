@@ -53,7 +53,7 @@ public class Mica310Upgrade implements UpgradeStep {
 
   @Override
   public void execute(Version version) {
-    logger.info("Executing Mica upgrade to version 3.3.0");
+    logger.info("Executing Mica upgrade to version 3.1.0");
 
     setupDatasetOrders();
 
