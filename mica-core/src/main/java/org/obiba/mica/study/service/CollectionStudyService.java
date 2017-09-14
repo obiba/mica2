@@ -23,9 +23,9 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
-import org.apache.commons.math3.util.Pair;
 import org.joda.time.DateTime;
-import org.obiba.mica.NoSuchEntityException;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.obiba.mica.core.domain.AbstractGitPersistable;
 import org.obiba.mica.core.repository.EntityStateRepository;
 import org.obiba.mica.dataset.HarmonizationDatasetRepository;
@@ -54,7 +54,6 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 import static java.util.stream.Collectors.toList;
-import static org.obiba.mica.core.domain.RevisionStatus.DRAFT;
 
 @Service
 @Validated
@@ -156,6 +155,15 @@ public class CollectionStudyService extends AbstractStudyService<StudyState, Stu
     }
 
     return restoredStudy;
+  }
+
+  public JSONObject getFromCommitAsJson(@NotNull Study study, @NotNull String commitId) {
+    String studyBlob = gitService.getBlob(study, commitId, Study.class);
+    try {
+      return new JSONObject(studyBlob);
+    } catch (JSONException e) {
+      throw Throwables.propagate(e);
+    }
   }
 
   public Map<String, List<String>> getPotentialUnpublishingConflicts(Study study) {
