@@ -294,11 +294,12 @@ public class StudyService extends AbstractGitPersistableService<StudyState, Stud
       throw Throwables.propagate(e);
     }
 
-    restoredStudy.getAttachments().stream()
+    restoredStudy.getAttachments()
       .forEach(a -> ensureAttachmentState(a, String.format("/study/%s", restoredStudy.getId())));
-    restoredStudy.getPopulations().stream().forEach(p -> p.getDataCollectionEvents().stream().forEach(
-      d -> d.getAttachments().stream().forEach(a -> ensureAttachmentState(a, String
-        .format("/study/%s/population/%s/data-collection-event/%s", restoredStudy.getId(), p.getId(), d.getId())))));
+    if (restoredStudy.getPopulations() != null)
+      restoredStudy.getPopulations().forEach(p -> p.getDataCollectionEvents().forEach(
+        d -> d.getAttachments().forEach(a -> ensureAttachmentState(a, String
+          .format("/study/%s/population/%s/data-collection-event/%s", restoredStudy.getId(), p.getId(), d.getId())))));
 
     return restoredStudy;
   }

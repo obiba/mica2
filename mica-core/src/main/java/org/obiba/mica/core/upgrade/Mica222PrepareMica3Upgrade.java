@@ -54,11 +54,12 @@ public class Mica222PrepareMica3Upgrade implements UpgradeStep {
   public void execute(Version version) {
     logger.info("Executing Mica upgrade to version 2.2.2. This upgrade is needed before upgrading to version 3");
 
-    try {
-      republishStudies();
-    } catch (RuntimeException e) {
-      logger.error("Error occurred when republishing studies");
-    }
+    // Must not be executed, the migration in Mica223 fix it
+//    try {
+//      republishStudies();
+//    } catch (RuntimeException e) {
+//      logger.error("Error occurred when republishing studies");
+//    }
 
     try {
       republishNetworks();
@@ -79,28 +80,28 @@ public class Mica222PrepareMica3Upgrade implements UpgradeStep {
     }
   }
 
-  private void republishStudies() {
-
-    List<Study> publishedStudies = studyService.findAllPublishedStudies();
-
-    for (Study publishedStudy : publishedStudies) {
-      StudyState studyState = studyService.getEntityState(publishedStudy.getId());
-      if (studyState.getRevisionsAhead() == 0) {
-        studyService.save(publishedStudy);
-        studyService.publish(publishedStudy.getId(), true);
-      } else {
-        Study draftStudy = studyService.findStudy(publishedStudy.getId());
-        studyService.save(publishedStudy);
-        studyService.publish(publishedStudy.getId(), true);
-        studyService.save(draftStudy);
-      }
-    }
-
-    List<String> publishedStudiesIds = publishedStudies.stream().map(AbstractGitPersistable::getId).collect(toList());
-    studyService.findAllDraftStudies().stream()
-      .filter(unknownStateStudy -> !publishedStudiesIds.contains(unknownStateStudy.getId()))
-      .forEach(unpublishedStudy -> studyService.save(unpublishedStudy));
-  }
+//  private void republishStudies() {
+//
+//    List<Study> publishedStudies = studyService.findAllPublishedStudies();
+//
+//    for (Study publishedStudy : publishedStudies) {
+//      StudyState studyState = studyService.getEntityState(publishedStudy.getId());
+//      if (studyState.getRevisionsAhead() == 0) {
+//        studyService.save(publishedStudy);
+//        studyService.publish(publishedStudy.getId(), true);
+//      } else {
+//        Study draftStudy = studyService.findStudy(publishedStudy.getId());
+//        studyService.save(publishedStudy);
+//        studyService.publish(publishedStudy.getId(), true);
+//        studyService.save(draftStudy);
+//      }
+//    }
+//
+//    List<String> publishedStudiesIds = publishedStudies.stream().map(AbstractGitPersistable::getId).collect(toList());
+//    studyService.findAllDraftStudies().stream()
+//      .filter(unknownStateStudy -> !publishedStudiesIds.contains(unknownStateStudy.getId()))
+//      .forEach(unpublishedStudy -> studyService.save(unpublishedStudy));
+//  }
 
   private void republishNetworks() {
     List<Network> publishedNetworks = networkService.findAllPublishedNetworks();
