@@ -57,6 +57,7 @@
     "field": "opal"
     "alias": "opal"
     "static": "true"
+    "hidden": "true"
 - "name": "methods-design"
   "title":
     "en": "Study design"
