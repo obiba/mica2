@@ -266,8 +266,6 @@ class StudySummaryDtos {
       builder = asDtoBuilder(study, studyState.isPublished(), 0);
     }
 
-    builder.setPopulationOrDceWeightChange(((StudyState) studyState).isPopulationOrDceWeightChange());
-
     builder.setPublished(studyState.isPublished());
 
     return builder.setExtension(Mica.EntityStateDto.studySummaryState, stateBuilder.build()).build();
