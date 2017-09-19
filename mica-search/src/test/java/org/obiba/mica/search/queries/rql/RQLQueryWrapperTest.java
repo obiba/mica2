@@ -46,6 +46,20 @@ public class RQLQueryWrapperTest {
   }
 
   @Test
+  public void test_rql_query_terms_contains_default() throws IOException {
+    String rql
+        = "study(contains((toto,tutu)))";
+    RQLQueryWrapper rqlQueryWrapper = new RQLQueryWrapper(rql);
+    assertThat(rqlQueryWrapper.hasQueryBuilder()).isTrue();
+    String expected = "{\n" +
+        "  \"query_string\" : {\n" +
+        "    \"query\" : \"toto AND tutu\"\n" +
+        "  }\n" +
+        "}";
+    assertThat(rqlQueryWrapper.getQueryBuilder().toString()).isEqualTo(expected);
+  }
+
+  @Test
   public void test_rql_query_terms_in() throws IOException {
     String rql
       = "variable(or(in(attributes.Mlstr_area__Lifestyle_behaviours.und,(Phys_act,Tobacco)),in(attributes.Mlstr_area__Diseases.und,Neoplasms)))";

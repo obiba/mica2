@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.google.common.base.Joiner;
 import net.jazdw.rql.parser.ASTNode;
 import net.jazdw.rql.parser.RQLParser;
 import net.jazdw.rql.parser.SimpleASTVisitor;
@@ -320,6 +321,10 @@ public class RQLQueryWrapper implements QueryWrapper {
     }
 
     private QueryBuilder visitContains(ASTNode node) {
+      // if there is only one argument, all the terms of this argument are to be matched on the default fields
+      if (node.getArgumentsSize() == 1) {
+        return QueryBuilders.queryStringQuery(toStringQuery(node.getArgument(0), " AND "));
+      }
       FieldData data = resolveField(node.getArgument(0).toString());
       String field = data.getField();
       Object args = node.getArgument(1);
@@ -430,15 +435,17 @@ public class RQLQueryWrapper implements QueryWrapper {
 
     private QueryBuilder visitMatch(ASTNode node) {
       if(node.getArgumentsSize() == 0) return QueryBuilders.matchAllQuery();
+      String stringQuery = toStringQuery(node.getArgument(0), " OR ");
       // if there is only one argument, the fields to be matched are the default ones
-      // otherwise, the first argument can be the field name or a list of filed names
-      if(node.getArgumentsSize() == 1) return QueryBuilders.queryStringQuery(node.getArgument(0).toString());
-      QueryStringQueryBuilder builder = QueryBuilders.queryStringQuery(node.getArgument(0).toString());
-      if(node.getArgument(1) instanceof ArrayList) {
-        ArrayList<Object> fields = (ArrayList<Object>) node.getArgument(1);
-        fields.stream().map(Object::toString).forEach(f -> builder.field(resolveField(f).getField()));
-      } else {
-        builder.field(resolveField(node.getArgument(1).toString()).getField());
+      // otherwise, the following argument can be the field name or a list of field names
+      QueryStringQueryBuilder builder = QueryBuilders.queryStringQuery(stringQuery);
+      if(node.getArgumentsSize() > 1) {
+        if (node.getArgument(1) instanceof List) {
+          List<Object> fields = (List<Object>) node.getArgument(1);
+          fields.stream().map(Object::toString).forEach(f -> builder.field(resolveField(f).getField()));
+        } else {
+          builder.field(resolveField(node.getArgument(1).toString()).getField());
+        }
       }
       return builder;
     }
@@ -482,6 +489,17 @@ public class RQLQueryWrapper implements QueryWrapper {
             .addAll(vocabulary.getTerms().stream().map(TaxonomyEntity::getName).collect(Collectors.toList()));
         }
       }
+    }
+
+    private String toStringQuery(Object argument, String joiner) {
+      String stringQuery;
+      if(argument instanceof Collection) {
+        Collection<Object> terms = (Collection<Object>) argument;
+        stringQuery = Joiner.on(joiner).join(terms);
+      } else {
+        stringQuery = argument.toString();
+      }
+      return stringQuery;
     }
 
     private boolean isAttributeField(String field) {
