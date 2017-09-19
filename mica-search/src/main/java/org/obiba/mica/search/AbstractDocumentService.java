@@ -10,29 +10,16 @@
 
 package org.obiba.mica.search;
 
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import javax.annotation.Nullable;
-import javax.inject.Inject;
-
+import com.google.common.base.Joiner;
+import com.google.common.base.Splitter;
+import com.google.common.collect.Lists;
 import org.elasticsearch.ElasticsearchException;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.index.IndexNotFoundException;
-import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.IdsQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.index.query.QueryStringQueryBuilder;
+import org.elasticsearch.index.query.*;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.sort.SortBuilders;
@@ -42,10 +29,14 @@ import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.collect.Lists;
-
 import sun.util.locale.LanguageTag;
+
+import javax.annotation.Nullable;
+import javax.inject.Inject;
+import java.io.IOException;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public abstract class AbstractDocumentService<T> implements DocumentService<T> {
 
@@ -142,6 +133,51 @@ public abstract class AbstractDocumentService<T> implements DocumentService<T> {
     });
 
     return documents;
+  }
+
+  @Override
+  public List<String> getDefaultLocalizedFields() {
+    return Lists.newArrayList("acronym", "name");
+  }
+
+  @Override
+  public List<String> suggest(int limit, String locale, String queryString) {
+    List<String> suggestions = Lists.newArrayList();
+    // query default fields separately otherwise we do not know which field has matched and suggestion might not be correct
+    getDefaultLocalizedFields().forEach(df -> suggestions.addAll(suggest(limit, locale, queryString, df)));
+    return suggestions;
+  }
+
+  private List<String> suggest(int limit, String locale, String queryString, String defaultFieldName) {
+    String fieldName = defaultFieldName + "." + locale;
+
+    QueryBuilder queryExec = QueryBuilders.queryStringQuery(queryString)
+        .defaultField(fieldName + ".analyzed")
+        .defaultOperator(QueryStringQueryBuilder.Operator.OR);
+
+    SearchRequestBuilder search = client.prepareSearch() //
+        .setIndices(getIndexName()) //
+        .setTypes(getType()) //
+        .setQuery(queryExec) //
+        .setFrom(0) //
+        .setSize(limit)
+        .addSort(SortBuilders.scoreSort().order(SortOrder.DESC))
+        .setFetchSource(new String[] {fieldName}, null);
+
+    log.debug("Request /{}/{}", getIndexName(), getType());
+    if(log.isTraceEnabled()) log.trace("Request /{}/{}: {}", getIndexName(), getType(), search.toString());
+    SearchResponse response = search.execute().actionGet();
+
+    List<String> names = Lists.newArrayList();
+    response.getHits().forEach(hit -> {
+          String value = ((Map<String, Object>) hit.getSource().get(defaultFieldName)).get(locale).toString().toLowerCase();
+          names.add(Joiner.on(" ").join(Splitter.on(" ").trimResults().splitToList(value).stream()
+              .filter(str -> !str.contains("[") && !str.contains("(") && !str.contains("{") && !str.contains("]") && !str.contains(")") && !str.contains("}"))
+              .map(str -> str.replace(":", "").replace(",", ""))
+              .filter(str -> !str.isEmpty()).collect(Collectors.toList())));
+        }
+    );
+    return names;
   }
 
   @Override
