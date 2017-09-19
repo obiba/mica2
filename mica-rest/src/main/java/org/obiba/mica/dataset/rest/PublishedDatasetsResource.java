@@ -19,6 +19,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 
+import com.google.common.collect.Lists;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.elasticsearch.common.Strings;
 import org.obiba.mica.core.service.PublishedDocumentService;
@@ -65,7 +66,7 @@ public class PublishedDatasetsResource {
   @Path("_suggest")
   @Timed
   public List<String> suggest(@QueryParam("locale") @DefaultValue("en") String locale, @QueryParam("limit") @DefaultValue("10") int limit, @QueryParam("query") String query) {
-    String queryStr = Strings.isNullOrEmpty(query) ? "*" : query;
-    return publishedDatasetService.suggest(limit, locale, queryStr);
+    if (Strings.isNullOrEmpty(query)) return Lists.newArrayList();
+    return publishedDatasetService.suggest(limit, locale, query);
   }
 }
