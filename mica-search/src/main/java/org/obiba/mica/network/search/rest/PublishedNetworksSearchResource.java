@@ -118,7 +118,9 @@ public class PublishedNetworksSearchResource {
   @Path("/_rql")
   @Timed
   public JoinQueryResultDto rqlQuery(@QueryParam("query") String query) throws IOException {
-    return joinQueryExecutor.query(JoinQueryExecutor.QueryType.NETWORK, rqlQueryFactory.makeJoinQuery(query));
+    String queryStr = query;
+    if (Strings.isNullOrEmpty(queryStr)) queryStr = "network(exists(Mica_network.id))";
+    return joinQueryExecutor.query(JoinQueryExecutor.QueryType.NETWORK, rqlQueryFactory.makeJoinQuery(queryStr));
   }
 
   @GET

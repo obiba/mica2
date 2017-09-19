@@ -98,7 +98,9 @@ public class PublishedStudiesSearchResource {
   @Path("/_rql")
   @Timed
   public JoinQueryResultDto rqlQuery(@QueryParam("query") String query) throws IOException {
-    return joinQueryExecutor.query(JoinQueryExecutor.QueryType.STUDY, rqlQueryFactory.makeJoinQuery(query));
+    String queryStr = query;
+    if (Strings.isNullOrEmpty(queryStr)) queryStr = "study(exists(Mica_study.id))";
+    return joinQueryExecutor.query(JoinQueryExecutor.QueryType.STUDY, rqlQueryFactory.makeJoinQuery(queryStr));
   }
 
   @GET

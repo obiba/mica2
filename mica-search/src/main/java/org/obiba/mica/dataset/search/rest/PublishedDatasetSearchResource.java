@@ -146,7 +146,9 @@ public class PublishedDatasetSearchResource {
   @Path("/_rql")
   @Timed
   public MicaSearch.JoinQueryResultDto rqlQuery(@QueryParam("query") String query) throws IOException {
-    return joinQueryExecutor.query(JoinQueryExecutor.QueryType.DATASET, rqlQueryFactory.makeJoinQuery(query));
+    String queryStr = query;
+    if (Strings.isNullOrEmpty(queryStr)) queryStr = "dataset(exists(Mica_dataset.id))";
+    return joinQueryExecutor.query(JoinQueryExecutor.QueryType.DATASET, rqlQueryFactory.makeJoinQuery(queryStr));
   }
 
   @GET
