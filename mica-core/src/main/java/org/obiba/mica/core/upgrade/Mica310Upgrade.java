@@ -19,6 +19,8 @@ import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -93,11 +95,11 @@ public class Mica310Upgrade implements UpgradeStep {
   private boolean containsInvalidData(Study study) {
     return containsInvalidMethodsDesign(study)
       || containsInvalidExistingStudies(study)
-      || !containsMethods(study, "recruitments")
-      || !containsMethods(study, "otherDesign")
-      || !containsMethods(study, "followUpInfo")
-      || !containsMethods(study, "otherRecruitment")
-      || !containsMethods(study, "info");
+      || !containsValidMethods(study, "recruitments")
+      || !containsValidMethods(study, "otherDesign")
+      || !containsValidMethods(study, "followUpInfo")
+      || !containsValidMethods(study, "otherRecruitment")
+      || !containsValidMethods(study, "info");
   }
 
   private boolean containsInvalidMethodsDesign(Study study) {
@@ -110,7 +112,7 @@ public class Mica310Upgrade implements UpgradeStep {
     return false;
   }
 
-  private boolean containsMethods(Study study, String methodsAttribute) {
+  private boolean containsValidMethods(Study study, String methodsAttribute) {
     try {
       return (getModelMethods(study)).get(methodsAttribute) != null;
     } catch (RuntimeException ignore) {
@@ -218,11 +220,11 @@ public class Mica310Upgrade implements UpgradeStep {
   private void addMethodsIfMissing(Study study, List<JSONObject> history, String methodsAttribute) {
 
     try {
-      if (!containsRecruitments(study)) {
-        Optional<Object> optionalMethodsAttributeValue = history.stream()
-          .filter(t -> this.containsMethods(study, methodsAttribute))
+      if (!containsValidMethods(study, methodsAttribute)) {
+        Optional<Map<String, String>> optionalMethodsAttributeValue = history.stream()
+          .filter(studyHistoryAsJson -> this.containsOldMethods(studyHistoryAsJson, methodsAttribute))
           .filter(Objects::nonNull)
-          .map(t -> this.extractMethodsLocalizedString(t, methodsAttribute))
+          .map(studyHistoryAsJson -> this.extractMethodsLocalizedString(studyHistoryAsJson, methodsAttribute))
           .findFirst();
 
         optionalMethodsAttributeValue.ifPresent(
@@ -251,12 +253,29 @@ public class Mica310Upgrade implements UpgradeStep {
     }
   }
 
-  private Object extractMethodsLocalizedString(JSONObject jsonStudy, String methodsAttribute) {
+  private boolean containsOldMethods(JSONObject study, String methodsAttribute) {
     try {
-      return jsonStudy.getJSONObject("methods").get(methodsAttribute);
-    } catch (JSONException ignore) {
-      return null;
+      return extractMethodsLocalizedString(study, methodsAttribute) != null;
+    } catch (RuntimeException ignore) {
     }
+    return false;
+  }
+
+  private Map<String, String> extractMethodsLocalizedString(JSONObject jsonStudy, String methodsAttribute) {
+    try {
+      JSONObject methods = jsonStudy.getJSONObject("methods").getJSONObject(methodsAttribute);
+      if (methods != null && !methods.toString().equals("null")) {
+        HashMap<String, String> localizedFields = new HashMap<>();
+        Iterator localizedFieldKeys = methods.keys();
+        while (localizedFieldKeys.hasNext()) {
+          String key = (String) localizedFieldKeys.next();
+          localizedFields.put(key, methods.getString(key));
+        }
+        return localizedFields;
+      }
+    } catch (JSONException ignore) {
+    }
+    return null;
   }
 
   private String addPopulationAndDataCollectionEventWeightPropertyBasedOnIndex() {
