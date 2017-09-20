@@ -54,9 +54,6 @@ public class Mica223RecoverStudiesDataUpgrade implements UpgradeStep {
 
     for (Study publishedStudy : publishedStudies) {
 
-      if (!containsInvalidData(publishedStudy))
-        continue;
-
       publishedStudy = transformToValidStudy(publishedStudy);
 
       EntityState studyState = studyService.getEntityState(publishedStudy.getId());
@@ -132,7 +129,7 @@ public class Mica223RecoverStudiesDataUpgrade implements UpgradeStep {
   }
 
   private Study transformToValidStudy(Study study) {
-    if (!study.hasModel())
+    if (!containsInvalidData(study) && !study.hasModel())
       return study;
     transformMethodsDesign(study);
     transformExistingStudies(study);
