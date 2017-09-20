@@ -19,6 +19,7 @@
       "integer": "Entier",
       "decimal": "Décimal"
     },
+    "sort-by": "Trier par",
     "search": "Chercher",
     "localized": "Traduit",
     "repeatable": "Répétable",
@@ -100,6 +101,7 @@
       "networks": "Réseaux",
       "studies": "Études",
       "studies-with-variables": "Études individuelles avec des variables",
+      "dashboard-studies-with-variables": "Études avec des variables",
       "study-with-variables": "Étude individuelle avec des variables",
       "harmonization-studies-with-variables": "Études harmonisées avec des variables",
       "harmonization-study-with-variables": "Étude harmonisée avec des variables",
