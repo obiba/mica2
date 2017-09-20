@@ -19,6 +19,7 @@
       "integer": "Integer",
       "decimal": "Decimal"
     },
+    "sort-by": "Sort by",
     "search": "Search",
     "localized": "Localized",
     "repeatable": "Repeatable",
@@ -100,6 +101,7 @@
       "networks": "Networks",
       "studies": "Studies",
       "studies-with-variables": "Individual Studies with Variables",
+      "dashboard-studies-with-variables": "Studies with Variables",
       "study-with-variables": "Individual Study with Variables",
       "harmonization-studies-with-variables": "Harmonization Studies with Variables",
       "harmonization-study-with-variables": "Harmonization Study with Variables",
