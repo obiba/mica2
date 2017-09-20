@@ -76,6 +76,9 @@ public class TaxonomyConfigService {
   }
 
   private Taxonomy findByTargetInternal(TaxonomyTarget target) {
+    // taxonomy of taxonomies is not editable so fall back to the one that comes from the classpath
+    if (TaxonomyTarget.TAXONOMY.equals(target))
+      return defaultTaxonomyTaxonomy;
     String id = target.asId();
     TaxonomyEntityWrapper taxonomyEntityWrapper = taxonomyConfigRepository.findOne(id);
 
