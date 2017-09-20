@@ -90,6 +90,18 @@ public class Mica310Upgrade implements UpgradeStep {
       .filter(this::containsInvalidData)
       .map(this::transformToValidStudy)
       .forEach(collectionStudyService::save);
+
+    removeTaxonomyTaxonomyFromMongo();
+  }
+
+  void removeTaxonomyTaxonomyFromMongo() {
+    try {
+      logger.info("Remove Taxonomy of Taxonomies from DB since it is no longer persisted.");
+      mongoTemplate.execute(db -> db.eval("db.taxonomyEntityWrapper.deleteOne({_id: 'taxonomy'});"));
+    } catch (RuntimeException e) {
+      logger.error("Error occurred when trying to removeTaxonomyTaxonomyFromMongo().", e);
+    }
+
   }
 
   private boolean containsInvalidData(Study study) {
