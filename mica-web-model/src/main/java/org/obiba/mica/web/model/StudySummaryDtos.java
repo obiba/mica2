@@ -180,8 +180,8 @@ class StudySummaryDtos {
       extractStudyNumberOfParticipantsParticipantFromModel(studyModel)
         .ifPresent(numberOfParticipants ->
           builder.setTargetNumber(Mica.TargetNumberDto.newBuilder()
-            .setNumber((Integer) numberOfParticipants.get("number"))
-            .setNoLimit((Boolean) numberOfParticipants.get("noLimit")))
+            .setNumber((Integer) Optional.ofNullable(numberOfParticipants.get("number")).orElse(0))
+            .setNoLimit((Boolean) Optional.ofNullable(numberOfParticipants.get("noLimit")).orElse(false)))
         );
     } catch (NullPointerException | ClassCastException | NoSuchElementException e) {
       logger.debug(String.format("Impossible to extract numberOfParticipant in model [%s]", studyModel), e);
