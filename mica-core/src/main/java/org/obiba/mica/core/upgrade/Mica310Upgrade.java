@@ -68,8 +68,7 @@ public class Mica310Upgrade implements UpgradeStep {
 
     for (Study publishedStudy : publishedStudies) {
 
-      if (containsInvalidData(publishedStudy))
-        publishedStudy = transformToValidStudy(publishedStudy);
+      publishedStudy = transformToValidStudy(publishedStudy);
 
       EntityState studyState = collectionStudyService.getEntityState(publishedStudy.getId());
       if (studyState.getRevisionsAhead() == 0) {
@@ -156,9 +155,11 @@ public class Mica310Upgrade implements UpgradeStep {
   }
 
   private Study transformToValidStudy(Study study) {
-    transformMethodsDesign(study);
-    transformExistingStudies(study);
-    addLostMethods(study);
+    if (containsInvalidData(study)) {
+      transformMethodsDesign(study);
+      transformExistingStudies(study);
+      addLostMethods(study);
+    }
     return study;
   }
 
