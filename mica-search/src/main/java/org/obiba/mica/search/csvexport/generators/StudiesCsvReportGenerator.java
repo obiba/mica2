@@ -145,9 +145,12 @@ public class StudiesCsvReportGenerator extends CsvReportGeneratorImpl {
     line.add(translator.translate("search.study.individual"));
 
     if (mustShow("showStudiesDesignColumn")) {
-      line.add(translator.translate(!Strings.isNullOrEmpty(studySummaryDto.getDesign())
-        ? String.format("study_taxonomy.vocabulary.methods-design.term.%s.title", studySummaryDto.getDesign())
-        : ""));
+      if (Strings.isNullOrEmpty(studySummaryDto.getDesign())) {
+        line.add(NOT_EXISTS);
+      } else {
+        line.add(translator.translate(
+          String.format("study_taxonomy.vocabulary.methods-design.term.%s.title", studySummaryDto.getDesign())));
+      }
     }
 
     if (mustShow("showStudiesQuestionnaireColumn"))
