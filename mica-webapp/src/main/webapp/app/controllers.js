@@ -67,6 +67,13 @@ mica.controller('LanguageController', ['$scope', '$translate', 'amMoment', 'Publ
 
     $scope.publicMicaConfig = PublicMicaConfigResource.get(function (config) {
       $scope.languages = config.languages;
+      // allow switching to languages translated by default
+      ['fr','en'].forEach(function (lang) {
+        if (config.languages.indexOf(lang) === -1) {
+          $scope.languages.unshift(lang);
+        }
+      });
+      $scope.languages.sort();
     });
   }]);
 
