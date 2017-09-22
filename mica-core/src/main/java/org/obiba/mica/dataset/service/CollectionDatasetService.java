@@ -263,18 +263,17 @@ public class CollectionDatasetService extends DatasetService<StudyDataset, Study
       StudyTable studyTable = dataset.getStudyTable();
 
       BaseStudy study = publishedStudyService.findById(dataset.getStudyTable().getStudyId());
-      Population population = study.findPopulation(studyTable.getPopulationId());
-      if (population != null) {
-        studyTable.setPopulationWeight(population.getWeight());
-        DataCollectionEvent dataCollectionEvent = population
-          .findDataCollectionEvent(studyTable.getDataCollectionEventId());
+      if (study != null) {
+        Population population = study.findPopulation(studyTable.getPopulationId());
+        if(population != null) {
+          studyTable.setPopulationWeight(population.getWeight());
+          DataCollectionEvent dataCollectionEvent = population.findDataCollectionEvent(studyTable.getDataCollectionEventId());
 
-        if (dataCollectionEvent != null) {
-          studyTable.setDataCollectionEventWeight(
-            dataCollectionEvent.getWeight());
+          if(dataCollectionEvent != null) {
+            studyTable.setDataCollectionEventWeight(dataCollectionEvent.getWeight());
+          }
         }
       }
-
     }
   }
 
