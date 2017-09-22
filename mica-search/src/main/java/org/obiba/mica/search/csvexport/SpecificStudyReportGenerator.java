@@ -36,7 +36,6 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import static java.util.stream.Collectors.toList;
 
@@ -106,11 +105,13 @@ public class SpecificStudyReportGenerator extends CsvReportGeneratorImpl {
     line.add(tr("report-group.study.study-design"));
     line.add(tr("report-group.study.recruitment-target"));
     line.add(tr("report-group.study.number-of-participants"));
+    line.add(tr("report-group.study.number-of-bio-samples"));
     line.add(tr("report-group.study.population.name"));
     line.add(tr("report-group.study.population.source-of-recruitment"));
     line.add(tr("report-group.study.population.minimum-age"));
     line.add(tr("report-group.study.population.maximum-age"));
     line.add(tr("report-group.study.population.number-of-participants"));
+    line.add(tr("report-group.study.population.number-of-bio-samples"));
     line.add(tr("report-group.study.population.number-of-data-collection-events"));
 
     writer.writeNext(line.toArray(new String[line.size()]));
@@ -198,6 +199,8 @@ public class SpecificStudyReportGenerator extends CsvReportGeneratorImpl {
       .stream().map(m -> tr("study_taxonomy.vocabulary.methods-recruitments.term." + m + ".title")).sorted().collect(toList())));
     line.add(field(() -> ((Map<String, Object>) ((Map<String, Object>)
       study.getModel().get("numberOfParticipants")).get("participant")).get("number").toString()));
+    line.add(field(() -> ((Map<String, Object>) ((Map<String, Object>)
+      study.getModel().get("numberOfParticipants")).get("sample")).get("number").toString()));
 
     return line;
   }
@@ -213,13 +216,11 @@ public class SpecificStudyReportGenerator extends CsvReportGeneratorImpl {
     line.add(field(() -> ((Map<String, Object>) population.getModel().get("selectionCriteria")).get("ageMax").toString()));
     line.add(field(() -> ((Map<String, Object>) ((Map<String, Object>)
       population.getModel().get("numberOfParticipants")).get("participant")).get("number").toString()));
+    line.add(field(() -> ((Map<String, Object>) ((Map<String, Object>)
+      population.getModel().get("numberOfParticipants")).get("sample")).get("number").toString()));
     line.add(field(() -> Integer.toString(population.getDataCollectionEvents().size())));
 
     return line;
-  }
-
-  private List<String> generateEmptyStudyDetails() {
-    return IntStream.range(0, 10).mapToObj(i -> "").collect(toList());
   }
 
   private String calculateYearsOfFollowUp(BaseStudy studySummaryDto) {
