@@ -124,24 +124,19 @@ public class SpecificStudyReportGenerator extends CsvReportGeneratorImpl {
 
       if (publishedStudy != null) {
 
-        List<String> firstLineForThisStudy = generatePublishedStudyDetails(publishedStudy);
+        List<String> publishedStudyDetails = generatePublishedStudyDetails(publishedStudy);
 
         Iterator<Population> populationIterator = publishedStudy.getPopulations().iterator();
 
         if (!populationIterator.hasNext()) {
-          writer.writeNext(firstLineForThisStudy.toArray(new String[firstLineForThisStudy.size()]));
+          writer.writeNext(publishedStudyDetails.toArray(new String[publishedStudyDetails.size()]));
         }
 
-        if (populationIterator.hasNext()) {
-          firstLineForThisStudy.addAll(generatePopulationDetails(populationIterator.next()));
-          writer.writeNext(firstLineForThisStudy.toArray(new String[firstLineForThisStudy.size()]));
-
-          while (populationIterator.hasNext()) {
-            List<String> lineWithoutStudyDetails = generateEmptyStudyDetails();
-            Population next = populationIterator.next();
-            lineWithoutStudyDetails.addAll(generatePopulationDetails(next));
-            writer.writeNext(lineWithoutStudyDetails.toArray(new String[lineWithoutStudyDetails.size()]));
-          }
+        while (populationIterator.hasNext()) {
+          List<String> buildingCompleteLine = new ArrayList<>(publishedStudyDetails);
+          Population next = populationIterator.next();
+          buildingCompleteLine.addAll(generatePopulationDetails(next));
+          writer.writeNext(buildingCompleteLine.toArray(new String[buildingCompleteLine.size()]));
         }
       } else {
 
