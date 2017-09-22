@@ -1701,6 +1701,7 @@
       "study-design": "Conception de l'étude",
       "recruitment-target": "Cible de recrutement",
       "number-of-participants": "Nombre de participants",
+      "number-of-bio-samples": "Nombre de participants avec échantillons biologiques",
       "status": "Statut",
       "type": "Type",
       "type-individual": "Individuelle",
@@ -1711,6 +1712,7 @@
         "minimum-age": "Age minimum",
         "maximum-age": "Age maximum",
         "number-of-participants": "Nombre de participants",
+        "number-of-bio-samples": "Nombre de participants avec échantillons biologiques",
         "number-of-data-collection-events": "Nombre d'événements de collecte de données"
       }
     }

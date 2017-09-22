@@ -1702,6 +1702,7 @@
       "study-design": "Study Design",
       "recruitment-target": "Recruitment Target",
       "number-of-participants": "Number of Participants",
+      "number-of-bio-samples": "Number of Participants with biosamples",
       "status": "Status",
       "type": "Type",
       "type-individual":"Individual",
@@ -1712,6 +1713,7 @@
         "minimum-age": "Minimum Age",
         "maximum-age": "Maximum Age",
         "number-of-participants": "Number of Participants",
+        "number-of-bio-samples": "Number of Participants with biosamples",
         "number-of-data-collection-events": "Number of Data Collection Events"
       }
     }
