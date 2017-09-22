@@ -575,6 +575,8 @@ mica.dataset
             saveAndUpdateDataset();
           };
         }
+
+        $scope.dataset = dataset;
       };
 
       var getViewMode = function() {
@@ -609,7 +611,7 @@ mica.dataset
       };
 
       var fetchDataset = function (datasetId) {
-        $scope.dataset = DatasetResource.get({id: datasetId, type: $scope.type}, initializeDataset);
+        DatasetResource.get({id: datasetId, type: $scope.type}, initializeDataset);
       };
 
       var fetchRevisions = function (datasetId, onSuccess) {
@@ -667,7 +669,7 @@ mica.dataset
       $scope.Mode = {View: 0, Revision: 1, File: 2, Permission: 3, Comment: 4};
       $scope.type = getTypeFromUrl();
       $scope.datasetId = $routeParams.id;
-      $scope.dataset = DatasetResource.get({id: $routeParams.id, type: $scope.type}, initializeDataset);
+      DatasetResource.get({id: $routeParams.id, type: $scope.type}, initializeDataset);
 
       $scope.publish = function (publish) {
         if (publish) {
@@ -676,7 +678,7 @@ mica.dataset
               DatasetPublicationResource.handledPublish(
                 {id: $scope.dataset.id, type: $scope.type, cascading: response.length > 0 ? 'UNDER_REVIEW' : 'NONE'},
                 function () {
-                  $scope.dataset = DatasetResource.get({id: $routeParams.id, type: $scope.type}, initializeDataset);
+                  DatasetResource.get({id: $routeParams.id, type: $scope.type}, initializeDataset);
                 },
                 function (error) {
                   AlertBuilder.newBuilder().trMsg(error.data).build();
@@ -688,14 +690,14 @@ mica.dataset
           );
         } else {
           DatasetPublicationResource.unPublish({id: $scope.dataset.id, type: $scope.type}, function () {
-            $scope.dataset = DatasetResource.get({id: $routeParams.id, type: $scope.type}, initializeDataset);
+            DatasetResource.get({id: $routeParams.id, type: $scope.type}, initializeDataset);
           });
         }
       };
 
       $scope.toStatus = function (value) {
         DraftDatasetStatusResource.toStatus({id: $scope.dataset.id, type:$scope.type, value: value}, function () {
-          $scope.dataset = DatasetResource.get({id: $routeParams.id, type: $scope.type}, initializeDataset);
+          DatasetResource.get({id: $routeParams.id, type: $scope.type}, initializeDataset);
         });
       };
 
