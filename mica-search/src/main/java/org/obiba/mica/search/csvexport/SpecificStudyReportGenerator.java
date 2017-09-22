@@ -36,7 +36,6 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import static java.util.stream.Collectors.toList;
 
@@ -222,10 +221,6 @@ public class SpecificStudyReportGenerator extends CsvReportGeneratorImpl {
     line.add(field(() -> Integer.toString(population.getDataCollectionEvents().size())));
 
     return line;
-  }
-
-  private List<String> generateEmptyStudyDetails() {
-    return IntStream.range(0, 10).mapToObj(i -> "").collect(toList());
   }
 
   private String calculateYearsOfFollowUp(BaseStudy studySummaryDto) {
