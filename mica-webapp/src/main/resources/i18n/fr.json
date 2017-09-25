@@ -63,6 +63,8 @@
     "participant-harmonization-studies": "Études harmonisées incluses",
     "included-individual-studies": "Étude individuelle incluse",
     "included-individual-study": "Études individuelles incluses",
+    "definition": "Définition",
+    "display": "Affichage",
     "messages": {
       "error": {
           "unique-id": "L'ID doit être unique"
@@ -1350,6 +1352,12 @@
       "edit-criterion": "Modifier Critère",
       "name-help": "Nom unique identifiant ce critère de recherche.",
       "repeatable-help": "Rechercher correspondance exacte ou valeur contenue.",
+      "facet": "Facette",
+      "facet-help": "Un critère facette est exposé dans la page de la liste des facettes.",
+      "facet-position": "Position de la facette",
+      "facet-position-help": "Valeur numérique indiquant la position de la facette (zéro apparaît en premier).",
+      "facet-expanded": "Facette ouverte",
+      "facet-expanded-help": "Détermine si la facette est ouverte ou fermée lorsque la page de la liste est chargée.",
       "field-help": "Nom du champ entièrement qualifié dans le modèle de document (si différent du nom).",
       "type-help": "Le type de recherche par facette: sélection de la plage pour un type numérique, entrée ouverte pour un type de texte, etc.",
       "unique-name": "Le nom du critère doit être unique.",
