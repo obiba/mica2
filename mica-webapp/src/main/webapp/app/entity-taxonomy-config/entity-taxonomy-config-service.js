@@ -45,6 +45,39 @@ mica.entityTaxonomyConfig
         return field ? field.value : defaultValue;
       }
 
+      function setAttributeAndRemoveIfNull(attributes, key, value) {
+        if (null === value || "null" === value) {
+          // remove null value
+          var index = attributes.map(function(attribute){
+            return attribute.key;
+          }).indexOf(key);
+
+          if (-1 !== index) {
+            attributes.splice(index, 1);
+          }
+
+        } else {
+          setAttribute(attributes, key, value);
+        }
+      }
+
+      function getIntegerAttribute(content, key, defaultValue) {
+        var value = defaultValue ? defaultValue : null;
+        if (content && content.attributes) {
+          value = getAttribute(content.attributes, key, defaultValue);
+        }
+
+        return parseInt(value);
+      }
+
+      function getBoolAttribute(content, key) {
+        if (content && content.attributes) {
+          return 'true' === getAttribute(content.attributes, key, 'false');
+        }
+
+        return false;
+      }
+
       this.getType = function(content) {
         if (content && content.attributes) {
           return getAttribute(content.attributes, 'type', 'string');
@@ -93,11 +126,7 @@ mica.entityTaxonomyConfig
       };
 
       this.getRange = function(content) {
-        if (content && content.attributes) {
-          return 'true' === getAttribute(content.attributes, 'range', false);
-        }
-
-        return false;
+        return getBoolAttribute(content, 'range');
       };
 
       this.setAlias = function(attributes, content) {
@@ -109,11 +138,31 @@ mica.entityTaxonomyConfig
       };
 
       this.getLocalized = function(content) {
-        if (content && content.attributes) {
-          return 'true' === getAttribute(content.attributes, 'localized', 'false');
-        }
+        return getBoolAttribute(content, 'localized');
+      };
 
-        return false;
+      this.setFacet = function(attributes, facet) {
+        setAttribute(attributes, 'facet', facet+'');
+      };
+
+      this.getFacet = function(content) {
+        return getBoolAttribute(content, 'facet');
+      };
+
+      this.setFacetExpanded = function(attributes, expanded) {
+        setAttribute(attributes, 'facetExpanded', expanded+'');
+      };
+
+      this.getFacetExpanded = function(content) {
+        return getBoolAttribute(content, 'facetExpanded');
+      };
+
+      this.setFacetPosition = function(attributes, position) {
+        setAttributeAndRemoveIfNull(attributes, 'facetPosition', position+'');
+      };
+
+      this.getFacetPosition = function(content) {
+        return getIntegerAttribute(content, 'facetPosition', 0);
       };
 
       this.getTermsSortKeyMap = function(content) {
@@ -135,19 +184,7 @@ mica.entityTaxonomyConfig
       };
 
       this.setTermsSortKey = function(attributes, value) {
-        if (null === value) {
-          // remove null value
-          var index = attributes.map(function(attribute){
-            return attribute.key;
-          }).indexOf('termsSortKey');
-
-          if (-1 !== index) {
-            attributes.splice(index, 1);
-          }
-
-        } else {
-          setAttribute(attributes, 'termsSortKey', value);
-        }
+        setAttributeAndRemoveIfNull(attributes, 'termsSortKey', value);
       };
 
       this.setHidden = function(attributes, localized) {
@@ -155,19 +192,11 @@ mica.entityTaxonomyConfig
       };
 
       this.getHidden = function(content) {
-        if (content && content.attributes) {
-          return 'true' === getAttribute(content.attributes, 'hidden', 'false');
-        }
-
-        return false;
+        return getBoolAttribute(content, 'hidden');
       };
 
       this.isStatic = function(content) {
-        if (content && content.attributes) {
-          return 'true' === getAttribute(content.attributes, 'static', 'false');
-        }
-
-        return false;
+        return getBoolAttribute(content, 'static');
       };
 
       this.getAliases = function(vocabularies, excludeVocabulary) {
@@ -355,6 +384,8 @@ mica.entityTaxonomyConfig
 
       function getVocabularyFormData(content, siblings, onRangeChange) {
         var isStatic = VocabularyAttributeService.isStatic(content);
+        var isFacetted = VocabularyAttributeService.getFacet(content);
+
         var data = {
           schema: {
             'type': 'object',
@@ -418,6 +449,19 @@ mica.entityTaxonomyConfig
                 'title': $filter('translate')('taxonomy-config.criterion-dialog.range-aggregation'),
                 'type': 'boolean',
                 'readonly': isStatic
+              },
+              'facet': {
+                'title': $filter('translate')('taxonomy-config.criterion-dialog.facet'),
+                'type': 'boolean'
+              },
+              'facetPosition': {
+                'title': $filter('translate')('taxonomy-config.criterion-dialog.facet-position'),
+                'type': 'integer',
+                'default': 0
+              },
+              'facetExpanded': {
+                'title': $filter('translate')('taxonomy-config.criterion-dialog.facet-expanded'),
+                'type': 'boolean'
               }
             }
           },
@@ -432,39 +476,76 @@ mica.entityTaxonomyConfig
               'type':'localizedstring',
               'key':'description',
               'showLocales': true,
-              'rows': 10
+              'rows': 5
             },
             {
-              'key': 'repeatable',
-              'description': '<p class="help-block">' + $filter('translate')('taxonomy-config.criterion-dialog.repeatable-help') + '</p>'
-            },
-            {
-              'key': 'hidden',
-              'description': '<p class="help-block">' + $filter('translate')('taxonomy-config.criterion-dialog.hidden-help') + '</p>'
-            },
-            'localized',
-            {
-              'key': 'field',
-              'type':'typeahead',
-              'description': '<p class="help-block">' + $filter('translate')('taxonomy-config.criterion-dialog.field-help') + '</p>'
-            },
-            {
-              'key': 'type',
-              'type': 'select',
-              'titleMap': getTypeMap(),
-              'description': '<p class="help-block">' + $filter('translate')('taxonomy-config.criterion-dialog.type-help') + '</p>'
-            },
-            {
-              'key': 'rangeAggregation',
-              'condition': 'model.type && model.type !== \'string\'',
-              'description': '<p class="help-block">' + $filter('translate')('taxonomy-config.criterion-dialog.range-aggregation-help') + '</p>',
-              'onChange': onRangeChange
-            },
-            {
-              'key': 'termsSortKey',
-              'type': 'select',
-              'titleMap': getTermsSortKeyMap(),
-              'description': '<p class="help-block">' + $filter('translate')('taxonomy-config.criterion-dialog.term-sort-key-help') + '</p>'
+              'type': 'tabs',
+              'htmlClass': 'voffset4',
+              'tabs': [
+                {
+                  'title': $filter('translate')('global.definition'),
+                  'items': [
+                    {
+                      'key': 'type',
+                      'type': 'select',
+                      'titleMap': getTypeMap(),
+                      'description': '<p class="help-block">' + $filter('translate')('taxonomy-config.criterion-dialog.type-help') + '</p>'
+                    },
+                    {
+                      'key': 'repeatable',
+                      'description': '<p class="help-block">' + $filter('translate')('taxonomy-config.criterion-dialog.repeatable-help') + '</p>'
+                    },
+                    'localized',
+                    {
+                      'key': 'field',
+                      'type': 'typeahead',
+                      'description': '<p class="help-block">' + $filter('translate')('taxonomy-config.criterion-dialog.field-help') + '</p>'
+                    },
+                    {
+                      'key': 'rangeAggregation',
+                      'condition': 'model.type && model.type !== \'string\'',
+                      'description': '<p class="help-block">' + $filter('translate')('taxonomy-config.criterion-dialog.range-aggregation-help') + '</p>',
+                      'onChange': onRangeChange
+                    }
+                  ]
+                },
+                {
+                  'title': $filter('translate')('global.display'),
+                  'items': [
+                    {
+                      'key': 'hidden',
+                      'description': '<p class="help-block">' + $filter('translate')('taxonomy-config.criterion-dialog.hidden-help') + '</p>'
+                    },
+                    {
+                      'key': 'termsSortKey',
+                      'type': 'select',
+                      'titleMap': getTermsSortKeyMap(),
+                      'description': '<p class="help-block">' + $filter('translate')('taxonomy-config.criterion-dialog.term-sort-key-help') + '</p>'
+                    },
+                    {
+                      'key': 'facet',
+                      'description': '<p class="help-block">' + $filter('translate')('taxonomy-config.criterion-dialog.facet-help') + '</p>'
+                    },
+                    {
+                      "type": "section",
+                      "htmlClass": "well well-sm no-margin",
+                      "condition": "model.facet",
+                      "items": [
+                        {
+                          'key': 'facetPosition',
+                          'description': '<p class="help-block">' + $filter('translate')('taxonomy-config.criterion-dialog.facet-position-help') + '</p>',
+                          "destroyStrategy": "retain"
+                        },
+                        {
+                          'key': 'facetExpanded',
+                          'description': '<p class="help-block">' + $filter('translate')('taxonomy-config.criterion-dialog.facet-expanded-help') + '</p>',
+                          "destroyStrategy": "retain"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
             }
           ],
           model: {}
@@ -486,6 +567,9 @@ mica.entityTaxonomyConfig
           data.model.repeatable = content.repeatable;
           data.model.hidden = VocabularyAttributeService.getHidden(content);
           data.model.localized = VocabularyAttributeService.getLocalized(content);
+          data.model.facet = VocabularyAttributeService.getFacet(content);
+          data.model.facetPosition = VocabularyAttributeService.getFacetPosition(content);
+          data.model.facetExpanded = VocabularyAttributeService.getFacetExpanded(content);
           data.model.termsSortKey = VocabularyAttributeService.getTermsSortKey(content);
           data.model.rangeAggregation = VocabularyAttributeService.getRange(content);
         }
@@ -642,6 +726,25 @@ mica.entityTaxonomyConfig
 
             if (data.model.hasOwnProperty('localized')) {
               VocabularyAttributeService.setLocalized(model.content.attributes, data.model.localized);
+            }
+
+            if (data.model.hasOwnProperty('facet')) {
+              VocabularyAttributeService.setFacet(model.content.attributes, data.model.facet);
+
+              if (data.model.facet) {
+                if (data.model.hasOwnProperty('facetPosition')) {
+                  VocabularyAttributeService.setFacetPosition(model.content.attributes, data.model.facetPosition);
+                }
+
+                if (data.model.hasOwnProperty('facetExpanded')) {
+                  VocabularyAttributeService.setFacetExpanded(model.content.attributes, data.model.facetExpanded);
+                }
+              } else {
+                // remove face related properties
+                model.content.attributes = model.content.attributes.filter(function(element) {
+                  return ['facetPosition', 'facetExpanded'].indexOf(element.key) === -1;
+                });
+              }
             }
 
             if (data.model.hasOwnProperty('termsSortKey')) {

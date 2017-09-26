@@ -96,6 +96,24 @@
           {{getTermsSortKeyMap(model.content).title}}
         </td>
       </tr>
+      <tr>
+        <th translate>taxonomy-config.criterion-dialog.facet</th>
+        <td translate>
+          {{'global.'+getFacet(model.content) | translate}}
+        </td>
+      </tr>
+      <tr ng-if="getFacet(model.content)">
+        <th translate>taxonomy-config.criterion-dialog.facet-position</th>
+        <td translate>
+          {{getFacetPosition(model.content)}}
+        </td>
+      </tr>
+      <tr ng-if="getFacet(model.content)">
+        <th translate>taxonomy-config.criterion-dialog.facet-expanded</th>
+        <td translate>
+          {{'global.'+getFacetExpanded(model.content) | translate}}
+        </td>
+      </tr>
       </tbody>
     </table>
   </div>
