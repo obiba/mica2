@@ -46,7 +46,7 @@ mica.entityTaxonomyConfig
       }
 
       function setAttributeAndRemoveIfNull(attributes, key, value) {
-        if (null === value || "null" === value) {
+        if (null === value || 'null' === value) {
           // remove null value
           var index = attributes.map(function(attribute){
             return attribute.key;
@@ -384,7 +384,6 @@ mica.entityTaxonomyConfig
 
       function getVocabularyFormData(content, siblings, onRangeChange) {
         var isStatic = VocabularyAttributeService.isStatic(content);
-        var isFacetted = VocabularyAttributeService.getFacet(content);
 
         var data = {
           schema: {
@@ -527,19 +526,19 @@ mica.entityTaxonomyConfig
                       'description': '<p class="help-block">' + $filter('translate')('taxonomy-config.criterion-dialog.facet-help') + '</p>'
                     },
                     {
-                      "type": "section",
-                      "htmlClass": "well well-sm no-margin",
-                      "condition": "model.facet",
-                      "items": [
+                      'type': 'section',
+                      'htmlClass': 'well well-sm no-margin',
+                      'condition': 'model.facet',
+                      'items': [
                         {
                           'key': 'facetPosition',
                           'description': '<p class="help-block">' + $filter('translate')('taxonomy-config.criterion-dialog.facet-position-help') + '</p>',
-                          "destroyStrategy": "retain"
+                          'destroyStrategy': 'retain'
                         },
                         {
                           'key': 'facetExpanded',
                           'description': '<p class="help-block">' + $filter('translate')('taxonomy-config.criterion-dialog.facet-expanded-help') + '</p>',
-                          "destroyStrategy": "retain"
+                          'destroyStrategy': 'retain'
                         }
                       ]
                     }
