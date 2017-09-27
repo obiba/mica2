@@ -12,8 +12,8 @@ import org.obiba.mica.search.queries.rql.JoinRQLQueryWrapper;
 import org.obiba.mica.search.queries.rql.RQLQueryFactory;
 import org.obiba.mica.study.domain.BaseStudy;
 import org.obiba.mica.study.domain.Population;
-import org.obiba.mica.study.service.DraftStudyService;
 import org.obiba.mica.study.service.PublishedStudyService;
+import org.obiba.mica.study.service.StudyService;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.mica.web.model.MicaSearch;
 import org.slf4j.Logger;
@@ -58,7 +58,7 @@ public class SpecificStudyReportGenerator extends CsvReportGeneratorImpl {
   private PublishedStudyService publishedStudyService;
 
   @Inject
-  private DraftStudyService draftStudyService;
+  private StudyService studyService;
 
   @Inject
   private NetworkService networkService;
@@ -67,27 +67,34 @@ public class SpecificStudyReportGenerator extends CsvReportGeneratorImpl {
   private List<String> studyIds;
   private String locale;
 
-  public void report(String networkId, String locale, OutputStream outputStream) throws IOException {
+  public void report(Translator translator, List<String> studyIds, String locale, OutputStream outputStream) {
+    this.translator = translator;
+    this.studyIds = studyIds.stream().sorted().collect(toList());
     this.locale = locale;
-    this.studyIds = networkService.findById(networkId).getStudyIds();
-    this.translator = JsonTranslator.buildSafeTranslator(() -> micaConfigService.getTranslations(locale, false));
     this.write(outputStream);
+  }
+
+  public void report(String networkId, String locale, OutputStream outputStream) throws IOException {
+    List<String> studyIds = networkService.findById(networkId).getStudyIds();
+    Translator translator = JsonTranslator.buildSafeTranslator(() -> micaConfigService.getTranslations(locale, false));
+
+    report(translator, studyIds, locale, outputStream);
   }
 
   public void report(String rqlQuery, OutputStream outputStream) throws IOException {
 
     JoinRQLQueryWrapper joinQueryWrapper = rqlQueryFactory.makeJoinQuery(rqlQuery);
 
-    this.locale = joinQueryWrapper.getLocale();
-    this.studyIds = joinQueryExecutor.query(JoinQueryExecutor.QueryType.STUDY, joinQueryWrapper)
+    List<String> studyIds = joinQueryExecutor.query(JoinQueryExecutor.QueryType.STUDY, joinQueryWrapper)
       .getStudyResultDto()
       .getExtension(MicaSearch.StudyResultDto.result)
       .getSummariesList()
       .stream()
       .map(Mica.StudySummaryDto::getId)
       .collect(toList());
-    this.translator = JsonTranslator.buildSafeTranslator(() -> micaConfigService.getTranslations(locale, false));
-    this.write(outputStream);
+    Translator translator = JsonTranslator.buildSafeTranslator(() -> micaConfigService.getTranslations(joinQueryWrapper.getLocale(), false));
+
+    report(translator, studyIds, joinQueryWrapper.getLocale(), outputStream);
   }
 
   @Override
@@ -141,7 +148,7 @@ public class SpecificStudyReportGenerator extends CsvReportGeneratorImpl {
         }
       } else {
 
-        BaseStudy draftStudy = draftStudyService.findById(studyId);
+        BaseStudy draftStudy = studyService.findStudy(studyId);
         if (draftStudy != null) {
           List<String> lineOfDratStudy = generateDraftStudyDetails(draftStudy);
           writer.writeNext(lineOfDratStudy.toArray(new String[lineOfDratStudy.size()]));
