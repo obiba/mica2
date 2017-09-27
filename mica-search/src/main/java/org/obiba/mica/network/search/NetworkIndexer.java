@@ -19,7 +19,7 @@ import org.obiba.mica.network.event.NetworkPublishedEvent;
 import org.obiba.mica.network.event.NetworkUnpublishedEvent;
 import org.obiba.mica.network.event.NetworkUpdatedEvent;
 import org.obiba.mica.network.service.NetworkService;
-import org.obiba.mica.search.ElasticSearchIndexer;
+import org.obiba.mica.spi.search.Indexer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
@@ -44,35 +44,35 @@ public class NetworkIndexer {
   private NetworkService networkService;
 
   @Inject
-  private ElasticSearchIndexer elasticSearchIndexer;
+  private Indexer indexer;
 
   @Async
   @Subscribe
   public void networkUpdated(NetworkUpdatedEvent event) {
     log.info("Network {} was updated", event.getPersistable());
-    elasticSearchIndexer.index(DRAFT_NETWORK_INDEX, event.getPersistable());
+    indexer.index(DRAFT_NETWORK_INDEX, event.getPersistable());
   }
 
   @Async
   @Subscribe
   public void networkPublished(NetworkPublishedEvent event) {
     log.info("Network {} was published", event.getPersistable());
-    elasticSearchIndexer.index(PUBLISHED_NETWORK_INDEX, event.getPersistable());
+    indexer.index(PUBLISHED_NETWORK_INDEX, event.getPersistable());
   }
 
   @Async
   @Subscribe
   public void networkPublished(NetworkUnpublishedEvent event) {
     log.info("Network {} was unpublished", event.getPersistable());
-    elasticSearchIndexer.delete(PUBLISHED_NETWORK_INDEX, event.getPersistable());
+    indexer.delete(PUBLISHED_NETWORK_INDEX, event.getPersistable());
   }
 
   @Async
   @Subscribe
   public void networkDeleted(NetworkDeletedEvent event) {
     log.info("Network {} was deleted", event.getPersistable());
-    elasticSearchIndexer.delete(DRAFT_NETWORK_INDEX, event.getPersistable());
-    elasticSearchIndexer.delete(PUBLISHED_NETWORK_INDEX, event.getPersistable());
+    indexer.delete(DRAFT_NETWORK_INDEX, event.getPersistable());
+    indexer.delete(PUBLISHED_NETWORK_INDEX, event.getPersistable());
   }
 
   @Async
@@ -84,6 +84,6 @@ public class NetworkIndexer {
   }
 
   private void reIndexAll(String indexName, Iterable<Network> networks) {
-    elasticSearchIndexer.reindexAll(indexName, networks);
+    indexer.reindexAll(indexName, networks);
   }
 }

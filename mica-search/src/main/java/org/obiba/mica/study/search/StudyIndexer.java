@@ -12,9 +12,9 @@ package org.obiba.mica.study.search;
 
 import javax.inject.Inject;
 
-import org.obiba.mica.core.domain.Indexable;
+import org.obiba.mica.spi.search.Indexable;
 import org.obiba.mica.dataset.service.CollectionDatasetService;
-import org.obiba.mica.search.ElasticSearchIndexer;
+import org.obiba.mica.spi.search.Indexer;
 import org.obiba.mica.study.domain.BaseStudy;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.event.DraftStudyUpdatedEvent;
@@ -46,7 +46,7 @@ public class StudyIndexer {
   public static final String DEFAULT_SORT_FIELD  = "name";
 
   @Inject
-  private ElasticSearchIndexer elasticSearchIndexer;
+  private Indexer indexer;
 
   @Inject
   private StudyService studyService;
@@ -58,14 +58,14 @@ public class StudyIndexer {
   @Subscribe
   public void studyUpdated(DraftStudyUpdatedEvent event) {
     log.info("Study {} was updated", event.getPersistable());
-    elasticSearchIndexer.index(DRAFT_STUDY_INDEX, (Indexable)event.getPersistable());
+    indexer.index(DRAFT_STUDY_INDEX, (Indexable)event.getPersistable());
   }
 
   @Async
   @Subscribe
   public void studyPublished(StudyPublishedEvent event) {
     log.info("Study {} was published", event.getPersistable());
-    elasticSearchIndexer.index(PUBLISHED_STUDY_INDEX, (Indexable) event.getPersistable());
+    indexer.index(PUBLISHED_STUDY_INDEX, (Indexable) event.getPersistable());
 
     if (event.getPersistable() instanceof Study) {
       log.info("Call indexAllDatasetsForStudyIdIfPopulationOrDceWeightChanged for Study {}", event.getPersistable());
@@ -77,16 +77,16 @@ public class StudyIndexer {
   @Subscribe
   public void studyUnpublished(StudyUnpublishedEvent event) {
     log.info("Study {} was unpublished", event.getPersistable());
-    elasticSearchIndexer.delete(PUBLISHED_STUDY_INDEX, (Indexable)event.getPersistable());
-    elasticSearchIndexer.index(DRAFT_STUDY_INDEX, (Indexable)event.getPersistable());
+    indexer.delete(PUBLISHED_STUDY_INDEX, (Indexable)event.getPersistable());
+    indexer.index(DRAFT_STUDY_INDEX, (Indexable)event.getPersistable());
   }
 
   @Async
   @Subscribe
   public void studyDeleted(StudyDeletedEvent event) {
     log.info("Study {} was deleted", event.getPersistable());
-    elasticSearchIndexer.delete(DRAFT_STUDY_INDEX, (Indexable)event.getPersistable());
-    elasticSearchIndexer.delete(PUBLISHED_STUDY_INDEX, (Indexable)event.getPersistable());
+    indexer.delete(DRAFT_STUDY_INDEX, (Indexable)event.getPersistable());
+    indexer.delete(PUBLISHED_STUDY_INDEX, (Indexable)event.getPersistable());
   }
 
   @Async
@@ -105,6 +105,6 @@ public class StudyIndexer {
   }
 
   private void reIndexAll(String indexName, Iterable<BaseStudy> studies) {
-    elasticSearchIndexer.reIndexAllIndexables(indexName, studies);
+    indexer.reIndexAllIndexables(indexName, studies);
   }
 }

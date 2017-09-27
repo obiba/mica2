@@ -15,17 +15,15 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.dataset.event.DatasetDeletedEvent;
 import org.obiba.mica.dataset.event.DatasetPublishedEvent;
 import org.obiba.mica.dataset.event.DatasetUnpublishedEvent;
-import org.obiba.mica.dataset.event.DatasetUpdatedEvent;
 import org.obiba.mica.dataset.service.CollectionDatasetService;
-import org.obiba.mica.search.ElasticSearchIndexer;
+import org.obiba.mica.spi.search.Indexer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
@@ -53,7 +51,7 @@ public class VariableIndexer {
   public static final String[] LOCALIZED_ANALYZED_FIELDS = { "label", "description" };
 
   @Inject
-  private ElasticSearchIndexer elasticSearchIndexer;
+  private Indexer indexer;
 
   @Inject
   private CollectionDatasetService collectionDatasetService;
@@ -100,22 +98,22 @@ public class VariableIndexer {
 
   // legacy index, cleanup
   private void clearDraftVariablesIndex() {
-    if(elasticSearchIndexer.hasIndex(VariableIndexer.DRAFT_VARIABLE_INDEX)) elasticSearchIndexer.dropIndex(VariableIndexer.DRAFT_VARIABLE_INDEX);
+    if(indexer.hasIndex(VariableIndexer.DRAFT_VARIABLE_INDEX)) indexer.dropIndex(VariableIndexer.DRAFT_VARIABLE_INDEX);
   }
 
   private void indexDatasetVariables(String indexName, Iterable<DatasetVariable> variables) {
-    elasticSearchIndexer.indexAllIndexables(indexName, variables);
+    indexer.indexAllIndexables(indexName, variables);
   }
 
   protected void indexHarmonizedVariables(String indexName, Map<String, List<DatasetVariable>> harmonizationVariables) {
     harmonizationVariables.keySet().forEach(
-      parentId -> elasticSearchIndexer.indexAllIndexables(indexName, harmonizationVariables.get(parentId), parentId));
+      parentId -> indexer.indexAllIndexables(indexName, harmonizationVariables.get(parentId), parentId));
   }
 
   private void deleteDatasetVariables(String indexName, Dataset dataset) {
     // remove variables that have this dataset as parent
-    QueryBuilder query = QueryBuilders.termQuery("datasetId", dataset.getId());
-    elasticSearchIndexer.delete(indexName, HARMONIZED_VARIABLE_TYPE, query);
-    elasticSearchIndexer.delete(indexName, VARIABLE_TYPE, query);
+    Map.Entry<String, String> termQuery = ImmutablePair.of("datasetId", dataset.getId());
+    indexer.delete(indexName, HARMONIZED_VARIABLE_TYPE, termQuery);
+    indexer.delete(indexName, VARIABLE_TYPE, termQuery);
   }
 }

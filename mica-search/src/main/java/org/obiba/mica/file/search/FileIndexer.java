@@ -20,7 +20,7 @@ import org.obiba.mica.file.event.FilePublishedEvent;
 import org.obiba.mica.file.event.FileUnPublishedEvent;
 import org.obiba.mica.file.event.FileUpdatedEvent;
 import org.obiba.mica.file.event.IndexFilesEvent;
-import org.obiba.mica.search.ElasticSearchIndexer;
+import org.obiba.mica.spi.search.Indexer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -43,7 +43,7 @@ public class FileIndexer {
   public static final String ATTACHMENT_TYPE = "AttachmentState";
 
   @Inject
-  private ElasticSearchIndexer elasticSearchIndexer;
+  private Indexer indexer;
 
   @Inject
   private AttachmentStateRepository attachmentStateRepository;
@@ -53,8 +53,8 @@ public class FileIndexer {
   public void onFilePublished(FilePublishedEvent event) {
     log.debug("File {} was published", event.getPersistable());
     if (FileUtils.isDirectory(event.getPersistable())) return;
-    elasticSearchIndexer.index(ATTACHMENT_DRAFT_INDEX, event.getPersistable());
-    elasticSearchIndexer.index(ATTACHMENT_PUBLISHED_INDEX, event.getPersistable());
+    indexer.index(ATTACHMENT_DRAFT_INDEX, event.getPersistable());
+    indexer.index(ATTACHMENT_PUBLISHED_INDEX, event.getPersistable());
   }
 
   @Async
@@ -62,8 +62,8 @@ public class FileIndexer {
   public void onFileUnPublished(FileUnPublishedEvent event) {
     log.debug("File {} was unpublished", event.getPersistable());
     if (FileUtils.isDirectory(event.getPersistable())) return;
-    elasticSearchIndexer.index(ATTACHMENT_DRAFT_INDEX, event.getPersistable());
-    elasticSearchIndexer.delete(ATTACHMENT_PUBLISHED_INDEX, event.getPersistable());
+    indexer.index(ATTACHMENT_DRAFT_INDEX, event.getPersistable());
+    indexer.delete(ATTACHMENT_PUBLISHED_INDEX, event.getPersistable());
   }
 
   @Async
@@ -71,8 +71,8 @@ public class FileIndexer {
   public void onFileDeleted(FileDeletedEvent event) {
     log.debug("File {} was deleted", event.getPersistable());
     if (FileUtils.isDirectory(event.getPersistable())) return;
-    elasticSearchIndexer.delete(ATTACHMENT_DRAFT_INDEX, event.getPersistable());
-    elasticSearchIndexer.delete(ATTACHMENT_PUBLISHED_INDEX, event.getPersistable());
+    indexer.delete(ATTACHMENT_DRAFT_INDEX, event.getPersistable());
+    indexer.delete(ATTACHMENT_PUBLISHED_INDEX, event.getPersistable());
   }
 
   @Async
@@ -80,14 +80,14 @@ public class FileIndexer {
   public void onFileUpdated(FileUpdatedEvent event) {
     log.debug("File {} was updated", event.getPersistable());
     if (FileUtils.isDirectory(event.getPersistable())) return;
-    elasticSearchIndexer.index(ATTACHMENT_DRAFT_INDEX, event.getPersistable());
+    indexer.index(ATTACHMENT_DRAFT_INDEX, event.getPersistable());
   }
 
   @Async
   @Subscribe
   public void reIndexAll(IndexFilesEvent event) {
-    if(elasticSearchIndexer.hasIndex(ATTACHMENT_DRAFT_INDEX)) elasticSearchIndexer.dropIndex(ATTACHMENT_DRAFT_INDEX);
-    if(elasticSearchIndexer.hasIndex(ATTACHMENT_PUBLISHED_INDEX)) elasticSearchIndexer.dropIndex(ATTACHMENT_PUBLISHED_INDEX);
+    if(indexer.hasIndex(ATTACHMENT_DRAFT_INDEX)) indexer.dropIndex(ATTACHMENT_DRAFT_INDEX);
+    if(indexer.hasIndex(ATTACHMENT_PUBLISHED_INDEX)) indexer.dropIndex(ATTACHMENT_PUBLISHED_INDEX);
 
     Pageable pageRequest = new PageRequest(0, 100);
     Page<AttachmentState> attachments;
@@ -97,10 +97,10 @@ public class FileIndexer {
       attachments.forEach(a -> {
         if (FileUtils.isDirectory(a)) return;
 
-        elasticSearchIndexer.index(ATTACHMENT_DRAFT_INDEX, a);
+        indexer.index(ATTACHMENT_DRAFT_INDEX, a);
 
         if(a.getPublishedAttachment() != null) {
-          elasticSearchIndexer.index(ATTACHMENT_PUBLISHED_INDEX, a);
+          indexer.index(ATTACHMENT_PUBLISHED_INDEX, a);
         }
       });
     } while((pageRequest = attachments.nextPageable()) != null);

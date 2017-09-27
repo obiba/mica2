@@ -10,6 +10,7 @@
 
 package org.obiba.mica.search;
 
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
@@ -31,8 +32,10 @@ import org.elasticsearch.client.Client;
 import org.elasticsearch.client.IndicesAdminClient;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
-import org.obiba.mica.core.domain.Indexable;
+import org.obiba.mica.spi.search.Indexable;
+import org.obiba.mica.spi.search.Indexer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Persistable;
@@ -42,7 +45,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Component
-public class ElasticSearchIndexer {
+public class ElasticSearchIndexer implements Indexer {
 
   private static final Logger log = LoggerFactory.getLogger(ElasticSearchIndexer.class);
 
@@ -60,48 +63,52 @@ public class ElasticSearchIndexer {
   @Inject
   private Set<IndexConfigurationListener> indexConfigurationListeners;
 
-  public IndexResponse index(String indexName, Persistable<String> persistable) {
-    return index(indexName, persistable, null);
+  @Override
+  public void index(String indexName, Persistable<String> persistable) {
+    index(indexName, persistable, null);
   }
 
-  public IndexResponse index(String indexName, Persistable<String> persistable, Persistable<String> parent) {
-
+  @Override
+  public void index(String indexName, Persistable<String> persistable, Persistable<String> parent) {
     log.debug("Indexing for indexName [{}] indexableObject [{}]", indexName, persistable);
-
     createIndexIfNeeded(indexName);
     String parentId = parent == null ? null : parent.getId();
-    return getIndexRequestBuilder(indexName, persistable).setSource(toJson(persistable)).setParent(parentId).execute()
+    getIndexRequestBuilder(indexName, persistable).setSource(toJson(persistable)).setParent(parentId).execute()
       .actionGet();
   }
 
-  public IndexResponse index(String indexName, Indexable indexable) {
-    return index(indexName, indexable, null);
+  @Override
+  public void index(String indexName, Indexable indexable) {
+    index(indexName, indexable, null);
   }
 
-  public IndexResponse index(String indexName, Indexable indexable, Indexable parent) {
-
+  @Override
+  public void index(String indexName, Indexable indexable, Indexable parent) {
     log.debug("Indexing for indexName [{}] indexableObject [{}]", indexName, indexable);
-
     createIndexIfNeeded(indexName);
     String parentId = parent == null ? null : parent.getId();
-    return getIndexRequestBuilder(indexName, indexable).setSource(toJson(indexable)).setParent(parentId).execute()
+    getIndexRequestBuilder(indexName, indexable).setSource(toJson(indexable)).setParent(parentId).execute()
       .actionGet();
   }
 
+  @Override
   synchronized public void reIndexAllIndexables(String indexName, Iterable<? extends Indexable> persistables) {
     if(hasIndex(indexName)) dropIndex(indexName);
     indexAllIndexables(indexName, persistables, null);
   }
 
+  @Override
   synchronized public void reindexAll(String indexName, Iterable<? extends Persistable<String>> persistables) {
     if(hasIndex(indexName)) dropIndex(indexName);
     indexAll(indexName, persistables, null);
   }
 
+  @Override
   public void indexAll(String indexName, Iterable<? extends Persistable<String>> persistables) {
     indexAll(indexName, persistables, null);
   }
 
+  @Override
   public void indexAll(String indexName, Iterable<? extends Persistable<String>> persistables,
     Persistable<String> parent) {
 
@@ -116,10 +123,12 @@ public class ElasticSearchIndexer {
     if (bulkRequest.numberOfActions() > 0) bulkRequest.execute().actionGet();
   }
 
+  @Override
   public void indexAllIndexables(String indexName, Iterable<? extends Indexable> indexables) {
     indexAllIndexables(indexName, indexables, null);
   }
 
+  @Override
   public void indexAllIndexables(String indexName, Iterable<? extends Indexable> indexables, @Nullable String parentId) {
 
     log.debug("Indexing all indexables for indexName [{}] persistableObjectNumber [{}]", indexName, Iterables.size(indexables));
@@ -132,28 +141,22 @@ public class ElasticSearchIndexer {
     if(bulkRequest.numberOfActions() > 0) bulkRequest.execute().actionGet();
   }
 
-  private String toJson(Object obj) {
-    try {
-      return objectMapper.writeValueAsString(obj);
-    } catch(JsonProcessingException e) {
-      throw new RuntimeException("Cannot serialize " + obj + " to ElasticSearch", e);
-    }
-  }
-
-  public DeleteResponse delete(String indexName, Persistable<String> persistable) {
+  @Override
+  public void delete(String indexName, Persistable<String> persistable) {
     createIndexIfNeeded(indexName);
-    return client.prepareDelete(indexName, persistable.getClass().getSimpleName(), persistable.getId()).execute()
+    client.prepareDelete(indexName, persistable.getClass().getSimpleName(), persistable.getId()).execute()
       .actionGet();
   }
 
-  public DeleteResponse delete(String indexName, Indexable indexable) {
+  @Override
+  public void delete(String indexName, Indexable indexable) {
     createIndexIfNeeded(indexName);
-    return client.prepareDelete(indexName, getType(indexable), indexable.getId()).execute().actionGet();
+    client.prepareDelete(indexName, getType(indexable), indexable.getId()).execute().actionGet();
   }
 
-  public ActionResponse delete(String indexName, String[] types, QueryBuilder query) {
-    ActionResponse lastResponse = null;
-
+  @Override
+  public void delete(String indexName, String[] types, Map.Entry<String, String> termQuery) {
+    QueryBuilder query = QueryBuilders.termQuery(termQuery.getKey(), termQuery.getValue());
     if (types != null) {
       createIndexIfNeeded(indexName);
 
@@ -181,34 +184,39 @@ public class ElasticSearchIndexer {
       }
 
       try {
-        lastResponse = bulkRequest.execute().get();
+        bulkRequest.execute().get();
       } catch (InterruptedException | ExecutionException e) {
         //
       }
     }
-
-    return lastResponse;
   }
 
-  public ActionResponse delete(String indexName, String type, QueryBuilder query) {
-    return delete(indexName, type != null ? new String[] {type} : null, query);
+  @Override
+  public void delete(String indexName, String type, Map.Entry<String, String> termQuery) {
+    delete(indexName, type != null ? new String[] {type} : null, termQuery);
   }
 
+  @Override
   public boolean hasIndex(String indexName) {
     return client.admin().indices().exists(new IndicesExistsRequest(indexName)).actionGet().isExists();
   }
 
-  public DeleteIndexResponse dropIndex(String indexName) {
-    return client.admin().indices().prepareDelete(indexName).execute().actionGet();
-  }
-
-  public Client getClient() {
-    return client;
+  @Override
+  public void dropIndex(String indexName) {
+    client.admin().indices().prepareDelete(indexName).execute().actionGet();
   }
 
   //
   // Private methods
   //
+
+  private String toJson(Object obj) {
+    try {
+      return objectMapper.writeValueAsString(obj);
+    } catch(JsonProcessingException e) {
+      throw new RuntimeException("Cannot serialize " + obj + " to ElasticSearch", e);
+    }
+  }
 
   private IndexRequestBuilder getIndexRequestBuilder(String indexName, Persistable<String> persistable) {
     return client.prepareIndex(indexName, persistable.getClass().getSimpleName(), persistable.getId());

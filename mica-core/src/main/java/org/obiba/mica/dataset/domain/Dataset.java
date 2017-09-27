@@ -18,7 +18,7 @@ import org.obiba.mica.core.domain.AbstractModelAware;
 import org.obiba.mica.core.domain.Attribute;
 import org.obiba.mica.core.domain.AttributeAware;
 import org.obiba.mica.core.domain.Attributes;
-import org.obiba.mica.core.domain.Indexable;
+import org.obiba.mica.spi.search.Indexable;
 import org.obiba.mica.core.domain.LocalizedString;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;

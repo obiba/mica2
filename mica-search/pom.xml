@@ -28,6 +28,10 @@
     </dependency>
     <dependency>
       <groupId>org.obiba.mica</groupId>
+      <artifactId>mica-spi</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.obiba.mica</groupId>
       <artifactId>mica-web-model</artifactId>
     </dependency>
     <dependency>

@@ -13,7 +13,7 @@ package org.obiba.mica.dataset.search;
 import javax.inject.Inject;
 
 import org.obiba.mica.dataset.domain.Dataset;
-import org.obiba.mica.core.domain.Indexable;
+import org.obiba.mica.spi.search.Indexable;
 import org.obiba.mica.dataset.event.DatasetDeletedEvent;
 import org.obiba.mica.dataset.event.DatasetPublishedEvent;
 import org.obiba.mica.dataset.event.DatasetUnpublishedEvent;
@@ -21,7 +21,7 @@ import org.obiba.mica.dataset.event.DatasetUpdatedEvent;
 import org.obiba.mica.dataset.event.IndexDatasetsEvent;
 import org.obiba.mica.dataset.service.HarmonizationDatasetService;
 import org.obiba.mica.dataset.service.CollectionDatasetService;
-import org.obiba.mica.search.ElasticSearchIndexer;
+import org.obiba.mica.spi.search.Indexer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
@@ -43,7 +43,7 @@ public class DatasetIndexer {
   public static final String[] LOCALIZED_ANALYZED_FIELDS = { "acronym", "name", "description" };
 
   @Inject
-  protected ElasticSearchIndexer elasticSearchIndexer;
+  private Indexer indexer;
 
   @Inject
   private HarmonizationDatasetService harmonizationDatasetService;
@@ -55,39 +55,39 @@ public class DatasetIndexer {
   @Subscribe
   public void datasetUpdated(DatasetUpdatedEvent event) {
     log.debug("{} {} was updated", event.getPersistable().getClass().getSimpleName(), event.getPersistable());
-    elasticSearchIndexer.index(DRAFT_DATASET_INDEX, (Indexable) event.getPersistable());
+    indexer.index(DRAFT_DATASET_INDEX, (Indexable) event.getPersistable());
   }
 
   @Async
   @Subscribe
   public void datasetDeleted(DatasetDeletedEvent event) {
     log.debug("{} {} was deleted", event.getPersistable().getClass().getSimpleName(), event.getPersistable());
-    elasticSearchIndexer.delete(DRAFT_DATASET_INDEX, (Indexable) event.getPersistable());
-    elasticSearchIndexer.delete(PUBLISHED_DATASET_INDEX, (Indexable) event.getPersistable());
+    indexer.delete(DRAFT_DATASET_INDEX, (Indexable) event.getPersistable());
+    indexer.delete(PUBLISHED_DATASET_INDEX, (Indexable) event.getPersistable());
   }
 
   @Async
   @Subscribe
   public void datasetPublished(DatasetPublishedEvent event) {
     log.debug("{} {} was published", event.getPersistable().getClass().getSimpleName(), event.getPersistable());
-    elasticSearchIndexer.index(PUBLISHED_DATASET_INDEX, (Indexable) event.getPersistable());
+    indexer.index(PUBLISHED_DATASET_INDEX, (Indexable) event.getPersistable());
   }
 
   @Async
   @Subscribe
   public void datasetUnpublished(DatasetUnpublishedEvent event) {
     log.debug("{} {} was unpublished", event.getPersistable().getClass().getSimpleName(), event.getPersistable());
-    elasticSearchIndexer.delete(PUBLISHED_DATASET_INDEX, (Indexable) event.getPersistable());
+    indexer.delete(PUBLISHED_DATASET_INDEX, (Indexable) event.getPersistable());
   }
 
   @Async
   @Subscribe
   synchronized public void reIndexAll(IndexDatasetsEvent event) {
-    if(elasticSearchIndexer.hasIndex(PUBLISHED_DATASET_INDEX)) elasticSearchIndexer.dropIndex(PUBLISHED_DATASET_INDEX);
-    if(elasticSearchIndexer.hasIndex(DRAFT_DATASET_INDEX)) elasticSearchIndexer.dropIndex(DRAFT_DATASET_INDEX);
+    if(indexer.hasIndex(PUBLISHED_DATASET_INDEX)) indexer.dropIndex(PUBLISHED_DATASET_INDEX);
+    if(indexer.hasIndex(DRAFT_DATASET_INDEX)) indexer.dropIndex(DRAFT_DATASET_INDEX);
 
-    if(elasticSearchIndexer.hasIndex(VariableIndexer.DRAFT_VARIABLE_INDEX)) elasticSearchIndexer.dropIndex(VariableIndexer.DRAFT_VARIABLE_INDEX);
-    if(elasticSearchIndexer.hasIndex(VariableIndexer.PUBLISHED_VARIABLE_INDEX)) elasticSearchIndexer.dropIndex(VariableIndexer.PUBLISHED_VARIABLE_INDEX);
+    if(indexer.hasIndex(VariableIndexer.DRAFT_VARIABLE_INDEX)) indexer.dropIndex(VariableIndexer.DRAFT_VARIABLE_INDEX);
+    if(indexer.hasIndex(VariableIndexer.PUBLISHED_VARIABLE_INDEX)) indexer.dropIndex(VariableIndexer.PUBLISHED_VARIABLE_INDEX);
 
     harmonizationDatasetService.indexAll();
     collectionDatasetService.indexAll();

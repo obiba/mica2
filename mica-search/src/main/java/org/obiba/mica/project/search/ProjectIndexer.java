@@ -12,7 +12,7 @@ package org.obiba.mica.project.search;
 
 import javax.inject.Inject;
 
-import org.obiba.mica.core.domain.Indexable;
+import org.obiba.mica.spi.search.Indexable;
 import org.obiba.mica.project.domain.Project;
 import org.obiba.mica.project.event.IndexProjectsEvent;
 import org.obiba.mica.project.event.ProjectDeletedEvent;
@@ -20,7 +20,7 @@ import org.obiba.mica.project.event.ProjectPublishedEvent;
 import org.obiba.mica.project.event.ProjectUnpublishedEvent;
 import org.obiba.mica.project.event.ProjectUpdatedEvent;
 import org.obiba.mica.project.service.ProjectService;
-import org.obiba.mica.search.ElasticSearchIndexer;
+import org.obiba.mica.spi.search.Indexer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
@@ -45,35 +45,35 @@ public class ProjectIndexer {
   private ProjectService projectService;
 
   @Inject
-  private ElasticSearchIndexer elasticSearchIndexer;
+  private Indexer indexer;
 
   @Async
   @Subscribe
   public void networkUpdated(ProjectUpdatedEvent event) {
     log.info("Project {} was updated", (Indexable) event.getPersistable());
-    elasticSearchIndexer.index(DRAFT_PROJECT_INDEX, (Indexable) event.getPersistable());
+    indexer.index(DRAFT_PROJECT_INDEX, (Indexable) event.getPersistable());
   }
 
   @Async
   @Subscribe
   public void networkPublished(ProjectPublishedEvent event) {
     log.info("Project {} was published", (Indexable) event.getPersistable());
-    elasticSearchIndexer.index(PUBLISHED_PROJECT_INDEX, (Indexable) event.getPersistable());
+    indexer.index(PUBLISHED_PROJECT_INDEX, (Indexable) event.getPersistable());
   }
 
   @Async
   @Subscribe
   public void networkPublished(ProjectUnpublishedEvent event) {
     log.info("Project {} was unpublished", (Indexable) event.getPersistable());
-    elasticSearchIndexer.delete(PUBLISHED_PROJECT_INDEX, (Indexable) event.getPersistable());
+    indexer.delete(PUBLISHED_PROJECT_INDEX, (Indexable) event.getPersistable());
   }
 
   @Async
   @Subscribe
   public void networkDeleted(ProjectDeletedEvent event) {
     log.info("Project {} was deleted", (Indexable) event.getPersistable());
-    elasticSearchIndexer.delete(DRAFT_PROJECT_INDEX, (Indexable) event.getPersistable());
-    elasticSearchIndexer.delete(PUBLISHED_PROJECT_INDEX, (Indexable) event.getPersistable());
+    indexer.delete(DRAFT_PROJECT_INDEX, (Indexable) event.getPersistable());
+    indexer.delete(PUBLISHED_PROJECT_INDEX, (Indexable) event.getPersistable());
   }
 
   @Async
@@ -85,6 +85,6 @@ public class ProjectIndexer {
   }
 
   private void reIndexAll(String indexName, Iterable<Project> projects) {
-    elasticSearchIndexer.reIndexAllIndexables(indexName, projects);
+    indexer.reIndexAllIndexables(indexName, projects);
   }
 }

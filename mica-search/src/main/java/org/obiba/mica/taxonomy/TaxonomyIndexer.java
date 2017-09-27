@@ -11,16 +11,16 @@
 package org.obiba.mica.taxonomy;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
-import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.obiba.mica.core.domain.TaxonomyTarget;
 import org.obiba.mica.micaConfig.event.TaxonomiesUpdatedEvent;
 import org.obiba.mica.micaConfig.service.TaxonomyService;
-import org.obiba.mica.search.ElasticSearchIndexer;
+import org.obiba.mica.spi.search.Indexer;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,7 +50,7 @@ public class TaxonomyIndexer {
   private TaxonomyService taxonomyService;
 
   @Inject
-  private ElasticSearchIndexer elasticSearchIndexer;
+  private Indexer indexer;
 
   @Async
   @Subscribe
@@ -58,7 +58,7 @@ public class TaxonomyIndexer {
     // reindex all taxonomies if target is TAXONOMY or there is no target
     if ((event.getTaxonomyTarget() == null && event.getTaxonomyName() == null) || event.getTaxonomyTarget() == TaxonomyTarget.TAXONOMY) {
       log.info("All taxonomies were updated");
-      if(elasticSearchIndexer.hasIndex(TAXONOMY_INDEX)) elasticSearchIndexer.dropIndex(TAXONOMY_INDEX);
+      if(indexer.hasIndex(TAXONOMY_INDEX)) indexer.dropIndex(TAXONOMY_INDEX);
       index(TaxonomyTarget.VARIABLE,
         ImmutableList.<Taxonomy>builder().addAll(taxonomyService.getOpalTaxonomies().stream() //
           .filter(t -> taxonomyService.metaTaxonomyContains(t.getName())).collect(Collectors.toList())) //
@@ -68,8 +68,8 @@ public class TaxonomyIndexer {
       index(TaxonomyTarget.DATASET, Lists.newArrayList(taxonomyService.getDatasetTaxonomy()));
       index(TaxonomyTarget.NETWORK, Lists.newArrayList(taxonomyService.getNetworkTaxonomy()));
     } else {
-      QueryBuilder query = QueryBuilders.boolQuery().must(QueryBuilders.termQuery("taxonomyName", event.getTaxonomyName()));
-      elasticSearchIndexer.delete(TAXONOMY_INDEX, new String[] {TAXONOMY_TYPE, TAXONOMY_VOCABULARY_TYPE, TAXONOMY_TERM_TYPE}, query);
+      Map.Entry<String, String> termQuery = ImmutablePair.of("taxonomyName", event.getTaxonomyName());
+      indexer.delete(TAXONOMY_INDEX, new String[] {TAXONOMY_TYPE, TAXONOMY_VOCABULARY_TYPE, TAXONOMY_TERM_TYPE}, termQuery);
 
       switch (event.getTaxonomyTarget()) {
         case STUDY:
@@ -94,11 +94,11 @@ public class TaxonomyIndexer {
 
   private void index(TaxonomyTarget target, List<Taxonomy> taxonomies) {
     taxonomies.forEach(taxo -> {
-      elasticSearchIndexer.index(TAXONOMY_INDEX, new TaxonomyIndexable(target, taxo));
+      indexer.index(TAXONOMY_INDEX, new TaxonomyIndexable(target, taxo));
       if(taxo.hasVocabularies()) taxo.getVocabularies().forEach(voc -> {
-        elasticSearchIndexer.index(TAXONOMY_INDEX, new TaxonomyVocabularyIndexable(target, taxo, voc));
+        indexer.index(TAXONOMY_INDEX, new TaxonomyVocabularyIndexable(target, taxo, voc));
         if(voc.hasTerms()) voc.getTerms().forEach(
-          term -> elasticSearchIndexer.index(TAXONOMY_INDEX, new TaxonomyTermIndexable(target, taxo, voc, term)));
+          term -> indexer.index(TAXONOMY_INDEX, new TaxonomyTermIndexable(target, taxo, voc, term)));
       });
     });
   }
