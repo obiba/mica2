@@ -28,6 +28,7 @@ import org.obiba.mica.dataset.search.DatasetIndexer;
 import org.obiba.mica.dataset.search.VariableIndexer;
 import org.obiba.mica.network.event.IndexNetworksEvent;
 import org.obiba.mica.network.search.NetworkIndexer;
+import org.obiba.mica.spi.search.Indexer;
 import org.obiba.mica.study.event.IndexStudiesEvent;
 import org.obiba.mica.study.search.StudyIndexer;
 import org.springframework.scheduling.annotation.Async;
@@ -56,31 +57,31 @@ public class IndexFieldMappingService {
   }
 
   public IndexFieldMapping getVariableIndexMapping() {
-    return getMapping(VariableIndexer.PUBLISHED_VARIABLE_INDEX, VariableIndexer.VARIABLE_TYPE);
+    return getMapping(Indexer.PUBLISHED_VARIABLE_INDEX, Indexer.VARIABLE_TYPE);
   }
 
   public IndexFieldMapping getDatasetIndexMapping() {
-    return getMapping(DatasetIndexer.DRAFT_DATASET_INDEX, DatasetIndexer.DATASET_TYPE);
+    return getMapping(Indexer.DRAFT_DATASET_INDEX, Indexer.DATASET_TYPE);
   }
 
   public IndexFieldMapping getStudyIndexMapping() {
-    return getMapping(StudyIndexer.DRAFT_STUDY_INDEX, StudyIndexer.STUDY_TYPE);
+    return getMapping(Indexer.DRAFT_STUDY_INDEX, Indexer.STUDY_TYPE);
   }
 
   public IndexFieldMapping getNetworkIndexMapping() {
-    return getMapping(NetworkIndexer.DRAFT_NETWORK_INDEX, NetworkIndexer.NETWORK_TYPE);
+    return getMapping(Indexer.DRAFT_NETWORK_INDEX, Indexer.NETWORK_TYPE);
   }
 
   @Async
   @Subscribe
   public void clearNetworkIndexMapping(IndexNetworksEvent event) {
-    mappings.remove(NetworkIndexer.DRAFT_NETWORK_INDEX);
+    mappings.remove(Indexer.DRAFT_NETWORK_INDEX);
   }
 
   @Async
   @Subscribe
   public void clearStudyIndexMapping(IndexStudiesEvent event) {
-    mappings.remove(StudyIndexer.DRAFT_STUDY_INDEX);
+    mappings.remove(Indexer.DRAFT_STUDY_INDEX);
   }
 
   @Async
@@ -96,8 +97,8 @@ public class IndexFieldMappingService {
   }
 
   private void clearDatasetIndexMapping() {
-    mappings.remove(DatasetIndexer.DRAFT_DATASET_INDEX);
-    mappings.remove(VariableIndexer.PUBLISHED_VARIABLE_INDEX);
+    mappings.remove(Indexer.DRAFT_DATASET_INDEX);
+    mappings.remove(Indexer.PUBLISHED_VARIABLE_INDEX);
   }
 
   private IndexFieldMapping getMapping(String name, String type) {

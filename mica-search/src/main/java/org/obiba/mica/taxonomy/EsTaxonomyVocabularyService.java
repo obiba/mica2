@@ -14,6 +14,7 @@ import java.io.IOException;
 
 import org.elasticsearch.search.SearchHit;
 import org.obiba.mica.search.AbstractDocumentService;
+import org.obiba.mica.spi.search.Indexer;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -26,11 +27,11 @@ public class EsTaxonomyVocabularyService extends AbstractDocumentService<String>
 
   @Override
   protected String getIndexName() {
-    return TaxonomyIndexer.TAXONOMY_INDEX;
+    return Indexer.TAXONOMY_INDEX;
   }
 
   @Override
   protected String getType() {
-    return TaxonomyIndexer.TAXONOMY_VOCABULARY_TYPE;
+    return Indexer.TAXONOMY_VOCABULARY_TYPE;
   }
 }

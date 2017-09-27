@@ -15,6 +15,7 @@ import com.google.common.base.Strings;
 import org.obiba.magma.Variable;
 import org.obiba.magma.support.VariableNature;
 import org.obiba.mica.core.domain.*;
+import org.obiba.mica.spi.search.Indexable;
 
 import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;

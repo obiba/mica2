@@ -29,6 +29,7 @@ import org.obiba.mica.core.domain.DefaultEntityBase;
 import org.obiba.mica.micaConfig.service.helper.AggregationMetaDataProvider;
 import org.obiba.mica.search.CountStatsData;
 import org.obiba.mica.search.aggregations.StudyTaxonomyMetaDataProvider;
+import org.obiba.mica.spi.search.Indexer;
 import org.obiba.mica.study.domain.BaseStudy;
 import org.obiba.mica.study.domain.HarmonizationStudy;
 import org.obiba.mica.study.domain.Study;
@@ -67,12 +68,12 @@ public class StudyQuery extends AbstractDocumentQuery {
 
   @Override
   public String getSearchIndex() {
-    return StudyIndexer.PUBLISHED_STUDY_INDEX;
+    return Indexer.PUBLISHED_STUDY_INDEX;
   }
 
   @Override
   public String getSearchType() {
-    return StudyIndexer.STUDY_TYPE;
+    return Indexer.STUDY_TYPE;
   }
 
   @Override
@@ -89,7 +90,7 @@ public class StudyQuery extends AbstractDocumentQuery {
 
   @Override
   public Stream<String> getLocalizedQueryStringFields() {
-    return Stream.of(StudyIndexer.LOCALIZED_ANALYZED_FIELDS);
+    return Stream.of(Indexer.STUDY_LOCALIZED_ANALYZED_FIELDS);
   }
 
   @Override

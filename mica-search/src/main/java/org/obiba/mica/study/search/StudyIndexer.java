@@ -10,43 +10,28 @@
 
 package org.obiba.mica.study.search;
 
-import javax.inject.Inject;
-
-import org.obiba.mica.core.domain.Indexable;
+import com.google.common.eventbus.Subscribe;
 import org.obiba.mica.dataset.service.CollectionDatasetService;
-import org.obiba.mica.search.ElasticSearchIndexer;
+import org.obiba.mica.spi.search.Indexable;
+import org.obiba.mica.spi.search.Indexer;
 import org.obiba.mica.study.domain.BaseStudy;
 import org.obiba.mica.study.domain.Study;
-import org.obiba.mica.study.event.DraftStudyUpdatedEvent;
-import org.obiba.mica.study.event.IndexStudiesEvent;
-import org.obiba.mica.study.event.StudyDeletedEvent;
-import org.obiba.mica.study.event.StudyPublishedEvent;
-import org.obiba.mica.study.event.StudyUnpublishedEvent;
+import org.obiba.mica.study.event.*;
 import org.obiba.mica.study.service.StudyService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
-import com.google.common.eventbus.Subscribe;
+import javax.inject.Inject;
 
 @Component
 public class StudyIndexer {
 
   private static final Logger log = LoggerFactory.getLogger(StudyIndexer.class);
 
-  public static final String DRAFT_STUDY_INDEX = "study-draft";
-
-  public static final String PUBLISHED_STUDY_INDEX = "study-published";
-
-  public static final String STUDY_TYPE = "Study";
-
-  public static final String[] LOCALIZED_ANALYZED_FIELDS = {"acronym", "name", "objectives"};
-
-  public static final String DEFAULT_SORT_FIELD  = "name";
-
   @Inject
-  private ElasticSearchIndexer elasticSearchIndexer;
+  private Indexer indexer;
 
   @Inject
   private StudyService studyService;
@@ -58,14 +43,14 @@ public class StudyIndexer {
   @Subscribe
   public void studyUpdated(DraftStudyUpdatedEvent event) {
     log.info("Study {} was updated", event.getPersistable());
-    elasticSearchIndexer.index(DRAFT_STUDY_INDEX, (Indexable)event.getPersistable());
+    indexer.index(Indexer.DRAFT_STUDY_INDEX, (Indexable) event.getPersistable());
   }
 
   @Async
   @Subscribe
   public void studyPublished(StudyPublishedEvent event) {
     log.info("Study {} was published", event.getPersistable());
-    elasticSearchIndexer.index(PUBLISHED_STUDY_INDEX, (Indexable) event.getPersistable());
+    indexer.index(Indexer.PUBLISHED_STUDY_INDEX, (Indexable) event.getPersistable());
 
     if (event.getPersistable() instanceof Study) {
       log.info("Call indexAllDatasetsForStudyIdIfPopulationOrDceWeightChanged for Study {}", event.getPersistable());
@@ -77,16 +62,16 @@ public class StudyIndexer {
   @Subscribe
   public void studyUnpublished(StudyUnpublishedEvent event) {
     log.info("Study {} was unpublished", event.getPersistable());
-    elasticSearchIndexer.delete(PUBLISHED_STUDY_INDEX, (Indexable)event.getPersistable());
-    elasticSearchIndexer.index(DRAFT_STUDY_INDEX, (Indexable)event.getPersistable());
+    indexer.delete(Indexer.PUBLISHED_STUDY_INDEX, (Indexable) event.getPersistable());
+    indexer.index(Indexer.DRAFT_STUDY_INDEX, (Indexable) event.getPersistable());
   }
 
   @Async
   @Subscribe
   public void studyDeleted(StudyDeletedEvent event) {
     log.info("Study {} was deleted", event.getPersistable());
-    elasticSearchIndexer.delete(DRAFT_STUDY_INDEX, (Indexable)event.getPersistable());
-    elasticSearchIndexer.delete(PUBLISHED_STUDY_INDEX, (Indexable)event.getPersistable());
+    indexer.delete(Indexer.DRAFT_STUDY_INDEX, (Indexable) event.getPersistable());
+    indexer.delete(Indexer.PUBLISHED_STUDY_INDEX, (Indexable) event.getPersistable());
   }
 
   @Async
@@ -97,14 +82,14 @@ public class StudyIndexer {
   }
 
   public void reIndexAllDraft(Iterable<BaseStudy> studies) {
-    reIndexAll(DRAFT_STUDY_INDEX, studies);
+    reIndexAll(Indexer.DRAFT_STUDY_INDEX, studies);
   }
 
   public void reIndexAllPublished(Iterable<BaseStudy> studies) {
-    reIndexAll(PUBLISHED_STUDY_INDEX, studies);
+    reIndexAll(Indexer.PUBLISHED_STUDY_INDEX, studies);
   }
 
   private void reIndexAll(String indexName, Iterable<BaseStudy> studies) {
-    elasticSearchIndexer.reIndexAllIndexables(indexName, studies);
+    indexer.reIndexAllIndexables(indexName, studies);
   }
 }

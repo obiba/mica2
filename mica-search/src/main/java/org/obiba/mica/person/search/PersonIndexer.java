@@ -16,7 +16,7 @@ import org.obiba.mica.contact.event.PersonUpdatedEvent;
 import org.obiba.mica.contact.event.IndexContactsEvent;
 import org.obiba.mica.core.domain.Person;
 import org.obiba.mica.core.repository.PersonRepository;
-import org.obiba.mica.search.ElasticSearchIndexer;
+import org.obiba.mica.spi.search.Indexer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -32,35 +32,31 @@ public class PersonIndexer {
 
   private static final Logger log = LoggerFactory.getLogger(PersonIndexer.class);
 
-  public static final String PERSON_INDEX = "person";
-
-  public static final String PERSON_TYPE = "Person";
-
   @Inject
   private PersonRepository personRepository;
 
   @Inject
-  private ElasticSearchIndexer elasticSearchIndexer;
+  private Indexer indexer;
 
   @Async
   @Subscribe
   public void personUpdated(PersonUpdatedEvent event) {
     log.info("Person {} was updated", event.getPersistable());
-    elasticSearchIndexer.index(PERSON_INDEX, event.getPersistable());
+    indexer.index(Indexer.PERSON_INDEX, event.getPersistable());
   }
 
   @Async
   @Subscribe
   public void reIndexContacts(IndexContactsEvent event) {
     log.info("Reindexing all persons");
-    if(elasticSearchIndexer.hasIndex(PERSON_INDEX)) elasticSearchIndexer.dropIndex(PERSON_INDEX);
+    if(indexer.hasIndex(Indexer.PERSON_INDEX)) indexer.dropIndex(Indexer.PERSON_INDEX);
 
     Pageable pageRequest = new PageRequest(0, 100);
     Page<Person> persons;
 
     do {
       persons = personRepository.findAll(pageRequest);
-      elasticSearchIndexer.indexAll(PERSON_INDEX, persons);
+      indexer.indexAll(Indexer.PERSON_INDEX, persons);
     } while((pageRequest = persons.nextPageable()) != null);
   }
 }

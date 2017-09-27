@@ -16,6 +16,7 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.obiba.mica.core.domain.DefaultEntityBase;
 import org.obiba.mica.search.AbstractDocumentService;
+import org.obiba.mica.spi.search.Indexer;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.service.CollectionStudyService;
 import org.obiba.mica.study.service.DraftStudyService;
@@ -55,12 +56,12 @@ public class EsDraftStudyService extends AbstractDocumentService<Study> implemen
 
   @Override
   protected String getIndexName() {
-    return StudyIndexer.DRAFT_STUDY_INDEX;
+    return Indexer.DRAFT_STUDY_INDEX;
   }
 
   @Override
   protected String getType() {
-    return StudyIndexer.STUDY_TYPE;
+    return Indexer.STUDY_TYPE;
   }
 
   @Override

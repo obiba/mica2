@@ -10,7 +10,8 @@
 
 package org.obiba.mica.taxonomy;
 
-import org.obiba.mica.core.domain.TaxonomyTarget;
+import org.obiba.mica.spi.search.Indexer;
+import org.obiba.mica.spi.search.TaxonomyTarget;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.obiba.opal.core.domain.taxonomy.Vocabulary;
 
@@ -33,7 +34,7 @@ public class TaxonomyVocabularyIndexable extends TaxonomyEntityIndexable<Vocabul
 
   @Override
   public String getMappingName() {
-    return TaxonomyIndexer.TAXONOMY_VOCABULARY_TYPE;
+    return Indexer.TAXONOMY_VOCABULARY_TYPE;
   }
 
   @Override

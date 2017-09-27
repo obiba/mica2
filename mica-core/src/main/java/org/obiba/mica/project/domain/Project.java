@@ -16,7 +16,7 @@ import java.util.Map;
 
 import org.obiba.mica.JSONUtils;
 import org.obiba.mica.core.domain.AbstractGitPersistable;
-import org.obiba.mica.core.domain.Indexable;
+import org.obiba.mica.spi.search.Indexable;
 import org.obiba.mica.core.domain.LocalizedString;
 
 import com.google.common.base.Strings;

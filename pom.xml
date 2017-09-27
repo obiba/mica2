@@ -23,6 +23,7 @@
 
   <modules>
     <module>mica-core</module>
+    <module>mica-spi</module>
     <module>mica-rest</module>
     <module>mica-search</module>
     <module>mica-web-model</module>
@@ -65,7 +66,7 @@
     <logstash-logback.version>4.5.1</logstash-logback.version>
     <metrics-spring.version>3.0.0</metrics-spring.version>
     <nosqlunit.version>0.7.9</nosqlunit.version>
-    <obiba-commons.version>1.8.8</obiba-commons.version>
+    <obiba-commons.version>1.9.0</obiba-commons.version>
     <opal.version>2.9.5</opal.version>
     <opencsv.version>2.3</opencsv.version>
     <poi.version>3.9</poi.version>
@@ -74,6 +75,7 @@
     <rql-parser.version>0.3.1</rql-parser.version>
     <shiro.version>1.3.3-obiba</shiro.version>
     <shiro-extras.version>1.0.3-obiba</shiro-extras.version>
+    <spring-data-commons.version>1.11.4.RELEASE</spring-data-commons.version>
 
     <maven-antrun-plugin.version>1.7</maven-antrun-plugin.version>
     <maven-assembly-plugin.version>2.4</maven-assembly-plugin.version>
@@ -157,6 +159,11 @@
       <dependency>
         <groupId>org.obiba.mica</groupId>
         <artifactId>mica-core</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.obiba.mica</groupId>
+        <artifactId>mica-spi</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -307,6 +314,11 @@
         <artifactId>spring-boot-loader-tools</artifactId>
         <version>${spring-boot.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.springframework.data</groupId>
+        <artifactId>spring-data-commons</artifactId>
+        <version>${spring-data-commons.version}</version>
+      </dependency>
 
       <dependency>
         <groupId>io.github.jhipster.loaded</groupId>
@@ -387,6 +399,18 @@
       <dependency>
         <groupId>org.obiba.commons</groupId>
         <artifactId>obiba-core</artifactId>
+        <version>${obiba-commons.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+
+      <dependency>
+        <groupId>org.obiba.commons</groupId>
+        <artifactId>obiba-plugins</artifactId>
         <version>${obiba-commons.version}</version>
         <exclusions>
           <exclusion>

@@ -27,6 +27,7 @@ import org.obiba.mica.dataset.domain.HarmonizationDatasetState;
 import org.obiba.mica.dataset.service.DraftHarmonizationDatasetService;
 import org.obiba.mica.dataset.service.HarmonizationDatasetService;
 import org.obiba.mica.search.AbstractDocumentService;
+import org.obiba.mica.spi.search.Indexer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -50,12 +51,12 @@ class EsDraftHarmonizationDatasetService extends AbstractDocumentService<Harmoni
 
   @Override
   protected String getIndexName() {
-    return DatasetIndexer.DRAFT_DATASET_INDEX;
+    return Indexer.DRAFT_DATASET_INDEX;
   }
 
   @Override
   protected String getType() {
-    return DatasetIndexer.DATASET_TYPE;
+    return Indexer.DATASET_TYPE;
   }
 
   @Override

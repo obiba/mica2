@@ -18,25 +18,25 @@ import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentFactory;
 import org.obiba.mica.search.AbstractIndexConfiguration;
 import org.obiba.mica.search.ElasticSearchIndexer;
+import org.obiba.mica.spi.search.Indexer;
 import org.springframework.stereotype.Component;
 
 @Component
-public class VariableIndexConfiguration extends AbstractIndexConfiguration
-  implements ElasticSearchIndexer.IndexConfigurationListener {
+public class VariableIndexConfiguration extends AbstractIndexConfiguration {
 
   @Override
   public void onIndexCreated(Client client, String indexName) {
-    if(VariableIndexer.PUBLISHED_VARIABLE_INDEX.equals(indexName)) {
+    if(Indexer.PUBLISHED_VARIABLE_INDEX.equals(indexName)) {
       setMappingProperties(client, indexName);
     }
   }
 
   private void setMappingProperties(Client client, String indexName) {
     try {
-      client.admin().indices().preparePutMapping(indexName).setType(VariableIndexer.HARMONIZED_VARIABLE_TYPE)
-        .setSource(createMappingProperties(VariableIndexer.HARMONIZED_VARIABLE_TYPE)).execute().actionGet();
-      client.admin().indices().preparePutMapping(indexName).setType(VariableIndexer.VARIABLE_TYPE)
-        .setSource(createMappingProperties(VariableIndexer.VARIABLE_TYPE)).execute().actionGet();
+      client.admin().indices().preparePutMapping(indexName).setType(Indexer.HARMONIZED_VARIABLE_TYPE)
+        .setSource(createMappingProperties(Indexer.HARMONIZED_VARIABLE_TYPE)).execute().actionGet();
+      client.admin().indices().preparePutMapping(indexName).setType(Indexer.VARIABLE_TYPE)
+        .setSource(createMappingProperties(Indexer.VARIABLE_TYPE)).execute().actionGet();
     } catch(IOException e) {
       throw new RuntimeException(e);
     }
@@ -65,7 +65,7 @@ public class VariableIndexConfiguration extends AbstractIndexConfiguration
     try {
       mapping.startObject("attributes");
       mapping.startObject("properties");
-      Stream.of(VariableIndexer.LOCALIZED_ANALYZED_FIELDS)
+      Stream.of(Indexer.VARIABLE_LOCALIZED_ANALYZED_FIELDS)
         .forEach(field -> createLocalizedMappingWithAnalyzers(mapping, field));
       mapping.endObject(); // properties
       mapping.endObject(); // attributes
@@ -76,8 +76,8 @@ public class VariableIndexConfiguration extends AbstractIndexConfiguration
     mapping.endObject(); // properties
 
     // parent
-    if(VariableIndexer.HARMONIZED_VARIABLE_TYPE.equals(type)) {
-      mapping.startObject("_parent").field("type", VariableIndexer.VARIABLE_TYPE).endObject();
+    if(Indexer.HARMONIZED_VARIABLE_TYPE.equals(type)) {
+      mapping.startObject("_parent").field("type", Indexer.VARIABLE_TYPE).endObject();
     }
 
     mapping.endObject().endObject();

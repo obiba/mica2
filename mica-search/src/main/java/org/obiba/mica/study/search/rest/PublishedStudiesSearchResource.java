@@ -20,6 +20,7 @@ import org.obiba.mica.search.queries.protobuf.JoinQueryDtoWrapper;
 import org.obiba.mica.search.queries.protobuf.QueryDtoHelper;
 import org.obiba.mica.search.queries.rql.RQLQueryBuilder;
 import org.obiba.mica.search.queries.rql.RQLQueryFactory;
+import org.obiba.mica.spi.search.Indexer;
 import org.obiba.mica.study.search.StudyIndexer;
 import org.obiba.mica.web.model.MicaSearch;
 import org.springframework.context.annotation.Scope;
@@ -80,8 +81,8 @@ public class PublishedStudiesSearchResource {
     @QueryParam("locale") @DefaultValue("en") String locale) throws IOException {
 
     JoinQueryResultDto.Builder builder = joinQueryExecutor.listQuery(JoinQueryExecutor.QueryType.STUDY, QueryDtoHelper
-      .createQueryDto(from, limit, Strings.isNullOrEmpty(sort) ? StudyIndexer.DEFAULT_SORT_FIELD + "." + locale : sort,
-        order, query, locale, Stream.of(StudyIndexer.LOCALIZED_ANALYZED_FIELDS)), locale).toBuilder();
+      .createQueryDto(from, limit, Strings.isNullOrEmpty(sort) ? Indexer.DEFAULT_SORT_FIELD + "." + locale : sort,
+        order, query, locale, Stream.of(Indexer.STUDY_LOCALIZED_ANALYZED_FIELDS)), locale).toBuilder();
     builder.clearDatasetResultDto().clearNetworkResultDto().clearVariableResultDto();
     builder.setStudyResultDto(builder.getStudyResultDto().toBuilder().clearAggs());
     return builder.build();

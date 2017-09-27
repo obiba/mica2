@@ -35,6 +35,7 @@ import org.obiba.mica.search.queries.protobuf.JoinQueryDtoWrapper;
 import org.obiba.mica.search.queries.protobuf.QueryDtoHelper;
 import org.obiba.mica.search.queries.rql.RQLQueryBuilder;
 import org.obiba.mica.search.queries.rql.RQLQueryFactory;
+import org.obiba.mica.spi.search.Indexer;
 import org.obiba.mica.web.model.MicaSearch;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -109,7 +110,7 @@ public class PublishedDatasetSearchResource {
 
     MicaSearch.QueryDto queryDto = QueryDtoHelper
       .createQueryDto(from, limit, sort, order, mergeQueries(createTypeQuery(type), query), locale,
-        Stream.of(DatasetIndexer.LOCALIZED_ANALYZED_FIELDS));
+        Stream.of(Indexer.DATASET_LOCALIZED_ANALYZED_FIELDS));
 
     if(!Strings.isNullOrEmpty(studyId)) {
       List<MicaSearch.FieldFilterQueryDto> filters = Lists.newArrayList();

@@ -16,23 +16,22 @@ import com.google.common.collect.Lists;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentFactory;
-import org.obiba.mica.core.domain.TaxonomyTarget;
+import org.obiba.mica.spi.search.Indexer;
+import org.obiba.mica.spi.search.TaxonomyTarget;
 import org.obiba.mica.search.AbstractIndexConfiguration;
-import org.obiba.mica.search.ElasticSearchIndexer;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.springframework.stereotype.Component;
 
 @Component
-public class DatasetIndexConfiguration extends AbstractIndexConfiguration
-  implements ElasticSearchIndexer.IndexConfigurationListener {
+public class DatasetIndexConfiguration extends AbstractIndexConfiguration {
 
   @Override
   public void onIndexCreated(Client client, String indexName) {
-    if(DatasetIndexer.DRAFT_DATASET_INDEX.equals(indexName) ||
-      DatasetIndexer.PUBLISHED_DATASET_INDEX.equals(indexName)) {
+    if(Indexer.DRAFT_DATASET_INDEX.equals(indexName) ||
+      Indexer.PUBLISHED_DATASET_INDEX.equals(indexName)) {
 
       try {
-        client.admin().indices().preparePutMapping(indexName).setType(DatasetIndexer.DATASET_TYPE)
+        client.admin().indices().preparePutMapping(indexName).setType(Indexer.DATASET_TYPE)
           .setSource(createMappingProperties()).execute().actionGet();
       } catch(IOException e) {
         throw new RuntimeException(e);
@@ -41,7 +40,7 @@ public class DatasetIndexConfiguration extends AbstractIndexConfiguration
   }
 
   private XContentBuilder createMappingProperties() throws IOException {
-    XContentBuilder mapping = XContentFactory.jsonBuilder().startObject().startObject(DatasetIndexer.DATASET_TYPE);
+    XContentBuilder mapping = XContentFactory.jsonBuilder().startObject().startObject(Indexer.DATASET_TYPE);
     mapping.startObject("properties");
     Taxonomy taxonomy = getTaxonomy();
     addStaticVocabularies(taxonomy, "studyTable.studyId", "studyTables.studyId", "harmonizationTable.studyId", "harmonizationTables.studyId");

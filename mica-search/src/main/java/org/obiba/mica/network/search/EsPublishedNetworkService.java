@@ -26,6 +26,7 @@ import org.obiba.mica.network.domain.NetworkState;
 import org.obiba.mica.network.service.NetworkService;
 import org.obiba.mica.network.service.PublishedNetworkService;
 import org.obiba.mica.search.AbstractDocumentService;
+import org.obiba.mica.spi.search.Indexer;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -53,12 +54,12 @@ public class EsPublishedNetworkService extends AbstractDocumentService<Network>
 
   @Override
   protected String getIndexName() {
-    return NetworkIndexer.PUBLISHED_NETWORK_INDEX;
+    return Indexer.PUBLISHED_NETWORK_INDEX;
   }
 
   @Override
   protected String getType() {
-    return NetworkIndexer.NETWORK_TYPE;
+    return Indexer.NETWORK_TYPE;
   }
 
   @Override

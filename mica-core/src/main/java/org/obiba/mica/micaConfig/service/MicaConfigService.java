@@ -23,11 +23,12 @@ import org.apache.shiro.codec.Hex;
 import org.apache.shiro.crypto.AesCipherService;
 import org.apache.shiro.crypto.CryptoException;
 import org.apache.shiro.util.ByteSource;
-import org.obiba.mica.core.domain.TaxonomyTarget;
+import org.obiba.mica.spi.search.TaxonomyTarget;
 import org.obiba.mica.micaConfig.MissingConfigurationException;
 import org.obiba.mica.micaConfig.domain.MicaConfig;
 import org.obiba.mica.micaConfig.event.MicaConfigUpdatedEvent;
 import org.obiba.mica.micaConfig.repository.MicaConfigRepository;
+import org.obiba.mica.spi.search.ConfigurationProvider;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.obiba.opal.core.domain.taxonomy.TaxonomyEntity;
 import org.obiba.opal.core.domain.taxonomy.Term;
@@ -57,7 +58,7 @@ import static org.springframework.util.CollectionUtils.isEmpty;
 
 @Service
 @Validated
-public class MicaConfigService {
+public class MicaConfigService implements ConfigurationProvider {
 
   private static final Logger logger = LoggerFactory.getLogger(MicaConfigService.class);
 
@@ -80,6 +81,26 @@ public class MicaConfigService {
   private Environment env;
 
   private final AesCipherService cipherService = new AesCipherService();
+
+  @Override
+  public List<String> getLocales() {
+    return getConfig().getLocalesAsString();
+  }
+
+  @Override
+  public List<String> getRoles() {
+    return getConfig().getRoles();
+  }
+
+  @Override
+  public ObjectMapper getObjectMapper() {
+    return objectMapper;
+  }
+
+  @Override
+  public Taxonomy getTaxonomy(TaxonomyTarget target) {
+    return taxonomyConfigService.findByTarget(target);
+  }
 
   @NotNull
   Taxonomy getNetworkTaxonomy() {

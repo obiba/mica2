@@ -24,6 +24,7 @@ import org.elasticsearch.search.SearchHit;
 import org.obiba.mica.file.AttachmentState;
 import org.obiba.mica.file.service.DraftFileService;
 import org.obiba.mica.search.AbstractDocumentService;
+import org.obiba.mica.spi.search.Indexer;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
@@ -56,12 +57,12 @@ public class EsDraftFileService extends AbstractDocumentService<AttachmentState>
 
   @Override
   protected String getIndexName() {
-    return FileIndexer.ATTACHMENT_DRAFT_INDEX;
+    return Indexer.ATTACHMENT_DRAFT_INDEX;
   }
 
   @Override
   protected String getType() {
-    return FileIndexer.ATTACHMENT_TYPE;
+    return Indexer.ATTACHMENT_TYPE;
   }
 
   @Override

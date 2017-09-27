@@ -22,6 +22,7 @@ import org.obiba.mica.dataset.search.DatasetIndexer;
 import org.obiba.mica.dataset.search.VariableIndexer;
 import org.obiba.mica.network.search.NetworkIndexer;
 import org.obiba.mica.search.mapping.IndexFieldMapping;
+import org.obiba.mica.spi.search.Indexer;
 import org.obiba.mica.study.search.StudyIndexer;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.obiba.opal.core.domain.taxonomy.TaxonomyEntity;
@@ -55,10 +56,10 @@ public class RqlFieldResolver {
 
   private final Map<RQLNode, List<String>> nodeLocalizedFields = new HashMap<RQLNode, List<String>>() {
     {
-      put(RQLNode.DATASET, Lists.newArrayList(DatasetIndexer.LOCALIZED_ANALYZED_FIELDS));
-      put(RQLNode.STUDY, Lists.newArrayList(StudyIndexer.LOCALIZED_ANALYZED_FIELDS));
-      put(RQLNode.NETWORK, Lists.newArrayList(NetworkIndexer.LOCALIZED_ANALYZED_FIELDS));
-      put(RQLNode.VARIABLE, Lists.newArrayList(VariableIndexer.LOCALIZED_ANALYZED_FIELDS));
+      put(RQLNode.DATASET, Lists.newArrayList(Indexer.DATASET_LOCALIZED_ANALYZED_FIELDS));
+      put(RQLNode.STUDY, Lists.newArrayList(Indexer.STUDY_LOCALIZED_ANALYZED_FIELDS));
+      put(RQLNode.NETWORK, Lists.newArrayList(Indexer.NETWORK_LOCALIZED_ANALYZED_FIELDS));
+      put(RQLNode.VARIABLE, Lists.newArrayList(Indexer.VARIABLE_LOCALIZED_ANALYZED_FIELDS));
     }
   };
 

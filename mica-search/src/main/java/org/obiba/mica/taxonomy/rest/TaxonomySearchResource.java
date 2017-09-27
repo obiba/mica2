@@ -20,8 +20,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
-import org.obiba.mica.core.domain.TaxonomyTarget;
-import org.obiba.mica.micaConfig.service.TaxonomyNotFoundException;
+import org.obiba.mica.spi.search.TaxonomyTarget;
 import org.obiba.opal.core.cfg.NoSuchVocabularyException;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.obiba.opal.core.domain.taxonomy.Vocabulary;
@@ -32,7 +31,6 @@ import org.springframework.stereotype.Component;
 
 import com.codahale.metrics.annotation.Timed;
 import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
 
 import static org.obiba.mica.taxonomy.TaxonomyResolver.asMap;
 
