@@ -17,7 +17,6 @@ import org.elasticsearch.ElasticsearchException;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
-import org.elasticsearch.client.Client;
 import org.elasticsearch.index.IndexNotFoundException;
 import org.elasticsearch.index.query.*;
 import org.elasticsearch.search.SearchHit;
@@ -45,7 +44,7 @@ public abstract class AbstractDocumentService<T> implements DocumentService<T> {
   protected static final int MAX_SIZE = 10000;
 
   @Inject
-  protected Client client;
+  protected SearchEngineClient client;
 
   @Inject
   protected MicaConfigService micaConfigService;
@@ -75,59 +74,60 @@ public abstract class AbstractDocumentService<T> implements DocumentService<T> {
 
   @Override
   public Documents<T> find(int from, int limit, @Nullable String sort, @Nullable String order, @Nullable String studyId,
-    @Nullable String queryString) {
+                           @Nullable String queryString) {
     return find(from, limit, sort, order, studyId, queryString, null);
   }
 
   @Override
   public Documents<T> find(int from, int limit, @Nullable String sort, @Nullable String order, @Nullable String studyId,
-    @Nullable String queryString, @Nullable List<String> fields) {
+                           @Nullable String queryString, @Nullable List<String> fields) {
     return find(from, limit, sort, order, studyId, queryString, fields, null);
   }
 
   @Override
   public Documents<T> find(int from, int limit, @Nullable String sort, @Nullable String order, @Nullable String studyId,
-    @Nullable String queryString, @Nullable List<String> fields, @Nullable List<String> excludedFields) {
-    if(!indexExists()) return new Documents<>(0, from, limit);
+                           @Nullable String queryString, @Nullable List<String> fields, @Nullable List<String> excludedFields) {
+    if (!indexExists()) return new Documents<>(0, from, limit);
 
     QueryStringQueryBuilder query = queryString != null ? QueryBuilders.queryStringQuery(queryString) : null;
 
-    if(query != null && fields != null) fields.forEach(query::field);
+    if (query != null && fields != null) fields.forEach(query::field);
 
     QueryBuilder postFilter = getPostFilter(studyId);
 
     QueryBuilder execQuery = postFilter == null ? query : query == null ? postFilter : QueryBuilders.boolQuery().must(query).filter(postFilter);
 
-    if(excludedFields != null) {
+    if (excludedFields != null) {
       BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
       excludedFields.forEach(f -> boolQueryBuilder.mustNot(
-        QueryBuilders.boolQuery().must(QueryBuilders.termQuery(f, "true")).must(QueryBuilders.existsQuery(f))));
+          QueryBuilders.boolQuery().must(QueryBuilders.termQuery(f, "true")).must(QueryBuilders.existsQuery(f))));
       execQuery = boolQueryBuilder.must(execQuery);
     }
 
     SearchRequestBuilder search = client.prepareSearch() //
-      .setIndices(getIndexName()) //
-      .setTypes(getType()) //
-      .setQuery(execQuery) //
-      .setFrom(from) //
-      .setSize(limit);
+        .setIndices(getIndexName()) //
+        .setTypes(getType()) //
+        .setQuery(execQuery) //
+        .setFrom(from) //
+        .setSize(limit);
 
-    if(sort != null) {
+    if (sort != null) {
       search.addSort(
-        SortBuilders.fieldSort(sort).order(order == null ? SortOrder.ASC : SortOrder.valueOf(order.toUpperCase())));
+          SortBuilders.fieldSort(sort).order(order == null ? SortOrder.ASC : SortOrder.valueOf(order.toUpperCase())));
     }
 
     log.debug("Request /{}/{}", getIndexName(), getType());
-    if(log.isTraceEnabled()) log.trace("Request /{}/{}: {}", getIndexName(), getType(), search.toString());
+    if (log.isTraceEnabled()) log.trace("Request /{}/{}: {}", getIndexName(), getType(), search.toString());
     SearchResponse response = search.execute().actionGet();
     Documents<T> documents = new Documents<>(Long.valueOf(response.getHits().getTotalHits()).intValue(), from, limit);
     log.debug("Response /{}/{}", getIndexName(), getType());
-    if(log.isTraceEnabled()) log.trace("Response /{}/{}: totalHits={}", getIndexName(), getType(), response.getHits().getTotalHits());
+    if (log.isTraceEnabled())
+      log.trace("Response /{}/{}: totalHits={}", getIndexName(), getType(), response.getHits().getTotalHits());
 
     response.getHits().forEach(hit -> {
       try {
         documents.add(processHit(hit));
-      } catch(IOException e) {
+      } catch (IOException e) {
         log.error("Failed processing found hits.", e);
       }
     });
@@ -162,10 +162,10 @@ public abstract class AbstractDocumentService<T> implements DocumentService<T> {
         .setFrom(0) //
         .setSize(limit)
         .addSort(SortBuilders.scoreSort().order(SortOrder.DESC))
-        .setFetchSource(new String[] {fieldName}, null);
+        .setFetchSource(new String[]{fieldName}, null);
 
     log.debug("Request /{}/{}", getIndexName(), getType());
-    if(log.isTraceEnabled()) log.trace("Request /{}/{}: {}", getIndexName(), getType(), search.toString());
+    if (log.isTraceEnabled()) log.trace("Request /{}/{}: {}", getIndexName(), getType(), search.toString());
     SearchResponse response = search.execute().actionGet();
 
     List<String> names = Lists.newArrayList();
@@ -188,12 +188,12 @@ public abstract class AbstractDocumentService<T> implements DocumentService<T> {
   protected long getCount(QueryBuilder builder) {
     try {
       SearchRequestBuilder search = client.prepareSearch().setIndices(getIndexName()).setTypes(getType())
-        .setQuery(builder).setFrom(0).setSize(0);
+          .setQuery(builder).setFrom(0).setSize(0);
 
       SearchResponse response = search.execute().actionGet();
 
       return response.getHits().getTotalHits();
-    } catch(ElasticsearchException e) {
+    } catch (ElasticsearchException e) {
       return 0;
     }
   }
@@ -247,25 +247,26 @@ public abstract class AbstractDocumentService<T> implements DocumentService<T> {
     QueryBuilder accessFilter = filterByAccess();
 
     SearchRequestBuilder requestBuilder = client.prepareSearch(getIndexName()) //
-      .setTypes(getType()) //
-      .setSearchType(SearchType.DFS_QUERY_THEN_FETCH) //
-      .setQuery(
-        accessFilter == null ? queryBuilder : QueryBuilders.boolQuery().must(queryBuilder).must(accessFilter)) //
-      .setFrom(from) //
-      .setSize(size);
+        .setTypes(getType()) //
+        .setSearchType(SearchType.DFS_QUERY_THEN_FETCH) //
+        .setQuery(
+            accessFilter == null ? queryBuilder : QueryBuilders.boolQuery().must(queryBuilder).must(accessFilter)) //
+        .setFrom(from) //
+        .setSize(size);
 
     try {
       log.debug("Request /{}/{}", getIndexName(), getType());
-      if(log.isTraceEnabled()) log.trace("Request /{}/{}: {}", getIndexName(), getType(), requestBuilder);
+      if (log.isTraceEnabled()) log.trace("Request /{}/{}: {}", getIndexName(), getType(), requestBuilder);
       SearchResponse response = requestBuilder.execute().actionGet();
       log.debug("Response /{}/{}", getIndexName(), getType());
-      if(log.isTraceEnabled()) log.trace("Response /{}/{}: totalHits={}", getIndexName(), getType(), response.getHits().getTotalHits());
+      if (log.isTraceEnabled())
+        log.trace("Response /{}/{}: totalHits={}", getIndexName(), getType(), response.getHits().getTotalHits());
 
       SearchHits hits = response.getHits();
       return ids == null || ids.size() != hits.totalHits()
-        ? processHits(response.getHits())
-        : processHitsOrderByIds(response.getHits(), ids);
-    } catch(IndexNotFoundException e) {
+          ? processHits(response.getHits())
+          : processHitsOrderByIds(response.getHits(), ids);
+    } catch (IndexNotFoundException e) {
       return Lists.newArrayList(); //ignoring
     }
   }
@@ -276,8 +277,8 @@ public abstract class AbstractDocumentService<T> implements DocumentService<T> {
     hits.forEach(hit -> {
       try {
         int position = ids.indexOf(hit.getId());
-        if(position != -1) documents.put(position, processHit(hit));
-      } catch(IOException e) {
+        if (position != -1) documents.put(position, processHit(hit));
+      } catch (IOException e) {
         throw new RuntimeException(e);
       }
     });
@@ -290,7 +291,7 @@ public abstract class AbstractDocumentService<T> implements DocumentService<T> {
     hits.forEach(hit -> {
       try {
         documents.add(processHit(hit));
-      } catch(IOException e) {
+      } catch (IOException e) {
         throw new RuntimeException(e);
       }
     });
@@ -308,7 +309,7 @@ public abstract class AbstractDocumentService<T> implements DocumentService<T> {
   private QueryBuilder getPostFilter(@Nullable String studyId) {
     QueryBuilder filter = filterByAccess();
 
-    if(studyId != null) {
+    if (studyId != null) {
       QueryBuilder filterByStudy = filterByStudy(studyId);
       filter = filter == null ? filterByStudy : QueryBuilders.boolQuery().must(filter).must(filterByStudy);
     }
@@ -323,11 +324,11 @@ public abstract class AbstractDocumentService<T> implements DocumentService<T> {
   protected List<String> getLocalizedFields(String... fieldNames) {
     List<String> fields = Lists.newArrayList();
     Stream.concat(micaConfigService.getConfig().getLocalesAsString().stream(), Stream.of(LanguageTag.UNDETERMINED))
-      .forEach(locale -> {
-        Arrays.stream(fieldNames).forEach(f -> {
-          fields.add(f + "." + locale + ".analyzed");
+        .forEach(locale -> {
+          Arrays.stream(fieldNames).forEach(f -> {
+            fields.add(f + "." + locale + ".analyzed");
+          });
         });
-      });
     return fields;
   }
 }

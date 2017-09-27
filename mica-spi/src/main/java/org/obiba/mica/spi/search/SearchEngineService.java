@@ -10,6 +10,7 @@
 
 package org.obiba.mica.spi.search;
 
+import org.elasticsearch.client.Client;
 import org.obiba.plugins.spi.ServicePlugin;
 
 public interface SearchEngineService extends ServicePlugin {
@@ -17,5 +18,8 @@ public interface SearchEngineService extends ServicePlugin {
   void setConfigurationProvider(ConfigurationProvider configurationProvider);
 
   Indexer getIndexer();
+
+  // TODO isolate search functionalities
+  Client getClient();
 
 }

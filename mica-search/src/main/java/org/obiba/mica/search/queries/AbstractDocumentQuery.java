@@ -45,6 +45,7 @@ import org.obiba.mica.micaConfig.service.helper.AggregationAliasHelper;
 import org.obiba.mica.micaConfig.service.helper.AggregationMetaDataProvider;
 import org.obiba.mica.search.CountStatsData;
 import org.obiba.mica.search.DocumentQueryHelper;
+import org.obiba.mica.search.SearchEngineClient;
 import org.obiba.mica.search.aggregations.AggregationMetaDataResolver;
 import org.obiba.mica.search.aggregations.AggregationYamlParser;
 import org.obiba.mica.search.queries.protobuf.QueryDtoHelper;
@@ -75,7 +76,7 @@ public abstract class AbstractDocumentQuery {
   private static final String AGG_TOTAL_COUNT = "totalCount";
 
   @Inject
-  protected Client client;
+  protected SearchEngineClient client;
 
   @Inject
   protected AggregationYamlParser aggregationYamlParser;

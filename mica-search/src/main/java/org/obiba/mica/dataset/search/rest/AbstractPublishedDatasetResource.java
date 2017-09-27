@@ -41,6 +41,7 @@ import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.search.DatasetIndexer;
 import org.obiba.mica.dataset.search.VariableIndexer;
 import org.obiba.mica.micaConfig.service.OpalService;
+import org.obiba.mica.search.SearchEngineClient;
 import org.obiba.mica.spi.search.Indexer;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
@@ -67,7 +68,7 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
   protected Dtos dtos;
 
   @Inject
-  protected Client client;
+  protected SearchEngineClient client;
 
   @Inject
   protected ObjectMapper objectMapper;

@@ -28,7 +28,9 @@ import org.obiba.mica.dataset.search.DatasetIndexer;
 import org.obiba.mica.dataset.search.VariableIndexer;
 import org.obiba.mica.network.event.IndexNetworksEvent;
 import org.obiba.mica.network.search.NetworkIndexer;
+import org.obiba.mica.search.SearchEngineClient;
 import org.obiba.mica.spi.search.Indexer;
+import org.obiba.mica.spi.search.SearchEngineService;
 import org.obiba.mica.study.event.IndexStudiesEvent;
 import org.obiba.mica.study.search.StudyIndexer;
 import org.springframework.scheduling.annotation.Async;
@@ -47,7 +49,7 @@ import com.jayway.jsonpath.ReadContext;
 @Component
 public class IndexFieldMappingService {
   @Inject
-  private Client client;
+  private SearchEngineClient client;
 
   private Map<String, IndexFieldMapping> mappings;
 
