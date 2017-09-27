@@ -8,7 +8,7 @@ import java.util.stream.Stream;
 import javax.inject.Inject;
 
 import org.obiba.mica.core.domain.TaxonomyEntityWrapper;
-import org.obiba.mica.core.domain.TaxonomyTarget;
+import org.obiba.mica.spi.search.TaxonomyTarget;
 import org.obiba.mica.micaConfig.domain.StudyConfig;
 import org.obiba.mica.micaConfig.repository.StudyConfigRepository;
 import org.obiba.mica.micaConfig.repository.TaxonomyConfigRepository;

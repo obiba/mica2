@@ -19,6 +19,51 @@ import java.util.Map;
  * Search engine index manager.
  */
 public interface Indexer {
+
+  String[] ANALYZED_FIELDS = { "name" };
+  String MAPPING_NAME = "Variable";
+  String HMAPPING_NAME = "H" + MAPPING_NAME;
+
+  String DRAFT_DATASET_INDEX = "dataset-draft";
+  String PUBLISHED_DATASET_INDEX = "dataset-published";
+  String DATASET_TYPE = MAPPING_NAME;
+  String[] DATASET_LOCALIZED_ANALYZED_FIELDS = { "acronym", "name", "description" };
+
+  String DRAFT_VARIABLE_INDEX = "variable-draft";
+  String PUBLISHED_VARIABLE_INDEX = "variable-published";
+  String VARIABLE_TYPE = MAPPING_NAME;
+  String HARMONIZED_VARIABLE_TYPE = HMAPPING_NAME;
+  String[] VARIABLE_LOCALIZED_ANALYZED_FIELDS = { "label", "description" };
+
+  String DRAFT_STUDY_INDEX = "study-draft";
+  String PUBLISHED_STUDY_INDEX = "study-published";
+  String STUDY_TYPE = "Study";
+  String[] STUDY_LOCALIZED_ANALYZED_FIELDS = {"acronym", "name", "objectives"};
+  String DEFAULT_SORT_FIELD  = "name";
+
+  String DRAFT_NETWORK_INDEX = "network-draft";
+  String PUBLISHED_NETWORK_INDEX = "network-published";
+  String NETWORK_TYPE = "Network";
+  String[] NETWORK_LOCALIZED_ANALYZED_FIELDS = {"acronym", "name", "description"};
+  
+  String DRAFT_PROJECT_INDEX = "project-draft";
+  String PUBLISHED_PROJECT_INDEX = "project-published";
+  String PROJECT_TYPE = "Project";
+  String[] PROJECT_LOCALIZED_ANALYZED_FIELDS = {"title", "summary"};
+
+  String PERSON_INDEX = "person";
+  String PERSON_TYPE = "Person";
+  
+  String ATTACHMENT_DRAFT_INDEX = "file-draft";
+  String ATTACHMENT_PUBLISHED_INDEX = "file-published";
+  String ATTACHMENT_TYPE = "AttachmentState";
+
+  String TAXONOMY_INDEX = "taxonomy";
+  String TAXONOMY_TYPE = "Taxonomy";
+  String TAXONOMY_VOCABULARY_TYPE = "Vocabulary";
+  String TAXONOMY_TERM_TYPE = "Term";
+  String[] TAXONOMY_LOCALIZED_ANALYZED_FIELDS = { "title", "description", "keywords" };
+
   void index(String indexName, Persistable<String> persistable);
   void index(String indexName, Persistable<String> persistable, Persistable<String> parent);
   void index(String indexName, Indexable indexable);
@@ -35,4 +80,8 @@ public interface Indexer {
   void delete(String indexName, String type, Map.Entry<String, String> termQuery);
   boolean hasIndex(String indexName);
   void dropIndex(String indexName);
+
+  interface IndexConfigurationListener {
+    void onIndexCreated(SearchEngineService searchEngineService, String indexName);
+  }
 }

@@ -25,6 +25,7 @@ import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.dataset.domain.StudyDatasetState;
 import org.obiba.mica.dataset.service.DraftStudyDatasetService;
 import org.obiba.mica.dataset.service.CollectionDatasetService;
+import org.obiba.mica.spi.search.Indexer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -50,12 +51,12 @@ class EsDraftStudyDatasetService extends AbstractEsDatasetService<StudyDataset> 
 
   @Override
   protected String getIndexName() {
-    return DatasetIndexer.DRAFT_DATASET_INDEX;
+    return Indexer.DRAFT_DATASET_INDEX;
   }
 
   @Override
   protected String getType() {
-    return DatasetIndexer.DATASET_TYPE;
+    return Indexer.DATASET_TYPE;
   }
 
   @Override

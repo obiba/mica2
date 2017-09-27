@@ -43,6 +43,7 @@ import org.obiba.mica.search.CountStatsData;
 import org.obiba.mica.micaConfig.service.helper.AggregationMetaDataProvider;
 import org.obiba.mica.search.aggregations.NetworkAggregationMetaDataProvider;
 import org.obiba.mica.search.aggregations.NetworkTaxonomyMetaDataProvider;
+import org.obiba.mica.spi.search.Indexer;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.mica.web.model.MicaSearch;
@@ -80,12 +81,12 @@ public class NetworkQuery extends AbstractDocumentQuery {
 
   @Override
   public String getSearchIndex() {
-    return NetworkIndexer.PUBLISHED_NETWORK_INDEX;
+    return Indexer.PUBLISHED_NETWORK_INDEX;
   }
 
   @Override
   public String getSearchType() {
-    return NetworkIndexer.NETWORK_TYPE;
+    return Indexer.NETWORK_TYPE;
   }
 
   @Override
@@ -100,7 +101,7 @@ public class NetworkQuery extends AbstractDocumentQuery {
 
   @Override
   public Stream<String> getLocalizedQueryStringFields() {
-    return Stream.of(NetworkIndexer.LOCALIZED_ANALYZED_FIELDS);
+    return Stream.of(Indexer.NETWORK_LOCALIZED_ANALYZED_FIELDS);
   }
 
   @Nullable

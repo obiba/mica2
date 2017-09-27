@@ -36,12 +36,6 @@ public class FileIndexer {
 
   private static final Logger log = LoggerFactory.getLogger(FileIndexer.class);
 
-  public static final String ATTACHMENT_DRAFT_INDEX = "file-draft";
-
-  public static final String ATTACHMENT_PUBLISHED_INDEX = "file-published";
-
-  public static final String ATTACHMENT_TYPE = "AttachmentState";
-
   @Inject
   private Indexer indexer;
 
@@ -53,8 +47,8 @@ public class FileIndexer {
   public void onFilePublished(FilePublishedEvent event) {
     log.debug("File {} was published", event.getPersistable());
     if (FileUtils.isDirectory(event.getPersistable())) return;
-    indexer.index(ATTACHMENT_DRAFT_INDEX, event.getPersistable());
-    indexer.index(ATTACHMENT_PUBLISHED_INDEX, event.getPersistable());
+    indexer.index(Indexer.ATTACHMENT_DRAFT_INDEX, event.getPersistable());
+    indexer.index(Indexer.ATTACHMENT_PUBLISHED_INDEX, event.getPersistable());
   }
 
   @Async
@@ -62,8 +56,8 @@ public class FileIndexer {
   public void onFileUnPublished(FileUnPublishedEvent event) {
     log.debug("File {} was unpublished", event.getPersistable());
     if (FileUtils.isDirectory(event.getPersistable())) return;
-    indexer.index(ATTACHMENT_DRAFT_INDEX, event.getPersistable());
-    indexer.delete(ATTACHMENT_PUBLISHED_INDEX, event.getPersistable());
+    indexer.index(Indexer.ATTACHMENT_DRAFT_INDEX, event.getPersistable());
+    indexer.delete(Indexer.ATTACHMENT_PUBLISHED_INDEX, event.getPersistable());
   }
 
   @Async
@@ -71,8 +65,8 @@ public class FileIndexer {
   public void onFileDeleted(FileDeletedEvent event) {
     log.debug("File {} was deleted", event.getPersistable());
     if (FileUtils.isDirectory(event.getPersistable())) return;
-    indexer.delete(ATTACHMENT_DRAFT_INDEX, event.getPersistable());
-    indexer.delete(ATTACHMENT_PUBLISHED_INDEX, event.getPersistable());
+    indexer.delete(Indexer.ATTACHMENT_DRAFT_INDEX, event.getPersistable());
+    indexer.delete(Indexer.ATTACHMENT_PUBLISHED_INDEX, event.getPersistable());
   }
 
   @Async
@@ -80,14 +74,14 @@ public class FileIndexer {
   public void onFileUpdated(FileUpdatedEvent event) {
     log.debug("File {} was updated", event.getPersistable());
     if (FileUtils.isDirectory(event.getPersistable())) return;
-    indexer.index(ATTACHMENT_DRAFT_INDEX, event.getPersistable());
+    indexer.index(Indexer.ATTACHMENT_DRAFT_INDEX, event.getPersistable());
   }
 
   @Async
   @Subscribe
   public void reIndexAll(IndexFilesEvent event) {
-    if(indexer.hasIndex(ATTACHMENT_DRAFT_INDEX)) indexer.dropIndex(ATTACHMENT_DRAFT_INDEX);
-    if(indexer.hasIndex(ATTACHMENT_PUBLISHED_INDEX)) indexer.dropIndex(ATTACHMENT_PUBLISHED_INDEX);
+    if(indexer.hasIndex(Indexer.ATTACHMENT_DRAFT_INDEX)) indexer.dropIndex(Indexer.ATTACHMENT_DRAFT_INDEX);
+    if(indexer.hasIndex(Indexer.ATTACHMENT_PUBLISHED_INDEX)) indexer.dropIndex(Indexer.ATTACHMENT_PUBLISHED_INDEX);
 
     Pageable pageRequest = new PageRequest(0, 100);
     Page<AttachmentState> attachments;
@@ -97,10 +91,10 @@ public class FileIndexer {
       attachments.forEach(a -> {
         if (FileUtils.isDirectory(a)) return;
 
-        indexer.index(ATTACHMENT_DRAFT_INDEX, a);
+        indexer.index(Indexer.ATTACHMENT_DRAFT_INDEX, a);
 
         if(a.getPublishedAttachment() != null) {
-          indexer.index(ATTACHMENT_PUBLISHED_INDEX, a);
+          indexer.index(Indexer.ATTACHMENT_PUBLISHED_INDEX, a);
         }
       });
     } while((pageRequest = attachments.nextPageable()) != null);

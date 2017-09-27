@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 
 import org.elasticsearch.index.IndexNotFoundException;
-import org.obiba.mica.core.domain.TaxonomyTarget;
+import org.obiba.mica.spi.search.TaxonomyTarget;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.micaConfig.service.TaxonomyNotFoundException;
 import org.obiba.mica.micaConfig.service.TaxonomyService;

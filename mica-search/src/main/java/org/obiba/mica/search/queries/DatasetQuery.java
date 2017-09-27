@@ -45,6 +45,7 @@ import org.obiba.mica.search.CountStatsData;
 import org.obiba.mica.search.DocumentQueryHelper;
 import org.obiba.mica.search.DocumentQueryIdProvider;
 import org.obiba.mica.search.aggregations.DatasetTaxonomyMetaDataProvider;
+import org.obiba.mica.spi.search.Indexer;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.mica.web.model.MicaSearch;
@@ -84,12 +85,12 @@ public class DatasetQuery extends AbstractDocumentQuery {
 
   @Override
   public String getSearchIndex() {
-    return DatasetIndexer.PUBLISHED_DATASET_INDEX;
+    return Indexer.PUBLISHED_DATASET_INDEX;
   }
 
   @Override
   public String getSearchType() {
-    return DatasetIndexer.DATASET_TYPE;
+    return Indexer.DATASET_TYPE;
   }
 
   @Override
@@ -106,7 +107,7 @@ public class DatasetQuery extends AbstractDocumentQuery {
 
   @Override
   public Stream<String> getLocalizedQueryStringFields() {
-    return Stream.of(DatasetIndexer.LOCALIZED_ANALYZED_FIELDS);
+    return Stream.of(Indexer.DATASET_LOCALIZED_ANALYZED_FIELDS);
   }
 
   public void setDatasetIdProvider(DocumentQueryIdProvider provider) {

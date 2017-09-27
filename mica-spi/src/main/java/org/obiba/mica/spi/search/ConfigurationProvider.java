@@ -10,12 +10,18 @@
 
 package org.obiba.mica.spi.search;
 
-import org.obiba.plugins.spi.ServicePlugin;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 
-public interface SearchEngineService extends ServicePlugin {
+import java.util.List;
 
-  void setConfigurationProvider(ConfigurationProvider configurationProvider);
+public interface ConfigurationProvider {
 
-  Indexer getIndexer();
+  List<String> getLocales();
 
+  List<String> getRoles();
+
+  ObjectMapper getObjectMapper();
+
+  Taxonomy getTaxonomy(TaxonomyTarget target);
 }

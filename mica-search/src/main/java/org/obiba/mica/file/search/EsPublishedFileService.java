@@ -25,6 +25,7 @@ import org.obiba.mica.file.AttachmentState;
 import org.obiba.mica.file.service.PublishedFileService;
 import org.obiba.mica.search.AbstractDocumentService;
 import org.obiba.mica.search.queries.AbstractDocumentQuery;
+import org.obiba.mica.spi.search.Indexer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
@@ -60,12 +61,12 @@ public class EsPublishedFileService extends AbstractDocumentService<AttachmentSt
 
   @Override
   protected String getIndexName() {
-    return FileIndexer.ATTACHMENT_PUBLISHED_INDEX;
+    return Indexer.ATTACHMENT_PUBLISHED_INDEX;
   }
 
   @Override
   protected String getType() {
-    return FileIndexer.ATTACHMENT_TYPE;
+    return Indexer.ATTACHMENT_TYPE;
   }
 
   @Override

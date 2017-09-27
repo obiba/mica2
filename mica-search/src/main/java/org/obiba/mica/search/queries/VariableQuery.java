@@ -52,6 +52,7 @@ import org.obiba.mica.search.aggregations.DatasetAggregationMetaDataProvider;
 import org.obiba.mica.search.aggregations.StudyAggregationMetaDataProvider;
 import org.obiba.mica.search.aggregations.TaxonomyAggregationMetaDataProvider;
 import org.obiba.mica.search.aggregations.VariableTaxonomyMetaDataProvider;
+import org.obiba.mica.spi.search.Indexer;
 import org.obiba.mica.study.NoSuchStudyException;
 import org.obiba.mica.study.domain.BaseStudy;
 import org.obiba.mica.study.service.PublishedStudyService;
@@ -117,12 +118,12 @@ public class VariableQuery extends AbstractDocumentQuery {
 
   @Override
   public String getSearchIndex() {
-    return VariableIndexer.PUBLISHED_VARIABLE_INDEX;
+    return Indexer.PUBLISHED_VARIABLE_INDEX;
   }
 
   @Override
   public String getSearchType() {
-    return VariableIndexer.VARIABLE_TYPE;
+    return Indexer.VARIABLE_TYPE;
   }
 
   @Override
@@ -143,12 +144,12 @@ public class VariableQuery extends AbstractDocumentQuery {
 
   @Override
   public Stream<String> getLocalizedQueryStringFields() {
-    return Stream.of(VariableIndexer.LOCALIZED_ANALYZED_FIELDS).map(f -> "attributes." + f);
+    return Stream.of(Indexer.VARIABLE_LOCALIZED_ANALYZED_FIELDS).map(f -> "attributes." + f);
   }
 
   @Override
   public Stream<String> getQueryStringFields() {
-    return Stream.of(VariableIndexer.ANALYZED_FIELDS);
+    return Stream.of(Indexer.ANALYZED_FIELDS);
   }
 
   public void setDatasetIdProvider(DocumentQueryIdProvider provider) {

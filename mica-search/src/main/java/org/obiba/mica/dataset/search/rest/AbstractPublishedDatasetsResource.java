@@ -34,6 +34,7 @@ import org.obiba.mica.dataset.service.HarmonizationDatasetService;
 import org.obiba.mica.dataset.service.CollectionDatasetService;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.security.service.SubjectAclService;
+import org.obiba.mica.spi.search.Indexer;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.slf4j.Logger;
@@ -81,8 +82,8 @@ public abstract class AbstractPublishedDatasetsResource<T extends Dataset> {
     QueryBuilder postFilter = getPostFilter(clazz, studyId);
 
     SearchRequestBuilder search = client.prepareSearch() //
-      .setIndices(DatasetIndexer.PUBLISHED_DATASET_INDEX) //
-      .setTypes(DatasetIndexer.DATASET_TYPE) //
+      .setIndices(Indexer.PUBLISHED_DATASET_INDEX) //
+      .setTypes(Indexer.DATASET_TYPE) //
       .setQuery(postFilter == null ? query : QueryBuilders.boolQuery().must(query).must(postFilter)) //
       .setFrom(from) //
       .setSize(limit);

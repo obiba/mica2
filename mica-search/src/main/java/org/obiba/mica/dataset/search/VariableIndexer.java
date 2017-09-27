@@ -38,18 +38,6 @@ import com.google.common.eventbus.Subscribe;
 public class VariableIndexer {
   private static final Logger log = LoggerFactory.getLogger(VariableIndexer.class);
 
-  public static final String DRAFT_VARIABLE_INDEX = "variable-draft";
-
-  public static final String PUBLISHED_VARIABLE_INDEX = "variable-published";
-
-  public static final String VARIABLE_TYPE = DatasetVariable.MAPPING_NAME;
-
-  public static final String HARMONIZED_VARIABLE_TYPE = DatasetVariable.HMAPPING_NAME;
-
-  public static final String[] ANALYZED_FIELDS = { "name" };
-
-  public static final String[] LOCALIZED_ANALYZED_FIELDS = { "label", "description" };
-
   @Inject
   private Indexer indexer;
 
@@ -62,18 +50,18 @@ public class VariableIndexer {
     log.debug("{} {} was published", event.getPersistable().getClass().getSimpleName(), event.getPersistable());
     clearDraftVariablesIndex();
     if(event.getVariables() != null) {
-      deleteDatasetVariables(PUBLISHED_VARIABLE_INDEX, event.getPersistable());
+      deleteDatasetVariables(Indexer.PUBLISHED_VARIABLE_INDEX, event.getPersistable());
 
       if (event.getPersistable() instanceof StudyDataset) {
-        indexDatasetVariables(PUBLISHED_VARIABLE_INDEX, collectionDatasetService.processVariablesForStudyDataset(
+        indexDatasetVariables(Indexer.PUBLISHED_VARIABLE_INDEX, collectionDatasetService.processVariablesForStudyDataset(
           (StudyDataset) event.getPersistable(), event.getVariables()));
       } else {
-        indexDatasetVariables(PUBLISHED_VARIABLE_INDEX, event.getVariables());
+        indexDatasetVariables(Indexer.PUBLISHED_VARIABLE_INDEX, event.getVariables());
       }
     }
 
     if(event.hasHarmonizationVariables())
-      indexHarmonizedVariables(PUBLISHED_VARIABLE_INDEX, event.getHarmonizationVariables());
+      indexHarmonizedVariables(Indexer.PUBLISHED_VARIABLE_INDEX, event.getHarmonizationVariables());
   }
 
   @Async
@@ -81,7 +69,7 @@ public class VariableIndexer {
   public void datasetUnpublished(DatasetUnpublishedEvent event) {
     log.debug("{} {} was unpublished", event.getPersistable().getClass().getSimpleName(), event.getPersistable());
     clearDraftVariablesIndex();
-    deleteDatasetVariables(PUBLISHED_VARIABLE_INDEX, event.getPersistable());
+    deleteDatasetVariables(Indexer.PUBLISHED_VARIABLE_INDEX, event.getPersistable());
   }
 
   @Async
@@ -89,7 +77,7 @@ public class VariableIndexer {
   public void datasetDeleted(DatasetDeletedEvent event) {
     log.debug("{} {} was deleted", event.getPersistable().getClass().getSimpleName(), event.getPersistable());
     clearDraftVariablesIndex();
-    deleteDatasetVariables(PUBLISHED_VARIABLE_INDEX, event.getPersistable());
+    deleteDatasetVariables(Indexer.PUBLISHED_VARIABLE_INDEX, event.getPersistable());
   }
 
   //
@@ -98,7 +86,7 @@ public class VariableIndexer {
 
   // legacy index, cleanup
   private void clearDraftVariablesIndex() {
-    if(indexer.hasIndex(VariableIndexer.DRAFT_VARIABLE_INDEX)) indexer.dropIndex(VariableIndexer.DRAFT_VARIABLE_INDEX);
+    if(indexer.hasIndex(Indexer.DRAFT_VARIABLE_INDEX)) indexer.dropIndex(Indexer.DRAFT_VARIABLE_INDEX);
   }
 
   private void indexDatasetVariables(String indexName, Iterable<DatasetVariable> variables) {
@@ -113,7 +101,7 @@ public class VariableIndexer {
   private void deleteDatasetVariables(String indexName, Dataset dataset) {
     // remove variables that have this dataset as parent
     Map.Entry<String, String> termQuery = ImmutablePair.of("datasetId", dataset.getId());
-    indexer.delete(indexName, HARMONIZED_VARIABLE_TYPE, termQuery);
-    indexer.delete(indexName, VARIABLE_TYPE, termQuery);
+    indexer.delete(indexName, Indexer.HARMONIZED_VARIABLE_TYPE, termQuery);
+    indexer.delete(indexName, Indexer.VARIABLE_TYPE, termQuery);
   }
 }

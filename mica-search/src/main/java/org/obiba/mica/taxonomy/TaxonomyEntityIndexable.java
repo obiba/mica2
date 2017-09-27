@@ -14,7 +14,7 @@ import java.util.Map;
 
 import org.obiba.mica.spi.search.Indexable;
 import org.obiba.mica.core.domain.LocalizedString;
-import org.obiba.mica.core.domain.TaxonomyTarget;
+import org.obiba.mica.spi.search.TaxonomyTarget;
 import org.obiba.opal.core.domain.taxonomy.TaxonomyEntity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;

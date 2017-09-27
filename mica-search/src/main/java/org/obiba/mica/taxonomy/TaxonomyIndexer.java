@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.obiba.mica.core.domain.TaxonomyTarget;
+import org.obiba.mica.spi.search.TaxonomyTarget;
 import org.obiba.mica.micaConfig.event.TaxonomiesUpdatedEvent;
 import org.obiba.mica.micaConfig.service.TaxonomyService;
 import org.obiba.mica.spi.search.Indexer;
@@ -36,16 +36,6 @@ public class TaxonomyIndexer {
 
   private static final Logger log = LoggerFactory.getLogger(TaxonomyIndexer.class);
 
-  public static final String TAXONOMY_INDEX = "taxonomy";
-
-  public static final String TAXONOMY_TYPE = "Taxonomy";
-
-  public static final String TAXONOMY_VOCABULARY_TYPE = "Vocabulary";
-
-  public static final String TAXONOMY_TERM_TYPE = "Term";
-
-  public static final String[] LOCALIZED_ANALYZED_FIELDS = { "title", "description", "keywords" };
-
   @Inject
   private TaxonomyService taxonomyService;
 
@@ -58,7 +48,7 @@ public class TaxonomyIndexer {
     // reindex all taxonomies if target is TAXONOMY or there is no target
     if ((event.getTaxonomyTarget() == null && event.getTaxonomyName() == null) || event.getTaxonomyTarget() == TaxonomyTarget.TAXONOMY) {
       log.info("All taxonomies were updated");
-      if(indexer.hasIndex(TAXONOMY_INDEX)) indexer.dropIndex(TAXONOMY_INDEX);
+      if(indexer.hasIndex(Indexer.TAXONOMY_INDEX)) indexer.dropIndex(Indexer.TAXONOMY_INDEX);
       index(TaxonomyTarget.VARIABLE,
         ImmutableList.<Taxonomy>builder().addAll(taxonomyService.getOpalTaxonomies().stream() //
           .filter(t -> taxonomyService.metaTaxonomyContains(t.getName())).collect(Collectors.toList())) //
@@ -69,7 +59,7 @@ public class TaxonomyIndexer {
       index(TaxonomyTarget.NETWORK, Lists.newArrayList(taxonomyService.getNetworkTaxonomy()));
     } else {
       Map.Entry<String, String> termQuery = ImmutablePair.of("taxonomyName", event.getTaxonomyName());
-      indexer.delete(TAXONOMY_INDEX, new String[] {TAXONOMY_TYPE, TAXONOMY_VOCABULARY_TYPE, TAXONOMY_TERM_TYPE}, termQuery);
+      indexer.delete(Indexer.TAXONOMY_INDEX, new String[] {Indexer.TAXONOMY_TYPE, Indexer.TAXONOMY_VOCABULARY_TYPE, Indexer.TAXONOMY_TERM_TYPE}, termQuery);
 
       switch (event.getTaxonomyTarget()) {
         case STUDY:
@@ -94,11 +84,11 @@ public class TaxonomyIndexer {
 
   private void index(TaxonomyTarget target, List<Taxonomy> taxonomies) {
     taxonomies.forEach(taxo -> {
-      indexer.index(TAXONOMY_INDEX, new TaxonomyIndexable(target, taxo));
+      indexer.index(Indexer.TAXONOMY_INDEX, new TaxonomyIndexable(target, taxo));
       if(taxo.hasVocabularies()) taxo.getVocabularies().forEach(voc -> {
-        indexer.index(TAXONOMY_INDEX, new TaxonomyVocabularyIndexable(target, taxo, voc));
+        indexer.index(Indexer.TAXONOMY_INDEX, new TaxonomyVocabularyIndexable(target, taxo, voc));
         if(voc.hasTerms()) voc.getTerms().forEach(
-          term -> indexer.index(TAXONOMY_INDEX, new TaxonomyTermIndexable(target, taxo, voc, term)));
+          term -> indexer.index(Indexer.TAXONOMY_INDEX, new TaxonomyTermIndexable(target, taxo, voc, term)));
       });
     });
   }

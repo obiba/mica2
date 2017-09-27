@@ -16,6 +16,7 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.obiba.mica.core.domain.DefaultEntityBase;
 import org.obiba.mica.dataset.search.AbstractEsStudyService;
+import org.obiba.mica.spi.search.Indexer;
 import org.obiba.mica.study.domain.BaseStudy;
 import org.obiba.mica.study.domain.HarmonizationStudy;
 import org.obiba.mica.study.domain.Study;
@@ -73,12 +74,12 @@ public class EsPublishedStudyService extends AbstractEsStudyService<BaseStudy> i
 
   @Override
   protected String getIndexName() {
-    return StudyIndexer.PUBLISHED_STUDY_INDEX;
+    return Indexer.PUBLISHED_STUDY_INDEX;
   }
 
   @Override
   protected String getType() {
-    return StudyIndexer.STUDY_TYPE;
+    return Indexer.STUDY_TYPE;
   }
 
   @Override

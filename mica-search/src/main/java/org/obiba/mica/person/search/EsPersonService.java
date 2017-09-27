@@ -19,6 +19,7 @@ import javax.inject.Inject;
 import org.elasticsearch.search.SearchHit;
 import org.obiba.mica.core.domain.Person;
 import org.obiba.mica.search.AbstractDocumentService;
+import org.obiba.mica.spi.search.Indexer;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -37,11 +38,11 @@ public class EsPersonService extends AbstractDocumentService<Person> {
 
   @Override
   protected String getIndexName() {
-    return PersonIndexer.PERSON_INDEX;
+    return Indexer.PERSON_INDEX;
   }
 
   @Override
   protected String getType() {
-    return PersonIndexer.PERSON_TYPE;
+    return Indexer.PERSON_TYPE;
   }
 }

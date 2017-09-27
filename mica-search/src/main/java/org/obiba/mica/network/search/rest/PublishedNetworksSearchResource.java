@@ -33,6 +33,7 @@ import org.obiba.mica.search.queries.protobuf.JoinQueryDtoWrapper;
 import org.obiba.mica.search.queries.protobuf.QueryDtoHelper;
 import org.obiba.mica.search.queries.rql.RQLQueryBuilder;
 import org.obiba.mica.search.queries.rql.RQLQueryFactory;
+import org.obiba.mica.spi.search.Indexer;
 import org.obiba.mica.web.model.MicaSearch;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -88,10 +89,10 @@ public class PublishedNetworksSearchResource {
 
     if(!Strings.isNullOrEmpty(sort) && !sort.equals(DEFAULT_SORT)) {
       queryDto = QueryDtoHelper
-        .createQueryDto(from, limit, sort, order, query, locale, Stream.of(NetworkIndexer.LOCALIZED_ANALYZED_FIELDS));
+        .createQueryDto(from, limit, sort, order, query, locale, Stream.of(Indexer.NETWORK_LOCALIZED_ANALYZED_FIELDS));
     } else {
       queryDto = QueryDtoHelper.createQueryDto(from, limit, sortScript, type, order, query, locale,
-        Stream.of(NetworkIndexer.LOCALIZED_ANALYZED_FIELDS));
+        Stream.of(Indexer.NETWORK_LOCALIZED_ANALYZED_FIELDS));
     }
 
     if(!Strings.isNullOrEmpty(studyId)) {

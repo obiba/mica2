@@ -27,6 +27,7 @@ import org.obiba.mica.project.domain.ProjectState;
 import org.obiba.mica.project.service.DraftProjectService;
 import org.obiba.mica.project.service.ProjectService;
 import org.obiba.mica.search.AbstractDocumentService;
+import org.obiba.mica.spi.search.Indexer;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -51,12 +52,12 @@ public class EsDraftProjectService extends AbstractDocumentService<Project> impl
 
   @Override
   protected String getIndexName() {
-    return ProjectIndexer.DRAFT_PROJECT_INDEX;
+    return Indexer.DRAFT_PROJECT_INDEX;
   }
 
   @Override
   protected String getType() {
-    return ProjectIndexer.PROJECT_TYPE;
+    return Indexer.PROJECT_TYPE;
   }
 
   @Override

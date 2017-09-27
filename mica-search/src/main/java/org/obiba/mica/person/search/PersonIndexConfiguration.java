@@ -17,20 +17,21 @@ import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentFactory;
 import org.obiba.mica.search.AbstractIndexConfiguration;
 import org.obiba.mica.search.ElasticSearchIndexer;
+import org.obiba.mica.spi.search.Indexer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component
-public class PersonIndexConfiguration extends AbstractIndexConfiguration implements ElasticSearchIndexer.IndexConfigurationListener {
+public class PersonIndexConfiguration extends AbstractIndexConfiguration {
   private static final Logger log = LoggerFactory.getLogger(PersonIndexConfiguration.class);
 
   @Override
   public void onIndexCreated(Client client, String indexName) {
-    if(PersonIndexer.PERSON_INDEX.equals(indexName)) {
+    if(Indexer.PERSON_INDEX.equals(indexName)) {
       try {
-        client.admin().indices().preparePutMapping(indexName).setType(PersonIndexer.PERSON_TYPE)
-          .setSource(createMappingProperties(PersonIndexer.PERSON_TYPE)).execute().actionGet();
+        client.admin().indices().preparePutMapping(indexName).setType(Indexer.PERSON_TYPE)
+          .setSource(createMappingProperties(Indexer.PERSON_TYPE)).execute().actionGet();
       } catch (IOException e) {
         throw new RuntimeException(e);
       }

@@ -11,7 +11,7 @@
 
 package org.obiba.mica.micaConfig.event;
 
-import org.obiba.mica.core.domain.TaxonomyTarget;
+import org.obiba.mica.spi.search.TaxonomyTarget;
 
 public class TaxonomiesUpdatedEvent {
 

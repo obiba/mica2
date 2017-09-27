@@ -17,26 +17,25 @@ import com.google.common.collect.Lists;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentFactory;
-import org.obiba.mica.core.domain.TaxonomyTarget;
+import org.obiba.mica.spi.search.Indexer;
+import org.obiba.mica.spi.search.TaxonomyTarget;
 import org.obiba.mica.search.AbstractIndexConfiguration;
-import org.obiba.mica.search.ElasticSearchIndexer;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component
-public class NetworkIndexConfiguration extends AbstractIndexConfiguration
-  implements ElasticSearchIndexer.IndexConfigurationListener {
+public class NetworkIndexConfiguration extends AbstractIndexConfiguration {
   private static final Logger log = LoggerFactory.getLogger(NetworkIndexConfiguration.class);
 
   @Override
   public void onIndexCreated(Client client, String indexName) {
-    if(NetworkIndexer.DRAFT_NETWORK_INDEX.equals(indexName) ||
-      NetworkIndexer.PUBLISHED_NETWORK_INDEX.equals(indexName)) {
+    if(Indexer.DRAFT_NETWORK_INDEX.equals(indexName) ||
+      Indexer.PUBLISHED_NETWORK_INDEX.equals(indexName)) {
 
       try {
-        client.admin().indices().preparePutMapping(indexName).setType(NetworkIndexer.NETWORK_TYPE)
+        client.admin().indices().preparePutMapping(indexName).setType(Indexer.NETWORK_TYPE)
           .setSource(createMappingProperties()).execute().actionGet();
       } catch(IOException e) {
         throw new RuntimeException(e);
@@ -45,7 +44,7 @@ public class NetworkIndexConfiguration extends AbstractIndexConfiguration
   }
 
   private XContentBuilder createMappingProperties() throws IOException {
-    XContentBuilder mapping = XContentFactory.jsonBuilder().startObject().startObject(NetworkIndexer.NETWORK_TYPE);
+    XContentBuilder mapping = XContentFactory.jsonBuilder().startObject().startObject(Indexer.NETWORK_TYPE);
 
     mapping.startObject("properties");
     appendMembershipProperties(mapping);

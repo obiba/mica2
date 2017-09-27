@@ -30,6 +30,7 @@ import org.obiba.mica.dataset.domain.StudyDatasetState;
 import org.obiba.mica.dataset.service.CollectionDatasetService;
 import org.obiba.mica.dataset.service.HarmonizationDatasetService;
 import org.obiba.mica.dataset.service.PublishedDatasetService;
+import org.obiba.mica.spi.search.Indexer;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -75,12 +76,12 @@ class EsPublishedDatasetService extends AbstractEsDatasetService<Dataset> implem
 
   @Override
   protected String getIndexName() {
-    return DatasetIndexer.PUBLISHED_DATASET_INDEX;
+    return Indexer.PUBLISHED_DATASET_INDEX;
   }
 
   @Override
   protected String getType() {
-    return DatasetIndexer.DATASET_TYPE;
+    return Indexer.DATASET_TYPE;
   }
 
   private Class getClass(String className) {

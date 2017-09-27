@@ -21,9 +21,8 @@ import javax.inject.Inject;
 
 import org.elasticsearch.common.Strings;
 import org.elasticsearch.common.xcontent.XContentBuilder;
-import org.obiba.mica.core.domain.TaxonomyTarget;
-import org.obiba.mica.micaConfig.service.MicaConfigService;
-import org.obiba.mica.micaConfig.service.TaxonomyConfigService;
+import org.obiba.mica.spi.search.TaxonomyTarget;
+import org.obiba.mica.spi.search.ConfigurationProvider;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.obiba.opal.core.domain.taxonomy.Vocabulary;
 import org.slf4j.Logger;
@@ -34,7 +33,7 @@ import com.google.common.collect.Maps;
 
 import sun.util.locale.LanguageTag;
 
-public abstract class AbstractIndexConfiguration {
+public abstract class AbstractIndexConfiguration implements ElasticSearchIndexer.IndexConfigurationListener {
   private static final Logger log = LoggerFactory.getLogger(AbstractIndexConfiguration.class);
   private static final String TRUE = "true";
   private static final String LOCALIZED = "localized";
@@ -43,13 +42,10 @@ public abstract class AbstractIndexConfiguration {
   private static final String FIELD = "field";
 
   @Inject
-  private MicaConfigService micaConfigService;
-
-  @Inject
-  private TaxonomyConfigService taxonomyConfigService;
+  private ConfigurationProvider configurationProvider;
 
   protected Taxonomy getTaxonomy() {
-    return taxonomyConfigService.findByTarget(getTarget());
+    return configurationProvider.getTaxonomy(getTarget());
   }
 
   protected void addLocalizedVocabularies(Taxonomy taxonomy, String... fields) {
@@ -68,7 +64,7 @@ public abstract class AbstractIndexConfiguration {
     try {
       mapping.startObject(name);
       mapping.startObject("properties");
-      Stream.concat(micaConfigService.getConfig().getLocalesAsString().stream(), Stream.of(
+      Stream.concat(configurationProvider.getLocales().stream(), Stream.of(
         LanguageTag.UNDETERMINED)).forEach(locale -> {
         try {
           mapping.startObject(locale).field("type", "multi_field");
@@ -127,7 +123,7 @@ public abstract class AbstractIndexConfiguration {
 
   protected void appendMembershipProperties(XContentBuilder mapping) throws IOException {
     XContentBuilder membershipsMapping = mapping.startObject("memberships").startObject("properties");
-    for(String role : micaConfigService.getConfig().getRoles()) {
+    for(String role : configurationProvider.getRoles()) {
       XContentBuilder personMapping = membershipsMapping.startObject(role).startObject("properties") //
         .startObject("person").startObject("properties");
       createMappingWithAndWithoutAnalyzer(personMapping, "lastName");

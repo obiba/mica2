@@ -27,6 +27,7 @@ import org.obiba.mica.network.domain.NetworkState;
 import org.obiba.mica.network.service.DraftNetworkService;
 import org.obiba.mica.network.service.NetworkService;
 import org.obiba.mica.search.AbstractDocumentService;
+import org.obiba.mica.spi.search.Indexer;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -51,12 +52,12 @@ public class EsDraftNetworkService extends AbstractDocumentService<Network> impl
 
   @Override
   protected String getIndexName() {
-    return NetworkIndexer.DRAFT_NETWORK_INDEX;
+    return Indexer.DRAFT_NETWORK_INDEX;
   }
 
   @Override
   protected String getType() {
-    return NetworkIndexer.NETWORK_TYPE;
+    return Indexer.NETWORK_TYPE;
   }
 
   @Override

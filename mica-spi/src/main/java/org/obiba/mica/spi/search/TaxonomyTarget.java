@@ -8,7 +8,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.obiba.mica.core.domain;
+package org.obiba.mica.spi.search;
 
 public enum TaxonomyTarget {
   VARIABLE, STUDY, NETWORK, DATASET, TAXONOMY;

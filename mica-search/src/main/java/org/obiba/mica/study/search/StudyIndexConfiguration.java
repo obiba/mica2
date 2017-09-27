@@ -17,25 +17,24 @@ import com.google.common.collect.Lists;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentFactory;
-import org.obiba.mica.core.domain.TaxonomyTarget;
+import org.obiba.mica.spi.search.Indexer;
+import org.obiba.mica.spi.search.TaxonomyTarget;
 import org.obiba.mica.search.AbstractIndexConfiguration;
-import org.obiba.mica.search.ElasticSearchIndexer;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component
-public class StudyIndexConfiguration extends AbstractIndexConfiguration
-  implements ElasticSearchIndexer.IndexConfigurationListener {
+public class StudyIndexConfiguration extends AbstractIndexConfiguration {
   private static final Logger log = LoggerFactory.getLogger(StudyIndexConfiguration.class);
 
   @Override
   public void onIndexCreated(Client client, String indexName) {
-    if(StudyIndexer.DRAFT_STUDY_INDEX.equals(indexName) || StudyIndexer.PUBLISHED_STUDY_INDEX.equals(indexName)) {
+    if(Indexer.DRAFT_STUDY_INDEX.equals(indexName) || Indexer.PUBLISHED_STUDY_INDEX.equals(indexName)) {
 
       try {
-        client.admin().indices().preparePutMapping(indexName).setType(StudyIndexer.STUDY_TYPE)
+        client.admin().indices().preparePutMapping(indexName).setType(Indexer.STUDY_TYPE)
           .setSource(createMappingProperties()).execute().actionGet();
       } catch(IOException e) {
         throw new RuntimeException(e);
@@ -44,7 +43,7 @@ public class StudyIndexConfiguration extends AbstractIndexConfiguration
   }
 
   private XContentBuilder createMappingProperties() throws IOException {
-    XContentBuilder mapping = XContentFactory.jsonBuilder().startObject().startObject(StudyIndexer.STUDY_TYPE);
+    XContentBuilder mapping = XContentFactory.jsonBuilder().startObject().startObject(Indexer.STUDY_TYPE);
     mapping.startObject("properties");
     appendMembershipProperties(mapping);
     Taxonomy taxonomy = getTaxonomy();

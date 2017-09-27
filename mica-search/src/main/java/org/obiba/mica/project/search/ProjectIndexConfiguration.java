@@ -18,22 +18,22 @@ import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentFactory;
 import org.obiba.mica.search.AbstractIndexConfiguration;
 import org.obiba.mica.search.ElasticSearchIndexer;
+import org.obiba.mica.spi.search.Indexer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ProjectIndexConfiguration extends AbstractIndexConfiguration
-  implements ElasticSearchIndexer.IndexConfigurationListener {
+public class ProjectIndexConfiguration extends AbstractIndexConfiguration {
   private static final Logger log = LoggerFactory.getLogger(ProjectIndexConfiguration.class);
 
   @Override
   public void onIndexCreated(Client client, String indexName) {
-    if(ProjectIndexer.DRAFT_PROJECT_INDEX.equals(indexName) ||
-      ProjectIndexer.PUBLISHED_PROJECT_INDEX.equals(indexName)) {
+    if(Indexer.DRAFT_PROJECT_INDEX.equals(indexName) ||
+      Indexer.PUBLISHED_PROJECT_INDEX.equals(indexName)) {
 
       try {
-        client.admin().indices().preparePutMapping(indexName).setType(ProjectIndexer.PROJECT_TYPE)
+        client.admin().indices().preparePutMapping(indexName).setType(Indexer.PROJECT_TYPE)
           .setSource(createMappingProperties()).execute().actionGet();
       } catch(IOException e) {
         throw new RuntimeException(e);
@@ -42,13 +42,13 @@ public class ProjectIndexConfiguration extends AbstractIndexConfiguration
   }
 
   private XContentBuilder createMappingProperties() throws IOException {
-    XContentBuilder mapping = XContentFactory.jsonBuilder().startObject().startObject(ProjectIndexer.PROJECT_TYPE);
+    XContentBuilder mapping = XContentFactory.jsonBuilder().startObject().startObject(Indexer.PROJECT_TYPE);
 
     // properties
     mapping.startObject("properties");
     mapping.startObject("id").field("type", "string").field("index", "not_analyzed").endObject();
     appendMembershipProperties(mapping);
-    Stream.of(ProjectIndexer.LOCALIZED_ANALYZED_FIELDS)
+    Stream.of(Indexer.PROJECT_LOCALIZED_ANALYZED_FIELDS)
       .forEach(field -> createLocalizedMappingWithAnalyzers(mapping, field));
     mapping.endObject();
 

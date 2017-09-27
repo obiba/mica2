@@ -32,10 +32,6 @@ public class PersonIndexer {
 
   private static final Logger log = LoggerFactory.getLogger(PersonIndexer.class);
 
-  public static final String PERSON_INDEX = "person";
-
-  public static final String PERSON_TYPE = "Person";
-
   @Inject
   private PersonRepository personRepository;
 
@@ -46,21 +42,21 @@ public class PersonIndexer {
   @Subscribe
   public void personUpdated(PersonUpdatedEvent event) {
     log.info("Person {} was updated", event.getPersistable());
-    indexer.index(PERSON_INDEX, event.getPersistable());
+    indexer.index(Indexer.PERSON_INDEX, event.getPersistable());
   }
 
   @Async
   @Subscribe
   public void reIndexContacts(IndexContactsEvent event) {
     log.info("Reindexing all persons");
-    if(indexer.hasIndex(PERSON_INDEX)) indexer.dropIndex(PERSON_INDEX);
+    if(indexer.hasIndex(Indexer.PERSON_INDEX)) indexer.dropIndex(Indexer.PERSON_INDEX);
 
     Pageable pageRequest = new PageRequest(0, 100);
     Page<Person> persons;
 
     do {
       persons = personRepository.findAll(pageRequest);
-      indexer.indexAll(PERSON_INDEX, persons);
+      indexer.indexAll(Indexer.PERSON_INDEX, persons);
     } while((pageRequest = persons.nextPageable()) != null);
   }
 }
