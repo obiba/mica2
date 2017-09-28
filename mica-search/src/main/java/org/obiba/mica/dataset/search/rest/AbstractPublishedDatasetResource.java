@@ -23,7 +23,6 @@ import javax.validation.constraints.NotNull;
 
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.client.Client;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -38,10 +37,9 @@ import org.obiba.mica.dataset.NoSuchDatasetException;
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
-import org.obiba.mica.dataset.search.DatasetIndexer;
-import org.obiba.mica.dataset.search.VariableIndexer;
 import org.obiba.mica.micaConfig.service.OpalService;
 import org.obiba.mica.spi.search.Indexer;
+import org.obiba.mica.spi.search.Searcher;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
@@ -67,7 +65,7 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
   protected Dtos dtos;
 
   @Inject
-  protected Client client;
+  protected Searcher searcher;
 
   @Inject
   protected ObjectMapper objectMapper;
@@ -82,7 +80,7 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
     query = QueryBuilders.boolQuery().must(query)
       .must(QueryBuilders.idsQuery(Indexer.DATASET_TYPE).addIds(datasetId));
 
-    SearchRequestBuilder search = client.prepareSearch() //
+    SearchRequestBuilder search = searcher.prepareSearch() //
       .setIndices(Indexer.PUBLISHED_DATASET_INDEX) //
       .setTypes(Indexer.DATASET_TYPE) //
       .setQuery(query);
@@ -126,7 +124,7 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
   protected Mica.DatasetVariablesDto getDatasetVariableDtosInternal(QueryBuilder query, int from, int limit, @Nullable String sort,
     @Nullable String order) {
 
-    SearchRequestBuilder search = client.prepareSearch() //
+    SearchRequestBuilder search = searcher.prepareSearch() //
       .setIndices(Indexer.PUBLISHED_VARIABLE_INDEX) //
       .setTypes(Indexer.VARIABLE_TYPE) //
       .setQuery(query) //
@@ -281,7 +279,7 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
   private DatasetVariable getDatasetVariableInternal(String indexType, String variableId, String variableName) {
     QueryBuilder query = QueryBuilders.idsQuery(indexType).addIds(variableId);
 
-    SearchRequestBuilder search = client.prepareSearch() //
+    SearchRequestBuilder search = searcher.prepareSearch() //
       .setIndices(Indexer.PUBLISHED_VARIABLE_INDEX) //
       .setTypes(indexType) //
       .setQuery(query);

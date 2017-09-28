@@ -1,5 +1,5 @@
 skipTests = false
-version=0.9-SNAPSHOT
+version=3.1-SNAPSHOT
 mvn_exec = mvn -Dmaven.test.skip=${skipTests}
 current_dir = $(shell pwd)
 ifdef MICA_HOME
@@ -46,6 +46,9 @@ install:
 core:
 	cd mica-core && ${mvn_exec} install
 
+spi:
+	cd mica-spi && ${mvn_exec} install
+
 search:
 	cd mica-search && ${mvn_exec} install
 
@@ -69,6 +72,13 @@ restlog:
 seed:
 	mkdir -p mica-webapp/target/mica_home/seed/in && \
 	cp mica-core/src/test/resources/seed/studies.json mica-webapp/target/mica_home/seed/in
+
+plugins:
+	rm -rf ${mica_home}/plugins/* && \
+	mkdir -p ${mica_home}/plugins && \
+	cd ../mica-search-es && mvn clean install && \
+	cp target/mica-search-es-2.4-SNAPSHOT-dist.zip ${mica_home}/plugins
+#	cd ${mica_home}/plugins && unzip *zip && rm *zip
 
 run:
 	cd mica-webapp && \

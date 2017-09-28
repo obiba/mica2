@@ -118,7 +118,7 @@ public class EsPublishedDatasetVariableService extends AbstractDocumentService<D
   private SearchResponse executeCountQuery(QueryBuilder queryBuilder, AbstractAggregationBuilder aggregationBuilder) {
     QueryBuilder accessFilter = filterByAccess();
 
-    SearchRequestBuilder requestBuilder = client.prepareSearch(getIndexName()) //
+    SearchRequestBuilder requestBuilder = searcher.prepareSearch(getIndexName()) //
       .setTypes(getType()) //
       .setSize(0) //
       .setQuery(

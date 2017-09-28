@@ -21,7 +21,6 @@ import javax.inject.Inject;
 
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.client.Client;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.sort.SortBuilders;
@@ -29,12 +28,12 @@ import org.elasticsearch.search.sort.SortOrder;
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.HarmonizationDatasetState;
 import org.obiba.mica.dataset.domain.StudyDatasetState;
-import org.obiba.mica.dataset.search.DatasetIndexer;
 import org.obiba.mica.dataset.service.HarmonizationDatasetService;
 import org.obiba.mica.dataset.service.CollectionDatasetService;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.spi.search.Indexer;
+import org.obiba.mica.spi.search.Searcher;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.slf4j.Logger;
@@ -55,7 +54,7 @@ public abstract class AbstractPublishedDatasetsResource<T extends Dataset> {
   private Dtos dtos;
 
   @Inject
-  private Client client;
+  private Searcher searcher;
 
   @Inject
   private ObjectMapper objectMapper;
@@ -81,7 +80,7 @@ public abstract class AbstractPublishedDatasetsResource<T extends Dataset> {
 
     QueryBuilder postFilter = getPostFilter(clazz, studyId);
 
-    SearchRequestBuilder search = client.prepareSearch() //
+    SearchRequestBuilder search = searcher.prepareSearch() //
       .setIndices(Indexer.PUBLISHED_DATASET_INDEX) //
       .setTypes(Indexer.DATASET_TYPE) //
       .setQuery(postFilter == null ? query : QueryBuilders.boolQuery().must(query).must(postFilter)) //

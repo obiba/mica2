@@ -35,6 +35,9 @@ shiro:
 # Other advanced settings
 #
 
+plugins:
+  updateSite: https://plugins.obiba.org/unstable
+
 spring:
     profiles: dev
     data:

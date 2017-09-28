@@ -36,7 +36,6 @@ import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.HarmonizationDatasetState;
 import org.obiba.mica.dataset.domain.StudyDatasetState;
-import org.obiba.mica.dataset.search.DatasetIndexer;
 import org.obiba.mica.dataset.service.CollectionDatasetService;
 import org.obiba.mica.dataset.service.HarmonizationDatasetService;
 import org.obiba.mica.micaConfig.service.helper.AggregationAliasHelper;
@@ -215,7 +214,7 @@ public class DatasetQuery extends AbstractDocumentQuery {
     QueryBuilder accessFilter = getAccessFilter();
     QueryBuilder query = hasQueryBuilder() ? getQueryBuilder() : QueryBuilders.matchAllQuery();
 
-    SearchRequestBuilder requestBuilder = client.prepareSearch(getSearchIndex()) //
+    SearchRequestBuilder requestBuilder = searcher.prepareSearch(getSearchIndex()) //
       .setTypes(getSearchType()) //
       .setSize(0) //
       .setQuery(accessFilter == null ? query : QueryBuilders.boolQuery().must(query).must(accessFilter)) //

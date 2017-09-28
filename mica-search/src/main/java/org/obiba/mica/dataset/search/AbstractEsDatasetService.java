@@ -33,7 +33,7 @@ public abstract class AbstractEsDatasetService<T> extends AbstractDocumentServic
     BoolQueryBuilder builder = QueryBuilders.boolQuery()
       .should(QueryBuilders.existsQuery("studyTable.studyId"));
 
-    SearchRequestBuilder requestBuilder = client.prepareSearch(getIndexName()) //
+    SearchRequestBuilder requestBuilder = searcher.prepareSearch(getIndexName()) //
       .setTypes(getType()) //
       .setSearchType(SearchType.DFS_QUERY_THEN_FETCH) //
       .setQuery(builder)
