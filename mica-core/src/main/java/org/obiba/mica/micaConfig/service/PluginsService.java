@@ -26,7 +26,6 @@ import org.obiba.plugins.PluginsManagerHelper;
 import org.obiba.plugins.spi.ServicePlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
@@ -39,7 +38,6 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Component
@@ -99,8 +97,6 @@ public class PluginsService implements EnvironmentAware {
     }
     archiveDir = new File(pluginsDir, ".archive");
     initPlugins();
-    //initServicePlugins();
-    //initSearchEngineServicePlugin();
   }
 
   /**

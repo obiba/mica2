@@ -10,16 +10,29 @@
 
 package org.obiba.mica.spi.search;
 
-import org.elasticsearch.client.Client;
 import org.obiba.plugins.spi.ServicePlugin;
 
 public interface SearchEngineService extends ServicePlugin {
 
+  /**
+   * Provides some Mica configurations usefull for the search engine.
+   *
+   * @param configurationProvider
+   */
   void setConfigurationProvider(ConfigurationProvider configurationProvider);
 
+  /**
+   * Does the indexing stuff.
+   *
+   * @return
+   */
   Indexer getIndexer();
 
-  // TODO isolate search functionalities
-  Client getClient();
+  /**
+   * Does the search stuff.
+   *
+   * @return
+   */
+  Searcher getSearcher();
 
 }

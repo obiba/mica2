@@ -26,6 +26,7 @@ import org.elasticsearch.search.sort.SortOrder;
 import org.obiba.mica.core.service.DocumentService;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.security.service.SubjectAclService;
+import org.obiba.mica.spi.search.Searcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sun.util.locale.LanguageTag;
@@ -44,7 +45,7 @@ public abstract class AbstractDocumentService<T> implements DocumentService<T> {
   protected static final int MAX_SIZE = 10000;
 
   @Inject
-  protected SearchEngineClient client;
+  protected Searcher searcher;
 
   @Inject
   protected MicaConfigService micaConfigService;
@@ -104,7 +105,7 @@ public abstract class AbstractDocumentService<T> implements DocumentService<T> {
       execQuery = boolQueryBuilder.must(execQuery);
     }
 
-    SearchRequestBuilder search = client.prepareSearch() //
+    SearchRequestBuilder search = searcher.prepareSearch() //
         .setIndices(getIndexName()) //
         .setTypes(getType()) //
         .setQuery(execQuery) //
@@ -155,7 +156,7 @@ public abstract class AbstractDocumentService<T> implements DocumentService<T> {
         .defaultField(fieldName + ".analyzed")
         .defaultOperator(QueryStringQueryBuilder.Operator.OR);
 
-    SearchRequestBuilder search = client.prepareSearch() //
+    SearchRequestBuilder search = searcher.prepareSearch() //
         .setIndices(getIndexName()) //
         .setTypes(getType()) //
         .setQuery(queryExec) //
@@ -187,7 +188,7 @@ public abstract class AbstractDocumentService<T> implements DocumentService<T> {
 
   protected long getCount(QueryBuilder builder) {
     try {
-      SearchRequestBuilder search = client.prepareSearch().setIndices(getIndexName()).setTypes(getType())
+      SearchRequestBuilder search = searcher.prepareSearch().setIndices(getIndexName()).setTypes(getType())
           .setQuery(builder).setFrom(0).setSize(0);
 
       SearchResponse response = search.execute().actionGet();
@@ -240,13 +241,13 @@ public abstract class AbstractDocumentService<T> implements DocumentService<T> {
   }
 
   private boolean indexExists() {
-    return client.admin().indices().prepareExists(getIndexName()).get().isExists();
+    return searcher.admin().indices().prepareExists(getIndexName()).get().isExists();
   }
 
   private List<T> executeQueryInternal(QueryBuilder queryBuilder, int from, int size, List<String> ids) {
     QueryBuilder accessFilter = filterByAccess();
 
-    SearchRequestBuilder requestBuilder = client.prepareSearch(getIndexName()) //
+    SearchRequestBuilder requestBuilder = searcher.prepareSearch(getIndexName()) //
         .setTypes(getType()) //
         .setSearchType(SearchType.DFS_QUERY_THEN_FETCH) //
         .setQuery(

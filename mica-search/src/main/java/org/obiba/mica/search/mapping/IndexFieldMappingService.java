@@ -10,46 +10,39 @@
 
 package org.obiba.mica.search.mapping;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.function.Function;
-
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-
-import org.elasticsearch.action.admin.indices.mapping.get.GetMappingsResponse;
-import org.elasticsearch.client.Client;
-import org.elasticsearch.cluster.metadata.MappingMetaData;
-import org.elasticsearch.common.collect.ImmutableOpenMap;
-import org.obiba.mica.dataset.event.HarmonizationDatasetIndexedEvent;
-import org.obiba.mica.dataset.event.StudyDatasetIndexedEvent;
-import org.obiba.mica.dataset.search.DatasetIndexer;
-import org.obiba.mica.dataset.search.VariableIndexer;
-import org.obiba.mica.network.event.IndexNetworksEvent;
-import org.obiba.mica.network.search.NetworkIndexer;
-import org.obiba.mica.search.SearchEngineClient;
-import org.obiba.mica.spi.search.Indexer;
-import org.obiba.mica.spi.search.SearchEngineService;
-import org.obiba.mica.study.event.IndexStudiesEvent;
-import org.obiba.mica.study.search.StudyIndexer;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.stereotype.Component;
-
 import com.google.common.collect.Maps;
 import com.google.common.eventbus.Subscribe;
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.Option;
 import com.jayway.jsonpath.ReadContext;
+import org.elasticsearch.action.admin.indices.mapping.get.GetMappingsResponse;
+import org.elasticsearch.cluster.metadata.MappingMetaData;
+import org.elasticsearch.common.collect.ImmutableOpenMap;
+import org.obiba.mica.dataset.event.HarmonizationDatasetIndexedEvent;
+import org.obiba.mica.dataset.event.StudyDatasetIndexedEvent;
+import org.obiba.mica.network.event.IndexNetworksEvent;
+import org.obiba.mica.spi.search.Indexer;
+import org.obiba.mica.spi.search.Searcher;
+import org.obiba.mica.study.event.IndexStudiesEvent;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.Function;
 
 /**
  * Service providing Elasticsearch Index Mapping information
  */
 @Component
 public class IndexFieldMappingService {
+
   @Inject
-  private SearchEngineClient client;
+  private Searcher searcher;
 
   private Map<String, IndexFieldMapping> mappings;
 
@@ -105,7 +98,7 @@ public class IndexFieldMappingService {
 
   private IndexFieldMapping getMapping(String name, String type) {
     IndexFieldMapping mapping = mappings.get(name);
-    Function<String, Boolean> indexExists = (n) -> client.admin().indices().prepareExists(n).get().isExists();
+    Function<String, Boolean> indexExists = (n) -> searcher.admin().indices().prepareExists(n).get().isExists();
 
     if (mapping == null) {
       mapping = new IndexFieldMappingImpl(indexExists.apply(name) ? getContext(name, type) : null);
@@ -117,7 +110,7 @@ public class IndexFieldMappingService {
   }
 
   private ReadContext getContext(String indexName, String indexType) {
-    GetMappingsResponse result = client.admin().indices().prepareGetMappings(indexName).execute().actionGet();
+    GetMappingsResponse result = searcher.admin().indices().prepareGetMappings(indexName).execute().actionGet();
     ImmutableOpenMap<String, ImmutableOpenMap<String, MappingMetaData>> mappings = result.getMappings();
     MappingMetaData metaData = mappings.get(indexName).get(indexType);
     Object jsonContent = Configuration.defaultConfiguration().jsonProvider().parse(metaData.source().toString());

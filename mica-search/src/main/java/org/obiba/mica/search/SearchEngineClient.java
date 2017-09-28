@@ -12,28 +12,30 @@ package org.obiba.mica.search;
 
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.client.AdminClient;
-import org.elasticsearch.client.Client;
 import org.obiba.mica.micaConfig.service.PluginsService;
+import org.obiba.mica.spi.search.Searcher;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 
 @Component
-public class SearchEngineClient {
+public class SearchEngineClient implements Searcher {
 
   @Inject
   private PluginsService pluginsService;
 
-  private Client getClient() {
-    return pluginsService.getSearchEngineService().getClient();
+  private Searcher getSearcher() {
+    return pluginsService.getSearchEngineService().getSearcher();
   }
 
+  @Override
   public SearchRequestBuilder prepareSearch(String... indices) {
-    return getClient().prepareSearch(indices);
+    return getSearcher().prepareSearch(indices);
   }
 
+  @Override
   public AdminClient admin() {
-    return getClient().admin();
+    return getSearcher().admin();
   }
 
 }

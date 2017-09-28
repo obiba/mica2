@@ -21,24 +21,10 @@ import java.util.ServiceLoader;
 /**
  * {@link SearchEngineService} loader.
  */
-public class SearchEngineServiceLoader extends ServicePluginLoader<SearchEngineService> {
-
-  private static SearchEngineServiceLoader loader;
-
-  private ServiceLoader<SearchEngineService> serviceLoader = ServiceLoader.load(SearchEngineService.class);
-
-  public static synchronized SearchEngineServiceLoader get() {
-    if (loader == null) loader = new SearchEngineServiceLoader();
-    return loader;
-  }
+public class SearchEngineServiceLoader {
 
   public static Collection<SearchEngineService> get(URLClassLoader classLoader) {
-    List<SearchEngineService> services = Lists.newArrayList(ServiceLoader.load(SearchEngineService.class, classLoader).iterator());
-    return services;
+    return Lists.newArrayList(ServiceLoader.load(SearchEngineService.class, classLoader).iterator());
   }
 
-  @Override
-  protected ServiceLoader<SearchEngineService> getServiceLoader() {
-    return serviceLoader;
-  }
 }

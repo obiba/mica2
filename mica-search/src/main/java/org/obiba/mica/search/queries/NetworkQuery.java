@@ -37,7 +37,6 @@ import org.elasticsearch.search.aggregations.Aggregations;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.network.domain.NetworkState;
-import org.obiba.mica.network.search.NetworkIndexer;
 import org.obiba.mica.network.service.PublishedNetworkService;
 import org.obiba.mica.search.CountStatsData;
 import org.obiba.mica.micaConfig.service.helper.AggregationMetaDataProvider;
@@ -171,7 +170,7 @@ public class NetworkQuery extends AbstractDocumentQuery {
   }
 
   public Map<String, List<String>> getStudyCountsByNetwork() {
-    SearchRequestBuilder requestBuilder = client.prepareSearch(getSearchIndex()) //
+    SearchRequestBuilder requestBuilder = searcher.prepareSearch(getSearchIndex()) //
       .setTypes(getSearchType()) //
       .setSearchType(SearchType.COUNT) //
       .setQuery(hasQueryBuilder() ? getQueryBuilder() : QueryBuilders.matchAllQuery()) //
