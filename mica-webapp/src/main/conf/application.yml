@@ -50,9 +50,3 @@ spring:
             uri: mongodb://localhost:27017/mica
     profiles: prod
 
-#
-# Plugins
-#
-
-plugins:
-  updateSite: https://plugins.obiba.org/stable
