@@ -115,9 +115,11 @@ public class PluginsService implements EnvironmentAware {
       // rescan plugins
       plugins = getPlugins(true);
     }
+    boolean micaSearchFound = false; // mica-search plugin is a singleton
     for (PluginResources plugin : plugins) {
-      if ("mica-search".equals(plugin.getType())) {
+      if ("mica-search".equals(plugin.getType()) && !micaSearchFound) {
         initSearchEngineServicePlugin(plugin);
+        micaSearchFound = true;
       }
     }
   }
