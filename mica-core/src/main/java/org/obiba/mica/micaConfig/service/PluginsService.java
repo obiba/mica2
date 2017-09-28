@@ -50,6 +50,10 @@ public class PluginsService implements EnvironmentAware {
 
   private static final String DEFAULT_PLUGINS_UPDATE_SITE = "https://plugins.obiba.org/stable";
 
+  private static final String[] ES_CONFIGURATION = new String[]{"dataNode", "clusterName", "shards", "replicas",
+      "settings", "maxConcurrentJoinQueries", "concurrentJoinQueriesWaitTimeout",
+      "transportClient", "transportAddress", "transportSniff"};
+
   @Inject
   private ConfigurationProvider configurationProvider;
 
@@ -121,7 +125,7 @@ public class PluginsService implements EnvironmentAware {
   private void initSearchEngineServicePlugin(PluginResources plugin) {
     SearchEngineService service = SearchEngineServiceLoader.get(plugin.getURLClassLoader()).iterator().next();
     Properties properties = plugin.getProperties();
-    for (String key : new String[] {"dataNode","clusterName","shards","replicas", "settings", "maxConcurrentJoinQueries", "concurrentJoinQueriesWaitTimeout"}) {
+    for (String key : ES_CONFIGURATION) {
       if (esPropertyResolver.containsProperty(key))
         properties.setProperty(key, esPropertyResolver.getProperty(key));
     }
