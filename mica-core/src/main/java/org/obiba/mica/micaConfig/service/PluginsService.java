@@ -38,6 +38,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.stream.Collectors;
 
 @Component
@@ -119,7 +120,12 @@ public class PluginsService implements EnvironmentAware {
 
   private void initSearchEngineServicePlugin(PluginResources plugin) {
     SearchEngineService service = SearchEngineServiceLoader.get(plugin.getURLClassLoader()).iterator().next();
-    service.configure(plugin.getProperties());
+    Properties properties = plugin.getProperties();
+    for (String key : new String[] {"dataNode","clusterName","shards","replicas", "settings", "maxConcurrentJoinQueries", "concurrentJoinQueriesWaitTimeout"}) {
+      if (esPropertyResolver.containsProperty(key))
+        properties.setProperty(key, esPropertyResolver.getProperty(key));
+    }
+    service.configure(properties);
     service.setConfigurationProvider(configurationProvider);
     service.start();
     servicePlugins.add(service);
