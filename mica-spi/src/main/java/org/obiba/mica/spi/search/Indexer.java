@@ -26,7 +26,7 @@ public interface Indexer {
 
   String DRAFT_DATASET_INDEX = "dataset-draft";
   String PUBLISHED_DATASET_INDEX = "dataset-published";
-  String DATASET_TYPE = MAPPING_NAME;
+  String DATASET_TYPE = "Dataset";
   String[] DATASET_LOCALIZED_ANALYZED_FIELDS = {"acronym", "name", "description"};
 
   String DRAFT_VARIABLE_INDEX = "variable-draft";
