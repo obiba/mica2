@@ -107,6 +107,8 @@ public interface Indexer {
    */
   void dropIndex(String indexName);
 
+  IndexFieldMapping getIndexfieldMapping(String indexName, String type);
+
   interface IndexConfigurationListener {
     void onIndexCreated(SearchEngineService searchEngineService, String indexName);
   }

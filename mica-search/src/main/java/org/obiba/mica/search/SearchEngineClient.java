@@ -33,9 +33,4 @@ public class SearchEngineClient implements Searcher {
     return getSearcher().prepareSearch(indices);
   }
 
-  @Override
-  public AdminClient admin() {
-    return getSearcher().admin();
-  }
-
 }

@@ -22,6 +22,4 @@ public interface Searcher {
 
   SearchRequestBuilder prepareSearch(String... indices);
 
-  AdminClient admin();
-
 }
