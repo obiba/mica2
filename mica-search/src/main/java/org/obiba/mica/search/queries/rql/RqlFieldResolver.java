@@ -18,12 +18,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.elasticsearch.common.Strings;
-import org.obiba.mica.dataset.search.DatasetIndexer;
-import org.obiba.mica.dataset.search.VariableIndexer;
-import org.obiba.mica.network.search.NetworkIndexer;
-import org.obiba.mica.search.mapping.IndexFieldMapping;
+import org.obiba.mica.spi.search.IndexFieldMapping;
 import org.obiba.mica.spi.search.Indexer;
-import org.obiba.mica.study.search.StudyIndexer;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.obiba.opal.core.domain.taxonomy.TaxonomyEntity;
 import org.obiba.opal.core.domain.taxonomy.Vocabulary;

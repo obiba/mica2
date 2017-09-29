@@ -22,6 +22,7 @@ import org.elasticsearch.common.collect.ImmutableOpenMap;
 import org.obiba.mica.dataset.event.HarmonizationDatasetIndexedEvent;
 import org.obiba.mica.dataset.event.StudyDatasetIndexedEvent;
 import org.obiba.mica.network.event.IndexNetworksEvent;
+import org.obiba.mica.spi.search.IndexFieldMapping;
 import org.obiba.mica.spi.search.Indexer;
 import org.obiba.mica.spi.search.Searcher;
 import org.obiba.mica.study.event.IndexStudiesEvent;
@@ -42,7 +43,7 @@ import java.util.function.Function;
 public class IndexFieldMappingService {
 
   @Inject
-  private Searcher searcher;
+  private Indexer indexer;
 
   private Map<String, IndexFieldMapping> mappings;
 
@@ -97,45 +98,12 @@ public class IndexFieldMappingService {
   }
 
   private IndexFieldMapping getMapping(String name, String type) {
-    IndexFieldMapping mapping = mappings.get(name);
-    Function<String, Boolean> indexExists = (n) -> searcher.admin().indices().prepareExists(n).get().isExists();
-
-    if (mapping == null) {
-      mapping = new IndexFieldMappingImpl(indexExists.apply(name) ? getContext(name, type) : null);
-      mappings.put(name, mapping);
-    }
-
-    return mapping;
+    if (!mappings.containsKey(name))
+      mappings.put(name, indexer.getIndexfieldMapping(name, type));
+    return mappings.get(name);
 
   }
 
-  private ReadContext getContext(String indexName, String indexType) {
-    GetMappingsResponse result = searcher.admin().indices().prepareGetMappings(indexName).execute().actionGet();
-    ImmutableOpenMap<String, ImmutableOpenMap<String, MappingMetaData>> mappings = result.getMappings();
-    MappingMetaData metaData = mappings.get(indexName).get(indexType);
-    Object jsonContent = Configuration.defaultConfiguration().jsonProvider().parse(metaData.source().toString());
-    return JsonPath.using(Configuration.defaultConfiguration().addOptions(Option.ALWAYS_RETURN_LIST)).parse(jsonContent);
-  }
 
-  private static class IndexFieldMappingImpl implements IndexFieldMapping {
-
-    private Optional<ReadContext> context;
-
-    IndexFieldMappingImpl(ReadContext ctx) {
-      context = Optional.ofNullable(ctx);
-    }
-
-    @Override
-    public boolean isAnalyzed(String fieldName) {
-      boolean analyzed = false;
-      if (context.isPresent()) {
-        List<Object> result = context.get().read(String.format("$..%s..analyzed", fieldName.replaceAll("\\.", "..")));
-        analyzed = result.size() > 0;
-      }
-
-      return analyzed;
-    }
-
-  }
 
 }

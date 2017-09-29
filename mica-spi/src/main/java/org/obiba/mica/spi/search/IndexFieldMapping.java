@@ -8,7 +8,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.obiba.mica.search.mapping;
+package org.obiba.mica.spi.search;
 
 public interface IndexFieldMapping {
   boolean isAnalyzed(String fieldName);

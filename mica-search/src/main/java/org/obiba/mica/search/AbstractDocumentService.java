@@ -26,6 +26,7 @@ import org.elasticsearch.search.sort.SortOrder;
 import org.obiba.mica.core.service.DocumentService;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.security.service.SubjectAclService;
+import org.obiba.mica.spi.search.Indexer;
 import org.obiba.mica.spi.search.Searcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,6 +47,9 @@ public abstract class AbstractDocumentService<T> implements DocumentService<T> {
 
   @Inject
   protected Searcher searcher;
+
+  @Inject
+  protected Indexer indexer;
 
   @Inject
   protected MicaConfigService micaConfigService;
@@ -241,7 +245,7 @@ public abstract class AbstractDocumentService<T> implements DocumentService<T> {
   }
 
   private boolean indexExists() {
-    return searcher.admin().indices().prepareExists(getIndexName()).get().isExists();
+    return indexer.hasIndex(getIndexName());
   }
 
   private List<T> executeQueryInternal(QueryBuilder queryBuilder, int from, int size, List<String> ids) {

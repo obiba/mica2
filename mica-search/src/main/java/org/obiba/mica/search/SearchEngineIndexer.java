@@ -11,6 +11,7 @@
 package org.obiba.mica.search;
 
 import org.obiba.mica.micaConfig.service.PluginsService;
+import org.obiba.mica.spi.search.IndexFieldMapping;
 import org.obiba.mica.spi.search.Indexable;
 import org.obiba.mica.spi.search.Indexer;
 import org.springframework.data.domain.Persistable;
@@ -108,5 +109,10 @@ public class SearchEngineIndexer implements Indexer {
   @Override
   public void dropIndex(String indexName) {
     getIndexer().dropIndex(indexName);
+  }
+
+  @Override
+  public IndexFieldMapping getIndexfieldMapping(String indexName, String type) {
+    return getIndexer().getIndexfieldMapping(indexName, type);
   }
 }
