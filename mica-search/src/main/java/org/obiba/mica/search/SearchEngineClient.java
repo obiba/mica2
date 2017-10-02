@@ -17,6 +17,7 @@ import org.obiba.mica.spi.search.Searcher;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
+import java.util.List;
 
 @Component
 public class SearchEngineClient implements Searcher {
@@ -33,4 +34,8 @@ public class SearchEngineClient implements Searcher {
     return getSearcher().prepareSearch(indices);
   }
 
+  @Override
+  public List<String> suggest(String indexName, String type, int limit, String locale, String queryString, String defaultFieldName) {
+    return getSearcher().suggest(indexName, type, limit, locale, queryString, defaultFieldName);
+  }
 }

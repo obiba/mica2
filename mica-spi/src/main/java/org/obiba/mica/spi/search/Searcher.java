@@ -13,6 +13,8 @@ package org.obiba.mica.spi.search;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.client.AdminClient;
 
+import java.util.List;
+
 /**
  * Defines the search operations that can be performed within the search engine.
  *
@@ -21,5 +23,18 @@ import org.elasticsearch.client.AdminClient;
 public interface Searcher {
 
   SearchRequestBuilder prepareSearch(String... indices);
+
+  /**
+   * Get field suggestions from query.
+   *
+   * @param indexName
+   * @param type
+   * @param limit
+   * @param locale
+   * @param queryString
+   * @param defaultFieldName
+   * @return
+   */
+  List<String> suggest(String indexName, String type, int limit, String locale, String queryString, String defaultFieldName);
 
 }

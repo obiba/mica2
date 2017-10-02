@@ -149,40 +149,8 @@ public abstract class AbstractDocumentService<T> implements DocumentService<T> {
   public List<String> suggest(int limit, String locale, String queryString) {
     List<String> suggestions = Lists.newArrayList();
     // query default fields separately otherwise we do not know which field has matched and suggestion might not be correct
-    getDefaultLocalizedFields().forEach(df -> suggestions.addAll(suggest(limit, locale, queryString, df)));
+    getDefaultLocalizedFields().forEach(df -> suggestions.addAll(searcher.suggest(getIndexName(), getType(), limit, locale, queryString, df)));
     return suggestions;
-  }
-
-  private List<String> suggest(int limit, String locale, String queryString, String defaultFieldName) {
-    String fieldName = defaultFieldName + "." + locale;
-
-    QueryBuilder queryExec = QueryBuilders.queryStringQuery(queryString)
-        .defaultField(fieldName + ".analyzed")
-        .defaultOperator(QueryStringQueryBuilder.Operator.OR);
-
-    SearchRequestBuilder search = searcher.prepareSearch() //
-        .setIndices(getIndexName()) //
-        .setTypes(getType()) //
-        .setQuery(queryExec) //
-        .setFrom(0) //
-        .setSize(limit)
-        .addSort(SortBuilders.scoreSort().order(SortOrder.DESC))
-        .setFetchSource(new String[]{fieldName}, null);
-
-    log.debug("Request /{}/{}", getIndexName(), getType());
-    if (log.isTraceEnabled()) log.trace("Request /{}/{}: {}", getIndexName(), getType(), search.toString());
-    SearchResponse response = search.execute().actionGet();
-
-    List<String> names = Lists.newArrayList();
-    response.getHits().forEach(hit -> {
-          String value = ((Map<String, Object>) hit.getSource().get(defaultFieldName)).get(locale).toString().toLowerCase();
-          names.add(Joiner.on(" ").join(Splitter.on(" ").trimResults().splitToList(value).stream()
-              .filter(str -> !str.contains("[") && !str.contains("(") && !str.contains("{") && !str.contains("]") && !str.contains(")") && !str.contains("}"))
-              .map(str -> str.replace(":", "").replace(",", ""))
-              .filter(str -> !str.isEmpty()).collect(Collectors.toList())));
-        }
-    );
-    return names;
   }
 
   @Override
