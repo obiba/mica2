@@ -10,19 +10,17 @@
 
 package org.obiba.mica.search;
 
-import com.google.common.base.Joiner;
-import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import org.elasticsearch.ElasticsearchException;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.index.IndexNotFoundException;
-import org.elasticsearch.index.query.*;
+import org.elasticsearch.index.query.IdsQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
-import org.elasticsearch.search.sort.SortBuilders;
-import org.elasticsearch.search.sort.SortOrder;
 import org.obiba.mica.core.service.DocumentService;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.security.service.SubjectAclService;
@@ -34,7 +32,9 @@ import sun.util.locale.LanguageTag;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -52,7 +52,7 @@ public abstract class AbstractDocumentService<T> implements DocumentService<T> {
   protected Indexer indexer;
 
   @Inject
-  protected MicaConfigService micaConfigService;
+  private MicaConfigService micaConfigService;
 
   @Inject
   protected SubjectAclService subjectAclService;
@@ -94,49 +94,19 @@ public abstract class AbstractDocumentService<T> implements DocumentService<T> {
                            @Nullable String queryString, @Nullable List<String> fields, @Nullable List<String> excludedFields) {
     if (!indexExists()) return new Documents<>(0, from, limit);
 
-    QueryStringQueryBuilder query = queryString != null ? QueryBuilders.queryStringQuery(queryString) : null;
+    Searcher.TermFilter studyIdFilter = getStudyIdFilter(studyId);
+    Searcher.IdFilter idFilter = getAccessibleIdFilter();
 
-    if (query != null && fields != null) fields.forEach(query::field);
+    Searcher.DocumentResults results = searcher.getDocuments(getIndexName(), getType(), from, limit, sort, order, queryString, studyIdFilter, idFilter, fields, excludedFields);
 
-    QueryBuilder postFilter = getPostFilter(studyId);
-
-    QueryBuilder execQuery = postFilter == null ? query : query == null ? postFilter : QueryBuilders.boolQuery().must(query).filter(postFilter);
-
-    if (excludedFields != null) {
-      BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
-      excludedFields.forEach(f -> boolQueryBuilder.mustNot(
-          QueryBuilders.boolQuery().must(QueryBuilders.termQuery(f, "true")).must(QueryBuilders.existsQuery(f))));
-      execQuery = boolQueryBuilder.must(execQuery);
-    }
-
-    SearchRequestBuilder search = searcher.prepareSearch() //
-        .setIndices(getIndexName()) //
-        .setTypes(getType()) //
-        .setQuery(execQuery) //
-        .setFrom(from) //
-        .setSize(limit);
-
-    if (sort != null) {
-      search.addSort(
-          SortBuilders.fieldSort(sort).order(order == null ? SortOrder.ASC : SortOrder.valueOf(order.toUpperCase())));
-    }
-
-    log.debug("Request /{}/{}", getIndexName(), getType());
-    if (log.isTraceEnabled()) log.trace("Request /{}/{}: {}", getIndexName(), getType(), search.toString());
-    SearchResponse response = search.execute().actionGet();
-    Documents<T> documents = new Documents<>(Long.valueOf(response.getHits().getTotalHits()).intValue(), from, limit);
-    log.debug("Response /{}/{}", getIndexName(), getType());
-    if (log.isTraceEnabled())
-      log.trace("Response /{}/{}: totalHits={}", getIndexName(), getType(), response.getHits().getTotalHits());
-
-    response.getHits().forEach(hit -> {
+    Documents<T> documents = new Documents<>(Long.valueOf(results.getTotal()).intValue(), from, limit);
+    results.getDocuments().forEach(res -> {
       try {
-        documents.add(processHit(hit));
+        documents.add(processHit(res));
       } catch (IOException e) {
         log.error("Failed processing found hits.", e);
       }
     });
-
     return documents;
   }
 
@@ -178,7 +148,34 @@ public abstract class AbstractDocumentService<T> implements DocumentService<T> {
    * @return
    * @throws IOException
    */
-  protected abstract T processHit(SearchHit hit) throws IOException;
+  // TODO remove when will be ES independent
+  protected T processHit(SearchHit hit) throws IOException {
+    return processHit(new Searcher.DocumentResult() {
+      @Override
+      public String getId() {
+        return hit.getId();
+      }
+
+      @Override
+      public InputStream getSourceInputStream() {
+        return new ByteArrayInputStream(hit.getSourceAsString().getBytes());
+      }
+
+      @Override
+      public String getClassName() {
+        return (String) hit.getSource().get("className");
+      }
+    });
+  }
+
+  /**
+   * Turns a search result input stream into document's pojo.
+   *
+   * @param res
+   * @return
+   * @throws IOException
+   */
+  protected abstract T processHit(Searcher.DocumentResult res) throws IOException;
 
   /**
    * Get the index where the search must take place.
@@ -204,9 +201,31 @@ public abstract class AbstractDocumentService<T> implements DocumentService<T> {
     return null;
   }
 
+  /**
+   * If access check apply, get the corresponding filter.
+   *
+   * @return
+   */
+  @Nullable
+  protected Searcher.IdFilter getAccessibleIdFilter() {
+    return null;
+  }
+
+  protected String getStudyIdField() {
+    return "studyIds";
+  }
+
   protected List<T> executeQuery(QueryBuilder queryBuilder, int from, int size) {
     return executeQueryInternal(queryBuilder, from, size, null);
   }
+
+  protected boolean isOpenAccess() {
+    return micaConfigService.getConfig().isOpenAccess();
+  }
+
+  //
+  // Private methods
+  //
 
   private List<T> executeQueryByIds(QueryBuilder queryBuilder, int from, int size, List<String> ids) {
     return executeQueryInternal(queryBuilder, from, size, ids);
@@ -244,7 +263,7 @@ public abstract class AbstractDocumentService<T> implements DocumentService<T> {
     }
   }
 
-  protected List<T> processHitsOrderByIds(SearchHits hits, List<String> ids) {
+  private List<T> processHitsOrderByIds(SearchHits hits, List<String> ids) {
     TreeMap<Integer, T> documents = new TreeMap<>();
 
     hits.forEach(hit -> {
@@ -259,7 +278,7 @@ public abstract class AbstractDocumentService<T> implements DocumentService<T> {
     return documents.entrySet().stream().map(Map.Entry::getValue).collect(Collectors.toList());
   }
 
-  protected List<T> processHits(SearchHits hits) {
+  private List<T> processHits(SearchHits hits) {
     List<T> documents = Lists.newArrayList();
     hits.forEach(hit -> {
       try {
@@ -272,26 +291,25 @@ public abstract class AbstractDocumentService<T> implements DocumentService<T> {
     return documents;
   }
 
-  protected QueryBuilder buildFilteredQuery(List<String> ids) {
+  private QueryBuilder buildFilteredQuery(List<String> ids) {
     IdsQueryBuilder builder = QueryBuilders.idsQuery(getType());
     ids.forEach(builder::addIds);
     return builder;
   }
 
-  @Nullable
-  private QueryBuilder getPostFilter(@Nullable String studyId) {
-    QueryBuilder filter = filterByAccess();
+  private Searcher.TermFilter getStudyIdFilter(@Nullable final String studyId) {
+    if (studyId == null) return null;
+    return new Searcher.TermFilter() {
+      @Override
+      public String getField() {
+        return getStudyIdField();
+      }
 
-    if (studyId != null) {
-      QueryBuilder filterByStudy = filterByStudy(studyId);
-      filter = filter == null ? filterByStudy : QueryBuilders.boolQuery().must(filter).must(filterByStudy);
-    }
-
-    return filter;
-  }
-
-  protected QueryBuilder filterByStudy(String studyId) {
-    return QueryBuilders.termQuery("studyIds", studyId);
+      @Override
+      public String getValue() {
+        return studyId;
+      }
+    };
   }
 
   protected List<String> getLocalizedFields(String... fieldNames) {

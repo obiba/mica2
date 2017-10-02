@@ -13,6 +13,7 @@ package org.obiba.mica.project.search;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,6 +29,7 @@ import org.obiba.mica.project.service.ProjectService;
 import org.obiba.mica.project.service.PublishedProjectService;
 import org.obiba.mica.search.AbstractDocumentService;
 import org.obiba.mica.spi.search.Indexer;
+import org.obiba.mica.spi.search.Searcher;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -43,9 +45,8 @@ public class EsPublishedProjectService extends AbstractDocumentService<Project> 
   private ProjectService projectService;
 
   @Override
-  protected Project processHit(SearchHit hit) throws IOException {
-    InputStream inputStream = new ByteArrayInputStream(hit.getSourceAsString().getBytes());
-    return objectMapper.readValue(inputStream, Project.class);
+  protected Project processHit(Searcher.DocumentResult res) throws IOException {
+    return objectMapper.readValue(res.getSourceInputStream(), Project.class);
   }
 
   @Override
@@ -66,12 +67,24 @@ public class EsPublishedProjectService extends AbstractDocumentService<Project> 
   @Nullable
   @Override
   protected QueryBuilder filterByAccess() {
-    if(micaConfigService.getConfig().isOpenAccess()) return null;
-    List<String> ids = projectService.findPublishedStates().stream().map(ProjectState::getId)
-      .filter(s -> subjectAclService.isAccessible("/project", s))
-      .collect(Collectors.toList());
+    if(isOpenAccess()) return null;
+    Collection<String> ids = getAccessibleIdFilter().getValues();
     return ids.isEmpty()
       ? QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("id"))
       : QueryBuilders.idsQuery().ids(ids);
+  }
+
+  @Nullable
+  @Override
+  protected Searcher.IdFilter getAccessibleIdFilter() {
+    if (isOpenAccess()) return null;
+    return new Searcher.IdFilter() {
+      @Override
+      public Collection<String> getValues() {
+        return projectService.findPublishedStates().stream().map(ProjectState::getId)
+            .filter(s -> subjectAclService.isAccessible("/project", s))
+            .collect(Collectors.toList());
+      }
+    };
   }
 }

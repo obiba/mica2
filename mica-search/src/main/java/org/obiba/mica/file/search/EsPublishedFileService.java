@@ -10,30 +10,26 @@
 
 package org.obiba.mica.file.search;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
-
-import javax.annotation.Nullable;
-import javax.inject.Inject;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.Lists;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.search.SearchHit;
 import org.obiba.mica.file.AttachmentState;
 import org.obiba.mica.file.service.PublishedFileService;
 import org.obiba.mica.search.AbstractDocumentService;
 import org.obiba.mica.search.queries.AbstractDocumentQuery;
 import org.obiba.mica.spi.search.Indexer;
+import org.obiba.mica.spi.search.Searcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.Lists;
+import javax.annotation.Nullable;
+import javax.inject.Inject;
+import java.io.IOException;
+import java.util.List;
 
 @Component
 @Scope(scopeName = "request", proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -54,9 +50,8 @@ public class EsPublishedFileService extends AbstractDocumentService<AttachmentSt
   }
 
   @Override
-  protected AttachmentState processHit(SearchHit hit) throws IOException {
-    InputStream inputStream = new ByteArrayInputStream(hit.getSourceAsString().getBytes());
-    return objectMapper.readValue(inputStream, AttachmentState.class);
+  protected AttachmentState processHit(Searcher.DocumentResult res) throws IOException {
+    return objectMapper.readValue(res.getSourceInputStream(), AttachmentState.class);
   }
 
   @Override
@@ -71,7 +66,7 @@ public class EsPublishedFileService extends AbstractDocumentService<AttachmentSt
 
   @Override
   public Documents<AttachmentState> find(int from, int limit, @Nullable String sort, @Nullable String order,
-    @Nullable String basePath, @Nullable String queryString) {
+                                         @Nullable String basePath, @Nullable String queryString) {
     this.basePath = basePath;
     List<String> fields = Lists.newArrayList("publishedAttachment.name.analyzed", "publishedAttachment.type.analyzed");
     fields.addAll(getLocalizedFields("publishedAttachment.description"));
@@ -81,7 +76,14 @@ public class EsPublishedFileService extends AbstractDocumentService<AttachmentSt
   @Nullable
   @Override
   protected QueryBuilder filterByAccess() {
+    if (isOpenAccess()) return null;
     return fileFilterHelper.makePublishedFilesFilter(basePath);
   }
 
+  @Nullable
+  @Override
+  protected Searcher.IdFilter getAccessibleIdFilter() {
+    if (isOpenAccess()) return null;
+    return fileFilterHelper.makePublishedPathFilter(basePath);
+  }
 }

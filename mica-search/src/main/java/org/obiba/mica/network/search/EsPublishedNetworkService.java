@@ -10,26 +10,23 @@
 
 package org.obiba.mica.network.search;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import javax.inject.Inject;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.search.SearchHit;
 import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.network.domain.NetworkState;
 import org.obiba.mica.network.service.NetworkService;
 import org.obiba.mica.network.service.PublishedNetworkService;
 import org.obiba.mica.search.AbstractDocumentService;
 import org.obiba.mica.spi.search.Indexer;
+import org.obiba.mica.spi.search.Searcher;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import javax.annotation.Nullable;
+import javax.inject.Inject;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.stream.Collectors;
 
 @Service
 public class EsPublishedNetworkService extends AbstractDocumentService<Network>
@@ -47,9 +44,8 @@ public class EsPublishedNetworkService extends AbstractDocumentService<Network>
   }
 
   @Override
-  protected Network processHit(SearchHit hit) throws IOException {
-    InputStream inputStream = new ByteArrayInputStream(hit.getSourceAsString().getBytes());
-    return objectMapper.readValue(inputStream, Network.class);
+  protected Network processHit(Searcher.DocumentResult res) throws IOException {
+    return objectMapper.readValue(res.getSourceInputStream(), Network.class);
   }
 
   @Override
@@ -64,12 +60,24 @@ public class EsPublishedNetworkService extends AbstractDocumentService<Network>
 
   @Override
   protected QueryBuilder filterByAccess() {
-    if(micaConfigService.getConfig().isOpenAccess()) return null;
-    List<String> ids = networkService.findPublishedStates().stream().map(NetworkState::getId)
-      .filter(s -> subjectAclService.isAccessible("/network", s))
-      .collect(Collectors.toList());
+    if (isOpenAccess()) return null;
+    Collection<String> ids = getAccessibleIdFilter().getValues();
     return ids.isEmpty()
-      ? QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("id"))
-      : QueryBuilders.idsQuery().ids(ids);
+        ? QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("id"))
+        : QueryBuilders.idsQuery().ids(ids);
+  }
+
+  @Nullable
+  @Override
+  protected Searcher.IdFilter getAccessibleIdFilter() {
+    if (isOpenAccess()) return null;
+    return new Searcher.IdFilter() {
+      @Override
+      public Collection<String> getValues() {
+        return networkService.findPublishedStates().stream().map(NetworkState::getId)
+            .filter(s -> subjectAclService.isAccessible("/network", s))
+            .collect(Collectors.toList());
+      }
+    };
   }
 }

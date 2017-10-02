@@ -10,30 +10,24 @@
 
 package org.obiba.mica.dataset.search;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import javax.inject.Inject;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.search.SearchHit;
-import org.obiba.mica.dataset.domain.Dataset;
-import org.obiba.mica.dataset.domain.HarmonizationDataset;
-import org.obiba.mica.dataset.domain.HarmonizationDatasetState;
-import org.obiba.mica.dataset.domain.StudyDataset;
-import org.obiba.mica.dataset.domain.StudyDatasetState;
+import org.obiba.mica.dataset.domain.*;
 import org.obiba.mica.dataset.service.CollectionDatasetService;
 import org.obiba.mica.dataset.service.HarmonizationDatasetService;
 import org.obiba.mica.dataset.service.PublishedDatasetService;
 import org.obiba.mica.spi.search.Indexer;
+import org.obiba.mica.spi.search.Searcher;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import javax.annotation.Nullable;
+import javax.inject.Inject;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 class EsPublishedDatasetService extends AbstractEsDatasetService<Dataset> implements PublishedDatasetService {
@@ -60,18 +54,17 @@ class EsPublishedDatasetService extends AbstractEsDatasetService<Dataset> implem
   @Override
   public List<HarmonizationDataset> getHarmonizationDatasetsByStudy(String studyId) {
     BoolQueryBuilder query = QueryBuilders.boolQuery()
-      .must(QueryBuilders.termQuery("className", HarmonizationDataset.class.getSimpleName()))
-      .must(QueryBuilders.termQuery("harmonizationTable.studyId", studyId));
+        .must(QueryBuilders.termQuery("className", HarmonizationDataset.class.getSimpleName()))
+        .must(QueryBuilders.termQuery("harmonizationTable.studyId", studyId));
 
     return executeQuery(query, 0, MAX_SIZE)
-      .stream()
-      .map(ds -> (HarmonizationDataset) ds).collect(Collectors.toList());
+        .stream()
+        .map(ds -> (HarmonizationDataset) ds).collect(Collectors.toList());
   }
 
   @Override
-  protected Dataset processHit(SearchHit hit) throws IOException {
-    InputStream inputStream = new ByteArrayInputStream(hit.getSourceAsString().getBytes());
-    return (Dataset) objectMapper.readValue(inputStream, getClass((String) hit.getSource().get("className")));
+  protected Dataset processHit(Searcher.DocumentResult res) throws IOException {
+    return (Dataset) objectMapper.readValue(res.getSourceInputStream(), getClass(res.getClassName()));
   }
 
   @Override
@@ -89,20 +82,32 @@ class EsPublishedDatasetService extends AbstractEsDatasetService<Dataset> implem
   }
 
   @Override
-  protected QueryBuilder filterByStudy(String studyId) {
-    return QueryBuilders.boolQuery() //
-      .should(QueryBuilders.termQuery("studyTable.studyId", studyId));
+  protected String getStudyIdField() {
+    return "studyTable.studyId";
   }
 
   @Override
   protected QueryBuilder filterByAccess() {
-    if(micaConfigService.getConfig().isOpenAccess()) return null;
-    List<String> ids = collectionDatasetService.findPublishedStates().stream().map(StudyDatasetState::getId)
-      .filter(s -> subjectAclService.isAccessible("/collected-dataset", s)).collect(Collectors.toList());
-    ids.addAll(harmonizationDatasetService.findPublishedStates().stream().map(HarmonizationDatasetState::getId)
-      .filter(s -> subjectAclService.isAccessible("/harmonized-dataset", s)).collect(Collectors.toList()));
+    if (isOpenAccess()) return null;
+    Collection<String> ids = getAccessibleIdFilter().getValues();
     return ids.isEmpty()
-      ? QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("id"))
-      : QueryBuilders.idsQuery().ids(ids);
+        ? QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("id"))
+        : QueryBuilders.idsQuery().ids(ids);
+  }
+
+  @Nullable
+  @Override
+  protected Searcher.IdFilter getAccessibleIdFilter() {
+    if (isOpenAccess()) return null;
+    return new Searcher.IdFilter() {
+      @Override
+      public Collection<String> getValues() {
+        List<String> ids = collectionDatasetService.findPublishedStates().stream().map(StudyDatasetState::getId)
+            .filter(s -> subjectAclService.isAccessible("/collected-dataset", s)).collect(Collectors.toList());
+        ids.addAll(harmonizationDatasetService.findPublishedStates().stream().map(HarmonizationDatasetState::getId)
+            .filter(s -> subjectAclService.isAccessible("/harmonized-dataset", s)).collect(Collectors.toList()));
+        return ids;
+      }
+    };
   }
 }

@@ -10,27 +10,24 @@
 
 package org.obiba.mica.dataset.search;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import javax.inject.Inject;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.search.SearchHit;
 import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.dataset.domain.StudyDatasetState;
-import org.obiba.mica.dataset.service.DraftStudyDatasetService;
 import org.obiba.mica.dataset.service.CollectionDatasetService;
+import org.obiba.mica.dataset.service.DraftStudyDatasetService;
 import org.obiba.mica.spi.search.Indexer;
+import org.obiba.mica.spi.search.Searcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import javax.annotation.Nullable;
+import javax.inject.Inject;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.stream.Collectors;
 
 @Service
 class EsDraftStudyDatasetService extends AbstractEsDatasetService<StudyDataset> implements DraftStudyDatasetService {
@@ -44,9 +41,8 @@ class EsDraftStudyDatasetService extends AbstractEsDatasetService<StudyDataset> 
   private CollectionDatasetService collectionDatasetService;
 
   @Override
-  protected StudyDataset processHit(SearchHit hit) throws IOException {
-    InputStream inputStream = new ByteArrayInputStream(hit.getSourceAsString().getBytes());
-    return objectMapper.readValue(inputStream, StudyDataset.class);
+  protected StudyDataset processHit(Searcher.DocumentResult res) throws IOException {
+    return objectMapper.readValue(res.getSourceInputStream(), StudyDataset.class);
   }
 
   @Override
@@ -60,18 +56,28 @@ class EsDraftStudyDatasetService extends AbstractEsDatasetService<StudyDataset> 
   }
 
   @Override
-  protected QueryBuilder filterByStudy(String studyId) {
-    return QueryBuilders.boolQuery() //
-      .should(QueryBuilders.termQuery("studyTable.studyId", studyId));
+  protected String getStudyIdField() {
+    return "studyTable.studyId";
   }
 
   @Override
   protected QueryBuilder filterByAccess() {
-    List<String> ids = collectionDatasetService.findAllStates().stream().map(StudyDatasetState::getId)
-      .filter(s -> subjectAclService.isPermitted("/draft/collected-dataset", "VIEW", s)).collect(Collectors.toList());
-
+    Collection<String> ids = getAccessibleIdFilter().getValues();
     return ids.isEmpty()
-      ? QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("id"))
-      : QueryBuilders.idsQuery().ids(ids);
+        ? QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("id"))
+        : QueryBuilders.idsQuery().ids(ids);
+  }
+
+  @Nullable
+  @Override
+  protected Searcher.IdFilter getAccessibleIdFilter() {
+    return new Searcher.IdFilter() {
+      @Override
+      public Collection<String> getValues() {
+        return collectionDatasetService.findAllStates().stream().map(StudyDatasetState::getId)
+            .filter(s -> subjectAclService.isPermitted("/draft/collected-dataset", "VIEW", s))
+            .collect(Collectors.toList());
+      }
+    };
   }
 }
