@@ -10,19 +10,16 @@
 
 package org.obiba.mica.person.search;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-
-import javax.inject.Inject;
-
-import org.elasticsearch.search.SearchHit;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.obiba.mica.core.domain.Person;
 import org.obiba.mica.search.AbstractDocumentService;
 import org.obiba.mica.spi.search.Indexer;
+import org.obiba.mica.spi.search.Searcher;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import javax.inject.Inject;
+import java.io.IOException;
+import java.io.InputStream;
 
 @Service
 public class EsPersonService extends AbstractDocumentService<Person> {
@@ -31,9 +28,8 @@ public class EsPersonService extends AbstractDocumentService<Person> {
   private ObjectMapper objectMapper;
 
   @Override
-  protected Person processHit(SearchHit hit) throws IOException {
-    InputStream inputStream = new ByteArrayInputStream(hit.getSourceAsString().getBytes());
-    return objectMapper.readValue(inputStream, Person.class);
+  protected Person processHit(Searcher.DocumentResult res) throws IOException {
+    return objectMapper.readValue(res.getSourceInputStream(), Person.class);
   }
 
   @Override

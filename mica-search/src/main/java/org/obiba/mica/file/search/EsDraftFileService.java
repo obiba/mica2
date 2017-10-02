@@ -10,27 +10,23 @@
 
 package org.obiba.mica.file.search;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
-
-import javax.annotation.Nullable;
-import javax.inject.Inject;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.Lists;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.search.SearchHit;
 import org.obiba.mica.file.AttachmentState;
 import org.obiba.mica.file.service.DraftFileService;
 import org.obiba.mica.search.AbstractDocumentService;
 import org.obiba.mica.spi.search.Indexer;
+import org.obiba.mica.spi.search.Searcher;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.Lists;
+import javax.annotation.Nullable;
+import javax.inject.Inject;
+import java.io.IOException;
+import java.util.List;
 
 @Component
 @Scope(scopeName = "request", proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -45,9 +41,8 @@ public class EsDraftFileService extends AbstractDocumentService<AttachmentState>
   private String basePath = "/";
 
   @Override
-  protected AttachmentState processHit(SearchHit hit) throws IOException {
-    InputStream inputStream = new ByteArrayInputStream(hit.getSourceAsString().getBytes());
-    return objectMapper.readValue(inputStream, AttachmentState.class);
+  protected AttachmentState processHit(Searcher.DocumentResult res) throws IOException {
+    return objectMapper.readValue(res.getSourceInputStream(), AttachmentState.class);
   }
 
   @Override
@@ -67,7 +62,7 @@ public class EsDraftFileService extends AbstractDocumentService<AttachmentState>
 
   @Override
   public Documents<AttachmentState> find(int from, int limit, @Nullable String sort, @Nullable String order, @Nullable String basePath,
-    @Nullable String queryString) {
+                                         @Nullable String queryString) {
     this.basePath = basePath;
     List<String> fields = Lists.newArrayList("attachment.name.analyzed", "attachment.type.analyzed");
     fields.addAll(getLocalizedFields("attachment.description"));
@@ -80,5 +75,9 @@ public class EsDraftFileService extends AbstractDocumentService<AttachmentState>
     return fileFilterHelper.makeDraftFilesFilter(basePath);
   }
 
-
+  @Nullable
+  @Override
+  protected Searcher.IdFilter getAccessibleIdFilter() {
+    return fileFilterHelper.makeDraftPathFilter(basePath);
+  }
 }

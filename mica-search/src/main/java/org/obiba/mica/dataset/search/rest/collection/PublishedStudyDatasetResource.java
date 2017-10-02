@@ -43,10 +43,6 @@ public class PublishedStudyDatasetResource extends AbstractPublishedDatasetResou
   /**
    * Get {@link StudyDataset} from published index.
    *
-   * @param from
-   * @param limit
-   * @param sort
-   * @param order
    * @return
    */
   @GET

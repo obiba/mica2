@@ -172,7 +172,8 @@ public class NetworkQuery extends AbstractDocumentQuery {
   public Map<String, List<String>> getStudyCountsByNetwork() {
     SearchRequestBuilder requestBuilder = searcher.prepareSearch(getSearchIndex()) //
       .setTypes(getSearchType()) //
-      .setSearchType(SearchType.COUNT) //
+      .setSearchType(SearchType.QUERY_THEN_FETCH) //
+      .setSize(0)
       .setQuery(hasQueryBuilder() ? getQueryBuilder() : QueryBuilders.matchAllQuery()) //
       .setNoFields();
 

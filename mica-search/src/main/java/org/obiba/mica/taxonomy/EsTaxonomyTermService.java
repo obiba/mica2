@@ -10,19 +10,19 @@
 
 package org.obiba.mica.taxonomy;
 
-import java.io.IOException;
-
-import org.elasticsearch.search.SearchHit;
 import org.obiba.mica.search.AbstractDocumentService;
 import org.obiba.mica.spi.search.Indexer;
+import org.obiba.mica.spi.search.Searcher;
 import org.springframework.stereotype.Service;
+
+import java.io.IOException;
 
 @Service
 public class EsTaxonomyTermService extends AbstractDocumentService<String> {
 
   @Override
-  protected String processHit(SearchHit hit) throws IOException {
-    return hit.getId();
+  protected String processHit(Searcher.DocumentResult res) throws IOException {
+    return res.getId();
   }
 
   @Override

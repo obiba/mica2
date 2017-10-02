@@ -11,30 +11,28 @@
 package org.obiba.mica.study.search;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.jsonwebtoken.lang.Assert;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.search.SearchHit;
 import org.obiba.mica.core.domain.DefaultEntityBase;
 import org.obiba.mica.dataset.search.AbstractEsStudyService;
 import org.obiba.mica.spi.search.Indexer;
+import org.obiba.mica.spi.search.Searcher;
 import org.obiba.mica.study.domain.BaseStudy;
 import org.obiba.mica.study.domain.HarmonizationStudy;
 import org.obiba.mica.study.domain.Study;
+import org.obiba.mica.study.service.CollectionStudyService;
 import org.obiba.mica.study.service.HarmonizationStudyService;
 import org.obiba.mica.study.service.PublishedStudyService;
-import org.obiba.mica.study.service.CollectionStudyService;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
-
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import io.jsonwebtoken.lang.Assert;
 
 @Service
 public class EsPublishedStudyService extends AbstractEsStudyService<BaseStudy> implements PublishedStudyService {
@@ -62,14 +60,13 @@ public class EsPublishedStudyService extends AbstractEsStudyService<BaseStudy> i
   public List<BaseStudy> findAllByClassName(@NotNull String className) {
     Assert.notNull("ClassName query cannot be null");
     Assert.isTrue(Study.class.getSimpleName().equals(className) ||
-      HarmonizationStudy.class.getSimpleName().equals(className));
+        HarmonizationStudy.class.getSimpleName().equals(className));
     return executeQuery(QueryBuilders.queryStringQuery(className).defaultField("className"), 0, MAX_SIZE);
   }
 
   @Override
-  protected BaseStudy processHit(SearchHit hit) throws IOException {
-    InputStream inputStream = new ByteArrayInputStream(hit.getSourceAsString().getBytes());
-    return (BaseStudy) objectMapper.readValue(inputStream, getClass((String) hit.getSource().get("className")));
+  protected BaseStudy processHit(Searcher.DocumentResult res) throws IOException {
+    return (BaseStudy) objectMapper.readValue(res.getSourceInputStream(), getClass(res.getClassName()));
   }
 
   @Override
@@ -84,14 +81,27 @@ public class EsPublishedStudyService extends AbstractEsStudyService<BaseStudy> i
 
   @Override
   protected QueryBuilder filterByAccess() {
-    if (micaConfigService.getConfig().isOpenAccess()) return null;
-    List<String> ids = collectionStudyService.findPublishedStates().stream().map(DefaultEntityBase::getId)
-      .filter(s -> subjectAclService.isAccessible("/individual-study", s)).collect(Collectors.toList());
-    ids.addAll(harmonizationStudyService.findPublishedStates().stream().map(DefaultEntityBase::getId)
-      .filter(s -> subjectAclService.isAccessible("/harmonization-study", s)).collect(Collectors.toList()));
+    if (isOpenAccess()) return null;
+    Collection<String> ids = getAccessibleIdFilter().getValues();
     return ids.isEmpty()
-      ? QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("id"))
-      : QueryBuilders.idsQuery().ids(ids);
+        ? QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("id"))
+        : QueryBuilders.idsQuery().ids(ids);
+  }
+
+  @Nullable
+  @Override
+  protected Searcher.IdFilter getAccessibleIdFilter() {
+    if (isOpenAccess()) return null;
+    return new Searcher.IdFilter() {
+      @Override
+      public Collection<String> getValues() {
+        List<String> ids = collectionStudyService.findPublishedStates().stream().map(DefaultEntityBase::getId)
+            .filter(s -> subjectAclService.isAccessible("/individual-study", s)).collect(Collectors.toList());
+        ids.addAll(harmonizationStudyService.findPublishedStates().stream().map(DefaultEntityBase::getId)
+            .filter(s -> subjectAclService.isAccessible("/harmonization-study", s)).collect(Collectors.toList()));
+        return ids;
+      }
+    };
   }
 
   private Class getClass(String className) {

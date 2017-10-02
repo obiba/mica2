@@ -76,21 +76,8 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
   private String locale;
 
   protected T getDataset(Class<T> clazz, @NotNull String datasetId) throws NoSuchDatasetException {
-    QueryBuilder query = QueryBuilders.queryStringQuery(clazz.getSimpleName()).field("className");
-    query = QueryBuilders.boolQuery().must(query)
-      .must(QueryBuilders.idsQuery(Indexer.DATASET_TYPE).addIds(datasetId));
-
-    SearchRequestBuilder search = searcher.prepareSearch() //
-      .setIndices(Indexer.PUBLISHED_DATASET_INDEX) //
-      .setTypes(Indexer.DATASET_TYPE) //
-      .setQuery(query);
-
-    log.info("Request /{}/{}", Indexer.PUBLISHED_DATASET_INDEX, Indexer.DATASET_TYPE);
-    SearchResponse response = search.execute().actionGet();
-
-    if(response.getHits().totalHits() == 0) throw NoSuchDatasetException.withId(datasetId);
-
-    InputStream inputStream = new ByteArrayInputStream(response.getHits().hits()[0].getSourceAsString().getBytes());
+    InputStream inputStream = searcher.getDocumentByClassName(Indexer.PUBLISHED_DATASET_INDEX, Indexer.DATASET_TYPE, clazz, datasetId);
+    if(inputStream == null) throw NoSuchDatasetException.withId(datasetId);
     try {
       T rval = objectMapper.readValue(inputStream, clazz);
       log.info("Response /{}/{}", Indexer.PUBLISHED_DATASET_INDEX, Indexer.DATASET_TYPE);
@@ -277,19 +264,8 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
   }
 
   private DatasetVariable getDatasetVariableInternal(String indexType, String variableId, String variableName) {
-    QueryBuilder query = QueryBuilders.idsQuery(indexType).addIds(variableId);
-
-    SearchRequestBuilder search = searcher.prepareSearch() //
-      .setIndices(Indexer.PUBLISHED_VARIABLE_INDEX) //
-      .setTypes(indexType) //
-      .setQuery(query);
-
-    log.debug("Request: {}", search.toString());
-    SearchResponse response = search.execute().actionGet();
-
-    if(response.getHits().totalHits() == 0) throw new NoSuchVariableException(variableName);
-
-    InputStream inputStream = new ByteArrayInputStream(response.getHits().hits()[0].getSourceAsString().getBytes());
+    InputStream inputStream = searcher.getDocumentById(Indexer.PUBLISHED_VARIABLE_INDEX, indexType, variableId);
+    if(inputStream == null) throw new NoSuchVariableException(variableName);
     try {
       return objectMapper.readValue(inputStream, DatasetVariable.class);
     } catch(IOException e) {

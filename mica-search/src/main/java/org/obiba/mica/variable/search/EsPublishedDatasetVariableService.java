@@ -10,43 +10,40 @@
 
 package org.obiba.mica.variable.search;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import javax.annotation.Nullable;
-import javax.inject.Inject;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.index.IndexNotFoundException;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.aggregations.AbstractAggregationBuilder;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.HarmonizationDatasetState;
 import org.obiba.mica.dataset.domain.StudyDatasetState;
-import org.obiba.mica.dataset.service.HarmonizationDatasetService;
 import org.obiba.mica.dataset.service.CollectionDatasetService;
+import org.obiba.mica.dataset.service.HarmonizationDatasetService;
 import org.obiba.mica.search.AbstractDocumentService;
+import org.obiba.mica.spi.search.Searcher;
 import org.obiba.mica.study.service.PublishedDatasetVariableService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import javax.annotation.Nullable;
+import javax.inject.Inject;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class EsPublishedDatasetVariableService extends AbstractDocumentService<DatasetVariable>
-  implements PublishedDatasetVariableService {
+    implements PublishedDatasetVariableService {
 
   private static final Logger log = LoggerFactory.getLogger(EsPublishedDatasetVariableService.class);
 
@@ -69,7 +66,7 @@ public class EsPublishedDatasetVariableService extends AbstractDocumentService<D
   public long getCountByStudyId(String studyId) {
     SearchResponse response = executeCountQuery(buildStudyFilteredQuery(studyId), null);
 
-    if(response == null) {
+    if (response == null) {
       return 0;
     }
 
@@ -78,21 +75,20 @@ public class EsPublishedDatasetVariableService extends AbstractDocumentService<D
 
   public Map<String, Long> getCountByStudyIds(List<String> studyIds) {
     SearchResponse response = executeCountQuery(buildStudiesFilteredQuery(studyIds),
-      AggregationBuilders.terms(STUDY_ID_FIELD).field(STUDY_ID_FIELD).size(0));
+        AggregationBuilders.terms(STUDY_ID_FIELD).field(STUDY_ID_FIELD).size(0));
 
-    if(response == null) {
+    if (response == null) {
       return studyIds.stream().collect(Collectors.toMap(s -> s, s -> 0L));
     }
 
     Terms aggregation = response.getAggregations().get(STUDY_ID_FIELD);
     return studyIds.stream().collect(Collectors.toMap(s -> s,
-      s -> Optional.ofNullable(aggregation.getBucketByKey(s)).map(Terms.Bucket::getDocCount).orElse(0L)));
+        s -> Optional.ofNullable(aggregation.getBucketByKey(s)).map(Terms.Bucket::getDocCount).orElse(0L)));
   }
 
   @Override
-  protected DatasetVariable processHit(SearchHit hit) throws IOException {
-    InputStream inputStream = new ByteArrayInputStream(hit.getSourceAsString().getBytes());
-    return objectMapper.readValue(inputStream, DatasetVariable.class);
+  protected DatasetVariable processHit(Searcher.DocumentResult res) throws IOException {
+    return objectMapper.readValue(res.getSourceInputStream(), DatasetVariable.class);
   }
 
   @Override
@@ -119,43 +115,58 @@ public class EsPublishedDatasetVariableService extends AbstractDocumentService<D
     QueryBuilder accessFilter = filterByAccess();
 
     SearchRequestBuilder requestBuilder = searcher.prepareSearch(getIndexName()) //
-      .setTypes(getType()) //
-      .setSize(0) //
-      .setQuery(
-        accessFilter == null ? queryBuilder : QueryBuilders.boolQuery().must(queryBuilder).must(accessFilter)) //
-      .setFrom(0) //
-      .setSize(0);
+        .setTypes(getType()) //
+        .setSize(0) //
+        .setQuery(
+            accessFilter == null ? queryBuilder : QueryBuilders.boolQuery().must(queryBuilder).must(accessFilter)) //
+        .setFrom(0) //
+        .setSize(0);
 
-    if(aggregationBuilder != null) {
+    if (aggregationBuilder != null) {
       requestBuilder.addAggregation(aggregationBuilder);
     }
 
     try {
       return requestBuilder.execute().actionGet();
-    } catch(IndexNotFoundException e) {
+    } catch (IndexNotFoundException e) {
       return null; //ignoring
     }
   }
 
-  @Override
-  protected QueryBuilder filterByStudy(String studyId) {
-    return QueryBuilders.termQuery("studyId", studyId);
+  protected String getStudyIdField() {
+    return "studyId";
   }
 
   @Nullable
   @Override
   protected QueryBuilder filterByAccess() {
-    if(micaConfigService.getConfig().isOpenAccess()) return null;
-    List<String> ids = collectionDatasetService.findPublishedStates().stream().map(StudyDatasetState::getId)
-      .filter(s -> subjectAclService.isAccessible("/collected-dataset", s)).collect(Collectors.toList());
-    ids.addAll(harmonizationDatasetService.findPublishedStates().stream().map(HarmonizationDatasetState::getId)
-      .filter(s -> subjectAclService.isAccessible("/harmonized-dataset", s)).collect(Collectors.toList()));
-
-    if(ids.isEmpty()) return QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("id"));
-
+    if (isOpenAccess()) return null;
+    Collection<String> ids = getAccessibleIdFilter().getValues();
+    if (ids.isEmpty()) return QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("id"));
     BoolQueryBuilder orFilter = QueryBuilders.boolQuery();
     ids.forEach(id -> orFilter.should(QueryBuilders.termQuery("datasetId", id)));
-
     return orFilter;
+  }
+
+  @Nullable
+  @Override
+  protected Searcher.IdFilter getAccessibleIdFilter() {
+    if (isOpenAccess()) return null;
+    return new Searcher.IdFilter() {
+
+      @Override
+      public String getField() {
+        return "datasetId";
+      }
+
+      @Override
+      public Collection<String> getValues() {
+        List<String> ids = collectionDatasetService.findPublishedStates().stream().map(StudyDatasetState::getId)
+            .filter(s -> subjectAclService.isAccessible("/collected-dataset", s)).collect(Collectors.toList());
+        ids.addAll(harmonizationDatasetService.findPublishedStates().stream().map(HarmonizationDatasetState::getId)
+            .filter(s -> subjectAclService.isAccessible("/harmonized-dataset", s)).collect(Collectors.toList()));
+        return ids;
+      }
+    };
   }
 }
