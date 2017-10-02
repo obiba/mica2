@@ -10,26 +10,25 @@
 
 package org.obiba.mica.taxonomy;
 
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import javax.inject.Inject;
-
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
+import com.google.common.eventbus.Subscribe;
 import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.obiba.mica.spi.search.TaxonomyTarget;
+import org.obiba.mica.micaConfig.event.OpalTaxonomiesUpdatedEvent;
 import org.obiba.mica.micaConfig.event.TaxonomiesUpdatedEvent;
 import org.obiba.mica.micaConfig.service.TaxonomyService;
 import org.obiba.mica.spi.search.Indexer;
+import org.obiba.mica.spi.search.TaxonomyTarget;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
-import com.google.common.eventbus.Subscribe;
+import javax.inject.Inject;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Component
 public class TaxonomyIndexer {
@@ -41,6 +40,18 @@ public class TaxonomyIndexer {
 
   @Inject
   private Indexer indexer;
+
+  @Async
+  @Subscribe
+  public void opalTaxonomiesUpdatedEvent(OpalTaxonomiesUpdatedEvent event) {
+    log.info("Reindex all opal taxonomies");
+    index(
+      TaxonomyTarget.VARIABLE,
+      event.extractOpalTaxonomies()
+        .stream()
+        .filter(t -> taxonomyService.metaTaxonomyContains(t.getName()))
+        .collect(Collectors.toList()));
+  }
 
   @Async
   @Subscribe
@@ -92,5 +103,4 @@ public class TaxonomyIndexer {
       });
     });
   }
-
 }

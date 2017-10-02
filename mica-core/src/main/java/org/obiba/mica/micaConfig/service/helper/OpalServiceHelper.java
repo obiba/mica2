@@ -13,12 +13,13 @@ package org.obiba.mica.micaConfig.service.helper;
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentMap;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
 import org.obiba.mica.core.domain.AttributeKey;
-import org.obiba.mica.micaConfig.event.TaxonomiesUpdatedEvent;
+import org.obiba.mica.micaConfig.event.OpalTaxonomiesUpdatedEvent;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.obiba.opal.rest.client.magma.OpalJavaClient;
 import org.obiba.opal.web.model.Opal;
@@ -46,9 +47,9 @@ public class OpalServiceHelper {
     List<Opal.TaxonomyDto> taxonomies = opalJavaClient
       .getResources(Opal.TaxonomyDto.class, uri, Opal.TaxonomyDto.newBuilder());
 
-    eventBus.post(new TaxonomiesUpdatedEvent());
-
-    return taxonomies.stream().collect(Collectors.toConcurrentMap(Opal.TaxonomyDto::getName, this::fromDto));
+    ConcurrentMap<String, Taxonomy> taxonomiesList = taxonomies.stream().collect(Collectors.toConcurrentMap(Opal.TaxonomyDto::getName, this::fromDto));
+    eventBus.post(new OpalTaxonomiesUpdatedEvent(taxonomiesList));
+    return taxonomiesList;
   }
 
   /**
