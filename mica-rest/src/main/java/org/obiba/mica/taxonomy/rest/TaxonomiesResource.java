@@ -20,9 +20,10 @@ import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
+import com.google.common.eventbus.EventBus;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresRoles;
-import org.obiba.mica.micaConfig.service.CacheService;
+import org.obiba.mica.micaConfig.event.TaxonomiesUpdatedEvent;
 import org.obiba.mica.micaConfig.service.OpalService;
 import org.obiba.mica.security.Roles;
 import org.obiba.opal.web.model.Opal;
@@ -43,7 +44,7 @@ public class TaxonomiesResource {
   private OpalService opalService;
 
   @Inject
-  private CacheService cacheService;
+  private EventBus eventBus;
 
   @GET
   @Timed
@@ -66,8 +67,7 @@ public class TaxonomiesResource {
   @RequiresRoles(Roles.MICA_ADMIN)
   public Response updateIndices() {
     logger.info("clear and rebuild cache opalTaxonomies url /taxonomies/_index");
-    cacheService.clearOpalTaxonomiesCache();
-    new Thread(() -> opalService.getTaxonomies()).start();
+    eventBus.post(new TaxonomiesUpdatedEvent());
     return Response.noContent().build();
   }
 }

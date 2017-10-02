@@ -46,9 +46,10 @@ public class CacheService {
   @Inject
   private TaxonomyService taxonomyService;
 
-  @CacheEvict(value = "opal-taxonomies", allEntries = true)
+  @CacheEvict(value = "opal-taxonomies", allEntries = true, beforeInvocation = true)
   public void clearOpalTaxonomiesCache() {
     log.info("Clearing opal taxonomies cache");
+    taxonomyService.getOpalTaxonomies();
   }
 
   @CacheEvict(value = "micaConfig", allEntries = true)

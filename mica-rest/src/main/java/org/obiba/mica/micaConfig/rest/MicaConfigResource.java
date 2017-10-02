@@ -314,7 +314,6 @@ public class MicaConfigResource {
   @Timed
   @RequiresRoles(Roles.MICA_ADMIN)
   public Response updateIndices() {
-    cacheService.clearOpalTaxonomiesCache();
     eventBus.post(new IndexStudiesEvent());
     eventBus.post(new IndexFilesEvent());
     eventBus.post(new IndexContactsEvent());
