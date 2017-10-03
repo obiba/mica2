@@ -18,6 +18,7 @@ import javax.annotation.Nullable;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Defines the search operations that can be performed within the search engine.
@@ -44,7 +45,7 @@ public interface Searcher {
   Query makeQuery(String rql);
 
   /**
-   * Search for documents matching the RQL query. The RQL query can include limit and sort statements.
+   * Search for documents matching the RQL query. The RQL query can include limit() and sort() statements.
    *
    * @param indexName
    * @param type
@@ -52,6 +53,17 @@ public interface Searcher {
    * @return
    */
   DocumentResults find(String indexName, String type, String rql);
+
+  /**
+   * Count documents matching the RQL query. The RQL query can include an aggregate() statement.
+   *
+   * @param indexName
+   * @param type
+   * @param rql
+   * @param idFilter
+   * @return
+   */
+  DocumentResults count(String indexName, String type, String rql, IdFilter idFilter);
 
   /**
    * Get field suggestions from query.
@@ -154,6 +166,14 @@ public interface Searcher {
      * @return
      */
     List<DocumentResult> getDocuments();
+
+    /**
+     * Get the aggregation counts (count of hits by observed term value) for the field.
+     *
+     * @param field
+     * @return
+     */
+    Map<String, Long> getAggregation(String field);
   }
 
   /**

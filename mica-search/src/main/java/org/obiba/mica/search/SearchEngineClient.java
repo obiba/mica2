@@ -11,7 +11,6 @@
 package org.obiba.mica.search;
 
 import org.elasticsearch.action.search.SearchRequestBuilder;
-import org.elasticsearch.client.AdminClient;
 import org.obiba.mica.micaConfig.service.PluginsService;
 import org.obiba.mica.spi.search.Searcher;
 import org.obiba.mica.spi.search.support.JoinQuery;
@@ -51,6 +50,11 @@ public class SearchEngineClient implements Searcher {
   @Override
   public DocumentResults find(String indexName, String type, String rql) {
     return getSearcher().find(indexName, type, rql);
+  }
+
+  @Override
+  public DocumentResults count(String indexName, String type, String rql, IdFilter idFilter) {
+    return getSearcher().count(indexName, type, rql, idFilter);
   }
 
   @Override
