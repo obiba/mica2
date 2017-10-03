@@ -13,11 +13,11 @@ package org.obiba.mica.search.csvexport;
 import org.obiba.core.translator.JsonTranslator;
 import org.obiba.core.translator.Translator;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
-import org.obiba.mica.search.JoinQueryExecutor;
 import org.obiba.mica.search.csvexport.generators.DatasetsCsvReportGenerator;
 import org.obiba.mica.search.csvexport.generators.NetworkCsvReportGenerator;
 import org.obiba.mica.search.csvexport.generators.StudiesCsvReportGenerator;
 import org.obiba.mica.search.csvexport.generators.VariablesCsvReportGenerator;
+import org.obiba.mica.spi.search.QueryType;
 import org.obiba.mica.web.model.MicaSearch;
 import org.springframework.stereotype.Component;
 
@@ -30,7 +30,7 @@ public class CsvReportGeneratorFactory {
   @Inject
   private MicaConfigService micaConfigService;
 
-  public CsvReportGenerator get(JoinQueryExecutor.QueryType type, MicaSearch.JoinQueryResultDto queryResult, List<String> columnsToHide, String locale) {
+  public CsvReportGenerator get(QueryType type, MicaSearch.JoinQueryResultDto queryResult, List<String> columnsToHide, String locale) {
 
     Translator translator = JsonTranslator.buildSafeTranslator(() -> micaConfigService.getTranslations(locale, false));
 

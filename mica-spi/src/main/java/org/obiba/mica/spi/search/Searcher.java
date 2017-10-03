@@ -11,6 +11,8 @@
 package org.obiba.mica.spi.search;
 
 import org.elasticsearch.action.search.SearchRequestBuilder;
+import org.obiba.mica.spi.search.support.JoinQuery;
+import org.obiba.mica.spi.search.support.Query;
 
 import javax.annotation.Nullable;
 import java.io.InputStream;
@@ -20,10 +22,28 @@ import java.util.List;
 /**
  * Defines the search operations that can be performed within the search engine.
  */
-// TODO isolate elasticsearch as search functionalities
 public interface Searcher {
 
+  // TODO isolate elasticsearch as search functionalities
   SearchRequestBuilder prepareSearch(String... indices);
+
+  /**
+   * Parse the RQL string query to make a {@link JoinQuery} that will be passed to the query execution requests.
+   *
+   * @param rql
+   * @return
+   */
+  JoinQuery makeJoinQuery(String rql);
+
+  /**
+   * Parse the RQL string query to make a {@link Query} that will be passed to the query execution requests.
+   *
+   * @param rql
+   * @return
+   */
+  Query makeQuery(String rql);
+
+  DocumentResults find(String indexName, String type, String rql);
 
   /**
    * Get field suggestions from query.

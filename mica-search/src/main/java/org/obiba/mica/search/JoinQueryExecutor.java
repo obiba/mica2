@@ -11,10 +11,7 @@
 package org.obiba.mica.search;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
@@ -27,7 +24,7 @@ import javax.inject.Inject;
 import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.micaConfig.service.TaxonomyService;
 import org.obiba.mica.search.queries.AbstractDocumentQuery;
-import org.obiba.mica.search.queries.AbstractDocumentQuery.Mode;
+import org.obiba.mica.spi.search.*;
 import org.obiba.mica.search.queries.DatasetQuery;
 import org.obiba.mica.search.queries.JoinQueryWrapper;
 import org.obiba.mica.search.queries.NetworkQuery;
@@ -56,9 +53,9 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.UncheckedTimeoutException;
 
-import static org.obiba.mica.search.queries.AbstractDocumentQuery.Scope.AGGREGATION;
-import static org.obiba.mica.search.queries.AbstractDocumentQuery.Scope.DETAIL;
-import static org.obiba.mica.search.queries.AbstractDocumentQuery.Scope.DIGEST;
+import static org.obiba.mica.spi.search.QueryScope.AGGREGATION;
+import static org.obiba.mica.spi.search.QueryScope.DETAIL;
+import static org.obiba.mica.spi.search.QueryScope.DIGEST;
 
 @Component
 @Scope("request")
@@ -72,13 +69,6 @@ public class JoinQueryExecutor {
 
   @Value("${elasticsearch.concurrentJoinQueriesWaitTimeout:30000}")
   private long concurrentJoinQueriesWaitTimeout;
-
-  public enum QueryType {
-    VARIABLE,
-    DATASET,
-    STUDY,
-    NETWORK
-  }
 
   @Inject
   private TaxonomyService taxonomyService;
@@ -98,14 +88,17 @@ public class JoinQueryExecutor {
   @Inject
   private Dtos dtos;
 
+  @Inject
+  private Searcher searcher;
+
   @Timed
   public JoinQueryResultDto query(QueryType type, JoinQueryWrapper joinQueryWrapper) throws IOException {
-    return query(type, joinQueryWrapper, CountStatsData.newBuilder(), DETAIL, Mode.SEARCH);
+    return query(type, joinQueryWrapper, CountStatsData.newBuilder(), DETAIL, QueryMode.SEARCH);
   }
 
   @Timed
   public JoinQueryResultDto queryCoverage(JoinQueryWrapper joinQueryWrapper) throws IOException {
-    return query(QueryType.VARIABLE, joinQueryWrapper, null, DIGEST, Mode.COVERAGE);
+    return query(QueryType.VARIABLE, joinQueryWrapper, null, DIGEST, QueryMode.COVERAGE);
   }
 
   @Timed
@@ -114,7 +107,7 @@ public class JoinQueryExecutor {
         .build();
 
     JoinQueryWrapper joinQueryWrapper = new JoinQueryDtoWrapper(joinQueryDto);
-    initializeQueries(joinQueryWrapper, Mode.LIST);
+    initializeQueries(joinQueryWrapper, QueryMode.LIST);
 
     execute(type, DETAIL, CountStatsData.newBuilder());
 
@@ -149,7 +142,7 @@ public class JoinQueryExecutor {
   }
 
   private JoinQueryResultDto query(QueryType type, JoinQueryWrapper joinQueryWrapper,
-                                   CountStatsData.Builder countBuilder, AbstractDocumentQuery.Scope scope, AbstractDocumentQuery.Mode mode)
+                                   CountStatsData.Builder countBuilder, QueryScope scope, QueryMode mode)
     throws IOException {
 
     boolean havePermit = false;
@@ -178,7 +171,7 @@ public class JoinQueryExecutor {
   }
 
   private JoinQueryResultDto unsafeQuery(QueryType type, JoinQueryWrapper joinQueryWrapper,
-      CountStatsData.Builder countBuilder, AbstractDocumentQuery.Scope scope, AbstractDocumentQuery.Mode mode)
+                                         CountStatsData.Builder countBuilder, QueryScope scope, QueryMode mode)
       throws IOException {
     log.debug("Start query");
     initializeQueries(joinQueryWrapper, mode);
@@ -186,9 +179,9 @@ public class JoinQueryExecutor {
   }
 
   private JoinQueryResultDto doQueries(QueryType type, JoinQueryWrapper joinQueryWrapper,
-      CountStatsData.Builder countBuilder, AbstractDocumentQuery.Scope scope) throws IOException {
+      CountStatsData.Builder countBuilder, QueryScope scope) throws IOException {
     boolean queriesHaveFilters = Stream.of(variableQuery, datasetQuery, studyQuery, networkQuery)
-        .anyMatch(AbstractDocumentQuery::hasQueryBuilder);
+        .anyMatch(AbstractDocumentQuery::isValid);
 
     if(queriesHaveFilters) {
       DocumentQueryIdProvider datasetIdProvider = new DocumentQueryIdProvider();
@@ -212,7 +205,7 @@ public class JoinQueryExecutor {
     return resultDto;
   }
 
-  private void initializeQueries(JoinQueryWrapper joinQueryWrapper, AbstractDocumentQuery.Mode mode) {
+  private void initializeQueries(JoinQueryWrapper joinQueryWrapper, QueryMode mode) {
     String locale = joinQueryWrapper.getLocale();
 
     variableQuery.initialize(joinQueryWrapper.getVariableQueryWrapper(), locale, mode);
@@ -330,7 +323,7 @@ public class JoinQueryExecutor {
 
       newList.addAll(buildres.values().stream() //
           .filter(b -> aggregationNames.contains(b.getAggregation())) //
-          .sorted((b1, b2) -> b1.getAggregation().compareTo(b2.getAggregation())) //
+          .sorted(Comparator.comparing(AggregationResultDto.Builder::getAggregation)) //
           .map(MicaSearch.AggregationResultDto.Builder::build) //
           .collect(Collectors.toList())); //
 
@@ -338,7 +331,7 @@ public class JoinQueryExecutor {
     };
   }
 
-  private void execute(QueryType type, AbstractDocumentQuery.Scope scope, CountStatsData.Builder countBuilder)
+  private void execute(QueryType type, QueryScope scope, CountStatsData.Builder countBuilder)
       throws IOException {
 
     CountStatsData countStats;
@@ -442,7 +435,7 @@ public class JoinQueryExecutor {
 
   private List<String> execute(AbstractDocumentQuery docQuery, AbstractDocumentQuery... subQueries) throws IOException {
     List<AbstractDocumentQuery> queries = Arrays.stream(subQueries)
-      .filter(AbstractDocumentQuery::hasQueryBuilder)
+      .filter(AbstractDocumentQuery::isValid)
       .collect(Collectors.toList());
 
     List<String> studyIds = null;
@@ -450,7 +443,7 @@ public class JoinQueryExecutor {
     if(queries.size() > 0) studyIds = queryStudyIds(queries);
     if(studyIds == null || studyIds.size() > 0) docQueryStudyIds = docQuery.queryStudyIds(studyIds);
 
-    List<String> aggStudyIds = docQuery.hasQueryBuilder() && docQueryStudyIds != null ? joinStudyIds(studyIds,
+    List<String> aggStudyIds = docQuery.isValid() && docQueryStudyIds != null ? joinStudyIds(studyIds,
         docQueryStudyIds) : studyIds;
 
     if(aggStudyIds == null || aggStudyIds.size() > 0) {

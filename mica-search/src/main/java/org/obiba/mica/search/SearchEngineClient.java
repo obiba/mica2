@@ -14,6 +14,8 @@ import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.client.AdminClient;
 import org.obiba.mica.micaConfig.service.PluginsService;
 import org.obiba.mica.spi.search.Searcher;
+import org.obiba.mica.spi.search.support.JoinQuery;
+import org.obiba.mica.spi.search.support.Query;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Nullable;
@@ -34,6 +36,21 @@ public class SearchEngineClient implements Searcher {
   @Override
   public SearchRequestBuilder prepareSearch(String... indices) {
     return getSearcher().prepareSearch(indices);
+  }
+
+  @Override
+  public JoinQuery makeJoinQuery(String rql) {
+    return getSearcher().makeJoinQuery(rql);
+  }
+
+  @Override
+  public Query makeQuery(String rql) {
+    return getSearcher().makeQuery(rql);
+  }
+
+  @Override
+  public DocumentResults find(String indexName, String type, String rql) {
+    return getSearcher().find(indexName, type, rql);
   }
 
   @Override

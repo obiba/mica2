@@ -28,7 +28,7 @@ public class RQLQueryWrapperTest {
     String rql
       = "study(contains(Mica_study.populations-selectionCriteria-countriesIso,(CAN,USA)))";
     RQLQueryWrapper rqlQueryWrapper = new RQLQueryWrapper(rql);
-    assertThat(rqlQueryWrapper.hasQueryBuilder()).isTrue();
+    assertThat(rqlQueryWrapper.isValid()).isTrue();
     String expected = "{\n" +
       "  \"bool\" : {\n" +
       "    \"must\" : [ {\n" +
@@ -50,7 +50,7 @@ public class RQLQueryWrapperTest {
     String rql
         = "study(contains((toto,tutu)))";
     RQLQueryWrapper rqlQueryWrapper = new RQLQueryWrapper(rql);
-    assertThat(rqlQueryWrapper.hasQueryBuilder()).isTrue();
+    assertThat(rqlQueryWrapper.isValid()).isTrue();
     String expected = "{\n" +
         "  \"query_string\" : {\n" +
         "    \"query\" : \"toto AND tutu\"\n" +
@@ -64,7 +64,7 @@ public class RQLQueryWrapperTest {
     String rql
       = "variable(or(in(attributes.Mlstr_area__Lifestyle_behaviours.und,(Phys_act,Tobacco)),in(attributes.Mlstr_area__Diseases.und,Neoplasms)))";
     RQLQueryWrapper rqlQueryWrapper = new RQLQueryWrapper(rql);
-    assertThat(rqlQueryWrapper.hasQueryBuilder()).isTrue();
+    assertThat(rqlQueryWrapper.isValid()).isTrue();
     String expected = "{\n" +
       "  \"bool\" : {\n" +
       "    \"should\" : [ {\n" +
@@ -86,7 +86,7 @@ public class RQLQueryWrapperTest {
     String rql
       = "variable(out(attributes.Mlstr_area__Diseases.und,Neoplasms))";
     RQLQueryWrapper rqlQueryWrapper = new RQLQueryWrapper(rql);
-    assertThat(rqlQueryWrapper.hasQueryBuilder()).isTrue();
+    assertThat(rqlQueryWrapper.isValid()).isTrue();
     String expected = "{\n" +
       "  \"bool\" : {\n" +
       "    \"must_not\" : {\n" +
@@ -104,7 +104,7 @@ public class RQLQueryWrapperTest {
     String rql
       = "variable(not(in(attributes.Mlstr_area__Diseases.und,Neoplasms)))";
     RQLQueryWrapper rqlQueryWrapper = new RQLQueryWrapper(rql);
-    assertThat(rqlQueryWrapper.hasQueryBuilder()).isTrue();
+    assertThat(rqlQueryWrapper.isValid()).isTrue();
     String expected = "{\n" +
       "  \"bool\" : {\n" +
       "    \"must_not\" : {\n" +
@@ -121,7 +121,7 @@ public class RQLQueryWrapperTest {
   public void test_rql_query_range() throws IOException {
     String rql = "study(and(ge(populations.selectionCriteria.ageMin,50),le(populations.selectionCriteria.ageMin,60)))";
     RQLQueryWrapper rqlQueryWrapper = new RQLQueryWrapper(rql);
-    assertThat(rqlQueryWrapper.hasQueryBuilder()).isTrue();
+    assertThat(rqlQueryWrapper.isValid()).isTrue();
     String expected = "{\n" +
       "  \"bool\" : {\n" +
       "    \"must\" : [ {\n" +
@@ -153,7 +153,7 @@ public class RQLQueryWrapperTest {
     String rql
       = "variable(match(tutu))";
     RQLQueryWrapper rqlQueryWrapper = new RQLQueryWrapper(rql);
-    assertThat(rqlQueryWrapper.hasQueryBuilder()).isTrue();
+    assertThat(rqlQueryWrapper.isValid()).isTrue();
     String expected = "{\n" +
       "  \"query_string\" : {\n" +
       "    \"query\" : \"tutu\"\n" +
@@ -167,7 +167,7 @@ public class RQLQueryWrapperTest {
     String rql
       = "variable(exists(tutu))";
     RQLQueryWrapper rqlQueryWrapper = new RQLQueryWrapper(rql);
-    assertThat(rqlQueryWrapper.hasQueryBuilder()).isTrue();
+    assertThat(rqlQueryWrapper.isValid()).isTrue();
     String expected = "{\n" +
       "  \"exists\" : {\n" +
       "    \"field\" : \"tutu\"\n" +
@@ -181,7 +181,7 @@ public class RQLQueryWrapperTest {
     String rql
       = "variable(missing(tutu))";
     RQLQueryWrapper rqlQueryWrapper = new RQLQueryWrapper(rql);
-    assertThat(rqlQueryWrapper.hasQueryBuilder()).isTrue();
+    assertThat(rqlQueryWrapper.isValid()).isTrue();
     String expected = "{\n" +
       "  \"missing\" : {\n" +
       "    \"field\" : \"tutu\"\n" +
@@ -195,7 +195,7 @@ public class RQLQueryWrapperTest {
     String rql
       = "variable(not(match(tutu)))";
     RQLQueryWrapper rqlQueryWrapper = new RQLQueryWrapper(rql);
-    assertThat(rqlQueryWrapper.hasQueryBuilder()).isTrue();
+    assertThat(rqlQueryWrapper.isValid()).isTrue();
     String expected = "{\n" +
       "  \"bool\" : {\n" +
       "    \"must_not\" : {\n" +
@@ -213,7 +213,7 @@ public class RQLQueryWrapperTest {
     String rql
       = "variable(nand(in(Mlstr_area.Lifestyle_behaviours,Alcohol),in(Mlstr_area.Diseases,Neoplasms)))";
     RQLQueryWrapper rqlQueryWrapper = new RQLQueryWrapper(rql);
-    assertThat(rqlQueryWrapper.hasQueryBuilder()).isTrue();
+    assertThat(rqlQueryWrapper.isValid()).isTrue();
     String expected = "{\n" +
       "  \"bool\" : {\n" +
       "    \"must_not\" : {\n" +
@@ -239,7 +239,7 @@ public class RQLQueryWrapperTest {
     String rql
       = "variable(nor(in(Mlstr_area.Lifestyle_behaviours,Alcohol),in(Mlstr_area.Diseases,Neoplasms)))";
     RQLQueryWrapper rqlQueryWrapper = new RQLQueryWrapper(rql);
-    assertThat(rqlQueryWrapper.hasQueryBuilder()).isTrue();
+    assertThat(rqlQueryWrapper.isValid()).isTrue();
     String expected = "{\n" +
       "  \"bool\" : {\n" +
       "    \"must_not\" : {\n" +
@@ -265,7 +265,7 @@ public class RQLQueryWrapperTest {
     String rql
       = "variable(match(name:tutu description:tata pwel))";
     RQLQueryWrapper rqlQueryWrapper = new RQLQueryWrapper(rql);
-    assertThat(rqlQueryWrapper.hasQueryBuilder()).isTrue();
+    assertThat(rqlQueryWrapper.isValid()).isTrue();
     String expected = "{\n" +
       "  \"query_string\" : {\n" +
       "    \"query\" : \"name:tutu description:tata pwel\"\n" +
@@ -279,7 +279,7 @@ public class RQLQueryWrapperTest {
     String rql
       = "variable(match(tutu,name))";
     RQLQueryWrapper rqlQueryWrapper = new RQLQueryWrapper(rql);
-    assertThat(rqlQueryWrapper.hasQueryBuilder()).isTrue();
+    assertThat(rqlQueryWrapper.isValid()).isTrue();
     String expected = "{\n" +
       "  \"query_string\" : {\n" +
       "    \"query\" : \"tutu\",\n" +
@@ -294,7 +294,7 @@ public class RQLQueryWrapperTest {
     String rql
       = "variable(match(tutu,(name,description)))";
     RQLQueryWrapper rqlQueryWrapper = new RQLQueryWrapper(rql);
-    assertThat(rqlQueryWrapper.hasQueryBuilder()).isTrue();
+    assertThat(rqlQueryWrapper.isValid()).isTrue();
     String expected = "{\n" +
       "  \"query_string\" : {\n" +
       "    \"query\" : \"tutu\",\n" +
@@ -308,7 +308,7 @@ public class RQLQueryWrapperTest {
   public void test_rql_query_between() throws IOException {
     String rql = "study(between(populations.selectionCriteria.ageMin,(50,60)))";
     RQLQueryWrapper rqlQueryWrapper = new RQLQueryWrapper(rql);
-    assertThat(rqlQueryWrapper.hasQueryBuilder()).isTrue();
+    assertThat(rqlQueryWrapper.isValid()).isTrue();
     String expected = "{\n" +
       "  \"range\" : {\n" +
       "    \"populations.selectionCriteria.ageMin\" : {\n" +
@@ -326,7 +326,7 @@ public class RQLQueryWrapperTest {
   public void test_rql_query_not_between() throws IOException {
     String rql = "study(not(between(populations.selectionCriteria.ageMin,(50,60))))";
     RQLQueryWrapper rqlQueryWrapper = new RQLQueryWrapper(rql);
-    assertThat(rqlQueryWrapper.hasQueryBuilder()).isTrue();
+    assertThat(rqlQueryWrapper.isValid()).isTrue();
     String expected = "{\n" +
       "  \"bool\" : {\n" +
       "    \"must_not\" : {\n" +
@@ -348,7 +348,7 @@ public class RQLQueryWrapperTest {
   public void test_rql_query_term_and_limit_and_sort() throws IOException {
     String rql = "network(eq(id,ialsa),limit(3,4),sort(-name))";
     RQLQueryWrapper rqlQueryWrapper = new RQLQueryWrapper(rql);
-    assertThat(rqlQueryWrapper.hasQueryBuilder()).isTrue();
+    assertThat(rqlQueryWrapper.isValid()).isTrue();
     String expectedQuery = "{\n" +
       "  \"term\" : {\n" +
       "    \"id\" : \"ialsa\"\n" +
@@ -388,7 +388,7 @@ public class RQLQueryWrapperTest {
   public void test_query_argument_type() throws IOException {
     String rql = "study(in(Mica_study.id,3d)";
     RQLQueryWrapper rqlQueryWrapper = new RQLQueryWrapper(rql);
-    assertThat(rqlQueryWrapper.hasQueryBuilder()).isTrue();
+    assertThat(rqlQueryWrapper.isValid()).isTrue();
     assertThat(rqlQueryWrapper.getNode().getArgument(1)).isEqualTo("3d");
   }
 
@@ -424,7 +424,7 @@ public class RQLQueryWrapperTest {
     assertThat(rqlQueryWrapper.getSourceFields()).isNotNull();
     assertThat(rqlQueryWrapper.getSourceFields().size()).isEqualTo(1);
     assertThat(rqlQueryWrapper.getSourceFields().get(0)).isEqualTo("name.*");
-    assertThat(rqlQueryWrapper.hasQueryBuilder()).isTrue();
+    assertThat(rqlQueryWrapper.isValid()).isTrue();
     String expected = "{\n" +
       "  \"query\" : {\n" +
       "    \"exists\" : {\n" +

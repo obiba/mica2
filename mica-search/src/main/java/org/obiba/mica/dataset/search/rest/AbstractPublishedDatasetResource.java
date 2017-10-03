@@ -10,24 +10,14 @@
 
 package org.obiba.mica.dataset.search.rest;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Stream;
-
-import javax.annotation.Nullable;
-import javax.inject.Inject;
-import javax.validation.constraints.NotNull;
-
-import org.elasticsearch.action.search.SearchRequestBuilder;
-import org.elasticsearch.action.search.SearchResponse;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Joiner;
+import com.google.common.base.Splitter;
+import org.elasticsearch.common.Strings;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.QueryStringQueryBuilder;
-import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
 import org.obiba.magma.NoSuchVariableException;
 import org.obiba.mica.core.domain.BaseStudyTable;
@@ -47,7 +37,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import javax.annotation.Nullable;
+import javax.inject.Inject;
+import javax.validation.constraints.NotNull;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Retrieve the {@link org.obiba.mica.dataset.domain.Dataset} from the published dataset index.
@@ -77,12 +75,12 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
 
   protected T getDataset(Class<T> clazz, @NotNull String datasetId) throws NoSuchDatasetException {
     InputStream inputStream = searcher.getDocumentByClassName(Indexer.PUBLISHED_DATASET_INDEX, Indexer.DATASET_TYPE, clazz, datasetId);
-    if(inputStream == null) throw NoSuchDatasetException.withId(datasetId);
+    if (inputStream == null) throw NoSuchDatasetException.withId(datasetId);
     try {
       T rval = objectMapper.readValue(inputStream, clazz);
       log.info("Response /{}/{}", Indexer.PUBLISHED_DATASET_INDEX, Indexer.DATASET_TYPE);
       return rval;
-    } catch(IOException e) {
+    } catch (IOException e) {
       log.error("Failed retrieving {}", clazz.getSimpleName(), e);
       throw NoSuchDatasetException.withId(datasetId);
     }
@@ -93,50 +91,43 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
   }
 
   protected Mica.DatasetVariablesDto getDatasetVariableDtos(@NotNull String queryString, @NotNull String datasetId,
-    DatasetVariable.Type type, int from, int limit, @Nullable String sort, @Nullable String order) {
-    QueryBuilder query = FilteredQueryBuilder.newBuilder().must("datasetId", datasetId)
-      .must("variableType", type.toString()).build(QueryStringBuilder.newBuilder(queryString).build());
-
-    return getDatasetVariableDtosInternal(query, from, limit, sort, order);
+                                                            DatasetVariable.Type type, int from, int limit, @Nullable String sort, @Nullable String order) {
+    // TODO make a helper class for this
+    String match = "";
+    if (!Strings.isNullOrEmpty(queryString)) {
+      String tokens = Joiner.on(",").join(Splitter.on(" ").splitToList(queryString).stream()
+          .filter(t -> !t.trim().isEmpty()).collect(Collectors.toList()));
+      if (!Strings.isNullOrEmpty(tokens)) match = String.format(",match((%s))", tokens);
+    }
+    String rql = String.format("and(eq(datasetId,%s),eq(variableType,%s)%s)", datasetId, type.toString(), match);
+    return getDatasetVariableDtosInternal(rql, from, limit, sort, order);
   }
 
   protected Mica.DatasetVariablesDto getDatasetVariableDtos(@NotNull String datasetId, DatasetVariable.Type type, int from,
-    int limit, @Nullable String sort, @Nullable String order) {
-    QueryBuilder query = FilteredQueryBuilder.newBuilder().must("datasetId", datasetId)
-      .must("variableType", type.toString()).build(QueryBuilders.matchAllQuery());
-
-    return getDatasetVariableDtosInternal(query, from, limit, sort, order);
+                                                            int limit, @Nullable String sort, @Nullable String order) {
+    String rql = String.format("and(eq(datasetId,%s),eq(variableType,%s))", datasetId, type.toString());
+    return getDatasetVariableDtosInternal(rql, from, limit, sort, order);
   }
 
-  protected Mica.DatasetVariablesDto getDatasetVariableDtosInternal(QueryBuilder query, int from, int limit, @Nullable String sort,
-    @Nullable String order) {
-
-    SearchRequestBuilder search = searcher.prepareSearch() //
-      .setIndices(Indexer.PUBLISHED_VARIABLE_INDEX) //
-      .setTypes(Indexer.VARIABLE_TYPE) //
-      .setQuery(query) //
-      .setFrom(from) //
-      .setSize(limit);
-
-    if(sort != null) {
-      search.addSort(
-        SortBuilders.fieldSort(sort).order(order == null ? SortOrder.ASC : SortOrder.valueOf(order.toUpperCase())));
+  protected Mica.DatasetVariablesDto getDatasetVariableDtosInternal(String rql, int from, int limit, @Nullable String sort, @Nullable String order) {
+    String rqlSort = "";
+    if (!Strings.isNullOrEmpty(sort)) {
+      String orderOp = !Strings.isNullOrEmpty(order) && SortOrder.DESC.equals(SortOrder.valueOf(order.toUpperCase())) ? "-" : "";
+      rqlSort = String.format(",sort(%s)", orderOp + sort);
     }
-
-    log.info("Request /{}/{}", Indexer.PUBLISHED_VARIABLE_INDEX, Indexer.VARIABLE_TYPE);
-    SearchResponse response = search.execute().actionGet();
+    String query = String.format("variable(%s,limit(%s,%s)%s)", rql, from, limit, rqlSort);
+    Searcher.DocumentResults results = searcher.find(Indexer.PUBLISHED_VARIABLE_INDEX, Indexer.VARIABLE_TYPE, query);
 
     Mica.DatasetVariablesDto.Builder builder = Mica.DatasetVariablesDto.newBuilder() //
-      .setTotal(Long.valueOf(response.getHits().getTotalHits()).intValue()) //
-      .setFrom(from) //
-      .setLimit(limit);
+        .setTotal(Long.valueOf(results.getTotal()).intValue()) //
+        .setFrom(from) //
+        .setLimit(limit);
 
     List<Taxonomy> taxonomies = getTaxonomies();
-    response.getHits().forEach(hit -> {
-      InputStream inputStream = new ByteArrayInputStream(hit.getSourceAsString().getBytes());
+    results.getDocuments().forEach(res -> {
       try {
-        builder.addVariables(dtos.asDto(objectMapper.readValue(inputStream, DatasetVariable.class), taxonomies));
-      } catch(IOException e) {
+        builder.addVariables(dtos.asDto(objectMapper.readValue(res.getSourceInputStream(), DatasetVariable.class), taxonomies));
+      } catch (IOException e) {
         log.error("Failed retrieving {}", DatasetVariable.class.getSimpleName(), e);
       }
     });
@@ -147,18 +138,18 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
   }
 
   protected Mica.DatasetVariableHarmonizationDto getVariableHarmonizationDto(HarmonizationDataset dataset,
-    String variableName) {
+                                                                             String variableName) {
     DatasetVariable.IdResolver variableResolver = DatasetVariable.IdResolver
-      .from(dataset.getId(), variableName, DatasetVariable.Type.Dataschema);
+        .from(dataset.getId(), variableName, DatasetVariable.Type.Dataschema);
     Mica.DatasetVariableHarmonizationDto.Builder builder = Mica.DatasetVariableHarmonizationDto.newBuilder();
     builder.setResolver(dtos.asDto(variableResolver));
 
     dataset.getAllOpalTables().forEach(table -> {
       try {
         builder.addDatasetVariableSummaries(
-          getDatasetVariableSummaryDto(dataset.getId(), variableResolver.getName(), DatasetVariable.Type.Harmonized,
-            table));
-      } catch(NoSuchVariableException e) {
+            getDatasetVariableSummaryDto(dataset.getId(), variableResolver.getName(), DatasetVariable.Type.Harmonized,
+                table));
+      } catch (NoSuchVariableException e) {
         log.debug("ignore (case the study has not implemented this dataschema variable)", e);
       }
     });
@@ -167,18 +158,18 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
   }
 
   protected DatasetVariable getDatasetVariable(@NotNull String datasetId, @NotNull String variableName,
-    DatasetVariable.Type variableType, OpalTable opalTable) {
+                                               DatasetVariable.Type variableType, OpalTable opalTable) {
 
     if (opalTable != null) {
       return getDatasetVariable(datasetId,
-        variableName,
-        variableType,
-        opalTable instanceof BaseStudyTable ? ((BaseStudyTable) opalTable).getStudyId() : null,
-        opalTable.getProject(),
-        opalTable.getTable(),
-        opalTable instanceof StudyTable
-          ? DatasetVariable.OPAL_STUDY_TABLE_PREFIX
-          : DatasetVariable.OPAL_HARMONIZATION_TABLE_PREFIX);
+          variableName,
+          variableType,
+          opalTable instanceof BaseStudyTable ? ((BaseStudyTable) opalTable).getStudyId() : null,
+          opalTable.getProject(),
+          opalTable.getTable(),
+          opalTable instanceof StudyTable
+              ? DatasetVariable.OPAL_STUDY_TABLE_PREFIX
+              : DatasetVariable.OPAL_HARMONIZATION_TABLE_PREFIX);
 
     }
 
@@ -198,14 +189,14 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
    * @throws NoSuchVariableException
    */
   protected DatasetVariable getDatasetVariable(@NotNull String datasetId, @NotNull String variableName,
-    DatasetVariable.Type variableType, @Nullable String studyId, @Nullable String project, @Nullable String table,
-    @Nullable String tableType)
-    throws NoSuchVariableException {
+                                               DatasetVariable.Type variableType, @Nullable String studyId, @Nullable String project, @Nullable String table,
+                                               @Nullable String tableType)
+      throws NoSuchVariableException {
 
     String variableId = DatasetVariable.IdResolver
-      .encode(datasetId, variableName, variableType, studyId, project, table, tableType);
+        .encode(datasetId, variableName, variableType, studyId, project, table, tableType);
 
-    if(variableType.equals(DatasetVariable.Type.Harmonized)) {
+    if (variableType.equals(DatasetVariable.Type.Harmonized)) {
       return getHarmonizedDatasetVariable(datasetId, variableId, variableName);
     }
 
@@ -213,26 +204,26 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
   }
 
   protected Mica.DatasetVariableDto getDatasetVariableDto(@NotNull String datasetId, @NotNull String variableName,
-    DatasetVariable.Type variableType) {
+                                                          DatasetVariable.Type variableType) {
     return getDatasetVariableDto(datasetId, variableName, variableType, null);
   }
 
   protected Mica.DatasetVariableDto getDatasetVariableDto(@NotNull String datasetId, @NotNull String variableName,
-    DatasetVariable.Type variableType, @Nullable OpalTable opalTable) {
+                                                          DatasetVariable.Type variableType, @Nullable OpalTable opalTable) {
     return dtos
-      .asDto(getDatasetVariable(datasetId, variableName, variableType, opalTable), getTaxonomies(),
-        getLocale());
+        .asDto(getDatasetVariable(datasetId, variableName, variableType, opalTable), getTaxonomies(),
+            getLocale());
   }
 
   protected Mica.DatasetVariableDto getDatasetVariableDto(@NotNull String datasetId, @NotNull String variableName,
-    DatasetVariable.Type variableType, @Nullable String studyId, @Nullable String project, @Nullable String table,
-    @Nullable String tableType) {
+                                                          DatasetVariable.Type variableType, @Nullable String studyId, @Nullable String project, @Nullable String table,
+                                                          @Nullable String tableType) {
     return dtos.asDto(getDatasetVariable(datasetId, variableName, variableType, studyId, project, table, tableType),
-      getTaxonomies(), getLocale());
+        getTaxonomies(), getLocale());
   }
 
   protected Mica.DatasetVariableSummaryDto getDatasetVariableSummaryDto(@NotNull String datasetId,
-    @NotNull String variableName, DatasetVariable.Type variableType, @Nullable OpalTable opalTable) {
+                                                                        @NotNull String variableName, DatasetVariable.Type variableType, @Nullable OpalTable opalTable) {
     DatasetVariable variable = getDatasetVariable(datasetId, variableName, variableType, opalTable);
     return dtos.asSummaryDto(variable, opalTable, true);
   }
@@ -242,7 +233,7 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
     List<Taxonomy> taxonomies = null;
     try {
       taxonomies = opalService.getTaxonomies();
-    } catch(Exception e) {
+    } catch (Exception e) {
       // ignore
     }
     return taxonomies == null ? Collections.emptyList() : taxonomies;
@@ -250,14 +241,14 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
 
   private DatasetVariable getHarmonizedDatasetVariable(String datasetId, String variableId, String variableName) {
     String dataSchemaVariableId = DatasetVariable.IdResolver
-      .encode(datasetId, variableName, DatasetVariable.Type.Dataschema, null, null, null, null);
+        .encode(datasetId, variableName, DatasetVariable.Type.Dataschema, null, null, null, null);
     DatasetVariable harmonizedDatasetVariable = getDatasetVariableInternal(Indexer.HARMONIZED_VARIABLE_TYPE,
-      variableId, variableName);
+        variableId, variableName);
     DatasetVariable dataSchemaVariable = getDatasetVariableInternal(Indexer.VARIABLE_TYPE,
-      dataSchemaVariableId, variableName);
+        dataSchemaVariableId, variableName);
 
     dataSchemaVariable.getAttributes().asAttributeList().forEach(a -> {
-      if(!a.getName().startsWith("Mlstr_harmo")) harmonizedDatasetVariable.addAttribute(a);
+      if (!a.getName().startsWith("Mlstr_harmo")) harmonizedDatasetVariable.addAttribute(a);
     });
 
     return harmonizedDatasetVariable;
@@ -265,10 +256,10 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
 
   private DatasetVariable getDatasetVariableInternal(String indexType, String variableId, String variableName) {
     InputStream inputStream = searcher.getDocumentById(Indexer.PUBLISHED_VARIABLE_INDEX, indexType, variableId);
-    if(inputStream == null) throw new NoSuchVariableException(variableName);
+    if (inputStream == null) throw new NoSuchVariableException(variableName);
     try {
       return objectMapper.readValue(inputStream, DatasetVariable.class);
-    } catch(IOException e) {
+    } catch (IOException e) {
       log.error("Failed retrieving {}", DatasetVariable.class.getSimpleName(), e);
       throw new NoSuchVariableException(variableName);
     }
@@ -296,9 +287,9 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
 
     public QueryBuilder build() {
       Stream.of(Indexer.ANALYZED_FIELDS)
-        .forEach(f -> builder.field(f + ".analyzed"));
+          .forEach(f -> builder.field(f + ".analyzed"));
       Stream.of(Indexer.VARIABLE_LOCALIZED_ANALYZED_FIELDS)
-        .forEach(f -> builder.field("attributes." + f + ".*.analyzed"));
+          .forEach(f -> builder.field("attributes." + f + ".*.analyzed"));
 
       return builder;
     }

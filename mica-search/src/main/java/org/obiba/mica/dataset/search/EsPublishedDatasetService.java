@@ -20,6 +20,7 @@ import org.obiba.mica.dataset.service.HarmonizationDatasetService;
 import org.obiba.mica.dataset.service.PublishedDatasetService;
 import org.obiba.mica.spi.search.Indexer;
 import org.obiba.mica.spi.search.Searcher;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Nullable;
@@ -36,9 +37,11 @@ class EsPublishedDatasetService extends AbstractEsDatasetService<Dataset> implem
   private ObjectMapper objectMapper;
 
   @Inject
+  @Lazy
   private CollectionDatasetService collectionDatasetService;
 
   @Inject
+  @Lazy
   private HarmonizationDatasetService harmonizationDatasetService;
 
   @Override

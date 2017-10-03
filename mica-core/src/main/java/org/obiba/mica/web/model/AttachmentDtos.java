@@ -24,7 +24,6 @@ import org.springframework.stereotype.Component;
 
 import com.google.common.base.Strings;
 
-import static org.obiba.mica.web.model.Mica.AttachmentDto;
 
 @Component
 class AttachmentDtos {
@@ -102,8 +101,8 @@ class AttachmentDtos {
   }
 
   @NotNull
-  AttachmentDto asDto(@NotNull Attachment attachment) {
-    AttachmentDto.Builder builder = AttachmentDto.newBuilder().setId(attachment.getId())
+  Mica.AttachmentDto asDto(@NotNull Attachment attachment) {
+    Mica.AttachmentDto.Builder builder = Mica.AttachmentDto.newBuilder().setId(attachment.getId())
       .setFileName(attachment.getName()).setTimestamps(TimestampsDtos.asDto(attachment));
     if(attachment.getType() != null) builder.setType(attachment.getType());
     if(attachment.getDescription() != null) {

@@ -18,6 +18,7 @@ import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
 
 import com.google.common.base.Preconditions;
+import org.obiba.mica.spi.search.support.AttributeKey;
 
 public class Attribute implements Serializable {
 

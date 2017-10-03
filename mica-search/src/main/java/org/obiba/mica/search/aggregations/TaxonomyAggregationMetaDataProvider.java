@@ -18,7 +18,7 @@ import java.util.Optional;
 
 import javax.inject.Inject;
 
-import org.obiba.mica.core.domain.AttributeKey;
+import org.obiba.mica.spi.search.support.AttributeKey;
 import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.micaConfig.service.OpalService;
 import org.obiba.mica.micaConfig.service.helper.AggregationMetaDataProvider;

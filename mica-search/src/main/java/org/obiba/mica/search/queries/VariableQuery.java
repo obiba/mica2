@@ -10,22 +10,9 @@
 
 package org.obiba.mica.search.queries;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import javax.annotation.Nullable;
-import javax.inject.Inject;
-import javax.validation.constraints.NotNull;
-
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.common.Strings;
 import org.elasticsearch.index.query.BoolQueryBuilder;
@@ -34,25 +21,22 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.TermsQueryBuilder;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
-import org.obiba.mica.core.domain.AttributeKey;
+import org.obiba.mica.spi.search.support.AttributeKey;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.HarmonizationDatasetState;
 import org.obiba.mica.dataset.domain.StudyDatasetState;
-import org.obiba.mica.dataset.search.VariableIndexer;
 import org.obiba.mica.dataset.service.CollectionDatasetService;
 import org.obiba.mica.dataset.service.HarmonizationDatasetService;
 import org.obiba.mica.micaConfig.service.OpalService;
 import org.obiba.mica.micaConfig.service.helper.AggregationMetaDataProvider;
 import org.obiba.mica.network.domain.Network;
-import org.obiba.mica.search.CountStatsData;
+import org.obiba.mica.spi.search.CountStatsData;
 import org.obiba.mica.search.DocumentQueryHelper;
 import org.obiba.mica.search.DocumentQueryIdProvider;
-import org.obiba.mica.search.aggregations.DataCollectionEventAggregationMetaDataProvider;
-import org.obiba.mica.search.aggregations.DatasetAggregationMetaDataProvider;
-import org.obiba.mica.search.aggregations.StudyAggregationMetaDataProvider;
-import org.obiba.mica.search.aggregations.TaxonomyAggregationMetaDataProvider;
-import org.obiba.mica.search.aggregations.VariableTaxonomyMetaDataProvider;
+import org.obiba.mica.search.aggregations.*;
 import org.obiba.mica.spi.search.Indexer;
+import org.obiba.mica.spi.search.QueryMode;
+import org.obiba.mica.spi.search.QueryScope;
 import org.obiba.mica.study.NoSuchStudyException;
 import org.obiba.mica.study.domain.BaseStudy;
 import org.obiba.mica.study.service.PublishedStudyService;
@@ -63,15 +47,20 @@ import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.obiba.opal.core.domain.taxonomy.Vocabulary;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-
 import sun.util.locale.LanguageTag;
 
-import static org.obiba.mica.search.queries.AbstractDocumentQuery.Scope.DETAIL;
-import static org.obiba.mica.search.queries.AbstractDocumentQuery.Scope.NONE;
+import javax.annotation.Nullable;
+import javax.inject.Inject;
+import javax.validation.constraints.NotNull;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.*;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+
+import static org.obiba.mica.spi.search.QueryScope.DETAIL;
+import static org.obiba.mica.spi.search.QueryScope.NONE;
 
 @Component
 @Scope("request")
@@ -128,13 +117,13 @@ public class VariableQuery extends AbstractDocumentQuery {
 
   @Override
   public QueryBuilder getAccessFilter() {
-    if(micaConfigService.getConfig().isOpenAccess()) return null;
+    if (micaConfigService.getConfig().isOpenAccess()) return null;
     List<String> ids = collectionDatasetService.findPublishedStates().stream().map(StudyDatasetState::getId)
-      .filter(s -> subjectAclService.isAccessible("/collected-dataset", s)).collect(Collectors.toList());
+        .filter(s -> subjectAclService.isAccessible("/collected-dataset", s)).collect(Collectors.toList());
     ids.addAll(harmonizationDatasetService.findPublishedStates().stream().map(HarmonizationDatasetState::getId)
-      .filter(s -> subjectAclService.isAccessible("/harmonized-dataset", s)).collect(Collectors.toList()));
+        .filter(s -> subjectAclService.isAccessible("/harmonized-dataset", s)).collect(Collectors.toList()));
 
-    if(ids.isEmpty()) return QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("id"));
+    if (ids.isEmpty()) return QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("id"));
 
     BoolQueryBuilder orFilter = QueryBuilders.boolQuery();
     ids.forEach(id -> orFilter.should(QueryBuilders.termQuery("datasetId", id)));
@@ -142,28 +131,18 @@ public class VariableQuery extends AbstractDocumentQuery {
     return orFilter;
   }
 
-  @Override
-  public Stream<String> getLocalizedQueryStringFields() {
-    return Stream.of(Indexer.VARIABLE_LOCALIZED_ANALYZED_FIELDS).map(f -> "attributes." + f);
-  }
-
-  @Override
-  public Stream<String> getQueryStringFields() {
-    return Stream.of(Indexer.ANALYZED_FIELDS);
-  }
-
   public void setDatasetIdProvider(DocumentQueryIdProvider provider) {
     datasetIdProvider = provider;
   }
 
   @Override
-  protected void processHits(MicaSearch.QueryResultDto.Builder builder, SearchHits hits, Scope scope,
-    CountStatsData counts) throws IOException {
+  protected void processHits(MicaSearch.QueryResultDto.Builder builder, SearchHits hits, QueryScope scope,
+                             CountStatsData counts) throws IOException {
     MicaSearch.DatasetVariableResultDto.Builder resBuilder = MicaSearch.DatasetVariableResultDto.newBuilder();
     Map<String, BaseStudy> studyMap = Maps.newHashMap();
     Map<String, Network> networkMap = Maps.newHashMap();
 
-    for(SearchHit hit : hits) {
+    for (SearchHit hit : hits) {
       DatasetVariable.IdResolver resolver = DatasetVariable.IdResolver.from(hit.getId());
       String sourceAsString = hit.getSourceAsString();
       if (!Strings.isNullOrEmpty(sourceAsString)) {
@@ -179,15 +158,15 @@ public class VariableQuery extends AbstractDocumentQuery {
   @Override
   protected List<AggregationMetaDataProvider> getAggregationMetaDataProviders() {
     return Arrays
-      .asList(taxonomyAggregationMetaDataProvider, variableTaxonomyMetaDataProvider, datasetAggregationMetaDataProvider,
-        dceAggregationMetaDataProvider, studyAggregationMetaDataProvider);
+        .asList(taxonomyAggregationMetaDataProvider, variableTaxonomyMetaDataProvider, datasetAggregationMetaDataProvider,
+            dceAggregationMetaDataProvider, studyAggregationMetaDataProvider);
   }
 
   @Override
   protected List<String> getMandatorySourceFields() {
     return Lists.newArrayList(
-      "id",
-      "studyId"
+        "id",
+        "studyId"
     );
   }
 
@@ -200,39 +179,39 @@ public class VariableQuery extends AbstractDocumentQuery {
    * @return
    */
   private Mica.DatasetVariableResolverDto processHit(DatasetVariable.IdResolver resolver, DatasetVariable variable,
-    Map<String, BaseStudy> studyMap, Map<String, Network> networkMap) {
+                                                     Map<String, BaseStudy> studyMap, Map<String, Network> networkMap) {
     Mica.DatasetVariableResolverDto.Builder builder = dtos.asDto(resolver);
 
     String studyId = resolver.hasStudyId() ? resolver.getStudyId() : null;
 
-    if(resolver.getType() == DatasetVariable.Type.Collected || resolver.getType() == DatasetVariable.Type.Dataschema || resolver.getType() == DatasetVariable.Type.Harmonized) {
+    if (resolver.getType() == DatasetVariable.Type.Collected || resolver.getType() == DatasetVariable.Type.Dataschema || resolver.getType() == DatasetVariable.Type.Harmonized) {
       studyId = variable.getStudyId();
     }
 
-    if(studyId != null) {
+    if (studyId != null) {
       builder.setStudyId(studyId);
 
       try {
         BaseStudy study;
-        if(studyMap.containsKey(studyId)) {
+        if (studyMap.containsKey(studyId)) {
           study = studyMap.get(studyId);
         } else {
           study = publishedStudyService.findById(studyId);
           studyMap.put(studyId, study);
         }
 
-        if(study != null) {
+        if (study != null) {
           builder.addAllStudyName(dtos.asDto(study.getName()));
           builder.addAllStudyAcronym(dtos.asDto(study.getAcronym()));
         }
-      } catch(NoSuchStudyException e) {
+      } catch (NoSuchStudyException e) {
       }
     }
 
     builder.addAllDatasetAcronym(dtos.asDto(variable.getDatasetAcronym()));
     builder.addAllDatasetName(dtos.asDto(variable.getDatasetName()));
 
-    if(variable.hasAttribute("label", null)) {
+    if (variable.hasAttribute("label", null)) {
       builder.addAllVariableLabel(dtos.asDto(variable.getAttributes().getAttribute("label", null).getValues()));
     }
 
@@ -250,21 +229,21 @@ public class VariableQuery extends AbstractDocumentQuery {
   }
 
   @Override
-  public List<String> query(List<String> studyIds, CountStatsData counts, Scope scope) throws IOException {
+  public List<String> query(List<String> studyIds, CountStatsData counts, QueryScope scope) throws IOException {
     updateDatasetQuery();
     List<String> ids = super.query(studyIds, null, scope == DETAIL ? DETAIL : NONE);
-    if(datasetIdProvider != null) datasetIdProvider.setIds(getDatasetIds());
+    if (datasetIdProvider != null) datasetIdProvider.setIds(getDatasetIds());
     return ids;
   }
 
   private void updateDatasetQuery() {
-    if(datasetIdProvider == null) return;
+    if (datasetIdProvider == null) return;
     List<String> datasetIds = datasetIdProvider.getIds();
-    if(datasetIds.size() > 0) {
+    if (datasetIds.size() > 0) {
       TermsQueryBuilder termsQueryBuilder = QueryBuilders.termsQuery(DATASET_ID, datasetIds);
-      setQueryBuilder(hasQueryBuilder()
-        ? QueryBuilders.boolQuery().must(getQueryBuilder()).must(termsQueryBuilder)
-        : termsQueryBuilder);
+      setQueryBuilder(isValid()
+          ? QueryBuilders.boolQuery().must(getQueryBuilder()).must(termsQueryBuilder)
+          : termsQueryBuilder);
     }
   }
 
@@ -281,7 +260,7 @@ public class VariableQuery extends AbstractDocumentQuery {
   }
 
   private List<String> getDatasetIds() {
-    if(resultDto != null) {
+    if (resultDto != null) {
       return getResponseDocumentIds(Arrays.asList(DATASET_ID), resultDto.getAggsList());
     }
 
@@ -316,31 +295,31 @@ public class VariableQuery extends AbstractDocumentQuery {
   @Override
   protected Properties getAggregationsProperties(List<String> filter) {
     Properties properties = new Properties();
-    if(mode != Mode.LIST && filter != null) {
+    if (mode != QueryMode.LIST && filter != null) {
       List<Pattern> patterns = filter.stream().map(Pattern::compile).collect(Collectors.toList());
 
       getOpalTaxonomies().stream().filter(Taxonomy::hasVocabularies)
-        .forEach(taxonomy -> taxonomy.getVocabularies().stream().filter(Vocabulary::hasTerms).forEach(vocabulary -> {
-          String field = vocabulary.getAttributes().containsKey("field")
-            ? vocabulary.getAttributeValue("field")
-            : "attributes." + AttributeKey.getMapKey(vocabulary.getName(), taxonomy.getName()) + "." +
-              LanguageTag.UNDETERMINED;
-          if(patterns.isEmpty() || patterns.stream().anyMatch(p -> p.matcher(field).find()))
-            properties.put(field, "");
-        }));
+          .forEach(taxonomy -> taxonomy.getVocabularies().stream().filter(Vocabulary::hasTerms).forEach(vocabulary -> {
+            String field = vocabulary.getAttributes().containsKey("field")
+                ? vocabulary.getAttributeValue("field")
+                : "attributes." + AttributeKey.getMapKey(vocabulary.getName(), taxonomy.getName()) + "." +
+                LanguageTag.UNDETERMINED;
+            if (patterns.isEmpty() || patterns.stream().anyMatch(p -> p.matcher(field).find()))
+              properties.put(field, "");
+          }));
 
       taxonomyService.getVariableTaxonomy().getVocabularies().forEach(vocabulary -> {
         String field = vocabulary.getAttributes().containsKey("field")
-          ? vocabulary.getAttributeValue("field")
-          : vocabulary.getName().replace('-', '.');
-        if(patterns.isEmpty() || patterns.stream().anyMatch(p -> p.matcher(field).matches()))
+            ? vocabulary.getAttributeValue("field")
+            : vocabulary.getName().replace('-', '.');
+        if (patterns.isEmpty() || patterns.stream().anyMatch(p -> p.matcher(field).matches()))
           properties.put(field, "");
       });
     }
 
     // required for the counts to work
-    if(!properties.containsKey(JOIN_FIELD)) properties.put(JOIN_FIELD, "");
-    if(!properties.containsKey(DATASET_ID)) properties.put(DATASET_ID, "");
+    if (!properties.containsKey(JOIN_FIELD)) properties.put(JOIN_FIELD, "");
+    if (!properties.containsKey(DATASET_ID)) properties.put(DATASET_ID, "");
 
     return properties;
   }
@@ -361,7 +340,7 @@ public class VariableQuery extends AbstractDocumentQuery {
 
     try {
       taxonomies = opalService.getTaxonomies();
-    } catch(Exception e) {
+    } catch (Exception e) {
       // ignore
     }
 

@@ -8,12 +8,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.obiba.mica.search.queries.rql;
+package org.obiba.mica.spi.search.rql;
 
 /**
  * Mica supported RQL node names.
  */
-enum RQLNode {
+public enum RQLNode {
   VARIABLE, //
   DATASET, //
   STUDY, //

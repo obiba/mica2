@@ -11,24 +11,18 @@
 package org.obiba.mica.search.queries;
 
 import java.util.List;
-import java.util.Map;
 
 import javax.annotation.Nullable;
-import javax.validation.constraints.NotNull;
 
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.search.sort.SortBuilder;
+import org.obiba.mica.spi.search.support.Query;
 
 /**
  *
  */
-public interface QueryWrapper {
+public interface QueryWrapper extends Query {
 
-  int DEFAULT_FROM = 0;
-
-  int DEFAULT_SIZE = 10;
-
-  boolean hasQueryBuilder();
 
   @Nullable
   QueryBuilder getQueryBuilder();
@@ -38,18 +32,4 @@ public interface QueryWrapper {
   @Nullable
   List<SortBuilder> getSortBuilders();
 
-  int getFrom();
-
-  int getSize();
-
-  List<String> getSourceFields();
-
-  @NotNull
-  List<String> getAggregationBuckets();
-
-  @Nullable
-  List<String> getAggregations();
-
-  @NotNull
-  Map<String, Map<String, List<String>>> getTaxonomyTermsMap();
 }

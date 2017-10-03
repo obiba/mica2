@@ -27,7 +27,6 @@ import javax.ws.rs.core.StreamingOutput;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.domain.StudyDataset;
-import org.obiba.mica.dataset.search.DatasetIndexer;
 import org.obiba.mica.search.JoinQueryExecutor;
 import org.obiba.mica.search.csvexport.GenericReportGenerator;
 import org.obiba.mica.search.queries.DatasetQuery;
@@ -36,6 +35,7 @@ import org.obiba.mica.search.queries.protobuf.QueryDtoHelper;
 import org.obiba.mica.search.queries.rql.RQLQueryBuilder;
 import org.obiba.mica.search.queries.rql.RQLQueryFactory;
 import org.obiba.mica.spi.search.Indexer;
+import org.obiba.mica.spi.search.QueryType;
 import org.obiba.mica.web.model.MicaSearch;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -91,7 +91,7 @@ public class PublishedDatasetSearchResource {
       RQLQueryBuilder.TargetQueryBuilder.datasetInstance().exists("id").limit(from, limit).sort(sort, order).build())
       .locale(locale).buildArgsAsString();
 
-    return joinQueryExecutor.query(JoinQueryExecutor.QueryType.DATASET, rqlQueryFactory.makeJoinQuery(rql));
+    return joinQueryExecutor.query(QueryType.DATASET, rqlQueryFactory.makeJoinQuery(rql));
   }
 
   @GET
@@ -130,17 +130,10 @@ public class PublishedDatasetSearchResource {
     }
 
     MicaSearch.JoinQueryResultDto.Builder builder = joinQueryExecutor
-      .listQuery(JoinQueryExecutor.QueryType.DATASET, queryDto, locale).toBuilder();
+      .listQuery(QueryType.DATASET, queryDto, locale).toBuilder();
     builder.clearNetworkResultDto().clearVariableResultDto().clearStudyResultDto();
     builder.setDatasetResultDto(builder.getDatasetResultDto().toBuilder().clearAggs().build());
     return builder.build();
-  }
-
-  @POST
-  @Path("/_search")
-  @Timed
-  public MicaSearch.JoinQueryResultDto query(MicaSearch.JoinQueryDto joinQueryDto) throws IOException {
-    return joinQueryExecutor.query(JoinQueryExecutor.QueryType.DATASET, new JoinQueryDtoWrapper(joinQueryDto));
   }
 
   @GET
@@ -149,14 +142,14 @@ public class PublishedDatasetSearchResource {
   public MicaSearch.JoinQueryResultDto rqlQuery(@QueryParam("query") String query) throws IOException {
     String queryStr = query;
     if (Strings.isNullOrEmpty(queryStr)) queryStr = "dataset(exists(Mica_dataset.id))";
-    return joinQueryExecutor.query(JoinQueryExecutor.QueryType.DATASET, rqlQueryFactory.makeJoinQuery(queryStr));
+    return joinQueryExecutor.query(QueryType.DATASET, rqlQueryFactory.makeJoinQuery(queryStr));
   }
 
   @GET
   @Path("/_rql_csv")
   @Timed
   public Response rqlQueryAsCsv(@QueryParam("query") String query, @QueryParam("columnsToHide") List<String> columnsToHide) throws IOException {
-    StreamingOutput stream = os -> genericReportGenerator.generateCsv(JoinQueryExecutor.QueryType.DATASET, query, columnsToHide, os);
+    StreamingOutput stream = os -> genericReportGenerator.generateCsv(QueryType.DATASET, query, columnsToHide, os);
     return Response.ok(stream).header("Content-Disposition", "attachment; filename=\"SearchDatasets.csv\"").build();
   }
 

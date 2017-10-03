@@ -10,24 +10,21 @@
 
 package org.obiba.mica.search.queries;
 
-import java.util.List;
-import java.util.Map;
-
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.search.sort.SortBuilder;
+import org.obiba.mica.spi.search.support.EmptyQuery;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
+import java.util.List;
 
 /**
  *
  */
-public class EmptyQueryWrapper implements QueryWrapper {
+public class EmptyQueryWrapper extends EmptyQuery implements QueryWrapper {
 
   private QueryBuilder queryBuilder;
 
   @Override
-  public boolean hasQueryBuilder() {
+  public boolean isValid() {
     return queryBuilder != null;
   }
 
@@ -46,33 +43,4 @@ public class EmptyQueryWrapper implements QueryWrapper {
     return null;
   }
 
-  @Override
-  public int getFrom() {
-    return DEFAULT_FROM;
-  }
-
-  @Override
-  public int getSize() {
-    return DEFAULT_SIZE;
-  }
-
-  @Override
-  public List<String> getSourceFields() {
-    return Lists.newArrayList();
-  }
-
-  @Override
-  public List<String> getAggregationBuckets() {
-    return Lists.newArrayList();
-  }
-
-  @Override
-  public List<String> getAggregations() {
-    return null;
-  }
-
-  @Override
-  public Map<String, Map<String, List<String>>> getTaxonomyTermsMap() {
-    return Maps.newHashMap();
-  }
 }

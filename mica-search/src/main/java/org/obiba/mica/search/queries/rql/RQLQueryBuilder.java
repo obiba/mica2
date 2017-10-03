@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 import net.jazdw.rql.parser.ASTNode;
 
 import org.elasticsearch.common.Strings;
+import org.obiba.mica.spi.search.rql.RQLNode;
 
 public class RQLQueryBuilder {
 

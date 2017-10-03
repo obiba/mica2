@@ -20,6 +20,7 @@ import com.google.common.base.Strings;
 
 import sun.util.locale.LanguageTag;
 
+// TODO refactor to RQL
 public final class QueryDtoHelper {
 
   public static final int DEFAULT_FROM = 0;

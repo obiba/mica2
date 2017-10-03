@@ -19,6 +19,7 @@ import javax.annotation.Nullable;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.collect.Lists;
+import org.obiba.mica.spi.search.support.AttributeKey;
 
 public class Attributes extends TreeMap<String, LocalizedString> implements AttributeAware, Serializable {
 

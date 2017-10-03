@@ -10,20 +10,8 @@
 
 package org.obiba.mica.search.queries;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import javax.annotation.Nullable;
-import javax.inject.Inject;
-
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
@@ -35,14 +23,16 @@ import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.aggregations.Aggregations;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
+import org.obiba.mica.micaConfig.service.helper.AggregationMetaDataProvider;
 import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.network.domain.NetworkState;
 import org.obiba.mica.network.service.PublishedNetworkService;
-import org.obiba.mica.search.CountStatsData;
-import org.obiba.mica.micaConfig.service.helper.AggregationMetaDataProvider;
+import org.obiba.mica.spi.search.CountStatsData;
 import org.obiba.mica.search.aggregations.NetworkAggregationMetaDataProvider;
 import org.obiba.mica.search.aggregations.NetworkTaxonomyMetaDataProvider;
 import org.obiba.mica.spi.search.Indexer;
+import org.obiba.mica.spi.search.QueryMode;
+import org.obiba.mica.spi.search.QueryScope;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.mica.web.model.MicaSearch;
@@ -51,8 +41,17 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
+import javax.annotation.Nullable;
+import javax.inject.Inject;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import static org.obiba.mica.search.CountStatsDtoBuilders.NetworkCountStatsBuilder;
 import static org.obiba.mica.web.model.MicaSearch.NetworkResultDto;
@@ -90,39 +89,34 @@ public class NetworkQuery extends AbstractDocumentQuery {
 
   @Override
   public QueryBuilder getAccessFilter() {
-    if(micaConfigService.getConfig().isOpenAccess()) return null;
+    if (micaConfigService.getConfig().isOpenAccess()) return null;
     List<String> ids = publishedNetworkService.getNetworkService().findPublishedStates().stream()
-      .map(NetworkState::getId).filter(s -> subjectAclService.isAccessible("/network", s)).collect(Collectors.toList());
+        .map(NetworkState::getId).filter(s -> subjectAclService.isAccessible("/network", s)).collect(Collectors.toList());
     return ids.isEmpty()
-      ? QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("id"))
-      : QueryBuilders.idsQuery().ids(ids);
-  }
-
-  @Override
-  public Stream<String> getLocalizedQueryStringFields() {
-    return Stream.of(Indexer.NETWORK_LOCALIZED_ANALYZED_FIELDS);
+        ? QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("id"))
+        : QueryBuilders.idsQuery().ids(ids);
   }
 
   @Nullable
   @Override
   protected Properties getAggregationsProperties(List<String> filter) {
     Properties properties = getAggregationsProperties(filter, taxonomyService.getNetworkTaxonomy());
-    if(!properties.containsKey(JOIN_FIELD)) properties.put(JOIN_FIELD,"");
+    if (!properties.containsKey(JOIN_FIELD)) properties.put(JOIN_FIELD, "");
     return properties;
   }
 
   @Override
-  public void processHits(QueryResultDto.Builder builder, SearchHits hits, Scope scope, CountStatsData counts)
-    throws IOException {
+  public void processHits(QueryResultDto.Builder builder, SearchHits hits, QueryScope scope, CountStatsData counts)
+      throws IOException {
     NetworkResultDto.Builder resBuilder = NetworkResultDto.newBuilder();
     NetworkCountStatsBuilder networkCountStatsBuilder = counts == null
-      ? null
-      : NetworkCountStatsBuilder.newBuilder(counts);
+        ? null
+        : NetworkCountStatsBuilder.newBuilder(counts);
 
     Consumer<Network> addDto = getNetworkConsumer(scope, resBuilder, networkCountStatsBuilder);
     List<Network> networks = Lists.newArrayList();
 
-    for(SearchHit hit : hits) {
+    for (SearchHit hit : hits) {
       String sourceAsString = hit.getSourceAsString();
       if (!Strings.isNullOrEmpty(sourceAsString)) {
         InputStream inputStream = new ByteArrayInputStream(sourceAsString.getBytes());
@@ -134,19 +128,19 @@ public class NetworkQuery extends AbstractDocumentQuery {
     builder.setExtension(NetworkResultDto.result, resBuilder.build());
   }
 
-  private Consumer<Network> getNetworkConsumer(Scope scope, NetworkResultDto.Builder resBuilder,
-    NetworkCountStatsBuilder networkCountStatsBuilder) {
+  private Consumer<Network> getNetworkConsumer(QueryScope scope, NetworkResultDto.Builder resBuilder,
+                                               NetworkCountStatsBuilder networkCountStatsBuilder) {
 
-    return scope == Scope.DETAIL ? (network) -> {
+    return scope == QueryScope.DETAIL ? (network) -> {
       Mica.NetworkDto.Builder networkBuilder = dtos.asDtoBuilder(network);
-      if(mode == Mode.LIST) {
+      if (mode == QueryMode.LIST) {
         networkBuilder.clearStudySummaries();
         networkBuilder.clearContacts();
         networkBuilder.clearInvestigators();
       }
-      if(networkCountStatsBuilder != null) {
+      if (networkCountStatsBuilder != null) {
         networkBuilder.setExtension(MicaSearch.CountStatsDto.networkCountStats, networkCountStatsBuilder.build(network))
-          .build();
+            .build();
       }
       resBuilder.addNetworks(networkBuilder.build());
     } : (network) -> resBuilder.addDigests(dtos.asDigestDtoBuilder(network).build());
@@ -155,7 +149,7 @@ public class NetworkQuery extends AbstractDocumentQuery {
   @Override
   protected List<String> getMandatorySourceFields() {
     return Lists.newArrayList(
-      "id"
+        "id"
     );
   }
 
@@ -171,11 +165,11 @@ public class NetworkQuery extends AbstractDocumentQuery {
 
   public Map<String, List<String>> getStudyCountsByNetwork() {
     SearchRequestBuilder requestBuilder = searcher.prepareSearch(getSearchIndex()) //
-      .setTypes(getSearchType()) //
-      .setSearchType(SearchType.QUERY_THEN_FETCH) //
-      .setSize(0)
-      .setQuery(hasQueryBuilder() ? getQueryBuilder() : QueryBuilders.matchAllQuery()) //
-      .setNoFields();
+        .setTypes(getSearchType()) //
+        .setSearchType(SearchType.QUERY_THEN_FETCH) //
+        .setSize(0)
+        .setQuery(isValid() ? getQueryBuilder() : QueryBuilders.matchAllQuery()) //
+        .setNoFields();
 
     Properties props = new Properties();
     props.setProperty("id", "");
@@ -190,9 +184,9 @@ public class NetworkQuery extends AbstractDocumentQuery {
       SearchResponse response = requestBuilder.execute().actionGet();
 
       response.getAggregations().forEach(
-        aggregation -> ((Terms) aggregation).getBuckets().stream().filter(bucket -> bucket.getDocCount() > 0)
-          .forEach(bucket -> map.put(bucket.getKeyAsString(), getStudyCounts(bucket.getAggregations()))));
-    } catch(IndexNotFoundException e) {
+          aggregation -> ((Terms) aggregation).getBuckets().stream().filter(bucket -> bucket.getDocCount() > 0)
+              .forEach(bucket -> map.put(bucket.getKeyAsString(), getStudyCounts(bucket.getAggregations()))));
+    } catch (IndexNotFoundException e) {
       // ignore
     }
 
@@ -202,8 +196,8 @@ public class NetworkQuery extends AbstractDocumentQuery {
   private List<String> getStudyCounts(Aggregations aggregations) {
     List<String> list = Lists.newArrayList();
     aggregations.forEach(
-      aggregation -> ((Terms) aggregation).getBuckets().stream().filter(bucket -> bucket.getDocCount() > 0)
-        .forEach(bucket -> list.add(bucket.getKeyAsString())));
+        aggregation -> ((Terms) aggregation).getBuckets().stream().filter(bucket -> bucket.getDocCount() > 0)
+            .forEach(bucket -> list.add(bucket.getKeyAsString())));
 
     return list;
   }

@@ -13,7 +13,7 @@ package org.obiba.mica.search;
 import java.util.List;
 import java.util.Map;
 
-import org.obiba.mica.core.domain.AttributeKey;
+import org.obiba.mica.spi.search.support.AttributeKey;
 import org.obiba.mica.web.model.MicaSearch;
 
 import com.google.common.collect.Lists;
