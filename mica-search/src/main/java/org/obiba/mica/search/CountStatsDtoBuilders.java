@@ -20,6 +20,7 @@ import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.search.queries.DatasetQuery;
+import org.obiba.mica.spi.search.CountStatsData;
 import org.obiba.mica.study.domain.BaseStudy;
 
 import com.google.common.collect.ImmutableSet;

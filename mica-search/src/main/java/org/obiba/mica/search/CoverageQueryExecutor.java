@@ -21,11 +21,11 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
-import org.obiba.mica.core.domain.AttributeKey;
+import org.obiba.mica.spi.search.support.AttributeKey;
 import org.obiba.mica.micaConfig.service.OpalService;
 import org.obiba.mica.search.queries.JoinQueryWrapper;
 import org.obiba.mica.search.queries.QueryWrapper;
-import org.obiba.mica.search.queries.protobuf.JoinQueryDtoWrapper;
+import org.obiba.mica.search.queries.rql.RQLQueryFactory;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.MicaSearch;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
@@ -50,24 +50,17 @@ public class CoverageQueryExecutor {
   private JoinQueryExecutor joinQueryExecutor;
 
   @Inject
+  private RQLQueryFactory rqlQueryFactory;
+
+  @Inject
   private Dtos dtos;
 
   private JoinQueryWrapper joinQueryWrapper;
 
   private Map<String, Map<String, List<String>>> restrictedTermsMap;
 
-  public MicaSearch.TaxonomiesCoverageDto coverageQuery(MicaSearch.JoinQueryDto joinQuery, boolean strict)
-    throws IOException {
-    return coverageQuery(new JoinQueryDtoWrapper(joinQuery == null ? getDefaultJoinQueryDto() : joinQuery), strict);
-  }
-
-  public MicaSearch.TaxonomiesCoverageDto coverageQuery(JoinQueryWrapper joinQuery) throws IOException {
-    // always strict
-    return coverageQuery(joinQuery, true);
-  }
-
-  public MicaSearch.TaxonomiesCoverageDto coverageQuery(JoinQueryWrapper joinQuery, boolean strict) throws IOException {
-    joinQueryWrapper = joinQuery;
+  public MicaSearch.TaxonomiesCoverageDto coverageQuery(String rqlJoinQuery, boolean strict) throws IOException {
+    joinQueryWrapper = rqlQueryFactory.makeJoinQuery(rqlJoinQuery);
 
     // Strict coverage means that coverage result is restricted to the terms specified in the variable query.
     // If no variable query is specified, nothing is returned if strictness is applied, otherwise coverage of all terms is returned.
@@ -100,12 +93,6 @@ public class CoverageQueryExecutor {
     // Do not append the aggregations if no facets is requested
     if(joinQueryWrapper.isWithFacets()) builder.setQueryResult(result);
 
-    return builder.build();
-  }
-
-  private MicaSearch.JoinQueryDto getDefaultJoinQueryDto() {
-    MicaSearch.JoinQueryDto.Builder builder = MicaSearch.JoinQueryDto.newBuilder() //
-      .setWithFacets(false);
     return builder.build();
   }
 

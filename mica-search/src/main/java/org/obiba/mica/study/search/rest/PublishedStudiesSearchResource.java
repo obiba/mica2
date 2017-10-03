@@ -21,7 +21,7 @@ import org.obiba.mica.search.queries.protobuf.QueryDtoHelper;
 import org.obiba.mica.search.queries.rql.RQLQueryBuilder;
 import org.obiba.mica.search.queries.rql.RQLQueryFactory;
 import org.obiba.mica.spi.search.Indexer;
-import org.obiba.mica.study.search.StudyIndexer;
+import org.obiba.mica.spi.search.QueryType;
 import org.obiba.mica.web.model.MicaSearch;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -69,7 +69,7 @@ public class PublishedStudiesSearchResource {
       RQLQueryBuilder.TargetQueryBuilder.studyInstance().exists("id").limit(from, limit).sort(sort, order).build())
       .locale(locale).buildArgsAsString();
 
-    return joinQueryExecutor.query(JoinQueryExecutor.QueryType.STUDY, rqlQueryFactory.makeJoinQuery(rql));
+    return joinQueryExecutor.query(QueryType.STUDY, rqlQueryFactory.makeJoinQuery(rql));
   }
 
   @GET
@@ -80,19 +80,12 @@ public class PublishedStudiesSearchResource {
     @QueryParam("order") @DefaultValue("asc") String order, @QueryParam("query") String query,
     @QueryParam("locale") @DefaultValue("en") String locale) throws IOException {
 
-    JoinQueryResultDto.Builder builder = joinQueryExecutor.listQuery(JoinQueryExecutor.QueryType.STUDY, QueryDtoHelper
+    JoinQueryResultDto.Builder builder = joinQueryExecutor.listQuery(QueryType.STUDY, QueryDtoHelper
       .createQueryDto(from, limit, Strings.isNullOrEmpty(sort) ? Indexer.DEFAULT_SORT_FIELD + "." + locale : sort,
         order, query, locale, Stream.of(Indexer.STUDY_LOCALIZED_ANALYZED_FIELDS)), locale).toBuilder();
     builder.clearDatasetResultDto().clearNetworkResultDto().clearVariableResultDto();
     builder.setStudyResultDto(builder.getStudyResultDto().toBuilder().clearAggs());
     return builder.build();
-  }
-
-  @POST
-  @Path("/_search")
-  @Timed
-  public JoinQueryResultDto query(MicaSearch.JoinQueryDto joinQueryDto) throws IOException {
-    return joinQueryExecutor.query(JoinQueryExecutor.QueryType.STUDY, new JoinQueryDtoWrapper(joinQueryDto));
   }
 
   @GET
@@ -101,14 +94,14 @@ public class PublishedStudiesSearchResource {
   public JoinQueryResultDto rqlQuery(@QueryParam("query") String query) throws IOException {
     String queryStr = query;
     if (Strings.isNullOrEmpty(queryStr)) queryStr = "study(exists(Mica_study.id))";
-    return joinQueryExecutor.query(JoinQueryExecutor.QueryType.STUDY, rqlQueryFactory.makeJoinQuery(queryStr));
+    return joinQueryExecutor.query(QueryType.STUDY, rqlQueryFactory.makeJoinQuery(queryStr));
   }
 
   @GET
   @Path("/_rql_csv")
   @Timed
   public Response rqlQueryAsCsv(@QueryParam("query") String query, @QueryParam("columnsToHide") List<String> columnsToHide) throws IOException {
-    StreamingOutput stream = os -> genericReportGenerator.generateCsv(JoinQueryExecutor.QueryType.STUDY, query, columnsToHide, os);
+    StreamingOutput stream = os -> genericReportGenerator.generateCsv(QueryType.STUDY, query, columnsToHide, os);
     return Response.ok(stream).header("Content-Disposition", "attachment; filename=\"SearchStudies.csv\"").build();
   }
 

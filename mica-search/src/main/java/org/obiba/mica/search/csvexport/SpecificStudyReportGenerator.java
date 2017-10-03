@@ -8,8 +8,9 @@ import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.network.service.NetworkService;
 import org.obiba.mica.search.JoinQueryExecutor;
 import org.obiba.mica.search.csvexport.generators.CsvReportGeneratorImpl;
-import org.obiba.mica.search.queries.rql.JoinRQLQueryWrapper;
+import org.obiba.mica.search.queries.rql.RQLJoinQueryWrapper;
 import org.obiba.mica.search.queries.rql.RQLQueryFactory;
+import org.obiba.mica.spi.search.QueryType;
 import org.obiba.mica.study.domain.BaseStudy;
 import org.obiba.mica.study.domain.Population;
 import org.obiba.mica.study.service.PublishedStudyService;
@@ -83,9 +84,9 @@ public class SpecificStudyReportGenerator extends CsvReportGeneratorImpl {
 
   public void report(String rqlQuery, OutputStream outputStream) throws IOException {
 
-    JoinRQLQueryWrapper joinQueryWrapper = rqlQueryFactory.makeJoinQuery(rqlQuery);
+    RQLJoinQueryWrapper joinQueryWrapper = rqlQueryFactory.makeJoinQuery(rqlQuery);
 
-    List<String> studyIds = joinQueryExecutor.query(JoinQueryExecutor.QueryType.STUDY, joinQueryWrapper)
+    List<String> studyIds = joinQueryExecutor.query(QueryType.STUDY, joinQueryWrapper)
       .getStudyResultDto()
       .getExtension(MicaSearch.StudyResultDto.result)
       .getSummariesList()

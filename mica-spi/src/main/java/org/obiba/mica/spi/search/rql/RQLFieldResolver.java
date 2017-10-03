@@ -8,7 +8,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.obiba.mica.search.queries.rql;
+package org.obiba.mica.spi.search.rql;
 
 import java.util.HashMap;
 import java.util.List;
@@ -17,7 +17,7 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.elasticsearch.common.Strings;
+import com.google.common.base.Strings;
 import org.obiba.mica.spi.search.IndexFieldMapping;
 import org.obiba.mica.spi.search.Indexer;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
@@ -28,7 +28,7 @@ import com.google.common.collect.Lists;
 
 import sun.util.locale.LanguageTag;
 
-public class RqlFieldResolver {
+public class RQLFieldResolver {
 
   public static final String TYPE_STRING = "string";
   public static final String TYPE_INTEGER = "integer";
@@ -59,7 +59,7 @@ public class RqlFieldResolver {
     }
   };
 
-  public RqlFieldResolver(RQLNode node, List<Taxonomy> taxonomies, String locale, IndexFieldMapping indexFieldMapping) {
+  public RQLFieldResolver(RQLNode node, List<Taxonomy> taxonomies, String locale, IndexFieldMapping indexFieldMapping) {
     this.node = node;
     this.taxonomies = taxonomies;
     this.locale = locale;
@@ -187,7 +187,7 @@ public class RqlFieldResolver {
     }
   }
 
-  static class FieldData {
+  public static class FieldData {
     private Taxonomy taxonomy;
     private VocabularyWrapper vocabulary = new VocabularyWrapper();
     private String field;

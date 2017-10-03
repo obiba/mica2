@@ -8,9 +8,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.obiba.mica.search.queries;
+package org.obiba.mica.spi.search.support;
 
-public interface JoinQueryWrapper {
+public interface JoinQuery {
 
   String DEFAULT_LOCALE = "en";
 
@@ -20,13 +20,13 @@ public interface JoinQueryWrapper {
     return DEFAULT_LOCALE;
   }
 
-  QueryWrapper getVariableQueryWrapper();
+  Query getVariableQuery();
 
-  QueryWrapper getDatasetQueryWrapper();
+  Query getDatasetQuery();
 
-  QueryWrapper getStudyQueryWrapper();
+  Query getStudyQuery();
 
-  QueryWrapper getNetworkQueryWrapper();
+  Query getNetworkQuery();
 
   default boolean searchOnNetworksOnly() {
     return false;

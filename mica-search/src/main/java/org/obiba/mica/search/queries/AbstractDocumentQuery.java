@@ -33,14 +33,16 @@ import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.micaConfig.service.TaxonomyService;
 import org.obiba.mica.micaConfig.service.helper.AggregationAliasHelper;
 import org.obiba.mica.micaConfig.service.helper.AggregationMetaDataProvider;
-import org.obiba.mica.search.CountStatsData;
+import org.obiba.mica.spi.search.CountStatsData;
 import org.obiba.mica.search.DocumentQueryHelper;
 import org.obiba.mica.search.aggregations.AggregationMetaDataResolver;
 import org.obiba.mica.search.aggregations.AggregationYamlParser;
-import org.obiba.mica.search.queries.protobuf.QueryDtoHelper;
-import org.obiba.mica.search.queries.protobuf.QueryDtoWrapper;
 import org.obiba.mica.security.service.SubjectAclService;
+import org.obiba.mica.spi.search.QueryMode;
+import org.obiba.mica.spi.search.QueryScope;
 import org.obiba.mica.spi.search.Searcher;
+import org.obiba.mica.spi.search.support.EmptyQuery;
+import org.obiba.mica.spi.search.support.Query;
 import org.obiba.mica.web.model.MicaSearch;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.obiba.opal.core.domain.taxonomy.TaxonomyEntity;
@@ -54,13 +56,11 @@ import java.io.StringReader;
 import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static com.jayway.jsonpath.JsonPath.using;
-import static org.obiba.mica.search.queries.AbstractDocumentQuery.Mode.COVERAGE;
-import static org.obiba.mica.search.queries.AbstractDocumentQuery.Scope.AGGREGATION;
-import static org.obiba.mica.search.queries.AbstractDocumentQuery.Scope.DETAIL;
-import static org.obiba.mica.web.model.MicaSearch.QueryDto;
+import static org.obiba.mica.spi.search.QueryMode.COVERAGE;
+import static org.obiba.mica.spi.search.QueryScope.AGGREGATION;
+import static org.obiba.mica.spi.search.QueryScope.DETAIL;
 import static org.obiba.mica.web.model.MicaSearch.QueryResultDto;
 
 public abstract class AbstractDocumentQuery {
@@ -90,65 +90,50 @@ public abstract class AbstractDocumentQuery {
 
   private static final Logger log = LoggerFactory.getLogger(AbstractDocumentQuery.class);
 
-  public enum Mode {
-    SEARCH,  // search for documents (with results and aggregations)
-    LIST,    // list documents (with results but no aggregations)
-    COVERAGE // search for documents coverage of classifications (with aggregations but no results)
-  }
+  protected QueryMode mode = QueryMode.SEARCH;
 
-  public enum Scope {
-    NONE,
-    DIGEST,
-    DETAIL,
-    AGGREGATION
-  }
-
-  protected Mode mode = Mode.SEARCH;
-
-  private QueryWrapper queryWrapper;
+  private QueryWrapper query;
 
   QueryResultDto resultDto;
 
   private String locale;
 
+  public Query getQuery() {
+    return query;
+  }
+
+  public boolean isValid() {
+    return query.isValid();
+  }
+
   public QueryBuilder getQueryBuilder() {
-    return queryWrapper.getQueryBuilder();
+    return query.getQueryBuilder();
   }
 
   public void setQueryBuilder(QueryBuilder queryBuilder) {
-    queryWrapper.setQueryBuilder(queryBuilder);
-  }
-
-  public boolean hasQueryBuilder() {
-    return queryWrapper.hasQueryBuilder();
-  }
-
-  protected List<String> getAggregationGroupBy() {
-    return hasQueryBuilder() ? queryWrapper.getAggregationBuckets() : Lists.newArrayList();
-  }
-
-  private int getFrom() {
-    return queryWrapper.getFrom();
-  }
-
-  private int getSize() {
-    return queryWrapper.getSize();
+    query.setQueryBuilder(queryBuilder);
   }
 
   private List<SortBuilder> getSortBuilders() {
-    return queryWrapper.getSortBuilders();
+    return query.getSortBuilders();
   }
 
-  public void initialize(QueryDto query, String locale, Mode mode) {
-    QueryDto queryDto = QueryDtoHelper
-        .ensureQueryStringDtoFields(query, locale, getLocalizedQueryStringFields(), getQueryStringFields());
-    initialize(new QueryDtoWrapper(queryDto), locale, mode);
+  protected List<String> getAggregationGroupBy() {
+    return isValid() ? query.getAggregationBuckets() : Lists.newArrayList();
   }
 
-  public void initialize(@Nullable QueryWrapper queryWrapper, String locale, Mode mode) {
+  private int getFrom() {
+    return query.getFrom();
+  }
+
+  private int getSize() {
+    return query.getSize();
+  }
+
+  public void initialize(@Nullable QueryWrapper query, String locale, QueryMode mode) {
     this.mode = mode;
     this.locale = locale;
-    this.queryWrapper = queryWrapper == null ? new EmptyQueryWrapper() : queryWrapper;
+    this.query = query == null ? new EmptyQueryWrapper() : query;
     resultDto = null;
   }
 
@@ -162,15 +147,13 @@ public abstract class AbstractDocumentQuery {
 
   public abstract QueryBuilder getAccessFilter();
 
-  public abstract Stream<String> getLocalizedQueryStringFields();
-
   /**
    * Verifies if the query has any criteria on the primary key (ID).
    *
    * @return true/false
    */
   public boolean hasPrimaryKeyCriteria() {
-    if (hasQueryBuilder()) {
+    if (isValid()) {
       Object jsonContent = Configuration.defaultConfiguration().jsonProvider().parse(getQueryBuilder().toString());
       ReadContext context = using(Configuration.defaultConfiguration().addOptions(Option.ALWAYS_RETURN_LIST)).parse(jsonContent);
       List<String> ids = context.read("$..id");
@@ -186,10 +169,6 @@ public abstract class AbstractDocumentQuery {
 
   protected DocumentQueryJoinKeys processJoinKeys(SearchResponse response) {
     return DocumentQueryHelper.processStudyJoinKey(response);
-  }
-
-  public Stream<String> getQueryStringFields() {
-    return null;
   }
 
   protected List<AggregationMetaDataProvider> getAggregationMetaDataProviders() {
@@ -222,7 +201,7 @@ public abstract class AbstractDocumentQuery {
 
   Properties getAggregationsProperties(List<String> filter, Taxonomy taxonomy) {
     Properties properties = new Properties();
-    if (mode != Mode.LIST && filter != null) {
+    if (mode != QueryMode.LIST && filter != null) {
       List<Pattern> patterns = filter.stream().map(Pattern::compile).collect(Collectors.toList());
       taxonomy.getVocabularies().forEach(vocabulary -> {
         String field = vocabulary.getAttributes().containsKey("field")
@@ -262,7 +241,7 @@ public abstract class AbstractDocumentQuery {
   }
 
   private Properties getFilteredAggregationsProperties() {
-    Properties properties = getAggregationsProperties(queryWrapper.getAggregations());
+    Properties properties = getAggregationsProperties(query.getAggregations());
 
     // make sure the buckets are part of the aggregations
     if (properties != null) {
@@ -280,7 +259,7 @@ public abstract class AbstractDocumentQuery {
    * @throws IOException
    */
   public List<String> queryStudyIds() {
-    return queryStudyIds(queryWrapper.getQueryBuilder());
+    return queryStudyIds(query.getQueryBuilder());
   }
 
   /**
@@ -344,7 +323,7 @@ public abstract class AbstractDocumentQuery {
    * @return List of study IDs
    * @throws IOException
    */
-  public List<String> query(List<String> studyIds, CountStatsData counts, Scope scope) throws IOException {
+  public List<String> query(List<String> studyIds, CountStatsData counts, QueryScope scope) throws IOException {
     QueryBuilder tempQuery = newStudyIdQuery(studyIds);
     return mode == COVERAGE
         ? executeCoverage(tempQuery, getAggregationGroupBy())
@@ -354,7 +333,7 @@ public abstract class AbstractDocumentQuery {
   /**
    * Executes a query to retrieve documents and aggregations.
    */
-  protected List<String> execute(QueryBuilder query, List<SortBuilder> sortBuilder, int from, int size, Scope scope,
+  private List<String> execute(QueryBuilder query, List<SortBuilder> sortBuilder, int from, int size, QueryScope scope,
                                  CountStatsData counts, List<String> aggregationGroupBy) throws IOException {
     if (query == null) return null;
 
@@ -422,7 +401,7 @@ public abstract class AbstractDocumentQuery {
    * @return
    * @throws IOException
    */
-  protected List<String> executeCoverage(QueryBuilder queryBuilder, List<String> aggregationGroupBy) throws IOException {
+  private List<String> executeCoverage(QueryBuilder queryBuilder, List<String> aggregationGroupBy) throws IOException {
     if (queryBuilder == null) return null;
 
     aggregationTitleResolver.registerProviders(getAggregationMetaDataProviders());
@@ -475,19 +454,10 @@ public abstract class AbstractDocumentQuery {
   }
 
   /**
-   * Returning 'false' will include documents in the query result
-   *
-   * @return
-   */
-  protected boolean ignoreFields() {
-    return true;
-  }
-
-  /**
    * Returns the default source filtering fields. A NULL signifies the whole source to be included
    */
-  protected List<String> getSourceFields() {
-    List<String> sourceFields = queryWrapper.getSourceFields();
+  private List<String> getSourceFields() {
+    List<String> sourceFields = query.getSourceFields();
 
     if (sourceFields != null && !sourceFields.isEmpty()) {
       sourceFields.addAll(getMandatorySourceFields());
@@ -507,7 +477,7 @@ public abstract class AbstractDocumentQuery {
    * @param hits
    * @throws IOException
    */
-  protected abstract void processHits(QueryResultDto.Builder builder, SearchHits hits, Scope scope,
+  protected abstract void processHits(QueryResultDto.Builder builder, SearchHits hits, QueryScope scope,
                                       CountStatsData counts) throws IOException;
 
   /**
@@ -516,7 +486,7 @@ public abstract class AbstractDocumentQuery {
    * @param builder
    * @param aggregations
    */
-  protected void processAggregations(QueryResultDto.Builder builder, Aggregations aggregations) {
+  private void processAggregations(QueryResultDto.Builder builder, Aggregations aggregations) {
     log.debug("start processAggregations");
     EsQueryResultParser parser = EsQueryResultParser.newParser(aggregationTitleResolver, locale);
     builder.addAllAggs(parser.parseAggregations(aggregations));
@@ -535,12 +505,12 @@ public abstract class AbstractDocumentQuery {
   protected abstract List<String> getJoinFields();
 
   private QueryBuilder newStudyIdQuery(List<String> studyIds) {
-    return hasQueryBuilder() ? addStudyIdQuery(studyIds) : createStudyIdQuery(studyIds);
+    return isValid() ? addStudyIdQuery(studyIds) : createStudyIdQuery(studyIds);
   }
 
   private QueryBuilder addStudyIdQuery(List<String> studyIds) {
-    if (studyIds == null || studyIds.isEmpty()) return queryWrapper.getQueryBuilder();
-    return QueryBuilders.boolQuery().must(queryWrapper.getQueryBuilder()).must(createStudyIdQuery(studyIds));
+    if (studyIds == null || studyIds.isEmpty()) return query.getQueryBuilder();
+    return QueryBuilders.boolQuery().must(query.getQueryBuilder()).must(createStudyIdQuery(studyIds));
   }
 
   private QueryBuilder createStudyIdQuery(List<String> studyIds) {
@@ -561,16 +531,16 @@ public abstract class AbstractDocumentQuery {
    * @param aggDtos
    * @return
    */
-  protected List<String> getResponseStudyIds(List<MicaSearch.AggregationResultDto> aggDtos) {
+  private List<String> getResponseStudyIds(List<MicaSearch.AggregationResultDto> aggDtos) {
     return getResponseDocumentIds(getJoinFields(), aggDtos);
   }
 
-  protected Map<String, Integer> getDocumentCounts(String joinField) {
+  Map<String, Integer> getDocumentCounts(String joinField) {
     if (resultDto == null) return Maps.newHashMap();
     return getDocumentCountsFilteredByClassName(joinField, null);
   }
 
-  protected Map<String, Integer> getDocumentCountsFilteredByClassName(String joinField, String className) {
+  Map<String, Integer> getDocumentCountsFilteredByClassName(String joinField, String className) {
     if (resultDto == null) return Maps.newHashMap();
 
     return
@@ -585,7 +555,7 @@ public abstract class AbstractDocumentQuery {
             );
   }
 
-  protected Map<String, Integer> getDocumentBucketCounts(String joinField, String bucketField, String bucketValue) {
+  Map<String, Integer> getDocumentBucketCounts(String joinField, String bucketField, String bucketValue) {
     if (resultDto == null) return Maps.newHashMap();
     return resultDto.getAggsList().stream() //
         .filter(agg -> bucketField.equals(AggregationAliasHelper.unformatName(agg.getAggregation()))) //
@@ -601,7 +571,7 @@ public abstract class AbstractDocumentQuery {
         .collect(Collectors.toMap(MicaSearch.TermsAggregationResultDto::getKey, term -> term.getCount()));
   }
 
-  protected List<String> getResponseDocumentIds(List<String> fields, List<MicaSearch.AggregationResultDto> aggDtos) {
+  List<String> getResponseDocumentIds(List<String> fields, List<MicaSearch.AggregationResultDto> aggDtos) {
     log.debug("start getResponseDocumentIds");
     List<String> ids = aggDtos.stream() //
         .filter(agg -> fields.contains(AggregationAliasHelper.unformatName(agg.getAggregation()))) //

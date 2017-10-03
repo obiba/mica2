@@ -58,7 +58,7 @@ import static org.springframework.util.CollectionUtils.isEmpty;
 
 @Service
 @Validated
-public class MicaConfigService implements ConfigurationProvider {
+public class MicaConfigService {
 
   private static final Logger logger = LoggerFactory.getLogger(MicaConfigService.class);
 
@@ -82,22 +82,18 @@ public class MicaConfigService implements ConfigurationProvider {
 
   private final AesCipherService cipherService = new AesCipherService();
 
-  @Override
   public List<String> getLocales() {
     return getConfig().getLocalesAsString();
   }
 
-  @Override
   public List<String> getRoles() {
     return getConfig().getRoles();
   }
 
-  @Override
   public ObjectMapper getObjectMapper() {
     return objectMapper;
   }
 
-  @Override
   public Taxonomy getTaxonomy(TaxonomyTarget target) {
     return taxonomyConfigService.findByTarget(target);
   }

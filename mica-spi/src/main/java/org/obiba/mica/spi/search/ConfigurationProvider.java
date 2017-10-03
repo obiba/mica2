@@ -23,5 +23,13 @@ public interface ConfigurationProvider {
 
   ObjectMapper getObjectMapper();
 
-  Taxonomy getTaxonomy(TaxonomyTarget target);
+  Taxonomy getNetworkTaxonomy();
+
+  Taxonomy getStudyTaxonomy();
+
+  Taxonomy getVariableTaxonomy();
+
+  Taxonomy getDatasetTaxonomy();
+
+  List<Taxonomy> getVariableTaxonomies();
 }

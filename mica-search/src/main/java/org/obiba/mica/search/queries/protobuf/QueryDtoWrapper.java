@@ -42,7 +42,7 @@ public class QueryDtoWrapper implements QueryWrapper {
   }
 
   @Override
-  public boolean hasQueryBuilder() {
+  public boolean isValid() {
     return queryBuilder != null;
   }
 

@@ -21,8 +21,8 @@ public class RQLQueryFactory {
   @Inject
   private ApplicationContext applicationContext;
 
-  public JoinRQLQueryWrapper makeJoinQuery(String query) {
-    JoinRQLQueryWrapper joinQuery = applicationContext.getBean(JoinRQLQueryWrapper.class);
+  public RQLJoinQueryWrapper makeJoinQuery(String query) {
+    RQLJoinQueryWrapper joinQuery = applicationContext.getBean(RQLJoinQueryWrapper.class);
     joinQuery.initialize(query);
     return joinQuery;
   }

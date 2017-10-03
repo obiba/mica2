@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
-import org.obiba.mica.core.domain.AttributeKey;
+import org.obiba.mica.spi.search.support.AttributeKey;
 import org.obiba.mica.micaConfig.event.OpalTaxonomiesUpdatedEvent;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.obiba.opal.rest.client.magma.OpalJavaClient;

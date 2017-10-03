@@ -25,7 +25,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
-import org.obiba.mica.network.search.NetworkIndexer;
 import org.obiba.mica.search.JoinQueryExecutor;
 import org.obiba.mica.search.csvexport.GenericReportGenerator;
 import org.obiba.mica.search.queries.NetworkQuery;
@@ -34,6 +33,7 @@ import org.obiba.mica.search.queries.protobuf.QueryDtoHelper;
 import org.obiba.mica.search.queries.rql.RQLQueryBuilder;
 import org.obiba.mica.search.queries.rql.RQLQueryFactory;
 import org.obiba.mica.spi.search.Indexer;
+import org.obiba.mica.spi.search.QueryType;
 import org.obiba.mica.web.model.MicaSearch;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -72,7 +72,7 @@ public class PublishedNetworksSearchResource {
       RQLQueryBuilder.TargetQueryBuilder.networkInstance().exists("id").limit(from, limit).sort(sort, order).build())
       .locale(locale).buildArgsAsString();
 
-    return joinQueryExecutor.query(JoinQueryExecutor.QueryType.NETWORK, rqlQueryFactory.makeJoinQuery(rql));
+    return joinQueryExecutor.query(QueryType.NETWORK, rqlQueryFactory.makeJoinQuery(rql));
   }
 
   @GET
@@ -101,18 +101,11 @@ public class PublishedNetworksSearchResource {
         QueryDtoHelper.BoolQueryType.SHOULD);
     }
 
-    JoinQueryResultDto result = joinQueryExecutor.listQuery(JoinQueryExecutor.QueryType.NETWORK, queryDto, locale);
+    JoinQueryResultDto result = joinQueryExecutor.listQuery(QueryType.NETWORK, queryDto, locale);
     JoinQueryResultDto.Builder builder = result.toBuilder().clearDatasetResultDto().clearStudyResultDto()
       .clearVariableResultDto();
     builder.setNetworkResultDto(builder.getNetworkResultDto().toBuilder().clearAggs());
     return builder.build();
-  }
-
-  @POST
-  @Path("/_search")
-  @Timed
-  public JoinQueryResultDto query(JoinQueryDto joinQueryDto) throws IOException {
-    return joinQueryExecutor.query(JoinQueryExecutor.QueryType.NETWORK, new JoinQueryDtoWrapper(joinQueryDto));
   }
 
   @GET
@@ -121,14 +114,14 @@ public class PublishedNetworksSearchResource {
   public JoinQueryResultDto rqlQuery(@QueryParam("query") String query) throws IOException {
     String queryStr = query;
     if (Strings.isNullOrEmpty(queryStr)) queryStr = "network(exists(Mica_network.id))";
-    return joinQueryExecutor.query(JoinQueryExecutor.QueryType.NETWORK, rqlQueryFactory.makeJoinQuery(queryStr));
+    return joinQueryExecutor.query(QueryType.NETWORK, rqlQueryFactory.makeJoinQuery(queryStr));
   }
 
   @GET
   @Path("/_rql_csv")
   @Timed
   public Response rqlQueryAsCsv(@QueryParam("query") String query, @QueryParam("columnsToHide") List<String> columnsToHide) throws IOException {
-    StreamingOutput stream = os -> genericReportGenerator.generateCsv(JoinQueryExecutor.QueryType.NETWORK, query, columnsToHide, os);
+    StreamingOutput stream = os -> genericReportGenerator.generateCsv(QueryType.NETWORK, query, columnsToHide, os);
     return Response.ok(stream).header("Content-Disposition", "attachment; filename=\"SearchNetworks.csv\"").build();
   }
 }

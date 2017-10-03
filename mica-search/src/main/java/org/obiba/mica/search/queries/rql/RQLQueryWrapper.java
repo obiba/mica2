@@ -31,9 +31,11 @@ import org.elasticsearch.index.query.RangeQueryBuilder;
 import org.elasticsearch.search.sort.SortBuilder;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
-import org.obiba.mica.core.domain.AttributeKey;
+import org.obiba.mica.spi.search.support.AttributeKey;
 import org.obiba.mica.search.queries.QueryWrapper;
-import org.obiba.mica.search.queries.rql.RqlFieldResolver.FieldData;
+import org.obiba.mica.spi.search.rql.RQLFieldResolver;
+import org.obiba.mica.spi.search.rql.RQLFieldResolver.FieldData;
+import org.obiba.mica.spi.search.rql.RQLNode;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.obiba.opal.core.domain.taxonomy.TaxonomyEntity;
 import org.obiba.opal.core.domain.taxonomy.Vocabulary;
@@ -47,7 +49,7 @@ import com.google.common.collect.Maps;
  */
 public class RQLQueryWrapper implements QueryWrapper {
 
-  private final RqlFieldResolver rqlFieldResolver;
+  private final RQLFieldResolver rqlFieldResolver;
 
   private int from = DEFAULT_FROM;
 
@@ -69,11 +71,11 @@ public class RQLQueryWrapper implements QueryWrapper {
 
   @VisibleForTesting
   RQLQueryWrapper(String rql) {
-    this(new RQLParser(new RQLConverter()).parse(rql), new RqlFieldResolver(null, Collections.emptyList(), "en",
+    this(new RQLParser(new RQLConverter()).parse(rql), new RQLFieldResolver(null, Collections.emptyList(), "en",
         null ));
   }
 
-  public RQLQueryWrapper(ASTNode node, RqlFieldResolver rqlFieldResolver) {
+  public RQLQueryWrapper(ASTNode node, RQLFieldResolver rqlFieldResolver) {
     this.rqlFieldResolver = rqlFieldResolver;
     parseNode(node);
   }
@@ -168,7 +170,7 @@ public class RQLQueryWrapper implements QueryWrapper {
   }
 
   @Override
-  public boolean hasQueryBuilder() {
+  public boolean isValid() {
     return queryBuilder != null;
   }
 
@@ -215,9 +217,9 @@ public class RQLQueryWrapper implements QueryWrapper {
 
   private abstract class RQLBuilder<T> implements SimpleASTVisitor<T> {
 
-    protected final RqlFieldResolver rqlFieldResolver;
+    protected final RQLFieldResolver rqlFieldResolver;
 
-    RQLBuilder(RqlFieldResolver rqlFieldResolver) {
+    RQLBuilder(RQLFieldResolver rqlFieldResolver) {
       this.rqlFieldResolver = rqlFieldResolver;
     }
 
@@ -245,7 +247,7 @@ public class RQLQueryWrapper implements QueryWrapper {
   }
 
   private class RQLQueryBuilder extends RQLBuilder<QueryBuilder> {
-    RQLQueryBuilder(RqlFieldResolver rqlFieldResolver) {
+    RQLQueryBuilder(RQLFieldResolver rqlFieldResolver) {
       super(rqlFieldResolver);
     }
 
@@ -539,7 +541,7 @@ public class RQLQueryWrapper implements QueryWrapper {
   }
 
   private class RQLSortBuilder extends RQLBuilder<List<SortBuilder>> {
-    RQLSortBuilder(RqlFieldResolver rqlFieldResolver) {
+    RQLSortBuilder(RQLFieldResolver rqlFieldResolver) {
       super(rqlFieldResolver);
     }
 
@@ -574,7 +576,7 @@ public class RQLQueryWrapper implements QueryWrapper {
   }
 
   private class RQLAggregateBuilder extends RQLBuilder<Boolean> {
-    RQLAggregateBuilder(RqlFieldResolver rqlFieldResolver) {
+    RQLAggregateBuilder(RQLFieldResolver rqlFieldResolver) {
       super(rqlFieldResolver);
     }
 

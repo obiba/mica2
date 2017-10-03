@@ -10,30 +10,20 @@
 
 package org.obiba.mica.search.queries;
 
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import javax.annotation.Nullable;
-import javax.inject.Inject;
-
+import com.google.common.collect.Lists;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHits;
 import org.obiba.mica.core.domain.DefaultEntityBase;
 import org.obiba.mica.micaConfig.service.helper.AggregationMetaDataProvider;
-import org.obiba.mica.search.CountStatsData;
+import org.obiba.mica.spi.search.CountStatsData;
 import org.obiba.mica.search.aggregations.StudyTaxonomyMetaDataProvider;
 import org.obiba.mica.spi.search.Indexer;
+import org.obiba.mica.spi.search.QueryMode;
+import org.obiba.mica.spi.search.QueryScope;
 import org.obiba.mica.study.domain.BaseStudy;
 import org.obiba.mica.study.domain.HarmonizationStudy;
 import org.obiba.mica.study.domain.Study;
-import org.obiba.mica.study.search.StudyIndexer;
 import org.obiba.mica.study.service.CollectionStudyService;
 import org.obiba.mica.study.service.HarmonizationStudyService;
 import org.obiba.mica.web.model.Dtos;
@@ -42,7 +32,15 @@ import org.obiba.mica.web.model.MicaSearch;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import com.google.common.collect.Lists;
+import javax.annotation.Nullable;
+import javax.inject.Inject;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import static org.obiba.mica.search.CountStatsDtoBuilders.StudyCountStatsBuilder;
 import static org.obiba.mica.web.model.MicaSearch.QueryResultDto;
@@ -78,19 +76,14 @@ public class StudyQuery extends AbstractDocumentQuery {
 
   @Override
   public QueryBuilder getAccessFilter() {
-    if(micaConfigService.getConfig().isOpenAccess()) return null;
+    if (micaConfigService.getConfig().isOpenAccess()) return null;
     List<String> ids = collectionStudyService.findPublishedStates().stream().map(DefaultEntityBase::getId)
-      .filter(s -> subjectAclService.isAccessible("/individual-study", s)).collect(Collectors.toList());
+        .filter(s -> subjectAclService.isAccessible("/individual-study", s)).collect(Collectors.toList());
     ids.addAll(harmonizationStudyService.findPublishedStates().stream().map(DefaultEntityBase::getId)
-      .filter(s -> subjectAclService.isAccessible("/harmonization-study", s)).collect(Collectors.toList()));
+        .filter(s -> subjectAclService.isAccessible("/harmonization-study", s)).collect(Collectors.toList()));
     return ids.isEmpty()
-      ? QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("id"))
-      : QueryBuilders.idsQuery().ids(ids.toArray(new String[ids.size()]));
-  }
-
-  @Override
-  public Stream<String> getLocalizedQueryStringFields() {
-    return Stream.of(Indexer.STUDY_LOCALIZED_ANALYZED_FIELDS);
+        ? QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("id"))
+        : QueryBuilders.idsQuery().ids(ids.toArray(new String[ids.size()]));
   }
 
   @Override
@@ -101,16 +94,16 @@ public class StudyQuery extends AbstractDocumentQuery {
   @Override
   protected List<String> getMandatorySourceFields() {
     return Lists.newArrayList(
-      "id",
-      "className",
-      "populations.id",
-      "populations.dataCollectionEvents.id"
+        "id",
+        "className",
+        "populations.id",
+        "populations.dataCollectionEvents.id"
     );
   }
 
   @Override
-  public void processHits(QueryResultDto.Builder builder, SearchHits hits, Scope scope, CountStatsData counts)
-    throws IOException {
+  public void processHits(QueryResultDto.Builder builder, SearchHits hits, QueryScope scope, CountStatsData counts)
+      throws IOException {
     StudyResultDto.Builder resBuilder = StudyResultDto.newBuilder();
     StudyCountStatsBuilder studyCountStatsBuilder = counts == null ? null : StudyCountStatsBuilder.newBuilder(counts);
     Consumer<BaseStudy> addDto = getStudyConsumer(scope, resBuilder, studyCountStatsBuilder);
@@ -119,17 +112,17 @@ public class StudyQuery extends AbstractDocumentQuery {
     builder.setExtension(StudyResultDto.result, resBuilder.build());
   }
 
-  private Consumer<BaseStudy> getStudyConsumer(Scope scope, StudyResultDto.Builder resBuilder,
-    StudyCountStatsBuilder studyCountStatsBuilder) {
+  private Consumer<BaseStudy> getStudyConsumer(QueryScope scope, StudyResultDto.Builder resBuilder,
+                                               StudyCountStatsBuilder studyCountStatsBuilder) {
 
-    return scope == Scope.DETAIL ? (study) -> {
+    return scope == QueryScope.DETAIL ? (study) -> {
       Mica.StudySummaryDto.Builder summaryBuilder = dtos.asSummaryDtoBuilder(study);
-      if(mode == Mode.LIST) {
+      if (mode == QueryMode.LIST) {
         summaryBuilder.clearPopulationSummaries();
       }
-      if(studyCountStatsBuilder != null) {
+      if (studyCountStatsBuilder != null) {
         summaryBuilder.setExtension(MicaSearch.CountStatsDto.studyCountStats, studyCountStatsBuilder.build(study))
-          .build();
+            .build();
       }
       resBuilder.addSummaries(summaryBuilder.build());
     } : (study) -> resBuilder.addDigests(dtos.asDigestDtoBuilder(study).build());
@@ -139,7 +132,7 @@ public class StudyQuery extends AbstractDocumentQuery {
   @Override
   protected Properties getAggregationsProperties(List<String> filter) {
     Properties properties = getAggregationsProperties(filter, taxonomyService.getStudyTaxonomy());
-    if(!properties.containsKey(JOIN_FIELD)) properties.put(JOIN_FIELD,"");
+    if (!properties.containsKey(JOIN_FIELD)) properties.put(JOIN_FIELD, "");
     return properties;
   }
 
