@@ -43,6 +43,14 @@ public interface Searcher {
    */
   Query makeQuery(String rql);
 
+  /**
+   * Search for documents matching the RQL query. The RQL query can include limit and sort statements.
+   *
+   * @param indexName
+   * @param type
+   * @param rql
+   * @return
+   */
   DocumentResults find(String indexName, String type, String rql);
 
   /**

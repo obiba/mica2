@@ -93,13 +93,11 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
   protected Mica.DatasetVariablesDto getDatasetVariableDtos(@NotNull String queryString, @NotNull String datasetId,
                                                             DatasetVariable.Type type, int from, int limit, @Nullable String sort, @Nullable String order) {
     // TODO make a helper class for this
-    String match = "";
+    String queryStr = "";
     if (!Strings.isNullOrEmpty(queryString)) {
-      String tokens = Joiner.on(",").join(Splitter.on(" ").splitToList(queryString).stream()
-          .filter(t -> !t.trim().isEmpty()).collect(Collectors.toList()));
-      if (!Strings.isNullOrEmpty(tokens)) match = String.format(",match((%s))", tokens);
+      queryStr = String.format(",query(%s)", queryString.replaceAll(" ","+"));
     }
-    String rql = String.format("and(eq(datasetId,%s),eq(variableType,%s)%s)", datasetId, type.toString(), match);
+    String rql = String.format("and(eq(datasetId,%s),eq(variableType,%s)%s)", datasetId, type.toString(), queryStr);
     return getDatasetVariableDtosInternal(rql, from, limit, sort, order);
   }
 

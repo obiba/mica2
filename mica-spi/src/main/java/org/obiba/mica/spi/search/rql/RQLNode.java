@@ -14,34 +14,35 @@ package org.obiba.mica.spi.search.rql;
  * Mica supported RQL node names.
  */
 public enum RQLNode {
-  VARIABLE, //
-  DATASET, //
-  STUDY, //
-  NETWORK, //
-  LIMIT, //
-  SORT, //
-  AND, //
-  NAND, //
-  OR, //
-  NOR, //
-  NOT, //
-  CONTAINS, //
-  IN, //
-  OUT, //
-  EQ, //
-  GT, //
-  GE, //
-  LT, //
-  LE, //
-  BETWEEN, //
-  MATCH, //
-  EXISTS, //
-  MISSING, //
-  FACET, //
-  LOCALE, //
-  AGGREGATE, //
-  BUCKET, //
-  RE, //
+  VARIABLE,
+  DATASET,
+  STUDY,
+  NETWORK,
+  LIMIT,
+  SORT,
+  AND,
+  NAND,
+  OR,
+  NOR,
+  NOT,
+  CONTAINS,
+  IN,
+  OUT,
+  EQ,
+  GT,
+  GE,
+  LT,
+  LE,
+  BETWEEN,
+  MATCH,
+  EXISTS,
+  MISSING,
+  QUERY,
+  FACET,
+  LOCALE,
+  AGGREGATE,
+  BUCKET,
+  RE,
   FIELDS;
 
   public static RQLNode getType(String name) {
