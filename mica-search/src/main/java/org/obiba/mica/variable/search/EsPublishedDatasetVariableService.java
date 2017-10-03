@@ -11,15 +11,10 @@
 package org.obiba.mica.variable.search;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.elasticsearch.action.search.SearchRequestBuilder;
-import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.index.IndexNotFoundException;
+import com.google.common.base.Joiner;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.search.aggregations.AbstractAggregationBuilder;
-import org.elasticsearch.search.aggregations.AggregationBuilders;
-import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.HarmonizationDatasetState;
 import org.obiba.mica.dataset.domain.StudyDatasetState;
@@ -38,7 +33,6 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -64,26 +58,16 @@ public class EsPublishedDatasetVariableService extends AbstractDocumentService<D
 
   @Override
   public long getCountByStudyId(String studyId) {
-    SearchResponse response = executeCountQuery(buildStudyFilteredQuery(studyId), null);
-
-    if (response == null) {
-      return 0;
-    }
-
-    return response.getHits().totalHits();
+    Searcher.DocumentResults results = executeCountQuery(buildStudyFilteredQuery(studyId));
+    return results == null ? 0 : results.getTotal();
   }
 
   public Map<String, Long> getCountByStudyIds(List<String> studyIds) {
-    SearchResponse response = executeCountQuery(buildStudiesFilteredQuery(studyIds),
-        AggregationBuilders.terms(STUDY_ID_FIELD).field(STUDY_ID_FIELD).size(0));
+    Searcher.DocumentResults results = executeCountQuery(buildStudiesFilteredQuery(studyIds));
+    if (results == null) return studyIds.stream().collect(Collectors.toMap(s -> s, s -> 0L));
 
-    if (response == null) {
-      return studyIds.stream().collect(Collectors.toMap(s -> s, s -> 0L));
-    }
-
-    Terms aggregation = response.getAggregations().get(STUDY_ID_FIELD);
-    return studyIds.stream().collect(Collectors.toMap(s -> s,
-        s -> Optional.ofNullable(aggregation.getBucketByKey(s)).map(Terms.Bucket::getDocCount).orElse(0L)));
+    Map<String, Long> aggs = results.getAggregation(STUDY_ID_FIELD);
+    return studyIds.stream().collect(Collectors.toMap(s -> s, s -> aggs.getOrDefault(s, 0L)));
   }
 
   @Override
@@ -101,34 +85,19 @@ public class EsPublishedDatasetVariableService extends AbstractDocumentService<D
     return VARIABLE_TYPE;
   }
 
-  private QueryBuilder buildStudiesFilteredQuery(List<String> ids) {
-    BoolQueryBuilder boolFilter = QueryBuilders.boolQuery().must(QueryBuilders.termsQuery(STUDY_ID_FIELD, ids));
-    return QueryBuilders.boolQuery().must(QueryBuilders.matchAllQuery()).must(boolFilter);
+  private String buildStudiesFilteredQuery(List<String> ids) {
+    return String.format("variable(in(%s,(%s)),aggregate(%s))", STUDY_ID_FIELD, Joiner.on(",").join(ids), STUDY_ID_FIELD);
   }
 
-  private QueryBuilder buildStudyFilteredQuery(String id) {
-    BoolQueryBuilder boolFilter = QueryBuilders.boolQuery().must(QueryBuilders.termQuery(STUDY_ID_FIELD, id));
-    return QueryBuilders.boolQuery().must(QueryBuilders.matchAllQuery()).must(boolFilter);
+  private String buildStudyFilteredQuery(String id) {
+    return String.format("variable(eq(%s,%s))", STUDY_ID_FIELD, id);
   }
 
-  private SearchResponse executeCountQuery(QueryBuilder queryBuilder, AbstractAggregationBuilder aggregationBuilder) {
-    QueryBuilder accessFilter = filterByAccess();
-
-    SearchRequestBuilder requestBuilder = searcher.prepareSearch(getIndexName()) //
-        .setTypes(getType()) //
-        .setSize(0) //
-        .setQuery(
-            accessFilter == null ? queryBuilder : QueryBuilders.boolQuery().must(queryBuilder).must(accessFilter)) //
-        .setFrom(0) //
-        .setSize(0);
-
-    if (aggregationBuilder != null) {
-      requestBuilder.addAggregation(aggregationBuilder);
-    }
-
+  private Searcher.DocumentResults executeCountQuery(String rql) {
     try {
-      return requestBuilder.execute().actionGet();
-    } catch (IndexNotFoundException e) {
+      Searcher.IdFilter idFilter = getAccessibleIdFilter();
+      return searcher.count(getIndexName(), getType(), rql, idFilter);
+    } catch (Exception e) {
       return null; //ignoring
     }
   }
