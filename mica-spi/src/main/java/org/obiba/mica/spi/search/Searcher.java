@@ -55,7 +55,7 @@ public interface Searcher {
   DocumentResults find(String indexName, String type, String rql);
 
   /**
-   * Count documents latching the RQL query. The RQL query can include aggregate() statement.
+   * Count documents matching the RQL query. The RQL query can include an aggregate() statement.
    *
    * @param indexName
    * @param type
