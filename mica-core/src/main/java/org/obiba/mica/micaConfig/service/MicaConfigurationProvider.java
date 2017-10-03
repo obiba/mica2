@@ -12,8 +12,8 @@ package org.obiba.mica.micaConfig.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.obiba.mica.spi.search.ConfigurationProvider;
-import org.obiba.mica.spi.search.TaxonomyTarget;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
@@ -26,6 +26,7 @@ public class MicaConfigurationProvider implements ConfigurationProvider {
   private MicaConfigService micaConfigService;
 
   @Inject
+  @Lazy
   private TaxonomyService taxonomyService;
 
   @Override
@@ -67,6 +68,4 @@ public class MicaConfigurationProvider implements ConfigurationProvider {
   public List<Taxonomy> getVariableTaxonomies() {
     return taxonomyService.getVariableTaxonomies();
   }
-
-
 }
