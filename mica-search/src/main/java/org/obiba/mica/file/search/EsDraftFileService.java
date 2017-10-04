@@ -47,7 +47,7 @@ public class EsDraftFileService extends AbstractDocumentService<AttachmentState>
 
   @Override
   public long getCount(String path) {
-    return getCount(QueryBuilders.wildcardQuery("path", String.format("/%s/*", path)));
+    return getCountByRql("like(path,%2F" + path.replaceAll("/", "%20") + "%2F*)");
   }
 
   @Override

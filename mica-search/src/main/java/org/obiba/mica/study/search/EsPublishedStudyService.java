@@ -48,12 +48,12 @@ public class EsPublishedStudyService extends AbstractEsStudyService<BaseStudy> i
 
   @Override
   public long getCollectionStudyCount() {
-    return getCount(QueryBuilders.termQuery("className", Study.class.getSimpleName()));
+    return getCountByRql(String.format("in(className,%s)", Study.class.getSimpleName()));
   }
 
   @Override
   public long getHarmonizationStudyCount() {
-    return getCount(QueryBuilders.termQuery("className", HarmonizationStudy.class.getSimpleName()));
+    return getCountByRql(String.format("in(className,%s)", HarmonizationStudy.class.getSimpleName()));
   }
 
   @Override

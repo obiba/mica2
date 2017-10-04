@@ -125,17 +125,12 @@ public abstract class AbstractDocumentService<T> implements DocumentService<T> {
 
   @Override
   public long getCount() {
-    return getCount(QueryBuilders.matchAllQuery());
+    return getCountByRql("");
   }
 
-  protected long getCount(QueryBuilder builder) {
+  protected long getCountByRql(String rql) {
     try {
-      SearchRequestBuilder search = searcher.prepareSearch().setIndices(getIndexName()).setTypes(getType())
-          .setQuery(builder).setFrom(0).setSize(0);
-
-      SearchResponse response = search.execute().actionGet();
-
-      return response.getHits().getTotalHits();
+      return searcher.count(getIndexName(), getType(), rql, null).getTotal();
     } catch (ElasticsearchException e) {
       return 0;
     }
