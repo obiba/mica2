@@ -116,9 +116,9 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
     String query = String.format("variable(%s,limit(%s,%s)%s)", rql, from, limit, rqlSort);
     Searcher.DocumentResults results = searcher.find(Indexer.PUBLISHED_VARIABLE_INDEX, Indexer.VARIABLE_TYPE, query);
 
-    Mica.DatasetVariablesDto.Builder builder = Mica.DatasetVariablesDto.newBuilder() //
-        .setTotal(Long.valueOf(results.getTotal()).intValue()) //
-        .setFrom(from) //
+    Mica.DatasetVariablesDto.Builder builder = Mica.DatasetVariablesDto.newBuilder()
+        .setTotal(Long.valueOf(results.getTotal()).intValue())
+        .setFrom(from)
         .setLimit(limit);
 
     List<Taxonomy> taxonomies = getTaxonomies();
@@ -269,44 +269,5 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
 
   public void setLocale(String value) {
     locale = value;
-  }
-
-  protected static class QueryStringBuilder {
-
-    private final QueryStringQueryBuilder builder;
-
-    private QueryStringBuilder(String queryString) {
-      builder = QueryBuilders.queryStringQuery(queryString);
-    }
-
-    public static QueryStringBuilder newBuilder(String queryString) {
-      return new QueryStringBuilder(queryString);
-    }
-
-    public QueryBuilder build() {
-      Stream.of(Indexer.ANALYZED_FIELDS)
-          .forEach(f -> builder.field(f + ".analyzed"));
-      Stream.of(Indexer.VARIABLE_LOCALIZED_ANALYZED_FIELDS)
-          .forEach(f -> builder.field("attributes." + f + ".*.analyzed"));
-
-      return builder;
-    }
-  }
-
-  protected static class FilteredQueryBuilder {
-    private BoolQueryBuilder boolFilter = QueryBuilders.boolQuery();
-
-    public static FilteredQueryBuilder newBuilder() {
-      return new FilteredQueryBuilder();
-    }
-
-    public FilteredQueryBuilder must(String field, String value) {
-      boolFilter.must(QueryBuilders.termQuery(field, value));
-      return this;
-    }
-
-    public QueryBuilder build(QueryBuilder query) {
-      return QueryBuilders.boolQuery().must(query).must(boolFilter);
-    }
   }
 }

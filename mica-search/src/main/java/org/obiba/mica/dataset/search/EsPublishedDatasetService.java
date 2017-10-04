@@ -46,12 +46,12 @@ class EsPublishedDatasetService extends AbstractEsDatasetService<Dataset> implem
 
   @Override
   public long getStudyDatasetsCount() {
-    return getCount(QueryBuilders.termQuery("className", StudyDataset.class.getSimpleName()));
+    return getCountByRql(String.format("in(className,%s)", StudyDataset.class.getSimpleName()));
   }
 
   @Override
   public long getHarmonizationDatasetsCount() {
-    return getCount(QueryBuilders.termQuery("className", HarmonizationDataset.class.getSimpleName()));
+    return getCountByRql(String.format("in(className,%s)", HarmonizationDataset.class.getSimpleName()));
   }
 
   @Override
