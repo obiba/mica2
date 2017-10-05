@@ -823,6 +823,7 @@
   "all": "All",
   "name": "Name",
   "acronym": "Acronym",
+  "relevance": "Relevance",
   "id": "ID",
   "size": "Size",
   "value": "Value",
