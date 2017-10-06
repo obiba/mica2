@@ -10,27 +10,26 @@
 
 package org.obiba.mica.search;
 
-import java.io.IOException;
-import java.util.*;
-import java.util.concurrent.Semaphore;
-import java.util.concurrent.TimeUnit;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import javax.inject.Inject;
-
+import com.codahale.metrics.annotation.Timed;
+import com.google.common.base.Function;
+import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
+import com.google.common.util.concurrent.UncheckedTimeoutException;
 import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.micaConfig.service.TaxonomyService;
-import org.obiba.mica.search.queries.AbstractDocumentQuery;
-import org.obiba.mica.spi.search.*;
 import org.obiba.mica.search.queries.DatasetQuery;
+import org.obiba.mica.search.queries.DocumentQueryInterface;
 import org.obiba.mica.search.queries.JoinQueryWrapper;
 import org.obiba.mica.search.queries.NetworkQuery;
 import org.obiba.mica.search.queries.StudyQuery;
 import org.obiba.mica.search.queries.VariableQuery;
 import org.obiba.mica.search.queries.protobuf.JoinQueryDtoWrapper;
+import org.obiba.mica.spi.search.CountStatsData;
+import org.obiba.mica.spi.search.QueryMode;
+import org.obiba.mica.spi.search.QueryScope;
+import org.obiba.mica.spi.search.QueryType;
+import org.obiba.mica.spi.search.Searcher;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.mica.web.model.MicaSearch;
@@ -46,12 +45,19 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import com.codahale.metrics.annotation.Timed;
-import com.google.common.base.Function;
-import com.google.common.base.Strings;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
-import com.google.common.util.concurrent.UncheckedTimeoutException;
+import javax.inject.Inject;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.obiba.mica.spi.search.QueryScope.AGGREGATION;
 import static org.obiba.mica.spi.search.QueryScope.DETAIL;
@@ -61,7 +67,7 @@ import static org.obiba.mica.spi.search.QueryScope.DIGEST;
 @Scope("request")
 public class JoinQueryExecutor {
 
-  private static final Logger log = LoggerFactory.getLogger(AbstractDocumentQuery.class);
+  private static final Logger log = LoggerFactory.getLogger(JoinQueryExecutor.class);
 
   @Inject
   @Qualifier("esJoinQueriesSemaphore")
@@ -181,7 +187,7 @@ public class JoinQueryExecutor {
   private JoinQueryResultDto doQueries(QueryType type, JoinQueryWrapper joinQueryWrapper,
       CountStatsData.Builder countBuilder, QueryScope scope) throws IOException {
     boolean queriesHaveFilters = Stream.of(variableQuery, datasetQuery, studyQuery, networkQuery)
-        .anyMatch(AbstractDocumentQuery::isValid);
+        .anyMatch(DocumentQueryInterface::isValid);
 
     if(queriesHaveFilters) {
       DocumentQueryIdProvider datasetIdProvider = new DocumentQueryIdProvider();
@@ -385,7 +391,7 @@ public class JoinQueryExecutor {
     return joinedIds;
   }
 
-  private AbstractDocumentQuery getDocumentQuery(QueryType type) {
+  private DocumentQueryInterface getDocumentQuery(QueryType type) {
     switch(type) {
       case VARIABLE:
         return variableQuery;
@@ -433,9 +439,9 @@ public class JoinQueryExecutor {
     return countStats;
   }
 
-  private List<String> execute(AbstractDocumentQuery docQuery, AbstractDocumentQuery... subQueries) throws IOException {
-    List<AbstractDocumentQuery> queries = Arrays.stream(subQueries)
-      .filter(AbstractDocumentQuery::isValid)
+  private List<String> execute(DocumentQueryInterface docQuery, DocumentQueryInterface... subQueries) throws IOException {
+    List<DocumentQueryInterface> queries = Arrays.stream(subQueries)
+      .filter(DocumentQueryInterface::isValid)
       .collect(Collectors.toList());
 
     List<String> studyIds = null;
@@ -461,13 +467,13 @@ public class JoinQueryExecutor {
     return joinedStudyIds;
   }
 
-  private void queryAggregations(List<String> studyIds, AbstractDocumentQuery... queries) throws IOException {
-    for(AbstractDocumentQuery query : queries) {
+  private void queryAggregations(List<String> studyIds, DocumentQueryInterface... queries) throws IOException {
+    for(DocumentQueryInterface query : queries) {
       query.query(studyIds, null, AGGREGATION);
     }
   }
 
-  private List<String> queryStudyIds(List<AbstractDocumentQuery> queries) throws IOException {
+  private List<String> queryStudyIds(List<DocumentQueryInterface> queries) throws IOException {
     List<String> studyIds = queries.get(0).queryStudyIds();
 
     queries.stream().skip(1).forEach(query -> {

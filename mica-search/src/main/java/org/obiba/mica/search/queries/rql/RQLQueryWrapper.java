@@ -69,7 +69,6 @@ public class RQLQueryWrapper implements QueryWrapper {
 
   private final Map<String, Map<String, List<String>>> taxonomyTermsMap = Maps.newHashMap();
 
-  @VisibleForTesting
   RQLQueryWrapper(String rql) {
     this(new RQLParser(new RQLConverter()).parse(rql), new RQLFieldResolver(null, Collections.emptyList(), "en",
         null ));
