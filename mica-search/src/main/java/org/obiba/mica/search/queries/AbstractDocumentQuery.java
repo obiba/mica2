@@ -41,7 +41,6 @@ import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.spi.search.QueryMode;
 import org.obiba.mica.spi.search.QueryScope;
 import org.obiba.mica.spi.search.Searcher;
-import org.obiba.mica.spi.search.support.EmptyQuery;
 import org.obiba.mica.spi.search.support.Query;
 import org.obiba.mica.web.model.MicaSearch;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
@@ -63,7 +62,7 @@ import static org.obiba.mica.spi.search.QueryScope.AGGREGATION;
 import static org.obiba.mica.spi.search.QueryScope.DETAIL;
 import static org.obiba.mica.web.model.MicaSearch.QueryResultDto;
 
-public abstract class AbstractDocumentQuery {
+public abstract class AbstractDocumentQuery implements DocumentQueryInterface {
 
   private static final String AGG_TOTAL_COUNT = "totalCount";
 
