@@ -68,13 +68,15 @@ public abstract class AbstractDocumentService<T> implements DocumentService<T> {
   @Override
   public List<T> findAll() {
     log.debug("findAll {}", getClass());
-    return executeQuery(QueryBuilders.matchAllQuery(), 0, MAX_SIZE);
+    return executeRqlQuery(String.format("generic(limit(0,%s))", MAX_SIZE));
   }
 
   @Override
   public List<T> findByIds(List<String> ids) {
     log.debug("findByIds {} {} ids", getClass(), ids.size());
-    return executeQueryByIds(buildFilteredQuery(ids), 0, MAX_SIZE, ids);
+
+    String idsAsRqlStringParam = String.join(",", ids);
+    return executeRqlQuery(String.format("generic(in(id,(%s)),limit(0,%s))", idsAsRqlStringParam, MAX_SIZE));
   }
 
   @Override
@@ -130,7 +132,7 @@ public abstract class AbstractDocumentService<T> implements DocumentService<T> {
 
   protected long getCountByRql(String rql) {
     try {
-      return searcher.count(getIndexName(), getType(), rql, null).getTotal();
+      return searcher.count(getIndexName(), getType(), rql).getTotal();
     } catch (ElasticsearchException e) {
       return 0;
     }
@@ -210,6 +212,10 @@ public abstract class AbstractDocumentService<T> implements DocumentService<T> {
     return "studyIds";
   }
 
+  protected List<T> executeRqlQuery(String rql) {
+    return executeQueryInternal(rql);
+  }
+
   protected List<T> executeQuery(QueryBuilder queryBuilder, int from, int size) {
     return executeQueryInternal(queryBuilder, from, size, null);
   }
@@ -228,6 +234,12 @@ public abstract class AbstractDocumentService<T> implements DocumentService<T> {
 
   private boolean indexExists() {
     return indexer.hasIndex(getIndexName());
+  }
+
+  private List<T> executeQueryInternal(String rql) {
+    Searcher.IdFilter accessibleIdFilter = getAccessibleIdFilter();
+    Searcher.DocumentResults documentResults = searcher.find(getIndexName(), getType(), rql, accessibleIdFilter);
+    return processHits(documentResults);
   }
 
   private List<T> executeQueryInternal(QueryBuilder queryBuilder, int from, int size, List<String> ids) {
@@ -284,6 +296,18 @@ public abstract class AbstractDocumentService<T> implements DocumentService<T> {
     });
 
     return documents;
+  }
+
+  private List<T> processHits(Searcher.DocumentResults documentResults) {
+
+    return documentResults.getDocuments().stream()
+      .map(documentResult -> {
+        try {
+          return processHit(documentResult);
+        } catch (IOException e) {
+          throw new RuntimeException(e);
+        }
+      }).collect(Collectors.toList());
   }
 
   private QueryBuilder buildFilteredQuery(List<String> ids) {
