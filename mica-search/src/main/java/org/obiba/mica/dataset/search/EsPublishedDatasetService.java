@@ -11,9 +11,11 @@
 package org.obiba.mica.dataset.search;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
-import org.obiba.mica.dataset.domain.*;
+import org.obiba.mica.dataset.domain.Dataset;
+import org.obiba.mica.dataset.domain.HarmonizationDataset;
+import org.obiba.mica.dataset.domain.HarmonizationDatasetState;
+import org.obiba.mica.dataset.domain.StudyDataset;
+import org.obiba.mica.dataset.domain.StudyDatasetState;
 import org.obiba.mica.dataset.service.CollectionDatasetService;
 import org.obiba.mica.dataset.service.HarmonizationDatasetService;
 import org.obiba.mica.dataset.service.PublishedDatasetService;
@@ -87,15 +89,6 @@ class EsPublishedDatasetService extends AbstractEsDatasetService<Dataset> implem
   @Override
   protected String getStudyIdField() {
     return "studyTable.studyId";
-  }
-
-  @Override
-  protected QueryBuilder filterByAccess() {
-    if (isOpenAccess()) return null;
-    Collection<String> ids = getAccessibleIdFilter().getValues();
-    return ids.isEmpty()
-        ? QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("id"))
-        : QueryBuilders.idsQuery().ids(ids);
   }
 
   @Nullable

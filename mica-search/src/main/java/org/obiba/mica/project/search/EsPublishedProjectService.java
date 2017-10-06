@@ -10,19 +10,7 @@
 
 package org.obiba.mica.project.search;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Collection;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import javax.annotation.Nullable;
-import javax.inject.Inject;
-
-import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.search.SearchHit;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.obiba.mica.project.domain.Project;
 import org.obiba.mica.project.domain.ProjectState;
 import org.obiba.mica.project.service.ProjectService;
@@ -32,7 +20,11 @@ import org.obiba.mica.spi.search.Indexer;
 import org.obiba.mica.spi.search.Searcher;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import javax.annotation.Nullable;
+import javax.inject.Inject;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.stream.Collectors;
 
 @Service
 public class EsPublishedProjectService extends AbstractDocumentService<Project> implements
@@ -62,16 +54,6 @@ public class EsPublishedProjectService extends AbstractDocumentService<Project> 
   @Override
   public ProjectService getProjectService() {
     return projectService;
-  }
-
-  @Nullable
-  @Override
-  protected QueryBuilder filterByAccess() {
-    if(isOpenAccess()) return null;
-    Collection<String> ids = getAccessibleIdFilter().getValues();
-    return ids.isEmpty()
-      ? QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("id"))
-      : QueryBuilders.idsQuery().ids(ids);
   }
 
   @Nullable

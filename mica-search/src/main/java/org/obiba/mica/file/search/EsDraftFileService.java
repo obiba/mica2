@@ -12,8 +12,6 @@ package org.obiba.mica.file.search;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
-import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
 import org.obiba.mica.file.AttachmentState;
 import org.obiba.mica.file.service.DraftFileService;
 import org.obiba.mica.search.AbstractDocumentService;
@@ -67,12 +65,6 @@ public class EsDraftFileService extends AbstractDocumentService<AttachmentState>
     List<String> fields = Lists.newArrayList("attachment.name.analyzed", "attachment.type.analyzed");
     fields.addAll(getLocalizedFields("attachment.description"));
     return find(from, limit, sort, order, null, queryString, fields);
-  }
-
-  @Nullable
-  @Override
-  protected QueryBuilder filterByAccess() {
-    return fileFilterHelper.makeDraftFilesFilter(basePath);
   }
 
   @Nullable

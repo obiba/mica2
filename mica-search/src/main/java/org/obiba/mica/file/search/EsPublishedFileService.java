@@ -12,8 +12,6 @@ package org.obiba.mica.file.search;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
-import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
 import org.obiba.mica.file.AttachmentState;
 import org.obiba.mica.file.service.PublishedFileService;
 import org.obiba.mica.search.AbstractDocumentService;
@@ -71,13 +69,6 @@ public class EsPublishedFileService extends AbstractDocumentService<AttachmentSt
     List<String> fields = Lists.newArrayList("publishedAttachment.name.analyzed", "publishedAttachment.type.analyzed");
     fields.addAll(getLocalizedFields("publishedAttachment.description"));
     return find(from, limit, sort, order, null, queryString, fields);
-  }
-
-  @Nullable
-  @Override
-  protected QueryBuilder filterByAccess() {
-    if (isOpenAccess()) return null;
-    return fileFilterHelper.makePublishedFilesFilter(basePath);
   }
 
   @Nullable

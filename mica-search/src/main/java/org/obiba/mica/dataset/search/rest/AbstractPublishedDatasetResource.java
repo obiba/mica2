@@ -11,14 +11,7 @@
 package org.obiba.mica.dataset.search.rest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.base.Joiner;
-import com.google.common.base.Splitter;
-import org.elasticsearch.common.Strings;
-import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.index.query.QueryStringQueryBuilder;
-import org.elasticsearch.search.sort.SortOrder;
+import com.google.common.base.Strings;
 import org.obiba.magma.NoSuchVariableException;
 import org.obiba.mica.core.domain.BaseStudyTable;
 import org.obiba.mica.core.domain.OpalTable;
@@ -44,8 +37,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Retrieve the {@link org.obiba.mica.dataset.domain.Dataset} from the published dataset index.
@@ -110,7 +101,7 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
   protected Mica.DatasetVariablesDto getDatasetVariableDtosInternal(String rql, int from, int limit, @Nullable String sort, @Nullable String order) {
     String rqlSort = "";
     if (!Strings.isNullOrEmpty(sort)) {
-      String orderOp = !Strings.isNullOrEmpty(order) && SortOrder.DESC.equals(SortOrder.valueOf(order.toUpperCase())) ? "-" : "";
+      String orderOp = !Strings.isNullOrEmpty(order) && "DESC".equals(order.toUpperCase()) ? "-" : "";
       rqlSort = String.format(",sort(%s)", orderOp + sort);
     }
     String query = String.format("variable(%s,limit(%s,%s)%s)", rql, from, limit, rqlSort);

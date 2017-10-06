@@ -11,9 +11,6 @@
 package org.obiba.mica.file.search;
 
 import com.google.common.collect.Lists;
-import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
 import org.obiba.mica.dataset.domain.HarmonizationDatasetState;
 import org.obiba.mica.dataset.domain.StudyDatasetState;
 import org.obiba.mica.dataset.service.CollectionDatasetService;
@@ -85,18 +82,6 @@ public class FileFilterHelper {
             path.startsWith("/project/"));
   }
 
-  QueryBuilder makeDraftFilesFilter(@NotNull String basePath) {
-    List<String> networkIds = getNetworkIds(basePath, true);
-    List<String> individualStudyIds = getIndividualStudyIds(basePath, true);
-    List<String> harmonizationStudyIds = getHarmonizationStudyIds(basePath, true);
-    List<String> studyDatasetIds = getCollectedDatasetIds(basePath, true);
-    List<String> harmonizationDatasetIds = getHarmonizedDatasetIds(basePath, true);
-    List<String> projectIds = getProjectIds(basePath, true);
-
-    return makeFilterBuilder(networkIds, individualStudyIds, harmonizationStudyIds, studyDatasetIds,
-        harmonizationDatasetIds, projectIds);
-  }
-
   Searcher.PathFilter makeDraftPathFilter(@NotNull String basePath) {
     List<String> networkIds = getNetworkIds(basePath, true);
     List<String> individualStudyIds = getIndividualStudyIds(basePath, true);
@@ -107,18 +92,6 @@ public class FileFilterHelper {
 
     return makePathFilter(networkIds, individualStudyIds, harmonizationStudyIds, studyDatasetIds,
         harmonizationDatasetIds, projectIds);
-  }
-
-  QueryBuilder makePublishedFilesFilter(String basePath) {
-    if (micaConfigService.getConfig().isOpenAccess()) return null;
-    List<String> networkIds = getNetworkIds(basePath, false);
-    List<String> individualStudyIds = getIndividualStudyIds(basePath, false);
-    List<String> harmonizationStudyIds = getHarmonizationStudyIds(basePath, true);
-    List<String> studyDatasetIds = getCollectedDatasetIds(basePath, false);
-    List<String> harmonizationDatasetIds = getHarmonizedDatasetIds(basePath, false);
-    List<String> projectIds = getProjectIds(basePath, false);
-
-    return makeFilterBuilder(networkIds, individualStudyIds, harmonizationStudyIds, studyDatasetIds, harmonizationDatasetIds, projectIds);
   }
 
   Searcher.PathFilter makePublishedPathFilter(String basePath) {
@@ -253,30 +226,6 @@ public class FileFilterHelper {
     return idx <= 0 ? p : p.substring(0, idx);
   }
 
-  private QueryBuilder makeFilterBuilder(List<String> networkIds, List<String> individualStudyIds,
-                                         List<String> harmonizationStudyIds, List<String> collectedDatasetIds, List<String> harmonizedDatasetIds,
-                                         List<String> projectIds) {
-
-    List<QueryBuilder> excludes = Lists.newArrayList();
-    List<QueryBuilder> includes = Lists
-        .newArrayList(QueryBuilders.termQuery("path", "/user"), QueryBuilders.prefixQuery("path", "/user/"));
-    addFilter(excludes, includes, "/network", networkIds);
-    addFilter(excludes, includes, "/individual-study", individualStudyIds);
-    addFilter(excludes, includes, "/harmonization-study", harmonizationStudyIds);
-    addFilter(excludes, includes, "/collected-dataset", collectedDatasetIds);
-    addFilter(excludes, includes, "/harmonized-dataset", harmonizedDatasetIds);
-    addFilter(excludes, includes, "/project", projectIds);
-
-    BoolQueryBuilder includedFilter = QueryBuilders.boolQuery();
-    includes.forEach(includedFilter::should);
-    if (excludes.isEmpty()) return includedFilter;
-
-    BoolQueryBuilder excludedFilter = QueryBuilders.boolQuery();
-    excludes.forEach(excludedFilter::should);
-
-    return QueryBuilders.boolQuery().must(includedFilter).mustNot(excludedFilter);
-  }
-
   private Searcher.PathFilter makePathFilter(List<String> networkIds, List<String> individualStudyIds,
                                              List<String> harmonizationStudyIds, List<String> collectedDatasetIds, List<String> harmonizedDatasetIds,
                                              List<String> projectIds) {
@@ -313,16 +262,4 @@ public class FileFilterHelper {
       });
     }
   }
-
-  private void addFilter(Collection<QueryBuilder> excludes, Collection<QueryBuilder> includes, String prefix, List<String> ids) {
-    if (ids.isEmpty()) {
-      excludes.add(QueryBuilders.prefixQuery("path", prefix));
-    } else {
-      ids.forEach(id -> {
-        includes.add(QueryBuilders.termQuery("path", prefix + "/" + id));
-        includes.add(QueryBuilders.prefixQuery("path", prefix + "/" + id + "/"));
-      });
-    }
-  }
-
 }

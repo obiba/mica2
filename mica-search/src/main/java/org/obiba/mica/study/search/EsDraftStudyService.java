@@ -12,8 +12,6 @@ package org.obiba.mica.study.search;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
-import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
 import org.obiba.mica.core.domain.DefaultEntityBase;
 import org.obiba.mica.search.AbstractDocumentService;
 import org.obiba.mica.spi.search.Indexer;
@@ -61,14 +59,6 @@ public class EsDraftStudyService extends AbstractDocumentService<Study> implemen
   @Override
   protected String getType() {
     return Indexer.STUDY_TYPE;
-  }
-
-  @Override
-  protected QueryBuilder filterByAccess() {
-    Collection<String> ids = getAccessibleIdFilter().getValues();
-    return ids.isEmpty()
-        ? QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("id"))
-        : QueryBuilders.idsQuery().ids(ids);
   }
 
   @Nullable

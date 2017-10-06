@@ -11,8 +11,6 @@
 package org.obiba.mica.dataset.search;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.domain.HarmonizationDatasetState;
 import org.obiba.mica.dataset.service.DraftHarmonizationDatasetService;
@@ -20,8 +18,6 @@ import org.obiba.mica.dataset.service.HarmonizationDatasetService;
 import org.obiba.mica.search.AbstractDocumentService;
 import org.obiba.mica.spi.search.Indexer;
 import org.obiba.mica.spi.search.Searcher;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Nullable;
@@ -32,8 +28,6 @@ import java.util.stream.Collectors;
 
 @Service
 class EsDraftHarmonizationDatasetService extends AbstractDocumentService<HarmonizationDataset> implements DraftHarmonizationDatasetService {
-
-  private static final Logger log = LoggerFactory.getLogger(EsDraftHarmonizationDatasetService.class);
 
   @Inject
   private ObjectMapper objectMapper;
@@ -59,14 +53,6 @@ class EsDraftHarmonizationDatasetService extends AbstractDocumentService<Harmoni
   @Override
   protected String getStudyIdField() {
     return "studyTable.studyId";
-  }
-
-  @Override
-  protected QueryBuilder filterByAccess() {
-    Collection<String> ids = getAccessibleIdFilter().getValues();
-    return ids.isEmpty()
-        ? QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("id"))
-        : QueryBuilders.idsQuery().ids(ids);
   }
 
   @Nullable

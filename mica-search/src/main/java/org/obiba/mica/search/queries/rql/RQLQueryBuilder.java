@@ -13,9 +13,9 @@ package org.obiba.mica.search.queries.rql;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
+import com.google.common.base.Strings;
 import net.jazdw.rql.parser.ASTNode;
 
-import org.elasticsearch.common.Strings;
 import org.obiba.mica.spi.search.rql.RQLNode;
 
 public class RQLQueryBuilder {

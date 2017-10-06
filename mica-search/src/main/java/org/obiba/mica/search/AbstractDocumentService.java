@@ -11,16 +11,6 @@
 package org.obiba.mica.search;
 
 import com.google.common.collect.Lists;
-import org.elasticsearch.ElasticsearchException;
-import org.elasticsearch.action.search.SearchRequestBuilder;
-import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.action.search.SearchType;
-import org.elasticsearch.index.IndexNotFoundException;
-import org.elasticsearch.index.query.IdsQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.search.SearchHit;
-import org.elasticsearch.search.SearchHits;
 import org.obiba.mica.core.service.DocumentService;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.security.service.SubjectAclService;
@@ -32,10 +22,10 @@ import sun.util.locale.LanguageTag;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -133,75 +123,28 @@ public abstract class AbstractDocumentService<T> implements DocumentService<T> {
   protected long getCountByRql(String rql) {
     try {
       return searcher.count(getIndexName(), getType(), rql).getTotal();
-    } catch (ElasticsearchException e) {
+    } catch (RuntimeException e) {
       return 0;
     }
   }
 
   /**
-   * Turns a search hit into document's pojo.
-   *
-   * @param hit
-   * @return
-   * @throws IOException
-   */
-  // TODO remove when will be ES independent
-  protected T processHit(SearchHit hit) throws IOException {
-    return processHit(new Searcher.DocumentResult() {
-      @Override
-      public String getId() {
-        return hit.getId();
-      }
-
-      @Override
-      public InputStream getSourceInputStream() {
-        return new ByteArrayInputStream(hit.getSourceAsString().getBytes());
-      }
-
-      @Override
-      public String getClassName() {
-        return (String) hit.getSource().get("className");
-      }
-    });
-  }
-
-  /**
    * Turns a search result input stream into document's pojo.
-   *
-   * @param res
-   * @return
-   * @throws IOException
    */
   protected abstract T processHit(Searcher.DocumentResult res) throws IOException;
 
   /**
    * Get the index where the search must take place.
-   *
-   * @return
    */
   protected abstract String getIndexName();
 
   /**
    * Get the document type name.
-   *
-   * @return
    */
   protected abstract String getType();
 
   /**
-   * If access check apply, make it a filter for the corresponding searched type.
-   *
-   * @return
-   */
-  @Nullable
-  protected QueryBuilder filterByAccess() {
-    return null;
-  }
-
-  /**
    * If access check apply, get the corresponding filter.
-   *
-   * @return
    */
   @Nullable
   protected Searcher.IdFilter getAccessibleIdFilter() {
@@ -216,10 +159,6 @@ public abstract class AbstractDocumentService<T> implements DocumentService<T> {
     return executeQueryInternal(rql);
   }
 
-  protected List<T> executeQuery(QueryBuilder queryBuilder, int from, int size) {
-    return executeQueryInternal(queryBuilder, from, size, null);
-  }
-
   protected boolean isOpenAccess() {
     return micaConfigService.getConfig().isOpenAccess();
   }
@@ -227,10 +166,6 @@ public abstract class AbstractDocumentService<T> implements DocumentService<T> {
   //
   // Private methods
   //
-
-  private List<T> executeQueryByIds(QueryBuilder queryBuilder, int from, int size, List<String> ids) {
-    return executeQueryInternal(queryBuilder, from, size, ids);
-  }
 
   private boolean indexExists() {
     return indexer.hasIndex(getIndexName());
@@ -240,62 +175,6 @@ public abstract class AbstractDocumentService<T> implements DocumentService<T> {
     Searcher.IdFilter accessibleIdFilter = getAccessibleIdFilter();
     Searcher.DocumentResults documentResults = searcher.find(getIndexName(), getType(), rql, accessibleIdFilter);
     return processHits(documentResults);
-  }
-
-  private List<T> executeQueryInternal(QueryBuilder queryBuilder, int from, int size, List<String> ids) {
-    QueryBuilder accessFilter = filterByAccess();
-
-    SearchRequestBuilder requestBuilder = searcher.prepareSearch(getIndexName()) //
-        .setTypes(getType()) //
-        .setSearchType(SearchType.DFS_QUERY_THEN_FETCH) //
-        .setQuery(
-            accessFilter == null ? queryBuilder : QueryBuilders.boolQuery().must(queryBuilder).must(accessFilter)) //
-        .setFrom(from) //
-        .setSize(size);
-
-    try {
-      log.debug("Request /{}/{}", getIndexName(), getType());
-      if (log.isTraceEnabled()) log.trace("Request /{}/{}: {}", getIndexName(), getType(), requestBuilder);
-      SearchResponse response = requestBuilder.execute().actionGet();
-      log.debug("Response /{}/{}", getIndexName(), getType());
-      if (log.isTraceEnabled())
-        log.trace("Response /{}/{}: totalHits={}", getIndexName(), getType(), response.getHits().getTotalHits());
-
-      SearchHits hits = response.getHits();
-      return ids == null || ids.size() != hits.totalHits()
-          ? processHits(response.getHits())
-          : processHitsOrderByIds(response.getHits(), ids);
-    } catch (IndexNotFoundException e) {
-      return Lists.newArrayList(); //ignoring
-    }
-  }
-
-  private List<T> processHitsOrderByIds(SearchHits hits, List<String> ids) {
-    TreeMap<Integer, T> documents = new TreeMap<>();
-
-    hits.forEach(hit -> {
-      try {
-        int position = ids.indexOf(hit.getId());
-        if (position != -1) documents.put(position, processHit(hit));
-      } catch (IOException e) {
-        throw new RuntimeException(e);
-      }
-    });
-
-    return documents.entrySet().stream().map(Map.Entry::getValue).collect(Collectors.toList());
-  }
-
-  private List<T> processHits(SearchHits hits) {
-    List<T> documents = Lists.newArrayList();
-    hits.forEach(hit -> {
-      try {
-        documents.add(processHit(hit));
-      } catch (IOException e) {
-        throw new RuntimeException(e);
-      }
-    });
-
-    return documents;
   }
 
   private List<T> processHits(Searcher.DocumentResults documentResults) {
@@ -308,12 +187,6 @@ public abstract class AbstractDocumentService<T> implements DocumentService<T> {
           throw new RuntimeException(e);
         }
       }).collect(Collectors.toList());
-  }
-
-  private QueryBuilder buildFilteredQuery(List<String> ids) {
-    IdsQueryBuilder builder = QueryBuilders.idsQuery(getType());
-    ids.forEach(builder::addIds);
-    return builder;
   }
 
   private Searcher.TermFilter getStudyIdFilter(@Nullable final String studyId) {
@@ -334,11 +207,8 @@ public abstract class AbstractDocumentService<T> implements DocumentService<T> {
   protected List<String> getLocalizedFields(String... fieldNames) {
     List<String> fields = Lists.newArrayList();
     Stream.concat(micaConfigService.getConfig().getLocalesAsString().stream(), Stream.of(LanguageTag.UNDETERMINED))
-        .forEach(locale -> {
-          Arrays.stream(fieldNames).forEach(f -> {
-            fields.add(f + "." + locale + ".analyzed");
-          });
-        });
+        .forEach(locale -> Arrays.stream(fieldNames)
+          .forEach(f -> fields.add(f + "." + locale + ".analyzed")));
     return fields;
   }
 }

@@ -17,10 +17,10 @@ import java.util.Optional;
 
 import javax.inject.Inject;
 
+import com.google.common.base.Strings;
 import net.jazdw.rql.parser.ASTNode;
 import net.jazdw.rql.parser.RQLParser;
 
-import org.elasticsearch.common.Strings;
 import org.obiba.mica.micaConfig.service.TaxonomyService;
 import org.obiba.mica.search.mapping.IndexFieldMappingService;
 import org.obiba.mica.search.queries.JoinQueryWrapper;

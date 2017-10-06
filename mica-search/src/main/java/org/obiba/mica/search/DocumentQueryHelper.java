@@ -57,6 +57,4 @@ public final class DocumentQueryHelper {
     if(idProvider != null) idProvider.setIds(joinKeys.datasetIds);
     return joinKeys;
   }
-
-
 }
