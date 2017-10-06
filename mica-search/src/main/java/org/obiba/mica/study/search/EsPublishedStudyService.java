@@ -12,8 +12,6 @@ package org.obiba.mica.study.search;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.lang.Assert;
-import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
 import org.obiba.mica.core.domain.DefaultEntityBase;
 import org.obiba.mica.dataset.search.AbstractEsStudyService;
 import org.obiba.mica.spi.search.Indexer;
@@ -61,7 +59,8 @@ public class EsPublishedStudyService extends AbstractEsStudyService<BaseStudy> i
     Assert.notNull("ClassName query cannot be null");
     Assert.isTrue(Study.class.getSimpleName().equals(className) ||
         HarmonizationStudy.class.getSimpleName().equals(className));
-    return executeQuery(QueryBuilders.queryStringQuery(className).defaultField("className"), 0, MAX_SIZE);
+
+    return executeRqlQuery(String.format("generic(eq(className,%s),limit(0,%s))", className, MAX_SIZE));
   }
 
   @Override
@@ -77,15 +76,6 @@ public class EsPublishedStudyService extends AbstractEsStudyService<BaseStudy> i
   @Override
   protected String getType() {
     return Indexer.STUDY_TYPE;
-  }
-
-  @Override
-  protected QueryBuilder filterByAccess() {
-    if (isOpenAccess()) return null;
-    Collection<String> ids = getAccessibleIdFilter().getValues();
-    return ids.isEmpty()
-        ? QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("id"))
-        : QueryBuilders.idsQuery().ids(ids);
   }
 
   @Nullable

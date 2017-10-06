@@ -12,9 +12,6 @@ package org.obiba.mica.variable.search;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Joiner;
-import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.HarmonizationDatasetState;
 import org.obiba.mica.dataset.domain.StudyDatasetState;
@@ -104,17 +101,6 @@ public class EsPublishedDatasetVariableService extends AbstractDocumentService<D
 
   protected String getStudyIdField() {
     return "studyId";
-  }
-
-  @Nullable
-  @Override
-  protected QueryBuilder filterByAccess() {
-    if (isOpenAccess()) return null;
-    Collection<String> ids = getAccessibleIdFilter().getValues();
-    if (ids.isEmpty()) return QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("id"));
-    BoolQueryBuilder orFilter = QueryBuilders.boolQuery();
-    ids.forEach(id -> orFilter.should(QueryBuilders.termQuery("datasetId", id)));
-    return orFilter;
   }
 
   @Nullable

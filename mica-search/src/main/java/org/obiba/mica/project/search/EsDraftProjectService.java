@@ -11,8 +11,6 @@
 package org.obiba.mica.project.search;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
 import org.obiba.mica.project.domain.Project;
 import org.obiba.mica.project.domain.ProjectState;
 import org.obiba.mica.project.service.DraftProjectService;
@@ -55,14 +53,6 @@ public class EsDraftProjectService extends AbstractDocumentService<Project> impl
   @Override
   protected String getType() {
     return Indexer.PROJECT_TYPE;
-  }
-
-  @Override
-  protected QueryBuilder filterByAccess() {
-    Collection<String> ids = getAccessibleIdFilter().getValues();
-    return ids.isEmpty()
-        ? QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("id"))
-        : QueryBuilders.idsQuery().ids(ids);
   }
 
   @Nullable

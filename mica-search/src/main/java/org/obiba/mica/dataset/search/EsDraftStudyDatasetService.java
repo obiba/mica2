@@ -11,16 +11,12 @@
 package org.obiba.mica.dataset.search;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
 import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.dataset.domain.StudyDatasetState;
 import org.obiba.mica.dataset.service.CollectionDatasetService;
 import org.obiba.mica.dataset.service.DraftStudyDatasetService;
 import org.obiba.mica.spi.search.Indexer;
 import org.obiba.mica.spi.search.Searcher;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Nullable;
@@ -31,8 +27,6 @@ import java.util.stream.Collectors;
 
 @Service
 class EsDraftStudyDatasetService extends AbstractEsDatasetService<StudyDataset> implements DraftStudyDatasetService {
-
-  private static final Logger log = LoggerFactory.getLogger(EsDraftStudyDatasetService.class);
 
   @Inject
   private ObjectMapper objectMapper;
@@ -58,14 +52,6 @@ class EsDraftStudyDatasetService extends AbstractEsDatasetService<StudyDataset> 
   @Override
   protected String getStudyIdField() {
     return "studyTable.studyId";
-  }
-
-  @Override
-  protected QueryBuilder filterByAccess() {
-    Collection<String> ids = getAccessibleIdFilter().getValues();
-    return ids.isEmpty()
-        ? QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("id"))
-        : QueryBuilders.idsQuery().ids(ids);
   }
 
   @Nullable

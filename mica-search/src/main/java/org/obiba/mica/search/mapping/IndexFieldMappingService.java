@@ -12,29 +12,18 @@ package org.obiba.mica.search.mapping;
 
 import com.google.common.collect.Maps;
 import com.google.common.eventbus.Subscribe;
-import com.jayway.jsonpath.Configuration;
-import com.jayway.jsonpath.JsonPath;
-import com.jayway.jsonpath.Option;
-import com.jayway.jsonpath.ReadContext;
-import org.elasticsearch.action.admin.indices.mapping.get.GetMappingsResponse;
-import org.elasticsearch.cluster.metadata.MappingMetaData;
-import org.elasticsearch.common.collect.ImmutableOpenMap;
 import org.obiba.mica.dataset.event.HarmonizationDatasetIndexedEvent;
 import org.obiba.mica.dataset.event.StudyDatasetIndexedEvent;
 import org.obiba.mica.network.event.IndexNetworksEvent;
 import org.obiba.mica.spi.search.IndexFieldMapping;
 import org.obiba.mica.spi.search.Indexer;
-import org.obiba.mica.spi.search.Searcher;
 import org.obiba.mica.study.event.IndexStudiesEvent;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
-import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.function.Function;
 
 /**
  * Service providing Elasticsearch Index Mapping information

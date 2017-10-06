@@ -11,8 +11,6 @@
 package org.obiba.mica.network.search;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
 import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.network.domain.NetworkState;
 import org.obiba.mica.network.service.DraftNetworkService;
@@ -55,14 +53,6 @@ public class EsDraftNetworkService extends AbstractDocumentService<Network> impl
   @Override
   protected String getType() {
     return Indexer.NETWORK_TYPE;
-  }
-
-  @Override
-  protected QueryBuilder filterByAccess() {
-    Collection<String> ids = getAccessibleIdFilter().getValues();
-    return ids.isEmpty()
-        ? QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("id"))
-        : QueryBuilders.idsQuery().ids(ids);
   }
 
   @Nullable
