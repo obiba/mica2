@@ -11,7 +11,6 @@
 package org.obiba.mica.dataset.search;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.obiba.mica.dataset.domain.*;
@@ -56,13 +55,14 @@ class EsPublishedDatasetService extends AbstractEsDatasetService<Dataset> implem
 
   @Override
   public List<HarmonizationDataset> getHarmonizationDatasetsByStudy(String studyId) {
-    BoolQueryBuilder query = QueryBuilders.boolQuery()
-        .must(QueryBuilders.termQuery("className", HarmonizationDataset.class.getSimpleName()))
-        .must(QueryBuilders.termQuery("harmonizationTable.studyId", studyId));
 
-    return executeQuery(query, 0, MAX_SIZE)
-        .stream()
-        .map(ds -> (HarmonizationDataset) ds).collect(Collectors.toList());
+    List<Dataset> datasets = executeRqlQuery(
+      String.format("dataset(limit(0,%s),and(in(className,%s),in(harmonizationTable.studyId,%s)))",
+        MAX_SIZE, HarmonizationDataset.class.getSimpleName(), studyId));
+
+    return datasets
+      .stream()
+      .map(ds -> (HarmonizationDataset) ds).collect(Collectors.toList());
   }
 
   @Override

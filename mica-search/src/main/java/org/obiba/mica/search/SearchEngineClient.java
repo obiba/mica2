@@ -48,8 +48,8 @@ public class SearchEngineClient implements Searcher {
   }
 
   @Override
-  public DocumentResults find(String indexName, String type, String rql) {
-    return getSearcher().find(indexName, type, rql);
+  public DocumentResults find(String indexName, String type, String rql, IdFilter idFilter) {
+    return getSearcher().find(indexName, type, rql, idFilter);
   }
 
   @Override

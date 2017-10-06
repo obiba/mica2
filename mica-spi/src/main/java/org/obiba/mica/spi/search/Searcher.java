@@ -46,13 +46,12 @@ public interface Searcher {
 
   /**
    * Search for documents matching the RQL query. The RQL query can include limit() and sort() statements.
-   *
-   * @param indexName
-   * @param type
-   * @param rql
-   * @return
    */
-  DocumentResults find(String indexName, String type, String rql);
+  DocumentResults find(String indexName, String type, String rql, IdFilter idFilter);
+
+  default DocumentResults find(String indexName, String type, String rql) {
+    return find(indexName, type, rql, null);
+  }
 
   /**
    * Count documents matching the RQL query. The RQL query can include an aggregate() statement.
@@ -64,6 +63,10 @@ public interface Searcher {
    * @return
    */
   DocumentResults count(String indexName, String type, String rql, IdFilter idFilter);
+
+  default DocumentResults count(String indexName, String type, String rql) {
+    return count(indexName, type, rql, null);
+  }
 
   /**
    * Get field suggestions from query.

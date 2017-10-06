@@ -18,6 +18,7 @@ public enum RQLNode {
   DATASET,
   STUDY,
   NETWORK,
+  GENERIC,
   LIMIT,
   SORT,
   AND,
