@@ -125,7 +125,7 @@ public class PluginsService implements EnvironmentAware {
   }
 
   private void initSearchEngineServicePlugin(PluginResources plugin) {
-    SearchEngineService service = SearchEngineServiceLoader.get(plugin.getURLClassLoader()).iterator().next();
+    SearchEngineService service = SearchEngineServiceLoader.get(plugin.getURLClassLoader(false)).iterator().next();
     Properties properties = plugin.getProperties();
     for (String key : ES_CONFIGURATION) {
       if (esPropertyResolver.containsProperty(key))
