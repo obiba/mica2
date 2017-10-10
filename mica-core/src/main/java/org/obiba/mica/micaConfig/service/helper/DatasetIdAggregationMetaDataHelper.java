@@ -10,16 +10,16 @@
 
 package org.obiba.mica.micaConfig.service.helper;
 
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import javax.inject.Inject;
-
+import com.google.common.collect.Maps;
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.service.PublishedDatasetService;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
+
+import javax.inject.Inject;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.obiba.mica.security.SubjectUtils.sudo;
 
@@ -29,12 +29,16 @@ public class DatasetIdAggregationMetaDataHelper extends AbstractIdAggregationMet
   @Inject
   PublishedDatasetService publishedDatasetService;
 
-  @Cacheable(value="aggregations-metadata", key = "'dataset'")
+  @Cacheable(value = "aggregations-metadata", key = "'dataset'")
   public Map<String, AggregationMetaDataProvider.LocalizedMetaData> getDatasets() {
-    List<Dataset> datasets = sudo(() -> publishedDatasetService.findAll());
-    return datasets.stream()
-      .collect(
-        Collectors.toMap(Dataset::getId, d -> new AggregationMetaDataProvider.LocalizedMetaData(d.getAcronym(), d.getName(), d.getClassName())));
+    try {
+      List<Dataset> datasets = sudo(() -> publishedDatasetService.findAll());
+      return datasets.stream()
+          .collect(
+              Collectors.toMap(Dataset::getId, d -> new AggregationMetaDataProvider.LocalizedMetaData(d.getAcronym(), d.getName(), d.getClassName())));
+    } catch (Exception e) {
+      return Maps.newHashMap();
+    }
   }
 
   @Override
