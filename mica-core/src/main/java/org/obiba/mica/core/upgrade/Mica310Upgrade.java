@@ -1,5 +1,6 @@
 package org.obiba.mica.core.upgrade;
 
+import com.google.common.collect.ImmutableMap;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -7,9 +8,13 @@ import org.obiba.git.CommitInfo;
 import org.obiba.mica.core.domain.AbstractGitPersistable;
 import org.obiba.mica.core.domain.EntityState;
 import org.obiba.mica.dataset.service.CollectionDatasetService;
+import org.obiba.mica.micaConfig.service.TaxonomyConfigService;
+import org.obiba.mica.spi.search.TaxonomyTarget;
 import org.obiba.mica.study.domain.Population;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.service.CollectionStudyService;
+import org.obiba.opal.core.domain.taxonomy.Taxonomy;
+import org.obiba.opal.core.domain.taxonomy.Vocabulary;
 import org.obiba.runtime.Version;
 import org.obiba.runtime.upgrade.UpgradeStep;
 import org.slf4j.Logger;
@@ -41,6 +46,9 @@ public class Mica310Upgrade implements UpgradeStep {
   @Inject
   private CollectionStudyService collectionStudyService;
 
+  @Inject
+  private TaxonomyConfigService taxonomyConfigService;
+
   private static final Logger logger = LoggerFactory.getLogger(Mica310Upgrade.class);
 
   @Override
@@ -60,6 +68,46 @@ public class Mica310Upgrade implements UpgradeStep {
     setupDatasetOrders();
 
     republishStudiesWithInvalidContent();
+
+    addDefaultFacets();
+  }
+
+  private void addDefaultFacets() {
+
+    logger.info("Add default facets in study taxonomy");
+    ImmutableMap<String, String> vocabularyWithPriority = ImmutableMap.<String, String>builder()
+      .put("objectives", "1")
+      .put("methods-design", "2")
+      .put("investigator", "3")
+      .put("start", "4")
+      .put("end", "5")
+      .put("populations-selectionCriteria-countriesIso", "6")
+      .put("populations-selectionCriteria-ageMin", "7")
+      .put("populations-selectionCriteria-ageMax", "8")
+      .put("populations-selectionCriteria-gender", "9")
+      .put("populations-selectionCriteria-pregnantWomen", "10")
+      .put("populations-selectionCriteria-newborn", "11")
+      .put("populations-selectionCriteria-twins", "12")
+      .put("numberOfParticipants-participant-range", "13")
+      .put("numberOfParticipants-sample-range", "14")
+      .put("methods-recruitments", "15")
+      .put("populations-recruitment-dataSources", "16")
+      .put("populations-dataCollectionEvents-dataSources", "17")
+      .put("populations-dataCollectionEvents-bioSamples", "18")
+      .put("access", "19")
+      .build();
+
+    Taxonomy studyTaxonomy = taxonomyConfigService.findByTarget(TaxonomyTarget.STUDY);
+    for (Vocabulary vocabulary : studyTaxonomy.getVocabularies()) {
+      String vocabularyPriority = vocabularyWithPriority.get(vocabulary.getName());
+      if(vocabularyPriority != null) {
+        vocabulary.addAttribute("facet", "true");
+        vocabulary.addAttribute("facetExpanded", "false");
+        vocabulary.addAttribute("facetPosition", vocabularyPriority);
+      }
+    }
+
+    taxonomyConfigService.update(TaxonomyTarget.STUDY, studyTaxonomy);
   }
 
   private void republishStudiesWithInvalidContent() {
