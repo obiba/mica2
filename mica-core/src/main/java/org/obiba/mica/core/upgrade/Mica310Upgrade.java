@@ -1,6 +1,6 @@
 package org.obiba.mica.core.upgrade;
 
-import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableList;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -75,35 +75,33 @@ public class Mica310Upgrade implements UpgradeStep {
   private void addDefaultFacets() {
 
     logger.info("Add default facets in study taxonomy");
-    ImmutableMap<String, String> vocabularyWithPriority = ImmutableMap.<String, String>builder()
-      .put("objectives", "1")
-      .put("methods-design", "2")
-      .put("investigator", "3")
-      .put("start", "4")
-      .put("end", "5")
-      .put("populations-selectionCriteria-countriesIso", "6")
-      .put("populations-selectionCriteria-ageMin", "7")
-      .put("populations-selectionCriteria-ageMax", "8")
-      .put("populations-selectionCriteria-gender", "9")
-      .put("populations-selectionCriteria-pregnantWomen", "10")
-      .put("populations-selectionCriteria-newborn", "11")
-      .put("populations-selectionCriteria-twins", "12")
-      .put("numberOfParticipants-participant-range", "13")
-      .put("numberOfParticipants-sample-range", "14")
-      .put("methods-recruitments", "15")
-      .put("populations-recruitment-dataSources", "16")
-      .put("populations-dataCollectionEvents-dataSources", "17")
-      .put("populations-dataCollectionEvents-bioSamples", "18")
-      .put("access", "19")
+    ImmutableList<String> vocabulariesWithFacet = ImmutableList.<String>builder()
+      .add("objectives")
+      .add("methods-design")
+      .add("investigator")
+      .add("start")
+      .add("end")
+      .add("populations-selectionCriteria-countriesIso")
+      .add("populations-selectionCriteria-ageMin")
+      .add("populations-selectionCriteria-ageMax")
+      .add("populations-selectionCriteria-gender")
+      .add("populations-selectionCriteria-pregnantWomen")
+      .add("populations-selectionCriteria-newborn")
+      .add("populations-selectionCriteria-twins")
+      .add("numberOfParticipants-participant-range")
+      .add("numberOfParticipants-sample-range")
+      .add("methods-recruitments")
+      .add("populations-recruitment-dataSources")
+      .add("populations-dataCollectionEvents-dataSources")
+      .add("populations-dataCollectionEvents-bioSamples")
+      .add("access", "19")
       .build();
 
     Taxonomy studyTaxonomy = taxonomyConfigService.findByTarget(TaxonomyTarget.STUDY);
     for (Vocabulary vocabulary : studyTaxonomy.getVocabularies()) {
-      String vocabularyPriority = vocabularyWithPriority.get(vocabulary.getName());
-      if(vocabularyPriority != null) {
+      if(vocabulariesWithFacet.contains(vocabulary.getName())) {
         vocabulary.addAttribute("facet", "true");
         vocabulary.addAttribute("facetExpanded", "false");
-        vocabulary.addAttribute("facetPosition", vocabularyPriority);
       }
     }
 
