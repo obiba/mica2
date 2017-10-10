@@ -15,6 +15,7 @@ import org.obiba.mica.core.domain.AbstractGitPersistable;
 import org.obiba.mica.study.domain.BaseStudy;
 import org.obiba.mica.study.domain.HarmonizationStudy;
 import org.obiba.mica.study.service.PublishedStudyService;
+import org.slf4j.Logger;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
@@ -24,9 +25,12 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.obiba.mica.security.SubjectUtils.sudo;
+import static org.slf4j.LoggerFactory.getLogger;
 
 @Component
 public class StudyIdAggregationMetaDataHelper extends AbstractStudyAggregationMetaDataHelper {
+
+  private static final Logger log = getLogger(StudyIdAggregationMetaDataHelper.class);
 
   @Inject
   private PublishedStudyService publishedStudyService;
@@ -45,6 +49,7 @@ public class StudyIdAggregationMetaDataHelper extends AbstractStudyAggregationMe
             yearToString(study.getModel().get("startYear")), yearToString(study.getModel().get("endYear")));
       }));
     } catch (Exception e) {
+      log.debug("Could not build Study aggregation metadata {}", e);
       return Maps.newHashMap();
     }
   }
