@@ -10,24 +10,18 @@
 
 package org.obiba.mica.micaConfig.service.helper;
 
-import java.util.List;
-import java.util.Map;
-import java.util.SortedSet;
-
-import javax.inject.Inject;
-
+import com.google.common.collect.Maps;
 import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.core.domain.StudyTable;
-import org.obiba.mica.study.domain.BaseStudy;
-import org.obiba.mica.study.domain.DataCollectionEvent;
-import org.obiba.mica.study.domain.HarmonizationStudy;
-import org.obiba.mica.study.domain.Population;
-import org.obiba.mica.study.domain.Study;
+import org.obiba.mica.study.domain.*;
 import org.obiba.mica.study.service.PublishedStudyService;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
-import com.google.common.collect.Maps;
+import javax.inject.Inject;
+import java.util.List;
+import java.util.Map;
+import java.util.SortedSet;
 
 import static org.obiba.mica.security.SubjectUtils.sudo;
 
@@ -39,25 +33,29 @@ public class DceIdAggregationMetaDataHelper extends AbstractStudyAggregationMeta
 
   @Cacheable(value = "aggregations-metadata", key = "'dce'")
   public Map<String, AggregationMetaDataProvider.LocalizedMetaData> getDces() {
-    List<BaseStudy> studies = sudo(() -> publishedStudyService.findAllByClassName(Study.class.getSimpleName()));
-    Map<String, AggregationMetaDataProvider.LocalizedMetaData> map = Maps.newHashMap();
+    try {
+      List<BaseStudy> studies = sudo(() -> publishedStudyService.findAllByClassName(Study.class.getSimpleName()));
+      Map<String, AggregationMetaDataProvider.LocalizedMetaData> map = Maps.newHashMap();
 
-    studies.forEach(study -> {
-      SortedSet<Population> pops = study.getPopulations();
-      if(pops == null) return;
-      pops.forEach(population -> {
-        SortedSet<DataCollectionEvent> dces = population.getDataCollectionEvents();
-        if(dces == null) return;
-        dces.forEach(dce -> mapIdToMetadata(map, study, population, dce));
+      studies.forEach(study -> {
+        SortedSet<Population> pops = study.getPopulations();
+        if (pops == null) return;
+        pops.forEach(population -> {
+          SortedSet<DataCollectionEvent> dces = population.getDataCollectionEvents();
+          if (dces == null) return;
+          dces.forEach(dce -> mapIdToMetadata(map, study, population, dce));
+        });
       });
-    });
 
-    sudo(() -> publishedStudyService.findAllByClassName(HarmonizationStudy.class.getSimpleName()))
-      .stream()
-      .forEach(hStudy -> hStudy.getPopulations().stream()
-        .forEach(population -> mapIdToMetadata(map, hStudy, population, null)));
+      sudo(() -> publishedStudyService.findAllByClassName(HarmonizationStudy.class.getSimpleName()))
+          .stream()
+          .forEach(hStudy -> hStudy.getPopulations().stream()
+              .forEach(population -> mapIdToMetadata(map, hStudy, population, null)));
 
-    return map;
+      return map;
+    } catch (Exception e) {
+      return Maps.newHashMap();
+    }
   }
 
   @Override
@@ -66,7 +64,7 @@ public class DceIdAggregationMetaDataHelper extends AbstractStudyAggregationMeta
   }
 
   private void mapIdToMetadata(Map<String, AggregationMetaDataProvider.LocalizedMetaData> map,
-    BaseStudy study, Population population, DataCollectionEvent dce) {
+                               BaseStudy study, Population population, DataCollectionEvent dce) {
 
     MonikerData md = new MonikerData(study.getAcronym(), population, dce);
 
@@ -79,18 +77,18 @@ public class DceIdAggregationMetaDataHelper extends AbstractStudyAggregationMeta
 
     if (dce == null) {
       map.put(StudyTable.getDataCollectionEventUId(study.getId(), population.getId()),
-        new AggregationMetaDataProvider.LocalizedMetaData(title, description, "", null, null));
+          new AggregationMetaDataProvider.LocalizedMetaData(title, description, "", null, null));
     } else {
       String start = dce.hasStart() ? dce.getStart().getYearMonth() : null;
       String end = dce.hasEnd() ? dce.getEnd().getYearMonth() : null;
 
       map.put(
-        StudyTable.getDataCollectionEventUId(study.getId(), population.getId(), dce.getId()),
-        new AggregationMetaDataProvider.LocalizedMetaData(title,
-          description,
-          dce.getClass().getSimpleName(),
-          start,
-          end));
+          StudyTable.getDataCollectionEventUId(study.getId(), population.getId(), dce.getId()),
+          new AggregationMetaDataProvider.LocalizedMetaData(title,
+              description,
+              dce.getClass().getSimpleName(),
+              start,
+              end));
     }
   }
 
@@ -113,20 +111,20 @@ public class DceIdAggregationMetaDataHelper extends AbstractStudyAggregationMeta
 
     public String getTitle(String locale) {
       return dceName == null
-        ? String.format("%s:%s",
-            studyAcronym.getOrDefault(locale, ""),
-            populationName.getOrDefault(locale, ""))
-        : String.format("%s:%s:%s",
-            studyAcronym.getOrDefault(locale, ""),
-            populationName.getOrDefault(locale, ""),
-            dceName.getOrDefault(locale, ""));
+          ? String.format("%s:%s",
+          studyAcronym.getOrDefault(locale, ""),
+          populationName.getOrDefault(locale, ""))
+          : String.format("%s:%s:%s",
+          studyAcronym.getOrDefault(locale, ""),
+          populationName.getOrDefault(locale, ""),
+          dceName.getOrDefault(locale, ""));
     }
 
     public String getDescription(String locale) {
       return String.format("%s:%s:%s",
-        studyAcronym.getOrDefault(locale, ""),
-        populationDescription != null ? populationDescription.getOrDefault(locale, "") : "",
-        dceDescription != null ? dceDescription.getOrDefault(locale, "") : "");
+          studyAcronym.getOrDefault(locale, ""),
+          populationDescription != null ? populationDescription.getOrDefault(locale, "") : "",
+          dceDescription != null ? dceDescription.getOrDefault(locale, "") : "");
     }
   }
 }
