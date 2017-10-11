@@ -10,18 +10,10 @@
 
 package org.obiba.mica.dataset.rest;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
-import javax.inject.Inject;
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.QueryParam;
-
+import com.codahale.metrics.annotation.Timed;
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
-import org.elasticsearch.common.Strings;
 import org.obiba.mica.core.service.PublishedDocumentService;
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.service.PublishedDatasetService;
@@ -30,7 +22,13 @@ import org.obiba.mica.web.model.Mica;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import com.codahale.metrics.annotation.Timed;
+import javax.inject.Inject;
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.QueryParam;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 @Path("/datasets")
@@ -48,8 +46,8 @@ public class PublishedDatasetsResource {
   @Path("/_list")
   @Timed
   public Mica.DatasetsDto list(@QueryParam("from") @DefaultValue("0") int from,
-      @QueryParam("limit") @DefaultValue("10") int limit, @QueryParam("sort") String sort,
-      @QueryParam("order") String order, @QueryParam("study") String studyId, @QueryParam("query") String query) {
+                               @QueryParam("limit") @DefaultValue("10") int limit, @QueryParam("sort") String sort,
+                               @QueryParam("order") String order, @QueryParam("study") String studyId, @QueryParam("query") String query) {
 
     PublishedDocumentService.Documents<Dataset> datasets = publishedDatasetService
         .find(from, limit, sort, order, studyId, query);

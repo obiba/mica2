@@ -10,25 +10,18 @@
 
 package org.obiba.mica.search.queries;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.validation.constraints.NotNull;
-
-import org.elasticsearch.search.aggregations.Aggregations;
-import org.elasticsearch.search.aggregations.InternalAggregation;
-import org.elasticsearch.search.aggregations.bucket.global.Global;
-import org.elasticsearch.search.aggregations.bucket.range.Range;
-import org.elasticsearch.search.aggregations.bucket.terms.Terms;
-import org.elasticsearch.search.aggregations.metrics.stats.Stats;
+import com.google.common.collect.Lists;
 import org.obiba.mica.micaConfig.service.helper.AggregationMetaDataProvider;
 import org.obiba.mica.search.aggregations.AggregationMetaDataResolver;
+import org.obiba.mica.spi.search.Searcher;
 import org.obiba.mica.web.model.MicaSearch;
+import org.obiba.mica.web.model.MicaSearch.AggregationResultDto;
 import org.obiba.mica.web.model.MicaSearch.RangeAggregationResultDto;
+import org.obiba.mica.web.model.MicaSearch.StatsAggregationResultDto;
+import org.obiba.mica.web.model.MicaSearch.TermsAggregationResultDto;
 
-import static org.obiba.mica.web.model.MicaSearch.AggregationResultDto;
-import static org.obiba.mica.web.model.MicaSearch.StatsAggregationResultDto;
-import static org.obiba.mica.web.model.MicaSearch.TermsAggregationResultDto;
+import javax.validation.constraints.NotNull;
+import java.util.List;
 
 public class EsQueryResultParser {
 
@@ -47,63 +40,63 @@ public class EsQueryResultParser {
     return new EsQueryResultParser(aggregationTitleResolver, locale);
   }
 
-  public List<AggregationResultDto> parseAggregations(@NotNull Aggregations aggregations) {
-    List<AggregationResultDto> aggResults = new ArrayList();
+  public List<AggregationResultDto> parseAggregations(@NotNull List<Searcher.DocumentAggregation> aggregations) {
+    List<AggregationResultDto> aggResults = Lists.newArrayList();
 
     aggregations.forEach(aggregation -> {
 
       AggregationResultDto.Builder aggResultBuilder = AggregationResultDto.newBuilder();
       aggResultBuilder.setAggregation(aggregation.getName());
-      String aggType = ((InternalAggregation) aggregation).type().name();
+      String aggType = aggregation.getType();
 
-      switch(aggType) {
+      switch (aggType) {
         case "stats":
-          Stats stats = (Stats) aggregation;
-          if(stats.getCount() > 0) {
+          Searcher.DocumentStatsAggregation stats = aggregation.asStats();
+          if (stats.getCount() > 0) {
             aggResultBuilder.setExtension(
-              StatsAggregationResultDto.stats,
-              StatsAggregationResultDto.newBuilder().setData(buildStatsDto(stats)).build());
+                StatsAggregationResultDto.stats,
+                StatsAggregationResultDto.newBuilder().setData(buildStatsDto(stats)).build());
           }
           break;
         case "terms":
-          ((Terms) aggregation).getBuckets().forEach(bucket -> {
+          aggregation.asTerms().getBuckets().forEach(bucket -> {
             TermsAggregationResultDto.Builder termsBuilder = TermsAggregationResultDto.newBuilder();
 
-            if(bucket.getAggregations() != null) {
+            if (bucket.getAggregations() != null) {
               termsBuilder.addAllAggs(parseAggregations(bucket.getAggregations()));
             }
 
             AggregationMetaDataProvider.MetaData metaData = aggregationMetaDataResolver
-              .getMetaData(aggregation.getName(), bucket.getKeyAsString(), locale);
-            if(metaData.hasTitle()) termsBuilder.setTitle(metaData.getTitle());
-            if(metaData.hasDescription()) termsBuilder.setDescription(metaData.getDescription());
+                .getMetaData(aggregation.getName(), bucket.getKeyAsString(), locale);
+            if (metaData.hasTitle()) termsBuilder.setTitle(metaData.getTitle());
+            if (metaData.hasDescription()) termsBuilder.setDescription(metaData.getDescription());
             if (metaData.hasClassName()) termsBuilder.setClassName(metaData.getClassName());
-            if(metaData.hasStart()) termsBuilder.setStart(metaData.getStart());
-            if(metaData.hasEnd()) termsBuilder.setEnd(metaData.getEnd());
+            if (metaData.hasStart()) termsBuilder.setStart(metaData.getStart());
+            if (metaData.hasEnd()) termsBuilder.setEnd(metaData.getEnd());
 
             aggResultBuilder.addExtension(TermsAggregationResultDto.terms,
-              termsBuilder.setKey(bucket.getKeyAsString()).setCount((int) bucket.getDocCount()).build());
+                termsBuilder.setKey(bucket.getKeyAsString()).setCount((int) bucket.getDocCount()).build());
           });
           break;
 
         case "range":
-          ((Range) aggregation).getBuckets().forEach(bucket -> {
+          aggregation.asRange().getBuckets().forEach(bucket -> {
             AggregationMetaDataProvider.MetaData metaData = aggregationMetaDataResolver
-              .getMetaData(aggregation.getName(), bucket.getKeyAsString(), locale);
+                .getMetaData(aggregation.getName(), bucket.getKeyAsString(), locale);
 
             RangeAggregationResultDto.Builder rangeBuilder =
-              RangeAggregationResultDto.newBuilder()
-                .setDefault(-1)
-                .setCount(bucket.getDocCount())
-                .setKey(bucket.getKeyAsString())
-                .setTitle(metaData.getTitle());
+                RangeAggregationResultDto.newBuilder()
+                    .setDefault(-1)
+                    .setCount(bucket.getDocCount())
+                    .setKey(bucket.getKeyAsString())
+                    .setTitle(metaData.getTitle());
 
             if (metaData.hasDescription()) rangeBuilder.setDescription(metaData.getDescription());
             if (metaData.hasClassName()) rangeBuilder.setClassName(metaData.getClassName());
 
-            Double from = (Double)bucket.getFrom();
-            Double to = (Double)bucket.getTo();
-            if (Double.NEGATIVE_INFINITY != from ) {
+            Double from = bucket.getFrom();
+            Double to = bucket.getTo();
+            if (Double.NEGATIVE_INFINITY != from) {
               rangeBuilder.setFrom(from);
             }
             if (Double.POSITIVE_INFINITY != to) {
@@ -116,7 +109,7 @@ public class EsQueryResultParser {
           break;
 
         case "global":
-          totalCount = ((Global) aggregation).getDocCount();
+          totalCount = aggregation.asGlobal().getDocCount();
           // do not include in the list of aggregations
           return;
 
@@ -131,15 +124,15 @@ public class EsQueryResultParser {
     return aggResults;
   }
 
-  private MicaSearch.StatsAggregationResultDataDto buildStatsDto(Stats stats) {
+  private MicaSearch.StatsAggregationResultDataDto buildStatsDto(Searcher.DocumentStatsAggregation stats) {
     MicaSearch.StatsAggregationResultDataDto.Builder builder = MicaSearch.StatsAggregationResultDataDto.newBuilder()
-      .setCount(stats.getCount());
+        .setCount(stats.getCount());
 
-    if(!Double.isInfinite(stats.getMin())) {
+    if (!Double.isInfinite(stats.getMin())) {
       builder.setMin(stats.getMin());
     }
 
-    if(!Double.isInfinite(stats.getMax())) {
+    if (!Double.isInfinite(stats.getMax())) {
       builder.setMax(stats.getMax());
     }
 

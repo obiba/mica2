@@ -24,7 +24,7 @@ import org.obiba.mica.core.domain.TaxonomyEntityWrapper;
 import org.obiba.mica.spi.search.TaxonomyTarget;
 import org.obiba.mica.micaConfig.event.TaxonomiesUpdatedEvent;
 import org.obiba.mica.micaConfig.repository.TaxonomyConfigRepository;
-import org.obiba.mica.micaConfig.service.helper.AggregationAliasHelper;
+import org.obiba.mica.spi.search.support.AggregationHelper;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.obiba.opal.core.domain.taxonomy.Vocabulary;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -125,7 +125,7 @@ public class TaxonomyConfigService {
         if (Strings.isNullOrEmpty(type)) type = "string";
 
         String alias = v.getAttributeValue("alias");
-        if(Strings.isNullOrEmpty(alias)) alias = AggregationAliasHelper.formatName(field);
+        if(Strings.isNullOrEmpty(alias)) alias = AggregationHelper.formatName(field);
 
         String range = v.getAttributeValue("range");
         boolean isRange = Strings.isNullOrEmpty(range) ? false : "true".equals(range);

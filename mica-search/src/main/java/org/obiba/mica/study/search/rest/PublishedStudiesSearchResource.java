@@ -16,20 +16,17 @@ import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.search.JoinQueryExecutor;
 import org.obiba.mica.search.csvexport.GenericReportGenerator;
 import org.obiba.mica.search.csvexport.SpecificStudyReportGenerator;
-import org.obiba.mica.search.queries.protobuf.JoinQueryDtoWrapper;
 import org.obiba.mica.search.queries.protobuf.QueryDtoHelper;
 import org.obiba.mica.search.queries.rql.RQLQueryBuilder;
-import org.obiba.mica.search.queries.rql.RQLQueryFactory;
 import org.obiba.mica.spi.search.Indexer;
 import org.obiba.mica.spi.search.QueryType;
-import org.obiba.mica.web.model.MicaSearch;
+import org.obiba.mica.spi.search.Searcher;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
-import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
@@ -50,7 +47,7 @@ public class PublishedStudiesSearchResource {
   private JoinQueryExecutor joinQueryExecutor;
 
   @Inject
-  private RQLQueryFactory rqlQueryFactory;
+  private Searcher searcher;
 
   @Inject
   private GenericReportGenerator genericReportGenerator;
@@ -61,28 +58,28 @@ public class PublishedStudiesSearchResource {
   @GET
   @Timed
   public JoinQueryResultDto rqlList(@QueryParam("from") @DefaultValue("0") int from,
-    @QueryParam("limit") @DefaultValue("10") int limit, @QueryParam("sort") @DefaultValue("name") String sort,
-    @QueryParam("order") @DefaultValue("asc") String order, @QueryParam("locale") @DefaultValue("en") String locale)
-    throws IOException {
+                                    @QueryParam("limit") @DefaultValue("10") int limit, @QueryParam("sort") @DefaultValue("name") String sort,
+                                    @QueryParam("order") @DefaultValue("asc") String order, @QueryParam("locale") @DefaultValue("en") String locale)
+      throws IOException {
 
     String rql = RQLQueryBuilder.newInstance().target(
-      RQLQueryBuilder.TargetQueryBuilder.studyInstance().exists("id").limit(from, limit).sort(sort, order).build())
-      .locale(locale).buildArgsAsString();
+        RQLQueryBuilder.TargetQueryBuilder.studyInstance().exists("id").limit(from, limit).sort(sort, order).build())
+        .locale(locale).buildArgsAsString();
 
-    return joinQueryExecutor.query(QueryType.STUDY, rqlQueryFactory.makeJoinQuery(rql));
+    return joinQueryExecutor.query(QueryType.STUDY, searcher.makeJoinQuery(rql));
   }
 
   @GET
   @Path("/_search")
   @Timed
   public JoinQueryResultDto list(@QueryParam("from") @DefaultValue("0") int from,
-    @QueryParam("limit") @DefaultValue("10") int limit, @QueryParam("sort") String sort,
-    @QueryParam("order") @DefaultValue("asc") String order, @QueryParam("query") String query,
-    @QueryParam("locale") @DefaultValue("en") String locale) throws IOException {
+                                 @QueryParam("limit") @DefaultValue("10") int limit, @QueryParam("sort") String sort,
+                                 @QueryParam("order") @DefaultValue("asc") String order, @QueryParam("query") String query,
+                                 @QueryParam("locale") @DefaultValue("en") String locale) throws IOException {
 
     JoinQueryResultDto.Builder builder = joinQueryExecutor.listQuery(QueryType.STUDY, QueryDtoHelper
-      .createQueryDto(from, limit, Strings.isNullOrEmpty(sort) ? Indexer.DEFAULT_SORT_FIELD + "." + locale : sort,
-        order, query, locale, Stream.of(Indexer.STUDY_LOCALIZED_ANALYZED_FIELDS)), locale).toBuilder();
+        .createQueryDto(from, limit, Strings.isNullOrEmpty(sort) ? Indexer.DEFAULT_SORT_FIELD + "." + locale : sort,
+            order, query, locale, Stream.of(Indexer.STUDY_LOCALIZED_ANALYZED_FIELDS)), locale).toBuilder();
     builder.clearDatasetResultDto().clearNetworkResultDto().clearVariableResultDto();
     builder.setStudyResultDto(builder.getStudyResultDto().toBuilder().clearAggs());
     return builder.build();
@@ -94,7 +91,7 @@ public class PublishedStudiesSearchResource {
   public JoinQueryResultDto rqlQuery(@QueryParam("query") String query) throws IOException {
     String queryStr = query;
     if (Strings.isNullOrEmpty(queryStr)) queryStr = "study(exists(Mica_study.id))";
-    return joinQueryExecutor.query(QueryType.STUDY, rqlQueryFactory.makeJoinQuery(queryStr));
+    return joinQueryExecutor.query(QueryType.STUDY, searcher.makeJoinQuery(queryStr));
   }
 
   @GET

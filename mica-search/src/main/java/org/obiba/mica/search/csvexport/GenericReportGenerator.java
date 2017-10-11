@@ -11,9 +11,9 @@
 package org.obiba.mica.search.csvexport;
 
 import org.obiba.mica.search.JoinQueryExecutor;
-import org.obiba.mica.search.queries.rql.RQLJoinQueryWrapper;
-import org.obiba.mica.search.queries.rql.RQLQueryFactory;
 import org.obiba.mica.spi.search.QueryType;
+import org.obiba.mica.spi.search.Searcher;
+import org.obiba.mica.spi.search.support.JoinQuery;
 import org.obiba.mica.web.model.MicaSearch;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -31,15 +31,15 @@ public class GenericReportGenerator {
   private JoinQueryExecutor joinQueryExecutor;
 
   @Inject
-  private RQLQueryFactory rqlQueryFactory;
+  private Searcher searcher;
 
   @Inject
   private CsvReportGeneratorFactory csvReportGeneratorFactory;
 
   public void generateCsv(QueryType exportType, String rqlQuery, List<String> columnsToHide, OutputStream outputStream) throws IOException {
-    RQLJoinQueryWrapper joinQueryWrapper = rqlQueryFactory.makeJoinQuery(rqlQuery);
-    MicaSearch.JoinQueryResultDto queryResult = joinQueryExecutor.query(exportType, joinQueryWrapper);
-    CsvReportGenerator csvReportGenerator = csvReportGeneratorFactory.get(exportType, queryResult, columnsToHide, joinQueryWrapper.getLocale());
+    JoinQuery joinQuery = searcher.makeJoinQuery(rqlQuery);
+    MicaSearch.JoinQueryResultDto queryResult = joinQueryExecutor.query(exportType, joinQuery);
+    CsvReportGenerator csvReportGenerator = csvReportGeneratorFactory.get(exportType, queryResult, columnsToHide, joinQuery.getLocale());
     csvReportGenerator.write(outputStream);
   }
 }

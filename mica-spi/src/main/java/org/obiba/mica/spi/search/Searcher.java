@@ -10,23 +10,23 @@
 
 package org.obiba.mica.spi.search;
 
-import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.obiba.mica.spi.search.support.JoinQuery;
 import org.obiba.mica.spi.search.support.Query;
 
 import javax.annotation.Nullable;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * Defines the search operations that can be performed within the search engine.
  */
 public interface Searcher {
 
-  // TODO isolate elasticsearch as search functionalities
-  SearchRequestBuilder prepareSearch(String... indices);
+  String AGG_TOTAL_COUNT = "totalCount";
 
   /**
    * Parse the RQL string query to make a {@link JoinQuery} that will be passed to the query execution requests.
@@ -43,6 +43,14 @@ public interface Searcher {
    * @return
    */
   Query makeQuery(String rql);
+
+  /**
+   * Make a query from several queries, joined with and().
+   *
+   * @param queries
+   * @return
+   */
+  Query andQuery(Query... queries);
 
   /**
    * Search for documents matching the RQL query. The RQL query can include limit() and sort() statements.
@@ -153,6 +161,49 @@ public interface Searcher {
   long countDocumentsWithField(String indexName, String type, String field);
 
   /**
+   * Query documents.
+   *
+   * @param indexName
+   * @param type
+   * @param query
+   * @param scope
+   * @param mandatorySourceFields
+   * @param aggregationProperties
+   * @param idFilter
+   * @return
+   * @throws IOException
+   */
+  DocumentResults query(String indexName, String type, Query query, QueryScope scope, List<String> mandatorySourceFields, Properties aggregationProperties, @Nullable IdFilter idFilter) throws IOException;
+
+  /**
+   * Get document aggregations from provided properties.
+   *
+   * @param indexName
+   * @param type
+   * @param query
+   * @param aggregationProperties
+   * @param idFilter
+   * @return
+   */
+  DocumentResults aggregate(String indexName, String type, Query query, Properties aggregationProperties, IdFilter idFilter);
+
+  /**
+   * Get document nested aggregations from provided properties.
+   *
+   * @param indexName
+   * @param type
+   * @param query
+   * @param aggregationProperties
+   * @param idFilter
+   * @return
+   * @throws IOException
+   */
+  DocumentResults cover(String indexName, String type, Query query, Properties aggregationProperties, @Nullable IdFilter idFilter);
+
+  DocumentResults cover(String indexName, String type, Query query, Properties aggregationProperties, Map<String, Properties> subAggregationProperties, @Nullable IdFilter idFilter);
+
+
+  /**
    * Read the found documents.
    */
   interface DocumentResults {
@@ -177,6 +228,8 @@ public interface Searcher {
      * @return
      */
     Map<String, Long> getAggregation(String field);
+
+    List<DocumentAggregation> getAggregations();
   }
 
   /**
@@ -192,7 +245,16 @@ public interface Searcher {
     String getId();
 
     /**
-     * Source content.
+     * Whether the document source can be extracted.
+     *
+     * @return
+     */
+    boolean hasSource();
+
+    Map<String, Object> getSource();
+
+    /**
+     * Source content stream.
      *
      * @return
      */
@@ -204,6 +266,106 @@ public interface Searcher {
      * @return
      */
     String getClassName();
+  }
+
+  interface DocumentAggregation {
+    String getName();
+
+    String getType();
+
+    DocumentStatsAggregation asStats();
+
+    DocumentTermsAggregation asTerms();
+
+    DocumentRangeAggregation asRange();
+
+    DocumentGlobalAggregation asGlobal();
+  }
+
+  interface DocumentStatsAggregation {
+
+    /**
+     * @return The number of values that were aggregated.
+     */
+    long getCount();
+
+    /**
+     * @return The minimum value of all aggregated values.
+     */
+    double getMin();
+
+    /**
+     * @return The maximum value of all aggregated values.
+     */
+    double getMax();
+
+    /**
+     * @return The avg value over all aggregated values.
+     */
+    double getAvg();
+
+    /**
+     * @return The sum of aggregated values.
+     */
+    double getSum();
+  }
+
+  interface DocumentRangeAggregation {
+    List<DocumentRangeBucket> getBuckets();
+  }
+
+  interface DocumentRangeBucket {
+
+    /**
+     * @return The key associated with the bucket as a string
+     */
+    String getKeyAsString();
+
+    /**
+     * @return The number of documents that fall within this bucket
+     */
+    long getDocCount();
+
+    /**
+     * @return The lower bound of the range
+     */
+    Double getFrom();
+
+    /**
+     * @return The upper bound of the range (excluding)
+     */
+    Double getTo();
+  }
+
+  interface DocumentTermsAggregation {
+    List<DocumentTermsBucket> getBuckets();
+  }
+
+  interface DocumentTermsBucket {
+
+    /**
+     * @return The key associated with the bucket as a string
+     */
+    String getKeyAsString();
+
+    /**
+     * @return The number of documents that fall within this bucket
+     */
+    long getDocCount();
+
+    /**
+     * @return The sub aggregations
+     */
+    List<DocumentAggregation> getAggregations();
+  }
+
+  interface DocumentGlobalAggregation {
+
+    /**
+     * @return The number of documents in this bucket
+     */
+    long getDocCount();
+
   }
 
   /**

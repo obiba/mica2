@@ -10,8 +10,8 @@
 
 package org.obiba.mica.search;
 
-import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.obiba.mica.micaConfig.service.PluginsService;
+import org.obiba.mica.spi.search.QueryScope;
 import org.obiba.mica.spi.search.Searcher;
 import org.obiba.mica.spi.search.support.JoinQuery;
 import org.obiba.mica.spi.search.support.Query;
@@ -19,8 +19,11 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 
 @Component
 public class SearchEngineClient implements Searcher {
@@ -33,11 +36,6 @@ public class SearchEngineClient implements Searcher {
   }
 
   @Override
-  public SearchRequestBuilder prepareSearch(String... indices) {
-    return getSearcher().prepareSearch(indices);
-  }
-
-  @Override
   public JoinQuery makeJoinQuery(String rql) {
     return getSearcher().makeJoinQuery(rql);
   }
@@ -45,6 +43,31 @@ public class SearchEngineClient implements Searcher {
   @Override
   public Query makeQuery(String rql) {
     return getSearcher().makeQuery(rql);
+  }
+
+  @Override
+  public Query andQuery(Query... queries) {
+    return getSearcher().andQuery(queries);
+  }
+
+  @Override
+  public DocumentResults query(String indexName, String type, Query query, QueryScope scope, List<String> mandatorySourceFields, Properties aggregationProperties, @Nullable IdFilter idFilter) throws IOException {
+    return getSearcher().query(indexName, type, query, scope, mandatorySourceFields, aggregationProperties, idFilter);
+  }
+
+  @Override
+  public DocumentResults cover(String indexName, String type, Query query, Properties aggregationProperties, @Nullable IdFilter idFilter) {
+    return getSearcher().cover(indexName, type, query, aggregationProperties, idFilter);
+  }
+
+  @Override
+  public DocumentResults cover(String indexName, String type, Query query, Properties aggregationProperties, Map<String, Properties> subAggregationProperties, @Nullable IdFilter idFilter) {
+    return getSearcher().cover(indexName, type, query, aggregationProperties, subAggregationProperties, idFilter);
+  }
+
+  @Override
+  public DocumentResults aggregate(String indexName, String type, Query query, Properties aggregationProperties, IdFilter idFilter) {
+    return getSearcher().aggregate(indexName, type, query, aggregationProperties, idFilter);
   }
 
   @Override

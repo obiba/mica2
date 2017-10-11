@@ -8,9 +8,9 @@ import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.network.service.NetworkService;
 import org.obiba.mica.search.JoinQueryExecutor;
 import org.obiba.mica.search.csvexport.generators.CsvReportGeneratorImpl;
-import org.obiba.mica.search.queries.rql.RQLJoinQueryWrapper;
-import org.obiba.mica.search.queries.rql.RQLQueryFactory;
 import org.obiba.mica.spi.search.QueryType;
+import org.obiba.mica.spi.search.Searcher;
+import org.obiba.mica.spi.search.support.JoinQuery;
 import org.obiba.mica.study.domain.BaseStudy;
 import org.obiba.mica.study.domain.Population;
 import org.obiba.mica.study.service.PublishedStudyService;
@@ -27,13 +27,7 @@ import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -50,7 +44,7 @@ public class SpecificStudyReportGenerator extends CsvReportGeneratorImpl {
   private JoinQueryExecutor joinQueryExecutor;
 
   @Inject
-  private RQLQueryFactory rqlQueryFactory;
+  private Searcher searcher;
 
   @Inject
   private MicaConfigService micaConfigService;
@@ -84,18 +78,18 @@ public class SpecificStudyReportGenerator extends CsvReportGeneratorImpl {
 
   public void report(String rqlQuery, OutputStream outputStream) throws IOException {
 
-    RQLJoinQueryWrapper joinQueryWrapper = rqlQueryFactory.makeJoinQuery(rqlQuery);
+    JoinQuery joinQuery = searcher.makeJoinQuery(rqlQuery);
 
-    List<String> studyIds = joinQueryExecutor.query(QueryType.STUDY, joinQueryWrapper)
-      .getStudyResultDto()
-      .getExtension(MicaSearch.StudyResultDto.result)
-      .getSummariesList()
-      .stream()
-      .map(Mica.StudySummaryDto::getId)
-      .collect(toList());
-    Translator translator = JsonTranslator.buildSafeTranslator(() -> micaConfigService.getTranslations(joinQueryWrapper.getLocale(), false));
+    List<String> studyIds = joinQueryExecutor.query(QueryType.STUDY, joinQuery)
+        .getStudyResultDto()
+        .getExtension(MicaSearch.StudyResultDto.result)
+        .getSummariesList()
+        .stream()
+        .map(Mica.StudySummaryDto::getId)
+        .collect(toList());
+    Translator translator = JsonTranslator.buildSafeTranslator(() -> micaConfigService.getTranslations(joinQuery.getLocale(), false));
 
-    report(translator, studyIds, joinQueryWrapper.getLocale(), outputStream);
+    report(translator, studyIds, joinQuery.getLocale(), outputStream);
   }
 
   @Override
@@ -203,12 +197,12 @@ public class SpecificStudyReportGenerator extends CsvReportGeneratorImpl {
     line.add(field(() -> calculateYearsOfFollowUp(study)));
     line.add(field(() -> tr("study_taxonomy.vocabulary.methods-design.term." + ((Map<String, Object>) study.getModel().get("methods")).get("design").toString() + ".title")));
     line.add(arrayField(() -> ((List<String>) ((Map<String, Object>)
-      study.getModel().get("methods")).get("recruitments"))
-      .stream().map(m -> tr("study_taxonomy.vocabulary.methods-recruitments.term." + m + ".title")).sorted().collect(toList())));
+        study.getModel().get("methods")).get("recruitments"))
+        .stream().map(m -> tr("study_taxonomy.vocabulary.methods-recruitments.term." + m + ".title")).sorted().collect(toList())));
     line.add(field(() -> ((Map<String, Object>) ((Map<String, Object>)
-      study.getModel().get("numberOfParticipants")).get("participant")).get("number").toString()));
+        study.getModel().get("numberOfParticipants")).get("participant")).get("number").toString()));
     line.add(field(() -> ((Map<String, Object>) ((Map<String, Object>)
-      study.getModel().get("numberOfParticipants")).get("sample")).get("number").toString()));
+        study.getModel().get("numberOfParticipants")).get("sample")).get("number").toString()));
 
     return line;
   }
@@ -219,13 +213,13 @@ public class SpecificStudyReportGenerator extends CsvReportGeneratorImpl {
 
     line.add(localizedField(() -> population.getName()));
     line.add(arrayField(() -> ((List<String>) ((Map<String, Object>) population.getModel().get("recruitment")).get("dataSources"))
-      .stream().map(source -> tr("study_taxonomy.vocabulary.populations-recruitment-dataSources.term." + source + ".title")).sorted().collect(toList())));
+        .stream().map(source -> tr("study_taxonomy.vocabulary.populations-recruitment-dataSources.term." + source + ".title")).sorted().collect(toList())));
     line.add(field(() -> ((Map<String, Object>) population.getModel().get("selectionCriteria")).get("ageMin").toString()));
     line.add(field(() -> ((Map<String, Object>) population.getModel().get("selectionCriteria")).get("ageMax").toString()));
     line.add(field(() -> ((Map<String, Object>) ((Map<String, Object>)
-      population.getModel().get("numberOfParticipants")).get("participant")).get("number").toString()));
+        population.getModel().get("numberOfParticipants")).get("participant")).get("number").toString()));
     line.add(field(() -> ((Map<String, Object>) ((Map<String, Object>)
-      population.getModel().get("numberOfParticipants")).get("sample")).get("number").toString()));
+        population.getModel().get("numberOfParticipants")).get("sample")).get("number").toString()));
     line.add(field(() -> Integer.toString(population.getDataCollectionEvents().size())));
 
     return line;

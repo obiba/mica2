@@ -18,18 +18,9 @@ import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.UncheckedTimeoutException;
 import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.micaConfig.service.TaxonomyService;
-import org.obiba.mica.search.queries.DatasetQuery;
-import org.obiba.mica.search.queries.DocumentQueryInterface;
-import org.obiba.mica.search.queries.JoinQueryWrapper;
-import org.obiba.mica.search.queries.NetworkQuery;
-import org.obiba.mica.search.queries.StudyQuery;
-import org.obiba.mica.search.queries.VariableQuery;
-import org.obiba.mica.search.queries.protobuf.JoinQueryDtoWrapper;
-import org.obiba.mica.spi.search.CountStatsData;
-import org.obiba.mica.spi.search.QueryMode;
-import org.obiba.mica.spi.search.QueryScope;
-import org.obiba.mica.spi.search.QueryType;
-import org.obiba.mica.spi.search.Searcher;
+import org.obiba.mica.search.queries.*;
+import org.obiba.mica.spi.search.*;
+import org.obiba.mica.spi.search.support.JoinQuery;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.mica.web.model.MicaSearch;
@@ -47,11 +38,7 @@ import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
@@ -59,9 +46,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.obiba.mica.spi.search.QueryScope.AGGREGATION;
-import static org.obiba.mica.spi.search.QueryScope.DETAIL;
-import static org.obiba.mica.spi.search.QueryScope.DIGEST;
+import static org.obiba.mica.spi.search.QueryScope.*;
 
 @Component
 @Scope("request")
@@ -98,30 +83,31 @@ public class JoinQueryExecutor {
   private Searcher searcher;
 
   @Timed
-  public JoinQueryResultDto query(QueryType type, JoinQueryWrapper joinQueryWrapper) throws IOException {
-    return query(type, joinQueryWrapper, CountStatsData.newBuilder(), DETAIL, QueryMode.SEARCH);
+  public JoinQueryResultDto query(QueryType type, JoinQuery joinQuery) throws IOException {
+    return query(type, joinQuery, CountStatsData.newBuilder(), DETAIL, QueryMode.SEARCH);
   }
 
   @Timed
-  public JoinQueryResultDto queryCoverage(JoinQueryWrapper joinQueryWrapper) throws IOException {
-    return query(QueryType.VARIABLE, joinQueryWrapper, null, DIGEST, QueryMode.COVERAGE);
+  public JoinQueryResultDto queryCoverage(JoinQuery joinQuery) throws IOException {
+    return query(QueryType.VARIABLE, joinQuery, null, DIGEST, QueryMode.COVERAGE);
   }
 
-  @Timed
   public JoinQueryResultDto listQuery(QueryType type, MicaSearch.QueryDto queryDto, String locale) throws IOException {
-    JoinQueryDto joinQueryDto = createJoinQueryByType(type, queryDto).toBuilder().setWithFacets(false).setLocale(locale)
-        .build();
+    throw new UnsupportedOperationException("Query dto to be replaced by a RQL string");
+  }
 
-    JoinQueryWrapper joinQueryWrapper = new JoinQueryDtoWrapper(joinQueryDto);
-    initializeQueries(joinQueryWrapper, QueryMode.LIST);
+  @Timed
+  public JoinQueryResultDto listQuery(QueryType type, String rqlQuery, String locale) throws IOException {
+    JoinQuery joinQuery = searcher.makeJoinQuery(rqlQuery);
+    initializeQueries(joinQuery, QueryMode.LIST);
 
     execute(type, DETAIL, CountStatsData.newBuilder());
 
     JoinQueryResultDto.Builder builder = JoinQueryResultDto.newBuilder();
-    if(variableQuery.getResultQuery() != null) builder.setVariableResultDto(variableQuery.getResultQuery());
-    if(datasetQuery.getResultQuery() != null) builder.setDatasetResultDto(datasetQuery.getResultQuery());
-    if(studyQuery.getResultQuery() != null) builder.setStudyResultDto(studyQuery.getResultQuery());
-    if(networkQuery.getResultQuery() != null) builder.setNetworkResultDto(networkQuery.getResultQuery());
+    if (variableQuery.getResultQuery() != null) builder.setVariableResultDto(variableQuery.getResultQuery());
+    if (datasetQuery.getResultQuery() != null) builder.setDatasetResultDto(datasetQuery.getResultQuery());
+    if (studyQuery.getResultQuery() != null) builder.setStudyResultDto(studyQuery.getResultQuery());
+    if (networkQuery.getResultQuery() != null) builder.setNetworkResultDto(networkQuery.getResultQuery());
 
     return builder.build();
   }
@@ -129,7 +115,7 @@ public class JoinQueryExecutor {
   private JoinQueryDto createJoinQueryByType(QueryType type, MicaSearch.QueryDto queryDto) {
     JoinQueryDto.Builder builder = JoinQueryDto.newBuilder();
 
-    switch(type) {
+    switch (type) {
       case VARIABLE:
         builder.setVariableQueryDto(queryDto).build();
         break;
@@ -147,15 +133,15 @@ public class JoinQueryExecutor {
     return builder.build();
   }
 
-  private JoinQueryResultDto query(QueryType type, JoinQueryWrapper joinQueryWrapper,
+  private JoinQueryResultDto query(QueryType type, JoinQuery joinQuery,
                                    CountStatsData.Builder countBuilder, QueryScope scope, QueryMode mode)
-    throws IOException {
+      throws IOException {
 
     boolean havePermit = false;
     try {
       havePermit = acquireSemaphorePermit();
       if (havePermit)
-        return unsafeQuery(type, joinQueryWrapper, countBuilder, scope, mode);
+        return unsafeQuery(type, joinQuery, countBuilder, scope, mode);
       else
         throw new UncheckedTimeoutException("Too many queries in a short time. Please retry later.");
     } finally {
@@ -176,20 +162,20 @@ public class JoinQueryExecutor {
     esJoinQueriesSemaphore.release();
   }
 
-  private JoinQueryResultDto unsafeQuery(QueryType type, JoinQueryWrapper joinQueryWrapper,
+  private JoinQueryResultDto unsafeQuery(QueryType type, JoinQuery joinQuery,
                                          CountStatsData.Builder countBuilder, QueryScope scope, QueryMode mode)
       throws IOException {
     log.debug("Start query");
-    initializeQueries(joinQueryWrapper, mode);
-    return doQueries(type, joinQueryWrapper, countBuilder, scope);
+    initializeQueries(joinQuery, mode);
+    return doQueries(type, joinQuery, countBuilder, scope);
   }
 
-  private JoinQueryResultDto doQueries(QueryType type, JoinQueryWrapper joinQueryWrapper,
-      CountStatsData.Builder countBuilder, QueryScope scope) throws IOException {
+  private JoinQueryResultDto doQueries(QueryType type, JoinQuery joinQuery,
+                                       CountStatsData.Builder countBuilder, QueryScope scope) throws IOException {
     boolean queriesHaveFilters = Stream.of(variableQuery, datasetQuery, studyQuery, networkQuery)
-        .anyMatch(DocumentQueryInterface::isValid);
+        .anyMatch(DocumentQueryInterface::isQueryNotEmpty);
 
-    if(queriesHaveFilters) {
+    if (queriesHaveFilters) {
       DocumentQueryIdProvider datasetIdProvider = new DocumentQueryIdProvider();
       variableQuery.setDatasetIdProvider(datasetIdProvider);
       datasetQuery.setDatasetIdProvider(datasetIdProvider);
@@ -197,30 +183,30 @@ public class JoinQueryExecutor {
       List<String> joinedIds = executeJoin(type);
       CountStatsData countStats = countBuilder != null ? getCountStatsData(type) : null;
 
-      if (joinQueryWrapper.searchOnNetworksOnly() || joinedIds != null && joinedIds.size() > 0) {
-        getDocumentQuery(type).query(joinQueryWrapper.searchOnNetworksOnly() ? Collections.emptyList() : joinedIds, countStats, scope);
+      if (joinQuery.searchOnNetworksOnly() || joinedIds != null && joinedIds.size() > 0) {
+        getDocumentQuery(type).query(joinQuery.searchOnNetworksOnly() ? Collections.emptyList() : joinedIds, countStats, scope);
       }
     } else {
       execute(type, scope, countBuilder);
     }
 
     log.debug("Building result");
-    JoinQueryResultDto resultDto = buildQueryResult(joinQueryWrapper);
+    JoinQueryResultDto resultDto = buildQueryResult(joinQuery);
     log.debug("Finished query");
 
     return resultDto;
   }
 
-  private void initializeQueries(JoinQueryWrapper joinQueryWrapper, QueryMode mode) {
-    String locale = joinQueryWrapper.getLocale();
+  private void initializeQueries(JoinQuery joinQuery, QueryMode mode) {
+    String locale = joinQuery.getLocale();
 
-    variableQuery.initialize(joinQueryWrapper.getVariableQueryWrapper(), locale, mode);
-    datasetQuery.initialize(joinQueryWrapper.getDatasetQueryWrapper(), locale, mode);
-    studyQuery.initialize(joinQueryWrapper.getStudyQueryWrapper(), locale, mode);
-    networkQuery.initialize(joinQueryWrapper.getNetworkQueryWrapper(), locale, mode);
+    variableQuery.initialize(joinQuery.getVariableQuery(), locale, mode);
+    datasetQuery.initialize(joinQuery.getDatasetQuery(), locale, mode);
+    studyQuery.initialize(joinQuery.getStudyQuery(), locale, mode);
+    networkQuery.initialize(joinQuery.getNetworkQuery(), locale, mode);
   }
 
-  private JoinQueryResultDto buildQueryResult(JoinQueryWrapper joinQueryDto) {
+  private JoinQueryResultDto buildQueryResult(JoinQuery joinQueryDto) {
     JoinQueryResultDto.Builder builder = JoinQueryResultDto.newBuilder();
 
     builder.setVariableResultDto(joinQueryDto.isWithFacets()
@@ -249,7 +235,7 @@ public class JoinQueryExecutor {
 
   private MicaSearch.QueryResultDto removeAggregations(MicaSearch.QueryResultDto queryResultDto) {
     MicaSearch.QueryResultDto.Builder builder;
-    if(queryResultDto != null) {
+    if (queryResultDto != null) {
       builder = MicaSearch.QueryResultDto.newBuilder().mergeFrom(queryResultDto);
       builder.clearAggs();
     } else {
@@ -260,17 +246,17 @@ public class JoinQueryExecutor {
   }
 
   private MicaSearch.QueryResultDto addAggregationTitles(MicaSearch.QueryResultDto queryResultDto,
-      List<Taxonomy> taxonomies,
-      Function<List<AggregationResultDto>, List<AggregationResultDto>> postProcessor) {
+                                                         List<Taxonomy> taxonomies,
+                                                         Function<List<AggregationResultDto>, List<AggregationResultDto>> postProcessor) {
 
-    if(queryResultDto != null) {
+    if (queryResultDto != null) {
       MicaSearch.QueryResultDto.Builder builder = MicaSearch.QueryResultDto.newBuilder().mergeFrom(queryResultDto);
       List<AggregationResultDto.Builder> builders = ImmutableList.copyOf(builder.getAggsBuilderList());
       builder.clearAggs();
 
       List<AggregationResultDto> aggregationResultDtos = builders.stream().map(b -> {
         taxonomies.forEach(taxonomy -> taxonomy.getVocabularies().forEach(voc -> {
-          if(b.getAggregation().equals(getVocabularyAggregationName(voc))) {
+          if (b.getAggregation().equals(getVocabularyAggregationName(voc))) {
             b.addAllTitle(dtos.asDto(LocalizedString.from(voc.getTitle())));
           }
         }));
@@ -317,7 +303,7 @@ public class JoinQueryExecutor {
       List<String> aggregationNames = Lists.newArrayList();
       aggregationResultDtos.forEach(dto -> {
         Matcher matcher = pattern.matcher(dto.getAggregation());
-        if(matcher.find()) {
+        if (matcher.find()) {
           String taxonomy = matcher.group(1);
           MicaSearch.AggregationResultDto.Builder builder = buildres.get(taxonomy);
           builder.addChildren(dto);
@@ -342,7 +328,7 @@ public class JoinQueryExecutor {
 
     CountStatsData countStats;
 
-    switch(type) {
+    switch (type) {
       case VARIABLE:
         queryAggregations(null, studyQuery, datasetQuery, networkQuery);
         countStats = countBuilder != null ? getCountStatsData(type) : null;
@@ -369,7 +355,7 @@ public class JoinQueryExecutor {
   private List<String> executeJoin(QueryType type) throws IOException {
     List<String> joinedIds = null;
 
-    switch(type) {
+    switch (type) {
       case VARIABLE:
         joinedIds = execute(variableQuery, studyQuery, datasetQuery, networkQuery);
         break;
@@ -377,12 +363,12 @@ public class JoinQueryExecutor {
         joinedIds = execute(datasetQuery, variableQuery, studyQuery, networkQuery);
         break;
       case STUDY:
-        joinedIds = datasetQuery.hasPrimaryKeyCriteria()
-          ? execute(studyQuery, datasetQuery, variableQuery, networkQuery)
-          : execute(studyQuery, variableQuery, datasetQuery, networkQuery);
+        joinedIds = datasetQuery.hasIdCriteria()
+            ? execute(studyQuery, datasetQuery, variableQuery, networkQuery)
+            : execute(studyQuery, variableQuery, datasetQuery, networkQuery);
         break;
       case NETWORK:
-        joinedIds = datasetQuery.hasPrimaryKeyCriteria()
+        joinedIds = datasetQuery.hasIdCriteria()
             ? execute(networkQuery, datasetQuery, variableQuery, studyQuery)
             : execute(networkQuery, variableQuery, datasetQuery, studyQuery);
         break;
@@ -392,7 +378,7 @@ public class JoinQueryExecutor {
   }
 
   private DocumentQueryInterface getDocumentQuery(QueryType type) {
-    switch(type) {
+    switch (type) {
       case VARIABLE:
         return variableQuery;
       case DATASET:
@@ -408,7 +394,7 @@ public class JoinQueryExecutor {
 
   private CountStatsData getCountStatsData(QueryType type) {
     CountStatsData countStats = null;
-    switch(type) {
+    switch (type) {
       case DATASET:
         countStats = CountStatsData.newBuilder().variables(variableQuery.getDatasetCounts())
             .studyVariables(variableQuery.getStudyVariableByDatasetCounts())
@@ -441,18 +427,18 @@ public class JoinQueryExecutor {
 
   private List<String> execute(DocumentQueryInterface docQuery, DocumentQueryInterface... subQueries) throws IOException {
     List<DocumentQueryInterface> queries = Arrays.stream(subQueries)
-      .filter(DocumentQueryInterface::isValid)
-      .collect(Collectors.toList());
+        .filter(DocumentQueryInterface::isQueryNotEmpty)
+        .collect(Collectors.toList());
 
     List<String> studyIds = null;
     List<String> docQueryStudyIds = null;
-    if(queries.size() > 0) studyIds = queryStudyIds(queries);
-    if(studyIds == null || studyIds.size() > 0) docQueryStudyIds = docQuery.queryStudyIds(studyIds);
+    if (queries.size() > 0) studyIds = queryStudyIds(queries);
+    if (studyIds == null || studyIds.size() > 0) docQueryStudyIds = docQuery.queryStudyIds(studyIds);
 
-    List<String> aggStudyIds = docQuery.isValid() && docQueryStudyIds != null ? joinStudyIds(studyIds,
+    List<String> aggStudyIds = docQuery.isQueryNotEmpty() && docQueryStudyIds != null ? joinStudyIds(studyIds,
         docQueryStudyIds) : studyIds;
 
-    if(aggStudyIds == null || aggStudyIds.size() > 0) {
+    if (aggStudyIds == null || aggStudyIds.size() > 0) {
       queryAggregations(aggStudyIds, subQueries);
     }
 
@@ -460,7 +446,7 @@ public class JoinQueryExecutor {
   }
 
   private List<String> joinStudyIds(List<String> studyIds, List<String> joinedStudyIds) {
-    if(studyIds != null) {
+    if (studyIds != null) {
       joinedStudyIds.retainAll(studyIds);
     }
 
@@ -468,7 +454,7 @@ public class JoinQueryExecutor {
   }
 
   private void queryAggregations(List<String> studyIds, DocumentQueryInterface... queries) throws IOException {
-    for(DocumentQueryInterface query : queries) {
+    for (DocumentQueryInterface query : queries) {
       query.query(studyIds, null, AGGREGATION);
     }
   }

@@ -10,9 +10,9 @@
 
 package org.obiba.mica.search.queries;
 
-import java.util.List;
-
 import com.google.common.collect.Lists;
+
+import java.util.List;
 
 public class DocumentQueryJoinKeys {
 

@@ -18,8 +18,15 @@ import java.util.Map;
 
 public class EmptyQuery implements Query {
 
+  private List<String> aggregationBuckets = Lists.newArrayList();
+
   @Override
-  public boolean isValid() {
+  public boolean isEmpty() {
+    return true;
+  }
+
+  @Override
+  public boolean hasIdCriteria() {
     return false;
   }
 
@@ -30,12 +37,19 @@ public class EmptyQuery implements Query {
 
   @Override
   public List<String> getAggregationBuckets() {
-    return Lists.newArrayList();
+    return aggregationBuckets;
+  }
+
+  @Override
+  public void ensureAggregationBuckets(List<String> additionalAggregationBuckets) {
+    for (String agg : additionalAggregationBuckets) {
+      if (!aggregationBuckets.contains(agg)) aggregationBuckets.add(agg);
+    }
   }
 
   @Override
   public List<String> getAggregations() {
-    return null;
+    return Lists.newArrayList();
   }
 
   @Override

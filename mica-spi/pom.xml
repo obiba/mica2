@@ -42,11 +42,6 @@
       <groupId>org.obiba.opal</groupId>
       <artifactId>opal-core-api</artifactId>
     </dependency>
-    <!-- TODO remove this dependency -->
-    <dependency>
-      <groupId>org.elasticsearch</groupId>
-      <artifactId>elasticsearch</artifactId>
-    </dependency>
   </dependencies>
 
   <build>

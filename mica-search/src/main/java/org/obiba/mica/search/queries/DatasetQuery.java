@@ -10,45 +10,36 @@
 
 package org.obiba.mica.search.queries;
 
+import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import org.elasticsearch.action.search.SearchRequestBuilder;
-import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.index.IndexNotFoundException;
-import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.index.query.TermsQueryBuilder;
-import org.elasticsearch.search.SearchHits;
-import org.elasticsearch.search.aggregations.Aggregation;
-import org.elasticsearch.search.aggregations.Aggregations;
-import org.elasticsearch.search.aggregations.bucket.MultiBucketsAggregation;
-import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.HarmonizationDatasetState;
 import org.obiba.mica.dataset.domain.StudyDatasetState;
 import org.obiba.mica.dataset.service.CollectionDatasetService;
 import org.obiba.mica.dataset.service.HarmonizationDatasetService;
-import org.obiba.mica.micaConfig.service.helper.AggregationAliasHelper;
 import org.obiba.mica.micaConfig.service.helper.AggregationMetaDataProvider;
-import org.obiba.mica.spi.search.CountStatsData;
 import org.obiba.mica.search.DocumentQueryHelper;
 import org.obiba.mica.search.DocumentQueryIdProvider;
 import org.obiba.mica.search.aggregations.DatasetTaxonomyMetaDataProvider;
+import org.obiba.mica.spi.search.CountStatsData;
 import org.obiba.mica.spi.search.Indexer;
 import org.obiba.mica.spi.search.QueryScope;
+import org.obiba.mica.spi.search.Searcher;
+import org.obiba.mica.spi.search.support.AggregationHelper;
+import org.obiba.mica.spi.search.support.Query;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.mica.web.model.MicaSearch;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -59,6 +50,8 @@ import static org.obiba.mica.web.model.MicaSearch.QueryResultDto;
 @Component
 @Scope("request")
 public class DatasetQuery extends AbstractDocumentQuery {
+
+  private static final Logger log = LoggerFactory.getLogger(DatasetQuery.class);
 
   public static final String ID = "id";
 
@@ -90,16 +83,20 @@ public class DatasetQuery extends AbstractDocumentQuery {
     return Indexer.DATASET_TYPE;
   }
 
+  @Nullable
   @Override
-  public QueryBuilder getAccessFilter() {
-    if (micaConfigService.getConfig().isOpenAccess()) return null;
-    List<String> ids = collectionDatasetService.findPublishedStates().stream().map(StudyDatasetState::getId)
-        .filter(s -> subjectAclService.isAccessible("/collected-dataset", s)).collect(Collectors.toList());
-    ids.addAll(harmonizationDatasetService.findPublishedStates().stream().map(HarmonizationDatasetState::getId)
-        .filter(s -> subjectAclService.isAccessible("/harmonized-dataset", s)).collect(Collectors.toList()));
-    return ids.isEmpty()
-        ? QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("id"))
-        : QueryBuilders.idsQuery().ids(ids);
+  protected Searcher.IdFilter getAccessibleIdFilter() {
+    if (isOpenAccess()) return null;
+    return new Searcher.IdFilter() {
+      @Override
+      public Collection<String> getValues() {
+        List<String> ids = collectionDatasetService.findPublishedStates().stream().map(StudyDatasetState::getId)
+            .filter(s -> subjectAclService.isAccessible("/collected-dataset", s)).collect(Collectors.toList());
+        ids.addAll(harmonizationDatasetService.findPublishedStates().stream().map(HarmonizationDatasetState::getId)
+            .filter(s -> subjectAclService.isAccessible("/harmonized-dataset", s)).collect(Collectors.toList()));
+        return ids;
+      }
+    };
   }
 
   public void setDatasetIdProvider(DocumentQueryIdProvider provider) {
@@ -108,8 +105,8 @@ public class DatasetQuery extends AbstractDocumentQuery {
 
 
   @Override
-  protected QueryBuilder updateJoinKeyQuery(QueryBuilder queryBuilder) {
-    return DocumentQueryHelper.updateDatasetJoinKeysQuery(queryBuilder, ID, datasetIdProvider);
+  protected Query updateWithJoinKeyQuery(Query query) {
+    return searcher.andQuery(query, searcher.makeQuery(DocumentQueryHelper.inRQL(ID, datasetIdProvider)));
   }
 
   @Override
@@ -121,8 +118,8 @@ public class DatasetQuery extends AbstractDocumentQuery {
   }
 
   @Override
-  protected DocumentQueryJoinKeys processJoinKeys(SearchResponse response) {
-    return DocumentQueryHelper.processDatasetJoinKeys(response, ID, datasetIdProvider);
+  protected DocumentQueryJoinKeys processJoinKeys(Searcher.DocumentResults results) {
+    return DocumentQueryHelper.processDatasetJoinKeys(results, ID, datasetIdProvider);
   }
 
   @Override
@@ -144,14 +141,14 @@ public class DatasetQuery extends AbstractDocumentQuery {
   }
 
   @Override
-  public void processHits(QueryResultDto.Builder builder, SearchHits hits, QueryScope scope, CountStatsData counts) {
+  public void processHits(QueryResultDto.Builder builder, Searcher.DocumentResults results, QueryScope scope, CountStatsData counts) {
     DatasetResultDto.Builder resBuilder = DatasetResultDto.newBuilder();
     DatasetCountStatsBuilder datasetCountStatsBuilder = counts == null
         ? null
         : DatasetCountStatsBuilder.newBuilder(counts);
 
     Consumer<Dataset> addDto = getDatasetConsumer(scope, resBuilder, datasetCountStatsBuilder);
-    List<Dataset> published = getPublishedDocumentsFromHitsByClassName(hits, Dataset.class);
+    List<Dataset> published = getPublishedDocumentsFromHitsByClassName(results, Dataset.class);
     published.forEach(addDto::accept);
     builder.setExtension(DatasetResultDto.result, resBuilder.build());
   }
@@ -173,10 +170,8 @@ public class DatasetQuery extends AbstractDocumentQuery {
     if (datasetIdProvider == null) return;
     List<String> datasetIds = datasetIdProvider.getIds();
     if (datasetIds.size() > 0) {
-      TermsQueryBuilder termsQueryBuilder = QueryBuilders.termsQuery("id", datasetIds);
-      setQueryBuilder(isValid()
-          ? QueryBuilders.boolQuery().must(getQueryBuilder()).must(termsQueryBuilder)
-          : termsQueryBuilder);
+      Query datasetQuery = searcher.makeQuery(String.format("in(%s,(%s))", "id", Joiner.on(",").join(datasetIds)));
+      setQuery(isQueryNotEmpty() ? searcher.andQuery(getQuery(), datasetQuery) : datasetQuery);
     }
   }
 
@@ -204,41 +199,33 @@ public class DatasetQuery extends AbstractDocumentQuery {
   }
 
   public Map<String, Map<String, List<String>>> getStudyCountsByDataset() {
-    QueryBuilder accessFilter = getAccessFilter();
-    QueryBuilder query = isValid() ? getQueryBuilder() : QueryBuilders.matchAllQuery();
-
-    SearchRequestBuilder requestBuilder = searcher.prepareSearch(getSearchIndex()) //
-        .setTypes(getSearchType()) //
-        .setSize(0) //
-        .setQuery(accessFilter == null ? query : QueryBuilders.boolQuery().must(query).must(accessFilter)) //
-        .setNoFields();
-
     Properties props = new Properties();
     props.setProperty("id", "");
     Properties subProps = new Properties();
     getJoinFields().forEach(joinField -> subProps.setProperty(joinField, ""));
     Map<String, Properties> subAggregations = Maps.newHashMap();
     subAggregations.put("id", subProps);
-    aggregationYamlParser.getAggregations(props, subAggregations).forEach(requestBuilder::addAggregation);
+
 
     Map<String, Map<String, List<String>>> map = Maps.newHashMap();
     try {
-      SearchResponse response = requestBuilder.execute().actionGet();
-      Aggregation idAgg = response.getAggregations().get("id");
-      ((Terms) idAgg).getBuckets().stream().filter(bucket -> bucket.getDocCount() > 0)
+      Searcher.DocumentResults results = searcher.cover(getSearchIndex(), getSearchType(), getQuery(), props, subAggregations, getAccessibleIdFilter());
+      Searcher.DocumentAggregation idAgg = results.getAggregations().stream().filter(agg -> agg.getName().equals("id")).findFirst().get();
+      idAgg.asTerms().getBuckets().stream().filter(bucket -> bucket.getDocCount() > 0)
           .forEach(bucket -> map.put(bucket.getKeyAsString(), getStudyCounts(bucket.getAggregations())));
-    } catch (IndexNotFoundException e) {
-      // ignore
+    } catch (Exception e) {
+      log.warn("Study counts by dataset failed", e);
     }
 
     return map;
   }
 
-  private Map<String, List<String>> getStudyCounts(Aggregations aggregations) {
+  private Map<String, List<String>> getStudyCounts(List<Searcher.DocumentAggregation> aggregations) {
     Map<String, List<String>> map = Maps.newHashMap();
-    aggregations.forEach(aggregation -> map.put(AggregationAliasHelper.unformatName(aggregation.getName()),
-        ((Terms) aggregation).getBuckets().stream().filter(bucket -> bucket.getDocCount() > 0)
-            .map(MultiBucketsAggregation.Bucket::getKeyAsString).collect(Collectors.toList())));
+    aggregations.stream().filter(agg -> "terms".equals(agg.getType()))
+        .forEach(aggregation -> map.put(AggregationHelper.unformatName(aggregation.getName()),
+            aggregation.asTerms().getBuckets().stream().filter(bucket -> bucket.getDocCount() > 0)
+                .map(Searcher.DocumentTermsBucket::getKeyAsString).collect(Collectors.toList())));
 
     return map;
   }

@@ -47,8 +47,6 @@
     <commons-io.version>2.4</commons-io.version>
     <commons-lang.version>2.6</commons-lang.version>
     <ehcache-core.version>2.6.11</ehcache-core.version>
-    <elasticsearch.version>2.4.5</elasticsearch.version>
-    <elasticsearch-groovy.version>2.1.2</elasticsearch-groovy.version>
     <embed-mongo.version>1.50.0</embed-mongo.version>
     <guava.version>19.0</guava.version>
     <geronimo-javamail_1.4_mail.version>1.8.3</geronimo-javamail_1.4_mail.version>
@@ -192,16 +190,6 @@
         <artifactId>mica-webapp</artifactId>
         <version>${project.version}</version>
         <type>war</type>
-      </dependency>
-      <dependency>
-        <groupId>org.elasticsearch</groupId>
-        <artifactId>elasticsearch</artifactId>
-        <version>${elasticsearch.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.elasticsearch</groupId>
-        <artifactId>elasticsearch-groovy</artifactId>
-        <version>${elasticsearch-groovy.version}</version>
       </dependency>
       <dependency>
         <groupId>com.carrotsearch</groupId>
