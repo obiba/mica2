@@ -13,6 +13,7 @@ package org.obiba.mica.micaConfig.service.helper;
 import com.google.common.collect.Maps;
 import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.network.service.PublishedNetworkService;
+import org.slf4j.Logger;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
@@ -22,9 +23,12 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.obiba.mica.security.SubjectUtils.sudo;
+import static org.slf4j.LoggerFactory.getLogger;
 
 @Component
 public class NetworkIdAggregationMetaDataHelper extends AbstractIdAggregationMetaDataHelper {
+
+  private static final Logger log = getLogger(NetworkIdAggregationMetaDataHelper.class);
 
   @Inject
   PublishedNetworkService publishedNetworkService;
@@ -37,6 +41,7 @@ public class NetworkIdAggregationMetaDataHelper extends AbstractIdAggregationMet
           .collect(Collectors
               .toMap(Network::getId, d -> new AggregationMetaDataProvider.LocalizedMetaData(d.getAcronym(), d.getName(), d.getClass().getSimpleName())));
     } catch (Exception e) {
+      log.debug("Could not build Network aggregation metadata {}", e);
       return Maps.newHashMap();
     }
   }

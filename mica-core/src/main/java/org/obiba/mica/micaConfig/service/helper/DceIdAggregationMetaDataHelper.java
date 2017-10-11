@@ -15,6 +15,7 @@ import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.core.domain.StudyTable;
 import org.obiba.mica.study.domain.*;
 import org.obiba.mica.study.service.PublishedStudyService;
+import org.slf4j.Logger;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
@@ -24,9 +25,12 @@ import java.util.Map;
 import java.util.SortedSet;
 
 import static org.obiba.mica.security.SubjectUtils.sudo;
+import static org.slf4j.LoggerFactory.getLogger;
 
 @Component
 public class DceIdAggregationMetaDataHelper extends AbstractStudyAggregationMetaDataHelper {
+
+  private static final Logger log = getLogger(DceIdAggregationMetaDataHelper.class);
 
   @Inject
   PublishedStudyService publishedStudyService;
@@ -54,6 +58,7 @@ public class DceIdAggregationMetaDataHelper extends AbstractStudyAggregationMeta
 
       return map;
     } catch (Exception e) {
+      log.debug("Could not build DCE aggregation metadata {}", e);
       return Maps.newHashMap();
     }
   }

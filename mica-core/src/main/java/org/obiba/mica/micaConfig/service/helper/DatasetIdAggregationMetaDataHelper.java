@@ -13,6 +13,7 @@ package org.obiba.mica.micaConfig.service.helper;
 import com.google.common.collect.Maps;
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.service.PublishedDatasetService;
+import org.slf4j.Logger;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
@@ -22,9 +23,12 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.obiba.mica.security.SubjectUtils.sudo;
+import static org.slf4j.LoggerFactory.getLogger;
 
 @Component
 public class DatasetIdAggregationMetaDataHelper extends AbstractIdAggregationMetaDataHelper {
+
+  private static final Logger log = getLogger(DatasetIdAggregationMetaDataHelper.class);
 
   @Inject
   PublishedDatasetService publishedDatasetService;
@@ -37,6 +41,7 @@ public class DatasetIdAggregationMetaDataHelper extends AbstractIdAggregationMet
           .collect(
               Collectors.toMap(Dataset::getId, d -> new AggregationMetaDataProvider.LocalizedMetaData(d.getAcronym(), d.getName(), d.getClassName())));
     } catch (Exception e) {
+      log.debug("Could not build Dataset aggregation metadata {}", e);
       return Maps.newHashMap();
     }
   }

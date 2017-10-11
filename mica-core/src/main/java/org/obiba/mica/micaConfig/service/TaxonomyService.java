@@ -177,7 +177,6 @@ public class TaxonomyService {
     if(datasetTaxonomy != null) return;
     datasetTaxonomy = copy(micaConfigService.getDatasetTaxonomy());
     datasetHelper.applyIdTerms(datasetTaxonomy, "id");
-    networkHelper.applyIdTerms(datasetTaxonomy, "networkId");
   }
 
   private void initializeVariableTaxonomy() {
