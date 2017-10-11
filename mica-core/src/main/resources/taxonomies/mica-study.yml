@@ -45,6 +45,9 @@
     "alias": "objectives"
     "static": "true"
     "localized": "true"
+    "facet": "true"
+    "facetPosition": "0"
+    "facetExpanded": "false"
 - "name": "opal"
   "title":
     "en": "Opal Server"
@@ -68,6 +71,9 @@
   "attributes":
     "field": "model.methods.design"
     "alias": "model-methods-design"
+    "facet": "true"
+    "facetPosition": "0"
+    "facetExpanded": "false"
   "terms":
   - "name": "cohort_study"
     "title":
@@ -121,6 +127,9 @@
     "field": "memberships.investigator.person.fullName"
     "alias": "memberships-investigator-person-fullName"
     "static": "true"
+    "facet": "true"
+    "facetPosition": "0"
+    "facetExpanded": "false"
 - "name": "investigator-institution"
   "title":
     "en": "Investigator institution"
@@ -156,6 +165,34 @@
     "alias": "memberships-contact-person-institution-name"
     "static": "true"
     "localized": "true"
+- "name": "start"
+  "title":
+    "en": "Start year"
+    "fr": "Année de début"
+  "description":
+    "en": "Year in which the study has started."
+    "fr": "Année à laquelle l'étude a commencé."
+  "attributes":
+    "type": "integer"
+    "field": "model.startYear"
+    "alias": "model-startYear"
+    "facet": "true"
+    "facetPosition": "0"
+    "facetExpanded": "false"
+- "name": "end"
+  "title":
+    "en": "End year"
+    "fr": "Année de fin"
+  "description":
+    "en": "Year in which the study has ended or will end."
+    "fr": "Année à laquelle l'étude a fini ou finira."
+  "attributes":
+    "type": "integer"
+    "field": "model.endYear"
+    "alias": "model-endYear"
+    "facet": "true"
+    "facetPosition": "0"
+    "facetExpanded": "false"
 - "name": "populations-selectionCriteria-countriesIso"
   "title":
     "en": "Selection criteria - Country of residence"
@@ -165,6 +202,9 @@
   "attributes":
     "field": "populations.model.selectionCriteria.countriesIso"
     "alias": "populations-model-selectionCriteria-countriesIso"
+    "facet": "true"
+    "facetPosition": "0"
+    "facetExpanded": "false"
   "repeatable": "true"
   "terms":
   - "name": "AND"
@@ -1461,6 +1501,9 @@
     "type": "integer"
     "field": "populations.model.selectionCriteria.ageMin"
     "alias": "populations-model-selectionCriteria-ageMin"
+    "facet": "true"
+    "facetPosition": "0"
+    "facetExpanded": "false"
 - "name": "populations-selectionCriteria-ageMax"
   "title":
     "en": "Selection criteria - Maximum age"
@@ -1472,6 +1515,9 @@
     "type": "integer"
     "field": "populations.model.selectionCriteria.ageMax"
     "alias": "populations-model-selectionCriteria-ageMax"
+    "facet": "true"
+    "facetPosition": "0"
+    "facetExpanded": "false"
 - "name": "populations-selectionCriteria-gender"
   "title":
     "en": "Selection criteria - Sex"
@@ -1481,6 +1527,9 @@
   "attributes":
     "field": "populations.model.selectionCriteria.gender"
     "alias": "populations-model-selectionCriteria-gender"
+    "facet": "true"
+    "facetPosition": "0"
+    "facetExpanded": "false"
   "terms":
   - "name": "men"
     "title":
@@ -1504,6 +1553,9 @@
   "attributes":
     "field": "populations.model.selectionCriteria.pregnantWomen"
     "alias": "populations-model-selectionCriteria-pregnantWomen"
+    "facet": "true"
+    "facetPosition": "0"
+    "facetExpanded": "false"
   "terms":
   - "name": "first_trimester"
     "title":
@@ -1536,6 +1588,9 @@
   "attributes":
     "field": "populations.model.selectionCriteria.newborn"
     "alias": "populations-model-selectionCriteria-newborn"
+    "facet": "true"
+    "facetPosition": "0"
+    "facetExpanded": "false"
   "terms":
   - "name": "true"
     "title":
@@ -1561,6 +1616,9 @@
   "attributes":
     "field": "populations.model.selectionCriteria.twins"
     "alias": "populations-model-selectionCriteria-twins"
+    "facet": "true"
+    "facetPosition": "0"
+    "facetExpanded": "false"
   "terms":
   - "name": "true"
     "title":
@@ -1587,6 +1645,9 @@
     "type": "integer"
     "field": "model.numberOfParticipants.participant.number"
     "alias": "model-numberOfParticipants-participant-number"
+    "facet": "true"
+    "facetPosition": "0"
+    "facetExpanded": "false"
   "terms": []
 - "name": "numberOfParticipants-participant-range"
   "title":
@@ -1654,6 +1715,9 @@
     "type": "integer"
     "field": "model.numberOfParticipants.sample.number"
     "alias": "model-numberOfParticipants-sample-number"
+    "facet": "true"
+    "facetPosition": "0"
+    "facetExpanded": "false"
   "terms": []
 - "name": "numberOfParticipants-sample-range"
   "title":
@@ -1721,6 +1785,9 @@
   "attributes":
     "field": "model.methods.recruitments"
     "alias": "model-methods-recruitments"
+    "facet": "true"
+    "facetPosition": "0"
+    "facetExpanded": "false"
   "terms":
   - "name": "individuals"
     "title":
@@ -1753,7 +1820,10 @@
   "attributes":
     "field": "populations.model.recruitment.dataSources"
     "alias": "populations-model-recruitment-dataSources"
-  "repeatable": "true"
+    "facet": "true"
+    "facetPosition": "0"
+    "facetExpanded": "false"
+    "repeatable": "true"
   "terms":
   - "name": "general_population"
     "title":
@@ -1793,6 +1863,9 @@
   "attributes":
     "field": "populations.dataCollectionEvents.model.dataSources"
     "alias": "populations-dataCollectionEvents-model-dataSources"
+    "facet": "true"
+    "facetPosition": "0"
+    "facetExpanded": "false"
   "repeatable": "true"
   "terms":
   - "name": "questionnaires"
@@ -1895,39 +1968,7 @@
       "fr": "Autre population spécifique"
     "description":
       "en": "Other specific population."
-- "name": "access"
-  "title":
-    "en": "Access"
-    "fr": "Accès"
-  "description":
-    "en": "Whether access to study data, biosamples or other study material by external researchers or third parties is provided."
-    "fr": "Indique si l'accès aux donnés, aux échantillons biologiques ou à tout autre matériel d'étude est permis à des chercheurs externes ou des tiers."
-  "attributes":
-      "field": "model.access"
-      "alias": "model-access"
-  "repeatable": "true"
-  "terms":
-  - "name": "data"
-    "title":
-      "en": "Data"
-      "fr": "Données"
-    "description":
-      "en": "Access to participant data items could be allowed."
-      "fr": "L'accès aux éléments de données des participants pourrait être autorisé."
-  - "name": "bio_samples"
-    "title":
-      "en": "Biosamples"
-      "fr": "Échantillons biologiques"
-    "description":
-      "en": "Access to participant biosamples could be allowed."
-      "fr": "L'accès aux échantillons biologiques des participants pourrait être autorisé."
-  - "name": "other"
-    "title":
-      "en": "Other"
-      "fr": "Autre"
-    "description":
-      "en": "Access to other participant-related information could be allowed (e.g. images)."
-      "fr": "L'accès à d'autres informations relatives aux participants pourrait être autorisé (e.g. images)."
+
 - "name": "populations-dataCollectionEvents-bioSamples"
   "title":
     "en": "Data sources - Biosamples"
@@ -1937,6 +1978,9 @@
   "attributes":
     "field": "populations.dataCollectionEvents.model.bioSamples"
     "alias": "populations-dataCollectionEvents-model-bioSamples"
+    "facet": "true"
+    "facetPosition": "0"
+    "facetExpanded": "false"
   "repeatable": "true"
   "terms":
   - "name": "blood"
@@ -2019,28 +2063,44 @@
       "fr": "Bases de données environnementales"
     "description":
       "en": "Administrative database containing information concerning natural or man-made environmental characteristics (e.g. air pollutants, weather, built environment)."
-- "name": "start"
+- "name": "access"
   "title":
-    "en": "Start year"
-    "fr": "Année de début"
+    "en": "Access"
+    "fr": "Accès"
   "description":
-    "en": "Year in which the study has started."
-    "fr": "Année à laquelle l'étude a commencé."
+    "en": "Whether access to study data, biosamples or other study material by external researchers or third parties is provided."
+    "fr": "Indique si l'accès aux donnés, aux échantillons biologiques ou à tout autre matériel d'étude est permis à des chercheurs externes ou des tiers."
   "attributes":
-    "type": "integer"
-    "field": "model.startYear"
-    "alias": "model-startYear"
-- "name": "end"
-  "title":
-    "en": "End year"
-    "fr": "Année de fin"
-  "description":
-    "en": "Year in which the study has ended or will end."
-    "fr": "Année à laquelle l'étude a fini ou finira."
-  "attributes":
-    "type": "integer"
-    "field": "model.endYear"
-    "alias": "model-endYear"
+      "field": "model.access"
+      "alias": "model-access"
+      "facet": "true"
+      "facetPosition": "0"
+      "facetExpanded": "false"
+  "repeatable": "true"
+  "terms":
+  - "name": "data"
+    "title":
+      "en": "Data"
+      "fr": "Données"
+    "description":
+      "en": "Access to participant data items could be allowed."
+      "fr": "L'accès aux éléments de données des participants pourrait être autorisé."
+  - "name": "bio_samples"
+    "title":
+      "en": "Biosamples"
+      "fr": "Échantillons biologiques"
+    "description":
+      "en": "Access to participant biosamples could be allowed."
+      "fr": "L'accès aux échantillons biologiques des participants pourrait être autorisé."
+  - "name": "other"
+    "title":
+      "en": "Other"
+      "fr": "Autre"
+    "description":
+      "en": "Access to other participant-related information could be allowed (e.g. images)."
+      "fr": "L'accès à d'autres informations relatives aux participants pourrait être autorisé (e.g. images)."
+
+
 - "name": "populations-dataCollectionEvents-id"
   "title":
     "en": "Data Collection Event ID"
