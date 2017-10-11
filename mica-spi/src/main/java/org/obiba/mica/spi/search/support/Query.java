@@ -45,11 +45,11 @@ public interface Query {
    */
   List<String> getSourceFields();
 
-  /**
-   * @return
-   */
   @NotNull
   List<String> getAggregationBuckets();
+
+  @NotNull
+  List<String> getQueryAggregationBuckets();
 
   void ensureAggregationBuckets(List<String> additionalAggregationBuckets);
 
