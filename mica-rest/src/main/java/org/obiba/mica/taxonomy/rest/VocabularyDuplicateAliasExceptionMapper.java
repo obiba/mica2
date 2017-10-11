@@ -13,7 +13,7 @@ package org.obiba.mica.taxonomy.rest;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.Provider;
 
-import org.elasticsearch.common.Strings;
+import com.google.common.base.Strings;
 import org.obiba.jersey.exceptionmapper.AbstractErrorDtoExceptionMapper;
 import org.obiba.mica.micaConfig.service.VocabularyDuplicateAliasException;
 import org.obiba.opal.core.domain.taxonomy.Vocabulary;

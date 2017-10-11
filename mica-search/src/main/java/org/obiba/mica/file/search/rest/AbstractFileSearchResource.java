@@ -10,27 +10,20 @@
 
 package org.obiba.mica.file.search.rest;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Stream;
-
-import javax.inject.Inject;
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.QueryParam;
-
-import org.apache.lucene.queryparser.classic.QueryParser;
+import com.codahale.metrics.annotation.Timed;
+import com.google.common.base.Joiner;
+import com.google.common.base.Strings;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.AttachmentState;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 
-import com.codahale.metrics.annotation.Timed;
-import com.google.common.base.Joiner;
-import com.google.common.base.Strings;
+import javax.inject.Inject;
+import javax.ws.rs.*;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Stream;
 
 import static org.obiba.mica.file.FileUtils.isRoot;
 import static org.obiba.mica.file.FileUtils.normalizePath;
@@ -63,35 +56,36 @@ public abstract class AbstractFileSearchResource {
   protected String getQueryString(String path, String query, boolean recursively) {
     String basePath = normalizePath(Strings.isNullOrEmpty(path) ? "/" : path);
     String pathPart = String.format("path:%s", escapeQuery(basePath));
-    if(recursively) {
+    if (recursively) {
       pathPart = String.format("(%s OR %s\\/*)", pathPart, isRoot(basePath) ? "path:" : pathPart);
     }
 
     String queryString = Joiner.on(" AND ").join(
-      Stream.of(pathPart, Strings.isNullOrEmpty(query) ? null : String.format("(%s)", query))
-        .filter(Objects::nonNull)
-        .iterator());
+        Stream.of(pathPart, Strings.isNullOrEmpty(query) ? null : String.format("(%s)", query))
+            .filter(Objects::nonNull)
+            .iterator());
 
     return queryString;
   }
 
   private String escapeQuery(String query) {
+    // TODO replace lucene QueryParser.escape()
     // escape spaces as well
-    return QueryParser.escape(query).replaceAll("\\s+", "\\\\ ");
+    return query.replaceAll("\\s+", "\\\\ ");
   }
 
   @GET
   @Path("/{path:.*}")
   @Timed
   public List<Mica.FileDto> searchFiles(@PathParam("path") String path, @QueryParam("query") String query,
-    @QueryParam("recursively") @DefaultValue("false") boolean recursively,
-    @QueryParam("from") @DefaultValue("0") int from, @QueryParam("limit") @DefaultValue(MAX_SIZE) int limit,
-    @QueryParam("sort") @DefaultValue(DEFAULT_SORT) String sort,
-    @QueryParam("order") @DefaultValue("desc") String order,
-    @QueryParam("key") String shareKey) {
+                                        @QueryParam("recursively") @DefaultValue("false") boolean recursively,
+                                        @QueryParam("from") @DefaultValue("0") int from, @QueryParam("limit") @DefaultValue(MAX_SIZE) int limit,
+                                        @QueryParam("sort") @DefaultValue(DEFAULT_SORT) String sort,
+                                        @QueryParam("order") @DefaultValue("desc") String order,
+                                        @QueryParam("key") String shareKey) {
 
     basePath = normalizePath(path);
-    if(!isPublishedFileSystem()) {
+    if (!isPublishedFileSystem()) {
       subjectAclService.checkPermission("/draft/file", "VIEW", normalizePath(path), shareKey);
     }
     String queryString = getQueryString(path, query, recursively);

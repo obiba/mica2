@@ -10,7 +10,6 @@
 
 package org.obiba.mica.spi.search;
 
-import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.obiba.mica.spi.search.support.JoinQuery;
 import org.obiba.mica.spi.search.support.Query;
 
@@ -328,7 +327,7 @@ public interface Searcher {
     long getDocCount();
 
     /**
-     * @return  The lower bound of the range
+     * @return The lower bound of the range
      */
     Double getFrom();
 
@@ -363,7 +362,7 @@ public interface Searcher {
   interface DocumentGlobalAggregation {
 
     /**
-     * @return  The number of documents in this bucket
+     * @return The number of documents in this bucket
      */
     long getDocCount();
 
