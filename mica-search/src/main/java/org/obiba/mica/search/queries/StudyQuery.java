@@ -11,16 +11,10 @@
 package org.obiba.mica.search.queries;
 
 import com.google.common.collect.Lists;
-import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.search.SearchHits;
 import org.obiba.mica.core.domain.DefaultEntityBase;
 import org.obiba.mica.micaConfig.service.helper.AggregationMetaDataProvider;
-import org.obiba.mica.spi.search.CountStatsData;
 import org.obiba.mica.search.aggregations.StudyTaxonomyMetaDataProvider;
-import org.obiba.mica.spi.search.Indexer;
-import org.obiba.mica.spi.search.QueryMode;
-import org.obiba.mica.spi.search.QueryScope;
+import org.obiba.mica.spi.search.*;
 import org.obiba.mica.study.domain.BaseStudy;
 import org.obiba.mica.study.domain.HarmonizationStudy;
 import org.obiba.mica.study.domain.Study;
@@ -35,10 +29,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -74,16 +65,20 @@ public class StudyQuery extends AbstractDocumentQuery {
     return Indexer.STUDY_TYPE;
   }
 
+  @Nullable
   @Override
-  public QueryBuilder getAccessFilter() {
-    if (micaConfigService.getConfig().isOpenAccess()) return null;
-    List<String> ids = collectionStudyService.findPublishedStates().stream().map(DefaultEntityBase::getId)
-        .filter(s -> subjectAclService.isAccessible("/individual-study", s)).collect(Collectors.toList());
-    ids.addAll(harmonizationStudyService.findPublishedStates().stream().map(DefaultEntityBase::getId)
-        .filter(s -> subjectAclService.isAccessible("/harmonization-study", s)).collect(Collectors.toList()));
-    return ids.isEmpty()
-        ? QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("id"))
-        : QueryBuilders.idsQuery().ids(ids.toArray(new String[ids.size()]));
+  protected Searcher.IdFilter getAccessibleIdFilter() {
+    if (isOpenAccess()) return null;
+    return new Searcher.IdFilter() {
+      @Override
+      public Collection<String> getValues() {
+        List<String> ids = collectionStudyService.findPublishedStates().stream().map(DefaultEntityBase::getId)
+            .filter(s -> subjectAclService.isAccessible("/individual-study", s)).collect(Collectors.toList());
+        ids.addAll(harmonizationStudyService.findPublishedStates().stream().map(DefaultEntityBase::getId)
+            .filter(s -> subjectAclService.isAccessible("/harmonization-study", s)).collect(Collectors.toList()));
+        return ids;
+      }
+    };
   }
 
   @Override
@@ -102,12 +97,12 @@ public class StudyQuery extends AbstractDocumentQuery {
   }
 
   @Override
-  public void processHits(QueryResultDto.Builder builder, SearchHits hits, QueryScope scope, CountStatsData counts)
+  public void processHits(QueryResultDto.Builder builder, Searcher.DocumentResults results, QueryScope scope, CountStatsData counts)
       throws IOException {
     StudyResultDto.Builder resBuilder = StudyResultDto.newBuilder();
     StudyCountStatsBuilder studyCountStatsBuilder = counts == null ? null : StudyCountStatsBuilder.newBuilder(counts);
     Consumer<BaseStudy> addDto = getStudyConsumer(scope, resBuilder, studyCountStatsBuilder);
-    List<BaseStudy> publishedStudies = getPublishedDocumentsFromHitsByClassName(hits, BaseStudy.class);
+    List<BaseStudy> publishedStudies = getPublishedDocumentsFromHitsByClassName(results, BaseStudy.class);
     publishedStudies.forEach(addDto::accept);
     builder.setExtension(StudyResultDto.result, resBuilder.build());
   }

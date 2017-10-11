@@ -10,29 +10,25 @@
 
 package org.obiba.mica.taxonomy.rest;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.stream.Collectors;
-
-import javax.inject.Inject;
-
-import org.elasticsearch.index.IndexNotFoundException;
-import org.obiba.mica.spi.search.TaxonomyTarget;
+import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.micaConfig.service.TaxonomyNotFoundException;
 import org.obiba.mica.micaConfig.service.TaxonomyService;
+import org.obiba.mica.spi.search.TaxonomyTarget;
 import org.obiba.mica.taxonomy.EsTaxonomyTermService;
 import org.obiba.mica.taxonomy.EsTaxonomyVocabularyService;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.obiba.opal.web.model.Opal;
 import org.obiba.opal.web.taxonomy.Dtos;
-
-import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
-
 import sun.util.locale.LanguageTag;
+
+import javax.inject.Inject;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 public class AbstractTaxonomySearchResource {
 
@@ -40,9 +36,9 @@ public class AbstractTaxonomySearchResource {
 
   private static final String DEFAULT_SORT = "id";
 
-  private static final String[] VOCABULARY_FIELDS = { "title", "description" };
+  private static final String[] VOCABULARY_FIELDS = {"title", "description"};
 
-  private static final String[] TERM_FIELDS = { "title", "description", "keywords" };
+  private static final String[] TERM_FIELDS = {"title", "description", "keywords"};
 
   @Inject
   private EsTaxonomyTermService esTaxonomyTermService;
@@ -57,26 +53,26 @@ public class AbstractTaxonomySearchResource {
   private MicaConfigService micaConfigService;
 
   protected void populate(Opal.TaxonomyDto.Builder tBuilder, Taxonomy taxonomy,
-    Map<String, Map<String, List<String>>> taxoNamesMap) {
+                          Map<String, Map<String, List<String>>> taxoNamesMap) {
     taxonomy.getVocabularies().stream().filter(v -> taxoNamesMap.get(taxonomy.getName()).containsKey(v.getName()))
-      .forEach(voc -> {
-        Opal.VocabularyDto.Builder vBuilder = Dtos.asDto(voc, false).toBuilder();
-        List<String> termNames = taxoNamesMap.get(taxonomy.getName()).get(voc.getName());
-        if(voc.hasTerms()) {
-          if(termNames.isEmpty())
-            vBuilder.addAllTerms(voc.getTerms().stream().map(Dtos::asDto).collect(Collectors.toList()));
-          else voc.getTerms().stream().filter(t -> termNames.contains(t.getName()))
-            .forEach(term -> vBuilder.addTerms(Dtos.asDto(term)));
-        }
-        tBuilder.addVocabularies(vBuilder);
-      });
+        .forEach(voc -> {
+          Opal.VocabularyDto.Builder vBuilder = Dtos.asDto(voc, false).toBuilder();
+          List<String> termNames = taxoNamesMap.get(taxonomy.getName()).get(voc.getName());
+          if (voc.hasTerms()) {
+            if (termNames.isEmpty())
+              vBuilder.addAllTerms(voc.getTerms().stream().map(Dtos::asDto).collect(Collectors.toList()));
+            else voc.getTerms().stream().filter(t -> termNames.contains(t.getName()))
+                .forEach(term -> vBuilder.addTerms(Dtos.asDto(term)));
+          }
+          tBuilder.addVocabularies(vBuilder);
+        });
   }
 
   protected List<String> filterVocabularies(TaxonomyTarget target, String query, String locale) {
     try {
       return esTaxonomyVocabularyService.find(0, MAX_SIZE, DEFAULT_SORT, "asc", null, getTargettedQuery(target, query),
-        getFields(locale, VOCABULARY_FIELDS), null).getList();
-    } catch(IndexNotFoundException e) {
+          getFields(locale, VOCABULARY_FIELDS), null).getList();
+    } catch (Exception e) {
       initTaxonomies();
       // for a 404 response
       throw new NoSuchElementException();
@@ -88,15 +84,15 @@ public class AbstractTaxonomySearchResource {
       if (vocabularies != null && vocabularies.size() > 0) {
         // filter on vocabulary names; remove taxonomy prefixes ('Mica_study:')
         String vocabulariesQuery = vocabularies.stream()
-          .map(v -> String.format("vocabularyName:%s", v.replaceAll("^([^\\:]+):", "")))
-          .collect(Collectors.joining(" AND "));
-        query = Strings.isNullOrEmpty(query) ? vocabulariesQuery: query + " " + vocabulariesQuery;
+            .map(v -> String.format("vocabularyName:%s", v.replaceAll("^([^\\:]+):", "")))
+            .collect(Collectors.joining(" AND "));
+        query = Strings.isNullOrEmpty(query) ? vocabulariesQuery : query + " " + vocabulariesQuery;
       }
 
       return esTaxonomyTermService
-        .find(0, MAX_SIZE, DEFAULT_SORT, "asc", null, getTargettedQuery(target, query), getFields(locale, TERM_FIELDS))
-        .getList();
-    } catch(IndexNotFoundException e) {
+          .find(0, MAX_SIZE, DEFAULT_SORT, "asc", null, getTargettedQuery(target, query), getFields(locale, TERM_FIELDS))
+          .getList();
+    } catch (Exception e) {
       initTaxonomies();
       // for a 404 response
       throw new NoSuchElementException();
@@ -104,7 +100,7 @@ public class AbstractTaxonomySearchResource {
   }
 
   protected List<Taxonomy> getTaxonomies(TaxonomyTarget target) {
-    switch(target) {
+    switch (target) {
       case NETWORK:
         return Lists.newArrayList(taxonomyService.getNetworkTaxonomy());
       case STUDY:
@@ -119,7 +115,7 @@ public class AbstractTaxonomySearchResource {
   }
 
   protected Taxonomy getTaxonomy(TaxonomyTarget target, String name) {
-    switch(target) {
+    switch (target) {
       case NETWORK:
         return taxonomyService.getNetworkTaxonomy();
       case STUDY:
@@ -130,7 +126,7 @@ public class AbstractTaxonomySearchResource {
         return taxonomyService.getTaxonomyTaxonomy();
       default:
         Taxonomy foundTaxonomy = taxonomyService.getVariableTaxonomies().stream().filter(taxonomy -> taxonomy.getName().equals(name))
-          .findFirst().orElse(null);
+            .findFirst().orElse(null);
 
         if (foundTaxonomy == null) {
           throw new TaxonomyNotFoundException(name);
@@ -143,7 +139,7 @@ public class AbstractTaxonomySearchResource {
   protected TaxonomyTarget getTaxonomyTarget(String target) {
     try {
       return TaxonomyTarget.valueOf(target.toUpperCase());
-    } catch(Exception e) {
+    } catch (Exception e) {
       throw new NoSuchElementException("No such taxonomy target: " + target);
     }
   }
@@ -156,7 +152,7 @@ public class AbstractTaxonomySearchResource {
     List<String> fields = Lists.newArrayList("name.analyzed");
     List<String> locales = Lists.newArrayList();
 
-    if(Strings.isNullOrEmpty(locale)) {
+    if (Strings.isNullOrEmpty(locale)) {
       locales.addAll(micaConfigService.getConfig().getLocalesAsString());
       locales.add(LanguageTag.UNDETERMINED);
     } else {

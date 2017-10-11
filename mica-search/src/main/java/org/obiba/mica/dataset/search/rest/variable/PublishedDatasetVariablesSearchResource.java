@@ -16,10 +16,9 @@ import org.obiba.mica.core.DebugMethod;
 import org.obiba.mica.search.CoverageQueryExecutor;
 import org.obiba.mica.search.JoinQueryExecutor;
 import org.obiba.mica.search.csvexport.GenericReportGenerator;
-import org.obiba.mica.search.queries.protobuf.JoinQueryDtoWrapper;
 import org.obiba.mica.search.queries.protobuf.QueryDtoHelper;
-import org.obiba.mica.search.queries.rql.RQLQueryFactory;
 import org.obiba.mica.spi.search.QueryType;
+import org.obiba.mica.spi.search.Searcher;
 import org.obiba.mica.web.model.MicaSearch;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -47,7 +46,7 @@ public class PublishedDatasetVariablesSearchResource {
   private CoverageQueryExecutor coverageQueryExecutor;
 
   @Inject
-  private RQLQueryFactory rqlQueryFactory;
+  private Searcher searcher;
 
   @Inject
   private CoverageByBucketFactory coverageByBucketFactory;
@@ -70,7 +69,7 @@ public class PublishedDatasetVariablesSearchResource {
   @Path("/_rql")
   @Timed
   public MicaSearch.JoinQueryResultDto rqlQuery(@QueryParam("query") String query) throws IOException {
-    return joinQueryExecutor.query(QueryType.VARIABLE, rqlQueryFactory.makeJoinQuery(query));
+    return joinQueryExecutor.query(QueryType.VARIABLE, searcher.makeJoinQuery(query));
   }
 
   @GET

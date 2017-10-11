@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
 import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.NotEmpty;
@@ -126,9 +127,7 @@ public class MicaConfig extends AbstractAuditableDocument {
   }
 
   public List<String> getLocalesAsString() {
-    List<String> list = Lists.newArrayList(Iterables.transform(getLocales(), Locale::getLanguage));
-    Collections.sort(list);
-    return list;
+    return getLocales().stream().map(Locale::getLanguage).sorted().collect(Collectors.toList());
   }
 
   public void setLocales(List<Locale> locales) {

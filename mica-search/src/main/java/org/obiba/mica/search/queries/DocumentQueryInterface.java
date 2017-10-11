@@ -26,9 +26,9 @@ public interface DocumentQueryInterface {
 
   Query getQuery();
 
-  boolean isValid();
+  boolean isQueryNotEmpty();
 
-  void initialize(@Nullable QueryWrapper query, String locale, QueryMode mode);
+  void initialize(@Nullable Query query, String locale, QueryMode mode);
 
   QueryResultDto getResultQuery();
 
@@ -37,7 +37,7 @@ public interface DocumentQueryInterface {
    *
    * @return true/false
    */
-  boolean hasPrimaryKeyCriteria();
+  boolean hasIdCriteria();
 
   /**
    * Executes query to extract study IDs from the aggregation results
