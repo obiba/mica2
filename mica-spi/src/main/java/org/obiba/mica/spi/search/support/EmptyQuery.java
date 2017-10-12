@@ -26,6 +26,11 @@ public class EmptyQuery implements Query {
   }
 
   @Override
+  public boolean hasQueryBuilder() {
+    return false;
+  }
+
+  @Override
   public boolean hasIdCriteria() {
     return false;
   }

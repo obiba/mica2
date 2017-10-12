@@ -88,6 +88,10 @@ public abstract class AbstractDocumentQuery implements DocumentQueryInterface {
     return !query.isEmpty();
   }
 
+  public boolean hasQueryBuilder() {
+    return query.hasQueryBuilder();
+  }
+
   public void initialize(@Nullable Query query, String locale, QueryMode mode) {
     this.mode = mode;
     this.locale = locale;

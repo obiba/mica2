@@ -435,7 +435,7 @@ public class JoinQueryExecutor {
     if (queries.size() > 0) studyIds = queryStudyIds(queries);
     if (studyIds == null || studyIds.size() > 0) docQueryStudyIds = docQuery.queryStudyIds(studyIds);
 
-    List<String> aggStudyIds = docQuery.isQueryNotEmpty() && docQueryStudyIds != null ? joinStudyIds(studyIds,
+    List<String> aggStudyIds = docQuery.hasQueryBuilder() && docQueryStudyIds != null ? joinStudyIds(studyIds,
         docQueryStudyIds) : studyIds;
 
     if (aggStudyIds == null || aggStudyIds.size() > 0) {

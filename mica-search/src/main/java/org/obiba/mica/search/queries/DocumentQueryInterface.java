@@ -28,6 +28,8 @@ public interface DocumentQueryInterface {
 
   boolean isQueryNotEmpty();
 
+  boolean hasQueryBuilder();
+
   void initialize(@Nullable Query query, String locale, QueryMode mode);
 
   QueryResultDto getResultQuery();

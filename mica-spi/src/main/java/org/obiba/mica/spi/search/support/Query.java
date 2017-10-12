@@ -67,6 +67,13 @@ public interface Query {
   boolean isEmpty();
 
   /**
+   * Empty when there is no real query inside.
+   *
+   * @return
+   */
+  boolean hasQueryBuilder();
+
+  /**
    * When there is a statement about the id field.
    *
    * @return
