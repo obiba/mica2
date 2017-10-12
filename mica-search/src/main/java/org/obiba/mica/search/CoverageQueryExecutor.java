@@ -159,7 +159,7 @@ public class CoverageQueryExecutor {
     if (joinQuery == null || joinQuery.getVariableQuery() == null ||
         joinQuery.getVariableQuery().getAggregationBuckets().isEmpty()) return Collections.emptyList();
 
-    List<String> aggsBy = joinQuery.getVariableQuery().getAggregationBuckets();
+    List<String> aggsBy = joinQuery.getVariableQuery().getQueryAggregationBuckets();
 
     List<BucketResult> termResults = Lists.newArrayList();
 

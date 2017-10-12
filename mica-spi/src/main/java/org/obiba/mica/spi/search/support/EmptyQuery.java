@@ -41,6 +41,11 @@ public class EmptyQuery implements Query {
   }
 
   @Override
+  public List<String> getQueryAggregationBuckets() {
+    return Lists.newArrayList();
+  }
+
+  @Override
   public void ensureAggregationBuckets(List<String> additionalAggregationBuckets) {
     for (String agg : additionalAggregationBuckets) {
       if (!aggregationBuckets.contains(agg)) aggregationBuckets.add(agg);
