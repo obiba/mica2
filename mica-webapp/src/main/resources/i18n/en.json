@@ -1356,7 +1356,7 @@
       "facet": "Facet",
       "facet-help": "A facet criterion is exposed in the faceted list page.",
       "facet-position": "Facet Position",
-      "facet-position-help": "Numeric value indicating the position of the facet (zero appears first).",
+      "facet-position-help": "Number to order the facets (lower appears first).",
       "facet-expanded": "Facet Expanded",
       "facet-expanded-help": "Determines whether the facet is opened or closed when list page is loaded.",
       "field-help": "Fully qualified field name in the document model (if different from the name).",
