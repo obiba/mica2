@@ -1356,7 +1356,7 @@
       "facet": "Facette",
       "facet-help": "Un critère facette est exposé dans la page de la liste des facettes.",
       "facet-position": "Position de la facette",
-      "facet-position-help": "Valeur numérique indiquant la position de la facette (zéro apparaît en premier).",
+      "facet-position-help": "Valeur numérique indiquant la position de la facette (valeur inférieure en premier).",
       "facet-expanded": "Facette ouverte",
       "facet-expanded-help": "Détermine si la facette est ouverte ou fermée lorsque la page de la liste est chargée.",
       "field-help": "Nom du champ entièrement qualifié dans le modèle de document (si différent du nom).",
