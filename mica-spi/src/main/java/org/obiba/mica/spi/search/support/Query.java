@@ -45,17 +45,34 @@ public interface Query {
    */
   List<String> getSourceFields();
 
-  @NotNull
-  List<String> getAggregationBuckets();
-
+  /**
+   * @return List of aggregation buckets specified in the query.
+   */
   @NotNull
   List<String> getQueryAggregationBuckets();
 
+  /**
+   * @return List of all aggregation buckets (additional and query specific) when executing the query.
+   */
+  @NotNull
+  List<String> getAggregationBuckets();
+
+  /**
+   * This will ensure that {@link #getAggregationBuckets} includes the additional aggregation buckets.
+   * @param additionalAggregationBuckets
+   */
   void ensureAggregationBuckets(List<String> additionalAggregationBuckets);
 
+  /**
+   * @return List of aggregations specified in the query.
+   */
   @NotNull
   List<String> getAggregations();
 
+  /**
+   * @return Returns a list of specific taxonomy terms to restrict the query aggregations when executing
+   * coverage queries.
+   */
   @NotNull
   Map<String, Map<String, List<String>>> getTaxonomyTermsMap();
 
