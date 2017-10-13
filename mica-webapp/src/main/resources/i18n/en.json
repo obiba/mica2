@@ -932,6 +932,7 @@
     "contains-help": "Value contains all the selected terms",
     "advanced": "Advanced",
     "advanced-help": "Show logical operators",
+    "advanced-button": "Advanced Search",
     "basic": "Basic",
     "basic-help": "Hide logical operators",
     "coverage-end-date-ongoing": "Ongoing",
