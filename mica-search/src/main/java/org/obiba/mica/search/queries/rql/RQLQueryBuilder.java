@@ -11,9 +11,12 @@
 package org.obiba.mica.search.queries.rql;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
+
 import net.jazdw.rql.parser.ASTNode;
 
 import org.obiba.mica.spi.search.rql.RQLNode;
@@ -83,6 +86,19 @@ public class RQLQueryBuilder {
 
     public TargetQueryBuilder exists(String field) {
       target.createChildNode(RQLNode.EXISTS.name().toLowerCase(), Arrays.asList(field));
+      return this;
+    }
+
+    public TargetQueryBuilder match(String query) {
+      target.createChildNode(RQLNode.MATCH.name().toLowerCase(), Arrays.asList(query));
+      return this;
+    }
+
+    public TargetQueryBuilder fields(List<String> fields) {
+      ASTNode node = target.createChildNode(RQLNode.FIELDS.name().toLowerCase());
+      if (fields != null) {
+        fields.forEach(node::addArgument);
+      }
       return this;
     }
 
