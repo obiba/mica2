@@ -17,41 +17,43 @@
     </div>
   </div>
 
-  <table class="table table-bordered table-striped">
-    <thead>
-    <tr>
-      <th translate>name</th>
-      <th translate>global.title</th>
-      <th translate>global.field</th>
-      <th translate>global.terms</th>
-      <th translate>global.order</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr dir-paginate="child in model.children | filter: searchText | itemsPerPage: 10" pagination-id="target.name">
-      <td>
-        <a href ng-click="navigateToVocabulary(child)">{{child.name}}</a>
-      </td>
-      <td>
-        <property-view property="child.title"></property-view>
-      </td>
-      <td>
-        {{getField(child)}}
-      </td>
-      <td>
-        {{getTermsCount(child)}}
-      </td>
-      <td class="no-wrap">
-        <ul class="list-inline">
-          <li ng-hide="model.children.indexOf(child) === model.children.length - 1">
-            <a href ng-click="moveVocabularyDown(child)" title="{{'down' | translate}}"><i class="fa fa-arrow-down"></i></a>
-          </li>
-          <li ng-hide="model.children.indexOf(child) === 0">
-            <a href ng-click="moveVocabularyUp(child)" title="{{'up' | translate}}"><i class="fa fa-arrow-up"></i></a>
-          </li>
-        </ul>
-      </td>
-    </tr>
-    </tbody>
-  </table>
+  <div class="table-responsive">
+    <table class="table table-bordered table-striped">
+      <thead>
+      <tr>
+        <th translate>name</th>
+        <th translate>global.title</th>
+        <th translate>global.field</th>
+        <th translate>global.terms</th>
+        <th translate>global.order</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr dir-paginate="child in model.children | filter: searchText | itemsPerPage: 10" pagination-id="target.name">
+        <td>
+          <a href ng-click="navigateToVocabulary(child)">{{child.name}}</a>
+        </td>
+        <td>
+          <property-view property="child.title"></property-view>
+        </td>
+        <td>
+          {{getField(child)}}
+        </td>
+        <td>
+          {{getTermsCount(child)}}
+        </td>
+        <td class="no-wrap">
+          <ul class="list-inline">
+            <li ng-hide="model.children.indexOf(child) === model.children.length - 1">
+              <a href ng-click="moveVocabularyDown(child)" title="{{'down' | translate}}"><i class="fa fa-arrow-down"></i></a>
+            </li>
+            <li ng-hide="model.children.indexOf(child) === 0">
+              <a href ng-click="moveVocabularyUp(child)" title="{{'up' | translate}}"><i class="fa fa-arrow-up"></i></a>
+            </li>
+          </ul>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
 </div>
