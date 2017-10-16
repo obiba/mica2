@@ -5,22 +5,25 @@
       <li class="active">{{model.content.name}}</li>
     </ol>
   </h3>
-  <h3 ng-if="model.type!=='taxonomy'">
-    <ol class="breadcrumb mica-breadcrumb">
-      <li><a href ng-click="navigateToTaxonomy()">{{taxonomy.name}}</a></li>
-      <li class="active">
-        <span>{{model.content.name}}</span>
-        <span ng-if="target.editable && !isStatic(model.content)">
-              <a href ng-click="deleteCriterion()"><i class="fa fa-trash"></i></a>
-            </span>
-      </li>
-    </ol>
-  </h3>
 
-  <h4>
-    <span translate>properties</span>
+  <div class="row" ng-if="model.type!=='taxonomy'">
+    <div class="col-xs-9">
+      <ol class="breadcrumb mica-breadcrumb">
+        <li><a class="h3" href ng-click="navigateToTaxonomy()">{{taxonomy.name}}</a></li>
+        <li class="active">
+          <span class="h3">{{model.content.name}}</span>
+        </li>
+      </ol>
+    </div>
+    <div class="col-xs-3">
+      <a class="btn btn-danger pull-right" href ng-click="deleteCriterion()"><i class="fa fa-trash"></i> <span translate>delete</span></a>
+    </div>
+  </div>
+
+  <div>
+    <span class="h4" translate>properties</span>
     <a ng-if="target.editable" ng-click="edit()"> <i class="fa fa-pencil-square-o hand"></i></a>
-  </h4>
+  </div>
 
   <div class="table-responsive">
     <table class="table table-bordered table-striped">
