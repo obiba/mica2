@@ -25,7 +25,6 @@ import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.mica.web.model.MicaSearch;
 import org.obiba.mica.web.model.MicaSearch.AggregationResultDto;
-import org.obiba.mica.web.model.MicaSearch.JoinQueryDto;
 import org.obiba.mica.web.model.MicaSearch.JoinQueryResultDto;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.obiba.opal.core.domain.taxonomy.Vocabulary;
@@ -92,10 +91,6 @@ public class JoinQueryExecutor {
     return query(QueryType.VARIABLE, joinQuery, null, DIGEST, QueryMode.COVERAGE);
   }
 
-  public JoinQueryResultDto listQuery(QueryType type, MicaSearch.QueryDto queryDto, String locale) throws IOException {
-    throw new UnsupportedOperationException("Query dto to be replaced by a RQL string");
-  }
-
   @Timed
   public JoinQueryResultDto listQuery(QueryType type, String rqlQuery, String locale) throws IOException {
     JoinQuery joinQuery = searcher.makeJoinQuery(rqlQuery);
@@ -108,27 +103,6 @@ public class JoinQueryExecutor {
     if (datasetQuery.getResultQuery() != null) builder.setDatasetResultDto(datasetQuery.getResultQuery());
     if (studyQuery.getResultQuery() != null) builder.setStudyResultDto(studyQuery.getResultQuery());
     if (networkQuery.getResultQuery() != null) builder.setNetworkResultDto(networkQuery.getResultQuery());
-
-    return builder.build();
-  }
-
-  private JoinQueryDto createJoinQueryByType(QueryType type, MicaSearch.QueryDto queryDto) {
-    JoinQueryDto.Builder builder = JoinQueryDto.newBuilder();
-
-    switch (type) {
-      case VARIABLE:
-        builder.setVariableQueryDto(queryDto).build();
-        break;
-      case DATASET:
-        builder.setDatasetQueryDto(queryDto).build();
-        break;
-      case STUDY:
-        builder.setStudyQueryDto(queryDto).build();
-        break;
-      case NETWORK:
-        builder.setNetworkQueryDto(queryDto);
-        break;
-    }
 
     return builder.build();
   }

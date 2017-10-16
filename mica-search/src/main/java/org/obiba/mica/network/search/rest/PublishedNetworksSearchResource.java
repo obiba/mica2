@@ -10,20 +10,8 @@
 
 package org.obiba.mica.network.search.rest;
 
-import com.codahale.metrics.annotation.Timed;
-import com.google.common.base.Strings;
-import org.apache.shiro.authz.annotation.RequiresAuthentication;
-import org.obiba.mica.search.JoinQueryExecutor;
-import org.obiba.mica.search.csvexport.GenericReportGenerator;
-import org.obiba.mica.search.queries.NetworkQuery;
-import org.obiba.mica.search.queries.protobuf.QueryDtoHelper;
-import org.obiba.mica.search.queries.rql.RQLQueryBuilder;
-import org.obiba.mica.spi.search.Indexer;
-import org.obiba.mica.spi.search.QueryType;
-import org.obiba.mica.spi.search.Searcher;
-import org.obiba.mica.web.model.MicaSearch;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
+import java.io.IOException;
+import java.util.List;
 
 import javax.inject.Inject;
 import javax.ws.rs.DefaultValue;
@@ -32,10 +20,18 @@ import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Stream;
+
+import org.apache.shiro.authz.annotation.RequiresAuthentication;
+import org.obiba.mica.search.JoinQueryExecutor;
+import org.obiba.mica.search.csvexport.GenericReportGenerator;
+import org.obiba.mica.search.queries.rql.RQLQueryBuilder;
+import org.obiba.mica.spi.search.QueryType;
+import org.obiba.mica.spi.search.Searcher;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
+import com.codahale.metrics.annotation.Timed;
+import com.google.common.base.Strings;
 
 import static org.obiba.mica.web.model.MicaSearch.JoinQueryResultDto;
 
@@ -68,39 +64,6 @@ public class PublishedNetworksSearchResource {
         .locale(locale).buildArgsAsString();
 
     return joinQueryExecutor.query(QueryType.NETWORK, searcher.makeJoinQuery(rql));
-  }
-
-  @GET
-  @Path("/_search")
-  @Timed
-  public JoinQueryResultDto list(@QueryParam("from") @DefaultValue("0") int from,
-                                 @QueryParam("limit") @DefaultValue("10") int limit, @QueryParam("sort") @DefaultValue(DEFAULT_SORT) String sort,
-                                 @QueryParam("order") @DefaultValue("desc") String order, @QueryParam("study") String studyId,
-                                 @QueryParam("query") String query, @QueryParam("locale") @DefaultValue("en") String locale) throws IOException {
-    String sortScript = "doc['studyIds'].values.size()"; //groovy sort script
-    String type = "number";
-
-    MicaSearch.QueryDto queryDto;
-
-    if (!Strings.isNullOrEmpty(sort) && !sort.equals(DEFAULT_SORT)) {
-      queryDto = QueryDtoHelper
-          .createQueryDto(from, limit, sort, order, query, locale, Stream.of(Indexer.NETWORK_LOCALIZED_ANALYZED_FIELDS));
-    } else {
-      queryDto = QueryDtoHelper.createQueryDto(from, limit, sortScript, type, order, query, locale,
-          Stream.of(Indexer.NETWORK_LOCALIZED_ANALYZED_FIELDS));
-    }
-
-    if (!Strings.isNullOrEmpty(studyId)) {
-      queryDto = QueryDtoHelper.addTermFilters(queryDto,
-          Arrays.asList(QueryDtoHelper.createTermFilter(NetworkQuery.JOIN_FIELD, Arrays.asList(studyId))),
-          QueryDtoHelper.BoolQueryType.SHOULD);
-    }
-
-    JoinQueryResultDto result = joinQueryExecutor.listQuery(QueryType.NETWORK, queryDto, locale);
-    JoinQueryResultDto.Builder builder = result.toBuilder().clearDatasetResultDto().clearStudyResultDto()
-        .clearVariableResultDto();
-    builder.setNetworkResultDto(builder.getNetworkResultDto().toBuilder().clearAggs());
-    return builder.build();
   }
 
   @GET

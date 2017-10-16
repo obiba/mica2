@@ -10,25 +10,32 @@
 
 package org.obiba.mica.dataset.search.rest.variable;
 
-import com.codahale.metrics.annotation.Timed;
+import java.io.IOException;
+import java.util.List;
+
+import javax.inject.Inject;
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.StreamingOutput;
+
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.core.DebugMethod;
 import org.obiba.mica.search.CoverageQueryExecutor;
 import org.obiba.mica.search.JoinQueryExecutor;
 import org.obiba.mica.search.csvexport.GenericReportGenerator;
-import org.obiba.mica.search.queries.protobuf.QueryDtoHelper;
+import org.obiba.mica.search.queries.rql.RQLQueryBuilder;
 import org.obiba.mica.spi.search.QueryType;
 import org.obiba.mica.spi.search.Searcher;
 import org.obiba.mica.web.model.MicaSearch;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
-import javax.ws.rs.*;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.StreamingOutput;
-import java.io.IOException;
-import java.util.List;
+import com.codahale.metrics.annotation.Timed;
+import com.google.common.base.Strings;
 
 /**
  * Search for variables in the published variable index.
@@ -57,12 +64,23 @@ public class PublishedDatasetVariablesSearchResource {
   @GET
   @Timed
   public MicaSearch.JoinQueryResultDto query(@QueryParam("from") @DefaultValue("0") int from,
-                                             @QueryParam("limit") @DefaultValue("10") int limit, @QueryParam("sort") String sort,
-                                             @QueryParam("order") String order, @QueryParam("query") String query,
+                                             @QueryParam("limit") @DefaultValue("10") int limit,
+                                             @QueryParam("sort") String sort, @QueryParam("order") String order,
+                                             @QueryParam("query") String query, @QueryParam("field") List<String> fields,
                                              @QueryParam("locale") @DefaultValue("en") String locale) throws IOException {
 
-    return joinQueryExecutor.listQuery(QueryType.VARIABLE,
-        QueryDtoHelper.createQueryDto(from, limit, sort, order, query, locale, null, null), locale);
+    RQLQueryBuilder.TargetQueryBuilder targetBuilder = RQLQueryBuilder.TargetQueryBuilder.variableInstance()
+      .exists("id").limit(from, limit).fields(fields);
+
+    if (!Strings.isNullOrEmpty(query)) {
+      targetBuilder.match(query);
+    }
+
+    if (!Strings.isNullOrEmpty(sort)) {
+      targetBuilder.sort(sort, order);
+    }
+
+    return rqlQuery(RQLQueryBuilder.newInstance().target(targetBuilder.build()).locale(locale).buildArgsAsString());
   }
 
   @GET
