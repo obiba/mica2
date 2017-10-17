@@ -17,11 +17,11 @@ mica.dataset.OPAL_TABLE_TYPES = {STUDY_TABLE: 'studyTable', HARMONIZATION_TABLE:
 
 mica.dataset
 
-  .controller('CollectionDatasetListController', [
-    '$scope', '$timeout', 'CollectionDatasetsResource', 'DatasetService', 'AlertBuilder', mica.commons.ListController
+  .controller('CollectedDatasetListController', [
+    '$scope', '$timeout', 'CollectedDatasetsResource', 'DatasetService', 'AlertBuilder', mica.commons.ListController
   ])
 
-  .controller('CollectionDatasetEditController', ['$rootScope',
+  .controller('CollectedDatasetEditController', ['$rootScope',
     '$scope',
     '$routeParams',
     '$log',
@@ -29,9 +29,9 @@ mica.dataset
     '$location',
     '$translate',
     '$filter',
-    'CollectionDatasetResource',
-    'DraftCollectionDatasetsResource',
-    'CollectionDatasetPublicationResource',
+    'CollectedDatasetResource',
+    'DraftCollectedDatasetsResource',
+    'CollectedDatasetPublicationResource',
     'MicaConfigResource',
     'FormServerValidation',
     'StudyStatesResource',
@@ -49,9 +49,9 @@ mica.dataset
               $location,
               $translate,
               $filter,
-              CollectionDatasetResource,
-              DraftCollectionDatasetsResource,
-              CollectionDatasetPublicationResource,
+              CollectedDatasetResource,
+              DraftCollectedDatasetsResource,
+              CollectedDatasetPublicationResource,
               MicaConfigResource,
               FormServerValidation,
               StudyStatesResource,
@@ -105,7 +105,7 @@ mica.dataset
       };
 
       var createDataset = function () {
-        DraftCollectionDatasetsResource.save($scope.dataset,
+        DraftCollectedDatasetsResource.save($scope.dataset,
           function (resource, getResponseHeaders) {
             FormDirtyStateObserver.unobserve();
             var parts = getResponseHeaders().location.split('/');
@@ -156,7 +156,7 @@ mica.dataset
       $scope.type = getTypeFromUrl();
       $scope.newDataset = !$routeParams.id;
       if ($routeParams.id) {
-        $scope.dataset = CollectionDatasetResource.get({id: $routeParams.id}, function (dataset) {
+        $scope.dataset = CollectedDatasetResource.get({id: $routeParams.id}, function (dataset) {
           $scope.studyTable = dataset['obiba.mica.CollectedDatasetDto.type'].studyTable;
           populateStudyTable($scope.studyTable);
         });
@@ -214,15 +214,15 @@ mica.dataset
       FormDirtyStateObserver.observe($scope);
     }])
 
-  .controller('HarmonizationDatasetEditController', ['$rootScope',
+  .controller('HarmonizedDatasetEditController', ['$rootScope',
     '$scope',
     '$routeParams',
     '$log',
     '$location',
     '$translate',
     '$filter',
-    'HarmonizationDatasetResource',
-    'DraftHarmonizationDatasetsResource',
+    'HarmonizedDatasetResource',
+    'DraftHarmonizedDatasetsResource',
     'MicaConfigResource',
     'FormServerValidation',
     'StudyStatesResource',
@@ -240,8 +240,8 @@ mica.dataset
               $location,
               $translate,
               $filter,
-              HarmonizationDatasetResource,
-              DraftHarmonizationDatasetsResource,
+              HarmonizedDatasetResource,
+              DraftHarmonizedDatasetsResource,
               MicaConfigResource,
               FormServerValidation,
               StudyStatesResource,
@@ -293,7 +293,7 @@ mica.dataset
       }
 
       if ($routeParams.id) {
-        $scope.dataset = HarmonizationDatasetResource.get({id: $routeParams.id});
+        $scope.dataset = HarmonizedDatasetResource.get({id: $routeParams.id});
         $scope.dataset.$promise.then(function (dataset) {
 
           $scope.opalTables = OpalTablesService.getTables(dataset);
@@ -368,7 +368,7 @@ mica.dataset
       };
 
       var createDataset = function () {
-        DraftHarmonizationDatasetsResource.save($scope.dataset,
+        DraftHarmonizedDatasetsResource.save($scope.dataset,
           function (resource, getResponseHeaders) {
             FormDirtyStateObserver.unobserve();
             var parts = getResponseHeaders().location.split('/');
@@ -412,8 +412,8 @@ mica.dataset
     'StudyStatesResource',
     'EntityFormResource',
     'OpalTablesService',
-    'CollectionDatasetResource',
-    'HarmonizationDatasetResource',
+    'CollectedDatasetResource',
+    'HarmonizedDatasetResource',
     'SfOptionsService',
     'AlertBuilder',
     '$timeout',
@@ -441,8 +441,8 @@ mica.dataset
               StudyStatesResource,
               EntityFormResource,
               OpalTablesService,
-              CollectionDatasetResource,
-              HarmonizationDatasetResource,
+              CollectedDatasetResource,
+              HarmonizedDatasetResource,
               SfOptionsService,
               AlertBuilder,
               $timeout) {
@@ -495,7 +495,7 @@ mica.dataset
                   return mica.dataset.OPAL_TABLE_TYPES.STUDY_TABLE;
                 }
               },
-              isHarmonizationDatasetScope: $scope.type === 'harmonized-dataset'
+              isHarmonizedDatasetScope: $scope.type === 'harmonized-dataset'
             }
           })
           .result.then(
@@ -624,11 +624,11 @@ mica.dataset
 
       function saveAndUpdateDataset() {
         if($scope.type === 'harmonized-dataset') {
-          HarmonizationDatasetResource.save({id: $scope.dataset.id}, $scope.dataset).$promise.then(function () {
+          HarmonizedDatasetResource.save({id: $scope.dataset.id}, $scope.dataset).$promise.then(function () {
             fetchDataset($scope.dataset.id);
           });
         } else {
-          CollectionDatasetResource.save({id: $scope.dataset.id}, $scope.dataset).$promise.then(function () {
+          CollectedDatasetResource.save({id: $scope.dataset.id}, $scope.dataset).$promise.then(function () {
             fetchDataset($scope.dataset.id);
           });
         }
@@ -762,8 +762,8 @@ mica.dataset
     };
   }])
 
-  .controller('HarmonizationDatasetListController', [
-    '$scope', '$timeout', 'HarmonizationDatasetsResource', 'DatasetService', 'AlertBuilder', mica.commons.ListController
+  .controller('HarmonizedDatasetListController', [
+    '$scope', '$timeout', 'HarmonizedDatasetsResource', 'DatasetService', 'AlertBuilder', mica.commons.ListController
   ])
 
   .controller('StudyTableModalController', [
@@ -778,7 +778,7 @@ mica.dataset
     'LocalizedSchemaFormService',
     'table',
     'tableType',
-    'isHarmonizationDatasetScope',
+    'isHarmonizedDatasetScope',
     function ($scope,
               $uibModalInstance,
               $log,
@@ -790,11 +790,11 @@ mica.dataset
               LocalizedSchemaFormService,
               table,
               tableType,
-              isHarmonizationDatasetScope) {
+              isHarmonizedDatasetScope) {
 
       $scope.studies = [];
       $scope.projects = [];
-      $scope.isHarmonizationDatasetScope = isHarmonizationDatasetScope;
+      $scope.isHarmonizedDatasetScope = isHarmonizedDatasetScope;
       $scope.selected = {
         get isHarmonizationTable() {
           return this._isHarmonizationTable;

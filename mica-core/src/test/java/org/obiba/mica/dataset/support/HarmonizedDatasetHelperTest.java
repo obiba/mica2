@@ -26,12 +26,12 @@ import static org.obiba.mica.assertj.Assertions.assertThat;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(MockitoJUnitRunner.class)
-public class HarmonizationDatasetHelperTest {
+public class HarmonizedDatasetHelperTest {
 
   @Test
   public void test_empty_datasets() {
     List<HarmonizationDataset> datasets = Lists.newArrayList();
-    HarmonizationDatasetHelper.TablesMerger tablesMerger = HarmonizationDatasetHelper.newTablesMerger(datasets);
+    HarmonizedDatasetHelper.TablesMerger tablesMerger = HarmonizedDatasetHelper.newTablesMerger(datasets);
     assertTrue(tablesMerger.getStudyTables().isEmpty());
     assertTrue(tablesMerger.getHarmonizationStudyTables().isEmpty());
   }
@@ -39,7 +39,7 @@ public class HarmonizationDatasetHelperTest {
   @Test
   public void test_null_datasets() {
     try {
-      HarmonizationDatasetHelper.newTablesMerger(null);
+      HarmonizedDatasetHelper.newTablesMerger(null);
     } catch (IllegalArgumentException e) {
       assertTrue("Dataset list cannot be null.".equals(e.getMessage()));
     }
@@ -53,7 +53,7 @@ public class HarmonizationDatasetHelperTest {
         createDataset(Lists.newArrayList("003", "004"), Lists.newArrayList("h002"))
       );
 
-    HarmonizationDatasetHelper.TablesMerger tablesMerger = HarmonizationDatasetHelper.newTablesMerger(datasets);
+    HarmonizedDatasetHelper.TablesMerger tablesMerger = HarmonizedDatasetHelper.newTablesMerger(datasets);
     assertThat(tablesMerger.getStudyTables().size()).isEqualTo(4);
     assertThat(tablesMerger.getHarmonizationStudyTables().size()).isEqualTo(2);
   }
@@ -66,7 +66,7 @@ public class HarmonizationDatasetHelperTest {
         createDataset(Lists.newArrayList("002", "004"), Lists.newArrayList("h001", "h003"))
       );
 
-    HarmonizationDatasetHelper.TablesMerger tablesMerger = HarmonizationDatasetHelper.newTablesMerger(datasets);
+    HarmonizedDatasetHelper.TablesMerger tablesMerger = HarmonizedDatasetHelper.newTablesMerger(datasets);
     assertThat(tablesMerger.getStudyTables().size()).isEqualTo(3);
     assertThat(tablesMerger.getHarmonizationStudyTables().size()).isEqualTo(3);
   }
@@ -79,7 +79,7 @@ public class HarmonizationDatasetHelperTest {
         createDataset(Lists.newArrayList("001", "002"), Lists.newArrayList("h001"))
       );
 
-    HarmonizationDatasetHelper.TablesMerger tablesMerger = HarmonizationDatasetHelper.newTablesMerger(datasets);
+    HarmonizedDatasetHelper.TablesMerger tablesMerger = HarmonizedDatasetHelper.newTablesMerger(datasets);
     assertThat(tablesMerger.getStudyTables().size()).isEqualTo(2);
     assertThat(tablesMerger.getHarmonizationStudyTables().size()).isEqualTo(1);
   }

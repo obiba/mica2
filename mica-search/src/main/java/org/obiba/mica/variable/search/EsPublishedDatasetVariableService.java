@@ -15,8 +15,8 @@ import com.google.common.base.Joiner;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.HarmonizationDatasetState;
 import org.obiba.mica.dataset.domain.StudyDatasetState;
-import org.obiba.mica.dataset.service.CollectionDatasetService;
-import org.obiba.mica.dataset.service.HarmonizationDatasetService;
+import org.obiba.mica.dataset.service.CollectedDatasetService;
+import org.obiba.mica.dataset.service.HarmonizedDatasetService;
 import org.obiba.mica.search.AbstractDocumentService;
 import org.obiba.mica.spi.search.Searcher;
 import org.obiba.mica.study.service.PublishedDatasetVariableService;
@@ -48,10 +48,10 @@ public class EsPublishedDatasetVariableService extends AbstractDocumentService<D
   private ObjectMapper objectMapper;
 
   @Inject
-  private CollectionDatasetService collectionDatasetService;
+  private CollectedDatasetService collectedDatasetService;
 
   @Inject
-  private HarmonizationDatasetService harmonizationDatasetService;
+  private HarmonizedDatasetService harmonizedDatasetService;
 
   @Override
   public long getCountByStudyId(String studyId) {
@@ -116,9 +116,9 @@ public class EsPublishedDatasetVariableService extends AbstractDocumentService<D
 
       @Override
       public Collection<String> getValues() {
-        List<String> ids = collectionDatasetService.findPublishedStates().stream().map(StudyDatasetState::getId)
+        List<String> ids = collectedDatasetService.findPublishedStates().stream().map(StudyDatasetState::getId)
             .filter(s -> subjectAclService.isAccessible("/collected-dataset", s)).collect(Collectors.toList());
-        ids.addAll(harmonizationDatasetService.findPublishedStates().stream().map(HarmonizationDatasetState::getId)
+        ids.addAll(harmonizedDatasetService.findPublishedStates().stream().map(HarmonizationDatasetState::getId)
             .filter(s -> subjectAclService.isAccessible("/harmonized-dataset", s)).collect(Collectors.toList()));
         return ids;
       }

@@ -396,13 +396,13 @@ message MicaConfigDto {
   optional string networkNotificationsSubject = 17;
   optional bool isCollectedDatasetNotificationsEnabled = 18;
   optional string collectedDatasetNotificationsSubject = 19;
-  optional bool isHarmonizationDatasetNotificationsEnabled = 20;
-  optional string harmonizationDatasetNotificationsSubject = 21;
+  optional bool isHarmonizedDatasetNotificationsEnabled = 20;
+  optional string harmonizedDatasetNotificationsSubject = 21;
   optional bool isSingleStudyEnabled = 22;
   optional bool isNetworkEnabled = 23;
   optional bool isSingleNetworkEnabled = 24;
   optional bool isCollectedDatasetEnabled = 25;
-  optional bool isHarmonizationDatasetEnabled = 26;
+  optional bool isHarmonizedDatasetEnabled = 26;
   optional string style = 27;
   repeated LocalizedStringDto translations = 28;
   optional bool isProjectNotificationsEnabled = 29;

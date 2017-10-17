@@ -13,8 +13,8 @@ package org.obiba.mica.file.search;
 import com.google.common.collect.Lists;
 import org.obiba.mica.dataset.domain.HarmonizationDatasetState;
 import org.obiba.mica.dataset.domain.StudyDatasetState;
-import org.obiba.mica.dataset.service.CollectionDatasetService;
-import org.obiba.mica.dataset.service.HarmonizationDatasetService;
+import org.obiba.mica.dataset.service.CollectedDatasetService;
+import org.obiba.mica.dataset.service.HarmonizedDatasetService;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.network.domain.NetworkState;
 import org.obiba.mica.network.service.NetworkService;
@@ -24,7 +24,7 @@ import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.spi.search.Searcher;
 import org.obiba.mica.study.domain.HarmonizationStudyState;
 import org.obiba.mica.study.domain.StudyState;
-import org.obiba.mica.study.service.CollectionStudyService;
+import org.obiba.mica.study.service.IndividualStudyService;
 import org.obiba.mica.study.service.HarmonizationStudyService;
 import org.springframework.stereotype.Component;
 
@@ -53,16 +53,16 @@ public class FileFilterHelper {
   private NetworkService networkService;
 
   @Inject
-  private CollectionStudyService collectionStudyService;
+  private IndividualStudyService individualStudyService;
 
   @Inject
   private HarmonizationStudyService harmonizationStudyService;
 
   @Inject
-  private CollectionDatasetService collectedDatasetService;
+  private CollectedDatasetService collectedDatasetService;
 
   @Inject
-  private HarmonizationDatasetService harmonizedDatasetService;
+  private HarmonizedDatasetService harmonizedDatasetService;
 
   @Inject
   private ProjectService projectService;
@@ -130,9 +130,9 @@ public class FileFilterHelper {
   private List<String> getIndividualStudyIds(String basePath, boolean draft) {
     if ("/".equals(basePath) || "/individual-study".equals(basePath)) {
       return draft
-          ? collectionStudyService.findAllStates().stream().map(StudyState::getId)
+          ? individualStudyService.findAllStates().stream().map(StudyState::getId)
           .filter(s -> subjectAclService.isPermitted("/draft/individual-study", "VIEW", s)).collect(Collectors.toList())
-          : collectionStudyService.findPublishedStates().stream().map(StudyState::getId)
+          : individualStudyService.findPublishedStates().stream().map(StudyState::getId)
           .filter(s -> subjectAclService.isAccessible("/individual-study", s)).collect(Collectors.toList());
     }
     if (basePath.startsWith("/individual-study/")) {

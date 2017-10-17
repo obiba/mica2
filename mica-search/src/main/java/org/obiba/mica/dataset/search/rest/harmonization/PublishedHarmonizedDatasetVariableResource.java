@@ -26,14 +26,12 @@ import com.google.common.base.Strings;
 import org.apache.commons.math3.util.Pair;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.magma.NoSuchValueTableException;
-import org.obiba.mica.core.domain.BaseStudyTable;
 import org.obiba.mica.core.domain.OpalTable;
-import org.obiba.mica.core.domain.StudyTable;
 import org.obiba.mica.dataset.DatasetVariableResource;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.search.rest.AbstractPublishedDatasetResource;
-import org.obiba.mica.dataset.service.HarmonizationDatasetService;
+import org.obiba.mica.dataset.service.HarmonizedDatasetService;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.opal.web.model.Search;
 import org.slf4j.Logger;
@@ -65,7 +63,7 @@ public class PublishedHarmonizedDatasetVariableResource extends AbstractPublishe
   private String tableType;
 
   @Inject
-  private HarmonizationDatasetService datasetService;
+  private HarmonizedDatasetService datasetService;
 
   @GET
   @Timed

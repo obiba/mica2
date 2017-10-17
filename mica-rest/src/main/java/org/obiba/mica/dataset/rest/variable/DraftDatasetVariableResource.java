@@ -18,7 +18,7 @@ import org.obiba.mica.dataset.DatasetVariableResource;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.rest.harmonization.DraftDataschemaDatasetVariableResource;
 import org.obiba.mica.dataset.rest.harmonization.DraftHarmonizedDatasetVariableResource;
-import org.obiba.mica.dataset.rest.collection.DraftCollectionDatasetVariableResource;
+import org.obiba.mica.dataset.rest.collection.DraftCollectedDatasetVariableResource;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
@@ -42,7 +42,7 @@ public class DraftDatasetVariableResource {
     switch(resolver.getType()) {
       case Collected:
         subjectAclService.isPermitted("/draft/collected-dataset", "VIEW", resolver.getDatasetId());
-        resource = applicationContext.getBean(DraftCollectionDatasetVariableResource.class);
+        resource = applicationContext.getBean(DraftCollectedDatasetVariableResource.class);
         break;
       case Dataschema:
         subjectAclService.isPermitted("/draft/harmonized-dataset", "VIEW", resolver.getDatasetId());

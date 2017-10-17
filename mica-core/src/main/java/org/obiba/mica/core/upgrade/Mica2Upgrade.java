@@ -24,8 +24,8 @@ import org.obiba.mica.dataset.HarmonizationDatasetRepository;
 import org.obiba.mica.dataset.StudyDatasetRepository;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.domain.StudyDataset;
-import org.obiba.mica.dataset.service.HarmonizationDatasetService;
-import org.obiba.mica.dataset.service.CollectionDatasetService;
+import org.obiba.mica.dataset.service.HarmonizedDatasetService;
+import org.obiba.mica.dataset.service.CollectedDatasetService;
 import org.obiba.mica.micaConfig.event.TaxonomiesUpdatedEvent;
 import org.obiba.mica.micaConfig.service.CacheService;
 import org.obiba.mica.network.NetworkRepository;
@@ -33,7 +33,7 @@ import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.network.service.NetworkService;
 import org.obiba.mica.study.StudyRepository;
 import org.obiba.mica.study.domain.Study;
-import org.obiba.mica.study.service.CollectionStudyService;
+import org.obiba.mica.study.service.IndividualStudyService;
 import org.obiba.runtime.Version;
 import org.obiba.runtime.upgrade.UpgradeStep;
 import org.slf4j.Logger;
@@ -68,11 +68,11 @@ public class Mica2Upgrade implements UpgradeStep {
   @Inject
   private NetworkService networkService;
   @Inject
-  private CollectionStudyService collectionStudyService;
+  private IndividualStudyService individualStudyService;
   @Inject
-  private CollectionDatasetService collectionDatasetService;
+  private CollectedDatasetService collectedDatasetService;
   @Inject
-  private HarmonizationDatasetService harmonizationDatasetService;
+  private HarmonizedDatasetService harmonizedDatasetService;
 
   @Inject
   CacheService cacheService;
@@ -117,13 +117,13 @@ public class Mica2Upgrade implements UpgradeStep {
     networkService.indexAll();
 
     logger.debug("Indexing all studies in the repository.");
-    collectionStudyService.indexAll();
+    individualStudyService.indexAll();
 
     logger.debug("Indexing all study datasets in the repository.");
-    collectionDatasetService.indexAll(false);
+    collectedDatasetService.indexAll(false);
 
     logger.debug("Indexing all harmonization datasets in the repository.");
-    harmonizationDatasetService.indexAll(false);
+    harmonizedDatasetService.indexAll(false);
 
     logger.debug("Indexing all contacts.");
     eventBus.post(new IndexContactsEvent());

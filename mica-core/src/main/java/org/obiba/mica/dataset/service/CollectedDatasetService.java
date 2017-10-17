@@ -48,7 +48,7 @@ import org.obiba.mica.study.domain.DataCollectionEvent;
 import org.obiba.mica.study.domain.Population;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.domain.StudyState;
-import org.obiba.mica.study.service.CollectionStudyService;
+import org.obiba.mica.study.service.IndividualStudyService;
 import org.obiba.mica.study.service.PublishedStudyService;
 import org.obiba.mica.study.service.StudyService;
 import org.obiba.opal.rest.client.magma.RestValueTable;
@@ -74,9 +74,9 @@ import static java.util.stream.Collectors.toList;
 
 @Service
 @Validated
-public class CollectionDatasetService extends DatasetService<StudyDataset, StudyDatasetState> {
+public class CollectedDatasetService extends DatasetService<StudyDataset, StudyDatasetState> {
 
-  private static final Logger log = LoggerFactory.getLogger(CollectionDatasetService.class);
+  private static final Logger log = LoggerFactory.getLogger(CollectedDatasetService.class);
 
   @Inject
   private StudyService studyService;
@@ -98,7 +98,7 @@ public class CollectionDatasetService extends DatasetService<StudyDataset, Study
   private StudyDatasetStateRepository studyDatasetStateRepository;
 
   @Inject
-  private CollectionStudyService collectionStudyService;
+  private IndividualStudyService individualStudyService;
 
   @Inject
   private PublishedStudyService publishedStudyService;
@@ -217,7 +217,7 @@ public class CollectionDatasetService extends DatasetService<StudyDataset, Study
     if (!dataset.hasStudyTable())
       return;
 
-    if (!collectionStudyService.isPublished(dataset.getStudyTable().getStudyId())) {
+    if (!individualStudyService.isPublished(dataset.getStudyTable().getStudyId())) {
       throw new IllegalArgumentException("dataset.collection.study-not-published");
     }
 
@@ -290,7 +290,7 @@ public class CollectionDatasetService extends DatasetService<StudyDataset, Study
   }
 
   public void indexAllDatasetsForStudyIdIfPopulationOrDceWeightChanged(String studyId) {
-    if (collectionStudyService.getEntityState(studyId).isPopulationOrDceWeightChange()) {
+    if (individualStudyService.getEntityState(studyId).isPopulationOrDceWeightChange()) {
       List<StudyDataset> datasets = findAllDatasets(studyId);
       HashSet<StudyDataset> publishedDatasets = Sets
         .newHashSet(findPublishedDatasets(datasets.stream().map(AbstractGitPersistable::getId).collect(toList())));
@@ -431,11 +431,11 @@ public class CollectionDatasetService extends DatasetService<StudyDataset, Study
   }
 
   private void resetCollectionStudyStatePopulationDceWeightChangeStatus(String studyId) {
-    StudyState studyState = collectionStudyService.getEntityState(studyId);
+    StudyState studyState = individualStudyService.getEntityState(studyId);
 
     if (!studyState.hasRevisionsAhead()) {
       studyState.setPopulationOrDceWeightChange(false);
-      collectionStudyService.saveState(studyState);
+      individualStudyService.saveState(studyState);
     }
   }
 
@@ -517,7 +517,7 @@ public class CollectionDatasetService extends DatasetService<StudyDataset, Study
     private static final Logger log = LoggerFactory.getLogger(Helper.class);
 
     @Inject
-    CollectionDatasetService service;
+    CollectedDatasetService service;
 
     @CacheEvict(value = "dataset-variables", cacheResolver = "datasetVariablesCacheResolver", allEntries = true, beforeInvocation = true)
     public void evictCache(StudyDataset dataset) {

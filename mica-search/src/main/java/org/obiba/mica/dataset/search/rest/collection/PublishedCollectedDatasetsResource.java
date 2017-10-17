@@ -30,9 +30,9 @@ import com.codahale.metrics.annotation.Timed;
 @Scope("request")
 @Path("/collected-datasets")
 @RequiresAuthentication
-public class PublishedStudyDatasetsResource extends AbstractPublishedDatasetsResource<StudyDataset> {
+public class PublishedCollectedDatasetsResource extends AbstractPublishedDatasetsResource<StudyDataset> {
 
-  private static final Logger log = LoggerFactory.getLogger(PublishedStudyDatasetsResource.class);
+  private static final Logger log = LoggerFactory.getLogger(PublishedCollectedDatasetsResource.class);
 
   /**
    * Get {@link org.obiba.mica.dataset.domain.StudyDataset}s, optionally filtered by study.

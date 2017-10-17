@@ -17,7 +17,7 @@ import org.obiba.mica.search.AbstractDocumentService;
 import org.obiba.mica.spi.search.Indexer;
 import org.obiba.mica.spi.search.Searcher;
 import org.obiba.mica.study.domain.Study;
-import org.obiba.mica.study.service.CollectionStudyService;
+import org.obiba.mica.study.service.IndividualStudyService;
 import org.obiba.mica.study.service.DraftStudyService;
 import org.obiba.mica.study.service.HarmonizationStudyService;
 import org.springframework.stereotype.Service;
@@ -36,14 +36,14 @@ public class EsDraftStudyService extends AbstractDocumentService<Study> implemen
   private ObjectMapper objectMapper;
 
   @Inject
-  private CollectionStudyService collectionStudyService;
+  private IndividualStudyService individualStudyService;
 
   @Inject
   private HarmonizationStudyService harmonizationStudyService;
 
   @Override
-  public CollectionStudyService getCollectionStudyService() {
-    return collectionStudyService;
+  public IndividualStudyService getIndividualStudyService() {
+    return individualStudyService;
   }
 
   @Override
@@ -83,7 +83,7 @@ public class EsDraftStudyService extends AbstractDocumentService<Study> implemen
   }
 
   private List<String> findAuthorizedCollectionStudyIds() {
-    return collectionStudyService.findAllStates().stream()
+    return individualStudyService.findAllStates().stream()
         .map(DefaultEntityBase::getId)
         .filter(studyId -> subjectAclService.isPermitted("/draft/individual-study", "VIEW", studyId))
         .collect(Collectors.toList());

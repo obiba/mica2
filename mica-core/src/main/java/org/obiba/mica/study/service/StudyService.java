@@ -22,16 +22,12 @@ import javax.validation.constraints.NotNull;
 import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.core.domain.EntityState;
 import org.obiba.mica.core.domain.PublishCascadingScope;
-import org.obiba.mica.study.date.PersistableYearMonth;
 import org.obiba.mica.study.domain.BaseStudy;
-import org.obiba.mica.study.domain.DataCollectionEvent;
 import org.obiba.mica.study.domain.HarmonizationStudy;
-import org.obiba.mica.study.domain.Population;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.event.IndexStudiesEvent;
 import org.springframework.stereotype.Component;
 
-import com.google.common.collect.Lists;
 import com.google.common.eventbus.EventBus;
 
 @Component
@@ -41,7 +37,7 @@ public class StudyService {
   protected EventBus eventBus;
 
   @Inject
-  private CollectionStudyService collectionStudyService;
+  private IndividualStudyService individualStudyService;
 
   @Inject
   private HarmonizationStudyService harmonizationStudyService;
@@ -60,7 +56,7 @@ public class StudyService {
 
   public void save(@NotNull @Valid BaseStudy study, @Nullable String comment) {
     if (study instanceof Study) {
-      collectionStudyService.save((Study)study, comment);
+      individualStudyService.save((Study)study, comment);
     } else {
       harmonizationStudyService.save((HarmonizationStudy)study, comment);
     }
@@ -70,7 +66,7 @@ public class StudyService {
     throws NoSuchEntityException {
 
     if (isCollectionStudy(id)) {
-      collectionStudyService.publish(id, publish, cascadingScope);
+      individualStudyService.publish(id, publish, cascadingScope);
     } else {
       harmonizationStudyService.publish(id, publish, cascadingScope);
     }
@@ -82,21 +78,21 @@ public class StudyService {
 
   public EntityState getEntityState(String id) throws NoSuchEntityException {
     try {
-      return collectionStudyService.getEntityState(id);
+      return individualStudyService.getEntityState(id);
     } catch(NoSuchEntityException ex) {
       return harmonizationStudyService.getEntityState(id);
     }
   }
 
   public EntityState findStateById(String id) throws NoSuchEntityException {
-    EntityState state = collectionStudyService.findStateById(id);
+    EntityState state = individualStudyService.findStateById(id);
     if (state == null) state = harmonizationStudyService.findStateById(id);
     return state;
   }
 
   public BaseStudy findDraft(String id) throws NoSuchEntityException {
     try {
-      return collectionStudyService.findDraft(id);
+      return individualStudyService.findDraft(id);
     } catch(NoSuchEntityException ex) {
       return harmonizationStudyService.findDraft(id);
     }
@@ -104,7 +100,7 @@ public class StudyService {
 
   public BaseStudy findDraft(@NotNull String id, String locale) throws NoSuchEntityException {
     try {
-      return collectionStudyService.findDraft(id, locale);
+      return individualStudyService.findDraft(id, locale);
     } catch(NoSuchEntityException ex) {
       return harmonizationStudyService.findDraft(id, locale);
     }
@@ -113,7 +109,7 @@ public class StudyService {
   @NotNull
   public BaseStudy findStudy(@NotNull String id) throws NoSuchEntityException {
     try {
-      return collectionStudyService.findStudy(id);
+      return individualStudyService.findStudy(id);
     } catch(NoSuchEntityException ex) {
       return harmonizationStudyService.findStudy(id);
     }
@@ -121,7 +117,7 @@ public class StudyService {
 
   public boolean isPublished(@NotNull String id) throws NoSuchEntityException {
     try {
-      return collectionStudyService.getEntityState(id).isPublished();
+      return individualStudyService.getEntityState(id).isPublished();
     } catch(NoSuchEntityException ex) {
       return harmonizationStudyService.getEntityState(id).isPublished();
     }
@@ -129,33 +125,33 @@ public class StudyService {
 
   public List<BaseStudy> findAllUnpublishedStudies() {
     return Stream
-      .concat(collectionStudyService.findAllUnpublishedStudies().stream(),
+      .concat(individualStudyService.findAllUnpublishedStudies().stream(),
         harmonizationStudyService.findAllUnpublishedStudies().stream())
       .collect(Collectors.toList());
   }
 
   public List<BaseStudy> findAllPublishedStudies() {
     return Stream
-      .concat(collectionStudyService.findAllPublishedStudies().stream(),
+      .concat(individualStudyService.findAllPublishedStudies().stream(),
         harmonizationStudyService.findAllPublishedStudies().stream())
       .collect(Collectors.toList());
   }
 
   public List<BaseStudy> findAllDraftStudies() {
     return Stream
-      .concat(collectionStudyService.findAllDraftStudies().stream(),
+      .concat(individualStudyService.findAllDraftStudies().stream(),
         harmonizationStudyService.findAllDraftStudies().stream())
       .collect(Collectors.toList());
   }
 
   public List<? extends EntityState> findAllStates() {
-    return Stream.concat(collectionStudyService.findAllStates().stream(),
+    return Stream.concat(individualStudyService.findAllStates().stream(),
       harmonizationStudyService.findAllStates().stream())
       .collect(Collectors.toList());
   }
 
   public List<? extends EntityState> findAllStates(Iterable<String> ids) {
-    return Stream.concat(collectionStudyService.findAllStates(ids).stream(),
+    return Stream.concat(individualStudyService.findAllStates(ids).stream(),
       harmonizationStudyService.findAllStates(ids).stream())
       .collect(Collectors.toList());
   }

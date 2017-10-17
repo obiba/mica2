@@ -68,16 +68,16 @@
 
         <p class="help-block" translate>config.notifications.harmonized-dataset-info</p>
 
-        <div form-checkbox name="isHarmonizationDatasetNotificationsEnabled"
-            model="micaConfig.isHarmonizationDatasetNotificationsEnabled"
+        <div form-checkbox name="isHarmonizedDatasetNotificationsEnabled"
+            model="micaConfig.isHarmonizedDatasetNotificationsEnabled"
             label="config.notifications.harmonized-dataset"
             help="config.notifications.harmonized-dataset-help"></div>
-        <div form-input name="harmonizationDatasetNotificationsSubject"
-            model="micaConfig.harmonizationDatasetNotificationsSubject"
+        <div form-input name="harmonizedDatasetNotificationsSubject"
+            model="micaConfig.harmonizedDatasetNotificationsSubject"
             label="config.notifications.harmonized-dataset-subject"
             help="config.notifications.harmonized-dataset-subject-help-long"
             placeholder="[${organization}] ${documentId}: Harmonization Dataset status has changed" required="false"
-            disable="!micaConfig.isHarmonizationDatasetNotificationsEnabled"></div>
+            disable="!micaConfig.isHarmonizedDatasetNotificationsEnabled"></div>
       </div>
     </div>
 

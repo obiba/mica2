@@ -11,7 +11,7 @@
 package org.obiba.mica.micaConfig.rest;
 
 import org.obiba.mica.micaConfig.domain.StudyConfig;
-import org.obiba.mica.micaConfig.service.CollectionStudyConfigService;
+import org.obiba.mica.micaConfig.service.IndividualStudyConfigService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.springframework.stereotype.Component;
@@ -28,7 +28,7 @@ public class StudyConfigResource
   static final String TARGET_NAME = "individual-study";
 
   @Inject
-  CollectionStudyConfigService studyConfigService;
+  IndividualStudyConfigService studyConfigService;
 
   @Inject
   Dtos dtos;
@@ -44,7 +44,7 @@ public class StudyConfigResource
   }
 
   @Override
-  protected CollectionStudyConfigService getConfigService() {
+  protected IndividualStudyConfigService getConfigService() {
     return studyConfigService;
   }
 

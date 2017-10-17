@@ -13,6 +13,6 @@ package org.obiba.mica.dataset.service;
 import org.obiba.mica.core.service.DraftDocumentService;
 import org.obiba.mica.dataset.domain.StudyDataset;
 
-public interface DraftStudyDatasetService extends DraftDocumentService<StudyDataset>, EsDatasetService {
+public interface DraftCollectedDatasetService extends DraftDocumentService<StudyDataset>, EsDatasetService {
 
 }

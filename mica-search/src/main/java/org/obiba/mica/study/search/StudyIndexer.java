@@ -11,7 +11,7 @@
 package org.obiba.mica.study.search;
 
 import com.google.common.eventbus.Subscribe;
-import org.obiba.mica.dataset.service.CollectionDatasetService;
+import org.obiba.mica.dataset.service.CollectedDatasetService;
 import org.obiba.mica.spi.search.Indexable;
 import org.obiba.mica.spi.search.Indexer;
 import org.obiba.mica.study.domain.BaseStudy;
@@ -37,7 +37,7 @@ public class StudyIndexer {
   private StudyService studyService;
 
   @Inject
-  private CollectionDatasetService collectionDatasetService;
+  private CollectedDatasetService collectedDatasetService;
 
   @Async
   @Subscribe
@@ -54,7 +54,7 @@ public class StudyIndexer {
 
     if (event.getPersistable() instanceof Study) {
       log.info("Call indexAllDatasetsForStudyIdIfPopulationOrDceWeightChanged for Study {}", event.getPersistable());
-      collectionDatasetService.indexAllDatasetsForStudyIdIfPopulationOrDceWeightChanged(event.getPersistable().getId());
+      collectedDatasetService.indexAllDatasetsForStudyIdIfPopulationOrDceWeightChanged(event.getPersistable().getId());
     }
   }
 

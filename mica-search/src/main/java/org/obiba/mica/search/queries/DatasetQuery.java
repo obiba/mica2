@@ -16,8 +16,8 @@ import com.google.common.collect.Maps;
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.HarmonizationDatasetState;
 import org.obiba.mica.dataset.domain.StudyDatasetState;
-import org.obiba.mica.dataset.service.CollectionDatasetService;
-import org.obiba.mica.dataset.service.HarmonizationDatasetService;
+import org.obiba.mica.dataset.service.CollectedDatasetService;
+import org.obiba.mica.dataset.service.HarmonizedDatasetService;
 import org.obiba.mica.micaConfig.service.helper.AggregationMetaDataProvider;
 import org.obiba.mica.search.DocumentQueryHelper;
 import org.obiba.mica.search.DocumentQueryIdProvider;
@@ -63,13 +63,13 @@ public class DatasetQuery extends AbstractDocumentQuery {
   Dtos dtos;
 
   @Inject
-  private CollectionDatasetService collectionDatasetService;
+  private CollectedDatasetService collectedDatasetService;
 
   @Inject
   private DatasetTaxonomyMetaDataProvider datasetTaxonomyMetaDataProvider;
 
   @Inject
-  private HarmonizationDatasetService harmonizationDatasetService;
+  private HarmonizedDatasetService harmonizedDatasetService;
 
   private DocumentQueryIdProvider datasetIdProvider;
 
@@ -90,9 +90,9 @@ public class DatasetQuery extends AbstractDocumentQuery {
     return new Searcher.IdFilter() {
       @Override
       public Collection<String> getValues() {
-        List<String> ids = collectionDatasetService.findPublishedStates().stream().map(StudyDatasetState::getId)
+        List<String> ids = collectedDatasetService.findPublishedStates().stream().map(StudyDatasetState::getId)
             .filter(s -> subjectAclService.isAccessible("/collected-dataset", s)).collect(Collectors.toList());
-        ids.addAll(harmonizationDatasetService.findPublishedStates().stream().map(HarmonizationDatasetState::getId)
+        ids.addAll(harmonizedDatasetService.findPublishedStates().stream().map(HarmonizationDatasetState::getId)
             .filter(s -> subjectAclService.isAccessible("/harmonized-dataset", s)).collect(Collectors.toList()));
         return ids;
       }

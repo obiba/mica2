@@ -35,7 +35,7 @@ import org.obiba.mica.dataset.DatasetVariableResource;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.search.rest.AbstractPublishedDatasetResource;
-import org.obiba.mica.dataset.service.HarmonizationDatasetService;
+import org.obiba.mica.dataset.service.HarmonizedDatasetService;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.opal.web.model.Math;
 import org.obiba.opal.web.model.Search;
@@ -69,7 +69,7 @@ public class PublishedDataschemaDatasetVariableResource extends AbstractPublishe
   private String variableName;
 
   @Inject
-  private HarmonizationDatasetService datasetService;
+  private HarmonizedDatasetService datasetService;
 
   @Inject
   private Helper helper;
@@ -268,7 +268,7 @@ public class PublishedDataschemaDatasetVariableResource extends AbstractPublishe
   public static class Helper {
 
     @Inject
-    private HarmonizationDatasetService datasetService;
+    private HarmonizedDatasetService datasetService;
 
     @Async
     private Future<Math.SummaryStatisticsDto> getVariableFacet(HarmonizationDataset dataset, String variableName,

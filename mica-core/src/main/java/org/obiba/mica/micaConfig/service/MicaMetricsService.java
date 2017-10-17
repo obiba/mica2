@@ -16,7 +16,7 @@ import org.obiba.mica.dataset.HarmonizationDatasetRepository;
 import org.obiba.mica.dataset.HarmonizationDatasetStateRepository;
 import org.obiba.mica.dataset.StudyDatasetRepository;
 import org.obiba.mica.dataset.StudyDatasetStateRepository;
-import org.obiba.mica.dataset.service.DraftStudyDatasetService;
+import org.obiba.mica.dataset.service.DraftCollectedDatasetService;
 import org.obiba.mica.dataset.service.PublishedDatasetService;
 import org.obiba.mica.file.service.DraftFileService;
 import org.obiba.mica.file.service.PublishedFileService;
@@ -59,7 +59,7 @@ public class MicaMetricsService {
   private StudyDatasetRepository studyDatasetRepository;
 
   @Inject
-  private DraftStudyDatasetService draftStudyDatasetService;
+  private DraftCollectedDatasetService draftCollectedDatasetService;
 
   @Inject
   private PublishedDatasetService publishedDatasetService;
@@ -113,7 +113,7 @@ public class MicaMetricsService {
   }
 
   public long getStudiesWithVariablesCount() {
-    return draftStudyDatasetService.getStudiesWithVariablesCount();
+    return draftCollectedDatasetService.getStudiesWithVariablesCount();
   }
 
   public long getPublishedStudiesWithVariablesCount() {

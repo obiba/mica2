@@ -16,7 +16,7 @@ import javax.ws.rs.Path;
 
 import org.obiba.mica.dataset.DatasetVariableResource;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
-import org.obiba.mica.dataset.service.HarmonizationDatasetService;
+import org.obiba.mica.dataset.service.HarmonizedDatasetService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.opal.web.model.Search;
@@ -32,7 +32,7 @@ public class DraftHarmonizedDatasetVariableResource implements DatasetVariableRe
   private String variableName;
 
   @Inject
-  private HarmonizationDatasetService datasetService;
+  private HarmonizedDatasetService datasetService;
 
   @Inject
   private Dtos dtos;

@@ -22,12 +22,12 @@ import javax.validation.constraints.NotNull;
 import org.obiba.mica.JSONUtils;
 import org.obiba.mica.core.domain.Membership;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
-import org.obiba.mica.dataset.support.HarmonizationDatasetHelper;
+import org.obiba.mica.dataset.support.HarmonizedDatasetHelper;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.study.domain.BaseStudy;
 import org.obiba.mica.study.domain.HarmonizationStudy;
 import org.obiba.mica.study.domain.Study;
-import org.obiba.mica.study.service.CollectionStudyService;
+import org.obiba.mica.study.service.IndividualStudyService;
 import org.obiba.mica.study.service.HarmonizationStudyService;
 import org.springframework.stereotype.Component;
 
@@ -65,7 +65,7 @@ class StudyDtos {
   private MicaConfigService micaConfigService;
 
   @Inject
-  private CollectionStudyService collectionStudyService;
+  private IndividualStudyService individualStudyService;
 
   @Inject
   private HarmonizationStudyService harmonizationStudyService;
@@ -74,7 +74,7 @@ class StudyDtos {
   Mica.StudyDto asDto(@NotNull Study study, boolean asDraft) {
     Mica.StudyDto.Builder builder = asDtoBuilder(study, asDraft);
     builder.setExtension(Mica.CollectionStudyDto.type, Mica.CollectionStudyDto.newBuilder().build());
-    builder.setPublished(collectionStudyService.isPublished(study.getId()));
+    builder.setPublished(individualStudyService.isPublished(study.getId()));
 
     return builder.build();
   }
@@ -82,7 +82,7 @@ class StudyDtos {
   @NotNull
   Mica.StudyDto asDto(@NotNull HarmonizationStudy study, boolean asDraft, List<HarmonizationDataset> datasets) {
     Mica.HarmonizationStudyDto.Builder hStudyBuilder = Mica.HarmonizationStudyDto.newBuilder();
-    HarmonizationDatasetHelper.TablesMerger tableMerger = HarmonizationDatasetHelper.newTablesMerger(datasets);
+    HarmonizedDatasetHelper.TablesMerger tableMerger = HarmonizedDatasetHelper.newTablesMerger(datasets);
     tableMerger.getStudyTables()
       .stream().filter(studyTable -> datasetDtos.isStudyTablePermitted(asDraft, "individual", studyTable.getStudyId()))
       .forEach(st -> hStudyBuilder.addStudyTables(datasetDtos.asDto(st, true)));
