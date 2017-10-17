@@ -27,7 +27,7 @@ import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.dataset.domain.StudyDatasetState;
 import org.obiba.mica.micaConfig.service.OpalService;
 import org.obiba.mica.study.domain.Study;
-import org.obiba.mica.study.service.CollectionStudyService;
+import org.obiba.mica.study.service.IndividualStudyService;
 import org.obiba.opal.rest.client.magma.RestDatasource;
 
 import com.google.common.eventbus.EventBus;
@@ -38,13 +38,13 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class CollectionDatasetServiceTest {
+public class CollectedDatasetServiceTest {
 
   @InjectMocks
-  private CollectionDatasetService collectionDatasetService;
+  private CollectedDatasetService collectedDatasetService;
 
   @Mock
-  private CollectionStudyService collectionStudyService;
+  private IndividualStudyService individualStudyService;
 
   @Mock
   private OpalService opalService;
@@ -82,10 +82,10 @@ public class CollectionDatasetServiceTest {
     RestDatasource r = mock(RestDatasource.class);
     when(r.getValueTable(anyString())).thenThrow(new MagmaRuntimeException());
     when(opalService.getDatasource(anyString(), anyString())).thenReturn(r);
-    when(collectionStudyService.findDraft(anyString())).thenReturn(study);
+    when(individualStudyService.findDraft(anyString())).thenReturn(study);
     when(studyDatasetStateRepository.findOne(anyString())).thenReturn(state);
 
-    collectionDatasetService.save(dataset);
+    collectedDatasetService.save(dataset);
   }
 
   private StudyDataset buildStudyDataset() {

@@ -407,8 +407,8 @@ mica.study
     function ($rootScope, $translate, $interpolate, NOTIFICATION_EVENTS) {
       this.popup = function (data, title, message, callback) {
         var conflicts = '{{network ? networks + ": " + network + ". " : "" }}' +
-          '{{harmonizationDataset ? harmonizationDatasets + ": " + harmonizationDataset + ". " : "" }}' +
-          '{{collectionDataset ? collectionDatasets + ": " + collectionDataset : "" }}';
+          '{{harmonizedDataset ? harmonizedDatasets + ": " + harmonizedDataset + ". " : "" }}' +
+          '{{collectedDataset ? collectedDatasets + ": " + collectedDataset : "" }}';
 
         $translate([message, 'networks', 'collected-datasets', 'harmonized-datasets'])
           .then(function (translation) {
@@ -417,11 +417,11 @@ mica.study
               message: translation[message] + ' ' + $interpolate(conflicts)(
                 {
                   networks: translation.networks,
-                  harmonizationDatasets: translation['harmonized-datasets'],
-                  collectionDatasets: translation['collected-datasets'],
+                  harmonizedDatasets: translation['harmonized-datasets'],
+                  collectedDatasets: translation['collected-datasets'],
                   network: data.network ? data.network.join(', ') : null,
-                  harmonizationDataset: data.harmonizationDataset ? data.harmonizationDataset.join(', ') : null,
-                  collectionDataset: data.studyDataset ? data.studyDataset.join(', ') : null
+                  harmonizedDataset: data.harmonizedDataset ? data.harmonizedDataset.join(', ') : null,
+                  collectedDataset: data.studyDataset ? data.studyDataset.join(', ') : null
                 })
             }, function () {
               if (callback) {

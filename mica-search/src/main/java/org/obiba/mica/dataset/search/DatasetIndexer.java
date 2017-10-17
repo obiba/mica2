@@ -12,8 +12,8 @@ package org.obiba.mica.dataset.search;
 
 import com.google.common.eventbus.Subscribe;
 import org.obiba.mica.dataset.event.*;
-import org.obiba.mica.dataset.service.CollectionDatasetService;
-import org.obiba.mica.dataset.service.HarmonizationDatasetService;
+import org.obiba.mica.dataset.service.CollectedDatasetService;
+import org.obiba.mica.dataset.service.HarmonizedDatasetService;
 import org.obiba.mica.spi.search.Indexable;
 import org.obiba.mica.spi.search.Indexer;
 import org.slf4j.Logger;
@@ -32,10 +32,10 @@ public class DatasetIndexer {
   private Indexer indexer;
 
   @Inject
-  private HarmonizationDatasetService harmonizationDatasetService;
+  private HarmonizedDatasetService harmonizedDatasetService;
 
   @Inject
-  private CollectionDatasetService collectionDatasetService;
+  private CollectedDatasetService collectedDatasetService;
 
   @Async
   @Subscribe
@@ -76,7 +76,7 @@ public class DatasetIndexer {
     if (indexer.hasIndex(Indexer.PUBLISHED_VARIABLE_INDEX))
       indexer.dropIndex(Indexer.PUBLISHED_VARIABLE_INDEX);
 
-    harmonizationDatasetService.indexAll();
-    collectionDatasetService.indexAll();
+    harmonizedDatasetService.indexAll();
+    collectedDatasetService.indexAll();
   }
 }

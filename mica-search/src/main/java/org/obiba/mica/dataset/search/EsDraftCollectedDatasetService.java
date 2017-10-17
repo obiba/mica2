@@ -11,11 +11,10 @@
 package org.obiba.mica.dataset.search;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.obiba.mica.dataset.domain.HarmonizationDataset;
-import org.obiba.mica.dataset.domain.HarmonizationDatasetState;
-import org.obiba.mica.dataset.service.DraftHarmonizationDatasetService;
-import org.obiba.mica.dataset.service.HarmonizationDatasetService;
-import org.obiba.mica.search.AbstractDocumentService;
+import org.obiba.mica.dataset.domain.StudyDataset;
+import org.obiba.mica.dataset.domain.StudyDatasetState;
+import org.obiba.mica.dataset.service.CollectedDatasetService;
+import org.obiba.mica.dataset.service.DraftCollectedDatasetService;
 import org.obiba.mica.spi.search.Indexer;
 import org.obiba.mica.spi.search.Searcher;
 import org.springframework.stereotype.Service;
@@ -27,17 +26,17 @@ import java.util.Collection;
 import java.util.stream.Collectors;
 
 @Service
-class EsDraftHarmonizationDatasetService extends AbstractDocumentService<HarmonizationDataset> implements DraftHarmonizationDatasetService {
+class EsDraftCollectedDatasetService extends AbstractEsDatasetService<StudyDataset> implements DraftCollectedDatasetService {
 
   @Inject
   private ObjectMapper objectMapper;
 
   @Inject
-  private HarmonizationDatasetService harmonizationDatasetService;
+  private CollectedDatasetService collectedDatasetService;
 
   @Override
-  protected HarmonizationDataset processHit(Searcher.DocumentResult res) throws IOException {
-    return objectMapper.readValue(res.getSourceInputStream(), HarmonizationDataset.class);
+  protected StudyDataset processHit(Searcher.DocumentResult res) throws IOException {
+    return objectMapper.readValue(res.getSourceInputStream(), StudyDataset.class);
   }
 
   @Override
@@ -61,8 +60,8 @@ class EsDraftHarmonizationDatasetService extends AbstractDocumentService<Harmoni
     return new Searcher.IdFilter() {
       @Override
       public Collection<String> getValues() {
-        return harmonizationDatasetService.findAllStates().stream().map(HarmonizationDatasetState::getId)
-            .filter(s -> subjectAclService.isPermitted("/draft/harmonized-dataset", "VIEW", s))
+        return collectedDatasetService.findAllStates().stream().map(StudyDatasetState::getId)
+            .filter(s -> subjectAclService.isPermitted("/draft/collected-dataset", "VIEW", s))
             .collect(Collectors.toList());
       }
     };

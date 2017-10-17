@@ -82,9 +82,9 @@ import static java.util.stream.Collectors.toList;
 
 @Service
 @Validated
-public class HarmonizationDatasetService extends DatasetService<HarmonizationDataset, HarmonizationDatasetState> {
+public class HarmonizedDatasetService extends DatasetService<HarmonizationDataset, HarmonizationDatasetState> {
 
-  private static final Logger log = LoggerFactory.getLogger(HarmonizationDatasetService.class);
+  private static final Logger log = LoggerFactory.getLogger(HarmonizedDatasetService.class);
 
   @Inject
   private StudyService studyService;
@@ -565,10 +565,10 @@ public class HarmonizationDatasetService extends DatasetService<HarmonizationDat
     @Inject
     private EventBus eventBus;
 
-    private static final Logger log = LoggerFactory.getLogger(HarmonizationDatasetService.Helper.class);
+    private static final Logger log = LoggerFactory.getLogger(HarmonizedDatasetService.Helper.class);
 
     @Inject
-    HarmonizationDatasetService service;
+    HarmonizedDatasetService service;
 
     @CacheEvict(value = "dataset-variables", cacheResolver = "datasetVariablesCacheResolver", allEntries = true, beforeInvocation = true)
     public void evictCache(HarmonizationDataset dataset) {

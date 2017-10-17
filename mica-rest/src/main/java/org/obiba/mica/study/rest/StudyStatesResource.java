@@ -30,12 +30,10 @@ import org.obiba.mica.core.domain.EntityState;
 import org.obiba.mica.core.service.DocumentService;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.study.domain.BaseStudy;
-import org.obiba.mica.study.domain.HarmonizationStudyState;
 import org.obiba.mica.study.domain.Study;
-import org.obiba.mica.study.domain.StudyState;
 import org.obiba.mica.study.service.AbstractStudyService;
 import org.obiba.mica.study.service.DraftStudyService;
-import org.obiba.mica.study.service.CollectionStudyService;
+import org.obiba.mica.study.service.IndividualStudyService;
 import org.obiba.mica.study.service.HarmonizationStudyService;
 import org.obiba.mica.study.service.StudyService;
 import org.obiba.mica.web.model.Dtos;
@@ -53,7 +51,7 @@ public class StudyStatesResource {
   private StudyService studyService;
 
   @Inject
-  private CollectionStudyService collectionStudyService;
+  private IndividualStudyService individualStudyService;
 
   @Inject
   private HarmonizationStudyService harmonizationStudyService;
@@ -112,6 +110,6 @@ public class StudyStatesResource {
   }
 
   private AbstractStudyService<? extends EntityState, ? extends BaseStudy> getStudyServiceByType(@NotNull String type) {
-    return "individual-study".equals(type) ? collectionStudyService : harmonizationStudyService;
+    return "individual-study".equals(type) ? individualStudyService : harmonizationStudyService;
   }
 }

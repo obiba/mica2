@@ -11,7 +11,7 @@
 'use strict';
 
 mica.dataset
-  .factory('CollectionDatasetsResource', ['$resource',
+  .factory('CollectedDatasetsResource', ['$resource',
     function ($resource) {
       return $resource('ws/draft/collected-datasets', {}, {
         'query': {method: 'GET', errorHandler: true, isArray: true},
@@ -19,7 +19,7 @@ mica.dataset
       });
     }])
 
-  .factory('DraftCollectionDatasetsResource', ['$resource', 'DatasetModelService',
+  .factory('DraftCollectedDatasetsResource', ['$resource', 'DatasetModelService',
     function ($resource, DatasetModelService) {
       return $resource('ws/draft/collected-datasets?comment:comment', {}, {
         'save': {method: 'POST', errorHandler: true, transformRequest: function(dataset) {
@@ -28,7 +28,7 @@ mica.dataset
       });
     }])
 
-  .factory('CollectionDatasetResource', ['$resource', 'DatasetModelService',
+  .factory('CollectedDatasetResource', ['$resource', 'DatasetModelService',
     function ($resource, DatasetModelService) {
       return $resource('ws/draft/collected-dataset/:id', {}, {
         'save': {method: 'PUT', params: {id: '@id'}, errorHandler: true, transformRequest: function(dataset) {
@@ -40,7 +40,7 @@ mica.dataset
       });
     }])
 
-  .factory('CollectionDatasetPublicationResource', ['$resource',
+  .factory('CollectedDatasetPublicationResource', ['$resource',
     function ($resource) {
       return $resource('ws/draft/collected-dataset/:id/_publish', {}, {
         'publish': {method: 'PUT', params: {id: '@id'}},
@@ -56,7 +56,7 @@ mica.dataset
       });
     }])
 
-  .factory('HarmonizationDatasetsResource', ['$resource',
+  .factory('HarmonizedDatasetsResource', ['$resource',
     function ($resource) {
       return $resource('ws/draft/harmonized-datasets?comment:comment', {}, {
         'query': {method: 'GET', errorHandler: true, isArray: true},
@@ -64,7 +64,7 @@ mica.dataset
       });
     }])
 
-  .factory('DraftHarmonizationDatasetsResource', ['$resource', 'DatasetModelService',
+  .factory('DraftHarmonizedDatasetsResource', ['$resource', 'DatasetModelService',
     function ($resource, DatasetModelService) {
       return $resource('ws/draft/harmonized-datasets', {}, {
         'save': {method: 'POST', errorHandler: true, transformRequest: function(dataset) {
@@ -73,7 +73,7 @@ mica.dataset
       });
     }])
 
-  .factory('HarmonizationDatasetResource', ['$resource', 'DatasetModelService',
+  .factory('HarmonizedDatasetResource', ['$resource', 'DatasetModelService',
     function ($resource, DatasetModelService) {
       return $resource('ws/draft/harmonized-dataset/:id', {}, {
         'save': {method: 'PUT', params: {id: '@id'}, errorHandler: true, transformRequest: function(dataset) {
@@ -85,7 +85,7 @@ mica.dataset
       });
     }])
 
-  .factory('HarmonizationDatasetPublicationResource', ['$resource',
+  .factory('HarmonizedDatasetPublicationResource', ['$resource',
     function ($resource) {
       return $resource('ws/draft/harmonized-dataset/:id/_publish', {}, {
         'publish': {method: 'PUT', params: {id: '@id'}},
@@ -174,9 +174,9 @@ mica.dataset
     }])
 
   .factory('DatasetService', ['$rootScope',
-    'HarmonizationDatasetResource',
+    'HarmonizedDatasetResource',
     'NOTIFICATION_EVENTS',
-    function ($rootScope, HarmonizationDatasetResource, NOTIFICATION_EVENTS) {
+    function ($rootScope, HarmonizedDatasetResource, NOTIFICATION_EVENTS) {
 
       function getNames(name) {
         return name.map(function(entry) {

@@ -21,7 +21,7 @@ import org.obiba.magma.NoSuchVariableException;
 import org.obiba.mica.core.domain.BaseStudyTable;
 import org.obiba.mica.dataset.DatasetVariableResource;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
-import org.obiba.mica.dataset.service.HarmonizationDatasetService;
+import org.obiba.mica.dataset.service.HarmonizedDatasetService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.opal.web.model.Math;
@@ -40,7 +40,7 @@ public class DraftDataschemaDatasetVariableResource implements DatasetVariableRe
   private String variableName;
 
   @Inject
-  private HarmonizationDatasetService datasetService;
+  private HarmonizedDatasetService datasetService;
 
   @Inject
   private Dtos dtos;

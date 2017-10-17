@@ -3,7 +3,7 @@ package org.obiba.mica.core.upgrade;
 import javax.inject.Inject;
 
 import org.obiba.mica.dataset.HarmonizationDatasetStateRepository;
-import org.obiba.mica.dataset.service.HarmonizationDatasetService;
+import org.obiba.mica.dataset.service.HarmonizedDatasetService;
 import org.obiba.runtime.Version;
 import org.obiba.runtime.upgrade.UpgradeStep;
 import org.slf4j.Logger;
@@ -20,7 +20,7 @@ public class Mica3Upgrade implements UpgradeStep {
   private MongoTemplate mongoTemplate;
 
   @Inject
-  private HarmonizationDatasetService harmonizationDatasetService;
+  private HarmonizedDatasetService harmonizedDatasetService;
 
   @Inject
   private HarmonizationDatasetStateRepository harmonizationDatasetStateRepository;
@@ -156,7 +156,7 @@ public class Mica3Upgrade implements UpgradeStep {
 
   private void unpublishAllHarmonizationDataset() {
     harmonizationDatasetStateRepository.findByPublishedTagNotNull().forEach(
-      harmonizationDatasetState -> harmonizationDatasetService.unPublishState(harmonizationDatasetState.getId())
+      harmonizationDatasetState -> harmonizedDatasetService.unPublishState(harmonizationDatasetState.getId())
     );
   }
 

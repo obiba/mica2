@@ -60,7 +60,7 @@ import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.domain.StudyState;
 import org.obiba.mica.study.event.DraftStudyUpdatedEvent;
-import org.obiba.mica.study.service.CollectionStudyService;
+import org.obiba.mica.study.service.IndividualStudyService;
 import org.obiba.mica.study.service.PublishedStudyService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -95,15 +95,15 @@ import static org.obiba.mica.core.domain.LocalizedString.en;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @TestExecutionListeners(DependencyInjectionTestExecutionListener.class)
-@ContextConfiguration(classes = { CollectionStudyServiceTest.Config.class, JsonConfiguration.class })
+@ContextConfiguration(classes = { IndividualStudyServiceTest.Config.class, JsonConfiguration.class })
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-public class CollectionStudyServiceTest {
+public class IndividualStudyServiceTest {
 
   @Rule
   public ExpectedException exception = ExpectedException.none();
 
   @Inject
-  private CollectionStudyService collectionStudyService;
+  private IndividualStudyService individualStudyService;
 
   @Inject
   private StudyStateRepository studyStateRepository;
@@ -136,7 +136,7 @@ public class CollectionStudyServiceTest {
 
     Study study = new Study();
     study.setName(en("name en").forFr("name fr"));
-    collectionStudyService.save(study);
+    individualStudyService.save(study);
 
     List<StudyState> studyStates = studyStateRepository.findAll();
     assertThat(studyStates).hasSize(1);
@@ -148,7 +148,7 @@ public class CollectionStudyServiceTest {
 
     verify(eventBus).post(any(DraftStudyUpdatedEvent.class));
 
-    Study retrievedStudy = collectionStudyService.findDraft(study.getId());
+    Study retrievedStudy = individualStudyService.findDraft(study.getId());
     assertThat(retrievedStudy).areFieldsEqualToEachOther(study);
   }
 
@@ -163,8 +163,8 @@ public class CollectionStudyServiceTest {
     persons.add(person);
     study.getMemberships().get(Membership.CONTACT).addAll(persons.stream().map(e -> new Membership(e, "contact")).collect(Collectors.toList()));
 
-    collectionStudyService.save(study);
-    Study retrievedStudy = collectionStudyService.findDraft(study.getId());
+    individualStudyService.save(study);
+    Study retrievedStudy = individualStudyService.findDraft(study.getId());
 
     List<Person> retrievedPersons = retrievedStudy.getMemberships().get(Membership.CONTACT).stream().map(Membership::getPerson).collect(Collectors.toList());
     assertThat(retrievedPersons).contains(person);
@@ -174,10 +174,10 @@ public class CollectionStudyServiceTest {
   public void test_update_study() throws Exception {
     Study study = new Study();
     study.setName(en("name en to update").forFr("name fr to update"));
-    collectionStudyService.save(study);
+    individualStudyService.save(study);
 
     study.setName(en("new name en").forFr("new name fr"));
-    collectionStudyService.save(study);
+    individualStudyService.save(study);
 
     List<StudyState> studyStates = studyStateRepository.findAll();
     assertThat(studyStates).hasSize(1);
@@ -189,7 +189,7 @@ public class CollectionStudyServiceTest {
 
     verify(eventBus, times(2)).post(any(DraftStudyUpdatedEvent.class));
 
-    Study retrievedStudy = collectionStudyService.findDraft(study.getId());
+    Study retrievedStudy = individualStudyService.findDraft(study.getId());
     assertThat(retrievedStudy).areFieldsEqualToEachOther(study);
   }
 
@@ -197,23 +197,23 @@ public class CollectionStudyServiceTest {
   public void test_publish_current() throws Exception {
     Study study = new Study();
     study.setName(en("name en").forFr("name fr"));
-    collectionStudyService.save(study);
+    individualStudyService.save(study);
 
-    assertThat(collectionStudyService.findAllStates()).hasSize(1);
-    assertThat(collectionStudyService.findPublishedStates()).isEmpty();
+    assertThat(individualStudyService.findAllStates()).hasSize(1);
+    assertThat(individualStudyService.findPublishedStates()).isEmpty();
 
-    collectionStudyService.publish(study.getId(), true);
-    List<StudyState> publishedStates = collectionStudyService.findPublishedStates();
+    individualStudyService.publish(study.getId(), true);
+    List<StudyState> publishedStates = individualStudyService.findPublishedStates();
     assertThat(publishedStates).hasSize(1);
     StudyState publishedState = publishedStates.get(0);
     assertThat(publishedState.getId()).isEqualTo(study.getId());
     assertThat(publishedState.getPublishedTag()).isEqualTo("1");
 
-    Study draft = collectionStudyService.findDraft(study.getId());
+    Study draft = individualStudyService.findDraft(study.getId());
     draft.setName(en("new name en").forFr("new name fr"));
-    collectionStudyService.save(draft);
+    individualStudyService.save(draft);
 
-    assertThat(collectionStudyService.findDraft(study.getId())).areFieldsEqualToEachOther(draft);
+    assertThat(individualStudyService.findDraft(study.getId())).areFieldsEqualToEachOther(draft);
   }
 
   @Test
@@ -221,10 +221,10 @@ public class CollectionStudyServiceTest {
     Stream.of("cancer", "gout", "diabetes").forEach(name -> {
       Study draft = new Study();
       draft.setName(en(name +" en").forFr(name + " fr"));
-      collectionStudyService.save(draft);
+      individualStudyService.save(draft);
     });
 
-    List<Study> drafts = collectionStudyService.findAllDraftStudies();
+    List<Study> drafts = individualStudyService.findAllDraftStudies();
     assertThat(drafts.size()).isEqualTo(3);
     assertThat(drafts.get(2).getName().get("en")).isEqualTo("diabetes en");
   }
@@ -234,16 +234,16 @@ public class CollectionStudyServiceTest {
     Study study = new Study();
     Stream.of("a", "b", "c").forEach(name -> {
       study.setName(en(name+ " en").forFr(name + " fr"));
-      collectionStudyService.save(study);
-      collectionStudyService.publish(study.getId(), true);
+      individualStudyService.save(study);
+      individualStudyService.publish(study.getId(), true);
     });
 
     FileUtil.delete(Config.BASE_REPO);
-    Study draft = collectionStudyService.findDraft(study.getId());
+    Study draft = individualStudyService.findDraft(study.getId());
     draft.setName(en("d en").forFr("d fr"));
-    collectionStudyService.save(draft);
-    collectionStudyService.publish(draft.getId(), true);
-    StudyState studyState = collectionStudyService.findStateById(draft.getId());
+    individualStudyService.save(draft);
+    individualStudyService.publish(draft.getId(), true);
+    StudyState studyState = individualStudyService.findStateById(draft.getId());
     assertThat(studyState.isPublished()).isTrue();
     assertThat(studyState.getPublishedTag()).isEqualTo("4");
   }
@@ -253,16 +253,16 @@ public class CollectionStudyServiceTest {
     Study study = new Study();
     Stream.of("a", "b", "c").forEach(name -> {
       study.setName(en(name+ " en").forFr(name + " fr"));
-      collectionStudyService.save(study);
-      collectionStudyService.publish(study.getId(), true);
+      individualStudyService.save(study);
+      individualStudyService.publish(study.getId(), true);
     });
 
     FileUtil.delete(Config.BASE_CLONE);
-    Study draft = collectionStudyService.findDraft(study.getId());
+    Study draft = individualStudyService.findDraft(study.getId());
     draft.setName(en("d en").forFr("d fr"));
-    collectionStudyService.save(draft);
-    collectionStudyService.publish(draft.getId(), true);
-    StudyState studyState = collectionStudyService.findStateById(draft.getId());
+    individualStudyService.save(draft);
+    individualStudyService.publish(draft.getId(), true);
+    StudyState studyState = individualStudyService.findStateById(draft.getId());
     assertThat(studyState.isPublished()).isTrue();
     assertThat(studyState.getPublishedTag()).isEqualTo("4");
   }
@@ -272,18 +272,18 @@ public class CollectionStudyServiceTest {
     Study study = new Study();
     Stream.of("a", "b", "c").forEach(name -> {
       study.setName(en(name+ " en").forFr(name + " fr"));
-      collectionStudyService.save(study);
-      collectionStudyService.publish(study.getId(), true);
+      individualStudyService.save(study);
+      individualStudyService.publish(study.getId(), true);
     });
 
     FileUtil.delete(Config.BASE_REPO);
     FileUtil.delete(Config.BASE_CLONE);
 
-    Study draft = collectionStudyService.findDraft(study.getId());
+    Study draft = individualStudyService.findDraft(study.getId());
     draft.setName(en("d en").forFr("d fr"));
-    collectionStudyService.save(draft);
-    collectionStudyService.publish(draft.getId(), true);
-    StudyState studyState = collectionStudyService.findStateById(draft.getId());
+    individualStudyService.save(draft);
+    individualStudyService.publish(draft.getId(), true);
+    StudyState studyState = individualStudyService.findStateById(draft.getId());
     assertThat(studyState.isPublished()).isTrue();
     assertThat(studyState.getPublishedTag()).isEqualTo("1");
   }
@@ -292,11 +292,11 @@ public class CollectionStudyServiceTest {
   public void test_delete_study() {
     Study study = new Study();
     study.setName(en("name en").forFr("name fr"));
-    collectionStudyService.save(study);
+    individualStudyService.save(study);
 
     assertThat(studyStateRepository.findAll()).hasSize(1);
 
-    collectionStudyService.delete(study.getId());
+    individualStudyService.delete(study.getId());
 
     assertThat(studyRepository.findAll()).hasSize(0);
     assertThat(studyStateRepository.findAll()).hasSize(0);
@@ -306,7 +306,7 @@ public class CollectionStudyServiceTest {
   public void test_delete_study_conflict() {
     Study study = new Study();
     study.setName(en("name en").forFr("name fr"));
-    collectionStudyService.save(study);
+    individualStudyService.save(study);
     Network network = new Network();
     network.setId("test");
     network.setStudyIds(new ArrayList() {{ add(study.getId()); }});
@@ -316,7 +316,7 @@ public class CollectionStudyServiceTest {
 
     exception.expect(ConstraintException.class);
 
-    collectionStudyService.delete(study.getId());
+    individualStudyService.delete(study.getId());
   }
 
   @After
@@ -348,8 +348,8 @@ public class CollectionStudyServiceTest {
     }
 
     @Bean
-    public CollectionStudyService studyService() {
-      return new CollectionStudyService();
+    public IndividualStudyService studyService() {
+      return new IndividualStudyService();
     }
 
     @Bean

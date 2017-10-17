@@ -39,9 +39,9 @@ import java.io.IOException;
 @Scope("request")
 @Path("/harmonized-dataset/{id}")
 @RequiresAuthentication
-public class PublishedHarmonizationDatasetResource extends AbstractPublishedDatasetResource<HarmonizationDataset> {
+public class PublishedHarmonizedDatasetResource extends AbstractPublishedDatasetResource<HarmonizationDataset> {
 
-  private static final Logger log = LoggerFactory.getLogger(PublishedHarmonizationDatasetResource.class);
+  private static final Logger log = LoggerFactory.getLogger(PublishedHarmonizedDatasetResource.class);
 
   @Inject
   private SubjectAclService subjectAclService;

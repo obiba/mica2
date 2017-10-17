@@ -21,7 +21,7 @@ import org.springframework.util.Assert;
 
 import com.google.common.collect.Maps;
 
-public final class HarmonizationDatasetHelper {
+public final class HarmonizedDatasetHelper {
 
 
   public static TablesMerger newTablesMerger(List<HarmonizationDataset> datasets) {

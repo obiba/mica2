@@ -30,7 +30,7 @@ import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.event.IndexStudiesEvent;
-import org.obiba.mica.study.service.CollectionStudyService;
+import org.obiba.mica.study.service.IndividualStudyService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.springframework.context.ApplicationContext;
@@ -38,10 +38,10 @@ import org.springframework.context.ApplicationContext;
 import com.codahale.metrics.annotation.Timed;
 
 @Path("/draft")
-public class DraftCollectionStudiesResource {
+public class DraftIndividualStudiesResource {
 
   @Inject
-  private CollectionStudyService collectionStudyService;
+  private IndividualStudyService individualStudyService;
 
   @Inject
   private SubjectAclService subjectAclService;
@@ -59,7 +59,7 @@ public class DraftCollectionStudiesResource {
   @Path("/individual-studies")
   @Timed
   public List<Mica.StudyDto> list() {
-    return collectionStudyService.findAllDraftStudies().stream()
+    return individualStudyService.findAllDraftStudies().stream()
       .filter(s -> subjectAclService.isPermitted("/draft/individual-study", "VIEW", s.getId()))
       .sorted((o1, o2) -> o1.getId().compareTo(o2.getId())).map(s -> dtos.asDto(s, true)).collect(Collectors.toList());
   }
@@ -68,7 +68,7 @@ public class DraftCollectionStudiesResource {
   @Path("/individual-studies/summaries")
   @Timed
   public List<Mica.StudySummaryDto> listSummaries(@QueryParam("id") List<String> ids) {
-    List<Study> studies = ids.isEmpty() ? collectionStudyService.findAllDraftStudies() : collectionStudyService.findAllDraftStudies(ids);
+    List<Study> studies = ids.isEmpty() ? individualStudyService.findAllDraftStudies() : individualStudyService.findAllDraftStudies(ids);
     return studies.stream().filter(s -> subjectAclService.isPermitted("/draft/individual-study", "VIEW", s.getId()))
       .map(dtos::asSummaryDto).collect(Collectors.toList());
   }
@@ -77,7 +77,7 @@ public class DraftCollectionStudiesResource {
   @Path("/individual-studies/digests")
   @Timed
   public List<Mica.DocumentDigestDto> listDigests(@QueryParam("id") List<String> ids) {
-    List<Study> studies = ids.isEmpty() ? collectionStudyService.findAllDraftStudies() : collectionStudyService.findAllDraftStudies(ids);
+    List<Study> studies = ids.isEmpty() ? individualStudyService.findAllDraftStudies() : individualStudyService.findAllDraftStudies(ids);
     return studies.stream().filter(s -> subjectAclService.isPermitted("/draft/individual-study", "VIEW", s.getId())).map(dtos::asDigestDto).collect(Collectors.toList());
   }
 
@@ -88,14 +88,14 @@ public class DraftCollectionStudiesResource {
   public Response create(@SuppressWarnings("TypeMayBeWeakened") Mica.StudyDto studyDto, @Context UriInfo uriInfo,
     @Nullable @QueryParam("comment") String comment) {
     Study study = (Study)dtos.fromDto(studyDto);
-    collectionStudyService.save(study, comment);
-    return Response.created(uriInfo.getBaseUriBuilder().path(DraftCollectionStudiesResource.class, "study").build(study.getId()))
+    individualStudyService.save(study, comment);
+    return Response.created(uriInfo.getBaseUriBuilder().path(DraftIndividualStudiesResource.class, "study").build(study.getId()))
       .build();
   }
 
   @Path("/individual-study/{id}")
-  public DraftCollectionStudyResource study(@PathParam("id") String id) {
-    DraftCollectionStudyResource studyResource = applicationContext.getBean(DraftCollectionStudyResource.class);
+  public DraftIndividualStudyResource study(@PathParam("id") String id) {
+    DraftIndividualStudyResource studyResource = applicationContext.getBean(DraftIndividualStudyResource.class);
     studyResource.setId(id);
     return studyResource;
   }

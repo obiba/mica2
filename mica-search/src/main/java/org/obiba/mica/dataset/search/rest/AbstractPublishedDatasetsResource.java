@@ -14,8 +14,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.HarmonizationDatasetState;
 import org.obiba.mica.dataset.domain.StudyDatasetState;
-import org.obiba.mica.dataset.service.CollectionDatasetService;
-import org.obiba.mica.dataset.service.HarmonizationDatasetService;
+import org.obiba.mica.dataset.service.CollectedDatasetService;
+import org.obiba.mica.dataset.service.HarmonizedDatasetService;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.spi.search.Indexer;
@@ -57,10 +57,10 @@ public abstract class AbstractPublishedDatasetsResource<T extends Dataset> {
   private SubjectAclService subjectAclService;
 
   @Inject
-  private CollectionDatasetService collectionDatasetService;
+  private CollectedDatasetService collectedDatasetService;
 
   @Inject
-  private HarmonizationDatasetService harmonizationDatasetService;
+  private HarmonizedDatasetService harmonizedDatasetService;
 
   protected Mica.DatasetsDto getDatasetDtos(Class<T> clazz, int from, int limit, @Nullable String sort,
                                             @Nullable String order, final @Nullable String studyId, @Nullable String queryString) {
@@ -106,9 +106,9 @@ public abstract class AbstractPublishedDatasetsResource<T extends Dataset> {
       public Collection<String> getValues() {
         List<String> ids;
         if ("StudyDataset".equals(clazz.getSimpleName()))
-          ids = collectionDatasetService.findPublishedStates().stream().map(StudyDatasetState::getId)
+          ids = collectedDatasetService.findPublishedStates().stream().map(StudyDatasetState::getId)
               .filter(s -> subjectAclService.isAccessible("/collected-dataset", s)).collect(Collectors.toList());
-        else ids = harmonizationDatasetService.findPublishedStates().stream().map(HarmonizationDatasetState::getId)
+        else ids = harmonizedDatasetService.findPublishedStates().stream().map(HarmonizationDatasetState::getId)
             .filter(s -> subjectAclService.isAccessible("/harmonized-dataset", s)).collect(Collectors.toList());
         return ids;
       }

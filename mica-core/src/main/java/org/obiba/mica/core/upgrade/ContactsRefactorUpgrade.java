@@ -20,7 +20,7 @@ import org.obiba.mica.study.StudyRepository;
 import org.obiba.mica.study.domain.StudyState;
 import org.obiba.mica.study.event.DraftStudyUpdatedEvent;
 import org.obiba.mica.study.event.StudyPublishedEvent;
-import org.obiba.mica.study.service.CollectionStudyService;
+import org.obiba.mica.study.service.IndividualStudyService;
 import org.obiba.runtime.Version;
 import org.obiba.runtime.upgrade.UpgradeStep;
 import org.slf4j.Logger;
@@ -38,7 +38,7 @@ public class ContactsRefactorUpgrade implements UpgradeStep {
   private StudyRepository studyRepository;
 
   @Inject
-  private CollectionStudyService collectionStudyService;
+  private IndividualStudyService individualStudyService;
 
   @Inject
   private NetworkRepository networkRepository;
@@ -64,7 +64,7 @@ public class ContactsRefactorUpgrade implements UpgradeStep {
     log.info("Executing contacts upgrade");
     studyRepository.findAll().forEach(study -> {
       study.getAllPersons().forEach(p -> p.setEmail(Strings.emptyToNull(p.getEmail())));
-      StudyState studyState = collectionStudyService.findStateById(study.getId());
+      StudyState studyState = individualStudyService.findStateById(study.getId());
 
       studyRepository.saveWithReferences(study);
 

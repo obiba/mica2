@@ -30,9 +30,9 @@ import com.codahale.metrics.annotation.Timed;
 @Scope("request")
 @Path("/harmonized-datasets")
 @RequiresAuthentication
-public class PublishedHarmonizationDatasetsResource extends AbstractPublishedDatasetsResource<HarmonizationDataset> {
+public class PublishedHarmonizedDatasetsResource extends AbstractPublishedDatasetsResource<HarmonizationDataset> {
 
-  private static final Logger log = LoggerFactory.getLogger(PublishedHarmonizationDatasetsResource.class);
+  private static final Logger log = LoggerFactory.getLogger(PublishedHarmonizedDatasetsResource.class);
 
   /**
    * Get {@link org.obiba.mica.dataset.domain.HarmonizationDataset}s, optionally filtered by study.

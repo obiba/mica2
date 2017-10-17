@@ -7,12 +7,12 @@ import org.json.JSONObject;
 import org.obiba.git.CommitInfo;
 import org.obiba.mica.core.domain.AbstractGitPersistable;
 import org.obiba.mica.core.domain.EntityState;
-import org.obiba.mica.dataset.service.CollectionDatasetService;
+import org.obiba.mica.dataset.service.CollectedDatasetService;
 import org.obiba.mica.micaConfig.service.TaxonomyConfigService;
 import org.obiba.mica.spi.search.TaxonomyTarget;
 import org.obiba.mica.study.domain.Population;
 import org.obiba.mica.study.domain.Study;
-import org.obiba.mica.study.service.CollectionStudyService;
+import org.obiba.mica.study.service.IndividualStudyService;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.obiba.opal.core.domain.taxonomy.Vocabulary;
 import org.obiba.runtime.Version;
@@ -41,10 +41,10 @@ public class Mica310Upgrade implements UpgradeStep {
   private MongoTemplate mongoTemplate;
 
   @Inject
-  private CollectionDatasetService collectionDatasetService;
+  private CollectedDatasetService collectedDatasetService;
 
   @Inject
-  private CollectionStudyService collectionStudyService;
+  private IndividualStudyService individualStudyService;
 
   @Inject
   private TaxonomyConfigService taxonomyConfigService;
@@ -110,31 +110,31 @@ public class Mica310Upgrade implements UpgradeStep {
 
   private void republishStudiesWithInvalidContent() {
 
-    List<Study> publishedStudies = collectionStudyService.findAllPublishedStudies();
+    List<Study> publishedStudies = individualStudyService.findAllPublishedStudies();
 
     for (Study publishedStudy : publishedStudies) {
 
       publishedStudy = transformToValidStudy(publishedStudy);
 
-      EntityState studyState = collectionStudyService.getEntityState(publishedStudy.getId());
+      EntityState studyState = individualStudyService.getEntityState(publishedStudy.getId());
       if (studyState.getRevisionsAhead() == 0) {
-        collectionStudyService.save(publishedStudy);
-        collectionStudyService.publish(publishedStudy.getId(), true);
+        individualStudyService.save(publishedStudy);
+        individualStudyService.publish(publishedStudy.getId(), true);
       } else {
-        Study draftStudy = collectionStudyService.findStudy(publishedStudy.getId());
+        Study draftStudy = individualStudyService.findStudy(publishedStudy.getId());
         draftStudy = transformToValidStudy(draftStudy);
-        collectionStudyService.save(publishedStudy);
-        collectionStudyService.publish(publishedStudy.getId(), true);
-        collectionStudyService.save(draftStudy);
+        individualStudyService.save(publishedStudy);
+        individualStudyService.publish(publishedStudy.getId(), true);
+        individualStudyService.save(draftStudy);
       }
     }
 
     List<String> publishedStudiesIds = publishedStudies.stream().map(AbstractGitPersistable::getId).collect(toList());
-    collectionStudyService.findAllDraftStudies().stream()
+    individualStudyService.findAllDraftStudies().stream()
       .filter(unknownStateStudy -> !publishedStudiesIds.contains(unknownStateStudy.getId()))
       .filter(this::containsInvalidData)
       .map(this::transformToValidStudy)
-      .forEach(collectionStudyService::save);
+      .forEach(individualStudyService::save);
 
     removeTaxonomyTaxonomyFromMongo();
   }
@@ -244,15 +244,15 @@ public class Mica310Upgrade implements UpgradeStep {
     }
 
     logger.info("Indexing all Collected Datasets");
-    collectionDatasetService.indexAll();
+    collectedDatasetService.indexAll();
   }
 
   private void addLostMethods(Study study) {
 
-    Iterable<CommitInfo> commitInfos = collectionStudyService.getCommitInfos(study);
+    Iterable<CommitInfo> commitInfos = individualStudyService.getCommitInfos(study);
 
     List<JSONObject> history = StreamSupport.stream(commitInfos.spliterator(), false)
-      .map(commit -> collectionStudyService.getFromCommitAsJson(study, commit.getCommitId()))
+      .map(commit -> individualStudyService.getFromCommitAsJson(study, commit.getCommitId()))
       .collect(toList());
 
     addRecruitmentsIfMissing(study, history);

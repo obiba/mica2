@@ -40,20 +40,20 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
-public class HarmonizationDatasetServiceTest {
+public class HarmonizedDatasetServiceTest {
 
   @Rule
   public ExpectedException exception = ExpectedException.none();
 
   @Spy
   @InjectMocks
-  private HarmonizationDatasetService datasetService;
+  private HarmonizedDatasetService datasetService;
 
   @Mock
   private EventBus eventBus;
 
   @Mock
-  private HarmonizationDatasetService.Helper helper;
+  private HarmonizedDatasetService.Helper helper;
 
   private StudyTable st;
   private StudyTable st2;

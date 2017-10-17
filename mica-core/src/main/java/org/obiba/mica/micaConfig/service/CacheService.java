@@ -15,8 +15,8 @@ import javax.inject.Inject;
 import org.obiba.magma.NoSuchVariableException;
 import org.obiba.mica.core.domain.BaseStudyTable;
 import org.obiba.mica.dataset.domain.Dataset;
-import org.obiba.mica.dataset.service.CollectionDatasetService;
-import org.obiba.mica.dataset.service.HarmonizationDatasetService;
+import org.obiba.mica.dataset.service.CollectedDatasetService;
+import org.obiba.mica.dataset.service.HarmonizedDatasetService;
 import org.obiba.mica.security.event.SubjectAclUpdatedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,10 +35,10 @@ public class CacheService {
   private Helper helper;
 
   @Inject
-  private HarmonizationDatasetService harmonizationDatasetService;
+  private HarmonizedDatasetService harmonizedDatasetService;
 
   @Inject
-  private CollectionDatasetService collectionDatasetService;
+  private CollectedDatasetService collectedDatasetService;
 
   @Inject
   private EventBus eventBus;
@@ -64,8 +64,8 @@ public class CacheService {
   }
 
   public void clearDatasetVariablesCache() {
-    harmonizationDatasetService.findAllDatasets().forEach(dataset -> helper.clearDatasetVariablesCache(dataset));
-    collectionDatasetService.findAllDatasets().forEach(dataset -> helper.clearDatasetVariablesCache(dataset));
+    harmonizedDatasetService.findAllDatasets().forEach(dataset -> helper.clearDatasetVariablesCache(dataset));
+    collectedDatasetService.findAllDatasets().forEach(dataset -> helper.clearDatasetVariablesCache(dataset));
   }
 
   public void clearAuthorizationCache() {
@@ -91,10 +91,10 @@ public class CacheService {
     private static final Logger log = LoggerFactory.getLogger(CacheService.Helper.class);
 
     @Inject
-    private HarmonizationDatasetService harmonizationDatasetService;
+    private HarmonizedDatasetService harmonizedDatasetService;
 
     @Inject
-    private CollectionDatasetService collectionDatasetService;
+    private CollectedDatasetService collectedDatasetService;
 
     @CacheEvict(value = "dataset-variables", cacheResolver = "datasetVariablesCacheResolver", allEntries = true, beforeInvocation = true)
     public void clearDatasetVariablesCache(Dataset dataset) {
@@ -103,12 +103,12 @@ public class CacheService {
 
     @Async
     public void buildDatasetVariablesCache() {
-      harmonizationDatasetService.findAllPublishedDatasets().forEach(
-        dataset -> harmonizationDatasetService.getDatasetVariables(dataset)
+      harmonizedDatasetService.findAllPublishedDatasets().forEach(
+        dataset -> harmonizedDatasetService.getDatasetVariables(dataset)
           .forEach(v -> dataset.getAllOpalTables().forEach(st -> {
             String studyId = ((BaseStudyTable)st).getStudyId();
             try {
-              harmonizationDatasetService
+              harmonizedDatasetService
                 .getVariableSummary(dataset, v.getName(), studyId, st.getProject(), st.getTable());
             } catch(NoSuchVariableException ex) {
               //ignore
@@ -118,10 +118,10 @@ public class CacheService {
             }
           })));
 
-      collectionDatasetService.findAllDatasets()
-        .forEach(dataset -> collectionDatasetService.getDatasetVariables(dataset).forEach(v -> {
+      collectedDatasetService.findAllDatasets()
+        .forEach(dataset -> collectedDatasetService.getDatasetVariables(dataset).forEach(v -> {
           try {
-            collectionDatasetService.getVariableSummary(dataset, v.getName());
+            collectedDatasetService.getVariableSummary(dataset, v.getName());
           } catch(NoSuchVariableException ex) {
             //ignore
           } catch(Exception e) {

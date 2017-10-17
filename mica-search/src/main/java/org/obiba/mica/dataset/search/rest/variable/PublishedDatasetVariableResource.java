@@ -22,9 +22,9 @@ import org.obiba.mica.dataset.NoSuchDatasetException;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.search.rest.harmonization.PublishedDataschemaDatasetVariableResource;
 import org.obiba.mica.dataset.search.rest.harmonization.PublishedHarmonizedDatasetVariableResource;
-import org.obiba.mica.dataset.search.rest.collection.PublishedStudyDatasetVariableResource;
-import org.obiba.mica.dataset.service.HarmonizationDatasetService;
-import org.obiba.mica.dataset.service.CollectionDatasetService;
+import org.obiba.mica.dataset.search.rest.collection.PublishedCollectedDatasetVariableResource;
+import org.obiba.mica.dataset.service.HarmonizedDatasetService;
+import org.obiba.mica.dataset.service.CollectedDatasetService;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -36,10 +36,10 @@ import org.springframework.stereotype.Component;
 public class PublishedDatasetVariableResource {
 
   @Inject
-  private CollectionDatasetService collectionDatasetService;
+  private CollectedDatasetService collectedDatasetService;
 
   @Inject
-  private HarmonizationDatasetService harmonizationDatasetService;
+  private HarmonizedDatasetService harmonizedDatasetService;
 
   @Inject
   private ApplicationContext applicationContext;
@@ -52,17 +52,17 @@ public class PublishedDatasetVariableResource {
     DatasetVariable.IdResolver resolver = DatasetVariable.IdResolver.from(id);
     switch(resolver.getType()) {
       case Collected:
-        if (!collectionDatasetService.isPublished(resolver.getDatasetId())) throw NoSuchDatasetException.withId(resolver.getDatasetId());
-        resource = applicationContext.getBean(PublishedStudyDatasetVariableResource.class);
-        ((PublishedStudyDatasetVariableResource)resource).setLocale(locale);
+        if (!collectedDatasetService.isPublished(resolver.getDatasetId())) throw NoSuchDatasetException.withId(resolver.getDatasetId());
+        resource = applicationContext.getBean(PublishedCollectedDatasetVariableResource.class);
+        ((PublishedCollectedDatasetVariableResource)resource).setLocale(locale);
         break;
       case Dataschema:
-        if (!harmonizationDatasetService.isPublished(resolver.getDatasetId())) throw NoSuchDatasetException.withId(resolver.getDatasetId());
+        if (!harmonizedDatasetService.isPublished(resolver.getDatasetId())) throw NoSuchDatasetException.withId(resolver.getDatasetId());
         resource = applicationContext.getBean(PublishedDataschemaDatasetVariableResource.class);
         ((PublishedDataschemaDatasetVariableResource)resource).setLocale(locale);
         break;
       case Harmonized:
-        if (!harmonizationDatasetService.isPublished(resolver.getDatasetId())) throw NoSuchDatasetException.withId(resolver.getDatasetId());
+        if (!harmonizedDatasetService.isPublished(resolver.getDatasetId())) throw NoSuchDatasetException.withId(resolver.getDatasetId());
         resource = applicationContext.getBean(PublishedHarmonizedDatasetVariableResource.class);
         ((PublishedHarmonizedDatasetVariableResource)resource).setStudyId(resolver.getStudyId());
         ((PublishedHarmonizedDatasetVariableResource)resource).setProject(resolver.getProject());

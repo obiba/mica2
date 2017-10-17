@@ -36,7 +36,7 @@ import org.obiba.mica.core.domain.PublishCascadingScope;
 import org.obiba.mica.core.domain.RevisionStatus;
 import org.obiba.mica.core.service.AbstractGitPersistableService;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
-import org.obiba.mica.dataset.service.HarmonizationDatasetService;
+import org.obiba.mica.dataset.service.HarmonizedDatasetService;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.rest.FileResource;
 import org.obiba.mica.file.service.FileSystemService;
@@ -66,7 +66,7 @@ public class DraftHarmonizationStudyResource extends AbstractGitPersistableResou
   private HarmonizationStudyService studyService;
 
   @Inject
-  private HarmonizationDatasetService harmonizationDatasetService;
+  private HarmonizedDatasetService harmonizedDatasetService;
 
   @Inject
   private FileSystemService fileSystemService;
@@ -89,7 +89,7 @@ public class DraftHarmonizationStudyResource extends AbstractGitPersistableResou
     @QueryParam("participatingStudies") @DefaultValue("false") boolean participatingStudies) {
     checkPermission("/draft/harmonization-study", "VIEW", key);
     List<HarmonizationDataset> datasets = participatingStudies
-      ? harmonizationDatasetService.findAllDatasetsByHarmonizationStudy(id)
+      ? harmonizedDatasetService.findAllDatasetsByHarmonizationStudy(id)
       : Lists.newArrayList();
 
     return dtos.asDto(studyService.findDraft(id, locale), true, datasets);

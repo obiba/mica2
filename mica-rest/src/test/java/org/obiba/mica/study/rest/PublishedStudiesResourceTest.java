@@ -19,7 +19,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
 import org.obiba.mica.TestApplication;
-import org.obiba.mica.study.service.CollectionStudyService;
+import org.obiba.mica.study.service.IndividualStudyService;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.web.rest.TestUtil;
 import org.springframework.boot.test.SpringApplicationConfiguration;
@@ -67,7 +67,7 @@ public class PublishedStudiesResourceTest {
   private static final String UPD_SAMPLE_TEXT_ATTR = "sampleTextAttributeUpt";
 
   @Inject
-  private CollectionStudyService collectionStudyService;
+  private IndividualStudyService individualStudyService;
 
   private MockMvc restStudyMockMvc;
 
@@ -77,7 +77,7 @@ public class PublishedStudiesResourceTest {
   public void setup() {
     MockitoAnnotations.initMocks(this);
     PublishedStudiesResource publishedStudiesResource = new PublishedStudiesResource();
-    ReflectionTestUtils.setField(publishedStudiesResource, "studyRepository", collectionStudyService);
+    ReflectionTestUtils.setField(publishedStudiesResource, "studyRepository", individualStudyService);
 
     restStudyMockMvc = MockMvcBuilders.standaloneSetup(publishedStudiesResource).build();
 

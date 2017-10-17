@@ -21,8 +21,6 @@ import javax.ws.rs.Path;
 import org.obiba.mica.micaConfig.service.OpalService;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.study.domain.BaseStudy;
-import org.obiba.mica.study.domain.Study;
-import org.obiba.mica.study.service.CollectionStudyService;
 import org.obiba.mica.study.service.StudyService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;

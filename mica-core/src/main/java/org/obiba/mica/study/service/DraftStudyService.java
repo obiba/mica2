@@ -15,6 +15,6 @@ import org.obiba.mica.study.domain.Study;
 
 public interface DraftStudyService extends DraftDocumentService<Study> {
 
-  CollectionStudyService getCollectionStudyService();
+  IndividualStudyService getIndividualStudyService();
 
 }

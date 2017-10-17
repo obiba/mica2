@@ -35,7 +35,7 @@ import com.codahale.metrics.annotation.Timed;
 @Scope("request")
 @Path("/collected-dataset/{id}")
 @RequiresAuthentication
-public class PublishedStudyDatasetResource extends AbstractPublishedDatasetResource<StudyDataset> {
+public class PublishedCollectedDatasetResource extends AbstractPublishedDatasetResource<StudyDataset> {
 
   @Inject
   private SubjectAclService subjectAclService;
@@ -88,11 +88,11 @@ public class PublishedStudyDatasetResource extends AbstractPublishedDatasetResou
   }
 
   @Path("/variable/{variable}")
-  public PublishedStudyDatasetVariableResource getVariable(@PathParam("id") String id,
-    @PathParam("variable") String variable) {
+  public PublishedCollectedDatasetVariableResource getVariable(@PathParam("id") String id,
+                                                               @PathParam("variable") String variable) {
     checkAccess(id);
-    PublishedStudyDatasetVariableResource resource = applicationContext
-      .getBean(PublishedStudyDatasetVariableResource.class);
+    PublishedCollectedDatasetVariableResource resource = applicationContext
+      .getBean(PublishedCollectedDatasetVariableResource.class);
     resource.setDatasetId(id);
     resource.setVariableName(variable);
     return resource;

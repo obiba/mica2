@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 
 @Component
-public class CollectionStudyConfigService extends EntityConfigService<StudyConfig> {
+public class IndividualStudyConfigService extends EntityConfigService<StudyConfig> {
 
   @Inject
   StudyConfigRepository studyConfigRepository;

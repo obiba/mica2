@@ -8,7 +8,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.obiba.mica.dataset.rest.harmonization;
+package org.obiba.mica.dataset.rest.collection;
 
 import java.util.List;
 import java.util.stream.Stream;
@@ -32,9 +32,9 @@ import com.google.common.base.Strings;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.obiba.mica.core.service.DocumentService;
 import org.obiba.mica.dataset.domain.Dataset;
-import org.obiba.mica.dataset.domain.HarmonizationDataset;
-import org.obiba.mica.dataset.service.DraftHarmonizationDatasetService;
-import org.obiba.mica.dataset.service.HarmonizationDatasetService;
+import org.obiba.mica.dataset.domain.StudyDataset;
+import org.obiba.mica.dataset.service.DraftCollectedDatasetService;
+import org.obiba.mica.dataset.service.CollectedDatasetService;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
@@ -48,11 +48,12 @@ import static java.util.stream.Collectors.toList;
 @Component
 @Scope("request")
 @Path("/draft")
-public class DraftHarmonizationDatasetsResource {
+public class DraftCollectedDatasetsResource {
+
   private static final int MAX_LIMIT = 10000; //default ElasticSearch limit
 
   @Inject
-  private HarmonizationDatasetService datasetService;
+  private CollectedDatasetService datasetService;
 
   @Inject
   private SubjectAclService subjectAclService;
@@ -67,16 +68,16 @@ public class DraftHarmonizationDatasetsResource {
   private Helper helper;
 
   @Inject
-  private DraftHarmonizationDatasetService draftDatasetService;
+  private DraftCollectedDatasetService draftCollectedDatasetService;
 
   /**
-   * Get all {@link HarmonizationDataset}, optionally filtered by study.
+   * Get all {@link org.obiba.mica.dataset.domain.StudyDataset}, optionally filtered by study.
    *
    * @param studyId can be null, in which case all datasets are returned
    * @return
    */
   @GET
-  @Path("/harmonized-datasets")
+  @Path("/collected-datasets")
   @Timed
   public List<Mica.DatasetDto> list(@QueryParam("study") String studyId, @QueryParam("query") String query,
                                     @QueryParam("from") @DefaultValue("0") Integer from,
@@ -89,12 +90,12 @@ public class DraftHarmonizationDatasetsResource {
     if(limit < 0) throw new IllegalArgumentException("limit cannot be negative");
 
     if(Strings.isNullOrEmpty(query)) {
-      List<HarmonizationDataset> datasets = datasetService.findAllDatasets(studyId).stream()
-        .filter(s -> subjectAclService.isPermitted("/draft/harmonized-dataset", "VIEW", s.getId())).collect(toList());
+      List<StudyDataset> datasets = datasetService.findAllDatasets(studyId).stream()
+        .filter(s -> subjectAclService.isPermitted("/draft/collected-dataset", "VIEW", s.getId())).collect(toList());
       totalCount = datasets.size();
       result = datasets.stream().map(d -> dtos.asDto(d, true)).skip(from).limit(limit);
     } else {
-      DocumentService.Documents<HarmonizationDataset> datasets = draftDatasetService.find(from, limit, null, null, studyId, query);
+      DocumentService.Documents<StudyDataset> datasets = draftCollectedDatasetService.find(from, limit, null, null, studyId, query);
       totalCount = datasets.getTotal();
       result = datasetService.findAllDatasets(datasets.getList().stream().map(Dataset::getId).collect(toList())).stream().map(d -> dtos.asDto(d, true));
     }
@@ -102,36 +103,34 @@ public class DraftHarmonizationDatasetsResource {
     response.addHeader("X-Total-Count", Long.toString(totalCount));
 
     return result.collect(toList());
-
   }
 
   @POST
-  @Path("/harmonized-datasets")
+  @Path("/collected-datasets")
   @Timed
-  @RequiresPermissions({ "/draft/harmonized-dataset:ADD" })
+  @RequiresPermissions({ "/draft/collected-dataset:ADD" })
   public Response create(Mica.DatasetDto datasetDto, @Context UriInfo uriInfo,
                          @Nullable @QueryParam("comment") String comment) {
     Dataset dataset = dtos.fromDto(datasetDto);
-    if(!(dataset instanceof HarmonizationDataset))
-      throw new IllegalArgumentException("An harmonization dataset is expected");
+    if(!(dataset instanceof StudyDataset)) throw new IllegalArgumentException("An study dataset is expected");
 
-    datasetService.save((HarmonizationDataset) dataset, comment);
-    return Response
-      .created(uriInfo.getBaseUriBuilder().segment("draft", "harmonized-dataset", dataset.getId()).build()).build();
+    datasetService.save((StudyDataset) dataset, comment);
+    return Response.created(uriInfo.getBaseUriBuilder().segment("draft", "collected-dataset", dataset.getId()).build())
+      .build();
   }
 
   @PUT
-  @Path("/harmonized-datasets/_index")
+  @Path("/collected-datasets/_index")
   @Timed
-  @RequiresPermissions({ "/draft/harmonized-dataset:PUBLISH" })
+  @RequiresPermissions({ "/draft/collected-dataset:PUBLISH" })
   public Response reIndex() {
     helper.indexAll();
     return Response.noContent().build();
   }
 
-  @Path("/harmonized-dataset/{id}")
-  public DraftHarmonizationDatasetResource dataset(@PathParam("id") String id) {
-    DraftHarmonizationDatasetResource resource = applicationContext.getBean(DraftHarmonizationDatasetResource.class);
+  @Path("/collected-dataset/{id}")
+  public DraftCollectedDatasetResource dataset(@PathParam("id") String id) {
+    DraftCollectedDatasetResource resource = applicationContext.getBean(DraftCollectedDatasetResource.class);
     resource.setId(id);
     return resource;
   }
@@ -140,11 +139,12 @@ public class DraftHarmonizationDatasetsResource {
   public static class Helper {
 
     @Inject
-    private HarmonizationDatasetService harmonizationDatasetService;
+    private CollectedDatasetService collectedDatasetService;
 
     @Async
     public void indexAll() {
-      harmonizationDatasetService.indexAll();
+      collectedDatasetService.indexAll();
     }
   }
+
 }

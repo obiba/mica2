@@ -55,7 +55,7 @@ mica.entityConfig
           case 'DataCollectionEvent':
             return 'dataCollectionEvents';
           case 'CollectedDataset':
-          case 'HarmonizationDataset':
+          case 'HarmonizedDataset':
             return 'datasets';
           case 'Network':
             return 'Networks';

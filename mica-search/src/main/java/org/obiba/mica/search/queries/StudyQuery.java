@@ -18,7 +18,7 @@ import org.obiba.mica.spi.search.*;
 import org.obiba.mica.study.domain.BaseStudy;
 import org.obiba.mica.study.domain.HarmonizationStudy;
 import org.obiba.mica.study.domain.Study;
-import org.obiba.mica.study.service.CollectionStudyService;
+import org.obiba.mica.study.service.IndividualStudyService;
 import org.obiba.mica.study.service.HarmonizationStudyService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
@@ -42,7 +42,7 @@ import static org.obiba.mica.web.model.MicaSearch.StudyResultDto;
 public class StudyQuery extends AbstractDocumentQuery {
 
   @Inject
-  private CollectionStudyService collectionStudyService;
+  private IndividualStudyService individualStudyService;
 
   @Inject
   private HarmonizationStudyService harmonizationStudyService;
@@ -72,7 +72,7 @@ public class StudyQuery extends AbstractDocumentQuery {
     return new Searcher.IdFilter() {
       @Override
       public Collection<String> getValues() {
-        List<String> ids = collectionStudyService.findPublishedStates().stream().map(DefaultEntityBase::getId)
+        List<String> ids = individualStudyService.findPublishedStates().stream().map(DefaultEntityBase::getId)
             .filter(s -> subjectAclService.isAccessible("/individual-study", s)).collect(Collectors.toList());
         ids.addAll(harmonizationStudyService.findPublishedStates().stream().map(DefaultEntityBase::getId)
             .filter(s -> subjectAclService.isAccessible("/harmonization-study", s)).collect(Collectors.toList()));
