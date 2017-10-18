@@ -101,6 +101,7 @@ public class Mica310Upgrade implements UpgradeStep {
     for (Vocabulary vocabulary : studyTaxonomy.getVocabularies()) {
       if(vocabulariesWithFacet.contains(vocabulary.getName())) {
         vocabulary.addAttribute("facet", "true");
+        vocabulary.addAttribute("facetPosition", "0");
         vocabulary.addAttribute("facetExpanded", "false");
       }
     }
