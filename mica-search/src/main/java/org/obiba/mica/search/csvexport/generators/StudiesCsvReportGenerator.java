@@ -123,15 +123,13 @@ public class StudiesCsvReportGenerator extends CsvReportGeneratorImpl {
 
     if (mustShow("showStudiesStudyDatasetsColumn"))
       line.add(getNot0ValueOrDefault(studySummaryDto.getExtension(MicaSearch.CountStatsDto.studyCountStats).getStudyDatasets()));
+    if (mustShow("showStudiesVariablesColumn") && mustShow("showStudiesStudyVariablesColumn"))
+      line.add(getNot0ValueOrDefault(studySummaryDto.getExtension(MicaSearch.CountStatsDto.studyCountStats).getStudyVariables()));
+
     if (mustShow("showStudiesHarmonizationDatasetsColumn"))
       line.add(getNot0ValueOrDefault(studySummaryDto.getExtension(MicaSearch.CountStatsDto.studyCountStats).getHarmonizationDatasets()));
-
-    if (mustShow("showStudiesVariablesColumn")) {
-      if (mustShow("showStudiesStudyVariablesColumn"))
-        line.add(getNot0ValueOrDefault(studySummaryDto.getExtension(MicaSearch.CountStatsDto.studyCountStats).getStudyVariables()));
-      if (mustShow("showStudiesDataschemaVariablesColumn"))
-        line.add(getNot0ValueOrDefault(studySummaryDto.getExtension(MicaSearch.CountStatsDto.studyCountStats).getDataschemaVariables()));
-    }
+    if (mustShow("showStudiesVariablesColumn") && mustShow("showStudiesDataschemaVariablesColumn"))
+      line.add(getNot0ValueOrDefault(studySummaryDto.getExtension(MicaSearch.CountStatsDto.studyCountStats).getDataschemaVariables()));
 
     return line;
   }
@@ -169,15 +167,13 @@ public class StudiesCsvReportGenerator extends CsvReportGeneratorImpl {
 
     if (mustShow("showStudiesStudyDatasetsColumn"))
       line.add(getNot0ValueOrDefault(studySummaryDto.getExtension(MicaSearch.CountStatsDto.studyCountStats).getStudyDatasets()));
+    if (mustShow("showStudiesVariablesColumn") && mustShow("showStudiesStudyVariablesColumn"))
+      line.add(getNot0ValueOrDefault(studySummaryDto.getExtension(MicaSearch.CountStatsDto.studyCountStats).getStudyVariables()));
+
     if (mustShow("showStudiesHarmonizationDatasetsColumn"))
       line.add(getNot0ValueOrDefault(studySummaryDto.getExtension(MicaSearch.CountStatsDto.studyCountStats).getHarmonizationDatasets()));
-
-    if (mustShow("showStudiesVariablesColumn")) {
-      if (mustShow("showStudiesStudyVariablesColumn"))
-        line.add(getNot0ValueOrDefault(studySummaryDto.getExtension(MicaSearch.CountStatsDto.studyCountStats).getStudyVariables()));
-      if (mustShow("showStudiesDataschemaVariablesColumn"))
-        line.add(getNot0ValueOrDefault(studySummaryDto.getExtension(MicaSearch.CountStatsDto.studyCountStats).getDataschemaVariables()));
-    }
+    if (mustShow("showStudiesVariablesColumn") && mustShow("showStudiesDataschemaVariablesColumn"))
+      line.add(getNot0ValueOrDefault(studySummaryDto.getExtension(MicaSearch.CountStatsDto.studyCountStats).getDataschemaVariables()));
 
     return line;
   }
