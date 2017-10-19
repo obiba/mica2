@@ -15,6 +15,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -47,8 +48,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-
 
 @Component
 class DatasetDtos {
@@ -91,8 +92,7 @@ class DatasetDtos {
     Mica.DatasetDto.Builder builder = asBuilder(dataset);
     builder.setVariableType(DatasetVariable.Type.Collected.name());
 
-    if(dataset.hasStudyTable() &&
-      !Strings.isNullOrEmpty(dataset.getStudyTable().getStudyId()) &&
+    if(dataset.hasStudyTable() && !Strings.isNullOrEmpty(dataset.getStudyTable().getStudyId()) &&
       isStudyTablePermitted(asDraft, "individual", dataset.getStudyTable().getStudyId())) {
       Mica.CollectedDatasetDto.Builder sbuilder = Mica.CollectedDatasetDto.newBuilder()
         .setStudyTable(asDto(dataset.getStudyTable(), true));
@@ -131,24 +131,22 @@ class DatasetDtos {
 
     Mica.HarmonizedDatasetDto.Builder hbuilder = Mica.HarmonizedDatasetDto.newBuilder();
 
-    if (dataset.hasHarmonizationTable() &&
-      !Strings.isNullOrEmpty(dataset.getHarmonizationTable().getStudyId()) &&
+    if(dataset.hasHarmonizationTable() && !Strings.isNullOrEmpty(dataset.getHarmonizationTable().getStudyId()) &&
       isStudyTablePermitted(asDraft, "harmonization", dataset.getHarmonizationTable().getStudyId())) {
-      hbuilder.setHarmonizationTable(createHarmonizationLinkDtoFromHarmonizationTable(dataset.getHarmonizationTable(), asDraft));
+      hbuilder.setHarmonizationTable(
+        createHarmonizationLinkDtoFromHarmonizationTable(dataset.getHarmonizationTable(), asDraft));
     }
 
     if(!dataset.getStudyTables().isEmpty()) {
-      dataset.getStudyTables()
-        .stream().filter(studyTable -> isStudyTablePermitted(asDraft, "individual", studyTable.getStudyId()))
-        .forEach(studyTable -> hbuilder
-        .addStudyTables(asDto(studyTable, true)));
+      dataset.getStudyTables().stream()
+        .filter(studyTable -> isStudyTablePermitted(asDraft, "individual", studyTable.getStudyId()))
+        .forEach(studyTable -> hbuilder.addStudyTables(asDto(studyTable, true)));
     }
 
-    if (!dataset.getHarmonizationTables().isEmpty()) {
-      dataset.getHarmonizationTables()
-        .stream().filter(studyTable -> isStudyTablePermitted(asDraft, "harmonization", studyTable.getStudyId()))
-        .forEach(harmonizationTable -> hbuilder
-        .addHarmonizationTables(asDto(harmonizationTable, true)));
+    if(!dataset.getHarmonizationTables().isEmpty()) {
+      dataset.getHarmonizationTables().stream()
+        .filter(studyTable -> isStudyTablePermitted(asDraft, "harmonization", studyTable.getStudyId()))
+        .forEach(harmonizationTable -> hbuilder.addHarmonizationTables(asDto(harmonizationTable, true)));
     }
 
     builder.setExtension(Mica.HarmonizedDatasetDto.type, hbuilder.build());
@@ -210,54 +208,34 @@ class DatasetDtos {
     return asDto(variable, Collections.emptyList(), "en");
   }
 
+  List<Mica.DatasetVariableDto> asDtos(Map<String, List<DatasetVariable>> studyIdVariableMap,
+    @NotNull List<Taxonomy> taxonomies, String locale) {
+    List<Mica.DatasetVariableDto> variableDtos = Lists.newArrayList();
+    List<Mica.StudySummaryDto> studySummaryDtos = this.studySummaryDtos.asDtos(studyIdVariableMap.keySet());
+
+    for(Mica.StudySummaryDto dto : studySummaryDtos) {
+      variableDtos.addAll(studyIdVariableMap.get(dto.getId()).stream().map(variable -> {
+        Mica.DatasetVariableDto.Builder builder = asDtoBuilder(variable, taxonomies, locale);
+
+        if(variable.getStudyId() != null) {
+          builder.setStudyId(variable.getStudyId());
+          builder.setStudySummary(dto);
+        }
+
+        return builder.build();
+      }).collect(Collectors.toList()));
+    }
+
+    return variableDtos;
+  }
+
   @NotNull
   Mica.DatasetVariableDto asDto(@NotNull DatasetVariable variable, @NotNull List<Taxonomy> taxonomies, String locale) {
-    Mica.DatasetVariableDto.Builder builder = Mica.DatasetVariableDto.newBuilder() //
-      .setId(variable.getId()) //
-      .setDatasetId(variable.getDatasetId()) //
-      .addAllDatasetName(localizedStringDtos.asDto(variable.getDatasetName())) //
-      .setName(variable.getName()) //
-      .setEntityType(variable.getEntityType()) //
-      .setValueType(variable.getValueType())//
-      .setVariableType(variable.getVariableType().name()) //
-      .setRepeatable(variable.isRepeatable()) //
-      .setNature(variable.getNature()) //
-      .setIndex(variable.getIndex());
+    Mica.DatasetVariableDto.Builder builder = asDtoBuilder(variable, taxonomies, locale);
 
     if(variable.getStudyId() != null) {
       builder.setStudyId(variable.getStudyId());
       builder.setStudySummary(studySummaryDtos.asDto(variable.getStudyId()));
-    }
-
-    if(!Strings.isNullOrEmpty(variable.getOccurrenceGroup())) {
-      builder.setOccurrenceGroup(variable.getOccurrenceGroup());
-    }
-
-    if(!Strings.isNullOrEmpty(variable.getUnit())) {
-      builder.setUnit(variable.getUnit());
-    }
-
-    if(!Strings.isNullOrEmpty(variable.getReferencedEntityType())) {
-      builder.setReferencedEntityType(variable.getReferencedEntityType());
-    }
-
-    if(!Strings.isNullOrEmpty(variable.getMimeType())) {
-      builder.setMimeType(variable.getMimeType());
-    }
-
-    if(variable.getAttributes() != null) {
-      variable.getAttributes().asAttributeList()
-        .forEach(attribute -> builder.addAttributes(attributeDtos.asDto(attribute)));
-      if(taxonomies != null) {
-        taxonomies.forEach(taxonomy -> {
-          Mica.TermAttributesDto dto = asDto(taxonomy, variable.getAttributes(), locale);
-          if(dto.getVocabularyTermsCount() > 0) builder.addTermAttributes(dto);
-        });
-      }
-    }
-
-    if(variable.getCategories() != null) {
-      variable.getCategories().forEach(category -> builder.addCategories(asDto(category)));
     }
 
     return builder.build();
@@ -269,7 +247,8 @@ class DatasetDtos {
   }
 
   @NotNull
-  Mica.DatasetVariableSummaryDto asSummaryDto(@NotNull DatasetVariable variable, OpalTable opalTable, boolean includeSummaries) {
+  Mica.DatasetVariableSummaryDto asSummaryDto(@NotNull DatasetVariable variable, OpalTable opalTable,
+    boolean includeSummaries) {
     Mica.DatasetVariableSummaryDto.Builder builder = Mica.DatasetVariableSummaryDto.newBuilder() //
       .setResolver(asDto(DatasetVariable.IdResolver.from(variable.getId())));
 
@@ -278,9 +257,8 @@ class DatasetDtos {
         .forEach(attribute -> builder.addAttributes(attributeDtos.asDto(attribute)));
     }
 
-    if (opalTable instanceof StudyTable)
-      builder.setStudyTable(asDto((StudyTable) opalTable, includeSummaries));
-    else if (opalTable instanceof HarmonizationStudyTable) {
+    if(opalTable instanceof StudyTable) builder.setStudyTable(asDto((StudyTable) opalTable, includeSummaries));
+    else if(opalTable instanceof HarmonizationStudyTable) {
       builder.setHarmonizationStudyTable(asDto((HarmonizationStudyTable) opalTable, includeSummaries));
     }
 
@@ -362,7 +340,8 @@ class DatasetDtos {
     return asDto(harmonizationTable, false);
   }
 
-  public Mica.DatasetDto.HarmonizationTableDto.Builder asDto(HarmonizationStudyTable harmonizationTable, boolean includeSummary) {
+  public Mica.DatasetDto.HarmonizationTableDto.Builder asDto(HarmonizationStudyTable harmonizationTable,
+    boolean includeSummary) {
     Mica.DatasetDto.HarmonizationTableDto.Builder hBuilder = Mica.DatasetDto.HarmonizationTableDto.newBuilder()
       .setProject(harmonizationTable.getProject())
       .setTable(harmonizationTable.getTable())
@@ -370,7 +349,7 @@ class DatasetDtos {
       .setStudyId(harmonizationTable.getStudyId())
       .setPopulationId(harmonizationTable.getPopulationId());
 
-    if (includeSummary) hBuilder.setStudySummary(studySummaryDtos.asDto(harmonizationTable.getStudyId()));
+    if(includeSummary) hBuilder.setStudySummary(studySummaryDtos.asDto(harmonizationTable.getStudyId()));
 
     hBuilder.addAllName(localizedStringDtos.asDto(harmonizationTable.getName()));
     hBuilder.addAllDescription(localizedStringDtos.asDto(harmonizationTable.getDescription()));
@@ -403,10 +382,8 @@ class DatasetDtos {
     else if (opalTable instanceof HarmonizationStudyTable)
       aggDto.setHarmonizationStudyTable(asDto((HarmonizationStudyTable) opalTable));
 
-
     return aggDto;
   }
-
 
   public Mica.DatasetVariableContingencyDto.Builder asContingencyDto(@NotNull OpalTable opalTable,
     DatasetVariable variable, DatasetVariable crossVariable, @Nullable Search.QueryResultDto results) {
@@ -621,7 +598,7 @@ class DatasetDtos {
         .forEach(attribute -> builder.addAttributes(attributeDtos.asDto(attribute)));
     }
 
-    if (dataset.hasModel()) {
+    if(dataset.hasModel()) {
       builder.setContent(JSONUtils.toJSON(dataset.getModel()));
     }
 
@@ -645,7 +622,7 @@ class DatasetDtos {
     if(dto.getAttributesCount() > 0) {
       dto.getAttributesList().forEach(attributeDto -> dataset.addAttribute(attributeDtos.fromDto(attributeDto)));
     }
-    if (dto.hasContent()) {
+    if(dto.hasContent()) {
       dataset.setModel(JSONUtils.toMap(dto.getContent()));
     }
 
@@ -660,11 +637,12 @@ class DatasetDtos {
       dto.getStudyTablesList().forEach(tableDto -> harmonizationDataset.addStudyTable(fromDto(tableDto)));
     }
 
-    if (dto.getHarmonizationTablesCount() > 0) {
-      dto.getHarmonizationTablesList().forEach(tableDto -> harmonizationDataset.addHarmonizationTable(fromDto(tableDto)));
+    if(dto.getHarmonizationTablesCount() > 0) {
+      dto.getHarmonizationTablesList()
+        .forEach(tableDto -> harmonizationDataset.addHarmonizationTable(fromDto(tableDto)));
     }
 
-    if (dto.hasHarmonizationTable()) {
+    if(dto.hasHarmonizationTable()) {
       HarmonizationStudyTable harmonizationLink = new HarmonizationStudyTable();
       harmonizationLink.setProject(dto.getHarmonizationTable().getProject());
       harmonizationLink.setTable(dto.getHarmonizationTable().getTable());
@@ -712,21 +690,23 @@ class DatasetDtos {
     return table;
   }
 
-  private Mica.DatasetDto.HarmonizationTableDto.Builder createHarmonizationLinkDtoFromHarmonizationTable(HarmonizationStudyTable harmonizationLink, boolean asDraft) {
-    Mica.DatasetDto.HarmonizationTableDto.Builder harmonizationLinkBuilder = Mica.DatasetDto.HarmonizationTableDto.newBuilder();
+  private Mica.DatasetDto.HarmonizationTableDto.Builder createHarmonizationLinkDtoFromHarmonizationTable(
+    HarmonizationStudyTable harmonizationLink, boolean asDraft) {
+    Mica.DatasetDto.HarmonizationTableDto.Builder harmonizationLinkBuilder = Mica.DatasetDto.HarmonizationTableDto
+      .newBuilder();
 
-    if (!Strings.isNullOrEmpty(harmonizationLink.getProject()))
+    if(!Strings.isNullOrEmpty(harmonizationLink.getProject()))
       harmonizationLinkBuilder.setProject(harmonizationLink.getProject());
 
-    if (!Strings.isNullOrEmpty(harmonizationLink.getTable()))
+    if(!Strings.isNullOrEmpty(harmonizationLink.getTable()))
       harmonizationLinkBuilder.setTable(harmonizationLink.getTable());
 
     String studyId = harmonizationLink.getStudyId();
 
-    if (asDraft && studyId != null) {
-        harmonizationLinkBuilder.setStudyId(harmonizationLink.getStudyId());
-        harmonizationLinkBuilder.setPopulationId(harmonizationLink.getPopulationId());
-    } else if (!asDraft && studyId != null && publishedStudyService.findById(studyId) != null) {
+    if(asDraft && studyId != null) {
+      harmonizationLinkBuilder.setStudyId(harmonizationLink.getStudyId());
+      harmonizationLinkBuilder.setPopulationId(harmonizationLink.getPopulationId());
+    } else if(!asDraft && studyId != null && publishedStudyService.findById(studyId) != null) {
       harmonizationLinkBuilder.setStudyId(harmonizationLink.getStudyId());
       harmonizationLinkBuilder.setPopulationId(harmonizationLink.getPopulationId());
     } else {
@@ -734,8 +714,56 @@ class DatasetDtos {
       harmonizationLinkBuilder.setPopulationId("-");
     }
 
-    if (studyId != null) harmonizationLinkBuilder.setStudySummary(studySummaryDtos.asHarmoStudyDto(studyId));
+    if(studyId != null) harmonizationLinkBuilder.setStudySummary(studySummaryDtos.asHarmoStudyDto(studyId));
 
     return harmonizationLinkBuilder;
+  }
+
+  private Mica.DatasetVariableDto.Builder asDtoBuilder(@NotNull DatasetVariable variable,
+    @NotNull List<Taxonomy> taxonomies, String locale) {
+    Mica.DatasetVariableDto.Builder builder = Mica.DatasetVariableDto.newBuilder()
+      .setId(variable.getId())
+      .setDatasetId(variable.getDatasetId())
+      .addAllDatasetName(localizedStringDtos.asDto(variable.getDatasetName()))
+      .setName(variable.getName())
+      .setEntityType(variable.getEntityType())
+      .setValueType(variable.getValueType())
+      .setVariableType(variable.getVariableType().name())
+      .setRepeatable(variable.isRepeatable())
+      .setNature(variable.getNature())
+      .setIndex(variable.getIndex());
+
+    if(!Strings.isNullOrEmpty(variable.getOccurrenceGroup())) {
+      builder.setOccurrenceGroup(variable.getOccurrenceGroup());
+    }
+
+    if(!Strings.isNullOrEmpty(variable.getUnit())) {
+      builder.setUnit(variable.getUnit());
+    }
+
+    if(!Strings.isNullOrEmpty(variable.getReferencedEntityType())) {
+      builder.setReferencedEntityType(variable.getReferencedEntityType());
+    }
+
+    if(!Strings.isNullOrEmpty(variable.getMimeType())) {
+      builder.setMimeType(variable.getMimeType());
+    }
+
+    if(variable.getAttributes() != null) {
+      variable.getAttributes().asAttributeList()
+        .forEach(attribute -> builder.addAttributes(attributeDtos.asDto(attribute)));
+      if(taxonomies != null) {
+        taxonomies.forEach(taxonomy -> {
+          Mica.TermAttributesDto dto = asDto(taxonomy, variable.getAttributes(), locale);
+          if(dto.getVocabularyTermsCount() > 0) builder.addTermAttributes(dto);
+        });
+      }
+    }
+
+    if(variable.getCategories() != null) {
+      variable.getCategories().forEach(category -> builder.addCategories(asDto(category)));
+    }
+
+    return builder;
   }
 }

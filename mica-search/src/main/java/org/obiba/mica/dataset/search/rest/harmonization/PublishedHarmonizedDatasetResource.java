@@ -112,18 +112,7 @@ public class PublishedHarmonizedDatasetResource extends AbstractPublishedDataset
   public Mica.DatasetVariablesHarmonizationsDto getVariableHarmonizations(@PathParam("id") String id,
     @QueryParam("from") @DefaultValue("0") int from, @QueryParam("limit") @DefaultValue("10") int limit,
     @QueryParam("sort") @DefaultValue("index") String sort, @QueryParam("order") @DefaultValue("asc") String order) {
-    checkAccess(id);
-    Mica.DatasetVariablesHarmonizationsDto.Builder builder = Mica.DatasetVariablesHarmonizationsDto.newBuilder();
-    HarmonizationDataset dataset = getDataset(HarmonizationDataset.class, id);
-    Mica.DatasetVariablesDto variablesDto = getDatasetVariableDtos(id, DatasetVariable.Type.Dataschema, from, limit,
-      sort, order);
-
-    builder.setTotal(variablesDto.getTotal()).setLimit(variablesDto.getLimit()).setFrom(variablesDto.getFrom());
-
-    variablesDto.getVariablesList()
-      .forEach(variable -> builder.addVariableHarmonizations(getVariableHarmonizationDto(dataset, variable.getName())));
-
-    return builder.build();
+    return getVariableHarmonizationsInternal(id, from, limit, sort, order, true);
   }
 
   @GET
@@ -133,9 +122,9 @@ public class PublishedHarmonizedDatasetResource extends AbstractPublishedDataset
   public Response getVariableHarmonizationsAsCsv(@PathParam("id") String id,
     @QueryParam("sort") @DefaultValue("index") String sort, @QueryParam("order") @DefaultValue("asc") String order,
     @QueryParam("locale") @DefaultValue("en") String locale) throws IOException {
-    checkAccess(id);
     HarmonizationDataset dataset = getDataset(HarmonizationDataset.class, id);
-    Mica.DatasetVariablesHarmonizationsDto harmonizationVariables = getVariableHarmonizations(id, 0, 999999, sort, order);
+    Mica.DatasetVariablesHarmonizationsDto harmonizationVariables =
+      getVariableHarmonizationsInternal(id, 0, 999999, sort, order, false);
 
     CsvHarmonizationVariablesWriter writer = new CsvHarmonizationVariablesWriter(
       Lists.newArrayList("maelstrom", "Mlstr_harmo"));
@@ -184,6 +173,24 @@ public class PublishedHarmonizedDatasetResource extends AbstractPublishedDataset
         : DatasetVariable.OPAL_HARMONIZATION_TABLE_PREFIX);
     });
     return resource;
+  }
+
+  private Mica.DatasetVariablesHarmonizationsDto getVariableHarmonizationsInternal(String id,
+    int from, int limit, String sort, String order, boolean includeSummaries) {
+
+    checkAccess(id);
+    Mica.DatasetVariablesHarmonizationsDto.Builder builder = Mica.DatasetVariablesHarmonizationsDto.newBuilder();
+    HarmonizationDataset dataset = getDataset(HarmonizationDataset.class, id);
+    Mica.DatasetVariablesDto variablesDto = getDatasetVariableDtos(id, DatasetVariable.Type.Dataschema, from, limit,
+      sort, order);
+
+    builder.setTotal(variablesDto.getTotal()).setLimit(variablesDto.getLimit()).setFrom(variablesDto.getFrom());
+
+    variablesDto.getVariablesList()
+      .forEach(variable -> builder.addVariableHarmonizations(getVariableHarmonizationDto(dataset, variable.getName(), includeSummaries)));
+
+    return builder.build();
+
   }
 
   private void checkAccess(String id) {

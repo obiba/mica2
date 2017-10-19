@@ -10,8 +10,18 @@
 
 package org.obiba.mica.dataset.search.rest;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.base.Strings;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
+import javax.annotation.Nullable;
+import javax.inject.Inject;
+import javax.validation.constraints.NotNull;
+
 import org.obiba.magma.NoSuchVariableException;
 import org.obiba.mica.core.domain.BaseStudyTable;
 import org.obiba.mica.core.domain.OpalTable;
@@ -30,13 +40,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 
-import javax.annotation.Nullable;
-import javax.inject.Inject;
-import javax.validation.constraints.NotNull;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Collections;
-import java.util.List;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Strings;
 
 /**
  * Retrieve the {@link org.obiba.mica.dataset.domain.Dataset} from the published dataset index.
@@ -113,13 +118,17 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
         .setLimit(limit);
 
     List<Taxonomy> taxonomies = getTaxonomies();
-    results.getDocuments().forEach(res -> {
+
+    Map<String, List<DatasetVariable>> studyIdVariableMap = results.getDocuments().stream().map(res -> {
       try {
-        builder.addVariables(dtos.asDto(objectMapper.readValue(res.getSourceInputStream(), DatasetVariable.class), taxonomies));
-      } catch (IOException e) {
+        return objectMapper.readValue(res.getSourceInputStream(), DatasetVariable.class);
+      } catch(IOException e) {
         log.error("Failed retrieving {}", DatasetVariable.class.getSimpleName(), e);
+        return null;
       }
-    });
+    }).filter(Objects::nonNull).collect(Collectors.groupingBy(DatasetVariable::getStudyId));
+
+    builder.addAllVariables(dtos.asDtos(studyIdVariableMap, taxonomies));
 
     log.info("Response /{}/{}", Indexer.PUBLISHED_VARIABLE_INDEX, Indexer.VARIABLE_TYPE);
 
@@ -127,7 +136,7 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
   }
 
   protected Mica.DatasetVariableHarmonizationDto getVariableHarmonizationDto(HarmonizationDataset dataset,
-                                                                             String variableName) {
+                                                                             String variableName, boolean includeSummaries) {
     DatasetVariable.IdResolver variableResolver = DatasetVariable.IdResolver
         .from(dataset.getId(), variableName, DatasetVariable.Type.Dataschema);
     Mica.DatasetVariableHarmonizationDto.Builder builder = Mica.DatasetVariableHarmonizationDto.newBuilder();
@@ -137,7 +146,7 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
       try {
         builder.addDatasetVariableSummaries(
             getDatasetVariableSummaryDto(dataset.getId(), variableResolver.getName(), DatasetVariable.Type.Harmonized,
-                table));
+                table, includeSummaries));
       } catch (NoSuchVariableException e) {
         log.debug("ignore (case the study has not implemented this dataschema variable)", e);
       }
@@ -215,6 +224,15 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
                                                                         @NotNull String variableName, DatasetVariable.Type variableType, @Nullable OpalTable opalTable) {
     DatasetVariable variable = getDatasetVariable(datasetId, variableName, variableType, opalTable);
     return dtos.asSummaryDto(variable, opalTable, true);
+  }
+
+  protected Mica.DatasetVariableSummaryDto getDatasetVariableSummaryDto(@NotNull String datasetId,
+                                                                        @NotNull String variableName,
+                                                                        DatasetVariable.Type variableType,
+                                                                        @Nullable OpalTable opalTable,
+                                                                        boolean includeSummaries) {
+    DatasetVariable variable = getDatasetVariable(datasetId, variableName, variableType, opalTable);
+    return dtos.asSummaryDto(variable, opalTable, includeSummaries);
   }
 
   @NotNull
