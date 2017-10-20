@@ -60,12 +60,8 @@ public interface DocumentQueryInterface {
 
   /**
    * Executes a filtered query to retrieve documents and aggregations.
-   *
-   * @param studyIds
-   * @return List of study IDs
-   * @throws IOException
    */
-  List<String> query(List<String> studyIds, CountStatsData counts, QueryScope scope) throws IOException;
+  void query(List<String> studyIds, CountStatsData counts, QueryScope scope);
 
   Map<String, Integer> getStudyCounts();
 }

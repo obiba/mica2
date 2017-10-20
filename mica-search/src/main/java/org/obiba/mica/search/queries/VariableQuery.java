@@ -221,11 +221,10 @@ public class VariableQuery extends AbstractDocumentQuery {
   }
 
   @Override
-  public List<String> query(List<String> studyIds, CountStatsData counts, QueryScope scope) throws IOException {
+  public void query(List<String> studyIds, CountStatsData counts, QueryScope scope) {
     updateDatasetQuery();
-    List<String> ids = super.query(studyIds, null, scope == DETAIL ? DETAIL : NONE);
+    super.query(studyIds, null, scope == DETAIL ? DETAIL : NONE);
     if (datasetIdProvider != null) datasetIdProvider.setIds(getDatasetIds());
-    return ids;
   }
 
   private void updateDatasetQuery() {

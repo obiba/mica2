@@ -123,11 +123,10 @@ public class DatasetQuery extends AbstractDocumentQuery {
   }
 
   @Override
-  public List<String> query(List<String> studyIds, CountStatsData counts, QueryScope scope) throws IOException {
+  public void query(List<String> studyIds, CountStatsData counts, QueryScope scope) {
     updateDatasetQuery();
-    List<String> ids = super.query(studyIds, counts, scope);
+    super.query(studyIds, counts, scope);
     if (datasetIdProvider != null) datasetIdProvider.setIds(getDatasetIds());
-    return ids;
   }
 
   @Nullable

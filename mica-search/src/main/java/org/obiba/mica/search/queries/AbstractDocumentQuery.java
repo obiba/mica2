@@ -265,21 +265,22 @@ public abstract class AbstractDocumentQuery implements DocumentQueryInterface {
 
   /**
    * Executes a filtered query to retrieve documents and aggregations.
-   *
-   * @param studyIds
-   * @return List of study IDs
-   * @throws IOException
    */
-  public List<String> query(List<String> studyIds, CountStatsData counts, QueryScope scope) throws IOException {
+  public void query(List<String> studyIds, CountStatsData counts, QueryScope scope) {
     Query tempQuery = newStudyIdQuery(studyIds);
-    return mode == COVERAGE ? executeCoverage(tempQuery) : execute(tempQuery, scope, counts);
+
+    if (mode == COVERAGE) {
+      executeCoverage(tempQuery);
+    } else {
+      execute(tempQuery, scope, counts);
+    }
   }
 
   /**
    * Executes a query to retrieve documents and aggregations.
    */
-  private List<String> execute(Query query, QueryScope scope, CountStatsData counts) throws IOException {
-    if (query == null) return null;
+  private void execute(Query query, QueryScope scope, CountStatsData counts) {
+    if (query == null) return;
 
     aggregationTitleResolver.registerProviders(getAggregationMetaDataProviders());
     aggregationTitleResolver.refresh();
@@ -290,10 +291,9 @@ public abstract class AbstractDocumentQuery implements DocumentQueryInterface {
       if (scope == DETAIL) processHits(builder, results, scope, counts);
       processAggregations(builder, results);
       resultDto = builder.build();
-      return getResponseStudyIds(resultDto.getAggsList());
+      getResponseStudyIds(resultDto.getAggsList());
     } catch (Exception e) {
       log.error("Query execution error", e);
-      return null; //ignoring
     } finally {
       aggregationTitleResolver.unregisterProviders(getAggregationMetaDataProviders());
     }
@@ -301,13 +301,9 @@ public abstract class AbstractDocumentQuery implements DocumentQueryInterface {
 
   /**
    * Executes a query to retrieve documents and aggregations for coverage.
-   *
-   * @param query
-   * @return
-   * @throws IOException
    */
-  private List<String> executeCoverage(Query query) throws IOException {
-    if (query == null) return null;
+  private void executeCoverage(Query query) {
+    if (query == null) return;
 
     aggregationTitleResolver.registerProviders(getAggregationMetaDataProviders());
     aggregationTitleResolver.refresh();
@@ -317,15 +313,13 @@ public abstract class AbstractDocumentQuery implements DocumentQueryInterface {
       QueryResultDto.Builder builder = QueryResultDto.newBuilder().setTotalHits((int) results.getTotal());
       processAggregations(builder, results);
       resultDto = builder.build();
-      return getResponseStudyIds(resultDto.getAggsList());
+      getResponseStudyIds(resultDto.getAggsList());
     } catch (Exception e) {
       log.error("Coverage execution error", e);
-      return Lists.newArrayList(); //ignoring
     } finally {
       aggregationTitleResolver.unregisterProviders(getAggregationMetaDataProviders());
     }
   }
-
 
   protected List<String> getMandatorySourceFields() {
     return Lists.newArrayList();
@@ -426,17 +420,17 @@ public abstract class AbstractDocumentQuery implements DocumentQueryInterface {
 
   Map<String, Integer> getDocumentBucketCounts(String joinField, String bucketField, String bucketValue) {
     if (resultDto == null) return Maps.newHashMap();
-    return resultDto.getAggsList().stream() //
-        .filter(agg -> bucketField.equals(AggregationHelper.unformatName(agg.getAggregation()))) //
-        .map(d -> d.getExtension(MicaSearch.TermsAggregationResultDto.terms)) //
-        .flatMap(Collection::stream) //
-        .filter(t -> bucketValue.equals(t.getKey())) //
+    return resultDto.getAggsList().stream()
+        .filter(agg -> bucketField.equals(AggregationHelper.unformatName(agg.getAggregation())))
+        .map(d -> d.getExtension(MicaSearch.TermsAggregationResultDto.terms))
+        .flatMap(Collection::stream)
+        .filter(t -> bucketValue.equals(t.getKey()))
         .map(t -> t.getAggsList())
         .flatMap(Collection::stream)
-        .filter(agg -> joinField.equals(AggregationHelper.unformatName(agg.getAggregation()))) //
-        .map(d -> d.getExtension(MicaSearch.TermsAggregationResultDto.terms)) //
-        .flatMap(Collection::stream) //
-        .filter(s -> s.getCount() > 0) //
+        .filter(agg -> joinField.equals(AggregationHelper.unformatName(agg.getAggregation())))
+        .map(d -> d.getExtension(MicaSearch.TermsAggregationResultDto.terms))
+        .flatMap(Collection::stream)
+        .filter(s -> s.getCount() > 0)
         .collect(Collectors.toMap(MicaSearch.TermsAggregationResultDto::getKey, term -> term.getCount()));
   }
 

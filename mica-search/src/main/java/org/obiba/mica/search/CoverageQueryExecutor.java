@@ -95,9 +95,6 @@ public class CoverageQueryExecutor {
 
   /**
    * Extract hits from aggregations and merge them into the taxonomies descriptions.
-   *
-   * @param aggregations
-   * @return
    */
   private Iterable<MicaSearch.TaxonomyCoverageDto> getCoverages(List<MicaSearch.AggregationResultDto> aggregations) {
     Map<String, Map<String, MicaSearch.TermsAggregationResultDto>> aggTermsTitlesMap = aggregations.stream().collect(
@@ -150,9 +147,6 @@ public class CoverageQueryExecutor {
 
   /**
    * Extract the hits per taxonomy term and bucket.
-   *
-   * @param aggregations
-   * @return
    */
   @NotNull
   private Collection<BucketResult> extractBucketResults(List<MicaSearch.AggregationResultDto> aggregations) {
@@ -180,11 +174,6 @@ public class CoverageQueryExecutor {
   /**
    * For a {@link Taxonomy}, report the number of hits and optionally the
    * number of hits for each bucket.
-   *
-   * @param coverages
-   * @param taxonomy
-   * @param aggsMap
-   * @param bucketResults
    */
   private void addTaxonomyCoverage(List<MicaSearch.TaxonomyCoverageDto> coverages, Taxonomy taxonomy,
                                    Map<String, Map<String, Integer>> aggsMap, @Nullable List<BucketResult> bucketResults,
@@ -237,12 +226,6 @@ public class CoverageQueryExecutor {
   /**
    * For a taxonomy {@link Vocabulary}, report the number of hits and optionally the
    * number of hits for each bucket.
-   *
-   * @param taxoBuilder
-   * @param vocabulary
-   * @param hits
-   * @param bucketResults
-   * @return
    */
   private int addVocabularyCoverage(MicaSearch.TaxonomyCoverageDto.Builder taxoBuilder, Taxonomy taxonomy,
                                     Vocabulary vocabulary, Map<String, Integer> hits, @Nullable List<BucketResult> bucketResults,
@@ -307,11 +290,6 @@ public class CoverageQueryExecutor {
   /**
    * For a taxonomy {@link Term}, report the number of hits and optionally
    * the number of hits for each bucket.
-   *
-   * @param vocBuilder
-   * @param term
-   * @param hits
-   * @param bucketResults
    */
   private void addTermCoverage(MicaSearch.VocabularyCoverageDto.Builder vocBuilder, Term term,
                                Map<String, Integer> hits, @Nullable List<BucketResult> bucketResults,
