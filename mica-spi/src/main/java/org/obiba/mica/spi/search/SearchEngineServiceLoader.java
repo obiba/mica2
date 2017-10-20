@@ -11,11 +11,9 @@
 package org.obiba.mica.spi.search;
 
 import com.google.common.collect.Lists;
-import org.obiba.plugins.spi.ServicePluginLoader;
 
 import java.net.URLClassLoader;
 import java.util.Collection;
-import java.util.List;
 import java.util.ServiceLoader;
 
 /**

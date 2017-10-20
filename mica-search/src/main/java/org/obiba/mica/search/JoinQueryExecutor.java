@@ -18,8 +18,15 @@ import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.UncheckedTimeoutException;
 import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.micaConfig.service.TaxonomyService;
-import org.obiba.mica.search.queries.*;
-import org.obiba.mica.spi.search.*;
+import org.obiba.mica.search.queries.DatasetQuery;
+import org.obiba.mica.search.queries.DocumentQueryInterface;
+import org.obiba.mica.search.queries.NetworkQuery;
+import org.obiba.mica.search.queries.StudyQuery;
+import org.obiba.mica.search.queries.VariableQuery;
+import org.obiba.mica.spi.search.CountStatsData;
+import org.obiba.mica.spi.search.QueryMode;
+import org.obiba.mica.spi.search.QueryScope;
+import org.obiba.mica.spi.search.QueryType;
 import org.obiba.mica.spi.search.support.JoinQuery;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
@@ -36,8 +43,11 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
-import java.io.IOException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
@@ -45,7 +55,9 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.obiba.mica.spi.search.QueryScope.*;
+import static org.obiba.mica.spi.search.QueryScope.AGGREGATION;
+import static org.obiba.mica.spi.search.QueryScope.DETAIL;
+import static org.obiba.mica.spi.search.QueryScope.DIGEST;
 
 @Component
 @Scope("request")
@@ -78,38 +90,18 @@ public class JoinQueryExecutor {
   @Inject
   private Dtos dtos;
 
-  @Inject
-  private Searcher searcher;
-
   @Timed
-  public JoinQueryResultDto query(QueryType type, JoinQuery joinQuery) throws IOException {
+  public JoinQueryResultDto query(QueryType type, JoinQuery joinQuery) {
     return query(type, joinQuery, CountStatsData.newBuilder(), DETAIL, QueryMode.SEARCH);
   }
 
   @Timed
-  public JoinQueryResultDto queryCoverage(JoinQuery joinQuery) throws IOException {
+  public JoinQueryResultDto queryCoverage(JoinQuery joinQuery) {
     return query(QueryType.VARIABLE, joinQuery, null, DIGEST, QueryMode.COVERAGE);
   }
 
-  @Timed
-  public JoinQueryResultDto listQuery(QueryType type, String rqlQuery, String locale) throws IOException {
-    JoinQuery joinQuery = searcher.makeJoinQuery(rqlQuery);
-    initializeQueries(joinQuery, QueryMode.LIST);
-
-    execute(type, DETAIL, CountStatsData.newBuilder());
-
-    JoinQueryResultDto.Builder builder = JoinQueryResultDto.newBuilder();
-    if (variableQuery.getResultQuery() != null) builder.setVariableResultDto(variableQuery.getResultQuery());
-    if (datasetQuery.getResultQuery() != null) builder.setDatasetResultDto(datasetQuery.getResultQuery());
-    if (studyQuery.getResultQuery() != null) builder.setStudyResultDto(studyQuery.getResultQuery());
-    if (networkQuery.getResultQuery() != null) builder.setNetworkResultDto(networkQuery.getResultQuery());
-
-    return builder.build();
-  }
-
   private JoinQueryResultDto query(QueryType type, JoinQuery joinQuery,
-                                   CountStatsData.Builder countBuilder, QueryScope scope, QueryMode mode)
-      throws IOException {
+                                   CountStatsData.Builder countBuilder, QueryScope scope, QueryMode mode) {
 
     boolean havePermit = false;
     try {
@@ -137,15 +129,14 @@ public class JoinQueryExecutor {
   }
 
   private JoinQueryResultDto unsafeQuery(QueryType type, JoinQuery joinQuery,
-                                         CountStatsData.Builder countBuilder, QueryScope scope, QueryMode mode)
-      throws IOException {
+                                         CountStatsData.Builder countBuilder, QueryScope scope, QueryMode mode) {
     log.debug("Start query");
     initializeQueries(joinQuery, mode);
     return doQueries(type, joinQuery, countBuilder, scope);
   }
 
   private JoinQueryResultDto doQueries(QueryType type, JoinQuery joinQuery,
-                                       CountStatsData.Builder countBuilder, QueryScope scope) throws IOException {
+                                       CountStatsData.Builder countBuilder, QueryScope scope) {
     boolean queriesHaveFilters = Stream.of(variableQuery, datasetQuery, studyQuery, networkQuery)
         .anyMatch(DocumentQueryInterface::isQueryNotEmpty);
 
@@ -297,8 +288,7 @@ public class JoinQueryExecutor {
     };
   }
 
-  private void execute(QueryType type, QueryScope scope, CountStatsData.Builder countBuilder)
-      throws IOException {
+  private void execute(QueryType type, QueryScope scope, CountStatsData.Builder countBuilder) {
 
     CountStatsData countStats;
 
@@ -326,7 +316,7 @@ public class JoinQueryExecutor {
     }
   }
 
-  private List<String> executeJoin(QueryType type) throws IOException {
+  private List<String> executeJoin(QueryType type) {
     List<String> joinedIds = null;
 
     switch (type) {
@@ -399,7 +389,7 @@ public class JoinQueryExecutor {
     return countStats;
   }
 
-  private List<String> execute(DocumentQueryInterface docQuery, DocumentQueryInterface... subQueries) throws IOException {
+  private List<String> execute(DocumentQueryInterface docQuery, DocumentQueryInterface... subQueries) {
     List<DocumentQueryInterface> queries = Arrays.stream(subQueries)
         .filter(DocumentQueryInterface::isQueryNotEmpty)
         .collect(Collectors.toList());
@@ -427,13 +417,13 @@ public class JoinQueryExecutor {
     return joinedStudyIds;
   }
 
-  private void queryAggregations(List<String> studyIds, DocumentQueryInterface... queries) throws IOException {
+  private void queryAggregations(List<String> studyIds, DocumentQueryInterface... queries) {
     for (DocumentQueryInterface query : queries) {
       query.query(studyIds, null, AGGREGATION);
     }
   }
 
-  private List<String> queryStudyIds(List<DocumentQueryInterface> queries) throws IOException {
+  private List<String> queryStudyIds(List<DocumentQueryInterface> queries) {
     List<String> studyIds = queries.get(0).queryStudyIds();
 
     queries.stream().skip(1).forEach(query -> {
