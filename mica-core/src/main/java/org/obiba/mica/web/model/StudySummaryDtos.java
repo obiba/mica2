@@ -10,22 +10,6 @@
 
 package org.obiba.mica.web.model;
 
-import org.obiba.mica.core.domain.EntityState;
-import org.obiba.mica.study.domain.BaseStudy;
-import org.obiba.mica.study.domain.DataCollectionEvent;
-import org.obiba.mica.study.domain.HarmonizationStudy;
-import org.obiba.mica.study.domain.Population;
-import org.obiba.mica.study.domain.Study;
-import org.obiba.mica.study.domain.StudyState;
-import org.obiba.mica.study.service.PublishedDatasetVariableService;
-import org.obiba.mica.study.service.PublishedStudyService;
-import org.obiba.mica.study.service.StudyService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
-
-import javax.inject.Inject;
-import javax.validation.constraints.NotNull;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -35,7 +19,24 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.SortedSet;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import javax.inject.Inject;
+import javax.validation.constraints.NotNull;
+
+import org.obiba.mica.core.domain.EntityState;
+import org.obiba.mica.study.domain.BaseStudy;
+import org.obiba.mica.study.domain.DataCollectionEvent;
+import org.obiba.mica.study.domain.HarmonizationStudy;
+import org.obiba.mica.study.domain.Population;
+import org.obiba.mica.study.domain.Study;
+import org.obiba.mica.study.service.PublishedDatasetVariableService;
+import org.obiba.mica.study.service.PublishedStudyService;
+import org.obiba.mica.study.service.StudyService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 import static java.util.stream.Collectors.toSet;
 
@@ -291,5 +292,9 @@ class StudySummaryDtos {
     }
 
     return asDto(studyState);
+  }
+
+  List<Mica.StudySummaryDto> asDtos(Collection<String> studyIds) {
+    return studyIds.stream().map(this::asDto).collect(Collectors.toList());
   }
 }

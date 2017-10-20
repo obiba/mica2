@@ -251,7 +251,7 @@ public class PublishedDataschemaDatasetVariableResource extends AbstractPublishe
   @Timed
   public Mica.DatasetVariableHarmonizationDto getVariableHarmonizations() {
     HarmonizationDataset dataset = getDataset(HarmonizationDataset.class, datasetId);
-    return getVariableHarmonizationDto(dataset, variableName);
+    return getVariableHarmonizationDto(dataset, variableName, true);
   }
 
   @Override

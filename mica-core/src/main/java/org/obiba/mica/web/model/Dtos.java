@@ -335,6 +335,11 @@ public class Dtos {
   }
 
   @NotNull
+  public List<Mica.DatasetVariableDto> asDtos(Map<String, List<DatasetVariable>> studyIdVariableMap, @NotNull List<Taxonomy> taxonomies) {
+    return datasetDtos.asDtos(studyIdVariableMap, taxonomies, "en");
+  }
+
+  @NotNull
   public Mica.DatasetVariableDto asDto(@NotNull DatasetVariable variable, List<Taxonomy> taxonomies, String locale) {
     return datasetDtos.asDto(variable, taxonomies, locale);
   }
