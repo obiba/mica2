@@ -45,9 +45,6 @@
     "alias": "objectives"
     "static": "true"
     "localized": "true"
-    "facet": "true"
-    "facetPosition": "0"
-    "facetExpanded": "false"
 - "name": "opal"
   "title":
     "en": "Opal Server"
@@ -127,9 +124,6 @@
     "field": "memberships.investigator.person.fullName"
     "alias": "memberships-investigator-person-fullName"
     "static": "true"
-    "facet": "true"
-    "facetPosition": "0"
-    "facetExpanded": "false"
 - "name": "investigator-institution"
   "title":
     "en": "Investigator institution"
