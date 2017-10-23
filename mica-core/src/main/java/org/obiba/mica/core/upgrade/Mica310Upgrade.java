@@ -76,9 +76,7 @@ public class Mica310Upgrade implements UpgradeStep {
 
     logger.info("Add default facets in study taxonomy");
     ImmutableList<String> vocabulariesWithFacet = ImmutableList.<String>builder()
-      .add("objectives")
       .add("methods-design")
-      .add("investigator")
       .add("start")
       .add("end")
       .add("populations-selectionCriteria-countriesIso")
