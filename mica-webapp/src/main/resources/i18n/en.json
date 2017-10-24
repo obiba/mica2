@@ -1023,7 +1023,8 @@
     "faceted-navigation-help": "Select an entry from the menu on the left to start browsing in the repository.",
     "facet": {
       "more": "More",
-      "less": "Less"
+      "less": "Less",
+      "no-data": "No data matching this query."
     },
     "refresh-taxonomies": "Refresh Taxonomies",
     "showing": "Showing {{arg0}} / {{arg1}}"
