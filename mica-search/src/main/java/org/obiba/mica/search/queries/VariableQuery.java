@@ -284,7 +284,7 @@ public class VariableQuery extends AbstractDocumentQuery {
   @Override
   protected Properties getAggregationsProperties(List<String> filter) {
     Properties properties = new Properties();
-    if (mode != QueryMode.LIST && filter != null) {
+    if (mode != QueryMode.LIST && filter != null && !filter.isEmpty()) {
       List<Pattern> patterns = filter.stream().map(Pattern::compile).collect(Collectors.toList());
 
       getOpalTaxonomies().stream().filter(Taxonomy::hasVocabularies)
