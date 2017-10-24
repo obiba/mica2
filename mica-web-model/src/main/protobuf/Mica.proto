@@ -835,6 +835,8 @@ message MicaMetricsDto {
       required int64 total = 2;
       required int64 published = 3;
       optional int64 editing = 4;
+      optional int64 variables = 5;
+      optional int64 totalWithVariable = 6;
     }
 
     message OpalServerStatusDto {

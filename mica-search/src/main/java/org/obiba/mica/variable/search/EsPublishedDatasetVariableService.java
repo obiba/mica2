@@ -68,8 +68,13 @@ public class EsPublishedDatasetVariableService extends AbstractDocumentService<D
   }
 
   @Override
+  public long getCountByVariableType(DatasetVariable.Type type) {
+    return getCountByRql(String.format("variable(in(variableType,%s))", type));
+  }
+
+  @Override
   protected DatasetVariable processHit(Searcher.DocumentResult res) throws IOException {
-    return objectMapper.readValue(res.getSourceInputStream(), DatasetVariable.class);
+    return objectMapper.readValue(res.getSourceInputStream(), DatasetVariable .class);
   }
 
   @Override
