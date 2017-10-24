@@ -1023,7 +1023,8 @@
     "faceted-navigation-help": "Sélectionner une entrée dans le menu de gauche pour naviguer dans le catalogue.",
     "facet": {
       "more": "Plus",
-      "less": "Mois"
+      "less": "Moins",
+      "no-data": "Aucune donnée ne correspond à cette requête."
     },
     "refresh-taxonomies": "Rafraîchir les taxonomies",
     "showing": "Afficher {{arg0}} / {{arg1}}"
