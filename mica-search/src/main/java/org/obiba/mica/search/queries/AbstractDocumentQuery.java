@@ -168,7 +168,7 @@ public abstract class AbstractDocumentQuery implements DocumentQueryInterface {
 
   Properties getAggregationsProperties(List<String> filter, Taxonomy taxonomy) {
     Properties properties = new Properties();
-    if (mode != QueryMode.LIST && filter != null) {
+    if (mode != QueryMode.LIST && filter != null && !filter.isEmpty()) {
       List<Pattern> patterns = filter.stream().map(Pattern::compile).collect(Collectors.toList());
       taxonomy.getVocabularies().forEach(vocabulary -> {
         String field = vocabulary.getAttributes().containsKey("field")
