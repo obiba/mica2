@@ -391,7 +391,7 @@ public class JoinQueryExecutor {
 
   private List<String> execute(DocumentQueryInterface docQuery, DocumentQueryInterface... subQueries) {
     List<DocumentQueryInterface> queries = Arrays.stream(subQueries)
-        .filter(DocumentQueryInterface::isQueryNotEmpty)
+        .filter(DocumentQueryInterface::hasQueryBuilder)
         .collect(Collectors.toList());
 
     List<String> studyIds = null;
