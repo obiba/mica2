@@ -23,6 +23,7 @@ import com.google.common.base.MoreObjects;
  */
 @Document
 public class Study extends BaseStudy {
+  public static final String RESOURCE_PATH = "individual-study";
 
   private static final long serialVersionUID = 6559914069652243954L;
 
@@ -47,6 +48,7 @@ public class Study extends BaseStudy {
 
   @Override
   public String getResourcePath() {
-    return "individual-study";
+    return RESOURCE_PATH;
   }
+
 }

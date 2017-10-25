@@ -20,4 +20,7 @@ public interface PublishedDatasetVariableService extends PublishedDocumentServic
   long getCountByStudyId(String studyId);
 
   Map<String, Long> getCountByStudyIds(List<String> studyIds);
+
+  long getCountByVariableType(DatasetVariable.Type type);
+
 }

@@ -16,7 +16,7 @@ import org.obiba.mica.dataset.HarmonizationDatasetRepository;
 import org.obiba.mica.dataset.HarmonizationDatasetStateRepository;
 import org.obiba.mica.dataset.StudyDatasetRepository;
 import org.obiba.mica.dataset.StudyDatasetStateRepository;
-import org.obiba.mica.dataset.service.DraftCollectedDatasetService;
+import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.service.PublishedDatasetService;
 import org.obiba.mica.file.service.DraftFileService;
 import org.obiba.mica.file.service.PublishedFileService;
@@ -27,8 +27,11 @@ import org.obiba.mica.network.service.PublishedNetworkService;
 import org.obiba.mica.project.ProjectRepository;
 import org.obiba.mica.project.ProjectStateRepository;
 import org.obiba.mica.project.service.PublishedProjectService;
+import org.obiba.mica.study.HarmonizationStudyRepository;
+import org.obiba.mica.study.HarmonizationStudyStateRepository;
 import org.obiba.mica.study.StudyRepository;
 import org.obiba.mica.study.StudyStateRepository;
+import org.obiba.mica.study.domain.HarmonizationStudy;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.service.PublishedDatasetVariableService;
 import org.obiba.mica.study.service.PublishedStudyService;
@@ -39,6 +42,9 @@ public class MicaMetricsService {
 
   @Inject
   private StudyRepository studyRepository;
+
+  @Inject
+  private HarmonizationStudyStateRepository harmonizationStudyStateRepository;
 
   @Inject
   private StudyStateRepository studyStateRepository;
@@ -57,9 +63,6 @@ public class MicaMetricsService {
 
   @Inject
   private StudyDatasetRepository studyDatasetRepository;
-
-  @Inject
-  private DraftCollectedDatasetService draftCollectedDatasetService;
 
   @Inject
   private PublishedDatasetService publishedDatasetService;
@@ -91,37 +94,63 @@ public class MicaMetricsService {
   @Inject
   private PublishedFileService publishedFileService;
 
-  // Study
-  public long getStudiesCount() {
+  // Individual Study
+  public long getDraftIndividualStudiesCount() {
     return studyRepository.count();
   }
 
-  public long getPublishedStudiesCount() {
-    return publishedStudyService.getCount();
+  public long getPublishedIndividualStudiesCount() {
+    return publishedStudyService.getIndividualStudyCount();
   }
 
-  public long getDraftStudyFilesCount() {
-    return draftFileService.getCount(Study.class.getSimpleName().toLowerCase());
-  }
-
-  public long getEditingStudiesCount() {
+  public long getEditingIndividualStudiesCount() {
     return studyStateRepository.countByPublishedTagNotNullAndRevisionsAheadGreaterThanEqual(1);
   }
 
-  public long getPublishedStudyFilesCount() {
-    return publishedFileService.getCount(Study.class.getSimpleName().toLowerCase());
+  public long getDraftIndividualStudiesFilesCount() {
+    return draftFileService.getCount(Study.RESOURCE_PATH.toLowerCase());
   }
 
-  public long getStudiesWithVariablesCount() {
-    return draftCollectedDatasetService.getStudiesWithVariablesCount();
+  public long getPublishedIndividualStudiesFilesCount() {
+    return publishedFileService.getCount(Study.RESOURCE_PATH.toLowerCase());
   }
 
-  public long getPublishedStudiesWithVariablesCount() {
+  public long getPublishedIndividualStudiesWithVariablesCount() {
     return publishedDatasetService.getStudiesWithVariablesCount();
   }
 
+  public long getPublishedIndividualStudiesVariablesCount() {
+    return publishedDatasetVariableService.getCountByVariableType(DatasetVariable.Type.Collected);
+  }
+
+  // Harmonization Study
+
+  public long getDraftHarmonizationStudiesCount() {
+    return harmonizationDatasetRepository.count();
+  }
+
+  public long getPublishedHarmonizationStudiesCount() {
+    return publishedStudyService.getHarmonizationStudyCount();
+  }
+
+  public long getEditingHarmonizationStudiesCount() {
+    return harmonizationStudyStateRepository.countByPublishedTagNotNullAndRevisionsAheadGreaterThanEqual(1);
+  }
+
+  public long getDraftHarmonizationStudiesFilesCount() {
+    return draftFileService.getCount(HarmonizationStudy.RESOURCE_PATH.toLowerCase());
+  }
+
+  public long getPublishedHarmonizationStudiesFilesCount() {
+    return publishedFileService.getCount(HarmonizationStudy.RESOURCE_PATH.toLowerCase());
+  }
+
+  public long getPublishedHarmonizationStudiesVariablesCount() {
+    return publishedDatasetVariableService.getCountByVariableType(DatasetVariable.Type.Dataschema);
+  }
+
   // Network
-  public long getNetworksCount() {
+  public long getDraftNetworksCount() {
     return networkRepository.count();
   }
 
@@ -142,7 +171,7 @@ public class MicaMetricsService {
   }
 
   // Study Dataset
-  public long getStudyDatasetsCount() {
+  public long getDraftStudyDatasetsCount() {
     return studyDatasetRepository.count();
   }
 
@@ -163,7 +192,7 @@ public class MicaMetricsService {
   }
 
   // Harmonization Dataset
-  public long getHarmonizarionDatasetsCount() {
+  public long getDraftHarmonizarionDatasetsCount() {
     return harmonizationDatasetRepository.count();
   }
 
@@ -184,7 +213,7 @@ public class MicaMetricsService {
   }
 
   // Project
-  public long getProjectsCount() {
+  public long getDraftProjectsCount() {
     return projectRepository.count();
   }
 
@@ -196,7 +225,7 @@ public class MicaMetricsService {
     return projectStateRepository.countByPublishedTagNotNullAndRevisionsAheadGreaterThanEqual(1);
   }
 
-  public long getProjectFilesCount() {
+  public long getDraftProjectFilesCount() {
     return draftFileService.getCount("project");
   }
 

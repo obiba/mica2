@@ -102,12 +102,10 @@
   "metrics": {
     "mica": {
       "networks": "Networks",
-      "studies": "Studies",
+      "studies": "Individual Studies",
       "studies-with-variables": "Individual Studies with Variables",
-      "dashboard-studies-with-variables": "Studies with Variables",
       "study-with-variables": "Individual Study with Variables",
-      "harmonization-studies-with-variables": "Harmonization Studies with Variables",
-      "harmonization-study-with-variables": "Harmonization Study with Variables",
+      "harmonization-studies": "Harmonization Studies",
       "collected-datasets": "Collected Datasets",
       "harmonized-datasets": "Harmonized Datasets",
       "variables": "Variables",

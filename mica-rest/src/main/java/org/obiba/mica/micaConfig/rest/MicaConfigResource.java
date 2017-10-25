@@ -64,6 +64,7 @@ import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.network.event.IndexNetworksEvent;
 import org.obiba.mica.project.domain.Project;
 import org.obiba.mica.security.Roles;
+import org.obiba.mica.study.domain.HarmonizationStudy;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.event.IndexStudiesEvent;
 import org.obiba.mica.user.UserProfileService;
@@ -332,66 +333,83 @@ public class MicaConfigResource {
       .addDocuments(
         Mica.MicaMetricsDto.DocumentMetricsDto.newBuilder()
           .setType(Network.class.getSimpleName())
-          .setTotal(micaMetricsService.getNetworksCount())
+          .setTotal(micaMetricsService.getDraftNetworksCount())
           .setPublished(micaMetricsService.getPublishedNetworksCount())
           .setEditing(micaMetricsService.getEditingNetworksCount()))
       .addFiles(Mica.MicaMetricsDto.DocumentMetricsDto.newBuilder()
         .setType(Network.class.getSimpleName())
         .setTotal(micaMetricsService.getDraftNetworkFilesCount())
-        .setPublished(micaMetricsService.getDraftHarmonizationDatasetFilesCount()))
-      // Study
+        .setPublished(micaMetricsService.getPublishedNetworkFilesCount()))
+
+      // Individual Study
       .addDocuments(
         Mica.MicaMetricsDto.DocumentMetricsDto.newBuilder()
           .setType(Study.class.getSimpleName())
-          .setTotal(micaMetricsService.getStudiesCount())
-          .setPublished(micaMetricsService.getPublishedStudiesCount())
-          .setEditing(micaMetricsService.getEditingStudiesCount()))
+          .setTotal(micaMetricsService.getDraftIndividualStudiesCount())
+          .setPublished(micaMetricsService.getPublishedIndividualStudiesCount())
+          .setEditing(micaMetricsService.getEditingIndividualStudiesCount())
+          .setTotalWithVariable(micaMetricsService.getPublishedIndividualStudiesWithVariablesCount())
+          .setVariables(micaMetricsService.getPublishedIndividualStudiesVariablesCount()))
+
       .addFiles(Mica.MicaMetricsDto.DocumentMetricsDto.newBuilder()
         .setType(Study.class.getSimpleName())
-        .setTotal(micaMetricsService.getDraftStudyFilesCount())
-        .setPublished(micaMetricsService.getPublishedStudyFilesCount()))
-      .addDocuments(Mica.MicaMetricsDto.DocumentMetricsDto.newBuilder()
-        .setType("StudyWithVariable")
-        .setTotal(micaMetricsService.getStudiesWithVariablesCount())
-        .setPublished(micaMetricsService.getPublishedStudiesWithVariablesCount()))
+        .setTotal(micaMetricsService.getDraftIndividualStudiesFilesCount())
+        .setPublished(micaMetricsService.getPublishedIndividualStudiesFilesCount()))
+
+      // Harmonization Study
+      .addDocuments(
+        Mica.MicaMetricsDto.DocumentMetricsDto.newBuilder()
+          .setType(HarmonizationStudy.class.getSimpleName())
+          .setTotal(micaMetricsService.getDraftHarmonizationStudiesCount())
+          .setPublished(micaMetricsService.getPublishedHarmonizationStudiesCount())
+          .setEditing(micaMetricsService.getEditingHarmonizationStudiesCount())
+          .setVariables(micaMetricsService.getPublishedHarmonizationStudiesVariablesCount()))
+      .addFiles(Mica.MicaMetricsDto.DocumentMetricsDto.newBuilder()
+        .setType(HarmonizationStudy.class.getSimpleName())
+        .setTotal(micaMetricsService.getDraftHarmonizationStudiesFilesCount())
+        .setPublished(micaMetricsService.getPublishedHarmonizationStudiesFilesCount()))
+
       // StudyDataset
       .addDocuments(
         Mica.MicaMetricsDto.DocumentMetricsDto.newBuilder()
           .setType(StudyDataset.class.getSimpleName())
-          .setTotal(micaMetricsService.getStudyDatasetsCount())
+          .setTotal(micaMetricsService.getDraftStudyDatasetsCount())
           .setPublished(micaMetricsService.getPublishedStudyDatasetsCount())
           .setEditing(micaMetricsService.getEditingStudyDatasetsCount()))
       .addFiles(Mica.MicaMetricsDto.DocumentMetricsDto.newBuilder()
         .setType(StudyDataset.class.getSimpleName())
         .setTotal(micaMetricsService.getDraftStudyDatasetFilesCount())
         .setPublished(micaMetricsService.getPublishedStudyDatasetFilesCount()))
+
       // HarmonizarionDataset
       .addDocuments(
         Mica.MicaMetricsDto.DocumentMetricsDto.newBuilder()
           .setType(HarmonizationDataset.class.getSimpleName())
-          .setTotal(micaMetricsService.getHarmonizarionDatasetsCount())
+          .setTotal(micaMetricsService.getDraftHarmonizarionDatasetsCount())
           .setPublished(micaMetricsService.getPublishedHarmonizationDatasetsCount())
           .setEditing(micaMetricsService.getEditingHarmonizationDatasetsCount()))
       .addFiles(Mica.MicaMetricsDto.DocumentMetricsDto.newBuilder()
         .setType(HarmonizationDataset.class.getSimpleName())
         .setTotal(micaMetricsService.getDraftHarmonizationDatasetFilesCount())
         .setPublished(micaMetricsService.getPublishedHarmonizationDatasetFilesCount()))
+
       // Projects
       .addDocuments(
         Mica.MicaMetricsDto.DocumentMetricsDto.newBuilder()
           .setType(Project.class.getSimpleName())
-          .setTotal(micaMetricsService.getProjectsCount())
+          .setTotal(micaMetricsService.getDraftProjectsCount())
           .setPublished(micaMetricsService.getPublishedProjectsCount())
           .setEditing(micaMetricsService.getEditingProjectsCount()))
       .addFiles(Mica.MicaMetricsDto.DocumentMetricsDto.newBuilder()
         .setType(Project.class.getSimpleName())
-        .setTotal(micaMetricsService.getProjectFilesCount())
+        .setTotal(micaMetricsService.getDraftProjectFilesCount())
         .setPublished(micaMetricsService.getPublishedProjectFilesCount()))
+
       // Variables
       .addDocuments(
         Mica.MicaMetricsDto.DocumentMetricsDto.newBuilder()
           .setType(DatasetVariable.class.getSimpleName())
-          .setTotal(0)
+          .setTotal(micaMetricsService.getPublishedVariablesCount())
           .setPublished(micaMetricsService.getPublishedVariablesCount()))
       .build();
   }

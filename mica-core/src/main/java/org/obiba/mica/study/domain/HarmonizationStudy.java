@@ -8,6 +8,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document
 public class HarmonizationStudy extends BaseStudy {
+  public static final String RESOURCE_PATH = "harmonization-study";
+
   private static final long serialVersionUID = -2711951694614982486L;
 
   @Override
@@ -29,6 +31,6 @@ public class HarmonizationStudy extends BaseStudy {
 
   @Override
   public String getResourcePath() {
-    return "harmonization-study";
+    return RESOURCE_PATH;
   }
 }
