@@ -378,9 +378,9 @@ class DatasetDtos {
     }
 
     if(opalTable instanceof StudyTable)
-      aggDto.setStudyTable(asDto((StudyTable) opalTable));
+      aggDto.setStudyTable(asDto((StudyTable) opalTable, true));
     else if (opalTable instanceof HarmonizationStudyTable)
-      aggDto.setHarmonizationStudyTable(asDto((HarmonizationStudyTable) opalTable));
+      aggDto.setHarmonizationStudyTable(asDto((HarmonizationStudyTable) opalTable, true));
 
     return aggDto;
   }
