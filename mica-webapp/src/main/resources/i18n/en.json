@@ -505,6 +505,7 @@
     "documents": "Documents",
     "documents-help": "If applicable, please provide relevant documentation about the study (e.g.: Study Protocol).",
     "timeline": "Study Timeline",
+    "help-text-timeline": "Each colour in the timeline graph below represents a separate Study Population, while each segment in the graph represents a separate Data Collection Event. Clicking on a segment gives more detailed information on a Data Collection Event.",
     "population": "Population",
     "populations": "Populations",
     "maelstromAuthorization": "Maelstrom authorization",
