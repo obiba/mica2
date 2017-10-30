@@ -505,6 +505,7 @@
     "documents": "Documents",
     "documents-help": "Le cas échéant, fournir la documentation pertinente au sujet de l'étude (par exemple le protocole).",
     "timeline": "Chronologie de l'étude",
+    "help-text-timeline": "Chaque couleur dans le schéma de la chronologie de l'étude ci-dessous représente une population de l'étude distincte, alors que chaque segment du schéma représente un événement de collecte de données distinct. En cliquant sur un segment, de l'information plus détaillée sur l'événement de collecte est obtenue.",
     "population": "Population",
     "populations": "Populations",
     "maelstromAuthorization": "Authorisation Maelstrom",
