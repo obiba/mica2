@@ -502,7 +502,10 @@ public class RQLQueryWrapper implements QueryWrapper {
             List<SortBuilder> sortBuilders = Lists.newArrayList();
             if (node.getArgumentsSize() >= 1) {
               for(int i = 0; i < node.getArgumentsSize(); i++) {
-                sortBuilders.add(processArgument(node.getArgument(i).toString()));
+                SortBuilder sortBuilder = processArgument(node.getArgument(i).toString());
+                ((FieldSortBuilder) sortBuilder).unmappedType("string");
+                sortBuilder.missing("_last");
+                sortBuilders.add(sortBuilder);
               }
             }
             return sortBuilders;
