@@ -148,7 +148,7 @@ public class JoinQueryExecutor {
       List<String> joinedIds = executeJoin(type);
       CountStatsData countStats = countBuilder != null ? getCountStatsData(type) : null;
 
-      if (joinQuery.searchOnNetworksOnly() || joinedIds != null && joinedIds.size() > 0) {
+      if ((joinQuery.searchOnNetworksOnly() && QueryType.NETWORK.equals(type)) || (joinedIds != null && joinedIds.size() > 0)) {
         getDocumentQuery(type).query(joinQuery.searchOnNetworksOnly() ? Collections.emptyList() : joinedIds, countStats, scope);
       }
     } else {
