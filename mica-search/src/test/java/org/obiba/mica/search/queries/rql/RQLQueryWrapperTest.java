@@ -343,7 +343,9 @@ public class RQLQueryWrapperTest {
     assertThat(rqlQueryWrapper.getSize()).isEqualTo(4);
     String expectedSort = "\n" +
       "\"name\"{\n" +
-      "  \"order\" : \"desc\"\n" +
+      "  \"order\" : \"desc\",\n" +
+      "  \"missing\" : \"_last\",\n" +
+      "  \"unmapped_type\" : \"string\"\n" +
       "}";
     assertThat(rqlQueryWrapper.getSortBuilders().get(0).toString()).isEqualTo(expectedSort);
   }
