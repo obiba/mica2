@@ -149,7 +149,7 @@ public class JoinQueryExecutor {
       CountStatsData countStats = countBuilder != null ? getCountStatsData(type) : null;
 
       if (joinQuery.searchOnNetworksOnly() || joinedIds != null && joinedIds.size() > 0) {
-        getDocumentQuery(type).query(joinQuery.searchOnNetworksOnly() ? Collections.emptyList() : joinedIds, countStats, scope);
+        getDocumentQuery(type).query((joinQuery.searchOnNetworksOnly() && QueryType.NETWORK.equals(type)) ? Collections.emptyList() : joinedIds, countStats, scope);
       }
     } else {
       execute(type, scope, countBuilder);
