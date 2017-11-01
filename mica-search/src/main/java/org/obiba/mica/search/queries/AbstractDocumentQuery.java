@@ -365,12 +365,16 @@ public abstract class AbstractDocumentQuery implements DocumentQueryInterface {
   }
 
   private Query addStudyIdQuery(List<String> studyIds) {
-    if (studyIds == null || studyIds.isEmpty()) return query;
+    if (studyIds == null || studyIds.isEmpty()) {
+      return query.isEmpty() ? new EmptyQuery() : query;
+    }
     return searcher.andQuery(query, createStudyIdQuery(studyIds));
   }
 
   private Query createStudyIdQuery(List<String> studyIds) {
-    if (studyIds == null || studyIds.isEmpty()) return new EmptyQuery();
+    if (studyIds == null || studyIds.isEmpty()) {
+      return query.isEmpty() ? new EmptyQuery() : query;
+    }
     List<String> joinFields = getJoinFields();
     String joinedStudyIds = Joiner.on(",").join(studyIds);
     String rql;
