@@ -138,7 +138,7 @@ public class JoinQueryExecutor {
   private JoinQueryResultDto doQueries(QueryType type, JoinQuery joinQuery,
                                        CountStatsData.Builder countBuilder, QueryScope scope) {
     boolean queriesHaveFilters = Stream.of(variableQuery, datasetQuery, studyQuery, networkQuery)
-        .anyMatch(DocumentQueryInterface::isQueryNotEmpty);
+        .anyMatch(DocumentQueryInterface::hasQueryBuilder);
 
     if (queriesHaveFilters) {
       DocumentQueryIdProvider datasetIdProvider = new DocumentQueryIdProvider();
@@ -399,7 +399,7 @@ public class JoinQueryExecutor {
     if (queries.size() > 0) studyIds = queryStudyIds(queries);
     if (studyIds == null || studyIds.size() > 0) docQueryStudyIds = docQuery.queryStudyIds(studyIds);
 
-    List<String> aggStudyIds = docQuery.isQueryNotEmpty() && docQueryStudyIds != null ? joinStudyIds(studyIds,
+    List<String> aggStudyIds = docQuery.hasQueryBuilder() && docQueryStudyIds != null ? joinStudyIds(studyIds,
         docQueryStudyIds) : studyIds;
 
     if (aggStudyIds == null || aggStudyIds.size() > 0) {
