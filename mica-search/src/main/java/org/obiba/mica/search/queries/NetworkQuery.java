@@ -106,7 +106,7 @@ public class NetworkQuery extends AbstractDocumentQuery {
         ? null
         : NetworkCountStatsBuilder.newBuilder(counts);
 
-    Consumer<Network> addDto = getNetworkConsumer(scope, resBuilder, networkCountStatsBuilder);
+    Consumer<Network> addDto = networkConsumer(scope, resBuilder, networkCountStatsBuilder);
     List<Network> networks = Lists.newArrayList();
 
     for (Searcher.DocumentResult result : results.getDocuments()) {
@@ -118,13 +118,13 @@ public class NetworkQuery extends AbstractDocumentQuery {
     builder.setExtension(NetworkResultDto.result, resBuilder.build());
   }
 
-  private Consumer<Network> getNetworkConsumer(QueryScope scope, NetworkResultDto.Builder resBuilder,
-                                               NetworkCountStatsBuilder networkCountStatsBuilder) {
+  private Consumer<Network> networkConsumer(QueryScope scope, NetworkResultDto.Builder resBuilder,
+                                            NetworkCountStatsBuilder networkCountStatsBuilder) {
 
-    return scope == QueryScope.DETAIL ? getNetworkConsumer(resBuilder, networkCountStatsBuilder) : (network) -> resBuilder.addDigests(dtos.asDigestDtoBuilder(network).build());
+    return scope == QueryScope.DETAIL ? networkConsumer(resBuilder, networkCountStatsBuilder) : (network) -> resBuilder.addDigests(dtos.asDigestDtoBuilder(network).build());
   }
 
-  private Consumer<Network> getNetworkConsumer(NetworkResultDto.Builder resBuilder, NetworkCountStatsBuilder networkCountStatsBuilder) {
+  private Consumer<Network> networkConsumer(NetworkResultDto.Builder resBuilder, NetworkCountStatsBuilder networkCountStatsBuilder) {
     return (network) -> {
       Mica.NetworkDto.Builder networkBuilder = dtos.asDtoBuilder(network);
       if (mode == QueryMode.LIST) {
