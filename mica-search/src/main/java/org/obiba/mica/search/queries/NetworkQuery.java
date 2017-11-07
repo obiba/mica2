@@ -18,7 +18,11 @@ import org.obiba.mica.network.domain.NetworkState;
 import org.obiba.mica.network.service.PublishedNetworkService;
 import org.obiba.mica.search.aggregations.NetworkAggregationMetaDataProvider;
 import org.obiba.mica.search.aggregations.NetworkTaxonomyMetaDataProvider;
-import org.obiba.mica.spi.search.*;
+import org.obiba.mica.spi.search.CountStatsData;
+import org.obiba.mica.spi.search.Indexer;
+import org.obiba.mica.spi.search.QueryMode;
+import org.obiba.mica.spi.search.QueryScope;
+import org.obiba.mica.spi.search.Searcher;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.mica.web.model.MicaSearch;
@@ -30,7 +34,11 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.io.IOException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -98,7 +106,7 @@ public class NetworkQuery extends AbstractDocumentQuery {
         ? null
         : NetworkCountStatsBuilder.newBuilder(counts);
 
-    Consumer<Network> addDto = getNetworkConsumer(scope, resBuilder, networkCountStatsBuilder);
+    Consumer<Network> addDto = networkConsumer(scope, resBuilder, networkCountStatsBuilder);
     List<Network> networks = Lists.newArrayList();
 
     for (Searcher.DocumentResult result : results.getDocuments()) {
@@ -110,10 +118,14 @@ public class NetworkQuery extends AbstractDocumentQuery {
     builder.setExtension(NetworkResultDto.result, resBuilder.build());
   }
 
-  private Consumer<Network> getNetworkConsumer(QueryScope scope, NetworkResultDto.Builder resBuilder,
-                                               NetworkCountStatsBuilder networkCountStatsBuilder) {
+  private Consumer<Network> networkConsumer(QueryScope scope, NetworkResultDto.Builder resBuilder,
+                                            NetworkCountStatsBuilder networkCountStatsBuilder) {
 
-    return scope == QueryScope.DETAIL ? (network) -> {
+    return scope == QueryScope.DETAIL ? networkConsumer(resBuilder, networkCountStatsBuilder) : (network) -> resBuilder.addDigests(dtos.asDigestDtoBuilder(network).build());
+  }
+
+  private Consumer<Network> networkConsumer(NetworkResultDto.Builder resBuilder, NetworkCountStatsBuilder networkCountStatsBuilder) {
+    return (network) -> {
       Mica.NetworkDto.Builder networkBuilder = dtos.asDtoBuilder(network);
       if (mode == QueryMode.LIST) {
         networkBuilder.clearStudySummaries();
@@ -125,7 +137,7 @@ public class NetworkQuery extends AbstractDocumentQuery {
             .build();
       }
       resBuilder.addNetworks(networkBuilder.build());
-    } : (network) -> resBuilder.addDigests(dtos.asDigestDtoBuilder(network).build());
+    };
   }
 
   @Override

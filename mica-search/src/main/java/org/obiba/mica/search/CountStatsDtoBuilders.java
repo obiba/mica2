@@ -10,11 +10,9 @@
 
 package org.obiba.mica.search;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.domain.StudyDataset;
@@ -23,10 +21,11 @@ import org.obiba.mica.search.queries.DatasetQuery;
 import org.obiba.mica.spi.search.CountStatsData;
 import org.obiba.mica.study.domain.BaseStudy;
 
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
+import static java.util.stream.Collectors.toList;
 import static org.obiba.mica.web.model.MicaSearch.CountStatsDto;
 
 
@@ -109,7 +108,12 @@ public class CountStatsDtoBuilders {
     }
 
     public CountStatsDto build(Network network) {
-      return calculateCounts(network.getStudyIds());
+
+      List<String> studyIdsInRequestResponse = network.getStudyIds().stream()
+        .filter(studyIdInNetwork -> this.countStatsData.getStudies(studyIdInNetwork) > 0)
+        .collect(toList());
+
+      return calculateCounts(studyIdsInRequestResponse);
     }
 
     private CountStatsDto calculateCounts(List<String> ids) {
@@ -134,8 +138,8 @@ public class CountStatsDtoBuilders {
         harmonizationStudies += countStatsData.getHarmonizationStudies(id);
       }
 
-      studyDatasets = studyDatasets.stream().distinct().collect(Collectors.toList());
-      harmonizationDatasets = harmonizationDatasets.stream().distinct().collect(Collectors.toList());
+      studyDatasets = studyDatasets.stream().distinct().collect(toList());
+      harmonizationDatasets = harmonizationDatasets.stream().distinct().collect(toList());
       int variables = Sets.union(ImmutableSet.copyOf(studyDatasets), ImmutableSet.copyOf(harmonizationDatasets))
         .stream().mapToInt(countStatsData::getVariables).sum();
       int studyVariables = studyDatasets.stream().mapToInt(countStatsData::getVariables).sum();
