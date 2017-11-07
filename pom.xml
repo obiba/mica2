@@ -54,7 +54,7 @@
     <jackson.version>2.8.1</jackson.version>
     <javax.inject.version>1</javax.inject.version>
     <javax-rs.version>2.0</javax-rs.version>
-    <jersey.version>2.21</jersey.version>
+    <jersey.version>2.22.2</jersey.version>
     <jetty.version>9.2.18.v20160721</jetty.version>
     <jgit.version>3.6.2.201501210735-r</jgit.version>
     <jhipsterloaded.version>0.7</jhipsterloaded.version>
@@ -498,6 +498,56 @@
         <groupId>org.obiba.opal</groupId>
         <artifactId>opal-core-api</artifactId>
         <version>${opal.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>com.orientechnologies</groupId>
+            <artifactId>orient-commons</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>com.orientechnologies</groupId>
+            <artifactId>orientdb-server</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-core</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-validator</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.obiba.magma</groupId>
+            <artifactId>magma-crypt</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.obiba.magma</groupId>
+            <artifactId>magma-datasource-fs</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.obiba.magma</groupId>
+            <artifactId>magma-datasource-hibernate</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.obiba.magma</groupId>
+            <artifactId>magma-datasource-jdbc</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.obiba.magma</groupId>
+            <artifactId>magma-datasource-mongodb</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.obiba.opal</groupId>
+            <artifactId>opal-spi</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-vfs2</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
 
       <dependency>

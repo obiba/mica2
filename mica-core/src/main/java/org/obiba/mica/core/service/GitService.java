@@ -24,12 +24,12 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.math3.util.Pair;
-import org.codehaus.plexus.util.FileUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.PersonIdent;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.transport.PushResult;
+import org.obiba.core.util.FileUtil;
 import org.obiba.git.CommitInfo;
 import org.obiba.git.GitException;
 import org.obiba.git.GitUtils;
@@ -97,14 +97,13 @@ public class GitService {
   }
 
   public boolean hasGitRepository(GitIdentifier persistable) {
-    return FileUtils.fileExists(getRepositoryPath(persistable).getAbsolutePath()) ||
-      FileUtils.fileExists(getCloneRepositoryPath(persistable).getAbsolutePath());
+    return getRepositoryPath(persistable).exists() || getCloneRepositoryPath(persistable).exists();
   }
 
   public void deleteGitRepository(GitPersistable persistable) {
     try {
-      FileUtils.deleteDirectory(getRepositoryPath(persistable));
-      FileUtils.deleteDirectory(getCloneRepositoryPath(persistable));
+      FileUtil.delete(getRepositoryPath(persistable));
+      FileUtil.delete(getCloneRepositoryPath(persistable));
     } catch(IOException e) {
       Throwables.propagate(e);
     }
