@@ -20,7 +20,7 @@ import java.util.Map;
  */
 public interface Indexer {
 
-  String[] ANALYZED_FIELDS = {"name"};
+  String[] ANALYZED_FIELDS = {"acronym", "name"};
   String MAPPING_NAME = "Variable";
   String HMAPPING_NAME = "H" + MAPPING_NAME;
 
