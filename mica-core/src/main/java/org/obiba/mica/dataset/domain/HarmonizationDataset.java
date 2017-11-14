@@ -20,6 +20,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
+import org.obiba.mica.core.domain.BaseStudyTable;
 import org.obiba.mica.core.domain.HarmonizationStudyTable;
 import org.obiba.mica.core.domain.OpalTable;
 import org.obiba.mica.core.domain.StudyTable;
@@ -103,7 +104,7 @@ public class HarmonizationDataset extends Dataset {
   }
 
   @JsonIgnore
-  public List<OpalTable> getAllOpalTables() {
+  public List<BaseStudyTable> getBaseStudyTables() {
     return Lists.newArrayList(Iterables.concat(getStudyTables(), getHarmonizationTables())).stream()//
       .sorted(Comparator.comparingInt(OpalTable::getWeight)).collect(Collectors.toList());
   }

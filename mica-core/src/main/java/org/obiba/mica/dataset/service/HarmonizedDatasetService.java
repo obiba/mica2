@@ -24,10 +24,7 @@ import org.obiba.magma.NoSuchVariableException;
 import org.obiba.magma.ValueTable;
 import org.obiba.magma.Variable;
 import org.obiba.mica.NoSuchEntityException;
-import org.obiba.mica.core.domain.HarmonizationStudyTable;
-import org.obiba.mica.core.domain.OpalTable;
-import org.obiba.mica.core.domain.PublishCascadingScope;
-import org.obiba.mica.core.domain.StudyTable;
+import org.obiba.mica.core.domain.*;
 import org.obiba.mica.core.repository.EntityStateRepository;
 import org.obiba.mica.dataset.HarmonizationDatasetRepository;
 import org.obiba.mica.dataset.HarmonizationDatasetStateRepository;
@@ -447,9 +444,8 @@ public class HarmonizedDatasetService extends DatasetService<HarmonizationDatase
   private ValueTable getTable(@NotNull HarmonizationDataset dataset, String studyId, String project, String table)
     throws NoSuchStudyException, NoSuchValueTableException {
 
-    for(OpalTable opalTable : dataset.getAllOpalTables()) {
+    for(BaseStudyTable opalTable : dataset.getBaseStudyTables()) {
       String opalTableId = studyId;
-
       if(opalTable.isFor(opalTableId, project, table)) {
         return getTable(opalTable);
       }
@@ -461,9 +457,8 @@ public class HarmonizedDatasetService extends DatasetService<HarmonizationDatase
   private RestValueTable.RestVariableValueSource getVariableValueSource(@NotNull HarmonizationDataset dataset,
     String variableName, String studyId, String project, String table)
     throws NoSuchStudyException, NoSuchValueTableException, NoSuchVariableException {
-    for(OpalTable opalTable : dataset.getAllOpalTables()) {
+    for(BaseStudyTable opalTable : dataset.getBaseStudyTables()) {
       String opalTableId = studyId;
-
       if(opalTable.isFor(opalTableId, project, table)) {
         return getVariableValueSource(variableName, opalTable);
       }
@@ -480,8 +475,8 @@ public class HarmonizedDatasetService extends DatasetService<HarmonizationDatase
   protected Map<String, List<DatasetVariable>> populateHarmonizedVariablesMap(HarmonizationDataset dataset) {
     Map<String, List<DatasetVariable>> map = Maps.newHashMap();
 
-    if(!dataset.getAllOpalTables().isEmpty()) {
-      Iterable<DatasetVariable> res = dataset.getAllOpalTables().stream()
+    if(!dataset.getBaseStudyTables().isEmpty()) {
+      Iterable<DatasetVariable> res = dataset.getBaseStudyTables().stream()
         .map(s -> helper.asyncGetDatasetVariables(() -> getDatasetVariables(dataset, s))).map(f -> {
           try {
             return f.get();
@@ -586,16 +581,9 @@ public class HarmonizedDatasetService extends DatasetService<HarmonizationDatase
       Map<String, List<DatasetVariable>> harmonizationVariables) {
       log.info("building variable summaries cache");
 
-      dataset.getAllOpalTables().forEach(st -> harmonizationVariables.forEach((k, v) -> v.forEach(var -> {
+      dataset.getBaseStudyTables().forEach(st -> harmonizationVariables.forEach((k, v) -> v.forEach(var -> {
         try {
-          String studyId = null;
-
-          if (st instanceof StudyTable) {
-            studyId = ((StudyTable) st).getStudyId();
-          } else if (st instanceof HarmonizationStudyTable) {
-            studyId = ((HarmonizationStudyTable) st).getStudyId();
-          }
-
+          String studyId = st.getStudyId();
           service.getVariableSummary(dataset, var.getName(), studyId, st.getProject(), st.getTable());
         } catch(Exception e) {
           //ignoring

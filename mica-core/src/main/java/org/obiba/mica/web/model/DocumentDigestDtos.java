@@ -16,6 +16,7 @@ import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
 import org.obiba.mica.dataset.domain.Dataset;
+import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.study.domain.BaseStudy;
 import org.obiba.mica.study.domain.Study;
@@ -42,13 +43,26 @@ public class DocumentDigestDtos {
   }
 
   @NotNull
+  public DocumentDigestDto.Builder asDtoBuilder(@NotNull DatasetVariable variable) {
+    DocumentDigestDto.Builder builder = DocumentDigestDto.newBuilder().setId(variable.getId());
+    if (variable.getAttributes().hasAttribute("label", null))
+      builder.addAllName(localizedStringDtos.asDto(variable.getAttributes().getAttribute("label", null).getValues()));
+    return builder;
+  }
+
+  @NotNull
+  public DocumentDigestDto asDto(@NotNull DatasetVariable variable) {
+    return asDtoBuilder(variable).build();
+  }
+
+  @NotNull
   public DocumentDigestDto.Builder asDtoBuilder(@NotNull BaseStudy study) {
     return DocumentDigestDto.newBuilder().setId(study.getId()) //
         .addAllName(localizedStringDtos.asDto(study.getName()));
   }
 
   @NotNull
-  public DocumentDigestDto asDto(@NotNull Study study) {
+  public DocumentDigestDto asDto(@NotNull BaseStudy study) {
     return asDtoBuilder(study).build();
   }
 

@@ -18,7 +18,6 @@ import javax.ws.rs.Path;
 
 import org.obiba.magma.NoSuchValueTableException;
 import org.obiba.magma.NoSuchVariableException;
-import org.obiba.mica.core.domain.BaseStudyTable;
 import org.obiba.mica.dataset.DatasetVariableResource;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.service.HarmonizedDatasetService;
@@ -55,9 +54,9 @@ public class DraftDataschemaDatasetVariableResource implements DatasetVariableRe
   public List<Math.SummaryStatisticsDto> getVariableSummaries() {
     ImmutableList.Builder<Math.SummaryStatisticsDto> builder = ImmutableList.builder();
     HarmonizationDataset dataset = getDataset();
-    dataset.getAllOpalTables().forEach(table -> {
+    dataset.getBaseStudyTables().forEach(table -> {
       try {
-        String studyId = ((BaseStudyTable)table).getStudyId();
+        String studyId = table.getStudyId();
         builder.add(datasetService
           .getVariableSummary(dataset, variableName, studyId, table.getProject(), table.getTable())
           .getWrappedDto());
@@ -73,9 +72,9 @@ public class DraftDataschemaDatasetVariableResource implements DatasetVariableRe
   public List<Search.QueryResultDto> getVariableFacets() {
     ImmutableList.Builder<Search.QueryResultDto> builder = ImmutableList.builder();
     HarmonizationDataset dataset = getDataset();
-    dataset.getAllOpalTables().forEach(table -> {
+    dataset.getBaseStudyTables().forEach(table -> {
       try {
-        String studyId = ((BaseStudyTable)table).getStudyId();
+        String studyId = table.getStudyId();
         builder.add(datasetService.getVariableFacet(dataset, variableName, studyId, table.getProject(), table.getTable()));
       } catch(NoSuchVariableException | NoSuchValueTableException e) {
         // ignore (case the study has not implemented this dataschema variable)
@@ -89,7 +88,7 @@ public class DraftDataschemaDatasetVariableResource implements DatasetVariableRe
   public List<Mica.DatasetVariableDto> getHarmonizedVariables() {
     ImmutableList.Builder<Mica.DatasetVariableDto> builder = ImmutableList.builder();
     HarmonizationDataset dataset = getDataset();
-    dataset.getAllOpalTables().forEach(table -> {
+    dataset.getBaseStudyTables().forEach(table -> {
       try {
         builder.add(dtos.asDto(datasetService.getDatasetVariable(dataset, variableName, table)));
       } catch(NoSuchVariableException | NoSuchValueTableException e) {

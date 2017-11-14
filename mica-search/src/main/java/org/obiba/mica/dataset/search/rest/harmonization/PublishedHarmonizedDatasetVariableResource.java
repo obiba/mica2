@@ -26,7 +26,7 @@ import com.google.common.base.Strings;
 import org.apache.commons.math3.util.Pair;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.magma.NoSuchValueTableException;
-import org.obiba.mica.core.domain.OpalTable;
+import org.obiba.mica.core.domain.BaseStudyTable;
 import org.obiba.mica.dataset.DatasetVariableResource;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
@@ -94,9 +94,8 @@ public class PublishedHarmonizedDatasetVariableResource extends AbstractPublishe
   @Timed
   public Mica.DatasetVariableAggregationDto getVariableAggregations() {
     HarmonizationDataset dataset = getDataset(HarmonizationDataset.class, datasetId);
-    for(OpalTable opalTable : dataset.getAllOpalTables()) {
+    for(BaseStudyTable opalTable : dataset.getBaseStudyTables()) {
       String opalTableId = studyId;
-
       if(opalTable.isFor(opalTableId, project, table)) {
         try {
           return dtos.asDto(opalTable,
@@ -123,9 +122,8 @@ public class PublishedHarmonizedDatasetVariableResource extends AbstractPublishe
   private Mica.DatasetVariableContingencyDto getContingencyDto(DatasetVariable var, DatasetVariable crossVar) {
     HarmonizationDataset dataset = getDataset(HarmonizationDataset.class, datasetId);
 
-    for(OpalTable opalTable : dataset.getAllOpalTables()) {
+    for(BaseStudyTable opalTable : dataset.getBaseStudyTables()) {
       String opalTableId = studyId;
-
       if(opalTable.isFor(opalTableId, project, table)) {
         try {
           return dtos.asContingencyDto(opalTable, var, crossVar,
