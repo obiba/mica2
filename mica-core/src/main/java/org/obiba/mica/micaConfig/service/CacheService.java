@@ -13,7 +13,6 @@ package org.obiba.mica.micaConfig.service;
 import javax.inject.Inject;
 
 import org.obiba.magma.NoSuchVariableException;
-import org.obiba.mica.core.domain.BaseStudyTable;
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.service.CollectedDatasetService;
 import org.obiba.mica.dataset.service.HarmonizedDatasetService;
@@ -105,8 +104,8 @@ public class CacheService {
     public void buildDatasetVariablesCache() {
       harmonizedDatasetService.findAllPublishedDatasets().forEach(
         dataset -> harmonizedDatasetService.getDatasetVariables(dataset)
-          .forEach(v -> dataset.getAllOpalTables().forEach(st -> {
-            String studyId = ((BaseStudyTable)st).getStudyId();
+          .forEach(v -> dataset.getBaseStudyTables().forEach(st -> {
+            String studyId = st.getStudyId();
             try {
               harmonizedDatasetService
                 .getVariableSummary(dataset, v.getName(), studyId, st.getProject(), st.getTable());

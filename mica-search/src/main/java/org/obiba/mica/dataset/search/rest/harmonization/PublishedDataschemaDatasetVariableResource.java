@@ -86,9 +86,9 @@ public class PublishedDataschemaDatasetVariableResource extends AbstractPublishe
   public List<Math.SummaryStatisticsDto> getVariableSummaries() {
     ImmutableList.Builder<Math.SummaryStatisticsDto> builder = ImmutableList.builder();
     HarmonizationDataset dataset = getDataset(HarmonizationDataset.class, datasetId);
-    dataset.getAllOpalTables().forEach(table -> {
+    dataset.getBaseStudyTables().forEach(table -> {
       try {
-        String studyId = ((BaseStudyTable)table).getStudyId();
+        String studyId = table.getStudyId();
         builder.add(datasetService
           .getVariableSummary(dataset, variableName, studyId, table.getProject(), table.getTable())
           .getWrappedDto());
@@ -106,9 +106,9 @@ public class PublishedDataschemaDatasetVariableResource extends AbstractPublishe
   public List<Search.QueryResultDto> getVariableFacets() {
     ImmutableList.Builder<Search.QueryResultDto> builder = ImmutableList.builder();
     HarmonizationDataset dataset = getDataset(HarmonizationDataset.class, datasetId);
-    dataset.getAllOpalTables().forEach(table -> {
+    dataset.getBaseStudyTables().forEach(table -> {
       try {
-        String studyId = ((BaseStudyTable)table).getStudyId();
+        String studyId = table.getStudyId();
         builder.add(datasetService
           .getVariableFacet(dataset, variableName, studyId, table.getProject(), table.getTable()));
       } catch(NoSuchVariableException | NoSuchValueTableException e) {
@@ -128,10 +128,10 @@ public class PublishedDataschemaDatasetVariableResource extends AbstractPublishe
     Mica.DatasetVariableAggregationsDto.Builder aggDto = Mica.DatasetVariableAggregationsDto.newBuilder();
 
     List<Future<Math.SummaryStatisticsDto>> results = Lists.newArrayList();
-    dataset.getAllOpalTables().forEach(table -> results.add(helper.getVariableFacet(dataset, variableName, table)));
+    dataset.getBaseStudyTables().forEach(table -> results.add(helper.getVariableFacet(dataset, variableName, table)));
 
-    for(int i = 0; i < dataset.getAllOpalTables().size(); i++) {
-      OpalTable opalTable = dataset.getAllOpalTables().get(i);
+    for(int i = 0; i < dataset.getBaseStudyTables().size(); i++) {
+      BaseStudyTable opalTable = dataset.getBaseStudyTables().get(i);
       Future<Math.SummaryStatisticsDto> futureResult = results.get(i);
       try {
         builder.add(dtos.asDto(opalTable, futureResult.get()).build());
@@ -168,12 +168,12 @@ public class PublishedDataschemaDatasetVariableResource extends AbstractPublishe
     Mica.DatasetVariableContingenciesDto.Builder crossDto = Mica.DatasetVariableContingenciesDto.newBuilder();
 
     List<Future<Search.QueryResultDto>> results = Lists.newArrayList();
-    dataset.getAllOpalTables().forEach(table -> results.add(helper.getContingencyTable(dataset, var, crossVar, table)));
+    dataset.getBaseStudyTables().forEach(table -> results.add(helper.getContingencyTable(dataset, var, crossVar, table)));
 
     Multimap<String, Mica.DatasetVariableAggregationDto> termAggregations = LinkedListMultimap.create();
 
-    for(int i = 0; i < dataset.getAllOpalTables().size(); i++) {
-      OpalTable opalTable = dataset.getAllOpalTables().get(i);
+    for(int i = 0; i < dataset.getBaseStudyTables().size(); i++) {
+      BaseStudyTable opalTable = dataset.getBaseStudyTables().get(i);
       Future<Search.QueryResultDto> futureResult = results.get(i);
 
       try {

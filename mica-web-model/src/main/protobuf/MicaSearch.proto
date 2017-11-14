@@ -206,3 +206,18 @@ message BucketsCoverageDto {
   repeated RowDto rows = 4;
 }
 
+message DatasetEntitiesCountDto {
+  required string query = 1;
+  required int32 count = 2;
+  required DocumentDigestDto variable = 3;
+  required DocumentDigestDto dataset = 4;
+  required DocumentDigestDto study = 5;
+  repeated DatasetEntitiesCountDto counts = 6;
+}
+
+message EntitiesCountDto {
+  required string entityType = 1;
+  required string query = 2;
+  required int32 total = 3;
+  repeated DatasetEntitiesCountDto counts = 4;
+}

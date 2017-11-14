@@ -23,6 +23,7 @@ import org.obiba.mica.micaConfig.event.OpalTaxonomiesUpdatedEvent;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.obiba.opal.rest.client.magma.OpalJavaClient;
 import org.obiba.opal.web.model.Opal;
+import org.obiba.opal.web.model.Search;
 import org.obiba.opal.web.taxonomy.Dtos;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,6 +51,16 @@ public class OpalServiceHelper {
     ConcurrentMap<String, Taxonomy> taxonomiesList = taxonomies.stream().collect(Collectors.toConcurrentMap(Opal.TaxonomyDto::getName, this::fromDto));
     eventBus.post(new OpalTaxonomiesUpdatedEvent(taxonomiesList));
     return taxonomiesList;
+  }
+
+  public Search.EntitiesResultDto getEntitiesCount(OpalJavaClient opalJavaClient, String query, String entityType) {
+    log.info("Fetching opal entities count");
+    log.debug("  Entities query: {}", query);
+    URI uri = opalJavaClient.newUri().segment("datasources", "entities", "_count")
+        .query("query", query)
+        .query("type", Strings.isNullOrEmpty(entityType) ? "Participant" : entityType).build();
+    Search.EntitiesResultDto result = opalJavaClient.getResource(Search.EntitiesResultDto.class, uri, Search.EntitiesResultDto.newBuilder());
+    return result;
   }
 
   /**

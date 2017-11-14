@@ -108,6 +108,12 @@
       <groupId>com.jayway.jsonpath</groupId>
       <artifactId>json-path</artifactId>
     </dependency>
+
+    <dependency>
+      <groupId>net.jazdw</groupId>
+      <artifactId>rql-parser</artifactId>
+    </dependency>
+
     <dependency>
       <groupId>org.glassfish.jersey.test-framework.providers</groupId>
       <artifactId>jersey-test-framework-provider-inmemory</artifactId>

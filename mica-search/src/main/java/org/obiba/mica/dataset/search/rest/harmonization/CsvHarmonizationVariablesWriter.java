@@ -58,7 +58,7 @@ public class CsvHarmonizationVariablesWriter {
   }
 
   private void writeHeader(CSVWriter writer, HarmonizationDataset dataset, String locale) {
-    List<String> headers = Lists.newArrayList(dataset.getAllOpalTables()).stream()
+    List<String> headers = Lists.newArrayList(dataset.getBaseStudyTables()).stream()
         .map(table -> {
           LocalizedString name = table.getName();
           String id = table instanceof StudyTable ? ((StudyTable)table).getStudyId() : ((HarmonizationStudyTable) table).getStudyId();
@@ -77,7 +77,7 @@ public class CsvHarmonizationVariablesWriter {
     harmonizationVariables.getVariableHarmonizationsList().forEach(
         variableHarmonization -> {
           List<String> row = Lists.newArrayList();
-          dataset.getAllOpalTables().forEach(
+          dataset.getBaseStudyTables().forEach(
             table -> {
               final boolean[] found = { false };
               variableHarmonization.getDatasetVariableSummariesList().forEach(

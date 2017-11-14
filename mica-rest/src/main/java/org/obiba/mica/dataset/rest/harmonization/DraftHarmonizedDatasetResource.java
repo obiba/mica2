@@ -13,7 +13,7 @@ package org.obiba.mica.dataset.rest.harmonization;
 import com.codahale.metrics.annotation.Timed;
 import com.google.common.collect.ImmutableList;
 import org.obiba.mica.AbstractGitPersistableResource;
-import org.obiba.mica.core.domain.OpalTable;
+import org.obiba.mica.core.domain.BaseStudyTable;
 import org.obiba.mica.core.domain.PublishCascadingScope;
 import org.obiba.mica.core.domain.RevisionStatus;
 import org.obiba.mica.core.service.AbstractGitPersistableService;
@@ -169,7 +169,7 @@ public class DraftHarmonizedDatasetResource extends
     checkPermission("/draft/harmonized-dataset", "VIEW");
     ImmutableList.Builder<Search.QueryResultDto> builder = ImmutableList.builder();
     HarmonizationDataset dataset = getDataset();
-    for(OpalTable table : dataset.getAllOpalTables()) {
+    for(BaseStudyTable table : dataset.getBaseStudyTables()) {
       builder.add(datasetService.getFacets(query, table));
     }
     return builder.build();

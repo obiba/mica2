@@ -142,7 +142,7 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
     Mica.DatasetVariableHarmonizationDto.Builder builder = Mica.DatasetVariableHarmonizationDto.newBuilder();
     builder.setResolver(dtos.asDto(variableResolver));
 
-    dataset.getAllOpalTables().forEach(table -> {
+    dataset.getBaseStudyTables().forEach(table -> {
       try {
         builder.addDatasetVariableSummaries(
             getDatasetVariableSummaryDto(dataset.getId(), variableResolver.getName(), DatasetVariable.Type.Harmonized,
