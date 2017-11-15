@@ -54,7 +54,7 @@ public class PublishedDatasetsEntitiesResource {
     RQLCriteriaOpalConverter converter = applicationContext.getBean(RQLCriteriaOpalConverter.class);
     converter.parse(query);
     Map<String, List<RQLCriterionOpalConverter>> opalConverters = converter.getCriterionConverters().stream()
-        .collect(Collectors.groupingBy(c -> c.getTable().getOpal()));
+        .collect(Collectors.groupingBy(c -> c.getVariableReferences().getOpal()));
     List<OpalEntitiesQuery> opalEntitiesQueries = opalConverters.keySet().stream()
         .map(opalUrl -> new OpalEntitiesQuery(entityType, opalUrl, opalConverters.get(opalUrl)))
         .collect(Collectors.toList());
@@ -115,9 +115,9 @@ public class PublishedDatasetsEntitiesResource {
           .setCount(opalResult.getTotalHits());
       RQLCriterionOpalConverter converter = findConverter(opalResult.getQuery());
       builder.setQuery(converter.getMicaQuery())
-          .setVariable(documentDigestDtos.asDto(converter.getTable().getVariable()))
-          .setDataset(documentDigestDtos.asDto(converter.getTable().getDataset()))
-          .setStudy(documentDigestDtos.asDto(converter.getTable().getStudy()));
+          .setVariable(documentDigestDtos.asDto(converter.getVariableReferences().getVariable()))
+          .setDataset(documentDigestDtos.asDto(converter.getVariableReferences().getDataset()))
+          .setStudy(documentDigestDtos.asDto(converter.getVariableReferences().getStudy()));
       return builder.build();
     }
 

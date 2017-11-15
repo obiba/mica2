@@ -40,6 +40,7 @@ import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -156,7 +157,6 @@ public class RQLCriteriaOpalConverter {
   }
 
   protected RQLFieldReferences parseField(String path) {
-    // TODO translate mica variable to opal server + variable
     DatasetVariable.IdResolver resolver = DatasetVariable.IdResolver.from(path);
     if (resolver.getType() == null || DatasetVariable.Type.Collected.equals(resolver.getType())) {
       StudyDataset ds = collectedDatasetService.findById(resolver.getDatasetId());
@@ -164,13 +164,17 @@ public class RQLCriteriaOpalConverter {
       BaseStudy study = studyService.findStudy(studyTable.getStudyId());
       return new RQLFieldReferences(path, ds, studyTable, study, getDatasetVariableInternal(Indexer.VARIABLE_TYPE, path));
     } else if (DatasetVariable.Type.Dataschema.equals(resolver.getType())) {
-      HarmonizationDataset ds = harmonizedDatasetService.findById(resolver.getDatasetId());
-      ds.getBaseStudyTables();
-      // TODO
+      throw new IllegalArgumentException("Entities count on dataschema variables is not supported");
+      //HarmonizationDataset ds = harmonizedDatasetService.findById(resolver.getDatasetId());
+      //return new RQLFieldReferences(path, ds, null, null, getDatasetVariableInternal(Indexer.VARIABLE_TYPE, path));
     } else if (DatasetVariable.Type.Harmonized.equals(resolver.getType())) {
       HarmonizationDataset ds = harmonizedDatasetService.findById(resolver.getDatasetId());
-      ds.getBaseStudyTables();
-      // TODO
+      Optional<BaseStudyTable> studyTable = ds.getBaseStudyTables().stream().filter(st -> st.getStudyId().equals(resolver.getStudyId())
+          && st.getProject().equals(resolver.getProject())
+          && st.getTable().equals(resolver.getTable())).findFirst();
+      if (!studyTable.isPresent()) throw new IllegalArgumentException("Not a valid variable: " + path);
+      BaseStudy study = studyService.findStudy(studyTable.get().getStudyId());
+      return new RQLFieldReferences(path, ds, studyTable.get(), study, getDatasetVariableInternal(Indexer.HARMONIZED_VARIABLE_TYPE, path));
     }
     throw new IllegalArgumentException("Not a valid variable: " + path);
   }
