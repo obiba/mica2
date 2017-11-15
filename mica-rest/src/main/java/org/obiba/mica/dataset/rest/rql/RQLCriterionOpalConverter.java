@@ -42,7 +42,7 @@ public class RQLCriterionOpalConverter {
     return getQuery(variableReferences.getMicaVariableReference());
   }
 
-  public RQLFieldReferences getTable() {
+  public RQLFieldReferences getVariableReferences() {
     return variableReferences;
   }
 
