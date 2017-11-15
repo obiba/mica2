@@ -819,7 +819,8 @@
       "title": "Restaurer un réseau à partir d'une révision",
       "message": "Etes-vous sûr de vouloir restaurer cette révision de '{{arg0}}'?"
     },
-    "none": "Aucun réseau."
+    "none": "Aucun réseau.",
+    "number-of-studies": "Nombre d'études"
   },
   "all": "Tous",
   "name": "Nom",

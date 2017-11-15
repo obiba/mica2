@@ -819,7 +819,8 @@
       "title": "Restoring Network from Revision",
       "message": "Are you sure you want to restore this revision from '{{arg0}}'?"
     },
-    "none": "No networks."
+    "none": "No networks.",
+    "number-of-studies": "Number of Studies"
   },
   "all": "All",
   "name": "Name",
