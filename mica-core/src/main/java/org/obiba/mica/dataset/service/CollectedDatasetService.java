@@ -43,6 +43,7 @@ import org.obiba.mica.file.FileUtils;
 import org.obiba.mica.file.service.FileSystemService;
 import org.obiba.mica.micaConfig.service.OpalService;
 import org.obiba.mica.network.service.NetworkService;
+import org.obiba.mica.study.NoSuchStudyException;
 import org.obiba.mica.study.domain.BaseStudy;
 import org.obiba.mica.study.domain.DataCollectionEvent;
 import org.obiba.mica.study.domain.Population;
@@ -213,17 +214,17 @@ public class CollectedDatasetService extends DatasetService<StudyDataset, StudyD
   }
 
   private void checkIsPublishable(StudyDataset dataset) {
-
     if (!dataset.hasStudyTable())
       return;
 
-    if (!individualStudyService.isPublished(dataset.getStudyTable().getStudyId())) {
+    if (!individualStudyService.isPublished(dataset.getStudyTable().getStudyId()))
       throw new IllegalArgumentException("dataset.collection.study-not-published");
-    }
 
     BaseStudy study = publishedStudyService.findById(dataset.getStudyTable().getStudyId());
+    if (study == null)
+      throw NoSuchStudyException.withId(dataset.getStudyTable().getStudyId());
 
-    if (study == null || !(study instanceof Study))
+    if(!(study instanceof Study))
       throw new IllegalArgumentException("Wrong study type found");
 
     if (!isPublishedPopulation(study, dataset.getStudyTable().getPopulationId()))
