@@ -644,6 +644,7 @@
     "general-info": "<h3>Informations générales</h3>",
     "description": "Description",
     "entity-type": "Type d'entité",
+    "custom-order": "Chronologique",
     "study-population": {
       "title": "Population d'une étude",
       "info": ""
