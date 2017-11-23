@@ -281,6 +281,7 @@ public abstract class AbstractDocumentQuery implements DocumentQueryInterface {
    */
   private void execute(Query query, QueryScope scope, CountStatsData counts) {
     if (query == null) return;
+    if ("Network".equals(getSearchType()) && !micaConfigService.getConfig().isNetworkEnabled()) return;
 
     aggregationTitleResolver.registerProviders(getAggregationMetaDataProviders());
     aggregationTitleResolver.refresh();
@@ -304,6 +305,7 @@ public abstract class AbstractDocumentQuery implements DocumentQueryInterface {
    */
   private void executeCoverage(Query query) {
     if (query == null) return;
+    if ("Network".equals(getSearchType()) && !micaConfigService.getConfig().isNetworkEnabled()) return;
 
     aggregationTitleResolver.registerProviders(getAggregationMetaDataProviders());
     aggregationTitleResolver.refresh();
