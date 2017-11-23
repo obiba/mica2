@@ -86,26 +86,4 @@ mica.config
           };
         }
       };
-    }])
-
-  .provider('MicaConfigProxy',
-    function () {
-      function Proxy(MicaConfigResource, $filter, $q) {
-        this.languages = function() {
-          var deferred = $q.defer();
-          MicaConfigResource.get(function (micaConfig) {
-            var formLanguages = {};
-            micaConfig.languages.forEach(function (loc) {
-              formLanguages[loc] = $filter('translate')('language.' + loc);
-            });
-            deferred.resolve(formLanguages);
-          });
-
-          return deferred.promise;
-        };
-      }
-
-      this.$get = ['MicaConfigResource', '$filter', '$q', function(MicaConfigResource, $filter, $q) {
-        return new Proxy(MicaConfigResource, $filter, $q);
-      }];
-    });
+    }]);

@@ -158,6 +158,8 @@ public class NetworkQuery extends AbstractDocumentQuery {
   }
 
   public Map<String, List<String>> getStudyCountsByNetwork() {
+    Map<String, List<String>> map = Maps.newHashMap();
+    if (!micaConfigService.getConfig().isNetworkEnabled()) return map;
 
     Properties props = new Properties();
     props.setProperty("id", "");
@@ -166,7 +168,7 @@ public class NetworkQuery extends AbstractDocumentQuery {
     Map<String, Properties> subAggregations = Maps.newHashMap();
     subAggregations.put("id", subProps);
 
-    Map<String, List<String>> map = Maps.newHashMap();
+
     try {
       Searcher.DocumentResults results = searcher.cover(getSearchIndex(), getSearchType(), getQuery(), props, subAggregations, null);
       results.getAggregations().stream().filter(agg -> "terms".equals(agg.getType()))

@@ -75,7 +75,7 @@
       <ul class="nav nav-list xlarge-bottom-margin">
         <li class="nav-header" translate>content</li>
         <div>
-          <li>
+          <li ng-if="micaConfig.isNetworkEnabled">
             <a href="#/admin/network-config"><span><i class="fa fa-cog"></i> {{'network-config.title' | translate}}</span></a>
             <p class="help-block">
               <small translate>admin-page.help.network-config</small>
@@ -93,13 +93,13 @@
               <small translate>admin-page.help.harmonization-study-config</small>
             </p>
           </li>
-          <li>
+          <li ng-if="micaConfig.isCollectedDatasetEnabled">
             <a href="#/admin/collected-dataset-config"><span><i class="fa fa-cog"></i> {{'collected-dataset-config.title' | translate}}</span></a>
             <p class="help-block">
               <small translate>admin-page.help.collected-dataset-config</small>
             </p>
           </li>
-          <li>
+          <li ng-if="micaConfig.isHarmonizedDatasetEnabled">
             <a href="#/admin/harmonized-dataset-config"><span><i class="fa fa-cog"></i> {{'harmonized-dataset-config.title' | translate}}</span></a>
             <p class="help-block">
               <small translate>admin-page.help.harmonized-dataset-config</small>
