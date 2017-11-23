@@ -311,7 +311,7 @@ class MicaConfigDtos {
       case CollectedDataset:
         config = new StudyDatasetConfig();
         break;
-      case HarmonizationDataset:
+      case HarmonizedDataset:
         config = new HarmonizationDatasetConfig();
         break;
       case HarmonizationStudy:
@@ -335,7 +335,7 @@ class MicaConfigDtos {
   @NotNull
   Mica.EntityFormDto asDto(@NotNull DatasetConfig datasetConfig) {
     return asDto(datasetConfig, datasetConfig instanceof StudyDatasetConfig ?
-        Mica.EntityFormDto.Type.CollectedDataset : Mica.EntityFormDto.Type.HarmonizationDataset);
+        Mica.EntityFormDto.Type.CollectedDataset : Mica.EntityFormDto.Type.HarmonizedDataset);
   }
 
   @NotNull

@@ -767,7 +767,7 @@ message EntityFormDto {
     Population = 3;
     DataCollectionEvent = 4;
     CollectedDataset = 5;
-    HarmonizationDataset = 6;
+    HarmonizedDataset = 6;
     HarmonizationStudy = 7;
     HarmonizationPopulation = 8;
   }
