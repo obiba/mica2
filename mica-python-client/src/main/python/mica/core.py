@@ -138,6 +138,7 @@ class MicaRequest:
         self.curl_options = {}
         self.headers = {'Accept': 'application/json'}
         self._verbose = False
+        self.params = None
 
     def curl_option(self, opt, value):
         self.curl_options[opt] = value
@@ -220,13 +221,20 @@ class MicaRequest:
         if self.method:
             curl.setopt(pycurl.CUSTOMREQUEST, self.method)
         if self.resource:
-            curl.setopt(pycurl.URL, self.client.base_url + '/ws' + self.resource)
+            path = self.resource
+            if self.params:
+                path = path + '?' + urllib.urlencode(self.params)
+            curl.setopt(pycurl.URL, self.client.base_url + '/ws' + path)
         else:
             raise Exception('Resource is missing')
         return curl
 
     def resource(self, ws):
         self.resource = ws
+        return self
+
+    def query(self, parameters):
+        self.params = parameters
         return self
 
     def content(self, content):
