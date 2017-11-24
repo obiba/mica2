@@ -17,7 +17,8 @@ def add_arguments(parser):
     parser.add_argument('--dce', '-dce', required=False, help='Mica study population data collection event')
     parser.add_argument('--project', '-prj', required=False, help='Opal project')
     parser.add_argument('--table', '-tbl', required=False, help='Opal table')
-    parser.add_argument('--publish', '-pub', action='store_true', help='Publish dataset')
+    parser.add_argument('--publish', '-pub', action='store_true', help='Publish the colected dataset')
+    parser.add_argument('--unpublish', '-un', action='store_true', help='Unpublish the collected dataset')
 
 def new_request(args):
     request = mica.core.MicaClient.build(mica.core.MicaClient.LoginInfo.parse(args)).new_request()
@@ -84,6 +85,11 @@ def do_command(args):
             print "Publishing " + args.id + "..."
             request = new_request(args)
             request.put().resource(path + '/_publish').send()
+
+        if args.unpublish:
+            print "Unpublishing " + args.id + "..."
+            request = new_request(args)
+            request.delete().resource(path + '/_publish').send()
 
     except Exception, e:
         print e
