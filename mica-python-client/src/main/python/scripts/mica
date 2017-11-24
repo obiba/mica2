@@ -19,6 +19,7 @@ import mica.access_collected_dataset
 import mica.access_harmonized_dataset
 import mica.access_file
 import mica.tags
+import mica.update_collected_dataset
 
 def add_mica_arguments(parser):
     """
@@ -82,6 +83,9 @@ add_subcommand('access-file', 'Apply access on a file.',
 
 add_subcommand('tags', 'Extract classification tags from published variables.', mica.tags.add_arguments,
                mica.tags.do_command)
+
+add_subcommand('update-collected-dataset', 'Update collected dataset linkage with an Opal table.', mica.update_collected_dataset.add_arguments,
+               mica.update_collected_dataset.do_command)
 
 add_subcommand('rest', 'Request directly the Mica REST API, for advanced users.', mica.rest.add_arguments,
                mica.rest.do_command)

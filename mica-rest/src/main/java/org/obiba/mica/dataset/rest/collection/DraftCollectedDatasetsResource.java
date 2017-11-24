@@ -112,7 +112,7 @@ public class DraftCollectedDatasetsResource {
   public Response create(Mica.DatasetDto datasetDto, @Context UriInfo uriInfo,
                          @Nullable @QueryParam("comment") String comment) {
     Dataset dataset = dtos.fromDto(datasetDto);
-    if(!(dataset instanceof StudyDataset)) throw new IllegalArgumentException("An study dataset is expected");
+    if(!(dataset instanceof StudyDataset)) throw new IllegalArgumentException("A collected dataset is expected");
 
     datasetService.save((StudyDataset) dataset, comment);
     return Response.created(uriInfo.getBaseUriBuilder().segment("draft", "collected-dataset", dataset.getId()).build())
