@@ -242,6 +242,7 @@ public abstract class AbstractDocumentQuery implements DocumentQueryInterface {
 
   private List<String> queryStudyIds(Query localQuery) {
     if (localQuery == null) return null;
+    if ("Network".equals(getSearchType()) && !micaConfigService.getConfig().isNetworkEnabled()) return null;
 
     Query updatedQuery = updateWithJoinKeyQuery(localQuery);
     Searcher.IdFilter idFilter = getAccessibleIdFilter();
