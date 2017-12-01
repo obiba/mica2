@@ -12,6 +12,7 @@ package org.obiba.mica.variable.search;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Joiner;
+import com.google.common.collect.Lists;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.HarmonizationDatasetState;
 import org.obiba.mica.dataset.domain.StudyDatasetState;
@@ -75,6 +76,11 @@ public class EsPublishedDatasetVariableService extends AbstractDocumentService<D
   @Override
   protected DatasetVariable processHit(Searcher.DocumentResult res) throws IOException {
     return objectMapper.readValue(res.getSourceInputStream(), DatasetVariable .class);
+  }
+
+  @Override
+  public List<String> getDefaultLocalizedFields() {
+    return Lists.newArrayList("name", "attributes.label");
   }
 
   @Override
