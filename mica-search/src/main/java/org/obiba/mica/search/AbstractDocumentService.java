@@ -26,6 +26,8 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -104,7 +106,7 @@ public abstract class AbstractDocumentService<T> implements DocumentService<T> {
 
   @Override
   public List<String> getDefaultLocalizedFields() {
-    return Lists.newArrayList("acronym", "name");
+    return Lists.newArrayList("name", "acronym");
   }
 
   @Override
@@ -112,7 +114,19 @@ public abstract class AbstractDocumentService<T> implements DocumentService<T> {
     List<String> suggestions = Lists.newArrayList();
     // query default fields separately otherwise we do not know which field has matched and suggestion might not be correct
     getDefaultLocalizedFields().forEach(df -> suggestions.addAll(searcher.suggest(getIndexName(), getType(), limit, locale, queryString, df)));
-    return suggestions;
+    return suggestions.stream().map(s -> s
+        .replace("'s","") // english thing that confuses RQL
+        .replace("l'","") // french thing that confuses RQL
+        .replaceAll("['\",:;?!\\(\\)]", "") // chars that might confuse RQL
+        .replace(" - ", " ") // isolated hyphen
+        .trim().replaceAll(" +", " ")) // duplicated spaces
+        .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
+        .entrySet()
+        .stream()
+        .filter(e -> e.getValue() == 1) // remove duplicate values
+        .map(Map.Entry::getKey)
+        .sorted()
+        .collect(Collectors.toList());
   }
 
   @Override
