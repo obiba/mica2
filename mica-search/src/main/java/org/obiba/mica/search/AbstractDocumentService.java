@@ -11,6 +11,7 @@
 package org.obiba.mica.search;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import org.obiba.mica.core.service.DocumentService;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.security.service.SubjectAclService;
@@ -23,10 +24,7 @@ import sun.util.locale.LanguageTag;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -111,22 +109,16 @@ public abstract class AbstractDocumentService<T> implements DocumentService<T> {
 
   @Override
   public List<String> suggest(int limit, String locale, String queryString) {
-    List<String> suggestions = Lists.newArrayList();
+    Set<String> suggestions = Sets.newLinkedHashSet();
     // query default fields separately otherwise we do not know which field has matched and suggestion might not be correct
     getDefaultLocalizedFields().forEach(df -> suggestions.addAll(searcher.suggest(getIndexName(), getType(), limit, locale, queryString, df)));
-    return suggestions.stream().map(s -> s
+    return Lists.newArrayList(suggestions.stream().map(s -> s
         .replace("'s","") // english thing that confuses RQL
         .replace("l'","") // french thing that confuses RQL
         .replaceAll("['\",:;?!\\(\\)]", "") // chars that might confuse RQL
         .replace(" - ", " ") // isolated hyphen
         .trim().replaceAll(" +", " ")) // duplicated spaces
-        .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
-        .entrySet()
-        .stream()
-        .filter(e -> e.getValue() == 1) // remove duplicate values
-        .map(Map.Entry::getKey)
-        .sorted()
-        .collect(Collectors.toList());
+        .collect(Collectors.toSet()));
   }
 
   @Override
