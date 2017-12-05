@@ -24,6 +24,7 @@ import org.obiba.mica.core.upgrade.HarmonizationDatasetUpgrade;
 import org.obiba.mica.core.upgrade.Mica220Upgrade;
 import org.obiba.mica.core.upgrade.Mica2Upgrade;
 import org.obiba.mica.core.upgrade.Mica310Upgrade;
+import org.obiba.mica.core.upgrade.Mica312Upgrade;
 import org.obiba.mica.core.upgrade.Mica3Upgrade;
 import org.obiba.mica.core.upgrade.MicaVersionModifier;
 import org.obiba.mica.core.upgrade.NetworkStateUpgrade;
@@ -76,7 +77,8 @@ public class UpgradeConfiguration {
       applicationContext.getBean(Mica2Upgrade.class),
       applicationContext.getBean(Mica220Upgrade.class),
       applicationContext.getBean(Mica3Upgrade.class),
-      applicationContext.getBean(Mica310Upgrade.class)
+      applicationContext.getBean(Mica310Upgrade.class),
+      applicationContext.getBean(Mica312Upgrade.class)
     );
   }
 }
