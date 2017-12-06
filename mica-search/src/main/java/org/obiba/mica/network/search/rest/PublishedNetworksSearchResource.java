@@ -14,10 +14,7 @@ import java.io.IOException;
 import java.util.List;
 
 import javax.inject.Inject;
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.QueryParam;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
 
@@ -27,6 +24,7 @@ import org.obiba.mica.search.csvexport.GenericReportGenerator;
 import org.obiba.mica.search.queries.rql.RQLQueryBuilder;
 import org.obiba.mica.spi.search.QueryType;
 import org.obiba.mica.spi.search.Searcher;
+import org.obiba.mica.web.model.MicaSearch;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -75,11 +73,27 @@ public class PublishedNetworksSearchResource {
     return joinQueryExecutor.query(QueryType.NETWORK, searcher.makeJoinQuery(queryStr));
   }
 
+  @POST
+  @Path("/_rql")
+  @Timed
+  public MicaSearch.JoinQueryResultDto rqlLargeQuery(@FormParam("query") String query) throws IOException {
+    return rqlQuery(query);
+  }
+
   @GET
   @Path("/_rql_csv")
+  @Produces("text/csv")
   @Timed
   public Response rqlQueryAsCsv(@QueryParam("query") String query, @QueryParam("columnsToHide") List<String> columnsToHide) throws IOException {
     StreamingOutput stream = os -> genericReportGenerator.generateCsv(QueryType.NETWORK, query, columnsToHide, os);
     return Response.ok(stream).header("Content-Disposition", "attachment; filename=\"SearchNetworks.csv\"").build();
+  }
+
+  @POST
+  @Path("/_rql_csv")
+  @Produces("text/csv")
+  @Timed
+  public Response rqlLargeQueryAsCsv(@FormParam("query") String query, @FormParam("columnsToHide") List<String> columnsToHide) throws IOException {
+    return rqlQueryAsCsv(query, columnsToHide);
   }
 }

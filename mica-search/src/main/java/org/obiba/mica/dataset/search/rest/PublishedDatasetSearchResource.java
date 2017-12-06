@@ -14,10 +14,7 @@ import java.io.IOException;
 import java.util.List;
 
 import javax.inject.Inject;
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.QueryParam;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
 
@@ -71,11 +68,28 @@ public class PublishedDatasetSearchResource {
     return joinQueryExecutor.query(QueryType.DATASET, searcher.makeJoinQuery(queryStr));
   }
 
+  @POST
+  @Path("/_rql")
+  @Timed
+  public MicaSearch.JoinQueryResultDto rqlLargeQuery(@FormParam("query") String query) throws IOException {
+    return rqlQuery(query);
+  }
+
   @GET
   @Path("/_rql_csv")
+  @Produces("text/csv")
   @Timed
   public Response rqlQueryAsCsv(@QueryParam("query") String query, @QueryParam("columnsToHide") List<String> columnsToHide) throws IOException {
     StreamingOutput stream = os -> genericReportGenerator.generateCsv(QueryType.DATASET, query, columnsToHide, os);
     return Response.ok(stream).header("Content-Disposition", "attachment; filename=\"SearchDatasets.csv\"").build();
   }
+
+  @POST
+  @Path("/_rql_csv")
+  @Produces("text/csv")
+  @Timed
+  public Response rqlLargeQueryAsCsv(@FormParam("query") String query, @FormParam("columnsToHide") List<String> columnsToHide) throws IOException {
+    return rqlQueryAsCsv(query, columnsToHide);
+  }
+
 }
