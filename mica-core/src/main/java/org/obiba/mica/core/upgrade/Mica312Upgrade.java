@@ -2,6 +2,7 @@ package org.obiba.mica.core.upgrade;
 
 import javax.inject.Inject;
 
+import org.obiba.mica.micaConfig.event.TaxonomiesUpdatedEvent;
 import org.obiba.runtime.Version;
 import org.obiba.runtime.upgrade.UpgradeStep;
 import org.slf4j.Logger;
@@ -9,11 +10,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Component;
 
+import com.google.common.eventbus.EventBus;
+
 @Component
 public class Mica312Upgrade implements UpgradeStep {
 
   @Inject
   private MongoTemplate mongoTemplate;
+
+  @Inject
+  private EventBus eventBus;
 
   private static final Logger logger = LoggerFactory.getLogger(Mica312Upgrade.class);
 
@@ -33,6 +39,9 @@ public class Mica312Upgrade implements UpgradeStep {
 
     logger.info("Updating variable's variableType vocabulary terms.");
     mongoTemplate.execute(db -> db.eval(variableTypeVocabularyTermsUpdate()));
+
+    logger.info("Indexing Taxonomies");
+    eventBus.post(new TaxonomiesUpdatedEvent());
   }
 
   private String variableTypeVocabularyTermsUpdate() {
