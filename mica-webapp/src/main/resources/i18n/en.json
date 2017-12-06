@@ -1094,6 +1094,7 @@
   "item": "item",
   "select-all": "Select all",
   "clear-selection": "Clear",
+  "select-items": "Select",
   "items-selected": "items selected",
   "item-selected": "item selected",
   "files-selected": "files selected",
