@@ -930,6 +930,7 @@
     "none": "Aucun",
     "none-help": "Valeur manquante",
     "in": "Dans",
+    "out": "Pas dans",
     "in-help": "La valeur est dans au moins un des termes sélectionnés",
     "contains": "contient",
     "contains-help": "La Valeur contient tous les termes sélectionnés",
