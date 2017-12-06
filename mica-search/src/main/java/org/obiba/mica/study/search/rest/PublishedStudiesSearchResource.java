@@ -101,17 +101,35 @@ public class PublishedStudiesSearchResource {
 
   @GET
   @Path("/_report")
+  @Produces("text/csv")
   @Timed
   public Response report(@QueryParam("query") String query) throws IOException {
     StreamingOutput stream = os -> specificStudyReportGenerator.report(query, os);
     return Response.ok(stream).header("Content-Disposition", "attachment; filename=\"Studies.csv\"").build();
   }
 
+  @POST
+  @Path("/_report")
+  @Produces("text/csv")
+  @Timed
+  public Response reportLargeQuery(@FormParam("query") String query) throws IOException {
+    return report(query);
+  }
+
   @GET
   @Path("/_report_by_network")
+  @Produces("text/csv")
   @Timed
   public Response report(@QueryParam("networkId") String networkId, @QueryParam("locale") @DefaultValue("en") String locale) throws IOException {
     StreamingOutput stream = os -> specificStudyReportGenerator.report(networkId, locale, os);
     return Response.ok(stream).header("Content-Disposition", "attachment; filename=\"Studies.csv\"").build();
+  }
+
+  @POST
+  @Path("/_report_by_network")
+  @Produces("text/csv")
+  @Timed
+  public Response reportLargeQuery(@FormParam("networkId") String networkId, @FormParam("locale") @DefaultValue("en") String locale) throws IOException {
+    return report(networkId, locale);
   }
 }

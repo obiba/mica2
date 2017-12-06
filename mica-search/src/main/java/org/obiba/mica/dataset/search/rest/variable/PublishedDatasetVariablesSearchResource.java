@@ -118,6 +118,14 @@ public class PublishedDatasetVariablesSearchResource {
     return coverageByBucketFactory.asBucketsCoverageDto(getTaxonomiesCoverageDto(query, true));
   }
 
+  @POST
+  @DebugMethod
+  @Path("/_coverage")
+  @Timed
+  public MicaSearch.BucketsCoverageDto largeRqlCoverageAsBucket(@FormParam("query") String query) throws IOException {
+    return rqlCoverageAsBucket(query);
+  }
+
   @GET
   @DebugMethod
   @Path("/legacy/_coverage")
@@ -139,6 +147,15 @@ public class PublishedDatasetVariablesSearchResource {
         .header("Content-Disposition", "attachment; filename=\"coverage.csv\"").build();
   }
 
+  @POST
+  @Timed
+  @DebugMethod
+  @Path("/_coverage")
+  @Produces("text/csv")
+  public Response largeRqlCoverageCsv(@FormParam("query") String query) throws IOException {
+    return rqlCoverageCsv(query);
+  }
+
   @GET
   @Timed
   @DebugMethod
@@ -146,6 +163,15 @@ public class PublishedDatasetVariablesSearchResource {
   @Produces("text/csv")
   public Response rqlCoverageDownload(@QueryParam("query") String query) throws IOException {
     return rqlCoverageCsv(query);
+  }
+
+  @POST
+  @Timed
+  @DebugMethod
+  @Path("/_coverage_download")
+  @Produces("text/csv")
+  public Response largeRqlCoverageDownload(@FormParam("query") String query) throws IOException {
+    return rqlCoverageDownload(query);
   }
 
   //
