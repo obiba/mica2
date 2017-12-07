@@ -59,6 +59,15 @@ public class RQLFieldResolver {
     }
   };
 
+  private final Map<RQLNode, List<String>> nodeAnalyzedFields = new HashMap<RQLNode, List<String>>() {
+    {
+      put(RQLNode.DATASET, Lists.newArrayList(Indexer.ANALYZED_FIELDS));
+      put(RQLNode.STUDY, Lists.newArrayList(Indexer.ANALYZED_FIELDS));
+      put(RQLNode.NETWORK, Lists.newArrayList(Indexer.ANALYZED_FIELDS));
+      put(RQLNode.VARIABLE, Lists.newArrayList(Indexer.VARIABLE_ANALYZED_FIELDS));
+    }
+  };
+
   public RQLFieldResolver(RQLNode node, List<Taxonomy> taxonomies, String locale, IndexFieldMapping indexFieldMapping) {
     this.node = node;
     this.taxonomies = taxonomies;
@@ -118,6 +127,10 @@ public class RQLFieldResolver {
 
   public List<Taxonomy> getTaxonomies() {
     return taxonomies;
+  }
+
+  public List<String> getAnalzedFields() {
+    return nodeAnalyzedFields.getOrDefault(node, Lists.newArrayList(Indexer.ANALYZED_FIELDS));
   }
 
   private String localize(Vocabulary vocabulary, String field, String locale) {
