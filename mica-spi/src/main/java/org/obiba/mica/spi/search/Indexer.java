@@ -33,6 +33,7 @@ public interface Indexer {
   String PUBLISHED_VARIABLE_INDEX = "variable-published";
   String VARIABLE_TYPE = MAPPING_NAME;
   String HARMONIZED_VARIABLE_TYPE = HMAPPING_NAME;
+  String[] VARIABLE_ANALYZED_FIELDS = {"name", "label"};
   String[] VARIABLE_LOCALIZED_ANALYZED_FIELDS = {"label", "description"};
 
   String DRAFT_STUDY_INDEX = "study-draft";
