@@ -916,7 +916,13 @@
       "variable": "e.g. alcohol, pregnancy, cancer",
       "dataset": "Search by dataset name or type",
       "study": "e.g. cohort, gender, twin",
-      "network": "Search by network name"
+      "network": "Search by network name",
+      "meta-taxonomy-filter": {
+        "variables": "Search",
+        "datasets": "Search",
+        "studies": "Search",
+        "networks": "Search"
+      }
     },
     "classifications-show": "Show detailed classifications",
     "list": "List",
