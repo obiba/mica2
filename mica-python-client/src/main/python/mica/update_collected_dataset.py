@@ -11,7 +11,7 @@ def add_arguments(parser):
     """
     Add REST command specific options
     """
-    parser.add_argument('id', help='Collected dataset identifier')
+    parser.add_argument('id', help='Collected dataset ID')
     parser.add_argument('--study', '-std', required=False, help='Mica study')
     parser.add_argument('--population', '-pop', required=False, help='Mica population')
     parser.add_argument('--dce', '-dce', required=False, help='Mica study population data collection event')
