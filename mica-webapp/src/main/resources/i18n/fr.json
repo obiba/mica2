@@ -916,7 +916,13 @@
       "variable": "ex. alcool, grossesse, cancer",
       "dataset": "Cherche par nom ou type d'ensemble de données",
       "study": "ex. cohorte, sexe, jumeau",
-      "network": "Cherche par nom de réseau"
+      "network": "Cherche par nom de réseau",
+      "meta-taxonomy-filter": {
+        "variables": "Chercher",
+        "datasets": "Chercher",
+        "studies": "Chercher",
+        "networks": "Chercher"
+      }
     },
     "classifications-show": "Afficher les classifications détaillées",
     "list": "Liste",
