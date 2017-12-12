@@ -90,7 +90,7 @@ public class RQLQueryBuilder {
     }
 
     public TargetQueryBuilder match(String query) {
-      target.createChildNode(RQLNode.MATCH.name().toLowerCase(), Arrays.asList(query));
+      target.createChildNode(RQLNode.DOC_MATCH.name().toLowerCase(), Arrays.asList(query));
       return this;
     }
 
