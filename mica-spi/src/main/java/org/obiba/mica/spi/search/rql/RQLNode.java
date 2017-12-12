@@ -36,6 +36,7 @@ public enum RQLNode {
   LE,
   BETWEEN,
   MATCH,
+  DOC_MATCH,
   LIKE,
   EXISTS,
   MISSING,
