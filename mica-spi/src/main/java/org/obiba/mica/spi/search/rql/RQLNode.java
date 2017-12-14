@@ -45,7 +45,8 @@ public enum RQLNode {
   AGGREGATE,
   BUCKET,
   RE,
-  FIELDS;
+  FIELDS,
+  FILTER;
 
   public static RQLNode getType(String name) {
     return valueOf(name.trim().toUpperCase());
