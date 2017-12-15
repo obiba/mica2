@@ -25,7 +25,6 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.io.IOException;
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -103,20 +102,21 @@ public abstract class AbstractDocumentService<T> implements DocumentService<T> {
   }
 
   @Override
-  public List<String> getDefaultLocalizedFields() {
-    return Lists.newArrayList("name", "acronym");
+  public List<String> getSuggestionFields() {
+    return Lists.newArrayList("name.%s.analyzed", "acronym.%s.analyzed");
   }
 
   @Override
   public List<String> suggest(int limit, String locale, String queryString) {
     Set<String> suggestions = Sets.newLinkedHashSet();
     // query default fields separately otherwise we do not know which field has matched and suggestion might not be correct
-    getDefaultLocalizedFields().forEach(df -> suggestions.addAll(searcher.suggest(getIndexName(), getType(), limit, locale, queryString, df)));
+    getSuggestionFields().forEach(df -> suggestions.addAll(searcher.suggest(getIndexName(), getType(), limit, locale, queryString, df)));
     return Lists.newArrayList(suggestions.stream().map(s -> s
         .replace("'s","") // english thing that confuses RQL
         .replace("l'","") // french thing that confuses RQL
         .replaceAll("['\",:;?!\\(\\)]", "") // chars that might confuse RQL
         .replace(" - ", " ") // isolated hyphen
+        .replaceAll("(\\.\\w+)", "") // remove chars after "dot"
         .trim().replaceAll(" +", " ")) // duplicated spaces
         .collect(Collectors.toSet()));
   }

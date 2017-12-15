@@ -61,7 +61,7 @@ public interface DocumentService<T> {
   Documents<T> find(int from, int limit, @Nullable String sort, @Nullable String order, @Nullable String studyId,
                     @Nullable String query, @Nullable List<String> fields, @Nullable List<String> excludedFields);
 
-  List<String> getDefaultLocalizedFields();
+  List<String> getSuggestionFields();
 
   List<String> suggest(int limit, String locale, String query);
 
