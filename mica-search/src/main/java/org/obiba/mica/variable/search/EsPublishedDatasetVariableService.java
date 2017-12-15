@@ -79,8 +79,8 @@ public class EsPublishedDatasetVariableService extends AbstractDocumentService<D
   }
 
   @Override
-  public List<String> getDefaultLocalizedFields() {
-    return Lists.newArrayList("name", "attributes.label");
+  public List<String> getSuggestionFields() {
+    return Lists.newArrayList("name.analyzed", "attributes.label.%s.analyzed");
   }
 
   @Override
