@@ -434,6 +434,12 @@
         "label": "Gettext",
         "help": "The complete translations will be exported in the Gettext format."
       }
+    },
+    "searchLayout": {
+      "title": "Search Layout",
+      "help": "Switch between an on-demand and global search view of taxonomy terms.",
+      "layout1": "On-demand",
+      "layout2": "Global"
     }
   },
   "publish": {

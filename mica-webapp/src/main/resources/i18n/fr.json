@@ -434,6 +434,12 @@
         "label": "Gettext",
         "help": "Les traductions complètes seront exportées au format Gettext."
       }
+    },
+    "searchLayout": {
+      "title": "Mise en page de recherche",
+      "help": "Choisir entre une mise en page de recherche des termes et taxonomies globale et à la demande.",
+      "layout1": "À la demande",
+      "layout2": "Globale"
     }
   },
   "publish": {

@@ -408,6 +408,8 @@ message MicaConfigDto {
   optional bool isProjectNotificationsEnabled = 29;
   optional string projectNotificationsSubject = 30;
   optional string portalUrl = 31;
+  repeated string availableLayoutOptions = 32;
+  optional string searchLayout = 33;
 }
 
 message PublicMicaConfigDto {
@@ -415,6 +417,8 @@ message PublicMicaConfigDto {
   required bool openAccess = 2 [default = true];
   optional string publicUrl = 3;
   repeated string languages = 4;
+  repeated string availableLayoutOptions = 5;
+  optional string searchLayout = 6;
 }
 
 message AggregationsConfigDto {
