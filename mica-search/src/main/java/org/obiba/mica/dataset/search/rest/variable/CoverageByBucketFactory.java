@@ -66,7 +66,20 @@ public class CoverageByBucketFactory {
         .addAllCounts(bucketRow.counts);
       builder.addRows(row);
     });
+
+    builder.setTotalCounts(totalCountsFromJoinQueryResult(coverage.getQueryResult()));
     return builder.build();
   }
 
+  private MicaSearch.EntitiesTotalCountsDto.Builder totalCountsFromJoinQueryResult(MicaSearch.JoinQueryResultDto resultDto) {
+    return MicaSearch.EntitiesTotalCountsDto.newBuilder()
+      .setNetworkTotalCount(totalCountsFromQueryResult(resultDto.getNetworkResultDto()))
+      .setDatasetTotalCount(totalCountsFromQueryResult(resultDto.getDatasetResultDto()))
+      .setStudyTotalCount(totalCountsFromQueryResult(resultDto.getStudyResultDto()))
+      .setVariableTotalCount(totalCountsFromQueryResult(resultDto.getVariableResultDto()));
+  }
+
+  private MicaSearch.EntityTotalCountDto.Builder totalCountsFromQueryResult(MicaSearch.QueryResultDto queryResult) {
+    return MicaSearch.EntityTotalCountDto.newBuilder().setHits(queryResult.getTotalHits()).setTotal(queryResult.getTotalCount());
+  }
 }
