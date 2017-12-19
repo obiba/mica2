@@ -85,7 +85,8 @@ public class CoverageQueryExecutor {
     MicaSearch.TaxonomiesCoverageDto.Builder builder = MicaSearch.TaxonomiesCoverageDto.newBuilder()//
         .setTotalCount(result.getVariableResultDto().getTotalCount()) //
         .setTotalHits(result.getVariableResultDto().getTotalHits()) //
-        .addAllTaxonomies(getCoverages(aggregations));
+        .addAllTaxonomies(getCoverages(aggregations))
+        .setQueryResult(result);
 
     // Do not append the aggregations if no facets is requested
     if (joinQuery.isWithFacets()) builder.setQueryResult(result);

@@ -204,6 +204,7 @@ message BucketsCoverageDto {
   repeated HeaderDto vocabularyHeaders = 2;
   repeated HeaderDto termHeaders = 3;
   repeated RowDto rows = 4;
+  optional EntitiesTotalCountsDto totalCounts = 5;
 }
 
 message DatasetEntitiesCountDto {
@@ -220,4 +221,16 @@ message EntitiesCountDto {
   required string query = 2;
   required int32 total = 3;
   repeated DatasetEntitiesCountDto counts = 4;
+}
+
+message EntityTotalCountDto {
+  required int64 total = 1;
+  required int32 hits = 2;
+}
+
+message EntitiesTotalCountsDto {
+  optional EntityTotalCountDto studyTotalCount = 1;
+  optional EntityTotalCountDto datasetTotalCount = 2;
+  optional EntityTotalCountDto variableTotalCount = 3;
+  optional EntityTotalCountDto networkTotalCount = 4;
 }
