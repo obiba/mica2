@@ -1036,7 +1036,8 @@
       "no-data": "Aucune donnée ne correspond à cette requête."
     },
     "refresh-taxonomies": "Rafraîchir les taxonomies",
-    "showing": "Afficher {{arg0}} / {{arg1}}"
+    "showing": "Afficher {{arg0}} / {{arg1}}",
+    "search-not-available": "La recherche n'est pas disponible pour la configuration actuelle des sections de documents."
   },
   "variables": "Variables",
   "classifications": {

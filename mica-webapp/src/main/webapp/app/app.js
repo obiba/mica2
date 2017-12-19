@@ -84,12 +84,14 @@ mica
     'tmhDynamicLocaleProvider',
     'AlertBuilderProvider',
     'USER_ROLES',
+    'ObibaServerConfigResourceProvider',
     function ($routeProvider,
               $httpProvider,
               $translateProvider,
               tmhDynamicLocaleProvider,
               AlertBuilderProvider,
-              USER_ROLES) {
+              USER_ROLES,
+              ObibaServerConfigResourceProvider) {
 
       AlertBuilderProvider.setMsgKey('global.server-error');
       AlertBuilderProvider.setAlertId('MainController');
@@ -144,6 +146,13 @@ mica
 
       tmhDynamicLocaleProvider.localeLocationPattern('bower_components/angular-i18n/angular-locale_{{locale}}.js');
       tmhDynamicLocaleProvider.useCookieStorage('NG_TRANSLATE_LANG_KEY');
+
+      ObibaServerConfigResourceProvider.setFactory(
+        ['MicaConfigResource', function(MicaConfigResource){
+          return {get: MicaConfigResource.get};
+        }]
+      );
+
     }])
 
   // Workaround for bug #1404

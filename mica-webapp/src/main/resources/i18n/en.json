@@ -1036,7 +1036,8 @@
       "no-data": "No data matching this query."
     },
     "refresh-taxonomies": "Refresh Taxonomies",
-    "showing": "Showing {{arg0}} / {{arg1}}"
+    "showing": "Showing {{arg0}} / {{arg1}}",
+    "search-not-available": "Searching is unavailable for the current document section configuration."
   },
   "variables": "Variables",
   "classifications": {

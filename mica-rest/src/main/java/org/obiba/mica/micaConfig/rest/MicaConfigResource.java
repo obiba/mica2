@@ -53,6 +53,7 @@ import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.dataset.event.IndexDatasetsEvent;
 import org.obiba.mica.dataset.service.KeyStoreService;
 import org.obiba.mica.file.event.IndexFilesEvent;
+import org.obiba.mica.micaConfig.domain.MicaConfig;
 import org.obiba.mica.micaConfig.event.TaxonomiesUpdatedEvent;
 import org.obiba.mica.micaConfig.service.CacheService;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
@@ -143,7 +144,9 @@ public class MicaConfigResource {
   @Timed
   @RequiresRoles(Roles.MICA_ADMIN)
   public Response create(@SuppressWarnings("TypeMayBeWeakened") Mica.MicaConfigDto dto) {
-    micaConfigService.save(dtos.fromDto(dto));
+    MicaConfig micaConfig = dtos.fromDto(dto);
+    taxonomyService.refreshTaxonomyTaxonomyIfNeeded(micaConfigService.getConfig(), micaConfig);
+    micaConfigService.save(micaConfig);
     return Response.noContent().build();
   }
 

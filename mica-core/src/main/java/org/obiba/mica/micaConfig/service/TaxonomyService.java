@@ -280,4 +280,14 @@ public class TaxonomyService {
     refresh();
   }
 
+  public void refreshTaxonomyTaxonomyIfNeeded(MicaConfig currentConfig, MicaConfig newConfig) {
+    if (currentConfig.isSingleStudyEnabled() != newConfig.isSingleStudyEnabled()
+      || currentConfig.isNetworkEnabled() != newConfig.isNetworkEnabled()
+      || currentConfig.isSingleNetworkEnabled() != newConfig.isSingleNetworkEnabled()
+      || currentConfig.isStudyDatasetEnabled() != newConfig.isStudyDatasetEnabled()
+      || currentConfig.isHarmonizationDatasetEnabled() != newConfig.isHarmonizationDatasetEnabled()) {
+
+      taxonomyTaxonomy = null;
+    }
+  }
 }

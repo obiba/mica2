@@ -130,7 +130,9 @@
               <small translate>admin-page.help.file-system</small>
             </p>
           </li>
-          <li>
+          <li ng-if="!micaConfig.isSingleStudyEnabled ||
+                (micaConfig.isNetworkEnabled && !micaConfig.isSingleNetworkEnabled) ||
+                micaConfig.isCollectedDatasetEnabled || micaConfig.isHarmonizedDatasetEnabled">
             <a href="#/search">
               <span><i class="fa fa-cog"></i> {{'search.title' | translate}}</span>
             </a>
