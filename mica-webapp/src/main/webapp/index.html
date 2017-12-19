@@ -78,10 +78,8 @@
             <li><a href="#/harmonization-study">{{'global.harmonization-studies' | translate}}</a></li>
           </ul>
         </li>
-        <li ng-if="authenticated && micaConfig.isSingleStudyEnabled && !micaConfig.isHarmonizedDatasetEnabled">
-          <a href="#/individual-study">
-            <span>{{'study.label' | translate}}</span>
-          </a>
+        <li ng-if="authenticated && !micaConfig.isHarmonizedDatasetEnabled">
+          <a href="#/individual-study">{{micaConfig.isSingleStudyEnabled ? 'global.individual-study' : 'global.individual-studies' | translate}}</a>
         </li>
         <li class="dropdown clearfix" ng-if="authenticated && micaConfig.isCollectedDatasetEnabled && micaConfig.isHarmonizedDatasetEnabled">
           <a href="" class="dropdown-toggle" data-toggle="dropdown">
