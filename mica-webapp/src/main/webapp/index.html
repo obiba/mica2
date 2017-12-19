@@ -92,12 +92,12 @@
         </li>
         <li ng-if="authenticated && micaConfig.isCollectedDatasetEnabled && !micaConfig.isHarmonizedDatasetEnabled">
           <a href="#/collected-dataset">
-            <span>{{'datasets' | translate}}</span>
+            <span>{{'collected-datasets' | translate}}</span>
           </a>
         </li>
         <li ng-if="authenticated && !micaConfig.isCollectedDatasetEnabled && micaConfig.isHarmonizedDatasetEnabled">
           <a href="#/harmonized-dataset">
-            <span>{{'datasets' | translate}}</span>
+            <span>{{'harmonized-datasets' | translate}}</span>
           </a>
         </li>
         <li class="dropdown clearfix" ng-if="authenticated && (micaConfig.isCollectedDatasetEnabled || micaConfig.isHarmonizedDatasetEnabled)">
