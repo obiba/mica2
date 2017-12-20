@@ -416,7 +416,7 @@ mica.config
         });
 
         $scope.$watchGroup(['name', 'isNetworkEnabled', 'isSingleNetworkEnabled',
-          'isSingleStudyEnabled', 'isCollectedDatasetEnabled', 'isHarmonizedDatasetEnabled', 'languages'].map(function(p) { return 'micaConfig.' + p; }), function(value, oldValue) {
+          'isSingleStudyEnabled', 'isCollectedDatasetEnabled', 'isHarmonizedDatasetEnabled', 'languages', 'searchLayout'].map(function(p) { return 'micaConfig.' + p; }), function(value, oldValue) {
           if(!angular.equals(value,oldValue)) {
             reload = true;
           }
