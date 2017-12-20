@@ -408,7 +408,8 @@ mica.config
           return {
             name: 'searchLayout',
             label: $filter('translate')('config.searchLayout.' + layoutOption),
-            value: layoutOption
+            value: layoutOption,
+            help: $filter('translate')('config.searchLayout.' + layoutOption + '-help')
           };
         });
 

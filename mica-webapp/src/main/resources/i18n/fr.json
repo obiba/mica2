@@ -437,9 +437,11 @@
     },
     "searchLayout": {
       "title": "Mise en page de recherche",
-      "help": "Choisir entre une mise en page de recherche des termes et taxonomies globale et à la demande.",
-      "layout1": "À la demande",
-      "layout2": "Globale"
+      "help": "Changer la disposition de la page de recherche pour  Mica.",
+      "layout1": "Mise en page 1",
+      "layout2": "Mise en page 2",
+      "layout1-help": "Mise en page mettant l'accent sur une barre de recherche qui mappe les mots clés en taxonomies disponibles.",
+      "layout2-help": "Disposition fournissant un panneau de recherche sur le côté gauche qui affiche la taxonomie complète des différentes catégories de recherche (variable, étude et réseau)."
     }
   },
   "publish": {
