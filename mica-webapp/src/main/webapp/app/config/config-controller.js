@@ -409,7 +409,7 @@ mica.config
             name: 'searchLayout',
             label: $filter('translate')('config.searchLayout.' + layoutOption),
             value: layoutOption
-          }
+          };
         });
 
         $scope.$watchGroup(['name', 'isNetworkEnabled', 'isSingleNetworkEnabled',
