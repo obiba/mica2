@@ -366,6 +366,7 @@ mica.config
     '$window',
     '$location',
     '$log',
+    '$filter',
     'MicaConfigResource',
     'FormServerValidation',
     '$translate',
@@ -376,6 +377,7 @@ mica.config
               $window,
               $location,
               $log,
+              $filter,
               MicaConfigResource,
               FormServerValidation,
               $translate) {
@@ -393,6 +395,23 @@ mica.config
       getAvailableLanguages();
 
       $scope.micaConfig.$promise.then(function() {
+        $scope.selectedSearchLayout = {
+          get design() {
+            return $scope.micaConfig.searchLayout;
+          },
+          set design(value) {
+            $scope.micaConfig.searchLayout = value;
+          }
+        };
+
+        $scope.searchLayoutOptions = $scope.micaConfig.availableLayoutOptions.map(function (layoutOption) {
+          return {
+            name: 'searchLayout',
+            label: $filter('translate')('config.searchLayout.' + layoutOption),
+            value: layoutOption
+          }
+        });
+
         $scope.$watchGroup(['name', 'isNetworkEnabled', 'isSingleNetworkEnabled',
           'isSingleStudyEnabled', 'isCollectedDatasetEnabled', 'isHarmonizedDatasetEnabled', 'languages'].map(function(p) { return 'micaConfig.' + p; }), function(value, oldValue) {
           if(!angular.equals(value,oldValue)) {

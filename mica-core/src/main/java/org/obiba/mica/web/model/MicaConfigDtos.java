@@ -10,6 +10,7 @@
 
 package org.obiba.mica.web.model;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -49,6 +50,9 @@ class MicaConfigDtos {
     if (config.hasPublicUrl()) {
       builder.setPublicUrl(config.getPublicUrl());
     }
+
+    builder.addAllAvailableLayoutOptions(Arrays.asList(MicaConfig.LAYOUT_OPTIONS));
+    builder.setSearchLayout(config.getSearchLayout());
 
     return builder.build();
   }
@@ -108,6 +112,9 @@ class MicaConfigDtos {
 
     if(config.hasTranslations()) builder.addAllTranslations(localizedStringDtos.asDto(config.getTranslations()));
 
+    builder.addAllAvailableLayoutOptions(Arrays.asList(MicaConfig.LAYOUT_OPTIONS));
+    builder.setSearchLayout(config.getSearchLayout());
+
     return builder.build();
   }
 
@@ -117,6 +124,8 @@ class MicaConfigDtos {
     config.setName(dto.getName());
     config.setDefaultCharacterSet(dto.getDefaultCharSet());
     config.setOpenAccess(dto.getOpenAccess());
+
+    if (dto.hasSearchLayout()) config.setSearchLayout(dto.getSearchLayout());
 
     if(dto.hasPublicUrl()) config.setPublicUrl(dto.getPublicUrl());
     if(dto.hasPortalUrl()) config.setPortalUrl(dto.getPortalUrl());

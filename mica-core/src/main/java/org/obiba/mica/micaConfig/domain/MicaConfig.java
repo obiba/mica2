@@ -42,6 +42,8 @@ public class MicaConfig extends AbstractAuditableDocument {
 
   public static final String DEFAULT_OPAL = "https://localhost:8443";
 
+  public static final String[] LAYOUT_OPTIONS = {"layout1", "layout2"};
+
   @NotBlank
   private String name = DEFAULT_NAME;
 
@@ -111,6 +113,8 @@ public class MicaConfig extends AbstractAuditableDocument {
   private LocalizedString translations;
 
   private boolean searchRefreshButtonShown = false;
+
+  private String searchLayout = "layout2";
 
   public String getName() {
     return name;
@@ -391,5 +395,13 @@ public class MicaConfig extends AbstractAuditableDocument {
 
   public boolean hasTranslations() {
     return translations != null && !translations.isEmpty();
+  }
+
+  public String getSearchLayout() {
+    return searchLayout;
+  }
+
+  public void setSearchLayout(String searchLayout) {
+    this.searchLayout = searchLayout;
   }
 }
