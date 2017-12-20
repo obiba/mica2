@@ -385,7 +385,9 @@ mica.config
       $scope.micaConfig = MicaConfigResource.get();
 
       function getAvailableLanguages() {
-        $scope.availableLanguages = $resource('ws/config/languages').get({locale: $translate.use()});
+        $resource('ws/config/languages').get({locale: $translate.use()}).$promise.then(function (languages) {
+          $scope.availableLanguages = languages;
+        });
       }
 
       $rootScope.$on('$translateChangeSuccess', function () {
