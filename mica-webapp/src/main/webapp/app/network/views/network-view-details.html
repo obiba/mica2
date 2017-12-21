@@ -31,7 +31,7 @@
               <i class="fa fa-trash-o"></i> <span translate>global.delete-selected</span>
             </a>
 
-            <a ng-href="{{getStudyReportByNetworkUrl()}}" class="btn btn-responsive btn-info" ng-if="inViewMode() && permissions.canEdit()">
+            <a obiba-file-download url="getStudyReportByNetworkUrl()" href class="btn btn-responsive btn-info" ng-if="inViewMode() && permissions.canEdit()">
               <i class="fa fa-download"></i> <span translate>report-group.study.button-name</span>
             </a>
           </div>

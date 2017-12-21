@@ -155,7 +155,7 @@ public class TaxonomyService {
       taxonomyTaxonomy.removeVocabulary("dataset");
       taxonomyTaxonomy.removeVocabulary("variable");
     }
-    if(config.isSingleStudyEnabled()) {
+    if(config.isSingleStudyEnabled() && !config.isHarmonizationDatasetEnabled()) {
       taxonomyTaxonomy.removeVocabulary("study");
     }
   }
