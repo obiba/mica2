@@ -70,8 +70,8 @@ public abstract class AbstractFileSearchResource {
 
   private String escapeQuery(String query) {
     // TODO replace lucene QueryParser.escape()
-    // escape spaces as well
-    return query.replaceAll("\\s+", "\\\\ ");
+    // escape spaces as well as forward slashes
+    return query.replaceAll("\\/|\\\\\\/", "\\\\/").replaceAll("\\s+", "\\\\ ");
   }
 
   @GET
