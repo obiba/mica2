@@ -5,6 +5,7 @@
     "fr": "French"
   },
   "global": {
+    "close-panel" : "Close the panel",
     "menu": {
       "home": "Home",
       "myProfile": "My Profile",
