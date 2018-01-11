@@ -926,6 +926,7 @@
       "dataset": "Search by dataset name or type",
       "study": "e.g. cohort, gender, twin",
       "network": "Search by network name",
+      "vocabulary-filter": "Search",
       "meta-taxonomy-filter": {
         "variables": "Search",
         "datasets": "Search",
