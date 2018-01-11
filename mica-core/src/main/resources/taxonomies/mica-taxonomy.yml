@@ -41,6 +41,42 @@
       "description":
         "en": "Information about data collection methods and individuals targeted."
         "fr": "Information sur les méthodes de collecte de données et les individus ciblés."
+  - "name": "Scales"
+    "title":
+      "en": "Scales/Measures"
+      "fr": "Échelles/Mesures"
+    "description":
+      "en": "Information about constructs."
+      "fr": "Information au sujet de mesures composées (échelles)."
+    "terms":
+    - "name": "Mlstr_cogscale"
+      "title":
+        "en": "Constructs for cognitive functioning and mental health"
+        "fr": "Information au sujet de mesures composées (échelles) du fonctionnement cognitif et de la santé mentale"
+      "description":
+        "en": "Constructs for cognitive functioning and mental health"
+        "fr": "Information au sujet de mesures composées (échelles) du fonctionnement cognitif et de la santé mentale"
+    - "name": "Mlstr_genhealth"
+      "title":
+        "en": "Constructs for general health"
+        "fr": "Information au sujet de mesures composées (échelles) de la santé générale"
+      "description":
+        "en": "Refers to constructs used to measure general health"
+        "fr": "Information au sujet de mesures composées (échelles) de la santé générale"
+    - "name": "Mlstr_habits"
+      "title":
+        "en": "Constructs for life habits"
+        "fr": "Échelles utilisées pour les habitudes de vie"
+      "description":
+        "en": "Refers to constructs used to measure life habits"
+        "fr": "Information au sujet de mesures composites d'habitudes de vie"
+    - "name": "Mlstr_social"
+      "title":
+        "en": "Constructs for the social domain"
+        "fr": "Échelles utilisées dans le domaine social"
+      "description":
+        "en": "Refers to constructs used in the social domain"
+        "fr": "Information au sujet de mesures composites (échelles) utilisées dans le domaine social"
 - "name": "dataset"
   "title":
     "en": "Datasets"
