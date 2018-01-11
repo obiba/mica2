@@ -926,7 +926,7 @@
       "dataset": "Cherche par nom ou type d'ensemble de données",
       "study": "ex. cohorte, sexe, jumeau",
       "network": "Cherche par nom de réseau",
-      "vocabulary-filter": "Chercher",
+      "vocabulary-filter": "Filtrer",
       "meta-taxonomy-filter": {
         "variables": "Chercher",
         "datasets": "Chercher",
