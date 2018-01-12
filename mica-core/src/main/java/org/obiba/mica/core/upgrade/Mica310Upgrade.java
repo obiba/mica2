@@ -75,9 +75,18 @@ public class Mica310Upgrade implements UpgradeStep {
   public void execute(Version version) {
     logger.info("Executing Mica upgrade to version 3.1.0");
 
-    republishStudiesWithInvalidContent();
+    try {
+      republishStudiesWithInvalidContent();
+    } catch(Exception e) {
+      logger.error("Failed republishStudiesWithInvalidContent", e);
+    }
 
-    addDefaultFacets();
+    try {
+      addDefaultFacets();
+    } catch(Exception e) {
+      logger.error("Failed addDefaultFacets", e);
+    }
+
   }
 
   private void addDefaultFacets() {
@@ -141,11 +150,21 @@ public class Mica310Upgrade implements UpgradeStep {
     List<String> publishedStudiesIds = publishedStudies.stream().map(AbstractGitPersistable::getId).collect(toList());
     individualStudyService.findAllDraftStudies().stream()
       .filter(unknownStateStudy -> !publishedStudiesIds.contains(unknownStateStudy.getId()))
+      .filter(this::canGetCommitInfoOnStudyRepository)
       .filter(this::containsInvalidData)
       .map(this::transformToValidStudy)
       .forEach(individualStudyService::save);
 
     removeTaxonomyTaxonomyFromMongo();
+  }
+
+  boolean canGetCommitInfoOnStudyRepository(Study study) {
+    try {
+      return individualStudyService.getCommitInfos(study) != null;
+    } catch(Exception e) {
+      logger.error("Failed to get commit info for Study \"{}\" {}", study.getId(), e.getMessage());
+      return false;
+    }
   }
 
   void removeTaxonomyTaxonomyFromMongo() {
