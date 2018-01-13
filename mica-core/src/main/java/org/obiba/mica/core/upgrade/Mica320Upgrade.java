@@ -48,17 +48,33 @@ public class Mica320Upgrade implements UpgradeStep {
   public void execute(Version version) {
     logger.info("Executing Mica upgrade to version 3.2.0");
 
-    logger.info("Updating variable's variableType vocabulary terms.");
-    mongoTemplate.execute(db -> db.eval(variableTypeVocabularyTermsUpdate()));
+    try {
+      logger.info("Updating variable's variableType vocabulary terms.");
+      mongoTemplate.execute(db -> db.eval(variableTypeVocabularyTermsUpdate()));
+    } catch(Exception e) {
+      logger.error("Failed to update variable's variableType vocabulary terms", e);
+    }
 
-    logger.info("Indexing Taxonomies");
-    eventBus.post(new TaxonomiesUpdatedEvent());
+    try {
+      logger.info("Indexing Taxonomies");
+      eventBus.post(new TaxonomiesUpdatedEvent());
+    } catch(Exception e) {
+      logger.error("Failed to index Taxonomies", e);
+    }
 
-    logger.info("Re-indexing studies");
-    eventBus.post(new IndexStudiesEvent());
+    try {
+      logger.info("Re-indexing studies");
+      eventBus.post(new IndexStudiesEvent());
+    } catch(Exception e) {
+      logger.error("Failed to re-index studies", e);
+    }
 
-    logger.info("Re-indexing networks");
-    eventBus.post(new IndexNetworksEvent());
+    try {
+      logger.info("Re-indexing networks");
+      eventBus.post(new IndexNetworksEvent());
+    } catch(Exception e) {
+      logger.error("Failed to re-index networks", e);
+    }
   }
 
   private String variableTypeVocabularyTermsUpdate() {
