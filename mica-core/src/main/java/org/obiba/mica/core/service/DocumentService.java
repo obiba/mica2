@@ -10,11 +10,10 @@
 
 package org.obiba.mica.core.service;
 
-import java.util.List;
+import com.google.common.collect.Lists;
 
 import javax.annotation.Nullable;
-
-import com.google.common.collect.Lists;
+import java.util.List;
 
 public interface DocumentService<T> {
 
@@ -66,6 +65,15 @@ public interface DocumentService<T> {
   List<String> suggest(int limit, String locale, String query);
 
   long getCount();
+
+  /**
+   * Whether the document service implementation shall use cache. Note that cachable document are expected to
+   * be instances of {@link org.obiba.mica.spi.search.Identified}.
+   * @return
+   */
+  default boolean useCache() {
+    return false;
+  }
 
   /**
    * Documents query result container.

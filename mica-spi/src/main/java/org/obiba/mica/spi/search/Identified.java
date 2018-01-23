@@ -10,20 +10,16 @@
 
 package org.obiba.mica.spi.search;
 
-import java.io.Serializable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 /**
- * Allow indexing of a document that is not persisted.
+ * A document with an identifier.
  */
-public interface Indexable extends Serializable, Identified {
+public interface Identified {
 
-  String getClassName();
-
-  @JsonIgnore
-  String getMappingName();
-
-  String getParentId();
+  /**
+   * Get the identifier.
+   *
+   * @return
+   */
+  String getId();
 
 }
