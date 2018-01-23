@@ -48,7 +48,7 @@ mica.study.BaseEditController = function (
     $log.debug('Updating study', $scope.study);
     $scope.study.$save({comment: $scope.revision.comment}, function () {
       FormDirtyStateObserver.unobserve();
-      $location.path('/' + self.type + '-study/' + $routeParams.id).replace();
+      $location.url('/' + self.type + '-study/' + $routeParams.id);
     }, self.saveErrorHandler);
   };
 
