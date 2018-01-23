@@ -10,5 +10,12 @@
 
 package org.obiba.mica.core.service;
 
-public interface PublishedDocumentService<T> extends DocumentService<T> {
+import org.obiba.mica.spi.search.Identified;
+
+public interface PublishedDocumentService<T extends Identified> extends DocumentService<T> {
+
+  @Override
+  default boolean useCache() {
+    return true;
+  }
 }

@@ -10,11 +10,14 @@
 
 package org.obiba.mica.search;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import org.obiba.mica.core.service.DocumentService;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.security.service.SubjectAclService;
+import org.obiba.mica.spi.search.Identified;
 import org.obiba.mica.spi.search.Indexer;
 import org.obiba.mica.spi.search.Searcher;
 import org.slf4j.Logger;
@@ -25,6 +28,7 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -46,10 +50,18 @@ public abstract class AbstractDocumentService<T> implements DocumentService<T> {
   @Inject
   protected SubjectAclService subjectAclService;
 
+  private Cache<String, T> cache = CacheBuilder.newBuilder().maximumSize(1000).expireAfterWrite(1, TimeUnit.MINUTES).build();
+
   @Override
   @Nullable
   public T findById(String id) {
     log.debug("findById {} {}", getClass(), id);
+
+    if (useCache()) {
+      T result = cache.getIfPresent(id);
+      if (result != null) return result;
+    }
+
     List<T> results = findByIds(Collections.singletonList(id));
     return results != null && results.size() > 0 ? results.get(0) : null;
   }
@@ -64,8 +76,30 @@ public abstract class AbstractDocumentService<T> implements DocumentService<T> {
   public List<T> findByIds(List<String> ids) {
     log.debug("findByIds {} {} ids", getClass(), ids.size());
 
-    String idsAsRqlStringParam = String.join(",", ids);
-    return executeRqlQuery(String.format("generic(in(id,(%s)),limit(0,%s))", idsAsRqlStringParam, MAX_SIZE));
+    List<T> results = Lists.newArrayList();
+    List<String> notCachedIds = Lists.newArrayList();
+    if (useCache()) {
+      for (String id : ids) {
+        T result = cache.getIfPresent(id);
+        if (result == null) notCachedIds.add(id);
+        else results.add(result);
+      }
+    } else {
+      notCachedIds = ids;
+    }
+
+    if (notCachedIds.isEmpty()) return results;
+
+    String idsAsRqlStringParam = String.join(",", notCachedIds);
+    // TODO handle case ids size is greater than MAX_SIZE
+    List<T> notCachedResults = executeRqlQuery(String.format("generic(in(id,(%s)),limit(0,%s))", idsAsRqlStringParam, MAX_SIZE));
+
+    if (useCache()) {
+      notCachedResults.forEach(result -> cache.put(((Identified)result).getId(), result));
+    }
+
+    results.addAll(notCachedResults);
+    return results;
   }
 
   @Override

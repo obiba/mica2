@@ -17,9 +17,10 @@ import org.joda.time.DateTime;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Strings;
+import org.obiba.mica.spi.search.Identified;
 import org.springframework.data.domain.Persistable;
 
-public abstract class AbstractGitPersistable implements GitPersistable, Persistable<String> {
+public abstract class AbstractGitPersistable implements GitPersistable, Persistable<String>, Identified {
 
   private static final long serialVersionUID = -5039056351334888684L;
 
