@@ -22,7 +22,6 @@ import org.obiba.mica.spi.search.Indexer;
 import org.obiba.mica.spi.search.Searcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.domain.Persistable;
 import sun.util.locale.LanguageTag;
 
 import javax.annotation.Nullable;
