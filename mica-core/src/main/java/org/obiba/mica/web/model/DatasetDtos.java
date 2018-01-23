@@ -88,14 +88,14 @@ class DatasetDtos {
   private SubjectAclService subjectAclService;
 
   @NotNull
-  Mica.DatasetDto.Builder asDtoBuilder(@NotNull StudyDataset dataset, boolean asDraft) {
+  Mica.DatasetDto.Builder asDtoBuilder(@NotNull StudyDataset dataset, boolean asDraft, boolean studySummary) {
     Mica.DatasetDto.Builder builder = asBuilder(dataset);
     builder.setVariableType(DatasetVariable.Type.Collected.name());
 
     if(dataset.hasStudyTable() && !Strings.isNullOrEmpty(dataset.getStudyTable().getStudyId()) &&
       isStudyTablePermitted(asDraft, "individual", dataset.getStudyTable().getStudyId())) {
       Mica.CollectedDatasetDto.Builder sbuilder = Mica.CollectedDatasetDto.newBuilder()
-        .setStudyTable(asDto(dataset.getStudyTable(), true));
+        .setStudyTable(asDto(dataset.getStudyTable(), studySummary));
       builder.setExtension(Mica.CollectedDatasetDto.type, sbuilder.build());
     }
 
@@ -116,16 +116,16 @@ class DatasetDtos {
 
   @NotNull
   Mica.DatasetDto asDto(@NotNull StudyDataset dataset) {
-    return asDto(dataset, false);
+    return asDto(dataset, false, true);
   }
 
   @NotNull
-  Mica.DatasetDto asDto(@NotNull StudyDataset dataset, boolean asDraft) {
-    return asDtoBuilder(dataset, asDraft).build();
+  Mica.DatasetDto asDto(@NotNull StudyDataset dataset, boolean asDraft, boolean studySummary) {
+    return asDtoBuilder(dataset, asDraft, studySummary).build();
   }
 
   @NotNull
-  Mica.DatasetDto.Builder asDtoBuilder(@NotNull HarmonizationDataset dataset, boolean asDraft) {
+  Mica.DatasetDto.Builder asDtoBuilder(@NotNull HarmonizationDataset dataset, boolean asDraft, boolean studySummary) {
     Mica.DatasetDto.Builder builder = asBuilder(dataset);
     builder.setVariableType(DatasetVariable.Type.Dataschema.name());
 
@@ -140,13 +140,13 @@ class DatasetDtos {
     if(!dataset.getStudyTables().isEmpty()) {
       dataset.getStudyTables().stream()
         .filter(studyTable -> isStudyTablePermitted(asDraft, "individual", studyTable.getStudyId()))
-        .forEach(studyTable -> hbuilder.addStudyTables(asDto(studyTable, true)));
+        .forEach(studyTable -> hbuilder.addStudyTables(asDto(studyTable, studySummary)));
     }
 
     if(!dataset.getHarmonizationTables().isEmpty()) {
       dataset.getHarmonizationTables().stream()
         .filter(studyTable -> isStudyTablePermitted(asDraft, "harmonization", studyTable.getStudyId()))
-        .forEach(harmonizationTable -> hbuilder.addHarmonizationTables(asDto(harmonizationTable, true)));
+        .forEach(harmonizationTable -> hbuilder.addHarmonizationTables(asDto(harmonizationTable, studySummary)));
     }
 
     builder.setExtension(Mica.HarmonizedDatasetDto.type, hbuilder.build());
@@ -173,12 +173,12 @@ class DatasetDtos {
 
   @NotNull
   Mica.DatasetDto asDto(@NotNull HarmonizationDataset dataset) {
-    return asDto(dataset, false);
+    return asDto(dataset, false, true);
   }
 
   @NotNull
-  Mica.DatasetDto asDto(@NotNull HarmonizationDataset dataset, boolean asDraft) {
-    return asDtoBuilder(dataset, asDraft).build();
+  Mica.DatasetDto asDto(@NotNull HarmonizationDataset dataset, boolean asDraft, boolean studySummary) {
+    return asDtoBuilder(dataset, asDraft, studySummary).build();
   }
 
   @NotNull

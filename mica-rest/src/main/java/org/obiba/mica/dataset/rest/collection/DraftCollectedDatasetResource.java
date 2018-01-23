@@ -10,6 +10,7 @@
 
 package org.obiba.mica.dataset.rest.collection;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import org.obiba.mica.AbstractGitPersistableResource;
 import org.obiba.mica.core.domain.PublishCascadingScope;
@@ -62,7 +63,7 @@ public class DraftCollectedDatasetResource extends
   @GET
   public Mica.DatasetDto get(@QueryParam("key") String key) {
     checkPermission("/draft/collected-dataset", "VIEW", key);
-    return dtos.asDto(getDataset(), true);
+    return dtos.asDto(getDataset(), true, !Strings.isNullOrEmpty(key));
   }
 
   @GET
