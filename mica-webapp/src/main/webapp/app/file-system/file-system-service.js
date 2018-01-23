@@ -134,7 +134,7 @@ mica.fileSystem
         if (!files) {
           return;
         }
-        
+
         files.forEach(function (file) {
           Upload
             .upload({
@@ -190,28 +190,28 @@ mica.fileSystem
 
     this.study = function(study) {
       if (isValidEntity(study)) {
-        return ['/study', study.id].join('/');
+        return [study.studyResourcePath, study.id].join('/');
       }
       return '';
     };
 
     this.dce = function(study, population, dce) {
       if (isValidEntity(study) && isValidEntity(population) && isValidEntity(dce)) {
-        return ['/study', study.id, 'population', population.id, 'data-collection-event', dce.id].join('/');
+        return [study.studyResourcePath, study.id, 'population', population.id, 'data-collection-event', dce.id].join('/');
       }
       return '';
     };
 
     this.population = function(study, population) {
       if (isValidEntity(study) && isValidEntity(population)) {
-        return ['/study', study.id, 'population', population.id].join('/');
+        return [study.studyResourcePath, study.id, 'population', population.id].join('/');
       }
       return '';
     };
 
     this.studyFiles = function(study) {
       if (isValidEntity(study)) {
-        return ['/study', study.id, 'files'].join('/');
+        return [study.studyResourcePath, study.id, 'files'].join('/');
       }
       return '';
     };
