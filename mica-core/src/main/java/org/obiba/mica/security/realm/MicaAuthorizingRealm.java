@@ -13,11 +13,16 @@ package org.obiba.mica.security.realm;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.inject.Inject;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
@@ -55,6 +60,10 @@ public class MicaAuthorizingRealm extends AuthorizingRealm implements RolePermis
   private SubjectAclService subjectAclService;
 
   private final RolePermissionResolver rolePermissionResolver = new GroupPermissionResolver();
+
+  private Cache<String, Collection<Permission>> rolePermissionsCache = CacheBuilder.newBuilder().maximumSize(10000).expireAfterWrite(1, TimeUnit.MINUTES).build();
+
+  private Cache<String, List<String>> subjectPermissionsCache = CacheBuilder.newBuilder().maximumSize(10000).expireAfterWrite(1, TimeUnit.MINUTES).build();
 
   @Override
   public boolean supports(AuthenticationToken token) {
@@ -142,11 +151,26 @@ public class MicaAuthorizingRealm extends AuthorizingRealm implements RolePermis
     return loadSubjectPermissions(principals.getPrimaryPrincipal().toString(), SubjectAcl.Type.USER);
   }
 
+  /**
+   * Get permissions that apply to the subject and to any subjects of the same type.
+   *
+   * @param name
+   * @param type
+   * @return
+   */
   private List<String> loadSubjectPermissions(String name, SubjectAcl.Type type) {
-    // get permissions that apply to the subject and to all subjects
+    String key = name + ":" + type;
+    try {
+      return subjectPermissionsCache.get(key, () -> doLoadSubjectPermissions(name, type));
+    } catch (ExecutionException e) {
+      return doLoadSubjectPermissions(name, type);
+    }
+  }
+
+  private List<String> doLoadSubjectPermissions(String name, SubjectAcl.Type type) {
     return Stream
-      .concat(subjectAclService.findBySubject("*", type).stream(), subjectAclService.findBySubject(name, type).stream())
-      .map(SubjectAcl::getPermission).collect(Collectors.toList());
+        .concat(subjectAclService.findBySubject("*", type).stream(), subjectAclService.findBySubject(name, type).stream())
+        .map(SubjectAcl::getPermission).collect(Collectors.toList());
   }
 
   //
@@ -157,12 +181,16 @@ public class MicaAuthorizingRealm extends AuthorizingRealm implements RolePermis
 
     @Override
     public Collection<Permission> resolvePermissionsInRole(String roleString) {
+      Collection<Permission> cachedPerms = rolePermissionsCache.getIfPresent(roleString);
+      if (cachedPerms != null) return cachedPerms;
+
       List<String> permissions = loadSubjectPermissions(roleString, SubjectAcl.Type.GROUP);
       // built-in permissions
       Collection<Permission> perms;
       switch(roleString) {
         case Roles.MICA_ADMIN:
-          return mergePermissions("*", permissions);
+          perms = mergePermissions("*", permissions);
+          break;
         case Roles.MICA_REVIEWER:
           // all permissions: edition and publication on draft, view on published
           perms = mergePermissions("/files:UPLOAD", permissions);
@@ -172,7 +200,7 @@ public class MicaAuthorizingRealm extends AuthorizingRealm implements RolePermis
             perms.addAll(toPermissions(String.format("/%s:VIEW", e)));
             perms.addAll(toPermissions(String.format("/file:VIEW:/%s", e)));
           });
-          return perms;
+          break;
         case Roles.MICA_EDITOR:
           // all edition permissions on draft
           perms = mergePermissions("/files:UPLOAD", permissions);
@@ -186,18 +214,23 @@ public class MicaAuthorizingRealm extends AuthorizingRealm implements RolePermis
             perms.addAll(toPermissions(String.format("/%s:VIEW", e)));
             perms.addAll(toPermissions(String.format("/file:VIEW:/%s", e)));
           });
-          return perms;
+          break;
         case Roles.MICA_DAO:
           // can view and delete any project and data access requests
-          return mergePermissions(
+          perms = mergePermissions(
               "/data-access-request:ADD,/data-access-request:VIEW,/data-access-request:DELETE," +
               "/files:UPLOAD",
             permissions);
+          break;
         case Roles.MICA_USER:
-          return mergePermissions("/data-access-request:ADD,/files:UPLOAD", permissions);
+          perms = mergePermissions("/data-access-request:ADD,/files:UPLOAD", permissions);
+          break;
+        default:
+            // other groups
+            perms = PermissionUtils.resolvePermissions(permissions, getPermissionResolver());
       }
-      // other groups
-      return PermissionUtils.resolvePermissions(permissions, getPermissionResolver());
+      rolePermissionsCache.put(roleString, perms);
+      return perms;
     }
 
     private Collection<Permission> mergePermissions(String delimitedPermissions, Collection<String> permissions) {
