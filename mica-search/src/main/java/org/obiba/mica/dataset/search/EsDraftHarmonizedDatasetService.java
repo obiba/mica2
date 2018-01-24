@@ -61,7 +61,7 @@ class EsDraftHarmonizedDatasetService extends AbstractDocumentService<Harmonizat
     return new Searcher.IdFilter() {
       @Override
       public Collection<String> getValues() {
-        return harmonizedDatasetService.findAllStates().stream().map(HarmonizationDatasetState::getId)
+        return harmonizedDatasetService.findAllIds().stream()
             .filter(s -> subjectAclService.isPermitted("/draft/harmonized-dataset", "VIEW", s))
             .collect(Collectors.toList());
       }

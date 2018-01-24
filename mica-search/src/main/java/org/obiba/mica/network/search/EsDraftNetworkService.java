@@ -61,7 +61,7 @@ public class EsDraftNetworkService extends AbstractDocumentService<Network> impl
     return new Searcher.IdFilter() {
       @Override
       public Collection<String> getValues() {
-        return networkService.findAllStates().stream().map(NetworkState::getId)
+        return networkService.findAllIds().stream()
             .filter(s -> subjectAclService.isPermitted("/draft/network", "VIEW", s))
             .collect(Collectors.toList());
       }

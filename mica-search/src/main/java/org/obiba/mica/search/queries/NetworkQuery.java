@@ -83,7 +83,7 @@ public class NetworkQuery extends AbstractDocumentQuery {
     return new Searcher.IdFilter() {
       @Override
       public Collection<String> getValues() {
-        return publishedNetworkService.getNetworkService().findPublishedStates().stream().map(NetworkState::getId)
+        return publishedNetworkService.getNetworkService().findPublishedIds().stream()
             .filter(s -> subjectAclService.isAccessible("/network", s))
             .collect(Collectors.toList());
       }

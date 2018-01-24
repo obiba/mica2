@@ -63,7 +63,7 @@ public class EsPublishedNetworkService extends AbstractDocumentService<Network>
     return new Searcher.IdFilter() {
       @Override
       public Collection<String> getValues() {
-        return networkService.findPublishedStates().stream().map(NetworkState::getId)
+        return networkService.findPublishedIds().stream()
             .filter(s -> subjectAclService.isAccessible("/network", s))
             .collect(Collectors.toList());
       }

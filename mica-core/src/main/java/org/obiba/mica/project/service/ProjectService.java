@@ -190,6 +190,15 @@ public class ProjectService extends AbstractGitPersistableService<ProjectState, 
   }
 
   /**
+   * Get all project identifiers.
+   *
+   * @return
+   */
+  public List<String> findAllIds() {
+    return projectRepository.findAllExistingIds().stream().map(Project::getId).collect(toList());
+  }
+
+  /**
    * Get all published {@link Project}s.
    *
    * @return

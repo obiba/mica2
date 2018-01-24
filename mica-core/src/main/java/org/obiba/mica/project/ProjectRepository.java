@@ -12,10 +12,17 @@ package org.obiba.mica.project;
 
 import org.obiba.mica.project.domain.Project;
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.Query;
+
+import java.util.List;
 
 /**
  * Spring Data MongoDB repository for the {@link Project} entity.
  */
 public interface ProjectRepository extends MongoRepository<Project, String> {
+
+
+  @Query(value = "{}", fields = "{_id : 1}")
+  List<Project> findAllExistingIds();
 
 }

@@ -184,6 +184,15 @@ public class NetworkService extends AbstractGitPersistableService<NetworkState, 
   }
 
   /**
+   * Get all network identifiers.
+   *
+   * @return
+   */
+  public List<String> findAllIds() {
+    return networkRepository.findAllExistingIds().stream().map(Network::getId).collect(toList());
+  }
+
+  /**
    * Get all {@link Network}s.
    *
    * @return

@@ -28,4 +28,7 @@ public interface StudyDatasetRepository extends MongoRepository<StudyDataset, St
 
   @Query("{'model' : { $exists : false }}")
   List<StudyDataset> findWithoutModel();
+
+  @Query(value = "{}", fields = "{_id : 1}")
+  List<StudyDataset> findAllExistingIds();
 }

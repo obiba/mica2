@@ -13,6 +13,7 @@ package org.obiba.mica.dataset.service;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
+import java.util.List;
 
 import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
@@ -88,6 +89,14 @@ public abstract class DatasetService<T extends Dataset, T1 extends EntityState> 
   protected abstract OpalService getOpalService();
 
   protected abstract EventBus getEventBus();
+
+  /**
+   * Find all dataset identifiers.
+   *
+   * @return
+   */
+  @NotNull
+  public abstract List<String> findAllIds();
 
   /**
    * Find a dataset by its identifier.

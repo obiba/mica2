@@ -61,7 +61,7 @@ public class EsDraftProjectService extends AbstractDocumentService<Project> impl
     return new Searcher.IdFilter() {
       @Override
       public Collection<String> getValues() {
-        return projectService.findAllStates().stream().map(ProjectState::getId)
+        return projectService.findAllIds().stream()
             .filter(s -> subjectAclService.isPermitted("/draft/project", "VIEW", s))
             .collect(Collectors.toList());
       }

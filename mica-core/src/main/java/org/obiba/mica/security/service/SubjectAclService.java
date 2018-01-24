@@ -12,10 +12,13 @@ package org.obiba.mica.security.service;
 
 import com.codahale.metrics.annotation.Timed;
 import com.google.common.base.Strings;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.AuthorizationException;
+import org.apache.shiro.subject.Subject;
 import org.obiba.mica.dataset.event.DatasetDeletedEvent;
 import org.obiba.mica.file.FileUtils;
 import org.obiba.mica.file.event.FileDeletedEvent;
@@ -43,6 +46,9 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
 /**
@@ -63,6 +69,8 @@ public class SubjectAclService {
 
   @Inject
   private EventBus eventBus;
+
+  private Cache<String, Boolean> permissionCache = CacheBuilder.newBuilder().maximumSize(1000).expireAfterWrite(10, TimeUnit.SECONDS).build();
 
   public boolean isCurrentUser(String principal) {
     return SecurityUtils.getSubject().getPrincipal().toString().equals(principal);
@@ -113,8 +121,14 @@ public class SubjectAclService {
    */
   @Timed
   public boolean isPermitted(@NotNull String resource, @NotNull String action, @Nullable String instance) {
-    return SecurityUtils.getSubject()
-      .isPermitted(resource + ":" + action + (Strings.isNullOrEmpty(instance) ? "" : ":" + encode(instance)));
+    String perm = resource + ":" + action + (Strings.isNullOrEmpty(instance) ? "" : ":" + encode(instance));
+    Subject subject = SecurityUtils.getSubject();
+    String permKey = subject.getPrincipal() + ":" + perm;
+    try {
+      return permissionCache.get(permKey, () -> subject.isPermitted(perm));
+    } catch (ExecutionException e) {
+      return subject.isPermitted(perm);
+    }
   }
 
   @Timed
