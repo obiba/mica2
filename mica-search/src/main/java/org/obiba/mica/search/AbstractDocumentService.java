@@ -14,6 +14,7 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import org.apache.shiro.SecurityUtils;
 import org.obiba.mica.core.service.DocumentService;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.security.service.SubjectAclService;
@@ -50,7 +51,7 @@ public abstract class AbstractDocumentService<T> implements DocumentService<T> {
   @Inject
   protected SubjectAclService subjectAclService;
 
-  private Cache<String, T> cache = CacheBuilder.newBuilder().maximumSize(1000).expireAfterWrite(1, TimeUnit.MINUTES).build();
+  private Cache<String, T> documentsCache = CacheBuilder.newBuilder().maximumSize(1000).expireAfterWrite(1, TimeUnit.MINUTES).build();
 
   @Override
   @Nullable
@@ -58,7 +59,8 @@ public abstract class AbstractDocumentService<T> implements DocumentService<T> {
     log.debug("findById {} {}", getClass(), id);
 
     if (useCache()) {
-      T result = cache.getIfPresent(id);
+      String principal = SecurityUtils.getSubject().getPrincipal().toString();
+      T result = documentsCache.getIfPresent(principal + "::" + id);
       if (result != null) return result;
     }
 
@@ -75,12 +77,12 @@ public abstract class AbstractDocumentService<T> implements DocumentService<T> {
   @Override
   public List<T> findByIds(List<String> ids) {
     log.debug("findByIds {} {} ids", getClass(), ids.size());
-
+    String principal = useCache() ? SecurityUtils.getSubject().getPrincipal().toString() : "";
     List<T> results = Lists.newArrayList();
     List<String> notCachedIds = Lists.newArrayList();
     if (useCache()) {
       for (String id : ids) {
-        T result = cache.getIfPresent(id);
+        T result = documentsCache.getIfPresent(principal + "::" + id);
         if (result == null) notCachedIds.add(id);
         else results.add(result);
       }
@@ -95,7 +97,7 @@ public abstract class AbstractDocumentService<T> implements DocumentService<T> {
     List<T> notCachedResults = executeRqlQuery(String.format("generic(in(id,(%s)),limit(0,%s))", idsAsRqlStringParam, MAX_SIZE));
 
     if (useCache()) {
-      notCachedResults.forEach(result -> cache.put(((Identified)result).getId(), result));
+      notCachedResults.forEach(result -> documentsCache.put(principal + "::" + ((Identified)result).getId(), result));
     }
 
     results.addAll(notCachedResults);
