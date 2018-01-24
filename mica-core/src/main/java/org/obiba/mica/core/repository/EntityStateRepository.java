@@ -10,15 +10,21 @@
 
 package org.obiba.mica.core.repository;
 
-import java.util.List;
-
 import org.obiba.mica.core.domain.EntityState;
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.Query;
+
+import java.util.List;
 
 
 public interface EntityStateRepository<T extends EntityState> extends MongoRepository<T, String> {
+
   List<T> findByPublishedTagNotNull();
-  List<T> findByPublishedTagIsNull();
+
   Long countByPublishedTagNotNullAndRevisionsAheadGreaterThanEqual(int value);
+
   List<T> findByPublishedTagNotNullAndIdIn(Iterable<String> datasetIds);
+
+  @Query(value = "{ publishedTag : { $exists: true } }", fields = "{_id : 1}")
+  List<T> findAllPublishedIds();
 }

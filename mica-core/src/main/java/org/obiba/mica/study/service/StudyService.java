@@ -123,13 +123,6 @@ public class StudyService {
     }
   }
 
-  public List<BaseStudy> findAllUnpublishedStudies() {
-    return Stream
-      .concat(individualStudyService.findAllUnpublishedStudies().stream(),
-        harmonizationStudyService.findAllUnpublishedStudies().stream())
-      .collect(Collectors.toList());
-  }
-
   public List<BaseStudy> findAllPublishedStudies() {
     return Stream
       .concat(individualStudyService.findAllPublishedStudies().stream(),

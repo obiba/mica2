@@ -33,4 +33,7 @@ public interface HarmonizationDatasetRepository extends MongoRepository<Harmoniz
 
   @Query("{'model' : { $exists : false }}")
   List<HarmonizationDataset> findWithoutModel();
+
+  @Query(value = "{}", fields = "{_id : 1}")
+  List<HarmonizationDataset> findAllExistingIds();
 }

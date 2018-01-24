@@ -60,7 +60,7 @@ class EsDraftCollectedDatasetService extends AbstractEsDatasetService<StudyDatas
     return new Searcher.IdFilter() {
       @Override
       public Collection<String> getValues() {
-        return collectedDatasetService.findAllStates().stream().map(StudyDatasetState::getId)
+        return collectedDatasetService.findAllIds().stream()
             .filter(s -> subjectAclService.isPermitted("/draft/collected-dataset", "VIEW", s))
             .collect(Collectors.toList());
       }

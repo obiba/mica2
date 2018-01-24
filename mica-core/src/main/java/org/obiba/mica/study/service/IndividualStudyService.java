@@ -10,19 +10,11 @@
 
 package org.obiba.mica.study.service;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import javax.annotation.Nullable;
-import javax.inject.Inject;
-import javax.validation.constraints.NotNull;
-
+import com.google.common.base.Throwables;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import org.joda.time.DateTime;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -47,11 +39,17 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
-import com.google.common.base.Throwables;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
+import javax.annotation.Nullable;
+import javax.inject.Inject;
+import javax.validation.constraints.NotNull;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 
@@ -109,7 +107,7 @@ public class IndividualStudyService extends AbstractStudyService<StudyState, Stu
     }
 
     ImmutableSet<String> invalidRoles = ImmutableSet
-      .copyOf(Sets.difference(study.membershipRoles(), Sets.newHashSet(micaConfigService.getConfig().getRoles())));
+        .copyOf(Sets.difference(study.membershipRoles(), Sets.newHashSet(micaConfigService.getConfig().getRoles())));
 
     invalidRoles.forEach(study::removeRole);
 
@@ -126,7 +124,7 @@ public class IndividualStudyService extends AbstractStudyService<StudyState, Stu
     studyStateRepository.save(studyState);
     study.setLastModifiedDate(DateTime.now());
 
-    if(cascade) studyRepository.saveWithReferences(study);
+    if (cascade) studyRepository.saveWithReferences(study);
     else studyRepository.save(study);
 
     gitService.save(study, comment);
@@ -150,7 +148,7 @@ public class IndividualStudyService extends AbstractStudyService<StudyState, Stu
 
     try {
       restoredStudy = objectMapper.readValue(inputStream, Study.class);
-    } catch(IOException e) {
+    } catch (IOException e) {
       throw Throwables.propagate(e);
     }
 
@@ -184,10 +182,10 @@ public class IndividualStudyService extends AbstractStudyService<StudyState, Stu
    */
   public List<StudyDataset> findAllPublishedDatasetsByStudy(@NotNull String studyId) {
     return studyDatasetRepository
-      .findByStudyTableStudyId(studyId)
-      .stream()
-      .filter(ds -> studyDatasetStateRepository.findOne(ds.getId()).isPublished())
-      .collect(Collectors.toList());
+        .findByStudyTableStudyId(studyId)
+        .stream()
+        .filter(ds -> studyDatasetStateRepository.findOne(ds.getId()).isPublished())
+        .collect(Collectors.toList());
   }
 
   public Map<String, List<String>> getPotentialConflicts(Study study, boolean publishing) {
@@ -200,7 +198,7 @@ public class IndividualStudyService extends AbstractStudyService<StudyState, Stu
           List<String> studyDatasetIds = findStudyDatasetDependencies(dceUIDs);
           List<String> harmoDatasetIds = findHarmonizedDatasetDependencies(dceUIDs);
           List<String> networkIds = networkRepository.findByStudyIds(study.getId()).stream()
-            .map(AbstractGitPersistable::getId).collect(toList());
+              .map(AbstractGitPersistable::getId).collect(toList());
 
           if (!harmoDatasetIds.isEmpty() || !studyDatasetIds.isEmpty() || !networkIds.isEmpty()) {
             return new HashMap<String, List<String>>() {{
@@ -225,7 +223,7 @@ public class IndividualStudyService extends AbstractStudyService<StudyState, Stu
       List<String> oldDceUIDs = toListOfDceUids(oldStudy, withDceStartField);
 
       boolean isChangeSignificant = newDceUIDs.size() <= oldDceUIDs.size() && !newDceUIDs.containsAll(oldDceUIDs);
-      if(isChangeSignificant) {
+      if (isChangeSignificant) {
         oldDceUIDs.removeAll(newDceUIDs);
         return oldDceUIDs;
       } else return null;
@@ -248,11 +246,11 @@ public class IndividualStudyService extends AbstractStudyService<StudyState, Stu
 
   protected void checkStudyConstraints(Study study) {
     List<String> harmonizationDatasetsIds = harmonizationDatasetRepository.findByStudyTablesStudyId(study.getId())
-      .stream().map(h -> h.getId()).collect(toList());
+        .stream().map(h -> h.getId()).collect(toList());
     List<String> studyDatasetIds = studyDatasetRepository.findByStudyTableStudyId(study.getId()).stream()
-      .map(h -> h.getId()).collect(toList());
+        .map(AbstractGitPersistable::getId).collect(toList());
     List<String> networkIds = networkRepository.findByStudyIds(study.getId()).stream().map(n -> n.getId())
-      .collect(toList());
+        .collect(toList());
 
     if (!harmonizationDatasetsIds.isEmpty() || !studyDatasetIds.isEmpty() || !networkIds.isEmpty()) {
       Map<String, List<String>> conflicts = new HashMap<String, List<String>>() {{
@@ -266,8 +264,8 @@ public class IndividualStudyService extends AbstractStudyService<StudyState, Stu
   }
 
   @Override
-  public List<String> findAllExistingIds(Iterable<String> ids) {
-    return studyRepository.findAllExistingIds(ids).stream().map(Study::getId).collect(Collectors.toList());
+  public List<String> findAllIds() {
+    return studyRepository.findAllExistingIds().stream().map(Study::getId).collect(Collectors.toList());
   }
 
   @Override
@@ -288,32 +286,32 @@ public class IndividualStudyService extends AbstractStudyService<StudyState, Stu
   // from dataCollectionEventUIDs
   private List<String> findStudyDatasetDependencies(List<String> concatenatedIds) {
     return concatenatedIds.stream()
-      .map(o -> {
-        String[] split = o.split(SEPARATOR);
-        return studyDatasetRepository.findByStudyTableStudyIdAndStudyTablePopulationIdAndStudyTableDataCollectionEventId(
-          split[0], split[1], split[2]);
-      })
-      .reduce(Lists.newArrayList(), StudyService::listAddAll).stream()
-      .map(AbstractGitPersistable::getId).distinct().collect(toList());
+        .map(o -> {
+          String[] split = o.split(SEPARATOR);
+          return studyDatasetRepository.findByStudyTableStudyIdAndStudyTablePopulationIdAndStudyTableDataCollectionEventId(
+              split[0], split[1], split[2]);
+        })
+        .reduce(Lists.newArrayList(), StudyService::listAddAll).stream()
+        .map(AbstractGitPersistable::getId).distinct().collect(toList());
   }
 
   // from dataCollectionEventUIDs
   private List<String> findHarmonizedDatasetDependencies(List<String> concatenatedIds) {
     return concatenatedIds.stream()
-      .map(o -> {
-        String[] split = o.split(SEPARATOR);
-        return harmonizationDatasetRepository.findByStudyTablesStudyIdAndStudyTablesPopulationIdAndStudyTablesDataCollectionEventId(
-          split[0], split[1], split[2]);
-      })
-      .reduce(Lists.newArrayList(), StudyService::listAddAll).stream()
-      .map(AbstractGitPersistable::getId).distinct().collect(toList());
+        .map(o -> {
+          String[] split = o.split(SEPARATOR);
+          return harmonizationDatasetRepository.findByStudyTablesStudyIdAndStudyTablesPopulationIdAndStudyTablesDataCollectionEventId(
+              split[0], split[1], split[2]);
+        })
+        .reduce(Lists.newArrayList(), StudyService::listAddAll).stream()
+        .map(AbstractGitPersistable::getId).distinct().collect(toList());
   }
 
   private List<String> toListOfDceUids(Study study, boolean withDceStartField) {
     return study.getPopulations().stream()
-      .map(p -> p.getDataCollectionEvents().stream()
-        .map(dce -> study.getId() + SEPARATOR + p.getId() + SEPARATOR + dce.getId() + (withDceStartField ? SEPARATOR + dce.getStart().getSortableYearMonth() : ""))
-        .collect(toList()))
-      .reduce(Lists.newArrayList(), StudyService::listAddAll);
+        .map(p -> p.getDataCollectionEvents().stream()
+            .map(dce -> study.getId() + SEPARATOR + p.getId() + SEPARATOR + dce.getId() + (withDceStartField ? SEPARATOR + dce.getStart().getSortableYearMonth() : ""))
+            .collect(toList()))
+        .reduce(Lists.newArrayList(), StudyService::listAddAll);
   }
 }

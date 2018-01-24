@@ -76,15 +76,13 @@ public class EsDraftStudyService extends AbstractDocumentService<Study> implemen
   }
 
   private List<String> findAuthorizedHarmonizationStudyIds() {
-    return harmonizationStudyService.findAllStates().stream()
-        .map(DefaultEntityBase::getId)
+    return harmonizationStudyService.findAllIds().stream()
         .filter(studyId -> subjectAclService.isPermitted("/draft/harmonization-study", "VIEW", studyId))
         .collect(Collectors.toList());
   }
 
   private List<String> findAuthorizedCollectionStudyIds() {
-    return individualStudyService.findAllStates().stream()
-        .map(DefaultEntityBase::getId)
+    return individualStudyService.findAllIds().stream()
         .filter(studyId -> subjectAclService.isPermitted("/draft/individual-study", "VIEW", studyId))
         .collect(Collectors.toList());
   }

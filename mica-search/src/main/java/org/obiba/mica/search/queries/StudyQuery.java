@@ -72,9 +72,9 @@ public class StudyQuery extends AbstractDocumentQuery {
     return new Searcher.IdFilter() {
       @Override
       public Collection<String> getValues() {
-        List<String> ids = individualStudyService.findPublishedStates().stream().map(DefaultEntityBase::getId)
+        List<String> ids = individualStudyService.findPublishedIds().stream()
             .filter(s -> subjectAclService.isAccessible("/individual-study", s)).collect(Collectors.toList());
-        ids.addAll(harmonizationStudyService.findPublishedStates().stream().map(DefaultEntityBase::getId)
+        ids.addAll(harmonizationStudyService.findPublishedIds().stream()
             .filter(s -> subjectAclService.isAccessible("/harmonization-study", s)).collect(Collectors.toList()));
         return ids;
       }

@@ -63,7 +63,7 @@ public class EsPublishedProjectService extends AbstractDocumentService<Project> 
     return new Searcher.IdFilter() {
       @Override
       public Collection<String> getValues() {
-        return projectService.findPublishedStates().stream().map(ProjectState::getId)
+        return projectService.findPublishedIds().stream()
             .filter(s -> subjectAclService.isAccessible("/project", s))
             .collect(Collectors.toList());
       }

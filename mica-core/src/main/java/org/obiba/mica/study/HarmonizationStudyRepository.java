@@ -20,6 +20,6 @@ import org.springframework.data.mongodb.repository.Query;
 public interface HarmonizationStudyRepository
   extends MongoRepository<HarmonizationStudy, String>, HarmonizationStudyRepositoryCustom {
 
-  @Query(value = "{'_id' : { $in: ?0 }}", fields = "{_id : 1}")
-  List<Study> findAllExistingIds(Iterable<String> ids);
+  @Query(value = "{}", fields = "{_id : 1}")
+  List<Study> findAllExistingIds();
 }

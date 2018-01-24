@@ -13,6 +13,7 @@ package org.obiba.mica.dataset.service;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -133,6 +134,11 @@ public class CollectedDatasetService extends DatasetService<StudyDataset, StudyD
     StudyDataset dataset = studyDatasetRepository.findOne(id);
     if(dataset == null) throw NoSuchDatasetException.withId(id);
     return dataset;
+  }
+
+  @Override
+  public List<String> findAllIds() {
+    return studyDatasetRepository.findAllExistingIds().stream().map(StudyDataset::getId).collect(Collectors.toList());
   }
 
   /**

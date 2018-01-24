@@ -27,4 +27,8 @@ public interface NetworkRepository extends MongoRepository<Network, String>, Net
 
   @Query("{'model' : { $exists : false }}")
   List<Network> findWithoutModel();
+
+  @Query(value = "{}", fields = "{_id : 1}")
+  List<Network> findAllExistingIds();
+
 }
