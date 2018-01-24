@@ -73,6 +73,7 @@ import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import static java.util.stream.Collectors.toList;
@@ -144,6 +145,11 @@ public class HarmonizedDatasetService extends DatasetService<HarmonizationDatase
     return harmonizationDatasetRepository.findByHarmonizationTableStudyId(studyId);
   }
 
+  @Override
+  public List<String> findAllIds() {
+    return harmonizationDatasetRepository.findAllExistingIds().stream().map(HarmonizationDataset::getId).collect(Collectors.toList());
+  }
+
   /**
    * Get all {@link HarmonizationDataset}s.
    *
@@ -210,8 +216,6 @@ public class HarmonizedDatasetService extends DatasetService<HarmonizationDatase
 
     findAllDatasets().forEach(dataset -> {
       try {
-
-
         eventBus.post(new DatasetUpdatedEvent(dataset));
 
         if (publishedDatasets.contains(dataset)) {

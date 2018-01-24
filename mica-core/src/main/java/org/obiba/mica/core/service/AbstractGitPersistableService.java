@@ -12,6 +12,8 @@ package org.obiba.mica.core.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Throwables;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Lists;
 import org.apache.commons.math3.util.Pair;
 import org.apache.shiro.SecurityUtils;
@@ -21,6 +23,7 @@ import org.joda.time.DateTime;
 import org.obiba.git.CommitInfo;
 import org.obiba.git.command.AbstractGitWriteCommand;
 import org.obiba.mica.NoSuchEntityException;
+import org.obiba.mica.core.domain.DefaultEntityBase;
 import org.obiba.mica.core.domain.EntityState;
 import org.obiba.mica.core.domain.GitPersistable;
 import org.obiba.mica.core.domain.RevisionStatus;
@@ -37,7 +40,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import static org.obiba.mica.core.domain.RevisionStatus.DELETED;
 import static org.obiba.mica.core.domain.RevisionStatus.DRAFT;
@@ -45,6 +52,8 @@ import static org.obiba.mica.core.domain.RevisionStatus.DRAFT;
 public abstract class AbstractGitPersistableService<T extends EntityState, T1 extends GitPersistable> {
 
   private static final Logger log = LoggerFactory.getLogger(AbstractGitPersistableService.class);
+
+  private static final String PUBLISHED_CACHE_KEY = "published";
 
   @Inject
   protected ObjectMapper objectMapper;
@@ -54,6 +63,8 @@ public abstract class AbstractGitPersistableService<T extends EntityState, T1 ex
 
   @Inject
   protected GitService gitService;
+
+  private Cache<String, List<String>> idsCache = CacheBuilder.newBuilder().maximumSize(1000).expireAfterWrite(1, TimeUnit.MINUTES).build();
 
   protected abstract EntityStateRepository<T> getEntityStateRepository();
 
@@ -145,8 +156,17 @@ public abstract class AbstractGitPersistableService<T extends EntityState, T1 ex
     return getEntityStateRepository().findByPublishedTagNotNull();
   }
 
-  public List<T> findUnpublishedStates() {
-    return getEntityStateRepository().findByPublishedTagIsNull();
+  /**
+   * Get the published entity identifiers from the repository (with short-term cache).
+   *
+   * @return
+   */
+  public List<String> findPublishedIds() {
+    try {
+      return idsCache.get(PUBLISHED_CACHE_KEY, this::findPublishedIdsFromRepository);
+    } catch (ExecutionException e) {
+      return findPublishedIdsFromRepository();
+    }
   }
 
   public List<T> findAllStates() {
@@ -174,6 +194,7 @@ public abstract class AbstractGitPersistableService<T extends EntityState, T1 ex
       entityState.setPublicationDate(DateTime.now());
       getEntityStateRepository().save(entityState);
     }
+    idsCache.invalidate(PUBLISHED_CACHE_KEY);
     return entityState;
   }
 
@@ -187,6 +208,7 @@ public abstract class AbstractGitPersistableService<T extends EntityState, T1 ex
       if(entityState.getRevisionStatus() != DELETED) entityState.setRevisionStatus(DRAFT);
       getEntityStateRepository().save(entityState);
     }
+    idsCache.invalidate(PUBLISHED_CACHE_KEY);
     return entityState;
   }
 
@@ -203,6 +225,14 @@ public abstract class AbstractGitPersistableService<T extends EntityState, T1 ex
   protected String getCurrentUsername() {
     Subject subject = SecurityUtils.getSubject();
     return extractAuthorName(subject, AbstractGitWriteCommand.DEFAULT_AUTHOR_NAME);
+  }
+
+  //
+  // Private methods
+  //
+
+  private List<String> findPublishedIdsFromRepository() {
+    return getEntityStateRepository().findAllPublishedIds().stream().map(DefaultEntityBase::getId).collect(Collectors.toList());
   }
 
   private String extractAuthorName(Subject subject, String defaultName) {

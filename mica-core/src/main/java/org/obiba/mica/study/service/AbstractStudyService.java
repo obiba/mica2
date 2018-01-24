@@ -89,7 +89,7 @@ public abstract class AbstractStudyService<S extends EntityState, T extends Base
   }
 
   @NotNull
-  public abstract List<String> findAllExistingIds(Iterable<String> ids);
+  public abstract List<String> findAllIds();
 
   @NotNull
   public T findStudy(@NotNull String id) throws NoSuchEntityException {
@@ -108,13 +108,6 @@ public abstract class AbstractStudyService<S extends EntityState, T extends Base
       .filter(studyState ->
         gitService.hasGitRepository(studyState) && !Strings.isNullOrEmpty(studyState.getPublishedTag()))
       .map(studyState -> gitService.readFromTag(studyState, studyState.getPublishedTag(), getType()))
-      .map(s -> { s.getModel(); return s; }) // make sure dynamic model is initialized
-      .collect(toList());
-  }
-
-  public List<T> findAllUnpublishedStudies() {
-    return findUnpublishedStates().stream() //
-      .map(studyState -> findDraft(studyState.getId()))
       .map(s -> { s.getModel(); return s; }) // make sure dynamic model is initialized
       .collect(toList());
   }

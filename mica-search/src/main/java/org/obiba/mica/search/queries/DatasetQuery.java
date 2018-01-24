@@ -90,9 +90,9 @@ public class DatasetQuery extends AbstractDocumentQuery {
     return new Searcher.IdFilter() {
       @Override
       public Collection<String> getValues() {
-        List<String> ids = collectedDatasetService.findPublishedStates().stream().map(StudyDatasetState::getId)
+        List<String> ids = collectedDatasetService.findPublishedIds().stream()
             .filter(s -> subjectAclService.isAccessible("/collected-dataset", s)).collect(Collectors.toList());
-        ids.addAll(harmonizedDatasetService.findPublishedStates().stream().map(HarmonizationDatasetState::getId)
+        ids.addAll(harmonizedDatasetService.findPublishedIds().stream()
             .filter(s -> subjectAclService.isAccessible("/harmonized-dataset", s)).collect(Collectors.toList()));
         return ids;
       }

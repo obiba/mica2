@@ -25,6 +25,6 @@ public interface StudyRepository extends MongoRepository<Study, String>, StudyRe
   @Query("{'model' : { $exists : false }}")
   List<Study> findWithoutModel();
 
-  @Query(value = "{'_id' : { $in: ?0 }}", fields = "{_id : 1}")
-  List<Study> findAllExistingIds(Iterable<String> ids);
+  @Query(value = "{}", fields = "{_id : 1}")
+  List<Study> findAllExistingIds();
 }
