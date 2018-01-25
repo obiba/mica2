@@ -16,11 +16,11 @@ set -e
 # for details, see http://www.debian.org/doc/debian-policy/ or
 # the debian-policy package
 
-NAME=opal
+NAME=mica
 
 case "$1" in
 
-  [0-1])
+  0)
     chkconfig --del mica2
 
     # Read configuration variable file if it is present
@@ -33,6 +33,9 @@ case "$1" in
     else
             /etc/init.d/mica2 stop
     fi
+  ;;
+
+  1)
   ;;
 
   *)
