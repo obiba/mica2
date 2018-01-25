@@ -35,7 +35,8 @@ case "$1" in
     # /var/log: logs
 
     rm -f /usr/share/mica2
-    ln -s /usr/share/mica2-* /usr/share/mica2
+    new_release="$(ls -t /usr/share/ |grep mica2|head -1)"
+    ln -s /usr/share/${new_release} /usr/share/mica2
 
     if [ ! -e /var/lib/mica2/conf ] ; then
       ln -s /etc/mica2 /var/lib/mica2/conf
