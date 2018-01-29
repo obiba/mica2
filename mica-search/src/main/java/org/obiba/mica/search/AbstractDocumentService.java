@@ -59,8 +59,14 @@ public abstract class AbstractDocumentService<T> implements DocumentService<T> {
     log.debug("findById {} {}", getClass(), id);
 
     if (useCache()) {
-      String principal = SecurityUtils.getSubject().getPrincipal().toString();
-      T result = documentsCache.getIfPresent(principal + "::" + id);
+      Object principal = SecurityUtils.getSubject().getPrincipal();
+      String principalString = "nouser";
+
+      if (principal != null) {
+        principalString = principal.toString();
+      }
+
+      T result = documentsCache.getIfPresent(principalString + "::" + id);
       if (result != null) return result;
     }
 
@@ -77,7 +83,14 @@ public abstract class AbstractDocumentService<T> implements DocumentService<T> {
   @Override
   public List<T> findByIds(List<String> ids) {
     log.debug("findByIds {} {} ids", getClass(), ids.size());
-    String principal = useCache() ? SecurityUtils.getSubject().getPrincipal().toString() : "";
+
+    Object securityPrincipal = SecurityUtils.getSubject().getPrincipal();
+    String securityPrincipalString = "nouser";
+    if (securityPrincipal != null) {
+      securityPrincipalString = securityPrincipal.toString();
+    }
+
+    String principal = useCache() ? securityPrincipalString : "";
     List<T> results = Lists.newArrayList();
     List<String> notCachedIds = Lists.newArrayList();
     if (useCache()) {
