@@ -259,7 +259,12 @@ mica.dataset
 
     factory.addUpdateTable = function(dataset, tableType, wrapper, newTable) {
       if (angular.isDefined(wrapper)) {
-        this.updateTable(dataset, wrapper, newTable);
+        if (wrapper.type !== tableType) {
+          this.deleteTable(dataset, wrapper);
+          this.addTable(dataset, tableType, newTable);
+        } else {
+          this.updateTable(dataset, wrapper, newTable);
+        }
       } else {
         this.addTable(dataset, tableType, newTable);
       }
