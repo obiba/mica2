@@ -16,6 +16,9 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.obiba.mica.core.domain.DocumentSet;
+import org.obiba.mica.core.event.DocumentSetUpdatedEvent;
+import org.obiba.mica.core.service.DocumentSetService;
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.StudyDataset;
@@ -43,6 +46,9 @@ public class VariableIndexer {
 
   @Inject
   private CollectedDatasetService collectedDatasetService;
+
+  @Inject
+  private DocumentSetService documentSetService;
 
   @Async
   @Subscribe
@@ -80,6 +86,12 @@ public class VariableIndexer {
     deleteDatasetVariables(Indexer.PUBLISHED_VARIABLE_INDEX, event.getPersistable());
   }
 
+  @Async
+  @Subscribe
+  public void documentSetUpdated(DocumentSetUpdatedEvent event) {
+    // TODO
+  }
+
   //
   // Private methods
   //
@@ -90,6 +102,11 @@ public class VariableIndexer {
   }
 
   private void indexDatasetVariables(String indexName, Iterable<DatasetVariable> variables) {
+    List<DocumentSet> documentSets = documentSetService.findByType(DatasetVariable.MAPPING_NAME);
+    variables.forEach(variable ->
+      documentSets.forEach(ds -> {
+        if (ds.getIdentifiers().contains(variable.getId())) variable.addSet(ds.getId());
+      }));
     indexer.indexAllIndexables(indexName, variables);
   }
 

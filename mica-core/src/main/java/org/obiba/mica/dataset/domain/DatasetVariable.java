@@ -12,6 +12,7 @@ package org.obiba.mica.dataset.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Strings;
+import com.google.common.collect.Sets;
 import org.obiba.magma.Variable;
 import org.obiba.magma.support.VariableNature;
 import org.obiba.mica.core.domain.*;
@@ -20,6 +21,7 @@ import org.obiba.mica.spi.search.Indexable;
 import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -101,6 +103,8 @@ public class DatasetVariable implements Indexable, AttributeAware {
   private int populationWeight;
 
   private int dataCollectionEventWeight;
+
+  private Set<String> sets;
 
   public DatasetVariable() {
   }
@@ -311,6 +315,26 @@ public class DatasetVariable implements Indexable, AttributeAware {
     return getClass().getSimpleName();
   }
 
+  public Set<String> getSets() {
+    return sets;
+  }
+
+  public void setSets(Set<String> sets) {
+    this.sets = sets;
+  }
+
+  public void addSet(String id) {
+    if (sets == null) {
+      sets = Sets.newLinkedHashSet();
+    }
+    sets.add(id);
+  }
+
+  public void removeSet(String id) {
+    if (sets == null) return;
+    sets.remove(id);
+  }
+
   public String getContainerId() {
     return containerId;
   }
@@ -425,7 +449,7 @@ public class DatasetVariable implements Indexable, AttributeAware {
     }
 
     private IdResolver(String id) {
-      if (id == null) throw new IllegalArgumentException("Dataset variable cannot be null");
+      if (Strings.isNullOrEmpty(id)) throw new IllegalArgumentException("Dataset variable cannot be null or empty");
       this.id = id;
 
       String[] tokens = id.split(ID_SEPARATOR);
