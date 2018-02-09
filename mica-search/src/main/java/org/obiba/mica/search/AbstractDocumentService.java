@@ -56,7 +56,7 @@ public abstract class AbstractDocumentService<T> implements DocumentService<T> {
   @Override
   @Nullable
   public T findById(String id) {
-    log.debug("findOne {} {}", getClass(), id);
+    log.debug("findById {} {}", getClass(), id);
 
     if (useCache()) {
       Object principal = SecurityUtils.getSubject().getPrincipal();
@@ -76,7 +76,7 @@ public abstract class AbstractDocumentService<T> implements DocumentService<T> {
 
   @Override
   public List<T> findAll() {
-    log.debug("getAll {}", getClass());
+    log.debug("findAll {}", getClass());
     return executeRqlQuery(String.format("generic(limit(0,%s))", MAX_SIZE));
   }
 
