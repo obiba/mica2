@@ -21,7 +21,6 @@ import org.obiba.mica.core.domain.InvalidDocumentSetTypeException;
 import org.obiba.mica.core.event.DocumentSetDeletedEvent;
 import org.obiba.mica.core.event.DocumentSetUpdatedEvent;
 import org.obiba.mica.core.repository.DocumentSetRepository;
-import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -85,7 +84,6 @@ public abstract class DocumentSetService {
   }
 
   public abstract String getType();
-
 
 
   public DocumentSet create(String name, List<String> identifiers) {
@@ -153,11 +151,15 @@ public abstract class DocumentSetService {
     return save(documentSet);
   }
 
+  public boolean validateType(DocumentSet documentSet) {
+    return documentSet != null && getType().equals(documentSet.getType());
+  }
+
   //
   // Private methods
   //
 
-  private void ensureType(@NotNull DocumentSet documentSet) throws InvalidDocumentSetTypeException {
+  protected void ensureType(@NotNull DocumentSet documentSet) throws InvalidDocumentSetTypeException {
     if (!getType().equals(documentSet.getType())) throw InvalidDocumentSetTypeException.forSet(documentSet, getType());
   }
 

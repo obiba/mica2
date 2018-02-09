@@ -10,12 +10,10 @@
 
 package org.obiba.mica.variable.search.rest;
 
-import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.core.domain.DocumentSet;
-import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.service.VariableSetService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
@@ -49,6 +47,13 @@ public class PublishedDatasetVariablesSetResource {
   @GET
   public Mica.DocumentSetDto get() {
     return dtos.asDto(variableSetService.get(id));
+  }
+
+  @GET
+  @Path("/variables")
+  public List<Mica.DatasetVariableDto> getVariables(@QueryParam("from") @DefaultValue("0") int from, @QueryParam("limit") @DefaultValue("10") int limit) {
+    return variableSetService.getVariables(variableSetService.get(id), from, limit).stream()
+      .map(var -> dtos.asDto(var)).collect(Collectors.toList());
   }
 
   @GET

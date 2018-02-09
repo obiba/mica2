@@ -10,11 +10,8 @@
 
 package org.obiba.mica.variable.search.rest;
 
-import com.google.common.base.Splitter;
-import com.google.common.base.Strings;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.core.domain.DocumentSet;
-import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.service.VariableSetService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;

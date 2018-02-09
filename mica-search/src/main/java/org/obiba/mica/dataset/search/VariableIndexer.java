@@ -89,7 +89,10 @@ public class VariableIndexer {
   @Async
   @Subscribe
   public void documentSetUpdated(DocumentSetUpdatedEvent event) {
-    // TODO
+    if (!variableSetService.validateType(event.getPersistable())) return;
+    List<DatasetVariable> variables = variableSetService.getVariables(event.getPersistable());
+    variables.forEach(var -> var.addSet(event.getPersistable().getId()));
+    indexer.indexAllIndexables(Indexer.PUBLISHED_VARIABLE_INDEX, variables);
   }
 
   //

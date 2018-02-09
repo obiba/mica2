@@ -10,6 +10,7 @@
 
 package org.obiba.mica.dataset.service;
 
+import com.google.common.collect.Lists;
 import org.obiba.mica.core.domain.DocumentSet;
 import org.obiba.mica.core.service.DocumentSetService;
 import org.obiba.mica.dataset.domain.DatasetVariable;
@@ -36,5 +37,18 @@ public class VariableSetService extends DocumentSetService {
   public List<String> extractIdentifiers(String importedIdentifiers) {
     return extractIdentifiers(importedIdentifiers,
       id -> DatasetVariable.Type.Collected.equals(DatasetVariable.IdResolver.from(id).getType()));
+  }
+
+  public List<DatasetVariable> getVariables(DocumentSet documentSet) {
+    ensureType(documentSet);
+    if (documentSet.getIdentifiers().isEmpty()) return Lists.newArrayList();
+    return publishedDatasetVariableService.findByIds(Lists.newArrayList(documentSet.getIdentifiers()));
+  }
+
+  public List<DatasetVariable> getVariables(DocumentSet documentSet, int from, int limit) {
+    ensureType(documentSet);
+    if (documentSet.getIdentifiers().isEmpty()) return Lists.newArrayList();
+    List<String> ids = Lists.newArrayList(documentSet.getIdentifiers());
+    return publishedDatasetVariableService.findByIds(ids.subList(from, from + limit));
   }
 }
