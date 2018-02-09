@@ -40,8 +40,11 @@ public class PublishedDatasetVariablesSetsResource {
   private Dtos dtos;
 
   @GET
-  public List<Mica.DocumentSetDto> list() {
-    return variableSetService.getAllCurrentUser().stream().map(s -> dtos.asDto(s)).collect(Collectors.toList());
+  public List<Mica.DocumentSetDto> list(@QueryParam("id") List<String> ids) {
+    if (ids.isEmpty())
+      return variableSetService.getAllCurrentUser().stream().map(s -> dtos.asDto(s)).collect(Collectors.toList());
+    else
+      return ids.stream().map(id -> dtos.asDto(variableSetService.get(id))).collect(Collectors.toList());
   }
 
   @POST
