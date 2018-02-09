@@ -335,6 +335,11 @@ public class DatasetVariable implements Indexable, AttributeAware {
     sets.remove(id);
   }
 
+  public boolean containsSet(String id) {
+    if (sets == null) return false;
+    return sets.contains(id);
+  }
+
   public String getContainerId() {
     return containerId;
   }

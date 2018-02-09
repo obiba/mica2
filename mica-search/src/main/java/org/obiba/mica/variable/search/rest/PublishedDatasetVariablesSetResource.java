@@ -49,6 +49,12 @@ public class PublishedDatasetVariablesSetResource {
     return dtos.asDto(variableSetService.get(id));
   }
 
+  @DELETE
+  public Response delete() {
+    variableSetService.delete(variableSetService.get(id));
+    return Response.ok().build();
+  }
+
   @GET
   @Path("/variables")
   public List<Mica.DatasetVariableDto> getVariables(@QueryParam("from") @DefaultValue("0") int from, @QueryParam("limit") @DefaultValue("10") int limit) {

@@ -20,6 +20,7 @@ import org.springframework.validation.annotation.Validated;
 
 import javax.inject.Inject;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @Validated
@@ -36,15 +37,42 @@ public class VariableSetService extends DocumentSetService {
   @Override
   public List<String> extractIdentifiers(String importedIdentifiers) {
     return extractIdentifiers(importedIdentifiers,
-      id -> DatasetVariable.Type.Collected.equals(DatasetVariable.IdResolver.from(id).getType()));
+      id -> {
+        DatasetVariable.Type type = DatasetVariable.IdResolver.from(id).getType();
+        return DatasetVariable.Type.Collected.equals(type) || DatasetVariable.Type.Dataschema.equals(type);
+      });
   }
 
+  /**
+   * Get variables from their identifiers.
+   *
+   * @param identifiers
+   * @return
+   */
+  public List<DatasetVariable> getVariables(Set<String> identifiers) {
+    return publishedDatasetVariableService.findByIds(Lists.newArrayList(identifiers));
+  }
+
+  /**
+   * Get the variables referred by the {@link DocumentSet}.
+   *
+   * @param documentSet
+   * @return
+   */
   public List<DatasetVariable> getVariables(DocumentSet documentSet) {
     ensureType(documentSet);
     if (documentSet.getIdentifiers().isEmpty()) return Lists.newArrayList();
-    return publishedDatasetVariableService.findByIds(Lists.newArrayList(documentSet.getIdentifiers()));
+    return getVariables(documentSet.getIdentifiers());
   }
 
+  /**
+   * Get a subset of the variables referred by the {@link DocumentSet}.
+   *
+   * @param documentSet
+   * @param from
+   * @param limit
+   * @return
+   */
   public List<DatasetVariable> getVariables(DocumentSet documentSet, int from, int limit) {
     ensureType(documentSet);
     if (documentSet.getIdentifiers().isEmpty()) return Lists.newArrayList();

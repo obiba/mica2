@@ -10,12 +10,10 @@
 
 package org.obiba.mica.dataset.search;
 
-import java.util.List;
-import java.util.Map;
-
-import javax.inject.Inject;
-
+import com.google.common.collect.Lists;
+import com.google.common.eventbus.Subscribe;
 import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.obiba.magma.Variable;
 import org.obiba.mica.core.domain.DocumentSet;
 import org.obiba.mica.core.event.DocumentSetUpdatedEvent;
 import org.obiba.mica.dataset.domain.Dataset;
@@ -32,7 +30,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
-import com.google.common.eventbus.Subscribe;
+import javax.inject.Inject;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Indexer of variables, that reacts on dataset events.
@@ -55,7 +55,7 @@ public class VariableIndexer {
   public void datasetPublished(DatasetPublishedEvent event) {
     log.debug("{} {} was published", event.getPersistable().getClass().getSimpleName(), event.getPersistable());
     clearDraftVariablesIndex();
-    if(event.getVariables() != null) {
+    if (event.getVariables() != null) {
       deleteDatasetVariables(Indexer.PUBLISHED_VARIABLE_INDEX, event.getPersistable());
 
       if (event.getPersistable() instanceof StudyDataset) {
@@ -66,7 +66,7 @@ public class VariableIndexer {
       }
     }
 
-    if(event.hasHarmonizationVariables())
+    if (event.hasHarmonizationVariables())
       indexHarmonizedVariables(Indexer.PUBLISHED_VARIABLE_INDEX, event.getHarmonizationVariables());
   }
 
@@ -90,9 +90,21 @@ public class VariableIndexer {
   @Subscribe
   public void documentSetUpdated(DocumentSetUpdatedEvent event) {
     if (!variableSetService.validateType(event.getPersistable())) return;
+    List<DatasetVariable> toIndex = Lists.newArrayList();
+    String id = event.getPersistable().getId();
+    if (event.hasRemovedIdentifiers()) {
+      List<DatasetVariable> toRemove = variableSetService.getVariables(event.getRemovedIdentifiers());
+      toRemove.forEach(var -> var.removeSet(id));
+      toIndex.addAll(toRemove);
+    }
     List<DatasetVariable> variables = variableSetService.getVariables(event.getPersistable());
-    variables.forEach(var -> var.addSet(event.getPersistable().getId()));
-    indexer.indexAllIndexables(Indexer.PUBLISHED_VARIABLE_INDEX, variables);
+    variables.stream()
+      .filter(var -> !var.containsSet(id))
+      .forEach(var -> {
+        var.addSet(id);
+        toIndex.add(var);
+      });
+    indexer.indexAllIndexables(Indexer.PUBLISHED_VARIABLE_INDEX, toIndex);
   }
 
   //
@@ -101,7 +113,7 @@ public class VariableIndexer {
 
   // legacy index, cleanup
   private void clearDraftVariablesIndex() {
-    if(indexer.hasIndex(Indexer.DRAFT_VARIABLE_INDEX)) indexer.dropIndex(Indexer.DRAFT_VARIABLE_INDEX);
+    if (indexer.hasIndex(Indexer.DRAFT_VARIABLE_INDEX)) indexer.dropIndex(Indexer.DRAFT_VARIABLE_INDEX);
   }
 
   private void indexDatasetVariables(String indexName, Iterable<DatasetVariable> variables) {

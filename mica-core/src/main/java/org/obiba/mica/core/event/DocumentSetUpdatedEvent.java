@@ -12,9 +12,22 @@ package org.obiba.mica.core.event;
 
 import org.obiba.mica.core.domain.DocumentSet;
 
+import java.util.Set;
+
 public class DocumentSetUpdatedEvent extends PersistableUpdatedEvent<DocumentSet> {
 
-  public DocumentSetUpdatedEvent(DocumentSet documentSet) {
+  private final Set<String> removedIdentifiers;
+
+  public DocumentSetUpdatedEvent(DocumentSet documentSet, Set<String> removedIdentifiers) {
     super(documentSet);
+    this.removedIdentifiers = removedIdentifiers;
+  }
+
+  public boolean hasRemovedIdentifiers() {
+    return removedIdentifiers != null && !removedIdentifiers.isEmpty();
+  }
+
+  public Set<String> getRemovedIdentifiers() {
+    return removedIdentifiers;
   }
 }

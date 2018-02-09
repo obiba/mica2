@@ -13,6 +13,7 @@ package org.obiba.mica.core.service;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.google.common.eventbus.EventBus;
 import org.apache.shiro.SecurityUtils;
 import org.joda.time.DateTime;
@@ -28,6 +29,7 @@ import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -91,21 +93,7 @@ public abstract class DocumentSetService {
     if (!Strings.isNullOrEmpty(name)) documentSet.setName(name);
     documentSet.setIdentifiers(identifiers);
     documentSet.setType(getType());
-    return save(documentSet);
-  }
-
-  public DocumentSet save(DocumentSet documentSet) {
-    ensureType(documentSet);
-    documentSet.setLastModifiedDate(DateTime.now());
-    if (Strings.isNullOrEmpty(documentSet.getUsername())) {
-      Object principal = SecurityUtils.getSubject().getPrincipal();
-      if (principal != null) {
-        documentSet.setUsername(principal.toString());
-      }
-    }
-    documentSet = documentSetRepository.save(documentSet);
-    eventBus.post(new DocumentSetUpdatedEvent(documentSet));
-    return documentSet;
+    return save(documentSet, null);
   }
 
   public void delete(DocumentSet documentSet) {
@@ -135,20 +123,22 @@ public abstract class DocumentSetService {
     DocumentSet documentSet = get(id);
     if (identifiers.isEmpty()) return documentSet;
     documentSet.getIdentifiers().addAll(identifiers);
-    return save(documentSet);
+    return save(documentSet, null);
   }
 
   public DocumentSet removeIdentifiers(String id, List<String> identifiers) {
     DocumentSet documentSet = get(id);
     if (identifiers.isEmpty()) return documentSet;
+
     documentSet.getIdentifiers().removeAll(identifiers);
-    return save(documentSet);
+    return save(documentSet, Sets.newLinkedHashSet(identifiers));
   }
 
   public DocumentSet setIdentifiers(String id, List<String> identifiers) {
     DocumentSet documentSet = get(id);
+    Set<String> removedIdentifiers =  Sets.difference(documentSet.getIdentifiers(),Sets.newLinkedHashSet(identifiers));
     documentSet.setIdentifiers(identifiers);
-    return save(documentSet);
+    return save(documentSet, removedIdentifiers);
   }
 
   public boolean validateType(DocumentSet documentSet) {
@@ -163,4 +153,17 @@ public abstract class DocumentSetService {
     if (!getType().equals(documentSet.getType())) throw InvalidDocumentSetTypeException.forSet(documentSet, getType());
   }
 
+  private DocumentSet save(DocumentSet documentSet, Set<String> removedIdentifiers) {
+    ensureType(documentSet);
+    documentSet.setLastModifiedDate(DateTime.now());
+    if (Strings.isNullOrEmpty(documentSet.getUsername())) {
+      Object principal = SecurityUtils.getSubject().getPrincipal();
+      if (principal != null) {
+        documentSet.setUsername(principal.toString());
+      }
+    }
+    documentSet = documentSetRepository.save(documentSet);
+    eventBus.post(new DocumentSetUpdatedEvent(documentSet, removedIdentifiers));
+    return documentSet;
+  }
 }
