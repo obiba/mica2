@@ -15,8 +15,8 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.core.domain.DocumentSet;
-import org.obiba.mica.core.service.DocumentSetService;
 import org.obiba.mica.dataset.domain.DatasetVariable;
+import org.obiba.mica.dataset.service.VariableSetService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.springframework.context.annotation.Scope;
@@ -38,7 +38,7 @@ import java.util.stream.Collectors;
 public class PublishedDatasetVariablesSetResource {
 
   @Inject
-  private DocumentSetService documentSetService;
+  private VariableSetService variableSetService;
 
   @Inject
   private Dtos dtos;
@@ -48,15 +48,14 @@ public class PublishedDatasetVariablesSetResource {
 
   @GET
   public Mica.DocumentSetDto get() {
-    return dtos.asDto(documentSetService.findById(id));
+    return dtos.asDto(variableSetService.get(id));
   }
 
   @GET
   @Path("/variables/_export")
   @Produces(MediaType.TEXT_PLAIN)
   public Response exportVariables() {
-    DocumentSet documentSet = documentSetService.findById(id);
-    if (!validateType(documentSet)) return Response.status(Response.Status.BAD_REQUEST).build();
+    DocumentSet documentSet = variableSetService.get(id);
     StreamingOutput stream = os -> {
       documentSet.getIdentifiers().forEach(id -> {
         try {
@@ -75,30 +74,16 @@ public class PublishedDatasetVariablesSetResource {
   @Path("/variables/_import")
   @Consumes(MediaType.TEXT_PLAIN)
   public Response importVariables(String body) {
-    if (Strings.isNullOrEmpty(body)) return Response.status(Response.Status.BAD_REQUEST).build();
-    DocumentSet documentSet = documentSetService.findById(id);
-    if (!validateType(documentSet)) return Response.status(Response.Status.BAD_REQUEST).build();
-    // TODO verify that these are valid
-    List<String> identifiers = Splitter.on("\n").splitToList(body).stream()
-      .filter(id -> !Strings.isNullOrEmpty(id) && DatasetVariable.Type.Collected.equals(DatasetVariable.IdResolver.from(id).getType()))
-      .collect(Collectors.toList());
-    if (identifiers.isEmpty()) return Response.status(Response.Status.BAD_REQUEST).build();
-    documentSet.setIdentifiers(identifiers);
-    documentSetService.save(documentSet);
+    if (Strings.isNullOrEmpty(body)) return Response.ok().build();
+    variableSetService.addIdentifiers(id, variableSetService.extractIdentifiers(body));
     return Response.ok().build();
   }
 
   @DELETE
   @Path("/variables")
   public Response deleteVariables() {
-    DocumentSet documentSet = documentSetService.findById(id);
-    if (!validateType(documentSet)) return Response.status(Response.Status.BAD_REQUEST).build();
-    documentSet.setIdentifiers(Lists.newArrayList());
-    documentSetService.save(documentSet);
+    variableSetService.setIdentifiers(id, Lists.newArrayList());
     return Response.ok().build();
   }
 
-  private boolean validateType(DocumentSet documentSet) {
-    return DatasetVariable.MAPPING_NAME.equals(documentSet.getType());
-  }
 }

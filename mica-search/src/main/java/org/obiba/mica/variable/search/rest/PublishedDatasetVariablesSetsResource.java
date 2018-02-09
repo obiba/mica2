@@ -14,8 +14,8 @@ import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.core.domain.DocumentSet;
-import org.obiba.mica.core.service.DocumentSetService;
 import org.obiba.mica.dataset.domain.DatasetVariable;
+import org.obiba.mica.dataset.service.VariableSetService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.springframework.context.annotation.Scope;
@@ -37,30 +37,21 @@ import java.util.stream.Collectors;
 public class PublishedDatasetVariablesSetsResource {
 
   @Inject
-  private DocumentSetService documentSetService;
+  private VariableSetService variableSetService;
 
   @Inject
   private Dtos dtos;
 
   @GET
   public List<Mica.DocumentSetDto> list() {
-    return documentSetService.findAllCurrentUser().stream().map(s -> dtos.asDto(s)).collect(Collectors.toList());
+    return variableSetService.getAllCurrentUser().stream().map(s -> dtos.asDto(s)).collect(Collectors.toList());
   }
 
   @POST
   @Path("_import")
   @Consumes(MediaType.TEXT_PLAIN)
   public Response importVariables(@Context UriInfo uriInfo, @QueryParam("name") String name, String body) {
-    if (Strings.isNullOrEmpty(body)) return Response.status(Response.Status.BAD_REQUEST).build();
-    DocumentSet documentSet = new DocumentSet();
-    if (!Strings.isNullOrEmpty(name)) documentSet.setName(name);
-    List<String> identifiers = Splitter.on("\n").splitToList(body).stream()
-      .filter(id -> !Strings.isNullOrEmpty(id) && DatasetVariable.Type.Collected.equals(DatasetVariable.IdResolver.from(id).getType()))
-      .collect(Collectors.toList());
-    if (identifiers.isEmpty()) return Response.status(Response.Status.BAD_REQUEST).build();
-    documentSet.setIdentifiers(identifiers);
-    documentSet.setType(DatasetVariable.MAPPING_NAME);
-    documentSetService.save(documentSet);
-    return Response.ok().build();
+    DocumentSet created = variableSetService.create(name, variableSetService.extractIdentifiers(body));
+    return Response.created(uriInfo.getBaseUriBuilder().segment("variables", "set", created.getId()).build()).build();
   }
 }

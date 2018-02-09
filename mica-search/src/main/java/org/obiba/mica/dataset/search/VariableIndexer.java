@@ -18,7 +18,6 @@ import javax.inject.Inject;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.obiba.mica.core.domain.DocumentSet;
 import org.obiba.mica.core.event.DocumentSetUpdatedEvent;
-import org.obiba.mica.core.service.DocumentSetService;
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.StudyDataset;
@@ -26,6 +25,7 @@ import org.obiba.mica.dataset.event.DatasetDeletedEvent;
 import org.obiba.mica.dataset.event.DatasetPublishedEvent;
 import org.obiba.mica.dataset.event.DatasetUnpublishedEvent;
 import org.obiba.mica.dataset.service.CollectedDatasetService;
+import org.obiba.mica.dataset.service.VariableSetService;
 import org.obiba.mica.spi.search.Indexer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,7 +48,7 @@ public class VariableIndexer {
   private CollectedDatasetService collectedDatasetService;
 
   @Inject
-  private DocumentSetService documentSetService;
+  private VariableSetService variableSetService;
 
   @Async
   @Subscribe
@@ -102,7 +102,7 @@ public class VariableIndexer {
   }
 
   private void indexDatasetVariables(String indexName, Iterable<DatasetVariable> variables) {
-    List<DocumentSet> documentSets = documentSetService.findByType(DatasetVariable.MAPPING_NAME);
+    List<DocumentSet> documentSets = variableSetService.getAll();
     variables.forEach(variable ->
       documentSets.forEach(ds -> {
         if (ds.getIdentifiers().contains(variable.getId())) variable.addSet(ds.getId());

@@ -165,7 +165,7 @@ public class RQLCriteriaOpalConverter {
       return new RQLFieldReferences(path, ds, studyTable, study, getDatasetVariableInternal(Indexer.VARIABLE_TYPE, path));
     } else if (DatasetVariable.Type.Dataschema.equals(resolver.getType())) {
       throw new IllegalArgumentException("Entities count on dataschema variables is not supported");
-      //HarmonizationDataset ds = harmonizedDatasetService.findById(resolver.getDatasetId());
+      //HarmonizationDataset ds = harmonizedDatasetService.findOne(resolver.getDatasetId());
       //return new RQLFieldReferences(path, ds, null, null, getDatasetVariableInternal(Indexer.VARIABLE_TYPE, path));
     } else if (DatasetVariable.Type.Harmonized.equals(resolver.getType())) {
       HarmonizationDataset ds = harmonizedDatasetService.findById(resolver.getDatasetId());

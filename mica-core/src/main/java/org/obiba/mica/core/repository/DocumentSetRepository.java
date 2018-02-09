@@ -26,11 +26,12 @@ public interface DocumentSetRepository extends MongoRepository<DocumentSet, Stri
   List<DocumentSet> findByType(String type);
 
   /**
-   * Find document sets of a given user name.
+   * Find document sets of a given type and user name.
+   * @param type
    * @param username
    * @return
    */
-  List<DocumentSet> findByUsername(String username);
+  List<DocumentSet> findByTypeAndUsername(String type, String username);
 
   /**
    * Find document sets of a given type and containing the identifier.

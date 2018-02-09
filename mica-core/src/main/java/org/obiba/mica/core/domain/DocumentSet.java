@@ -69,4 +69,8 @@ public class DocumentSet extends DefaultEntityBase {
   public void setIdentifiers(List<String> identifiers) {
     this.identifiers = Sets.newLinkedHashSet(identifiers);
   }
+
+  public void addAllIdentifiers(List<String> identifiers) {
+    getIdentifiers().addAll(identifiers);
+  }
 }
