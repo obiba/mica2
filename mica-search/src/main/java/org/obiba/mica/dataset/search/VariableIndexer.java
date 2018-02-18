@@ -13,7 +13,6 @@ package org.obiba.mica.dataset.search;
 import com.google.common.collect.Lists;
 import com.google.common.eventbus.Subscribe;
 import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.obiba.magma.Variable;
 import org.obiba.mica.core.domain.DocumentSet;
 import org.obiba.mica.core.event.DocumentSetUpdatedEvent;
 import org.obiba.mica.dataset.domain.Dataset;
@@ -89,7 +88,7 @@ public class VariableIndexer {
   @Async
   @Subscribe
   public void documentSetUpdated(DocumentSetUpdatedEvent event) {
-    if (!variableSetService.validateType(event.getPersistable())) return;
+    if (!variableSetService.isForType(event.getPersistable())) return;
     List<DatasetVariable> toIndex = Lists.newArrayList();
     String id = event.getPersistable().getId();
     if (event.hasRemovedIdentifiers()) {

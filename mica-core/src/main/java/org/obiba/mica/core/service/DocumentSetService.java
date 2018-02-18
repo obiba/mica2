@@ -141,7 +141,7 @@ public abstract class DocumentSetService {
     return save(documentSet, removedIdentifiers);
   }
 
-  public boolean validateType(DocumentSet documentSet) {
+  public boolean isForType(DocumentSet documentSet) {
     return documentSet != null && getType().equals(documentSet.getType());
   }
 

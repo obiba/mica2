@@ -119,10 +119,14 @@ public class Dtos {
   private GitCommitInfoDtos gitCommitInfoDtos;
 
   @Inject
-  private DocumentSetDtos documentSetDtos;
+  private SetDtos setDtos;
 
   public Mica.DocumentSetDto asDto(DocumentSet documentSet) {
-    return documentSetDtos.asDto(documentSet);
+    return setDtos.asDto(documentSet);
+  }
+
+  public Mica.SetOperationDto asDto(SetOperation setOperation) {
+    return setDtos.asDto(setOperation);
   }
 
   @NotNull

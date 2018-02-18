@@ -10,8 +10,13 @@
 
 package org.obiba.mica.variable.search.rest;
 
+import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
+import org.obiba.mica.core.domain.ComposedSet;
 import org.obiba.mica.core.domain.DocumentSet;
+import org.obiba.mica.core.domain.SetOperation;
+import org.obiba.mica.dataset.service.VariableSetOperationService;
 import org.obiba.mica.dataset.service.VariableSetService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
@@ -37,6 +42,9 @@ public class PublishedDatasetVariablesSetsResource {
   private VariableSetService variableSetService;
 
   @Inject
+  private VariableSetOperationService variableSetOperationService;
+
+  @Inject
   private Dtos dtos;
 
   @GET
@@ -53,5 +61,22 @@ public class PublishedDatasetVariablesSetsResource {
   public Response importVariables(@Context UriInfo uriInfo, @QueryParam("name") String name, String body) {
     DocumentSet created = variableSetService.create(name, variableSetService.extractIdentifiers(body));
     return Response.created(uriInfo.getBaseUriBuilder().segment("variables", "set", created.getId()).build()).build();
+  }
+
+  @POST
+  @Path("operations")
+  public Response compose(@Context UriInfo uriInfo, @QueryParam("s1") String set1, @QueryParam("s2") String set2, @QueryParam("s3") String set3) {
+    List<DocumentSet> sets = Lists.newArrayList();
+    sets.add(variableSetService.get(set1));
+    sets.add(variableSetService.get(set2));
+    if (!Strings.isNullOrEmpty(set3)) sets.add(variableSetService.get(set3));
+    SetOperation setOperation = variableSetOperationService.create(sets);
+    return Response.created(uriInfo.getBaseUriBuilder().segment("variables", "sets", "operation", setOperation.getId()).build()).build();
+  }
+
+  @GET
+  @Path("operation/{id}")
+  public Mica.SetOperationDto compose(@Context UriInfo uriInfo, @PathParam("id") String operationId) {
+    return dtos.asDto(variableSetOperationService.get(operationId));
   }
 }

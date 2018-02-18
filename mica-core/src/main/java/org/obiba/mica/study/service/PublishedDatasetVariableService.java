@@ -23,4 +23,6 @@ public interface PublishedDatasetVariableService extends PublishedDocumentServic
 
   long getCountByVariableType(DatasetVariable.Type type);
 
+  long countVariables(String rql);
+
 }

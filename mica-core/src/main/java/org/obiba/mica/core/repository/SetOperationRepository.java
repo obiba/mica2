@@ -10,29 +10,23 @@
 
 package org.obiba.mica.core.repository;
 
+import org.obiba.mica.core.domain.ComposedSet;
 import org.obiba.mica.core.domain.DocumentSet;
+import org.obiba.mica.core.domain.SetOperation;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.List;
 
 
-public interface DocumentSetRepository extends MongoRepository<DocumentSet, String> {
+public interface SetOperationRepository extends MongoRepository<SetOperation, String> {
 
   /**
-   * Find document sets of a given type.
+   * Find all composed sets that are part of a given operation for a type.
    *
    * @param type
+   * @param id
    * @return
    */
-  List<DocumentSet> findByType(String type);
-
-  /**
-   * Find document sets of a given type and user name.
-   *
-   * @param type
-   * @param username
-   * @return
-   */
-  List<DocumentSet> findByTypeAndUsername(String type, String username);
+  SetOperation findByTypeAndId(String type, String id);
 
 }
