@@ -36,7 +36,7 @@
     "angular-utils-pagination": "0.11.1",
     "angular-schema-form": "0.8.13",
     "angular-schema-form-bootstrap": "https://github.com/obiba/angular-schema-form-bootstrap.git#1.1.2",
-    "angular-schema-form-ui-ace": "0.1.2",
+    "angular-schema-form-ui-ace": "https://github.com/obiba/angular-schema-form-ui-ace.git#0.1.2",
     "angular-ui-ace": "0.2.3",
     "angular-moment": "1.0.0",
     "angular-schema-form-datetimepicker": "https://github.com/obiba/angular-schema-form-datetimepicker.git#0.1.8",
