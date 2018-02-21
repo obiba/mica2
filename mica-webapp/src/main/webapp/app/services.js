@@ -136,9 +136,9 @@ mica.service('AuthenticationSharedService', ['$rootScope', '$q', '$http', '$cook
             'Content-Type': 'application/x-www-form-urlencoded'
           },
           ignoreAuthModule: 'ignoreAuthModule'
-        }).success(function () {
+        }).then(function success() {
           self.initSession();
-        }).error(function() {
+        }, function error() {
           $rootScope.authenticationError = true;
           Session.destroy();
         });
@@ -174,14 +174,15 @@ mica.service('AuthenticationSharedService', ['$rootScope', '$q', '$http', '$cook
     this.logout = function () {
         $rootScope.authenticationError = false;
         $http({method: 'DELETE', url: 'ws/auth/session/_current', errorHandler: true})
-          .success(function () {
-            Session.destroy();
-            authService.loginCancelled(null, 'logout');
-          }).error(function () {
-            Session.destroy();
-            authService.loginCancelled(null, 'logout failure');
-          }
-        );
+          .then(
+            function success() {
+              Session.destroy();
+              authService.loginCancelled(null, 'logout');
+            },
+            function error() {
+              Session.destroy();
+              authService.loginCancelled(null, 'logout failure');
+            });
       };
   }]);
 
