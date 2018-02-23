@@ -32,16 +32,33 @@ public abstract class SetOperationService {
   @Inject
   private SetOperationRepository setOperationRepository;
 
+  /**
+   * Get the document type.
+   *
+   * @return
+   */
   public abstract String getType();
 
+  /**
+   * Count the documents that can be retrieved from the RQL query of the set composition.
+   *
+   * @param composedSet
+   * @return
+   */
   public abstract long countDocuments(ComposedSet composedSet);
 
+  /**
+   * Get the set operation with ID and current type.
+   *
+   * @param operationId
+   * @return
+   */
   public SetOperation get(String operationId) {
     return setOperationRepository.findByTypeAndId(getType(), operationId);
   }
 
   /**
-   * Create all possible sub-sets from the provided {@link DocumentSet} (maximum of 3).
+   * Create all possible sub-sets from the provided {@link DocumentSet} (maximum of 3) plus the union of all.
    *
    * @param sets
    * @return
@@ -82,6 +99,12 @@ public abstract class SetOperationService {
     return save(setOperation);
   }
 
+  /**
+   * Verify that the set operation applies to this service.
+   *
+   * @param setOperation
+   * @return
+   */
   public boolean isForType(SetOperation setOperation) {
     return setOperation != null && getType().equals(setOperation.getType());
   }

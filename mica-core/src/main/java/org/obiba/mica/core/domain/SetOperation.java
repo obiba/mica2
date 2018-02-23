@@ -16,6 +16,10 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
 
+/**
+ * A set operation is a list of one or more set compositions. The result of the operation will most likely be the union
+ * of some of these compositions. A set operation applies to a single type of documents.
+ */
 @Document
 public class SetOperation extends DefaultEntityBase {
 

@@ -12,13 +12,15 @@ package org.obiba.mica.core.domain;
 
 
 import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
 import java.util.Set;
 
+/**
+ * Defines a set of documents by specifying their type and a list of identifiers.
+ */
 @Document
 public class DocumentSet extends DefaultEntityBase {
 

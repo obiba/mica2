@@ -14,6 +14,10 @@ import com.google.common.collect.Lists;
 
 import java.util.List;
 
+/**
+ * Defines the composition of several sets identified by their ID (and of same type) and a RQL query string to be
+ * used to retrieve the associated documents.
+ */
 public class ComposedSet {
 
   private String id;

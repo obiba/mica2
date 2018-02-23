@@ -10,12 +10,8 @@
 
 package org.obiba.mica.core.repository;
 
-import org.obiba.mica.core.domain.ComposedSet;
-import org.obiba.mica.core.domain.DocumentSet;
 import org.obiba.mica.core.domain.SetOperation;
 import org.springframework.data.mongodb.repository.MongoRepository;
-
-import java.util.List;
 
 
 public interface SetOperationRepository extends MongoRepository<SetOperation, String> {

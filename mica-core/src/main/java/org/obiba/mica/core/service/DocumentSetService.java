@@ -25,6 +25,7 @@ import org.obiba.mica.core.repository.DocumentSetRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 import java.util.List;
@@ -85,10 +86,21 @@ public abstract class DocumentSetService {
     return documentSetRepository.findByTypeAndUsername(getType(), SecurityUtils.getSubject().getPrincipal().toString());
   }
 
+  /**
+   * Get document type.
+   *
+   * @return
+   */
   public abstract String getType();
 
-
-  public DocumentSet create(String name, List<String> identifiers) {
+  /**
+   * Create a set of documents associated to the current user.
+   *
+   * @param name
+   * @param identifiers
+   * @return
+   */
+  public DocumentSet create(@Nullable String name, List<String> identifiers) {
     DocumentSet documentSet = new DocumentSet();
     if (!Strings.isNullOrEmpty(name)) documentSet.setName(name);
     documentSet.setIdentifiers(identifiers);
@@ -96,6 +108,11 @@ public abstract class DocumentSetService {
     return save(documentSet, null);
   }
 
+  /**
+   * Delete definitely a document set.
+   *
+   * @param documentSet
+   */
   public void delete(DocumentSet documentSet) {
     ensureType(documentSet);
     if (!documentSet.isNew()) {
@@ -104,6 +121,12 @@ public abstract class DocumentSetService {
     }
   }
 
+  /**
+   * Extract a list of identifiers separated by new lines.
+   *
+   * @param importedIdentifiers
+   * @return
+   */
   public List<String> extractIdentifiers(String importedIdentifiers) {
     if (Strings.isNullOrEmpty(importedIdentifiers)) return Lists.newArrayList();
     return Splitter.on("\n").splitToList(importedIdentifiers).stream()
@@ -111,14 +134,13 @@ public abstract class DocumentSetService {
       .collect(Collectors.toList());
   }
 
-  protected List<String> extractIdentifiers(String importedIdentifiers, Predicate<String> predicate) {
-    if (Strings.isNullOrEmpty(importedIdentifiers)) return Lists.newArrayList();
-    return Splitter.on("\n").splitToList(importedIdentifiers).stream()
-      .filter(id -> !Strings.isNullOrEmpty(id))
-      .filter(predicate)
-      .collect(Collectors.toList());
-  }
-
+  /**
+   * Add identifiers to a set.
+   *
+   * @param id
+   * @param identifiers
+   * @return
+   */
   public DocumentSet addIdentifiers(String id, List<String> identifiers) {
     DocumentSet documentSet = get(id);
     if (identifiers.isEmpty()) return documentSet;
@@ -126,6 +148,13 @@ public abstract class DocumentSetService {
     return save(documentSet, null);
   }
 
+  /**
+   * Remove the given identifiers from the document set and notify about the removal.
+   *
+   * @param id
+   * @param identifiers
+   * @return
+   */
   public DocumentSet removeIdentifiers(String id, List<String> identifiers) {
     DocumentSet documentSet = get(id);
     if (identifiers.isEmpty()) return documentSet;
@@ -134,13 +163,26 @@ public abstract class DocumentSetService {
     return save(documentSet, Sets.newLinkedHashSet(identifiers));
   }
 
+  /**
+   * Set the new list of identifiers to a document set and notifies that some of them have been removed (if any).
+   *
+   * @param id
+   * @param identifiers
+   * @return
+   */
   public DocumentSet setIdentifiers(String id, List<String> identifiers) {
     DocumentSet documentSet = get(id);
-    Set<String> removedIdentifiers =  Sets.difference(documentSet.getIdentifiers(),Sets.newLinkedHashSet(identifiers));
+    Set<String> removedIdentifiers = Sets.difference(documentSet.getIdentifiers(), Sets.newLinkedHashSet(identifiers));
     documentSet.setIdentifiers(identifiers);
     return save(documentSet, removedIdentifiers);
   }
 
+  /**
+   * Verifies that a document set applies to the current service.
+   *
+   * @param documentSet
+   * @return
+   */
   public boolean isForType(DocumentSet documentSet) {
     return documentSet != null && getType().equals(documentSet.getType());
   }
@@ -148,6 +190,14 @@ public abstract class DocumentSetService {
   //
   // Private methods
   //
+
+  protected List<String> extractIdentifiers(String importedIdentifiers, Predicate<String> predicate) {
+    if (Strings.isNullOrEmpty(importedIdentifiers)) return Lists.newArrayList();
+    return Splitter.on("\n").splitToList(importedIdentifiers).stream()
+      .filter(id -> !Strings.isNullOrEmpty(id))
+      .filter(predicate)
+      .collect(Collectors.toList());
+  }
 
   protected void ensureType(@NotNull DocumentSet documentSet) throws InvalidDocumentSetTypeException {
     if (!getType().equals(documentSet.getType())) throw InvalidDocumentSetTypeException.forSet(documentSet, getType());
