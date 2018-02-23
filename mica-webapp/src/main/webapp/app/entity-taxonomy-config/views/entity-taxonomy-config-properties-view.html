@@ -15,7 +15,7 @@
         </li>
       </ol>
     </div>
-    <div class="col-xs-3">
+    <div ng-if="target.editable && !isStatic(model.content)" class="col-xs-3" >
       <a class="btn btn-danger pull-right" href ng-click="deleteCriterion()"><i class="fa fa-trash"></i> <span translate>delete</span></a>
     </div>
   </div>
