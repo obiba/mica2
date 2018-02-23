@@ -60,6 +60,11 @@ public class EsPublishedDatasetVariableService extends AbstractDocumentService<D
     return results == null ? 0 : results.getTotal();
   }
 
+  @Override
+  public long countVariables(String rql) {
+    return getCountByRql(String.format("variable(%s)", rql));
+  }
+
   public Map<String, Long> getCountByStudyIds(List<String> studyIds) {
     Searcher.DocumentResults results = executeCountQuery(buildStudiesFilteredQuery(studyIds));
     if (results == null) return studyIds.stream().collect(Collectors.toMap(s -> s, s -> 0L));

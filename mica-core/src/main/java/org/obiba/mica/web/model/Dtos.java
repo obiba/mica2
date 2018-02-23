@@ -19,13 +19,7 @@ import javax.validation.constraints.NotNull;
 
 import org.obiba.git.CommitInfo;
 import org.obiba.mica.access.domain.DataAccessRequest;
-import org.obiba.mica.core.domain.Comment;
-import org.obiba.mica.core.domain.EntityState;
-import org.obiba.mica.core.domain.LocalizedString;
-import org.obiba.mica.core.domain.OpalTable;
-import org.obiba.mica.core.domain.Person;
-import org.obiba.mica.core.domain.StudyTable;
-import org.obiba.mica.core.domain.Timestamped;
+import org.obiba.mica.core.domain.*;
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
@@ -123,6 +117,17 @@ public class Dtos {
 
   @Inject
   private GitCommitInfoDtos gitCommitInfoDtos;
+
+  @Inject
+  private SetDtos setDtos;
+
+  public Mica.DocumentSetDto asDto(DocumentSet documentSet) {
+    return setDtos.asDto(documentSet);
+  }
+
+  public Mica.SetOperationDto asDto(SetOperation setOperation) {
+    return setDtos.asDto(setOperation);
+  }
 
   @NotNull
   public StudyDto asDto(@NotNull Study study) {

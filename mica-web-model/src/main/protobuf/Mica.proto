@@ -852,3 +852,32 @@ message MicaMetricsDto {
     repeated DocumentMetricsDto files = 2;
     repeated OpalServerStatusDto opalServers = 3;
 }
+
+message DocumentSetDto {
+  required string id = 1;
+  required string type = 2;
+  optional string name = 3;
+  optional TimestampsDto timestamps = 4;
+  optional string username = 5;
+  repeated string identifiers = 6;
+  required int64 count = 7;
+}
+
+message ComposedSetDto {
+  required string id = 1;
+  required string type = 2;
+  optional string name = 3;
+  optional TimestampsDto timestamps = 4;
+  optional string username = 5;
+  required string operation = 6;
+  repeated string sets = 7;
+  required string query = 8;
+  required int64 count = 9;
+}
+
+message SetOperationDto {
+  required string id = 1;
+  required string type = 2;
+  repeated string sets = 3;
+  repeated ComposedSetDto compositions = 4;
+}
