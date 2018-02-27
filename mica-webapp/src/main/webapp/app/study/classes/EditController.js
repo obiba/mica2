@@ -10,6 +10,8 @@
 
 'use strict';
 
+var ERRONEOUS_ID_CHARS = /[;,\\/?:@&%=+$\-_.!~*'( )#]/g;
+
 /**
  * Basic study edit controller class
  * Must be overridden before use
@@ -46,7 +48,7 @@ mica.study.BaseEditController = function (
 
   self.updateStudy = function () {
     $log.debug('Updating study', $scope.study);
-    $scope.study.$save({comment: $scope.revision.comment}, function () {
+    $scope.study.$save({ comment: $scope.revision.comment }, function () {
       FormDirtyStateObserver.unobserve();
       $location.url('/' + self.type + '-study/' + $routeParams.id);
     }, self.saveErrorHandler);
@@ -91,7 +93,7 @@ mica.study.EditController = function (
   mica.study.BaseEditController.call(this, $scope, $routeParams, $location, $log, FormServerValidation, FormDirtyStateObserver, StudyUpdateWarningService);
 
   var self = this;
-  self.study = {model: {}};
+  self.study = { model: {} };
   self.files = [];
 
   self.save = function () {
@@ -114,7 +116,7 @@ mica.study.EditController = function (
 
   self.updateStudy = function () {
     $log.debug('Updating study', $scope.study);
-    $scope.study.$save({comment: $scope.revision.comment}, function (response) {
+    $scope.study.$save({ comment: $scope.revision.comment }, function (response) {
       FormDirtyStateObserver.unobserve();
       $location.path('/individual-study/' + response.study.id).replace();
 
@@ -128,12 +130,12 @@ mica.study.EditController = function (
     FormServerValidation.error(response, $scope.form, $scope.languages);
   };
 
-  self.initializeForm = function() {
+  self.initializeForm = function () {
     $q.all([
       MicaConfigResource.get().$promise,
       SfOptionsService.transform(),
-      EntityFormResource.get({target: 'individual-study', locale: $translate.use()}).$promise,
-      $routeParams.id ? DraftStudyResource.get({id: $routeParams.id}).$promise : null
+      EntityFormResource.get({ target: 'individual-study', locale: $translate.use() }).$promise,
+      $routeParams.id ? DraftStudyResource.get({ id: $routeParams.id }).$promise : null
     ]).then(function (data) {
       var micaConfig = data[0];
       var sfLanguages = {};
@@ -144,7 +146,7 @@ mica.study.EditController = function (
 
       self.languages = micaConfig.languages;
       self.sfOptions = data[1];
-      self.sfOptions.formDefaults = {languages: sfLanguages};
+      self.sfOptions.formDefaults = { languages: sfLanguages, ngModelOptions: { allowInvalid: true } };
       self.sfForm = data[2];
 
       if (data[3]) {
@@ -194,9 +196,9 @@ mica.study.HarmonizationStudyEditController = function (
 
   mica.study.BaseEditController.call(this, $scope, $routeParams, $location, $log, FormServerValidation, FormDirtyStateObserver, StudyUpdateWarningService);
 
-  var self= this;
+  var self = this;
 
-  self.study = {model: {}};
+  self.study = { model: {} };
   self.files = [];
 
   self.save = function () {
@@ -219,7 +221,7 @@ mica.study.HarmonizationStudyEditController = function (
 
   self.updateStudy = function () {
     $log.debug('Updating study', $scope.study);
-    $scope.study.$save({comment: $scope.revision.comment}, function (response) {
+    $scope.study.$save({ comment: $scope.revision.comment }, function (response) {
       FormDirtyStateObserver.unobserve();
       $location.path('/harmonization-study/' + response.study.id).replace();
 
@@ -233,12 +235,12 @@ mica.study.HarmonizationStudyEditController = function (
     FormServerValidation.error(response, $scope.form, $scope.languages);
   };
 
-  self.initializeForm = function() {
+  self.initializeForm = function () {
     $q.all([
       MicaConfigResource.get().$promise,
       SfOptionsService.transform(),
-      EntityFormResource.get({target: 'harmonization-study', locale: $translate.use()}).$promise,
-      $routeParams.id ? DraftStudyResource.get({id: $routeParams.id}).$promise : null
+      EntityFormResource.get({ target: 'harmonization-study', locale: $translate.use() }).$promise,
+      $routeParams.id ? DraftStudyResource.get({ id: $routeParams.id }).$promise : null
     ]).then(function (data) {
       var micaConfig = data[0];
       var sfLanguages = {};
@@ -249,7 +251,7 @@ mica.study.HarmonizationStudyEditController = function (
 
       self.languages = micaConfig.languages;
       self.sfOptions = data[1];
-      self.sfOptions.formDefaults = {languages: sfLanguages};
+      self.sfOptions.formDefaults = { languages: sfLanguages, ngModelOptions: { allowInvalid: true } };
       self.sfForm = data[2];
 
       if (data[3]) {
@@ -301,7 +303,7 @@ mica.study.PopulationEditController = function (
   mica.study.BaseEditController.call(this, $scope, $routeParams, $location, $log, FormServerValidation, FormDirtyStateObserver, StudyUpdateWarningService);
 
   var self = this;
-  self.population = {model: {}};
+  self.population = { model: {} };
   self.populationSfForm = {};
 
   self.save = function (form) {
@@ -311,12 +313,12 @@ mica.study.PopulationEditController = function (
 
   self.type = 'individual';
 
-  self.initializeForm = function() {
+  self.initializeForm = function () {
     $q.all([
       MicaConfigResource.get().$promise,
       SfOptionsService.transform(),
-      EntityFormResource.get({target: 'population', locale: $translate.use()}).$promise,
-      DraftStudyResource.get({id: $routeParams.id}).$promise
+      EntityFormResource.get({ target: 'population', locale: $translate.use() }).$promise,
+      DraftStudyResource.get({ id: $routeParams.id }).$promise
     ]).then(function (data) {
       var micaConfig = data[0];
       var sfLanguages = {};
@@ -327,7 +329,8 @@ mica.study.PopulationEditController = function (
 
       self.languages = micaConfig.languages;
       self.sfOptions = data[1];
-      self.sfOptions.formDefaults = {languages: sfLanguages};
+      self.sfOptions.formDefaults = { languages: sfLanguages, ngModelOptions: { allowInvalid: true } };
+      self.sfOptions.validationMessage.validId = $filter('translate')('global.messages.error.invalid-id');
       self.populationSfForm = data[2];
 
       self.study = data[3];
@@ -348,13 +351,18 @@ mica.study.PopulationEditController = function (
   };
 
   function validate(form) {
-    $scope.$broadcast('schemaForm.error._id','uniqueId',true);
+    $scope.$broadcast('schemaForm.error._id', 'uniqueId', true);
+    $scope.$broadcast('schemaForm.error._id', 'validId', true);
     $scope.$broadcast('schemaFormValidate');
 
     if ($scope.study.populations.filter(function (p) {
-        return p.model._id === $scope.population.model._id;
-      }).length > 1) {
-      $scope.$broadcast('schemaForm.error._id','uniqueId',false);
+      return p.model._id === $scope.population.model._id;
+    }).length > 1) {
+      $scope.$broadcast('schemaForm.error._id', 'uniqueId', false);
+    }
+
+    if ($scope.population.model._id.match(ERRONEOUS_ID_CHARS)) {
+      $scope.$broadcast('schemaForm.error._id', 'validId', false);
     }
 
     return form.$valid;
@@ -392,7 +400,7 @@ mica.study.HarmonizationPopulationEditController = function (
   mica.study.BaseEditController.call(this, $scope, $routeParams, $location, $log, FormServerValidation, FormDirtyStateObserver, StudyUpdateWarningService);
 
   var self = this;
-  self.population = {model: {}};
+  self.population = { model: {} };
   self.populationSfForm = {};
 
   self.save = function (form) {
@@ -402,12 +410,12 @@ mica.study.HarmonizationPopulationEditController = function (
 
   self.type = 'harmonization';
 
-  self.initializeForm = function() {
+  self.initializeForm = function () {
     $q.all([
       MicaConfigResource.get().$promise,
       SfOptionsService.transform(),
-      EntityFormResource.get({target: 'harmonization-population', locale: $translate.use()}).$promise,
-      DraftStudyResource.get({id: $routeParams.id}).$promise
+      EntityFormResource.get({ target: 'harmonization-population', locale: $translate.use() }).$promise,
+      DraftStudyResource.get({ id: $routeParams.id }).$promise
     ]).then(function (data) {
       var micaConfig = data[0];
       var sfLanguages = {};
@@ -418,7 +426,8 @@ mica.study.HarmonizationPopulationEditController = function (
 
       self.languages = micaConfig.languages;
       self.sfOptions = data[1];
-      self.sfOptions.formDefaults = {languages: sfLanguages};
+      self.sfOptions.formDefaults = { languages: sfLanguages, ngModelOptions: { allowInvalid: true } };
+      self.sfOptions.validationMessage.validId = $filter('translate')('global.messages.error.invalid-id');
       self.populationSfForm = data[2];
 
       self.study = data[3];
@@ -438,14 +447,18 @@ mica.study.HarmonizationPopulationEditController = function (
   };
 
   function validate(form) {
+    $scope.$broadcast('schemaForm.error._id', 'uniqueId', true);
+    $scope.$broadcast('schemaForm.error._id', 'validId', true);
     $scope.$broadcast('schemaFormValidate');
 
     if ($scope.study.populations.filter(function (p) {
-        return p.model._id === $scope.population.model._id;
-      }).length > 1) {
-      form.$setValidity('population_id', false);
-    } else {
-      form.$setValidity('population_id', true);
+      return p.model._id === $scope.population.model._id;
+    }).length > 1) {
+      $scope.$broadcast('schemaForm.error._id', 'uniqueId', false);
+    }
+
+    if ($scope.population.model._id.match(ERRONEOUS_ID_CHARS)) {
+      $scope.$broadcast('schemaForm.error._id', 'validId', false);
     }
 
     return form.$valid;
@@ -483,7 +496,7 @@ mica.study.DataCollectionEventEditController = function (
   mica.study.BaseEditController.call(this, $scope, $routeParams, $location, $log, FormServerValidation, FormDirtyStateObserver, StudyUpdateWarningService);
 
   var self = this;
-  self.dce = {model: {}};
+  self.dce = { model: {} };
   self.dceSfForm = {};
 
   self.save = function (form) {
@@ -497,8 +510,8 @@ mica.study.DataCollectionEventEditController = function (
     $q.all([
       MicaConfigResource.get().$promise,
       SfOptionsService.transform(),
-      EntityFormResource.get({target: 'data-collection-event', locale: $translate.use()}).$promise,
-      DraftStudyResource.get({id: $routeParams.id}).$promise
+      EntityFormResource.get({ target: 'data-collection-event', locale: $translate.use() }).$promise,
+      DraftStudyResource.get({ id: $routeParams.id }).$promise
     ]).then(function (data) {
       var micaConfig = data[0];
       var sfLanguages = {};
@@ -509,7 +522,8 @@ mica.study.DataCollectionEventEditController = function (
 
       self.languages = micaConfig.languages;
       self.sfOptions = data[1];
-      self.sfOptions.formDefaults = {languages: sfLanguages};
+      self.sfOptions.formDefaults = { languages: sfLanguages, ngModelOptions: { allowInvalid: true } };
+      self.sfOptions.validationMessage.validId = $filter('translate')('global.messages.error.invalid-id');
 
       self.dceSfForm = data[2];
       self.study = data[3];
@@ -548,13 +562,18 @@ mica.study.DataCollectionEventEditController = function (
   }
 
   function validate(form) {
-    $scope.$broadcast('schemaForm.error._id','uniqueId',true);
+    $scope.$broadcast('schemaForm.error._id', 'uniqueId', true);
+    $scope.$broadcast('schemaForm.error._id', 'validId', true);
     $scope.$broadcast('schemaFormValidate');
 
     if ($scope.population.dataCollectionEvents.filter(function (d) {
-        return d.model._id === $scope.dce.model._id;
-      }).length > 1) {
-      $scope.$broadcast('schemaForm.error._id','uniqueId',false);
+      return d.model._id === $scope.dce.model._id;
+    }).length > 1) {
+      $scope.$broadcast('schemaForm.error._id', 'uniqueId', false);
+    }
+
+    if ($scope.dce.model._id.match(ERRONEOUS_ID_CHARS)) {
+      $scope.$broadcast('schemaForm.error._id', 'validId', false);
     }
 
     return form.$valid;
