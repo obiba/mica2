@@ -70,7 +70,8 @@
     "display": "Affichage",
     "messages": {
       "error": {
-          "unique-id": "L'ID doit être unique"
+          "unique-id": "L'ID doit être unique.",
+          "invalid-id": "L'ID ne doit pas contenir de caractères spéciaux, utiliser des caractères alpha-numériques."
       }
     }
   },
@@ -1199,7 +1200,7 @@
       "409": {
         "network": {
           "delete-conflict": "Conflit lors de la suppression du réseau",
-          "delete-conflict-message": "Conflits lors de suppression de réseau. Supprimez toutes les références vers les réseaux suivants: {{arg0}}"
+          "delete-conflict-message": "Conflits lors de suppression de réseau. Supprimez toutes les références vers les réseaux suivants: {{arg0}}."
         }
       },
       "taxonomy": {

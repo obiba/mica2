@@ -70,7 +70,8 @@
     "display": "Display",
     "messages": {
       "error": {
-        "unique-id": "ID must be unique"
+        "unique-id": "ID must be unique.",
+        "invalid-id": "ID must not contain special characters, use alpha-numerical characters."
       }
     }
   },
@@ -1199,7 +1200,7 @@
       "409": {
         "network": {
           "delete-conflict": "Conflict deleting network",
-          "delete-conflict-message": "Found conflicts when trying to delete network. Remove all references from the following networks: {{arg0}}"
+          "delete-conflict-message": "Found conflicts when trying to delete network. Remove all references from the following networks: {{arg0}}."
         }
       },
       "taxonomy": {
