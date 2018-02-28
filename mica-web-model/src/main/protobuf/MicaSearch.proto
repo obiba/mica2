@@ -207,20 +207,29 @@ message BucketsCoverageDto {
   optional EntitiesTotalCountsDto totalCounts = 5;
 }
 
-message DatasetEntitiesCountDto {
+message VariableEntitiesCountDto {
   required string query = 1;
-  required int32 count = 2;
-  required DocumentDigestDto variable = 3;
-  required DocumentDigestDto dataset = 4;
-  required DocumentDigestDto study = 5;
-  repeated DatasetEntitiesCountDto counts = 6;
+  required DocumentDigestDto variable = 2;
+  required int32 count = 3 [default = 0];
+}
+
+message DatasetEntitiesCountDto {
+  required DocumentDigestDto dataset = 1;
+  repeated VariableEntitiesCountDto counts = 2;
+}
+
+message StudyEntitiesCountDto {
+  required string entityType = 1;
+  required string query = 2; // original query restricted to study variables
+  required DocumentDigestDto study = 3;
+  required int32 total = 4 [default = 0]; // all criteria count
+  repeated DatasetEntitiesCountDto counts = 5;
 }
 
 message EntitiesCountDto {
-  required string entityType = 1;
-  required string query = 2;
-  required int32 total = 3;
-  repeated DatasetEntitiesCountDto counts = 4;
+  required string query = 1; // original query
+  required int32 total = 2 [default = 0]; // sum of the study counts
+  repeated StudyEntitiesCountDto counts = 4;
 }
 
 message EntityTotalCountDto {
