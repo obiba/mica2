@@ -48,7 +48,7 @@ public class RQLFieldReferences {
   }
 
   public String getOpal() {
-    return Strings.isNullOrEmpty(study.getOpal()) ? "_default" : study.getOpal();
+    return getOpal(study);
   }
 
   public String getTableReference() {
@@ -61,5 +61,9 @@ public class RQLFieldReferences {
 
   public String getMicaVariableReference() {
     return micaVariableReference;
+  }
+
+  public static String getOpal(BaseStudy study) {
+    return Strings.isNullOrEmpty(study.getOpal()) ? "_default" : study.getOpal();
   }
 }
