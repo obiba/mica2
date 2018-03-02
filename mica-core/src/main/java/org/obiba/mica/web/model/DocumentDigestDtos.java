@@ -10,17 +10,15 @@
 
 package org.obiba.mica.web.model;
 
-import java.util.List;
-
-import javax.inject.Inject;
-import javax.validation.constraints.NotNull;
-
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.study.domain.BaseStudy;
-import org.obiba.mica.study.domain.Study;
 import org.springframework.stereotype.Component;
+
+import javax.inject.Inject;
+import javax.validation.constraints.NotNull;
+import java.util.List;
 
 import static org.obiba.mica.web.model.Mica.DocumentDigestDto;
 
@@ -34,7 +32,8 @@ public class DocumentDigestDtos {
   @NotNull
   public DocumentDigestDto.Builder asDtoBuilder(@NotNull Dataset dataset) {
     return DocumentDigestDto.newBuilder().setId(dataset.getId()) //
-        .addAllName(localizedStringDtos.asDto(dataset.getName()));
+      .addAllAcronym(localizedStringDtos.asDto(dataset.getAcronym()))
+      .addAllName(localizedStringDtos.asDto(dataset.getName()));
   }
 
   @NotNull
@@ -57,8 +56,9 @@ public class DocumentDigestDtos {
 
   @NotNull
   public DocumentDigestDto.Builder asDtoBuilder(@NotNull BaseStudy study) {
-    return DocumentDigestDto.newBuilder().setId(study.getId()) //
-        .addAllName(localizedStringDtos.asDto(study.getName()));
+    return DocumentDigestDto.newBuilder().setId(study.getId())
+      .addAllAcronym(localizedStringDtos.asDto(study.getAcronym()))
+      .addAllName(localizedStringDtos.asDto(study.getName()));
   }
 
   @NotNull
@@ -69,12 +69,13 @@ public class DocumentDigestDtos {
   @NotNull
   public DocumentDigestDto.Builder asDtoBuilder(@NotNull Network network) {
     DocumentDigestDto.Builder builder = DocumentDigestDto.newBuilder().setId(network.getId()) //
-        .addAllName(localizedStringDtos.asDto(network.getName()));
+      .addAllAcronym(localizedStringDtos.asDto(network.getAcronym()))
+      .addAllName(localizedStringDtos.asDto(network.getName()));
 
     List<String> studyIds = network.getStudyIds();
     if (studyIds.size() > 0) {
       builder.setExtension(Mica.NetworkDigestDto.studies,
-          Mica.NetworkDigestDto.newBuilder().addAllIds(studyIds).build());
+        Mica.NetworkDigestDto.newBuilder().addAllIds(studyIds).build());
     }
 
     return builder;
