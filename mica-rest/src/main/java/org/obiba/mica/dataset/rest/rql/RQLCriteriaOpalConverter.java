@@ -134,11 +134,13 @@ public class RQLCriteriaOpalConverter {
   }
 
   private void parseNode(ASTNode node, boolean not) {
+    if (node.getName().equals("not")) {
+      parseNode((ASTNode) node.getArgument(0), true);
+      return;
+    }
     RQLFieldReferences references = parseField(node.getArgument(0).toString());
 
     switch (node.getName()) {
-      case "not":
-        parseNode((ASTNode) node.getArgument(0), true);
       case "exists":
       case "all":
         criterionConverters.add(RQLCriterionOpalConverter.newBuilder(node)
