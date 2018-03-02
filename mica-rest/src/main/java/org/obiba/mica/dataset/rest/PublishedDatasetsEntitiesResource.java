@@ -31,6 +31,7 @@ import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -136,7 +137,10 @@ public class PublishedDatasetsEntitiesResource {
     private MicaSearch.DatasetEntitiesCountDto createDatasetEntitiesCount(Dataset dataset, List<Search.EntitiesResultDto> opalResults) {
       MicaSearch.DatasetEntitiesCountDto.Builder builder = MicaSearch.DatasetEntitiesCountDto.newBuilder()
         .setDataset(documentDigestDtos.asDto(dataset));
-      builder.addAllCounts(opalResults.stream().map(this::createVariableEntitiesCount).collect(Collectors.toList()));
+      builder.addAllCounts(opalResults.stream()
+        .map(this::createVariableEntitiesCount)
+        .sorted(Comparator.comparing(dto -> dto.getVariable().getId()))
+        .collect(Collectors.toList()));
       return builder.build();
     }
 
