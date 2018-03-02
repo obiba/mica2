@@ -913,6 +913,23 @@
   "members": "Membres",
   "unsaved-title": "Modifications non sauvegardées",
   "unsaved-prompt": "Êtes-vous sûr de vouloir quitter cette page? toute modification non sauvegardée sera perdue.",
+  "analysis": {
+    "all-criteria": "Tous critères",
+    "criteria": "Critère",
+    "count": "#",
+    "all": "Tout",
+    "all-help": "Avec ou sans donnée",
+    "exists": "Existe",
+    "exists-help": "Avec donnée",
+    "empty": "Sans",
+    "empty-help": "Sans donnée",
+    "in": "Dans",
+    "in-help": "Avec une donnée dans...",
+    "out": "Pas dans",
+    "out-help": "Avec une donnée pas dans...",
+    "min": "Min",
+    "max": "Max"
+  },
   "search": {
     "title": "Chercher",
     "help": "Chercher dans le catalogue publié.",

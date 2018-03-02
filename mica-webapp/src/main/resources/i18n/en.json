@@ -913,6 +913,23 @@
   "members": "Members",
   "unsaved-title": "Unsaved Changes",
   "unsaved-prompt": "Are you sure you want to leave this page? Unsaved changes will be lost.",
+  "analysis": {
+    "all-criteria": "All criteria",
+    "criteria": "Criteria",
+    "count": "#",
+    "all": "All",
+    "all-help": "With or without value",
+    "exists": "Exists",
+    "exists-help": "With value",
+    "empty": "Empty",
+    "empty-help": "Without value",
+    "in": "In",
+    "in-help": "With value in...",
+    "out": "Not in",
+    "out-help": "With value not in...",
+    "min": "Min",
+    "max": "Max"
+  },
   "search": {
     "title": "Search",
     "help": "Search in the published repository.",
