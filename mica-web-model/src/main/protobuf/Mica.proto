@@ -216,7 +216,8 @@ message PublicKeyForm {
 
 message DocumentDigestDto {
   required string id = 1;
-  repeated LocalizedStringDto name = 2;
+  repeated LocalizedStringDto acronym = 2;
+  repeated LocalizedStringDto name = 3;
   extensions 1000 to max;
 }
 
