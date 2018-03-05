@@ -39,14 +39,14 @@
     </div>
 
     <div class="table-responsive">
-      <table class="table table-bordered table-striped">
+      <table class="table table-bordered table-striped" obiba-table-sorter="projects">
         <thead>
         <tr>
-          <th>ID</th>
-          <th translate>research-project.title</th>
-          <th translate>research-project.data-access-request</th>
-          <th translate>published</th>
-          <th translate>status</th>
+          <th data-column-name="id">ID</th>
+          <th data-column-name="title">{{"research-project.title" | translate}}</th>
+          <th data-column-name="request.id">{{"research-project.data-access-request" | translate}}</th>
+          <th data-column-name="published">{{"research-project.published" | translate}}</th>
+          <th data-column-name="obiba.mica.EntityStateDto.projectState::revisionStatus">{{"research-project.status" | translate}}</th>
           <th translate>actions</th>
         </tr>
         </thead>
