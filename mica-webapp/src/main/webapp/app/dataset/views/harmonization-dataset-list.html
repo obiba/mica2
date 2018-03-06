@@ -39,14 +39,14 @@
     </div>
 
     <div ng-show="hasDocuments()" class="table-responsive">
-      <table class="table table-bordered table-striped">
+      <table class="table table-bordered table-striped" obiba-table-sorter="documents">
         <thead>
         <tr>
-          <th>ID</th>
-          <th translate>dataset.acronym</th>
-          <th translate>dataset.name</th>
-          <th translate>publish.published</th>
-          <th translate>status</th>
+          <th data-column-name="id">ID</th>
+          <th data-column-name="acronym">{{"dataset.acronym" | translate}}</th>
+          <th data-column-name="name" class="col-md-6">{{"dataset.name" | translate}}</th>
+          <th data-column-name="published">{{"publish.published" | translate}}</th>
+          <th data-column-name="obiba.mica.EntityStateDto.datasetState::revisionStatus">{{"status" | translate}}</th>
           <th translate>actions</th>
         </tr>
         </thead>

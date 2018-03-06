@@ -69,7 +69,6 @@ mica.commons.ListController = function (
 
   function onSuccess(response, responseHeaders) {
     self.searching = angular.isDefined($scope.pagination) && '' !== $scope.pagination.searchText;
-    self.documents = response;
     self.totalCount = parseInt(responseHeaders('X-Total-Count'), 10) || self.documents.length; // TODO remove last condition when harmo study is completed
     self.loading = false;
 
@@ -94,7 +93,7 @@ mica.commons.ListController = function (
     if (self.pagination.searchText) {
       data.query = self.pagination.searchText + '*';
     }
-    StatesResource.query(data, onSuccess, AlertBuilder.newBuilder().onError(onError));
+    self.documents = StatesResource.query(data, onSuccess, AlertBuilder.newBuilder().onError(onError));
   }
 
   loadPage(self.pagination.current);
