@@ -928,7 +928,14 @@
     "out": "Pas dans",
     "out-help": "Avec une donnée pas dans...",
     "min": "Min",
-    "max": "Max"
+    "max": "Max",
+    "range": "Intervalle",
+    "values": "Valeurs",
+    "value": "Valeur",
+    "values-title": "Valeurs (séparées par des espaces)",
+    "from": "Depuis",
+    "to": "A",
+    "date-title": "Date"
   },
   "search": {
     "title": "Chercher",
