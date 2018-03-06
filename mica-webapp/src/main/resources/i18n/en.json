@@ -928,7 +928,14 @@
     "out": "Not in",
     "out-help": "With value not in...",
     "min": "Min",
-    "max": "Max"
+    "max": "Max",
+    "range": "Range",
+    "values": "Values",
+    "value": "Value",
+    "values-title": "Values (space separated)",
+    "from": "From",
+    "to": "To",
+    "date-title": "Date"
   },
   "search": {
     "title": "Search",
