@@ -12,6 +12,7 @@ package org.obiba.mica.dataset.rest.rql;
 
 import com.google.common.base.Strings;
 import org.obiba.mica.core.domain.BaseStudyTable;
+import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.study.domain.BaseStudy;
@@ -61,6 +62,14 @@ public class RQLFieldReferences {
 
   public String getMicaVariableReference() {
     return micaVariableReference;
+  }
+
+  public boolean hasStudyTableName() {
+    return studyTable.getName() != null;
+  }
+
+  public LocalizedString getStudyTableName() {
+    return studyTable.getName();
   }
 
   public static String getOpal(BaseStudy study) {
