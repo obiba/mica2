@@ -25,7 +25,7 @@ import org.springframework.stereotype.Component;
 import com.google.common.base.Strings;
 
 @Component
-class LocalizedStringDtos {
+public class LocalizedStringDtos {
 
   Iterable<Mica.LocalizedStringDto> asDto(@SuppressWarnings("TypeMayBeWeakened") LocalizedString localizedString) {
     if (localizedString == null) return Collections.emptyList();
@@ -70,7 +70,7 @@ class LocalizedStringDtos {
    */
   public Iterable<Mica.LocalizedStringDto> asDto(Map<String, String> localizedMap, @Nullable String locale) {
     if (localizedMap == null || localizedMap.isEmpty()) return Collections.emptyList();
-    if (localizedMap.containsKey(locale)) {
+    if (locale != null && localizedMap.containsKey(locale)) {
       return Collections.singleton(Mica.LocalizedStringDto.newBuilder().setLang(locale).setValue(localizedMap.get(locale))
         .build());
     }

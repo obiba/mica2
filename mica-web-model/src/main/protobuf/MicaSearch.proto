@@ -211,6 +211,7 @@ message VariableEntitiesCountDto {
   required string query = 1;
   required DocumentDigestDto variable = 2;
   required int32 count = 3 [default = 0];
+  repeated LocalizedStringDto studyTableName = 4;
 }
 
 message DatasetEntitiesCountDto {

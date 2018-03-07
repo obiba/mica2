@@ -20,6 +20,7 @@ import org.obiba.mica.dataset.rest.rql.RQLFieldReferences;
 import org.obiba.mica.micaConfig.service.OpalService;
 import org.obiba.mica.study.domain.BaseStudy;
 import org.obiba.mica.web.model.DocumentDigestDtos;
+import org.obiba.mica.web.model.LocalizedStringDtos;
 import org.obiba.mica.web.model.MicaSearch;
 import org.obiba.opal.web.model.Search;
 import org.springframework.context.ApplicationContext;
@@ -50,6 +51,9 @@ public class PublishedDatasetsEntitiesResource {
 
   @Inject
   private DocumentDigestDtos documentDigestDtos;
+
+  @Inject
+  private LocalizedStringDtos localizedStringDtos;
 
   @GET
   @Path("_count")
@@ -147,9 +151,12 @@ public class PublishedDatasetsEntitiesResource {
     private MicaSearch.VariableEntitiesCountDto createVariableEntitiesCount(Search.EntitiesResultDto opalResult) {
       MicaSearch.VariableEntitiesCountDto.Builder builder = MicaSearch.VariableEntitiesCountDto.newBuilder();
       RQLCriterionOpalConverter converter = findConverter(opalResult.getQuery());
+      RQLFieldReferences references = converter.getVariableReferences();
       builder.setQuery(converter.getMicaQuery())
         .setCount(opalResult.getTotalHits())
-        .setVariable(documentDigestDtos.asDto(converter.getVariableReferences().getVariable()));
+        .setVariable(documentDigestDtos.asDto(references.getVariable()));
+      if (references.hasStudyTableName())
+        builder.addAllStudyTableName(localizedStringDtos.asDto(references.getStudyTableName()));
       return builder.build();
     }
 
