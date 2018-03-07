@@ -347,6 +347,18 @@ module.exports = function (grunt) {
           }
         ]
       },
+      distLibsImages: {
+        files: [
+          {
+            expand: true,
+            cwd: 'src/main/webapp/bower_components/ng-obiba-mica/dist',
+            dest: '<%= yeoman.dist %>',
+            src: [
+              'images/*'
+            ]
+          }
+        ]
+      },
       styles: {
         expand: true,
         cwd: 'src/main/webapp/styles',
@@ -445,7 +457,8 @@ module.exports = function (grunt) {
     //'replace',
     'uglify',
     'rev',
-    'usemin'
+    'usemin',
+    'copy:distLibsImages'
   ]);
 
   grunt.registerTask('default', [
