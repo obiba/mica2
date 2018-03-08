@@ -10,7 +10,7 @@
 
 'use strict';
 
-var ERRONEOUS_ID_CHARS = /[;,\\/?:@&%=+$\-_.!~*'( )#]/g;
+var ERRONEOUS_ID_CHARS = /[;,\\/?:@&%=+$.!`~*'( ){}\[\]<>^#]/g;
 
 /**
  * Basic study edit controller class
