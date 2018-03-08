@@ -8,10 +8,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.obiba.mica.dataset.rest.rql;
+package org.obiba.mica.dataset.rest.entity.rql;
 
 import com.google.common.base.Strings;
 import net.jazdw.rql.parser.ASTNode;
+import org.obiba.mica.core.domain.BaseStudyTable;
+
+import java.util.List;
 
 public class RQLCriterionOpalConverter {
 
@@ -23,7 +26,8 @@ public class RQLCriterionOpalConverter {
 
   private RQLFieldReferences variableReferences;
 
-  private RQLCriterionOpalConverter() {}
+  private RQLCriterionOpalConverter() {
+  }
 
   private String getQuery(String field) {
     String query = function + "(" + field;
@@ -34,12 +38,24 @@ public class RQLCriterionOpalConverter {
     return not ? "not(" + query + ")" : query;
   }
 
+  public boolean hasMultipleStudyTables() {
+    return getStudyTables().size() > 1;
+  }
+
+  public List<BaseStudyTable> getStudyTables() {
+    return variableReferences.getStudyTables();
+  }
+
+  public String getOpalQuery(BaseStudyTable studyTable) {
+    return getQuery(variableReferences.getOpalVariablePath(studyTable));
+  }
+
   public String getOpalQuery() {
-    return getQuery(variableReferences.getOpalVariableReference());
+    return getQuery(variableReferences.getOpalVariablePath());
   }
 
   public String getMicaQuery() {
-    return getQuery(variableReferences.getMicaVariableReference());
+    return getQuery(variableReferences.getMicaVariablePath());
   }
 
   public RQLFieldReferences getVariableReferences() {
@@ -63,6 +79,7 @@ public class RQLCriterionOpalConverter {
       criterion.variableReferences = variableReferences;
       return this;
     }
+
     public Builder value(String value) {
       criterion.value = value;
       return this;

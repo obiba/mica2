@@ -8,7 +8,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.obiba.mica.dataset.rest.rql;
+package org.obiba.mica.dataset.rest.entity.rql;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Joiner;
@@ -30,6 +30,7 @@ import org.obiba.mica.dataset.service.HarmonizedDatasetService;
 import org.obiba.mica.spi.search.Indexer;
 import org.obiba.mica.spi.search.Searcher;
 import org.obiba.mica.study.domain.BaseStudy;
+import org.obiba.mica.study.domain.HarmonizationStudy;
 import org.obiba.mica.study.service.StudyService;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -62,20 +63,10 @@ public class RQLCriteriaOpalConverter {
   private StudyService studyService;
 
   @Inject
-  protected Searcher searcher;
+  private Searcher searcher;
 
   @Inject
-  protected ObjectMapper objectMapper;
-
-  /**
-   * RQL query object.
-   */
-  private ASTNode queryNode;
-
-  /**
-   * Original RQL query string.
-   */
-  private String rqlQuery;
+  private ObjectMapper objectMapper;
 
   /**
    * RQL criterion list.
@@ -86,19 +77,38 @@ public class RQLCriteriaOpalConverter {
   }
 
   public void parse(String rqlQuery) {
-    this.rqlQuery = rqlQuery;
     RQLParser parser = new RQLParser();
-    this.queryNode = parser.parse(rqlQuery);
+    ASTNode queryNode = parser.parse(rqlQuery);
     parseNode(queryNode);
-  }
-
-  public String getOriginalQuery() {
-    return rqlQuery;
   }
 
   public List<RQLCriterionOpalConverter> getCriterionConverters() {
     return criterionConverters;
   }
+
+  ValueType getValueType() {
+    return TextType.get();
+  }
+
+  VariableNature getNature() {
+    return VariableNature.UNDETERMINED;
+  }
+
+  protected String join(String on, Collection<?> args) {
+    String nOn = on;
+    boolean toQuote = getNature().equals(VariableNature.CATEGORICAL);
+    List<String> nArgs = args.stream().map(arg -> {
+      String nArg = arg instanceof DateTime ? normalizeDate((DateTime) arg) : arg.toString();
+      if (toQuote) return quote(nArg);
+      else return normalizeString(nArg);
+    }).collect(Collectors.toList());
+
+    return Joiner.on(nOn).join(nArgs);
+  }
+
+  //
+  // Private methods
+  //
 
   private String toString(ASTNode node) {
     StringBuilder builder = new StringBuilder(node.getName()).append("(");
@@ -144,21 +154,21 @@ public class RQLCriteriaOpalConverter {
       case "exists":
       case "all":
         criterionConverters.add(RQLCriterionOpalConverter.newBuilder(node)
-            .references(references).not(not).build());
+          .references(references).not(not).build());
         break;
       case "in":
       case "like":
         criterionConverters.add(RQLCriterionOpalConverter.newBuilder(node)
-            .references(references).value(parseValue(node.getArgument(1))).not(not).build());
+          .references(references).value(parseValue(node.getArgument(1))).not(not).build());
         break;
       case "range":
         criterionConverters.add(RQLCriterionOpalConverter.newBuilder(node)
-            .references(references).value(parseRange(node.getArgument(1))).not(not).build());
+          .references(references).value(parseRange(node.getArgument(1))).not(not).build());
         break;
     }
   }
 
-  protected RQLFieldReferences parseField(String path) {
+  private RQLFieldReferences parseField(String path) {
     DatasetVariable.IdResolver resolver = DatasetVariable.IdResolver.from(path);
     if (resolver.getType() == null || DatasetVariable.Type.Collected.equals(resolver.getType())) {
       StudyDataset ds = collectedDatasetService.findById(resolver.getDatasetId());
@@ -166,44 +176,20 @@ public class RQLCriteriaOpalConverter {
       BaseStudy study = studyService.findStudy(studyTable.getStudyId());
       return new RQLFieldReferences(path, ds, studyTable, study, getDatasetVariableInternal(Indexer.VARIABLE_TYPE, path));
     } else if (DatasetVariable.Type.Dataschema.equals(resolver.getType())) {
-      throw new IllegalArgumentException("Entities count on dataschema variables is not supported");
-      //HarmonizationDataset ds = harmonizedDatasetService.findById(resolver.getDatasetId());
-      //return new RQLFieldReferences(path, ds, null, null, getDatasetVariableInternal(Indexer.VARIABLE_TYPE, path));
+      HarmonizationDataset ds = harmonizedDatasetService.findById(resolver.getDatasetId());
+      BaseStudy study = studyService.findStudy(ds.getHarmonizationTable().getStudyId());
+      return new RQLFieldReferences(path, ds, ds.getBaseStudyTables(), study, getDatasetVariableInternal(Indexer.VARIABLE_TYPE, path));
     } else if (DatasetVariable.Type.Harmonized.equals(resolver.getType())) {
       HarmonizationDataset ds = harmonizedDatasetService.findById(resolver.getDatasetId());
       Optional<BaseStudyTable> studyTable = ds.getBaseStudyTables().stream().filter(st -> st.getStudyId().equals(resolver.getStudyId())
-          && st.getProject().equals(resolver.getProject())
-          && st.getTable().equals(resolver.getTable())).findFirst();
+        && st.getProject().equals(resolver.getProject())
+        && st.getTable().equals(resolver.getTable())).findFirst();
       if (!studyTable.isPresent()) throw new IllegalArgumentException("Not a valid variable: " + path);
       BaseStudy study = studyService.findStudy(studyTable.get().getStudyId());
       return new RQLFieldReferences(path, ds, studyTable.get(), study, getDatasetVariableInternal(Indexer.HARMONIZED_VARIABLE_TYPE, path));
     }
     throw new IllegalArgumentException("Not a valid variable: " + path);
   }
-
-  protected ValueType getValueType() {
-    return TextType.get();
-  }
-
-  protected VariableNature getNature() {
-    return VariableNature.UNDETERMINED;
-  }
-
-  protected String join(String on, Collection<?> args) {
-    String nOn = on;
-    boolean toQuote = getNature().equals(VariableNature.CATEGORICAL);
-    List<String> nArgs = args.stream().map(arg -> {
-      String nArg = arg instanceof DateTime ? normalizeDate((DateTime) arg) : arg.toString();
-      if (toQuote) return quote(nArg);
-      else return normalizeString(nArg);
-    }).collect(Collectors.toList());
-
-    return Joiner.on(nOn).join(nArgs);
-  }
-
-  //
-  // Private methods
-  //
 
   private String parseValue(Object value) {
     if (value instanceof ASTNode) return toString((ASTNode) value);
