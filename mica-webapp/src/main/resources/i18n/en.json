@@ -935,7 +935,10 @@
     "values-title": "Values (space separated)",
     "from": "From",
     "to": "To",
-    "date-title": "Date"
+    "date-title": "Date",
+    "entities-count": {
+      "no-query": "To count entities you need to select some variables first and then apply criteria on their values."
+    }
   },
   "search": {
     "title": "Search",
