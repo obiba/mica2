@@ -259,22 +259,31 @@ public abstract class DatasetService<T extends Dataset, T1 extends EntityState> 
 
     private void writeObject(java.io.ObjectOutputStream stream)
       throws IOException {
-      stream.writeObject(summary);
       GeneratedMessage ext = null;
 
-      if(summary.hasExtension(Math.CategoricalSummaryDto.categorical))
-        ext = summary.getExtension(Math.CategoricalSummaryDto.categorical);
-      else if(summary.hasExtension(Math.ContinuousSummaryDto.continuous))
-        ext = summary.getExtension(Math.ContinuousSummaryDto.continuous);
-      else if(summary.hasExtension(Math.DefaultSummaryDto.defaultSummary))
-        ext = summary.getExtension(Math.DefaultSummaryDto.defaultSummary);
-      else if(summary.hasExtension(Math.TextSummaryDto.textSummary))
-        ext = summary.getExtension(Math.TextSummaryDto.textSummary);
-      else if(summary.hasExtension(Math.GeoSummaryDto.geoSummary))
-        ext = summary.getExtension(Math.GeoSummaryDto.geoSummary);
-      else if(summary.hasExtension(Math.BinarySummaryDto.binarySummary))
-        ext = summary.getExtension(Math.BinarySummaryDto.binarySummary);
+      Math.SummaryStatisticsDto.Builder builder = Math.SummaryStatisticsDto.newBuilder(summary);
 
+      if(summary.hasExtension(Math.CategoricalSummaryDto.categorical)) {
+        ext = summary.getExtension(Math.CategoricalSummaryDto.categorical);
+        builder.clearExtension(Math.CategoricalSummaryDto.categorical);
+      } else if(summary.hasExtension(Math.ContinuousSummaryDto.continuous)) {
+        ext = summary.getExtension(Math.ContinuousSummaryDto.continuous);
+        builder.clearExtension(Math.ContinuousSummaryDto.continuous);
+      } else if(summary.hasExtension(Math.DefaultSummaryDto.defaultSummary)) {
+        ext = summary.getExtension(Math.DefaultSummaryDto.defaultSummary);
+        builder.clearExtension(Math.DefaultSummaryDto.defaultSummary);
+      } else if(summary.hasExtension(Math.TextSummaryDto.textSummary)) {
+        ext = summary.getExtension(Math.TextSummaryDto.textSummary);
+        builder.clearExtension(Math.TextSummaryDto.textSummary);
+      } else if(summary.hasExtension(Math.GeoSummaryDto.geoSummary)) {
+        ext = summary.getExtension(Math.GeoSummaryDto.geoSummary);
+        builder.clearExtension(Math.GeoSummaryDto.geoSummary);
+      } else if(summary.hasExtension(Math.BinarySummaryDto.binarySummary)) {
+        ext = summary.getExtension(Math.BinarySummaryDto.binarySummary);
+        builder.clearExtension(Math.BinarySummaryDto.binarySummary);
+      }
+
+      stream.writeObject(builder.build());
       stream.writeObject(ext);
     }
   }
