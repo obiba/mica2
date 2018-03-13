@@ -18,6 +18,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
 
+import com.google.protobuf.UnknownFieldSet;
 import net.sf.ehcache.pool.sizeof.annotations.IgnoreSizeOf;
 
 import org.obiba.magma.MagmaRuntimeException;
@@ -254,6 +255,8 @@ public abstract class DatasetService<T extends Dataset, T1 extends EntityState> 
       else if(ext instanceof Math.BinarySummaryDto)
         builder.setExtension(Math.BinarySummaryDto.binarySummary, (Math.BinarySummaryDto) ext);
 
+      // TEMPORARY-FIX cleaning reading the unknownFields before setting the summary
+      builder.setUnknownFields(UnknownFieldSet.getDefaultInstance());
       summary = builder.build();
     }
 
