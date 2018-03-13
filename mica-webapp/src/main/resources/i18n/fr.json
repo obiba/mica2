@@ -914,6 +914,7 @@
   "unsaved-title": "Modifications non sauvegardées",
   "unsaved-prompt": "Êtes-vous sûr de vouloir quitter cette page? toute modification non sauvegardée sera perdue.",
   "analysis": {
+    "action": "Analyses",
     "all-criteria": "Tous critères",
     "criteria": "Critère",
     "count": "#",
@@ -937,7 +938,13 @@
     "to": "A",
     "date-title": "Date",
     "entities-count": {
+      "action": "Compter les entités",
       "no-query": "Afin de compter les entités vous devez d'abord sélectionner des variables puis appliquer des critères sur leurs valeurs."
+    }
+  },
+  "sets": {
+    "cart": {
+      "no-variables": "Le panier de variables est vide."
     }
   },
   "search": {

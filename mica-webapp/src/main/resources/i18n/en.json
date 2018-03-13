@@ -914,6 +914,7 @@
   "unsaved-title": "Unsaved Changes",
   "unsaved-prompt": "Are you sure you want to leave this page? Unsaved changes will be lost.",
   "analysis": {
+    "action": "Analysis",
     "all-criteria": "All criteria",
     "criteria": "Criteria",
     "count": "#",
@@ -937,7 +938,13 @@
     "to": "To",
     "date-title": "Date",
     "entities-count": {
+      "action": "Count entities",
       "no-query": "To count entities you need to select some variables first and then apply criteria on their values."
+    }
+  },
+  "sets": {
+    "cart": {
+      "no-variables": "The cart of variables is empty."
     }
   },
   "search": {
