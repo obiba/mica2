@@ -944,7 +944,9 @@
   },
   "sets": {
     "cart": {
-      "no-variables": "Le panier de variables est vide."
+      "no-variables": "Le panier de variables est vide.",
+      "no-variables-added": "Aucune variable n'a été ajoutée au panier.",
+      "variables-added": "Variables ajoutées au panier: {{arg0}}"
     }
   },
   "search": {

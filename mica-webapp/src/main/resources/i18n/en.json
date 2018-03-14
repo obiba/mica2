@@ -944,7 +944,9 @@
   },
   "sets": {
     "cart": {
-      "no-variables": "The cart of variables is empty."
+      "no-variables": "The cart of variables is empty.",
+      "no-variables-added": "No variables have been added to the cart.",
+      "variables-added": "Variables added to the cart: {{arg0}}"
     }
   },
   "search": {
