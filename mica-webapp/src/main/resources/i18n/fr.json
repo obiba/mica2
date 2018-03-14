@@ -938,15 +938,21 @@
     "to": "A",
     "date-title": "Date",
     "entities-count": {
+      "title": "Nombre d'entités",
+      "help": "Etant donné un ensemble de variables, les entités satisfaisant tous les critères définis sur ces variables peuvent être comptés.",
       "action": "Compter les entités",
       "no-query": "Afin de compter les entités vous devez d'abord sélectionner des variables puis appliquer des critères sur leurs valeurs."
     }
   },
   "sets": {
     "cart": {
+      "title": "Panier",
+      "help": "Utiliser le cart pour constituer un ensemble de variables. Cet ensemble de variables peut ensuite être analysé ou vue dans la page de recherche.",
       "no-variables": "Le panier de variables est vide.",
-      "no-variables-added": "Aucune variable n'a été ajoutée au panier.",
-      "variables-added": "Variables ajoutées au panier: {{arg0}}"
+      "no-variable-added": "Aucune variable n'a été ajoutée au panier.",
+      "variables-added": "Variables ajoutées au panier: {{arg0}}",
+      "variable-added": "Variable ajoutée au panier.",
+      "add-to-cart": "Ajouter au panier"
     }
   },
   "search": {
@@ -1217,7 +1223,8 @@
       "file-system": "Gérer le système de fichiers.",
       "search": "Chercher dans le catalogue publié.",
       "classifications": "Parcourir les taxonomies.",
-      "translations": "Gérer les traductions des libellés."
+      "translations": "Gérer les traductions des libellés.",
+      "cart": "Panier de variables publiées."
     }
   },
   "server": {
