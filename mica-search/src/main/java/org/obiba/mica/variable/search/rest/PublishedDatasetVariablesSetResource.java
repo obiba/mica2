@@ -26,7 +26,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
 import java.io.IOException;
-import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
@@ -56,14 +55,19 @@ public class PublishedDatasetVariablesSetResource {
   }
 
   @GET
-  @Path("/variables")
-  public List<Mica.DatasetVariableDto> getVariables(@QueryParam("from") @DefaultValue("0") int from, @QueryParam("limit") @DefaultValue("10") int limit) {
-    return variableSetService.getVariables(variableSetService.get(id), from, limit).stream()
-      .map(var -> dtos.asDto(var)).collect(Collectors.toList());
+  @Path("/documents")
+  public Mica.DatasetVariablesDto getVariables(@QueryParam("from") @DefaultValue("0") int from, @QueryParam("limit") @DefaultValue("10") int limit) {
+    DocumentSet set = variableSetService.get(id);
+    return Mica.DatasetVariablesDto.newBuilder()
+      .setTotal(set.getIdentifiers().size())
+      .setFrom(from)
+      .setLimit(limit)
+      .addAllVariables(variableSetService.getVariables(set, from, limit).stream()
+        .map(var -> dtos.asDto(var)).collect(Collectors.toList())).build();
   }
 
   @GET
-  @Path("/variables/_export")
+  @Path("/documents/_export")
   @Produces(MediaType.TEXT_PLAIN)
   public Response exportVariables() {
     DocumentSet documentSet = variableSetService.get(id);
@@ -82,16 +86,17 @@ public class PublishedDatasetVariablesSetResource {
   }
 
   @POST
-  @Path("/variables/_import")
+  @Path("/documents/_import")
   @Consumes(MediaType.TEXT_PLAIN)
   public Response importVariables(String body) {
-    if (Strings.isNullOrEmpty(body)) return Response.ok().build();
+    DocumentSet set = variableSetService.get(id);
+    if (Strings.isNullOrEmpty(body)) return Response.ok().entity(dtos.asDto(set)).build();
     variableSetService.addIdentifiers(id, variableSetService.extractIdentifiers(body));
-    return Response.ok().build();
+    return Response.ok().entity(dtos.asDto(variableSetService.get(id))).build();
   }
 
   @DELETE
-  @Path("/variables")
+  @Path("/documents")
   public Response deleteVariables() {
     variableSetService.setIdentifiers(id, Lists.newArrayList());
     return Response.ok().build();

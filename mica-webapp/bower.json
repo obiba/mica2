@@ -34,6 +34,7 @@
     "filesize": "3.6.0",
     "ngclipboard": "1.1.3",
     "angular-utils-pagination": "0.11.1",
+    "angular-local-storage": "^0.7.1",
     "angular-schema-form": "0.8.13",
     "angular-schema-form-bootstrap": "https://github.com/obiba/angular-schema-form-bootstrap.git#master",
     "angular-schema-form-ui-ace": "https://github.com/obiba/angular-schema-form-ui-ace.git#0.1.2",

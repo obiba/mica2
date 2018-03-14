@@ -914,6 +914,7 @@
   "unsaved-title": "Unsaved Changes",
   "unsaved-prompt": "Are you sure you want to leave this page? Unsaved changes will be lost.",
   "analysis": {
+    "action": "Analysis",
     "all-criteria": "All criteria",
     "criteria": "Criteria",
     "count": "#",
@@ -937,7 +938,21 @@
     "to": "To",
     "date-title": "Date",
     "entities-count": {
+      "title": "Entities Count",
+      "help": "Given a set of variables, the entities matching all the criteria for these variables can be counted.",
+      "action": "Count entities",
       "no-query": "To count entities you need to select some variables first and then apply criteria on their values."
+    }
+  },
+  "sets": {
+    "cart": {
+      "title": "Cart",
+      "help": "Use the cart to make a set of variables. This set can be analyzed or can be viewed in the search page.",
+      "no-variables": "The cart of variables is empty.",
+      "no-variable-added": "No variable has been added to the cart.",
+      "variables-added": "Variables added to the cart: {{arg0}}",
+      "variable-added": "Variable added to the cart.",
+      "add-to-cart": "Add to Cart"
     }
   },
   "search": {
@@ -1208,7 +1223,8 @@
       "file-system": "Manage file system.",
       "search": "Search in the published repository.",
       "classifications": "Browse taxonomies.",
-      "translations": "Manage labels translations."
+      "translations": "Manage labels translations.",
+      "cart": "Cart of published variables."
     }
   },
   "server": {

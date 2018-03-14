@@ -56,11 +56,18 @@ public class PublishedDatasetVariablesSetsResource {
   }
 
   @POST
+  public Response createEmpty(@Context UriInfo uriInfo, @QueryParam("name") String name) {
+    DocumentSet created = variableSetService.create(name, Lists.newArrayList());
+    return Response.created(uriInfo.getBaseUriBuilder().segment("variables", "set", created.getId()).build()).build();
+  }
+
+  @POST
   @Path("_import")
   @Consumes(MediaType.TEXT_PLAIN)
   public Response importVariables(@Context UriInfo uriInfo, @QueryParam("name") String name, String body) {
     DocumentSet created = variableSetService.create(name, variableSetService.extractIdentifiers(body));
-    return Response.created(uriInfo.getBaseUriBuilder().segment("variables", "set", created.getId()).build()).build();
+    return Response.created(uriInfo.getBaseUriBuilder().segment("variables", "set", created.getId()).build())
+      .entity(dtos.asDto(created)).build();
   }
 
   @POST

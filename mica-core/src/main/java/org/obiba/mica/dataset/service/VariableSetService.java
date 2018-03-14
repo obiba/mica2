@@ -77,6 +77,8 @@ public class VariableSetService extends DocumentSetService {
     ensureType(documentSet);
     if (documentSet.getIdentifiers().isEmpty()) return Lists.newArrayList();
     List<String> ids = Lists.newArrayList(documentSet.getIdentifiers());
-    return publishedDatasetVariableService.findByIds(ids.subList(from, from + limit));
+    int to = from + limit;
+    if (to > ids.size()) to = ids.size();
+    return publishedDatasetVariableService.findByIds(ids.subList(from, to));
   }
 }
