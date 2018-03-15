@@ -114,10 +114,12 @@ public class WebConfiguration implements ServletContextInitializer, JettyServerC
 
       @Override
       protected void doStart() throws Exception {
-        super.doStart();
         setSslContext(sslContextFactory.createSslContext());
       }
 
+      @Override
+      public void checkKeyStore() {
+      }
     };
     jettySsl.setWantClientAuth(true);
     jettySsl.setNeedClientAuth(false);
