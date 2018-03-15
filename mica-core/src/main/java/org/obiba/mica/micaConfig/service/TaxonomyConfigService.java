@@ -47,6 +47,8 @@ public class TaxonomyConfigService {
 
   private Taxonomy defaultTaxonomyTaxonomy;
 
+  private ObjectMapper mapper = new ObjectMapper();
+
   @Inject
   private EventBus eventBus;
 
@@ -77,9 +79,7 @@ public class TaxonomyConfigService {
   private Taxonomy readTaxonomyFromYaml(String yamlResourcePath) {
     YamlMapFactoryBean factory = new YamlMapFactoryBean();
     factory.setResources(new ClassPathResource(yamlResourcePath));
-    factory.getObject();
 
-    ObjectMapper mapper = new ObjectMapper();
     return mapper.convertValue(factory.getObject(), Taxonomy.class);
   }
 

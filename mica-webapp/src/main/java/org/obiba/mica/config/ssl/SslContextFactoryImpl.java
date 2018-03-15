@@ -38,7 +38,7 @@ public class SslContextFactoryImpl implements SslContextFactory, EnvironmentAwar
   public SSLContext createSslContext() {
     KeyStoreManager keystore = prepareServerKeystore();
     try {
-      SSLContext ctx = SSLContext.getInstance("TLSv1");
+      SSLContext ctx = SSLContext.getInstance("TLSv1.2");
       ctx.init(new KeyManager[] { new X509ExtendedKeyManagerImpl(keystore) }, null, null);
       return ctx;
     } catch(Exception e) {
