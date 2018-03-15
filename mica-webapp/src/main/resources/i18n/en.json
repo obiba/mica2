@@ -952,7 +952,10 @@
       "no-variable-added": "No variable has been added to the cart.",
       "variables-added": "Variables added to the cart: {{arg0}}",
       "variable-added": "Variable added to the cart.",
-      "add-to-cart": "Add to Cart"
+      "add-to-cart": "Add to Cart",
+      "no-variable-removed": "No variable was removed from the cart.",
+      "variable-removed": "Variable removed from the cart.",
+      "remove-from-cart": "Remove from Cart"
     }
   },
   "search": {

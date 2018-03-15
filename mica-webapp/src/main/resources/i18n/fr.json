@@ -952,7 +952,10 @@
       "no-variable-added": "Aucune variable n'a été ajoutée au panier.",
       "variables-added": "Variables ajoutées au panier: {{arg0}}",
       "variable-added": "Variable ajoutée au panier.",
-      "add-to-cart": "Ajouter au panier"
+      "add-to-cart": "Ajouter au panier",
+      "no-variable-removed": "Aucune variable n'a été supprimée du panier.",
+      "variable-removed": "Variable supprimée du panier.",
+      "remove-from-cart": "Retirer du panier"
     }
   },
   "search": {

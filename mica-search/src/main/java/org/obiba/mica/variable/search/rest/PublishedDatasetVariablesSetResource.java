@@ -86,6 +86,16 @@ public class PublishedDatasetVariablesSetResource {
   }
 
   @POST
+  @Path("/documents/_delete")
+  @Consumes(MediaType.TEXT_PLAIN)
+  public Response deleteVariables(String body) {
+    DocumentSet set = variableSetService.get(id);
+    if (Strings.isNullOrEmpty(body)) return Response.ok().entity(dtos.asDto(set)).build();
+    variableSetService.removeIdentifiers(id, variableSetService.extractIdentifiers(body));
+    return Response.ok().entity(dtos.asDto(variableSetService.get(id))).build();
+  }
+
+  @POST
   @Path("/documents/_import")
   @Consumes(MediaType.TEXT_PLAIN)
   public Response importVariables(String body) {
@@ -100,6 +110,13 @@ public class PublishedDatasetVariablesSetResource {
   public Response deleteVariables() {
     variableSetService.setIdentifiers(id, Lists.newArrayList());
     return Response.ok().build();
+  }
+
+  @GET
+  @Path("/document/{documentId}/_exists")
+  public Response hasVariable(@PathParam("documentId") String documentId) {
+    DocumentSet set = variableSetService.get(id);
+    return set.getIdentifiers().contains(documentId) ? Response.ok().build() : Response.status(Response.Status.NOT_FOUND).build();
   }
 
 }
