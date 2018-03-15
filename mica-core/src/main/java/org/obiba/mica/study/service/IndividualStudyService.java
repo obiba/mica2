@@ -131,7 +131,7 @@ public class IndividualStudyService extends AbstractStudyService<StudyState, Stu
     eventBus.post(new DraftStudyUpdatedEvent(study));
   }
 
-  public void save(Study study, @Nullable String comment, boolean weightChanged) {
+  public void save(Study study, String comment, boolean weightChanged) {
     saveInternal(study, comment, true, weightChanged);
   }
 

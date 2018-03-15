@@ -16,9 +16,11 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 
-import org.obiba.mica.config.taxonomies.VariableTaxonomy;
+import org.obiba.mica.micaConfig.service.TaxonomyConfigService;
+import org.obiba.mica.spi.search.TaxonomyTarget;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.mica.web.model.MicaSearch;
+import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -29,7 +31,9 @@ import com.google.common.collect.Lists;
 class CoverageByBucket {
 
   @Inject
-  private VariableTaxonomy variableTaxonomy;
+  private TaxonomyConfigService taxonomyConfigService;
+
+  private Taxonomy variableTaxonomy;
 
   private List<TaxonomyHeader> taxonomyHeaders = Lists.newArrayList();
 
@@ -43,7 +47,9 @@ class CoverageByBucket {
 
   private String locale;
 
-  CoverageByBucket() {}
+  CoverageByBucket() {
+    variableTaxonomy = taxonomyConfigService.findByTarget(TaxonomyTarget.VARIABLE);
+  }
 
   public List<TaxonomyHeader> getTaxonomyHeaders() {
     return taxonomyHeaders;
@@ -99,7 +105,7 @@ class CoverageByBucket {
   //
 
   private void initializeLocale(MicaSearch.TaxonomiesCoverageDto coverage) {
-    if(coverage.getTaxonomiesCount()>0) {
+    if(coverage.getTaxonomiesCount() > 0) {
       Mica.LocalizedStringDto localized = coverage.getTaxonomies(0).getTaxonomy().getTitles(0);
       locale = localized.getLang();
     }
@@ -190,7 +196,8 @@ class CoverageByBucket {
 
     BucketRow(MicaSearch.BucketCoverageDto bucketCoverage) {
       field = bucketCoverage.getField();
-      if (variableTaxonomy.hasVocabulary(field) && variableTaxonomy.getVocabulary(field).getTitle().containsKey(locale)) {
+      if(variableTaxonomy.hasVocabulary(field) &&
+        variableTaxonomy.getVocabulary(field).getTitle().containsKey(locale)) {
         fieldTitle = variableTaxonomy.getVocabulary(field).getTitle().get(locale);
       } else {
         fieldTitle = field;

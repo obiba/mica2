@@ -19,8 +19,9 @@ import javax.validation.constraints.NotNull;
 import org.obiba.mica.config.Profiles;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.SpringApplication;
+import org.springframework.boot.Banner;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.SimpleCommandLinePropertySource;
@@ -55,12 +56,12 @@ public class Application {
    * To run the application with hot reload enabled, add the following arguments to your JVM:
    * "-javaagent:spring_loaded/springloaded-jhipster.jar -noverify -Dspringloaded=plugins=io.github.jhipster.loaded.instrument.JHipsterLoadtimeInstrumentationPlugin"
    */
-  public static void main(String... args) throws InterruptedException {
+  public static void main(String... args) {
 
     checkSystemProperty("MICA_HOME");
 
-    SpringApplication app = new SpringApplication(Application.class);
-    app.setShowBanner(false);
+    SpringApplicationBuilder app = new SpringApplicationBuilder(Application.class)
+      .bannerMode(Banner.Mode.OFF);
 
     SimpleCommandLinePropertySource source = new SimpleCommandLinePropertySource(args);
 
@@ -82,9 +83,9 @@ public class Application {
   /**
    * Set a default profile if it has not been set
    */
-  private static void addDefaultProfile(SpringApplication app, SimpleCommandLinePropertySource source) {
+  private static void addDefaultProfile(SpringApplicationBuilder app, SimpleCommandLinePropertySource source) {
     if(!source.containsProperty("spring.profiles.active") && System.getProperty("spring.profiles.active") == null) {
-      app.setAdditionalProfiles(Profiles.PROD);
+      app.profiles(Profiles.PROD);
     }
   }
 

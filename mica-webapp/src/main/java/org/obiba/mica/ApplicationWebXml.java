@@ -13,8 +13,9 @@ package org.obiba.mica;
 import org.obiba.mica.config.Profiles;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.Banner;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.boot.context.web.SpringBootServletInitializer;
+import org.springframework.boot.web.support.SpringBootServletInitializer;
 
 /**
  * This is an helper Java class that provides an alternative to creating a web.xml.
@@ -25,7 +26,9 @@ public class ApplicationWebXml extends SpringBootServletInitializer {
 
   @Override
   protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
-    return application.profiles(addDefaultProfile()).showBanner(false).sources(Application.class);
+    return application.profiles(addDefaultProfile())
+      .bannerMode(Banner.Mode.OFF)
+      .sources(Application.class);
   }
 
   /**

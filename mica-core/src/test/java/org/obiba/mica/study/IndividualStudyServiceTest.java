@@ -32,11 +32,6 @@ import org.obiba.core.util.FileUtil;
 import org.obiba.git.command.GitCommandHandler;
 import org.obiba.mica.config.JsonConfiguration;
 import org.obiba.mica.config.MongoDbConfiguration;
-import org.obiba.mica.config.taxonomies.DatasetTaxonomy;
-import org.obiba.mica.config.taxonomies.NetworkTaxonomy;
-import org.obiba.mica.config.taxonomies.StudyTaxonomy;
-import org.obiba.mica.config.taxonomies.TaxonomyTaxonomy;
-import org.obiba.mica.config.taxonomies.VariableTaxonomy;
 import org.obiba.mica.core.ModelAwareTranslator;
 import org.obiba.mica.core.domain.Membership;
 import org.obiba.mica.core.domain.Person;
@@ -420,31 +415,6 @@ public class IndividualStudyServiceTest {
       when(micaConfigService.getConfig()).thenReturn(micaConfig);
 
       return micaConfigService;
-    }
-
-    @Bean
-    public NetworkTaxonomy networksConfiguration() {
-      return mock(NetworkTaxonomy.class);
-    }
-
-    @Bean
-    public StudyTaxonomy studiesConfiguration() {
-      return mock(StudyTaxonomy.class);
-    }
-
-    @Bean
-    public DatasetTaxonomy datasetsConfiguration() {
-      return mock(DatasetTaxonomy.class);
-    }
-
-    @Bean
-    public VariableTaxonomy variablesConfiguration() {
-      return mock(VariableTaxonomy.class);
-    }
-
-    @Bean
-    public TaxonomyTaxonomy taxonomyConfiguration() {
-      return mock(TaxonomyTaxonomy.class);
     }
 
     @Bean

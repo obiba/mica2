@@ -41,9 +41,9 @@ import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
-import org.springframework.boot.context.embedded.ServletContextInitializer;
 import org.springframework.boot.context.embedded.jetty.JettyEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.jetty.JettyServerCustomizer;
+import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -114,12 +114,10 @@ public class WebConfiguration implements ServletContextInitializer, JettyServerC
 
       @Override
       protected void doStart() throws Exception {
+        super.doStart();
         setSslContext(sslContextFactory.createSslContext());
       }
 
-      @Override
-      public void checkKeyStore() {
-      }
     };
     jettySsl.setWantClientAuth(true);
     jettySsl.setNeedClientAuth(false);
