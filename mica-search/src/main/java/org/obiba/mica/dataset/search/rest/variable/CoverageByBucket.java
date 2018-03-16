@@ -33,8 +33,6 @@ class CoverageByBucket {
   @Inject
   private TaxonomyConfigService taxonomyConfigService;
 
-  private Taxonomy variableTaxonomy;
-
   private List<TaxonomyHeader> taxonomyHeaders = Lists.newArrayList();
 
   private List<VocabularyHeader> vocabularyHeaders = Lists.newArrayList();
@@ -47,9 +45,7 @@ class CoverageByBucket {
 
   private String locale;
 
-  CoverageByBucket() {
-    variableTaxonomy = taxonomyConfigService.findByTarget(TaxonomyTarget.VARIABLE);
-  }
+  CoverageByBucket() { }
 
   public List<TaxonomyHeader> getTaxonomyHeaders() {
     return taxonomyHeaders;
@@ -195,6 +191,8 @@ class CoverageByBucket {
     final List<Integer> counts = Lists.newArrayList();
 
     BucketRow(MicaSearch.BucketCoverageDto bucketCoverage) {
+      Taxonomy variableTaxonomy = taxonomyConfigService.findByTarget(TaxonomyTarget.VARIABLE);
+
       field = bucketCoverage.getField();
       if(variableTaxonomy.hasVocabulary(field) &&
         variableTaxonomy.getVocabulary(field).getTitle().containsKey(locale)) {
