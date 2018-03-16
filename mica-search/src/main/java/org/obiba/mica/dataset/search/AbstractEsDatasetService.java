@@ -10,12 +10,11 @@
 
 package org.obiba.mica.dataset.search;
 
+import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.service.EsDatasetService;
-import org.obiba.mica.search.AbstractDocumentService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.obiba.mica.search.AbstractIdentifiedDocumentService;
 
-public abstract class AbstractEsDatasetService<T> extends AbstractDocumentService<T> implements EsDatasetService {
+public abstract class AbstractEsDatasetService<T extends Dataset> extends AbstractIdentifiedDocumentService<T> implements EsDatasetService {
 
   @Override
   public long getStudiesWithVariablesCount() {

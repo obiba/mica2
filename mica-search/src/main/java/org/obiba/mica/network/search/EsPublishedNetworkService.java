@@ -12,10 +12,9 @@ package org.obiba.mica.network.search;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.obiba.mica.network.domain.Network;
-import org.obiba.mica.network.domain.NetworkState;
 import org.obiba.mica.network.service.NetworkService;
 import org.obiba.mica.network.service.PublishedNetworkService;
-import org.obiba.mica.search.AbstractDocumentService;
+import org.obiba.mica.search.AbstractIdentifiedDocumentService;
 import org.obiba.mica.spi.search.Indexer;
 import org.obiba.mica.spi.search.Searcher;
 import org.springframework.stereotype.Service;
@@ -27,8 +26,8 @@ import java.util.Collection;
 import java.util.stream.Collectors;
 
 @Service
-public class EsPublishedNetworkService extends AbstractDocumentService<Network>
-    implements PublishedNetworkService {
+public class EsPublishedNetworkService extends AbstractIdentifiedDocumentService<Network>
+  implements PublishedNetworkService {
 
   @Inject
   private ObjectMapper objectMapper;
@@ -64,8 +63,8 @@ public class EsPublishedNetworkService extends AbstractDocumentService<Network>
       @Override
       public Collection<String> getValues() {
         return networkService.findPublishedIds().stream()
-            .filter(s -> subjectAclService.isAccessible("/network", s))
-            .collect(Collectors.toList());
+          .filter(s -> subjectAclService.isAccessible("/network", s))
+          .collect(Collectors.toList());
       }
     };
   }

@@ -12,10 +12,9 @@ package org.obiba.mica.network.search;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.obiba.mica.network.domain.Network;
-import org.obiba.mica.network.domain.NetworkState;
 import org.obiba.mica.network.service.DraftNetworkService;
 import org.obiba.mica.network.service.NetworkService;
-import org.obiba.mica.search.AbstractDocumentService;
+import org.obiba.mica.search.AbstractIdentifiedDocumentService;
 import org.obiba.mica.spi.search.Indexer;
 import org.obiba.mica.spi.search.Searcher;
 import org.springframework.stereotype.Service;
@@ -27,7 +26,7 @@ import java.util.Collection;
 import java.util.stream.Collectors;
 
 @Service
-public class EsDraftNetworkService extends AbstractDocumentService<Network> implements DraftNetworkService {
+public class EsDraftNetworkService extends AbstractIdentifiedDocumentService<Network> implements DraftNetworkService {
 
   @Inject
   private ObjectMapper objectMapper;
@@ -62,8 +61,8 @@ public class EsDraftNetworkService extends AbstractDocumentService<Network> impl
       @Override
       public Collection<String> getValues() {
         return networkService.findAllIds().stream()
-            .filter(s -> subjectAclService.isPermitted("/draft/network", "VIEW", s))
-            .collect(Collectors.toList());
+          .filter(s -> subjectAclService.isPermitted("/draft/network", "VIEW", s))
+          .collect(Collectors.toList());
       }
     };
   }

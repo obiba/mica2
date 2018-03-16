@@ -14,11 +14,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import org.obiba.mica.dataset.domain.DatasetVariable;
-import org.obiba.mica.dataset.domain.HarmonizationDatasetState;
-import org.obiba.mica.dataset.domain.StudyDatasetState;
 import org.obiba.mica.dataset.service.CollectedDatasetService;
 import org.obiba.mica.dataset.service.HarmonizedDatasetService;
-import org.obiba.mica.search.AbstractDocumentService;
+import org.obiba.mica.search.AbstractIdentifiedDocumentService;
 import org.obiba.mica.spi.search.Searcher;
 import org.obiba.mica.study.service.PublishedDatasetVariableService;
 import org.slf4j.Logger;
@@ -34,8 +32,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
-public class EsPublishedDatasetVariableService extends AbstractDocumentService<DatasetVariable>
-    implements PublishedDatasetVariableService {
+public class EsPublishedDatasetVariableService extends AbstractIdentifiedDocumentService<DatasetVariable>
+  implements PublishedDatasetVariableService {
 
   private static final Logger log = LoggerFactory.getLogger(EsPublishedDatasetVariableService.class);
 
@@ -80,7 +78,7 @@ public class EsPublishedDatasetVariableService extends AbstractDocumentService<D
 
   @Override
   protected DatasetVariable processHit(Searcher.DocumentResult res) throws IOException {
-    return objectMapper.readValue(res.getSourceInputStream(), DatasetVariable .class);
+    return objectMapper.readValue(res.getSourceInputStream(), DatasetVariable.class);
   }
 
   @Override
@@ -133,9 +131,9 @@ public class EsPublishedDatasetVariableService extends AbstractDocumentService<D
       @Override
       public Collection<String> getValues() {
         List<String> ids = collectedDatasetService.findPublishedIds().stream()
-            .filter(s -> subjectAclService.isAccessible("/collected-dataset", s)).collect(Collectors.toList());
+          .filter(s -> subjectAclService.isAccessible("/collected-dataset", s)).collect(Collectors.toList());
         ids.addAll(harmonizedDatasetService.findPublishedIds().stream()
-            .filter(s -> subjectAclService.isAccessible("/harmonized-dataset", s)).collect(Collectors.toList()));
+          .filter(s -> subjectAclService.isAccessible("/harmonized-dataset", s)).collect(Collectors.toList()));
         return ids;
       }
     };

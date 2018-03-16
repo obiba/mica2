@@ -10,15 +10,11 @@
 
 package org.obiba.mica.search;
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import org.apache.shiro.SecurityUtils;
 import org.obiba.mica.core.service.DocumentService;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.security.service.SubjectAclService;
-import org.obiba.mica.spi.search.Identified;
 import org.obiba.mica.spi.search.Indexer;
 import org.obiba.mica.spi.search.Searcher;
 import org.slf4j.Logger;
@@ -28,8 +24,9 @@ import sun.util.locale.LanguageTag;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.io.IOException;
-import java.util.*;
-import java.util.concurrent.TimeUnit;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -51,70 +48,10 @@ public abstract class AbstractDocumentService<T> implements DocumentService<T> {
   @Inject
   protected SubjectAclService subjectAclService;
 
-  private Cache<String, T> documentsCache = CacheBuilder.newBuilder().maximumSize(1000).expireAfterWrite(1, TimeUnit.MINUTES).build();
-
-  @Override
-  @Nullable
-  public T findById(String id) {
-    log.debug("findById {} {}", getClass(), id);
-
-    if (useCache()) {
-      Object principal = SecurityUtils.getSubject().getPrincipal();
-      String principalString = "nouser";
-
-      if (principal != null) {
-        principalString = principal.toString();
-      }
-
-      T result = documentsCache.getIfPresent(principalString + "::" + id);
-      if (result != null) return result;
-    }
-
-    List<T> results = findByIds(Collections.singletonList(id));
-    return results != null && results.size() > 0 ? results.get(0) : null;
-  }
-
   @Override
   public List<T> findAll() {
     log.debug("findAll {}", getClass());
     return executeRqlQuery(String.format("generic(limit(0,%s))", MAX_SIZE));
-  }
-
-  @Override
-  public List<T> findByIds(List<String> ids) {
-    log.debug("findByIds {} {} ids", getClass(), ids.size());
-
-    Object securityPrincipal = SecurityUtils.getSubject().getPrincipal();
-    String securityPrincipalString = "nouser";
-    if (securityPrincipal != null) {
-      securityPrincipalString = securityPrincipal.toString();
-    }
-
-    String principal = useCache() ? securityPrincipalString : "";
-    List<T> results = Lists.newArrayList();
-    List<String> notCachedIds = Lists.newArrayList();
-    if (useCache()) {
-      for (String id : ids) {
-        T result = documentsCache.getIfPresent(principal + "::" + id);
-        if (result == null) notCachedIds.add(id);
-        else results.add(result);
-      }
-    } else {
-      notCachedIds = ids;
-    }
-
-    if (notCachedIds.isEmpty()) return results;
-
-    String idsAsRqlStringParam = String.join(",", notCachedIds);
-    // TODO handle case ids size is greater than MAX_SIZE
-    List<T> notCachedResults = executeRqlQuery(String.format("generic(in(id,(%s)),limit(0,%s))", idsAsRqlStringParam, MAX_SIZE));
-
-    if (useCache()) {
-      notCachedResults.forEach(result -> documentsCache.put(principal + "::" + ((Identified)result).getId(), result));
-    }
-
-    results.addAll(notCachedResults);
-    return results;
   }
 
   @Override
@@ -161,13 +98,13 @@ public abstract class AbstractDocumentService<T> implements DocumentService<T> {
     // query default fields separately otherwise we do not know which field has matched and suggestion might not be correct
     getSuggestionFields().forEach(df -> suggestions.addAll(searcher.suggest(getIndexName(), getType(), limit, locale, queryString, df)));
     return Lists.newArrayList(suggestions.stream().map(s -> s
-        .replace("'s","") // english thing that confuses RQL
-        .replace("l'","") // french thing that confuses RQL
-        .replaceAll("['\",:;?!\\(\\)]", "") // chars that might confuse RQL
-        .replace(" - ", " ") // isolated hyphen
-        .replaceAll("(\\.\\w+)", "") // remove chars after "dot"
-        .trim().replaceAll(" +", " ")) // duplicated spaces
-        .collect(Collectors.toSet()));
+      .replace("'s", "") // english thing that confuses RQL
+      .replace("l'", "") // french thing that confuses RQL
+      .replaceAll("['\",:;?!\\(\\)]", "") // chars that might confuse RQL
+      .replace(" - ", " ") // isolated hyphen
+      .replaceAll("(\\.\\w+)", "") // remove chars after "dot"
+      .trim().replaceAll(" +", " ")) // duplicated spaces
+      .collect(Collectors.toSet()));
   }
 
   @Override
@@ -262,8 +199,8 @@ public abstract class AbstractDocumentService<T> implements DocumentService<T> {
   protected List<String> getLocalizedFields(String... fieldNames) {
     List<String> fields = Lists.newArrayList();
     Stream.concat(micaConfigService.getConfig().getLocalesAsString().stream(), Stream.of(LanguageTag.UNDETERMINED))
-        .forEach(locale -> Arrays.stream(fieldNames)
-          .forEach(f -> fields.add(f + "." + locale + ".analyzed")));
+      .forEach(locale -> Arrays.stream(fieldNames)
+        .forEach(f -> fields.add(f + "." + locale + ".analyzed")));
     return fields;
   }
 }

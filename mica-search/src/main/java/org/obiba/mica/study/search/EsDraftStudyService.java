@@ -12,14 +12,13 @@ package org.obiba.mica.study.search;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
-import org.obiba.mica.core.domain.DefaultEntityBase;
-import org.obiba.mica.search.AbstractDocumentService;
+import org.obiba.mica.search.AbstractIdentifiedDocumentService;
 import org.obiba.mica.spi.search.Indexer;
 import org.obiba.mica.spi.search.Searcher;
 import org.obiba.mica.study.domain.Study;
-import org.obiba.mica.study.service.IndividualStudyService;
 import org.obiba.mica.study.service.DraftStudyService;
 import org.obiba.mica.study.service.HarmonizationStudyService;
+import org.obiba.mica.study.service.IndividualStudyService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Nullable;
@@ -30,7 +29,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class EsDraftStudyService extends AbstractDocumentService<Study> implements DraftStudyService {
+public class EsDraftStudyService extends AbstractIdentifiedDocumentService<Study> implements DraftStudyService {
 
   @Inject
   private ObjectMapper objectMapper;
@@ -77,13 +76,13 @@ public class EsDraftStudyService extends AbstractDocumentService<Study> implemen
 
   private List<String> findAuthorizedHarmonizationStudyIds() {
     return harmonizationStudyService.findAllIds().stream()
-        .filter(studyId -> subjectAclService.isPermitted("/draft/harmonization-study", "VIEW", studyId))
-        .collect(Collectors.toList());
+      .filter(studyId -> subjectAclService.isPermitted("/draft/harmonization-study", "VIEW", studyId))
+      .collect(Collectors.toList());
   }
 
   private List<String> findAuthorizedCollectionStudyIds() {
     return individualStudyService.findAllIds().stream()
-        .filter(studyId -> subjectAclService.isPermitted("/draft/individual-study", "VIEW", studyId))
-        .collect(Collectors.toList());
+      .filter(studyId -> subjectAclService.isPermitted("/draft/individual-study", "VIEW", studyId))
+      .collect(Collectors.toList());
   }
 }

@@ -12,10 +12,9 @@ package org.obiba.mica.project.search;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.obiba.mica.project.domain.Project;
-import org.obiba.mica.project.domain.ProjectState;
 import org.obiba.mica.project.service.ProjectService;
 import org.obiba.mica.project.service.PublishedProjectService;
-import org.obiba.mica.search.AbstractDocumentService;
+import org.obiba.mica.search.AbstractIdentifiedDocumentService;
 import org.obiba.mica.spi.search.Indexer;
 import org.obiba.mica.spi.search.Searcher;
 import org.springframework.stereotype.Service;
@@ -27,8 +26,8 @@ import java.util.Collection;
 import java.util.stream.Collectors;
 
 @Service
-public class EsPublishedProjectService extends AbstractDocumentService<Project> implements
-    PublishedProjectService {
+public class EsPublishedProjectService extends AbstractIdentifiedDocumentService<Project> implements
+  PublishedProjectService {
 
   @Inject
   private ObjectMapper objectMapper;
@@ -64,8 +63,8 @@ public class EsPublishedProjectService extends AbstractDocumentService<Project> 
       @Override
       public Collection<String> getValues() {
         return projectService.findPublishedIds().stream()
-            .filter(s -> subjectAclService.isAccessible("/project", s))
-            .collect(Collectors.toList());
+          .filter(s -> subjectAclService.isAccessible("/project", s))
+          .collect(Collectors.toList());
       }
     };
   }

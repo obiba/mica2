@@ -12,17 +12,16 @@ package org.obiba.mica.person.search;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.obiba.mica.core.domain.Person;
-import org.obiba.mica.search.AbstractDocumentService;
+import org.obiba.mica.search.AbstractIdentifiedDocumentService;
 import org.obiba.mica.spi.search.Indexer;
 import org.obiba.mica.spi.search.Searcher;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import java.io.IOException;
-import java.io.InputStream;
 
 @Service
-public class EsPersonService extends AbstractDocumentService<Person> {
+public class EsPersonService extends AbstractIdentifiedDocumentService<Person> {
 
   @Inject
   private ObjectMapper objectMapper;

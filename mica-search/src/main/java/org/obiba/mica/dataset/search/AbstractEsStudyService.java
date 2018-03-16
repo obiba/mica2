@@ -10,7 +10,8 @@
 
 package org.obiba.mica.dataset.search;
 
-import org.obiba.mica.search.AbstractDocumentService;
+import org.obiba.mica.search.AbstractIdentifiedDocumentService;
+import org.obiba.mica.study.domain.BaseStudy;
 
-public abstract class AbstractEsStudyService<T> extends AbstractDocumentService<T> {
+public abstract class AbstractEsStudyService<T extends BaseStudy> extends AbstractIdentifiedDocumentService<T> {
 }

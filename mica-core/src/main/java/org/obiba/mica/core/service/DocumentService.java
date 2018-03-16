@@ -18,27 +18,11 @@ import java.util.List;
 public interface DocumentService<T> {
 
   /**
-   * Get one document by its ID, returns null if not found.
-   *
-   * @param id
-   * @return
-   */
-  T findById(String id);
-
-  /**
    * List all documents.
    *
    * @return
    */
   List<T> findAll();
-
-  /**
-   * List all documents matching a list of IDs.
-   *
-   * @param ids
-   * @return
-   */
-  List<T> findByIds(List<String> ids);
 
   /**
    * Get the list in a object that informs about the set of documents that was retrieved.
@@ -65,15 +49,6 @@ public interface DocumentService<T> {
   List<String> suggest(int limit, String locale, String query);
 
   long getCount();
-
-  /**
-   * Whether the document service implementation shall use cache. Note that cachable document are expected to
-   * be instances of {@link org.obiba.mica.spi.search.Identified}.
-   * @return
-   */
-  default boolean useCache() {
-    return false;
-  }
 
   /**
    * Documents query result container.

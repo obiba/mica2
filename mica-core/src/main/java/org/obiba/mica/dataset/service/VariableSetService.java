@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import javax.inject.Inject;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -77,6 +78,7 @@ public class VariableSetService extends DocumentSetService {
     ensureType(documentSet);
     if (documentSet.getIdentifiers().isEmpty()) return Lists.newArrayList();
     List<String> ids = Lists.newArrayList(documentSet.getIdentifiers());
+    Collections.sort(ids);
     int to = from + limit;
     if (to > ids.size()) to = ids.size();
     return publishedDatasetVariableService.findByIds(ids.subList(from, to));

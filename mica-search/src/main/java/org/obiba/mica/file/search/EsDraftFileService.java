@@ -14,7 +14,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 import org.obiba.mica.file.AttachmentState;
 import org.obiba.mica.file.service.DraftFileService;
-import org.obiba.mica.search.AbstractDocumentService;
+import org.obiba.mica.search.AbstractIdentifiedDocumentService;
 import org.obiba.mica.spi.search.Indexer;
 import org.obiba.mica.spi.search.Searcher;
 import org.springframework.context.annotation.Scope;
@@ -28,7 +28,7 @@ import java.util.List;
 
 @Component
 @Scope(scopeName = "request", proxyMode = ScopedProxyMode.TARGET_CLASS)
-public class EsDraftFileService extends AbstractDocumentService<AttachmentState> implements DraftFileService {
+public class EsDraftFileService extends AbstractIdentifiedDocumentService<AttachmentState> implements DraftFileService {
 
   @Inject
   private ObjectMapper objectMapper;

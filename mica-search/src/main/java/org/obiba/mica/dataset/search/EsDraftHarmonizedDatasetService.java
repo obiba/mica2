@@ -12,10 +12,9 @@ package org.obiba.mica.dataset.search;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
-import org.obiba.mica.dataset.domain.HarmonizationDatasetState;
 import org.obiba.mica.dataset.service.DraftHarmonizationDatasetService;
 import org.obiba.mica.dataset.service.HarmonizedDatasetService;
-import org.obiba.mica.search.AbstractDocumentService;
+import org.obiba.mica.search.AbstractIdentifiedDocumentService;
 import org.obiba.mica.spi.search.Indexer;
 import org.obiba.mica.spi.search.Searcher;
 import org.springframework.stereotype.Service;
@@ -27,7 +26,7 @@ import java.util.Collection;
 import java.util.stream.Collectors;
 
 @Service
-class EsDraftHarmonizedDatasetService extends AbstractDocumentService<HarmonizationDataset> implements DraftHarmonizationDatasetService {
+class EsDraftHarmonizedDatasetService extends AbstractIdentifiedDocumentService<HarmonizationDataset> implements DraftHarmonizationDatasetService {
 
   @Inject
   private ObjectMapper objectMapper;
@@ -62,8 +61,8 @@ class EsDraftHarmonizedDatasetService extends AbstractDocumentService<Harmonizat
       @Override
       public Collection<String> getValues() {
         return harmonizedDatasetService.findAllIds().stream()
-            .filter(s -> subjectAclService.isPermitted("/draft/harmonized-dataset", "VIEW", s))
-            .collect(Collectors.toList());
+          .filter(s -> subjectAclService.isPermitted("/draft/harmonized-dataset", "VIEW", s))
+          .collect(Collectors.toList());
       }
     };
   }

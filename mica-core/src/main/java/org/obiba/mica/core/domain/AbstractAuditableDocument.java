@@ -13,6 +13,7 @@ package org.obiba.mica.core.domain;
 import java.util.Objects;
 
 import org.joda.time.DateTime;
+import org.obiba.mica.spi.search.Identified;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -23,7 +24,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Strings;
 
-public abstract class AbstractAuditableDocument implements Auditable<String, String>, Timestamped {
+public abstract class AbstractAuditableDocument implements Auditable<String, String>, Timestamped, Identified {
 
   private static final long serialVersionUID = -5039056351334888684L;
 

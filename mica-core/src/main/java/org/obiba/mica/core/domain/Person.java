@@ -18,6 +18,7 @@ import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.NotBlank;
 import org.obiba.mica.network.domain.Network;
+import org.obiba.mica.spi.search.Identified;
 import org.obiba.mica.study.domain.BaseStudy;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.domain.Persistable;
@@ -30,7 +31,7 @@ import com.google.common.collect.Lists;
 import static java.util.stream.Collectors.toList;
 
 @Document
-public class Person implements Persistable<String> {
+public class Person implements Persistable<String>, Identified {
 
   public void setId(String id) {
     this.id = id;

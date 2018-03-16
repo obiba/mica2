@@ -14,7 +14,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 import org.obiba.mica.file.AttachmentState;
 import org.obiba.mica.file.service.PublishedFileService;
-import org.obiba.mica.search.AbstractDocumentService;
+import org.obiba.mica.search.AbstractIdentifiedDocumentService;
 import org.obiba.mica.search.queries.AbstractDocumentQuery;
 import org.obiba.mica.spi.search.Indexer;
 import org.obiba.mica.spi.search.Searcher;
@@ -31,7 +31,7 @@ import java.util.List;
 
 @Component
 @Scope(scopeName = "request", proxyMode = ScopedProxyMode.TARGET_CLASS)
-public class EsPublishedFileService extends AbstractDocumentService<AttachmentState> implements PublishedFileService {
+public class EsPublishedFileService extends AbstractIdentifiedDocumentService<AttachmentState> implements PublishedFileService {
   private static final Logger log = LoggerFactory.getLogger(AbstractDocumentQuery.class);
 
   @Inject
