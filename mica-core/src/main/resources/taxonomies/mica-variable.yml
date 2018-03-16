@@ -72,8 +72,15 @@
   "description":
     "en": "Sets in which the variable appears."
     "fr": "Ensembles dans lesquels est définie la variable."
+  "terms":
+  - "name": "cart"
+    "title":
+      "en": "Cart"
+      "fr": "Panier"
+    "description": {}
   "attributes":
     "static": "true"
+    "hidden": "true"
 - "name": "variableType"
   "title":
     "en": "Type of variable"
