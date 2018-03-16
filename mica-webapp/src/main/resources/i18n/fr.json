@@ -947,7 +947,7 @@
   "sets": {
     "cart": {
       "title": "Panier",
-      "help": "Utiliser le cart pour constituer un ensemble de variables. Cet ensemble de variables peut ensuite être analysé ou vue dans la page de recherche.",
+      "help": "Utiliser le panier pour constituer un ensemble de variables. Cet ensemble de variables peut ensuite être analysé ou vu dans la page de recherche.",
       "no-variables": "Le panier de variables est vide.",
       "no-variable-added": "Aucune variable n'a été ajoutée au panier.",
       "variables-added": "Variables ajoutées au panier: {{arg0}}",
@@ -1743,7 +1743,7 @@
       "dataset": {
         "complete": "Complet",
         "undetermined": "Indéterminé(e)",
-        "variable-crosstab": "Variable de tableau croisé",
+        "variable-crosstab": "Table de contingence",
         "participants": "Participants",
         "dataset-type": "Type d'ensemble de données",
         "number-of-variables": "Nombre de variables"
