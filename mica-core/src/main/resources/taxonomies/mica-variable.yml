@@ -59,10 +59,10 @@
 - "name": "datasetId"
   "title":
     "en": "Dataset"
-    "fr": "Jeux de données"
+    "fr": "Ensemble de données"
   "description":
     "en": "Dataset in which the variable appears."
-    "fr": "Jeux de données dans lequel est définie la variable."
+    "fr": "Ensemble de données dans lequel est définie la variable."
   "attributes":
     "static": "true"
 - "name": "sets"
@@ -93,7 +93,7 @@
       "fr": "Collecte"
     "description":
       "en": "A collection variable holds metadata about data collected within a data collection event."
-      "fr": "Variables d'un jeux de données spécifique à une étude de collecte."
+      "fr": "Variables d'un ensemble de données spécifique à une étude de collecte."
   - "name": "Dataschema"
     "title":
       "en": "DataSchema"

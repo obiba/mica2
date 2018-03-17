@@ -44,18 +44,18 @@
 - "name": "dataset"
   "title":
     "en": "Datasets"
-    "fr": "Jeux de données"
+    "fr": "Ensembles de données"
   "description":
     "en": "Dataset classifications."
-    "fr": "Classifications des jeux de données."
+    "fr": "Classifications des ensembles de données."
   "terms":
   - "name": "Mica_dataset"
     "title":
       "en": "Datasets"
-      "fr": "Jeux de données"
+      "fr": "Ensembles de données"
     "description":
       "en": "Datasets properties as defined in the catalogue."
-      "fr": "Propriétés des jeux de données telles que définies dans le catalogue."
+      "fr": "Propriétés des ensembles de données telles que définies dans le catalogue."
 - "name": "study"
   "title":
     "en": "Studies"

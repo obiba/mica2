@@ -1069,8 +1069,8 @@
     },
     "harmonization": "Harmonisation",
     "network-where": "Réseaux où...",
-    "study-where": "Studies où...",
-    "dataset-where": "Datasets où...",
+    "study-where": "Études où...",
+    "dataset-where": "Ensembles de données où...",
     "variable-where": "Variables où...",
     "match":{
       "placeholder": "Entrez le texte à rechercher..."

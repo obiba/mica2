@@ -87,7 +87,7 @@ public class Mica320Upgrade implements UpgradeStep {
         "    },\n" +
         "    \"description\": {\n" +
         "      \"en\": \"A collection variable holds metadata about data collected within a data collection event.\",\n" +
-        "      \"fr\": \"Variables d'un jeux de données spécifique à une étude de collecte.\"\n" +
+        "      \"fr\": \"Variables d'un ensemble de données spécifique à une étude de collecte.\"\n" +
         "    },\n" +
         "    \"keywords\": {},\n" +
         "    \"attributes\": {}\n" +

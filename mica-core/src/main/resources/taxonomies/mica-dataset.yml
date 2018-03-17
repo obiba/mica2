@@ -1,10 +1,10 @@
 "name": "Mica_dataset"
 "title":
   "en": "Dataset properties"
-  "fr": "Propriétés des jeux de données"
+  "fr": "Propriétés des ensembles de données"
 "description":
   "en": "Datasets properties as defined in the catalogue."
-  "fr": "Propriétés des jeux de données telles que définies dans le catalogue."
+  "fr": "Propriétés des ensembles de données telles que définies dans le catalogue."
 "license": "CC BY-NC 4.0"
 "vocabularies":
 - "name": "id"
@@ -13,7 +13,7 @@
     "fr": "Acronyme"
   "description":
     "en": "Dataset acronym."
-    "fr": "Acronyme du jeux de données"
+    "fr": "Acronyme de l'ensemble de données"
   "attributes":
     "static": "true"
 - "name": "name"
@@ -22,7 +22,7 @@
     "fr": "Nom"
   "description":
     "en": "Official dataset name."
-    "fr": "Nom officiel du jeux de données."
+    "fr": "Nom officiel de l'ensemble de données."
   "terms": []
   "attributes":
     "field": "name"
@@ -36,7 +36,7 @@
     "fr": "Description"
   "description":
     "en": "Description of the dataset."
-    "fr": "Description du jeux de données."
+    "fr": "Description de l'ensemble de données."
   "terms": []
   "attributes":
     "field": "description"
@@ -50,7 +50,7 @@
     "fr": "Type d'entité"
   "description":
     "en": "Entity type of the dataset."
-    "fr": "Type d'entité du jeux de données."
+    "fr": "Type d'entité de l'ensemble de données."
   "terms": []
   "attributes":
     "field": "entityType"
@@ -60,7 +60,7 @@
 - "name": "className"
   "title":
     "en": "Type of Dataset"
-    "fr": "Type de jeux de données"
+    "fr": "Type d'ensemble de données"
   "description":
     "en": "Type of dataset (e.g. data collected or harmonized)"
   "terms":
@@ -70,7 +70,7 @@
       "fr": "Collecte"
     "description":
       "en": "A collected dataset holds metadata about the variables collected within a data collection event."
-      "fr": "Jeux de données spécifique à une étude de collecte."
+      "fr": "Ensemble de données spécifique à une étude de collecte."
   - "name": "HarmonizationDataset"
     "title":
       "en": "Harmonized"
