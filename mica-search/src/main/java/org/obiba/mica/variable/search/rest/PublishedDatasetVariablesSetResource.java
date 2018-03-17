@@ -15,8 +15,12 @@ import com.google.common.collect.Lists;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.core.domain.DocumentSet;
 import org.obiba.mica.dataset.service.VariableSetService;
+import org.obiba.mica.search.JoinQueryExecutor;
+import org.obiba.mica.spi.search.QueryType;
+import org.obiba.mica.spi.search.Searcher;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
+import org.obiba.mica.web.model.MicaSearch;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -26,6 +30,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
 import java.io.IOException;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
@@ -36,6 +41,12 @@ public class PublishedDatasetVariablesSetResource {
 
   @Inject
   private VariableSetService variableSetService;
+
+  @Inject
+  private JoinQueryExecutor joinQueryExecutor;
+
+  @Inject
+  private Searcher searcher;
 
   @Inject
   private Dtos dtos;
@@ -103,6 +114,21 @@ public class PublishedDatasetVariablesSetResource {
     if (Strings.isNullOrEmpty(body)) return Response.ok().entity(dtos.asDto(set)).build();
     variableSetService.addIdentifiers(id, variableSetService.extractIdentifiers(body));
     return Response.ok().entity(dtos.asDto(variableSetService.get(id))).build();
+  }
+
+  @POST
+  @Path("/documents/_rql")
+  public Response importQueryVariables(@FormParam("query") String query) throws IOException {
+    DocumentSet set = variableSetService.get(id);
+    if (Strings.isNullOrEmpty(query)) return Response.ok().entity(dtos.asDto(set)).build();
+    MicaSearch.JoinQueryResultDto result = joinQueryExecutor.query(QueryType.VARIABLE, searcher.makeJoinQuery(query));
+    if (result.hasVariableResultDto() && result.getVariableResultDto().getTotalHits() > 0) {
+      List<String> ids = result.getVariableResultDto().getExtension(MicaSearch.DatasetVariableResultDto.result).getSummariesList().stream()
+        .map(Mica.DatasetVariableResolverDto::getId).collect(Collectors.toList());
+      variableSetService.addIdentifiers(id, ids);
+      set = variableSetService.get(id);
+    }
+    return Response.ok().entity(dtos.asDto(set)).build();
   }
 
   @DELETE
