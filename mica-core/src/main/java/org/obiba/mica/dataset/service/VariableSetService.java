@@ -51,7 +51,18 @@ public class VariableSetService extends DocumentSetService {
    * @return
    */
   public List<DatasetVariable> getVariables(Set<String> identifiers) {
-    return publishedDatasetVariableService.findByIds(Lists.newArrayList(identifiers));
+    return getVariables(identifiers, true);
+  }
+
+  /**
+   * Get variables from their identifiers.
+   *
+   * @param identifiers
+   * @param useCache
+   * @return
+   */
+  public List<DatasetVariable> getVariables(Set<String> identifiers, boolean useCache) {
+    return publishedDatasetVariableService.findByIds(Lists.newArrayList(identifiers), useCache);
   }
 
   /**
@@ -61,9 +72,20 @@ public class VariableSetService extends DocumentSetService {
    * @return
    */
   public List<DatasetVariable> getVariables(DocumentSet documentSet) {
+    return getVariables(documentSet, true);
+  }
+
+  /**
+   * Get the variables referred by the {@link DocumentSet}.
+   *
+   * @param documentSet
+   * @param useCache
+   * @return
+   */
+  public List<DatasetVariable> getVariables(DocumentSet documentSet, boolean useCache) {
     ensureType(documentSet);
     if (documentSet.getIdentifiers().isEmpty()) return Lists.newArrayList();
-    return getVariables(documentSet.getIdentifiers());
+    return getVariables(documentSet.getIdentifiers(), useCache);
   }
 
   /**

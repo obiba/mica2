@@ -32,6 +32,8 @@ public interface IdentifiedDocumentService<T extends Identified> extends Documen
    */
   List<T> findByIds(List<String> ids);
 
+  List<T> findByIds(List<String> ids, boolean useCache);
+
   /**
    * Whether the document service implementation shall use cache. Note that cachable document are expected to
    * be instances of {@link org.obiba.mica.spi.search.Identified}.

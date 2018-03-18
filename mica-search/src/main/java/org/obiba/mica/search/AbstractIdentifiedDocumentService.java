@@ -58,6 +58,11 @@ public abstract class AbstractIdentifiedDocumentService<T extends Identified> ex
 
   @Override
   public List<T> findByIds(List<String> ids) {
+    return findByIds(ids, true);
+  }
+
+  @Override
+  public List<T> findByIds(List<String> ids, boolean useCache) {
     log.debug("findByIds {} {} ids", getClass(), ids.size());
 
     Object securityPrincipal = SecurityUtils.getSubject().getPrincipal();
@@ -66,10 +71,10 @@ public abstract class AbstractIdentifiedDocumentService<T extends Identified> ex
       securityPrincipalString = securityPrincipal.toString();
     }
 
-    String principal = useCache() ? securityPrincipalString : "";
+    String principal = (useCache && useCache()) ? securityPrincipalString : "";
     List<T> results = Lists.newArrayList();
     List<String> notCachedIds = Lists.newArrayList();
-    if (useCache()) {
+    if (useCache && useCache()) {
       for (String id : ids) {
         T result = documentsCache.getIfPresent(principal + "::" + id);
         if (result == null) notCachedIds.add(id);
@@ -91,7 +96,7 @@ public abstract class AbstractIdentifiedDocumentService<T extends Identified> ex
       from = from + MAX_SIZE;
     }
 
-    if (useCache()) {
+    if (useCache && useCache()) {
       notCachedResults.forEach(result -> documentsCache.put(principal + "::" + result.getId(), result));
     }
 

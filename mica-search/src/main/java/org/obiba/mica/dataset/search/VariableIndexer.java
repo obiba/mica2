@@ -87,16 +87,16 @@ public class VariableIndexer {
 
   @Async
   @Subscribe
-  public void documentSetUpdated(DocumentSetUpdatedEvent event) {
+  public synchronized void documentSetUpdated(DocumentSetUpdatedEvent event) {
     if (!variableSetService.isForType(event.getPersistable())) return;
     List<DatasetVariable> toIndex = Lists.newArrayList();
     String id = event.getPersistable().getId();
     if (event.hasRemovedIdentifiers()) {
-      List<DatasetVariable> toRemove = variableSetService.getVariables(event.getRemovedIdentifiers());
+      List<DatasetVariable> toRemove = variableSetService.getVariables(event.getRemovedIdentifiers(), false);
       toRemove.forEach(var -> var.removeSet(id));
       toIndex.addAll(toRemove);
     }
-    List<DatasetVariable> variables = variableSetService.getVariables(event.getPersistable());
+    List<DatasetVariable> variables = variableSetService.getVariables(event.getPersistable(), false);
     variables.stream()
       .filter(var -> !var.containsSet(id))
       .forEach(var -> {
@@ -124,7 +124,7 @@ public class VariableIndexer {
     indexer.indexAllIndexables(indexName, variables);
   }
 
-  protected void indexHarmonizedVariables(String indexName, Map<String, List<DatasetVariable>> harmonizationVariables) {
+  private void indexHarmonizedVariables(String indexName, Map<String, List<DatasetVariable>> harmonizationVariables) {
     harmonizationVariables.keySet().forEach(
       parentId -> indexer.indexAllIndexables(indexName, harmonizationVariables.get(parentId), parentId));
   }
