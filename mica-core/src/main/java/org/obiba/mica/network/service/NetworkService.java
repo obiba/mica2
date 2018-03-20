@@ -16,6 +16,7 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import org.joda.time.DateTime;
@@ -101,7 +102,7 @@ public class NetworkService extends AbstractGitPersistableService<NetworkState, 
   }
 
   @Override
-  public void save(@NotNull Network network, String comment) {
+  public void save(@NotNull @Valid Network network, String comment) {
     saveInternal(network, comment, true);
   }
 

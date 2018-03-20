@@ -13,6 +13,7 @@ package org.obiba.mica.project.service;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import com.google.common.collect.Lists;
@@ -114,7 +115,7 @@ public class ProjectService extends AbstractGitPersistableService<ProjectState, 
   }
 
   @Override
-  public void save(@NotNull Project project, String comments) {
+  public void save(@NotNull @Valid Project project, String comments) {
     Project saved = project;
 
     if(project.isNew()) {

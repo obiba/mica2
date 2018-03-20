@@ -18,6 +18,7 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import javax.inject.Inject;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import org.joda.time.DateTime;
@@ -112,7 +113,7 @@ public class CollectedDatasetService extends DatasetService<StudyDataset, StudyD
   @Lazy
   private Helper helper;
 
-  public void save(@NotNull StudyDataset dataset) {
+  public void save(@NotNull @Valid StudyDataset dataset) {
     saveInternal(dataset, null);
   }
 
