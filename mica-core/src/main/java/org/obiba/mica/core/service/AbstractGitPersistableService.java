@@ -80,7 +80,7 @@ public abstract class AbstractGitPersistableService<T extends EntityState, T1 ex
   @NotNull
   public abstract T1 findDraft(@NotNull String id) throws NoSuchEntityException;
 
-  public T1 getFromCommit(T1 gitPersistable, String commitId) {
+  public T1 getFromCommit(@NotNull T1 gitPersistable, @NotNull String commitId) {
     String blob = gitService.getBlob(gitPersistable, commitId, getType());
     InputStream inputStream = new ByteArrayInputStream(blob.getBytes(StandardCharsets.UTF_8));
 
@@ -91,7 +91,7 @@ public abstract class AbstractGitPersistableService<T extends EntityState, T1 ex
     }
   }
 
-  public abstract void save(T1 gitPersistable, String comments);
+  public abstract void save(@NotNull T1 gitPersistable, String comments);
 
   @Nullable
   public T findStateById(@NotNull String id) throws NoSuchEntityException {

@@ -15,49 +15,50 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import org.obiba.mica.NoSuchEntityException;
-import org.obiba.mica.config.taxonomies.DatasetTaxonomy;
-import org.obiba.mica.config.taxonomies.NetworkTaxonomy;
-import org.obiba.mica.config.taxonomies.StudyTaxonomy;
-import org.obiba.mica.config.taxonomies.TaxonomyTaxonomy;
-import org.obiba.mica.config.taxonomies.VariableTaxonomy;
 import org.obiba.mica.core.domain.TaxonomyEntityWrapper;
-import org.obiba.mica.spi.search.TaxonomyTarget;
 import org.obiba.mica.micaConfig.event.TaxonomiesUpdatedEvent;
 import org.obiba.mica.micaConfig.repository.TaxonomyConfigRepository;
+import org.obiba.mica.spi.search.TaxonomyTarget;
 import org.obiba.mica.spi.search.support.AggregationHelper;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.obiba.opal.core.domain.taxonomy.Vocabulary;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.beans.factory.config.YamlMapFactoryBean;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.google.common.eventbus.EventBus;
 
 @Service
-@EnableConfigurationProperties({ NetworkTaxonomy.class, StudyTaxonomy.class, DatasetTaxonomy.class, VariableTaxonomy.class, TaxonomyTaxonomy.class })
 public class TaxonomyConfigService {
 
   @Inject
   private TaxonomyConfigRepository taxonomyConfigRepository;
 
-  @Inject
-  private NetworkTaxonomy defaultNetworkTaxonomy;
+  private Taxonomy defaultNetworkTaxonomy;
 
-  @Inject
-  private StudyTaxonomy defaultStudyTaxonomy;
+  private Taxonomy defaultStudyTaxonomy;
 
-  @Inject
-  private DatasetTaxonomy defaultDatasetTaxonomy;
+  private Taxonomy defaultDatasetTaxonomy;
 
-  @Inject
-  private VariableTaxonomy defaultVariableTaxonomy;
+  private Taxonomy defaultVariableTaxonomy;
 
-  @Inject
-  private TaxonomyTaxonomy defaultTaxonomyTaxonomy;
+  private Taxonomy defaultTaxonomyTaxonomy;
+
+  private ObjectMapper mapper = new ObjectMapper();
 
   @Inject
   private EventBus eventBus;
+
+  public TaxonomyConfigService() {
+    defaultStudyTaxonomy = readTaxonomyFromYaml("/taxonomies/mica-study.yml");
+    defaultNetworkTaxonomy = readTaxonomyFromYaml("/taxonomies/mica-network.yml");
+    defaultDatasetTaxonomy = readTaxonomyFromYaml("/taxonomies/mica-dataset.yml");
+    defaultVariableTaxonomy = readTaxonomyFromYaml("/taxonomies/mica-variable.yml");
+    defaultTaxonomyTaxonomy = readTaxonomyFromYaml("/taxonomies/mica-taxonomy.yml");
+  }
 
   public Taxonomy findByTarget(TaxonomyTarget target) {
     return findByTargetInternal(target);
@@ -75,14 +76,20 @@ public class TaxonomyConfigService {
     updateInternal(target, targetTaxonomy);
   }
 
+  private Taxonomy readTaxonomyFromYaml(String yamlResourcePath) {
+    YamlMapFactoryBean factory = new YamlMapFactoryBean();
+    factory.setResources(new ClassPathResource(yamlResourcePath));
+
+    return mapper.convertValue(factory.getObject(), Taxonomy.class);
+  }
+
   private Taxonomy findByTargetInternal(TaxonomyTarget target) {
     // taxonomy of taxonomies is not editable so fall back to the one that comes from the classpath
-    if (TaxonomyTarget.TAXONOMY.equals(target))
-      return defaultTaxonomyTaxonomy;
+    if(TaxonomyTarget.TAXONOMY.equals(target)) return defaultTaxonomyTaxonomy;
     String id = target.asId();
     TaxonomyEntityWrapper taxonomyEntityWrapper = taxonomyConfigRepository.findOne(id);
 
-    if (taxonomyEntityWrapper == null) {
+    if(taxonomyEntityWrapper == null) {
       createDefault(target);
       taxonomyEntityWrapper = taxonomyConfigRepository.findOne(id);
     }
@@ -92,15 +99,15 @@ public class TaxonomyConfigService {
 
   void mergeVocabulariesTerms(Taxonomy taxonomy, Taxonomy defaultTaxonomy) {
     defaultTaxonomy.getVocabularies().forEach(v -> {
-      if (!taxonomy.hasVocabulary(v.getName())) {
+      if(!taxonomy.hasVocabulary(v.getName())) {
         taxonomy.addVocabulary(v);
       } else {
         Vocabulary defaultTaxonomyVocabulary = defaultTaxonomy.getVocabulary(v.getName());
         Vocabulary taxonomyVocabulary = taxonomy.getVocabulary(v.getName());
 
-        if (defaultTaxonomyVocabulary.hasTerms()) {
+        if(defaultTaxonomyVocabulary.hasTerms()) {
           defaultTaxonomyVocabulary.getTerms().forEach(t -> {
-            if (!taxonomyVocabulary.hasTerm(t.getName())) taxonomyVocabulary.addTerm(t);
+            if(!taxonomyVocabulary.hasTerm(t.getName())) taxonomyVocabulary.addTerm(t);
           });
         }
       }
@@ -120,9 +127,9 @@ public class TaxonomyConfigService {
     taxonomy.getVocabularies().forEach(v -> {
       String field = v.getAttributeValue("field");
 
-      if (!Strings.isNullOrEmpty(field)) {
+      if(!Strings.isNullOrEmpty(field)) {
         String type = v.getAttributeValue("type");
-        if (Strings.isNullOrEmpty(type)) type = "string";
+        if(Strings.isNullOrEmpty(type)) type = "string";
 
         String alias = v.getAttributeValue("alias");
         if(Strings.isNullOrEmpty(alias)) alias = AggregationHelper.formatName(field);
@@ -134,9 +141,9 @@ public class TaxonomyConfigService {
         aliases.put(alias, true);
 
         if("integer".equals(type) || "decimal".equals(type)) {
-          if (v.hasTerms() != isRange) {
-            if (isRange) throw new VocabularyMissingRangeTermsException(v);
-            if (!isRange) throw new VocabularyMissingRangeAttributeException(v);
+          if(v.hasTerms() != isRange) {
+            if(isRange) throw new VocabularyMissingRangeTermsException(v);
+            if(!isRange) throw new VocabularyMissingRangeAttributeException(v);
           }
         }
       }

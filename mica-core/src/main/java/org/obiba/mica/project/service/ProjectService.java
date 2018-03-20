@@ -114,7 +114,7 @@ public class ProjectService extends AbstractGitPersistableService<ProjectState, 
   }
 
   @Override
-  public void save(Project project, String comments) {
+  public void save(@NotNull Project project, String comments) {
     Project saved = project;
 
     if(project.isNew()) {

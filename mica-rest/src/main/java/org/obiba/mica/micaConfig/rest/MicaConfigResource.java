@@ -261,7 +261,7 @@ public class MicaConfigResource {
   @Path("/opal-credentials")
   @Timed
   @RequiresRoles(Roles.MICA_ADMIN)
-  public List<Mica.OpalCredentialDto> getOpalCredentials(String opalUrl) {
+  public List<Mica.OpalCredentialDto> getOpalCredentials() {
     return opalCredentialService.findAllOpalCredentials().stream().map(dtos::asDto).collect(toList());
   }
 

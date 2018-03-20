@@ -31,7 +31,7 @@ import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.Option;
 import com.jayway.jsonpath.PathNotFoundException;
-import com.jayway.jsonpath.internal.JsonReader;
+import com.jayway.jsonpath.internal.JsonContext;
 
 import static com.jayway.jsonpath.Configuration.defaultConfiguration;
 
@@ -72,7 +72,7 @@ public class SchemaFormContentFileService {
     Object json = defaultConfiguration().jsonProvider().parse(entity.getContent());
     DocumentContext context = JsonPath.using(defaultConfiguration().addOptions(Option.AS_PATH_LIST)).parse(json);
     DocumentContext reader =
-        new JsonReader(defaultConfiguration().addOptions(Option.REQUIRE_PROPERTIES)).parse(json);
+        new JsonContext(defaultConfiguration().addOptions(Option.REQUIRE_PROPERTIES)).parse(json);
 
     try {
       ((JSONArray)context.read("$..obibaFiles")).stream()
@@ -109,7 +109,7 @@ public class SchemaFormContentFileService {
 
   private Map<String, JSONArray> getPathFilesMap(DocumentContext context, Object json) {
     DocumentContext reader =
-        new JsonReader(defaultConfiguration().addOptions(Option.REQUIRE_PROPERTIES)).parse(json);
+        new JsonContext(defaultConfiguration().addOptions(Option.REQUIRE_PROPERTIES)).parse(json);
 
     JSONArray paths = null;
     try {
