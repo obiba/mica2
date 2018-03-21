@@ -66,6 +66,7 @@ import org.springframework.validation.annotation.Validated;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Map;
@@ -121,7 +122,7 @@ public class HarmonizedDatasetService extends DatasetService<HarmonizationDatase
   }
 
   @Override
-  public void save(@NotNull HarmonizationDataset dataset, String comment) {
+  public void save(@NotNull @Valid HarmonizationDataset dataset, String comment) {
     saveInternal(dataset, comment);
   }
 
