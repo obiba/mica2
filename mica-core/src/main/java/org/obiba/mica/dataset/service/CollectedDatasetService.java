@@ -118,7 +118,7 @@ public class CollectedDatasetService extends DatasetService<StudyDataset, StudyD
   }
 
   @Override
-  public void save(StudyDataset dataset, String comment) {
+  public void save(@NotNull @Valid StudyDataset dataset, String comment) {
     saveInternal(dataset, comment);
   }
 

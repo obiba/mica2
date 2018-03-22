@@ -136,6 +136,22 @@ public class PublishedDatasetVariablesSearchResource {
   }
 
   @GET
+  @DebugMethod
+  @Path("/charts/_coverage")
+  @Timed
+  public MicaSearch.ChartsCoverageDto rqlCoverageForChartData(@QueryParam("query") String query) throws IOException {
+    return (new CoverageChartDataFactory().makeChartData(getTaxonomiesCoverageDto(query, false)));
+  }
+
+  @POST
+  @DebugMethod
+  @Path("/charts/_coverage")
+  @Timed
+  public MicaSearch.ChartsCoverageDto largeRqlCoverageForChartData(@FormParam("query") String query) throws IOException {
+    return rqlCoverageForChartData(query);
+  }
+
+  @GET
   @Timed
   @DebugMethod
   @Path("/_coverage")

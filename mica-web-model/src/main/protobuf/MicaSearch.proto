@@ -207,6 +207,29 @@ message BucketsCoverageDto {
   optional EntitiesTotalCountsDto totalCounts = 5;
 }
 
+message ChartsCoverageDto {
+
+  message ChartDataItemDto {
+    required string key = 1;
+    required int32 value = 2;
+    required string title = 3;
+  }
+
+  message ChartDataDto {
+    required string vocabulary = 1;
+    repeated ChartDataItemDto items = 2;
+  }
+
+  message ChartDto {
+    required string title = 1;
+    optional string subtitle = 2;
+    required string taxonomy = 3;
+    repeated ChartDataDto data = 4;
+  }
+
+  repeated ChartDto charts = 1;
+}
+
 message VariableEntitiesCountDto {
   required string query = 1;
   required DocumentDigestDto variable = 2;
