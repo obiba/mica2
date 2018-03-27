@@ -8,11 +8,9 @@
 
   <div class="row" ng-if="model.type!=='taxonomy'">
     <div class="col-xs-9">
-      <ol class="breadcrumb mica-breadcrumb">
-        <li><a class="h3" href ng-click="navigateToTaxonomy()">{{taxonomy.name}}</a></li>
-        <li class="active">
-          <span class="h3">{{model.content.name}}</span>
-        </li>
+      <ol class="breadcrumb mica-breadcrumb h3">
+        <li><a href ng-click="navigateToTaxonomy()">{{taxonomy.name}}</a></li>
+        <li class="active">{{model.content.name}}</li>
       </ol>
     </div>
     <div ng-if="target.editable && !isStatic(model.content)" class="col-xs-3" >
