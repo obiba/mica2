@@ -86,7 +86,7 @@ public class PublishedNetworksSearchResource {
   @Timed
   public Response rqlQueryAsCsv(@QueryParam("query") String query, @QueryParam("columnsToHide") List<String> columnsToHide) throws IOException {
     StreamingOutput stream = os -> genericReportGenerator.generateCsv(QueryType.NETWORK, query, columnsToHide, os);
-    return Response.ok(stream).header("Content-Disposition", "attachment; filename=\"SearchNetworks.csv\"").build();
+    return Response.ok(stream).header("Content-Disposition", "attachment; filename=\"Networks.csv\"").build();
   }
 
   @POST

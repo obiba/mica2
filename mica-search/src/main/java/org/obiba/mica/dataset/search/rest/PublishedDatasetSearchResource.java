@@ -81,7 +81,7 @@ public class PublishedDatasetSearchResource {
   @Timed
   public Response rqlQueryAsCsv(@QueryParam("query") String query, @QueryParam("columnsToHide") List<String> columnsToHide) throws IOException {
     StreamingOutput stream = os -> genericReportGenerator.generateCsv(QueryType.DATASET, query, columnsToHide, os);
-    return Response.ok(stream).header("Content-Disposition", "attachment; filename=\"SearchDatasets.csv\"").build();
+    return Response.ok(stream).header("Content-Disposition", "attachment; filename=\"Datasets.csv\"").build();
   }
 
   @POST
