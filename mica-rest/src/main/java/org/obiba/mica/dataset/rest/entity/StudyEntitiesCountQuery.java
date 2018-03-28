@@ -150,13 +150,11 @@ public class StudyEntitiesCountQuery {
   }
 
   private MicaSearch.VariableEntitiesCountDto createVariableEntitiesCount(Search.EntitiesResultDto opalResult) {
-    int count = opalResult.getTotalHits();
     MicaSearch.VariableEntitiesCountDto.Builder builder = MicaSearch.VariableEntitiesCountDto.newBuilder();
     RQLCriterionOpalConverter converter = findConverter(opalResult.getQuery());
     RQLFieldReferences references = converter.getVariableReferences();
     builder.setQuery(converter.getMicaQuery())
-      .setCount(count < privacyThreshold ? privacyThreshold : count)
-      .setBelowPrivacyThreshold(count < privacyThreshold)
+      .setCount(opalResult.getTotalHits())
       .setVariable(documentDigestDtos.asDto(references.getVariable()));
     if (references.hasStudyTableName())
       builder.addAllStudyTableName(localizedStringDtos.asDto(references.getStudyTableName()));

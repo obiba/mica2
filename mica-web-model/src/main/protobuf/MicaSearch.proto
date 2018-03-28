@@ -235,7 +235,6 @@ message VariableEntitiesCountDto {
   required DocumentDigestDto variable = 2;
   required int32 count = 3 [default = 0];
   repeated LocalizedStringDto studyTableName = 4;
-  required bool belowPrivacyThreshold = 5 [default = false];
 }
 
 message DatasetEntitiesCountDto {
