@@ -235,6 +235,7 @@ message VariableEntitiesCountDto {
   required DocumentDigestDto variable = 2;
   required int32 count = 3 [default = 0];
   repeated LocalizedStringDto studyTableName = 4;
+  required bool belowPrivacyThreshold = 5 [default = false];
 }
 
 message DatasetEntitiesCountDto {
@@ -247,12 +248,14 @@ message StudyEntitiesCountDto {
   required string query = 2; // original query restricted to study variables
   required DocumentDigestDto study = 3;
   required int32 total = 4 [default = 0]; // all criteria count
-  repeated DatasetEntitiesCountDto counts = 5;
+  required bool belowPrivacyThreshold = 5 [default = false];
+  repeated DatasetEntitiesCountDto counts = 6;
 }
 
 message EntitiesCountDto {
   required string query = 1; // original query
   required int32 total = 2 [default = 0]; // sum of the study counts
+  required bool belowPrivacyThreshold = 3 [default = false];
   repeated StudyEntitiesCountDto counts = 4;
 }
 

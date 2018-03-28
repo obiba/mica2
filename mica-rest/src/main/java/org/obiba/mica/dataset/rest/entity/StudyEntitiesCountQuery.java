@@ -11,7 +11,6 @@
 package org.obiba.mica.dataset.rest.entity;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
 import org.obiba.mica.core.domain.BaseStudyTable;
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.rest.entity.rql.RQLCriterionOpalConverter;
@@ -19,7 +18,6 @@ import org.obiba.mica.dataset.rest.entity.rql.RQLFieldReferences;
 import org.obiba.mica.micaConfig.service.OpalService;
 import org.obiba.mica.study.domain.BaseStudy;
 import org.obiba.mica.study.domain.HarmonizationStudy;
-import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.service.StudyService;
 import org.obiba.mica.web.model.DocumentDigestDtos;
 import org.obiba.mica.web.model.LocalizedStringDtos;
@@ -37,6 +35,8 @@ public class StudyEntitiesCountQuery {
 
   private final StudyService studyService;
 
+  private final int privacyThreshold;
+
   private final DocumentDigestDtos documentDigestDtos;
 
   private final LocalizedStringDtos localizedStringDtos;
@@ -49,10 +49,11 @@ public class StudyEntitiesCountQuery {
 
   private final Search.EntitiesResultDto opalResults;
 
-  StudyEntitiesCountQuery(StudyService studyService, OpalService opalService, DocumentDigestDtos documentDigestDtos, LocalizedStringDtos localizedStringDtos,
+  StudyEntitiesCountQuery(StudyService studyService, OpalService opalService, int privacyThreshold, DocumentDigestDtos documentDigestDtos, LocalizedStringDtos localizedStringDtos,
                           String entityType, BaseStudy study, List<RQLCriterionOpalConverter> opalConverters) {
     this.studyService = studyService;
     this.opalService = opalService;
+    this.privacyThreshold = privacyThreshold;
     this.documentDigestDtos = documentDigestDtos;
     this.localizedStringDtos = localizedStringDtos;
     this.entityType = entityType;
@@ -74,8 +75,10 @@ public class StudyEntitiesCountQuery {
   }
 
   public MicaSearch.StudyEntitiesCountDto getStudyEntitiesCount() {
+    int total = getTotal();
     MicaSearch.StudyEntitiesCountDto.Builder builder = MicaSearch.StudyEntitiesCountDto.newBuilder()
-      .setTotal(getTotal())
+      .setTotal(total < privacyThreshold ? privacyThreshold : total)
+      .setBelowPrivacyThreshold(total < privacyThreshold)
       .setEntityType(getEntityType())
       .setQuery(getMicaQuery())
       .setStudy(documentDigestDtos.asDto(study));
@@ -147,11 +150,13 @@ public class StudyEntitiesCountQuery {
   }
 
   private MicaSearch.VariableEntitiesCountDto createVariableEntitiesCount(Search.EntitiesResultDto opalResult) {
+    int count = opalResult.getTotalHits();
     MicaSearch.VariableEntitiesCountDto.Builder builder = MicaSearch.VariableEntitiesCountDto.newBuilder();
     RQLCriterionOpalConverter converter = findConverter(opalResult.getQuery());
     RQLFieldReferences references = converter.getVariableReferences();
     builder.setQuery(converter.getMicaQuery())
-      .setCount(opalResult.getTotalHits())
+      .setCount(count < privacyThreshold ? privacyThreshold : count)
+      .setBelowPrivacyThreshold(count < privacyThreshold)
       .setVariable(documentDigestDtos.asDto(references.getVariable()));
     if (references.hasStudyTableName())
       builder.addAllStudyTableName(localizedStringDtos.asDto(references.getStudyTableName()));

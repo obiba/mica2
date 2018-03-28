@@ -14,6 +14,7 @@ import com.codahale.metrics.annotation.Timed;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.dataset.rest.entity.StudyEntitiesCountService;
 import org.obiba.mica.dataset.rest.entity.StudyEntitiesCountQuery;
+import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.web.model.MicaSearch;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -34,6 +35,9 @@ public class PublishedDatasetsEntitiesResource {
   @Inject
   private StudyEntitiesCountService studyEntitiesCountService;
 
+  @Inject
+  private MicaConfigService micaConfigService;
+
   @GET
   @Path("_count")
   @Timed
@@ -47,7 +51,14 @@ public class PublishedDatasetsEntitiesResource {
       builder.addCounts(studyEntitiesCountQuery.getStudyEntitiesCount());
     }
     // sum of all the study counts because entities are study specific
-    builder.setTotal(total);
+    int privacyThreshold = micaConfigService.getConfig().getPrivacyThreshold();
+    if (total<privacyThreshold) {
+      builder.setTotal(privacyThreshold);
+      builder.setBelowPrivacyThreshold(true);
+    } else {
+      builder.setTotal(total);
+      builder.setBelowPrivacyThreshold(false);
+    }
 
     return builder.build();
   }

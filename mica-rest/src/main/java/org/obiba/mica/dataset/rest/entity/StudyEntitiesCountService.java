@@ -12,6 +12,7 @@ package org.obiba.mica.dataset.rest.entity;
 
 import org.obiba.mica.dataset.rest.entity.rql.RQLCriteriaOpalConverter;
 import org.obiba.mica.dataset.rest.entity.rql.RQLCriterionOpalConverter;
+import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.micaConfig.service.OpalService;
 import org.obiba.mica.study.domain.BaseStudy;
 import org.obiba.mica.study.service.StudyService;
@@ -36,6 +37,9 @@ public class StudyEntitiesCountService {
 
   @Inject
   private OpalService opalService;
+
+  @Inject
+  private MicaConfigService micaConfigService;
 
   @Inject
   private DocumentDigestDtos documentDigestDtos;
@@ -63,6 +67,7 @@ public class StudyEntitiesCountService {
   }
 
   private StudyEntitiesCountQuery newQuery(String entityType, BaseStudy study, List<RQLCriterionOpalConverter> rqlCriterionOpalConverters) {
-    return new StudyEntitiesCountQuery(studyService, opalService, documentDigestDtos, localizedStringDtos, entityType, study, rqlCriterionOpalConverters);
+    return new StudyEntitiesCountQuery(studyService, opalService, micaConfigService.getConfig().getPrivacyThreshold(),
+      documentDigestDtos, localizedStringDtos, entityType, study, rqlCriterionOpalConverters);
   }
 }
