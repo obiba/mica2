@@ -43,7 +43,7 @@ public class DatasetCacheResolver implements CacheResolver{
   private CacheManager springCacheManager;
 
   @Override
-  public Collection<? extends Cache> resolveCaches(CacheOperationInvocationContext<?> cacheOperationInvocationContext) {
+  public synchronized Collection<? extends Cache> resolveCaches(CacheOperationInvocationContext<?> cacheOperationInvocationContext) {
     Collection<Cache> res = Lists.newArrayList();
 
     Optional<Object> dataset = Arrays.stream(cacheOperationInvocationContext.getArgs())
