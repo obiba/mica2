@@ -27,6 +27,8 @@
       "description":
         "en": "Information classification developed by Maelstrom."
         "fr": "Classification des informations développée par Maelstrom."
+      "attributes":
+        "weight": 0
     - "name": "Mica_variable"
       "title":
         "en": "Variable properties"
@@ -34,6 +36,8 @@
       "description":
         "en": "Variable properties as defined in the catalogue."
         "fr": "Propriétés des variables telles que définies dans le catalogue."
+      "attributes":
+        "weight": 2
     - "name": "Mlstr_additional"
       "title":
         "en": "Source & target"
@@ -41,6 +45,8 @@
       "description":
         "en": "Information about data collection methods and individuals targeted."
         "fr": "Information sur les méthodes de collecte de données et les individus ciblés."
+      "attributes":
+        "weight": 1
 - "name": "dataset"
   "title":
     "en": "Datasets"
