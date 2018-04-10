@@ -23,4 +23,8 @@ public class NoSuchDataAccessFormException extends NoSuchElementException {
   public static NoSuchDataAccessFormException withDefaultMessage() {
     return new NoSuchDataAccessFormException("DataAccessForm does not exist");
   }
+
+  public static NoSuchDataAccessFormException withMessage(String msg) {
+    return new NoSuchDataAccessFormException(msg);
+  }
 }

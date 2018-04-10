@@ -289,6 +289,44 @@ class MicaConfigDtos {
     return dataAccessForm;
   }
 
+  Mica.DataAccessAmendmentFormDto asDto(@NotNull DataAccessAmendmentForm dataAccessAmendmentForm) {
+    Mica.DataAccessAmendmentFormDto.Builder builder = Mica.DataAccessAmendmentFormDto.newBuilder()
+      .setDefinition(dataAccessAmendmentForm.getDefinition()).setSchema(dataAccessAmendmentForm.getSchema())
+      .addAllProperties(asDtoList(dataAccessAmendmentForm.getProperties()))
+      .setCsvExportFormat(dataAccessAmendmentForm.getCsvExportFormat());
+
+    if(dataAccessAmendmentForm.hasTitleFieldPath()) {
+      builder.setTitleFieldPath(dataAccessAmendmentForm.getTitleFieldPath());
+    }
+
+    if(dataAccessAmendmentForm.hasSummaryFieldPath()) {
+      builder.setSummaryFieldPath(dataAccessAmendmentForm.getSummaryFieldPath());
+    }
+
+    return builder.build();
+  }
+
+  DataAccessAmendmentForm fromDto(@NotNull Mica.DataAccessAmendmentFormDto dto) {
+    DataAccessAmendmentForm dataAccessAmendmentForm = new DataAccessAmendmentForm();
+
+    dataAccessAmendmentForm.setSchema(dto.getSchema());
+    dataAccessAmendmentForm.setDefinition(dto.getDefinition());
+    dataAccessAmendmentForm.setCsvExportFormat(dto.getCsvExportFormat());
+
+    dataAccessAmendmentForm.setProperties(dto.getPropertiesList().stream()
+      .collect(toMap(Mica.LocalizedPropertyDto::getName, e -> localizedStringDtos.fromDto(e.getValueList()))));
+
+    if(dto.hasTitleFieldPath()) {
+      dataAccessAmendmentForm.setTitleFieldPath(dto.getTitleFieldPath());
+    }
+
+    if(dto.hasSummaryFieldPath()) {
+      dataAccessAmendmentForm.setSummaryFieldPath(dto.getSummaryFieldPath());
+    }
+
+    return dataAccessAmendmentForm;
+  }
+
   @NotNull
   Mica.ProjectFormDto asDto(@NotNull ProjectConfig projectConfig) {
     Mica.ProjectFormDto.Builder builder = Mica.ProjectFormDto.newBuilder() //
