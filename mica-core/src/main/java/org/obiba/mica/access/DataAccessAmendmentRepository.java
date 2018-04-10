@@ -10,13 +10,15 @@
 
 package org.obiba.mica.access;
 
+import org.obiba.mica.access.domain.DataAccessAmendment;
 import org.obiba.mica.access.domain.DataAccessRequest;
 
+import java.util.List;
+
 /**
- * Spring Data MongoDB repository for the {@link org.obiba.mica.access.domain.DataAccessRequest} entity.
+ * Spring Data MongoDB repository for the {@link DataAccessRequest} entity.
  */
 
-public interface DataAccessRequestRepository extends DataAccessEntityRepository<DataAccessRequest>,
-  DataAccessRequestRepositoryCustom {
-
+public interface DataAccessAmendmentRepository extends DataAccessEntityRepository<DataAccessAmendment> {
+  List<DataAccessAmendment> findByParentId(String parentId);
 }
