@@ -1,0 +1,98 @@
+{
+  "headers": {
+    "title": {
+      "en": "<Organisation> Access Office",
+      "fr": "<Organisation> Access Office"
+    },
+    "subtitle": {
+      "en": "Access Requests Report",
+      "fr": "Rapport sur les demandes d'accès"
+    },
+    "summary": {
+      "en": "SUMMARY",
+      "fr": "SOMMAIRE"
+    },
+    "currentStatus": {
+      "en": "CURRENT STATUS",
+      "fr": "STATUT ACTUEL"
+    },
+    "numberOfAccessRequests": {
+      "en": "NUMBER OF ACCESS REQUESTS",
+      "fr": "NOMBRE DE DEMANDES D'ACCÈS"
+    },
+    "opened": {
+      "en": "Opened",
+      "fr": "Ouverte(s)"
+    },
+    "submitted": {
+      "en": "Submitted",
+      "fr": "Soumise(s)"
+    },
+    "underReview": {
+      "en": "Under Review",
+      "fr": "En relecture"
+    },
+    "approved": {
+      "en": "Approved",
+      "fr": "Approuvée(s)"
+    },
+    "conditionallyApproved": {
+      "en": "Conditionally Approved",
+      "fr": "Approuvée(s) sous conditions"
+    },
+    "rejected": {
+      "en": "Rejected",
+      "fr": "Rejetée(s)"
+    },
+    "detailedOverview": {
+      "en": "DETAILED OVERVIEW",
+      "fr": "APERÇU DÉTAILLÉ"
+    },
+    "true": {
+      "en": "YES",
+      "fr": "OUI"
+    },
+    "false": {
+      "en": "NO",
+      "fr": "NON"
+    }
+  },
+  "table": {
+    "generic.accessRequestId": {
+      "en": "ACCESS REQUEST ID",
+      "fr": "ID DE LA DEMANDE D'ACCÈS"
+    },
+    "projectTitle": {
+      "en": "TITLE",
+      "fr": "TITRE"
+    },
+    "name": {
+      "en": "PRINCIPAL APPLICANT NAME",
+      "fr": "NOM DE L'APPLIQUANT PRINCIPAL"
+    },
+    "institution": {
+      "en": "PRINCIPAL APPLICANT INSTITUTION",
+      "fr": "INSTITUTION DU PRINCIPAL APPLIQUANT"
+    },
+    "generic.creationDate": {
+      "en": "CREATION DATE",
+      "fr": "DATE DE CRÉATION"
+    },
+    "generic.status": {
+      "en": "CURRENT STATUS",
+      "fr": "STATUT ACTUEL"
+    },
+    "generic.firstSubmissionDate": {
+      "en": "FIRST SUBMISSION DATE",
+      "fr": "PREMIÈRE DATE DE SOUMISSION"
+    },
+    "generic.lastApprovedOrRejectedDate": {
+      "en": "APPROVED/REJECTED DATE",
+      "fr": "DATE D'APPROBATION / DE REJET"
+    },
+    "generic.numberOfDaysBetweenFirstSubmissionAndApproveOrReject": {
+      "en": "DAYS BETWEEN FIRST SUBMISSION DATE AND APPROVED/REJECTED DATE",
+      "fr": "JOURS ENTRE LA DATE DE PREMIÈRE SOUMISSION ET LA DATE D'APPROBATION / DE REJET"
+    }
+  }
+}

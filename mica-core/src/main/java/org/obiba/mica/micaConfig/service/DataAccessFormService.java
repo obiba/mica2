@@ -10,33 +10,35 @@
 
 package org.obiba.mica.micaConfig.service;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import java.util.Optional;
+
+import javax.inject.Inject;
+
 import org.obiba.mica.file.FileStoreService;
 import org.obiba.mica.micaConfig.domain.DataAccessForm;
 import org.obiba.mica.micaConfig.repository.DataAccessFormRepository;
-import org.springframework.core.io.DefaultResourceLoader;
-import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import javax.inject.Inject;
-import java.io.IOException;
-import java.util.Optional;
-import java.util.Scanner;
-
-import static org.springframework.util.StringUtils.isEmpty;
-
 @Component
-public class DataAccessFormService {
+public class DataAccessFormService extends AbstractDataAccessEntityFormService<DataAccessForm> {
+
+  private FileStoreService fileStoreService;
+
+  private DataAccessFormRepository dataAccessFormRepository;
 
   @Inject
-  FileStoreService fileStoreService;
+  public DataAccessFormService(FileStoreService fileStoreService, DataAccessFormRepository dataAccessFormRepository) {
+    this.fileStoreService = fileStoreService;
+    this.dataAccessFormRepository = dataAccessFormRepository;
+  }
 
-  @Inject
-  DataAccessFormRepository dataAccessFormRepository;
+  @Override
+  String getDataAccessEntityFormResourceLocation() {
+    return "classpath:config/data-access-form/";
+  }
 
+  @Override
   public DataAccessForm createOrUpdate(DataAccessForm dataAccessForm) {
     validateForm(dataAccessForm);
 
@@ -50,6 +52,7 @@ public class DataAccessFormService {
     return dataAccessFormRepository.save(dataAccessForm);
   }
 
+  @Override
   public Optional<DataAccessForm> find() {
     DataAccessForm form = dataAccessFormRepository.findOne(DataAccessForm.DEFAULT_ID);
     if (form == null) {
@@ -64,29 +67,6 @@ public class DataAccessFormService {
     return Optional.ofNullable(form);
   }
 
-  private void validateForm(DataAccessForm dataAccessForm) {
-    validateJsonObject(dataAccessForm.getSchema());
-    validateJsonArray(dataAccessForm.getDefinition());
-    if (!isEmpty(dataAccessForm.getCsvExportFormat())) {
-      validateJsonObject(dataAccessForm.getCsvExportFormat());
-    }
-  }
-
-  private void validateJsonObject(String json) {
-    try {
-      new JSONObject(json);
-    } catch(JSONException e) {
-      throw new InvalidFormSchemaException(e);
-    }
-  }
-  private void validateJsonArray(String json) {
-    try {
-      new JSONArray(json);
-    } catch(JSONException e) {
-      throw new InvalidFormSchemaException(e);
-    }
-  }
-
   private DataAccessForm createDefaultDataAccessForm() {
     DataAccessForm form = new DataAccessForm();
     form.setDefinition(getDefaultDataAccessFormResourceAsString("definition.json"));
@@ -95,17 +75,5 @@ public class DataAccessFormService {
     form.setTitleFieldPath("projectTitle");
     form.setSummaryFieldPath("summary");
     return form;
-  }
-
-  private Resource getDefaultDataAccessFormResource(String name) {
-    return new DefaultResourceLoader().getResource("classpath:config/data-access-form/" + name);
-  }
-
-  private String getDefaultDataAccessFormResourceAsString(String name) {
-    try(Scanner s = new Scanner(getDefaultDataAccessFormResource(name).getInputStream())) {
-      return s.useDelimiter("\\A").hasNext() ? s.next() : "";
-    } catch(IOException e) {
-      return "";
-    }
   }
 }

@@ -12,30 +12,18 @@ package org.obiba.mica.micaConfig.domain;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
-import org.obiba.mica.core.domain.LocalizedString;
+
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.micaConfig.PdfDownloadType;
 
 import java.util.Locale;
 import java.util.Map;
 
-public class DataAccessForm extends EntityConfig {
-
-  public final static String DEFAULT_ID = "default";
-
-  public final static int DEFAULT_ID_LENGTH = 6;
-
-  private String csvExportFormat;
+public class DataAccessForm extends AbstractDataAccessEntityForm {
 
   private Map<Locale, Attachment> pdfTemplates;
 
   private PdfDownloadType pdfDownloadType = PdfDownloadType.Template;
-
-  private Map<String, LocalizedString> properties;
-
-  private String titleFieldPath;
-
-  private String summaryFieldPath;
 
   private String idPrefix;
 
@@ -82,23 +70,7 @@ public class DataAccessForm extends EntityConfig {
   private boolean rejectedFinal = false;
 
   public DataAccessForm() {
-    setId(DEFAULT_ID);
-  }
-
-  public String getCsvExportFormat() {
-    return csvExportFormat;
-  }
-
-  public void setCsvExportFormat(String csvExportFormat) {
-    this.csvExportFormat = csvExportFormat;
-  }
-
-  public Map<String, LocalizedString> getProperties() {
-    return properties == null ? properties = Maps.newHashMap() : properties;
-  }
-
-  public void setProperties(Map<String, LocalizedString> properties) {
-    this.properties = properties;
+    super();
   }
 
   public Map<Locale, Attachment> getPdfTemplates() {
@@ -115,30 +87,6 @@ public class DataAccessForm extends EntityConfig {
 
   public void setPdfDownloadType(PdfDownloadType pdfDownloadType) {
     this.pdfDownloadType = pdfDownloadType;
-  }
-
-  public boolean hasTitleFieldPath() {
-    return !Strings.isNullOrEmpty(titleFieldPath);
-  }
-
-  public String getTitleFieldPath() {
-    return titleFieldPath;
-  }
-
-  public void setTitleFieldPath(String titleFieldPath) {
-    this.titleFieldPath = titleFieldPath;
-  }
-
-  public boolean hasSummaryFieldPath() {
-    return !Strings.isNullOrEmpty(summaryFieldPath);
-  }
-
-  public String getSummaryFieldPath() {
-    return summaryFieldPath;
-  }
-
-  public void setSummaryFieldPath(String summaryFieldPath) {
-    this.summaryFieldPath = summaryFieldPath;
   }
 
   public boolean hasIdPrefix() {
