@@ -714,6 +714,15 @@ message DataAccessRequestDto {
   repeated StatusChangeDto statusChangeHistory = 10;
   optional UserProfileDto profile = 11;
   optional ProjectSummaryDto project = 12;
+  extensions 1000 to max;
+}
+
+message DataAccessAmendmentDto {
+  required string parentId = 1;
+
+  extend DataAccessRequestDto {
+    required DataAccessAmendmentDto amendment = 1000;
+  }
 }
 
 message DataAccessRequestSummaryDto {
@@ -721,6 +730,13 @@ message DataAccessRequestSummaryDto {
   required string status = 2;
   required bool viewable = 3;
   optional string applicant = 4;
+  extensions 1000 to max;
+}
+
+message DataAccessAmendmentSummaryDto {
+  extend DataAccessRequestSummaryDto {
+    required string parentId = 1000;
+  }
 }
 
 message ProjectSummaryDto {

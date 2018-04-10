@@ -88,6 +88,7 @@ mica
     'AlertBuilderProvider',
     'USER_ROLES',
     'ObibaServerConfigResourceProvider',
+    '$qProvider',
     function ($routeProvider,
               $httpProvider,
               $translateProvider,
@@ -95,8 +96,10 @@ mica
               tmhDynamicLocaleProvider,
               AlertBuilderProvider,
               USER_ROLES,
-              ObibaServerConfigResourceProvider) {
+              ObibaServerConfigResourceProvider,
+              $qProvider) {
 
+      $qProvider.errorOnUnhandledRejections(false);
       $locationProvider.hashPrefix('');
 
       AlertBuilderProvider.setMsgKey('global.server-error');

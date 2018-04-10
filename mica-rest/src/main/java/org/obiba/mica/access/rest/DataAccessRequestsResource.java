@@ -16,6 +16,7 @@ import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.joda.time.DateTime;
 import org.obiba.mica.access.domain.DataAccessRequest;
+import org.obiba.mica.access.domain.DataAccessRequestStatus;
 import org.obiba.mica.access.service.DataAccessRequestService;
 import org.obiba.mica.micaConfig.domain.DataAccessForm;
 import org.obiba.mica.micaConfig.service.DataAccessFormService;
@@ -94,7 +95,7 @@ public class DataAccessRequestsResource {
     String applicant = SecurityUtils.getSubject().getPrincipal().toString();
     request.setApplicant(applicant);
     request.setId(null);
-    request.setStatus(DataAccessRequest.Status.OPENED);
+    request.setStatus(DataAccessRequestStatus.OPENED);
 
     dataAccessRequestService.save(request);
 
