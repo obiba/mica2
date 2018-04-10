@@ -27,6 +27,7 @@ import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.AttachmentState;
 import org.obiba.mica.file.TempFile;
+import org.obiba.mica.micaConfig.domain.DataAccessAmendmentForm;
 import org.obiba.mica.micaConfig.domain.DataAccessForm;
 import org.obiba.mica.micaConfig.domain.DataCollectionEventConfig;
 import org.obiba.mica.micaConfig.domain.DatasetConfig;
@@ -438,6 +439,16 @@ public class Dtos {
 
   @NotNull
   public DataAccessForm fromDto(@NotNull Mica.DataAccessFormDto dto) {
+    return micaConfigDtos.fromDto(dto);
+  }
+
+  @NotNull
+  public Mica.DataAccessAmendmentFormDto asDto(@NotNull DataAccessAmendmentForm dataAccessAmendmentForm) {
+    return micaConfigDtos.asDto(dataAccessAmendmentForm);
+  }
+
+  @NotNull
+  public DataAccessAmendmentForm fromDto(@NotNull Mica.DataAccessAmendmentFormDto dto) {
     return micaConfigDtos.fromDto(dto);
   }
 

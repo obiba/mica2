@@ -759,6 +759,15 @@ message DataAccessFormDto {
   required PdfDownloadType pdfDownloadType = 30;
 }
 
+message DataAccessAmendmentFormDto {
+  required string schema = 1;
+  required string definition = 2;
+  repeated LocalizedPropertyDto properties = 3;
+  optional string titleFieldPath = 4;
+  optional string summaryFieldPath = 5;
+  optional string csvExportFormat = 6;
+}
+
 message ProjectFormDto {
   required string schema = 1;
   required string definition = 2;
