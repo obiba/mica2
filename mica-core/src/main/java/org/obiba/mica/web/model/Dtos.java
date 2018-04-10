@@ -18,6 +18,7 @@ import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
 import org.obiba.git.CommitInfo;
+import org.obiba.mica.access.domain.DataAccessAmendment;
 import org.obiba.mica.access.domain.DataAccessRequest;
 import org.obiba.mica.core.domain.*;
 import org.obiba.mica.dataset.domain.Dataset;
@@ -394,6 +395,16 @@ public class Dtos {
   @NotNull
   public DataAccessRequest fromDto(@NotNull Mica.DataAccessRequestDto dto) {
     return dataAccessRequestDtos.fromDto(dto);
+  }
+
+  @NotNull
+  public Mica.DataAccessRequestDto asAmendentDto(@NotNull DataAccessAmendment amendment) {
+    return dataAccessRequestDtos.asAmendmentDto(amendment);
+  }
+
+  @NotNull
+  public DataAccessAmendment fromAmendmentDto(@NotNull Mica.DataAccessRequestDto dto) {
+    return dataAccessRequestDtos.fromAmendmentDto(dto);
   }
 
   @NotNull
