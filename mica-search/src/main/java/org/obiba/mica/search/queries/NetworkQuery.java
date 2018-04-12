@@ -143,7 +143,8 @@ public class NetworkQuery extends AbstractDocumentQuery {
   @Override
   protected List<String> getMandatorySourceFields() {
     return Lists.newArrayList(
-        "id"
+      "id",
+      "studyIds"
     );
   }
 
