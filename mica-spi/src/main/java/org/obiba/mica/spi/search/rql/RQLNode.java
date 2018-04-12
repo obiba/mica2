@@ -45,6 +45,7 @@ public enum RQLNode {
   AGGREGATE,
   BUCKET,
   RE,
+  SELECT,
   FIELDS,
   FILTER;
 
