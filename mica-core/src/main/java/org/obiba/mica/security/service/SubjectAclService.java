@@ -292,7 +292,7 @@ public class SubjectAclService {
     }
     subjectAclRepository.save(acl);
     // inform acls update (for caching)
-    eventBus.post(new SubjectAclUpdatedEvent(type.subjectFor(principal)));
+    broadcastSubjectAclUpdateEvent(type, principal);
   }
 
   /**
@@ -345,7 +345,7 @@ public class SubjectAclService {
     subjectAclRepository.findByPrincipalAndTypeAndResourceAndInstance(principal, type, resource, encode(instance))
       .forEach(subjectAclRepository::delete);
     // inform acls update (for caching)
-    eventBus.post(new SubjectAclUpdatedEvent(type.subjectFor(principal)));
+    broadcastSubjectAclUpdateEvent(type, principal);
   }
 
   //
@@ -442,6 +442,13 @@ public class SubjectAclService {
         }
       });
     // inform acls update (for caching)
+    broadcastSubjectAclUpdateEvent(type, principal);
+  }
+
+  private void  broadcastSubjectAclUpdateEvent(SubjectAcl.Type type, String principal) {
+    permissionCache.invalidateAll();
+    permissionCache.cleanUp();
+
     eventBus.post(new SubjectAclUpdatedEvent(type.subjectFor(principal)));
   }
 
