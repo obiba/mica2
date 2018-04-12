@@ -39,6 +39,8 @@ import org.obiba.mica.security.Roles;
 import org.obiba.mica.security.domain.SubjectAcl;
 import org.obiba.mica.security.event.SubjectAclUpdatedEvent;
 import org.obiba.mica.security.service.SubjectAclService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.google.common.collect.ImmutableSet;
@@ -55,6 +57,8 @@ public class MicaAuthorizingRealm extends AuthorizingRealm implements RolePermis
     "harmonized-dataset",
     "project"
   };
+
+  private static final Logger logger = LoggerFactory.getLogger(MicaAuthorizingRealm.class);
 
   @Inject
   private SubjectAclService subjectAclService;
@@ -138,14 +142,25 @@ public class MicaAuthorizingRealm extends AuthorizingRealm implements RolePermis
 
   @Subscribe
   public void onSubjectAclUpdate(SubjectAclUpdatedEvent event) {
-    if(isCachingEnabled()) {
-      getAuthorizationCache().clear();
-    }
+    invalidateCache();
   }
 
   //
   // Private methods
   //
+
+  private void invalidateCache() {
+    logger.warn("Invalidating authorization cache");
+    if(isCachingEnabled()) {
+      getAuthorizationCache().clear();
+
+      subjectPermissionsCache.invalidateAll();
+      subjectPermissionsCache.cleanUp();
+
+      rolePermissionsCache.invalidateAll();
+      rolePermissionsCache.cleanUp();
+    }
+  }
 
   private List<String> loadUserPermissions(PrincipalCollection principals) {
     return loadSubjectPermissions(principals.getPrimaryPrincipal().toString(), SubjectAcl.Type.USER);
