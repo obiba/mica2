@@ -275,6 +275,10 @@ public class DatasetVariable implements Indexable, AttributeAware {
     return null;
   }
 
+  public boolean hasAttributes() {
+    return attributes != null && !attributes.isEmpty();
+  }
+
   public Attributes getAttributes() {
     return attributes;
   }
