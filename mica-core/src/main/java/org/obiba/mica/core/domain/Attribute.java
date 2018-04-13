@@ -18,6 +18,7 @@ import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import org.obiba.mica.spi.search.support.AttributeKey;
 
 public class Attribute implements Serializable {
@@ -37,6 +38,10 @@ public class Attribute implements Serializable {
 
   public void setName(String name) {
     this.name = name;
+  }
+
+  public boolean hasNamespace() {
+    return !Strings.isNullOrEmpty(namespace);
   }
 
   public String getNamespace() {

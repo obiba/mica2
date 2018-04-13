@@ -11,8 +11,10 @@
 package org.obiba.mica.search.queries;
 
 import com.google.common.base.Joiner;
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import org.obiba.mica.core.domain.Attribute;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.HarmonizationDatasetState;
 import org.obiba.mica.dataset.domain.StudyDatasetState;
@@ -203,8 +205,17 @@ public class VariableQuery extends AbstractDocumentQuery {
     builder.addAllDatasetAcronym(dtos.asDto(variable.getDatasetAcronym()));
     builder.addAllDatasetName(dtos.asDto(variable.getDatasetName()));
 
-    if (variable.hasAttribute("label", null)) {
-      builder.addAllVariableLabel(dtos.asDto(variable.getAttributes().getAttribute("label", null).getValues()));
+    if (variable.hasAttributes()) {
+      if (variable.hasAttribute("label", null)) {
+        builder.addAllVariableLabel(dtos.asDto(variable.getAttributes().getAttribute("label", null).getValues()));
+      }
+      variable.getAttributes().asAttributeList().stream()
+        .filter(Attribute::hasNamespace)
+        .filter(attr -> !Strings.isNullOrEmpty(attr.getValues().getUndetermined()))
+        .forEach(attr -> builder.addAnnotations(Mica.AnnotationDto.newBuilder()
+          .setTaxonomy(attr.getNamespace())
+          .setVocabulary(attr.getName())
+          .setValue(attr.getValues().getUndetermined())));
     }
 
     return builder.build();

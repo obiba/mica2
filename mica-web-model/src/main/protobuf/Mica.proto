@@ -454,6 +454,12 @@ message TermAttributesDto {
   repeated TermAttributeDto vocabularyTerms = 2;
 }
 
+message AnnotationDto {
+  required string taxonomy = 1;
+  required string vocabulary = 2;
+  required string value = 3;
+}
+
 message DatasetDto {
   optional string id = 1;
   repeated LocalizedStringDto name = 2;
@@ -577,6 +583,7 @@ message DatasetVariableResolverDto {
   repeated LocalizedStringDto networkName = 14;
   repeated LocalizedStringDto networkAcronym = 15;
   optional string networkTableId = 16;
+  repeated AnnotationDto annotations = 17;
 }
 
 message DatasetVariableSummaryDto {
