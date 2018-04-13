@@ -218,6 +218,14 @@ public class VariableQuery extends AbstractDocumentQuery {
           .setValue(attr.getValues().getUndetermined())));
     }
 
+    if (!Strings.isNullOrEmpty(variable.getValueType())) {
+      builder.setValueType(variable.getValueType());
+    }
+
+    if (!Strings.isNullOrEmpty(variable.getNature())) {
+      builder.setNature(variable.getNature());
+    }
+
     return builder.build();
   }
 

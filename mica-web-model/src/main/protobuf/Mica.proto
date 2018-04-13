@@ -584,6 +584,8 @@ message DatasetVariableResolverDto {
   repeated LocalizedStringDto networkAcronym = 15;
   optional string networkTableId = 16;
   repeated AnnotationDto annotations = 17;
+  optional string valueType = 18;
+  optional string nature = 19;
 }
 
 message DatasetVariableSummaryDto {
