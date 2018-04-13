@@ -25,6 +25,7 @@ import java.util.stream.Stream;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
+import org.obiba.mica.JSONUtils;
 import org.obiba.mica.core.domain.EntityState;
 import org.obiba.mica.study.domain.BaseStudy;
 import org.obiba.mica.study.domain.DataCollectionEvent;
@@ -85,6 +86,7 @@ class StudySummaryDtos {
       builder = asHarmonizationStudyDtoBuilder((HarmonizationStudy) study, true, variablesCount);
     }
 
+    if(study.hasModel()) builder.setContent(JSONUtils.toJSON(study.getModel()));
     builder.setStudyResourcePath(study.getResourcePath());
     return builder;
   }
