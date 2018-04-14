@@ -217,10 +217,11 @@ class StudySummaryDtos {
 
   @NotNull
   Mica.PopulationSummaryDto asDto(@NotNull Population population) {
-    Mica.PopulationSummaryDto.Builder builder = Mica.PopulationSummaryDto.newBuilder();
-
-    builder.setId(population.getId()) //
+    Mica.PopulationSummaryDto.Builder builder = Mica.PopulationSummaryDto.newBuilder()
+      .setId(population.getId())
       .addAllName(localizedStringDtos.asDto(population.getName()));
+
+    if (population.hasModel()) builder.setContent(JSONUtils.toJSON(population.getModel()));
 
     if(population.getDataCollectionEvents() != null) {
       population.getDataCollectionEvents().forEach(dce -> builder.addDataCollectionEventSummaries(asDto(dce)));
@@ -231,8 +232,16 @@ class StudySummaryDtos {
 
   @NotNull
   Mica.DataCollectionEventSummaryDto asDto(@NotNull DataCollectionEvent dce) {
-    return Mica.DataCollectionEventSummaryDto.newBuilder().setId(dce.getId()) //
-      .addAllName(localizedStringDtos.asDto(dce.getName())).build();
+    Mica.DataCollectionEventSummaryDto.Builder builder = Mica.DataCollectionEventSummaryDto.newBuilder()
+      .setId(dce.getId())
+      .addAllName(localizedStringDtos.asDto(dce.getName()));
+
+    if(dce.hasModel()) builder.setContent(JSONUtils.toJSON(dce.getModel()));
+
+    if (dce.hasStart()) builder.setStart(dce.getStart().getYearMonth());
+    if (dce.hasEnd()) builder.setEnd(dce.getEnd().getYearMonth());
+
+    return builder.build();
   }
 
   @NotNull
