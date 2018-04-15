@@ -962,6 +962,8 @@
     "title": "Chercher",
     "help": "Chercher dans le catalogue publié.",
     "back": "Retour à la recherche",
+    "query": "Requête",
+    "query-copy-help": "Utilisez la requête dans une commande R ou Python.",
     "no-results": "Aucun résultat trouvé.",
     "no-graphic-result": "Aucun graphique pour la requête actuelle.",
     "error": "Impossible d'effectuer la recherche pour l'instant. Veuillez réessayer plus tard.",
