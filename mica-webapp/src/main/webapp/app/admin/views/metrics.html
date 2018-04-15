@@ -17,7 +17,7 @@
   </h2>
   <!--<p>threadDump&nbsp;{{threadDump}}</p>-->
   <p>
-    <button type="button" class="btn btn-primary" ng-click="refresh()"><span class="glyphicon glyphicon-refresh"></span>&nbsp;{{'metrics.refresh.button'
+    <button type="button" class="btn btn-primary" ng-click="refresh()"><span class="fa fa-refresh"></span>&nbsp;{{'metrics.refresh.button'
       | translate}}
     </button>
   </p>
@@ -56,7 +56,7 @@
       </div>
     </div>
     <div class="col-md-4">
-      <b translate="metrics.jvm.threads.title">Threads</b> (Total: {{metrics.gauges['jvm.threads.count'].value}}) <a class="hand" ng-click="dumpThread()" data-toggle="modal" data-target="#threadDump"><i class="glyphicon glyphicon-eye-open"></i></a>
+      <b translate="metrics.jvm.threads.title">Threads</b> (Total: {{metrics.gauges['jvm.threads.count'].value}}) <a class="hand" ng-click="dumpThread()" data-toggle="modal" data-target="#threadDump"><i class="fa fa-eye-open"></i></a>
 
       <p>{{'metrics.jvm.threads.runnable' | translate}} {{metrics.gauges['jvm.threads.runnable.count'].value}}</p>
 
