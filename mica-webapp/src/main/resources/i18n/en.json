@@ -966,6 +966,8 @@
     "no-graphic-result": "No graphics for current query.",
     "error": "Impossible to search for now. Please try again later.",
     "no-description": "No description.",
+    "query": "Query",
+    "query-copy-help": "Use the query in R or Python commands.",
     "placeholder": {
       "all": "e.g. alcohol, cancer, gender, cohort, twin",
       "variable": "e.g. alcohol, pregnancy, cancer",
