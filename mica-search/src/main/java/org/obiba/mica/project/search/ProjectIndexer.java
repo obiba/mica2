@@ -36,28 +36,28 @@ public class ProjectIndexer {
 
   @Async
   @Subscribe
-  public void networkUpdated(ProjectUpdatedEvent event) {
+  public void projectUpdated(ProjectUpdatedEvent event) {
     log.info("Project {} was updated", (Indexable) event.getPersistable());
     indexer.index(Indexer.DRAFT_PROJECT_INDEX, (Indexable) event.getPersistable());
   }
 
   @Async
   @Subscribe
-  public void networkPublished(ProjectPublishedEvent event) {
+  public void projectPublished(ProjectPublishedEvent event) {
     log.info("Project {} was published", (Indexable) event.getPersistable());
     indexer.index(Indexer.PUBLISHED_PROJECT_INDEX, (Indexable) event.getPersistable());
   }
 
   @Async
   @Subscribe
-  public void networkPublished(ProjectUnpublishedEvent event) {
+  public void projectPublished(ProjectUnpublishedEvent event) {
     log.info("Project {} was unpublished", (Indexable) event.getPersistable());
     indexer.delete(Indexer.PUBLISHED_PROJECT_INDEX, (Indexable) event.getPersistable());
   }
 
   @Async
   @Subscribe
-  public void networkDeleted(ProjectDeletedEvent event) {
+  public void projectDeleted(ProjectDeletedEvent event) {
     log.info("Project {} was deleted", (Indexable) event.getPersistable());
     indexer.delete(Indexer.DRAFT_PROJECT_INDEX, (Indexable) event.getPersistable());
     indexer.delete(Indexer.PUBLISHED_PROJECT_INDEX, (Indexable) event.getPersistable());
@@ -66,7 +66,7 @@ public class ProjectIndexer {
   @Async
   @Subscribe
   public void reIndexProjects(IndexProjectsEvent event) {
-    log.info("Reindexing all networks");
+    log.info("Reindexing all projects");
     reIndexAll(Indexer.PUBLISHED_PROJECT_INDEX, projectService.findAllPublishedProjects());
     reIndexAll(Indexer.DRAFT_PROJECT_INDEX, projectService.findAllProjects());
   }

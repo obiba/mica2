@@ -6,12 +6,12 @@ import com.google.common.eventbus.EventBus;
 import org.obiba.mica.JSONUtils;
 import org.obiba.mica.access.NoSuchDataAccessRequestException;
 import org.obiba.mica.access.domain.DataAccessAmendment;
-import org.obiba.mica.access.domain.DataAccessRequest;
 import org.obiba.mica.access.service.DataAccessAmendmentService;
-import org.obiba.mica.security.event.ResourceDeletedEvent;
+import org.obiba.mica.access.service.DataAccessEntityService;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
+import org.slf4j.Logger;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -20,18 +20,19 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import java.util.Map;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
 @Component
 @Scope("request")
-public class DataAccessAmendmentResource {
+public class DataAccessAmendmentResource extends DataAccessEntityResource {
+
+  private static final Logger log = getLogger(DataAccessAmendmentResource.class);
 
   @Inject
   private Dtos dtos;
 
   @Inject
   private SubjectAclService subjectAclService;
-
-  @Inject
-  private EventBus eventBus;
 
   @Inject
   private DataAccessAmendmentService dataAccessAmendmentService;
@@ -43,7 +44,7 @@ public class DataAccessAmendmentResource {
   @GET
   @Timed
   public Mica.DataAccessRequestDto getAmendment() {
-    subjectAclService.checkPermission(String.format("/data-access-request/%s/amendment", parentId), "VIEW", id);
+    subjectAclService.checkPermission(getResourcePath(), "VIEW", id);
     DataAccessAmendment amendment = dataAccessAmendmentService.findById(id);
     return dtos.asAmendentDto(amendment);
   }
@@ -52,14 +53,14 @@ public class DataAccessAmendmentResource {
   @Path("/model")
   @Produces("application/json")
   public Map<String, Object> getModel() {
-    subjectAclService.checkPermission(String.format("/data-access-request/%s/amendment", parentId), "VIEW", id);
+    subjectAclService.checkPermission(getResourcePath(), "VIEW", id);
     return JSONUtils.toMap(dataAccessAmendmentService.findById(id).getContent());
   }
 
   @PUT
   @Timed
   public Response update(Mica.DataAccessRequestDto dto) {
-    subjectAclService.checkPermission(String.format("/data-access-request/%s/amendment", parentId), "EDIT", id);
+    subjectAclService.checkPermission(getResourcePath(), "EDIT", id);
     if(!id.equals(dto.getId())) throw new BadRequestException();
     DataAccessAmendment request = dtos.fromAmendmentDto(dto);
     dataAccessAmendmentService.save(request);
@@ -68,16 +69,13 @@ public class DataAccessAmendmentResource {
 
   @DELETE
   public Response delete() {
-    String resource = String.format("/data-access-request/%s/amendment", parentId);
+    String resource = getResourcePath();
     subjectAclService.checkPermission(resource, "DELETE", id);
 
     try {
       dataAccessAmendmentService.delete(id);
-      // remove associated comments
-      eventBus.post(new ResourceDeletedEvent(resource, id));
-      eventBus.post(new ResourceDeletedEvent(resource + "/" + id, "_status"));
     } catch(NoSuchDataAccessRequestException e) {
-      // ignore
+      log.error("Could not delete amendment {}", e);
     }
 
     return Response.noContent().build();
@@ -89,5 +87,20 @@ public class DataAccessAmendmentResource {
 
   public void setParentId(String parentId) {
     this.parentId = parentId;
+  }
+
+  @Override
+  protected DataAccessEntityService getService() {
+    return dataAccessAmendmentService;
+  }
+
+  @Override
+  protected String getId() {
+    return id;
+  }
+
+  @Override
+  String getResourcePath() {
+    return String.format("/data-access-request/%s/amendment", parentId);
   }
 }
