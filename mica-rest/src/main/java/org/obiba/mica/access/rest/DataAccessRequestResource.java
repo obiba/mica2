@@ -34,6 +34,7 @@ import org.obiba.mica.JSONUtils;
 import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.access.NoSuchDataAccessRequestException;
 import org.obiba.mica.access.domain.DataAccessRequest;
+import org.obiba.mica.access.domain.DataAccessRequestStatus;
 import org.obiba.mica.access.notification.DataAccessRequestCommentMailNotification;
 import org.obiba.mica.access.service.DataAccessRequestService;
 import org.obiba.mica.core.domain.Comment;
@@ -45,6 +46,7 @@ import org.obiba.mica.security.event.ResourceDeletedEvent;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 import com.codahale.metrics.annotation.Timed;
@@ -65,6 +67,9 @@ public class DataAccessRequestResource {
 
   @Inject
   private CommentsService commentsService;
+
+  @Inject
+  private ApplicationContext applicationContext;
 
   @Inject
   private Dtos dtos;
@@ -234,7 +239,7 @@ public class DataAccessRequestResource {
   @Path("/_status")
   public Response updateStatus(@PathParam("id") String id, @QueryParam("to") String status) {
     subjectAclService.checkPermission("/data-access-request/" + id, "EDIT", "_status");
-    switch(DataAccessRequest.Status.valueOf(status.toUpperCase())) {
+    switch(DataAccessRequestStatus.valueOf(status.toUpperCase())) {
       case SUBMITTED:
         return submit(id);
       case OPENED:
@@ -251,19 +256,36 @@ public class DataAccessRequestResource {
     throw new BadRequestException("Unknown status");
   }
 
+  @Path("/amendments")
+  public DataAccessAmendmentsResource getAmendments(@PathParam("id") String id) {
+    dataAccessRequestService.findById(id);
+    DataAccessAmendmentsResource dataAccessAmendmentsResource = applicationContext.getBean(DataAccessAmendmentsResource.class);
+    dataAccessAmendmentsResource.setParentId(id);
+    return dataAccessAmendmentsResource;
+  }
+
+  @Path("/amendment/{amendmentId}")
+  public DataAccessAmendmentResource getAmendment(@PathParam("id") String id, @PathParam("amendmentId") String amendmentId) {
+    dataAccessRequestService.findById(id);
+    DataAccessAmendmentResource dataAccessAmendmentResource = applicationContext.getBean(DataAccessAmendmentResource.class);
+    dataAccessAmendmentResource.setParentId(id);
+    dataAccessAmendmentResource.setId(amendmentId);
+    return dataAccessAmendmentResource;
+  }
+
   //
   // Private methods
   //
 
   private Response submit(String id) {
     DataAccessRequest request = dataAccessRequestService.findById(id);
-    boolean fromOpened = request.getStatus() == DataAccessRequest.Status.OPENED;
-    boolean fromConditionallyApproved = request.getStatus() == DataAccessRequest.Status.CONDITIONALLY_APPROVED;
+    boolean fromOpened = request.getStatus() == DataAccessRequestStatus.OPENED;
+    boolean fromConditionallyApproved = request.getStatus() == DataAccessRequestStatus.CONDITIONALLY_APPROVED;
     if(fromOpened && !subjectAclService.isCurrentUser(request.getApplicant())) {
       // only applicant can submit an opened request
       throw new ForbiddenException();
     }
-    dataAccessRequestService.updateStatus(id, DataAccessRequest.Status.SUBMITTED);
+    dataAccessRequestService.updateStatus(id, DataAccessRequestStatus.SUBMITTED);
     if (fromOpened || fromConditionallyApproved) {
       // applicant cannot edit, nor delete request anymore + status cannot be changed
       subjectAclService.removePermission("/data-access-request", "EDIT,DELETE", id);
@@ -275,7 +297,7 @@ public class DataAccessRequestResource {
   }
 
   private Response open(@PathParam("id") String id) {
-    DataAccessRequest request = dataAccessRequestService.updateStatus(id, DataAccessRequest.Status.OPENED);
+    DataAccessRequest request = dataAccessRequestService.updateStatus(id, DataAccessRequestStatus.OPENED);
     // restore applicant permissions
     subjectAclService.addUserPermission(request.getApplicant(), "/data-access-request", "VIEW,EDIT,DELETE", id);
     subjectAclService.addUserPermission(request.getApplicant(), "/data-access-request/" + id, "EDIT", "_status");
@@ -286,7 +308,7 @@ public class DataAccessRequestResource {
 
   private Response review(@PathParam("id") String id) {
     DataAccessRequest request = dataAccessRequestService.findById(id);
-    boolean fromConditionallyApproved = request.getStatus() == DataAccessRequest.Status.CONDITIONALLY_APPROVED;
+    boolean fromConditionallyApproved = request.getStatus() == DataAccessRequestStatus.CONDITIONALLY_APPROVED;
     if (fromConditionallyApproved) {
       // remove applicant permissions
       subjectAclService.removePermission("/data-access-request", "EDIT,DELETE", id);
@@ -294,28 +316,28 @@ public class DataAccessRequestResource {
       // data access officers can change the status of the request
       subjectAclService.addGroupPermission(Roles.MICA_DAO, "/data-access-request/" + id, "EDIT", "_status");
     }
-    return updateStatus(id, DataAccessRequest.Status.REVIEWED);
+    return updateStatus(id, DataAccessRequestStatus.REVIEWED);
   }
 
   private Response approve(@PathParam("id") String id) {
-    return updateStatus(id, DataAccessRequest.Status.APPROVED);
+    return updateStatus(id, DataAccessRequestStatus.APPROVED);
   }
 
   private Response reject(@PathParam("id") String id) {
-    return updateStatus(id, DataAccessRequest.Status.REJECTED);
+    return updateStatus(id, DataAccessRequestStatus.REJECTED);
   }
 
   private Response conditionallyApprove(@PathParam("id") String id) {
-    DataAccessRequest request = dataAccessRequestService.updateStatus(id, DataAccessRequest.Status.CONDITIONALLY_APPROVED);
+    DataAccessRequest request = dataAccessRequestService.updateStatus(id, DataAccessRequestStatus.CONDITIONALLY_APPROVED);
     // restore applicant permissions
     subjectAclService.addUserPermission(request.getApplicant(), "/data-access-request", "VIEW,EDIT,DELETE", id);
     subjectAclService.addUserPermission(request.getApplicant(), "/data-access-request/" + id, "EDIT", "_status");
     // data access officers cannot change the status of this request anymore
     subjectAclService.removeGroupPermission(Roles.MICA_DAO, "/data-access-request/" + id, "EDIT", "_status");
-    return updateStatus(id, DataAccessRequest.Status.CONDITIONALLY_APPROVED);
+    return updateStatus(id, DataAccessRequestStatus.CONDITIONALLY_APPROVED);
   }
 
-  private Response updateStatus(String id, DataAccessRequest.Status status) {
+  private Response updateStatus(String id, DataAccessRequestStatus status) {
     dataAccessRequestService.updateStatus(id, status);
     return Response.noContent().build();
   }

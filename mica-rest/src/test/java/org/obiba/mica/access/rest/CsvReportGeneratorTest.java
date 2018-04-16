@@ -15,7 +15,7 @@ import org.joda.time.DateTime;
 import org.json.JSONException;
 import org.junit.Test;
 import org.obiba.mica.access.domain.DataAccessRequest;
-import org.obiba.mica.access.domain.DataAccessRequest.Status;
+import org.obiba.mica.access.domain.DataAccessRequestStatus;
 import org.obiba.mica.access.domain.StatusChange;
 
 import java.io.ByteArrayOutputStream;
@@ -60,12 +60,12 @@ public class CsvReportGeneratorTest {
 
     CsvReportGenerator csvReportGenerator = new CsvReportGenerator(null, "{}", null);
     List<StatusChange> statusChangeHistory = asList(
-      StatusChange.newBuilder().changedOn(new DateTime(2000, 1, 1, 1, 1)).current(Status.APPROVED).build(),
-      StatusChange.newBuilder().changedOn(new DateTime(2001, 1, 1, 1, 1)).current(Status.APPROVED).build(),
-      StatusChange.newBuilder().changedOn(new DateTime(2016, 1, 1, 1, 1)).current(Status.OPENED).build(),
-      StatusChange.newBuilder().changedOn(new DateTime(2015, 1, 1, 1, 1)).current(Status.APPROVED).build(),
-      StatusChange.newBuilder().changedOn(new DateTime(2002, 1, 1, 1, 1)).current(Status.APPROVED).build(),
-      StatusChange.newBuilder().changedOn(new DateTime(2003, 1, 1, 1, 1)).current(Status.APPROVED).build()
+      StatusChange.newBuilder().changedOn(new DateTime(2000, 1, 1, 1, 1)).current(DataAccessRequestStatus.APPROVED).build(),
+      StatusChange.newBuilder().changedOn(new DateTime(2001, 1, 1, 1, 1)).current(DataAccessRequestStatus.APPROVED).build(),
+      StatusChange.newBuilder().changedOn(new DateTime(2016, 1, 1, 1, 1)).current(DataAccessRequestStatus.OPENED).build(),
+      StatusChange.newBuilder().changedOn(new DateTime(2015, 1, 1, 1, 1)).current(DataAccessRequestStatus.APPROVED).build(),
+      StatusChange.newBuilder().changedOn(new DateTime(2002, 1, 1, 1, 1)).current(DataAccessRequestStatus.APPROVED).build(),
+      StatusChange.newBuilder().changedOn(new DateTime(2003, 1, 1, 1, 1)).current(DataAccessRequestStatus.APPROVED).build()
     );
 
     DateTime lastApprovedOrRejectedDate = csvReportGenerator.extractLastApprovedOrRejectDate(statusChangeHistory);
@@ -78,12 +78,12 @@ public class CsvReportGeneratorTest {
 
     CsvReportGenerator csvReportGenerator = new CsvReportGenerator(null, "{}", null);
     List<StatusChange> statusChangeHistory = asList(
-      StatusChange.newBuilder().changedOn(new DateTime(2000, 1, 1, 1, 1)).current(Status.SUBMITTED).build(),
-      StatusChange.newBuilder().changedOn(new DateTime(2001, 1, 1, 1, 1)).current(Status.SUBMITTED).build(),
-      StatusChange.newBuilder().changedOn(new DateTime(1900, 1, 1, 1, 1)).current(Status.OPENED).build(),
-      StatusChange.newBuilder().changedOn(new DateTime(1901, 1, 1, 1, 1)).current(Status.SUBMITTED).build(),
-      StatusChange.newBuilder().changedOn(new DateTime(2002, 1, 1, 1, 1)).current(Status.SUBMITTED).build(),
-      StatusChange.newBuilder().changedOn(new DateTime(2003, 1, 1, 1, 1)).current(Status.SUBMITTED).build()
+      StatusChange.newBuilder().changedOn(new DateTime(2000, 1, 1, 1, 1)).current(DataAccessRequestStatus.SUBMITTED).build(),
+      StatusChange.newBuilder().changedOn(new DateTime(2001, 1, 1, 1, 1)).current(DataAccessRequestStatus.SUBMITTED).build(),
+      StatusChange.newBuilder().changedOn(new DateTime(1900, 1, 1, 1, 1)).current(DataAccessRequestStatus.OPENED).build(),
+      StatusChange.newBuilder().changedOn(new DateTime(1901, 1, 1, 1, 1)).current(DataAccessRequestStatus.SUBMITTED).build(),
+      StatusChange.newBuilder().changedOn(new DateTime(2002, 1, 1, 1, 1)).current(DataAccessRequestStatus.SUBMITTED).build(),
+      StatusChange.newBuilder().changedOn(new DateTime(2003, 1, 1, 1, 1)).current(DataAccessRequestStatus.SUBMITTED).build()
     );
 
     DateTime firstSubmissionDate = csvReportGenerator.extractFirstSubmissionDate(statusChangeHistory);
@@ -109,42 +109,42 @@ public class CsvReportGeneratorTest {
   }
 
   private DataAccessRequest openedDataAccessRequest() {
-    DataAccessRequest dataAccessRequest = DataAccessRequest.newBuilder()
-      .status(Status.OPENED.toString())
+    DataAccessRequest dataAccessRequest = (DataAccessRequest)DataAccessRequest.newBuilder()
+      .status(DataAccessRequestStatus.OPENED.toString())
       .content("{'title':'Opened request title'}")
       .build();
     dataAccessRequest.setId("refused id");
     dataAccessRequest.setCreatedDate(new DateTime(2016, 8, 20, 14, 36));
     dataAccessRequest.setLastModifiedDate(new DateTime(2016, 8, 25, 14, 36));
     dataAccessRequest.setStatusChangeHistory(Collections.singletonList(
-      StatusChange.newBuilder().changedOn(new DateTime(2016, 6, 1, 1, 1)).current(Status.SUBMITTED).build()));
+      StatusChange.newBuilder().changedOn(new DateTime(2016, 6, 1, 1, 1)).current(DataAccessRequestStatus.SUBMITTED).build()));
     return dataAccessRequest;
   }
 
   private DataAccessRequest submittedDataAccessRequest() {
-    DataAccessRequest dataAccessRequest = DataAccessRequest.newBuilder()
-      .status(Status.SUBMITTED.toString())
+    DataAccessRequest dataAccessRequest = (DataAccessRequest)DataAccessRequest.newBuilder()
+      .status(DataAccessRequestStatus.SUBMITTED.toString())
       .content("{'title':'Opened request title', 'isWaiting':true}")
       .build();
     dataAccessRequest.setId("refused id");
     dataAccessRequest.setCreatedDate(new DateTime(2016, 8, 20, 14, 36));
     dataAccessRequest.setLastModifiedDate(new DateTime(2016, 8, 25, 14, 36));
     dataAccessRequest.setStatusChangeHistory(Collections.singletonList(
-      StatusChange.newBuilder().changedOn(new DateTime(2016, 6, 1, 1, 1)).current(Status.SUBMITTED).build()));
+      StatusChange.newBuilder().changedOn(new DateTime(2016, 6, 1, 1, 1)).current(DataAccessRequestStatus.SUBMITTED).build()));
     return dataAccessRequest;
   }
 
   private DataAccessRequest approvedDataAccessRequest() {
-    DataAccessRequest dataAccessRequest = DataAccessRequest.newBuilder()
-      .status(Status.APPROVED.toString())
+    DataAccessRequest dataAccessRequest = (DataAccessRequest)DataAccessRequest.newBuilder()
+      .status(DataAccessRequestStatus.APPROVED.toString())
       .content("{'title':'Approved request title', 'isWaiting':false}")
       .build();
     dataAccessRequest.setId("approved id");
     dataAccessRequest.setCreatedDate(new DateTime(2016, 8, 20, 14, 36));
     dataAccessRequest.setLastModifiedDate(new DateTime(2015, 8, 25, 14, 36));
     dataAccessRequest.setStatusChangeHistory(asList(
-      StatusChange.newBuilder().changedOn(new DateTime(2017, 1, 1, 1, 1)).current(Status.APPROVED).build(),
-      StatusChange.newBuilder().changedOn(new DateTime(2016, 6, 1, 1, 1)).current(Status.SUBMITTED).build()));
+      StatusChange.newBuilder().changedOn(new DateTime(2017, 1, 1, 1, 1)).current(DataAccessRequestStatus.APPROVED).build(),
+      StatusChange.newBuilder().changedOn(new DateTime(2016, 6, 1, 1, 1)).current(DataAccessRequestStatus.SUBMITTED).build()));
     return dataAccessRequest;
   }
 
