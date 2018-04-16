@@ -180,6 +180,9 @@ class MicaRequest:
     def content_type_protobuf(self):
         return self.content_type('application/x-protobuf')
 
+    def content_type_form(self):
+        return self.content_type('application/x-www-form-urlencoded')
+
     def method(self, method):
         if not method:
             self.method = 'GET'
@@ -246,6 +249,10 @@ class MicaRequest:
         reader = cStringIO.StringIO(content)
         self.curl_option(pycurl.READFUNCTION, reader.read)
         return self
+
+    def form(self, parameters):
+        content = urllib.urlencode(parameters)
+        return self.content(content)
 
     def content_file(self, filename):
         if self._verbose:

@@ -18,6 +18,7 @@ import mica.access_harmonization_study
 import mica.access_collected_dataset
 import mica.access_harmonized_dataset
 import mica.access_file
+import mica.search
 import mica.tags
 import mica.update_collected_dataset
 import mica.update_collected_datasets
@@ -81,6 +82,9 @@ add_subcommand('access-harmonized-dataset', 'Apply access on a harmonized datase
                mica.access_harmonized_dataset.add_arguments, mica.access_harmonized_dataset.do_command)
 add_subcommand('access-file', 'Apply access on a file.',
                mica.access_file.add_arguments, mica.access_file.do_command)
+
+add_subcommand('search', 'Perform a search query on variables, datasets, studies (including populations and data collection events) and networks.', mica.search.add_arguments,
+               mica.search.do_command)
 
 add_subcommand('tags', 'Extract classification tags from published variables.', mica.tags.add_arguments,
                mica.tags.do_command)
