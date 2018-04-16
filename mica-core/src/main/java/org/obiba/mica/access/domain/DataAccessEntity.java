@@ -8,7 +8,7 @@ import org.obiba.mica.core.domain.SchemaFormContentAware;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
-public abstract class DataAccessEntity extends AbstractAuditableDocument implements SchemaFormContentAware {
+public class DataAccessEntity extends AbstractAuditableDocument implements SchemaFormContentAware {
 
   /**
    * User name of the user making the request.

@@ -104,10 +104,12 @@ public class DataAccessAmendmentService extends DataAccessEntityService<DataAcce
    */
   @Override
   public void delete(@NotNull String id) throws NoSuchDataAccessRequestException {
-    DataAccessAmendment amendment = findById(id);
+    delete(findById(id));
+  }
+
+  void delete(@NotNull DataAccessAmendment amendment) throws NoSuchDataAccessRequestException {
     schemaFormContentFileService.deleteFiles(amendment);
     eventBus.post(new DataAccessAmendmentDeletedEvent(amendment));
     dataAmendmentRequestRepository.delete(amendment);
   }
-
 }
