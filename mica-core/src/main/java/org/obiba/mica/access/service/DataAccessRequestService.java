@@ -18,6 +18,7 @@ import org.joda.time.DateTime;
 import org.obiba.mica.access.DataAccessEntityRepository;
 import org.obiba.mica.access.DataAccessRequestRepository;
 import org.obiba.mica.access.NoSuchDataAccessRequestException;
+import org.obiba.mica.access.domain.DataAccessAmendment;
 import org.obiba.mica.access.domain.DataAccessRequest;
 import org.obiba.mica.access.domain.DataAccessRequestStatus;
 import org.obiba.mica.access.event.DataAccessRequestDeletedEvent;
@@ -49,6 +50,9 @@ import static com.jayway.jsonpath.Configuration.defaultConfiguration;
 public class DataAccessRequestService extends DataAccessEntityService<DataAccessRequest> {
 
   private static final Logger log = LoggerFactory.getLogger(DataAccessRequestService.class);
+
+  @Inject
+  private DataAccessAmendmentService dataAccessAmendmentService;
 
   @Inject
   private DataAccessRequestRepository dataAccessRequestRepository;
@@ -138,6 +142,7 @@ public class DataAccessRequestService extends DataAccessEntityService<DataAccess
 
     dataAccessRequestRepository.deleteWithReferences(dataAccessRequest);
     schemaFormContentFileService.deleteFiles(dataAccessRequest);
+    deleteAmendments(id);
 
     attachments.forEach(a -> fileStoreService.delete(a.getId()));
     eventBus.post(new DataAccessRequestDeletedEvent(dataAccessRequest));
@@ -154,6 +159,11 @@ public class DataAccessRequestService extends DataAccessEntityService<DataAccess
     }
 
     return ba.toByteArray();
+  }
+
+  private void deleteAmendments(String id) {
+    List<DataAccessAmendment> amendments = dataAccessAmendmentService.findByParentId(id);
+    amendments.stream().forEach(dataAccessAmendmentService::delete);
   }
 
   private byte[] getTemplate(Locale locale) throws IOException {
