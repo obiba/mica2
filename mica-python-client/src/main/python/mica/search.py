@@ -22,7 +22,6 @@ def add_arguments(parser):
     parser.add_argument('--start', '-s', required=False, type=int, default=0, help='Start search at document position.')
     parser.add_argument('--limit', '-lm', required=False, type=int, default=100, help='Max number of documents.')
     parser.add_argument('--locale', '-lc', required=False, default='en', help='The language for labels.')
-    parser.add_argument('--json', '-j', action='store_true', help='Output the response in JSON.')
 
 def send_search_request(client, ws, query, verbose=False):
     '''
