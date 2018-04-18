@@ -18,6 +18,7 @@ import org.obiba.mica.JSONUtils;
 import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.access.NoSuchDataAccessRequestException;
 import org.obiba.mica.access.domain.DataAccessRequest;
+import org.obiba.mica.access.domain.DataAccessRequestStatus;
 import org.obiba.mica.access.notification.DataAccessRequestCommentMailNotification;
 import org.obiba.mica.access.service.DataAccessEntityService;
 import org.obiba.mica.access.service.DataAccessRequestService;
@@ -70,9 +71,6 @@ public class DataAccessRequestResource extends DataAccessEntityResource {
   private EventBus eventBus;
 
   @Inject
-  private SubjectAclService subjectAclService;
-
-  @Inject
   private FileStoreService fileStoreService;
 
   @PathParam("id")
@@ -96,7 +94,7 @@ public class DataAccessRequestResource extends DataAccessEntityResource {
 
   @PUT
   @Timed
-  public Response get(Mica.DataAccessRequestDto dto) {
+  public Response put(Mica.DataAccessRequestDto dto) {
     subjectAclService.checkPermission("/data-access-request", "EDIT", id);
     if(!id.equals(dto.getId())) throw new BadRequestException();
     DataAccessRequest request = dtos.fromDto(dto);
@@ -258,5 +256,21 @@ public class DataAccessRequestResource extends DataAccessEntityResource {
   @Override
   String getResourcePath() {
     return "/data-access-request";
+  }
+
+  @Override
+  protected Response updateStatus(DataAccessRequestStatus status) {
+    DataAccessRequest request = dataAccessRequestService.findById(id);
+    String resource = String.format("/data-access-request/%s/amendment", id);
+    String applicant = request.getApplicant();
+
+    if (DataAccessRequestStatus.APPROVED.equals(status)) {
+      subjectAclService.addUserPermission(applicant, resource, "ADD", null);
+      subjectAclService.addGroupPermission(Roles.MICA_DAO, resource, "VIEW,DELETE", null);
+    } else {
+      subjectAclService.removeUserPermission(applicant, resource, "ADD", null);
+    }
+
+    return super.updateStatus(status);
   }
 }
