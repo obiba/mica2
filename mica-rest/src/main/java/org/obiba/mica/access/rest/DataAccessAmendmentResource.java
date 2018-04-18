@@ -32,9 +32,6 @@ public class DataAccessAmendmentResource extends DataAccessEntityResource {
   private Dtos dtos;
 
   @Inject
-  private SubjectAclService subjectAclService;
-
-  @Inject
   private DataAccessAmendmentService dataAccessAmendmentService;
 
   private String parentId;
@@ -44,7 +41,7 @@ public class DataAccessAmendmentResource extends DataAccessEntityResource {
   @GET
   @Timed
   public Mica.DataAccessRequestDto getAmendment() {
-    subjectAclService.checkPermission(getResourcePath(), "VIEW", id);
+    subjectAclService.checkPermission(getParentResourcePath(), "VIEW", parentId);
     DataAccessAmendment amendment = dataAccessAmendmentService.findById(id);
     return dtos.asAmendentDto(amendment);
   }
@@ -97,6 +94,10 @@ public class DataAccessAmendmentResource extends DataAccessEntityResource {
   @Override
   protected String getId() {
     return id;
+  }
+
+  private String getParentResourcePath() {
+    return String.format("/data-access-request");
   }
 
   @Override
