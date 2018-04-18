@@ -10,6 +10,14 @@
 
 package org.obiba.mica.access.service;
 
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import javax.annotation.Nullable;
+import javax.inject.Inject;
+import javax.validation.constraints.NotNull;
+
 import org.joda.time.DateTime;
 import org.obiba.mica.access.DataAccessAmendmentRepository;
 import org.obiba.mica.access.DataAccessEntityRepository;
@@ -23,12 +31,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
-
-import javax.annotation.Nullable;
-import javax.inject.Inject;
-import javax.validation.constraints.NotNull;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Validated
@@ -78,6 +80,13 @@ public class DataAccessAmendmentService extends DataAccessEntityService<DataAcce
     eventBus.post(new DataAccessAmendmentUpdatedEvent(saved));
     sendNotificationEmails(saved, from);
     return saved;
+  }
+
+  @Override
+  protected Map<String, String> getNotificationEmailContext(DataAccessAmendment request) {
+    Map<String, String> notificationEmailContext = super.getNotificationEmailContext(request);
+    notificationEmailContext.put("parentId", request.getParentId());
+    return notificationEmailContext;
   }
 
   public List<DataAccessAmendment> findByStatus(@Nullable String parentId, @Nullable List<String> status) {
