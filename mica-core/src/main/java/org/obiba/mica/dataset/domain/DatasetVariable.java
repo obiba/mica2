@@ -74,7 +74,7 @@ public class DatasetVariable implements Indexable, AttributeAware {
 
   private String referencedEntityType;
 
-  private boolean repeatable;
+  private Boolean repeatable;
 
   private String occurrenceGroup;
 
@@ -249,8 +249,12 @@ public class DatasetVariable implements Indexable, AttributeAware {
     return referencedEntityType;
   }
 
+  public boolean hasRepeatable() {
+    return repeatable != null;
+  }
+
   public boolean isRepeatable() {
-    return repeatable;
+    return hasRepeatable() ? repeatable : false;
   }
 
   public String getOccurrenceGroup() {

@@ -369,6 +369,11 @@ public class Dtos {
   }
 
   @NotNull
+  public Mica.DatasetVariableResolverDto.Builder asDto(@NotNull DatasetVariable.IdResolver variableResolver, DatasetVariable variable) {
+    return datasetDtos.asDto(variableResolver, variable);
+  }
+
+  @NotNull
   public Mica.DatasetDto.StudyTableDto.Builder asDto(@NotNull StudyTable studyTable) {
     return datasetDtos.asDto(studyTable);
   }

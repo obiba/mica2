@@ -22,10 +22,7 @@ import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
 import org.obiba.mica.JSONUtils;
-import org.obiba.mica.core.domain.Attributes;
-import org.obiba.mica.core.domain.HarmonizationStudyTable;
-import org.obiba.mica.core.domain.OpalTable;
-import org.obiba.mica.core.domain.StudyTable;
+import org.obiba.mica.core.domain.*;
 import org.obiba.mica.dataset.HarmonizationDatasetStateRepository;
 import org.obiba.mica.dataset.StudyDatasetStateRepository;
 import org.obiba.mica.dataset.domain.Dataset;
@@ -198,6 +195,66 @@ class DatasetDtos {
     }
     if(resolver.hasTable()) {
       builder.setTable(resolver.getTable());
+    }
+
+    return builder;
+  }
+
+
+  @NotNull
+  Mica.DatasetVariableResolverDto.Builder asDto(@NotNull DatasetVariable.IdResolver resolver, DatasetVariable variable) {
+    Mica.DatasetVariableResolverDto.Builder builder = asDto(resolver);
+
+    builder.addAllDatasetAcronym(localizedStringDtos.asDto(variable.getDatasetAcronym()));
+    builder.addAllDatasetName(localizedStringDtos.asDto(variable.getDatasetName()));
+
+    if (variable.hasAttributes()) {
+      if (variable.hasAttribute("label", null)) {
+        builder.addAllVariableLabel(localizedStringDtos.asDto(variable.getAttributes().getAttribute("label", null).getValues()));
+      }
+      variable.getAttributes().asAttributeList().stream()
+        .filter(Attribute::hasNamespace)
+        .filter(attr -> !Strings.isNullOrEmpty(attr.getValues().getUndetermined()))
+        .forEach(attr -> builder.addAnnotations(Mica.AnnotationDto.newBuilder()
+          .setTaxonomy(attr.getNamespace())
+          .setVocabulary(attr.getName())
+          .setValue(attr.getValues().getUndetermined())));
+    }
+
+    if (!Strings.isNullOrEmpty(variable.getPopulationId())) {
+      builder.setPopulationId(variable.getPopulationId());
+    }
+
+    if (!Strings.isNullOrEmpty(variable.getDceId())) {
+      builder.setDceId(variable.getDceId());
+    }
+
+    if (!Strings.isNullOrEmpty(variable.getValueType())) {
+      builder.setValueType(variable.getValueType());
+    }
+
+    if (!Strings.isNullOrEmpty(variable.getReferencedEntityType())) {
+      builder.setReferencedEntityType(variable.getReferencedEntityType());
+    }
+
+    if (!Strings.isNullOrEmpty(variable.getMimeType())) {
+      builder.setMimeType(variable.getMimeType());
+    }
+
+    if (!Strings.isNullOrEmpty(variable.getOccurrenceGroup())) {
+      builder.setOccurrenceGroup(variable.getOccurrenceGroup());
+    }
+
+    if (!Strings.isNullOrEmpty(variable.getNature())) {
+      builder.setNature(variable.getNature());
+    }
+
+    if (!Strings.isNullOrEmpty(variable.getUnit())) {
+      builder.setUnit(variable.getUnit());
+    }
+
+    if(variable.getCategories() != null) {
+      variable.getCategories().forEach(category -> builder.addCategories(asDto(category)));
     }
 
     return builder;

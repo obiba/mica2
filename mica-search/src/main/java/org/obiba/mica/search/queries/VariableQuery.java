@@ -68,7 +68,6 @@ public class VariableQuery extends AbstractDocumentQuery {
   @Inject
   private PublishedStudyService publishedStudyService;
 
-
   @Inject
   private Dtos dtos;
 
@@ -174,7 +173,7 @@ public class VariableQuery extends AbstractDocumentQuery {
    */
   private Mica.DatasetVariableResolverDto processHit(DatasetVariable.IdResolver resolver, DatasetVariable variable,
                                                      Map<String, BaseStudy> studyMap, Map<String, Network> networkMap) {
-    Mica.DatasetVariableResolverDto.Builder builder = dtos.asDto(resolver);
+    Mica.DatasetVariableResolverDto.Builder builder = dtos.asDto(resolver, variable);
 
     String studyId = resolver.hasStudyId() ? resolver.getStudyId() : null;
 
@@ -200,30 +199,6 @@ public class VariableQuery extends AbstractDocumentQuery {
         }
       } catch (NoSuchStudyException e) {
       }
-    }
-
-    builder.addAllDatasetAcronym(dtos.asDto(variable.getDatasetAcronym()));
-    builder.addAllDatasetName(dtos.asDto(variable.getDatasetName()));
-
-    if (variable.hasAttributes()) {
-      if (variable.hasAttribute("label", null)) {
-        builder.addAllVariableLabel(dtos.asDto(variable.getAttributes().getAttribute("label", null).getValues()));
-      }
-      variable.getAttributes().asAttributeList().stream()
-        .filter(Attribute::hasNamespace)
-        .filter(attr -> !Strings.isNullOrEmpty(attr.getValues().getUndetermined()))
-        .forEach(attr -> builder.addAnnotations(Mica.AnnotationDto.newBuilder()
-          .setTaxonomy(attr.getNamespace())
-          .setVocabulary(attr.getName())
-          .setValue(attr.getValues().getUndetermined())));
-    }
-
-    if (!Strings.isNullOrEmpty(variable.getValueType())) {
-      builder.setValueType(variable.getValueType());
-    }
-
-    if (!Strings.isNullOrEmpty(variable.getNature())) {
-      builder.setNature(variable.getNature());
     }
 
     return builder.build();

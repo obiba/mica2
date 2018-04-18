@@ -588,9 +588,17 @@ message DatasetVariableResolverDto {
   repeated LocalizedStringDto networkName = 14;
   repeated LocalizedStringDto networkAcronym = 15;
   optional string networkTableId = 16;
-  repeated AnnotationDto annotations = 17;
-  optional string valueType = 18;
-  optional string nature = 19;
+  optional string populationId = 17;
+  optional string dceId = 18;
+  repeated AnnotationDto annotations = 19;
+  optional string valueType = 20;
+  optional string nature = 21;
+  optional string mimeType = 22;
+  optional bool repeatable = 23;
+  optional string occurrenceGroup = 24;
+  optional string unit = 25;
+  optional string referencedEntityType = 26;
+  repeated DatasetCategoryDto categories = 27;
 }
 
 message DatasetVariableSummaryDto {
