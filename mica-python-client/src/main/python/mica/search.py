@@ -75,7 +75,7 @@ def extract_label(labels, locale='en', locale_key='lang', value_key='value'):
                 return encoder.encode(label[value_key])
             if label[locale_key] == 'und':
                 label_und = label[value_key]
-    return encoder.encode(label_und)
+    return encoder.encode(label_und) if label_und else ''
 
 def new_writer(out, headers):
     file = sys.stdout
@@ -259,11 +259,22 @@ def search_datasets(args, client):
             writer.writerow(row)
 
 def search_variables(args, client):
-    q = append_rql(args.query, 'variable', ['attributes','nature','valueType'], ['id'], args.start, args.limit, args.locale)
+    q = append_rql(args.query, 'variable', ['*'], ['id'], args.start, args.limit, args.locale)
     ws = mica.core.UriBuilder(['variables', '_rql']).build()
     res = send_search_request(client, ws, q, args.verbose)
+    encoder = codecs.getincrementalencoder('utf-8')()
+
+    def category_label(category):
+        if 'attributes' in category:
+            labels = map(lambda label: extract_label(label['values'], args.locale), filter(lambda a: a['name'] == 'label', category['attributes']))
+            return labels[0] if len(labels)>0 else ''
+        else:
+            return ''
+
     if 'variableResultDto' in res and 'obiba.mica.DatasetVariableResultDto.result' in res['variableResultDto']:
-        headers = ['id','name','label','valueType','nature','datasetId','studyId','variableType']
+        headers = ['id','name','label','valueType','nature','categories','categories.missing','categories.label',
+                   'datasetId','studyId','populationId','dceId',
+                   'variableType','mimeType','unit','referencedEntityType','repeatable','occurrenceGroup']
         for item in res['variableResultDto']['obiba.mica.DatasetVariableResultDto.result']['summaries']:
             if 'annotations' in item:
                 for annot in item['annotations']:
@@ -273,15 +284,26 @@ def search_variables(args, client):
         writer = new_writer(args.out, headers)
         for item in res['variableResultDto']['obiba.mica.DatasetVariableResultDto.result']['summaries']:
             row = {
-                'id': item['id'],
-                'name': item['name'],
-                'label': extract_label(item['variableLabel'], args.locale),
+                'id': encoder.encode(item['id']),
+                'name': encoder.encode(item['name']),
+                'label': extract_label(item['variableLabel'], args.locale) if 'variableLabel' in item else '',
                 'datasetId': item['datasetId'],
                 'studyId': item['studyId'],
+                'populationId': item['populationId'] if 'populationId' in item else '',
+                'dceId': item['dceId'] if 'dceId' in item else '',
                 'variableType': item['variableType'],
                 'valueType': item['valueType'] if 'valueType' in item else '',
-                'nature': item['nature'] if 'nature' in item else ''
+                'nature': item['nature'] if 'nature' in item else '',
+                'mimeType': encoder.encode(item['mimeType']) if 'mimeType' in item else '',
+                'unit': encoder.encode(item['unit']) if 'unit' in item else '',
+                'referencedEntityType': encoder.encode(item['referencedEntityType']) if 'referencedEntityType' in item else '',
+                'repeatable': item['repeatable'] if 'repeatable' in item else '',
+                'occurrenceGroup': encoder.encode(item['occurrenceGroup']) if 'occurrenceGroup' in item else ''
             }
+            if 'categories' in item:
+                row['categories'] = '|'.join(map(lambda c: c['name'], item['categories']))
+                row['categories.missing'] = '|'.join(map(lambda c: str(c['missing']), item['categories']))
+                row['categories.label'] = '|'.join(map(category_label, item['categories']))
             if 'annotations' in item:
                 for annot in item['annotations']:
                     key = annot['taxonomy'] + '.' + annot['vocabulary']

@@ -241,6 +241,10 @@ class DatasetDtos {
       builder.setMimeType(variable.getMimeType());
     }
 
+    if (variable.hasRepeatable()) {
+      builder.setRepeatable(variable.isRepeatable());
+    }
+
     if (!Strings.isNullOrEmpty(variable.getOccurrenceGroup())) {
       builder.setOccurrenceGroup(variable.getOccurrenceGroup());
     }
