@@ -18,7 +18,7 @@ import org.obiba.mica.JSONUtils;
 import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.access.NoSuchDataAccessRequestException;
 import org.obiba.mica.access.domain.DataAccessRequest;
-import org.obiba.mica.access.domain.DataAccessRequestStatus;
+import org.obiba.mica.access.domain.DataAccessEntityStatus;
 import org.obiba.mica.access.notification.DataAccessRequestCommentMailNotification;
 import org.obiba.mica.access.service.DataAccessEntityService;
 import org.obiba.mica.access.service.DataAccessRequestService;
@@ -28,7 +28,6 @@ import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.FileStoreService;
 import org.obiba.mica.security.Roles;
 import org.obiba.mica.security.event.ResourceDeletedEvent;
-import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.slf4j.Logger;
@@ -259,12 +258,12 @@ public class DataAccessRequestResource extends DataAccessEntityResource {
   }
 
   @Override
-  protected Response updateStatus(DataAccessRequestStatus status) {
+  protected Response updateStatus(DataAccessEntityStatus status) {
     DataAccessRequest request = dataAccessRequestService.findById(id);
     String resource = String.format("/data-access-request/%s/amendment", id);
     String applicant = request.getApplicant();
 
-    if (DataAccessRequestStatus.APPROVED.equals(status)) {
+    if (DataAccessEntityStatus.APPROVED.equals(status)) {
       subjectAclService.addUserPermission(applicant, resource, "ADD", null);
       subjectAclService.addGroupPermission(Roles.MICA_DAO, resource, "VIEW,DELETE", null);
     } else {

@@ -19,8 +19,8 @@ import org.obiba.mica.access.DataAccessEntityRepository;
 import org.obiba.mica.access.DataAccessRequestRepository;
 import org.obiba.mica.access.NoSuchDataAccessRequestException;
 import org.obiba.mica.access.domain.DataAccessAmendment;
+import org.obiba.mica.access.domain.DataAccessEntityStatus;
 import org.obiba.mica.access.domain.DataAccessRequest;
-import org.obiba.mica.access.domain.DataAccessRequestStatus;
 import org.obiba.mica.access.event.DataAccessRequestDeletedEvent;
 import org.obiba.mica.access.event.DataAccessRequestUpdatedEvent;
 import org.obiba.mica.core.repository.AttachmentRepository;
@@ -74,12 +74,12 @@ public class DataAccessRequestService extends DataAccessEntityService<DataAccess
   @Override
   public DataAccessRequest save(@NotNull DataAccessRequest request) {
     DataAccessRequest saved = request;
-    DataAccessRequestStatus from = null;
+    DataAccessEntityStatus from = null;
     Iterable<Attachment> attachmentsToDelete = null;
     Iterable<Attachment> attachmentsToSave = null;
 
     if(request.isNew()) {
-      setAndLogStatus(saved, DataAccessRequestStatus.OPENED);
+      setAndLogStatus(saved, DataAccessEntityStatus.OPENED);
       saved.setId(generateId());
       attachmentsToSave = saved.getAttachments();
     } else {
@@ -98,7 +98,7 @@ public class DataAccessRequestService extends DataAccessEntityService<DataAccess
           "lastModifiedDate", "statusChangeHistory");
       } else {
         saved = request;
-        setAndLogStatus(saved, DataAccessRequestStatus.OPENED);
+        setAndLogStatus(saved, DataAccessEntityStatus.OPENED);
       }
     }
 

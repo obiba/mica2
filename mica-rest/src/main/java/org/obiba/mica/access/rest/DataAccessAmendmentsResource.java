@@ -3,13 +3,10 @@ package org.obiba.mica.access.rest;
 
 import com.codahale.metrics.annotation.Timed;
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.obiba.mica.access.domain.DataAccessAmendment;
-import org.obiba.mica.access.domain.DataAccessRequest;
-import org.obiba.mica.access.domain.DataAccessRequestStatus;
+import org.obiba.mica.access.domain.DataAccessEntityStatus;
 import org.obiba.mica.access.service.DataAccessAmendmentService;
 import org.obiba.mica.access.service.DataAccessRequestService;
-import org.obiba.mica.security.Roles;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
@@ -57,7 +54,7 @@ public class DataAccessAmendmentsResource {
     amendment.setApplicant(applicant);
     amendment.setId(null);
     amendment.setParentId(parentId);
-    amendment.setStatus(DataAccessRequestStatus.OPENED);
+    amendment.setStatus(DataAccessEntityStatus.OPENED);
 
     dataAccessAmendmentService.save(amendment);
     resource = String.format("/data-access-request/%s/amendment", parentId);

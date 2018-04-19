@@ -21,7 +21,7 @@ public abstract class DataAccessEntity extends AbstractAuditableDocument impleme
    */
   protected String content;
 
-  protected DataAccessRequestStatus status = DataAccessRequestStatus.OPENED;
+  protected DataAccessEntityStatus status = DataAccessEntityStatus.OPENED;
 
   private List<StatusChange> statusChangeHistory;
 
@@ -37,11 +37,11 @@ public abstract class DataAccessEntity extends AbstractAuditableDocument impleme
     this.applicant = applicant;
   }
 
-  public DataAccessRequestStatus getStatus() {
+  public DataAccessEntityStatus getStatus() {
     return status;
   }
 
-  public void setStatus(DataAccessRequestStatus status) {
+  public void setStatus(DataAccessEntityStatus status) {
     this.status = status;
   }
 
@@ -85,7 +85,7 @@ public abstract class DataAccessEntity extends AbstractAuditableDocument impleme
     }
 
     public Builder status(String status) {
-      request.status = DataAccessRequestStatus.valueOf(status.toUpperCase());
+      request.status = DataAccessEntityStatus.valueOf(status.toUpperCase());
       return this;
     }
 
