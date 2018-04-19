@@ -3,10 +3,12 @@ package org.obiba.mica.access.rest;
 
 import com.codahale.metrics.annotation.Timed;
 import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.obiba.mica.access.domain.DataAccessAmendment;
 import org.obiba.mica.access.domain.DataAccessRequest;
 import org.obiba.mica.access.domain.DataAccessRequestStatus;
 import org.obiba.mica.access.service.DataAccessAmendmentService;
+import org.obiba.mica.access.service.DataAccessRequestService;
 import org.obiba.mica.security.Roles;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.web.model.Dtos;
@@ -35,6 +37,9 @@ public class DataAccessAmendmentsResource {
   private SubjectAclService subjectAclService;
 
   @Inject
+  private DataAccessRequestService dataAccessRequestService;
+
+  @Inject
   private DataAccessAmendmentService dataAccessAmendmentService;
 
   private String parentId;
@@ -42,6 +47,9 @@ public class DataAccessAmendmentsResource {
   @POST
   @Timed
   public Response create(Mica.DataAccessRequestDto dto, @Context UriInfo uriInfo) {
+    String resource = String.format("/data-access-request/%s/amendment", parentId);
+    subjectAclService.checkPermission(resource, "ADD");
+
     DataAccessAmendment amendment = dtos.fromAmendmentDto(dto);
 
     // force applicant and make sure it is a new request
@@ -52,7 +60,7 @@ public class DataAccessAmendmentsResource {
     amendment.setStatus(DataAccessRequestStatus.OPENED);
 
     dataAccessAmendmentService.save(amendment);
-    String resource = String.format("/data-access-request/%s/amendment", parentId);
+    resource = String.format("/data-access-request/%s/amendment", parentId);
 
     subjectAclService.addPermission(resource, "VIEW,EDIT,DELETE", amendment.getId());
     subjectAclService.addPermission(resource + "/" + amendment.getId(), "EDIT", "_status");
