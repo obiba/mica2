@@ -23,7 +23,7 @@ import org.obiba.mica.access.DataAccessAmendmentRepository;
 import org.obiba.mica.access.DataAccessEntityRepository;
 import org.obiba.mica.access.NoSuchDataAccessRequestException;
 import org.obiba.mica.access.domain.DataAccessAmendment;
-import org.obiba.mica.access.domain.DataAccessRequestStatus;
+import org.obiba.mica.access.domain.DataAccessEntityStatus;
 import org.obiba.mica.access.event.DataAccessAmendmentDeletedEvent;
 import org.obiba.mica.access.event.DataAccessAmendmentUpdatedEvent;
 import org.slf4j.Logger;
@@ -49,10 +49,10 @@ public class DataAccessAmendmentService extends DataAccessEntityService<DataAcce
   @Override
   public DataAccessAmendment save(@NotNull DataAccessAmendment amendment) {
     DataAccessAmendment saved = amendment;
-    DataAccessRequestStatus from = null;
+    DataAccessEntityStatus from = null;
 
     if(amendment.isNew()) {
-      setAndLogStatus(saved, DataAccessRequestStatus.OPENED);
+      setAndLogStatus(saved, DataAccessEntityStatus.OPENED);
       saved.setId(generateId());
     } else {
       saved = dataAmendmentRequestRepository.findOne(amendment.getId());
@@ -67,7 +67,7 @@ public class DataAccessAmendmentService extends DataAccessEntityService<DataAcce
           "lastModifiedDate", "statusChangeHistory");
       } else {
         saved = amendment;
-        setAndLogStatus(saved, DataAccessRequestStatus.OPENED);
+        setAndLogStatus(saved, DataAccessEntityStatus.OPENED);
       }
     }
 
@@ -92,7 +92,7 @@ public class DataAccessAmendmentService extends DataAccessEntityService<DataAcce
   public List<DataAccessAmendment> findByStatus(@Nullable String parentId, @Nullable List<String> status) {
     if (status == null || status.isEmpty()) return dataAmendmentRequestRepository.findByParentId(parentId);
 
-    List<DataAccessRequestStatus> statusList = status.stream().map(DataAccessRequestStatus::valueOf)
+    List<DataAccessEntityStatus> statusList = status.stream().map(DataAccessEntityStatus::valueOf)
       .collect(Collectors.toList());
 
     return dataAmendmentRequestRepository.findByParentId(parentId)

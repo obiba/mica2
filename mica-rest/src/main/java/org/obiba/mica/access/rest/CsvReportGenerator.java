@@ -17,8 +17,8 @@ import com.jayway.jsonpath.PathNotFoundException;
 import org.joda.time.DateTime;
 import org.joda.time.Days;
 import org.joda.time.base.AbstractInstant;
+import org.obiba.mica.access.domain.DataAccessEntityStatus;
 import org.obiba.mica.access.domain.DataAccessRequest;
-import org.obiba.mica.access.domain.DataAccessRequestStatus;
 import org.obiba.mica.access.domain.StatusChange;
 
 import java.io.IOException;
@@ -107,13 +107,13 @@ public class CsvReportGenerator {
     writer.writeNext(toArray(extractTranslatedField(GENERIC_TANSLATION_PREFIX + ".summary")));
     writer.writeNext(toArray(extractTranslatedField(GENERIC_TANSLATION_PREFIX + ".currentStatus"), extractTranslatedField(GENERIC_TANSLATION_PREFIX + ".numberOfAccessRequests")));
 
-    Map<DataAccessRequestStatus, Long> summaryStatistics = dataAccessRequestDtos.stream().collect(Collectors.groupingBy(DataAccessRequest::getStatus, Collectors.counting()));
-    writer.writeNext(toArray(extractTranslatedField(DataAccessRequestStatus.OPENED), getWith0AsDefault(summaryStatistics.get(DataAccessRequestStatus.OPENED))));
-    writer.writeNext(toArray(extractTranslatedField(DataAccessRequestStatus.SUBMITTED), getWith0AsDefault(summaryStatistics.get(DataAccessRequestStatus.SUBMITTED))));
-    writer.writeNext(toArray(extractTranslatedField(DataAccessRequestStatus.REVIEWED), getWith0AsDefault(summaryStatistics.get(DataAccessRequestStatus.REVIEWED))));
-    writer.writeNext(toArray(extractTranslatedField(DataAccessRequestStatus.APPROVED), getWith0AsDefault(summaryStatistics.get(DataAccessRequestStatus.APPROVED))));
-    writer.writeNext(toArray(extractTranslatedField(DataAccessRequestStatus.CONDITIONALLY_APPROVED), getWith0AsDefault(summaryStatistics.get(DataAccessRequestStatus.CONDITIONALLY_APPROVED))));
-    writer.writeNext(toArray(extractTranslatedField(DataAccessRequestStatus.REJECTED), getWith0AsDefault(summaryStatistics.get(DataAccessRequestStatus.REJECTED))));
+    Map<DataAccessEntityStatus, Long> summaryStatistics = dataAccessRequestDtos.stream().collect(Collectors.groupingBy(DataAccessRequest::getStatus, Collectors.counting()));
+    writer.writeNext(toArray(extractTranslatedField(DataAccessEntityStatus.OPENED), getWith0AsDefault(summaryStatistics.get(DataAccessEntityStatus.OPENED))));
+    writer.writeNext(toArray(extractTranslatedField(DataAccessEntityStatus.SUBMITTED), getWith0AsDefault(summaryStatistics.get(DataAccessEntityStatus.SUBMITTED))));
+    writer.writeNext(toArray(extractTranslatedField(DataAccessEntityStatus.REVIEWED), getWith0AsDefault(summaryStatistics.get(DataAccessEntityStatus.REVIEWED))));
+    writer.writeNext(toArray(extractTranslatedField(DataAccessEntityStatus.APPROVED), getWith0AsDefault(summaryStatistics.get(DataAccessEntityStatus.APPROVED))));
+    writer.writeNext(toArray(extractTranslatedField(DataAccessEntityStatus.CONDITIONALLY_APPROVED), getWith0AsDefault(summaryStatistics.get(DataAccessEntityStatus.CONDITIONALLY_APPROVED))));
+    writer.writeNext(toArray(extractTranslatedField(DataAccessEntityStatus.REJECTED), getWith0AsDefault(summaryStatistics.get(DataAccessEntityStatus.REJECTED))));
     writer.writeNext(toArray(""));
   }
 
@@ -164,7 +164,7 @@ public class CsvReportGenerator {
     return dateTime.toString(DATETIME_FORMAT);
   }
 
-  private String extractTranslatedField(DataAccessRequestStatus status) {
+  private String extractTranslatedField(DataAccessEntityStatus status) {
     switch (status) {
       case OPENED:
         return extractTranslatedField(GENERIC_TANSLATION_PREFIX + ".opened");
@@ -193,7 +193,7 @@ public class CsvReportGenerator {
 
   DateTime extractLastApprovedOrRejectDate(List<StatusChange> statusChangeHistory) {
     return statusChangeHistory.stream()
-      .filter(statusChange -> asList(DataAccessRequestStatus.APPROVED, DataAccessRequestStatus.REJECTED).contains(statusChange.getTo()))
+      .filter(statusChange -> asList(DataAccessEntityStatus.APPROVED, DataAccessEntityStatus.REJECTED).contains(statusChange.getTo()))
       .map(StatusChange::getChangedOn)
       .max(AbstractInstant::compareTo)
       .orElseGet(() -> null);
@@ -201,7 +201,7 @@ public class CsvReportGenerator {
 
   DateTime extractFirstSubmissionDate(List<StatusChange> statusChangeHistory) {
     return statusChangeHistory.stream()
-      .filter(statusChange -> DataAccessRequestStatus.SUBMITTED.equals(statusChange.getTo()))
+      .filter(statusChange -> DataAccessEntityStatus.SUBMITTED.equals(statusChange.getTo()))
       .map(StatusChange::getChangedOn)
       .min(AbstractInstant::compareTo)
       .orElseGet(() -> null);

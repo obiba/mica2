@@ -105,6 +105,10 @@ class DataAccessRequestDtos {
       .isPermitted(Paths.get("/data-access-request", request.getId()).toString(), "EDIT", "_status")) {
       builder.addActions("EDIT_STATUS");
     }
+    if(subjectAclService
+      .isPermitted(Paths.get("/data-access-request", request.getId(), "/amendment").toString(), "ADD")) {
+      builder.addActions("ADD_AMENDMENT");
+    }
     if (SecurityUtils.getSubject().hasRole(Roles.MICA_DAO) ||
       subjectAclService.isPermitted(Paths.get("/data-access-request", request.getId(), "_attachments").toString(), "EDIT")) {
       builder.addActions("EDIT_ATTACHMENTS");
