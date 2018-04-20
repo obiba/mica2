@@ -24,6 +24,9 @@
       <li ng-class="{'active': tab.name === 'form'}">
         <a href ng-click="tab.name = 'form'" title="{{'form' | translate}}"><i class="fa fa-list"></i></a>
       </li>
+      <li ng-class="{'active': tab.name === 'amendment'}">
+        <a href ng-click="tab.name = 'amendment'" title="{{'data-access-config.amendment.title' | translate}}"><i class="fa fa-wpforms"></i></a>
+      </li>
       <li ng-class="{'active': tab.name === 'notifications'}">
         <a href ng-click="tab.name = 'notifications'" title="{{'data-access-config.notifications.title' | translate}}"><i class="fa fa-envelope"></i></a>
       </li>
@@ -87,6 +90,28 @@
       </label>
       <p class="help-block" translate>data-access-config.pdf-embedded.info</p>
     </div>
+
+  </div>
+  <div ng-show="tab.name === 'amendment'">
+    <h3 translate>data-access-config.amendment.schema-form.title</h3>
+
+    <p class="help-block" translate>data-access-config.amendment.schema-form.info</p>
+    <entity-sf-config form="formAmendment" alert-id="DataAccessConfigController" dirty-observable="state.getDirtyObservable()"></entity-sf-config>
+
+    <h3 translate>data-access-config.amendment.properties.title</h3>
+
+    <p class="help-block" translate>data-access-config.amendment.properties.info</p>
+
+    <form>
+      <div class="row">
+        <div class="col-md-6">
+          <div form-input name="titleFieldPath" model="amendmentForm.titleFieldPath" label="data-access-config.amendment.title-field" required="false" help="data-access-config.amendment.title-field-help"></div>
+        </div>
+        <div class="col-md-6">
+          <div form-input name="summaryFieldPath" model="amendmentForm.summaryFieldPath" label="data-access-config.amendment.summary-field" required="false" help="data-access-config.amendment.summary-field-help"></div>
+        </div>
+      </div>
+    </form>
 
   </div>
 
