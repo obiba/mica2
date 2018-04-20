@@ -11,11 +11,13 @@
 package org.obiba.mica.web.model;
 
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
+import com.google.common.collect.Lists;
 import org.apache.shiro.SecurityUtils;
 import org.obiba.mica.access.domain.DataAccessEntity;
 import org.obiba.mica.access.domain.DataAccessAmendment;
@@ -91,20 +93,14 @@ class DataAccessRequestDtos {
     }
 
     request.getAttachments().forEach(attachment -> builder.addAttachments(attachmentDtos.asDto(attachment)));
-    // possible actions depending on the caller
-    if(subjectAclService.isPermitted("/data-access-request", "VIEW", request.getId())) {
-      builder.addActions("VIEW");
-    }
-    if(subjectAclService.isPermitted("/data-access-request", "EDIT", request.getId())) {
-      builder.addActions("EDIT");
-    }
-    if(subjectAclService.isPermitted("/data-access-request", "DELETE", request.getId())) {
-      builder.addActions("DELETE");
-    }
+
+    builder.addAllActions(addDataAccessEntityActions(request, "/data-access-request"));
+
     if(subjectAclService
-      .isPermitted(Paths.get("/data-access-request", request.getId()).toString(), "EDIT", "_status")) {
-      builder.addActions("EDIT_STATUS");
+      .isPermitted(Paths.get("/data-access-request", request.getId(), "/amendment").toString(), "ADD")) {
+      builder.addActions("ADD_AMENDMENT");
     }
+
     if (SecurityUtils.getSubject().hasRole(Roles.MICA_DAO) ||
       subjectAclService.isPermitted(Paths.get("/data-access-request", request.getId(), "_attachments").toString(), "EDIT")) {
       builder.addActions("EDIT_ATTACHMENTS");
@@ -153,6 +149,13 @@ class DataAccessRequestDtos {
       Mica.DataAccessAmendmentDto.newBuilder().setParentId(amendment.getParentId()).build()
     );
 
+    builder.addAllActions(
+      addDataAccessEntityActions(
+        amendment,
+        String.format("/data-access-request/%s/amendment", amendment.getParentId())
+      )
+    );
+
     return builder.build();
   }
 
@@ -170,4 +173,23 @@ class DataAccessRequestDtos {
     return (DataAccessAmendment)builder.build();
   }
 
+  private List<String> addDataAccessEntityActions(DataAccessEntity entity, String resource) {
+    List<String> actions = Lists.newArrayList();
+
+    // possible actions depending on the caller
+    if(subjectAclService.isPermitted(resource, "VIEW", entity.getId())) {
+      actions.add("VIEW");
+    }
+    if(subjectAclService.isPermitted(resource, "EDIT", entity.getId())) {
+      actions.add("EDIT");
+    }
+    if(subjectAclService.isPermitted(resource, "DELETE", entity.getId())) {
+      actions.add("DELETE");
+    }
+    if(subjectAclService
+      .isPermitted(Paths.get(resource, entity.getId()).toString(), "EDIT", "_status")) {
+      actions.add("EDIT_STATUS");
+    }
+    return actions;
+  }
 }
