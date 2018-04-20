@@ -383,6 +383,7 @@ public class SubjectAclService {
     String id  = request.getId();
     removeResourcePermissions(resource, id);
     removeResourcePermissions(resource + "/" + id, "_status");
+    removeResourcePermissions(resource + "/" + id+ "/amendment", null);
     removeResourcePermissions(resource + "/" + id + "/_attachments", null);
     removeResourcePermissions(resource + "/" + id+ "/comment", null);
   }

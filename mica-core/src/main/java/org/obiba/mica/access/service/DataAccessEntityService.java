@@ -10,8 +10,8 @@ import org.obiba.mica.PdfUtils;
 import org.obiba.mica.access.DataAccessEntityRepository;
 import org.obiba.mica.access.NoSuchDataAccessRequestException;
 import org.obiba.mica.access.domain.DataAccessEntity;
+import org.obiba.mica.access.domain.DataAccessEntityStatus;
 import org.obiba.mica.access.domain.DataAccessRequest;
-import org.obiba.mica.access.domain.DataAccessRequestStatus;
 import org.obiba.mica.access.domain.StatusChange;
 import org.obiba.mica.core.service.MailService;
 import org.obiba.mica.core.service.SchemaFormContentFileService;
@@ -80,7 +80,7 @@ public abstract class DataAccessEntityService<T extends DataAccessEntity> {
    * @param status
    * @throws NoSuchDataAccessRequestException
    */
-  public T updateStatus(@NotNull String id, @NotNull DataAccessRequestStatus status)
+  public T updateStatus(@NotNull String id, @NotNull DataAccessEntityStatus status)
     throws NoSuchDataAccessRequestException {
     T request = findById(id);
     setAndLogStatus(request, status);
@@ -96,7 +96,7 @@ public abstract class DataAccessEntityService<T extends DataAccessEntity> {
    */
   public void updateContent(@NotNull String id, String content) {
     T request = findById(id);
-    if (request.getStatus() != DataAccessRequestStatus.OPENED)
+    if (request.getStatus() != DataAccessEntityStatus.OPENED)
       throw new IllegalArgumentException("Data access request content can only be modified when status is draft");
     request.setContent(content);
     save(request);
@@ -133,7 +133,7 @@ public abstract class DataAccessEntityService<T extends DataAccessEntity> {
 
   public List<T> findByStatus(@Nullable List<String> status) {
     if (status == null || status.isEmpty()) return getRepository().findAll();
-    List<DataAccessRequestStatus> statusList = status.stream().map(DataAccessRequestStatus::valueOf)
+    List<DataAccessEntityStatus> statusList = status.stream().map(DataAccessEntityStatus::valueOf)
       .collect(Collectors.toList());
 
     return getRepository().findAll().stream().filter(dar -> statusList.contains(dar.getStatus()))
@@ -150,7 +150,7 @@ public abstract class DataAccessEntityService<T extends DataAccessEntity> {
    * @param request
    * @param from
    */
-  protected void sendNotificationEmails(T request, @Nullable DataAccessRequestStatus from) {
+  protected void sendNotificationEmails(T request, @Nullable DataAccessEntityStatus from) {
     // check is new request
     if (from == null) return;
 
@@ -308,8 +308,8 @@ public abstract class DataAccessEntityService<T extends DataAccessEntity> {
     return null;
   }
 
-  protected void setAndLogStatus(T request, DataAccessRequestStatus to) {
-    DataAccessRequestStatus from = request.getStatus();
+  protected void setAndLogStatus(T request, DataAccessEntityStatus to) {
+    DataAccessEntityStatus from = request.getStatus();
     dataAccessRequestUtilService.checkStatusTransition(request, to);
     request.setStatus(to);
     request.getStatusChangeHistory().add( //

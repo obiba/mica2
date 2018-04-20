@@ -20,7 +20,7 @@ import com.google.common.collect.Lists;
 import org.joda.time.DateTime;
 import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.access.domain.DataAccessRequest;
-import org.obiba.mica.access.domain.DataAccessRequestStatus;
+import org.obiba.mica.access.domain.DataAccessEntityStatus;
 import org.obiba.mica.access.event.DataAccessRequestDeletedEvent;
 import org.obiba.mica.access.event.DataAccessRequestUpdatedEvent;
 import org.obiba.mica.access.service.DataAccessRequestUtilService;
@@ -286,7 +286,7 @@ public class ProjectService extends AbstractGitPersistableService<ProjectState, 
   @Subscribe
   public void dataAccessRequestUpdated(DataAccessRequestUpdatedEvent event) {
     DataAccessRequest request = event.getPersistable();
-    if(!projectRepository.exists(request.getId()) && request.getStatus() == DataAccessRequestStatus.APPROVED) {
+    if(!projectRepository.exists(request.getId()) && request.getStatus() == DataAccessEntityStatus.APPROVED) {
       Project project = new Project();
       project.setId(event.getPersistable().getId());
       project.setDataAccessRequestId(event.getPersistable().getId());
