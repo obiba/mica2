@@ -31,4 +31,11 @@ mica.dataAccessConfig
         'delete': {method: 'DELETE', params: {type: '@type', principal: '@principal'}, errorHandler: true},
         'get': {method: 'GET', isArray: true}
       });
+    }])
+  .factory('DataAccessAmendmentFormResource', ['$resource',
+    function ($resource) {
+      return $resource('ws/config/data-access-amendment-form', {}, {
+        'get': {method: 'GET', errorHandler: true},
+        'save': {method: 'PUT', errorHandler: true}
+      });
     }]);

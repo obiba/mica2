@@ -23,6 +23,7 @@ mica.dataAccessConfig
     'DataAccessFormPermissionsResource',
     'LocalizedSchemaFormService',
     'AlertBuilder',
+    'DataAccessAmendmentFormResource',
     function ($rootScope,
               $q,
               $location,
@@ -33,7 +34,8 @@ mica.dataAccessConfig
               EntitySchemaFormService,
               DataAccessFormPermissionsResource,
               LocalizedSchemaFormService,
-              AlertBuilder) {
+              AlertBuilder,
+              DataAccessAmendmentFormResource) {
 
       MicaConfigResource.get(function (micaConfig) {
         $scope.tabs = [];
@@ -45,11 +47,24 @@ mica.dataAccessConfig
       $scope.state = new mica.commons.EntityState($q, $scope);
       $scope.pdfTemplates = {};
 
+      function entitySchemaFormSanitizeToSave(entitySchemaForm, form){
+        $scope[entitySchemaForm].definition = $scope[form].definition;
+        $scope[entitySchemaForm].schema = $scope[form].schema;
+      }
+
+      function entitySchemaFormDelete(entitySchemaForm){
+        delete $scope[entitySchemaForm].definitionJson;
+        delete $scope[entitySchemaForm].schemaJson;
+        delete $scope[entitySchemaForm].model;
+      }
+
       var saveForm = function() {
-        switch (EntitySchemaFormService.isFormValid($scope.form)) {
+        switch (EntitySchemaFormService.isFormValid($scope.form) && EntitySchemaFormService.isFormValid($scope.formAmendment)) {
           case EntitySchemaFormService.ParseResult.VALID:
-            $scope.dataAccessForm.definition = $scope.form.definition;
-            $scope.dataAccessForm.schema = $scope.form.schema;
+            entitySchemaFormSanitizeToSave('dataAccessForm', 'form');
+            entitySchemaFormSanitizeToSave('amendmentForm', 'amendmentForm');
+
+
             $scope.dataAccessForm.pdfTemplates = [];
 
             for (var lang in $scope.pdfTemplates) {
@@ -62,9 +77,8 @@ mica.dataAccessConfig
               }
             }
 
-            delete $scope.dataAccessForm.definitionJson;
-            delete $scope.dataAccessForm.schemaJson;
-            delete $scope.dataAccessForm.model;
+            entitySchemaFormDelete('dataAccessForm');
+            entitySchemaFormDelete('amendmentForm');
 
             DataAccessFormResource.save($scope.dataAccessForm,
               function () {
@@ -74,6 +88,16 @@ mica.dataAccessConfig
               function (response) {
                 AlertBuilder.newBuilder().response(response).build();
               });
+
+            DataAccessAmendmentFormResource.save($scope.amendmentForm,
+              function () {
+                $scope.state.setDirty(false);
+                AlertBuilder.newBuilder().delay(3000).type('success').trMsg('entity-config.save-alert.success').build();
+              },
+              function (response) {
+                AlertBuilder.newBuilder().response(response).build();
+              });
+
             break;
           case EntitySchemaFormService.ParseResult.SCHEMA:
             AlertBuilder.newBuilder().trMsg('data-access-config.syntax-error.schema').build();
@@ -85,6 +109,7 @@ mica.dataAccessConfig
       };
 
       $scope.dataAccessForm = {schema: '', definition: '', pdfTemplates: []};
+      $scope.amendmentForm = {schema: '', definition: ''};
       $scope.fileTypes = '.pdf';
 
       function isUndefinedOrNull(a) { return angular.isUndefined(a) || a === null; }
@@ -127,15 +152,23 @@ mica.dataAccessConfig
 
       }
 
+      function entitySchemaFormSanitize(SchemaFormEntity){
+        SchemaFormEntity.model = {};
+        SchemaFormEntity.definitionJson = EntitySchemaFormService.parseJsonSafely(SchemaFormEntity.definition, []);
+        SchemaFormEntity.definition = EntitySchemaFormService.prettifyJson(SchemaFormEntity.definitionJson);
+        SchemaFormEntity.schemaJson = EntitySchemaFormService.parseJsonSafely(SchemaFormEntity.schema, {});
+        SchemaFormEntity.schema = EntitySchemaFormService.prettifyJson(SchemaFormEntity.schemaJson);
+        return  SchemaFormEntity;
+      }
+
+      function entitySchemaFormaError(response){
+        AlertBuilder.newBuilder().response(response).build();
+      }
+
       $scope.form = DataAccessFormResource.get(
         function(dataAccessForm){
           var watchState = {firstTime: true};
-          dataAccessForm.model = {};
-          dataAccessForm.definitionJson = EntitySchemaFormService.parseJsonSafely(dataAccessForm.definition, []);
-          dataAccessForm.definition = EntitySchemaFormService.prettifyJson(dataAccessForm.definitionJson);
-          dataAccessForm.schemaJson = EntitySchemaFormService.parseJsonSafely(dataAccessForm.schema, {});
-          dataAccessForm.schema = EntitySchemaFormService.prettifyJson(dataAccessForm.schemaJson);
-          $scope.dataAccessForm = dataAccessForm;
+          $scope.dataAccessForm = entitySchemaFormSanitize(dataAccessForm);
           $scope.dataAccessForm.pdfTemplates = $scope.dataAccessForm.pdfTemplates || [];
 
           $scope.pdfTemplates = $scope.dataAccessForm.pdfTemplates.reduce(function(s, file) {
@@ -152,10 +185,22 @@ mica.dataAccessConfig
 
           startWatchForDirty('dataAccessForm', watchState);
           startWatchForDirty('pdfTemplates', watchState);
-        },
-        function(response) {
-          AlertBuilder.newBuilder().response(response).build();
-        });
+        },entitySchemaFormaError);
+
+      $scope.formAmendment = DataAccessAmendmentFormResource.get(function(amendmentForm){
+        var watchState = {firstTime: true};
+        $scope.amendmentForm = entitySchemaFormSanitize(amendmentForm);
+
+        if (amendmentForm.definitionJson.length === 0) {
+          AlertBuilder.newBuilder().trMsg('data-access-config-amendment.parse-error.schema').build();
+        }
+        if (Object.getOwnPropertyNames(amendmentForm.schemaJson).length === 0) {
+          AlertBuilder.newBuilder().trMsg('data-access-config-amendment.parse-error.definition').build();
+        }
+
+        startWatchForDirty('amendmentForm', watchState);
+
+      },entitySchemaFormaError);
 
       $scope.loadPermissions = function() {
         $scope.acls = DataAccessFormPermissionsResource.get();
