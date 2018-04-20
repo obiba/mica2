@@ -16,6 +16,7 @@ import org.obiba.mica.access.domain.StatusChange;
 import org.obiba.mica.core.service.MailService;
 import org.obiba.mica.core.service.SchemaFormContentFileService;
 import org.obiba.mica.core.support.IdentifierGenerator;
+import org.obiba.mica.core.support.YamlClassPathResourceReader;
 import org.obiba.mica.micaConfig.domain.DataAccessForm;
 import org.obiba.mica.micaConfig.service.DataAccessFormService;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
@@ -57,6 +58,8 @@ public abstract class DataAccessEntityService<T extends DataAccessEntity> {
 
   @Inject
   protected MicaConfigService micaConfigService;
+
+  private static final String EXCLUSION_IDS_YAML_RESOURCE_PATH = "/config/data-access-form/data-access-request-exclusion-ids-list.yml";
 
   abstract protected DataAccessEntityRepository<T> getRepository();
 
@@ -323,8 +326,17 @@ public abstract class DataAccessEntityService<T extends DataAccessEntity> {
 
   protected String generateId() {
     DataAccessForm dataAccessForm = dataAccessFormService.find().get();
-    IdentifierGenerator idGenerator = IdentifierGenerator.newBuilder().prefix(dataAccessForm.getIdPrefix())
-      .size(dataAccessForm.getIdLength()).zeros().build();
+
+    Object exclusions = YamlClassPathResourceReader.read(EXCLUSION_IDS_YAML_RESOURCE_PATH, Map.class).get("exclusions");
+
+    IdentifierGenerator.Builder builder = IdentifierGenerator.newBuilder().prefix(dataAccessForm.getIdPrefix())
+      .size(dataAccessForm.getIdLength()).zeros();
+
+    if (exclusions instanceof List) {
+      builder.exclusions((List) exclusions);
+    }
+
+    IdentifierGenerator idGenerator = builder.build();
     while (true) {
       String id = idGenerator.generateIdentifier();
       if (getRepository().findOne(id) == null) return id;
