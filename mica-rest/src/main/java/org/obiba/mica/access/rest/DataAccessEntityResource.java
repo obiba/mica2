@@ -1,12 +1,9 @@
 package org.obiba.mica.access.rest;
 
-import org.obiba.mica.access.NoSuchDataAccessRequestException;
 import org.obiba.mica.access.domain.DataAccessEntity;
-import org.obiba.mica.access.domain.DataAccessRequest;
-import org.obiba.mica.access.domain.DataAccessRequestStatus;
+import org.obiba.mica.access.domain.DataAccessEntityStatus;
 import org.obiba.mica.access.service.DataAccessEntityService;
 import org.obiba.mica.security.Roles;
-import org.obiba.mica.security.event.ResourceDeletedEvent;
 import org.obiba.mica.security.service.SubjectAclService;
 
 import javax.inject.Inject;
@@ -29,7 +26,7 @@ public abstract class DataAccessEntityResource {
   public Response updateStatus(@QueryParam("to") String status) {
     subjectAclService.checkPermission(getResourcePath() + "/" + getId(), "EDIT", "_status");
 
-    switch(DataAccessRequestStatus.valueOf(status.toUpperCase())) {
+    switch(DataAccessEntityStatus.valueOf(status.toUpperCase())) {
       case SUBMITTED:
         return submit();
       case OPENED:
@@ -53,13 +50,13 @@ public abstract class DataAccessEntityResource {
   protected Response submit() {
     String id  = getId();
     DataAccessEntity request = getService().findById(id);
-    boolean fromOpened = request.getStatus() == DataAccessRequestStatus.OPENED;
-    boolean fromConditionallyApproved = request.getStatus() == DataAccessRequestStatus.CONDITIONALLY_APPROVED;
+    boolean fromOpened = request.getStatus() == DataAccessEntityStatus.OPENED;
+    boolean fromConditionallyApproved = request.getStatus() == DataAccessEntityStatus.CONDITIONALLY_APPROVED;
     if(fromOpened && !subjectAclService.isCurrentUser(request.getApplicant())) {
       // only applicant can submit an opened request
       throw new ForbiddenException();
     }
-    getService().updateStatus(id, DataAccessRequestStatus.SUBMITTED);
+    getService().updateStatus(id, DataAccessEntityStatus.SUBMITTED);
     if (fromOpened || fromConditionallyApproved) {
       // applicant cannot edit, nor delete request anymore + status cannot be changed
       subjectAclService.removePermission(getResourcePath(), "EDIT,DELETE", id);
@@ -72,7 +69,7 @@ public abstract class DataAccessEntityResource {
 
   protected Response open() {
     String id = getId();
-    DataAccessEntity request = getService().updateStatus(getId(), DataAccessRequestStatus.OPENED);
+    DataAccessEntity request = getService().updateStatus(getId(), DataAccessEntityStatus.OPENED);
     // restore applicant permissions
     subjectAclService.addUserPermission(request.getApplicant(), getResourcePath(), "VIEW,EDIT,DELETE", id);
     subjectAclService.addUserPermission(request.getApplicant(), getResourcePath()+ "/" + id, "EDIT", "_status");
@@ -84,7 +81,7 @@ public abstract class DataAccessEntityResource {
   protected Response review() {
     String id = getId();
     DataAccessEntity request = getService().findById(id);
-    boolean fromConditionallyApproved = request.getStatus() == DataAccessRequestStatus.CONDITIONALLY_APPROVED;
+    boolean fromConditionallyApproved = request.getStatus() == DataAccessEntityStatus.CONDITIONALLY_APPROVED;
     if (fromConditionallyApproved) {
       // remove applicant permissions
       subjectAclService.removePermission(getResourcePath(), "EDIT,DELETE", id);
@@ -92,29 +89,29 @@ public abstract class DataAccessEntityResource {
       // data access officers can change the status of the request
       subjectAclService.addGroupPermission(Roles.MICA_DAO, getResourcePath()+ "/" + id, "EDIT", "_status");
     }
-    return updateStatus(DataAccessRequestStatus.REVIEWED);
+    return updateStatus(DataAccessEntityStatus.REVIEWED);
   }
 
   protected Response approve() {
-    return updateStatus(DataAccessRequestStatus.APPROVED);
+    return updateStatus(DataAccessEntityStatus.APPROVED);
   }
 
   protected Response reject() {
-    return updateStatus(DataAccessRequestStatus.REJECTED);
+    return updateStatus(DataAccessEntityStatus.REJECTED);
   }
 
   protected Response conditionallyApprove() {
     String id = getId();
-    DataAccessEntity request = getService().updateStatus(id, DataAccessRequestStatus.CONDITIONALLY_APPROVED);
+    DataAccessEntity request = getService().updateStatus(id, DataAccessEntityStatus.CONDITIONALLY_APPROVED);
     // restore applicant permissions
     subjectAclService.addUserPermission(request.getApplicant(), getResourcePath(), "VIEW,EDIT,DELETE", id);
     subjectAclService.addUserPermission(request.getApplicant(), getResourcePath()+ "/" + id, "EDIT", "_status");
     // data access officers cannot change the status of this request anymore
     subjectAclService.removeGroupPermission(Roles.MICA_DAO, getResourcePath()+ "/" + id, "EDIT", "_status");
-    return updateStatus(DataAccessRequestStatus.CONDITIONALLY_APPROVED);
+    return updateStatus(DataAccessEntityStatus.CONDITIONALLY_APPROVED);
   }
 
-  protected Response updateStatus(DataAccessRequestStatus status) {
+  protected Response updateStatus(DataAccessEntityStatus status) {
     getService().updateStatus(getId(), status);
     return Response.noContent().build();
   }
