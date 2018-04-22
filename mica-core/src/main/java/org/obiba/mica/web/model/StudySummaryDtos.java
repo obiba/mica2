@@ -221,6 +221,8 @@ class StudySummaryDtos {
       .setId(population.getId())
       .addAllName(localizedStringDtos.asDto(population.getName()));
 
+    if (population.getDescription() != null) builder.addAllDescription(localizedStringDtos.asDto(population.getDescription()));
+
     if (population.hasModel()) builder.setContent(JSONUtils.toJSON(population.getModel()));
 
     if(population.getDataCollectionEvents() != null) {
@@ -235,6 +237,10 @@ class StudySummaryDtos {
     Mica.DataCollectionEventSummaryDto.Builder builder = Mica.DataCollectionEventSummaryDto.newBuilder()
       .setId(dce.getId())
       .addAllName(localizedStringDtos.asDto(dce.getName()));
+
+
+    if (dce.getDescription() != null) builder.addAllDescription(localizedStringDtos.asDto(dce.getDescription()));
+
 
     if(dce.hasModel()) builder.setContent(JSONUtils.toJSON(dce.getModel()));
 

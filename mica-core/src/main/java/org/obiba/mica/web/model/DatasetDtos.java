@@ -212,6 +212,9 @@ class DatasetDtos {
       if (variable.hasAttribute("label", null)) {
         builder.addAllVariableLabel(localizedStringDtos.asDto(variable.getAttributes().getAttribute("label", null).getValues()));
       }
+      if (variable.hasAttribute("description", null)) {
+        builder.addAllDescription(localizedStringDtos.asDto(variable.getAttributes().getAttribute("description", null).getValues()));
+      }
       variable.getAttributes().asAttributeList().stream()
         .filter(Attribute::hasNamespace)
         .filter(attr -> !Strings.isNullOrEmpty(attr.getValues().getUndetermined()))

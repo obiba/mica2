@@ -90,14 +90,15 @@ def to_string(value):
         return ''
     return str(value)
 
-def flatten(content):
+def flatten(content, locale='en'):
     flat = {}
     for key in content.keys():
         value = content[key]
         if type(value) is dict:
-            fvalue = flatten(value)
+            fvalue = flatten(value, locale)
             for k in fvalue:
-                flat[key + '.' + k] = fvalue[k]
+                nk = key + '.' + k if k != locale else key
+                flat[nk] = fvalue[k]
         elif type(value) is list:
             encoder = codecs.getincrementalencoder('utf-8')()
             flat[key] = encoder.encode('|'.join(map(to_string, value)))
@@ -107,14 +108,14 @@ def flatten(content):
     return flat
 
 def search_networks(args, client):
-    q = append_rql(args.query, 'network', ['acronym', 'name', 'studyIds','model'], ['id'], args.start, args.limit, args.locale)
+    q = append_rql(args.query, 'network', ['*'], ['id'], args.start, args.limit, args.locale)
     ws = mica.core.UriBuilder(['networks', '_rql']).build()
     res = send_search_request(client, ws, q, args.verbose)
     if 'networkResultDto' in res and 'obiba.mica.NetworkResultDto.result' in res['networkResultDto']:
-        headers = ['id','name','acronym','studyIds']
+        headers = ['id','name','acronym','description','studyIds']
         for item in res['networkResultDto']['obiba.mica.NetworkResultDto.result']['networks']:
             if 'content' in item:
-                item['flat'] = flatten(json.loads(item['content']))
+                item['flat'] = flatten(json.loads(item['content']), args.locale)
                 for key in item['flat'].keys():
                     if key not in headers:
                         headers.append(key)
@@ -123,6 +124,7 @@ def search_networks(args, client):
             row = {
                 'id': item['id'],
                 'name': extract_label(item['name'], args.locale),
+                'description': extract_label(item['description'], args.locale) if 'description' in item else '',
                 'acronym': extract_label(item['acronym'], args.locale),
                 'studyIds': '|'.join(item['studyIds'])
             }
@@ -132,14 +134,14 @@ def search_networks(args, client):
             writer.writerow(row)
 
 def search_studies(args, client):
-    q = append_rql(args.query, 'study', ['acronym', 'name', 'model'], ['id'], args.start, args.limit, args.locale)
+    q = append_rql(args.query, 'study', ['acronym', 'name', 'objectives', 'model'], ['id'], args.start, args.limit, args.locale)
     ws = mica.core.UriBuilder(['studies', '_rql']).build()
     res = send_search_request(client, ws, q, args.verbose)
     if 'studyResultDto' in res and 'obiba.mica.StudyResultDto.result' in res['studyResultDto']:
-        headers = ['id','name','acronym']
+        headers = ['id','name','acronym','objectives']
         for item in res['studyResultDto']['obiba.mica.StudyResultDto.result']['summaries']:
             if 'content' in item:
-                item['flat'] = flatten(json.loads(item['content']))
+                item['flat'] = flatten(json.loads(item['content']), args.locale)
                 for key in item['flat'].keys():
                     if key not in headers:
                         headers.append(key)
@@ -148,6 +150,7 @@ def search_studies(args, client):
             row = {
                 'id': item['id'],
                 'name': extract_label(item['name'], args.locale),
+                'objectives': extract_label(item['objectives'], args.locale) if 'objectives' in item else '',
                 'acronym': extract_label(item['acronym'], args.locale)
             }
             if 'flat' in item:
@@ -156,16 +159,16 @@ def search_studies(args, client):
             writer.writerow(row)
 
 def search_study_populations(args, client):
-    q = append_rql(args.query, 'study', ['populations.name','populations.model'], ['id'], args.start, args.limit, args.locale)
+    q = append_rql(args.query, 'study', ['populations.name','populations.description','populations.model'], ['id'], args.start, args.limit, args.locale)
     ws = mica.core.UriBuilder(['studies', '_rql']).build()
     res = send_search_request(client, ws, q, args.verbose)
     if 'studyResultDto' in res and 'obiba.mica.StudyResultDto.result' in res['studyResultDto']:
-        headers = ['id','name','studyId']
+        headers = ['id','name','description','studyId']
         for item in res['studyResultDto']['obiba.mica.StudyResultDto.result']['summaries']:
             if 'populationSummaries' in item:
                 for pop in item['populationSummaries']:
                     if 'content' in pop:
-                        pop['flat'] = flatten(json.loads(pop['content']))
+                        pop['flat'] = flatten(json.loads(pop['content']), args.locale)
                         for key in pop['flat'].keys():
                             if key not in headers:
                                 headers.append(key)
@@ -176,6 +179,7 @@ def search_study_populations(args, client):
                     row = {
                         'id': item['id'] + ':' + pop['id'],
                         'name': extract_label(pop['name'], args.locale),
+                        'description': extract_label(pop['description'], args.locale) if 'description' in pop else '',
                         'studyId': item['id']
                     }
                     if 'flat' in pop:
@@ -188,14 +192,14 @@ def search_study_dces(args, client):
     ws = mica.core.UriBuilder(['studies', '_rql']).build()
     res = send_search_request(client, ws, q, args.verbose)
     if 'studyResultDto' in res and 'obiba.mica.StudyResultDto.result' in res['studyResultDto']:
-        headers = ['id','name','studyId', 'populationId', 'start', 'end']
+        headers = ['id','name','description','studyId', 'populationId', 'start', 'end']
         for item in res['studyResultDto']['obiba.mica.StudyResultDto.result']['summaries']:
             if 'populationSummaries' in item:
                 for pop in item['populationSummaries']:
                     if 'dataCollectionEventSummaries' in pop:
                         for dce in pop['dataCollectionEventSummaries']:
                             if 'content' in dce:
-                                dce['flat'] = flatten(json.loads(dce['content']))
+                                dce['flat'] = flatten(json.loads(dce['content']), args.locale)
                                 for key in dce['flat'].keys():
                                     if key not in headers:
                                         headers.append(key)
@@ -208,6 +212,7 @@ def search_study_dces(args, client):
                             row = {
                                 'id': item['id'] + ':' + pop['id'] + dce['id'],
                                 'name': extract_label(dce['name'], args.locale),
+                                'description': extract_label(dce['description'], args.locale) if 'description' in dce else '',
                                 'studyId': item['id'],
                                 'populationId': item['id'] + ':' + pop['id'],
                                 'start': dce['start'] if 'start' in dce else '',
@@ -220,14 +225,14 @@ def search_study_dces(args, client):
 
 
 def search_datasets(args, client):
-    q = append_rql(args.query, 'dataset', ['acronym', 'name', 'studyTable', 'harmonizationTable','model'], ['id'], args.start, args.limit, args.locale)
+    q = append_rql(args.query, 'dataset', ['*'], ['id'], args.start, args.limit, args.locale)
     ws = mica.core.UriBuilder(['datasets', '_rql']).build()
     res = send_search_request(client, ws, q, args.verbose)
     if 'datasetResultDto' in res and 'obiba.mica.DatasetResultDto.result' in res['datasetResultDto']:
-        headers = ['id','name','acronym', 'variableType', 'entityType', 'studyId', 'populationId', 'dceId']
+        headers = ['id','name','acronym','description', 'variableType', 'entityType', 'studyId', 'populationId', 'dceId']
         for item in res['datasetResultDto']['obiba.mica.DatasetResultDto.result']['datasets']:
             if 'content' in item:
-                item['flat'] = flatten(json.loads(item['content']))
+                item['flat'] = flatten(json.loads(item['content']), args.locale)
                 for key in item['flat'].keys():
                     if key not in headers:
                         headers.append(key)
@@ -247,6 +252,7 @@ def search_datasets(args, client):
                 'id': item['id'],
                 'name': extract_label(item['name'], args.locale),
                 'acronym': extract_label(item['acronym'], args.locale),
+                'description': extract_label(item['description'], args.locale) if 'description' in item else '',
                 'variableType': item['variableType'],
                 'entityType': item['entityType'],
                 'studyId': study_id,
@@ -272,7 +278,7 @@ def search_variables(args, client):
             return ''
 
     if 'variableResultDto' in res and 'obiba.mica.DatasetVariableResultDto.result' in res['variableResultDto']:
-        headers = ['id','name','label','valueType','nature','categories','categories.missing','categories.label',
+        headers = ['id','name','label','description','valueType','nature','categories','categories.missing','categories.label',
                    'datasetId','studyId','populationId','dceId',
                    'variableType','mimeType','unit','referencedEntityType','repeatable','occurrenceGroup']
         for item in res['variableResultDto']['obiba.mica.DatasetVariableResultDto.result']['summaries']:
@@ -287,6 +293,7 @@ def search_variables(args, client):
                 'id': encoder.encode(item['id']),
                 'name': encoder.encode(item['name']),
                 'label': extract_label(item['variableLabel'], args.locale) if 'variableLabel' in item else '',
+                'description': extract_label(item['description'], args.locale) if 'description' in item else '',
                 'datasetId': item['datasetId'],
                 'studyId': item['studyId'],
                 'populationId': item['populationId'] if 'populationId' in item else '',
