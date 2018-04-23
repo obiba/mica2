@@ -27,7 +27,7 @@
     "grunt-contrib-less": "1.3.0",
     "jquery-ui": "1.12.1",
     "json3": "3.3.2",
-    "mica-study-timeline": "https://github.com/obiba/mica-study-timeline.git#master",
+    "mica-study-timeline": "https://github.com/obiba/mica-study-timeline.git#1.0.5",
     "ng-file-upload": "12.2.13",
     "ng-obiba": "https://github.com/obiba/ng-obiba.git#1.7.0",
     "ng-obiba-mica": "https://github.com/obiba/ng-obiba-mica.git#branch-3.3.x",
