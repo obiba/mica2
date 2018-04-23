@@ -18,6 +18,7 @@ import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
 import org.obiba.git.CommitInfo;
+import org.obiba.mica.access.domain.DataAccessAmendment;
 import org.obiba.mica.access.domain.DataAccessRequest;
 import org.obiba.mica.core.domain.*;
 import org.obiba.mica.dataset.domain.Dataset;
@@ -27,6 +28,7 @@ import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.AttachmentState;
 import org.obiba.mica.file.TempFile;
+import org.obiba.mica.micaConfig.domain.DataAccessAmendmentForm;
 import org.obiba.mica.micaConfig.domain.DataAccessForm;
 import org.obiba.mica.micaConfig.domain.DataCollectionEventConfig;
 import org.obiba.mica.micaConfig.domain.DatasetConfig;
@@ -401,6 +403,16 @@ public class Dtos {
   }
 
   @NotNull
+  public Mica.DataAccessRequestDto asAmendentDto(@NotNull DataAccessAmendment amendment) {
+    return dataAccessRequestDtos.asAmendmentDto(amendment);
+  }
+
+  @NotNull
+  public DataAccessAmendment fromAmendmentDto(@NotNull Mica.DataAccessRequestDto dto) {
+    return dataAccessRequestDtos.fromAmendmentDto(dto);
+  }
+
+  @NotNull
   public Mica.TaxonomyEntityDto asDto(@NotNull Taxonomy taxonomy, @Nullable String locale) {
     return taxonomyDtos.asDto(taxonomy, locale);
   }
@@ -443,6 +455,16 @@ public class Dtos {
 
   @NotNull
   public DataAccessForm fromDto(@NotNull Mica.DataAccessFormDto dto) {
+    return micaConfigDtos.fromDto(dto);
+  }
+
+  @NotNull
+  public Mica.DataAccessAmendmentFormDto asDto(@NotNull DataAccessAmendmentForm dataAccessAmendmentForm) {
+    return micaConfigDtos.asDto(dataAccessAmendmentForm);
+  }
+
+  @NotNull
+  public DataAccessAmendmentForm fromDto(@NotNull Mica.DataAccessAmendmentFormDto dto) {
     return micaConfigDtos.fromDto(dto);
   }
 

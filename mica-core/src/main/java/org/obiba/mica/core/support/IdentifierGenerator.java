@@ -11,9 +11,11 @@
 package org.obiba.mica.core.support;
 
 import java.security.SecureRandom;
+import java.util.List;
 import java.util.Random;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 
 /**
  * Generate IDs according to specifications.
@@ -29,6 +31,8 @@ public class IdentifierGenerator {
   private String prefix;
 
   private boolean hex = false;
+
+  private List<String> exclusions;
 
   private IdentifierGenerator() {}
 
@@ -52,6 +56,15 @@ public class IdentifierGenerator {
     return Strings.isNullOrEmpty(prefix) ? 0 : prefix.length();
   }
 
+  public List<String> getExclusions() {
+    if (exclusions == null) exclusions = Lists.newArrayList();
+    return exclusions;
+  }
+
+  public void setExclusions(List<String> exclusions) {
+    this.exclusions = exclusions;
+  }
+
   public String generateIdentifier() {
     if(keySize < 1) {
       throw new IllegalStateException("keySize must be at least 1: " + keySize);
@@ -73,7 +86,10 @@ public class IdentifierGenerator {
       value = valueHex;
     }
 
-    return getPrefixLength() > 0 ? prefix + value : value;
+    String result = getPrefixLength() > 0 ? prefix + value : value;
+
+    if (getExclusions().indexOf(result) != -1) return generateIdentifier();
+    return result;
   }
 
   private int nextIntModuloZero() {
@@ -111,6 +127,11 @@ public class IdentifierGenerator {
 
     public Builder hex() {
       idGenerator.hex = true;
+      return this;
+    }
+
+    public Builder exclusions(List<String> exclusions) {
+      idGenerator.exclusions = exclusions;
       return this;
     }
 

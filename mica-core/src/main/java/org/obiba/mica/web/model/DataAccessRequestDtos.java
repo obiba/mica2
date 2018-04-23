@@ -11,12 +11,16 @@
 package org.obiba.mica.web.model;
 
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
+import com.google.common.collect.Lists;
 import org.apache.shiro.SecurityUtils;
+import org.obiba.mica.access.domain.DataAccessEntity;
+import org.obiba.mica.access.domain.DataAccessAmendment;
 import org.obiba.mica.access.domain.DataAccessRequest;
 import org.obiba.mica.access.service.DataAccessRequestUtilService;
 import org.obiba.mica.project.domain.Project;
@@ -57,14 +61,31 @@ class DataAccessRequestDtos {
   @Inject
   private ProjectService projectService;
 
-  @NotNull
-  public Mica.DataAccessRequestDto asDto(@NotNull DataAccessRequest request) {
+  Mica.DataAccessRequestDto.Builder asDtoBuilder(@NotNull DataAccessEntity request) {
     Mica.DataAccessRequestDto.Builder builder = Mica.DataAccessRequestDto.newBuilder();
     builder.setApplicant(request.getApplicant()) //
       .setStatus(request.getStatus().name()) //
       .setTimestamps(TimestampsDtos.asDto(request)); //
     if(request.hasContent()) builder.setContent(request.getContent()); //
     if(!request.isNew()) builder.setId(request.getId());
+
+    request.getStatusChangeHistory()
+      .forEach(statusChange -> builder.addStatusChangeHistory(statusChangeDtos.asDto(statusChange)));
+
+    ObibaRealm.Subject profile = userProfileService.getProfile(request.getApplicant());
+    if(profile != null) {
+      builder.setProfile(userProfileDtos.asDto(profile));
+    }
+
+    // possible status transitions
+    dataAccessRequestUtilService.nextStatus(request).forEach(status -> builder.addNextStatus(status.toString()));
+
+    return builder;
+  }
+
+  @NotNull
+  public Mica.DataAccessRequestDto asDto(@NotNull DataAccessRequest request) {
+    Mica.DataAccessRequestDto.Builder builder = asDtoBuilder(request);
 
     String title = dataAccessRequestUtilService.getRequestTitle(request);
     if(!Strings.isNullOrEmpty(title)) {
@@ -73,23 +94,13 @@ class DataAccessRequestDtos {
 
     request.getAttachments().forEach(attachment -> builder.addAttachments(attachmentDtos.asDto(attachment)));
 
-    request.getStatusChangeHistory()
-      .forEach(statusChange -> builder.addStatusChangeHistory(statusChangeDtos.asDto(statusChange)));
+    builder.addAllActions(addDataAccessEntityActions(request, "/data-access-request"));
 
-    // possible actions depending on the caller
-    if(subjectAclService.isPermitted("/data-access-request", "VIEW", request.getId())) {
-      builder.addActions("VIEW");
-    }
-    if(subjectAclService.isPermitted("/data-access-request", "EDIT", request.getId())) {
-      builder.addActions("EDIT");
-    }
-    if(subjectAclService.isPermitted("/data-access-request", "DELETE", request.getId())) {
-      builder.addActions("DELETE");
-    }
     if(subjectAclService
-      .isPermitted(Paths.get("/data-access-request", request.getId()).toString(), "EDIT", "_status")) {
-      builder.addActions("EDIT_STATUS");
+      .isPermitted(Paths.get("/data-access-request", request.getId(), "/amendment").toString(), "ADD")) {
+      builder.addActions("ADD_AMENDMENT");
     }
+
     if (SecurityUtils.getSubject().hasRole(Roles.MICA_DAO) ||
       subjectAclService.isPermitted(Paths.get("/data-access-request", request.getId(), "_attachments").toString(), "EDIT")) {
       builder.addActions("EDIT_ATTACHMENTS");
@@ -107,24 +118,19 @@ class DataAccessRequestDtos {
       // do nothing
     }
 
-    ObibaRealm.Subject profile = userProfileService.getProfile(request.getApplicant());
-    if(profile != null) {
-      builder.setProfile(userProfileDtos.asDto(profile));
-    }
-
-    // possible status transitions
-    dataAccessRequestUtilService.nextStatus(request).forEach(status -> builder.addNextStatus(status.toString()));
-
     return builder.build();
+  }
+
+  void fromDto(@NotNull Mica.DataAccessRequestDto dto, DataAccessEntity.Builder builder) {
+    builder.applicant(dto.getApplicant()).status(dto.getStatus());
+    if(dto.hasContent()) builder.content(dto.getContent());
   }
 
   @NotNull
   public DataAccessRequest fromDto(@NotNull Mica.DataAccessRequestDto dto) {
     DataAccessRequest.Builder builder = DataAccessRequest.newBuilder();
-    builder.applicant(dto.getApplicant()).status(dto.getStatus());
-    if(dto.hasContent()) builder.content(dto.getContent());
-
-    DataAccessRequest request = builder.build();
+    fromDto(dto, builder);
+    DataAccessRequest request = (DataAccessRequest)builder.build();
     if(dto.hasId()) request.setId(dto.getId());
 
     if(dto.getAttachmentsCount() > 0) {
@@ -132,7 +138,58 @@ class DataAccessRequestDtos {
         dto.getAttachmentsList().stream().map(attachmentDtos::fromDto).collect(Collectors.toList()));
     }
     TimestampsDtos.fromDto(dto.getTimestamps(), request);
+    return (DataAccessRequest)builder.build();
+  }
 
-    return request;
+  @NotNull
+  public Mica.DataAccessRequestDto asAmendmentDto(@NotNull DataAccessAmendment amendment) {
+    Mica.DataAccessRequestDto.Builder builder = asDtoBuilder(amendment);
+    builder.setExtension(
+      Mica.DataAccessAmendmentDto.amendment,
+      Mica.DataAccessAmendmentDto.newBuilder().setParentId(amendment.getParentId()).build()
+    );
+
+    builder.addAllActions(
+      addDataAccessEntityActions(
+        amendment,
+        String.format("/data-access-request/%s/amendment", amendment.getParentId())
+      )
+    );
+
+    return builder.build();
+  }
+
+  @NotNull
+  public DataAccessAmendment fromAmendmentDto(@NotNull Mica.DataAccessRequestDto dto) {
+    DataAccessAmendment.Builder builder = DataAccessAmendment.newBuilder();
+    Mica.DataAccessAmendmentDto extension = dto.getExtension(Mica.DataAccessAmendmentDto.amendment);
+    builder.parentId(extension.getParentId());
+
+    fromDto(dto, builder);
+    DataAccessAmendment amendment = (DataAccessAmendment)builder.build();
+    if(dto.hasId()) amendment.setId(dto.getId());
+    TimestampsDtos.fromDto(dto.getTimestamps(), amendment);
+
+    return (DataAccessAmendment)builder.build();
+  }
+
+  private List<String> addDataAccessEntityActions(DataAccessEntity entity, String resource) {
+    List<String> actions = Lists.newArrayList();
+
+    // possible actions depending on the caller
+    if(subjectAclService.isPermitted(resource, "VIEW", entity.getId())) {
+      actions.add("VIEW");
+    }
+    if(subjectAclService.isPermitted(resource, "EDIT", entity.getId())) {
+      actions.add("EDIT");
+    }
+    if(subjectAclService.isPermitted(resource, "DELETE", entity.getId())) {
+      actions.add("DELETE");
+    }
+    if(subjectAclService
+      .isPermitted(Paths.get(resource, entity.getId()).toString(), "EDIT", "_status")) {
+      actions.add("EDIT_STATUS");
+    }
+    return actions;
   }
 }

@@ -19,6 +19,10 @@ import com.google.common.eventbus.Subscribe;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.AuthorizationException;
 import org.apache.shiro.subject.Subject;
+import org.obiba.mica.access.domain.DataAccessAmendment;
+import org.obiba.mica.access.domain.DataAccessRequest;
+import org.obiba.mica.access.event.DataAccessAmendmentDeletedEvent;
+import org.obiba.mica.access.event.DataAccessRequestDeletedEvent;
 import org.obiba.mica.dataset.event.DatasetDeletedEvent;
 import org.obiba.mica.file.FileUtils;
 import org.obiba.mica.file.event.FileDeletedEvent;
@@ -352,6 +356,15 @@ public class SubjectAclService {
   // Events handling
   //
 
+  private void removeResourcePermissions(String resource, String instance) {
+    // delete specific acls
+    subjectAclRepository.delete(subjectAclRepository.findByResourceAndInstance(resource, encode(instance)));
+    // delete children acls, i.e. acls which resource name starts with regex "<resource>/<instance>/.+"
+
+    String resourcePattern = resource + (Strings.isNullOrEmpty(instance) ? "" : "/" + encode(instance) + "/.+");
+    subjectAclRepository.delete(subjectAclRepository.findByResourceStartingWith(resourcePattern));
+  }
+
   /**
    * Remove all the permissions associated to the resource.
    *
@@ -359,13 +372,30 @@ public class SubjectAclService {
    */
   @Subscribe
   public void onResourceDeleted(ResourceDeletedEvent event) {
-    // delete specific acls
-    subjectAclRepository
-      .delete(subjectAclRepository.findByResourceAndInstance(event.getResource(), encode(event.getInstance())));
-    // delete children acls, i.e. acls which resource name starts with regex "<resource>/<instance>/.+"
-    subjectAclRepository
-      .delete(subjectAclRepository.findByResourceStartingWith(event.getResource() + "/" + encode(event.getInstance()) +
-        "/.+"));
+    removeResourcePermissions(event.getResource(), event.getInstance());
+  }
+
+  @Async
+  @Subscribe
+  public void dataAccessRequestDeleted(DataAccessRequestDeletedEvent event) {
+    DataAccessRequest request = event.getPersistable();
+    String resource  = "/data-access-request";
+    String id  = request.getId();
+    removeResourcePermissions(resource, id);
+    removeResourcePermissions(resource + "/" + id, "_status");
+    removeResourcePermissions(resource + "/" + id+ "/amendment", null);
+    removeResourcePermissions(resource + "/" + id + "/_attachments", null);
+    removeResourcePermissions(resource + "/" + id+ "/comment", null);
+  }
+
+  @Async
+  @Subscribe
+  public void dataAccessAmendmentDeleted(DataAccessAmendmentDeletedEvent event) {
+    DataAccessAmendment amendment = event.getPersistable();
+    String resource  = String.format("/data-access-request/%s/amendment", amendment.getParentId());
+    String id  = amendment.getId();
+    removeResourcePermissions(resource, id);
+    removeResourcePermissions(resource + "/" + id, "_status");
   }
 
   @Async

@@ -714,6 +714,15 @@ message DataAccessRequestDto {
   repeated StatusChangeDto statusChangeHistory = 10;
   optional UserProfileDto profile = 11;
   optional ProjectSummaryDto project = 12;
+  extensions 1000 to max;
+}
+
+message DataAccessAmendmentDto {
+  required string parentId = 1;
+
+  extend DataAccessRequestDto {
+    required DataAccessAmendmentDto amendment = 1000;
+  }
 }
 
 message DataAccessRequestSummaryDto {
@@ -721,6 +730,13 @@ message DataAccessRequestSummaryDto {
   required string status = 2;
   required bool viewable = 3;
   optional string applicant = 4;
+  extensions 1000 to max;
+}
+
+message DataAccessAmendmentSummaryDto {
+  extend DataAccessRequestSummaryDto {
+    required string parentId = 1000;
+  }
 }
 
 message ProjectSummaryDto {
@@ -782,6 +798,15 @@ message DataAccessFormDto {
   optional string attachmentSubject = 28;
   optional string csvExportFormat = 29;
   required PdfDownloadType pdfDownloadType = 30;
+}
+
+message DataAccessAmendmentFormDto {
+  required string schema = 1;
+  required string definition = 2;
+  repeated LocalizedPropertyDto properties = 3;
+  optional string titleFieldPath = 4;
+  optional string summaryFieldPath = 5;
+  optional string csvExportFormat = 6;
 }
 
 message ProjectFormDto {
