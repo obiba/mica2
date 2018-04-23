@@ -128,7 +128,7 @@
     <connection>scm:git:git://github.com/obiba/mica2.git</connection>
     <developerConnection>scm:git:https://github.com/obiba/mica2.git</developerConnection>
     <url>https://github.com/obiba/mica2</url>
-    <tag>HEAD</tag>
+    <tag>mica-3.3.x</tag>
   </scm>
 
   <issueManagement>
