@@ -18,27 +18,27 @@ public class StatusChange implements Serializable {
 
   private static final long serialVersionUID = -3662401180541149163L;
 
-  private DataAccessRequest.Status from;
+  private DataAccessEntityStatus from;
 
-  private DataAccessRequest.Status to;
+  private DataAccessEntityStatus to;
 
   private String author;
 
   private DateTime changedOn;
 
-  public DataAccessRequest.Status getFrom() {
+  public DataAccessEntityStatus getFrom() {
     return from;
   }
 
-  public void setFrom(DataAccessRequest.Status value) {
+  public void setFrom(DataAccessEntityStatus value) {
     from = value;
   }
 
-  public DataAccessRequest.Status getTo() {
+  public DataAccessEntityStatus getTo() {
     return to;
   }
 
-  public void setTo(DataAccessRequest.Status value) {
+  public void setTo(DataAccessEntityStatus value) {
     to = value;
   }
 
@@ -72,12 +72,12 @@ public class StatusChange implements Serializable {
       statusChange = source == null ?  new StatusChange() : source;
     }
 
-    public Builder previous(DataAccessRequest.Status value) {
+    public Builder previous(DataAccessEntityStatus value) {
       statusChange.setFrom(value);
       return this;
     }
 
-    public Builder current(DataAccessRequest.Status value) {
+    public Builder current(DataAccessEntityStatus value) {
       statusChange.setTo(value);
       return this;
     }

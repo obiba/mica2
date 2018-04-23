@@ -16,17 +16,15 @@ import javax.inject.Inject;
 
 import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.core.domain.TaxonomyEntityWrapper;
+import org.obiba.mica.core.support.YamlClassPathResourceReader;
 import org.obiba.mica.micaConfig.event.TaxonomiesUpdatedEvent;
 import org.obiba.mica.micaConfig.repository.TaxonomyConfigRepository;
 import org.obiba.mica.spi.search.TaxonomyTarget;
 import org.obiba.mica.spi.search.support.AggregationHelper;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.obiba.opal.core.domain.taxonomy.Vocabulary;
-import org.springframework.beans.factory.config.YamlMapFactoryBean;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.google.common.eventbus.EventBus;
@@ -46,8 +44,6 @@ public class TaxonomyConfigService {
   private Taxonomy defaultVariableTaxonomy;
 
   private Taxonomy defaultTaxonomyTaxonomy;
-
-  private ObjectMapper mapper = new ObjectMapper();
 
   @Inject
   private EventBus eventBus;
@@ -77,10 +73,7 @@ public class TaxonomyConfigService {
   }
 
   private Taxonomy readTaxonomyFromYaml(String yamlResourcePath) {
-    YamlMapFactoryBean factory = new YamlMapFactoryBean();
-    factory.setResources(new ClassPathResource(yamlResourcePath));
-
-    return mapper.convertValue(factory.getObject(), Taxonomy.class);
+    return YamlClassPathResourceReader.read(yamlResourcePath, Taxonomy.class);
   }
 
   private Taxonomy findByTargetInternal(TaxonomyTarget target) {

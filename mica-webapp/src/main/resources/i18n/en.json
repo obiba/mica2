@@ -1579,6 +1579,20 @@
     "parse-error": {
       "definition": "Form definition is not a valid document, please contact your administrator to configure the form definition.",
       "schema": "Form schema is not a valid document, please contact your administrator to configure the form schema."
+    },
+    "amendment": {
+      "schema-form": {
+        "title": "Amendment Form",
+        "info": "The Amendment form can be specified both in terms of data structure (schema) and data display and validation (definition). See <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>form schema documentation</a> for more details."
+      },
+      "properties": {
+        "title": "Amendment Properties",
+        "info": "Some properties of the Amendment will be extracted from the application form model according to their specified JSON field path."
+      },
+      "title-field": "Title Field",
+      "title-field-help": "The title of the Amendment.",
+      "summary-field": "Summary Field",
+      "summary-field-help": "The lay summary of the Amendment."
     }
   },
   "entity-config": {

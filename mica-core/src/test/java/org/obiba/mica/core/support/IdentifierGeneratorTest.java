@@ -10,8 +10,12 @@
 
 package org.obiba.mica.core.support;
 
+import java.util.List;
+
 import org.junit.Assert;
 import org.junit.Test;
+
+import com.google.common.collect.Lists;
 
 public class IdentifierGeneratorTest {
 
@@ -61,6 +65,19 @@ public class IdentifierGeneratorTest {
     Assert.assertEquals(4, generated.length());
     generated = IdentifierGenerator.newBuilder().size(2).hex().generate();
     Assert.assertEquals(2, generated.length());
+  }
+
+  @Test
+  public void testExclusionsNotCreated() {
+    List<String> exclusions = Lists.newArrayList("0", "3", "4", "8", "9");
+    IdentifierGenerator generator = IdentifierGenerator.newBuilder().zeros().size(1).exclusions(exclusions).build();
+    boolean isNotInExclusions = true;
+
+    for(int i = 0; i < 10; i++) {
+      isNotInExclusions = isNotInExclusions && (exclusions.indexOf(generator.generateIdentifier()) == -1);
+    }
+
+    Assert.assertTrue(isNotInExclusions);
   }
 
 }

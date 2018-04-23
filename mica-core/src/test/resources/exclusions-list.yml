@@ -1,0 +1,7 @@
+#
+# List of id's to exclude
+# [] denotes an empty array otherwise follow YAML specs for sequence of scalars (http://yaml.org/spec/1.0/#id2489726)
+#
+exclusions:
+  - test1
+  - test2

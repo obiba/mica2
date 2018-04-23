@@ -10,15 +10,15 @@
 
 package org.obiba.mica.web.model;
 
-import javax.inject.Inject;
-
 import org.joda.time.DateTime;
-import org.obiba.mica.access.domain.DataAccessRequest;
+import org.obiba.mica.access.domain.DataAccessEntityStatus;
 import org.obiba.mica.access.domain.StatusChange;
 import org.obiba.mica.user.UserProfileService;
 import org.obiba.mica.web.model.Mica.DataAccessRequestDto.StatusChangeDto;
 import org.obiba.shiro.realm.ObibaRealm;
 import org.springframework.stereotype.Component;
+
+import javax.inject.Inject;
 
 @Component
 public class StatusChangeDtos {
@@ -46,8 +46,8 @@ public class StatusChangeDtos {
 
   StatusChange fromDto(StatusChangeDto dto) {
     return StatusChange.newBuilder() //
-      .previous(DataAccessRequest.Status.valueOf(dto.getFrom())) //
-      .current(DataAccessRequest.Status.valueOf(dto.getTo())) //
+      .previous(DataAccessEntityStatus.valueOf(dto.getFrom())) //
+      .current(DataAccessEntityStatus.valueOf(dto.getTo())) //
       .author(dto.getAuthor()) //
       .changedOn(DateTime.parse(dto.getChangedOn())) //
       .build(); //
