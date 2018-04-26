@@ -123,6 +123,7 @@ public class SubjectAclService {
   public boolean isPermitted(@NotNull String resource, @NotNull String action, @Nullable String instance) {
     String perm = resource + ":" + action + (Strings.isNullOrEmpty(instance) ? "" : ":" + encode(instance));
     Subject subject = SecurityUtils.getSubject();
+    if (subject.getPrincipal() == null) logger.warn("Checking permissions for a 'null' principal");
     String permKey = subject.getPrincipal() + ":" + perm;
     try {
       return permissionCache.get(permKey, () -> subject.isPermitted(perm));

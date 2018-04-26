@@ -11,7 +11,7 @@
 package org.obiba.mica.config;
 
 import java.util.concurrent.Executor;
-import org.obiba.mica.core.ExceptionHandlingAsyncTaskExecutor;
+import org.obiba.mica.core.MicaAsyncTaskExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;
@@ -60,7 +60,7 @@ public class AsyncConfiguration implements AsyncConfigurer, EnvironmentAware {
     executor.setMaxPoolSize(poolSize);
     executor.setQueueCapacity(propertyResolver.getProperty("queueCapacity", Integer.class, DEFAULT_QUEUE_CAPACITY));
     executor.setThreadNamePrefix("mica-executor-");
-    return new ExceptionHandlingAsyncTaskExecutor(executor);
+    return new MicaAsyncTaskExecutor(executor);
   }
 
   @Bean(name="opalExecutor")
@@ -74,6 +74,6 @@ public class AsyncConfiguration implements AsyncConfigurer, EnvironmentAware {
     executor.setMaxPoolSize(poolSize);
     executor.setQueueCapacity(propertyResolver.getProperty("opal.queueCapacity", Integer.class, DEFAULT_QUEUE_CAPACITY));
     executor.setThreadNamePrefix("mica-opal-executor-");
-    return new ExceptionHandlingAsyncTaskExecutor(executor);
+    return new MicaAsyncTaskExecutor(executor);
   }
 }
