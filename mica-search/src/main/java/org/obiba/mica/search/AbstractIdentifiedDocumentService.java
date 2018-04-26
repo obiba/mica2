@@ -86,14 +86,13 @@ public abstract class AbstractIdentifiedDocumentService<T extends Identified> ex
 
     if (notCachedIds.isEmpty()) return results;
 
-    // TODO handle case ids size is greater than MAX_SIZE
-
     List<T> notCachedResults = Lists.newArrayList();
     int from = 0;
-    while (notCachedResults.size()<notCachedIds.size()) {
-      String idsAsRqlStringParam = String.join(",", notCachedIds.subList(from, Math.min(from + MAX_SIZE, notCachedIds.size())));
+    while (notCachedResults.size()<notCachedIds.size() && from != notCachedIds.size()) {
+      int to = Math.min(from + MAX_SIZE, notCachedIds.size());
+      String idsAsRqlStringParam = String.join(",", notCachedIds.subList(from, to));
       notCachedResults.addAll(executeRqlQuery(String.format("generic(in(id,(%s)),limit(0,%s))", idsAsRqlStringParam, MAX_SIZE)));
-      from = from + MAX_SIZE;
+      from = to;
     }
 
     if (useCache && useCache()) {

@@ -13,30 +13,39 @@ package org.obiba.mica.core;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.subject.Subject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.task.AsyncTaskExecutor;
 
-public class ExceptionHandlingAsyncTaskExecutor implements AsyncTaskExecutor, InitializingBean, DisposableBean {
+/**
+ * Subject aware, exception handling asynchronous task executor.
+ */
+public class MicaAsyncTaskExecutor implements AsyncTaskExecutor, InitializingBean, DisposableBean {
 
-  private static final Logger log = LoggerFactory.getLogger(ExceptionHandlingAsyncTaskExecutor.class);
+  private static final Logger log = LoggerFactory.getLogger(MicaAsyncTaskExecutor.class);
 
   private final AsyncTaskExecutor executor;
 
-  public ExceptionHandlingAsyncTaskExecutor(AsyncTaskExecutor executor) {
+  public MicaAsyncTaskExecutor(AsyncTaskExecutor executor) {
     this.executor = executor;
   }
 
   @Override
   public void execute(Runnable task) {
-    executor.execute(task);
+    Subject subject = SecurityUtils.getSubject();
+    Runnable work = subject.associateWith(task);
+    executor.execute(work);
   }
 
   @Override
   public void execute(Runnable task, long startTimeout) {
-    executor.execute(createWrappedRunnable(task), startTimeout);
+    Subject subject = SecurityUtils.getSubject();
+    Runnable work = subject.associateWith(task);
+    executor.execute(createWrappedRunnable(work), startTimeout);
   }
 
   private <T> Callable<T> createCallable(Callable<T> task) {
