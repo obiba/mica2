@@ -78,10 +78,10 @@ public class DataAccessAmendmentsResource {
   }
 
   private List<DataAccessAmendment> listByStatusFilteringPermitted(List<String> status) {
-    String resource = String.format("/data-access-request/%s/amendment", parentId);
+    String resource = "/data-access-request";
     List<DataAccessAmendment> amendments = dataAccessAmendmentService.findByStatus(parentId, status);
     return amendments.stream() //
-      .filter(amendment -> subjectAclService.isPermitted(resource, "VIEW", amendment.getId())) //
+      .filter(amendment -> subjectAclService.isPermitted(resource, "VIEW", parentId)) //
       .collect(Collectors.toList());
   }
 }
