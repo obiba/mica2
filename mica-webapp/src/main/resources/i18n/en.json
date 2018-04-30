@@ -1287,6 +1287,7 @@
     "documents": "Additional Documents",
     "documents-help": "Select one or more documents to be attached to the data access request.",
     "no-documents": "No documents.",
+    "add-documents": "Add files",
     "edit-documents": "Add/Remove Files",
     "select-status": "Select a Status",
     "comments": "Comments",
