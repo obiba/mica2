@@ -15,6 +15,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import org.apache.shiro.SecurityUtils;
+import org.obiba.mica.access.domain.DataAccessAmendment;
 import org.obiba.mica.access.domain.DataAccessEntity;
 import org.obiba.mica.access.domain.DataAccessEntityStatus;
 import org.obiba.mica.micaConfig.domain.DataAccessForm;
@@ -96,7 +97,15 @@ public class DataAccessRequestUtilService {
    */
   public Iterable<DataAccessEntityStatus> nextStatus(DataAccessEntity request) {
     List<DataAccessEntityStatus> to = Lists.newArrayList();
-    if (!subjectAclService.isPermitted("/data-access-request/" + request.getId(), "EDIT", "_status")) return to;
+    boolean isPermitted;
+
+    if (request instanceof DataAccessAmendment) {
+      isPermitted = subjectAclService.isPermitted("/data-access-request/" + ((DataAccessAmendment) request).getParentId() + "/amendment/" + request.getId(), "EDIT", "_status");
+    } else {
+      isPermitted = subjectAclService.isPermitted("/data-access-request/" + request.getId(), "EDIT", "_status");
+    }
+
+    if (!isPermitted) return to;
     switch(request.getStatus()) {
       case OPENED:
         if (SecurityUtils.getSubject().getPrincipal().toString().equals(request.getApplicant()))
