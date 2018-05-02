@@ -1272,6 +1272,19 @@
     },
     "show-details": "Show details"
   },
+  "data-access-amendments": "Amendments",
+  "data-access-amendment": {
+    "none": "No amendment requested.",
+    "add": "Add Amendment",
+    "edit": "Edit Amendment",
+    "delete-dialog": {
+      "title": "Delete Amendment",
+      "message": "Are you sure you want to delete amendment '{{arg0}}' requested by '{{arg1}}'?"
+    },
+    "submit": {
+      "invalid": "The amendment cannot be submitted because of an incomplete application form."
+    }
+  },
   "data-access-requests": "Data Access Requests",
   "data-access-request": {
     "applicant": "Applicant",
@@ -1304,7 +1317,7 @@
     },
     "delete-dialog": {
       "title": "Delete Data Access Request",
-      "message": "Are you sure you want to delete Data Access '{{arg0}}' request by '{{arg1}}'?"
+      "message": "Are you sure you want to delete Data Access '{{arg0}}' requested by '{{arg1}}'?"
     },
     "submit": {
       "invalid": "The request cannot be submitted because of an incomplete application form."
