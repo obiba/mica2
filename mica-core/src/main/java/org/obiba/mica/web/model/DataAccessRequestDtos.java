@@ -98,7 +98,7 @@ class DataAccessRequestDtos {
 
     if(subjectAclService
       .isPermitted(Paths.get("/data-access-request", request.getId(), "/amendment").toString(), "ADD")) {
-      builder.addActions("ADD_AMENDMENT");
+      builder.addActions("ADD_AMENDMENTS");
     }
 
     boolean canDeleteAttachments = SecurityUtils.getSubject().hasRole(Roles.MICA_DAO) || SecurityUtils.getSubject().hasRole(Roles.MICA_ADMIN);
