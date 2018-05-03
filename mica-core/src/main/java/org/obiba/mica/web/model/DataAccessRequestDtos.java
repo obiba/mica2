@@ -69,6 +69,11 @@ class DataAccessRequestDtos {
     if(request.hasContent()) builder.setContent(request.getContent()); //
     if(!request.isNew()) builder.setId(request.getId());
 
+    String title = dataAccessRequestUtilService.getRequestTitle(request);
+    if(!Strings.isNullOrEmpty(title)) {
+      builder.setTitle(title);
+    }
+
     request.getStatusChangeHistory()
       .forEach(statusChange -> builder.addStatusChangeHistory(statusChangeDtos.asDto(statusChange)));
 
