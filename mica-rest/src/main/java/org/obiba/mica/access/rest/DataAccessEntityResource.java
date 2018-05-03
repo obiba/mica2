@@ -1,8 +1,11 @@
 package org.obiba.mica.access.rest;
 
+import java.io.IOException;
+
 import org.obiba.mica.access.domain.DataAccessEntity;
 import org.obiba.mica.access.domain.DataAccessEntityStatus;
 import org.obiba.mica.access.service.DataAccessEntityService;
+import org.obiba.mica.file.FileStoreService;
 import org.obiba.mica.security.Roles;
 import org.obiba.mica.security.service.SubjectAclService;
 
@@ -10,10 +13,15 @@ import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 
+import com.codahale.metrics.annotation.Timed;
+
 public abstract class DataAccessEntityResource {
 
   @Inject
   protected SubjectAclService subjectAclService;
+
+  @Inject
+  protected FileStoreService fileStoreService;
 
   protected abstract DataAccessEntityService getService();
 
@@ -41,6 +49,18 @@ public abstract class DataAccessEntityResource {
         return reject();
     }
     throw new BadRequestException("Unknown status");
+  }
+
+  @GET
+  @Timed
+  @Path("/form/attachments/{attachmentName}/{attachmentId}/_download")
+  public Response getFormAttachment(@PathParam("attachmentName") String attachmentName,
+    @PathParam("attachmentId") String attachmentId) throws IOException {
+    subjectAclService.checkPermission(getResourcePath(), "VIEW", getId());
+    getService().findById(getId());
+    return Response.ok(fileStoreService.getFile(attachmentId)).header("Content-Disposition",
+      "attachment; filename=\"" + attachmentName + "\"")
+      .build();
   }
 
   //

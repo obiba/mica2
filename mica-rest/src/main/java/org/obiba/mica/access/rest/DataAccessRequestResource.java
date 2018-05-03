@@ -69,9 +69,6 @@ public class DataAccessRequestResource extends DataAccessEntityResource {
   @Inject
   private EventBus eventBus;
 
-  @Inject
-  private FileStoreService fileStoreService;
-
   @PathParam("id")
   private String id;
 
