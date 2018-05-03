@@ -1283,6 +1283,11 @@
     },
     "submit": {
       "invalid": "The amendment cannot be submitted because of an incomplete application form."
+    },
+    "status-change-confirmation": {
+      "title": "Status Change Confirmation",
+      "message": "Are you sure you want to {{arg0}} this amendment?",
+      "message-review": "Are you sure you want to put this amendment under review?"
     }
   },
   "data-access-requests": "Data Access Requests",

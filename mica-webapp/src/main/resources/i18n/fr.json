@@ -1272,17 +1272,22 @@
     },
     "show-details": "Afficher les détails"
   },
-  "data-access-amendments": "Data Access Amendments",
+  "data-access-amendments": "Amendments",
   "data-access-amendment": {
     "none": "Aucun amendment demandé.",
     "add": "Ajouter un amendment",
     "edit": "Éditer un amendment",
     "delete-dialog": {
-      "title": "Supprimer l'amendment de demande d'accès aux données",
+      "title": "Supprimer l'amendment",
       "message": "Etes-vous sûr de vouloir supprimer l'amendment '{{arg0}}' demandé par '{{arg1}}'?"
     },
     "submit": {
       "invalid": "L'amendment ne peut être soumise en raison d'un formulaire de demande incomplet."
+    },
+    "status-change-confirmation": {
+      "title": "Confirmation de changement d'état",
+      "message": "Êtes-vous sûr de vouloir {{arg0}} cet amendment?",
+      "message-review": "Êtes-vous sûr de vouloir mettre cet amendment en révision?"
     }
   },
   "data-access-requests": "Demandes d'accès aux données",
