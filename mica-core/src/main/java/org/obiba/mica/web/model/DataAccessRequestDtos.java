@@ -154,6 +154,10 @@ class DataAccessRequestDtos {
       Mica.DataAccessAmendmentDto.newBuilder().setParentId(amendment.getParentId()).build()
     );
 
+    if (subjectAclService.isPermitted("/data-access-request", "VIEW", amendment.getParentId())) {
+      builder.addActions("VIEW");
+    }
+
     builder.addAllActions(
       addDataAccessEntityActions(
         amendment,
@@ -182,7 +186,7 @@ class DataAccessRequestDtos {
     List<String> actions = Lists.newArrayList();
 
     // possible actions depending on the caller
-    if(subjectAclService.isPermitted(resource, "VIEW", entity.getId())) {
+    if(entity instanceof DataAccessRequest && subjectAclService.isPermitted(resource, "VIEW", entity.getId())) {
       actions.add("VIEW");
     }
     if(subjectAclService.isPermitted(resource, "EDIT", entity.getId())) {

@@ -1,17 +1,7 @@
 package org.obiba.mica.access.rest;
 
-
-import com.codahale.metrics.annotation.Timed;
-import org.apache.shiro.SecurityUtils;
-import org.obiba.mica.access.domain.DataAccessAmendment;
-import org.obiba.mica.access.domain.DataAccessEntityStatus;
-import org.obiba.mica.access.service.DataAccessAmendmentService;
-import org.obiba.mica.access.service.DataAccessRequestService;
-import org.obiba.mica.security.service.SubjectAclService;
-import org.obiba.mica.web.model.Dtos;
-import org.obiba.mica.web.model.Mica;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.ws.rs.GET;
@@ -20,8 +10,18 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
-import java.util.List;
-import java.util.stream.Collectors;
+
+import org.apache.shiro.SecurityUtils;
+import org.obiba.mica.access.domain.DataAccessAmendment;
+import org.obiba.mica.access.domain.DataAccessEntityStatus;
+import org.obiba.mica.access.service.DataAccessAmendmentService;
+import org.obiba.mica.security.service.SubjectAclService;
+import org.obiba.mica.web.model.Dtos;
+import org.obiba.mica.web.model.Mica;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
+import com.codahale.metrics.annotation.Timed;
 
 @Component
 @Scope("request")
@@ -32,9 +32,6 @@ public class DataAccessAmendmentsResource {
 
   @Inject
   private SubjectAclService subjectAclService;
-
-  @Inject
-  private DataAccessRequestService dataAccessRequestService;
 
   @Inject
   private DataAccessAmendmentService dataAccessAmendmentService;
