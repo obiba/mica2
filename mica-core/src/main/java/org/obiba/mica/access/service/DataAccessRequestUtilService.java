@@ -18,7 +18,10 @@ import org.apache.shiro.SecurityUtils;
 import org.obiba.mica.access.domain.DataAccessAmendment;
 import org.obiba.mica.access.domain.DataAccessEntity;
 import org.obiba.mica.access.domain.DataAccessEntityStatus;
+import org.obiba.mica.access.domain.DataAccessRequest;
+import org.obiba.mica.micaConfig.domain.AbstractDataAccessEntityForm;
 import org.obiba.mica.micaConfig.domain.DataAccessForm;
+import org.obiba.mica.micaConfig.service.DataAccessAmendmentFormService;
 import org.obiba.mica.micaConfig.service.DataAccessFormService;
 import org.obiba.mica.security.Roles;
 import org.obiba.mica.security.service.SubjectAclService;
@@ -47,18 +50,25 @@ public class DataAccessRequestUtilService {
   private DataAccessFormService dataAccessFormService;
 
   @Inject
+  private DataAccessAmendmentFormService dataAccessAmendmentFormService;
+
+  @Inject
   private SubjectAclService subjectAclService;
 
   @Inject
   private UserProfileService userProfileService;
 
+  public AbstractDataAccessEntityForm getDataAccessForm(boolean isDataAccessRequest) {
+    return isDataAccessRequest ? dataAccessFormService.find().get() : dataAccessAmendmentFormService.find().get();
+  }
+
   public String getRequestTitle(DataAccessEntity request) {
-    DataAccessForm dataAccessForm = dataAccessFormService.find().get();
+    AbstractDataAccessEntityForm dataAccessForm = getDataAccessForm(request instanceof DataAccessRequest);
     return getRequestField(request, dataAccessForm.getTitleFieldPath());
   }
 
   public String getRequestSummary(DataAccessEntity request) {
-    DataAccessForm dataAccessForm = dataAccessFormService.find().get();
+    AbstractDataAccessEntityForm dataAccessForm = getDataAccessForm(request instanceof DataAccessRequest);
     return getRequestField(request, dataAccessForm.getSummaryFieldPath());
   }
 
