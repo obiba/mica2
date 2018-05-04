@@ -29,7 +29,6 @@
     <module>mica-web-model</module>
     <module>mica-webapp</module>
     <module>mica-dist</module>
-    <module>mica-python-client</module>
   </modules>
 
   <properties>
