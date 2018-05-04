@@ -7,22 +7,17 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
+
 <assembly>
-  <id>dist</id>
+  <id>python</id>
   <formats>
     <format>zip</format>
   </formats>
   <includeBaseDirectory>false</includeBaseDirectory>
   <fileSets>
     <fileSet>
-      <directory>src/main/python</directory>
-      <outputDirectory>mica-python/bin</outputDirectory>
-      <filtered>true</filtered>
-    </fileSet>
-
-    <fileSet>
-      <directory>../mica-web-model/target/generated-sources/protobuf-python/</directory>
-      <outputDirectory>mica-python/bin/mica/protobuf</outputDirectory>
+      <directory>target/generated-sources/protobuf-python/</directory>
+      <outputDirectory>mica-web-model-python</outputDirectory>
       <includes>
         <include>**/*.*</include>
       </includes>
