@@ -1602,16 +1602,16 @@
     "amendment": {
       "schema-form": {
         "title": "Amendment Form",
-        "info": "The Amendment form can be specified both in terms of data structure (schema) and data display and validation (definition). See <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>form schema documentation</a> for more details."
+        "info": "The amendment form can be specified both in terms of data structure (schema) and data display and validation (definition). See <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>form schema documentation</a> for more details."
       },
       "properties": {
-        "title": "Amendment Properties",
-        "info": "Some properties of the Amendment will be extracted from the application form model according to their specified JSON field path."
+        "title": "Properties",
+        "info": "Some properties of the amendment will be extracted from the application form model according to their specified JSON field path."
       },
       "title-field": "Title Field",
-      "title-field-help": "The title of the Amendment.",
+      "title-field-help": "The title of the amendment.",
       "summary-field": "Summary Field",
-      "summary-field-help": "The lay summary of the Amendment."
+      "summary-field-help": "The lay summary of the amendment."
     }
   },
   "entity-config": {
