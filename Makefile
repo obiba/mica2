@@ -58,7 +58,7 @@ model:
 	cd mica-web-model && ${mvn_exec} install
 
 python:
-	cd mica-python-client && ${mvn_exec} install
+	cd ../mica-python-client && ${mvn_exec} install
 
 rest:
 	cd mica-rest && ${mvn_exec} install
@@ -102,9 +102,9 @@ debug:
 	${mvn_exec} spring-boot:run -Pdev -Dspring.profiles.active=dev -DMICA_HOME="${mica_home}" -DMICA_LOG="${mica_log}"
 
 run-python:
-	cd mica-python-client/target/mica-python/bin && \
+	cd ../mica-python-client/target/mica-python/bin && \
 	chmod +x ./scripts/mica && \
-	export PYTHONPATH=${current_dir}/mica-python-client/target/mica-python/bin && \
+	export PYTHONPATH=${current_dir}/../mica-python-client/target/mica-python/bin && \
 	./scripts/mica ${args}
 
 grunt:
