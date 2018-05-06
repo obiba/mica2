@@ -1496,7 +1496,7 @@
     "title-edit": "Modifier la configuration d'accès aux données",
     "properties": {
       "title": "Propriétés",
-      "info": "Certaines propriétés de la demande seront extraites du modèle de formulaire d'accès en fonction de leur chemin d'accès du champs JSON spécifié."
+      "info": "Certaines propriétés de la demande seront extraites du modèle de formulaire d'accès en fonction de leur chemin d'accès du champ JSON spécifié."
     },
     "title-field": "Champ Titre",
     "title-field-help": "Le titre de la demande.",
@@ -1598,6 +1598,20 @@
     "parse-error": {
       "definition": "La définition du formulaire est pas un document valide, veuillez contacter votre administrateur pour configurer la définition du formulaire.",
       "schema": "Le Schema Form n'est pas un document valide, veuillez contacter votre administrateur pour configurer le formulaire schéma."
+    },
+    "amendment": {
+      "schema-form": {
+        "title": "Formulaire d'amendment",
+        "info": "Le formulaire d'amendment peut être spécifié à la fois en termes de structure de données (schéma) et d'affichage des données et validation (définition). Voir <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>documentation du Schema Form</a> pour plus de détails."
+      },
+      "properties": {
+        "title": "Propriétés",
+        "info": "Certaines propriétés de l'amendement seront extraites du modèle de formulaire en fonction de leur chemin d'accès du champ JSON spécifié."
+      },
+      "title-field": "Champ Titre",
+      "title-field-help": "Le titre de l'amendement.",
+      "summary-field": "Champ Résumé",
+      "summary-field-help": "Le résumé simplifié de l'amendement."
     }
   },
   "entity-config": {
