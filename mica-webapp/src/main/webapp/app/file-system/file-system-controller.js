@@ -24,6 +24,7 @@ mica.fileSystem
     'ServerErrorUtils',
     'DraftFileSystemFileResource',
     'DraftFileSystemFilesResource',
+    'DraftFilePermissionResource',
     'DraftFileAccessResource',
     'DraftFileSystemSearchResource',
     'MicaConfigResource',
@@ -40,6 +41,7 @@ mica.fileSystem
               ServerErrorUtils,
               DraftFileSystemFileResource,
               DraftFileSystemFilesResource,
+              DraftFilePermissionResource,
               DraftFileAccessResource,
               DraftFileSystemSearchResource,
               MicaConfigResource,
@@ -135,6 +137,8 @@ mica.fileSystem
 
         if (response.status !== 403 && $scope.data.document) {
           navigateTo($scope.data.document);
+        } else {
+          navigateToPath('/');
         }
       };
 
@@ -151,6 +155,9 @@ mica.fileSystem
             }
 
             if ($scope.data.document.permissions.edit) {
+              DraftFilePermissionResource.query({path: $scope.data.document.path}, function onSuccess(response) {
+                $scope.data.permissions = response;
+              });
               DraftFileAccessResource.query({path: $scope.data.document.path}, function onSuccess(response) {
                 $scope.data.accesses = response;
               });
@@ -311,7 +318,9 @@ mica.fileSystem
       };
 
       function clearSearchInternal() {
-        LocationService.update($scope.data.document.path);
+        if ($scope.data.document) {
+          LocationService.update($scope.data.document.path);
+        }
         $scope.data.search.text = null;
         $scope.data.search.active = false;
       }
@@ -490,6 +499,29 @@ mica.fileSystem
         });
       };
 
+      $scope.loadPermissions = function (document) {
+        DraftFilePermissionResource.query({path: document.path}, function onSuccess(response) {
+          $scope.data.permissions = response;
+        });
+      };
+
+      $scope.deletePermission = function (document, perm) {
+        DraftFilePermissionResource.delete({path: document.path}, perm, function onSuccess() {
+          $scope.loadPermissions(document);
+        });
+      };
+
+      $scope.addPermission = function (document, perm) {
+        var submittedPerm = angular.copy(perm);
+        submittedPerm.type = perm.type.name ? perm.type.name : 'USER';
+        submittedPerm.role = perm.role.name ? perm.role.name : 'READER';
+        DraftFilePermissionResource.save({path: document.path}, submittedPerm, function onSuccess() {
+          $scope.loadPermissions(document);
+          $scope.data.permission = { type: $scope.SUBJECT_TYPES[0], role: $scope.SUBJECT_ROLES[0] };
+        });
+        $scope.data.addPermission = false;
+      };
+
       $scope.loadAccesses = function (document) {
         DraftFileAccessResource.query({path: document.path}, function onSuccess(response) {
           $scope.data.accesses = response;
@@ -507,14 +539,20 @@ mica.fileSystem
         submittedAccess.type = access.type.name ? access.type.name : 'USER';
         DraftFileAccessResource.save({path: document.path}, submittedAccess, function onSuccess() {
           $scope.loadAccesses(document);
-          $scope.data.access = { type: $scope.ACCESS_TYPES[0] };
+          $scope.data.access = { type: $scope.SUBJECT_TYPES[0] };
         });
         $scope.data.addAccess = false;
       };
 
-      $scope.ACCESS_TYPES = [
+      $scope.SUBJECT_TYPES = [
         {name: 'USER', label: $filter('translate')('permission.user')},
         {name: 'GROUP', label: $filter('translate')('permission.group')}
+      ];
+
+      $scope.SUBJECT_ROLES = [
+        {name: 'READER', label: $filter('translate')('permission.reader')},
+        {name: 'EDITOR', label: $filter('translate')('permission.editor')},
+        {name: 'REVIEWER', label: $filter('translate')('permission.reviewer')}
       ];
 
       $scope.screen = $rootScope.screen;
@@ -561,8 +599,10 @@ mica.fileSystem
       $scope.data = {
         rootPath: null,
         document: null,
+        permissions: [],
+        permission: { type: $scope.SUBJECT_TYPES[0], role: $scope.SUBJECT_ROLES[0] },
         accesses: [],
-        access: { type: $scope.ACCESS_TYPES[0] },
+        access: { type: $scope.SUBJECT_TYPES[0] },
         search: {
           text: null,
           active: false,

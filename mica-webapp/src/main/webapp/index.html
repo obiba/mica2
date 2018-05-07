@@ -117,6 +117,9 @@
             </li>
           </ul>
         </li>
+        <li ng-if="authenticated">
+          <a href="#/files"><span>{{'files' | translate}}</span></a>
+        </li>
       </ul>
 
       <ul class="nav navbar-nav navbar-right" ng-hide="!authenticated">
@@ -324,6 +327,7 @@
 <script src="app/entity-taxonomy-config/entity-taxonomy-config-directive.js"></script>
 <script src="app/access/data-access-request.js"></script>
 <script src="app/file-system/file-system.js"></script>
+<script src="app/file-system/file-system-router.js"></script>
 <script src="app/file-system/file-system-controller.js"></script>
 <script src="app/file-system/file-system-directive.js"></script>
 <script src="app/file-system/file-system-service.js"></script>

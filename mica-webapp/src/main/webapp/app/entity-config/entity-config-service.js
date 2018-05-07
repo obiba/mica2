@@ -35,7 +35,7 @@ mica.entityConfig
       return $resource('ws/config/:target/permissions', {}, {
         'save': {
           method: 'PUT',
-          params: {target: '@target', type: '@type', principal: '@principal', role: '@role'},
+          params: {target: '@target', type: '@type', principal: '@principal', role: '@role', file: '@file'},
           errorHandler: true
         },
         'delete': {method: 'DELETE', params: {target: '@target', type: '@type', principal: '@principal'}, errorHandler: true},

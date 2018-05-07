@@ -16,7 +16,7 @@ mica.fileSystem
   .factory('DraftFileSystemFileResource', ['$resource',
     function ($resource) {
       return $resource('ws/draft/file/:path/', {path: '@path'}, {
-        'get': {method: 'GET', errorHandler: true},
+        'get': {method: 'GET', errorHandler: true, ignoreAuthModule: true},
         'delete': {method: 'DELETE', errorHandler: true},
         'rename': {method: 'PUT', params: {name: '@name'}, errorHandler: true},
         'copy': {method: 'PUT', params: {copy: '@destinationFolder'}, errorHandler: true},
@@ -37,13 +37,27 @@ mica.fileSystem
   .factory('DraftFileSystemSearchResource', ['$resource',
     function ($resource) {
       return $resource('ws/draft/files-search/:path', {path: '@path'}, {
-        'search': { method: 'GET', isArray: true, errorHandler: true},
+        'search': { method: 'GET', isArray: true, errorHandler: true, ignoreAuthModule: true},
         'searchUnderReview': {
           method: 'GET',
           isArray: true,
           params: {recursively: true, query: 'revisionStatus:UNDER_REVIEW'},
           errorHandler: true
         }
+      });
+    }])
+
+  .factory('DraftFilePermissionResource', ['$resource',
+    function ($resource) {
+      return $resource('ws/draft/file-permission/:path', {path: '@path'}, {
+        'save': {
+          method: 'PUT',
+          params: {path: '@path', type: '@type', principal: '@principal', role: '@role'},
+          errorHandler: true
+        },
+        'delete': {method: 'DELETE', params: {path: '@path', type: '@type', principal: '@principal'}, errorHandler: true},
+        'get': {method: 'GET'},
+        'query': {method: 'GET', params: {path: '@path'}, isArray: true}
       });
     }])
 

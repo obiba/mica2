@@ -46,6 +46,49 @@
         <span>{{data.document.timestamps.lastUpdate | amDateFormat : 'lll'}}</span>
       </div>
     </div>
+    <div class="voffset" ng-if="data.document.permissions.publish">
+      <label class="text-muted no-margin">
+        <small>{{'permission.draft' | translate}}</small>
+      </label>
+      <ul class="list-inline">
+        <li>
+          <i class="fa fa-lock"></i>
+        </li>
+        <li ng-repeat="permission in data.permissions" class="label {{permission.type === 'USER' ? 'label-success' : 'label-warning'}} hoffset1" title="{{'permission.' + permission.type.toLowerCase() | translate}}">
+          <em ng-if="permission.principal === '*'" translate>
+            {{permission.type === 'USER' ? 'permission.anyone' : 'permission.any-group'}}
+          </em>
+          <span ng-if="permission.principal !== '*'">
+            {{permission.principal}} ({{'permission.' + permission.role.toLowerCase() | translate}})
+          </span>
+          <a href ng-if="data.document.permissions.delete" ng-click="deletePermission(data.document, permission)" class="hoffset1">x</a>
+        </li>
+        <li ng-if="data.document.permissions.publish && !data.addPermission">
+          <a href ng-click="data.addPermission = true">
+            <i class="fa fa-plus"></i>
+          </a>
+        </li>
+      </ul>
+      <div ng-if="data.document.permissions.publish && data.addPermission" class="panel panel-default">
+        <div class="panel-body">
+          <form name="form" role="form" novalidate>
+            <select id="ptype" name="type" class="form-control" ng-model="data.permission.type" ng-options="type.label for type in SUBJECT_TYPES" required="true">
+            </select>
+            <select id="prole" name="role" class="form-control voffset2" ng-model="data.permission.role" ng-options="role.label for role in SUBJECT_ROLES" required="true">
+            </select>
+            <div form-input name="principal" model="data.permission.principal" placeholder="permission.principal-help"></div>
+            <span class="editable-buttons">
+                <button ng-click="addPermission(data.document, data.permission)" class="btn btn-primary">
+                  <span class="fa fa-check"></span>
+                </button>
+                <button type="button" class="btn btn-default" ng-click="data.addPermission = false">
+                  <span class="fa fa-remove"></span>
+                </button>
+              </span>
+          </form>
+        </div>
+      </div>
+    </div>
     <div class="voffset">
       <label class="text-muted no-margin">
         <small>{{'publish.publication' | translate}}</small>
@@ -59,7 +102,7 @@
         </span>
       </div>
     </div>
-    <div class="voffset" ng-if="!openAccess">
+    <div class="voffset" ng-if="!openAccess && data.document.permissions.publish">
       <label class="text-muted no-margin">
         <small>{{'publish.publication-access' | translate}}</small>
       </label>
@@ -85,7 +128,7 @@
       <div ng-if="data.document.permissions.publish && data.addAccess" class="panel panel-default">
         <div class="panel-body">
           <form name="form" role="form" novalidate>
-            <select id="type" name="type" class="form-control" ng-model="data.access.type" ng-options="type.label for type in ACCESS_TYPES" required="true">
+            <select id="type" name="type" class="form-control" ng-model="data.access.type" ng-options="type.label for type in SUBJECT_TYPES" required="true">
             </select>
             <div form-input name="principal" model="data.access.principal" placeholder="permission.principal-help"></div>
               <span class="editable-buttons">

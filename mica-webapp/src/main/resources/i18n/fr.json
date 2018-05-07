@@ -1135,11 +1135,13 @@
     "editor-help": "Modifier l'accès au document en mode brouillon avec ses révisions et ses fichiers associés. La publication ou la suppression permanente ne sont pas autorisés.",
     "reviewer": "Réviseur",
     "reviewer-help": "Accès total au document, sa publication, la suppression permanente et les autorisations.",
+    "file-permission": "Appliquer la même permission à tous les fichiers associés",
     "file-access": "Appliquer un accès en lecture à tous les fichiers associés",
     "delete-dialog": {
       "title": "Supprimer l'autorisation",
       "message": "Etes-vous sûr de vouloir supprimer l'autorisation de {{arg0}} {{arg1}}"
-    }
+    },
+    "draft": "Permission sur le brouillon"
   },
   "access": {
     "help": "Accorder l'autorisation de <code>Lire</code> la publication.",
@@ -1244,7 +1246,7 @@
         "failed": "La recherche a échoué, veuillez réviser votre requête et réessayer.",
         "timeout": "Trop de recherches simultanées, veuillez réessayer dans quelques instants."
       },
-      "403": "Le serveur a rejeté votre demande, veuillez vous assurer que vous êtes connecté et essayez de nouveau.",
+      "403": "Accès non autorisé.",
       "409": {
         "network": {
           "delete-conflict": "Conflit lors de la suppression du réseau",
