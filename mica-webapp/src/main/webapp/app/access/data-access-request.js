@@ -18,7 +18,8 @@ mica.dataAccessRequest = angular.module('mica.data-access-request', [
       ngObibaMicaAccessTemplateUrlProvider.setHeaderUrl('view','app/access/views/data-access-request-view-header.html');
       ngObibaMicaAccessTemplateUrlProvider.setHeaderUrl('form','app/access/views/data-access-request-form-header.html');
       ngObibaMicaAccessTemplateUrlProvider.setHeaderUrl('list','app/access/views/data-access-request-list-header.html');
-      ngObibaMicaAccessTemplateUrlProvider.setHeaderUrl('amendment','app/access/views/data-access-amendment-view-header.html');
+      ngObibaMicaAccessTemplateUrlProvider.setHeaderUrl('amendmentView','app/access/views/data-access-amendment-view-header.html');
+      ngObibaMicaAccessTemplateUrlProvider.setHeaderUrl('amendmentForm','app/access/views/data-access-amendment-view-header.html');
     }]);
 
 
