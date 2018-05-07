@@ -1140,7 +1140,8 @@
     "delete-dialog": {
       "title": "Delete Permission",
       "message": "Are you sure you want to delete the permission of {{arg0}} {{arg1}}"
-    }
+    },
+    "draft": "Draft Permission"
   },
   "access": {
     "help": "Grant <code>Read</code> access to the current publication.",
