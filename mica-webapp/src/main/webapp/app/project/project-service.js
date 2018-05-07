@@ -70,7 +70,7 @@ mica.project
       return $resource('ws/draft/project/:id/permissions', {}, {
         'save': {
           method: 'PUT',
-          params: {id: '@id', type: '@type', principal: '@principal', role: '@role'},
+          params: {id: '@id', type: '@type', principal: '@principal', role: '@role', file: '@file'},
           errorHandler: true
         },
         'delete': {method: 'DELETE', params: {id: '@id', type: '@type', principal: '@principal'}, errorHandler: true},

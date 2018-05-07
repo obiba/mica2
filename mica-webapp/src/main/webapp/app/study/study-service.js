@@ -45,7 +45,7 @@ mica.study
       return $resource('ws/draft/individual-study/:id/permissions', {}, {
         'save': {
           method: 'PUT',
-          params: {id: '@id', type: '@type', principal: '@principal', role: '@role'},
+          params: {id: '@id', type: '@type', principal: '@principal', role: '@role', file: '@file'},
           errorHandler: true
         },
         'delete': {method: 'DELETE', params: {id: '@id', type: '@type', principal: '@principal'}, errorHandler: true},
@@ -465,7 +465,7 @@ mica.study
       return $resource('ws/draft/harmonization-study/:id/permissions', {}, {
         'save': {
           method: 'PUT',
-          params: {id: '@id', type: '@type', principal: '@principal', role: '@role'},
+          params: {id: '@id', type: '@type', principal: '@principal', role: '@role', file: '@file'},
           errorHandler: true
         },
         'delete': {method: 'DELETE', params: {id: '@id', type: '@type', principal: '@principal'}, errorHandler: true},

@@ -135,6 +135,8 @@ mica.fileSystem
 
         if (response.status !== 403 && $scope.data.document) {
           navigateTo($scope.data.document);
+        } else {
+          navigateToPath('/');
         }
       };
 

@@ -32,7 +32,7 @@ mica.projectConfig
       return $resource('ws/config/project/permissions', {}, {
         'save': {
           method: 'PUT',
-          params: {draft: '@draft', type: '@type', principal: '@principal', role: '@role'},
+          params: {draft: '@draft', type: '@type', principal: '@principal', role: '@role', file: '@file'},
           errorHandler: true
         },
         'delete': {method: 'DELETE', params: {draft: '@draft', type: '@type', principal: '@principal'}, errorHandler: true},

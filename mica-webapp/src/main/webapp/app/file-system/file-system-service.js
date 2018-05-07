@@ -16,7 +16,7 @@ mica.fileSystem
   .factory('DraftFileSystemFileResource', ['$resource',
     function ($resource) {
       return $resource('ws/draft/file/:path/', {path: '@path'}, {
-        'get': {method: 'GET', errorHandler: true},
+        'get': {method: 'GET', errorHandler: true, ignoreAuthModule: true},
         'delete': {method: 'DELETE', errorHandler: true},
         'rename': {method: 'PUT', params: {name: '@name'}, errorHandler: true},
         'copy': {method: 'PUT', params: {copy: '@destinationFolder'}, errorHandler: true},
@@ -37,7 +37,7 @@ mica.fileSystem
   .factory('DraftFileSystemSearchResource', ['$resource',
     function ($resource) {
       return $resource('ws/draft/files-search/:path', {path: '@path'}, {
-        'search': { method: 'GET', isArray: true, errorHandler: true},
+        'search': { method: 'GET', isArray: true, errorHandler: true, ignoreAuthModule: true},
         'searchUnderReview': {
           method: 'GET',
           isArray: true,

@@ -79,10 +79,11 @@ mica.permission
     }
 
     $scope.addPermission = function() {
-      editPermission({role: 'READER', type: 'USER'});
+      editPermission({role: 'READER', type: 'USER', file: true});
     };
 
     $scope.editPermission = function (acl) {
+      acl.file =true;
       editPermission(acl);
     };
 
@@ -194,10 +195,11 @@ mica.permission
     }
 
     $scope.addPermission = function () {
-      editPermission({type:'USER', role: 'READER'});
+      editPermission({type:'USER', role: 'READER', file: true});
     };
 
     $scope.editPermission = function (acl) {
+      acl.file = true;
       editPermission(acl);
     };
 

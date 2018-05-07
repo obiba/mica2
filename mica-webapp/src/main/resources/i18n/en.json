@@ -1135,6 +1135,7 @@
     "editor-help": "Edit access to the document in draft mode with its revisions and its associated files. Publication or permanent deletion are not permitted.",
     "reviewer": "Reviewer",
     "reviewer-help": "Full access to the document, including its publication, permanent deletion and permissions.",
+    "file-permission": "Apply same permission to all associated files",
     "file-access": "Apply Read access to all associated files",
     "delete-dialog": {
       "title": "Delete Permission",
@@ -1244,7 +1245,7 @@
         "failed": "Search failed, please revise your query and try again.",
         "timeout": "Too many search in progress, please retry later."
       },
-      "403": "Server rejected your request, please make sure you are logged in and try again.",
+      "403": "Unauthorized access.",
       "409": {
         "network": {
           "delete-conflict": "Conflict deleting network",
