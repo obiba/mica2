@@ -112,6 +112,7 @@ public class PublishedHarmonizedDatasetVariableResource extends AbstractPublishe
 
   @GET
   @Path("/contingency")
+  @RequiresAuthentication
   @Timed
   public Mica.DatasetVariableContingencyDto getContingency(@QueryParam("by") String crossVariable) {
     Pair<DatasetVariable, DatasetVariable> variables = getContingencyVariables(crossVariable);
@@ -140,6 +141,7 @@ public class PublishedHarmonizedDatasetVariableResource extends AbstractPublishe
 
   @GET
   @Path("/contingency/_export")
+  @RequiresAuthentication
   @Produces("text/csv")
   @Timed
   public Response getContingencyCsv(@QueryParam("by") String crossVariable) throws IOException {
@@ -153,6 +155,7 @@ public class PublishedHarmonizedDatasetVariableResource extends AbstractPublishe
 
   @GET
   @Path("/contingency/_export")
+  @RequiresAuthentication
   @Produces("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
   @Timed
   public Response getContingencyExcel(@QueryParam("by") String crossVariable) throws IOException {
