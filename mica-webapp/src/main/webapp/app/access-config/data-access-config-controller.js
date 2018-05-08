@@ -64,7 +64,6 @@ mica.dataAccessConfig
             entitySchemaFormSanitizeToSave('dataAccessForm', 'form');
             entitySchemaFormSanitizeToSave('amendmentForm', 'amendmentForm');
 
-
             $scope.dataAccessForm.pdfTemplates = [];
 
             for (var lang in $scope.pdfTemplates) {
@@ -80,23 +79,12 @@ mica.dataAccessConfig
             entitySchemaFormDelete('dataAccessForm');
             entitySchemaFormDelete('amendmentForm');
 
-            DataAccessFormResource.save($scope.dataAccessForm,
-              function () {
-                $scope.state.setDirty(false);
-                AlertBuilder.newBuilder().delay(3000).type('success').trMsg('entity-config.save-alert.success').build();
-              },
-              function (response) {
-                AlertBuilder.newBuilder().response(response).build();
-              });
-
-            DataAccessAmendmentFormResource.save($scope.amendmentForm,
-              function () {
-                $scope.state.setDirty(false);
-                AlertBuilder.newBuilder().delay(3000).type('success').trMsg('entity-config.save-alert.success').build();
-              },
-              function (response) {
-                AlertBuilder.newBuilder().response(response).build();
-              });
+            Promise.all([DataAccessFormResource.save($scope.dataAccessForm).$promise, DataAccessAmendmentFormResource.save($scope.amendmentForm)]).then(function (value) {
+              $scope.state.setDirty(false);
+              AlertBuilder.newBuilder().delay(3000).type('success').trMsg('entity-config.save-alert.success').build();
+            }, function (reason) {
+              AlertBuilder.newBuilder().response(reason).build();
+            });
 
             break;
           case EntitySchemaFormService.ParseResult.SCHEMA:
