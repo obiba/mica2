@@ -1276,6 +1276,7 @@
   },
   "data-access-amendments": "Amendments",
   "data-access-amendment": {
+    "title": "Amendment",
     "none": "No amendment requested.",
     "add": "Add Amendment",
     "edit": "Edit Amendment",

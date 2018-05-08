@@ -1274,22 +1274,23 @@
     },
     "show-details": "Afficher les détails"
   },
-  "data-access-amendments": "Amendments",
+  "data-access-amendments": "Amendements",
   "data-access-amendment": {
-    "none": "Aucun amendment demandé.",
-    "add": "Ajouter un amendment",
-    "edit": "Éditer un amendment",
+    "title": "Amendement",
+    "none": "Aucun amendement demandé.",
+    "add": "Ajouter un amendement",
+    "edit": "Éditer un amendement",
     "delete-dialog": {
-      "title": "Supprimer l'amendment",
-      "message": "Etes-vous sûr de vouloir supprimer l'amendment '{{arg0}}' demandé par '{{arg1}}'?"
+      "title": "Supprimer l'amendement",
+      "message": "Etes-vous sûr de vouloir supprimer l'amendement '{{arg0}}' demandé par '{{arg1}}'?"
     },
     "submit": {
-      "invalid": "L'amendment ne peut être soumise en raison d'un formulaire de demande incomplet."
+      "invalid": "L'amendement ne peut être soumise en raison d'un formulaire de demande incomplet."
     },
     "status-change-confirmation": {
       "title": "Confirmation de changement d'état",
-      "message": "Êtes-vous sûr de vouloir {{arg0}} cet amendment?",
-      "message-review": "Êtes-vous sûr de vouloir mettre cet amendment en révision?"
+      "message": "Êtes-vous sûr de vouloir {{arg0}} cet amendement?",
+      "message-review": "Êtes-vous sûr de vouloir mettre cet amendement en révision?"
     },
     "default": {
       "name": "Nom",
@@ -1661,8 +1662,8 @@
     },
     "amendment": {
       "schema-form": {
-        "title": "Formulaire d'amendment",
-        "info": "Le formulaire d'amendment peut être spécifié à la fois en termes de structure de données (schéma) et d'affichage des données et validation (définition). Voir <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>documentation du Schema Form</a> pour plus de détails."
+        "title": "Formulaire d'amendement",
+        "info": "Le formulaire d'amendement peut être spécifié à la fois en termes de structure de données (schéma) et d'affichage des données et validation (définition). Voir <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>documentation du Schema Form</a> pour plus de détails."
       },
       "properties": {
         "title": "Propriétés",
