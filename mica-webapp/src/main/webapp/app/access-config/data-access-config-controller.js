@@ -79,7 +79,7 @@ mica.dataAccessConfig
             entitySchemaFormDelete('dataAccessForm');
             entitySchemaFormDelete('amendmentForm');
 
-            Promise.all([DataAccessFormResource.save($scope.dataAccessForm).$promise, DataAccessAmendmentFormResource.save($scope.amendmentForm)]).then(function (value) {
+            $q.all([DataAccessFormResource.save($scope.dataAccessForm).$promise, DataAccessAmendmentFormResource.save($scope.amendmentForm).$promise]).then(function () {
               $scope.state.setDirty(false);
               AlertBuilder.newBuilder().delay(3000).type('success').trMsg('entity-config.save-alert.success').build();
             }, function (reason) {
