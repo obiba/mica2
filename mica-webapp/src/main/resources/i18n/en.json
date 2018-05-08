@@ -1290,6 +1290,64 @@
       "title": "Status Change Confirmation",
       "message": "Are you sure you want to {{arg0}} this amendment?",
       "message-review": "Are you sure you want to put this amendment under review?"
+    },
+    "default": {
+      "name": "Name",
+      "title": "Title",
+      "position": "Position",
+      "email": "Email",
+      "institution": "Institution",
+      "institution-email": "Institutional Email",
+      "email-alt": "Alternate Email",
+      "phone": "Telephone Number",
+      "address": "Mailing Address",
+      "I": {
+        "title": "Modifications on Contact and Research Project Information",
+        "A": {
+          "title": "Modifications on Name, institution, and contact details of the Applicant (Principal Applicant)",
+          "info": "Please ensure that a full postal address and a valid institutional e-mail address are included. In case of more than one affiliation, applicants are asked to only provide their contact information pertaining to the institution they are affiliated with for the purpose of this research project."
+        },
+        "B": {
+          "title": "Modifications on Name, institution, and contact details of the authorized institutional representative",
+          "info": "Please include a full postal address and a valid institutional e-mail address."
+        },
+        "C": {
+          "title": "Modifications on Title of the Research Project",
+          "info": "",
+          "website": "Project website",
+          "website-help": "If available, please provide the address of the research project website as well."
+        },
+        "D": {
+          "title": "Adding Names of authorized personnel (within your institution)",
+          "info": "Please provide the names of all investigators, collaborators, data managers and research staff that will have access to the research data in order to work on the research project. A valid institutional e-mail address for each name along with their job title and function is also required.",
+          "check": "No personnel will require access to the research data."
+        },
+        "E": {
+          "title": "Adding Names of authorized students (within your institution)",
+          "info": "Please provide the names of all students who will have access to the research data in order to work on the project. A valid e-mail address for each name is required. Students at other institutions should not be included in this list.",
+          "check": "No students will require access to the research data."
+        },
+        "F": {
+          "title": "Modifications on Research Project (scientific abstract)",
+          "info": "Please provide a clear scientific description of the research project, its specific aims, methodology and deliverables and how it meets our objectives, in <strong>no more than 500 words</strong>. Also, please ensure to clearly explain how our research data will be used in the research project."
+        },
+        "G": {
+          "title": "Modifications on Lay summary of the project",
+          "info": "Please provide a short, accessible description of the project for the general public in <strong>no more than 200 words</strong>. Scientific jargon should be avoided to a reasonable extent. This description will be made available on the consortium public access registry and may be used in a variety of communications materials produced by the consortium (e.g. brochures, reports to stakeholders, press releases, blogs etc.)."
+        }
+      },
+      "documents": {
+        "title": "Modifications on Documents",
+        "reb-research-protocol": "Research Ethics Board approved research protocol",
+        "reb-decision-letter": "Decision letter from a Research Ethics Board",
+        "cv": "2-Page CV of the Principal Applicant",
+        "peer-review": "Proof of scientific peer-review, if available",
+        "other": "Other documents"
+      },
+      "signature": {
+        "title": "Signature",
+        "check": "I have completed all mandatory fields, included all necessary documents, and hereby submit this application."
+      }
     }
   },
   "data-access-requests": "Data Access Requests",

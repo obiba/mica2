@@ -1,10 +1,74 @@
 [
   {
     "type": "help",
-    "helpvalue": "<h2>I - t(data-access-request.default.I.title)</h2>"
+    "helpvalue": "<h2>Data Access Request update</h2>"
   },
   {
     "type": "fieldset",
+    "items": [
+      {
+        "type": "help",
+        "helpvalue": "<h3>Nature of modifications</h3>"
+      },
+      {
+        "key": "modificationNature",
+        "type": "checkboxes",
+        "titleMap": [
+          {
+            "value": "IA",
+            "name": "Modifications on applicant info"
+          },
+          {
+            "value": "IB",
+            "name": "Modifications on institutional representative info"
+          },
+          {
+            "value": "IC",
+            "name": "Modifications on research project title"
+          },
+          {
+            "value": "ID",
+            "name": "Add authorized personnel"
+          },
+          {
+            "value": "IE",
+            "name": "Add authorized students"
+          },
+          {
+            "value": "IF",
+            "name": "Modifications on abstract"
+          },
+          {
+            "value": "IG",
+            "name": "Modifications on summary"
+          },
+          {
+            "value": "IIrdRebResearchProtocol",
+            "name": "Research Ethics Board approved research protocol"
+          },
+          {
+            "value": "IIrdRebDecisionLetter",
+            "name": "Decision letter from a Research Ethics Board"
+          },
+          {
+            "value": "IIrdCV",
+            "name": "2-Page CV of the Principal Applicant"
+          },
+          {
+            "value": "IIrdPeerReview",
+            "name": "Proof of scientific peer-review"
+          },
+          {
+            "value": "other",
+            "name": "Other"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "fieldset",
+    "condition": "model.modificationNature.indexOf('IA') > -1",
     "items": [
       {
         "type": "help",
@@ -43,6 +107,7 @@
   },
   {
     "type": "fieldset",
+    "condition": "model.modificationNature.indexOf('IB') > -1",
     "items": [
       {
         "type": "help",
@@ -80,6 +145,7 @@
   },
   {
     "type": "fieldset",
+    "condition": "model.modificationNature.indexOf('IC') > -1",
     "items": [
       {
         "type": "help",
@@ -114,81 +180,94 @@
     ]
   },
   {
-    "type": "help",
-    "helpvalue": "<h3>D. t(data-access-request.default.I.D.title)</h3><p class='help-block'>t(data-access-request.default.I.D.info)</p>"
-  },
-  {
-    "type": "section",
-    "htmlClass": "row",
+    "type": "fieldset",
+    "condition": "model.modificationNature.indexOf('ID') > -1",
     "items": [
       {
-        "type": "section",
-        "htmlClass": "col-xs-6",
-        "items": [
-          "hasNoStaff",
-          {
-            "key": "staff",
-            "add": "New",
-            "style": {
-              "add": "btn-info"
-            },
-            "notitle": true,
-            "items": [
-              "staff[].name",
-              "staff[].title",
-              "staff[].position",
-              "staff[].email"
-            ],
-            "condition": "!model.hasNoStaff"
-          }
-        ]
+        "type": "help",
+        "helpvalue": "<h3>D. t(data-access-request.default.I.D.title)</h3><p class='help-block'>t(data-access-request.default.I.D.info)</p>"
       },
       {
         "type": "section",
-        "htmlClass": "col-xs-6",
-        "items": []
-      }
-    ]
-  },
-  {
-    "type": "help",
-    "helpvalue": "<h3>E. t(data-access-request.default.I.E.title)</h3><p class='help-block'>t(data-access-request.default.I.E.info)</p>"
-  },
-  {
-    "type": "section",
-    "htmlClass": "row",
-    "items": [
-      {
-        "type": "section",
-        "htmlClass": "col-xs-6",
+        "htmlClass": "row",
         "items": [
-          "hasNoStudents",
           {
-            "key": "students",
-            "add": "New",
-            "style": {
-              "add": "btn-info"
-            },
-            "notitle": true,
+            "type": "section",
+            "htmlClass": "col-xs-6",
             "items": [
-              "students[].name",
-              "students[].title",
-              "students[].position",
-              "students[].email"
-            ],
-            "condition": "!model.hasNoStudents"
+              "hasNoStaff",
+              {
+                "key": "staff",
+                "add": "New",
+                "style": {
+                  "add": "btn-info"
+                },
+                "notitle": true,
+                "items": [
+                  "staff[].name",
+                  "staff[].title",
+                  "staff[].position",
+                  "staff[].email"
+                ],
+                "condition": "!model.hasNoStaff"
+              }
+            ]
+          },
+          {
+            "type": "section",
+            "htmlClass": "col-xs-6",
+            "items": []
           }
         ]
-      },
-      {
-        "type": "section",
-        "htmlClass": "col-xs-6",
-        "items": []
       }
     ]
   },
   {
     "type": "fieldset",
+    "condition": "model.modificationNature.indexOf('IE') > -1",
+    "items": [
+      {
+        "type": "help",
+        "helpvalue": "<h3>E. t(data-access-request.default.I.E.title)</h3><p class='help-block'>t(data-access-request.default.I.E.info)</p>"
+      },
+      {
+        "type": "section",
+        "htmlClass": "row",
+        "items": [
+          {
+            "type": "section",
+            "htmlClass": "col-xs-6",
+            "items": [
+              "hasNoStudents",
+              {
+                "key": "students",
+                "add": "New",
+                "style": {
+                  "add": "btn-info"
+                },
+                "notitle": true,
+                "items": [
+                  "students[].name",
+                  "students[].title",
+                  "students[].position",
+                  "students[].email"
+                ],
+                "condition": "!model.hasNoStudents"
+              }
+            ]
+          },
+          {
+            "type": "section",
+            "htmlClass": "col-xs-6",
+            "items": []
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "fieldset",
+    "condition": "model.modificationNature.indexOf('IF') > -1",
     "items": [
       {
         "type": "help",
@@ -207,6 +286,7 @@
   },
   {
     "type": "fieldset",
+    "condition": "model.modificationNature.indexOf('IG') > -1",
     "items": [
       {
         "type": "help",
@@ -225,7 +305,8 @@
   },
   {
     "type": "help",
-    "helpvalue": "<h2>II - t(data-access-request.default.documents.title)</h2>"
+    "helpvalue": "<h2>II - t(data-access-request.default.documents.title)</h2>",
+    "condition": "model.modificationNature.indexOf('IIrdRebResearchProtocol') > -1 || model.modificationNature.indexOf('IIrdRebDecisionLetter') > -1 || model.modificationNature.indexOf('IIrdCV') > -1 || model.modificationNature.indexOf('IIrdPeerReview') > -1"
   },
   {
     "type": "fieldset",
@@ -233,6 +314,7 @@
       {
         "key": "rdRebResearchProtocol",
         "type": "obibaFileUpload",
+        "condition": "model.modificationNature.indexOf('IIrdRebResearchProtocol') > -1",
         "validationMessage": {
           "missingFiles": "t(missing-files)",
           "minItems": "t(min-items)"
@@ -242,6 +324,7 @@
       {
         "key": "rdRebDecisionLetter",
         "type": "obibaFileUpload",
+        "condition": "model.modificationNature.indexOf('IIrdRebDecisionLetter') > -1",
         "validationMessage": {
           "missingFiles": "t(missing-files)",
           "minItems": "t(min-items)"
@@ -251,6 +334,7 @@
       {
         "key": "rdCV",
         "type": "obibaFileUpload",
+        "condition": "model.modificationNature.indexOf('IIrdCV') > -1",
         "validationMessage": {
           "missingFiles": "t(missing-files)",
           "minItems": "t(min-items)"
@@ -260,11 +344,27 @@
       {
         "key": "rdPeerReview",
         "type": "obibaFileUpload",
+        "condition": "model.modificationNature.indexOf('IIrdPeerReview') > -1",
         "validationMessage": {
           "missingFiles": "t(missing-files)",
           "minItems": "t(min-items)"
         },
         "emptyMessage": "t(data-access-request.no-documents)"
+      }
+    ]
+  },
+  {
+    "type": "fieldset",
+    "condition": "model.modificationNature.indexOf('other') > -1",
+    "items": [
+      {
+        "key": "other",
+        "type": "textarea",
+        "rows": 5,
+        "wordLimit": 500,
+        "validationMessage": {
+          "wordLimitError": "The 500 words limit has been exceeded."
+        }
       }
     ]
   },

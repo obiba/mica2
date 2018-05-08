@@ -1,6 +1,23 @@
 {
   "type": "object",
   "properties": {
+    "modificationNature": {
+      "type": "checkboxes",
+      "enum": [
+        "IA",
+        "IB",
+        "IC",
+        "ID",
+        "IE",
+        "IF",
+        "IG",
+        "IIrdRebResearchProtocol",
+        "IIrdRebDecisionLetter",
+        "IIrdCV",
+        "IIrdPeerReview",
+        "other"
+      ]
+    },
     "name": {
       "title": "t(data-access-request.default.name)",
       "type": "string"
@@ -145,6 +162,10 @@
     "summary": {
       "type": "string"
     },
+    "other": {
+      "title": "Other modifications",
+      "type": "string"
+    },
     "rdRebResearchProtocol": {
       "type": "object",
       "format": "obibaFiles",
@@ -171,16 +192,6 @@
     }
   },
   "required": [
-    "name",
-    "email",
-    "repName",
-    "repEmail",
-    "projectTitle",
-    "abstract",
-    "summary",
-    "rdRebResearchProtocol",
-    "rdRebDecisionLetter",
-    "rdCV",
     "isFormCompleted"
   ]
 }
