@@ -226,7 +226,7 @@ mica
           $rootScope.hasRole = AuthenticationSharedService.isAuthorized;
           $rootScope.userRoles = USER_ROLES;
           $rootScope.subject = Session;
-          $rootScope.getFullName = UserProfileService.getFullName;
+          $rootScope.UserProfileService = UserProfileService;
 
           if (!$rootScope.authenticated) {
             if ('/login' !== $location.path()) {
