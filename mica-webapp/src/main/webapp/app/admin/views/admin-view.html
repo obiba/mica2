@@ -124,12 +124,6 @@
       <ul class="nav nav-list xlarge-bottom-margin">
         <li class="nav-header" translate>data-management</li>
         <div>
-          <li>
-            <a href="#/admin/files"><span><i class="fa fa-cog"></i> {{'files' | translate}}</span></a>
-            <p class="help-block">
-              <small translate>admin-page.help.file-system</small>
-            </p>
-          </li>
           <li ng-if="!micaConfig.isSingleStudyEnabled ||
                 (micaConfig.isNetworkEnabled && !micaConfig.isSingleNetworkEnabled) ||
                 micaConfig.isCollectedDatasetEnabled || micaConfig.isHarmonizedDatasetEnabled">
