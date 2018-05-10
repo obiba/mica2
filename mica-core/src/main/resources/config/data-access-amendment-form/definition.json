@@ -16,47 +16,47 @@
         "titleMap": [
           {
             "value": "IA",
-            "name": "Modifications on applicant info"
+            "name": "t(data-access-amendment.default.I.A.title)"
           },
           {
             "value": "IB",
-            "name": "Modifications on institutional representative info"
+            "name": "t(data-access-amendment.default.I.B.title)"
           },
           {
             "value": "IC",
-            "name": "Modifications on research project title"
+            "name": "t(data-access-amendment.default.I.C.title)"
           },
           {
             "value": "ID",
-            "name": "Add authorized personnel"
+            "name": "t(data-access-amendment.default.I.D.title)"
           },
           {
             "value": "IE",
-            "name": "Add authorized students"
+            "name": "t(data-access-amendment.default.I.E.title)"
           },
           {
             "value": "IF",
-            "name": "Modifications on abstract"
+            "name": "t(data-access-amendment.default.I.F.title)"
           },
           {
             "value": "IG",
-            "name": "Modifications on summary"
+            "name": "t(data-access-amendment.default.I.G.title)"
           },
           {
             "value": "IIrdRebResearchProtocol",
-            "name": "Research Ethics Board approved research protocol"
+            "name": "t(data-access-amendment.default.documents.reb-research-protocol)"
           },
           {
             "value": "IIrdRebDecisionLetter",
-            "name": "Decision letter from a Research Ethics Board"
+            "name": "t(data-access-amendment.default.documents.reb-decision-letter)"
           },
           {
             "value": "IIrdCV",
-            "name": "2-Page CV of the Principal Applicant"
+            "name": "t(data-access-amendment.default.documents.cv)t"
           },
           {
             "value": "IIrdPeerReview",
-            "name": "Proof of scientific peer-review"
+            "name": "t(data-access-amendment.default.documents.peer-review)"
           },
           {
             "value": "other",
@@ -72,7 +72,7 @@
     "items": [
       {
         "type": "help",
-        "helpvalue": "<h3>A. t(data-access-request.default.I.A.title)</h3><p class='help-block'>t(data-access-request.default.I.A.info)</p>"
+        "helpvalue": "<h3>A. t(data-access-amendment.default.I.A.title)</h3><p class='help-block'>t(data-access-request.default.I.A.info)</p>"
       },
       {
         "type": "section",
@@ -111,7 +111,7 @@
     "items": [
       {
         "type": "help",
-        "helpvalue": "<h3>B. t(data-access-request.default.I.B.title)</h3><p class='help-block'>t(data-access-request.default.I.B.info)</p>"
+        "helpvalue": "<h3>B. t(data-access-amendment.default.I.B.title)</h3><p class='help-block'>t(data-access-amendment.default.I.B.info)</p>"
       },
       {
         "type": "section",
@@ -149,7 +149,7 @@
     "items": [
       {
         "type": "help",
-        "helpvalue": "<h3>C. t(data-access-request.default.I.C.title)</h3>"
+        "helpvalue": "<h3>C. t(data-access-amendment.default.I.C.title)</h3>"
       },
       {
         "key": "projectTitle",
@@ -166,7 +166,7 @@
             "items": [
               {
                 "key": "projectWebsite",
-                "description": "t(data-access-request.default.I.C.website-help)"
+                "description": "t(data-access-amendment.default.I.C.website-help)"
               }
             ]
           },
@@ -185,7 +185,7 @@
     "items": [
       {
         "type": "help",
-        "helpvalue": "<h3>D. t(data-access-request.default.I.D.title)</h3><p class='help-block'>t(data-access-request.default.I.D.info)</p>"
+        "helpvalue": "<h3>D. t(data-access-amendment.default.I.D.title)</h3><p class='help-block'>t(data-access-amendment.default.I.D.info)</p>"
       },
       {
         "type": "section",
@@ -228,7 +228,7 @@
     "items": [
       {
         "type": "help",
-        "helpvalue": "<h3>E. t(data-access-request.default.I.E.title)</h3><p class='help-block'>t(data-access-request.default.I.E.info)</p>"
+        "helpvalue": "<h3>E. t(data-access-amendment.default.I.E.title)</h3><p class='help-block'>t(data-access-amendment.default.I.E.info)</p>"
       },
       {
         "type": "section",
@@ -271,7 +271,7 @@
     "items": [
       {
         "type": "help",
-        "helpvalue": "<h3>F. t(data-access-request.default.I.F.title)</h3><p class='help-block'>t(data-access-request.default.I.F.info)</p>"
+        "helpvalue": "<h3>F. t(data-access-amendment.default.I.F.title)</h3><p class='help-block'>t(data-access-amendment.default.I.F.info)</p>"
       },
       {
         "key": "abstract",
@@ -290,7 +290,7 @@
     "items": [
       {
         "type": "help",
-        "helpvalue": "<h3>G. t(data-access-request.default.I.G.title)</h3><p class='help-block'>t(data-access-request.default.I.G.info)</p>"
+        "helpvalue": "<h3>G. t(data-access-amendment.default.I.G.title)</h3><p class='help-block'>t(data-access-amendment.default.I.G.info)</p>"
       },
       {
         "key": "summary",
@@ -305,7 +305,7 @@
   },
   {
     "type": "help",
-    "helpvalue": "<h2>II - t(data-access-request.default.documents.title)</h2>",
+    "helpvalue": "<h2>II - t(data-access-request.amendment.documents.title)</h2>",
     "condition": "model.modificationNature.indexOf('IIrdRebResearchProtocol') > -1 || model.modificationNature.indexOf('IIrdRebDecisionLetter') > -1 || model.modificationNature.indexOf('IIrdCV') > -1 || model.modificationNature.indexOf('IIrdPeerReview') > -1"
   },
   {
@@ -373,7 +373,7 @@
     "items": [
       {
         "type": "help",
-        "helpvalue": "<h3>t(data-access-request.default.signature.title)</h3>"
+        "helpvalue": "<h3>t(data-access-amendment.default.signature.title)</h3>"
       },
       "isFormCompleted"
     ]
