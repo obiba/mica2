@@ -48,6 +48,7 @@
     "sf-checkboxgroup": "https://github.com/obiba/sf-checkboxgroup.git#1.0.1",
     "sf-typeahead": "https://github.com/obiba/sf-typeahead.git#1.1.1",
     "sf-obiba-countries-ui-select": "https://github.com/obiba/sf-obiba-countries-ui-select.git#1.0.3",
+    "sf-radio-group-collection": "https://github.com/obiba/sf-radio-group-collection.git#master",
     "obiba-shims": "https://github.com/obiba/obiba-shims.git#1.0.0"
   },
   "devDependencies": {
