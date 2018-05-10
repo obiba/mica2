@@ -22,6 +22,7 @@ import org.apache.shiro.SecurityUtils;
 import org.obiba.mica.access.domain.DataAccessEntity;
 import org.obiba.mica.access.domain.DataAccessAmendment;
 import org.obiba.mica.access.domain.DataAccessRequest;
+import org.obiba.mica.access.service.DataAccessAmendmentService;
 import org.obiba.mica.access.service.DataAccessRequestUtilService;
 import org.obiba.mica.project.domain.Project;
 import org.obiba.mica.project.service.NoSuchProjectException;
@@ -60,6 +61,9 @@ class DataAccessRequestDtos {
 
   @Inject
   private ProjectService projectService;
+
+  @Inject
+  private DataAccessAmendmentService dataAccessAmendmentService;
 
   Mica.DataAccessRequestDto.Builder asDtoBuilder(@NotNull DataAccessEntity request) {
     Mica.DataAccessRequestDto.Builder builder = Mica.DataAccessRequestDto.newBuilder();
@@ -100,6 +104,12 @@ class DataAccessRequestDtos {
     request.getAttachments().forEach(attachment -> builder.addAttachments(attachmentDtos.asDto(attachment)));
 
     builder.addAllActions(addDataAccessEntityActions(request, "/data-access-request"));
+
+    dataAccessAmendmentService.findByParentId(request.getId())
+      .forEach(daa -> daa.getStatusChangeHistory()
+        .forEach(statusChange ->
+          builder.addAmendmentStatusChangeHistory(statusChangeDtos.asDto(statusChange).toBuilder().setReference(daa.getId()).build())
+        ));
 
     if(subjectAclService
       .isPermitted(Paths.get("/data-access-request", request.getId(), "/amendment").toString(), "ADD")) {
