@@ -1293,6 +1293,8 @@
       "message-review": "Are you sure you want to put this amendment under review?"
     },
     "default": {
+      "form-title": "Data Access Request Update",
+      "modification-nature-title": "Nature of modifications",
       "name": "Name",
       "title": "Title",
       "position": "Position",
@@ -1319,12 +1321,12 @@
           "website-help": "If available, please provide the address of the research project website as well."
         },
         "D": {
-          "title": "Adding Names of authorized personnel (within your institution)",
+          "title": "Adding names of authorized personnel (within your institution)",
           "info": "Please provide the names of all investigators, collaborators, data managers and research staff that will have access to the research data in order to work on the research project. A valid institutional e-mail address for each name along with their job title and function is also required.",
           "check": "No personnel will require access to the research data."
         },
         "E": {
-          "title": "Adding Names of authorized students (within your institution)",
+          "title": "Adding names of authorized students (within your institution)",
           "info": "Please provide the names of all students who will have access to the research data in order to work on the project. A valid e-mail address for each name is required. Students at other institutions should not be included in this list.",
           "check": "No students will require access to the research data."
         },

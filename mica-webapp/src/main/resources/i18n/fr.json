@@ -1293,6 +1293,8 @@
       "message-review": "Êtes-vous sûr de vouloir mettre cet amendement en révision?"
     },
     "default": {
+      "form-title": "Mise à jour de la demande d'accès",
+      "modification-nature-title": "Nature des modifications",
       "name": "Nom",
       "title": "Titre",
       "position": "Poste",
@@ -1303,42 +1305,42 @@
       "phone": "Numéro de téléphone",
       "address": "Adresse postale",
       "I": {
-        "title": "Contact et information sur le projet de recherche",
+        "title": "Modifications de contact et information sur le projet de recherche",
         "A": {
           "title": "Nom, institution, et coordonnées du demandeur (demandeur principal)",
           "info": "Veuillez vous assurer qu'une adresse postale complète et une adresse courriel institutionnelle valide sont incluses. Dans le cas de plus d'une affiliation, les candidats doivent fournir leurs coordonnées se rapportant uniquement à l'institution à laquelle ils sont affiliés dans le cadre de ce projet de recherche."
         },
         "B": {
-          "title": "Nom, institution et coordonnées du représentant institutionnel autorisé",
+          "title": "Modifications de nom, institution et coordonnées du représentant institutionnel autorisé",
           "info": "Veuillez inclure une adresse postale complète et une adresse courriel institutionnelle valide."
         },
         "C": {
-          "title": "Titre du projet de recherche",
+          "title": "Modification du titre du projet de recherche",
           "info": "",
           "website": "Site web du projet",
           "website-help": "Veuillez fournir l'adresse du site web du projet de recherche, s'il y a lieu."
         },
         "D": {
-          "title": "Les noms des personnes autorisées (au sein de votre institution)",
+          "title": "Ajout de personnes autorisées (au sein de votre institution)",
           "info": "Veuillez fournir les noms de tous les chercheurs, collaborateurs, gestionnaires de données et le personnel de recherche qui auront accès aux données de recherche afin de travailler sur le projet. Une adresse courriel institutionnelle valide pour chaque nom avec leur titre d'emploi et fonction sont également requis.",
           "check": "Aucun membre du personnel ne nécessite un accès aux données de recherche."
         },
         "E": {
-          "title": "Les noms des étudiants autorisés (au sein de votre institution)",
+          "title": "Ajout d'étudiants autorisés (au sein de votre institution)",
           "info": "Veuillez fournir les noms de tous les étudiants qui auront accès aux données de recherche afin de travailler sur le projet. Une adresse courriel valide pour chaque nom est requise. Les étudiants d'autres institutions ne doivent pas être inclus dans cette liste.",
           "check": "Aucun étudiant ne nécessite un accès aux données de recherche."
         },
         "F": {
-          "title": "Projet de recherche (résumé scientifique)",
+          "title": "Modifications du projet de recherche (résumé scientifique)",
           "info": "Veuillez fournir une description scientifique claire du projet de recherche, de ses objectifs spécifiques, de sa méthodologie et ses livrables et de la façon dont il répond à nos objectifs, dans <strong> pas plus de 500 mots </strong>. Aussi, veuillez expliquer clairement comment nos données de recherche seront utilisées dans le projet de recherche."
         },
         "G": {
-          "title": "Résumé simplifié du projet",
+          "title": "Modifications du résumé simplifié du projet",
           "info": "Veuillez fournir une brève description du projet accessible au grand public dans <strong> pas plus de 200 mots </strong>. Le jargon scientifique doit être évité dans la mesure du possible. Cette description sera rendue disponible sur le registre d'accès public du consortium et peut être utilisée dans une variété d'outils de communication produits par le consortium (ex. brochures, rapports aux partenaires, communiqués de presse, blogs, etc.)."
         }
       },
       "documents": {
-        "title": "Documents",
+        "title": "Modifications de documents",
         "reb-research-protocol": "Le comité d'éthique de la recherche a approuvé le protocole de recherche",
         "reb-decision-letter": "Lettre de décision d'un comité d'éthique de la recherche",
         "cv": "CV de 2 pages du candidat principal",

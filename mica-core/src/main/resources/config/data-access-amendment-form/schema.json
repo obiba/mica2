@@ -19,77 +19,77 @@
       ]
     },
     "name": {
-      "title": "t(data-access-request.default.name)",
+      "title": "t(data-access-amendment.default.name)",
       "type": "string"
     },
     "title": {
-      "title": "t(data-access-request.default.title)",
+      "title": "t(data-access-amendment.default.title)",
       "type": "string"
     },
     "position": {
-      "title": "t(data-access-request.default.position)",
+      "title": "t(data-access-amendment.default.position)",
       "type": "string"
     },
     "institution": {
-      "title": "t(data-access-request.default.institution)",
+      "title": "t(data-access-amendment.default.institution)",
       "type": "string"
     },
     "email": {
-      "title": "t(data-access-request.default.institution-email)",
+      "title": "t(data-access-amendment.default.institution-email)",
       "type": "string",
       "pattern": "^\\S+@\\S+$"
     },
     "emailAlt": {
-      "title": "t(data-access-request.default.email-alt)",
+      "title": "t(data-access-amendment.default.email-alt)",
       "type": "string",
       "pattern": "^\\S+@\\S+$"
     },
     "mailingAddress": {
-      "title": "t(data-access-request.default.address)",
+      "title": "t(data-access-amendment.default.address)",
       "type": "string"
     },
     "phone": {
-      "title": "t(data-access-request.default.phone)",
+      "title": "t(data-access-amendment.default.phone)",
       "type": "string"
     },
     "repName": {
-      "title": "t(data-access-request.default.name)",
+      "title": "t(data-access-amendment.default.name)",
       "type": "string"
     },
     "repTitle": {
-      "title": "t(data-access-request.default.title)",
+      "title": "t(data-access-amendment.default.title)",
       "type": "string"
     },
     "repPosition": {
-      "title": "t(data-access-request.default.position)",
+      "title": "t(data-access-amendment.default.position)",
       "type": "string"
     },
     "repInstitution": {
-      "title": "t(data-access-request.default.institution)",
+      "title": "t(data-access-amendment.default.institution)",
       "type": "string"
     },
     "repEmail": {
-      "title": "t(data-access-request.default.institution-email)",
+      "title": "t(data-access-amendment.default.institution-email)",
       "type": "string",
       "pattern": "^\\S+@\\S+$"
     },
     "repMailingAddress": {
-      "title": "t(data-access-request.default.address)",
+      "title": "t(data-access-amendment.default.address)",
       "type": "string"
     },
     "repPhone": {
-      "title": "t(data-access-request.default.phone)",
+      "title": "t(data-access-amendment.default.phone)",
       "type": "string"
     },
     "projectTitle": {
       "type": "string"
     },
     "projectWebsite": {
-      "title": "t(data-access-request.default.I.C.website)",
+      "title": "t(data-access-amendment.default.I.C.website)",
       "type": "string"
     },
     "hasNoStaff": {
-      "title": "t(data-access-request.default.I.D.check)",
+      "title": "t(data-access-amendment.default.I.D.check)",
       "type": "boolean"
     },
     "staff": {
@@ -99,19 +99,19 @@
         "type": "object",
         "properties": {
           "name": {
-            "title": "t(data-access-request.default.name)",
+            "title": "t(data-access-amendment.default.name)",
             "type": "string"
           },
           "title": {
-            "title": "t(data-access-request.default.title)",
+            "title": "t(data-access-amendment.default.title)",
             "type": "string"
           },
           "position": {
-            "title": "t(data-access-request.default.position)",
+            "title": "t(data-access-amendment.default.position)",
             "type": "string"
           },
           "email": {
-            "title": "t(data-access-request.default.email)",
+            "title": "t(data-access-amendment.default.email)",
             "type": "string",
             "pattern": "^\\S+@\\S+$"
           }
@@ -123,7 +123,7 @@
       }
     },
     "hasNoStudents": {
-      "title": "t(data-access-request.default.I.E.check)",
+      "title": "t(data-access-amendment.default.I.E.check)",
       "type": "boolean"
     },
     "students": {
@@ -133,19 +133,19 @@
         "type": "object",
         "properties": {
           "name": {
-            "title": "t(data-access-request.default.name)",
+            "title": "t(data-access-amendment.default.name)",
             "type": "string"
           },
           "title": {
-            "title": "t(data-access-request.default.title)",
+            "title": "t(data-access-amendment.default.title)",
             "type": "string"
           },
           "position": {
-            "title": "t(data-access-request.default.position)",
+            "title": "t(data-access-amendment.default.position)",
             "type": "string"
           },
           "email": {
-            "title": "t(data-access-request.default.email)",
+            "title": "t(data-access-amendment.default.email)",
             "type": "string",
             "pattern": "^\\S+@\\S+$"
           }
@@ -169,25 +169,25 @@
     "rdRebResearchProtocol": {
       "type": "object",
       "format": "obibaFiles",
-      "title": "t(data-access-request.default.documents.reb-research-protocol)"
+      "title": "t(data-access-amendment.default.documents.reb-research-protocol)"
     },
     "rdRebDecisionLetter": {
       "type": "object",
       "format": "obibaFiles",
-      "title": "t(data-access-request.default.documents.reb-decision-letter)"
+      "title": "t(data-access-amendment.default.documents.reb-decision-letter)"
     },
     "rdCV": {
       "type": "object",
       "format": "obibaFiles",
-      "title": "t(data-access-request.default.documents.cv)"
+      "title": "t(data-access-amendment.default.documents.cv)"
     },
     "rdPeerReview": {
       "type": "object",
       "format": "obibaFiles",
-      "title": "t(data-access-request.default.documents.peer-review)"
+      "title": "t(data-access-amendment.default.documents.peer-review)"
     },
     "isFormCompleted": {
-      "title": "t(data-access-request.default.signature.check)",
+      "title": "t(data-access-amendment.default.signature.check)",
       "type": "boolean"
     }
   },
