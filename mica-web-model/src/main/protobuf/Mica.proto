@@ -700,6 +700,7 @@ message DataAccessRequestDto {
     required string author = 3;
     required string changedOn = 4;
     optional UserProfileDto profile = 5;
+    optional string reference = 6;
   }
 
   optional string id = 1;
@@ -714,6 +715,7 @@ message DataAccessRequestDto {
   repeated StatusChangeDto statusChangeHistory = 10;
   optional UserProfileDto profile = 11;
   optional ProjectSummaryDto project = 12;
+  repeated StatusChangeDto amendmentStatusChangeHistory = 13;
   extensions 1000 to max;
 }
 
