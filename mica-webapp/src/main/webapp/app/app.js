@@ -48,6 +48,7 @@ var mica = angular.module('mica', [
   'sfCheckboxgroup',
   'sfTypeahead',
   'sfObibaCountriesUiSelect',
+  'sfRadioGroupCollection',
   'hc.marked',
   'ngclipboard'
 ]);
