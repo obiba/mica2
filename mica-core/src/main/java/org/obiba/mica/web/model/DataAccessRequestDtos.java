@@ -61,6 +61,10 @@ class DataAccessRequestDtos {
   @Inject
   private ProjectService projectService;
 
+  public StatusChangeDtos getStatusChangeDtos() {
+    return statusChangeDtos;
+  }
+
   Mica.DataAccessRequestDto.Builder asDtoBuilder(@NotNull DataAccessEntity request) {
     Mica.DataAccessRequestDto.Builder builder = Mica.DataAccessRequestDto.newBuilder();
     builder.setApplicant(request.getApplicant()) //

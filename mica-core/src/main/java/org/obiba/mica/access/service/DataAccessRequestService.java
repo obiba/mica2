@@ -21,6 +21,7 @@ import org.obiba.mica.access.NoSuchDataAccessRequestException;
 import org.obiba.mica.access.domain.DataAccessAmendment;
 import org.obiba.mica.access.domain.DataAccessEntityStatus;
 import org.obiba.mica.access.domain.DataAccessRequest;
+import org.obiba.mica.access.domain.StatusChange;
 import org.obiba.mica.access.event.DataAccessRequestDeletedEvent;
 import org.obiba.mica.access.event.DataAccessRequestUpdatedEvent;
 import org.obiba.mica.core.repository.AttachmentRepository;
@@ -119,6 +120,12 @@ public class DataAccessRequestService extends DataAccessEntityService<DataAccess
     eventBus.post(new DataAccessRequestUpdatedEvent(saved));
     sendNotificationEmails(saved, from);
     return saved;
+  }
+
+  public List<StatusChange> getMergedStatusChangHistory(String dataAccessRequestId) {
+    List<StatusChange> statusChangeHistory = findById(dataAccessRequestId).getStatusChangeHistory();
+    statusChangeHistory.addAll(dataAccessAmendmentService.getCongregatedAmendmentStatusChangesFor(dataAccessRequestId));
+    return statusChangeHistory;
   }
 
   public DataAccessRequest saveAttachments(@NotNull DataAccessRequest request) {
