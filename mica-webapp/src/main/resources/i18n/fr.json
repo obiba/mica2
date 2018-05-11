@@ -1295,6 +1295,7 @@
     "default": {
       "form-title": "Mise à jour de la demande d'accès",
       "modification-nature-title": "Nature des modifications",
+      "other-modifications": "Autres modifications",
       "name": "Nom",
       "title": "Titre",
       "position": "Poste",

@@ -1,14 +1,14 @@
 [
   {
     "type": "help",
-    "helpvalue": "<h2>Data Access Request update</h2>"
+    "helpvalue": "<h2>t(data-access-amendment.default.form-title)</h2>"
   },
   {
     "type": "fieldset",
     "items": [
       {
         "type": "help",
-        "helpvalue": "<h3>Nature of modifications</h3>"
+        "helpvalue": "<h3>t(data-access-amendment.default.modification-nature-title)</h3>"
       },
       {
         "key": "modificationNature",
@@ -305,7 +305,7 @@
   },
   {
     "type": "help",
-    "helpvalue": "<h2>II - t(data-access-request.amendment.documents.title)</h2>",
+    "helpvalue": "<h2>II - t(data-access-amendment.default.documents.title)</h2>",
     "condition": "model.modificationNature.indexOf('IIrdRebResearchProtocol') > -1 || model.modificationNature.indexOf('IIrdRebDecisionLetter') > -1 || model.modificationNature.indexOf('IIrdCV') > -1 || model.modificationNature.indexOf('IIrdPeerReview') > -1"
   },
   {

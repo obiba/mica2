@@ -1295,6 +1295,7 @@
     "default": {
       "form-title": "Data Access Request Update",
       "modification-nature-title": "Nature of modifications",
+      "other-modifications": "Other Modifications",
       "name": "Name",
       "title": "Title",
       "position": "Position",
