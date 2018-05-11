@@ -11,6 +11,7 @@
 package org.obiba.mica.access.service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -106,12 +107,9 @@ public class DataAccessAmendmentService extends DataAccessEntityService<DataAcce
     return dataAmendmentRequestRepository.findByParentId(parentId);
   }
 
-  public List<StatusChange> getCongregatedAmendmentStatusChangesFor(@NotNull String dataAccessRequestId) {
+  public Map<String, List<StatusChange>> getCongregatedAmendmentStatusChangesFor(@NotNull String dataAccessRequestId) {
     return dataAmendmentRequestRepository.findByParentId(dataAccessRequestId).stream()
-      .map(DataAccessEntity::getStatusChangeHistory).reduce(new ArrayList<>(), (acc, items) -> {
-        acc.addAll(items);
-        return acc;
-      });
+      .collect(Collectors.toMap(DataAccessAmendment::getId, DataAccessAmendment::getStatusChangeHistory));
   }
 
   /**
