@@ -700,6 +700,7 @@ message DataAccessRequestDto {
     required string author = 3;
     required string changedOn = 4;
     optional UserProfileDto profile = 5;
+    optional string reference = 6;
   }
 
   optional string id = 1;

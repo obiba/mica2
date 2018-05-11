@@ -52,6 +52,8 @@ public class DataAccessRequestService extends DataAccessEntityService<DataAccess
 
   private static final Logger log = LoggerFactory.getLogger(DataAccessRequestService.class);
 
+  public static final String DAR_ROOT_KEY =  "###ROOT###";
+
   @Inject
   private DataAccessAmendmentService dataAccessAmendmentService;
 
@@ -122,10 +124,12 @@ public class DataAccessRequestService extends DataAccessEntityService<DataAccess
     return saved;
   }
 
-  public List<StatusChange> getMergedStatusChangHistory(String dataAccessRequestId) {
-    List<StatusChange> statusChangeHistory = findById(dataAccessRequestId).getStatusChangeHistory();
-    statusChangeHistory.addAll(dataAccessAmendmentService.getCongregatedAmendmentStatusChangesFor(dataAccessRequestId));
-    return statusChangeHistory;
+  public Map<String, List<StatusChange>> getMergedStatusChangHistory(String dataAccessRequestId) {
+    Map<String, List<StatusChange>> congregatedAmendmentStatusChanges = dataAccessAmendmentService
+      .getCongregatedAmendmentStatusChangesFor(dataAccessRequestId);
+
+    congregatedAmendmentStatusChanges.put(DAR_ROOT_KEY, findById(dataAccessRequestId).getStatusChangeHistory());
+    return congregatedAmendmentStatusChanges;
   }
 
   public DataAccessRequest saveAttachments(@NotNull DataAccessRequest request) {

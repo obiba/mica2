@@ -13,7 +13,9 @@ package org.obiba.mica.access.rest;
 import com.codahale.metrics.annotation.Timed;
 import com.google.common.base.Strings;
 import com.google.common.eventbus.EventBus;
+
 import org.apache.shiro.SecurityUtils;
+import org.joda.time.DateTime;
 import org.obiba.mica.JSONUtils;
 import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.access.NoSuchDataAccessRequestException;
@@ -31,14 +33,17 @@ import org.obiba.mica.security.Roles;
 import org.obiba.mica.security.event.ResourceDeletedEvent;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
+import org.obiba.mica.web.model.Mica.DataAccessRequestDto.StatusChangeDto;
 import org.slf4j.Logger;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
+
 import sun.util.locale.LanguageTag;
 
 import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
+
 import java.io.IOException;
 import java.util.Comparator;
 import java.util.List;
@@ -84,9 +89,15 @@ public class DataAccessRequestResource extends DataAccessEntityResource {
 
   @GET
   @Path("/_history")
-  public List<Mica.DataAccessRequestDto.StatusChangeDto> getLoggedHistory() {
-    return dataAccessRequestService.getMergedStatusChangHistory(id).stream()
-      .sorted(Comparator.comparing(StatusChange::getChangedOn)).map(dtos::asDto)
+  public List<StatusChangeDto> getLoggedHistory() {
+    Map<String, List<StatusChange>> mergedStatusChangHistory = dataAccessRequestService.getMergedStatusChangHistory(id);
+
+    return mergedStatusChangHistory.entrySet().stream().map(entry -> entry.getValue().stream().map(
+      statusChange -> dtos.asDto(statusChange).toBuilder()
+        .setReference(!entry.getKey().equals(DataAccessRequestService.DAR_ROOT_KEY) ? entry.getKey() : "").build())
+      .collect(Collectors.toList()))
+      .flatMap(List::stream)
+      .sorted(Comparator.comparing(StatusChangeDto::getChangedOn))
       .collect(Collectors.toList());
   }
 
@@ -134,29 +145,26 @@ public class DataAccessRequestResource extends DataAccessEntityResource {
   @GET
   @Timed
   @Path("/attachments/{attachmentId}/_download")
-  public Response getAttachment(@PathParam("attachmentId") String attachmentId)
-    throws IOException {
+  public Response getAttachment(@PathParam("attachmentId") String attachmentId) throws IOException {
     subjectAclService.checkPermission("/data-access-request", "VIEW", id);
     DataAccessRequest request = dataAccessRequestService.findById(id);
     Optional<Attachment> r = request.getAttachments().stream().filter(a -> a.getId().equals(attachmentId)).findFirst();
 
     if(!r.isPresent()) throw NoSuchEntityException.withId(Attachment.class, attachmentId);
 
-    return Response.ok(fileStoreService.getFile(r.get().getFileReference())).header("Content-Disposition",
-      "attachment; filename=\"" + r.get().getName() + "\"")
-      .build();
+    return Response.ok(fileStoreService.getFile(r.get().getFileReference()))
+      .header("Content-Disposition", "attachment; filename=\"" + r.get().getName() + "\"").build();
   }
 
   @GET
   @Timed
   @Path("/form/attachments/{attachmentName}/{attachmentId}/_download")
   public Response getFormAttachment(@PathParam("attachmentName") String attachmentName,
-      @PathParam("attachmentId") String attachmentId) throws IOException {
+    @PathParam("attachmentId") String attachmentId) throws IOException {
     subjectAclService.checkPermission("/data-access-request", "VIEW", id);
     dataAccessRequestService.findById(id);
-    return Response.ok(fileStoreService.getFile(attachmentId)).header("Content-Disposition",
-      "attachment; filename=\"" + attachmentName + "\"")
-      .build();
+    return Response.ok(fileStoreService.getFile(attachmentId))
+      .header("Content-Disposition", "attachment; filename=\"" + attachmentName + "\"").build();
   }
 
   @DELETE
@@ -195,7 +203,8 @@ public class DataAccessRequestResource extends DataAccessEntityResource {
         .build(), commentMailNotification); //
 
     subjectAclService.addPermission("/data-access-request/" + id + "/comment", "VIEW,EDIT,DELETE", comment.getId());
-    subjectAclService.addGroupPermission(Roles.MICA_DAO, "/data-access-request/" + id + "/comment", "DELETE", comment.getId());
+    subjectAclService
+      .addGroupPermission(Roles.MICA_DAO, "/data-access-request/" + id + "/comment", "DELETE", comment.getId());
 
     return Response.noContent().build();
   }
@@ -235,7 +244,8 @@ public class DataAccessRequestResource extends DataAccessEntityResource {
   @Path("/amendments")
   public DataAccessAmendmentsResource getAmendments() {
     dataAccessRequestService.findById(id);
-    DataAccessAmendmentsResource dataAccessAmendmentsResource = applicationContext.getBean(DataAccessAmendmentsResource.class);
+    DataAccessAmendmentsResource dataAccessAmendmentsResource = applicationContext
+      .getBean(DataAccessAmendmentsResource.class);
     dataAccessAmendmentsResource.setParentId(id);
     return dataAccessAmendmentsResource;
   }
@@ -243,7 +253,8 @@ public class DataAccessRequestResource extends DataAccessEntityResource {
   @Path("/amendment/{amendmentId}")
   public DataAccessAmendmentResource getAmendment(@PathParam("amendmentId") String amendmentId) {
     dataAccessRequestService.findById(id);
-    DataAccessAmendmentResource dataAccessAmendmentResource = applicationContext.getBean(DataAccessAmendmentResource.class);
+    DataAccessAmendmentResource dataAccessAmendmentResource = applicationContext
+      .getBean(DataAccessAmendmentResource.class);
     dataAccessAmendmentResource.setParentId(id);
     dataAccessAmendmentResource.setId(amendmentId);
     return dataAccessAmendmentResource;
@@ -270,7 +281,7 @@ public class DataAccessRequestResource extends DataAccessEntityResource {
     String resource = String.format("/data-access-request/%s/amendment", id);
     String applicant = request.getApplicant();
 
-    if (DataAccessEntityStatus.APPROVED.equals(status)) {
+    if(DataAccessEntityStatus.APPROVED.equals(status)) {
       subjectAclService.addUserPermission(applicant, resource, "ADD", null);
       subjectAclService.addGroupPermission(Roles.MICA_DAO, resource, "VIEW,DELETE", null);
     } else {
