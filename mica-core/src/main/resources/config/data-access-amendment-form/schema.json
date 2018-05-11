@@ -163,7 +163,7 @@
       "type": "string"
     },
     "other": {
-      "title": "Other modifications",
+      "title": "t(data-access-amendment.default.other-modifications)",
       "type": "string"
     },
     "rdRebResearchProtocol": {
