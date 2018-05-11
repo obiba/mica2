@@ -19,6 +19,7 @@ import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.access.NoSuchDataAccessRequestException;
 import org.obiba.mica.access.domain.DataAccessRequest;
 import org.obiba.mica.access.domain.DataAccessEntityStatus;
+import org.obiba.mica.access.domain.StatusChange;
 import org.obiba.mica.access.notification.DataAccessRequestCommentMailNotification;
 import org.obiba.mica.access.service.DataAccessEntityService;
 import org.obiba.mica.access.service.DataAccessRequestService;
@@ -39,6 +40,7 @@ import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -78,6 +80,14 @@ public class DataAccessRequestResource extends DataAccessEntityResource {
     subjectAclService.checkPermission("/data-access-request", "VIEW", id);
     DataAccessRequest request = dataAccessRequestService.findById(id);
     return dtos.asDto(request);
+  }
+
+  @GET
+  @Path("/_history")
+  public List<Mica.DataAccessRequestDto.StatusChangeDto> getLoggedHistory() {
+    return dataAccessRequestService.getMergedStatusChangHistory(id).stream()
+      .sorted(Comparator.comparing(StatusChange::getChangedOn)).map(dtos::asDto)
+      .collect(Collectors.toList());
   }
 
   @GET

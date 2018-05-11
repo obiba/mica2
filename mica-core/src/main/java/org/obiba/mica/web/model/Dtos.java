@@ -20,6 +20,7 @@ import javax.validation.constraints.NotNull;
 import org.obiba.git.CommitInfo;
 import org.obiba.mica.access.domain.DataAccessAmendment;
 import org.obiba.mica.access.domain.DataAccessRequest;
+import org.obiba.mica.access.domain.StatusChange;
 import org.obiba.mica.core.domain.*;
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.DatasetVariable;
@@ -130,6 +131,8 @@ public class Dtos {
   public Mica.SetOperationDto asDto(SetOperation setOperation) {
     return setDtos.asDto(setOperation);
   }
+
+  public Mica.DataAccessRequestDto.StatusChangeDto asDto(StatusChange statusChange) { return dataAccessRequestDtos.getStatusChangeDtos().asDto(statusChange); }
 
   @NotNull
   public StudyDto asDto(@NotNull Study study) {

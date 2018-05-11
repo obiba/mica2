@@ -18,6 +18,7 @@ import org.obiba.mica.access.service.DataAccessAmendmentService;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
+import org.obiba.mica.web.model.Mica.DataAccessRequestDto.StatusChangeDto;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 

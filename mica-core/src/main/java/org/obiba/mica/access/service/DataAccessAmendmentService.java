@@ -10,6 +10,7 @@
 
 package org.obiba.mica.access.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -23,7 +24,9 @@ import org.obiba.mica.access.DataAccessAmendmentRepository;
 import org.obiba.mica.access.DataAccessEntityRepository;
 import org.obiba.mica.access.NoSuchDataAccessRequestException;
 import org.obiba.mica.access.domain.DataAccessAmendment;
+import org.obiba.mica.access.domain.DataAccessEntity;
 import org.obiba.mica.access.domain.DataAccessEntityStatus;
+import org.obiba.mica.access.domain.StatusChange;
 import org.obiba.mica.access.event.DataAccessAmendmentDeletedEvent;
 import org.obiba.mica.access.event.DataAccessAmendmentUpdatedEvent;
 import org.slf4j.Logger;
@@ -72,7 +75,7 @@ public class DataAccessAmendmentService extends DataAccessEntityService<DataAcce
     }
 
     schemaFormContentFileService.save(saved, dataAmendmentRequestRepository.findOne(amendment.getId()),
-        String.format("/data-access-request/%s/amendment/%s", saved.getParentId(),amendment.getId()));
+      String.format("/data-access-request/%s/amendment/%s", saved.getParentId(), amendment.getId()));
 
     saved.setLastModifiedDate(DateTime.now());
 
@@ -90,19 +93,25 @@ public class DataAccessAmendmentService extends DataAccessEntityService<DataAcce
   }
 
   public List<DataAccessAmendment> findByStatus(@Nullable String parentId, @Nullable List<String> status) {
-    if (status == null || status.isEmpty()) return dataAmendmentRequestRepository.findByParentId(parentId);
+    if(status == null || status.isEmpty()) return dataAmendmentRequestRepository.findByParentId(parentId);
 
     List<DataAccessEntityStatus> statusList = status.stream().map(DataAccessEntityStatus::valueOf)
       .collect(Collectors.toList());
 
-    return dataAmendmentRequestRepository.findByParentId(parentId)
-      .stream()
-      .filter(dar -> statusList.contains(dar.getStatus()))
-      .collect(Collectors.toList());
+    return dataAmendmentRequestRepository.findByParentId(parentId).stream()
+      .filter(dar -> statusList.contains(dar.getStatus())).collect(Collectors.toList());
   }
 
   public List<DataAccessAmendment> findByParentId(@NotNull String parentId) {
     return dataAmendmentRequestRepository.findByParentId(parentId);
+  }
+
+  public List<StatusChange> getCongregatedAmendmentStatusChangesFor(@NotNull String dataAccessRequestId) {
+    return dataAmendmentRequestRepository.findByParentId(dataAccessRequestId).stream()
+      .map(DataAccessEntity::getStatusChangeHistory).reduce(new ArrayList<>(), (acc, items) -> {
+        acc.addAll(items);
+        return acc;
+      });
   }
 
   /**
