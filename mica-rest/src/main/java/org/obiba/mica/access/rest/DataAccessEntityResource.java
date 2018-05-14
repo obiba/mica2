@@ -1,7 +1,6 @@
 package org.obiba.mica.access.rest;
 
-import java.io.IOException;
-
+import com.codahale.metrics.annotation.Timed;
 import org.obiba.mica.access.domain.DataAccessEntity;
 import org.obiba.mica.access.domain.DataAccessEntityStatus;
 import org.obiba.mica.access.service.DataAccessEntityService;
@@ -10,10 +9,15 @@ import org.obiba.mica.security.Roles;
 import org.obiba.mica.security.service.SubjectAclService;
 
 import javax.inject.Inject;
-import javax.ws.rs.*;
+import javax.ws.rs.BadRequestException;
+import javax.ws.rs.ForbiddenException;
+import javax.ws.rs.GET;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
-
-import com.codahale.metrics.annotation.Timed;
+import java.io.IOException;
 
 public abstract class DataAccessEntityResource {
 

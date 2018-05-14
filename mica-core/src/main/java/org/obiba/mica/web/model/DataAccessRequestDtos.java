@@ -10,17 +10,12 @@
 
 package org.obiba.mica.web.model;
 
-import java.nio.file.Paths;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import javax.inject.Inject;
-import javax.validation.constraints.NotNull;
-
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import org.apache.shiro.SecurityUtils;
-import org.obiba.mica.access.domain.DataAccessEntity;
+import org.obiba.mica.access.domain.ActionLog;
 import org.obiba.mica.access.domain.DataAccessAmendment;
+import org.obiba.mica.access.domain.DataAccessEntity;
 import org.obiba.mica.access.domain.DataAccessRequest;
 import org.obiba.mica.access.service.DataAccessRequestUtilService;
 import org.obiba.mica.project.domain.Project;
@@ -32,7 +27,11 @@ import org.obiba.mica.user.UserProfileService;
 import org.obiba.shiro.realm.ObibaRealm;
 import org.springframework.stereotype.Component;
 
-import com.google.common.base.Strings;
+import javax.inject.Inject;
+import javax.validation.constraints.NotNull;
+import java.nio.file.Paths;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 class DataAccessRequestDtos {
@@ -42,6 +41,9 @@ class DataAccessRequestDtos {
 
   @Inject
   private StatusChangeDtos statusChangeDtos;
+
+  @Inject
+  private ActionLogDtos actionLogDtos;
 
   @Inject
   private SubjectAclService subjectAclService;
@@ -76,6 +78,12 @@ class DataAccessRequestDtos {
     String title = dataAccessRequestUtilService.getRequestTitle(request);
     if(!Strings.isNullOrEmpty(title)) {
       builder.setTitle(title);
+    }
+
+    boolean canAccessActionLogs = SecurityUtils.getSubject().hasRole(Roles.MICA_DAO) || SecurityUtils.getSubject().hasRole(Roles.MICA_ADMIN);
+    if (canAccessActionLogs) {
+      request.getActionLogHistory()
+        .forEach(actionLog -> builder.addActionLogHistory(actionLogDtos.asDto(actionLog)));
     }
 
     request.getStatusChangeHistory()
@@ -147,6 +155,11 @@ class DataAccessRequestDtos {
     DataAccessRequest request = (DataAccessRequest)builder.build();
     if(dto.hasId()) request.setId(dto.getId());
 
+    if(dto.getActionLogHistoryCount() > 0) {
+      request.setActionLogHistory(
+        dto.getActionLogHistoryList().stream().map(actionLogDtos::fromDto).collect(Collectors.toList()));
+    }
+
     if(dto.getAttachmentsCount() > 0) {
       request.setAttachments(
         dto.getAttachmentsList().stream().map(attachmentDtos::fromDto).collect(Collectors.toList()));
@@ -189,6 +202,11 @@ class DataAccessRequestDtos {
     TimestampsDtos.fromDto(dto.getTimestamps(), amendment);
 
     return (DataAccessAmendment)builder.build();
+  }
+
+  @NotNull
+  public ActionLog fromDto(Mica.DataAccessRequestDto.ActionLogDto dto) {
+    return actionLogDtos.fromDto(dto);
   }
 
   private List<String> addDataAccessEntityActions(DataAccessEntity entity, String resource) {
