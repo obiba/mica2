@@ -10,18 +10,20 @@
 
 package org.obiba.mica.web.model;
 
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.Nullable;
-import javax.inject.Inject;
-import javax.validation.constraints.NotNull;
-
 import org.obiba.git.CommitInfo;
+import org.obiba.mica.access.domain.ActionLog;
 import org.obiba.mica.access.domain.DataAccessAmendment;
 import org.obiba.mica.access.domain.DataAccessRequest;
 import org.obiba.mica.access.domain.StatusChange;
-import org.obiba.mica.core.domain.*;
+import org.obiba.mica.core.domain.Comment;
+import org.obiba.mica.core.domain.DocumentSet;
+import org.obiba.mica.core.domain.EntityState;
+import org.obiba.mica.core.domain.LocalizedString;
+import org.obiba.mica.core.domain.OpalTable;
+import org.obiba.mica.core.domain.Person;
+import org.obiba.mica.core.domain.SetOperation;
+import org.obiba.mica.core.domain.StudyTable;
+import org.obiba.mica.core.domain.Timestamped;
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
@@ -29,19 +31,7 @@ import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.AttachmentState;
 import org.obiba.mica.file.TempFile;
-import org.obiba.mica.micaConfig.domain.DataAccessAmendmentForm;
-import org.obiba.mica.micaConfig.domain.DataAccessForm;
-import org.obiba.mica.micaConfig.domain.DataCollectionEventConfig;
-import org.obiba.mica.micaConfig.domain.DatasetConfig;
-import org.obiba.mica.micaConfig.domain.EntityConfig;
-import org.obiba.mica.micaConfig.domain.HarmonizationPopulationConfig;
-import org.obiba.mica.micaConfig.domain.HarmonizationStudyConfig;
-import org.obiba.mica.micaConfig.domain.MicaConfig;
-import org.obiba.mica.micaConfig.domain.NetworkConfig;
-import org.obiba.mica.micaConfig.domain.OpalCredential;
-import org.obiba.mica.micaConfig.domain.PopulationConfig;
-import org.obiba.mica.micaConfig.domain.ProjectConfig;
-import org.obiba.mica.micaConfig.domain.StudyConfig;
+import org.obiba.mica.micaConfig.domain.*;
 import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.project.domain.Project;
 import org.obiba.mica.study.domain.BaseStudy;
@@ -57,14 +47,13 @@ import org.obiba.opal.web.model.Search;
 import org.obiba.shiro.realm.ObibaRealm.Subject;
 import org.springframework.stereotype.Component;
 
-import static org.obiba.mica.web.model.Mica.DocumentDigestDto;
-import static org.obiba.mica.web.model.Mica.MicaConfigDto;
-import static org.obiba.mica.web.model.Mica.MicaConfigDtoOrBuilder;
-import static org.obiba.mica.web.model.Mica.NetworkDto;
-import static org.obiba.mica.web.model.Mica.NetworkDtoOrBuilder;
-import static org.obiba.mica.web.model.Mica.StudyDto;
-import static org.obiba.mica.web.model.Mica.StudyDtoOrBuilder;
-import static org.obiba.mica.web.model.Mica.StudySummaryDto;
+import javax.annotation.Nullable;
+import javax.inject.Inject;
+import javax.validation.constraints.NotNull;
+import java.util.List;
+import java.util.Map;
+
+import static org.obiba.mica.web.model.Mica.*;
 
 @Component
 @SuppressWarnings("OverlyCoupledClass")
@@ -132,7 +121,9 @@ public class Dtos {
     return setDtos.asDto(setOperation);
   }
 
-  public Mica.DataAccessRequestDto.StatusChangeDto asDto(StatusChange statusChange) { return dataAccessRequestDtos.getStatusChangeDtos().asDto(statusChange); }
+  public Mica.DataAccessRequestDto.StatusChangeDto asDto(StatusChange statusChange) {
+    return dataAccessRequestDtos.getStatusChangeDtos().asDto(statusChange);
+  }
 
   @NotNull
   public StudyDto asDto(@NotNull Study study) {
@@ -229,6 +220,11 @@ public class Dtos {
   @NotNull
   public BaseStudy fromDto(@NotNull StudyDtoOrBuilder dto) {
     return studyDtos.fromDto(dto);
+  }
+
+  @NotNull
+  public ActionLog fromDto(@NotNull DataAccessRequestDto.ActionLogDto dto) {
+    return dataAccessRequestDtos.fromDto(dto);
   }
 
   @NotNull

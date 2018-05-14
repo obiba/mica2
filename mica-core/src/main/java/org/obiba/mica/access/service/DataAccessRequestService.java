@@ -14,6 +14,7 @@ import com.google.common.base.Throwables;
 import com.google.common.collect.Sets;
 import com.google.common.io.ByteStreams;
 import com.itextpdf.text.DocumentException;
+import org.apache.shiro.SecurityUtils;
 import org.joda.time.DateTime;
 import org.obiba.mica.access.DataAccessEntityRepository;
 import org.obiba.mica.access.DataAccessRequestRepository;
@@ -28,6 +29,7 @@ import org.obiba.mica.core.repository.AttachmentRepository;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.FileStoreService;
 import org.obiba.mica.micaConfig.domain.DataAccessForm;
+import org.obiba.mica.security.Roles;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -88,6 +90,12 @@ public class DataAccessRequestService extends DataAccessEntityService<DataAccess
     } else {
       saved = dataAccessRequestRepository.findOne(request.getId());
       if(saved != null) {
+        if (!SecurityUtils.getSubject().hasRole(Roles.MICA_DAO) &&
+          !SecurityUtils.getSubject().hasRole(Roles.MICA_ADMIN)) {
+          // preserve current actionLogs as no other user role can add or remove them
+          request.setActionLogHistory(saved.getActionLogHistory());
+        }
+
         attachmentsToDelete = Sets.difference(Sets.newHashSet(saved.getAttachments()), Sets.newHashSet(request.getAttachments()));
         attachmentsToSave = Sets.difference(Sets.newHashSet(request.getAttachments()), Sets.newHashSet(saved.getAttachments()));
 
@@ -130,6 +138,13 @@ public class DataAccessRequestService extends DataAccessEntityService<DataAccess
 
     congregatedAmendmentStatusChanges.put(DAR_ROOT_KEY, findById(dataAccessRequestId).getStatusChangeHistory());
     return congregatedAmendmentStatusChanges;
+  }
+
+  public DataAccessRequest saveActionsLogs(@NotNull DataAccessRequest request) {
+    DataAccessRequest saved = findById(request.getId());
+    saved.setActionLogHistory(request.getActionLogHistory());
+    save(saved);
+    return saved;
   }
 
   public DataAccessRequest saveAttachments(@NotNull DataAccessRequest request) {
