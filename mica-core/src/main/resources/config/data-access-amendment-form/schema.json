@@ -2,21 +2,24 @@
   "type": "object",
   "properties": {
     "modificationNature": {
-      "type": "checkboxes",
-      "enum": [
-        "IA",
-        "IB",
-        "IC",
-        "ID",
-        "IE",
-        "IF",
-        "IG",
-        "IIrdRebResearchProtocol",
-        "IIrdRebDecisionLetter",
-        "IIrdCV",
-        "IIrdPeerReview",
-        "other"
-      ]
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "IA",
+          "IB",
+          "IC",
+          "ID",
+          "IE",
+          "IF",
+          "IG",
+          "IIrdRebResearchProtocol",
+          "IIrdRebDecisionLetter",
+          "IIrdCV",
+          "IIrdPeerReview",
+          "other"
+        ]
+      }
     },
     "name": {
       "title": "t(data-access-amendment.default.name)",
