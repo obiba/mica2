@@ -13,6 +13,8 @@
       {
         "key": "modificationNature",
         "type": "checkboxes",
+        "required": true,
+        "notitle": true,
         "titleMap": [
           {
             "value": "IA",
