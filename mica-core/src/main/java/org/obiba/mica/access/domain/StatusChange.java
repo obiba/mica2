@@ -10,11 +10,9 @@
 
 package org.obiba.mica.access.domain;
 
-import java.io.Serializable;
-
 import org.joda.time.DateTime;
 
-public class StatusChange implements Serializable {
+public class StatusChange extends ChangeLog {
 
   private static final long serialVersionUID = -3662401180541149163L;
 
@@ -22,32 +20,12 @@ public class StatusChange implements Serializable {
 
   private DataAccessEntityStatus to;
 
-  private String author;
-
-  private DateTime changedOn;
-
   public DataAccessEntityStatus getFrom() {
     return from;
   }
 
-  public void setFrom(DataAccessEntityStatus value) {
-    from = value;
-  }
-
   public DataAccessEntityStatus getTo() {
     return to;
-  }
-
-  public void setTo(DataAccessEntityStatus value) {
-    to = value;
-  }
-
-  public DateTime getChangedOn() {
-    return changedOn;
-  }
-
-  public void setChangedOn(DateTime value) {
-    changedOn = value;
   }
 
   public static Builder newBuilder(StatusChange source) {
@@ -55,14 +33,6 @@ public class StatusChange implements Serializable {
   }
   public static Builder newBuilder() {
     return newBuilder(null);
-  }
-
-  public String getAuthor() {
-    return author;
-  }
-
-  public void setAuthor(String author) {
-    this.author = author;
   }
 
   public static class Builder {
@@ -73,27 +43,27 @@ public class StatusChange implements Serializable {
     }
 
     public Builder previous(DataAccessEntityStatus value) {
-      statusChange.setFrom(value);
+      statusChange.from = value;
       return this;
     }
 
     public Builder current(DataAccessEntityStatus value) {
-      statusChange.setTo(value);
+      statusChange.to = value;
       return this;
     }
 
     public Builder author(String value) {
-      statusChange.setAuthor(value);
+      statusChange.author = value;
       return this;
     }
 
     public Builder now() {
-      statusChange.setChangedOn(DateTime.now());
+      statusChange.changedOn = DateTime.now();
       return this;
     }
 
     public Builder changedOn(DateTime value) {
-      statusChange.setChangedOn(value);
+      statusChange.changedOn = value;
       return this;
     }
 
