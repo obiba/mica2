@@ -136,7 +136,7 @@ public class DataAccessRequestResource extends DataAccessEntityResource {
   }
 
   @PUT
-  @Path("/_logActions")
+  @Path("/_log-actions")
   @Timed
   public Response updateActionLogs(Mica.DataAccessRequestDto dto) {
     if (!SecurityUtils.getSubject().hasRole(Roles.MICA_DAO) && !SecurityUtils.getSubject().hasRole(Roles.MICA_ADMIN)) {
