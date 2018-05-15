@@ -13,6 +13,7 @@ package org.obiba.mica.web.model;
 import org.obiba.git.CommitInfo;
 import org.obiba.mica.access.domain.ActionLog;
 import org.obiba.mica.access.domain.DataAccessAmendment;
+import org.obiba.mica.access.domain.DataAccessEntity;
 import org.obiba.mica.access.domain.DataAccessRequest;
 import org.obiba.mica.access.domain.StatusChange;
 import org.obiba.mica.core.domain.Comment;
@@ -409,6 +410,11 @@ public class Dtos {
   @NotNull
   public DataAccessAmendment fromAmendmentDto(@NotNull Mica.DataAccessRequestDto dto) {
     return dataAccessRequestDtos.fromAmendmentDto(dto);
+  }
+
+  @NotNull
+  public List<Mica.DataAccessRequestDto.StatusChangeDto> asStatusChangeDtoList(@NotNull DataAccessEntity entity) {
+    return dataAccessRequestDtos.asStatusChangeDtoList(entity);
   }
 
   @NotNull

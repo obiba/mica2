@@ -17,6 +17,7 @@ import org.obiba.mica.access.domain.ActionLog;
 import org.obiba.mica.access.domain.DataAccessAmendment;
 import org.obiba.mica.access.domain.DataAccessEntity;
 import org.obiba.mica.access.domain.DataAccessRequest;
+import org.obiba.mica.access.domain.StatusChange;
 import org.obiba.mica.access.service.DataAccessRequestUtilService;
 import org.obiba.mica.project.domain.Project;
 import org.obiba.mica.project.service.NoSuchProjectException;
@@ -29,6 +30,7 @@ import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
+import javax.xml.crypto.Data;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -202,6 +204,19 @@ class DataAccessRequestDtos {
     TimestampsDtos.fromDto(dto.getTimestamps(), amendment);
 
     return (DataAccessAmendment)builder.build();
+  }
+
+  @NotNull
+  public List<Mica.DataAccessRequestDto.StatusChangeDto> asStatusChangeDtoList(@NotNull DataAccessEntity entity) {
+    return entity.getStatusChangeHistory().stream().map(statusChange -> {
+      Mica.DataAccessRequestDto.StatusChangeDto.Builder builder = statusChangeDtos.asDtoBuilder(statusChange);
+
+      if (entity instanceof DataAccessAmendment) {
+        builder.setReference(entity.getId());
+      }
+
+      return builder.build();
+    }).collect(Collectors.toList());
   }
 
   @NotNull

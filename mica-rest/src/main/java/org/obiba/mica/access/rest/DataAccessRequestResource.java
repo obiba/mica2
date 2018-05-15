@@ -20,7 +20,6 @@ import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.access.NoSuchDataAccessRequestException;
 import org.obiba.mica.access.domain.DataAccessEntityStatus;
 import org.obiba.mica.access.domain.DataAccessRequest;
-import org.obiba.mica.access.domain.StatusChange;
 import org.obiba.mica.access.notification.DataAccessRequestCommentMailNotification;
 import org.obiba.mica.access.service.DataAccessEntityService;
 import org.obiba.mica.access.service.DataAccessRequestService;
@@ -31,7 +30,6 @@ import org.obiba.mica.security.Roles;
 import org.obiba.mica.security.event.ResourceDeletedEvent;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
-import org.obiba.mica.web.model.Mica.DataAccessRequestDto.StatusChangeDto;
 import org.slf4j.Logger;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
@@ -49,7 +47,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -89,20 +86,6 @@ public class DataAccessRequestResource extends DataAccessEntityResource {
     subjectAclService.checkPermission("/data-access-request", "VIEW", id);
     DataAccessRequest request = dataAccessRequestService.findById(id);
     return dtos.asDto(request);
-  }
-
-  @GET
-  @Path("/_history")
-  public List<StatusChangeDto> getLoggedHistory() {
-    Map<String, List<StatusChange>> mergedStatusChangHistory = dataAccessRequestService.getMergedStatusChangHistory(id);
-
-    return mergedStatusChangHistory.entrySet().stream().map(entry -> entry.getValue().stream().map(
-      statusChange -> dtos.asDto(statusChange).toBuilder()
-        .setReference(!entry.getKey().equals(DataAccessRequestService.DAR_ROOT_KEY) ? entry.getKey() : "").build())
-      .collect(Collectors.toList()))
-      .flatMap(List::stream)
-      .sorted(Comparator.comparing(StatusChangeDto::getChangedOn))
-      .collect(Collectors.toList());
   }
 
   @GET

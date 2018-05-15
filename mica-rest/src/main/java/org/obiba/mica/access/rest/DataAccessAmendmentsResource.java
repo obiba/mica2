@@ -1,24 +1,33 @@
 package org.obiba.mica.access.rest;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
+import com.google.common.collect.Lists;
 import org.apache.shiro.SecurityUtils;
 import org.obiba.mica.access.domain.DataAccessAmendment;
 import org.obiba.mica.access.domain.DataAccessEntityStatus;
+import org.obiba.mica.access.domain.StatusChange;
 import org.obiba.mica.access.service.DataAccessAmendmentService;
+import org.obiba.mica.access.service.DataAccessRequestService;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.mica.web.model.Mica.DataAccessRequestDto.StatusChangeDto;
+import org.obiba.mica.web.model.StatusChangeDtos;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -73,6 +82,17 @@ public class DataAccessAmendmentsResource {
 
   public void setParentId(String parentId) {
     this.parentId = parentId;
+  }
+
+  @GET
+  @Path("/_history")
+  public List<StatusChangeDto> getLoggedHistory() {
+    List<StatusChangeDto> statusChangeDtos = new ArrayList<>();
+    dataAccessAmendmentService.findByParentId(parentId).forEach(amendment ->
+      statusChangeDtos.addAll(dtos.asStatusChangeDtoList(amendment))
+    );
+
+    return statusChangeDtos;
   }
 
   private List<DataAccessAmendment> listByStatusFilteringPermitted(List<String> status) {
