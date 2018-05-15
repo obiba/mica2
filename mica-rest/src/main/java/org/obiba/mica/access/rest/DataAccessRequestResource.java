@@ -13,14 +13,13 @@ package org.obiba.mica.access.rest;
 import com.codahale.metrics.annotation.Timed;
 import com.google.common.base.Strings;
 import com.google.common.eventbus.EventBus;
-
 import org.apache.shiro.SecurityUtils;
-import org.joda.time.DateTime;
+import org.apache.shiro.authz.AuthorizationException;
 import org.obiba.mica.JSONUtils;
 import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.access.NoSuchDataAccessRequestException;
-import org.obiba.mica.access.domain.DataAccessRequest;
 import org.obiba.mica.access.domain.DataAccessEntityStatus;
+import org.obiba.mica.access.domain.DataAccessRequest;
 import org.obiba.mica.access.domain.StatusChange;
 import org.obiba.mica.access.notification.DataAccessRequestCommentMailNotification;
 import org.obiba.mica.access.service.DataAccessEntityService;
@@ -28,7 +27,6 @@ import org.obiba.mica.access.service.DataAccessRequestService;
 import org.obiba.mica.core.domain.Comment;
 import org.obiba.mica.core.service.CommentsService;
 import org.obiba.mica.file.Attachment;
-import org.obiba.mica.file.FileStoreService;
 import org.obiba.mica.security.Roles;
 import org.obiba.mica.security.event.ResourceDeletedEvent;
 import org.obiba.mica.web.model.Dtos;
@@ -37,13 +35,19 @@ import org.obiba.mica.web.model.Mica.DataAccessRequestDto.StatusChangeDto;
 import org.slf4j.Logger;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
-
 import sun.util.locale.LanguageTag;
 
 import javax.inject.Inject;
-import javax.ws.rs.*;
+import javax.ws.rs.BadRequestException;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
-
 import java.io.IOException;
 import java.util.Comparator;
 import java.util.List;
@@ -129,6 +133,19 @@ public class DataAccessRequestResource extends DataAccessEntityResource {
 
     return Response.ok(dataAccessRequestService.getRequestPdf(id, lang))
       .header("Content-Disposition", "attachment; filename=\"" + "data-access-request-" + id + ".pdf" + "\"").build();
+  }
+
+  @PUT
+  @Path("/_log-actions")
+  @Timed
+  public Response updateActionLogs(Mica.DataAccessRequestDto dto) {
+    if (!SecurityUtils.getSubject().hasRole(Roles.MICA_DAO) && !SecurityUtils.getSubject().hasRole(Roles.MICA_ADMIN)) {
+      throw new AuthorizationException();
+    }
+    if(!id.equals(dto.getId())) throw new BadRequestException();
+    DataAccessRequest request = dtos.fromDto(dto);
+    dataAccessRequestService.saveActionsLogs(request);
+    return Response.noContent().build();
   }
 
   @PUT

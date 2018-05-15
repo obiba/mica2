@@ -25,6 +25,8 @@ public abstract class DataAccessEntity extends AbstractAuditableDocument impleme
 
   private List<StatusChange> statusChangeHistory;
 
+  private List<ActionLog> actionLogHistory;
+
   //
   // Accessors
   //
@@ -70,6 +72,19 @@ public abstract class DataAccessEntity extends AbstractAuditableDocument impleme
 
   public void setStatusChangeHistory(List<StatusChange> statusChangeHistory) {
     this.statusChangeHistory = statusChangeHistory;
+  }
+
+  public boolean hasActionLogHistory() {
+    return actionLogHistory != null && !actionLogHistory.isEmpty();
+  }
+
+  public List<ActionLog> getActionLogHistory() {
+    if (actionLogHistory == null) actionLogHistory = Lists.newArrayList();
+    return actionLogHistory;
+  }
+
+  public void setActionLogHistory(List<ActionLog> actionLogHistory) {
+    this.actionLogHistory = actionLogHistory;
   }
 
   public static Builder newBuilder() {

@@ -694,6 +694,12 @@ message ProjectsDto {
 
 message DataAccessRequestDto {
 
+  message ActionLogDto {
+    required string action = 1;
+    required string author = 2;
+    required string changedOn = 3;
+  }
+
   message StatusChangeDto {
     required string from = 1;
     required string to = 2;
@@ -715,6 +721,8 @@ message DataAccessRequestDto {
   repeated StatusChangeDto statusChangeHistory = 10;
   optional UserProfileDto profile = 11;
   optional ProjectSummaryDto project = 12;
+  repeated ActionLogDto actionLogHistory = 13;
+
   extensions 1000 to max;
 }
 
