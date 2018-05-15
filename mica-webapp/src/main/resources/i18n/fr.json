@@ -1279,7 +1279,7 @@
     "title": "Amendement",
     "none": "Aucun amendement demandé.",
     "add": "Ajouter un amendement",
-    "edit": "Éditer un amendement",
+    "cannot-add": "Aucun amendement ne peut être ajouté jusqu'à ce que la demande d'accès aux données a été approuvée.",
     "delete-dialog": {
       "title": "Supprimer l'amendement",
       "message": "Etes-vous sûr de vouloir supprimer l'amendement '{{arg0}}' demandé par '{{arg1}}'?"

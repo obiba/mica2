@@ -1279,6 +1279,7 @@
     "title": "Amendment",
     "none": "No amendment requested.",
     "add": "Add Amendment",
+    "cannot-add": "No amendment can be added until the data access request has been approved.",
     "edit": "Edit Amendment",
     "delete-dialog": {
       "title": "Delete Amendment",
