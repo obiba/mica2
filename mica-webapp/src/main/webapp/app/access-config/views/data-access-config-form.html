@@ -61,34 +61,45 @@
       </div>
     </form>
 
-    <h3 translate>data-access-config.pdf-download.title</h3>
-    <p class="help-block" translate>data-access-config.pdf-download.info</p>
+    <div class="row">
+      <div class="col-md-6">
+        <h3 translate>data-access-config.pdf-download.title</h3>
+        <p class="help-block" translate>data-access-config.pdf-download.info</p>
 
-    <div>
-      <label>
-        <input type="radio" name="role" value="Template" ng-model="dataAccessForm.pdfDownloadType" required>
-        <span translate>data-access-config.pdf-template.title</span>
-      </label>
-      <p class="help-block" translate>data-access-config.pdf-template.info</p>
+        <div>
+          <label>
+            <input type="radio" name="role" value="Template" ng-model="dataAccessForm.pdfDownloadType" required>
+            <span translate>data-access-config.pdf-template.title</span>
+          </label>
+          <p class="help-block" translate>data-access-config.pdf-template.info</p>
 
-      <uib-tabset>
-        <uib-tab ng-repeat="tab in tabs" heading="{{'language.' + tab.lang | translate}}" disable="tab.disabled">
-          <div class="voffset2"></div>
-          <attachment-input files="pdfTemplates[tab.lang]" accept="*.pdf" multiple="false"></attachment-input>
-        </uib-tab>
-      </uib-tabset>
+          <uib-tabset>
+            <uib-tab ng-repeat="tab in tabs" heading="{{'language.' + tab.lang | translate}}" disable="tab.disabled">
+              <div class="voffset2"></div>
+              <attachment-input files="pdfTemplates[tab.lang]" accept="*.pdf" multiple="false"></attachment-input>
+            </uib-tab>
+          </uib-tabset>
 
-      <div class="help-block">
-        <span>{{'allowed-file-types' | translate}}<span><strong>{{fileTypes}}</strong></span></span>
+          <div class="help-block">
+            <span>{{'allowed-file-types' | translate}}<span><strong>{{fileTypes}}</strong></span></span>
+          </div>
+        </div>
+
+        <div class="voffset4">
+          <label>
+            <input type="radio" name="role" value="Embedded" ng-model="dataAccessForm.pdfDownloadType" required>
+            <span translate>data-access-config.pdf-embedded.title</span>
+          </label>
+          <p class="help-block" translate>data-access-config.pdf-embedded.info</p>
+        </div>
       </div>
-    </div>
-
-    <div class="voffset4">
-      <label>
-        <input type="radio" name="role" value="Embedded" ng-model="dataAccessForm.pdfDownloadType" required>
-        <span translate>data-access-config.pdf-embedded.title</span>
-      </label>
-      <p class="help-block" translate>data-access-config.pdf-embedded.info</p>
+      <div class="col-md-6">
+        <key-list title-key="data-access-config.action-log.title"
+                  help-key="data-access-config.action-log.help"
+                  keys="dataAccessForm.predefinedActions"
+                  on-update-keys="onUpdateActionKeys(keys)">
+        </key-list>
+      </div>
     </div>
 
   </div>

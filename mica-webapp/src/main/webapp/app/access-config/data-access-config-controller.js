@@ -153,6 +153,15 @@ mica.dataAccessConfig
         AlertBuilder.newBuilder().response(response).build();
       }
 
+      function onUpdateActionKeys(keys) {
+        if (keys && keys.length > 0) {
+          $scope.dataAccessForm.predefinedActions = angular.copy (keys);
+        } else {
+          delete $scope.dataAccessForm.predefinedActions;
+        }
+        console.log('onUpdateActionKeys', $scope,keys);
+      }
+
       $scope.form = DataAccessFormResource.get(
         function(dataAccessForm){
           var watchState = {firstTime: true};
@@ -190,6 +199,7 @@ mica.dataAccessConfig
 
       },entitySchemaFormaError);
 
+      $scope.onUpdateActionKeys = onUpdateActionKeys;
       $scope.loadPermissions = function() {
         $scope.acls = DataAccessFormPermissionsResource.get();
         return $scope.acls;

@@ -807,6 +807,7 @@ message DataAccessFormDto {
   optional string attachmentSubject = 28;
   optional string csvExportFormat = 29;
   required PdfDownloadType pdfDownloadType = 30;
+  repeated string predefinedActions = 31;
 }
 
 message DataAccessAmendmentFormDto {

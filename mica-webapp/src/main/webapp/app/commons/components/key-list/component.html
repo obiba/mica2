@@ -1,0 +1,29 @@
+<h3>{{$ctrl.titleKey | translate}}</h3>
+<p class="help-block" ng-bind-html="$ctrl.helpKey | translate">
+</p>
+<button type="button" class="btn btn-info voffset2" ng-click="$ctrl.addOrEdit()">
+  <i class="fa fa-plus"></i> <span translate>key-list.add-key</span>
+</button>
+<div ng-show="$ctrl.keys && $ctrl.keys.length > 0">
+  <div class="voffset3">
+    <table class="table table-bordered table-striped attributes-column">
+      <thead>
+      <tr>
+        <th class="width75" translate>global.key</th>
+        <th translate>actions</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr ng-repeat="value in $ctrl.keys">
+        <td class="width75">
+          {{value}}
+        </td>
+        <td>
+          <a href="" ng-click="$ctrl.addOrEdit($index)" class="action"><i class="fa fa-pencil"></i></a>
+          <a href="" ng-click="$ctrl.remove($index)" class="action"><i class="fa fa-trash-o"></i></a>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
