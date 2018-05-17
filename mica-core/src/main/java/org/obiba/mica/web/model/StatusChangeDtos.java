@@ -19,6 +19,8 @@ import org.obiba.shiro.realm.ObibaRealm;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class StatusChangeDtos {
@@ -29,7 +31,7 @@ public class StatusChangeDtos {
   @Inject
   private UserProfileDtos userProfileDtos;
 
-  StatusChangeDto asDto(StatusChange statusChange) {
+  StatusChangeDto.Builder asDtoBuilder(StatusChange statusChange) {
     StatusChangeDto.Builder builder = StatusChangeDto.newBuilder() //
       .setFrom(statusChange.getFrom().toString()) //
       .setTo(statusChange.getTo().toString()) //
@@ -41,7 +43,11 @@ public class StatusChangeDtos {
       builder.setProfile(userProfileDtos.asDto(profile));
     }
 
-    return builder.build();
+    return builder;
+  }
+
+  StatusChangeDto asDto(StatusChange statusChange) {
+    return asDtoBuilder(statusChange).build();
   }
 
   StatusChange fromDto(StatusChangeDto dto) {
@@ -52,6 +58,4 @@ public class StatusChangeDtos {
       .changedOn(DateTime.parse(dto.getChangedOn())) //
       .build(); //
   }
-
-
 }
