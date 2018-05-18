@@ -212,11 +212,13 @@ public abstract class DataAccessEntityService<T extends DataAccessEntity> {
     if (dataAccessForm.isNotifySubmitted()) {
       Map<String, String> ctx = getNotificationEmailContext(request);
 
+      boolean hasParentId = ctx.get("parentId") != null;
+
       mailService.sendEmailToUsers(mailService.getSubject(dataAccessForm.getSubmittedSubject(), ctx,
-        DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), "dataAccessRequestSubmittedApplicantEmail", ctx,
+        DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), hasParentId ? "dataAccessAmendmentSubmittedApplicantEmail" : "dataAccessRequestSubmittedApplicantEmail", ctx,
         request.getApplicant());
       mailService.sendEmailToGroups(mailService.getSubject(dataAccessForm.getSubmittedSubject(), ctx,
-        DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), "dataAccessRequestSubmittedDAOEmail", ctx,
+        DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), hasParentId ? "dataAccessAmendmentSubmittedDAOEmail" : "dataAccessRequestSubmittedDAOEmail", ctx,
         Roles.MICA_DAO);
     }
   }
@@ -226,8 +228,10 @@ public abstract class DataAccessEntityService<T extends DataAccessEntity> {
     if (dataAccessForm.isNotifyConditionallyApproved()) {
       Map<String, String> ctx = getNotificationEmailContext(request);
 
+      boolean hasParentId = ctx.get("parentId") != null;
+
       mailService.sendEmailToUsers(mailService.getSubject(dataAccessForm.getConditionallyApprovedSubject(), ctx,
-        DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), "dataAccessRequestConditionallyApprovedApplicantEmail", ctx,
+        DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), hasParentId ? "dataAccessAmendmentConditionallyApprovedApplicantEmail" : "dataAccessRequestConditionallyApprovedApplicantEmail", ctx,
         request.getApplicant());
     }
   }
@@ -237,8 +241,10 @@ public abstract class DataAccessEntityService<T extends DataAccessEntity> {
     if (dataAccessForm.isNotifyReviewed() && dataAccessForm.isWithReview()) {
       Map<String, String> ctx = getNotificationEmailContext(request);
 
+      boolean hasParentId = ctx.get("parentId") != null;
+
       mailService.sendEmailToUsers(mailService.getSubject(dataAccessForm.getReviewedSubject(), ctx,
-        DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), "dataAccessRequestReviewedApplicantEmail", ctx,
+        DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), hasParentId ? "dataAccessAmendmentReviewedApplicantEmail" : "dataAccessRequestReviewedApplicantEmail", ctx,
         request.getApplicant());
     }
   }
@@ -248,8 +254,10 @@ public abstract class DataAccessEntityService<T extends DataAccessEntity> {
     if (dataAccessForm.isNotifyReopened()) {
       Map<String, String> ctx = getNotificationEmailContext(request);
 
+      boolean hasParentId = ctx.get("parentId") != null;
+
       mailService.sendEmailToUsers(mailService.getSubject(dataAccessForm.getReopenedSubject(), ctx,
-        DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), "dataAccessRequestReopenedApplicantEmail", ctx,
+        DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), hasParentId ? "dataAccessAmendmentReopenedApplicantEmail" : "dataAccessRequestReopenedApplicantEmail", ctx,
         request.getApplicant());
     }
   }
@@ -259,8 +267,10 @@ public abstract class DataAccessEntityService<T extends DataAccessEntity> {
     if (dataAccessForm.isNotifyApproved()) {
       Map<String, String> ctx = getNotificationEmailContext(request);
 
+      boolean hasParentId = ctx.get("parentId") != null;
+
       mailService.sendEmailToUsers(mailService.getSubject(dataAccessForm.getApprovedSubject(), ctx,
-        DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), "dataAccessRequestApprovedApplicantEmail", ctx,
+        DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), hasParentId ? "dataAccessAmendmentApprovedApplicantEmail" : "dataAccessRequestApprovedApplicantEmail", ctx,
         request.getApplicant());
     }
   }
@@ -270,8 +280,10 @@ public abstract class DataAccessEntityService<T extends DataAccessEntity> {
     if (dataAccessForm.isNotifyRejected()) {
       Map<String, String> ctx = getNotificationEmailContext(request);
 
+      boolean hasParentId = ctx.get("parentId") != null;
+
       mailService.sendEmailToUsers(mailService.getSubject(dataAccessForm.getRejectedSubject(), ctx,
-        DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), "dataAccessRequestRejectedApplicantEmail", ctx,
+        DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), hasParentId ? "dataAccessAmendmentRejectedApplicantEmail" : "dataAccessRequestRejectedApplicantEmail", ctx,
         request.getApplicant());
     }
   }
@@ -348,4 +360,3 @@ public abstract class DataAccessEntityService<T extends DataAccessEntity> {
   }
 
 }
-//  public DataAccessRequest save(@NotNull DataAccessRequest request) {
