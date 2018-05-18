@@ -120,11 +120,12 @@ class DataAccessRequestDtos {
       builder.addActions("ADD_AMENDMENTS");
     }
 
-    boolean canDeleteAttachments = SecurityUtils.getSubject().hasRole(Roles.MICA_DAO) || SecurityUtils.getSubject().hasRole(Roles.MICA_ADMIN);
-    if (canDeleteAttachments ||
+    boolean hasAdministrativeRole = SecurityUtils.getSubject().hasRole(Roles.MICA_DAO) || SecurityUtils.getSubject().hasRole(Roles.MICA_ADMIN);
+    if (hasAdministrativeRole ||
       subjectAclService.isPermitted(Paths.get("/data-access-request", request.getId(), "_attachments").toString(), "EDIT")) {
-      if (canDeleteAttachments) {
+      if (hasAdministrativeRole) {
         builder.addActions("DELETE_ATTACHMENTS");
+        builder.addActions("EDIT_ACTION_LOGS");
       }
 
       builder.addActions("EDIT_ATTACHMENTS");

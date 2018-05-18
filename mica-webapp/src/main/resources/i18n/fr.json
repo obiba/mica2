@@ -1384,6 +1384,10 @@
       "rejected":  "Rejetée",
       "conditionallyApproved": "Approuvée sous conditions"
     },
+    "action-log": {
+      "required": "Les deux entrées doivent être remplies avant la soumission",
+      "action-placeholder": "Entrer le texte"
+    },
     "delete-dialog": {
       "title": "Supprimer la demande d'accès aux données",
       "message": "Etes-vous sûr de vouloir supprimer l'accès aux données '{{arg0}}' demandé par '{{arg1}}'?"
