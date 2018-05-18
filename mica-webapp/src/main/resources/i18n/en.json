@@ -1385,6 +1385,10 @@
       "rejected":  "Rejected",
       "conditionallyApproved": "Conditionally approved"
     },
+    "action-log": {
+      "required": "Both inputs must be filled before submitting",
+      "action-placeholder": "Enter text"
+    },
     "delete-dialog": {
       "title": "Delete Data Access Request",
       "message": "Are you sure you want to delete Data Access '{{arg0}}' requested by '{{arg1}}'?"
