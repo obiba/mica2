@@ -159,7 +159,6 @@ mica.dataAccessConfig
         } else {
           delete $scope.dataAccessForm.predefinedActions;
         }
-        console.log('onUpdateActionKeys', $scope,keys);
       }
 
       $scope.form = DataAccessFormResource.get(
