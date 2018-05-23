@@ -11,11 +11,13 @@
 package org.obiba.mica.micaConfig.domain;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.micaConfig.PdfDownloadType;
 
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -68,6 +70,8 @@ public class DataAccessForm extends AbstractDataAccessEntityForm {
   private boolean approvedFinal = false;
 
   private boolean rejectedFinal = false;
+
+  private List<String> predefinedActions = null;
 
   public DataAccessForm() {
     super();
@@ -267,5 +271,13 @@ public class DataAccessForm extends AbstractDataAccessEntityForm {
 
   public void setAttachmentSubject(String attachmentSubject) {
     this.attachmentSubject = attachmentSubject;
+  }
+
+  public List<String> getPredefinedActions() {
+    return predefinedActions == null ? Lists.newArrayList() : predefinedActions;
+  }
+
+  public void setPredefinedActions(List<String> predefinedActions) {
+    this.predefinedActions = predefinedActions;
   }
 }

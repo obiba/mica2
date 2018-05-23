@@ -68,6 +68,7 @@
     "included-individual-study": "Individual Study Included",
     "definition": "Definition",
     "display": "Display",
+    "key": "Key",
     "messages": {
       "error": {
         "unique-id": "ID must be unique.",
@@ -1615,6 +1616,10 @@
       "tab": "Model",
       "info": "The form model stores the valid input data, invalid values are excluded."
     },
+    "action-log": {
+      "title": "Predefined Action Names",
+      "help": "An action name is a translation key that must be preceded by <strong>data-access-request.action-log.config.label.</strong>, <a href='#/admin/translations/edit?filter=data-access-request.action-log.config.label.'>here is</a> where you can add new translations."
+    },
     "id-generation": {
       "title": "ID Generation",
       "info": "The ID of the data access requests can be generated following a pattern.",
@@ -1689,6 +1694,19 @@
       "summary-field": "Summary Field",
       "summary-field-help": "The lay summary of the amendment."
     }
+  },
+  "key-list": {
+    "add-key": "Add Key",
+    "edit-key": "Edit Key",
+    "delete-dialog": {
+      "title": "Delete Key",
+      "message": "Are you sure you want to delete '{{key}}'?"
+    },
+    "error": {
+      "unique-key": "Key must be unique.",
+      "key-character-error": "Key contains invalid characters. Please avoid characters such as spaces, '.', '~' and '!'."
+    },
+    "modal-add-help": "Do not use spaces, '.', '~', '!' and hyphenate multiple words."
   },
   "entity-config": {
     "save-alert": {

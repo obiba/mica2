@@ -226,6 +226,8 @@ class MicaConfigDtos {
 
     if(dataAccessForm.getConditionallyApprovedSubject() != null) builder.setConditionallyApprovedSubject(dataAccessForm.getConditionallyApprovedSubject());
 
+    if(dataAccessForm.getPredefinedActions() != null) builder.addAllPredefinedActions(dataAccessForm.getPredefinedActions());
+
     builder.setPdfDownloadType(Mica.DataAccessFormDto.PdfDownloadType.valueOf(dataAccessForm.getPdfDownloadType().name()));
     return builder.build();
   }
@@ -254,6 +256,7 @@ class MicaConfigDtos {
     if(dto.hasIdPrefix()) {
       dataAccessForm.setIdPrefix(dto.getIdPrefix());
     }
+
     dataAccessForm.setIdLength(dto.getIdLength());
 
     dataAccessForm.setNotifySubmitted(dto.getNotifySubmitted());
@@ -285,6 +288,7 @@ class MicaConfigDtos {
     dataAccessForm.setNotifyConditionallyApproved(dto.getNotifyConditionallyApproved());
     dataAccessForm.setConditionallyApprovedSubject(dto.getConditionallyApprovedSubject());
     dataAccessForm.setPdfDownloadType(PdfDownloadType.valueOf(dto.getPdfDownloadType().name()));
+    dataAccessForm.setPredefinedActions(dto.getPredefinedActionsList());
 
     return dataAccessForm;
   }

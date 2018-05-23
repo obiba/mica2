@@ -68,6 +68,7 @@
     "included-individual-study": "Études individuelles incluses",
     "definition": "Définition",
     "display": "Affichage",
+    "key": "Clé",
     "messages": {
       "error": {
           "unique-id": "L'ID doit être unique.",
@@ -576,10 +577,10 @@
     "opal-help": "URL du serveur Opal pour cette étude (si différent de celui définit par défaut).",
     "potential-conflicts": "Conflits potentiels",
     "potential-conflicts-message": "Des conflits potentiels peuvent subvenir.",
-    "delete-conflict": "Conflit à la suppression de l'étude",
-    "delete-conflict-message": "Des conflits ont été trouvés lors de la tentative de suppression de l'étude. Supprimez les dépendances et essayez à nouveau.",
     "unpublish-conflicts": "Unpublish Conflict",
     "unpublish-conflicts-message": "L'étude est reliée à des ensembles de données publiées. Veuillez dépublier les dépendances et essayez à nouveau.",
+    "delete-conflict": "Conflit à la suppression de l'étude",
+    "delete-conflict-message": "Des conflits ont été trouvés lors de la tentative de suppression de l'étude. Supprimez les dépendances et essayez à nouveau.",
     "population-delete-conflict-message": "Des conflits ont été trouvés lors de la tentative de suppression d'une population. Supprimez les dépendances et essayez à nouveau.",
     "population-dce-delete-conflict-message": "Des conflits ont été trouvés lors de la tentative de suppression d'un événement de collecte de données. Supprimez les dépendances et essayez à nouveau.",
     "population-or-dce-delete-conflict-message": "Des conflits ont été trouvés lors de la tentative de suppression d'une population ou d'un événement de collecte de données. Supprimez les dépendances et essayez à nouveau.",
@@ -1280,6 +1281,7 @@
     "none": "Aucun amendement demandé.",
     "add": "Ajouter un amendement",
     "cannot-add": "Aucun amendement ne peut être ajouté jusqu'à ce que la demande d'accès aux données a été approuvée.",
+    "edit": "Modifier l'amendement",
     "delete-dialog": {
       "title": "Supprimer l'amendement",
       "message": "Etes-vous sûr de vouloir supprimer l'amendement '{{arg0}}' demandé par '{{arg1}}'?"
@@ -1614,6 +1616,10 @@
       "tab": "Modèle",
       "info": "Le modèle du formulaire stocke les données entrées valides, les valeurs non valides sont exclues."
     },
+    "action-log": {
+      "title": "Noms d'actions prédéfinies",
+      "help": "Un nom d'action est une clé de traduction qui doit être précédée de <strong>data-access-request.action-log.config.label.</strong>, <a href='#/admin/translations/edit?filter=data-access-request.action-log.config.label.'>voici</a> où vous pouvez ajouter de nouvelles traductions."
+    },
     "id-generation": {
       "title": "Generation d'ID",
       "info": "L'ID des demandes d'accès aux données peut être généré suivant un modèle.",
@@ -1688,6 +1694,19 @@
       "summary-field": "Champ Résumé",
       "summary-field-help": "Le résumé simplifié de l'amendement."
     }
+  },
+  "key-list": {
+    "add-key": "Ajouter une clé",
+    "edit-key": "Modifier une clé",
+    "delete-dialog": {
+      "title": "Supprimer une clé",
+      "message": "Êtes-vous sûr de vouloir supprimer '{{key}}'?"
+    },
+    "error": {
+      "unique-key": "La clé doit être unique.",
+      "key-character-error": "La clé contient des caractères non valides. Évitez les caractères tels que les espaces, '.', '~' et '!'"
+    },
+    "modal-add-help": "N'utilisez pas d'espaces, '.', '~', '!' et utilisez des traits d'union pour lier plusieurs mots."
   },
   "entity-config": {
     "save-alert": {
