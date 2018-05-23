@@ -1386,7 +1386,14 @@
     },
     "action-log": {
       "required": "Les deux entrées doivent être remplies avant la soumission",
-      "action-placeholder": "Entrer le texte"
+      "action-placeholder": "Entrer le texte",
+      "delete": {
+        "title": "Suprimmer une instance d'enregistrement d'action",
+        "message": "Êtes-vous sûr de vouloir supprimer cette d'action '{{action}}' créée par '{{author}}' le '{{changedOn}}'?"
+      },
+      "edit": {
+        "title": "Modifier une action"
+      }
     },
     "delete-dialog": {
       "title": "Supprimer la demande d'accès aux données",
