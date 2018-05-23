@@ -1387,7 +1387,14 @@
     },
     "action-log": {
       "required": "Both inputs must be filled before submitting",
-      "action-placeholder": "Enter text"
+      "action-placeholder": "Enter text",
+      "delete": {
+        "title": "Delete Action Log Item",
+        "message": "Are you sure you want to delete action '{{action}}' made by '{{author}}' on '{{changedOn}}'?"
+      },
+      "edit": {
+        "title": "Edit Action Log Item"
+      }
     },
     "delete-dialog": {
       "title": "Delete Data Access Request",
