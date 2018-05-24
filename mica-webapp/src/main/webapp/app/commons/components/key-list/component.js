@@ -12,7 +12,15 @@
 
 (function () {
 
-  function ModalController ($scope, $uibModalInstance, keys, key) {
+  function addTranslationPrefix(prefix, key) {
+    return prefix ? prefix.replace(/\.$/,'') + '.' + key : key;
+  }
+
+  function removeTranslationPrefix(prefix, key) {
+    return angular.isDefined(prefix)? key.substring(prefix.length+1) : key;
+  }
+
+  function ModalController ($scope, $uibModalInstance, keys, translationPrefix, key) {
     function hasSpecialCharacters(str) {
       if (str && typeof str === 'string') {
         var result = str.match (/[A-Z\s~!\.]/g);
@@ -23,11 +31,13 @@
     }
 
     function save(form) {
-      $scope.data.key = $scope.data.key.toLowerCase();
-      form.key.$setValidity ('text', !keys || keys.indexOf ($scope.data.key) < 0);
-      form.key.$setValidity ('character', !hasSpecialCharacters ($scope.data.key));
+      var key = $scope.data.key.toLowerCase();
+      form.key.$setValidity ('character', !hasSpecialCharacters (key));
+      key = addTranslationPrefix(translationPrefix, key);
+      form.key.$setValidity ('text', !keys || keys.indexOf (key) < 0);
 
       if (form.$valid) {
+        $scope.data.key = key;
         $uibModalInstance.close ($scope.data.key);
       } else {
         $scope.form = form;
@@ -42,7 +52,7 @@
     $scope.cancel = cancel;
     $scope.save = save;
     $scope.title = key === null ? 'key-list.add-key' : 'key-list.edit-key';
-    $scope.data = {key: key ? key : null};
+    $scope.data = {key: key ? removeTranslationPrefix(translationPrefix, key) : null};
   }
 
   function Controller ($rootScope, $uibModal, $translate, NOTIFICATION_EVENTS) {
@@ -53,10 +63,13 @@
       $uibModal
         .open ({
           templateUrl: 'app/commons/components/key-list/modal.html',
-          controller: ['$scope', '$uibModalInstance', 'keys', 'key', ModalController],
+          controller: ['$scope', '$uibModalInstance', 'keys', 'translationPrefix', 'key', ModalController],
           resolve: {
             keys: function () {
               return ctrl.keys;
+            },
+            translationPrefix: function() {
+              return ctrl.translationPrefix;
             },
             key: function() {
               return hasIndex ? ctrl.keys[index] : null;
@@ -112,6 +125,7 @@
     bindings: {
       titleKey: '@',
       helpKey: '@',
+      translationPrefix: '@',
       keys: '<',
       onUpdateKeys: '&'
     },
