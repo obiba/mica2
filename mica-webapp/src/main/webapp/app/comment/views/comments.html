@@ -1,4 +1,4 @@
 <div>
-  <obiba-comments comments="comments" on-update="updateComment" on-delete="deleteComment" name-resolver="userProfileService.getFullName" edit-action="EDIT" delete-action="DELETE"></obiba-comments>
+  <obiba-comments comments="comments" on-update="updateComment" on-delete="deleteComment" name-resolver="getFullName(profile)" edit-action="EDIT" delete-action="DELETE"></obiba-comments>
   <obiba-comment-editor on-submit="submitComment"></obiba-comment-editor>
 </div>

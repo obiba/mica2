@@ -10,7 +10,7 @@
 
 'use strict';
 
-mica.comment.controller('CommentController', ['$scope', '$rootScope', '$routeParams', 'NOTIFICATION_EVENTS', 'CommentResource', 'CommentsResource', function ($scope, $rootScope, $routeParams, NOTIFICATION_EVENTS, CommentResource, CommentsResource) {
+mica.comment.controller('CommentController', ['$scope', '$rootScope', '$routeParams', 'NOTIFICATION_EVENTS', 'CommentResource', 'CommentsResource', 'UserProfileService', function ($scope, $rootScope, $routeParams, NOTIFICATION_EVENTS, CommentResource, CommentsResource,UserProfileService) {
   $scope.comments = [];
 
   var onError = function (response) {
@@ -56,6 +56,10 @@ mica.comment.controller('CommentController', ['$scope', '$rootScope', '$routePar
       }, {}, $scope.retrieveComments, onError);
     }
   });
+
+  $scope.getFullName = function(profile) {
+    return UserProfileService.getFullName(profile);
+  };
 
   $scope.retrieveComments();
 }]);
