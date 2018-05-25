@@ -212,6 +212,11 @@ mica.dataAccessConfig
         return DataAccessFormPermissionsResource.delete(acl);
       };
 
+      $scope.otherResources = [{
+        value: 'action-logs',
+        text: 'data-access-config.action-log.action-logs-permission'
+      }];
+
       $scope.loadPermissions();
       $scope.tab = {name: 'form'};
       $scope.saveForm = saveForm;

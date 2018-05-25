@@ -18,3 +18,4 @@ spring_loaded
 .vagrant
 .work
 .vscode
+**/.attach_pid*

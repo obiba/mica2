@@ -10,7 +10,9 @@
 
 package org.obiba.mica.security.rest;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -25,10 +27,9 @@ import org.obiba.mica.file.FileUtils;
 import org.obiba.mica.security.PermissionsUtils;
 import org.obiba.mica.security.domain.SubjectAcl;
 import org.obiba.mica.security.service.SubjectAclService;
+import org.obiba.mica.web.model.MicaSecurity.AclDto;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-
-import static org.obiba.mica.web.model.MicaSecurity.AclDto;
 
 /**
  * REST controller for managing ACLs on a resource.
@@ -48,6 +49,8 @@ public class SubjectAclResource {
 
   private String fileInstance;
 
+  private Set<String> otherResources = new HashSet<String>();
+
   public void setResourceInstance(String resource, String instance) {
     this.resource = resource;
     this.instance = instance;
@@ -56,6 +59,10 @@ public class SubjectAclResource {
   public void setFileResourceInstance(String resource, String instance) {
     fileResource = resource;
     fileInstance = instance;
+  }
+
+  public void addOtherResourceName(String resource) {
+    otherResources.add(resource);
   }
 
   @GET
@@ -75,13 +82,16 @@ public class SubjectAclResource {
     SubjectAcl.Type type = SubjectAcl.Type.valueOf(typeStr.toUpperCase());
     subjectAclService.removeSubjectPermissions(type, principal, resource, instance);
     subjectAclService.removeSubjectPermissions(type, principal, fileResource, fileInstance);
+
+    otherResources.forEach(otherResourceName -> subjectAclService.removeSubjectPermissions(type, principal, mergeWithResourceName(otherResourceName), instance));
+
     return Response.noContent().build();
   }
 
   @PUT
   public Response update(@QueryParam("principal") String principal,
     @QueryParam("type") @DefaultValue("USER") String typeStr, @QueryParam("role") @DefaultValue("READER") String role,
-    @QueryParam("file") @DefaultValue("true") boolean file) {
+    @QueryParam("file") @DefaultValue("true") boolean file, @QueryParam("otherResources") List<String> others) {
     if(principal == null) return Response.status(Response.Status.BAD_REQUEST).build();
     checkPermission();
 
@@ -91,7 +101,16 @@ public class SubjectAclResource {
     if(file) {
       subjectAclService.addSubjectPermission(type, principal, fileResource, actions, fileInstance);
     }
+
+    if (others != null && others.size() > 0) {
+      others.stream().filter(otherResources::contains).forEach(otherResourceName -> subjectAclService.addSubjectPermission(type, principal, mergeWithResourceName(otherResourceName), actions, instance));
+    }
+
     return Response.noContent().build();
+  }
+
+  private String mergeWithResourceName(String otherResourceName) {
+    return resource + "/" + otherResourceName;
   }
 
   private void checkPermission() {
