@@ -1618,7 +1618,8 @@
     },
     "action-log": {
       "title": "Predefined Action Names",
-      "help": "An action name is a translation key that must be preceded by <strong>data-access-request.action-log.config.label.</strong>, <a href='#/admin/translations/edit?filter=data-access-request.action-log.config.label.'>here is</a> where you can add new translations."
+      "help": "An action name is a translation key that must be preceded by <strong>data-access-request.action-log.config.label.</strong>, <a href='#/admin/translations/edit?filter=data-access-request.action-log.config.label.'>here is</a> where you can add new translations.",
+      "action-logs-permission": "Apply the same permission to associated action logs"
     },
     "id-generation": {
       "title": "ID Generation",

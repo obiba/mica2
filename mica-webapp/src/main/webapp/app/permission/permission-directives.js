@@ -42,7 +42,8 @@ mica.permission
       onAdd: '=',
       onDelete: '=',
       onLoad: '=',
-      name: '='
+      name: '=',
+      otherResources: '<'
     },
     templateUrl: 'app/permission/permission-config-table-template.html',
     controller: 'PermissionsConfigController'
@@ -64,11 +65,11 @@ mica.permission
           onAdd: function () {
             return $scope.onAdd;
           },
-          onLoad: function () {
-            return $scope.onLoad;
-          },
           name: function () {
             return $scope.name;
+          },
+          otherResources: function () {
+            return $scope.otherResources;
           }
         }
       }).result.then(function(result) {
@@ -108,8 +109,8 @@ mica.permission
     $scope.onLoad();
   }])
 
-.controller('PermissionsConfigModalController', ['$scope', '$uibModalInstance', 'AlertService', 'ServerErrorUtils', '$filter', 'acl', 'onAdd', 'name',
-  function ($scope, $uibModalInstance, AlertService, ServerErrorUtils, $filter, acl, onAdd, name) {
+.controller('PermissionsConfigModalController', ['$scope', '$uibModalInstance', 'AlertService', 'ServerErrorUtils', '$filter', 'acl', 'onAdd', 'name', 'otherResources',
+  function ($scope, $uibModalInstance, AlertService, ServerErrorUtils, $filter, acl, onAdd, name, otherResources) {
     $scope.ROLES = ['READER'];
     $scope.TYPES = [
       {name: 'USER', label: $filter('translate')('permission.user')},
@@ -125,6 +126,7 @@ mica.permission
     ];
 
     $scope.name = {arg0: $filter('translate')(name).toLowerCase()};
+    $scope.others = otherResources;
 
     var selectedIndex = acl ?
       $scope.TYPES.findIndex(function(type) {
@@ -143,6 +145,9 @@ mica.permission
 
       if(form.$valid) {
         $scope.acl.type = $scope.selectedType.name;
+
+        $scope.acl.others = Object.keys($scope.acl.others || {});
+
         onAdd($scope.acl).$promise.then(function () {
           $uibModalInstance.close(true);
         }, function (response) {

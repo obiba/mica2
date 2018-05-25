@@ -82,7 +82,7 @@ class DataAccessRequestDtos {
       builder.setTitle(title);
     }
 
-    boolean canAccessActionLogs = SecurityUtils.getSubject().hasRole(Roles.MICA_DAO) || SecurityUtils.getSubject().hasRole(Roles.MICA_ADMIN);
+    boolean canAccessActionLogs = SecurityUtils.getSubject().hasRole(Roles.MICA_DAO) || SecurityUtils.getSubject().hasRole(Roles.MICA_ADMIN) || subjectAclService.isPermitted("/data-access-request/action-logs", "VIEW");
     if (canAccessActionLogs) {
       request.getActionLogHistory()
         .forEach(actionLog -> builder.addActionLogHistory(actionLogDtos.asDto(actionLog)));

@@ -64,6 +64,7 @@ public class DataAccessFormResource {
   public SubjectAclResource permissions() {
     SubjectAclResource subjectAclResource = applicationContext.getBean(SubjectAclResource.class);
     subjectAclResource.setResourceInstance("/data-access-request", "*");
+    subjectAclResource.addOtherResourceName("action-logs");
     subjectAclResource.setFileResourceInstance("/file", "/data-access-request");
     return subjectAclResource;
   }
