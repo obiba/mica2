@@ -1280,7 +1280,7 @@
     "title": "Amendement",
     "none": "Aucun amendement demandé.",
     "add": "Ajouter un amendement",
-    "cannot-add": "Aucun amendement ne peut être ajouté jusqu'à ce que la demande d'accès aux données a été approuvée.",
+    "cannot-add": "Vous n'avez pas la permission d'ajouter d'amendement.",
     "edit": "Modifier l'amendement",
     "delete-dialog": {
       "title": "Supprimer l'amendement",
