@@ -1375,6 +1375,7 @@
     "edit-documents": "Add/Remove Files",
     "select-status": "Select a Status",
     "comments": "Comments",
+    "private-comments": "Private Comments",
     "history": "History",
     "status-placeholder": "Filter by status",
     "histories": {

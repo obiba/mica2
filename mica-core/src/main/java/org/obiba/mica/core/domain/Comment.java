@@ -23,6 +23,8 @@ public class Comment extends AbstractAuditableDocument {
 
   private String instanceId;
 
+  private boolean admin;
+
   public String getMessage() {
     return message;
   }
@@ -53,6 +55,14 @@ public class Comment extends AbstractAuditableDocument {
 
   public void setInstanceId(String instanceId) {
     this.instanceId = instanceId;
+  }
+
+  public boolean getAdmin() {
+    return admin;
+  }
+
+  public void setAdmin(boolean admin) {
+    this.admin = admin;
   }
 
   /**
@@ -93,6 +103,11 @@ public class Comment extends AbstractAuditableDocument {
 
     public Builder instanceId(String id) {
       comment.setInstanceId(id);
+      return this;
+    }
+
+    public Builder admin(Boolean admin) {
+      comment.setAdmin(admin);
       return this;
     }
 
