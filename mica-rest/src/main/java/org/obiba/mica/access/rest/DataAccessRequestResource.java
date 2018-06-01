@@ -45,6 +45,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.util.List;
@@ -182,25 +183,35 @@ public class DataAccessRequestResource extends DataAccessEntityResource {
 
   @GET
   @Path("/comments")
-  public List<Mica.CommentDto> comments() {
+  public List<Mica.CommentDto> comments(@QueryParam("admin") @DefaultValue("false") boolean admin) {
     subjectAclService.checkPermission("/data-access-request", "VIEW", id);
     dataAccessRequestService.findById(id);
-    return commentsService.findByResourceAndInstance("/data-access-request", id).stream().map(dtos::asDto)
-      .collect(Collectors.toList());
+    if(!admin) {
+      return commentsService.findPublicComments("/data-access-request", id).stream().map(dtos::asDto)
+        .collect(Collectors.toList());
+    }
+    else{
+      return commentsService.findPrivateComments("/data-access-request", id).stream().map(dtos::asDto)
+        .collect(Collectors.toList());
+    }
   }
 
   @POST
   @Path("/comments")
-  public Response createComment(String message) {
+  public Response createComment(String message, @QueryParam("admin")  @DefaultValue("false") boolean admin) {
     subjectAclService.checkPermission("/data-access-request", "VIEW", id);
     dataAccessRequestService.findById(id);
-    Comment comment = commentsService.save( //
-      Comment.newBuilder() //
-        .createdBy(SecurityUtils.getSubject().getPrincipal().toString()) //
-        .message(message) //
-        .resourceId("/data-access-request") //
-        .instanceId(id) //
-        .build(), commentMailNotification); //
+    Comment.Builder buildComment = Comment.newBuilder() //
+      .createdBy(SecurityUtils.getSubject().getPrincipal().toString()) //
+      .message(message) //
+      .resourceId("/data-access-request") //
+      .instanceId(id);
+    //@Todo check permission to add new comments
+    if(admin==true){
+      buildComment.admin(true);
+    }
+
+    Comment comment = commentsService.save(buildComment.build(), commentMailNotification); //
 
     subjectAclService.addPermission("/data-access-request/" + id + "/comment", "VIEW,EDIT,DELETE", comment.getId());
     subjectAclService

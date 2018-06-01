@@ -72,4 +72,12 @@ public class CommentsService {
   public List<Comment> findByResourceAndInstance(String name, String id) {
     return commentsRepository.findByResourceIdAndInstanceId(name, id);
   }
+
+  public List<Comment> findPublicComments(String name, String id) {
+    return commentsRepository.findPublicCommentsByResourceIdAndInstanceId(name, id);
+  }
+
+  public List<Comment> findPrivateComments(String name, String id) {
+    return commentsRepository.findByResourceIdAndInstanceIdAndAdminIsTrue(name, id);
+  }
 }

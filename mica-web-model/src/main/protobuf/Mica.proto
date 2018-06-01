@@ -682,6 +682,7 @@ message CommentDto {
   repeated string actions = 9;
   optional UserProfileDto createdByProfile = 10;
   optional UserProfileDto modifiedByProfile = 11;
+  optional bool admin = 12;
 }
 
 message ProjectsDto {
