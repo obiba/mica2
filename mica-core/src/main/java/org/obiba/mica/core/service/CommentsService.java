@@ -20,6 +20,8 @@ import org.obiba.mica.core.domain.NoSuchCommentException;
 import org.obiba.mica.core.notification.MailNotification;
 import org.obiba.mica.core.repository.CommentsRepository;
 import org.springframework.beans.BeanUtils;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
@@ -29,6 +31,8 @@ public class CommentsService {
 
   @Inject
   CommentsRepository commentsRepository;
+
+  private static final Pageable LIMITER = new PageRequest(0, 1);
 
   public Comment save(Comment comment, MailNotification<Comment> mailNotification) {
     if (comment.getMessage().isEmpty()) throw new IllegalArgumentException("Comment message cannot be empty");
@@ -67,6 +71,10 @@ public class CommentsService {
     Comment comment = commentsRepository.findOne(id);
     if(comment == null) throw NoSuchCommentException.withId(id);
     return comment;
+  }
+
+  public List<Comment> findCommentAndNext(String commentId, String resourceId, String instanceId) {
+    return commentsRepository.findCommentAndNext(commentId, resourceId, instanceId, LIMITER);
   }
 
   public List<Comment> findByResourceAndInstance(String name, String id) {

@@ -13,14 +13,20 @@ package org.obiba.mica.core.repository;
 import java.util.List;
 
 import org.obiba.mica.core.domain.Comment;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 
-public interface CommentsRepository extends MongoRepository<Comment, String>  {
+public interface CommentsRepository extends MongoRepository<Comment, String> {
   List<Comment> findByClassName(String name);
   List<Comment> findByInstanceId(String id);
   List<Comment> findByResourceIdAndInstanceId(String name, String id);
-  @Query("{resourceId: ?0, instanceId: ?1, $or: [{admin: {$exists: false}}, {admin: false}]}")
+
+  @Query("{ resourceId: ?0, instanceId: ?1, $or: [{ admin: { $exists: false } }, { admin: false }] }")
   List<Comment> findPublicCommentsByResourceIdAndInstanceId(String name, String id);
+
   List<Comment> findByResourceIdAndInstanceIdAndAdminIsTrue(String name, String id);
+
+  @Query("{ $and: [{ _id: { $gte: ?0 } }, { resourceId: ?1, instanceId: ?2 }] }")
+  List<Comment> findCommentAndNext(String commentId, String resourceId, String instanceId, Pageable pageable);
 }
