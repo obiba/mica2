@@ -32,7 +32,7 @@ public class CommentsService {
   @Inject
   CommentsRepository commentsRepository;
 
-  private static final Pageable LIMITER = new PageRequest(0, 1);
+  private static final Pageable LIMITER = new PageRequest(0, 2);
 
   public Comment save(Comment comment, MailNotification<Comment> mailNotification) {
     if (comment.getMessage().isEmpty()) throw new IllegalArgumentException("Comment message cannot be empty");
