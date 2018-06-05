@@ -11,11 +11,15 @@
 package org.obiba.mica.web.model;
 
 import java.nio.file.Paths;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
+import org.apache.shiro.SecurityUtils;
 import org.obiba.mica.core.domain.Comment;
+import org.obiba.mica.security.Roles;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.user.UserProfileService;
 import org.obiba.shiro.realm.ObibaRealm.Subject;
@@ -35,44 +39,20 @@ public class CommentDtos {
   private UserProfileDtos userProfileDtos;
 
   @NotNull
-  Mica.CommentDto asDto(@NotNull Comment comment) {
-    Mica.CommentDto.Builder builder = Mica.CommentDto.newBuilder() //
-      .setId(comment.getId()) //
-      .setMessage(comment.getMessage()) //
-      .setResourceId(comment.getResourceId()) //
-      .setInstanceId(comment.getInstanceId()) //
-      .setCreatedBy(comment.getCreatedBy()) //
-      .setTimestamps(TimestampsDtos.asDto(comment));
-
-    String modifiedBy = comment.getLastModifiedBy();
-    if (!Strings.isNullOrEmpty(modifiedBy)) builder.setModifiedBy(modifiedBy);
-
-    if (subjectAclService.isPermitted(Paths.get(comment.getResourceId(), comment.getInstanceId(), "/comment").toString(), "EDIT", comment.getId())) {
-      builder.addActions("EDIT");
-    }
-    if (subjectAclService.isPermitted(Paths.get(comment.getResourceId(), comment.getInstanceId(), "/comment").toString(), "DELETE", comment.getId())) {
-      builder.addActions("DELETE");
-    }
-
-    Subject profile = userProfileService.getProfile(comment.getCreatedBy());
-    if (profile != null) {
-      builder.setCreatedByProfile(userProfileDtos.asDto(profile));
-    }
-
-    String lastModifiedBy = comment.getLastModifiedBy();
-    if (!Strings.isNullOrEmpty(lastModifiedBy)) {
-      profile = userProfileService.getProfile(lastModifiedBy);
-      if(profile != null) {
-        builder.setModifiedByProfile(userProfileDtos.asDto(profile));
-      }
-    }
-
-    Boolean adminMessage = comment.getAdmin();
-    if(adminMessage != null){
-      builder.setAdmin(adminMessage);
-    }
-
+  Mica.CommentDto asDto(@NotNull Comment comment, boolean withPermission) {
+    Mica.CommentDto.Builder builder = asDtoBuilder(comment);
+    if (withPermission) addCommentPermissions(builder, comment);
     return builder.build();
+  }
+
+  public List<Mica.CommentDto> asDtos(@NotNull List<Comment> comments) {
+    boolean canAdministrate = SecurityUtils.getSubject().hasRole(Roles.MICA_DAO) || SecurityUtils.getSubject().hasRole(Roles.MICA_ADMIN);
+
+    return comments.stream().map(comment -> {
+      Mica.CommentDto.Builder builder = asDtoBuilder(comment);
+      if (canAdministrate || comments.indexOf(comment) == (comments.size() - 1)) addCommentPermissions(builder, comment);
+      return builder.build();
+    }).collect(Collectors.toList());
   }
 
   @NotNull
@@ -90,5 +70,45 @@ public class CommentDtos {
     TimestampsDtos.fromDto(dto.getTimestamps(), comment);
 
     return comment;
+  }
+
+  private void addCommentPermissions(Mica.CommentDto.Builder builder, Comment comment) {
+    if (subjectAclService.isPermitted(Paths.get(comment.getResourceId(), comment.getInstanceId(), "/comment").toString(), "EDIT", comment.getId())) {
+      builder.addActions("EDIT");
+    }
+
+    if (subjectAclService.isPermitted(Paths.get(comment.getResourceId(), comment.getInstanceId(), "/comment").toString(), "DELETE", comment.getId())) {
+      builder.addActions("DELETE");
+    }
+  }
+
+  private Mica.CommentDto.Builder asDtoBuilder(Comment comment) {
+    Mica.CommentDto.Builder builder = Mica.CommentDto.newBuilder() //
+      .setId(comment.getId()) //
+      .setMessage(comment.getMessage()) //
+      .setResourceId(comment.getResourceId()) //
+      .setInstanceId(comment.getInstanceId()) //
+      .setCreatedBy(comment.getCreatedBy()) //
+      .setTimestamps(TimestampsDtos.asDto(comment));
+
+    String modifiedBy = comment.getLastModifiedBy();
+    if (!Strings.isNullOrEmpty(modifiedBy)) builder.setModifiedBy(modifiedBy);
+
+    Subject profile = userProfileService.getProfile(comment.getCreatedBy());
+    if (profile != null) {
+      builder.setCreatedByProfile(userProfileDtos.asDto(profile));
+    }
+
+    String lastModifiedBy = comment.getLastModifiedBy();
+    if (!Strings.isNullOrEmpty(lastModifiedBy)) {
+      profile = userProfileService.getProfile(lastModifiedBy);
+      if(profile != null) {
+        builder.setModifiedByProfile(userProfileDtos.asDto(profile));
+      }
+    }
+
+    builder.setAdmin(comment.getAdmin());
+
+    return builder;
   }
 }

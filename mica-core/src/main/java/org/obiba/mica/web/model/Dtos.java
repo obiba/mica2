@@ -524,8 +524,17 @@ public class Dtos {
   }
 
   @NotNull
+  public Mica.CommentDto asDto(@NotNull Comment comment, boolean withPermissions) {
+    return commentDtos.asDto(comment, withPermissions);
+  }
+
+  @NotNull
   public Mica.CommentDto asDto(@NotNull Comment comment) {
-    return commentDtos.asDto(comment);
+    return asDto(comment);
+  }
+
+  public List<Mica.CommentDto> asDtos(@NotNull List<Comment> comments) {
+    return commentDtos.asDtos(comments);
   }
 
   @NotNull

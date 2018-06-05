@@ -39,6 +39,7 @@ import javax.inject.Inject;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.NotFoundException;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
@@ -51,8 +52,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
-
 import static org.slf4j.LoggerFactory.getLogger;
 
 @Component
@@ -186,13 +185,10 @@ public class DataAccessRequestResource extends DataAccessEntityResource {
   public List<Mica.CommentDto> comments(@QueryParam("admin") @DefaultValue("false") boolean admin) {
     subjectAclService.checkPermission("/data-access-request", "VIEW", id);
     dataAccessRequestService.findById(id);
-    if(!admin) {
-      return commentsService.findPublicComments("/data-access-request", id).stream().map(dtos::asDto)
-        .collect(Collectors.toList());
-    }
-    else{
-      return commentsService.findPrivateComments("/data-access-request", id).stream().map(dtos::asDto)
-        .collect(Collectors.toList());
+    if (!admin) {
+      return dtos.asDtos(commentsService.findPublicComments("/data-access-request", id));
+    } else {
+      return dtos.asDtos(commentsService.findPrivateComments("/data-access-request", id));
     }
   }
 
@@ -225,7 +221,13 @@ public class DataAccessRequestResource extends DataAccessEntityResource {
   public Mica.CommentDto getComment(@PathParam("commentId") String commentId) {
     subjectAclService.checkPermission("/data-access-request/", "VIEW", id);
     dataAccessRequestService.findById(id);
-    return dtos.asDto(commentsService.findById(commentId));
+
+    List<Comment> commentAndNext = commentsService.findCommentAndNext(commentId, "/data-access-request/", id);
+    if (commentAndNext.size() > 0) {
+      return dtos.asDto(commentAndNext.get(0), commentAndNext.size() == 1);
+    } else {
+      throw new NotFoundException(commentId);
+    }
   }
 
   @PUT
@@ -272,7 +274,7 @@ public class DataAccessRequestResource extends DataAccessEntityResource {
   }
 
   @Override
-  protected DataAccessEntityService getService() {
+  protected DataAccessEntityService<DataAccessRequest> getService() {
     return dataAccessRequestService;
   }
 
