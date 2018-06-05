@@ -15,10 +15,14 @@ import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.joda.time.DateTime;
+import org.obiba.mica.access.domain.DataAccessAmendment;
 import org.obiba.mica.access.domain.DataAccessEntityStatus;
 import org.obiba.mica.access.domain.DataAccessRequest;
+import org.obiba.mica.access.service.DataAccessAmendmentService;
 import org.obiba.mica.access.service.DataAccessRequestService;
+import org.obiba.mica.micaConfig.domain.DataAccessAmendmentForm;
 import org.obiba.mica.micaConfig.domain.DataAccessForm;
+import org.obiba.mica.micaConfig.service.DataAccessAmendmentFormService;
 import org.obiba.mica.micaConfig.service.DataAccessFormService;
 import org.obiba.mica.security.Roles;
 import org.obiba.mica.security.service.SubjectAclService;
@@ -28,11 +32,17 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
-import javax.ws.rs.*;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Component
@@ -47,10 +57,16 @@ public class DataAccessRequestsResource {
   private DataAccessRequestService dataAccessRequestService;
 
   @Inject
+  private DataAccessAmendmentService dataAccessAmendmentService;
+
+  @Inject
   private Dtos dtos;
 
   @Inject
   private DataAccessFormService dataAccessFormService;
+
+  @Inject
+  private DataAccessAmendmentFormService dataAccessAmendmentFormService;
 
   @GET
   @Timed
@@ -66,11 +82,15 @@ public class DataAccessRequestsResource {
   @Produces("text/csv")
   public Response exportCsv(@QueryParam("lang") String lang) {
 
-    List<DataAccessRequest> dataAccessRequests = listByStatusFilteringPermitted(null);
     DataAccessForm dataAccessForm = dataAccessFormService.find().get();
+    DataAccessAmendmentForm amendmentForm = dataAccessAmendmentFormService.find().get();
+    Map<DataAccessRequest, List<DataAccessAmendment>> dataAccessRequestListMap = listAllWithAmendments();
 
     ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-    new CsvReportGenerator(dataAccessRequests, dataAccessForm.getCsvExportFormat(), lang).write(byteArrayOutputStream);
+    new CsvReportGenerator(dataAccessRequestListMap,
+      dataAccessForm.getCsvExportFormat(),
+      amendmentForm.getCsvExportFormat(),
+      lang).write(byteArrayOutputStream);
 
     String date = new DateTime().toString("YYYY-MM-dd");
     return Response.ok(byteArrayOutputStream.toByteArray()).header("Content-Disposition", String.format("attachment; filename=\"Access-Requests-Report_%s.csv\"", date)).build();
@@ -105,6 +125,13 @@ public class DataAccessRequestsResource {
     subjectAclService.addGroupPermission(Roles.MICA_DAO, "/data-access-request/" + request.getId() + "/_attachments", "EDIT", null);
 
     return Response.created(uriInfo.getBaseUriBuilder().segment("data-access-request", request.getId()).build()).build();
+  }
+
+  private Map<DataAccessRequest, List<DataAccessAmendment>> listAllWithAmendments() {
+     return dataAccessRequestService.findAll(null)
+      .stream()
+      .filter(req -> subjectAclService.isPermitted("/data-access-request", "VIEW", req.getId())) //
+      .collect(Collectors.toMap(req -> req, req -> dataAccessAmendmentService.findByParentId(req.getId())));
   }
 
   private List<DataAccessRequest> listByStatusFilteringPermitted(List<String> status) {
