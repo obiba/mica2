@@ -58,14 +58,14 @@ public class CommentDtos {
   @NotNull
   Comment fromDto(@NotNull Mica.CommentDtoOrBuilder dto) {
     Comment.Builder commentBuilder = Comment.newBuilder() //
-      .id(dto.getId()) //
-      .message(dto.getMessage()) //
-      .resourceId(dto.getResourceId()) //
-      .instanceId(dto.getInstanceId());
-    if(dto.hasAdmin()){
-      commentBuilder.admin(dto.getAdmin());
-    }
+        .id(dto.getId()) //
+        .message(dto.getMessage()) //
+        .resourceId(dto.getResourceId()) //
+        .instanceId(dto.getInstanceId());
+
+    if (dto.hasAdmin()) commentBuilder.admin(dto.getAdmin());
     Comment comment = commentBuilder.build();
+
     if (dto.hasModifiedBy()) comment.setLastModifiedBy(dto.getModifiedBy());
     TimestampsDtos.fromDto(dto.getTimestamps(), comment);
 

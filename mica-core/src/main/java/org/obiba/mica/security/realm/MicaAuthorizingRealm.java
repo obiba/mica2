@@ -233,6 +233,7 @@ public class MicaAuthorizingRealm extends AuthorizingRealm implements RolePermis
         case Roles.MICA_DAO:
           // can view and delete any project and data access requests
           perms = mergePermissions(
+              "/private-comment/data-access-request:VIEW,/private-comment/data-access-request:ADD," +
               "/data-access-request:ADD,/data-access-request:VIEW,/data-access-request:DELETE," +
               "/files:UPLOAD",
             permissions);
