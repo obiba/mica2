@@ -185,10 +185,11 @@ public class DataAccessRequestResource extends DataAccessEntityResource {
   public List<Mica.CommentDto> comments(@QueryParam("admin") @DefaultValue("false") boolean admin) {
     subjectAclService.checkPermission("/data-access-request", "VIEW", id);
     dataAccessRequestService.findById(id);
-    if (!admin) {
-      return dtos.asDtos(commentsService.findPublicComments("/data-access-request", id));
-    } else {
+    if (admin) {
+      subjectAclService.checkPermission("/private-comment/data-access-request", "VIEW");
       return dtos.asDtos(commentsService.findPrivateComments("/data-access-request", id));
+    } else {
+      return dtos.asDtos(commentsService.findPublicComments("/data-access-request", id));
     }
   }
 
@@ -202,9 +203,10 @@ public class DataAccessRequestResource extends DataAccessEntityResource {
       .message(message) //
       .resourceId("/data-access-request") //
       .instanceId(id);
-    //@Todo check permission to add new comments
-    if(admin==true){
-      buildComment.admin(true);
+
+    if (admin) {
+      subjectAclService.checkPermission("/private-comment/data-access-request", "ADD");
+      buildComment.admin(admin);
     }
 
     Comment comment = commentsService.save(buildComment.build(), commentMailNotification); //

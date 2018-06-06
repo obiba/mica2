@@ -120,15 +120,22 @@ class DataAccessRequestDtos {
       builder.addActions("ADD_AMENDMENTS");
     }
 
+    if (subjectAclService.isPermitted("/private-comment/data-access-request", "VIEW")) {
+      builder.addActions("VIEW_PRIVATE_COMMENTS");
+    }
+
+    if (subjectAclService.isPermitted("/private-comment/data-access-request", "ADD")) {
+      builder.addActions("ADD_PRIVATE_COMMENTS");
+    }
+
     boolean hasAdministrativeRole = SecurityUtils.getSubject().hasRole(Roles.MICA_DAO) || SecurityUtils.getSubject().hasRole(Roles.MICA_ADMIN);
-    if (hasAdministrativeRole ||
-      subjectAclService.isPermitted(Paths.get("/data-access-request", request.getId(), "_attachments").toString(), "EDIT")) {
+    if (hasAdministrativeRole || subjectAclService.isPermitted(Paths.get("/data-access-request", request.getId(), "_attachments").toString(), "EDIT")) {
+      builder.addActions("EDIT_ATTACHMENTS");
+      
       if (hasAdministrativeRole) {
         builder.addActions("DELETE_ATTACHMENTS");
         builder.addActions("EDIT_ACTION_LOGS");
       }
-
-      builder.addActions("EDIT_ATTACHMENTS");
     }
 
     try {
