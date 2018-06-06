@@ -1,24 +1,12 @@
 {
   "headers": {
-    "title": {
-      "en": "<Organisation> Access Office",
-      "fr": "<Organisation> Access Office"
-    },
-    "subtitle": {
-      "en": "Access Requests Report",
-      "fr": "Rapport sur les demandes d'accès"
-    },
-    "summary": {
-      "en": "SUMMARY",
-      "fr": "SOMMAIRE"
-    },
     "currentStatus": {
       "en": "CURRENT STATUS",
       "fr": "STATUT ACTUEL"
     },
     "numberOfAccessRequests": {
-      "en": "NUMBER OF ACCESS REQUESTS",
-      "fr": "NOMBRE DE DEMANDES D'ACCÈS"
+      "en": "NUMBER OF AMENDMENTS",
+      "fr": "NOMBRE DE D'AMENDEMENTS"
     },
     "opened": {
       "en": "Opened",
@@ -59,8 +47,8 @@
   },
   "table": {
     "generic.accessRequestId": {
-      "en": "ACCESS REQUEST ID",
-      "fr": "ID DE LA DEMANDE D'ACCÈS"
+      "en": "AMENDMENT ID",
+      "fr": "ID DE L'AMENDEMENT"
     },
     "projectTitle": {
       "en": "TITLE",

@@ -17,6 +17,8 @@ import com.jayway.jsonpath.PathNotFoundException;
 import org.joda.time.DateTime;
 import org.joda.time.Days;
 import org.joda.time.base.AbstractInstant;
+import org.obiba.mica.access.domain.DataAccessAmendment;
+import org.obiba.mica.access.domain.DataAccessEntity;
 import org.obiba.mica.access.domain.DataAccessEntityStatus;
 import org.obiba.mica.access.domain.DataAccessRequest;
 import org.obiba.mica.access.domain.StatusChange;
@@ -42,16 +44,22 @@ public class CsvReportGenerator {
   private static final String GENERIC_TANSLATION_PREFIX = "headers";
   private static final String EMPTY_CELL_CONTENT = "N/A";
 
-  private List<DataAccessRequest> dataAccessRequestDtos;
+  private Map<DataAccessRequest, List<DataAccessAmendment>> dataAccessRequestDtos;
   private String lang;
 
-  private DocumentContext csvSchema;
+  private DocumentContext darSchema;
+  private DocumentContext amdSchema;
 
-  public CsvReportGenerator(List<DataAccessRequest> dataAccessRequestDtos, String csvSchemaAsString, String lang) {
+  public CsvReportGenerator(Map<DataAccessRequest, List<DataAccessAmendment>> dataAccessRequestDtos,
+                            String darSchemaAsString,
+                            String amdSchemaAsString,
+                            String lang) {
+
     this.dataAccessRequestDtos = dataAccessRequestDtos;
     this.lang = lang;
 
-    csvSchema = JsonPath.parse(csvSchemaAsString);
+    darSchema = JsonPath.parse(darSchemaAsString);
+    amdSchema = JsonPath.parse(amdSchemaAsString);
   }
 
   public void write(OutputStream outputStream) {
@@ -69,34 +77,62 @@ public class CsvReportGenerator {
 
   private void writeEachDataAccessRequest(CSVWriter writer) {
 
-    writer.writeNext(toArray(extractTranslatedField(GENERIC_TANSLATION_PREFIX + ".detailedOverview")));
+    writer.writeNext(toArray(extractTranslatedField(darSchema, GENERIC_TANSLATION_PREFIX + ".detailedOverview")));
+    Set<String> tableKeys = darSchema.read("table", Map.class).keySet();
 
-    Set<String> tableKeys = csvSchema.read("table", Map.class).keySet();
-    writer.writeNext(tableKeys.stream()
-      .map(key -> extractTranslatedField("table.['" + key + "']"))
-      .toArray(String[]::new));
+    dataAccessRequestDtos.entrySet().forEach(entry -> {
+      writer.writeNext(tableKeys.stream()
+        .map(key -> extractTranslatedField(darSchema, "table.['" + key + "']"))
+        .toArray(String[]::new));
 
-    for (DataAccessRequest dataAccessRequestDto : dataAccessRequestDtos) {
-
+      DataAccessRequest dataAccessRequestDto = entry.getKey();
       DocumentContext dataAccessRequestContent = JsonPath.parse(dataAccessRequestDto.getContent());
 
-      addGenericVariablesInDocumentContext(dataAccessRequestDto, dataAccessRequestContent);
+      addGenericVariablesInDocumentContext(dataAccessRequestDto, darSchema, dataAccessRequestContent);
 
       writer.writeNext(
         tableKeys.stream()
           .map(key -> extractValueFromDataAccessRequest(dataAccessRequestContent, key))
           .toArray(String[]::new));
+
+      writer.writeNext(toArray(""));
+      List<DataAccessAmendment> amendments = entry.getValue();
+      if (amendments != null && !amendments.isEmpty()) {
+        writeEachAmendment(amendments, writer);
+      }
+
+      writer.writeNext(toArray(""));
+      writer.writeNext(toArray(""));
+      writer.writeNext(toArray(""));
+    });
+  }
+
+  private void writeEachAmendment(List<DataAccessAmendment> amendments, CSVWriter writer) {
+    Set<String> tableKeys = amdSchema.read("table", Map.class).keySet();
+    writer.writeNext(tableKeys.stream()
+      .map(key -> extractTranslatedField(amdSchema, "table.['" + key + "']"))
+      .toArray(String[]::new));
+
+    for (DataAccessAmendment amendment : amendments) {
+      DocumentContext amendmentContent = JsonPath.parse(amendment.getContent());
+
+      addGenericVariablesInDocumentContext(amendment, amdSchema, amendmentContent);
+
+      writer.writeNext(
+        tableKeys.stream()
+          .map(key -> extractValueFromDataAccessRequest(amendmentContent, key))
+          .toArray(String[]::new));
     }
   }
 
-  private void addGenericVariablesInDocumentContext(DataAccessRequest dataAccessRequest, DocumentContext dataAccessRequestContent) {
+  private void addGenericVariablesInDocumentContext(DataAccessEntity dataAccessEntity, DocumentContext context, DocumentContext dataAccessRequestContent) {
     dataAccessRequestContent.put("$", GENERIC_VARIALES_PREFIX, new HashMap<>());
-    dataAccessRequestContent.put(GENERIC_VARIALES_PREFIX, "status", extractTranslatedField(dataAccessRequest.getStatus()));
-    dataAccessRequestContent.put(GENERIC_VARIALES_PREFIX, "creationDate", formatDate(dataAccessRequest.getCreatedDate()));
-    dataAccessRequestContent.put(GENERIC_VARIALES_PREFIX, "accessRequestId", dataAccessRequest.getId());
+    dataAccessRequestContent.put(GENERIC_VARIALES_PREFIX, "status", extractTranslatedField(context, dataAccessEntity.getStatus()));
+    dataAccessRequestContent.put(GENERIC_VARIALES_PREFIX, "creationDate", formatDate(dataAccessEntity.getCreatedDate()));
+    dataAccessRequestContent.put(GENERIC_VARIALES_PREFIX, "accessRequestId", dataAccessEntity.getId());
 
-    DateTime lastApprovedOrRejectDate = extractLastApprovedOrRejectDate(dataAccessRequest.getStatusChangeHistory());
-    DateTime firstSubmissionDate = extractFirstSubmissionDate(dataAccessRequest.getStatusChangeHistory());
+    DateTime lastApprovedOrRejectDate = extractLastApprovedOrRejectDate(dataAccessEntity.getStatusChangeHistory());
+    DateTime firstSubmissionDate = extractFirstSubmissionDate(dataAccessEntity.getStatusChangeHistory());
     Integer numberOfDaysBetweenSubmissionAndApproveOrReject = calculateDaysBetweenDates(lastApprovedOrRejectDate, firstSubmissionDate);
     dataAccessRequestContent.put(GENERIC_VARIALES_PREFIX, "lastApprovedOrRejectedDate", lastApprovedOrRejectDate != null ? formatDate(lastApprovedOrRejectDate) : EMPTY_CELL_CONTENT);
     dataAccessRequestContent.put(GENERIC_VARIALES_PREFIX, "firstSubmissionDate", firstSubmissionDate != null ? formatDate(firstSubmissionDate) : EMPTY_CELL_CONTENT);
@@ -104,22 +140,22 @@ public class CsvReportGenerator {
   }
 
   private void writeSummary(CSVWriter writer) {
-    writer.writeNext(toArray(extractTranslatedField(GENERIC_TANSLATION_PREFIX + ".summary")));
-    writer.writeNext(toArray(extractTranslatedField(GENERIC_TANSLATION_PREFIX + ".currentStatus"), extractTranslatedField(GENERIC_TANSLATION_PREFIX + ".numberOfAccessRequests")));
+    writer.writeNext(toArray(extractTranslatedField(darSchema, GENERIC_TANSLATION_PREFIX + ".summary")));
+    writer.writeNext(toArray(extractTranslatedField(darSchema, GENERIC_TANSLATION_PREFIX + ".currentStatus"), extractTranslatedField(darSchema, GENERIC_TANSLATION_PREFIX + ".numberOfAccessRequests")));
 
-    Map<DataAccessEntityStatus, Long> summaryStatistics = dataAccessRequestDtos.stream().collect(Collectors.groupingBy(DataAccessRequest::getStatus, Collectors.counting()));
-    writer.writeNext(toArray(extractTranslatedField(DataAccessEntityStatus.OPENED), getWith0AsDefault(summaryStatistics.get(DataAccessEntityStatus.OPENED))));
-    writer.writeNext(toArray(extractTranslatedField(DataAccessEntityStatus.SUBMITTED), getWith0AsDefault(summaryStatistics.get(DataAccessEntityStatus.SUBMITTED))));
-    writer.writeNext(toArray(extractTranslatedField(DataAccessEntityStatus.REVIEWED), getWith0AsDefault(summaryStatistics.get(DataAccessEntityStatus.REVIEWED))));
-    writer.writeNext(toArray(extractTranslatedField(DataAccessEntityStatus.APPROVED), getWith0AsDefault(summaryStatistics.get(DataAccessEntityStatus.APPROVED))));
-    writer.writeNext(toArray(extractTranslatedField(DataAccessEntityStatus.CONDITIONALLY_APPROVED), getWith0AsDefault(summaryStatistics.get(DataAccessEntityStatus.CONDITIONALLY_APPROVED))));
-    writer.writeNext(toArray(extractTranslatedField(DataAccessEntityStatus.REJECTED), getWith0AsDefault(summaryStatistics.get(DataAccessEntityStatus.REJECTED))));
+    Map<DataAccessEntityStatus, Long> summaryStatistics = dataAccessRequestDtos.keySet().stream().collect(Collectors.groupingBy(DataAccessRequest::getStatus, Collectors.counting()));
+    writer.writeNext(toArray(extractTranslatedField(darSchema, DataAccessEntityStatus.OPENED), getWith0AsDefault(summaryStatistics.get(DataAccessEntityStatus.OPENED))));
+    writer.writeNext(toArray(extractTranslatedField(darSchema, DataAccessEntityStatus.SUBMITTED), getWith0AsDefault(summaryStatistics.get(DataAccessEntityStatus.SUBMITTED))));
+    writer.writeNext(toArray(extractTranslatedField(darSchema, DataAccessEntityStatus.REVIEWED), getWith0AsDefault(summaryStatistics.get(DataAccessEntityStatus.REVIEWED))));
+    writer.writeNext(toArray(extractTranslatedField(darSchema, DataAccessEntityStatus.APPROVED), getWith0AsDefault(summaryStatistics.get(DataAccessEntityStatus.APPROVED))));
+    writer.writeNext(toArray(extractTranslatedField(darSchema, DataAccessEntityStatus.CONDITIONALLY_APPROVED), getWith0AsDefault(summaryStatistics.get(DataAccessEntityStatus.CONDITIONALLY_APPROVED))));
+    writer.writeNext(toArray(extractTranslatedField(darSchema, DataAccessEntityStatus.REJECTED), getWith0AsDefault(summaryStatistics.get(DataAccessEntityStatus.REJECTED))));
     writer.writeNext(toArray(""));
   }
 
   private void writeHeader(CSVWriter writer) {
-    writer.writeNext(toArray(extractTranslatedField(GENERIC_TANSLATION_PREFIX + ".title")));
-    writer.writeNext(toArray(extractTranslatedField(GENERIC_TANSLATION_PREFIX + ".subtitle")));
+    writer.writeNext(toArray(extractTranslatedField(darSchema, GENERIC_TANSLATION_PREFIX + ".title")));
+    writer.writeNext(toArray(extractTranslatedField(darSchema, GENERIC_TANSLATION_PREFIX + ".subtitle")));
     writer.writeNext(toArray(formatDate(new DateTime())));
     writer.writeNext(toArray(""));
   }
@@ -149,7 +185,7 @@ public class CsvReportGenerator {
       return EMPTY_CELL_CONTENT;
 
     String translationKey = value ? "true" : "false";
-    return extractTranslatedField(GENERIC_TANSLATION_PREFIX + "." + translationKey);
+    return extractTranslatedField(darSchema, GENERIC_TANSLATION_PREFIX + "." + translationKey);
   }
 
   private String getWith0AsDefault(Long value) {
@@ -164,30 +200,35 @@ public class CsvReportGenerator {
     return dateTime.toString(DATETIME_FORMAT);
   }
 
-  private String extractTranslatedField(DataAccessEntityStatus status) {
+  private String extractTranslatedField(DocumentContext context, DataAccessEntityStatus status) {
     switch (status) {
       case OPENED:
-        return extractTranslatedField(GENERIC_TANSLATION_PREFIX + ".opened");
+        return extractTranslatedField(context, GENERIC_TANSLATION_PREFIX + ".opened");
       case SUBMITTED:
-        return extractTranslatedField(GENERIC_TANSLATION_PREFIX + ".submitted");
+        return extractTranslatedField(context, GENERIC_TANSLATION_PREFIX + ".submitted");
       case REVIEWED:
-        return extractTranslatedField(GENERIC_TANSLATION_PREFIX + ".underReview");
+        return extractTranslatedField(context, GENERIC_TANSLATION_PREFIX + ".underReview");
       case APPROVED:
-        return extractTranslatedField(GENERIC_TANSLATION_PREFIX + ".approved");
+        return extractTranslatedField(context, GENERIC_TANSLATION_PREFIX + ".approved");
       case CONDITIONALLY_APPROVED:
-        return extractTranslatedField(GENERIC_TANSLATION_PREFIX + ".conditionallyApproved");
+        return extractTranslatedField(context, GENERIC_TANSLATION_PREFIX + ".conditionallyApproved");
       case REJECTED:
-        return extractTranslatedField(GENERIC_TANSLATION_PREFIX + ".rejected");
+        return extractTranslatedField(context, GENERIC_TANSLATION_PREFIX + ".rejected");
       default:
         throw new IllegalStateException(String.format("Impossible to map the status [%s] to variable", status));
     }
   }
 
+  // For Testing
   String extractTranslatedField(String fieldPath) {
+    return extractTranslatedField(darSchema, fieldPath);
+  }
+
+  String extractTranslatedField(DocumentContext context, String fieldPath) {
     try {
-      return csvSchema.read(fieldPath + "." + lang, String.class);
+      return context.read(fieldPath + "." + lang, String.class);
     } catch (PathNotFoundException e) {
-      return csvSchema.read(fieldPath + "." + DEFAULT_LANGUAGE, String.class);
+      return context.read(fieldPath + "." + DEFAULT_LANGUAGE, String.class);
     }
   }
 
