@@ -416,7 +416,7 @@ public class CsvReportGeneratorTest {
   private String expectedResultWithAmendments() {
     return "\"<Organisation> Access Office\"\n" +
       "\"Rapport des demandes d'accès\"\n" +
-      "\"05/06/2018\"\n" +
+      "\"" + new DateTime().toString(CsvReportGenerator.DATETIME_FORMAT) + "\"\n" +
       "\"\"\n" +
       "\"SOMMAIRE\"\n" +
       "\"STATUT ACTUEL\",\"NOMBRE DE DEMANDES D'ACCÈS\"\n" +
@@ -454,7 +454,7 @@ public class CsvReportGeneratorTest {
   private String expectedResult() {
     return "\"<Organisation> Access Office\"\n" +
       "\"Rapport des demandes d'accès\"\n" +
-      "\"05/06/2018\"\n" +
+      "\"" + new DateTime().toString(CsvReportGenerator.DATETIME_FORMAT) + "\"\n" +
       "\"\"\n" +
       "\"SOMMAIRE\"\n" +
       "\"STATUT ACTUEL\",\"NOMBRE DE DEMANDES D'ACCÈS\"\n" +
