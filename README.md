@@ -1,6 +1,4 @@
-[![Build Status](https://travis-ci.org/obiba/mica2.svg?branch=master)](https://travis-ci.org/obiba/mica2)
-
-# Mica
+# Mica [![Build Status](https://travis-ci.org/obiba/mica2.svg?branch=master)](https://travis-ci.org/obiba/mica2)
 
 Web data portal application server.
 
