@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/obiba/mica.svg?branch=master)](https://travis-ci.org/obiba/mica)
+[![Build Status](https://travis-ci.org/obiba/mica2.svg?branch=master)](https://travis-ci.org/obiba/mica2)
 
 # Mica
 
