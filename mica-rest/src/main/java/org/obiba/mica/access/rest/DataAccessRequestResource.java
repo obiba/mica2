@@ -24,6 +24,8 @@ import org.obiba.mica.access.notification.DataAccessRequestCommentMailNotificati
 import org.obiba.mica.access.service.DataAccessEntityService;
 import org.obiba.mica.access.service.DataAccessRequestService;
 import org.obiba.mica.core.domain.Comment;
+import org.obiba.mica.core.domain.NoSuchCommentException;
+import org.obiba.mica.core.domain.UnauthorizedCommentException;
 import org.obiba.mica.core.service.CommentsService;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.security.Roles;
@@ -39,7 +41,6 @@ import javax.inject.Inject;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
-import javax.ws.rs.NotFoundException;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
@@ -228,7 +229,7 @@ public class DataAccessRequestResource extends DataAccessEntityResource {
     if (commentAndNext.size() > 0) {
       return dtos.asDto(commentAndNext.get(0), commentAndNext.size() == 1);
     } else {
-      throw new NotFoundException(commentId);
+      throw new NoSuchCommentException(commentId);
     }
   }
 
@@ -237,8 +238,7 @@ public class DataAccessRequestResource extends DataAccessEntityResource {
   public Response updateComment(@PathParam("commentId") String commentId, String message) {
     subjectAclService.checkPermission("/data-access-request/" + id + "/comment", "EDIT", commentId);
     dataAccessRequestService.findById(id);
-
-    commentsService.save(Comment.newBuilder(commentsService.findById(commentId)) //
+    commentsService.save(Comment.newBuilder(getCommentIfnotRepliedTo(commentId)) //
       .message(message) //
       .modifiedBy(SecurityUtils.getSubject().getPrincipal().toString()) //
       .build(), commentMailNotification); //
@@ -250,9 +250,11 @@ public class DataAccessRequestResource extends DataAccessEntityResource {
   @Path("/comment/{commentId}")
   public Response deleteComment(@PathParam("commentId") String commentId) {
     subjectAclService.checkPermission("/data-access-request/" + id + "/comment", "DELETE", commentId);
+
     dataAccessRequestService.findById(id);
-    commentsService.delete(commentId);
+    commentsService.delete(getCommentIfnotRepliedTo(commentId));
     eventBus.post(new ResourceDeletedEvent("/data-access-request/" + id + "/comment", commentId));
+
     return Response.noContent().build();
   }
 
@@ -304,5 +306,17 @@ public class DataAccessRequestResource extends DataAccessEntityResource {
     }
 
     return super.updateStatus(status);
+  }
+
+  private Comment getCommentIfnotRepliedTo(String commentId) {
+    List<Comment> commentAndNext = commentsService.findCommentAndNext(commentId, "/data-access-request", id);
+
+    if (commentAndNext.size() > 1) {
+      throw new UnauthorizedCommentException(commentId);
+    } else if (commentAndNext.size() == 0) {
+      throw new NoSuchCommentException(commentId);
+    }
+
+    return commentAndNext.get(0);
   }
 }
