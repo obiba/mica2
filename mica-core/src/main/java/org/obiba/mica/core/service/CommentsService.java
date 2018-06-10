@@ -14,6 +14,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.obiba.mica.core.domain.Comment;
 import org.obiba.mica.core.domain.NoSuchCommentException;
@@ -74,7 +75,7 @@ public class CommentsService {
   }
 
   public List<Comment> findCommentAndNext(String commentId, String resourceId, String instanceId) {
-    return commentsRepository.findCommentAndNext(commentId, resourceId, instanceId, LIMITER);
+    return commentsRepository.findCommentAndNext(new ObjectId(commentId), resourceId, instanceId, LIMITER);
   }
 
   public List<Comment> findByResourceAndInstance(String name, String id) {

@@ -12,6 +12,7 @@ package org.obiba.mica.core.repository;
 
 import java.util.List;
 
+import org.bson.types.ObjectId;
 import org.obiba.mica.core.domain.Comment;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -28,5 +29,5 @@ public interface CommentsRepository extends MongoRepository<Comment, String> {
   List<Comment> findByResourceIdAndInstanceIdAndAdminIsTrue(String name, String id);
 
   @Query("{ $and: [{ _id: { $gte: ?0 } }, { resourceId: ?1, instanceId: ?2 }] }")
-  List<Comment> findCommentAndNext(String commentId, String resourceId, String instanceId, Pageable pageable);
+  List<Comment> findCommentAndNext(ObjectId commentId, String resourceId, String instanceId, Pageable pageable);
 }
