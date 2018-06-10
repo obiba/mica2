@@ -362,7 +362,7 @@
                 <configuration>
                   <releaseName>${project.version}</releaseName>
                   <tag>${project.version}</tag>
-                  <repositoryId>obiba/opal</repositoryId>
+                  <repositoryId>obiba/mica2</repositoryId>
                   <artifact>donotuploadjar</artifact>
                   <fileSets>
                     <fileSet>
@@ -373,7 +373,7 @@
                       </includes>
                     </fileSet>
                     <fileSet>
-                      <directory>${basedir}/target/rpm/opal-server/RPMS/noarch</directory>
+                      <directory>${basedir}/target/rpm/mica2/RPMS/noarch</directory>
                       <includes>
                         <include>*.rpm</include>
                       </includes>
