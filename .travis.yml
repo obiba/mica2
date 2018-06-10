@@ -1,5 +1,10 @@
 sudo: required
-language: java, node_js
+language: java
+before_install:
+  - add-apt-repository -y ppa:chris-lea/node.js
+  - nvm install 4.4.0
+  - node --version
+  - npm install -g bower
 addons:
   apt:
     packages:
@@ -7,10 +12,8 @@ addons:
     - devscripts
     - fakeroot
     - debhelper
-before_install:
-  - nvm install 4.4.0
-  - node --version
-  - npm install -g bower
+    - nodejs
+    - devscripts
 cache:
   directories:
   - $HOME/.cache
