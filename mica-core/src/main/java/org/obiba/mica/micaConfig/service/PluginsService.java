@@ -48,7 +48,7 @@ public class PluginsService implements EnvironmentAware {
 
   private static final String PLUGINS_PATH = "${MICA_HOME}/plugins";
 
-  private static final String DEFAULT_PLUGINS_UPDATE_SITE = "https://plugins.obiba.org/stable";
+  private static final String DEFAULT_PLUGINS_UPDATE_SITE = "http://obiba.org/assets";
 
   private static final String[] ES_CONFIGURATION = new String[]{"dataNode", "clusterName", "shards", "replicas",
       "settings", "maxConcurrentJoinQueries", "concurrentJoinQueriesWaitTimeout",

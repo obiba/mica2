@@ -61,8 +61,8 @@
     <logstash-logback.version>4.5.1</logstash-logback.version>
     <metrics-spring.version>3.0.0</metrics-spring.version>
     <nosqlunit.version>0.7.9</nosqlunit.version>
-    <obiba-commons.version>1.9.3</obiba-commons.version>
-    <opal.version>2.10.2</opal.version>
+    <obiba-commons.version>1.10.2</obiba-commons.version>
+    <opal.version>2.11-SNAPSHOT</opal.version>
     <opencsv.version>2.3</opencsv.version>
     <poi.version>3.9</poi.version>
     <protobuf.version>2.5.0</protobuf.version>
@@ -72,81 +72,22 @@
     <shiro-extras.version>1.0.3-obiba</shiro-extras.version>
     <spring-data-commons.version>1.13.10.RELEASE</spring-data-commons.version>
 
+    <!-- maven plugins -->
+    <bintray-maven-plugin.version>1.2.20180117184439</bintray-maven-plugin.version>
+    <github-release-plugin.version>1.2.0</github-release-plugin.version>
     <maven-antrun-plugin.version>1.7</maven-antrun-plugin.version>
     <maven-assembly-plugin.version>2.4</maven-assembly-plugin.version>
     <maven-buildnumber-plugin.version>1.2</maven-buildnumber-plugin.version>
-    <maven-dependency-plugin.version>2.1</maven-dependency-plugin.version>
+    <maven-dependency-plugin.version>3.1.0</maven-dependency-plugin.version>
+    <maven-deploy-plugin.version>2.8.1</maven-deploy-plugin.version>
     <maven-enforcer-plugin.version>1.3.1</maven-enforcer-plugin.version>
     <maven-findbugs-plugin.version>3.0.4</maven-findbugs-plugin.version>
     <maven-pmd-plugin.version>3.1</maven-pmd-plugin.version>
     <maven-sonar-plugin.version>2.2</maven-sonar-plugin.version>
     <maven-release-plugin.version>2.5.2</maven-release-plugin.version>
+    <rpm-maven-plugin.version>2.1.4</rpm-maven-plugin.version>
 
   </properties>
-
-  <repositories>
-    <repository>
-      <id>obiba.org</id>
-      <name>Obiba Maven 2.x Repository</name>
-      <url>http://repo.obiba.org/repo</url>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
-  </repositories>
-
-  <pluginRepositories>
-    <pluginRepository>
-      <id>obiba</id>
-      <url>http://repo.obiba.org/repo</url>
-    </pluginRepository>
-  </pluginRepositories>
-
-  <prerequisites>
-    <maven>3.0.0</maven>
-  </prerequisites>
-
-  <distributionManagement>
-
-    <repository>
-      <id>obiba-releases</id>
-      <url>http://repo.obiba.org/libs-release-local</url>
-    </repository>
-
-    <snapshotRepository>
-      <id>obiba-snapshots</id>
-      <url>http://repo.obiba.org/libs-snapshot-local</url>
-    </snapshotRepository>
-
-  </distributionManagement>
-
-  <scm>
-    <connection>scm:git:git://github.com/obiba/mica2.git</connection>
-    <developerConnection>scm:git:https://github.com/obiba/mica2.git</developerConnection>
-    <url>https://github.com/obiba/mica2</url>
-    <tag>HEAD</tag>
-  </scm>
-
-  <issueManagement>
-    <system>JIRA</system>
-    <url>http://jira.obiba.org</url>
-  </issueManagement>
-
-  <ciManagement>
-    <system>Jenkins</system>
-    <url>http://ci.obiba.org/view/Mica/job/Mica2</url>
-  </ciManagement>
-
-  <mailingLists>
-    <mailingList>
-      <name>OBiBa Users</name>
-      <post>obiba-users@googlegroups.com</post>
-      <archive>https://groups.google.com/forum/?fromgroups#!forum/obiba-users</archive>
-    </mailingList>
-  </mailingLists>
 
   <dependencyManagement>
     <dependencies>
@@ -668,6 +609,12 @@
 
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-deploy-plugin</artifactId>
+          <version>${maven-deploy-plugin.version}</version>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-antrun-plugin</artifactId>
           <version>${maven-antrun-plugin.version}</version>
         </plugin>
@@ -678,6 +625,17 @@
           <version>${maven-assembly-plugin.version}</version>
         </plugin>
 
+        <plugin>
+          <groupId>de.jutzig</groupId>
+          <artifactId>github-release-plugin</artifactId>
+          <version>${github-release-plugin.version}</version>
+        </plugin>
+
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>rpm-maven-plugin</artifactId>
+          <version>${rpm-maven-plugin.version}</version>
+        </plugin>
       </plugins>
 
     </pluginManagement>
@@ -848,10 +806,70 @@
 
   </build>
 
+  <repositories>
+    <repository>
+      <id>obiba-releases</id>
+      <name>Obiba Maven Releases Repository</name>
+      <url>https://dl.bintray.com/obiba/maven</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>obiba-snapshots</id>
+      <name>Obiba Maven Snapshots Repository</name>
+      <url>https://obiba.jfrog.io/obiba/libs-snapshot</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
+
+  <distributionManagement>
+    <repository>
+      <id>obiba-bintray</id>
+      <url>https://api.bintray.com/obiba/maven/</url>
+    </repository>
+    <snapshotRepository>
+      <id>obiba-artifactory</id>
+      <url>https://obiba.jfrog.io/obiba/libs-snapshot</url>
+    </snapshotRepository>
+  </distributionManagement>
+
+  <scm>
+    <connection>scm:git:https://github.com/obiba/mica2.git</connection>
+    <developerConnection>scm:git:https://github.com/obiba/mica2.git</developerConnection>
+    <url>https://github.com/obiba/mica2</url>
+  </scm>
+
+  <issueManagement>
+    <system>GitHub</system>
+    <url>https://github.com/obiba/mica2/issues</url>
+  </issueManagement>
+
+  <ciManagement>
+    <system>Travis</system>
+    <url>https://travis-ci.org/obiba/mica2</url>
+  </ciManagement>
+
+  <mailingLists>
+    <mailingList>
+      <name>OBiBa Users</name>
+      <post>obiba-users@googlegroups.com</post>
+      <archive>https://groups.google.com/forum/?fromgroups#!forum/obiba-users</archive>
+    </mailingList>
+  </mailingLists>
+
   <licenses>
     <license>
       <name>GNU Public License version 3</name>
-      <url>http://www.obiba.org/node/62</url>
+      <url>https://www.gnu.org/licenses/gpl-3.0.txt</url>
     </license>
   </licenses>
 
