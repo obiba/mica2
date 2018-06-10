@@ -304,48 +304,6 @@
                   </target>
                 </configuration>
               </execution>
-              <execution>
-                <id>deploy-deb</id>
-                <phase>deploy</phase>
-                <goals>
-                  <goal>run</goal>
-                </goals>
-                <configuration>
-                  <target>
-                    <property name="deb.version" value="${project.version}-b${buildNumber}" />
-                    <!-- Deploy deb file in deb repo -->
-                    <copy file="target/mica2_${deb.version}_all.deb" todir="${obiba.deb.dir}/${obiba.deploy.dir}" />
-                  </target>
-                </configuration>
-              </execution>
-              <execution>
-                <id>deploy-package</id>
-                <phase>deploy</phase>
-                <goals>
-                  <goal>run</goal>
-                </goals>
-                <configuration>
-                  <target>
-                    <!-- Deploy Mica Server package file in download repo -->
-                    <copy file="target/mica-dist-${project.version}-dist.zip" tofile="${obiba.download.dir}/mica/${obiba.deploy.dir}/mica2-${project.version}-dist.zip" />
-                  </target>
-                </configuration>
-              </execution>
-              <execution>
-                <id>deploy-rpm</id>
-                <phase>deploy</phase>
-                <goals>
-                  <goal>run</goal>
-                </goals>
-                <configuration>
-                  <target>
-                    <!-- Deploy rpm file in rpm repo -->
-                    <copy todir="${obiba.rpm.dir}/${obiba.deploy.dir}">
-                      <fileset dir="target/rpm/mica2/RPMS/noarch" />
-                    </copy>
-                  </target>
-                </configuration>
-              </execution>
             </executions>
           </plugin>
 
