@@ -1359,7 +1359,7 @@
   "data-access-requests": "Data Access Requests",
   "data-access-request": {
     "applicant": "Applicant",
-    "title": "Title",
+    "title": "Data Access Request",
     "title-help": "Short summary to help identifying the request.",
     "status": "Status",
     "lastUpdate": "Last Update",
@@ -1388,6 +1388,7 @@
       "conditionallyApproved": "Conditionally approved"
     },
     "action-log": {
+      "title": "Action",
       "required": "Both inputs must be filled before submitting",
       "action-placeholder": "Enter text",
       "delete": {

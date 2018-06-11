@@ -15,6 +15,7 @@ import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.joda.time.DateTime;
+import org.obiba.core.translator.JsonTranslator;
 import org.obiba.mica.access.domain.DataAccessAmendment;
 import org.obiba.mica.access.domain.DataAccessEntityStatus;
 import org.obiba.mica.access.domain.DataAccessRequest;
@@ -24,14 +25,17 @@ import org.obiba.mica.micaConfig.domain.DataAccessAmendmentForm;
 import org.obiba.mica.micaConfig.domain.DataAccessForm;
 import org.obiba.mica.micaConfig.service.DataAccessAmendmentFormService;
 import org.obiba.mica.micaConfig.service.DataAccessFormService;
+import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.security.Roles;
 import org.obiba.mica.security.service.SubjectAclService;
+import org.obiba.mica.user.UserProfileService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -42,6 +46,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -68,12 +73,35 @@ public class DataAccessRequestsResource {
   @Inject
   private DataAccessAmendmentFormService dataAccessAmendmentFormService;
 
+  @Inject
+  MicaConfigService micaConfigService;
+
+  @Inject
+  private UserProfileService userProfileService;
+
   @GET
   @Timed
   public List<Mica.DataAccessRequestDto> listByStatus(@QueryParam("status") List<String> status) {
     return listByStatusFilteringPermitted(status).stream()
       .map(dtos::asDto)
       .collect(Collectors.toList());
+  }
+
+  @GET
+  @Path("/_history")
+  @Produces("text/csv")
+  public Response downloadHistory(@QueryParam("lang") @DefaultValue("en") String lang) {
+    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+    new CsvHistoryReportGenerator(
+      listAllWithAmendments(),
+      JsonTranslator.buildSafeTranslator(() -> micaConfigService.getTranslations(lang, false)),
+      Locale.forLanguageTag(lang),
+      userProfileService
+    ).write(byteArrayOutputStream);
+
+    String date = new DateTime().toString("YYYY-MM-dd");
+    String filename = String.format("attachment; filename=\"Access-Requests-History-Report_%s.csv\"", date);
+    return Response.ok(byteArrayOutputStream.toByteArray()).header("Content-Disposition", filename).build();
   }
 
   @GET
@@ -93,7 +121,9 @@ public class DataAccessRequestsResource {
       lang).write(byteArrayOutputStream);
 
     String date = new DateTime().toString("YYYY-MM-dd");
-    return Response.ok(byteArrayOutputStream.toByteArray()).header("Content-Disposition", String.format("attachment; filename=\"Access-Requests-Report_%s.csv\"", date)).build();
+    return Response.ok(byteArrayOutputStream.toByteArray())
+      .header("Content-Disposition", String.format("attachment; filename=\"Access-Requests-Report_%s.csv\"", date))
+      .build();
   }
 
   @GET
@@ -128,7 +158,7 @@ public class DataAccessRequestsResource {
   }
 
   private Map<DataAccessRequest, List<DataAccessAmendment>> listAllWithAmendments() {
-     return dataAccessRequestService.findAll(null)
+    return dataAccessRequestService.findAll(null)
       .stream()
       .filter(req -> subjectAclService.isPermitted("/data-access-request", "VIEW", req.getId())) //
       .collect(Collectors.toMap(req -> req, req -> dataAccessAmendmentService.findByParentId(req.getId())));

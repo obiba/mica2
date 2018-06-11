@@ -1359,7 +1359,7 @@
   "data-access-requests": "Demandes d'accès aux données",
   "data-access-request": {
     "applicant": "Demandeur",
-    "title": "Titre",
+    "title": "Demande d'accès aux données",
     "title-help": "Bref résumé pour aider à identifier la demande.",
     "status": "Statut",
     "lastUpdate": "Dernière mise à jour",
@@ -1388,6 +1388,7 @@
       "conditionallyApproved": "Approuvée sous conditions"
     },
     "action-log": {
+      "title": "Action",
       "required": "Les deux entrées doivent être remplies avant la soumission",
       "action-placeholder": "Entrer le texte",
       "delete": {
