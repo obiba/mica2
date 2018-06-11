@@ -31,7 +31,7 @@
   </div>
 
   <div ng-show="tab.name === 'form'">
-    <h3 translate>project-config.schema-form.title</h3>
+    <span class="config-navigation"><h3 class="config-navigation-item" translate>project-config.schema-form.title</h3></span>
 
     <p class="help-block" translate>project-config.schema-form.info</p>
     <entity-sf-config form="form" alert-id="ProjectConfigController" dirty-observable="state.getDirtyObservable()"></entity-sf-config>

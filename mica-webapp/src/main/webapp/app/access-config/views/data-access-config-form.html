@@ -40,7 +40,7 @@
   </div>
 
   <div ng-show="tab.name === 'form'">
-    <h3 translate>data-access-config.schema-form.title</h3>
+    <span class="config-navigation"><h3 class="config-navigation-item" ng-class="{'active': tab.name === 'form'}" translate>data-access-config.schema-form.title</h3></span>
 
     <p class="help-block" translate>data-access-config.schema-form.info</p>
 
@@ -105,8 +105,7 @@
 
   </div>
   <div ng-show="tab.name === 'amendment'">
-    <h3 translate>data-access-config.amendment.schema-form.title</h3>
-
+    <span class="config-navigation"><h3 class="config-navigation-item" ng-class="{'active': tab.name === 'amendment'}" translate>data-access-config.amendment.schema-form.title</h3></span>
     <p class="help-block" translate>data-access-config.amendment.schema-form.info</p>
     <entity-sf-config form="formAmendment" alert-id="DataAccessConfigController" dirty-observable="state.getDirtyObservable()"></entity-sf-config>
 

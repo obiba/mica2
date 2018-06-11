@@ -54,7 +54,7 @@ mica.entitySfConfig
         gotoFullScreen: function (id) {
           {
             var editors = document.querySelectorAll('#' + id);
-            var nav = document.querySelector('ul.nav.nav-pills').querySelectorAll('li');
+            var nav = document.querySelectorAll('.config-navigation .config-navigation-item');
             var who = 0;
 
             angular.forEach(nav, function (n, i) {
