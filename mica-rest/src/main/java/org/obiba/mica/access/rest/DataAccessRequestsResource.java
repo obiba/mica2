@@ -96,7 +96,8 @@ public class DataAccessRequestsResource {
       listAllWithAmendments(),
       JsonTranslator.buildSafeTranslator(() -> micaConfigService.getTranslations(lang, false)),
       Locale.forLanguageTag(lang),
-      userProfileService
+      userProfileService,
+      SecurityUtils.getSubject().hasRole(Roles.MICA_DAO) || SecurityUtils.getSubject().hasRole(Roles.MICA_ADMIN)
     ).write(byteArrayOutputStream);
 
     String date = new DateTime().toString("YYYY-MM-dd");

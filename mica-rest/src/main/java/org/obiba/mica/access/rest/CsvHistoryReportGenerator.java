@@ -2,6 +2,7 @@ package org.obiba.mica.access.rest;
 
 import au.com.bytecode.opencsv.CSVWriter;
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import org.joda.time.DateTime;
 import org.obiba.core.translator.Translator;
 import org.obiba.mica.access.domain.ActionLog;
@@ -29,15 +30,18 @@ public class CsvHistoryReportGenerator implements CsvReportGenerator {
   private final Translator translator;
   private final UserProfileService userProfileService;
   private final Locale locale;
+  private final boolean includeActions;
 
   public CsvHistoryReportGenerator(Map<DataAccessRequest, List<DataAccessAmendment>> list,
                                    Translator translator,
                                    Locale locale,
-                                   UserProfileService userProfileService) {
+                                   UserProfileService userProfileService,
+                                   boolean includeActions) {
     dataAccessRequestListMap = list;
     this.translator = translator;
     this.locale = locale;
     this.userProfileService = userProfileService;
+    this.includeActions = includeActions;
   }
 
   @Override
@@ -95,11 +99,13 @@ public class CsvHistoryReportGenerator implements CsvReportGenerator {
             .map(status -> new Node(dar.getId(), "data-access-request.title", status))
             .collect(Collectors.toList());
 
-          List<Node> dataAccessActionHistory = dar
-            .getActionLogHistory()
-            .stream()
-            .map(action -> new Node(dar.getId(), "data-access-request.action-log.title", action))
-            .collect(Collectors.toList());
+          List<Node> dataAccessActionHistory =
+            includeActions
+              ? dar.getActionLogHistory()
+                .stream()
+                .map(action -> new Node(dar.getId(), "data-access-request.action-log.title", action))
+                .collect(Collectors.toList())
+              : Lists.newArrayList();
 
         return Stream.of(dataAccessStatusHistory, dataAccessActionHistory, amendmentStatusHistory)
             .flatMap(list -> list.stream())
