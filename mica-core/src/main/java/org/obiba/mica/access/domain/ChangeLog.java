@@ -4,7 +4,7 @@ import org.joda.time.DateTime;
 
 import java.io.Serializable;
 
-abstract class ChangeLog implements Serializable {
+public abstract class ChangeLog implements Serializable {
 
   protected String author;
 
