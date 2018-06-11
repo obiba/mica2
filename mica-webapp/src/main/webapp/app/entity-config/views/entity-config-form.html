@@ -37,8 +37,8 @@
 
     <p class="help-block" translate="{{target + '-config.schema-form.info'}}"></p>
 
-    <ul class="nav nav-pills" ng-show="forms.length > 1">
-      <li role="presentation" ng-repeat="form in forms" ng-class="{active: form.active}"><a href ng-click="setActive(form)" translate>{{target + '-config.' + form.name + '-form-title' | translate}}</a></li>
+    <ul class="nav nav-pills config-navigation" ng-show="forms.length > 1">
+      <li role="presentation" ng-repeat="form in forms" ng-class="{active: form.active}" class="config-navigation-item"><a href ng-click="setActive(form)" translate>{{target + '-config.' + form.name + '-form-title' | translate}}</a></li>
     </ul>
     <div class="voffset4" ng-repeat="form in forms">
       <entity-sf-config form="form.form" alert-id="EntityConfigController" dirty-observable="state.getDirtyObservable()" ng-show="form.active"></entity-sf-config>
