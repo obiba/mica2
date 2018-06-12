@@ -10,19 +10,34 @@
 
 package org.obiba.mica.web.model;
 
+import javax.inject.Inject;
+
 import org.joda.time.DateTime;
 import org.obiba.mica.access.domain.ActionLog;
+import org.obiba.mica.user.UserProfileService;
 import org.obiba.mica.web.model.Mica.DataAccessRequestDto.ActionLogDto;
+import org.obiba.shiro.realm.ObibaRealm.Subject;
 import org.springframework.stereotype.Component;
 
 @Component
 public class ActionLogDtos {
+
+  @Inject
+  private UserProfileService userProfileService;
+
+  @Inject
+  private UserProfileDtos userProfileDtos;
 
   ActionLogDto asDto(ActionLog actionLog) {
     ActionLogDto.Builder builder = ActionLogDto.newBuilder() //
       .setAuthor(actionLog.getAuthor()) //
       .setChangedOn(actionLog.getChangedOn().toString())
       .setAction(actionLog.getAction());
+
+    Subject profile = userProfileService.getProfile(actionLog.getAuthor());
+    if (profile != null) {
+      builder.setProfile(userProfileDtos.asDto(profile));
+    }
 
     return builder.build();
   }
