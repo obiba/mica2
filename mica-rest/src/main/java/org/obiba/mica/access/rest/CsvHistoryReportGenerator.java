@@ -147,15 +147,23 @@ public class CsvHistoryReportGenerator implements CsvReportGenerator {
     String getAuthor() {
       String author = changeLog.getAuthor();
       ObibaRealm.Subject profile = userProfileService.getProfile(author);
-      Map<String, String> nameMap = profile.getAttributes()
-        .stream()
-        .filter(map -> map.containsValue("firstName") || map.containsValue("lastName"))
-        .collect(Collectors.toMap(e -> e.get("key"), e -> e.get("value")));
+      List<Map<String, String>> attributes = profile.getAttributes();
+      String fullName = author;
 
-      String firstName = Strings.emptyToNull(nameMap.get("firstName"));
-      String lastName = Strings.emptyToNull(nameMap.get("lastName"));
+      if (attributes != null) {
+        Map<String, String> nameMap = attributes.stream()
+          .filter(map -> map.containsValue("firstName") || map.containsValue("lastName"))
+          .collect(Collectors.toMap(e -> e.get("key"), e -> e.get("value")));
 
-      return firstName == null || lastName == null ? author : firstName  + " " + lastName;
+        String firstName = Strings.emptyToNull(nameMap.get("firstName"));
+        String lastName = Strings.emptyToNull(nameMap.get("lastName"));
+
+        if (firstName!= null && lastName != null) {
+          fullName = firstName  + " " + lastName;
+        }
+      }
+
+      return fullName;
     }
   }
 
