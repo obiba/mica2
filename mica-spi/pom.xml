@@ -20,7 +20,7 @@
   </parent>
 
   <artifactId>mica-spi</artifactId>
-
+  
   <dependencies>
     <dependency>
       <groupId>org.obiba.mica</groupId>

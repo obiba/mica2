@@ -1,12 +1,38 @@
-language: java, node_js
-jdk:
-  - oraclejdk8
-sudo: false
+sudo: required
+language: java
 before_install:
+  - sudo add-apt-repository -y ppa:chris-lea/node.js
+  - sudo apt-get install -y nodejs devscripts
   - nvm install 4.4.0
   - node --version
-  - npm install -g bower
+  - npm install -g grunt-cli bower
 addons:
   apt:
     packages:
-      - oracle-java8-installer
+    - rpm
+    - devscripts
+    - fakeroot
+    - debhelper
+cache:
+  directories:
+  - $HOME/.cache
+  - $HOME/.m2
+deploy:
+  - provider: script
+    script: cp .travis.settings.xml $HOME/.m2/settings.xml && mvn deploy
+    skip_cleanup: true
+    on:
+      branch: snapshot
+      tags: false
+  - provider: script
+    script: cp .travis.settings.xml $HOME/.m2/settings.xml && mvn -Prelease deploy
+    skip_cleanup: true
+    on:
+      all_branches: true
+      tags: true
+notifications:
+  email:
+    recipients:
+    - dev@obiba.org
+    on_success: change
+    on_failure: always
