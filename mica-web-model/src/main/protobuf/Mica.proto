@@ -699,6 +699,7 @@ message DataAccessRequestDto {
     required string action = 1;
     required string author = 2;
     required string changedOn = 3;
+    optional UserProfileDto profile = 4;
   }
 
   message StatusChangeDto {
