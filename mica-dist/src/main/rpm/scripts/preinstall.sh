@@ -11,7 +11,7 @@ case "$1" in
         echo "following script to safely remove the current version before installing a new"
         echo "version:"
         echo
-        echo "https://download.obiba.org/tools/rpm/safely-remove-mica-package-before-3.2.1.sh.gz"
+        echo "https://github.com/obiba/mica2/releases/download/3.2.1/safely-remove-mica-package-before-3.2.1.sh.gz"
         echo
         exit 1
       fi
