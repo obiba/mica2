@@ -38,4 +38,4 @@ portal.draftResource.urlPattern: "{portalUrl}/mica/{resourceType}/{resourceId}/d
 #
 
 plugins:
-  updateSite: https://plugins.obiba.org/stable
+  updateSite: https://plugins.obiba.org

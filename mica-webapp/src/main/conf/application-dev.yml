@@ -36,7 +36,7 @@ shiro:
 #
 
 plugins:
-  updateSite: https://plugins.obiba.org/unstable
+  updateSite: https://plugins.obiba.org
 
 spring:
     profiles: dev
