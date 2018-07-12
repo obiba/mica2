@@ -271,7 +271,7 @@
                 <configuration>
                   <target>
                     <property name="deb.dir" value="${basedir}/target/deb" />
-                    <property name="deb.version" value="${project.version}-b${buildNumber}" />
+                    <property name="deb.version" value="${project.version}" />
                     <tstamp>
                       <!-- http://www.debian.org/doc/debian-policy/ch-source.html -->
                       <format property="deb.date" pattern="EEE, d MMM yyyy HH:mm:ss Z" locale="en" />
