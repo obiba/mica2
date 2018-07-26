@@ -956,7 +956,11 @@
       "add-to-cart": "Add to Cart",
       "no-variable-removed": "No variable was removed from the cart.",
       "variable-removed": "Variable removed from the cart.",
-      "remove-from-cart": "Remove from Cart"
+      "remove-from-cart": "Remove from Cart",
+      "all-cart-page-selected": "All items of this page are selected.",
+      "all-cart-selected": "All items of this cart are selected.",
+      "select-all-cart": "Select all items of this cart",
+      "unselect-all-cart": "Unselect all items"
     }
   },
   "search": {

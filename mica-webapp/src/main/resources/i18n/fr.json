@@ -956,7 +956,11 @@
       "add-to-cart": "Ajouter au panier",
       "no-variable-removed": "Aucune variable n'a été supprimée du panier.",
       "variable-removed": "Variable supprimée du panier.",
-      "remove-from-cart": "Retirer du panier"
+      "remove-from-cart": "Retirer du panier",
+      "all-cart-page-selected": "Tout les documents de cette page sont sélectionnés.",
+      "all-cart-selected": "Tout les documents de ce panier sont sélectionnés.",
+      "select-all-cart": "Sélectionner tout les documents de ce panier",
+      "unselect-all-cart": "Déselectionner tout les documents"
     }
   },
   "search": {
