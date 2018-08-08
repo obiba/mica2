@@ -38,6 +38,26 @@ case "$1" in
     new_release="$(ls -t /usr/share/ |grep mica2|head -1)"
     ln -s /usr/share/${new_release} /usr/share/mica2
 
+    if [ ! -e /var/lib/mica2/data ] ; then
+      mkdir /var/lib/mica2/data
+    fi
+
+    if [ ! -e /var/lib/mica2/work ] ; then
+      mkdir /var/lib/mica2/work
+    fi
+
+    if [ ! -e /var/lib/mica2/plugins ] ; then
+      mkdir /var/lib/mica2/plugins
+    fi
+
+    if [ ! -e /var/lib/mica2/logs ] ; then
+      mkdir /var/lib/mica2/logs
+    fi
+
+    if [ ! -e /var/log/mica2 ] ; then
+      mkdir /var/log/mica2
+    fi
+
     if [ ! -e /var/lib/mica2/conf ] ; then
       ln -s /etc/mica2 /var/lib/mica2/conf
     fi
