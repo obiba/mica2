@@ -19,8 +19,10 @@ case "$1" in
   ;;
 esac
 
-getent group adm >/dev/null || groupadd -r adm
 getent passwd mica >/dev/null || \
-    useradd -r -g adm -d /home/mica -s /sbin/nologin \
+    useradd -r -d /home/mica -s /sbin/nologin \
     -c "User for Mica Server" mica
+
+usermod -g nobody mica
+
 exit 0
