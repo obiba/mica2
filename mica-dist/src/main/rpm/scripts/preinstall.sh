@@ -20,6 +20,9 @@ case "$1" in
 esac
 
 getent passwd mica >/dev/null || \
-    useradd -r -g nobody -d /home/mica -s /sbin/nologin \
+    useradd -r -d /home/mica -s /sbin/nologin \
     -c "User for Mica Server" mica
+
+usermod -g nobody mica
+
 exit 0
