@@ -23,6 +23,7 @@ import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.obiba.mica.config.JerseyConfiguration;
 import org.obiba.shiro.web.filter.AuthenticationExecutor;
+import org.obiba.shiro.web.filter.UserBannedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -45,13 +46,14 @@ public class SessionsResource {
       String sessionId = SecurityUtils.getSubject().getSession().getId().toString();
       log.info("Successful session creation for user '{}' session ID is '{}'.", username, sessionId);
       return Response
-          .created(UriBuilder.fromPath(JerseyConfiguration.WS_ROOT).path(SessionResource.class).build(sessionId))
-          .build();
-
+        .created(UriBuilder.fromPath(JerseyConfiguration.WS_ROOT).path(SessionResource.class).build(sessionId))
+        .build();
+    } catch(UserBannedException e) {
+      throw e;
     } catch(AuthenticationException e) {
       log.info("Authentication failure of user '{}' at ip: '{}': {}", username, servletRequest.getRemoteAddr(),
           e.getMessage());
-      // When a request contains credentials and they are invalid, the a 403 (Forbidden) should be returned.
+      // When a request contains credentials and they are invalid, the 403 (Forbidden) should be returned.
       return Response.status(Response.Status.FORBIDDEN).cookie().build();
     }
   }

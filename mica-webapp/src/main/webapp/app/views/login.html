@@ -13,7 +13,9 @@
     <div class="col-md-4"></div>
     <div class="col-md-4">
 
-      <div class="alert alert-danger" ng-show="authenticationError" translate="login.messages.error.authentication">
+      <div class="alert alert-danger" ng-show="authenticationError && !userBannedError" translate="login.messages.error.authentication">
+      </div>
+      <div class="alert alert-danger" ng-show="userBannedError" translate="login.messages.error.userBanned">
       </div>
       <div class="well">
         <form class="form" role="form">

@@ -69,6 +69,7 @@ public class JoinQueryExecutor {
   @Qualifier("esJoinQueriesSemaphore")
   private Semaphore esJoinQueriesSemaphore;
 
+
   @Value("${elasticsearch.concurrentJoinQueriesWaitTimeout:30000}")
   private long concurrentJoinQueriesWaitTimeout;
 

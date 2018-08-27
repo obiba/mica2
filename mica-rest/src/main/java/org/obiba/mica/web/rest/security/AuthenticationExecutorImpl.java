@@ -10,12 +10,14 @@
 
 package org.obiba.mica.web.rest.security;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.apache.shiro.subject.Subject;
 import org.obiba.mica.file.service.FileSystemService;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.shiro.web.filter.AbstractAuthenticationExecutor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -26,6 +28,21 @@ public class AuthenticationExecutorImpl extends AbstractAuthenticationExecutor {
 
   @Inject
   private SubjectAclService subjectAclService;
+
+  @Value("${login.maxTry:3}")
+  private int maxTry;
+
+  @Value("${login.trialTime:300}")
+  private int trialTime;
+
+  @Value("${login.banTime:300}")
+  private int banTime;
+
+
+  @PostConstruct
+  public void configure() {
+    configureBan(maxTry, trialTime, banTime);
+  }
 
   @Override
   protected void ensureProfile(Subject subject) {

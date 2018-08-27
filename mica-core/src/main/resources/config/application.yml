@@ -39,3 +39,12 @@ portal.draftResource.urlPattern: "{portalUrl}/mica/{resourceType}/{resourceId}/d
 
 plugins:
   updateSite: https://plugins.obiba.org
+
+#
+# Security
+#
+
+login:
+  maxTry: 3
+  trialTime: 300
+  banTime: 300

@@ -99,7 +99,8 @@
     },
     "messages": {
       "error": {
-        "authentication": "<strong>Authentication failed!</strong> Please check your credentials and try again."
+        "authentication": "<strong>Authentication failed!</strong> Please check your credentials and try again.",
+        "userBanned": "<strong>Too many login failures.</strong> Please try again later."
       }
     }
   },

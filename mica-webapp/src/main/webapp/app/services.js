@@ -130,6 +130,7 @@ mica.service('AuthenticationSharedService', ['$rootScope', '$q', '$http', '$cook
 
     this.login = function (param) {
         $rootScope.authenticationError = false;
+        $rootScope.userBannedError = false;
         var data = 'username=' + param.username + '&password=' + param.password;
         $http.post('ws/auth/sessions', data, {
           headers: {
@@ -138,7 +139,11 @@ mica.service('AuthenticationSharedService', ['$rootScope', '$q', '$http', '$cook
           ignoreAuthModule: 'ignoreAuthModule'
         }).then(function success() {
           self.initSession();
-        }, function error() {
+        }, function error(response) {
+          var resp = response.data;
+          if (resp.messageTemplate && resp.messageTemplate === 'error.userBanned') {
+            $rootScope.userBannedError = true;
+          }
           $rootScope.authenticationError = true;
           Session.destroy();
         });
@@ -173,6 +178,7 @@ mica.service('AuthenticationSharedService', ['$rootScope', '$q', '$http', '$cook
 
     this.logout = function () {
         $rootScope.authenticationError = false;
+        $rootScope.userBanned = false;
         $http({method: 'DELETE', url: 'ws/auth/session/_current', errorHandler: true})
           .then(
             function success() {
