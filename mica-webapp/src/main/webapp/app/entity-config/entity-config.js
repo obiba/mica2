@@ -20,7 +20,6 @@ mica.entityConfig = angular.module('mica.entityConfig', [
   'ngResource',
   'ngRoute',
   'ui.bootstrap',
-  'ui',
   'pascalprecht.translate',
   'mica.entityTaxonomyConfig'
 ]);

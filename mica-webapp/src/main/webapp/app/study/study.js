@@ -24,7 +24,6 @@ mica.study = angular.module('mica.study', [
   'ngRoute',
   'ui.bootstrap',
   'ui.select',
-  'ui',
   'pascalprecht.translate',
   'obiba.mica.attachment',
   'mica.revisions',

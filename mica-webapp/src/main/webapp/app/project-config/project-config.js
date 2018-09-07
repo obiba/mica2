@@ -17,7 +17,6 @@ mica.projectConfig = angular.module('mica.projectConfig', [
   'ngResource',
   'ngRoute',
   'ui.bootstrap',
-  'ui',
   'pascalprecht.translate',
   'mica.entitySfConfig'
 ]);

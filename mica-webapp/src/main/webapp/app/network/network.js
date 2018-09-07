@@ -24,7 +24,6 @@ mica.network = angular.module('mica.network', [
   'ngResource',
   'ngRoute',
   'ui.bootstrap',
-  'ui',
   'pascalprecht.translate',
   'mica.revisions',
   'mica.shareResource'

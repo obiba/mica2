@@ -17,7 +17,6 @@ mica.dataAccessConfig = angular.module('mica.dataAccessConfig', [
   'ngResource',
   'ngRoute',
   'ui.bootstrap',
-  'ui',
   'pascalprecht.translate',
   'mica.entitySfConfig'
 ]);

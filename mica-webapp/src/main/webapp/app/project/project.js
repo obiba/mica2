@@ -23,7 +23,6 @@ mica.project = angular.module('mica.project', [
   'ngResource',
   'ngRoute',
   'ui.bootstrap',
-  'ui',
   'pascalprecht.translate',
   'mica.revisions',
   'mica.shareResource'
