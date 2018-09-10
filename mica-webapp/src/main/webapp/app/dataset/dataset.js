@@ -20,7 +20,6 @@ mica.dataset = angular.module('mica.dataset', [
   'ngResource',
   'ngRoute',
   'ui.bootstrap',
-  'ui',
   'pascalprecht.translate',
   'mica.status',
   'mica.revisions',

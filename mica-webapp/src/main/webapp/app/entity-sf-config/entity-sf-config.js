@@ -18,6 +18,5 @@ mica.entitySfConfig = angular.module('mica.entitySfConfig', [
   'ngResource',
   'ngRoute',
   'ui.bootstrap',
-  'ui',
   'pascalprecht.translate'
 ]);
