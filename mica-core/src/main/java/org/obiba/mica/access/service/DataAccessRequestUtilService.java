@@ -10,10 +10,13 @@
 
 package org.obiba.mica.access.service;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import javax.inject.Inject;
 
+import com.google.common.collect.Maps;
+import com.jayway.jsonpath.*;
 import org.apache.shiro.SecurityUtils;
 import org.obiba.mica.access.domain.DataAccessAmendment;
 import org.obiba.mica.access.domain.DataAccessEntity;
@@ -32,11 +35,6 @@ import org.springframework.stereotype.Component;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
-import com.jayway.jsonpath.Configuration;
-import com.jayway.jsonpath.InvalidPathException;
-import com.jayway.jsonpath.JsonPath;
-import com.jayway.jsonpath.Option;
-import com.jayway.jsonpath.PathNotFoundException;
 
 @Component
 public class DataAccessRequestUtilService {
@@ -65,6 +63,37 @@ public class DataAccessRequestUtilService {
   public String getRequestTitle(DataAccessEntity request) {
     AbstractDataAccessEntityForm dataAccessForm = getDataAccessForm(request instanceof DataAccessRequest);
     return getRequestField(request, dataAccessForm.getTitleFieldPath());
+  }
+
+  /**
+   * This method merely assigns a value to a path where all parent nodes already exist.
+   *
+   * TODO create a setRequestField() such that all non-existent nodes are created and proper type checking is made.
+   *
+   * @param request
+   * @param title
+   */
+  void setRequestTitle(DataAccessEntity request, String title) {
+    AbstractDataAccessEntityForm dataAccessForm = getDataAccessForm(request instanceof DataAccessRequest);
+    String titleFieldPath = dataAccessForm.getTitleFieldPath();
+    if (!Strings.isNullOrEmpty(titleFieldPath)) {
+      String rawContent = request.getContent();
+      if(!Strings.isNullOrEmpty(titleFieldPath) && !Strings.isNullOrEmpty(rawContent)) {
+        Object content = Configuration.defaultConfiguration().jsonProvider().parse(rawContent);
+        DocumentContext context = JsonPath.using(conf).parse(content);
+
+        try {
+          context.read(titleFieldPath);
+          context.set(titleFieldPath, title);
+        } catch(PathNotFoundException ex) {
+          context.put("$", titleFieldPath.replaceAll("^\\$\\.", ""), title);
+        } catch(InvalidPathException e) {
+          log.warn("Invalid jsonpath {}", titleFieldPath);
+        }
+
+        request.setContent(context.jsonString());
+      }
+    }
   }
 
   public String getRequestSummary(DataAccessEntity request) {
