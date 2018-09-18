@@ -1623,6 +1623,7 @@
       "tab": "Model",
       "info": "The form model stores the valid input data, invalid values are excluded."
     },
+    "private-comment-permission": "Give access to the private comments section.",
     "action-log": {
       "title": "Predefined Action Names",
       "help": "An action name is a translation key that must be preceded by <strong>data-access-request.action-log.config.label.</strong>, <a href='#/admin/translations/edit?filter=data-access-request.action-log.config.label.'>here is</a> where you can add new translations.",

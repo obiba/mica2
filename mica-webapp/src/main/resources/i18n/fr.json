@@ -1623,6 +1623,7 @@
       "tab": "Modèle",
       "info": "Le modèle du formulaire stocke les données entrées valides, les valeurs non valides sont exclues."
     },
+    "private-comment-permission": "Donner accès à la section des commentaires privés.",
     "action-log": {
       "title": "Noms d'actions prédéfinies",
       "help": "Un nom d'action est une clé de traduction qui doit être précédée de <strong>data-access-request.action-log.config.label.</strong>, <a href='#/admin/translations/edit?filter=data-access-request.action-log.config.label.'>voici</a> où vous pouvez ajouter de nouvelles traductions.",

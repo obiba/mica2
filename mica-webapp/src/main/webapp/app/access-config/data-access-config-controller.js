@@ -215,6 +215,10 @@ mica.dataAccessConfig
       $scope.otherResources = [{
         value: 'action-logs',
         text: 'data-access-config.action-log.action-logs-permission'
+      },
+      {
+        value: 'private-comment',
+        text: 'data-access-config.private-comment-permission'
       }];
 
       $scope.loadPermissions();
