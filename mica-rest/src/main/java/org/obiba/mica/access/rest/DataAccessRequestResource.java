@@ -187,7 +187,8 @@ public class DataAccessRequestResource extends DataAccessEntityResource {
     subjectAclService.checkPermission("/data-access-request", "VIEW", id);
     dataAccessRequestService.findById(id);
     if (admin) {
-      subjectAclService.checkPermission("/private-comment/data-access-request", "VIEW");
+      if (!subjectAclService.isPermitted("/data-access-request/private-comment", "VIEW"))
+        subjectAclService.checkPermission("/private-comment/data-access-request", "VIEW");
       return dtos.asDtos(commentsService.findPrivateComments("/data-access-request", id));
     } else {
       return dtos.asDtos(commentsService.findPublicComments("/data-access-request", id));
@@ -206,7 +207,8 @@ public class DataAccessRequestResource extends DataAccessEntityResource {
       .instanceId(id);
 
     if (admin) {
-      subjectAclService.checkPermission("/private-comment/data-access-request", "ADD");
+      if (!subjectAclService.isPermitted("/data-access-request/private-comment", "VIEW"))
+        subjectAclService.checkPermission("/private-comment/data-access-request", "ADD");
       buildComment.admin(admin);
     }
 

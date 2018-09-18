@@ -120,12 +120,8 @@ class DataAccessRequestDtos {
       builder.addActions("ADD_AMENDMENTS");
     }
 
-    if (subjectAclService.isPermitted("/private-comment/data-access-request", "VIEW")) {
+    if (subjectAclService.isPermitted("/data-access-request/private-comment", "VIEW")) {
       builder.addActions("VIEW_PRIVATE_COMMENTS");
-    }
-
-    if (subjectAclService.isPermitted("/private-comment/data-access-request", "ADD")) {
-      builder.addActions("ADD_PRIVATE_COMMENTS");
     }
 
     boolean hasAdministrativeRole = SecurityUtils.getSubject().hasRole(Roles.MICA_DAO) || SecurityUtils.getSubject().hasRole(Roles.MICA_ADMIN);
