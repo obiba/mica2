@@ -10,12 +10,10 @@
 
 package org.obiba.mica.access.service;
 
-import java.util.LinkedHashMap;
 import java.util.List;
 
 import javax.inject.Inject;
 
-import com.google.common.collect.Maps;
 import com.jayway.jsonpath.*;
 import org.apache.shiro.SecurityUtils;
 import org.obiba.mica.access.domain.DataAccessAmendment;

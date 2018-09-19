@@ -12,8 +12,6 @@ package org.obiba.mica.core.upgrade;
 
 import com.google.common.eventbus.EventBus;
 import org.obiba.mica.micaConfig.event.TaxonomiesUpdatedEvent;
-import org.obiba.mica.network.event.IndexNetworksEvent;
-import org.obiba.mica.study.event.IndexStudiesEvent;
 import org.obiba.runtime.Version;
 import org.obiba.runtime.upgrade.UpgradeStep;
 import org.slf4j.Logger;

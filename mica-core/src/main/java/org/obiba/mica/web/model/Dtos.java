@@ -394,7 +394,12 @@ public class Dtos {
 
   @NotNull
   public Mica.DataAccessRequestDto asDto(@NotNull DataAccessRequest request) {
-    return dataAccessRequestDtos.asDto(request);
+    return dataAccessRequestDtos.asDto(request, false);
+  }
+
+  @NotNull
+  public Mica.DataAccessRequestDto asDto(@NotNull DataAccessRequest request, boolean includeAmendmentsSummary) {
+    return dataAccessRequestDtos.asDto(request, includeAmendmentsSummary);
   }
 
   @NotNull

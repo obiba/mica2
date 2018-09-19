@@ -13,11 +13,11 @@ package org.obiba.mica.web.model;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import org.apache.shiro.SecurityUtils;
+import org.obiba.mica.access.DataAccessRequestRepository;
 import org.obiba.mica.access.domain.ActionLog;
 import org.obiba.mica.access.domain.DataAccessAmendment;
 import org.obiba.mica.access.domain.DataAccessEntity;
 import org.obiba.mica.access.domain.DataAccessRequest;
-import org.obiba.mica.access.domain.StatusChange;
 import org.obiba.mica.access.service.DataAccessRequestUtilService;
 import org.obiba.mica.project.domain.Project;
 import org.obiba.mica.project.service.NoSuchProjectException;
@@ -30,9 +30,10 @@ import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
-import javax.xml.crypto.Data;
 import java.nio.file.Paths;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Component
@@ -61,6 +62,9 @@ class DataAccessRequestDtos {
 
   @Inject
   private DataAccessRequestUtilService dataAccessRequestUtilService;
+
+  @Inject
+  private DataAccessRequestRepository dataAccessRequestRepository;
 
   @Inject
   private ProjectService projectService;
@@ -103,7 +107,7 @@ class DataAccessRequestDtos {
   }
 
   @NotNull
-  public Mica.DataAccessRequestDto asDto(@NotNull DataAccessRequest request) {
+  public Mica.DataAccessRequestDto asDto(@NotNull DataAccessRequest request, boolean includeAmendmentsSummary) {
     Mica.DataAccessRequestDto.Builder builder = asDtoBuilder(request);
 
     String title = dataAccessRequestUtilService.getRequestTitle(request);
@@ -118,6 +122,24 @@ class DataAccessRequestDtos {
     if(subjectAclService
       .isPermitted(Paths.get("/data-access-request", request.getId(), "/amendment").toString(), "ADD")) {
       builder.addActions("ADD_AMENDMENTS");
+    }
+
+    if (subjectAclService.isPermitted("/data-access-request/private-comment", "VIEW")) {
+      builder.addActions("VIEW_PRIVATE_COMMENTS");
+    }
+
+    if (includeAmendmentsSummary) {
+      Map<Object, LinkedHashMap> pendingAmendments = dataAccessRequestRepository.getAmendmentsSummary(request.getId());
+      if (!pendingAmendments.isEmpty()) {
+        LinkedHashMap map = pendingAmendments.get(request.getId());
+        builder.setAmendmentsSummary(
+          Mica.DataAccessRequestDto.AmendmentsSummaryDto.newBuilder()
+            .setId(map.get("_id") + "")
+            .setPending((double) map.get("pending"))
+            .setTotal((double) map.get("total"))
+            .build()
+        );
+      }
     }
 
     boolean hasAdministrativeRole = SecurityUtils.getSubject().hasRole(Roles.MICA_DAO) || SecurityUtils.getSubject().hasRole(Roles.MICA_ADMIN);

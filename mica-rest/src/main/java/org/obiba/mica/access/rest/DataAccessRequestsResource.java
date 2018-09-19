@@ -83,7 +83,7 @@ public class DataAccessRequestsResource {
   @Timed
   public List<Mica.DataAccessRequestDto> listByStatus(@QueryParam("status") List<String> status) {
     return listByStatusFilteringPermitted(status).stream()
-      .map(dtos::asDto)
+      .map(request -> dtos.asDto(request, true))
       .collect(Collectors.toList());
   }
 
