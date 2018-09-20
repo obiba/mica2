@@ -124,10 +124,6 @@ class DataAccessRequestDtos {
       builder.addActions("ADD_AMENDMENTS");
     }
 
-    if (subjectAclService.isPermitted("/data-access-request/private-comment", "VIEW")) {
-      builder.addActions("VIEW_PRIVATE_COMMENTS");
-    }
-
     if (includeAmendmentsSummary) {
       Map<Object, LinkedHashMap> pendingAmendments = dataAccessRequestRepository.getAmendmentsSummary(request.getId());
       if (!pendingAmendments.isEmpty()) {
