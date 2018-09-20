@@ -80,14 +80,15 @@ public class KeyStoreService {
 
   @NotNull
   public String getPEMCertificate(@NotNull String name, String alias) throws KeyStoreException, IOException {
-    Certificate certificate = ofNullable(getKeyStore(name).getKeyStore().getCertificate(alias))
-      .orElseThrow(() -> new IllegalArgumentException("Cannot find certificate for alias: " + alias));
+    Certificate[] certificates = getKeyStore(name).getKeyStore().getCertificateChain(alias);
+    if (certificates == null || certificates.length == 0) throw new IllegalArgumentException("Cannot find certificate for alias: " + alias);
 
     StringWriter writer = new StringWriter();
     PEMWriter pemWriter = new PEMWriter(writer);
-    pemWriter.writeObject(certificate);
+    for (Certificate certificate : certificates) {
+      pemWriter.writeObject(certificate);
+    }
     pemWriter.flush();
-
     return writer.getBuffer().toString();
   }
 
