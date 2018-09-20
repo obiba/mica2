@@ -711,6 +711,12 @@ message DataAccessRequestDto {
     optional string reference = 6;
   }
 
+  message AmendmentsSummaryDto {
+    required string id = 1;
+    required double pending = 2;
+    required double total = 3;
+  }
+
   optional string id = 1;
   optional TimestampsDto timestamps = 2;
   required string applicant = 3;
@@ -724,6 +730,7 @@ message DataAccessRequestDto {
   optional UserProfileDto profile = 11;
   optional ProjectSummaryDto project = 12;
   repeated ActionLogDto actionLogHistory = 13;
+  optional AmendmentsSummaryDto amendmentsSummary = 14;
 
   extensions 1000 to max;
 }

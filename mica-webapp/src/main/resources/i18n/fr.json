@@ -1383,6 +1383,8 @@
     "private-comments": "Commentaires Privés",
     "history": "Historique",
     "status-placeholder": "Filtrer par statut",
+    "pending-amendments": "Amendements en attente",
+    "total-amendments": "Total des amendements",
     "histories": {
       "opened":   "Ouverte",
       "submitted": "Soumise",
