@@ -11,12 +11,12 @@
       </button>
     </div>
     <uib-tab ng-click="selectTab('form-schema')" heading="{{'entity-sf-config.schema.tab' | translate}}">
-      <div id="form-schema" ui-ace="ace.options" ng-model="form.schema" class="form-control form-schema">
+      <div id="form-schema" ui-ace="ace.options" ng-model="form.schema" class="form-schema">
       </div>
       <div class="help-block" translate>entity-sf-config.schema.info</div>
     </uib-tab>
     <uib-tab ng-click="selectTab('form-definition')" heading="{{'entity-sf-config.definition.tab' | translate}}">
-      <div id="form-definition" class="form-control form-definition" ui-ace="ace.options" ng-model="form.definition">
+      <div id="form-definition" class="form-definition" ui-ace="ace.options" ng-model="form.definition">
       </div>
       <div class="help-block" translate>entity-sf-config.definition.info</div>
     </uib-tab>
@@ -32,7 +32,7 @@
       </div>
     </uib-tab>
     <uib-tab ng-click="selectTab('form-model')" heading="{{'entity-sf-config.model.tab' | translate}}">
-      <div id="form-model" class="form-control form-definition" ui-ace="ace.options" ng-model="modelPreview">
+      <div id="form-model" class="form-definition" ui-ace="ace.options" ng-model="modelPreview">
       </div>
       <div class="help-block" translate>entity-sf-config.model.info</div>
     </uib-tab>
