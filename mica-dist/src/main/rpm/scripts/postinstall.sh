@@ -23,11 +23,6 @@ NAME=mica2
 case "$1" in
   [1-2])
 
-    # Create mica user if it doesn't exist.
-    if ! id mica > /dev/null 2>&1 ; then
-      adduser --system --home-dir /var/lib/mica2 --no-create-home mica
-    fi
-
     # Mica2 file structure on Debian
     # /etc/mica2: configuration
     # /usr/share/mica2: executable
