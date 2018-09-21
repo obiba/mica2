@@ -12,6 +12,7 @@ import com.jayway.jsonpath.PathNotFoundException;
 import org.apache.shiro.SecurityUtils;
 import org.obiba.mica.PdfUtils;
 import org.obiba.mica.access.DataAccessEntityRepository;
+import org.obiba.mica.access.DataAccessRequestGenerationException;
 import org.obiba.mica.access.NoSuchDataAccessRequestException;
 import org.obiba.mica.access.domain.DataAccessEntity;
 import org.obiba.mica.access.domain.DataAccessEntityStatus;
@@ -349,14 +350,19 @@ public abstract class DataAccessEntityService<T extends DataAccessEntity> {
       .size(dataAccessForm.getIdLength()).zeros();
 
     if (exclusions instanceof List) {
+      log.info("Using exclusions {} to generate DAR id", exclusions.toString());
       builder.exclusions((List) exclusions);
     }
 
     IdentifierGenerator idGenerator = builder.build();
-    while (true) {
+    int tries = 0;
+    while (tries < 100) {
+      tries++;
       String id = idGenerator.generateIdentifier();
       if (getRepository().findOne(id) == null) return id;
     }
+
+    throw new DataAccessRequestGenerationException("Exceeded 100 id generation tries");
   }
 
 }
