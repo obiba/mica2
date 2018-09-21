@@ -1,7 +1,24 @@
 #!/bin/sh
 
 case "$1" in
+  1)
+     useradd -r -g nobody -d /var/lib/mica2 -s /sbin/nologin -c "User for Mica Server" mica
+  ;;
+
   2)
+    # stop the service if running
+    if service mica2 status > /dev/null; then
+      if which service >/dev/null 2>&1; then
+        service mica2 stop
+      elif which invoke-rc.d >/dev/null 2>&1; then
+        invoke-rc.d mica2 stop
+      else
+        /etc/init.d/mica2 stop
+      fi
+    fi
+
+    usermod -g nobody mica -d /var/lib/mica
+
     latest_version="$(ls -t /usr/share | grep mica2- | head -1| cut -d'-' -f2)"
     if [ ! -z "$latest_version" ] ; then
       latest_version_number="${latest_version//.}"
@@ -19,10 +36,5 @@ case "$1" in
   ;;
 esac
 
-getent passwd mica >/dev/null || \
-    useradd -r -d /home/mica -s /sbin/nologin \
-    -c "User for Mica Server" mica
-
-usermod -g nobody mica
 
 exit 0

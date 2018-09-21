@@ -21,7 +21,13 @@ set -e
 case "$1" in
   0)
     userdel -f mica || true
-    rm -rf /var/lib/mica2 /var/log/mica2 /tmp/mica2 /etc/mica2 /usr/share/mica2*
+    rm -rf /var/log/mica2 /tmp/mica2 /etc/mica2 /usr/share/mica2*
+
+    # Backup mica2 home
+    timestamp="$(date '+%N')"
+    echo "Backing up /var/lib/mica2 to /var/lib/mica2-backup-$timestamp"
+    mv /var/lib/mica2 /var/lib/mica2-backup-$timestamp >/dev/null 2>&1
+    chown -R root:root /var/lib/mica2-backup-$timestamp >/dev/null 2>&1
   ;;
 
   1)
