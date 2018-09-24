@@ -64,7 +64,7 @@ public abstract class DataAccessEntityService<T extends DataAccessEntity> {
   @Inject
   protected MicaConfigService micaConfigService;
 
-  private static final String EXCLUSION_IDS_YAML_RESOURCE_PATH = "/config/data-access-form/data-access-request-exclusion-ids-list.yml";
+  private static final String EXCLUSION_IDS_YAML_RESOURCE_PATH = "config/data-access-form/data-access-request-exclusion-ids-list.yml";
 
   abstract protected DataAccessEntityRepository<T> getRepository();
 
