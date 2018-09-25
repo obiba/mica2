@@ -342,8 +342,12 @@ public class OpalService implements EnvironmentAware {
   }
 
   private OpalCredential getOpalCredential(String opalUrl) {
-    return opalCredentialService.findOpalCredentialById(opalUrl)
-        .orElse(new OpalCredential(getDefaultOpal(), AuthType.USERNAME, getOpalUsername(), getOpalPassword()));
+    Optional<OpalCredential> opalCredential = opalCredentialService.findOpalCredentialById(opalUrl);
+    if (opalCredential.isPresent()) {
+      return opalCredential.get();
+    }
+
+    return new OpalCredential(getDefaultOpal(), AuthType.USERNAME, getOpalUsername(), getOpalPassword());
   }
 
   private String cleanupOpalUrl(String opalUrl) {
