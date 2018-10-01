@@ -54,6 +54,7 @@
       <div class="row">
         <div class="col-md-6">
           <div form-input name="titleFieldPath" model="dataAccessForm.titleFieldPath" label="data-access-config.title-field" required="false" help="data-access-config.title-field-help"></div>
+          <div form-checkbox name="amendmentsEnabled" model="dataAccessForm.amendmentsEnabled" label="data-access-config.amendments-enabled" help="data-access-config.amendments-enabled-help"></div>
         </div>
         <div class="col-md-6">
           <div form-input name="summaryFieldPath" model="dataAccessForm.summaryFieldPath" label="data-access-config.summary-field" required="false" help="data-access-config.summary-field-help"></div>
@@ -94,6 +95,7 @@
         </div>
       </div>
       <div class="col-md-6">
+
         <key-list title-key="data-access-config.action-log.title"
                   help-key="data-access-config.action-log.help"
                   keys="dataAccessForm.predefinedActions"

@@ -34,26 +34,20 @@ import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.slf4j.Logger;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.stereotype.Component;
 import sun.util.locale.LanguageTag;
 
 import javax.inject.Inject;
-import javax.ws.rs.BadRequestException;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.DefaultValue;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
 import static org.slf4j.LoggerFactory.getLogger;
+
 
 @Component
 @Path("/data-access-request/{id}")
@@ -262,6 +256,7 @@ public class DataAccessRequestResource extends DataAccessEntityResource {
 
   @Path("/amendments")
   public DataAccessAmendmentsResource getAmendments() {
+    if (!dataAccessRequestService.isAmendmentEnabled()) throw new BadRequestException();
     dataAccessRequestService.findById(id);
     DataAccessAmendmentsResource dataAccessAmendmentsResource = applicationContext
       .getBean(DataAccessAmendmentsResource.class);
@@ -271,6 +266,7 @@ public class DataAccessRequestResource extends DataAccessEntityResource {
 
   @Path("/amendment/{amendmentId}")
   public DataAccessAmendmentResource getAmendment(@PathParam("amendmentId") String amendmentId) {
+    if (!dataAccessRequestService.isAmendmentEnabled()) throw new BadRequestException();
     dataAccessRequestService.findById(id);
     DataAccessAmendmentResource dataAccessAmendmentResource = applicationContext
       .getBean(DataAccessAmendmentResource.class);

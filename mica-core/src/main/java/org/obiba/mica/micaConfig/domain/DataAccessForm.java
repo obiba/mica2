@@ -73,6 +73,8 @@ public class DataAccessForm extends AbstractDataAccessEntityForm {
 
   private List<String> predefinedActions = null;
 
+  private boolean amendmentsEnabled = false;
+
   public DataAccessForm() {
     super();
   }
@@ -279,5 +281,13 @@ public class DataAccessForm extends AbstractDataAccessEntityForm {
 
   public void setPredefinedActions(List<String> predefinedActions) {
     this.predefinedActions = predefinedActions;
+  }
+
+  public boolean isAmendmentsEnabled() {
+    return amendmentsEnabled;
+  }
+
+  public void setAmendmentsEnabled(boolean amendmentsEnabled) {
+    this.amendmentsEnabled = amendmentsEnabled;
   }
 }

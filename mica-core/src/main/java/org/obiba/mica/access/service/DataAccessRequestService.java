@@ -187,6 +187,10 @@ public class DataAccessRequestService extends DataAccessEntityService<DataAccess
     return ba.toByteArray();
   }
 
+  public boolean isAmendmentEnabled() {
+    return dataAccessFormService.find().map(DataAccessForm::isAmendmentsEnabled).orElse(false);
+  }
+
   private void deleteAmendments(String id) {
     List<DataAccessAmendment> amendments = dataAccessAmendmentService.findByParentId(id);
     amendments.stream().forEach(dataAccessAmendmentService::delete);

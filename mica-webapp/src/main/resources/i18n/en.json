@@ -1590,6 +1590,8 @@
     "summary-field-help": "The lay summary of the request.",
     "general-config": "General Configuration",
     "saved": "Data Access Form is successfully updated.",
+    "amendments-enabled": "Amendments enabled",
+    "amendments-enabled-help":"Enables the capability of creating amendments for an approved data access request.",
     "pdf-download": {
       "title": "PDF Download",
       "info": "The data collected in the form can be rendered in a PDF file. Choose one of the following options:"
