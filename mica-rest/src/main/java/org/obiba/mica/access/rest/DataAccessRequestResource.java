@@ -18,6 +18,7 @@ import org.apache.shiro.authz.AuthorizationException;
 import org.obiba.mica.JSONUtils;
 import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.access.NoSuchDataAccessRequestException;
+import org.obiba.mica.micaConfig.DataAccessAmendmentsNotEnabled;
 import org.obiba.mica.access.domain.DataAccessEntityStatus;
 import org.obiba.mica.access.domain.DataAccessRequest;
 import org.obiba.mica.access.notification.DataAccessRequestCommentMailNotification;
@@ -34,7 +35,6 @@ import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.slf4j.Logger;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Conditional;
 import org.springframework.stereotype.Component;
 import sun.util.locale.LanguageTag;
 
@@ -256,7 +256,7 @@ public class DataAccessRequestResource extends DataAccessEntityResource {
 
   @Path("/amendments")
   public DataAccessAmendmentsResource getAmendments() {
-    if (!dataAccessRequestService.isAmendmentEnabled()) throw new BadRequestException();
+    if (!dataAccessRequestService.isAmendmentsEnabled()) throw new DataAccessAmendmentsNotEnabled();
     dataAccessRequestService.findById(id);
     DataAccessAmendmentsResource dataAccessAmendmentsResource = applicationContext
       .getBean(DataAccessAmendmentsResource.class);
@@ -266,7 +266,7 @@ public class DataAccessRequestResource extends DataAccessEntityResource {
 
   @Path("/amendment/{amendmentId}")
   public DataAccessAmendmentResource getAmendment(@PathParam("amendmentId") String amendmentId) {
-    if (!dataAccessRequestService.isAmendmentEnabled()) throw new BadRequestException();
+    if (!dataAccessRequestService.isAmendmentsEnabled()) throw new DataAccessAmendmentsNotEnabled();
     dataAccessRequestService.findById(id);
     DataAccessAmendmentResource dataAccessAmendmentResource = applicationContext
       .getBean(DataAccessAmendmentResource.class);

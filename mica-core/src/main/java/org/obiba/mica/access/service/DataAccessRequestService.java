@@ -187,7 +187,7 @@ public class DataAccessRequestService extends DataAccessEntityService<DataAccess
     return ba.toByteArray();
   }
 
-  public boolean isAmendmentEnabled() {
+  public boolean isAmendmentsEnabled() {
     return dataAccessFormService.find().map(DataAccessForm::isAmendmentsEnabled).orElse(false);
   }
 

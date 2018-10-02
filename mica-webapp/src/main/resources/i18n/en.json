@@ -1264,6 +1264,9 @@
         "range-criterion-missing-terms": "The criterion '{{arg0}}' must have terms to define its range intervals.",
         "range-criterion-missing-range-attribute": "The criterion '{{arg0}}' with terms must be marked as having range intervals.",
         "duplicate-criterion-alias": "The field '{{arg0}}' already has an associated criterion. Only a numerical field can have two criteria, a discrete and a range criterion."
+      },
+      "data-access-amendment": {
+        "not-enabled": "Data Access Amendment operations are disabled, contact your administrator to enable this functionality."
       }
     }
   },
@@ -1590,8 +1593,8 @@
     "summary-field-help": "The lay summary of the request.",
     "general-config": "General Configuration",
     "saved": "Data Access Form is successfully updated.",
-    "amendments-enabled": "Amendments enabled",
-    "amendments-enabled-help":"Enables the capability of creating amendments for an approved data access request.",
+    "amendments-enabled": "Enable Amendments.",
+    "amendments-enabled-help":"Enable the capability of requesting amendments to an approved data access request.",
     "pdf-download": {
       "title": "PDF Download",
       "info": "The data collected in the form can be rendered in a PDF file. Choose one of the following options:"

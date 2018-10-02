@@ -1264,6 +1264,9 @@
         "range-criterion-missing-terms": "Le critère '{{arg0}} doit avoir des termes pour définir ses intervalles de portée.",
         "range-criterion-missing-range-attribute": "Le critère '{{arg0}}' avec des termes doit être marqué comme ayant des intervalles de portée.",
         "duplicate-criterion-alias": "Le champ '{{arg0}}' a déjà un critère associé. Seul un champ numérique peut avoir deux critères, un critère discret et un critère de portée."
+      },
+      "data-access-amendment": {
+        "not-enabled": "Les opérations d'amendement d'accès aux données sont désactivées. Contactez votre administrateur pour activer cette fonctionnalité."
       }
     }
   },
@@ -1590,6 +1593,8 @@
     "summary-field-help": "Le résumé simplifié de la demande.",
     "general-config": "Configuration générale",
     "saved": "Formulaire d'accès aux données a été mis à jour avec succès.",
+    "amendments-enabled": "Activer les amendements.",
+    "amendments-enabled-help":"Permet d'amender des modifications à une demande d'accès aux données approuvée.",
     "pdf-download": {
       "title": "Télécharger le PDF",
       "info": "Les données collectées dans le formulaire peuvent être représentées dans un fichier PDF. Choisissez l'une des options suivantes:"
