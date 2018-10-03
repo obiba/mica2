@@ -817,6 +817,7 @@ message DataAccessFormDto {
   optional string csvExportFormat = 29;
   required PdfDownloadType pdfDownloadType = 30;
   repeated string predefinedActions = 31;
+  required bool amendmentsEnabled = 32;
 }
 
 message DataAccessAmendmentFormDto {

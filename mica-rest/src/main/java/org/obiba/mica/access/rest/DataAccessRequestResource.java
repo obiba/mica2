@@ -18,6 +18,7 @@ import org.apache.shiro.authz.AuthorizationException;
 import org.obiba.mica.JSONUtils;
 import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.access.NoSuchDataAccessRequestException;
+import org.obiba.mica.micaConfig.DataAccessAmendmentsNotEnabled;
 import org.obiba.mica.access.domain.DataAccessEntityStatus;
 import org.obiba.mica.access.domain.DataAccessRequest;
 import org.obiba.mica.access.notification.DataAccessRequestCommentMailNotification;
@@ -38,22 +39,15 @@ import org.springframework.stereotype.Component;
 import sun.util.locale.LanguageTag;
 
 import javax.inject.Inject;
-import javax.ws.rs.BadRequestException;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.DefaultValue;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
 import static org.slf4j.LoggerFactory.getLogger;
+
 
 @Component
 @Path("/data-access-request/{id}")
@@ -262,6 +256,7 @@ public class DataAccessRequestResource extends DataAccessEntityResource {
 
   @Path("/amendments")
   public DataAccessAmendmentsResource getAmendments() {
+    if (!dataAccessRequestService.isAmendmentsEnabled()) throw new DataAccessAmendmentsNotEnabled();
     dataAccessRequestService.findById(id);
     DataAccessAmendmentsResource dataAccessAmendmentsResource = applicationContext
       .getBean(DataAccessAmendmentsResource.class);
@@ -271,6 +266,7 @@ public class DataAccessRequestResource extends DataAccessEntityResource {
 
   @Path("/amendment/{amendmentId}")
   public DataAccessAmendmentResource getAmendment(@PathParam("amendmentId") String amendmentId) {
+    if (!dataAccessRequestService.isAmendmentsEnabled()) throw new DataAccessAmendmentsNotEnabled();
     dataAccessRequestService.findById(id);
     DataAccessAmendmentResource dataAccessAmendmentResource = applicationContext
       .getBean(DataAccessAmendmentResource.class);
