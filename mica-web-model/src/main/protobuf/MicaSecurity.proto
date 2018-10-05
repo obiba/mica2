@@ -7,4 +7,6 @@ message AclDto {
   required string resource = 3;
   optional string role = 4;
   optional string instance = 5;
+  repeated string otherResources = 6;
+  optional bool file = 7;
 }

@@ -25,7 +25,7 @@ mica.dataAccessConfig
       return $resource('ws/config/data-access-form/permissions', {}, {
         'save': {
           method: 'PUT',
-          params: {type: '@type', principal: '@principal', role: '@role', otherResources: '@others'},
+          params: {type: '@type', principal: '@principal', role: '@role', otherResources: '@otherResources'},
           errorHandler: true
         },
         'delete': {method: 'DELETE', params: {type: '@type', principal: '@principal'}, errorHandler: true},
