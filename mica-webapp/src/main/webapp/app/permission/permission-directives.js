@@ -135,7 +135,12 @@ mica.permission
 
     $scope.selectedType = selectedIndex > -1 ? $scope.TYPES[selectedIndex] : $scope.TYPES[0];
     $scope.editMode = acl && acl.principal;
-    $scope.acl= acl;
+    $scope.acl = acl;
+
+    $scope.chosen = { others: {} };
+    ($scope.acl.otherResources || []).forEach(function (other) {
+      $scope.chosen.others[other] = true;
+    });
 
     $scope.save = function (form) {
       form.principal.$setValidity('required', true);
@@ -146,7 +151,7 @@ mica.permission
       if(form.$valid) {
         $scope.acl.type = $scope.selectedType.name;
 
-        $scope.acl.others = Object.keys($scope.acl.others || {});
+        $scope.acl.otherResources = Object.keys($scope.chosen.others|| {}).filter(function (value) { return $scope.chosen.others[value]; });
 
         onAdd($scope.acl).$promise.then(function () {
           $uibModalInstance.close(true);
@@ -204,7 +209,6 @@ mica.permission
     };
 
     $scope.editPermission = function (acl) {
-      acl.file = true;
       editPermission(acl);
     };
 
@@ -303,6 +307,7 @@ mica.permission
     $scope.save = function (form) {
       if(form.$valid) {
         $scope.acl.type = $scope.selectedType.name;
+
         onAdd($scope.acl).$promise.then(function () {
           $uibModalInstance.close(true);
         }, function (response) {

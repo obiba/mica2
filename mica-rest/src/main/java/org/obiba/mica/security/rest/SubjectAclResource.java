@@ -12,6 +12,7 @@ package org.obiba.mica.security.rest;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -23,6 +24,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
+import com.google.common.collect.Lists;
 import org.obiba.mica.file.FileUtils;
 import org.obiba.mica.security.PermissionsUtils;
 import org.obiba.mica.security.domain.SubjectAcl;
@@ -69,10 +71,19 @@ public class SubjectAclResource {
   public List<AclDto> get() {
     checkPermission();
 
-    return subjectAclService.findByResourceInstance(resource, instance).stream().map(
+    Map<String, AclDto.Builder> builderMap = subjectAclService.findByResourceInstance(resource, instance).stream().map(
       a -> AclDto.newBuilder().setType(a.getType().name()).setPrincipal(a.getPrincipal()).setResource(resource)
-        .setRole(PermissionsUtils.asRole(a.getActions())).setInstance(FileUtils.decode(instance)).build())
-      .collect(Collectors.toList());
+        .setRole(PermissionsUtils.asRole(a.getActions())).setInstance(FileUtils.decode(instance)))
+      .collect(Collectors.toMap(AclDto.Builder::getPrincipal, aclDto -> aclDto));
+
+
+    for (String otherResource : otherResources) {
+      subjectAclService.findByResourceInstance(mergeWithResourceName(otherResource), instance).forEach(subjectAcl -> builderMap.get(subjectAcl.getPrincipal()).addOtherResources(otherResource));
+    }
+
+    subjectAclService.findByResourceInstance(fileResource, fileInstance).forEach(subjectAcl -> builderMap.get(subjectAcl.getPrincipal()).setFile(true));
+
+    return builderMap.values().stream().map(AclDto.Builder::build).collect(Collectors.toList());
   }
 
   @DELETE
@@ -98,10 +109,13 @@ public class SubjectAclResource {
     SubjectAcl.Type type = SubjectAcl.Type.valueOf(typeStr.toUpperCase());
     String actions = PermissionsUtils.asActions(isDraft() ? role.toUpperCase() : "READER");
     subjectAclService.addSubjectPermission(type, principal, resource, actions, instance);
+
+    subjectAclService.removeSubjectPermissions(type, principal, fileResource, fileInstance);
     if(file) {
       subjectAclService.addSubjectPermission(type, principal, fileResource, actions, fileInstance);
     }
 
+    otherResources.forEach(otherResourceName -> subjectAclService.removeSubjectPermissions(type, principal, mergeWithResourceName(otherResourceName), instance));
     if (others != null && others.size() > 0) {
       others.stream().filter(otherResources::contains).forEach(otherResourceName -> subjectAclService.addSubjectPermission(type, principal, mergeWithResourceName(otherResourceName), actions, instance));
     }
