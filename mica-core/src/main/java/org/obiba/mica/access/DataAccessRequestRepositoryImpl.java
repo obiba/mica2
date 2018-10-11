@@ -85,24 +85,31 @@ public class DataAccessRequestRepositoryImpl
   private Map<Object, LinkedHashMap> getAmendmentsSummaryInternal(String id) {
     String match = Strings.isNullOrEmpty(id) ? "" : "{$match: {\"parentId\": \"" + id + "\"}},";
     String group =
-      "{\n" +
-      "  $group: {" +
-      "    _id: \"$parentId\"," +
-      "    pending: {" +
-      "      $sum: {" +
-      "        $cond: { " +
-      "           if: { $or: [ { $eq: [ \"$status\", \"APPROVED\" ] }, { $eq: [ \"$status\", \"REJECTED\" ] } ] }, " +
-      "           then: 0, "+
-      "           else: 1" +
-      "        }" +
-      "      }" +
-      "    }," +
-      "    total: {" +
-      "      $sum: 1" +
-      "    }" +
-      "  }" +
-      "}";
-
+        "    {\n" +
+        "      $sort: {\n" +
+        "        lastModifiedDate: 1\n" +
+        "      }\n" +
+        "    }, \n" +
+        "    {\n" +
+        "      $group: {\n" +
+        "      _id: \"$parentId\",\n" +
+        "        pending: {\n" +
+        "          $sum: {\n" +
+        "            $cond: {\n" +
+        "              if: { $or: [ { $eq: [ \"$status\", \"APPROVED\" ] }, { $eq: [ \"$status\", \"REJECTED\" ] } ] }, \n" +
+        "              then: 0, \n" +
+        "              else: 1\n" +
+        "            }\n" +
+        "          }\n" +
+        "        },\n" +
+        "        lastModified: { \n" +
+        "          $last: \"$lastModifiedDate\"\n" +
+        "        },\n" +
+        "        total: {\n" +
+        "          $sum: 1\n" +
+        "        }\n" +
+        "      }\n" +
+        "    }";
     String aggregate = String.format("db.dataAccessAmendment.aggregate([%s%s])", match, group);
 
     try {

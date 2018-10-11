@@ -715,6 +715,7 @@ message DataAccessRequestDto {
     required string id = 1;
     required double pending = 2;
     required double total = 3;
+    optional string lastModifiedDate = 4;
   }
 
   optional string id = 1;
