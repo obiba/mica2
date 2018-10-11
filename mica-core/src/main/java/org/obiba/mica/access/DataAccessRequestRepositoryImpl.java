@@ -97,6 +97,9 @@ public class DataAccessRequestRepositoryImpl
       "        }" +
       "      }" +
       "    }," +
+      "    lastModified: { " +
+      "      $last: \"$lastModifiedDate\" " +
+      "    }, " +
       "    total: {" +
       "      $sum: 1" +
       "    }" +

@@ -31,6 +31,10 @@ import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 import java.nio.file.Paths;
+import java.text.DateFormat;
+import java.time.Instant;
+import java.time.ZoneOffset;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -133,6 +137,7 @@ class DataAccessRequestDtos {
             .setId(map.get("_id") + "")
             .setPending((double) map.get("pending"))
             .setTotal((double) map.get("total"))
+            .setLastModifiedDate(map.get("lastModified") instanceof Date ? ((Date) map.get("lastModified")).toInstant().atOffset(ZoneOffset.systemDefault().getRules().getOffset(Instant.now())).toString() : "")
             .build()
         );
       }
