@@ -53,6 +53,7 @@
     "update-comment": "Ajoutez un commentaire pour décrire les modifications.",
     "copied": "Copié",
     "copy-to-clipboard": "Copier dans le presse-papier",
+    "copy-query": "Copier la requête",
     "name": "Nom",
     "default": "Par défaut",
     "chronological": "Chronologique",
