@@ -53,6 +53,7 @@
     "update-comment": "Add a comment to describe the changes.",
     "copied": "Copied",
     "copy-to-clipboard": "Copy to clipboard",
+    "copy-query": "Copy query",
     "name": "Name",
     "default": "Default",
     "chronological": "Chronological",
