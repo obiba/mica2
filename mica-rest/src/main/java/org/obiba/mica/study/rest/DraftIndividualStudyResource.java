@@ -160,7 +160,7 @@ public class DraftIndividualStudyResource extends AbstractGitPersistableResource
   public FileResource file(@PathParam("fileId") String fileId, @QueryParam("key") String key) {
     checkPermission("/draft/individual-study", "VIEW", key);
     FileResource fileResource = applicationContext.getBean(FileResource.class);
-    Study study = individualStudyService.findDraft(id);
+    Study study = individualStudyService.findDraft(id, null); // must compare un-cached study with un-cached study; findDraft(String) is cached
 
     if(study.hasLogo() && study.getLogo().getId().equals(fileId)) {
       fileResource.setAttachment(study.getLogo());
