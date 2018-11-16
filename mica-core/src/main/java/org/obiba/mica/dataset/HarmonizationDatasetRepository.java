@@ -25,9 +25,11 @@ public interface HarmonizationDatasetRepository extends MongoRepository<Harmoniz
 
   List<HarmonizationDataset> findByStudyTablesStudyId(String studyId);
 
+  @Query("{'studyTables' : { $elemMatch: { 'studyId': ?0, 'populationId': ?1, 'dataCollectionEventId': ?2 } }}")
   List<HarmonizationDataset> findByStudyTablesStudyIdAndStudyTablesPopulationIdAndStudyTablesDataCollectionEventId(
     String studyId, String populationId, String dataCollectionEventId);
 
+  @Query("{'harmonizationTables' : { $elemMatch: { 'studyId': ?0, 'populationId': ?1 } }}")
   List<HarmonizationDataset> findByHarmonizationTableStudyIdAndHarmonizationTablePopulationId(
     String studyId, String populationId);
 
