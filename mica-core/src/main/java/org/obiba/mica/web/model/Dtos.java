@@ -535,7 +535,7 @@ public class Dtos {
 
   @NotNull
   public Mica.CommentDto asDto(@NotNull Comment comment) {
-    return asDto(comment);
+    return commentDtos.asDto(comment,true);
   }
 
   public List<Mica.CommentDto> asDtos(@NotNull List<Comment> comments) {
