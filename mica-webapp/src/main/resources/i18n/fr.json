@@ -1641,7 +1641,7 @@
       "title": "Generation d'ID",
       "info": "L'ID des demandes d'accès aux données peut être généré suivant un modèle.",
       "prefix": "Préfixe",
-      "prefix-help": "Les ID générés vont commencer avec le texte spécifié.",
+      "prefix-help": "Les ID générés vont commencer avec le texte spécifié. Seul un texte alpha-numérique est accepté.",
       "length": "Length",
       "length-help": "Longueur de la partie générée de l'ID (préfixe non compris)."
     },
