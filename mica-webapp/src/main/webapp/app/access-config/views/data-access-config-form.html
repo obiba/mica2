@@ -135,7 +135,7 @@
     <form>
       <div class="row">
         <div class="col-md-6">
-          <div form-input name="idPrefix" model="dataAccessForm.idPrefix" label="data-access-config.id-generation.prefix" required="false" help="data-access-config.id-generation.prefix-help"></div>
+          <div form-input name="idPrefix" model="dataAccessForm.idPrefix" label="data-access-config.id-generation.prefix" pattern="'[a-zA-Z0-9_-]+'" required="false" help="data-access-config.id-generation.prefix-help"></div>
 
           <div form-input name="idLength" model="dataAccessForm.idLength" label="data-access-config.id-generation.length" type="number" required="false" help="data-access-config.id-generation.length-help"></div>
         </div>
