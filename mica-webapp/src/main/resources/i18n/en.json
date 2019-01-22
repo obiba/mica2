@@ -1641,7 +1641,7 @@
       "title": "ID Generation",
       "info": "The ID of the data access requests can be generated following a pattern.",
       "prefix": "Prefix",
-      "prefix-help": "Generated IDs will start with the specified text. Only an alpha-numeric text is accepted",
+      "prefix-help": "Generated IDs will start with the specified text. Only alpha-numeric characters, underscores and hyphens are accepted.",
       "length": "Length",
       "length-help": "Length of the generated part of the ID (i.e. not including the prefix)."
     },
