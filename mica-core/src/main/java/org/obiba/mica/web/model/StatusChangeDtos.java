@@ -32,11 +32,7 @@ public class StatusChangeDtos {
   private UserProfileDtos userProfileDtos;
 
   StatusChangeDto.Builder asDtoBuilder(StatusChange statusChange) {
-    StatusChangeDto.Builder builder = StatusChangeDto.newBuilder() //
-      .setFrom(statusChange.getFrom().toString()) //
-      .setTo(statusChange.getTo().toString()) //
-      .setAuthor(statusChange.getAuthor()) //
-      .setChangedOn(statusChange.getChangedOn().toString());
+    StatusChangeDto.Builder builder = asMinimalistDtoBuilder(statusChange);
 
     ObibaRealm.Subject profile = subjectProfileService.getProfile(statusChange.getAuthor());
     if (profile != null) {
@@ -48,6 +44,14 @@ public class StatusChangeDtos {
 
   StatusChangeDto asDto(StatusChange statusChange) {
     return asDtoBuilder(statusChange).build();
+  }
+
+  StatusChangeDto.Builder asMinimalistDtoBuilder(StatusChange statusChange) {
+    return StatusChangeDto.newBuilder() //
+      .setFrom(statusChange.getFrom().toString()) //
+      .setTo(statusChange.getTo().toString()) //
+      .setAuthor(statusChange.getAuthor()) //
+      .setChangedOn(statusChange.getChangedOn().toString());
   }
 
   StatusChange fromDto(StatusChangeDto dto) {

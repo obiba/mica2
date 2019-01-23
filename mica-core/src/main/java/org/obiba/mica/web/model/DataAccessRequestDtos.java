@@ -12,6 +12,7 @@ package org.obiba.mica.web.model;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import java.util.ArrayList;
 import org.apache.shiro.SecurityUtils;
 import org.obiba.mica.access.DataAccessRequestRepository;
 import org.obiba.mica.access.domain.ActionLog;
@@ -26,12 +27,12 @@ import org.obiba.mica.security.Roles;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.user.UserProfileService;
 import org.obiba.shiro.realm.ObibaRealm;
+import org.obiba.shiro.realm.ObibaRealm.Subject;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 import java.nio.file.Paths;
-import java.text.DateFormat;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.util.Date;
@@ -78,26 +79,13 @@ class DataAccessRequestDtos {
   }
 
   Mica.DataAccessRequestDto.Builder asDtoBuilder(@NotNull DataAccessEntity request) {
-    Mica.DataAccessRequestDto.Builder builder = Mica.DataAccessRequestDto.newBuilder();
-    builder.setApplicant(request.getApplicant()) //
-      .setStatus(request.getStatus().name()) //
-      .setTimestamps(TimestampsDtos.asDto(request)); //
-    if(request.hasContent()) builder.setContent(request.getContent()); //
-    if(!request.isNew()) builder.setId(request.getId());
-
-    String title = dataAccessRequestUtilService.getRequestTitle(request);
-    if(!Strings.isNullOrEmpty(title)) {
-      builder.setTitle(title);
-    }
+    Mica.DataAccessRequestDto.Builder builder = asMinimalistDtoBuilder(request);
 
     boolean canAccessActionLogs = SecurityUtils.getSubject().hasRole(Roles.MICA_DAO) || SecurityUtils.getSubject().hasRole(Roles.MICA_ADMIN) || subjectAclService.isPermitted("/data-access-request/action-logs", "VIEW");
     if (canAccessActionLogs) {
       request.getActionLogHistory()
         .forEach(actionLog -> builder.addActionLogHistory(actionLogDtos.asDto(actionLog)));
     }
-
-    request.getStatusChangeHistory()
-      .forEach(statusChange -> builder.addStatusChangeHistory(statusChangeDtos.asDto(statusChange)));
 
     ObibaRealm.Subject profile = userProfileService.getProfile(request.getApplicant());
     if(profile != null) {
@@ -111,7 +99,7 @@ class DataAccessRequestDtos {
   }
 
   @NotNull
-  public Mica.DataAccessRequestDto asDto(@NotNull DataAccessRequest request, boolean includeAmendmentsSummary) {
+  public Mica.DataAccessRequestDto asDto(@NotNull DataAccessRequest request) {
     Mica.DataAccessRequestDto.Builder builder = asDtoBuilder(request);
 
     String title = dataAccessRequestUtilService.getRequestTitle(request);
@@ -126,21 +114,6 @@ class DataAccessRequestDtos {
     if(subjectAclService
       .isPermitted(Paths.get("/data-access-request", request.getId(), "/amendment").toString(), "ADD")) {
       builder.addActions("ADD_AMENDMENTS");
-    }
-
-    if (includeAmendmentsSummary) {
-      Map<Object, LinkedHashMap> pendingAmendments = dataAccessRequestRepository.getAmendmentsSummary(request.getId());
-      if (!pendingAmendments.isEmpty()) {
-        LinkedHashMap map = pendingAmendments.get(request.getId());
-        builder.setAmendmentsSummary(
-          Mica.DataAccessRequestDto.AmendmentsSummaryDto.newBuilder()
-            .setId(map.get("_id") + "")
-            .setPending((double) map.get("pending"))
-            .setTotal((double) map.get("total"))
-            .setLastModifiedDate(map.get("lastModified") instanceof Date ? ((Date) map.get("lastModified")).toInstant().atOffset(ZoneOffset.systemDefault().getRules().getOffset(Instant.now())).toString() : "")
-            .build()
-        );
-      }
     }
 
     boolean hasAdministrativeRole = SecurityUtils.getSubject().hasRole(Roles.MICA_DAO) || SecurityUtils.getSubject().hasRole(Roles.MICA_ADMIN);
@@ -200,24 +173,7 @@ class DataAccessRequestDtos {
 
   @NotNull
   public Mica.DataAccessRequestDto asAmendmentDto(@NotNull DataAccessAmendment amendment) {
-    Mica.DataAccessRequestDto.Builder builder = asDtoBuilder(amendment);
-    builder.setExtension(
-      Mica.DataAccessAmendmentDto.amendment,
-      Mica.DataAccessAmendmentDto.newBuilder().setParentId(amendment.getParentId()).build()
-    );
-
-    if (subjectAclService.isPermitted("/data-access-request", "VIEW", amendment.getParentId())) {
-      builder.addActions("VIEW");
-    }
-
-    builder.addAllActions(
-      addDataAccessEntityActions(
-        amendment,
-        String.format("/data-access-request/%s/amendment", amendment.getParentId())
-      )
-    );
-
-    return builder.build();
+    return asDtoBuilder(amendment).build();
   }
 
   @NotNull
@@ -252,23 +208,112 @@ class DataAccessRequestDtos {
     return actionLogDtos.fromDto(dto);
   }
 
+  List<Mica.DataAccessRequestDto> asDtoList(@NotNull List<DataAccessRequest> requests) {
+    if (requests != null) {
+
+      Map<String, Subject> micaProfiles = userProfileService.getProfilesByApplication("mica", null).stream().collect(Collectors.toMap(Subject::getUsername, profile -> profile));
+      Map<Object, LinkedHashMap> allAmendmentsSummary = dataAccessRequestRepository.getAllAmendmentsSummary();
+
+      return requests.stream()
+        .map(this::asMinimalistDtoBuilder)
+        .map(builder -> setUserProfileAndAmendmentsSummary(builder, micaProfiles, allAmendmentsSummary).build()).collect(Collectors.toList());
+    }
+
+    return new ArrayList<>();
+  }
+
+  private Mica.DataAccessRequestDto.Builder asMinimalistDtoBuilder(DataAccessEntity dataAccessEntity) {
+    Mica.DataAccessRequestDto.Builder builder = Mica.DataAccessRequestDto.newBuilder();
+
+    builder
+      .setApplicant(dataAccessEntity.getApplicant())
+      .setStatus(dataAccessEntity.getStatus().name())
+      .setTimestamps(TimestampsDtos.asDto(dataAccessEntity));
+
+    if(dataAccessEntity.hasContent()) builder.setContent(dataAccessEntity.getContent());
+    if(!dataAccessEntity.isNew()) builder.setId(dataAccessEntity.getId());
+
+    String title = dataAccessRequestUtilService.getRequestTitle(dataAccessEntity);
+    if(!Strings.isNullOrEmpty(title)) builder.setTitle(title);
+
+    dataAccessEntity.getStatusChangeHistory().forEach(statusChange -> builder.addStatusChangeHistory(statusChangeDtos.asMinimalistDtoBuilder(statusChange)));
+
+    setMinimalistActions(builder, dataAccessEntity);
+
+    return builder;
+  }
+
+  private void setMinimalistActions(Mica.DataAccessRequestDto.Builder builder, DataAccessEntity dataAccessEntity) {
+    if (dataAccessEntity instanceof DataAccessAmendment) {
+
+      DataAccessAmendment amendment = (DataAccessAmendment) dataAccessEntity;
+
+      builder.setExtension(
+        Mica.DataAccessAmendmentDto.amendment,
+        Mica.DataAccessAmendmentDto.newBuilder().setParentId(amendment.getParentId()).build()
+      );
+
+      builder.addAllActions(
+        addDataAccessEntityActions(
+          amendment,
+          String.format("/data-access-request/%s/amendment", amendment.getParentId())
+        )
+      );
+    } else {
+      builder.addAllActions(addDataAccessEntityActions(dataAccessEntity, "/data-access-request"));
+    }
+  }
+
+  private void setAmendmentsSummary(Mica.DataAccessRequestDto.Builder builder, Map<Object, LinkedHashMap> pendingAmendments) {
+    if (!pendingAmendments.isEmpty() && builder.hasId() && pendingAmendments.containsKey(builder.getId())) {
+
+      LinkedHashMap map = pendingAmendments.get(builder.getId());
+
+      builder.setAmendmentsSummary(
+        Mica.DataAccessRequestDto.AmendmentsSummaryDto.newBuilder()
+          .setId(map.get("_id") + "")
+          .setPending((double) map.get("pending"))
+          .setTotal((double) map.get("total"))
+          .setLastModifiedDate(map.get("lastModified") instanceof Date ? ((Date) map.get("lastModified")).toInstant().atOffset(ZoneOffset.systemDefault().getRules().getOffset(Instant.now())).toString() : "")
+          .build()
+      );
+    }
+  }
+
+  private Mica.DataAccessRequestDto.Builder setUserProfileAndAmendmentsSummary(Mica.DataAccessRequestDto.Builder dataAccessEntityBuilder, Map<String, Subject> micaProfiles, Map<Object, LinkedHashMap> pendingAmendments) {
+
+    if (micaProfiles != null && dataAccessEntityBuilder.hasApplicant() && micaProfiles.containsKey(dataAccessEntityBuilder.getApplicant())) {
+      dataAccessEntityBuilder.setProfile(userProfileDtos.asDto(micaProfiles.get(dataAccessEntityBuilder.getApplicant())));
+    }
+
+    setAmendmentsSummary(dataAccessEntityBuilder, pendingAmendments);
+
+    return dataAccessEntityBuilder;
+  }
+
   private List<String> addDataAccessEntityActions(DataAccessEntity entity, String resource) {
     List<String> actions = Lists.newArrayList();
 
-    // possible actions depending on the caller
+    if (entity instanceof DataAccessAmendment && subjectAclService.isPermitted("/data-access-request", "VIEW", ((DataAccessAmendment) entity).getParentId())) {
+      actions.add("VIEW");
+    }
+
     if(entity instanceof DataAccessRequest && subjectAclService.isPermitted(resource, "VIEW", entity.getId())) {
       actions.add("VIEW");
     }
+
     if(subjectAclService.isPermitted(resource, "EDIT", entity.getId())) {
       actions.add("EDIT");
     }
+
     if(subjectAclService.isPermitted(resource, "DELETE", entity.getId())) {
       actions.add("DELETE");
     }
-    if(subjectAclService
-      .isPermitted(Paths.get(resource, entity.getId()).toString(), "EDIT", "_status")) {
+
+    if(subjectAclService.isPermitted(Paths.get(resource, entity.getId()).toString(), "EDIT", "_status")) {
       actions.add("EDIT_STATUS");
     }
+
     return actions;
   }
 }
