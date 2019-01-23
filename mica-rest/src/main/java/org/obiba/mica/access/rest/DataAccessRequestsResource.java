@@ -31,6 +31,7 @@ import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.user.UserProfileService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
+import org.obiba.shiro.realm.ObibaRealm.Subject;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -82,9 +83,7 @@ public class DataAccessRequestsResource {
   @GET
   @Timed
   public List<Mica.DataAccessRequestDto> listByStatus(@QueryParam("status") List<String> status) {
-    return listByStatusFilteringPermitted(status).stream()
-      .map(request -> dtos.asDto(request, true))
-      .collect(Collectors.toList());
+    return dtos.asDtoList(listByStatusFilteringPermitted(status));
   }
 
   @GET

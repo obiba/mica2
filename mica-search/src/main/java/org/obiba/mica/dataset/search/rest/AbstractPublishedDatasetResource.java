@@ -128,7 +128,7 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
       }
     }).filter(Objects::nonNull).collect(Collectors.groupingBy(DatasetVariable::getStudyId));
 
-    builder.addAllVariables(dtos.asDtos(studyIdVariableMap, taxonomies));
+    builder.addAllVariables(dtos.asDtoList(studyIdVariableMap, taxonomies));
 
     log.info("Response /{}/{}", Indexer.PUBLISHED_VARIABLE_INDEX, Indexer.VARIABLE_TYPE);
 

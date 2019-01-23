@@ -346,7 +346,7 @@ public class Dtos {
   }
 
   @NotNull
-  public List<Mica.DatasetVariableDto> asDtos(Map<String, List<DatasetVariable>> studyIdVariableMap, @NotNull List<Taxonomy> taxonomies) {
+  public List<Mica.DatasetVariableDto> asDtoList(Map<String, List<DatasetVariable>> studyIdVariableMap, @NotNull List<Taxonomy> taxonomies) {
     return datasetDtos.asDtos(studyIdVariableMap, taxonomies, "en");
   }
 
@@ -394,12 +394,11 @@ public class Dtos {
 
   @NotNull
   public Mica.DataAccessRequestDto asDto(@NotNull DataAccessRequest request) {
-    return dataAccessRequestDtos.asDto(request, false);
+    return dataAccessRequestDtos.asDto(request);
   }
 
-  @NotNull
-  public Mica.DataAccessRequestDto asDto(@NotNull DataAccessRequest request, boolean includeAmendmentsSummary) {
-    return dataAccessRequestDtos.asDto(request, includeAmendmentsSummary);
+  public List<Mica.DataAccessRequestDto> asDtoList(@NotNull List<DataAccessRequest> requests) {
+    return dataAccessRequestDtos.asDtoList(requests);
   }
 
   @NotNull
