@@ -52,6 +52,7 @@
           <descriptors>
             <descriptor>src/main/assembly/mica-server.xml</descriptor>
           </descriptors>
+          <finalName>mica2-${project.version}</finalName>
         </configuration>
         <executions>
           <execution>
@@ -287,8 +288,8 @@
                     </copy>
 
                     <mkdir dir="${deb.dir}/usr/share" />
-                    <unzip src="${basedir}/target/mica-dist-${project.version}-dist.zip" dest="${deb.dir}/usr/share" />
-                    <move file="${deb.dir}/usr/share/mica-dist-${project.version}" tofile="${deb.dir}/usr/share/mica2-${project.version}" />
+                    <unzip src="${basedir}/target/mica-${project.version}-dist.zip" dest="${deb.dir}/usr/share" />
+                    <move file="${deb.dir}/usr/share/mica-${project.version}" tofile="${deb.dir}/usr/share/mica2-${project.version}" />
 
                     <mkdir dir="${deb.dir}/etc" />
                     <copy todir="${deb.dir}/etc/mica2">
@@ -351,7 +352,7 @@
   <properties>
     <install.dir>/usr/share</install.dir>
     <mica.dir>${install.dir}/mica2-${project.version}</mica.dir>
-    <package.name>mica-dist-${project.version}</package.name>
+    <package.name>mica2-${project.version}</package.name>
     <dist.location>${basedir}/target/${package.name}-dist/${package.name}</dist.location>
   </properties>
 
