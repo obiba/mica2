@@ -963,6 +963,18 @@
       "all-cart-selected": "Tout les documents de ce panier sont sélectionnés.",
       "select-all-cart": "Sélectionner tout les documents de ce panier",
       "unselect-all-cart": "Déselectionner tout les documents"
+    },
+    "add": {
+      "button": {
+        "cart-label": "Ajouter au panier",
+        "set-label": "Ajouter à un ensemble"
+      },
+      "modal": {
+        "title": "Sauvegarder dans l'ensemble",
+        "sub-title": "Nom",
+        "create-new": "Créer un nouvel ensemble",
+        "to-existing": "Ajouter à un ensemble existant"
+      }
     }
   },
   "search": {
