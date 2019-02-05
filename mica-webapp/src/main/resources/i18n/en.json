@@ -963,6 +963,18 @@
       "all-cart-selected": "All items of this cart are selected.",
       "select-all-cart": "Select all items of this cart",
       "unselect-all-cart": "Unselect all items"
+    },
+    "add": {
+      "button": {
+        "cart-label": "Add to Cart",
+        "set-label": "Add to Set"
+      },
+      "modal": {
+        "title": "Save to Set",
+        "sub-title": "Name",
+        "create-new": "Create a new set",
+        "to-existing": "Add to existing set"
+      }
     }
   },
   "search": {
