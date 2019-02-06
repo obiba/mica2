@@ -964,6 +964,12 @@
       "select-all-cart": "Sélectionner tout les documents de ce panier",
       "unselect-all-cart": "Déselectionner tout les documents"
     },
+    "set": {
+      "title": "Ensembles",
+      "help": "Constituer un ou plusieurs ensembles. Chaque ensemble peut ensuite être analysé ou vu dans la page de recherche.",
+      "no-variable-added": "Aucune variable n'a été ajoutée à l'ensemble {{arg0}}.",
+      "variables-added": "Variables ajoutées à l'ensemble {{arg0}}: {{arg1}}"
+    },
     "add": {
       "button": {
         "cart-label": "Ajouter au panier",
@@ -1250,7 +1256,8 @@
       "search": "Chercher dans le catalogue publié.",
       "classifications": "Parcourir les taxonomies.",
       "translations": "Gérer les traductions des libellés.",
-      "cart": "Panier de variables publiées."
+      "cart": "Panier de variables publiées.",
+      "sets": "Ensembles de variables publiées."
     }
   },
   "server": {
