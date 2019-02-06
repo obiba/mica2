@@ -1256,8 +1256,8 @@
       "search": "Chercher dans le catalogue publié.",
       "classifications": "Parcourir les taxonomies.",
       "translations": "Gérer les traductions des libellés.",
-      "cart": "Panier de variables publiées.",
-      "sets": "Ensembles de variables publiées."
+      "cart": "Panier de variables.",
+      "sets": "Ensembles de variables."
     }
   },
   "server": {

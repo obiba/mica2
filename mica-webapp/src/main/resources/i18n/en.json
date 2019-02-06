@@ -1256,8 +1256,8 @@
       "search": "Search in the published repository.",
       "classifications": "Browse taxonomies.",
       "translations": "Manage labels translations.",
-      "cart": "Cart of published variables.",
-      "sets": "Sets of published variables."
+      "cart": "Cart of variables.",
+      "sets": "Sets of variables."
     }
   },
   "server": {
