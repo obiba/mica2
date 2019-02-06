@@ -18,4 +18,5 @@ mica.sets
   .config(['ngObibaMicaSetsTemplateUrlProvider',
     function (ngObibaMicaSetsTemplateUrlProvider) {
       ngObibaMicaSetsTemplateUrlProvider.setHeaderUrl('cart', 'app/sets/views/cart-view-header.html');
+      ngObibaMicaSetsTemplateUrlProvider.setHeaderUrl('sets', 'app/sets/views/sets-view-header.html');
     }]);

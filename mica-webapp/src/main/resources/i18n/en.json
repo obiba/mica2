@@ -964,6 +964,12 @@
       "select-all-cart": "Select all items of this cart",
       "unselect-all-cart": "Unselect all items"
     },
+    "set": {
+      "title": "Sets",
+      "help": "Make one or more sets. Each set can be analyzed or can be viewed in the search page.",
+      "no-variable-added": "No variable has been added to the {{arg0}} set.",
+      "variables-added": "Variables added to the {{arg0}} set: {{arg1}}"
+    },
     "add": {
       "button": {
         "cart-label": "Add to Cart",
@@ -1250,7 +1256,8 @@
       "search": "Search in the published repository.",
       "classifications": "Browse taxonomies.",
       "translations": "Manage labels translations.",
-      "cart": "Cart of published variables."
+      "cart": "Cart of variables.",
+      "sets": "Sets of variables."
     }
   },
   "server": {
