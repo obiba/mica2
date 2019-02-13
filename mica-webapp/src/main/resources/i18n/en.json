@@ -948,6 +948,7 @@
     }
   },
   "sets": {
+    "empty": "No set",
     "cart": {
       "title": "Cart",
       "help": "Use the cart to make a set of variables. This set can be analyzed or can be viewed in the search page.",

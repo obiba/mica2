@@ -948,6 +948,7 @@
     }
   },
   "sets": {
+    "empty": "Aucun ensemble",
     "cart": {
       "title": "Panier",
       "help": "Utiliser le panier pour constituer un ensemble de variables. Cet ensemble de variables peut ensuite être analysé ou vu dans la page de recherche.",
