@@ -152,7 +152,7 @@ mica.fileSystem
         files.forEach(function (file) {
           Upload
             .upload({
-              url: '/ws/files/temp',
+              url: 'ws/files/temp',
               method: 'POST',
               file: file
             })
