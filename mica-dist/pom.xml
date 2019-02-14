@@ -288,8 +288,7 @@
                     </copy>
 
                     <mkdir dir="${deb.dir}/usr/share" />
-                    <unzip src="${basedir}/target/mica-${project.version}-dist.zip" dest="${deb.dir}/usr/share" />
-                    <move file="${deb.dir}/usr/share/mica-${project.version}" tofile="${deb.dir}/usr/share/mica2-${project.version}" />
+                    <unzip src="${basedir}/target/mica2-${project.version}-dist.zip" dest="${deb.dir}/usr/share" />
 
                     <mkdir dir="${deb.dir}/etc" />
                     <copy todir="${deb.dir}/etc/mica2">
