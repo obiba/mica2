@@ -268,10 +268,10 @@ public class PublishedDataschemaDatasetVariableResource extends AbstractPublishe
   public static class Helper {
 
     @Inject
-    private HarmonizedDatasetService datasetService;
+    protected HarmonizedDatasetService datasetService;
 
     @Async
-    private Future<Math.SummaryStatisticsDto> getVariableFacet(HarmonizationDataset dataset, String variableName,
+    protected Future<Math.SummaryStatisticsDto> getVariableFacet(HarmonizationDataset dataset, String variableName,
       OpalTable table) {
       try {
         String studyId = null;
@@ -292,7 +292,7 @@ public class PublishedDataschemaDatasetVariableResource extends AbstractPublishe
     }
 
     @Async
-    private Future<Search.QueryResultDto> getContingencyTable(HarmonizationDataset dataset, DatasetVariable var,
+    protected Future<Search.QueryResultDto> getContingencyTable(HarmonizationDataset dataset, DatasetVariable var,
       DatasetVariable crossVar, OpalTable table) {
       try {
         return new AsyncResult<>(datasetService.getContingencyTable(table, var, crossVar));
