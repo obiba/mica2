@@ -982,6 +982,10 @@
         "create-new": "Créer un nouvel ensemble",
         "to-existing": "Ajouter à un ensemble existant"
       }
+    },
+    "delete-dialog": {
+      "title": "Supprimer les ensembles sélectionnés",
+      "message": "Êtes-vous sûr de vouloir supprimer les ensembles sélectionnés?"
     }
   },
   "search": {

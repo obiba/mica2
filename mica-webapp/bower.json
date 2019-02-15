@@ -28,7 +28,7 @@
     "json3": "3.3.2",
     "mica-study-timeline": "https://github.com/obiba/mica-study-timeline.git#1.0.5",
     "ng-file-upload": "12.2.13",
-    "ng-obiba": "https://github.com/obiba/ng-obiba.git#1.8.1",
+    "ng-obiba": "https://github.com/obiba/ng-obiba.git#1.9.0",
     "ng-obiba-mica": "https://github.com/obiba/ng-obiba-mica.git#master",
     "filesize": "3.6.0",
     "ngclipboard": "1.1.3",
