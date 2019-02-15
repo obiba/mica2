@@ -982,6 +982,10 @@
         "create-new": "Create a new set",
         "to-existing": "Add to existing set"
       }
+    },
+    "delete-dialog": {
+      "title": "Delete Selected Sets",
+      "message": "Are you sure you want to delete the selected sets."
     }
   },
   "search": {
