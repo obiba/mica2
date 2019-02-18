@@ -297,7 +297,8 @@ class MicaConfigDtos {
     return dataAccessForm;
   }
 
-  Mica.DataAccessAmendmentFormDto asDto(@NotNull DataAccessAmendmentForm dataAccessAmendmentForm) {
+  Mica.DataAccessAmendmentFormDto asDto(@NotNull DataAccessAmendmentForm dataAccessAmendmentForm,
+                                        @NotNull DataAccessForm dataAccessForm) {
     Mica.DataAccessAmendmentFormDto.Builder builder = Mica.DataAccessAmendmentFormDto.newBuilder()
       .setDefinition(dataAccessAmendmentForm.getDefinition()).setSchema(dataAccessAmendmentForm.getSchema())
       .addAllProperties(asDtoList(dataAccessAmendmentForm.getProperties()))
@@ -310,6 +311,9 @@ class MicaConfigDtos {
     if(dataAccessAmendmentForm.hasSummaryFieldPath()) {
       builder.setSummaryFieldPath(dataAccessAmendmentForm.getSummaryFieldPath());
     }
+
+    builder.setWithReview(dataAccessForm.isWithReview());
+    builder.setApprovedFinal(dataAccessForm.isApprovedFinal());
 
     return builder.build();
   }

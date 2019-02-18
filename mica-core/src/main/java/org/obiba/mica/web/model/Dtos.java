@@ -468,8 +468,8 @@ public class Dtos {
   }
 
   @NotNull
-  public Mica.DataAccessAmendmentFormDto asDto(@NotNull DataAccessAmendmentForm dataAccessAmendmentForm) {
-    return micaConfigDtos.asDto(dataAccessAmendmentForm);
+  public Mica.DataAccessAmendmentFormDto asDto(@NotNull DataAccessAmendmentForm dataAccessAmendmentForm, DataAccessForm dataAccessForm) {
+    return micaConfigDtos.asDto(dataAccessAmendmentForm, dataAccessForm);
   }
 
   @NotNull

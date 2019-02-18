@@ -828,6 +828,8 @@ message DataAccessAmendmentFormDto {
   optional string titleFieldPath = 4;
   optional string summaryFieldPath = 5;
   optional string csvExportFormat = 6;
+  required bool withReview = 7;
+  required bool approvedFinal = 8;
 }
 
 message ProjectFormDto {
