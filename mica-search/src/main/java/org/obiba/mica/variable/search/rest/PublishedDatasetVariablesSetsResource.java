@@ -67,7 +67,7 @@ public class PublishedDatasetVariablesSetsResource {
 
   @POST
   public Response createEmpty(@Context UriInfo uriInfo, @QueryParam("name") String name) {
-    if (variableSetService.getAllCurrentUser().size() <= micaConfigService.getConfig().getMaxNumberOfSets()) {
+    if (numberOfNamedSets() <= micaConfigService.getConfig().getMaxNumberOfSets()) {
       DocumentSet created = variableSetService.create(name, Lists.newArrayList());
       return Response.created(uriInfo.getBaseUriBuilder().segment("variables", "set", created.getId()).build()).build();
     } else {
@@ -79,9 +79,13 @@ public class PublishedDatasetVariablesSetsResource {
   @Path("_import")
   @Consumes(MediaType.TEXT_PLAIN)
   public Response importVariables(@Context UriInfo uriInfo, @QueryParam("name") String name, String body) {
-    DocumentSet created = variableSetService.create(name, variableSetService.extractIdentifiers(body));
-    return Response.created(uriInfo.getBaseUriBuilder().segment("variables", "set", created.getId()).build())
-      .entity(dtos.asDto(created)).build();
+    if (numberOfNamedSets() <= micaConfigService.getConfig().getMaxNumberOfSets()) {
+      DocumentSet created = variableSetService.create(name, variableSetService.extractIdentifiers(body));
+      return Response.created(uriInfo.getBaseUriBuilder().segment("variables", "set", created.getId()).build())
+        .entity(dtos.asDto(created)).build();
+    } else {
+      return Response.notModified().build();
+    }
   }
 
   @POST
@@ -99,5 +103,9 @@ public class PublishedDatasetVariablesSetsResource {
   @Path("operation/{id}")
   public Mica.SetOperationDto compose(@Context UriInfo uriInfo, @PathParam("id") String operationId) {
     return dtos.asDto(variableSetOperationService.get(operationId));
+  }
+
+  private long numberOfNamedSets() {
+    return variableSetService.getAllCurrentUser().stream().filter(set -> set.hasName()).count();
   }
 }

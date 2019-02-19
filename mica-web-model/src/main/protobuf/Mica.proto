@@ -434,10 +434,8 @@ message PublicMicaConfigDto {
   repeated string languages = 4;
   repeated string availableLayoutOptions = 5;
   optional string searchLayout = 6;
-  required bool currentUserCanCreateCart = 7;
-  required bool currentUserCanCreateSets = 8;
-  required int64 maxNumberOfSets = 9;
-  required int64 maxItemsPerSet = 10;
+  required int64 maxNumberOfSets = 7;
+  required int64 maxItemsPerSet = 8;
 }
 
 message AggregationsConfigDto {

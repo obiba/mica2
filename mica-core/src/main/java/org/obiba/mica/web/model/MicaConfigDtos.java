@@ -65,16 +65,6 @@ class MicaConfigDtos {
     builder.addAllAvailableLayoutOptions(Arrays.asList(MicaConfig.LAYOUT_OPTIONS));
     builder.setSearchLayout(config.getSearchLayout());
 
-    String principal = SecurityUtils.getSubject().getPrincipal().toString();
-
-    if (principal.equals(config.getAnonymousUsername())) {
-      builder.setCurrentUserCanCreateCart(config.isAnonymousCanCreateCart());
-      builder.setCurrentUserCanCreateSets(config.isAnonymousCanCreateSets());
-    } else {
-      builder.setCurrentUserCanCreateCart(true);
-      builder.setCurrentUserCanCreateSets(true);
-    }
-
     builder.setMaxItemsPerSet(config.getMaxItemsPerSet());
     builder.setMaxNumberOfSets(config.getMaxNumberOfSets());
 
