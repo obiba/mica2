@@ -13,11 +13,11 @@ package org.obiba.mica.variable.search.rest;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
-import org.obiba.mica.core.domain.ComposedSet;
 import org.obiba.mica.core.domain.DocumentSet;
 import org.obiba.mica.core.domain.SetOperation;
 import org.obiba.mica.dataset.service.VariableSetOperationService;
 import org.obiba.mica.dataset.service.VariableSetService;
+import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.springframework.context.annotation.Scope;
@@ -38,14 +38,24 @@ import java.util.stream.Collectors;
 @RequiresAuthentication
 public class PublishedDatasetVariablesSetsResource {
 
-  @Inject
   private VariableSetService variableSetService;
 
-  @Inject
   private VariableSetOperationService variableSetOperationService;
 
-  @Inject
+  private MicaConfigService micaConfigService;
+
   private Dtos dtos;
+
+  @Inject
+  public PublishedDatasetVariablesSetsResource(
+    VariableSetService variableSetService,
+    VariableSetOperationService variableSetOperationService,
+    MicaConfigService micaConfigService, Dtos dtos) {
+    this.variableSetService = variableSetService;
+    this.variableSetOperationService = variableSetOperationService;
+    this.micaConfigService = micaConfigService;
+    this.dtos = dtos;
+  }
 
   @GET
   public List<Mica.DocumentSetDto> list(@QueryParam("id") List<String> ids) {
@@ -57,8 +67,12 @@ public class PublishedDatasetVariablesSetsResource {
 
   @POST
   public Response createEmpty(@Context UriInfo uriInfo, @QueryParam("name") String name) {
-    DocumentSet created = variableSetService.create(name, Lists.newArrayList());
-    return Response.created(uriInfo.getBaseUriBuilder().segment("variables", "set", created.getId()).build()).build();
+    if (variableSetService.getAllCurrentUser().size() <= micaConfigService.getConfig().getMaxNumberOfSets()) {
+      DocumentSet created = variableSetService.create(name, Lists.newArrayList());
+      return Response.created(uriInfo.getBaseUriBuilder().segment("variables", "set", created.getId()).build()).build();
+    } else {
+      return Response.notModified().build();
+    }
   }
 
   @POST

@@ -44,6 +44,16 @@ public class MicaConfig extends AbstractAuditableDocument {
 
   public static final String[] LAYOUT_OPTIONS = {"layout1", "layout2"};
 
+  public static final long DEFAULT_MAX_ITEMS_PER_SET = 20000;
+
+  public static final long DEFAULT_MAX_SETS = 10;
+
+  public static final String ANONYMOUS_USERNAME = "anonymous";
+
+  public static final boolean ANONYMOUS_CAN_CREATE_CART = true;
+
+  public static final boolean ANONYMOUS_CAN_CREATE_SETS = true;
+
   @NotBlank
   private String name = DEFAULT_NAME;
 
@@ -115,6 +125,16 @@ public class MicaConfig extends AbstractAuditableDocument {
   private boolean searchRefreshButtonShown = false;
 
   private String searchLayout = "layout2";
+
+  private long maxNumberOfSets = DEFAULT_MAX_SETS;
+
+  private long maxItemsPerSet = DEFAULT_MAX_ITEMS_PER_SET;
+
+  private String anonymousUsername = ANONYMOUS_USERNAME;
+
+  private boolean anonymousCanCreateCart = ANONYMOUS_CAN_CREATE_CART;
+
+  private boolean anonymousCanCreateSets = ANONYMOUS_CAN_CREATE_SETS;
 
   public String getName() {
     return name;
@@ -403,5 +423,45 @@ public class MicaConfig extends AbstractAuditableDocument {
 
   public void setSearchLayout(String searchLayout) {
     this.searchLayout = searchLayout;
+  }
+
+  public long getMaxNumberOfSets() {
+    return maxNumberOfSets;
+  }
+
+  public void setMaxNumberOfSets(long maxNumberOfSets) {
+    this.maxNumberOfSets = maxNumberOfSets;
+  }
+
+  public long getMaxItemsPerSet() {
+    return maxItemsPerSet;
+  }
+
+  public void setMaxItemsPerSet(long maxItemsPerSet) {
+    this.maxItemsPerSet = maxItemsPerSet;
+  }
+
+  public String getAnonymousUsername() {
+    return anonymousUsername;
+  }
+
+  public void setAnonymousUsername(String anonymousUsername) {
+    this.anonymousUsername = anonymousUsername;
+  }
+
+  public boolean isAnonymousCanCreateCart() {
+    return anonymousCanCreateCart;
+  }
+
+  public void setAnonymousCanCreateCart(boolean anonymousCanCreateCart) {
+    this.anonymousCanCreateCart = anonymousCanCreateCart;
+  }
+
+  public boolean isAnonymousCanCreateSets() {
+    return anonymousCanCreateCart && anonymousCanCreateSets;
+  }
+
+  public void setAnonymousCanCreateSets(boolean anonymousCanCreateSets) {
+    this.anonymousCanCreateSets = anonymousCanCreateSets;
   }
 }

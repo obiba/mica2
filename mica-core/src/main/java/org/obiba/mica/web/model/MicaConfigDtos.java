@@ -18,6 +18,7 @@ import java.util.Map;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
+import org.apache.shiro.SecurityUtils;
 import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.micaConfig.AuthType;
@@ -34,11 +35,21 @@ import static java.util.stream.Collectors.toMap;
 @Component
 class MicaConfigDtos {
 
-  @Inject
   private LocalizedStringDtos localizedStringDtos;
 
-  @Inject
   private AttachmentDtos attachmentDtos;
+
+  @Inject
+  public MicaConfigDtos(
+    LocalizedStringDtos localizedStringDtos,
+    AttachmentDtos attachmentDtos) {
+    this.localizedStringDtos = localizedStringDtos;
+    this.attachmentDtos = attachmentDtos;
+  }
+
+  public MicaConfigDtos() {
+    this.localizedStringDtos = new LocalizedStringDtos();
+  }
 
   @NotNull
   Mica.PublicMicaConfigDto asPublicDto(@NotNull MicaConfig config) {
@@ -53,6 +64,19 @@ class MicaConfigDtos {
 
     builder.addAllAvailableLayoutOptions(Arrays.asList(MicaConfig.LAYOUT_OPTIONS));
     builder.setSearchLayout(config.getSearchLayout());
+
+    String principal = SecurityUtils.getSubject().getPrincipal().toString();
+
+    if (principal.equals(config.getAnonymousUsername())) {
+      builder.setCurrentUserCanCreateCart(config.isAnonymousCanCreateCart());
+      builder.setCurrentUserCanCreateSets(config.isAnonymousCanCreateSets());
+    } else {
+      builder.setCurrentUserCanCreateCart(true);
+      builder.setCurrentUserCanCreateSets(true);
+    }
+
+    builder.setMaxItemsPerSet(config.getMaxItemsPerSet());
+    builder.setMaxNumberOfSets(config.getMaxNumberOfSets());
 
     return builder.build();
   }
@@ -115,6 +139,22 @@ class MicaConfigDtos {
     builder.addAllAvailableLayoutOptions(Arrays.asList(MicaConfig.LAYOUT_OPTIONS));
     builder.setSearchLayout(config.getSearchLayout());
 
+    String principal = SecurityUtils.getSubject().getPrincipal().toString();
+
+    builder.setAnonymousCanCreateCart(config.isAnonymousCanCreateCart());
+    builder.setAnonymousCanCreateSets(config.isAnonymousCanCreateSets());
+    builder.setAnonymousUsername(config.getAnonymousUsername());
+    builder.setMaxItemsPerSet(config.getMaxItemsPerSet());
+    builder.setMaxNumberOfSets(config.getMaxNumberOfSets());
+
+    if (principal.equals(config.getAnonymousUsername())) {
+      builder.setCurrentUserCanCreateCart(config.isAnonymousCanCreateCart());
+      builder.setCurrentUserCanCreateSets(config.isAnonymousCanCreateSets());
+    } else {
+      builder.setCurrentUserCanCreateCart(true);
+      builder.setCurrentUserCanCreateSets(true);
+    }
+
     return builder.build();
   }
 
@@ -155,6 +195,13 @@ class MicaConfigDtos {
     config.setNetworkEnabled(dto.getIsNetworkEnabled());
     config.setStudyDatasetEnabled(dto.getIsCollectedDatasetEnabled());
     config.setHarmonizationDatasetEnabled(dto.getIsHarmonizedDatasetEnabled());
+
+    config.setAnonymousCanCreateCart(dto.getAnonymousCanCreateCart());
+    config.setAnonymousCanCreateSets(dto.getAnonymousCanCreateSets());
+
+    if (dto.hasAnonymousUsername() && !dto.getAnonymousUsername().isEmpty()) config.setAnonymousUsername(dto.getAnonymousUsername());
+    if (dto.hasMaxItemsPerSet() && dto.getMaxItemsPerSet() > 0) config.setMaxItemsPerSet(dto.getMaxItemsPerSet());
+    if (dto.hasMaxNumberOfSets() && dto.getMaxNumberOfSets() > 0) config.setMaxNumberOfSets(dto.getMaxNumberOfSets());
 
     if(dto.hasStyle()) config.setStyle(dto.getStyle());
 

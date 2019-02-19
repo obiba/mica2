@@ -80,19 +80,33 @@
       </div>
       <div class="col-md-6">
         <h4 translate>config.sections</h4>
-            <div form-checkbox name="isSingleStudyEnabled" model="micaConfig.isSingleStudyEnabled"
-                label="config.single-study-enabled" help="config.single-study-enabled-help"></div>
-            <div form-checkbox name="isNetworkEnabled" model="micaConfig.isNetworkEnabled" label="config.network-enabled"
-                help="config.network-enabled-help"></div>
-            <div form-checkbox name="isSingleNetworkEnabled" model="micaConfig.isSingleNetworkEnabled"
-                label="config.single-network-enabled" help="config.single-network-enabled-help"
-                disabled="!micaConfig.isNetworkEnabled"></div>
+          <div form-checkbox name="isSingleStudyEnabled" model="micaConfig.isSingleStudyEnabled"
+              label="config.single-study-enabled" help="config.single-study-enabled-help"></div>
+          <div form-checkbox name="isNetworkEnabled" model="micaConfig.isNetworkEnabled" label="config.network-enabled"
+              help="config.network-enabled-help"></div>
+          <div form-checkbox name="isSingleNetworkEnabled" model="micaConfig.isSingleNetworkEnabled"
+              label="config.single-network-enabled" help="config.single-network-enabled-help"
+              disabled="!micaConfig.isNetworkEnabled"></div>
 
-            <div form-checkbox name="isCollectedDatasetEnabled" model="micaConfig.isCollectedDatasetEnabled"
-                label="config.collected-dataset-enabled" help="config.collected-dataset-enabled-help"></div>
-            <div form-checkbox name="isHarmonizedDatasetEnabled" model="micaConfig.isHarmonizedDatasetEnabled"
-                label="config.harmonized-dataset-enabled" help="config.harmonized-dataset-enabled-help"></div>
+          <div form-checkbox name="isCollectedDatasetEnabled" model="micaConfig.isCollectedDatasetEnabled"
+              label="config.collected-dataset-enabled" help="config.collected-dataset-enabled-help"></div>
+          <div form-checkbox name="isHarmonizedDatasetEnabled" model="micaConfig.isHarmonizedDatasetEnabled"
+              label="config.harmonized-dataset-enabled" help="config.harmonized-dataset-enabled-help"></div>
 
+
+        <h4 class="voffset5" translate>config.sets</h4>
+        <div form-checkbox name="anonymousCanCreateCart" model="micaConfig.anonymousCanCreateCart"
+             label="config.anonymous-create-cart"></div>
+        <div form-checkbox name="anonymousCanCreateSets" model="micaConfig.anonymousCanCreateSets"
+             label="config.anonymous-create-sets"></div>
+
+        <div form-input name="anonymousUsername" model="micaConfig.anonymousUsername" label="config.anonymous-username"
+             required="true"></div>
+
+        <div form-input name="maxNumberOfSets" model="micaConfig.maxNumberOfSets" label="config.max-number-sets"
+             type="number" required="true" help="config.privacy-threshold-help"></div>
+        <div form-input name="maxItemsPerSet" model="micaConfig.maxItemsPerSet" label="config.max-items-per-set"
+             type="number" required="true"></div>
       </div>
     </div>
 

@@ -10,16 +10,40 @@
 
 package org.obiba.mica.web.model;
 
-import java.util.Locale;
-
-import org.junit.Test;
-import org.obiba.mica.micaConfig.domain.MicaConfig;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class MicaConfigDtosTest {
+import java.util.Locale;
+import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.config.IniSecurityManagerFactory;
+import org.apache.shiro.mgt.SecurityManager;
+import org.apache.shiro.subject.Subject;
+import org.apache.shiro.util.Factory;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.obiba.mica.AbstractShiroTest;
+import org.obiba.mica.micaConfig.domain.MicaConfig;
+
+public class MicaConfigDtosTest extends AbstractShiroTest {
 
   private final MicaConfigDtos dtos = new MicaConfigDtos();
+
+  @BeforeClass
+  public static void beforeClass() {
+    Factory<SecurityManager> factory = new IniSecurityManagerFactory("classpath:test.shiro.ini");
+    setSecurityManager(factory.getInstance());
+  }
+
+  @Before
+  public void setup() {
+    Subject subjectUnderTest = new Subject.Builder(getSecurityManager()).buildSubject();
+
+    UsernamePasswordToken token = new UsernamePasswordToken("root", "secret");
+    subjectUnderTest.login(token);
+
+    setSubject(subjectUnderTest);
+  }
 
   @Test
   public void test_default_values() {
@@ -46,5 +70,10 @@ public class MicaConfigDtosTest {
 
     MicaConfig fromDto = dtos.fromDto(dto);
     assertThat(fromDto).isEqualToIgnoringGivenFields(config, "createdDate");
+  }
+
+  @AfterClass
+  public static void tearDownSubject() {
+    tearDownShiro();
   }
 }
