@@ -14,6 +14,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.core.domain.DocumentSet;
+import org.obiba.mica.core.domain.MaximumDocumentSetCreationExceededException;
 import org.obiba.mica.core.domain.SetOperation;
 import org.obiba.mica.dataset.service.VariableSetOperationService;
 import org.obiba.mica.dataset.service.VariableSetService;
@@ -67,25 +68,21 @@ public class PublishedDatasetVariablesSetsResource {
 
   @POST
   public Response createEmpty(@Context UriInfo uriInfo, @QueryParam("name") String name) {
-    if (numberOfNamedSets() <= micaConfigService.getConfig().getMaxNumberOfSets()) {
-      DocumentSet created = variableSetService.create(name, Lists.newArrayList());
-      return Response.created(uriInfo.getBaseUriBuilder().segment("variables", "set", created.getId()).build()).build();
-    } else {
-      return Response.notModified().build();
-    }
+    if (name != null && !name.isEmpty()) checkSetsNumberLimit();
+
+    DocumentSet created = variableSetService.create(name, Lists.newArrayList());
+    return Response.created(uriInfo.getBaseUriBuilder().segment("variables", "set", created.getId()).build()).build();
   }
 
   @POST
   @Path("_import")
   @Consumes(MediaType.TEXT_PLAIN)
   public Response importVariables(@Context UriInfo uriInfo, @QueryParam("name") String name, String body) {
-    if (numberOfNamedSets() <= micaConfigService.getConfig().getMaxNumberOfSets()) {
-      DocumentSet created = variableSetService.create(name, variableSetService.extractIdentifiers(body));
-      return Response.created(uriInfo.getBaseUriBuilder().segment("variables", "set", created.getId()).build())
-        .entity(dtos.asDto(created)).build();
-    } else {
-      return Response.notModified().build();
-    }
+    if (name != null && !name.isEmpty()) checkSetsNumberLimit();
+
+    DocumentSet created = variableSetService.create(name, variableSetService.extractIdentifiers(body));
+    return Response.created(uriInfo.getBaseUriBuilder().segment("variables", "set", created.getId()).build())
+      .entity(dtos.asDto(created)).build();
   }
 
   @POST
@@ -106,6 +103,13 @@ public class PublishedDatasetVariablesSetsResource {
   }
 
   private long numberOfNamedSets() {
-    return variableSetService.getAllCurrentUser().stream().filter(set -> set.hasName()).count();
+    return variableSetService.getAllCurrentUser().stream().filter(DocumentSet::hasName).count();
+  }
+
+  private void checkSetsNumberLimit() {
+    long maxNumberOfSets = micaConfigService.getConfig().getMaxNumberOfSets();
+
+    if (numberOfNamedSets() >= maxNumberOfSets)
+      throw MaximumDocumentSetCreationExceededException.because(maxNumberOfSets, variableSetService.getType());
   }
 }

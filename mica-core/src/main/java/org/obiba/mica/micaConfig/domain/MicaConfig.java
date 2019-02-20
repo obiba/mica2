@@ -449,7 +449,7 @@ public class MicaConfig extends AbstractAuditableDocument {
     this.anonymousUsername = anonymousUsername;
   }
 
-  public boolean isAnonymousCanCreateCart() {
+  public boolean canAnonymousCreateCart() {
     return anonymousCanCreateCart;
   }
 
@@ -457,7 +457,7 @@ public class MicaConfig extends AbstractAuditableDocument {
     this.anonymousCanCreateCart = anonymousCanCreateCart;
   }
 
-  public boolean isAnonymousCanCreateSets() {
+  public boolean canAnonymousCreateSets() {
     return anonymousCanCreateCart && anonymousCanCreateSets;
   }
 
