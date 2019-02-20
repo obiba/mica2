@@ -131,15 +131,15 @@ class MicaConfigDtos {
 
     String principal = SecurityUtils.getSubject().getPrincipal().toString();
 
-    builder.setAnonymousCanCreateCart(config.canAnonymousCreateCart());
-    builder.setAnonymousCanCreateSets(config.canAnonymousCreateSets());
+    builder.setAnonymousCanCreateCart(config.isAnonymousCanCreateCart());
+    builder.setAnonymousCanCreateSets(config.isAnonymousCanCreateSets());
     builder.setAnonymousUsername(config.getAnonymousUsername());
     builder.setMaxItemsPerSet(config.getMaxItemsPerSet());
     builder.setMaxNumberOfSets(config.getMaxNumberOfSets());
 
     if (principal.equals(config.getAnonymousUsername())) {
-      builder.setCurrentUserCanCreateCart(config.canAnonymousCreateCart());
-      builder.setCurrentUserCanCreateSets(config.canAnonymousCreateSets());
+      builder.setCurrentUserCanCreateCart(config.isAnonymousCanCreateCart());
+      builder.setCurrentUserCanCreateSets(config.isAnonymousCanCreateSets());
     } else {
       builder.setCurrentUserCanCreateCart(true);
       builder.setCurrentUserCanCreateSets(true);
