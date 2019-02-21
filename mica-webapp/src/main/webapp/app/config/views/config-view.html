@@ -158,6 +158,59 @@
         </tbody>
       </table>
 
+      <h4 translate>config.sets</h4>
+
+      <table class="table table-bordered table-striped">
+        <tbody>
+
+          <tr>
+            <td>
+              <span translate>config.anonymous-create-cart</span>
+              <span class="help-block" translate>config.anonymous-create-cart-help</span>
+            </td>
+            <td>
+              <i class="fa fa-check-square-o" ng-hide="!micaConfig.anonymousCanCreateCart"></i>
+              <i class="fa fa-square-o" ng-hide="micaConfig.anonymousCanCreateCart"></i>
+            </td>
+          </tr>
+
+          <tr>
+            <td>
+              <span translate>config.anonymous-create-sets</span>
+              <span class="help-block" translate>config.anonymous-create-sets-help</span>
+            </td>
+            <td>
+              <i class="fa fa-check-square-o" ng-hide="!micaConfig.anonymousCanCreateSets"></i>
+              <i class="fa fa-square-o" ng-hide="micaConfig.anonymousCanCreateSets"></i>
+            </td>
+          </tr>
+
+          <tr>
+            <td>
+              <span translate>config.anonymous-username</span>
+              <span class="help-block" translate>config.anonymous-username-help</span>
+            </td>
+            <td>{{micaConfig.anonymousUsername}}</td>
+          </tr>
+
+          <tr>
+            <td>
+              <span translate>config.max-number-sets</span>
+              <span class="help-block" translate></span>
+            </td>
+            <td>{{micaConfig.maxNumberOfSets}}</td>
+          </tr>
+
+          <tr>
+            <td>
+              <span translate>config.max-items-per-set</span>
+              <span class="help-block" translate></span>
+            </td>
+            <td>{{micaConfig.maxItemsPerSet}}</td>
+          </tr>
+        </tbody>
+      </table>
+
     </div>
   </div>
   <div class="row">

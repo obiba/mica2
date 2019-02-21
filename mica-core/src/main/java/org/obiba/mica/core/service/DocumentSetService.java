@@ -16,6 +16,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+import java.util.stream.Stream;
 import org.apache.shiro.SecurityUtils;
 import org.joda.time.DateTime;
 import org.obiba.mica.core.domain.DocumentSet;
@@ -25,6 +26,7 @@ import org.obiba.mica.core.event.DocumentSetUpdatedEvent;
 import org.obiba.mica.core.repository.DocumentSetRepository;
 import org.obiba.mica.dataset.event.DatasetDeletedEvent;
 import org.obiba.mica.dataset.event.DatasetUnpublishedEvent;
+import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
@@ -47,6 +49,9 @@ public abstract class DocumentSetService {
 
   @Inject
   private EventBus eventBus;
+
+  @Inject
+  private MicaConfigService micaConfigService;
 
   /**
    * Get document with ID and ensure the type is valid.
@@ -148,7 +153,13 @@ public abstract class DocumentSetService {
   public DocumentSet addIdentifiers(String id, List<String> identifiers) {
     DocumentSet documentSet = get(id);
     if (identifiers.isEmpty()) return documentSet;
-    documentSet.getIdentifiers().addAll(identifiers);
+
+    List<String> concatenatedIdentifiers = Stream.concat(documentSet.getIdentifiers().stream(), identifiers.stream())
+      .distinct()
+      .limit(micaConfigService.getConfig().getMaxItemsPerSet())
+      .collect(Collectors.toList());
+
+    documentSet.setIdentifiers(concatenatedIdentifiers);
     return save(documentSet, null);
   }
 

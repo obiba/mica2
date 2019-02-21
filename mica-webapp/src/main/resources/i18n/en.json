@@ -290,6 +290,15 @@
     }
   },
   "config": {
+    "sets": "Sets",
+    "anonymous-username": "\"Username\" of the anonymous user.",
+    "anonymous-username-help": "User that is configured for unauthenticated Portal usage.",
+    "anonymous-create-cart": "Anonymous user can create and manage a cart?",
+    "anonymous-create-cart-help": "Create/Add to cart button is available to the anonymous user.",
+    "anonymous-create-sets": "Anonymous user can create and manage sets?",
+    "anonymous-create-sets-help": "Create/Add to set button is available to the anonymous user.",
+    "max-number-sets": "Maximum number of sets that a user can create.",
+    "max-items-per-set": "Maximum number of items in a set.",
     "short-title": "Configuration",
     "title": "General Configuration",
     "title-edit": "Edit General Configuration",

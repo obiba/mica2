@@ -290,6 +290,15 @@
     }
   },
   "config": {
+    "sets": "Ensembles",
+    "anonymous-username": "l'\"identifiant\" de l'utilisateur anonyme.",
+    "anonymous-username-help": "L'utilisateur configuré pour le fonctionnement anonyme du Portail.",
+    "anonymous-create-cart": "Est-ce que l'utilisateur anonyme peut créer et gérer un panier?",
+    "anonymous-create-cart-help": "Le bouton d'ajout/de création de panier est is available to the anonymous user.",
+    "anonymous-create-sets": "Est-ce que l'utilisateur anonyme peut créer et gérer un ensemble?",
+    "anonymous-create-sets-help": "Create/Add to set button is available to the anonymous user.",
+    "max-number-sets": "Le nombre maximal d'ensemble qu'un utilistateur peut créer.",
+    "max-items-per-set": "Le nombre maximal d'item qui peut être ajouter dans un ensemble.",
     "short-title": "Configuration",
     "title": "Configuration générale",
     "title-edit": "Éditer la configuration générale",

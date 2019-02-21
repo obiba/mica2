@@ -39,17 +39,25 @@ import java.util.stream.Collectors;
 @RequiresAuthentication
 public class PublishedDatasetVariablesSetResource {
 
-  @Inject
   private VariableSetService variableSetService;
 
-  @Inject
   private JoinQueryExecutor joinQueryExecutor;
 
-  @Inject
   private Searcher searcher;
 
-  @Inject
   private Dtos dtos;
+
+  @Inject
+  public PublishedDatasetVariablesSetResource(
+    VariableSetService variableSetService,
+    JoinQueryExecutor joinQueryExecutor,
+    Searcher searcher,
+    Dtos dtos) {
+    this.variableSetService = variableSetService;
+    this.joinQueryExecutor = joinQueryExecutor;
+    this.searcher = searcher;
+    this.dtos = dtos;
+  }
 
   @PathParam("id")
   private String id;

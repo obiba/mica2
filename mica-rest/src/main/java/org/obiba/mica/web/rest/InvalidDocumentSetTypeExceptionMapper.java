@@ -10,13 +10,11 @@
 
 package org.obiba.mica.web.rest;
 
-import org.obiba.mica.core.domain.InvalidDocumentSetTypeException;
-import org.obiba.mica.dataset.service.InvalidDatasetException;
-
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
+import org.obiba.mica.core.domain.InvalidDocumentSetTypeException;
 
 @Provider
 public class InvalidDocumentSetTypeExceptionMapper implements ExceptionMapper<InvalidDocumentSetTypeException> {
