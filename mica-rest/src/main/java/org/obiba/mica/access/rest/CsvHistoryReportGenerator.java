@@ -45,13 +45,18 @@ public class CsvHistoryReportGenerator implements CsvReportGenerator {
   }
 
   @Override
-  public void write(OutputStream outputStream) {
+  public void write(OutputStream outputStream, boolean omitHeader) {
     try (CSVWriter writer = new CSVWriter(new PrintWriter(outputStream))) {
-      writeHeader(writer);
+      if (!omitHeader) writeHeader(writer);
       writeBody(writer);
     } catch (IOException e) {
       throw new UncheckedIOException(e);
     }
+  }
+
+  @Override
+  public void write(OutputStream outputStream) {
+    write(outputStream, false);
   }
 
   private String[] toArray(String... elements) {

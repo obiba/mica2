@@ -26,9 +26,9 @@ public abstract class CsvReportGeneratorImpl implements CsvReportGenerator {
 
   private static final Logger log = LoggerFactory.getLogger(CsvReportGeneratorImpl.class);
 
-  public void write(OutputStream outputStream) {
+  public void write(OutputStream outputStream, boolean omitHeader) {
     try (CSVWriter writer = new CSVWriter(new PrintWriter(new OutputStreamWriter(outputStream, "UTF-8")))) {
-      writeHeader(writer);
+      if (!omitHeader) writeHeader(writer);
       writeEachLine(writer);
       outputStream.flush();
     } catch (IOException e) {
@@ -37,6 +37,10 @@ public abstract class CsvReportGeneratorImpl implements CsvReportGenerator {
     } catch (Exception e) {
       log.error("CSV report extraction failed", e);
     }
+  }
+
+  public void write(OutputStream outputStream) {
+    write(outputStream, false);
   }
 
   protected abstract void writeHeader(CSVWriter writer);
