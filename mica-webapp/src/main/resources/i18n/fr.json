@@ -956,6 +956,12 @@
       "no-query": "Afin de compter les entités vous devez d'abord sélectionner des variables puis appliquer des critères sur leurs valeurs."
     }
   },
+  "table-selections": {
+    "all-page-selected": "Tout les documents de cette page sont sélectionnés.",
+    "all-selected": "Tout les documents sont sélectionnés.",
+    "select-all": "Sélectionner tout les documents",
+    "unselect-all": "Déselectionner tout les documents"
+  },
   "sets": {
     "empty": "Aucun ensemble",
     "cart": {
@@ -968,11 +974,7 @@
       "add-to-cart": "Ajouter au panier",
       "no-variable-removed": "Aucune variable n'a été supprimée du panier.",
       "variable-removed": "Variable supprimée du panier.",
-      "remove-from-cart": "Retirer du panier",
-      "all-cart-page-selected": "Tout les documents de cette page sont sélectionnés.",
-      "all-cart-selected": "Tout les documents de ce panier sont sélectionnés.",
-      "select-all-cart": "Sélectionner tout les documents de ce panier",
-      "unselect-all-cart": "Déselectionner tout les documents"
+      "remove-from-cart": "Retirer du panier"
     },
     "set": {
       "title": "Ensembles",
