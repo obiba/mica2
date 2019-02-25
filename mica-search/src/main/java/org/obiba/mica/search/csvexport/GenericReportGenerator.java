@@ -10,6 +10,8 @@
 
 package org.obiba.mica.search.csvexport;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.obiba.mica.search.JoinQueryExecutor;
 import org.obiba.mica.spi.search.QueryType;
 import org.obiba.mica.spi.search.Searcher;
@@ -27,6 +29,8 @@ import java.util.List;
 @Scope("request")
 public class GenericReportGenerator {
 
+  private static final int MAX_DOWNLOAD_STEP = 100000;
+
   @Inject
   private JoinQueryExecutor joinQueryExecutor;
 
@@ -37,9 +41,26 @@ public class GenericReportGenerator {
   private CsvReportGeneratorFactory csvReportGeneratorFactory;
 
   public void generateCsv(QueryType exportType, String rqlQuery, List<String> columnsToHide, OutputStream outputStream) throws IOException {
-    JoinQuery joinQuery = searcher.makeJoinQuery(rqlQuery);
-    MicaSearch.JoinQueryResultDto queryResult = joinQueryExecutor.query(exportType, joinQuery);
-    CsvReportGenerator csvReportGenerator = csvReportGeneratorFactory.get(exportType, queryResult, columnsToHide, joinQuery.getLocale());
-    csvReportGenerator.write(outputStream);
+    final String limitRegex = "limit\\((\\d+),(\\d+)\\)";
+    Pattern pattern = Pattern.compile(limitRegex);
+    Matcher matcher = pattern.matcher(rqlQuery);
+
+    if (matcher.find()) {
+      int size = Integer.valueOf(matcher.group(2));
+
+      int numberOfSteps = Double.valueOf(Math.ceil(size / (double) MAX_DOWNLOAD_STEP)).intValue();
+
+      for (int i = 0; i < numberOfSteps; i++) {
+        JoinQuery joinQuery = searcher.makeJoinQuery(rqlQuery.replace(matcher.group(), "limit(" + (MAX_DOWNLOAD_STEP * i) + "," + MAX_DOWNLOAD_STEP + ")"));
+        MicaSearch.JoinQueryResultDto queryResult = joinQueryExecutor.query(exportType, joinQuery);
+        CsvReportGenerator csvReportGenerator = csvReportGeneratorFactory.get(exportType, queryResult, columnsToHide, joinQuery.getLocale());
+        csvReportGenerator.write(outputStream, i > 0);
+      }
+    } else {
+      JoinQuery joinQuery = searcher.makeJoinQuery(rqlQuery);
+      MicaSearch.JoinQueryResultDto queryResult = joinQueryExecutor.query(exportType, joinQuery);
+      CsvReportGenerator csvReportGenerator = csvReportGeneratorFactory.get(exportType, queryResult, columnsToHide, joinQuery.getLocale());
+      csvReportGenerator.write(outputStream);
+    }
   }
 }

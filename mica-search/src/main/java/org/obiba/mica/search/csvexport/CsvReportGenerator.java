@@ -14,6 +14,8 @@ import java.io.OutputStream;
 
 public interface CsvReportGenerator {
 
+  void write(OutputStream outputStream, boolean omitHeader);
+
   void write(OutputStream outputStream);
 
 }
