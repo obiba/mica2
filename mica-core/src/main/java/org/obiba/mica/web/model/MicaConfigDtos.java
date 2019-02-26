@@ -136,12 +136,13 @@ class MicaConfigDtos {
     builder.setAnonymousUsername(config.getAnonymousUsername());
     builder.setMaxItemsPerSet(config.getMaxItemsPerSet());
     builder.setMaxNumberOfSets(config.getMaxNumberOfSets());
+    builder.setIsCartEnabled(config.isCartEnabled());
 
     if (principal.equals(config.getAnonymousUsername())) {
-      builder.setCurrentUserCanCreateCart(config.isAnonymousCanCreateCart());
+      builder.setCurrentUserCanCreateCart(config.isCartEnabled() && config.isAnonymousCanCreateCart());
       builder.setCurrentUserCanCreateSets(config.isAnonymousCanCreateSets());
     } else {
-      builder.setCurrentUserCanCreateCart(true);
+      builder.setCurrentUserCanCreateCart(config.isCartEnabled());
       builder.setCurrentUserCanCreateSets(true);
     }
 
@@ -186,7 +187,9 @@ class MicaConfigDtos {
     config.setStudyDatasetEnabled(dto.getIsCollectedDatasetEnabled());
     config.setHarmonizationDatasetEnabled(dto.getIsHarmonizedDatasetEnabled());
 
-    config.setAnonymousCanCreateCart(dto.getAnonymousCanCreateCart());
+    boolean cartEnabled = dto.getIsCartEnabled();
+    config.setCartEnabled(cartEnabled);
+    config.setAnonymousCanCreateCart(cartEnabled && dto.getAnonymousCanCreateCart());
     config.setAnonymousCanCreateSets(dto.getAnonymousCanCreateSets());
 
     if (dto.hasAnonymousUsername() && !dto.getAnonymousUsername().isEmpty()) config.setAnonymousUsername(dto.getAnonymousUsername());

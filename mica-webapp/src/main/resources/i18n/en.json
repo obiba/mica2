@@ -293,6 +293,8 @@
     "sets": "Sets",
     "anonymous-username": "\"Username\" of the anonymous user.",
     "anonymous-username-help": "User that is configured for unauthenticated Portal usage.",
+    "cart-enabled": "Cart enabled",
+    "cart-enabled-help": "Cart creation and mangement is enabled.",
     "anonymous-create-cart": "Anonymous user can create and manage a cart?",
     "anonymous-create-cart-help": "Create/Add to cart button is available to the anonymous user.",
     "anonymous-create-sets": "Anonymous user can create and manage sets?",

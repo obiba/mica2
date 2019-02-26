@@ -293,6 +293,8 @@
     "sets": "Ensembles",
     "anonymous-username": "l'\"identifiant\" de l'utilisateur anonyme.",
     "anonymous-username-help": "L'utilisateur configuré pour le fonctionnement anonyme du Portail.",
+    "cart-enabled": "Panier activé",
+    "cart-enabled-help": "La création et la gestion de panier est activée",
     "anonymous-create-cart": "Est-ce que l'utilisateur anonyme peut créer et gérer un panier?",
     "anonymous-create-cart-help": "Le bouton d'ajout/de création de panier est is available to the anonymous user.",
     "anonymous-create-sets": "Est-ce que l'utilisateur anonyme peut créer et gérer un ensemble?",

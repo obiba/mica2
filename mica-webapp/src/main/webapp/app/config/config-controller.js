@@ -396,6 +396,12 @@ mica.config
 
       getAvailableLanguages();
 
+      $scope.cartEnabledChanged = function() {
+        if (!$scope.micaConfig.isCartEnabled) {
+          $scope.micaConfig.anonymousCanCreateCart = false;
+        }
+      };
+
       $scope.micaConfig.$promise.then(function() {
         $scope.selectedSearchLayout = {
           get design() {
