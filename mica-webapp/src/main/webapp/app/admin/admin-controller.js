@@ -13,10 +13,12 @@
 mica.admin
 
   .controller('AdminViewController', [
-    '$rootScope',
     '$scope',
-    '$translate',
-    function () {
+    'MicaConfigResource',
+    function ($scope, MicaConfigResource) {
+      MicaConfigResource.get(function(config){
+        $scope.micaConfig = config;
+      });
     }])
 
   .controller('MetricsController', ['$rootScope', '$scope', 'MetricsService', 'ThreadDumpService',
