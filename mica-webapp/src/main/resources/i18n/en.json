@@ -1618,8 +1618,8 @@
     }
   },
   "data-access-config": {
-    "dao-can-edit": "Data Access Officers could edit a data access request.",
-    "dao-can-edit-help": "A Data Access Officer would have the permission to edit a data access request/amendment when it is in a <strong>SUBMITTED</strong>, <strong>REVIEWED</strong>, <strong>APPROVED</strong> or <strong>REJECTED</strong> state",
+    "dao-can-edit": "Grant Edit Permission to Data Access Officers.",
+    "dao-can-edit-help": "Data Access Officer has permission to edit a data access request/amendment when it is <strong>SUBMITTED</strong>, <strong>REVIEWED</strong>, <strong>APPROVED</strong> or <strong>REJECTED</strong>",
     "menu": "Data Access",
     "title": "Data Access Configuration",
     "title-edit": "Edit Data Access Configuration",
