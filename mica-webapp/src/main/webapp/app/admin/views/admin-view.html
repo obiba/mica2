@@ -142,7 +142,7 @@
               <small translate>admin-page.help.classifications</small>
             </p>
           </li>
-          <li>
+          <li ng-if="micaConfig.isCartEnabled">
             <a href="#/cart">
               <span><i class="fa fa-cog"></i> {{'sets.cart.title' | translate}}</span>
             </a>

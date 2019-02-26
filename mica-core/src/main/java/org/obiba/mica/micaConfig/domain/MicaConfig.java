@@ -136,6 +136,8 @@ public class MicaConfig extends AbstractAuditableDocument {
 
   private boolean anonymousCanCreateSets = ANONYMOUS_CAN_CREATE_SETS;
 
+  private boolean cartEnabled = true;
+
   public String getName() {
     return name;
   }
@@ -463,5 +465,13 @@ public class MicaConfig extends AbstractAuditableDocument {
 
   public void setAnonymousCanCreateSets(boolean anonymousCanCreateSets) {
     this.anonymousCanCreateSets = anonymousCanCreateSets;
+  }
+
+  public boolean isCartEnabled() {
+    return cartEnabled;
+  }
+
+  public void setCartEnabled(boolean cartEnabled) {
+    this.cartEnabled = cartEnabled;
   }
 }

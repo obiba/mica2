@@ -425,6 +425,7 @@ message MicaConfigDto {
   required bool anonymousCanCreateSets = 38;
   required bool currentUserCanCreateCart = 39;
   required bool currentUserCanCreateSets = 40;
+  required bool isCartEnabled = 41;
 }
 
 message PublicMicaConfigDto {
