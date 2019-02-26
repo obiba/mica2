@@ -829,6 +829,7 @@ message DataAccessFormDto {
   required PdfDownloadType pdfDownloadType = 30;
   repeated string predefinedActions = 31;
   required bool amendmentsEnabled = 32;
+  required bool daoCanEdit = 33;
 }
 
 message DataAccessAmendmentFormDto {
