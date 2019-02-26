@@ -18,6 +18,7 @@ import org.apache.shiro.authz.AuthorizationException;
 import org.obiba.mica.JSONUtils;
 import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.access.NoSuchDataAccessRequestException;
+import org.obiba.mica.file.FileStoreService;
 import org.obiba.mica.micaConfig.DataAccessAmendmentsNotEnabled;
 import org.obiba.mica.access.domain.DataAccessEntityStatus;
 import org.obiba.mica.access.domain.DataAccessRequest;
@@ -29,8 +30,10 @@ import org.obiba.mica.core.domain.NoSuchCommentException;
 import org.obiba.mica.core.domain.UnauthorizedCommentException;
 import org.obiba.mica.core.service.CommentsService;
 import org.obiba.mica.file.Attachment;
+import org.obiba.mica.micaConfig.service.DataAccessFormService;
 import org.obiba.mica.security.Roles;
 import org.obiba.mica.security.event.ResourceDeletedEvent;
+import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.slf4j.Logger;
@@ -51,26 +54,40 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 @Component
 @Path("/data-access-request/{id}")
-public class DataAccessRequestResource extends DataAccessEntityResource {
+public class DataAccessRequestResource extends DataAccessEntityResource<DataAccessRequest> {
   private static final Logger log = getLogger(DataAccessRequestResource.class);
 
-  @Inject
   private DataAccessRequestService dataAccessRequestService;
 
-  @Inject
   private DataAccessRequestCommentMailNotification commentMailNotification;
 
-  @Inject
   private CommentsService commentsService;
 
-  @Inject
   private ApplicationContext applicationContext;
 
-  @Inject
   private Dtos dtos;
 
-  @Inject
   private EventBus eventBus;
+
+  @Inject
+  public DataAccessRequestResource(
+    DataAccessRequestService dataAccessRequestService,
+    DataAccessRequestCommentMailNotification commentMailNotification,
+    CommentsService commentsService,
+    ApplicationContext applicationContext,
+    EventBus eventBus,
+    Dtos dtos,
+    SubjectAclService subjectAclService,
+    FileStoreService fileStoreService,
+    DataAccessFormService dataAccessFormService) {
+    super(subjectAclService, fileStoreService, dataAccessFormService);
+    this.dataAccessRequestService = dataAccessRequestService;
+    this.commentMailNotification = commentMailNotification;
+    this.commentsService = commentsService;
+    this.applicationContext = applicationContext;
+    this.eventBus = eventBus;
+    this.dtos = dtos;
+  }
 
   @PathParam("id")
   private String id;

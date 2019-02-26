@@ -2,12 +2,13 @@ package org.obiba.mica.access.rest;
 
 
 import com.codahale.metrics.annotation.Timed;
-import com.google.common.eventbus.EventBus;
 import org.obiba.mica.JSONUtils;
 import org.obiba.mica.access.NoSuchDataAccessRequestException;
 import org.obiba.mica.access.domain.DataAccessAmendment;
 import org.obiba.mica.access.service.DataAccessAmendmentService;
 import org.obiba.mica.access.service.DataAccessEntityService;
+import org.obiba.mica.file.FileStoreService;
+import org.obiba.mica.micaConfig.service.DataAccessFormService;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
@@ -24,15 +25,25 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 @Component
 @Scope("request")
-public class DataAccessAmendmentResource extends DataAccessEntityResource {
+public class DataAccessAmendmentResource extends DataAccessEntityResource<DataAccessAmendment> {
 
   private static final Logger log = getLogger(DataAccessAmendmentResource.class);
 
-  @Inject
   private Dtos dtos;
 
-  @Inject
   private DataAccessAmendmentService dataAccessAmendmentService;
+
+  @Inject
+  public DataAccessAmendmentResource(
+    SubjectAclService subjectAclService,
+    FileStoreService fileStoreService,
+    DataAccessFormService dataAccessFormService,
+    Dtos dtos,
+    DataAccessAmendmentService dataAccessAmendmentService) {
+    super(subjectAclService, fileStoreService, dataAccessFormService);
+    this.dtos = dtos;
+    this.dataAccessAmendmentService = dataAccessAmendmentService;
+  }
 
   private String parentId;
 
@@ -87,7 +98,7 @@ public class DataAccessAmendmentResource extends DataAccessEntityResource {
   }
 
   @Override
-  protected DataAccessEntityService getService() {
+  protected DataAccessEntityService<DataAccessAmendment> getService() {
     return dataAccessAmendmentService;
   }
 

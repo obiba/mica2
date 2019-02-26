@@ -1618,6 +1618,8 @@
     }
   },
   "data-access-config": {
+    "dao-can-edit": "Autoriser l'agent d'accès aux données de modifier les demandes d'accès.",
+    "dao-can-edit-help": "Le responsable de l'accès aux données a la permission de modifier une demande / un amendement d'accès aux données ayant le statut statut <strong>SOUMISE</strong>, <strong>EN RÉVISION</strong>, <strong>APPROUVÉE</strong> ou <strong>REJETËE</strong>",
     "menu": "Accès aux données",
     "title": "Configuration de l'accès aux données",
     "title-edit": "Modifier la configuration d'accès aux données",

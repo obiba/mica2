@@ -10,12 +10,14 @@
 
 package org.obiba.mica.micaConfig.service;
 
+import com.google.common.eventbus.EventBus;
 import java.util.Optional;
 
 import javax.inject.Inject;
 
 import org.obiba.mica.file.FileStoreService;
 import org.obiba.mica.micaConfig.domain.DataAccessForm;
+import org.obiba.mica.micaConfig.event.DataAccessFormUpdatedEvent;
 import org.obiba.mica.micaConfig.repository.DataAccessFormRepository;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -27,10 +29,16 @@ public class DataAccessFormService extends AbstractDataAccessEntityFormService<D
 
   private DataAccessFormRepository dataAccessFormRepository;
 
+  private EventBus eventBus;
+
   @Inject
-  public DataAccessFormService(FileStoreService fileStoreService, DataAccessFormRepository dataAccessFormRepository) {
+  public DataAccessFormService(
+    FileStoreService fileStoreService,
+    DataAccessFormRepository dataAccessFormRepository,
+    EventBus eventBus) {
     this.fileStoreService = fileStoreService;
     this.dataAccessFormRepository = dataAccessFormRepository;
+    this.eventBus = eventBus;
   }
 
   @Override
@@ -48,6 +56,8 @@ public class DataAccessFormService extends AbstractDataAccessEntityFormService<D
         v.setJustUploaded(false);
       }
     });
+
+    eventBus.post(new DataAccessFormUpdatedEvent(dataAccessForm));
 
     return dataAccessFormRepository.save(dataAccessForm);
   }

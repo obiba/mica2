@@ -222,7 +222,8 @@ class MicaConfigDtos {
       .setSchema(dataAccessForm.getSchema()) //
       .addAllPdfTemplates(
         dataAccessForm.getPdfTemplates().values().stream().map(p -> attachmentDtos.asDto(p)).collect(toList())) //
-      .addAllProperties(asDtoList(dataAccessForm.getProperties()));
+      .addAllProperties(asDtoList(dataAccessForm.getProperties()))
+      .setDaoCanEdit(dataAccessForm.isDaoCanEdit());
 
     if(dataAccessForm.hasTitleFieldPath()) {
       builder.setTitleFieldPath(dataAccessForm.getTitleFieldPath());
@@ -281,6 +282,7 @@ class MicaConfigDtos {
     dataAccessForm.setSchema(dto.getSchema());
     dataAccessForm.setDefinition(dto.getDefinition());
     dataAccessForm.setCsvExportFormat(dto.getCsvExportFormat());
+    dataAccessForm.setDaoCanEdit(dto.getDaoCanEdit());
 
     dataAccessForm.setProperties(dto.getPropertiesList().stream()
       .collect(toMap(Mica.LocalizedPropertyDto::getName, e -> localizedStringDtos.fromDto(e.getValueList()))));

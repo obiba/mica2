@@ -75,6 +75,8 @@ public class DataAccessForm extends AbstractDataAccessEntityForm {
 
   private boolean amendmentsEnabled = false;
 
+  private boolean daoCanEdit = false;
+
   public DataAccessForm() {
     super();
   }
@@ -289,5 +291,13 @@ public class DataAccessForm extends AbstractDataAccessEntityForm {
 
   public void setAmendmentsEnabled(boolean amendmentsEnabled) {
     this.amendmentsEnabled = amendmentsEnabled;
+  }
+
+  public boolean isDaoCanEdit() {
+    return daoCanEdit;
+  }
+
+  public void setDaoCanEdit(boolean daoCanEdit) {
+    this.daoCanEdit = daoCanEdit;
   }
 }
