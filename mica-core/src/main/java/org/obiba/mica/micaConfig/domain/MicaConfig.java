@@ -52,7 +52,7 @@ public class MicaConfig extends AbstractAuditableDocument {
 
   public static final boolean ANONYMOUS_CAN_CREATE_CART = true;
 
-  public static final boolean ANONYMOUS_CAN_CREATE_SETS = true;
+  public static final boolean ANONYMOUS_CAN_CREATE_SETS = false;
 
   @NotBlank
   private String name = DEFAULT_NAME;
