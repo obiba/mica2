@@ -971,7 +971,7 @@
       "help": "Utiliser le panier pour constituer un ensemble de variables. Cet ensemble de variables peut ensuite être analysé ou vu dans la page de recherche.",
       "no-variables": "Le panier de variables est vide.",
       "no-variable-added": "Aucune variable n'a été ajoutée au panier.",
-      "variables-added": "Variables ajoutées au panier: {{arg0}}",
+      "variables-added": "<a href='#/cart' target='_self'><u>{{arg0}} nouvelle(s) variable(s) ont été ajoutées au panier</u></a>.",
       "variable-added": "Variable ajoutée au panier.",
       "add-to-cart": "Ajouter au panier",
       "no-variable-removed": "Aucune variable n'a été supprimée du panier.",
@@ -982,7 +982,7 @@
       "title": "Ensembles",
       "help": "Constituer un ou plusieurs ensembles. Chaque ensemble peut ensuite être analysé ou vu dans la page de recherche.",
       "no-variable-added": "Aucune variable n'a été ajoutée à l'ensemble {{arg0}}.",
-      "variables-added": "Variables ajoutées à l'ensemble {{arg0}}: {{arg1}}"
+      "variables-added": "<a href='#/sets?id={{arg0}}' target='_self'><u>{{arg1}} variable(s) ont été ajoutées à l'ensemble {{arg2}}.</u></a>"
     },
     "add": {
       "button": {
