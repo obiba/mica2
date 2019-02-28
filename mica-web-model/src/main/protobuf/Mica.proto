@@ -420,12 +420,10 @@ message MicaConfigDto {
   optional string searchLayout = 33;
   required int64 maxNumberOfSets = 34;
   required int64 maxItemsPerSet = 35;
-  required string anonymousUsername = 36;
-  required bool anonymousCanCreateCart = 37;
-  required bool anonymousCanCreateSets = 38;
-  required bool currentUserCanCreateCart = 39;
-  required bool currentUserCanCreateSets = 40;
-  required bool isCartEnabled = 41;
+  required bool anonymousCanCreateCart = 36;
+  required bool currentUserCanCreateCart = 37;
+  required bool currentUserCanCreateSets = 38;
+  required bool isCartEnabled = 39;
 }
 
 message PublicMicaConfigDto {

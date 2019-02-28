@@ -48,11 +48,7 @@ public class MicaConfig extends AbstractAuditableDocument {
 
   public static final long DEFAULT_MAX_SETS = 10;
 
-  public static final String ANONYMOUS_USERNAME = "anonymous";
-
   public static final boolean ANONYMOUS_CAN_CREATE_CART = true;
-
-  public static final boolean ANONYMOUS_CAN_CREATE_SETS = false;
 
   @NotBlank
   private String name = DEFAULT_NAME;
@@ -122,19 +118,13 @@ public class MicaConfig extends AbstractAuditableDocument {
 
   private LocalizedString translations;
 
-  private boolean searchRefreshButtonShown = false;
-
   private String searchLayout = "layout2";
 
   private long maxNumberOfSets = DEFAULT_MAX_SETS;
 
   private long maxItemsPerSet = DEFAULT_MAX_ITEMS_PER_SET;
 
-  private String anonymousUsername = ANONYMOUS_USERNAME;
-
   private boolean anonymousCanCreateCart = ANONYMOUS_CAN_CREATE_CART;
-
-  private boolean anonymousCanCreateSets = ANONYMOUS_CAN_CREATE_SETS;
 
   private boolean cartEnabled = true;
 
@@ -443,28 +433,12 @@ public class MicaConfig extends AbstractAuditableDocument {
     this.maxItemsPerSet = maxItemsPerSet;
   }
 
-  public String getAnonymousUsername() {
-    return anonymousUsername;
-  }
-
-  public void setAnonymousUsername(String anonymousUsername) {
-    this.anonymousUsername = anonymousUsername;
-  }
-
   public boolean isAnonymousCanCreateCart() {
     return anonymousCanCreateCart;
   }
 
   public void setAnonymousCanCreateCart(boolean anonymousCanCreateCart) {
     this.anonymousCanCreateCart = anonymousCanCreateCart;
-  }
-
-  public boolean isAnonymousCanCreateSets() {
-    return anonymousCanCreateSets;
-  }
-
-  public void setAnonymousCanCreateSets(boolean anonymousCanCreateSets) {
-    this.anonymousCanCreateSets = anonymousCanCreateSets;
   }
 
   public boolean isCartEnabled() {
