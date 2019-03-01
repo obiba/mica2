@@ -290,17 +290,17 @@
     }
   },
   "config": {
-    "sets": "Sets",
+    "sets": "Lists",
     "anonymous-username": "\"Username\" of the anonymous user.",
     "anonymous-username-help": "User that is configured for unauthenticated Portal usage.",
     "cart-enabled": "Cart enabled",
-    "cart-enabled-help": "Cart creation and mangement is enabled.",
-    "anonymous-create-cart": "Anonymous user can create and manage a cart?",
-    "anonymous-create-cart-help": "Create/Add to cart button is available to the anonymous user.",
-    "anonymous-create-sets": "Anonymous user can create and manage sets?",
-    "anonymous-create-sets-help": "Create/Add to set button is available to the anonymous user.",
-    "max-number-sets": "Maximum number of sets that a user can create.",
-    "max-items-per-set": "Maximum number of items in a set.",
+    "cart-enabled-help": "Cart creation and management is enabled.",
+    "anonymous-create-cart": "Anonymous user has a cart",
+    "anonymous-create-cart-help": "Anonymous user can create and manage a cart.",
+    "max-number-sets": "Maximum number of lists",
+    "max-number-sets-help": "Maximum number of lists that a user can create.",
+    "max-items-per-set": "Maximum number of documents",
+    "max-items-per-set-help": "Maximum number of documents a list can contain.",
     "short-title": "Configuration",
     "title": "General Configuration",
     "title-edit": "Edit General Configuration",
@@ -953,7 +953,7 @@
     "date-title": "Date",
     "entities-count": {
       "title": "Entities Count",
-      "help": "Given a set of variables, the entities matching all the criteria for these variables can be counted.",
+      "help": "Given a list of variables, the entities matching all the criteria for these variables can be counted.",
       "action": "Count entities",
       "no-query": "To count entities you need to select some variables first and then apply criteria on their values."
     }
@@ -965,10 +965,10 @@
     "unselect-all": "Unselect all items"
   },
   "sets": {
-    "empty": "No set",
+    "empty": "No list",
     "cart": {
       "title": "Cart",
-      "help": "Use the cart to make a set of variables. This set can be analyzed or can be viewed in the search page.",
+      "help": "Use the cart to make a list of variables. This list can be analyzed or can be viewed in the search page.",
       "no-variables": "The cart of variables is empty.",
       "no-variable-added": "No variable has been added to the cart.",
       "variables-added": "<a href='#/cart' target='_self'><u>{{arg0}} new variable(s) were added to the cart.</u></a>",
@@ -979,26 +979,26 @@
       "remove-from-cart": "Remove from Cart"
     },
     "set": {
-      "title": "Sets",
-      "help": "Make one or more sets. Each set can be analyzed or can be viewed in the search page.",
-      "no-variable-added": "No variable has been added to the {{arg0}} set.",
-      "variables-added": "<a href='#/sets?id={{arg0}}' target='_self'><u>{{arg1}} variable(s) were added to set {{arg2}}.</u></a>"
+      "title": "Lists",
+      "help": "Make one or more lists. Each list can be analyzed or can be viewed in the search page.",
+      "no-variable-added": "No variable has been added to the {{arg0}} list.",
+      "variables-added": "<a href='#/sets?id={{arg0}}' target='_self'><u>{{arg1}} variable(s) were added to list {{arg2}}.</u></a>"
     },
     "add": {
       "button": {
         "cart-label": "Add to Cart",
-        "set-label": "Add to Set"
+        "set-label": "Add to List"
       },
       "modal": {
-        "title": "Save to Set",
+        "title": "Save to List",
         "sub-title": "Name",
-        "create-new": "Create a new set",
-        "to-existing": "Add to existing set"
+        "create-new": "Create a new list",
+        "to-existing": "Add to an existing list"
       }
     },
     "delete-dialog": {
-      "title": "Delete Selected Sets",
-      "message": "Are you sure you want to delete the selected sets."
+      "title": "Delete Selected Lists",
+      "message": "Are you sure you want to delete the selected lists."
     }
   },
   "search": {
@@ -1275,7 +1275,7 @@
       "classifications": "Browse taxonomies.",
       "translations": "Manage labels translations.",
       "cart": "Cart of variables.",
-      "sets": "Sets of variables."
+      "sets": "Lists of variables."
     }
   },
   "server": {
