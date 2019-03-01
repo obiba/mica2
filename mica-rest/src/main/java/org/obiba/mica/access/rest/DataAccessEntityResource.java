@@ -143,7 +143,7 @@ public abstract class DataAccessEntityResource<T extends DataAccessEntity> {
 
   protected Response conditionallyApprove() {
     String id = getId();
-    DataAccessEntity request = getService().updateStatus(id, DataAccessEntityStatus.CONDITIONALLY_APPROVED);
+    DataAccessEntity request = getService().findById(id);
     restoreApplicantActions(id, request.getApplicant());
     return updateStatus(DataAccessEntityStatus.CONDITIONALLY_APPROVED);
   }
