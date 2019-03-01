@@ -12,10 +12,14 @@ package org.obiba.mica.variable.search.rest;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import org.apache.shiro.authz.AuthorizationException;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.core.domain.DocumentSet;
 import org.obiba.mica.dataset.service.VariableSetService;
+import org.obiba.mica.micaConfig.domain.MicaConfig;
+import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.search.JoinQueryExecutor;
+import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.spi.search.QueryType;
 import org.obiba.mica.spi.search.Searcher;
 import org.obiba.mica.web.model.Dtos;
@@ -43,6 +47,11 @@ public class PublishedDatasetVariablesSetResource {
 
   private JoinQueryExecutor joinQueryExecutor;
 
+  private MicaConfigService micaConfigService;
+
+  private SubjectAclService subjectAclService;
+
+
   private Searcher searcher;
 
   private Dtos dtos;
@@ -52,9 +61,13 @@ public class PublishedDatasetVariablesSetResource {
     VariableSetService variableSetService,
     JoinQueryExecutor joinQueryExecutor,
     Searcher searcher,
-    Dtos dtos) {
+    Dtos dtos,
+    MicaConfigService micaConfigService,
+    SubjectAclService subjectAclService) {
     this.variableSetService = variableSetService;
     this.joinQueryExecutor = joinQueryExecutor;
+    this.micaConfigService = micaConfigService;
+    this.subjectAclService = subjectAclService;
     this.searcher = searcher;
     this.dtos = dtos;
   }
@@ -76,7 +89,7 @@ public class PublishedDatasetVariablesSetResource {
   @GET
   @Path("/documents")
   public Mica.DatasetVariablesDto getVariables(@QueryParam("from") @DefaultValue("0") int from, @QueryParam("limit") @DefaultValue("10") int limit) {
-    DocumentSet set = variableSetService.get(id);
+    DocumentSet set = getSecuredDocumentSet();
     return Mica.DatasetVariablesDto.newBuilder()
       .setTotal(set.getIdentifiers().size())
       .setFrom(from)
@@ -89,7 +102,7 @@ public class PublishedDatasetVariablesSetResource {
   @Path("/documents/_export")
   @Produces(MediaType.TEXT_PLAIN)
   public Response exportVariables() {
-    DocumentSet documentSet = variableSetService.get(id);
+    DocumentSet documentSet = getSecuredDocumentSet();
     StreamingOutput stream = os -> {
       documentSet.getIdentifiers().forEach(id -> {
         try {
@@ -108,7 +121,7 @@ public class PublishedDatasetVariablesSetResource {
   @Path("/documents/_delete")
   @Consumes(MediaType.TEXT_PLAIN)
   public Response deleteVariables(String body) {
-    DocumentSet set = variableSetService.get(id);
+    DocumentSet set = getSecuredDocumentSet();
     if (Strings.isNullOrEmpty(body)) return Response.ok().entity(dtos.asDto(set)).build();
     variableSetService.removeIdentifiers(id, variableSetService.extractIdentifiers(body));
     return Response.ok().entity(dtos.asDto(variableSetService.get(id))).build();
@@ -118,7 +131,7 @@ public class PublishedDatasetVariablesSetResource {
   @Path("/documents/_import")
   @Consumes(MediaType.TEXT_PLAIN)
   public Response importVariables(String body) {
-    DocumentSet set = variableSetService.get(id);
+    DocumentSet set = getSecuredDocumentSet();
     if (Strings.isNullOrEmpty(body)) return Response.ok().entity(dtos.asDto(set)).build();
     variableSetService.addIdentifiers(id, variableSetService.extractIdentifiers(body));
     return Response.ok().entity(dtos.asDto(variableSetService.get(id))).build();
@@ -127,14 +140,14 @@ public class PublishedDatasetVariablesSetResource {
   @POST
   @Path("/documents/_rql")
   public Response importQueryVariables(@FormParam("query") String query) throws IOException {
-    DocumentSet set = variableSetService.get(id);
+    DocumentSet set = getSecuredDocumentSet();
     if (Strings.isNullOrEmpty(query)) return Response.ok().entity(dtos.asDto(set)).build();
     MicaSearch.JoinQueryResultDto result = joinQueryExecutor.query(QueryType.VARIABLE, searcher.makeJoinQuery(query));
     if (result.hasVariableResultDto() && result.getVariableResultDto().getTotalHits() > 0) {
       List<String> ids = result.getVariableResultDto().getExtension(MicaSearch.DatasetVariableResultDto.result).getSummariesList().stream()
         .map(Mica.DatasetVariableResolverDto::getId).collect(Collectors.toList());
       variableSetService.addIdentifiers(id, ids);
-      set = variableSetService.get(id);
+      set = getSecuredDocumentSet();
     }
     return Response.ok().entity(dtos.asDto(set)).build();
   }
@@ -149,8 +162,19 @@ public class PublishedDatasetVariablesSetResource {
   @GET
   @Path("/document/{documentId}/_exists")
   public Response hasVariable(@PathParam("documentId") String documentId) {
-    DocumentSet set = variableSetService.get(id);
+    DocumentSet set = getSecuredDocumentSet();
     return set.getIdentifiers().contains(documentId) ? Response.ok().build() : Response.status(Response.Status.NOT_FOUND).build();
+  }
+
+  private DocumentSet getSecuredDocumentSet() {
+    DocumentSet documentSet = variableSetService.get(id);
+    if (!subjectAclService.isCurrentUser(documentSet.getUsername())) throw new AuthorizationException();
+
+    MicaConfig config = micaConfigService.getConfig();
+    if (!(config.isCartEnabled() && config.isAnonymousCanCreateCart()) && !documentSet.hasName()) throw new AuthorizationException(); // cart
+    if (documentSet.hasName() && !subjectAclService.hasMicaRole()) throw new AuthorizationException();
+
+    return documentSet;
   }
 
 }

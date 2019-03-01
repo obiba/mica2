@@ -28,6 +28,7 @@ import org.obiba.mica.file.FileUtils;
 import org.obiba.mica.file.event.FileDeletedEvent;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.network.event.NetworkDeletedEvent;
+import org.obiba.mica.security.Roles;
 import org.obiba.mica.security.domain.SubjectAcl;
 import org.obiba.mica.security.event.ResourceDeletedEvent;
 import org.obiba.mica.security.event.SubjectAclUpdatedEvent;
@@ -53,6 +54,7 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
 /**
  * Access control lists management: add, remove and check permissions on resources.
@@ -100,6 +102,11 @@ public class SubjectAclService {
   public List<SubjectAcl> findByResourceInstance(String resource, String instance) {
     return subjectAclRepository.findByResourceAndInstance(resource, encode(instance),
       new Sort(new Sort.Order(Sort.Direction.DESC, "type"), new Sort.Order(Sort.Direction.ASC, "principal")));
+  }
+
+  public boolean hasMicaRole() {
+    return Stream.of(Roles.MICA_DAO, Roles.MICA_ADMIN, Roles.MICA_EDITOR, Roles.MICA_REVIEWER, Roles.MICA_USER)
+      .anyMatch(SecurityUtils.getSubject()::hasRole);
   }
 
   /**

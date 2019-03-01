@@ -12,15 +12,20 @@ package org.obiba.mica.variable.search.rest;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import org.apache.shiro.authz.AuthorizationException;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.core.domain.DocumentSet;
 import org.obiba.mica.core.domain.MaximumDocumentSetCreationExceededException;
 import org.obiba.mica.core.domain.SetOperation;
 import org.obiba.mica.dataset.service.VariableSetOperationService;
 import org.obiba.mica.dataset.service.VariableSetService;
+import org.obiba.mica.micaConfig.domain.MicaConfig;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
+import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -45,21 +50,30 @@ public class PublishedDatasetVariablesSetsResource {
 
   private MicaConfigService micaConfigService;
 
+  private SubjectAclService subjectAclService;
+
   private Dtos dtos;
+
+  private static final Logger log = LoggerFactory.getLogger(PublishedDatasetVariablesSetsResource.class);
 
   @Inject
   public PublishedDatasetVariablesSetsResource(
     VariableSetService variableSetService,
     VariableSetOperationService variableSetOperationService,
-    MicaConfigService micaConfigService, Dtos dtos) {
+    MicaConfigService micaConfigService,
+    SubjectAclService subjectAclService,
+    Dtos dtos) {
     this.variableSetService = variableSetService;
     this.variableSetOperationService = variableSetOperationService;
     this.micaConfigService = micaConfigService;
+    this.subjectAclService = subjectAclService;
     this.dtos = dtos;
   }
 
   @GET
   public List<Mica.DocumentSetDto> list(@QueryParam("id") List<String> ids) {
+    if (!subjectAclService.hasMicaRole()) throw new AuthorizationException();
+
     if (ids.isEmpty())
       return variableSetService.getAllCurrentUser().stream().map(s -> dtos.asDto(s)).collect(Collectors.toList());
     else
@@ -68,7 +82,8 @@ public class PublishedDatasetVariablesSetsResource {
 
   @POST
   public Response createEmpty(@Context UriInfo uriInfo, @QueryParam("name") String name) {
-    if (name != null && !name.isEmpty()) checkSetsNumberLimit();
+    ensureUserIsAuthorized(name);
+    if (!Strings.isNullOrEmpty(name)) checkSetsNumberLimit();
 
     DocumentSet created = variableSetService.create(name, Lists.newArrayList());
     return Response.created(uriInfo.getBaseUriBuilder().segment("variables", "set", created.getId()).build()).build();
@@ -78,7 +93,8 @@ public class PublishedDatasetVariablesSetsResource {
   @Path("_import")
   @Consumes(MediaType.TEXT_PLAIN)
   public Response importVariables(@Context UriInfo uriInfo, @QueryParam("name") String name, String body) {
-    if (name != null && !name.isEmpty()) checkSetsNumberLimit();
+    ensureUserIsAuthorized(name);
+    if (!Strings.isNullOrEmpty(name)) checkSetsNumberLimit();
 
     DocumentSet created = variableSetService.create(name, variableSetService.extractIdentifiers(body));
     return Response.created(uriInfo.getBaseUriBuilder().segment("variables", "set", created.getId()).build())
@@ -88,6 +104,7 @@ public class PublishedDatasetVariablesSetsResource {
   @POST
   @Path("operations")
   public Response compose(@Context UriInfo uriInfo, @QueryParam("s1") String set1, @QueryParam("s2") String set2, @QueryParam("s3") String set3) {
+    if (!subjectAclService.hasMicaRole()) throw new AuthorizationException();
     List<DocumentSet> sets = Lists.newArrayList();
     sets.add(variableSetService.get(set1));
     sets.add(variableSetService.get(set2));
@@ -99,7 +116,14 @@ public class PublishedDatasetVariablesSetsResource {
   @GET
   @Path("operation/{id}")
   public Mica.SetOperationDto compose(@Context UriInfo uriInfo, @PathParam("id") String operationId) {
+    if (!subjectAclService.hasMicaRole()) throw new AuthorizationException();
     return dtos.asDto(variableSetOperationService.get(operationId));
+  }
+
+  private void ensureUserIsAuthorized(String name) {
+    MicaConfig config = micaConfigService.getConfig();
+    if (!(config.isCartEnabled() && config.isAnonymousCanCreateCart()) && Strings.isNullOrEmpty(name)) throw new AuthorizationException(); // cart
+    if (!Strings.isNullOrEmpty(name) && !subjectAclService.hasMicaRole()) throw new AuthorizationException();
   }
 
   private long numberOfNamedSets() {

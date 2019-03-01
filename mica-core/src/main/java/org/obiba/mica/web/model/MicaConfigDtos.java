@@ -35,6 +35,8 @@ import static java.util.stream.Collectors.toMap;
 @Component
 class MicaConfigDtos {
 
+  public static final String ANONYMOUS_USERNAME = "anonymous";
+
   private LocalizedStringDtos localizedStringDtos;
 
   private AttachmentDtos attachmentDtos;
@@ -132,15 +134,13 @@ class MicaConfigDtos {
     String principal = SecurityUtils.getSubject().getPrincipal().toString();
 
     builder.setAnonymousCanCreateCart(config.isAnonymousCanCreateCart());
-    builder.setAnonymousCanCreateSets(config.isAnonymousCanCreateSets());
-    builder.setAnonymousUsername(config.getAnonymousUsername());
     builder.setMaxItemsPerSet(config.getMaxItemsPerSet());
     builder.setMaxNumberOfSets(config.getMaxNumberOfSets());
     builder.setIsCartEnabled(config.isCartEnabled());
 
-    if (principal.equals(config.getAnonymousUsername())) {
+    if (principal.equals(ANONYMOUS_USERNAME)) {
       builder.setCurrentUserCanCreateCart(config.isCartEnabled() && config.isAnonymousCanCreateCart());
-      builder.setCurrentUserCanCreateSets(config.isAnonymousCanCreateSets());
+      builder.setCurrentUserCanCreateSets(false);
     } else {
       builder.setCurrentUserCanCreateCart(config.isCartEnabled());
       builder.setCurrentUserCanCreateSets(true);
@@ -190,9 +190,7 @@ class MicaConfigDtos {
     boolean cartEnabled = dto.getIsCartEnabled();
     config.setCartEnabled(cartEnabled);
     config.setAnonymousCanCreateCart(cartEnabled && dto.getAnonymousCanCreateCart());
-    config.setAnonymousCanCreateSets(dto.getAnonymousCanCreateSets());
 
-    if (dto.hasAnonymousUsername() && !dto.getAnonymousUsername().isEmpty()) config.setAnonymousUsername(dto.getAnonymousUsername());
     if (dto.hasMaxItemsPerSet() && dto.getMaxItemsPerSet() > 0) config.setMaxItemsPerSet(dto.getMaxItemsPerSet());
     if (dto.hasMaxNumberOfSets() && dto.getMaxNumberOfSets() > 0) config.setMaxNumberOfSets(dto.getMaxNumberOfSets());
 

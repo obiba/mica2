@@ -99,11 +99,6 @@
              label="config.cart-enabled" ng-click="cartEnabledChanged()"></div>
         <div form-checkbox name="anonymousCanCreateCart" model="micaConfig.anonymousCanCreateCart"
              label="config.anonymous-create-cart" disabled="!micaConfig.isCartEnabled"></div>
-        <div form-checkbox name="anonymousCanCreateSets" model="micaConfig.anonymousCanCreateSets"
-             label="config.anonymous-create-sets"></div>
-
-        <div form-input name="anonymousUsername" model="micaConfig.anonymousUsername" label="config.anonymous-username"
-             required="true"></div>
 
         <div form-input name="maxNumberOfSets" model="micaConfig.maxNumberOfSets" label="config.max-number-sets"
              type="number" required="true" help="config.privacy-threshold-help"></div>
