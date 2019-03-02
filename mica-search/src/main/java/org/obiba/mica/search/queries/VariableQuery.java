@@ -11,13 +11,10 @@
 package org.obiba.mica.search.queries;
 
 import com.google.common.base.Joiner;
-import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import org.obiba.mica.core.domain.Attribute;
+import javax.inject.Inject;
 import org.obiba.mica.dataset.domain.DatasetVariable;
-import org.obiba.mica.dataset.domain.HarmonizationDatasetState;
-import org.obiba.mica.dataset.domain.StudyDatasetState;
 import org.obiba.mica.dataset.service.CollectedDatasetService;
 import org.obiba.mica.dataset.service.HarmonizedDatasetService;
 import org.obiba.mica.micaConfig.service.OpalService;
@@ -42,7 +39,6 @@ import org.springframework.stereotype.Component;
 import sun.util.locale.LanguageTag;
 
 import javax.annotation.Nullable;
-import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.util.*;
@@ -60,39 +56,59 @@ public class VariableQuery extends AbstractDocumentQuery {
 
   private static final String DATASET_ID = "datasetId";
 
+  private static final String SETS = "sets";
+
   private static final String VARIABLE_TYPE = "variableType";
 
-  @Inject
   private OpalService opalService;
 
-  @Inject
   private PublishedStudyService publishedStudyService;
 
-  @Inject
   private Dtos dtos;
 
-  @Inject
   private DatasetAggregationMetaDataProvider datasetAggregationMetaDataProvider;
 
-  @Inject
   private TaxonomyAggregationMetaDataProvider taxonomyAggregationMetaDataProvider;
 
-  @Inject
   private VariableTaxonomyMetaDataProvider variableTaxonomyMetaDataProvider;
 
-  @Inject
   private DataCollectionEventAggregationMetaDataProvider dceAggregationMetaDataProvider;
 
-  @Inject
   private StudyAggregationMetaDataProvider studyAggregationMetaDataProvider;
 
-  @Inject
   private CollectedDatasetService collectedDatasetService;
 
-  @Inject
   private HarmonizedDatasetService harmonizedDatasetService;
 
+  private SetsAggregationMetaDataProvider setsAggregationMetaDataProvider;
+
   private DocumentQueryIdProvider datasetIdProvider;
+
+  @Inject
+  public VariableQuery(
+    OpalService opalService,
+    PublishedStudyService publishedStudyService,
+    CollectedDatasetService collectedDatasetService,
+    HarmonizedDatasetService harmonizedDatasetService,
+    Dtos dtos,
+    DatasetAggregationMetaDataProvider datasetAggregationMetaDataProvider,
+    TaxonomyAggregationMetaDataProvider taxonomyAggregationMetaDataProvider,
+    VariableTaxonomyMetaDataProvider variableTaxonomyMetaDataProvider,
+    DataCollectionEventAggregationMetaDataProvider dceAggregationMetaDataProvider,
+    StudyAggregationMetaDataProvider studyAggregationMetaDataProvider,
+    SetsAggregationMetaDataProvider setsAggregationMetaDataProvider) {
+    this.opalService = opalService;
+    this.publishedStudyService = publishedStudyService;
+    this.dtos = dtos;
+    this.datasetAggregationMetaDataProvider = datasetAggregationMetaDataProvider;
+    this.taxonomyAggregationMetaDataProvider = taxonomyAggregationMetaDataProvider;
+    this.variableTaxonomyMetaDataProvider = variableTaxonomyMetaDataProvider;
+    this.dceAggregationMetaDataProvider = dceAggregationMetaDataProvider;
+    this.studyAggregationMetaDataProvider = studyAggregationMetaDataProvider;
+    this.collectedDatasetService = collectedDatasetService;
+    this.harmonizedDatasetService = harmonizedDatasetService;
+    this.setsAggregationMetaDataProvider = setsAggregationMetaDataProvider;
+  }
 
   @Override
   public String getSearchIndex() {
@@ -152,7 +168,7 @@ public class VariableQuery extends AbstractDocumentQuery {
   protected List<AggregationMetaDataProvider> getAggregationMetaDataProviders() {
     return Arrays
         .asList(taxonomyAggregationMetaDataProvider, variableTaxonomyMetaDataProvider, datasetAggregationMetaDataProvider,
-            dceAggregationMetaDataProvider, studyAggregationMetaDataProvider);
+            dceAggregationMetaDataProvider, studyAggregationMetaDataProvider, setsAggregationMetaDataProvider);
   }
 
   @Override
@@ -303,6 +319,7 @@ public class VariableQuery extends AbstractDocumentQuery {
     // required for the counts to work
     if (!properties.containsKey(JOIN_FIELD)) properties.put(JOIN_FIELD, "");
     if (!properties.containsKey(DATASET_ID)) properties.put(DATASET_ID, "");
+    if (!properties.containsKey(SETS)) properties.put(SETS, "");
 
     return properties;
   }

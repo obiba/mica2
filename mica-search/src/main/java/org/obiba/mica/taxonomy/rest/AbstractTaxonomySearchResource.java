@@ -12,6 +12,8 @@ package org.obiba.mica.taxonomy.rest;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import org.obiba.mica.core.domain.DocumentSet;
+import org.obiba.mica.dataset.service.VariableSetService;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.micaConfig.service.TaxonomyNotFoundException;
 import org.obiba.mica.micaConfig.service.TaxonomyService;
@@ -19,6 +21,7 @@ import org.obiba.mica.spi.search.TaxonomyTarget;
 import org.obiba.mica.taxonomy.EsTaxonomyTermService;
 import org.obiba.mica.taxonomy.EsTaxonomyVocabularyService;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
+import org.obiba.opal.core.domain.taxonomy.Term;
 import org.obiba.opal.web.model.Opal;
 import org.obiba.opal.web.taxonomy.Dtos;
 import sun.util.locale.LanguageTag;
@@ -52,16 +55,31 @@ public class AbstractTaxonomySearchResource {
   @Inject
   private MicaConfigService micaConfigService;
 
+  @Inject
+  private VariableSetService variableSetService;
+
   protected void populate(Opal.TaxonomyDto.Builder tBuilder, Taxonomy taxonomy,
                           Map<String, Map<String, List<String>>> taxoNamesMap) {
+
     taxonomy.getVocabularies().stream().filter(v -> taxoNamesMap.get(taxonomy.getName()).containsKey(v.getName()))
         .forEach(voc -> {
           Opal.VocabularyDto.Builder vBuilder = Dtos.asDto(voc, false).toBuilder();
           List<String> termNames = taxoNamesMap.get(taxonomy.getName()).get(voc.getName());
           if (voc.hasTerms()) {
+            List<Term> terms = voc.getTerms();
+
+            // for now, sets are available for variable documents only
+            if (taxonomy.getName().equals("Mica_" + TaxonomyTarget.VARIABLE.asId()) && voc.getName().equals("sets")) {
+              List<String> allSetsCurrentUser = variableSetService.getAllCurrentUser().stream().map(DocumentSet::getId).collect(Collectors.toList());
+
+              if (allSetsCurrentUser.size() > 0) {
+                terms = voc.getTerms().stream().filter(term -> allSetsCurrentUser.contains(term.getName())).collect(Collectors.toList());
+              }
+            }
+
             if (termNames.isEmpty())
-              vBuilder.addAllTerms(voc.getTerms().stream().map(Dtos::asDto).collect(Collectors.toList()));
-            else voc.getTerms().stream().filter(t -> termNames.contains(t.getName()))
+              vBuilder.addAllTerms(terms.stream().map(Dtos::asDto).collect(Collectors.toList()));
+            else terms.stream().filter(t -> termNames.contains(t.getName()))
                 .forEach(term -> vBuilder.addTerms(Dtos.asDto(term)));
           }
           tBuilder.addVocabularies(vBuilder);
