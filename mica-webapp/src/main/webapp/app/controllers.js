@@ -20,8 +20,8 @@ mica.controller('MainController', [
   'PublicMicaConfigResource',
   'screenSize',
   'AuthenticationSharedService',
-  function ($rootScope, $scope, $window, MicaConfigResource, PublicMicaConfigResource, screenSize,
-            AuthenticationSharedService) {
+  '$cacheFactory',
+  function ($rootScope, $scope, $window, MicaConfigResource, PublicMicaConfigResource, screenSize, AuthenticationSharedService, $cacheFactory) {
     function getScreenSize() {
       var size = ['lg', 'md', 'sm', 'xs'].filter(function (size) {
         return screenSize.is(size);
@@ -46,6 +46,8 @@ mica.controller('MainController', [
 
     $rootScope.$on('event:auth-loginConfirmed', function () {
       $scope.micaConfig = MicaConfigResource.get();
+      $cacheFactory.remove('taxonomyResource');
+      $cacheFactory.remove('taxonomiesResource');
     });
 
     getScreenSize();

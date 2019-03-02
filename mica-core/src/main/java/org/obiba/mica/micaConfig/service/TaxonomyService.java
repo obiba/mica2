@@ -24,6 +24,7 @@ import org.obiba.mica.micaConfig.domain.MicaConfig;
 import org.obiba.mica.micaConfig.service.helper.DatasetIdAggregationMetaDataHelper;
 import org.obiba.mica.micaConfig.service.helper.DceIdAggregationMetaDataHelper;
 import org.obiba.mica.micaConfig.service.helper.NetworkIdAggregationMetaDataHelper;
+import org.obiba.mica.micaConfig.service.helper.SetsAggregationMetaDataHelper;
 import org.obiba.mica.micaConfig.service.helper.StudyIdAggregationMetaDataHelper;
 import org.obiba.mica.network.event.NetworkPublishedEvent;
 import org.obiba.mica.network.event.NetworkUnpublishedEvent;
@@ -41,23 +42,19 @@ import com.google.common.eventbus.Subscribe;
 @Service
 public class TaxonomyService {
 
-  @Inject
   private OpalService opalService;
 
-  @Inject
   private MicaConfigService micaConfigService;
 
-  @Inject
-  StudyIdAggregationMetaDataHelper studyHelper;
+  private StudyIdAggregationMetaDataHelper studyHelper;
 
-  @Inject
-  DatasetIdAggregationMetaDataHelper datasetHelper;
+  private DatasetIdAggregationMetaDataHelper datasetHelper;
 
-  @Inject
-  NetworkIdAggregationMetaDataHelper networkHelper;
+  private NetworkIdAggregationMetaDataHelper networkHelper;
 
-  @Inject
-  DceIdAggregationMetaDataHelper dceHelper;
+  private DceIdAggregationMetaDataHelper dceHelper;
+
+  private SetsAggregationMetaDataHelper setsHelper;
 
   private Taxonomy taxonomyTaxonomy;
 
@@ -68,6 +65,24 @@ public class TaxonomyService {
   private Taxonomy studyTaxonomy;
 
   private Taxonomy networkTaxonomy;
+
+  @Inject
+  public TaxonomyService(
+    OpalService opalService,
+    MicaConfigService micaConfigService,
+    StudyIdAggregationMetaDataHelper studyHelper,
+    DatasetIdAggregationMetaDataHelper datasetHelper,
+    NetworkIdAggregationMetaDataHelper networkHelper,
+    DceIdAggregationMetaDataHelper dceHelper,
+    SetsAggregationMetaDataHelper setsHelper) {
+    this.opalService = opalService;
+    this.micaConfigService = micaConfigService;
+    this.studyHelper = studyHelper;
+    this.datasetHelper = datasetHelper;
+    this.networkHelper = networkHelper;
+    this.dceHelper = dceHelper;
+    this.setsHelper = setsHelper;
+  }
 
   @NotNull
   public Taxonomy getTaxonomyTaxonomy() {
@@ -185,6 +200,7 @@ public class TaxonomyService {
     studyHelper.applyIdTerms(variableTaxonomy, "studyId");
     datasetHelper.applyIdTerms(variableTaxonomy, "datasetId");
     dceHelper.applyIdTerms(variableTaxonomy, "dceId");
+    setsHelper.applyIdTerms(variableTaxonomy, "sets");
   }
 
   private Taxonomy copy(Taxonomy source) {
