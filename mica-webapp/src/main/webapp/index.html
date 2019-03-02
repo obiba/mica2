@@ -145,24 +145,6 @@
                 <span>{{'language.' + lang | translate}}</span> <i class="fa fa-check" aria-hidden="true" ng-show="getCurrentLanguage() === lang"></i></a>
             </li>
             <li class="divider"></li>
-            <li ng-if="!micaConfig.isSingleStudyEnabled ||
-                (micaConfig.isNetworkEnabled && !micaConfig.isSingleNetworkEnabled) ||
-                micaConfig.isCollectedDatasetEnabled || micaConfig.isHarmonizedDatasetEnabled">
-              <a href="#/search">
-                <span>{{'search.title' | translate}}</span>
-              </a>
-            </li>
-            <li ng-if="micaConfig.isCartEnabled">
-              <a href="#/cart">
-                <span>{{'sets.cart.title' | translate}}</span>
-              </a>
-            </li>
-            <li>
-              <a href="#/sets">
-                <span>{{'sets.set.title' | translate}}</span>
-              </a>
-            </li>
-            <li class="divider"></li>
             <li><a href="#/logout"><i class="fa fa-sign-out"></i> <span translate>global.menu.logout</span></a></li>
           </ul>
         </li>
