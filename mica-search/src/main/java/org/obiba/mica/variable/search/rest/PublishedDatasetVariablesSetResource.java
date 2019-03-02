@@ -77,24 +77,27 @@ public class PublishedDatasetVariablesSetResource {
 
   @GET
   public Mica.DocumentSetDto get() {
-    return dtos.asDto(variableSetService.get(id));
+    DocumentSet documentSet = getSecuredDocumentSet();
+    variableSetService.touch(documentSet);
+    return dtos.asDto(documentSet);
   }
 
   @DELETE
   public Response delete() {
-    variableSetService.delete(variableSetService.get(id));
+    variableSetService.delete(getSecuredDocumentSet());
     return Response.ok().build();
   }
 
   @GET
   @Path("/documents")
   public Mica.DatasetVariablesDto getVariables(@QueryParam("from") @DefaultValue("0") int from, @QueryParam("limit") @DefaultValue("10") int limit) {
-    DocumentSet set = getSecuredDocumentSet();
+    DocumentSet documentSet = getSecuredDocumentSet();
+    variableSetService.touch(documentSet);
     return Mica.DatasetVariablesDto.newBuilder()
-      .setTotal(set.getIdentifiers().size())
+      .setTotal(documentSet.getIdentifiers().size())
       .setFrom(from)
       .setLimit(limit)
-      .addAllVariables(variableSetService.getVariables(set, from, limit).stream()
+      .addAllVariables(variableSetService.getVariables(documentSet, from, limit).stream()
         .map(var -> dtos.asDto(var)).collect(Collectors.toList())).build();
   }
 
@@ -103,6 +106,7 @@ public class PublishedDatasetVariablesSetResource {
   @Produces(MediaType.TEXT_PLAIN)
   public Response exportVariables() {
     DocumentSet documentSet = getSecuredDocumentSet();
+    variableSetService.touch(documentSet);
     StreamingOutput stream = os -> {
       documentSet.getIdentifiers().forEach(id -> {
         try {

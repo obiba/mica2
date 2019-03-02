@@ -128,6 +128,10 @@ public class MicaConfig extends AbstractAuditableDocument {
 
   private boolean cartEnabled = true;
 
+  private int cartTimeToLive = 30; // 1 month
+
+  private int setTimeToLive = 365; // year
+
   public String getName() {
     return name;
   }
@@ -447,5 +451,21 @@ public class MicaConfig extends AbstractAuditableDocument {
 
   public void setCartEnabled(boolean cartEnabled) {
     this.cartEnabled = cartEnabled;
+  }
+
+  public int getCartTimeToLive() {
+    return cartTimeToLive;
+  }
+
+  public void setCartTimeToLive(int cartTimeToLive) {
+    this.cartTimeToLive = cartTimeToLive;
+  }
+
+  public int getSetTimeToLive() {
+    return setTimeToLive;
+  }
+
+  public void setSetTimeToLive(int setTimeToLive) {
+    this.setTimeToLive = setTimeToLive;
   }
 }

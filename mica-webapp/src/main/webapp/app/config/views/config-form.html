@@ -96,14 +96,24 @@
 
         <h4 class="voffset5" translate>config.sets</h4>
         <div form-checkbox name="cartEnabled" model="micaConfig.isCartEnabled"
-             label="config.cart-enabled" ng-click="cartEnabledChanged()"></div>
+             label="config.cart-enabled" ng-click="cartEnabledChanged()" help="config.cart-enabled-help">
+        </div>
         <div form-checkbox name="anonymousCanCreateCart" model="micaConfig.anonymousCanCreateCart"
-             label="config.anonymous-create-cart" disabled="!micaConfig.isCartEnabled"></div>
-
+             label="config.anonymous-create-cart" disabled="!micaConfig.isCartEnabled"  help="config.anonymous-create-cart-help">
+        </div>
         <div form-input name="maxNumberOfSets" model="micaConfig.maxNumberOfSets" label="config.max-number-sets"
-             type="number" required="true" help="config.privacy-threshold-help"></div>
+             type="number" required="true" help="config.max-number-sets-help">
+        </div>
         <div form-input name="maxItemsPerSet" model="micaConfig.maxItemsPerSet" label="config.max-items-per-set"
-             type="number" required="true"></div>
+             type="number" required="true" help="config.max-items-per-set-help">
+        </div>
+
+        <div form-input name="cartTimeToLive" model="micaConfig.cartTimeToLive" label="config.cart-time-to-live"
+             type="number" min="1" step="1" required="true" disabled="!micaConfig.isCartEnabled" help="config.cart-time-to-live-help">
+        </div>
+        <div form-input name="setTimeToLive" model="micaConfig.setTimeToLive" label="config.set-time-to-live"
+             type="number" min="1" step="1" required="true" help="config.set-time-to-live-help">
+        </div>
       </div>
     </div>
 

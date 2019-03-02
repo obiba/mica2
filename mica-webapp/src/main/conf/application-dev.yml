@@ -62,3 +62,9 @@ hotReload:
         restdto: org.obiba.mica.web.rest.dto
     watchdir:
         - target/classes
+
+sets:
+  cleanup:
+    # "<second> <minute> <hour> <day-of-month> <month> <day-of-week> <year>"
+    # Current cron set to run every day at mid-night
+    cron: "0 0 * * * ?"

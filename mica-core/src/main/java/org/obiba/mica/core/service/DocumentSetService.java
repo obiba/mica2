@@ -16,7 +16,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import java.util.stream.Stream;
 import org.apache.shiro.SecurityUtils;
 import org.joda.time.DateTime;
 import org.obiba.mica.core.domain.DocumentSet;
@@ -26,10 +25,12 @@ import org.obiba.mica.core.event.DocumentSetUpdatedEvent;
 import org.obiba.mica.core.repository.DocumentSetRepository;
 import org.obiba.mica.dataset.event.DatasetDeletedEvent;
 import org.obiba.mica.dataset.event.DatasetUnpublishedEvent;
+import org.obiba.mica.micaConfig.domain.MicaConfig;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.Scheduled;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -39,6 +40,7 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public abstract class DocumentSetService {
 
@@ -202,6 +204,10 @@ public abstract class DocumentSetService {
     return documentSet != null && getType().equals(documentSet.getType());
   }
 
+  public void touch(DocumentSet documentSet) {
+    saveInternal(documentSet);
+  }
+
   @Async
   @Subscribe
   public void datasetUnpublished(DatasetUnpublishedEvent event) {
@@ -217,9 +223,21 @@ public abstract class DocumentSetService {
     // query fails: bug in spring data?
   }
 
-  //
-  // Private methods
-  //
+  @Async
+  @Scheduled(cron = "${sets.cleanup.cron:0 0 * * * ?}")
+  public void cleanupOldSets() {
+    MicaConfig config = micaConfigService.getConfig();
+    documentSetRepository.findAll()
+      .forEach(set -> {
+        int timeToLive = set.hasName() ? config.getSetTimeToLive() : config.getCartTimeToLive();
+        DateTime deadline = DateTime.now().minusDays(timeToLive);
+        if (set.getLastModifiedDate().isBefore(deadline)) {
+          log.debug("Last updated {} - expiration {}", set.getLastModifiedDate(), deadline);
+          log.info("{} {} has expired, deleting...", (set.hasName() ? "Set" : "Cart"), set.getId());
+          delete(set);
+        }
+      });
+  }
 
   protected List<String> extractIdentifiers(String importedIdentifiers, Predicate<String> predicate) {
     if (Strings.isNullOrEmpty(importedIdentifiers)) return Lists.newArrayList();
@@ -234,6 +252,12 @@ public abstract class DocumentSetService {
   }
 
   private DocumentSet save(DocumentSet documentSet, Set<String> removedIdentifiers) {
+    DocumentSet saved = saveInternal(documentSet);
+    eventBus.post(new DocumentSetUpdatedEvent(saved, removedIdentifiers));
+    return saved;
+  }
+
+  private DocumentSet saveInternal(DocumentSet documentSet) {
     ensureType(documentSet);
     documentSet.setLastModifiedDate(DateTime.now());
     if (Strings.isNullOrEmpty(documentSet.getUsername())) {
@@ -243,7 +267,7 @@ public abstract class DocumentSetService {
       }
     }
     documentSet = documentSetRepository.save(documentSet);
-    eventBus.post(new DocumentSetUpdatedEvent(documentSet, removedIdentifiers));
     return documentSet;
   }
+
 }
