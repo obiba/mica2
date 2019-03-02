@@ -14,6 +14,7 @@ import com.google.common.collect.Lists;
 import com.google.common.eventbus.Subscribe;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.obiba.mica.core.domain.DocumentSet;
+import org.obiba.mica.core.event.DocumentSetDeletedEvent;
 import org.obiba.mica.core.event.DocumentSetUpdatedEvent;
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.DatasetVariable;
@@ -103,6 +104,20 @@ public class VariableIndexer {
         var.addSet(id);
         toIndex.add(var);
       });
+    indexer.indexAllIndexables(Indexer.PUBLISHED_VARIABLE_INDEX, toIndex);
+  }
+
+  @Async
+  @Subscribe
+  public synchronized void documentSetDeleted(DocumentSetDeletedEvent event) {
+    if (!variableSetService.isForType(event.getPersistable())) return;
+    DocumentSet documentSet = event.getPersistable();
+    List<DatasetVariable> toIndex = Lists.newArrayList();
+    {
+      List<DatasetVariable> toRemove = variableSetService.getVariables(event.getPersistable(), false);
+      toRemove.forEach(var -> var.removeSet(documentSet.getId()));
+      toIndex.addAll(toRemove);
+    }
     indexer.indexAllIndexables(Indexer.PUBLISHED_VARIABLE_INDEX, toIndex);
   }
 

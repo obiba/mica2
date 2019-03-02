@@ -424,6 +424,8 @@ message MicaConfigDto {
   required bool currentUserCanCreateCart = 37;
   required bool currentUserCanCreateSets = 38;
   required bool isCartEnabled = 39;
+  optional int32 cartTimeToLive = 40;
+  optional int32 setTimeToLive = 41;
 }
 
 message PublicMicaConfigDto {

@@ -50,3 +50,8 @@ spring:
             uri: mongodb://localhost:27017/mica
     profiles: prod
 
+sets:
+  cleanup:
+    # "<second> <minute> <hour> <day-of-month> <month> <day-of-week> <year>"
+    # Current cron set to run every day at mid-night
+    cron: "0 0 * * * ?"
