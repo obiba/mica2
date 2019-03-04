@@ -46,8 +46,16 @@ mica.controller('MainController', [
 
     $rootScope.$on('event:auth-loginConfirmed', function () {
       $scope.micaConfig = MicaConfigResource.get();
-      $cacheFactory.remove('taxonomyResource');
-      $cacheFactory.remove('taxonomiesResource');
+
+      var taxonomyResourceCache = $cacheFactory.get('taxonomyResource');
+      if (taxonomyResourceCache) {
+        taxonomyResourceCache.removeAll();
+      }
+
+      var taxonomiesResourceCache =  $cacheFactory.get('taxonomiesResource');
+      if (taxonomiesResourceCache) {
+        taxonomiesResourceCache.removeAll();
+      }
     });
 
     getScreenSize();
