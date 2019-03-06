@@ -175,7 +175,8 @@ public class PublishedDatasetVariablesSetResource {
     if (!subjectAclService.isCurrentUser(documentSet.getUsername())) throw new AuthorizationException();
 
     MicaConfig config = micaConfigService.getConfig();
-    if (!(config.isCartEnabled() && config.isAnonymousCanCreateCart()) && !documentSet.hasName()) throw new AuthorizationException(); // cart
+    if (!config.isCartEnabled() && !documentSet.hasName()) throw new AuthorizationException(); // cart
+    if (config.isCartEnabled() && !config.isAnonymousCanCreateCart() && !subjectAclService.hasMicaRole() && !documentSet.hasName()) throw new AuthorizationException(); // cart
     if (documentSet.hasName() && !subjectAclService.hasMicaRole()) throw new AuthorizationException();
 
     return documentSet;
