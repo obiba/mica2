@@ -975,18 +975,18 @@
       "help": "Utiliser le panier pour constituer une liste de variables. Cette liste de variables peut ensuite être analysé ou vu dans la page de recherche.",
       "no-variables": "Le panier de variables est vide.",
       "no-variable-added": "Aucune variable n'a été ajoutée au panier.",
-      "variables-added": "<a href='#/cart' target='_self'><u>{{arg0}} nouvelle(s) variable(s) ont été ajoutées au panier</u></a>.",
-      "variable-added": "Variable ajoutée au panier.",
+      "variables-added": "<a href='{{arg0}}' target='_self'><u>{{arg1}} nouvelle(s) variable(s) ont été ajoutées au panier.</u></a>",
+      "variable-added": "<a href='{{arg0}}' target='_self'><u>Variable ajoutée au panier.</u></a>",
       "add-to-cart": "Ajouter au panier",
       "no-variable-removed": "Aucune variable n'a été supprimée du panier.",
-      "variable-removed": "Variable supprimée du panier.",
+      "variable-removed": "<a href='{{arg0}}' target='_self'><u>Variable supprimée du panier.</u></a>",
       "remove-from-cart": "Retirer du panier"
     },
     "set": {
       "title": "Listes",
       "help": "Constituer un ou plusieurs listes. Chaque liste peut ensuite être analysé ou vu dans la page de recherche.",
       "no-variable-added": "Aucune variable n'a été ajoutée à la liste {{arg0}}.",
-      "variables-added": "<a href='#/sets?id={{arg0}}' target='_self'><u>{{arg1}} variable(s) ont été ajoutées à la liste {{arg2}}.</u></a>"
+      "variables-added": "<a href='{{arg0}}?id={{arg1}}' target='_self'><u>{{arg2}} variable(s) ont été ajoutées à la liste {{arg3}}.</u></a>"
     },
     "add": {
       "button": {
