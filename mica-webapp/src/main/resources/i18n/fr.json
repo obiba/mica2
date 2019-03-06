@@ -970,6 +970,7 @@
   },
   "sets": {
     "empty": "Aucune liste",
+    "maximum-number-attained": "Votre limite de {{arg0}} <a href='{{arg1}}' target='_self'><strong><u>listes</u></strong></a> a été atteinte.",
     "cart": {
       "title": "Panier",
       "help": "Utiliser le panier pour constituer une liste de variables. Cette liste de variables peut ensuite être analysé ou vu dans la page de recherche.",
