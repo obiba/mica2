@@ -25,6 +25,7 @@ import org.obiba.mica.micaConfig.AuthType;
 import org.obiba.mica.micaConfig.domain.HarmonizationStudyConfig;
 import org.obiba.mica.micaConfig.PdfDownloadType;
 import org.obiba.mica.micaConfig.domain.*;
+import org.obiba.mica.security.service.SubjectAclService;
 import org.springframework.stereotype.Component;
 
 import com.google.common.base.Strings;
@@ -35,18 +36,20 @@ import static java.util.stream.Collectors.toMap;
 @Component
 class MicaConfigDtos {
 
-  public static final String ANONYMOUS_USERNAME = "anonymous";
-
   private LocalizedStringDtos localizedStringDtos;
 
   private AttachmentDtos attachmentDtos;
 
+  private SubjectAclService subjectAclService;
+
   @Inject
   public MicaConfigDtos(
     LocalizedStringDtos localizedStringDtos,
-    AttachmentDtos attachmentDtos) {
+    AttachmentDtos attachmentDtos,
+    SubjectAclService subjectAclService) {
     this.localizedStringDtos = localizedStringDtos;
     this.attachmentDtos = attachmentDtos;
+    this.subjectAclService = subjectAclService;
   }
 
   MicaConfigDtos() {
@@ -131,8 +134,6 @@ class MicaConfigDtos {
     builder.addAllAvailableLayoutOptions(Arrays.asList(MicaConfig.LAYOUT_OPTIONS));
     builder.setSearchLayout(config.getSearchLayout());
 
-    String principal = SecurityUtils.getSubject().getPrincipal().toString();
-
     builder.setAnonymousCanCreateCart(config.isAnonymousCanCreateCart());
     builder.setMaxItemsPerSet(config.getMaxItemsPerSet());
     builder.setMaxNumberOfSets(config.getMaxNumberOfSets());
@@ -140,7 +141,7 @@ class MicaConfigDtos {
     builder.setSetTimeToLive(config.getSetTimeToLive());
     builder.setCartTimeToLive(config.getCartTimeToLive());
 
-    if (principal.equals(ANONYMOUS_USERNAME)) {
+    if (!subjectAclService.hasMicaRole()) {
       builder.setCurrentUserCanCreateCart(config.isCartEnabled() && config.isAnonymousCanCreateCart());
       builder.setCurrentUserCanCreateSets(false);
     } else {

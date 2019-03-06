@@ -122,7 +122,8 @@ public class PublishedDatasetVariablesSetsResource {
 
   private void ensureUserIsAuthorized(String name) {
     MicaConfig config = micaConfigService.getConfig();
-    if (!(config.isCartEnabled() && config.isAnonymousCanCreateCart()) && Strings.isNullOrEmpty(name)) throw new AuthorizationException(); // cart
+    if (!config.isCartEnabled() && Strings.isNullOrEmpty(name)) throw new AuthorizationException(); // cart
+    if (config.isCartEnabled() && !config.isAnonymousCanCreateCart() && !subjectAclService.hasMicaRole() && Strings.isNullOrEmpty(name)) throw new AuthorizationException(); // cart
     if (!Strings.isNullOrEmpty(name) && !subjectAclService.hasMicaRole()) throw new AuthorizationException();
   }
 

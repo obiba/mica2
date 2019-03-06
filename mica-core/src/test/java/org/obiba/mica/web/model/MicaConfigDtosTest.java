@@ -22,12 +22,28 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 import org.obiba.mica.AbstractShiroTest;
 import org.obiba.mica.micaConfig.domain.MicaConfig;
+import org.obiba.mica.security.service.SubjectAclService;
 
+@RunWith(MockitoJUnitRunner.class)
 public class MicaConfigDtosTest extends AbstractShiroTest {
 
-  private final MicaConfigDtos dtos = new MicaConfigDtos();
+  @InjectMocks
+  private MicaConfigDtos dtos;
+
+  @Mock
+  private LocalizedStringDtos localizedStringDtos;
+
+  @Mock
+  private AttachmentDtos attachmentDtos;
+
+  @Mock
+  private SubjectAclService subjectAclService;
 
   @BeforeClass
   public static void beforeClass() {
