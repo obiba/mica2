@@ -975,18 +975,18 @@
       "help": "Use the cart to make a list of variables. This list can be analyzed or can be viewed in the search page.",
       "no-variables": "The cart of variables is empty.",
       "no-variable-added": "No variable has been added to the cart.",
-      "variables-added": "<a href='#/cart' target='_self'><u>{{arg0}} new variable(s) were added to the cart.</u></a>",
-      "variable-added": "Variable added to the cart.",
+      "variables-added": "<a href='{{arg0}}' target='_self'><u>{{arg1}} new variable(s) were added to the cart.</u></a>",
+      "variable-added": "<a href='{{arg0}}' target='_self'><u>Variable added to the cart.</u></a>",
       "add-to-cart": "Add to Cart",
       "no-variable-removed": "No variable was removed from the cart.",
-      "variable-removed": "Variable removed from the cart.",
+      "variable-removed": "<a href='{{arg0}}' target='_self'><u>Variable removed from the cart.</u></a>",
       "remove-from-cart": "Remove from Cart"
     },
     "set": {
       "title": "Lists",
       "help": "Make one or more lists. Each list can be analyzed or can be viewed in the search page.",
       "no-variable-added": "No variable has been added to the {{arg0}} list.",
-      "variables-added": "<a href='#/sets?id={{arg0}}' target='_self'><u>{{arg1}} variable(s) were added to list {{arg2}}.</u></a>"
+      "variables-added": "<a href='{{arg0}}?id={{arg1}}' target='_self'><u>{{arg2}} variable(s) were added to list {{arg3}}.</u></a>"
     },
     "add": {
       "button": {
