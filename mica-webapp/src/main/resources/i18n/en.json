@@ -970,6 +970,7 @@
   },
   "sets": {
     "empty": "No list",
+    "maximum-number-attained": "Your limit of {{arg0}} <a href='{{arg1}}' target='_self'><strong><u>lists</u></strong></a> have been attained.",
     "cart": {
       "title": "Cart",
       "help": "Use the cart to make a list of variables. This list can be analyzed or can be viewed in the search page.",
