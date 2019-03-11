@@ -1189,7 +1189,10 @@
       "title": "Delete Permission",
       "message": "Are you sure you want to delete the permission of {{arg0}} {{arg1}}"
     },
-    "draft": "Draft Permission"
+    "draft": "Draft Permission",
+    "error": {
+      "reserved-groups": "Group name cannot be any of the following reserved groups: {{arg0}}."
+    }
   },
   "access": {
     "help": "Grant <code>Read</code> access to the current publication.",
