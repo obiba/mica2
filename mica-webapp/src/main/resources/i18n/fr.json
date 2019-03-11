@@ -1189,7 +1189,10 @@
       "title": "Supprimer l'autorisation",
       "message": "Etes-vous sûr de vouloir supprimer l'autorisation de {{arg0}} {{arg1}}"
     },
-    "draft": "Permission sur le brouillon"
+    "draft": "Permission sur le brouillon",
+    "error": {
+      "reserved-groups": "Le nom du groupe ne peut pas être l'un des groupes réservés suivants: {{arg0}}."
+    }
   },
   "access": {
     "help": "Accorder l'autorisation de <code>Lire</code> la publication.",

@@ -143,9 +143,15 @@ mica.permission
     });
 
     $scope.save = function (form) {
-      form.principal.$setValidity('required', true);
-      if (BLOCKED_NAMES.indexOf(acl.principal) > -1) {
-        form.principal.$setValidity('required', false);
+      form.principal.$setValidity('reserved-groups', true);
+      if ("GROUP" === $scope.selectedType.name && BLOCKED_NAMES.indexOf(acl.principal) > -1) {
+        form.principal.$setValidity('reserved-groups', false);
+        AlertService.alert({
+          id: 'PermissionsConfigModalController',
+          type: 'danger',
+          msgKey: 'permission.error.reserved-groups',
+          msgArgs: [BLOCKED_NAMES.join(', ')]
+        });
       }
 
       if(form.$valid) {
@@ -157,7 +163,7 @@ mica.permission
           $uibModalInstance.close(true);
         }, function (response) {
           AlertService.alert({
-            id: 'formAlert',
+            id: 'PermissionsConfigModalController',
             type: 'danger',
             msg: ServerErrorUtils.buildMessage(response)
           });
