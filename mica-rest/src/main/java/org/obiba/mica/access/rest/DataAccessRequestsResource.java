@@ -130,9 +130,7 @@ public class DataAccessRequestsResource {
   @Path("/applicant/{applicant}")
   @Timed
   public List<Mica.DataAccessRequestDto> list(@PathParam("applicant") String applicant) {
-    return dataAccessRequestService.findAll(applicant).stream() //
-      .filter(req -> subjectAclService.isPermitted("/data-access-request", "VIEW", req.getId())) //
-      .map(dtos::asDto).collect(Collectors.toList());
+    return dtos.asDtoList(listByApplicantFilteringPermitted(applicant));
   }
 
   @POST
@@ -164,8 +162,15 @@ public class DataAccessRequestsResource {
       .collect(Collectors.toMap(req -> req, req -> dataAccessAmendmentService.findByParentId(req.getId())));
   }
 
+  private List<DataAccessRequest> listByApplicantFilteringPermitted(String applicant) {
+    return filteringPermitted(dataAccessRequestService.findAll(applicant));
+  }
+
   private List<DataAccessRequest> listByStatusFilteringPermitted(List<String> status) {
-    List<DataAccessRequest> reqs = dataAccessRequestService.findByStatus(status);
+    return filteringPermitted(dataAccessRequestService.findByStatus(status));
+  }
+
+  private List<DataAccessRequest> filteringPermitted(List<DataAccessRequest> reqs) {
     return reqs.stream() //
       .filter(req -> subjectAclService.isPermitted("/data-access-request", "VIEW", req.getId())) //
       .collect(Collectors.toList());

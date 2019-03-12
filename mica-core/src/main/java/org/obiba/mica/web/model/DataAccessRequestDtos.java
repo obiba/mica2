@@ -26,6 +26,7 @@ import org.obiba.mica.project.service.ProjectService;
 import org.obiba.mica.security.Roles;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.user.UserProfileService;
+import org.obiba.mica.web.model.Mica.DataAccessRequestDto.StatusChangeDto.Builder;
 import org.obiba.shiro.realm.ObibaRealm;
 import org.obiba.shiro.realm.ObibaRealm.Subject;
 import org.springframework.stereotype.Component;
@@ -79,18 +80,24 @@ class DataAccessRequestDtos {
   }
 
   Mica.DataAccessRequestDto.Builder asDtoBuilder(@NotNull DataAccessEntity request) {
-    Mica.DataAccessRequestDto.Builder builder = asMinimalistDtoBuilder(request);
+    Mica.DataAccessRequestDto.Builder builder = asMinimalistDtoBuilder(request, true);
 
-    boolean canAccessActionLogs = SecurityUtils.getSubject().hasRole(Roles.MICA_DAO) || SecurityUtils.getSubject().hasRole(Roles.MICA_ADMIN) || subjectAclService.isPermitted("/data-access-request/action-logs", "VIEW");
+    boolean canAccessActionLogs = SecurityUtils.getSubject().hasRole(Roles.MICA_DAO) ||
+                                  SecurityUtils.getSubject().hasRole(Roles.MICA_ADMIN) ||
+                                  subjectAclService.isPermitted("/data-access-request/action-logs", "VIEW");
+
     if (canAccessActionLogs) {
       request.getActionLogHistory()
         .forEach(actionLog -> builder.addActionLogHistory(actionLogDtos.asDto(actionLog)));
     }
 
-    ObibaRealm.Subject profile = userProfileService.getProfile(request.getApplicant());
-    if(profile != null) {
-      builder.setProfile(userProfileDtos.asDto(profile));
+    Map<String, Subject> micaProfiles = userProfileService.getProfilesByApplication("mica", null).stream().collect(Collectors.toMap(Subject::getUsername, profile -> profile));
+
+    if(micaProfiles.containsKey(request.getApplicant())) {
+      builder.setProfile(userProfileDtos.asDto(micaProfiles.get(request.getApplicant())));
     }
+
+    builder.addAllStatusChangeHistory(asStatusChangeDtoList(request, micaProfiles));
 
     // possible status transitions
     dataAccessRequestUtilService.nextStatus(request).forEach(status -> builder.addNextStatus(status.toString()));
@@ -191,21 +198,31 @@ class DataAccessRequestDtos {
   }
 
   @NotNull
-  public List<Mica.DataAccessRequestDto.StatusChangeDto> asStatusChangeDtoList(@NotNull DataAccessEntity entity) {
-    return entity.getStatusChangeHistory().stream().map(statusChange -> {
-      Mica.DataAccessRequestDto.StatusChangeDto.Builder builder = statusChangeDtos.asDtoBuilder(statusChange);
+  public ActionLog fromDto(Mica.DataAccessRequestDto.ActionLogDto dto) {
+    return actionLogDtos.fromDto(dto);
+  }
+
+  @NotNull
+  List<Mica.DataAccessRequestDto.StatusChangeDto> asStatusChangeDtoList(@NotNull DataAccessEntity entity) {
+    Map<String, Subject> micaProfiles = userProfileService.getProfilesByApplication("mica", null).stream().collect(Collectors.toMap(Subject::getUsername, profile -> profile));
+    return asStatusChangeDtoList(entity, micaProfiles);
+  }
+
+  @NotNull
+  List<Mica.DataAccessRequestDto.StatusChangeDto> asStatusChangeDtoList(@NotNull DataAccessEntity entity, Map<String, Subject> micaProfiles) {
+    return entity.getStatusChangeHistory().stream().map(statusChange ->  {
+      Builder builder = statusChangeDtos.asMinimalistDtoBuilder(statusChange);
 
       if (entity instanceof DataAccessAmendment) {
         builder.setReference(entity.getId());
       }
 
+      if (micaProfiles.containsKey(statusChange.getAuthor())) {
+        builder.setProfile(userProfileDtos.asDto(micaProfiles.get(statusChange.getAuthor())));
+      }
+
       return builder.build();
     }).collect(Collectors.toList());
-  }
-
-  @NotNull
-  public ActionLog fromDto(Mica.DataAccessRequestDto.ActionLogDto dto) {
-    return actionLogDtos.fromDto(dto);
   }
 
   List<Mica.DataAccessRequestDto> asDtoList(@NotNull List<DataAccessRequest> requests) {
@@ -215,14 +232,14 @@ class DataAccessRequestDtos {
       Map<Object, LinkedHashMap> allAmendmentsSummary = dataAccessRequestRepository.getAllAmendmentsSummary();
 
       return requests.stream()
-        .map(this::asMinimalistDtoBuilder)
+        .map(request -> asMinimalistDtoBuilder(request, false))
         .map(builder -> setUserProfileAndAmendmentsSummary(builder, micaProfiles, allAmendmentsSummary).build()).collect(Collectors.toList());
     }
 
     return new ArrayList<>();
   }
 
-  private Mica.DataAccessRequestDto.Builder asMinimalistDtoBuilder(DataAccessEntity dataAccessEntity) {
+  private Mica.DataAccessRequestDto.Builder asMinimalistDtoBuilder(DataAccessEntity dataAccessEntity, boolean omitStatusChangeHistory) {
     Mica.DataAccessRequestDto.Builder builder = Mica.DataAccessRequestDto.newBuilder();
 
     builder
@@ -236,7 +253,7 @@ class DataAccessRequestDtos {
     String title = dataAccessRequestUtilService.getRequestTitle(dataAccessEntity);
     if(!Strings.isNullOrEmpty(title)) builder.setTitle(title);
 
-    dataAccessEntity.getStatusChangeHistory().forEach(statusChange -> builder.addStatusChangeHistory(statusChangeDtos.asMinimalistDtoBuilder(statusChange)));
+    if (!omitStatusChangeHistory) dataAccessEntity.getStatusChangeHistory().forEach(statusChange -> builder.addStatusChangeHistory(statusChangeDtos.asMinimalistDtoBuilder(statusChange)));
 
     setMinimalistActions(builder, dataAccessEntity);
 
@@ -280,8 +297,9 @@ class DataAccessRequestDtos {
     }
   }
 
-  private Mica.DataAccessRequestDto.Builder setUserProfileAndAmendmentsSummary(Mica.DataAccessRequestDto.Builder dataAccessEntityBuilder, Map<String, Subject> micaProfiles, Map<Object, LinkedHashMap> pendingAmendments) {
-
+  private Mica.DataAccessRequestDto.Builder setUserProfileAndAmendmentsSummary(Mica.DataAccessRequestDto.Builder dataAccessEntityBuilder,
+                                                                               Map<String, Subject> micaProfiles,
+                                                                               Map<Object, LinkedHashMap> pendingAmendments) {
     if (micaProfiles != null && dataAccessEntityBuilder.hasApplicant() && micaProfiles.containsKey(dataAccessEntityBuilder.getApplicant())) {
       dataAccessEntityBuilder.setProfile(userProfileDtos.asDto(micaProfiles.get(dataAccessEntityBuilder.getApplicant())));
     }
