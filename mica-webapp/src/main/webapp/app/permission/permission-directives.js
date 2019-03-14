@@ -144,7 +144,7 @@ mica.permission
 
     $scope.save = function (form) {
       form.principal.$setValidity('reserved-groups', true);
-      if ("GROUP" === $scope.selectedType.name && BLOCKED_NAMES.indexOf(acl.principal) > -1) {
+      if ('GROUP' === $scope.selectedType.name && BLOCKED_NAMES.indexOf(acl.principal) > -1) {
         form.principal.$setValidity('reserved-groups', false);
         AlertService.alert({
           id: 'PermissionsConfigModalController',
