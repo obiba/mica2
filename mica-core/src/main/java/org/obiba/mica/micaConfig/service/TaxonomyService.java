@@ -18,6 +18,7 @@ import java.util.stream.Stream;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
+import org.obiba.mica.core.event.DocumentSetUpdatedEvent;
 import org.obiba.mica.dataset.event.DatasetPublishedEvent;
 import org.obiba.mica.dataset.event.DatasetUnpublishedEvent;
 import org.obiba.mica.micaConfig.domain.MicaConfig;
@@ -293,6 +294,12 @@ public class TaxonomyService {
   @Async
   @Subscribe
   public void datasetUnpublished(DatasetUnpublishedEvent event) {
+    refresh();
+  }
+
+  @Async
+  @Subscribe
+  public void documentSetUpdated(DocumentSetUpdatedEvent event) {
     refresh();
   }
 
