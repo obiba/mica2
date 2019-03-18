@@ -74,6 +74,8 @@ public class AbstractTaxonomySearchResource {
 
               if (allSetsCurrentUser.size() > 0) {
                 terms = voc.getTerms().stream().filter(term -> allSetsCurrentUser.contains(term.getName())).collect(Collectors.toList());
+              } else {
+                terms = Lists.newArrayList();
               }
             }
 
