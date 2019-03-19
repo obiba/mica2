@@ -213,11 +213,6 @@ public class DataAccessRequestUtilService {
     DataAccessForm dataAccessForm = dataAccessFormService.find().get();
     if (dataAccessForm.isWithConditionalApproval()) to.add(DataAccessEntityStatus.CONDITIONALLY_APPROVED);
      else to.add(DataAccessEntityStatus.OPENED);
-
-    // check if current user role is admin to add DataAccessEntityStatus.SUBMITTED
-    if (userProfileService.currentUserIs(Roles.MICA_ADMIN)) {
-      to.add(DataAccessEntityStatus.SUBMITTED);
-    }
   }
 
   private void addNextConditionallyApprovedStatus(List<DataAccessEntityStatus> to) {
