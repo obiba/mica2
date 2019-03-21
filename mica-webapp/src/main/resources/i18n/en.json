@@ -301,6 +301,8 @@
     "set-time-to-live-help": "List time span in days.",
     "anonymous-create-cart": "Anonymous user has a cart",
     "anonymous-create-cart-help": "Anonymous user can create and manage a cart.",
+    "sets-analysis-enabled": "Enable analysis",
+    "sets-analysis-enabled-help": "Enable analysis actions (e.g. count entities).",
     "max-number-sets": "Maximum number of lists",
     "max-number-sets-help": "Maximum number of lists that a user can create.",
     "max-items-per-set": "Maximum number of documents",
