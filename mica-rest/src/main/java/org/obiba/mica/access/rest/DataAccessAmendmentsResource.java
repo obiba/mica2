@@ -18,6 +18,7 @@ import javax.ws.rs.core.UriInfo;
 
 import com.google.common.collect.Lists;
 import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.access.domain.DataAccessAmendment;
 import org.obiba.mica.access.domain.DataAccessEntityStatus;
 import org.obiba.mica.access.domain.StatusChange;
@@ -35,6 +36,7 @@ import com.codahale.metrics.annotation.Timed;
 
 @Component
 @Scope("request")
+@RequiresAuthentication
 public class DataAccessAmendmentsResource {
 
   @Inject

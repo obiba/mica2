@@ -2,6 +2,7 @@ package org.obiba.mica.access.rest;
 
 
 import com.codahale.metrics.annotation.Timed;
+import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.JSONUtils;
 import org.obiba.mica.access.NoSuchDataAccessRequestException;
 import org.obiba.mica.access.domain.DataAccessAmendment;
@@ -25,6 +26,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 @Component
 @Scope("request")
+@RequiresAuthentication
 public class DataAccessAmendmentResource extends DataAccessEntityResource<DataAccessAmendment> {
 
   private static final Logger log = getLogger(DataAccessAmendmentResource.class);
