@@ -15,6 +15,7 @@ import com.google.common.base.Strings;
 import com.google.common.eventbus.EventBus;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.AuthorizationException;
+import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.JSONUtils;
 import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.access.NoSuchDataAccessRequestException;
@@ -54,6 +55,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 @Component
 @Path("/data-access-request/{id}")
+@RequiresAuthentication
 public class DataAccessRequestResource extends DataAccessEntityResource<DataAccessRequest> {
   private static final Logger log = getLogger(DataAccessRequestResource.class);
 

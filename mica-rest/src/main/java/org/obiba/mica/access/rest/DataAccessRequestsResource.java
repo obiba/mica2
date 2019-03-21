@@ -13,6 +13,7 @@ package org.obiba.mica.access.rest;
 import com.codahale.metrics.annotation.Timed;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.joda.time.DateTime;
 import org.obiba.core.translator.JsonTranslator;
@@ -54,6 +55,7 @@ import java.util.stream.Collectors;
 @Component
 @Scope("request")
 @Path("/data-access-requests")
+@RequiresAuthentication
 public class DataAccessRequestsResource {
 
   @Inject
