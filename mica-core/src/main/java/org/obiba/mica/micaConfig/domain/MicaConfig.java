@@ -132,6 +132,8 @@ public class MicaConfig extends AbstractAuditableDocument {
 
   private int setTimeToLive = 365; // year
 
+  private boolean setsAnalysisEnabled = true;
+
   public String getName() {
     return name;
   }
@@ -467,5 +469,13 @@ public class MicaConfig extends AbstractAuditableDocument {
 
   public void setSetTimeToLive(int setTimeToLive) {
     this.setTimeToLive = setTimeToLive;
+  }
+
+  public boolean isSetsAnalysisEnabled() {
+    return setsAnalysisEnabled;
+  }
+
+  public void setSetsAnalysisEnabled(boolean setsAnalysisEnabled) {
+    this.setsAnalysisEnabled = setsAnalysisEnabled;
   }
 }

@@ -140,6 +140,7 @@ class MicaConfigDtos {
     builder.setIsCartEnabled(config.isCartEnabled());
     builder.setSetTimeToLive(config.getSetTimeToLive());
     builder.setCartTimeToLive(config.getCartTimeToLive());
+    builder.setIsSetsAnalysisEnabled(config.isSetsAnalysisEnabled());
 
     if (!subjectAclService.hasMicaRole()) {
       builder.setCurrentUserCanCreateCart(config.isCartEnabled() && config.isAnonymousCanCreateCart());
@@ -193,6 +194,7 @@ class MicaConfigDtos {
     boolean cartEnabled = dto.getIsCartEnabled();
     config.setCartEnabled(cartEnabled);
     config.setAnonymousCanCreateCart(cartEnabled && dto.getAnonymousCanCreateCart());
+    config.setSetsAnalysisEnabled(dto.getIsSetsAnalysisEnabled());
 
     if (dto.hasMaxItemsPerSet() && dto.getMaxItemsPerSet() > 0) config.setMaxItemsPerSet(dto.getMaxItemsPerSet());
     if (dto.hasMaxNumberOfSets() && dto.getMaxNumberOfSets() > 0) config.setMaxNumberOfSets(dto.getMaxNumberOfSets());
