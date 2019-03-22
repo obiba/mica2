@@ -10,6 +10,7 @@
 
 package org.obiba.mica.micaConfig.rest;
 
+import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.micaConfig.domain.ProjectConfig;
 import org.obiba.mica.micaConfig.service.EntityConfigService;
 import org.obiba.mica.micaConfig.service.ProjectConfigService;
@@ -22,6 +23,7 @@ import javax.ws.rs.Path;
 
 @Component
 @Path("/config/project")
+@RequiresAuthentication
 public class ProjectConfigResource
   extends EntityConfigResource<ProjectConfig, Mica.ProjectFormDto>
   implements PermissionAwareResource {

@@ -10,6 +10,7 @@
 
 package org.obiba.mica.micaConfig.rest;
 
+import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.micaConfig.domain.StudyConfig;
 import org.obiba.mica.micaConfig.service.IndividualStudyConfigService;
 import org.obiba.mica.web.model.Dtos;
@@ -21,6 +22,7 @@ import javax.ws.rs.Path;
 
 @Component
 @Path("/config/" + StudyConfigResource.TARGET_NAME)
+@RequiresAuthentication
 public class StudyConfigResource
   extends EntityConfigResource<StudyConfig, Mica.EntityFormDto>
   implements PermissionAwareResource  {

@@ -10,6 +10,7 @@
 
 package org.obiba.mica.micaConfig.rest;
 
+import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.micaConfig.domain.PopulationConfig;
 import org.obiba.mica.micaConfig.service.PopulationConfigService;
 import org.obiba.mica.web.model.Dtos;
@@ -21,6 +22,7 @@ import javax.ws.rs.Path;
 
 @Component
 @Path("/config/population")
+@RequiresAuthentication
 public class PopulationConfigResource extends EntityConfigResource<PopulationConfig, Mica.EntityFormDto> {
 
   @Inject

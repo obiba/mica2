@@ -13,6 +13,7 @@ package org.obiba.mica.micaConfig.rest;
 import javax.inject.Inject;
 import javax.ws.rs.Path;
 
+import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.micaConfig.domain.NetworkConfig;
 import org.obiba.mica.micaConfig.service.NetworkConfigService;
 import org.obiba.mica.web.model.Dtos;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Path("/config/" + NetworkConfigResource.TARGET_NAME)
+@RequiresAuthentication
 public class NetworkConfigResource
   extends EntityConfigResource<NetworkConfig, Mica.EntityFormDto>
   implements PermissionAwareResource {
