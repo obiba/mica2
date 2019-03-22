@@ -18,6 +18,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
 
+import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.obiba.mica.spi.search.TaxonomyTarget;
 import org.obiba.mica.micaConfig.service.CacheService;
@@ -29,6 +30,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Path("/config/{target}/taxonomy")
+@RequiresAuthentication
 public class TaxonomyConfigResource {
 
   @Inject

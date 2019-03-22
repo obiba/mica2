@@ -13,6 +13,7 @@ package org.obiba.mica.micaConfig.rest;
 import javax.inject.Inject;
 import javax.ws.rs.Path;
 
+import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.micaConfig.domain.HarmonizationStudyConfig;
 import org.obiba.mica.micaConfig.service.EntityConfigService;
 import org.obiba.mica.micaConfig.service.HarmonizationStudyConfigService;
@@ -22,6 +23,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Path("/config/" + HarmonizationStudyConfigResource.TARGET_NAME)
+@RequiresAuthentication
 public class HarmonizationStudyConfigResource
   extends EntityConfigResource<HarmonizationStudyConfig, Mica.EntityFormDto>
   implements PermissionAwareResource {

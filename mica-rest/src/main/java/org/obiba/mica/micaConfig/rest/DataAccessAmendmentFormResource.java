@@ -8,6 +8,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
 
+import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.obiba.mica.micaConfig.NoSuchDataAccessFormException;
 import org.obiba.mica.micaConfig.domain.DataAccessAmendmentForm;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Path("/config/data-access-amendment-form")
+@RequiresAuthentication
 public class DataAccessAmendmentFormResource {
 
   private DataAccessFormService dataAccessFormService;

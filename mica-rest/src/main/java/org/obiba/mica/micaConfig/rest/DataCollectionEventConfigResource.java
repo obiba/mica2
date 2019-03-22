@@ -13,6 +13,7 @@ package org.obiba.mica.micaConfig.rest;
 import javax.inject.Inject;
 import javax.ws.rs.Path;
 
+import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.micaConfig.domain.DataCollectionEventConfig;
 import org.obiba.mica.micaConfig.service.DataCollectionEventConfigService;
 import org.obiba.mica.web.model.Dtos;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Path("/config/data-collection-event")
+@RequiresAuthentication
 public class DataCollectionEventConfigResource extends EntityConfigResource<DataCollectionEventConfig, Mica.EntityFormDto> {
 
   @Inject
