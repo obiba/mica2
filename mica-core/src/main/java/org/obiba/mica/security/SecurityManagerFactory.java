@@ -9,18 +9,11 @@
  */
 package org.obiba.mica.security;
 
-import java.io.IOException;
-import java.util.Collection;
-import java.util.Set;
-
-import javax.annotation.PreDestroy;
-import javax.inject.Inject;
-
+import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableList;
 import net.sf.ehcache.CacheManager;
-
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.credential.PasswordMatcher;
-import org.apache.shiro.authc.pam.AtLeastOneSuccessfulStrategy;
 import org.apache.shiro.authc.pam.FirstSuccessfulStrategy;
 import org.apache.shiro.authc.pam.ModularRealmAuthenticator;
 import org.apache.shiro.authz.ModularRealmAuthorizer;
@@ -38,8 +31,6 @@ import org.apache.shiro.mgt.SessionsSecurityManager;
 import org.apache.shiro.realm.Realm;
 import org.apache.shiro.realm.text.IniRealm;
 import org.apache.shiro.session.mgt.DefaultSessionManager;
-import org.apache.shiro.session.mgt.ExecutorServiceSessionValidationScheduler;
-import org.apache.shiro.session.mgt.SessionValidationScheduler;
 import org.apache.shiro.session.mgt.eis.EnterpriseCacheSessionDAO;
 import org.apache.shiro.util.LifecycleUtils;
 import org.obiba.shiro.SessionStorageEvaluator;
@@ -52,10 +43,11 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.stereotype.Component;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.ImmutableList;
-
-import static org.obiba.mica.security.AuthoritiesConstants.ADMIN;
+import javax.annotation.PreDestroy;
+import javax.inject.Inject;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.Set;
 
 @Component
 public class SecurityManagerFactory implements FactoryBean<SessionsSecurityManager> {
@@ -162,10 +154,8 @@ public class SecurityManagerFactory implements FactoryBean<SessionsSecurityManag
         DefaultSessionManager sessionManager = (DefaultSessionManager) dsm.getSessionManager();
 //        sessionManager.setSessionListeners(sessionListeners);
         sessionManager.setSessionDAO(new EnterpriseCacheSessionDAO());
-        SessionValidationScheduler sessionValidationScheduler = new ExecutorServiceSessionValidationScheduler();
-        sessionValidationScheduler.enableSessionValidation();
-        sessionManager.setSessionValidationScheduler(sessionValidationScheduler);
         sessionManager.setSessionValidationInterval(SESSION_VALIDATION_INTERVAL);
+        sessionManager.setSessionValidationSchedulerEnabled(true);
       }
     }
 

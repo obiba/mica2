@@ -13,7 +13,7 @@
     xsi:noNamespaceSchemaLocation="http://ehcache.org/ehcache.xsd"
     name="CM1"
     updateCheck="false"
-    maxBytesLocalHeap="128M">
+    maxBytesLocalHeap="1G">
 
   <!--
     This is a default configuration, it is re-configured by the CacheConfiguration Spring Bean, using the
@@ -29,11 +29,10 @@
          ehcache would evict sessions without Shiro's knowledge, which would cause many problems
         (e.g. "My Shiro session timeout is 30 minutes - why isn't a session available after 2 minutes?"
                Answer - ehcache expired it due to the timeToIdle property set to 120 seconds.)
-
         diskPersistent=true since we want an enterprise session management feature - ability to use sessions after
         even after a JVM restart.  -->
   <cache name="shiro-activeSessionCache"
-      maxBytesLocalHeap="16M"
+      maxBytesLocalHeap="500M"
       overflowToDisk="true"
       eternal="true"
       timeToLiveSeconds="0"
