@@ -39,6 +39,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.boot.bind.RelaxedPropertyResolver;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
@@ -64,6 +65,7 @@ public class SecurityManagerFactory implements FactoryBean<SessionsSecurityManag
   private SessionsSecurityManager securityManager;
 
   @Inject
+  @Lazy
   public SecurityManagerFactory(
     Environment environment,
     Set<Realm> realms,
