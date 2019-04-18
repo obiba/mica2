@@ -11,6 +11,9 @@ package org.obiba.mica.security;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
+import java.util.Set;
+import javax.annotation.PreDestroy;
+import javax.inject.Inject;
 import net.sf.ehcache.CacheManager;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.credential.PasswordMatcher;
@@ -22,32 +25,23 @@ import org.apache.shiro.authz.permission.PermissionResolverAware;
 import org.apache.shiro.authz.permission.RolePermissionResolver;
 import org.apache.shiro.authz.permission.RolePermissionResolverAware;
 import org.apache.shiro.cache.ehcache.EhCacheManager;
-import org.apache.shiro.config.Ini;
-import org.apache.shiro.config.IniSecurityManagerFactory;
-import org.apache.shiro.mgt.DefaultSecurityManager;
 import org.apache.shiro.mgt.DefaultSubjectDAO;
-import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.mgt.SessionsSecurityManager;
 import org.apache.shiro.realm.Realm;
 import org.apache.shiro.realm.text.IniRealm;
-import org.apache.shiro.session.mgt.DefaultSessionManager;
 import org.apache.shiro.session.mgt.eis.EnterpriseCacheSessionDAO;
 import org.apache.shiro.util.LifecycleUtils;
+import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
+import org.apache.shiro.web.session.mgt.DefaultWebSessionManager;
 import org.obiba.shiro.SessionStorageEvaluator;
 import org.obiba.shiro.realm.ObibaRealm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.boot.bind.RelaxedPropertyResolver;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.core.env.Environment;
-import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.stereotype.Component;
-
-import javax.annotation.PreDestroy;
-import javax.inject.Inject;
-import java.io.IOException;
-import java.util.Collection;
-import java.util.Set;
 
 @Component
 public class SecurityManagerFactory implements FactoryBean<SessionsSecurityManager> {
@@ -58,28 +52,32 @@ public class SecurityManagerFactory implements FactoryBean<SessionsSecurityManag
 
   private static final Logger log = LoggerFactory.getLogger(SecurityManagerFactory.class);
 
-  @Inject
-  private Environment env;
+  private final Environment environment;
 
-  @Inject
-  private Set<Realm> realms;
+  private final Set<Realm> realms;
 
-//  @Inject
-//  private Set<SessionListener> sessionListeners;
+  private final RolePermissionResolver rolePermissionResolver;
 
-//  @Inject
-//  private Set<AuthenticationListener> authenticationListeners;
+  private final PermissionResolver permissionResolver;
 
-  @Inject
-  private RolePermissionResolver rolePermissionResolver;
-
-  @Inject
-  private PermissionResolver permissionResolver;
-
-  @Inject
-  private CacheManager cacheManager;
+  private final CacheManager cacheManager;
 
   private SessionsSecurityManager securityManager;
+
+  @Inject
+  @Lazy
+  public SecurityManagerFactory(
+    Environment environment,
+    Set<Realm> realms,
+    RolePermissionResolver rolePermissionResolver,
+    PermissionResolver permissionResolver,
+    CacheManager cacheManager) {
+    this.environment = environment;
+    this.realms = realms;
+    this.rolePermissionResolver = rolePermissionResolver;
+    this.permissionResolver = permissionResolver;
+    this.cacheManager = cacheManager;
+  }
 
   @Override
   public SessionsSecurityManager getObject() throws Exception {
@@ -110,110 +108,84 @@ public class SecurityManagerFactory implements FactoryBean<SessionsSecurityManag
   }
 
   private SessionsSecurityManager doCreateSecurityManager() {
-    return (SessionsSecurityManager) new CustomIniSecurityManagerFactory(getShiroIniPath()).createInstance();
+
+    ImmutableList.Builder<Realm> builder = ImmutableList.<Realm>builder().add(micaIniRealm());
+
+    RelaxedPropertyResolver propertyResolver = new RelaxedPropertyResolver(environment, "agate.");
+    String obibaRealmUrl = propertyResolver.getProperty("url");
+    String serviceName = propertyResolver.getProperty("application.name");
+    String serviceKey = propertyResolver.getProperty("application.key");
+
+    if(!Strings.isNullOrEmpty(obibaRealmUrl)) {
+      builder.add(obibaRealm(obibaRealmUrl, serviceName, serviceKey));
+    }
+
+    builder.addAll(realms);
+
+    DefaultWebSecurityManager manager = new DefaultWebSecurityManager(builder.build());
+
+    initializeCacheManager(manager);
+    initializeSessionManager(manager);
+    initializeSubjectDAO(manager);
+    initializeAuthorizer(manager);
+    initializeAuthenticator(manager);
+
+    return manager;
   }
 
-  private String getShiroIniPath() {
-    try {
-      return new DefaultResourceLoader().getResource("classpath:/shiro.ini").getFile().getAbsolutePath();
-    } catch(IOException e) {
-      throw new RuntimeException("Cannot load shiro.ini", e);
+  private Realm micaIniRealm() {
+    IniRealm iniRealm = new IniRealm("classpath:shiro.ini");
+    iniRealm.setName(INI_REALM);
+    iniRealm.setRolePermissionResolver(rolePermissionResolver);
+    iniRealm.setPermissionResolver(permissionResolver);
+    iniRealm.setCredentialsMatcher(new PasswordMatcher());
+
+    return iniRealm;
+  }
+
+  private Realm obibaRealm(String obibaRealmUrl, String serviceName, String serviceKey) {
+    ObibaRealm oRealm = new ObibaRealm();
+    oRealm.setRolePermissionResolver(rolePermissionResolver);
+    oRealm.setBaseUrl(obibaRealmUrl);
+    oRealm.setServiceName(serviceName);
+    oRealm.setServiceKey(serviceKey);
+    // Note: authentication caching is not enabled because it makes the SSO fail
+
+    return oRealm;
+  }
+
+  private void initializeCacheManager(DefaultWebSecurityManager dsm) {
+    if(dsm.getCacheManager() == null) {
+      EhCacheManager ehCacheManager = new EhCacheManager();
+      ehCacheManager.setCacheManager(cacheManager);
+      dsm.setCacheManager(ehCacheManager);
     }
   }
 
-  private class CustomIniSecurityManagerFactory extends IniSecurityManagerFactory {
+  private void initializeSessionManager(DefaultWebSecurityManager dsm) {
+    DefaultWebSessionManager sessionManager = new DefaultWebSessionManager();
+    sessionManager.setSessionDAO(new EnterpriseCacheSessionDAO());
+    sessionManager.setSessionValidationInterval(SESSION_VALIDATION_INTERVAL);
+    sessionManager.setSessionValidationSchedulerEnabled(true);
+    dsm.setSessionManager(sessionManager);
+  }
 
-    private CustomIniSecurityManagerFactory(String resourcePath) {
-      super(resourcePath);
+  private void initializeSubjectDAO(DefaultWebSecurityManager dsm) {
+    if(dsm.getSubjectDAO() instanceof DefaultSubjectDAO) {
+      ((DefaultSubjectDAO) dsm.getSubjectDAO()).setSessionStorageEvaluator(new SessionStorageEvaluator());
     }
+  }
 
-    @Override
-    @SuppressWarnings("ChainOfInstanceofChecks")
-    protected SecurityManager createDefaultInstance() {
-      DefaultSecurityManager dsm = (DefaultSecurityManager) super.createDefaultInstance();
-
-      initializeCacheManager(dsm);
-      initializeSessionManager(dsm);
-      initializeSubjectDAO(dsm);
-      initializeAuthorizer(dsm);
-      initializeAuthenticator(dsm);
-
-      return dsm;
+  private void initializeAuthorizer(DefaultWebSecurityManager dsm) {
+    if(dsm.getAuthorizer() instanceof ModularRealmAuthorizer) {
+      ((RolePermissionResolverAware) dsm.getAuthorizer()).setRolePermissionResolver(rolePermissionResolver);
+      ((PermissionResolverAware) dsm.getAuthorizer()).setPermissionResolver(permissionResolver);
     }
+  }
 
-    private void initializeCacheManager(DefaultSecurityManager dsm) {
-      if(dsm.getCacheManager() == null) {
-        EhCacheManager ehCacheManager = new EhCacheManager();
-        ehCacheManager.setCacheManager(cacheManager);
-        dsm.setCacheManager(ehCacheManager);
-      }
-    }
-
-    private void initializeSessionManager(DefaultSecurityManager dsm) {
-      if(dsm.getSessionManager() instanceof DefaultSessionManager) {
-        DefaultSessionManager sessionManager = (DefaultSessionManager) dsm.getSessionManager();
-//        sessionManager.setSessionListeners(sessionListeners);
-        sessionManager.setSessionDAO(new EnterpriseCacheSessionDAO());
-        sessionManager.setSessionValidationInterval(SESSION_VALIDATION_INTERVAL);
-        sessionManager.setSessionValidationSchedulerEnabled(true);
-      }
-    }
-
-    private void initializeSubjectDAO(DefaultSecurityManager dsm) {
-      if(dsm.getSubjectDAO() instanceof DefaultSubjectDAO) {
-        ((DefaultSubjectDAO) dsm.getSubjectDAO()).setSessionStorageEvaluator(new SessionStorageEvaluator());
-      }
-    }
-
-    private void initializeAuthorizer(DefaultSecurityManager dsm) {
-      if(dsm.getAuthorizer() instanceof ModularRealmAuthorizer) {
-        ((RolePermissionResolverAware) dsm.getAuthorizer()).setRolePermissionResolver(rolePermissionResolver);
-        ((PermissionResolverAware) dsm.getAuthorizer()).setPermissionResolver(permissionResolver);
-      }
-    }
-
-    private void initializeAuthenticator(DefaultSecurityManager dsm) {
-      //((AbstractAuthenticator) dsm.getAuthenticator()).setAuthenticationListeners(authenticationListeners);
-
-      if(dsm.getAuthenticator() instanceof ModularRealmAuthenticator) {
-        ((ModularRealmAuthenticator) dsm.getAuthenticator()).setAuthenticationStrategy(new FirstSuccessfulStrategy());
-      }
-    }
-
-    @Override
-    protected void applyRealmsToSecurityManager(Collection<Realm> shiroRealms, @SuppressWarnings(
-        "ParameterHidesMemberVariable") SecurityManager securityManager) {
-      ImmutableList.Builder<Realm> builder = ImmutableList.<Realm>builder().addAll(shiroRealms).addAll(realms);
-      RelaxedPropertyResolver propertyResolver = new RelaxedPropertyResolver(env, "agate.");
-      String obibaRealmUrl = propertyResolver.getProperty("url");
-      String serviceName = propertyResolver.getProperty("application.name");
-      String serviceKey = propertyResolver.getProperty("application.key");
-
-      if(!Strings.isNullOrEmpty(obibaRealmUrl)) {
-        ObibaRealm oRealm = new ObibaRealm();
-        oRealm.setRolePermissionResolver(rolePermissionResolver);
-        oRealm.setBaseUrl(obibaRealmUrl);
-        oRealm.setServiceName(serviceName);
-        oRealm.setServiceKey(serviceKey);
-        // Note: authentication caching is not enabled because it makes the SSO fail
-
-        builder.add(oRealm);
-      }
-      super.applyRealmsToSecurityManager(builder.build(), securityManager);
-    }
-
-    @Override
-    protected Realm createRealm(Ini ini) {
-      // Set the resolvers first, because IniRealm is initialized before the resolvers
-      // are applied by the ModularRealmAuthorizer
-      IniRealm realm = new IniRealm();
-      realm.setName(INI_REALM);
-      realm.setRolePermissionResolver(rolePermissionResolver);
-      realm.setPermissionResolver(permissionResolver);
-      realm.setResourcePath(getShiroIniPath());
-      realm.setCredentialsMatcher(new PasswordMatcher());
-      realm.setIni(ini);
-      return realm;
+  private void initializeAuthenticator(DefaultWebSecurityManager dsm) {
+    if(dsm.getAuthenticator() instanceof ModularRealmAuthenticator) {
+      ((ModularRealmAuthenticator) dsm.getAuthenticator()).setAuthenticationStrategy(new FirstSuccessfulStrategy());
     }
   }
 }

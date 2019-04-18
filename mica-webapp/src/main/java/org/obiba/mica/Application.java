@@ -11,23 +11,19 @@
 package org.obiba.mica;
 
 import java.util.Arrays;
-
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
-
 import org.obiba.mica.config.Profiles;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.Banner;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.SimpleCommandLinePropertySource;
 
-@ComponentScan("org.obiba")
-@EnableAutoConfiguration
+@SpringBootApplication(scanBasePackages = "org.obiba")
 public class Application {
 
   private static final Logger log = LoggerFactory.getLogger(Application.class);

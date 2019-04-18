@@ -29,6 +29,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.shiro.web.env.EnvironmentLoaderListener;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlets.GzipFilter;
@@ -79,25 +80,31 @@ public class WebConfiguration implements ServletContextInitializer, JettyServerC
 
   private static final int REQUEST_HEADER_SIZE = 8192;
 
-  @Inject
-  private Environment env;
+  private Environment environment;
 
-  @Inject
-  private MetricRegistry metricRegistry;
+  private final MetricRegistry metricRegistry;
 
-  @Inject
-  private org.obiba.ssl.SslContextFactory sslContextFactory;
+  private final org.obiba.ssl.SslContextFactory sslContextFactory;
 
   private int httpsPort;
 
+  @Inject
+  public WebConfiguration(
+    MetricRegistry metricRegistry,
+    org.obiba.ssl.SslContextFactory sslContextFactory) {
+    this.metricRegistry = metricRegistry;
+    this.sslContextFactory = sslContextFactory;
+  }
+
   @Override
   public void setEnvironment(Environment environment) {
+    this.environment = environment;
     RelaxedPropertyResolver propertyResolver = new RelaxedPropertyResolver(environment, "https.");
     httpsPort = propertyResolver.getProperty("port", Integer.class, DEFAULT_HTTPS_PORT);
   }
 
   @Bean
-  EmbeddedServletContainerCustomizer containerCustomizer() throws Exception {
+  public EmbeddedServletContainerCustomizer containerCustomizer() throws Exception {
     return (ConfigurableEmbeddedServletContainer container) -> {
       JettyEmbeddedServletContainerFactory jetty = (JettyEmbeddedServletContainerFactory) container;
       jetty.setServerCustomizers(Collections.singleton(this));
@@ -131,7 +138,9 @@ public class WebConfiguration implements ServletContextInitializer, JettyServerC
 
   @Override
   public void onStartup(ServletContext servletContext) throws ServletException {
-    log.info("Web application configuration, using profiles: {}", Arrays.toString(env.getActiveProfiles()));
+    log.info("Web application configuration, using profiles: {}", Arrays.toString(environment.getActiveProfiles()));
+
+    servletContext.addListener(EnvironmentLoaderListener.class);
 
     initAllowedMethods(servletContext);
     // Note: authentication filter was already added by Spring
@@ -139,7 +148,7 @@ public class WebConfiguration implements ServletContextInitializer, JettyServerC
     EnumSet<DispatcherType> disps = EnumSet.of(REQUEST, FORWARD, ASYNC);
     initMetrics(servletContext, disps);
 
-    if(env.acceptsProfiles(Profiles.PROD)) {
+    if(environment.acceptsProfiles(Profiles.PROD)) {
       initStaticResourcesProductionFilter(servletContext, disps);
       initCachingHttpHeadersFilter(servletContext, disps);
     }
