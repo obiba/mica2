@@ -43,18 +43,17 @@ import java.util.stream.Collectors;
 @RequiresAuthentication
 public class PublishedDatasetVariablesSetResource {
 
-  private VariableSetService variableSetService;
+  private final VariableSetService variableSetService;
 
-  private JoinQueryExecutor joinQueryExecutor;
+  private final JoinQueryExecutor joinQueryExecutor;
 
-  private MicaConfigService micaConfigService;
+  private final MicaConfigService micaConfigService;
 
-  private SubjectAclService subjectAclService;
+  private final SubjectAclService subjectAclService;
 
+  private final Searcher searcher;
 
-  private Searcher searcher;
-
-  private Dtos dtos;
+  private final Dtos dtos;
 
   @Inject
   public PublishedDatasetVariablesSetResource(
@@ -72,45 +71,42 @@ public class PublishedDatasetVariablesSetResource {
     this.dtos = dtos;
   }
 
-  @PathParam("id")
-  private String id;
-
   @GET
-  public Mica.DocumentSetDto get() {
-    DocumentSet documentSet = getSecuredDocumentSet();
+  public Mica.DocumentSetDto get(@PathParam("id") String id) {
+    DocumentSet documentSet = getSecuredDocumentSet(id);
     variableSetService.touch(documentSet);
     return dtos.asDto(documentSet);
   }
 
   @DELETE
-  public Response delete() {
-    variableSetService.delete(getSecuredDocumentSet());
+  public Response delete(@PathParam("id") String id) {
+    variableSetService.delete(getSecuredDocumentSet(id));
     return Response.ok().build();
   }
 
   @GET
   @Path("/documents")
-  public Mica.DatasetVariablesDto getVariables(@QueryParam("from") @DefaultValue("0") int from, @QueryParam("limit") @DefaultValue("10") int limit) {
-    DocumentSet documentSet = getSecuredDocumentSet();
+  public Mica.DatasetVariablesDto getVariables(@PathParam("id") String id, @QueryParam("from") @DefaultValue("0") int from, @QueryParam("limit") @DefaultValue("10") int limit) {
+    DocumentSet documentSet = getSecuredDocumentSet(id);
     variableSetService.touch(documentSet);
     return Mica.DatasetVariablesDto.newBuilder()
       .setTotal(documentSet.getIdentifiers().size())
       .setFrom(from)
       .setLimit(limit)
       .addAllVariables(variableSetService.getVariables(documentSet, from, limit).stream()
-        .map(var -> dtos.asDto(var)).collect(Collectors.toList())).build();
+        .map(dtos::asDto).collect(Collectors.toList())).build();
   }
 
   @GET
   @Path("/documents/_export")
   @Produces(MediaType.TEXT_PLAIN)
-  public Response exportVariables() {
-    DocumentSet documentSet = getSecuredDocumentSet();
+  public Response exportVariables(@PathParam("id") String id) {
+    DocumentSet documentSet = getSecuredDocumentSet(id);
     variableSetService.touch(documentSet);
     StreamingOutput stream = os -> {
-      documentSet.getIdentifiers().forEach(id -> {
+      documentSet.getIdentifiers().forEach(ident -> {
         try {
-          os.write((id + "\n").getBytes());
+          os.write((ident + "\n").getBytes());
         } catch (IOException e) {
           // ignore
         }
@@ -124,8 +120,8 @@ public class PublishedDatasetVariablesSetResource {
   @POST
   @Path("/documents/_delete")
   @Consumes(MediaType.TEXT_PLAIN)
-  public Response deleteVariables(String body) {
-    DocumentSet set = getSecuredDocumentSet();
+  public Response deleteVariables(@PathParam("id") String id, String body) {
+    DocumentSet set = getSecuredDocumentSet(id);
     if (Strings.isNullOrEmpty(body)) return Response.ok().entity(dtos.asDto(set)).build();
     variableSetService.removeIdentifiers(id, variableSetService.extractIdentifiers(body));
     return Response.ok().entity(dtos.asDto(variableSetService.get(id))).build();
@@ -134,8 +130,8 @@ public class PublishedDatasetVariablesSetResource {
   @POST
   @Path("/documents/_import")
   @Consumes(MediaType.TEXT_PLAIN)
-  public Response importVariables(String body) {
-    DocumentSet set = getSecuredDocumentSet();
+  public Response importVariables(@PathParam("id") String id, String body) {
+    DocumentSet set = getSecuredDocumentSet(id);
     if (Strings.isNullOrEmpty(body)) return Response.ok().entity(dtos.asDto(set)).build();
     variableSetService.addIdentifiers(id, variableSetService.extractIdentifiers(body));
     return Response.ok().entity(dtos.asDto(variableSetService.get(id))).build();
@@ -143,34 +139,34 @@ public class PublishedDatasetVariablesSetResource {
 
   @POST
   @Path("/documents/_rql")
-  public Response importQueryVariables(@FormParam("query") String query) throws IOException {
-    DocumentSet set = getSecuredDocumentSet();
+  public Response importQueryVariables(@PathParam("id") String id, @FormParam("query") String query) throws IOException {
+    DocumentSet set = getSecuredDocumentSet(id);
     if (Strings.isNullOrEmpty(query)) return Response.ok().entity(dtos.asDto(set)).build();
     MicaSearch.JoinQueryResultDto result = joinQueryExecutor.query(QueryType.VARIABLE, searcher.makeJoinQuery(query));
     if (result.hasVariableResultDto() && result.getVariableResultDto().getTotalHits() > 0) {
       List<String> ids = result.getVariableResultDto().getExtension(MicaSearch.DatasetVariableResultDto.result).getSummariesList().stream()
         .map(Mica.DatasetVariableResolverDto::getId).collect(Collectors.toList());
       variableSetService.addIdentifiers(id, ids);
-      set = getSecuredDocumentSet();
+      set = getSecuredDocumentSet(id);
     }
     return Response.ok().entity(dtos.asDto(set)).build();
   }
 
   @DELETE
   @Path("/documents")
-  public Response deleteVariables() {
+  public Response deleteVariables(@PathParam("id") String id) {
     variableSetService.setIdentifiers(id, Lists.newArrayList());
     return Response.ok().build();
   }
 
   @GET
   @Path("/document/{documentId}/_exists")
-  public Response hasVariable(@PathParam("documentId") String documentId) {
-    DocumentSet set = getSecuredDocumentSet();
+  public Response hasVariable(@PathParam("id") String id, @PathParam("documentId") String documentId) {
+    DocumentSet set = getSecuredDocumentSet(id);
     return set.getIdentifiers().contains(documentId) ? Response.ok().build() : Response.status(Response.Status.NOT_FOUND).build();
   }
 
-  private DocumentSet getSecuredDocumentSet() {
+  private DocumentSet getSecuredDocumentSet(String id) {
     DocumentSet documentSet = variableSetService.get(id);
     if (!subjectAclService.isCurrentUser(documentSet.getUsername())) throw new AuthorizationException();
 
