@@ -134,6 +134,8 @@ public class MicaConfig extends AbstractAuditableDocument {
 
   private boolean setsAnalysisEnabled = true;
 
+  private boolean setsSearchEnabled = true;
+
   public String getName() {
     return name;
   }
@@ -477,5 +479,13 @@ public class MicaConfig extends AbstractAuditableDocument {
 
   public void setSetsAnalysisEnabled(boolean setsAnalysisEnabled) {
     this.setsAnalysisEnabled = setsAnalysisEnabled;
+  }
+
+  public boolean isSetsSearchEnabled() {
+    return setsSearchEnabled;
+  }
+
+  public void setSetsSearchEnabled(boolean setsSearchEnabled) {
+    this.setsSearchEnabled = setsSearchEnabled;
   }
 }

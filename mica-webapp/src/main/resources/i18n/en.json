@@ -303,6 +303,8 @@
     "anonymous-create-cart-help": "Anonymous user can create and manage a cart.",
     "sets-analysis-enabled": "Enable analysis",
     "sets-analysis-enabled-help": "Enable analysis actions (e.g. count entities).",
+    "sets-search-enabled": "Enable search",
+    "sets-search-enabled-help": "Enable launching a search from list or cart pages.",
     "max-number-sets": "Maximum number of lists",
     "max-number-sets-help": "Maximum number of lists that a user can create.",
     "max-items-per-set": "Maximum number of documents",

@@ -303,6 +303,8 @@
     "anonymous-create-cart-help": "Un utilisateur anonyme peut créer et gérer un panier",
     "sets-analysis-enabled": "Analyses activées",
     "sets-analysis-enabled-help": "L'utilisation de fonctions d'analyses est activée.",
+    "sets-search-enabled": "Activer la recherche",
+    "sets-search-enabled-help": "Activer le lancement d'une recherche à partir des pages de liste ou de panier.",
     "max-number-sets": "Nombre maximum de listes",
     "max-number-sets-help": "Le nombre maximum de listes qu'un utilisateur peut créer.",
     "max-items-per-set": "Nombre maximum de documents",
