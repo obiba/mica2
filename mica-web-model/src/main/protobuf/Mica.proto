@@ -427,6 +427,7 @@ message MicaConfigDto {
   optional int32 cartTimeToLive = 40;
   optional int32 setTimeToLive = 41;
   required bool isSetsAnalysisEnabled = 42;
+  required bool isSetsSearchEnabled = 43;
 }
 
 message PublicMicaConfigDto {
