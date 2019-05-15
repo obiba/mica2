@@ -2065,7 +2065,7 @@
     "en": "Access to study data by external researchers or third parties is provided."
     "fr": "Indique si l'accès aux donnés est permis à des chercheurs externes ou des tiers."
   "attributes":
-    "field": "model.access.data"
+    "field": "model.access.access_data"
     "alias": "model-access-data"
     "facet": "true"
     "facetPosition": "0"
@@ -2101,7 +2101,7 @@
     "en": "Access to study Biosamples by external researchers or third parties is provided."
     "fr": "Indique si l'accès aux Échantillons biologiques est permis à des chercheurs externes ou des tiers."
   "attributes":
-    "field": "model.access.bio_samples"
+    "field": "model.access.access_bio_samples"
     "alias": "model-access-bio-samples"
     "facet": "true"
     "facetPosition": "0"
@@ -2137,7 +2137,7 @@
     "en": "Whether other Access by external researchers or third parties is provided."
     "fr": "Indique si d'autre accès est permis à des chercheurs externes ou des tiers."
   "attributes":
-    "field": "model.access.other"
+    "field": "model.access.access_other"
     "alias": "model-access-other"
     "facet": "true"
     "facetPosition": "0"
