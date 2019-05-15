@@ -111,21 +111,269 @@
       "title": "t(study.end-year)"
     },
     "access": {
+      "type": "object",
+      "format": "radioGroupCollection",
+      "properties": {
+        "data": {
+          "type": "string"
+        },
+        "bio_samples": {
+          "type": "string"
+        },
+        "other": {
+          "type": "string"
+        }
+      },
+      "values": [
+        {"key": "yes", "caption":"t(global.yes)"},
+        {"key": "no", "caption":"t(global.no)"},
+        {"key": "na", "caption":"t(global.not-applicable)"}
+      ],
+      "items": [
+        {
+          "key": "access_data",
+          "name": "t(study_taxonomy.vocabulary.access_data.title)"
+        },
+        {
+          "key": "access_bio_samples",
+          "name": "t(study_taxonomy.vocabulary.access_bio_samples.title)"
+        },
+        {
+          "key": "access_other",
+          "name": "t(study_taxonomy.vocabulary.access_other.title)"
+        }
+      ]
+    },
+    "access_info_location": {
+      "title": "t(study.access.external_researchers_obtaining_study_data_bio_info.label)",
       "type": "array",
       "items": {
         "type": "string",
         "enum": [
-          "data",
-          "bio_samples",
-          "other"
+          "study_website",
+          "study_representative"
         ]
-      },
-      "title": "t(study.access.label)"
+      }
+    },
+    "access_info_representative": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "title": "t(contact.name)"
+        },
+        "title": {
+          "type": "string",
+          "title": "t(contact.title)"
+        },
+        "institution": {
+          "type": "string",
+          "title": "t(contact.institution)"
+        },
+        "email": {
+          "type": "string",
+          "pattern": "^\\S+@\\S+$",
+          "title": "t(contact.email)"
+        },
+        "telephone": {
+          "type": "string",
+          "title": "t(contact.phone)"
+        }
+      }
+    },
+    "access_permission_data": {
+      "type": "object",
+      "format": "radioGroupCollection",
+      "title": "Data",
+      "values": [
+        {"key": "yes", "caption":"t(global.yes)"},
+        {"key": "no", "caption":"t(global.no)"},
+        {"key": "na", "caption":"t(global.not-applicable)"},
+        {"key": "dk", "caption":"t(global.don-know)"}
+      ],
+      "items": [
+        {
+          "key": "public_sector",
+          "name": "t(study.access.access_permission_data.public_sector)"
+        },
+        {
+          "key": "private_sector",
+          "name": "t(study.access.access_permission_data.private_sector)"
+        },
+        {
+          "key": "not_for_profit_organization",
+          "name": "t(study.access.access_permission_data.not_for_profit_organization)"
+        }
+      ]
+    },
+    "access_restrictions": {
+      "type": "boolean",
+      "title": "t(study.access.access_permission_data.any-restrictions)"
+    },
+    "access_permission_biological_samples": {
+      "type": "object",
+      "format": "radioGroupCollection",
+      "title": "Biological Samples",
+      "values": [
+        {"key": "yes", "caption":"t(global.yes)"},
+        {"key": "no", "caption":"t(global.no)"},
+        {"key": "na", "caption":"t(global.not-applicable)"},
+        {"key": "dk", "caption":"t(global.don-know)"}
+      ],
+      "items": [
+        {
+          "key": "public_sector",
+          "name": "t(study.access.access_permission_data.public_sector)"
+        },
+        {
+          "key": "private_sector",
+          "name": "t(study.access.access_permission_data.private_sector)"
+        },
+        {
+          "key": "not_for_profit_organization",
+          "name": "t(study.access.access_permission_data.not_for_profit_organization)"
+        }
+      ]
+    },
+    "access_permission_additional_info": {
+      "type": "string",
+      "title": "t(study.access.access_permission_additional_info.title)"
+    },
+    "access_data_can_leave": {
+      "type": "object",
+      "title": "t(study_taxonomy.vocabulary.access_data.title)",
+      "format": "radioGroupCollection",
+      "values": [
+        {"key": "yes", "caption":"t(global.yes)"},
+        {"key": "no", "caption":"t(global.no)"},
+        {"key": "na", "caption":"t(global.not-applicable)"},
+        {"key": "dk", "caption":"t(global.don-know)"}
+      ],
+      "items": [
+        {
+          "key": "study_facility",
+          "name": "t(study.access.access_data_can_leave.study_facility)"
+        },
+        {
+          "key": "country",
+          "name": "t(study.access.access_data_can_leave.country)"
+        }
+      ]
+    },
+    "access_biological_samples_can_leave": {
+      "type": "object",
+      "title": "t(study_taxonomy.vocabulary.access_bio_samples.title)",
+      "format": "radioGroupCollection",
+      "values": [
+        {"key": "yes", "caption":"t(global.yes)"},
+        {"key": "no", "caption":"t(global.no)"},
+        {"key": "na", "caption":"t(global.not-applicable)"},
+        {"key": "dk", "caption":"t(global.don-know)"}
+      ],
+      "items": [
+        {
+          "key": "study_facility",
+          "name": "t(study.access.access_data_can_leave.study_facility)"
+        },
+        {
+          "key": "country",
+          "name": "t(study.access.access_data_can_leave.country)"
+        }
+      ]
+    },
+    "access_special_conditions_to_leave": {
+      "type": "string",
+      "title": "t(study.access.access_special_conditions_to_leave.title)"
     },
     "otherAccess": {
       "type": "object",
       "format": "localizedString",
       "title": "t(study.access.other)"
+    },
+    "access_fees": {
+      "type": "boolean",
+      "title": "t(study.access.access_fees.any-fees)"
+    },
+    "access_data_sharing_cost": {
+      "type": "object",
+      "title": "t(study.access.access_data_sharing_cost.title)",
+      "format": "radioGroupCollection",
+      "values": [
+
+        {
+          "key": "no_cost",
+          "caption": "t(study.access.access_data_sharing_cost.no_cost)"
+        },
+        {
+          "key": "fix_cost",
+          "caption": "t(study.access.access_data_sharing_cost.fix_cost)"
+        },
+        {
+          "key": "variable_cost",
+          "caption": "t(study.access.access_data_sharing_cost.variable_cost)"
+        },
+        {
+          "key": "nyd",
+          "caption": "t(study.access.access_data_sharing_cost.nyd)"
+        },
+        {
+          "key": "na",
+          "caption": "t(global.not-applicable)"
+        }
+      ],
+      "items": [
+        {
+          "key": "data",
+          "name": "t(study_taxonomy.vocabulary.access_data.title)"
+        },
+        {
+          "key": "biological_samples",
+          "name": "t(study_taxonomy.vocabulary.access_bio_samples.title)"
+        }
+      ]
+    },
+    "access_cost_reduction_consideration": {
+      "title": "t(study.access.access_cost_reduction_consideration.title)",
+      "type": "object",
+      "format": "radioGroupCollection",
+      "properties": {
+        "data": {
+          "type": "string"
+        },
+        "bio_samples": {
+          "type": "string"
+        },
+        "other": {
+          "type": "string"
+        }
+      },
+      "values": [
+        {"key": "yes", "caption":"t(global.yes)"},
+        {"key": "no", "caption":"t(global.no)"},
+        {"key": "na", "caption":"t(global.not-applicable)"}
+      ],
+      "items": [
+        {
+          "key": "data",
+          "name": "t(study_taxonomy.vocabulary.access_data.title)"
+        },
+        {
+          "key": "bio_samples",
+          "name": "t(study_taxonomy.vocabulary.access_bio_samples.title)"
+        }
+      ]
+    },
+    "access_cost_reduction_consideration_specification": {
+      "title": "t(study.access.access_cost_reduction_consideration_specification.title)",
+      "type": "string"
+    },
+    "access_cost_additional_information": {
+      "title": "t(study.access.access_cost_additional_information.title)",
+      "type": "string"
+    },
+    "access_supplementary_info": {
+      "type": "string",
+      "title": "t(study.access.access_supplementary_info.title)"
     },
     "markerPaper": {
       "type": "string",

@@ -2057,42 +2057,114 @@
       "fr": "Bases de données environnementales"
     "description":
       "en": "Administrative database containing information concerning natural or man-made environmental characteristics (e.g. air pollutants, weather, built environment)."
-- "name": "access"
+- "name": "access_data"
   "title":
-    "en": "Access"
-    "fr": "Accès"
+    "en": "Data"
+    "fr": "Données"
   "description":
-    "en": "Whether access to study data, biosamples or other study material by external researchers or third parties is provided."
-    "fr": "Indique si l'accès aux donnés, aux échantillons biologiques ou à tout autre matériel d'étude est permis à des chercheurs externes ou des tiers."
+    "en": "Access to study data by external researchers or third parties is provided."
+    "fr": "Indique si l'accès aux donnés est permis à des chercheurs externes ou des tiers."
   "attributes":
-      "field": "model.access"
-      "alias": "model-access"
-      "facet": "true"
-      "facetPosition": "0"
-      "facetExpanded": "false"
+    "field": "model.access.data"
+    "alias": "model-access-data"
+    "facet": "true"
+    "facetPosition": "0"
+    "facetExpanded": "false"
   "repeatable": "true"
   "terms":
-  - "name": "data"
-    "title":
-      "en": "Data"
-      "fr": "Données"
-    "description":
-      "en": "Access to participant data items could be allowed."
-      "fr": "L'accès aux éléments de données des participants pourrait être autorisé."
-  - "name": "bio_samples"
-    "title":
-      "en": "Biosamples"
-      "fr": "Échantillons biologiques"
-    "description":
-      "en": "Access to participant biosamples could be allowed."
-      "fr": "L'accès aux échantillons biologiques des participants pourrait être autorisé."
-  - "name": "other"
-    "title":
-      "en": "Other"
-      "fr": "Autre"
-    "description":
-      "en": "Access to other participant-related information could be allowed (e.g. images)."
-      "fr": "L'accès à d'autres informations relatives aux participants pourrait être autorisé (e.g. images)."
+    - "name": "yes"
+      "title":
+        "en": "Yes"
+        "fr": "Oui"
+      "description":
+        "en": "Access to participant data items could be allowed."
+        "fr": "L'accès aux éléments de données des participants pourrait être autorisé."
+    - "name": "no"
+      "title":
+        "en": "No"
+        "fr": "Non"
+      "description":
+        "en": "Access to participant data items could't be allowed."
+        "fr": "L'accès aux éléments de données des participants ne pourrait pas être autorisé."
+    - "name": "na"
+      "title":
+        "en": "NA"
+        "fr": "NA"
+      "description":
+        "en": "Not applicable"
+        "fr": "non applicable"
+- "name": "access_bio_samples"
+  "title":
+    "en": "Biosamples"
+    "fr": "Échantillons biologiques"
+  "description":
+    "en": "Access to study Biosamples by external researchers or third parties is provided."
+    "fr": "Indique si l'accès aux Échantillons biologiques est permis à des chercheurs externes ou des tiers."
+  "attributes":
+    "field": "model.access.bio_samples"
+    "alias": "model-access-bio-samples"
+    "facet": "true"
+    "facetPosition": "0"
+    "facetExpanded": "false"
+  "repeatable": "true"
+  "terms":
+    - "name": "yes"
+      "title":
+        "en": "Yes"
+        "fr": "Oui"
+      "description":
+        "en": "Access to participant Biosamples items could be allowed."
+        "fr": "L'accès aux éléments d'échantillons biologiques des participants pourrait être autorisé."
+    - "name": "no"
+      "title":
+        "en": "No"
+        "fr": "Non"
+      "description":
+        "en": "Access to participant Biosamples items could't be allowed."
+        "fr": "L'accès aux éléments d'échantillons biologiques des participants ne pourrait pas être autorisé."
+    - "name": "na"
+      "title":
+        "en": "NA"
+        "fr": "NA"
+      "description":
+        "en": "Not applicable"
+        "fr": "non applicable"
+- "name": "access_other"
+  "title":
+    "en": "Other"
+    "fr": "Autre"
+  "description":
+    "en": "Whether other Access by external researchers or third parties is provided."
+    "fr": "Indique si d'autre accès est permis à des chercheurs externes ou des tiers."
+  "attributes":
+    "field": "model.access.other"
+    "alias": "model-access-other"
+    "facet": "true"
+    "facetPosition": "0"
+    "facetExpanded": "false"
+  "repeatable": "true"
+  "terms":
+    - "name": "yes"
+      "title":
+        "en": "Yes"
+        "fr": "Oui"
+      "description":
+        "en": "Access to other participant-related information could be allowed (e.g. images)."
+        "fr": "L'accès à d'autres informations relatives aux participants pourrait être autorisé (e.g. images)."
+    - "name": "no"
+      "title":
+        "en": "No"
+        "fr": "Non"
+      "description":
+        "en": "Access to other participant-related information could't be allowed (e.g. images)."
+        "fr": "L'accès à d'autres informations relatives aux participants ne pourrait pas être autorisé (e.g. images)."
+    - "name": "na"
+      "title":
+        "en": "NA"
+        "fr": "NA"
+      "description":
+        "en": "Not applicable"
+        "fr": "non applicable"
 
 
 - "name": "populations-dataCollectionEvents-id"
