@@ -11,9 +11,15 @@
 package org.obiba.mica.dataset.service;
 
 import com.google.common.collect.Lists;
+import java.util.Map;
+import java.util.stream.Collectors;
 import org.obiba.mica.core.domain.DocumentSet;
+import org.obiba.mica.core.domain.OpalTable;
 import org.obiba.mica.core.service.DocumentSetService;
+import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.DatasetVariable;
+import org.obiba.mica.dataset.domain.HarmonizationDataset;
+import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.study.service.PublishedDatasetVariableService;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -27,8 +33,17 @@ import java.util.Set;
 @Validated
 public class VariableSetService extends DocumentSetService {
 
+  private final PublishedDatasetVariableService publishedDatasetVariableService;
+
+  private final PublishedDatasetService publishedDatasetService;
+
   @Inject
-  private PublishedDatasetVariableService publishedDatasetVariableService;
+  public VariableSetService(
+    PublishedDatasetVariableService publishedDatasetVariableService,
+    PublishedDatasetService publishedDatasetService) {
+    this.publishedDatasetVariableService = publishedDatasetVariableService;
+    this.publishedDatasetService = publishedDatasetService;
+  }
 
   @Override
   public String getType() {
@@ -104,5 +119,26 @@ public class VariableSetService extends DocumentSetService {
     int to = from + limit;
     if (to > ids.size()) to = ids.size();
     return publishedDatasetVariableService.findByIds(ids.subList(from, to));
+  }
+
+  public List<String> toOpalVariableFullNames(String variableSetId) {
+    DocumentSet documentSet = get(variableSetId);
+    List<DatasetVariable> variables = publishedDatasetVariableService.findByIds(Lists.newArrayList(documentSet.getIdentifiers()));
+
+    Map<String, String> opalTableFullNameMap = publishedDatasetService.findByIds(variables.stream()
+      .map(DatasetVariable::getDatasetId)
+      .distinct()
+      .collect(Collectors.toList())
+    ).stream()
+      .collect(Collectors.toMap(Dataset::getId, this::toOpalTableFullName));
+
+    return variables.stream()
+      .filter(variable -> opalTableFullNameMap.containsKey(variable.getDatasetId()))
+      .map(variable -> opalTableFullNameMap.get(variable.getDatasetId()) + ":" + variable.getName())
+      .collect(Collectors.toList());
+  }
+  private String toOpalTableFullName(Dataset dataset) {
+    OpalTable opalTable = dataset instanceof StudyDataset ? ((StudyDataset) dataset).getSafeStudyTable() : ((HarmonizationDataset) dataset).getSafeHarmonizationTable();
+    return opalTable.getProject() + "." + opalTable.getTable();
   }
 }

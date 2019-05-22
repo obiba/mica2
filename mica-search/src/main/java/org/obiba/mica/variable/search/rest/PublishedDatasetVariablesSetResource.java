@@ -12,6 +12,7 @@ package org.obiba.mica.variable.search.rest;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import java.util.Collection;
 import org.apache.shiro.authz.AuthorizationException;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.core.domain.DocumentSet;
@@ -103,18 +104,16 @@ public class PublishedDatasetVariablesSetResource {
   public Response exportVariables(@PathParam("id") String id) {
     DocumentSet documentSet = getSecuredDocumentSet(id);
     variableSetService.touch(documentSet);
-    StreamingOutput stream = os -> {
-      documentSet.getIdentifiers().forEach(ident -> {
-        try {
-          os.write((ident + "\n").getBytes());
-        } catch (IOException e) {
-          // ignore
-        }
-      });
-      os.flush();
-    };
-    return Response.ok(stream)
+    return Response.ok(toStream(documentSet.getIdentifiers()))
       .header("Content-Disposition", String.format("attachment; filename=\"%s-variables.txt\"", id)).build();
+  }
+
+  @GET
+  @Path("/opal/_export")
+  @Produces(MediaType.TEXT_PLAIN)
+  public Response createView(@PathParam("id") String id) {
+    return Response.ok().entity(toStream(variableSetService.toOpalVariableFullNames(id)))
+      .header("Content-Disposition", String.format("attachment; filename=\"%s-opal-variables.txt\"", id)).build();
   }
 
   @POST
@@ -176,6 +175,19 @@ public class PublishedDatasetVariablesSetResource {
     if (documentSet.hasName() && !subjectAclService.hasMicaRole()) throw new AuthorizationException();
 
     return documentSet;
+  }
+
+  private StreamingOutput toStream(Collection<String> items) {
+    return os -> {
+      items.forEach(item -> {
+        try {
+          os.write((item + "\n").getBytes());
+        } catch (IOException e) {
+          //
+        }
+      });
+      os.flush();
+    };
   }
 
 }
