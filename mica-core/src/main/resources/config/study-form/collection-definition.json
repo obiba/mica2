@@ -179,77 +179,80 @@
     "htmlClass": "row",
     "items": [
       {
-        "type": "section",
-        "htmlClass": "col-xs-12",
-        "items": [
-
-        ]
+        "type": "help",
+        "helpvalue": "<h3>t(study.access.label)</h3>"
+      },
+      {
+        "type": "help",
+        "helpvalue": "<h4>t(study.general-info)</h4>"
       },
       {
         "type": "section",
-        "htmlClass": "col-xs-12",
+        "htmlClass": "row",
         "items": [
           {
-            "type": "help",
-            "helpvalue": "<h3>t(study.access.label)</h3>"
-          },
-          {
-            "type": "help",
-            "helpvalue": "<h4>t(study.general-info)</h4>"
-          },
-          {
-            "type": "help",
-            "helpvalue": "<h5><label>t(study.access.access_external_researchers_permitted_foreseen.title)</label></h5>"
-          },
-          {
-            "type": "help",
-            "helpvalue": "<label>t(study.access.access_external_researchers_permitted_foreseen.label)</label>"
-          },
-          {
-            "type": "radioGroupCollection",
-            "key": "access",
-            "notitle": true
+              "type": "section",
+              "htmlClass": "col-md-6",
+              "items": [
+                {
+                  "type": "help",
+                  "helpvalue": "<h5><label>t(study.access.access_external_researchers_permitted_foreseen.title)</label></h5>"
+                },
+                {
+                  "type": "radioGroupCollection",
+                  "key": "access",
+                  "notitle": true
+                },
+                {
+                  "type": "section",
+                  "htmlClass": "hoffset3",
+                  "items": [
+                    {
+                      "key": "otherAccess",
+                      "type": "localizedstring",
+                      "rows": 2,
+                      "condition": "model.access.access_other == 'yes'"
+                    }
+                  ]
+                }
+              ]
           },
           {
             "type": "section",
-            "htmlClass": "hoffset3",
+            "htmlClass": "col-md-6",
             "items": [
               {
-                "key": "otherAccess",
-                "type": "localizedstring",
-                "rows": 2,
-                "condition": "model.access.other=='yes'"
-              }
-            ]
-          },
-          {
-            "type": "help",
-            "helpvalue": "<h5><label>t(study.access.external_researchers_obtaining_study_data_bio_info.title)</label></h5>"
-          },
-          {
-            "key": "access_info_location",
-            "titleMap": [
-              {
-                "value": "study_website",
-                "name": "t(study.access.external_researchers_obtaining_study_data_bio_info.access_info_location.study_website)"
+                "type": "help",
+                "helpvalue": "<h5><label>t(study.access.external_researchers_obtaining_study_data_bio_info.title)</label></h5>"
               },
               {
-                "value": "study_representative",
-                "name": "t(study.access.external_researchers_obtaining_study_data_bio_info.access_info_location.study_representative)"
+                "key": "access_info_location",
+                "titleMap": [
+                  {
+                    "value": "study_website",
+                    "name": "t(study.access.external_researchers_obtaining_study_data_bio_info.access_info_location.study_website)"
+                  },
+                  {
+                    "value": "study_representative",
+                    "name": "t(study.access.external_researchers_obtaining_study_data_bio_info.access_info_location.study_representative)"
+                  }
+                ],
+                "notitle": true
+              },
+              {
+                "key": "access_info_representative",
+                "items": [
+                  "access_info_representative.name",
+                  "access_info_representative.title",
+                  "access_info_representative.email",
+                  "access_info_representative.telephone",
+                  "access_info_representative.institution"
+                ],
+                "notitle": true,
+                "condition": "model.access_info_location.indexOf('study_representative')>-1"
               }
-            ]
-          },
-          {
-            "key": "access_info_representative",
-            "items": [
-              "access_info_representative.name",
-              "access_info_representative.title",
-              "access_info_representative.institution",
-              "access_info_representative.email",
-              "access_info_representative.telephone"
             ],
-            "notitle": true,
-            "condition": "model.access_info_location.indexOf('study_representative')>-1"
+            "condition": "model.access.access_data=='yes' || model.access.access_bio_samples=='yes' || model.access.access_other=='yes'"
           }
         ]
       },
@@ -258,7 +261,8 @@
         "htmlClass": "col-xs-12",
         "items": [
           "access_restrictions"
-        ]
+        ],
+        "condition": "model.access.access_data=='yes' || model.access.access_bio_samples=='yes' || model.access.access_other=='yes'"
       },
       {
         "type": "section",
@@ -271,10 +275,6 @@
           {
             "type": "help",
             "helpvalue": "<h5><label>t(study.access.access_restrictions.sector-of-research.title)</label></h5>"
-          },
-          {
-            "type": "help",
-            "helpvalue": "<label>t(study.access.access_restrictions.sector-of-research.label)</label> t(study.access.access_restrictions.sector-of-research-eg)"
           },
           {
             "type": "section",
@@ -290,6 +290,30 @@
                       {
                         "type": "help",
                         "helpvalue": "<label>t(study_taxonomy.vocabulary.access_data.title)</label>"
+                      },
+                      {
+                        "key": "access_permission_data",
+                        "type": "radioGroupCollection",
+                        "notitle": true
+                      },
+                      {
+                        "type": "help",
+                        "helpvalue": "<label>t(study_taxonomy.vocabulary.access_bio_samples.title)</label>"
+                      },
+                      {
+                        "key": "access_permission_biological_samples",
+                        "type": "radioGroupCollection",
+                        "notitle": true
+                      },
+                      {
+                        "type": "help",
+                        "helpvalue": "<label>t(study.access.access_permission_additional_info.label)</label>"
+                      },
+                      {
+                        "key": "access_permission_additional_info",
+                        "type": "localizedstring",
+                        "rows": 2,
+                        "notitle": true
                       }
                     ]
                   },
@@ -299,34 +323,24 @@
                     "items": [
                       {
                         "type": "help",
-                        "helpvalue": "<label>t(study_taxonomy.vocabulary.access_bio_samples.title)</label>"
-                      }
-                    ]
-                  }
-                ]
-              },
-              {
-                "type": "section",
-                "htmlClass": "row",
-                "items": [
-                  {
-                    "type": "section",
-                    "htmlClass": "col-xs-6",
-                    "items": [
+                        "helpvalue": "<h5><label>t(study.access.access_restrictions.transfer.title)</label></h5>"
+                      },
                       {
-                        "key": "access_permission_data",
-                        "type": "radioGroupCollection",
-                        "notitle": true
-                      }
-                    ]
-                  },
-                  {
-                    "type": "section",
-                    "htmlClass": "col-xs-6",
-                    "items": [
+                        "key": "access_data_can_leave",
+                        "type": "radioGroupCollection"
+                      },
                       {
-                        "key": "access_permission_biological_samples",
-                        "type": "radioGroupCollection",
+                        "key": "access_biological_samples_can_leave",
+                        "type": "radioGroupCollection"
+                      },
+                      {
+                        "type": "help",
+                        "helpvalue": "<label>t(study.access.access_special_conditions_to_leave.label)</label>"
+                      },
+                      {
+                        "key": "access_special_conditions_to_leave",
+                        "type": "localizedstring",
+                        "rows": 2,
                         "notitle": true
                       }
                     ]
@@ -334,58 +348,17 @@
                 ]
               }
             ]
-          },
-          {
-            "key": "access_permission_additional_info",
-            "type": "textarea"
-          },
-          {
-            "type": "help",
-            "helpvalue": "<h5><label>t(study.access.access_restrictions.transfer.title)</label></h5>"
-          },
-          {
-            "type": "help",
-            "helpvalue": "<label>t(study.access.access_restrictions.transfer.label)</label> t(study.access.access_restrictions.transfer-eg)"
-          },
-          {
-            "type": "section",
-            "htmlClass": "row",
-            "items": [
-              {
-                "type": "section",
-                "htmlClass": "col-xs-6",
-                "items": [
-                  {
-                    "key": "access_data_can_leave",
-                    "type": "radioGroupCollection"
-                  }
-                ]
-              },
-              {
-                "type": "section",
-                "htmlClass": "col-xs-6",
-                "items": [
-                  {
-                    "key": "access_biological_samples_can_leave",
-                    "type": "radioGroupCollection"
-                  }
-                ]
-              }
-            ]
-          },
-          {
-            "key": "access_special_conditions_to_leave",
-            "type": "textarea"
           }
         ],
-        "condition": "model.access_restrictions"
+        "condition": "model.access_restrictions && (model.access.access_data=='yes' || model.access.access_bio_samples=='yes' || model.access.access_other=='yes')"
       },
       {
         "type": "section",
         "htmlClass": "col-xs-12",
         "items": [
           "access_fees"
-        ]
+        ],
+        "condition": "model.access.access_data=='yes' || model.access.access_bio_samples=='yes' || model.access.access_other=='yes'"
       },
       {
         "type": "section",
@@ -400,41 +373,68 @@
             "htmlClass": "row",
             "items": [
               {
-                "type": "section",
+                  "type": "section",
                 "htmlClass": "col-xs-12",
+                  "items": [
+                    {
+                      "type": "help",
+                      "helpvalue": "<h5><label>t(study.access.access_data_sharing_cost.cost-title)</label></h5>"
+                    },
+                    {
+                      "key": "access_data_sharing_cost",
+                      "type": "radioGroupCollection"
+                    }
+                  ]
+              },
+              {
+                  "type": "section",
+                  "htmlClass": "col-md-6",
+                  "items": [
+                    {
+                      "type": "help",
+                      "helpvalue": "<h5><label>t(study.access.access_data_sharing_cost.cost-reduction-title)</label></h5>"
+                    },
+                    {
+                      "key": "access_cost_reduction_consideration",
+                      "notitle": true
+                    }
+                  ]
+              },
+              {
+                "type": "section",
+                "htmlClass": "col-md-6",
                 "items": [
-                  {
-                    "type": "help",
-                    "helpvalue": "<h5><label>t(study.access.access_data_sharing_cost.cost-title)</label></h5>"
-                  },
-                  {
-                    "key": "access_data_sharing_cost",
-                    "type": "radioGroupCollection"
-                  },
-                  {
-                    "type": "help",
-                    "helpvalue": "<h5><label>t(study.access.access_data_sharing_cost.cost-reduction-title)</label></h5>"
-                  },
-                  "access_cost_reduction_consideration",
                   {
                     "type": "section",
                     "items": [
                       {
+                        "type": "help",
+                        "helpvalue": "<label>t(study.access.access_cost_reduction_consideration_specification.title)</label>"
+                      },
+                      {
                         "key": "access_cost_reduction_consideration_specification",
-                        "type": "textarea"
+                        "type": "localizedstring",
+                        "rows": 2,
+                        "notitle": true
+                      },
+                      {
+                        "type": "help",
+                        "helpvalue": "<label>t(study.access.access_cost_additional_information.title)</label>"
+                      },
+                      {
+                        "key": "access_cost_additional_information",
+                        "type": "localizedstring",
+                        "rows": 2,
+                        "notitle": true
                       }
                     ]
-                  },
-                  {
-                    "key": "access_cost_additional_information",
-                    "type": "textarea"
                   }
                 ]
               }
             ]
           }
         ],
-        "condition": "model.access_fees"
+        "condition": "model.access_fees && (model.access.access_data=='yes' || model.access.access_bio_samples=='yes' || model.access.access_other=='yes')"
       },
       {
         "type": "section",
@@ -446,9 +446,22 @@
           },
           {
             "key": "access_supplementary_info",
-            "type": "textarea"
+            "type": "localizedstring",
+            "rows": 2,
+            "notitle": true
           }
-        ]
+        ],
+        "condition": "model.access.access_data=='yes' || model.access.access_bio_samples=='yes' || model.access.access_other=='yes'"
+      }
+    ]
+  },
+  {
+    "type": "section",
+    "htmlClass": "row",
+    "items": [
+      {
+        "type": "help",
+        "helpvalue": "<hr>"
       },
       {
         "type": "section",

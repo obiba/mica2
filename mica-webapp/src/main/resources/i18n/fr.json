@@ -1212,12 +1212,10 @@
       "message": "Etes-vous sûr de vouloir supprimer l'accès de {{arg0}} {{arg1}}"
     },
     "access_external_researchers_permitted_foreseen": {
-      "title": "Disponibilité de données et d'échantillons biologiques",
-      "label": "Is access to the study data and biological samples by external researchers permitted or foreseen?"
+      "title": "Disponibilité de données et d'échantillons biologiques"
     },
     "external_researchers_obtaining_study_data_bio_info": {
       "title": "Availability of access information",
-      "label": "Where can external researchers obtain information regarding access to the study data and biological samples?",
       "access_info_location": {
         "study_website": "On the study website",
         "study_representative": "By contacting the study representative"
@@ -1227,7 +1225,7 @@
       "public_sector": "Investigators from the public sector",
       "private_sector": "Investigators from the private sector",
       "not_for_profit_organization": "Investigators from not-for-profit organization",
-      "any-restrictions": "Any restrictions"
+      "any-restrictions": "Add restrictions"
     },
     "access_permission_additional_info": {
       "title": "If needed, please provide additional information about who may be given access to data and biological sample"
@@ -1242,14 +1240,12 @@
     "access_data_sharing_cost": {
       "cost-title": "Cost",
       "cost-reduction-title": "Cost reduction for co-analyses",
-      "title" : "Is there any cost to access data and biological samples?",
       "no_cost" : "No Cost",
       "fix_cost": "Fix Cost",
       "variable_cost": "Variable Cost",
       "nyd": "Not yet defined"
     },
     "access_cost_reduction_consideration": {
-      "title": "Would you consider a cost reduction for projects co-analyzing data across multiple studies?"
     },
     "access_cost_additional_information": {
       "title": "If needed, please provide additional information about costs to access study data and biological samples"
@@ -1260,19 +1256,15 @@
     "access_restrictions": {
       "title":  "Restrictions",
       "sector-of-research": {
-        "title": "Sector of research",
-        "label": "Who may be given access to the study data and biological samples?"
+        "title": "Sector of research"
       },
-      "sector-of-research-eg": "(e.g. the consent form might state that only investigators conducting research in public institution can have access)",
       "transfer": {
-        "title": "Transfer",
-        "label": "Can the study data and biological samples leave the study facility/country?"
-      },
-      "transfer-eg": "(e.g. there can be consent form restriction as to where the data/samples can be sent)"
+        "title": "Transfer"
+      }
     },
     "access_fees": {
       "title": "Fees",
-      "any-fees": "Any fees"
+      "any-fees": "Add fees"
     },
     "suppl-info": "Supplementary Information"
   },
