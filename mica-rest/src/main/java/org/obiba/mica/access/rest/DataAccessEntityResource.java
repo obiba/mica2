@@ -1,10 +1,12 @@
 package org.obiba.mica.access.rest;
 
-import com.codahale.metrics.annotation.Timed;
 import com.google.common.eventbus.Subscribe;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import javax.ws.rs.BadRequestException;
+import javax.ws.rs.ForbiddenException;
+import javax.ws.rs.core.Response;
 import org.obiba.mica.access.domain.DataAccessEntity;
 import org.obiba.mica.access.domain.DataAccessEntityStatus;
 import org.obiba.mica.access.service.DataAccessEntityService;
@@ -13,16 +15,6 @@ import org.obiba.mica.micaConfig.event.DataAccessFormUpdatedEvent;
 import org.obiba.mica.micaConfig.service.DataAccessFormService;
 import org.obiba.mica.security.Roles;
 import org.obiba.mica.security.service.SubjectAclService;
-
-import javax.ws.rs.BadRequestException;
-import javax.ws.rs.ForbiddenException;
-import javax.ws.rs.GET;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Response;
-import java.io.IOException;
 
 public abstract class DataAccessEntityResource<T extends DataAccessEntity> {
 
@@ -34,8 +26,6 @@ public abstract class DataAccessEntityResource<T extends DataAccessEntity> {
 
   protected abstract DataAccessEntityService<T> getService();
 
-  protected abstract String getId();
-
   abstract String getResourcePath();
 
   public DataAccessEntityResource(
@@ -45,40 +35,6 @@ public abstract class DataAccessEntityResource<T extends DataAccessEntity> {
     this.subjectAclService = subjectAclService;
     this.fileStoreService = fileStoreService;
     this.dataAccessFormService = dataAccessFormService;
-  }
-
-  @PUT
-  @Path("/_status")
-  public Response updateStatus(@QueryParam("to") String status) {
-    subjectAclService.checkPermission(getResourcePath() + "/" + getId(), "EDIT", "_status");
-
-    switch(DataAccessEntityStatus.valueOf(status.toUpperCase())) {
-      case SUBMITTED:
-        return submit();
-      case OPENED:
-        return open();
-      case REVIEWED:
-        return review();
-      case CONDITIONALLY_APPROVED:
-        return conditionallyApprove();
-      case APPROVED:
-        return approve();
-      case REJECTED:
-        return reject();
-    }
-    throw new BadRequestException("Unknown status");
-  }
-
-  @GET
-  @Timed
-  @Path("/form/attachments/{attachmentName}/{attachmentId}/_download")
-  public Response getFormAttachment(@PathParam("attachmentName") String attachmentName,
-    @PathParam("attachmentId") String attachmentId) throws IOException {
-    subjectAclService.checkPermission(getResourcePath(), "VIEW", getId());
-    getService().findById(getId());
-    return Response.ok(fileStoreService.getFile(attachmentId)).header("Content-Disposition",
-      "attachment; filename=\"" + attachmentName + "\"")
-      .build();
   }
 
   @Subscribe
@@ -100,8 +56,7 @@ public abstract class DataAccessEntityResource<T extends DataAccessEntity> {
   // Private methods
   //
 
-  protected Response submit() {
-    String id  = getId();
+  protected Response submit(String id) {
     DataAccessEntity request = getService().findById(id);
     boolean fromOpened = request.getStatus() == DataAccessEntityStatus.OPENED;
     boolean fromConditionallyApproved = request.getStatus() == DataAccessEntityStatus.CONDITIONALLY_APPROVED;
@@ -116,41 +71,58 @@ public abstract class DataAccessEntityResource<T extends DataAccessEntity> {
     return Response.noContent().build();
   }
 
-  protected Response open() {
-    String id = getId();
-    DataAccessEntity request = getService().updateStatus(getId(), DataAccessEntityStatus.OPENED);
+  protected Response open(String id) {
+    DataAccessEntity request = getService().updateStatus(id, DataAccessEntityStatus.OPENED);
     restoreApplicantActions(id, request.getApplicant());
     return Response.noContent().build();
   }
 
-  protected Response review() {
-    String id = getId();
+  protected Response review(String id) {
     DataAccessEntity request = getService().findById(id);
     boolean fromConditionallyApproved = request.getStatus() == DataAccessEntityStatus.CONDITIONALLY_APPROVED;
     if (fromConditionallyApproved) {
       restoreDaoActions(id);
     }
-    return updateStatus(DataAccessEntityStatus.REVIEWED);
+    return updateStatus(id, DataAccessEntityStatus.REVIEWED);
   }
 
-  protected Response approve() {
-    return updateStatus(DataAccessEntityStatus.APPROVED);
+  protected Response approve(String id) {
+    return updateStatus(id, DataAccessEntityStatus.APPROVED);
   }
 
-  protected Response reject() {
-    return updateStatus(DataAccessEntityStatus.REJECTED);
+  protected Response reject(String id) {
+    return updateStatus(id, DataAccessEntityStatus.REJECTED);
   }
 
-  protected Response conditionallyApprove() {
-    String id = getId();
+  protected Response conditionallyApprove(String id) {
     DataAccessEntity request = getService().findById(id);
     restoreApplicantActions(id, request.getApplicant());
-    return updateStatus(DataAccessEntityStatus.CONDITIONALLY_APPROVED);
+    return updateStatus(id, DataAccessEntityStatus.CONDITIONALLY_APPROVED);
   }
 
-  protected Response updateStatus(DataAccessEntityStatus status) {
-    getService().updateStatus(getId(), status);
+  protected Response updateStatus(String id, DataAccessEntityStatus status) {
+    getService().updateStatus(id, status);
     return Response.noContent().build();
+  }
+
+  Response doUpdateStatus(String id, String status) {
+    subjectAclService.checkPermission(getResourcePath() + "/" + id, "EDIT", "_status");
+
+    switch(DataAccessEntityStatus.valueOf(status.toUpperCase())) {
+      case SUBMITTED:
+        return submit(id);
+      case OPENED:
+        return open(id);
+      case REVIEWED:
+        return review(id);
+      case CONDITIONALLY_APPROVED:
+        return conditionallyApprove(id);
+      case APPROVED:
+        return approve(id);
+      case REJECTED:
+        return reject(id);
+    }
+    throw new BadRequestException("Unknown status");
   }
 
   private void restoreApplicantActions(String id, String applicant) {
