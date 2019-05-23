@@ -2,10 +2,12 @@ package org.obiba.mica.access.rest;
 
 
 import com.codahale.metrics.annotation.Timed;
+import java.io.IOException;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.JSONUtils;
 import org.obiba.mica.access.NoSuchDataAccessRequestException;
 import org.obiba.mica.access.domain.DataAccessAmendment;
+import org.obiba.mica.access.domain.DataAccessEntityStatus;
 import org.obiba.mica.access.service.DataAccessAmendmentService;
 import org.obiba.mica.access.service.DataAccessEntityService;
 import org.obiba.mica.file.FileStoreService;
@@ -91,6 +93,23 @@ public class DataAccessAmendmentResource extends DataAccessEntityResource<DataAc
     return Response.noContent().build();
   }
 
+  @PUT
+  @Path("/_status")
+  public Response updateStatus(@QueryParam("to") String status) {
+    return super.doUpdateStatus(id, status);
+  }
+
+  @GET
+  @Timed
+  @Path("/form/attachments/{attachmentName}/{attachmentId}/_download")
+  public Response getFormAttachment(@PathParam("attachmentName") String attachmentName, @PathParam("attachmentId") String attachmentId) throws IOException {
+    subjectAclService.checkPermission(getResourcePath(), "VIEW", id);
+    getService().findById(id);
+    return Response.ok(fileStoreService.getFile(attachmentId)).header("Content-Disposition",
+      "attachment; filename=\"" + attachmentName + "\"")
+      .build();
+  }
+
   public void setId(String id) {
     this.id = id;
   }
@@ -102,11 +121,6 @@ public class DataAccessAmendmentResource extends DataAccessEntityResource<DataAc
   @Override
   protected DataAccessEntityService<DataAccessAmendment> getService() {
     return dataAccessAmendmentService;
-  }
-
-  @Override
-  protected String getId() {
-    return id;
   }
 
   private String getParentResourcePath() {

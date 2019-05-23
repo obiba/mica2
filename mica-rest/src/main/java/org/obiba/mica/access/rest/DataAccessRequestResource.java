@@ -91,12 +91,9 @@ public class DataAccessRequestResource extends DataAccessEntityResource<DataAcce
     this.dtos = dtos;
   }
 
-  @PathParam("id")
-  private String id;
-
   @GET
   @Timed
-  public Mica.DataAccessRequestDto get() {
+  public Mica.DataAccessRequestDto get(@PathParam("id") String id) {
     subjectAclService.checkPermission("/data-access-request", "VIEW", id);
     DataAccessRequest request = dataAccessRequestService.findById(id);
     return dtos.asDto(request);
@@ -105,14 +102,14 @@ public class DataAccessRequestResource extends DataAccessEntityResource<DataAcce
   @GET
   @Path("/model")
   @Produces("application/json")
-  public Map<String, Object> getModel() {
+  public Map<String, Object> getModel(@PathParam("id") String id) {
     subjectAclService.checkPermission("/data-access-request", "VIEW", id);
     return JSONUtils.toMap(dataAccessRequestService.findById(id).getContent());
   }
 
   @PUT
   @Timed
-  public Response put(Mica.DataAccessRequestDto dto) {
+  public Response put(@PathParam("id") String id, Mica.DataAccessRequestDto dto) {
     subjectAclService.checkPermission("/data-access-request", "EDIT", id);
     if(!id.equals(dto.getId())) throw new BadRequestException();
     DataAccessRequest request = dtos.fromDto(dto);
@@ -123,7 +120,7 @@ public class DataAccessRequestResource extends DataAccessEntityResource<DataAcce
   @GET
   @Timed
   @Path("/_pdf")
-  public Response getPdf(@QueryParam("lang") String lang) {
+  public Response getPdf(@PathParam("id") String id, @QueryParam("lang") String lang) {
     subjectAclService.checkPermission("/data-access-request", "VIEW", id);
 
     if(Strings.isNullOrEmpty(lang)) lang = LanguageTag.UNDETERMINED;
@@ -135,7 +132,7 @@ public class DataAccessRequestResource extends DataAccessEntityResource<DataAcce
   @PUT
   @Path("/_log-actions")
   @Timed
-  public Response updateActionLogs(Mica.DataAccessRequestDto dto) {
+  public Response updateActionLogs(@PathParam("id") String id, Mica.DataAccessRequestDto dto) {
     if (!SecurityUtils.getSubject().hasRole(Roles.MICA_DAO) && !SecurityUtils.getSubject().hasRole(Roles.MICA_ADMIN)) {
       throw new AuthorizationException();
     }
@@ -148,7 +145,7 @@ public class DataAccessRequestResource extends DataAccessEntityResource<DataAcce
   @PUT
   @Timed
   @Path("/_attachments")
-  public Response updateAttachments(Mica.DataAccessRequestDto dto) {
+  public Response updateAttachments(@PathParam("id") String id, Mica.DataAccessRequestDto dto) {
     subjectAclService.checkPermission("/data-access-request", "VIEW", id);
     if(!id.equals(dto.getId())) throw new BadRequestException();
     DataAccessRequest request = dtos.fromDto(dto);
@@ -159,7 +156,7 @@ public class DataAccessRequestResource extends DataAccessEntityResource<DataAcce
   @GET
   @Timed
   @Path("/attachments/{attachmentId}/_download")
-  public Response getAttachment(@PathParam("attachmentId") String attachmentId) throws IOException {
+  public Response getAttachment(@PathParam("id") String id, @PathParam("attachmentId") String attachmentId) throws IOException {
     subjectAclService.checkPermission("/data-access-request", "VIEW", id);
     DataAccessRequest request = dataAccessRequestService.findById(id);
     Optional<Attachment> r = request.getAttachments().stream().filter(a -> a.getId().equals(attachmentId)).findFirst();
@@ -173,7 +170,7 @@ public class DataAccessRequestResource extends DataAccessEntityResource<DataAcce
   @GET
   @Timed
   @Path("/form/attachments/{attachmentName}/{attachmentId}/_download")
-  public Response getFormAttachment(@PathParam("attachmentName") String attachmentName,
+  public Response getFormAttachment(@PathParam("id") String id, @PathParam("attachmentName") String attachmentName,
     @PathParam("attachmentId") String attachmentId) throws IOException {
     subjectAclService.checkPermission("/data-access-request", "VIEW", id);
     dataAccessRequestService.findById(id);
@@ -196,7 +193,7 @@ public class DataAccessRequestResource extends DataAccessEntityResource<DataAcce
 
   @GET
   @Path("/comments")
-  public List<Mica.CommentDto> comments(@QueryParam("admin") @DefaultValue("false") boolean admin) {
+  public List<Mica.CommentDto> comments(@PathParam("id") String id, @QueryParam("admin") @DefaultValue("false") boolean admin) {
     subjectAclService.checkPermission("/data-access-request", "VIEW", id);
     dataAccessRequestService.findById(id);
     if (admin) {
@@ -210,7 +207,7 @@ public class DataAccessRequestResource extends DataAccessEntityResource<DataAcce
 
   @POST
   @Path("/comments")
-  public Response createComment(String message, @QueryParam("admin")  @DefaultValue("false") boolean admin) {
+  public Response createComment(@PathParam("id") String id, String message, @QueryParam("admin")  @DefaultValue("false") boolean admin) {
     subjectAclService.checkPermission("/data-access-request", "VIEW", id);
     dataAccessRequestService.findById(id);
     Comment.Builder buildComment = Comment.newBuilder() //
@@ -236,7 +233,7 @@ public class DataAccessRequestResource extends DataAccessEntityResource<DataAcce
 
   @GET
   @Path("/comment/{commentId}")
-  public Mica.CommentDto getComment(@PathParam("commentId") String commentId) {
+  public Mica.CommentDto getComment(@PathParam("id") String id, @PathParam("commentId") String commentId) {
     subjectAclService.checkPermission("/data-access-request/", "VIEW", id);
     dataAccessRequestService.findById(id);
 
@@ -250,10 +247,10 @@ public class DataAccessRequestResource extends DataAccessEntityResource<DataAcce
 
   @PUT
   @Path("/comment/{commentId}")
-  public Response updateComment(@PathParam("commentId") String commentId, String message) {
+  public Response updateComment(@PathParam("id") String id, @PathParam("commentId") String commentId, String message) {
     subjectAclService.checkPermission("/data-access-request/" + id + "/comment", "EDIT", commentId);
     dataAccessRequestService.findById(id);
-    commentsService.save(Comment.newBuilder(getCommentIfnotRepliedTo(commentId)) //
+    commentsService.save(Comment.newBuilder(getCommentIfNotRepliedTo(id, commentId)) //
       .message(message) //
       .modifiedBy(SecurityUtils.getSubject().getPrincipal().toString()) //
       .build(), commentMailNotification); //
@@ -263,18 +260,24 @@ public class DataAccessRequestResource extends DataAccessEntityResource<DataAcce
 
   @DELETE
   @Path("/comment/{commentId}")
-  public Response deleteComment(@PathParam("commentId") String commentId) {
+  public Response deleteComment(@PathParam("id") String id, @PathParam("commentId") String commentId) {
     subjectAclService.checkPermission("/data-access-request/" + id + "/comment", "DELETE", commentId);
 
     dataAccessRequestService.findById(id);
-    commentsService.delete(getCommentIfnotRepliedTo(commentId));
+    commentsService.delete(getCommentIfNotRepliedTo(id, commentId));
     eventBus.post(new ResourceDeletedEvent("/data-access-request/" + id + "/comment", commentId));
 
     return Response.noContent().build();
   }
 
+  @PUT
+  @Path("/_status")
+  public Response updateStatus(@PathParam("id") String id, @QueryParam("to") String status) {
+    return super.doUpdateStatus(id, status);
+  }
+
   @Path("/amendments")
-  public DataAccessAmendmentsResource getAmendments() {
+  public DataAccessAmendmentsResource getAmendments(@PathParam("id") String id) {
     if (!dataAccessRequestService.isAmendmentsEnabled()) throw new DataAccessAmendmentsNotEnabled();
     dataAccessRequestService.findById(id);
     DataAccessAmendmentsResource dataAccessAmendmentsResource = applicationContext
@@ -284,7 +287,7 @@ public class DataAccessRequestResource extends DataAccessEntityResource<DataAcce
   }
 
   @Path("/amendment/{amendmentId}")
-  public DataAccessAmendmentResource getAmendment(@PathParam("amendmentId") String amendmentId) {
+  public DataAccessAmendmentResource getAmendment(@PathParam("id") String id, @PathParam("amendmentId") String amendmentId) {
     if (!dataAccessRequestService.isAmendmentsEnabled()) throw new DataAccessAmendmentsNotEnabled();
     dataAccessRequestService.findById(id);
     DataAccessAmendmentResource dataAccessAmendmentResource = applicationContext
@@ -300,17 +303,12 @@ public class DataAccessRequestResource extends DataAccessEntityResource<DataAcce
   }
 
   @Override
-  protected String getId() {
-    return id;
-  }
-
-  @Override
   String getResourcePath() {
     return "/data-access-request";
   }
 
   @Override
-  protected Response updateStatus(DataAccessEntityStatus status) {
+  protected Response updateStatus(String id, DataAccessEntityStatus status) {
     DataAccessRequest request = dataAccessRequestService.findById(id);
     String resource = String.format("/data-access-request/%s/amendment", id);
     String applicant = request.getApplicant();
@@ -322,10 +320,10 @@ public class DataAccessRequestResource extends DataAccessEntityResource<DataAcce
       subjectAclService.removeUserPermission(applicant, resource, "ADD", null);
     }
 
-    return super.updateStatus(status);
+    return super.updateStatus(id, status);
   }
 
-  private Comment getCommentIfnotRepliedTo(String commentId) {
+  private Comment getCommentIfNotRepliedTo(String id, String commentId) {
     List<Comment> commentAndNext = commentsService.findCommentAndNext(commentId, "/data-access-request", id);
 
     if (commentAndNext.size() > 1) {
