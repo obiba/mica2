@@ -113,17 +113,6 @@
     "access": {
       "type": "object",
       "format": "radioGroupCollection",
-      "properties": {
-        "data": {
-          "type": "string"
-        },
-        "bio_samples": {
-          "type": "string"
-        },
-        "other": {
-          "type": "string"
-        }
-      },
       "values": [
         {"key": "yes", "caption":"t(global.yes)"},
         {"key": "no", "caption":"t(global.no)"},
@@ -144,8 +133,13 @@
         }
       ]
     },
+    "otherAccess": {
+      "type": "object",
+      "format": "localizedString",
+      "title": "t(study.access.other)"
+    },
     "access_info_location": {
-      "title": "t(study.access.external_researchers_obtaining_study_data_bio_info.label)",
+      "title": "t(study.access.external_researchers_obtaining_study_data_bio_info.title)",
       "type": "array",
       "items": {
         "type": "string",
@@ -236,8 +230,8 @@
       ]
     },
     "access_permission_additional_info": {
-      "type": "string",
-      "title": "t(study.access.access_permission_additional_info.title)"
+      "type": "object",
+      "format": "localizedString"
     },
     "access_data_can_leave": {
       "type": "object",
@@ -282,13 +276,8 @@
       ]
     },
     "access_special_conditions_to_leave": {
-      "type": "string",
-      "title": "t(study.access.access_special_conditions_to_leave.title)"
-    },
-    "otherAccess": {
       "type": "object",
-      "format": "localizedString",
-      "title": "t(study.access.other)"
+      "format": "localizedString"
     },
     "access_fees": {
       "type": "boolean",
@@ -296,7 +285,7 @@
     },
     "access_data_sharing_cost": {
       "type": "object",
-      "title": "t(study.access.access_data_sharing_cost.title)",
+      "title": "t(study.access.access_data_sharing_cost.cost-reduction-title)",
       "format": "radioGroupCollection",
       "values": [
 
@@ -365,15 +354,17 @@
     },
     "access_cost_reduction_consideration_specification": {
       "title": "t(study.access.access_cost_reduction_consideration_specification.title)",
-      "type": "string"
+      "type": "object",
+      "format": "localizedString"
     },
     "access_cost_additional_information": {
       "title": "t(study.access.access_cost_additional_information.title)",
-      "type": "string"
+      "type": "object",
+      "format": "localizedString"
     },
     "access_supplementary_info": {
-      "type": "string",
-      "title": "t(study.access.access_supplementary_info.title)"
+      "type": "object",
+      "format": "localizedString"
     },
     "markerPaper": {
       "type": "string",
