@@ -530,11 +530,64 @@
     "recruitment-target": "Cible de recrutement",
     "access": {
       "label": "Accès",
-      "for": "Accès à des chercheurs externes ou des tiers fournis ou prévus.",
-      "none": "Accès à des chercheurs externes ou des tiers non fournis ni prévus.",
+      "data": "Données",
+      "biological_samples": "Échantillons biologiques",
       "other": "Autres accès",
-      "data" : "Données (dérivées du questionnaire, mesurées...)",
-      "biosamples": "Échantillons biologiques"
+      "access_external_researchers_permitted_foreseen": {
+        "title": "Disponibilité des données et échantillons biologiques"
+      },
+      "external_researchers_obtaining_study_data_bio_info": {
+        "title": "Disponibilité des ’informations d’accès",
+        "access_info_location": {
+          "study_website": "Sur le site web de l’étude",
+          "study_representative": "En contactant le représentant de l’étude"
+        }
+      },
+      "access_permission_data": {
+        "public_sector": "Investigateurs du secteur public",
+        "private_sector": "Investigateurs du secteur privé",
+        "not_for_profit_organization": "Investigateurs d’organisations à but non lucratif",
+        "any-restrictions": "Toute restriction"
+      },
+      "access_permission_additional_info": {
+        "label": "Informations complémentaires sur le secteur de la recherche"
+      },
+      "access_data_can_leave": {
+        "study_facility": "Peut quitter l’installation de l’étude",
+        "country": "Peut quitter le pays"
+      },
+      "access_special_conditions_to_leave": {
+        "label": "Informations supplémentaires sur le transfert"
+      },
+      "access_data_sharing_cost": {
+        "cost-title": "Coût",
+        "cost-reduction-title": "Réduction des coûts pour les co-analyses",
+        "no_cost" : "Sans frais",
+        "fix_cost": "Coût fixe",
+        "variable_cost": "Coût variable",
+        "nyd": "Pas encore défini",
+        "na": "Non applicable"
+      },
+      "access_cost_reduction_consideration_specification": {
+        "title": "Informations supplémentaires sur la réduction des coûts pour les co-analyses"
+      },
+      "access_cost_additional_information": {
+        "title": "Informations supplémentaires sur les frais d'accès"
+      },
+      "access_restrictions": {
+        "title":  "Restrictions",
+        "sector-of-research": {
+          "title": "Secteur de recherche"
+        },
+        "transfer": {
+          "title": "Transfert"
+        }
+      },
+      "access_fees": {
+        "title": "Frais",
+        "any-fees": "Tout Frais"
+      },
+      "suppl-info": "Information Supplementaire"
     },
     "marker-paper": "Marker Paper",
     "pubmed-id": "ID de Pubmed",
@@ -1200,73 +1253,6 @@
     "error": {
       "reserved-groups": "Le nom du groupe ne peut pas être l'un des groupes réservés suivants: {{arg0}}."
     }
-  },
-  "access": {
-    "help": "Accorder l'autorisation de <code>Lire</code> la publication.",
-    "help-global": "Accorder l'autorisation de <code>Lire</code> toutes les publications.",
-    "none": "Aucun accès.",
-    "add": "Ajouter un accès",
-    "principal-help": "Nom unique d'utilisateur ou de groupe. Utiliser un astérisque * pour spécifier tout utilisateur ou groupe.",
-    "delete-dialog": {
-      "title": "Supprimer l'accès",
-      "message": "Etes-vous sûr de vouloir supprimer l'accès de {{arg0}} {{arg1}}"
-    },
-    "access_external_researchers_permitted_foreseen": {
-      "title": "Disponibilité de données et d'échantillons biologiques"
-    },
-    "external_researchers_obtaining_study_data_bio_info": {
-      "title": "Availability of access information",
-      "access_info_location": {
-        "study_website": "On the study website",
-        "study_representative": "By contacting the study representative"
-      }
-    },
-    "access_permission_data": {
-      "public_sector": "Investigators from the public sector",
-      "private_sector": "Investigators from the private sector",
-      "not_for_profit_organization": "Investigators from not-for-profit organization",
-      "any-restrictions": "Add restrictions"
-    },
-    "access_permission_additional_info": {
-      "title": "If needed, please provide additional information about who may be given access to data and biological sample"
-    },
-    "access_data_can_leave": {
-      "study_facility": "Can leave the study facility",
-      "country": "Can leave the country"
-    },
-    "access_special_conditions_to_leave": {
-      "title": "If applicable, specify the special conditions for data to leave study"
-    },
-    "access_data_sharing_cost": {
-      "cost-title": "Cost",
-      "cost-reduction-title": "Cost reduction for co-analyses",
-      "no_cost" : "No Cost",
-      "fix_cost": "Fix Cost",
-      "variable_cost": "Variable Cost",
-      "nyd": "Not yet defined"
-    },
-    "access_cost_reduction_consideration": {
-    },
-    "access_cost_additional_information": {
-      "title": "If needed, please provide additional information about costs to access study data and biological samples"
-    },
-    "access_supplementary_info": {
-      "title": "Please feel free to give us any further information regarding the data access process"
-    },
-    "access_restrictions": {
-      "title":  "Restrictions",
-      "sector-of-research": {
-        "title": "Sector of research"
-      },
-      "transfer": {
-        "title": "Transfer"
-      }
-    },
-    "access_fees": {
-      "title": "Fees",
-      "any-fees": "Add fees"
-    },
-    "suppl-info": "Supplementary Information"
   },
   "draft": "Brouillon",
   "published": "Publié",
