@@ -534,7 +534,7 @@
       "biological_samples": "Biological samples",
       "other": "Other",
       "access_external_researchers_permitted_foreseen": {
-        "title": "Availability of data and biological sample"
+        "title": "Availability of data and biosamples"
       },
       "external_researchers_obtaining_study_data_bio_info": {
         "title": "Availability of access information",
@@ -550,7 +550,6 @@
         "any-restrictions": "Add restrictions"
       },
       "access_permission_additional_info": {
-        "title": "If needed, please provide additional information about who may be given access to data and biological sample",
         "label": "Supplementary information about sector of research"
       },
       "access_data_can_leave": {
@@ -558,28 +557,22 @@
         "country": "Can leave the country"
       },
       "access_special_conditions_to_leave": {
-        "title": "If applicable, specify the special conditions for data to leave study",
         "label": "Supplementary information about transfer"
       },
       "access_data_sharing_cost": {
         "cost-title": "Cost",
         "cost-reduction-title": "Cost reduction for co-analyses",
         "no_cost" : "No Cost",
-        "fix_cost": "Fix Cost",
+        "fix_cost": "Fixed Cost",
         "variable_cost": "Variable Cost",
         "nyd": "Not yet defined",
         "na": "Not Applicable"
-      },
-      "access_cost_reduction_consideration": {
       },
       "access_cost_reduction_consideration_specification": {
         "title": "Supplementary information about cost reduction for co-analyses"
       },
       "access_cost_additional_information": {
         "title": "Supplementary information about access fees"
-      },
-      "access_supplementary_info": {
-        "title": "Please feel free to give us any further information regarding the data access process"
       },
       "access_restrictions": {
         "title":  "Restrictions",
