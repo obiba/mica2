@@ -86,12 +86,13 @@ public class DataAccessRequestCommentMailNotification implements MailNotificatio
     ctx.put("title", title);
     ctx.put("applicant", request.getApplicant());
     ctx.put("status", request.getStatus().name());
+    ctx.put("createdBy", comment.getCreatedBy());
 
     if (comment.getAdmin()) {
       List<SubjectAcl> privateCommentsAcls = getPrivateCommentsAcls();
 
       mailService.sendEmailToGroupsAndUsers(
-        dataAccessForm.getCommentedSubject(),
+        mailService.getSubject(dataAccessForm.getCommentedSubject(), ctx, DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT),
         "dataAccessRequestCommentAdded",
         ctx,
         getAclForType(privateCommentsAcls, Type.GROUP),
