@@ -196,7 +196,7 @@
               "items": [
                 {
                   "type": "help",
-                  "helpvalue": "<h5><label>t(study.access.access_external_researchers_permitted_foreseen.title)</label></h5>"
+                  "helpvalue": "<label>t(study.access.access_external_researchers_permitted_foreseen.title)</label>"
                 },
                 {
                   "type": "radioGroupCollection",
@@ -223,7 +223,7 @@
             "items": [
               {
                 "type": "help",
-                "helpvalue": "<h5><label>t(study.access.external_researchers_obtaining_study_data_bio_info.title)</label></h5>"
+                "helpvalue": "<label>t(study.access.external_researchers_obtaining_study_data_bio_info.title)</label>"
               },
               {
                 "key": "access_info_location",
@@ -274,7 +274,7 @@
           },
           {
             "type": "help",
-            "helpvalue": "<h5><label>t(study.access.access_restrictions.sector-of-research.title)</label></h5>"
+            "helpvalue": "<label>t(study.access.access_restrictions.sector-of-research.title)</label>"
           },
           {
             "type": "section",
@@ -323,7 +323,7 @@
                     "items": [
                       {
                         "type": "help",
-                        "helpvalue": "<h5><label>t(study.access.access_restrictions.transfer.title)</label></h5>"
+                        "helpvalue": "<label>t(study.access.access_restrictions.transfer.title)</label>"
                       },
                       {
                         "key": "access_data_can_leave",
@@ -365,10 +365,6 @@
         "htmlClass": "col-xs-12",
         "items": [
           {
-            "type": "help",
-            "helpvalue": "<h4>t(study.access.access_fees.title)</h4>"
-          },
-          {
             "type": "section",
             "htmlClass": "row",
             "items": [
@@ -378,11 +374,16 @@
                   "items": [
                     {
                       "type": "help",
-                      "helpvalue": "<h5><label>t(study.access.access_data_sharing_cost.cost-title)</label></h5>"
+                      "helpvalue": "<h4>t(study.access.access_fees.title)</h4>"
                     },
                     {
-                      "key": "access_data_sharing_cost",
-                      "type": "radioGroupCollection"
+                    "type": "help",
+                    "helpvalue": "<label>t(study.access.access_data_sharing_cost.cost-title)</label>"
+                  },
+                  {
+                    "key": "access_data_sharing_cost",
+                    "type": "radioGroupCollection",
+                    "notitle": true
                     }
                   ]
               },
@@ -392,7 +393,7 @@
                   "items": [
                     {
                       "type": "help",
-                      "helpvalue": "<h5><label>t(study.access.access_data_sharing_cost.cost-reduction-title)</label></h5>"
+                      "helpvalue": "<label>t(study.access.access_data_sharing_cost.cost-reduction-title)</label>"
                     },
                     {
                       "key": "access_cost_reduction_consideration",

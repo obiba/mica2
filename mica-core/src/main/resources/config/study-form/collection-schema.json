@@ -285,7 +285,6 @@
     },
     "access_data_sharing_cost": {
       "type": "object",
-      "title": "t(study.access.access_data_sharing_cost.cost-reduction-title)",
       "format": "radioGroupCollection",
       "values": [
 
