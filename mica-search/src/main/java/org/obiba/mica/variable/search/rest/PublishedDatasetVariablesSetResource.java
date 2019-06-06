@@ -12,6 +12,7 @@ package org.obiba.mica.variable.search.rest;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import java.io.BufferedOutputStream;
 import java.util.Collection;
 import org.apache.shiro.authz.AuthorizationException;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
@@ -26,6 +27,7 @@ import org.obiba.mica.spi.search.Searcher;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.mica.web.model.MicaSearch;
+import org.obiba.opal.web.model.Magma;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -110,10 +112,13 @@ public class PublishedDatasetVariablesSetResource {
 
   @GET
   @Path("/opal/_export")
-  @Produces(MediaType.TEXT_PLAIN)
+  @Produces(MediaType.APPLICATION_OCTET_STREAM)
   public Response createView(@PathParam("id") String id) {
-    return Response.ok().entity(toStream(variableSetService.toOpalVariableFullNames(id)))
-      .header("Content-Disposition", String.format("attachment; filename=\"%s-opal-variables.txt\"", id)).build();
+    DocumentSet set = getSecuredDocumentSet(id);
+    List<Magma.ViewDto> views = variableSetService.createOpalViews(set);
+    StreamingOutput streamingOutput = stream -> variableSetService.createZip(views, new BufferedOutputStream(stream));
+
+    return Response.ok(streamingOutput, MediaType.APPLICATION_OCTET_STREAM).header("Content-Disposition", "attachment; filename=\"opal-views-" + id + ".zip\"").build();
   }
 
   @POST
