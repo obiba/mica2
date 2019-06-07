@@ -182,7 +182,7 @@ public class VariableSetService extends DocumentSetService {
       builder.setExtension(Magma.VariableListViewDto.view, Magma.VariableListViewDto.newBuilder().addAllVariables(value).build());
 
       builder.addAllFrom(usedEntityTypeProjectFullnameMap.get(key));
-      builder.setName(usedEntityTypeProjectFullnameMap.get(key).toArray()[0].toString().split("\\.")[0] + "-view-" + new Date().getTime());
+      builder.setName(usedEntityTypeProjectFullnameMap.get(key).toArray()[0].toString().split("\\.")[0] + "-view-" + key + "-" + new Date().getTime());
 
       views.add(builder.build());
     });
