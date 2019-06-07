@@ -136,6 +136,12 @@ public class VariableSetService extends DocumentSetService {
     return publishedDatasetVariableService.findByIds(ids.subList(from, to));
   }
 
+  /**
+   * Get a list of opal view dto for backup restore purposes
+   *
+   * @param documentSet The source variable document set
+   * @return a list of opal views grouped by project and entity type
+   */
   public List<Magma.ViewDto> createOpalViews(DocumentSet documentSet) {
     List<Magma.ViewDto> views = new ArrayList<>();
 
@@ -157,6 +163,23 @@ public class VariableSetService extends DocumentSetService {
     }
 
     return views;
+  }
+
+  /**
+   * Zip View dtos
+   *
+   * @param views a list of opal views
+   * @param outputStream the outputstream
+   * @throws IOException in case the zip fails
+   */
+  public void createZip(List<Magma.ViewDto> views, OutputStream outputStream) throws IOException {
+    try (ZipOutputStream zipOutputStream = new ZipOutputStream(outputStream)) {
+      for (Magma.ViewDto view : views) {
+        zipOutputStream.putNextEntry(new ZipEntry(view.getName() + ".json"));
+        zipOutputStream.write(JsonFormat.printToString(view).getBytes());
+        zipOutputStream.closeEntry();
+      }
+    }
   }
 
   private List<Magma.ViewDto> createViewsDto(List<DatasetVariable> variables, Map<String, String> opalTableFullNameMap) {
@@ -252,16 +275,6 @@ public class VariableSetService extends DocumentSetService {
 
       return builder.build();
     }).collect(Collectors.toList());
-  }
-
-  public void createZip(List<Magma.ViewDto> views, OutputStream outputStream) throws IOException {
-    try (ZipOutputStream zipOutputStream = new ZipOutputStream(outputStream)) {
-      for (Magma.ViewDto view : views) {
-        zipOutputStream.putNextEntry(new ZipEntry(view.getName() + ".json"));
-        zipOutputStream.write(JsonFormat.printToString(view).getBytes());
-        zipOutputStream.closeEntry();
-      }
-    }
   }
 
   private String toOpalTableFullName(Dataset dataset) {
