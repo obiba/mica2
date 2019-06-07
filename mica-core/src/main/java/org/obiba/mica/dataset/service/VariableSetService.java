@@ -10,16 +10,16 @@
 
 package org.obiba.mica.dataset.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.jsonFormatVisitors.JsonFormatVisitable;
 import com.google.common.collect.Lists;
 import com.googlecode.protobuf.format.JsonFormat;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -34,8 +34,8 @@ import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.study.service.PublishedDatasetVariableService;
-import org.obiba.mica.study.service.PublishedStudyService;
 import org.obiba.opal.web.model.Magma;
+import org.obiba.opal.web.model.Magma.VariableDto;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
@@ -52,21 +52,12 @@ public class VariableSetService extends DocumentSetService {
 
   private final PublishedDatasetService publishedDatasetService;
 
-  private final PublishedStudyService publishedStudyService;
-
-  private final ObjectMapper mapper;
-
   @Inject
   public VariableSetService(
     PublishedDatasetVariableService publishedDatasetVariableService,
-    PublishedDatasetService publishedDatasetService,
-    PublishedStudyService publishedStudyService) {
+    PublishedDatasetService publishedDatasetService) {
     this.publishedDatasetVariableService = publishedDatasetVariableService;
     this.publishedDatasetService = publishedDatasetService;
-    this.publishedStudyService = publishedStudyService;
-
-    mapper = new ObjectMapper();
-    mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
   }
 
   @Override
@@ -158,23 +149,48 @@ public class VariableSetService extends DocumentSetService {
 
     Map<String, String> opalTableFullNameMap = datasets.stream().collect(Collectors.toMap(Dataset::getId, this::toOpalTableFullName));
 
-    List<Magma.VariableDto> variableDtos = variables.stream()
-      .filter(variable -> opalTableFullNameMap.containsKey(variable.getDatasetId()))
-      .map(variable -> toMagmaVariable(variable, opalTableFullNameMap))
-      .collect(Collectors.toList());
+    Map<String, List<DatasetVariable>> variablesGroupedByProject = variables.stream()
+      .collect(Collectors.groupingBy(variable -> opalTableFullNameMap.get(variable.getDatasetId()).split("\\.")[0]));
 
-    Magma.ViewDto.Builder builder = Magma.ViewDto.newBuilder();
-    builder.setExtension(Magma.VariableListViewDto.view, Magma.VariableListViewDto.newBuilder().addAllVariables(variableDtos).build());
-
-    builder.addAllFrom(opalTableFullNameMap.values());
-    builder.setName("view-" + new Date().getTime());
-
-    views.add(builder.build());
+    for (Entry<String, List<DatasetVariable>> entry : variablesGroupedByProject.entrySet()) {
+      views.addAll(createViewsDto(entry.getValue(), opalTableFullNameMap));
+    }
 
     return views;
   }
 
-  private Magma.VariableDto toMagmaVariable(DatasetVariable datasetVariable, Map<String, String> opalTableFullNameMap) {
+  private List<Magma.ViewDto> createViewsDto(List<DatasetVariable> variables, Map<String, String> opalTableFullNameMap) {
+    List<Magma.ViewDto> views = new ArrayList<>();
+
+    Map<String, Set<String>> usedEntityTypeProjectFullnameMap = new HashMap<>();
+
+    Map<String, List<VariableDto>> entityTypeVariableMap = variables.stream()
+      .filter(variable -> opalTableFullNameMap.containsKey(variable.getDatasetId()))
+      .map(variable -> {
+        String entityType = variable.getEntityType();
+        if (!usedEntityTypeProjectFullnameMap.containsKey(entityType)) {
+          usedEntityTypeProjectFullnameMap.put(entityType, new HashSet<>());
+        }
+        usedEntityTypeProjectFullnameMap.get(entityType).add(opalTableFullNameMap.get(variable.getDatasetId()));
+
+        return toVariableDto(variable, opalTableFullNameMap);
+      })
+      .collect(Collectors.groupingBy(VariableDto::getEntityType));
+
+    entityTypeVariableMap.forEach((key, value) -> {
+      Magma.ViewDto.Builder builder = Magma.ViewDto.newBuilder();
+      builder.setExtension(Magma.VariableListViewDto.view, Magma.VariableListViewDto.newBuilder().addAllVariables(value).build());
+
+      builder.addAllFrom(usedEntityTypeProjectFullnameMap.get(key));
+      builder.setName(usedEntityTypeProjectFullnameMap.get(key).toArray()[0].toString().split("\\.")[0] + "-view-" + new Date().getTime());
+
+      views.add(builder.build());
+    });
+
+    return views;
+  }
+
+  private Magma.VariableDto toVariableDto(DatasetVariable datasetVariable, Map<String, String> opalTableFullNameMap) {
     Magma.VariableDto.Builder builder = Magma.VariableDto.newBuilder();
 
     builder.setName(datasetVariable.getName());
@@ -241,7 +257,7 @@ public class VariableSetService extends DocumentSetService {
   public void createZip(List<Magma.ViewDto> views, OutputStream outputStream) throws IOException {
     try (ZipOutputStream zipOutputStream = new ZipOutputStream(outputStream)) {
       for (Magma.ViewDto view : views) {
-        zipOutputStream.putNextEntry(new ZipEntry(view.getName()));
+        zipOutputStream.putNextEntry(new ZipEntry(view.getName() + ".json"));
         zipOutputStream.write(JsonFormat.printToString(view).getBytes());
         zipOutputStream.closeEntry();
       }
