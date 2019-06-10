@@ -137,12 +137,31 @@ public class VariableSetService extends DocumentSetService {
   }
 
   /**
+   * Zip View dtos
+   *
+   * @param documentSet a set of variables, source for opal views
+   * @param outputStream the outputstream
+   * @throws IOException in case the zip fails
+   */
+  public void createOpalViewsZip(DocumentSet documentSet, OutputStream outputStream) throws IOException {
+    List<Magma.ViewDto> views = createOpalViews(documentSet);
+
+    try (ZipOutputStream zipOutputStream = new ZipOutputStream(outputStream)) {
+      for (Magma.ViewDto view : views) {
+        zipOutputStream.putNextEntry(new ZipEntry(view.getName() + ".json"));
+        zipOutputStream.write(JsonFormat.printToString(view).getBytes());
+        zipOutputStream.closeEntry();
+      }
+    }
+  }
+
+  /**
    * Get a list of opal view dto for backup restore purposes
    *
    * @param documentSet The source variable document set
    * @return a list of opal views grouped by project and entity type
    */
-  public List<Magma.ViewDto> createOpalViews(DocumentSet documentSet) {
+  private List<Magma.ViewDto> createOpalViews(DocumentSet documentSet) {
     List<Magma.ViewDto> views = new ArrayList<>();
 
     List<DatasetVariable> variables = publishedDatasetVariableService.findByIds(Lists.newArrayList(documentSet.getIdentifiers()));
@@ -163,23 +182,6 @@ public class VariableSetService extends DocumentSetService {
     }
 
     return views;
-  }
-
-  /**
-   * Zip View dtos
-   *
-   * @param views a list of opal views
-   * @param outputStream the outputstream
-   * @throws IOException in case the zip fails
-   */
-  public void createZip(List<Magma.ViewDto> views, OutputStream outputStream) throws IOException {
-    try (ZipOutputStream zipOutputStream = new ZipOutputStream(outputStream)) {
-      for (Magma.ViewDto view : views) {
-        zipOutputStream.putNextEntry(new ZipEntry(view.getName() + ".json"));
-        zipOutputStream.write(JsonFormat.printToString(view).getBytes());
-        zipOutputStream.closeEntry();
-      }
-    }
   }
 
   private List<Magma.ViewDto> createViewsDto(List<DatasetVariable> variables, Map<String, String> opalTableFullNameMap) {

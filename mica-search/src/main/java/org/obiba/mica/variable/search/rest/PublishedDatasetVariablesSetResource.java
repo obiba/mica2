@@ -111,12 +111,11 @@ public class PublishedDatasetVariablesSetResource {
   }
 
   @GET
-  @Path("/opal/_export")
+  @Path("/documents/_opal")
   @Produces(MediaType.APPLICATION_OCTET_STREAM)
-  public Response createView(@PathParam("id") String id) {
+  public Response createOpalViews(@PathParam("id") String id) {
     DocumentSet set = getSecuredDocumentSet(id);
-    List<Magma.ViewDto> views = variableSetService.createOpalViews(set);
-    StreamingOutput streamingOutput = stream -> variableSetService.createZip(views, new BufferedOutputStream(stream));
+    StreamingOutput streamingOutput = stream -> variableSetService.createOpalViewsZip(set, new BufferedOutputStream(stream));
 
     return Response.ok(streamingOutput, MediaType.APPLICATION_OCTET_STREAM).header("Content-Disposition", "attachment; filename=\"opal-views-" + id + ".zip\"").build();
   }
