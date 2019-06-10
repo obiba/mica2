@@ -151,6 +151,8 @@ class MicaConfigDtos {
       builder.setCurrentUserCanCreateSets(true);
     }
 
+    builder.setDownloadOpalViewsFromSetsAllowed(subjectAclService.isPermitted("/set/documents", "VIEW", "_opal"));
+
     return builder.build();
   }
 

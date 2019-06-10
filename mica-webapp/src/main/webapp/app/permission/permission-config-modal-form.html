@@ -36,7 +36,7 @@
             <input type="radio" name="role" value="{{role}}" ng-model="acl.role" required>
             <span>{{'permission.' + role.toLowerCase() | translate}}</span>
           </label>
-          <p class="help-block hoffset3">{{'permission.' + role.toLowerCase() + '-config-help' | translate:name}}</p>
+          <p class="help-block hoffset3">{{getRoleHelpText(role) | translate:name}}</p>
         </div>
       </div>
 

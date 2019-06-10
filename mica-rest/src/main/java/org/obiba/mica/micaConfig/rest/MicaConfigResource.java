@@ -65,6 +65,7 @@ import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.network.event.IndexNetworksEvent;
 import org.obiba.mica.project.domain.Project;
 import org.obiba.mica.security.Roles;
+import org.obiba.mica.security.rest.SubjectAclResource;
 import org.obiba.mica.study.domain.HarmonizationStudy;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.event.IndexStudiesEvent;
@@ -242,6 +243,12 @@ public class MicaConfigResource {
     }
 
     return Response.status(Response.Status.NOT_FOUND).build();
+  }
+  @Path("/document-sets/permissions")
+  public SubjectAclResource documentSetsResource() {
+    SubjectAclResource subjectAclResource = applicationContext.getBean(SubjectAclResource.class);
+    subjectAclResource.setResourceInstance("/set/documents", "_opal");
+    return subjectAclResource;
   }
 
   @GET

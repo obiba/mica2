@@ -16,6 +16,7 @@ import java.io.BufferedOutputStream;
 import java.util.Collection;
 import org.apache.shiro.authz.AuthorizationException;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.obiba.mica.core.domain.DocumentSet;
 import org.obiba.mica.dataset.service.VariableSetService;
 import org.obiba.mica.micaConfig.domain.MicaConfig;
@@ -27,7 +28,6 @@ import org.obiba.mica.spi.search.Searcher;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.mica.web.model.MicaSearch;
-import org.obiba.opal.web.model.Magma;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -114,6 +114,7 @@ public class PublishedDatasetVariablesSetResource {
   @Path("/documents/_opal")
   @Produces(MediaType.APPLICATION_OCTET_STREAM)
   public Response createOpalViews(@PathParam("id") String id) {
+    subjectAclService.checkPermission("/set/documents", "VIEW", "_opal");
     DocumentSet set = getSecuredDocumentSet(id);
     StreamingOutput streamingOutput = stream -> variableSetService.createOpalViewsZip(set, new BufferedOutputStream(stream));
 

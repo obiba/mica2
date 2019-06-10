@@ -242,6 +242,17 @@
         </tbody>
       </table>
 
+      <div class="help-block">{{'config.opal-sets-views-download-permission-help' | translate}}</div>
+      <permission-config-table
+        overridden-role-help-texts="overriddenRoleHelpTexts"
+        name="'opal-views'"
+        allow-blocked-principals="true"
+        permissions="documentSetsAcls"
+        on-add="onAddDocumentSetsAcl"
+        on-delete="onRemoveDocumentSetsAcl"
+        on-load="onLoadDocumentSetsAcls">
+      </permission-config-table>
+
     </div>
   </div>
   <div class="row">

@@ -43,7 +43,9 @@ mica.permission
       onDelete: '=',
       onLoad: '=',
       name: '=',
-      otherResources: '<'
+      otherResources: '<',
+      overriddenRoleHelpTexts: '<',
+      allowBlockedPrincipals: '<'
     },
     templateUrl: 'app/permission/permission-config-table-template.html',
     controller: 'PermissionsConfigController'
@@ -70,6 +72,12 @@ mica.permission
           },
           otherResources: function () {
             return $scope.otherResources;
+          },
+          allowBlockedPrincipals: function () {
+            return $scope.allowBlockedPrincipals;
+          },
+          overriddenRoleHelpTexts: function () {
+            return $scope.overriddenRoleHelpTexts;
           }
         }
       }).result.then(function(result) {
@@ -109,8 +117,8 @@ mica.permission
     $scope.onLoad();
   }])
 
-.controller('PermissionsConfigModalController', ['$scope', '$uibModalInstance', 'AlertService', 'ServerErrorUtils', '$filter', 'acl', 'onAdd', 'name', 'otherResources',
-  function ($scope, $uibModalInstance, AlertService, ServerErrorUtils, $filter, acl, onAdd, name, otherResources) {
+.controller('PermissionsConfigModalController', ['$scope', '$uibModalInstance', 'AlertService', 'ServerErrorUtils', '$filter', 'acl', 'onAdd', 'name', 'otherResources', 'allowBlockedPrincipals', 'overriddenRoleHelpTexts',
+  function ($scope, $uibModalInstance, AlertService, ServerErrorUtils, $filter, acl, onAdd, name, otherResources, allowBlockedPrincipals, overriddenRoleHelpTexts) {
     $scope.ROLES = ['READER'];
     $scope.TYPES = [
       {name: 'USER', label: $filter('translate')('permission.user')},
@@ -144,7 +152,7 @@ mica.permission
 
     $scope.save = function (form) {
       form.principal.$setValidity('reserved-groups', true);
-      if ('GROUP' === $scope.selectedType.name && BLOCKED_NAMES.indexOf(acl.principal) > -1) {
+      if (!allowBlockedPrincipals && 'GROUP' === $scope.selectedType.name && BLOCKED_NAMES.indexOf(acl.principal) > -1) {
         form.principal.$setValidity('reserved-groups', false);
         AlertService.alert({
           id: 'PermissionsConfigModalController',
@@ -171,6 +179,14 @@ mica.permission
       }
 
       form.saveAttempted = true;
+    };
+
+    $scope.getRoleHelpText = function(role) {
+      var text = 'permission.' + role.toLowerCase() + '-config-help';
+      if (overriddenRoleHelpTexts) {
+        text = overriddenRoleHelpTexts[role] || text;
+      }
+      return text;
     };
 
     $scope.cancel = function () {
