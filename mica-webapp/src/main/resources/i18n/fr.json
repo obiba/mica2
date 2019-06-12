@@ -312,6 +312,8 @@
     "max-number-sets-help": "Le nombre maximum de listes qu'un utilisateur peut créer.",
     "max-items-per-set": "Nombre maximum de documents",
     "max-items-per-set-help": "Le nombre maximum de documents qu'une liste ou le panier peut contenir.",
+    "opal-sets-views-download-permission": "Autoriser la création de vues d'opal à partir d'une liste.",
+    "opal-sets-views-download-permission-help": "Permissions gérant le téléchargement de vues opal à partir de listes. Ces vues pouront être ensuite importer dans Opal",
     "short-title": "Configuration",
     "title": "Configuration générale",
     "title-edit": "Éditer la configuration générale",
@@ -1049,6 +1051,8 @@
       "no-variable-added": "Aucune variable n'a été ajoutée à la liste {{arg0}}.",
       "variables-added": "<a href='{{arg0}}?id={{arg1}}' target='_self'><u>{{arg2}} variable(s) ont été ajoutées à la liste {{arg3}}.</u></a>"
     },
+    "opal-views-download-button-text": "Vues opal",
+    "opal-views-download-button-help": "Télécharger des vues opal représentant les items de cette liste.",
     "add": {
       "button": {
         "cart-label": "Ajouter au panier",

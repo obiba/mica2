@@ -25,6 +25,7 @@ mica.config
     'KeyStoreResource',
     'FormServerValidation',
     'NOTIFICATION_EVENTS',
+    'DocumentSetsPermissionsResource',
 
     function ($rootScope,
               $scope,
@@ -39,7 +40,8 @@ mica.config
               OpalCredentialResource,
               KeyStoreResource,
               FormServerValidation,
-              NOTIFICATION_EVENTS) {
+              NOTIFICATION_EVENTS,
+              DocumentSetsPermissionsResource) {
       $scope.micaConfig = MicaConfigResource.get();
 
       function getAvailableLanguages() {
@@ -237,6 +239,26 @@ mica.config
           }, function () {
           });
       };
+
+      $scope.documentSetsAcls = [];
+
+      $scope.onAddDocumentSetsAcl = function (acl) {
+        return DocumentSetsPermissionsResource.save(acl);
+      };
+
+      $scope.onRemoveDocumentSetsAcl = function (acl) {
+        return DocumentSetsPermissionsResource.delete(acl);
+      };
+
+      $scope.onLoadDocumentSetsAcls = function () {
+        $scope.documentSetsAcls = DocumentSetsPermissionsResource.query();
+        return $scope.documentSetsAcls;
+      };
+
+      $scope.overriddenRoleHelpTexts = {
+        'READER': 'config.opal-sets-views-download-permission'
+      };
+
     }])
 
   .controller('ImportKeyPairModalController', ['$scope', '$location', '$uibModalInstance', 'isOpalCredential',

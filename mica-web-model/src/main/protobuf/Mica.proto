@@ -428,6 +428,7 @@ message MicaConfigDto {
   optional int32 setTimeToLive = 41;
   required bool isSetsAnalysisEnabled = 42;
   required bool isSetsSearchEnabled = 43;
+  required bool downloadOpalViewsFromSetsAllowed = 44 [default = false];
 }
 
 message PublicMicaConfigDto {

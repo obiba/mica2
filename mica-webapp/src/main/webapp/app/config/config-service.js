@@ -57,6 +57,18 @@ mica.config
         'export': {method: 'GET', url: 'ws/config/i18n/custom/export'}
       }, {});
     }])
+  .factory('DocumentSetsPermissionsResource', ['$resource', function ($resource) {
+    return $resource('ws/config/document-sets/permissions', {}, {
+      'save': {
+        method: 'PUT',
+        params: {type: '@type', principal: '@principal', role: '@role', otherResources: '@otherResources'},
+        errorHandler: true
+      },
+      'delete': {method: 'DELETE', params: {type: '@type', principal: '@principal'}, errorHandler: true},
+      'get': {method: 'GET', isArray: true}
+    });
+  }])
+
   .factory('StyleEditorService', [
     function () {
       return {

@@ -312,6 +312,8 @@
     "max-number-sets-help": "Maximum number of lists that a user can create.",
     "max-items-per-set": "Maximum number of documents",
     "max-items-per-set-help": "Maximum number of documents a list or the cart can contain.",
+    "opal-sets-views-download-permission": "Allow opal view creation from a list.",
+    "opal-sets-views-download-permission-help": "Manage Opal views download from lists permissions. These views can then be imported to Opal",
     "short-title": "Configuration",
     "title": "General Configuration",
     "title-edit": "Edit General Configuration",
@@ -1049,6 +1051,8 @@
       "no-variable-added": "No variable has been added to the {{arg0}} list.",
       "variables-added": "<a href='{{arg0}}?id={{arg1}}' target='_self'><u>{{arg2}} variable(s) were added to list {{arg3}}.</u></a>"
     },
+    "opal-views-download-button-text": "Opal Views",
+    "opal-views-download-button-help": "Download opal views representation of this list.",
     "add": {
       "button": {
         "cart-label": "Add to Cart",

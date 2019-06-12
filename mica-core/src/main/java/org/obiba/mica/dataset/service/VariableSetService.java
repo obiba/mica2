@@ -11,10 +11,31 @@
 package org.obiba.mica.dataset.service;
 
 import com.google.common.collect.Lists;
+import com.googlecode.protobuf.format.JsonFormat;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
+import org.obiba.mica.core.domain.Attributes;
 import org.obiba.mica.core.domain.DocumentSet;
+import org.obiba.mica.core.domain.LocalizedString;
+import org.obiba.mica.core.domain.OpalTable;
 import org.obiba.mica.core.service.DocumentSetService;
+import org.obiba.mica.dataset.domain.Dataset;
+import org.obiba.mica.dataset.domain.DatasetCategory;
 import org.obiba.mica.dataset.domain.DatasetVariable;
+import org.obiba.mica.dataset.domain.HarmonizationDataset;
+import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.study.service.PublishedDatasetVariableService;
+import org.obiba.opal.web.model.Magma;
+import org.obiba.opal.web.model.Magma.VariableDto;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
@@ -27,8 +48,17 @@ import java.util.Set;
 @Validated
 public class VariableSetService extends DocumentSetService {
 
+  private final PublishedDatasetVariableService publishedDatasetVariableService;
+
+  private final PublishedDatasetService publishedDatasetService;
+
   @Inject
-  private PublishedDatasetVariableService publishedDatasetVariableService;
+  public VariableSetService(
+    PublishedDatasetVariableService publishedDatasetVariableService,
+    PublishedDatasetService publishedDatasetService) {
+    this.publishedDatasetVariableService = publishedDatasetVariableService;
+    this.publishedDatasetService = publishedDatasetService;
+  }
 
   @Override
   public String getType() {
@@ -104,5 +134,153 @@ public class VariableSetService extends DocumentSetService {
     int to = from + limit;
     if (to > ids.size()) to = ids.size();
     return publishedDatasetVariableService.findByIds(ids.subList(from, to));
+  }
+
+  /**
+   * Zip View dtos
+   *
+   * @param documentSet a set of variables, source for opal views
+   * @param outputStream the outputstream
+   * @throws IOException in case the zip fails
+   */
+  public void createOpalViewsZip(DocumentSet documentSet, OutputStream outputStream) throws IOException {
+    List<Magma.ViewDto> views = createOpalViews(documentSet);
+
+    try (ZipOutputStream zipOutputStream = new ZipOutputStream(outputStream)) {
+      for (Magma.ViewDto view : views) {
+        zipOutputStream.putNextEntry(new ZipEntry(view.getName() + ".json"));
+        zipOutputStream.write(JsonFormat.printToString(view).getBytes());
+        zipOutputStream.closeEntry();
+      }
+    }
+  }
+
+  /**
+   * Get a list of opal view dto for backup restore purposes
+   *
+   * @param documentSet The source variable document set
+   * @return a list of opal views grouped by project and entity type
+   */
+  private List<Magma.ViewDto> createOpalViews(DocumentSet documentSet) {
+    List<Magma.ViewDto> views = new ArrayList<>();
+
+    List<DatasetVariable> variables = publishedDatasetVariableService.findByIds(Lists.newArrayList(documentSet.getIdentifiers()));
+
+    List<Dataset> datasets = publishedDatasetService.findByIds(variables.stream()
+      .map(DatasetVariable::getDatasetId)
+      .distinct()
+      .collect(Collectors.toList())
+    );
+
+    Map<String, String> opalTableFullNameMap = datasets.stream().collect(Collectors.toMap(Dataset::getId, this::toOpalTableFullName));
+
+    Map<String, List<DatasetVariable>> variablesGroupedByProject = variables.stream()
+      .collect(Collectors.groupingBy(variable -> opalTableFullNameMap.get(variable.getDatasetId()).split("\\.")[0]));
+
+    for (Entry<String, List<DatasetVariable>> entry : variablesGroupedByProject.entrySet()) {
+      views.addAll(createViewsDto(entry.getValue(), opalTableFullNameMap));
+    }
+
+    return views;
+  }
+
+  private List<Magma.ViewDto> createViewsDto(List<DatasetVariable> variables, Map<String, String> opalTableFullNameMap) {
+    List<Magma.ViewDto> views = new ArrayList<>();
+
+    Map<String, Set<String>> usedEntityTypeProjectFullnameMap = new HashMap<>();
+
+    Map<String, List<VariableDto>> entityTypeVariableMap = variables.stream()
+      .filter(variable -> opalTableFullNameMap.containsKey(variable.getDatasetId()))
+      .map(variable -> {
+        String entityType = variable.getEntityType();
+        if (!usedEntityTypeProjectFullnameMap.containsKey(entityType)) {
+          usedEntityTypeProjectFullnameMap.put(entityType, new HashSet<>());
+        }
+        usedEntityTypeProjectFullnameMap.get(entityType).add(opalTableFullNameMap.get(variable.getDatasetId()));
+
+        return toVariableDto(variable, opalTableFullNameMap);
+      })
+      .collect(Collectors.groupingBy(VariableDto::getEntityType));
+
+    entityTypeVariableMap.forEach((key, value) -> {
+      Magma.ViewDto.Builder builder = Magma.ViewDto.newBuilder();
+      builder.setExtension(Magma.VariableListViewDto.view, Magma.VariableListViewDto.newBuilder().addAllVariables(value).build());
+
+      builder.addAllFrom(usedEntityTypeProjectFullnameMap.get(key));
+      builder.setName(usedEntityTypeProjectFullnameMap.get(key).toArray()[0].toString().split("\\.")[0] + "-view-" + key + "-" + new Date().getTime());
+
+      views.add(builder.build());
+    });
+
+    return views;
+  }
+
+  private Magma.VariableDto toVariableDto(DatasetVariable datasetVariable, Map<String, String> opalTableFullNameMap) {
+    Magma.VariableDto.Builder builder = Magma.VariableDto.newBuilder();
+
+    builder.setName(datasetVariable.getName());
+    builder.setIndex(datasetVariable.getIndex());
+    builder.setReferencedEntityType(datasetVariable.getReferencedEntityType());
+    builder.setUnit(datasetVariable.getUnit());
+    builder.setMimeType(datasetVariable.getMimeType());
+    builder.setIsRepeatable(datasetVariable.isRepeatable());
+    builder.setOccurrenceGroup(datasetVariable.getOccurrenceGroup());
+    builder.setValueType(datasetVariable.getValueType());
+    builder.setEntityType(datasetVariable.getEntityType());
+
+    if (datasetVariable.hasAttributes()) {
+      builder.addAllAttributes(toAttributeDtoList(datasetVariable.getAttributes()));
+    }
+
+    if (datasetVariable.hasCategories()) {
+      builder.addAllCategories(toCategoryDtoList(datasetVariable.getCategories()));
+    }
+
+    String tableFullName = opalTableFullNameMap.get(datasetVariable.getDatasetId());
+    String[] split = tableFullName.split("\\.");
+    builder.addAttributes(Magma.AttributeDto.newBuilder().setName("derivedFrom").setNamespace("opal").setValue("/datasource/" + split[0] + "/table/" + split[1] + "/variable/" + datasetVariable.getName()).build());
+    builder.addAttributes(Magma.AttributeDto.newBuilder().setName("script").setValue("$('" + datasetVariable.getName() + "')").build());
+
+    return builder.build();
+  }
+
+  private List<Magma.AttributeDto> toAttributeDtoList(Attributes attributes) {
+    return attributes.asAttributeList().stream().map(attribute -> {
+      Magma.AttributeDto.Builder builder = Magma.AttributeDto.newBuilder();
+
+      builder.setName(attribute.getName());
+
+      if (attribute.hasNamespace()) builder.setNamespace(attribute.getNamespace());
+
+      LocalizedString values = attribute.getValues();
+      String firstKey = values.firstKey();
+
+      if (!"und".equals(firstKey)) builder.setLocale(firstKey);
+
+      builder.setValue(values.get(firstKey));
+
+      return builder.build();
+    }).collect(Collectors.toList());
+  }
+
+
+  private List<Magma.CategoryDto> toCategoryDtoList(List<DatasetCategory> categories) {
+    return categories.stream().map(category -> {
+      Magma.CategoryDto.Builder builder = Magma.CategoryDto.newBuilder();
+
+      builder.setName(category.getName());
+      builder.setIsMissing(category.isMissing());
+
+      Attributes categoryAttributes = category.getAttributes();
+      if (categoryAttributes != null && !categoryAttributes.isEmpty()) builder.addAllAttributes(
+        toAttributeDtoList(categoryAttributes));
+
+      return builder.build();
+    }).collect(Collectors.toList());
+  }
+
+  private String toOpalTableFullName(Dataset dataset) {
+    OpalTable opalTable = dataset instanceof StudyDataset ? ((StudyDataset) dataset).getSafeStudyTable() : ((HarmonizationDataset) dataset).getSafeHarmonizationTable();
+    return opalTable.getProject() + "." + opalTable.getTable();
   }
 }

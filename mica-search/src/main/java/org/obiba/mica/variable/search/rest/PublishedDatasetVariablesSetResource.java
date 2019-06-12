@@ -12,8 +12,11 @@ package org.obiba.mica.variable.search.rest;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import java.io.BufferedOutputStream;
+import java.util.Collection;
 import org.apache.shiro.authz.AuthorizationException;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.obiba.mica.core.domain.DocumentSet;
 import org.obiba.mica.dataset.service.VariableSetService;
 import org.obiba.mica.micaConfig.domain.MicaConfig;
@@ -103,18 +106,19 @@ public class PublishedDatasetVariablesSetResource {
   public Response exportVariables(@PathParam("id") String id) {
     DocumentSet documentSet = getSecuredDocumentSet(id);
     variableSetService.touch(documentSet);
-    StreamingOutput stream = os -> {
-      documentSet.getIdentifiers().forEach(ident -> {
-        try {
-          os.write((ident + "\n").getBytes());
-        } catch (IOException e) {
-          // ignore
-        }
-      });
-      os.flush();
-    };
-    return Response.ok(stream)
+    return Response.ok(toStream(documentSet.getIdentifiers()))
       .header("Content-Disposition", String.format("attachment; filename=\"%s-variables.txt\"", id)).build();
+  }
+
+  @GET
+  @Path("/documents/_opal")
+  @Produces(MediaType.APPLICATION_OCTET_STREAM)
+  public Response createOpalViews(@PathParam("id") String id) {
+    subjectAclService.checkPermission("/set/documents", "VIEW", "_opal");
+    DocumentSet set = getSecuredDocumentSet(id);
+    StreamingOutput streamingOutput = stream -> variableSetService.createOpalViewsZip(set, new BufferedOutputStream(stream));
+
+    return Response.ok(streamingOutput, MediaType.APPLICATION_OCTET_STREAM).header("Content-Disposition", "attachment; filename=\"opal-views-" + id + ".zip\"").build();
   }
 
   @POST
@@ -176,6 +180,19 @@ public class PublishedDatasetVariablesSetResource {
     if (documentSet.hasName() && !subjectAclService.hasMicaRole()) throw new AuthorizationException();
 
     return documentSet;
+  }
+
+  private StreamingOutput toStream(Collection<String> items) {
+    return os -> {
+      items.forEach(item -> {
+        try {
+          os.write((item + "\n").getBytes());
+        } catch (IOException e) {
+          //
+        }
+      });
+      os.flush();
+    };
   }
 
 }
