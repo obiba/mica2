@@ -174,48 +174,30 @@ public class VariableSetService extends DocumentSetService {
 
     Map<String, String> opalTableFullNameMap = datasets.stream().collect(Collectors.toMap(Dataset::getId, this::toOpalTableFullName));
 
-    Map<String, List<DatasetVariable>> variablesGroupedByProject = variables.stream()
-      .collect(Collectors.groupingBy(variable -> opalTableFullNameMap.get(variable.getDatasetId()).split("\\.")[0]));
+    Map<String, List<DatasetVariable>> variablesGroupedByProjectTable = variables.stream()
+      .collect(Collectors.groupingBy(variable -> opalTableFullNameMap.get(variable.getDatasetId())));
 
-    for (Entry<String, List<DatasetVariable>> entry : variablesGroupedByProject.entrySet()) {
-      views.addAll(createViewsDto(entry.getValue(), opalTableFullNameMap));
+    for (Entry<String, List<DatasetVariable>> entry : variablesGroupedByProjectTable.entrySet()) {
+      views.add(createViewsDto(entry.getValue(), entry.getKey()));
     }
 
     return views;
   }
 
-  private List<Magma.ViewDto> createViewsDto(List<DatasetVariable> variables, Map<String, String> opalTableFullNameMap) {
-    List<Magma.ViewDto> views = new ArrayList<>();
+  private Magma.ViewDto createViewsDto(List<DatasetVariable> variables, String opalTableFullName) {
+    Magma.ViewDto.Builder builder = Magma.ViewDto.newBuilder();
+    builder.setExtension(
+      Magma.VariableListViewDto.view,
+      Magma.VariableListViewDto.newBuilder()
+        .addAllVariables(variables.stream().map(variable -> toVariableDto(variable, opalTableFullName)).collect(Collectors.toList())).build());
 
-    Map<String, Set<String>> usedEntityTypeProjectFullnameMap = new HashMap<>();
+    builder.addFrom(opalTableFullName);
+    builder.setName(opalTableFullName + "-view-" + new Date().getTime());
 
-    Map<String, List<VariableDto>> entityTypeVariableMap = variables.stream()
-      .filter(variable -> opalTableFullNameMap.containsKey(variable.getDatasetId()))
-      .map(variable -> {
-        String entityType = variable.getEntityType();
-        if (!usedEntityTypeProjectFullnameMap.containsKey(entityType)) {
-          usedEntityTypeProjectFullnameMap.put(entityType, new HashSet<>());
-        }
-        usedEntityTypeProjectFullnameMap.get(entityType).add(opalTableFullNameMap.get(variable.getDatasetId()));
-
-        return toVariableDto(variable, opalTableFullNameMap);
-      })
-      .collect(Collectors.groupingBy(VariableDto::getEntityType));
-
-    entityTypeVariableMap.forEach((key, value) -> {
-      Magma.ViewDto.Builder builder = Magma.ViewDto.newBuilder();
-      builder.setExtension(Magma.VariableListViewDto.view, Magma.VariableListViewDto.newBuilder().addAllVariables(value).build());
-
-      builder.addAllFrom(usedEntityTypeProjectFullnameMap.get(key));
-      builder.setName(usedEntityTypeProjectFullnameMap.get(key).toArray()[0].toString().split("\\.")[0] + "-view-" + key + "-" + new Date().getTime());
-
-      views.add(builder.build());
-    });
-
-    return views;
+    return builder.build();
   }
 
-  private Magma.VariableDto toVariableDto(DatasetVariable datasetVariable, Map<String, String> opalTableFullNameMap) {
+  private Magma.VariableDto toVariableDto(DatasetVariable datasetVariable, String opalTableFullName) {
     Magma.VariableDto.Builder builder = Magma.VariableDto.newBuilder();
 
     builder.setName(datasetVariable.getName());
@@ -236,8 +218,7 @@ public class VariableSetService extends DocumentSetService {
       builder.addAllCategories(toCategoryDtoList(datasetVariable.getCategories()));
     }
 
-    String tableFullName = opalTableFullNameMap.get(datasetVariable.getDatasetId());
-    String[] split = tableFullName.split("\\.");
+    String[] split = opalTableFullName.split("\\.");
     builder.addAttributes(Magma.AttributeDto.newBuilder().setName("derivedFrom").setNamespace("opal").setValue("/datasource/" + split[0] + "/table/" + split[1] + "/variable/" + datasetVariable.getName()).build());
     builder.addAttributes(Magma.AttributeDto.newBuilder().setName("script").setValue("$('" + datasetVariable.getName() + "')").build());
 
