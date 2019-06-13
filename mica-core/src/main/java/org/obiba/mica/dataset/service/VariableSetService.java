@@ -16,8 +16,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
@@ -35,7 +33,6 @@ import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.study.service.PublishedDatasetVariableService;
 import org.obiba.opal.web.model.Magma;
-import org.obiba.opal.web.model.Magma.VariableDto;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
@@ -178,13 +175,13 @@ public class VariableSetService extends DocumentSetService {
       .collect(Collectors.groupingBy(variable -> opalTableFullNameMap.get(variable.getDatasetId())));
 
     for (Entry<String, List<DatasetVariable>> entry : variablesGroupedByProjectTable.entrySet()) {
-      views.add(createViewsDto(entry.getValue(), entry.getKey()));
+      views.add(createViewDto(entry.getValue(), entry.getKey()));
     }
 
     return views;
   }
 
-  private Magma.ViewDto createViewsDto(List<DatasetVariable> variables, String opalTableFullName) {
+  private Magma.ViewDto createViewDto(List<DatasetVariable> variables, String opalTableFullName) {
     Magma.ViewDto.Builder builder = Magma.ViewDto.newBuilder();
     builder.setExtension(
       Magma.VariableListViewDto.view,
@@ -192,7 +189,7 @@ public class VariableSetService extends DocumentSetService {
         .addAllVariables(variables.stream().map(variable -> toVariableDto(variable, opalTableFullName)).collect(Collectors.toList())).build());
 
     builder.addFrom(opalTableFullName);
-    builder.setName(opalTableFullName + "-view-" + new Date().getTime());
+    builder.setName(opalTableFullName.replaceAll("\\.", "_") + "-view-" + new Date().getTime());
 
     return builder.build();
   }
