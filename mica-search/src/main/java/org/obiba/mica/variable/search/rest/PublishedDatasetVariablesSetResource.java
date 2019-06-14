@@ -116,7 +116,7 @@ public class PublishedDatasetVariablesSetResource {
   public Response createOpalViews(@PathParam("id") String id) {
     subjectAclService.checkPermission("/set/documents", "VIEW", "_opal");
     DocumentSet set = getSecuredDocumentSet(id);
-    StreamingOutput streamingOutput = stream -> variableSetService.createOpalViewsZip(set, new BufferedOutputStream(stream));
+    StreamingOutput streamingOutput = stream -> variableSetService.createOpalViewsZip(set, micaConfigService.getConfig().getOpalViewsGrouping(), new BufferedOutputStream(stream));
 
     return Response.ok(streamingOutput, MediaType.APPLICATION_OCTET_STREAM).header("Content-Disposition", "attachment; filename=\"opal-views-" + id + ".zip\"").build();
   }

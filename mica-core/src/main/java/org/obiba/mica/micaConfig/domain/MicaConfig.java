@@ -136,6 +136,8 @@ public class MicaConfig extends AbstractAuditableDocument {
 
   private boolean setsSearchEnabled = true;
 
+  private OpalViewsGrouping opalViewsGrouping = OpalViewsGrouping.PROJECT_TABLE;
+
   public String getName() {
     return name;
   }
@@ -487,5 +489,19 @@ public class MicaConfig extends AbstractAuditableDocument {
 
   public void setSetsSearchEnabled(boolean setsSearchEnabled) {
     this.setsSearchEnabled = setsSearchEnabled;
+  }
+
+  public OpalViewsGrouping getOpalViewsGrouping() {
+    return opalViewsGrouping;
+  }
+
+  public void setOpalViewsGrouping(OpalViewsGrouping opalViewsGrouping) {
+    this.opalViewsGrouping = opalViewsGrouping;
+  }
+
+  public enum OpalViewsGrouping {
+    PROJECT_TABLE,
+    PROJECT_ENTITY_TYPE,
+    ENTITY_TYPE
   }
 }

@@ -429,6 +429,7 @@ message MicaConfigDto {
   required bool isSetsAnalysisEnabled = 42;
   required bool isSetsSearchEnabled = 43;
   required bool downloadOpalViewsFromSetsAllowed = 44 [default = false];
+  required string opalViewsGrouping = 45;
 }
 
 message PublicMicaConfigDto {

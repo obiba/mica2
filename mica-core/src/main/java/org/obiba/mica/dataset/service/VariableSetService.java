@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
@@ -31,6 +32,7 @@ import org.obiba.mica.dataset.domain.DatasetCategory;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.domain.StudyDataset;
+import org.obiba.mica.micaConfig.domain.MicaConfig;
 import org.obiba.mica.study.service.PublishedDatasetVariableService;
 import org.obiba.opal.web.model.Magma;
 import org.springframework.stereotype.Service;
@@ -140,8 +142,8 @@ public class VariableSetService extends DocumentSetService {
    * @param outputStream the outputstream
    * @throws IOException in case the zip fails
    */
-  public void createOpalViewsZip(DocumentSet documentSet, OutputStream outputStream) throws IOException {
-    List<Magma.ViewDto> views = createOpalViews(documentSet);
+  public void createOpalViewsZip(DocumentSet documentSet, MicaConfig.OpalViewsGrouping opalViewsGrouping, OutputStream outputStream) throws IOException {
+    List<Magma.ViewDto> views = createOpalViews(documentSet, opalViewsGrouping);
 
     try (ZipOutputStream zipOutputStream = new ZipOutputStream(outputStream)) {
       for (Magma.ViewDto view : views) {
@@ -158,7 +160,7 @@ public class VariableSetService extends DocumentSetService {
    * @param documentSet The source variable document set
    * @return a list of opal views grouped by project and entity type
    */
-  private List<Magma.ViewDto> createOpalViews(DocumentSet documentSet) {
+  private List<Magma.ViewDto> createOpalViews(DocumentSet documentSet, MicaConfig.OpalViewsGrouping opalViewsGrouping) {
     List<Magma.ViewDto> views = new ArrayList<>();
 
     List<DatasetVariable> variables = publishedDatasetVariableService.findByIds(Lists.newArrayList(documentSet.getIdentifiers()));
@@ -171,16 +173,40 @@ public class VariableSetService extends DocumentSetService {
 
     Map<String, String> opalTableFullNameMap = datasets.stream().collect(Collectors.toMap(Dataset::getId, this::toOpalTableFullName));
 
-    Map<String, List<DatasetVariable>> variablesGroupedByProjectTable = variables.stream()
-      .collect(Collectors.groupingBy(variable -> opalTableFullNameMap.get(variable.getDatasetId())));
+    switch (opalViewsGrouping) {
+      case PROJECT_TABLE:
+        Map<String, List<DatasetVariable>> variablesGroupedByProjectTable = variables.stream()
+          .collect(Collectors.groupingBy(variable -> opalTableFullNameMap.get(variable.getDatasetId())));
 
-    for (Entry<String, List<DatasetVariable>> entry : variablesGroupedByProjectTable.entrySet()) {
-      views.add(createViewDto(entry.getValue(), entry.getKey()));
+        for (Entry<String, List<DatasetVariable>> entry : variablesGroupedByProjectTable.entrySet()) {
+          views.add(createViewDto(entry.getValue(), entry.getKey()));
+        }
+        break;
+      case PROJECT_ENTITY_TYPE:
+        Map<String, List<DatasetVariable>> variablesGroupedByProjectEntityType = variables.stream()
+          .collect(Collectors.groupingBy(variable -> {
+            String opalTableFullName = opalTableFullNameMap.get(variable.getDatasetId());
+            return opalTableFullName.split("\\.")[0] + "." + variable.getEntityType();
+          }));
+
+        for (Entry<String, List<DatasetVariable>> entry : variablesGroupedByProjectEntityType.entrySet()) {
+          views.add(createViewDto(entry.getValue(), entry.getKey(), opalTableFullNameMap));
+        }
+        break;
+      case ENTITY_TYPE:
+        Map<String, List<DatasetVariable>> variablesGroupedByEntityType = variables.stream()
+          .collect(Collectors.groupingBy(DatasetVariable::getEntityType));
+
+        for (Entry<String, List<DatasetVariable>> entry : variablesGroupedByEntityType.entrySet()) {
+          views.add(createViewDto(entry.getValue(), entry.getKey(), opalTableFullNameMap));
+        }
+        break;
     }
 
     return views;
   }
 
+  // group by entity type
   private Magma.ViewDto createViewDto(List<DatasetVariable> variables, String opalTableFullName) {
     Magma.ViewDto.Builder builder = Magma.ViewDto.newBuilder();
     builder.setExtension(
@@ -190,6 +216,26 @@ public class VariableSetService extends DocumentSetService {
 
     builder.addFrom(opalTableFullName);
     builder.setName(opalTableFullName.replaceAll("\\.", "_") + "-view-" + new Date().getTime());
+
+    return builder.build();
+  }
+
+  private Magma.ViewDto createViewDto(List<DatasetVariable> variables, String key, Map<String, String> opalTableFullNameMap) {
+    Magma.ViewDto.Builder builder = Magma.ViewDto.newBuilder();
+
+    Set<String> usedOpalTables = new HashSet<>();
+
+    builder.setExtension(
+      Magma.VariableListViewDto.view,
+      Magma.VariableListViewDto.newBuilder()
+        .addAllVariables(variables.stream().map(variable -> {
+          String opalTableFullName = opalTableFullNameMap.get(variable.getDatasetId());
+          usedOpalTables.add(opalTableFullName);
+          return toVariableDto(variable, opalTableFullName);
+        }).collect(Collectors.toList())).build());
+
+    builder.addAllFrom(usedOpalTables);
+    builder.setName(key.replaceAll("\\.", "_") + "-view-" + new Date().getTime());
 
     return builder.build();
   }

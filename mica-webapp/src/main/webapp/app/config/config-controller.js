@@ -198,7 +198,7 @@ mica.config
       };
 
       $scope.$on(NOTIFICATION_EVENTS.confirmDialogAccepted, function (event, index) {
-        if (roleToDelete === $scope.micaConfig.roles[index]) {
+        if (Number.isInteger(index) && roleToDelete === $scope.micaConfig.roles[index]) {
           $scope.micaConfig.roles.splice(index, 1);
 
           $scope.micaConfig.$save(
@@ -417,6 +417,12 @@ mica.config
       });
 
       getAvailableLanguages();
+
+      $scope.groupByOptions = [
+        'PROJECT_TABLE',
+        'PROJECT_ENTITY_TYPE',
+        'ENTITY_TYPE'
+      ];
 
       $scope.cartEnabledChanged = function() {
         if (!$scope.micaConfig.isCartEnabled) {

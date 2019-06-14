@@ -25,6 +25,7 @@ import org.obiba.mica.micaConfig.AuthType;
 import org.obiba.mica.micaConfig.domain.HarmonizationStudyConfig;
 import org.obiba.mica.micaConfig.PdfDownloadType;
 import org.obiba.mica.micaConfig.domain.*;
+import org.obiba.mica.micaConfig.domain.MicaConfig.OpalViewsGrouping;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.springframework.stereotype.Component;
 
@@ -142,6 +143,7 @@ class MicaConfigDtos {
     builder.setCartTimeToLive(config.getCartTimeToLive());
     builder.setIsSetsAnalysisEnabled(config.isSetsAnalysisEnabled());
     builder.setIsSetsSearchEnabled(config.isSetsSearchEnabled());
+    builder.setOpalViewsGrouping(config.getOpalViewsGrouping().name());
 
     if (!subjectAclService.hasMicaRole()) {
       builder.setCurrentUserCanCreateCart(config.isCartEnabled() && config.isAnonymousCanCreateCart());
@@ -162,6 +164,8 @@ class MicaConfigDtos {
     config.setName(dto.getName());
     config.setDefaultCharacterSet(dto.getDefaultCharSet());
     config.setOpenAccess(dto.getOpenAccess());
+
+    config.setOpalViewsGrouping(OpalViewsGrouping.valueOf(dto.getOpalViewsGrouping()));
 
     if (dto.hasSearchLayout()) config.setSearchLayout(dto.getSearchLayout());
 
