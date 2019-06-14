@@ -92,8 +92,11 @@
               label="config.collected-dataset-enabled" help="config.collected-dataset-enabled-help"></div>
           <div form-checkbox name="isHarmonizedDatasetEnabled" model="micaConfig.isHarmonizedDatasetEnabled"
               label="config.harmonized-dataset-enabled" help="config.harmonized-dataset-enabled-help"></div>
+      </div>
+    </div>
 
-
+    <div class="row">
+      <div class="col-md-6">
         <h4 class="voffset5" translate>config.sets</h4>
         <div form-checkbox name="cartEnabled" model="micaConfig.isCartEnabled"
              label="config.cart-enabled" ng-click="cartEnabledChanged()" help="config.cart-enabled-help">
@@ -113,17 +116,31 @@
         <div form-input name="maxItemsPerSet" model="micaConfig.maxItemsPerSet" label="config.max-items-per-set"
              type="number" required="true" help="config.max-items-per-set-help">
         </div>
-
+      </div>
+      <div class="col-md-6">
+        <p class="voffset5">&nbsp;</p>
         <div form-input name="cartTimeToLive" model="micaConfig.cartTimeToLive" label="config.cart-time-to-live"
              type="number" min="1" step="1" required="true" disabled="!micaConfig.isCartEnabled" help="config.cart-time-to-live-help">
         </div>
         <div form-input name="setTimeToLive" model="micaConfig.setTimeToLive" label="config.set-time-to-live"
              type="number" min="1" step="1" required="true" help="config.set-time-to-live-help">
         </div>
+        <div class="form-group"
+             ng-class="{'has-error': (form.opalViewsGrouping.$dirty || form.saveAttempted) && form.opalViewsGrouping.$invalid}">
+          <label for="opalViewsGrouping" class="control-label">
+            <span translate>config.opal-views-grouping</span> *
+          </label>
+          <select id="opalViewsGrouping" name="opalViewsGrouping" ng-model="micaConfig.opalViewsGrouping"
+                  ng-options="groupByOption for groupByOption in groupByOptions" class="form-control" required>
+          </select>
+          <p class="input-error" ng-show="form.opalViewsGrouping.$dirty && form.opalViewsGrouping.$invalid">
+            <span ng-show="form.opalViewsGrouping.$error.server">{{ errors.name }}</span>
+            <span ng-show="form.opalViewsGrouping.$error.required" translate>required</span>
+          </p>
+          <p class="help-block">{{'config.opal-views-grouping-' + micaConfig.opalViewsGrouping + '-help' | translate}}</p>
+        </div>
       </div>
     </div>
-
-
 
     <div class="voffset2">
       <a href="#/admin/general" class="btn btn-default">
