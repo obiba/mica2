@@ -91,8 +91,7 @@ public abstract class AbstractIdentifiedDocumentService<T extends Identified> ex
     while (notCachedResults.size()<notCachedIds.size() && from != notCachedIds.size()) {
       int to = Math.min(from + MAX_SIZE, notCachedIds.size());
       String idsAsRqlStringParam = String.join(",", notCachedIds.subList(from, to));
-      notCachedResults.addAll(executeRqlQuery(String.format("generic(in(id,(%s)),limit(0,%s))", idsAsRqlStringParam, MAX_SIZE)
-        .replaceAll("/", "%2F")));
+      notCachedResults.addAll(executeRqlQuery(String.format("generic(in(id,(%s)),limit(0,%s))", idsAsRqlStringParam, MAX_SIZE)));
       from = to;
     }
 
