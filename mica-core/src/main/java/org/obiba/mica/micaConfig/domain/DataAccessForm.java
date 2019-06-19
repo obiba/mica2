@@ -31,6 +31,8 @@ public class DataAccessForm extends AbstractDataAccessEntityForm {
 
   private int idLength = 6;
 
+  private boolean allowIdWithLeadingZeros = true;
+
   private boolean notifySubmitted = true;
 
   private boolean notifyReviewed = true;
@@ -299,5 +301,13 @@ public class DataAccessForm extends AbstractDataAccessEntityForm {
 
   public void setDaoCanEdit(boolean daoCanEdit) {
     this.daoCanEdit = daoCanEdit;
+  }
+
+  public boolean isAllowIdWithLeadingZeros() {
+    return allowIdWithLeadingZeros;
+  }
+
+  public void setAllowIdWithLeadingZeros(boolean allowIdWithLeadingZeros) {
+    this.allowIdWithLeadingZeros = allowIdWithLeadingZeros;
   }
 }
