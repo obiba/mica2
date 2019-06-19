@@ -18,7 +18,6 @@ import java.util.Map;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
-import org.apache.shiro.SecurityUtils;
 import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.micaConfig.AuthType;
@@ -249,6 +248,9 @@ class MicaConfigDtos {
     if(dataAccessForm.hasIdPrefix()) {
       builder.setIdPrefix(dataAccessForm.getIdPrefix());
     }
+
+    builder.setAllowIdWithLeadingZeros(dataAccessForm.isAllowIdWithLeadingZeros());
+
     builder.setIdLength(dataAccessForm.getIdLength()) //
       .setNotifySubmitted(dataAccessForm.isNotifySubmitted()) //
       .setNotifyReviewed(dataAccessForm.isNotifyReviewed()) //
@@ -314,6 +316,8 @@ class MicaConfigDtos {
     if(dto.hasIdPrefix()) {
       dataAccessForm.setIdPrefix(dto.getIdPrefix());
     }
+
+    dataAccessForm.setAllowIdWithLeadingZeros(dto.getAllowIdWithLeadingZeros());
 
     dataAccessForm.setIdLength(dto.getIdLength());
 

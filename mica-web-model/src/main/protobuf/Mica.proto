@@ -834,6 +834,7 @@ message DataAccessFormDto {
   repeated string predefinedActions = 31;
   required bool amendmentsEnabled = 32;
   required bool daoCanEdit = 33;
+  optional bool allowIdWithLeadingZeros = 34;
 }
 
 message DataAccessAmendmentFormDto {
