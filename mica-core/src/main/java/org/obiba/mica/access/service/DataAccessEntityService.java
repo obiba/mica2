@@ -347,7 +347,11 @@ public abstract class DataAccessEntityService<T extends DataAccessEntity> {
     Object exclusions = YamlClassPathResourceReader.read(EXCLUSION_IDS_YAML_RESOURCE_PATH, Map.class).get("exclusions");
 
     IdentifierGenerator.Builder builder = IdentifierGenerator.newBuilder().prefix(dataAccessForm.getIdPrefix())
-      .size(dataAccessForm.getIdLength()).zeros();
+      .size(dataAccessForm.getIdLength());
+
+    if (dataAccessForm.isAllowIdWithLeadingZeros()) {
+      builder.zeros();
+    }
 
     if (exclusions instanceof List) {
       log.info("Using exclusions {} to generate DAR id", exclusions.toString());
