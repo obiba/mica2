@@ -38,11 +38,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 public class UserProfileService extends AgateRestService {
   private static final Logger log = LoggerFactory.getLogger(UserProfileService.class);
 
-  @Override
-  public void init() {
-    initInternal();
-  }
-
   public synchronized Subject getProfile(@NotNull String username) {
     Assert.notNull(username, "Username cannot be null");
     Subject subject = getProfileInternal(getProfileServiceUrl(username));
@@ -82,7 +77,7 @@ public class UserProfileService extends AgateRestService {
   public String getUserProfileTranslations(String locale) {
 
     String serviceUrl = UriComponentsBuilder
-      .fromHttpUrl(getAgateUrl())
+      .fromHttpUrl(agateServerConfigService.getAgateUrl())
       .path(DEFAULT_REST_PREFIX)
       .path("/users/i18n/" + locale + ".json")
       .build().toUriString();
@@ -126,12 +121,16 @@ public class UserProfileService extends AgateRestService {
   }
 
   private String getProfileServiceUrl(String username) {
-    return UriComponentsBuilder.fromHttpUrl(getAgateUrl()).path(DEFAULT_REST_PREFIX).path(
-      String.format("/tickets/subject/%s", username)).build().toUriString();
+    return UriComponentsBuilder
+      .fromHttpUrl(agateServerConfigService.getAgateUrl())
+      .path(DEFAULT_REST_PREFIX)
+      .path(String.format("/tickets/subject/%s", username))
+      .build().toUriString();
   }
 
   private String getProfileServiceUrlByApp(String username, String application, String group) {
-    UriComponentsBuilder urlBuilder = UriComponentsBuilder.fromHttpUrl(getAgateUrl()).path(DEFAULT_REST_PREFIX);
+    UriComponentsBuilder urlBuilder =
+      UriComponentsBuilder.fromHttpUrl(agateServerConfigService.getAgateUrl()).path(DEFAULT_REST_PREFIX);
 
     if (Strings.isNullOrEmpty(username)) {
       urlBuilder.path(String.format("/application/%s/users", application));

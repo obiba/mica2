@@ -265,6 +265,13 @@ mica.factory('MicaMetricsService', ['$resource',
     });
   }]);
 
+mica.factory('OidcProvidersResource', ['$resource',
+  function ($resource) {
+    return $resource('ws/auth/providers', {locale: '@locale'}, {
+      'get': { method: 'GET', errorHandler: true, isArray: true }
+    });
+  }]);
+
 mica.factory('AuditsService', ['$http',
   function ($http) {
     return {

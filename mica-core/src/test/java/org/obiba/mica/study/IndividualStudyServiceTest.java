@@ -38,6 +38,7 @@ import org.obiba.mica.core.domain.Person;
 import org.obiba.mica.core.notification.EntityPublicationFlowMailNotification;
 import org.obiba.mica.core.repository.AttachmentRepository;
 import org.obiba.mica.core.repository.AttachmentStateRepository;
+import org.obiba.mica.core.service.AgateServerConfigService;
 import org.obiba.mica.core.service.GitService;
 import org.obiba.mica.core.service.MailService;
 import org.obiba.mica.core.service.StudyIdGeneratorService;
@@ -390,6 +391,11 @@ public class IndividualStudyServiceTest {
     @Bean
     public MailService mailService() {
       return mock(MailService.class);
+    }
+
+    @Bean
+    public AgateServerConfigService agateServerConfigService() {
+      return mock(AgateServerConfigService.class);
     }
 
     @Bean

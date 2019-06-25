@@ -19,6 +19,7 @@ import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
 import org.obiba.mica.core.domain.LocalizedString;
+import org.obiba.mica.core.service.AgateServerConfigService;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.micaConfig.AuthType;
 import org.obiba.mica.micaConfig.domain.HarmonizationStudyConfig;
@@ -42,14 +43,18 @@ class MicaConfigDtos {
 
   private SubjectAclService subjectAclService;
 
+  private AgateServerConfigService agateServerConfigService;
+
   @Inject
   public MicaConfigDtos(
     LocalizedStringDtos localizedStringDtos,
     AttachmentDtos attachmentDtos,
-    SubjectAclService subjectAclService) {
+    SubjectAclService subjectAclService,
+    AgateServerConfigService agateServerConfigService) {
     this.localizedStringDtos = localizedStringDtos;
     this.attachmentDtos = attachmentDtos;
     this.subjectAclService = subjectAclService;
+    this.agateServerConfigService = agateServerConfigService;
   }
 
   MicaConfigDtos() {
@@ -60,7 +65,9 @@ class MicaConfigDtos {
   Mica.PublicMicaConfigDto asPublicDto(@NotNull MicaConfig config) {
     Mica.PublicMicaConfigDto.Builder builder = Mica.PublicMicaConfigDto.newBuilder() //
       .setName(config.getName()) //
-      .setOpenAccess(config.isOpenAccess());
+      .setOpenAccess(config.isOpenAccess())
+      .setAgateUrl(agateServerConfigService.getAgateUrl());
+
     config.getLocales().forEach(locale -> builder.addLanguages(locale.getLanguage()));
 
     if (config.hasPublicUrl()) {

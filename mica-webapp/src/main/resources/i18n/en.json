@@ -2049,5 +2049,10 @@
         "number-of-data-collection-events": "Number of Data Collection Events"
       }
     }
+  },
+  "realm": {
+    "oidc": {
+      "signin-with": "Sign in with"
+    }
   }
 }

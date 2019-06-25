@@ -60,7 +60,7 @@
     <metrics-spring.version>3.0.0</metrics-spring.version>
     <mongodb-driver.version>3.9.1</mongodb-driver.version>
     <nosqlunit.version>0.7.9</nosqlunit.version>
-    <obiba-commons.version>1.11.3</obiba-commons.version>
+    <obiba-commons.version>1.12-SNAPSHOT</obiba-commons.version>
     <opal.version>2.13.1</opal.version>
     <opencsv.version>2.3</opencsv.version>
     <poi.version>3.9</poi.version>
@@ -70,6 +70,7 @@
     <shiro.version>1.4.0</shiro.version>
     <shiro-extras.version>1.0.3-obiba</shiro-extras.version>
     <spring-data-commons.version>1.13.16.RELEASE</spring-data-commons.version>
+    <lang-tag.version>1.4.4</lang-tag.version>
 
     <!-- maven plugins -->
     <bintray-maven-plugin.version>1.2.20180117184439</bintray-maven-plugin.version>
@@ -295,6 +296,30 @@
             <artifactId>mockito-all</artifactId>
           </exclusion>
         </exclusions>
+      </dependency>
+
+      <dependency>
+        <groupId>org.obiba.commons</groupId>
+        <artifactId>obiba-web-model</artifactId>
+        <version>${obiba-commons.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+
+      <dependency>
+        <groupId>org.obiba.commons</groupId>
+        <artifactId>obiba-oidc</artifactId>
+        <version>${obiba-commons.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.nimbusds</groupId>
+        <artifactId>lang-tag</artifactId>
+        <version>${lang-tag.version}</version>
       </dependency>
 
       <dependency>

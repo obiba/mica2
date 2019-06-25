@@ -60,7 +60,6 @@ public class MailService extends AgateRestService {
     if(Strings.isNullOrEmpty(from)) {
       from = "mica@example.org";
     }
-    initInternal();
   }
 
   @Async
@@ -174,7 +173,10 @@ public class MailService extends AgateRestService {
   }
 
   private String getNotificationsUrl() {
-    return UriComponentsBuilder.fromHttpUrl(getAgateUrl()).path(DEFAULT_REST_PREFIX).path(DEFAULT_NOTIFICATIONS_PATH).build()
+    return UriComponentsBuilder
+      .fromHttpUrl(agateServerConfigService.getAgateUrl())
+      .path(DEFAULT_REST_PREFIX)
+      .path(DEFAULT_NOTIFICATIONS_PATH).build()
       .toUriString();
   }
 

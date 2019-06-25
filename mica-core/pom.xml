@@ -175,6 +175,21 @@
     </dependency>
 
     <dependency>
+      <groupId>org.obiba.commons</groupId>
+      <artifactId>obiba-web-model</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.obiba.commons</groupId>
+      <artifactId>obiba-oidc</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>com.nimbusds</groupId>
+      <artifactId>lang-tag</artifactId>
+    </dependency>
+
+    <dependency>
       <groupId>org.obiba.opal</groupId>
       <artifactId>opal-rest-client</artifactId>
     </dependency>

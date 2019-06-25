@@ -17,7 +17,6 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.shiro.codec.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.core.env.Environment;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
@@ -49,32 +48,23 @@ public abstract class AgateRestService {
   @Inject
   protected Environment env;
 
+  @Inject
+  protected AgateServerConfigService agateServerConfigService;
+
   private HttpComponentsClientHttpRequestFactory httpRequestFactory;
 
-  private String agateUrl;
-
-  private String serviceName;
-
-  private String serviceKey;
 
   @PostConstruct
-  public abstract void init();
-
-  protected void initInternal() {
-    RelaxedPropertyResolver propertyResolver = new RelaxedPropertyResolver(env, "agate.");
-    agateUrl = propertyResolver.getProperty("url");
-    serviceName = propertyResolver.getProperty("application.name");
-    serviceKey = propertyResolver.getProperty("application.key");
-  }
+  public void init() {}
 
   protected String getApplicationAuth() {
-    String token = serviceName + ":" + serviceKey;
+    String token = agateServerConfigService.buildToken();
     return APPLICATION_AUTH_SCHEMA + " " + Base64.encodeToString(token.getBytes());
   }
 
   protected RestTemplate newRestTemplate() {
-    log.info("Connecting to Agate: {}", agateUrl);
-    if(agateUrl.toLowerCase().startsWith("https://")) {
+    log.info("Connecting to Agate: {}", agateServerConfigService.getAgateUrl());
+    if(agateServerConfigService.isSecured()) {
       if(httpRequestFactory == null) {
         httpRequestFactory = new HttpComponentsClientHttpRequestFactory(createHttpClient());
       }
@@ -82,18 +72,6 @@ public abstract class AgateRestService {
     } else {
       return new RestTemplate();
     }
-  }
-
-  protected String getAgateUrl() {
-    return agateUrl;
-  }
-
-  protected String getServiceName() {
-    return serviceName;
-  }
-
-  protected String getServiceKey() {
-    return serviceKey;
   }
 
   protected HttpComponentsClientHttpRequestFactory getHttpRequestFactory() {
