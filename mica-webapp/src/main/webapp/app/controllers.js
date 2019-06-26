@@ -106,7 +106,7 @@ mica.controller('LoginController',
             AuthenticationSharedService) {
 
     function getRedirectUrl(providerName) {
-      return $scope.config.agateUrl + "/auth/signin/" + providerName + "?redirect=" + new $window.URL($location.absUrl()).origin;
+      return $scope.config.agateUrl + '/auth/signin/' + providerName + '?redirect=' + new $window.URL($location.absUrl()).origin;
     }
 
     function login() {
