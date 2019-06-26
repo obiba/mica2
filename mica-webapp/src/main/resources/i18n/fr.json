@@ -314,7 +314,12 @@
     "max-items-per-set-help": "Le nombre maximum de documents qu'une liste ou le panier peut contenir.",
     "opal-sets-views-download-permission": "Autoriser la création de vues d'opal à partir d'une liste.",
     "opal-sets-views-download-permission-help": "Permissions gérant le téléchargement de vues opal à partir de listes. Ces vues pouront être ensuite importer dans Opal",
-    "opal-views-grouping": "Configuration du goupement des vues Opal",
+    "opal-views-grouping": "Goupement des vues Opal",
+    "opal-views-grouping-label": {
+      "PROJECT_TABLE": "Table",
+      "PROJECT_ENTITY_TYPE": "Projet et type d'entité",
+      "ENTITY_TYPE": "Type d'entité"
+    },
     "opal-views-grouping-PROJECT_TABLE-help": "Les variables sont groupées par tables Opal.",
     "opal-views-grouping-PROJECT_ENTITY_TYPE-help": "Les variables sont groupées par projet puis par leur type d'entité.",
     "opal-views-grouping-ENTITY_TYPE-help": "Les variables sont groupées par leur type d'entité.",
