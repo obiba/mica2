@@ -131,7 +131,7 @@
             <span translate>config.opal-views-grouping</span> *
           </label>
           <select id="opalViewsGrouping" name="opalViewsGrouping" ng-model="micaConfig.opalViewsGrouping"
-                  ng-options="groupByOption for groupByOption in groupByOptions" class="form-control" required>
+                  ng-options="'config.opal-views-grouping-label.' + groupByOption | translate for groupByOption in groupByOptions" class="form-control" required>
           </select>
           <p class="input-error" ng-show="form.opalViewsGrouping.$dirty && form.opalViewsGrouping.$invalid">
             <span ng-show="form.opalViewsGrouping.$error.server">{{ errors.name }}</span>
