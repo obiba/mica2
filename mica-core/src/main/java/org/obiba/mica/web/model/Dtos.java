@@ -11,20 +11,8 @@
 package org.obiba.mica.web.model;
 
 import org.obiba.git.CommitInfo;
-import org.obiba.mica.access.domain.ActionLog;
-import org.obiba.mica.access.domain.DataAccessAmendment;
-import org.obiba.mica.access.domain.DataAccessEntity;
-import org.obiba.mica.access.domain.DataAccessRequest;
-import org.obiba.mica.access.domain.StatusChange;
-import org.obiba.mica.core.domain.Comment;
-import org.obiba.mica.core.domain.DocumentSet;
-import org.obiba.mica.core.domain.EntityState;
-import org.obiba.mica.core.domain.LocalizedString;
-import org.obiba.mica.core.domain.OpalTable;
-import org.obiba.mica.core.domain.Person;
-import org.obiba.mica.core.domain.SetOperation;
-import org.obiba.mica.core.domain.StudyTable;
-import org.obiba.mica.core.domain.Timestamped;
+import org.obiba.mica.access.domain.*;
+import org.obiba.mica.core.domain.*;
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
@@ -35,17 +23,15 @@ import org.obiba.mica.file.TempFile;
 import org.obiba.mica.micaConfig.domain.*;
 import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.project.domain.Project;
-import org.obiba.mica.study.domain.BaseStudy;
-import org.obiba.mica.study.domain.HarmonizationStudy;
-import org.obiba.mica.study.domain.HarmonizationStudyState;
-import org.obiba.mica.study.domain.Study;
-import org.obiba.mica.study.domain.StudyState;
+import org.obiba.mica.study.domain.*;
+import org.obiba.oidc.OIDCAuthProviderSummary;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.obiba.opal.core.domain.taxonomy.Term;
 import org.obiba.opal.core.domain.taxonomy.Vocabulary;
 import org.obiba.opal.web.model.Math;
 import org.obiba.opal.web.model.Search;
 import org.obiba.shiro.realm.ObibaRealm.Subject;
+import org.obiba.web.model.OIDCDtos;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Nullable;
@@ -60,59 +46,84 @@ import static org.obiba.mica.web.model.Mica.*;
 @SuppressWarnings("OverlyCoupledClass")
 public class Dtos {
 
-  @Inject
-  private StudyDtos studyDtos;
+  private final StudyDtos studyDtos;
+
+  private final MicaConfigDtos micaConfigDtos;
+
+  private final NetworkDtos networkDtos;
+
+  private final StudySummaryDtos studySummaryDtos;
+
+  private final NetworkSummaryDtos networkSummaryDtos;
+
+  private final DocumentDigestDtos documentDigestDtos;
+
+  private final TempFileDtos tempFileDtos;
+
+  private final AttachmentDtos attachmentDtos;
+
+  private final DatasetDtos datasetDtos;
+
+  private final ProjectDtos projectDtos;
+
+  private final DataAccessRequestDtos dataAccessRequestDtos;
+
+  private final CommentDtos commentDtos;
+
+  private final PersonDtos personDtos;
+
+  private final TaxonomyDtos taxonomyDtos;
+
+  private final LocalizedStringDtos localizedStringDtos;
+
+  private final UserProfileDtos userProfileDtos;
+
+  private final GitCommitInfoDtos gitCommitInfoDtos;
+
+  private final SetDtos setDtos;
+
+  private final OidcAuthProviderSummaryDtos oidcAuthProviderSummaryDtos;
 
   @Inject
-  private MicaConfigDtos micaConfigDtos;
-
-  @Inject
-  private NetworkDtos networkDtos;
-
-  @Inject
-  private StudySummaryDtos studySummaryDtos;
-
-  @Inject
-  private NetworkSummaryDtos networkSummaryDtos;
-
-  @Inject
-  private DocumentDigestDtos documentDigestDtos;
-
-  @Inject
-  private TempFileDtos tempFileDtos;
-
-  @Inject
-  private AttachmentDtos attachmentDtos;
-
-  @Inject
-  private DatasetDtos datasetDtos;
-
-  @Inject
-  private ProjectDtos projectDtos;
-
-  @Inject
-  private DataAccessRequestDtos dataAccessRequestDtos;
-
-  @Inject
-  private CommentDtos commentDtos;
-
-  @Inject
-  private PersonDtos personDtos;
-
-  @Inject
-  private TaxonomyDtos taxonomyDtos;
-
-  @Inject
-  private LocalizedStringDtos localizedStringDtos;
-
-  @Inject
-  private UserProfileDtos userProfileDtos;
-
-  @Inject
-  private GitCommitInfoDtos gitCommitInfoDtos;
-
-  @Inject
-  private SetDtos setDtos;
+  public Dtos(OidcAuthProviderSummaryDtos oidcAuthProviderSummaryDtos,
+              DatasetDtos datasetDtos,
+              StudyDtos studyDtos,
+              MicaConfigDtos micaConfigDtos,
+              NetworkDtos networkDtos,
+              StudySummaryDtos studySummaryDtos,
+              TaxonomyDtos taxonomyDtos,
+              SetDtos setDtos,
+              PersonDtos personDtos,
+              NetworkSummaryDtos networkSummaryDtos,
+              DocumentDigestDtos documentDigestDtos,
+              LocalizedStringDtos localizedStringDtos,
+              TempFileDtos tempFileDtos,
+              AttachmentDtos attachmentDtos,
+              ProjectDtos projectDtos,
+              GitCommitInfoDtos gitCommitInfoDtos,
+              CommentDtos commentDtos,
+              UserProfileDtos userProfileDtos,
+              DataAccessRequestDtos dataAccessRequestDtos) {
+    this.oidcAuthProviderSummaryDtos = oidcAuthProviderSummaryDtos;
+    this.datasetDtos = datasetDtos;
+    this.studyDtos = studyDtos;
+    this.micaConfigDtos = micaConfigDtos;
+    this.networkDtos = networkDtos;
+    this.studySummaryDtos = studySummaryDtos;
+    this.taxonomyDtos = taxonomyDtos;
+    this.setDtos = setDtos;
+    this.personDtos = personDtos;
+    this.networkSummaryDtos = networkSummaryDtos;
+    this.documentDigestDtos = documentDigestDtos;
+    this.localizedStringDtos = localizedStringDtos;
+    this.tempFileDtos = tempFileDtos;
+    this.attachmentDtos = attachmentDtos;
+    this.projectDtos = projectDtos;
+    this.gitCommitInfoDtos = gitCommitInfoDtos;
+    this.commentDtos = commentDtos;
+    this.userProfileDtos = userProfileDtos;
+    this.dataAccessRequestDtos = dataAccessRequestDtos;
+  }
 
   public Mica.DocumentSetDto asDto(DocumentSet documentSet) {
     return setDtos.asDto(documentSet);
@@ -574,5 +585,10 @@ public class Dtos {
   @NotNull
   public Mica.GitCommitInfoDto asDto(CommitInfo commitInfo) {
     return gitCommitInfoDtos.asDto(commitInfo);
+  }
+
+  @NotNull
+  public OIDCDtos.OIDCAuthProviderSummaryDto asSummaryDto(OIDCAuthProviderSummary summary) {
+    return oidcAuthProviderSummaryDtos.asSummaryDto(summary);
   }
 }

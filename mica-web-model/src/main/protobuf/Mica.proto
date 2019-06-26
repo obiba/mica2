@@ -441,6 +441,7 @@ message PublicMicaConfigDto {
   optional string searchLayout = 6;
   required int64 maxNumberOfSets = 7;
   required int64 maxItemsPerSet = 8;
+  required string agateUrl = 9;
 }
 
 message AggregationsConfigDto {

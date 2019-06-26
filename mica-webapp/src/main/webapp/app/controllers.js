@@ -89,9 +89,27 @@ mica.controller('LanguageController', ['$scope', '$translate', 'amMoment', 'Publ
 
 mica.controller('MenuController', [function () {}]);
 
-mica.controller('LoginController', ['$scope', '$location', 'AuthenticationSharedService',
-  function ($scope, $location, AuthenticationSharedService) {
-    $scope.login = function () {
+mica.controller('LoginController',
+  ['$scope',
+    '$location',
+    '$window',
+    '$translate',
+    'PublicMicaConfigResource',
+    'OidcProvidersResource',
+    'AuthenticationSharedService',
+  function ($scope,
+            $location,
+            $window,
+            $translate,
+            PublicMicaConfigResource,
+            OidcProvidersResource,
+            AuthenticationSharedService) {
+
+    function getRedirectUrl(providerName) {
+      return $scope.config.agateUrl + "/auth/signin/" + providerName + "?redirect=" + new $window.URL($location.absUrl()).origin;
+    }
+
+    function login() {
       AuthenticationSharedService.login({
         username: $scope.username,
         password: $scope.password,
@@ -99,7 +117,17 @@ mica.controller('LoginController', ['$scope', '$location', 'AuthenticationShared
           $location.path('');
         }
       });
-    };
+    }
+
+    PublicMicaConfigResource.get().$promise.then(function (config) {
+      $scope.config = config;
+      OidcProvidersResource.get({locale: $translate.use()}).$promise.then(function (providers) {
+        $scope.providers = providers;
+      });
+    });
+
+    $scope.getRedirectUrl = getRedirectUrl;
+    $scope.login = login;
   }]);
 
 mica.controller('LogoutController', ['$location', 'AuthenticationSharedService',
