@@ -251,8 +251,7 @@
                 "notitle": true,
                 "condition": "model.access_info_location.indexOf('study_representative')>-1"
               }
-            ],
-            "condition": "model.access.access_data=='yes' || model.access.access_bio_samples=='yes' || model.access.access_other=='yes'"
+            ]
           }
         ]
       },
