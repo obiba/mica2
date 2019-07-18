@@ -191,31 +191,31 @@
         "htmlClass": "row",
         "items": [
           {
-            "type": "section",
-            "htmlClass": "col-md-6",
-            "items": [
-              {
-                "type": "help",
-                "helpvalue": "<label>t(study.access.access_external_researchers_permitted_foreseen.title)</label>"
-              },
-              {
-                "type": "radioGroupCollection",
-                "key": "access",
-                "notitle": true
-              },
-              {
-                "type": "section",
-                "htmlClass": "hoffset3",
-                "items": [
-                  {
-                    "key": "otherAccess",
-                    "type": "localizedstring",
-                    "rows": 2,
-                    "condition": "model.access.access_other == 'yes'"
-                  }
-                ]
-              }
-            ]
+              "type": "section",
+              "htmlClass": "col-md-6",
+              "items": [
+                {
+                  "type": "help",
+                  "helpvalue": "<label>t(study.access.access_external_researchers_permitted_foreseen.title)</label>"
+                },
+                {
+                  "type": "radioGroupCollection",
+                  "key": "access",
+                  "notitle": true
+                },
+                {
+                  "type": "section",
+                  "htmlClass": "hoffset3",
+                  "items": [
+                    {
+                      "key": "otherAccess",
+                      "type": "localizedstring",
+                      "rows": 2,
+                      "condition": "model.access.access_other == 'yes'"
+                    }
+                  ]
+                }
+              ]
           },
           {
             "type": "section",
@@ -226,51 +226,33 @@
                 "helpvalue": "<label>t(study.access.external_researchers_obtaining_study_data_bio_info.title)</label>"
               },
               {
-                "type": "section",
-                "htmlClass": "col-md-12",
-                "items": [
+                "key": "access_info_location",
+                "titleMap": [
                   {
-                    "key": "access_info_location_study_website",
-                    "titleMap": [
-                      {
-                        "value": "study_website",
-                        "name": "t(study.access.external_researchers_obtaining_study_data_bio_info.access_info_location.study_website)"
-                      }
-                    ],
-                    "notitle": true
-                  }
-                ],
-                "condition": "model.access.access_data=='yes' || model.access.access_bio_samples=='yes' || model.access.access_other=='yes'"
-              },
-              {
-                "type": "section",
-                "htmlClass": "col-md-12",
-                "items": [
-                  {
-                    "key": "access_info_location_study_representative",
-                    "titleMap": [
-                      {
-                        "value": "study_representative",
-                        "name": "t(study.access.external_researchers_obtaining_study_data_bio_info.access_info_location.study_representative)"
-                      }
-                    ],
-                    "notitle": true
+                    "value": "study_website",
+                    "name": "t(study.access.external_researchers_obtaining_study_data_bio_info.access_info_location.study_website)"
                   },
                   {
-                    "key": "access_info_representative",
-                    "items": [
-                      "access_info_representative.name",
-                      "access_info_representative.title",
-                      "access_info_representative.email",
-                      "access_info_representative.telephone",
-                      "access_info_representative.institution"
-                    ],
-                    "notitle": true,
-                    "condition": "model.access_info_location_study_representative.indexOf('study_representative')>-1"
+                    "value": "study_representative",
+                    "name": "t(study.access.external_researchers_obtaining_study_data_bio_info.access_info_location.study_representative)"
                   }
-                ]
+                ],
+                "notitle": true
+              },
+              {
+                "key": "access_info_representative",
+                "items": [
+                  "access_info_representative.name",
+                  "access_info_representative.title",
+                  "access_info_representative.email",
+                  "access_info_representative.telephone",
+                  "access_info_representative.institution"
+                ],
+                "notitle": true,
+                "condition": "model.access_info_location.indexOf('study_representative')>-1"
               }
-            ]
+            ],
+            "condition": "model.access.access_data=='yes' || model.access.access_bio_samples=='yes' || model.access.access_other=='yes'"
           }
         ]
       },
@@ -387,14 +369,14 @@
             "htmlClass": "row",
             "items": [
               {
-                "type": "section",
+                  "type": "section",
                 "htmlClass": "col-xs-12",
-                "items": [
-                  {
-                    "type": "help",
-                    "helpvalue": "<h4>t(study.access.access_fees.title)</h4>"
-                  },
-                  {
+                  "items": [
+                    {
+                      "type": "help",
+                      "helpvalue": "<h4>t(study.access.access_fees.title)</h4>"
+                    },
+                    {
                     "type": "help",
                     "helpvalue": "<label>t(study.access.access_data_sharing_cost.cost-title)</label>"
                   },
@@ -402,22 +384,22 @@
                     "key": "access_data_sharing_cost",
                     "type": "radioGroupCollection",
                     "notitle": true
-                  }
-                ]
+                    }
+                  ]
               },
               {
-                "type": "section",
-                "htmlClass": "col-md-6",
-                "items": [
-                  {
-                    "type": "help",
-                    "helpvalue": "<label>t(study.access.access_data_sharing_cost.cost-reduction-title)</label>"
-                  },
-                  {
-                    "key": "access_cost_reduction_consideration",
-                    "notitle": true
-                  }
-                ]
+                  "type": "section",
+                  "htmlClass": "col-md-6",
+                  "items": [
+                    {
+                      "type": "help",
+                      "helpvalue": "<label>t(study.access.access_data_sharing_cost.cost-reduction-title)</label>"
+                    },
+                    {
+                      "key": "access_cost_reduction_consideration",
+                      "notitle": true
+                    }
+                  ]
               },
               {
                 "type": "section",

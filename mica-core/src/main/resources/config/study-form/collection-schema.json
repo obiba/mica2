@@ -138,22 +138,13 @@
       "format": "localizedString",
       "title": "t(study.access.other)"
     },
-    "access_info_location_study_website": {
+    "access_info_location": {
       "title": "t(study.access.external_researchers_obtaining_study_data_bio_info.title)",
       "type": "array",
       "items": {
         "type": "string",
         "enum": [
-          "study_website"
-        ]
-      }
-    },
-    "access_info_location_study_representative": {
-      "title": "t(study.access.external_researchers_obtaining_study_data_bio_info.title)",
-      "type": "array",
-      "items": {
-        "type": "string",
-        "enum": [
+          "study_website",
           "study_representative"
         ]
       }
