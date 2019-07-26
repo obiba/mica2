@@ -59,17 +59,6 @@ mica.study.BaseViewController = function (
 
   self.initializeForm = function () { };
 
-  self.isOrderingContacts = false; //prevent opening contact modal on reordering (firefox)
-  self.sortableOptions = {
-    start: function() {
-      self.isOrderingContacts = true;
-    },
-    stop: function () {
-      self.emitStudyUpdated();
-      self.isOrderingContacts = false;
-    }
-  };
-
   /* jshint unused:vars */
   self.initializeStudy = function (study) { };
 
