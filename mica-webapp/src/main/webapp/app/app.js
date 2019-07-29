@@ -50,7 +50,8 @@ var mica = angular.module('mica', [
   'sfObibaCountriesUiSelect',
   'sfRadioGroupCollection',
   'hc.marked',
-  'ngclipboard'
+  'ngclipboard',
+  'ui.sortable'
 ]);
 
 mica
