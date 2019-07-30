@@ -31,7 +31,7 @@ public interface PersonAwareRepository<T extends PersonAware> {
   default void saveContacts(T obj) {
     updateRemovedContacts(obj);
     obj.getAllMemberships().forEach(c -> obj.addToPerson(c));
-    List<Person> persons = obj.getAllMemberships().stream().map(Membership::getPerson).collect(toList());
+    List<Person> persons = obj.getAllMemberships().stream().map(Membership::getPerson).distinct().collect(toList());
     getPersonRepository().save(persons);
     persons.forEach(p -> getEventBus().post(new PersonUpdatedEvent(p)));
   }
