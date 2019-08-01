@@ -2056,8 +2056,10 @@
     }
   },
   "realm": {
+    "test": "Valider",
     "oidc": {
-      "signin-with": "Connectez-vous avec"
+      "signin-with": "Connectez-vous avec",
+      "signup-with": "S'inscrire avec"
     }
   }
 }
