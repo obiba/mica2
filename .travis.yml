@@ -21,13 +21,13 @@ cache:
   - $HOME/.m2
 deploy:
   - provider: script
-    script: cp .travis.settings.xml $HOME/.m2/settings.xml && mvn deploy
+    script: cp .travis.settings.xml $HOME/.m2/settings.xml && mvn -B deploy
     skip_cleanup: true
     on:
       branch: snapshot
       tags: false
   - provider: script
-    script: cp .travis.settings.xml $HOME/.m2/settings.xml && mvn -Prelease deploy
+    script: cp .travis.settings.xml $HOME/.m2/settings.xml && mvn -B -Prelease deploy
     skip_cleanup: true
     on:
       all_branches: true
