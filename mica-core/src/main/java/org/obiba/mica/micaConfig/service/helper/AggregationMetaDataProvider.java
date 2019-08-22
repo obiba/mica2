@@ -39,6 +39,7 @@ public interface AggregationMetaDataProvider {
     private String className;
     private String start;
     private String end;
+    private String sortField;
 
     public LocalizedMetaData(LocalizedString title, LocalizedString description, String className) {
       this.title = title;
@@ -47,11 +48,14 @@ public interface AggregationMetaDataProvider {
     }
 
     public LocalizedMetaData(LocalizedString title, LocalizedString description, String className, String start, String end) {
-      this.title = title;
-      this.description = description;
-      this.className = className;
+      this(title, description, className);
       this.start = start;
       this.end = end;
+    }
+
+    public LocalizedMetaData(LocalizedString title, LocalizedString description, String className, String start, String end, String sortField) {
+      this(title, description, className, start, end);
+      this.sortField = sortField;
     }
 
     public LocalizedString getTitle() {
@@ -73,6 +77,10 @@ public interface AggregationMetaDataProvider {
     public String getEnd() {
       return end;
     }
+
+    public String getSortField() {
+      return sortField;
+    }
   }
 
   class MetaData {
@@ -81,6 +89,7 @@ public interface AggregationMetaDataProvider {
     private String className;
     private String start;
     private String end;
+    private String sortField;
 
     private MetaData() {}
 
@@ -129,6 +138,14 @@ public interface AggregationMetaDataProvider {
       return end;
     }
 
+    public boolean hasSortField() {
+      return !Strings.isNullOrEmpty(sortField);
+    }
+
+    public String getSortField() {
+      return sortField;
+    }
+
     public static Builder newBuilder() {
       return new Builder();
     }
@@ -161,6 +178,11 @@ public interface AggregationMetaDataProvider {
 
       public Builder end(String value) {
         metaData.end = value;
+        return this;
+      }
+
+      public Builder sortField(String sortField) {
+        metaData.sortField = sortField;
         return this;
       }
 

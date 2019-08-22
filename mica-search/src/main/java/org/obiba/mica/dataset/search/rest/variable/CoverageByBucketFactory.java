@@ -62,6 +62,7 @@ public class CoverageByBucketFactory {
         .setClassName(bucketRow.className) //
         .setStart(bucketRow.start) //
         .setEnd(bucketRow.end) //
+        .setSortField(bucketRow.sortField)
         .addAllHits(bucketRow.hits) //
         .addAllCounts(bucketRow.counts);
       builder.addRows(row);

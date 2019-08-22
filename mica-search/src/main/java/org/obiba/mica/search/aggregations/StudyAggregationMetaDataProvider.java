@@ -35,6 +35,7 @@ public class StudyAggregationMetaDataProvider implements AggregationMetaDataProv
       .className(studiesDictionary.get(termKey).getClassName())
       .start(studiesDictionary.get(termKey).getStart()) //
       .end(studiesDictionary.get(termKey).getEnd()) //
+      .sortField(studiesDictionary.get(termKey).getSortField())
       .build() : null;
   }
 
