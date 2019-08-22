@@ -208,7 +208,7 @@ class CoverageByBucket {
       className = bucketCoverage.hasClassName() ? bucketCoverage.getClassName() : "";
       start = bucketCoverage.hasStart() ? bucketCoverage.getStart() : "";
       end = bucketCoverage.hasEnd() ? bucketCoverage.getEnd() : "";
-      sortField = bucketCoverage.hasSortField() ? bucketCoverage.getSortField() : "";
+      sortField = bucketCoverage.hasSortField() ? bucketCoverage.getSortField() : value;
     }
 
     public void setHits(int termPosition, MicaSearch.BucketCoverageDto bucketCoverage) {
@@ -228,7 +228,7 @@ class CoverageByBucket {
     @Override
     public int compareTo(BucketRow o) {
       if(o == null) return 1;
-      return field.equals(o.field) ? value.compareTo(o.value) : field.compareTo(o.field);
+      return field.equals(o.field) ? sortField.compareTo(o.sortField) : field.compareTo(o.field);
     }
 
     @Override
