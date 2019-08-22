@@ -105,6 +105,7 @@ message TermsAggregationResultDto {
   repeated AggregationResultDto aggs = 7;
   optional string start = 8;
   optional string end = 9;
+  optional string sortField = 10;
 
   extend AggregationResultDto {
     repeated TermsAggregationResultDto terms = 1000;
@@ -152,6 +153,7 @@ message BucketCoverageDto {
   optional string className = 7;
   optional string start = 8;
   optional string end = 9;
+  optional string sortField = 10;
 }
 
 message TermCoverageDto {
@@ -199,6 +201,7 @@ message BucketsCoverageDto {
     repeated int32 counts = 7;
     optional string start = 8;
     optional string end = 9;
+    optional string sortField = 10;
   }
   repeated HeaderDto taxonomyHeaders = 1;
   repeated HeaderDto vocabularyHeaders = 2;

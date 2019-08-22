@@ -81,11 +81,14 @@ public class DceIdAggregationMetaDataHelper extends AbstractStudyAggregationMeta
     ), md.getDescription(e.getKey())));
 
     if (dce == null) {
+      String sortField = study.getId() + ":" + String.format("%04d", population.getWeight());
       map.put(StudyTable.getDataCollectionEventUId(study.getId(), population.getId()),
-          new AggregationMetaDataProvider.LocalizedMetaData(title, description, "", null, null));
+          new AggregationMetaDataProvider.LocalizedMetaData(title, description, "", null, null, sortField));
     } else {
       String start = dce.hasStart() ? dce.getStart().getYearMonth() : null;
       String end = dce.hasEnd() ? dce.getEnd().getYearMonth() : null;
+
+      String sortField = study.getId() + ":" + String.format("%04d", population.getWeight()) + ":" + String.format("%04d", dce.getWeight());
 
       map.put(
           StudyTable.getDataCollectionEventUId(study.getId(), population.getId(), dce.getId()),
@@ -93,7 +96,8 @@ public class DceIdAggregationMetaDataHelper extends AbstractStudyAggregationMeta
               description,
               dce.getClass().getSimpleName(),
               start,
-              end));
+              end,
+              sortField));
     }
   }
 

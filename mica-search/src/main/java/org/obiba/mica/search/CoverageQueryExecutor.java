@@ -321,6 +321,7 @@ public class CoverageQueryExecutor {
     if (term.hasClassName()) builder.setClassName(term.getClassName());
     if (term.hasStart()) builder.setStart(term.getStart());
     if (term.hasEnd()) builder.setEnd(term.getEnd());
+    if (term.hasSortField()) builder.setSortField(term.getSortField());
 
     return builder;
   }

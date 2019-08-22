@@ -36,6 +36,7 @@ public class DataCollectionEventAggregationMetaDataProvider implements Aggregati
       .className(dceDictionary.get(termKey).getClassName()) //
       .start(dceDictionary.get(termKey).getStart()) //
       .end(dceDictionary.get(termKey).getEnd()) //
+      .sortField(dceDictionary.get(termKey).getSortField())
       .build() : null;
   }
 
