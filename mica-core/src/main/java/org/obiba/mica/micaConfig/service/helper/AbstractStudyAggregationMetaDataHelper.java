@@ -19,6 +19,7 @@ public abstract class AbstractStudyAggregationMetaDataHelper extends AbstractIdA
     Term term = super.createTermFromMetaData(id, metaData);
     if(metaData.getStart() != null) term.addAttribute("start", metaData.getStart());
     if(metaData.getEnd() != null) term.addAttribute("end", metaData.getEnd());
+    if (metaData.getSortField() != null) term.addAttribute("sortField", metaData.getSortField());
     return term;
   }
 

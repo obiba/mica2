@@ -186,6 +186,8 @@ class CoverageByBucket {
 
     final String end;
 
+    final String sortField;
+
     final List<Integer> hits = Lists.newArrayList();
 
     final List<Integer> counts = Lists.newArrayList();
@@ -206,6 +208,7 @@ class CoverageByBucket {
       className = bucketCoverage.hasClassName() ? bucketCoverage.getClassName() : "";
       start = bucketCoverage.hasStart() ? bucketCoverage.getStart() : "";
       end = bucketCoverage.hasEnd() ? bucketCoverage.getEnd() : "";
+      sortField = bucketCoverage.hasSortField() ? bucketCoverage.getSortField() : "";
     }
 
     public void setHits(int termPosition, MicaSearch.BucketCoverageDto bucketCoverage) {

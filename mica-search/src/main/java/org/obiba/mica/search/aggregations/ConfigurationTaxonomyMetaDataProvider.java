@@ -54,6 +54,7 @@ public abstract class ConfigurationTaxonomyMetaDataProvider implements Aggregati
         .className(md.getClassName())
         .start(md.getStart())
         .end(md.getEnd())
+        .sortField(md.getSortField())
         .build();
   }
 
@@ -98,7 +99,7 @@ public abstract class ConfigurationTaxonomyMetaDataProvider implements Aggregati
           className = t.getClass().getSimpleName();
         }
         LocalizedMetaData md = new LocalizedMetaData(title, description, className, t.getAttributeValue("start"),
-          t.getAttributeValue("end"));
+          t.getAttributeValue("end"), t.getAttributeValue("sortField"));
         metaData.put(t.getName(), md);
         metaData.put(t.getName().toLowerCase(), md);
       });

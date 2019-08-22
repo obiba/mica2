@@ -73,6 +73,7 @@ public class EsQueryResultParser {
             if (metaData.hasClassName()) termsBuilder.setClassName(metaData.getClassName());
             if (metaData.hasStart()) termsBuilder.setStart(metaData.getStart());
             if (metaData.hasEnd()) termsBuilder.setEnd(metaData.getEnd());
+            if (metaData.hasSortField()) termsBuilder.setSortField(metaData.getSortField());
 
             aggResultBuilder.addExtension(TermsAggregationResultDto.terms,
                 termsBuilder.setKey(bucket.getKeyAsString()).setCount((int) bucket.getDocCount()).build());
