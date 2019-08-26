@@ -35,7 +35,7 @@ public class CoverageByBucketFactory {
     return coverageByBucket;
   }
 
-  public MicaSearch.BucketsCoverageDto asBucketsCoverageDto(MicaSearch.TaxonomiesCoverageDto coverage, boolean withZeroes) {
+  public MicaSearch.BucketsCoverageDto asBucketsCoverageDto(MicaSearch.TaxonomiesCoverageDto coverage, boolean withZeros) {
     CoverageByBucket coverageByBucket = applicationContext.getBean(CoverageByBucket.class);
     coverageByBucket.initialize(coverage);
     MicaSearch.BucketsCoverageDto.Builder builder = MicaSearch.BucketsCoverageDto.newBuilder();
@@ -67,7 +67,7 @@ public class CoverageByBucketFactory {
       if (termHeader.hits > 0) termIndices.add(i);
     }
 
-    if (termIndices.size() == termHeaders.size() || withZeroes) {
+    if (termIndices.size() == termHeaders.size() || withZeros) {
       termHeaders.forEach(termHeader -> addTermHeaderToCoverageBuilder(builder, termHeader));
       coverageByBucket.getBucketRows().forEach(bucketRow -> addBucketRowToCoverageBuilder(builder, bucketRow, bucketRow.hits));
 
