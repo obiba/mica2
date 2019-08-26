@@ -10,8 +10,15 @@
 
 package org.obiba.mica.dataset.search.rest.variable;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import javax.inject.Inject;
 
+import org.obiba.mica.dataset.search.rest.variable.CoverageByBucket.BucketRow;
+import org.obiba.mica.dataset.search.rest.variable.CoverageByBucket.TermHeader;
+import org.obiba.mica.web.model.Mica.TaxonomyEntityDto;
 import org.obiba.mica.web.model.MicaSearch;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
@@ -28,48 +35,111 @@ public class CoverageByBucketFactory {
     return coverageByBucket;
   }
 
-  public MicaSearch.BucketsCoverageDto asBucketsCoverageDto(MicaSearch.TaxonomiesCoverageDto coverage) {
+  public MicaSearch.BucketsCoverageDto asBucketsCoverageDto(MicaSearch.TaxonomiesCoverageDto coverage, boolean withZeroes) {
     CoverageByBucket coverageByBucket = applicationContext.getBean(CoverageByBucket.class);
     coverageByBucket.initialize(coverage);
     MicaSearch.BucketsCoverageDto.Builder builder = MicaSearch.BucketsCoverageDto.newBuilder();
-    coverageByBucket.getTaxonomyHeaders().forEach(taxonomyHeader -> {
-      MicaSearch.BucketsCoverageDto.HeaderDto.Builder header = MicaSearch.BucketsCoverageDto.HeaderDto.newBuilder();
-      header.setEntity(taxonomyHeader.taxonomy) //
-        .setHits(taxonomyHeader.hits) //
-        .setTermsCount(taxonomyHeader.termsCount);
-      builder.addTaxonomyHeaders(header);
-    });
-    coverageByBucket.getVocabularyHeaders().forEach(vocabularyHeader -> {
-      MicaSearch.BucketsCoverageDto.HeaderDto.Builder header = MicaSearch.BucketsCoverageDto.HeaderDto.newBuilder();
-      header.setEntity(vocabularyHeader.vocabulary) //
-        .setHits(vocabularyHeader.hits) //
-        .setTermsCount(vocabularyHeader.termsCount);
-      builder.addVocabularyHeaders(header);
-    });
-    coverageByBucket.getTermHeaders().forEach(termHeader -> {
-      MicaSearch.BucketsCoverageDto.HeaderDto.Builder header = MicaSearch.BucketsCoverageDto.HeaderDto.newBuilder();
-      header.setEntity(termHeader.term) //
-        .setHits(termHeader.hits) //
-        .setTermsCount(1);
-      builder.addTermHeaders(header);
-    });
-    coverageByBucket.getBucketRows().forEach(bucketRow -> {
-      MicaSearch.BucketsCoverageDto.RowDto.Builder row = MicaSearch.BucketsCoverageDto.RowDto.newBuilder();
-      row.setField(bucketRow.field) //
-        .setValue(bucketRow.value) //
-        .setTitle(bucketRow.title) //
-        .setDescription(bucketRow.description) //
-        .setClassName(bucketRow.className) //
-        .setStart(bucketRow.start) //
-        .setEnd(bucketRow.end) //
-        .setSortField(bucketRow.sortField)
-        .addAllHits(bucketRow.hits) //
-        .addAllCounts(bucketRow.counts);
-      builder.addRows(row);
-    });
+
+    List<TermHeader> termHeaders = coverageByBucket.getTermHeaders();
+
+    Map<String, Integer> taxonomyTermCounts = new HashMap<>();
+    Map<String, Integer> vocabularyTermCounts = new HashMap<>();
+
+    List<Integer> termIndices = new ArrayList<>();
+    for (int i = 0; i < termHeaders.size(); i++) {
+      TermHeader termHeader = termHeaders.get(i);
+
+      String vocabularyName = termHeader.vocabulary.getName();
+      String taxonomyName = termHeader.taxonomy.getName();
+
+      if (!taxonomyTermCounts.containsKey(taxonomyName)) {
+        taxonomyTermCounts.put(taxonomyName, 0);
+      } else {
+        taxonomyTermCounts.put(taxonomyName, taxonomyTermCounts.get(taxonomyName) + 1);
+      }
+
+      if (!vocabularyTermCounts.containsKey(vocabularyName)) {
+        vocabularyTermCounts.put(vocabularyName, 0);
+      } else {
+        vocabularyTermCounts.put(vocabularyName, vocabularyTermCounts.get(vocabularyName) + 1);
+      }
+
+      if (termHeader.hits > 0) termIndices.add(i);
+    }
+
+    if (termIndices.size() == termHeaders.size() || withZeroes) {
+      termHeaders.forEach(termHeader -> addTermHeaderToCoverageBuilder(builder, termHeader));
+      coverageByBucket.getBucketRows().forEach(bucketRow -> addBucketRowToCoverageBuilder(builder, bucketRow, bucketRow.hits));
+
+      coverageByBucket.getTaxonomyHeaders().forEach(taxonomyHeader -> {
+        MicaSearch.BucketsCoverageDto.HeaderDto.Builder header = MicaSearch.BucketsCoverageDto.HeaderDto.newBuilder();
+        header.setEntity(taxonomyHeader.taxonomy) //
+          .setHits(taxonomyHeader.hits) //
+          .setTermsCount(taxonomyHeader.termsCount);
+        builder.addTaxonomyHeaders(header);
+      });
+      coverageByBucket.getVocabularyHeaders().forEach(vocabularyHeader -> {
+        MicaSearch.BucketsCoverageDto.HeaderDto.Builder header = MicaSearch.BucketsCoverageDto.HeaderDto.newBuilder();
+        header.setEntity(vocabularyHeader.vocabulary) //
+          .setHits(vocabularyHeader.hits) //
+          .setTermsCount(vocabularyHeader.termsCount);
+        builder.addVocabularyHeaders(header);
+      });
+    } else {
+      for (Integer termIndex : termIndices) {
+        addTermHeaderToCoverageBuilder(builder, termHeaders.get(termIndex));
+      }
+
+      coverageByBucket.getBucketRows().forEach(bucketRow -> {
+        List<Integer> hits = new ArrayList<>();
+        for (Integer termIndex : termIndices) {
+          hits.add(bucketRow.hits.get(termIndex));
+        }
+
+        addBucketRowToCoverageBuilder(builder, bucketRow, hits);
+      });
+
+      coverageByBucket.getTaxonomyHeaders().forEach(taxonomyHeader -> {
+        MicaSearch.BucketsCoverageDto.HeaderDto.Builder header = MicaSearch.BucketsCoverageDto.HeaderDto.newBuilder();
+        header.setEntity(taxonomyHeader.taxonomy) //
+          .setHits(taxonomyHeader.hits) //
+          .setTermsCount(taxonomyTermCounts.get(taxonomyHeader.taxonomy.getName()));
+        builder.addTaxonomyHeaders(header);
+      });
+      coverageByBucket.getVocabularyHeaders().forEach(vocabularyHeader -> {
+        MicaSearch.BucketsCoverageDto.HeaderDto.Builder header = MicaSearch.BucketsCoverageDto.HeaderDto.newBuilder();
+        header.setEntity(vocabularyHeader.vocabulary) //
+          .setHits(vocabularyHeader.hits) //
+          .setTermsCount(vocabularyTermCounts.get(vocabularyHeader.vocabulary.getName()));
+        builder.addVocabularyHeaders(header);
+      });
+    }
 
     builder.setTotalCounts(totalCountsFromJoinQueryResult(coverage.getQueryResult()));
     return builder.build();
+  }
+
+  private void addBucketRowToCoverageBuilder(MicaSearch.BucketsCoverageDto.Builder builder, BucketRow bucketRow, List<Integer> hits) {
+    MicaSearch.BucketsCoverageDto.RowDto.Builder row = MicaSearch.BucketsCoverageDto.RowDto.newBuilder();
+    row.setField(bucketRow.field) //
+      .setValue(bucketRow.value) //
+      .setTitle(bucketRow.title) //
+      .setDescription(bucketRow.description) //
+      .setClassName(bucketRow.className) //
+      .setStart(bucketRow.start) //
+      .setEnd(bucketRow.end) //
+      .setSortField(bucketRow.sortField)
+      .addAllHits(hits) //
+      .addAllCounts(bucketRow.counts);
+    builder.addRows(row);
+  }
+
+  private void addTermHeaderToCoverageBuilder(MicaSearch.BucketsCoverageDto.Builder builder, TermHeader termHeader) {
+    MicaSearch.BucketsCoverageDto.HeaderDto.Builder header = MicaSearch.BucketsCoverageDto.HeaderDto.newBuilder();
+    header.setEntity(termHeader.term) //
+      .setHits(termHeader.hits) //
+      .setTermsCount(1);
+    builder.addTermHeaders(header);
   }
 
   private MicaSearch.EntitiesTotalCountsDto.Builder totalCountsFromJoinQueryResult(MicaSearch.JoinQueryResultDto resultDto) {
