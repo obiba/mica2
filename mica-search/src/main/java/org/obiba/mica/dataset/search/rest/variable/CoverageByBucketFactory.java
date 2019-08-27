@@ -52,19 +52,21 @@ public class CoverageByBucketFactory {
       String vocabularyName = termHeader.vocabulary.getName();
       String taxonomyName = termHeader.taxonomy.getName();
 
-      if (!taxonomyTermCounts.containsKey(taxonomyName)) {
-        taxonomyTermCounts.put(taxonomyName, 0);
-      } else {
-        taxonomyTermCounts.put(taxonomyName, taxonomyTermCounts.get(taxonomyName) + 1);
-      }
+      if ((termHeader.hits > 0)) {
+        if (!taxonomyTermCounts.containsKey(taxonomyName)) {
+          taxonomyTermCounts.put(taxonomyName, 1);
+        } else {
+          taxonomyTermCounts.put(taxonomyName, taxonomyTermCounts.get(taxonomyName) + 1);
+        }
 
-      if (!vocabularyTermCounts.containsKey(vocabularyName)) {
-        vocabularyTermCounts.put(vocabularyName, 0);
-      } else {
-        vocabularyTermCounts.put(vocabularyName, vocabularyTermCounts.get(vocabularyName) + 1);
-      }
+        if (!vocabularyTermCounts.containsKey(vocabularyName)) {
+          vocabularyTermCounts.put(vocabularyName, 1);
+        } else {
+          vocabularyTermCounts.put(vocabularyName, vocabularyTermCounts.get(vocabularyName) + 1);
+        }
 
-      if (termHeader.hits > 0) termIndices.add(i);
+        termIndices.add(i);
+      }
     }
 
     if (termIndices.size() == termHeaders.size() || withZeros) {
