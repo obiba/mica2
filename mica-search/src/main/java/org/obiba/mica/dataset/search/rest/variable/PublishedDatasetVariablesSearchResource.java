@@ -114,16 +114,16 @@ public class PublishedDatasetVariablesSearchResource {
   @DebugMethod
   @Path("/_coverage")
   @Timed
-  public MicaSearch.BucketsCoverageDto rqlCoverageAsBucket(@QueryParam("query") String query) throws IOException {
-    return coverageByBucketFactory.asBucketsCoverageDto(getTaxonomiesCoverageDto(query, true));
+  public MicaSearch.BucketsCoverageDto rqlCoverageAsBucket(@QueryParam("query") String query, @QueryParam("withZeros") @DefaultValue("true") boolean withZeros) throws IOException {
+    return coverageByBucketFactory.asBucketsCoverageDto(getTaxonomiesCoverageDto(query, true), withZeros);
   }
 
   @POST
   @DebugMethod
   @Path("/_coverage")
   @Timed
-  public MicaSearch.BucketsCoverageDto largeRqlCoverageAsBucket(@FormParam("query") String query) throws IOException {
-    return rqlCoverageAsBucket(query);
+  public MicaSearch.BucketsCoverageDto largeRqlCoverageAsBucket(@FormParam("query") String query, @FormParam("withZeros") @DefaultValue("true") boolean withZeros) throws IOException {
+    return rqlCoverageAsBucket(query, withZeros);
   }
 
   @GET

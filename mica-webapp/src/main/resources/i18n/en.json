@@ -1125,6 +1125,7 @@
     "basic": "Basic",
     "basic-help": "Hide logical operators",
     "coverage-end-date-ongoing": "Ongoing",
+    "coverage-with-zeros": "With Columns of Zeros",
     "no-coverage": "Select some variable search criteria to see their corresponding coverage.",
     "coverage-dce-cols": {
       "study": "Study",
