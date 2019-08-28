@@ -1125,6 +1125,7 @@
     "basic": "Basique",
     "basic-help": "Cacher les opérateurs logiques",
     "coverage-end-date-ongoing": "En cours",
+    "coverage-with-zeros": "Avec des colonnes de zéros",
     "no-coverage": "Sélectionnez des critères de recherche de variables pour voir leur couverture correspondante.",
     "coverage-dce-cols": {
       "study": "Étude",
