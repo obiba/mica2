@@ -13,6 +13,7 @@ package org.obiba.mica.file.rest;
 
 import com.google.common.base.Strings;
 import com.google.common.io.Files;
+import java.io.UnsupportedEncodingException;
 import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.core.domain.RevisionStatus;
 import org.obiba.mica.file.Attachment;
@@ -34,6 +35,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
+import org.springframework.web.util.UriUtils;
 
 @Component
 @Path("/draft")
@@ -57,18 +59,19 @@ public class DraftFileSystemResource extends AbstractFileSystemResource {
 
     try {
       Attachment attachment = doGetAttachment(path, version, shareKey);
+      String filename = attachment.getName();
+      String uriEncodedFilename = UriUtils.encode(filename, "UTF-8");
 
       if (inline) {
-        String filename = attachment.getName();
         return Response.ok(fileStoreService.getFile(attachment.getFileReference()))
-          .header("Content-Disposition", "inline; filename=\"" + filename + "\"")
+          .header("Content-Disposition", "inline; filename=\"" + uriEncodedFilename + "\"")
           .type(FileMediaType.type(Files.getFileExtension(filename)))
           .build();
       }
 
       return Response.ok(fileStoreService.getFile(attachment.getFileReference()))
-        .header("Content-Disposition", "attachment; filename=\"" + attachment.getName() + "\"").build();
-    } catch (NoSuchEntityException e) {
+        .header("Content-Disposition", "attachment; filename=" + uriEncodedFilename).build();
+    } catch (NoSuchEntityException | UnsupportedEncodingException e) {
       String name = doZip(path);
 
       return Response.ok(tempFileService.getInputStreamFromFile(name))
