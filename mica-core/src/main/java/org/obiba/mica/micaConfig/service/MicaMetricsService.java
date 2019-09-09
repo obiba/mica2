@@ -126,7 +126,7 @@ public class MicaMetricsService {
   // Harmonization Study
 
   public long getDraftHarmonizationStudiesCount() {
-    return harmonizationDatasetRepository.count();
+    return harmonizationStudyStateRepository.count();
   }
 
   public long getPublishedHarmonizationStudiesCount() {
