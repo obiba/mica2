@@ -984,6 +984,7 @@
   "total": "Total",
   "type": "Type",
   "fullscreen": "Passer en mode plein écran",
+  "exit-fullscreen": "Quitter le mode plein écran",
   "status": "Statut",
   "changed-by": "Changée par",
   "changed-on": "Changée le",
@@ -1103,6 +1104,8 @@
         "networks": "Chercher"
       }
     },
+    "left-panel-close-tooltip": "Fermer le panneau de gauche",
+    "left-panel-open-tooltip": "Ouvrir le panneau de gauche",
     "classifications-show": "Afficher les classifications détaillées",
     "list": "Liste",
     "list-help": "",
