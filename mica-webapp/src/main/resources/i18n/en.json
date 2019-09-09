@@ -984,6 +984,7 @@
   "total": "Total",
   "type": "Type",
   "fullscreen": "Switch to fullscreen mode",
+  "exit-fullscreen": "Exit from fullscreen mode",
   "status": "Status",
   "changed-by": "Changed By",
   "changed-on": "Changed On",
@@ -1103,6 +1104,8 @@
         "networks": "Search"
       }
     },
+    "left-panel-close-tooltip": "Close left panel",
+    "left-panel-open-tooltip": "Open left panel",
     "classifications-show": "Show detailed classifications",
     "list": "List",
     "list-help": "",
