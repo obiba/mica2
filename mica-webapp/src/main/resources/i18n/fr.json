@@ -1128,7 +1128,8 @@
     "basic": "Basique",
     "basic-help": "Cacher les opérateurs logiques",
     "coverage-end-date-ongoing": "En cours",
-    "coverage-with-zeros": "Avec des colonnes de zéros",
+    "coverage-with-zeros": "Tous les sous-domaines",
+    "coverage-without-zeros": "Sous-domaines avec des variables",
     "no-coverage": "Sélectionnez des critères de recherche de variables pour voir leur couverture correspondante.",
     "coverage-dce-cols": {
       "study": "Étude",
@@ -1203,6 +1204,7 @@
       "placeholder": "Entrez le texte à rechercher..."
     },
     "filter": "Filtre",
+    "apply-selections": "Filtrer les sélections",
     "close-and-search": "Fermer et chercher",
     "criterion": {
       "created": "Le critère <strong>{{arg0}} ({{arg1}})</strong> a été ajouté.",
