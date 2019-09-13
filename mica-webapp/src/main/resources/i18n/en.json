@@ -1128,7 +1128,8 @@
     "basic": "Basic",
     "basic-help": "Hide logical operators",
     "coverage-end-date-ongoing": "Ongoing",
-    "coverage-with-zeros": "With Columns of Zeros",
+    "coverage-with-zeros": "All Subdomains",
+    "coverage-without-zeros": "Subdomains with Variables",
     "no-coverage": "Select some variable search criteria to see their corresponding coverage.",
     "coverage-dce-cols": {
       "study": "Study",
@@ -1203,6 +1204,7 @@
       "placeholder": "Enter text to search..."
     },
     "filter": "Filter",
+    "apply-selections": "Filter Selections",
     "close-and-search": "Close and search",
     "criterion": {
       "created": "Criteria <strong>{{arg0}} ({{arg1}})</strong> was added.",
