@@ -135,15 +135,8 @@ public class VariableSetService extends DocumentSetService {
     return publishedDatasetVariableService.findByIds(ids.subList(from, to));
   }
 
-  /**
-   * Zip View dtos
-   *
-   * @param documentSet a set of variables, source for opal views
-   * @param outputStream the outputstream
-   * @throws IOException in case the zip fails
-   */
-  public void createOpalViewsZip(DocumentSet documentSet, MicaConfig.OpalViewsGrouping opalViewsGrouping, OutputStream outputStream) throws IOException {
-    List<Magma.ViewDto> views = createOpalViews(documentSet, opalViewsGrouping);
+  public void createOpalViewsZip(List<DatasetVariable> variables, MicaConfig.OpalViewsGrouping opalViewsGrouping, OutputStream outputStream) throws IOException {
+    List<Magma.ViewDto> views = createOpalViews(variables, opalViewsGrouping);
 
     try (ZipOutputStream zipOutputStream = new ZipOutputStream(outputStream)) {
       for (Magma.ViewDto view : views) {
@@ -155,15 +148,24 @@ public class VariableSetService extends DocumentSetService {
   }
 
   /**
+   * Zip View dtos
+   *
+   * @param documentSet a set of variables, source for opal views
+   * @param outputStream the outputstream
+   * @throws IOException in case the zip fails
+   */
+  public void createOpalViewsZip(DocumentSet documentSet, MicaConfig.OpalViewsGrouping opalViewsGrouping, OutputStream outputStream) throws IOException {
+    createOpalViewsZip(getVariables(documentSet), opalViewsGrouping, outputStream);
+  }
+
+  /**
    * Get a list of opal view dto for backup restore purposes
    *
-   * @param documentSet The source variable document set
+   * @param variables The source variables set
    * @return a list of opal views grouped by project and entity type
    */
-  private List<Magma.ViewDto> createOpalViews(DocumentSet documentSet, MicaConfig.OpalViewsGrouping opalViewsGrouping) {
+  private List<Magma.ViewDto> createOpalViews(List<DatasetVariable> variables, MicaConfig.OpalViewsGrouping opalViewsGrouping) {
     List<Magma.ViewDto> views = new ArrayList<>();
-
-    List<DatasetVariable> variables = publishedDatasetVariableService.findByIds(Lists.newArrayList(documentSet.getIdentifiers()));
 
     List<Dataset> datasets = publishedDatasetService.findByIds(variables.stream()
       .map(DatasetVariable::getDatasetId)
