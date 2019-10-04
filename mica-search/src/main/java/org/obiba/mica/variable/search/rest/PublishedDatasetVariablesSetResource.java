@@ -12,11 +12,11 @@ package org.obiba.mica.variable.search.rest;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import java.io.BufferedOutputStream;
 import java.util.Collection;
 import org.apache.shiro.authz.AuthorizationException;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
-import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.obiba.mica.core.domain.DocumentSet;
 import org.obiba.mica.dataset.service.VariableSetService;
 import org.obiba.mica.micaConfig.domain.MicaConfig;
@@ -113,12 +113,25 @@ public class PublishedDatasetVariablesSetResource {
   @GET
   @Path("/documents/_opal")
   @Produces(MediaType.APPLICATION_OCTET_STREAM)
-  public Response createOpalViews(@PathParam("id") String id) {
+  public Response createOpalViewsGet(@PathParam("id") String id, @QueryParam("ids") String identifiers) {
     subjectAclService.checkPermission("/set/documents", "VIEW", "_opal");
     DocumentSet set = getSecuredDocumentSet(id);
-    StreamingOutput streamingOutput = stream -> variableSetService.createOpalViewsZip(set, micaConfigService.getConfig().getOpalViewsGrouping(), new BufferedOutputStream(stream));
+    StreamingOutput streamingOutput;
+
+    if (!Strings.isNullOrEmpty(identifiers)) {
+      streamingOutput = stream -> variableSetService.createOpalViewsZip(variableSetService.getVariables(Sets.newHashSet(identifiers.split(","))), micaConfigService.getConfig().getOpalViewsGrouping(), new BufferedOutputStream(stream));
+    } else {
+      streamingOutput = stream -> variableSetService.createOpalViewsZip(variableSetService.getVariables(set), micaConfigService.getConfig().getOpalViewsGrouping(), new BufferedOutputStream(stream));
+    }
 
     return Response.ok(streamingOutput, MediaType.APPLICATION_OCTET_STREAM).header("Content-Disposition", "attachment; filename=\"opal-views-" + id + ".zip\"").build();
+  }
+
+  @POST
+  @Path("/documents/_opal")
+  @Produces(MediaType.APPLICATION_OCTET_STREAM)
+  public Response createOpalViewsPost(@PathParam("id") String id, @FormParam("ids") String identifiers) {
+    return createOpalViewsGet(id, identifiers);
   }
 
   @POST
