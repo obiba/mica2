@@ -1104,6 +1104,10 @@
         "networks": "Chercher"
       }
     },
+    "left-panel-open-title": "Ouvrir le panneau",
+    "left-panel-close-title": "Fermer le panneau",
+    "enter-fullscreen-title": "Entrer en plein écran",
+    "exit-fullscreen-title": "Quitter le plein écran",
     "left-panel-close-tooltip": "Fermer le panneau de gauche",
     "left-panel-open-tooltip": "Ouvrir le panneau de gauche",
     "classifications-show": "Afficher les classifications détaillées",
