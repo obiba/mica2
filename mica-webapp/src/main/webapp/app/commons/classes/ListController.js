@@ -91,7 +91,7 @@ mica.commons.ListController = function (
     var data = {from:(page - 1) * self.limit, limit: self.limit};
 
     if (self.pagination.searchText) {
-      data.query = self.pagination.searchText + '*';
+      data.query = new obiba.utils.NgObibaStringUtils().cleanDoubleQuotesLeftUnclosed(self.pagination.searchText) + '*';
     }
     self.documents = StatesResource.query(data, onSuccess, AlertBuilder.newBuilder().onError(onError));
   }
