@@ -316,10 +316,12 @@ public class VariableQuery extends AbstractDocumentQuery {
       });
     }
 
-    // required for the counts to work
-    if (!properties.containsKey(JOIN_FIELD)) properties.put(JOIN_FIELD, "");
-    if (!properties.containsKey(DATASET_ID)) properties.put(DATASET_ID, "");
-    if (!properties.containsKey(SETS)) properties.put(SETS, "");
+    // required for the counts to work except when going coverage
+    if (QueryMode.COVERAGE != mode) {
+      if (!properties.containsKey(JOIN_FIELD)) properties.put(JOIN_FIELD, "");
+      if (!properties.containsKey(DATASET_ID)) properties.put(DATASET_ID, "");
+      if (!properties.containsKey(SETS)) properties.put(SETS, "");
+    }
 
     return properties;
   }
