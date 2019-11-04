@@ -33,6 +33,8 @@ public class DataAccessForm extends AbstractDataAccessEntityForm {
 
   private boolean allowIdWithLeadingZeros = true;
 
+  private boolean notifyCreated = false;
+
   private boolean notifySubmitted = true;
 
   private boolean notifyReviewed = true;
@@ -48,6 +50,8 @@ public class DataAccessForm extends AbstractDataAccessEntityForm {
   private boolean notifyCommented = true;
 
   private boolean notifyAttachment = true;
+
+  private String createdSubject;
 
   private String submittedSubject;
 
@@ -117,6 +121,14 @@ public class DataAccessForm extends AbstractDataAccessEntityForm {
 
   public void setIdLength(int idLength) {
     this.idLength = idLength < DEFAULT_ID_LENGTH ? DEFAULT_ID_LENGTH : idLength;
+  }
+
+  public void setNotifyCreated(boolean notifyCreated) {
+    this.notifyCreated = notifyCreated;
+  }
+
+  public boolean isNotifyCreated() {
+    return notifyCreated;
   }
 
   public void setNotifySubmitted(boolean notifySubmitted) {
@@ -213,6 +225,14 @@ public class DataAccessForm extends AbstractDataAccessEntityForm {
 
   public boolean isRejectedFinal() {
     return rejectedFinal;
+  }
+
+  public String getCreatedSubject() {
+    return createdSubject;
+  }
+
+  public void setCreatedSubject(String createdSubject) {
+    this.createdSubject = createdSubject;
   }
 
   public String getSubmittedSubject() {

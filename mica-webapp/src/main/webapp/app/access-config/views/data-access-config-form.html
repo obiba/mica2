@@ -175,6 +175,8 @@
     <form>
       <div class="row">
         <div class="col-md-6">
+          <div form-checkbox name="notifyCreated" model="dataAccessForm.notifyCreated" label="data-access-config.notifications.created" help="data-access-config.notifications.created-help"></div>
+          <div form-input name="createdSubject" model="dataAccessForm.createdSubject" label="data-access-config.notifications.createdSubject" placeholder="[${organization}] ${title}" required="false" disable="!dataAccessForm.notifySubmitted"></div>
           <div form-checkbox name="notifySubmitted" model="dataAccessForm.notifySubmitted" label="data-access-config.notifications.submitted" help="data-access-config.notifications.submitted-help"></div>
           <div form-input name="submittedSubject" model="dataAccessForm.submittedSubject" label="data-access-config.notifications.submittedSubject" placeholder="[${organization}] ${title}" required="false" disable="!dataAccessForm.notifySubmitted"></div>
           <div form-checkbox name="notifyReviewed" model="dataAccessForm.notifyReviewed" label="data-access-config.notifications.reviewed" help="data-access-config.notifications.reviewed-help"></div>

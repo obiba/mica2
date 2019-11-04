@@ -259,6 +259,7 @@ class MicaConfigDtos {
     builder.setAllowIdWithLeadingZeros(dataAccessForm.isAllowIdWithLeadingZeros());
 
     builder.setIdLength(dataAccessForm.getIdLength()) //
+      .setNotifyCreated(dataAccessForm.isNotifyCreated()) //
       .setNotifySubmitted(dataAccessForm.isNotifySubmitted()) //
       .setNotifyReviewed(dataAccessForm.isNotifyReviewed()) //
       .setNotifyApproved(dataAccessForm.isNotifyApproved()) //
@@ -272,6 +273,8 @@ class MicaConfigDtos {
       .setWithConditionalApproval(dataAccessForm.isWithConditionalApproval())
       .setNotifyConditionallyApproved(dataAccessForm.isNotifyConditionallyApproved())
       .setCsvExportFormat(dataAccessForm.getCsvExportFormat());
+
+    if(dataAccessForm.getCreatedSubject() != null) builder.setCreatedSubject(dataAccessForm.getCreatedSubject());
 
     if(dataAccessForm.getSubmittedSubject() != null) builder.setSubmittedSubject(dataAccessForm.getSubmittedSubject());
 
@@ -327,6 +330,9 @@ class MicaConfigDtos {
     dataAccessForm.setAllowIdWithLeadingZeros(dto.getAllowIdWithLeadingZeros());
 
     dataAccessForm.setIdLength(dto.getIdLength());
+
+    dataAccessForm.setNotifyCreated(dto.getNotifyCreated());
+    dataAccessForm.setCreatedSubject(dto.getCreatedSubject());
 
     dataAccessForm.setNotifySubmitted(dto.getNotifySubmitted());
     dataAccessForm.setSubmittedSubject(dto.getSubmittedSubject());

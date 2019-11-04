@@ -159,31 +159,29 @@ public abstract class DataAccessEntityService<T extends DataAccessEntity> {
    * @param from
    */
   protected void sendNotificationEmails(T request, @Nullable DataAccessEntityStatus from) {
-    // check is new request
-    if (from == null) return;
-
-    // check no transition
-    if (request.getStatus() == from) return;
-
-    switch (request.getStatus()) {
-      case SUBMITTED:
-        sendSubmittedNotificationEmail(request);
-        break;
-      case REVIEWED:
-        sendReviewedNotificationEmail(request);
-        break;
-      case OPENED:
-        sendOpenedNotificationEmail(request);
-        break;
-      case CONDITIONALLY_APPROVED:
-        sendConditionallyApprovedEmail(request);
-        break;
-      case APPROVED:
-        sendApprovedNotificationEmail(request);
-        break;
-      case REJECTED:
-        sendRejectedNotificationEmail(request);
-        break;
+    if (from == null) { // check is new request
+      sendCreatedNotificationEmail(request);
+    } else if (request.getStatus() != from) { // check there is a transition
+      switch (request.getStatus()) {
+        case SUBMITTED:
+          sendSubmittedNotificationEmail(request);
+          break;
+        case REVIEWED:
+          sendReviewedNotificationEmail(request);
+          break;
+        case OPENED:
+          sendOpenedNotificationEmail(request);
+          break;
+        case CONDITIONALLY_APPROVED:
+          sendConditionallyApprovedEmail(request);
+          break;
+        case APPROVED:
+          sendApprovedNotificationEmail(request);
+          break;
+        case REJECTED:
+          sendRejectedNotificationEmail(request);
+          break;
+      }
     }
   }
 
@@ -206,6 +204,17 @@ public abstract class DataAccessEntityService<T extends DataAccessEntity> {
     ctx.put("status", request.getStatus().name());
 
     return ctx;
+  }
+
+  protected void sendCreatedNotificationEmail(T request) {
+    DataAccessForm dataAccessForm = dataAccessFormService.find().get();
+    if (dataAccessForm.isNotifyCreated()) {
+      Map<String, String> ctx = getNotificationEmailContext(request);
+
+      mailService.sendEmailToGroups(mailService.getSubject(dataAccessForm.getCreatedSubject(), ctx,
+        DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), "dataAccessRequestCreatedDAOEmail", ctx,
+        Roles.MICA_DAO);
+    }
   }
 
   protected void sendSubmittedNotificationEmail(T request) {

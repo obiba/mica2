@@ -836,6 +836,8 @@ message DataAccessFormDto {
   required bool amendmentsEnabled = 32;
   required bool daoCanEdit = 33;
   optional bool allowIdWithLeadingZeros = 34;
+  required bool notifyCreated = 35;
+  optional string createdSubject = 36;
 }
 
 message DataAccessAmendmentFormDto {

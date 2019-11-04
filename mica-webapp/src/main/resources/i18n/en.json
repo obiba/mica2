@@ -1769,6 +1769,9 @@
     "notifications": {
       "title": "Notifications",
       "info": "Emails can be sent to applicant and data access officers when an event happens on the data access request. Events can be: status change or comment. Notification email subjects can contain the following placeholders: ${organization}, ${title} and ${id} for the request id.",
+      "created": "On creation",
+      "createdSubject": "On creation email subject",
+      "created-help": "Email is sent to data access officers on data access request creation (i.e. saved for the first time but not yet submitted).",
       "submitted": "On submission",
       "submittedSubject": "On submission email subject",
       "submitted-help": "Email is sent to data access officers and to applicant on data access request submission.",
