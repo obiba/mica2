@@ -1950,6 +1950,7 @@
     "study-design": "Conception de l'étude",
     "bio-samples": "Échantillons biologiques recueillis",
     "geo-chart-title": "Répartition des études par pays de résidence",
+    "geo-chart-subtitle": "Plusieurs pays peuvent faire partie d'une même étude",
     "study-design-chart-title": "Répartition des études par conception d'étude",
     "bio-samples-chart-title": "Répartition des études par échantillons biologiques",
     "number-participants-chart-title": "Répartition des études par nombre de participants"
