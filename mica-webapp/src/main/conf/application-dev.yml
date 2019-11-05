@@ -68,3 +68,19 @@ sets:
     # "<second> <minute> <hour> <day-of-month> <month> <day-of-week> <year>"
     # Current cron set to run every day at mid-night
     cron: "0 0 * * * ?"
+
+#
+# Cors Configuration
+# allowCredentials : boolean (true, false)
+# allowedOrigins : String ("http://Domaine1.com,http://domaine2.com,http://domaine3.com ...", "*")
+# allowedMethods : String ("OPTIONS,GET,POST,PUT,DELETE ...", "*")
+# allowedHeaders : String ("Accept,Content-type ...", "*")
+# maxAge : Long (0 ~ 3600 etc..)
+#
+
+#cors:
+#  allowCredentials: true
+#  allowedOrigins: "http://localhost:8088"
+#  allowedMethods: "OPTIONS,GET,POST"
+#  allowedHeaders: "*"
+#  maxAge: "3600"
