@@ -1953,7 +1953,8 @@
     "geo-chart-subtitle": " Multiple countries can be associated with one study.",
     "study-design-chart-title": "Distribution of studies by study design",
     "bio-samples-chart-title": "Distribution of studies by biosamples",
-    "number-participants-chart-title": "Distribution of studies by number of participants"
+    "number-participants-chart-title": "Distribution of studies by number of participants",
+    "graphics.percentage.studies": "Percentage of Studies"
   },
   "research-projects": "Research Projects",
   "research-project": {
