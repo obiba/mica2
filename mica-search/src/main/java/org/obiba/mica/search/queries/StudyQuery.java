@@ -11,7 +11,6 @@
 package org.obiba.mica.search.queries;
 
 import com.google.common.collect.Lists;
-import org.obiba.mica.core.domain.DefaultEntityBase;
 import org.obiba.mica.micaConfig.service.helper.AggregationMetaDataProvider;
 import org.obiba.mica.search.aggregations.StudyTaxonomyMetaDataProvider;
 import org.obiba.mica.spi.search.*;
@@ -23,6 +22,7 @@ import org.obiba.mica.study.service.HarmonizationStudyService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.mica.web.model.MicaSearch;
+import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -79,6 +79,11 @@ public class StudyQuery extends AbstractDocumentQuery {
         return ids;
       }
     };
+  }
+
+  @Override
+  protected Taxonomy getTaxonomy() {
+    return taxonomyService.getStudyTaxonomy();
   }
 
   @Override

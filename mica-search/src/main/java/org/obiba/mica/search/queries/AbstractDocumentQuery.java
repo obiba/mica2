@@ -125,6 +125,8 @@ public abstract class AbstractDocumentQuery implements DocumentQueryInterface {
     return micaConfigService.getConfig().isOpenAccess();
   }
 
+  abstract protected Taxonomy getTaxonomy();
+
   /**
    * Verifies if the query has any criteria on the primary key (ID).
    *
@@ -212,8 +214,14 @@ public abstract class AbstractDocumentQuery implements DocumentQueryInterface {
 
     // make sure the buckets are part of the aggregations
     if (properties != null) {
-      query.getAggregationBuckets().stream().filter(b -> !properties.containsKey(b))
-          .forEach(b -> properties.put(b, ""));
+      Properties subAggProperties =
+        getAggregationsProperties(
+          query.getAggregationBuckets().stream()
+            .filter(b -> !properties.containsKey(b))
+            .collect(Collectors.toList()), getTaxonomy()
+        );
+
+      properties.putAll(subAggProperties);
     }
 
     return properties;

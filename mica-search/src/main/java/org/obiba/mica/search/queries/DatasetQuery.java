@@ -29,6 +29,7 @@ import org.obiba.mica.spi.search.support.Query;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.mica.web.model.MicaSearch;
+import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
@@ -94,6 +95,11 @@ public class DatasetQuery extends AbstractDocumentQuery {
         return ids;
       }
     };
+  }
+
+  @Override
+  protected Taxonomy getTaxonomy() {
+    return taxonomyService.getDatasetTaxonomy();
   }
 
   public void setDatasetIdProvider(DocumentQueryIdProvider provider) {
