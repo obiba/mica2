@@ -14,7 +14,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.obiba.mica.micaConfig.service.helper.AggregationMetaDataProvider;
 import org.obiba.mica.network.domain.Network;
-import org.obiba.mica.network.domain.NetworkState;
 import org.obiba.mica.network.service.PublishedNetworkService;
 import org.obiba.mica.search.aggregations.NetworkAggregationMetaDataProvider;
 import org.obiba.mica.search.aggregations.NetworkTaxonomyMetaDataProvider;
@@ -26,6 +25,7 @@ import org.obiba.mica.spi.search.Searcher;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.mica.web.model.MicaSearch;
+import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
@@ -88,6 +88,11 @@ public class NetworkQuery extends AbstractDocumentQuery {
             .collect(Collectors.toList());
       }
     };
+  }
+
+  @Override
+  protected Taxonomy getTaxonomy() {
+    return taxonomyService.getNetworkTaxonomy();
   }
 
   @Nullable

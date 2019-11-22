@@ -332,6 +332,11 @@ public class VariableQuery extends AbstractDocumentQuery {
     return Lists.newArrayList(VARIABLE_TYPE);
   }
 
+  @Override
+  protected Taxonomy getTaxonomy() {
+    return taxonomyService.getVariableTaxonomy();
+  }
+
   @NotNull
   private List<Taxonomy> getOpalTaxonomies() {
     List<Taxonomy> taxonomies = null;
