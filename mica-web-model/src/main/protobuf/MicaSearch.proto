@@ -137,6 +137,7 @@ message RangeAggregationResultDto {
   required int64 count = 6;
   optional double from = 7;
   optional double to = 8;
+  repeated AggregationResultDto aggs = 9;
 
   extend AggregationResultDto {
     repeated RangeAggregationResultDto ranges = 1002;
