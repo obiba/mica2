@@ -173,6 +173,49 @@
     "facet": "true"
     "facetPosition": "0"
     "facetExpanded": "false"
+- "name": "start-range"
+  "title":
+    "en": "Start year (ranges)"
+    "fr": "Année de début (intervalles)"
+  "description":
+    "en": "Year in which the study has started."
+    "fr": "Année à laquelle l'étude a commencé."
+  "attributes":
+    "type": "integer"
+    "field": "model.startYear"
+    "alias": "model-startYear-range"
+    "range" : "true"
+  "terms":
+    - "name": "*:1900"
+      "title":
+        "en": "Before 1900"
+        "fr": "Avant 1900"
+      "description": {}
+      "keywords": {}
+    - "name": "1900:1950"
+      "title":
+        "en": "1900 to 1950"
+        "fr": "1900 à 1950"
+      "description": {}
+      "keywords": {}
+    - "name": "1950:2000"
+      "title":
+        "en": "1950 to 2000"
+        "fr": "1950 à 2000"
+      "description": {}
+      "keywords": {}
+    - "name": "2000:2010"
+      "title":
+        "en": "2000 to 2010"
+        "fr": "2000 à 2010"
+      "description": {}
+      "keywords": {}
+    - "name": "2010:*"
+      "title":
+        "en": "2010 and later"
+        "fr": "2010 et plus tard"
+      "description": {}
+      "keywords": {}
 - "name": "end"
   "title":
     "en": "End year"
