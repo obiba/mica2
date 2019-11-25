@@ -61,9 +61,10 @@ public class EsQueryResultParser {
         case "terms":
           aggregation.asTerms().getBuckets().forEach(bucket -> {
             TermsAggregationResultDto.Builder termsBuilder = TermsAggregationResultDto.newBuilder();
+            List<Searcher.DocumentAggregation> bucketAggregations = bucket.getAggregations();
 
-            if (bucket.getAggregations() != null) {
-              termsBuilder.addAllAggs(parseAggregations(bucket.getAggregations()));
+            if (bucketAggregations != null && bucketAggregations.size() > 0) {
+              termsBuilder.addAllAggs(parseAggregations(bucketAggregations));
             }
 
             AggregationMetaDataProvider.MetaData metaData = aggregationMetaDataResolver
@@ -84,6 +85,7 @@ public class EsQueryResultParser {
           aggregation.asRange().getBuckets().forEach(bucket -> {
             AggregationMetaDataProvider.MetaData metaData = aggregationMetaDataResolver
                 .getMetaData(aggregation.getName(), bucket.getKeyAsString(), locale);
+            List<Searcher.DocumentAggregation> bucketAggregations = bucket.getAggregations();
 
             RangeAggregationResultDto.Builder rangeBuilder =
                 RangeAggregationResultDto.newBuilder()
@@ -91,6 +93,10 @@ public class EsQueryResultParser {
                     .setCount(bucket.getDocCount())
                     .setKey(bucket.getKeyAsString())
                     .setTitle(metaData.getTitle());
+
+            if (bucketAggregations != null && bucketAggregations.size() > 0) {
+              rangeBuilder.addAllAggs(parseAggregations(bucketAggregations));
+            }
 
             if (metaData.hasDescription()) rangeBuilder.setDescription(metaData.getDescription());
             if (metaData.hasClassName()) rangeBuilder.setClassName(metaData.getClassName());

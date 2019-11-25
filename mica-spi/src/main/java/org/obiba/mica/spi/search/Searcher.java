@@ -335,6 +335,11 @@ public interface Searcher {
      * @return The upper bound of the range (excluding)
      */
     Double getTo();
+
+    /**
+     * @return The sub aggregations
+     */
+    List<DocumentAggregation> getAggregations();
   }
 
   interface DocumentTermsAggregation {
