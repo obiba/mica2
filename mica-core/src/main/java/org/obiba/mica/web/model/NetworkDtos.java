@@ -90,28 +90,7 @@ class NetworkDtos {
 
   @NotNull
   Mica.NetworkDto.Builder asDtoBuilder(@NotNull Network network, boolean asDraft) {
-    Mica.NetworkDto.Builder builder = Mica.NetworkDto.newBuilder();
-
-    if(network.hasModel()) builder.setContent(JSONUtils.toJSON(network.getModel()));
-
-    builder.setId(network.getId()) //
-      .addAllName(localizedStringDtos.asDto(network.getName())) //
-      .addAllDescription(localizedStringDtos.asDto(network.getDescription())) //
-      .addAllAcronym(localizedStringDtos.asDto(network.getAcronym()));
-
-    Mica.PermissionsDto permissionsDto = permissionsDtos.asDto(network);
-
-    NetworkState networkState = networkService.getEntityState(network.getId());
-    builder.setPublished(networkState.isPublished());
-    if(asDraft) {
-      builder.setTimestamps(TimestampsDtos.asDto(network)) //
-        .setPublished(networkState.isPublished()) //
-        .setExtension(Mica.EntityStateDto.state,
-          entityStateDtos.asDto(networkState).setPermissions(permissionsDto).build());
-    }
-
-    builder.setPermissions(permissionsDto);
-
+    Mica.NetworkDto.Builder builder = asDtoBuilderInternal(network, asDraft);
     List<String> roles = micaConfigService.getConfig().getRoles();
 
     if(network.getMemberships() != null) {
@@ -154,13 +133,45 @@ class NetworkDtos {
       }
     });
 
+
+    return builder;
+  }
+
+  @NotNull
+  Mica.NetworkDto.Builder asDtoBuilderForSearchListing(@NotNull Network network, boolean asDraft) {
+    return asDtoBuilderInternal(network, asDraft);
+  }
+
+  private Mica.NetworkDto.Builder asDtoBuilderInternal(@NotNull Network network, boolean asDraft) {
+    Mica.NetworkDto.Builder builder = Mica.NetworkDto.newBuilder();
+
+    if(network.hasModel()) builder.setContent(JSONUtils.toJSON(network.getModel()));
+
+    builder.setId(network.getId()) //
+      .addAllName(localizedStringDtos.asDto(network.getName())) //
+      .addAllDescription(localizedStringDtos.asDto(network.getDescription())) //
+      .addAllAcronym(localizedStringDtos.asDto(network.getAcronym()));
+
+    Mica.PermissionsDto permissionsDto = permissionsDtos.asDto(network);
+
+    NetworkState networkState = networkService.getEntityState(network.getId());
+    builder.setPublished(networkState.isPublished());
+    if(asDraft) {
+      builder.setTimestamps(TimestampsDtos.asDto(network)) //
+        .setPublished(networkState.isPublished()) //
+        .setExtension(Mica.EntityStateDto.state,
+          entityStateDtos.asDto(networkState).setPermissions(permissionsDto).build());
+    }
+
+    builder.setPermissions(permissionsDto);
+
     if(network.getLogo() != null) {
       builder.setLogo(attachmentDtos.asDto(network.getLogo()));
     }
 
     network.getNetworkIds().stream()
       .filter(nId -> asDraft && subjectAclService.isPermitted("/draft/network", "VIEW", nId)
-          || subjectAclService.isAccessible("/network", nId))
+        || subjectAclService.isAccessible("/network", nId))
       .forEach(nId -> {
         try {
           builder.addNetworkSummaries(networkSummaryDtos.asDtoBuilder(nId, asDraft));
@@ -173,6 +184,7 @@ class NetworkDtos {
 
     return builder;
   }
+
 
   /**
    * Get the dto of the network.
