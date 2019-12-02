@@ -131,12 +131,10 @@ public class NetworkQuery extends AbstractDocumentQuery {
 
   private Consumer<Network> networkConsumer(NetworkResultDto.Builder resBuilder, NetworkCountStatsBuilder networkCountStatsBuilder) {
     return (network) -> {
-      Mica.NetworkDto.Builder networkBuilder = dtos.asDtoBuilder(network);
-      if (mode == QueryMode.LIST) {
-        networkBuilder.clearStudySummaries();
-        networkBuilder.clearContacts();
-        networkBuilder.clearInvestigators();
-      }
+      Mica.NetworkDto.Builder networkBuilder = mode == QueryMode.LIST || mode == QueryMode.SEARCH
+        ? dtos.asDtoBuilderForSearchListing(network)
+        : dtos.asDtoBuilder(network);
+
       if (networkCountStatsBuilder != null) {
         networkBuilder.setExtension(MicaSearch.CountStatsDto.networkCountStats, networkCountStatsBuilder.build(network))
             .build();
