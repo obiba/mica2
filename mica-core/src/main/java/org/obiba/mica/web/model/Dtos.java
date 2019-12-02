@@ -240,6 +240,11 @@ public class Dtos {
   }
 
   @NotNull
+  public NetworkDto.Builder asDtoBuilderForSearchListing(@NotNull Network network) {
+    return networkDtos.asDtoBuilderForSearchListing(network, false);
+  }
+
+  @NotNull
   public NetworkDto.Builder asDtoBuilder(@NotNull Network network) {
     return networkDtos.asDtoBuilder(network, false);
   }
