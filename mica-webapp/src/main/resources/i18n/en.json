@@ -1954,7 +1954,9 @@
     "study-design-chart-title": "Distribution of studies by study design",
     "bio-samples-chart-title": "Distribution of studies by biosamples",
     "number-participants-chart-title": "Distribution of studies by number of participants",
-    "graphics.percentage.studies": "Percentage of Studies"
+    "percentage.studies": "Percentage of Studies",
+    "study-start-year": "Study Start Year",
+    "study-start-year-chart-title": "Distribution of studies by start year"
   },
   "research-projects": "Research Projects",
   "research-project": {

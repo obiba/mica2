@@ -1954,7 +1954,9 @@
     "study-design-chart-title": "Répartition des études par conception d'étude",
     "bio-samples-chart-title": "Répartition des études par échantillons biologiques",
     "number-participants-chart-title": "Répartition des études par nombre de participants",
-    "graphics.percentage.studies": "Pourcentage d'études"
+    "percentage.studies": "Pourcentage d'études",
+    "study-start-year": "Année de debut d'étude",
+    "study-start-year-chart-title": "Répartition des études par leurs debut d'année"
   },
   "research-projects": "Projets de recherche",
   "research-project": {
