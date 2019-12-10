@@ -1956,7 +1956,9 @@
     "number-participants-chart-title": "Distribution of studies by number of participants",
     "percentage.studies": "Percentage of Studies",
     "study-start-year": "Study Start Year",
-    "study-start-year-chart-title": "Distribution of studies by start year"
+    "study-start-year-chart-title": "Distribution of studies by start year",
+    "undetermined": "Undetermined",
+    "total": "Total"
   },
   "research-projects": "Research Projects",
   "research-project": {
