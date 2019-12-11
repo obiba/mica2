@@ -70,30 +70,60 @@ public class Mica372Upgrade implements UpgradeStep {
         "  \"repeatable\": false,\n" +
         "  \"terms\": [\n" +
         "    {\n" +
-        "      \"name\": \"*:1900\",\n" +
+        "      \"name\": \"*:1950\",\n" +
         "      \"title\": {\n" +
-        "        \"en\": \"Before 1900\",\n" +
-        "        \"fr\": \"Avant 1900\"\n" +
+        "        \"en\": \"Before 1950\",\n" +
+        "        \"fr\": \"Avant 1950\"\n" +
         "      },\n" +
         "      \"description\": {},\n" +
         "      \"keywords\": {},\n" +
         "      \"attributes\": {}\n" +
         "    },\n" +
         "    {\n" +
-        "      \"name\": \"1900:1950\",\n" +
+        "      \"name\": \"1950:1960\",\n" +
         "      \"title\": {\n" +
-        "        \"en\": \"1900 to 1950\",\n" +
-        "        \"fr\": \"1900 à 1950\"\n" +
+        "        \"en\": \"1950 to 1960\",\n" +
+        "        \"fr\": \"1950 à 1960\"\n" +
         "      },\n" +
         "      \"description\": {},\n" +
         "      \"keywords\": {},\n" +
         "      \"attributes\": {}\n" +
         "    },\n" +
         "    {\n" +
-        "      \"name\": \"1950:2000\",\n" +
+        "      \"name\": \"1960:1970\",\n" +
         "      \"title\": {\n" +
-        "        \"en\": \"1950 to 2000\",\n" +
-        "        \"fr\": \"1950 à 2000\"\n" +
+        "        \"en\": \"1960 to 1970\",\n" +
+        "        \"fr\": \"1960 à 1970\"\n" +
+        "      },\n" +
+        "      \"description\": {},\n" +
+        "      \"keywords\": {},\n" +
+        "      \"attributes\": {}\n" +
+        "    },\n" +
+        "    {\n" +
+        "      \"name\": \"1970:1980\",\n" +
+        "      \"title\": {\n" +
+        "        \"en\": \"1970 to 1980\",\n" +
+        "        \"fr\": \"1970 à 1980\"\n" +
+        "      },\n" +
+        "      \"description\": {},\n" +
+        "      \"keywords\": {},\n" +
+        "      \"attributes\": {}\n" +
+        "    },\n" +
+        "    {\n" +
+        "      \"name\": \"1980:1990\",\n" +
+        "      \"title\": {\n" +
+        "        \"en\": \"1980 to 1990\",\n" +
+        "        \"fr\": \"1980 à 1990\"\n" +
+        "      },\n" +
+        "      \"description\": {},\n" +
+        "      \"keywords\": {},\n" +
+        "      \"attributes\": {}\n" +
+        "    },\n" +
+        "    {\n" +
+        "      \"name\": \"1990:2000\",\n" +
+        "      \"title\": {\n" +
+        "        \"en\": \"1990 to 2000\",\n" +
+        "        \"fr\": \"1990 à 2000\"\n" +
         "      },\n" +
         "      \"description\": {},\n" +
         "      \"keywords\": {},\n" +
@@ -141,7 +171,8 @@ public class Mica372Upgrade implements UpgradeStep {
         "if (db.getCollection('taxonomyEntityWrapper').find({\n" +
         "    $and: [\n" +
         "        {_id: 'study', \"taxonomy.vocabularies\": {$elemMatch: {\"name\": \"start\"}}},\n" +
-        "        {_id: 'study', \"taxonomy.vocabularies\": {$elemMatch: {\"attributes.field\": \"model.startYear\"}}}\n" +
+        "        {_id: 'study', \"taxonomy.vocabularies\": {$elemMatch: {\"attributes.field\": \"model.startYear\"}}},\n" +
+        "        {_id: 'study', \"taxonomy.vocabularies\": {$not: {$elemMatch: {\"name\": \"start-range\"}}}}\n" +
         "    ]\n" +
         " }).count() > 0) {\n" +
         "    db.taxonomyEntityWrapper.update({\"_id\": \"study\"}, {$push: {\"taxonomy.vocabularies\": startRangeVocabulary}})\n" +
