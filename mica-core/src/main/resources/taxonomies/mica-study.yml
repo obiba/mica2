@@ -186,30 +186,42 @@
     "alias": "model-startYear-range"
     "range" : "true"
   "terms":
-    - "name": "*:1900"
+    - "name": "*:1950"
       "title":
-        "en": "Before 1900"
-        "fr": "Avant 1900"
+        "en": "Before 1950"
+        "fr": "Avant 1950"
       "description": {}
       "keywords": {}
-    - "name": "1900:1950"
+    - "name": "1950:1960"
       "title":
-        "en": "1900 to 1950"
-        "fr": "1900 à 1950"
+        "en": "1950 to 1960"
+        "fr": "1950 à 1960"
       "description": {}
       "keywords": {}
-    - "name": "1950:2000"
+    - "name": "1960:1970"
       "title":
-        "en": "1950 to 2000"
-        "fr": "1950 à 2000"
+        "en": "1960 to 1970"
+        "fr": "1960 à 1970"
       "description": {}
       "keywords": {}
+    - "name": "1970:1980"
+      "title":
+        "en": "1970 to 1980"
+        "fr": "1970 à 1980"
+      "description": {}
+      "keywords": {}
+    - "name": "1980:1990"
+      "title":
+        "en": "1980 to 1990"
+        "fr": "1980 à 1990"
+    - "name": "1990:2000"
+      "title":
+        "en": "1990 to 2000"
+        "fr": "1990 à 2000"
     - "name": "2000:2010"
       "title":
         "en": "2000 to 2010"
         "fr": "2000 à 2010"
-      "description": {}
-      "keywords": {}
     - "name": "2010:*"
       "title":
         "en": "2010 and later"

@@ -1956,7 +1956,9 @@
     "number-participants-chart-title": "Répartition des études par nombre de participants",
     "percentage.studies": "Pourcentage d'études",
     "study-start-year": "Année de debut d'étude",
-    "study-start-year-chart-title": "Répartition des études par leurs debut d'année"
+    "study-start-year-chart-title": "Répartition des études par leurs debut d'année",
+    "undetermined": "Indéterminé",
+    "total": "Totale"
   },
   "research-projects": "Projets de recherche",
   "research-project": {
