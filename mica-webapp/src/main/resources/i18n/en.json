@@ -1433,6 +1433,7 @@
       "email-alt": "Alternate Email",
       "phone": "Telephone Number",
       "address": "Mailing Address",
+      "date-error": "Not a valid date",
       "I": {
         "title": "Modifications on Contact and Research Project Information",
         "A": {
@@ -1466,6 +1467,10 @@
         "G": {
           "title": "Modifications on Lay summary of the project",
           "info": "Please provide a short, accessible description of the project for the general public in <strong>no more than 200 words</strong>. Scientific jargon should be avoided to a reasonable extent. This description will be made available on the consortium public access registry and may be used in a variety of communications materials produced by the consortium (e.g. brochures, reports to stakeholders, press releases, blogs etc.)."
+        },
+        "H": {
+          "title": "Modification of the End date of the project",
+          "info": "Expected end date of the project. A final report may be requested at that date."
         }
       },
       "documents": {
@@ -1566,6 +1571,7 @@
       "email-alt": "Alternate Email",
       "phone": "Telephone Number",
       "address": "Mailing Address",
+      "date-error": "Not a valid date",
       "I": {
         "title": "Contact and Research Project Information",
         "A": {
@@ -1599,6 +1605,10 @@
         "G": {
           "title": "Lay summary of the project",
           "info": "Please provide a short, accessible description of the project for the general public in <strong>no more than 200 words</strong>. Scientific jargon should be avoided to a reasonable extent. This description will be made available on the consortium public access registry and may be used in a variety of communications materials produced by the consortium (e.g. brochures, reports to stakeholders, press releases, blogs etc.)."
+        },
+        "H": {
+          "title": "End date of the project",
+          "info": "Expected end date of the project. A final report may be requested at that date."
         }
       },
       "documents": {
@@ -1711,6 +1721,8 @@
     "title-field-help": "The title of the request.",
     "summary-field": "Summary Field",
     "summary-field-help": "The lay summary of the request.",
+    "end-date-field": "End Date Field",
+    "end-date-field-help": "The end date of the project declared in the request. The date format must be yyyy-MM-dd (ISO 8601). If no end date can be identified either in the request form or in an amendment form, no report notifications will be sent.",
     "general-config": "General Configuration",
     "saved": "Data Access Form is successfully updated.",
     "amendments-enabled": "Enable Amendments.",
@@ -1769,6 +1781,7 @@
     "notifications": {
       "title": "Notifications",
       "info": "Emails can be sent to applicant and data access officers when an event happens on the data access request. Events can be: status change or comment. Notification email subjects can contain the following placeholders: ${organization}, ${title} and ${id} for the request id.",
+      "events": "Events",
       "created": "On creation",
       "createdSubject": "On creation email subject",
       "created-help": "Email is sent to data access officers on data access request creation (i.e. saved for the first time but not yet submitted).",
@@ -1795,7 +1808,16 @@
       "attachment-help": "Email is sent to applicant and data access officers when the document list of the data access request is updated.",
       "conditionallyApproved": "On conditional approval",
       "conditionallyApprovedSubject": "On conditional approval email subject",
-      "conditionallyApproved-help": "Email is sent to applicant when its data access request is in the 'Conditionally Approved' state."
+      "conditionallyApproved-help": "Email is sent to applicant when its data access request is in the 'Conditionally Approved' state.",
+      "reports":  "Reports",
+      "finalReport": "Final report reminder",
+      "finalReportSubject": "Final report reminder email subject",
+      "finalReport-help": "Email is sent to applicant to remind that a final report is due. Applies to approved data access requests only.",
+      "intermediateReport": "Intermediate report reminder",
+      "intermediateReportSubject": "Intermediate report reminder email subject",
+      "intermediateReport-help": "Email is sent to applicant to remind that an intermediate (yearly) report is due. Applies to approved data access requests only.",
+      "nbOfDaysBeforeReport": "Days before sending a report reminder",
+      "nbOfDaysBeforeReport-help": "Number of days before sending a reminder email for the intermediate or the final reports."
     },
     "workflow": {
       "title": "Workflow",
@@ -1833,7 +1855,9 @@
       "title-field": "Title Field",
       "title-field-help": "The title of the amendment.",
       "summary-field": "Summary Field",
-      "summary-field-help": "The lay summary of the amendment."
+      "summary-field-help": "The lay summary of the amendment.",
+      "end-date-field": "End Date Field",
+      "end-date-field-help": "The end date of the project declared in the amendment. If no end date can be identified either in the request form or in an amendment form, no report notifications will be sent."
     }
   },
   "key-list": {

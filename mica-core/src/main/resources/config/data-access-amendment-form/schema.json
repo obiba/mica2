@@ -13,6 +13,7 @@
           "IE",
           "IF",
           "IG",
+          "IH",
           "IIrdRebResearchProtocol",
           "IIrdRebDecisionLetter",
           "IIrdCV",
@@ -164,6 +165,10 @@
     },
     "summary": {
       "type": "string"
+    },
+    "endDate": {
+      "type": "string",
+      "format": "datepicker"
     },
     "other": {
       "title": "t(data-access-amendment.default.other-modifications)",

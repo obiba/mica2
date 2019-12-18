@@ -19,6 +19,8 @@ public abstract class AbstractDataAccessEntityForm extends EntityConfig {
 
   private String summaryFieldPath;
 
+  private String endDateFieldPath;
+
   AbstractDataAccessEntityForm() {
     super();
   }
@@ -62,4 +64,17 @@ public abstract class AbstractDataAccessEntityForm extends EntityConfig {
   public boolean hasSummaryFieldPath() {
     return !Strings.isNullOrEmpty(summaryFieldPath);
   }
+
+  public void setEndDateFieldPath(String endDateFieldPath) {
+    this.endDateFieldPath = endDateFieldPath;
+  }
+
+  public String getEndDateFieldPath() {
+    return endDateFieldPath;
+  }
+
+  public boolean hasEndDateFieldPath() {
+    return !Strings.isNullOrEmpty(endDateFieldPath);
+  }
+
 }

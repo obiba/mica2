@@ -10,10 +10,8 @@
 
 package org.obiba.mica.access.service;
 
-import java.util.List;
-
-import javax.inject.Inject;
-
+import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import com.jayway.jsonpath.*;
 import org.apache.shiro.SecurityUtils;
 import org.obiba.mica.access.domain.DataAccessAmendment;
@@ -31,8 +29,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
+import javax.inject.Inject;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
 
 @Component
 public class DataAccessRequestUtilService {
@@ -41,6 +42,8 @@ public class DataAccessRequestUtilService {
   private static final Configuration conf = Configuration.defaultConfiguration().addOptions(Option.ALWAYS_RETURN_LIST);
 
   public static final String DEFAULT_NOTIFICATION_SUBJECT = "[${organization}] ${title}";
+
+  private static final SimpleDateFormat ISO_8601 = new SimpleDateFormat("yyyy-MM-dd");
 
   @Inject
   private DataAccessFormService dataAccessFormService;
@@ -65,7 +68,7 @@ public class DataAccessRequestUtilService {
 
   /**
    * This method merely assigns a value to a path where all parent nodes already exist.
-   *
+   * <p>
    * TODO create a setRequestField() such that all non-existent nodes are created and proper type checking is made.
    *
    * @param request
@@ -76,16 +79,16 @@ public class DataAccessRequestUtilService {
     String titleFieldPath = dataAccessForm.getTitleFieldPath();
     if (!Strings.isNullOrEmpty(titleFieldPath)) {
       String rawContent = request.getContent();
-      if(!Strings.isNullOrEmpty(titleFieldPath) && !Strings.isNullOrEmpty(rawContent)) {
+      if (!Strings.isNullOrEmpty(titleFieldPath) && !Strings.isNullOrEmpty(rawContent)) {
         Object content = Configuration.defaultConfiguration().jsonProvider().parse(rawContent);
         DocumentContext context = JsonPath.using(conf).parse(content);
 
         try {
           context.read(titleFieldPath);
           context.set(titleFieldPath, title);
-        } catch(PathNotFoundException ex) {
+        } catch (PathNotFoundException ex) {
           context.put("$", titleFieldPath.replaceAll("^\\$\\.", ""), title);
-        } catch(InvalidPathException e) {
+        } catch (InvalidPathException e) {
           log.warn("Invalid jsonpath {}", titleFieldPath);
         }
 
@@ -99,11 +102,24 @@ public class DataAccessRequestUtilService {
     return getRequestField(request, dataAccessForm.getSummaryFieldPath());
   }
 
+  public Date getRequestEndDate(DataAccessEntity request) {
+    AbstractDataAccessEntityForm dataAccessForm = getDataAccessForm(request instanceof DataAccessRequest);
+    if (!dataAccessForm.hasEndDateFieldPath()) return null;
+    String value = getRequestField(request, dataAccessForm.getEndDateFieldPath());
+    if (Strings.isNullOrEmpty(value)) return null;
+    try {
+      return ISO_8601.parse(value);
+    } catch (ParseException e) {
+      log.warn("Not a valid (ISO 8601) date format: {}", value);
+      return null;
+    }
+  }
+
   public void checkStatusTransition(DataAccessEntity request, DataAccessEntityStatus to)
     throws IllegalArgumentException {
-    if(request.getStatus() == to) return;
+    if (request.getStatus() == to) return;
 
-    switch(request.getStatus()) {
+    switch (request.getStatus()) {
       case OPENED:
         checkOpenedStatusTransition(to);
         break;
@@ -143,7 +159,7 @@ public class DataAccessRequestUtilService {
     }
 
     if (!isPermitted) return to;
-    switch(request.getStatus()) {
+    switch (request.getStatus()) {
       case OPENED:
         if (SecurityUtils.getSubject().getPrincipal().toString().equals(request.getApplicant()))
           addNextOpenedStatus(to);
@@ -173,18 +189,18 @@ public class DataAccessRequestUtilService {
 
   private String getRequestField(DataAccessEntity request, String fieldPath) {
     String rawContent = request.getContent();
-    if(!Strings.isNullOrEmpty(fieldPath) && !Strings.isNullOrEmpty(rawContent)) {
+    if (!Strings.isNullOrEmpty(fieldPath) && !Strings.isNullOrEmpty(rawContent)) {
       Object content = Configuration.defaultConfiguration().jsonProvider().parse(rawContent);
       List<Object> values = null;
       try {
         values = JsonPath.using(conf).parse(content).read(fieldPath);
-      } catch(PathNotFoundException ex) {
+      } catch (PathNotFoundException ex) {
         //ignore
-      } catch(InvalidPathException e) {
+      } catch (InvalidPathException e) {
         log.warn("Invalid jsonpath {}", fieldPath);
       }
 
-      if(values != null) {
+      if (values != null) {
         return values.get(0).toString();
       }
     }
@@ -198,7 +214,7 @@ public class DataAccessRequestUtilService {
   private void addNextSubmittedStatus(List<DataAccessEntityStatus> to) {
     to.add(DataAccessEntityStatus.OPENED);
     DataAccessForm dataAccessForm = dataAccessFormService.find().get();
-    if(dataAccessForm.isWithReview()) {
+    if (dataAccessForm.isWithReview()) {
       to.add(DataAccessEntityStatus.REVIEWED);
     } else {
       to.add(DataAccessEntityStatus.APPROVED);
@@ -212,7 +228,7 @@ public class DataAccessRequestUtilService {
     to.add(DataAccessEntityStatus.REJECTED);
     DataAccessForm dataAccessForm = dataAccessFormService.find().get();
     if (dataAccessForm.isWithConditionalApproval()) to.add(DataAccessEntityStatus.CONDITIONALLY_APPROVED);
-     else to.add(DataAccessEntityStatus.OPENED);
+    else to.add(DataAccessEntityStatus.OPENED);
   }
 
   private void addNextConditionallyApprovedStatus(List<DataAccessEntityStatus> to) {
@@ -221,36 +237,36 @@ public class DataAccessRequestUtilService {
 
   private void addNextApprovedStatus(List<DataAccessEntityStatus> to) {
     DataAccessForm dataAccessForm = dataAccessFormService.find().get();
-    if(!dataAccessForm.isApprovedFinal()) {
-      if(dataAccessForm.isWithReview()) to.add(DataAccessEntityStatus.REVIEWED);
+    if (!dataAccessForm.isApprovedFinal()) {
+      if (dataAccessForm.isWithReview()) to.add(DataAccessEntityStatus.REVIEWED);
       else to.add(DataAccessEntityStatus.SUBMITTED);
     }
   }
 
   private void addNextRejectedStatus(List<DataAccessEntityStatus> to) {
     DataAccessForm dataAccessForm = dataAccessFormService.find().get();
-    if(!dataAccessForm.isRejectedFinal()) {
-      if(dataAccessForm.isWithReview()) to.add(DataAccessEntityStatus.REVIEWED);
+    if (!dataAccessForm.isRejectedFinal()) {
+      if (dataAccessForm.isWithReview()) to.add(DataAccessEntityStatus.REVIEWED);
       else to.add(DataAccessEntityStatus.SUBMITTED);
     }
   }
 
   private void checkOpenedStatusTransition(DataAccessEntityStatus to) {
-    if(to != DataAccessEntityStatus.SUBMITTED)
+    if (to != DataAccessEntityStatus.SUBMITTED)
       throw new IllegalArgumentException("Opened data access request can only be submitted");
   }
 
   private void checkSubmittedStatusTransition(DataAccessEntityStatus to) {
     DataAccessForm dataAccessForm = dataAccessFormService.find().get();
-    if(dataAccessForm.isWithReview()) {
-      if(to != DataAccessEntityStatus.OPENED && to != DataAccessEntityStatus.REVIEWED)
+    if (dataAccessForm.isWithReview()) {
+      if (to != DataAccessEntityStatus.OPENED && to != DataAccessEntityStatus.REVIEWED)
         throw new IllegalArgumentException("Submitted data access request can only be reopened or put under review");
     } else if (!dataAccessForm.isWithReview() && dataAccessForm.isWithConditionalApproval()) {
       if (to != DataAccessEntityStatus.CONDITIONALLY_APPROVED && to != DataAccessEntityStatus.OPENED &&
         to != DataAccessEntityStatus.APPROVED && to != DataAccessEntityStatus.REJECTED)
         throw new IllegalArgumentException("Submitted data access request can only be conditionally approved, reopened, or be approved/rejected");
     } else {
-      if(to != DataAccessEntityStatus.OPENED && to != DataAccessEntityStatus.APPROVED &&
+      if (to != DataAccessEntityStatus.OPENED && to != DataAccessEntityStatus.APPROVED &&
         to != DataAccessEntityStatus.REJECTED) throw new IllegalArgumentException(
         "Submitted data access request can only be reopened or be approved/rejected");
     }
@@ -265,7 +281,7 @@ public class DataAccessRequestUtilService {
         && to != DataAccessEntityStatus.REJECTED)
         throw new IllegalArgumentException("Reviewed data access request can only be conditionally approved or be approved/rejected, only the admin can resubmit");
     } else {
-      if((!userProfileService.currentUserIs(Roles.MICA_ADMIN) && to == DataAccessEntityStatus.SUBMITTED)
+      if ((!userProfileService.currentUserIs(Roles.MICA_ADMIN) && to == DataAccessEntityStatus.SUBMITTED)
         && to != DataAccessEntityStatus.OPENED
         && to != DataAccessEntityStatus.APPROVED
         && to != DataAccessEntityStatus.REJECTED)
@@ -286,28 +302,28 @@ public class DataAccessRequestUtilService {
 
   private void checkApprovedStatusTransition(DataAccessEntityStatus to) {
     DataAccessForm dataAccessForm = dataAccessFormService.find().get();
-    if(dataAccessForm.isApprovedFinal())
+    if (dataAccessForm.isApprovedFinal())
       throw new IllegalArgumentException("Approved data access request cannot be modified");
 
-    if(dataAccessForm.isWithReview() && to != DataAccessEntityStatus.REVIEWED) {
+    if (dataAccessForm.isWithReview() && to != DataAccessEntityStatus.REVIEWED) {
       throw new IllegalArgumentException("Approved data access request can only be put under review");
     }
 
-    if(!dataAccessForm.isWithReview() && to != DataAccessEntityStatus.SUBMITTED) {
+    if (!dataAccessForm.isWithReview() && to != DataAccessEntityStatus.SUBMITTED) {
       throw new IllegalArgumentException("Approved data access request can only go to submitted state");
     }
   }
 
   private void checkRejectedStatusTransition(DataAccessEntityStatus to) {
     DataAccessForm dataAccessForm = dataAccessFormService.find().get();
-    if(dataAccessForm.isApprovedFinal())
+    if (dataAccessForm.isApprovedFinal())
       throw new IllegalArgumentException("Rejected data access request cannot be modified");
 
-    if(dataAccessForm.isWithReview() && to != DataAccessEntityStatus.REVIEWED) {
+    if (dataAccessForm.isWithReview() && to != DataAccessEntityStatus.REVIEWED) {
       throw new IllegalArgumentException("Rejected data access request can only be put under review");
     }
 
-    if(!dataAccessForm.isWithReview() && to != DataAccessEntityStatus.SUBMITTED) {
+    if (!dataAccessForm.isWithReview() && to != DataAccessEntityStatus.SUBMITTED) {
       throw new IllegalArgumentException("Rejected data access request can only go to submitted state");
     }
   }

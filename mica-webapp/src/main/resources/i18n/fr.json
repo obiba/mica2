@@ -1433,6 +1433,7 @@
       "email-alt": "Courriel alternatif",
       "phone": "Numéro de téléphone",
       "address": "Adresse postale",
+      "date-error":  "Date invalide",
       "I": {
         "title": "Modifications de contact et information sur le projet de recherche",
         "A": {
@@ -1466,6 +1467,10 @@
         "G": {
           "title": "Modifications du résumé simplifié du projet",
           "info": "Veuillez fournir une brève description du projet accessible au grand public dans <strong> pas plus de 200 mots </strong>. Le jargon scientifique doit être évité dans la mesure du possible. Cette description sera rendue disponible sur le registre d'accès public du consortium et peut être utilisée dans une variété d'outils de communication produits par le consortium (ex. brochures, rapports aux partenaires, communiqués de presse, blogs, etc.)."
+        },
+        "H": {
+          "title": "Modification de la date de fin du projet",
+          "info": "Date à laquelle la fin du projet est attendue. Un rapport final peut être demandé à cette date."
         }
       },
       "documents": {
@@ -1566,6 +1571,7 @@
       "email-alt": "Courriel alternatif",
       "phone": "Numéro de téléphone",
       "address": "Adresse postale",
+      "date-error":  "Date invalide",
       "I": {
         "title": "Contact et information sur le projet de recherche",
         "A": {
@@ -1599,6 +1605,10 @@
         "G": {
           "title": "Résumé simplifié du projet",
           "info": "Veuillez fournir une brève description du projet accessible au grand public dans <strong> pas plus de 200 mots </strong>. Le jargon scientifique doit être évité dans la mesure du possible. Cette description sera rendue disponible sur le registre d'accès public du consortium et peut être utilisée dans une variété d'outils de communication produits par le consortium (ex. brochures, rapports aux partenaires, communiqués de presse, blogs, etc.)."
+        },
+        "H": {
+          "title": "Date de fin du projet",
+          "info": "Date à laquelle la fin du projet est attendue. Un rapport final peut être demandé à cette date."
         }
       },
       "documents": {
@@ -1711,6 +1721,8 @@
     "title-field-help": "Le titre de la demande.",
     "summary-field": "Champ Résumé",
     "summary-field-help": "Le résumé simplifié de la demande.",
+    "end-date-field": "Champ Date de fin",
+    "end-date-field-help": "La date de fin du projet déclarée dans la demande. Le format de la date doit être aaaa-MM-jj (ISO 8601). Si aucune date de fin ne peut être identifiée dans la demande ou dans les amendements subséquents, aucun message de notification pour les rapports attendus ne pourra être envoyé.",
     "general-config": "Configuration générale",
     "saved": "Formulaire d'accès aux données a été mis à jour avec succès.",
     "amendments-enabled": "Activer les amendements.",
@@ -1795,7 +1807,15 @@
       "attachment-help": "Le courriel est envoyé au demandeur et les agents d'accès aux données lorsque la liste des documents de la demande d'accès est mise à jour.",
       "conditionallyApproved": "Sur approbation conditionnelle",
       "conditionallyApprovedSubject": "Objet du courriel Sur approbation conditionnelle",
-      "conditionallyApproved-help": "Le courriel est envoyé au demandeur lorsque sa demande d'accès aux données est approuvée conditionnellement."
+      "conditionallyApproved-help": "Le courriel est envoyé au demandeur lorsque sa demande d'accès aux données est approuvée conditionnellement.",
+      "finalReport": "Rappel de rapport final",
+      "finalReportSubject": "Objet du courriel rappelant de soummettre le rapport final",
+      "finalReport-help": "Le courriel est envoyé au demandeur pour lui rappeler que le rapport final doit être soumis. Ce courriel ne s'applique qu'aux demande d'accès aux données ayant été approuvées.",
+      "intermediateReport": "Rappel de rapport intermédiaire",
+      "intermediateReportSubject": "Objet du courriel rappelant de soummettre un rapport intermédiaire",
+      "intermediateReport-help": "Le courriel est envoyé au demandeur pour lui rappeler qu'un rapport intermédiaire (annuel) doit être soumis. Ce courriel ne s'applique qu'aux demande d'accès aux données ayant été approuvées.",
+      "nbOfDaysBeforeReport": "Jours avant d'envoyer un courriel de rappel",
+      "nbOfDaysBeforeReport-help": "Nombre de jours avant d'envoyer un courriel de rappel pour les rapports intermédiaires ou final."
     },
     "workflow": {
       "title": "Flux de travail",
@@ -1833,7 +1853,9 @@
       "title-field": "Champ Titre",
       "title-field-help": "Le titre de l'amendement.",
       "summary-field": "Champ Résumé",
-      "summary-field-help": "Le résumé simplifié de l'amendement."
+      "summary-field-help": "Le résumé simplifié de l'amendement.",
+      "end-date-field": "Champ Date de fin",
+      "end-date-field-help": "La date de fin déclarée dans l'amendement."
     }
   },
   "key-list": {

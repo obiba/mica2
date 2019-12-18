@@ -252,6 +252,10 @@ class MicaConfigDtos {
       builder.setSummaryFieldPath(dataAccessForm.getSummaryFieldPath());
     }
 
+    if(dataAccessForm.hasEndDateFieldPath()) {
+      builder.setEndDateFieldPath(dataAccessForm.getEndDateFieldPath());
+    }
+
     if(dataAccessForm.hasIdPrefix()) {
       builder.setIdPrefix(dataAccessForm.getIdPrefix());
     }
@@ -267,6 +271,8 @@ class MicaConfigDtos {
       .setNotifyReopened(dataAccessForm.isNotifyReopened()) //
       .setNotifyCommented(dataAccessForm.isNotifyCommented()) //
       .setNotifyAttachment(dataAccessForm.isNotifyAttachment()) //
+      .setNotifyFinalReport(dataAccessForm.isNotifyFinalReport())
+      .setNotifyIntermediateReport(dataAccessForm.isNotifyIntermediateReport())
       .setWithReview(dataAccessForm.isWithReview()) //
       .setApprovedFinal(dataAccessForm.isApprovedFinal()) //
       .setRejectedFinal(dataAccessForm.isRejectedFinal())
@@ -291,6 +297,12 @@ class MicaConfigDtos {
     if(dataAccessForm.getAttachmentSubject() != null) builder.setAttachmentSubject(dataAccessForm.getAttachmentSubject());
 
     if(dataAccessForm.getConditionallyApprovedSubject() != null) builder.setConditionallyApprovedSubject(dataAccessForm.getConditionallyApprovedSubject());
+
+    if(dataAccessForm.getFinalReportSubject() != null) builder.setFinalReportSubject(dataAccessForm.getFinalReportSubject());
+
+    if(dataAccessForm.getIntermediateReportSubject() != null) builder.setIntermediateReportSubject(dataAccessForm.getIntermediateReportSubject());
+
+    builder.setNbOfDaysBeforeReport(dataAccessForm.getNbOfDaysBeforeReport());
 
     if(dataAccessForm.getPredefinedActions() != null) builder.addAllPredefinedActions(dataAccessForm.getPredefinedActions());
 
@@ -321,6 +333,10 @@ class MicaConfigDtos {
 
     if(dto.hasSummaryFieldPath()) {
       dataAccessForm.setSummaryFieldPath(dto.getSummaryFieldPath());
+    }
+
+    if(dto.hasEndDateFieldPath()) {
+      dataAccessForm.setEndDateFieldPath(dto.getEndDateFieldPath());
     }
 
     if(dto.hasIdPrefix()) {
@@ -355,6 +371,14 @@ class MicaConfigDtos {
     dataAccessForm.setNotifyAttachment(dto.getNotifyAttachment());
     dataAccessForm.setAttachmentSubject(dto.getAttachmentSubject());
 
+    dataAccessForm.setNotifyFinalReport(dto.getNotifyFinalReport());
+    dataAccessForm.setFinalReportSubject(dto.getFinalReportSubject());
+
+    dataAccessForm.setNotifyIntermediateReport(dto.getNotifyIntermediateReport());
+    dataAccessForm.setIntermediateReportSubject(dto.getIntermediateReportSubject());
+
+    if (dto.hasNbOfDaysBeforeReport()) dataAccessForm.setNbOfDaysBeforeReport(dto.getNbOfDaysBeforeReport());
+
     dataAccessForm.setWithReview(dto.getWithReview());
     dataAccessForm.setApprovedFinal(dto.getApprovedFinal());
     dataAccessForm.setRejectedFinal(dto.getRejectedFinal());
@@ -384,6 +408,10 @@ class MicaConfigDtos {
       builder.setSummaryFieldPath(dataAccessAmendmentForm.getSummaryFieldPath());
     }
 
+    if(dataAccessAmendmentForm.hasEndDateFieldPath()) {
+      builder.setEndDateFieldPath(dataAccessAmendmentForm.getEndDateFieldPath());
+    }
+
     builder.setWithReview(dataAccessForm.isWithReview());
     builder.setApprovedFinal(dataAccessForm.isApprovedFinal());
 
@@ -406,6 +434,10 @@ class MicaConfigDtos {
 
     if(dto.hasSummaryFieldPath()) {
       dataAccessAmendmentForm.setSummaryFieldPath(dto.getSummaryFieldPath());
+    }
+
+    if(dto.hasEndDateFieldPath()) {
+      dataAccessAmendmentForm.setEndDateFieldPath(dto.getEndDateFieldPath());
     }
 
     return dataAccessAmendmentForm;

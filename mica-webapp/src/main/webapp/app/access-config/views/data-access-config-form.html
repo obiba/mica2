@@ -54,10 +54,11 @@
       <div class="row">
         <div class="col-md-6">
           <div form-input name="titleFieldPath" model="dataAccessForm.titleFieldPath" label="data-access-config.title-field" required="false" help="data-access-config.title-field-help"></div>
-          <div form-checkbox name="amendmentsEnabled" model="dataAccessForm.amendmentsEnabled" label="data-access-config.amendments-enabled" help="data-access-config.amendments-enabled-help"></div>
+          <div form-input name="summaryFieldPath" model="dataAccessForm.summaryFieldPath" label="data-access-config.summary-field" required="false" help="data-access-config.summary-field-help"></div>
+          <div form-input name="endDateFieldPath" model="dataAccessForm.endDateFieldPath" label="data-access-config.end-date-field" required="false" help="data-access-config.end-date-field-help"></div>
         </div>
         <div class="col-md-6">
-          <div form-input name="summaryFieldPath" model="dataAccessForm.summaryFieldPath" label="data-access-config.summary-field" required="false" help="data-access-config.summary-field-help"></div>
+          <div form-checkbox name="amendmentsEnabled" model="dataAccessForm.amendmentsEnabled" label="data-access-config.amendments-enabled" help="data-access-config.amendments-enabled-help"></div>
           <div form-checkbox name="daoCanEdit" model="dataAccessForm.daoCanEdit" label="data-access-config.dao-can-edit"></div>
           <p class="help-block" translate>data-access-config.dao-can-edit-help</p>
         </div>
@@ -120,9 +121,10 @@
       <div class="row">
         <div class="col-md-6">
           <div form-input name="titleFieldPath" model="amendmentForm.titleFieldPath" label="data-access-config.amendment.title-field" required="false" help="data-access-config.amendment.title-field-help"></div>
+          <div form-input name="summaryFieldPath" model="amendmentForm.summaryFieldPath" label="data-access-config.amendment.summary-field" required="false" help="data-access-config.amendment.summary-field-help"></div>
         </div>
         <div class="col-md-6">
-          <div form-input name="summaryFieldPath" model="amendmentForm.summaryFieldPath" label="data-access-config.amendment.summary-field" required="false" help="data-access-config.amendment.summary-field-help"></div>
+          <div form-input name="endDateFieldPath" model="amendmentForm.endDateFieldPath" label="data-access-config.amendment.end-date-field" required="false" help="data-access-config.amendment.end-date-field-help"></div>
         </div>
       </div>
     </form>
@@ -172,32 +174,52 @@
 
     <p class="help-block" translate>data-access-config.notifications.info</p>
 
-    <form>
-      <div class="row">
-        <div class="col-md-6">
-          <div form-checkbox name="notifyCreated" model="dataAccessForm.notifyCreated" label="data-access-config.notifications.created" help="data-access-config.notifications.created-help"></div>
-          <div form-input name="createdSubject" model="dataAccessForm.createdSubject" label="data-access-config.notifications.createdSubject" placeholder="[${organization}] ${title}" required="false" disable="!dataAccessForm.notifySubmitted"></div>
-          <div form-checkbox name="notifySubmitted" model="dataAccessForm.notifySubmitted" label="data-access-config.notifications.submitted" help="data-access-config.notifications.submitted-help"></div>
-          <div form-input name="submittedSubject" model="dataAccessForm.submittedSubject" label="data-access-config.notifications.submittedSubject" placeholder="[${organization}] ${title}" required="false" disable="!dataAccessForm.notifySubmitted"></div>
-          <div form-checkbox name="notifyReviewed" model="dataAccessForm.notifyReviewed" label="data-access-config.notifications.reviewed" help="data-access-config.notifications.reviewed-help"></div>
-          <div form-input name="reviewedSubject" model="dataAccessForm.reviewedSubject" placeholder="[${organization}] ${title}" label="data-access-config.notifications.reviewedSubject" required="false" disable="!dataAccessForm.notifyReviewed"></div>
-          <div form-checkbox name="notifyReopened" model="dataAccessForm.notifyReopened" label="data-access-config.notifications.reopened" help="data-access-config.notifications.reopened-help"></div>
-          <div form-input name="reopenedSubject" model="dataAccessForm.reopenedSubject" placeholder="[${organization}] ${title}" label="data-access-config.notifications.reopenedSubject" required="false" disable="!dataAccessForm.notifyReopened"></div>
-          <div form-checkbox name="notifyConditionallyApproved" model="dataAccessForm.notifyConditionallyApproved" label="data-access-config.notifications.conditionallyApproved" help="data-access-config.notifications.conditionallyApproved-help"></div>
-          <div form-input name="conditionallyApprovedSubject" model="dataAccessForm.conditionallyApprovedSubject" placeholder="[${organization}] ${title}" label="data-access-config.notifications.conditionallyApprovedSubject"></div>
-        </div>
-        <div class="col-md-6">
-          <div form-checkbox name="notifyRejected" model="dataAccessForm.notifyRejected" label="data-access-config.notifications.rejected" help="data-access-config.notifications.rejected-help"></div>
-          <div form-input name="rejectedSubject" model="dataAccessForm.rejectedSubject" placeholder="[${organization}] ${title}" label="data-access-config.notifications.rejectedSubject" required="false" disable="!dataAccessForm.notifyRejected"></div>
-          <div form-checkbox name="notifyApproved" model="dataAccessForm.notifyApproved" label="data-access-config.notifications.approved" help="data-access-config.notifications.approved-help"></div>
-          <div form-input name="approvedSubject" model="dataAccessForm.approvedSubject" placeholder="[${organization}] ${title}" label="data-access-config.notifications.approvedSubject" required="false" disable="!dataAccessForm.notifyApproved"></div>
-          <div form-checkbox name="notifyCommented" model="dataAccessForm.notifyCommented" label="data-access-config.notifications.commented" help="data-access-config.notifications.commented-help"></div>
-          <div form-input name="commentedSubject" model="dataAccessForm.commentedSubject" placeholder="[${organization}] ${title}" label="data-access-config.notifications.commentedSubject" required="false" disable="!dataAccessForm.notifyCommented"></div>
-          <div form-checkbox name="notifyAttachment" model="dataAccessForm.notifyAttachment" label="data-access-config.notifications.attachment" help="data-access-config.notifications.attachment-help"></div>
-          <div form-input name="attachmentSubject" model="dataAccessForm.attachmentSubject" placeholder="[${organization}] ${title}" label="data-access-config.notifications.attachmentSubject" required="false" disable="!dataAccessForm.notifyAttachment"></div>
-        </div>
-      </div>
-    </form>
+    <uib-tabset>
+      <uib-tab heading="{{'data-access-config.notifications.events' | translate}}">
+        <form>
+          <div class="row">
+            <div class="col-md-6">
+              <div form-checkbox name="notifyCreated" model="dataAccessForm.notifyCreated" label="data-access-config.notifications.created" help="data-access-config.notifications.created-help"></div>
+              <div form-input name="createdSubject" model="dataAccessForm.createdSubject" label="data-access-config.notifications.createdSubject" placeholder="[${organization}] ${title}" required="false" disable="!dataAccessForm.notifySubmitted"></div>
+              <div form-checkbox name="notifySubmitted" model="dataAccessForm.notifySubmitted" label="data-access-config.notifications.submitted" help="data-access-config.notifications.submitted-help"></div>
+              <div form-input name="submittedSubject" model="dataAccessForm.submittedSubject" label="data-access-config.notifications.submittedSubject" placeholder="[${organization}] ${title}" required="false" disable="!dataAccessForm.notifySubmitted"></div>
+              <div form-checkbox name="notifyReviewed" model="dataAccessForm.notifyReviewed" label="data-access-config.notifications.reviewed" help="data-access-config.notifications.reviewed-help"></div>
+              <div form-input name="reviewedSubject" model="dataAccessForm.reviewedSubject" placeholder="[${organization}] ${title}" label="data-access-config.notifications.reviewedSubject" required="false" disable="!dataAccessForm.notifyReviewed"></div>
+              <div form-checkbox name="notifyReopened" model="dataAccessForm.notifyReopened" label="data-access-config.notifications.reopened" help="data-access-config.notifications.reopened-help"></div>
+              <div form-input name="reopenedSubject" model="dataAccessForm.reopenedSubject" placeholder="[${organization}] ${title}" label="data-access-config.notifications.reopenedSubject" required="false" disable="!dataAccessForm.notifyReopened"></div>
+              <div form-checkbox name="notifyConditionallyApproved" model="dataAccessForm.notifyConditionallyApproved" label="data-access-config.notifications.conditionallyApproved" help="data-access-config.notifications.conditionallyApproved-help"></div>
+              <div form-input name="conditionallyApprovedSubject" model="dataAccessForm.conditionallyApprovedSubject" placeholder="[${organization}] ${title}" label="data-access-config.notifications.conditionallyApprovedSubject"></div>
+            </div>
+            <div class="col-md-6">
+              <div form-checkbox name="notifyRejected" model="dataAccessForm.notifyRejected" label="data-access-config.notifications.rejected" help="data-access-config.notifications.rejected-help"></div>
+              <div form-input name="rejectedSubject" model="dataAccessForm.rejectedSubject" placeholder="[${organization}] ${title}" label="data-access-config.notifications.rejectedSubject" required="false" disable="!dataAccessForm.notifyRejected"></div>
+              <div form-checkbox name="notifyApproved" model="dataAccessForm.notifyApproved" label="data-access-config.notifications.approved" help="data-access-config.notifications.approved-help"></div>
+              <div form-input name="approvedSubject" model="dataAccessForm.approvedSubject" placeholder="[${organization}] ${title}" label="data-access-config.notifications.approvedSubject" required="false" disable="!dataAccessForm.notifyApproved"></div>
+              <div form-checkbox name="notifyCommented" model="dataAccessForm.notifyCommented" label="data-access-config.notifications.commented" help="data-access-config.notifications.commented-help"></div>
+              <div form-input name="commentedSubject" model="dataAccessForm.commentedSubject" placeholder="[${organization}] ${title}" label="data-access-config.notifications.commentedSubject" required="false" disable="!dataAccessForm.notifyCommented"></div>
+              <div form-checkbox name="notifyAttachment" model="dataAccessForm.notifyAttachment" label="data-access-config.notifications.attachment" help="data-access-config.notifications.attachment-help"></div>
+              <div form-input name="attachmentSubject" model="dataAccessForm.attachmentSubject" placeholder="[${organization}] ${title}" label="data-access-config.notifications.attachmentSubject" required="false" disable="!dataAccessForm.notifyAttachment"></div>
+            </div>
+          </div>
+        </form>
+      </uib-tab>
+      <uib-tab heading="{{'data-access-config.notifications.reports' | translate}}">
+        <form>
+          <div class="row">
+            <div class="col-md-6">
+              <div form-checkbox name="notifyFinalReport" model="dataAccessForm.notifyFinalReport" label="data-access-config.notifications.finalReport" help="data-access-config.notifications.finalReport-help"></div>
+              <div form-input name="finalReportSubject" model="dataAccessForm.finalReportSubject" placeholder="[${organization}] ${title}" label="data-access-config.notifications.finalReportSubject" required="false" disable="!dataAccessForm.notifyFinalReport"></div>
+              <div form-checkbox name="notifyIntermediateReport" model="dataAccessForm.notifyIntermediateReport" label="data-access-config.notifications.intermediateReport" help="data-access-config.notifications.intermediateReport-help"></div>
+              <div form-input name="intermediateReportSubject" model="dataAccessForm.intermediateReportSubject" placeholder="[${organization}] ${title}" label="data-access-config.notifications.intermediateReportSubject" required="false" disable="!dataAccessForm.notifyIntermediateReport"></div>
+            </div>
+            <div class="col-md-6">
+              <div form-input type="number" model="dataAccessForm.nbOfDaysBeforeReport" label="data-access-config.notifications.nbOfDaysBeforeReport" help="data-access-config.notifications.nbOfDaysBeforeReport-help"></div>
+            </div>
+          </div>
+        </form>
+      </uib-tab>
+    </uib-tabset>
+
   </div>
 
   <div ng-show="tab.name === 'permissions'">

@@ -84,6 +84,7 @@ public class DataAccessFormService extends AbstractDataAccessEntityFormService<D
     form.setCsvExportFormat(getDefaultDataAccessFormResourceAsString("export-csv-schema.json"));
     form.setTitleFieldPath("projectTitle");
     form.setSummaryFieldPath("summary");
+    form.setEndDateFieldPath("endDate");
     return form;
   }
 }

@@ -19,6 +19,7 @@ import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.validation.constraints.NotNull;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -33,6 +34,20 @@ public class DataAccessRequest extends DataAccessEntity implements AttachmentAwa
   private List<Attachment> attachments = Lists.newArrayList();
 
   private Iterable<Attachment> removedAttachments = Lists.newArrayList();
+
+  private Date startDate;
+
+  public boolean hasStartDate() {
+    return startDate != null;
+  }
+
+  public Date getStartDate() {
+    return startDate;
+  }
+
+  public void setStartDate(Date startDate) {
+    this.startDate = startDate;
+  }
 
   //
   // Attachments
@@ -56,7 +71,7 @@ public class DataAccessRequest extends DataAccessEntity implements AttachmentAwa
 
   @Override
   public void setAttachments(List<Attachment> attachments) {
-    if(attachments == null) attachments = Lists.newArrayList();
+    if (attachments == null) attachments = Lists.newArrayList();
 
     this.removedAttachments = Sets.difference(Sets.newHashSet(this.attachments), Sets.newHashSet(attachments));
     this.attachments = attachments;

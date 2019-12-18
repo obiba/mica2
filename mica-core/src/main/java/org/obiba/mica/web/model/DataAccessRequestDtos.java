@@ -12,13 +12,10 @@ package org.obiba.mica.web.model;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
-import java.util.ArrayList;
 import org.apache.shiro.SecurityUtils;
 import org.obiba.mica.access.DataAccessRequestRepository;
-import org.obiba.mica.access.domain.ActionLog;
-import org.obiba.mica.access.domain.DataAccessAmendment;
-import org.obiba.mica.access.domain.DataAccessEntity;
-import org.obiba.mica.access.domain.DataAccessRequest;
+import org.obiba.mica.access.domain.*;
+import org.obiba.mica.access.notification.DataAccessRequestReportNotificationService;
 import org.obiba.mica.access.service.DataAccessRequestUtilService;
 import org.obiba.mica.project.domain.Project;
 import org.obiba.mica.project.service.NoSuchProjectException;
@@ -27,23 +24,23 @@ import org.obiba.mica.security.Roles;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.user.UserProfileService;
 import org.obiba.mica.web.model.Mica.DataAccessRequestDto.StatusChangeDto.Builder;
-import org.obiba.shiro.realm.ObibaRealm;
 import org.obiba.shiro.realm.ObibaRealm.Subject;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 import java.nio.file.Paths;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.ZoneOffset;
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
 class DataAccessRequestDtos {
+
+  private static final SimpleDateFormat ISO_8601 = new SimpleDateFormat("yyyy-MM-dd");
 
   @Inject
   private AttachmentDtos attachmentDtos;
@@ -75,6 +72,9 @@ class DataAccessRequestDtos {
   @Inject
   private ProjectService projectService;
 
+  @Inject
+  private DataAccessRequestReportNotificationService dataAccessRequestReportNotificationService;
+
   public StatusChangeDtos getStatusChangeDtos() {
     return statusChangeDtos;
   }
@@ -83,8 +83,8 @@ class DataAccessRequestDtos {
     Mica.DataAccessRequestDto.Builder builder = asMinimalistDtoBuilder(request, true);
 
     boolean canAccessActionLogs = SecurityUtils.getSubject().hasRole(Roles.MICA_DAO) ||
-                                  SecurityUtils.getSubject().hasRole(Roles.MICA_ADMIN) ||
-                                  subjectAclService.isPermitted("/data-access-request/action-logs", "VIEW");
+      SecurityUtils.getSubject().hasRole(Roles.MICA_ADMIN) ||
+      subjectAclService.isPermitted("/data-access-request/action-logs", "VIEW");
 
     if (canAccessActionLogs) {
       request.getActionLogHistory()
@@ -93,7 +93,7 @@ class DataAccessRequestDtos {
 
     Map<String, Subject> micaProfiles = userProfileService.getProfilesByApplication("mica", null).stream().collect(Collectors.toMap(Subject::getUsername, profile -> profile));
 
-    if(micaProfiles.containsKey(request.getApplicant())) {
+    if (micaProfiles.containsKey(request.getApplicant())) {
       builder.setProfile(userProfileDtos.asDto(micaProfiles.get(request.getApplicant())));
     }
 
@@ -110,15 +110,25 @@ class DataAccessRequestDtos {
     Mica.DataAccessRequestDto.Builder builder = asDtoBuilder(request);
 
     String title = dataAccessRequestUtilService.getRequestTitle(request);
-    if(!Strings.isNullOrEmpty(title)) {
+    if (!Strings.isNullOrEmpty(title)) {
       builder.setTitle(title);
+    }
+
+    if (request.hasStartDate()) builder.setStartDate(ISO_8601.format(request.getStartDate()));
+
+    DataAccessRequestTimeline timeline = dataAccessRequestReportNotificationService.getProjectTimeline(request);
+    if (timeline.hasStartDate() && timeline.hasEndDate()) {
+      builder.setTimeline(Mica.TimelineDto.newBuilder()
+        .setStartDate(ISO_8601.format(timeline.getStartDate()))
+        .setEndDate(ISO_8601.format(timeline.getEndDate()))
+        .addAllIntermediateDates(timeline.getIntermediateDates().stream().map(d -> ISO_8601.format(d)).collect(Collectors.toList())));
     }
 
     request.getAttachments().forEach(attachment -> builder.addAttachments(attachmentDtos.asDto(attachment)));
 
     builder.addAllActions(addDataAccessEntityActions(request, "/data-access-request"));
 
-    if(subjectAclService
+    if (subjectAclService
       .isPermitted(Paths.get("/data-access-request", request.getId(), "/amendment").toString(), "ADD")) {
       builder.addActions("ADD_AMENDMENTS");
     }
@@ -131,7 +141,7 @@ class DataAccessRequestDtos {
 
     if (hasAdministrativeRole || subjectAclService.isPermitted(Paths.get("/data-access-request", request.getId(), "_attachments").toString(), "EDIT")) {
       builder.addActions("EDIT_ATTACHMENTS");
-      
+
       if (hasAdministrativeRole) {
         builder.addActions("DELETE_ATTACHMENTS");
         builder.addActions("EDIT_ACTION_LOGS");
@@ -155,27 +165,35 @@ class DataAccessRequestDtos {
 
   void fromDto(@NotNull Mica.DataAccessRequestDto dto, DataAccessEntity.Builder builder) {
     builder.applicant(dto.getApplicant()).status(dto.getStatus());
-    if(dto.hasContent()) builder.content(dto.getContent());
+    if (dto.hasContent()) builder.content(dto.getContent());
   }
 
   @NotNull
   public DataAccessRequest fromDto(@NotNull Mica.DataAccessRequestDto dto) {
     DataAccessRequest.Builder builder = DataAccessRequest.newBuilder();
     fromDto(dto, builder);
-    DataAccessRequest request = (DataAccessRequest)builder.build();
-    if(dto.hasId()) request.setId(dto.getId());
+    DataAccessRequest request = (DataAccessRequest) builder.build();
+    if (dto.hasId()) request.setId(dto.getId());
 
-    if(dto.getActionLogHistoryCount() > 0) {
+    if (dto.hasStartDate()) {
+      try {
+        request.setStartDate(ISO_8601.parse(dto.getStartDate()));
+      } catch (ParseException e) {
+        // ignore
+      }
+    }
+
+    if (dto.getActionLogHistoryCount() > 0) {
       request.setActionLogHistory(
         dto.getActionLogHistoryList().stream().map(actionLogDtos::fromDto).collect(Collectors.toList()));
     }
 
-    if(dto.getAttachmentsCount() > 0) {
+    if (dto.getAttachmentsCount() > 0) {
       request.setAttachments(
         dto.getAttachmentsList().stream().map(attachmentDtos::fromDto).collect(Collectors.toList()));
     }
     TimestampsDtos.fromDto(dto.getTimestamps(), request);
-    return (DataAccessRequest)builder.build();
+    return (DataAccessRequest) builder.build();
   }
 
   @NotNull
@@ -190,11 +208,11 @@ class DataAccessRequestDtos {
     builder.parentId(extension.getParentId());
 
     fromDto(dto, builder);
-    DataAccessAmendment amendment = (DataAccessAmendment)builder.build();
-    if(dto.hasId()) amendment.setId(dto.getId());
+    DataAccessAmendment amendment = (DataAccessAmendment) builder.build();
+    if (dto.hasId()) amendment.setId(dto.getId());
     TimestampsDtos.fromDto(dto.getTimestamps(), amendment);
 
-    return (DataAccessAmendment)builder.build();
+    return (DataAccessAmendment) builder.build();
   }
 
   @NotNull
@@ -210,7 +228,7 @@ class DataAccessRequestDtos {
 
   @NotNull
   List<Mica.DataAccessRequestDto.StatusChangeDto> asStatusChangeDtoList(@NotNull DataAccessEntity entity, Map<String, Subject> micaProfiles) {
-    return entity.getStatusChangeHistory().stream().map(statusChange ->  {
+    return entity.getStatusChangeHistory().stream().map(statusChange -> {
       Builder builder = statusChangeDtos.asMinimalistDtoBuilder(statusChange);
 
       if (entity instanceof DataAccessAmendment) {
@@ -247,13 +265,14 @@ class DataAccessRequestDtos {
       .setStatus(dataAccessEntity.getStatus().name())
       .setTimestamps(TimestampsDtos.asDto(dataAccessEntity));
 
-    if(dataAccessEntity.hasContent()) builder.setContent(dataAccessEntity.getContent());
-    if(!dataAccessEntity.isNew()) builder.setId(dataAccessEntity.getId());
+    if (dataAccessEntity.hasContent()) builder.setContent(dataAccessEntity.getContent());
+    if (!dataAccessEntity.isNew()) builder.setId(dataAccessEntity.getId());
 
     String title = dataAccessRequestUtilService.getRequestTitle(dataAccessEntity);
-    if(!Strings.isNullOrEmpty(title)) builder.setTitle(title);
+    if (!Strings.isNullOrEmpty(title)) builder.setTitle(title);
 
-    if (!omitStatusChangeHistory) dataAccessEntity.getStatusChangeHistory().forEach(statusChange -> builder.addStatusChangeHistory(statusChangeDtos.asMinimalistDtoBuilder(statusChange)));
+    if (!omitStatusChangeHistory)
+      dataAccessEntity.getStatusChangeHistory().forEach(statusChange -> builder.addStatusChangeHistory(statusChangeDtos.asMinimalistDtoBuilder(statusChange)));
 
     setMinimalistActions(builder, dataAccessEntity);
 
@@ -316,19 +335,19 @@ class DataAccessRequestDtos {
       actions.add("VIEW");
     }
 
-    if(entity instanceof DataAccessRequest && subjectAclService.isPermitted(resource, "VIEW", entity.getId())) {
+    if (entity instanceof DataAccessRequest && subjectAclService.isPermitted(resource, "VIEW", entity.getId())) {
       actions.add("VIEW");
     }
 
-    if(subjectAclService.isPermitted(resource, "EDIT", entity.getId())) {
+    if (subjectAclService.isPermitted(resource, "EDIT", entity.getId())) {
       actions.add("EDIT");
     }
 
-    if(subjectAclService.isPermitted(resource, "DELETE", entity.getId())) {
+    if (subjectAclService.isPermitted(resource, "DELETE", entity.getId())) {
       actions.add("DELETE");
     }
 
-    if(subjectAclService.isPermitted(Paths.get(resource, entity.getId()).toString(), "EDIT", "_status")) {
+    if (subjectAclService.isPermitted(Paths.get(resource, entity.getId()).toString(), "EDIT", "_status")) {
       actions.add("EDIT_STATUS");
     }
 

@@ -145,6 +145,10 @@
     "summary": {
       "type": "string"
     },
+    "endDate": {
+      "type": "string",
+      "format": "datepicker"
+    },
     "rdRebResearchProtocol": {
       "type": "object",
       "format": "obibaFiles",
@@ -178,6 +182,7 @@
     "projectTitle",
     "abstract",
     "summary",
+    "endDate",
     "rdRebResearchProtocol",
     "rdRebDecisionLetter",
     "rdCV",
