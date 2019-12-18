@@ -10,10 +10,7 @@ import org.obiba.mica.PdfUtils;
 import org.obiba.mica.access.DataAccessEntityRepository;
 import org.obiba.mica.access.DataAccessRequestGenerationException;
 import org.obiba.mica.access.NoSuchDataAccessRequestException;
-import org.obiba.mica.access.domain.DataAccessEntity;
-import org.obiba.mica.access.domain.DataAccessEntityStatus;
-import org.obiba.mica.access.domain.DataAccessRequest;
-import org.obiba.mica.access.domain.StatusChange;
+import org.obiba.mica.access.domain.*;
 import org.obiba.mica.core.domain.AbstractAuditableDocument;
 import org.obiba.mica.core.service.MailService;
 import org.obiba.mica.core.service.SchemaFormContentFileService;
@@ -212,6 +209,8 @@ public abstract class DataAccessEntityService<T extends DataAccessEntity> {
     ctx.put("organization", organization);
     ctx.put("publicUrl", micaConfigService.getPublicUrl());
     ctx.put("id", id);
+    if (request instanceof DataAccessAmendment)
+      ctx.put("parentId", ((DataAccessAmendment) request).getParentId());
     if (Strings.isNullOrEmpty(title)) title = id;
     ctx.put("title", title);
     ctx.put("applicant", request.getApplicant());
@@ -222,12 +221,13 @@ public abstract class DataAccessEntityService<T extends DataAccessEntity> {
 
   protected void sendCreatedNotificationEmail(T request) {
     DataAccessForm dataAccessForm = dataAccessFormService.find().get();
-    if (dataAccessForm.isNotifyCreated()) {
+    if (dataAccessForm.isNotifyCreated() ) {
       Map<String, String> ctx = getNotificationEmailContext(request);
-
-      mailService.sendEmailToGroups(mailService.getSubject(dataAccessForm.getCreatedSubject(), ctx,
-        DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), "dataAccessRequestCreatedDAOEmail", ctx,
-        Roles.MICA_DAO);
+      if (ctx.get("parentId") == null) { // only original request, not amendments
+        mailService.sendEmailToGroups(mailService.getSubject(dataAccessForm.getCreatedSubject(), ctx,
+          DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), "dataAccessRequestCreatedDAOEmail", ctx,
+          Roles.MICA_DAO);
+      }
     }
   }
 
