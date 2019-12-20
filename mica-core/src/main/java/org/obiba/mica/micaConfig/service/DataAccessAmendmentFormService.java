@@ -54,6 +54,7 @@ public class DataAccessAmendmentFormService extends AbstractDataAccessEntityForm
     form.setCsvExportFormat(getDefaultDataAccessFormResourceAsString("export-csv-schema.json"));
     form.setTitleFieldPath("projectTitle");
     form.setSummaryFieldPath("summary");
+    form.setEndDateFieldPath("endDate");
     return form;
   }
 }

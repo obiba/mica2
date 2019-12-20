@@ -747,6 +747,8 @@ message DataAccessRequestDto {
   optional ProjectSummaryDto project = 12;
   repeated ActionLogDto actionLogHistory = 13;
   optional AmendmentsSummaryDto amendmentsSummary = 14;
+  optional string startDate = 15;
+  optional TimelineDto reportsTimeline = 16;
 
   extensions 1000 to max;
 }
@@ -757,6 +759,12 @@ message DataAccessAmendmentDto {
   extend DataAccessRequestDto {
     required DataAccessAmendmentDto amendment = 1000;
   }
+}
+
+message TimelineDto {
+  required string startDate = 1;
+  required string endDate = 2;
+  repeated string intermediateDates = 3;
 }
 
 message DataAccessRequestSummaryDto {
@@ -836,6 +844,14 @@ message DataAccessFormDto {
   required bool amendmentsEnabled = 32;
   required bool daoCanEdit = 33;
   optional bool allowIdWithLeadingZeros = 34;
+  required bool notifyCreated = 35;
+  optional string createdSubject = 36;
+  optional string endDateFieldPath = 37;
+  required bool notifyFinalReport = 38;
+  optional string finalReportSubject = 39;
+  required bool notifyIntermediateReport = 40;
+  optional string intermediateReportSubject = 41;
+  optional int32 nbOfDaysBeforeReport = 42;
 }
 
 message DataAccessAmendmentFormDto {
@@ -847,6 +863,7 @@ message DataAccessAmendmentFormDto {
   optional string csvExportFormat = 6;
   required bool withReview = 7;
   required bool approvedFinal = 8;
+  optional string endDateFieldPath = 9;
 }
 
 message ProjectFormDto {

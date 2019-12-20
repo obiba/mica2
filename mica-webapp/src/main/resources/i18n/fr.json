@@ -935,6 +935,7 @@
   "documents": "Documents",
   "edit": "Éditer",
   "clone": "Cloner",
+  "start-date": "Date de début",
   "view": "Vue",
   "delete": "Supprimer",
   "cancel": "Annuler",
@@ -994,6 +995,7 @@
   "CONDITIONALLY_APPROVED": "Approuvée sous conditions",
   "APPROVED": "Approuvée",
   "REJECTED": "Rejetée",
+  "APPROVED-REJECTED": "Approuvée ou Rejetée",
   "date": "Date",
   "author": "Auteur",
   "user": "Utilisateur",
@@ -1433,6 +1435,7 @@
       "email-alt": "Courriel alternatif",
       "phone": "Numéro de téléphone",
       "address": "Adresse postale",
+      "date-error":  "Date invalide",
       "I": {
         "title": "Modifications de contact et information sur le projet de recherche",
         "A": {
@@ -1466,6 +1469,10 @@
         "G": {
           "title": "Modifications du résumé simplifié du projet",
           "info": "Veuillez fournir une brève description du projet accessible au grand public dans <strong> pas plus de 200 mots </strong>. Le jargon scientifique doit être évité dans la mesure du possible. Cette description sera rendue disponible sur le registre d'accès public du consortium et peut être utilisée dans une variété d'outils de communication produits par le consortium (ex. brochures, rapports aux partenaires, communiqués de presse, blogs, etc.)."
+        },
+        "H": {
+          "title": "Modification de la date de fin du projet",
+          "info": "Date à laquelle la fin du projet est attendue. Un rapport final peut être demandé à cette date."
         }
       },
       "documents": {
@@ -1506,6 +1513,12 @@
     "status-placeholder": "Filtrer par statut",
     "pending-amendments": "Amendements en attente",
     "total-amendments": "Total des amendements",
+    "start-date-help": "Date à laquelle le projet commence, les dates des rapports intermédiaires étant ajustées en fonction.",
+    "start": "Début",
+    "start-label": "D",
+    "intermediate": "Rapport annuel",
+    "end": "Rapport final",
+    "end-label": "F",
     "histories": {
       "opened":   "Ouverte",
       "submitted": "Soumise",
@@ -1566,6 +1579,7 @@
       "email-alt": "Courriel alternatif",
       "phone": "Numéro de téléphone",
       "address": "Adresse postale",
+      "date-error":  "Date invalide",
       "I": {
         "title": "Contact et information sur le projet de recherche",
         "A": {
@@ -1599,6 +1613,10 @@
         "G": {
           "title": "Résumé simplifié du projet",
           "info": "Veuillez fournir une brève description du projet accessible au grand public dans <strong> pas plus de 200 mots </strong>. Le jargon scientifique doit être évité dans la mesure du possible. Cette description sera rendue disponible sur le registre d'accès public du consortium et peut être utilisée dans une variété d'outils de communication produits par le consortium (ex. brochures, rapports aux partenaires, communiqués de presse, blogs, etc.)."
+        },
+        "H": {
+          "title": "Date de fin du projet",
+          "info": "Date à laquelle la fin du projet est attendue. Un rapport final peut être demandé à cette date."
         }
       },
       "documents": {
@@ -1711,6 +1729,8 @@
     "title-field-help": "Le titre de la demande.",
     "summary-field": "Champ Résumé",
     "summary-field-help": "Le résumé simplifié de la demande.",
+    "end-date-field": "Champ Date de fin",
+    "end-date-field-help": "La date de fin du projet déclarée dans la demande. Le format de la date doit être aaaa-MM-jj (ISO 8601). Si aucune date de fin ne peut être identifiée dans la demande ou dans les amendements subséquents, aucun message de notification pour les rapports attendus ne pourra être envoyé.",
     "general-config": "Configuration générale",
     "saved": "Formulaire d'accès aux données a été mis à jour avec succès.",
     "amendments-enabled": "Activer les amendements.",
@@ -1769,30 +1789,41 @@
     "notifications": {
       "title": "Notifications",
       "info": "Les courriels peuvent être envoyés au demandeur et aux agents d'accès aux données lorsqu'un événement se produit sur la demande d'accès aux données. Les événements peuvent être: changement de statut ou un commentaire. Les objets de notifications par courriel peuvent contenir les information suivantes : ${organisation}, ${title} et ${id} pour l'ID de la demande.",
+      "created": "A la création",
+      "createdSubject": "Objet du courriel de Création",
+      "created-help": "Le courriel est envoyé aux agents d'accès aux données à la création de la demande d'accès aux données (i.e. avant d'avoir été soumise).",
       "submitted": "Sur soumission",
-      "submittedSubject": "Objet du courriel Sur soumission",
+      "submittedSubject": "Objet du courriel de Soumission",
       "submitted-help": "Le courriel est envoyé aux agents d'accès aux données et au demandeur sur la soumission de la demande d'accès aux données.",
       "reviewed": "Sur révision",
-      "reviewedSubject": "Objet du courriel Sur révision",
+      "reviewedSubject": "Objet du courriel de Révision",
       "reviewed-help": "Le courriel est envoyé au demandeur lorsque sa demande d'accès aux données est en révision.",
       "approved": "Sur approbation",
-      "approvedSubject": "Objet du courriel Sur approbation",
+      "approvedSubject": "Objet du courriel d'Approbation",
       "approved-help": "Le courriel est envoyé au demandeur lorsque sa demande d'accès aux données est approuvée.",
       "rejected": "Sur rejet",
-      "rejectedSubject": "Objet du courriel Sur rejet",
+      "rejectedSubject": "Objet du courriel de Rejet",
       "rejected-help": "Le courriel est envoyé au demandeur lorsque sa demande d'accès aux données est rejetée.",
-      "reopened": "Sur rouverture",
-      "reopenedSubject": "Objet du courriel Sur rouverture",
+      "reopened": "Sur réouverture",
+      "reopenedSubject": "Objet du courriel de Réouverture",
       "reopened-help": "Le courriel est envoyé au demandeur lorsque sa demande d'accès aux données est rouvert.",
       "commented": "Sur commentaire",
-      "commentedSubject": "Objet du courriel Sur commentaire",
+      "commentedSubject": "Objet du courriel de Commentaire",
       "commented-help": "Le courriel est envoyé au demandeur lorsque sa demande d'accès aux données est commentée.",
       "attachment": "Sur mise à jour des documents",
-      "attachmentSubject": "Objet du courriel Sur mise à jour des documents",
+      "attachmentSubject": "Objet du courriel de Mise à jour des documents",
       "attachment-help": "Le courriel est envoyé au demandeur et les agents d'accès aux données lorsque la liste des documents de la demande d'accès est mise à jour.",
       "conditionallyApproved": "Sur approbation conditionnelle",
       "conditionallyApprovedSubject": "Objet du courriel Sur approbation conditionnelle",
-      "conditionallyApproved-help": "Le courriel est envoyé au demandeur lorsque sa demande d'accès aux données est approuvée conditionnellement."
+      "conditionallyApproved-help": "Le courriel est envoyé au demandeur lorsque sa demande d'accès aux données est approuvée conditionnellement.",
+      "finalReport": "Rappel de rapport final",
+      "finalReportSubject": "Objet du courriel rappelant de soummettre le rapport final",
+      "finalReport-help": "Le courriel est envoyé au demandeur pour lui rappeler que le rapport final doit être soumis. Ce courriel ne s'applique qu'aux demande d'accès aux données ayant été approuvées.",
+      "intermediateReport": "Rappel de rapport intermédiaire",
+      "intermediateReportSubject": "Objet du courriel rappelant de soummettre un rapport intermédiaire",
+      "intermediateReport-help": "Le courriel est envoyé au demandeur pour lui rappeler qu'un rapport intermédiaire (annuel) doit être soumis. Ce courriel ne s'applique qu'aux demande d'accès aux données ayant été approuvées.",
+      "nbOfDaysBeforeReport": "Jours avant d'envoyer un courriel de rappel",
+      "nbOfDaysBeforeReport-help": "Nombre de jours avant d'envoyer un courriel de rappel pour les rapports intermédiaires ou final."
     },
     "workflow": {
       "title": "Flux de travail",
@@ -1830,7 +1861,9 @@
       "title-field": "Champ Titre",
       "title-field-help": "Le titre de l'amendement.",
       "summary-field": "Champ Résumé",
-      "summary-field-help": "Le résumé simplifié de l'amendement."
+      "summary-field-help": "Le résumé simplifié de l'amendement.",
+      "end-date-field": "Champ Date de fin",
+      "end-date-field-help": "La date de fin déclarée dans l'amendement."
     }
   },
   "key-list": {

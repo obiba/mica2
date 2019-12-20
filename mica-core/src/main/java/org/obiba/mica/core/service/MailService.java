@@ -136,6 +136,7 @@ public class MailService extends AgateRestService {
         } catch(UnsupportedEncodingException ignored) {
         }
       });
+      log.info("Sending email with parameters: {}", form);
       HttpEntity<String> entity = new HttpEntity<>(form.toString(), headers);
 
       ResponseEntity<String> response = template.exchange(getNotificationsUrl(), HttpMethod.POST, entity, String.class);
@@ -143,10 +144,10 @@ public class MailService extends AgateRestService {
       if(response.getStatusCode().is2xxSuccessful()) {
         log.info("Email sent via Agate");
       } else {
-        log.error("Sending email via Agate failed with status: {}", response.getStatusCode());
+        log.error("Agate email service failure with status: {}", response.getStatusCode());
       }
     } catch(Exception e) {
-      log.error("Agate connection failure: {}", e.getMessage());
+      log.error("Agate email service connection failure: {}", e.getMessage());
     }
   }
 

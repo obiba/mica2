@@ -4,20 +4,14 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.google.common.eventbus.EventBus;
 import com.itextpdf.text.DocumentException;
-import com.jayway.jsonpath.Configuration;
-import com.jayway.jsonpath.InvalidPathException;
-import com.jayway.jsonpath.JsonPath;
-import com.jayway.jsonpath.Option;
-import com.jayway.jsonpath.PathNotFoundException;
+import com.jayway.jsonpath.*;
 import org.apache.shiro.SecurityUtils;
 import org.obiba.mica.PdfUtils;
 import org.obiba.mica.access.DataAccessEntityRepository;
 import org.obiba.mica.access.DataAccessRequestGenerationException;
 import org.obiba.mica.access.NoSuchDataAccessRequestException;
-import org.obiba.mica.access.domain.DataAccessEntity;
-import org.obiba.mica.access.domain.DataAccessEntityStatus;
-import org.obiba.mica.access.domain.DataAccessRequest;
-import org.obiba.mica.access.domain.StatusChange;
+import org.obiba.mica.access.domain.*;
+import org.obiba.mica.core.domain.AbstractAuditableDocument;
 import org.obiba.mica.core.service.MailService;
 import org.obiba.mica.core.service.SchemaFormContentFileService;
 import org.obiba.mica.core.support.IdentifierGenerator;
@@ -34,6 +28,7 @@ import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -135,22 +130,38 @@ public abstract class DataAccessEntityService<T extends DataAccessEntity> {
    * @return
    */
   public List<T> findAll(@Nullable String applicant) {
-    if (Strings.isNullOrEmpty(applicant)) return getRepository().findAll();
-    return getRepository().findByApplicant(applicant);
+    if (Strings.isNullOrEmpty(applicant)) return applyDefaultSort(getRepository().findAll());
+    return applyDefaultSort(getRepository().findByApplicant(applicant));
   }
 
+  /**
+   * Get all {@link DataAccessRequest}s, optionally filtered by status.
+   *
+   * @param status
+   * @return
+   */
   public List<T> findByStatus(@Nullable List<String> status) {
-    if (status == null || status.isEmpty()) return getRepository().findAll();
-    List<DataAccessEntityStatus> statusList = status.stream().map(DataAccessEntityStatus::valueOf)
-      .collect(Collectors.toList());
-
-    return getRepository().findAll().stream().filter(dar -> statusList.contains(dar.getStatus()))
-      .collect(Collectors.toList());
+    List<T> list = getRepository().findAll();
+    if (status != null && !status.isEmpty()) {
+      list = list.stream().filter(dar -> status.contains(dar.getStatus().name())).collect(Collectors.toList());
+    }
+    return applyDefaultSort(list);
   }
 
   //
   // Private methods
   //
+
+  /**
+   * Sort by last modified first.
+   *
+   * @param list
+   * @return
+   */
+  private List<T> applyDefaultSort(List<T> list) {
+    list.sort(Comparator.comparing(AbstractAuditableDocument::getLastModifiedDate).reversed());
+    return list;
+  }
 
   /**
    * Send a notification email, depending on the status of the request.
@@ -159,31 +170,29 @@ public abstract class DataAccessEntityService<T extends DataAccessEntity> {
    * @param from
    */
   protected void sendNotificationEmails(T request, @Nullable DataAccessEntityStatus from) {
-    // check is new request
-    if (from == null) return;
-
-    // check no transition
-    if (request.getStatus() == from) return;
-
-    switch (request.getStatus()) {
-      case SUBMITTED:
-        sendSubmittedNotificationEmail(request);
-        break;
-      case REVIEWED:
-        sendReviewedNotificationEmail(request);
-        break;
-      case OPENED:
-        sendOpenedNotificationEmail(request);
-        break;
-      case CONDITIONALLY_APPROVED:
-        sendConditionallyApprovedEmail(request);
-        break;
-      case APPROVED:
-        sendApprovedNotificationEmail(request);
-        break;
-      case REJECTED:
-        sendRejectedNotificationEmail(request);
-        break;
+    if (from == null) { // check is new request
+      sendCreatedNotificationEmail(request);
+    } else if (request.getStatus() != from) { // check there is a transition
+      switch (request.getStatus()) {
+        case SUBMITTED:
+          sendSubmittedNotificationEmail(request);
+          break;
+        case REVIEWED:
+          sendReviewedNotificationEmail(request);
+          break;
+        case OPENED:
+          sendOpenedNotificationEmail(request);
+          break;
+        case CONDITIONALLY_APPROVED:
+          sendConditionallyApprovedEmail(request);
+          break;
+        case APPROVED:
+          sendApprovedNotificationEmail(request);
+          break;
+        case REJECTED:
+          sendRejectedNotificationEmail(request);
+          break;
+      }
     }
   }
 
@@ -200,12 +209,26 @@ public abstract class DataAccessEntityService<T extends DataAccessEntity> {
     ctx.put("organization", organization);
     ctx.put("publicUrl", micaConfigService.getPublicUrl());
     ctx.put("id", id);
+    if (request instanceof DataAccessAmendment)
+      ctx.put("parentId", ((DataAccessAmendment) request).getParentId());
     if (Strings.isNullOrEmpty(title)) title = id;
     ctx.put("title", title);
     ctx.put("applicant", request.getApplicant());
     ctx.put("status", request.getStatus().name());
 
     return ctx;
+  }
+
+  protected void sendCreatedNotificationEmail(T request) {
+    DataAccessForm dataAccessForm = dataAccessFormService.find().get();
+    if (dataAccessForm.isNotifyCreated() ) {
+      Map<String, String> ctx = getNotificationEmailContext(request);
+      if (ctx.get("parentId") == null) { // only original request, not amendments
+        mailService.sendEmailToGroups(mailService.getSubject(dataAccessForm.getCreatedSubject(), ctx,
+          DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), "dataAccessRequestCreatedDAOEmail", ctx,
+          Roles.MICA_DAO);
+      }
+    }
   }
 
   protected void sendSubmittedNotificationEmail(T request) {

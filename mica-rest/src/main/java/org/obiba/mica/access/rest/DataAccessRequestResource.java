@@ -19,6 +19,7 @@ import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.JSONUtils;
 import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.access.NoSuchDataAccessRequestException;
+import org.obiba.mica.access.service.DataAccessRequestUtilService;
 import org.obiba.mica.file.FileStoreService;
 import org.obiba.mica.micaConfig.DataAccessAmendmentsNotEnabled;
 import org.obiba.mica.access.domain.DataAccessEntityStatus;
@@ -46,6 +47,7 @@ import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -127,6 +129,27 @@ public class DataAccessRequestResource extends DataAccessEntityResource<DataAcce
 
     return Response.ok(dataAccessRequestService.getRequestPdf(id, lang))
       .header("Content-Disposition", "attachment; filename=\"" + "data-access-request-" + id + ".pdf" + "\"").build();
+  }
+
+  @PUT
+  @Path("/_start-date")
+  @Timed
+  public Response updateStartDate(@PathParam("id") String id, @QueryParam("date") String date) {
+    if (!SecurityUtils.getSubject().hasRole(Roles.MICA_DAO) && !SecurityUtils.getSubject().hasRole(Roles.MICA_ADMIN)) {
+      throw new AuthorizationException();
+    }
+    DataAccessRequest request = dataAccessRequestService.findById(id);
+    if (Strings.isNullOrEmpty(date))
+      request.setStartDate(null);
+    else {
+      try {
+        request.setStartDate(DataAccessRequestUtilService.ISO_8601.parse(date));
+      } catch (ParseException e) {
+        e.printStackTrace();
+      }
+    }
+    dataAccessRequestService.save(request);
+    return Response.noContent().build();
   }
 
   @PUT

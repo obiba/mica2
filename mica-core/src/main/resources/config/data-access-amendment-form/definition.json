@@ -45,6 +45,10 @@
             "name": "t(data-access-amendment.default.I.G.title)"
           },
           {
+            "value": "IH",
+            "name": "t(data-access-amendment.default.I.H.title)"
+          },
+          {
             "value": "IIrdRebResearchProtocol",
             "name": "t(data-access-amendment.default.documents.reb-research-protocol)"
           },
@@ -302,6 +306,24 @@
         "validationMessage": {
           "wordLimitError": "The 200 words limit has been exceeded."
         }
+      }
+    ]
+  },
+  {
+    "type": "fieldset",
+    "condition": "model.modificationNature.indexOf('IH') > -1",
+    "items": [
+      {
+        "type": "help",
+        "helpvalue": "<h3>G. t(data-access-amendment.default.I.H.title)</h3><p class='help-block'>t(data-access-amendment.default.I.H.info)</p>"
+      },
+      {
+        "key": "endDate",
+        "notitle": true,
+        "dateOptions": {
+          "dateFormat": "yyyy-MM-dd"
+        },
+        "validationMessage": "t(data-access-amendment.default.date-error)"
       }
     ]
   },

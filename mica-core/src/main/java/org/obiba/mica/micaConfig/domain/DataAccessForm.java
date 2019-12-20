@@ -33,6 +33,8 @@ public class DataAccessForm extends AbstractDataAccessEntityForm {
 
   private boolean allowIdWithLeadingZeros = true;
 
+  private boolean notifyCreated = false;
+
   private boolean notifySubmitted = true;
 
   private boolean notifyReviewed = true;
@@ -48,6 +50,12 @@ public class DataAccessForm extends AbstractDataAccessEntityForm {
   private boolean notifyCommented = true;
 
   private boolean notifyAttachment = true;
+
+  private boolean notifyFinalReport = false;
+
+  private boolean notifyIntermediateReport = false;
+
+  private String createdSubject;
 
   private String submittedSubject;
 
@@ -65,6 +73,10 @@ public class DataAccessForm extends AbstractDataAccessEntityForm {
 
   private String attachmentSubject;
 
+  private String finalReportSubject;
+
+  private String intermediateReportSubject;
+
   private boolean withReview = true;
 
   private boolean withConditionalApproval = false;
@@ -78,6 +90,8 @@ public class DataAccessForm extends AbstractDataAccessEntityForm {
   private boolean amendmentsEnabled = false;
 
   private boolean daoCanEdit = false;
+
+  private int nbOfDaysBeforeReport = 7;
 
   public DataAccessForm() {
     super();
@@ -117,6 +131,14 @@ public class DataAccessForm extends AbstractDataAccessEntityForm {
 
   public void setIdLength(int idLength) {
     this.idLength = idLength < DEFAULT_ID_LENGTH ? DEFAULT_ID_LENGTH : idLength;
+  }
+
+  public void setNotifyCreated(boolean notifyCreated) {
+    this.notifyCreated = notifyCreated;
+  }
+
+  public boolean isNotifyCreated() {
+    return notifyCreated;
   }
 
   public void setNotifySubmitted(boolean notifySubmitted) {
@@ -215,6 +237,14 @@ public class DataAccessForm extends AbstractDataAccessEntityForm {
     return rejectedFinal;
   }
 
+  public String getCreatedSubject() {
+    return createdSubject;
+  }
+
+  public void setCreatedSubject(String createdSubject) {
+    this.createdSubject = createdSubject;
+  }
+
   public String getSubmittedSubject() {
     return submittedSubject;
   }
@@ -309,5 +339,45 @@ public class DataAccessForm extends AbstractDataAccessEntityForm {
 
   public void setAllowIdWithLeadingZeros(boolean allowIdWithLeadingZeros) {
     this.allowIdWithLeadingZeros = allowIdWithLeadingZeros;
+  }
+
+  public void setNbOfDaysBeforeReport(int nbOfDaysBeforeReport) {
+    this.nbOfDaysBeforeReport = nbOfDaysBeforeReport;
+  }
+
+  public int getNbOfDaysBeforeReport() {
+    return nbOfDaysBeforeReport;
+  }
+
+  public void setNotifyFinalReport(boolean notifyFinalReport) {
+    this.notifyFinalReport = notifyFinalReport;
+  }
+
+  public boolean isNotifyFinalReport() {
+    return notifyFinalReport;
+  }
+
+  public String getFinalReportSubject() {
+    return finalReportSubject;
+  }
+
+  public void setFinalReportSubject(String finalReportSubject) {
+    this.finalReportSubject = finalReportSubject;
+  }
+
+  public void setNotifyIntermediateReport(boolean notifyIntermediateReport) {
+    this.notifyIntermediateReport = notifyIntermediateReport;
+  }
+
+  public boolean isNotifyIntermediateReport() {
+    return notifyIntermediateReport;
+  }
+
+  public void setIntermediateReportSubject(String intermediateReportSubject) {
+    this.intermediateReportSubject = intermediateReportSubject;
+  }
+
+  public String getIntermediateReportSubject() {
+    return intermediateReportSubject;
   }
 }
