@@ -43,7 +43,7 @@ public class DataAccessRequestUtilService {
 
   public static final String DEFAULT_NOTIFICATION_SUBJECT = "[${organization}] ${title}";
 
-  private static final SimpleDateFormat ISO_8601 = new SimpleDateFormat("yyyy-MM-dd");
+  public static final SimpleDateFormat ISO_8601 = new SimpleDateFormat("yyyy-MM-dd");
 
   @Inject
   private DataAccessFormService dataAccessFormService;

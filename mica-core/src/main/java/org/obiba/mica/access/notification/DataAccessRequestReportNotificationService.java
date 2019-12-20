@@ -81,14 +81,14 @@ public class DataAccessRequestReportNotificationService {
    * @param dar
    * @return
    */
-  public DataAccessRequestTimeline getProjectTimeline(DataAccessRequest dar) {
+  public DataAccessRequestTimeline getReportsTimeline(DataAccessRequest dar) {
     DataAccessRequestTimeline timeline = new DataAccessRequestTimeline();
     timeline.setStartDate(getStartDate(dar));
     timeline.setEndDate(getEndDate(dar));
     // split time interval between start and end date by year steps
     if (timeline.hasStartDate() && timeline.hasEndDate() && timeline.getStartDate().before(timeline.getEndDate())) {
       LocalDate localStartDate = toLocalDate(timeline.getStartDate());
-      LocalDate localEndDate = toLocalDate(timeline.getEndDate());
+      LocalDate localEndDate = toLocalDate(timeline.getEndDate()).minus(6, ChronoUnit.MONTHS);
       LocalDate localDate = localStartDate.plus(1, ChronoUnit.YEARS);
       while (localDate.isBefore(localEndDate)) {
         timeline.addIntermediateDate(toDate(localDate));
@@ -109,7 +109,7 @@ public class DataAccessRequestReportNotificationService {
     LocalDate dateNow = LocalDate.now().minusDays(nbOfDaysBeforeReport);
 
     for (DataAccessRequest dar : dataAccessRequestService.findByStatus(Lists.newArrayList(DataAccessEntityStatus.APPROVED.name()))) {
-      DataAccessRequestTimeline timeline = getProjectTimeline(dar);
+      DataAccessRequestTimeline timeline = getReportsTimeline(dar);
 
       if (timeline.hasEndDate()) {
         LocalDate localEndDate = toLocalDate(timeline.getEndDate());

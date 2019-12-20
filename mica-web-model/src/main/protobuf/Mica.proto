@@ -748,7 +748,7 @@ message DataAccessRequestDto {
   repeated ActionLogDto actionLogHistory = 13;
   optional AmendmentsSummaryDto amendmentsSummary = 14;
   optional string startDate = 15;
-  optional TimelineDto timeline = 16;
+  optional TimelineDto reportsTimeline = 16;
 
   extensions 1000 to max;
 }

@@ -116,9 +116,9 @@ class DataAccessRequestDtos {
 
     if (request.hasStartDate()) builder.setStartDate(ISO_8601.format(request.getStartDate()));
 
-    DataAccessRequestTimeline timeline = dataAccessRequestReportNotificationService.getProjectTimeline(request);
+    DataAccessRequestTimeline timeline = dataAccessRequestReportNotificationService.getReportsTimeline(request);
     if (timeline.hasStartDate() && timeline.hasEndDate()) {
-      builder.setTimeline(Mica.TimelineDto.newBuilder()
+      builder.setReportsTimeline(Mica.TimelineDto.newBuilder()
         .setStartDate(ISO_8601.format(timeline.getStartDate()))
         .setEndDate(ISO_8601.format(timeline.getEndDate()))
         .addAllIntermediateDates(timeline.getIntermediateDates().stream().map(d -> ISO_8601.format(d)).collect(Collectors.toList())));
