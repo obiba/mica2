@@ -219,9 +219,15 @@ message ChartsCoverageDto {
     required string title = 3;
   }
 
+  message ChartTermDataDto {
+    required string term = 1;
+    repeated ChartDataItemDto items = 2;
+  }
+
   message ChartDataDto {
     required string vocabulary = 1;
     repeated ChartDataItemDto items = 2;
+    repeated ChartTermDataDto termItems = 3;
   }
 
   message ChartDto {
