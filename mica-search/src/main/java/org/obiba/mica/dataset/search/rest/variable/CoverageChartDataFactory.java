@@ -65,12 +65,14 @@ public class CoverageChartDataFactory {
       .filter(dto-> dto.getBucketsCount() > 0)
       .forEach(dto -> {
         ChartsCoverageDto.ChartTermDataDto.Builder builder = ChartsCoverageDto.ChartTermDataDto.newBuilder();
-        builder.setTerm(dto.getTerm().getName());
+        Mica.TaxonomyEntityDto termDto = dto.getTerm();
+        String title = termDto.getTitlesCount() > 0 ? termDto.getTitles(0).getValue() : "";
+        builder.setTerm(termDto.getName());
         dto.getBucketsList().forEach(bucket ->
           builder.addItems(MicaSearch.ChartsCoverageDto.ChartDataItemDto.newBuilder()
             .setValue(bucket.getHits())
             .setKey(bucket.getValue())
-            .setTitle(bucket.getTitle())
+            .setTitle(title)
           ));
 
         termItemsDto.add(builder.build());
