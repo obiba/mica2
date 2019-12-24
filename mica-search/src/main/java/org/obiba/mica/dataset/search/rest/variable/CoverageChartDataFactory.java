@@ -1,12 +1,15 @@
 package org.obiba.mica.dataset.search.rest.variable;
 
+import com.google.common.collect.Lists;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.mica.web.model.MicaSearch;
 import org.obiba.mica.web.model.MicaSearch.ChartsCoverageDto;
 
+import java.util.List;
+
 public class CoverageChartDataFactory {
 
-  public ChartsCoverageDto makeChartData(MicaSearch.TaxonomiesCoverageDto taxonomiesCoverageDto) {
+  public ChartsCoverageDto makeChartData(MicaSearch.TaxonomiesCoverageDto taxonomiesCoverageDto, boolean includeTerms) {
     ChartsCoverageDto.Builder chartsBuilder = ChartsCoverageDto.newBuilder();
     taxonomiesCoverageDto.getTaxonomiesList()
       .stream()
@@ -30,6 +33,7 @@ public class CoverageChartDataFactory {
                     .setKey(bucket.getValue())
                     .setTitle(title)
                   ));
+
             } else {
               chartDataBuilder
                 .addItems(MicaSearch.ChartsCoverageDto.ChartDataItemDto.newBuilder()
@@ -37,6 +41,10 @@ public class CoverageChartDataFactory {
                   .setKey("")
                   .setTitle(title)
                 );
+            }
+
+            if (includeTerms) {
+              chartDataBuilder.addAllTermItems(addTermData(vocabularyCoverageDto.getTermsList()));
             }
 
             chartBuilder.addData(chartDataBuilder);
@@ -48,5 +56,28 @@ public class CoverageChartDataFactory {
       });
 
     return chartsBuilder.build();
+  }
+
+  private List<ChartsCoverageDto.ChartTermDataDto> addTermData(List<MicaSearch.TermCoverageDto> termsDto) {
+    List<ChartsCoverageDto.ChartTermDataDto> termItemsDto =Lists.newArrayList();
+
+    termsDto.stream()
+      .filter(dto-> dto.getBucketsCount() > 0)
+      .forEach(dto -> {
+        ChartsCoverageDto.ChartTermDataDto.Builder builder = ChartsCoverageDto.ChartTermDataDto.newBuilder();
+        Mica.TaxonomyEntityDto termDto = dto.getTerm();
+        String title = termDto.getTitlesCount() > 0 ? termDto.getTitles(0).getValue() : "";
+        builder.setTerm(termDto.getName());
+        dto.getBucketsList().forEach(bucket ->
+          builder.addItems(MicaSearch.ChartsCoverageDto.ChartDataItemDto.newBuilder()
+            .setValue(bucket.getHits())
+            .setKey(bucket.getValue())
+            .setTitle(title)
+          ));
+
+        termItemsDto.add(builder.build());
+      });
+
+    return termItemsDto;
   }
 }
