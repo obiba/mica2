@@ -128,16 +128,16 @@ class StudyDtos {
 
     List<String> roles = micaConfigService.getConfig().getRoles();
 
-    if(study.getMemberships() != null) {
-      List<Mica.MembershipsDto> memberships = study.getMemberships().entrySet().stream()
-        .filter(e -> roles.contains(e.getKey())).map(e -> //
-          Mica.MembershipsDto.newBuilder() //
-            .setRole(e.getKey()).addAllMembers(e.getValue().stream().map(m -> //
-            personDtos.asDto(m.getPerson(), asDraft)).collect(toList())).build()) //
-        .collect(toList());
-
-      builder.addAllMemberships(memberships);
-    }
+//    if(study.getMemberships() != null) {
+//      List<Mica.MembershipsDto> memberships = study.getMemberships().entrySet().stream()
+//        .filter(e -> roles.contains(e.getKey())).map(e -> //
+//          Mica.MembershipsDto.newBuilder() //
+//            .setRole(e.getKey()).addAllMembers(e.getValue().stream().map(m -> //
+//            personDtos.asDto(m.getPerson(), asDraft)).collect(toList())).build()) //
+//        .collect(toList());
+//
+//      builder.addAllMemberships(memberships);
+//    }
 
     if(!isNullOrEmpty(study.getOpal())) builder.setOpal(study.getOpal());
 
@@ -163,12 +163,12 @@ class StudyDtos {
     if(dto.getObjectivesCount() > 0) study.setObjectives(localizedStringDtos.fromDto(dto.getObjectivesList()));
     if(dto.hasOpal()) study.setOpal(dto.getOpal());
 
-    if(dto.getMembershipsCount() > 0) {
-      Map<String, List<Membership>> memberships = Maps.newHashMap();
-      dto.getMembershipsList().forEach(e -> memberships.put(e.getRole(),
-        e.getMembersList().stream().map(p -> new Membership(personDtos.fromDto(p), e.getRole())).collect(toList())));
-      study.setMemberships(memberships);
-    }
+//    if(dto.getMembershipsCount() > 0) {
+//      Map<String, List<Membership>> memberships = Maps.newHashMap();
+//      dto.getMembershipsList().forEach(e -> memberships.put(e.getRole(),
+//        e.getMembersList().stream().map(p -> new Membership(personDtos.fromDto(p), e.getRole())).collect(toList())));
+//      study.setMemberships(memberships);
+//    }
 
     if (dto.getPopulationsCount() > 0) {
       study.setPopulations(dto.getPopulationsList().stream().map(populationDtos::fromDto)

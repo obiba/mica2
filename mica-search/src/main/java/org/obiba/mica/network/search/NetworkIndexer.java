@@ -10,8 +10,17 @@
 
 package org.obiba.mica.network.search;
 
+import com.google.common.collect.Lists;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.stream.Collectors;
 import javax.inject.Inject;
 
+import org.obiba.mica.core.domain.Membership;
+import org.obiba.mica.core.domain.Person;
+import org.obiba.mica.core.service.PersonService;
+import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.network.event.IndexNetworksEvent;
 import org.obiba.mica.network.event.NetworkDeletedEvent;
@@ -36,20 +45,26 @@ public class NetworkIndexer {
   private NetworkService networkService;
 
   @Inject
+  private PersonService personService;
+
+  @Inject
+  private MicaConfigService micaConfigService;
+
+  @Inject
   private Indexer indexer;
 
   @Async
   @Subscribe
   public void networkUpdated(NetworkUpdatedEvent event) {
     log.info("Network {} was updated", event.getPersistable());
-    indexer.index(Indexer.DRAFT_NETWORK_INDEX, event.getPersistable());
+    indexer.index(Indexer.DRAFT_NETWORK_INDEX, addMemberships(event.getPersistable()));
   }
 
   @Async
   @Subscribe
   public void networkPublished(NetworkPublishedEvent event) {
     log.info("Network {} was published", event.getPersistable());
-    indexer.index(Indexer.PUBLISHED_NETWORK_INDEX, event.getPersistable());
+    indexer.index(Indexer.PUBLISHED_NETWORK_INDEX, addMemberships(event.getPersistable()));
   }
 
   @Async
@@ -71,11 +86,34 @@ public class NetworkIndexer {
   @Subscribe
   public void reIndexNetworks(IndexNetworksEvent event) {
     log.info("Reindexing all networks");
-    reIndexAll(Indexer.PUBLISHED_NETWORK_INDEX, networkService.findAllPublishedNetworks());
-    reIndexAll(Indexer.DRAFT_NETWORK_INDEX, networkService.findAllNetworks());
+    reIndexAll(Indexer.PUBLISHED_NETWORK_INDEX, networkService.findAllPublishedNetworks().stream().map(this::addMemberships).collect(Collectors.toList()));
+    reIndexAll(Indexer.DRAFT_NETWORK_INDEX, networkService.findAllNetworks().stream().map(this::addMemberships).collect(Collectors.toList()));
   }
 
   private void reIndexAll(String indexName, Iterable<Network> networks) {
     indexer.reindexAll(indexName, networks);
+  }
+
+  private Network addMemberships(Network network) {
+    HashMap<String, List<Membership>> membershipMap = new HashMap<String, List<Membership>>();
+    micaConfigService.getConfig().getRoles().forEach(role -> membershipMap.put(role, new ArrayList<>()));
+
+    List<Person> networkMemberships = personService.getNetworkMemberships(network.getId());
+    networkMemberships.forEach(person -> {
+      person.getNetworkMemberships().stream()
+        .filter(networkMembership -> networkMembership.getParentId().equals(network.getId()))
+        .forEach(networkMembership -> {
+          Membership membership = new Membership(person, networkMembership.getRole());
+          if (!membershipMap.containsKey(networkMembership.getRole())) {
+            membershipMap.put(networkMembership.getRole(), Lists.newArrayList(membership));
+          } else {
+            membershipMap.get(networkMembership.getRole()).add(membership);
+          }
+        });
+    });
+
+    network.setMemberships(membershipMap);
+
+    return network;
   }
 }

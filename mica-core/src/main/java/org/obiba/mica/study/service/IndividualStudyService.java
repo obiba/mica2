@@ -124,8 +124,7 @@ public class IndividualStudyService extends AbstractStudyService<StudyState, Stu
     studyStateRepository.save(studyState);
     study.setLastModifiedDate(DateTime.now());
 
-    if (cascade) studyRepository.saveWithReferences(study);
-    else studyRepository.save(study);
+    studyRepository.save(study);
 
     gitService.save(study, comment);
     eventBus.post(new DraftStudyUpdatedEvent(study));

@@ -93,14 +93,14 @@ class NetworkDtos {
     Mica.NetworkDto.Builder builder = asDtoBuilderInternal(network, asDraft);
     List<String> roles = micaConfigService.getConfig().getRoles();
 
-    if(network.getMemberships() != null) {
-      List<Mica.MembershipsDto> memberships = network.getMemberships().entrySet().stream()
-        .filter(e -> roles.contains(e.getKey())).map(e -> Mica.MembershipsDto.newBuilder().setRole(e.getKey())
-          .addAllMembers(e.getValue().stream().map(m -> personDtos.asDto(m.getPerson(), asDraft)).collect(toList()))
-          .build()).collect(toList());
-
-      builder.addAllMemberships(memberships);
-    }
+//    if(network.getMemberships() != null) {
+//      List<Mica.MembershipsDto> memberships = network.getMemberships().entrySet().stream()
+//        .filter(e -> roles.contains(e.getKey())).map(e -> Mica.MembershipsDto.newBuilder().setRole(e.getKey())
+//          .addAllMembers(e.getValue().stream().map(m -> personDtos.asDto(m.getPerson(), asDraft)).collect(toList()))
+//          .build()).collect(toList());
+//
+//      builder.addAllMemberships(memberships);
+//    }
 
     List<BaseStudy> publishedStudies = publishedStudyService.findByIds(network.getStudyIds());
     Set<String> publishedStudyIds = publishedStudies.stream().map(AbstractGitPersistable::getId)
@@ -210,12 +210,12 @@ class NetworkDtos {
     network.setDescription(localizedStringDtos.fromDto(dto.getDescriptionList()));
     network.setAcronym(localizedStringDtos.fromDto(dto.getAcronymList()));
 
-    if(dto.getMembershipsCount() > 0) {
-      Map<String, List<Membership>> memberships = Maps.newHashMap();
-      dto.getMembershipsList().forEach(e -> memberships.put(e.getRole(),
-        e.getMembersList().stream().map(p -> new Membership(personDtos.fromDto(p), e.getRole())).collect(toList())));
-      network.setMemberships(memberships);
-    }
+//    if(dto.getMembershipsCount() > 0) {
+//      Map<String, List<Membership>> memberships = Maps.newHashMap();
+//      dto.getMembershipsList().forEach(e -> memberships.put(e.getRole(),
+//        e.getMembersList().stream().map(p -> new Membership(personDtos.fromDto(p), e.getRole())).collect(toList())));
+//      network.setMemberships(memberships);
+//    }
 
     if(dto.getStudyIdsCount() > 0) {
       dto.getStudyIdsList().forEach(network::addStudyId);
