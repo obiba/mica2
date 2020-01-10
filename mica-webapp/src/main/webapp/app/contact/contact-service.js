@@ -23,8 +23,8 @@ mica.contact
       'update': {method: 'PUT', params: {id: '@id'}},
       'delete': {method: 'DELETE', params: {id: '@id'}},
       'create': {url: 'ws/draft/persons', method: 'POST'},
-      'getStudyMemberships': {url: 'ws/draft/persons/study/:studyId', method: 'GET', params: {studyId: '@studyId'}},
-      'getNetworkMemberships': {url: 'ws/draft/persons/network/:networkId', method: 'GET', params: {networkId: '@networkId'}}
+      'getStudyMemberships': {url: 'ws/draft/persons/study/:studyId', method: 'GET', isArray: true, params: {studyId: '@studyId'}},
+      'getNetworkMemberships': {url: 'ws/draft/persons/network/:networkId', method: 'GET', isArray: true, params: {networkId: '@networkId'}}
     });
   }])
   .factory('ContactSerializationService', ['LocalizedValues',

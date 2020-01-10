@@ -20,41 +20,7 @@
       <div class="col-md-6">
         <h3 translate>members</h3>
 
-        <div class="table-responsive">
-          <table class="table table-bordered table-striped">
-          <tbody>
-          <tr ng-repeat="role in roles">
-            <th translate="contact.list.{{role}}"></th>
-            <td>
-              <div ng-controller="ContactController">
-                <ul ui-sortable="sortableOptions" ng-model="memberships[role]" class="list-unstyled sortable" ng-show="memberships[role].length">
-                  <li ng-repeat="person in memberships[role]">
-                    <a ng-click="viewContact(person)" title="{{'dnd-reorder' | translate}}">
-                      {{person.title}} {{person.firstName}} {{person.lastName}}
-                      {{person.academicLevel}}
-                    <span ng-show="person.institution.name">
-                      (<localized value="person.institution.name" lang="lang"></localized>)
-                    </span>
-                    </a>
-                    <div class="inline hidden-print" ng-if="inViewMode() && permissions.canEdit()">
-                      <a ng-click="editMember(study, person, role)" class="action"><i class="fa fa-pencil"></i></a>
-                      <a ng-click="deleteMember(study, person, role)" class="action"><i class="fa fa-trash-o"></i></a>
-                    </div>
-                  </li>
-                </ul>
-                <button type="button" class="btn btn-info btn-responsive btn-sm hidden-print" ng-click="addMember(study, role)" ng-if="inViewMode() && permissions.canEdit()">
-                  <i class="fa fa-plus"></i> <span translate="contact.add.{{role}}"></span>
-                </button>
-              </div>
-            </td>
-          </tr>
-          <tr ng-show="study.networks.length">
-            <th translate>networks</th>
-            <td>{{study.networks}}</td>
-          </tr>
-          </tbody>
-        </table>
-        </div>
+        <membership-management docid="study.id" doctype="STUDY" permissions="permissions"></membership-management>
       </div>
     </div>
 
