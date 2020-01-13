@@ -54,7 +54,9 @@ public class PersonService {
   }
 
   public Person save(Person person) {
-    return personRepository.save(person);
+    Person saved = personRepository.save(person);
+    eventBus.post(new PersonUpdatedEvent(saved));
+    return saved;
   }
 
   public void delete(String id) {
