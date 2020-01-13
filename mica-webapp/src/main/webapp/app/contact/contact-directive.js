@@ -192,9 +192,11 @@ angular.module('mica.contact')
         };
 
         ctrl.$onChanges = function (changesObj) {
-          var currentDocid = changesObj.docid.currentValue;
-          if (currentDocid) {
-            refresh(currentDocid);
+          if (changesObj.docid) {
+            var currentDocid = changesObj.docid.currentValue;
+            if (currentDocid) {
+              refresh(currentDocid);
+            }
           }
         };
 
