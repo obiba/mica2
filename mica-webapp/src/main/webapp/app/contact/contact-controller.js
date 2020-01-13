@@ -12,7 +12,6 @@
 
 /* global CONTACT_SCHEMA */
 /* global CONTACT_DEFINITION */
-/* global obiba */
 
 mica.contact
 

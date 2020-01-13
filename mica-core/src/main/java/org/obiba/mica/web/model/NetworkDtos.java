@@ -21,21 +21,18 @@ import javax.validation.constraints.NotNull;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import jersey.repackaged.com.google.common.collect.Lists;
 import org.obiba.mica.JSONUtils;
 import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.core.domain.AbstractGitPersistable;
-import org.obiba.mica.core.domain.Membership;
+import org.obiba.mica.core.service.PersonService;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.network.domain.NetworkState;
 import org.obiba.mica.network.service.NetworkService;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.study.domain.BaseStudy;
-import org.obiba.mica.study.domain.HarmonizationStudy;
-import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.service.PublishedDatasetVariableService;
 import org.obiba.mica.study.service.PublishedStudyService;
 import org.obiba.mica.web.model.Mica.MembershipSortOrderDto;
@@ -75,10 +72,10 @@ class NetworkDtos {
   private PublishedDatasetVariableService datasetVariableService;
 
   @Inject
-  private AttributeDtos attributeDtos;
+  private NetworkService networkService;
 
   @Inject
-  private NetworkService networkService;
+  private PersonService personService;
 
   @Inject
   private SubjectAclService subjectAclService;
@@ -127,6 +124,15 @@ class NetworkDtos {
 
     if (network.getMembershipSortOrder() != null) {
       network.getMembershipSortOrder().forEach((role, ids) -> builder.addMembershipSortOrder(MembershipSortOrderDto.newBuilder().setRole(role).addAllPersonIds(ids).build()));
+    }
+
+    if (!asDraft) {
+      List<Mica.MembershipsDto> memberships = personService.getNetworkMembershipMap(network.getId()).entrySet().stream()
+        .filter(e -> roles.contains(e.getKey())).map(e -> Mica.MembershipsDto.newBuilder().setRole(e.getKey())
+          .addAllMembers(e.getValue().stream().map(m -> personDtos.asDto(m.getPerson(), asDraft)).collect(toList()))
+          .build()).collect(toList());
+
+      builder.addAllMemberships(memberships);
     }
 
     return builder;

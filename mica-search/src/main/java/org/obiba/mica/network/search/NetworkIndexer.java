@@ -10,18 +10,14 @@
 
 package org.obiba.mica.network.search;
 
-import com.google.common.collect.Lists;
-import java.util.ArrayList;
+import com.google.common.eventbus.Subscribe;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import javax.inject.Inject;
-
 import org.obiba.mica.core.domain.Membership;
-import org.obiba.mica.core.domain.Person;
 import org.obiba.mica.core.service.PersonService;
-import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.network.event.IndexNetworksEvent;
 import org.obiba.mica.network.event.NetworkDeletedEvent;
@@ -35,8 +31,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
-import com.google.common.eventbus.Subscribe;
-
 @Component
 public class NetworkIndexer {
 
@@ -47,9 +41,6 @@ public class NetworkIndexer {
 
   @Inject
   private PersonService personService;
-
-  @Inject
-  private MicaConfigService micaConfigService;
 
   @Inject
   private Indexer indexer;
@@ -96,22 +87,7 @@ public class NetworkIndexer {
   }
 
   private Network addMemberships(Network network) {
-    HashMap<String, List<Membership>> membershipMap = new HashMap<String, List<Membership>>();
-    micaConfigService.getConfig().getRoles().forEach(role -> membershipMap.put(role, new ArrayList<>()));
-
-    List<Person> networkMemberships = personService.getNetworkMemberships(network.getId());
-    networkMemberships.forEach(person -> {
-      person.getNetworkMemberships().stream()
-        .filter(networkMembership -> networkMembership.getParentId().equals(network.getId()))
-        .forEach(networkMembership -> {
-          Membership membership = new Membership(person, networkMembership.getRole());
-          if (!membershipMap.containsKey(networkMembership.getRole())) {
-            membershipMap.put(networkMembership.getRole(), Lists.newArrayList(membership));
-          } else {
-            membershipMap.get(networkMembership.getRole()).add(membership);
-          }
-        });
-    });
+    Map<String, List<Membership>> membershipMap = personService.getNetworkMembershipMap(network.getId());
 
     membershipMap.forEach((role, people) -> {
       people.sort(new Comparator<Membership>() {

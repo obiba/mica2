@@ -21,6 +21,7 @@ import javax.validation.constraints.NotNull;
 
 import org.obiba.mica.JSONUtils;
 import org.obiba.mica.core.domain.Membership;
+import org.obiba.mica.core.service.PersonService;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.support.HarmonizedDatasetHelper;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
@@ -70,6 +71,9 @@ class StudyDtos {
 
   @Inject
   private HarmonizationStudyService harmonizationStudyService;
+
+  @Inject
+  private PersonService personService;
 
   @NotNull
   Mica.StudyDto asDto(@NotNull Study study, boolean asDraft) {
@@ -137,6 +141,17 @@ class StudyDtos {
 
     if (study.getMembershipSortOrder() != null) {
       study.getMembershipSortOrder().forEach((role, ids) -> builder.addMembershipSortOrder(MembershipSortOrderDto.newBuilder().setRole(role).addAllPersonIds(ids).build()));
+    }
+
+    if (!asDraft) {
+      if (!asDraft) {
+        List<Mica.MembershipsDto> memberships = personService.getNetworkMembershipMap(study.getId()).entrySet().stream()
+          .filter(e -> roles.contains(e.getKey())).map(e -> Mica.MembershipsDto.newBuilder().setRole(e.getKey())
+            .addAllMembers(e.getValue().stream().map(m -> personDtos.asDto(m.getPerson(), asDraft)).collect(toList()))
+            .build()).collect(toList());
+
+        builder.addAllMemberships(memberships);
+      }
     }
 
     return builder;

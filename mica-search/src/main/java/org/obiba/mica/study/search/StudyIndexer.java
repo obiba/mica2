@@ -10,31 +10,29 @@
 
 package org.obiba.mica.study.search;
 
-import com.google.common.collect.Lists;
 import com.google.common.eventbus.Subscribe;
-import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
+import javax.inject.Inject;
 import org.obiba.mica.core.domain.Membership;
-import org.obiba.mica.core.domain.Person;
 import org.obiba.mica.core.service.PersonService;
 import org.obiba.mica.dataset.service.CollectedDatasetService;
-import org.obiba.mica.micaConfig.service.MicaConfigService;
-import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.spi.search.Indexable;
 import org.obiba.mica.spi.search.Indexer;
 import org.obiba.mica.study.domain.BaseStudy;
 import org.obiba.mica.study.domain.Study;
-import org.obiba.mica.study.event.*;
+import org.obiba.mica.study.event.DraftStudyUpdatedEvent;
+import org.obiba.mica.study.event.IndexStudiesEvent;
+import org.obiba.mica.study.event.StudyDeletedEvent;
+import org.obiba.mica.study.event.StudyPublishedEvent;
+import org.obiba.mica.study.event.StudyUnpublishedEvent;
 import org.obiba.mica.study.service.StudyService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
-
-import javax.inject.Inject;
 
 @Component
 public class StudyIndexer {
@@ -49,9 +47,6 @@ public class StudyIndexer {
 
   @Inject
   private CollectedDatasetService collectedDatasetService;
-
-  @Inject
-  private MicaConfigService micaConfigService;
 
   @Inject
   private PersonService personService;
@@ -111,22 +106,7 @@ public class StudyIndexer {
   }
 
   private BaseStudy addMemberships(BaseStudy study) {
-    HashMap<String, List<Membership>> membershipMap = new HashMap<String, List<Membership>>();
-    micaConfigService.getConfig().getRoles().forEach(role -> membershipMap.put(role, new ArrayList<>()));
-
-    List<Person> studyMemberships = personService.getStudyMemberships(study.getId());
-    studyMemberships.forEach(person -> {
-      person.getStudyMemberships().stream()
-        .filter(studyMembership -> studyMembership.getParentId().equals(study.getId()))
-        .forEach(studyMembership -> {
-          Membership membership = new Membership(person, studyMembership.getRole());
-          if (!membershipMap.containsKey(studyMembership.getRole())) {
-            membershipMap.put(studyMembership.getRole(), Lists.newArrayList(membership));
-          } else {
-            membershipMap.get(studyMembership.getRole()).add(membership);
-          }
-        });
-    });
+    Map<String, List<Membership>> membershipMap = personService.getStudyMembershipMap(study.getId());
 
     membershipMap.forEach((role, people) -> {
       people.sort(new Comparator<Membership>() {
