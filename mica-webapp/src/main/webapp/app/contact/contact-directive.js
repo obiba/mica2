@@ -5,16 +5,19 @@ angular.module('mica.contact')
     bindings: {
       doctype: '@',
       docid: '<',
-      permissions: '<'
+      order: '<',
+      permissions: '<',
+      onUpdate: '&'
     },
     templateUrl: 'app/contact/views/contact-view.html',
-    controller: ['NOTIFICATION_EVENTS', 'MicaConfigResource', 'PersonResource', 'ContactSerializationService', '$rootScope', '$scope', '$translate', '$uibModal',
-      function MemberShipManagementController(NOTIFICATION_EVENTS, MicaConfigResource, PersonResource, ContactSerializationService, $rootScope, $scope, $translate, $uibModal) {
+    controller: ['NOTIFICATION_EVENTS', 'MicaConfigResource', 'PersonResource', 'ContactSerializationService', '$rootScope', '$scope', '$timeout', '$translate', '$uibModal',
+      function MemberShipManagementController(NOTIFICATION_EVENTS, MicaConfigResource, PersonResource, ContactSerializationService, $rootScope, $scope, $timeout, $translate, $uibModal) {
         var ctrl = this;
         var listenerRegistry = new obiba.utils.EventListenerRegistry();
 
         ctrl.data = [];
         ctrl.memberships = {};
+        ctrl.isOrdering = false;
 
         function initMembership(data, personMembershipsFieldName, currentDocid) {
           data.forEach(function (person) {
@@ -28,19 +31,27 @@ angular.module('mica.contact')
               }
             });
           });
+
+          if (ctrl.order) {
+            ctrl.order.forEach(function (order) {
+              ctrl.memberships[order.role].sort(function (a, b) {
+                return order.personIds.indexOf(a.id) - order.personIds.indexOf(b.id);
+              });
+            });
+          }
         }
 
         function refresh(currentDocid) {
           ctrl.data = [];
           ctrl.memberships = {};
           if (ctrl.doctype === 'STUDY') {
-            PersonResource.getStudyMemberships({studyId: currentDocid}).$promise.then(function (data) {
+            return PersonResource.getStudyMemberships({studyId: currentDocid}).$promise.then(function (data) {
               ctrl.data = data;
               initMembership(data, 'studyMemberships', currentDocid);
               return data;
             });
           } else {
-            PersonResource.getNetworkMemberships({networkId: currentDocid}).$promise.then(function (data) {
+            return PersonResource.getNetworkMemberships({networkId: currentDocid}).$promise.then(function (data) {
               ctrl.data = data;
               initMembership(data, 'networkMemberships', currentDocid);
               return data;
@@ -49,18 +60,20 @@ angular.module('mica.contact')
         }
 
         function viewPerson(person) {
-          $uibModal.open({
-            templateUrl: 'app/contact/contact-modal-view.html',
-            controller: 'ContactViewModalController',
-            resolve: {
-              micaConfig: function() {
-                return ctrl.micaConfig;
-              },
-              contact: function () {
-                return ContactSerializationService.deserialize(person);
+          if (!ctrl.isOrdering) {
+            $uibModal.open({
+              templateUrl: 'app/contact/contact-modal-view.html',
+              controller: 'ContactViewModalController',
+              resolve: {
+                micaConfig: function() {
+                  return ctrl.micaConfig;
+                },
+                contact: function () {
+                  return ContactSerializationService.deserialize(person);
+                }
               }
-            }
-          });
+            });
+          }
         }
 
         function editPerson(person, role) {
@@ -84,7 +97,9 @@ angular.module('mica.contact')
             }
           }).result.then(function (data) {
             data.$update().then(function () {
-              refresh(ctrl.docid);
+              refresh(ctrl.docid).then(function () {
+                orderUpdated();
+              });
             });
           });
         }
@@ -122,7 +137,9 @@ angular.module('mica.contact')
               }
 
               person.$update().then(function () {
-                refresh(ctrl.docid);
+                refresh(ctrl.docid).then(function () {
+                  orderUpdated();
+                });
               });
             }
           }));
@@ -174,18 +191,49 @@ angular.module('mica.contact')
             if (person.id) {
               PersonResource.update(person).$promise.then(function (data) {
                 if (data) {
-                  refresh(ctrl.docid);
+                  refresh(ctrl.docid).then(function () {
+                    orderUpdated();
+                  });
                 }
               });
             } else {
               PersonResource.create(person).$promise.then(function (data) {
                 if (data && data.id) {
-                  refresh(ctrl.docid);
+                  refresh(ctrl.docid).then(function () {
+                    orderUpdated();
+                  });
                 }
               });
             }
           });
         }
+
+        function orderUpdated() {
+          var order = [];
+          for (var role in ctrl.memberships) {
+            var people = {
+              role: role,
+              personIds: (ctrl.memberships[role] || []).map(function (item) {
+                return item.id;
+              })
+            };
+            order.push(people);
+          }
+
+          ctrl.onUpdate({newOrder: order});
+        }
+
+        ctrl.sortableOptions = {
+          start: function() {
+            ctrl.isOrdering = true;
+          },
+          stop: function () {
+            orderUpdated();
+            $timeout(function () {
+              ctrl.isOrdering = false;
+            });
+          }
+        };
 
         ctrl.$onInit = function() {
           ctrl.micaConfig = MicaConfigResource.get();

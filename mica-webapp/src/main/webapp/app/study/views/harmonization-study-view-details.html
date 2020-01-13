@@ -20,7 +20,7 @@
       <div class="col-md-6">
         <h3 translate>members</h3>
 
-        <membership-management docid="study.id" doctype="STUDY" permissions="permissions"></membership-management>
+        <membership-management docid="study.id" doctype="STUDY" order="study.membershipSortOrder" permissions="permissions" on-update="setOrder(newOrder)"></membership-management>
       </div>
     </div>
 

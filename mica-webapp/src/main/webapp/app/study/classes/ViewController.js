@@ -275,6 +275,11 @@ mica.study.ViewController = function (
     $scope.memberships = processMemberships(study);
   };
 
+  self.setOrder = function(newOrder) {
+    $scope.study.membershipSortOrder = newOrder;
+    $scope.emitStudyUpdated();
+  };
+
   $scope.$watch('studySummary', function () {
     safeUpdateStudyTimeline($scope.study);
   });

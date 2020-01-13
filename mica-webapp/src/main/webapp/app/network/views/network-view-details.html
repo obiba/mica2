@@ -166,7 +166,7 @@
     <h3 translate>members</h3>
 
     <div class="row-fluid">
-      <membership-management docid="network.id" doctype="NETWORK" permissions="permissions"></membership-management>
+      <membership-management docid="network.id" doctype="NETWORK" order="network.membershipSortOrder" permissions="permissions" on-update="setOrder(newOrder)"></membership-management>
     </div>
 
     <a ng-if="inViewMode() && (network.studyIds.length > 0 || network.networkIds.length > 0)" href

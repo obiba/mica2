@@ -419,6 +419,11 @@ mica.network
         });
       };
 
+      $scope.setOrder = function(newOrder) {
+        $scope.network.membershipSortOrder = newOrder;
+        $scope.emitNetworkUpdated();
+      };
+
       var getViewMode = function() {
         var result = /\/(revision[s\/]*|files|permissions|comments)/.exec($location.path());
 
