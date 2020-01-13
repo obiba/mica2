@@ -1,13 +1,13 @@
 <div class="table-responsive">
   <table class="table table-bordered table-striped">
     <tbody>
-      <tr ng-repeat="(role, members) in $ctrl.memberships">
+      <tr ng-repeat="role in $ctrl.micaConfig.roles">
         <th translate="contact.list.{{role}}"></th>
         <td>
           <div>
-            <ul ng-show="members.length" class="list-unstyled">
-              <li ng-repeat="person in members">
-                <a ng-click="$ctrl.view(person)">
+            <ul ui-sortable="sortableOptions" ng-model="$ctrl.memberships[role]" class="list-unstyled sortable">
+              <li ng-repeat="person in $ctrl.memberships[role]">
+                <a ng-click="$ctrl.view(person)" title="{{'dnd-reorder' | translate}}">
                   {{person.title}} {{person.firstName}} {{person.lastName}}
                   {{person.academicLevel}}
                   <span ng-show="person.institution.name">(<localized value="person.institution.name" lang="lang"></localized>)</span>
