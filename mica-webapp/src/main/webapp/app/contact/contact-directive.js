@@ -113,11 +113,11 @@ angular.module('mica.contact')
             if (contactConfirmed === person) {
               if (ctrl.doctype === 'STUDY') {
                 person.studyMemberships = person.studyMemberships.filter(function (membership) {
-                  return membership.parentId !== ctrl.docid && membership.role !== role;
+                  return membership.parentId === ctrl.docid && membership.role !== role;
                 });
               } else {
                 person.networkMemberships = person.networkMemberships.filter(function (membership) {
-                  return membership.parentId !== ctrl.docid && membership.role !== role;
+                  return membership.parentId === ctrl.docid && membership.role !== role;
                 });
               }
 
@@ -171,16 +171,14 @@ angular.module('mica.contact')
               }
             }
 
-            // TODO: timing issue
             if (person.id) {
-              PersonResource.update(person).then(function (data) {
+              PersonResource.update(person).$promise.then(function (data) {
                 if (data) {
                   refresh(ctrl.docid);
                 }
-
               });
             } else {
-              PersonResource.create(person).then(function (data) {
+              PersonResource.create(person).$promise.then(function (data) {
                 if (data && data.id) {
                   refresh(ctrl.docid);
                 }
