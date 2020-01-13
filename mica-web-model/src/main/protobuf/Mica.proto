@@ -136,6 +136,11 @@ message PopulationDto {
   }
 }
 
+message MembershipSortOrderDto {
+  required string role = 1;
+  repeated string personIds = 2;
+}
+
 message StudyDto {
   optional string id = 1;
   optional TimestampsDto timestamps = 2;
@@ -151,6 +156,7 @@ message StudyDto {
   optional string content = 30;
   optional bool published = 31;
   optional string studyResourcePath = 32;
+  repeated MembershipSortOrderDto membershipSortOrder = 33;
 
   extensions 1000 to max;
 }
@@ -254,6 +260,7 @@ message NetworkDto {
   repeated NetworkSummaryDto networkSummaries = 19;
   optional PermissionsDto permissions = 21;
   optional string content = 22;
+  repeated MembershipSortOrderDto membershipSortOrder = 23;
   extensions 1000 to max;
 }
 

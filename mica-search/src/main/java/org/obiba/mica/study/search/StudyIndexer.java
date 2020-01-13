@@ -13,6 +13,7 @@ package org.obiba.mica.study.search;
 import com.google.common.collect.Lists;
 import com.google.common.eventbus.Subscribe;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -125,6 +126,16 @@ public class StudyIndexer {
             membershipMap.get(studyMembership.getRole()).add(membership);
           }
         });
+    });
+
+    membershipMap.forEach((role, people) -> {
+      people.sort(new Comparator<Membership>() {
+        @Override
+        public int compare(Membership membership1, Membership membership2) {
+          List<String> list = study.getMembershipSortOrder().get(role);
+          return list.indexOf(membership1) - list.indexOf(membership2);
+        }
+      });
     });
 
     study.setMemberships(membershipMap);

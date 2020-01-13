@@ -12,6 +12,7 @@ package org.obiba.mica.network.search;
 
 import com.google.common.collect.Lists;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -110,6 +111,16 @@ public class NetworkIndexer {
             membershipMap.get(networkMembership.getRole()).add(membership);
           }
         });
+    });
+
+    membershipMap.forEach((role, people) -> {
+      people.sort(new Comparator<Membership>() {
+        @Override
+        public int compare(Membership membership1, Membership membership2) {
+          List<String> list = network.getMembershipSortOrder().get(role);
+          return list.indexOf(membership1) - list.indexOf(membership2);
+        }
+      });
     });
 
     network.setMemberships(membershipMap);

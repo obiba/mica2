@@ -43,6 +43,8 @@ public abstract class BaseStudy extends AbstractModelAware implements PersonAwar
 
   private LocalizedString objectives;
 
+  private Map<String, List<String>> membershipSortOrder = new HashMap<>();
+
   private Map<String, List<Membership>> memberships = new HashMap<String, List<Membership>>() {
     {
       put(Membership.CONTACT, Lists.newArrayList());
@@ -103,6 +105,14 @@ public abstract class BaseStudy extends AbstractModelAware implements PersonAwar
 
   public void setOpal(String opal) {
     this.opal = opal;
+  }
+
+  public Map<String, List<String>> getMembershipSortOrder() {
+    return membershipSortOrder;
+  }
+
+  public void setMembershipSortOrder(Map<String, List<String>> membershipSortOrder) {
+    this.membershipSortOrder = membershipSortOrder;
   }
 
   //

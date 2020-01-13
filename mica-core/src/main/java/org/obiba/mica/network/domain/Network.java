@@ -57,6 +57,8 @@ public class Network extends AbstractModelAware implements AttributeAware, Perso
 
   private boolean published = false;
 
+  private Map<String, List<String>> membershipSortOrder = new HashMap<>();
+
   private Map<String, List<Membership>> memberships = new HashMap<String, List<Membership>>() {
     {
       put(Membership.CONTACT, Lists.newArrayList());
@@ -104,6 +106,14 @@ public class Network extends AbstractModelAware implements AttributeAware, Perso
 
   public void setAcronym(LocalizedString acronym) {
     this.acronym = acronym;
+  }
+
+  public Map<String, List<String>> getMembershipSortOrder() {
+    return membershipSortOrder;
+  }
+
+  public void setMembershipSortOrder(Map<String, List<String>> membershipSortOrder) {
+    this.membershipSortOrder = membershipSortOrder;
   }
 
   /**

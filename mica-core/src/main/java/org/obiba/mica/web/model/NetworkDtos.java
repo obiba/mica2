@@ -38,6 +38,7 @@ import org.obiba.mica.study.domain.HarmonizationStudy;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.service.PublishedDatasetVariableService;
 import org.obiba.mica.study.service.PublishedStudyService;
+import org.obiba.mica.web.model.Mica.MembershipSortOrderDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -124,6 +125,9 @@ class NetworkDtos {
       }
     });
 
+    if (network.getMembershipSortOrder() != null) {
+      network.getMembershipSortOrder().forEach((role, ids) -> builder.addMembershipSortOrder(MembershipSortOrderDto.newBuilder().setRole(role).addAllPersonIds(ids).build()));
+    }
 
     return builder;
   }
@@ -216,6 +220,16 @@ class NetworkDtos {
 
     if(dto.getNetworkIdsCount() > 0) {
       network.setNetworkIds(Lists.newArrayList(Sets.newHashSet(dto.getNetworkIdsList())));
+    }
+
+    if (dto.getMembershipSortOrderCount() > 0) {
+      Map<String, List<String>> membershipSortOrder = new HashMap<>();
+
+      dto.getMembershipSortOrderList().forEach(membership -> {
+        membershipSortOrder.put(membership.getRole(), membership.getPersonIdsList());
+      });
+
+      network.setMembershipSortOrder(membershipSortOrder);
     }
 
     if (dto.hasContent() && !Strings.isNullOrEmpty(dto.getContent()))

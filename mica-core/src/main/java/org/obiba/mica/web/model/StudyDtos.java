@@ -29,6 +29,7 @@ import org.obiba.mica.study.domain.HarmonizationStudy;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.service.IndividualStudyService;
 import org.obiba.mica.study.service.HarmonizationStudyService;
+import org.obiba.mica.web.model.Mica.MembershipSortOrderDto;
 import org.springframework.stereotype.Component;
 
 import com.google.common.base.Strings;
@@ -134,6 +135,10 @@ class StudyDtos {
       study.getPopulations().forEach(population -> builder.addPopulations(populationDtos.asDto(population)));
     }
 
+    if (study.getMembershipSortOrder() != null) {
+      study.getMembershipSortOrder().forEach((role, ids) -> builder.addMembershipSortOrder(MembershipSortOrderDto.newBuilder().setRole(role).addAllPersonIds(ids).build()));
+    }
+
     return builder;
   }
 
@@ -155,6 +160,16 @@ class StudyDtos {
     if (dto.getPopulationsCount() > 0) {
       study.setPopulations(dto.getPopulationsList().stream().map(populationDtos::fromDto)
         .collect(Collectors.toCollection(TreeSet<org.obiba.mica.study.domain.Population>::new)));
+    }
+
+    if (dto.getMembershipSortOrderCount() > 0) {
+      Map<String, List<String>> membershipSortOrder = new HashMap<>();
+
+      dto.getMembershipSortOrderList().forEach(membership -> {
+        membershipSortOrder.put(membership.getRole(), membership.getPersonIdsList());
+      });
+
+      study.setMembershipSortOrder(membershipSortOrder);
     }
 
     if (dto.hasContent() && !Strings.isNullOrEmpty(dto.getContent()))
