@@ -129,9 +129,8 @@ class NetworkDtos {
 
     if (!asDraft) {
       Map<String, List<Membership>> networkMembershipMap = personService.getNetworkMembershipMap(network.getId());
-      personService.setMembershipOrder(network.getMembershipSortOrder(), networkMembershipMap);
 
-      List<Mica.MembershipsDto> memberships = networkMembershipMap
+      List<Mica.MembershipsDto> memberships = personService.setMembershipOrder(network.getMembershipSortOrder(), networkMembershipMap)
         .entrySet().stream()
         .filter(e -> roles.contains(e.getKey())).map(e -> Mica.MembershipsDto.newBuilder().setRole(e.getKey())
           .addAllMembers(e.getValue().stream().map(m -> personDtos.asDto(m.getPerson(), asDraft)).collect(toList()))
