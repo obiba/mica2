@@ -60,6 +60,8 @@ public interface Indexer {
   String ATTACHMENT_TYPE = "AttachmentState";
 
   String TAXONOMY_INDEX = "taxonomy";
+  String VOCABULARY_INDEX = "vocabulary";
+  String TERM_INDEX = "term";
   String TAXONOMY_TYPE = "Taxonomy";
   String TAXONOMY_VOCABULARY_TYPE = "Vocabulary";
   String TAXONOMY_TERM_TYPE = "Term";

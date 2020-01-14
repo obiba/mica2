@@ -18,7 +18,9 @@
     "types": {
       "string": "String",
       "integer": "Integer",
-      "decimal": "Decimal"
+      "decimal": "Decimal",
+      "keyword": "Keyword",
+      "keyword_string": "Keyword and String"
     },
     "sort-by": "Sort by",
     "read-more": "Read more",
