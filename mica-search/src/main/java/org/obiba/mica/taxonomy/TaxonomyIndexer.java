@@ -97,9 +97,9 @@ public class TaxonomyIndexer {
     taxonomies.forEach(taxo -> {
       indexer.index(Indexer.TAXONOMY_INDEX, new TaxonomyIndexable(target, taxo));
       if(taxo.hasVocabularies()) taxo.getVocabularies().forEach(voc -> {
-        indexer.index(Indexer.TAXONOMY_INDEX, new TaxonomyVocabularyIndexable(target, taxo, voc));
+        indexer.index(Indexer.VOCABULARY_INDEX, new TaxonomyVocabularyIndexable(target, taxo, voc));
         if(voc.hasTerms()) voc.getTerms().forEach(
-          term -> indexer.index(Indexer.TAXONOMY_INDEX, new TaxonomyTermIndexable(target, taxo, voc, term)));
+          term -> indexer.index(Indexer.TERM_INDEX, new TaxonomyTermIndexable(target, taxo, voc, term)));
       });
     });
   }

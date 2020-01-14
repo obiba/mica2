@@ -63,6 +63,7 @@
     "field": "memberships.investigator.person.fullName"
     "alias": "memberships-investigator-person-fullName"
     "static": "true"
+    "type": "text"
 - "name": "investigator-institution"
   "title":
     "en": "Investigator institution"
@@ -82,6 +83,7 @@
     "field": "memberships.contact.person.fullName"
     "alias": "memberships-contact-person-fullName"
     "static": "true"
+    "type": "text"
 - "name": "contact-institution"
   "title":
     "en": "Contact institution"
