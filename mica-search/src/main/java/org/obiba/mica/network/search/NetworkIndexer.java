@@ -88,16 +88,7 @@ public class NetworkIndexer {
 
   private Network addMemberships(Network network) {
     Map<String, List<Membership>> membershipMap = personService.getNetworkMembershipMap(network.getId());
-
-    membershipMap.forEach((role, people) -> {
-      people.sort(new Comparator<Membership>() {
-        @Override
-        public int compare(Membership membership1, Membership membership2) {
-          List<String> list = network.getMembershipSortOrder().get(role);
-          return list.indexOf(membership1) - list.indexOf(membership2);
-        }
-      });
-    });
+    personService.setMembershipOrder(network.getMembershipSortOrder(), membershipMap);
 
     network.setMemberships(membershipMap);
 

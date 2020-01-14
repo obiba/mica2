@@ -107,17 +107,7 @@ public class StudyIndexer {
 
   private BaseStudy addMemberships(BaseStudy study) {
     Map<String, List<Membership>> membershipMap = personService.getStudyMembershipMap(study.getId());
-
-    membershipMap.forEach((role, people) -> {
-      people.sort(new Comparator<Membership>() {
-        @Override
-        public int compare(Membership membership1, Membership membership2) {
-          List<String> list = study.getMembershipSortOrder().get(role);
-          return list.indexOf(membership1) - list.indexOf(membership2);
-        }
-      });
-    });
-
+    personService.setMembershipOrder(study.getMembershipSortOrder(), membershipMap);
     study.setMemberships(membershipMap);
 
     return study;

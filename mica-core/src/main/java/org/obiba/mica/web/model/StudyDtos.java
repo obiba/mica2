@@ -144,14 +144,15 @@ class StudyDtos {
     }
 
     if (!asDraft) {
-      if (!asDraft) {
-        List<Mica.MembershipsDto> memberships = personService.getNetworkMembershipMap(study.getId()).entrySet().stream()
-          .filter(e -> roles.contains(e.getKey())).map(e -> Mica.MembershipsDto.newBuilder().setRole(e.getKey())
-            .addAllMembers(e.getValue().stream().map(m -> personDtos.asDto(m.getPerson(), asDraft)).collect(toList()))
-            .build()).collect(toList());
+      Map<String, List<Membership>> studyMembershipMap = personService.getStudyMembershipMap(study.getId());
+      personService.setMembershipOrder(study.getMembershipSortOrder(), studyMembershipMap);
 
-        builder.addAllMemberships(memberships);
-      }
+      List<Mica.MembershipsDto> memberships = studyMembershipMap.entrySet().stream()
+        .filter(e -> roles.contains(e.getKey())).map(e -> Mica.MembershipsDto.newBuilder().setRole(e.getKey())
+          .addAllMembers(e.getValue().stream().map(m -> personDtos.asDto(m.getPerson(), asDraft)).collect(toList()))
+          .build()).collect(toList());
+
+      builder.addAllMemberships(memberships);
     }
 
     return builder;

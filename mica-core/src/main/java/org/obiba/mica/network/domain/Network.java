@@ -109,6 +109,7 @@ public class Network extends AbstractModelAware implements AttributeAware, Perso
   }
 
   public Map<String, List<String>> getMembershipSortOrder() {
+    if (membershipSortOrder == null) return new HashMap<>();
     return membershipSortOrder;
   }
 

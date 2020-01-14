@@ -26,6 +26,7 @@ import jersey.repackaged.com.google.common.collect.Lists;
 import org.obiba.mica.JSONUtils;
 import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.core.domain.AbstractGitPersistable;
+import org.obiba.mica.core.domain.Membership;
 import org.obiba.mica.core.service.PersonService;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.network.domain.Network;
@@ -127,7 +128,11 @@ class NetworkDtos {
     }
 
     if (!asDraft) {
-      List<Mica.MembershipsDto> memberships = personService.getNetworkMembershipMap(network.getId()).entrySet().stream()
+      Map<String, List<Membership>> networkMembershipMap = personService.getNetworkMembershipMap(network.getId());
+      personService.setMembershipOrder(network.getMembershipSortOrder(), networkMembershipMap);
+
+      List<Mica.MembershipsDto> memberships = networkMembershipMap
+        .entrySet().stream()
         .filter(e -> roles.contains(e.getKey())).map(e -> Mica.MembershipsDto.newBuilder().setRole(e.getKey())
           .addAllMembers(e.getValue().stream().map(m -> personDtos.asDto(m.getPerson(), asDraft)).collect(toList()))
           .build()).collect(toList());

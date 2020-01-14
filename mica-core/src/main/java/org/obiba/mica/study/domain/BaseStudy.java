@@ -108,6 +108,7 @@ public abstract class BaseStudy extends AbstractModelAware implements PersonAwar
   }
 
   public Map<String, List<String>> getMembershipSortOrder() {
+    if (membershipSortOrder == null) return new HashMap<>();
     return membershipSortOrder;
   }
 

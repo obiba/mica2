@@ -11,6 +11,7 @@
 package org.obiba.mica.core.service;
 
 import com.google.common.collect.Lists;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -105,6 +106,19 @@ public class PersonService {
     });
 
     return membershipMap;
+  }
+
+  public void setMembershipOrder(Map<String, List<String>> membershipSortOrder, Map<String, List<Membership>> membershipMap) {
+    membershipMap.forEach((role, people) -> {
+      people.sort(new Comparator<Membership>() {
+        @Override
+        public int compare(Membership membership1, Membership membership2) {
+          List<String> list = membershipSortOrder.get(role);
+          if (list == null) return 0;
+          return list.indexOf(membership1) - list.indexOf(membership2);
+        }
+      });
+    });
   }
 
   @Async
