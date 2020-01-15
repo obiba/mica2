@@ -106,11 +106,6 @@ public class IndividualStudyService extends AbstractStudyService<StudyState, Stu
       study.getLogo().setJustUploaded(false);
     }
 
-    ImmutableSet<String> invalidRoles = ImmutableSet
-        .copyOf(Sets.difference(study.membershipRoles(), Sets.newHashSet(micaConfigService.getConfig().getRoles())));
-
-    invalidRoles.forEach(study::removeRole);
-
     StudyState studyState = findEntityState(study, StudyState::new);
 
     if (!study.isNew()) ensureGitRepository(studyState);
@@ -124,8 +119,7 @@ public class IndividualStudyService extends AbstractStudyService<StudyState, Stu
     studyStateRepository.save(studyState);
     study.setLastModifiedDate(DateTime.now());
 
-    if (cascade) studyRepository.saveWithReferences(study);
-    else studyRepository.save(study);
+    studyRepository.save(study);
 
     gitService.save(study, comment);
     eventBus.post(new DraftStudyUpdatedEvent(study));

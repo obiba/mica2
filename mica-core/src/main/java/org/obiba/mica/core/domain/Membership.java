@@ -12,15 +12,12 @@ package org.obiba.mica.core.domain;
 
 import java.io.Serializable;
 
-import org.springframework.data.mongodb.core.mapping.DBRef;
-
 public class Membership implements Serializable {
 
   public final static String INVESTIGATOR = "investigator";
 
   public final static String CONTACT = "contact";
 
-  @DBRef
   private Person person;
 
   private String role;

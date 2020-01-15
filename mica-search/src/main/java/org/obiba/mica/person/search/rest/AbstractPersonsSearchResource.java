@@ -59,8 +59,7 @@ public abstract class AbstractPersonsSearchResource {
 
     PublishedDocumentService.Documents<Person> contacts = esPersonService.find(from, limit, sort, order, null, query);
 
-    List<Mica.PersonDto> persons = contacts.getList().stream().map(p -> dtos.asDto(p, isDraft()))
-      .filter(p -> p.getStudyMembershipsCount() > 0 || p.getNetworkMembershipsCount() > 0).collect(Collectors.toList());
+    List<Mica.PersonDto> persons = contacts.getList().stream().map(p -> dtos.asDto(p, isDraft())).collect(Collectors.toList());
 
     Mica.PersonsDto.Builder builder = Mica.PersonsDto.newBuilder().setFrom(from).setLimit(limit)
       .setTotal(persons.size());

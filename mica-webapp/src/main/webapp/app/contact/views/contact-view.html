@@ -1,0 +1,29 @@
+<div class="table-responsive">
+  <table class="table table-bordered table-striped">
+    <tbody>
+      <tr ng-repeat="role in $ctrl.micaConfig.roles">
+        <th translate="contact.list.{{role}}"></th>
+        <td>
+          <div>
+            <ul ui-sortable="$ctrl.sortableOptions" ng-model="$ctrl.memberships[role]" class="list-unstyled sortable">
+              <li ng-repeat="person in $ctrl.memberships[role]">
+                <a ng-click="$ctrl.view(person)" title="{{'dnd-reorder' | translate}}">
+                  {{person.title}} {{person.firstName}} {{person.lastName}}
+                  {{person.academicLevel}}
+                  <span ng-show="person.institution.name">(<localized value="person.institution.name" lang="lang"></localized> )</span>
+                </a>
+                <div class="inline hidden-print" ng-if="$ctrl.permissions.canEdit()">
+                  <a ng-click="$ctrl.edit(person, role)" class="action"><i class="fa fa-pencil"></i></a>
+                  <a ng-click="$ctrl.remove(person, role)" class="action"><i class="fa fa-trash-o"></i></a>
+                </div>
+              </li>
+            </ul>
+            <button type="button" class="btn btn-info btn-responsive btn-sm hidden-print" ng-click="$ctrl.add(role)" ng-if="$ctrl.permissions.canEdit()">
+              <i class="fa fa-plus"></i> <span translate="contact.add.{{role}}"></span>
+            </button>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

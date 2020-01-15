@@ -149,8 +149,7 @@ public class NetworkService extends AbstractGitPersistableService<NetworkState, 
 
     saved.setLastModifiedDate(DateTime.now());
 
-    if(cascade) networkRepository.saveWithReferences(saved);
-    else networkRepository.save(saved);
+    networkRepository.save(saved);
 
     eventBus.post(new NetworkUpdatedEvent(saved));
     gitService.save(saved, comment);
@@ -287,7 +286,7 @@ public class NetworkService extends AbstractGitPersistableService<NetworkState, 
   public void delete(@NotNull String id) throws NoSuchNetworkException {
     Network network = findById(id);
     checkConstraints(network);
-    networkRepository.deleteWithReferences(network);
+    networkRepository.delete(network);
 
     if (network.getLogo() != null) fileStoreService.delete(network.getLogo().getId());
 

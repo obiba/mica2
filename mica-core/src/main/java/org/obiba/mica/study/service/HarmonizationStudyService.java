@@ -108,8 +108,7 @@ public class HarmonizationStudyService extends AbstractStudyService<Harmonizatio
 
     study.setLastModifiedDate(DateTime.now());
 
-    if (cascade) harmonizationStudyRepository.saveWithReferences(study);
-    else harmonizationStudyRepository.save(study);
+    harmonizationStudyRepository.save(study);
 
     gitService.save(study, comment);
     eventBus.post(new DraftStudyUpdatedEvent(study));
