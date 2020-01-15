@@ -23,7 +23,7 @@ final public class AggregationHelper {
   public static final String TYPE = PROPERTIES + FIELD_SEPARATOR + "type";
 
   public static final String NAME_SEPARATOR = "-";
-  public static final String AGG_TERMS = "terms";
+  public static final String AGG_TERMS = "sterms";
   public static final String AGG_STATS = "stats";
   public static final String AGG_RANGE = "range";
   public static final String UND_LOCALE = Locale.forLanguageTag("und").toLanguageTag();

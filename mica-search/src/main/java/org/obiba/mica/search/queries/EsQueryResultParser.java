@@ -58,6 +58,7 @@ public class EsQueryResultParser {
                 StatsAggregationResultDto.newBuilder().setData(buildStatsDto(stats)).build());
           }
           break;
+        case "sterms":
         case "terms":
           aggregation.asTerms().getBuckets().forEach(bucket -> {
             TermsAggregationResultDto.Builder termsBuilder = TermsAggregationResultDto.newBuilder();

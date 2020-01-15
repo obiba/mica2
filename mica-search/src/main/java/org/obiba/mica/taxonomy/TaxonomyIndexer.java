@@ -58,8 +58,12 @@ public class TaxonomyIndexer {
   public void taxonomiesUpdated(TaxonomiesUpdatedEvent event) {
     // reindex all taxonomies if target is TAXONOMY or there is no target
     if ((event.getTaxonomyTarget() == null && event.getTaxonomyName() == null) || event.getTaxonomyTarget() == TaxonomyTarget.TAXONOMY) {
+
       log.info("All taxonomies were updated");
       if(indexer.hasIndex(Indexer.TAXONOMY_INDEX)) indexer.dropIndex(Indexer.TAXONOMY_INDEX);
+      if(indexer.hasIndex(Indexer.VOCABULARY_INDEX)) indexer.dropIndex(Indexer.VOCABULARY_INDEX);
+      if(indexer.hasIndex(Indexer.TERM_INDEX)) indexer.dropIndex(Indexer.TERM_INDEX);
+
       index(TaxonomyTarget.VARIABLE,
         ImmutableList.<Taxonomy>builder().addAll(taxonomyService.getOpalTaxonomies().stream() //
           .filter(t -> taxonomyService.metaTaxonomyContains(t.getName())).collect(Collectors.toList())) //
@@ -69,26 +73,35 @@ public class TaxonomyIndexer {
       index(TaxonomyTarget.DATASET, Lists.newArrayList(taxonomyService.getDatasetTaxonomy()));
       index(TaxonomyTarget.NETWORK, Lists.newArrayList(taxonomyService.getNetworkTaxonomy()));
     } else {
+      indexer.delete(Indexer.TAXONOMY_INDEX, new String[] {}, ImmutablePair.of("name", event.getTaxonomyName()));
       Map.Entry<String, String> termQuery = ImmutablePair.of("taxonomyName", event.getTaxonomyName());
-      indexer.delete(Indexer.TAXONOMY_INDEX, new String[] {Indexer.TAXONOMY_TYPE, Indexer.TAXONOMY_VOCABULARY_TYPE, Indexer.TAXONOMY_TERM_TYPE}, termQuery);
+      indexer.delete(Indexer.VOCABULARY_INDEX, new String[] {}, termQuery);
+      indexer.delete(Indexer.TERM_INDEX, new String[] {}, termQuery);
 
-      switch (event.getTaxonomyTarget()) {
+      Taxonomy taxonomy = null;
+      TaxonomyTarget taxonomyTarget = event.getTaxonomyTarget();
+
+      switch (taxonomyTarget) {
         case STUDY:
           log.info("Study taxonomies were updated");
-          index(TaxonomyTarget.STUDY, Lists.newArrayList(taxonomyService.getStudyTaxonomy()));
+          taxonomy = taxonomyService.getStudyTaxonomy();
           break;
         case NETWORK:
           log.info("Network taxonomies were updated");
-          index(TaxonomyTarget.NETWORK, Lists.newArrayList(taxonomyService.getNetworkTaxonomy()));
+          taxonomy = taxonomyService.getNetworkTaxonomy();
           break;
         case DATASET:
           log.info("Dataset taxonomies were updated");
-          index(TaxonomyTarget.DATASET, Lists.newArrayList(taxonomyService.getDatasetTaxonomy()));
+          taxonomy = taxonomyService.getDatasetTaxonomy();
           break;
         case VARIABLE:
           log.info("Variable taxonomies were updated");
-          index(TaxonomyTarget.VARIABLE, Lists.newArrayList(taxonomyService.getVariableTaxonomy()));
+          taxonomy = taxonomyService.getVariableTaxonomy();
           break;
+      }
+
+      if (taxonomy != null) {
+        index(taxonomyTarget, Lists.newArrayList(taxonomy));
       }
     }
   }

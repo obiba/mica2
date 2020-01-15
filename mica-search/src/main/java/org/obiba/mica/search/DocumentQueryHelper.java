@@ -27,7 +27,7 @@ public final class DocumentQueryHelper {
 
   public static DocumentQueryJoinKeys processStudyJoinKey(Searcher.DocumentResults results) {
     DocumentQueryJoinKeys joinKeys = new DocumentQueryJoinKeys();
-    results.getAggregations().stream().filter(agg -> agg.getType().equals("terms"))
+    results.getAggregations().stream().filter(agg -> agg.getType().equals("sterms"))
         .forEach(aggregation -> aggregation.asTerms().getBuckets().forEach(bucket -> {
           if (bucket.getDocCount() > 0) {
             joinKeys.studyIds.add(bucket.getKeyAsString());
@@ -39,7 +39,7 @@ public final class DocumentQueryHelper {
 
   public static DocumentQueryJoinKeys processDatasetJoinKeys(Searcher.DocumentResults results, String datasetId, DocumentQueryIdProvider idProvider) {
     DocumentQueryJoinKeys joinKeys = new DocumentQueryJoinKeys();
-    results.getAggregations().stream().filter(agg -> agg.getType().equals("terms"))
+    results.getAggregations().stream().filter(agg -> agg.getType().equals("sterms"))
         .forEach(
             aggregation -> aggregation.asTerms().getBuckets().forEach(
                 bucket -> {

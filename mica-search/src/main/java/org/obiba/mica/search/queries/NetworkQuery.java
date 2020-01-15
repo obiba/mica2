@@ -175,7 +175,7 @@ public class NetworkQuery extends AbstractDocumentQuery {
 
     try {
       Searcher.DocumentResults results = searcher.cover(getSearchIndex(), getSearchType(), getQuery(), props, subAggregations, null);
-      results.getAggregations().stream().filter(agg -> "terms".equals(agg.getType()))
+      results.getAggregations().stream().filter(agg -> "sterms".equals(agg.getType()))
           .forEach(
               aggregation -> aggregation.asTerms().getBuckets().stream().filter(bucket -> bucket.getDocCount() > 0)
                   .forEach(bucket -> map.put(bucket.getKeyAsString(), getStudyCounts(bucket.getAggregations()))));
@@ -187,7 +187,7 @@ public class NetworkQuery extends AbstractDocumentQuery {
 
   private List<String> getStudyCounts(List<Searcher.DocumentAggregation> aggregations) {
     List<String> list = Lists.newArrayList();
-    aggregations.stream().filter(agg -> "terms".equals(agg.getType()))
+    aggregations.stream().filter(agg -> "sterms".equals(agg.getType()))
         .forEach(
             aggregation -> aggregation.asTerms().getBuckets().stream().filter(bucket -> bucket.getDocCount() > 0)
                 .forEach(bucket -> list.add(bucket.getKeyAsString())));
