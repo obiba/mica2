@@ -21,23 +21,22 @@ import javax.validation.constraints.NotNull;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import jersey.repackaged.com.google.common.collect.Lists;
 import org.obiba.mica.JSONUtils;
 import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.core.domain.AbstractGitPersistable;
 import org.obiba.mica.core.domain.Membership;
+import org.obiba.mica.core.service.PersonService;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.network.domain.NetworkState;
 import org.obiba.mica.network.service.NetworkService;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.study.domain.BaseStudy;
-import org.obiba.mica.study.domain.HarmonizationStudy;
-import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.service.PublishedDatasetVariableService;
 import org.obiba.mica.study.service.PublishedStudyService;
+import org.obiba.mica.web.model.Mica.MembershipSortOrderDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -74,10 +73,10 @@ class NetworkDtos {
   private PublishedDatasetVariableService datasetVariableService;
 
   @Inject
-  private AttributeDtos attributeDtos;
+  private NetworkService networkService;
 
   @Inject
-  private NetworkService networkService;
+  private PersonService personService;
 
   @Inject
   private SubjectAclService subjectAclService;
@@ -92,15 +91,6 @@ class NetworkDtos {
   Mica.NetworkDto.Builder asDtoBuilder(@NotNull Network network, boolean asDraft) {
     Mica.NetworkDto.Builder builder = asDtoBuilderInternal(network, asDraft);
     List<String> roles = micaConfigService.getConfig().getRoles();
-
-    if(network.getMemberships() != null) {
-      List<Mica.MembershipsDto> memberships = network.getMemberships().entrySet().stream()
-        .filter(e -> roles.contains(e.getKey())).map(e -> Mica.MembershipsDto.newBuilder().setRole(e.getKey())
-          .addAllMembers(e.getValue().stream().map(m -> personDtos.asDto(m.getPerson(), asDraft)).collect(toList()))
-          .build()).collect(toList());
-
-      builder.addAllMemberships(memberships);
-    }
 
     List<BaseStudy> publishedStudies = publishedStudyService.findByIds(network.getStudyIds());
     Set<String> publishedStudyIds = publishedStudies.stream().map(AbstractGitPersistable::getId)
@@ -133,6 +123,21 @@ class NetworkDtos {
       }
     });
 
+    if (network.getMembershipSortOrder() != null) {
+      network.getMembershipSortOrder().forEach((role, ids) -> builder.addMembershipSortOrder(MembershipSortOrderDto.newBuilder().setRole(role).addAllPersonIds(ids).build()));
+    }
+
+    if (!asDraft) {
+      Map<String, List<Membership>> networkMembershipMap = personService.getNetworkMembershipMap(network.getId());
+
+      List<Mica.MembershipsDto> memberships = personService.setMembershipOrder(network.getMembershipSortOrder(), networkMembershipMap)
+        .entrySet().stream()
+        .filter(e -> roles.contains(e.getKey())).map(e -> Mica.MembershipsDto.newBuilder().setRole(e.getKey())
+          .addAllMembers(e.getValue().stream().map(m -> personDtos.asDto(m.getPerson(), asDraft)).collect(toList()))
+          .build()).collect(toList());
+
+      builder.addAllMemberships(memberships);
+    }
 
     return builder;
   }
@@ -210,13 +215,6 @@ class NetworkDtos {
     network.setDescription(localizedStringDtos.fromDto(dto.getDescriptionList()));
     network.setAcronym(localizedStringDtos.fromDto(dto.getAcronymList()));
 
-    if(dto.getMembershipsCount() > 0) {
-      Map<String, List<Membership>> memberships = Maps.newHashMap();
-      dto.getMembershipsList().forEach(e -> memberships.put(e.getRole(),
-        e.getMembersList().stream().map(p -> new Membership(personDtos.fromDto(p), e.getRole())).collect(toList())));
-      network.setMemberships(memberships);
-    }
-
     if(dto.getStudyIdsCount() > 0) {
       dto.getStudyIdsList().forEach(network::addStudyId);
     }
@@ -232,6 +230,16 @@ class NetworkDtos {
 
     if(dto.getNetworkIdsCount() > 0) {
       network.setNetworkIds(Lists.newArrayList(Sets.newHashSet(dto.getNetworkIdsList())));
+    }
+
+    if (dto.getMembershipSortOrderCount() > 0) {
+      Map<String, List<String>> membershipSortOrder = new HashMap<>();
+
+      dto.getMembershipSortOrderList().forEach(membership -> {
+        membershipSortOrder.put(membership.getRole(), membership.getPersonIdsList());
+      });
+
+      network.setMembershipSortOrder(membershipSortOrder);
     }
 
     if (dto.hasContent() && !Strings.isNullOrEmpty(dto.getContent()))

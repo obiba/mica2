@@ -21,6 +21,7 @@ import javax.validation.constraints.NotNull;
 
 import org.obiba.mica.JSONUtils;
 import org.obiba.mica.core.domain.Membership;
+import org.obiba.mica.core.service.PersonService;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.support.HarmonizedDatasetHelper;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
@@ -29,6 +30,7 @@ import org.obiba.mica.study.domain.HarmonizationStudy;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.service.IndividualStudyService;
 import org.obiba.mica.study.service.HarmonizationStudyService;
+import org.obiba.mica.web.model.Mica.MembershipSortOrderDto;
 import org.springframework.stereotype.Component;
 
 import com.google.common.base.Strings;
@@ -69,6 +71,9 @@ class StudyDtos {
 
   @Inject
   private HarmonizationStudyService harmonizationStudyService;
+
+  @Inject
+  private PersonService personService;
 
   @NotNull
   Mica.StudyDto asDto(@NotNull Study study, boolean asDraft) {
@@ -128,21 +133,25 @@ class StudyDtos {
 
     List<String> roles = micaConfigService.getConfig().getRoles();
 
-    if(study.getMemberships() != null) {
-      List<Mica.MembershipsDto> memberships = study.getMemberships().entrySet().stream()
-        .filter(e -> roles.contains(e.getKey())).map(e -> //
-          Mica.MembershipsDto.newBuilder() //
-            .setRole(e.getKey()).addAllMembers(e.getValue().stream().map(m -> //
-            personDtos.asDto(m.getPerson(), asDraft)).collect(toList())).build()) //
-        .collect(toList());
-
-      builder.addAllMemberships(memberships);
-    }
-
     if(!isNullOrEmpty(study.getOpal())) builder.setOpal(study.getOpal());
 
     if(study.getPopulations() != null) {
       study.getPopulations().forEach(population -> builder.addPopulations(populationDtos.asDto(population)));
+    }
+
+    if (study.getMembershipSortOrder() != null) {
+      study.getMembershipSortOrder().forEach((role, ids) -> builder.addMembershipSortOrder(MembershipSortOrderDto.newBuilder().setRole(role).addAllPersonIds(ids).build()));
+    }
+
+    if (!asDraft) {
+      Map<String, List<Membership>> studyMembershipMap = personService.getStudyMembershipMap(study.getId());
+
+      List<Mica.MembershipsDto> memberships = personService.setMembershipOrder(study.getMembershipSortOrder(), studyMembershipMap).entrySet().stream()
+        .filter(e -> roles.contains(e.getKey())).map(e -> Mica.MembershipsDto.newBuilder().setRole(e.getKey())
+          .addAllMembers(e.getValue().stream().map(m -> personDtos.asDto(m.getPerson(), asDraft)).collect(toList()))
+          .build()).collect(toList());
+
+      builder.addAllMemberships(memberships);
     }
 
     return builder;
@@ -163,16 +172,19 @@ class StudyDtos {
     if(dto.getObjectivesCount() > 0) study.setObjectives(localizedStringDtos.fromDto(dto.getObjectivesList()));
     if(dto.hasOpal()) study.setOpal(dto.getOpal());
 
-    if(dto.getMembershipsCount() > 0) {
-      Map<String, List<Membership>> memberships = Maps.newHashMap();
-      dto.getMembershipsList().forEach(e -> memberships.put(e.getRole(),
-        e.getMembersList().stream().map(p -> new Membership(personDtos.fromDto(p), e.getRole())).collect(toList())));
-      study.setMemberships(memberships);
-    }
-
     if (dto.getPopulationsCount() > 0) {
       study.setPopulations(dto.getPopulationsList().stream().map(populationDtos::fromDto)
         .collect(Collectors.toCollection(TreeSet<org.obiba.mica.study.domain.Population>::new)));
+    }
+
+    if (dto.getMembershipSortOrderCount() > 0) {
+      Map<String, List<String>> membershipSortOrder = new HashMap<>();
+
+      dto.getMembershipSortOrderList().forEach(membership -> {
+        membershipSortOrder.put(membership.getRole(), membership.getPersonIdsList());
+      });
+
+      study.setMembershipSortOrder(membershipSortOrder);
     }
 
     if (dto.hasContent() && !Strings.isNullOrEmpty(dto.getContent()))

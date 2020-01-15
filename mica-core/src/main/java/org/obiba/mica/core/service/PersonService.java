@@ -10,11 +10,17 @@
 
 package org.obiba.mica.core.service;
 
+import com.google.common.collect.Lists;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.inject.Inject;
 
 import org.obiba.mica.contact.event.PersonUpdatedEvent;
+import org.obiba.mica.core.domain.Membership;
 import org.obiba.mica.core.domain.Person;
 import org.obiba.mica.core.repository.PersonRepository;
 import org.obiba.mica.micaConfig.event.MicaConfigUpdatedEvent;
@@ -42,6 +48,79 @@ public class PersonService {
 
   public Person findById(String id) {
     return personRepository.findOne(id);
+  }
+
+  public List<Person> getStudyMemberships(String studyId) {
+    return personRepository.findByStudyMemberships(studyId);
+  }
+
+  public List<Person> getNetworkMemberships(String networkId) {
+    return personRepository.findByNetworkMemberships(networkId);
+  }
+
+  public Person save(Person person) {
+    Person saved = personRepository.save(person);
+    eventBus.post(new PersonUpdatedEvent(saved));
+    return saved;
+  }
+
+  public void delete(String id) {
+    personRepository.delete(id);
+  }
+
+  public Map<String, List<Membership>> getStudyMembershipMap(String studyId) {
+    Map<String, List<Membership>> membershipMap = new HashMap<String, List<Membership>>();
+
+    List<Person> studyMemberships = getStudyMemberships(studyId);
+    studyMemberships.forEach(person -> {
+      person.getStudyMemberships().stream()
+        .filter(studyMembership -> studyMembership.getParentId().equals(studyId))
+        .forEach(studyMembership -> {
+          Membership membership = new Membership(person, studyMembership.getRole());
+          if (!membershipMap.containsKey(studyMembership.getRole())) {
+            membershipMap.put(studyMembership.getRole(), Lists.newArrayList(membership));
+          } else {
+            membershipMap.get(studyMembership.getRole()).add(membership);
+          }
+        });
+    });
+
+    return membershipMap;
+  }
+
+  public Map<String, List<Membership>> getNetworkMembershipMap(String networkId) {
+    Map<String, List<Membership>> membershipMap = new HashMap<String, List<Membership>>();
+
+    List<Person> studyMemberships = getNetworkMemberships(networkId);
+    studyMemberships.forEach(person -> {
+      person.getNetworkMemberships().stream()
+        .filter(networkMembership -> networkMembership.getParentId().equals(networkId))
+        .forEach(networkMembership -> {
+          Membership membership = new Membership(person, networkMembership.getRole());
+          if (!membershipMap.containsKey(networkMembership.getRole())) {
+            membershipMap.put(networkMembership.getRole(), Lists.newArrayList(membership));
+          } else {
+            membershipMap.get(networkMembership.getRole()).add(membership);
+          }
+        });
+    });
+
+    return membershipMap;
+  }
+
+  public Map<String, List<Membership>> setMembershipOrder(Map<String, List<String>> membershipSortOrder, Map<String, List<Membership>> membershipMap) {
+    membershipMap.forEach((role, people) -> {
+      people.sort(new Comparator<Membership>() {
+        @Override
+        public int compare(Membership membership1, Membership membership2) {
+          List<String> list = membershipSortOrder.get(role);
+          if (list == null) return 0;
+          return list.indexOf(membership1.getPerson().getId()) - list.indexOf(membership2.getPerson().getId());
+        }
+      });
+    });
+
+    return membershipMap;
   }
 
   @Async

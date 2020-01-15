@@ -10,8 +10,14 @@
 
 package org.obiba.mica.network.search;
 
+import com.google.common.eventbus.Subscribe;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import javax.inject.Inject;
-
+import org.obiba.mica.core.domain.Membership;
+import org.obiba.mica.core.service.PersonService;
 import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.network.event.IndexNetworksEvent;
 import org.obiba.mica.network.event.NetworkDeletedEvent;
@@ -25,8 +31,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
-import com.google.common.eventbus.Subscribe;
-
 @Component
 public class NetworkIndexer {
 
@@ -36,20 +40,23 @@ public class NetworkIndexer {
   private NetworkService networkService;
 
   @Inject
+  private PersonService personService;
+
+  @Inject
   private Indexer indexer;
 
   @Async
   @Subscribe
   public void networkUpdated(NetworkUpdatedEvent event) {
     log.info("Network {} was updated", event.getPersistable());
-    indexer.index(Indexer.DRAFT_NETWORK_INDEX, event.getPersistable());
+    indexer.index(Indexer.DRAFT_NETWORK_INDEX, addMemberships(event.getPersistable()));
   }
 
   @Async
   @Subscribe
   public void networkPublished(NetworkPublishedEvent event) {
     log.info("Network {} was published", event.getPersistable());
-    indexer.index(Indexer.PUBLISHED_NETWORK_INDEX, event.getPersistable());
+    indexer.index(Indexer.PUBLISHED_NETWORK_INDEX, addMemberships(event.getPersistable()));
   }
 
   @Async
@@ -71,11 +78,20 @@ public class NetworkIndexer {
   @Subscribe
   public void reIndexNetworks(IndexNetworksEvent event) {
     log.info("Reindexing all networks");
-    reIndexAll(Indexer.PUBLISHED_NETWORK_INDEX, networkService.findAllPublishedNetworks());
-    reIndexAll(Indexer.DRAFT_NETWORK_INDEX, networkService.findAllNetworks());
+    reIndexAll(Indexer.PUBLISHED_NETWORK_INDEX, networkService.findAllPublishedNetworks().stream().map(this::addMemberships).collect(Collectors.toList()));
+    reIndexAll(Indexer.DRAFT_NETWORK_INDEX, networkService.findAllNetworks().stream().map(this::addMemberships).collect(Collectors.toList()));
   }
 
   private void reIndexAll(String indexName, Iterable<Network> networks) {
     indexer.reindexAll(indexName, networks);
+  }
+
+  private Network addMemberships(Network network) {
+    Map<String, List<Membership>> membershipMap = personService.getNetworkMembershipMap(network.getId());
+    personService.setMembershipOrder(network.getMembershipSortOrder(), membershipMap);
+
+    network.setMemberships(membershipMap);
+
+    return network;
   }
 }

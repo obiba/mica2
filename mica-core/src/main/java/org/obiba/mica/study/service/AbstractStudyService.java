@@ -133,7 +133,7 @@ public abstract class AbstractStudyService<S extends EntityState, T extends Base
 
     fileSystemService.delete(FileUtils.getEntityPath(study));
     getEntityStateRepository().delete(id);
-    ((DBRefAwareRepository<T>)getRepository()).deleteWithReferences(study);
+    getRepository().delete(study);
     gitService.deleteGitRepository(study);
     eventBus.post(new StudyDeletedEvent(study));
   }
