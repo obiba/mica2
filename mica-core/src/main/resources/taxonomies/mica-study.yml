@@ -190,43 +190,62 @@
       "title":
         "en": "Before 1950"
         "fr": "Avant 1950"
-      "description": {}
+      "description":
+        "en": "Before 1950"
+        "fr": "Avant 1950"
       "keywords": {}
     - "name": "1950:1960"
       "title":
-        "en": "1950 to 1960"
-        "fr": "1950 à 1960"
-      "description": {}
+        "en": "1950 to 1959"
+        "fr": "1950 à 1959"
+      "description":
+        "en": "1950 to 1959"
+        "fr": "1950 à 1959"
       "keywords": {}
     - "name": "1960:1970"
       "title":
-        "en": "1960 to 1970"
-        "fr": "1960 à 1970"
-      "description": {}
+        "en": "1960 to 1969"
+        "fr": "1960 à 1969"
+      "description":
+        "en": "1960 to 1969"
+        "fr": "1960 à 1969"
       "keywords": {}
     - "name": "1970:1980"
       "title":
-        "en": "1970 to 1980"
-        "fr": "1970 à 1980"
-      "description": {}
+        "en": "1970 to 1979"
+        "fr": "1970 à 1979"
+      "description":
+        "en": "1970 to 1979"
+        "fr": "1970 à 1979"
       "keywords": {}
     - "name": "1980:1990"
       "title":
-        "en": "1980 to 1990"
-        "fr": "1980 à 1990"
+        "en": "1980 to 1989"
+        "fr": "1980 à 1989"
+      "description":
+        "en": "1980 to 1989"
+        "fr": "1980 à 1989"
     - "name": "1990:2000"
       "title":
-        "en": "1990 to 2000"
-        "fr": "1990 à 2000"
+        "en": "1990 to 1999"
+        "fr": "1990 à 1999"
+      "description":
+        "en": "1990 to 1999"
+        "fr": "1990 à 1999"
     - "name": "2000:2010"
       "title":
-        "en": "2000 to 2010"
-        "fr": "2000 à 2010"
+        "en": "2000 to 2009"
+        "fr": "2000 à 2009"
+      "description":
+        "en": "2000 to 2009"
+        "fr": "2000 à 2009"
     - "name": "2010:*"
       "title":
         "en": "2010 and later"
         "fr": "2010 et plus tard"
-      "description": {}
+      "description":
+        "en": "2010 and later"
+        "fr": "2010 et plus tard"
       "keywords": {}
 - "name": "end"
   "title":
