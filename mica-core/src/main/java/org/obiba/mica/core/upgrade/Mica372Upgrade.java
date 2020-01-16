@@ -75,67 +75,88 @@ public class Mica372Upgrade implements UpgradeStep {
         "        \"en\": \"Before 1950\",\n" +
         "        \"fr\": \"Avant 1950\"\n" +
         "      },\n" +
-        "      \"description\": {},\n" +
+        "      \"description\": {\n" +
+        "        \"en\": \"Before 1950\",\n" +
+        "        \"fr\": \"Avant 1950\"\n" +
+        "      },\n" +
         "      \"keywords\": {},\n" +
         "      \"attributes\": {}\n" +
         "    },\n" +
         "    {\n" +
         "      \"name\": \"1950:1960\",\n" +
         "      \"title\": {\n" +
-        "        \"en\": \"1950 to 1960\",\n" +
-        "        \"fr\": \"1950 à 1960\"\n" +
+        "        \"en\": \"1950 to 1959\",\n" +
+        "        \"fr\": \"1950 à 1959\"\n" +
         "      },\n" +
-        "      \"description\": {},\n" +
+        "      \"description\": {\n" +
+        "        \"en\": \"1950 to 1959\",\n" +
+        "        \"fr\": \"1950 à 1959\"\n" +
+        "      },\n" +
         "      \"keywords\": {},\n" +
         "      \"attributes\": {}\n" +
         "    },\n" +
         "    {\n" +
         "      \"name\": \"1960:1970\",\n" +
         "      \"title\": {\n" +
-        "        \"en\": \"1960 to 1970\",\n" +
-        "        \"fr\": \"1960 à 1970\"\n" +
+        "        \"en\": \"1960 to 1969\",\n" +
+        "        \"fr\": \"1960 à 1969\"\n" +
         "      },\n" +
-        "      \"description\": {},\n" +
+        "      \"description\": {\n" +
+        "        \"en\": \"1960 to 1969\",\n" +
+        "        \"fr\": \"1960 à 1969\"\n" +
+        "      },\n" +
         "      \"keywords\": {},\n" +
         "      \"attributes\": {}\n" +
         "    },\n" +
         "    {\n" +
         "      \"name\": \"1970:1980\",\n" +
         "      \"title\": {\n" +
-        "        \"en\": \"1970 to 1980\",\n" +
-        "        \"fr\": \"1970 à 1980\"\n" +
+        "        \"en\": \"1970 to 1979\",\n" +
+        "        \"fr\": \"1970 à 1979\"\n" +
         "      },\n" +
-        "      \"description\": {},\n" +
+        "      \"description\": {\n" +
+        "        \"en\": \"1970 to 1979\",\n" +
+        "        \"fr\": \"1970 à 1979\"\n" +
+        "      },\n" +
         "      \"keywords\": {},\n" +
         "      \"attributes\": {}\n" +
         "    },\n" +
         "    {\n" +
         "      \"name\": \"1980:1990\",\n" +
         "      \"title\": {\n" +
-        "        \"en\": \"1980 to 1990\",\n" +
-        "        \"fr\": \"1980 à 1990\"\n" +
+        "        \"en\": \"1980 to 1989\",\n" +
+        "        \"fr\": \"1980 à 1989\"\n" +
         "      },\n" +
-        "      \"description\": {},\n" +
+        "      \"description\": {\n" +
+        "        \"en\": \"1980 to 1989\",\n" +
+        "        \"fr\": \"1980 à 1989\"\n" +
+        "      },\n" +
         "      \"keywords\": {},\n" +
         "      \"attributes\": {}\n" +
         "    },\n" +
         "    {\n" +
         "      \"name\": \"1990:2000\",\n" +
         "      \"title\": {\n" +
-        "        \"en\": \"1990 to 2000\",\n" +
-        "        \"fr\": \"1990 à 2000\"\n" +
+        "        \"en\": \"1990 to 1999\",\n" +
+        "        \"fr\": \"1990 à 1999\"\n" +
         "      },\n" +
-        "      \"description\": {},\n" +
+        "      \"description\": {\n" +
+        "        \"en\": \"1990 to 1999\",\n" +
+        "        \"fr\": \"1990 à 1999\"\n" +
+        "      },\n" +
         "      \"keywords\": {},\n" +
         "      \"attributes\": {}\n" +
         "    },\n" +
         "    {\n" +
         "      \"name\": \"2000:2010\",\n" +
         "      \"title\": {\n" +
-        "        \"en\": \"2000 to 2010\",\n" +
-        "        \"fr\": \"2000 à 2010\"\n" +
+        "        \"en\": \"2000 to 2009\",\n" +
+        "        \"fr\": \"2000 à 2009\"\n" +
         "      },\n" +
-        "      \"description\": {},\n" +
+        "      \"description\": {\n" +
+        "        \"en\": \"2000 to 2009\",\n" +
+        "        \"fr\": \"2000 à 2009\"\n" +
+        "      },\n" +
         "      \"keywords\": {},\n" +
         "      \"attributes\": {}\n" +
         "    },\n" +
@@ -145,7 +166,10 @@ public class Mica372Upgrade implements UpgradeStep {
         "        \"en\": \"2010 and later\",\n" +
         "        \"fr\": \"2010 et plus tard\"\n" +
         "      },\n" +
-        "      \"description\": {},\n" +
+        "      \"description\": {\n" +
+        "        \"en\": \"2010 and later\",\n" +
+        "        \"fr\": \"2010 et plus tard\"\n" +
+        "      },\n" +
         "      \"keywords\": {},\n" +
         "      \"attributes\": {}\n" +
         "    }\n" +
