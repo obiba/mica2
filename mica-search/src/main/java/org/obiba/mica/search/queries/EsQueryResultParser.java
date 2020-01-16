@@ -14,6 +14,7 @@ import com.google.common.collect.Lists;
 import org.obiba.mica.micaConfig.service.helper.AggregationMetaDataProvider;
 import org.obiba.mica.search.aggregations.AggregationMetaDataResolver;
 import org.obiba.mica.spi.search.Searcher;
+import org.obiba.mica.spi.search.support.AggregationHelper;
 import org.obiba.mica.web.model.MicaSearch;
 import org.obiba.mica.web.model.MicaSearch.AggregationResultDto;
 import org.obiba.mica.web.model.MicaSearch.RangeAggregationResultDto;
@@ -50,7 +51,7 @@ public class EsQueryResultParser {
       String aggType = aggregation.getType();
 
       switch (aggType) {
-        case "stats":
+        case AggregationHelper.AGG_STATS:
           Searcher.DocumentStatsAggregation stats = aggregation.asStats();
           if (stats.getCount() > 0) {
             aggResultBuilder.setExtension(
@@ -58,8 +59,7 @@ public class EsQueryResultParser {
                 StatsAggregationResultDto.newBuilder().setData(buildStatsDto(stats)).build());
           }
           break;
-        case "sterms":
-        case "terms":
+        case AggregationHelper.AGG_TERMS:
           aggregation.asTerms().getBuckets().forEach(bucket -> {
             TermsAggregationResultDto.Builder termsBuilder = TermsAggregationResultDto.newBuilder();
             List<Searcher.DocumentAggregation> bucketAggregations = bucket.getAggregations();
@@ -82,7 +82,7 @@ public class EsQueryResultParser {
           });
           break;
 
-        case "range":
+        case AggregationHelper.AGG_RANGE:
           aggregation.asRange().getBuckets().forEach(bucket -> {
             AggregationMetaDataProvider.MetaData metaData = aggregationMetaDataResolver
                 .getMetaData(aggregation.getName(), bucket.getKeyAsString(), locale);
@@ -116,7 +116,7 @@ public class EsQueryResultParser {
 
           break;
 
-        case "global":
+        case AggregationHelper.AGG_GLOBAL:
           totalCount = aggregation.asGlobal().getDocCount();
           // do not include in the list of aggregations
           return;

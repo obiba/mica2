@@ -22,6 +22,7 @@ import org.obiba.mica.spi.search.Indexer;
 import org.obiba.mica.spi.search.QueryMode;
 import org.obiba.mica.spi.search.QueryScope;
 import org.obiba.mica.spi.search.Searcher;
+import org.obiba.mica.spi.search.support.AggregationHelper;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.mica.web.model.MicaSearch;
@@ -175,7 +176,7 @@ public class NetworkQuery extends AbstractDocumentQuery {
 
     try {
       Searcher.DocumentResults results = searcher.cover(getSearchIndex(), getSearchType(), getQuery(), props, subAggregations, null);
-      results.getAggregations().stream().filter(agg -> "sterms".equals(agg.getType()))
+      results.getAggregations().stream().filter(agg -> AggregationHelper.AGG_TERMS.equals(agg.getType()))
           .forEach(
               aggregation -> aggregation.asTerms().getBuckets().stream().filter(bucket -> bucket.getDocCount() > 0)
                   .forEach(bucket -> map.put(bucket.getKeyAsString(), getStudyCounts(bucket.getAggregations()))));
@@ -187,7 +188,7 @@ public class NetworkQuery extends AbstractDocumentQuery {
 
   private List<String> getStudyCounts(List<Searcher.DocumentAggregation> aggregations) {
     List<String> list = Lists.newArrayList();
-    aggregations.stream().filter(agg -> "sterms".equals(agg.getType()))
+    aggregations.stream().filter(agg -> AggregationHelper.AGG_TERMS.equals(agg.getType()))
         .forEach(
             aggregation -> aggregation.asTerms().getBuckets().stream().filter(bucket -> bucket.getDocCount() > 0)
                 .forEach(bucket -> list.add(bucket.getKeyAsString())));

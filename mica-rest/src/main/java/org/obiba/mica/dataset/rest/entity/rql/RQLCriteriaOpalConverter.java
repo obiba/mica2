@@ -174,11 +174,11 @@ public class RQLCriteriaOpalConverter {
       StudyDataset ds = collectedDatasetService.findById(resolver.getDatasetId());
       BaseStudyTable studyTable = ds.getStudyTable();
       BaseStudy study = studyService.findStudy(studyTable.getStudyId());
-      return new RQLFieldReferences(path, ds, studyTable, study, getDatasetVariableInternal(Indexer.VARIABLE_TYPE, path));
+      return new RQLFieldReferences(path, ds, studyTable, study, getDatasetVariableInternal(Indexer.PUBLISHED_VARIABLE_INDEX, Indexer.VARIABLE_TYPE, path));
     } else if (DatasetVariable.Type.Dataschema.equals(resolver.getType())) {
       HarmonizationDataset ds = harmonizedDatasetService.findById(resolver.getDatasetId());
       BaseStudy study = studyService.findStudy(ds.getHarmonizationTable().getStudyId());
-      return new RQLFieldReferences(path, ds, ds.getBaseStudyTables(), study, getDatasetVariableInternal(Indexer.VARIABLE_TYPE, path));
+      return new RQLFieldReferences(path, ds, ds.getBaseStudyTables(), study, getDatasetVariableInternal(Indexer.PUBLISHED_VARIABLE_INDEX, Indexer.VARIABLE_TYPE, path));
     } else if (DatasetVariable.Type.Harmonized.equals(resolver.getType())) {
       HarmonizationDataset ds = harmonizedDatasetService.findById(resolver.getDatasetId());
       Optional<BaseStudyTable> studyTable = ds.getBaseStudyTables().stream().filter(st -> st.getStudyId().equals(resolver.getStudyId())
@@ -186,7 +186,7 @@ public class RQLCriteriaOpalConverter {
         && st.getTable().equals(resolver.getTable())).findFirst();
       if (!studyTable.isPresent()) throw new IllegalArgumentException("Not a valid variable: " + path);
       BaseStudy study = studyService.findStudy(studyTable.get().getStudyId());
-      return new RQLFieldReferences(path, ds, studyTable.get(), study, getDatasetVariableInternal(Indexer.HARMONIZED_VARIABLE_TYPE, path));
+      return new RQLFieldReferences(path, ds, studyTable.get(), study, getDatasetVariableInternal(Indexer.PUBLISHED_HVARIABLE_INDEX, Indexer.HARMONIZED_VARIABLE_TYPE, path));
     }
     throw new IllegalArgumentException("Not a valid variable: " + path);
   }
@@ -239,8 +239,8 @@ public class RQLCriteriaOpalConverter {
   }
 
 
-  private DatasetVariable getDatasetVariableInternal(String indexType, String variableId) {
-    InputStream inputStream = searcher.getDocumentById(Indexer.PUBLISHED_VARIABLE_INDEX, indexType, variableId);
+  private DatasetVariable getDatasetVariableInternal(String indexName, String indexType, String variableId) {
+    InputStream inputStream = searcher.getDocumentById(indexName, indexType, variableId);
     if (inputStream == null) throw new NoSuchVariableException(variableId);
     try {
       return objectMapper.readValue(inputStream, DatasetVariable.class);
