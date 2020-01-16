@@ -26,6 +26,7 @@ final public class AggregationHelper {
   public static final String AGG_TERMS = "sterms";
   public static final String AGG_STATS = "stats";
   public static final String AGG_RANGE = "range";
+  public static final String AGG_GLOBAL = "global";
   public static final String UND_LOCALE = Locale.forLanguageTag("und").toLanguageTag();
   public static final String UND_LOCALE_NAME = NAME_SEPARATOR + UND_LOCALE;
   public static final String UND_LOCALE_FIELD = FIELD_SEPARATOR + UND_LOCALE;

@@ -75,6 +75,8 @@ public class DatasetIndexer {
     if (indexer.hasIndex(Indexer.DRAFT_VARIABLE_INDEX)) indexer.dropIndex(Indexer.DRAFT_VARIABLE_INDEX);
     if (indexer.hasIndex(Indexer.PUBLISHED_VARIABLE_INDEX))
       indexer.dropIndex(Indexer.PUBLISHED_VARIABLE_INDEX);
+    if (indexer.hasIndex(Indexer.PUBLISHED_HVARIABLE_INDEX))
+      indexer.dropIndex(Indexer.PUBLISHED_HVARIABLE_INDEX);
 
     harmonizedDatasetService.indexAll();
     collectedDatasetService.indexAll();
