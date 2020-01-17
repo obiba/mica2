@@ -1,9 +1,12 @@
 package org.obiba.mica.core.upgrade;
 
 import com.google.common.eventbus.EventBus;
+import org.obiba.mica.core.domain.PublishCascadingScope;
 import org.obiba.mica.micaConfig.event.TaxonomiesUpdatedEvent;
 import org.obiba.mica.micaConfig.service.TaxonomyConfigService;
+import org.obiba.mica.network.service.NetworkService;
 import org.obiba.mica.spi.search.TaxonomyTarget;
+import org.obiba.mica.study.service.StudyService;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.obiba.runtime.Version;
 import org.obiba.runtime.upgrade.UpgradeStep;
@@ -26,11 +29,20 @@ public class Mica372Upgrade implements UpgradeStep {
 
   private final TaxonomyConfigService taxonomyConfigService;
 
+  private final StudyService studyService;
+
+  private final NetworkService networkService;
+
   @Inject
-  public Mica372Upgrade(MongoTemplate mongoTemplate, EventBus eventBus, TaxonomyConfigService taxonomyConfigService) {
+  public Mica372Upgrade(MongoTemplate mongoTemplate,
+    EventBus eventBus,
+    TaxonomyConfigService taxonomyConfigService,
+    StudyService studyService, NetworkService networkService) {
     this.mongoTemplate = mongoTemplate;
     this.eventBus = eventBus;
     this.taxonomyConfigService = taxonomyConfigService;
+    this.studyService = studyService;
+    this.networkService = networkService;
   }
 
 
@@ -61,6 +73,23 @@ public class Mica372Upgrade implements UpgradeStep {
       eventBus.post(new TaxonomiesUpdatedEvent(studyTaxonomy.getName(), TaxonomyTarget.STUDY));
     } catch(Exception e) {
       logger.error("Failed to index Taxonomy", e);
+    }
+
+    try {
+      logger.info("Updating studies and networks with their membership sort orders.");
+      mongoTemplate.execute(db -> db.eval(setMemberShipSortOrder()));
+
+      studyService.findAllStates().stream().filter(state -> !state.hasRevisionsAhead()).forEach(state -> {
+        studyService.save(studyService.findStudy(state.getId()), "Updating membership sort orders.");
+        studyService.publish(state.getId(), true, PublishCascadingScope.NONE);
+      });
+
+      networkService.findAllStates().stream().filter(state -> !state.hasRevisionsAhead()).forEach(state -> {
+        networkService.save(networkService.findById(state.getId()), "Updating membership sort orders.");
+        networkService.publish(state.getId(), true, PublishCascadingScope.NONE);
+      });
+    } catch (Exception e) {
+      logger.error("Failed to update studies and networks with their membership sort orders.", e);
     }
   }
 
@@ -201,5 +230,28 @@ public class Mica372Upgrade implements UpgradeStep {
         " }).count() > 0) {\n" +
         "    db.taxonomyEntityWrapper.update({\"_id\": \"study\"}, {$push: {\"taxonomy.vocabularies\": startRangeVocabulary}})\n" +
         "}\n";
+  }
+
+  private String setMemberShipSortOrder() {
+    return
+          "db.study.find({}).forEach(function (study) { \n"
+        + "  var roles = Object.keys(study.memberships); \n"
+        + "  var membershipSortOrder = {}; \n"
+        + "  roles.forEach(function (role) { \n"
+        + "    var memberships = study.memberships[role].map(function (membership) { \n"
+        + "      return membership.person.$id.str; \n"
+        + "    }); membershipSortOrder[role] = memberships; }); \n"
+        + "    db.study.update({_id: study._id}, {$set: {membershipSortOrder: membershipSortOrder}}); \n"
+        + "});\n"
+        + "\n"
+        + "db.network.find({}).forEach(function (network) { \n"
+        + "  var roles = Object.keys(network.memberships); \n"
+        + "  var membershipSortOrder = {}; \n"
+        + "  roles.forEach(function (role) { \n"
+        + "    var memberships = network.memberships[role].map(function (membership) { \n"
+        + "      return membership.person.$id.str; \n"
+        + "    }); membershipSortOrder[role] = memberships; }); \n"
+        + "    db.network.update({_id: network._id}, {$set: {membershipSortOrder: membershipSortOrder}}); \n"
+        + "});";
   }
 }
