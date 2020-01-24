@@ -26,7 +26,7 @@
   <!--<logger name="javax" level="info"/>-->
   <!--<logger name="org.apache.tomcat.util.descriptor.DigesterFactory" level="OFF"/>-->
   <!--<logger name="org.atmosphere" level="warn"/>-->
-  <!--<logger name="org.thymeleaf" level="warn"/>-->
+  <!--<logger name="freemarker" level="warn"/>-->
   <logger name="org.springframework.data" level="warn"/>
   <!--<logger name="org.bson" level="warn"/>-->
   <logger name="org.glassfish" level="warn"/>
