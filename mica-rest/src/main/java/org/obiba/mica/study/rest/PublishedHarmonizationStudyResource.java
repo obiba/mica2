@@ -37,7 +37,6 @@ import com.google.common.collect.Lists;
 @Component
 @Path("/harmonization-study/{id}")
 @Scope("request")
-@RequiresAuthentication
 public class PublishedHarmonizationStudyResource extends AbstractPublishedStudyResource {
 
   @Inject
