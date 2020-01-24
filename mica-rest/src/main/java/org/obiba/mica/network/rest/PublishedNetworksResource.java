@@ -35,7 +35,6 @@ import com.codahale.metrics.annotation.Timed;
 @Component
 @Path("/networks")
 @Scope("request")
-@RequiresAuthentication
 public class PublishedNetworksResource {
 
   @Inject

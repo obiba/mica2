@@ -33,7 +33,6 @@ import java.util.stream.Collectors;
 @Component
 @Path("/studies")
 @Scope("request")
-@RequiresAuthentication
 public class PublishedStudiesResource {
 
   @Inject

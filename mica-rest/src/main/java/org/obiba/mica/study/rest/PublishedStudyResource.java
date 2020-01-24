@@ -32,7 +32,6 @@ import com.codahale.metrics.annotation.Timed;
 @Component
 @Path("/study/{id}")
 @Scope("request")
-@RequiresAuthentication
 public class PublishedStudyResource extends AbstractPublishedStudyResource {
 
   @GET
