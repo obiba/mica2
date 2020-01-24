@@ -34,7 +34,6 @@ import com.google.common.base.Strings;
 import static org.obiba.mica.web.model.MicaSearch.JoinQueryResultDto;
 
 @Path("/networks")
-@RequiresAuthentication
 @Scope("request")
 @Component
 public class PublishedNetworksSearchResource {
