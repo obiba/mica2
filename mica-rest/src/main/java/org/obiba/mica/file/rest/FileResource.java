@@ -10,14 +10,7 @@
 
 package org.obiba.mica.file.rest;
 
-import java.io.IOException;
-
-import javax.inject.Inject;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.core.Response;
-
-import org.apache.shiro.authz.annotation.RequiresAuthentication;
+import com.codahale.metrics.annotation.Timed;
 import org.obiba.mica.core.domain.PersistableWithAttachments;
 import org.obiba.mica.core.service.GitService;
 import org.obiba.mica.file.Attachment;
@@ -25,11 +18,14 @@ import org.obiba.mica.file.FileStoreService;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import com.codahale.metrics.annotation.Timed;
+import javax.inject.Inject;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.core.Response;
+import java.io.IOException;
 
 @Component
 @Scope("request")
-@RequiresAuthentication
 public class FileResource {
 
   @Inject
@@ -60,7 +56,7 @@ public class FileResource {
   @Path("/_download")
   @Timed
   public Response download() throws IOException {
-    if(persistable != null) {
+    if (persistable != null) {
       attachment = persistable.findAttachmentById(fileId);
 
       return Response.ok(gitService.readFileHead(persistable, attachment.getId()))
