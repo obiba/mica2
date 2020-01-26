@@ -3,7 +3,7 @@
     <a href="../bower_components/admin-lte/index3.html" class="navbar-brand">
       <img src="../bower_components/admin-lte/dist/img/AdminLTELogo.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3"
            style="opacity: .8">
-      <span class="brand-text font-weight-light">Mica</span>
+      <span class="brand-text font-weight-light">Example</span>
     </a>
 
     <button class="navbar-toggler order-1" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
@@ -23,7 +23,7 @@
           <a href="../studies" class="nav-link">Studies</a>
         </li>
         <li class="nav-item">
-          <a href="../studies" class="nav-link">Datasets</a>
+          <a href="../datasets" class="nav-link">Datasets</a>
         </li>
         <li class="nav-item dropdown">
           <a id="studiesMenu" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle">Research</a>
