@@ -5,5 +5,5 @@
     <strong>Copyright &copy; 2020 <a href="https://example.org">Example</a>.</strong> All rights reserved.
   </div>
   <!-- Default to the left -->
-  Powered by <a href="https://obiba.org">OBiBa Mica</a>.
+  Powered by <a href="https://www.obiba.org">OBiBa Mica</a>.
 </footer>

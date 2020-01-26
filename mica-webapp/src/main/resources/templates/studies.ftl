@@ -3,16 +3,33 @@
 <html lang="en">
 <head>
   <title>Example | Studies</title>
-    <#include "libs/head.ftl">
-    <!-- DataTables -->
-    <link rel="stylesheet" href="../bower_components/admin-lte/plugins/datatables-bs4/css/dataTables.bootstrap4.css">
+  <#include "libs/head.ftl">
 </head>
 <body class="hold-transition layout-top-nav">
 <div class="wrapper">
 
   <!-- Navbar -->
-    <#include "libs/top-navbar.ftl">
+  <#include "libs/top-navbar.ftl">
   <!-- /.navbar -->
+
+  <!-- Template variables -->
+  <#if !type??>
+    <#assign title = "Studies">
+    <#assign callout = "The Studies section includes an inventory of epidemiological studies and of harmonization projects.
+            This section can help identify studies with relevant designs that collected information useful in answering specific research questions.
+            This section can also learn about current and past harmonization projects. Through access to lists of harmonized variables, users can also learn about the harmonization potential across studies and the data processing applied to generate harmonized data.">
+    <#assign showTypeColumn = true>
+  <#elseif type == "Harmonization">
+    <#assign title = "Harmonization Studies">
+    <#assign callout = "The Harmonization Studies section includes an inventory of harmonization projects.
+            This section can also learn about current and past harmonization projects. Through access to lists of harmonized variables, users can also learn about the harmonization potential across studies and the data processing applied to generate harmonized data.">
+    <#assign showTypeColumn = false>
+  <#else>
+    <#assign title = "Individual Studies">
+    <#assign callout = "The Individual Studies section includes an inventory of epidemiological studies.
+            This section can help identify studies with relevant designs that collected information useful in answering specific research questions.">
+    <#assign showTypeColumn = false>
+  </#if>
 
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
@@ -21,10 +38,13 @@
       <div class="container">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1 class="m-0">Studies</h1>
+            <h1 class="m-0">${title}</h1>
           </div><!-- /.col -->
           <div class="col-sm-6">
-
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a class="text-white-50" href="#">Home</a></li>
+              <li class="breadcrumb-item active text-light">${title}</li>
+            </ol>
           </div><!-- /.col -->
         </div><!-- /.row -->
       </div><!-- /.container-fluid -->
@@ -37,9 +57,7 @@
 
         <div class="callout callout-info">
           <p>
-            The Studies section includes an inventory of epidemiological studies and of harmonization projects.
-            This section can help identify studies with relevant designs that collected information useful in answering specific research questions.
-            This section can also learn about current and past harmonization projects. Through access to lists of harmonized variables, users can also learn about the harmonization potential across studies and the data processing applied to generate harmonized data.
+            ${callout}
           </p>
         </div>
 
@@ -69,7 +87,9 @@
                         <tr>
                           <th>Acronym</th>
                           <th>Name</th>
-                          <th>Type</th>
+                          <#if showTypeColumn>
+                            <th>Type</th>
+                          </#if>
                         </tr>
                         </thead>
                         <tbody>
@@ -77,13 +97,15 @@
                           <tr>
                             <td><a href="../study/${std.id}">${std.acronym.en}</a></td>
                             <td><small>${std.name.en}</small></td>
-                            <td>
-                              <#if std.class.simpleName == "HarmonizationStudy">
-                                Harmonization
-                              <#else>
-                                Individual
-                              </#if>
-                            </td>
+                            <#if showTypeColumn>
+                              <td>
+                                <#if std.class.simpleName == "HarmonizationStudy">
+                                  Harmonization
+                                <#else>
+                                  Individual
+                                </#if>
+                              </td>
+                            </#if>
                           </tr>
                         </#list>
                         </tbody>
@@ -146,10 +168,6 @@
 <!-- ./wrapper -->
 
 <#include "libs/scripts.ftl">
-
-<!-- DataTables -->
-<script src="../bower_components/admin-lte/plugins/datatables/jquery.dataTables.js"></script>
-<script src="../bower_components/admin-lte/plugins/datatables-bs4/js/dataTables.bootstrap4.js"></script>
 <script>
     $(function () {
         var opts = {
