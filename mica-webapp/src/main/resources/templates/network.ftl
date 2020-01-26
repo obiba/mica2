@@ -49,34 +49,38 @@
                   </div>
                 </div>
                 <div class="row mb-4">
-                  <div class="col-lg-8">
-                      <#if network.logo??>
-                        <img class="img-fluid" style="max-height: 200px" alt="${network.acronym.en} logo" src="../ws/network/${network.id}/file/${network.logo.id}/_download"/>
-                      <#else >
-                        <p class="text-black-50 text-center">
-                          <i class="fas fa-project-diagram fa-5x"></i>
-                        </p>
-                      </#if>
+                  <div class="col-md-3 col-sm-6 col-12">
+                    <#if network.logo??>
+                      <img class="img-fluid" style="max-height: 200px" alt="${network.acronym.en} logo" src="../ws/network/${network.id}/file/${network.logo.id}/_download"/>
+                    <#else >
+                      <p class="text-light text-center">
+                        <i class="ion ion-filing fa-6x"></i>
+                      </p>
+                    </#if>
                   </div>
-                  <div class="col-lg-4">
+                  <div class="col-md-3 col-sm-6 col-12">
                     <div class="info-box">
-                      <span class="info-box-icon bg-info"><i class="far fa-envelope"></i></span>
+                      <span class="info-box-icon bg-success"><i class="ion ion-folder"></i></span>
                       <div class="info-box-content">
                         <span class="info-box-text">Studies</span>
                         <span class="info-box-number" id="study-hits">${individualStudies?size + harmonizationStudies?size}</span>
                       </div>
                       <!-- /.info-box-content -->
                     </div>
+                  </div>
+                  <div class="col-md-3 col-sm-6 col-12">
                     <div class="info-box">
-                      <span class="info-box-icon bg-info"><i class="far fa-envelope"></i></span>
+                      <span class="info-box-icon bg-warning"><i class="ion ion-grid"></i></span>
                       <div class="info-box-content">
                         <span class="info-box-text">Datasets</span>
                         <span class="info-box-number" id="dataset-hits">-</span>
                       </div>
                       <!-- /.info-box-content -->
                     </div>
+                  </div>
+                  <div class="col-md-3 col-sm-6 col-12">
                     <div class="info-box">
-                      <span class="info-box-icon bg-info"><i class="far fa-envelope"></i></span>
+                      <span class="info-box-icon bg-danger"><i class="ion ion-pie-graph"></i></span>
                       <div class="info-box-content">
                         <span class="info-box-text">Variables</span>
                         <span class="info-box-number" id="variable-hits">-</span>
@@ -87,7 +91,9 @@
                 </div>
 
                 <p class="card-text">
+                  <#if network.description??>
                     ${network.description.en}
+                  </#if>
                 </p>
                   <#if network.model.website??>
                     <blockquote>
