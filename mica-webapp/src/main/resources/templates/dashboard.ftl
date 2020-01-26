@@ -4,8 +4,6 @@
 <head>
   <title>Example | Dashboard</title>
     <#include "libs/head.ftl">
-  <!-- Ionicons -->
-  <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
 </head>
 <body class="hold-transition layout-top-nav">
 <div class="wrapper">
@@ -44,7 +42,7 @@
                 <p>Networks</p>
               </div>
               <div class="icon">
-                <i class="ion ion-bag"></i>
+                <i class="ion ion-filing"></i>
               </div>
               <a href="../catalog/#/search?type=networks" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
             </div>
@@ -58,7 +56,7 @@
                 <p>Studies</p>
               </div>
               <div class="icon">
-                <i class="ion ion-stats-bars"></i>
+                <i class="ion ion-folder"></i>
               </div>
               <a href="../catalog/#/search?type=studies" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
             </div>
@@ -72,7 +70,7 @@
                 <p>Datasets</p>
               </div>
               <div class="icon">
-                <i class="ion ion-person-add"></i>
+                <i class="ion ion-grid"></i>
               </div>
               <a href="../catalog/#/search?type=datasets" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
             </div>

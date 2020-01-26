@@ -36,7 +36,6 @@ import static org.obiba.mica.web.model.MicaSearch.JoinQueryResultDto;
 
 @Component
 @Path("/studies")
-@RequiresAuthentication
 @Scope("request")
 public class PublishedStudiesSearchResource {
 

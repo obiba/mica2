@@ -1,10 +1,6 @@
 package org.obiba.mica.web.controller;
 
-import org.obiba.mica.network.NoSuchNetworkException;
-import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.network.service.PublishedNetworkService;
-import org.obiba.mica.security.service.SubjectAclService;
-import org.obiba.mica.study.service.PublishedStudyService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.servlet.ModelAndView;
@@ -18,13 +14,7 @@ import java.util.stream.Collectors;
 public class NetworksController extends EntityController {
 
   @Inject
-  private SubjectAclService subjectAclService;
-
-  @Inject
   private PublishedNetworkService publishedNetworkService;
-
-  @Inject
-  private PublishedStudyService publishedStudyService;
 
   @GetMapping("/networks")
   public ModelAndView list() {
@@ -35,12 +25,6 @@ public class NetworksController extends EntityController {
       .collect(Collectors.toList()));
 
     return new ModelAndView("networks", params);
-  }
-
-  private Network getNetwork(String id) {
-    Network network = publishedNetworkService.findById(id);
-    if (network == null) throw NoSuchNetworkException.withId(id);
-    return network;
   }
 
 }
