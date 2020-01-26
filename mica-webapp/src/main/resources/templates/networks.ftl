@@ -89,7 +89,6 @@
                               <div class="col-12 col-sm-6 col-md-4 d-flex align-items-stretch">
                                 <div class="card bg-light">
                                   <div class="card-header text-dark border-bottom-0">
-
                                     <h2 class="lead"><b>${netwk.acronym.en}</b></h2>
                                   </div>
                                   <div class="card-body pt-0">
