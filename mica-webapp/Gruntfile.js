@@ -158,7 +158,8 @@ module.exports = function (grunt) {
       },
       all: [
         'Gruntfile.js',
-        'src/main/webapp/app/**/*.js'
+        'src/main/webapp/app/**/*.js',
+        'src/main/webapp/mica.js'
       ]
     },
 

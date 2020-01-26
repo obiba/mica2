@@ -17,23 +17,19 @@
           <a href="../dashboard" class="nav-link">Home</a>
         </li>
         <li class="nav-item">
-          <a href="../contact" class="nav-link">Contact</a>
-        </li>
-        <li class="nav-item">
           <a href="../networks" class="nav-link">Networks</a>
         </li>
-        <li class="nav-item dropdown">
-          <a id="studiesMenu" href="../studies" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle">Studies</a>
-          <ul aria-labelledby="dropdownSubMenu1" class="dropdown-menu border-0 shadow">
-            <li><a href="../individual-studies" class="dropdown-item">Individual Studies</a></li>
-            <li><a href="../harmonization-studies" class="dropdown-item">Harmonization Studies</a></li>
-          </ul>
+        <li class="nav-item">
+          <a href="../studies" class="nav-link">Studies</a>
+        </li>
+        <li class="nav-item">
+          <a href="../studies" class="nav-link">Datasets</a>
         </li>
         <li class="nav-item dropdown">
-          <a id="datasetsMenu" href="../datasets" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle">Datasets</a>
+          <a id="studiesMenu" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle">Research</a>
           <ul aria-labelledby="dropdownSubMenu1" class="dropdown-menu border-0 shadow">
-            <li><a href="../collected-datasets" class="dropdown-item">Collected Datasets</a></li>
-            <li><a href="../harmonized-datasets" class="dropdown-item">Harmonized Datasets</a></li>
+            <li><a href="../data-access-request" class="dropdown-item">Data Access</a></li>
+            <li><a href="../projects" class="dropdown-item">Approved Projects</a></li>
           </ul>
         </li>
       </ul>
