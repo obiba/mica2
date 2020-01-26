@@ -3,15 +3,13 @@
 <html lang="en">
 <head>
   <title>Example | ${network.acronym.en}</title>
-    <#include "libs/head.ftl">
-  <!-- DataTables -->
-  <link rel="stylesheet" href="../bower_components/admin-lte/plugins/datatables-bs4/css/dataTables.bootstrap4.css">
+  <#include "libs/head.ftl">
 </head>
 <body class="hold-transition layout-top-nav">
 <div class="wrapper">
 
   <!-- Navbar -->
-    <#include "libs/top-navbar.ftl">
+  <#include "libs/top-navbar.ftl">
   <!-- /.navbar -->
 
   <!-- Content Wrapper. Contains page content -->
@@ -60,7 +58,10 @@
                   </div>
                   <div class="col-md-3 col-sm-6 col-12">
                     <div class="info-box">
-                      <span class="info-box-icon bg-success"><i class="ion ion-folder"></i></span>
+                      <span class="info-box-icon bg-success">
+                        <a href="../catalog/#search?type=studies&query=network(in(Mica_network.id,${network.id}))">
+                          <i class="ion ion-folder"></i>
+                        </a></span>
                       <div class="info-box-content">
                         <span class="info-box-text">Studies</span>
                         <span class="info-box-number" id="study-hits">${individualStudies?size + harmonizationStudies?size}</span>
@@ -70,7 +71,11 @@
                   </div>
                   <div class="col-md-3 col-sm-6 col-12">
                     <div class="info-box">
-                      <span class="info-box-icon bg-warning"><i class="ion ion-grid"></i></span>
+                      <span class="info-box-icon bg-warning">
+                        <a href="../catalog/#search?type=datasets&query=network(in(Mica_network.id,${network.id}))">
+                          <i class="ion ion-grid"></i>
+                        </a>
+                      </span>
                       <div class="info-box-content">
                         <span class="info-box-text">Datasets</span>
                         <span class="info-box-number" id="dataset-hits">-</span>
@@ -80,7 +85,11 @@
                   </div>
                   <div class="col-md-3 col-sm-6 col-12">
                     <div class="info-box">
-                      <span class="info-box-icon bg-danger"><i class="ion ion-pie-graph"></i></span>
+                      <span class="info-box-icon bg-danger">
+                        <a href="../catalog/#search?type=datasets&query=network(in(Mica_network.id,${network.id}))">
+                          <i class="ion ion-pie-graph"></i>
+                        </a>
+                      </span>
                       <div class="info-box-content">
                         <span class="info-box-text">Variables</span>
                         <span class="info-box-number" id="variable-hits">-</span>
@@ -271,10 +280,6 @@
 <!-- ./wrapper -->
 
 <#include "libs/scripts.ftl">
-
-<!-- DataTables -->
-<script src="../bower_components/admin-lte/plugins/datatables/jquery.dataTables.js"></script>
-<script src="../bower_components/admin-lte/plugins/datatables-bs4/js/dataTables.bootstrap4.js"></script>
 <!-- page script -->
 <script>
     $(function () {

@@ -3,15 +3,13 @@
 <html lang="en">
 <head>
   <title>Example | Networks</title>
-    <#include "libs/head.ftl">
-    <!-- DataTables -->
-    <link rel="stylesheet" href="../bower_components/admin-lte/plugins/datatables-bs4/css/dataTables.bootstrap4.css">
+  <#include "libs/head.ftl">
 </head>
 <body class="hold-transition layout-top-nav">
 <div class="wrapper">
 
   <!-- Navbar -->
-    <#include "libs/top-navbar.ftl">
+  <#include "libs/top-navbar.ftl">
   <!-- /.navbar -->
 
   <!-- Content Wrapper. Contains page content -->
@@ -139,10 +137,6 @@
 <!-- ./wrapper -->
 
 <#include "libs/scripts.ftl">
-
-<!-- DataTables -->
-<script src="../bower_components/admin-lte/plugins/datatables/jquery.dataTables.js"></script>
-<script src="../bower_components/admin-lte/plugins/datatables-bs4/js/dataTables.bootstrap4.js"></script>
 <!-- page script -->
 <script>
     $(function () {
