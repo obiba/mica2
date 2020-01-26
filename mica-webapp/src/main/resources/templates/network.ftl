@@ -63,7 +63,23 @@
                       <span class="info-box-icon bg-info"><i class="far fa-envelope"></i></span>
                       <div class="info-box-content">
                         <span class="info-box-text">Studies</span>
-                        <span class="info-box-number">${individualStudies?size + harmonizationStudies?size}</span>
+                        <span class="info-box-number" id="study-hits">${individualStudies?size + harmonizationStudies?size}</span>
+                      </div>
+                      <!-- /.info-box-content -->
+                    </div>
+                    <div class="info-box">
+                      <span class="info-box-icon bg-info"><i class="far fa-envelope"></i></span>
+                      <div class="info-box-content">
+                        <span class="info-box-text">Datasets</span>
+                        <span class="info-box-number" id="dataset-hits">-</span>
+                      </div>
+                      <!-- /.info-box-content -->
+                    </div>
+                    <div class="info-box">
+                      <span class="info-box-icon bg-info"><i class="far fa-envelope"></i></span>
+                      <div class="info-box-content">
+                        <span class="info-box-text">Variables</span>
+                        <span class="info-box-number" id="variable-hits">-</span>
                       </div>
                       <!-- /.info-box-content -->
                     </div>
@@ -83,160 +99,160 @@
           </div>
         </div>
 
-        <div class="row">
-          <div class="col-lg-6">
-              <#if network.memberships??>
-                <div class="card card-primary card-outline card-outline-tabs">
-                  <div class="card-header p-0 border-bottom-0">
-                    <ul class="nav nav-tabs" id="custom-tabs-three-tab" role="tablist">
-                      <li class="nav-item">
-                        <a class="nav-link active" id="custom-tabs-three-home-tab" data-toggle="pill" href="#custom-tabs-three-home" role="tab" aria-controls="custom-tabs-three-home" aria-selected="true">Investigators</a>
-                      </li>
-                      <li class="nav-item">
-                        <a class="nav-link" id="custom-tabs-three-profile-tab" data-toggle="pill" href="#custom-tabs-three-profile" role="tab" aria-controls="custom-tabs-three-profile" aria-selected="false">Contacts</a>
-                      </li>
-                    </ul>
-                  </div>
+        <#if network.memberships?? && network.memberships?keys?size!=0>
+          <div class="row">
+            <div class="col-lg-6">
+              <div class="card card-primary card-outline card-outline-tabs">
+                <div class="card-header p-0 border-bottom-0">
+                  <ul class="nav nav-tabs" id="custom-tabs-three-tab" role="tablist">
+                    <li class="nav-item">
+                      <a class="nav-link active" id="custom-tabs-three-home-tab" data-toggle="pill" href="#custom-tabs-three-home" role="tab" aria-controls="custom-tabs-three-home" aria-selected="true">Investigators</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" id="custom-tabs-three-profile-tab" data-toggle="pill" href="#custom-tabs-three-profile" role="tab" aria-controls="custom-tabs-three-profile" aria-selected="false">Contacts</a>
+                    </li>
+                  </ul>
+                </div>
 
-                  <div class="card-body">
-                    <div class="tab-content" id="custom-tabs-three-tabContent">
-                      <div class="tab-pane fade show active" id="custom-tabs-three-home" role="tabpanel" aria-labelledby="custom-tabs-three-home-tab">
-                          <#if network.memberships.investigator??>
-                              <@memberlist members=network.memberships.investigator role="investigator"/>
-                          </#if>
-                      </div>
-                      <div class="tab-pane fade" id="custom-tabs-three-profile" role="tabpanel" aria-labelledby="custom-tabs-three-profile-tab">
-                          <#if network.memberships.contact??>
-                              <@memberlist members=network.memberships.contact role="contact"/>
-                          </#if>
-                      </div>
+                <div class="card-body">
+                  <div class="tab-content" id="custom-tabs-three-tabContent">
+                    <div class="tab-pane fade show active" id="custom-tabs-three-home" role="tabpanel" aria-labelledby="custom-tabs-three-home-tab">
+                        <#if network.memberships.investigator??>
+                            <@memberlist members=network.memberships.investigator role="investigator"/>
+                        </#if>
+                    </div>
+                    <div class="tab-pane fade" id="custom-tabs-three-profile" role="tabpanel" aria-labelledby="custom-tabs-three-profile-tab">
+                        <#if network.memberships.contact??>
+                            <@memberlist members=network.memberships.contact role="contact"/>
+                        </#if>
                     </div>
                   </div>
                 </div>
-              </#if>
+              </div>
+            </div>
+            <!-- /.col-md-6 -->
+            <div class="col-lg-6">
+              <div class="card card-primary card-outline">
+                <div class="card-header">
+                  <h3 class="card-title">Affiliated Members</h3>
+                </div>
+                <div class="card-body">
+                  TODO
+                </div>
+              </div>
+            </div>
+            <!-- /.col-md-6 -->
           </div>
-          <!-- /.col-md-6 -->
-          <div class="col-lg-6">
-            <div class="card card-primary card-outline">
-              <div class="card-header">
-                <h3 class="card-title">Affiliated Members</h3>
-              </div>
-              <div class="card-body">
-                TODO
+          <!-- /.row -->
+        </#if>
+
+        <#if networks?size != 0>
+          <div class="row">
+            <div class="col-lg-12">
+              <div class="card card-info card-outline">
+                <div class="card-header">
+                  <h3 class="card-title">Networks</h3>
+                  <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="Collapse">
+                      <i class="fas fa-minus"></i></button>
+                  </div>
+                </div>
+                <div class="card-body">
+                  <table id="networks" class="table table-bordered table-striped">
+                    <thead>
+                    <tr>
+                      <th>Acronym</th>
+                      <th>Name</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <#list networks as netwk>
+                      <tr>
+                        <td><a href="../network/${netwk.id}">${netwk.acronym.en}</a></td>
+                        <td><small>${netwk.name.en}</small></td>
+                      </tr>
+                    </#list>
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
           </div>
-          <!-- /.col-md-6 -->
-        </div>
-        <!-- /.row -->
+        </#if>
 
-          <#if networks?size != 0>
-            <div class="row">
-              <div class="col-lg-12">
-                <div class="card card-info card-outline">
-                  <div class="card-header">
-                    <h3 class="card-title">Networks</h3>
-                    <div class="card-tools">
-                      <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="Collapse">
-                        <i class="fas fa-minus"></i></button>
-                    </div>
+        <#if individualStudies?size != 0>
+          <div class="row">
+            <div class="col-lg-12">
+              <div class="card card-info card-outline">
+                <div class="card-header">
+                  <h3 class="card-title">Individual Studies</h3>
+                  <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="Collapse">
+                      <i class="fas fa-minus"></i></button>
                   </div>
-                  <div class="card-body">
-                    <table id="networks" class="table table-bordered table-striped">
-                      <thead>
+                </div>
+                <div class="card-body">
+                  <table id="individual-studies" class="table table-bordered table-striped">
+                    <thead>
+                    <tr>
+                      <th>Acronym</th>
+                      <th>Name</th>
+                      <th>Study Design</th>
+                      <th>Participants</th>
+                      <th>Countries</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <#list individualStudies as study>
                       <tr>
-                        <th>Acronym</th>
-                        <th>Name</th>
+                        <td><a href="../study/${study.id}">${study.acronym.en}</a></td>
+                        <td><small>${study.name.en}</small></td>
+                        <td>${study.model.methods.design}</td>
+                        <td>${study.model.numberOfParticipants.participant.number}</td>
+                        <td></td>
                       </tr>
-                      </thead>
-                      <tbody>
-                      <#list networks as netwk>
-                        <tr>
-                          <td><a href="../network/${netwk.id}">${netwk.acronym.en}</a></td>
-                          <td><small>${netwk.name.en}</small></td>
-                        </tr>
-                      </#list>
-                      </tbody>
-                    </table>
-                  </div>
+                    </#list>
+                    </tbody>
+                  </table>
                 </div>
               </div>
             </div>
-          </#if>
+          </div>
+        </#if>
 
-          <#if individualStudies?size != 0>
-            <div class="row">
-              <div class="col-lg-12">
-                <div class="card card-info card-outline">
-                  <div class="card-header">
-                    <h3 class="card-title">Individual Studies</h3>
-                    <div class="card-tools">
-                      <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="Collapse">
-                        <i class="fas fa-minus"></i></button>
-                    </div>
+        <#if harmonizationStudies?size != 0>
+          <div class="row">
+            <div class="col-lg-12">
+              <div class="card card-info card-outline">
+                <div class="card-header">
+                  <h3 class="card-title">Harmonization Studies</h3>
+                  <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="Collapse">
+                      <i class="fas fa-minus"></i></button>
                   </div>
-                  <div class="card-body">
-                    <table id="individual-studies" class="table table-bordered table-striped">
-                      <thead>
+                </div>
+                <div class="card-body">
+                  <table id="harmonization-studies" class="table table-bordered table-striped">
+                    <thead>
+                    <tr>
+                      <th>Acronym</th>
+                      <th>Name</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <#list harmonizationStudies as study>
                       <tr>
-                        <th>Acronym</th>
-                        <th>Name</th>
-                        <th>Study Design</th>
-                        <th>Participants</th>
-                        <th>Countries</th>
+                        <td><a href="../study/${study.id}">${study.acronym.en}</a></td>
+                        <td><small>${study.name.en}</small></td>
                       </tr>
-                      </thead>
-                      <tbody>
-                      <#list individualStudies as study>
-                        <tr>
-                          <td><a href="../study/${study.id}">${study.acronym.en}</a></td>
-                          <td><small>${study.name.en}</small></td>
-                          <td>${study.model.methods.design}</td>
-                          <td>${study.model.numberOfParticipants.participant.number}</td>
-                          <td></td>
-                        </tr>
-                      </#list>
-                      </tbody>
-                    </table>
-                  </div>
+                    </#list>
+                    </tbody>
+                  </table>
                 </div>
               </div>
             </div>
-          </#if>
-
-          <#if harmonizationStudies?size != 0>
-            <div class="row">
-              <div class="col-lg-12">
-                <div class="card card-info card-outline">
-                  <div class="card-header">
-                    <h3 class="card-title">Harmonization Studies</h3>
-                    <div class="card-tools">
-                      <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="Collapse">
-                        <i class="fas fa-minus"></i></button>
-                    </div>
-                  </div>
-                  <div class="card-body">
-                    <table id="harmonization-studies" class="table table-bordered table-striped">
-                      <thead>
-                      <tr>
-                        <th>Acronym</th>
-                        <th>Name</th>
-                      </tr>
-                      </thead>
-                      <tbody>
-                      <#list harmonizationStudies as study>
-                        <tr>
-                          <td><a href="../study/${study.id}">${study.acronym.en}</a></td>
-                          <td><small>${study.name.en}</small></td>
-                        </tr>
-                      </#list>
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </#if>
+          </div>
+        </#if>
 
       </div><!-- /.container-fluid -->
     </div>
@@ -269,6 +285,11 @@
         $("#individual-studies").DataTable(opts);
         $("#harmonization-studies").DataTable(opts);
     });
+    micajs.stats('networks', { query: "network(in(Mica_network.id,${network.id}))" }, function(stats) {
+        $('#study-hits').text(new Intl.NumberFormat().format(stats.studyResultDto.totalHits));
+        $('#dataset-hits').text(new Intl.NumberFormat().format(stats.datasetResultDto.totalHits));
+        $('#variable-hits').text(new Intl.NumberFormat().format(stats.variableResultDto.totalHits));
+    }, micajs.redirectError);
 </script>
 </body>
 </html>

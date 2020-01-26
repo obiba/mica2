@@ -40,8 +40,7 @@
             <!-- small box -->
             <div class="small-box bg-info">
               <div class="inner">
-                <h3>${stats.networkResultDto.totalHits}</h3>
-
+                <h3 id="network-hits">-</h3>
                 <p>Networks</p>
               </div>
               <div class="icon">
@@ -55,8 +54,7 @@
             <!-- small box -->
             <div class="small-box bg-success">
               <div class="inner">
-                <h3>${stats.studyResultDto.totalHits}</h3>
-
+                <h3 id="study-hits">-</h3>
                 <p>Studies</p>
               </div>
               <div class="icon">
@@ -70,8 +68,7 @@
             <!-- small box -->
             <div class="small-box bg-warning">
               <div class="inner">
-                <h3>${stats.datasetResultDto.totalHits}</h3>
-
+                <h3 id="dataset-hits">-</h3>
                 <p>Datasets</p>
               </div>
               <div class="icon">
@@ -85,8 +82,7 @@
             <!-- small box -->
             <div class="small-box bg-danger">
               <div class="inner">
-                <h3>${stats.variableResultDto.totalHits}</h3>
-
+                <h3 id="variable-hits">-</h3>
                 <p>Variables</p>
               </div>
               <div class="icon">
@@ -99,12 +95,10 @@
         </div>
 
         <div class="callout callout-info">
-
           <div class="row mb-2">
             <div class="col-sm-10">
               <p class="text-justify">
                 Search tool to query networks, studies, and variables and to explore harmonization potential across studies.
-
               </p>
             </div><!-- /.col -->
             <div class="col-sm-2">
@@ -130,6 +124,15 @@
 <!-- ./wrapper -->
 
 <#include "libs/scripts.ftl">
+
+<script>
+    micajs.stats('networks', {}, function(stats) {
+        $('#network-hits').text(new Intl.NumberFormat().format(stats.networkResultDto.totalHits));
+        $('#study-hits').text(new Intl.NumberFormat().format(stats.studyResultDto.totalHits));
+        $('#dataset-hits').text(new Intl.NumberFormat().format(stats.datasetResultDto.totalHits));
+        $('#variable-hits').text(new Intl.NumberFormat().format(stats.variableResultDto.totalHits));
+    }, micajs.redirectError);
+</script>
 
 </body>
 </html>

@@ -26,6 +26,7 @@
     "bootswatch": "3.3.7",
     "font-awesome": "4.7.0",
     "grunt-contrib-less": "1.3.0",
+    "jquery.redirect": "1.1.4",
     "jquery-ui": "1.12.1",
     "json3": "3.3.2",
     "mica-study-timeline": "https://github.com/obiba/mica-study-timeline.git#1.0.5",
