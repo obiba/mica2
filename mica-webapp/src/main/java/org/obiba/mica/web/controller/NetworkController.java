@@ -57,6 +57,7 @@ public class NetworkController extends EntityController {
   private Network getNetwork(String id) {
     Network network = publishedNetworkService.findById(id);
     if (network == null) throw NoSuchNetworkException.withId(id);
+    checkAccess("/network", id);
     return network;
   }
 

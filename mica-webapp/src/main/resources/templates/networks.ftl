@@ -140,16 +140,7 @@
 <!-- page script -->
 <script>
     $(function () {
-        var opts = {
-            "paging": false,
-            //"scrollY": "200px",
-            "lengthChange": false,
-            "searching": true,
-            "ordering": true,
-            "info": false,
-            "autoWidth": true,
-        };
-        $("#networks").DataTable(opts);
+        $("#networks").DataTable(dataTablesDefaultOpts);
     });
 </script>
 </body>
