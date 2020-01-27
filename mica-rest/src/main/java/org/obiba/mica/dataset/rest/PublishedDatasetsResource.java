@@ -33,7 +33,6 @@ import java.util.stream.Collectors;
 @Component
 @Path("/datasets")
 @Scope("request")
-@RequiresAuthentication
 public class PublishedDatasetsResource {
 
   @Inject

@@ -3,7 +3,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>Example | Study</title>
+  <title>Example | ${study.acronym.en}</title>
   <#include "libs/head.ftl">
   <!-- Ionicons -->
   <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
@@ -29,7 +29,7 @@
             <ol class="breadcrumb float-sm-right">
               <li class="breadcrumb-item"><a class="text-white-50" href="#">Home</a></li>
               <li class="breadcrumb-item"><a class="text-white-50" href="../studies">Studies</a></li>
-              <li class="breadcrumb-item active text-light">Study</li>
+              <li class="breadcrumb-item active text-light">${study.acronym.en}</li>
             </ol>
           </div><!-- /.col -->
         </div><!-- /.row -->
@@ -240,7 +240,7 @@
                                   </a>
                                   <@dcemodal id=dceId dce=dce></@dcemodal>
                                 </td>
-                                <td><small><#if dce.description??>${dce.description.en!""}</#if></small></td>
+                                <td><small><#if dce.description??>${dce.description.en?trim?truncate(200, "...")}</#if></small></td>
                                 <td><#if dce.start?? && dce.start.yearMonth??>${dce.start.yearMonth}</#if></td>
                                 <td><#if dce.end?? && dce.end.yearMonth??>${dce.end.yearMonth}</#if></td>
                               </tr>
@@ -270,17 +270,8 @@
 <#include "libs/scripts.ftl">
 <script>
     $(function () {
-        var opts = {
-            "paging": false,
-            //"scrollY": "200px",
-            "lengthChange": false,
-            "searching": true,
-            "ordering": true,
-            "info": false,
-            "autoWidth": true,
-        };
         <#list study.populations as pop>
-          $("#population-${pop.id}-dces").DataTable(opts);
+          $("#population-${pop.id}-dces").DataTable(dataTablesDefaultOpts);
         </#list>
     });
     micajs.stats('studies', { query: "study(in(Mica_study.id,${study.id}))" }, function(stats) {

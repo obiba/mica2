@@ -1,4 +1,3 @@
-<#include "libs/members.ftl">
 <!DOCTYPE html>
 <html lang="en">
 <head>
