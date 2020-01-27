@@ -5,7 +5,7 @@
   <title>Example | Datasets</title>
   <#include "libs/head.ftl">
 </head>
-<body class="hold-transition layout-top-nav">
+<body class="hold-transition layout-top-nav layout-navbar-fixed">
 <div class="wrapper">
 
   <!-- Navbar -->
@@ -66,10 +66,10 @@
                   <h3 class="card-title p-3">Datasets</h3>
                   <ul class="nav nav-pills ml-auto p-2">
                     <li class="nav-item"><a class="nav-link" href="#list" data-toggle="tab">
-                        <i class="fas fa-grip-lines"></i></a>
+                      <i class="fas fa-grip-lines"></i></a>
                     </li>
                     <li class="nav-item"><a class="nav-link active" href="#cards" data-toggle="tab">
-                        <i class="fas fa-grip-horizontal"></i></a>
+                      <i class="fas fa-grip-horizontal"></i></a>
                     </li>
                   </ul>
                 </div><!-- /.card-header -->
@@ -124,13 +124,13 @@
                                     <p class="text-muted text-sm">${ds.name.en}</p>
                                   </div>
                                   <div class="col-5 text-center">
-                                      <#if ds.logo??>
-                                        <img class="img-fluid" style="max-height: 200px" alt="${ds.acronym.en} logo" src="../ws/dataset/${ds.id}/file/${ds.logo.id}/_download"/>
-                                      <#else >
-                                        <p class="text-black-50 text-center mr-5 ml-5 pr-5">
-                                          <i class="ion ion-grid fa-4x"></i>
-                                        </p>
+                                    <p class="text-black-50 text-center mr-5 ml-5 pr-5">
+                                      <#if ds.class.simpleName == "HarmonizationDataset">
+                                        <i class="ion ion-gear-b fa-4x"></i>
+                                      <#else>
+                                        <i class="ion ion-grid fa-4x"></i>
                                       </#if>
+                                    </p>
                                   </div>
                                 </div>
                               </div>
