@@ -21,7 +21,7 @@ public class NetworksController extends EntityController {
 
     Map<String, Object> params = new HashMap<String, Object>();
     params.put("networks", publishedNetworkService.findAll().stream()
-      .filter(n -> subjectAclService.isAccessible("/network", n.getId()))
+      .filter(n -> isAccessible("/network", n.getId()))
       .collect(Collectors.toList()));
 
     return new ModelAndView("networks", params);
