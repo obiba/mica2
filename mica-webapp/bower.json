@@ -29,6 +29,7 @@
     "jquery.redirect": "1.1.4",
     "jquery-ui": "1.12.1",
     "json3": "3.3.2",
+    "js-cookie": "2.2.1",
     "mica-study-timeline": "https://github.com/obiba/mica-study-timeline.git#1.0.5",
     "ng-file-upload": "12.2.13",
     "ng-obiba": "https://github.com/obiba/ng-obiba.git#1.9.8",

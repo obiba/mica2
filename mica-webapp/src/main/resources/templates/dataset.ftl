@@ -1,3 +1,5 @@
+<#include "libs/population.ftl">
+<#include "libs/dce.ftl">
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,7 +8,7 @@
   <!-- Ionicons -->
   <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
 </head>
-<body class="hold-transition layout-top-nav">
+<body class="hold-transition layout-top-nav layout-navbar-fixed">
 <div class="wrapper">
 
   <!-- Navbar -->
@@ -48,8 +50,12 @@
                 </div>
                 <div class="row mb-4">
                   <div class="col-md-3 col-sm-6 col-12">
-                    <p class="text-light text-center">
-                      <i class="ion ion-grid fa-6x"></i>
+                    <p class="text-muted text-center">
+                      <#if type == "Collected">
+                        <i class="ion ion-grid fa-5x"></i>
+                      <#else >
+                        <i class="ion ion-gear-b fa-5x"></i>
+                      </#if>
                     </p>
                   </div>
                   <div class="col-md-3 col-sm-6 col-12">
@@ -105,9 +111,64 @@
                   </#if>
                 </p>
               </div>
+                <#if study??>
+                  <div class="card-footer">
+                    Associated study
+                    <a class="btn btn-success ml-2" href="../study/${study.id}">
+                      <i class="ion ion-folder"></i> ${study.acronym.en}
+                    </a>
+                  </div>
+                </#if>
             </div>
           </div>
         </div>
+
+        <div class="row">
+          <#if population??>
+            <div class="col-lg-6">
+              <div class="card card-info card-outline">
+                <div class="card-header">
+                  <h3 class="card-title">Population</h3>
+                  <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="Collapse">
+                      <i class="fas fa-minus"></i></button>
+                  </div>
+                </div>
+                <div class="card-body">
+                  <h5>${population.name.en}</h5>
+                  <div><#if population.description??>${population.description.en!""}</#if></div>
+                  <@populationmodal id=population.id population=population></@populationmodal>
+                </div>
+                <div class="card-footer">
+                  <a href="#" data-toggle="modal" data-target="#modal-${population.id}">More info <i class="fas fa-arrow-circle-right"></i></a>
+                </div>
+              </div>
+            </div>
+          </#if>
+          <#if dce??>
+            <div class="col-lg-6">
+              <div class="card card-info card-outline">
+                <div class="card-header">
+                  <h3 class="card-title">Data Collection Event</h3>
+                  <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="Collapse">
+                      <i class="fas fa-minus"></i></button>
+                  </div>
+                </div>
+                <div class="card-body">
+                  <h5>${dce.name.en}</h5>
+                  <div><#if dce.description??>${dce.description.en!""}</#if></div>
+                  <#assign dceId="${population.id}-${dce.id}">
+                  <@dcemodal id=dceId dce=dce></@dcemodal>
+                </div>
+                <div class="card-footer">
+                  <a href="#" data-toggle="modal" data-target="#modal-${dceId}">More info <i class="fas fa-arrow-circle-right"></i></a>
+                </div>
+              </div>
+            </div>
+          </#if>
+        </div>
+
       </div><!-- /.container-fluid -->
     </div>
     <!-- /.content -->
