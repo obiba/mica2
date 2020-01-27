@@ -8,7 +8,7 @@
   <!-- Ionicons -->
   <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
 </head>
-<body class="hold-transition layout-top-nav">
+<body class="hold-transition layout-top-nav layout-navbar-fixed">
 <div class="wrapper">
 
   <!-- Navbar -->
@@ -55,7 +55,7 @@
                       <img class="img-fluid" style="max-height: 200px" alt="${study.acronym.en} logo" src="../ws/study/${study.id}/file/${study.logo.id}/_download"/>
                     <#else >
                       <p class="text-light text-center">
-                        <i class="ion ion-folder fa-6x"></i>
+                        <i class="ion ion-folder fa-5x"></i>
                       </p>
                     </#if>
                   </div>

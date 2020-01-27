@@ -28,9 +28,12 @@
         <li class="nav-item dropdown">
           <a id="studiesMenu" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle">Research</a>
           <ul aria-labelledby="dropdownSubMenu1" class="dropdown-menu border-0 shadow">
-            <li><a href="../data-access-request" class="dropdown-item">Data Access</a></li>
+            <li><a href="../data-access-process" class="dropdown-item">Data Access Process</a></li>
             <li><a href="../projects" class="dropdown-item">Approved Projects</a></li>
           </ul>
+        </li>
+        <li>
+
         </li>
       </ul>
     </div>
