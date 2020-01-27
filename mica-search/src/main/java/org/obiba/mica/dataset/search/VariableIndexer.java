@@ -151,6 +151,5 @@ public class VariableIndexer {
     // remove variables that have this dataset as parent
     Map.Entry<String, String> termQuery = ImmutablePair.of("datasetId", dataset.getId());
     indexer.delete(indexName, Indexer.HARMONIZED_VARIABLE_TYPE, termQuery);
-    indexer.delete(indexName, Indexer.VARIABLE_TYPE, termQuery);
   }
 }
