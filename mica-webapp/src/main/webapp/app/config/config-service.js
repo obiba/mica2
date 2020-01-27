@@ -43,7 +43,7 @@ mica.config
     }])
   .factory('OpalCredentialResource', ['$resource',
     function ($resource) {
-      return $resource('ws/config/opal-credential/:id', {id: '@id'}, {});
+      return $resource('ws/config/opal-credential', {}, {});
     }])
   .factory('TranslationsResource', ['$resource',
     function ($resource) {

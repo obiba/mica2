@@ -273,18 +273,18 @@ public class MicaConfigResource {
   }
 
   @GET
-  @Path("/opal-credential/{id}")
+  @Path("/opal-credential")
   @Timed
   @RequiresRoles(Roles.MICA_ADMIN)
-  public Mica.OpalCredentialDto getOpalCredential(@PathParam("id") String opalUrl) {
+  public Mica.OpalCredentialDto getOpalCredential(@QueryParam("id") String opalUrl) {
     return dtos.asDto(opalCredentialService.getOpalCredential(opalUrl));
   }
 
   @GET
-  @Path("/opal-credential/{id}/certificate")
+  @Path("/opal-credential/certificate")
   @Timed
   @RequiresRoles(Roles.MICA_ADMIN)
-  public Response getOpalCredentialCertificate(@PathParam("id") String opalUrl) {
+  public Response getOpalCredentialCertificate(@QueryParam("id") String opalUrl) {
     return Response.ok(opalCredentialService.getCertificate(opalUrl), MediaType.TEXT_PLAIN_TYPE)
       .header("Content-disposition", "attachment; filename=opal-mica-certificate.pem").build();
   }
@@ -301,20 +301,20 @@ public class MicaConfigResource {
   }
 
   @PUT
-  @Path("/opal-credential/{id}")
+  @Path("/opal-credential")
   @Timed
   @RequiresRoles(Roles.MICA_ADMIN)
-  public Response updateOpalCredential(@PathParam("id") String id, Mica.OpalCredentialDto opalCredentialDto) {
+  public Response updateOpalCredential(@QueryParam("id") String id, Mica.OpalCredentialDto opalCredentialDto) {
     createOrUpdateCredential(opalCredentialDto);
 
     return Response.ok().build();
   }
 
   @DELETE
-  @Path("/opal-credential/{id}")
+  @Path("/opal-credential")
   @Timed
   @RequiresRoles(Roles.MICA_ADMIN)
-  public Response updateOpalCredential(@PathParam("id") String id) {
+  public Response updateOpalCredential(@QueryParam("id") String id) {
     opalCredentialService.deleteOpalCredential(id);
 
     return Response.ok().build();
