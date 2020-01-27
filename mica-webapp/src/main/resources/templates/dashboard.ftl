@@ -4,7 +4,7 @@
   <title>Example | Dashboard</title>
     <#include "libs/head.ftl">
 </head>
-<body class="hold-transition layout-top-nav">
+<body class="hold-transition layout-top-nav layout-navbar-fixed">
 <div class="wrapper">
 
   <!-- Navbar -->
