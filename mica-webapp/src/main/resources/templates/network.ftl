@@ -283,18 +283,9 @@
 <!-- page script -->
 <script>
     $(function () {
-        var opts = {
-            "paging": false,
-            //"scrollY": "200px",
-            "lengthChange": false,
-            "searching": true,
-            "ordering": true,
-            "info": false,
-            "autoWidth": true,
-        };
-        $("#networks").DataTable(opts);
-        $("#individual-studies").DataTable(opts);
-        $("#harmonization-studies").DataTable(opts);
+        $("#networks").DataTable(dataTablesDefaultOpts);
+        $("#individual-studies").DataTable(dataTablesDefaultOpts);
+        $("#harmonization-studies").DataTable(dataTablesDefaultOpts);
     });
     micajs.stats('networks', { query: "network(in(Mica_network.id,${network.id}))" }, function(stats) {
         $('#study-hits').text(new Intl.NumberFormat().format(stats.studyResultDto.totalHits));
