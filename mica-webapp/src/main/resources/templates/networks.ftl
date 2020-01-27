@@ -68,13 +68,15 @@
                         <tr>
                           <th>Acronym</th>
                           <th>Name</th>
+                          <th>Description</th>
                         </tr>
                         </thead>
                         <tbody>
-                        <#list networks as netwk>
+                        <#list networks as ntwk>
                           <tr>
-                            <td><a href="../network/${netwk.id}">${netwk.acronym.en}</a></td>
-                            <td><small>${netwk.name.en}</small></td>
+                            <td><a href="../network/${ntwk.id}">${ntwk.acronym.en}</a></td>
+                            <td><small>${ntwk.name.en}</small></td>
+                            <td><small>${ntwk.description.en?trim?truncate_w(100, "...")}</small></td>
                           </tr>
                         </#list>
                         </tbody>
@@ -83,20 +85,20 @@
 
                     <div class="tab-pane active" id="cards">
                       <div class="row d-flex align-items-stretch">
-                        <#list networks as netwk>
+                        <#list networks as ntwk>
                           <div class="col-12 col-sm-6 col-md-4 d-flex align-items-stretch">
                             <div class="card bg-light">
                               <div class="card-header text-dark border-bottom-0">
-                                <h2 class="lead"><b>${netwk.acronym.en}</b></h2>
+                                <h2 class="lead"><b>${ntwk.acronym.en}</b></h2>
                               </div>
                               <div class="card-body pt-0">
                                 <div class="row">
                                   <div class="col-7">
-                                    <p class="text-muted text-sm">${netwk.name.en}</p>
+                                    <p class="text-muted text-sm">${ntwk.name.en}</p>
                                   </div>
                                   <div class="col-5 text-center">
-                                      <#if netwk.logo??>
-                                        <img class="img-fluid" style="max-height: 200px" alt="${netwk.acronym.en} logo" src="../ws/network/${netwk.id}/file/${netwk.logo.id}/_download"/>
+                                      <#if ntwk.logo??>
+                                        <img class="img-fluid" style="max-height: 200px" alt="${ntwk.acronym.en} logo" src="../ws/network/${ntwk.id}/file/${ntwk.logo.id}/_download"/>
                                       <#else >
                                         <p class="text-black-50 text-center mr-5 ml-5 pr-5">
                                           <i class="ion ion-filing fa-4x"></i>
@@ -107,8 +109,8 @@
                               </div>
                               <div class="card-footer">
                                 <div class="text-right">
-                                  <a href="../network/${netwk.id}" class="btn btn-sm btn-primary">
-                                    <i class="fas fa-eye"></i> View ${netwk.acronym.en}
+                                  <a href="../network/${ntwk.id}" class="btn btn-sm btn-primary">
+                                    <i class="fas fa-eye"></i> View ${ntwk.acronym.en}
                                   </a>
                                 </div>
                               </div>
