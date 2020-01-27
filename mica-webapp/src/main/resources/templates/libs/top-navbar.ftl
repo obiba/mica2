@@ -14,7 +14,10 @@
       <!-- Left navbar links -->
       <ul class="navbar-nav">
         <li class="nav-item">
-          <a href="../dashboard" class="nav-link">Home</a>
+          <a href="../index" class="nav-link">Home</a>
+        </li>
+        <li class="nav-item">
+          <a href="../dashboard" class="nav-link">Dashboard</a>
         </li>
         <li class="nav-item">
           <a href="../networks" class="nav-link">Networks</a>
@@ -32,10 +35,36 @@
             <li><a href="../projects" class="dropdown-item">Approved Projects</a></li>
           </ul>
         </li>
-        <li>
-
+        <li class="nav-item">
+          <a href="../data-accesses" class="btn btn-warning">Data Access <i class="fas fa-arrow-circle-right"></i></a>
         </li>
       </ul>
     </div>
+
+    <!-- Right navbar links -->
+    <ul class="order-1 order-md-3 navbar-nav navbar-no-expand ml-auto">
+      <#--<li class="nav-item">
+        <a href="../cart" class="nav-link">
+          <i class="fas fa-shopping-basket"></i>
+          <span class="badge badge-danger navbar-badge">3</span>
+        </a>
+      </li>-->
+      <#if user??>
+        <li class="nav-item dropdown">
+          <a id="userMenu" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle"><i class="fas fa-user"></i> username</a>
+          <ul aria-labelledby="dropdownSubMenu1" class="dropdown-menu border-0 shadow">
+            <li><a href="../profile" class="dropdown-item">Profile</a></li>
+            <li><a href="../signout" class="dropdown-item">Sign out</a></li>
+          </ul>
+        </li>
+      <#else >
+        <li class="nav-item">
+          <a class="nav-link" href="../signin">Sign in</a>
+        </li>
+        <li class="nav-item">
+          <a class="btn btn-outline-primary" href="../signup">Sign up</a>
+        </li>
+      </#if>
+    </ul>
   </div>
 </nav>
