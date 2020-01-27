@@ -5,7 +5,7 @@
   <title>Example | ${network.acronym.en}</title>
   <#include "libs/head.ftl">
 </head>
-<body class="hold-transition layout-top-nav">
+<body class="hold-transition layout-top-nav layout-navbar-fixed">
 <div class="wrapper">
 
   <!-- Navbar -->
@@ -52,7 +52,7 @@
                       <img class="img-fluid" style="max-height: 200px" alt="${network.acronym.en} logo" src="../ws/network/${network.id}/file/${network.logo.id}/_download"/>
                     <#else >
                       <p class="text-light text-center">
-                        <i class="ion ion-filing fa-6x"></i>
+                        <i class="ion ion-filing fa-5x"></i>
                       </p>
                     </#if>
                   </div>
