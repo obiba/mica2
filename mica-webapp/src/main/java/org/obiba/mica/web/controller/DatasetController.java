@@ -1,5 +1,6 @@
 package org.obiba.mica.web.controller;
 
+import com.google.common.collect.Lists;
 import org.obiba.mica.core.domain.HarmonizationStudyTable;
 import org.obiba.mica.core.domain.StudyTable;
 import org.obiba.mica.dataset.NoSuchDatasetException;
@@ -19,6 +20,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.inject.Inject;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -39,31 +41,70 @@ public class DatasetController extends EntityController {
     params.put("dataset", dataset);
     params.put("type", (dataset instanceof StudyDataset) ? "Collected" : "Harmonized");
     if (dataset instanceof StudyDataset) {
-      StudyTable studyTable = ((StudyDataset) dataset).getStudyTable();
-      try {
-        Study study = (Study) getStudy(studyTable.getStudyId());
-        Population population = study.findPopulation(studyTable.getPopulationId());
-        DataCollectionEvent dce = population.findDataCollectionEvent(studyTable.getDataCollectionEventId());
+      addStudyTableParameters(params, ((StudyDataset) dataset).getStudyTable());
+    } else {
+      HarmonizationDataset harmoDataset = (HarmonizationDataset) dataset;
+      addHarmonizationTableParameters(params, harmoDataset.getHarmonizationTable());
+      List<Map<String, Object>> studyTables = Lists.newArrayList();
+      List<String> ids = Lists.newArrayList();
+      for (StudyTable sTable : harmoDataset.getStudyTables()) {
+        Map<String, Object> p = new HashMap<String, Object>();
+        addStudyTableParameters(p, sTable, ids);
+        if (!p.isEmpty()) studyTables.add(p);
+      }
+      params.put("studyTables", studyTables);
+      List<Map<String, Object>> harmonizationTables = Lists.newArrayList();
+      ids.clear();
+      for (HarmonizationStudyTable hTable : harmoDataset.getHarmonizationTables()) {
+        Map<String, Object> p = new HashMap<String, Object>();
+        addHarmonizationTableParameters(p, hTable, ids);
+        if (!p.isEmpty()) harmonizationTables.add(p);
+      }
+      params.put("harmonizationTables", harmonizationTables);
+    }
+    return new ModelAndView("dataset", params);
+  }
+
+  private void addStudyTableParameters(Map<String, Object> params, StudyTable studyTable) {
+    addStudyTableParameters(params, studyTable, Lists.newArrayList());
+  }
+
+  private void addStudyTableParameters(Map<String, Object> params, StudyTable studyTable, List<String> ids) {
+    try {
+      Study study = (Study) getStudy(studyTable.getStudyId());
+      Population population = study.findPopulation(studyTable.getPopulationId());
+      DataCollectionEvent dce = population.findDataCollectionEvent(studyTable.getDataCollectionEventId());
+      String id = study.getId() + ":" + population.getId() + ":" + dce.getId();
+      if (!ids.contains(id)) { // could be different datasets from same dce
         params.put("study", study);
         params.put("population", population);
         params.put("dce", dce);
-      } catch (Exception e) {
-        // ignore
-        log.warn("Failed at retrieving collected dataset's study/population/dce", e);
+        ids.add(id);
       }
-    } else {
-      HarmonizationStudyTable studyTable = ((HarmonizationDataset) dataset).getHarmonizationTable();
-      try {
-        HarmonizationStudy study = (HarmonizationStudy) getStudy(studyTable.getStudyId());
-        Population population = study.findPopulation(studyTable.getPopulationId());
+    } catch (Exception e) {
+      // ignore
+      log.warn("Failed at retrieving collected dataset's study/population/dce", e);
+    }
+  }
+
+  private void addHarmonizationTableParameters(Map<String, Object> params, HarmonizationStudyTable studyTable) {
+    addHarmonizationTableParameters(params, studyTable, Lists.newArrayList());
+  }
+
+  private void addHarmonizationTableParameters(Map<String, Object> params, HarmonizationStudyTable studyTable, List<String> ids) {
+    try {
+      HarmonizationStudy study = (HarmonizationStudy) getStudy(studyTable.getStudyId());
+      Population population = study.findPopulation(studyTable.getPopulationId());
+      String id = study.getId() + ":" + population.getId();
+      if (!ids.contains(id)) { // could be different datasets from same population
         params.put("study", study);
         params.put("population", population);
-      } catch (Exception e) {
-        // ignore
-        log.warn("Failed at retrieving harmonized dataset's study/population", e);
+        ids.add(id);
       }
+    } catch (Exception e) {
+      // ignore
+      log.warn("Failed at retrieving harmonized dataset's study/population", e);
     }
-    return new ModelAndView("dataset", params);
   }
 
   private Dataset getDataset(String id) {
