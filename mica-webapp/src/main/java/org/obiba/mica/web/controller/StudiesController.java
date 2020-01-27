@@ -6,7 +6,6 @@ import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.service.PublishedStudyService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.inject.Inject;
@@ -25,7 +24,6 @@ public class StudiesController extends EntityController {
   public ModelAndView list() {
     Map<String, Object> params = new HashMap<String, Object>();
     params.put("studies", getStudies());
-
     return new ModelAndView("studies", params);
   }
 
@@ -47,7 +45,7 @@ public class StudiesController extends EntityController {
 
   private List<BaseStudy> getStudies() {
     return publishedStudyService.findAll().stream()
-      .filter(s -> subjectAclService.isAccessible((s instanceof Study) ? "/individual-study" : "harmonization-study", s.getId()))
+      .filter(s -> isAccessible((s instanceof Study) ? "/individual-study" : "/harmonization-study", s.getId()))
       .collect(Collectors.toList());
   }
 
