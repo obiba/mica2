@@ -22,11 +22,12 @@
       <div class="container">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1 class="m-0">Dataset</h1>
+            <h1 class="m-0">${dataset.acronym.en}</h1>
+            <small>${dataset.name.en}</small>
           </div><!-- /.col -->
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
-              <li class="breadcrumb-item"><a class="text-white-50" href="#">Home</a></li>
+              <li class="breadcrumb-item"><a class="text-white-50" href="../index">Home</a></li>
               <li class="breadcrumb-item"><a class="text-white-50" href="../datasets">Datasets</a></li>
               <li class="breadcrumb-item active text-light">${dataset.acronym.en}</li>
             </ol>
@@ -39,6 +40,8 @@
     <!-- Main content -->
     <div class="content">
       <div class="container">
+
+        <!-- General Information content -->
         <div class="row">
           <div class="col-lg-12">
             <div class="card card-primary card-outline">
@@ -123,6 +126,7 @@
           </div>
         </div>
 
+        <!-- Population and DCE content -->
         <div class="row">
           <#if population??>
             <div class="col-lg-6">
@@ -166,8 +170,109 @@
                 </div>
               </div>
             </div>
+          <#elseif studyTables?size != 0 || harmonizationTables?size != 0>
+            <div class="col-lg-6">
+              <div class="card card-info card-outline">
+                <div class="card-header">
+                  <h3 class="card-title">Studies Included</h3>
+                  <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="Collapse">
+                      <i class="fas fa-minus"></i></button>
+                  </div>
+                </div>
+                <div class="card-body">
+                  <#if studyTables?size != 0>
+                    <h5>Individual Studies</h5>
+                    <table class="table table-striped mb-3">
+                      <thead>
+                      <tr>
+                        <th>Study</th>
+                        <th>Population</th>
+                        <th>DCE</th>
+                      </tr>
+                      </thead>
+                      <tbody>
+                      <#list studyTables as table>
+                        <tr>
+                          <td>
+                            <a href="../study/${table.study.id}">
+                              ${table.study.acronym.en}
+                            </a>
+                          </td>
+                          <td>
+                            <#assign popId="${table.study.id}-${table.population.id}">
+                            <@populationmodal id=popId population=table.population></@populationmodal>
+                            <a href="#" data-toggle="modal" data-target="#modal-${popId}">
+                              ${table.population.name.en}
+                            </a>
+                          </td>
+                          <td>
+                            <#assign dceId="${table.study.id}-${table.population.id}-${table.dce.id}">
+                            <@dcemodal id=dceId dce=table.dce></@dcemodal>
+                            <a href="#" data-toggle="modal" data-target="#modal-${dceId}">
+                              ${table.dce.name.en}
+                            </a>
+                          </td>
+                        </tr>
+                      </#list>
+                      </tbody>
+                    </table>
+                  </#if>
+                    <#if harmonizationTables?size != 0>
+                      <h5>Harmonization Studies</h5>
+                      <table class="table table-striped">
+                        <thead>
+                        <tr>
+                          <th>Study</th>
+                          <th>Population</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <#list harmonizationTables as table>
+                          <tr>
+                            <td>
+                              <a href="../study/${table.study.id}">
+                                ${table.study.acronym.en}
+                              </a>
+                            </td>
+                            <td>
+                              <#assign popId="${table.study.id}-${table.population.id}">
+                              <@populationmodal id=popId population=table.population></@populationmodal>
+                              <a href="#" data-toggle="modal" data-target="#modal-${popId}">
+                                ${table.population.name.en}
+                              </a>
+                            </td>
+                          </tr>
+                        </#list>
+                        </tbody>
+                      </table>
+                    </#if>
+                </div>
+              </div>
+            </div>
           </#if>
         </div>
+
+        <!-- Harmonization content -->
+        <#if type != "Collected">
+          <div class="row">
+            <div class="col-lg-12">
+              <div class="card card-info card-outline">
+                <div class="card-header">
+                  <h3 class="card-title">Harmonization</h3>
+                  <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="Collapse">
+                      <i class="fas fa-minus"></i></button>
+                  </div>
+                </div>
+                <div class="card-body">
+                  TODO
+                </div>
+              </div>
+            </div>
+            </div>
+          </div>
+        </#if>
 
       </div><!-- /.container-fluid -->
     </div>
