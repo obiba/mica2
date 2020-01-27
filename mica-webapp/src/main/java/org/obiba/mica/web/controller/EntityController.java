@@ -7,10 +7,14 @@ import javax.inject.Inject;
 public class EntityController {
 
   @Inject
-  protected SubjectAclService subjectAclService;
+  private SubjectAclService subjectAclService;
 
-  private void checkAccess(String resource, String id) {
+  protected void checkAccess(String resource, String id) {
     subjectAclService.checkAccess(resource, id);
+  }
+
+  protected boolean isAccessible(String resource, String id) {
+    return subjectAclService.isAccessible(resource, id);
   }
 
 }
