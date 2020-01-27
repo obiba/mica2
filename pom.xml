@@ -44,6 +44,7 @@
     <commons-io.version>2.4</commons-io.version>
     <commons-lang.version>2.6</commons-lang.version>
     <embed-mongo.version>1.50.0</embed-mongo.version>
+    <freemarker.version>2.3.29</freemarker.version>
     <guava.version>19.0</guava.version>
     <geronimo-javamail_1.4_mail.version>1.8.3</geronimo-javamail_1.4_mail.version>
     <itextpdf.version>5.5.6</itextpdf.version>
@@ -219,6 +220,11 @@
         <groupId>io.github.jhipster.loaded</groupId>
         <artifactId>core</artifactId>
         <version>${jhipsterloaded.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.freemarker</groupId>
+        <artifactId>freemarker</artifactId>
+        <version>${freemarker.version}</version>
       </dependency>
 
       <!-- Test dependencies -->

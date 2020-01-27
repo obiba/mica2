@@ -12,3 +12,13 @@
 <!-- DataTables -->
 <script src="../bower_components/admin-lte/plugins/datatables/jquery.dataTables.js"></script>
 <script src="../bower_components/admin-lte/plugins/datatables-bs4/js/dataTables.bootstrap4.js"></script>
+<script>
+    var dataTablesDefaultOpts = {
+        "paging": true,
+        "lengthChange": true,
+        "searching": true,
+        "ordering": true,
+        "info": true,
+        "autoWidth": true,
+    };
+</script>
