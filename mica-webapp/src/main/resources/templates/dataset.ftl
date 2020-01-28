@@ -22,7 +22,9 @@
       <div class="container">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1 class="m-0"><span class="text-white-50">Dataset / </span>${dataset.acronym.en}</h1>
+            <h1 class="m-0">
+              <span class="text-white-50">${type} Dataset /</span> ${dataset.acronym.en}
+            </h1>
             <small>${dataset.name.en}</small>
           </div><!-- /.col -->
           <div class="col-sm-6">
