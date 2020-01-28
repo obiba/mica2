@@ -2,6 +2,8 @@ skipTests = false
 version=3.1-SNAPSHOT
 mvn_exec = mvn -Dmaven.test.skip=${skipTests}
 current_dir = $(shell pwd)
+search_plugin_version=
+
 ifdef MICA_HOME
 	mica_home = ${MICA_HOME}
 else
@@ -76,8 +78,8 @@ seed:
 plugins:
 	rm -rf ${mica_home}/plugins/* && \
 	mkdir -p ${mica_home}/plugins && \
-	cd ../mica-search-es && mvn clean install && \
-	cp target/mica-search-es-*-dist.zip ${mica_home}/plugins
+	cd ../mica-search-es${search_plugin_version} && mvn clean install && \
+	cp target/mica-search-es${search_plugin_version}-*-dist.zip ${mica_home}/plugins
 #	cd ${mica_home}/plugins && unzip *zip && rm *zip
 
 run:

@@ -23,7 +23,8 @@ final public class AggregationHelper {
   public static final String TYPE = PROPERTIES + FIELD_SEPARATOR + "type";
 
   public static final String NAME_SEPARATOR = "-";
-  public static final String AGG_TERMS = "sterms";
+  public static final String AGG_TERMS = "terms";
+  public static final String AGG_STERMS = "sterms";
   public static final String AGG_STATS = "stats";
   public static final String AGG_RANGE = "range";
   public static final String AGG_GLOBAL = "global";
@@ -40,6 +41,10 @@ final public class AggregationHelper {
 
   public static String unformatName(String name) {
     return name.replaceAll(NAME_SEPARATOR, FIELD_SEPARATOR);
+  }
+
+  public static boolean isTermsAgg(String type) {
+    return AGG_TERMS.equals(type) || AGG_STERMS.equals(type);
   }
 
 }
