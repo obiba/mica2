@@ -28,6 +28,7 @@
     "$": true,
     "ace": true,
     "FileReader": true,
-    "window": false
+    "window": false,
+    "URLSearchParams": true
   }
 }

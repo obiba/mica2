@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>Example | Catalog</title>
+  <title>Example | Data Access Process</title>
   <#include "libs/head.ftl">
 </head>
 <body class="hold-transition layout-top-nav layout-navbar-fixed">
 <div class="wrapper">
 
   <!-- Navbar -->
-    <#include "libs/top-navbar.ftl">
+  <#include "libs/top-navbar.ftl">
   <!-- /.navbar -->
 
   <!-- Content Wrapper. Contains page content -->
@@ -18,7 +18,7 @@
       <div class="container">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1 class="m-0">Catalog</h1>
+            <h1 class="m-0">Data Access Process</h1>
           </div><!-- /.col -->
           <div class="col-sm-6">
 
@@ -38,7 +38,7 @@
   </div>
   <!-- /.content-wrapper -->
 
-    <#include "libs/footer.ftl">
+  <#include "libs/footer.ftl">
 </div>
 <!-- ./wrapper -->
 
