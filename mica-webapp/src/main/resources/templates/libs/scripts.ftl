@@ -26,4 +26,5 @@
         "info": true,
         "autoWidth": true,
     };
+    micajs.signout("#signout");
 </script>

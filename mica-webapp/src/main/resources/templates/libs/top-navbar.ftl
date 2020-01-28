@@ -14,7 +14,7 @@
       <!-- Left navbar links -->
       <ul class="navbar-nav">
         <li class="nav-item">
-          <a href="../index" class="nav-link">Home</a>
+          <a href="../home" class="nav-link">Home</a>
         </li>
         <li class="nav-item">
           <a href="../dashboard" class="nav-link">Dashboard</a>
@@ -51,10 +51,10 @@
       </li>-->
       <#if user??>
         <li class="nav-item dropdown">
-          <a id="userMenu" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle"><i class="fas fa-user"></i> username</a>
+          <a id="userMenu" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle"><i class="fas fa-user"></i> ${user.fullName}</a>
           <ul aria-labelledby="dropdownSubMenu1" class="dropdown-menu border-0 shadow">
             <li><a href="../profile" class="dropdown-item">Profile</a></li>
-            <li><a href="../signout" class="dropdown-item">Sign out</a></li>
+            <li><a id="signout" href="#" class="dropdown-item">Sign out</a></li>
           </ul>
         </li>
       <#else >
