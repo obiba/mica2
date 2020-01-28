@@ -22,7 +22,9 @@
       <div class="container">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1 class="m-0"><span class="text-white-50">Study / </span>${study.acronym.en}</h1>
+            <h1 class="m-0">
+              <span class="text-white-50">${type} Study /</span> ${study.acronym.en}
+            </h1>
             <small>${study.name.en}</small>
           </div><!-- /.col -->
           <div class="col-sm-6">
