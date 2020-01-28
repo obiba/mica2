@@ -60,6 +60,7 @@ public class EsQueryResultParser {
           }
           break;
         case AggregationHelper.AGG_TERMS:
+        case AggregationHelper.AGG_STERMS:
           aggregation.asTerms().getBuckets().forEach(bucket -> {
             TermsAggregationResultDto.Builder termsBuilder = TermsAggregationResultDto.newBuilder();
             List<Searcher.DocumentAggregation> bucketAggregations = bucket.getAggregations();
