@@ -36,6 +36,9 @@
           </ul>
         </li>
         <li class="nav-item">
+          <a href="../catalog" class="btn btn-success">Search <i class="fas fa-search"></i></a>
+        </li>
+        <li class="nav-item ml-3">
           <a href="../data-accesses" class="btn btn-warning">Data Access <i class="fas fa-arrow-circle-right"></i></a>
         </li>
       </ul>
