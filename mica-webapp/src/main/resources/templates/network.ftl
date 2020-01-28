@@ -19,7 +19,7 @@
       <div class="container">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1 class="m-0">${network.acronym.en}</h1>
+            <h1 class="m-0"><span class="text-white-50">Network / </span>${network.acronym.en}</h1>
             <small>${network.name.en}</small>
           </div><!-- /.col -->
           <div class="col-sm-6">
