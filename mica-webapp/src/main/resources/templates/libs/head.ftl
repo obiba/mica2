@@ -13,4 +13,4 @@
 <!-- DataTables -->
 <link rel="stylesheet" href="../bower_components/admin-lte/plugins/datatables-bs4/css/dataTables.bootstrap4.css">
 <!-- Toastr -->
-<link rel="stylesheet" href="../../plugins/toastr/toastr.min.css">
+<link rel="stylesheet" href="../bower_components/admin-lte/plugins/toastr/toastr.min.css">

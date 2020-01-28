@@ -11,7 +11,7 @@ import java.util.Map;
 public class CatalogController {
 
   @GetMapping("/catalog")
-  public ModelAndView search() {
+  public ModelAndView get() {
     Map<String, Object> params = new HashMap<String, Object>();
     params.put("message", "coucou");
 

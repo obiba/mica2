@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>Example | Catalog</title>
+  <title>Example | Profile</title>
   <#include "libs/head.ftl">
 </head>
 <body class="hold-transition layout-top-nav layout-navbar-fixed">
 <div class="wrapper">
 
   <!-- Navbar -->
-    <#include "libs/top-navbar.ftl">
+  <#include "libs/top-navbar.ftl">
   <!-- /.navbar -->
 
   <!-- Content Wrapper. Contains page content -->
@@ -18,7 +18,7 @@
       <div class="container">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1 class="m-0">Catalog</h1>
+            <h1 class="m-0">${user.fullName}</h1>
           </div><!-- /.col -->
           <div class="col-sm-6">
 
@@ -31,14 +31,35 @@
     <!-- Main content -->
     <div class="content">
       <div class="container">
+        <div class="row">
+          <div class="col-6">
+            <div class="card card-primary card-outline">
+              <div class="card-header">
+                <h3 class="card-title">Attributes</h3>
+              </div>
+              <div class="card-body">
 
+              </div>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="card card-primary card-outline">
+              <div class="card-header">
+                <h3 class="card-title">Credentials</h3>
+              </div>
+              <div class="card-body">
+
+              </div>
+            </div>
+          </div>
+        </div>
       </div><!-- /.container-fluid -->
     </div>
     <!-- /.content -->
   </div>
   <!-- /.content-wrapper -->
 
-    <#include "libs/footer.ftl">
+  <#include "libs/footer.ftl">
 </div>
 <!-- ./wrapper -->
 
