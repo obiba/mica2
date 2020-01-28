@@ -1277,6 +1277,17 @@
       "reserved-groups": "Group name cannot be any of the following reserved groups: {{arg0}}."
     }
   },
+  "access": {
+    "help": "Grant <code>Read</code> access to the current publication.",
+    "help-global": "Grant <code>Read</code> access to any publication.",
+    "none": "No accesses.",
+    "add": "Add Access",
+    "principal-help": "User or group unique name. Use wildcard * for specifying anyone or any group.",
+    "delete-dialog": {
+      "title": "Delete Access",
+      "message": "Are you sure you want to delete the access of {{arg0}} {{arg1}}"
+    }
+  },
   "draft": "Draft",
   "published": "Published",
   "role": "Role",

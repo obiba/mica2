@@ -1277,6 +1277,17 @@
       "reserved-groups": "Le nom du groupe ne peut pas être l'un des groupes réservés suivants: {{arg0}}."
     }
   },
+  "access": {
+    "help": "Accorder l'autorisation de <code>Lire</code> la publication.",
+    "help-global": "Accorder l'autorisation de <code>Lire</code> toutes les publications.",
+    "none": "Aucun accès.",
+    "add": "Ajouter un accès",
+    "principal-help": "Nom unique d'utilisateur ou de groupe. Utiliser un astérisque * pour spécifier tout utilisateur ou groupe.",
+    "delete-dialog": {
+      "title": "Supprimer l'accès",
+      "message": "Etes-vous sûr de vouloir supprimer l'accès de {{arg0}} {{arg1}}"
+    }
+  },
   "draft": "Brouillon",
   "published": "Publié",
   "role": "Rôle",
