@@ -170,7 +170,7 @@
                 </div>
               </div>
             </div>
-          <#elseif studyTables?size != 0 || harmonizationTables?size != 0>
+          <#elseif (studyTables?? && studyTables?size != 0) || (harmonizationTables?? && harmonizationTables?size != 0)>
             <div class="col-lg-6">
               <div class="card card-info card-outline">
                 <div class="card-header">
@@ -181,7 +181,7 @@
                   </div>
                 </div>
                 <div class="card-body">
-                  <#if studyTables?size != 0>
+                  <#if studyTables?? && studyTables?size != 0>
                     <h5>Individual Studies</h5>
                     <table class="table table-striped mb-3">
                       <thead>
@@ -218,7 +218,7 @@
                       </tbody>
                     </table>
                   </#if>
-                    <#if harmonizationTables?size != 0>
+                    <#if harmonizationTables?? && harmonizationTables?size != 0>
                       <h5>Harmonization Studies</h5>
                       <table class="table table-striped">
                         <thead>
