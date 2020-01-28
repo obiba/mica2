@@ -27,7 +27,7 @@
           </div><!-- /.col -->
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
-              <li class="breadcrumb-item"><a class="text-white-50" href="../index">Home</a></li>
+              <li class="breadcrumb-item"><a class="text-white-50" href="../home">Home</a></li>
               <li class="breadcrumb-item"><a class="text-white-50" href="../studies">Studies</a></li>
               <li class="breadcrumb-item active text-light">${study.acronym.en}</li>
             </ol>
@@ -240,7 +240,7 @@
                                   </a>
                                   <@dcemodal id=dceId dce=dce></@dcemodal>
                                 </td>
-                                <td><small><#if dce.description??>${dce.description.en?trim?truncate(200, "...")}</#if></small></td>
+                                <td><small><#if dce.description?? && dce.description.en??>${dce.description.en?trim?truncate(200, "...")}</#if></small></td>
                                 <td><#if dce.start?? && dce.start.yearMonth??>${dce.start.yearMonth}</#if></td>
                                 <td><#if dce.end?? && dce.end.yearMonth??>${dce.end.yearMonth}</#if></td>
                               </tr>

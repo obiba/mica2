@@ -5,11 +5,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 @Controller
-public class DashboardController {
+public class ProjectsController {
 
-  @GetMapping("/dashboard")
+  @GetMapping("/projects")
   public ModelAndView get() {
-    return new ModelAndView("dashboard");
+    return new ModelAndView("projects");
   }
 
 }
