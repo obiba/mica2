@@ -12,6 +12,7 @@ var mica = angular.module('mica', [
   'obiba.comments',
   'angularUtils.directives.dirPagination',
   'pascalprecht.translate',
+  'tmh.dynamicLocale',
   'ngObibaMica'
 ]);
 
@@ -26,6 +27,7 @@ mica.search = angular.module('mica.search', [
   'obiba.comments',
   'angularUtils.directives.dirPagination',
   'pascalprecht.translate',
+  'tmh.dynamicLocale',
   'ngObibaMica',
   'obiba.mica.search'
 ]);
@@ -239,8 +241,28 @@ mica.search
     };
     //return ngObibaMicaSearch.getOptionsAsyn();
   }])
-  .config(['$routeProvider', '$locationProvider', 'ObibaServerConfigResourceProvider', 'ngObibaMicaSearchProvider', 'ngObibaMicaUrlProvider',
-    function ($routeProvider, $locationProvider, ObibaServerConfigResourceProvider, ngObibaMicaSearchProvider, ngObibaMicaUrlProvider) {
+  .config(['$routeProvider', '$locationProvider', 'ObibaServerConfigResourceProvider', 'ngObibaMicaSearchProvider', 'ngObibaMicaUrlProvider', 'tmhDynamicLocaleProvider', '$translateProvider',
+    function ($routeProvider, $locationProvider, ObibaServerConfigResourceProvider, ngObibaMicaSearchProvider, ngObibaMicaUrlProvider, tmhDynamicLocaleProvider, $translateProvider) {
+
+      // Initialize angular-translate
+      $translateProvider
+        .useStaticFilesLoader({
+          prefix: 'ws/config/i18n/',
+          suffix: '.json'
+        })
+        .registerAvailableLanguageKeys(['en', 'fr'], {
+          'en_*': 'en',
+          'fr_*': 'fr',
+          '*': 'en'
+        })
+        .determinePreferredLanguage()
+        .fallbackLanguage('en')
+        .useCookieStorage()
+        .useSanitizeValueStrategy('escaped');
+
+      tmhDynamicLocaleProvider.localeLocationPattern('../bower_components/angular-i18n/angular-locale_{{locale}}.js');
+      tmhDynamicLocaleProvider.useCookieStorage('NG_TRANSLATE_LANG_KEY');
+
       // This will be used to delay the loading of the search config until the options are all resolved; the result is
       // injected to the SearchController.
      /*var optionsResolve = ['ngObibaMicaSearch', function (ngObibaMicaSearch) {
