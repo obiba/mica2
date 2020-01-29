@@ -35,7 +35,6 @@ import com.codahale.metrics.annotation.Timed;
 
 @Component
 @Path("/taxonomies")
-@RequiresAuthentication
 public class TaxonomiesResource {
 
   private static final Logger logger = LoggerFactory.getLogger(TaxonomiesResource.class);
