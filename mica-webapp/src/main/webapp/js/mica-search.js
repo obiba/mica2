@@ -68,8 +68,30 @@ mica.search
       // TODO
       GraphicChartsConfig.setOptions({});
     }])
-  .config(['$locationProvider', 'ObibaServerConfigResourceProvider', 'ngObibaMicaSearchProvider',
-    function ($locationProvider, ObibaServerConfigResourceProvider, ngObibaMicaSearchProvider) {
+  .factory('MicaConfigResource', ['$resource',
+    function ($resource) {
+      return $resource('../ws/config', {}, {
+        'get': {method: 'GET'}
+      });
+    }])
+  .config(['$routeProvider', '$locationProvider', 'ObibaServerConfigResourceProvider', 'ngObibaMicaSearchProvider', 'ngObibaMicaUrlProvider',
+    function ($routeProvider, $locationProvider, ObibaServerConfigResourceProvider, ngObibaMicaSearchProvider, ngObibaMicaUrlProvider) {
+      // This will be used to delay the loading of the search config until the options are all resolved; the result is
+      // injected to the SearchController.
+      var optionsResolve = ['ngObibaMicaSearch', function (ngObibaMicaSearch) {
+        return ngObibaMicaSearch.getOptionsAsyn();
+      }];
+
+      $routeProvider
+        .when('/', {
+          templateUrl: '../bower_components/ng-obiba-mica/src/search/views/search-layout.html',
+          controller: 'SearchController',
+          reloadOnSearch: false,
+          resolve: {
+            options: optionsResolve
+          }
+        });
+
       // TODO
       ngObibaMicaSearchProvider.initialize({});
 
@@ -80,5 +102,11 @@ mica.search
           return {get: MicaConfigResource.get};
         }]
       );
+
+      ngObibaMicaUrlProvider.setUrl('TaxonomiesSearchResource', '../ws/taxonomies/_search');
+      ngObibaMicaUrlProvider.setUrl('TaxonomiesResource', '../ws/taxonomies/_filter');
+      ngObibaMicaUrlProvider.setUrl('TaxonomyResource', '../ws/taxonomy/:taxonomy/_filter');
+      ngObibaMicaUrlProvider.setUrl('VocabularyResource', '../ws/taxonomy/:taxonomy/vocabulary/:vocabulary/_filter');
+      // TODO more URL override
 
     }]);
