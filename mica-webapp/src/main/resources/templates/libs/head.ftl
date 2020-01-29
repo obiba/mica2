@@ -14,3 +14,7 @@
 <link rel="stylesheet" href="../bower_components/admin-lte/plugins/datatables-bs4/css/dataTables.bootstrap4.css">
 <!-- Toastr -->
 <link rel="stylesheet" href="../bower_components/admin-lte/plugins/toastr/toastr.min.css">
+
+<!-- TODO place in a header specific for Search -->
+<link rel="stylesheet" href="../bower_components/ng-obiba/dist/css/ng-obiba.css" />
+<link rel="stylesheet" href="../bower_components/ng-obiba-mica/dist/css/ng-obiba-mica.css" />
