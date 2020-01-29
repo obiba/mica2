@@ -26,6 +26,7 @@
 <script src="../bower_components/angular-local-storage/dist/angular-local-storage.js"></script>
 <script src="../bower_components/angular-cookies/angular-cookies.js"></script>
 <script src="../bower_components/ng-file-upload/ng-file-upload.js"></script>
+<script src="../bower_components/rql-nodojo/js/rql.js"></script>
 <script src="../bower_components/ng-obiba/dist/ng-obiba.js"></script>
 <script src="../bower_components/ng-obiba-mica/dist/ng-obiba-mica.js"></script>
 <script src="../js/mica-search.js"></script>
