@@ -39,8 +39,9 @@ mica.search
     }])
   .provider('SessionProxy',
     function () {
-      function Proxy() {
-        var real;
+      function Proxy(user) {
+        var real = {login: user.name, roles: user.roles, profile: user.data || null};
+
         this.update = function (value) {
           real = value;
         };
@@ -59,7 +60,11 @@ mica.search
       }
 
       this.$get = function() {
-        return new Proxy();
+        return new Proxy({
+          name: 'anonymous',
+          roles: ['mica-user'],
+          data:{}
+        });
       };
     })
   .run([
@@ -74,11 +79,171 @@ mica.search
         'get': {method: 'GET'}
       });
     }])
+  .factory('options', [function () {
+    const FIELDS_TO_FILTER = ['name', 'title', 'description', 'keywords'];
+    const QUERY_TARGETS = {
+      NETWORK: 'network',
+      STUDY: 'study',
+      DATASET: 'dataset',
+      VARIABLE: 'variable',
+      TAXONOMY: 'taxonomy'
+    };
+    const DISPLAY_TYPES = {
+      LIST: 'list',
+      COVERAGE: 'coverage',
+      GRAPHICS: 'graphics'
+    };
+
+    return {
+      searchLayout: 'layout2',
+      taxonomyPanelOptions: {
+        network: {
+          taxonomies: { 'Mica_network': { trKey: 'properties' } }
+        },
+        study: {
+          taxonomies: { 'Mica_study': { trKey: 'properties' } }
+        },
+        dataset: {
+          taxonomies: { 'Mica_dataset': { trKey: 'properties' } }
+        },
+        variable: {
+          taxonomies: {
+            'Mica_variable': { trKey: 'properties' }
+          }
+        },
+        fieldsToFilter: FIELDS_TO_FILTER
+      },
+      obibaListOptions: {
+        countCaption: true,
+        searchForm: true,
+        supplInfoDetails: true,
+        trimmedDescription: true
+      },
+      targetTabsOrder: [QUERY_TARGETS.VARIABLE, QUERY_TARGETS.DATASET, QUERY_TARGETS.STUDY, QUERY_TARGETS.NETWORK],
+      searchTabsOrder: [DISPLAY_TYPES.LIST, DISPLAY_TYPES.COVERAGE, DISPLAY_TYPES.GRAPHICS],
+      resultTabsOrder: [QUERY_TARGETS.VARIABLE, QUERY_TARGETS.DATASET, QUERY_TARGETS.STUDY, QUERY_TARGETS.NETWORK],
+      showAllFacetedTaxonomies: true,
+      showFacetTermsWithZeroCount: false,
+      showSearchBox: true,
+      showSearchBrowser: true,
+      showCopyQuery: true,
+      showSearchRefreshButton: false,
+      variableTaxonomiesOrder: [],
+      studyTaxonomiesOrder: [],
+      datasetTaxonomiesOrder: [],
+      networkTaxonomiesOrder: [],
+      hideNavigate: [],
+      hideSearch: ['studyId', 'dceId', 'datasetId', 'networkId'],
+      variables: {
+        showSearchTab: true,
+        listPageSize: 20,
+        variablesColumn: {
+          showVariablesTypeColumn: true,
+          showVariablesStudiesColumn: true,
+          showVariablesDatasetsColumn: true,
+          showDatasetsStudiesColumn: true,
+          showDatasetsVariablesColumn: true
+        },
+        fields: [
+          'attributes.label.*',
+          'variableType',
+          'datasetId',
+          'datasetAcronym'
+        ],
+        annotationTaxonomies: [
+          'Mlstr_area'
+        ],
+        showCart: true
+      },
+      datasets: {
+        showSearchTab: true,
+        listPageSize: 20,
+        showDatasetsSearchFilter: true,
+        datasetsColumn: {
+          showDatasetsAcronymColumn: true,
+          showDatasetsTypeColumn: true,
+          showDatasetsNetworkColumn: true,
+          showDatasetsStudiesColumn: true,
+          showDatasetsVariablesColumn: true
+        },
+        fields: [
+          'acronym.*',
+          'name.*',
+          'variableType',
+          'studyTable.studyId',
+          'studyTable.project',
+          'studyTable.table',
+          'studyTable.populationId',
+          'studyTable.dataCollectionEventId',
+          'harmonizationTable.studyId',
+          'harmonizationTable.project',
+          'harmonizationTable.table',
+          'harmonizationTable.populationId'
+        ]
+      },
+      studies: {
+        showSearchTab: true,
+        listPageSize: 20,
+        showStudiesSearchFilter: true,
+        studiesColumn: {
+          showStudiesTypeColumn: true,
+          showStudiesDesignColumn: true,
+          showStudiesQuestionnaireColumn: true,
+          showStudiesPmColumn: true,
+          showStudiesBioColumn: true,
+          showStudiesOtherColumn: true,
+          showStudiesParticipantsColumn: true,
+          showStudiesNetworksColumn: true,
+          showStudiesStudyDatasetsColumn: true,
+          showStudiesHarmonizationDatasetsColumn: true,
+          showStudiesVariablesColumn: false,
+          showStudiesStudyVariablesColumn: true,
+          showStudiesDataschemaVariablesColumn: true
+        },
+        fields: [
+          'acronym.*',
+          'name.*',
+          'model.methods.design',
+          'populations.dataCollectionEvents.model.dataSources',
+          'model.numberOfParticipants.participant'
+        ]
+      },
+      networks: {
+        showSearchTab: true,
+        listPageSize: 20,
+        networksColumn: {
+          showNetworksStudiesColumn: true,
+          showNetworksStudyDatasetColumn: true,
+          showNetworksHarmonizationDatasetColumn: true,
+          showNetworksVariablesColumn: false,
+          showNetworksStudyVariablesColumn: true,
+          showNetworksDataschemaVariablesColumn: true
+        },
+        fields: [
+          'acronym.*',
+          'name.*',
+          'studyIds'
+        ]
+      },
+      coverage: {
+        total: {
+          showInHeader: true,
+          showInFooter: false
+        },
+        groupBy: {
+          study: true,
+          dce: true,
+          dataset: true
+        }
+      }
+    };
+    //return ngObibaMicaSearch.getOptionsAsyn();
+  }])
   .config(['$routeProvider', '$locationProvider', 'ObibaServerConfigResourceProvider', 'ngObibaMicaSearchProvider', 'ngObibaMicaUrlProvider',
     function ($routeProvider, $locationProvider, ObibaServerConfigResourceProvider, ngObibaMicaSearchProvider, ngObibaMicaUrlProvider) {
       // This will be used to delay the loading of the search config until the options are all resolved; the result is
       // injected to the SearchController.
-      var optionsResolve = ['ngObibaMicaSearch', function (ngObibaMicaSearch) {
+     /*var optionsResolve = ['ngObibaMicaSearch', function (ngObibaMicaSearch) {
         return ngObibaMicaSearch.getOptionsAsyn();
       }];
 
@@ -90,10 +255,13 @@ mica.search
           resolve: {
             options: optionsResolve
           }
-        });
+        });*/
 
       // TODO
-      ngObibaMicaSearchProvider.initialize({});
+
+      //ngObibaMicaSearchProvider.initialize();
+
+      //SearchContext.setLocale('en');
 
       $locationProvider.hashPrefix('');
 

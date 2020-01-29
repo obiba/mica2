@@ -32,6 +32,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.shiro.web.env.EnvironmentLoaderListener;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.server.handler.gzip.GzipHandler;
 import org.eclipse.jetty.servlets.GzipFilter;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.obiba.mica.web.filter.CachingHttpHeadersFilter;
@@ -114,6 +115,12 @@ public class WebConfiguration implements ServletContextInitializer, JettyServerC
   @Override
   public void customize(Server server) {
     customizeSsl(server);
+
+    GzipHandler gzipHandler = new GzipHandler();
+    gzipHandler.setIncludedMethods("PUT", "POST", "GET");
+    gzipHandler.setInflateBufferSize(2048);
+    gzipHandler.setHandler(server.getHandler());
+    server.setHandler(gzipHandler);
   }
 
   private void customizeSsl(Server server) {
