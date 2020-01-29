@@ -9,7 +9,7 @@
 <!-- Mica Utils and dependencies -->
 <script src="../bower_components/jquery.redirect/jquery.redirect.js"></script>
 <script src="../bower_components/js-cookie/src/js.cookie.js"></script>
-<script src="../mica.js"></script>
+<script src="../js/mica.js"></script>
 <!-- DataTables -->
 <script src="../bower_components/admin-lte/plugins/datatables/jquery.dataTables.js"></script>
 <script src="../bower_components/admin-lte/plugins/datatables-bs4/js/dataTables.bootstrap4.js"></script>

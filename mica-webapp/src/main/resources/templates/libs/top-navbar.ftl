@@ -16,17 +16,16 @@
         <li class="nav-item">
           <a href="../home" class="nav-link">Home</a>
         </li>
-        <li class="nav-item">
-          <a href="../dashboard" class="nav-link">Dashboard</a>
+        <li class="nav-item dropdown">
+          <a id="repoMenu" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle">Repository</a>
+          <ul aria-labelledby="dropdownSubMenu1" class="dropdown-menu border-0 shadow">
+            <li><a href="../networks" class="dropdown-item">Networks</a></li>
+            <li><a href="../studies" class="dropdown-item">Studies</a></li>
+            <li><a href="../datasets" class="dropdown-item">Datasets</a></li>
+          </ul>
         </li>
         <li class="nav-item">
-          <a href="../networks" class="nav-link">Networks</a>
-        </li>
-        <li class="nav-item">
-          <a href="../studies" class="nav-link">Studies</a>
-        </li>
-        <li class="nav-item">
-          <a href="../datasets" class="nav-link">Datasets</a>
+          <a href="../catalog" class="btn btn-success">Search <i class="fas fa-search"></i></a>
         </li>
         <li class="nav-item dropdown">
           <a id="studiesMenu" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle">Research</a>
@@ -36,9 +35,6 @@
           </ul>
         </li>
         <li class="nav-item">
-          <a href="../catalog" class="btn btn-success">Search <i class="fas fa-search"></i></a>
-        </li>
-        <li class="nav-item ml-3">
           <a href="../data-accesses" class="btn btn-warning">Data Access <i class="fas fa-arrow-circle-right"></i></a>
         </li>
       </ul>
@@ -46,13 +42,13 @@
 
     <!-- Right navbar links -->
     <ul class="order-1 order-md-3 navbar-nav navbar-no-expand ml-auto">
-      <#--<li class="nav-item">
-        <a href="../cart" class="nav-link">
-          <i class="fas fa-shopping-basket"></i>
-          <span class="badge badge-danger navbar-badge">3</span>
-        </a>
-      </li>-->
       <#if user??>
+        <li class="nav-item">
+          <a href="../cart" class="nav-link">
+            <i class="fas fa-shopping-basket"></i>
+            <!--<span class="badge badge-danger navbar-badge">3</span>-->
+          </a>
+        </li>
         <li class="nav-item dropdown">
           <a id="userMenu" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle"><i class="fas fa-user"></i> ${user.fullName}</a>
           <ul aria-labelledby="dropdownSubMenu1" class="dropdown-menu border-0 shadow">

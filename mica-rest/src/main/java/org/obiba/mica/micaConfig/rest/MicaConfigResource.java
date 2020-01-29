@@ -130,7 +130,7 @@ public class MicaConfigResource {
 
   @GET
   @Timed
-  @RequiresAuthentication
+  //@RequiresAuthentication
   public Mica.MicaConfigDto get() {
     return dtos.asDto(micaConfigService.getConfig());
   }

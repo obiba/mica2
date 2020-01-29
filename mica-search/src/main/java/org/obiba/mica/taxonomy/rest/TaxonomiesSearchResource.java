@@ -21,7 +21,6 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 
-import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.spi.search.TaxonomyTarget;
 import org.obiba.mica.micaConfig.service.TaxonomyService;
 import org.obiba.mica.taxonomy.TaxonomyResolver;
@@ -38,7 +37,6 @@ import com.google.common.collect.Lists;
 @Component
 @Scope("request")
 @Path("/taxonomies")
-@RequiresAuthentication
 public class TaxonomiesSearchResource extends AbstractTaxonomySearchResource {
 
   private static final Logger logger = LoggerFactory.getLogger(TaxonomiesSearchResource.class);

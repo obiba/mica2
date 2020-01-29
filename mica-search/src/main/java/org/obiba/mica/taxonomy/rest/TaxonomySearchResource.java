@@ -19,7 +19,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 
-import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.spi.search.TaxonomyTarget;
 import org.obiba.opal.core.cfg.NoSuchVocabularyException;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
@@ -37,7 +36,6 @@ import static org.obiba.mica.taxonomy.TaxonomyResolver.asMap;
 @Component
 @Scope("request")
 @Path("/taxonomy/{name}")
-@RequiresAuthentication
 public class TaxonomySearchResource extends AbstractTaxonomySearchResource {
 
   @GET
