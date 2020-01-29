@@ -144,7 +144,7 @@ public class VariableIndexer {
 
   private void indexHarmonizedVariables(String indexName, Map<String, List<DatasetVariable>> harmonizationVariables) {
     harmonizationVariables.keySet().forEach(
-      parentId -> indexer.indexAllIndexables(indexName, harmonizationVariables.get(parentId), parentId));
+      parentId -> indexer.indexAllIndexables(indexName, harmonizationVariables.get(parentId)));
   }
 
   private void deleteDatasetVariables(String indexName, Dataset dataset) {
