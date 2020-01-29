@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>Example | Catalog</title>
+  <title>Example | Search</title>
   <#include "libs/head.ftl">
 </head>
 <body class="hold-transition layout-top-nav layout-navbar-fixed">
@@ -18,7 +18,7 @@
       <div class="container">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1 class="m-0">Catalog</h1>
+            <h1 class="m-0">Search</h1>
           </div><!-- /.col -->
           <div class="col-sm-6">
 
@@ -32,6 +32,22 @@
     <div class="content">
       <div class="container">
 
+        <div class="callout callout-info">
+          <p>
+            Search the catalog of networks, studies, datasets and variables.
+          </p>
+        </div>
+
+        <div class="row">
+          <div class="col-lg-12">
+            <div class="card card-info card-outline">
+              <div class="card-body">
+                <div ng-app="mica.search" ng-controller="SearchController"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
       </div><!-- /.container-fluid -->
     </div>
     <!-- /.content -->
@@ -43,6 +59,7 @@
 <!-- ./wrapper -->
 
 <#include "libs/scripts.ftl">
+<#include "libs/search-scripts.ftl">
 
 </body>
 </html>
