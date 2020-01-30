@@ -64,7 +64,7 @@
                   <div class="col-md-3 col-sm-6 col-12">
                     <div class="info-box">
                       <span class="info-box-icon bg-info">
-                        <a href="../catalog/#search?type=networks&query=study(in(Mica_study.id,${study.id}))">
+                        <a href="../search?type=networks&query=study(in(Mica_study.id,${study.id}))">
                           <i class="ion ion-filing"></i>
                         </a>
                       </span>
@@ -78,7 +78,7 @@
                   <div class="col-md-3 col-sm-6 col-12">
                     <div class="info-box">
                       <span class="info-box-icon bg-warning">
-                        <a href="../catalog/#search?type=datasets&query=study(in(Mica_study.id,${study.id}))">
+                        <a href="../search?type=datasets&query=study(in(Mica_study.id,${study.id}))">
                           <i class="ion ion-grid"></i>
                         </a>
                       </span>
@@ -95,7 +95,7 @@
                   <div class="col-md-3 col-sm-6 col-12">
                     <div class="info-box">
                       <span class="info-box-icon bg-danger">
-                        <a href="../catalog/#search?type=variables&query=study(in(Mica_study.id,${study.id}))">
+                        <a href="../search?type=variables&query=study(in(Mica_study.id,${study.id}))">
                           <i class="ion ion-pie-graph"></i>
                         </a>
                       </span>
