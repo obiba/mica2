@@ -283,8 +283,6 @@ mica.search
 
       //ngObibaMicaSearchProvider.initialize();
 
-      //SearchContext.setLocale('en');
-
       $locationProvider.hashPrefix('');
 
       ObibaServerConfigResourceProvider.setFactory(

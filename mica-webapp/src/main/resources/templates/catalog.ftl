@@ -4,7 +4,7 @@
   <title>Example | Search</title>
   <#include "libs/head.ftl">
 </head>
-<body class="hold-transition layout-top-nav layout-navbar-fixed">
+<body ng-app="mica.search" ng-controller="SearchController" class="hold-transition layout-top-nav layout-navbar-fixed">
 <div class="wrapper">
 
   <!-- Navbar -->
@@ -38,11 +38,21 @@
           </p>
         </div>
 
+        <div class="container alert-fixed-position">
+          <obiba-alert id="MainController"></obiba-alert>
+        </div>
+
+        <div class="alert-growl-container">
+          <obiba-alert id="MainControllerGrowl"></obiba-alert>
+        </div>
+
+
         <div class="row">
           <div class="col-lg-12">
             <div class="card card-info card-outline">
               <div class="card-body">
-                <div ng-app="mica.search" ng-controller="SearchController"></div>
+                <div ng-view=""></div>
+
               </div>
             </div>
           </div>
