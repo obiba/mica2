@@ -1,14 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>Example | Search</title>
+  <title>Example | Catalog</title>
   <#include "libs/head.ftl">
+
+  <link rel="stylesheet" href="styles/famfamfam-flags.css">
+  <link rel="stylesheet" href="../bower_components/ng-obiba/dist/css/ng-obiba.css" />
+  <link rel="stylesheet" href="../bower_components/ng-obiba-mica/dist/css/ng-obiba-mica.css" />
+
 </head>
 <body ng-app="mica.search" ng-controller="SearchController" class="hold-transition layout-top-nav layout-navbar-fixed">
 <div class="wrapper">
 
   <!-- Navbar -->
-    <#include "libs/top-navbar.ftl">
+  <#include "libs/top-navbar.ftl">
   <!-- /.navbar -->
 
   <!-- Content Wrapper. Contains page content -->
@@ -64,7 +69,7 @@
   </div>
   <!-- /.content-wrapper -->
 
-    <#include "libs/footer.ftl">
+  <#include "libs/footer.ftl">
 </div>
 <!-- ./wrapper -->
 
