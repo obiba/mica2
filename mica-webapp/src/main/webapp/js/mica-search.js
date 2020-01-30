@@ -48,24 +48,24 @@ mica.search
           real = value;
         };
 
-        this.login = function() {
+        this.login = function () {
           return real.login;
         };
 
-        this.roles = function() {
+        this.roles = function () {
           return real.roles || [];
         };
 
-        this.profile = function() {
+        this.profile = function () {
           return real.profile;
         };
       }
 
-      this.$get = function() {
+      this.$get = function () {
         return new Proxy({
           name: 'anonymous',
           roles: ['mica-user'],
-          data:{}
+          data: {}
         });
       };
     })
@@ -97,20 +97,20 @@ mica.search
     };
 
     return {
-      searchLayout: 'layout2',
+      searchLayout: 'layout1',
       taxonomyPanelOptions: {
         network: {
-          taxonomies: { 'Mica_network': { trKey: 'properties' } }
+          taxonomies: {'Mica_network': {trKey: 'properties'}}
         },
         study: {
-          taxonomies: { 'Mica_study': { trKey: 'properties' } }
+          taxonomies: {'Mica_study': {trKey: 'properties'}}
         },
         dataset: {
-          taxonomies: { 'Mica_dataset': { trKey: 'properties' } }
+          taxonomies: {'Mica_dataset': {trKey: 'properties'}}
         },
         variable: {
           taxonomies: {
-            'Mica_variable': { trKey: 'properties' }
+            'Mica_variable': {trKey: 'properties'}
           }
         },
         fieldsToFilter: FIELDS_TO_FILTER
@@ -265,19 +265,19 @@ mica.search
 
       // This will be used to delay the loading of the search config until the options are all resolved; the result is
       // injected to the SearchController.
-     /*var optionsResolve = ['ngObibaMicaSearch', function (ngObibaMicaSearch) {
-        return ngObibaMicaSearch.getOptionsAsyn();
-      }];
+      /*var optionsResolve = ['ngObibaMicaSearch', function (ngObibaMicaSearch) {
+         return ngObibaMicaSearch.getOptionsAsyn();
+       }];
 
-      $routeProvider
-        .when('/', {
-          templateUrl: '../bower_components/ng-obiba-mica/src/search/views/search-layout.html',
-          controller: 'SearchController',
-          reloadOnSearch: false,
-          resolve: {
-            options: optionsResolve
-          }
-        });*/
+       $routeProvider
+         .when('/', {
+           templateUrl: '../bower_components/ng-obiba-mica/src/search/views/search-layout.html',
+           controller: 'SearchController',
+           reloadOnSearch: false,
+           resolve: {
+             options: optionsResolve
+           }
+         });*/
 
       // TODO
 
@@ -286,7 +286,7 @@ mica.search
       $locationProvider.hashPrefix('');
 
       ObibaServerConfigResourceProvider.setFactory(
-        ['MicaConfigResource', function(MicaConfigResource){
+        ['MicaConfigResource', function (MicaConfigResource) {
           return {get: MicaConfigResource.get};
         }]
       );
@@ -295,6 +295,12 @@ mica.search
       ngObibaMicaUrlProvider.setUrl('TaxonomiesResource', '../ws/taxonomies/_filter');
       ngObibaMicaUrlProvider.setUrl('TaxonomyResource', '../ws/taxonomy/:taxonomy/_filter');
       ngObibaMicaUrlProvider.setUrl('VocabularyResource', '../ws/taxonomy/:taxonomy/vocabulary/:vocabulary/_filter');
+      ngObibaMicaUrlProvider.setUrl('JoinQuerySearchResource', 'ws/:type/_rql');
+      ngObibaMicaUrlProvider.setUrl('JoinQuerySearchCsvResource', 'ws/:type/_rql_csv?query=:query');
+      ngObibaMicaUrlProvider.setUrl('JoinQuerySearchCsvReportResource', 'ws/:type/_report?query=:query');
+      ngObibaMicaUrlProvider.setUrl('JoinQuerySearchCsvReportByNetworkResource', 'ws/:type/_report_by_network?networkId=:networkId&locale=:locale');
+      ngObibaMicaUrlProvider.setUrl('JoinQueryCoverageResource', 'ws/variables/_coverage');
+      ngObibaMicaUrlProvider.setUrl('JoinQueryCoverageDownloadResource', 'ws/variables/_coverage_download?query=:query');
       // TODO more URL override
 
     }]);

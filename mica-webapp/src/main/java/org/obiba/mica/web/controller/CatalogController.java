@@ -12,4 +12,9 @@ public class CatalogController {
     return new ModelAndView("catalog");
   }
 
+  @GetMapping("/search")
+  public ModelAndView search() {
+    return new ModelAndView("search");
+  }
+
 }
