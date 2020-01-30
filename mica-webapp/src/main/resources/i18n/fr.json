@@ -246,6 +246,8 @@
     "collected-datasets-help": "Index permettant de chercher des ensembles de données de collecte ainsi que les variables associées.",
     "harmonized-datasets": "Ensemble de données d'harmonisation",
     "harmonized-datasets-help": "Index permettant de chercher des ensembles de données d'harmonisation ainsi que les variables associées.",
+    "persons": "Contactes",
+    "persons-help": "Index permettant de chercher des contactes à ajourter dans les études ou réseaux.",
     "taxonomies": "Taxonomies",
     "taxonomies-help": "Index permettant de chercher des termes de taxonomie (c-à-d des critères de recherche)."
   },

@@ -1,13 +1,17 @@
 package org.obiba.mica.person.rest;
 
+import com.google.common.eventbus.EventBus;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.core.Response;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
+import org.obiba.mica.contact.event.IndexContactsEvent;
 import org.obiba.mica.core.service.PersonService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica.PersonDto;
@@ -22,10 +26,13 @@ public class PersonsResource {
 
   private final PersonService personService;
 
+  private final EventBus eventBus;
+
   @Inject
-  public PersonsResource(Dtos dtos, PersonService personService) {
+  public PersonsResource(Dtos dtos, PersonService personService, EventBus eventBus) {
     this.dtos = dtos;
     this.personService = personService;
+    this.eventBus = eventBus;
   }
 
   @GET
@@ -38,6 +45,13 @@ public class PersonsResource {
   @Path("/network/{networkId}")
   public Set<PersonDto> getNetworkMemberships(@PathParam("networkId") String networkId) {
     return personService.getNetworkMemberships(networkId).stream().map(member -> dtos.asDto(member, true)).collect(Collectors.toSet());
+  }
+
+  @PUT
+  @Path("/_index")
+  public Response index() {
+    eventBus.post(new IndexContactsEvent());
+    return Response.noContent().build();
   }
 
   @POST
