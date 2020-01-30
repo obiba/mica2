@@ -67,7 +67,8 @@ public class UpgradeConfiguration {
       applicationContext.getBean(Mica320Upgrade.class),
       applicationContext.getBean(Mica330Upgrade.class),
       applicationContext.getBean(Mica350Upgrade.class),
-      applicationContext.getBean(Mica372Upgrade.class)
+      applicationContext.getBean(Mica372Upgrade.class),
+      applicationContext.getBean(Mica380Upgrade.class)
     );
   }
 }
