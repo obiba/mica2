@@ -38,7 +38,6 @@ import com.google.common.base.Strings;
  */
 @Component
 @Path("/variables")
-@RequiresAuthentication
 @Scope("request")
 public class PublishedDatasetVariablesSearchResource {
 
