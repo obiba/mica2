@@ -252,6 +252,9 @@ mica.factory('IndexService', ['$resource',
       harmonizedDatasets: $resource('ws/draft/harmonized-datasets/_index', {}, {
         'build': {method: 'PUT'}
       }),
+      persons: $resource('ws/draft/persons/_index', {}, {
+        'build': {method: 'PUT'}
+      }),
       taxonomies: $resource('ws/taxonomies/_index', {}, {
         'build': {method: 'PUT'}
       })

@@ -234,6 +234,12 @@ mica.admin
         });
       };
 
+      $scope.indexPersons = function () {
+        withConfirm(function () {
+          IndexService.persons.build();
+        });
+      };
+
       $scope.indexTaxonomies = function () {
         withConfirm(function () {
           IndexService.taxonomies.build();
