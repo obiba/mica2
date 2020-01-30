@@ -45,15 +45,33 @@ mica.contact
     '$filter',
     'ContactSerializationService',
     'LocalizedSchemaFormService',
+    'LocalizedValues',
     'ContactsSearchResource',
     'micaConfig',
     'contact',
     'excludes',
     'type',
-    function ($scope, $uibModalInstance, $translate, $filter, ContactSerializationService, LocalizedSchemaFormService, ContactsSearchResource, micaConfig, contact, excludes, type) {
+    function ($scope,
+              $uibModalInstance,
+              $translate,
+              $filter,
+              ContactSerializationService,
+              LocalizedSchemaFormService,
+              LocalizedValues,
+              ContactsSearchResource,
+              micaConfig,
+              contact,
+              excludes,
+              type) {
       $translate(type).then(function(translation) {
         $scope.type = translation;
       });
+
+      function clearResult() {
+        $scope.result.persons = [];
+        $scope.result.total = 0;
+        $scope.result.current = 0;
+      }
 
       var newResult = function() {
         return {persons: [], total: 0, current: 0};
@@ -76,7 +94,7 @@ mica.contact
       var findContacts = function(search) {
         if (search) {
           if (!$scope.autoRefreshed) {
-            $scope.result = newResult();
+            clearResult();
           }
 
           ContactsSearchResource.search(
@@ -87,7 +105,14 @@ mica.contact
             },
             function onSuccess(result) {
               if (result.persons) {
-                $scope.result.persons = $scope.result.persons.concat(result.persons);
+                $scope.result.persons = $scope.result.persons.concat(result.persons.map(function(person) {
+                  if (person.institution && person.institution.name) {
+                    var localized = LocalizedValues.forLang(person.institution.name, $translate.use());
+                    person.institutionName = localized.length > 0 ? localized : '';
+                  }
+
+                  return person;
+                }));
                 $scope.result.total = result.total;
                 $scope.result.current = $scope.result.persons.length;
                 $scope.autoRefreshed = false;
@@ -95,7 +120,7 @@ mica.contact
             });
         }
         else {
-          $scope.result = newResult();
+          clearResult();
         }
       };
 
