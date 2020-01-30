@@ -43,7 +43,7 @@
               <div class="icon">
                 <i class="ion ion-filing"></i>
               </div>
-              <a href="../catalog/#/search?type=networks" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+              <a href="../search?type=networks" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
             </div>
           </div>
           <!-- ./col -->
@@ -57,7 +57,7 @@
               <div class="icon">
                 <i class="ion ion-folder"></i>
               </div>
-              <a href="../catalog/#/search?type=studies" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+              <a href="../search?type=studies" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
             </div>
           </div>
           <!-- ./col -->
@@ -71,7 +71,7 @@
               <div class="icon">
                 <i class="ion ion-grid"></i>
               </div>
-              <a href="../catalog/#/search?type=datasets" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+              <a href="../search?type=datasets" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
             </div>
           </div>
           <!-- ./col -->
@@ -85,7 +85,7 @@
               <div class="icon">
                 <i class="ion ion-pie-graph"></i>
               </div>
-              <a href="../catalog/#/search?type=variables" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+              <a href="../search?type=variables" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
             </div>
           </div>
           <!-- ./col -->
