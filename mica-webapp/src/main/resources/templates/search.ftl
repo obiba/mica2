@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en" xmlns:v-bind="http://www.w3.org/1999/xhtml">
 <head>
   <title>Example | Search</title>
   <#include "libs/head.ftl">
@@ -9,7 +9,7 @@
 <div class="wrapper">
 
   <!-- Navbar -->
-    <#include "libs/aside-navbar.ftl">
+  <#include "libs/aside-navbar.ftl">
   <!-- /.navbar -->
 
   <!-- Main Sidebar Container -->
@@ -34,90 +34,31 @@
 
       <!-- Sidebar Menu -->
       <nav class="mt-2">
-        <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-          <!-- Add icons to the links using the .nav-icon class
-               with font-awesome or any other icon font library -->
-          <li class="nav-item has-treeview">
-            <a href="#" class="nav-link">
-              <i class="nav-icon ion ion-pie-graph"></i>
-              <p>
-                Variables
-                <i class="right fas fa-angle-left"></i>
-              </p>
-            </a>
-            <ul class="nav nav-treeview">
-              <li class="nav-item">
-                <a href="#" class="nav-link">
-                  <i class="far fa-circle nav-icon"></i>
-                  <p>Areas of Information</p>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="#" class="nav-link">
-                  <i class="far fa-circle nav-icon"></i>
-                  <p>Source & Target</p>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="#" class="nav-link">
-                  <i class="far fa-circle nav-icon"></i>
-                  <p>Properties</p>
-                </a>
-              </li>
-            </ul>
-          </li>
-          <li class="nav-item has-treeview">
-            <a href="#" class="nav-link">
-              <i class="nav-icon ion ion-grid"></i>
-              <p>
-                Datasets
-                <i class="right fas fa-angle-left"></i>
-              </p>
-            </a>
-            <ul class="nav nav-treeview">
-              <li class="nav-item">
-                <a href="#" class="nav-link">
-                  <i class="far fa-circle nav-icon"></i>
-                  <p>Properties</p>
-                </a>
-              </li>
-            </ul>
-          </li>
-          <li class="nav-item has-treeview">
-            <a href="#" class="nav-link">
-              <i class="nav-icon ion ion-folder"></i>
-              <p>
-                Studies
-                <i class="right fas fa-angle-left"></i>
-              </p>
-            </a>
-            <ul class="nav nav-treeview">
-              <li class="nav-item">
-                <a href="#" class="nav-link">
-                  <i class="far fa-circle nav-icon"></i>
-                  <p>Properties</p>
-                </a>
-              </li>
-            </ul>
-          </li>
-          <li class="nav-item has-treeview">
-            <a href="#" class="nav-link">
-              <i class="nav-icon ion ion-filing"></i>
-              <p>
-                Networks
-                <i class="right fas fa-angle-left"></i>
-              </p>
-            </a>
-            <ul class="nav nav-treeview">
-              <li class="nav-item">
-                <a href="#" class="nav-link">
-                  <i class="far fa-circle nav-icon"></i>
-                  <p>Properties</p>
-                </a>
-              </li>
-            </ul>
-          </li>
+
+        <ul data-widget="treeview" role="menu" data-accordion="false" class="nav nav-pills nav-sidebar flex-column">
+
         </ul>
+
+        <div id="search-criteria">
+          <ul v-for="name in criteriaMenu.order" class="nav nav-pills nav-sidebar flex-column" data-widget="treeview"
+              role="menu" data-accordion="false">
+            <li class="nav-item has-treeview">
+              <a href="#" class="nav-link">
+                <i class="nav-icon" v-bind:class="criteriaMenu.items[name].icon"></i>
+                <p>
+                  {{criteriaMenu.items[name].title}}
+                  <i class="right fas fa-angle-left"></i>
+                </p>
+              </a>
+              <ul class="nav nav-treeview">
+                <taxonomy-menu v-for="menu in criteriaMenu.items[name].menus"
+                               v-bind:key="menu.name"
+                               v-bind:taxonomy="menu">
+                </taxonomy-menu>
+              </ul>
+            </li>
+          </ul>
+        </div>
       </nav>
       <!-- /.sidebar-menu -->
     </div>
@@ -149,7 +90,8 @@
           <h3 class="card-title">Query</h3>
 
           <div class="card-tools">
-            <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="Collapse">
+            <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip"
+                    title="Collapse">
               <i class="fas fa-minus"></i></button>
           </div>
         </div>
@@ -186,23 +128,28 @@
                   <div class="mt-3">
                     <ul class="nav nav-pills" id="results-tab" role="tablist">
                       <li class="nav-item">
-                        <a class="nav-link active" id="variables-tab" data-toggle="pill" href="#variables" role="tab" aria-controls="variables" aria-selected="true">Variables</a>
+                        <a class="nav-link active" id="variables-tab" data-toggle="pill" href="#variables" role="tab"
+                           aria-controls="variables" aria-selected="true">Variables</a>
                       </li>
                       <li class="nav-item">
-                        <a class="nav-link" id="datasets-tab" data-toggle="pill" href="#datasets" role="tab" aria-controls="datasets" aria-selected="false">Datasets</a>
+                        <a class="nav-link" id="datasets-tab" data-toggle="pill" href="#datasets" role="tab"
+                           aria-controls="datasets" aria-selected="false">Datasets</a>
                       </li>
                       <li class="nav-item">
-                        <a class="nav-link" id="studies-tab" data-toggle="pill" href="#studies" role="tab" aria-controls="studies" aria-selected="false">Studies</a>
+                        <a class="nav-link" id="studies-tab" data-toggle="pill" href="#studies" role="tab"
+                           aria-controls="studies" aria-selected="false">Studies</a>
                       </li>
                       <li class="nav-item">
-                        <a class="nav-link" id="networks-tab" data-toggle="pill" href="#networks" role="tab" aria-controls="networks" aria-selected="false">Networks</a>
+                        <a class="nav-link" id="networks-tab" data-toggle="pill" href="#networks" role="tab"
+                           aria-controls="networks" aria-selected="false">Networks</a>
                       </li>
                     </ul>
                   </div>
 
                   <div class="mt-3">
                     <div class="tab-content" id="results-tabContent">
-                      <div class="tab-pane fade show active" id="variables" role="tabpanel" aria-labelledby="variables-tab">
+                      <div class="tab-pane fade show active" id="variables" role="tabpanel"
+                           aria-labelledby="variables-tab">
                         List of variables
                       </div>
                       <div class="tab-pane fade" id="datasets" role="tabpanel" aria-labelledby="datasets-tab">
@@ -228,9 +175,9 @@
                 <!-- /.tab-pane -->
                 <div class="tab-pane" id="tab_graphics">
                   <p class="text-muted">
-                  Lorem Ipsum is simply dummy text of the printing and typesetting industry.
-                  Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,
-                  when an unknown printer took a galley of type and scrambled it to make a type specimen book.
+                    Lorem Ipsum is simply dummy text of the printing and typesetting industry.
+                    Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,
+                    when an unknown printer took a galley of type and scrambled it to make a type specimen book.
                   </p>
                 </div>
                 <!-- /.tab-pane -->
@@ -266,6 +213,7 @@
 <!-- ./wrapper -->
 
 <#include "libs/scripts.ftl">
+<#include "libs/search-scripts.ftl">
 
 </body>
 </html>

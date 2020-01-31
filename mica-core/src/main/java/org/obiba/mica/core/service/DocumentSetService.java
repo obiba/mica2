@@ -17,6 +17,7 @@ import com.google.common.collect.Sets;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.subject.Subject;
 import org.joda.time.DateTime;
 import org.obiba.mica.core.domain.DocumentSet;
 import org.obiba.mica.core.domain.InvalidDocumentSetTypeException;
@@ -94,7 +95,10 @@ public abstract class DocumentSetService {
    * @return
    */
   public List<DocumentSet> getAllCurrentUser() {
-    return documentSetRepository.findByTypeAndUsername(getType(), SecurityUtils.getSubject().getPrincipal().toString());
+    Subject subject = SecurityUtils.getSubject();
+    if (subject.isAuthenticated())
+      return documentSetRepository.findByTypeAndUsername(getType(), subject.getPrincipal().toString());
+    return Lists.newArrayList();
   }
 
   /**

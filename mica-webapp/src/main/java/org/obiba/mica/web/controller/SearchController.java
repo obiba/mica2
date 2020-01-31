@@ -5,12 +5,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 @Controller
-public class CatalogController {
-
-  @GetMapping("/catalog")
-  public ModelAndView get() {
-    return new ModelAndView("catalog");
-  }
+public class SearchController {
 
   @GetMapping("/search")
   public ModelAndView search() {
