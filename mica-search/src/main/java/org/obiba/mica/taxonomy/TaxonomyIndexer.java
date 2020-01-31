@@ -14,6 +14,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.eventbus.Subscribe;
 import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.obiba.mica.micaConfig.event.DeleteTaxonomiesEvent;
 import org.obiba.mica.micaConfig.event.OpalTaxonomiesUpdatedEvent;
 import org.obiba.mica.micaConfig.event.TaxonomiesUpdatedEvent;
 import org.obiba.mica.micaConfig.service.TaxonomyService;
@@ -51,6 +52,12 @@ public class TaxonomyIndexer {
         .stream()
         .filter(t -> taxonomyService.metaTaxonomyContains(t.getName()))
         .collect(Collectors.toList()));
+  }
+
+  @Async
+  @Subscribe
+  public void deletetaxonomies(DeleteTaxonomiesEvent event) {
+    indexer.dropIndex("_all");
   }
 
   @Async
