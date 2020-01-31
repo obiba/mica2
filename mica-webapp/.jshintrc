@@ -29,6 +29,8 @@
     "ace": true,
     "FileReader": true,
     "window": false,
-    "URLSearchParams": true
+    "URLSearchParams": true,
+    "Vue": true,
+    "axios": true
   }
 }
