@@ -31,7 +31,51 @@
     <!-- Main content -->
     <div class="content">
       <div class="container">
+        <div class="callout callout-info">
+          <p>
+              This the list of the data access requests.
+          </p>
+        </div>
 
+        <div class="row">
+          <div class="col-lg-12">
+            <div class="card card-primary card-outline">
+              <div class="card-header">
+                <h3 class="card-title">Data Access Requests</h3>
+              </div>
+              <div class="card-body">
+                <table id="dars" class="table table-bordered table-striped">
+                  <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Applicant</th>
+                    <th>Title</th>
+                    <th>Last Update</th>
+                    <th>Submission Date</th>
+                    <th>Pending Amendments</th>
+                    <th>Total Amendments</th>
+                    <th>Status</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  <#list dars as dar>
+                    <tr>
+                      <td><a href="../data-access/${dar.id}">${dar.id}</a></td>
+                      <td>${dar.applicant}</td>
+                      <td>${dar.title!""}</td>
+                      <td>${dar.lastUpdate.toString("yyyy-MM-dd hh:mm")}</td>
+                      <td>${dar.submissionDate!""}</td>
+                      <td>${dar.pendingAmendments}</td>
+                      <td>${dar.totalAmendments}</td>
+                      <td>${dar.status}</td>
+                    </tr>
+                  </#list>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
       </div><!-- /.container-fluid -->
     </div>
     <!-- /.content -->
@@ -43,6 +87,12 @@
 <!-- ./wrapper -->
 
 <#include "libs/scripts.ftl">
+<!-- page script -->
+<script>
+    $(function () {
+        $("#dars").DataTable(dataTablesDefaultOpts);
+    });
+</script>
 
 </body>
 </html>
