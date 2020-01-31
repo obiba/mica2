@@ -2,7 +2,9 @@ package org.obiba.mica.web.controller;
 
 import org.obiba.mica.security.service.SubjectAclService;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
+import javax.validation.constraints.NotNull;
 
 public class EntityController {
 
@@ -17,4 +19,7 @@ public class EntityController {
     return subjectAclService.isAccessible(resource, id);
   }
 
+  protected boolean isPermitted(String resource, String action, String id) {
+    return subjectAclService.isPermitted(resource, action, id);
+  }
 }
