@@ -1,11 +1,15 @@
 package org.obiba.mica.core.upgrade;
 
 import com.google.common.eventbus.EventBus;
+import org.obiba.mica.contact.event.IndexContactsEvent;
 import org.obiba.mica.core.domain.PublishCascadingScope;
+import org.obiba.mica.dataset.event.IndexDatasetsEvent;
+import org.obiba.mica.file.event.IndexFilesEvent;
 import org.obiba.mica.micaConfig.event.TaxonomiesUpdatedEvent;
 import org.obiba.mica.micaConfig.service.TaxonomyConfigService;
 import org.obiba.mica.network.event.IndexNetworksEvent;
 import org.obiba.mica.network.service.NetworkService;
+import org.obiba.mica.spi.search.SearchEngineService;
 import org.obiba.mica.spi.search.TaxonomyTarget;
 import org.obiba.mica.study.event.IndexStudiesEvent;
 import org.obiba.mica.study.service.StudyService;
@@ -63,7 +67,6 @@ public class Mica380Upgrade implements UpgradeStep {
     try {
       logger.info("Ensure Study taxonomy's investigator and contact vocabulary are of type `text`");
       ensureVocabularyType(TaxonomyTarget.STUDY, "investigator", "contact");
-      eventBus.post(new IndexStudiesEvent());
     } catch (RuntimeException e) {
       logger.error("Error occurred when ensuring Study taxonomy's investigator and contact vocabulary are of type `text`.", e);
     }
@@ -71,7 +74,6 @@ public class Mica380Upgrade implements UpgradeStep {
     try {
       logger.info("Ensure Network taxonomy's investigator and contact vocabulary are of type `text`");
       ensureVocabularyType(TaxonomyTarget.NETWORK, "investigator", "contact");
-      eventBus.post(new IndexNetworksEvent());
     } catch (RuntimeException e) {
       logger.error("Error occurred when ensuring Network taxonomy's investigator and contact vocabulary are of type `text`.", e);
     }
