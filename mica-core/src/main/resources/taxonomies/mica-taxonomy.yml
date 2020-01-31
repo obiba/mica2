@@ -36,8 +36,8 @@
         "fr": "Information sur les méthodes de collecte de données et les individus ciblés."
     - "name": "Mica_variable"
       "title":
-        "en": "Variable properties"
-        "fr": "Propriétés de variable"
+        "en": "Properties"
+        "fr": "Propriétés"
       "description":
         "en": "Variable properties as defined in the catalogue."
         "fr": "Propriétés des variables telles que définies dans le catalogue."
@@ -51,10 +51,10 @@
   "terms":
   - "name": "Mica_dataset"
     "title":
-      "en": "Datasets"
-      "fr": "Ensembles de données"
+      "en": "Properties"
+      "fr": "Propriétés"
     "description":
-      "en": "Datasets properties as defined in the catalogue."
+      "en": "Dataset properties as defined in the catalogue."
       "fr": "Propriétés des ensembles de données telles que définies dans le catalogue."
 - "name": "study"
   "title":
@@ -66,10 +66,10 @@
   "terms":
   - "name": "Mica_study"
     "title":
-      "en": "Studies"
-      "fr": "Études"
+      "en": "Properties"
+      "fr": "Propriétés"
     "description":
-      "en": "Studies properties as defined in the catalogue."
+      "en": "Study properties as defined in the catalogue."
       "fr": "Propriétés des études telles que définies dans le catalogue."
 - "name": "network"
   "title":
@@ -81,8 +81,8 @@
   "terms":
   - "name": "Mica_network"
     "title":
-      "en": "Networks"
-      "fr": "Réseaux"
+      "en": "Properties"
+      "fr": "Propriétés"
     "description":
       "en": "Network properties as defined in the catalogue."
       "fr": "Propriétés des réseaux telles que définies dans le catalogue."
