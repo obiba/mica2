@@ -6,6 +6,8 @@
 <script src="../bower_components/admin-lte/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
 <!-- AdminLTE App -->
 <script src="../bower_components/admin-lte/dist/js/adminlte.min.js"></script>
+<!-- Moment -->
+<script src="bower_components/moment/moment.js"></script>
 <!-- Mica Utils and dependencies -->
 <script src="../bower_components/jquery.redirect/jquery.redirect.js"></script>
 <script src="../bower_components/js-cookie/src/js.cookie.js"></script>
