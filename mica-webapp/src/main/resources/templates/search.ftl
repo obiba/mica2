@@ -40,7 +40,8 @@
         </ul>
 
         <div id="search-criteria">
-          <ul v-for="name in criteriaMenu.order" class="nav nav-pills nav-sidebar flex-column" data-widget="treeview"
+          <ul v-for="name in criteriaMenu.order"
+              class="nav nav-pills nav-sidebar flex-column" data-widget="treeview"
               role="menu" data-accordion="false">
             <li class="nav-item has-treeview">
               <a href="#" class="nav-link">
@@ -53,7 +54,8 @@
               <ul class="nav nav-treeview">
                 <taxonomy-menu v-for="menu in criteriaMenu.items[name].menus"
                                v-bind:key="menu.name"
-                               v-bind:taxonomy="menu">
+                               v-bind:taxonomy="menu"
+                               v-on:taxonomy-selection="onTaxonomySelection($event)">
                 </taxonomy-menu>
               </ul>
             </li>
@@ -96,7 +98,13 @@
           </div>
         </div>
         <div class="card-body">
-          ...
+          <div id="query-builder">
+            <div class="alert alert-info" v-if="message != ''">
+              <i class="icon fas fa-info"></i>
+              {{ message }}
+            </div>
+            Query type <span class="badge badge-danger">{{ queryType }}</span>
+          </div>
         </div>
         <!-- /.card-body -->
       </div>
@@ -110,9 +118,9 @@
             <div class="card-header d-flex p-0">
               <h3 class="card-title p-3">Results</h3>
               <ul class="nav nav-pills ml-auto p-2">
-                <li class="nav-item"><a class="nav-link active" href="#tab_lists" data-toggle="tab">Lists</a></li>
-                <li class="nav-item"><a class="nav-link" href="#tab_coverage" data-toggle="tab">Coverage</a></li>
-                <li class="nav-item"><a class="nav-link" href="#tab_graphics" data-toggle="tab">Graphics</a></li>
+                <li class="nav-item"><a id="lists-tab" class="nav-link active" href="#tab_lists" data-toggle="tab">Lists</a></li>
+                <li class="nav-item"><a id="coverage-tab" class="nav-link" href="#tab_coverage" data-toggle="tab">Coverage</a></li>
+                <li class="nav-item"><a id="graphics-tab" class="nav-link" href="#tab_graphics" data-toggle="tab">Graphics</a></li>
               </ul>
             </div><!-- /.card-header -->
             <div class="card-body">
@@ -151,15 +159,23 @@
                       <div class="tab-pane fade show active" id="variables" role="tabpanel"
                            aria-labelledby="variables-tab">
                         List of variables
+                        <div id="list-variables">
+                        </div>
                       </div>
                       <div class="tab-pane fade" id="datasets" role="tabpanel" aria-labelledby="datasets-tab">
                         List of datasets
+                        <div id="list-datasets">
+                        </div>
                       </div>
                       <div class="tab-pane fade" id="studies" role="tabpanel" aria-labelledby="studies-tab">
                         List of studies
+                        <div id="list-studies">
+                        </div>
                       </div>
                       <div class="tab-pane fade" id="networks" role="tabpanel" aria-labelledby="networks-tab">
                         List of networks
+                        <div id="list-networks">
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -171,6 +187,8 @@
                     For science, music, sport, etc, Europe uses the same vocabulary. The languages only differ
                     in their grammar, their pronunciation and their most common words.
                   </p>
+                  <div id="coverage">
+                  </div>
                 </div>
                 <!-- /.tab-pane -->
                 <div class="tab-pane" id="tab_graphics">
@@ -179,6 +197,8 @@
                     Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,
                     when an unknown printer took a galley of type and scrambled it to make a type specimen book.
                   </p>
+                  <div id="graphics">
+                  </div>
                 </div>
                 <!-- /.tab-pane -->
               </div>
