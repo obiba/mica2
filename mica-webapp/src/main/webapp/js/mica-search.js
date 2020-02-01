@@ -136,12 +136,14 @@ new Vue({
   el: '#list-variables',
   data() {
     return {
-      result: null
+      result: null,
+      count: 0
     }
   },
   methods: {
     onResult: function(payload) {
-      this.result = payload;
+      this.count++;
+      this.result = payload + ' ' + this.count;
     }
   },
   mounted() {
@@ -153,12 +155,14 @@ new Vue({
   el: '#list-datasets',
   data() {
     return {
-      result: null
+      result: null,
+      count: 0
     }
   },
   methods: {
     onResult: function(payload) {
-      this.result = payload;
+      this.count++;
+      this.result = payload + ' ' + this.count;
     }
   },
   mounted() {
@@ -170,12 +174,14 @@ new Vue({
   el: '#list-studies',
   data() {
     return {
-      result: null
+      result: null,
+      count: 0
     }
   },
   methods: {
     onResult: function(payload) {
-      this.result = payload;
+      this.count++;
+      this.result = payload + ' ' + this.count;
     }
   },
   mounted() {
@@ -187,12 +193,14 @@ new Vue({
   el: '#list-networks',
   data() {
     return {
-      result: null
+      result: null,
+      count: 0
     }
   },
   methods: {
     onResult: function(payload) {
-      this.result = payload;
+      this.count++;
+      this.result = payload + ' ' + this.count;
     }
   },
   mounted() {
@@ -204,12 +212,14 @@ new Vue({
   el: '#coverage',
   data() {
     return {
-      result: null
+      result: null,
+      count: 0
     }
   },
   methods: {
     onResult: function(payload) {
-      this.result = payload;
+      this.count++;
+      this.result = payload + ' ' + this.count;
     }
   },
   mounted() {
@@ -221,12 +231,14 @@ new Vue({
   el: '#graphics',
   data() {
     return {
-      result: null
+      result: null,
+      count: 0
     }
   },
   methods: {
     onResult: function(payload) {
-      this.result = payload;
+      this.count++;
+      this.result = payload + ' ' + this.count;
     }
   },
   mounted() {
@@ -266,6 +278,7 @@ new Vue({
           this.lastList = payload;
         }
       }
+      this.onExecuteQuery();
     },
     onExecuteQuery: function() {
       console.log('Executing ' + this.queryType + ' query ...');
@@ -293,5 +306,6 @@ new Vue({
           });
         }
       });
+    this.onExecuteQuery();
   }
 });
