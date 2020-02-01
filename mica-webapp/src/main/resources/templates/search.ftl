@@ -103,7 +103,7 @@
               <i class="icon fas fa-info"></i>
               {{ message }}
             </div>
-            Query type <span class="badge badge-danger">{{ queryType }}</span>
+            <button class="btn btn-success" @click.prevent="onExecuteQuery()"><i class="fas fa-sync"></i> Refresh</button> <span class="badge badge-danger">{{ queryType }}</span>
           </div>
         </div>
         <!-- /.card-body -->
@@ -160,21 +160,25 @@
                            aria-labelledby="variables-tab">
                         List of variables
                         <div id="list-variables">
+                          {{ result }}
                         </div>
                       </div>
                       <div class="tab-pane fade" id="datasets" role="tabpanel" aria-labelledby="datasets-tab">
                         List of datasets
                         <div id="list-datasets">
+                          {{ result }}
                         </div>
                       </div>
                       <div class="tab-pane fade" id="studies" role="tabpanel" aria-labelledby="studies-tab">
                         List of studies
                         <div id="list-studies">
+                          {{ result }}
                         </div>
                       </div>
                       <div class="tab-pane fade" id="networks" role="tabpanel" aria-labelledby="networks-tab">
                         List of networks
                         <div id="list-networks">
+                          {{ result }}
                         </div>
                       </div>
                     </div>
@@ -188,6 +192,7 @@
                     in their grammar, their pronunciation and their most common words.
                   </p>
                   <div id="coverage">
+                    {{ result }}
                   </div>
                 </div>
                 <!-- /.tab-pane -->
@@ -198,6 +203,7 @@
                     when an unknown printer took a galley of type and scrambled it to make a type specimen book.
                   </p>
                   <div id="graphics">
+                    {{ result }}
                   </div>
                 </div>
                 <!-- /.tab-pane -->
