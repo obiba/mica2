@@ -132,6 +132,108 @@ $('#graphics-tab').click(function(){
   EventBus.$emit('query-type-selection', 'graphics');
 });
 
+new Vue({
+  el: '#list-variables',
+  data() {
+    return {
+      result: null
+    }
+  },
+  methods: {
+    onResult: function(payload) {
+      this.result = payload;
+    }
+  },
+  mounted() {
+    EventBus.register('variables-list', this.onResult);
+  }
+});
+
+new Vue({
+  el: '#list-datasets',
+  data() {
+    return {
+      result: null
+    }
+  },
+  methods: {
+    onResult: function(payload) {
+      this.result = payload;
+    }
+  },
+  mounted() {
+    EventBus.register('datasets-list', this.onResult);
+  }
+});
+
+new Vue({
+  el: '#list-studies',
+  data() {
+    return {
+      result: null
+    }
+  },
+  methods: {
+    onResult: function(payload) {
+      this.result = payload;
+    }
+  },
+  mounted() {
+    EventBus.register('studies-list', this.onResult);
+  }
+});
+
+new Vue({
+  el: '#list-networks',
+  data() {
+    return {
+      result: null
+    }
+  },
+  methods: {
+    onResult: function(payload) {
+      this.result = payload;
+    }
+  },
+  mounted() {
+    EventBus.register('networks-list', this.onResult);
+  }
+});
+
+new Vue({
+  el: '#coverage',
+  data() {
+    return {
+      result: null
+    }
+  },
+  methods: {
+    onResult: function(payload) {
+      this.result = payload;
+    }
+  },
+  mounted() {
+    EventBus.register('coverage', this.onResult);
+  }
+});
+
+new Vue({
+  el: '#graphics',
+  data() {
+    return {
+      result: null
+    }
+  },
+  methods: {
+    onResult: function(payload) {
+      this.result = payload;
+    }
+  },
+  mounted() {
+    EventBus.register('graphics', this.onResult);
+  }
+});
+
 //
 // Querybuilder Vue
 // main app that orchestrates the query display, criteria selection, query execution and dispatch of the results
@@ -164,6 +266,10 @@ new Vue({
           this.lastList = payload;
         }
       }
+    },
+    onExecuteQuery: function() {
+      console.log('Executing ' + this.queryType + ' query ...');
+      EventBus.$emit(this.queryType, 'I am the result of a ' + this.queryType + ' query')
     }
   },
   mounted() {
