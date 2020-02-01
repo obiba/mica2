@@ -1,14 +1,43 @@
 'use strict';
 
+// an EventBus is a Vue app without element
+// its data are callback functions, registered by event name
+const EventBus = new Vue({
+  data: {
+      callbacks: {}
+  },
+  methods: {
+    register: function(eventName, callback) {
+      if (!this.callbacks[eventName]) {
+        this.callbacks[eventName] = []
+        this.$on(eventName, function(payload) {
+          for (let callback of this.callbacks[eventName]) {
+            callback(payload)
+          }
+        });
+      }
+      this.callbacks[eventName].push(callback);
+      //console.dir(this.callbacks)
+    },
+    unregister: function(eventName) {
+      this.callbacks[eventName] = undefined;
+    }
+  }
+});
+
+//
+// Search criteria Vue
+// sidebar menus for taxonomy selection. Terms selection is delegated to the main app (query builder)
+//
+
 // Taxonomy sidebar menu
 Vue.component('taxonomy-menu', {
   props: ['taxonomy'],
-  template: '<li class="nav-item"><a href="#" class="nav-link" :title="taxonomy.description[0].text" v-on:click="$emit(taxonomy.name)"><i class="far fa-circle nav-icon"></i><p>{{ taxonomy.title[0].text }}</p></a></li>'
+  template: '<li class="nav-item"><a href="#" class="nav-link" :title="taxonomy.description[0].text" @click.prevent="$emit(\'taxonomy-selection\', taxonomy.name)"><i class="far fa-circle nav-icon"></i><p>{{ taxonomy.title[0].text }}</p></a></li>'
 });
 
 new Vue({
   el: '#search-criteria',
-  //el: '#app',
   data() {
     return {
       criteriaMenu: {
@@ -35,46 +64,128 @@ new Vue({
           },
         },
         order: []
-      },
-      taxonomies: {},
-      initialized: false
+      }
     };
   },
+  methods: {
+    // make the menu
+    onMicaTaxonomies: function(payload) {
+      for (let target of payload) {
+        this.criteriaMenu.items[target.name].title = target.title[0].text;
+        switch(target.name) {
+          case 'variable':
+            // TODO handle multi level
+            this.criteriaMenu.items.variable.menus = target.terms[0].terms;
+            break;
+          case 'dataset':
+          case 'study':
+          case 'network':
+            this.criteriaMenu.items[target.name].menus = target.terms;
+            break;
+        }
+        if (this.criteriaMenu.items[target.name].menus && this.criteriaMenu.items[target.name].menus.length>0) {
+          this.criteriaMenu.order.push(target.name);
+        }
+      }
+    },
+    // forward taxonomy selection
+    onTaxonomySelection: function(payload) {
+      console.dir(payload);
+      EventBus.$emit('taxonomy-selection', payload);
+    }
+  },
   mounted() {
+    EventBus.register('mica-taxonomy', this.onMicaTaxonomies);
+  }
+});
+
+//
+// Results Vue
+// results display app, with some filtering criteria selection, and requests for query execution
+//
+
+$('#variables-tab').click(function(){
+  EventBus.$emit('query-type-selection', 'variables-list');
+});
+
+$('#datasets-tab').click(function(){
+  EventBus.$emit('query-type-selection', 'datasets-list');
+});
+
+$('#studies-tab').click(function(){
+  EventBus.$emit('query-type-selection', 'studies-list');
+});
+
+$('#networks-tab').click(function(){
+  EventBus.$emit('query-type-selection', 'networks-list');
+});
+
+$('#lists-tab').click(function(){
+  EventBus.$emit('query-type-selection', 'lists');
+});
+
+$('#coverage-tab').click(function(){
+  EventBus.$emit('query-type-selection', 'coverage');
+});
+
+$('#graphics-tab').click(function(){
+  EventBus.$emit('query-type-selection', 'graphics');
+});
+
+//
+// Querybuilder Vue
+// main app that orchestrates the query display, criteria selection, query execution and dispatch of the results
+//
+
+new Vue({
+  el: '#query-builder',
+  data() {
+    return {
+      taxonomies: {},
+      message: '',
+      queryType: 'variables-list',
+      lastList: ''
+    }
+  },
+  methods: {
+    // show a modal with all the vocabularies/terms of the selected taxonomy
+    // initialized by the query terms and update/trigger the query on close
+    onTaxonomySelection: function(payload) {
+      this.message = '[' + payload + '] ' + this.taxonomies[payload].title[0].text + ': ';
+      this.message = this.message + this.taxonomies[payload].vocabularies.map(voc => voc.title[0].text).join(', ');
+    },
+    // set the type of query to be executed, on result component selection
+    onQueryTypeSelection: function(payload) {
+      if (payload === 'lists') {
+        this.queryType = this.lastList;  
+      } else {
+        this.queryType = payload;
+        if (payload.endsWith('-list')) {
+          this.lastList = payload;
+        }
+      }
+    }
+  },
+  mounted() {
+    EventBus.register('taxonomy-selection', this.onTaxonomySelection);
+    EventBus.register('query-type-selection', this.onQueryTypeSelection);
+    // fetch the configured search criteria, in the form of a taxonomy of taxonomies
     axios
       .get('../ws/taxonomy/Mica_taxonomy/_filter?target=taxonomy')
       .then(response => {
-        //console.dir(response.data.vocabularies);
-        let vocabularies = response.data.vocabularies;
-        for (let group of vocabularies) {
-          //this.criteriaMenu.order.push(group.name);
-          this.criteriaMenu.items[group.name].title = group.title[0].text;
-          switch(group.name) {
-            case 'variable':
-              // TODO handle multi level
-              this.criteriaMenu.items.variable.menus = group.terms[0].terms;
-              break;
-            case 'dataset':
-            case 'study':
-            case 'network':
-              this.criteriaMenu.items[group.name].menus = group.terms;
-              break;
-          }
-          if (this.criteriaMenu.items[group.name].menus && this.criteriaMenu.items[group.name].menus.length>0) {
-            this.criteriaMenu.order.push(group.name);
-          }
-        }
+        let targets = response.data.vocabularies;
+        EventBus.$emit('mica-taxonomy', targets);
+
+        for (let target of targets) {
         // then load the taxonomies
-        for (let name of this.criteriaMenu.order) {
-          axios
-            .get('../ws/taxonomies/_filter?target=' + name)
-            .then(response => {
-              for (let taxo of response.data) {
-                this.taxonomies[taxo.name] = taxo;
-              }
-            });
+        axios
+          .get('../ws/taxonomies/_filter?target=' + target.name)
+          .then(response => {
+            for (let taxo of response.data) {
+              this.taxonomies[taxo.name] = taxo;
+            }
+          });
         }
-        this.initialized = true;
       });
   }
 });
