@@ -59,10 +59,42 @@
 
     <!-- Main content -->
     <section class="content">
+      <div class="row">
+        <div class="col-md-3 col-sm-6 col-12">
+          <div class="info-box bg-info">
+            <span class="info-box-icon"><i class="far fa-clock"></i></span>
+
+            <div class="info-box-content">
+              <span class="info-box-text">Status</span>
+              <span class="info-box-number">${dar.status}</span>
+
+              <div class="progress">
+                <div class="progress-bar" style="width: 10%"></div>
+              </div>
+              <span class="progress-description">
+                Main form still to be submitted
+                <a href="../data-access-form/${dar.id}" class="btn btn-sm btn-secondary">
+              <#if dar.status == "OPENED">
+                <i class="fa fa-pen"></i> Edit
+              <#else >
+                <i class="fa fa-eye"></i> View
+              </#if>
+            </a>
+              </span>
+            </div>
+            <!-- /.info-box-content -->
+          </div>
+          <!-- /.info-box -->
+        </div>
+      </div>
 
       <div class="row">
         <div class="col-12">
-
+          <div class="callout callout-info">
+            <p>
+              This is the dashboard of the data access request.
+            </p>
+          </div>
         </div>
         <!-- /.col-12 -->
       </div>
