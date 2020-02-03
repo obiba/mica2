@@ -1,20 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
+  <#include "libs/head.ftl">  <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>Example | Sign in</title>
+  <title>${config.name!""} | <@message "sign-in"/></title>
   <!-- Tell the browser to be responsive to screen width -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
-
-  <#include "libs/head.ftl">
-  <!-- icheck bootstrap -->
-  <link rel="stylesheet" href="../bower_components/admin-lte/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
 </head>
 <body class="hold-transition login-page">
 <div class="login-box">
   <div class="login-logo">
-    <a href="../home"><b>Example</b></a>
+    <a href="../home"><b>${config.name!""}</b></a>
   </div>
   <!-- /.login-logo -->
   <div class="card">

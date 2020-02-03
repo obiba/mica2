@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>Example | ${network.acronym.en}</title>
+  <title>Example | ${network.acronym[.lang]!""}</title>
   <#include "libs/head.ftl">
 </head>
 <body class="hold-transition layout-top-nav layout-navbar-fixed">
@@ -19,14 +19,14 @@
       <div class="container">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1 class="m-0"><span class="text-white-50">Network / </span>${network.acronym.en}</h1>
-            <small>${network.name.en}</small>
+            <h1 class="m-0"><span class="text-white-50">Network / </span>${network.acronym[.lang]!""}</h1>
+            <small>${network.name[.lang]!""}</small>
           </div><!-- /.col -->
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
               <li class="breadcrumb-item"><a class="text-white-50" href="../home">Home</a></li>
               <li class="breadcrumb-item"><a class="text-white-50" href="../networks">Networks</a></li>
-              <li class="breadcrumb-item active text-light">${network.acronym.en}</li>
+              <li class="breadcrumb-item active text-light">${network.acronym[.lang]!""}</li>
             </ol>
           </div><!-- /.col -->
         </div><!-- /.row -->
@@ -43,13 +43,13 @@
               <div class="card-body">
                 <div class="row">
                   <div class="col-lg-12">
-                    <h3 class="mb-4">${network.name.en}</h3>
+                    <h3 class="mb-4">${network.name[.lang]!""}</h3>
                   </div>
                 </div>
                 <div class="row mb-4">
                   <div class="col-md-3 col-sm-6 col-12">
                     <#if network.logo??>
-                      <img class="img-fluid" style="max-height: 200px" alt="${network.acronym.en} logo" src="../ws/network/${network.id}/file/${network.logo.id}/_download"/>
+                      <img class="img-fluid" style="max-height: 200px" alt="${network.acronym[.lang]!""} logo" src="../ws/network/${network.id}/file/${network.logo.id}/_download"/>
                     <#else >
                       <p class="text-light text-center">
                         <i class="ion ion-filing fa-5x"></i>
@@ -101,12 +101,12 @@
 
                 <p class="card-text">
                   <#if network.description??>
-                    ${network.description.en}
+                    ${network.description[.lang]!""}
                   </#if>
                 </p>
                   <#if network.model.website??>
                     <blockquote>
-                      Visit <a href="${network.model.website}" target="_blank" class="card-link">${network.acronym.en}</a>
+                      Visit <a href="${network.model.website}" target="_blank" class="card-link">${network.acronym[.lang]!""}</a>
                     </blockquote>
                   </#if>
               </div>
@@ -183,8 +183,8 @@
                     <tbody>
                     <#list networks as netwk>
                       <tr>
-                        <td><a href="../network/${netwk.id}">${netwk.acronym.en}</a></td>
-                        <td><small>${netwk.name.en}</small></td>
+                        <td><a href="../network/${netwk.id}">${netwk.acronym[.lang]!""}</a></td>
+                        <td><small>${netwk.name[.lang]!""}</small></td>
                       </tr>
                     </#list>
                     </tbody>
@@ -220,8 +220,8 @@
                     <tbody>
                     <#list individualStudies as study>
                       <tr>
-                        <td><a href="../study/${study.id}">${study.acronym.en}</a></td>
-                        <td><small>${study.name.en}</small></td>
+                        <td><a href="../study/${study.id}">${study.acronym[.lang]!""}</a></td>
+                        <td><small>${study.name[.lang]!""}</small></td>
                         <td>${study.model.methods.design}</td>
                         <td>${study.model.numberOfParticipants.participant.number}</td>
                         <td></td>
@@ -257,8 +257,8 @@
                     <tbody>
                     <#list harmonizationStudies as study>
                       <tr>
-                        <td><a href="../study/${study.id}">${study.acronym.en}</a></td>
-                        <td><small>${study.name.en}</small></td>
+                        <td><a href="../study/${study.id}">${study.acronym[.lang]!""}</a></td>
+                        <td><small>${study.name[.lang]!""}</small></td>
                       </tr>
                     </#list>
                     </tbody>

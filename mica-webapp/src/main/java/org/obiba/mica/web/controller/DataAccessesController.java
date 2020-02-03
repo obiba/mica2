@@ -21,7 +21,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Controller
-public class DataAccessesController extends EntityController {
+public class DataAccessesController extends BaseController {
 
   @Inject
   private DataAccessRequestService dataAccessRequestService;
