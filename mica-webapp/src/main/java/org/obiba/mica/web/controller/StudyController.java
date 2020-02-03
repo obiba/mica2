@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Controller
-public class StudyController extends EntityController {
+public class StudyController extends BaseController {
 
   @Inject
   private PublishedStudyService publishedStudyService;
