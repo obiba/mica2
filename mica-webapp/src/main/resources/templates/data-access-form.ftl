@@ -89,9 +89,12 @@
                   <div ng-controller="FormController">
                     <form>
                       <div sf-schema="schema" sf-form="form" sf-model="model"></div>
-                      <input type="submit" class="btn btn-primary" value="Submit">
-                      <button type="button" class="btn btn-success" ng-click="validate()">Validate</button>
-                      <button type="button" class="btn btn-default" ng-click="goBack()">Cancel</button>
+                      <div class="mt-5">
+                        <input type="submit" class="btn btn-primary" value="Submit">
+                        <button type="button" class="btn btn-success" ng-click="validate()">Validate</button>
+                        <button type="button" class="btn btn-default" ng-click="goBack()">Cancel</button>
+                      </div>
+
                     </form>
                   </div>
                 </div>
@@ -125,12 +128,20 @@
 <script src="${pathPrefix}/bower_components/objectpath/lib/ObjectPath.js"></script>
 <script src="${pathPrefix}/bower_components/marked/lib/marked.js"></script>
 <script src="${pathPrefix}/bower_components/tv4/tv4.js"></script>
+<script src="${pathPrefix}/bower_components/angular-sanitize/angular-sanitize.js"></script>
 <script src="${pathPrefix}/bower_components/angular-marked/dist/angular-marked.js"></script>
 <script src="${pathPrefix}/bower_components/angular-schema-form/dist/schema-form.js"></script>
 <script src="${pathPrefix}/bower_components/angular-schema-form/dist/bootstrap-decorator.js"></script>
 <script src="${pathPrefix}/bower_components/angular-schema-form-bootstrap/bootstrap-decorator.min.js"></script>
 <script src="${pathPrefix}/bower_components/angular-schema-form-ui-ace/bootstrap-ui-ace.min.js"></script>
 <script src="${pathPrefix}/bower_components/angular-schema-form-datetimepicker/schema-form-date-time-picker.min.js"></script>
+<script src="${pathPrefix}/bower_components/sf-localized-string/dist/sf-localized-string.min.js"></script>
+<script src="${pathPrefix}/bower_components/sf-obiba-file-upload/dist/sf-obiba-file-upload.min.js"></script>
+<script src="${pathPrefix}/bower_components/sf-checkboxgroup/dist/sf-checkboxgroup.min.js"></script>
+<script src="${pathPrefix}/bower_components/sf-typeahead/dist/sf-typeahead.min.js"></script>
+<script src="${pathPrefix}/bower_components/obiba-country-codes/dist/all.js"></script>
+<script src="${pathPrefix}/bower_components/sf-obiba-countries-ui-select/dist/sf-obiba-countries-ui-select.js"></script>
+<script src="${pathPrefix}/bower_components/sf-radio-group-collection/dist/sf-radio-group-collection.js"></script>
 
 <script>
     $('#form-menu').addClass('active').attr('href', '#');
@@ -145,7 +156,7 @@
                 sanitize: true
             });
         }])
-        .controller('FormController', ['$scope', 'marked', function ($scope, marked) {
+        .controller('FormController', ['$scope', function ($scope) {
             $scope.schema = formSchema;
             $scope.form = formDefinition;
             $scope.model = formModel;
