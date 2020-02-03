@@ -1,25 +1,31 @@
 package org.obiba.mica.web.controller;
 
+import com.google.common.collect.Maps;
 import org.obiba.mica.security.service.SubjectAclService;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
+import java.util.Map;
 
-public class EntityController {
+public class BaseController {
 
   @Inject
   private SubjectAclService subjectAclService;
 
-  protected void checkAccess(String resource, String id) {
+  void checkAccess(String resource, String id) {
     subjectAclService.checkAccess(resource, id);
   }
 
-  protected boolean isAccessible(String resource, String id) {
+  boolean isAccessible(String resource, String id) {
     return subjectAclService.isAccessible(resource, id);
   }
 
-  protected boolean isPermitted(String resource, String action, String id) {
+  boolean isPermitted(String resource, String action, String id) {
     return subjectAclService.isPermitted(resource, action, id);
+  }
+
+  Map<String, Object> newParameters() {
+    return Maps.newHashMap();
   }
 }

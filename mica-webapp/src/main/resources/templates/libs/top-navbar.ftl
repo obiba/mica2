@@ -1,10 +1,10 @@
 <#include "navbar-menus.ftl">
 <nav class="main-header navbar navbar-expand-md navbar-light navbar-white">
   <div class="container">
-    <a href="../bower_components/admin-lte/index3.html" class="navbar-brand">
+    <a href="${config.portalUrl!"../bower_components/admin-lte/index3.html"}" class="navbar-brand">
       <img src="../bower_components/admin-lte/dist/img/AdminLTELogo.png" alt="Logo" class="brand-image img-circle elevation-3"
            style="opacity: .8">
-      <span class="brand-text font-weight-light">Example</span>
+      <span class="brand-text font-weight-light">${config.name!"Mica"}</span>
     </a>
 
     <button class="navbar-toggler order-1" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
