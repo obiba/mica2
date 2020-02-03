@@ -3,6 +3,17 @@
 <head>
   <title>Example | Data Access ${dar.id}</title>
   <#include "libs/head.ftl">
+  <style>
+    .visible-print {
+      display: none;
+    }
+    .has-error {
+      color: #E74C3C;
+    }
+    .has-error input {
+      border-color: #E74C3C;
+    }
+  </style>
 </head>
 <body ng-app="formModule" class="hold-transition sidebar-mini">
 <!-- Site wrapper -->
@@ -112,29 +123,36 @@
 <#include "libs/scripts.ftl">
 <script src="${pathPrefix}/bower_components/angular/angular.js"></script>
 <script src="${pathPrefix}/bower_components/objectpath/lib/ObjectPath.js"></script>
+<script src="${pathPrefix}/bower_components/marked/lib/marked.js"></script>
+<script src="${pathPrefix}/bower_components/tv4/tv4.js"></script>
+<script src="${pathPrefix}/bower_components/angular-marked/dist/angular-marked.js"></script>
 <script src="${pathPrefix}/bower_components/angular-schema-form/dist/schema-form.js"></script>
 <script src="${pathPrefix}/bower_components/angular-schema-form/dist/bootstrap-decorator.js"></script>
 <script src="${pathPrefix}/bower_components/angular-schema-form-bootstrap/bootstrap-decorator.min.js"></script>
-<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="${pathPrefix}/bower_components/angular-schema-form-ui-ace/bootstrap-ui-ace.min.js"></script>
+<script src="${pathPrefix}/bower_components/angular-schema-form-datetimepicker/schema-form-date-time-picker.min.js"></script>
+
 <script>
     $('#form-menu').addClass('active').attr('href', '#');
-    angular.module('formModule', ['schemaForm'])
-        .controller('FormController', function($scope) {
-            $scope.schema = {};
-            $scope.form = [];
-            $scope.model = {};
-            axios
-                .get('${pathPrefix}/ws/config/data-access-form')
-                .then(response => {
-                  let dto = response.data;
-                  $scope.schema = JSON.parse(dto.schema);
-                  $scope.form = JSON.parse(dto.definition);
-
-                  console.dir($scope.schema);
-                  console.dir($scope.form);
-                  $scope.$broadcast('schemaFormRedraw')
-                });
-        });
+    let formSchema = ${form.schema!"{}"};
+    let formDefinition = ${form.definition!"['*']"};
+    let formModel = ${form.model!"{}"};
+    angular.module('formModule', ['schemaForm', 'hc.marked'])
+        .factory(['markedProvider', function(markedProvider) {
+            markedProvider.setOptions({
+                gfm: true,
+                tables: true,
+                sanitize: true
+            });
+        }])
+        .controller('FormController', ['$scope', 'marked', function ($scope, marked) {
+            $scope.schema = formSchema;
+            $scope.form = formDefinition;
+            $scope.model = formModel;
+            $scope.validate = function() {
+              $scope.$broadcast('schemaFormValidate');
+            };
+        }]);
 </script>
 </body>
 </html>
