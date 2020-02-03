@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 @Controller
-public class DatasetController extends EntityController {
+public class DatasetController extends BaseController {
 
   private static final Logger log = LoggerFactory.getLogger(DatasetController.class);
 
