@@ -35,10 +35,10 @@
       </li>
       <#if config.locales?size != 1>
         <li class="nav-item dropdown">
-          <a id="userMenu" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle"> ${.lang}</a>
+          <a id="userMenu" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle"> ${.lang?upper_case}</a>
           <ul aria-labelledby="dropdownSubMenu1" class="dropdown-menu border-0 shadow">
             <#list config.locales as locale>
-              <li><a href="#" onclick="micajs.changeLanguage('${locale.language}')" class="dropdown-item">${locale.language}</a></li>
+              <li><a href="#" onclick="micajs.changeLanguage('${locale.language}')" class="dropdown-item">${locale.language?upper_case}</a></li>
             </#list>
           </ul>
         </li>
@@ -54,10 +54,10 @@
     <#else >
         <#if config.locales?size != 1>
           <li class="nav-item dropdown">
-            <a id="userMenu" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle"> ${.lang}</a>
+            <a id="userMenu" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle"> ${.lang?upper_case}</a>
             <ul aria-labelledby="dropdownSubMenu1" class="dropdown-menu border-0 shadow">
                 <#list config.locales as locale>
-                  <li><a id="signout" href="#" onclick="micajs.changeLanguage('${locale.language}')" class="dropdown-item">${locale.language}</a></li>
+                  <li><a id="signout" href="#" onclick="micajs.changeLanguage('${locale.language}')" class="dropdown-item">${locale.language?upper_case}</a></li>
                 </#list>
             </ul>
           </li>
