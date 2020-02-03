@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Controller
-public class NetworksController extends EntityController {
+public class NetworksController extends BaseController {
 
   @Inject
   private PublishedNetworkService publishedNetworkService;

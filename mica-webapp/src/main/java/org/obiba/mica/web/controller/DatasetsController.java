@@ -4,10 +4,6 @@ import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.dataset.service.PublishedDatasetService;
-import org.obiba.mica.study.domain.BaseStudy;
-import org.obiba.mica.study.domain.HarmonizationStudy;
-import org.obiba.mica.study.domain.Study;
-import org.obiba.mica.study.service.PublishedStudyService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.servlet.ModelAndView;
@@ -19,7 +15,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Controller
-public class DatasetsController extends EntityController {
+public class DatasetsController extends BaseController {
 
   @Inject
   private PublishedDatasetService publishedDatasetService;
