@@ -15,7 +15,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Controller
-public class StudiesController extends EntityController {
+public class StudiesController extends BaseController {
 
   @Inject
   private PublishedStudyService publishedStudyService;

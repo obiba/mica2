@@ -30,6 +30,7 @@ public class SessionInterceptor extends HandlerInterceptorAdapter {
   private final UserProfileService userProfileService;
 
   private Cache<String, ObibaRealm.Subject> subjectCache = CacheBuilder.newBuilder()
+    .maximumSize(100)
     .expireAfterWrite(1, TimeUnit.MINUTES)
     .build();
 

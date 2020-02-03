@@ -20,7 +20,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Controller
-public class NetworkController extends EntityController {
+public class NetworkController extends BaseController {
 
   @Inject
   private SubjectAclService subjectAclService;
