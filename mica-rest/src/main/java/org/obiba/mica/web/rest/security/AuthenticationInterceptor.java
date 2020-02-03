@@ -11,12 +11,14 @@
 package org.obiba.mica.web.rest.security;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.annotation.Priority;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerResponseContext;
 import javax.ws.rs.container.ContainerResponseFilter;
 import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.NewCookie;
 
 import org.apache.shiro.SecurityUtils;
@@ -35,11 +37,16 @@ public class AuthenticationInterceptor implements ContainerResponseFilter {
       Session session = SecurityUtils.getSubject().getSession();
       session.touch();
       int timeout = (int) (session.getTimeout() / 1000);
-      responseContext.getHeaders().putSingle(HttpHeaders.SET_COOKIE,
-          new NewCookie(MICA_SESSION_ID_COOKIE_NAME, session.getId().toString(), "/", null, null, timeout, false));
+      NewCookie sidCookie = new NewCookie(MICA_SESSION_ID_COOKIE_NAME, session.getId().toString(), "/", null, null, timeout, false);
+      MultivaluedMap<String, Object> headers = responseContext.getHeaders();
+      List<Object> cookies = headers.get(HttpHeaders.SET_COOKIE);
+      if (cookies == null)
+        headers.putSingle(HttpHeaders.SET_COOKIE, sidCookie);
+      else
+        headers.add(HttpHeaders.SET_COOKIE, sidCookie);
       Object cookieValue = session.getAttribute(HttpHeaders.SET_COOKIE);
       if(cookieValue != null) {
-        responseContext.getHeaders().add(HttpHeaders.SET_COOKIE, NewCookie.valueOf(cookieValue.toString()));
+        headers.add(HttpHeaders.SET_COOKIE, NewCookie.valueOf(cookieValue.toString()));
       }
     } else {
       if(responseContext.getHeaders().get(HttpHeaders.SET_COOKIE) == null) {

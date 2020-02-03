@@ -138,7 +138,7 @@ new Vue({
     return {
       result: null,
       count: 0
-    }
+    };
   },
   methods: {
     onResult: function(payload) {
@@ -157,7 +157,7 @@ new Vue({
     return {
       result: null,
       count: 0
-    }
+    };
   },
   methods: {
     onResult: function(payload) {
@@ -176,7 +176,7 @@ new Vue({
     return {
       result: null,
       count: 0
-    }
+    };
   },
   methods: {
     onResult: function(payload) {
@@ -195,7 +195,7 @@ new Vue({
     return {
       result: null,
       count: 0
-    }
+    };
   },
   methods: {
     onResult: function(payload) {
@@ -214,7 +214,7 @@ new Vue({
     return {
       result: null,
       count: 0
-    }
+    };
   },
   methods: {
     onResult: function(payload) {
@@ -233,7 +233,7 @@ new Vue({
     return {
       result: null,
       count: 0
-    }
+    };
   },
   methods: {
     onResult: function(payload) {
@@ -259,7 +259,7 @@ new Vue({
       message: '',
       queryType: 'variables-list',
       lastList: ''
-    }
+    };
   },
   methods: {
     // show a modal with all the vocabularies/terms of the selected taxonomy
@@ -271,7 +271,7 @@ new Vue({
     // set the type of query to be executed, on result component selection
     onQueryTypeSelection: function(payload) {
       if (payload === 'lists') {
-        this.queryType = this.lastList;  
+        this.queryType = this.lastList;
       } else {
         this.queryType = payload;
         if (payload.endsWith('-list')) {
@@ -282,7 +282,7 @@ new Vue({
     },
     onExecuteQuery: function() {
       console.log('Executing ' + this.queryType + ' query ...');
-      EventBus.$emit(this.queryType, 'I am the result of a ' + this.queryType + ' query')
+      EventBus.$emit(this.queryType, 'I am the result of a ' + this.queryType + ' query');
     }
   },
   mounted() {
