@@ -48,7 +48,7 @@ public class DataAccessController extends BaseController {
       params.put("pathPrefix", "../..");
       return new ModelAndView("data-access", params);
     } else {
-      return new ModelAndView("redirect:signin?redirect=data-access/" + id);
+      return new ModelAndView("redirect:../signin?redirect=data-access%2F" + id);
     }
   }
 
@@ -64,7 +64,7 @@ public class DataAccessController extends BaseController {
       addDataAccessForm(params, dar.getContent(), language == null ? locale : language);
       return new ModelAndView("data-access-form", params);
     } else {
-      return new ModelAndView("redirect:signin?redirect=data-access-form/" + id);
+      return new ModelAndView("redirect:../signin?redirect=data-access-form%2F" + id);
     }
   }
 
