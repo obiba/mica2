@@ -42,7 +42,11 @@
             <div class="card card-primary card-outline">
               <div class="card-header">
                 <h3 class="card-title">Data Access Requests</h3>
-                <div class="float-right"><a href="#" class="btn btn-primary"><i class="fas fa-plus"></i> Add</a></div>
+                <div class="float-right">
+                  <button type="button" class="btn btn-primary ml-4" data-toggle="modal" data-target="#modal-add">
+                    <i class="fas fa-plus"></i> Add
+                  </button>
+                </div>
               </div>
               <div class="card-body">
                 <table id="dars" class="table table-bordered table-striped">
@@ -82,6 +86,30 @@
     <!-- /.content -->
   </div>
   <!-- /.content-wrapper -->
+
+  <!-- Confirm addition modal -->
+  <div class="modal fade" id="modal-add">
+    <div class="modal-dialog modal-sm">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">Confirm Creation</h4>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p>Please confirm that you want to create a new data access request.</p>
+        </div>
+        <div class="modal-footer justify-content-between">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="micajs.dataAccess.create()">Confirm</button>
+        </div>
+      </div>
+      <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+  </div>
+  <!-- /.modal -->
 
   <#include "libs/footer.ftl">
 </div>

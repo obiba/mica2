@@ -317,8 +317,7 @@ angular.module('formModule', ['schemaForm', 'hc.marked', 'angularMoment', 'schem
       $scope.$broadcast('schemaFormValidate');
       // check if the form is valid
       if ($scope.forms.requestForm.$valid) {
-        micajs.success(formMessages.validationSuccessOnSubmit);
-        console.log('submit ' + id);
+        micajs.dataAccess.submit(id);
       } else {
         // an invalid form cannot be submitted
         micajs.error(formMessages.validationErrorOnSubmit);

@@ -121,6 +121,50 @@ var micajs = (function() {
     toastr.error(text);
   };
 
+  //
+  // Data access
+  //
+
+  var micaCreateDataAccess = function() {
+    axios.post('../ws/data-access-requests/_empty')
+      .then(response => {
+        console.dir(response);
+        if (response.status === 201) {
+          const tokens = response.headers.location.split('/');
+          const id = tokens[tokens.length - 1];
+          micaRedirect('../data-access/' + id);
+        }
+      })
+      .catch(response => {
+        console.dir(response);
+        micaError('Data access request creation failed.');
+      });
+  };
+
+  var micaDeleteDataAccess = function(id) {
+    axios.delete('../../ws/data-access-request/' + id)
+      .then(response => {
+        console.dir(response);
+        micaRedirect('../../data-accesses');
+      })
+      .catch(response => {
+        console.dir(response);
+        micaError('Data access request deletion failed.');
+      });
+  };
+
+  var micaSubmitDataAccess = function(id) {
+    axios.put('../../ws/data-access-request/' + id + '/_status?to=SUBMITTED')
+      .then(response => {
+        console.dir(response);
+        micaRedirect('../data-access/' + id);
+      })
+      .catch(response => {
+        console.dir(response);
+        micaError('Data access request submission failed.');
+      });
+  };
+
   return {
     'stats': micaStats,
     'redirectError': micaRedirectError,
@@ -130,7 +174,12 @@ var micajs = (function() {
     'changeLanguage': micaChangeLanguage,
     'success': micaSuccess,
     'warning': micaWarning,
-    'error': micaError
+    'error': micaError,
+    'dataAccess': {
+      'create': micaCreateDataAccess,
+      'delete': micaDeleteDataAccess,
+      'submit': micaSubmitDataAccess
+    }
   };
 
 }());
