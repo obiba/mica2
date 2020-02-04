@@ -1,8 +1,8 @@
 <#include "libs/members.ftl">
 <!DOCTYPE html>
-<html lang="en">
+<html lang="${.lang}">
 <head>
-  <title>Example | Datasets</title>
+  <title>${config.name!""} | Datasets</title>
   <#include "libs/head.ftl">
 </head>
 <body class="hold-transition layout-top-nav layout-navbar-fixed">
@@ -92,8 +92,8 @@
                         <tbody>
                         <#list datasets as ds>
                           <tr>
-                            <td><a href="../dataset/${ds.id}">${ds.acronym.en}</a></td>
-                            <td><small>${ds.name.en}</small></td>
+                            <td><a href="../dataset/${ds.id}">${ds.acronym[.lang]!""}</a></td>
+                            <td><small>${ds.name[.lang]!""}</small></td>
                             <td><small><#if ds.description?? && ds.description.en??>${ds.description.en?trim?truncate_w(100, "...")}</#if></small></td>
                             <#if showTypeColumn>
                               <td>
@@ -116,12 +116,12 @@
                           <div class="col-12 col-sm-6 col-md-4 d-flex align-items-stretch">
                             <div class="card bg-light">
                               <div class="card-header text-dark border-bottom-0">
-                                <h2 class="lead"><b>${ds.acronym.en}</b></h2>
+                                <h2 class="lead"><b>${ds.acronym[.lang]!""}</b></h2>
                               </div>
                               <div class="card-body pt-0">
                                 <div class="row">
                                   <div class="col-7">
-                                    <p class="text-muted text-sm">${ds.name.en}</p>
+                                    <p class="text-muted text-sm">${ds.name[.lang]!""}</p>
                                   </div>
                                   <div class="col-5 text-center">
                                     <p class="text-black-50 text-center mr-5 ml-5 pr-5">
@@ -137,7 +137,7 @@
                               <div class="card-footer">
                                 <div class="text-right">
                                   <a href="../dataset/${ds.id}" class="btn btn-sm btn-primary">
-                                    <i class="fas fa-eye"></i> View ${ds.acronym.en}
+                                    <i class="fas fa-eye"></i> View ${ds.acronym[.lang]!""}
                                   </a>
                                 </div>
                               </div>

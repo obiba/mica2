@@ -2,7 +2,7 @@
 <html lang="${.lang}">
 <head>
   <#include "libs/head.ftl">
-  <title>${config.name!""} | Data Access ${dar.id}</title>
+  <title>${config.name!""} | Data Access Comments ${dar.id}</title>
 </head>
 <body class="hold-transition sidebar-mini">
 <!-- Site wrapper -->
@@ -40,7 +40,7 @@
         <div class="row">
           <div class="col-sm-6">
             <h1 class="m-0">
-              <span class="text-white-50">Data Access /</span> ${dar.id}
+              <span class="text-white-50">Data Access Comments /</span> ${dar.id}
             </h1>
           </div>
           <div class="col-sm-6">
@@ -52,64 +52,12 @@
 
     <!-- Main content -->
     <section class="content">
-      <div class="row">
-        <div class="col-md-3 col-sm-6 col-12">
-
-          <#if dar.status.toString() == "OPENED">
-            <#assign boxBg = "bg-primary"/>
-            <#assign boxProgress = "10"/>
-            <#assign boxText = "data-access-progress-opened"/>
-          <#elseif dar.status.toString() == "APPROVED">
-            <#assign boxBg = "bg-success"/>
-            <#assign boxProgress = "100"/>
-            <#assign boxText = "data-access-progress-approved"/>
-          <#elseif dar.status.toString() == "REJECTED">
-            <#assign boxBg = "bg-danger"/>
-            <#assign boxProgress = "100"/>
-            <#assign boxText = "data-access-progress-rejected"/>
-          <#elseif dar.status.toString() == "SUBMITTED">
-              <#assign boxBg = "bg-info"/>
-              <#assign boxProgress = "30"/>
-              <#assign boxText = "data-access-progress-submitted"/>
-          <#elseif dar.status.toString() == "REVIEWED">
-              <#assign boxBg = "bg-info"/>
-              <#assign boxProgress = "50"/>
-              <#assign boxText = "data-access-progress-reviewed"/>
-          <#elseif dar.status.toString() == "CONDITIONALLY_APPROVED">
-              <#assign boxBg = "bg-warning"/>
-              <#assign boxProgress = "80"/>
-              <#assign boxText = "data-access-progress-conditionally-approved"/>
-          <#else>
-              <#assign boxBg = "bg-info"/>
-              <#assign boxProgress = "50"/>
-              <#assign boxText = ""/>
-          </#if>
-
-          <div class="info-box ${boxBg}">
-            <span class="info-box-icon"><i class="far fa-clock"></i></span>
-
-            <div class="info-box-content">
-              <span class="info-box-text">Status</span>
-              <span class="info-box-number"><@message dar.status.toString()/></span>
-
-              <div class="progress">
-                <div class="progress-bar" style="width: ${boxProgress}%"></div>
-              </div>
-              <span class="progress-description">
-                <@message boxText/>
-              </span>
-            </div>
-            <!-- /.info-box-content -->
-          </div>
-          <!-- /.info-box -->
-        </div>
-      </div>
 
       <div class="row">
         <div class="col-12">
           <div class="callout callout-info">
             <p>
-              This is the dashboard of the data access request.
+              These are the comments related to the data access request.
             </p>
           </div>
         </div>
@@ -163,7 +111,7 @@
 
 <#include "libs/scripts.ftl">
 <script>
-  $('#dashboard-menu').addClass('active').attr('href', '#')
+  $('#comments-menu').addClass('active').attr('href', '#')
 </script>
 </body>
 </html>
