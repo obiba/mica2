@@ -40,6 +40,10 @@ var micajs = (function() {
     }, 'POST');
   };
 
+  var micaRedirect = function(path) {
+    $.redirect(path, null, 'GET');
+  };
+
   var micaSignin = function(formId, onFailure) {
     $(formId).submit(function(e) {
       e.preventDefault(); // avoid to execute the actual submit of the form.
@@ -107,12 +111,26 @@ var micajs = (function() {
     window.location.search = kvp.join('&');
   };
 
+  var micaSuccess = function(text) {
+    toastr.success(text);
+  };
+  var micaWarning = function(text) {
+    toastr.warning(text);
+  };
+  var micaError = function(text) {
+    toastr.error(text);
+  };
+
   return {
     'stats': micaStats,
     'redirectError': micaRedirectError,
+    'redirect': micaRedirect,
     'signin': micaSignin,
     'signout': micaSignout,
-    'changeLanguage': micaChangeLanguage
+    'changeLanguage': micaChangeLanguage,
+    'success': micaSuccess,
+    'warning': micaWarning,
+    'error': micaError
   };
 
 }());
