@@ -3,27 +3,6 @@
 <head>
   <#include "libs/head.ftl">
   <title>${config.name!""} | Data Access Form ${dar.id}</title>
-  <style>
-    @media print  {
-      .hidden-print {
-        display: none;
-      }
-    }
-    @media not print {
-      .visible-print {
-        display: none;
-      }
-    }
-    .has-error {
-      color: #E74C3C;
-    }
-    .has-error input {
-      border-color: #E74C3C;
-    }
-    .input-group-btn {
-      display: none;
-    }
-  </style>
 </head>
 <body ng-app="formModule" class="hold-transition sidebar-mini">
 <!-- Site wrapper -->
