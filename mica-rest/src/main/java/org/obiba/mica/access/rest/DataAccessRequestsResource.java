@@ -135,11 +135,23 @@ public class DataAccessRequestsResource {
   }
 
   @POST
+  @Path("/_empty")
+  @RequiresPermissions("/data-access-request:ADD")
+  public Response createEmpty(@Context UriInfo uriInfo) {
+    DataAccessRequest request = new DataAccessRequest();
+    request.setContent("{}");
+    return saveNew(request, uriInfo);
+  }
+
+  @POST
   @Timed
   @RequiresPermissions("/data-access-request:ADD")
   public Response create(Mica.DataAccessRequestDto dto, @Context UriInfo uriInfo) {
     DataAccessRequest request = dtos.fromDto(dto);
+    return saveNew(request, uriInfo);
+  }
 
+  private Response saveNew(DataAccessRequest request, UriInfo uriInfo) {
     // force applicant and make sure it is a new request
     String applicant = SecurityUtils.getSubject().getPrincipal().toString();
     request.setApplicant(applicant);
