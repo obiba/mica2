@@ -31,6 +31,9 @@
     "window": false,
     "URLSearchParams": true,
     "Vue": true,
-    "axios": true
+    "axios": true,
+    "formSchema": true,
+    "formDefinition": true,
+    "formModel": true
   }
 }
