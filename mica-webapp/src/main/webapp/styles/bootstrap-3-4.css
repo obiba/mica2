@@ -1,0 +1,19 @@
+@media print  {
+  .hidden-print {
+    display: none;
+  }
+}
+@media not print {
+  .visible-print {
+    display: none;
+  }
+}
+.has-error {
+  color: #E74C3C;
+}
+.has-error input {
+  border-color: #E74C3C;
+}
+.input-group-btn {
+  display: none;
+}
