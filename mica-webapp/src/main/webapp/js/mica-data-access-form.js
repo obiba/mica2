@@ -103,7 +103,7 @@ angular.module('ngObibaMica', ['ngResource'])
     };
   })
 
-  .directive('attachmentList', [function() {
+  .directive('attachmentList', [function () {
     return {
       restrict: 'E',
       scope: {
@@ -112,12 +112,14 @@ angular.module('ngObibaMica', ['ngResource'])
         emptyMessage: '='
       },
       template: attachmentListTemplate,
-      link: function(scope) {
+      link: function (scope) {
         scope.attachments = [];
-        scope.hrefBuilder = scope.hrefBuilder || function(a) { return a.id; };
+        scope.hrefBuilder = scope.hrefBuilder || function (a) {
+          return a.id;
+        };
         scope.hasAttachments = false;
 
-        scope.$watch('files', function(val) {
+        scope.$watch('files', function (val) {
           scope.attachments = [];
           if (val) {
             scope.hasAttachments = val.length > 0;
@@ -140,7 +142,7 @@ angular.module('ngObibaMica', ['ngResource'])
         accept: '@',
         files: '=',
         disabled: '=',
-        onError:'=',
+        onError: '=',
         deleteAttachments: '<'
       },
       template: attachmentTemplate,
@@ -149,7 +151,7 @@ angular.module('ngObibaMica', ['ngResource'])
   }])
   .controller('AttachmentCtrl', ['$scope', '$timeout', '$log', 'Upload', 'TempFileResource', 'ngObibaMicaUrl',
     function ($scope, $timeout, $log, Upload, TempFileResource, ngObibaMicaUrl) {
-      if($scope.deleteAttachments === undefined || $scope.deleteAttachments === null){
+      if ($scope.deleteAttachments === undefined || $scope.deleteAttachments === null) {
         $scope.deleteAttachments = true;
       }
       var uploadFile = function (file) {
@@ -191,18 +193,20 @@ angular.module('ngObibaMica', ['ngResource'])
                 attachment.justUploaded = true;
                 attachment.timestamps = {created: new Date()};
                 // wait for 1 second before hiding progress bar
-                $timeout(function () { attachment.showProgressBar = false; }, 1000);
+                $timeout(function () {
+                  attachment.showProgressBar = false;
+                }, 1000);
               }
             );
           })
-          .error(function(response){
+          .error(function (response) {
             $log.error('File upload failed: ', JSON.stringify(response, null, 2));
             var index = $scope.files.indexOf(attachment);
             if (index !== -1) {
               $scope.files.splice(index, 1);
             }
 
-            if ($scope.onError){
+            if ($scope.onError) {
               $scope.onError(attachment);
             }
           });
@@ -245,6 +249,7 @@ function NgObibaMicaUrlProvider() {
     'TempFileResource': '../../ws/files/temp/:id',
     'SchemaFormAttachmentDownloadResource': '../../ws/:path/form/attachments/:attachmentName/:attachmentId/_download'
   };
+
   function UrlProvider(registry) {
     var urlRegistry = registry;
 
@@ -269,10 +274,10 @@ function NgObibaMicaUrlProvider() {
 }
 
 angular.module('formModule', ['schemaForm', 'hc.marked', 'angularMoment', 'schemaForm-datepicker', 'schemaForm-timepicker', 'schemaForm-datetimepicker', 'sfObibaFileUpload', 'ngFileUpload', 'ui.bootstrap'])
-  .config(['$provide', function($provide) {
+  .config(['$provide', function ($provide) {
     $provide.provider('ngObibaMicaUrl', NgObibaMicaUrlProvider);
   }])
-  .factory(['markedProvider', function(markedProvider) {
+  .factory(['markedProvider', function (markedProvider) {
     markedProvider.setOptions({
       gfm: true,
       tables: true,
@@ -280,30 +285,43 @@ angular.module('formModule', ['schemaForm', 'hc.marked', 'angularMoment', 'schem
     });
   }])
   .controller('FormController', ['$scope', function ($scope) {
+    $scope.forms = {};
     $scope.schema = formSchema;
     $scope.form = formDefinition;
     $scope.model = formModel;
-    $scope.validate = function() {
-      $scope.$broadcast('schemaFormValidate');
-    };
-    $scope.save = function(id) {
+
+    $scope.validate = function () {
       $scope.$broadcast('schemaFormValidate');
       // check if the form is valid
-      if ($scope.form.$valid) {
-        console.log('save: valid! ' + id);
+      if ($scope.forms.requestForm.$valid) {
+        micajs.success(formMessages.validationSuccess);
       } else {
         // an invalid form can be saved with warning
-        console.log('save: NOT valid! ' + id);
+        micajs.warning(formMessages.validationError);
       }
     };
-    $scope.submit = function(id) {
+    $scope.save = function (id) {
+      axios.put(
+        '../../ws/data-access-request/' + id + '/model',
+        $scope.model,
+        {headers: {'Content-Type': 'application/json'}}
+      ).then(function() {
+        // check if the form was valid
+        micajs.redirect('../../data-access-form/' + id);
+      }).catch(response =>  {
+        micajs.error(formMessages.errorOnSave);
+        console.dir(response);
+      });
+    };
+    $scope.submit = function (id) {
       $scope.$broadcast('schemaFormValidate');
       // check if the form is valid
-      if ($scope.form.$valid) {
-        console.log('submit: valid! ' + id);
+      if ($scope.forms.requestForm.$valid) {
+        micajs.success(formMessages.validationSuccessOnSubmit);
+        console.log('submit ' + id);
       } else {
         // an invalid form cannot be submitted
-        console.log('submit: NOT valid! ' + id);
+        micajs.error(formMessages.validationErrorOnSubmit);
       }
     };
   }]);
