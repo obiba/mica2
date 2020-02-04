@@ -17,6 +17,8 @@
 <script src="${pathPrefix!".."}/bower_components/admin-lte/plugins/datatables-bs4/js/dataTables.bootstrap4.js"></script>
 <!-- Toastr -->
 <script src="${pathPrefix!".."}/bower_components/admin-lte/plugins/toastr/toastr.min.js"></script>
+<!-- Axios -->
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 
 <!-- Global js variables -->
 <script>
