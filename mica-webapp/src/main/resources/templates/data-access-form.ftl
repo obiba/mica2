@@ -65,23 +65,29 @@
       </div>
       <!-- /.row -->
 
-      <div class="row">
+      <div class="row" ng-controller="FormController">
         <div class="col-lg-8">
           <div class="card card-primary card-outline">
             <div class="card-header d-print-none">
               <h3 class="card-title">Form</h3>
+              <div>
+                <span class="float-right border-left ml-2 pl-2" ng-if="schema.readOnly">
+                  <a class="btn btn-primary" href="${dar.id}?edit=true"><i class="fa fa-pen"></i> Edit</a>
+                </span>
+                <span class="float-right border-left ml-2 pl-2" ng-hide="schema.readOnly">
+                  <a class="btn btn-primary" href="#" ng-click="save('${dar.id}')">Save</a>
+                  <a class="btn btn-default" href="${dar.id}">Cancel</a>
+                </span>
+                <span class="float-right">
+                  <button type="button" class="btn btn-info" ng-disabled="!schema.readOnly" ng-click="submit('${dar.id}')">Submit</button>
+                  <button type="button" class="btn btn-success" ng-click="validate()">Validate</button>
+                </span>
+              </div>
             </div>
             <div class="card-body">
-              <div ng-controller="FormController">
-                <form>
-                  <div sf-schema="schema" sf-form="form" sf-model="model"></div>
-                  <div class="mt-5 d-print-none">
-                    <input type="submit" class="btn btn-primary" value="Submit">
-                    <button type="button" class="btn btn-success" ng-click="validate()">Validate</button>
-                    <button type="button" class="btn btn-default" ng-click="goBack()">Cancel</button>
-                  </div>
-                </form>
-              </div>
+              <form>
+                <div sf-schema="schema" sf-form="form" sf-model="model"></div>
+              </form>
             </div>
           </div>
         </div>
