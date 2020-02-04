@@ -4,8 +4,15 @@
   <#include "libs/head.ftl">
   <title>${config.name!""} | Data Access Form ${dar.id}</title>
   <style>
-    .visible-print {
-      display: none;
+    @media print  {
+      .hidden-print {
+        display: none;
+      }
+    }
+    @media not print {
+      .visible-print {
+        display: none;
+      }
     }
     .has-error {
       color: #E74C3C;
@@ -67,50 +74,49 @@
     <!-- Main content -->
     <section class="content">
 
-      <div class="row">
+      <div class="row d-print-none">
         <div class="col-12">
           <div class="callout callout-info">
             <p>
               This the main data access request form.
             </p>
           </div>
-
-          <div class="row">
-            <div class="col-lg-8">
-              <div class="card card-primary card-outline">
-                <div class="card-header">
-                  <h3 class="card-title">Form</h3>
-                </div>
-                <div class="card-body">
-                  <div ng-controller="FormController">
-                    <form>
-                      <div sf-schema="schema" sf-form="form" sf-model="model"></div>
-                      <div class="mt-5">
-                        <input type="submit" class="btn btn-primary" value="Submit">
-                        <button type="button" class="btn btn-success" ng-click="validate()">Validate</button>
-                        <button type="button" class="btn btn-default" ng-click="goBack()">Cancel</button>
-                      </div>
-                    </form>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="col-lg-4">
-              <div class="card card-info card-outline">
-                <div class="card-header">
-                  <h3 class="card-title">Help</h3>
-                </div>
-                <div class="card-body">
-                  Some recommendations when filling the form...
-                </div>
-              </div>
-            </div>
-          </div>
-
         </div>
         <!-- /.col-12 -->
       </div>
       <!-- /.row -->
+
+      <div class="row">
+        <div class="col-lg-8">
+          <div class="card card-primary card-outline">
+            <div class="card-header d-print-none">
+              <h3 class="card-title">Form</h3>
+            </div>
+            <div class="card-body">
+              <div ng-controller="FormController">
+                <form>
+                  <div sf-schema="schema" sf-form="form" sf-model="model"></div>
+                  <div class="mt-5 d-print-none">
+                    <input type="submit" class="btn btn-primary" value="Submit">
+                    <button type="button" class="btn btn-success" ng-click="validate()">Validate</button>
+                    <button type="button" class="btn btn-default" ng-click="goBack()">Cancel</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-4 d-print-none">
+          <div class="card card-info card-outline">
+            <div class="card-header">
+              <h3 class="card-title">Help</h3>
+            </div>
+            <div class="card-body">
+              Some recommendations when filling the form...
+            </div>
+          </div>
+        </div>
+      </div>
 
     </section>
     <!-- /.content -->
