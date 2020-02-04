@@ -39,9 +39,12 @@
       <div class="container-fluid">
         <div class="row">
           <div class="col-sm-6">
-            <h1 class="m-0">
+            <h1 class="m-0 float-left">
               <span class="text-white-50">Data Access /</span> ${dar.id}
             </h1>
+            <button type="button" class="btn btn-danger ml-4" data-toggle="modal" data-target="#modal-delete">
+              <i class="fa fa-trash"></i> Delete
+            </button>
           </div>
           <div class="col-sm-6">
             <#include "libs/data-access-breadcrumb.ftl">
@@ -49,6 +52,30 @@
         </div>
       </div><!-- /.container-fluid -->
     </section>
+
+    <!-- Confirm delete modal -->
+    <div class="modal fade" id="modal-delete">
+      <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title">Confirm Deletion</h4>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <p>Please confirm that you want to delete this data access request.</p>
+          </div>
+          <div class="modal-footer justify-content-between">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+            <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="micajs.dataAccess.delete('${dar.id}')">Confirm</button>
+          </div>
+        </div>
+        <!-- /.modal-content -->
+      </div>
+      <!-- /.modal-dialog -->
+    </div>
+    <!-- /.modal -->
 
     <!-- Main content -->
     <section class="content">

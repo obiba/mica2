@@ -79,7 +79,9 @@
                   <a class="btn btn-default" href="${dar.id}">Cancel</a>
                 </span>
                 <span class="float-right">
-                  <button type="button" class="btn btn-info" ng-disabled="!schema.readOnly" ng-click="submit('${dar.id}')">Submit</button>
+                  <#if dar.status == 'OPENED'>
+                    <button type="button" class="btn btn-info" ng-disabled="!schema.readOnly" data-toggle="modal" data-target="#modal-submit">Submit</button>
+                  </#if>
                   <button type="button" class="btn btn-success" ng-click="validate()">Validate</button>
                 </span>
               </div>
@@ -90,6 +92,30 @@
               </form>
             </div>
           </div>
+
+          <!-- Confirm submission modal -->
+          <div class="modal fade" id="modal-submit">
+            <div class="modal-dialog modal-sm">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h4 class="modal-title">Confirm Submission</h4>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <p>Please confirm that you want to submit this data access request.</p>
+                </div>
+                <div class="modal-footer justify-content-between">
+                  <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                  <button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="submit('${dar.id}')">Confirm</button>
+                </div>
+              </div>
+              <!-- /.modal-content -->
+            </div>
+            <!-- /.modal-dialog -->
+          </div>
+          <!-- /.modal -->
         </div>
         <div class="col-lg-4 d-print-none">
           <div class="card card-info card-outline">
