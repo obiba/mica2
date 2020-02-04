@@ -132,6 +132,9 @@
 <script src="${pathPrefix}/bower_components/angular-marked/dist/angular-marked.js"></script>
 <script src="${pathPrefix}/bower_components/angular-strap/dist/angular-strap.js"></script>
 <script src="${pathPrefix}/bower_components/angular-strap/dist/angular-strap.tpl.js"></script>
+<script src="${pathPrefix}/bower_components/moment/moment.js"></script>
+<script src="${pathPrefix}/bower_components/moment/min/locales.min.js"></script>
+<script src="${pathPrefix}/bower_components/angular-moment/angular-moment.js"></script>
 <script src="${pathPrefix}/bower_components/angular-schema-form/dist/schema-form.js"></script>
 <script src="${pathPrefix}/bower_components/angular-schema-form/dist/bootstrap-decorator.js"></script>
 <script src="${pathPrefix}/bower_components/angular-schema-form-bootstrap/bootstrap-decorator.min.js"></script>
@@ -149,7 +152,7 @@
     let formSchema = ${form.schema!"{}"};
     let formDefinition = ${form.definition!"['*']"};
     let formModel = ${form.model!"{}"};
-    angular.module('formModule', ['schemaForm', 'hc.marked'])
+    angular.module('formModule', ['schemaForm', 'hc.marked', 'angularMoment', 'schemaForm-datepicker', 'schemaForm-timepicker', 'schemaForm-datetimepicker'])
         .factory(['markedProvider', function(markedProvider) {
             markedProvider.setOptions({
                 gfm: true,
