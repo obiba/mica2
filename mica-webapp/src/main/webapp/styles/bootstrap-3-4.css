@@ -1,3 +1,7 @@
+/*
+ * Bootstrap 3 classes CSS rules (re)definition when used in a Bootstrap 4 context
+ */
+
 @media print  {
   .hidden-print {
     display: none;
