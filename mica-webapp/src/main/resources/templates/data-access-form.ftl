@@ -85,7 +85,7 @@
               </div>
             </div>
             <div class="card-body">
-              <form>
+              <form name="forms.requestForm">
                 <div sf-schema="schema" sf-form="form" sf-model="model"></div>
               </form>
             </div>
