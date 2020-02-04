@@ -41,6 +41,7 @@ import org.obiba.mica.web.model.Mica;
 import org.slf4j.Logger;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.RequestBody;
 import sun.util.locale.LanguageTag;
 
 import javax.inject.Inject;
@@ -107,6 +108,17 @@ public class DataAccessRequestResource extends DataAccessEntityResource<DataAcce
   public Map<String, Object> getModel(@PathParam("id") String id) {
     subjectAclService.checkPermission("/data-access-request", "VIEW", id);
     return JSONUtils.toMap(dataAccessRequestService.findById(id).getContent());
+  }
+
+  @PUT
+  @Path("/model")
+  @Consumes("application/json")
+  public Response setModel(@PathParam("id") String id, String content) {
+    subjectAclService.checkPermission("/data-access-request", "EDIT", id);
+    DataAccessRequest request = dataAccessRequestService.findById(id);
+    request.setContent(content);
+    dataAccessRequestService.save(request);
+    return Response.ok().build();
   }
 
   @PUT
