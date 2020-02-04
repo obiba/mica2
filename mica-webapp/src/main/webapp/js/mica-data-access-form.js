@@ -241,8 +241,9 @@ angular.module('ngObibaMica', ['ngResource'])
 
 function NgObibaMicaUrlProvider() {
   var registry = {
-    'TempFileUploadResource': '../ws/files/temp',
-    'TempFileResource': '../ws/files/temp/:id'
+    'TempFileUploadResource': '../../ws/files/temp',
+    'TempFileResource': '../../ws/files/temp/:id',
+    'SchemaFormAttachmentDownloadResource': '../../ws/:path/form/attachments/:attachmentName/:attachmentId/_download'
   };
   function UrlProvider(registry) {
     var urlRegistry = registry;
@@ -285,7 +286,24 @@ angular.module('formModule', ['schemaForm', 'hc.marked', 'angularMoment', 'schem
     $scope.validate = function() {
       $scope.$broadcast('schemaFormValidate');
     };
-    $scope.save = function() {
+    $scope.save = function(id) {
       $scope.$broadcast('schemaFormValidate');
+      // check if the form is valid
+      if ($scope.form.$valid) {
+        console.log('save: valid! ' + id);
+      } else {
+        // an invalid form can be saved with warning
+        console.log('save: NOT valid! ' + id);
+      }
+    };
+    $scope.submit = function(id) {
+      $scope.$broadcast('schemaFormValidate');
+      // check if the form is valid
+      if ($scope.form.$valid) {
+        console.log('submit: valid! ' + id);
+      } else {
+        // an invalid form cannot be submitted
+        console.log('submit: NOT valid! ' + id);
+      }
     };
   }]);
