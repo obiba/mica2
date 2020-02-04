@@ -31,10 +31,10 @@ var attachmentTemplate = '<button ng-hide="{{disabled}}" type="button" class="bt
   '    </td>\n' +
   '    <td style="width:20px;" ng-show="deleteAttachments">\n' +
   '      <a ng-show="file.id" ng-click="deleteFile(file.id)" class="action">\n' +
-  '        <i class="fa fa-trash-o"></i>\n' +
+  '        <i class="fa fa-trash-alt"></i>\n' +
   '      </a>\n' +
   '      <a ng-show="file.tempId" ng-click="deleteTempFile(file.tempId)" class="action">\n' +
-  '        <i class="fa fa-trash-o"></i>\n' +
+  '        <i class="fa fa-trash-alt"></i>\n' +
   '      </a>\n' +
   '    </td>\n' +
   '  </tr>\n' +
@@ -283,6 +283,9 @@ angular.module('formModule', ['schemaForm', 'hc.marked', 'angularMoment', 'schem
     $scope.form = formDefinition;
     $scope.model = formModel;
     $scope.validate = function() {
+      $scope.$broadcast('schemaFormValidate');
+    };
+    $scope.save = function() {
       $scope.$broadcast('schemaFormValidate');
     };
   }]);
