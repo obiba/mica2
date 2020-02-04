@@ -27,8 +27,6 @@
 <script src="${pathPrefix}/bower_components/sf-obiba-countries-ui-select/dist/sf-obiba-countries-ui-select.js"></script>
 <script src="${pathPrefix}/bower_components/sf-radio-group-collection/dist/sf-radio-group-collection.js"></script>
 
-<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-
 <script>
     $('#form-menu').addClass('active');//.attr('href', '#');
     let formSchema = ${form.schema!"{}"};
