@@ -1,9 +1,9 @@
 <#include "libs/members.ftl">
 <#include "libs/dce.ftl">
 <!DOCTYPE html>
-<html lang="en">
+<html lang="${.lang}">
 <head>
-  <title>Example | ${study.acronym[.lang]!""}</title>
+  <title>${config.name!""} | ${study.acronym[.lang]!""}</title>
   <#include "libs/head.ftl">
   <!-- Ionicons -->
   <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">

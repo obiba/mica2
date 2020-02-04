@@ -1,8 +1,8 @@
 <#include "libs/members.ftl">
 <!DOCTYPE html>
-<html lang="en">
+<html lang="${.lang}">
 <head>
-  <title>Example | Networks</title>
+  <title>${config.name!""} | Networks</title>
   <#include "libs/head.ftl">
 </head>
 <body class="hold-transition layout-top-nav">
@@ -74,8 +74,8 @@
                         <tbody>
                         <#list networks as ntwk>
                           <tr>
-                            <td><a href="../network/${ntwk.id}">${ntwk.acronym.en}</a></td>
-                            <td><small>${ntwk.name.en}</small></td>
+                            <td><a href="../network/${ntwk.id}">${ntwk.acronym[.lang]!""}</a></td>
+                            <td><small>${ntwk.name[.lang]!""}</small></td>
                             <td><small>${ntwk.description.en?trim?truncate_w(100, "...")}</small></td>
                           </tr>
                         </#list>
@@ -89,16 +89,16 @@
                           <div class="col-12 col-sm-6 col-md-4 d-flex align-items-stretch">
                             <div class="card bg-light">
                               <div class="card-header text-dark border-bottom-0">
-                                <h2 class="lead"><b>${ntwk.acronym.en}</b></h2>
+                                <h2 class="lead"><b>${ntwk.acronym[.lang]!""}</b></h2>
                               </div>
                               <div class="card-body pt-0">
                                 <div class="row">
                                   <div class="col-7">
-                                    <p class="text-muted text-sm">${ntwk.name.en}</p>
+                                    <p class="text-muted text-sm">${ntwk.name[.lang]!""}</p>
                                   </div>
                                   <div class="col-5 text-center">
                                       <#if ntwk.logo??>
-                                        <img class="img-fluid" style="max-height: 200px" alt="${ntwk.acronym.en} logo" src="../ws/network/${ntwk.id}/file/${ntwk.logo.id}/_download"/>
+                                        <img class="img-fluid" style="max-height: 200px" alt="${ntwk.acronym[.lang]!""} logo" src="../ws/network/${ntwk.id}/file/${ntwk.logo.id}/_download"/>
                                       <#else >
                                         <p class="text-black-50 text-center mr-5 ml-5 pr-5">
                                           <i class="ion ion-filing fa-4x"></i>
@@ -110,7 +110,7 @@
                               <div class="card-footer">
                                 <div class="text-right">
                                   <a href="../network/${ntwk.id}" class="btn btn-sm btn-primary">
-                                    <i class="fas fa-eye"></i> View ${ntwk.acronym.en}
+                                    <i class="fas fa-eye"></i> View ${ntwk.acronym[.lang]!""}
                                   </a>
                                 </div>
                               </div>
