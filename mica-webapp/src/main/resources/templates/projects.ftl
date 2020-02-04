@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="${.lang}">
 <head>
-  <title>Example | Approved Projects</title>
+  <title>${config.name!""} | Approved Projects</title>
   <#include "libs/head.ftl">
 </head>
 <body class="hold-transition layout-top-nav layout-navbar-fixed">

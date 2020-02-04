@@ -28,4 +28,20 @@
         "info": true,
         "autoWidth": true,
     };
+    var dataTablesSortSearchOpts = {
+        "paging": false,
+        "lengthChange": false,
+        "searching": true,
+        "ordering": true,
+        "info": false,
+        "autoWidth": true,
+    };
+    var dataTablesSortOpts = {
+        "paging": false,
+        "lengthChange": false,
+        "searching": false,
+        "ordering": true,
+        "info": false,
+        "autoWidth": true,
+    };
 </script>

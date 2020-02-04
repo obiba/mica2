@@ -1,9 +1,9 @@
 <#include "libs/population.ftl">
 <#include "libs/dce.ftl">
 <!DOCTYPE html>
-<html lang="en">
+<html lang="${.lang}">
 <head>
-  <title>Example | ${dataset.acronym.en}</title>
+  <title>${config.name!""} | ${dataset.acronym[.lang]!""}</title>
     <#include "libs/head.ftl">
   <!-- Ionicons -->
   <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
@@ -23,15 +23,15 @@
         <div class="row mb-2">
           <div class="col-sm-6">
             <h1 class="m-0">
-              <span class="text-white-50">${type} Dataset /</span> ${dataset.acronym.en}
+              <span class="text-white-50">${type} Dataset /</span> ${dataset.acronym[.lang]!""}
             </h1>
-            <small>${dataset.name.en}</small>
+            <small>${dataset.name[.lang]!""}</small>
           </div><!-- /.col -->
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
               <li class="breadcrumb-item"><a class="text-white-50" href="../home">Home</a></li>
               <li class="breadcrumb-item"><a class="text-white-50" href="../datasets">Datasets</a></li>
-              <li class="breadcrumb-item active text-light">${dataset.acronym.en}</li>
+              <li class="breadcrumb-item active text-light">${dataset.acronym[.lang]!""}</li>
             </ol>
           </div><!-- /.col -->
         </div><!-- /.row -->
@@ -50,7 +50,7 @@
               <div class="card-body">
                 <div class="row">
                   <div class="col-lg-12">
-                    <h3 class="mb-4">${dataset.name.en}</h3>
+                    <h3 class="mb-4">${dataset.name[.lang]!""}</h3>
                   </div>
                 </div>
                 <div class="row mb-4">
@@ -112,7 +112,7 @@
 
                 <p class="card-text">
                   <#if dataset.description?? && dataset.description.en??>
-                      ${dataset.description.en}
+                      ${dataset.description[.lang]!""}
                   </#if>
                 </p>
               </div>
@@ -120,7 +120,7 @@
                   <div class="card-footer">
                     Associated study
                     <a class="btn btn-success ml-2" href="../study/${study.id}">
-                      <i class="ion ion-folder"></i> ${study.acronym.en}
+                      <i class="ion ion-folder"></i> ${study.acronym[.lang]!""}
                     </a>
                   </div>
                 </#if>
@@ -141,7 +141,7 @@
                   </div>
                 </div>
                 <div class="card-body">
-                  <h5>${population.name.en}</h5>
+                  <h5>${population.name[.lang]!""}</h5>
                   <div><#if population.description??>${population.description.en!""}</#if></div>
                   <@populationmodal id=population.id population=population></@populationmodal>
                 </div>
@@ -162,7 +162,7 @@
                   </div>
                 </div>
                 <div class="card-body">
-                  <h5>${dce.name.en}</h5>
+                  <h5>${dce.name[.lang]!""}</h5>
                   <div><#if dce.description??>${dce.description.en!""}</#if></div>
                   <#assign dceId="${population.id}-${dce.id}">
                   <@dcemodal id=dceId dce=dce></@dcemodal>
@@ -198,21 +198,21 @@
                         <tr>
                           <td>
                             <a href="../study/${table.study.id}">
-                              ${table.study.acronym.en}
+                              ${table.study.acronym[.lang]!""}
                             </a>
                           </td>
                           <td>
                             <#assign popId="${table.study.id}-${table.population.id}">
                             <@populationmodal id=popId population=table.population></@populationmodal>
                             <a href="#" data-toggle="modal" data-target="#modal-${popId}">
-                              ${table.population.name.en}
+                              ${table.population.name[.lang]!""}
                             </a>
                           </td>
                           <td>
                             <#assign dceId="${table.study.id}-${table.population.id}-${table.dce.id}">
                             <@dcemodal id=dceId dce=table.dce></@dcemodal>
                             <a href="#" data-toggle="modal" data-target="#modal-${dceId}">
-                              ${table.dce.name.en}
+                              ${table.dce.name[.lang]!""}
                             </a>
                           </td>
                         </tr>
@@ -234,14 +234,14 @@
                           <tr>
                             <td>
                               <a href="../study/${table.study.id}">
-                                ${table.study.acronym.en}
+                                ${table.study.acronym[.lang]!""}
                               </a>
                             </td>
                             <td>
                               <#assign popId="${table.study.id}-${table.population.id}">
                               <@populationmodal id=popId population=table.population></@populationmodal>
                               <a href="#" data-toggle="modal" data-target="#modal-${popId}">
-                                ${table.population.name.en}
+                                ${table.population.name[.lang]!""}
                               </a>
                             </td>
                           </tr>
