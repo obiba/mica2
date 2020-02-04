@@ -43,9 +43,7 @@ public class DataAccessController extends BaseController {
   public ModelAndView get(@PathVariable String id) {
     Subject subject = SecurityUtils.getSubject();
     if (subject.isAuthenticated()) {
-      Map<String, Object> params = newParameters();
-      params.put("dar", getDataAccessRequest(id));
-      params.put("pathPrefix", "../..");
+      Map<String, Object> params = newParameters(id);
       return new ModelAndView("data-access", params);
     } else {
       return new ModelAndView("redirect:../signin?redirect=data-access%2F" + id);
@@ -57,15 +55,82 @@ public class DataAccessController extends BaseController {
                               @RequestParam(value = "language", required = false) String language) {
     Subject subject = SecurityUtils.getSubject();
     if (subject.isAuthenticated()) {
-      DataAccessRequest dar = getDataAccessRequest(id);
-      Map<String, Object> params = newParameters();
-      params.put("dar", dar);
-      params.put("pathPrefix", "../..");
-      addDataAccessForm(params, dar.getContent(), language == null ? locale : language);
+      Map<String, Object> params = newParameters(id);
+      addDataAccessForm(params, getDataAccessRequest(params).getContent(), language == null ? locale : language);
       return new ModelAndView("data-access-form", params);
     } else {
       return new ModelAndView("redirect:../signin?redirect=data-access-form%2F" + id);
     }
+  }
+
+  @GetMapping("/data-access-feasibility/{id}")
+  public ModelAndView getFeasibility(@PathVariable String id) {
+    Subject subject = SecurityUtils.getSubject();
+    if (subject.isAuthenticated()) {
+      Map<String, Object> params = newParameters(id);
+      return new ModelAndView("data-access-feasibility", params);
+    } else {
+      return new ModelAndView("redirect:../signin?redirect=data-access-feasibility%2F" + id);
+    }
+  }
+
+  @GetMapping("/data-access-history/{id}")
+  public ModelAndView getHistory(@PathVariable String id) {
+    Subject subject = SecurityUtils.getSubject();
+    if (subject.isAuthenticated()) {
+      Map<String, Object> params = newParameters(id);
+      return new ModelAndView("data-access-history", params);
+    } else {
+      return new ModelAndView("redirect:../signin?redirect=data-access-history%2F" + id);
+    }
+  }
+
+  @GetMapping("/data-access-amendments/{id}")
+  public ModelAndView getAmendments(@PathVariable String id) {
+    Subject subject = SecurityUtils.getSubject();
+    if (subject.isAuthenticated()) {
+      Map<String, Object> params = newParameters(id);
+      return new ModelAndView("data-access-amendments", params);
+    } else {
+      return new ModelAndView("redirect:../signin?redirect=data-access-amendments%2F" + id);
+    }
+  }
+
+  @GetMapping("/data-access-documents/{id}")
+  public ModelAndView getDocuments(@PathVariable String id) {
+    Subject subject = SecurityUtils.getSubject();
+    if (subject.isAuthenticated()) {
+      Map<String, Object> params = newParameters(id);
+      return new ModelAndView("data-access-documents", params);
+    } else {
+      return new ModelAndView("redirect:../signin?redirect=data-access-documents%2F" + id);
+    }
+  }
+
+  @GetMapping("/data-access-comments/{id}")
+  public ModelAndView getComments(@PathVariable String id) {
+    Subject subject = SecurityUtils.getSubject();
+    if (subject.isAuthenticated()) {
+      Map<String, Object> params = newParameters(id);
+      return new ModelAndView("data-access-comments", params);
+    } else {
+      return new ModelAndView("redirect:../signin?redirect=data-access-comments%2F" + id);
+    }
+  }
+
+  //
+  // Private methods
+  //
+
+  private Map<String, Object> newParameters(String id) {
+    Map<String, Object> params = newParameters();
+    params.put("dar", getDataAccessRequest(id));
+    params.put("pathPrefix", "../..");
+    return params;
+  }
+
+  private DataAccessRequest getDataAccessRequest(Map<String, Object> params) {
+    return (DataAccessRequest) params.get("dar");
   }
 
   private DataAccessRequest getDataAccessRequest(String id) {
@@ -78,20 +143,6 @@ public class DataAccessController extends BaseController {
     params.put("form", new SchemaForm(d.get(), model, locale));
   }
 
-  @GetMapping("/data-access/{id}/amendment/{aid}/form")
-  public ModelAndView getAmendmentForm(@PathVariable String id, @PathVariable String aid) {
-    return new ModelAndView("data-access-amendment-form");
-  }
-
-  @GetMapping("/data-access/{id}/comments")
-  public ModelAndView getComments(@PathVariable String id) {
-    return new ModelAndView("data-access-comments");
-  }
-
-  @GetMapping("/data-access/{id}/history")
-  public ModelAndView getHistory(@PathVariable String id) {
-    return new ModelAndView("data-access-history");
-  }
 
   public class SchemaForm {
 

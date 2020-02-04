@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="${.lang}">
 <head>
-  <title>Example | Data Access Process</title>
+  <title>${config.name!""} | Data Access Process</title>
   <#include "libs/head.ftl">
 </head>
 <body class="hold-transition layout-top-nav layout-navbar-fixed">
