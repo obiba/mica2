@@ -1,7 +1,13 @@
+<!-- Spring utils for translations -->
 <#import "/spring.ftl" as spring/>
 <#macro message code>
   <@spring.messageText code code/>
 </#macro>
+
+<!-- App settings -->
+<#include "settings.ftl"/>
+
+
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="x-ua-compatible" content="ie=edge">

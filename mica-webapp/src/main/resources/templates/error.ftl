@@ -1,9 +1,8 @@
-<#include "libs/members.ftl">
 <!DOCTYPE html>
-<html lang="en">
+<html lang="${.lang}">
 <head>
-  <title>Example | Error</title>
-    <#include "libs/head.ftl">
+  <#include "libs/head.ftl">
+  <title>${config.name!""} | <@message "error"/></title>
   <!-- Ionicons -->
   <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
 </head>
@@ -21,7 +20,7 @@
       <div class="container">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1 class="m-0">Error</h1>
+            <h1 class="m-0"><@message "error"/></h1>
           </div><!-- /.col -->
           <div class="col-sm-6">
 
@@ -38,11 +37,18 @@
           <h2 class="headline text-warning"> ${status!"404"}</h2>
 
           <div class="error-content">
-            <h3><i class="fas fa-exclamation-triangle text-warning"></i> ${message!"Oops! Page not found."}</h3>
+            <h3><i class="fas fa-exclamation-triangle text-warning"></i>
+              <#if message??>
+                  ${message}
+              <#else >
+                  "Not found"
+              </#if>
+
+            </h3>
 
             <p>
-              We could not find the page you were looking for.
-              Meanwhile, you may <a href="../dashboard">return to dashboard</a> or try to <a href="../catalog">search the catalog</a>.
+              We could not access the page you were looking for.
+              Meanwhile, you may <a href="../dashboard">return to dashboard</a> or try to <a href="../search">search the repository</a>.
             </p>
           </div>
           <!-- /.error-content -->
