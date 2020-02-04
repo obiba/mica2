@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<html lang="${.lang}" xmlns:v-bind="http://www.w3.org/1999/xhtml">
 <head>
-  <title>Example | Data Access ${dar.id}</title>
   <#include "libs/head.ftl">
+  <title>${config.name!""} | Data Access Form ${dar.id}</title>
   <style>
     .visible-print {
       display: none;
@@ -31,18 +31,11 @@
            alt="Logo"
            class="brand-image img-circle elevation-3"
            style="opacity: .8">
-      <span class="brand-text font-weight-light">Example</span>
+      <span class="brand-text font-weight-light">${config.name!""}</span>
     </a>
 
     <!-- Sidebar -->
     <div class="sidebar">
-      <!-- Sidebar user (optional) -->
-      <div class="user-panel mt-3 pb-3 mb-3 d-flex">
-        <div class="info">
-          <a href="#" class="d-block">${dar.applicant} - ${dar.status}</a>
-        </div>
-      </div>
-
       <!-- Sidebar Menu -->
       <#include "libs/data-access-sidebar.ftl">
       <!-- /.sidebar-menu -->
@@ -62,7 +55,7 @@
             </h1>
           </div>
           <div class="col-sm-6">
-
+            <#include "libs/data-access-breadcrumb.ftl">
           </div>
         </div>
       </div><!-- /.container-fluid -->
@@ -80,7 +73,7 @@
           </div>
 
           <div class="row">
-            <div class="col-lg-12">
+            <div class="col-lg-8">
               <div class="card card-primary card-outline">
                 <div class="card-header">
                   <h3 class="card-title">Form</h3>
@@ -94,14 +87,22 @@
                         <button type="button" class="btn btn-success" ng-click="validate()">Validate</button>
                         <button type="button" class="btn btn-default" ng-click="goBack()">Cancel</button>
                       </div>
-
                     </form>
                   </div>
                 </div>
               </div>
             </div>
+            <div class="col-lg-4">
+              <div class="card card-info card-outline">
+                <div class="card-header">
+                  <h3 class="card-title">Help</h3>
+                </div>
+                <div class="card-body">
+                  Some recommendations when filling the form...
+                </div>
+              </div>
+            </div>
           </div>
-
 
         </div>
         <!-- /.col-12 -->

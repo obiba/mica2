@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<html lang="${.lang}" xmlns:v-bind="http://www.w3.org/1999/xhtml">
 <head>
-  <title>Example | Search</title>
+  <title>${config.name!""} | Search</title>
   <#include "libs/head.ftl">
 </head>
 <body class="hold-transition sidebar-mini">
@@ -20,7 +20,7 @@
            alt="Logo"
            class="brand-image img-circle elevation-3"
            style="opacity: .8">
-      <span class="brand-text font-weight-light">Example</span>
+      <span class="brand-text font-weight-light">${config.name!""}</span>
     </a>
 
     <!-- Sidebar -->

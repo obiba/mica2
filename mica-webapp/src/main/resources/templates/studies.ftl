@@ -1,8 +1,8 @@
 <#include "libs/members.ftl">
 <!DOCTYPE html>
-<html lang="en">
+<html lang="${.lang}">
 <head>
-  <title>Example | Studies</title>
+  <title>${config.name!""} | Studies</title>
   <#include "libs/head.ftl">
 </head>
 <body class="hold-transition layout-top-nav layout-navbar-fixed">
@@ -96,8 +96,8 @@
                         <tbody>
                         <#list studies as std>
                           <tr>
-                            <td><a href="../study/${std.id}">${std.acronym.en}</a></td>
-                            <td><small>${std.name.en}</small></td>
+                            <td><a href="../study/${std.id}">${std.acronym[.lang]!""}</a></td>
+                            <td><small>${std.name[.lang]!""}</small></td>
                             <td><small>${std.objectives.en?trim?truncate_w(100, "...")}</small></td>
                             <#if showTypeColumn>
                               <td>
@@ -120,16 +120,16 @@
                           <div class="col-12 col-sm-6 col-md-4 d-flex align-items-stretch">
                             <div class="card bg-light">
                               <div class="card-header text-dark border-bottom-0">
-                                <h2 class="lead"><b>${std.acronym.en}</b></h2>
+                                <h2 class="lead"><b>${std.acronym[.lang]!""}</b></h2>
                               </div>
                               <div class="card-body pt-0">
                                 <div class="row">
                                   <div class="col-7">
-                                    <p class="text-muted text-sm">${std.name.en}</p>
+                                    <p class="text-muted text-sm">${std.name[.lang]!""}</p>
                                   </div>
                                   <div class="col-5 text-center">
                                       <#if std.logo??>
-                                        <img class="img-fluid" style="max-height: 200px" alt="${std.acronym.en} logo" src="../ws/study/${std.id}/file/${std.logo.id}/_download"/>
+                                        <img class="img-fluid" style="max-height: 200px" alt="${std.acronym[.lang]!""} logo" src="../ws/study/${std.id}/file/${std.logo.id}/_download"/>
                                       <#else >
                                         <p class="text-black-50 text-center mr-5 ml-5 pr-5">
                                           <i class="ion ion-folder fa-4x"></i>
@@ -141,7 +141,7 @@
                               <div class="card-footer">
                                 <div class="text-right">
                                   <a href="../study/${std.id}" class="btn btn-sm btn-primary">
-                                    <i class="fas fa-eye"></i> View ${std.acronym.en}
+                                    <i class="fas fa-eye"></i> View ${std.acronym[.lang]!""}
                                   </a>
                                 </div>
                               </div>

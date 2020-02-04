@@ -1,8 +1,8 @@
 <#include "libs/members.ftl">
 <!DOCTYPE html>
-<html lang="en">
+<html lang="${.lang}">
 <head>
-  <title>Example | ${network.acronym[.lang]!""}</title>
+  <title>${config.name!""} | ${network.acronym[.lang]!""}</title>
   <#include "libs/head.ftl">
 </head>
 <body class="hold-transition layout-top-nav layout-navbar-fixed">
