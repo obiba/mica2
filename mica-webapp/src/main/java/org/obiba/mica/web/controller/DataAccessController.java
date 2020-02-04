@@ -1,6 +1,5 @@
 package org.obiba.mica.web.controller;
 
-import com.google.common.collect.Maps;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import org.obiba.core.translator.JsonTranslator;
@@ -13,9 +12,7 @@ import org.obiba.mica.micaConfig.NoSuchDataAccessFormException;
 import org.obiba.mica.micaConfig.domain.DataAccessForm;
 import org.obiba.mica.micaConfig.service.DataAccessFormService;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,7 +20,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.inject.Inject;
-import javax.ws.rs.QueryParam;
 import java.util.Map;
 import java.util.Optional;
 
@@ -51,12 +47,14 @@ public class DataAccessController extends BaseController {
   }
 
   @GetMapping("/data-access-form/{id}")
-  public ModelAndView getForm(@PathVariable String id, @CookieValue(value = "NG_TRANSLATE_LANG_KEY", required = false, defaultValue = "en") String locale,
+  public ModelAndView getForm(@PathVariable String id,
+                              @RequestParam(value = "edit", defaultValue = "false") boolean edit,
+                              @CookieValue(value = "NG_TRANSLATE_LANG_KEY", required = false, defaultValue = "en") String locale,
                               @RequestParam(value = "language", required = false) String language) {
     Subject subject = SecurityUtils.getSubject();
     if (subject.isAuthenticated()) {
       Map<String, Object> params = newParameters(id);
-      addDataAccessForm(params, getDataAccessRequest(params).getContent(), language == null ? locale : language);
+      addDataAccessForm(params, getDataAccessRequest(params).getContent(), !edit, language == null ? locale : language);
       return new ModelAndView("data-access-form", params);
     } else {
       return new ModelAndView("redirect:../signin?redirect=data-access-form%2F" + id);
@@ -137,10 +135,10 @@ public class DataAccessController extends BaseController {
     return dataAccessRequestService.findById(id);
   }
 
-  private void addDataAccessForm(Map<String, Object> params, String model, String locale) {
+  private void addDataAccessForm(Map<String, Object> params, String model, boolean readOnly, String locale) {
     Optional<DataAccessForm> d = dataAccessFormService.find();
     if(!d.isPresent()) throw NoSuchDataAccessFormException.withDefaultMessage();
-    params.put("form", new SchemaForm(d.get(), model, locale));
+    params.put("form", new SchemaForm(d.get(), model, locale, readOnly));
   }
 
 
@@ -149,8 +147,10 @@ public class DataAccessController extends BaseController {
     private final String schema;
     private final String definition;
     private final String model;
+    private final boolean readOnly;
 
-    private SchemaForm(DataAccessForm form, String model, String locale) {
+    private SchemaForm(DataAccessForm form, String model, String locale, boolean readOnly) {
+      this.readOnly = readOnly;
       String lang = locale == null ? "en" : locale.replaceAll("\"", "");
       Translator translator = JsonTranslator.buildSafeTranslator(() -> micaConfigService.getTranslations(lang, false));
       translator = new PrefixedValueTranslator(translator);
@@ -171,6 +171,10 @@ public class DataAccessController extends BaseController {
 
     public String getModel() {
       return model;
+    }
+
+    public boolean isReadOnly() {
+      return readOnly;
     }
   }
 }
