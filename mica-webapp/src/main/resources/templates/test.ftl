@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="${.lang}">
 <head>
   <#include "libs/head.ftl">
   <title>${config.name!""} | <@message "test.title"/></title>

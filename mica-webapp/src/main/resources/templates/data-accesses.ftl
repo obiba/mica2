@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="${.lang}">
 <head>
-  <title>Example | Data Accesses</title>
+  <title>${config.name!""} | Data Accesses</title>
   <#include "libs/head.ftl">
 </head>
 <body class="hold-transition layout-top-nav layout-navbar-fixed">
@@ -18,7 +18,7 @@
       <div class="container">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1 class="m-0">Data Accesses</h1>
+            <h1 class="m-0">Data Access</h1>
           </div><!-- /.col -->
           <div class="col-sm-6">
 
@@ -42,6 +42,7 @@
             <div class="card card-primary card-outline">
               <div class="card-header">
                 <h3 class="card-title">Data Access Requests</h3>
+                <div class="float-right"><a href="#" class="btn btn-primary"><i class="fas fa-plus"></i> Add</a></div>
               </div>
               <div class="card-body">
                 <table id="dars" class="table table-bordered table-striped">
@@ -67,7 +68,7 @@
                       <td>${dar.submissionDate!""}</td>
                       <td>${dar.pendingAmendments}</td>
                       <td>${dar.totalAmendments}</td>
-                      <td>${dar.status}</td>
+                      <td><@message dar.status.toString()/></td>
                     </tr>
                   </#list>
                   </tbody>
@@ -90,7 +91,7 @@
 <!-- page script -->
 <script>
     $(function () {
-        $("#dars").DataTable(dataTablesDefaultOpts);
+        $("#dars").DataTable(dataTablesSortSearchOpts);
     });
 </script>
 
