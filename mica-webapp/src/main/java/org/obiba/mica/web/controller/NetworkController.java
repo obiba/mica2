@@ -1,5 +1,9 @@
 package org.obiba.mica.web.controller;
 
+import com.google.common.base.Joiner;
+import org.obiba.mica.core.domain.AbstractGitPersistable;
+import org.obiba.mica.core.domain.Membership;
+import org.obiba.mica.core.service.PersonService;
 import org.obiba.mica.network.NoSuchNetworkException;
 import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.network.service.PublishedNetworkService;
@@ -31,6 +35,9 @@ public class NetworkController extends BaseController {
   @Inject
   private PublishedStudyService publishedStudyService;
 
+  @Inject
+  private PersonService personService;
+
   @GetMapping("/network/{id}")
   public ModelAndView network(@PathVariable String id) {
 
@@ -44,12 +51,23 @@ public class NetworkController extends BaseController {
       .collect(Collectors.toList()));
 
     List<BaseStudy> studies = publishedStudyService.findByIds(network.getStudyIds());
-    params.put("individualStudies", studies.stream()
+    List<BaseStudy> individualStudies = studies.stream()
       .filter(s -> (s instanceof Study) && subjectAclService.isAccessible("/individual-study", s.getId()))
-      .collect(Collectors.toList()));
-    params.put("harmonizationStudies", studies.stream()
+      .collect(Collectors.toList());
+    params.put("individualStudies", individualStudies);
+    List<BaseStudy> harmonizationStudies = studies.stream()
       .filter(s -> (s instanceof HarmonizationStudy) && subjectAclService.isAccessible("/harmonization-study", s.getId()))
-      .collect(Collectors.toList()));
+      .collect(Collectors.toList());
+    params.put("harmonizationStudies", harmonizationStudies);
+
+    List<String> ids = individualStudies.stream().map(AbstractGitPersistable::getId).collect(Collectors.toList());
+    ids.addAll(harmonizationStudies.stream().map(AbstractGitPersistable::getId).collect(Collectors.toList()));
+    if (!ids.isEmpty()) {
+      params.put("affiliatedMembersQuery","studyMemberships.parentId:(" + Joiner.on(" ").join(ids) + ")");
+    }
+
+    Map<String, List<Membership>> membershipMap = personService.getNetworkMembershipMap(network.getId());
+    params.put("memberships", membershipMap);
 
     return new ModelAndView("network", params);
   }
