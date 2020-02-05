@@ -1,4 +1,4 @@
-<#include "libs/members.ftl">
+<#include "models/member-macros.ftl">
 <!DOCTYPE html>
 <html lang="${.lang}">
 <head>
@@ -76,7 +76,7 @@
                           <tr>
                             <td><a href="../network/${ntwk.id}">${ntwk.acronym[.lang]!""}</a></td>
                             <td><small>${ntwk.name[.lang]!""}</small></td>
-                            <td><small>${ntwk.description.en?trim?truncate_w(100, "...")}</small></td>
+                            <td><small>${ntwk.description[.lang]?trim?truncate_w(100, "...")}</small></td>
                           </tr>
                         </#list>
                         </tbody>

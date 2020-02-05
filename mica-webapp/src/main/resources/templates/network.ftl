@@ -1,4 +1,7 @@
-<#include "libs/members.ftl">
+<!-- Macros -->
+<#include "models/member-macros.ftl">
+<#include "models/network-macros.ftl">
+
 <!DOCTYPE html>
 <html lang="${.lang}">
 <head>
@@ -114,6 +117,7 @@
           </div>
         </div>
 
+        <!-- Member list -->
         <#if network.memberships?? && network.memberships?keys?size!=0>
           <div class="row">
             <div class="col-12">
@@ -136,12 +140,12 @@
                     <tr>
                       <td>
                         <#if network.memberships.investigator??>
-                            <@memberlist members=network.memberships.investigator role="investigator"/>
+                            <@memberList members=network.memberships.investigator role="investigator"/>
                         </#if>
                       </td>
                       <td>
                         <#if network.memberships.contact??>
-                            <@memberlist members=network.memberships.contact role="contact"/>
+                            <@memberList members=network.memberships.contact role="contact"/>
                         </#if>
                       </td>
                     </tr>
@@ -155,6 +159,10 @@
           <!-- /.row -->
         </#if>
 
+        <!-- Network model -->
+        <#include "models/network.ftl">
+
+        <!-- Network list -->
         <#if networks?size != 0>
           <div class="row">
             <div class="col-lg-12">
@@ -172,6 +180,7 @@
                     <tr>
                       <th>Acronym</th>
                       <th>Name</th>
+                      <@networkTHs/>
                     </tr>
                     </thead>
                     <tbody>
@@ -179,6 +188,7 @@
                       <tr>
                         <td><a href="../network/${netwk.id}">${netwk.acronym[.lang]!""}</a></td>
                         <td><small>${netwk.name[.lang]!""}</small></td>
+                        <@networkTDs network=netwk/>
                       </tr>
                     </#list>
                     </tbody>
@@ -189,6 +199,7 @@
           </div>
         </#if>
 
+        <!-- Individual study list -->
         <#if individualStudies?size != 0>
           <div class="row">
             <div class="col-lg-12">
@@ -201,14 +212,13 @@
                   </div>
                 </div>
                 <div class="card-body">
+
                   <table id="individual-studies" class="table table-bordered table-striped">
                     <thead>
                     <tr>
                       <th>Acronym</th>
                       <th>Name</th>
-                      <th>Study Design</th>
-                      <th>Participants</th>
-                      <th>Countries</th>
+                      <@individualStudyTHs/>
                     </tr>
                     </thead>
                     <tbody>
@@ -216,9 +226,7 @@
                       <tr>
                         <td><a href="../study/${study.id}">${study.acronym[.lang]!""}</a></td>
                         <td><small>${study.name[.lang]!""}</small></td>
-                        <td>${study.model.methods.design}</td>
-                        <td>${study.model.numberOfParticipants.participant.number}</td>
-                        <td></td>
+                        <@individualStudyTDs study=study/>
                       </tr>
                     </#list>
                     </tbody>
@@ -229,6 +237,7 @@
           </div>
         </#if>
 
+        <!-- Harmonization study list -->
         <#if harmonizationStudies?size != 0>
           <div class="row">
             <div class="col-lg-12">
@@ -246,6 +255,7 @@
                     <tr>
                       <th>Acronym</th>
                       <th>Name</th>
+                      <@harmonizationStudyTHs/>
                     </tr>
                     </thead>
                     <tbody>
@@ -253,6 +263,7 @@
                       <tr>
                         <td><a href="../study/${study.id}">${study.acronym[.lang]!""}</a></td>
                         <td><small>${study.name[.lang]!""}</small></td>
+                        <@harmonizationStudyTDs study=study/>
                       </tr>
                     </#list>
                     </tbody>
@@ -269,7 +280,7 @@
   </div>
   <!-- /.content-wrapper -->
 
-    <#include "libs/footer.ftl">
+  <#include "libs/footer.ftl">
 </div>
 <!-- ./wrapper -->
 
