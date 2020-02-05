@@ -1,6 +1,6 @@
 <!-- Macros -->
-<#include "models/member-macros.ftl">
-<#include "models/network-macros.ftl">
+<#include "models/network.ftl">
+<#include "models/member.ftl">
 
 <!DOCTYPE html>
 <html lang="${.lang}">
@@ -160,7 +160,7 @@
         </#if>
 
         <!-- Network model -->
-        <#include "models/network.ftl">
+        <@networkModel network=network/>
 
         <!-- Network list -->
         <#if networks?size != 0>

@@ -1,4 +1,6 @@
-<#include "models/member-macros.ftl">
+<!-- Macros -->
+<#include "models/member.ftl">
+
 <!DOCTYPE html>
 <html lang="${.lang}">
 <head>

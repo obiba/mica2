@@ -1,4 +1,3 @@
-<#include "models/member-macros.ftl">
 <!DOCTYPE html>
 <html lang="${.lang}">
 <head>
