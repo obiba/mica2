@@ -1,4 +1,4 @@
-<#include "libs/members.ftl">
+<#include "models/member-macros.ftl">
 <!DOCTYPE html>
 <html lang="${.lang}">
 <head>
@@ -98,7 +98,7 @@
                           <tr>
                             <td><a href="../study/${std.id}">${std.acronym[.lang]!""}</a></td>
                             <td><small>${std.name[.lang]!""}</small></td>
-                            <td><small>${std.objectives.en?trim?truncate_w(100, "...")}</small></td>
+                            <td><small>${std.objectives[.lang]?trim?truncate_w(100, "...")}</small></td>
                             <#if showTypeColumn>
                               <td>
                                 <#if std.class.simpleName == "HarmonizationStudy">
