@@ -6,10 +6,9 @@
 <!DOCTYPE html>
 <html lang="${.lang}">
 <head>
-  <title>${config.name!""} | ${study.acronym[.lang]!""}</title>
   <#include "libs/head.ftl">
-  <!-- Ionicons -->
-  <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+  <title>${config.name!""} | ${study.acronym[.lang]!""}</title>
+  <link rel="stylesheet" href="../bower_components/mica-study-timeline/dist/mica-study-timeline.css" />
 </head>
 <body class="hold-transition layout-top-nav layout-navbar-fixed">
 <div class="wrapper">
@@ -181,7 +180,7 @@
                 </div>
               </div>
               <div class="card-body">
-                TODO
+                <div id="timeline"></div>
               </div>
             </div>
           </div>
@@ -274,17 +273,7 @@
 <!-- ./wrapper -->
 
 <#include "libs/scripts.ftl">
-<script>
-    $(function () {
-        <#list study.populations as pop>
-          $("#population-${pop.id}-dces").DataTable(dataTablesDefaultOpts);
-        </#list>
-    });
-    micajs.stats('studies', { query: "study(in(Mica_study.id,${study.id}))" }, function(stats) {
-        $('#network-hits').text(new Intl.NumberFormat().format(stats.networkResultDto.totalHits));
-        $('#dataset-hits').text(new Intl.NumberFormat().format(stats.datasetResultDto.totalHits));
-        $('#variable-hits').text(new Intl.NumberFormat().format(stats.variableResultDto.totalHits));
-    }, micajs.redirectError);
-</script>
+<#include "libs/study-scripts.ftl">
+
 </body>
 </html>
