@@ -17,7 +17,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 @Path("/persons/_search")
-@RequiresAuthentication
 @Scope("request")
 @Component
 public class PublishedPersonsSearchResource extends AbstractPersonsSearchResource {
