@@ -1,6 +1,6 @@
 <!-- Macros -->
-<#include "models/population-macros.ftl">
-<#include "models/dce-macros.ftl">
+<#include "models/population.ftl">
+<#include "models/dce.ftl">
 
 <!DOCTYPE html>
 <html lang="${.lang}">
