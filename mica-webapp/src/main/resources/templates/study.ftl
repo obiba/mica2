@@ -1,7 +1,8 @@
 <!-- Macros -->
-<#include "models/member-macros.ftl">
-<#include "models/population-macros.ftl">
-<#include "models/dce-macros.ftl">
+<#include "models/study.ftl">
+<#include "models/member.ftl">
+<#include "models/population.ftl">
+<#include "models/dce.ftl">
 
 <!DOCTYPE html>
 <html lang="${.lang}">
@@ -166,7 +167,7 @@
         </#if>
 
         <!-- Study model -->
-        <#include "models/study.ftl">
+        <@studyModel study=study type=type/>
 
         <!-- Timeline -->
         <div class="row">
