@@ -1,5 +1,8 @@
-<#include "libs/members.ftl">
-<#include "libs/dce.ftl">
+<!-- Macros -->
+<#include "models/member-macros.ftl">
+<#include "models/population-macros.ftl">
+<#include "models/dce-macros.ftl">
+
 <!DOCTYPE html>
 <html lang="${.lang}">
 <head>
@@ -123,12 +126,14 @@
           </div>
         </div>
 
+        <!-- Member list -->
         <#if study.memberships?? && study.memberships?keys?size!=0>
           <div class="row">
             <div class="col-12">
               <div class="card card-primary card-outline">
                 <div class="card-header">
                   <h3 class="card-title">Members</h3>
+                  <a href="../ws/persons/_search/_download?limit=1000&query=studyMemberships.parentId:(${study.id})" class="btn btn-primary float-right"><i class="fa fa-download"></i> Download</a>
                 </div>
                 <div class="card-body">
                   <table class="table">
@@ -142,12 +147,12 @@
                     <tr>
                       <td>
                         <#if study.memberships.investigator??>
-                            <@memberlist members=study.memberships.investigator role="investigator"/>
+                            <@memberList members=study.memberships.investigator role="investigator"/>
                         </#if>
                       </td>
                       <td>
                         <#if study.memberships.contact??>
-                            <@memberlist members=study.memberships.contact role="contact"/>
+                            <@memberList members=study.memberships.contact role="contact"/>
                         </#if>
                       </td>
                     </tr>
@@ -161,6 +166,10 @@
           <!-- /.row -->
         </#if>
 
+        <!-- Study model -->
+        <#include "models/study.ftl">
+
+        <!-- Timeline -->
         <div class="row">
           <div class="col-lg-12">
             <div class="card card-info card-outline">
@@ -178,6 +187,7 @@
           </div>
         </div>
 
+        <!-- Populations -->
         <#if study.populations?? && study.populations?size != 0>
           <div class="row">
             <div class="col-lg-12">
@@ -210,8 +220,11 @@
                     <#list study.populations as pop>
                       <div class="tab-pane <#if pop?index == 0>active</#if>" id="population-${pop.id}">
                         <div>
-                          <#if pop.description??>${pop.description.en!""}</#if>
+                          <#if pop.description??>${pop.description[.lang]!""}</#if>
                         </div>
+                        <@populationModel population=pop/>
+
+                        <!-- DCE list -->
                         <#if pop.dataCollectionEvents?? && pop.dataCollectionEvents?size != 0>
                           <h5>Data Collection Events</h5>
                           <table id="population-${pop.id}-dces" class="table table-bordered table-striped">
@@ -224,20 +237,20 @@
                             </tr>
                             </thead>
                             <tbody>
-                            <#list pop.dataCollectionEvents as dce>
-                              <tr>
-                                <td>
-                                  <#assign dceId="${pop.id}-${dce.id}">
-                                  <a href="#" data-toggle="modal" data-target="#modal-${dceId}">
-                                    ${dce.name[.lang]!""}
-                                  </a>
-                                  <@dcemodal id=dceId dce=dce></@dcemodal>
-                                </td>
-                                <td><small><#if dce.description?? && dce.description.en??>${dce.description.en?trim?truncate(200, "...")}</#if></small></td>
-                                <td><#if dce.start?? && dce.start.yearMonth??>${dce.start.yearMonth}</#if></td>
-                                <td><#if dce.end?? && dce.end.yearMonth??>${dce.end.yearMonth}</#if></td>
-                              </tr>
-                            </#list>
+                              <#list pop.dataCollectionEvents as dce>
+                                <tr>
+                                  <td>
+                                    <#assign dceId="${pop.id}-${dce.id}">
+                                    <a href="#" data-toggle="modal" data-target="#modal-${dceId}">
+                                      ${dce.name[.lang]!""}
+                                    </a>
+                                    <@dceDialog id=dceId dce=dce></@dceDialog>
+                                  </td>
+                                  <td><small><#if dce.description?? && dce.description[.lang]??>${dce.description[.lang]?trim?truncate(200, "...")}</#if></small></td>
+                                  <td><#if dce.start?? && dce.start.yearMonth??>${dce.start.yearMonth}</#if></td>
+                                  <td><#if dce.end?? && dce.end.yearMonth??>${dce.end.yearMonth}</#if></td>
+                                </tr>
+                              </#list>
                             </tbody>
                           </table>
                         </#if>
