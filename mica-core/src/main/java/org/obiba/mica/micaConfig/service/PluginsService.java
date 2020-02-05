@@ -24,6 +24,7 @@ import org.obiba.plugins.PluginRepositoryException;
 import org.obiba.plugins.PluginResources;
 import org.obiba.plugins.PluginsManagerHelper;
 import org.obiba.plugins.spi.ServicePlugin;
+import org.obiba.runtime.Version;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.bind.RelaxedPropertyResolver;
@@ -109,8 +110,10 @@ public class PluginsService implements EnvironmentAware {
    */
   private void initPlugins() {
     Collection<PluginResources> plugins = getPlugins(true);
+    String pluginLatestVersion = getPluginRepositoryCache().getPluginLatestVersion("mica-search-es");
     // ensure there is a mica-search plugin installed
-    if (plugins.stream().noneMatch(p -> "mica-search".equals(p.getType()))) {
+    if (plugins.stream().noneMatch(p -> "mica-search".equals(p.getType()))
+      || plugins.stream().filter(plugin -> plugin.getVersion().compareTo(new Version(pluginLatestVersion)) >= 0).count() == 0) {
       installPlugin("mica-search-es", null);
       // rescan plugins
       plugins = getPlugins(true);
