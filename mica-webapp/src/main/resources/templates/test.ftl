@@ -53,6 +53,11 @@
               <dd><@message "custom.message"/></dd>
               <dt>search.query</dt>
               <dd><@message "search.query"/></dd>
+              <dt>study_taxonomy.vocabulary.methods-design.term.cross_sectional.title</dt>
+              <dd>
+                <#assign code="study_taxonomy.vocabulary.methods-design.term." + "cross_sectional" + ".title"/>
+                <@message code/>
+              </dd>
             </dl>
           </div>
         </div>

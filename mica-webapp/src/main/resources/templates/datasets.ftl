@@ -1,4 +1,4 @@
-<#include "libs/members.ftl">
+<#include "models/member-macros.ftl">
 <!DOCTYPE html>
 <html lang="${.lang}">
 <head>
@@ -94,7 +94,7 @@
                           <tr>
                             <td><a href="../dataset/${ds.id}">${ds.acronym[.lang]!""}</a></td>
                             <td><small>${ds.name[.lang]!""}</small></td>
-                            <td><small><#if ds.description?? && ds.description.en??>${ds.description.en?trim?truncate_w(100, "...")}</#if></small></td>
+                            <td><small><#if ds.description?? && ds.description[.lang]??>${ds.description[.lang]?trim?truncate_w(100, "...")}</#if></small></td>
                             <#if showTypeColumn>
                               <td>
                                 <#if ds.class.simpleName == "HarmonizationDataset">
