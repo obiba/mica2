@@ -1,5 +1,7 @@
-<#include "libs/population.ftl">
-<#include "libs/dce.ftl">
+<!-- Macros -->
+<#include "models/population-macros.ftl">
+<#include "models/dce-macros.ftl">
+
 <!DOCTYPE html>
 <html lang="${.lang}">
 <head>
@@ -111,7 +113,7 @@
                 </div>
 
                 <p class="card-text">
-                  <#if dataset.description?? && dataset.description.en??>
+                  <#if dataset.description?? && dataset.description[.lang]??>
                       ${dataset.description[.lang]!""}
                   </#if>
                 </p>
@@ -142,8 +144,8 @@
                 </div>
                 <div class="card-body">
                   <h5>${population.name[.lang]!""}</h5>
-                  <div><#if population.description??>${population.description.en!""}</#if></div>
-                  <@populationmodal id=population.id population=population></@populationmodal>
+                  <div><#if population.description??>${population.description[.lang]!""}</#if></div>
+                  <@populationDialog id=population.id population=population></@populationDialog>
                 </div>
                 <div class="card-footer">
                   <a href="#" data-toggle="modal" data-target="#modal-${population.id}">More info <i class="fas fa-arrow-circle-right"></i></a>
@@ -163,9 +165,9 @@
                 </div>
                 <div class="card-body">
                   <h5>${dce.name[.lang]!""}</h5>
-                  <div><#if dce.description??>${dce.description.en!""}</#if></div>
+                  <div><#if dce.description??>${dce.description[.lang]!""}</#if></div>
                   <#assign dceId="${population.id}-${dce.id}">
-                  <@dcemodal id=dceId dce=dce></@dcemodal>
+                  <@dceDialog id=dceId dce=dce></@dceDialog>
                 </div>
                 <div class="card-footer">
                   <a href="#" data-toggle="modal" data-target="#modal-${dceId}">More info <i class="fas fa-arrow-circle-right"></i></a>
@@ -203,14 +205,14 @@
                           </td>
                           <td>
                             <#assign popId="${table.study.id}-${table.population.id}">
-                            <@populationmodal id=popId population=table.population></@populationmodal>
+                            <@populationDialog id=popId population=table.population></@populationDialog>
                             <a href="#" data-toggle="modal" data-target="#modal-${popId}">
                               ${table.population.name[.lang]!""}
                             </a>
                           </td>
                           <td>
                             <#assign dceId="${table.study.id}-${table.population.id}-${table.dce.id}">
-                            <@dcemodal id=dceId dce=table.dce></@dcemodal>
+                            <@dceDialog id=dceId dce=table.dce></@dceDialog>
                             <a href="#" data-toggle="modal" data-target="#modal-${dceId}">
                               ${table.dce.name[.lang]!""}
                             </a>
@@ -239,7 +241,7 @@
                             </td>
                             <td>
                               <#assign popId="${table.study.id}-${table.population.id}">
-                              <@populationmodal id=popId population=table.population></@populationmodal>
+                              <@populationDialog id=popId population=table.population></@populationDialog>
                               <a href="#" data-toggle="modal" data-target="#modal-${popId}">
                                 ${table.population.name[.lang]!""}
                               </a>
