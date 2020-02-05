@@ -79,12 +79,12 @@ public class Mica372Upgrade implements UpgradeStep {
       logger.info("Updating studies and networks with their membership sort orders.");
       mongoTemplate.execute(db -> db.eval(setMemberShipSortOrder()));
 
-      studyService.findAllStates().stream().filter(state -> !state.hasRevisionsAhead()).forEach(state -> {
+      studyService.findAllStates().stream().filter(state -> !state.hasRevisionsAhead() && state.isPublished()).forEach(state -> {
         studyService.save(studyService.findStudy(state.getId()), "Updating membership sort orders.");
         studyService.publish(state.getId(), true, PublishCascadingScope.NONE);
       });
 
-      networkService.findAllStates().stream().filter(state -> !state.hasRevisionsAhead()).forEach(state -> {
+      networkService.findAllStates().stream().filter(state -> !state.hasRevisionsAhead() && state.isPublished()).forEach(state -> {
         networkService.save(networkService.findById(state.getId()), "Updating membership sort orders.");
         networkService.publish(state.getId(), true, PublishCascadingScope.NONE);
       });
