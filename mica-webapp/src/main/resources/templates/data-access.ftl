@@ -43,7 +43,7 @@
               <span class="text-white-50">Data Access /</span> ${dar.id}
             </h1>
             <button type="button" class="btn btn-danger ml-4" data-toggle="modal" data-target="#modal-delete">
-              <i class="fa fa-trash"></i> Delete
+              <i class="fas fa-trash"></i> Delete
             </button>
           </div>
           <div class="col-sm-6">
