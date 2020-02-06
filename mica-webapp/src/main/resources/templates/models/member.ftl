@@ -74,7 +74,7 @@
 
 <!-- Member list by role -->
 <#macro memberList members role>
-  <ul>
+  <ul class="pl-3">
     <#assign i=0>
     <#list members as member>
       <li>

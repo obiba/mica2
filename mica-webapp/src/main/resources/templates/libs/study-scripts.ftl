@@ -14,6 +14,8 @@
         $('#variable-hits').text(new Intl.NumberFormat().format(stats.variableResultDto.totalHits));
     }, micajs.redirectError);
 
+    <#if timelineData??>
     let timelineData = ${timelineData};
     new $.MicaTimeline(new $.StudyDtoParser('${.lang}')).create('#timeline', timelineData).addLegend();
+    </#if>
 </script>
