@@ -58,6 +58,24 @@
                 <#assign code="study_taxonomy.vocabulary.methods-design.term." + "cross_sectional" + ".title"/>
                 <@message code/>
               </dd>
+              <dt>hash</dt>
+              <dd>
+                <#assign myHash = {
+                  "name": "mouse",
+                  "price": 50,
+                  "root": {
+                    "level1_1": "value1.1"
+                  }
+                }>
+                <ul>
+                  <#list myHash?keys as k>
+                    <li>${k}</li>
+                </#list>
+                  <p>
+                    root.level1_1 = ${myHash.root.level1_1}
+                  </p>
+                </ul>
+              </dd>
             </dl>
           </div>
         </div>

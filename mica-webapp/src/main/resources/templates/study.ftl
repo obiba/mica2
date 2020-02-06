@@ -118,7 +118,7 @@
                 </p>
                   <#if study.model.website??>
                     <blockquote>
-                      Visit <a href="${study.model.website}" target="_blank" class="card-link">${study.acronym[.lang]!""}</a>
+                      Visit <a href="${study.model.website}" target="_blank">${study.acronym[.lang]!""}</a>
                     </blockquote>
                   </#if>
               </div>
@@ -133,7 +133,11 @@
               <div class="card card-primary card-outline">
                 <div class="card-header">
                   <h3 class="card-title">Members</h3>
-                  <a href="../ws/persons/_search/_download?limit=1000&query=studyMemberships.parentId:(${study.id})" class="btn btn-primary float-right"><i class="fa fa-download"></i> Download</a>
+                  <div class="card-tools float-right">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="Collapse">
+                      <i class="fas fa-minus"></i></button>
+                  </div>
+                  <a href="../ws/persons/_search/_download?limit=1000&query=studyMemberships.parentId:(${study.id})" class="btn btn-primary float-right mr-2"><i class="fas fa-download"></i> Download</a>
                 </div>
                 <div class="card-body">
                   <table class="table">
@@ -170,22 +174,24 @@
         <@studyModel study=study type=type/>
 
         <!-- Timeline -->
-        <div class="row">
-          <div class="col-lg-12">
-            <div class="card card-info card-outline">
-              <div class="card-header">
-                <h3 class="card-title">Timeline</h3>
-                <div class="card-tools">
-                  <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="Collapse">
-                    <i class="fas fa-minus"></i></button>
+        <#if type == "Individual">
+          <div class="row">
+            <div class="col-lg-12">
+              <div class="card card-info card-outline">
+                <div class="card-header">
+                  <h3 class="card-title">Timeline</h3>
+                  <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="Collapse">
+                      <i class="fas fa-minus"></i></button>
+                  </div>
                 </div>
-              </div>
-              <div class="card-body">
-                <div id="timeline"></div>
+                <div class="card-body">
+                  <div id="timeline"></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        </#if>
 
         <!-- Populations -->
         <#if study.populations?? && study.populations?size != 0>
