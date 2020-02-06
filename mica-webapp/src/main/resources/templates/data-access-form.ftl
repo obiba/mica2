@@ -72,7 +72,7 @@
               <h3 class="card-title">Form</h3>
               <div>
                 <span class="float-right border-left ml-2 pl-2" ng-if="schema.readOnly">
-                  <a class="btn btn-primary" href="${dar.id}?edit=true"><i class="fa fa-pen"></i> Edit</a>
+                  <a class="btn btn-primary" href="${dar.id}?edit=true"><i class="fas fa-pen"></i> Edit</a>
                 </span>
                 <span class="float-right border-left ml-2 pl-2" ng-hide="schema.readOnly">
                   <a class="btn btn-primary" href="#" ng-click="save('${dar.id}')">Save</a>
