@@ -124,8 +124,12 @@
               <div class="card card-primary card-outline">
                 <div class="card-header">
                   <h3 class="card-title">Members</h3>
+                  <div class="card-tools float-right">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="Collapse">
+                      <i class="fas fa-minus"></i></button>
+                  </div>
                   <#if affiliatedMembersQuery??>
-                    <a href="../ws/persons/_search/_download?limit=1000&query=${affiliatedMembersQuery?url('utf-8')}" class="btn btn-primary float-right"><i class="fa fa-download"></i> Affiliated Members</a>
+                    <a href="../ws/persons/_search/_download?limit=1000&query=${affiliatedMembersQuery?url('utf-8')}" class="btn btn-primary float-right mr-2"><i class="fas fa-download"></i> Affiliated Members</a>
                   </#if>
                 </div>
                 <div class="card-body">
