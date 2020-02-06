@@ -14,7 +14,7 @@
               <#assign txt = "study_taxonomy.vocabulary.populations-dataCollectionEvents-dataSources.term." + item + ".title"/>
               <@message txt/>
               <#if item == "others" && dce.model.otherDataSources??>
-                (${dce.model.otherDataSources[.lang]})
+                : ${dce.model.otherDataSources[.lang]}
               </#if>
             </li>
           </#list>
@@ -33,9 +33,9 @@
               <#assign txt = "study_taxonomy.vocabulary.populations-dataCollectionEvents-bioSamples.term." + item + ".title"/>
               <@message txt/>
               <#if item == "tissues" && dce.model.tissueTypes??>
-                (${dce.model.tissueTypes[.lang]})
+                : ${dce.model.tissueTypes[.lang]}
               <#elseif item == "others" && dce.model.otherBioSamples??>
-                (${dce.model.otherBioSamples[.lang]})
+                : ${dce.model.otherBioSamples[.lang]}
               </#if>
             </li>
           </#list>
