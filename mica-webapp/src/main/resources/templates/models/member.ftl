@@ -23,17 +23,17 @@
       <#if member.person.institution??>
         <#if member.person.institution.name??>
           <dt class="col-sm-4">Institution</dt>
-          <dd class="col-sm-8">${member.person.institution.name[.lang]}</dd>
+          <dd class="col-sm-8">${member.person.institution.name[.lang]!""}</dd>
         </#if>
         <#if member.person.institution.department??>
           <dt class="col-sm-4">Department</dt>
-          <dd class="col-sm-8">${member.person.institution.department[.lang]}</dd>
+          <dd class="col-sm-8">${member.person.institution.department[.lang]!""}</dd>
         </#if>
         <#if member.person.institution.address?? && (member.person.institution.address.street?? || member.person.institution.address.city??)>
           <dt class="col-sm-4">Address</dt>
           <dd class="col-sm-8">
             <#if member.person.institution.address.street??>
-              ${member.person.institution.address.street[.lang]!""},
+              ${member.person.institution.address.street[.lang]!""}
             </#if>
             <#if member.person.institution.address.city??>
               ${member.person.institution.address.city[.lang]!""}

@@ -29,6 +29,9 @@
         "ordering": true,
         "info": true,
         "autoWidth": true,
+        "language": {
+            "url": "${pathPrefix!".."}/i18n/datatables.${.lang}.json"
+        }
     };
     var dataTablesSortSearchOpts = {
         "paging": false,
@@ -37,6 +40,9 @@
         "ordering": true,
         "info": false,
         "autoWidth": true,
+        "language": {
+            "url": "${pathPrefix!".."}/i18n/datatables.${.lang}.json"
+        }
     };
     var dataTablesSortOpts = {
         "paging": false,
@@ -45,5 +51,8 @@
         "ordering": true,
         "info": false,
         "autoWidth": true,
+        "language": {
+            "url": "${pathPrefix!".."}/i18n/datatables.${.lang}.json"
+        }
     };
 </script>
