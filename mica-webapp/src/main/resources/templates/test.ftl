@@ -76,6 +76,15 @@
                   </p>
                 </ul>
               </dd>
+              <dt>seq</dt>
+              <dd>
+                  <#assign mySeq = [["1", "a"], ["2", "b"], ["", "c"]]>
+                <ul>
+                    <#list mySeq as item>
+                      <li>${item[0]} : ${item[1]}</li>
+                    </#list>
+                </ul>
+              </dd>
             </dl>
           </div>
         </div>

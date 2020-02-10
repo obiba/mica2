@@ -1,3 +1,6 @@
+<!-- Macros -->
+<#include "libs/header.ftl">
+
 <!DOCTYPE html>
 <html lang="${.lang}">
 <head>
@@ -8,24 +11,13 @@
 <div class="wrapper">
 
   <!-- Navbar -->
-    <#include "libs/top-navbar.ftl">
+  <#include "libs/top-navbar.ftl">
   <!-- /.navbar -->
 
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
     <!-- Content Header (Page header) -->
-    <div class="content-header bg-info mb-4">
-      <div class="container">
-        <div class="row mb-2">
-          <div class="col-sm-6">
-            <h1 class="m-0">Home</h1>
-          </div><!-- /.col -->
-          <div class="col-sm-6">
-
-          </div><!-- /.col -->
-        </div><!-- /.row -->
-      </div><!-- /.container-fluid -->
-    </div>
+    <@header title="home"/>
     <!-- /.content-header -->
 
     <!-- Main content -->
