@@ -1,3 +1,6 @@
+<!-- Macros -->
+<#include "libs/header.ftl">
+
 <!DOCTYPE html>
 <html lang="${.lang}">
 <head>
@@ -14,27 +17,14 @@
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
     <!-- Content Header (Page header) -->
-    <div class="content-header bg-info mb-4">
-      <div class="container">
-        <div class="row mb-2">
-          <div class="col-sm-6">
-            <h1 class="m-0">Data Access</h1>
-          </div><!-- /.col -->
-          <div class="col-sm-6">
-
-          </div><!-- /.col -->
-        </div><!-- /.row -->
-      </div><!-- /.container-fluid -->
-    </div>
+    <@header title="data-access-requests"/>
     <!-- /.content-header -->
 
     <!-- Main content -->
     <div class="content">
       <div class="container">
         <div class="callout callout-info">
-          <p>
-              This the list of the data access requests.
-          </p>
+          <p><@message "data-access-requests-callout"/></p>
         </div>
 
         <div class="row">
