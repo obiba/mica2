@@ -1,5 +1,5 @@
 <!-- Macros -->
-<#include "models/member.ftl">
+<#include "libs/header.ftl">
 
 <!DOCTYPE html>
 <html lang="${.lang}">
@@ -16,47 +16,30 @@
 
   <!-- Template variables -->
   <#if !type??>
-    <#assign title = "Datasets">
-    <#assign callout = "">
+    <#assign title = "datasets">
+    <#assign callout = "datasets-callout">
     <#assign showTypeColumn = true>
   <#elseif type == "Harmonized">
-    <#assign title = "Harmonized Datasets">
-    <#assign callout = "">
+    <#assign title = "harmonized-datasets">
+    <#assign callout = "harmonized-datasets-callout">
     <#assign showTypeColumn = false>
   <#else>
-    <#assign title = "Collected Datasets">
-    <#assign callout = "">
+    <#assign title = "collected-datasets">
+    <#assign callout = "collected-datasets-callout">
     <#assign showTypeColumn = false>
   </#if>
 
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
     <!-- Content Header (Page header) -->
-    <div class="content-header bg-info mb-4">
-      <div class="container">
-        <div class="row mb-2">
-          <div class="col-sm-6">
-            <h1 class="m-0">${title}</h1>
-          </div><!-- /.col -->
-          <div class="col-sm-6">
-            <ol class="breadcrumb float-sm-right">
-              <li class="breadcrumb-item"><a class="text-white-50" href="../home">Home</a></li>
-              <li class="breadcrumb-item active text-light">${title}</li>
-            </ol>
-          </div><!-- /.col -->
-        </div><!-- /.row -->
-      </div><!-- /.container-fluid -->
-    </div>
+    <@header title=title breadcrumb=[["../home", "home"], [title]]/>
     <!-- /.content-header -->
 
     <!-- Main content -->
     <div class="content">
       <div class="container">
-
         <div class="callout callout-info">
-          <p>
-            ${callout}
-          </p>
+          <p><@message callout/></p>
         </div>
 
         <div class="row">
