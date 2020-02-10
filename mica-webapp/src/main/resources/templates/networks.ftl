@@ -1,3 +1,6 @@
+<!-- Macros -->
+<#include "libs/header.ftl">
+
 <!DOCTYPE html>
 <html lang="${.lang}">
 <head>
@@ -14,31 +17,14 @@
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
     <!-- Content Header (Page header) -->
-    <div class="content-header bg-info mb-4">
-      <div class="container">
-        <div class="row mb-2">
-          <div class="col-sm-6">
-            <h1 class="m-0">Networks</h1>
-          </div><!-- /.col -->
-          <div class="col-sm-6">
-            <ol class="breadcrumb float-sm-right">
-              <li class="breadcrumb-item"><a class="text-white-50" href="../home">Home</a></li>
-              <li class="breadcrumb-item active text-light">Networks</li>
-            </ol>
-          </div><!-- /.col -->
-        </div><!-- /.row -->
-      </div><!-- /.container-fluid -->
-    </div>
+    <@header title="networks" breadcrumb=[["../home", "home"], ["networks"]]/>
     <!-- /.content-header -->
 
     <!-- Main content -->
     <div class="content">
       <div class="container">
         <div class="callout callout-info">
-          <p>
-            The Networks section includes an inventory of research consortia.
-            This section can help users to learn about the research of the networks and their member studies.
-          </p>
+          <p><@message "networks-callout"/></p>
         </div>
 
         <div class="row">
@@ -75,7 +61,7 @@
                           <tr>
                             <td><a href="../network/${ntwk.id}">${ntwk.acronym[.lang]!""}</a></td>
                             <td><small>${ntwk.name[.lang]!""}</small></td>
-                            <td><small>${ntwk.description[.lang]?trim?truncate_w(100, "...")}</small></td>
+                            <td><small><#if ntwk.description?? && ntwk.description[.lang]??>${ntwk.description[.lang]?trim?truncate_w(100, "...")}</#if></small></td>
                           </tr>
                         </#list>
                         </tbody>
