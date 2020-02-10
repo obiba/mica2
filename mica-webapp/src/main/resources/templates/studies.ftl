@@ -1,3 +1,6 @@
+<!-- Macros -->
+<#include "libs/header.ftl">
+
 <!DOCTYPE html>
 <html lang="${.lang}">
 <head>
@@ -13,51 +16,30 @@
 
   <!-- Template variables -->
   <#if !type??>
-    <#assign title = "Studies">
-    <#assign callout = "The Studies section includes an inventory of epidemiological studies and of harmonization projects.
-            This section can help identify studies with relevant designs that collected information useful in answering specific research questions.
-            This section can also learn about current and past harmonization projects. Through access to lists of harmonized variables, users can also learn about the harmonization potential across studies and the data processing applied to generate harmonized data.">
+    <#assign title = "studies">
+    <#assign callout = "studies-callout">
     <#assign showTypeColumn = true>
   <#elseif type == "Harmonization">
-    <#assign title = "Harmonization Studies">
-    <#assign callout = "The Harmonization Studies section includes an inventory of harmonization projects.
-            This section can also learn about current and past harmonization projects. Through access to lists of harmonized variables, users can also learn about the harmonization potential across studies and the data processing applied to generate harmonized data.">
+    <#assign title = "harmonization-studies">
+    <#assign callout = "harmonization-studies-callout">
     <#assign showTypeColumn = false>
   <#else>
-    <#assign title = "Individual Studies">
-    <#assign callout = "The Individual Studies section includes an inventory of epidemiological studies.
-            This section can help identify studies with relevant designs that collected information useful in answering specific research questions.">
+    <#assign title = "individual-studies">
+    <#assign callout = "individual-studies-callout">
     <#assign showTypeColumn = false>
   </#if>
 
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
     <!-- Content Header (Page header) -->
-    <div class="content-header bg-info mb-4">
-      <div class="container">
-        <div class="row mb-2">
-          <div class="col-sm-6">
-            <h1 class="m-0">${title}</h1>
-          </div><!-- /.col -->
-          <div class="col-sm-6">
-            <ol class="breadcrumb float-sm-right">
-              <li class="breadcrumb-item"><a class="text-white-50" href="../home">Home</a></li>
-              <li class="breadcrumb-item active text-light">${title}</li>
-            </ol>
-          </div><!-- /.col -->
-        </div><!-- /.row -->
-      </div><!-- /.container-fluid -->
-    </div>
+    <@header title=title breadcrumb=[["../home", "home"], [title]]/>
     <!-- /.content-header -->
 
     <!-- Main content -->
     <div class="content">
       <div class="container">
-
         <div class="callout callout-info">
-          <p>
-            ${callout}
-          </p>
+          <p><@message callout/></p>
         </div>
 
         <div class="row">
@@ -97,7 +79,7 @@
                           <tr>
                             <td><a href="../study/${std.id}">${std.acronym[.lang]!""}</a></td>
                             <td><small>${std.name[.lang]!""}</small></td>
-                            <td><small>${std.objectives[.lang]?trim?truncate_w(100, "...")}</small></td>
+                            <td><small><#if std.objectives?? && std.objectives[.lang]??>${std.objectives[.lang]?trim?truncate_w(100, "...")}</#if></small></td>
                             <#if showTypeColumn>
                               <td>
                                 <#if std.class.simpleName == "HarmonizationStudy">

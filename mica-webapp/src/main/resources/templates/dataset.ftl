@@ -1,4 +1,5 @@
 <!-- Macros -->
+<#include "libs/header.ftl">
 <#include "models/population.ftl">
 <#include "models/dce.ftl">
 
@@ -20,25 +21,7 @@
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
     <!-- Content Header (Page header) -->
-    <div class="content-header bg-info mb-4">
-      <div class="container">
-        <div class="row mb-2">
-          <div class="col-sm-6">
-            <h1 class="m-0">
-              <span class="text-white-50">${type} Dataset /</span> ${dataset.acronym[.lang]!""}
-            </h1>
-            <small>${dataset.name[.lang]!""}</small>
-          </div><!-- /.col -->
-          <div class="col-sm-6">
-            <ol class="breadcrumb float-sm-right">
-              <li class="breadcrumb-item"><a class="text-white-50" href="../home">Home</a></li>
-              <li class="breadcrumb-item"><a class="text-white-50" href="../datasets">Datasets</a></li>
-              <li class="breadcrumb-item active text-light">${dataset.acronym[.lang]!""}</li>
-            </ol>
-          </div><!-- /.col -->
-        </div><!-- /.row -->
-      </div><!-- /.container-fluid -->
-    </div>
+    <@header titlePrefix=(type?lower_case + "-dataset") title=dataset.acronym[.lang]!"" subtitle=dataset.name[.lang]!"" breadcrumb=[["../home", "home"], ["../datasets", "datasets"], [dataset.acronym[.lang]!""]]/>
     <!-- /.content-header -->
 
     <!-- Main content -->
