@@ -37,6 +37,7 @@ import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -48,6 +49,10 @@ public class PluginsService implements EnvironmentAware {
   private static final Logger log = LoggerFactory.getLogger(PluginsService.class);
 
   private static final String PLUGINS_PATH = "${MICA_HOME}/plugins";
+
+  private static final String MICA_SEARCH_PLUGIN_NAME = "micaSearchPlugin";
+
+  private static final String DEFAULT_MICA_SEARCH_PLUGIN_NAME = "mica-search-es";
 
   private static final String DEFAULT_PLUGINS_UPDATE_SITE = "http://obiba.org/assets";
 
@@ -110,16 +115,25 @@ public class PluginsService implements EnvironmentAware {
    */
   private void initPlugins() {
     Collection<PluginResources> plugins = getPlugins(true);
-    String pluginLatestVersion = getPluginRepositoryCache().getPluginLatestVersion("mica-search-es");
+    String pluginName = pluginsPropertyResolver.getProperty(MICA_SEARCH_PLUGIN_NAME, DEFAULT_MICA_SEARCH_PLUGIN_NAME);
+    String pluginLatestVersion = getPluginRepositoryCache().getPluginLatestVersion(pluginName);
+
     // ensure there is a mica-search plugin installed
     if (plugins.stream().noneMatch(p -> "mica-search".equals(p.getType()))
-      || plugins.stream().filter(plugin -> plugin.getVersion().compareTo(new Version(pluginLatestVersion)) >= 0).count() == 0) {
-      installPlugin("mica-search-es", null);
+      || plugins.stream()
+          .filter(plugin -> pluginName.equals(plugin.getName()))
+          .filter(plugin -> plugin.getVersion().compareTo(new Version(pluginLatestVersion)) >= 0).count() == 0) {
+      installPlugin(pluginName, null);
       // rescan plugins
       plugins = getPlugins(true);
     }
     boolean micaSearchFound = false; // mica-search plugin is a singleton
-    for (PluginResources plugin : plugins) {
+    List<PluginResources> filteredPlugins =
+      plugins.stream().filter(plugin -> pluginName.equals(plugin.getName()))
+        .sorted(Comparator.comparing(PluginResources::getVersion))
+        .collect(Collectors.toList());
+
+    for (PluginResources plugin : filteredPlugins) {
       if ("mica-search".equals(plugin.getType()) && !micaSearchFound) {
         initSearchEngineServicePlugin(plugin);
         micaSearchFound = true;
