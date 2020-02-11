@@ -25,4 +25,4 @@
 <link rel="stylesheet" href="${pathPrefix!".."}/bower_components/admin-lte/plugins/toastr/toastr.min.css">
 
 <!-- Bootstrap 3 to 4 -->
-<link rel="stylesheet" href="${pathPrefix!".."}/styles/bootstrap-3-4.css">
+<link rel="stylesheet" href="${pathPrefix!".."}/css/bootstrap-3-4.css">
