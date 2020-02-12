@@ -15,7 +15,7 @@
 .has-error {
   color: #E74C3C;
 }
-.has-error input {
+.has-error input, .has-error textarea {
   border-color: #E74C3C;
 }
 .input-group-btn {
