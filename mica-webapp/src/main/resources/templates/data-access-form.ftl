@@ -1,3 +1,6 @@
+<!-- Macros -->
+<#include "models/data-access-form.ftl">
+
 <!DOCTYPE html>
 <html lang="${.lang}" xmlns:v-bind="http://www.w3.org/1999/xhtml">
 <head>
@@ -57,7 +60,7 @@
         <div class="col-12">
           <div class="callout callout-info">
             <p>
-              This the main data access request form.
+              <@message "data-access-form-callout"/>
             </p>
           </div>
         </div>
@@ -69,21 +72,37 @@
         <div class="col-lg-8">
           <div class="card card-primary card-outline">
             <div class="card-header d-print-none">
-              <h3 class="card-title">Form</h3>
+              <h3 class="card-title"><@message "application-form"/></h3>
               <div>
-                <span class="float-right border-left ml-2 pl-2" ng-if="schema.readOnly">
-                  <a class="btn btn-primary" href="${dar.id}?edit=true"><i class="fas fa-pen"></i> Edit</a>
-                </span>
-                <span class="float-right border-left ml-2 pl-2" ng-hide="schema.readOnly">
-                  <a class="btn btn-primary" href="#" ng-click="save('${dar.id}')">Save</a>
-                  <a class="btn btn-default" href="${dar.id}">Cancel</a>
-                </span>
-                <span class="float-right">
-                  <#if dar.status == 'OPENED'>
-                    <button type="button" class="btn btn-info" ng-disabled="!schema.readOnly" data-toggle="modal" data-target="#modal-submit">Submit</button>
-                  </#if>
-                  <button type="button" class="btn btn-success" ng-click="validate()">Validate</button>
-                </span>
+                <#if permissions?seq_contains("EDIT")>
+                  <span class="float-right border-left ml-2 pl-2" ng-if="schema.readOnly">
+                    <a class="btn btn-primary" href="${dar.id}?edit=true"><i class="fas fa-pen"></i> <@message "edit"/></a>
+                  </span>
+                  <span class="float-right border-left ml-2 pl-2" ng-hide="schema.readOnly">
+                    <a class="btn btn-primary" href="#" ng-click="save('${dar.id}')"><@message "save"/></a>
+                    <a class="btn btn-default" href="${dar.id}"><@message "cancel"/></a>
+                  </span>
+                </#if>
+                <#if permissions?seq_contains("EDIT_STATUS")>
+                  <span class="float-right">
+                    <#if dar.status == "OPENED" || dar.status == "CONDITIONALLY_APPROVED">
+                      <button type="button" class="btn btn-info" ng-disabled="!schema.readOnly" data-toggle="modal" data-target="#modal-submit"><@message "submit"/></button>
+                      <button type="button" class="btn btn-success" ng-click="validate()"><@message "validate"/></button>
+                    <#elseif (dar.status == "SUBMITTED" && accessConfig.withReview)>
+                      <button type="button" class="btn btn-primary" onclick="micajs.dataAccess.review('${dar.id}')"><@message "review"/></button>
+                    <#elseif dar.status == "REVIEWED" || (dar.status == "SUBMITTED" && !accessConfig.withReview)>
+                      <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modal-approve"><@message "approve"/></button>
+                      <#if accessConfig.withConditionalApproval>
+                        <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#modal-condition"><@message "conditionallyApprove"/></button>
+                      </#if>
+                      <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#modal-reject"><@message "reject"/></button>
+                    <#elseif dar.status == "APPROVED" && !accessConfig.approvedFinal>
+                      <button type="button" class="btn btn-outline-secondary" data-toggle="modal" data-target="#modal-cancel-approve"><@message "cancel-approval"/></button>
+                    <#elseif dar.status == "REJECTED" && !accessConfig.rejectedFinal>
+                      <button type="button" class="btn btn-outline-secondary" data-toggle="modal" data-target="#modal-cancel-reject"><@message "cancel-rejection"/></button>
+                    </#if>
+                  </span>
+                </#if>
               </div>
             </div>
             <div class="card-body">
@@ -95,20 +114,20 @@
 
           <!-- Confirm submission modal -->
           <div class="modal fade" id="modal-submit">
-            <div class="modal-dialog modal-sm">
+            <div class="modal-dialog">
               <div class="modal-content">
                 <div class="modal-header">
-                  <h4 class="modal-title">Confirm Submission</h4>
+                  <h4 class="modal-title"><@message "confirm-submission-title"/></h4>
                   <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                   </button>
                 </div>
                 <div class="modal-body">
-                  <p>Please confirm that you want to submit this data access request.</p>
+                  <p><@message "confirm-submission-text"/></p>
                 </div>
                 <div class="modal-footer justify-content-between">
-                  <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                  <button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="submit('${dar.id}')">Confirm</button>
+                  <button type="button" class="btn btn-default" data-dismiss="modal"><@message "cancel"/></button>
+                  <button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="submit('${dar.id}')"><@message "confirm"/></button>
                 </div>
               </div>
               <!-- /.modal-content -->
@@ -116,14 +135,143 @@
             <!-- /.modal-dialog -->
           </div>
           <!-- /.modal -->
+
+          <!-- Confirm approval modal -->
+          <div class="modal fade" id="modal-approve">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h4 class="modal-title"><@message "confirm-approval-title"/></h4>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <p><@message "confirm-approval-text"/></p>
+                </div>
+                <div class="modal-footer justify-content-between">
+                  <button type="button" class="btn btn-default" data-dismiss="modal"><@message "cancel"/></button>
+                  <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="micajs.dataAccess.approve('${dar.id}')"><@message "confirm"/></button>
+                </div>
+              </div>
+              <!-- /.modal-content -->
+            </div>
+            <!-- /.modal-dialog -->
+          </div>
+          <!-- /.modal -->
+
+          <!-- Confirm conditional approval modal -->
+          <div class="modal fade" id="modal-condition">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h4 class="modal-title"><@message "confirm-conditional-approval-title"/></h4>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <p><@message "confirm-conditional-approval-text"/></p>
+                </div>
+                <div class="modal-footer justify-content-between">
+                  <button type="button" class="btn btn-default" data-dismiss="modal"><@message "cancel"/></button>
+                  <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="micajs.dataAccess.conditionallyApprove('${dar.id}')"><@message "confirm"/></button>
+                </div>
+              </div>
+              <!-- /.modal-content -->
+            </div>
+            <!-- /.modal-dialog -->
+          </div>
+          <!-- /.modal -->
+
+          <!-- Confirm rejection modal -->
+          <div class="modal fade" id="modal-reject">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h4 class="modal-title"><@message "confirm-rejection-title"/></h4>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <p><@message "confirm-rejection-text"/></p>
+                </div>
+                <div class="modal-footer justify-content-between">
+                  <button type="button" class="btn btn-default" data-dismiss="modal"><@message "cancel"/></button>
+                  <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="micajs.dataAccess.reject('${dar.id}')"><@message "confirm"/></button>
+                </div>
+              </div>
+              <!-- /.modal-content -->
+            </div>
+            <!-- /.modal-dialog -->
+          </div>
+          <!-- /.modal -->
+
+          <!-- Confirm cancel approval modal -->
+          <div class="modal fade" id="modal-cancel-approve">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h4 class="modal-title"><@message "confirm-cancel-approval-title"/></h4>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <p><@message "confirm-cancel-approval-text"/></p>
+                </div>
+                <div class="modal-footer justify-content-between">
+                  <button type="button" class="btn btn-default" data-dismiss="modal"><@message "cancel"/></button>
+                  <#if accessConfig.withReview>
+                    <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="micajs.dataAccess.review('${dar.id}')"><@message "confirm"/></button>
+                  <#else>
+                    <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="micajs.dataAccess.submit('${dar.id}')"><@message "confirm"/></button>
+                  </#if>
+                </div>
+              </div>
+              <!-- /.modal-content -->
+            </div>
+            <!-- /.modal-dialog -->
+          </div>
+          <!-- /.modal -->
+
+          <!-- Confirm cancel rejection modal -->
+          <div class="modal fade" id="modal-cancel-reject">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h4 class="modal-title"><@message "confirm-cancel-rejection-title"/></h4>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <p><@message "confirm-cancel-rejection-text"/></p>
+                </div>
+                <div class="modal-footer justify-content-between">
+                  <button type="button" class="btn btn-default" data-dismiss="modal"><@message "cancel"/></button>
+                    <#if accessConfig.withReview>
+                      <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="micajs.dataAccess.review('${dar.id}')"><@message "confirm"/></button>
+                    <#else>
+                      <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="micajs.dataAccess.submit('${dar.id}')"><@message "confirm"/></button>
+                    </#if>
+                </div>
+              </div>
+              <!-- /.modal-content -->
+            </div>
+            <!-- /.modal-dialog -->
+          </div>
+          <!-- /.modal -->
+
         </div>
         <div class="col-lg-4 d-print-none">
           <div class="card card-info card-outline">
             <div class="card-header">
-              <h3 class="card-title">Help</h3>
+              <h3 class="card-title"><@message "help"/></h3>
             </div>
             <div class="card-body">
-              Some recommendations when filling the form...
+              <@dataAccessFormHelp dar=dar/>
             </div>
           </div>
         </div>

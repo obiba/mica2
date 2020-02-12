@@ -1,6 +1,24 @@
 <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+  <div>
+    <#if dar.status.toString() == "OPENED">
+      <#assign txtColor = "text-primary"/>
+    <#elseif dar.status.toString() == "APPROVED">
+      <#assign txtColor = "text-success"/>
+    <#elseif dar.status.toString() == "REJECTED">
+      <#assign txtColor = "text-danger"/>
+    <#elseif dar.status.toString() == "SUBMITTED">
+      <#assign txtColor = "text-info"/>
+    <#elseif dar.status.toString() == "REVIEWED">
+      <#assign txtColor = "text-info"/>
+    <#elseif dar.status.toString() == "CONDITIONALLY_APPROVED">
+      <#assign txtColor = "text-warning"/>
+    <#else>
+      <#assign txtColor = "text-info"/>
+    </#if>
+    <span title="<@message dar.status.toString()/>"><i class="fas fa-circle fa-2x pl-2 ${txtColor}"></i></span>
+  </div>
   <div class="info">
-    <a href="#" class="d-block">${dar.applicant} - <@message dar.status.toString()/></a>
+    <a href="#" class="d-inline">${applicant.fullName} </a>
   </div>
 </div>
 
