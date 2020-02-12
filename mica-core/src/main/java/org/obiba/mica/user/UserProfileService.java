@@ -10,14 +10,11 @@
 
 package org.obiba.mica.user;
 
-import java.util.Arrays;
-import java.util.List;
-
-import javax.annotation.Nullable;
-import javax.validation.constraints.NotNull;
-
 import com.google.common.base.Strings;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import org.apache.shiro.SecurityUtils;
 import org.obiba.mica.core.service.AgateRestService;
 import org.obiba.shiro.realm.ObibaRealm;
@@ -34,9 +31,21 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import javax.annotation.Nullable;
+import javax.validation.constraints.NotNull;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
 @Service
 public class UserProfileService extends AgateRestService {
   private static final Logger log = LoggerFactory.getLogger(UserProfileService.class);
+
+  private Cache<String, Subject> subjectCache = CacheBuilder.newBuilder()
+    .maximumSize(100)
+    .expireAfterWrite(1, TimeUnit.MINUTES)
+    .build();
 
   public synchronized Subject getProfile(@NotNull String username) {
     Assert.notNull(username, "Username cannot be null");
@@ -51,8 +60,33 @@ public class UserProfileService extends AgateRestService {
     return subject;
   }
 
+  public synchronized Subject getProfile(@NotNull String username, boolean cached) {
+    if (!cached) return getProfile(username);
+
+    ObibaRealm.Subject profile = subjectCache.getIfPresent(username);
+    if (profile == null) {
+      profile = getProfile(username);
+      subjectCache.put(username, profile);
+    }
+    return profile;
+  }
+
+  public synchronized Map<String, Object> asMap(@NotNull Subject profile) {
+    Map<String, Object> params = Maps.newHashMap();
+    String fullName = profile.getUsername();
+    Map<String, String> attributes = Maps.newHashMap();
+    if (profile.getAttributes() != null) {
+      profile.getAttributes().forEach(attr -> attributes.put(attr.get("key"), attr.get("value")));
+      fullName = attributes.getOrDefault("firstName", "") + (attributes.containsKey("firstName") ? " " : "") + attributes.getOrDefault("lastName", profile.getUsername());
+    }
+    params.put("username", profile.getUsername());
+    params.put("fullName", fullName);
+    params.put("attributes", attributes);
+    return params;
+  }
+
   public synchronized Subject getProfileByApplication(@NotNull String username, @NotNull String application,
-    @Nullable String group) {
+                                                      @Nullable String group) {
     Assert.notNull(username, "Username cannot be null");
     Assert.notNull(application, "Application name cannot be null");
     return getProfileInternal(getProfileServiceUrlByApp(username, application, group));
@@ -67,7 +101,7 @@ public class UserProfileService extends AgateRestService {
       String profileServiceUrl = getProfileServiceUrlByApp(null, application, group);
       return Arrays.asList(executeQuery(profileServiceUrl, Subject[].class));
 
-    } catch(RestClientException e) {
+    } catch (RestClientException e) {
       log.error("Agate connection failure: {}", e.getMessage());
     }
 
@@ -93,7 +127,9 @@ public class UserProfileService extends AgateRestService {
 
     String username = subject.getPrincipal().toString();
 
-    if (username.equals("administrator")) { return true; }
+    if (username.equals("administrator")) {
+      return true;
+    }
 
     ObibaRealm.Subject profile = getProfile(username);
     return profile != null && profile.getGroups() != null && profile.getGroups().stream().filter(g -> g.equals(role)).count() > 0;
@@ -102,7 +138,7 @@ public class UserProfileService extends AgateRestService {
   private synchronized Subject getProfileInternal(String serviceUrl) {
     try {
       return executeQuery(serviceUrl, Subject.class);
-    } catch(RestClientException e) {
+    } catch (RestClientException e) {
       log.error("Agate connection failure: {}", e.getMessage());
     }
 
