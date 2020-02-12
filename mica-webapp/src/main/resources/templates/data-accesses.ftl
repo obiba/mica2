@@ -79,7 +79,7 @@
 
   <!-- Confirm addition modal -->
   <div class="modal fade" id="modal-add">
-    <div class="modal-dialog modal-sm">
+    <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
           <h4 class="modal-title">Confirm Creation</h4>

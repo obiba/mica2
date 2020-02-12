@@ -29,10 +29,10 @@
 
 <script>
     $('#form-menu').addClass('active');//.attr('href', '#');
-    let formSchema = ${form.schema!"{}"};
-    formSchema.readOnly = ${form.readOnly?c};
-    let formDefinition = ${form.definition!"['*']"};
-    let formModel = ${form.model!"{}"};
+    let formSchema = ${formConfig.schema!"{}"};
+    formSchema.readOnly = ${formConfig.readOnly?c};
+    let formDefinition = ${formConfig.definition!"['*']"};
+    let formModel = ${formConfig.model!"{}"};
     let formMessages = {
         validationSuccess: 'The form is valid.',
         validationError: 'The form has invalid fields.',

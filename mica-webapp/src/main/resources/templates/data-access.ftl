@@ -42,9 +42,11 @@
             <h1 class="m-0 float-left">
               <span class="text-white-50">Data Access /</span> ${dar.id}
             </h1>
-            <button type="button" class="btn btn-danger ml-4" data-toggle="modal" data-target="#modal-delete">
-              <i class="fas fa-trash"></i> Delete
-            </button>
+            <#if permissions?seq_contains("DELETE")>
+              <button type="button" class="btn btn-danger ml-4" data-toggle="modal" data-target="#modal-delete">
+                <i class="fas fa-trash"></i> Delete
+              </button>
+            </#if>
           </div>
           <div class="col-sm-6">
             <#include "libs/data-access-breadcrumb.ftl">
@@ -55,7 +57,7 @@
 
     <!-- Confirm delete modal -->
     <div class="modal fade" id="modal-delete">
-      <div class="modal-dialog modal-sm">
+      <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
             <h4 class="modal-title">Confirm Deletion</h4>
