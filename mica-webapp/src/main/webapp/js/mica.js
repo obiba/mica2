@@ -157,11 +157,59 @@ var micajs = (function() {
     axios.put('../../ws/data-access-request/' + id + '/_status?to=SUBMITTED')
       .then(response => {
         console.dir(response);
-        micaRedirect('../data-access/' + id);
+        micaRedirect('../data-access-form/' + id);
       })
       .catch(response => {
         console.dir(response);
         micaError('Data access request submission failed.');
+      });
+  };
+
+  var micaReviewDataAccess = function(id) {
+    axios.put('../../ws/data-access-request/' + id + '/_status?to=REVIEWED')
+      .then(response => {
+        console.dir(response);
+        micaRedirect('../data-access-form/' + id);
+      })
+      .catch(response => {
+        console.dir(response);
+        micaError('Data access request review failed.');
+      });
+  };
+
+  var micaApproveDataAccess = function(id) {
+    axios.put('../../ws/data-access-request/' + id + '/_status?to=APPROVED')
+      .then(response => {
+        console.dir(response);
+        micaRedirect('../data-access-form/' + id);
+      })
+      .catch(response => {
+        console.dir(response);
+        micaError('Data access request approval failed.');
+      });
+  };
+
+  var micaConditionallyApproveDataAccess = function(id) {
+    axios.put('../../ws/data-access-request/' + id + '/_status?to=CONDITIONALLY_APPROVED')
+      .then(response => {
+        console.dir(response);
+        micaRedirect('../data-access-form/' + id);
+      })
+      .catch(response => {
+        console.dir(response);
+        micaError('Data access request conditional approval failed.');
+      });
+  };
+
+  var micaRejectDataAccess = function(id) {
+    axios.put('../../ws/data-access-request/' + id + '/_status?to=REJECTED')
+      .then(response => {
+        console.dir(response);
+        micaRedirect('../data-access-form/' + id);
+      })
+      .catch(response => {
+        console.dir(response);
+        micaError('Data access request rejection failed.');
       });
   };
 
@@ -178,7 +226,11 @@ var micajs = (function() {
     'dataAccess': {
       'create': micaCreateDataAccess,
       'delete': micaDeleteDataAccess,
-      'submit': micaSubmitDataAccess
+      'submit': micaSubmitDataAccess,
+      'review': micaReviewDataAccess,
+      'approve': micaApproveDataAccess,
+      'conditionallyApprove': micaConditionallyApproveDataAccess,
+      'reject': micaRejectDataAccess
     }
   };
 

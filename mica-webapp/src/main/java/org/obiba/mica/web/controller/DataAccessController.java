@@ -1,5 +1,6 @@
 package org.obiba.mica.web.controller;
 
+import com.google.common.collect.Lists;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import org.obiba.core.translator.JsonTranslator;
@@ -12,6 +13,7 @@ import org.obiba.mica.micaConfig.NoSuchDataAccessFormException;
 import org.obiba.mica.micaConfig.domain.DataAccessForm;
 import org.obiba.mica.micaConfig.service.DataAccessFormService;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
+import org.obiba.mica.user.UserProfileService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,8 +22,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.inject.Inject;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Controller
 public class DataAccessController extends BaseController {
@@ -35,11 +39,15 @@ public class DataAccessController extends BaseController {
   @Inject
   private MicaConfigService micaConfigService;
 
+  @Inject
+  private UserProfileService userProfileService;
+
   @GetMapping("/data-access/{id}")
   public ModelAndView get(@PathVariable String id) {
     Subject subject = SecurityUtils.getSubject();
     if (subject.isAuthenticated()) {
       Map<String, Object> params = newParameters(id);
+      addDataAccessConfiguration(params);
       return new ModelAndView("data-access", params);
     } else {
       return new ModelAndView("redirect:../signin?redirect=data-access%2F" + id);
@@ -54,7 +62,7 @@ public class DataAccessController extends BaseController {
     Subject subject = SecurityUtils.getSubject();
     if (subject.isAuthenticated()) {
       Map<String, Object> params = newParameters(id);
-      addDataAccessForm(params, getDataAccessRequest(params).getContent(), !edit, language == null ? locale : language);
+      addDataAccessFormConfiguration(params, getDataAccessRequest(params).getContent(), !edit, language == null ? locale : language);
       return new ModelAndView("data-access-form", params);
     } else {
       return new ModelAndView("redirect:../signin?redirect=data-access-form%2F" + id);
@@ -122,9 +130,24 @@ public class DataAccessController extends BaseController {
 
   private Map<String, Object> newParameters(String id) {
     Map<String, Object> params = newParameters();
-    params.put("dar", getDataAccessRequest(id));
+    DataAccessRequest dar = getDataAccessRequest(id);
+    params.put("dar", dar);
     params.put("pathPrefix", "../..");
+
+    params.put("applicant", userProfileService.asMap(userProfileService.getProfile(dar.getApplicant(), true)));
+
+    List<String> permissions = Lists.newArrayList("VIEW", "EDIT", "DELETE").stream()
+      .filter(action -> isPermitted(action, id)).collect(Collectors.toList());
+    if (isPermitted("/data-access-request/" + id, "EDIT", "_status"))
+      permissions.add("EDIT_STATUS");
+
+    params.put("permissions", permissions);
+
     return params;
+  }
+
+  private boolean isPermitted(String action, String id) {
+    return isPermitted("/data-access-request", action, id);
   }
 
   private DataAccessRequest getDataAccessRequest(Map<String, Object> params) {
@@ -135,21 +158,66 @@ public class DataAccessController extends BaseController {
     return dataAccessRequestService.findById(id);
   }
 
-  private void addDataAccessForm(Map<String, Object> params, String model, boolean readOnly, String locale) {
+  private void addDataAccessConfiguration(Map<String, Object> params) {
     Optional<DataAccessForm> d = dataAccessFormService.find();
-    if(!d.isPresent()) throw NoSuchDataAccessFormException.withDefaultMessage();
-    params.put("form", new SchemaForm(d.get(), model, locale, readOnly));
+    if (!d.isPresent()) throw NoSuchDataAccessFormException.withDefaultMessage();
+    DataAccessForm dataAccessForm = d.get();
+    params.put("accessConfig", new DataAccessConfig(dataAccessForm));
   }
 
+  private void addDataAccessFormConfiguration(Map<String, Object> params, String model, boolean readOnly, String locale) {
+    Optional<DataAccessForm> d = dataAccessFormService.find();
+    if (!d.isPresent()) throw NoSuchDataAccessFormException.withDefaultMessage();
+    DataAccessForm dataAccessForm = d.get();
+    params.put("formConfig", new SchemaFormConfig(dataAccessForm, model, locale, readOnly));
+    params.put("accessConfig", new DataAccessConfig(dataAccessForm));
+  }
 
-  public class SchemaForm {
+  /**
+   * Workflow settings.
+   */
+  public class DataAccessConfig {
+
+    private final boolean withReview;
+    private final boolean withConditionalApproval;
+    private final boolean approvedFinal;
+    private final boolean rejectedFinal;
+
+    private DataAccessConfig(DataAccessForm form) {
+      this.withReview = form.isWithReview();
+      this.withConditionalApproval = form.isWithConditionalApproval();
+      this.approvedFinal = form.isApprovedFinal();
+      this.rejectedFinal = form.isRejectedFinal();
+    }
+
+    public boolean isWithReview() {
+      return withReview;
+    }
+
+    public boolean isWithConditionalApproval() {
+      return withConditionalApproval;
+    }
+
+    public boolean isApprovedFinal() {
+      return approvedFinal;
+    }
+
+    public boolean isRejectedFinal() {
+      return rejectedFinal;
+    }
+  }
+
+  /**
+   * Schema form settings.
+   */
+  public class SchemaFormConfig {
 
     private final String schema;
     private final String definition;
     private final String model;
     private final boolean readOnly;
 
-    private SchemaForm(DataAccessForm form, String model, String locale, boolean readOnly) {
+    private SchemaFormConfig(DataAccessForm form, String model, String locale, boolean readOnly) {
       this.readOnly = readOnly;
       String lang = locale == null ? "en" : locale.replaceAll("\"", "");
       Translator translator = JsonTranslator.buildSafeTranslator(() -> micaConfigService.getTranslations(lang, false));
@@ -176,5 +244,6 @@ public class DataAccessController extends BaseController {
     public boolean isReadOnly() {
       return readOnly;
     }
+
   }
 }
