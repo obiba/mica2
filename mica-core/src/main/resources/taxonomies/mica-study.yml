@@ -18,6 +18,7 @@
   "terms": []
   "attributes":
     "static": "true"
+    "type": "keyword"
 - "name": "name"
   "title":
     "en": "Name"
@@ -58,6 +59,7 @@
     "alias": "opal"
     "static": "true"
     "hidden": "true"
+    "type": "string"
 - "name": "methods-design"
   "title":
     "en": "Study design"
@@ -1534,6 +1536,7 @@
     "alias": "populations-id"
     "static": "true"
     "hidden": "true"
+    "type": "keyword"
 - "name": "populations-name"
   "title":
     "en": "Population Name"
@@ -1634,14 +1637,14 @@
     "description":
       "en": "First trimester of pregnancy."
       "fr": "Premier trimestre de grossesse."
-  - "name": second_trimester
+  - "name": "second_trimester"
     "title":
       "en": "Second Trimester"
       "fr": "Deuxième trimestre"
     "description":
       "en": "Second trimester of pregnancy."
       "fr": "Deuxième trimestre de grossesse."
-  - "name": third_trimester
+  - "name": "third_trimester"
     "title":
       "en": "Third Trimester"
       "fr": "Troisième trimestre"
@@ -2241,8 +2244,6 @@
       "description":
         "en": "Not applicable"
         "fr": "non applicable"
-
-
 - "name": "populations-dataCollectionEvents-id"
   "title":
     "en": "Data Collection Event ID"
@@ -2254,6 +2255,7 @@
     "hidden": "true"
     "field": "populations.dataCollectionEvents.id"
     "alias": "populations-dataCollectionEvents-id"
+    "type": "keyword"
     "static": "true"
 - "name": "populations-dataCollectionEvents-name"
   "title":
@@ -2266,6 +2268,7 @@
     "field": "populations.dataCollectionEvents.name"
     "alias": "populations-dataCollectionEvents-name"
     "static": "true"
+    "type": "string"
     "hidden": "true"
     "localized": "true"
 - "name": "populations-dataCollectionEvents-start"
@@ -2280,6 +2283,7 @@
     "field": "populations.dataCollectionEvents.start.yearMonth"
     "alias": "populations-dataCollectionEvents-start-yearMonth"
     "static": "true"
+    "type": "keyword"
 - "name": "populations-dataCollectionEvents-end"
   "title":
     "en": "Data Collection Event End Date"
@@ -2292,6 +2296,7 @@
     "field": "populations.dataCollectionEvents.end.yearMonth"
     "alias": "populations-dataCollectionEvents-end-yearMonth"
     "static": "true"
+    "type": "keyword"
 - "name": "populations-dataCollectionEvents-description"
   "title":
     "en": "Data Collection Event Description"
