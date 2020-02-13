@@ -7,8 +7,12 @@ import org.obiba.core.translator.JsonTranslator;
 import org.obiba.core.translator.PrefixedValueTranslator;
 import org.obiba.core.translator.TranslationUtils;
 import org.obiba.core.translator.Translator;
+import org.obiba.mica.access.domain.ChangeLog;
 import org.obiba.mica.access.domain.DataAccessRequest;
 import org.obiba.mica.access.service.DataAccessRequestService;
+import org.obiba.mica.core.domain.AbstractAuditableDocument;
+import org.obiba.mica.core.domain.Comment;
+import org.obiba.mica.core.service.CommentsService;
 import org.obiba.mica.micaConfig.NoSuchDataAccessFormException;
 import org.obiba.mica.micaConfig.domain.DataAccessForm;
 import org.obiba.mica.micaConfig.service.DataAccessFormService;
@@ -41,6 +45,9 @@ public class DataAccessController extends BaseController {
 
   @Inject
   private UserProfileService userProfileService;
+
+  @Inject
+  private CommentsService commentsService;
 
   @GetMapping("/data-access/{id}")
   public ModelAndView get(@PathVariable String id) {
@@ -85,6 +92,11 @@ public class DataAccessController extends BaseController {
     Subject subject = SecurityUtils.getSubject();
     if (subject.isAuthenticated()) {
       Map<String, Object> params = newParameters(id);
+      DataAccessRequest dar = (DataAccessRequest) params.get("dar");
+
+      params.put("authors", dar.getStatusChangeHistory().stream().map(ChangeLog::getAuthor).distinct()
+        .collect(Collectors.toMap(u -> u, u -> userProfileService.getProfileMap(u, true))));
+
       return new ModelAndView("data-access-history", params);
     } else {
       return new ModelAndView("redirect:../signin?redirect=data-access-history%2F" + id);
@@ -118,9 +130,35 @@ public class DataAccessController extends BaseController {
     Subject subject = SecurityUtils.getSubject();
     if (subject.isAuthenticated()) {
       Map<String, Object> params = newParameters(id);
+
+      List<Comment> comments = commentsService.findPublicComments("/data-access-request", id);
+      params.put("comments", comments);
+      params.put("authors", comments.stream().map(AbstractAuditableDocument::getCreatedBy).distinct()
+        .collect(Collectors.toMap(u -> u, u -> userProfileService.getProfileMap(u, true))));
+
       return new ModelAndView("data-access-comments", params);
     } else {
       return new ModelAndView("redirect:../signin?redirect=data-access-comments%2F" + id);
+    }
+  }
+
+  @GetMapping("/data-access-private-comments/{id}")
+  public ModelAndView getPrivateComments(@PathVariable String id) {
+    Subject subject = SecurityUtils.getSubject();
+    if (subject.isAuthenticated()) {
+      Map<String, Object> params = newParameters(id);
+
+      if (!isPermitted("/data-access-request/private-comment", "VIEW"))
+        checkPermission("/private-comment/data-access-request", "VIEW", null);
+
+      List<Comment> comments = commentsService.findPrivateComments("/data-access-request", id);
+      params.put("comments", comments);
+      params.put("authors", comments.stream().map(AbstractAuditableDocument::getCreatedBy).distinct()
+        .collect(Collectors.toMap(u -> u, u -> userProfileService.getProfileMap(u, true))));
+
+      return new ModelAndView("data-access-private-comments", params);
+    } else {
+      return new ModelAndView("redirect:../signin?redirect=data-access-private-comments%2F" + id);
     }
   }
 
@@ -129,12 +167,13 @@ public class DataAccessController extends BaseController {
   //
 
   private Map<String, Object> newParameters(String id) {
+    checkPermission("/data-access-request", "VIEW", id);
     Map<String, Object> params = newParameters();
     DataAccessRequest dar = getDataAccessRequest(id);
     params.put("dar", dar);
     params.put("pathPrefix", "../..");
 
-    params.put("applicant", userProfileService.asMap(userProfileService.getProfile(dar.getApplicant(), true)));
+    params.put("applicant", userProfileService.getProfileMap(dar.getApplicant(), true));
 
     List<String> permissions = Lists.newArrayList("VIEW", "EDIT", "DELETE").stream()
       .filter(action -> isPermitted(action, id)).collect(Collectors.toList());

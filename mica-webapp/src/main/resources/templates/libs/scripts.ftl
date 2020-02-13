@@ -7,7 +7,7 @@
 <!-- AdminLTE App -->
 <script src="${pathPrefix!".."}/bower_components/admin-lte/dist/js/adminlte.min.js"></script>
 <!-- Moment -->
-<script src="${pathPrefix!".."}/bower_components/moment/moment.js"></script>
+<script src="${pathPrefix!".."}/bower_components/admin-lte/plugins/moment/moment-with-locales.min.js"></script>
 <!-- Mica Utils and dependencies -->
 <script src="${pathPrefix!".."}/bower_components/jquery.redirect/jquery.redirect.js"></script>
 <script src="${pathPrefix!".."}/bower_components/js-cookie/src/js.cookie.js"></script>
@@ -19,6 +19,8 @@
 <script src="${pathPrefix!".."}/bower_components/admin-lte/plugins/toastr/toastr.min.js"></script>
 <!-- Axios -->
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<!-- Marked -->
+<script src="${pathPrefix!".."}/bower_components/marked/lib/marked.js"></script>
 
 <!-- Global js variables -->
 <script>
@@ -55,4 +57,43 @@
             "url": "${pathPrefix!".."}/i18n/datatables.${.lang}.json"
         }
     };
+    var dataTablesNoSortSearchOpts = {
+        "paging": true,
+        "lengthChange": false,
+        "searching": true,
+        "ordering": false,
+        "info": false,
+        "autoWidth": true,
+        "language": {
+            "url": "${pathPrefix!".."}/i18n/datatables.${.lang}.json"
+        }
+    };
+</script>
+
+<script>
+    $(function () {
+        // apply markdown rendering
+        $('.marked').each(function () {
+            var msg = $.trim($(this).html());
+            if (msg && msg.length > 0) {
+                $(this).html(marked(msg));
+            }
+        });
+        // set moment's locale
+        moment.locale('${.lang}');
+        $('.moment-date').each(function () {
+            var msg = $.trim($(this).html());
+            if (msg && msg.length > 0) {
+                msg = moment(msg).format('LL');
+                $(this).html(msg);
+            }
+        });
+        $('.moment-datetime').each(function () {
+            var msg = $.trim($(this).html());
+            if (msg && msg.length > 0) {
+                msg = moment(msg).format('LLL');
+                $(this).html(msg);
+            }
+        });
+    });
 </script>

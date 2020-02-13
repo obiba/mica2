@@ -27,8 +27,13 @@ public class ExtendedResourceBundleMessageSource extends ReloadableResourceBundl
 
     final String key = locale.getLanguage();
     JsonTranslator translator = getTranslator(key);
-    if (translator != null)
-      result = translator.translate(code);
+    if (translator != null) {
+      try {
+        result = translator.translate(code);
+      } catch (Exception e) {
+        // ignore
+      }
+    }
 
     return result;
   }

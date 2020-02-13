@@ -28,16 +28,18 @@
 <script src="${pathPrefix}/bower_components/sf-radio-group-collection/dist/sf-radio-group-collection.js"></script>
 
 <script>
-    $('#form-menu').addClass('active');//.attr('href', '#');
+    $(function () {
+        $('#form-menu').addClass('active');//.attr('href', '#');
+    });
     let formSchema = ${formConfig.schema!"{}"};
     formSchema.readOnly = ${formConfig.readOnly?c};
     let formDefinition = ${formConfig.definition!"['*']"};
     let formModel = ${formConfig.model!"{}"};
     let formMessages = {
-        validationSuccess: 'The form is valid.',
-        validationError: 'The form has invalid fields.',
-        validationErrorOnSubmit: 'The form cannot be submitted due to validation errors.',
-        errorOnSave: 'The form could not be saved.'
+        validationSuccess: <@message "form-validation-success"/>,
+        validationError: <@message "form-validation-error"/>,
+        validationErrorOnSubmit: <@message "form-validation-submit-error"/>,
+        errorOnSave: <@message "form-save-error"/>
     };
 </script>
 
