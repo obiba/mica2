@@ -31,15 +31,15 @@
     $(function () {
         $('#form-menu').addClass('active');//.attr('href', '#');
     });
-    let formSchema = ${formConfig.schema!"{}"};
+    var formSchema = ${formConfig.schema!"{}"};
     formSchema.readOnly = ${formConfig.readOnly?c};
-    let formDefinition = ${formConfig.definition!"['*']"};
-    let formModel = ${formConfig.model!"{}"};
-    let formMessages = {
-        validationSuccess: <@message "form-validation-success"/>,
-        validationError: <@message "form-validation-error"/>,
-        validationErrorOnSubmit: <@message "form-validation-submit-error"/>,
-        errorOnSave: <@message "form-save-error"/>
+    var formDefinition = ${formConfig.definition!"['*']"};
+    var formModel = ${formConfig.model!"{}"};
+    var formMessages = {
+        validationSuccess: '<@message "form-validation-success"/>',
+        validationError: '<@message "form-validation-error"/>',
+        validationErrorOnSubmit: '<@message "form-validation-submit-error"/>',
+        errorOnSave: '<@message "form-save-error"/>'
     };
 </script>
 

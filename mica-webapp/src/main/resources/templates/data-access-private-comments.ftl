@@ -61,7 +61,7 @@
         <div class="col-12">
           <div class="callout callout-info">
             <p>
-              These are the comments related to the data access request.
+              These are the private comments (i.e. visible only by data access officers and administrators) related to the data access request.
             </p>
           </div>
         </div>
@@ -111,6 +111,11 @@
 <#include "libs/scripts.ftl">
 <#include "libs/data-access-comments-scripts.ftl">
 <@commentScripts isPrivate="true"/>
+<script>
+    $(function () {
+        $('#private-comments-menu').addClass('active').attr('href', '#');
+    });
+</script>
 
 </body>
 </html>

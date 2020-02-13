@@ -71,7 +71,7 @@
     <#assign admin = (user.roles?seq_contains("mica-administrator") || user.roles?seq_contains("mica-data-access-officer"))/>
     <#if admin>
       <li class="nav-item">
-        <a id="comments-menu" href="../data-access-private-comments/${dar.id}" class="nav-link">
+        <a id="private-comments-menu" href="../data-access-private-comments/${dar.id}" class="nav-link">
           <i class="fas fa-lock nav-icon"></i>
           <p><@message "private-comments"/></p>
         </a>
