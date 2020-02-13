@@ -1692,7 +1692,7 @@
       "facet-expanded": "Facet Expanded",
       "facet-expanded-help": "Determines whether the facet is opened or closed when list page is loaded.",
       "field-help": "Fully qualified field name in the document model (if different from the name).",
-      "type-help": "The type of search facet: range selection for a numerical type, open input for a text type etc.",
+      "type-help": "Range selection for a <code>numerical</code> type, full-text values for a <code>string</code> type and structured content for a <code>keyword</code> type.",
       "unique-name": "Criterion name must be unique.",
       "hidden": "Hidden",
       "hidden-help": "A hidden criterion is excluded from search.",
