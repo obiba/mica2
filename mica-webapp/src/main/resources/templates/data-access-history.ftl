@@ -84,8 +84,8 @@
                 <#list dar.statusChangeHistory?reverse as chg>
                   <tr>
                     <td><@message chg.to.toString()/></td>
-                    <td>${chg.author}</td>
-                    <td>${chg.changedOn.toString(datetimeFormat)}</td>
+                    <td>${authors[chg.author].fullName}</td>
+                    <td class="moment-datetime">${chg.changedOn.toString(datetimeFormat)}</td>
                   </tr>
                 </#list>
                 </tbody>
@@ -114,7 +114,7 @@
                   <tr>
                     <td>${act.action}</td>
                     <td>${act.author}</td>
-                    <td>${act.changedOn.toString(datetimeFormat)}</td>
+                    <td class="moment-datetime">${act.changedOn.toString(datetimeFormat)}</td>
                   </tr>
                 </#list>
                 </tbody>
@@ -143,11 +143,13 @@
 
 <#include "libs/scripts.ftl">
 <script>
-  $('#history-menu').addClass('active').attr('href', '#')
-  $(function () {
-    $("#status").DataTable(dataTablesSortOpts);
-    $("#actions").DataTable(dataTablesSortOpts);
-  });
+    $(function () {
+        $('#history-menu').addClass('active').attr('href', '#')
+        $(function () {
+            $("#status").DataTable(dataTablesNoSortSearchOpts);
+            $("#actions").DataTable(dataTablesNoSortSearchOpts);
+        });
+    });
 </script>
 </body>
 </html>

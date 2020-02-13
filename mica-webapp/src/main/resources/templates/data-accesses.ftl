@@ -39,11 +39,14 @@
                 </div>
               </div>
               <div class="card-body">
+                <#assign admin = (user.roles?seq_contains("mica-administrator") || user.roles?seq_contains("mica-data-access-officer"))/>
                 <table id="dars" class="table table-bordered table-striped">
                   <thead>
                   <tr>
                     <th>ID</th>
-                    <th>Applicant</th>
+                    <#if admin>
+                      <th>Applicant</th>
+                    </#if>
                     <th>Title</th>
                     <th>Last Update</th>
                     <th>Submission Date</th>
@@ -56,10 +59,12 @@
                   <#list dars as dar>
                     <tr>
                       <td><a href="../data-access/${dar.id}">${dar.id}</a></td>
-                      <td>${dar.applicant}</td>
+                      <#if admin>
+                        <td>${applicants[dar.applicant].fullName}</td>
+                      </#if>
                       <td>${dar.title!""}</td>
-                      <td>${dar.lastUpdate.toString("yyyy-MM-dd hh:mm")}</td>
-                      <td>${dar.submissionDate!""}</td>
+                      <td class="moment-datetime">${dar.lastUpdate.toString(datetimeFormat)}</td>
+                      <td class="moment-datetime"><#if dar.submitDate??>${dar.submitDate.toString(datetimeFormat)}</#if></td>
                       <td>${dar.pendingAmendments}</td>
                       <td>${dar.totalAmendments}</td>
                       <td><@message dar.status.toString()/></td>

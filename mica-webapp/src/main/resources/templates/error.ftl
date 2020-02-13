@@ -38,17 +38,16 @@
 
           <div class="error-content">
             <h3><i class="fas fa-exclamation-triangle text-warning"></i>
-              <#if message??>
-                  ${message}
+              <#if msg??>
+                  ${msg}
               <#else >
                   "Not found"
               </#if>
-
             </h3>
 
             <p>
               We could not access the page you were looking for.
-              Meanwhile, you may <a href="../dashboard">return to dashboard</a> or try to <a href="../search">search the repository</a>.
+              Meanwhile, you may <a href="../home">return to home</a> or try to <a href="../search">search the repository</a>.
             </p>
           </div>
           <!-- /.error-content -->
