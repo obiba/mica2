@@ -213,6 +213,47 @@ var micajs = (function() {
       });
   };
 
+  var micaSendComment = function(id, message, isPrivate) {
+    var url = '../../ws/data-access-request/' + id + '/comments';
+    var redirect = '../data-access-comments/' + id;
+    if (isPrivate) {
+      url = url + '?admin=true';
+      redirect = '../data-access-private-comments/' + id;
+    }
+    axios({
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      url: url,
+      data: message
+    })
+      .then(response => {
+        console.dir(response);
+        micaRedirect(redirect);
+      })
+      .catch(response => {
+        console.dir(response);
+        micaError('Sending comment failed.');
+      });
+  };
+
+  var micaDeleteComment = function(id, cid, isPrivate) {
+    var url = '../../ws/data-access-request/' + id + '/comment/' + cid;
+    var redirect = '../data-access-comments/' + id;
+    if (isPrivate) {
+      url = url + '?admin=true';
+      redirect = '../data-access-private-comments/' + id;
+    }
+    axios.delete(url)
+      .then(response => {
+        console.dir(response);
+        micaRedirect(redirect);
+      })
+      .catch(response => {
+        console.dir(response);
+        micaError('Deleting comment failed.');
+      });
+  };
+
   return {
     'stats': micaStats,
     'redirectError': micaRedirectError,
@@ -230,7 +271,9 @@ var micajs = (function() {
       'review': micaReviewDataAccess,
       'approve': micaApproveDataAccess,
       'conditionallyApprove': micaConditionallyApproveDataAccess,
-      'reject': micaRejectDataAccess
+      'reject': micaRejectDataAccess,
+      'sendComment': micaSendComment,
+      'deleteComment': micaDeleteComment
     }
   };
 
