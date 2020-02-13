@@ -6,12 +6,29 @@
   .hidden-print {
     display: none;
   }
+  label {
+    margin-right: 2em;
+  }
+  label+p, label+select {
+    display: inline-block;
+  }
+  [class*="col-xs"], [class*="col-sm"], [class*="col-md"], [class*="col-lg"] {
+    float: none !important;
+    width: 100% !important;
+  }
+  .content-wrapper {
+    background-color: #ffffff;
+  }
+  .card-outline {
+    border-top: none !important;
+  }
 }
 @media not print {
   .visible-print {
     display: none;
   }
 }
+
 .has-error {
   color: #E74C3C;
 }

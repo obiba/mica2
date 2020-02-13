@@ -21,6 +21,10 @@ public class BaseController {
     return subjectAclService.isAccessible(resource, id);
   }
 
+  void checkPermission(String resource, String action, String id) {
+    subjectAclService.checkPermission(resource, action, id);
+  }
+
   boolean isPermitted(String resource, String action, String id) {
     return subjectAclService.isPermitted(resource, action, id);
   }

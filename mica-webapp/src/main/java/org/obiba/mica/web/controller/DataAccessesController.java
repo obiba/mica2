@@ -4,12 +4,12 @@ import com.google.common.collect.Maps;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import org.joda.time.DateTime;
-import org.obiba.mica.access.DataAccessRequestRepository;
 import org.obiba.mica.access.domain.DataAccessEntityStatus;
 import org.obiba.mica.access.domain.DataAccessRequest;
+import org.obiba.mica.access.domain.StatusChange;
 import org.obiba.mica.access.service.DataAccessRequestService;
 import org.obiba.mica.access.service.DataAccessRequestUtilService;
-import org.obiba.mica.web.model.Dtos;
+import org.obiba.mica.user.UserProfileService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -30,17 +30,17 @@ public class DataAccessesController extends BaseController {
   private DataAccessRequestUtilService dataAccessRequestUtilService;
 
   @Inject
-  private Dtos dtos;
-
-  @Inject
-  private DataAccessRequestRepository dataAccessRequestRepository;
+  private UserProfileService userProfileService;
 
   @GetMapping("/data-accesses")
   public ModelAndView get(@RequestParam(value = "status", required = false) List<String> status) {
     Subject subject = SecurityUtils.getSubject();
     if (subject.isAuthenticated()) {
       Map<String, Object> params = Maps.newHashMap();
-      params.put("dars", getDataAccessRequests(status));
+      List<DataAccessRequestBundle> dars = getDataAccessRequests(status);
+      params.put("dars", dars);
+      params.put("applicants", dars.stream().map(DataAccessRequestBundle::getApplicant).distinct()
+        .collect(Collectors.toMap(u -> u, u -> userProfileService.getProfileMap(u, true))));
       return new ModelAndView("data-accesses", params);
     } else {
       return new ModelAndView("redirect:signin?redirect=data-accesses");
@@ -60,11 +60,19 @@ public class DataAccessesController extends BaseController {
     private final String title;
     private int totalAmendments = 0;
     private int pendingAmendments = 0;
+    private DateTime submitDate;
 
     public DataAccessRequestBundle(DataAccessRequest request) {
       this.id = request.getId();
       this.request = request;
       this.title = dataAccessRequestUtilService.getRequestTitle(request);
+      for (int i = request.getStatusChangeHistory().size()-1; i>=0; i--) {
+        StatusChange chg = request.getStatusChangeHistory().get(i);
+        if (chg.getTo().equals(DataAccessEntityStatus.SUBMITTED)) {
+          this.submitDate = chg.getChangedOn();
+          break;
+        }
+      }
     }
 
     public String getId() {
@@ -85,6 +93,10 @@ public class DataAccessesController extends BaseController {
 
     public DateTime getLastUpdate() {
       return request.getLastModifiedDate();
+    }
+
+    public DateTime getSubmitDate() {
+      return submitDate;
     }
 
     public DataAccessEntityStatus getStatus() {
