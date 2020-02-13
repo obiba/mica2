@@ -36,7 +36,8 @@ shiro:
 #
 
 plugins:
-  updateSite: https://plugins.obiba.org
+    micaSearchPlugin: mica-search-es7
+    updateSite: http://localhost
 
 spring:
     profiles: dev
