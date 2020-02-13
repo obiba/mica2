@@ -27,8 +27,6 @@
           status: false
       };
       $(function () {
-          $('#comments-menu').addClass('active').attr('href', '#');
-
           let newCommentMDE = new SimpleMDE(
               Object.assign(simpleMDEDefaults,
                   {element: $("#comment-add-write-text")[0]})
