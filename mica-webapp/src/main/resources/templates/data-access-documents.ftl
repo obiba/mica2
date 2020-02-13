@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="${.lang}">
 <head>
-  <#include "libs/head.ftl">
+    <#include "libs/head.ftl">
   <title>${config.name!""} | Data Access Documents ${dar.id}</title>
 </head>
 <body class="hold-transition sidebar-mini">
@@ -9,28 +9,12 @@
 <div class="wrapper">
 
   <!-- Navbar -->
-  <#include "libs/aside-navbar.ftl">
+    <#include "libs/aside-navbar.ftl">
   <!-- /.navbar -->
 
-  <!-- Main Sidebar Container -->
-  <aside class="main-sidebar sidebar-dark-primary">
-    <!-- Brand Logo -->
-    <a href="../bower_components/admin-lte/index3.html" class="brand-link bg-white">
-      <img src="../bower_components/admin-lte/dist/img/AdminLTELogo.png"
-           alt="Logo"
-           class="brand-image img-circle elevation-3"
-           style="opacity: .8">
-      <span class="brand-text font-weight-light">${config.name!""}</span>
-    </a>
-
-    <!-- Sidebar -->
-    <div class="sidebar">
-      <!-- Sidebar Menu -->
-      <#include "libs/data-access-sidebar.ftl">
-      <!-- /.sidebar-menu -->
-    </div>
-    <!-- /.sidebar -->
-  </aside>
+  <!-- Sidebar -->
+    <#include "libs/data-access-sidebar.ftl">
+  <!-- /.sidebar -->
 
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
@@ -44,7 +28,7 @@
             </h1>
           </div>
           <div class="col-sm-6">
-            <#include "libs/data-access-breadcrumb.ftl">
+              <#include "libs/data-access-breadcrumb.ftl">
           </div>
         </div>
       </div><!-- /.container-fluid -->
@@ -99,7 +83,7 @@
   </div>
   <!-- /.content-wrapper -->
 
-  <#include "libs/footer.ftl">
+    <#include "libs/footer.ftl">
 
   <!-- Control Sidebar -->
   <aside class="control-sidebar control-sidebar-dark">
@@ -111,7 +95,7 @@
 
 <#include "libs/scripts.ftl">
 <script>
-  $('#documents-menu').addClass('active').attr('href', '#')
+    $('#documents-menu').addClass('active').attr('href', '#')
 </script>
 </body>
 </html>
