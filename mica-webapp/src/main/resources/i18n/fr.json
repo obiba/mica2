@@ -1693,7 +1693,7 @@
       "facet-expanded": "Facette ouverte",
       "facet-expanded-help": "Détermine si la facette est ouverte ou fermée lorsque la page de la liste est chargée.",
       "field-help": "Nom du champ entièrement qualifié dans le modèle de document (si différent du nom).",
-      "type-help": "Le type de recherche par facette: sélection de la plage pour un type numérique, entrée ouverte pour un type de texte, etc.",
+      "type-help": "Sélection de plage pour un type <code>numérique</code>, valeurs de texte intégral pour un type <code>string</code> et contenu structuré pour un type <code>mot-clé</code>.",
       "unique-name": "Le nom du critère doit être unique.",
       "hidden": "Caché",
       "hidden-help": "Un critère caché est exclu de la recherche.",
