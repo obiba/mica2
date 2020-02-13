@@ -125,91 +125,135 @@ var micajs = (function() {
   // Data access
   //
 
-  var micaCreateDataAccess = function() {
-    axios.post('../ws/data-access-requests/_empty')
+  var micaCreateDataAccess = function(id) {
+    var url = '../ws/data-access-requests/_empty';
+    if (id) {
+      url = '../ws/data-access-request/' + id + '/amendments/_empty';
+    }
+    axios.post(url)
       .then(response => {
         console.dir(response);
         if (response.status === 201) {
           const tokens = response.headers.location.split('/');
-          const id = tokens[tokens.length - 1];
-          micaRedirect('../data-access/' + id);
+          const createdId = tokens[tokens.length - 1];
+          var redirect = '../data-access/' + createdId;
+          if (id) {
+            redirect = '../data-access-amendment-form/' + id + '?id=' + createdId;
+          }
+          micaRedirect(redirect);
         }
       })
       .catch(response => {
         console.dir(response);
-        micaError('Data access request creation failed.');
+        micaError('Creation failed.');
       });
   };
 
-  var micaDeleteDataAccess = function(id) {
-    axios.delete('../../ws/data-access-request/' + id)
+  var micaDeleteDataAccess = function(id, aId) {
+    var url = '../../ws/data-access-request/' + id;
+    var redirect = '../../data-accesses';
+    if (aId) {
+      url = url + '/amendment/' + aId;
+      redirect = '../../data-access/' + id;
+    }
+    axios.delete(url)
       .then(response => {
         console.dir(response);
-        micaRedirect('../../data-accesses');
+        micaRedirect(redirect);
       })
       .catch(response => {
         console.dir(response);
-        micaError('Data access request deletion failed.');
+        micaError('Deletion failed.');
       });
   };
 
-  var micaSubmitDataAccess = function(id) {
-    axios.put('../../ws/data-access-request/' + id + '/_status?to=SUBMITTED')
+  var micaSubmitDataAccess = function(id, aId) {
+    var url = '../../ws/data-access-request/' + id + '/_status?to=SUBMITTED';
+    var redirect = '../data-access-form/' + id;
+    if (aId) {
+      url = '../../ws/data-access-request/' + id + '/amendment/' + aId + '/_status?to=SUBMITTED';
+      redirect = '../data-access-amendment-form/' + id + '?id=' + aId;
+    }
+    axios.put(url)
       .then(response => {
         console.dir(response);
-        micaRedirect('../data-access-form/' + id);
+        micaRedirect(redirect);
       })
       .catch(response => {
         console.dir(response);
-        micaError('Data access request submission failed.');
+        micaError('Submission failed.');
       });
   };
 
-  var micaReviewDataAccess = function(id) {
-    axios.put('../../ws/data-access-request/' + id + '/_status?to=REVIEWED')
+  var micaReviewDataAccess = function(id, aId) {
+    var url = '../../ws/data-access-request/' + id + '/_status?to=REVIEWED';
+    var redirect = '../data-access-form/' + id;
+    if (aId) {
+      url = '../../ws/data-access-request/' + id + '/amendment/' + aId + '/_status?to=REVIEWED';
+      redirect = '../data-access-amendment-form/' + id + '?id=' + aId;
+    }
+    axios.put(url)
       .then(response => {
         console.dir(response);
-        micaRedirect('../data-access-form/' + id);
+        micaRedirect(redirect);
       })
       .catch(response => {
         console.dir(response);
-        micaError('Data access request review failed.');
+        micaError('Review failed.');
       });
   };
 
-  var micaApproveDataAccess = function(id) {
-    axios.put('../../ws/data-access-request/' + id + '/_status?to=APPROVED')
+  var micaApproveDataAccess = function(id, aId) {
+    var url = '../../ws/data-access-request/' + id + '/_status?to=APPROVED';
+    var redirect = '../data-access-form/' + id;
+    if (aId) {
+      url = '../../ws/data-access-request/' + id + '/amendment/' + aId + '/_status?to=APPROVED';
+      redirect = '../data-access-amendment-form/' + id + '?id=' + aId;
+    }
+    axios.put(url)
       .then(response => {
         console.dir(response);
-        micaRedirect('../data-access-form/' + id);
+        micaRedirect(redirect);
       })
       .catch(response => {
         console.dir(response);
-        micaError('Data access request approval failed.');
+        micaError('Approval failed.');
       });
   };
 
-  var micaConditionallyApproveDataAccess = function(id) {
-    axios.put('../../ws/data-access-request/' + id + '/_status?to=CONDITIONALLY_APPROVED')
+  var micaConditionallyApproveDataAccess = function(id, aId) {
+    var url = '../../ws/data-access-request/' + id + '/_status?to=CONDITIONALLY_APPROVED';
+    var redirect = '../data-access-form/' + id;
+    if (aId) {
+      url = '../../ws/data-access-request/' + id + '/amendment/' + aId + '/_status?to=CONDITIONALLY_APPROVED';
+      redirect = '../data-access-amendment-form/' + id + '?id=' + aId;
+    }
+    axios.put(url)
       .then(response => {
         console.dir(response);
-        micaRedirect('../data-access-form/' + id);
+        micaRedirect(redirect);
       })
       .catch(response => {
         console.dir(response);
-        micaError('Data access request conditional approval failed.');
+        micaError('Conditional approval failed.');
       });
   };
 
-  var micaRejectDataAccess = function(id) {
-    axios.put('../../ws/data-access-request/' + id + '/_status?to=REJECTED')
+  var micaRejectDataAccess = function(id, aId) {
+    var url = '../../ws/data-access-request/' + id + '/_status?to=REJECTED';
+    var redirect = '../data-access-form/' + id;
+    if (aId) {
+      url = '../../ws/data-access-request/' + id + '/amendment/' + aId + '/_status?to=REJECTED';
+      redirect = '../data-access-amendment-form/' + id + '?id=' + aId;
+    }
+    axios.put(url)
       .then(response => {
         console.dir(response);
-        micaRedirect('../data-access-form/' + id);
+        micaRedirect(redirect);
       })
       .catch(response => {
         console.dir(response);
-        micaError('Data access request rejection failed.');
+        micaError('Rejection failed.');
       });
   };
 

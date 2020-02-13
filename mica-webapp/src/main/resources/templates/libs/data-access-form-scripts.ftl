@@ -28,9 +28,6 @@
 <script src="${pathPrefix}/bower_components/sf-radio-group-collection/dist/sf-radio-group-collection.js"></script>
 
 <script>
-    $(function () {
-        $('#form-menu').addClass('active');//.attr('href', '#');
-    });
     var formSchema = ${formConfig.schema!"{}"};
     formSchema.readOnly = ${formConfig.readOnly?c};
     var formDefinition = ${formConfig.definition!"['*']"};
