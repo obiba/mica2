@@ -16,25 +16,9 @@
     <#include "libs/aside-navbar.ftl">
   <!-- /.navbar -->
 
-  <!-- Main Sidebar Container -->
-  <aside class="main-sidebar sidebar-dark-primary">
-    <!-- Brand Logo -->
-    <a href="../bower_components/admin-lte/index3.html" class="brand-link bg-white">
-      <img src="../bower_components/admin-lte/dist/img/AdminLTELogo.png"
-           alt="Logo"
-           class="brand-image img-circle elevation-3"
-           style="opacity: .8">
-      <span class="brand-text font-weight-light">${config.name!""}</span>
-    </a>
-
-    <!-- Sidebar -->
-    <div class="sidebar">
-      <!-- Sidebar Menu -->
-        <#include "libs/data-access-sidebar.ftl">
-      <!-- /.sidebar-menu -->
-    </div>
-    <!-- /.sidebar -->
-  </aside>
+  <!-- Sidebar -->
+    <#include "libs/data-access-sidebar.ftl">
+  <!-- /.sidebar -->
 
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
@@ -72,7 +56,7 @@
       <!-- Timelime of comments  -->
       <div class="row">
         <div class="col-6">
-          <@commentsTimeline/>
+            <@commentsTimeline/>
         </div>
         <!-- /.col -->
       </div>
