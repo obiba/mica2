@@ -8,13 +8,17 @@ import org.obiba.core.translator.PrefixedValueTranslator;
 import org.obiba.core.translator.TranslationUtils;
 import org.obiba.core.translator.Translator;
 import org.obiba.mica.access.domain.ChangeLog;
+import org.obiba.mica.access.domain.DataAccessAmendment;
 import org.obiba.mica.access.domain.DataAccessRequest;
+import org.obiba.mica.access.service.DataAccessAmendmentService;
 import org.obiba.mica.access.service.DataAccessRequestService;
 import org.obiba.mica.core.domain.AbstractAuditableDocument;
 import org.obiba.mica.core.domain.Comment;
 import org.obiba.mica.core.service.CommentsService;
 import org.obiba.mica.micaConfig.NoSuchDataAccessFormException;
+import org.obiba.mica.micaConfig.domain.DataAccessAmendmentForm;
 import org.obiba.mica.micaConfig.domain.DataAccessForm;
+import org.obiba.mica.micaConfig.service.DataAccessAmendmentFormService;
 import org.obiba.mica.micaConfig.service.DataAccessFormService;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.user.UserProfileService;
@@ -28,6 +32,7 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.inject.Inject;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -38,7 +43,13 @@ public class DataAccessController extends BaseController {
   private DataAccessRequestService dataAccessRequestService;
 
   @Inject
+  private DataAccessAmendmentService dataAccessAmendmentService;
+
+  @Inject
   DataAccessFormService dataAccessFormService;
+
+  @Inject
+  DataAccessAmendmentFormService dataAccessAmendmentFormService;
 
   @Inject
   private MicaConfigService micaConfigService;
@@ -69,7 +80,7 @@ public class DataAccessController extends BaseController {
     Subject subject = SecurityUtils.getSubject();
     if (subject.isAuthenticated()) {
       Map<String, Object> params = newParameters(id);
-      addDataAccessFormConfiguration(params, getDataAccessRequest(params).getContent(), !edit, language == null ? locale : language);
+      addDataAccessFormConfiguration(params, getDataAccessRequest(params), !edit, language == null ? locale : language);
       return new ModelAndView("data-access-form", params);
     } else {
       return new ModelAndView("redirect:../signin?redirect=data-access-form%2F" + id);
@@ -81,6 +92,7 @@ public class DataAccessController extends BaseController {
     Subject subject = SecurityUtils.getSubject();
     if (subject.isAuthenticated()) {
       Map<String, Object> params = newParameters(id);
+      addDataAccessConfiguration(params);
       return new ModelAndView("data-access-feasibility", params);
     } else {
       return new ModelAndView("redirect:../signin?redirect=data-access-feasibility%2F" + id);
@@ -93,6 +105,7 @@ public class DataAccessController extends BaseController {
     if (subject.isAuthenticated()) {
       Map<String, Object> params = newParameters(id);
       DataAccessRequest dar = (DataAccessRequest) params.get("dar");
+      addDataAccessConfiguration(params);
 
       params.put("authors", dar.getStatusChangeHistory().stream().map(ChangeLog::getAuthor).distinct()
         .collect(Collectors.toMap(u -> u, u -> userProfileService.getProfileMap(u, true))));
@@ -103,14 +116,26 @@ public class DataAccessController extends BaseController {
     }
   }
 
-  @GetMapping("/data-access-amendments/{id}")
-  public ModelAndView getAmendments(@PathVariable String id) {
+  @GetMapping("/data-access-amendment-form/{id}")
+  public ModelAndView getAmendmentForm(@PathVariable String id, @RequestParam("id") String amendmentId,
+                                       @RequestParam(value = "edit", defaultValue = "false") boolean edit,
+                                       @CookieValue(value = "NG_TRANSLATE_LANG_KEY", required = false, defaultValue = "en") String locale,
+                                       @RequestParam(value = "language", required = false) String language) {
     Subject subject = SecurityUtils.getSubject();
     if (subject.isAuthenticated()) {
       Map<String, Object> params = newParameters(id);
-      return new ModelAndView("data-access-amendments", params);
+      addDataAccessAmendmentFormConfiguration(params, getDataAccessAmendment(params, amendmentId), !edit, language == null ? locale : language);
+
+      List<String> permissions = Lists.newArrayList("VIEW", "EDIT", "DELETE").stream()
+        .filter(action -> isAmendmentPermitted(action, id, amendmentId)).collect(Collectors.toList());
+      if (isPermitted("/data-access-request/" + id + "/amendment/" + amendmentId, "EDIT", "_status"))
+        permissions.add("EDIT_STATUS");
+
+      params.put("amendmentPermissions", permissions);
+
+      return new ModelAndView("data-access-amendment-form", params);
     } else {
-      return new ModelAndView("redirect:../signin?redirect=data-access-amendments%2F" + id);
+      return new ModelAndView("redirect:../signin?redirect=data-access-amendment%2F" + id + "%3Fid%3D" + amendmentId);
     }
   }
 
@@ -119,6 +144,7 @@ public class DataAccessController extends BaseController {
     Subject subject = SecurityUtils.getSubject();
     if (subject.isAuthenticated()) {
       Map<String, Object> params = newParameters(id);
+      addDataAccessConfiguration(params);
       return new ModelAndView("data-access-documents", params);
     } else {
       return new ModelAndView("redirect:../signin?redirect=data-access-documents%2F" + id);
@@ -130,6 +156,7 @@ public class DataAccessController extends BaseController {
     Subject subject = SecurityUtils.getSubject();
     if (subject.isAuthenticated()) {
       Map<String, Object> params = newParameters(id);
+      addDataAccessConfiguration(params);
 
       List<Comment> comments = commentsService.findPublicComments("/data-access-request", id);
       params.put("comments", comments);
@@ -147,6 +174,7 @@ public class DataAccessController extends BaseController {
     Subject subject = SecurityUtils.getSubject();
     if (subject.isAuthenticated()) {
       Map<String, Object> params = newParameters(id);
+      addDataAccessConfiguration(params);
 
       if (!isPermitted("/data-access-request/private-comment", "VIEW"))
         checkPermission("/private-comment/data-access-request", "VIEW", null);
@@ -182,6 +210,9 @@ public class DataAccessController extends BaseController {
 
     params.put("permissions", permissions);
 
+    List<DataAccessAmendment> amendments = dataAccessAmendmentService.findByParentId(id);
+    params.put("amendments", amendments);
+
     return params;
   }
 
@@ -189,8 +220,20 @@ public class DataAccessController extends BaseController {
     return isPermitted("/data-access-request", action, id);
   }
 
+  private boolean isAmendmentPermitted(String action, String id, String amendmentId) {
+    return isPermitted("/data-access-request/" + id + "/amendment", action, amendmentId);
+  }
+
   private DataAccessRequest getDataAccessRequest(Map<String, Object> params) {
     return (DataAccessRequest) params.get("dar");
+  }
+
+  private DataAccessAmendment getDataAccessAmendment(Map<String, Object> params, String amendmentId) {
+    DataAccessRequest dar = getDataAccessRequest(params);
+    Optional<DataAccessAmendment> amendment = ((List<DataAccessAmendment>) params.get("amendments")).stream()
+      .filter(a -> a.getId().equals(amendmentId)).findFirst();
+    if (amendment.isPresent()) return amendment.get();
+    throw new NoSuchElementException("Data access amendment " + amendmentId); // TODO is there specific exception?
   }
 
   private DataAccessRequest getDataAccessRequest(String id) {
@@ -204,11 +247,23 @@ public class DataAccessController extends BaseController {
     params.put("accessConfig", new DataAccessConfig(dataAccessForm));
   }
 
-  private void addDataAccessFormConfiguration(Map<String, Object> params, String model, boolean readOnly, String locale) {
+  private void addDataAccessFormConfiguration(Map<String, Object> params, DataAccessRequest request, boolean readOnly, String locale) {
     Optional<DataAccessForm> d = dataAccessFormService.find();
     if (!d.isPresent()) throw NoSuchDataAccessFormException.withDefaultMessage();
     DataAccessForm dataAccessForm = d.get();
-    params.put("formConfig", new SchemaFormConfig(dataAccessForm, model, locale, readOnly));
+    params.put("formConfig", new SchemaFormConfig(dataAccessForm.getSchema(), dataAccessForm.getDefinition(), request.getContent(), locale, readOnly));
+    params.put("accessConfig", new DataAccessConfig(dataAccessForm));
+  }
+
+  private void addDataAccessAmendmentFormConfiguration(Map<String, Object> params, DataAccessAmendment amendment, boolean readOnly, String locale) {
+    Optional<DataAccessForm> d = dataAccessFormService.find();
+    if (!d.isPresent()) throw NoSuchDataAccessFormException.withDefaultMessage();
+    Optional<DataAccessAmendmentForm> ad = dataAccessAmendmentFormService.find();
+    if (!ad.isPresent()) throw NoSuchDataAccessFormException.withDefaultMessage();
+    DataAccessForm dataAccessForm = d.get();
+    DataAccessAmendmentForm dataAccessAmendmentForm = ad.get();
+    params.put("amendment", amendment);
+    params.put("formConfig", new SchemaFormConfig(dataAccessAmendmentForm.getSchema(), dataAccessAmendmentForm.getDefinition(), amendment.getContent(), locale, readOnly));
     params.put("accessConfig", new DataAccessConfig(dataAccessForm));
   }
 
@@ -221,12 +276,14 @@ public class DataAccessController extends BaseController {
     private final boolean withConditionalApproval;
     private final boolean approvedFinal;
     private final boolean rejectedFinal;
+    private final boolean amendmentsEnabled;
 
     private DataAccessConfig(DataAccessForm form) {
       this.withReview = form.isWithReview();
       this.withConditionalApproval = form.isWithConditionalApproval();
       this.approvedFinal = form.isApprovedFinal();
       this.rejectedFinal = form.isRejectedFinal();
+      this.amendmentsEnabled = form.isAmendmentsEnabled();
     }
 
     public boolean isWithReview() {
@@ -244,6 +301,10 @@ public class DataAccessController extends BaseController {
     public boolean isRejectedFinal() {
       return rejectedFinal;
     }
+
+    public boolean isAmendmentsEnabled() {
+      return amendmentsEnabled;
+    }
   }
 
   /**
@@ -256,15 +317,15 @@ public class DataAccessController extends BaseController {
     private final String model;
     private final boolean readOnly;
 
-    private SchemaFormConfig(DataAccessForm form, String model, String locale, boolean readOnly) {
+    private SchemaFormConfig(String schema, String definition, String model, String locale, boolean readOnly) {
       this.readOnly = readOnly;
       String lang = locale == null ? "en" : locale.replaceAll("\"", "");
       Translator translator = JsonTranslator.buildSafeTranslator(() -> micaConfigService.getTranslations(lang, false));
       translator = new PrefixedValueTranslator(translator);
 
       TranslationUtils translationUtils = new TranslationUtils();
-      this.schema = translationUtils.translate(form.getSchema(), translator).replaceAll("col-xs-", "col-");
-      this.definition = translationUtils.translate(form.getDefinition(), translator).replaceAll("col-xs-", "col-");
+      this.schema = translationUtils.translate(schema, translator).replaceAll("col-xs-", "col-");
+      this.definition = translationUtils.translate(definition, translator).replaceAll("col-xs-", "col-");
       this.model = model;
     }
 
