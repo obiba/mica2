@@ -111,6 +111,11 @@
 <#include "libs/scripts.ftl">
 <#include "libs/data-access-comments-scripts.ftl">
 <@commentScripts/>
+<script>
+    $(function () {
+        $('#comments-menu').addClass('active').attr('href', '#');
+    });
+</script>
 
 </body>
 </html>
