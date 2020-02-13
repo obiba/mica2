@@ -38,6 +38,7 @@
     "fr": "Étude dans laquelle est définie la variable."
   "attributes":
     "static": "true"
+    "type": "keyword"
 - "name": "populationId"
   "title":
     "en": "Population"
@@ -75,6 +76,7 @@
   "attributes":
     "static": "true"
     "hidden": "true"
+    "type": "keyword"
 - "name": "variableType"
   "title":
     "en": "Type of variable"
