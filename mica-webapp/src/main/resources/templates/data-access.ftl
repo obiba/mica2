@@ -86,46 +86,53 @@
 
           <#if dar.status.toString() == "OPENED">
             <#assign boxBg = "bg-primary"/>
+            <#assign boxIcon = "fa fa-pen"/>
             <#assign boxProgress = "10"/>
             <#assign boxText = "data-access-progress-opened"/>
           <#elseif dar.status.toString() == "APPROVED">
             <#assign boxBg = "bg-success"/>
+            <#assign boxIcon = "fa fa-check"/>
             <#assign boxProgress = "100"/>
             <#assign boxText = "data-access-progress-approved"/>
           <#elseif dar.status.toString() == "REJECTED">
             <#assign boxBg = "bg-danger"/>
+            <#assign boxIcon = "fa fa-ban"/>
             <#assign boxProgress = "100"/>
             <#assign boxText = "data-access-progress-rejected"/>
           <#elseif dar.status.toString() == "SUBMITTED">
-              <#assign boxBg = "bg-info"/>
-              <#assign boxProgress = "30"/>
-              <#assign boxText = "data-access-progress-submitted"/>
+            <#assign boxBg = "bg-info"/>
+            <#assign boxIcon = "far fa-clock"/>
+            <#assign boxProgress = "30"/>
+            <#assign boxText = "data-access-progress-submitted"/>
           <#elseif dar.status.toString() == "REVIEWED">
-              <#assign boxBg = "bg-info"/>
-              <#assign boxProgress = "50"/>
-              <#assign boxText = "data-access-progress-reviewed"/>
+            <#assign boxBg = "bg-info"/>
+            <#assign boxIcon = "far fa-clock"/>
+            <#assign boxProgress = "50"/>
+            <#assign boxText = "data-access-progress-reviewed"/>
           <#elseif dar.status.toString() == "CONDITIONALLY_APPROVED">
-              <#assign boxBg = "bg-warning"/>
-              <#assign boxProgress = "80"/>
-              <#assign boxText = "data-access-progress-conditionally-approved"/>
+            <#assign boxBg = "bg-warning"/>
+            <#assign boxIcon = "fa fa-pen"/>
+            <#assign boxProgress = "80"/>
+            <#assign boxText = "data-access-progress-conditionally-approved"/>
           <#else>
-              <#assign boxBg = "bg-info"/>
-              <#assign boxProgress = "50"/>
-              <#assign boxText = ""/>
+            <#assign boxBg = "bg-info"/>
+            <#assign boxIcon = "far fa-clock"/>
+            <#assign boxProgress = "50"/>
+            <#assign boxText = ""/>
           </#if>
 
           <div class="info-box ${boxBg}">
-            <span class="info-box-icon"><i class="far fa-clock"></i></span>
+            <span class="info-box-icon"><i class="${boxIcon}"></i></span>
 
             <div class="info-box-content">
-              <span class="info-box-text">Status</span>
+              <span class="info-box-text"><@message "status"/></span>
               <span class="info-box-number"><@message dar.status.toString()/></span>
 
               <div class="progress">
                 <div class="progress-bar" style="width: ${boxProgress}%"></div>
               </div>
               <span class="progress-description">
-                <@message boxText/>
+                <small><@message boxText/></small>
               </span>
             </div>
             <!-- /.info-box-content -->
@@ -159,17 +166,43 @@
         </div>
         <!-- /.col-6 -->
         <div class="col-6">
-          <div class="card card-info card-outline">
-            <div class="card-header">
-              <h3 class="card-title">Recent History</h3>
+
+          <#if user.username != applicant.username>
+            <div class="card card-info card-outline">
+              <div class="card-header">
+                <h3 class="card-title"><@message "applicant"/></h3>
+              </div>
+              <div class="card-body">
+                <dl class="row">
+                  <dt class="col-sm-4"><@message "full-name"/></dt>
+                  <dd class="col-sm-8">${applicant.fullName}</dd>
+                  <dt class="col-sm-4"><@message "username"/></dt>
+                  <dd class="col-sm-8">${applicant.username}</dd>
+                  <#list applicant.attributes?keys as key>
+                    <#if key != "realm">
+                      <dt class="col-sm-4"><@message key/></dt>
+                      <dd class="col-sm-8">
+                        <#assign value = applicant.attributes[key]/>
+                        <#if key == "email">
+                          <a href="mailto:${value}">${value}</a>
+                        <#elseif key == "locale">
+                          ${value?upper_case}
+                        <#elseif key == "lastLogin" || key == "createdDate">
+                          <span class="moment-datetime">${value.toString(datetimeFormat)}</span>
+                        <#else>
+                          ${value}
+                        </#if>
+                      </dd>
+                    </#if>
+                  </#list>
+                </dl>
+              </div>
+              <div class="card-footer">
+                <a href="${pathPrefix}/data-access-comments/${dar.id}"><@message "send-message"/> <i class="fas fa-arrow-circle-right"></i></a>
+              </div>
             </div>
-            <div class="card-body">
-              TODO
-            </div>
-            <div class="card-footer">
-              <a href="${pathPrefix}/data-access-history/${dar.id}">More info <i class="fas fa-arrow-circle-right"></i></a>
-            </div>
-          </div>
+          </#if>
+
         </div>
         <!-- /.col-6 -->
       </div>
@@ -192,7 +225,9 @@
 
 <#include "libs/scripts.ftl">
 <script>
-  $('#dashboard-menu').addClass('active').attr('href', '#')
+    $(function () {
+        $('#dashboard-menu').addClass('active').attr('href', '#');
+    });
 </script>
 </body>
 </html>

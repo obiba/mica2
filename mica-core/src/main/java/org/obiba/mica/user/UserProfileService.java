@@ -16,6 +16,8 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.apache.shiro.SecurityUtils;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.obiba.mica.core.service.AgateRestService;
 import org.obiba.shiro.realm.ObibaRealm;
 import org.obiba.shiro.realm.ObibaRealm.Subject;
@@ -33,6 +35,8 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -40,7 +44,10 @@ import java.util.concurrent.TimeUnit;
 
 @Service
 public class UserProfileService extends AgateRestService {
+
   private static final Logger log = LoggerFactory.getLogger(UserProfileService.class);
+
+  private static final DateTimeFormatter ISO_8601 = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
 
   private Cache<String, Subject> subjectCache = CacheBuilder.newBuilder()
     .maximumSize(100)
@@ -71,18 +78,8 @@ public class UserProfileService extends AgateRestService {
     return profile;
   }
 
-  public synchronized Map<String, Object> asMap(@NotNull Subject profile) {
-    Map<String, Object> params = Maps.newHashMap();
-    String fullName = profile.getUsername();
-    Map<String, String> attributes = Maps.newHashMap();
-    if (profile.getAttributes() != null) {
-      profile.getAttributes().forEach(attr -> attributes.put(attr.get("key"), attr.get("value")));
-      fullName = attributes.getOrDefault("firstName", "") + (attributes.containsKey("firstName") ? " " : "") + attributes.getOrDefault("lastName", profile.getUsername());
-    }
-    params.put("username", profile.getUsername());
-    params.put("fullName", fullName);
-    params.put("attributes", attributes);
-    return params;
+  public synchronized Map<String, Object> getProfileMap(@NotNull String username, boolean cached) {
+    return asMap(getProfile(username, cached));
   }
 
   public synchronized Subject getProfileByApplication(@NotNull String username, @NotNull String application,
@@ -133,6 +130,33 @@ public class UserProfileService extends AgateRestService {
 
     ObibaRealm.Subject profile = getProfile(username);
     return profile != null && profile.getGroups() != null && profile.getGroups().stream().filter(g -> g.equals(role)).count() > 0;
+  }
+
+  private Map<String, Object> asMap(@NotNull Subject profile) {
+    Map<String, Object> params = Maps.newHashMap();
+    String fullName = profile.getUsername();
+    Map<String, Object> attributes = Maps.newHashMap();
+    if (profile.getAttributes() != null) {
+      profile.getAttributes().forEach(attr -> {
+        String key = attr.get("key");
+        Object value;
+        if ("lastLogin".equals(key) || "createdDate".equals(key)) {
+          try {
+            attributes.put(key, ISO_8601.parseDateTime(attr.get("value")));
+          } catch (Exception e) {
+            // ignore
+          }
+        }
+        else
+          attributes.put(key, attr.get("value"));
+      });
+      fullName = attributes.getOrDefault("firstName", "") + (attributes.containsKey("firstName") ? " " : "") + attributes.getOrDefault("lastName", profile.getUsername());
+    }
+    params.put("username", profile.getUsername());
+    params.put("fullName", fullName);
+    params.put("groups", profile.getGroups());
+    params.put("attributes", attributes);
+    return params;
   }
 
   private synchronized Subject getProfileInternal(String serviceUrl) {
