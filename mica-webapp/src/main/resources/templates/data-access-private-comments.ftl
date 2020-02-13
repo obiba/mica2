@@ -72,7 +72,7 @@
       <!-- Timelime of comments  -->
       <div class="row">
         <div class="col-6">
-          <@commentsTimeline/>
+            <@commentsTimeline isPrivate="true"/>
         </div>
         <!-- /.col -->
       </div>
@@ -110,7 +110,7 @@
 
 <#include "libs/scripts.ftl">
 <#include "libs/data-access-comments-scripts.ftl">
-<@commentScripts/>
+<@commentScripts isPrivate="true"/>
 
 </body>
 </html>

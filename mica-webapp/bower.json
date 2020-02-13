@@ -53,7 +53,8 @@
     "sf-obiba-simple-mde": "https://github.com/obiba/sf-obiba-simple-mde.git#master",
     "sf-obiba-countries-ui-select": "https://github.com/obiba/sf-obiba-countries-ui-select.git#1.0.3",
     "sf-radio-group-collection": "https://github.com/obiba/sf-radio-group-collection.git#master",
-    "obiba-shims": "https://github.com/obiba/obiba-shims.git#1.0.0"
+    "obiba-shims": "https://github.com/obiba/obiba-shims.git#1.0.0",
+    "simplemde": "^1.11.2"
   },
   "devDependencies": {
     "angular-mocks": "1.6.9",

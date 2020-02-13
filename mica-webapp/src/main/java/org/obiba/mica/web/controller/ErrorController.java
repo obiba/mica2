@@ -22,7 +22,7 @@ public class ErrorController {
   public ModelAndView errorWithParams(@RequestParam(defaultValue = "500") int status, @RequestParam(defaultValue = "") String message) {
     Map<String, Object> params = new HashMap<String, Object>();
     params.put("status", status);
-    params.put("message", message);
+    params.put("msg", message);
     return new ModelAndView("error", params);
   }
 

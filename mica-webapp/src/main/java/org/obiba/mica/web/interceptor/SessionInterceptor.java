@@ -5,7 +5,6 @@ import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import org.obiba.mica.security.Roles;
 import org.obiba.mica.user.UserProfileService;
-import org.obiba.shiro.realm.ObibaRealm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -36,8 +35,7 @@ public class SessionInterceptor extends HandlerInterceptorAdapter {
     if (subject.isAuthenticated()) {
       String username = subject.getPrincipal().toString();
       try {
-        ObibaRealm.Subject profile = userProfileService.getProfile(username, true);
-        Map<String, Object> params = userProfileService.asMap(profile);
+        Map<String, Object> params = userProfileService.getProfileMap(username, true);
         List<String> roles = Lists.newArrayList(Roles.MICA_ADMIN, Roles.MICA_REVIEWER, Roles.MICA_EDITOR, Roles.MICA_DAO, Roles.MICA_USER);
         boolean[] result = subject.hasRoles(roles);
         for (int i = result.length - 1; i >= 0; i--) {
