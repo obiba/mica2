@@ -17,6 +17,7 @@
   "attributes":
     "alias": "networkId"
     "static": "true"
+    "type": "keyword"
 - "name": "name"
   "title":
     "en": "Name"
@@ -54,6 +55,7 @@
     "fr": "Études qui sont membres d'un réseau."
   "attributes":
     "static": "true"
+    "type": "keyword"
 - "name": "investigator"
   "title":
     "en": "Investigator name"
