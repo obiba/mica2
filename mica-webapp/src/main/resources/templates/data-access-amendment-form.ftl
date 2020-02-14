@@ -58,7 +58,7 @@
           <div class="modal-footer justify-content-between">
             <button type="button" class="btn btn-default" data-dismiss="modal"><@message "cancel"/></button>
             <button type="button" class="btn btn-primary" data-dismiss="modal"
-                    onclick="micajs.dataAccess.delete('${dar.id}')"><@message "confirm"/>
+                    onclick="micajs.dataAccess.delete('${dar.id}', '${amendment.id}')"><@message "confirm"/>
             </button>
           </div>
         </div>
@@ -91,11 +91,11 @@
               <div>
                   <#if amendmentPermissions?seq_contains("EDIT")>
                     <span class="float-right border-left ml-2 pl-2" ng-if="schema.readOnly">
-                    <a class="btn btn-primary" href="${dar.id}?id=${amendment.id}&edit=true"><i class="fas fa-pen"></i> <@message "edit"/></a>
+                    <a class="btn btn-primary" href="${amendment.id}?edit=true"><i class="fas fa-pen"></i> <@message "edit"/></a>
                   </span>
                     <span class="float-right border-left ml-2 pl-2" ng-hide="schema.readOnly">
                     <a class="btn btn-primary" href="#" ng-click="save('${dar.id}', '${amendment.id}')"><@message "save"/></a>
-                    <a class="btn btn-default" href="${dar.id}?id=${amendment.id}"><@message "cancel"/></a>
+                    <a class="btn btn-default" href="${amendment.id}"><@message "cancel"/></a>
                   </span>
                   </#if>
                   <#if amendmentPermissions?seq_contains("EDIT_STATUS")>
