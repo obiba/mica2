@@ -18,7 +18,11 @@
     <#return txtColor/>
 </#function>
 
-<!-- Main Sidebar Container -->
+<!-- Current user privilegies -->
+<#assign isAdministrator = user.roles?seq_contains("mica-administrator")/>
+<#assign isDAO = user.roles?seq_contains("mica-data-access-officer")/>
+
+  <!-- Main Sidebar Container -->
 <aside class="main-sidebar sidebar-dark-primary">
   <!-- Brand Logo -->
   <a href="../bower_components/admin-lte/index3.html" class="brand-link bg-white">
@@ -89,19 +93,21 @@
               <ul class="nav nav-treeview">
                   <#list amendments as amendment>
                     <li class="nav-item">
-                      <a id="amendment-form-menu-${amendment.id}" href="../data-access-amendment-form/${dar.id}?id=${amendment.id}" class="nav-link">
+                      <a id="amendment-form-menu-${amendment.id}" href="../data-access-amendment-form/${amendment.id}" class="nav-link">
                         <i class="fas fa-circle nav-icon text-${statusColor(amendment.status.toString())}"
                            title="<@message amendment.status.toString()/>"></i>
                         <p>${amendment.id}</p>
                       </a>
                     </li>
                   </#list>
-                <li class="nav-item">
-                  <a class="nav-link" data-toggle="modal" data-target="#modal-amendment-add">
-                    <i class="fas fa-plus nav-icon"></i>
-                    <p><@message "new-amendment"/></p>
-                  </a>
-                </li>
+                  <#if user.username == dar.applicant || isAdministrator>
+                    <li class="nav-item">
+                      <a class="nav-link" data-toggle="modal" data-target="#modal-amendment-add">
+                        <i class="fas fa-plus nav-icon"></i>
+                        <p><@message "new-amendment"/></p>
+                      </a>
+                    </li>
+                  </#if>
               </ul>
             </li>
           </#if>
@@ -111,8 +117,7 @@
             <p><@message "comments"/></p>
           </a>
         </li>
-          <#assign admin = (user.roles?seq_contains("mica-administrator") || user.roles?seq_contains("mica-data-access-officer"))/>
-          <#if admin>
+          <#if isAdministrator || isDAO>
             <li class="nav-item">
               <a id="private-comments-menu" href="../data-access-private-comments/${dar.id}" class="nav-link">
                 <i class="fas fa-lock nav-icon"></i>
