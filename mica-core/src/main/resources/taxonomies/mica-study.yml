@@ -2041,7 +2041,6 @@
       "fr": "Autre population spécifique"
     "description":
       "en": "Other specific population."
-
 - "name": "populations-dataCollectionEvents-bioSamples"
   "title":
     "en": "Data sources - Biosamples"
