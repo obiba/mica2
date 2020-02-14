@@ -305,7 +305,7 @@ angular.module('formModule', ['schemaForm', 'hc.marked', 'angularMoment', 'schem
       var redirect = '../../data-access-form/' + id;
       if (aId) {
         url = '../../ws/data-access-request/' + id + '/amendment/' + aId + '/model';
-        redirect = '../../data-access-amendment-form/' + id + '?id=' + aId;
+        redirect = '../../data-access-amendment-form/' + aId;
       }
       axios.put(
         url,

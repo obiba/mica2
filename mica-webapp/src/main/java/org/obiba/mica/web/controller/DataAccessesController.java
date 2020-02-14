@@ -66,13 +66,7 @@ public class DataAccessesController extends BaseController {
       this.id = request.getId();
       this.request = request;
       this.title = dataAccessRequestUtilService.getRequestTitle(request);
-      for (int i = request.getStatusChangeHistory().size()-1; i>=0; i--) {
-        StatusChange chg = request.getStatusChangeHistory().get(i);
-        if (chg.getTo().equals(DataAccessEntityStatus.SUBMITTED)) {
-          this.submitDate = chg.getChangedOn();
-          break;
-        }
-      }
+      this.submitDate = request.getSubmissionDate();
     }
 
     public String getId() {
