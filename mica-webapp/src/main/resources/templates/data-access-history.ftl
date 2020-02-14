@@ -129,10 +129,8 @@
 <script>
     $(function () {
         $('#history-menu').addClass('active').attr('href', '#')
-        $(function () {
-            $("#status").DataTable(dataTablesNoSortSearchOpts);
-            $("#actions").DataTable(dataTablesNoSortSearchOpts);
-        });
+        $("#status").DataTable(dataTablesNoSortSearchOpts);
+        $("#actions").DataTable(dataTablesNoSortSearchOpts);
     });
 </script>
 </body>

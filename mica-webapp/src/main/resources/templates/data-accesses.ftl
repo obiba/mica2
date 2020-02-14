@@ -34,17 +34,17 @@
                 <h3 class="card-title">Data Access Requests</h3>
                 <div class="float-right">
                   <button type="button" class="btn btn-primary ml-4" data-toggle="modal" data-target="#modal-add">
-                    <i class="fas fa-plus"></i> Add
+                    <i class="fas fa-plus"></i> <@message "new-data-access-request"/>
                   </button>
                 </div>
               </div>
               <div class="card-body">
-                <#assign admin = (user.roles?seq_contains("mica-administrator") || user.roles?seq_contains("mica-data-access-officer"))/>
+                <#assign isAdministrator = (user.roles?seq_contains("mica-administrator") || user.roles?seq_contains("mica-data-access-officer"))/>
                 <table id="dars" class="table table-bordered table-striped">
                   <thead>
                   <tr>
                     <th>ID</th>
-                    <#if admin>
+                    <#if isAdministrator>
                       <th>Applicant</th>
                     </#if>
                     <th>Title</th>
@@ -59,7 +59,7 @@
                   <#list dars as dar>
                     <tr>
                       <td><a href="../data-access/${dar.id}">${dar.id}</a></td>
-                      <#if admin>
+                      <#if isAdministrator>
                         <td>${applicants[dar.applicant].fullName}</td>
                       </#if>
                       <td>${dar.title!""}</td>
