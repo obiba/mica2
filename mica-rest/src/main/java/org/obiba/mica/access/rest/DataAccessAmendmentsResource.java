@@ -53,10 +53,21 @@ public class DataAccessAmendmentsResource {
   @POST
   @Timed
   public Response create(Mica.DataAccessRequestDto dto, @Context UriInfo uriInfo) {
+    DataAccessAmendment amendment = dtos.fromAmendmentDto(dto);
+    return saveNew(amendment, uriInfo);
+  }
+
+  @POST
+  @Path("/_empty")
+  public Response create(@Context UriInfo uriInfo) {
+    DataAccessAmendment amendment = new DataAccessAmendment();
+    amendment.setContent("{}");
+    return saveNew(amendment, uriInfo);
+  }
+
+  private Response saveNew(DataAccessAmendment amendment, UriInfo uriInfo) {
     String resource = String.format("/data-access-request/%s/amendment", parentId);
     subjectAclService.checkPermission(resource, "ADD");
-
-    DataAccessAmendment amendment = dtos.fromAmendmentDto(dto);
 
     // force applicant and make sure it is a new request
     String applicant = SecurityUtils.getSubject().getPrincipal().toString();
