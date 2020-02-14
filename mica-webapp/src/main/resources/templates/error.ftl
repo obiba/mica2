@@ -2,7 +2,7 @@
 <html lang="${.lang}">
 <head>
   <#include "libs/head.ftl">
-  <title>${config.name!""} | <@message "error"/></title>
+  <title><@message "error"/></title>
   <!-- Ionicons -->
   <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
 </head>

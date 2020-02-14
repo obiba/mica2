@@ -33,7 +33,7 @@
           <!--<span class="badge badge-danger navbar-badge">3</span>-->
         </a>
       </li>
-      <#if config.locales?size != 1>
+      <#if config?? && config.locales?size != 1>
         <li class="nav-item dropdown">
           <a id="userMenu" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle"> ${.lang?upper_case}</a>
           <ul aria-labelledby="dropdownSubMenu1" class="dropdown-menu border-0 shadow">
@@ -51,7 +51,7 @@
           <li><a href="#" onclick="micajs.signout('${pathPrefix!".."}');" class="dropdown-item"><@message "sign-out"/></a></li>
         </ul>
       </li>
-    <#else >
+    <#elseif config??>
         <#if config.locales?size != 1>
           <li class="nav-item dropdown">
             <a id="userMenu" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle"> ${.lang?upper_case}</a>
