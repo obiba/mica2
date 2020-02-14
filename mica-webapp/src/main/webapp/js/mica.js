@@ -138,7 +138,7 @@ var micajs = (function() {
           const createdId = tokens[tokens.length - 1];
           var redirect = '../data-access/' + createdId;
           if (id) {
-            redirect = '../data-access-amendment-form/' + id + '?id=' + createdId;
+            redirect = '../data-access-amendment-form/' + createdId;
           }
           micaRedirect(redirect);
         }
@@ -172,7 +172,7 @@ var micajs = (function() {
     var redirect = '../data-access-form/' + id;
     if (aId) {
       url = '../../ws/data-access-request/' + id + '/amendment/' + aId + '/_status?to=SUBMITTED';
-      redirect = '../data-access-amendment-form/' + id + '?id=' + aId;
+      redirect = '../data-access-amendment-form/' + aId;
     }
     axios.put(url)
       .then(response => {
@@ -190,7 +190,7 @@ var micajs = (function() {
     var redirect = '../data-access-form/' + id;
     if (aId) {
       url = '../../ws/data-access-request/' + id + '/amendment/' + aId + '/_status?to=REVIEWED';
-      redirect = '../data-access-amendment-form/' + id + '?id=' + aId;
+      redirect = '../data-access-amendment-form/' + aId;
     }
     axios.put(url)
       .then(response => {
@@ -208,7 +208,7 @@ var micajs = (function() {
     var redirect = '../data-access-form/' + id;
     if (aId) {
       url = '../../ws/data-access-request/' + id + '/amendment/' + aId + '/_status?to=APPROVED';
-      redirect = '../data-access-amendment-form/' + id + '?id=' + aId;
+      redirect = '../data-access-amendment-form/' + aId;
     }
     axios.put(url)
       .then(response => {
@@ -226,7 +226,7 @@ var micajs = (function() {
     var redirect = '../data-access-form/' + id;
     if (aId) {
       url = '../../ws/data-access-request/' + id + '/amendment/' + aId + '/_status?to=CONDITIONALLY_APPROVED';
-      redirect = '../data-access-amendment-form/' + id + '?id=' + aId;
+      redirect = '../data-access-amendment-form/' + aId;
     }
     axios.put(url)
       .then(response => {
@@ -244,7 +244,7 @@ var micajs = (function() {
     var redirect = '../data-access-form/' + id;
     if (aId) {
       url = '../../ws/data-access-request/' + id + '/amendment/' + aId + '/_status?to=REJECTED';
-      redirect = '../data-access-amendment-form/' + id + '?id=' + aId;
+      redirect = '../data-access-amendment-form/' + aId;
     }
     axios.put(url)
       .then(response => {
@@ -310,6 +310,7 @@ var micajs = (function() {
     'error': micaError,
     'dataAccess': {
       'create': micaCreateDataAccess,
+      'createAmendment': micaCreateDataAccess,
       'delete': micaDeleteDataAccess,
       'submit': micaSubmitDataAccess,
       'review': micaReviewDataAccess,

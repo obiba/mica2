@@ -12,14 +12,6 @@
     background: none;
   }
 
-  .timeline-item-r {
-    margin-left: 200px !important;
-  }
-
-  .timeline-item-l {
-    margin-right: 200px !important;
-  }
-
   .timeline-block {
     margin-left: 60px !important;
     margin-right: 25px !important;
