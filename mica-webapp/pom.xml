@@ -102,6 +102,9 @@
             <fileset>
               <directory>node_modules</directory>
             </fileset>
+            <fileset>
+	      <directory>src/main/webapp/js/libs/node_modules</directory>
+            </fileset>
           </filesets>
         </configuration>
       </plugin>
@@ -129,6 +132,21 @@
               <executable>npm</executable>
               <arguments>
                 <argument>install</argument>
+              </arguments>
+            </configuration>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>exec-npm-install-static</id>
+            <phase>generate-sources</phase>
+            <configuration>
+              <executable>npm</executable>
+              <arguments>
+                <argument>install</argument>
+                <argument>--prefix</argument>
+                <argument>src/main/webapp/js/libs</argument>
               </arguments>
             </configuration>
             <goals>
