@@ -1,0 +1,10 @@
+{
+   "name": "mica-static-libs",
+   "description": "JavaScript Node dependencies are listed here.",
+   "dependencies": {
+      "vue-obiba-search-result": "git+https://github.com/epigeny/vue-obiba-search-result.git#master"
+   },
+   "devDependencies": {},
+   "author": "OBiBa",
+   "license": "GPL3"
+}
