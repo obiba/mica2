@@ -172,21 +172,7 @@ public class DataAccessRequestReportNotificationService {
    * @return
    */
   private Date getStartDate(DataAccessRequest dar) {
-    Date startDate = null;
-    if (DataAccessEntityStatus.APPROVED.equals(dar.getStatus())) {
-      if (dar.hasStartDate()) {
-        // set start date
-        startDate = dar.getStartDate();
-      } else {
-        // default is approval date
-        for (StatusChange change : dar.getStatusChangeHistory()) {
-          if (change.getTo().equals(DataAccessEntityStatus.APPROVED)) {
-            startDate = change.getChangedOn().toDate();
-          }
-        }
-      }
-    }
-    return startDate;
+    return dar.getStartDateOrDefault();
   }
 
   private LocalDate toLocalDate(Date date) {
