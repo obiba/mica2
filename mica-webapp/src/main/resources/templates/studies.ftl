@@ -49,21 +49,6 @@
 
                 <div class="card-header d-flex p-0">
                   <h3 class="card-title p-3">Studies</h3>
-                  <div>
-                    <div class="btn-group btn-group-toggle mt-2" data-toggle="buttons">
-                      <label class="btn btn-sm btn-secondary active">
-                        <input type="radio" name="options" id="option1" autocomplete="off" checked=""> All
-                      </label>
-                      <label class="btn btn-sm btn-secondary">
-                        <input type="radio" name="options" id="option2" autocomplete="off"> Individual
-                      </label>
-                      <label class="btn btn-sm btn-secondary">
-                        <input type="radio" name="options" id="option3" autocomplete="off"> Harmonization
-                      </label>
-                    </div>
-                  </div>
-
-
                   <ul class="nav nav-pills ml-auto p-2">
                     <li class="nav-item"><a class="nav-link" href="#list" data-toggle="tab">
                         <i class="fas fa-grip-lines"></i></a>
