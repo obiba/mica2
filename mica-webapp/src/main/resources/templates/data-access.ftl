@@ -190,10 +190,170 @@
         <div class="col-lg-6">
           <div class="card card-info card-outline">
             <div class="card-header">
-              <h3 class="card-title">To Do</h3>
+              <h3 class="card-title"><@message "todo-title"/></h3>
             </div>
             <div class="card-body">
-              TODO
+              <#if dar.status == "OPENED">
+
+                <h4><@message "opened-title"/></h4>
+                <#if user.username == dar.applicant>
+                  <p><@message "opened-applicant-text"/></p>
+                  <div>
+                    <a href="../data-access-form/${dar.id}" class="btn btn-primary" >
+                      <i class="fas fa-pen"></i> <@message "application-form"/>
+                    </a>
+                  </div>
+                <#else>
+                  <p><@message "opened-dao-text"/></p>
+                </#if>
+
+              <#elseif dar.status == "CONDITIONALLY_APPROVED">
+
+                <h4><@message "conditionally-approved-title"/></h4>
+                <#if user.username == dar.applicant>
+                  <p><@message "conditionally-approved-applicant-text"/></p>
+                  <div>
+                    <a href="../data-access-form/${dar.id}" class="btn btn-primary" >
+                      <i class="fas fa-pen"></i> <@message "application-form"/>
+                    </a>
+                  </div>
+                <#else>
+                  <p><@message "conditionally-approved-dao-text"/></p>
+                </#if>
+
+              <#elseif dar.status == "SUBMITTED">
+
+                <h4><@message "submitted-title"/></h4>
+                <#if user.username == dar.applicant>
+                  <p><@message "submitted-applicant-text"/></p>
+                <#else>
+                  <p><@message "submitted-dao-text"/></p>
+                  <div>
+                    <a href="../data-access-form/${dar.id}" class="btn btn-primary" >
+                      <i class="fas fa-pen"></i> <@message "application-form"/>
+                    </a>
+                  </div>
+                </#if>
+
+              <#elseif dar.status == "REVIEWED">
+
+                <h4><@message "reviewed-title"/></h4>
+                <#if user.username == dar.applicant>
+                  <p><@message "reviewed-applicant-text"/></p>
+                <#else>
+                  <p><@message "reviewed-dao-text"/></p>
+                  <div>
+                    <a href="../data-access-form/${dar.id}" class="btn btn-primary" >
+                      <i class="fas fa-pen"></i> <@message "application-form"/>
+                    </a>
+                  </div>
+                </#if>
+
+              <#elseif dar.status == "APPROVED">
+
+                <h4 class="mt-3"><@message "report-timeline-title"/></h4>
+                <p><@message "report-timeline-text"/></p>
+
+                <#function isPast date>
+                  <#return .now?datetime gt date?datetime>
+                </#function>
+
+              <div class="timeline">
+                <!-- timeline time label -->
+                <div class="time-label">
+                  <span class="<#if isPast(reportTimeline.startDate)>bg-secondary<#else>bg-primary</#if>">${reportTimeline.startDate?date}</span>
+                </div>
+                <!-- /.timeline-label -->
+                <!-- timeline item -->
+                <div>
+                  <i class="fas fa-info <#if isPast(reportTimeline.startDate)>bg-secondary<#else>bg-blue</#if>"></i>
+                  <div class="timeline-item">
+                    <div class="timeline-body">
+
+                      <#if user.username == dar.applicant>
+                        <span><@message "start-date-applicant-text"/></span>
+                      <#else>
+                        <p><@message "start-date-dao-text"/></p>
+                        <div>
+                          <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modal-start-date">
+                            <i class="fas fa-clock"></i> <@message "start-date"/>
+                          </button>
+                        </div>
+                      </#if>
+                    </div>
+                  </div>
+                </div>
+                <!-- END timeline item -->
+
+                <#if reportTimeline.intermediateDates??>
+                  <#list reportTimeline.intermediateDates as date>
+                    <!-- timeline time label -->
+                    <div class="time-label">
+                      <span class="<#if isPast(date)>bg-secondary<#else>bg-info</#if>">${date?date}</span>
+                    </div>
+                    <!-- /.timeline-label -->
+
+                    <!-- timeline item -->
+                    <div>
+                      <i class="fas fa-file <#if isPast(date)>bg-secondary<#else>bg-blue</#if>"></i>
+                      <div class="timeline-item">
+                        <div class="timeline-body">
+                          <span class="badge badge-info">${date?counter}</span>
+                          <#if user.username == dar.applicant>
+                            <span><@message "intermediate-date-applicant-text"/></span>
+                          <#else>
+                            <span><@message "intermediate-date-dao-text"/></span>
+                          </#if>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- END timeline item -->
+                  </#list>
+                </#if>
+
+                <!-- timeline time label -->
+                <div class="time-label">
+                  <span class="<#if isPast(reportTimeline.endDate)>bg-secondary<#else>bg-blue</#if>">${reportTimeline.endDate?date}</span>
+                </div>
+                <!-- /.timeline-label -->
+                <!-- timeline item -->
+                <div>
+                  <i class="fas fa-book <#if isPast(reportTimeline.endDate)>bg-secondary<#else>bg-blue</#if>"></i>
+                  <div class="timeline-item">
+                    <div class="timeline-body">
+
+                      <#if user.username == dar.applicant>
+                        <span><@message "end-date-applicant-text"/></span>
+                      <#else>
+                        <span><@message "end-date-dao-text"/></span>
+                      </#if>
+                    </div>
+                  </div>
+                </div>
+                <!-- END timeline item -->
+
+                <div>
+                  <i class="fas fa-circle bg-gray"></i>
+                </div>
+
+              </div>
+
+
+              <#elseif dar.status == "REJECTED">
+
+                <h4><@message "rejected-title"/></h4>
+                <#if user.username == dar.applicant>
+                  <p><@message "rejected-applicant-text"/></p>
+                <#else>
+                  <p><@message "rejected-dao-text"/></p>
+                  <div>
+                    <a href="../data-access-form/${dar.id}" class="btn btn-primary" >
+                      <i class="fas fa-pen"></i> <@message "application-form"/>
+                    </a>
+                  </div>
+                </#if>
+
+              </#if>
             </div>
           </div>
         </div>
