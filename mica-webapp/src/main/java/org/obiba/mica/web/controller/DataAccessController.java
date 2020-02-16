@@ -11,6 +11,8 @@ import org.obiba.mica.access.NoSuchDataAccessRequestException;
 import org.obiba.mica.access.domain.ChangeLog;
 import org.obiba.mica.access.domain.DataAccessAmendment;
 import org.obiba.mica.access.domain.DataAccessRequest;
+import org.obiba.mica.access.domain.DataAccessRequestTimeline;
+import org.obiba.mica.access.notification.DataAccessRequestReportNotificationService;
 import org.obiba.mica.access.service.DataAccessAmendmentService;
 import org.obiba.mica.access.service.DataAccessRequestService;
 import org.obiba.mica.core.domain.AbstractAuditableDocument;
@@ -58,12 +60,19 @@ public class DataAccessController extends BaseController {
   @Inject
   private CommentsService commentsService;
 
+  @Inject
+  private DataAccessRequestReportNotificationService dataAccessRequestReportNotificationService;
+
   @GetMapping("/data-access/{id}")
   public ModelAndView get(@PathVariable String id) {
     Subject subject = SecurityUtils.getSubject();
     if (subject.isAuthenticated()) {
       Map<String, Object> params = newParameters(id);
       addDataAccessConfiguration(params);
+
+      DataAccessRequestTimeline timeline = dataAccessRequestReportNotificationService.getReportsTimeline(getDataAccessRequest(params));
+      params.put("reportTimeline", timeline);
+
       return new ModelAndView("data-access", params);
     } else {
       return new ModelAndView("redirect:../signin?redirect=data-access%2F" + id);

@@ -49,6 +49,27 @@ public class DataAccessRequest extends DataAccessEntity implements AttachmentAwa
     this.startDate = startDate;
   }
 
+  private Date getDefaultStartDate() {
+    // default is approval date
+    for (StatusChange change : getStatusChangeHistory()) {
+      if (change.getTo().equals(DataAccessEntityStatus.APPROVED)) {
+        return change.getChangedOn().toDate();
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Get the data access request from the startDate field in the data access request or from the approval data, only if
+   * the current status is "approved".
+   *
+   * @return
+   */
+  public Date getStartDateOrDefault() {
+    if (!DataAccessEntityStatus.APPROVED.equals(getStatus())) return null;
+    return hasStartDate() ? getStartDate() : getDefaultStartDate();
+  }
+
   //
   // Attachments
   //
