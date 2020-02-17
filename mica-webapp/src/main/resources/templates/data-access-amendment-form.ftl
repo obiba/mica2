@@ -114,8 +114,7 @@
                       <#if accessConfig.withConditionalApproval>
                       <button type="button" class="btn btn-warning" data-toggle="modal"
                               data-target="#modal-condition"><@message "conditionallyApprove"/></button>
-                    </#if>
-
+                      </#if>
                       <button type="button" class="btn btn-danger" data-toggle="modal"
                               data-target="#modal-reject"><@message "reject"/></button>
                     <#elseif amendment.status == "APPROVED" && !accessConfig.approvedFinal>
