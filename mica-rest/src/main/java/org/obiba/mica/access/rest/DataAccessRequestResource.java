@@ -53,6 +53,7 @@ import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -224,6 +225,17 @@ public class DataAccessRequestResource extends DataAccessEntityResource<DataAcce
 
     return Response.ok(fileStoreService.getFile(r.get().getFileReference()))
       .header("Content-Disposition", "attachment; filename=\"" + r.get().getName() + "\"").build();
+  }
+
+  @DELETE
+  @Timed
+  @Path("/attachments/{attachmentId}")
+  public Response deleteAttachment(@PathParam("id") String id, @PathParam("attachmentId") String attachmentId) throws IOException {
+    subjectAclService.checkPermission("/data-access-request", "VIEW", id);
+    DataAccessRequest request = dataAccessRequestService.findById(id);
+    request.setAttachments(request.getAttachments().stream().filter(a -> !a.getId().equals(attachmentId)).collect(Collectors.toList()));
+    dataAccessRequestService.saveAttachments(request);
+    return Response.noContent().build();
   }
 
   @GET
