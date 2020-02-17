@@ -1,28 +1,7 @@
-<!-- Function to get the color corresponding to a status -->
-<#function statusColor status>
-    <#if status == "OPENED">
-        <#local txtColor = "primary"/>
-    <#elseif status == "APPROVED">
-        <#local txtColor = "success"/>
-    <#elseif status == "REJECTED">
-        <#local txtColor = "danger"/>
-    <#elseif status == "SUBMITTED">
-        <#local txtColor = "info"/>
-    <#elseif status == "REVIEWED">
-        <#local txtColor = "info"/>
-    <#elseif status == "CONDITIONALLY_APPROVED">
-        <#local txtColor = "warning"/>
-    <#else>
-        <#local txtColor = "info"/>
-    </#if>
-    <#return txtColor/>
-</#function>
+<!-- Macros and functions -->
+<#include "data-access.ftl"/>
 
-<!-- Current user privilegies -->
-<#assign isAdministrator = user.roles?seq_contains("mica-administrator")/>
-<#assign isDAO = user.roles?seq_contains("mica-data-access-officer")/>
-
-  <!-- Main Sidebar Container -->
+<!-- Main Sidebar Container -->
 <aside class="main-sidebar sidebar-dark-primary">
   <!-- Brand Logo -->
   <a href="../js/libs/node_modules/admin-lte/index3.html" class="brand-link bg-white">
@@ -81,7 +60,9 @@
                 <p>
                     <@message "amendments"/>
                   <i class="right fas fa-angle-left"></i>
-                  <span class="badge badge-info right">${amendments?size}</span>
+                  <#if amendments?size != 0>
+                    <span class="badge badge-info right">${amendments?size}</span>
+                  </#if>
                 </p>
               </a>
               <ul class="nav nav-treeview">
@@ -115,6 +96,9 @@
           <a id="comments-menu" href="../data-access-comments/${dar.id}" class="nav-link">
             <i class="fas fa-comments nav-icon"></i>
             <p><@message "comments"/></p>
+            <#if commentsCount != 0>
+              <span class="badge badge-info right">${commentsCount}</span>
+            </#if>
           </a>
         </li>
           <#if isAdministrator || isDAO>
@@ -122,6 +106,9 @@
               <a id="private-comments-menu" href="../data-access-private-comments/${dar.id}" class="nav-link">
                 <i class="fas fa-lock nav-icon"></i>
                 <p><@message "private-comments"/></p>
+                <#if privateCommentsCount != 0>
+                  <span class="badge badge-info right">${privateCommentsCount}</span>
+                </#if>
               </a>
             </li>
           </#if>
