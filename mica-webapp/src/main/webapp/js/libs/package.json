@@ -2,7 +2,14 @@
    "name": "mica-static-libs",
    "description": "JavaScript Node dependencies are listed here.",
    "dependencies": {
+      "admin-lte": "^3.0.2",
+      "axios": "^0.19.2",
+      "bootstrap-datepicker": "^1.9.0",
+      "jquery.redirect": "^1.1.4",
+      "js-cookie": "^2.2.1",
       "rql": "git+https://github.com/epigeny/rql.git#master",
+      "simplemde": "^1.11.2",
+      "vue": "^2.6.11",
       "vue-obiba-search-result": "git+https://github.com/epigeny/vue-obiba-search-result.git#master"
    },
    "devDependencies": {},
