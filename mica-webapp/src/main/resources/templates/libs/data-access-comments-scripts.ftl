@@ -1,6 +1,6 @@
 <#macro commentScripts isPrivate="false">
   <!-- SimpleMDE -->
-  <script src="${pathPrefix!".."}/bower_components/simplemde/dist/simplemde.min.js"></script>
+  <script src="${pathPrefix!".."}/js/libs/node_modules/simplemde/dist/simplemde.min.js"></script>
 
   <script>
       var simpleMDEDefaults = {
