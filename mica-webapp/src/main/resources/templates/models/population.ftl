@@ -6,7 +6,7 @@
   <!-- Individual study -->
   <div class="row">
     <#if population.model.selectionCriteria??>
-      <div class="col-6">
+      <div class="col-sm-12 col-lg-6">
         <div class="card">
           <div class="card-header">
             <h5 class="card-title">
@@ -160,7 +160,7 @@
     </#if>
 
     <#if population.model.recruitment?? || population.model.numberOfParticipants??>
-      <div class="col-6">
+      <div class="col-sm-12 col-lg-6">
 
         <#if population.model.recruitment??>
           <div class="card">
