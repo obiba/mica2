@@ -8,10 +8,6 @@
 <script src="${pathPrefix!".."}/js/libs/node_modules/admin-lte/dist/js/adminlte.min.js"></script>
 <!-- Moment -->
 <script src="${pathPrefix!".."}/js/libs/node_modules/admin-lte/plugins/moment/moment-with-locales.min.js"></script>
-<!-- Mica Utils and dependencies -->
-<script src="${pathPrefix!".."}/js/libs/node_modules/jquery.redirect/jquery.redirect.js"></script>
-<script src="${pathPrefix!".."}/js/libs/node_modules/js-cookie/src/js.cookie.js"></script>
-<script src="${pathPrefix!".."}/js/mica.js"></script>
 <!-- DataTables -->
 <script src="${pathPrefix!".."}/js/libs/node_modules/admin-lte/plugins/datatables/jquery.dataTables.js"></script>
 <script src="${pathPrefix!".."}/js/libs/node_modules/admin-lte/plugins/datatables-bs4/js/dataTables.bootstrap4.js"></script>
@@ -21,6 +17,10 @@
 <script src="${pathPrefix!".."}/js/libs/node_modules/axios/dist/axios.min.js"></script>
 <!-- Marked -->
 <script src="${pathPrefix!".."}/js/libs/node_modules/marked/lib/marked.js"></script>
+<!-- Mica Utils and dependencies -->
+<script src="${pathPrefix!".."}/js/libs/node_modules/jquery.redirect/jquery.redirect.js"></script>
+<script src="${pathPrefix!".."}/js/libs/node_modules/js-cookie/src/js.cookie.js"></script>
+<script src="${pathPrefix!".."}/js/mica.js"></script>
 
 <!-- Global js variables -->
 <script>

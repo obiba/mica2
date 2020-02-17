@@ -298,6 +298,36 @@ var micajs = (function() {
       });
   };
 
+  var micaAddAction = function(id, action) {
+    console.dir(action);
+    var url = '../../ws/data-access-request/' + id + '/_log-actions';
+    var redirect = '../data-access-history/' + id;
+    axios.post(url, action)
+      .then(response => {
+        console.dir(response);
+        micaRedirect(redirect);
+      })
+      .catch(response => {
+        console.dir(response);
+        micaError('Adding action failed.');
+      });
+  };
+
+  var micaStartDate = function(id, startDate) {
+    console.log(startDate);
+    var url = '../../ws/data-access-request/' + id + '/_start-date?date=' + startDate;
+    var redirect = '../data-access/' + id;
+    axios.put(url)
+      .then(response => {
+        console.dir(response);
+        micaRedirect(redirect);
+      })
+      .catch(response => {
+        console.dir(response);
+        micaError('Setting start date failed.');
+      });
+  };
+
   return {
     'stats': micaStats,
     'redirectError': micaRedirectError,
@@ -318,7 +348,9 @@ var micajs = (function() {
       'conditionallyApprove': micaConditionallyApproveDataAccess,
       'reject': micaRejectDataAccess,
       'sendComment': micaSendComment,
-      'deleteComment': micaDeleteComment
+      'deleteComment': micaDeleteComment,
+      'addAction': micaAddAction,
+      'startDate': micaStartDate
     }
   };
 
