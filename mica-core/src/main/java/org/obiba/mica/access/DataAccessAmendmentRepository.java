@@ -12,6 +12,7 @@ package org.obiba.mica.access;
 
 import org.obiba.mica.access.domain.DataAccessAmendment;
 import org.obiba.mica.access.domain.DataAccessRequest;
+import org.springframework.data.mongodb.repository.Query;
 
 import java.util.List;
 
@@ -20,5 +21,12 @@ import java.util.List;
  */
 
 public interface DataAccessAmendmentRepository extends DataAccessEntityRepository<DataAccessAmendment> {
+
   List<DataAccessAmendment> findByParentId(String parentId);
+
+  int countByParentId(String parentId);
+
+  @Query(value = "{ parentId: ?0, status: { $nin: [\"APPROVED\", \"REJECTED\"] } }", count = true)
+  int countPendingByParentId(String parentId);
+
 }
