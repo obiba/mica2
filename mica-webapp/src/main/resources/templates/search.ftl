@@ -161,7 +161,7 @@
                         List of variables
                         <div id="list-variables">
                           {{ result }}
-			  <variables-result></variables-result>
+			                    <variables-result></variables-result>
                         </div>
                       </div>
                       <div class="tab-pane fade" id="datasets" role="tabpanel" aria-labelledby="datasets-tab">
