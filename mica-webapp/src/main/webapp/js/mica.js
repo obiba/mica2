@@ -328,54 +328,6 @@ var micajs = (function() {
       });
   };
 
-  var fileDownload = function(data, filename, mime, bom) {
-    var blobData = (typeof bom !== 'undefined') ? [bom, data] : [data]
-    var blob = new Blob(blobData, {type: mime || 'application/octet-stream'});
-    if (typeof window.navigator.msSaveBlob !== 'undefined') {
-      // IE workaround for "HTML7007: One or more blob URLs were
-      // revoked by closing the blob for which they were created.
-      // These URLs will no longer resolve as the data backing
-      // the URL has been freed."
-      window.navigator.msSaveBlob(blob, filename);
-    }
-    else {
-      var blobURL = window.URL.createObjectURL(blob);
-      var tempLink = document.createElement('a');
-      tempLink.style.display = 'none';
-      tempLink.href = blobURL;
-      tempLink.setAttribute('download', filename);
-
-      // Safari thinks _blank anchor are pop ups. We only want to set _blank
-      // target if the browser does not support the HTML5 download attribute.
-      // This allows you to download files in desktop safari if pop up blocking
-      // is enabled.
-      if (typeof tempLink.download === 'undefined') {
-        tempLink.setAttribute('target', '_blank');
-      }
-
-      document.body.appendChild(tempLink);
-      tempLink.click();
-
-      // Fixes "webkit blob resource error 1"
-      setTimeout(function() {
-        document.body.removeChild(tempLink);
-        window.URL.revokeObjectURL(blobURL);
-      }, 0);
-    }
-  }
-
-  var micaDownloadAttachment = function(id, fileId, fileName) {
-    var url = '../../ws/data-access-request/' + id + '/attachments/' + fileId + '/_download';
-    axios.get(url)
-      .then(response => {
-        fileDownload(response.data, fileName, response.headers['Content-Type']);
-      })
-      .catch(response => {
-        console.dir(response);
-        micaError('File download failed.');
-      });
-  };
-
   var micaDeleteAttachment = function(id, fileId) {
     var url = '../../ws/data-access-request/' + id + '/attachments/' + fileId;
     var redirect = '../data-access-documents/' + id;
@@ -387,6 +339,41 @@ var micajs = (function() {
       .catch(response => {
         console.dir(response);
         micaError('File deletion failed.');
+      });
+  };
+
+  var micaUploadTempFile = function(file, onsuccess, onprogress) {
+    var data = new FormData();
+    data.append('file', file);
+    var config = {
+      onUploadProgress: function(progressEvent) {
+        var percentCompleted = Math.round( (progressEvent.loaded * 100) / progressEvent.total );
+        onprogress(percentCompleted);
+      }
+    };
+    axios.post('../../ws/files/temp', data, config)
+      .then(response => {
+        console.dir(response);
+        var fileId = response.headers.location.split('/').pop();
+        onsuccess(fileId);
+      })
+      .catch(response => {
+        console.dir(response);
+        micaError('File upload failed.');
+      });
+  };
+
+  var micaAttachFile = function(id, fileId) {
+    var url = '../../ws/data-access-request/' + id + '/attachments/' + fileId;
+    var redirect = '../data-access-documents/' + id;
+    axios.post(url)
+      .then(response => {
+        console.dir(response);
+        micaRedirect(redirect);
+      })
+      .catch(response => {
+        console.dir(response);
+        micaError('File attachment failed.');
       });
   };
 
@@ -413,9 +400,10 @@ var micajs = (function() {
       'deleteComment': micaDeleteComment,
       'addAction': micaAddAction,
       'startDate': micaStartDate,
-      'downloadAttachment': micaDownloadAttachment,
-      'deleteAttachment': micaDeleteAttachment
-    }
+      'deleteAttachment': micaDeleteAttachment,
+      'attachFile': micaAttachFile
+    },
+    'uploadTempFile': micaUploadTempFile
   };
 
 }());
