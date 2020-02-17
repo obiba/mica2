@@ -118,27 +118,27 @@ $('#variables-tab').click(function(){
 });
 
 $('#datasets-tab').click(function(){
-  EventBus.$emit('query-type-selection', 'datasets-list');
+  EventBus.$emit('query-type-selection', {type: 'datasets-list'});
 });
 
 $('#studies-tab').click(function(){
-  EventBus.$emit('query-type-selection', 'studies-list');
+  EventBus.$emit('query-type-selection', {type: 'studies-list'});
 });
 
 $('#networks-tab').click(function(){
-  EventBus.$emit('query-type-selection', 'networks-list');
+  EventBus.$emit('query-type-selection', {type: 'networks-list'});
 });
 
 $('#lists-tab').click(function(){
-  EventBus.$emit('query-type-selection', 'lists');
+  EventBus.$emit('query-type-selection', {type: 'lists'});
 });
 
 $('#coverage-tab').click(function(){
-  EventBus.$emit('query-type-selection', 'coverage');
+  EventBus.$emit('query-type-selection', {type: 'coverage'});
 });
 
 $('#graphics-tab').click(function(){
-  EventBus.$emit('query-type-selection', 'graphics');
+  EventBus.$emit('query-type-selection', {type: 'graphics'});
 });
 
 Vue.use(VueObibaSearchResult.VariablesResult, {
@@ -167,7 +167,8 @@ new Vue({
       taxonomies: {},
       message: '',
       queryType: 'variables-list',
-      lastList: ''
+      lastList: '',
+      queryExecutor: new MicaQueryExecutor(EventBus)
     };
   },
   methods: {
@@ -179,16 +180,12 @@ new Vue({
     },
     // set the type of query to be executed, on result component selection
     onQueryTypeSelection: function(payload) {
-      if (payload === 'lists') {
+      if (payload.type === 'lists') {
         this.queryType = this.lastList;
-      } else if (typeof payload  === 'object') {
-        const from = payload.from ||  0;
-        const size = payload.size || 20;
-        this.executeQuery(payload, 'variables', `locale(en),variable(limit(${from},${size}),fields((attributes.label.*,variableType,datasetId,datasetAcronym,attributes.Mlstr_area*)),sort(variableType,containerId,populationWeight,dataCollectionEventWeight,datasetId,index,name))`);
       } else {
-        this.queryType = payload;
-        if (payload.endsWith('-list')) {
-          this.lastList = payload;
+        this.queryType = payload.type;
+        if (this.queryType.endsWith('-list')) {
+          this.lastList = payload.type;
         }
       }
       this.onExecuteQuery();
@@ -196,16 +193,10 @@ new Vue({
     onExecuteQuery: function() {
       console.log('Executing ' + this.queryType + ' query ...');
       EventBus.$emit(this.queryType, 'I am the result of a ' + this.queryType + ' query');
-    },
-    executeQuery: function(payload, target, query) {
-      axios
-        .get(`../ws/${target}/_rql?query=${query}`)
-        .then(response => {
-          EventBus.$emit('query-result-received', response.data);
-        });
     }
   },
   beforeMount() {
+    this.queryExecutor.init();
     console.log('Before mounted QueryBuilder');
   },
   mounted() {
@@ -232,6 +223,10 @@ new Vue({
         }
       });
     this.onExecuteQuery();
+  },
+  beforeDestory() {
+    console.log('Before destroy query builder');
+    this.queryExecutor.destroy();
   }
 });
 
