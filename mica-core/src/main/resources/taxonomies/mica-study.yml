@@ -71,6 +71,7 @@
     "field": "model.methods.design"
     "alias": "model-methods-design"
     "facet": "true"
+    "type": "keyword"
     "facetPosition": "0"
     "facetExpanded": "false"
   "terms":
@@ -275,6 +276,7 @@
     "field": "populations.model.selectionCriteria.countriesIso"
     "alias": "populations-model-selectionCriteria-countriesIso"
     "facet": "true"
+    "type": "keyword"
     "facetPosition": "0"
     "facetExpanded": "false"
   "repeatable": "true"
@@ -1601,6 +1603,7 @@
     "field": "populations.model.selectionCriteria.gender"
     "alias": "populations-model-selectionCriteria-gender"
     "facet": "true"
+    "type": "keyword"
     "facetPosition": "0"
     "facetExpanded": "false"
   "terms":
@@ -1627,6 +1630,7 @@
     "field": "populations.model.selectionCriteria.pregnantWomen"
     "alias": "populations-model-selectionCriteria-pregnantWomen"
     "facet": "true"
+    "type": "keyword"
     "facetPosition": "0"
     "facetExpanded": "false"
   "terms":
@@ -1662,6 +1666,7 @@
     "field": "populations.model.selectionCriteria.newborn"
     "alias": "populations-model-selectionCriteria-newborn"
     "facet": "true"
+    "type": "keyword"
     "facetPosition": "0"
     "facetExpanded": "false"
   "terms":
@@ -1690,6 +1695,7 @@
     "field": "populations.model.selectionCriteria.twins"
     "alias": "populations-model-selectionCriteria-twins"
     "facet": "true"
+    "type": "keyword"
     "facetPosition": "0"
     "facetExpanded": "false"
   "terms":
@@ -1859,6 +1865,7 @@
     "field": "model.methods.recruitments"
     "alias": "model-methods-recruitments"
     "facet": "true"
+    "type": "keyword"
     "facetPosition": "0"
     "facetExpanded": "false"
   "terms":
@@ -1896,6 +1903,7 @@
     "facet": "true"
     "facetPosition": "0"
     "facetExpanded": "false"
+    "type": "keyword"
     "repeatable": "true"
   "terms":
   - "name": "general_population"
@@ -1937,6 +1945,7 @@
     "field": "populations.dataCollectionEvents.model.dataSources"
     "alias": "populations-dataCollectionEvents-model-dataSources"
     "facet": "true"
+    "type": "keyword"
     "facetPosition": "0"
     "facetExpanded": "false"
   "repeatable": "true"
@@ -1992,6 +2001,7 @@
   "attributes":
     "field": "populations.model.recruitment.generalPopulationSources"
     "alias": "populations-model-recruitment-generalPopulationSources"
+    "type": "keyword"
   "repeatable": "true"
   "terms":
   - "name": "volunteer"
@@ -2021,6 +2031,7 @@
   "attributes":
     "field": "populations.model.recruitment.specificPopulationSources"
     "alias": "populations-model-recruitment-specificPopulationSources"
+    "type": "keyword"
   "repeatable": "true"
   "terms":
   - "name": "clinic_patients"
@@ -2051,6 +2062,7 @@
     "field": "populations.dataCollectionEvents.model.bioSamples"
     "alias": "populations-dataCollectionEvents-model-bioSamples"
     "facet": "true"
+    "type": "keyword"
     "facetPosition": "0"
     "facetExpanded": "false"
   "repeatable": "true"
@@ -2109,6 +2121,7 @@
   "attributes":
     "field": "populations.dataCollectionEvents.model.administrativeDatabases"
     "alias": "populations-dataCollectionEvents-model-administrativeDatabases"
+    "type": "keyword"
   "repeatable": "true"
   "terms":
   - "name": "health_databases"
@@ -2146,6 +2159,7 @@
     "field": "model.access.access_data"
     "alias": "model-access-data"
     "facet": "true"
+    "type": "keyword"
     "facetPosition": "0"
     "facetExpanded": "false"
   "repeatable": "true"
@@ -2182,6 +2196,7 @@
     "field": "model.access.access_bio_samples"
     "alias": "model-access-bio-samples"
     "facet": "true"
+    "type": "keyword"
     "facetPosition": "0"
     "facetExpanded": "false"
   "repeatable": "true"
@@ -2218,6 +2233,7 @@
     "field": "model.access.access_other"
     "alias": "model-access-other"
     "facet": "true"
+    "type": "keyword"
     "facetPosition": "0"
     "facetExpanded": "false"
   "repeatable": "true"
@@ -2333,6 +2349,7 @@
       "fr": "Une étude d'harmonisation de données."
   "attributes":
     "static": "true"
+    "type": "keyword"
 - "name": "harmonizationDesign"
   "title":
     "en": "Harmonization Study Design"

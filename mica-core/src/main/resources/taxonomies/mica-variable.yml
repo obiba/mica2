@@ -102,6 +102,7 @@
       "en": "A dataschema variable is part of a harmonization dataset and is a construct from multiple study variables."
   "attributes":
     "static": "true"
+    "type": "keyword"
 - "name": "entityType"
   "title":
     "en": "Type of entity"
@@ -122,6 +123,7 @@
     "description": {}
   "attributes":
     "static": "true"
+    "type": "keyword"
 - "name": "mimeType"
   "title":
     "en": "Media type"
@@ -215,6 +217,7 @@
       "fr": "Liste de lignes définissant une aire geographique."
   "attributes":
     "static": "true"
+    "type": "keyword"
 - "name": "nature"
   "title":
     "en": "Nature"
@@ -267,3 +270,4 @@
       "fr": "Autres natures de variable."
   "attributes":
     "static": "true"
+    "type": "keyword"
