@@ -26,7 +26,7 @@
 <aside class="main-sidebar sidebar-dark-primary">
   <!-- Brand Logo -->
   <a href="../bower_components/admin-lte/index3.html" class="brand-link bg-white">
-    <img src="../bower_components/admin-lte/dist/img/AdminLTELogo.png"
+    <img src="../images/logo.png"
          alt="Logo"
          class="brand-image img-circle elevation-3"
          style="opacity: .8">
@@ -74,12 +74,6 @@
             </p>
           </a>
         </li>
-        <li class="nav-item">
-          <a id="documents-menu" href="../data-access-documents/${dar.id}" class="nav-link">
-            <i class="fas fa-copy nav-icon"></i>
-            <p><@message "documents"/></p>
-          </a>
-        </li>
           <#if accessConfig.amendmentsEnabled && dar.status.toString() == "APPROVED">
             <li class="nav-item has-treeview <#if amendment??>menu-open</#if>">
               <a id="amendment-form-menu" href="#" class="nav-link">
@@ -111,6 +105,12 @@
               </ul>
             </li>
           </#if>
+        <li class="nav-item">
+          <a id="documents-menu" href="../data-access-documents/${dar.id}" class="nav-link">
+            <i class="fas fa-copy nav-icon"></i>
+            <p><@message "documents"/></p>
+          </a>
+        </li>
         <li class="nav-item">
           <a id="comments-menu" href="../data-access-comments/${dar.id}" class="nav-link">
             <i class="fas fa-comments nav-icon"></i>
