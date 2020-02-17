@@ -37,6 +37,8 @@
     "formModel": true,
     "formMessages": true,
     "toastr": true,
-    "micajs": true
+    "micajs": true,
+    "Blob": true,
+    "document": true
   }
 }
