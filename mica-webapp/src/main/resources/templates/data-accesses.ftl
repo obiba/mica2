@@ -1,5 +1,6 @@
 <!-- Macros -->
 <#include "libs/header.ftl">
+<#include "libs/data-access.ftl"/>
 
 <!DOCTYPE html>
 <html lang="${.lang}">
@@ -50,8 +51,10 @@
                     <th>Title</th>
                     <th>Last Update</th>
                     <th>Submission Date</th>
-                    <th>Pending Amendments</th>
-                    <th>Total Amendments</th>
+                    <#if accessConfig.amendmentsEnabled>
+                      <th>Pending Amendments</th>
+                      <th>Total Amendments</th>
+                    </#if>
                     <th>Status</th>
                   </tr>
                   </thead>
@@ -65,9 +68,11 @@
                       <td>${dar.title!""}</td>
                       <td class="moment-datetime">${dar.lastUpdate.toString(datetimeFormat)}</td>
                       <td class="moment-datetime"><#if dar.submitDate??>${dar.submitDate.toString(datetimeFormat)}</#if></td>
-                      <td>${dar.pendingAmendments}</td>
-                      <td>${dar.totalAmendments}</td>
-                      <td><@message dar.status.toString()/></td>
+                      <#if accessConfig.amendmentsEnabled>
+                        <td>${dar.pendingAmendments}</td>
+                        <td>${dar.totalAmendments}</td>
+                      </#if>
+                      <td><i class="fas fa-circle text-${statusColor(dar.status.toString())}"></i> <@message dar.status.toString()/></td>
                     </tr>
                   </#list>
                   </tbody>

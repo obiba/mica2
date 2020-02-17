@@ -2,6 +2,7 @@
 <html lang="${.lang}">
 <head>
     <#include "libs/head.ftl">
+  <link rel="stylesheet" href="${pathPrefix!".."}/js/libs/node_modules/bootstrap-datepicker/dist/css/bootstrap-datepicker3.css"></link>
   <title>${config.name!""} | <@message "data-access"/> ${dar.id}</title>
 </head>
 <body class="hold-transition sidebar-mini">
@@ -429,7 +430,7 @@
                       <td><a href="../data-access-amendment-form/${amendment.id}">${amendment.id}</a></td>
                       <td class="moment-datetime">${amendment.lastModifiedDate.toString(datetimeFormat)}</td>
                       <td class="moment-datetime"><#if amendment.submissionDate??>${dar.submissionDate.toString(datetimeFormat)}</#if></td>
-                      <td><@message amendment.status.toString()/></td>
+                      <td><i class="fas fa-circle text-${statusColor(amendment.status.toString())}"></i> <@message amendment.status.toString()/></td>
                     </tr>
                     </#list>
                     </tbody>
@@ -448,7 +449,39 @@
   </div>
   <!-- /.content-wrapper -->
 
-    <#include "libs/footer.ftl">
+  <!-- Start date modal -->
+  <div class="modal fade" id="modal-start-date">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title"><@message "start-date"/></h4>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label><@message "date"/></label>
+            <div class="input-group">
+              <input type="text" id="start-date" class="form-control">
+              <div class="input-group-append">
+                <span class="input-group-text"><i class="fas fa-calendar-alt"></i></span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer justify-content-between">
+          <button type="button" class="btn btn-default" data-dismiss="modal"><@message "cancel"/></button>
+          <button type="button" class="btn btn-primary" id="start-date-submit"><@message "submit"/></button>
+        </div>
+      </div>
+      <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+  </div>
+  <!-- /.modal -->
+
+  <#include "libs/footer.ftl">
 
   <!-- Control Sidebar -->
   <aside class="control-sidebar control-sidebar-dark">
@@ -459,11 +492,21 @@
 <!-- ./wrapper -->
 
 <#include "libs/scripts.ftl">
+<!-- Datepicker -->
+<script src="${pathPrefix!".."}/js/libs/node_modules/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js"></script>
 <script>
-    $(function () {
-        $('#dashboard-menu').addClass('active').attr('href', '#');
-        $("#amendments").DataTable(dataTablesSortOpts);
+  $(function () {
+    $('#dashboard-menu').addClass('active').attr('href', '#');
+    $("#amendments").DataTable(dataTablesSortOpts);
+    $('#start-date').datepicker({
+      locale: '${.lang}',
+      format: 'yyyy-mm-dd'
     });
+    $('#start-date-submit').click(function() {
+      micajs.dataAccess.startDate('${dar.id}', $('#start-date').val());
+    });
+  });
 </script>
+
 </body>
 </html>

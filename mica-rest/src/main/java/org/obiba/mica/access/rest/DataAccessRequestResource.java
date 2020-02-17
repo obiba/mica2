@@ -16,22 +16,24 @@ import com.google.common.eventbus.EventBus;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.AuthorizationException;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
+import org.joda.time.DateTime;
 import org.obiba.mica.JSONUtils;
 import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.access.NoSuchDataAccessRequestException;
-import org.obiba.mica.access.service.DataAccessRequestUtilService;
-import org.obiba.mica.file.FileStoreService;
-import org.obiba.mica.micaConfig.DataAccessAmendmentsNotEnabled;
+import org.obiba.mica.access.domain.ActionLog;
 import org.obiba.mica.access.domain.DataAccessEntityStatus;
 import org.obiba.mica.access.domain.DataAccessRequest;
 import org.obiba.mica.access.notification.DataAccessRequestCommentMailNotification;
 import org.obiba.mica.access.service.DataAccessEntityService;
 import org.obiba.mica.access.service.DataAccessRequestService;
+import org.obiba.mica.access.service.DataAccessRequestUtilService;
 import org.obiba.mica.core.domain.Comment;
 import org.obiba.mica.core.domain.NoSuchCommentException;
 import org.obiba.mica.core.domain.UnauthorizedCommentException;
 import org.obiba.mica.core.service.CommentsService;
 import org.obiba.mica.file.Attachment;
+import org.obiba.mica.file.FileStoreService;
+import org.obiba.mica.micaConfig.DataAccessAmendmentsNotEnabled;
 import org.obiba.mica.micaConfig.service.DataAccessFormService;
 import org.obiba.mica.security.Roles;
 import org.obiba.mica.security.event.ResourceDeletedEvent;
@@ -41,7 +43,6 @@ import org.obiba.mica.web.model.Mica;
 import org.slf4j.Logger;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.RequestBody;
 import sun.util.locale.LanguageTag;
 
 import javax.inject.Inject;
@@ -60,6 +61,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 @Path("/data-access-request/{id}")
 @RequiresAuthentication
 public class DataAccessRequestResource extends DataAccessEntityResource<DataAccessRequest> {
+
   private static final Logger log = getLogger(DataAccessRequestResource.class);
 
   private DataAccessRequestService dataAccessRequestService;
@@ -73,6 +75,7 @@ public class DataAccessRequestResource extends DataAccessEntityResource<DataAcce
   private Dtos dtos;
 
   private EventBus eventBus;
+
 
   @Inject
   public DataAccessRequestResource(
@@ -125,7 +128,7 @@ public class DataAccessRequestResource extends DataAccessEntityResource<DataAcce
   @Timed
   public Response put(@PathParam("id") String id, Mica.DataAccessRequestDto dto) {
     subjectAclService.checkPermission("/data-access-request", "EDIT", id);
-    if(!id.equals(dto.getId())) throw new BadRequestException();
+    if (!id.equals(dto.getId())) throw new BadRequestException();
     DataAccessRequest request = dtos.fromDto(dto);
     dataAccessRequestService.save(request);
     return Response.noContent().build();
@@ -137,7 +140,7 @@ public class DataAccessRequestResource extends DataAccessEntityResource<DataAcce
   public Response getPdf(@PathParam("id") String id, @QueryParam("lang") String lang) {
     subjectAclService.checkPermission("/data-access-request", "VIEW", id);
 
-    if(Strings.isNullOrEmpty(lang)) lang = LanguageTag.UNDETERMINED;
+    if (Strings.isNullOrEmpty(lang)) lang = LanguageTag.UNDETERMINED;
 
     return Response.ok(dataAccessRequestService.getRequestPdf(id, lang))
       .header("Content-Disposition", "attachment; filename=\"" + "data-access-request-" + id + ".pdf" + "\"").build();
@@ -171,9 +174,30 @@ public class DataAccessRequestResource extends DataAccessEntityResource<DataAcce
     if (!SecurityUtils.getSubject().hasRole(Roles.MICA_DAO) && !SecurityUtils.getSubject().hasRole(Roles.MICA_ADMIN)) {
       throw new AuthorizationException();
     }
-    if(!id.equals(dto.getId())) throw new BadRequestException();
+    if (!id.equals(dto.getId())) throw new BadRequestException();
     DataAccessRequest request = dtos.fromDto(dto);
     dataAccessRequestService.saveActionsLogs(request);
+    return Response.noContent().build();
+  }
+
+  @POST
+  @Path("/_log-actions")
+  @Consumes("application/json")
+  public Response addActionLog(@PathParam("id") String id, Map<String,String> action) {
+    if (!SecurityUtils.getSubject().hasRole(Roles.MICA_DAO) && !SecurityUtils.getSubject().hasRole(Roles.MICA_ADMIN)) {
+      throw new AuthorizationException();
+    }
+    DataAccessRequest request = dataAccessRequestService.findById(id);
+    if (Strings.isNullOrEmpty(action.get("text"))) return Response.status(Response.Status.BAD_REQUEST).build();
+    try {
+      request.getActionLogHistory().add(ActionLog.newBuilder().action(action.get("text"))
+        .changedOn(DateTime.parse(action.get("date")))
+        .author(SecurityUtils.getSubject().getPrincipal().toString()).build());
+      dataAccessRequestService.saveActionsLogs(request);
+    } catch (Exception e) {
+      return Response.status(Response.Status.BAD_REQUEST).build();
+    }
+
     return Response.noContent().build();
   }
 
@@ -182,7 +206,7 @@ public class DataAccessRequestResource extends DataAccessEntityResource<DataAcce
   @Path("/_attachments")
   public Response updateAttachments(@PathParam("id") String id, Mica.DataAccessRequestDto dto) {
     subjectAclService.checkPermission("/data-access-request", "VIEW", id);
-    if(!id.equals(dto.getId())) throw new BadRequestException();
+    if (!id.equals(dto.getId())) throw new BadRequestException();
     DataAccessRequest request = dtos.fromDto(dto);
     dataAccessRequestService.saveAttachments(request);
     return Response.noContent().build();
@@ -196,7 +220,7 @@ public class DataAccessRequestResource extends DataAccessEntityResource<DataAcce
     DataAccessRequest request = dataAccessRequestService.findById(id);
     Optional<Attachment> r = request.getAttachments().stream().filter(a -> a.getId().equals(attachmentId)).findFirst();
 
-    if(!r.isPresent()) throw NoSuchEntityException.withId(Attachment.class, attachmentId);
+    if (!r.isPresent()) throw NoSuchEntityException.withId(Attachment.class, attachmentId);
 
     return Response.ok(fileStoreService.getFile(r.get().getFileReference()))
       .header("Content-Disposition", "attachment; filename=\"" + r.get().getName() + "\"").build();
@@ -206,7 +230,7 @@ public class DataAccessRequestResource extends DataAccessEntityResource<DataAcce
   @Timed
   @Path("/form/attachments/{attachmentName}/{attachmentId}/_download")
   public Response getFormAttachment(@PathParam("id") String id, @PathParam("attachmentName") String attachmentName,
-    @PathParam("attachmentId") String attachmentId) throws IOException {
+                                    @PathParam("attachmentId") String attachmentId) throws IOException {
     subjectAclService.checkPermission("/data-access-request", "VIEW", id);
     dataAccessRequestService.findById(id);
     return Response.ok(fileStoreService.getFile(attachmentId))
@@ -220,7 +244,7 @@ public class DataAccessRequestResource extends DataAccessEntityResource<DataAcce
       dataAccessRequestService.delete(id);
       // remove associated comments
       commentsService.delete(DataAccessRequest.class.getSimpleName(), id);
-    } catch(NoSuchDataAccessRequestException e) {
+    } catch (NoSuchDataAccessRequestException e) {
       log.error("Could not delete data-access-request {}", e);
     }
     return Response.noContent().build();
@@ -242,7 +266,7 @@ public class DataAccessRequestResource extends DataAccessEntityResource<DataAcce
 
   @POST
   @Path("/comments")
-  public Response createComment(@PathParam("id") String id, String message, @QueryParam("admin")  @DefaultValue("false") boolean admin) {
+  public Response createComment(@PathParam("id") String id, String message, @QueryParam("admin") @DefaultValue("false") boolean admin) {
     subjectAclService.checkPermission("/data-access-request", "VIEW", id);
     dataAccessRequestService.findById(id);
     Comment.Builder buildComment = Comment.newBuilder() //
@@ -348,7 +372,7 @@ public class DataAccessRequestResource extends DataAccessEntityResource<DataAcce
     String resource = String.format("/data-access-request/%s/amendment", id);
     String applicant = request.getApplicant();
 
-    if(DataAccessEntityStatus.APPROVED.equals(status)) {
+    if (DataAccessEntityStatus.APPROVED.equals(status)) {
       subjectAclService.addUserPermission(applicant, resource, "ADD", null);
       subjectAclService.addGroupPermission(Roles.MICA_DAO, resource, "VIEW,DELETE", null);
     } else {
