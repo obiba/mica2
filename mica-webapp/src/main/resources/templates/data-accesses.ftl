@@ -5,8 +5,8 @@
 <!DOCTYPE html>
 <html lang="${.lang}">
 <head>
-  <title>${config.name!""} | Data Accesses</title>
   <#include "libs/head.ftl">
+  <title>${config.name!""} | <@message "data-access-requests"/></title>
 </head>
 <body class="hold-transition layout-top-nav layout-navbar-fixed">
 <div class="wrapper">
@@ -32,7 +32,7 @@
           <div class="col-lg-12">
             <div class="card card-primary card-outline">
               <div class="card-header">
-                <h3 class="card-title">Data Access Requests</h3>
+                <h3 class="card-title"><@message "data-access-requests"/></h3>
                 <div class="float-right">
                   <button type="button" class="btn btn-primary ml-4" data-toggle="modal" data-target="#modal-add">
                     <i class="fas fa-plus"></i> <@message "new-data-access-request"/>
@@ -48,14 +48,14 @@
                     <#if isAdministrator>
                       <th>Applicant</th>
                     </#if>
-                    <th>Title</th>
-                    <th>Last Update</th>
-                    <th>Submission Date</th>
+                    <th><@message "title"/></th>
+                    <th><@message "last-update"/></th>
+                    <th><@message "submission-date"/></th>
                     <#if accessConfig.amendmentsEnabled>
-                      <th>Pending Amendments</th>
-                      <th>Total Amendments</th>
+                      <th><@message "pending-amendments"/></th>
+                      <th><@message "total-amendments"/></th>
                     </#if>
-                    <th>Status</th>
+                    <th><@message "status"/></th>
                   </tr>
                   </thead>
                   <tbody>
@@ -92,17 +92,17 @@
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h4 class="modal-title">Confirm Creation</h4>
+          <h4 class="modal-title"><@message "confirm-creation"/></h4>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
         <div class="modal-body">
-          <p>Please confirm that you want to create a new data access request.</p>
+          <p><@message "confirm-data-access-request-creation"/></p>
         </div>
         <div class="modal-footer justify-content-between">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-          <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="micajs.dataAccess.create()">Confirm</button>
+          <button type="button" class="btn btn-default" data-dismiss="modal"><@message "cancel"/></button>
+          <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="micajs.dataAccess.create()"><@message "confirm"/></button>
         </div>
       </div>
       <!-- /.modal-content -->
