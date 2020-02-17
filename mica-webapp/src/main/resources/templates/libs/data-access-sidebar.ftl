@@ -59,10 +59,10 @@
                 <i class="nav-icon fas fa-file-import"></i>
                 <p>
                     <@message "amendments"/>
-                  <i class="right fas fa-angle-left"></i>
                   <#if amendments?size != 0>
                     <span class="badge badge-info right">${amendments?size}</span>
                   </#if>
+                  <i class="fas fa-angle-left right mr-1"></i>
                 </p>
               </a>
               <ul class="nav nav-treeview">
@@ -90,6 +90,9 @@
           <a id="documents-menu" href="../data-access-documents/${dar.id}" class="nav-link">
             <i class="fas fa-copy nav-icon"></i>
             <p><@message "documents"/></p>
+            <#if dar.attachments?size != 0>
+              <span class="badge badge-info right">${dar.attachments?size}</span>
+            </#if>
           </a>
         </li>
         <li class="nav-item">
