@@ -81,3 +81,4 @@
       "en": "A harmonization dataset holds metadata about core variables constructed from multiple study datasets."
   "attributes":
     "static": "true"
+    "type": "keyword"

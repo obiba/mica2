@@ -23,13 +23,13 @@ public class ElasticsearchMigrationUpgrade implements UpgradeStep {
   private final List<String> networkVocabularyKeyword = Stream.of("id", "studyIds").collect(Collectors.toList());
   private final List<String> networkVocabularyString = Stream.of("investigator", "contact").collect(Collectors.toList());
 
-  private final List<String> studyVocabularyKeyword = Stream.of("id", "populations-id", "populations-dataCollectionEvents-id", "populations-dataCollectionEvents-end").collect(Collectors.toList());
+  private final List<String> studyVocabularyKeyword = Stream.of("id", "populations-id", "populations-dataCollectionEvents-id", "populations-dataCollectionEvents-end", "methods-design", "populations-selectionCriteria-countriesIso", "populations-selectionCriteria-gender", "populations-selectionCriteria-pregnantWomen", "populations-selectionCriteria-newborn", "populations-selectionCriteria-twins", "methods-recruitments", "populations-recruitment-dataSources", "populations-dataCollectionEvents-dataSources", "populations-recruitment-generalPopulationSources", "populations-recruitment-specificPopulationSources", "populations-dataCollectionEvents-bioSamples", "populations-dataCollectionEvents-administrativeDatabases", "access_data", "access_bio_samples", "access_other", "className").collect(Collectors.toList());
   private final List<String> studyVocabularyString = Stream.of("opal", "investigator", "contact").collect(Collectors.toList());
 
-  private final List<String> datasetVocabularyKeyword = Stream.of("id", "entityType").collect(Collectors.toList());
+  private final List<String> datasetVocabularyKeyword = Stream.of("id", "entityType", "className").collect(Collectors.toList());
   private final List<String> datasetVocabularyString = new ArrayList<>();
 
-  private final List<String> variableVocabularyKeyword = Stream.of("studyId", "populationId", "dceId", "datasetId", "sets", "mimeType").collect(Collectors.toList());
+  private final List<String> variableVocabularyKeyword = Stream.of("studyId", "populationId", "dceId", "datasetId", "sets", "mimeType", "variableType", "entityType", "valueType", "nature").collect(Collectors.toList());
   private final List<String> variableVocabularyString = Stream.of("name").collect(Collectors.toList());
 
   private final Logger logger = LoggerFactory.getLogger(this.getClass());
