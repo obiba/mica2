@@ -129,6 +129,14 @@ public class DataAccessAmendmentService extends DataAccessEntityService<DataAcce
     return dataAmendmentRequestRepository.findByParentId(parentId);
   }
 
+  public int countByParentId(@NotNull String parentId) {
+    return dataAmendmentRequestRepository.countByParentId(parentId);
+  }
+
+  public int countPendingByParentId(@NotNull String parentId) {
+    return dataAmendmentRequestRepository.countPendingByParentId(parentId);
+  }
+
   public Map<String, List<StatusChange>> getCongregatedAmendmentStatusChangesFor(@NotNull String dataAccessRequestId) {
     return dataAmendmentRequestRepository.findByParentId(dataAccessRequestId).stream()
       .collect(Collectors.toMap(DataAccessAmendment::getId, DataAccessAmendment::getStatusChangeHistory));

@@ -86,7 +86,15 @@ public class CommentsService {
     return commentsRepository.findPublicCommentsByResourceIdAndInstanceId(name, id);
   }
 
+  public int countPublicComments(String name, String id) {
+    return commentsRepository.countPublicCommentsByResourceIdAndInstanceId(name, id);
+  }
+
   public List<Comment> findPrivateComments(String name, String id) {
     return commentsRepository.findByResourceIdAndInstanceIdAndAdminIsTrue(name, id);
+  }
+
+  public int countPrivateComments(String name, String id) {
+    return commentsRepository.countByResourceIdAndInstanceIdAndAdminIsTrue(name, id);
   }
 }
