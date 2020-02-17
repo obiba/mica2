@@ -33,6 +33,8 @@ import org.obiba.mica.core.domain.UnauthorizedCommentException;
 import org.obiba.mica.core.service.CommentsService;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.FileStoreService;
+import org.obiba.mica.file.TempFile;
+import org.obiba.mica.file.service.TempFileService;
 import org.obiba.mica.micaConfig.DataAccessAmendmentsNotEnabled;
 import org.obiba.mica.micaConfig.service.DataAccessFormService;
 import org.obiba.mica.security.Roles;
@@ -71,6 +73,8 @@ public class DataAccessRequestResource extends DataAccessEntityResource<DataAcce
 
   private CommentsService commentsService;
 
+  private TempFileService tempFileService;
+
   private ApplicationContext applicationContext;
 
   private Dtos dtos;
@@ -88,11 +92,13 @@ public class DataAccessRequestResource extends DataAccessEntityResource<DataAcce
     Dtos dtos,
     SubjectAclService subjectAclService,
     FileStoreService fileStoreService,
-    DataAccessFormService dataAccessFormService) {
+    DataAccessFormService dataAccessFormService,
+    TempFileService tempFileService) {
     super(subjectAclService, fileStoreService, dataAccessFormService);
     this.dataAccessRequestService = dataAccessRequestService;
     this.commentMailNotification = commentMailNotification;
     this.commentsService = commentsService;
+    this.tempFileService = tempFileService;
     this.applicationContext = applicationContext;
     this.eventBus = eventBus;
     this.dtos = dtos;
@@ -184,7 +190,7 @@ public class DataAccessRequestResource extends DataAccessEntityResource<DataAcce
   @POST
   @Path("/_log-actions")
   @Consumes("application/json")
-  public Response addActionLog(@PathParam("id") String id, Map<String,String> action) {
+  public Response addActionLog(@PathParam("id") String id, Map<String, String> action) {
     if (!SecurityUtils.getSubject().hasRole(Roles.MICA_DAO) && !SecurityUtils.getSubject().hasRole(Roles.MICA_ADMIN)) {
       throw new AuthorizationException();
     }
@@ -225,6 +231,27 @@ public class DataAccessRequestResource extends DataAccessEntityResource<DataAcce
 
     return Response.ok(fileStoreService.getFile(r.get().getFileReference()))
       .header("Content-Disposition", "attachment; filename=\"" + r.get().getName() + "\"").build();
+  }
+
+  @POST
+  @Timed
+  @Path("/attachments/{attachmentId}")
+  public Response addAttachment(@PathParam("id") String id, @PathParam("attachmentId") String attachmentId) throws IOException {
+    subjectAclService.checkPermission("/data-access-request", "VIEW", id);
+    DataAccessRequest request = dataAccessRequestService.findById(id);
+    TempFile tempFile = tempFileService.getMetadata(attachmentId);
+
+    Attachment attachment = new Attachment();
+    attachment.setId(tempFile.getId());
+    attachment.setName(tempFile.getName());
+    attachment.setSize(tempFile.getSize());
+    attachment.setCreatedBy(tempFile.getCreatedBy());
+    attachment.setCreatedDate(tempFile.getCreatedDate());
+    attachment.setJustUploaded(true);
+
+    request.getAttachments().add(attachment);
+    dataAccessRequestService.saveAttachments(request);
+    return Response.noContent().build();
   }
 
   @DELETE
