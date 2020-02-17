@@ -26,7 +26,12 @@ public interface CommentsRepository extends MongoRepository<Comment, String> {
   @Query("{ resourceId: ?0, instanceId: ?1, $or: [{ admin: { $exists: false } }, { admin: false }] }")
   List<Comment> findPublicCommentsByResourceIdAndInstanceId(String name, String id);
 
+  @Query(value = "{ resourceId: ?0, instanceId: ?1, $or: [{ admin: { $exists: false } }, { admin: false }] }", count = true)
+  int countPublicCommentsByResourceIdAndInstanceId(String name, String id);
+
   List<Comment> findByResourceIdAndInstanceIdAndAdminIsTrue(String name, String id);
+
+  int countByResourceIdAndInstanceIdAndAdminIsTrue(String name, String id);
 
   @Query("{ $and: [{ _id: { $gte: ?0 } }, { resourceId: ?1, instanceId: ?2 }] }")
   List<Comment> findCommentAndNext(ObjectId commentId, String resourceId, String instanceId, Pageable pageable);

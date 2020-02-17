@@ -41,7 +41,7 @@
         <div class="col-12">
           <div class="callout callout-info">
             <p>
-              This is the feasibility inquiry form of the data access request.
+              <@message "data-access-feasibility-callout"/>
             </p>
           </div>
         </div>
