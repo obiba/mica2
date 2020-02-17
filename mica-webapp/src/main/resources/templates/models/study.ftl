@@ -6,7 +6,7 @@
   <!-- Individual study -->
   <#if type == "Individual">
     <div class="row">
-      <div class="col-6">
+      <div class="col-sm-12 col-lg-6">
         <@studyDesign study=study/>
 
         <#if study.model.markerPaper??>
@@ -14,7 +14,7 @@
         </#if>
       </div>
 
-      <div class="col-6">
+      <div class="col-sm-12 col-lg-6">
         <#if study.model.methods.recruitments??>
           <@studyRecruitments study=study/>
         </#if>
