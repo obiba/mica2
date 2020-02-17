@@ -1,26 +1,26 @@
 <!-- REQUIRED SCRIPTS -->
 
 <!-- jQuery -->
-<script src="${pathPrefix!".."}/bower_components/admin-lte/plugins/jquery/jquery.min.js"></script>
+<script src="${pathPrefix!".."}/js/libs/node_modules/admin-lte/plugins/jquery/jquery.min.js"></script>
 <!-- Bootstrap 4 -->
-<script src="${pathPrefix!".."}/bower_components/admin-lte/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="${pathPrefix!".."}/js/libs/node_modules/admin-lte/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
 <!-- AdminLTE App -->
-<script src="${pathPrefix!".."}/bower_components/admin-lte/dist/js/adminlte.min.js"></script>
+<script src="${pathPrefix!".."}/js/libs/node_modules/admin-lte/dist/js/adminlte.min.js"></script>
 <!-- Moment -->
-<script src="${pathPrefix!".."}/bower_components/admin-lte/plugins/moment/moment-with-locales.min.js"></script>
+<script src="${pathPrefix!".."}/js/libs/node_modules/admin-lte/plugins/moment/moment-with-locales.min.js"></script>
 <!-- Mica Utils and dependencies -->
-<script src="${pathPrefix!".."}/bower_components/jquery.redirect/jquery.redirect.js"></script>
-<script src="${pathPrefix!".."}/bower_components/js-cookie/src/js.cookie.js"></script>
+<script src="${pathPrefix!".."}/js/libs/node_modules/jquery.redirect/jquery.redirect.js"></script>
+<script src="${pathPrefix!".."}/js/libs/node_modules/js-cookie/src/js.cookie.js"></script>
 <script src="${pathPrefix!".."}/js/mica.js"></script>
 <!-- DataTables -->
-<script src="${pathPrefix!".."}/bower_components/admin-lte/plugins/datatables/jquery.dataTables.js"></script>
-<script src="${pathPrefix!".."}/bower_components/admin-lte/plugins/datatables-bs4/js/dataTables.bootstrap4.js"></script>
+<script src="${pathPrefix!".."}/js/libs/node_modules/admin-lte/plugins/datatables/jquery.dataTables.js"></script>
+<script src="${pathPrefix!".."}/js/libs/node_modules/admin-lte/plugins/datatables-bs4/js/dataTables.bootstrap4.js"></script>
 <!-- Toastr -->
-<script src="${pathPrefix!".."}/bower_components/admin-lte/plugins/toastr/toastr.min.js"></script>
+<script src="${pathPrefix!".."}/js/libs/node_modules/admin-lte/plugins/toastr/toastr.min.js"></script>
 <!-- Axios -->
-<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="${pathPrefix!".."}/js/libs/node_modules/axios/dist/axios.min.js"></script>
 <!-- Marked -->
-<script src="${pathPrefix!".."}/bower_components/marked/lib/marked.js"></script>
+<script src="${pathPrefix!".."}/js/libs/node_modules/marked/lib/marked.js"></script>
 
 <!-- Global js variables -->
 <script>

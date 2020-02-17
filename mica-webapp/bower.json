@@ -21,15 +21,12 @@
     "angular-translate-storage-cookie": "2.17.0",
     "angular-ui-select": "0.19.8",
     "angular-ui-sortable": "0.19.0",
-    "admin-lte": "3.0.2",
     "bootstrap": "3.3.7",
     "bootswatch": "3.3.7",
     "font-awesome": "4.7.0",
     "grunt-contrib-less": "1.3.0",
-    "jquery.redirect": "1.1.4",
     "jquery-ui": "1.12.1",
     "json3": "3.3.2",
-    "js-cookie": "2.2.1",
     "mica-study-timeline": "https://github.com/obiba/mica-study-timeline.git#1.0.5",
     "ng-file-upload": "12.2.13",
     "ng-obiba": "https://github.com/obiba/ng-obiba.git#1.9.8",
@@ -52,8 +49,7 @@
     "sf-typeahead": "https://github.com/obiba/sf-typeahead.git#1.1.1",
     "sf-obiba-countries-ui-select": "https://github.com/obiba/sf-obiba-countries-ui-select.git#1.0.3",
     "sf-radio-group-collection": "https://github.com/obiba/sf-radio-group-collection.git#master",
-    "obiba-shims": "https://github.com/obiba/obiba-shims.git#1.0.0",
-    "simplemde": "^1.11.2"
+    "obiba-shims": "https://github.com/obiba/obiba-shims.git#1.0.0"
   },
   "devDependencies": {
     "angular-mocks": "1.6.9",
