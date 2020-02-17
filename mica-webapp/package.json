@@ -21,7 +21,7 @@
     "grunt-contrib-uglify": "2.0.0",
     "grunt-contrib-watch": "1.0.0",
     "grunt-karma": "2.0.0",
-    "grunt-modernizr": "1.0.2",
+    "grunt-modernizr": "^2.1.1",
     "grunt-ng-annotate": "3.0.0",
     "grunt-rev": "0.1.0",
     "grunt-svgmin": "4.0.0",
