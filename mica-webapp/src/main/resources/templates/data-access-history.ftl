@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html lang="${.lang}">
 <head>
-    <#include "libs/head.ftl">
+  <#include "libs/head.ftl">
+  <link rel="stylesheet" href="${pathPrefix!".."}/js/libs/node_modules/bootstrap-datepicker/dist/css/bootstrap-datepicker3.css"></link>
   <title>${config.name!""} | Data Access History ${dar.id}</title>
 </head>
 <body class="hold-transition sidebar-mini">
@@ -41,7 +42,7 @@
         <div class="col-12">
           <div class="callout callout-info">
             <p>
-              This is the history of changes and actions of the data access request.
+              <@message "data-access-history-callout"/>
             </p>
           </div>
         </div>
@@ -50,7 +51,7 @@
       <!-- /.row -->
 
       <div class="row">
-        <div class="col-lg-6">
+        <div class="col-sm-12 col-lg-6">
           <div class="card card-info card-outline">
             <div class="card-header">
               <h3 class="card-title">Status Changes</h3>
@@ -59,17 +60,30 @@
               <table id="status" class="table table-bordered table-striped">
                 <thead>
                 <tr>
+                  <#if accessConfig.amendmentsEnabled>
+                    <th>Form</th>
+                  </#if>
                   <th>Status</th>
                   <th>Author</th>
                   <th>Date</th>
                 </tr>
                 </thead>
                 <tbody>
-                <#list dar.statusChangeHistory?reverse as chg>
+                <#list statusChangeEvents?reverse as event>
                   <tr>
-                    <td><@message chg.to.toString()/></td>
-                    <td>${authors[chg.author].fullName}</td>
-                    <td class="moment-datetime">${chg.changedOn.toString(datetimeFormat)}</td>
+                    <#if accessConfig.amendmentsEnabled>
+                      <td>
+                        <#if event.amendment>
+                          <a href="../data-access-amendment-form/${event.form.id}"><i class="fas fa-file-import"></i> ${event.form.id}</a>
+                        <#else>
+                          <a href="../data-access-form/${event.form.id}"><i class="fas fa-book"></i> ${event.form.id}</a>
+                        </#if>
+
+                      </td>
+                    </#if>
+                    <td><i class="fas fa-circle text-${statusColor(event.status.toString())}"></i> <@message event.status.toString()/></td>
+                    <td>${event.profile.fullName}</td>
+                    <td class="moment-datetime">${event.date.toString(datetimeFormat)}</td>
                   </tr>
                 </#list>
                 </tbody>
@@ -78,34 +92,36 @@
           </div>
         </div>
         <!-- /.col-6 -->
-        <div class="col-6">
-          <div class="card card-info card-outline">
-            <div class="card-header">
-              <h3 class="card-title">Action Log</h3>
-              <div class="float-right"><a href="#" class="btn btn-primary"><i class="fas fa-plus"></i> Add</a></div>
-            </div>
-            <div class="card-body">
-              <table id="actions" class="table table-bordered table-striped">
-                <thead>
-                <tr>
-                  <th>Action</th>
-                  <th>Author</th>
-                  <th>Date</th>
-                </tr>
-                </thead>
-                <tbody>
-                <#list dar.actionLogHistory as act>
+        <#if isAdministrator || isDAO>
+          <div class="col-sm-12 col-lg-6">
+            <div class="card card-info card-outline">
+              <div class="card-header">
+                <h3 class="card-title">Action Log</h3>
+                <div class="float-right"><a href="#" class="btn btn-primary" data-toggle="modal" data-target="#modal-add"><i class="fas fa-plus"></i> Add</a></div>
+              </div>
+              <div class="card-body">
+                <table id="actions" class="table table-bordered table-striped">
+                  <thead>
                   <tr>
-                    <td>${act.action}</td>
-                    <td>${act.author}</td>
-                    <td class="moment-datetime">${act.changedOn.toString(datetimeFormat)}</td>
+                    <th>Action</th>
+                    <th>Author</th>
+                    <th>Date</th>
                   </tr>
-                </#list>
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                  <#list dar.actionLogHistory as act>
+                    <tr>
+                      <td>${act.action}</td>
+                      <td>${act.author}</td>
+                      <td class="moment-date">${act.changedOn.toString(datetimeFormat)}</td>
+                    </tr>
+                  </#list>
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
-        </div>
+        </#if>
         <!-- /.col-6 -->
       </div>
       <!-- /.row -->
@@ -115,7 +131,43 @@
   </div>
   <!-- /.content-wrapper -->
 
-    <#include "libs/footer.ftl">
+  <!-- Action addition modal -->
+  <div class="modal fade" id="modal-add">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title"><@message "add-action"/></h4>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label><@message "action"/></label>
+            <input type="text" id="action-text" class="form-control">
+          </div>
+          <div class="form-group">
+            <label><@message "date"/></label>
+            <div class="input-group">
+              <input type="text" id="action-date" class="form-control">
+              <div class="input-group-append">
+                <span class="input-group-text"><i class="fas fa-calendar-alt"></i></span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer justify-content-between">
+          <button type="button" class="btn btn-default" data-dismiss="modal"><@message "cancel"/></button>
+          <button type="button" class="btn btn-primary" id="action-add-submit"><@message "submit"/></button>
+        </div>
+      </div>
+      <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+  </div>
+  <!-- /.modal -->
+
+  <#include "libs/footer.ftl">
 
   <!-- Control Sidebar -->
   <aside class="control-sidebar control-sidebar-dark">
@@ -126,11 +178,24 @@
 <!-- ./wrapper -->
 
 <#include "libs/scripts.ftl">
+<!-- Datepicker -->
+<script src="${pathPrefix!".."}/js/libs/node_modules/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js"></script>
 <script>
     $(function () {
         $('#history-menu').addClass('active').attr('href', '#')
         $("#status").DataTable(dataTablesNoSortSearchOpts);
         $("#actions").DataTable(dataTablesNoSortSearchOpts);
+        $('#action-date').datepicker({
+          locale: '${.lang}',
+          format: 'yyyy-mm-dd'
+        });
+        $('#action-add-submit').click(function() {
+          let action = {
+            text: $('#action-text').val(),
+            date: $('#action-date').val()
+          };
+          micajs.dataAccess.addAction('${dar.id}', action);
+        });
     });
 </script>
 </body>

@@ -3,12 +3,7 @@ package org.obiba.mica.web.controller;
 import com.google.common.collect.Lists;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
-import org.obiba.core.translator.JsonTranslator;
-import org.obiba.core.translator.PrefixedValueTranslator;
-import org.obiba.core.translator.TranslationUtils;
-import org.obiba.core.translator.Translator;
 import org.obiba.mica.access.NoSuchDataAccessRequestException;
-import org.obiba.mica.access.domain.ChangeLog;
 import org.obiba.mica.access.domain.DataAccessAmendment;
 import org.obiba.mica.access.domain.DataAccessRequest;
 import org.obiba.mica.access.domain.DataAccessRequestTimeline;
@@ -25,6 +20,9 @@ import org.obiba.mica.micaConfig.service.DataAccessAmendmentFormService;
 import org.obiba.mica.micaConfig.service.DataAccessFormService;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.user.UserProfileService;
+import org.obiba.mica.web.controller.domain.DataAccessConfig;
+import org.obiba.mica.web.controller.domain.FormStatusChangeEvent;
+import org.obiba.mica.web.controller.domain.SchemaFormConfig;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
@@ -114,8 +112,21 @@ public class DataAccessController extends BaseController {
       DataAccessRequest dar = (DataAccessRequest) params.get("dar");
       addDataAccessConfiguration(params);
 
-      params.put("authors", dar.getStatusChangeHistory().stream().map(ChangeLog::getAuthor).distinct()
-        .collect(Collectors.toMap(u -> u, u -> userProfileService.getProfileMap(u, true))));
+      // merge change history from main form and amendment forms
+      final List<FormStatusChangeEvent> events = Lists.newArrayList(
+        dar.getStatusChangeHistory().stream()
+          .map(e -> new FormStatusChangeEvent(userProfileService, dar, e)).collect(Collectors.toList()));
+      getDataAccessAmendments(params).forEach(a -> {
+        a.getStatusChangeHistory().stream().map(e -> new FormStatusChangeEvent(userProfileService, a, e))
+          .forEach(events::add);
+      });
+      // order change events
+      params.put("statusChangeEvents", events.stream().sorted(new Comparator<FormStatusChangeEvent>() {
+        @Override
+        public int compare(FormStatusChangeEvent event1, FormStatusChangeEvent event2) {
+          return event1.getDate().compareTo(event2.getDate());
+        }
+      }).collect(Collectors.toList()));
 
       return new ModelAndView("data-access-history", params);
     } else {
@@ -224,6 +235,9 @@ public class DataAccessController extends BaseController {
     DataAccessAmendment lastAmendment = amendments.stream().max(Comparator.comparing(AbstractAuditableDocument::getLastModifiedDate)).orElse(null);
     params.put("lastAmendment", lastAmendment);
 
+    params.put("commentsCount", commentsService.countPublicComments("/data-access-request", id));
+    params.put("privateCommentsCount", commentsService.countPrivateComments("/data-access-request", id));
+
     return params;
   }
 
@@ -257,6 +271,10 @@ public class DataAccessController extends BaseController {
     return (DataAccessAmendment) params.get("amendment");
   }
 
+  private List<DataAccessAmendment> getDataAccessAmendments(Map<String, Object> params) {
+    return (List<DataAccessAmendment>) params.get("amendments");
+  }
+
   private DataAccessRequest getDataAccessRequest(String id) {
     return dataAccessRequestService.findById(id);
   }
@@ -272,7 +290,7 @@ public class DataAccessController extends BaseController {
     Optional<DataAccessForm> d = dataAccessFormService.find();
     if (!d.isPresent()) throw NoSuchDataAccessFormException.withDefaultMessage();
     DataAccessForm dataAccessForm = d.get();
-    params.put("formConfig", new SchemaFormConfig(dataAccessForm.getSchema(), dataAccessForm.getDefinition(), request.getContent(), locale, readOnly));
+    params.put("formConfig", new SchemaFormConfig(micaConfigService, dataAccessForm.getSchema(), dataAccessForm.getDefinition(), request.getContent(), locale, readOnly));
     params.put("accessConfig", new DataAccessConfig(dataAccessForm));
   }
 
@@ -283,87 +301,8 @@ public class DataAccessController extends BaseController {
     if (!ad.isPresent()) throw NoSuchDataAccessFormException.withDefaultMessage();
     DataAccessForm dataAccessForm = d.get();
     DataAccessAmendmentForm dataAccessAmendmentForm = ad.get();
-    params.put("formConfig", new SchemaFormConfig(dataAccessAmendmentForm.getSchema(), dataAccessAmendmentForm.getDefinition(), amendment.getContent(), locale, readOnly));
+    params.put("formConfig", new SchemaFormConfig(micaConfigService, dataAccessAmendmentForm.getSchema(), dataAccessAmendmentForm.getDefinition(), amendment.getContent(), locale, readOnly));
     params.put("accessConfig", new DataAccessConfig(dataAccessForm));
   }
 
-  /**
-   * Workflow settings.
-   */
-  public class DataAccessConfig {
-
-    private final boolean withReview;
-    private final boolean withConditionalApproval;
-    private final boolean approvedFinal;
-    private final boolean rejectedFinal;
-    private final boolean amendmentsEnabled;
-
-    private DataAccessConfig(DataAccessForm form) {
-      this.withReview = form.isWithReview();
-      this.withConditionalApproval = form.isWithConditionalApproval();
-      this.approvedFinal = form.isApprovedFinal();
-      this.rejectedFinal = form.isRejectedFinal();
-      this.amendmentsEnabled = form.isAmendmentsEnabled();
-    }
-
-    public boolean isWithReview() {
-      return withReview;
-    }
-
-    public boolean isWithConditionalApproval() {
-      return withConditionalApproval;
-    }
-
-    public boolean isApprovedFinal() {
-      return approvedFinal;
-    }
-
-    public boolean isRejectedFinal() {
-      return rejectedFinal;
-    }
-
-    public boolean isAmendmentsEnabled() {
-      return amendmentsEnabled;
-    }
-  }
-
-  /**
-   * Schema form settings.
-   */
-  public class SchemaFormConfig {
-
-    private final String schema;
-    private final String definition;
-    private final String model;
-    private final boolean readOnly;
-
-    private SchemaFormConfig(String schema, String definition, String model, String locale, boolean readOnly) {
-      this.readOnly = readOnly;
-      String lang = locale == null ? "en" : locale.replaceAll("\"", "");
-      Translator translator = JsonTranslator.buildSafeTranslator(() -> micaConfigService.getTranslations(lang, false));
-      translator = new PrefixedValueTranslator(translator);
-
-      TranslationUtils translationUtils = new TranslationUtils();
-      this.schema = translationUtils.translate(schema, translator).replaceAll("col-xs-", "col-");
-      this.definition = translationUtils.translate(definition, translator).replaceAll("col-xs-", "col-");
-      this.model = model;
-    }
-
-    public String getSchema() {
-      return schema;
-    }
-
-    public String getDefinition() {
-      return definition;
-    }
-
-    public String getModel() {
-      return model;
-    }
-
-    public boolean isReadOnly() {
-      return readOnly;
-    }
-
-  }
 }
