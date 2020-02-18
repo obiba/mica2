@@ -4,8 +4,8 @@
 <!-- Main Sidebar Container -->
 <aside class="main-sidebar sidebar-dark-primary">
   <!-- Brand Logo -->
-  <a href="../js/libs/node_modules/admin-lte/index3.html" class="brand-link bg-white">
-    <img src="../images/logo.png"
+  <a href="${config.portalUrl!"../assets/libs/node_modules/admin-lte/index3.html"}" class="brand-link bg-white">
+    <img src="../assets/images/logo.png"
          alt="Logo"
          class="brand-image img-circle elevation-3"
          style="opacity: .8">

@@ -40,4 +40,4 @@
     };
 </script>
 
-<script src="${pathPrefix}/js/mica-data-access-form.js"></script>
+<script src="${pathPrefix}/assets/js/mica-data-access-form.js"></script>

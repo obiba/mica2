@@ -103,7 +103,7 @@
               <directory>node_modules</directory>
             </fileset>
             <fileset>
-	      <directory>src/main/webapp/js/libs/node_modules</directory>
+	            <directory>src/main/webapp/assets/libs/node_modules</directory>
             </fileset>
           </filesets>
         </configuration>
@@ -146,7 +146,7 @@
               <arguments>
                 <argument>install</argument>
                 <argument>--prefix</argument>
-                <argument>src/main/webapp/js/libs</argument>
+                <argument>src/main/webapp/assets/libs</argument>
               </arguments>
             </configuration>
             <goals>
