@@ -1,5 +1,6 @@
 package org.obiba.mica.web.controller;
 
+import com.google.common.collect.Lists;
 import org.obiba.mica.study.domain.BaseStudy;
 import org.obiba.mica.study.domain.HarmonizationStudy;
 import org.obiba.mica.study.domain.Study;
@@ -22,7 +23,7 @@ public class StudiesController extends BaseController {
 
   @GetMapping("/studies")
   public ModelAndView list() {
-    Map<String, Object> params = new HashMap<String, Object>();
+    Map<String, Object> params = newParameters();
     params.put("studies", getStudies());
     return new ModelAndView("studies", params);
   }
@@ -44,9 +45,13 @@ public class StudiesController extends BaseController {
   }
 
   private List<BaseStudy> getStudies() {
-    return publishedStudyService.findAll().stream()
-      .filter(s -> isAccessible((s instanceof Study) ? "/individual-study" : "/harmonization-study", s.getId()))
-      .collect(Collectors.toList());
+    try {
+      return publishedStudyService.findAll().stream()
+        .filter(s -> isAccessible((s instanceof Study) ? "/individual-study" : "/harmonization-study", s.getId()))
+        .collect(Collectors.toList());
+    } catch(Exception e) {
+      return Lists.newArrayList();
+    }
   }
 
 }
