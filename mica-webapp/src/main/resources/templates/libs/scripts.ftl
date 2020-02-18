@@ -1,26 +1,26 @@
 <!-- REQUIRED SCRIPTS -->
 
 <!-- jQuery -->
-<script src="${pathPrefix!".."}/js/libs/node_modules/admin-lte/plugins/jquery/jquery.min.js"></script>
+<script src="${pathPrefix!".."}/assets/libs/node_modules/admin-lte/plugins/jquery/jquery.min.js"></script>
 <!-- Bootstrap 4 -->
-<script src="${pathPrefix!".."}/js/libs/node_modules/admin-lte/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="${pathPrefix!".."}/assets/libs/node_modules/admin-lte/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
 <!-- AdminLTE App -->
-<script src="${pathPrefix!".."}/js/libs/node_modules/admin-lte/dist/js/adminlte.min.js"></script>
+<script src="${pathPrefix!".."}/assets/libs/node_modules/admin-lte/dist/js/adminlte.min.js"></script>
 <!-- Moment -->
-<script src="${pathPrefix!".."}/js/libs/node_modules/admin-lte/plugins/moment/moment-with-locales.min.js"></script>
+<script src="${pathPrefix!".."}/assets/libs/node_modules/admin-lte/plugins/moment/moment-with-locales.min.js"></script>
 <!-- DataTables -->
-<script src="${pathPrefix!".."}/js/libs/node_modules/admin-lte/plugins/datatables/jquery.dataTables.js"></script>
-<script src="${pathPrefix!".."}/js/libs/node_modules/admin-lte/plugins/datatables-bs4/js/dataTables.bootstrap4.js"></script>
+<script src="${pathPrefix!".."}/assets/libs/node_modules/admin-lte/plugins/datatables/jquery.dataTables.js"></script>
+<script src="${pathPrefix!".."}/assets/libs/node_modules/admin-lte/plugins/datatables-bs4/js/dataTables.bootstrap4.js"></script>
 <!-- Toastr -->
-<script src="${pathPrefix!".."}/js/libs/node_modules/admin-lte/plugins/toastr/toastr.min.js"></script>
+<script src="${pathPrefix!".."}/assets/libs/node_modules/admin-lte/plugins/toastr/toastr.min.js"></script>
 <!-- Axios -->
-<script src="${pathPrefix!".."}/js/libs/node_modules/axios/dist/axios.min.js"></script>
+<script src="${pathPrefix!".."}/assets/libs/node_modules/axios/dist/axios.min.js"></script>
 <!-- Marked -->
-<script src="${pathPrefix!".."}/js/libs/node_modules/marked/lib/marked.js"></script>
+<script src="${pathPrefix!".."}/assets/libs/node_modules/marked/lib/marked.js"></script>
 <!-- Mica Utils and dependencies -->
-<script src="${pathPrefix!".."}/js/libs/node_modules/jquery.redirect/jquery.redirect.js"></script>
-<script src="${pathPrefix!".."}/js/libs/node_modules/js-cookie/src/js.cookie.js"></script>
-<script src="${pathPrefix!".."}/js/mica.js"></script>
+<script src="${pathPrefix!".."}/assets/libs/node_modules/jquery.redirect/jquery.redirect.js"></script>
+<script src="${pathPrefix!".."}/assets/libs/node_modules/js-cookie/src/js.cookie.js"></script>
+<script src="${pathPrefix!".."}/assets/js/mica.js"></script>
 
 <!-- Global js variables -->
 <script>
@@ -32,7 +32,7 @@
         "info": true,
         "autoWidth": true,
         "language": {
-            "url": "${pathPrefix!".."}/i18n/datatables.${.lang}.json"
+            "url": "${pathPrefix!".."}/assets/i18n/datatables.${.lang}.json"
         }
     };
     var dataTablesSortSearchOpts = {
@@ -43,7 +43,7 @@
         "info": false,
         "autoWidth": true,
         "language": {
-            "url": "${pathPrefix!".."}/i18n/datatables.${.lang}.json"
+            "url": "${pathPrefix!".."}/assets/i18n/datatables.${.lang}.json"
         }
     };
     var dataTablesSortOpts = {
@@ -54,7 +54,7 @@
         "info": false,
         "autoWidth": true,
         "language": {
-            "url": "${pathPrefix!".."}/i18n/datatables.${.lang}.json"
+            "url": "${pathPrefix!".."}/assets/i18n/datatables.${.lang}.json"
         }
     };
     var dataTablesNoSortSearchOpts = {
@@ -65,7 +65,7 @@
         "info": false,
         "autoWidth": true,
         "language": {
-            "url": "${pathPrefix!".."}/i18n/datatables.${.lang}.json"
+            "url": "${pathPrefix!".."}/assets/i18n/datatables.${.lang}.json"
         }
     };
 </script>
