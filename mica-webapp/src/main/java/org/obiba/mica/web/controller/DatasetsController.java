@@ -1,5 +1,6 @@
 package org.obiba.mica.web.controller;
 
+import com.google.common.collect.Lists;
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.domain.StudyDataset;
@@ -44,9 +45,13 @@ public class DatasetsController extends BaseController {
   }
 
   private List<Dataset> getDatasets() {
-    return publishedDatasetService.findAll().stream()
-      .filter(d -> isAccessible((d instanceof StudyDataset) ? "/collected-dataset" : "harmonized-dataset", d.getId()))
-      .collect(Collectors.toList());
+    try {
+      return publishedDatasetService.findAll().stream()
+        .filter(d -> isAccessible((d instanceof StudyDataset) ? "/collected-dataset" : "harmonized-dataset", d.getId()))
+        .collect(Collectors.toList());
+    } catch(Exception e) {
+      return Lists.newArrayList();
+    }
   }
 
 }
