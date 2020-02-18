@@ -3,5 +3,5 @@
         $('#network-hits').text(new Intl.NumberFormat().format(stats.networkResultDto.totalHits));
         $('#study-hits').text(new Intl.NumberFormat().format(stats.studyResultDto.totalHits));
         $('#variable-hits').text(new Intl.NumberFormat().format(stats.variableResultDto.totalHits));
-    }, micajs.redirectError);
+    });
 </script>
