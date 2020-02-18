@@ -11,7 +11,7 @@
             $('#network-hits').text(new Intl.NumberFormat().format(stats.networkResultDto.totalHits));
             $('#dataset-hits').text(new Intl.NumberFormat().format(stats.datasetResultDto.totalHits));
             $('#variable-hits').text(new Intl.NumberFormat().format(stats.variableResultDto.totalHits));
-        }, micajs.redirectError);
+        });
 
         <#if timelineData??>
         let timelineData = ${timelineData};
