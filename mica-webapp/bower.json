@@ -44,7 +44,7 @@
     "angular-xeditable": "0.8.1",
     "angular-media-queries": "0.6.1",
     "sf-localized-string": "https://github.com/obiba/sf-localized-string.git#1.3.3",
-    "sf-obiba-file-upload": "https://github.com/obiba/sf-obiba-file-upload.git#1.1.3",
+    "sf-obiba-file-upload": "https://github.com/obiba/sf-obiba-file-upload.git#1.2.0",
     "sf-checkboxgroup": "https://github.com/obiba/sf-checkboxgroup.git#1.0.1",
     "sf-typeahead": "https://github.com/obiba/sf-typeahead.git#1.1.1",
     "sf-obiba-simple-mde": "https://github.com/obiba/sf-obiba-simple-mde.git#1.0.0",
