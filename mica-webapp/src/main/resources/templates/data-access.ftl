@@ -252,7 +252,7 @@
 
               <#elseif dar.status == "APPROVED">
 
-                <h4 class="mt-3"><@message "report-timeline-title"/></h4>
+                <h4><@message "report-timeline-title"/></h4>
                 <p><@message "report-timeline-text"/></p>
 
                 <#function isPast date>
