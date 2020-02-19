@@ -42,6 +42,8 @@ public class MicaConfig extends AbstractAuditableDocument {
 
   public static final String DEFAULT_OPAL = "https://localhost:8443";
 
+  public static final String DEFAULT_PUBLIC_URL = "http://localhost:8082";
+
   public static final String[] LAYOUT_OPTIONS = {"layout1", "layout2"};
 
   public static final long DEFAULT_MAX_ITEMS_PER_SET = 20000;
