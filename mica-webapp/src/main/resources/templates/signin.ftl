@@ -15,19 +15,19 @@
   <!-- /.login-logo -->
   <div class="card">
     <div class="card-body login-card-body">
-      <p class="login-box-msg">Sign in to start your session</p>
+      <p class="login-box-msg"><@message "sign-in-caption"/></p>
 
       <div id="alertFailure" class="alert alert-danger d-none">
-        <small>Authentication failed. Please verify credentials.</small>
+        <small><@message "sign-in-auth-failed"/></small>
       </div>
 
       <div id="alertBanned" class="alert alert-warning d-none">
-        <small>Too many failures. Please try again later.</small>
+        <small><@message "sign-in-too-many-failures"/></small>
       </div>
 
       <form id="form" method="post">
         <div class="input-group mb-3">
-          <input name="username" type="text" class="form-control" placeholder="Username or Email">
+          <input name="username" type="text" class="form-control" placeholder="<@message "sign-in-username"/>">
           <div class="input-group-append">
             <div class="input-group-text">
               <span class="fas fa-envelope"></span>
@@ -35,7 +35,7 @@
           </div>
         </div>
         <div class="input-group mb-3">
-          <input name="password" type="password" class="form-control" placeholder="Password">
+          <input name="password" type="password" class="form-control" placeholder="<@message "sign-in-password"/>">
           <div class="input-group-append">
             <div class="input-group-text">
               <span class="fas fa-lock"></span>
@@ -48,18 +48,18 @@
           </div>
           <!-- /.col -->
           <div class="col-4">
-            <button type="submit" class="btn btn-primary btn-block">Sign In</button>
+            <button type="submit" class="btn btn-primary btn-block"><@message "sign-in-submit"/></button>
           </div>
           <!-- /.col -->
         </div>
       </form>
 
-      <#if oauthProviders?? && oauthProviders?size != 0>
+      <#if oidcProviders?? && oidcProviders?size != 0>
         <div class="social-auth-links text-center mb-3">
-          <p>- OR -</p>
-          <#list oauthProviders as oaut>
-            <a href="#" class="btn btn-block btn-primary">
-              Sign in using ${oauth.name}
+          <p>- <@message "sign-in-or"/> -</p>
+          <#list oidcProviders as oidc>
+            <a href="${oidc.signinUrl}" class="btn btn-block btn-primary">
+              <@message "sign-in-with"/> ${oidc.title}
             </a>
           </#list>
         </div>
@@ -67,10 +67,10 @@
       </#if>
 
       <p class="mb-1">
-        <a href="forgot-password">I forgot my password</a>
+        <a href="forgot-password"><@message "forgot-password"/></a>
       </p>
       <p class="mb-0">
-        <a href="signup" class="text-center">Register a new membership</a>
+        <a href="signup" class="text-center"><@message "register-new-membership"/></a>
       </p>
     </div>
     <!-- /.login-card-body -->
