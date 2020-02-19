@@ -6,10 +6,14 @@
   <title>${config.name!""} | Sign up</title>
   <!-- Tell the browser to be responsive to screen width -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <#include "libs/head.ftl">
-  <!-- icheck bootstrap -->
-  <link rel="stylesheet" href="../../plugins/icheck-bootstrap/icheck-bootstrap.min.css">
+  <#include "libs/head.ftl">
+  <script type="text/javascript">
+    var onloadCallback = function() {
+      grecaptcha.render('html_element', {
+        'sitekey' : '6LdANggTAAAAAEBWCuEL-YkFd3ehtzlg4CzQpn3e'
+      });
+    };
+  </script>
 </head>
 <body class="hold-transition login-page">
 <div class="login-box">
@@ -46,9 +50,9 @@
             </div>
           </div>
         </div>
+        <div id="html_element" class="mb-3"></div>
         <div class="row">
           <div class="col-8">
-
           </div>
           <!-- /.col -->
           <div class="col-4">
@@ -57,6 +61,9 @@
           <!-- /.col -->
         </div>
       </form>
+      <script src="https://www.google.com/recaptcha/api.js?onload=onloadCallback&render=explicit"
+              async defer>
+      </script>
 
       <#if oauthProviders?? && oauthProviders?size != 0>
         <div class="social-auth-links text-center mb-3">
