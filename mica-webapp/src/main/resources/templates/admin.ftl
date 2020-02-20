@@ -54,7 +54,7 @@
 <div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
-      <a href="#" class="navbar-brand">{{micaConfig.name}}</a>
+      <a href=".." class="navbar-brand">{{micaConfig.name}}</a>
       <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
         <span class="sr-only">Toggle navigation</span>
         <span class="icon-bar"></span>
@@ -178,9 +178,9 @@
           <li>© 2019</li>
           <li><a href="http://obiba.org" target="_blank"> OBiBa </a></li>
           <li><a href="http://micadoc.obiba.org" target="_blank" translate>
-            global.documentation</a></li>
+              global.documentation</a></li>
           <li><a href="https://github.com/obiba/mica2" target="_blank" translate>global.sources
-          </a></li>
+            </a></li>
         </ul>
       </div>
     </div>
