@@ -56,14 +56,14 @@
 
       <!-- Timelime of comments  -->
       <div class="row">
-        <div class="col-6">
+        <div class="col-sm-12 col-lg-6">
             <@commentsTimeline isPrivate="true"/>
         </div>
         <!-- /.col -->
       </div>
 
       <div class="row">
-        <div class="col-6">
+        <div class="col-sm-12 col-lg-6">
           <div class="card timeline-block">
             <div class="card-body p-0">
               <textarea id="comment-add-write-text"></textarea>
