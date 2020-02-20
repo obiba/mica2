@@ -198,7 +198,7 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
       return getHarmonizedDatasetVariable(datasetId, variableId, variableName);
     }
 
-    return getDatasetVariableInternal(Indexer.VARIABLE_TYPE, variableId, variableName);
+    return getDatasetVariableInternal(Indexer.PUBLISHED_VARIABLE_INDEX, Indexer.VARIABLE_TYPE, variableId, variableName);
   }
 
   protected Mica.DatasetVariableDto getDatasetVariableDto(@NotNull String datasetId, @NotNull String variableName,
@@ -249,9 +249,9 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
   private DatasetVariable getHarmonizedDatasetVariable(String datasetId, String variableId, String variableName) {
     String dataSchemaVariableId = DatasetVariable.IdResolver
         .encode(datasetId, variableName, DatasetVariable.Type.Dataschema, null, null, null, null);
-    DatasetVariable harmonizedDatasetVariable = getDatasetVariableInternal(Indexer.HARMONIZED_VARIABLE_TYPE,
+    DatasetVariable harmonizedDatasetVariable = getDatasetVariableInternal(Indexer.PUBLISHED_HVARIABLE_INDEX, Indexer.HARMONIZED_VARIABLE_TYPE,
         variableId, variableName);
-    DatasetVariable dataSchemaVariable = getDatasetVariableInternal(Indexer.VARIABLE_TYPE,
+    DatasetVariable dataSchemaVariable = getDatasetVariableInternal(Indexer.PUBLISHED_VARIABLE_INDEX, Indexer.VARIABLE_TYPE,
         dataSchemaVariableId, variableName);
 
     dataSchemaVariable.getAttributes().asAttributeList().forEach(a -> {
@@ -261,8 +261,8 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
     return harmonizedDatasetVariable;
   }
 
-  private DatasetVariable getDatasetVariableInternal(String indexType, String variableId, String variableName) {
-    InputStream inputStream = searcher.getDocumentById(Indexer.PUBLISHED_VARIABLE_INDEX, indexType, variableId);
+  private DatasetVariable getDatasetVariableInternal(String indexName, String indexType, String variableId, String variableName) {
+    InputStream inputStream = searcher.getDocumentById(indexName, indexType, variableId);
     if (inputStream == null) throw new NoSuchVariableException(variableName);
     try {
       return objectMapper.readValue(inputStream, DatasetVariable.class);

@@ -1,3 +1,4 @@
+
 /*
  * Copyright (c) 2018 OBiBa. All rights reserved.
  *
@@ -8,6 +9,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.obiba.mica.dataset.event;
+package org.obiba.mica.micaConfig.event;
 
-public class HarmonizationDatasetIndexedEvent {}
+public class DeleteTaxonomiesEvent {
+}

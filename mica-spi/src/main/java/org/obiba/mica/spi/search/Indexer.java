@@ -30,6 +30,7 @@ public interface Indexer {
   String[] DATASET_LOCALIZED_ANALYZED_FIELDS = {"acronym", "name", "description"};
 
   String DRAFT_VARIABLE_INDEX = "variable-draft";
+  String PUBLISHED_HVARIABLE_INDEX = "hvariable-published";
   String PUBLISHED_VARIABLE_INDEX = "variable-published";
   String VARIABLE_TYPE = MAPPING_NAME;
   String HARMONIZED_VARIABLE_TYPE = HMAPPING_NAME;
@@ -60,6 +61,8 @@ public interface Indexer {
   String ATTACHMENT_TYPE = "AttachmentState";
 
   String TAXONOMY_INDEX = "taxonomy";
+  String VOCABULARY_INDEX = "vocabulary";
+  String TERM_INDEX = "term";
   String TAXONOMY_TYPE = "Taxonomy";
   String TAXONOMY_VOCABULARY_TYPE = "Vocabulary";
   String TAXONOMY_TERM_TYPE = "Term";

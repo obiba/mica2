@@ -224,7 +224,7 @@ public class DatasetQuery extends AbstractDocumentQuery {
 
   private Map<String, List<String>> getStudyCounts(List<Searcher.DocumentAggregation> aggregations) {
     Map<String, List<String>> map = Maps.newHashMap();
-    aggregations.stream().filter(agg -> "terms".equals(agg.getType()))
+    aggregations.stream().filter(agg -> AggregationHelper.isTermsAgg(agg.getType()))
         .forEach(aggregation -> map.put(AggregationHelper.unformatName(aggregation.getName()),
             aggregation.asTerms().getBuckets().stream().filter(bucket -> bucket.getDocCount() > 0)
                 .map(Searcher.DocumentTermsBucket::getKeyAsString).collect(Collectors.toList())));

@@ -17,6 +17,7 @@
     "fr": "Nom de la variable."
   "attributes":
     "static": "true"
+    "type": "string"
 - "name": "label"
   "title":
     "en": "Label"
@@ -38,6 +39,7 @@
     "fr": "Étude dans laquelle est définie la variable."
   "attributes":
     "static": "true"
+    "type": "keyword"
 - "name": "populationId"
   "title":
     "en": "Population"
@@ -47,6 +49,7 @@
     "fr": "Population pour laquelle des données ont été collectées."
   "attributes":
     "static": "true"
+    "type": "keyword"
 - "name": "dceId"
   "title":
     "en": "Data Collection Event"
@@ -56,6 +59,7 @@
     "fr": "Événement durant lequel des données ont été collectées."
   "attributes":
     "static": "true"
+    "type": "keyword"
 - "name": "datasetId"
   "title":
     "en": "Dataset"
@@ -65,6 +69,7 @@
     "fr": "Ensemble de données dans lequel est définie la variable."
   "attributes":
     "static": "true"
+    "type": "keyword"
 - "name": "sets"
   "title":
     "en": "Sets"
@@ -75,6 +80,7 @@
   "attributes":
     "static": "true"
     "hidden": "true"
+    "type": "keyword"
 - "name": "variableType"
   "title":
     "en": "Type of variable"
@@ -96,6 +102,7 @@
       "en": "A dataschema variable is part of a harmonization dataset and is a construct from multiple study variables."
   "attributes":
     "static": "true"
+    "type": "keyword"
 - "name": "entityType"
   "title":
     "en": "Type of entity"
@@ -116,6 +123,7 @@
     "description": {}
   "attributes":
     "static": "true"
+    "type": "keyword"
 - "name": "mimeType"
   "title":
     "en": "Media type"
@@ -125,6 +133,7 @@
     "fr": "Format des données."
   "attributes":
     "static": "true"
+    "type": "keyword"
 - "name": "valueType"
   "title":
     "en": "Type of value"
@@ -208,6 +217,7 @@
       "fr": "Liste de lignes définissant une aire geographique."
   "attributes":
     "static": "true"
+    "type": "keyword"
 - "name": "nature"
   "title":
     "en": "Nature"
@@ -260,3 +270,4 @@
       "fr": "Autres natures de variable."
   "attributes":
     "static": "true"
+    "type": "keyword"

@@ -27,7 +27,7 @@ public class EsTaxonomyTermService extends AbstractDocumentService<String> {
 
   @Override
   protected String getIndexName() {
-    return Indexer.TAXONOMY_INDEX;
+    return Indexer.TERM_INDEX;
   }
 
   @Override

@@ -16,6 +16,7 @@
     "fr": "Acronyme de l'ensemble de données"
   "attributes":
     "static": "true"
+    "type": "keyword"
 - "name": "name"
   "title":
     "en": "Name"
@@ -56,6 +57,7 @@
     "field": "entityType"
     "alias": "entityType"
     "static": "true"
+    "type": "keyword"
     "hidden": "true"
 - "name": "className"
   "title":
@@ -79,3 +81,4 @@
       "en": "A harmonization dataset holds metadata about core variables constructed from multiple study datasets."
   "attributes":
     "static": "true"
+    "type": "keyword"

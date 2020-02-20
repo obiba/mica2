@@ -36,7 +36,6 @@ import org.obiba.mica.dataset.event.DatasetDeletedEvent;
 import org.obiba.mica.dataset.event.DatasetPublishedEvent;
 import org.obiba.mica.dataset.event.DatasetUnpublishedEvent;
 import org.obiba.mica.dataset.event.DatasetUpdatedEvent;
-import org.obiba.mica.dataset.event.HarmonizationDatasetIndexedEvent;
 import org.obiba.mica.dataset.service.support.QueryTermsUtil;
 import org.obiba.mica.file.FileUtils;
 import org.obiba.mica.file.service.FileSystemService;
@@ -229,8 +228,6 @@ public class HarmonizedDatasetService extends DatasetService<HarmonizationDatase
         log.error(String.format("Error indexing dataset %s", dataset), e);
       }
     });
-
-    eventBus.post(new HarmonizationDatasetIndexedEvent());
   }
 
   @Caching(evict = { @CacheEvict(value = "aggregations-metadata", key = "'dataset'") })

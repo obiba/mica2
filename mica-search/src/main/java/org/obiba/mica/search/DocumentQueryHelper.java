@@ -13,6 +13,7 @@ package org.obiba.mica.search;
 import com.google.common.base.Joiner;
 import org.obiba.mica.search.queries.DocumentQueryJoinKeys;
 import org.obiba.mica.spi.search.Searcher;
+import org.obiba.mica.spi.search.support.AggregationHelper;
 
 import java.util.List;
 
@@ -27,7 +28,7 @@ public final class DocumentQueryHelper {
 
   public static DocumentQueryJoinKeys processStudyJoinKey(Searcher.DocumentResults results) {
     DocumentQueryJoinKeys joinKeys = new DocumentQueryJoinKeys();
-    results.getAggregations().stream().filter(agg -> agg.getType().equals("terms"))
+    results.getAggregations().stream().filter(agg -> AggregationHelper.isTermsAgg(agg.getType()))
         .forEach(aggregation -> aggregation.asTerms().getBuckets().forEach(bucket -> {
           if (bucket.getDocCount() > 0) {
             joinKeys.studyIds.add(bucket.getKeyAsString());
@@ -39,7 +40,7 @@ public final class DocumentQueryHelper {
 
   public static DocumentQueryJoinKeys processDatasetJoinKeys(Searcher.DocumentResults results, String datasetId, DocumentQueryIdProvider idProvider) {
     DocumentQueryJoinKeys joinKeys = new DocumentQueryJoinKeys();
-    results.getAggregations().stream().filter(agg -> agg.getType().equals("terms"))
+    results.getAggregations().stream().filter(agg -> AggregationHelper.isTermsAgg(agg.getType()))
         .forEach(
             aggregation -> aggregation.asTerms().getBuckets().forEach(
                 bucket -> {

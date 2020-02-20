@@ -39,7 +39,6 @@ import org.obiba.mica.dataset.event.DatasetDeletedEvent;
 import org.obiba.mica.dataset.event.DatasetPublishedEvent;
 import org.obiba.mica.dataset.event.DatasetUnpublishedEvent;
 import org.obiba.mica.dataset.event.DatasetUpdatedEvent;
-import org.obiba.mica.dataset.event.StudyDatasetIndexedEvent;
 import org.obiba.mica.dataset.service.support.QueryTermsUtil;
 import org.obiba.mica.file.FileUtils;
 import org.obiba.mica.file.service.FileSystemService;
@@ -294,7 +293,6 @@ public class CollectedDatasetService extends DatasetService<StudyDataset, StudyD
 
   public void indexAll(boolean mustIndexVariables) {
     indexDatasets(Sets.newHashSet(findAllPublishedDatasets()), findAllDatasets(), mustIndexVariables);
-    eventBus.post(new StudyDatasetIndexedEvent());
   }
 
   public void indexAllDatasetsForStudyIdIfPopulationOrDceWeightChanged(String studyId) {

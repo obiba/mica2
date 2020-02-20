@@ -215,12 +215,12 @@ mica.network
         });
       }
 
-      $scope.query = studyIds.length === 0 ? '' : 'studyMemberships.parentId:(' + studyIds.join(' ') + ')';
+      $scope.query = studyIds.length === 0 ? '' : 'studyMemberships.parentId:(' + studyIds.join(' OR ') + ')';
       if (networkIds.length > 0) {
         if ($scope.query.length > 0) {
           $scope.query = $scope.query + ' OR ';
         }
-        $scope.query = $scope.query + 'networkMemberships.parentId:(' + networkIds.join(' ') + ')';
+        $scope.query = $scope.query + 'networkMemberships.parentId:(' + networkIds.join(' OR ') + ')';
 
       }
 

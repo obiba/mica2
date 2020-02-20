@@ -80,10 +80,10 @@ mica.entityTaxonomyConfig
 
       this.getType = function(content) {
         if (content && content.attributes) {
-          return getAttribute(content.attributes, 'type', 'string');
+          return getAttribute(content.attributes, 'type', 'keyword');
         }
 
-        return 'string';
+        return 'keyword';
       };
 
       this.getTypeMap = function(content) {
@@ -274,6 +274,10 @@ mica.entityTaxonomyConfig
           {
             'value': 'string',
             'name': $filter('translate')('global.types.string')
+          },
+          {
+            'value': 'keyword',
+            'name': $filter('translate')('global.types.keyword')
           },
           {
             'value': 'integer',
