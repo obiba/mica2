@@ -188,7 +188,7 @@
       <!-- /.row -->
 
       <div class="row">
-        <div class="col-lg-6">
+        <div class="col-sm-12 col-lg-6">
           <div class="card card-info card-outline">
             <div class="card-header">
               <h3 class="card-title"><@message "todo-title"/></h3>
@@ -359,7 +359,7 @@
           </div>
         </div>
         <!-- /.col-6 -->
-        <div class="col-6">
+        <div class="col-sm-12 col-lg-6">
 
             <#if user.username != applicant.username>
               <div class="card card-info card-outline">
