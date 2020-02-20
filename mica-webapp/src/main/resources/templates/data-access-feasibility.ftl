@@ -70,7 +70,7 @@
               TODO
             </div>
             <div class="card-footer">
-              <a href="${pathPrefix}/data-access-history/${dar.id}">More info <i class="fas fa-arrow-circle-right"></i></a>
+              <a href="${pathPrefix}/data-access-history/${dar.id}"><@message "more-info"/> <i class="fas fa-arrow-circle-right"></i></a>
             </div>
           </div>
         </div>
