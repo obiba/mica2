@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="${.lang}">
 <head>
-  <title>${config.name!""} | Data Access Process</title>
   <#include "libs/head.ftl">
+  <title>${config.name!""} | <@message "data-access-process"/></title>
 </head>
 <body class="hold-transition layout-top-nav layout-navbar-fixed">
 <div class="wrapper">
@@ -18,7 +18,7 @@
       <div class="container">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1 class="m-0">Data Access Process</h1>
+            <h1 class="m-0"><@message "data-access-process"/></h1>
           </div><!-- /.col -->
           <div class="col-sm-6">
 

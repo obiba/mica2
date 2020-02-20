@@ -7,7 +7,7 @@
 <html lang="${.lang}">
 <head>
   <title>${config.name!""} | ${dataset.acronym[.lang]!""}</title>
-    <#include "libs/head.ftl">
+  <#include "libs/head.ftl">
   <!-- Ionicons -->
   <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
 </head>
@@ -15,13 +15,13 @@
 <div class="wrapper">
 
   <!-- Navbar -->
-    <#include "libs/top-navbar.ftl">
+  <#include "libs/top-navbar.ftl">
   <!-- /.navbar -->
 
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
     <!-- Content Header (Page header) -->
-    <@header titlePrefix=(type?lower_case + "-dataset") title=dataset.acronym[.lang]!"" subtitle=dataset.name[.lang]!"" breadcrumb=[["../home", "home"], ["../datasets", "datasets"], [dataset.acronym[.lang]!""]]/>
+    <@header titlePrefix=(type?lower_case + "-dataset") title=dataset.acronym[.lang]!"" subtitle=dataset.name[.lang]!"" breadcrumb=[["..", "home"], ["../datasets", "datasets"], [dataset.acronym[.lang]!""]]/>
     <!-- /.content-header -->
 
     <!-- Main content -->
@@ -56,7 +56,7 @@
                         </a>
                       </span>
                       <div class="info-box-content">
-                        <span class="info-box-text">Networks</span>
+                        <span class="info-box-text"><@message "networks"/></span>
                         <span class="info-box-number" id="network-hits">-</span>
                       </div>
                       <!-- /.info-box-content -->
@@ -70,7 +70,7 @@
                         </a>
                       </span>
                       <div class="info-box-content">
-                        <span class="info-box-text">Studies</span>
+                        <span class="info-box-text"><@message "studies"/></span>
                         <span class="info-box-number" id="study-hits">-</span>
                       </div>
                       <div>
@@ -87,7 +87,7 @@
                         </a>
                       </span>
                       <div class="info-box-content">
-                        <span class="info-box-text">Variables</span>
+                        <span class="info-box-text"><@message "variables"/></span>
                         <span class="info-box-number" id="variable-hits">-</span>
                       </div>
                       <!-- /.info-box-content -->
@@ -131,7 +131,7 @@
                   <@populationDialog id=population.id population=population></@populationDialog>
                 </div>
                 <div class="card-footer">
-                  <a href="#" data-toggle="modal" data-target="#modal-${population.id}">More info <i class="fas fa-arrow-circle-right"></i></a>
+                  <a href="#" data-toggle="modal" data-target="#modal-${population.id}"><@message "more-info"/> <i class="fas fa-arrow-circle-right"></i></a>
                 </div>
               </div>
             </div>
@@ -153,7 +153,7 @@
                   <@dceDialog id=dceId dce=dce></@dceDialog>
                 </div>
                 <div class="card-footer">
-                  <a href="#" data-toggle="modal" data-target="#modal-${dceId}">More info <i class="fas fa-arrow-circle-right"></i></a>
+                  <a href="#" data-toggle="modal" data-target="#modal-${dceId}"><@message "more-info"/> <i class="fas fa-arrow-circle-right"></i></a>
                 </div>
               </div>
             </div>
@@ -169,7 +169,7 @@
                 </div>
                 <div class="card-body">
                   <#if studyTables?? && studyTables?size != 0>
-                    <h5>Individual Studies</h5>
+                    <h5><@message "individual-studies"/></h5>
                     <table class="table table-striped mb-3">
                       <thead>
                       <tr>
@@ -206,7 +206,7 @@
                     </table>
                   </#if>
                     <#if harmonizationTables?? && harmonizationTables?size != 0>
-                      <h5>Harmonization Studies</h5>
+                      <h5><@message "harmonization-studies"/></h5>
                       <table class="table table-striped">
                         <thead>
                         <tr>

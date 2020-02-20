@@ -22,7 +22,7 @@
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
     <!-- Content Header (Page header) -->
-    <@header titlePrefix=(type?lower_case + "-study") title=study.acronym[.lang]!"" subtitle=study.name[.lang]!"" breadcrumb=[["../home", "home"], ["../studies", "studies"], [study.acronym[.lang]!""]]/>
+    <@header titlePrefix=(type?lower_case + "-study") title=study.acronym[.lang]!"" subtitle=study.name[.lang]!"" breadcrumb=[["..", "home"], ["../studies", "studies"], [study.acronym[.lang]!""]]/>
     <!-- /.content-header -->
 
     <!-- Main content -->
@@ -55,7 +55,7 @@
                         </a>
                       </span>
                       <div class="info-box-content">
-                        <span class="info-box-text">Networks</span>
+                        <span class="info-box-text"><@message "networks"/></span>
                         <span class="info-box-number" id="network-hits">-</span>
                       </div>
                       <!-- /.info-box-content -->
@@ -69,7 +69,7 @@
                         </a>
                       </span>
                       <div class="info-box-content">
-                        <span class="info-box-text">Datasets</span>
+                        <span class="info-box-text"><@message "datasets"/></span>
                         <span class="info-box-number" id="dataset-hits">-</span>
                       </div>
                       <div>
@@ -86,7 +86,7 @@
                         </a>
                       </span>
                       <div class="info-box-content">
-                        <span class="info-box-text">Variables</span>
+                        <span class="info-box-text"><@message "variables"/></span>
                         <span class="info-box-number" id="variable-hits">-</span>
                       </div>
                       <!-- /.info-box-content -->

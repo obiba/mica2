@@ -18,14 +18,14 @@
 <body class="hold-transition login-page">
 <div class="login-box">
   <div class="login-logo">
-    <a href="../home"><b>${config.name!""}</b></a>
+    <a href=".."><b>${config.name!""}</b></a>
   </div>
   <!-- /.login-logo -->
   <div class="card">
     <div class="card-body login-card-body">
       <p class="login-box-msg">Register a new membership</p>
 
-      <form action="../home" method="post">
+      <form action=".." method="post">
         <div class="input-group mb-3">
           <input type="text" class="form-control" placeholder="Full name">
           <div class="input-group-append">
