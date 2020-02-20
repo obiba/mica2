@@ -2,7 +2,7 @@
 <html lang="${.lang}">
 <head>
   <#include "libs/head.ftl">
-  <link rel="stylesheet" href="${pathPrefix!".."}/js/libs/node_modules/bootstrap-datepicker/dist/css/bootstrap-datepicker3.css"></link>
+  <link rel="stylesheet" href="${pathPrefix!".."}/assets/libs/node_modules/bootstrap-datepicker/dist/css/bootstrap-datepicker3.css"></link>
   <title>${config.name!""} | Data Access History ${dar.id}</title>
 </head>
 <body class="hold-transition sidebar-mini">
@@ -179,7 +179,7 @@
 
 <#include "libs/scripts.ftl">
 <!-- Datepicker -->
-<script src="${pathPrefix!".."}/js/libs/node_modules/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js"></script>
+<script src="${pathPrefix!".."}/assets/libs/node_modules/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js"></script>
 <script>
     $(function () {
         $('#history-menu').addClass('active').attr('href', '#')
