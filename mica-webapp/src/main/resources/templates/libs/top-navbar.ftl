@@ -22,11 +22,12 @@
       <ul class="navbar-nav">
           <@leftmenus></@leftmenus>
       </ul>
+
+      <!-- Right navbar links -->
+      <ul class="order-1 order-md-3 navbar-nav navbar-no-expand ml-auto">
+        <@rightmenus></@rightmenus>
+      </ul>
     </div>
 
-    <!-- Right navbar links -->
-    <ul class="order-1 order-md-3 navbar-nav navbar-no-expand ml-auto">
-        <@rightmenus></@rightmenus>
-    </ul>
   </div>
 </nav>
