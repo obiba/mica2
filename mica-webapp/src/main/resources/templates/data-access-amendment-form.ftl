@@ -84,7 +84,7 @@
       <!-- /.row -->
 
       <div class="row" ng-controller="FormController">
-        <div class="col-lg-8">
+        <div class="col-sm-12 col-lg-8">
           <div class="card card-primary card-outline">
             <div class="card-header d-print-none">
               <h3 class="card-title"><@message "amendment-form"/></h3>
@@ -129,7 +129,7 @@
               </div>
             </div>
             <div class="card-body">
-              <form name="forms.requestForm">
+              <form name="forms.requestForm" class="bootstrap3">
                 <div sf-schema="schema" sf-form="form" sf-model="model"></div>
               </form>
             </div>
@@ -296,7 +296,7 @@
           <!-- /.modal -->
 
         </div>
-        <div class="col-lg-4 d-print-none">
+        <div class="col-sm-12 col-lg-4 d-print-none">
           <div class="card card-info card-outline">
             <div class="card-header">
               <h3 class="card-title"><@message "help"/></h3>
