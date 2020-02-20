@@ -29,6 +29,16 @@
   }
 }
 
+
+.radio-inline, .checkbox-inline, .radio, .radio > label, .checkbox, .checkbox > label {
+  font-weight: normal !important;
+}
+
+.radio-inline + .radio-inline, .checkbox-inline + .checkbox-inline {
+  margin-top: 0;
+  margin-left: 10px;
+}
+
 .has-error {
   color: #E74C3C;
 }
@@ -42,7 +52,6 @@
 .has-feedback label ~ .form-control-feedback {
   display: none;
 }
-
 
 .voffset {
   margin-top: 2px;
