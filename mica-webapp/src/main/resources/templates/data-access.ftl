@@ -2,7 +2,7 @@
 <html lang="${.lang}">
 <head>
     <#include "libs/head.ftl">
-  <link rel="stylesheet" href="${pathPrefix!".."}/js/libs/node_modules/bootstrap-datepicker/dist/css/bootstrap-datepicker3.css"></link>
+  <link rel="stylesheet" href="${pathPrefix!".."}/assets/libs/node_modules/bootstrap-datepicker/dist/css/bootstrap-datepicker3.css"></link>
   <title>${config.name!""} | <@message "data-access"/> ${dar.id}</title>
 </head>
 <body class="hold-transition sidebar-mini">
@@ -493,7 +493,7 @@
 
 <#include "libs/scripts.ftl">
 <!-- Datepicker -->
-<script src="${pathPrefix!".."}/js/libs/node_modules/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js"></script>
+<script src="${pathPrefix!".."}/assets/libs/node_modules/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js"></script>
 <script>
   $(function () {
     $('#dashboard-menu').addClass('active').attr('href', '#');
