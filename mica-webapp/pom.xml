@@ -195,6 +195,9 @@
             <includes>
               <include>**/*</include>
             </includes>
+            <excludes>
+              <exclude>**/*.ftl</exclude>
+            </excludes>
           </resource>
           <resource>
             <directory>src/main/conf</directory>
@@ -228,6 +231,9 @@
             <includes>
               <include>**/*</include>
             </includes>
+            <excludes>
+              <exclude>**/*.ftl</exclude>
+            </excludes>
           </resource>
           <resource>
             <directory>src/main/conf</directory>
