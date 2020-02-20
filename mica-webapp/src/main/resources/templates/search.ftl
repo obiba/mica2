@@ -15,7 +15,7 @@
   <!-- Main Sidebar Container -->
   <aside class="main-sidebar sidebar-dark-primary">
     <!-- Brand Logo -->
-    <a href="${config.portalUrl!"../assets/libs/node_modules/admin-lte/index3.html"}" class="brand-link bg-white">
+    <a href="${config.portalUrl!".."}" class="brand-link bg-white">
       <img src="../assets/images/logo.png"
            alt="Logo"
            class="brand-image img-circle elevation-3"
@@ -137,19 +137,19 @@
                     <ul class="nav nav-pills" id="results-tab" role="tablist">
                       <li class="nav-item">
                         <a class="nav-link active" id="variables-tab" data-toggle="pill" href="#variables" role="tab"
-                           aria-controls="variables" aria-selected="true">Variables</a>
+                           aria-controls="variables" aria-selected="true"><@message "variables"/></a>
                       </li>
                       <li class="nav-item">
                         <a class="nav-link" id="datasets-tab" data-toggle="pill" href="#datasets" role="tab"
-                           aria-controls="datasets" aria-selected="false">Datasets</a>
+                           aria-controls="datasets" aria-selected="false"><@message "datasets"/></a>
                       </li>
                       <li class="nav-item">
                         <a class="nav-link" id="studies-tab" data-toggle="pill" href="#studies" role="tab"
-                           aria-controls="studies" aria-selected="false">Studies</a>
+                           aria-controls="studies" aria-selected="false"><@message "studies"/></a>
                       </li>
                       <li class="nav-item">
                         <a class="nav-link" id="networks-tab" data-toggle="pill" href="#networks" role="tab"
-                           aria-controls="networks" aria-selected="false">Networks</a>
+                           aria-controls="networks" aria-selected="false"><@message "networks"/></a>
                       </li>
                     </ul>
                   </div>

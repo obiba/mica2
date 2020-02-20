@@ -19,7 +19,7 @@
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
     <!-- Content Header (Page header) -->
-    <@header titlePrefix="network" title=network.acronym[.lang]!"" subtitle=network.name[.lang]!"" breadcrumb=[["../home", "home"], ["../networks", "networks"], [network.acronym[.lang]!""]]/>
+    <@header titlePrefix="network" title=network.acronym[.lang]!"" subtitle=network.name[.lang]!"" breadcrumb=[["..", "home"], ["../networks", "networks"], [network.acronym[.lang]!""]]/>
     <!-- /.content-header -->
 
     <!-- Main content -->
@@ -51,7 +51,7 @@
                           <i class="ion ion-folder"></i>
                         </a></span>
                       <div class="info-box-content">
-                        <span class="info-box-text">Studies</span>
+                        <span class="info-box-text"><@message "studies"/></span>
                         <span class="info-box-number" id="study-hits">${individualStudies?size + harmonizationStudies?size}</span>
                       </div>
                       <!-- /.info-box-content -->
@@ -65,7 +65,7 @@
                         </a>
                       </span>
                       <div class="info-box-content">
-                        <span class="info-box-text">Datasets</span>
+                        <span class="info-box-text"><@message "datasets"/></span>
                         <span class="info-box-number" id="dataset-hits">-</span>
                       </div>
                       <!-- /.info-box-content -->
@@ -79,7 +79,7 @@
                         </a>
                       </span>
                       <div class="info-box-content">
-                        <span class="info-box-text">Variables</span>
+                        <span class="info-box-text"><@message "variables"/></span>
                         <span class="info-box-number" id="variable-hits">-</span>
                       </div>
                       <!-- /.info-box-content -->
@@ -157,7 +157,7 @@
             <div class="col-lg-12">
               <div class="card card-info card-outline">
                 <div class="card-header">
-                  <h3 class="card-title">Networks</h3>
+                  <h3 class="card-title"><@message "networks"/></h3>
                   <div class="card-tools">
                     <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="Collapse">
                       <i class="fas fa-minus"></i></button>
@@ -194,7 +194,7 @@
             <div class="col-lg-12">
               <div class="card card-info card-outline">
                 <div class="card-header">
-                  <h3 class="card-title">Individual Studies</h3>
+                  <h3 class="card-title"><@message "individual-studies"/></h3>
                   <div class="card-tools">
                     <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="Collapse">
                       <i class="fas fa-minus"></i></button>
@@ -232,7 +232,7 @@
             <div class="col-lg-12">
               <div class="card card-info card-outline">
                 <div class="card-header">
-                  <h3 class="card-title">Harmonization Studies</h3>
+                  <h3 class="card-title"><@message "harmonization-studies"/></h3>
                   <div class="card-tools">
                     <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="Collapse">
                       <i class="fas fa-minus"></i></button>

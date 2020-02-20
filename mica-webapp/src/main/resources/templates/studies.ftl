@@ -4,8 +4,8 @@
 <!DOCTYPE html>
 <html lang="${.lang}">
 <head>
-  <title>${config.name!""} | Studies</title>
   <#include "libs/head.ftl">
+  <title>${config.name!""} | <@message "studies"/></title>
 </head>
 <body class="hold-transition layout-top-nav layout-navbar-fixed">
 <div class="wrapper">
@@ -32,7 +32,7 @@
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
     <!-- Content Header (Page header) -->
-    <@header title=title breadcrumb=[["../home", "home"], [title]]/>
+    <@header title=title breadcrumb=[["..", "home"], [title]]/>
     <!-- /.content-header -->
 
     <!-- Main content -->
@@ -48,7 +48,7 @@
               <div class="card card-info card-outline">
 
                 <div class="card-header d-flex p-0">
-                  <h3 class="card-title p-3">Studies</h3>
+                  <h3 class="card-title p-3"><@message "studies"/></h3>
                   <ul class="nav nav-pills ml-auto p-2">
                     <li class="nav-item"><a class="nav-link" href="#list" data-toggle="tab">
                         <i class="fas fa-grip-lines"></i></a>

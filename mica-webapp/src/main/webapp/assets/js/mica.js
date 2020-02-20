@@ -56,7 +56,7 @@ var micajs = (function() {
         url: url,
         data: data})
         .done(function() {
-          var redirect = 'home';
+          var redirect = '/';
           var q = new URLSearchParams(window.location.search);
           if (q.get('redirect')) {
             redirect = q.get('redirect');
@@ -82,7 +82,7 @@ var micajs = (function() {
       url: pathPrefix + '/ws/auth/session/_current'
     })
     .always(function() {
-      var redirect = pathPrefix + '/home';
+      var redirect = pathPrefix + '/';
       $.redirect(redirect, {}, 'GET');
     });
   };
