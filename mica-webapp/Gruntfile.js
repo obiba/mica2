@@ -445,8 +445,8 @@ module.exports = function (grunt) {
     'copy:dist',
     //'cssmin',
     //'uglify',
-    'rev',
-    'usemin',
+    //'rev',
+    //'usemin',
     'copy:distLibsImages'
   ]);
 
