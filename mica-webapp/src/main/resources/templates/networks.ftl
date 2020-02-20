@@ -4,8 +4,8 @@
 <!DOCTYPE html>
 <html lang="${.lang}">
 <head>
-  <title>${config.name!""} | Networks</title>
   <#include "libs/head.ftl">
+  <title>${config.name!""} | <@message "networks"/></title>
 </head>
 <body class="hold-transition layout-top-nav">
 <div class="wrapper">
@@ -17,7 +17,7 @@
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
     <!-- Content Header (Page header) -->
-    <@header title="networks" breadcrumb=[["../home", "home"], ["networks"]]/>
+    <@header title="networks" breadcrumb=[["..", "home"], ["networks"]]/>
     <!-- /.content-header -->
 
     <!-- Main content -->
@@ -33,7 +33,7 @@
               <div class="card card-info card-outline">
 
                 <div class="card-header d-flex p-0">
-                  <h3 class="card-title p-3">Networks</h3>
+                  <h3 class="card-title p-3"><@message "networks"/></h3>
                   <ul class="nav nav-pills ml-auto p-2">
                     <li class="nav-item"><a class="nav-link" href="#list" data-toggle="tab">
                         <i class="fas fa-grip-lines"></i></a>
