@@ -440,7 +440,7 @@ module.exports = function (grunt) {
     'jshint',
     //'useminPrepare',
     'concurrent:dist',
-    'autoprefixer',
+    //'autoprefixer',
     //'concat',
     'copy:dist',
     //'cssmin',
