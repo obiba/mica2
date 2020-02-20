@@ -1,6 +1,6 @@
 <#macro leftmenus>
   <li class="nav-item">
-    <a href="${pathPrefix!".."}/home" class="nav-link"><@message "home"/></a>
+    <a href="${pathPrefix!".."}" class="nav-link"><@message "home"/></a>
   </li>
   <li class="nav-item dropdown">
     <a id="repoMenu" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle"><@message "repository"/></a>
@@ -57,13 +57,13 @@
             <a id="userMenu" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle"> ${.lang?upper_case}</a>
             <ul aria-labelledby="dropdownSubMenu1" class="dropdown-menu border-0 shadow">
                 <#list config.locales as locale>
-                  <li><a id="signout" href="#" onclick="micajs.changeLanguage('${locale.language}')" class="dropdown-item">${locale.language?upper_case}</a></li>
+                  <li><a id="lang-${locale.language}" href="#" onclick="micajs.changeLanguage('${locale.language}')" class="dropdown-item">${locale.language?upper_case}</a></li>
                 </#list>
             </ul>
           </li>
         </#if>
       <li class="nav-item">
-        <a class="nav-link" href="${pathPrefix!".."}/signin"><@message "sign-in"/></a>
+        <a class="nav-link" href="${pathPrefix!".."}/signin<#if rc.requestUri != "/">?redirect=${rc.requestUri}</#if>"><@message "sign-in"/></a>
       </li>
       <li class="nav-item">
         <a class="btn btn-outline-primary" href="${pathPrefix!".."}/signup"><@message "sign-up"/></a>

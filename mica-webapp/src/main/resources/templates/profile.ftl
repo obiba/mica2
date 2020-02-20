@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="${.lang}">
 <head>
-  <title>${config.name!""} | Profile</title>
   <#include "libs/head.ftl">
+  <title>${config.name!""} | <@message "profile"/></title>
 </head>
 <body class="hold-transition layout-top-nav layout-navbar-fixed">
 <div class="wrapper">
