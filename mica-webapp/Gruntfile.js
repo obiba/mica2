@@ -255,7 +255,7 @@ module.exports = function (grunt) {
     },
     // generated dynamically by useminPrepare
     //cssmin: {
-    //  // By default, your `index.html` <!-- Usemin Block --> will take care of
+    //  // By default, your `admin.html` <!-- Usemin Block --> will take care of
     //  // minification. This option is pre-configured if you do not wish to use
     //  // Usemin blocks.
     //  dist: {
@@ -392,21 +392,9 @@ module.exports = function (grunt) {
         html: ['<%= yeoman.dist %>/*.html']
       }
     },
-    replace: {
-      dist: {
-        src: ['<%= yeoman.dist %>/index.html'],
-        overwrite: true,                 // overwrite matched source files
-        replacements: [
-          {
-            from: '<div class="development"></div>',
-            to: ''
-          }
-        ]
-      }
-    },
     wiredep: {
       task: {
-        src: 'src/main/webapp/index.html'
+        src: 'src/main/resources/templates/admin.ftl'
       }
     }
     // generated dynamically by useminPrepare
@@ -449,14 +437,13 @@ module.exports = function (grunt) {
     'clean:dist',
     'less',
     'jshint',
-    'useminPrepare',
+    //'useminPrepare',
     'concurrent:dist',
     'autoprefixer',
-    'concat',
+    //'concat',
     'copy:dist',
-    'cssmin',
-    //'replace',
-    'uglify',
+    //'cssmin',
+    //'uglify',
     'rev',
     'usemin',
     'copy:distLibsImages'
