@@ -3,7 +3,8 @@
   "properties": {
     "website": {
       "title": "t(website)",
-      "type": "string"
+      "type": "string",
+      "pattern": "^https?://\\S+$"
     },
     "funding": {
       "type": "object",

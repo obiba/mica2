@@ -69,7 +69,8 @@
     },
     "projectWebsite": {
       "title": "t(data-access-request.default.I.C.website)",
-      "type": "string"
+      "type": "string",
+      "pattern": "^https?://\\S+$"
     },
     "hasNoStaff": {
       "title": "t(data-access-request.default.I.D.check)",
