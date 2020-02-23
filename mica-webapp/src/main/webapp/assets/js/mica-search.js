@@ -114,7 +114,7 @@ new Vue({
 //
 
 $('#variables-tab').click(function(){
-  EventBus.$emit('query-type-selection', {type: 'variables-list'});
+  EventBus.$emit('query-type-selection', {display: 'list', type: TYPES.VARIABLES, target: TARGETS.VARIABLE});
 });
 
 $('#datasets-tab').click(function(){
@@ -168,7 +168,7 @@ new Vue({
       message: '',
       queryType: 'variables-list',
       lastList: '',
-      queryExecutor: new MicaQueryExecutor(EventBus)
+      queryExecutor: new MicaQueryExecutor(EventBus, DataTableDefaults.pageLength)
     };
   },
   methods: {
@@ -246,7 +246,7 @@ new Vue({
   },
   beforeMount() {
     console.log('Before mounted List Variables');
-    EventBus.$emit('query-type-selection', {type: 'variables-list', from: 0, size: DataTableDefaults.pageLength});
+    EventBus.$emit('query-type-selection', {display: 'list', type: TYPES.VARIABLES, target: TARGETS.VARIABLE});
   },
   mounted() {
     EventBus.register('variables-list', this.onResult);
