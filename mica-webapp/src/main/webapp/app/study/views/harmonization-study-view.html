@@ -20,6 +20,10 @@
 
       <a share-modal resource-type="'harmonization-study'" resource-id="study.id" permissions="permissions"/>
 
+      <a obiba-file-download="" method="get" get-url="'/ws/draft/harmonization-study/' + study.id + '/export_csv'" target="_self" download="" class="btn btn-info ng-binding ng-isolate-scope" href="">
+        <i class="fa fa-download"></i> {{'study.export' | translate}}
+      </a>
+
       <a ng-click="print()"
          class="btn btn-responsive btn-default" title="{{'global.print' | translate}}">
         <i class="fa fa-print"></i> <span translate>global.print</span>

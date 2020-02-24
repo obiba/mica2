@@ -30,6 +30,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.obiba.mica.AbstractGitPersistableResource;
 import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.core.domain.PublishCascadingScope;
@@ -90,6 +91,15 @@ public class DraftIndividualStudyResource extends AbstractGitPersistableResource
   public Map<String, Object> getModel() {
     checkPermission("/draft/individual-study", "VIEW");
     return individualStudyService.findDraft(id).getModel();
+  }
+
+  @GET
+  @Timed
+  @Path("/export_csv")
+  @Produces("text/csv")
+  public Response exportAsCsv() throws JsonProcessingException {
+    return Response.ok(individualStudyService.writeCsv(getId()).toByteArray(), "text/csv")
+      .header("Content-Disposition", "attachment; filename=\"" + getId() + ".csv\"").build();
   }
 
   @PUT

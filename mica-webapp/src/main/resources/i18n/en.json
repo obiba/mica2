@@ -543,6 +543,7 @@
     "follow-up": "Follow Up",
     "follow-up-help": "General information on follow up (profile, frequency).",
     "recruitment-target": "Recruitment Target",
+    "export": "CSV Export",
     "access": {
       "label": "Access",
       "data": "data",
