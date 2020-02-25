@@ -58,7 +58,6 @@ import com.google.common.collect.Multimap;
  */
 @Component
 @Scope("request")
-@RequiresAuthentication
 public class PublishedDataschemaDatasetVariableResource extends AbstractPublishedDatasetResource<HarmonizationDataset>
   implements DatasetVariableResource {
 

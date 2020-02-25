@@ -103,7 +103,7 @@
               </div>
                 <#if study??>
                   <div class="card-footer">
-                    Associated study
+                    <@message "associated-study"/>
                     <a class="btn btn-success ml-2" href="../study/${study.id}">
                       <i class="ion ion-folder"></i> ${study.acronym[.lang]!""}
                     </a>
