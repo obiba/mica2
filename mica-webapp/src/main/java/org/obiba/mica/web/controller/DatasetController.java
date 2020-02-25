@@ -36,7 +36,7 @@ public class DatasetController extends BaseController {
 
   @GetMapping("/dataset/{id}")
   public ModelAndView study(@PathVariable String id) {
-    Map<String, Object> params = new HashMap<String, Object>();
+    Map<String, Object> params = newParameters();
     Dataset dataset = getDataset(id);
     params.put("dataset", dataset);
     params.put("type", (dataset instanceof StudyDataset) ? "Collected" : "Harmonized");
