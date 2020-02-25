@@ -1176,6 +1176,8 @@
     "study": {
       "facet-label": "Étude",
       "label": "Étude",
+      "population-name": "Population",
+      "dce-name": "ECD",
       "noResults": "Aucune étude trouvée",
       "dataSources": "Sources de données disponibles",
       "quest": "Quest",
