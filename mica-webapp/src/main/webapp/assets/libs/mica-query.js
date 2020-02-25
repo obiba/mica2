@@ -280,6 +280,7 @@ class MicaQueryExecutor {
    * @private
    */
   __executeQuery(tree, type ,display, noUrlUpdate) {
+    console.log(`__executeQuery`);
     axios
       .get(`../ws/${type}/_rql?query=${tree.serialize()}`)
       .then(response => {
@@ -288,12 +289,21 @@ class MicaQueryExecutor {
         tree.findAndDeleteQuery((name) => 'sort' === name);
         const limitQuery = tree.search((name, args, parent) => 'limit' === name && TYPES_TARGETS_MAP[type] === parent.name);
 
-        if (!noUrlUpdate) {
-          this.__updateLocation(type, display, tree.serialize());
-        }
+        this.__updateLocation(type, display, tree.serialize(), noUrlUpdate);
 
         EventBus.$emit('variables-results', {response: response.data, from: limitQuery.args[0]});
       });
+  }
+
+  __updateLocation(type, display, query, replace) {
+    console.log(`__updateLocation ${type} ${display} ${query} - history states ${history.length}`);
+    const urlSearch = [`type=${type}`, `query=${query}`].join('&');
+    const hash = `${display}?${urlSearch}`;
+    if(replace) {
+      history.replaceState(null, "", `#${hash}`);
+    } else {
+      history.pushState(null, "", `#${hash}`);
+    }
   }
 
   /**
@@ -344,12 +354,6 @@ class MicaQueryExecutor {
   __onQueryTypePaginate(payload) {
     console.log(`__onQueryTypeSelection ${payload}`);
     this.__prepareAndExecuteQuery(EVENTS.QUERY_TYPE_PAGINATE, payload);
-  }
-
-  __updateLocation(type, display, query) {
-    const urlSearch = [`type=${type}`, `query=${query}`].join('&');
-    const hash = `${display}?${urlSearch}`;
-    history.pushState(null, null, `#${hash}`);
   }
 
   init() {
