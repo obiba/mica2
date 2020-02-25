@@ -544,6 +544,7 @@
     "follow-up": "Suivi",
     "follow-up-help": "Informations générales sur le suivi (profil, fréquence).",
     "recruitment-target": "Cible de recrutement",
+    "export": "Export CSV",
     "access": {
       "label": "Accès",
       "data": "Données",

@@ -10,6 +10,9 @@
 
 package org.obiba.mica.study.service;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.List;
 import java.util.Map;
 
@@ -18,11 +21,17 @@ import javax.inject.Inject;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import au.com.bytecode.opencsv.CSVWriter;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jayway.jsonpath.Configuration;
+import com.jayway.jsonpath.JsonPath;
+import com.jayway.jsonpath.Option;
+import net.minidev.json.JSONArray;
 import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.core.ModelAwareTranslator;
 import org.obiba.mica.core.domain.EntityState;
 import org.obiba.mica.core.domain.PublishCascadingScope;
-import org.obiba.mica.core.repository.DBRefAwareRepository;
 import org.obiba.mica.core.repository.EntityStateRepository;
 import org.obiba.mica.core.service.AbstractGitPersistableService;
 import org.obiba.mica.core.service.StudyIdGeneratorService;
@@ -86,6 +95,33 @@ public abstract class AbstractStudyService<S extends EntityState, T extends Base
     }
 
     return study;
+  }
+
+  public ByteArrayOutputStream writeCsv(String id) throws JsonProcessingException {
+    BaseStudy draft = findDraft(id);
+    ObjectMapper mapper = new ObjectMapper();
+    final String string = mapper.writeValueAsString(draft);
+
+    JSONArray array = JsonPath.using(Configuration.builder().options(Option.AS_PATH_LIST).build()).parse(string).read("$..*");
+
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    try (CSVWriter writer = new CSVWriter(new PrintWriter(baos))) {
+      writer.writeNext(new String[]{"Field", "Value"});
+
+      array.stream()
+        .map(Object::toString)
+        .filter(key -> !key.startsWith("$['logo']") && !key.startsWith("$['createdDate']") && !key.startsWith("$['lastModifiedDate']"))
+        .forEach(key -> {
+          Object read = JsonPath.parse(string).read(key);
+          if (read != null && !(read instanceof Map) && !(read instanceof List)) {
+            writer.writeNext(new String[]{key, read.toString()});
+          }
+        });
+    } catch (IOException e) {
+      //
+    }
+
+    return baos;
   }
 
   @NotNull
