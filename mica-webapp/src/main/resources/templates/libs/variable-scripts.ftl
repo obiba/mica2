@@ -65,12 +65,12 @@
         var summary = data['Math.ContinuousSummaryDto.continuous'].summary;
 
         $('#n').html(summary.n);
-        $('#mean').html(summary.mean.toFixed(2));
-        $('#stdDev').html(summary.stdDev.toFixed(2));
-        $('#median').html(summary.median.toFixed(2));
-        $('#variance').html(summary.variance.toFixed(2));
-        $('#min').html(summary.min.toFixed(2));
-        $('#max').html(summary.max.toFixed(2));
+        $('#mean').html(summary.n == 0 ? '-' : summary.mean.toFixed(2));
+        $('#stdDev').html(summary.n == 0 ? '-' : summary.stdDev.toFixed(2));
+        $('#median').html(summary.n == 0 ? '-' : summary.median.toFixed(2));
+        $('#variance').html(summary.n == 0 ? '-' : summary.variance.toFixed(2));
+        $('#min').html(summary.n == 0 ? '-' : summary.min.toFixed(2));
+        $('#max').html(summary.n == 0 ? '-' : summary.max.toFixed(2));
 
         $('#continuousSummary').show();
       }
