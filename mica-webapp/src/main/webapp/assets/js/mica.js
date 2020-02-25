@@ -377,6 +377,27 @@ var micajs = (function() {
       });
   };
 
+  //
+  // Variable
+  //
+
+  var micaVariableSummary = function(id, onsuccess, onfailure) {
+    var url = '../ws/variable/' + id + '/summary';
+    axios.get(url)
+      .then(response => {
+        console.dir(response);
+        if (onsuccess) {
+          onsuccess(response.data);
+        }
+      })
+      .catch(response => {
+        console.dir(response);
+        if (onfailure) {
+          onfailure(response);
+        }
+      });
+  };
+
   return {
     'stats': micaStats,
     'redirectError': micaRedirectError,
@@ -403,7 +424,10 @@ var micajs = (function() {
       'deleteAttachment': micaDeleteAttachment,
       'attachFile': micaAttachFile
     },
-    'uploadTempFile': micaUploadTempFile
+    'uploadTempFile': micaUploadTempFile,
+    'variable': {
+      'summary': micaVariableSummary
+    }
   };
 
 }());

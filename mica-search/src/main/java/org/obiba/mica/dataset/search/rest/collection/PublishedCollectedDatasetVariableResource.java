@@ -43,7 +43,6 @@ import com.google.common.base.Strings;
 
 @Component
 @Scope("request")
-@RequiresAuthentication
 public class PublishedCollectedDatasetVariableResource extends AbstractPublishedDatasetResource<StudyDataset>
   implements DatasetVariableResource {
 
