@@ -22,11 +22,7 @@ import org.obiba.mica.core.event.DocumentSetUpdatedEvent;
 import org.obiba.mica.dataset.event.DatasetPublishedEvent;
 import org.obiba.mica.dataset.event.DatasetUnpublishedEvent;
 import org.obiba.mica.micaConfig.domain.MicaConfig;
-import org.obiba.mica.micaConfig.service.helper.DatasetIdAggregationMetaDataHelper;
-import org.obiba.mica.micaConfig.service.helper.DceIdAggregationMetaDataHelper;
-import org.obiba.mica.micaConfig.service.helper.NetworkIdAggregationMetaDataHelper;
-import org.obiba.mica.micaConfig.service.helper.SetsAggregationMetaDataHelper;
-import org.obiba.mica.micaConfig.service.helper.StudyIdAggregationMetaDataHelper;
+import org.obiba.mica.micaConfig.service.helper.*;
 import org.obiba.mica.network.event.NetworkPublishedEvent;
 import org.obiba.mica.network.event.NetworkUnpublishedEvent;
 import org.obiba.mica.study.event.StudyPublishedEvent;
@@ -53,6 +49,8 @@ public class TaxonomyService {
 
   private NetworkIdAggregationMetaDataHelper networkHelper;
 
+  private PopulationIdAggregationMetaDataHelper populationHelper;
+
   private DceIdAggregationMetaDataHelper dceHelper;
 
   private SetsAggregationMetaDataHelper setsHelper;
@@ -74,6 +72,7 @@ public class TaxonomyService {
     StudyIdAggregationMetaDataHelper studyHelper,
     DatasetIdAggregationMetaDataHelper datasetHelper,
     NetworkIdAggregationMetaDataHelper networkHelper,
+    PopulationIdAggregationMetaDataHelper populationHelper,
     DceIdAggregationMetaDataHelper dceHelper,
     SetsAggregationMetaDataHelper setsHelper) {
     this.opalService = opalService;
@@ -81,6 +80,7 @@ public class TaxonomyService {
     this.studyHelper = studyHelper;
     this.datasetHelper = datasetHelper;
     this.networkHelper = networkHelper;
+    this.populationHelper = populationHelper;
     this.dceHelper = dceHelper;
     this.setsHelper = setsHelper;
   }
@@ -200,6 +200,7 @@ public class TaxonomyService {
     variableTaxonomy = copy(micaConfigService.getVariableTaxonomy());
     studyHelper.applyIdTerms(variableTaxonomy, "studyId");
     datasetHelper.applyIdTerms(variableTaxonomy, "datasetId");
+    populationHelper.applyIdTerms(variableTaxonomy, "populationId");
     dceHelper.applyIdTerms(variableTaxonomy, "dceId");
     setsHelper.applyIdTerms(variableTaxonomy, "sets");
   }
