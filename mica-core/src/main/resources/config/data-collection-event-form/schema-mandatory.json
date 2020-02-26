@@ -36,7 +36,7 @@
     },
     "_description": {
       "type": "object",
-      "format": "localizedString",
+      "format": "obibaSimpleMde",
       "title": "t(data-collection-event.description)"
     }
   },

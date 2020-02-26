@@ -14,7 +14,7 @@
     "_description": {
       "title": "t(dataset.description)",
       "type": "object",
-      "format": "localizedString"
+      "format": "obibaSimpleMde"
     },
     "_entityType": {
       "title": "t(dataset.entity-type)",

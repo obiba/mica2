@@ -2130,5 +2130,19 @@
       "signin-with": "Sign in with",
       "signup-with": "Sign up with"
     }
+  },
+  "simple-mde": {
+    "toolbar": {
+      "bold": "Bold",
+      "italic": "Italic",
+      "heading": "Heading",
+      "quote": "Quote",
+      "unordered_list": "Generic List",
+      "ordered_list": "Numbered List",
+      "link": "Create Link",
+      "image": "Insert Image",
+      "table": "Insert Table",
+      "preview": "Toggle Preview"
+    }
   }
 }

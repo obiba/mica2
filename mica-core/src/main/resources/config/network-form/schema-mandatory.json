@@ -14,7 +14,7 @@
     "_description": {
       "title": "t(network.description)",
       "type": "object",
-      "format": "localizedString"
+      "format": "obibaSimpleMde"
     }
   },
   "required": [
