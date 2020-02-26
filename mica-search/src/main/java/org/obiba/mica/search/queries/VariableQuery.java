@@ -11,6 +11,7 @@
 package org.obiba.mica.search.queries;
 
 import com.google.common.base.Joiner;
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import javax.inject.Inject;
@@ -28,6 +29,8 @@ import org.obiba.mica.spi.search.support.AttributeKey;
 import org.obiba.mica.spi.search.support.Query;
 import org.obiba.mica.study.NoSuchStudyException;
 import org.obiba.mica.study.domain.BaseStudy;
+import org.obiba.mica.study.domain.DataCollectionEvent;
+import org.obiba.mica.study.domain.Population;
 import org.obiba.mica.study.service.PublishedStudyService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
@@ -74,6 +77,8 @@ public class VariableQuery extends AbstractDocumentQuery {
 
   private DataCollectionEventAggregationMetaDataProvider dceAggregationMetaDataProvider;
 
+  private PopulationAggregationMetaDataProvider populationAggregationMetaDataProvider;
+
   private StudyAggregationMetaDataProvider studyAggregationMetaDataProvider;
 
   private CollectedDatasetService collectedDatasetService;
@@ -95,6 +100,7 @@ public class VariableQuery extends AbstractDocumentQuery {
     TaxonomyAggregationMetaDataProvider taxonomyAggregationMetaDataProvider,
     VariableTaxonomyMetaDataProvider variableTaxonomyMetaDataProvider,
     DataCollectionEventAggregationMetaDataProvider dceAggregationMetaDataProvider,
+    PopulationAggregationMetaDataProvider populationAggregationMetaDataProvider,
     StudyAggregationMetaDataProvider studyAggregationMetaDataProvider,
     SetsAggregationMetaDataProvider setsAggregationMetaDataProvider) {
     this.opalService = opalService;
@@ -104,6 +110,7 @@ public class VariableQuery extends AbstractDocumentQuery {
     this.taxonomyAggregationMetaDataProvider = taxonomyAggregationMetaDataProvider;
     this.variableTaxonomyMetaDataProvider = variableTaxonomyMetaDataProvider;
     this.dceAggregationMetaDataProvider = dceAggregationMetaDataProvider;
+    this.populationAggregationMetaDataProvider = populationAggregationMetaDataProvider;
     this.studyAggregationMetaDataProvider = studyAggregationMetaDataProvider;
     this.collectedDatasetService = collectedDatasetService;
     this.harmonizedDatasetService = harmonizedDatasetService;
@@ -168,7 +175,7 @@ public class VariableQuery extends AbstractDocumentQuery {
   protected List<AggregationMetaDataProvider> getAggregationMetaDataProviders() {
     return Arrays
         .asList(taxonomyAggregationMetaDataProvider, variableTaxonomyMetaDataProvider, datasetAggregationMetaDataProvider,
-            dceAggregationMetaDataProvider, studyAggregationMetaDataProvider, setsAggregationMetaDataProvider);
+            dceAggregationMetaDataProvider, populationAggregationMetaDataProvider, studyAggregationMetaDataProvider, setsAggregationMetaDataProvider);
   }
 
   @Override
@@ -212,6 +219,22 @@ public class VariableQuery extends AbstractDocumentQuery {
         if (study != null) {
           builder.addAllStudyName(dtos.asDto(study.getName()));
           builder.addAllStudyAcronym(dtos.asDto(study.getAcronym()));
+
+          String dceId = variable.getDceId();
+          if (!Strings.isNullOrEmpty(dceId)) {
+            String[] parts = dceId.split(":");
+            if (parts.length > 1) {
+              Optional<Population> optionalPopulation = study.getPopulations().stream().filter(population -> population.getId().equals(parts[1])).findFirst();
+              if (optionalPopulation.isPresent()) {
+                Population population = optionalPopulation.get();
+                builder.addAllPopulationName(dtos.asDto(population.getName()));
+
+                if (parts.length > 2) {
+                  population.getDataCollectionEvents().stream().filter(dce -> dce.getId().equals(parts[2])).findFirst().ifPresent(dataCollectionEvent -> builder.addAllDceName(dtos.asDto(dataCollectionEvent.getName())));
+                }
+              }
+            }
+          }
         }
       } catch (NoSuchStudyException e) {
       }
