@@ -2,7 +2,9 @@
   "name": "mica",
   "version": "0.0.0",
   "description": "Description for mica",
-  "dependencies": {},
+  "dependencies": {
+    "codemirror": "^5.52.0"
+  },
   "devDependencies": {
     "grunt": "1.0.1",
     "grunt-autoprefixer": "3.0.4",
