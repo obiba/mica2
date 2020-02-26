@@ -118,7 +118,7 @@ $('#variables-tab').click(function(){
 });
 
 $('#datasets-tab').click(function(){
-  EventBus.$emit('query-type-selection', {type: 'datasets-list'});
+  EventBus.$emit('query-type-selection', {display: 'list', type: TYPES.DATASETS, target: TARGETS.DATASET});
 });
 
 $('#studies-tab').click(function(){
@@ -126,7 +126,7 @@ $('#studies-tab').click(function(){
 });
 
 $('#networks-tab').click(function(){
-  EventBus.$emit('query-type-selection', {type: 'networks-list'});
+  EventBus.$emit('query-type-selection', {display: 'list', type: TYPES.NETWORKS, target: TARGETS.NETWORK});
 });
 
 $('#lists-tab').click(function(){
@@ -141,7 +141,7 @@ $('#graphics-tab').click(function(){
   EventBus.$emit('query-type-selection', {type: 'graphics'});
 });
 
-Vue.use(VueObibaSearchResult.VariablesResult, {
+Vue.use(VueObibaSearchResult, {
   mixin: {
     methods: {
       getEventBus: function() {
@@ -246,6 +246,7 @@ new Vue({
   },
   beforeMount() {
     console.log('Before mounted List Variables');
+    // TODO remove this when selecting TABs from URL was implemented
     EventBus.$emit('query-type-selection', {display: 'list', type: TYPES.VARIABLES, target: TARGETS.VARIABLE});
   },
   mounted() {
@@ -265,7 +266,10 @@ new Vue({
     onResult: function(payload) {
       this.count++;
       this.result = payload + ' ' + this.count;
-    }
+    },
+    beforeMount() {
+      console.log('Before mounted List Datasets');
+    },
   },
   mounted() {
     EventBus.register('datasets-list', this.onResult);
