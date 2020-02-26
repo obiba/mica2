@@ -1,6 +1,6 @@
 package org.obiba.mica.web.rest.security;
 
-import org.obiba.mica.core.service.OidcProvidersService;
+import org.obiba.mica.core.service.UserAuthService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.web.model.OIDCDtos;
 import org.springframework.context.annotation.Scope;
@@ -23,17 +23,17 @@ public class OidcProvidersResource {
 
   private final Dtos dtos;
 
-  private final OidcProvidersService oidcProvidersService;
+  private final UserAuthService userAuthService;
 
   @Inject
-  public OidcProvidersResource(Dtos dtos, OidcProvidersService oidcProvidersService) {
+  public OidcProvidersResource(Dtos dtos, UserAuthService userAuthService) {
     this.dtos = dtos;
-    this.oidcProvidersService = oidcProvidersService;
+    this.userAuthService = userAuthService;
   }
 
   @GET
-  public List<OIDCDtos.OIDCAuthProviderSummaryDto> getProviders(@Nullable @QueryParam("locale") @DefaultValue("en") String locale) {
-    return oidcProvidersService.getProviders(locale)
+  public List<OIDCDtos.OIDCAuthProviderSummaryDto> getProviders(@Nullable @QueryParam("locale") @DefaultValue("en") String locale, @QueryParam("signup") @DefaultValue("false") boolean signupOnly) {
+    return userAuthService.getOidcProviders(locale, signupOnly)
       .stream()
       .map(dtos::asSummaryDto)
       .collect(Collectors.toList());

@@ -10,7 +10,7 @@
   <script type="text/javascript">
     var onloadCallback = function() {
       grecaptcha.render('html_element', {
-        'sitekey' : '6LdANggTAAAAAEBWCuEL-YkFd3ehtzlg4CzQpn3e'
+        'sitekey' : '${authConfig.reCaptchaKey}'
       });
     };
   </script>
@@ -25,17 +25,24 @@
     <div class="card-body login-card-body">
       <p class="login-box-msg">Register a new membership</p>
 
-      <form action=".." method="post">
-        <div class="input-group mb-3">
-          <input type="text" class="form-control" placeholder="Full name">
-          <div class="input-group-append">
-            <div class="input-group-text">
-              <span class="fas fa-user"></span>
+      <div id="alertFailure" class="alert alert-danger d-none">
+        <small><@message "sign-up-auth-failed"/></small>
+      </div>
+
+      <form id="form" method="post">
+
+        <#if authConfig.joinWithUsername>
+          <div class="input-group mb-3">
+            <input name="username" type="text" class="form-control" placeholder="<@message "username"/>">
+            <div class="input-group-append">
+              <div class="input-group-text">
+                <span class="fas fa-user"></span>
+              </div>
             </div>
           </div>
-        </div>
+        </#if>
         <div class="input-group mb-3">
-          <input type="email" class="form-control" placeholder="Email">
+          <input name="email" type="email" class="form-control" placeholder="<@message "email"/>">
           <div class="input-group-append">
             <div class="input-group-text">
               <span class="fas fa-envelope"></span>
@@ -43,42 +50,98 @@
           </div>
         </div>
         <div class="input-group mb-3">
-          <input type="password" class="form-control" placeholder="Password">
+          <input name="password" type="password" class="form-control" placeholder="<@message "password"/>">
           <div class="input-group-append">
             <div class="input-group-text">
               <span class="fas fa-lock"></span>
             </div>
           </div>
         </div>
+
+        <div class="text-center">
+          <p>- <@message "personal-information"/> -</p>
+        </div>
+
+        <div class="input-group mb-3">
+          <input name="firstname" type="text" class="form-control" placeholder="<@message "firstname"/>">
+          <div class="input-group-append">
+            <div class="input-group-text">
+              <span class="fas fa-user"></span>
+            </div>
+          </div>
+        </div>
+        <div class="input-group mb-3">
+          <input name="lastname" type="text" class="form-control" placeholder="<@message "lastname"/>">
+          <div class="input-group-append">
+            <div class="input-group-text">
+              <span class="fas fa-user"></span>
+            </div>
+          </div>
+        </div>
+
+        <#if authConfig.languages?size gt 1>
+          <div class="form-group mb-3">
+            <label><@message "preferred-language"/></label>
+            <select class="form-control" name="locale">
+              <#list authConfig.languages as language>
+                <option value="${language}"><@message language/></option>
+              </#list>
+            </select>
+          </div>
+        <#else>
+          <input type="hidden" name="locale" value="${authConfig.languages[0]}"/>
+        </#if>
+
+        <#list authConfig.userAttributes as attribute>
+          <div class="form-group mb-3">
+            <#if attribute.inputType == "checkbox">
+              <div class="form-check">
+                <input name="${attribute.name}" type="checkbox" value="true" class="form-check-input" id="${attribute.name}">
+                <label class="form-check-label" for="${attribute.name}"><@message attribute.name/></label>
+              </div>
+            <#elseif attribute.values?size != 0>
+              <label><@message attribute.name/></label>
+              <select class="form-control" name="${attribute.name}">
+                <#list attribute.values as value>
+                  <option value="${value}"><@message value/></option>
+                </#list>
+              </select>
+            <#else>
+              <input name="${attribute.name}" type="${attribute.inputType}" class="form-control" placeholder="<@message attribute.name/>">
+            </#if>
+          </div>
+        </#list>
+
         <div id="html_element" class="mb-3"></div>
         <div class="row">
           <div class="col-8">
           </div>
           <!-- /.col -->
           <div class="col-4">
-            <button type="submit" class="btn btn-primary btn-block">Sign Up</button>
+            <button type="submit" class="btn btn-primary btn-block"><@message "sign-up-submit"/></button>
           </div>
           <!-- /.col -->
         </div>
       </form>
+
       <script src="https://www.google.com/recaptcha/api.js?onload=onloadCallback&render=explicit"
               async defer>
       </script>
 
-      <#if oauthProviders?? && oauthProviders?size != 0>
+      <#if oidcProviders?? && oidcProviders?size != 0>
         <div class="social-auth-links text-center mb-3">
-          <p>- OR -</p>
-            <#list oauthProviders as oaut>
-              <a href="#" class="btn btn-block btn-primary">
-                Sign in using ${oauth.name}
-              </a>
-            </#list>
+          <p>- <@message "sign-up-or"/> -</p>
+          <#list oidcProviders as oidc>
+            <a href="${oidc.signinUrl}" class="btn btn-block btn-primary">
+              <@message "sign-up-with"/> ${oidc.title}
+            </a>
+          </#list>
         </div>
         <!-- /.social-auth-links -->
       </#if>
 
       <p class="mb-1">
-        <a href="signin" class="text-center">I already have a membership</a>
+        <a href="signin" class="text-center"><@message "already-have-a-membership"/></a>
       </p>
     </div>
     <!-- /.login-card-body -->
@@ -87,6 +150,42 @@
 <!-- /.login-box -->
 
 <#include "libs/scripts.ftl">
+
+<script>
+  const requiredFields = [
+    { name: 'email', title: '<@message "email"/>' },
+    { name: 'password', title: '<@message "password"/>' },
+    { name: 'firstname', title: '<@message "firstname"/>' },
+    { name: 'lastname', title: '<@message "lastname"/>' },
+    <#if authConfig.joinWithUsername>
+      { name: 'username', title: '<@message "username"/>' },
+    </#if>
+    <#list authConfig.userAttributes as attribute>
+      <#if attribute.required>
+        { name: '${attribute.name}', title: '<@message attribute.name/>' },
+      </#if>
+    </#list>
+    { name: 'g-recaptcha-response', title: '<@message "captcha"/>' }
+  ];
+  const errorMessages = {
+    'server.error.password.too-short': '<@message "server.error.password.too-short"/>',
+    'server.error.bad-request': '<@message "server.error.bad-request"/>',
+    'server.error.email-already-assigned': '<@message "server.error.email-already-assigned"/>',
+  };
+  micajs.signup("#form", requiredFields, function (message) {
+    var alertId = "#alertFailure";
+    var msg = message;
+    if (Array.isArray(message)) {
+      msg = '<@message "sign-up-fields-required"/>: ' + message.join(", ");
+    } else if (errorMessages[msg]) {
+      msg = errorMessages[msg];
+    }
+    $(alertId).html('<small>' + msg + '</small>').removeClass("d-none");
+    setTimeout(function() {
+      $(alertId).addClass("d-none");
+    }, 5000);
+  });
+</script>
 
 </body>
 </html>
