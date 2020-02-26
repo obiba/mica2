@@ -145,7 +145,7 @@
                     <div class="col-xs-12 col-lg-6">
                       <dl>
                         <dt>N</dt>
-                        <dd><span id="totalCount"></span></dd>
+                        <dd><span id="totalCount" class="badge badge-info"></span></dd>
                         <dt><@message "frequencies"/></dt>
                         <dd>
                           <table id="frequencyTable" class="table table-striped table-sm">
@@ -173,7 +173,7 @@
                     <div class="col-xs-12 col-lg-6">
                       <dl class="row">
                         <dt class="col-sm-4">N</dt>
-                        <dd id="n" class="col-sm-8"></dd>
+                        <dd class="col-sm-8"><span id="n" class="badge badge-info"></span></dd>
                         <dt class="col-sm-4"><@message "mean"/></dt>
                         <dd id="mean" class="col-sm-8"></dd>
                         <dt class="col-sm-4"><@message "stdDev"/></dt>
