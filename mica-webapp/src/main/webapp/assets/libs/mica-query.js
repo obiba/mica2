@@ -1,27 +1,27 @@
 const TYPES = {
   VARIABLES: 'variables',
-  DATASETS: 'datasts',
+  DATASETS: 'datasets',
   STUDIES: 'studies',
   NETWORKS: 'networks'
 };
 
 const TARGETS = {
   VARIABLE: 'variable',
-  DATASET: 'datast',
+  DATASET: 'dataset',
   STUDY: 'study',
   NETWORK: 'network'
 };
 
 const TYPES_TARGETS_MAP = {
   variables: 'variable',
-  datasets: 'datast',
+  datasets: 'dataset',
   studies: 'study',
   networks: 'network'
 };
 
 const TARGETS_TYPES_MAP = {
   variable: 'variables',
-  dataset: 'datasts',
+  dataset: 'datasets',
   study: 'studies',
   network: 'networks'
 };
@@ -159,9 +159,25 @@ class EntityQuery {
 
 class VariableQuery extends EntityQuery {
   constructor(defaultSize) {
-    super('variables', 'variable', defaultSize);
+    super(TYPES.VARIABLES, TARGETS.VARIABLE, defaultSize);
     this._fields = ['attributes.label.*', 'variableType', 'datasetId', 'datasetAcronym', 'attributes.Mlstr_area*'];
     this._sortFields = ['variableType,containerId', 'populationWeight', 'dataCollectionEventWeight', 'datasetId', 'index', 'name'];
+  }
+}
+
+class DatasetQuery extends EntityQuery {
+  constructor(defaultSize) {
+    super(TYPES.DATASETS, TARGETS.DATASET, defaultSize);
+    this._fields = ['acronym.*','name.*','variableType','studyTable.studyId','studyTable.project','studyTable.table','studyTable.populationId','studyTable.dataCollectionEventId','harmonizationTable.studyId','harmonizationTable.project','harmonizationTable.table','harmonizationTable.populationId'];
+    this._sortFields = ['studyTable.studyId','studyTable.populationWeight','studyTable.dataCollectionEventWeight','acronym'];
+  }
+}
+
+class NetworkQuery extends EntityQuery {
+  constructor(defaultSize) {
+    super(TYPES.NETWORKS, TARGETS.NETWORK, defaultSize);
+    this._fields = ['acronym.*','name.*','studyIds'];
+    this._sortFields = ['acronym'];
   }
 }
 
@@ -169,12 +185,11 @@ class MicaQueryExecutor {
 
   constructor(eventBus, defaultSize) {
     this._eventBus = eventBus;
-    this._query = {
-      'variables': new VariableQuery(defaultSize),
-      'datasets': new EntityQuery('datasets', 'dataset', defaultSize),
-      'studies': new EntityQuery('studies', 'study', defaultSize),
-      'networks': new EntityQuery('networks', 'network', defaultSize)
-    };
+    this._query = {};
+    this._query[TYPES.VARIABLES] = new VariableQuery(defaultSize);
+    this._query[TYPES.DATASETS] = new DatasetQuery(defaultSize);
+    this._query[TYPES.STUDIES] = new EntityQuery(TYPES.STUDIES, TARGETS.STUDY, defaultSize);
+    this._query[TYPES.NETWORKS] = new NetworkQuery(defaultSize);
   }
 
   /**
@@ -231,7 +246,9 @@ class MicaQueryExecutor {
    */
   __prepareAndExecuteQuery(eventId, payload) {
     switch (payload.type) {
-      case 'variables':
+      case TYPES.VARIABLES:
+      case TYPES.DATASETS:
+      case TYPES.NETWORKS:
         const type = payload.type;
         const display = payload.display;
         const entityQuery = this._query[type];
@@ -258,9 +275,7 @@ class MicaQueryExecutor {
         this.__executeQuery(tree, type, display, payload.noUrlUpdate);
         break;
 
-      case 'datasets-list':
-      case 'studies-list':
-      case 'networks-list':
+      case TYPES.STUDIES:
         break;
 
 
@@ -291,7 +306,7 @@ class MicaQueryExecutor {
 
         this.__updateLocation(type, display, tree.serialize(), noUrlUpdate);
 
-        EventBus.$emit('variables-results', {response: response.data, from: limitQuery.args[0]});
+        EventBus.$emit(`${type}-results`, {response: response.data, from: limitQuery.args[0]});
       });
   }
 
