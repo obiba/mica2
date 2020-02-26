@@ -51,11 +51,9 @@ var micajs = (function() {
       var url = '../ws/auth/sessions';
       var data = form.serialize(); // serializes the form's elements.
 
-      $.ajax({
-        type: 'POST',
-        url: url,
-        data: data})
-        .done(function() {
+      axios.post(url, data)
+        .then(response => {
+          console.dir(response);
           var redirect = '/';
           var q = new URLSearchParams(window.location.search);
           if (q.get('redirect')) {
@@ -63,14 +61,66 @@ var micajs = (function() {
           }
           $.redirect(redirect, {}, 'GET');
         })
-        .fail(function(xhr, status, errorThrown) {
-          console.log('The request has failed');
-          console.log('  Error: ' + errorThrown);
-          console.log('  Status: ' + status + ' ' + xhr.status);
-          console.dir(xhr);
+        .catch(handle => {
+          console.dir(handle);
           if (onFailure) {
-            var banned = xhr.responseJSON && xhr.responseJSON.message === 'User is banned';
-            onFailure(banned, xhr.responseJSON);
+            var banned = handle.response.data && handle.response.data.message === 'User is banned';
+            onFailure(banned, handle.response.data);
+          }
+        });
+    });
+  };
+
+  var micaSignup = function(formId, requiredFields, onFailure) {
+    $(formId).submit(function(e) {
+      e.preventDefault(); // avoid to execute the actual submit of the form.
+      var form = $(this);
+      var url = '../ws/users';
+      var data = form.serialize(); // serializes the form's elements.
+
+      var formData = form.serializeArray();
+
+      if (requiredFields) {
+        var missingFields = [];
+        requiredFields.forEach(function(item) {
+          var found = formData.filter(function(field) {
+            return field.name === item.name && field.value;
+          }).length;
+          if (found === 0) {
+             missingFields.push(item.title);
+          }
+        });
+        if (missingFields.length>0) {
+          if (onFailure) {
+            onFailure(missingFields);
+          } else {
+            console.dir(missingFields);
+          }
+          return;
+        }
+      }
+
+      if (onFailure) {
+        var password = formData.filter(function(field) {
+          return field.name === 'password';
+        }).map(function(field) {
+          return field.value;
+        })[0];
+        console.log(password);
+        if (password.length < 8) {
+          onFailure('server.error.password.too-short');
+          return;
+        }
+      }
+
+      axios.post(url, data)
+        .then(response => {
+          console.dir(response);
+        })
+        .catch(response => {
+          console.dir(response);
+          if (onFailure) {
+            onFailure('Submission failed: ' + response.statusText + ' (' + response.status + ')');
           }
         });
     });
@@ -403,6 +453,7 @@ var micajs = (function() {
     'redirectError': micaRedirectError,
     'redirect': micaRedirect,
     'signin': micaSignin,
+    'signup': micaSignup,
     'signout': micaSignout,
     'changeLanguage': micaChangeLanguage,
     'success': micaSuccess,

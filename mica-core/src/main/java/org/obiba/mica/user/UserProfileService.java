@@ -27,14 +27,18 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
-import org.springframework.web.client.RestClientException;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.util.ErrorHandler;
+import org.springframework.web.client.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -132,6 +136,49 @@ public class UserProfileService extends AgateRestService {
     return profile != null && profile.getGroups() != null && profile.getGroups().stream().filter(g -> g.equals(role)).count() > 0;
   }
 
+  public void createUser(Map<String, String[]> params) {
+    RestTemplate template = newRestTemplate();
+    HttpHeaders headers = new HttpHeaders();
+    headers.set(APPLICATION_AUTH_HEADER, getApplicationAuth());
+    headers.set(HttpHeaders.CONTENT_TYPE, "application/x-www-form-urlencoded");
+
+    StringBuffer query = new StringBuffer("group=mica-user");
+    for (String field : params.keySet()) {
+      for (String value : params.get(field)) {
+        if (!Strings.isNullOrEmpty(value)) {
+          query.append("&");
+          try {
+            if ("g-recaptcha-response".equals(field))
+              query.append("reCaptchaResponse");
+            else
+              query.append(field);
+            query.append("=").append(URLEncoder.encode(value, "UTF-8"));
+          } catch (UnsupportedEncodingException e) {
+            // ignore
+          }
+        }
+      }
+    }
+
+    HttpEntity<String> entity = new HttpEntity<>(query.toString(), headers);
+    try {
+      ResponseEntity<String> response = template.exchange(getUsersJoinUrl(), HttpMethod.POST, entity, String.class);
+      log.info(response.getHeaders().getLocation().toString());
+    } catch (HttpClientErrorException e) {
+      String message = e.getResponseBodyAsString();
+      log.error("Client error on user creation: {}", message);
+      throw e;
+    } catch (HttpServerErrorException e) {
+      String message = e.getResponseBodyAsString();
+      log.error("Server error on user creation: {}", message);
+      throw e;
+    }
+  }
+
+  //
+  // Private methods
+  //
+
   private Map<String, Object> asMap(@NotNull Subject profile) {
     Map<String, Object> params = Maps.newHashMap();
     String fullName = profile.getUsername();
@@ -178,6 +225,14 @@ public class UserProfileService extends AgateRestService {
     ResponseEntity<T> response = template.exchange(serviceUrl, HttpMethod.GET, entity, returnType);
 
     return response.getBody();
+  }
+
+  private String getUsersJoinUrl() {
+    return UriComponentsBuilder
+      .fromHttpUrl(agateServerConfigService.getAgateUrl())
+      .path(DEFAULT_REST_PREFIX)
+      .path("/users/_join")
+      .build().toUriString();
   }
 
   private String getProfileServiceUrl(String username) {
