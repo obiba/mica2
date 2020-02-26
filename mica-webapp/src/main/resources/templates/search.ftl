@@ -168,6 +168,7 @@
                         List of datasets
                         <div id="list-datasets">
                           {{ result }}
+                          <datasets-result></datasets-result>
                         </div>
                       </div>
                       <div class="tab-pane fade" id="studies" role="tabpanel" aria-labelledby="studies-tab">
@@ -180,6 +181,7 @@
                         List of networks
                         <div id="list-networks">
                           {{ result }}
+                          <networks-result></networks-result>
                         </div>
                       </div>
                     </div>
