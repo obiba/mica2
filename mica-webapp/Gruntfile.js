@@ -371,7 +371,14 @@ module.exports = function (grunt) {
       assets: {
         files: [
           {expand: true, src: ['node_modules/admin-lte/dist/**'], dest: 'src/main/webapp/assets/libs/'},
-          {expand: true, src: ['node_modules/admin-lte/plugins/**'], dest: 'src/main/webapp/assets/libs/'},
+          {expand: true, src: ['node_modules/admin-lte/plugins/bootstrap/**'], dest: 'src/main/webapp/assets/libs/'},
+          {expand: true, src: ['node_modules/admin-lte/plugins/chart.js/**'], dest: 'src/main/webapp/assets/libs/'},
+          {expand: true, src: ['node_modules/admin-lte/plugins/datatables/**'], dest: 'src/main/webapp/assets/libs/'},
+          {expand: true, src: ['node_modules/admin-lte/plugins/datatables-bs4/**'], dest: 'src/main/webapp/assets/libs/'},
+          {expand: true, src: ['node_modules/admin-lte/plugins/fontawesome-free/**'], dest: 'src/main/webapp/assets/libs/'},
+          {expand: true, src: ['node_modules/admin-lte/plugins/jquery/**'], dest: 'src/main/webapp/assets/libs/'},
+          {expand: true, src: ['node_modules/admin-lte/plugins/moment/**'], dest: 'src/main/webapp/assets/libs/'},
+          {expand: true, src: ['node_modules/admin-lte/plugins/toastr/**'], dest: 'src/main/webapp/assets/libs/'},
           {expand: true, src: ['node_modules/simplemde/dist/**'], dest: 'src/main/webapp/assets/libs/'},
           {expand: true, src: ['node_modules/vue/dist/**'], dest: 'src/main/webapp/assets/libs/'},
           {expand: true, src: ['node_modules/rql/dist/**'], dest: 'src/main/webapp/assets/libs/'},
