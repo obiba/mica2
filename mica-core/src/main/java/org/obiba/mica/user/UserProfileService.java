@@ -175,6 +175,21 @@ public class UserProfileService extends AgateRestService {
     }
   }
 
+  public void resetPassword(String username) {
+    RestTemplate template = newRestTemplate();
+    HttpHeaders headers = new HttpHeaders();
+    headers.set(HttpHeaders.CONTENT_TYPE, "application/x-www-form-urlencoded");
+
+    String query = "username=";
+    try {
+      query = query + URLEncoder.encode(username, "UTF-8");
+    } catch (UnsupportedEncodingException e) {
+      // ignore
+    }
+    HttpEntity<String> entity = new HttpEntity<>(query, headers);
+    ResponseEntity<String> response = template.exchange(getUsersForgotPasswordUrl(), HttpMethod.POST, entity, String.class);
+  }
+
   //
   // Private methods
   //
@@ -232,6 +247,14 @@ public class UserProfileService extends AgateRestService {
       .fromHttpUrl(agateServerConfigService.getAgateUrl())
       .path(DEFAULT_REST_PREFIX)
       .path("/users/_join")
+      .build().toUriString();
+  }
+
+  private String getUsersForgotPasswordUrl() {
+    return UriComponentsBuilder
+      .fromHttpUrl(agateServerConfigService.getAgateUrl())
+      .path(DEFAULT_REST_PREFIX)
+      .path("/users/_forgot_password")
       .build().toUriString();
   }
 
