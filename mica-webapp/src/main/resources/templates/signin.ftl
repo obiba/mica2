@@ -58,7 +58,7 @@
         <div class="social-auth-links text-center mb-3">
           <p>- <@message "sign-in-or"/> -</p>
           <#list oidcProviders as oidc>
-            <a href="${oidc.signinUrl}" class="btn btn-block btn-primary">
+            <a href="${oidc.url}" class="btn btn-block btn-primary">
               <@message "sign-in-with"/> ${oidc.title}
             </a>
           </#list>

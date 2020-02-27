@@ -54,8 +54,8 @@ var micajs = (function() {
       axios.post(url, data)
         .then(response => {
           console.dir(response);
-          var redirect = '/';
-          var q = new URLSearchParams(window.location.search);
+          let redirect = '/';
+          const q = new URLSearchParams(window.location.search);
           if (q.get('redirect')) {
             redirect = q.get('redirect');
           }
@@ -80,6 +80,13 @@ var micajs = (function() {
 
       var formData = form.serializeArray();
 
+      var getField = function(name) {
+        var fields = formData.filter(function(field) {
+          return field.name === name;
+        });
+        return fields.length > 0 ? fields[0] : undefined;
+      };
+
       if (requiredFields) {
         var missingFields = [];
         requiredFields.forEach(function(item) {
@@ -91,36 +98,47 @@ var micajs = (function() {
           }
         });
         if (missingFields.length>0) {
-          if (onFailure) {
-            onFailure(missingFields);
-          } else {
-            console.dir(missingFields);
-          }
+          onFailure(missingFields);
           return;
         }
       }
-
-      if (onFailure) {
-        var password = formData.filter(function(field) {
-          return field.name === 'password';
-        }).map(function(field) {
-          return field.value;
-        })[0];
-        console.log(password);
+      const passwordField = getField('password');
+      if (passwordField) {
+        const password = passwordField.value;
         if (password.length < 8) {
           onFailure('server.error.password.too-short');
           return;
         }
       }
 
+      const realmField = getField('realm');
+
       axios.post(url, data)
         .then(response => {
           console.dir(response);
+          let redirect = '/';
+          let values = {};
+          const q = new URLSearchParams(window.location.search);
+          if (q.get('redirect')) {
+            redirect = q.get('redirect');
+          } else if (passwordField || realmField) {
+            redirect = 'just-registered';
+            values = { signin: true }
+          } else {
+            redirect = 'just-registered';
+          }
+          $.redirect(redirect, values, 'GET');
         })
-        .catch(response => {
-          console.dir(response);
-          if (onFailure) {
-            onFailure('Submission failed: ' + response.statusText + ' (' + response.status + ')');
+        .catch(handle => {
+          console.dir(handle);
+          if (handle.response.data.message === 'Email already in use') {
+            onFailure('server.error.email-already-assigned');
+          } else if (handle.response.data.message === 'Invalid reCaptcha response') {
+            onFailure('server.error.bad-captcha');
+          }else if (handle.response.data.messageTemplate) {
+            onFailure(handle.response.data.messageTemplate);
+          } else {
+            onFailure('server.error.bad-request');
           }
         });
     });
