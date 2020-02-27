@@ -62,7 +62,7 @@
                       <#if key != "realm">
                         <dt class="col-sm-4"><@message key/></dt>
                         <dd class="col-sm-8">
-                          <#if key == "createdDate">
+                          <#if key == "createdDate" || key == "lastLogin">
                             ${user.attributes[key].toString(datetimeFormat)}
                           <#elseif key == "email">
                             <a href="mailto:${user.attributes[key]}">${user.attributes[key]}</a>
