@@ -7,11 +7,11 @@ public class OidcProvider {
 
   private final OIDCAuthProviderSummary authProviderSummary;
 
-  private final String signinUrl;
+  private final String url;
 
-  public OidcProvider(OIDCAuthProviderSummary authProviderSummary, String signinUrl) {
+  public OidcProvider(OIDCAuthProviderSummary authProviderSummary, String url) {
     this.authProviderSummary = authProviderSummary;
-    this.signinUrl = signinUrl;
+    this.url = url;
   }
 
   public String getName() {
@@ -23,8 +23,8 @@ public class OidcProvider {
     return Strings.isNullOrEmpty(title) ? getName() : title;
   }
 
-  public String getSigninUrl() {
-    return signinUrl;
+  public String getUrl() {
+    return url;
   }
 
   public String getAccountUrl() {
