@@ -1,6 +1,8 @@
 package org.obiba.mica.web.controller;
 
 import com.google.common.base.Strings;
+import net.minidev.json.parser.JSONParser;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.obiba.mica.core.service.AgateServerConfigService;
 import org.obiba.mica.core.service.UserAuthService;
@@ -49,7 +51,7 @@ public class SignController {
 
     String lang = getLang(language, locale);
     List<OidcProvider> providers = userAuthService.getOidcProviders(lang, true).stream()
-      .map(o -> new OidcProvider(o, getOidcSigninUrl(o.getName(), request, redirect))).collect(Collectors.toList());
+      .map(o -> new OidcProvider(o, getOidcSignupUrl(o.getName(), request, redirect))).collect(Collectors.toList());
     mv.getModel().put("oidcProviders", providers);
 
     JSONObject authConfig = userAuthService.getPublicConfiguration();
@@ -58,6 +60,37 @@ public class SignController {
 
     return mv;
   }
+
+  @GetMapping("/signup-with")
+  public ModelAndView signup(HttpServletRequest request, @RequestParam(value = "redirect", required = false) String redirect,
+                             @CookieValue(value = "u_auth", required = false, defaultValue = "{}") String uAuth,
+                             @CookieValue(value = "NG_TRANSLATE_LANG_KEY", required = false, defaultValue = "en") String locale,
+                             @RequestParam(value = "language", required = false) String language) {
+    ModelAndView mv = new ModelAndView("signup-with");
+    try {
+      String fixedUAuth = uAuth.replaceAll("\\\\", "");
+      mv.getModel().put("uAuth", new JSONObject(fixedUAuth));
+    } catch (JSONException e) {
+      mv.getModel().put("uAuth", new JSONObject());
+    }
+
+    JSONObject authConfig = userAuthService.getPublicConfiguration();
+    JSONObject clientConfig = userAuthService.getClientConfiguration();
+    mv.getModel().put("authConfig", new AuthConfiguration(authConfig, clientConfig));
+
+    return mv;
+  }
+
+  @GetMapping("/just-registered")
+  public ModelAndView justRegistered(@RequestParam(value = "signin", required = false, defaultValue = "false") boolean canSignin) {
+    ModelAndView mv =  new ModelAndView("just-registered");
+    mv.getModel().put("canSignin", canSignin);
+    return mv;
+  }
+
+  //
+  // Private methods
+  //
 
   private String getLang(String language, String locale) {
     return language == null ? locale : language;
@@ -76,11 +109,36 @@ public class SignController {
     if (!Strings.isNullOrEmpty(redirect))
       redirectUrl = String.format("%s/%s", baseUrl, redirect);
 
+    String signinErrorUrl = baseUrl + "/signup";
+
     try {
-      return String.format("%s/auth/signin/%s?redirect=%s", agateUrl, oidcName, URLEncoder.encode(redirectUrl, "UTF-8"));
+      return String.format("%s/auth/signin/%s?redirect=%s&signin_error=%s", agateUrl, oidcName, URLEncoder.encode(redirectUrl, "UTF-8"), URLEncoder.encode(signinErrorUrl, "UTF-8"));
     } catch (UnsupportedEncodingException e) {
       // not supposed to happen
       return String.format("%s/auth/signin/%s", agateUrl, oidcName);
+    }
+  }
+
+  private String getOidcSignupUrl(String oidcName, HttpServletRequest request, String redirect) {
+    // http://localhost:8081/auth/signup/kc-test?redirect=http://localhost:8082
+
+    String agateUrl = agateServerConfigService.getAgateUrl();
+
+    String requestUrl = request.getRequestURL().toString();
+    String requestUri = request.getRequestURI();
+    String baseUrl = requestUrl.replaceFirst(requestUri, "");
+
+    String redirectUrl = baseUrl + "/signup-with";
+    if (!Strings.isNullOrEmpty(redirect))
+      redirectUrl = String.format("%s/%s", baseUrl, redirect);
+
+    String errorUrl = baseUrl + "/error";
+
+    try {
+      return String.format("%s/auth/signup/%s?redirect=%s&error=%s", agateUrl, oidcName, URLEncoder.encode(redirectUrl, "UTF-8"), URLEncoder.encode(errorUrl, "UTF-8"));
+    } catch (UnsupportedEncodingException e) {
+      // not supposed to happen
+      return String.format("%s/auth/signup/%s", agateUrl, oidcName);
     }
   }
 
