@@ -63,7 +63,7 @@
           </li>
         </#if>
       <li class="nav-item">
-        <a class="nav-link" href="${pathPrefix!".."}/signin<#if rc.requestUri != "/" && rc.requestUri != "/just-registered">?redirect=${rc.requestUri}</#if>"><@message "sign-in"/></a>
+        <a class="nav-link" href="${pathPrefix!".."}/signin<#if rc.requestUri != "/" && !rc.requestUri?starts_with("/just-registered") && !rc.requestUri?starts_with("/error")>?redirect=${rc.requestUri}</#if>"><@message "sign-in"/></a>
       </li>
       <li class="nav-item">
         <a class="btn btn-outline-primary" href="${pathPrefix!".."}/signup"><@message "sign-up"/></a>
