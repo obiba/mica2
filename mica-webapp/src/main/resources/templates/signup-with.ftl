@@ -31,41 +31,8 @@
 
       <form id="form" method="post">
 
-        <#if authConfig.joinWithUsername>
-          <div class="input-group mb-3">
-            <input name="username" type="text" class="form-control" placeholder="<@message "username"/>">
-            <div class="input-group-append">
-              <div class="input-group-text">
-                <span class="fas fa-user"></span>
-              </div>
-            </div>
-          </div>
-        </#if>
         <div class="input-group mb-3">
-          <input name="email" type="email" class="form-control" placeholder="<@message "email"/>">
-          <div class="input-group-append">
-            <div class="input-group-text">
-              <span class="fas fa-envelope"></span>
-            </div>
-          </div>
-        </div>
-        <#if signupWithPassword>
-          <div class="input-group mb-3">
-            <input name="password" type="password" class="form-control" placeholder="<@message "password"/>">
-            <div class="input-group-append">
-              <div class="input-group-text">
-                <span class="fas fa-lock"></span>
-              </div>
-            </div>
-          </div>
-        </#if>
-
-        <div class="text-center">
-          <p>- <@message "personal-information"/> -</p>
-        </div>
-
-        <div class="input-group mb-3">
-          <input name="firstname" type="text" class="form-control" placeholder="<@message "firstname"/>">
+          <input name="username" type="text" class="form-control" placeholder="<@message "username"/>" value="${uAuth.username!""}" readonly>
           <div class="input-group-append">
             <div class="input-group-text">
               <span class="fas fa-user"></span>
@@ -73,7 +40,29 @@
           </div>
         </div>
         <div class="input-group mb-3">
-          <input name="lastname" type="text" class="form-control" placeholder="<@message "lastname"/>">
+          <input name="email" type="email" class="form-control" placeholder="<@message "email"/>" value="${uAuth.email!""}" readonly>
+          <div class="input-group-append">
+            <div class="input-group-text">
+              <span class="fas fa-envelope"></span>
+            </div>
+          </div>
+        </div>
+        <input type="hidden" name="realm" value="${uAuth.realm}"/>
+
+        <div class="text-center">
+          <p>- <@message "personal-information"/> -</p>
+        </div>
+
+        <div class="input-group mb-3">
+          <input name="firstname" type="text" class="form-control" placeholder="<@message "firstname"/>" value="${uAuth.firstname!""}">
+          <div class="input-group-append">
+            <div class="input-group-text">
+              <span class="fas fa-user"></span>
+            </div>
+          </div>
+        </div>
+        <div class="input-group mb-3">
+          <input name="lastname" type="text" class="form-control" placeholder="<@message "lastname"/>"  value="${uAuth.lastname!""}">
           <div class="input-group-append">
             <div class="input-group-text">
               <span class="fas fa-user"></span>
@@ -130,18 +119,6 @@
               async defer>
       </script>
 
-      <#if oidcProviders?? && oidcProviders?size != 0>
-        <div class="social-auth-links text-center mb-3">
-          <p>- <@message "sign-up-or"/> -</p>
-          <#list oidcProviders as oidc>
-            <a href="${oidc.url}" class="btn btn-block btn-primary">
-              <@message "sign-up-with"/> ${oidc.title}
-            </a>
-          </#list>
-        </div>
-        <!-- /.social-auth-links -->
-      </#if>
-
       <p class="mb-1">
         <a href="signin" class="text-center"><@message "already-have-a-membership"/></a>
       </p>
@@ -156,9 +133,6 @@
 <script>
   const requiredFields = [
     { name: 'email', title: '<@message "email"/>' },
-    <#if signupWithPassword>
-      { name: 'password', title: '<@message "password"/>' },
-    </#if>
     { name: 'firstname', title: '<@message "firstname"/>' },
     { name: 'lastname', title: '<@message "lastname"/>' },
     <#if authConfig.joinWithUsername>
@@ -172,7 +146,6 @@
     { name: 'g-recaptcha-response', title: '<@message "captcha"/>' }
   ];
   const errorMessages = {
-    'server.error.password.too-short': '<@message "server.error.password.too-short"/>',
     'server.error.bad-request': '<@message "server.error.bad-request"/>',
     'server.error.bad-captcha': '<@message "server.error.bad-captcha"/>',
     'server.error.email-already-assigned': '<@message "server.error.email-already-assigned"/>',
