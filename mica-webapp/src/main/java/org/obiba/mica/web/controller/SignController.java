@@ -107,7 +107,7 @@ public class SignController {
 
     String redirectUrl = baseUrl;
     if (!Strings.isNullOrEmpty(redirect))
-      redirectUrl = String.format("%s/%s", baseUrl, redirect);
+      redirectUrl = String.format("%s%s", baseUrl, redirect.startsWith("/") ? redirect : "/" + redirect);
 
     String signinErrorUrl = baseUrl + "/signup";
 
@@ -130,7 +130,7 @@ public class SignController {
 
     String redirectUrl = baseUrl + "/signup-with";
     if (!Strings.isNullOrEmpty(redirect))
-      redirectUrl = String.format("%s/%s", baseUrl, redirect);
+      redirectUrl = String.format("%s%s", baseUrl, redirect.startsWith("/") ? redirect : "/" + redirect);
 
     String errorUrl = baseUrl + "/error";
 
