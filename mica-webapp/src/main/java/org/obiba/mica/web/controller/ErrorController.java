@@ -11,29 +11,32 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Controller
-public class ErrorController {
+public class ErrorController implements org.springframework.boot.autoconfigure.web.ErrorController {
 
   @GetMapping("/error")
   public ModelAndView error(@RequestParam(value = "error", required = false, defaultValue = "999") String status, @RequestParam(defaultValue = "") String message) {
-    Map<String, Object> params = new HashMap<String, Object>();
-    params.put("status", status);
-    params.put("msg", message);
-    return new ModelAndView("error");
+    return makeModelAndView(status, message);
   }
 
   @PostMapping(value = "/error", consumes = "application/x-www-form-urlencoded")
   public ModelAndView errorWithParams(@RequestParam(defaultValue = "500") int status, @RequestParam(defaultValue = "") String message) {
-    Map<String, Object> params = new HashMap<String, Object>();
-    params.put("status", status);
-    params.put("msg", message);
-    return new ModelAndView("error", params);
+    return makeModelAndView(status + "", message);
   }
 
   @ExceptionHandler(Exception.class)
   public ModelAndView anyError(Exception ex) {
-    ModelAndView model = new ModelAndView("error");
-    model.addObject("status", 500);
-    model.addObject("msg", ex.getMessage());
-    return model;
+    return makeModelAndView("500", ex.getMessage());
+  }
+
+  @Override
+  public String getErrorPath() {
+    return "/error";
+  }
+
+  private ModelAndView makeModelAndView(String status, String message) {
+    ModelAndView mv = new ModelAndView("error");
+    mv.getModel().put("status", status);
+    mv.getModel().put("msg", message);
+    return mv;
   }
 }
