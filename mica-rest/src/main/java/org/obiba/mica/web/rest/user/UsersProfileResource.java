@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
@@ -60,5 +61,12 @@ public class UsersProfileResource {
       String message = e.getResponseBodyAsString();
       return Response.status(e.getRawStatusCode()).entity(message).build();
     }
+  }
+
+  @POST
+  @Path("/_forgot_password")
+  public Response resetPassword(@FormParam("username") String username) {
+    userProfileService.resetPassword(username);
+    return Response.ok().build();
   }
 }
