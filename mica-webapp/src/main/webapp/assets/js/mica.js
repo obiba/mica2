@@ -155,6 +155,29 @@ var micajs = (function() {
     });
   };
 
+  var micaResetPassword = function(formId, onFailure) {
+    $(formId).submit(function(e) {
+      e.preventDefault(); // avoid to execute the actual submit of the form.
+      var form = $(this);
+      var url = '../ws/users/_forgot_password';
+      var data = form.serialize(); // serializes the form's elements.
+
+      if (decodeURI(data).trim() === 'username=') {
+        return;
+      }
+
+      axios.post(url, data)
+        .then(response => {
+          console.dir(response);
+          $.redirect('/', {}, 'GET');
+        })
+        .catch(handle => {
+          console.dir(handle);
+          onFailure();
+        });
+    });
+  };
+
   var micaChangeLanguage = function(lang) {
     let key = 'language';
     let value = encodeURI(lang);
@@ -473,6 +496,7 @@ var micajs = (function() {
     'signin': micaSignin,
     'signup': micaSignup,
     'signout': micaSignout,
+    'resetPassword': micaResetPassword,
     'changeLanguage': micaChangeLanguage,
     'success': micaSuccess,
     'warning': micaWarning,
