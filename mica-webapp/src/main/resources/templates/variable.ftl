@@ -164,16 +164,20 @@
                       </dl>
                     </div>
                     <div class="col-xs-12 col-lg-6">
-                      <canvas id="frequencyChart" style="min-height: 350px; height: 350px; max-height: 350px; max-width: 100%; display: none;"></canvas>
+                      <canvas id="frequencyChart"></canvas>
                     </div>
                   </div>
                 </div>
                 <div id="continuousSummary" style="display: none">
                   <div class="row">
-                    <div class="col-xs-12 col-lg-6">
+                    <div class="col-xs-12 col-lg-4">
                       <dl class="row">
                         <dt class="col-sm-4">N</dt>
                         <dd class="col-sm-8"><span id="n" class="badge badge-info"></span></dd>
+                        <dt class="col-sm-4"><@message "n-values"/></dt>
+                        <dd id="n-values" class="col-sm-8"></dd>
+                        <dt class="col-sm-4"><@message "n-missings"/></dt>
+                        <dd id="n-missings" class="col-sm-8"></dd>
                         <dt class="col-sm-4"><@message "mean"/></dt>
                         <dd id="mean" class="col-sm-8"></dd>
                         <dt class="col-sm-4"><@message "stdDev"/></dt>
@@ -188,8 +192,8 @@
                         <dd id="max" class="col-sm-8"></dd>
                       </dl>
                     </div>
-                    <div class="col-xs-12 col-lg-6">
-                      <canvas id="percentilChart" style="min-height: 350px; height: 350px; max-height: 350px; max-width: 100%; display: none;"></canvas>
+                    <div class="col-xs-12 col-lg-8">
+                      <canvas id="histogramChart"></canvas>
                     </div>
                   </div>
                 </div>
