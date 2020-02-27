@@ -129,7 +129,6 @@
 <!-- /.login-box -->
 
 <#include "libs/scripts.ftl">
-
 <script>
   const requiredFields = [
     { name: 'email', title: '<@message "email"/>' },
@@ -145,25 +144,8 @@
     </#list>
     { name: 'g-recaptcha-response', title: '<@message "captcha"/>' }
   ];
-  const errorMessages = {
-    'server.error.bad-request': '<@message "server.error.bad-request"/>',
-    'server.error.bad-captcha': '<@message "server.error.bad-captcha"/>',
-    'server.error.email-already-assigned': '<@message "server.error.email-already-assigned"/>',
-  };
-  micajs.signup("#form", requiredFields, function (message) {
-    var alertId = "#alertFailure";
-    var msg = message;
-    if (Array.isArray(message)) {
-      msg = '<@message "sign-up-fields-required"/>: ' + message.join(", ");
-    } else if (errorMessages[msg]) {
-      msg = errorMessages[msg];
-    }
-    $(alertId).html('<small>' + msg + '</small>').removeClass("d-none");
-    setTimeout(function() {
-      $(alertId).addClass("d-none");
-    }, 5000);
-  });
 </script>
+<#include "libs/signup-scripts.ftl">
 
 </body>
 </html>
