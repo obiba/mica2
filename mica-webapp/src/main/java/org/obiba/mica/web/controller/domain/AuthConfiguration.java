@@ -48,6 +48,21 @@ public class AuthConfiguration {
     }
   }
 
+  public String getPublicUrl() {
+    try {
+      return publicConfiguration.getString("publicUrl");
+    } catch (JSONException e) {
+      return "";
+    }
+  }
+
+  public String getUserAccountUrl() {
+    String url = getPublicUrl();
+    if (!url.endsWith("/")) url = url + "/";
+    url = url + "#/profile";
+    return url;
+  }
+
   public List<String> getLanguages() {
     return languages;
   }

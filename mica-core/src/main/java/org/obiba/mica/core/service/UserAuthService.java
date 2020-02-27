@@ -39,7 +39,16 @@ public class UserAuthService extends AgateRestService {
   }
 
   public synchronized JSONObject getPublicConfiguration() {
-    return getJSONObject(getPublicConfigurationUrl());
+    JSONObject config = getJSONObject(getPublicConfigurationUrl());
+    if (!config.has("publicUrl")) { // publicUrl as configured in Agate
+      try {
+        // publicUrl as configured in Mica
+        config.put("publicUrl", agateServerConfigService.getAgateUrl());
+      } catch (JSONException e) {
+        // ignore
+      }
+    }
+    return config;
   }
 
   public synchronized JSONObject getClientConfiguration() {
