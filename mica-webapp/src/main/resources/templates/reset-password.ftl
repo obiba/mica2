@@ -15,14 +15,10 @@
   <!-- /.login-logo -->
   <div class="card">
     <div class="card-body login-card-body">
-      <p class="login-box-msg"><@message "sign-in-caption"/></p>
+      <p class="login-box-msg"><@message "reset-password"/></p>
 
       <div id="alertFailure" class="alert alert-danger d-none">
-        <small><@message "sign-in-auth-failed"/></small>
-      </div>
-
-      <div id="alertBanned" class="alert alert-warning d-none">
-        <small><@message "sign-in-too-many-failures"/></small>
+        <small><@message "reset-password-failed"/></small>
       </div>
 
       <form id="form" method="post">
@@ -34,41 +30,17 @@
             </div>
           </div>
         </div>
-        <div class="input-group mb-3">
-          <input name="password" type="password" class="form-control" placeholder="<@message "password"/>">
-          <div class="input-group-append">
-            <div class="input-group-text">
-              <span class="fas fa-lock"></span>
-            </div>
-          </div>
-        </div>
         <div class="row">
           <div class="col-8">
-
           </div>
           <!-- /.col -->
           <div class="col-4">
-            <button type="submit" class="btn btn-primary btn-block"><@message "sign-in-submit"/></button>
+            <button type="submit" class="btn btn-primary btn-block"><@message "reset"/></button>
           </div>
           <!-- /.col -->
         </div>
       </form>
 
-      <#if oidcProviders?? && oidcProviders?size != 0>
-        <div class="social-auth-links text-center mb-3">
-          <p>- <@message "sign-in-or"/> -</p>
-          <#list oidcProviders as oidc>
-            <a href="${oidc.url}" class="btn btn-block btn-primary">
-              <@message "sign-in-with"/> ${oidc.title}
-            </a>
-          </#list>
-        </div>
-        <!-- /.social-auth-links -->
-      </#if>
-
-      <p class="mb-1">
-        <a href="reset-password"><@message "forgot-password"/></a>
-      </p>
       <p class="mb-0">
         <a href="signup" class="text-center"><@message "register-new-membership"/></a>
       </p>
@@ -81,11 +53,11 @@
 <#include "libs/scripts.ftl">
 
 <script>
-  micajs.signin("#form", function (banned) {
-    var alertId = banned ? "#alertBanned" : "#alertFailure";
+  micajs.resetPassword("#form", function() {
+    var alertId = "#alertFailure";
     $(alertId).removeClass("d-none");
     setTimeout(function() {
-        $(alertId).addClass("d-none");
+      $(alertId).addClass("d-none");
     }, 5000);
   });
 </script>
