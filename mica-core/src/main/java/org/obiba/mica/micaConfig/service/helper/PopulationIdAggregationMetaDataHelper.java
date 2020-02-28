@@ -1,5 +1,6 @@
 package org.obiba.mica.micaConfig.service.helper;
 
+import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.core.domain.StudyTable;
 import org.obiba.mica.study.domain.BaseStudy;
 import org.obiba.mica.study.domain.Study;
@@ -38,9 +39,11 @@ public class PopulationIdAggregationMetaDataHelper extends AbstractStudyAggregat
 
     studies.forEach(study -> {
       study.getPopulations().forEach(population -> {
+        LocalizedString name = population.getName();
+        LocalizedString description = population.getDescription();
         map.put(
           StudyTable.getPopulationUId(study.getId(), population.getId()),
-          new AggregationMetaDataProvider.LocalizedMetaData(population.getName(), population.getDescription(), population.getClass().getSimpleName()));
+          new AggregationMetaDataProvider.LocalizedMetaData(name == null ? new LocalizedString() : name, description == null ? new LocalizedString() : description, population.getClass().getSimpleName()));
       });
     });
 
