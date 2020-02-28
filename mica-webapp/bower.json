@@ -30,7 +30,7 @@
     "mica-study-timeline": "https://github.com/obiba/mica-study-timeline.git#1.0.5",
     "ng-file-upload": "12.2.13",
     "ng-obiba": "https://github.com/obiba/ng-obiba.git#1.9.8",
-    "ng-obiba-mica": "https://github.com/obiba/ng-obiba-mica.git#master",
+    "ng-obiba-mica": "https://github.com/obiba/ng-obiba-mica.git#3.7.0",
     "filesize": "3.6.0",
     "ngclipboard": "1.1.3",
     "angular-utils-pagination": "0.11.1",
@@ -48,7 +48,7 @@
     "sf-checkboxgroup": "https://github.com/obiba/sf-checkboxgroup.git#1.0.1",
     "sf-typeahead": "https://github.com/obiba/sf-typeahead.git#1.1.1",
     "sf-obiba-countries-ui-select": "https://github.com/obiba/sf-obiba-countries-ui-select.git#1.0.3",
-    "sf-radio-group-collection": "https://github.com/obiba/sf-radio-group-collection.git#master",
+    "sf-radio-group-collection": "https://github.com/obiba/sf-radio-group-collection.git#1.0.1",
     "obiba-shims": "https://github.com/obiba/obiba-shims.git#1.0.0"
   },
   "devDependencies": {
