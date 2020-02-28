@@ -92,6 +92,12 @@
               label="config.collected-dataset-enabled" help="config.collected-dataset-enabled-help"></div>
           <div form-checkbox name="isHarmonizedDatasetEnabled" model="micaConfig.isHarmonizedDatasetEnabled"
               label="config.harmonized-dataset-enabled" help="config.harmonized-dataset-enabled-help"></div>
+
+        <h4 class="voffset4" translate>config.signup-section</h4>
+        <div form-checkbox name="signupWithPassword" model="micaConfig.signupWithPassword"
+             label="config.signup-with-password" help="config.signup-with-password-help"></div>
+        <div form-input name="signupGroups" model="signupGroups" label="config.signup-groups" help="config.signup-groups-form-help"
+             required="false" ng-keyup="signupGroupsUpdated()"></div>
       </div>
     </div>
 

@@ -138,6 +138,10 @@ public class MicaConfig extends AbstractAuditableDocument {
 
   private boolean setsSearchEnabled = true;
 
+  private List<String> signupGroups = Lists.newArrayList("mica-user");
+
+  private boolean signupWithPassword = true;
+
   private OpalViewsGrouping opalViewsGrouping = OpalViewsGrouping.PROJECT_TABLE;
 
   public String getName() {
@@ -235,6 +239,22 @@ public class MicaConfig extends AbstractAuditableDocument {
 
   public void setRoles(List<String> roles) {
     this.roles = roles == null ? Lists.newArrayList() : Lists.newArrayList(Sets.newLinkedHashSet(roles));
+  }
+
+  public void setSignupGroups(List<String> signupGroups) {
+    this.signupGroups = signupGroups == null || signupGroups.isEmpty() ? Lists.newArrayList("mica-user") : Lists.newArrayList(Sets.newLinkedHashSet(signupGroups));
+  }
+
+  public List<String> getSignupGroups() {
+    return signupGroups;
+  }
+
+  public void setSignupWithPassword(boolean signupWithPassword) {
+    this.signupWithPassword = signupWithPassword;
+  }
+
+  public boolean isSignupWithPassword() {
+    return signupWithPassword;
   }
 
   public void setOpenAccess(boolean openAccess) {

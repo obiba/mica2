@@ -430,6 +430,10 @@ mica.config
         }
       };
 
+      $scope.signupGroupsUpdated = function() {
+        $scope.micaConfig.signupGroups = $scope.signupGroups.split(' ').filter(function(g) { return g.length>0; });
+      };
+
       $scope.micaConfig.$promise.then(function() {
         $scope.selectedSearchLayout = {
           get design() {
@@ -448,6 +452,8 @@ mica.config
             help: $filter('translate')('config.searchLayout.' + layoutOption + '-help')
           };
         });
+
+        $scope.signupGroups = $scope.micaConfig.signupGroups.join(' ');
 
         $scope.$watchGroup(['name', 'isNetworkEnabled', 'isSingleNetworkEnabled',
           'isSingleStudyEnabled', 'isCollectedDatasetEnabled', 'isHarmonizedDatasetEnabled', 'languages', 'searchLayout'].map(function(p) { return 'micaConfig.' + p; }), function(value, oldValue) {
