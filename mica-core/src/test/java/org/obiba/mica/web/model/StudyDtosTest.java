@@ -19,6 +19,7 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.obiba.mica.core.domain.Timestamped;
+import org.obiba.mica.core.service.PersonService;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.micaConfig.domain.MicaConfig;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
@@ -26,6 +27,7 @@ import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.service.IndividualStudyService;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Locale;
 
 import static org.mockito.Matchers.any;
@@ -56,6 +58,9 @@ public class StudyDtosTest {
   @Mock
   private AttachmentDtos attachmentDtos;
 
+  @Mock
+  private PersonService personService;
+
   @Before
   public void before() {
     MicaConfig config = new MicaConfig();
@@ -63,6 +68,7 @@ public class StudyDtosTest {
     when(micaConfigService.getConfig()).thenReturn(config);
 
     when(permissionsDtos.asDto(any(Study.class))).thenReturn(Mica.PermissionsDto.getDefaultInstance());
+    when(personService.getStudyMembershipMap(anyString())).thenReturn(new HashMap<>());
     when(individualStudyService.isPublished(anyString())).thenReturn(true);
   }
 

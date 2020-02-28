@@ -143,16 +143,14 @@ class StudyDtos {
       study.getMembershipSortOrder().forEach((role, ids) -> builder.addMembershipSortOrder(MembershipSortOrderDto.newBuilder().setRole(role).addAllPersonIds(ids).build()));
     }
 
-    if (!asDraft) {
-      Map<String, List<Membership>> studyMembershipMap = personService.getStudyMembershipMap(study.getId());
+    Map<String, List<Membership>> studyMembershipMap = personService.getStudyMembershipMap(study.getId());
 
-      List<Mica.MembershipsDto> memberships = personService.setMembershipOrder(study.getMembershipSortOrder(), studyMembershipMap).entrySet().stream()
-        .filter(e -> roles.contains(e.getKey())).map(e -> Mica.MembershipsDto.newBuilder().setRole(e.getKey())
-          .addAllMembers(e.getValue().stream().map(m -> personDtos.asDto(m.getPerson(), asDraft)).collect(toList()))
-          .build()).collect(toList());
+    List<Mica.MembershipsDto> memberships = personService.setMembershipOrder(study.getMembershipSortOrder(), studyMembershipMap).entrySet().stream()
+      .filter(e -> roles.contains(e.getKey())).map(e -> Mica.MembershipsDto.newBuilder().setRole(e.getKey())
+        .addAllMembers(e.getValue().stream().map(m -> personDtos.asDto(m.getPerson(), asDraft)).collect(toList()))
+        .build()).collect(toList());
 
-      builder.addAllMemberships(memberships);
-    }
+    builder.addAllMemberships(memberships);
 
     return builder;
   }
