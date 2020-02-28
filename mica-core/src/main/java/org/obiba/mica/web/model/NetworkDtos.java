@@ -127,17 +127,15 @@ class NetworkDtos {
       network.getMembershipSortOrder().forEach((role, ids) -> builder.addMembershipSortOrder(MembershipSortOrderDto.newBuilder().setRole(role).addAllPersonIds(ids).build()));
     }
 
-    if (!asDraft) {
-      Map<String, List<Membership>> networkMembershipMap = personService.getNetworkMembershipMap(network.getId());
+    Map<String, List<Membership>> networkMembershipMap = personService.getNetworkMembershipMap(network.getId());
 
-      List<Mica.MembershipsDto> memberships = personService.setMembershipOrder(network.getMembershipSortOrder(), networkMembershipMap)
-        .entrySet().stream()
-        .filter(e -> roles.contains(e.getKey())).map(e -> Mica.MembershipsDto.newBuilder().setRole(e.getKey())
-          .addAllMembers(e.getValue().stream().map(m -> personDtos.asDto(m.getPerson(), asDraft)).collect(toList()))
-          .build()).collect(toList());
+    List<Mica.MembershipsDto> memberships = personService.setMembershipOrder(network.getMembershipSortOrder(), networkMembershipMap)
+      .entrySet().stream()
+      .filter(e -> roles.contains(e.getKey())).map(e -> Mica.MembershipsDto.newBuilder().setRole(e.getKey())
+        .addAllMembers(e.getValue().stream().map(m -> personDtos.asDto(m.getPerson(), asDraft)).collect(toList()))
+        .build()).collect(toList());
 
-      builder.addAllMemberships(memberships);
-    }
+    builder.addAllMemberships(memberships);
 
     return builder;
   }
