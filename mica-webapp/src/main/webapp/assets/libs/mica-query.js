@@ -33,6 +33,17 @@ const QUERY_ACTIONS = {
   PAGINATE: 'paginate'
 };
 
+const DISPLAYS = {
+  LISTS: 'lists',
+  COVERAGE: 'coverage',
+  GRAPHICS: 'grahics'
+};
+const DISPLAY_TABS = {
+  LISTS: 'tab-lists',
+  COVERAGE: 'tab-coverage',
+  GRAPHICS: 'tab-grahics'
+};
+
 const QueryTreeOptions  = {containers: Object.values(TARGETS)};
 
 const EVENTS = {
@@ -173,6 +184,14 @@ class DatasetQuery extends EntityQuery {
   }
 }
 
+class StudyQuery extends EntityQuery {
+  constructor(defaultSize) {
+    super(TYPES.STUDIES, TARGETS.STUDY, defaultSize);
+    this._fields = ['acronym.*','name.*','model.methods.design','populations.dataCollectionEvents.model.dataSources','model.numberOfParticipants.participant'];
+    this._sortFields = ['acronym'];
+  }
+}
+
 class NetworkQuery extends EntityQuery {
   constructor(defaultSize) {
     super(TYPES.NETWORKS, TARGETS.NETWORK, defaultSize);
@@ -188,7 +207,7 @@ class MicaQueryExecutor {
     this._query = {};
     this._query[TYPES.VARIABLES] = new VariableQuery(defaultSize);
     this._query[TYPES.DATASETS] = new DatasetQuery(defaultSize);
-    this._query[TYPES.STUDIES] = new EntityQuery(TYPES.STUDIES, TARGETS.STUDY, defaultSize);
+    this._query[TYPES.STUDIES] = new StudyQuery(defaultSize);
     this._query[TYPES.NETWORKS] = new NetworkQuery(defaultSize);
   }
 
@@ -221,17 +240,29 @@ class MicaQueryExecutor {
   }
 
   /**
+   * Ensure a valid type either supplied by the payload or url
+   */
+  __ensureValidType(urlSearchParams, type) {
+    return TYPES[(type || urlSearchParams.type || "").toUpperCase()] || TYPES.VARIABLES;
+  }
+
+  /**
+   * Ensure a valid display either supplied by the payload or url
+   */
+  __ensureValidDisplay(urlSearchParams, display) {
+    return DISPLAYS[(display || urlSearchParams.display || "").toUpperCase()] || DISPLAYS.LISTS;
+  }
+
+  /**
    * If the URL has query param, a QueryTree is returned
    *
-   * @param type
-   * @param display
-   * @returns {QueryTree|QueryTree|null}
    * @private
+   * @param urlSearchParams
+   * @returns {QueryTree|null}
    */
-  __getQueryTreeFromUrl(type, display) {
-    const urlParts = this.__parseUrl();
-    if (urlParts.hash === display && Object.keys(urlParts.searchParams).length > 0) {
-      return new RQL.QueryTree(RQL.Parser.parseQuery(urlParts.searchParams.query), QueryTreeOptions);
+  __getQueryTreeFromUrl(urlSearchParams) {
+    if (Object.keys(urlSearchParams).length > 0) {
+      return new RQL.QueryTree(RQL.Parser.parseQuery(urlSearchParams.query), QueryTreeOptions);
     }
 
     return null;
@@ -245,18 +276,17 @@ class MicaQueryExecutor {
    * @private
    */
   __prepareAndExecuteQuery(eventId, payload) {
-    switch (payload.type) {
+    const urlParts = this.__parseUrl();
+    const type = this.__ensureValidType(urlParts.searchParams, payload.type);
+
+    switch (type) {
       case TYPES.VARIABLES:
       case TYPES.DATASETS:
+      case TYPES.STUDIES:
       case TYPES.NETWORKS:
-        const type = payload.type;
-        const display = payload.display;
         const entityQuery = this._query[type];
-        if (!entityQuery) {
-          throw new Error(`Invalid entity query ${type}`);
-        }
-
-        let tree = this.__getQueryTreeFromUrl(type, display);
+        const display = this.__ensureValidDisplay(urlParts.hash, payload.display);
+        let tree = this.__getQueryTreeFromUrl(urlParts.searchParams);
 
         switch (eventId) {
           case EVENTS.QUERY_TYPE_SELECTION:
@@ -273,9 +303,6 @@ class MicaQueryExecutor {
             break;
         }
         this.__executeQuery(tree, type, display, payload.noUrlUpdate);
-        break;
-
-      case TYPES.STUDIES:
         break;
 
 
@@ -306,12 +333,14 @@ class MicaQueryExecutor {
 
         this.__updateLocation(type, display, tree.serialize(), noUrlUpdate);
 
-        EventBus.$emit(`${type}-results`, {response: response.data, from: limitQuery.args[0]});
+        EventBus.$emit(`${type}-results`, {response: response.data, from: limitQuery.args[0], size: limitQuery.args[1]});
       });
   }
 
   __updateLocation(type, display, query, replace) {
     console.log(`__updateLocation ${type} ${display} ${query} - history states ${history.length}`);
+    this._eventBus.$emit('location-updated', {type: type, display: display});
+
     const urlSearch = [`type=${type}`, `query=${query}`].join('&');
     const hash = `${display}?${urlSearch}`;
     if(replace) {
