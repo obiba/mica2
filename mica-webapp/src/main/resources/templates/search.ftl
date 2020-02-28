@@ -175,6 +175,7 @@
                         List of studies
                         <div id="list-studies">
                           {{ result }}
+                          <studies-result></studies-result>
                         </div>
                       </div>
                       <div class="tab-pane fade" id="networks" role="tabpanel" aria-labelledby="networks-tab">

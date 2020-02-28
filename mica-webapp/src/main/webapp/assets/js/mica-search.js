@@ -122,7 +122,7 @@ $('#datasets-tab').click(function(){
 });
 
 $('#studies-tab').click(function(){
-  EventBus.$emit('query-type-selection', {type: 'studies-list'});
+  EventBus.$emit('query-type-selection', {display: 'list', type: TYPES.STUDIES, target: TARGETS.STUDY});
 });
 
 $('#networks-tab').click(function(){
@@ -180,19 +180,24 @@ new Vue({
     },
     // set the type of query to be executed, on result component selection
     onQueryTypeSelection: function(payload) {
-      if (payload.type === 'lists') {
-        this.queryType = this.lastList;
-      } else {
-        this.queryType = payload.type;
-        if (this.queryType.endsWith('-list')) {
-          this.lastList = payload.type;
-        }
-      }
-      this.onExecuteQuery();
+      // TODO need cleaning, may be use the QueryExecutor for taxos as well
+      // if (payload.type === 'lists') {
+      //   this.queryType = this.lastList;
+      // } else {
+      //   this.queryType = payload.type;
+      //   if (this.queryType.endsWith('-list')) {
+      //     this.lastList = payload.type;
+      //   }
+      // }
+      // this.onExecuteQuery();
     },
     onExecuteQuery: function() {
       console.log('Executing ' + this.queryType + ' query ...');
       EventBus.$emit(this.queryType, 'I am the result of a ' + this.queryType + ' query');
+    },
+    onLocationChanged: function(payload) {
+      $(`.nav-pills #${payload.display}-tab`).tab('show');
+      $(`.nav-pills #${payload.type}-tab`).tab('show');
     }
   },
   beforeMount() {
@@ -203,6 +208,10 @@ new Vue({
     console.log('Mounted QueryBuilder');
     EventBus.register('taxonomy-selection', this.onTaxonomySelection);
     EventBus.register('query-type-selection', this.onQueryTypeSelection);
+    EventBus.register('location-updated', this.onLocationChanged.bind(this));
+
+    // Emit 'query-type-selection' to pickup a URL query to be executed; if nothing found a Variable query is executed
+    EventBus.$emit('query-type-selection', {});
 
     // fetch the configured search criteria, in the form of a taxonomy of taxonomies
     axios
@@ -226,6 +235,9 @@ new Vue({
   },
   beforeDestory() {
     console.log('Before destroy query builder');
+    EventBus.unregister('location-updated', this.onLocationChanged);
+    EventBus.unregister('taxonomy-selection', this.onTaxonomySelection);
+    EventBus.unregister('query-type-selection', this.onQueryTypeSelection);
     this.queryExecutor.destroy();
   }
 });
@@ -246,8 +258,6 @@ new Vue({
   },
   beforeMount() {
     console.log('Before mounted List Variables');
-    // TODO remove this when selecting TABs from URL was implemented
-    EventBus.$emit('query-type-selection', {display: 'list', type: TYPES.VARIABLES, target: TARGETS.VARIABLE});
   },
   mounted() {
     EventBus.register('variables-list', this.onResult);
