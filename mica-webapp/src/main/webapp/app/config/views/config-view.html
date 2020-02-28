@@ -156,6 +156,34 @@
         </tbody>
       </table>
 
+      <table class="table table-bordered table-striped">
+        <tbody>
+        <tr>
+          <td>
+            <span translate>config.signup-with-password</span>
+            <span class="help-block" translate>config.signup-with-password-help</span>
+          </td>
+          <td>
+            <i class="fa fa-check-square-o" ng-hide="!micaConfig.signupWithPassword"></i>
+            <i class="fa fa-square-o" ng-hide="micaConfig.signupWithPassword"></i>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <span translate>config.signup-groups</span>
+            <span class="help-block" translate>config.signup-groups-help</span>
+          </td>
+          <td>
+            <ul class="list-inline">
+              <li ng-repeat="group in micaConfig.signupGroups">
+                <span class="badge">{{group}}</span>
+              </li>
+            </ul>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+
     </div>
   </div>
 

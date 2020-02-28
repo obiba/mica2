@@ -159,6 +159,9 @@ class MicaConfigDtos {
       builder.setCurrentUserCanCreateSets(true);
     }
 
+    builder.setSignupWithPassword(config.isSignupWithPassword());
+    config.getSignupGroups().forEach(builder::addSignupGroups);
+
     builder.setDownloadOpalViewsFromSetsAllowed(subjectAclService.isPermitted("/set/documents", "VIEW", "_opal"));
 
     return builder.build();
@@ -203,6 +206,9 @@ class MicaConfigDtos {
     config.setNetworkEnabled(dto.getIsNetworkEnabled());
     config.setStudyDatasetEnabled(dto.getIsCollectedDatasetEnabled());
     config.setHarmonizationDatasetEnabled(dto.getIsHarmonizedDatasetEnabled());
+
+    config.setSignupWithPassword(dto.getSignupWithPassword());
+    config.setSignupGroups(dto.getSignupGroupsList());
 
     boolean cartEnabled = dto.getIsCartEnabled();
     config.setCartEnabled(cartEnabled);
