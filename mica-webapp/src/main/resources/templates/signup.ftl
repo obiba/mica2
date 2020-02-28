@@ -49,7 +49,7 @@
             </div>
           </div>
         </div>
-        <#if signupWithPassword>
+        <#if config.signupWithPassword>
           <div class="input-group mb-3">
             <input name="password" type="password" class="form-control" placeholder="<@message "password"/>">
             <div class="input-group-append">
@@ -155,7 +155,7 @@
 <script>
   const requiredFields = [
     { name: 'email', title: '<@message "email"/>' },
-    <#if signupWithPassword>
+    <#if config.signupWithPassword>
       { name: 'password', title: '<@message "password"/>' },
     </#if>
     { name: 'firstname', title: '<@message "firstname"/>' },

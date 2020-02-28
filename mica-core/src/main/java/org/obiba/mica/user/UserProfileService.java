@@ -19,6 +19,7 @@ import org.apache.shiro.SecurityUtils;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.obiba.mica.core.service.AgateRestService;
+import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.shiro.realm.ObibaRealm;
 import org.obiba.shiro.realm.ObibaRealm.Subject;
 import org.slf4j.Logger;
@@ -35,6 +36,7 @@ import org.springframework.web.client.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.annotation.Nullable;
+import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -52,6 +54,9 @@ public class UserProfileService extends AgateRestService {
   private static final Logger log = LoggerFactory.getLogger(UserProfileService.class);
 
   private static final DateTimeFormatter ISO_8601 = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+
+  @Inject
+  private MicaConfigService micaConfigService;
 
   private Cache<String, Subject> subjectCache = CacheBuilder.newBuilder()
     .maximumSize(100)
@@ -142,7 +147,11 @@ public class UserProfileService extends AgateRestService {
     headers.set(APPLICATION_AUTH_HEADER, getApplicationAuth());
     headers.set(HttpHeaders.CONTENT_TYPE, "application/x-www-form-urlencoded");
 
-    StringBuffer query = new StringBuffer("group=mica-user");
+    StringBuffer query = new StringBuffer();
+    for (String group : micaConfigService.getConfig().getSignupGroups()) {
+      if (query.length() > 0) query.append("&");
+      query.append("group=").append(group);
+    }
     for (String field : params.keySet()) {
       for (String value : params.get(field)) {
         if (!Strings.isNullOrEmpty(value)) {
