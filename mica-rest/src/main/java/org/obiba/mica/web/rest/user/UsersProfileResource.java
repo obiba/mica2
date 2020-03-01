@@ -22,6 +22,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.obiba.mica.security.Roles;
 import org.obiba.mica.user.UserProfileService;
@@ -45,9 +46,15 @@ public class UsersProfileResource {
   @GET
   @Path("/application/{application}")
   @RequiresRoles(Roles.MICA_DAO)
-  public List<Mica.UserProfileDto> getProfilesByApplication(@PathParam("application") String application,
-    @QueryParam("group") String group) {
-    return userProfileService.getProfilesByApplication(application, group).stream().map(dtos::asDto)
+  @Deprecated
+  public List<Mica.UserProfileDto> getProfilesByApplication(@PathParam("application") String application, @QueryParam("group") String group) {
+    return getProfilesByGroup(group);
+  }
+
+  @GET
+  @RequiresPermissions("/user:VIEW")
+  public List<Mica.UserProfileDto> getProfilesByGroup(@QueryParam("group") String group) {
+    return userProfileService.getProfilesByGroup(group).stream().map(dtos::asDto)
       .collect(Collectors.toList());
   }
 
