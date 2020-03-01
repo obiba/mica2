@@ -1,3 +1,6 @@
+<!-- Macros -->
+<#include "models/profile.ftl"/>
+
 <!DOCTYPE html>
 <html lang="${.lang}">
 <head>
@@ -38,46 +41,7 @@
                 <h3 class="card-title"><@message "attributes"/></h3>
               </div>
               <div class="card-body">
-                <dl class="row">
-                  <dt class="col-sm-4"><@message "username"/></dt>
-                  <dd class="col-sm-8">${user.username}</dd>
-                  <#if user.groups??>
-                    <dt class="col-sm-4"><@message "groups"/></dt>
-                    <dd class="col-sm-8">
-                        <#list user.groups as group>
-                          <span class="badge badge-info">${group}</span>
-                        </#list>
-                    </dd>
-                  </#if>
-                  <#if user.roles??>
-                    <dt class="col-sm-4"><@message "roles"/></dt>
-                    <dd class="col-sm-8">
-                      <#list user.roles as role>
-                        <span class="badge badge-primary">${role}</span>
-                      </#list>
-                    </dd>
-                  </#if>
-                  <#if user.attributes??>
-                    <#list user.attributes?keys as key>
-                      <#if key != "realm">
-                        <dt class="col-sm-4"><@message key/></dt>
-                        <dd class="col-sm-8">
-                          <#if key == "createdDate" || key == "lastLogin">
-                            ${user.attributes[key].toString(datetimeFormat)}
-                          <#elseif key == "email">
-                            <a href="mailto:${user.attributes[key]}">${user.attributes[key]}</a>
-                          <#elseif key == "locale">
-                            <@message user.attributes[key]/>
-                          <#elseif user.attributes[key] == "true">
-                            <i class="fas fa-check"></i>
-                          <#else>
-                            ${user.attributes[key]}
-                          </#if>
-                        </dd>
-                      </#if>
-                    </#list>
-                  </#if>
-                </dl>
+                <@userProfile profile=user/>
               </div>
             </div>
           </div>
