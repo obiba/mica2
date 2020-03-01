@@ -8,6 +8,8 @@ import org.obiba.mica.access.service.DataAccessRequestUtilService;
 import org.obiba.mica.micaConfig.NoSuchDataAccessFormException;
 import org.obiba.mica.micaConfig.domain.DataAccessForm;
 import org.obiba.mica.micaConfig.service.DataAccessFormService;
+import org.obiba.mica.security.Roles;
+import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.user.UserProfileService;
 import org.obiba.mica.web.controller.domain.DataAccessConfig;
 import org.obiba.mica.web.controller.domain.DataAccessRequestBundle;
@@ -40,6 +42,9 @@ public class DataAccessesController extends BaseController {
   @Inject
   DataAccessFormService dataAccessFormService;
 
+  @Inject
+  private SubjectAclService subjectAclService;
+
   @GetMapping("/data-accesses")
   public ModelAndView get(@RequestParam(value = "status", required = false) List<String> status) {
     Subject subject = SecurityUtils.getSubject();
@@ -48,6 +53,9 @@ public class DataAccessesController extends BaseController {
       addDataAccessConfiguration(params);
       List<DataAccessRequestBundle> dars = getDataAccessRequests(status);
       params.put("dars", dars);
+      if (subjectAclService.isPermitted("/user", "VIEW"))
+        params.put("users", userProfileService.getProfilesByGroup(Roles.MICA_USER).stream()
+          .map(s -> userProfileService.asMap(s)).collect(Collectors.toList()));
       params.put("applicants", dars.stream().map(DataAccessRequestBundle::getApplicant).distinct()
         .collect(Collectors.toMap(u -> u, u -> userProfileService.getProfileMap(u, true))));
       return new ModelAndView("data-accesses", params);
