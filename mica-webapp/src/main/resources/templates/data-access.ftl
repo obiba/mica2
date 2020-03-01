@@ -1,3 +1,6 @@
+<!-- Macros -->
+<#include "models/profile.ftl"/>
+
 <!DOCTYPE html>
 <html lang="${.lang}">
 <head>
@@ -371,29 +374,7 @@
                   </div>
                 </div>
                 <div class="card-body">
-                  <dl class="row">
-                    <dt class="col-sm-4"><@message "full-name"/></dt>
-                    <dd class="col-sm-8">${applicant.fullName}</dd>
-                    <dt class="col-sm-4"><@message "username"/></dt>
-                    <dd class="col-sm-8">${applicant.username}</dd>
-                      <#list applicant.attributes?keys as key>
-                          <#if key != "realm">
-                            <dt class="col-sm-4"><@message key/></dt>
-                            <dd class="col-sm-8">
-                                <#assign value = applicant.attributes[key]/>
-                                <#if key == "email">
-                                  <a href="mailto:${value}">${value}</a>
-                                <#elseif key == "locale">
-                                    ${value?upper_case}
-                                <#elseif key == "lastLogin" || key == "createdDate">
-                                  <span class="moment-datetime">${value.toString(datetimeFormat)}</span>
-                                <#else>
-                                    ${value}
-                                </#if>
-                            </dd>
-                          </#if>
-                      </#list>
-                  </dl>
+                  <@userProfile profile=applicant/>
                 </div>
                 <div class="card-footer">
                   <a href="${pathPrefix}/data-access-comments/${dar.id}"><@message "send-message"/> <i

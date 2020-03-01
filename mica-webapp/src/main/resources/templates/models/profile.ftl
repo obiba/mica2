@@ -9,6 +9,8 @@
 <!-- User profile -->
 <#macro userProfile profile>
   <dl class="row">
+    <dt class="col-sm-4"><@message "full-name"/></dt>
+    <dd class="col-sm-8">${profile.fullName}</dd>
     <dt class="col-sm-4"><@message "username"/></dt>
     <dd class="col-sm-8">${profile.username}</dd>
     <#if profile.groups??>
