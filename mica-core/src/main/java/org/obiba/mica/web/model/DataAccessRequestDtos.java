@@ -91,7 +91,7 @@ class DataAccessRequestDtos {
         .forEach(actionLog -> builder.addActionLogHistory(actionLogDtos.asDto(actionLog)));
     }
 
-    Map<String, Subject> micaProfiles = userProfileService.getProfilesByApplication("mica", null).stream().collect(Collectors.toMap(Subject::getUsername, profile -> profile));
+    Map<String, Subject> micaProfiles = userProfileService.getProfilesByGroup(null).stream().collect(Collectors.toMap(Subject::getUsername, profile -> profile));
 
     if (micaProfiles.containsKey(request.getApplicant())) {
       builder.setProfile(userProfileDtos.asDto(micaProfiles.get(request.getApplicant())));
@@ -222,7 +222,7 @@ class DataAccessRequestDtos {
 
   @NotNull
   List<Mica.DataAccessRequestDto.StatusChangeDto> asStatusChangeDtoList(@NotNull DataAccessEntity entity) {
-    Map<String, Subject> micaProfiles = userProfileService.getProfilesByApplication("mica", null).stream().collect(Collectors.toMap(Subject::getUsername, profile -> profile));
+    Map<String, Subject> micaProfiles = userProfileService.getProfilesByGroup(null).stream().collect(Collectors.toMap(Subject::getUsername, profile -> profile));
     return asStatusChangeDtoList(entity, micaProfiles);
   }
 
@@ -246,7 +246,7 @@ class DataAccessRequestDtos {
   List<Mica.DataAccessRequestDto> asDtoList(@NotNull List<DataAccessRequest> requests) {
     if (requests != null) {
 
-      Map<String, Subject> micaProfiles = userProfileService.getProfilesByApplication("mica", null).stream().collect(Collectors.toMap(Subject::getUsername, profile -> profile));
+      Map<String, Subject> micaProfiles = userProfileService.getProfilesByGroup(null).stream().collect(Collectors.toMap(Subject::getUsername, profile -> profile));
       Map<Object, LinkedHashMap> allAmendmentsSummary = dataAccessRequestRepository.getAllAmendmentsSummary();
 
       return requests.stream()
