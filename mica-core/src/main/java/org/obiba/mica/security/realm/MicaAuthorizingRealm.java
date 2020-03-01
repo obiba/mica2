@@ -235,7 +235,7 @@ public class MicaAuthorizingRealm extends AuthorizingRealm implements RolePermis
           perms = mergePermissions(
               "/private-comment/data-access-request:VIEW,/private-comment/data-access-request:ADD," +
               "/data-access-request:ADD,/data-access-request:VIEW,/data-access-request:DELETE," +
-              "/files:UPLOAD",
+              "/files:UPLOAD,/user:VIEW",
             permissions);
           break;
         case Roles.MICA_USER:
