@@ -91,20 +91,16 @@ public class UserProfileService extends AgateRestService {
     return asMap(getProfile(username, cached));
   }
 
-  public synchronized Subject getProfileByApplication(@NotNull String username, @NotNull String application,
-                                                      @Nullable String group) {
+  public synchronized Subject getProfileByGroup(@NotNull String username, @Nullable String group) {
     Assert.notNull(username, "Username cannot be null");
-    Assert.notNull(application, "Application name cannot be null");
-    return getProfileInternal(getProfileServiceUrlByApp(username, application, group));
+    return getProfileInternal(getProfileServiceUrlByGroup(username, group));
   }
 
-  public synchronized List<Subject> getProfilesByApplication(@NotNull String application, @Nullable String group) {
-
-    Assert.notNull(application, "Application name cannot be null");
+  public synchronized List<Subject> getProfilesByGroup(@Nullable String group) {
 
     try {
 
-      String profileServiceUrl = getProfileServiceUrlByApp(null, application, group);
+      String profileServiceUrl = getProfileServiceUrlByGroup(null, group);
       return Arrays.asList(executeQuery(profileServiceUrl, Subject[].class));
 
     } catch (RestClientException e) {
@@ -275,14 +271,14 @@ public class UserProfileService extends AgateRestService {
       .build().toUriString();
   }
 
-  private String getProfileServiceUrlByApp(String username, String application, String group) {
+  private String getProfileServiceUrlByGroup(String username, String group) {
     UriComponentsBuilder urlBuilder =
       UriComponentsBuilder.fromHttpUrl(agateServerConfigService.getAgateUrl()).path(DEFAULT_REST_PREFIX);
 
     if (Strings.isNullOrEmpty(username)) {
-      urlBuilder.path(String.format("/application/%s/users", application));
+      urlBuilder.path(String.format("/application/%s/users", getApplicationName()));
     } else {
-      urlBuilder.path(String.format("/application/%s/user/%s", application, username));
+      urlBuilder.path(String.format("/application/%s/user/%s", getApplicationName(), username));
     }
 
     if (!Strings.isNullOrEmpty(group)) {
