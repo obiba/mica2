@@ -1,6 +1,7 @@
 <!-- Macros -->
 <#include "libs/header.ftl">
 <#include "libs/data-access.ftl"/>
+<#include "models/profile.ftl"/>
 
 <!DOCTYPE html>
 <html lang="${.lang}">
@@ -63,7 +64,9 @@
                     <tr>
                       <td><a href="../data-access/${dar.id}">${dar.id}</a></td>
                       <#if isAdministrator>
-                        <td>${applicants[dar.applicant].fullName}</td>
+                        <td>
+                          <a href="#" data-toggle="modal" data-target="#modal-${dar.applicant}">${applicants[dar.applicant].fullName}</a>
+                        </td>
                       </#if>
                       <td>${dar.title!""}</td>
                       <td class="moment-datetime">${dar.lastUpdate.toString(datetimeFormat)}</td>
@@ -81,6 +84,51 @@
             </div>
           </div>
         </div>
+
+        <#if users??>
+          <div class="row">
+            <div class="col-lg-12">
+              <div class="card card-primary card-outline">
+                <div class="card-header">
+                  <h3 class="card-title"><@message "registered-users"/></h3>
+                </div>
+                <div class="card-body">
+                  <#assign isAdministrator = (user.roles?seq_contains("mica-administrator") || user.roles?seq_contains("mica-data-access-officer"))/>
+                  <table id="users" class="table table-bordered table-striped">
+                    <thead>
+                    <tr>
+                      <th><@message "full-name"/></th>
+                      <th><@message "groups"/></th>
+                      <th><@message "createdDate"/></th>
+                      <th><@message "lastLogin"/></th>
+                      <@userProfileTHs/>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <#list users as profile>
+                      <tr>
+                        <td>
+                          <a href="#" data-toggle="modal" data-target="#modal-${profile.username}">${profile.fullName}</a>
+                          <@userProfileDialog profile=profile/>
+                        </td>
+                        <td>
+                          <#list profile.groups as group>
+                            <span class="badge badge-info">${group}</span>
+                          </#list>
+                        </td>
+                        <td>${profile.attributes["createdDate"].toString(datetimeFormat)}</td>
+                        <td><#if profile.attributes["lastLogin"]??>${profile.attributes["lastLogin"].toString(datetimeFormat)}</#if></td>
+                        <@userProfileTDs profile=profile/>
+                      </tr>
+                    </#list>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </#if>
+
       </div><!-- /.container-fluid -->
     </div>
     <!-- /.content -->
@@ -120,6 +168,7 @@
 <script>
     $(function () {
         $("#dars").DataTable(dataTablesSortSearchOpts);
+        $("#users").DataTable(dataTablesSortSearchOpts);
     });
 </script>
 

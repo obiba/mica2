@@ -97,17 +97,17 @@ public class UserProfileService extends AgateRestService {
   }
 
   public synchronized List<Subject> getProfilesByGroup(@Nullable String group) {
-
+    List<Subject> subjects;
     try {
-
       String profileServiceUrl = getProfileServiceUrlByGroup(null, group);
-      return Arrays.asList(executeQuery(profileServiceUrl, Subject[].class));
-
+      subjects = Arrays.asList(executeQuery(profileServiceUrl, Subject[].class));
+      subjects.forEach(s -> subjectCache.put(s.getUsername(), s));
     } catch (RestClientException e) {
       log.error("Agate connection failure: {}", e.getMessage());
+      subjects = Lists.newArrayList();
     }
 
-    return Lists.newArrayList();
+    return subjects;
   }
 
   public String getUserProfileTranslations(String locale) {
@@ -195,11 +195,7 @@ public class UserProfileService extends AgateRestService {
     ResponseEntity<String> response = template.exchange(getUsersForgotPasswordUrl(), HttpMethod.POST, entity, String.class);
   }
 
-  //
-  // Private methods
-  //
-
-  private Map<String, Object> asMap(@NotNull Subject profile) {
+  public Map<String, Object> asMap(@NotNull Subject profile) {
     Map<String, Object> params = Maps.newHashMap();
     String fullName = profile.getUsername();
     Map<String, Object> attributes = Maps.newHashMap();
@@ -225,6 +221,10 @@ public class UserProfileService extends AgateRestService {
     params.put("attributes", attributes);
     return params;
   }
+
+  //
+  // Private methods
+  //
 
   private synchronized Subject getProfileInternal(String serviceUrl) {
     try {
