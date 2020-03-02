@@ -121,8 +121,8 @@
                               <span class="badge badge-info">${group}</span>
                             </#list>
                           </td>
-                          <td>${profile.attributes["createdDate"].toString(datetimeFormat)}</td>
-                          <td><#if profile.attributes["lastLogin"]??>${profile.attributes["lastLogin"].toString(datetimeFormat)}</#if></td>
+                          <td class="moment-datetime">${profile.attributes["createdDate"].toString(datetimeFormat)}</td>
+                          <td class="moment-datetime"><#if profile.attributes["lastLogin"]??>${profile.attributes["lastLogin"].toString(datetimeFormat)}</#if></td>
                           <@userProfileTDs profile=profile/>
                         </tr>
                       </#list>
