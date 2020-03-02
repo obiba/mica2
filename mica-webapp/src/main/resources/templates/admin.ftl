@@ -64,12 +64,12 @@
     </div>
     <div class="navbar-collapse collapse" id="navbar-main" ng-switch="authenticated">
       <ul class="nav navbar-nav">
-        <li ng-if="authenticated && micaConfig.isNetworkEnabled">
+        <li ng-if="authenticated && micaConfig.isRepositoryEnabled && micaConfig.isNetworkEnabled">
           <a href="#/network">
             <span>{{micaConfig.isSingleNetworkEnabled ? 'network.label' : 'networks' | translate}}</span>
           </a>
         </li>
-        <li class="dropdown clearfix" ng-if="authenticated && micaConfig.isHarmonizedDatasetEnabled">
+        <li class="dropdown clearfix" ng-if="authenticated && micaConfig.isRepositoryEnabled && micaConfig.isHarmonizedDatasetEnabled">
           <a href="" class="dropdown-toggle" data-toggle="dropdown">
             <span translate>studies</span>
             <i class="fa fa-caret-down"></i></a>
@@ -78,10 +78,10 @@
             <li><a href="#/harmonization-study">{{'global.harmonization-studies' | translate}}</a></li>
           </ul>
         </li>
-        <li ng-if="authenticated && !micaConfig.isHarmonizedDatasetEnabled">
+        <li ng-if="authenticated && micaConfig.isRepositoryEnabled && !micaConfig.isHarmonizedDatasetEnabled">
           <a href="#/individual-study">{{micaConfig.isSingleStudyEnabled ? 'global.individual-study' : 'global.individual-studies' | translate}}</a>
         </li>
-        <li class="dropdown clearfix" ng-if="authenticated && micaConfig.isCollectedDatasetEnabled && micaConfig.isHarmonizedDatasetEnabled">
+        <li class="dropdown clearfix" ng-if="authenticated && micaConfig.isRepositoryEnabled && micaConfig.isCollectedDatasetEnabled && micaConfig.isHarmonizedDatasetEnabled">
           <a href="" class="dropdown-toggle" data-toggle="dropdown">
             <span translate>datasets</span>
             <i class="fa fa-caret-down"></i></a>
@@ -90,17 +90,17 @@
             <li ng-if="micaConfig.isHarmonizedDatasetEnabled"><a href="#/harmonized-dataset"><span translate>harmonized-datasets</span></a></li>
           </ul>
         </li>
-        <li ng-if="authenticated && micaConfig.isCollectedDatasetEnabled && !micaConfig.isHarmonizedDatasetEnabled">
+        <li ng-if="authenticated && micaConfig.isRepositoryEnabled && micaConfig.isCollectedDatasetEnabled && !micaConfig.isHarmonizedDatasetEnabled">
           <a href="#/collected-dataset">
             <span>{{'collected-datasets' | translate}}</span>
           </a>
         </li>
-        <li ng-if="authenticated && !micaConfig.isCollectedDatasetEnabled && micaConfig.isHarmonizedDatasetEnabled">
+        <li ng-if="authenticated && micaConfig.isRepositoryEnabled && !micaConfig.isCollectedDatasetEnabled && micaConfig.isHarmonizedDatasetEnabled">
           <a href="#/harmonized-dataset">
             <span>{{'harmonized-datasets' | translate}}</span>
           </a>
         </li>
-        <li class="dropdown clearfix" ng-if="authenticated && (micaConfig.isCollectedDatasetEnabled || micaConfig.isHarmonizedDatasetEnabled)">
+        <li class="dropdown clearfix" ng-if="authenticated && micaConfig.isDataAccessEnabled">
           <a href="" class="dropdown-toggle" data-toggle="dropdown">
             <span translate>research</span>
             <i class="fa fa-caret-down"></i></a>
