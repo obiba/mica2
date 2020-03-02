@@ -437,10 +437,11 @@ message MicaConfigDto {
   required bool isSetsSearchEnabled = 43;
   required bool downloadOpalViewsFromSetsAllowed = 44 [default = false];
   required string opalViewsGrouping = 45;
-  repeated string signupGroups = 46;
-  required bool signupWithPassword = 47;
-  optional bool isRepositoryEnabled = 48;
-  optional bool isDataAccessEnabled = 49;
+  optional bool signupEnabled = 46;
+  repeated string signupGroups = 47;
+  required bool signupWithPassword = 48;
+  optional bool isRepositoryEnabled = 49;
+  optional bool isDataAccessEnabled = 50;
 }
 
 message PublicMicaConfigDto {

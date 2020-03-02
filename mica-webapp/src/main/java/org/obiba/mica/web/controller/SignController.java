@@ -6,6 +6,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.obiba.mica.core.service.AgateServerConfigService;
 import org.obiba.mica.core.service.UserAuthService;
+import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.web.controller.domain.AuthConfiguration;
 import org.obiba.mica.web.controller.domain.OidcProvider;
 import org.obiba.oidc.OIDCAuthProviderSummary;
@@ -24,6 +25,9 @@ import java.util.stream.Collectors;
 
 @Controller
 public class SignController {
+
+  @Inject
+  private MicaConfigService micaConfigService;
 
   @Inject
   private UserAuthService userAuthService;
@@ -48,6 +52,9 @@ public class SignController {
   public ModelAndView signup(HttpServletRequest request, @RequestParam(value = "redirect", required = false) String redirect,
                              @CookieValue(value = "NG_TRANSLATE_LANG_KEY", required = false, defaultValue = "en") String locale,
                              @RequestParam(value = "language", required = false) String language) {
+    if (!micaConfigService.getConfig().isSignupEnabled())
+      return new ModelAndView("redirect:/");
+
     ModelAndView mv = new ModelAndView("signup");
 
     String lang = getLang(language, locale);
@@ -64,6 +71,9 @@ public class SignController {
                              @CookieValue(value = "u_auth", required = false, defaultValue = "{}") String uAuth,
                              @CookieValue(value = "NG_TRANSLATE_LANG_KEY", required = false, defaultValue = "en") String locale,
                              @RequestParam(value = "language", required = false) String language) {
+    if (!micaConfigService.getConfig().isSignupEnabled())
+      return new ModelAndView("redirect:/");
+
     ModelAndView mv = new ModelAndView("signup-with");
     try {
       String fixedUAuth = uAuth.replaceAll("\\\\", "");

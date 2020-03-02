@@ -41,9 +41,11 @@
         </div>
       </form>
 
-      <p class="mb-0">
-        <a href="signup" class="text-center"><@message "register-new-membership"/></a>
-      </p>
+      <#if config?? && config.signupEnabled>
+        <p class="mb-0">
+          <a href="signup" class="text-center"><@message "register-new-membership"/></a>
+        </p>
+      </#if>
     </div>
     <!-- /.login-card-body -->
   </div>
