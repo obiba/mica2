@@ -399,6 +399,8 @@
     "collected-dataset-enabled-help": "Collected datasets section is accessible.",
     "harmonized-dataset-enabled": "Harmonized datasets section enabled",
     "harmonized-dataset-enabled-help": "Harmonized datasets section is accessible.",
+    "signup-enabled": "Sign-up enabled",
+    "signup-enabled-help": "New users can sign-up.",
     "signup-with-password": "Sign-up with password",
     "signup-with-password-help": "Sign-up form with password, in which case the new user is automatically Active (without email validation).",
     "signup-groups": "Sign-up groups",
