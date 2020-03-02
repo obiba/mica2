@@ -34,7 +34,7 @@
         <dt class="col-sm-4"><@message key/></dt>
         <dd class="col-sm-8">
           <#if key == "createdDate" || key == "lastLogin">
-            ${profile.attributes[key].toString(datetimeFormat)}
+            <span class="moment-datetime">${profile.attributes[key].toString(datetimeFormat)}</span>
           <#elseif key == "email">
             <a href="mailto:${profile.attributes[key]}">${profile.attributes[key]}</a>
           <#elseif key == "locale">

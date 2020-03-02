@@ -1,3 +1,6 @@
+<!-- Macros -->
+<#include "models/project.ftl">
+
 <!DOCTYPE html>
 <html lang="${.lang}">
 <head>
@@ -31,7 +34,36 @@
     <!-- Main content -->
     <div class="content">
       <div class="container">
+        <div class="callout callout-info">
+          <p><@message "projects-callout"/></p>
+        </div>
 
+        <div class="row">
+          <div class="col-lg-12">
+            <#if projects?? && projects?size != 0>
+              <div class="card card-info card-outline">
+                <div class="card-header d-flex p-0">
+                  <h3 class="card-title p-3"><@message "projects"/></h3>
+                </div><!-- /.card-header -->
+                <div class="card-body">
+                  <#list projects as project>
+                    <div>
+                      <p>
+                        <strong><i class="far fa-file-alt"></i> ${project.title[.lang]!""}</strong>
+                      </p>
+                      <p class="text-muted">${project.summary[.lang]!""}</p>
+                      <p>
+                        <@projectModel project=project/>
+                      </p>
+                      <hr/>
+                    </div>
+                  </#list>
+                </div>
+              </div>
+            </#if>
+          </div>
+        </div>
+        <!-- /.row -->
       </div><!-- /.container-fluid -->
     </div>
     <!-- /.content -->
