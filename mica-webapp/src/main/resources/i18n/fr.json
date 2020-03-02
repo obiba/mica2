@@ -2037,9 +2037,9 @@
         "title": "Statut",
         "help": "Spécifier le calendrier du projet.",
         "start": "Date de début",
-        "start-help": "Date de début du projet. Format de date : dd-mm-yyyy.",
+        "start-help": "Date de début du projet.",
         "end": "Date de fin",
-        "end-help": "Date de fin attendue ou effective du projet. Format de date : dd-mm-yyyy.",
+        "end-help": "Date de fin attendue ou effective du projet.",
         "date-error": "Date non valide."
       },
       "contact": {

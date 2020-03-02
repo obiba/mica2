@@ -2042,9 +2042,9 @@
         "title": "Status",
         "help": "Specify the timeline of the project.",
         "start": "Start Date",
-        "start-help": "Start date of the project. Date format: dd-mm-yyyy.",
+        "start-help": "Start date of the project.",
         "end": "End Date",
-        "end-help": "Expected or effective end date of the project. Date format: dd-mm-yyyy.",
+        "end-help": "Expected or effective end date of the project.",
         "date-error": "Not a valid date."
       },
       "contact": {
