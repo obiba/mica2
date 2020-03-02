@@ -21,22 +21,28 @@ import javax.inject.Inject;
 import org.obiba.mica.spi.search.support.AttributeKey;
 import org.obiba.mica.micaConfig.event.OpalTaxonomiesUpdatedEvent;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
+import org.obiba.opal.core.domain.taxonomy.TaxonomyEntity;
 import org.obiba.opal.rest.client.magma.OpalJavaClient;
 import org.obiba.opal.web.model.Opal;
 import org.obiba.opal.web.model.Search;
 import org.obiba.opal.web.taxonomy.Dtos;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.context.EnvironmentAware;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import com.google.common.base.Strings;
 import com.google.common.eventbus.EventBus;
 
 @Component
-public class OpalServiceHelper {
+public class OpalServiceHelper implements EnvironmentAware {
 
   private static final Logger log = LoggerFactory.getLogger(OpalServiceHelper.class);
+
+  private RelaxedPropertyResolver opalTaxonomiesProperties;
 
   @Inject
   private EventBus eventBus;
@@ -48,7 +54,16 @@ public class OpalServiceHelper {
     List<Opal.TaxonomyDto> taxonomies = opalJavaClient
       .getResources(Opal.TaxonomyDto.class, uri, Opal.TaxonomyDto.newBuilder());
 
-    ConcurrentMap<String, Taxonomy> taxonomiesList = taxonomies.stream().collect(Collectors.toConcurrentMap(Opal.TaxonomyDto::getName, this::fromDto));
+    ConcurrentMap<String, Taxonomy> taxonomiesList = taxonomies.stream().map(taxonomyDto -> {
+      Taxonomy taxonomy = fromDto(taxonomyDto);
+      String defaultTermsSortOrder = opalTaxonomiesProperties.getProperty("defaultTermsSortOrder");
+
+      if (!Strings.isNullOrEmpty(defaultTermsSortOrder)) {
+        taxonomy.getVocabularies().forEach(vocabulary -> vocabulary.addAttribute("termsSortKey", defaultTermsSortOrder));
+      }
+
+      return taxonomy;
+    }).collect(Collectors.toConcurrentMap(TaxonomyEntity::getName, taxonomy -> taxonomy));
     eventBus.post(new OpalTaxonomiesUpdatedEvent(taxonomiesList));
     return taxonomiesList;
   }
@@ -84,5 +99,10 @@ public class OpalServiceHelper {
       }
     });
     return taxonomy;
+  }
+
+  @Override
+  public void setEnvironment(Environment environment) {
+    this.opalTaxonomiesProperties = new RelaxedPropertyResolver(environment, "opalTaxonomies.");
   }
 }
