@@ -128,6 +128,8 @@ class MicaConfigDtos {
     builder.setIsProjectNotificationsEnabled(config.isProjectNotificationsEnabled());
     if(config.getProjectNotificationsSubject() != null) builder.setProjectNotificationsSubject(config.getProjectNotificationsSubject());
 
+    builder.setIsRepositoryEnabled(config.isRepositoryEnabled());
+    builder.setIsDataAccessEnabled(config.isDataAccessEnabled());
     builder.setIsSingleNetworkEnabled(config.isSingleNetworkEnabled());
     builder.setIsSingleStudyEnabled(config.isSingleStudyEnabled());
     builder.setIsNetworkEnabled(config.isNetworkEnabled());
@@ -201,6 +203,8 @@ class MicaConfigDtos {
     config.setProjectNotificationsEnabled(dto.getIsProjectNotificationsEnabled());
     if(dto.hasProjectNotificationsSubject()) config.setProjectNotificationsSubject(dto.getProjectNotificationsSubject());
 
+    if (dto.hasIsRepositoryEnabled()) config.setRepositoryEnabled(dto.getIsRepositoryEnabled());
+    if (dto.hasIsDataAccessEnabled()) config.setDataAccessEnabled(dto.getIsDataAccessEnabled());
     config.setSingleNetworkEnabled(dto.getIsSingleNetworkEnabled());
     config.setSingleStudyEnabled(dto.getIsSingleStudyEnabled());
     config.setNetworkEnabled(dto.getIsNetworkEnabled());
