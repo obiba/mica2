@@ -161,6 +161,7 @@ class MicaConfigDtos {
       builder.setCurrentUserCanCreateSets(true);
     }
 
+    builder.setSignupEnabled(config.isSignupEnabled());
     builder.setSignupWithPassword(config.isSignupWithPassword());
     config.getSignupGroups().forEach(builder::addSignupGroups);
 
@@ -211,6 +212,7 @@ class MicaConfigDtos {
     config.setStudyDatasetEnabled(dto.getIsCollectedDatasetEnabled());
     config.setHarmonizationDatasetEnabled(dto.getIsHarmonizedDatasetEnabled());
 
+    if (dto.hasSignupEnabled()) config.setSignupEnabled(dto.getSignupEnabled());
     config.setSignupWithPassword(dto.getSignupWithPassword());
     config.setSignupGroups(dto.getSignupGroupsList());
 

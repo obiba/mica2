@@ -396,6 +396,8 @@
     "collected-dataset-enabled-help": "Des ensembles de données de collecte sont présents dans Mica.",
     "harmonized-dataset-enabled": "Section ensemble de données d'harmonisation activée",
     "harmonized-dataset-enabled-help": "Des ensembles de données d'harmonisation sont présents dans Mica.",
+    "signup-enabled": "Enregistrement activé",
+    "signup-enabled-help": "Les nouveaux utilisateurs peuvent s'enregistrer.",
     "signup-with-password": "Formulaire d'enregistrement avec mot de passe",
     "signup-with-password-help": "Les nouveaux utilisateurs peuvent fournir leur mot de passe, ce qui leur permet d'être immédiatement Actif (sans validation de courriel).",
     "signup-groups": "Groupes des nouveaux utilisateur",

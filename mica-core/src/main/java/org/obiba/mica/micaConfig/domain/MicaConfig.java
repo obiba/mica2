@@ -142,6 +142,8 @@ public class MicaConfig extends AbstractAuditableDocument {
 
   private boolean setsSearchEnabled = true;
 
+  private boolean signupEnabled = true;
+
   private List<String> signupGroups = Lists.newArrayList("mica-user");
 
   private boolean signupWithPassword = true;
@@ -243,6 +245,14 @@ public class MicaConfig extends AbstractAuditableDocument {
 
   public void setRoles(List<String> roles) {
     this.roles = roles == null ? Lists.newArrayList() : Lists.newArrayList(Sets.newLinkedHashSet(roles));
+  }
+
+  public boolean isSignupEnabled() {
+    return signupEnabled;
+  }
+
+  public void setSignupEnabled(boolean signupEnabled) {
+    this.signupEnabled = signupEnabled;
   }
 
   public void setSignupGroups(List<String> signupGroups) {
