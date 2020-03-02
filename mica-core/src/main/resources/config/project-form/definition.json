@@ -17,7 +17,7 @@
               {
                 "key": "startDate",
                 "dateOptions": {
-                  "dateFormat": "dd-MM-yyyy"
+                  "dateFormat": "yyyy-MM-dd"
                 },
                 "description": "t(research-project.default.status.start-help)",
                 "validationMessage": "t(research-project.default.status.date-error)"
@@ -31,7 +31,7 @@
               {
                 "key": "endDate",
                 "dateOptions": {
-                  "dateFormat": "dd-MM-yyyy",
+                  "dateFormat": "yyyy-MM-dd",
                   "minDate": "startDate",
                   "minDateIsRef": true
                 },
