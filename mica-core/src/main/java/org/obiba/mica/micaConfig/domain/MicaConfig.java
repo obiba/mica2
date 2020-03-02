@@ -106,6 +106,10 @@ public class MicaConfig extends AbstractAuditableDocument {
 
   private String projectNotificationsSubject;
 
+  private boolean isRepositoryEnabled = true;
+
+  private boolean isDataAccessEnabled = true;
+
   private boolean isSingleStudyEnabled = false;
 
   private boolean isSingleNetworkEnabled = false;
@@ -375,6 +379,22 @@ public class MicaConfig extends AbstractAuditableDocument {
 
   public void setProjectNotificationsSubject(String projectNotificationsSubject) {
     this.projectNotificationsSubject = projectNotificationsSubject;
+  }
+
+  public boolean isRepositoryEnabled() {
+    return isRepositoryEnabled;
+  }
+
+  public void setRepositoryEnabled(boolean repositoryEnabled) {
+    isRepositoryEnabled = repositoryEnabled;
+  }
+
+  public boolean isDataAccessEnabled() {
+    return isDataAccessEnabled;
+  }
+
+  public void setDataAccessEnabled(boolean dataAccessEnabled) {
+    isDataAccessEnabled = dataAccessEnabled;
   }
 
   public boolean isSingleStudyEnabled() {
