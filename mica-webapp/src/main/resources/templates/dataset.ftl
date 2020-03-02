@@ -48,41 +48,28 @@
                       </#if>
                     </p>
                   </div>
-                  <div class="col-md-3 col-sm-6 col-12">
-                    <div class="info-box">
-                      <span class="info-box-icon bg-info">
-                        <a href="../search?type=networks&query=dataset(in(Mica_dataset.id,${dataset.id}))">
-                          <i class="ion ion-filing"></i>
-                        </a>
-                      </span>
-                      <div class="info-box-content">
-                        <span class="info-box-text"><@message "networks"/></span>
-                        <span class="info-box-number" id="network-hits">-</span>
-                      </div>
-                      <!-- /.info-box-content -->
-                    </div>
-                  </div>
-                  <div class="col-md-3 col-sm-6 col-12">
-                    <div class="info-box">
-                      <span class="info-box-icon bg-success">
-                        <a href="../search?type=studies&query=dataset(in(Mica_dataset.id,${dataset.id}))">
-                          <i class="ion ion-folder"></i>
-                        </a>
-                      </span>
-                      <div class="info-box-content">
-                        <span class="info-box-text"><@message "studies"/></span>
-                        <span class="info-box-number" id="study-hits">-</span>
-                      </div>
-                      <div>
-                      </div>
 
-                      <!-- /.info-box-content -->
+                  <#if config.networkEnabled && !config.singleNetworkEnabled>
+                    <div class="col-md-3 col-sm-6 col-12">
+                      <div class="info-box">
+                        <span class="info-box-icon bg-info">
+                          <a href="../search#lists?type=networks&query=dataset(in(Mica_dataset.id,${dataset.id}))">
+                            <i class="ion ion-filing"></i>
+                          </a>
+                        </span>
+                        <div class="info-box-content">
+                          <span class="info-box-text"><@message "networks"/></span>
+                          <span class="info-box-number" id="network-hits">-</span>
+                        </div>
+                        <!-- /.info-box-content -->
+                      </div>
                     </div>
-                  </div>
+                  </#if>
+
                   <div class="col-md-3 col-sm-6 col-12">
                     <div class="info-box">
                       <span class="info-box-icon bg-danger">
-                        <a href="../search?type=variables&query=dataset(in(Mica_dataset.id,${dataset.id}))">
+                        <a href="../search#lists?type=variables&query=dataset(in(Mica_dataset.id,${dataset.id}))">
                           <i class="ion ion-pie-graph"></i>
                         </a>
                       </span>

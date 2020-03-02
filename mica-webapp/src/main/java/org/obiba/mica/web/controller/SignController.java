@@ -1,13 +1,14 @@
 package org.obiba.mica.web.controller;
 
 import com.google.common.base.Strings;
-import net.minidev.json.parser.JSONParser;
+import com.google.common.collect.Lists;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.obiba.mica.core.service.AgateServerConfigService;
 import org.obiba.mica.core.service.UserAuthService;
 import org.obiba.mica.web.controller.domain.AuthConfiguration;
 import org.obiba.mica.web.controller.domain.OidcProvider;
+import org.obiba.oidc.OIDCAuthProviderSummary;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -37,7 +38,7 @@ public class SignController {
     ModelAndView mv = new ModelAndView("signin");
 
     String lang = getLang(language, locale);
-    List<OidcProvider> providers = userAuthService.getOidcProviders(lang).stream()
+    List<OidcProvider> providers = getOidcProviders(lang, false).stream()
       .map(o -> new OidcProvider(o, getOidcSigninUrl(o.getName(), request, redirect))).collect(Collectors.toList());
     mv.getModel().put("oidcProviders", providers);
     return mv;
@@ -50,7 +51,7 @@ public class SignController {
     ModelAndView mv = new ModelAndView("signup");
 
     String lang = getLang(language, locale);
-    List<OidcProvider> providers = userAuthService.getOidcProviders(lang, true).stream()
+    List<OidcProvider> providers = getOidcProviders(lang, true).stream()
       .map(o -> new OidcProvider(o, getOidcSignupUrl(o.getName(), request, redirect))).collect(Collectors.toList());
     mv.getModel().put("oidcProviders", providers);
 
@@ -74,9 +75,7 @@ public class SignController {
       mv.getModel().put("uAuth", new JSONObject());
     }
 
-    JSONObject authConfig = userAuthService.getPublicConfiguration();
-    JSONObject clientConfig = userAuthService.getClientConfiguration();
-    mv.getModel().put("authConfig", new AuthConfiguration(authConfig, clientConfig));
+    mv.getModel().put("authConfig", getAuthConfiguration());
 
     return mv;
   }
@@ -91,6 +90,20 @@ public class SignController {
   //
   // Private methods
   //
+
+  private List<OIDCAuthProviderSummary> getOidcProviders(String locale, boolean signupOnly) {
+    try {
+      return userAuthService.getOidcProviders(locale, signupOnly);
+    } catch(Exception e) {
+      return Lists.newArrayList();
+    }
+  }
+
+  private AuthConfiguration getAuthConfiguration() {
+    JSONObject authConfig = userAuthService.getPublicConfiguration();
+    JSONObject clientConfig = userAuthService.getClientConfiguration();
+    return new AuthConfiguration(authConfig, clientConfig);
+  }
 
   private String getLang(String language, String locale) {
     return language == null ? locale : language;

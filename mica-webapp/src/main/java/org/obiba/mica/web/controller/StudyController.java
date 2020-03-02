@@ -43,7 +43,12 @@ public class StudyController extends BaseController {
   }
 
   private BaseStudy getStudy(String id) {
-    BaseStudy study = publishedStudyService.findById(id);
+    BaseStudy study;
+    if ("_".equals(id))
+      study = publishedStudyService.findAll().stream().findFirst().orElse(null);
+    else
+      study = publishedStudyService.findById(id);
+
     if (study == null) throw NoSuchStudyException.withId(id);
     checkAccess((study instanceof Study) ? "/individual-study" : "/harmonization-study", id);
     return study;
