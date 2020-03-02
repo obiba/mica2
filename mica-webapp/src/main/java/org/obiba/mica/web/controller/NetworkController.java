@@ -41,7 +41,7 @@ public class NetworkController extends BaseController {
   @GetMapping("/network/{id}")
   public ModelAndView network(@PathVariable String id) {
 
-    Map<String, Object> params = new HashMap<String, Object>();
+    Map<String, Object> params = newParameters();
     Network network = getNetwork(id);
     params.put("network", network);
 
@@ -73,7 +73,12 @@ public class NetworkController extends BaseController {
   }
 
   private Network getNetwork(String id) {
-    Network network = publishedNetworkService.findById(id);
+    Network network;
+    if ("_".equals(id)) {
+      network = publishedNetworkService.findAll().stream().findFirst().orElse(null);
+    } else {
+      network = publishedNetworkService.findById(id);
+    }
     if (network == null) throw NoSuchNetworkException.withId(id);
     checkAccess("/network", id);
     return network;

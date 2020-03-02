@@ -5,9 +5,25 @@
   <li class="nav-item dropdown">
     <a id="repoMenu" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle"><@message "repository"/></a>
     <ul aria-labelledby="dropdownSubMenu1" class="dropdown-menu border-0 shadow">
-      <li><a href="${pathPrefix!".."}/networks" class="dropdown-item"><@message "networks"/></a></li>
-      <li><a href="${pathPrefix!".."}/studies" class="dropdown-item"><@message "studies"/></a></li>
-      <li><a href="${pathPrefix!".."}/datasets" class="dropdown-item"><@message "datasets"/></a></li>
+      <#if config.networkEnabled>
+        <li>
+          <#if config.singleNetworkEnabled>
+            <a href="${pathPrefix!".."}/network/_" class="dropdown-item"><@message "the-network"/></a>
+          <#else>
+            <a href="${pathPrefix!".."}/networks" class="dropdown-item"><@message "networks"/></a>
+          </#if>
+        </li>
+      </#if>
+      <li>
+        <#if config.singleStudyEnabled>
+          <a href="${pathPrefix!".."}/study/_" class="dropdown-item"><@message "the-study"/></a>
+        <#else>
+          <a href="${pathPrefix!".."}/studies" class="dropdown-item"><@message "studies"/></a>
+        </#if>
+      </li>
+      <#if config.studyDatasetEnabled || config.harmonizationDatasetEnabled>
+        <li><a href="${pathPrefix!".."}/datasets" class="dropdown-item"><@message "datasets"/></a></li>
+      </#if>
     </ul>
   </li>
   <li class="nav-item">

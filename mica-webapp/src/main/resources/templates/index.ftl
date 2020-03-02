@@ -30,62 +30,71 @@
       <div class="container">
 
         <div class="row">
-          <div class="col-lg-3 col-6">
-            <!-- small box -->
-            <div class="small-box bg-info">
-              <div class="inner">
-                <h3 id="network-hits">-</h3>
-                <p><@message "networks"/></p>
+
+          <#if config.networkEnabled && !config.singleNetworkEnabled>
+            <div class="col-lg-3 col-6">
+              <!-- small box -->
+              <div class="small-box bg-info">
+                <div class="inner">
+                  <h3 id="network-hits">-</h3>
+                  <p><@message "networks"/></p>
+                </div>
+                <div class="icon">
+                  <i class="ion ion-filing"></i>
+                </div>
+                <a href="../search#lists?type=networks" class="small-box-footer"><@message "more-info"/> <i class="fas fa-arrow-circle-right"></i></a>
               </div>
-              <div class="icon">
-                <i class="ion ion-filing"></i>
-              </div>
-              <a href="../search?type=networks" class="small-box-footer"><@message "more-info"/> <i class="fas fa-arrow-circle-right"></i></a>
             </div>
-          </div>
-          <!-- ./col -->
-          <div class="col-lg-3 col-6">
-            <!-- small box -->
-            <div class="small-box bg-success">
-              <div class="inner">
-                <h3 id="study-hits">-</h3>
-                <p><@message "studies"/></p>
+            <!-- ./col -->
+          </#if>
+
+          <#if !config.singleStudyEnabled>
+            <div class="col-lg-3 col-6">
+              <!-- small box -->
+              <div class="small-box bg-success">
+                <div class="inner">
+                  <h3 id="study-hits">-</h3>
+                  <p><@message "studies"/></p>
+                </div>
+                <div class="icon">
+                  <i class="ion ion-folder"></i>
+                </div>
+                <a href="../search#lists?type=studies" class="small-box-footer"><@message "more-info"/> <i class="fas fa-arrow-circle-right"></i></a>
               </div>
-              <div class="icon">
-                <i class="ion ion-folder"></i>
-              </div>
-              <a href="../search?type=studies" class="small-box-footer"><@message "more-info"/> <i class="fas fa-arrow-circle-right"></i></a>
             </div>
-          </div>
-          <!-- ./col -->
-          <div class="col-lg-3 col-6">
-            <!-- small box -->
-            <div class="small-box bg-warning">
-              <div class="inner">
-                <h3 id="dataset-hits">-</h3>
-                <p><@message "datasets"/></p>
+            <!-- ./col -->
+          </#if>
+
+          <#if config.studyDatasetEnabled || config.harmonizationDatasetEnabled>
+            <div class="col-lg-3 col-6">
+              <!-- small box -->
+              <div class="small-box bg-warning">
+                <div class="inner">
+                  <h3 id="dataset-hits">-</h3>
+                  <p><@message "datasets"/></p>
+                </div>
+                <div class="icon">
+                  <i class="ion ion-grid"></i>
+                </div>
+                <a href="../search#lists?type=datasets" class="small-box-footer"><@message "more-info"/> <i class="fas fa-arrow-circle-right"></i></a>
               </div>
-              <div class="icon">
-                <i class="ion ion-grid"></i>
-              </div>
-              <a href="../search?type=datasets" class="small-box-footer"><@message "more-info"/> <i class="fas fa-arrow-circle-right"></i></a>
             </div>
-          </div>
-          <!-- ./col -->
-          <div class="col-lg-3 col-6">
-            <!-- small box -->
-            <div class="small-box bg-danger">
-              <div class="inner">
-                <h3 id="variable-hits">-</h3>
-                <p><@message "variables"/></p>
+            <!-- ./col -->
+            <div class="col-lg-3 col-6">
+              <!-- small box -->
+              <div class="small-box bg-danger">
+                <div class="inner">
+                  <h3 id="variable-hits">-</h3>
+                  <p><@message "variables"/></p>
+                </div>
+                <div class="icon">
+                  <i class="ion ion-pie-graph"></i>
+                </div>
+                <a href="../search#lists?type=variables" class="small-box-footer"><@message "more-info"/> <i class="fas fa-arrow-circle-right"></i></a>
               </div>
-              <div class="icon">
-                <i class="ion ion-pie-graph"></i>
-              </div>
-              <a href="../search?type=variables" class="small-box-footer"><@message "more-info"/> <i class="fas fa-arrow-circle-right"></i></a>
             </div>
-          </div>
-          <!-- ./col -->
+            <!-- ./col -->
+          </#if>
         </div>
 
         <div class="callout callout-info">
@@ -135,7 +144,7 @@
 <#include "libs/scripts.ftl">
 
 <script>
-  micajs.stats('networks', {}, function(stats) {
+  micajs.stats('studies', {}, function(stats) {
     $('#network-hits').text(new Intl.NumberFormat().format(stats.networkResultDto.totalHits));
     $('#study-hits').text(new Intl.NumberFormat().format(stats.studyResultDto.totalHits));
     $('#dataset-hits').text(new Intl.NumberFormat().format(stats.datasetResultDto.totalHits));

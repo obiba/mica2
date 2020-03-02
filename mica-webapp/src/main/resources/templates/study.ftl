@@ -47,51 +47,58 @@
                       </p>
                     </#if>
                   </div>
-                  <div class="col-md-3 col-sm-6 col-12">
-                    <div class="info-box">
-                      <span class="info-box-icon bg-info">
-                        <a href="../search?type=networks&query=study(in(Mica_study.id,${study.id}))">
-                          <i class="ion ion-filing"></i>
-                        </a>
-                      </span>
-                      <div class="info-box-content">
-                        <span class="info-box-text"><@message "networks"/></span>
-                        <span class="info-box-number" id="network-hits">-</span>
-                      </div>
-                      <!-- /.info-box-content -->
-                    </div>
-                  </div>
-                  <div class="col-md-3 col-sm-6 col-12">
-                    <div class="info-box">
-                      <span class="info-box-icon bg-warning">
-                        <a href="../search?type=datasets&query=study(in(Mica_study.id,${study.id}))">
-                          <i class="ion ion-grid"></i>
-                        </a>
-                      </span>
-                      <div class="info-box-content">
-                        <span class="info-box-text"><@message "datasets"/></span>
-                        <span class="info-box-number" id="dataset-hits">-</span>
-                      </div>
-                      <div>
-                      </div>
 
-                      <!-- /.info-box-content -->
-                    </div>
-                  </div>
-                  <div class="col-md-3 col-sm-6 col-12">
-                    <div class="info-box">
-                      <span class="info-box-icon bg-danger">
-                        <a href="../search?type=variables&query=study(in(Mica_study.id,${study.id}))">
-                          <i class="ion ion-pie-graph"></i>
-                        </a>
-                      </span>
-                      <div class="info-box-content">
-                        <span class="info-box-text"><@message "variables"/></span>
-                        <span class="info-box-number" id="variable-hits">-</span>
+                  <#if config.networkEnabled && !config.singleNetworkEnabled>
+                    <div class="col-md-3 col-sm-6 col-12">
+                      <div class="info-box">
+                        <span class="info-box-icon bg-info">
+                          <a href="../search#lists?type=networks&query=study(in(Mica_study.id,${study.id}))">
+                            <i class="ion ion-filing"></i>
+                          </a>
+                        </span>
+                        <div class="info-box-content">
+                          <span class="info-box-text"><@message "networks"/></span>
+                          <span class="info-box-number" id="network-hits">-</span>
+                        </div>
+                        <!-- /.info-box-content -->
                       </div>
-                      <!-- /.info-box-content -->
                     </div>
-                  </div>
+                  </#if>
+
+                  <#if config.studyDatasetEnabled || config.harmonizationDatasetEnabled>
+                    <div class="col-md-3 col-sm-6 col-12">
+                      <div class="info-box">
+                        <span class="info-box-icon bg-warning">
+                          <a href="../search#lists?type=datasets&query=study(in(Mica_study.id,${study.id}))">
+                            <i class="ion ion-grid"></i>
+                          </a>
+                        </span>
+                        <div class="info-box-content">
+                          <span class="info-box-text"><@message "datasets"/></span>
+                          <span class="info-box-number" id="dataset-hits">-</span>
+                        </div>
+                        <div>
+                        </div>
+
+                        <!-- /.info-box-content -->
+                      </div>
+                    </div>
+                    <div class="col-md-3 col-sm-6 col-12">
+                      <div class="info-box">
+                        <span class="info-box-icon bg-danger">
+                          <a href="../search#lists?type=variables&query=study(in(Mica_study.id,${study.id}))">
+                            <i class="ion ion-pie-graph"></i>
+                          </a>
+                        </span>
+                        <div class="info-box-content">
+                          <span class="info-box-text"><@message "variables"/></span>
+                          <span class="info-box-number" id="variable-hits">-</span>
+                        </div>
+                        <!-- /.info-box-content -->
+                      </div>
+                    </div>
+                  </#if>
+
                 </div>
 
                 <p class="card-text">
