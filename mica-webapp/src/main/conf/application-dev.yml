@@ -39,6 +39,9 @@ plugins:
     micaSearchPlugin: mica-search-es
     updateSite: https://plugins.obiba.org
 
+opalTaxonomies:
+    defaultTermsSortOrder: "title"
+
 spring:
     profiles: dev
     data:
