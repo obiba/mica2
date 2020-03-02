@@ -54,10 +54,7 @@ public class SignController {
     List<OidcProvider> providers = getOidcProviders(lang, true).stream()
       .map(o -> new OidcProvider(o, getOidcSignupUrl(o.getName(), request, redirect))).collect(Collectors.toList());
     mv.getModel().put("oidcProviders", providers);
-
-    JSONObject authConfig = userAuthService.getPublicConfiguration();
-    JSONObject clientConfig = userAuthService.getClientConfiguration();
-    mv.getModel().put("authConfig", new AuthConfiguration(authConfig, clientConfig));
+    mv.getModel().put("authConfig", getAuthConfiguration());
 
     return mv;
   }
@@ -74,7 +71,6 @@ public class SignController {
     } catch (JSONException e) {
       mv.getModel().put("uAuth", new JSONObject());
     }
-
     mv.getModel().put("authConfig", getAuthConfiguration());
 
     return mv;
@@ -82,7 +78,7 @@ public class SignController {
 
   @GetMapping("/just-registered")
   public ModelAndView justRegistered(@RequestParam(value = "signin", required = false, defaultValue = "false") boolean canSignin) {
-    ModelAndView mv =  new ModelAndView("just-registered");
+    ModelAndView mv = new ModelAndView("just-registered");
     mv.getModel().put("canSignin", canSignin);
     return mv;
   }
@@ -94,15 +90,19 @@ public class SignController {
   private List<OIDCAuthProviderSummary> getOidcProviders(String locale, boolean signupOnly) {
     try {
       return userAuthService.getOidcProviders(locale, signupOnly);
-    } catch(Exception e) {
+    } catch (Exception e) {
       return Lists.newArrayList();
     }
   }
 
   private AuthConfiguration getAuthConfiguration() {
-    JSONObject authConfig = userAuthService.getPublicConfiguration();
-    JSONObject clientConfig = userAuthService.getClientConfiguration();
-    return new AuthConfiguration(authConfig, clientConfig);
+    try {
+      JSONObject authConfig = userAuthService.getPublicConfiguration();
+      JSONObject clientConfig = userAuthService.getClientConfiguration();
+      return new AuthConfiguration(authConfig, clientConfig);
+    } catch (Exception e) {
+      return new AuthConfiguration(new JSONObject(), new JSONObject());
+    }
   }
 
   private String getLang(String language, String locale) {

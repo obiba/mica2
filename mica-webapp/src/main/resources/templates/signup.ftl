@@ -91,7 +91,7 @@
             </select>
           </div>
         <#else>
-          <input type="hidden" name="locale" value="${authConfig.languages[0]}"/>
+          <input type="hidden" name="locale" value="${authConfig.languages[0]!"en"}"/>
         </#if>
 
         <#list authConfig.userAttributes as attribute>
