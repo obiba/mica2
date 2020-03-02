@@ -439,6 +439,8 @@ message MicaConfigDto {
   required string opalViewsGrouping = 45;
   repeated string signupGroups = 46;
   required bool signupWithPassword = 47;
+  optional bool isRepositoryEnabled = 48;
+  optional bool isDataAccessEnabled = 49;
 }
 
 message PublicMicaConfigDto {
