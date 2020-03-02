@@ -41,45 +41,49 @@
                 </div>
               </div>
               <div class="card-body">
-                <#assign isAdministrator = (user.roles?seq_contains("mica-administrator") || user.roles?seq_contains("mica-data-access-officer"))/>
-                <table id="dars" class="table table-bordered table-striped">
-                  <thead>
-                  <tr>
-                    <th>ID</th>
-                    <#if isAdministrator>
-                      <th>Applicant</th>
-                    </#if>
-                    <th><@message "title"/></th>
-                    <th><@message "last-update"/></th>
-                    <th><@message "submission-date"/></th>
-                    <#if accessConfig.amendmentsEnabled>
-                      <th><@message "pending-amendments"/></th>
-                      <th><@message "total-amendments"/></th>
-                    </#if>
-                    <th><@message "status"/></th>
-                  </tr>
-                  </thead>
-                  <tbody>
-                  <#list dars as dar>
+                <#if dars?? && dars?size gt 0>
+                  <#assign isAdministrator = (user.roles?seq_contains("mica-administrator") || user.roles?seq_contains("mica-data-access-officer"))/>
+                  <table id="dars" class="table table-bordered table-striped">
+                    <thead>
                     <tr>
-                      <td><a href="../data-access/${dar.id}">${dar.id}</a></td>
+                      <th>ID</th>
                       <#if isAdministrator>
-                        <td>
-                          <a href="#" data-toggle="modal" data-target="#modal-${dar.applicant}">${applicants[dar.applicant].fullName}</a>
-                        </td>
+                        <th>Applicant</th>
                       </#if>
-                      <td>${dar.title!""}</td>
-                      <td class="moment-datetime">${dar.lastUpdate.toString(datetimeFormat)}</td>
-                      <td class="moment-datetime"><#if dar.submitDate??>${dar.submitDate.toString(datetimeFormat)}</#if></td>
+                      <th><@message "title"/></th>
+                      <th><@message "last-update"/></th>
+                      <th><@message "submission-date"/></th>
                       <#if accessConfig.amendmentsEnabled>
-                        <td>${dar.pendingAmendments}</td>
-                        <td>${dar.totalAmendments}</td>
+                        <th><@message "pending-amendments"/></th>
+                        <th><@message "total-amendments"/></th>
                       </#if>
-                      <td><i class="fas fa-circle text-${statusColor(dar.status.toString())}"></i> <@message dar.status.toString()/></td>
+                      <th><@message "status"/></th>
                     </tr>
-                  </#list>
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                    <#list dars as dar>
+                      <tr>
+                        <td><a href="../data-access/${dar.id}">${dar.id}</a></td>
+                        <#if isAdministrator>
+                          <td>
+                            <a href="#" data-toggle="modal" data-target="#modal-${dar.applicant}">${applicants[dar.applicant].fullName}</a>
+                          </td>
+                        </#if>
+                        <td>${dar.title!""}</td>
+                        <td class="moment-datetime">${dar.lastUpdate.toString(datetimeFormat)}</td>
+                        <td class="moment-datetime"><#if dar.submitDate??>${dar.submitDate.toString(datetimeFormat)}</#if></td>
+                        <#if accessConfig.amendmentsEnabled>
+                          <td>${dar.pendingAmendments}</td>
+                          <td>${dar.totalAmendments}</td>
+                        </#if>
+                        <td><i class="fas fa-circle text-${statusColor(dar.status.toString())}"></i> <@message dar.status.toString()/></td>
+                      </tr>
+                    </#list>
+                    </tbody>
+                  </table>
+                <#else>
+                  <span class="text-muted"><@message "no-data-access-requests"/></span>
+                </#if>
               </div>
             </div>
           </div>
@@ -93,36 +97,40 @@
                   <h3 class="card-title"><@message "registered-users"/></h3>
                 </div>
                 <div class="card-body">
-                  <#assign isAdministrator = (user.roles?seq_contains("mica-administrator") || user.roles?seq_contains("mica-data-access-officer"))/>
-                  <table id="users" class="table table-bordered table-striped">
-                    <thead>
-                    <tr>
-                      <th><@message "full-name"/></th>
-                      <th><@message "groups"/></th>
-                      <th><@message "createdDate"/></th>
-                      <th><@message "lastLogin"/></th>
-                      <@userProfileTHs/>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <#list users as profile>
+                  <#if users?size gt 0>
+                    <#assign isAdministrator = (user.roles?seq_contains("mica-administrator") || user.roles?seq_contains("mica-data-access-officer"))/>
+                    <table id="users" class="table table-bordered table-striped">
+                      <thead>
                       <tr>
-                        <td>
-                          <a href="#" data-toggle="modal" data-target="#modal-${profile.username}">${profile.fullName}</a>
-                          <@userProfileDialog profile=profile/>
-                        </td>
-                        <td>
-                          <#list profile.groups as group>
-                            <span class="badge badge-info">${group}</span>
-                          </#list>
-                        </td>
-                        <td>${profile.attributes["createdDate"].toString(datetimeFormat)}</td>
-                        <td><#if profile.attributes["lastLogin"]??>${profile.attributes["lastLogin"].toString(datetimeFormat)}</#if></td>
-                        <@userProfileTDs profile=profile/>
+                        <th><@message "full-name"/></th>
+                        <th><@message "groups"/></th>
+                        <th><@message "createdDate"/></th>
+                        <th><@message "lastLogin"/></th>
+                        <@userProfileTHs/>
                       </tr>
-                    </#list>
-                    </tbody>
-                  </table>
+                      </thead>
+                      <tbody>
+                      <#list users as profile>
+                        <tr>
+                          <td>
+                            <a href="#" data-toggle="modal" data-target="#modal-${profile.username}">${profile.fullName}</a>
+                            <@userProfileDialog profile=profile/>
+                          </td>
+                          <td>
+                            <#list profile.groups as group>
+                              <span class="badge badge-info">${group}</span>
+                            </#list>
+                          </td>
+                          <td>${profile.attributes["createdDate"].toString(datetimeFormat)}</td>
+                          <td><#if profile.attributes["lastLogin"]??>${profile.attributes["lastLogin"].toString(datetimeFormat)}</#if></td>
+                          <@userProfileTDs profile=profile/>
+                        </tr>
+                      </#list>
+                      </tbody>
+                    </table>
+                  <#else>
+                    <span class="text-muted"><@message "no-users"/></span>
+                  </#if>
                 </div>
               </div>
             </div>
