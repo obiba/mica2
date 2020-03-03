@@ -16,11 +16,7 @@ import java.util.List;
 import java.util.concurrent.Future;
 
 import javax.inject.Inject;
-import javax.ws.rs.BadRequestException;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.math3.util.Pair;
@@ -121,7 +117,7 @@ public class PublishedDataschemaDatasetVariableResource extends AbstractPublishe
   @GET
   @Path("/aggregation")
   @Timed
-  public Mica.DatasetVariableAggregationsDto getVariableAggregations() {
+  public Mica.DatasetVariableAggregationsDto getVariableAggregations(@QueryParam("study") @DefaultValue("true") boolean withStudySummary) {
     ImmutableList.Builder<Mica.DatasetVariableAggregationDto> builder = ImmutableList.builder();
     HarmonizationDataset dataset = getDataset(HarmonizationDataset.class, datasetId);
     Mica.DatasetVariableAggregationsDto.Builder aggDto = Mica.DatasetVariableAggregationsDto.newBuilder();
@@ -133,10 +129,10 @@ public class PublishedDataschemaDatasetVariableResource extends AbstractPublishe
       BaseStudyTable opalTable = dataset.getBaseStudyTables().get(i);
       Future<Math.SummaryStatisticsDto> futureResult = results.get(i);
       try {
-        builder.add(dtos.asDto(opalTable, futureResult.get()).build());
+        builder.add(dtos.asDto(opalTable, futureResult.get(), withStudySummary).build());
       } catch(Exception e) {
         log.warn("Unable to retrieve statistics: " + e.getMessage(), e);
-        builder.add(dtos.asDto(opalTable, null).build());
+        builder.add(dtos.asDto(opalTable, null, withStudySummary).build());
       }
     }
 
