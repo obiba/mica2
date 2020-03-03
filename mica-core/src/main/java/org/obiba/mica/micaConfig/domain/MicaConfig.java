@@ -120,6 +120,8 @@ public class MicaConfig extends AbstractAuditableDocument {
 
   private boolean isHarmonizationDatasetEnabled = true;
 
+  private boolean variableSummaryRequiresAuthentication = false;
+
   private String style;
 
   private LocalizedString translations;
@@ -445,6 +447,14 @@ public class MicaConfig extends AbstractAuditableDocument {
 
   public void setHarmonizationDatasetEnabled(boolean harmonizationDatasetEnabled) {
     isHarmonizationDatasetEnabled = harmonizationDatasetEnabled;
+  }
+
+  public boolean isVariableSummaryRequiresAuthentication() {
+    return variableSummaryRequiresAuthentication;
+  }
+
+  public void setVariableSummaryRequiresAuthentication(boolean variableSummaryRequiresAuthentication) {
+    this.variableSummaryRequiresAuthentication = variableSummaryRequiresAuthentication;
   }
 
   public boolean hasStyle() {

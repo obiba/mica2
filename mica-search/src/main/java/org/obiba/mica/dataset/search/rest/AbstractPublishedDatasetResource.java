@@ -21,7 +21,9 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
+import javax.ws.rs.ForbiddenException;
 
+import org.apache.shiro.SecurityUtils;
 import org.obiba.magma.NoSuchVariableException;
 import org.obiba.mica.core.domain.BaseStudyTable;
 import org.obiba.mica.core.domain.OpalTable;
@@ -30,6 +32,7 @@ import org.obiba.mica.dataset.NoSuchDatasetException;
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
+import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.micaConfig.service.OpalService;
 import org.obiba.mica.spi.search.Indexer;
 import org.obiba.mica.spi.search.Searcher;
@@ -66,6 +69,9 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
 
   @Inject
   protected OpalService opalService;
+
+  @Inject
+  protected MicaConfigService micaConfigService;
 
   private String locale;
 
@@ -244,6 +250,11 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
       // ignore
     }
     return taxonomies == null ? Collections.emptyList() : taxonomies;
+  }
+
+  protected void checkVariableSummaryAccess() {
+    if (!SecurityUtils.getSubject().isAuthenticated() && micaConfigService.getConfig().isVariableSummaryRequiresAuthentication())
+      throw new ForbiddenException();
   }
 
   private DatasetVariable getHarmonizedDatasetVariable(String datasetId, String variableId, String variableName) {
