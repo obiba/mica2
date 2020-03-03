@@ -47,7 +47,7 @@
                 </div><!-- /.card-header -->
                 <div class="card-body">
                   <#list projects as project>
-                    <div>
+                    <div class="border-bottom mb-3">
                       <p>
                         <strong><i class="far fa-file-alt"></i> ${project.title[.lang]!""}</strong>
                       </p>
@@ -55,7 +55,6 @@
                       <p>
                         <@projectModel project=project/>
                       </p>
-                      <hr/>
                     </div>
                   </#list>
                 </div>

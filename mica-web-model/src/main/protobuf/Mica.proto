@@ -658,6 +658,12 @@ message FrequencyDto {
   optional bool missing = 3;
 }
 
+message IntervalFrequencyDto {
+  required int32 count = 1;
+  required double lower  = 2;
+  required double upper  = 3;
+}
+
 message StatisticsDto {
   optional double sum = 1;
   optional double min = 2;
@@ -677,6 +683,7 @@ message DatasetVariableAggregationDto {
   optional string term = 6;
   optional bool missing = 7;
   optional DatasetDto.HarmonizationTableDto harmonizationStudyTable = 8;
+  repeated IntervalFrequencyDto intervalFrequencies = 9;
 }
 
 message DatasetVariableAggregationsDto {

@@ -398,8 +398,8 @@ public class Dtos {
 
   @NotNull
   public Mica.DatasetVariableAggregationDto.Builder asDto(@NotNull OpalTable opalTable,
-    @Nullable Math.SummaryStatisticsDto summary) {
-    return datasetDtos.asDto(opalTable, summary);
+    @Nullable Math.SummaryStatisticsDto summary, boolean withStudySummary) {
+    return datasetDtos.asDto(opalTable, summary, withStudySummary);
   }
 
   @NotNull

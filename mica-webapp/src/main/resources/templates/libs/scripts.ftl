@@ -79,6 +79,9 @@
                 $(this).html(marked(msg));
             }
         });
+      $('.marked table').each(function () {
+        $(this).addClass('table table-striped');
+      });
         // set moment's locale
         moment.locale('${.lang}');
         $('.moment-date').each(function () {
