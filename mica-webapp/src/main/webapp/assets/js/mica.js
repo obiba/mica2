@@ -489,6 +489,23 @@ var micajs = (function() {
       });
   };
 
+  var micaVariableAggregation = function(id, onsuccess, onfailure) {
+    var url = '../ws/variable/' + id + '/aggregation';
+    axios.get(url)
+      .then(response => {
+        console.dir(response);
+        if (onsuccess) {
+          onsuccess(response.data);
+        }
+      })
+      .catch(response => {
+        console.dir(response);
+        if (onfailure) {
+          onfailure(response);
+        }
+      });
+  };
+
   return {
     'stats': micaStats,
     'redirectError': micaRedirectError,
@@ -519,7 +536,8 @@ var micajs = (function() {
     },
     'uploadTempFile': micaUploadTempFile,
     'variable': {
-      'summary': micaVariableSummary
+      'summary': micaVariableSummary,
+      'aggregation': micaVariableAggregation
     }
   };
 

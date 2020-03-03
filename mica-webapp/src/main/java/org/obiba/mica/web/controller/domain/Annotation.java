@@ -1,6 +1,5 @@
 package org.obiba.mica.web.controller.domain;
 
-import net.sf.cglib.core.Local;
 import org.obiba.mica.core.domain.Attribute;
 import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
@@ -42,14 +41,26 @@ public class Annotation {
     return LocalizedString.from(getVocabulary().getDescription());
   }
 
+  public String getTermName() {
+    return attribute.getValues().get("und");
+  }
+
   public LocalizedString getTermTitle() {
-    Term term = getVocabulary().getTerm(attribute.getValues().get("und"));
-    return LocalizedString.from(term.getTitle());
+    Vocabulary vocabulary = getVocabulary();
+    if (vocabulary.hasTerms() && vocabulary.hasTerm(getTermName())) {
+      Term term = vocabulary.getTerm(getTermName());
+      return LocalizedString.from(term.getTitle());
+    }
+    return attribute.getValues();
   }
 
   public LocalizedString getTermDescription() {
-    Term term = getVocabulary().getTerm(attribute.getValues().get("und"));
-    return LocalizedString.from(term.getDescription());
+    Vocabulary vocabulary = getVocabulary();
+    if (vocabulary.hasTerms() && vocabulary.hasTerm(getTermName())) {
+      Term term = vocabulary.getTerm(getTermName());
+      return LocalizedString.from(term.getDescription());
+    }
+    return null;
   }
 
   private Vocabulary getVocabulary() {

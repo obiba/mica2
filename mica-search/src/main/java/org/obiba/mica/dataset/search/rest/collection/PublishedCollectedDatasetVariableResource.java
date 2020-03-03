@@ -14,11 +14,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 import javax.inject.Inject;
-import javax.ws.rs.BadRequestException;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.math3.util.Pair;
@@ -77,16 +73,15 @@ public class PublishedCollectedDatasetVariableResource extends AbstractPublished
   @GET
   @Path("/aggregation")
   @Timed
-  public Mica.DatasetVariableAggregationDto getVariableAggregations() {
+  public Mica.DatasetVariableAggregationDto getVariableAggregations(@QueryParam("study") @DefaultValue("true") boolean withStudySummary) {
     StudyDataset dataset = getDataset(StudyDataset.class, datasetId);
     StudyTable studyTable = dataset.getSafeStudyTable();
-    Mica.DatasetVariableAggregationDto.Builder aggDto = Mica.DatasetVariableAggregationDto.newBuilder() //
-      .setStudyTable(dtos.asDto(studyTable));
+    Mica.DatasetVariableAggregationDto.Builder aggDto = Mica.DatasetVariableAggregationDto.newBuilder();
     try {
-      return dtos.asDto(studyTable, datasetService.getVariableSummary(dataset, variableName).getWrappedDto()).build();
+      return dtos.asDto(studyTable, datasetService.getVariableSummary(dataset, variableName).getWrappedDto(), withStudySummary).build();
     } catch(Exception e) {
       log.warn("Unable to retrieve statistics: " + e.getMessage(), e);
-      return dtos.asDto(studyTable, null).build();
+      return dtos.asDto(studyTable, null, withStudySummary).build();
     }
   }
 
