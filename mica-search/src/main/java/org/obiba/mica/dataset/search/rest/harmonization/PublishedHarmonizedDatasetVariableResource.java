@@ -14,11 +14,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 import javax.inject.Inject;
-import javax.ws.rs.BadRequestException;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 
 import com.codahale.metrics.annotation.Timed;
@@ -44,7 +40,6 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @Scope("request")
-@RequiresAuthentication
 public class PublishedHarmonizedDatasetVariableResource extends AbstractPublishedDatasetResource<HarmonizationDataset>
   implements DatasetVariableResource {
 
@@ -92,17 +87,17 @@ public class PublishedHarmonizedDatasetVariableResource extends AbstractPublishe
   @GET
   @Path("/aggregation")
   @Timed
-  public Mica.DatasetVariableAggregationDto getVariableAggregations() {
+  public Mica.DatasetVariableAggregationDto getVariableAggregations(@QueryParam("study") @DefaultValue("true") boolean withStudySummary) {
     HarmonizationDataset dataset = getDataset(HarmonizationDataset.class, datasetId);
     for(BaseStudyTable opalTable : dataset.getBaseStudyTables()) {
       String opalTableId = studyId;
       if(opalTable.isFor(opalTableId, project, table)) {
         try {
           return dtos.asDto(opalTable,
-            datasetService.getVariableSummary(dataset, variableName, studyId, project, table).getWrappedDto()).build();
+            datasetService.getVariableSummary(dataset, variableName, studyId, project, table).getWrappedDto(), withStudySummary).build();
         } catch(Exception e) {
           log.warn("Unable to retrieve statistics: " + e.getMessage(), e);
-          return dtos.asDto(opalTable, null).build();
+          return dtos.asDto(opalTable, null, withStudySummary).build();
         }
       }
     }

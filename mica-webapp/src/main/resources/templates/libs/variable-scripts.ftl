@@ -2,10 +2,18 @@
 <script src="../assets/libs/node_modules/admin-lte/plugins/chart.js/Chart.min.js"></script>
 <script>
   $(function () {
-    micajs.variable.summary('${variable.id}', function(data) {
+    micajs.variable.aggregation('${variable.id}', function(data) {
       $('#loadingSummary').hide();
 
-      if (data['Math.CategoricalSummaryDto.categorical']) {
+      if (data.n) {
+        $('#n').html(data.total);
+        $('#n-values').html(data.n);
+        $('#n-missings').html(data.total - data.n);
+
+        $('#counts').show();
+      }
+
+      if (data.frequencies) {
         const labels = [];
         const dataset = {
           data: [],
@@ -14,16 +22,16 @@
             '#28a745',  '#17a2b8'],
         };
         let frequencyRows = '';
-        data['Math.CategoricalSummaryDto.categorical'].frequencies.forEach(frequency => {
-          if (frequency.freq>0) {
+        data.frequencies.forEach(frequency => {
+          if (frequency.count>0) {
             labels.push(frequency.value);
-            dataset.data.push(frequency.freq);
+            dataset.data.push(frequency.count);
           }
 
-          const pct = frequency.pct * 100;
+          const pct = (frequency.count / data.n) * 100;
           frequencyRows = frequencyRows + '<tr>' +
                   '<td>' + frequency.value + '</td>' +
-                  '<td>' + frequency.freq + '</td>' +
+                  '<td>' + frequency.count + '</td>' +
                   '<td>' + pct.toFixed(2) + '</td>' +
                   '<td>' + (frequency.missing ? '<i class="fas fa-check"></i>' : '') + '</td>' +
                   '</tr>'
@@ -44,7 +52,6 @@
         });
         $('#frequencyChart').show();
 
-        $('#totalCount').html(data['Math.CategoricalSummaryDto.categorical'].n);
         $('#frequencyValues').html(frequencyRows);
 
         const dataTableOpts = {
@@ -63,32 +70,22 @@
 
         $('#categoricalSummary').show();
       }
-      else if (data['Math.ContinuousSummaryDto.continuous']) {
-        const frequencies = data['Math.ContinuousSummaryDto.continuous'].frequencies;
-        const summary = data['Math.ContinuousSummaryDto.continuous'].summary;
+      if (data.statistics) {
+        const summary = data.statistics;
 
-        const nMissings = frequencies.filter(item => item.missing === true).map(item => item.freq).reduce((a, b) => a + b, 0);
-
-        $('#n').html(summary.n + nMissings);
-        $('#n-values').html(summary.n);
-        $('#n-missings').html(nMissings);
         $('#mean').html(summary.n === 0 ? '-' : summary.mean.toFixed(2));
-        $('#stdDev').html(summary.n === 0 ? '-' : summary.stdDev.toFixed(2));
-        $('#median').html(summary.n === 0 ? '-' : summary.median.toFixed(2));
+        $('#stdDev').html(summary.n === 0 ? '-' : summary.stdDeviation.toFixed(2));
         $('#variance').html(summary.n === 0 ? '-' : summary.variance.toFixed(2));
+        $('#sum').html(summary.n === 0 ? '-' : summary.sum.toFixed(2));
+        $('#sum-of-squares').html(summary.n === 0 ? '-' : summary.sumOfSquares.toFixed(2));
         $('#min').html(summary.n === 0 ? '-' : summary.min.toFixed(2));
         $('#max').html(summary.n === 0 ? '-' : summary.max.toFixed(2));
 
-        if (summary.n !== 0) {
-          const intervalFrequency = data['Math.ContinuousSummaryDto.continuous'].intervalFrequency;
-          const min = summary.min.toFixed(2);
-          const max = summary.max.toFixed(2);
-          const middle = Math.round(min + (max - min)/2);
-
+        if (data.intervalFrequencies) {
           const labels = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'];
           let dataPoints = [];
-          intervalFrequency.forEach(item => {
-            dataPoints.push(item.freq);
+          data.intervalFrequencies.forEach(item => {
+            dataPoints.push(item.count);
           });
 
           const chartOptions = {
@@ -132,7 +129,7 @@
 
         $('#continuousSummary').show();
       }
-      else {
+      if (!data.frequencies && !data.statistics) {
         $('#noSummary').show();
       }
     });

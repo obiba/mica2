@@ -10,6 +10,7 @@ import org.obiba.mica.micaConfig.service.TaxonomyService;
 import org.obiba.mica.spi.search.Indexer;
 import org.obiba.mica.spi.search.Searcher;
 import org.obiba.mica.web.controller.domain.Annotation;
+import org.obiba.mica.web.controller.domain.HarmonizationAnnotations;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.obiba.opal.core.domain.taxonomy.TaxonomyEntity;
 import org.slf4j.Logger;
@@ -66,7 +67,7 @@ public class VariableController extends BaseController {
         break;
     }
 
-    DatasetVariable variable = getDatasetVariable(id, variableName);
+    DatasetVariable variable = resolver.getType().equals(DatasetVariable.Type.Harmonized) ? getHarmonizedDatasetVariable(resolver.getDatasetId(), id, variableName) : getDatasetVariable(id, variableName);
     params.put("variable", variable);
     params.put("type", resolver.getType().toString());
 
@@ -82,7 +83,17 @@ public class VariableController extends BaseController {
       .filter(attr -> attr.hasNamespace() && taxonomies.containsKey(attr.getNamespace()) && taxonomies.get(attr.getNamespace()).hasVocabulary(attr.getName()))
       .map(attr -> new Annotation(attr, taxonomies.get(attr.getNamespace())))
       .collect(Collectors.toList());
+
+    List<Annotation> harmoAnnotations = annotations.stream()
+      .filter(annot -> annot.getTaxonomyName().equals("Mlstr_harmo"))
+      .collect(Collectors.toList());
+
+    annotations = annotations.stream()
+      .filter(annot -> !annot.getTaxonomyName().equals("Mlstr_harmo"))
+      .collect(Collectors.toList());
+
     params.put("annotations", annotations);
+    params.put("harmoAnnotations", new HarmonizationAnnotations(harmoAnnotations));
 
     return new ModelAndView("variable", params);
   }
@@ -112,6 +123,21 @@ public class VariableController extends BaseController {
       log.error("Failed retrieving {}", DatasetVariable.class.getSimpleName(), e);
       throw new NoSuchVariableException(variableName);
     }
+  }
+
+  private DatasetVariable getHarmonizedDatasetVariable(String datasetId, String variableId, String variableName) {
+    String dataSchemaVariableId = DatasetVariable.IdResolver
+      .encode(datasetId, variableName, DatasetVariable.Type.Dataschema, null, null, null, null);
+    DatasetVariable harmonizedDatasetVariable = getDatasetVariableInternal(Indexer.PUBLISHED_HVARIABLE_INDEX, Indexer.HARMONIZED_VARIABLE_TYPE,
+      variableId, variableName);
+    DatasetVariable dataSchemaVariable = getDatasetVariableInternal(Indexer.PUBLISHED_VARIABLE_INDEX, Indexer.VARIABLE_TYPE,
+      dataSchemaVariableId, variableName);
+
+    dataSchemaVariable.getAttributes().asAttributeList().forEach(a -> {
+      if (!a.getName().startsWith("Mlstr_harmo")) harmonizedDatasetVariable.addAttribute(a);
+    });
+
+    return harmonizedDatasetVariable;
   }
 
 }

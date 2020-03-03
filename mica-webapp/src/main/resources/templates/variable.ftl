@@ -1,5 +1,6 @@
 <!-- Macros -->
 <#include "libs/header.ftl">
+<#include "models/variable.ftl">
 
 <!DOCTYPE html>
 <html lang="${.lang}">
@@ -17,7 +18,7 @@
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
     <!-- Content Header (Page header) -->
-    <@header titlePrefix=(type?lower_case + "-variable") title=variable.name subtitle="" breadcrumb=[["..", "home"], ["../dataset/" + variable.datasetId, variable.datasetAcronym[.lang]!variable.datasetId], [variable.name]]/>
+    <@header titlePrefix=(type?lower_case + "-variable") title=variable.name subtitle=""/>
     <!-- /.content-header -->
 
     <!-- Main content -->
@@ -25,8 +26,12 @@
       <div class="container">
         <div class="callout callout-info">
           <p>
-            <#if label?? && label[.lang]??>
-              ${label[.lang]}
+            <#if label??>
+              <#if label[.lang]??>
+                ${label[.lang]}
+              <#elseif label["und"]??>
+                ${label["und"]}
+              </#if>
             <#else>
               <span class="text-muted"><@message "no-label"/></span>
             </#if>
@@ -84,7 +89,11 @@
                         <td>${category.name}</td>
                         <td>
                           <#if category.attributes?? && category.attributes.label??>
-                            ${category.attributes.label[.lang]!""}
+                            <#if category.attributes.label[.lang]??>
+                              ${category.attributes.label[.lang]}
+                            <#elseif category.attributes.label["und"]??>
+                              ${category.attributes.label["und"]}
+                            </#if>
                           </#if>
                         </td>
                         <td><#if category.missing><i class="fas fa-check"></i></#if></td>
@@ -108,8 +117,8 @@
             </div>
           </div>
 
-          <#if annotations?? && annotations?size != 0>
-            <div class="col-xs-12 col-lg-6">
+          <div class="col-xs-12 col-lg-6">
+            <#if annotations?? && annotations?size != 0>
               <div class="card card-info card-outline">
                 <div class="card-header">
                   <h3 class="card-title"><@message "annotations"/></h3>
@@ -117,8 +126,16 @@
                 <div class="card-body">
                   <dl class="row">
                     <#list annotations as annotation>
-                      <dt class="col-sm-4" title="${annotation.vocabularyDescription[.lang]}">${annotation.vocabularyTitle[.lang]}</dt>
-                      <dd class="col-sm-8" title="${annotation.termDescription[.lang]}">${annotation.termTitle[.lang]}</dd>
+                      <dt class="col-sm-4" title="<#if annotation.vocabularyDescription??>${annotation.vocabularyDescription[.lang]!""}</#if>">
+                        ${annotation.vocabularyTitle[.lang]}
+                      </dt>
+                      <dd class="col-sm-8" title="<#if annotation.termDescription??>${annotation.termDescription[.lang]!""}</#if>">
+                        <#if annotation.termTitle[.lang]??>
+                          ${annotation.termTitle[.lang]}
+                        <#elseif annotation.termTitle["und"]??>
+                          <span class="marked">${annotation.termTitle["und"]}</span>
+                        </#if>
+                      </dd>
                     </#list>
                   </dl>
                 </div>
@@ -128,9 +145,63 @@
                   </a>
                 </div>
               </div>
-            </div>
-          </#if>
+            </#if>
+
+          </div>
         </div>
+
+        <#if type == "Harmonized" && harmoAnnotations??>
+          <div class="row">
+            <div class="col-12">
+              <div class="card card-<#if harmoAnnotations.hasStatus()>${harmoAnnotations.statusClass}<#else>info</#if> card-outline">
+                <div class="card-header">
+                  <h3 class="card-title"><@message "harmonization"/>
+                  <#if harmoAnnotations.hasStatus()>
+                    <span class=" badge badge-${harmoAnnotations.statusClass}">
+                      ${harmoAnnotations.statusValueTitle[.lang]!harmoAnnotations.statusValue!"-"}
+                    </span>
+
+                  </#if>
+                  </h3>
+                </div>
+                <div class="card-body">
+                  <#if !harmoAnnotations.hasStatusDetail() && !harmoAnnotations.hasAlgorithm() && !harmoAnnotations.hasComment()>
+                    <span class="text-muted"><@message "no-harmonization-description"/></span>
+                  <#else>
+                    <dl>
+                      <#if harmoAnnotations.hasStatusDetail()>
+                        <dt title="${harmoAnnotations.statusDetailDescription[.lang]!""}">
+                          ${harmoAnnotations.statusDetailTitle[.lang]!"Status detail"}
+                        </dt>
+                        <dd title="${harmoAnnotations.statusDetailValueDescription[.lang]!""}">
+                          ${harmoAnnotations.statusDetailValueTitle[.lang]!harmoAnnotations.statusDetailValue!"-"}
+                        </dd>
+                      </#if>
+
+                      <#if harmoAnnotations.hasAlgorithm()>
+                        <dt title="${harmoAnnotations.algorithmDescription[.lang]!""}">
+                          ${harmoAnnotations.algorithmTitle[.lang]!"Algorithm"}
+                        </dt>
+                        <dd>
+                          <span class="marked mt-3">${harmoAnnotations.algorithmValue!""}</span>
+                        </dd>
+                      </#if>
+
+                      <#if harmoAnnotations.hasComment()>
+                        <dt title="${harmoAnnotations.commentDescription[.lang]!""}">
+                          ${harmoAnnotations.commentTitle[.lang]!"Comment"}
+                        </dt>
+                        <dd>
+                          <span class="marked">${harmoAnnotations.commentValue!""}</span>
+                        </dd>
+                      </#if>
+                    </dl>
+                  </#if>
+                </div>
+              </div>
+            </div>
+          </div>
+        </#if>
 
         <div class="row">
           <div class="col-12">
@@ -139,67 +210,7 @@
                 <h3 class="card-title"><@message "summary-statistics"/></h3>
               </div>
               <div class="card-body">
-                <img id="loadingSummary" src="../assets/images/loading.gif">
-                <div id="categoricalSummary" style="display: none">
-                  <div class="row">
-                    <div class="col-xs-12 col-lg-6">
-                      <dl>
-                        <dt>N</dt>
-                        <dd><span id="totalCount" class="badge badge-info"></span></dd>
-                        <dt><@message "frequencies"/></dt>
-                        <dd>
-                          <table id="frequencyTable" class="table table-striped table-sm">
-                            <thead>
-                            <tr>
-                              <th><@message "value"/></th>
-                              <th><@message "frequency"/></th>
-                              <th>%</th>
-                              <th><@message "missing"/></th>
-                            </tr>
-                            </thead>
-                            <tbody id="frequencyValues">
-                            </tbody>
-                          </table>
-                        </dd>
-                      </dl>
-                    </div>
-                    <div class="col-xs-12 col-lg-6">
-                      <canvas id="frequencyChart"></canvas>
-                    </div>
-                  </div>
-                </div>
-                <div id="continuousSummary" style="display: none">
-                  <div class="row">
-                    <div class="col-xs-12 col-lg-4">
-                      <dl class="row">
-                        <dt class="col-sm-4">N</dt>
-                        <dd class="col-sm-8"><span id="n" class="badge badge-info"></span></dd>
-                        <dt class="col-sm-4"><@message "n-values"/></dt>
-                        <dd id="n-values" class="col-sm-8"></dd>
-                        <dt class="col-sm-4"><@message "n-missings"/></dt>
-                        <dd id="n-missings" class="col-sm-8"></dd>
-                        <dt class="col-sm-4"><@message "mean"/></dt>
-                        <dd id="mean" class="col-sm-8"></dd>
-                        <dt class="col-sm-4"><@message "stdDev"/></dt>
-                        <dd id="stdDev" class="col-sm-8"></dd>
-                        <dt class="col-sm-4"><@message "median"/></dt>
-                        <dd id="median" class="col-sm-8"></dd>
-                        <dt class="col-sm-4"><@message "variance"/></dt>
-                        <dd id="variance" class="col-sm-8"></dd>
-                        <dt class="col-sm-4"><@message "min"/></dt>
-                        <dd id="min" class="col-sm-8"></dd>
-                        <dt class="col-sm-4"><@message "max"/></dt>
-                        <dd id="max" class="col-sm-8"></dd>
-                      </dl>
-                    </div>
-                    <div class="col-xs-12 col-lg-8">
-                      <canvas id="histogramChart"></canvas>
-                    </div>
-                  </div>
-                </div>
-                <div id="noSummary" style="display: none">
-                  <span class="text-muted"><@message "no-variable-summary"/></span>
-                </div>
+                <@variableSummary variable=variable/>
               </div>
             </div>
           </div>
