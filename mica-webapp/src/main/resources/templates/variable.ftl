@@ -210,7 +210,12 @@
                 <h3 class="card-title"><@message "summary-statistics"/></h3>
               </div>
               <div class="card-body">
-                <@variableSummary variable=variable/>
+                <#if user?? || !config.variableSummaryRequiresAuthentication>
+                  <@variableSummary variable=variable/>
+                <#else>
+                  <@message "sign-in-for-variable-statistics"/>
+                  <a href="../signin?redirect=/variable/${variable.id}" class="btn btn-info"><@message "sign-in"/></a>
+                </#if>
               </div>
             </div>
           </div>

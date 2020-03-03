@@ -384,6 +384,8 @@
     },
     "openAccess": "Open access",
     "openAccess-help": "Access to published documents is opened to everyone.",
+    "variableSummaryRequiresAuthentication": "Restricted access to variable summary statistics",
+    "variableSummaryRequiresAuthentication-help": "The user needs to be identified when accessing to the variable summary statistics (and related operations like contingency table).",
     "sections": "Sections",
     "repository-enabled": "Repository enabled",
     "repository-enabled-help": "Show network, study, dataset, variable pages with the search interface.",
