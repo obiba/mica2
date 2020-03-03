@@ -60,6 +60,7 @@ public class PublishedCollectedDatasetVariableResource extends AbstractPublished
   @Path("/summary")
   @Timed
   public org.obiba.opal.web.model.Math.SummaryStatisticsDto getVariableSummary() {
+    checkVariableSummaryAccess();
     return datasetService.getVariableSummary(getDataset(StudyDataset.class, datasetId), variableName).getWrappedDto();
   }
 
@@ -67,6 +68,7 @@ public class PublishedCollectedDatasetVariableResource extends AbstractPublished
   @Path("/facet")
   @Timed
   public Search.QueryResultDto getVariableFacet() {
+    checkVariableSummaryAccess();
     return datasetService.getVariableFacet(getDataset(StudyDataset.class, datasetId), variableName);
   }
 
@@ -74,6 +76,7 @@ public class PublishedCollectedDatasetVariableResource extends AbstractPublished
   @Path("/aggregation")
   @Timed
   public Mica.DatasetVariableAggregationDto getVariableAggregations(@QueryParam("study") @DefaultValue("true") boolean withStudySummary) {
+    checkVariableSummaryAccess();
     StudyDataset dataset = getDataset(StudyDataset.class, datasetId);
     StudyTable studyTable = dataset.getSafeStudyTable();
     Mica.DatasetVariableAggregationDto.Builder aggDto = Mica.DatasetVariableAggregationDto.newBuilder();
@@ -89,8 +92,8 @@ public class PublishedCollectedDatasetVariableResource extends AbstractPublished
   @Path("/contingency")
   @Timed
   public Mica.DatasetVariableContingencyDto getContingency(@QueryParam("by") String crossVariable) {
+    checkVariableSummaryAccess();
     Pair<DatasetVariable, DatasetVariable> variables = getContingencyVariables(crossVariable);
-
     return getContingencyDto(variables.getFirst(), variables.getSecond());
   }
 
@@ -113,6 +116,7 @@ public class PublishedCollectedDatasetVariableResource extends AbstractPublished
   @Produces("text/csv")
   @Timed
   public Response getContingencyCsv(@QueryParam("by") String crossVariable) throws IOException {
+    checkVariableSummaryAccess();
     Pair<DatasetVariable, DatasetVariable> variables = getContingencyVariables(crossVariable);
     ByteArrayOutputStream res = new CsvContingencyWriter(variables.getFirst(), variables.getSecond())
       .write(getContingencyDto(variables.getFirst(), variables.getSecond()));
@@ -126,6 +130,7 @@ public class PublishedCollectedDatasetVariableResource extends AbstractPublished
   @Produces("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
   @Timed
   public Response getContingencyExcel(@QueryParam("by") String crossVariable) throws IOException {
+    checkVariableSummaryAccess();
     Pair<DatasetVariable, DatasetVariable> variables = getContingencyVariables(crossVariable);
     ByteArrayOutputStream res = new ExcelContingencyWriter(variables.getFirst(), variables.getSecond())
       .write(getContingencyDto(variables.getFirst(), variables.getSecond()));

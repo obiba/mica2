@@ -1,5 +1,6 @@
 <!-- ChartJS -->
 <script src="../assets/libs/node_modules/admin-lte/plugins/chart.js/Chart.min.js"></script>
+<#if user?? || !config.variableSummaryRequiresAuthentication>
 <script>
   $(function () {
     micajs.variable.aggregation('${variable.id}', function(data) {
@@ -132,6 +133,7 @@
       if (!data.frequencies && !data.statistics) {
         $('#noSummary').show();
       }
-    });
+  });
   });
 </script>
+</#if>
