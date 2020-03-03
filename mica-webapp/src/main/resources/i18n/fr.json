@@ -385,6 +385,8 @@
     },
     "openAccess": "Accès libre",
     "openAccess-help": "L'accès aux documents publiés est ouvert à tout le monde.",
+    "variableSummaryRequiresAuthentication": "Accès restreint aux statistiques des variables",
+    "variableSummaryRequiresAuthentication-help": "L'utilistaeur doit être identifié afin d'avoir accès aux statistiques de variables (sommaire, table de contingence etc.).",
     "sections": "Sections",
     "single-network-enabled": "Réseau unique activé",
     "single-network-enabled-help": "Un seul réseau est présent dans Mica.",
