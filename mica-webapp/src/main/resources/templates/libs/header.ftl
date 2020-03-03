@@ -2,7 +2,7 @@
   <div class="content-header bg-info mb-4">
     <div class="container">
       <div class="row mb-2">
-        <div class="col-sm-6">
+        <div class="<#if breadcrumb?? && breadcrumb?size != 0>col-sm-6<#else>col-sm-12</#if>">
           <h1 class="m-0">
             <#if titlePrefix?? && titlePrefix?length != 0>
               <span class="text-white-50"><@message titlePrefix/> /</span>
@@ -13,8 +13,8 @@
           </h1>
           <small>${subtitle}</small>
         </div><!-- /.col -->
-        <div class="col-sm-6">
-          <#if breadcrumb?? && breadcrumb?size != 0>
+        <#if breadcrumb?? && breadcrumb?size != 0>
+          <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
               <#list breadcrumb as item>
                 <#if item?size == 2>
@@ -32,8 +32,8 @@
                 </#if>
               </#list>
             </ol>
-          </#if>
-        </div><!-- /.col -->
+          </div><!-- /.col -->
+        </#if>
       </div><!-- /.row -->
     </div><!-- /.container-fluid -->
   </div>
