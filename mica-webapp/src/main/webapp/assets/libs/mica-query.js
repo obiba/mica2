@@ -49,9 +49,13 @@ const QueryTreeOptions  = {containers: Object.values(TARGETS)};
 const EVENTS = {
   QUERY_TYPE_SELECTION: 'query-type-selection',
   QUERY_TYPE_UPDATE: 'query-type-update',
+  QUERY_TYPE_UPDATES_SELECTION: 'query-type-updates-selection',
   QUERY_TYPE_DELETE: 'query-type-delete',
   QUERY_TYPE_PAGINATE: 'query-type-paginate',
 };
+
+const OPERATOR_NODES = ['and','or'];
+const CRITERIA_NODES = ['contains', 'in', 'out', 'eq', 'gt', 'ge', 'lt', 'le', 'between', 'match', 'exists', 'missing'];
 
 /**
  * Base class used to build quries and for CRUD operations
@@ -81,6 +85,17 @@ class EntityQuery {
     return this._sortFields;
   }
 
+  __ensureDestinationTargetQuery(type, tree) {
+    const destTarget = TYPES_TARGETS_MAP[type];
+    let destQuery = tree.search((name) => name === destTarget);
+    if (!destQuery) {
+      destQuery = new RQL.Query(destTarget,[]);
+      tree.addQuery(null, destQuery);
+    }
+
+    return destQuery;
+  }
+
   __ensureLimitFieldsSizeQueries(tree, targetQuery) {
     let limitQuery = tree.search((name, args, parent) => name === 'limit' && this._target === parent.name);
 
@@ -92,7 +107,29 @@ class EntityQuery {
     tree.addQuery(targetQuery, new RQL.Query('sort', this.getSortFields()));
   }
 
-  prepareForSelection(tree) {
+  /**
+   * Searches for a query by searching for the criterion key (<Taxonomy>_<vocabulary>)
+   *
+   * @returns Query
+   * @private
+   */
+  __findQuery(tree, query) {
+    const fnSearch = query.name === 'match'
+      ? (name, args) => args.indexOf(query.args[1]) > -1
+      : (name, args) => args.indexOf(query.args[0]) > -1;
+
+    return tree.search(fnSearch);
+  }
+
+  __getOpOrCriteriaChild(tree, targetQuery) {
+    return targetQuery.args
+      .filter(query =>
+        OPERATOR_NODES.indexOf(query.name) > -1 ||
+        CRITERIA_NODES.indexOf(query.name) > -1
+      ).pop();
+  }
+
+  prepareForSelection(tree, type) {
     let theTree = tree || new RQL.QueryTree(null, QueryTreeOptions);
     let targetQuery = theTree.search((name) => name === this._target);
 
@@ -101,12 +138,12 @@ class EntityQuery {
       theTree.addQuery(null, targetQuery);
     }
 
-    this.__ensureLimitFieldsSizeQueries(theTree, targetQuery);
+    this.__ensureLimitFieldsSizeQueries(theTree, this.__ensureDestinationTargetQuery(type, theTree));
 
     return theTree;
   }
 
-  prepareForUpdate(tree, target, updateQuery) {
+  prepareForUpdate(tree, type, target, updateQuery) {
     let theTree = tree || new RQL.QueryTree(null, QueryTreeOptions);
     let targetQuery = theTree.search((name) => name === target);
 
@@ -115,11 +152,7 @@ class EntityQuery {
       theTree.addQuery(null, targetQuery);
     }
 
-    const fnSearch = updateQuery.name === 'match'
-      ? (name, args) => args.indexOf(updateQuery.args[1]) > -1
-      : (name, args) => args.indexOf(updateQuery.args[0]) > -1;
-
-    let query = theTree.search(fnSearch);
+    let query = this.__findQuery(theTree, updateQuery);
 
     if (!query) {
       theTree.addQuery(targetQuery, updateQuery);
@@ -128,12 +161,62 @@ class EntityQuery {
       query.args = updateQuery.args;
     }
 
-    this.__ensureLimitFieldsSizeQueries(theTree, targetQuery);
+    this.__ensureLimitFieldsSizeQueries(theTree, this.__ensureDestinationTargetQuery(type, theTree));
 
     return theTree;
   }
 
-  prepareForDelete(tree, target, deleteQuery) {
+  /**
+   * Updates several queries and modifies the tree.
+   * TODO merge children of matching operators as to reduce the tree branching
+   *
+   * @param tree
+   * @param type
+   * @param updateInfo - [{target, query, operator}]
+   */
+  prepareForUpdatesAndSelection(tree, type, updateInfo) {
+    let theTree = tree || new RQL.QueryTree(null, QueryTreeOptions);
+
+    (updateInfo || []).forEach(info => {
+      if (info.target && info.query) {
+        const operator = {and: 'and', or: 'or'}[info.operator] || 'and';
+
+        let targetQuery = theTree.search((name) => name === info.target);
+        if (!targetQuery) {
+          // create target and add query as child, done!
+          targetQuery = new RQL.Query(info.target);
+          theTree.addQuery(null, targetQuery);
+          theTree.addQuery(targetQuery, info.query)
+        } else {
+          let theQuery = this.__findQuery(theTree, info.query);
+          if (theQuery) {
+            // query exists, just update
+            theQuery.name = info.query.name;
+            theQuery.args = info.query.args;
+          } else {
+            let opOrCriteriaChild = this.__getOpOrCriteriaChild(theTree, targetQuery);
+            if (opOrCriteriaChild) {
+              // there is a an operator or criteria child, use the proposed operator and modify theTree
+              const operatorQuery = new RQL.Query(operator);
+              theTree.addQuery(targetQuery, operatorQuery);
+              theTree.deleteQuery(opOrCriteriaChild);
+              theTree.addQuery(operatorQuery, opOrCriteriaChild);
+              theTree.addQuery(operatorQuery, info.query);
+            } else {
+              // target has no operator or crtieria child, just add criteria
+              theTree.addQuery(targetQuery, info.query);
+            }
+          }
+        }
+      }
+    });
+
+    this.__ensureLimitFieldsSizeQueries(theTree, this.__ensureDestinationTargetQuery(type, theTree));
+
+    return theTree;
+  }
+
+  prepareForDelete(tree, type, target, deleteQuery) {
     let theTree = tree || new RQL.QueryTree(null, QueryTreeOptions);
     let targetQuery = theTree.search((name) => name === target);
 
@@ -142,29 +225,25 @@ class EntityQuery {
       return;
     }
 
-    const fnSearch = deleteQuery.name === 'match'
-      ? (name, args) => args.indexOf(deleteQuery.args[1]) > -1
-      : (name, args) => args.indexOf(deleteQuery.args[0]) > -1;
-
-    let query = theTree.search(fnSearch);
+    let query = this.__findQuery(theTree, deleteQuery);
 
     if (query) {
       theTree.deleteQuery(query);
     }
 
-    this.__ensureLimitFieldsSizeQueries(theTree, targetQuery);
+    this.__ensureLimitFieldsSizeQueries(theTree, this.__ensureDestinationTargetQuery(type, theTree));
 
     return theTree;
   }
 
-  prepareForPaginate(tree, target, from, size) {
+  prepareForPaginate(tree, type, target, from, size) {
     let limitQuery = tree.search((name, args, parent) => 'limit' === name && target === parent.name);
     if (limitQuery) {
       limitQuery.args[0] = from;
       limitQuery.args[1] = size;
     }
 
-    return this.prepareForSelection(tree);
+    return this.prepareForSelection(tree, type);
   }
 }
 
@@ -290,16 +369,19 @@ class MicaQueryExecutor {
 
         switch (eventId) {
           case EVENTS.QUERY_TYPE_SELECTION:
-            tree = entityQuery.prepareForSelection(tree);
+            tree = entityQuery.prepareForSelection(tree, type);
             break;
           case EVENTS.QUERY_TYPE_UPDATE:
-            tree = entityQuery.prepareForUpdate(tree, payload.target, payload.query);
+            tree = entityQuery.prepareForUpdate(tree, type, payload.target, payload.query);
+            break;
+          case EVENTS.QUERY_TYPE_UPDATES_SELECTION:
+            tree = entityQuery.prepareForUpdatesAndSelection(tree, type, payload.updates);
             break;
           case EVENTS.QUERY_TYPE_DELETE:
-            tree = entityQuery.prepareForDelete(tree, payload.target, payload.query);
+            tree = entityQuery.prepareForDelete(tree, type, payload.target, payload.query);
             break;
           case EVENTS.QUERY_TYPE_PAGINATE:
-            tree = entityQuery.prepareForPaginate(tree, payload.target, payload.from, payload.size);
+            tree = entityQuery.prepareForPaginate(tree, type, payload.target, payload.from, payload.size);
             break;
         }
         this.__executeQuery(tree, type, display, payload.noUrlUpdate);
@@ -390,6 +472,11 @@ class MicaQueryExecutor {
     this.__prepareAndExecuteQuery(EVENTS.QUERY_TYPE_UPDATE, payload);
   }
 
+  __onQueryTypeUpdatesSelection(payload) {
+    console.log(`__onQueryTypeUpdatesSelection ${payload}`);
+    this.__prepareAndExecuteQuery(EVENTS.QUERY_TYPE_UPDATES_SELECTION, payload);
+  }
+
   __onQueryTypeDelete(payload) {
     console.log(`__onQueryTypeSelection ${payload}`);
     this.__prepareAndExecuteQuery(EVENTS.QUERY_TYPE_DELETE, payload);
@@ -401,19 +488,20 @@ class MicaQueryExecutor {
   }
 
   init() {
-    this._eventBus.register('query-type-selection', this.__onQueryTypeSelection.bind(this));
-    this._eventBus.register('query-type-update', this.__onQueryTypeUpdate.bind(this));
-    this._eventBus.register('query-type-delete', this.__onQueryTypeDelete.bind(this));
-    this._eventBus.register('query-type-paginate', this.__onQueryTypePaginate.bind(this));
+    this._eventBus.register(EVENTS.QUERY_TYPE_SELECTION, this.__onQueryTypeSelection.bind(this));
+    this._eventBus.register(EVENTS.QUERY_TYPE_UPDATE, this.__onQueryTypeUpdate.bind(this));
+    this._eventBus.register(EVENTS.QUERY_TYPE_UPDATES_SELECTION, this.__onQueryTypeUpdatesSelection.bind(this));
+    this._eventBus.register(EVENTS.QUERY_TYPE_DELETE, this.__onQueryTypeDelete.bind(this));
+    this._eventBus.register(EVENTS.QUERY_TYPE_PAGINATE, this.__onQueryTypePaginate.bind(this));
     window.addEventListener('hashchange', this.__onHashChanged.bind(this));
     window.addEventListener('beforeunload', this.__onBeforeUnload.bind(this));
   }
 
   destroy() {
-    this._eventBus.unregister('query-type-selection', this.__onQueryTypeSelection);
-    this._eventBus.unregister('query-type-update', this.__onQueryTypeUpdate);
-    this._eventBus.unregister('query-type-delete', this.__onQueryTypeDelete);
-    this._eventBus.unregister('query-type-paginate', this.__onQueryTypePaginate);
+    this._eventBus.unregister(EVENTS.QUERY_TYPE_SELECTION, this.__onQueryTypeSelection);
+    this._eventBus.unregister(EVENTS.QUERY_TYPE_UPDATE, this.__onQueryTypeUpdate);
+    this._eventBus.unregister(EVENTS.QUERY_TYPE_DELETE, this.__onQueryTypeDelete);
+    this._eventBus.unregister(EVENTS.QUERY_TYPE_DELETE, this.__onQueryTypePaginate);
   }
 }
 
