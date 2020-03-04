@@ -6,13 +6,10 @@
     micajs.variable.aggregation('${variable.id}', function(data) {
       $('#loadingSummary').hide();
 
-      if (data.n) {
-        $('#n').html(data.total);
-        $('#n-values').html(data.n);
-        $('#n-missings').html(data.total - data.n);
-
-        $('#counts').show();
-      }
+      $('#n').html(data.total);
+      $('#n-values').html(data.n);
+      $('#n-missings').html(data.total - data.n);
+      $('#counts').show();
 
       if (data.frequencies) {
         const labels = [];
@@ -29,7 +26,7 @@
             dataset.data.push(frequency.count);
           }
 
-          const pct = (frequency.count / data.n) * 100;
+          const pct = data.n === 0 ? 0 : (frequency.count / data.n) * 100;
           frequencyRows = frequencyRows + '<tr>' +
                   '<td>' + frequency.value + '</td>' +
                   '<td>' + frequency.count + '</td>' +

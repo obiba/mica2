@@ -44,6 +44,8 @@ public class HarmonizationAnnotations {
   }
 
   public String getStatusClass() {
+    if (!hasStatus()) return "info";
+
     switch (getStatusValue()) {
       case "complete":
         return "success";
