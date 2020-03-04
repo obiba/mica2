@@ -71,3 +71,14 @@
     <span class="text-muted"><@message "no-variable-summary"/></span>
   </div>
 </#macro>
+
+<!-- From an attribute get the value in the current language or in the undefined one -->
+<#macro attributeLocaleValue attribute>
+  <#if attribute??>
+    <#if attribute[.lang]??>
+      ${attribute[.lang]}
+    <#elseif attribute["und"]??>
+      ${attribute["und"]}
+    </#if>
+  </#if>
+</#macro>
