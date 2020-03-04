@@ -9,6 +9,12 @@ import org.obiba.mica.dataset.service.HarmonizedDatasetService;
 import org.obiba.mica.micaConfig.service.TaxonomyService;
 import org.obiba.mica.spi.search.Indexer;
 import org.obiba.mica.spi.search.Searcher;
+import org.obiba.mica.study.NoSuchStudyException;
+import org.obiba.mica.study.domain.BaseStudy;
+import org.obiba.mica.study.domain.DataCollectionEvent;
+import org.obiba.mica.study.domain.Population;
+import org.obiba.mica.study.domain.Study;
+import org.obiba.mica.study.service.PublishedStudyService;
 import org.obiba.mica.web.controller.domain.Annotation;
 import org.obiba.mica.web.controller.domain.HarmonizationAnnotations;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
@@ -41,6 +47,9 @@ public class VariableController extends BaseController {
   private HarmonizedDatasetService harmonizedDatasetService;
 
   @Inject
+  private PublishedStudyService publishedStudyService;
+
+  @Inject
   private Searcher searcher;
 
   @Inject
@@ -49,7 +58,7 @@ public class VariableController extends BaseController {
   @Inject
   private TaxonomyService taxonomyService;
 
-  @GetMapping("/variable/{id}")
+  @GetMapping("/variable/{id:.+}")
   public ModelAndView variable(@PathVariable String id) {
     Map<String, Object> params = newParameters();
 
@@ -71,9 +80,7 @@ public class VariableController extends BaseController {
     params.put("variable", variable);
     params.put("type", resolver.getType().toString());
 
-    if (variable.hasAttribute("label", null)) {
-      params.put("label", variable.getAttributes().getAttribute("label", null).getValues());
-    }
+    addStudyTableParameters(params, variable);
 
     Map<String, Taxonomy> taxonomies = taxonomyService.getVariableTaxonomies().stream()
       .collect(Collectors.toMap(TaxonomyEntity::getName, e -> e));
@@ -92,8 +99,18 @@ public class VariableController extends BaseController {
       .filter(annot -> !annot.getTaxonomyName().equals("Mlstr_harmo"))
       .collect(Collectors.toList());
 
+    StringBuilder query = new StringBuilder();
+    for (Annotation annot : annotations) {
+      String expr = "in(" + annot.getTaxonomyName() + "." + annot.getVocabularyName() + "," + annot.getTermName() + ")";
+      if (query.length() == 0)
+        query = new StringBuilder(expr);
+      else
+        query = new StringBuilder("and(" + query + "," + expr + ")");
+    };
+
     params.put("annotations", annotations);
     params.put("harmoAnnotations", new HarmonizationAnnotations(harmoAnnotations));
+    params.put("query", "variable(" + query.toString() + ")");
 
     return new ModelAndView("variable", params);
   }
@@ -138,6 +155,27 @@ public class VariableController extends BaseController {
     });
 
     return harmonizedDatasetVariable;
+  }
+
+  private void addStudyTableParameters(Map<String, Object> params, DatasetVariable variable) {
+    try {
+      BaseStudy study = getStudy(variable.getStudyId());
+      params.put("study", study);
+      Population population = study.findPopulation(variable.getPopulationId().replace(variable.getStudyId() + ":", ""));
+      params.put("population", population);
+      DataCollectionEvent dce = population.findDataCollectionEvent(variable.getDceId().replace(variable.getPopulationId() + ":", ""));
+      params.put("dce", dce);
+    } catch (Exception e) {
+      // ignore
+      log.warn("Failed at retrieving collected dataset's study/population/dce", e);
+    }
+  }
+
+  private BaseStudy getStudy(String id) {
+    BaseStudy study = publishedStudyService.findById(id);
+    if (study == null) throw NoSuchStudyException.withId(id);
+    checkAccess((study instanceof Study) ? "/individual-study" : "/harmonization-study", id);
+    return study;
   }
 
 }
