@@ -9,7 +9,7 @@ const EventBus = new Vue({
   methods: {
     register: function(eventName, callback) {
       if (!this.callbacks[eventName]) {
-        this.callbacks[eventName] = []
+        this.callbacks[eventName] = [];
         this.$on(eventName, function(payload) {
           for (let callback of this.callbacks[eventName]) {
             callback(payload)
@@ -42,7 +42,7 @@ const DataTableDefaults = {
 // Taxonomy sidebar menu
 Vue.component('taxonomy-menu', {
   props: ['taxonomy'],
-  template: '<li class="nav-item"><a href="#" class="nav-link" :title="taxonomy.description[0].text" @click.prevent="$emit(\'taxonomy-selection\', taxonomy.name)"><i class="far fa-circle nav-icon"></i><p>{{ taxonomy.title[0].text }}</p></a></li>'
+  template: '<li class="nav-item"><a href="#" class="nav-link" data-toggle="modal" data-target="#taxonomy-modal" :title="taxonomy.description[0].text" @click.prevent="$emit(\'taxonomy-selection\', taxonomy.name)"><i class="far fa-circle nav-icon"></i><p>{{ taxonomy.title[0].text }}</p></a></li>'
 });
 
 new Vue({
@@ -166,6 +166,7 @@ new Vue({
     return {
       taxonomies: {},
       message: '',
+      selectedTaxonomy: null,
       queryType: 'variables-list',
       lastList: '',
       queryExecutor: new MicaQueryExecutor(EventBus, DataTableDefaults.pageLength)
@@ -177,6 +178,7 @@ new Vue({
     onTaxonomySelection: function(payload) {
       this.message = '[' + payload + '] ' + this.taxonomies[payload].title[0].text + ': ';
       this.message = this.message + this.taxonomies[payload].vocabularies.map(voc => voc.title[0].text).join(', ');
+      this.selectedTaxonomy = this.taxonomies[payload];
     },
     // set the type of query to be executed, on result component selection
     onQueryTypeSelection: function(payload) {
