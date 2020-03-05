@@ -113,16 +113,12 @@
                       <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
                     </div>
                     <div class="modal-body">
-                      <rql-panel v-bind:taxonomy="selectedTaxonomy" v-bind:query="query"></rql-panel>
+                      <rql-panel v-bind:taxonomy="selectedTaxonomy"></rql-panel>
                     </div>
                   </div>
                 </div>
               </div>
               <!-- /.modal -->
-
-            <div v-for="query in queries" :key="query.name">
-              <rql-query-builder :query="query" taxonomy="taxonomies['Mica_' + query.name]"></rql-query-builder>
-            </div>
             <button class="btn btn-success" @click.prevent="onExecuteQuery()"><i class="fas fa-sync"></i> Refresh</button> <span class="badge badge-danger">{{ queryType }}</span>
           </div>
         </div>
