@@ -167,18 +167,39 @@ new Vue({
       taxonomies: {},
       message: '',
       selectedTaxonomy: null,
+      queryForSelectedTaxonomy: null,
       queryType: 'variables-list',
       lastList: '',
       queryExecutor: new MicaQueryExecutor(EventBus, DataTableDefaults.pageLength)
     };
   },
+  computed: {
+    queries() {
+      const result = {};
+      for (const target in TARGETS) {
+        result[target] = this.queryExecutor.getTree().search((name) => {return name === target});
+      }
+
+      return result;
+    }
+  },
   methods: {
+    getTaxonomyForTarget(target) {
+      this.taxonomies.filter(taxonomy => {
+        if (target === TARGETS.VARIABLE) {
+          return taxonomy.name === 'Mica_' + target || taxonomy.indexOf('Mica_') === -1;
+        } else {
+          return taxonomy.name === 'Mica_' + target;
+        }
+      })
+    },
     // show a modal with all the vocabularies/terms of the selected taxonomy
     // initialized by the query terms and update/trigger the query on close
     onTaxonomySelection: function(payload) {
       this.message = '[' + payload + '] ' + this.taxonomies[payload].title[0].text + ': ';
       this.message = this.message + this.taxonomies[payload].vocabularies.map(voc => voc.title[0].text).join(', ');
       this.selectedTaxonomy = this.taxonomies[payload];
+      this.queryForSelectedTaxonomy = payload.indexOf('Mica_') === -1 ? this.queries[TARGETS.VARIABLE] : this.queries[payload.split('Mica_')[1]];
     },
     // set the type of query to be executed, on result component selection
     onQueryTypeSelection: function(payload) {
