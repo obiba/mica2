@@ -365,7 +365,7 @@ class MicaQueryExecutor {
       case TYPES.NETWORKS:
         const entityQuery = this._query[type];
         const display = this.__ensureValidDisplay(urlParts.hash, payload.display);
-        let tree = this.__getQueryTreeFromUrl(urlParts.searchParams);
+        let tree = this.getTree(urlParts);
 
         switch (eventId) {
           case EVENTS.QUERY_TYPE_SELECTION:
@@ -392,6 +392,11 @@ class MicaQueryExecutor {
       default:
         break;
     }
+  }
+
+  getTree(parts) {
+    const urlParts = parts || this.__parseUrl();
+    return this.__getQueryTreeFromUrl(urlParts.searchParams);
   }
 
   /**
