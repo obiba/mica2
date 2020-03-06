@@ -31,7 +31,7 @@ const DataTableDefaults = {
   lengthMenu: [10, 20, 50, 100],
   pageLength: 20,
   // Paginatiom on top (the bottom one still remains)
-  dom: "<'row'<'col-sm-3'l><'col-sm-3'f><'col-sm-6'p>><'row'<'col-sm-12'tr>><'row'<'col-sm-5'i><'col-sm-7'p>>" // pager top
+  dom: "<'right'i><'row'<'col-sm-3'l><'col-sm-3'f><'col-sm-6'p>><'row'<'col-sm-12'tr>><'row'<'col-sm-5'i><'col-sm-7'p>>", // pager top
 };
 
 //
