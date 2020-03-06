@@ -99,27 +99,24 @@
         </div>
         <div class="card-body">
           <div id="query-builder">
-            <div class="alert alert-info" v-if="message != ''">
-              <i class="icon fas fa-info"></i>
-              {{ message }}
-            </div>
 
-            <div id="search-criteria">
-              <div class="modal fade" id="taxonomy-modal">
-                <div class="modal-dialog modal-xl" role="document">
-                  <div class="modal-content">
-                    <div class="modal-header">
-                      <h5 class="modal-title">{{ selectedTaxonomy ? selectedTaxonomy.title[0].text : "" }}</h5>
-                      <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
-                    </div>
-                    <div class="modal-body">
-                      <rql-panel v-bind:taxonomy="selectedTaxonomy"></rql-panel>
-                    </div>
+            <div class="modal fade" id="taxonomy-modal">
+              <div class="modal-dialog modal-xl" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title">{{ selectedTaxonomy ? selectedTaxonomy.title[0].text : "" }}</h5>
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
+                  </div>
+                  <div class="modal-body">
+                    <rql-panel v-bind:taxonomy="selectedTaxonomy" v-bind:query="queryForSelectedTaxonomy"></rql-panel>
                   </div>
                 </div>
               </div>
               <!-- /.modal -->
-            <button class="btn btn-success" @click.prevent="onExecuteQuery()"><i class="fas fa-sync"></i> Refresh</button> <span class="badge badge-danger">{{ queryType }}</span>
+            <button class="btn btn-success" @click.prevent="onExecuteQuery()"><i class="fas fa-sync"></i> Refresh</button>
+            <span class="badge badge-danger">{{ queryType }}</span>
+
+            <rql-query-builder v-for="(query, target) in queries" v-bind:target="target" v-bind:taxonomy="getTaxonomyForTarget(target)" v-bind:query="query"></rql-query-builder>
           </div>
         </div>
         <!-- /.card-body -->
