@@ -185,13 +185,18 @@ new Vue({
   },
   methods: {
     getTaxonomyForTarget(target) {
-      this.taxonomies.filter(taxonomy => {
+      let result = [];
+      
+      for (const taxonomy in this.taxonomies) {
         if (target === TARGETS.VARIABLE) {
-          return taxonomy.name === 'Mica_' + target || taxonomy.indexOf('Mica_') === -1;
+          if (taxonomy.name === 'Mica_' + target || taxonomy.name.indexOf('Mica_') === -1) result.push(taxonomy);
         } else {
-          return taxonomy.name === 'Mica_' + target;
+          if (taxonomy.name === 'Mica_' + target) result.push(taxonomy);
         }
-      })
+      }
+
+      if (result.length > 1) return result;
+      return result[0];
     },
     // show a modal with all the vocabularies/terms of the selected taxonomy
     // initialized by the query terms and update/trigger the query on close
