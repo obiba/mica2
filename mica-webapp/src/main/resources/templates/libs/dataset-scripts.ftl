@@ -16,7 +16,7 @@
             const descriptionLocale = localizedString(description);
             const acronym = localizedString(studySummary.acronym);
             const descriptionTag = descriptionLocale.length === 0 ? '' : '<i class="fas fa-info-circle" title="' + descriptionLocale + '"></i>'
-            theadTr.append('<th><small><a href="../study/' + studySummary.id + '">'  + acronym + '</a> ' + nameLocale + ' ' + descriptionTag + '</small></th>');
+            theadTr.append('<th><a href="../study/' + studySummary.id + '">'  + acronym + '</a> ' + nameLocale + ' ' + descriptionTag + '</th>');
           };
 
           if (data.studyTable) {
@@ -36,19 +36,18 @@
             $('#harmonizedTable > tbody').append($('<tr />'));
             const variableHarmonization = data.variableHarmonizations[i];
             const name = variableHarmonization.dataschemaVariableRef.name;
-            $('#harmonizedTable > tbody > tr:last-child').append('<td><small><a href="../variable/${dataset.id}:' + name + ':Dataschema">' + name + '</a></small></td>');
+            const lastTr = $('#harmonizedTable > tbody > tr:last-child');
+            lastTr.append('<td><a href="../variable/${dataset.id}:' + name + ':Dataschema">' + name + '</a></td>');
             for (const j in variableHarmonization.harmonizedVariables) {
               const harmonizedVariable = variableHarmonization.harmonizedVariables[j];
-              let iconClass = 'fas fa-minus text-muted';
-              if (harmonizedVariable.status === 'complete') {
-                iconClass = 'fas fa-check text-success';
-              } else if (harmonizedVariable.status === 'impossible') {
-                iconClass = 'fas fa-times text-danger';
-              } else if (harmonizedVariable.status === 'undetermined') {
-                iconClass = 'fas fa-question text-warning';
+              let iconClass = micajs.harmo.statusClass(harmonizedVariable.status);
+              if (!harmonizedVariable.status || harmonizedVariable.status.length === 0) {
+                lastTr.append('<td><i class="' + iconClass + '"></i></td>');
+              } else {
+                const url = harmonizedVariable.harmonizedVariableRef ? '../variable/' + harmonizedVariable.harmonizedVariableRef.id : '#';
+                lastTr.append('<td><a href="' + url + '"><i class="' + iconClass + '"></i></a></td>');
               }
-              const url = harmonizedVariable.harmonizedVariableRef ? '../variable/' + harmonizedVariable.harmonizedVariableRef.id : '#';
-              $('#harmonizedTable > tbody > tr:last-child').append('<td><small><a href="' + url + '"><i class="' + iconClass + '"></i></a></small></td>');
+
             }
           }
 
