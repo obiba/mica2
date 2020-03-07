@@ -318,6 +318,18 @@ public class DatasetVariable implements Indexable, AttributeAware {
     return index;
   }
 
+  public String getProject() {
+    return project;
+  }
+
+  public String getTable() {
+    return table;
+  }
+
+  public OpalTableType getOpalTableType() {
+    return opalTableType;
+  }
+
   @Override
   public String getClassName() {
     return getClass().getSimpleName();

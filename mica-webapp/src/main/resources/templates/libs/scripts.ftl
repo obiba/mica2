@@ -24,7 +24,8 @@
 
 <!-- Global js variables -->
 <script>
-    var dataTablesDefaultOpts = {
+    <!-- DataTable options -->
+    const dataTablesDefaultOpts = {
         "paging": true,
         "lengthChange": true,
         "searching": true,
@@ -35,7 +36,7 @@
             "url": "${pathPrefix!".."}/assets/i18n/datatables.${.lang}.json"
         }
     };
-    var dataTablesSortSearchOpts = {
+    const dataTablesSortSearchOpts = {
         "paging": false,
         "lengthChange": false,
         "searching": true,
@@ -46,7 +47,7 @@
             "url": "${pathPrefix!".."}/assets/i18n/datatables.${.lang}.json"
         }
     };
-    var dataTablesSortOpts = {
+    const dataTablesSortOpts = {
         "paging": false,
         "lengthChange": false,
         "searching": false,
@@ -57,7 +58,7 @@
             "url": "${pathPrefix!".."}/assets/i18n/datatables.${.lang}.json"
         }
     };
-    var dataTablesNoSortSearchOpts = {
+    const dataTablesNoSortSearchOpts = {
         "paging": true,
         "lengthChange": false,
         "searching": true,
@@ -67,6 +68,22 @@
         "language": {
             "url": "${pathPrefix!".."}/assets/i18n/datatables.${.lang}.json"
         }
+    };
+    <!-- Dto utility functions -->
+    const localizedString = function(localizedObj) {
+      if (localizedObj) {
+        for (const obj of localizedObj) {
+          if (obj.lang === '${.lang}') {
+            return obj.value;
+          }
+        }
+        for (const obj of localizedObj) {
+          if (obj.lang === 'und') {
+            return obj.value;
+          }
+        }
+      }
+      return '';
     };
 </script>
 
