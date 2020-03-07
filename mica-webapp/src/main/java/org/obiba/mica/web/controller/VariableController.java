@@ -2,8 +2,11 @@ package org.obiba.mica.web.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.obiba.magma.NoSuchVariableException;
+import org.obiba.mica.core.domain.HarmonizationStudyTable;
+import org.obiba.mica.core.domain.StudyTable;
 import org.obiba.mica.dataset.NoSuchDatasetException;
 import org.obiba.mica.dataset.domain.DatasetVariable;
+import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.service.CollectedDatasetService;
 import org.obiba.mica.dataset.service.HarmonizedDatasetService;
 import org.obiba.mica.micaConfig.service.TaxonomyService;
@@ -33,6 +36,7 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Controller
@@ -106,7 +110,7 @@ public class VariableController extends BaseController {
         query = new StringBuilder(expr);
       else
         query = new StringBuilder("and(" + query + "," + expr + ")");
-    };
+    }
 
     params.put("annotations", annotations);
     params.put("harmoAnnotations", new HarmonizationAnnotations(harmoAnnotations));
@@ -165,6 +169,22 @@ public class VariableController extends BaseController {
       params.put("population", population);
       DataCollectionEvent dce = population.findDataCollectionEvent(variable.getDceId().replace(variable.getPopulationId() + ":", ""));
       params.put("dce", dce);
+      if (DatasetVariable.Type.Harmonized.equals(variable.getVariableType())) {
+        HarmonizationDataset dataset = getHarmonizationDataset(variable.getDatasetId());
+        if (DatasetVariable.OpalTableType.Study.equals(variable.getOpalTableType())) {
+          Optional<StudyTable> studyTable = dataset.getStudyTables().stream().filter(st ->
+            variable.getStudyId().equals(st.getStudyId()) && variable.getProject().equals(st.getProject()) && variable.getTable().equals(st.getTable()))
+            .findFirst();
+          if (studyTable.isPresent())
+            params.put("opalTable", studyTable.get());
+        } else {
+          Optional<HarmonizationStudyTable> harmoStudyTable = dataset.getHarmonizationTables().stream().filter(st ->
+            variable.getStudyId().equals(st.getStudyId()) && variable.getProject().equals(st.getProject()) && variable.getTable().equals(st.getTable()))
+            .findFirst();
+          if (harmoStudyTable.isPresent())
+            params.put("opalTable", harmoStudyTable.get());
+        }
+      }
     } catch (Exception e) {
       // ignore
       log.warn("Failed at retrieving collected dataset's study/population/dce", e);
@@ -176,6 +196,10 @@ public class VariableController extends BaseController {
     if (study == null) throw NoSuchStudyException.withId(id);
     checkAccess((study instanceof Study) ? "/individual-study" : "/harmonization-study", id);
     return study;
+  }
+
+  private HarmonizationDataset getHarmonizationDataset(String id) {
+    return harmonizedDatasetService.findById(id);
   }
 
 }
