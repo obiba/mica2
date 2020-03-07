@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="${.lang}" xmlns:v-bind="http://www.w3.org/1999/xhtml">
 <head>
-  <title>${config.name!""} | Search</title>
   <#include "libs/head.ftl">
+  <title>${config.name!""} | <@message "search"/></title>
 </head>
 <body class="hold-transition sidebar-mini">
 <!-- Site wrapper -->
@@ -28,7 +28,7 @@
       <!-- Sidebar user (optional) -->
       <div class="user-panel mt-3 pb-3 mb-3 d-flex">
         <div class="info">
-          <a href="#" class="d-block">Search Criteria</a>
+          <a href="#" class="d-block"><@message "search-criteria"/></a>
         </div>
       </div>
 
@@ -74,7 +74,7 @@
       <div class="container-fluid">
         <div class="row">
           <div class="col-sm-6">
-            <h1>Search</h1>
+            <h1><@message "search"/></h1>
           </div>
           <div class="col-sm-6">
 
@@ -112,8 +112,10 @@
                   </div>
                 </div>
               </div>
-              <!-- /.modal -->
-            <button class="btn btn-success" @click.prevent="onExecuteQuery()"><i class="fas fa-sync"></i> Refresh</button>
+            </div>
+            <!-- /.modal -->
+
+            <button class="btn btn-success" @click.prevent="onExecuteQuery()"><i class="fas fa-sync"></i> <@message "refresh"/></button>
             <span class="badge badge-danger">{{ queryType }}</span>
 
             <rql-query-builder v-for="(query, target) in queries" v-bind:target="target" v-bind:taxonomy="getTaxonomyForTarget(target)" v-bind:query="query"></rql-query-builder>
@@ -129,100 +131,115 @@
           <!-- Custom Tabs -->
           <div class="card">
             <div class="card-header d-flex p-0">
-              <h3 class="card-title p-3">Results</h3>
+              <h3 class="card-title p-3"><@message "results"/></h3>
               <ul class="nav nav-pills ml-auto p-2">
-                <li class="nav-item"><a id="lists-tab" class="nav-link active" href="#tab_lists" data-toggle="tab">Lists</a></li>
-                <li class="nav-item"><a id="coverage-tab" class="nav-link" href="#tab_coverage" data-toggle="tab">Coverage</a></li>
-                <li class="nav-item"><a id="graphics-tab" class="nav-link" href="#tab_graphics" data-toggle="tab">Graphics</a></li>
+                <li class="nav-item"><a id="lists-tab" class="nav-link active" href="#tab_lists" data-toggle="tab"><@message "lists"/></a></li>
+                <#if config.studyDatasetEnabled || config.harmonizationDatasetEnabled>
+                  <li class="nav-item"><a id="coverage-tab" class="nav-link" href="#tab_coverage" data-toggle="tab"><@message "coverage"/></a></li>
+                </#if>
+                <#if config.networkEnabled && !config.singleStudyEnabled>
+                  <li class="nav-item"><a id="graphics-tab" class="nav-link" href="#tab_graphics" data-toggle="tab"><@message "graphics"/></a></li>
+                </#if>
               </ul>
             </div><!-- /.card-header -->
             <div class="card-body">
               <div class="tab-content">
                 <div class="tab-pane active" id="tab_lists">
                   <p class="text-muted">
-                    A wonderful serenity has taken possession of my entire soul,
-                    like these sweet mornings of spring which I enjoy with my whole heart.
-                    I am alone, and feel the charm of existence in this spot,
-                    which was created for the bliss of souls like mine.
+                    <@message "results-lists-text"/>
                   </p>
 
                   <div class="mt-3">
                     <ul class="nav nav-pills" id="results-tab" role="tablist">
-                      <li class="nav-item">
-                        <a class="nav-link active" id="variables-tab" data-toggle="pill" href="#variables" role="tab"
-                           aria-controls="variables" aria-selected="true"><@message "variables"/></a>
-                      </li>
-                      <li class="nav-item">
-                        <a class="nav-link" id="datasets-tab" data-toggle="pill" href="#datasets" role="tab"
-                           aria-controls="datasets" aria-selected="false"><@message "datasets"/></a>
-                      </li>
-                      <li class="nav-item">
-                        <a class="nav-link" id="studies-tab" data-toggle="pill" href="#studies" role="tab"
-                           aria-controls="studies" aria-selected="false"><@message "studies"/></a>
-                      </li>
-                      <li class="nav-item">
-                        <a class="nav-link" id="networks-tab" data-toggle="pill" href="#networks" role="tab"
-                           aria-controls="networks" aria-selected="false"><@message "networks"/></a>
-                      </li>
+                      <#if config.studyDatasetEnabled || config.harmonizationDatasetEnabled>
+                        <li class="nav-item">
+                          <a class="nav-link active" id="variables-tab" data-toggle="pill" href="#variables" role="tab"
+                             aria-controls="variables" aria-selected="true"><@message "variables"/></a>
+                        </li>
+                        <li class="nav-item">
+                          <a class="nav-link" id="datasets-tab" data-toggle="pill" href="#datasets" role="tab"
+                             aria-controls="datasets" aria-selected="false"><@message "datasets"/></a>
+                        </li>
+                      </#if>
+                      <#if !config.singleStudyEnabled>
+                        <li class="nav-item">
+                          <a class="nav-link" id="studies-tab" data-toggle="pill" href="#studies" role="tab"
+                             aria-controls="studies" aria-selected="false"><@message "studies"/></a>
+                        </li>
+                      </#if>
+                      <#if config.networkEnabled && !config.singleNetworkEnabled>
+                        <li class="nav-item">
+                          <a class="nav-link" id="networks-tab" data-toggle="pill" href="#networks" role="tab"
+                             aria-controls="networks" aria-selected="false"><@message "networks"/></a>
+                        </li>
+                      </#if>
                     </ul>
                   </div>
 
                   <div class="mt-3">
                     <div class="tab-content" id="results-tabContent">
-                      <div class="tab-pane fade show active" id="variables" role="tabpanel"
-                           aria-labelledby="variables-tab">
-                        List of variables
-                        <div id="list-variables">
-                          {{ result }}
-			                    <variables-result></variables-result>
+                      <#if config.studyDatasetEnabled || config.harmonizationDatasetEnabled>
+                        <div class="tab-pane fade show active" id="variables" role="tabpanel"
+                             aria-labelledby="variables-tab">
+                          <p class="text-muted"><@message "results-list-of-variables-text"/></p>
+                          <div id="list-variables">
+                            {{ result }}
+                            <variables-result></variables-result>
+                          </div>
                         </div>
-                      </div>
-                      <div class="tab-pane fade" id="datasets" role="tabpanel" aria-labelledby="datasets-tab">
-                        List of datasets
-                        <div id="list-datasets">
-                          {{ result }}
-                          <datasets-result></datasets-result>
+                        <div class="tab-pane fade" id="datasets" role="tabpanel" aria-labelledby="datasets-tab">
+                          <p class="text-muted"><@message "results-list-of-datasets-text"/></p>
+                          <div id="list-datasets">
+                            {{ result }}
+                            <datasets-result></datasets-result>
+                          </div>
                         </div>
-                      </div>
-                      <div class="tab-pane fade" id="studies" role="tabpanel" aria-labelledby="studies-tab">
-                        List of studies
-                        <div id="list-studies">
-                          {{ result }}
-                          <studies-result></studies-result>
+                      </#if>
+                      <#if !config.singleStudyEnabled>
+                        <div class="tab-pane fade" id="studies" role="tabpanel" aria-labelledby="studies-tab">
+                          <p class="text-muted"><@message "results-list-of-studies-text"/></p>
+                          <div id="list-studies">
+                            {{ result }}
+                            <studies-result></studies-result>
+                          </div>
                         </div>
-                      </div>
-                      <div class="tab-pane fade" id="networks" role="tabpanel" aria-labelledby="networks-tab">
-                        List of networks
-                        <div id="list-networks">
-                          {{ result }}
-                          <networks-result></networks-result>
+                      </#if>
+                      <#if config.networkEnabled && !config.singleNetworkEnabled>
+                        <div class="tab-pane fade" id="networks" role="tabpanel" aria-labelledby="networks-tab">
+                          <p class="text-muted"><@message "results-list-of-networks-text"/></p>
+                          <div id="list-networks">
+                            {{ result }}
+                            <networks-result></networks-result>
+                          </div>
                         </div>
-                      </div>
+                      </#if>
                     </div>
                   </div>
                 </div>
                 <!-- /.tab-pane -->
-                <div class="tab-pane" id="tab_coverage">
-                  <p class="text-muted">
-                    The European languages are members of the same family. Their separate existence is a myth.
-                    For science, music, sport, etc, Europe uses the same vocabulary. The languages only differ
-                    in their grammar, their pronunciation and their most common words.
-                  </p>
-                  <div id="coverage">
-                    {{ result }}
+
+                <#if config.studyDatasetEnabled || config.harmonizationDatasetEnabled>
+                  <div class="tab-pane" id="tab_coverage">
+                    <p class="text-muted">
+                      <@message "results-coverage-text"/>
+                    </p>
+                    <div id="coverage">
+                      {{ result }}
+                    </div>
                   </div>
-                </div>
+                </#if>
                 <!-- /.tab-pane -->
-                <div class="tab-pane" id="tab_graphics">
-                  <p class="text-muted">
-                    Lorem Ipsum is simply dummy text of the printing and typesetting industry.
-                    Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,
-                    when an unknown printer took a galley of type and scrambled it to make a type specimen book.
-                  </p>
-                  <div id="graphics">
-                    {{ result }}
+
+                <#if config.networkEnabled && !config.singleStudyEnabled>
+                  <div class="tab-pane" id="tab_graphics">
+                    <p class="text-muted">
+                      <@message "results-graphics-text"/>
+                    </p>
+                    <div id="graphics">
+                      {{ result }}
+                    </div>
                   </div>
-                </div>
+                </#if>
                 <!-- /.tab-pane -->
               </div>
               <!-- /.tab-content -->
