@@ -100,7 +100,7 @@
               <directory>src/main/webapp/bower_components</directory>
             </fileset>
             <fileset>
-              <directory>node_modules</directory>
+              <directory>src/main/webapp/js/libs/node_modules</directory>
             </fileset>
           </filesets>
         </configuration>
