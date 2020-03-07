@@ -16,8 +16,7 @@ var micajs = (function() {
       dataType : 'json',
     })
       .done(function(json) {
-        console.log('The request has succeeded');
-        console.log(json);
+        //console.log(json);
         if (onSuccess) {
           onSuccess(json);
         }
@@ -53,7 +52,7 @@ var micajs = (function() {
 
       axios.post(url, data)
         .then(response => {
-          console.dir(response);
+          //console.dir(response);
           let redirect = '/';
           const q = new URLSearchParams(window.location.search);
           if (q.get('redirect')) {
@@ -115,7 +114,7 @@ var micajs = (function() {
 
       axios.post(url, data)
         .then(response => {
-          console.dir(response);
+          //console.dir(response);
           let redirect = '/';
           let values = {};
           const q = new URLSearchParams(window.location.search);
@@ -168,7 +167,7 @@ var micajs = (function() {
 
       axios.post(url, data)
         .then(response => {
-          console.dir(response);
+          //console.dir(response);
           $.redirect('/', {}, 'GET');
         })
         .catch(handle => {
@@ -223,7 +222,7 @@ var micajs = (function() {
     }
     axios.post(url)
       .then(response => {
-        console.dir(response);
+        //console.dir(response);
         if (response.status === 201) {
           const tokens = response.headers.location.split('/');
           const createdId = tokens[tokens.length - 1];
@@ -249,7 +248,7 @@ var micajs = (function() {
     }
     axios.delete(url)
       .then(response => {
-        console.dir(response);
+        //console.dir(response);
         micaRedirect(redirect);
       })
       .catch(response => {
@@ -285,7 +284,7 @@ var micajs = (function() {
     }
     axios.put(url)
       .then(response => {
-        console.dir(response);
+        //console.dir(response);
         micaRedirect(redirect);
       })
       .catch(response => {
@@ -303,7 +302,7 @@ var micajs = (function() {
     }
     axios.put(url)
       .then(response => {
-        console.dir(response);
+        //console.dir(response);
         micaRedirect(redirect);
       })
       .catch(response => {
@@ -321,7 +320,7 @@ var micajs = (function() {
     }
     axios.put(url)
       .then(response => {
-        console.dir(response);
+        //console.dir(response);
         micaRedirect(redirect);
       })
       .catch(response => {
@@ -362,7 +361,7 @@ var micajs = (function() {
       data: message
     })
       .then(response => {
-        console.dir(response);
+        //console.dir(response);
         micaRedirect(redirect);
       })
       .catch(response => {
@@ -380,7 +379,7 @@ var micajs = (function() {
     }
     axios.delete(url)
       .then(response => {
-        console.dir(response);
+        //console.dir(response);
         micaRedirect(redirect);
       })
       .catch(response => {
@@ -395,7 +394,7 @@ var micajs = (function() {
     var redirect = '../data-access-history/' + id;
     axios.post(url, action)
       .then(response => {
-        console.dir(response);
+        //console.dir(response);
         micaRedirect(redirect);
       })
       .catch(response => {
@@ -410,7 +409,7 @@ var micajs = (function() {
     var redirect = '../data-access/' + id;
     axios.put(url)
       .then(response => {
-        console.dir(response);
+        //console.dir(response);
         micaRedirect(redirect);
       })
       .catch(response => {
@@ -424,7 +423,7 @@ var micajs = (function() {
     var redirect = '../data-access-documents/' + id;
     axios.delete(url)
       .then(response => {
-        console.dir(response);
+        //console.dir(response);
         micaRedirect(redirect);
       })
       .catch(response => {
@@ -476,7 +475,7 @@ var micajs = (function() {
     var url = '../ws/variable/' + id + '/summary';
     axios.get(url)
       .then(response => {
-        console.dir(response);
+        //console.dir(response);
         if (onsuccess) {
           onsuccess(response.data);
         }
@@ -493,7 +492,24 @@ var micajs = (function() {
     var url = '../ws/variable/' + id + '/aggregation';
     axios.get(url)
       .then(response => {
+        //console.dir(response);
+        if (onsuccess) {
+          onsuccess(response.data);
+        }
+      })
+      .catch(response => {
         console.dir(response);
+        if (onfailure) {
+          onfailure(response);
+        }
+      });
+  };
+
+  var micaDatasetHarmonizedVariables = function(id, from, limit, onsuccess, onfailure) {
+    var url = '../ws/harmonized-dataset/' + id + '/variables/harmonizations/_summary?from=' + 0 + '&limit=' + limit;
+    axios.get(url)
+      .then(response => {
+        //console.dir(response);
         if (onsuccess) {
           onsuccess(response.data);
         }
@@ -538,6 +554,9 @@ var micajs = (function() {
     'variable': {
       'summary': micaVariableSummary,
       'aggregation': micaVariableAggregation
+    },
+    'dataset': {
+      'harmonizedVariables': micaDatasetHarmonizedVariables
     }
   };
 
