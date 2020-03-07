@@ -22,7 +22,7 @@ elasticsearch:
     clusterName: mica
     shards: 5
     replicas: 1
-    settings: "http.enabled: true"
+    settings: "http.enabled: true\nhttp.cors.enabled: true\nhttp.cors.allow-origin: \"*\""
     maxConcurrentJoinQueries: 2
     concurrentJoinQueriesWaitTimeout: 15000
 

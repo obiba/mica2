@@ -653,6 +653,31 @@ message DatasetVariablesHarmonizationsDto {
   repeated DatasetVariableHarmonizationDto variableHarmonizations = 4;
 }
 
+message DatasetHarmonizedVariableSummaryDto {
+  // harmonized variable Mlstr_harmo.status
+  required string status = 1;
+  // harmonized variable reference (might not exists)
+  optional DatasetVariableResolverDto harmonizedVariableRef = 2;
+}
+
+message DatasetVariableHarmonizationSummaryDto {
+  // dataschema variable reference
+  required DatasetVariableResolverDto dataschemaVariableRef = 1;
+  // harmonized variables
+  repeated DatasetHarmonizedVariableSummaryDto harmonizedVariables = 2;
+}
+
+message DatasetVariablesHarmonizationSummaryDto {
+  required int32 total = 1;
+  required int32 from = 2;
+  required int32 limit = 3;
+  // columns
+  repeated DatasetDto.StudyTableDto studyTable = 4;
+  repeated DatasetDto.HarmonizationTableDto harmonizationStudyTable = 5;
+  // rows
+  repeated DatasetVariableHarmonizationSummaryDto variableHarmonizations = 6;
+}
+
 message FrequencyDto {
   required string value = 1;
   required int32 count = 2;
