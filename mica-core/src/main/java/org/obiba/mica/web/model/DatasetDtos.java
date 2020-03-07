@@ -311,6 +311,23 @@ class DatasetDtos {
   }
 
   @NotNull
+  Mica.DatasetHarmonizedVariableSummaryDto asHarmonizedSummaryDto(@NotNull DatasetVariable variable) {
+    if (variable == null) return Mica.DatasetHarmonizedVariableSummaryDto.newBuilder().setStatus("").build();
+    Mica.DatasetHarmonizedVariableSummaryDto.Builder builder = Mica.DatasetHarmonizedVariableSummaryDto.newBuilder() //
+      .setHarmonizedVariableRef(asDto(DatasetVariable.IdResolver.from(variable.getId())));
+
+    if(variable.getAttributes() != null) {
+      variable.getAttributes().asAttributeList()
+        .forEach(attribute -> {
+          if ("Mlstr_harmo".equals(attribute.getNamespace()) && "status".equals(attribute.getName()))
+            builder.setStatus(attribute.getValues().getUndetermined());
+        });
+    }
+
+    return builder.build();
+  }
+
+  @NotNull
   Mica.DatasetVariableSummaryDto asSummaryDto(@NotNull DatasetVariable variable, OpalTable opalTable,
     boolean includeSummaries) {
     Mica.DatasetVariableSummaryDto.Builder builder = Mica.DatasetVariableSummaryDto.newBuilder() //

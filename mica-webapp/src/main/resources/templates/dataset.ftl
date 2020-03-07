@@ -228,7 +228,7 @@
         </div>
 
         <!-- Harmonization content -->
-        <#if type != "Collected">
+        <#if type == "Harmonized">
           <div class="row">
             <div class="col-lg-12">
               <div class="card card-info card-outline">
@@ -240,21 +240,26 @@
                   </div>
                 </div>
                 <div class="card-body">
-                  TODO
+                  <img id="loadingSummary" src="../assets/images/loading.gif">
+                  <table id="harmonizedTable" class="table table-striped" style="display:none;">
+                    <thead>
+                      <tr>
+                        <th><@message "variable"/></th>
+                      </tr>
+                    </thead>
+                    <tbody></tbody>
+                  </table>
                 </div>
               </div>
             </div>
             </div>
           </div>
         </#if>
-
-      </div><!-- /.container-fluid -->
     </div>
     <!-- /.content -->
   </div>
   <!-- /.content-wrapper -->
-
-    <#include "libs/footer.ftl">
+  <#include "libs/footer.ftl">
 </div>
 <!-- ./wrapper -->
 
