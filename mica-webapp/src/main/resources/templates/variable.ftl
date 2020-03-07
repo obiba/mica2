@@ -20,7 +20,11 @@
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
     <!-- Content Header (Page header) -->
-    <@header titlePrefix=(type?lower_case + "-variable") title=variable.name subtitle=""/>
+    <#assign title = variable.name/>
+    <#if opalTable?? && opalTable.name??>
+      <#assign title = (variable.name + " [" + (opalTable.name[.lang]!"") + "]")/>
+    </#if>
+    <@header titlePrefix=(type?lower_case + "-variable") title=title subtitle=""/>
     <!-- /.content-header -->
 
     <!-- Main content -->
@@ -138,96 +142,109 @@
                       <@dceDialog id=dceId dce=dce></@dceDialog>
                     </dd>
                   </#if>
+                  <#if type == "Harmonized">
+                    <dt class="col-sm-4"><@message "dataschema-variable"/></dt>
+                    <dd class="col-sm-8"><a href="../variable/${variable.datasetId}:${variable.name}:Dataschema" class="btn btn-primary"><i class="ion ion-pie-graph"></i> ${variable.name}</a></dd>
+                  </#if>
+                  <#if opalTable?? && (opalTable.name?? || opalTable.description??)>
+                    <dt class="col-sm-4"><@message "datasource-info"/></dt>
+                    <dd class="col-sm-8">
+                      <#if opalTable.name??>
+                        [${opalTable.name[.lang]!""}]
+                      </#if>
+                      <#if opalTable.description??>
+                        <span class="text-muted">${opalTable.description[.lang]!""}</span>
+                      </#if>
+                    </dd>
+                  </#if>
                 </dl>
               </div>
             </div>
-
-
           </div>
         </div>
 
 
-          <div class="row">
-            <div class="col-sm-12 col-lg-6">
-              <#if annotations?? && annotations?size != 0>
-                <div class="card card-info card-outline">
-                  <div class="card-header">
-                    <h3 class="card-title"><@message "annotations"/></h3>
-                  </div>
-                  <div class="card-body">
-                    <dl class="row">
-                      <#list annotations as annotation>
-                        <dt class="col-sm-4" title="<#if annotation.vocabularyDescription??>${annotation.vocabularyDescription[.lang]!""}</#if>">
-                          ${annotation.vocabularyTitle[.lang]}
-                        </dt>
-                        <dd class="col-sm-8" title="<#if annotation.termDescription??>${annotation.termDescription[.lang]!""}</#if>">
-                          <#if annotation.termTitle[.lang]??>
-                            ${annotation.termTitle[.lang]}
-                          <#elseif annotation.termTitle["und"]??>
-                            <span class="marked">${annotation.termTitle["und"]}</span>
-                          </#if>
-                        </dd>
-                      </#list>
-                    </dl>
-                  </div>
-                  <div class="card-footer">
-                    <a href="../search#lists?type=variables&query=${query}">
-                      <@message "find-similar-variables"/> <i class="fas fa-search"></i>
-                    </a>
-                  </div>
+        <div class="row">
+          <div class="col-sm-12 col-lg-6">
+            <#if annotations?? && annotations?size != 0>
+              <div class="card card-info card-outline">
+                <div class="card-header">
+                  <h3 class="card-title"><@message "annotations"/></h3>
                 </div>
-              </#if>
-            </div>
-            <div class="col-sm-12 col-lg-6">
-              <#if type == "Harmonized">
-                <div class="card card-${harmoAnnotations.statusClass} card-outline">
-                  <div class="card-header">
-                    <h3 class="card-title"><@message "harmonization"/>
-                    <#if harmoAnnotations.hasStatus()>
-                      <span class=" badge badge-${harmoAnnotations.statusClass}">
-                        ${harmoAnnotations.statusValueTitle[.lang]!harmoAnnotations.statusValue!"-"}
-                      </span>
-                    </#if>
-                    </h3>
-                  </div>
-                  <div class="card-body">
-                    <#if !harmoAnnotations.hasStatusDetail() && !harmoAnnotations.hasAlgorithm() && !harmoAnnotations.hasComment()>
-                      <span class="text-muted"><@message "no-harmonization-description"/></span>
-                    <#else>
-                      <dl>
-                        <#if harmoAnnotations.hasStatusDetail()>
-                          <dt title="${harmoAnnotations.statusDetailDescription[.lang]!""}">
-                            ${harmoAnnotations.statusDetailTitle[.lang]!"Status detail"}
-                          </dt>
-                          <dd title="${harmoAnnotations.statusDetailValueDescription[.lang]!""}">
-                            ${harmoAnnotations.statusDetailValueTitle[.lang]!harmoAnnotations.statusDetailValue!"-"}
-                          </dd>
+                <div class="card-body">
+                  <dl class="row">
+                    <#list annotations as annotation>
+                      <dt class="col-sm-4" title="<#if annotation.vocabularyDescription??>${annotation.vocabularyDescription[.lang]!""}</#if>">
+                        ${annotation.vocabularyTitle[.lang]}
+                      </dt>
+                      <dd class="col-sm-8" title="<#if annotation.termDescription??>${annotation.termDescription[.lang]!""}</#if>">
+                        <#if annotation.termTitle[.lang]??>
+                          ${annotation.termTitle[.lang]}
+                        <#elseif annotation.termTitle["und"]??>
+                          <span class="marked">${annotation.termTitle["und"]}</span>
                         </#if>
-
-                        <#if harmoAnnotations.hasAlgorithm()>
-                          <dt title="${harmoAnnotations.algorithmDescription[.lang]!""}">
-                            ${harmoAnnotations.algorithmTitle[.lang]!"Algorithm"}
-                          </dt>
-                          <dd>
-                            <span class="marked mt-3">${harmoAnnotations.algorithmValue!""}</span>
-                          </dd>
-                        </#if>
-
-                        <#if harmoAnnotations.hasComment()>
-                          <dt title="${harmoAnnotations.commentDescription[.lang]!""}">
-                            ${harmoAnnotations.commentTitle[.lang]!"Comment"}
-                          </dt>
-                          <dd>
-                            <span class="marked">${harmoAnnotations.commentValue!""}</span>
-                          </dd>
-                        </#if>
-                      </dl>
-                    </#if>
-                  </div>
+                      </dd>
+                    </#list>
+                  </dl>
                 </div>
-              </#if>
-            </div>
+                <div class="card-footer">
+                  <a href="../search#lists?type=variables&query=${query}">
+                    <@message "find-similar-variables"/> <i class="fas fa-search"></i>
+                  </a>
+                </div>
+              </div>
+            </#if>
           </div>
+          <div class="col-sm-12 col-lg-6">
+            <#if type == "Harmonized">
+              <div class="card card-${harmoAnnotations.statusClass} card-outline">
+                <div class="card-header">
+                  <h3 class="card-title"><@message "harmonization"/>
+                  <#if harmoAnnotations.hasStatus()>
+                    <span class=" badge badge-${harmoAnnotations.statusClass}">
+                      ${harmoAnnotations.statusValueTitle[.lang]!harmoAnnotations.statusValue!"-"}
+                    </span>
+                  </#if>
+                  </h3>
+                </div>
+                <div class="card-body">
+                  <#if !harmoAnnotations.hasStatusDetail() && !harmoAnnotations.hasAlgorithm() && !harmoAnnotations.hasComment()>
+                    <span class="text-muted"><@message "no-harmonization-description"/></span>
+                  <#else>
+                    <dl>
+                      <#if harmoAnnotations.hasStatusDetail()>
+                        <dt title="${harmoAnnotations.statusDetailDescription[.lang]!""}">
+                          ${harmoAnnotations.statusDetailTitle[.lang]!"Status detail"}
+                        </dt>
+                        <dd title="<#if harmoAnnotations.statusDetailValueDescription??>${harmoAnnotations.statusDetailValueDescription[.lang]!""}</#if>">
+                          ${harmoAnnotations.statusDetailValueTitle[.lang]!harmoAnnotations.statusDetailValue!"-"}
+                        </dd>
+                      </#if>
+
+                      <#if harmoAnnotations.hasAlgorithm()>
+                        <dt title="${harmoAnnotations.algorithmDescription[.lang]!""}">
+                          ${harmoAnnotations.algorithmTitle[.lang]!"Algorithm"}
+                        </dt>
+                        <dd>
+                          <span class="marked mt-3">${harmoAnnotations.algorithmValue!""}</span>
+                        </dd>
+                      </#if>
+
+                      <#if harmoAnnotations.hasComment()>
+                        <dt title="${harmoAnnotations.commentDescription[.lang]!""}">
+                          ${harmoAnnotations.commentTitle[.lang]!"Comment"}
+                        </dt>
+                        <dd>
+                          <span class="marked">${harmoAnnotations.commentValue!""}</span>
+                        </dd>
+                      </#if>
+                    </dl>
+                  </#if>
+                </div>
+              </div>
+            </#if>
+          </div>
+        </div>
 
         <div class="row">
           <div class="col-12">
@@ -246,6 +263,38 @@
             </div>
           </div>
         </div>
+
+        <#if type == "Dataschema">
+          <div class="row">
+            <div class="col-12">
+              <div class="card card-info card-outline">
+                <div class="card-header">
+                  <h3 class="card-title"><@message "harmonized-variables"/></h3>
+                </div>
+                <div class="card-body">
+                  <img id="loadingHarmonizedVariables" src="../assets/images/loading.gif">
+
+                  <table id="harmonizedVariables" class="table table-striped" style="display: none">
+                    <thead>
+                      <tr>
+                        <th><@message "variable"/></th>
+                        <th><@message "study"/></th>
+                        <th><@message "data-collection-event"/></th>
+                        <th><@message "status"/></th>
+                        <th><@message "status-detail"/></th>
+                        <th><@message "comment"/></th>
+                      </tr>
+                    </thead>
+                    <tbody></tbody>
+                  </table>
+                  <div id="noHarmonizedVariables" style="display: none">
+                    <span class="text-muted"><@message "no-harmonized-variables"/></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </#if>
 
       </div><!-- /.container-fluid -->
     </div>
