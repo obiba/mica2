@@ -377,8 +377,23 @@ public class Dtos {
   }
 
   @NotNull
+  public Mica.DatasetHarmonizedVariableSummaryDto asHarmonizedSummaryDto(@NotNull DatasetVariable variable) {
+    return datasetDtos.asHarmonizedSummaryDto(variable);
+  }
+
+  @NotNull
   public Mica.DatasetVariableSummaryDto asSummaryDto(@NotNull DatasetVariable variable, OpalTable opalTable, boolean includeSummaries) {
     return datasetDtos.asSummaryDto(variable, opalTable, includeSummaries);
+  }
+
+  @NotNull
+  public Mica.DatasetDto.StudyTableDto.Builder asDto(StudyTable studyTable, boolean includeSummary) {
+    return datasetDtos.asDto(studyTable, includeSummary);
+  }
+
+  @NotNull
+  public Mica.DatasetDto.HarmonizationTableDto.Builder asDto(HarmonizationStudyTable harmonizationTable, boolean includeSummary) {
+    return datasetDtos.asDto(harmonizationTable, includeSummary);
   }
 
   @NotNull
