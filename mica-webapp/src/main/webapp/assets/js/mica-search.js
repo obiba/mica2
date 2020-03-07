@@ -134,11 +134,11 @@ $('#lists-tab').click(function(){
 });
 
 $('#coverage-tab').click(function(){
-  EventBus.$emit('query-type-selection', {type: 'coverage'});
+  EventBus.$emit('query-type-selection', {display: 'coverage'});
 });
 
 $('#graphics-tab').click(function(){
-  EventBus.$emit('query-type-selection', {type: 'graphics'});
+  EventBus.$emit('query-type-selection', {display: 'graphics'});
 });
 
 Vue.use(VueObibaSearchResult, {
@@ -186,7 +186,7 @@ new Vue({
   methods: {
     getTaxonomyForTarget(target) {
       let result = [];
-      
+
       for (const taxonomy in this.taxonomies) {
         if (target === TARGETS.VARIABLE) {
           if (taxonomy.name === 'Mica_' + target || taxonomy.name.indexOf('Mica_') === -1) result.push(taxonomy);
