@@ -52,6 +52,7 @@ const EVENTS = {
   QUERY_TYPE_UPDATES_SELECTION: 'query-type-updates-selection',
   QUERY_TYPE_DELETE: 'query-type-delete',
   QUERY_TYPE_PAGINATE: 'query-type-paginate',
+  QUERY_TYPE_COVERAGE: 'query-type-coverage'
 };
 
 const OPERATOR_NODES = ['and','or'];
@@ -245,6 +246,25 @@ class EntityQuery {
 
     return this.prepareForSelection(tree, type);
   }
+
+  prepareForCoverage(tree, from, size) {
+    if (tree) {
+      let variableQuery = tree.search(name => TARGETS.VARIABLE === name);
+      if (variableQuery) {
+        // TODO: should the coverage be limited to MLSTR taxonomies?
+        const coveragePossible = tree.search((name, args) => {
+          return args.some(arg => typeof arg === 'string' && arg.search(/Mlstr/))
+        });
+
+        if (coveragePossible) {
+          console.log('Something to work on...');
+        }
+      }
+    }
+
+    return null;
+  }
+
 }
 
 class VariableQuery extends EntityQuery {
@@ -383,8 +403,15 @@ class MicaQueryExecutor {
           case EVENTS.QUERY_TYPE_PAGINATE:
             tree = entityQuery.prepareForPaginate(tree, type, payload.target, payload.from, payload.size);
             break;
+          case EVENTS.QUERY_TYPE_COVERAGE:
+            tree = entityQuery.prepareForCoverage(tree, payload.from, payload.size);
+            break;
         }
-        this.__executeQuery(tree, type, display, payload.noUrlUpdate);
+
+        if (tree) {
+          this.__executeQuery(tree, type, display, payload.noUrlUpdate);
+        }
+
         break;
 
 
@@ -492,12 +519,18 @@ class MicaQueryExecutor {
     this.__prepareAndExecuteQuery(EVENTS.QUERY_TYPE_PAGINATE, payload);
   }
 
+  __onQueryTypeCoverage(payload) {
+    console.log(`__onQueryTypeSelection ${payload}`);
+    this.__prepareAndExecuteQuery(EVENTS.QUERY_TYPE_COVERAGE, payload);
+  }
+
   init() {
     this._eventBus.register(EVENTS.QUERY_TYPE_SELECTION, this.__onQueryTypeSelection.bind(this));
     this._eventBus.register(EVENTS.QUERY_TYPE_UPDATE, this.__onQueryTypeUpdate.bind(this));
     this._eventBus.register(EVENTS.QUERY_TYPE_UPDATES_SELECTION, this.__onQueryTypeUpdatesSelection.bind(this));
     this._eventBus.register(EVENTS.QUERY_TYPE_DELETE, this.__onQueryTypeDelete.bind(this));
     this._eventBus.register(EVENTS.QUERY_TYPE_PAGINATE, this.__onQueryTypePaginate.bind(this));
+    this._eventBus.register(EVENTS.QUERY_TYPE_COVERAGE, this.__onQueryTypeCoverage.bind(this));
     window.addEventListener('hashchange', this.__onHashChanged.bind(this));
     window.addEventListener('beforeunload', this.__onBeforeUnload.bind(this));
   }

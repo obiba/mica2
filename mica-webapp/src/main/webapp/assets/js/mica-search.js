@@ -134,7 +134,7 @@ $('#lists-tab').click(function(){
 });
 
 $('#coverage-tab').click(function(){
-  EventBus.$emit('query-type-selection', {display: 'coverage'});
+  EventBus.$emit('query-type-coverage', {display: 'coverage'});
 });
 
 $('#graphics-tab').click(function(){
@@ -176,8 +176,9 @@ new Vue({
   computed: {
     queries() {
       const result = {};
+      const tree = this.queryExecutor.getTree();
       for (const target in TARGETS) {
-        result[target] = this.queryExecutor.getTree().search((name) => {return name === target});
+        result[target] = tree.search((name) => {return name === TARGETS[target]});
       }
 
       return result;
@@ -229,6 +230,11 @@ new Vue({
     },
     onQueryUpdate(payload) {
       console.log('query-builder update', payload);
+      payload.value.terms = [`${payload.target}.${payload.vocabularyName}`, payload.value.terms];
+      payload.query = new RQL.Query(payload.value.operator, payload.value.terms);
+      payload.target = TARGETS.VARIABLE;
+
+      EventBus.$emit('query-type-update', payload);
     },
     onQueryRemove(payload) {
       console.log('query-builder update', payload);
