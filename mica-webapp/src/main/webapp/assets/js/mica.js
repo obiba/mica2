@@ -4,7 +4,7 @@
 var micajs = (function() {
 
   // get the stats
-  var micaStats = function(type, params, onSuccess, onFailure) {
+  const micaStats = function(type, params, onSuccess, onFailure) {
     var url = '/ws/' + type + '/_rql';
     if (params && Object.keys(params).length>0) {
       var query = Object.keys(params).map(key => key + '=' + params[key]).join('&');
@@ -32,18 +32,18 @@ var micajs = (function() {
       });
   };
 
-  var micaRedirectError = function(xhr, errorThrown) {
+  const micaRedirectError = function(xhr, errorThrown) {
     $.redirect('/error', {
       'status': xhr.status,
       'message': errorThrown
     }, 'POST');
   };
 
-  var micaRedirect = function(path) {
+  const micaRedirect = function(path) {
     $.redirect(path, null, 'GET');
   };
 
-  var micaSignin = function(formId, onFailure) {
+  const micaSignin = function(formId, onFailure) {
     $(formId).submit(function(e) {
       e.preventDefault(); // avoid to execute the actual submit of the form.
       var form = $(this);
@@ -70,7 +70,7 @@ var micajs = (function() {
     });
   };
 
-  var micaSignup = function(formId, requiredFields, onFailure) {
+  const micaSignup = function(formId, requiredFields, onFailure) {
     $(formId).submit(function(e) {
       e.preventDefault(); // avoid to execute the actual submit of the form.
       var form = $(this);
@@ -143,7 +143,7 @@ var micajs = (function() {
     });
   };
 
-  var micaSignout = function(pathPrefix) {
+  const micaSignout = function(pathPrefix) {
     $.ajax({
       type: 'DELETE',
       url: pathPrefix + '/ws/auth/session/_current'
@@ -154,7 +154,7 @@ var micajs = (function() {
     });
   };
 
-  var micaResetPassword = function(formId, onFailure) {
+  const micaResetPassword = function(formId, onFailure) {
     $(formId).submit(function(e) {
       e.preventDefault(); // avoid to execute the actual submit of the form.
       var form = $(this);
@@ -177,7 +177,7 @@ var micajs = (function() {
     });
   };
 
-  var micaChangeLanguage = function(lang) {
+  const micaChangeLanguage = function(lang) {
     let key = 'language';
     let value = encodeURI(lang);
     var kvp = window.location.search.substr(1).split('&');
@@ -201,13 +201,13 @@ var micajs = (function() {
     window.location.search = kvp.join('&');
   };
 
-  var micaSuccess = function(text) {
+  const micaSuccess = function(text) {
     toastr.success(text);
   };
-  var micaWarning = function(text) {
+  const micaWarning = function(text) {
     toastr.warning(text);
   };
-  var micaError = function(text) {
+  const micaError = function(text) {
     toastr.error(text);
   };
 
@@ -215,7 +215,7 @@ var micajs = (function() {
   // Data access
   //
 
-  var micaCreateDataAccess = function(id) {
+  const micaCreateDataAccess = function(id) {
     var url = '../ws/data-access-requests/_empty';
     if (id) {
       url = '../ws/data-access-request/' + id + '/amendments/_empty';
@@ -239,7 +239,7 @@ var micajs = (function() {
       });
   };
 
-  var micaDeleteDataAccess = function(id, aId) {
+  const micaDeleteDataAccess = function(id, aId) {
     var url = '../../ws/data-access-request/' + id;
     var redirect = '../../data-accesses';
     if (aId) {
@@ -257,7 +257,7 @@ var micajs = (function() {
       });
   };
 
-  var micaSubmitDataAccess = function(id, aId) {
+  const micaSubmitDataAccess = function(id, aId) {
     var url = '../../ws/data-access-request/' + id + '/_status?to=SUBMITTED';
     var redirect = '../data-access-form/' + id;
     if (aId) {
@@ -275,7 +275,7 @@ var micajs = (function() {
       });
   };
 
-  var micaReviewDataAccess = function(id, aId) {
+  const micaReviewDataAccess = function(id, aId) {
     var url = '../../ws/data-access-request/' + id + '/_status?to=REVIEWED';
     var redirect = '../data-access-form/' + id;
     if (aId) {
@@ -293,7 +293,7 @@ var micajs = (function() {
       });
   };
 
-  var micaApproveDataAccess = function(id, aId) {
+  const micaApproveDataAccess = function(id, aId) {
     var url = '../../ws/data-access-request/' + id + '/_status?to=APPROVED';
     var redirect = '../data-access-form/' + id;
     if (aId) {
@@ -311,7 +311,7 @@ var micajs = (function() {
       });
   };
 
-  var micaConditionallyApproveDataAccess = function(id, aId) {
+  const micaConditionallyApproveDataAccess = function(id, aId) {
     var url = '../../ws/data-access-request/' + id + '/_status?to=CONDITIONALLY_APPROVED';
     var redirect = '../data-access-form/' + id;
     if (aId) {
@@ -329,7 +329,7 @@ var micajs = (function() {
       });
   };
 
-  var micaRejectDataAccess = function(id, aId) {
+  const micaRejectDataAccess = function(id, aId) {
     var url = '../../ws/data-access-request/' + id + '/_status?to=REJECTED';
     var redirect = '../data-access-form/' + id;
     if (aId) {
@@ -347,7 +347,7 @@ var micajs = (function() {
       });
   };
 
-  var micaSendComment = function(id, message, isPrivate) {
+  const micaSendComment = function(id, message, isPrivate) {
     var url = '../../ws/data-access-request/' + id + '/comments';
     var redirect = '../data-access-comments/' + id;
     if (isPrivate) {
@@ -370,7 +370,7 @@ var micajs = (function() {
       });
   };
 
-  var micaDeleteComment = function(id, cid, isPrivate) {
+  const micaDeleteComment = function(id, cid, isPrivate) {
     var url = '../../ws/data-access-request/' + id + '/comment/' + cid;
     var redirect = '../data-access-comments/' + id;
     if (isPrivate) {
@@ -388,7 +388,7 @@ var micajs = (function() {
       });
   };
 
-  var micaAddAction = function(id, action) {
+  const micaAddAction = function(id, action) {
     console.dir(action);
     var url = '../../ws/data-access-request/' + id + '/_log-actions';
     var redirect = '../data-access-history/' + id;
@@ -403,7 +403,7 @@ var micajs = (function() {
       });
   };
 
-  var micaStartDate = function(id, startDate) {
+  const micaStartDate = function(id, startDate) {
     console.log(startDate);
     var url = '../../ws/data-access-request/' + id + '/_start-date?date=' + startDate;
     var redirect = '../data-access/' + id;
@@ -418,7 +418,7 @@ var micajs = (function() {
       });
   };
 
-  var micaDeleteAttachment = function(id, fileId) {
+  const micaDeleteAttachment = function(id, fileId) {
     var url = '../../ws/data-access-request/' + id + '/attachments/' + fileId;
     var redirect = '../data-access-documents/' + id;
     axios.delete(url)
@@ -432,7 +432,7 @@ var micajs = (function() {
       });
   };
 
-  var micaUploadTempFile = function(file, onsuccess, onprogress) {
+  const micaUploadTempFile = function(file, onsuccess, onprogress) {
     var data = new FormData();
     data.append('file', file);
     var config = {
@@ -453,7 +453,7 @@ var micajs = (function() {
       });
   };
 
-  var micaAttachFile = function(id, fileId) {
+  const micaAttachFile = function(id, fileId) {
     var url = '../../ws/data-access-request/' + id + '/attachments/' + fileId;
     var redirect = '../data-access-documents/' + id;
     axios.post(url)
@@ -471,7 +471,7 @@ var micajs = (function() {
   // Variable
   //
 
-  var micaVariableSummary = function(id, onsuccess, onfailure) {
+  const micaVariableSummary = function(id, onsuccess, onfailure) {
     var url = '../ws/variable/' + id + '/summary';
     axios.get(url)
       .then(response => {
@@ -488,7 +488,7 @@ var micajs = (function() {
       });
   };
 
-  var micaVariableAggregation = function(id, onsuccess, onfailure) {
+  const micaVariableAggregation = function(id, onsuccess, onfailure) {
     var url = '../ws/variable/' + id + '/aggregation';
     axios.get(url)
       .then(response => {
@@ -505,7 +505,30 @@ var micajs = (function() {
       });
   };
 
-  var micaDatasetHarmonizedVariables = function(id, from, limit, onsuccess, onfailure) {
+  /**
+   * Get the harmonized variables of a Dataschema variable.
+   * @param id
+   * @param onsuccess
+   * @param onfailure
+   */
+  const micaVariableHarmonizations = function(id, onsuccess, onfailure) {
+    var url = '../ws/variable/' + id + '/harmonizations';
+    axios.get(url)
+      .then(response => {
+        //console.dir(response);
+        if (onsuccess) {
+          onsuccess(response.data);
+        }
+      })
+      .catch(response => {
+        console.dir(response);
+        if (onfailure) {
+          onfailure(response);
+        }
+      });
+  };
+
+  const micaDatasetHarmonizedVariables = function(id, from, limit, onsuccess, onfailure) {
     var url = '../ws/harmonized-dataset/' + id + '/variables/harmonizations/_summary?from=' + 0 + '&limit=' + limit;
     axios.get(url)
       .then(response => {
@@ -520,6 +543,87 @@ var micajs = (function() {
           onfailure(response);
         }
       });
+  };
+
+  //
+  // Harmo
+  //
+
+  const micaVariableAttributeValue = function(variable, namespace, name) {
+    if (!variable || !variable.attributes) {
+      return undefined;
+    }
+    for (const attr of variable.attributes) {
+      if (attr.namespace === namespace && attr.name === name) {
+        return attr.values;
+      }
+    }
+    return undefined;
+  };
+
+  /**
+   * Get the css class that represents the harmonization status.
+   * @param status
+   * @returns {string}
+   */
+  const micaHarmoStatusClass = function(status) {
+    let iconClass = 'fas fa-minus text-muted';
+    if (status === 'complete') {
+      iconClass = 'fas fa-check text-success';
+    } else if (status === 'impossible') {
+      iconClass = 'fas fa-times text-danger';
+    } else if (status === 'undetermined') {
+      iconClass = 'fas fa-question text-warning';
+    }
+    return iconClass;
+  };
+
+  const micaHarmoStatus = function(variable) {
+    return micaVariableAttributeValue(variable, 'Mlstr_harmo', 'status');
+  };
+
+  const micaHarmoStatusDetail = function(variable) {
+    return micaVariableAttributeValue(variable, 'Mlstr_harmo', 'status_detail');
+  };
+
+  const micaHarmoComment = function(variable) {
+    return micaVariableAttributeValue(variable, 'Mlstr_harmo', 'comment');
+  };
+
+  //
+  // Study
+  //
+
+  /**
+   * Find population in study by ID
+   * @param study
+   */
+  const micaStudyPopulation = function(study, id) {
+    if (study.populationSummaries) {
+      for (const pop of study.populationSummaries) {
+        if (pop.id === id) {
+          return pop;
+        }
+      }
+    }
+    return undefined;
+  };
+
+  /**
+   * Find DCE in study population by ID
+   * @param population
+   * @param id
+   * @returns {undefined|any}
+   */
+  const micaStudyPopulationDCE = function(population, id) {
+    if (population.dataCollectionEventSummaries) {
+      for (const dce of population.dataCollectionEventSummaries) {
+        if (dce.id === id) {
+          return dce;
+        }
+      }
+    }
+    return undefined;
   };
 
   return {
@@ -553,10 +657,22 @@ var micajs = (function() {
     'uploadTempFile': micaUploadTempFile,
     'variable': {
       'summary': micaVariableSummary,
-      'aggregation': micaVariableAggregation
+      'aggregation': micaVariableAggregation,
+      'harmonizations': micaVariableHarmonizations,
+      'attributeValue': micaVariableAttributeValue
     },
     'dataset': {
       'harmonizedVariables': micaDatasetHarmonizedVariables
+    },
+    'harmo': {
+      'status': micaHarmoStatus,
+      'statusDetail': micaHarmoStatusDetail,
+      'comment': micaHarmoComment,
+      'statusClass': micaHarmoStatusClass
+    },
+    'study': {
+      'population': micaStudyPopulation,
+      'populationDCE': micaStudyPopulationDCE
     }
   };
 
