@@ -108,7 +108,7 @@
                     <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
                   </div>
                   <div class="modal-body">
-                    <rql-panel v-bind:taxonomy="selectedTaxonomy" v-bind:query="queryForSelectedTaxonomy"></rql-panel>
+                    <rql-panel v-bind:taxonomy="selectedTaxonomy" v-bind:query="queryForSelectedTaxonomy" @update-query="onQueryUpdate" @remove-query="onQueryRemove"></rql-panel>
                   </div>
                 </div>
               </div>
@@ -118,7 +118,7 @@
             <button class="btn btn-success" @click.prevent="onExecuteQuery()"><i class="fas fa-sync"></i> <@message "refresh"/></button>
             <span class="badge badge-danger">{{ queryType }}</span>
 
-            <rql-query-builder v-for="(query, target) in queries" v-bind:target="target" v-bind:taxonomy="getTaxonomyForTarget(target)" v-bind:query="query"></rql-query-builder>
+            <rql-query-builder v-for="(query, target) in queries" v-bind:target="target" v-bind:taxonomy="getTaxonomyForTarget(target)" v-bind:query="query" @update-query="onQueryUpdate" @remove-query="onQueryRemove"></rql-query-builder>
           </div>
         </div>
         <!-- /.card-body -->
