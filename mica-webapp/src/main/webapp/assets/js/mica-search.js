@@ -226,6 +226,12 @@ new Vue({
     onLocationChanged: function(payload) {
       $(`.nav-pills #${payload.display}-tab`).tab('show');
       $(`.nav-pills #${payload.type}-tab`).tab('show');
+    },
+    onQueryUpdate(payload) {
+      console.log('query-builder update', payload);
+    },
+    onQueryRemove(payload) {
+      console.log('query-builder update', payload);
     }
   },
   beforeMount() {
