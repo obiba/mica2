@@ -28,7 +28,7 @@
       </ul>
     </li>
     <li class="nav-item">
-      <a href="${pathPrefix!".."}/search" class="btn btn-success"><@message "search"/> <i class="fas fa-search"></i></a>
+      <a href="${pathPrefix!".."}/search${defaultSearchState}" class="btn btn-success"><@message "search"/> <i class="fas fa-search"></i></a>
     </li>
   </#if>
   <#if config?? &&config.dataAccessEnabled>
