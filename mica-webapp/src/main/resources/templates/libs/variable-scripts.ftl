@@ -3,6 +3,45 @@
 <#if user?? || !config.variableSummaryRequiresAuthentication>
 <script>
   $(function () {
+
+    <#if type == "Dataschema">
+      micajs.variable.harmonizations('${variable.id}', function(data) {
+        console.dir(data);
+        $('#loadingHarmonizedVariables').hide();
+        const harmonizedVariablesTableBody = $('#harmonizedVariables > tbody');
+        if (data.datasetVariableSummaries) {
+          for (const harmonizedVariable of data.datasetVariableSummaries) {
+            const status = micajs.harmo.status(harmonizedVariable);
+            const statusDetail = micajs.harmo.statusDetail(harmonizedVariable);
+            const comment = micajs.harmo.comment(harmonizedVariable);
+            const baseStudyTable = harmonizedVariable.studyTable ? harmonizedVariable.studyTable : harmonizedVariable.harmonizationStudyTable;
+            const population = micajs.study.population(baseStudyTable.studySummary, baseStudyTable.populationId);
+            const dce = population ? micajs.study.populationDCE(population, baseStudyTable.dataCollectionEventId) : undefined;
+            let dceName = population ? localizedString(population.name) : "";
+            if (dce) {
+              dceName = dceName + ' -- ' + localizedString(dce.name);
+            }
+            harmonizedVariablesTableBody.append('<tr>' +
+                    '<td title=""><a href="../variable/' + harmonizedVariable.resolver.id + '">' + harmonizedVariable.resolver.name + '</a> ' + localizedString(baseStudyTable.name) + '' +
+                    '<div class="text-muted">' + localizedString(baseStudyTable.description) + '</div>' +
+                    '</td>' +
+                    '<td><a href="../study/' + baseStudyTable.studyId + '">' + localizedString(baseStudyTable.studySummary.acronym) + '</a></td>' +
+                    '<td>' + dceName + '</td>' +
+                    '<td><i class=" ' + micajs.harmo.statusClass(localizedString(status)) + '"></i></td>' +
+                    '<td>' + localizedString(statusDetail) + '</td>' +
+                    '<td>' + localizedString(comment) + '</td>' +
+                    '</tr>')
+          }
+          $('#harmonizedVariables').show();
+        } else {
+          $('#noHarmonizedVariables').show();
+        }
+      }, function (data) {
+        $('#loadingHarmonizedVariables').hide();
+        $('#noHarmonizedVariables').show();
+      });
+    </#if>
+
     micajs.variable.aggregation('${variable.id}', function(data) {
       $('#loadingSummary').hide();
 
@@ -130,7 +169,10 @@
       if (!data.frequencies && !data.statistics) {
         $('#noSummary').show();
       }
-  });
+    }, function (data) {
+      $('#loadingSummary').hide();
+      $('#noSummary').show();
+    });
   });
 </script>
 </#if>
