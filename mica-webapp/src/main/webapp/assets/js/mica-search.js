@@ -134,7 +134,7 @@ $('#networks-tab').click(function(){
 });
 
 $('#lists-tab').click(function(){
-  EventBus.$emit('query-type-selection', {type: 'lists'});
+  EventBus.$emit('query-type-selection', {display: 'lists'});
 });
 
 $('#coverage-tab').click(function(){

@@ -20,9 +20,9 @@ const TYPES_TARGETS_MAP = {
 };
 
 BUCKETS = {
-  STUDY: 'studyId',
-  DCE: 'dceId',
-  DATASET: 'datasetId'
+  studyId: 'studyId',
+  dceId: 'dceId',
+  datasetId: 'datasetId'
 };
 
 const TARGETS_TYPES_MAP = {
@@ -139,7 +139,7 @@ class EntityQuery {
       ).pop();
   }
 
-  prepareForSelection(tree, type) {
+  prepareForSelection(tree, type, bucket) {
     let theTree = tree || new RQL.QueryTree(null, QueryTreeOptions);
     let targetQuery = theTree.search((name) => name === this._target);
 
@@ -148,12 +148,15 @@ class EntityQuery {
       theTree.addQuery(null, targetQuery);
     }
 
-    this.__ensureLimitFieldsSizeQueries(theTree, this.__ensureDestinationTargetQuery(type, theTree));
+    if (bucket) {
+      return this.prepareForCoverage(tree, bucket);
+    }
 
+    this.__ensureLimitFieldsSizeQueries(theTree, this.__ensureDestinationTargetQuery(type, theTree));
     return theTree;
   }
 
-  prepareForUpdate(tree, type, target, updateQuery) {
+  prepareForUpdate(tree, type, target, updateQuery, bucket) {
     let theTree = tree || new RQL.QueryTree(null, QueryTreeOptions);
     let targetQuery = theTree.search((name) => name === target);
 
@@ -171,8 +174,11 @@ class EntityQuery {
       query.args = updateQuery.args;
     }
 
-    this.__ensureLimitFieldsSizeQueries(theTree, this.__ensureDestinationTargetQuery(type, theTree));
+    if (bucket) {
+      return this.prepareForCoverage(tree, bucket)
+    }
 
+    this.__ensureLimitFieldsSizeQueries(theTree, this.__ensureDestinationTargetQuery(type, theTree));
     return theTree;
   }
 
@@ -184,7 +190,7 @@ class EntityQuery {
    * @param type
    * @param updateInfo - [{target, query, operator}]
    */
-  prepareForUpdatesAndSelection(tree, type, updateInfo) {
+  prepareForUpdatesAndSelection(tree, type, updateInfo, bucket) {
     let theTree = tree || new RQL.QueryTree(null, QueryTreeOptions);
 
     (updateInfo || []).forEach(info => {
@@ -221,12 +227,15 @@ class EntityQuery {
       }
     });
 
-    this.__ensureLimitFieldsSizeQueries(theTree, this.__ensureDestinationTargetQuery(type, theTree));
+    if (bucket) {
+      return this.prepareForCoverage(tree, bucket);
+    }
 
+    this.__ensureLimitFieldsSizeQueries(theTree, this.__ensureDestinationTargetQuery(type, theTree));
     return theTree;
   }
 
-  prepareForDelete(tree, type, target, deleteQuery) {
+  prepareForDelete(tree, type, target, deleteQuery, bucket) {
     let theTree = tree || new RQL.QueryTree(null, QueryTreeOptions);
     let targetQuery = theTree.search((name) => name === target);
 
@@ -241,8 +250,11 @@ class EntityQuery {
       theTree.deleteQuery(query);
     }
 
-    this.__ensureLimitFieldsSizeQueries(theTree, this.__ensureDestinationTargetQuery(type, theTree));
+    if (bucket) {
+      return this.prepareForCoverage(tree, bucket);
+    }
 
+    this.__ensureLimitFieldsSizeQueries(theTree, this.__ensureDestinationTargetQuery(type, theTree));
     return theTree;
   }
 
@@ -361,7 +373,7 @@ class MicaQueryExecutor {
    */
   __getBucketType(urlSearchParams, display) {
     if (DISPLAYS.COVERAGE === display) {
-      return urlSearchParams.hasOwnProperty(BUCKET) ? BUCKETS[urlSearchParams[BUCKET]]: BUCKETS.STUDY;
+      return urlSearchParams.hasOwnProperty(BUCKET) ? BUCKETS[urlSearchParams[BUCKET]]: BUCKETS.studyId;
     }
 
     return null;
@@ -370,8 +382,8 @@ class MicaQueryExecutor {
   /**
    * Ensure a valid display either supplied by the payload or url
    */
-  __ensureValidDisplay(urlSearchParams, display) {
-    return DISPLAYS[(display || urlSearchParams.display || "").toUpperCase()] || DISPLAYS.LISTS;
+  __ensureValidDisplay(hash, display) {
+    return DISPLAYS[(display || hash || "").toUpperCase()] || DISPLAYS.LISTS;
   }
 
   /**
@@ -407,21 +419,22 @@ class MicaQueryExecutor {
       case TYPES.NETWORKS:
         const entityQuery = this._query[type];
         const display = this.__ensureValidDisplay(urlParts.hash, payload.display);
+        const forCoverage = DISPLAYS.COVERAGE === display;
         const bucket = this.__getBucketType(urlParts.searchParams, display);
         let tree = this.getTree(urlParts);
 
         switch (eventId) {
           case EVENTS.QUERY_TYPE_SELECTION:
-            tree = entityQuery.prepareForSelection(tree, type);
+            tree = entityQuery.prepareForSelection(tree, type, forCoverage ? bucket : null);
             break;
           case EVENTS.QUERY_TYPE_UPDATE:
-            tree = entityQuery.prepareForUpdate(tree, type, payload.target, payload.query);
+            tree = entityQuery.prepareForUpdate(tree, type, payload.target, payload.query, forCoverage ? bucket : null);
             break;
           case EVENTS.QUERY_TYPE_UPDATES_SELECTION:
-            tree = entityQuery.prepareForUpdatesAndSelection(tree, type, payload.updates);
+            tree = entityQuery.prepareForUpdatesAndSelection(tree, type, payload.updates, forCoverage ? bucket : null);
             break;
           case EVENTS.QUERY_TYPE_DELETE:
-            tree = entityQuery.prepareForDelete(tree, type, payload.target, payload.query);
+            tree = entityQuery.prepareForDelete(tree, type, payload.target, payload.query, forCoverage ? bucket : null);
             break;
           case EVENTS.QUERY_TYPE_PAGINATE:
             tree = entityQuery.prepareForPaginate(tree, type, payload.target, payload.from, payload.size);
@@ -434,7 +447,7 @@ class MicaQueryExecutor {
         if (tree) {
           switch (display) {
             case DISPLAYS.COVERAGE:
-              this.__executeCoverage(tree, type, display, bucket, payload.noUrlUpdate);
+              this.__executeCoverage(tree, type, display, payload.noUrlUpdate, bucket);
               break;
 
             case DISPLAYS.LISTS:
@@ -513,7 +526,7 @@ class MicaQueryExecutor {
       .then(response => {
         tree.findAndDeleteQuery((name) => AGGREGATE === name);
         this.__updateLocation(type, display, tree.serialize(), noUrlUpdate, bucket);
-        EventBus.$emit(`coverage-results`, {response: response.data});
+        EventBus.$emit(`coverage-results`, {bucket, response: response.data});
       });
   }
 

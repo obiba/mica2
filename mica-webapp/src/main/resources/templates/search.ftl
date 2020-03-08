@@ -224,7 +224,7 @@
                       <@message "results-coverage-text"/>
                     </p>
                     <div id="coverage">
-                      {{ result }}
+                      <coverage-result></coverage-result>
                     </div>
                   </div>
                 </#if>
