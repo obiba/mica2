@@ -32,6 +32,13 @@ mica.dataAccessConfig
         'get': {method: 'GET', isArray: true}
       });
     }])
+  .factory('DataAccessFeasibilityFormResource', ['$resource',
+    function ($resource) {
+      return $resource('ws/config/data-access-feasibility-form', {}, {
+        'get': {method: 'GET', errorHandler: true},
+        'save': {method: 'PUT', errorHandler: true}
+      });
+    }])
   .factory('DataAccessAmendmentFormResource', ['$resource',
     function ($resource) {
       return $resource('ws/config/data-access-amendment-form', {}, {

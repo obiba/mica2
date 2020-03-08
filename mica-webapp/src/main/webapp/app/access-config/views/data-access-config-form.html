@@ -24,6 +24,9 @@
       <li ng-class="{'active': tab.name === 'form'}">
         <a href ng-click="tab.name = 'form'" title="{{'form' | translate}}"><i class="fa fa-list"></i></a>
       </li>
+      <li ng-class="{'active': tab.name === 'feasibility'}">
+        <a href ng-click="tab.name = 'feasibility'" title="{{'data-access-config.feasibility.schema-form.title' | translate}}"><i class="fa fa-question-circle"></i></a>
+      </li>
       <li ng-class="{'active': tab.name === 'amendment'}">
         <a href ng-click="tab.name = 'amendment'" title="{{'data-access-config.amendment.schema-form.title' | translate}}"><i class="fa fa-wpforms"></i></a>
       </li>
@@ -108,6 +111,13 @@
     </div>
 
   </div>
+
+  <div ng-show="tab.name === 'feasibility'">
+    <span class="config-navigation"><h3 class="config-navigation-item" ng-class="{'active': tab.name === 'feasibility'}" translate>data-access-config.feasibility.schema-form.title</h3></span>
+    <p class="help-block" translate>data-access-config.feasibility.schema-form.info</p>
+    <entity-sf-config form="formFeasibility" alert-id="DataAccessConfigController" dirty-observable="state.getDirtyObservable()"></entity-sf-config>
+  </div>
+
   <div ng-show="tab.name === 'amendment'">
     <span class="config-navigation"><h3 class="config-navigation-item" ng-class="{'active': tab.name === 'amendment'}" translate>data-access-config.amendment.schema-form.title</h3></span>
     <p class="help-block" translate>data-access-config.amendment.schema-form.info</p>

@@ -1517,6 +1517,57 @@
       }
     }
   },
+  "data-access-feasibility": {
+    "default": {
+      "form-title": "Demande de faisabilité",
+      "grant-submission": {
+        "title": "Détails de la demande de finance",
+        "check": "Ce formulaire de faisabilité est-il pour une demande de financement?"
+      },
+      "granting-agency": "Nom de l'agence de financement",
+      "grant-competition": "Nom de l'appel à projets",
+      "grant-date": "Date limite de soumission de la demande de financement",
+      "applicant-info": {
+        "title": "Information sur le demandeur"
+      },
+      "pi": "Investigateur principal",
+      "career": {
+        "title": "Carrière",
+        "inv-early": "Chercheur indépendant - Débutant (0 - 5 ans)",
+        "inv-mid": "Chercheur indépendant - Intermédiaire (5 - 15 ans)",
+        "inv-senior": "Chercheur indépendant - Senior (15+ ans)",
+        "student": "Etudiant diplomé",
+        "postdoc": "Postdoc",
+        "other": "Autre",
+        "other-career": "Autre carrière"
+      },
+      "current-position": "Poste actuel",
+      "pi-email": "Courriel de l'investigateur",
+      "pi-phone": "Numéro de téléphone de l'investigateur",
+      "pi-address": "Adresse postale de l'investigateur",
+      "project-info": "Présentation du projet",
+      "project-title": "Titre du projet",
+      "project-objectives": "Contexte et objectifs du projet",
+      "data": {
+        "title": "Données demandées"
+      },
+      "datasets":  "Préciser les ensembles de données et le type de données",
+      "selection-criteria": "Critère de sélection des participants pour lesquels des données sont demandées",
+      "study-design": "Conception de l'étude proposée et méthodes d'analyse statistique envisagées",
+      "biospecimens": {
+        "title": "Echantillons biologiques demandés",
+        "check": "Ce formulaire de faisabilité inclut-il un accès à des échantillons biologiques?"
+      },
+      "biospecimens-type": "Préciser le type, le nombre et le volume",
+      "biospecimens-selection-criteria": "Critères de sélection des participants pour lesquels des échantillons biologiques sont demandés",
+      "biospecimens-pre-analytical-characteristics": "Caractéristiques pré-analyse des échantillons biologiques, si applicable",
+      "biospecimens-analyze-methods": "Méthodes d'analyse envisagées pour les échantillons biologiques",
+      "linkage": {
+        "title": "Liens avec d'autres ensembles de données"
+      },
+      "data-linkage": "Données qui seront liées aux données demandées (préciser quel(s) ensembles de données, le type de données et leur origine), si applicable"
+    }
+  },
   "data-access-requests": "Demandes d'accès aux données",
   "data-access-request": {
     "applicant": "Demandeur",
@@ -1892,6 +1943,12 @@
       "summary-field-help": "Le résumé simplifié de l'amendement.",
       "end-date-field": "Champ Date de fin",
       "end-date-field-help": "La date de fin déclarée dans l'amendement."
+    },
+    "feasibility": {
+      "schema-form": {
+        "title": "Formulaire de faisabilité",
+        "info": "Le formulaire de faisabilité peut être spécifié à la fois en termes de structure de données (schéma) et d'affichage des données et validation (définition). Voir <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>documentation du Schema Form</a> pour plus de détails."
+      }
     }
   },
   "key-list": {

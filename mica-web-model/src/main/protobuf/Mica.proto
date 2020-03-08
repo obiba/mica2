@@ -901,6 +901,12 @@ message DataAccessFormDto {
   optional int32 nbOfDaysBeforeReport = 42;
 }
 
+message DataAccessFeasibilityFormDto {
+  required string schema = 1;
+  required string definition = 2;
+  optional string csvExportFormat = 6;
+}
+
 message DataAccessAmendmentFormDto {
   required string schema = 1;
   required string definition = 2;
