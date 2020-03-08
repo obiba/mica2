@@ -19,6 +19,12 @@ const TYPES_TARGETS_MAP = {
   networks: 'network'
 };
 
+BUCKETS = {
+  STUDY: 'studyId',
+  DCE: 'dceId',
+  DATASET: 'datasetId'
+};
+
 const TARGETS_TYPES_MAP = {
   variable: 'variables',
   dataset: 'datasets',
@@ -57,6 +63,9 @@ const EVENTS = {
 
 const OPERATOR_NODES = ['and','or'];
 const CRITERIA_NODES = ['contains', 'in', 'out', 'eq', 'gt', 'ge', 'lt', 'le', 'between', 'match', 'exists', 'missing'];
+const AGGREGATE = 'aggregate';
+const BUCKET = 'bucket';
+
 
 /**
  * Base class used to build quries and for CRUD operations
@@ -247,17 +256,19 @@ class EntityQuery {
     return this.prepareForSelection(tree, type);
   }
 
-  prepareForCoverage(tree, from, size) {
+  prepareForCoverage(tree, bucket) {
     if (tree) {
       let variableQuery = tree.search(name => TARGETS.VARIABLE === name);
       if (variableQuery) {
         // TODO: should the coverage be limited to MLSTR taxonomies?
         const coveragePossible = tree.search((name, args) => {
-          return args.some(arg => typeof arg === 'string' && arg.search(/Mlstr/))
+          return args.some(arg => typeof arg === 'string' && arg.search(/Mlstr/) > -1)
         });
 
         if (coveragePossible) {
-          console.log('Something to work on...');
+          // aggregation
+          tree.addQuery(variableQuery, new RQL.Query(AGGREGATE, [new RQL.Query(BUCKET, [bucket])]));
+          return tree;
         }
       }
     }
@@ -346,6 +357,17 @@ class MicaQueryExecutor {
   }
 
   /**
+   * Ensure a valid type either supplied by the payload or url
+   */
+  __getBucketType(urlSearchParams, display) {
+    if (DISPLAYS.COVERAGE === display) {
+      return urlSearchParams.hasOwnProperty(BUCKET) ? BUCKETS[urlSearchParams[BUCKET]]: BUCKETS.STUDY;
+    }
+
+    return null;
+  }
+
+  /**
    * Ensure a valid display either supplied by the payload or url
    */
   __ensureValidDisplay(urlSearchParams, display) {
@@ -385,6 +407,7 @@ class MicaQueryExecutor {
       case TYPES.NETWORKS:
         const entityQuery = this._query[type];
         const display = this.__ensureValidDisplay(urlParts.hash, payload.display);
+        const bucket = this.__getBucketType(urlParts.searchParams, display);
         let tree = this.getTree(urlParts);
 
         switch (eventId) {
@@ -404,26 +427,48 @@ class MicaQueryExecutor {
             tree = entityQuery.prepareForPaginate(tree, type, payload.target, payload.from, payload.size);
             break;
           case EVENTS.QUERY_TYPE_COVERAGE:
-            tree = entityQuery.prepareForCoverage(tree, payload.from, payload.size);
+            tree = entityQuery.prepareForCoverage(tree, bucket);
             break;
         }
 
         if (tree) {
-          this.__executeQuery(tree, type, display, payload.noUrlUpdate);
+          switch (display) {
+            case DISPLAYS.COVERAGE:
+              this.__executeCoverage(tree, type, display, bucket, payload.noUrlUpdate);
+              break;
+
+            case DISPLAYS.LISTS:
+              this.__executeQuery(tree, type, display, payload.noUrlUpdate);
+              break;
+          }
+
+          break;
         }
-
-        break;
-
-
-      // for other queries
-      default:
-        break;
     }
   }
 
   getTree(parts) {
     const urlParts = parts || this.__parseUrl();
     return this.__getQueryTreeFromUrl(urlParts.searchParams);
+  }
+
+  getTreeQueries(parts) {
+    const tree = this.getTree(parts);
+    const validNodes = CRITERIA_NODES.concat(OPERATOR_NODES);
+    let queries = {};
+
+    for (const target in TARGETS) {
+      let targetQuery = tree.search((name) => {
+        return name === TARGETS[target]
+      });
+
+      if (targetQuery) {
+        targetQuery.args = targetQuery.args.filter(arg => validNodes.indexOf(arg.name) > -1);
+        queries[target] = targetQuery;
+      }
+    }
+
+    return queries;
   }
 
   /**
@@ -437,6 +482,7 @@ class MicaQueryExecutor {
    */
   __executeQuery(tree, type ,display, noUrlUpdate) {
     console.log(`__executeQuery`);
+
     axios
       .get(`../ws/${type}/_rql?query=${tree.serialize()}`)
       .then(response => {
@@ -444,24 +490,49 @@ class MicaQueryExecutor {
         tree.findAndDeleteQuery((name) => 'fields' === name);
         tree.findAndDeleteQuery((name) => 'sort' === name);
         const limitQuery = tree.search((name, args, parent) => 'limit' === name && TYPES_TARGETS_MAP[type] === parent.name);
-
         this.__updateLocation(type, display, tree.serialize(), noUrlUpdate);
 
         EventBus.$emit(`${type}-results`, {response: response.data, from: limitQuery.args[0], size: limitQuery.args[1]});
       });
   }
 
-  __updateLocation(type, display, query, replace) {
-    console.log(`__updateLocation ${type} ${display} ${query} - history states ${history.length}`);
-    this._eventBus.$emit('location-updated', {type: type, display: display});
+  /**
+   * Executes a coverage and emits a result event
+   *
+   * @param tree
+   * @param type
+   * @param display
+   * @param noUrlUpdate
+   * @private
+   */
+  __executeCoverage(tree, type, display, noUrlUpdate, bucket) {
+    console.log(`__executeCoverage`);
 
-    const urlSearch = [`type=${type}`, `query=${query}`].join('&');
+    axios
+      .get(`../ws/variables/_coverage?query=${tree.serialize()}`)
+      .then(response => {
+        tree.findAndDeleteQuery((name) => AGGREGATE === name);
+        this.__updateLocation(type, display, tree.serialize(), noUrlUpdate, bucket);
+        EventBus.$emit(`coverage-results`, {response: response.data});
+      });
+  }
+
+  __updateLocation(type, display, query, replace, bucket) {
+    console.log(`__updateLocation ${type} ${display} ${query} - history states ${history.length}`);
+    let params = [`type=${type}`, `query=${query}`];
+    if (bucket) {
+      params.push(`bucket=${bucket}`);
+    }
+
+    const urlSearch = params.join('&');
     const hash = `${display}?${urlSearch}`;
     if(replace) {
       history.replaceState(null, "", `#${hash}`);
     } else {
       history.pushState(null, "", `#${hash}`);
     }
+
+    this._eventBus.$emit('location-updated', {type: type, display: display});
   }
 
   /**
