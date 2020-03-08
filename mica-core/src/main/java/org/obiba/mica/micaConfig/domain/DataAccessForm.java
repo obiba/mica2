@@ -87,6 +87,8 @@ public class DataAccessForm extends AbstractDataAccessEntityForm {
 
   private List<String> predefinedActions = null;
 
+  private boolean feasibilityEnabled = false;
+
   private boolean amendmentsEnabled = false;
 
   private boolean daoCanEdit = false;
@@ -315,6 +317,14 @@ public class DataAccessForm extends AbstractDataAccessEntityForm {
 
   public void setPredefinedActions(List<String> predefinedActions) {
     this.predefinedActions = predefinedActions;
+  }
+
+  public boolean isFeasibilityEnabled() {
+    return feasibilityEnabled;
+  }
+
+  public void setFeasibilityEnabled(boolean feasibilityEnabled) {
+    this.feasibilityEnabled = feasibilityEnabled;
   }
 
   public boolean isAmendmentsEnabled() {
