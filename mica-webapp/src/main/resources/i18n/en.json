@@ -1520,6 +1520,57 @@
       }
     }
   },
+  "data-access-feasibility": {
+    "default": {
+      "form-title": "Feasibility Inquiry",
+      "grant-submission": {
+        "title": "Grant Submission Details",
+        "check": "This feasibility form is for a grant submission?"
+      },
+      "granting-agency": "Name of granting agency",
+      "grant-competition": "Name of grant competition",
+      "grant-date": "Grant due date",
+      "applicant-info": {
+        "title": "Applicant Information"
+      },
+      "pi": "Principal Investigator",
+      "career": {
+        "title": "Career",
+        "inv-early": "Independent Investigator - Early Career (0 - 5 years)",
+        "inv-mid": "Independent Investigator - Mid Career (5 - 15 years)",
+        "inv-senior": "Independent Investigator - Senior (15+ years)",
+        "student": "Graduate Student",
+        "postdoc": "Postdoc Fellow",
+        "other": "Other",
+        "other-career": "Other Career"
+      },
+      "current-position": "Current Position",
+      "pi-email": "PI Email Address",
+      "pi-phone": "PI Phone Number",
+      "pi-address": "PI Mailing Address",
+      "project-info": "Project Overview",
+      "project-title": "Title of project",
+      "project-objectives": "Project background and objectives",
+      "data": {
+        "title": "Data Sought"
+      },
+      "datasets":  "Specify dataset(s) and type of data",
+      "selection-criteria": "Selection criteria for participants on whom data is sought",
+      "study-design": "Proposed study design and statistical methods for analyzing data",
+      "biospecimens": {
+        "title": "Biospecimens Sought",
+        "check": "This feasibility form includes access to biospecimens?"
+      },
+      "biospecimens-type": "Specify type, number, and volume",
+      "biospecimens-selection-criteria": "Selection criteria for participants on whom biospecimens are sought",
+      "biospecimens-pre-analytical-characteristics": "Biospecimens pre-analytical characteristics required, if applicable",
+      "biospecimens-analyze-methods": "Proposed methods for analyzing biospecimens",
+      "linkage": {
+        "title": "Linkage of Participants with Other Datasets"
+      },
+      "data-linkage": "Data to be linked (specify dataset(s), type of data, and their source), if applicable"
+    }
+  },
   "data-access-requests": "Data Access Requests",
   "data-access-request": {
     "applicant": "Applicant",
@@ -1897,6 +1948,12 @@
       "summary-field-help": "The lay summary of the amendment.",
       "end-date-field": "End Date Field",
       "end-date-field-help": "The end date of the project declared in the amendment. If no end date can be identified either in the request form or in an amendment form, no report notifications will be sent."
+    },
+    "feasibility": {
+      "schema-form": {
+        "title": "Feasibility Form",
+        "info": "The feasibility form can be specified both in terms of data structure (schema) and data display and validation (definition). See <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>form schema documentation</a> for more details."
+      }
     }
   },
   "key-list": {

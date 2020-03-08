@@ -499,6 +499,16 @@ public class Dtos {
   }
 
   @NotNull
+  public Mica.DataAccessFeasibilityFormDto asDto(@NotNull DataAccessFeasibilityForm dataAccessFeasibilityForm, DataAccessForm dataAccessForm) {
+    return micaConfigDtos.asDto(dataAccessFeasibilityForm, dataAccessForm);
+  }
+
+  @NotNull
+  public DataAccessFeasibilityForm fromDto(@NotNull Mica.DataAccessFeasibilityFormDto dto) {
+    return micaConfigDtos.fromDto(dto);
+  }
+
+  @NotNull
   public Mica.DataAccessAmendmentFormDto asDto(@NotNull DataAccessAmendmentForm dataAccessAmendmentForm, DataAccessForm dataAccessForm) {
     return micaConfigDtos.asDto(dataAccessAmendmentForm, dataAccessForm);
   }
