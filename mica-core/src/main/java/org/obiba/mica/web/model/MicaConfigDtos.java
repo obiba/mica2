@@ -407,6 +407,24 @@ class MicaConfigDtos {
     return dataAccessForm;
   }
 
+  Mica.DataAccessFeasibilityFormDto asDto(@NotNull DataAccessFeasibilityForm dataAccessFeasibilityForm,
+                                        @NotNull DataAccessForm dataAccessForm) {
+    Mica.DataAccessFeasibilityFormDto.Builder builder = Mica.DataAccessFeasibilityFormDto.newBuilder()
+      .setDefinition(dataAccessFeasibilityForm.getDefinition()).setSchema(dataAccessFeasibilityForm.getSchema())
+      .setCsvExportFormat(dataAccessFeasibilityForm.getCsvExportFormat());
+    return builder.build();
+  }
+
+  DataAccessFeasibilityForm fromDto(@NotNull Mica.DataAccessFeasibilityFormDto dto) {
+    DataAccessFeasibilityForm dataAccessFeasibilityForm = new DataAccessFeasibilityForm();
+
+    dataAccessFeasibilityForm.setSchema(dto.getSchema());
+    dataAccessFeasibilityForm.setDefinition(dto.getDefinition());
+    dataAccessFeasibilityForm.setCsvExportFormat(dto.getCsvExportFormat());
+
+    return dataAccessFeasibilityForm;
+  }
+
   Mica.DataAccessAmendmentFormDto asDto(@NotNull DataAccessAmendmentForm dataAccessAmendmentForm,
                                         @NotNull DataAccessForm dataAccessForm) {
     Mica.DataAccessAmendmentFormDto.Builder builder = Mica.DataAccessAmendmentFormDto.newBuilder()
