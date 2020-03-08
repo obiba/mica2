@@ -899,6 +899,7 @@ message DataAccessFormDto {
   required bool notifyIntermediateReport = 40;
   optional string intermediateReportSubject = 41;
   optional int32 nbOfDaysBeforeReport = 42;
+  required bool feasibilityEnabled = 43;
 }
 
 message DataAccessFeasibilityFormDto {

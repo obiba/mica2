@@ -1814,6 +1814,8 @@
     "saved": "Formulaire d'accès aux données a été mis à jour avec succès.",
     "amendments-enabled": "Activer les amendements.",
     "amendments-enabled-help":"Permet d'amender des modifications à une demande d'accès aux données approuvée.",
+    "feasibility-enabled": "Activer la demande de faisabilité.",
+    "feasibility-enabled-help":"Permet d'investiguer la faisabilité d'une demande d'accès aux données.",
     "pdf-download": {
       "title": "Télécharger le PDF",
       "info": "Les données collectées dans le formulaire peuvent être représentées dans un fichier PDF. Choisissez l'une des options suivantes:"
@@ -1854,6 +1856,10 @@
       "title": "Noms d'actions prédéfinies",
       "help": "Un nom d'action est une clé de traduction qui doit être précédée de <strong>data-access-request.action-log.config.label.</strong>, <a href='#/admin/translations/edit?filter=data-access-request.action-log.config.label.'>voici</a> où vous pouvez ajouter de nouvelles traductions.",
       "action-logs-permission": "Appliquer la même permission à tous les actions associées"
+    },
+    "settings": {
+      "title": "Paramètres",
+      "info": "Activer des formulaires complémentaires et modifier des permissions."
     },
     "id-generation": {
       "title": "Generation d'ID",

@@ -1817,6 +1817,8 @@
     "saved": "Data Access Form is successfully updated.",
     "amendments-enabled": "Enable Amendments.",
     "amendments-enabled-help":"Enable the capability of requesting amendments to an approved data access request.",
+    "feasibility-enabled": "Enable Feasibility Inquiry.",
+    "feasibility-enabled-help":"Enable the capability of inquiring for feasibility of a data access request.",
     "pdf-download": {
       "title": "PDF Download",
       "info": "The data collected in the form can be rendered in a PDF file. Choose one of the following options:"
@@ -1857,6 +1859,10 @@
       "title": "Predefined Action Names",
       "help": "An action name is a translation key that must be preceded by <strong>data-access-request.action-log.config.label.</strong>, <a href='#/admin/translations/edit?filter=data-access-request.action-log.config.label.'>here is</a> where you can add new translations.",
       "action-logs-permission": "Apply the same permission to associated action logs"
+    },
+    "settings": {
+      "title": "General",
+      "info": "Alternate forms and permissions can be enabled."
     },
     "id-generation": {
       "title": "ID Generation",
