@@ -21,6 +21,7 @@ import org.obiba.mica.micaConfig.service.TaxonomyService;
 import org.obiba.mica.spi.search.Indexer;
 import org.obiba.mica.spi.search.TaxonomyTarget;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
+import org.obiba.opal.core.domain.taxonomy.Vocabulary;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
@@ -116,11 +117,16 @@ public class TaxonomyIndexer {
   private void index(TaxonomyTarget target, List<Taxonomy> taxonomies) {
     taxonomies.forEach(taxo -> {
       indexer.index(Indexer.TAXONOMY_INDEX, new TaxonomyIndexable(target, taxo));
-      if(taxo.hasVocabularies()) taxo.getVocabularies().forEach(voc -> {
-        indexer.index(Indexer.VOCABULARY_INDEX, new TaxonomyVocabularyIndexable(target, taxo, voc));
-        if(voc.hasTerms()) voc.getTerms().forEach(
-          term -> indexer.index(Indexer.TERM_INDEX, new TaxonomyTermIndexable(target, taxo, voc, term)));
-      });
+      if(taxo.hasVocabularies()) {
+        List<Vocabulary> vocabularies = taxo.getVocabularies();
+
+        indexer.indexAllIndexables(Indexer.VOCABULARY_INDEX, vocabularies.stream().map(voc -> new TaxonomyVocabularyIndexable(target, taxo, voc)).collect(Collectors.toList()));
+        vocabularies.forEach(voc -> {
+          if (voc.hasTerms()) {
+            indexer.indexAllIndexables(Indexer.TERM_INDEX, voc.getTerms().stream().map(term -> new TaxonomyTermIndexable(target, taxo, voc, term)).collect(Collectors.toList()));
+          }
+        });
+      }
     });
   }
 }
