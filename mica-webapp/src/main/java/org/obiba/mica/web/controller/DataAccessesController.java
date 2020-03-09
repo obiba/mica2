@@ -3,6 +3,7 @@ package org.obiba.mica.web.controller;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import org.obiba.mica.access.service.DataAccessAmendmentService;
+import org.obiba.mica.access.service.DataAccessFeasibilityService;
 import org.obiba.mica.access.service.DataAccessRequestService;
 import org.obiba.mica.access.service.DataAccessRequestUtilService;
 import org.obiba.mica.micaConfig.NoSuchDataAccessFormException;
@@ -37,6 +38,9 @@ public class DataAccessesController extends BaseController {
   private DataAccessAmendmentService dataAccessAmendmentService;
 
   @Inject
+  private DataAccessFeasibilityService dataAccessFeasibilityService;
+
+  @Inject
   private UserProfileService userProfileService;
 
   @Inject
@@ -68,7 +72,8 @@ public class DataAccessesController extends BaseController {
     return dataAccessRequestService.findByStatus(status).stream() //
       .filter(req -> isPermitted("/data-access-request", "VIEW", req.getId()))
       .map(req -> new DataAccessRequestBundle(req, dataAccessRequestUtilService.getRequestTitle(req),
-        dataAccessAmendmentService.countByParentId(req.getId()), dataAccessAmendmentService.countPendingByParentId(req.getId())))
+        dataAccessAmendmentService.countByParentId(req.getId()), dataAccessAmendmentService.countPendingByParentId(req.getId()),
+        dataAccessFeasibilityService.countByParentId(req.getId()), dataAccessFeasibilityService.countPendingByParentId(req.getId())))
       .collect(Collectors.toList());
   }
 

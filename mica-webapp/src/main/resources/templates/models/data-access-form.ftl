@@ -17,7 +17,7 @@
   </#if>
 </#macro>
 
-<!-- Help section, can be adapted to data access request status -->
+<!-- Help section, can be adapted to data access amendment status -->
 <#macro dataAccessAmendmentFormHelp amendment>
     <#if amendment.status == "OPENED">
         <@message "data-access-amendment-form-opened-help"/>
@@ -32,4 +32,17 @@
     <#elseif amendment.status == "REJECTED">
         <@message "data-access-amendment-form-rejected-help"/>
     </#if>
+</#macro>
+
+<!-- Help section, can be adapted to data access feasibility status -->
+<#macro dataAccessFeasibilityFormHelp feasibility>
+  <#if feasibility.status == "OPENED">
+    <@message "data-access-feasibility-form-opened-help"/>
+  <#elseif feasibility.status == "SUBMITTED">
+    <@message "data-access-feasibility-form-submitted-help"/>
+  <#elseif feasibility.status == "APPROVED">
+    <@message "data-access-feasibility-form-approved-help"/>
+  <#elseif feasibility.status == "REJECTED">
+    <@message "data-access-feasibility-form-rejected-help"/>
+  </#if>
 </#macro>

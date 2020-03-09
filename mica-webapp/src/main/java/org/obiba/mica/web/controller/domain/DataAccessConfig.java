@@ -11,6 +11,7 @@ public class DataAccessConfig {
   private final boolean withConditionalApproval;
   private final boolean approvedFinal;
   private final boolean rejectedFinal;
+  private final boolean feasibilityEnabled;
   private final boolean amendmentsEnabled;
 
   public DataAccessConfig(DataAccessForm form) {
@@ -18,6 +19,7 @@ public class DataAccessConfig {
     this.withConditionalApproval = form.isWithConditionalApproval();
     this.approvedFinal = form.isApprovedFinal();
     this.rejectedFinal = form.isRejectedFinal();
+    this.feasibilityEnabled = form.isFeasibilityEnabled();
     this.amendmentsEnabled = form.isAmendmentsEnabled();
   }
 
@@ -39,5 +41,9 @@ public class DataAccessConfig {
 
   public boolean isAmendmentsEnabled() {
     return amendmentsEnabled;
+  }
+
+  public boolean isFeasibilityEnabled() {
+    return feasibilityEnabled;
   }
 }

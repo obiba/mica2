@@ -11,15 +11,19 @@ public class DataAccessRequestBundle {
   private final String title;
   private final int totalAmendments;
   private final int pendingAmendments;
+  private final int totalFeasibilities;
+  private final int pendingFeasibilities;
   private DateTime submitDate;
 
-  public DataAccessRequestBundle(DataAccessRequest request, String title, int totalAmendments, int pendingAmendments) {
+  public DataAccessRequestBundle(DataAccessRequest request, String title, int totalAmendments, int pendingAmendments, int totalFeasibilities, int pendingFeasibilities) {
     this.id = request.getId();
     this.request = request;
     this.title = title;
     this.submitDate = request.getSubmissionDate();
     this.totalAmendments = totalAmendments;
     this.pendingAmendments = pendingAmendments;
+    this.totalFeasibilities = totalFeasibilities;
+    this.pendingFeasibilities = pendingFeasibilities;
   }
 
   public String getId() {
@@ -56,5 +60,13 @@ public class DataAccessRequestBundle {
 
   public int getPendingAmendments() {
     return pendingAmendments;
+  }
+
+  public int getTotalFeasibilities() {
+    return totalFeasibilities;
+  }
+
+  public int getPendingFeasibilities() {
+    return pendingFeasibilities;
   }
 }
