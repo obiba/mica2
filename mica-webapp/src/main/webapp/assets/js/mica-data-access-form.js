@@ -300,12 +300,12 @@ angular.module('formModule', ['schemaForm', 'hc.marked', 'angularMoment', 'schem
         micajs.warning(formMessages.validationError);
       }
     };
-    $scope.save = function (id, aId) {
+    $scope.save = function (id, type, aId) {
       var url = '../../ws/data-access-request/' + id + '/model';
       var redirect = '../../data-access-form/' + id;
-      if (aId) {
-        url = '../../ws/data-access-request/' + id + '/amendment/' + aId + '/model';
-        redirect = '../../data-access-amendment-form/' + aId;
+      if (type && aId) {
+        url = '../../ws/data-access-request/' + id + '/' + type + '/' + aId + '/model';
+        redirect = '../../data-access-' + type + '-form/' + aId;
       }
       axios.put(
         url,
@@ -319,11 +319,11 @@ angular.module('formModule', ['schemaForm', 'hc.marked', 'angularMoment', 'schem
         console.dir(response);
       });
     };
-    $scope.submit = function (id, aId) {
+    $scope.submit = function (id, type, aId) {
       $scope.$broadcast('schemaFormValidate');
       // check if the form is valid
       if ($scope.forms.requestForm.$valid) {
-        micajs.dataAccess.submit(id, aId);
+        micajs.dataAccess.submit(id, type, aId);
       } else {
         // an invalid form cannot be submitted
         micajs.error(formMessages.validationErrorOnSubmit);

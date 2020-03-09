@@ -808,6 +808,14 @@ message DataAccessAmendmentDto {
   }
 }
 
+message DataAccessFeasibilityDto {
+  required string parentId = 1;
+
+  extend DataAccessRequestDto {
+    required DataAccessFeasibilityDto feasibility = 1001;
+  }
+}
+
 message TimelineDto {
   required string startDate = 1;
   required string endDate = 2;

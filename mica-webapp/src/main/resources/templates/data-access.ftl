@@ -72,7 +72,7 @@
     <!-- Main content -->
     <section class="content">
       <div class="row">
-        <div class="col-md-3 col-sm-6 col-12">
+        <div class="col-md-3 col-sm-6">
 
             <#if dar.status.toString() == "OPENED">
                 <#assign boxIcon = "fa fa-pen"/>
@@ -123,9 +123,54 @@
           <!-- /.info-box -->
         </div>
 
+        <#if lastFeasibility??>
+
+          <div class="col-md-3 col-sm-6">
+            <#if lastFeasibility.status.toString() == "OPENED">
+              <#assign boxIcon = "fa fa-pen"/>
+              <#assign boxProgress = "10"/>
+              <#assign boxText = "data-access-feasibility-progress-opened"/>
+            <#elseif lastFeasibility.status.toString() == "APPROVED">
+              <#assign boxIcon = "fa fa-check"/>
+              <#assign boxProgress = "100"/>
+              <#assign boxText = "data-access-feasibility-progress-approved"/>
+            <#elseif lastFeasibility.status.toString() == "REJECTED">
+              <#assign boxIcon = "fa fa-ban"/>
+              <#assign boxProgress = "100"/>
+              <#assign boxText = "data-access-feasibility-progress-rejected"/>
+            <#elseif lastFeasibility.status.toString() == "SUBMITTED">
+              <#assign boxIcon = "far fa-clock"/>
+              <#assign boxProgress = "30"/>
+              <#assign boxText = "data-access-feasibility-progress-submitted"/>
+            <#else>
+              <#assign boxIcon = "far fa-clock"/>
+              <#assign boxProgress = "50"/>
+              <#assign boxText = ""/>
+            </#if>
+
+            <div class="info-box bg-${statusColor(lastFeasibility.status.toString())}">
+              <span class="info-box-icon"><i class="${boxIcon}"></i></span>
+
+              <div class="info-box-content">
+                <span class="info-box-text"><@message "last-feasibility-status"/> - <a class="text-white" href="../data-access-feasibility-form/${lastFeasibility.id}">${lastFeasibility.id}</a></span>
+                <span class="info-box-number"><@message lastFeasibility.status.toString()/></span>
+
+                <div class="progress">
+                  <div class="progress-bar" style="width: ${boxProgress}%"></div>
+                </div>
+                <span class="progress-description">
+                  <small><@message boxText/></small>
+                </span>
+              </div>
+              <!-- /.info-box-content -->
+            </div>
+            <!-- /.info-box -->
+          </div>
+        </#if>
+
         <#if lastAmendment??>
 
-          <div class="col-md-3 col-sm-6 col-12">
+          <div class="col-md-3 col-sm-6">
             <#if lastAmendment.status.toString() == "OPENED">
               <#assign boxIcon = "fa fa-pen"/>
               <#assign boxProgress = "10"/>
@@ -182,7 +227,7 @@
         <div class="col-12">
           <div class="callout callout-info">
             <p>
-              This is the dashboard of the data access request.
+              <@message "data-access-dashboard-callout"/>
             </p>
           </div>
         </div>
@@ -364,61 +409,98 @@
         <!-- /.col-6 -->
         <div class="col-sm-12 col-lg-6">
 
-            <#if user.username != applicant.username>
-              <div class="card card-info card-outline">
-                <div class="card-header">
-                  <h3 class="card-title"><@message "applicant"/></h3>
-                  <div class="card-tools">
-                    <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i>
-                    </button>
-                  </div>
-                </div>
-                <div class="card-body">
-                  <@userProfile profile=applicant/>
-                </div>
-                <div class="card-footer">
-                  <a href="${pathPrefix}/data-access-comments/${dar.id}"><@message "send-message"/> <i
-                            class="fas fa-arrow-circle-right"></i></a>
+          <#if user.username != applicant.username>
+            <div class="card card-info card-outline">
+              <div class="card-header">
+                <h3 class="card-title"><@message "applicant"/></h3>
+                <div class="card-tools">
+                  <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i>
+                  </button>
                 </div>
               </div>
-            </#if>
+              <div class="card-body">
+                <@userProfile profile=applicant/>
+              </div>
+              <div class="card-footer">
+                <a href="${pathPrefix}/data-access-comments/${dar.id}"><@message "send-message"/> <i
+                          class="fas fa-arrow-circle-right"></i></a>
+              </div>
+            </div>
+          </#if>
 
-            <#if accessConfig.amendmentsEnabled && dar.status.toString() == "APPROVED">
-              <div class="card card-info card-outline">
-                <div class="card-header">
-                  <h3 class="card-title"><@message "amendments"/></h3>
-                  <div class="float-right">
-                    <#if user.username == dar.applicant || isAdministrator>
-                      <button type="button" class="btn btn-primary ml-4" data-toggle="modal" data-target="#modal-amendment-add">
-                        <i class="fas fa-plus"></i> <@message "new-amendment"/>
-                      </button>
-                    </#if>
-                  </div>
-                </div>
-                <div class="card-body">
-                  <table id="amendments" class="table table-bordered table-striped">
-                    <thead>
-                    <tr>
-                      <th>ID</th>
-                      <th>Last Update</th>
-                      <th>Submission Date</th>
-                      <th>Status</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <#list amendments as amendment>
-                    <tr>
-                      <td><a href="../data-access-amendment-form/${amendment.id}">${amendment.id}</a></td>
-                      <td class="moment-datetime">${amendment.lastModifiedDate.toString(datetimeFormat)}</td>
-                      <td class="moment-datetime"><#if amendment.submissionDate??>${dar.submissionDate.toString(datetimeFormat)}</#if></td>
-                      <td><i class="fas fa-circle text-${statusColor(amendment.status.toString())}"></i> <@message amendment.status.toString()/></td>
-                    </tr>
-                    </#list>
-                    </tbody>
-                  </table>
+          <#if accessConfig.feasibilityEnabled>
+            <div class="card card-info card-outline">
+              <div class="card-header">
+                <h3 class="card-title"><@message "feasibilities"/></h3>
+                <div class="float-right">
+                  <#if user.username == dar.applicant || isAdministrator>
+                    <button type="button" class="btn btn-primary ml-4" data-toggle="modal" data-target="#modal-feasibility-add">
+                      <i class="fas fa-plus"></i> <@message "new-feasibility"/>
+                    </button>
+                  </#if>
                 </div>
               </div>
-            </#if>
+              <div class="card-body">
+                <table id="feasibilities" class="table table-bordered table-striped">
+                  <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th><@message "last-update"/></th>
+                    <th><@message "submission-date"/></th>
+                    <th><@message "status"/></th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  <#list feasibilities as feasibility>
+                    <tr>
+                      <td><a href="../data-access-feasibility-form/${feasibility.id}">${feasibility.id}</a></td>
+                      <td class="moment-datetime">${feasibility.lastModifiedDate.toString(datetimeFormat)}</td>
+                      <td class="moment-datetime"><#if feasibility.submissionDate??>${feasibility.submissionDate.toString(datetimeFormat)}</#if></td>
+                      <td><i class="fas fa-circle text-${statusColor(feasibility.status.toString())}"></i> <@message feasibility.status.toString()/></td>
+                    </tr>
+                  </#list>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </#if>
+
+          <#if accessConfig.amendmentsEnabled && dar.status.toString() == "APPROVED">
+            <div class="card card-info card-outline">
+              <div class="card-header">
+                <h3 class="card-title"><@message "amendments"/></h3>
+                <div class="float-right">
+                  <#if user.username == dar.applicant || isAdministrator>
+                    <button type="button" class="btn btn-primary ml-4" data-toggle="modal" data-target="#modal-amendment-add">
+                      <i class="fas fa-plus"></i> <@message "new-amendment"/>
+                    </button>
+                  </#if>
+                </div>
+              </div>
+              <div class="card-body">
+                <table id="amendments" class="table table-bordered table-striped">
+                  <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th><@message "last-update"/></th>
+                    <th><@message "submission-date"/></th>
+                    <th><@message "status"/></th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  <#list amendments as amendment>
+                  <tr>
+                    <td><a href="../data-access-amendment-form/${amendment.id}">${amendment.id}</a></td>
+                    <td class="moment-datetime">${amendment.lastModifiedDate.toString(datetimeFormat)}</td>
+                    <td class="moment-datetime"><#if amendment.submissionDate??>${amendment.submissionDate.toString(datetimeFormat)}</#if></td>
+                    <td><i class="fas fa-circle text-${statusColor(amendment.status.toString())}"></i> <@message amendment.status.toString()/></td>
+                  </tr>
+                  </#list>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </#if>
 
         </div>
         <!-- /.col-6 -->

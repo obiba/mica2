@@ -1,9 +1,5 @@
 [
   {
-    "type": "help",
-    "helpvalue": "<h2>t(data-access-feasibility.default.form-title)</h2>"
-  },
-  {
     "type": "fieldset",
     "items": [
       {
@@ -52,7 +48,7 @@
     "items": [
       {
         "type": "help",
-        "helpvalue": "<h3>t(data-access-feasibility.default.applicant-info)</h3>"
+        "helpvalue": "<h3>t(data-access-feasibility.default.applicant-info.title)</h3>"
       }
     ]
   },

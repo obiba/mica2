@@ -5,7 +5,7 @@
 <html lang="${.lang}">
 <head>
     <#include "libs/head.ftl">
-  <title>${config.name!""} | Data Access Amendment ${amendment.id}</title>
+  <title>${config.name!""} | <@message "data-access-amendment"/> ${amendment.id}</title>
 </head>
 <body ng-app="formModule" class="hold-transition sidebar-mini">
 <!-- Site wrapper -->
@@ -27,11 +27,11 @@
         <div class="row">
           <div class="col-sm-8">
             <h1 class="m-0 float-left">
-              <span class="text-white-50">Data Access Amendment /</span> ${amendment.id}
+              <span class="text-white-50"><@message "data-access-amendment"/> /</span> ${amendment.id}
             </h1>
               <#if amendmentPermissions?seq_contains("DELETE")>
                 <button type="button" class="btn btn-danger ml-4" data-toggle="modal" data-target="#modal-delete">
-                  <i class="fas fa-trash"></i> Delete
+                  <i class="fas fa-trash"></i> <@message "delete"/>
                 </button>
               </#if>
           </div>
@@ -58,7 +58,7 @@
           <div class="modal-footer justify-content-between">
             <button type="button" class="btn btn-default" data-dismiss="modal"><@message "cancel"/></button>
             <button type="button" class="btn btn-primary" data-dismiss="modal"
-                    onclick="micajs.dataAccess.delete('${dar.id}', '${amendment.id}')"><@message "confirm"/>
+                    onclick="micajs.dataAccess.delete('${dar.id}', 'amendment', '${amendment.id}')"><@message "confirm"/>
             </button>
           </div>
         </div>
@@ -75,7 +75,7 @@
         <div class="col-12">
           <div class="callout callout-info">
             <p>
-                <@message "data-access-amendment-form-callout"/>
+              <@message "data-access-amendment-form-callout"/>
             </p>
           </div>
         </div>
@@ -94,7 +94,7 @@
                     <a class="btn btn-primary" href="${amendment.id}?edit=true"><i class="fas fa-pen"></i> <@message "edit"/></a>
                   </span>
                     <span class="float-right border-left ml-2 pl-2" ng-hide="schema.readOnly">
-                    <a class="btn btn-primary" href="#" ng-click="save('${dar.id}', '${amendment.id}')"><@message "save"/></a>
+                    <a class="btn btn-primary" href="#" ng-click="save('${dar.id}', 'amendment', '${amendment.id}')"><@message "save"/></a>
                     <a class="btn btn-default" href="${amendment.id}"><@message "cancel"/></a>
                   </span>
                   </#if>
@@ -107,7 +107,7 @@
                               ng-click="validate()"><@message "validate"/></button>
                     <#elseif (amendment.status == "SUBMITTED" && accessConfig.withReview)>
                       <button type="button" class="btn btn-primary"
-                              onclick="micajs.dataAccess.review('${dar.id}', '${amendment.id}')"><@message "review"/></button>
+                              onclick="micajs.dataAccess.review('${dar.id}', 'amendment', '${amendment.id}')"><@message "review"/></button>
                     <#elseif amendment.status == "REVIEWED" || (amendment.status == "SUBMITTED" && !accessConfig.withReview)>
                       <button type="button" class="btn btn-success" data-toggle="modal"
                               data-target="#modal-approve"><@message "approve"/></button>
@@ -151,7 +151,7 @@
                 <div class="modal-footer justify-content-between">
                   <button type="button" class="btn btn-default" data-dismiss="modal"><@message "cancel"/></button>
                   <button type="button" class="btn btn-primary" data-dismiss="modal"
-                          ng-click="submit('${dar.id}', '${amendment.id}')"><@message "confirm"/></button>
+                          ng-click="submit('${dar.id}', 'amendment', '${amendment.id}')"><@message "confirm"/></button>
                 </div>
               </div>
               <!-- /.modal-content -->
@@ -176,7 +176,7 @@
                 <div class="modal-footer justify-content-between">
                   <button type="button" class="btn btn-default" data-dismiss="modal"><@message "cancel"/></button>
                   <button type="button" class="btn btn-primary" data-dismiss="modal"
-                          onclick="micajs.dataAccess.approve('${dar.id}', '${amendment.id}')"><@message "confirm"/></button>
+                          onclick="micajs.dataAccess.approve('${dar.id}', 'amendment', '${amendment.id}')"><@message "confirm"/></button>
                 </div>
               </div>
               <!-- /.modal-content -->
@@ -201,7 +201,7 @@
                 <div class="modal-footer justify-content-between">
                   <button type="button" class="btn btn-default" data-dismiss="modal"><@message "cancel"/></button>
                   <button type="button" class="btn btn-primary" data-dismiss="modal"
-                          onclick="micajs.dataAccess.conditionallyApprove('${dar.id}', '${amendment.id}')"><@message "confirm"/></button>
+                          onclick="micajs.dataAccess.conditionallyApprove('${dar.id}', 'amendment', '${amendment.id}')"><@message "confirm"/></button>
                 </div>
               </div>
               <!-- /.modal-content -->
@@ -226,7 +226,7 @@
                 <div class="modal-footer justify-content-between">
                   <button type="button" class="btn btn-default" data-dismiss="modal"><@message "cancel"/></button>
                   <button type="button" class="btn btn-primary" data-dismiss="modal"
-                          onclick="micajs.dataAccess.reject('${dar.id}', '${amendment.id}')"><@message "confirm"/></button>
+                          onclick="micajs.dataAccess.reject('${dar.id}', 'amendment', '${amendment.id}')"><@message "confirm"/></button>
                 </div>
               </div>
               <!-- /.modal-content -->
@@ -252,10 +252,10 @@
                   <button type="button" class="btn btn-default" data-dismiss="modal"><@message "cancel"/></button>
                     <#if accessConfig.withReview>
                       <button type="button" class="btn btn-primary" data-dismiss="modal"
-                              onclick="micajs.dataAccess.review('${dar.id}', '${amendment.id}')"><@message "confirm"/></button>
+                              onclick="micajs.dataAccess.review('${dar.id}', 'amendment', '${amendment.id}')"><@message "confirm"/></button>
                     <#else>
                       <button type="button" class="btn btn-primary" data-dismiss="modal"
-                              onclick="micajs.dataAccess.submit('${dar.id}', '${amendment.id}')"><@message "confirm"/></button>
+                              onclick="micajs.dataAccess.submit('${dar.id}', 'amendment', '${amendment.id}')"><@message "confirm"/></button>
                     </#if>
                 </div>
               </div>
@@ -282,10 +282,10 @@
                   <button type="button" class="btn btn-default" data-dismiss="modal"><@message "cancel"/></button>
                     <#if accessConfig.withReview>
                       <button type="button" class="btn btn-primary" data-dismiss="modal"
-                              onclick="micajs.dataAccess.review('${dar.id}', '${amendment.id}')"><@message "confirm"/></button>
+                              onclick="micajs.dataAccess.review('${dar.id}', 'amendment', '${amendment.id}')"><@message "confirm"/></button>
                     <#else>
                       <button type="button" class="btn btn-primary" data-dismiss="modal"
-                              onclick="micajs.dataAccess.submit('${dar.id}', '${amendment.id}')"><@message "confirm"/></button>
+                              onclick="micajs.dataAccess.submit('${dar.id}', 'amendment', '${amendment.id}')"><@message "confirm"/></button>
                     </#if>
                 </div>
               </div>
@@ -299,7 +299,7 @@
         <div class="col-sm-12 col-lg-4 d-print-none">
           <div class="card card-info card-outline">
             <div class="card-header">
-              <h3 class="card-title"><@message "help"/></h3>
+              <h3 class="card-title"><@message "instructions"/></h3>
             </div>
             <div class="card-body">
                 <@dataAccessAmendmentFormHelp amendment=amendment/>
