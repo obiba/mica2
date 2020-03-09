@@ -438,7 +438,17 @@ public class Dtos {
   }
 
   @NotNull
-  public Mica.DataAccessRequestDto asAmendentDto(@NotNull DataAccessAmendment amendment) {
+  public Mica.DataAccessRequestDto asFeasibilityDto(@NotNull DataAccessFeasibility feasibility) {
+    return dataAccessRequestDtos.asFeasibilityDto(feasibility);
+  }
+
+  @NotNull
+  public DataAccessFeasibility fromFeasibilityDto(@NotNull Mica.DataAccessRequestDto dto) {
+    return dataAccessRequestDtos.fromFeasibilityDto(dto);
+  }
+
+  @NotNull
+  public Mica.DataAccessRequestDto asAmendmentDto(@NotNull DataAccessAmendment amendment) {
     return dataAccessRequestDtos.asAmendmentDto(amendment);
   }
 

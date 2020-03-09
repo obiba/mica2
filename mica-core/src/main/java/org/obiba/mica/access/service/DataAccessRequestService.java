@@ -19,7 +19,6 @@ import org.joda.time.DateTime;
 import org.obiba.mica.access.DataAccessEntityRepository;
 import org.obiba.mica.access.DataAccessRequestRepository;
 import org.obiba.mica.access.NoSuchDataAccessRequestException;
-import org.obiba.mica.access.domain.DataAccessAmendment;
 import org.obiba.mica.access.domain.DataAccessEntityStatus;
 import org.obiba.mica.access.domain.DataAccessRequest;
 import org.obiba.mica.access.domain.StatusChange;
@@ -58,6 +57,9 @@ public class DataAccessRequestService extends DataAccessEntityService<DataAccess
 
   @Inject
   private DataAccessAmendmentService dataAccessAmendmentService;
+
+  @Inject
+  private DataAccessFeasibilityService dataAccessFeasibilityService;
 
   @Inject
   private DataAccessRequestRepository dataAccessRequestRepository;
@@ -169,6 +171,7 @@ public class DataAccessRequestService extends DataAccessEntityService<DataAccess
     dataAccessRequestRepository.deleteWithReferences(dataAccessRequest);
     schemaFormContentFileService.deleteFiles(dataAccessRequest);
     deleteAmendments(id);
+    deleteFeasibilities(id);
 
     attachments.forEach(a -> fileStoreService.delete(a.getId()));
     eventBus.post(new DataAccessRequestDeletedEvent(dataAccessRequest));
@@ -187,13 +190,20 @@ public class DataAccessRequestService extends DataAccessEntityService<DataAccess
     return ba.toByteArray();
   }
 
+  public boolean isFeasibilityEnabled() {
+    return dataAccessFormService.find().map(DataAccessForm::isFeasibilityEnabled).orElse(false);
+  }
+
   public boolean isAmendmentsEnabled() {
     return dataAccessFormService.find().map(DataAccessForm::isAmendmentsEnabled).orElse(false);
   }
 
   private void deleteAmendments(String id) {
-    List<DataAccessAmendment> amendments = dataAccessAmendmentService.findByParentId(id);
-    amendments.stream().forEach(dataAccessAmendmentService::delete);
+    dataAccessAmendmentService.findByParentId(id).stream().forEach(dataAccessAmendmentService::delete);
+  }
+
+  private void deleteFeasibilities(String id) {
+    dataAccessFeasibilityService.findByParentId(id).stream().forEach(dataAccessFeasibilityService::delete);
   }
 
   private byte[] getTemplate(Locale locale) throws IOException {

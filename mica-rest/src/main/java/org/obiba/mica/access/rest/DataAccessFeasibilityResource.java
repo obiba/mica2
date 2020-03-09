@@ -2,12 +2,11 @@ package org.obiba.mica.access.rest;
 
 
 import com.codahale.metrics.annotation.Timed;
-import java.io.IOException;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.JSONUtils;
 import org.obiba.mica.access.NoSuchDataAccessRequestException;
-import org.obiba.mica.access.domain.DataAccessAmendment;
-import org.obiba.mica.access.service.DataAccessAmendmentService;
+import org.obiba.mica.access.domain.DataAccessFeasibility;
+import org.obiba.mica.access.service.DataAccessFeasibilityService;
 import org.obiba.mica.access.service.DataAccessEntityService;
 import org.obiba.mica.file.FileStoreService;
 import org.obiba.mica.micaConfig.service.DataAccessFormService;
@@ -21,6 +20,7 @@ import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
+import java.io.IOException;
 import java.util.Map;
 
 import static org.slf4j.LoggerFactory.getLogger;
@@ -28,24 +28,24 @@ import static org.slf4j.LoggerFactory.getLogger;
 @Component
 @Scope("request")
 @RequiresAuthentication
-public class DataAccessAmendmentResource extends DataAccessEntityResource<DataAccessAmendment> {
+public class DataAccessFeasibilityResource extends DataAccessEntityResource<DataAccessFeasibility> {
 
-  private static final Logger log = getLogger(DataAccessAmendmentResource.class);
+  private static final Logger log = getLogger(DataAccessFeasibilityResource.class);
 
   private Dtos dtos;
 
-  private DataAccessAmendmentService dataAccessAmendmentService;
+  private DataAccessFeasibilityService dataAccessFeasibilityService;
 
   @Inject
-  public DataAccessAmendmentResource(
+  public DataAccessFeasibilityResource(
     SubjectAclService subjectAclService,
     FileStoreService fileStoreService,
     DataAccessFormService dataAccessFormService,
     Dtos dtos,
-    DataAccessAmendmentService dataAccessAmendmentService) {
+    DataAccessFeasibilityService dataAccessFeasibilityService) {
     super(subjectAclService, fileStoreService, dataAccessFormService);
     this.dtos = dtos;
-    this.dataAccessAmendmentService = dataAccessAmendmentService;
+    this.dataAccessFeasibilityService = dataAccessFeasibilityService;
   }
 
   private String parentId;
@@ -54,10 +54,10 @@ public class DataAccessAmendmentResource extends DataAccessEntityResource<DataAc
 
   @GET
   @Timed
-  public Mica.DataAccessRequestDto getAmendment() {
+  public Mica.DataAccessRequestDto getFeasibility() {
     subjectAclService.checkPermission(getParentResourcePath(), "VIEW", parentId);
-    DataAccessAmendment amendment = dataAccessAmendmentService.findById(id);
-    return dtos.asAmendmentDto(amendment);
+    DataAccessFeasibility feasibility = dataAccessFeasibilityService.findById(id);
+    return dtos.asFeasibilityDto(feasibility);
   }
 
   @GET
@@ -65,7 +65,7 @@ public class DataAccessAmendmentResource extends DataAccessEntityResource<DataAc
   @Produces("application/json")
   public Map<String, Object> getModel() {
     subjectAclService.checkPermission(getResourcePath(), "VIEW", id);
-    return JSONUtils.toMap(dataAccessAmendmentService.findById(id).getContent());
+    return JSONUtils.toMap(dataAccessFeasibilityService.findById(id).getContent());
   }
 
   @PUT
@@ -73,9 +73,9 @@ public class DataAccessAmendmentResource extends DataAccessEntityResource<DataAc
   @Consumes("application/json")
   public Response setModel(String content) {
     subjectAclService.checkPermission(getResourcePath(), "EDIT", id);
-    DataAccessAmendment amendment = dataAccessAmendmentService.findById(id);
-    amendment.setContent(content);
-    dataAccessAmendmentService.save(amendment);
+    DataAccessFeasibility feasibility = dataAccessFeasibilityService.findById(id);
+    feasibility.setContent(content);
+    dataAccessFeasibilityService.save(feasibility);
     return Response.ok().build();
   }
 
@@ -84,8 +84,8 @@ public class DataAccessAmendmentResource extends DataAccessEntityResource<DataAc
   public Response update(Mica.DataAccessRequestDto dto) {
     subjectAclService.checkPermission(getResourcePath(), "EDIT", id);
     if(!id.equals(dto.getId())) throw new BadRequestException();
-    DataAccessAmendment request = dtos.fromAmendmentDto(dto);
-    dataAccessAmendmentService.save(request);
+    DataAccessFeasibility request = dtos.fromFeasibilityDto(dto);
+    dataAccessFeasibilityService.save(request);
     return Response.noContent().build();
   }
 
@@ -95,9 +95,9 @@ public class DataAccessAmendmentResource extends DataAccessEntityResource<DataAc
     subjectAclService.checkPermission(resource, "DELETE", id);
 
     try {
-      dataAccessAmendmentService.delete(id);
+      dataAccessFeasibilityService.delete(id);
     } catch(NoSuchDataAccessRequestException e) {
-      log.error("Could not delete amendment {}", e);
+      log.error("Could not delete feasibility {}", e);
     }
 
     return Response.noContent().build();
@@ -129,8 +129,8 @@ public class DataAccessAmendmentResource extends DataAccessEntityResource<DataAc
   }
 
   @Override
-  protected DataAccessEntityService<DataAccessAmendment> getService() {
-    return dataAccessAmendmentService;
+  protected DataAccessEntityService<DataAccessFeasibility> getService() {
+    return dataAccessFeasibilityService;
   }
 
   private String getParentResourcePath() {
@@ -139,6 +139,6 @@ public class DataAccessAmendmentResource extends DataAccessEntityResource<DataAc
 
   @Override
   String getResourcePath() {
-    return String.format("/data-access-request/%s/amendment", parentId);
+    return String.format("/data-access-request/%s/feasibility", parentId);
   }
 }

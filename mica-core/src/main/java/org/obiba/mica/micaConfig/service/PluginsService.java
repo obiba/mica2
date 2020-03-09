@@ -116,17 +116,22 @@ public class PluginsService implements EnvironmentAware {
   private void initPlugins() {
     Collection<PluginResources> plugins = getPlugins(true);
     String pluginName = pluginsPropertyResolver.getProperty(MICA_SEARCH_PLUGIN_NAME, DEFAULT_MICA_SEARCH_PLUGIN_NAME);
-    String pluginLatestVersion = getPluginRepositoryCache().getPluginLatestVersion(pluginName);
 
-    // ensure there is a mica-search plugin installed
-    if (plugins.stream().noneMatch(p -> "mica-search".equals(p.getType()))
-      || plugins.stream()
-          .filter(plugin -> pluginName.equals(plugin.getName()))
-          .filter(plugin -> plugin.getVersion().compareTo(new Version(pluginLatestVersion)) >= 0).count() == 0) {
-      installPlugin(pluginName, null);
-      // rescan plugins
-      plugins = getPlugins(true);
+    try {
+      String pluginLatestVersion = getPluginRepositoryCache().getPluginLatestVersion(pluginName);
+      // ensure there is a mica-search plugin installed
+      if (plugins.stream().noneMatch(p -> "mica-search".equals(p.getType()))
+        || plugins.stream()
+            .filter(plugin -> pluginName.equals(plugin.getName()))
+            .filter(plugin -> plugin.getVersion().compareTo(new Version(pluginLatestVersion)) >= 0).count() == 0) {
+        installPlugin(pluginName, null);
+        // rescan plugins
+        plugins = getPlugins(true);
+      }
+    } catch (PluginRepositoryException e) {
+      log.error("Cannot initialize plugins properly", e);
     }
+
     boolean micaSearchFound = false; // mica-search plugin is a singleton
     List<PluginResources> filteredPlugins =
       plugins.stream().filter(plugin -> pluginName.equals(plugin.getName()))
