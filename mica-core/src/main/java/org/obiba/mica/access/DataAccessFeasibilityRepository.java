@@ -10,18 +10,18 @@
 
 package org.obiba.mica.access;
 
-import org.obiba.mica.access.domain.DataAccessAmendment;
+import org.obiba.mica.access.domain.DataAccessFeasibility;
 import org.springframework.data.mongodb.repository.Query;
 
 import java.util.List;
 
 /**
- * Spring Data MongoDB repository for the {@link DataAccessAmendment} entity.
+ * Spring Data MongoDB repository for the {@link DataAccessFeasibility} entity.
  */
 
-public interface DataAccessAmendmentRepository extends DataAccessEntityRepository<DataAccessAmendment> {
+public interface DataAccessFeasibilityRepository extends DataAccessEntityRepository<DataAccessFeasibility> {
 
-  List<DataAccessAmendment> findByParentId(String parentId);
+  List<DataAccessFeasibility> findByParentId(String parentId);
 
   int countByParentId(String parentId);
 

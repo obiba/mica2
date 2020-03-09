@@ -101,7 +101,6 @@
     }
   },
   "required": [
-    "grantSubmission",
     "pi",
     "career",
     "currentPosition",
@@ -112,7 +111,6 @@
     "projectObjectives",
     "datasets",
     "selectionCriteria",
-    "studyDesign",
-    "includeBiospecimens"
+    "studyDesign"
   ]
 }

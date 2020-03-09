@@ -197,6 +197,25 @@ class DataAccessRequestDtos {
   }
 
   @NotNull
+  public Mica.DataAccessRequestDto asFeasibilityDto(@NotNull DataAccessFeasibility feasibility) {
+    return asDtoBuilder(feasibility).build();
+  }
+
+  @NotNull
+  public DataAccessFeasibility fromFeasibilityDto(@NotNull Mica.DataAccessRequestDto dto) {
+    DataAccessFeasibility.Builder builder = DataAccessFeasibility.newBuilder();
+    Mica.DataAccessFeasibilityDto extension = dto.getExtension(Mica.DataAccessFeasibilityDto.feasibility);
+    builder.parentId(extension.getParentId());
+
+    fromDto(dto, builder);
+    DataAccessFeasibility feasibility = (DataAccessFeasibility) builder.build();
+    if (dto.hasId()) feasibility.setId(dto.getId());
+    TimestampsDtos.fromDto(dto.getTimestamps(), feasibility);
+
+    return (DataAccessFeasibility) builder.build();
+  }
+
+  @NotNull
   public Mica.DataAccessRequestDto asAmendmentDto(@NotNull DataAccessAmendment amendment) {
     return asDtoBuilder(amendment).build();
   }

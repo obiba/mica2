@@ -163,6 +163,7 @@ public class DataAccessRequestsResource {
     subjectAclService.addPermission("/data-access-request", "VIEW,EDIT,DELETE", request.getId());
     subjectAclService.addPermission("/data-access-request/" + request.getId(), "EDIT", "_status");
     subjectAclService.addPermission("/data-access-request/" + request.getId() + "/_attachments", "EDIT");
+    subjectAclService.addPermission("/data-access-request/" + request.getId() + "/feasibilities", "ADD");
     subjectAclService.addGroupPermission(Roles.MICA_DAO, "/data-access-request/" + request.getId() + "/_attachments", "EDIT", null);
 
     return Response.created(uriInfo.getBaseUriBuilder().segment("data-access-request", request.getId()).build()).build();
