@@ -1,0 +1,119 @@
+<!--
+  ~ Copyright (c) 2018 OBiBa. All rights reserved.
+  ~
+  ~ This program and the accompanying materials
+  ~ are made available under the terms of the GNU Public License v3.0.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<div id="myModal" class="modal fade" role="dialog">
+  <div id="myModalDialog" class="modal-dialog vertical-align-center">
+    <div class="modal-content">
+      <div ng-controller="StudyImportController">
+        <form name="myForm" novalidate class="simple-form">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true" ng-click="close()">&times;</button>
+            <h3 class="modal-title">
+              <span translate>study.import.label</span>
+              <span translate>{{path.indexOf('harmonization') > -1 ? 'global.harmonization-studies' : 'global.individual-studies'}}</span>
+            </h3>
+          </div>
+          
+          <!-- Connections params -->
+          <div id="myDivBodyIndexOne" class="modal-body" ng-show="displayBodyIndexOne">
+            <h4><span translate>study.import.sub-title</span></h4><br>
+            <label class="control-label ng-binding"><span translate>study.import.address</span></label>
+            <input type="url" name="address" ng-model="importModel.url" class="form-control ng-pristine ng-valid ng-scope ng-empty ng-touched" required>
+            <div class="help-block"><span translate>study.import.address-help</span></div>
+            <label class="control-label ng-binding"><span translate>study.import.user</span></label>
+            <input type="text" name="user" ng-model="importModel.username" class="form-control ng-pristine ng-valid ng-scope ng-empty ng-touched" required>
+            <div class="help-block"><span translate>study.import.user-help</span></div>
+            <label class="control-label ng-binding"><span translate>study.import.password</span></label>
+            <input type="password" name="password" ng-model="importModel.password" class="form-control ng-pristine ng-valid ng-scope ng-empty ng-touched" required><br>
+          </div>
+          
+          <!-- Remote studies -->
+          <div id="myDivBodyIndexTwo" class="modal-body" ng-show="displayBodyIndexTwo">
+          
+            <!-- Search field and pagination controls -->
+          	<div class="row voffset2">
+      		  <div class="col-xs-4">
+      		    <span class="input-group input-group-sm no-padding-top">
+        		  <span class="input-group-addon" id="study-search"><i class="fa fa-search"></i></span>
+        		    <input id="myInput" type="text" ng-model="query.$"  placeholder="{{'search.placeholder.meta-taxonomy-filter.studies' | translate}}..." class="form-control">
+      		    </span>
+      	      </div> 
+      		  <div class="col-xs-8">
+         	   	<dir-pagination-controls class="pull-right" pagination-id="myPaginationId" on-page-change="pageChanged(newPageNumber, oldPageNumber)" />
+      		  </div>
+    	    </div>
+      		  
+            <table class="table table-bordered table-striped">
+              <thead>
+              <tr>
+                <th data-column-name="selected">#</th>
+                <th data-column-name="id">ID</th>
+                <th data-column-name="acronym">{{"study.acronym" | translate}}</th>
+                <th data-column-name="name" class="col-md-6">{{"study.name" | translate}}</th>
+                <th data-column-name="published">{{"publish.published" | translate}}</th>
+                <th data-column-name="obiba.mica.EntityStateDto.studySummaryState::revisionStatus">{{"status" | translate}}</th>
+              </tr>
+              </thead>
+              <tbody id="myTable">
+                <tr dir-paginate="studyModal in studiesToImport | filter:query | itemsPerPage: pageSize" pagination-id="myPaginationId" current-page="currentPage">
+                  <td>
+                    <input type="checkbox" class="myCheckBox" ng-checked="studyModal.checked" ng-model="studyModal.checked" ng-change="clickCheckbox(studyModal)"/>&nbsp;
+                  </td>
+                  <td>
+                    <ul class="list-unstyled">
+                      <a translate>{{studyModal.id}}</a>
+                    </ul>
+                  </td>
+                  <td>
+                    <ul class="list-unstyled">
+                      <li ng-repeat="acronym in studyModal.acronym">
+                        <span class="badge">{{acronym.lang}}</span> {{acronym.value}}
+                      </li>
+                    </ul>
+                  </td>
+                  <td>
+                    <ul class="list-unstyled">
+                      <li ng-repeat="name in studyModal.name">
+                        <span class="badge">{{name.lang}}</span> {{name.value}}
+                      </li>
+                    </ul>
+                  </td>
+                  <td>
+                    <div publish-status state="studyModal['obiba.mica.EntityStateDto.studySummaryState']"></div>
+                  </td>
+                  <td>
+                    {{'publish.status.' + studyModal['obiba.mica.EntityStateDto.studySummaryState'].revisionStatus | translate}}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          
+          <!-- Footer navigation Buttons -->
+          <div class="modal-footer">
+            <button id="myPreviousButton" type="button" class="btn btn-info" aria-hidden="true" ng-click="previous()" disabled>
+              <span translate>study.import.previous</span>
+            </button>
+            <button id="myNextButton" type="button" class="btn btn-info" aria-hidden="true" ng-click="next(importModel, path)" ng-disabled="myForm.$invalid">
+              <span translate>study.import.next</span>
+            </button>
+            <button id="myFinishButton" type="button" class="btn btn-default" aria-hidden="true" ng-click="finish(importModel, studiesToImport)" disabled>
+              <span translate>study.import.finish</span>
+            </button>
+            <button id="myCancelButton" type="button" class="btn btn-default" data-dismiss="modal" aria-hidden="true" ng-click="close()">
+              <span translate>cancel</span>
+            </button>
+          </div>
+          
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

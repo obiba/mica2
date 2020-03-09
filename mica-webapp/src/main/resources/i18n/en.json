@@ -541,6 +541,21 @@
     "follow-up": "Follow Up",
     "follow-up-help": "General information on follow up (profile, frequency).",
     "recruitment-target": "Recruitment Target",
+    "import": {
+      "label": "Import",
+      "sub-title": "Select the source to be imported.",
+      "address": "Mica address",
+      "address-help": "Mica address starts with http:// or https://",
+      "user": "User",
+      "user-help": "Name of the user valid for the remote Mica.",
+      "password": "Password",
+      "study-name": "Remote study",
+      "study-name-help": "Name of the study from which data will be imported.",
+      "finish": "Finish",
+      "previous": "< Previous",
+      "next": "Next >"
+
+    },
     "access": {
       "label": "Access",
       "data": "data",

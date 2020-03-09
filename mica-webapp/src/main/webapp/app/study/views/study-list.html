@@ -8,7 +8,10 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
+
+
 <div>
+  <div ng-include="'app/study/views/import/study-view-import.html'"></div>
 
   <h2>
     <span>{{path.indexOf('harmonization') > -1 ? 'global.harmonization-studies' : 'global.individual-studies' | translate}}</span>
@@ -17,6 +20,10 @@
   <a ng-href="{{path}}/new" class="btn btn-info" ng-if="hasRole(['mica-administrator','mica-reviewer','mica-editor'])">
     <i class="fa fa-plus"></i> <span translate>study.add</span>
   </a>
+
+  <button type="button" class="btn btn-default" data-toggle="modal" data-target="#myModal" ng-if="hasRole(['mica-administrator','mica-reviewer','mica-editor'])">
+    <i class="fa fa-upload"></i> <span translate>study.import.label</span> 
+  </button>
 
   <p class="help-block" ng-if="!searching && !hasDocuments() && !loading">
     <span translate>study.none</span>
@@ -50,8 +57,8 @@
           <th translate>actions</th>
         </tr>
         </thead>
+        
         <tbody>
-
         <tr dir-paginate="study in documents | itemsPerPage: limit" total-items="totalCount" current-page="pagination.current">
           <td>
             <a ng-href="{{path}}/{{study.id}}" translate>{{study.id}}</a>

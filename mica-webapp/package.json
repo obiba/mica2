@@ -21,7 +21,7 @@
     "grunt-contrib-uglify": "2.0.0",
     "grunt-contrib-watch": "1.0.0",
     "grunt-karma": "2.0.0",
-    "grunt-modernizr": "1.0.2",
+
     "grunt-ng-annotate": "3.0.0",
     "grunt-rev": "0.1.0",
     "grunt-svgmin": "4.0.0",
@@ -36,7 +36,7 @@
     "karma-requirejs": "1.1.0",
     "karma-script-launcher": "1.0.0",
     "load-grunt-tasks": "3.5.2",
-    "serve-static": "^1.12.3",
+    "serve-static": "^1.14.1",
     "time-grunt": "1.4.0"
   },
   "engines": {

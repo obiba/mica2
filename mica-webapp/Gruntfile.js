@@ -23,6 +23,8 @@ module.exports = function (grunt) {
   require('load-grunt-tasks')(grunt);
   require('time-grunt')(grunt);
 
+  var serveStatic = require('serve-static');
+
   grunt.initConfig({
     yeoman: {
       // configurable paths
@@ -115,7 +117,12 @@ module.exports = function (grunt) {
           middleware: function (connect) {
             return [
               proxySnippet,
-              connect.static(require('path').resolve('src/main/webapp'))
+              //connect.static(require('path').resolve('src/main/webapp'))
+
+              serveStatic('.tmp'),
+              connect().use('/bower_components', serveStatic('./bower_components')),
+              //serveStatic(config.app)
+              serveStatic(require('path').resolve('src/main/webapp'))
             ];
           }
         }
