@@ -42,7 +42,11 @@ const DataTableDefaults = {
 // Taxonomy sidebar menu
 Vue.component('taxonomy-menu', {
   props: ['taxonomy'],
-  template: '<li class="nav-item"><a href="#" class="nav-link" data-toggle="modal" data-target="#taxonomy-modal" :title="taxonomy.description[0].text" @click.prevent="$emit(\'taxonomy-selection\', taxonomy.name)"><i class="far fa-circle nav-icon"></i><p>{{ taxonomy.title[0].text }}</p></a></li>'
+  template: `
+    <li class="nav-item">
+        <a href="#" class="nav-link" data-toggle="modal" data-target="#taxonomy-modal" :title="taxonomy.description[0].text" @click.prevent="$emit('taxonomy-selection', taxonomy.name)"><i class="far fa-circle nav-icon"></i><p>{{ taxonomy.title[0].text }}</p></a>
+    </li>
+  `
 });
 
 new Vue({
@@ -98,9 +102,9 @@ new Vue({
       }
     },
     // forward taxonomy selection
-    onTaxonomySelection: function(payload) {
+    onTaxonomySelection: function(payload, target) {
       console.dir(payload);
-      EventBus.$emit('taxonomy-selection', payload);
+      EventBus.$emit('taxonomy-selection', {target, taxonomyName: payload});
     }
   },
   mounted() {
@@ -130,15 +134,15 @@ $('#networks-tab').click(function(){
 });
 
 $('#lists-tab').click(function(){
-  EventBus.$emit('query-type-selection', {type: 'lists'});
+  EventBus.$emit('query-type-selection', {display: 'lists'});
 });
 
 $('#coverage-tab').click(function(){
-  EventBus.$emit('query-type-selection', {type: 'coverage'});
+  EventBus.$emit('query-type-coverage', {display: 'coverage'});
 });
 
 $('#graphics-tab').click(function(){
-  EventBus.$emit('query-type-selection', {type: 'graphics'});
+  EventBus.$emit('query-type-selection', {display: 'graphics'});
 });
 
 Vue.use(VueObibaSearchResult, {
@@ -167,31 +171,27 @@ new Vue({
       taxonomies: {},
       message: '',
       selectedTaxonomy: null,
-      queryForSelectedTaxonomy: null,
+      selectedTarget: null,
+      selectedQuery: null,
       queryType: 'variables-list',
       lastList: '',
-      queryExecutor: new MicaQueryExecutor(EventBus, DataTableDefaults.pageLength)
+      queryExecutor: new MicaQueryExecutor(EventBus, DataTableDefaults.pageLength),
+      queries: null
     };
   },
-  computed: {
-    queries() {
-      const result = {};
-      for (const target in TARGETS) {
-        result[target] = this.queryExecutor.getTree().search((name) => {return name === target});
-      }
-
-      return result;
-    }
-  },
   methods: {
+    refreshQueries() {
+      this.queries = this.queryExecutor.getTreeQueries();
+    },
     getTaxonomyForTarget(target) {
       let result = [];
-      
+      const selectedTarget = TARGETS[target];
+
       for (const taxonomy in this.taxonomies) {
-        if (target === TARGETS.VARIABLE) {
-          if (taxonomy.name === 'Mica_' + target || taxonomy.name.indexOf('Mica_') === -1) result.push(taxonomy);
+        if (TARGETS.VARIABLE === selectedTarget) {
+          if (taxonomy === 'Mica_' + selectedTarget || taxonomy.indexOf('Mica_') === -1) result.push(this.taxonomies[taxonomy]);
         } else {
-          if (taxonomy.name === 'Mica_' + target) result.push(taxonomy);
+          if (taxonomy === 'Mica_' + selectedTarget) result.push(this.taxonomies[taxonomy]);
         }
       }
 
@@ -201,10 +201,12 @@ new Vue({
     // show a modal with all the vocabularies/terms of the selected taxonomy
     // initialized by the query terms and update/trigger the query on close
     onTaxonomySelection: function(payload) {
-      this.message = '[' + payload + '] ' + this.taxonomies[payload].title[0].text + ': ';
-      this.message = this.message + this.taxonomies[payload].vocabularies.map(voc => voc.title[0].text).join(', ');
-      this.selectedTaxonomy = this.taxonomies[payload];
-      this.queryForSelectedTaxonomy = payload.indexOf('Mica_') === -1 ? this.queries[TARGETS.VARIABLE] : this.queries[payload.split('Mica_')[1]];
+      this.selectedTaxonomy = this.taxonomies[payload.taxonomyName];
+      this.selectedTarget = payload.target;
+
+      this.selectedQuery = this.queries[this.selectedTarget.toUpperCase()];
+      this.message = '[' + payload.taxonomyName + '] ' + this.selectedTaxonomy.title[0].text + ': ';
+      this.message = this.message + this.selectedTaxonomy.vocabularies.map(voc => voc.title[0].text).join(', ');
     },
     // set the type of query to be executed, on result component selection
     onQueryTypeSelection: function(payload) {
@@ -226,12 +228,15 @@ new Vue({
     onLocationChanged: function(payload) {
       $(`.nav-pills #${payload.display}-tab`).tab('show');
       $(`.nav-pills #${payload.type}-tab`).tab('show');
+      this.refreshQueries();
     },
     onQueryUpdate(payload) {
       console.log('query-builder update', payload);
+      EventBus.$emit(EVENTS.QUERY_TYPE_UPDATE, payload);
     },
     onQueryRemove(payload) {
       console.log('query-builder update', payload);
+      EventBus.$emit(EVENTS.QUERY_TYPE_DELETE, payload);
     }
   },
   beforeMount() {
