@@ -22,6 +22,7 @@ import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.access.NoSuchDataAccessRequestException;
 import org.obiba.mica.access.domain.ActionLog;
 import org.obiba.mica.access.domain.DataAccessEntityStatus;
+import org.obiba.mica.access.domain.DataAccessFeasibility;
 import org.obiba.mica.access.domain.DataAccessRequest;
 import org.obiba.mica.access.notification.DataAccessRequestCommentMailNotification;
 import org.obiba.mica.access.service.DataAccessEntityService;
@@ -36,6 +37,7 @@ import org.obiba.mica.file.FileStoreService;
 import org.obiba.mica.file.TempFile;
 import org.obiba.mica.file.service.TempFileService;
 import org.obiba.mica.micaConfig.DataAccessAmendmentsNotEnabled;
+import org.obiba.mica.micaConfig.DataAccessFeasibilityNotEnabled;
 import org.obiba.mica.micaConfig.service.DataAccessFormService;
 import org.obiba.mica.security.Roles;
 import org.obiba.mica.security.event.ResourceDeletedEvent;
@@ -372,6 +374,27 @@ public class DataAccessRequestResource extends DataAccessEntityResource<DataAcce
   @Path("/_status")
   public Response updateStatus(@PathParam("id") String id, @QueryParam("to") String status) {
     return super.doUpdateStatus(id, status);
+  }
+
+  @Path("/feasibilities")
+  public DataAccessFeasibilitiesResource getFeasibilities(@PathParam("id") String id) {
+    if (!dataAccessRequestService.isFeasibilityEnabled()) throw new DataAccessFeasibilityNotEnabled();
+    dataAccessRequestService.findById(id);
+    DataAccessFeasibilitiesResource dataAccessFeasibilitiesResource = applicationContext
+      .getBean(DataAccessFeasibilitiesResource.class);
+    dataAccessFeasibilitiesResource.setParentId(id);
+    return dataAccessFeasibilitiesResource;
+  }
+
+  @Path("/feasibility/{feasibilityId}")
+  public DataAccessFeasibilityResource getFeasibility(@PathParam("id") String id, @PathParam("feasibilityId") String feasibilityId) {
+    if (!dataAccessRequestService.isFeasibilityEnabled()) throw new DataAccessFeasibilityNotEnabled();
+    dataAccessRequestService.findById(id);
+    DataAccessFeasibilityResource dataAccessFeasibilityResource = applicationContext
+      .getBean(DataAccessFeasibilityResource.class);
+    dataAccessFeasibilityResource.setParentId(id);
+    dataAccessFeasibilityResource.setId(feasibilityId);
+    return dataAccessFeasibilityResource;
   }
 
   @Path("/amendments")

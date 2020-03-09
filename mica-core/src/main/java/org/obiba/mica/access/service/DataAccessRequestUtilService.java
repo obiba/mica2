@@ -14,10 +14,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.jayway.jsonpath.*;
 import org.apache.shiro.SecurityUtils;
-import org.obiba.mica.access.domain.DataAccessAmendment;
-import org.obiba.mica.access.domain.DataAccessEntity;
-import org.obiba.mica.access.domain.DataAccessEntityStatus;
-import org.obiba.mica.access.domain.DataAccessRequest;
+import org.obiba.mica.access.domain.*;
 import org.obiba.mica.micaConfig.domain.AbstractDataAccessEntityForm;
 import org.obiba.mica.micaConfig.domain.DataAccessForm;
 import org.obiba.mica.micaConfig.service.DataAccessAmendmentFormService;
@@ -121,22 +118,22 @@ public class DataAccessRequestUtilService {
 
     switch (request.getStatus()) {
       case OPENED:
-        checkOpenedStatusTransition(to);
+        checkOpenedStatusTransition(request, to);
         break;
       case SUBMITTED:
-        checkSubmittedStatusTransition(to);
+        checkSubmittedStatusTransition(request, to);
         break;
       case REVIEWED:
-        checkReviewedStatusTransition(to);
+        checkReviewedStatusTransition(request, to);
         break;
       case CONDITIONALLY_APPROVED:
-        checkConditionallyApprovedStatusTransition(to);
+        checkConditionallyApprovedStatusTransition(request, to);
         break;
       case APPROVED:
-        checkApprovedStatusTransition(to);
+        checkApprovedStatusTransition(request, to);
         break;
       case REJECTED:
-        checkRejectedStatusTransition(to);
+        checkRejectedStatusTransition(request, to);
         break;
       default:
         throw new IllegalArgumentException("Unexpected data access request status: " + request.getStatus());
@@ -251,80 +248,76 @@ public class DataAccessRequestUtilService {
     }
   }
 
-  private void checkOpenedStatusTransition(DataAccessEntityStatus to) {
-    if (to != DataAccessEntityStatus.SUBMITTED)
-      throw new IllegalArgumentException("Opened data access request can only be submitted");
+  private boolean isDataAccessFeasibility(DataAccessEntity request) {
+    return request instanceof DataAccessFeasibility;
   }
 
-  private void checkSubmittedStatusTransition(DataAccessEntityStatus to) {
+  private void checkOpenedStatusTransition(DataAccessEntity request, DataAccessEntityStatus to) {
+    if (to != DataAccessEntityStatus.SUBMITTED)
+      throw new IllegalArgumentException("Opened data access form can only be submitted");
+  }
+
+  private void checkSubmittedStatusTransition(DataAccessEntity request, DataAccessEntityStatus to) {
     DataAccessForm dataAccessForm = dataAccessFormService.find().get();
-    if (dataAccessForm.isWithReview()) {
+    if (!isDataAccessFeasibility(request) && dataAccessForm.isWithReview()) {
       if (to != DataAccessEntityStatus.OPENED && to != DataAccessEntityStatus.REVIEWED)
-        throw new IllegalArgumentException("Submitted data access request can only be reopened or put under review");
-    } else if (!dataAccessForm.isWithReview() && dataAccessForm.isWithConditionalApproval()) {
+        throw new IllegalArgumentException("Submitted data access form can only be reopened or put under review");
+    } else if (!isDataAccessFeasibility(request) && !dataAccessForm.isWithReview() && dataAccessForm.isWithConditionalApproval()) {
       if (to != DataAccessEntityStatus.CONDITIONALLY_APPROVED && to != DataAccessEntityStatus.OPENED &&
         to != DataAccessEntityStatus.APPROVED && to != DataAccessEntityStatus.REJECTED)
-        throw new IllegalArgumentException("Submitted data access request can only be conditionally approved, reopened, or be approved/rejected");
+        throw new IllegalArgumentException("Submitted data access form can only be conditionally approved, reopened, or be approved/rejected");
     } else {
       if (to != DataAccessEntityStatus.OPENED && to != DataAccessEntityStatus.APPROVED &&
         to != DataAccessEntityStatus.REJECTED) throw new IllegalArgumentException(
-        "Submitted data access request can only be reopened or be approved/rejected");
+        "Submitted data access form can only be reopened or be approved/rejected");
     }
   }
 
-  private void checkReviewedStatusTransition(DataAccessEntityStatus to) {
+  private void checkReviewedStatusTransition(DataAccessEntity request, DataAccessEntityStatus to) {
     DataAccessForm dataAccessForm = dataAccessFormService.find().get();
-    if (dataAccessForm.isWithConditionalApproval()) {
-      if ((!userProfileService.currentUserIs(Roles.MICA_ADMIN) && to == DataAccessEntityStatus.SUBMITTED)
-        && to != DataAccessEntityStatus.CONDITIONALLY_APPROVED
-        && to != DataAccessEntityStatus.APPROVED
-        && to != DataAccessEntityStatus.REJECTED)
-        throw new IllegalArgumentException("Reviewed data access request can only be conditionally approved or be approved/rejected, only the admin can resubmit");
-    } else {
-      if ((!userProfileService.currentUserIs(Roles.MICA_ADMIN) && to == DataAccessEntityStatus.SUBMITTED)
-        && to != DataAccessEntityStatus.OPENED
-        && to != DataAccessEntityStatus.APPROVED
-        && to != DataAccessEntityStatus.REJECTED)
-        throw new IllegalArgumentException("Reviewed data access request can only be reopened or be approved/rejected, only the admin can resubmit");
+    if (!isDataAccessFeasibility(request) && dataAccessForm.isWithConditionalApproval()) {
+      if (!userProfileService.currentUserIs(Roles.MICA_ADMIN) && to == DataAccessEntityStatus.SUBMITTED)
+        throw new IllegalArgumentException("Reviewed data access form can only be conditionally approved or be approved/rejected, only the admin can resubmit");
+    } else if (!userProfileService.currentUserIs(Roles.MICA_ADMIN) && to == DataAccessEntityStatus.SUBMITTED) {
+      throw new IllegalArgumentException("Reviewed data access form can only be reopened or be approved/rejected, only the admin can resubmit");
     }
   }
 
-  private void checkConditionallyApprovedStatusTransition(DataAccessEntityStatus to) {
+  private void checkConditionallyApprovedStatusTransition(DataAccessEntity request, DataAccessEntityStatus to) {
     DataAccessForm dataAccessForm = dataAccessFormService.find().get();
     if (dataAccessForm.isWithReview()) {
       if (to != DataAccessEntityStatus.SUBMITTED && to != DataAccessEntityStatus.REVIEWED)
-        throw new IllegalArgumentException("Conditionally approved data access request can only be resubmitted or be under review");
-    } else {
-      if (to != DataAccessEntityStatus.SUBMITTED)
-        throw new IllegalArgumentException("Conditionally approved data access request can only be resubmitted");
+        throw new IllegalArgumentException("Conditionally approved data access form can only be resubmitted or be under review");
+    } else if (to != DataAccessEntityStatus.SUBMITTED) {
+      throw new IllegalArgumentException("Conditionally approved data access form can only be resubmitted");
     }
   }
 
-  private void checkApprovedStatusTransition(DataAccessEntityStatus to) {
+  private void checkApprovedStatusTransition(DataAccessEntity request, DataAccessEntityStatus to) {
     DataAccessForm dataAccessForm = dataAccessFormService.find().get();
     if (dataAccessForm.isApprovedFinal())
-      throw new IllegalArgumentException("Approved data access request cannot be modified");
+      throw new IllegalArgumentException("Approved data access form cannot be modified");
 
     if (dataAccessForm.isWithReview() && to != DataAccessEntityStatus.REVIEWED) {
-      throw new IllegalArgumentException("Approved data access request can only be put under review");
+      throw new IllegalArgumentException("Approved data access fomr can only be put under review");
     }
 
     if (!dataAccessForm.isWithReview() && to != DataAccessEntityStatus.SUBMITTED) {
-      throw new IllegalArgumentException("Approved data access request can only go to submitted state");
+      throw new IllegalArgumentException("Approved data access form can only go to submitted state");
     }
   }
 
-  private void checkRejectedStatusTransition(DataAccessEntityStatus to) {
+  private void checkRejectedStatusTransition(DataAccessEntity request, DataAccessEntityStatus to) {
     DataAccessForm dataAccessForm = dataAccessFormService.find().get();
     if (dataAccessForm.isApprovedFinal())
-      throw new IllegalArgumentException("Rejected data access request cannot be modified");
+      throw new IllegalArgumentException("Rejected data access form cannot be modified");
 
     if (dataAccessForm.isWithReview() && to != DataAccessEntityStatus.REVIEWED) {
-      throw new IllegalArgumentException("Rejected data access request can only be put under review");
+      throw new IllegalArgumentException("Rejected data access form can only be put under review");
     }
 
     if (!dataAccessForm.isWithReview() && to != DataAccessEntityStatus.SUBMITTED) {
-      throw new IllegalArgumentException("Rejected data access request can only go to submitted state");
+      throw new IllegalArgumentException("Rejected data access form can only go to submitted state");
     }
   }
 }
