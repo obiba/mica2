@@ -42,8 +42,11 @@ public class VariablesCsvReportGenerator extends CsvReportGeneratorImpl {
     line.add("search.variable.label");
     if (mustShow("showVariablesTypeColumn"))
       line.add("type");
-    if (mustShow("showVariablesStudiesColumn"))
+    if (mustShow("showVariablesStudiesColumn")) {
       line.add("search.study.label");
+      line.add("search.study.population-name");
+      line.add("search.study.dce-name");
+    }
     if (mustShow("showVariablesDatasetsColumn"))
       line.add("search.dataset.label");
 
@@ -71,8 +74,15 @@ public class VariablesCsvReportGenerator extends CsvReportGeneratorImpl {
       line.add(translator.translate(
         String.format("variable_taxonomy.vocabulary.variableType.term.%s.title", datasetVariableDto.getVariableType())));
 
-    if (mustShow("showVariablesStudiesColumn"))
+    if (mustShow("showVariablesStudiesColumn")) {
       line.add(getStudyOrNetworkName(datasetVariableDto));
+
+      if (datasetVariableDto.getPopulationNameCount() > 0) line.add(datasetVariableDto.getPopulationName(0).getValue());
+      else line.add(datasetVariableDto.getPopulationId());
+
+      if (datasetVariableDto.getDceNameCount() > 0) line.add(datasetVariableDto.getDceName(0).getValue());
+      else line.add(datasetVariableDto.getDceId());
+    }
     if (mustShow("showVariablesDatasetsColumn"))
       line.add(datasetVariableDto.getDatasetAcronym(0).getValue());
 
