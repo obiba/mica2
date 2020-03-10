@@ -254,7 +254,7 @@ mica.study
         $scope.currentPage = 1;
         $scope.pageSize = 7;
         
-        $("body").css("cursor", "progress");
+        $('body').css('cursor', 'progress');
         
         $http({
           url: 'ws/draft/studies/import/_preview',
@@ -340,9 +340,9 @@ mica.study
 
         console.log('listIds = ' + listIds);
 
-        var endpoint = importModel.type.indexOf('harmonization') > -1 ? '/harmonization-studies/_import' : '/individual-studies/_import';
+        //var endpoint = importModel.type.indexOf('harmonization') > -1 ? '/harmonization-studies/_import' : '/individual-studies/_import';
 
-        listIds = [];
+        //listIds = [];
         
         //TODO:  
         //1) Obter o estudo remoto completo (GET); 
