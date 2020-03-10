@@ -25,6 +25,8 @@ const EventBus = new Vue({
   }
 });
 
+const MicaConfig = JSON.parse($('#mica-config').val() || "{}");
+
 const DataTableDefaults = {
   searching: false,
   ordering: false,
