@@ -1545,7 +1545,9 @@
       "pi-email": "Courriel de l'investigateur",
       "pi-phone": "Numéro de téléphone de l'investigateur",
       "pi-address": "Adresse postale de l'investigateur",
-      "project-info": "Présentation du projet",
+      "project-info": {
+        "title": "Présentation du projet"
+      },
       "project-title": "Titre du projet",
       "project-objectives": "Contexte et objectifs du projet",
       "data": {
