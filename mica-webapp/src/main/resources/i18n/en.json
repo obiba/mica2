@@ -1548,7 +1548,9 @@
       "pi-email": "PI Email Address",
       "pi-phone": "PI Phone Number",
       "pi-address": "PI Mailing Address",
-      "project-info": "Project Overview",
+      "project-info": {
+        "title": "Project Overview"
+      },
       "project-title": "Title of project",
       "project-objectives": "Project background and objectives",
       "data": {
