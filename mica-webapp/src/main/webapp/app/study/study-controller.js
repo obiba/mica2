@@ -276,7 +276,7 @@ mica.study
           $('#myPreviousButton').prop('disabled', false);
           $('#myNextButton').prop('disabled', true);
           
-          $("body").css("cursor", "default");
+          $('body').css('cursor', 'default');
 
         });
       };
