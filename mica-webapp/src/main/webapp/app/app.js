@@ -45,6 +45,7 @@ var mica = angular.module('mica', [
   'schemaForm-datepicker',
   'sfLocalizedString',
   'sfObibaFileUpload',
+  'sfObibaSimpleMde',
   'sfCheckboxgroup',
   'sfTypeahead',
   'sfObibaCountriesUiSelect',

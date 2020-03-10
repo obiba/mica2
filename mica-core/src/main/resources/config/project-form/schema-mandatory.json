@@ -9,7 +9,7 @@
     "_summary": {
       "title": "t(research-project.summary)",
       "type": "object",
-      "format": "localizedString"
+      "format": "obibaSimpleMde"
     }
   },
   "required": [

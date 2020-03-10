@@ -13,7 +13,7 @@
   },
   {
     "key": "_description",
-    "type": "localizedstring",
+    "type": "obibaSimpleMde",
     "rows": 5,
     "marked": true
   }

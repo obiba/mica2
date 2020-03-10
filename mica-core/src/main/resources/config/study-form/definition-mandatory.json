@@ -34,7 +34,7 @@
         "items": [
           {
             "key": "_objectives",
-            "type": "localizedstring",
+            "type": "obibaSimpleMde",
             "rows": 3,
             "marked": true,
             "description": "t(study.objectives-help)"

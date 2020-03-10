@@ -2129,5 +2129,19 @@
       "signin-with": "Connectez-vous avec",
       "signup-with": "S'inscrire avec"
     }
+  },
+  "simple-mde": {
+    "toolbar": {
+      "bold": "Gras",
+      "italic": "Italique",
+      "heading": "Titre",
+      "quote": "Citation",
+      "unordered_list": "Liste générique",
+      "ordered_list": "Liste numérotée",
+      "link": "Créer un lien",
+      "image": "Insérer une image",
+      "table": "Insérer une table",
+      "preview": "Basculer l'aperçu"
+    }
   }
 }
