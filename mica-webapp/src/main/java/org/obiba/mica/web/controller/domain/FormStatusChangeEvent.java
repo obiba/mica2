@@ -1,10 +1,7 @@
 package org.obiba.mica.web.controller.domain;
 
 import org.joda.time.DateTime;
-import org.obiba.mica.access.domain.DataAccessAmendment;
-import org.obiba.mica.access.domain.DataAccessEntity;
-import org.obiba.mica.access.domain.DataAccessEntityStatus;
-import org.obiba.mica.access.domain.StatusChange;
+import org.obiba.mica.access.domain.*;
 import org.obiba.mica.user.UserProfileService;
 import org.obiba.mica.web.controller.DataAccessController;
 
@@ -28,6 +25,10 @@ public class FormStatusChangeEvent {
 
   public boolean isAmendment() {
     return form instanceof DataAccessAmendment;
+  }
+
+  public boolean isFeasibility() {
+    return form instanceof DataAccessFeasibility;
   }
 
   public DataAccessEntityStatus getStatus() {

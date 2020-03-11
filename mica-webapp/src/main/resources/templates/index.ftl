@@ -107,7 +107,7 @@
               </div><!-- /.col -->
               <div class="col-sm-2">
                 <div class="text-right">
-                  <button type="button"  onclick="location.href='search';" class="btn btn-success btn-lg">
+                  <button type="button"  onclick="location.href='search${defaultSearchState}';" class="btn btn-success btn-lg">
                     <i class="fas fa-search"></i> <@message "search"/>
                   </button>
                 </div>
