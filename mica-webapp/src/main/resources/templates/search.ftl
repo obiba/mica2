@@ -272,6 +272,9 @@
 </div>
 <!-- ./wrapper -->
 
+<!-- MicaConfig in JSON Format -->
+<input type="hidden" id="mica-config" value='${configJson}'></input>
+
 <#include "libs/scripts.ftl">
 <#include "libs/search-scripts.ftl">
 

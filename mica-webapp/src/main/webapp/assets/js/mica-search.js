@@ -25,6 +25,8 @@ const EventBus = new Vue({
   }
 });
 
+const MicaConfig = JSON.parse($('#mica-config').val() || "{}");
+
 const DataTableDefaults = {
   searching: false,
   ordering: false,
@@ -148,10 +150,9 @@ $('#graphics-tab').click(function(){
 Vue.use(VueObibaSearchResult, {
   mixin: {
     methods: {
-      getEventBus: function() {
-        return EventBus;
-      },
-      registerDataTable: function (tableId, options) {
+      getEventBus: () => EventBus,
+      getMicaConfig: () => MicaConfig,
+      registerDataTable: (tableId, options) => {
         const mergedOptions = Object.assign(options, DataTableDefaults);
         return $('#' + tableId).DataTable(mergedOptions);
       }
