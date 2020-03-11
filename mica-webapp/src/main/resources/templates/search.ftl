@@ -274,12 +274,7 @@
 
 <!-- MicaConfig in JSON Format -->
 <script>
-  const Mica = {};
-  try {
-    Mica.config = {config: JSON.parse("${configJson}" || "{}")};
-  } catch (error) {
-    Mica.config = "{}";
-  }
+  const Mica = { config: ${configJson!"{}"} };
 </script>
 
 
