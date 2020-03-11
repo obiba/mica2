@@ -1,5 +1,7 @@
 package org.obiba.mica.web.interceptor;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.obiba.mica.micaConfig.domain.MicaConfig;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.slf4j.Logger;
@@ -21,6 +23,8 @@ public class MicaConfigInterceptor extends HandlerInterceptorAdapter {
 
   private MicaConfig micaConfig;
 
+  private String micaConfigJson;
+
   @Inject
   public MicaConfigInterceptor(MicaConfigService configService) {
     this.micaConfigService = configService;
@@ -28,15 +32,29 @@ public class MicaConfigInterceptor extends HandlerInterceptorAdapter {
 
   @Override
   public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
-    modelAndView.getModel().put("config", getMicaConfig());
+    ensureMicaConfig();
+    modelAndView.getModel().put("config", micaConfig);
+    modelAndView.getModel().put("configJson", micaConfigJson);
   }
 
-  private MicaConfig getMicaConfig() {
+  private void ensureMicaConfig() {
     synchronized (this) {
-      if (micaConfig == null)
+      if (micaConfig == null) {
         micaConfig = micaConfigService.getConfig();
-      return micaConfig;
+        micaConfigJson = getMicaConfigAsJson();
+      }
     }
+  }
+
+  private String getMicaConfigAsJson() {
+    ObjectMapper mapper = new ObjectMapper();
+
+    try {
+      return mapper.writeValueAsString(micaConfig);
+    } catch (JsonProcessingException ignore) {
+    }
+
+    return "{}";
   }
 
   public void evict() {
