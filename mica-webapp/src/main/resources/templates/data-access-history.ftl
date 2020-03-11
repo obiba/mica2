@@ -3,7 +3,7 @@
 <head>
   <#include "libs/head.ftl">
   <link rel="stylesheet" href="${pathPrefix!".."}/assets/libs/node_modules/bootstrap-datepicker/dist/css/bootstrap-datepicker3.css"></link>
-  <title>${config.name!""} | Data Access History ${dar.id}</title>
+  <title>${config.name!""} | <@message "data-access-history"/> ${dar.id}</title>
 </head>
 <body class="hold-transition sidebar-mini">
 <!-- Site wrapper -->
@@ -25,7 +25,7 @@
         <div class="row">
           <div class="col-sm-6">
             <h1 class="m-0">
-              <span class="text-white-50">Data Access History /</span> ${dar.id}
+              <span class="text-white-50"><@message "data-access-history"/> /</span> ${dar.id}
             </h1>
           </div>
           <div class="col-sm-6">
@@ -54,18 +54,18 @@
         <div class="col-sm-12 col-lg-6">
           <div class="card card-info card-outline">
             <div class="card-header">
-              <h3 class="card-title">Status Changes</h3>
+              <h3 class="card-title"><@message "status-changes"/></h3>
             </div>
             <div class="card-body">
               <table id="status" class="table table-bordered table-striped">
                 <thead>
                 <tr>
                   <#if accessConfig.amendmentsEnabled>
-                    <th>Form</th>
+                    <th><@message "form"/></th>
                   </#if>
-                  <th>Status</th>
-                  <th>Author</th>
-                  <th>Date</th>
+                  <th><@message "status"/></th>
+                  <th><@message "author"/></th>
+                  <th><@message "date"/></th>
                 </tr>
                 </thead>
                 <tbody>
@@ -75,10 +75,11 @@
                       <td>
                         <#if event.amendment>
                           <a href="../data-access-amendment-form/${event.form.id}"><i class="fas fa-file-import"></i> ${event.form.id}</a>
+                        <#elseif event.feasibility>
+                          <a href="../data-access-feasibility-form/${event.form.id}"><i class="far fa-question-circle"></i> ${event.form.id}</a>
                         <#else>
                           <a href="../data-access-form/${event.form.id}"><i class="fas fa-book"></i> ${event.form.id}</a>
                         </#if>
-
                       </td>
                     </#if>
                     <td><i class="fas fa-circle text-${statusColor(event.status.toString())}"></i> <@message event.status.toString()/></td>
@@ -97,15 +98,15 @@
             <div class="card card-info card-outline">
               <div class="card-header">
                 <h3 class="card-title">Action Log</h3>
-                <div class="float-right"><a href="#" class="btn btn-primary" data-toggle="modal" data-target="#modal-add"><i class="fas fa-plus"></i> Add</a></div>
+                <div class="float-right"><a href="#" class="btn btn-primary" data-toggle="modal" data-target="#modal-add"><i class="fas fa-plus"></i> <@message "add"/></a></div>
               </div>
               <div class="card-body">
                 <table id="actions" class="table table-bordered table-striped">
                   <thead>
                   <tr>
-                    <th>Action</th>
-                    <th>Author</th>
-                    <th>Date</th>
+                    <th><@message "action"/></th>
+                    <th><@message "author"/></th>
+                    <th><@message "date"/>></th>
                   </tr>
                   </thead>
                   <tbody>
