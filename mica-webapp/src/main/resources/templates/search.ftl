@@ -273,7 +273,15 @@
 <!-- ./wrapper -->
 
 <!-- MicaConfig in JSON Format -->
-<input type="hidden" id="mica-config" value='${configJson}'></input>
+<script>
+  const Mica = {};
+  try {
+    Mica.config = {config: JSON.parse("${configJson}" || "{}")};
+  } catch (error) {
+    Mica.config = "{}";
+  }
+</script>
+
 
 <#include "libs/scripts.ftl">
 <#include "libs/search-scripts.ftl">
