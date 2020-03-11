@@ -55,10 +55,8 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import org.springframework.validation.annotation.Validated;
@@ -67,6 +65,7 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -84,37 +83,47 @@ public class HarmonizedDatasetService extends DatasetService<HarmonizationDatase
 
   private static final Logger log = LoggerFactory.getLogger(HarmonizedDatasetService.class);
 
-  @Inject
-  private StudyService studyService;
+  private final StudyService studyService;
+
+  private final NetworkService networkService;
+
+  private final OpalService opalService;
+
+  private final HarmonizationDatasetRepository harmonizationDatasetRepository;
+
+  private final HarmonizationDatasetStateRepository harmonizationDatasetStateRepository;
+
+  private final HarmonizationStudyService harmonizationStudyService;
+
+  private final PublishedStudyService publishedStudyService;
+
+  private final EventBus eventBus;
+
+  private final Helper helper;
+
+  private final FileSystemService fileSystemService;
 
   @Inject
-  @Lazy
-  private NetworkService networkService;
+  public HarmonizedDatasetService(
+    StudyService studyService,
+    NetworkService networkService, OpalService opalService,
+    HarmonizationDatasetRepository harmonizationDatasetRepository,
+    HarmonizationDatasetStateRepository harmonizationDatasetStateRepository,
+    HarmonizationStudyService harmonizationStudyService,
+    PublishedStudyService publishedStudyService,
+    EventBus eventBus, FileSystemService fileSystemService) {
+    this.studyService = studyService;
+    this.networkService = networkService;
+    this.opalService = opalService;
+    this.harmonizationDatasetRepository = harmonizationDatasetRepository;
+    this.harmonizationDatasetStateRepository = harmonizationDatasetStateRepository;
+    this.harmonizationStudyService = harmonizationStudyService;
+    this.publishedStudyService = publishedStudyService;
+    this.eventBus = eventBus;
+    this.fileSystemService = fileSystemService;
 
-  @Inject
-  private OpalService opalService;
-
-  @Inject
-  private HarmonizationDatasetRepository harmonizationDatasetRepository;
-
-  @Inject
-  private HarmonizationDatasetStateRepository harmonizationDatasetStateRepository;
-
-  @Inject
-  private HarmonizationStudyService harmonizationStudyService;
-
-  @Inject
-  private PublishedStudyService publishedStudyService;
-
-  @Inject
-  private EventBus eventBus;
-
-  @Inject
-  @Lazy
-  private Helper helper;
-
-  @Inject
-  private FileSystemService fileSystemService;
+    this.helper = new Helper(this, this.eventBus);
+  }
 
   public void save(@NotNull HarmonizationDataset dataset) {
     saveInternal(dataset, null);
@@ -496,7 +505,7 @@ public class HarmonizedDatasetService extends DatasetService<HarmonizationDatase
           } catch(InterruptedException ie) {
             throw Throwables.propagate(ie);
           }
-        }).reduce(Iterables::concat).get();
+        }).collect(ArrayList::new, (c, e) -> c.addAll(Lists.newArrayList(e)), ArrayList::addAll);
 
       for(DatasetVariable variable : res) {
         if(!map.containsKey(variable.getParentId())) {
@@ -559,15 +568,18 @@ public class HarmonizedDatasetService extends DatasetService<HarmonizationDatase
     return generateDatasetId(gitPersistable);
   }
 
-  @Component
   public static class Helper {
-    @Inject
+
     private EventBus eventBus;
 
     private static final Logger log = LoggerFactory.getLogger(HarmonizedDatasetService.Helper.class);
 
-    @Inject
     HarmonizedDatasetService service;
+
+    public Helper(HarmonizedDatasetService service, EventBus eventBus) {
+      this.service = service;
+      this.eventBus = eventBus;
+    }
 
     @CacheEvict(value = "dataset-variables", cacheResolver = "datasetVariablesCacheResolver", allEntries = true, beforeInvocation = true)
     public void evictCache(HarmonizationDataset dataset) {
