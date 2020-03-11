@@ -551,10 +551,12 @@
       "password": "Password",
       "study-name": "Remote study",
       "study-name-help": "Name of the study from which data will be imported.",
+      "summary": "The following operations will be executed. Are you sure?",
+      "include-operations": "Include operation(s):",
+      "update-operations": "Update operation(s):",
       "finish": "Finish",
       "previous": "< Previous",
       "next": "Next >"
-
     },
     "access": {
       "label": "Access",

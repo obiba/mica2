@@ -242,55 +242,67 @@ mica.study
 
       $scope.displayBodyIndexOne = true;
       $scope.displayBodyIndexTwo = false;
+      $scope.displayBodyIndexTwo = false;
       
       var listIds = [];
 
       //NEXT
-      $scope.next = function(importModel, path) {
-        console.log('[NEXT]');
+      $scope.next = function(importModel, path, isDisplayedIndexOne) {
+        console.log('[NEXT] ' + String(isDisplayedIndexOne) );
 
-        importModel.type = path.indexOf('harmonization') > -1 ? 'harmonization-study' : 'individual-study';
-
-        $scope.currentPage = 1;
-        $scope.pageSize = 7;
-        
-        $('body').css('cursor', 'progress');
-        
-        $http({
-          url: 'ws/draft/studies/import/_preview',
-          method: 'GET',
-          params: {url: importModel.url, 
-                   username: importModel.username, 
-                   password: importModel.password, 
-                   type: importModel.type}
-
-        }).then(function(response) {
+        if (isDisplayedIndexOne) {
         	
-          console.log('[NEXT(response)]');
+            importModel.type = path.indexOf('harmonization') > -1 ? 'harmonization-study' : 'individual-study';
+            $scope.currentPage = 1;
+            $scope.pageSize = 7;
+            $('body').css('cursor', 'progress');
+            
+            $http({
+                url: 'ws/draft/studies/import/_preview',
+                method: 'GET',
+                params: {url: importModel.url, username: importModel.username, 
+                         password: importModel.password, type: importModel.type}
+            
+              }).then(function(response) {
+                console.log('[NEXT(response)]');
+              	
+                $('#myModalDialog').addClass('modal-lg');
+                $('#myPreviousButton').prop('disabled', false);
+                $('body').css('cursor', 'default');
 
-          $scope.studiesToImport = JSON.parse(response.data);
-
-          $scope.displayBodyIndexOne = false;
-          $scope.displayBodyIndexTwo = true;
-          $('#myModalDialog').addClass('modal-lg');
-          $('#myPreviousButton').prop('disabled', false);
-          $('#myNextButton').prop('disabled', true);
-          
-          $('body').css('cursor', 'default');
-
-        });
+                $scope.studiesToImport = JSON.parse(response.data);
+                $scope.displayBodyIndexOne = false;
+              	$scope.displayBodyIndexTwo = true;
+              	$scope.displayBodyIndexThree = false;
+              });
+            
+        } else {
+        	
+        	$scope.displayBodyIndexOne = false;
+            $scope.displayBodyIndexTwo = false;
+            $scope.displayBodyIndexThree = true;
+        }
+        
       };
 
       //PREVIOUS
-      $scope.previous = function() {
-        console.log('[PREVIOUS]');
+      $scope.previous = function(isDisplayedIndexTwo) {
+        console.log('[PREVIOUS] ' + String(isDisplayedIndexTwo) );
 
-        $scope.displayBodyIndexOne = true;
-        $scope.displayBodyIndexTwo = false;
-        $('#myModalDialog').removeClass('modal-lg');
-        $('#myPreviousButton').prop('disabled', true);
-        $('#myNextButton').prop('disabled', false);
-        $('#myFinishButton').prop('disabled', true);
+        if (isDisplayedIndexTwo) {
+        	$scope.displayBodyIndexOne = true;
+            $scope.displayBodyIndexTwo = false;
+            $scope.displayBodyIndexThree = false;
+            $('#myModalDialog').removeClass('modal-lg');
+            $('#myPreviousButton').prop('disabled', true);
+            $('#myNextButton').prop('disabled', false);
+            $('#myFinishButton').prop('disabled', true);	
+        } else {
+        	$scope.displayBodyIndexOne = false;
+            $scope.displayBodyIndexTwo = true;
+            $scope.displayBodyIndexThree = false;
+            $('#myFinishButton').prop('disabled', true);
+        }
 
       };
 
@@ -298,20 +310,15 @@ mica.study
       $scope.clickCheckbox = function(studyModal) {
     	  
         console.log('[CLICK_CHECKBOX]');
+
+        for (var i = 0; i < $scope.studiesToImport.length; i++) {	
+            if ($scope.studiesToImport[i].checked) {
+            	$scope.studiesToImport.checked = true;
+            	return;
+            }
+        }
         
-        console.log(studyModal);
-        console.log(studyModal.checked);
-        
-        //TODO: resolver bug que surgiu apos colocar o ng-model no checkbox
-        var checkboxes = $('input[class=\'myCheckBox\']');
-        //var checkboxes = $('input[class=\'myCheckBox\'][ng-checked=\'True\']');
-        
-        
-        console.log( checkboxes );
-        
-        $('#myFinishButton').prop('disabled', !checkboxes.is(':checked')); 
-        //$('#myFinishButton').prop('disabled', !(checkboxes.length > 0) );
-        
+        $scope.studiesToImport.checked = false;
       };
 
       //FINISH

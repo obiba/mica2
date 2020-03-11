@@ -21,20 +21,20 @@
             </h3>
           </div>
           
-          <!-- Connections params -->
+          <!-- 1 -Connections params -->
           <div id="myDivBodyIndexOne" class="modal-body" ng-show="displayBodyIndexOne">
             <h4><span translate>study.import.sub-title</span></h4><br>
             <label class="control-label ng-binding"><span translate>study.import.address</span></label>
-            <input type="url" name="address" ng-model="importModel.url" class="form-control ng-pristine ng-valid ng-scope ng-empty ng-touched" required>
+            <input ng-init="importModel.url = 'https://recap-preterm.inesctec.pt/pub'" type="url" name="address" ng-model="importModel.url" class="form-control ng-pristine ng-valid ng-scope ng-empty ng-touched" required>
             <div class="help-block"><span translate>study.import.address-help</span></div>
             <label class="control-label ng-binding"><span translate>study.import.user</span></label>
-            <input type="text" name="user" ng-model="importModel.username" class="form-control ng-pristine ng-valid ng-scope ng-empty ng-touched" required>
+            <input ng-init="importModel.username = 'administrator'" type="text" name="user" ng-model="importModel.username" class="form-control ng-pristine ng-valid ng-scope ng-empty ng-touched" required>
             <div class="help-block"><span translate>study.import.user-help</span></div>
             <label class="control-label ng-binding"><span translate>study.import.password</span></label>
-            <input type="password" name="password" ng-model="importModel.password" class="form-control ng-pristine ng-valid ng-scope ng-empty ng-touched" required><br>
+            <input ng-init="importModel.password = 'correctduckpretermsubject'" type="password" name="password" ng-model="importModel.password" class="form-control ng-pristine ng-valid ng-scope ng-empty ng-touched" required><br>
           </div>
           
-          <!-- Remote studies -->
+          <!-- 2 - Remote studies -->
           <div id="myDivBodyIndexTwo" class="modal-body" ng-show="displayBodyIndexTwo">
           
             <!-- Search field and pagination controls -->
@@ -96,22 +96,29 @@
             </table>
           </div>
           
+          <!-- 3 - Operations Summary -->
+          <div id="myDivBodyIndexThree" class="modal-body" ng-show="displayBodyIndexThree">
+            <h4><span translate>study.import.summary</span></h4><br>
+            <label class="control-label ng-binding"><span translate>study.import.include-operations</span></label>
+            <label class="control-label ng-binding"><span translate>study.import.update-operations</span></label>
+          </div>
+          
           <!-- Footer navigation Buttons -->
           <div class="modal-footer">
-            <button id="myPreviousButton" type="button" class="btn btn-info" aria-hidden="true" ng-click="previous()" disabled>
+            <button id="myPreviousButton" type="button" class="btn btn-info" aria-hidden="true" ng-click="previous(displayBodyIndexTwo)" ng-disabled="displayBodyIndexOne">
               <span translate>study.import.previous</span>
             </button>
-            <button id="myNextButton" type="button" class="btn btn-info" aria-hidden="true" ng-click="next(importModel, path)" ng-disabled="myForm.$invalid">
+            <button id="myNextButton" type="button" class="btn btn-info" aria-hidden="true" ng-click="next(importModel, path, displayBodyIndexOne)" ng-disabled="(myForm.$invalid && !displayBodyIndexOne) || (!studiesToImport.checked && displayBodyIndexTwo) || displayBodyIndexThree">
               <span translate>study.import.next</span>
             </button>
-            <button id="myFinishButton" type="button" class="btn btn-default" aria-hidden="true" ng-click="finish(importModel, studiesToImport)" disabled>
+            <button id="myFinishButton" type="button" class="btn btn-default" aria-hidden="true" ng-click="finish(importModel, studiesToImport)" ng-disabled="!displayBodyIndexThree">
               <span translate>study.import.finish</span>
             </button>
             <button id="myCancelButton" type="button" class="btn btn-default" data-dismiss="modal" aria-hidden="true" ng-click="close()">
               <span translate>cancel</span>
             </button>
           </div>
-          
+             
         </form>
       </div>
     </div>
