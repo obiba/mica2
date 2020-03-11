@@ -1,9 +1,10 @@
 package org.obiba.mica.web.interceptor;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.googlecode.protobuf.format.JsonFormat;
 import org.obiba.mica.micaConfig.domain.MicaConfig;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
+import org.obiba.mica.web.model.Dtos;
+import org.obiba.mica.web.model.Mica;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -19,6 +20,8 @@ public class MicaConfigInterceptor extends HandlerInterceptorAdapter {
 
   private static final Logger log = LoggerFactory.getLogger(MicaConfigInterceptor.class);
 
+  private final Dtos dtos;
+
   private final MicaConfigService micaConfigService;
 
   private MicaConfig micaConfig;
@@ -26,8 +29,9 @@ public class MicaConfigInterceptor extends HandlerInterceptorAdapter {
   private String micaConfigJson;
 
   @Inject
-  public MicaConfigInterceptor(MicaConfigService configService) {
-    this.micaConfigService = configService;
+  public MicaConfigInterceptor(Dtos dtos, MicaConfigService micaConfigService) {
+    this.dtos = dtos;
+    this.micaConfigService = micaConfigService;
   }
 
   @Override
@@ -47,13 +51,11 @@ public class MicaConfigInterceptor extends HandlerInterceptorAdapter {
   }
 
   private String getMicaConfigAsJson() {
-    ObjectMapper mapper = new ObjectMapper();
-
     try {
-      return mapper.writeValueAsString(micaConfig).replaceAll("\"", "\\\\\"");
-    } catch (JsonProcessingException ignore) {
+      Mica.MicaConfigDto dto = dtos.asDto(micaConfig);
+      return JsonFormat.printToString(dto);
+    } catch (Exception ignore) {
     }
-
     return "{}";
   }
 
