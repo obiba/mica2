@@ -50,7 +50,7 @@ public class MicaConfigInterceptor extends HandlerInterceptorAdapter {
     ObjectMapper mapper = new ObjectMapper();
 
     try {
-      return mapper.writeValueAsString(micaConfig);
+      return mapper.writeValueAsString(micaConfig).replaceAll("\"", "\\\\\"");
     } catch (JsonProcessingException ignore) {
     }
 
