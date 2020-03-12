@@ -29,33 +29,51 @@
           <p><@message "data-access-requests-callout"/></p>
         </div>
 
-        <div class="row">
-          <div class="col-lg-12">
-            <div class="card card-primary card-outline">
-              <div class="card-header">
-                <h3 class="card-title"><@message "data-access-requests"/></h3>
-                <div class="float-right">
-                  <button type="button" class="btn btn-primary ml-4" data-toggle="modal" data-target="#modal-add">
+        <div class="card card-primary card-outline card-outline-tabs">
+          <#if users??>
+            <div class="card-header p-0 border-bottom-0 ">
+              <ul class="nav nav-tabs" id="tabs-tab" role="tablist">
+                <li class="nav-item">
+                  <a class="nav-link active" id="tabs-dars-tab" data-toggle="pill" href="#tabs-dars" role="tab" aria-controls="tabs-dars" aria-selected="true">
+                    <@message "data-access-requests"/> <span class="badge badge-info">${dars?size}</span>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" id="tabs-users-tab" data-toggle="pill" href="#tabs-users" role="tab" aria-controls="tabs-users" aria-selected="false">
+                    <@message "registered-users"/> <span class="badge badge-info">${users?size}</span>
+                  </a>
+                </li>
+              </ul>
+            </div>
+          <#else>
+            <div class="card-header">
+              <h3 class="card-title"><@message "my-data-access-requests"/></h3>
+            </div>
+          </#if>
+          <div class="card-body">
+            <div class="tab-content" id="tabs-tabContent">
+              <div class="tab-pane fade show active" id="tabs-dars" role="tabpanel" aria-labelledby="tabs-dars-tab">
+                <div class="mb-3">
+                  <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal-add">
                     <i class="fas fa-plus"></i> <@message "new-data-access-request"/>
                   </button>
                 </div>
-              </div>
-              <div class="card-body">
                 <#if dars?? && dars?size gt 0>
-                  <#assign isAdministrator = (user.roles?seq_contains("mica-administrator") || user.roles?seq_contains("mica-data-access-officer"))/>
                   <table id="dars" class="table table-bordered table-striped">
                     <thead>
                     <tr>
                       <th>ID</th>
-                      <#if isAdministrator>
+                      <#if isAdministrator || isDAO>
                         <th>Applicant</th>
                       </#if>
                       <th><@message "title"/></th>
                       <th><@message "last-update"/></th>
                       <th><@message "submission-date"/></th>
+                      <#if accessConfig.feasibilityEnabled>
+                        <th><@message "feasibilities-pending-total"/></th>
+                      </#if>
                       <#if accessConfig.amendmentsEnabled>
-                        <th><@message "pending-amendments"/></th>
-                        <th><@message "total-amendments"/></th>
+                        <th><@message "amendments-pending-total"/></th>
                       </#if>
                       <th><@message "status"/></th>
                     </tr>
@@ -64,7 +82,7 @@
                     <#list dars as dar>
                       <tr>
                         <td><a href="../data-access/${dar.id}">${dar.id}</a></td>
-                        <#if isAdministrator>
+                        <#if isAdministrator || isDAO>
                           <td>
                             <a href="#" data-toggle="modal" data-target="#modal-${dar.applicant}">${applicants[dar.applicant].fullName}</a>
                           </td>
@@ -72,9 +90,11 @@
                         <td>${dar.title!""}</td>
                         <td class="moment-datetime">${dar.lastUpdate.toString(datetimeFormat)}</td>
                         <td class="moment-datetime"><#if dar.submitDate??>${dar.submitDate.toString(datetimeFormat)}</#if></td>
+                        <#if accessConfig.feasibilityEnabled>
+                          <td>${dar.pendingFeasibilities}/${dar.totalFeasibilities}</td>
+                        </#if>
                         <#if accessConfig.amendmentsEnabled>
-                          <td>${dar.pendingAmendments}</td>
-                          <td>${dar.totalAmendments}</td>
+                          <td>${dar.pendingAmendments}/${dar.totalAmendments}</td>
                         </#if>
                         <td><i class="fas fa-circle text-${statusColor(dar.status.toString())}"></i> <@message dar.status.toString()/></td>
                       </tr>
@@ -82,60 +102,52 @@
                     </tbody>
                   </table>
                 <#else>
-                  <span class="text-muted"><@message "no-data-access-requests"/></span>
+                  <div class="mt-3 text-muted"><@message "no-data-access-requests"/></div>
                 </#if>
               </div>
-            </div>
-          </div>
-        </div>
-
-        <#if users??>
-          <div class="row">
-            <div class="col-lg-12">
-              <div class="card card-primary card-outline">
-                <div class="card-header">
-                  <h3 class="card-title"><@message "registered-users"/></h3>
-                </div>
-                <div class="card-body">
-                  <#if users?size gt 0>
-                    <#assign isAdministrator = (user.roles?seq_contains("mica-administrator") || user.roles?seq_contains("mica-data-access-officer"))/>
-                    <table id="users" class="table table-bordered table-striped">
-                      <thead>
+              <div class="tab-pane fade" id="tabs-users" role="tabpanel" aria-labelledby="tabs-users-tab">
+                <#if users?? && users?size gt 0>
+                  <table id="users" class="table table-bordered table-striped">
+                    <thead>
+                    <tr>
+                      <th><@message "full-name"/></th>
+                      <th><@message "groups"/></th>
+                      <th><@message "createdDate"/></th>
+                      <th><@message "lastLogin"/></th>
+                      <@userProfileTHs/>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <#list users as profile>
                       <tr>
-                        <th><@message "full-name"/></th>
-                        <th><@message "groups"/></th>
-                        <th><@message "createdDate"/></th>
-                        <th><@message "lastLogin"/></th>
-                        <@userProfileTHs/>
+                        <td>
+                          <a href="#" data-toggle="modal" data-target="#modal-${profile.username}">${profile.fullName}</a>
+                        </td>
+                        <td>
+                          <#list profile.groups as group>
+                            <span class="badge badge-info">${group}</span>
+                          </#list>
+                        </td>
+                        <td class="moment-datetime">${profile.attributes["createdDate"].toString(datetimeFormat)}</td>
+                        <td class="moment-datetime"><#if profile.attributes["lastLogin"]??>${profile.attributes["lastLogin"].toString(datetimeFormat)}</#if></td>
+                        <@userProfileTDs profile=profile/>
                       </tr>
-                      </thead>
-                      <tbody>
-                      <#list users as profile>
-                        <tr>
-                          <td>
-                            <a href="#" data-toggle="modal" data-target="#modal-${profile.username}">${profile.fullName}</a>
-                            <@userProfileDialog profile=profile/>
-                          </td>
-                          <td>
-                            <#list profile.groups as group>
-                              <span class="badge badge-info">${group}</span>
-                            </#list>
-                          </td>
-                          <td class="moment-datetime">${profile.attributes["createdDate"].toString(datetimeFormat)}</td>
-                          <td class="moment-datetime"><#if profile.attributes["lastLogin"]??>${profile.attributes["lastLogin"].toString(datetimeFormat)}</#if></td>
-                          <@userProfileTDs profile=profile/>
-                        </tr>
-                      </#list>
-                      </tbody>
-                    </table>
-                  <#else>
-                    <span class="text-muted"><@message "no-users"/></span>
-                  </#if>
-                </div>
+                    </#list>
+                    </tbody>
+                  </table>
+                <#else>
+                  <span class="text-muted"><@message "no-users"/></span>
+                </#if>
               </div>
+              <#if users?? && users?size gt 0>
+                <#list users as profile>
+                  <@userProfileDialog profile=profile/>
+                </#list>
+              </#if>
             </div>
           </div>
-        </#if>
+          <!-- /.card -->
+        </div>
 
       </div><!-- /.container-fluid -->
     </div>
@@ -175,8 +187,12 @@
 <!-- page script -->
 <script>
     $(function () {
+      <#if users??>
+        $("#dars").DataTable(dataTablesDefaultOpts);
+      <#else>
         $("#dars").DataTable(dataTablesSortSearchOpts);
-        $("#users").DataTable(dataTablesSortSearchOpts);
+      </#if>
+      $("#users").DataTable(dataTablesDefaultOpts);
     });
 </script>
 

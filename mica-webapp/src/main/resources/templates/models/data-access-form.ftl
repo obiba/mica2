@@ -46,3 +46,21 @@
     <@message "data-access-feasibility-form-rejected-help"/>
   </#if>
 </#macro>
+
+<!-- Form print header and footer, not visible on screen -->
+<#macro dataAccessFormPrintHeader form type>
+  <div class="clearfix border-bottom pb-3 mb-3">
+    <div class="float-left">
+      <img src="../assets/images/logo.png" alt="Logo" class="brand-image img-circle mr-2" style="opacity: .8; max-height: 33px">
+      <span class="brand-text font-weight-light" style="font-size: larger">${config.name!"Mica"}</span>
+    </div>
+    <div class="float-right text-muted">
+      <span><@message type/> - ${form.id} - [<@message form.status.toString()/>] - ${applicant.fullName}</span>
+    </div>
+  </div>
+</#macro>
+<#macro dataAccessFormPrintFooter form>
+  <div class="border-top mt-3 pt-3">
+    <small><span class="moment-datetime text-muted">${.now}</span></small>
+  </div>
+</#macro>

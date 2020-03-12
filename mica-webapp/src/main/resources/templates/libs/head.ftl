@@ -26,3 +26,15 @@
 
 <!-- Bootstrap 3 to 4 -->
 <link rel="stylesheet" href="${pathPrefix!".."}/assets/css/bootstrap-3-4.css">
+
+<style>
+  .info-box .info-box-text, .info-box .progress-description {
+    white-space: initial !important;
+  }
+</style>
+
+<!-- Current user privilegies -->
+<#if user??>
+  <#assign isAdministrator = user.roles?seq_contains("mica-administrator")/>
+  <#assign isDAO = user.roles?seq_contains("mica-data-access-officer")/>
+</#if>

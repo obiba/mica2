@@ -40,10 +40,10 @@
               <i class="nav-icon far fa-question-circle"></i>
               <p>
                 <@message "feasibilities"/>
-                <#if feasibilities?size != 0>
-                  <span class="badge badge-info right">${feasibilities?size}</span>
+                <span class="badge badge-info right">${feasibilities?size}</span>
+                <#if feasibilities?size != 0 || user.username == dar.applicant || isAdministrator>
+                  <i class="fas fa-angle-left right mr-1"></i>
                 </#if>
-                <i class="fas fa-angle-left right mr-1"></i>
               </p>
             </a>
             <ul class="nav nav-treeview">
@@ -86,10 +86,10 @@
               <i class="nav-icon fas fa-file-import"></i>
               <p>
                 <@message "amendments"/>
-                <#if amendments?size != 0>
-                  <span class="badge badge-info right">${amendments?size}</span>
+                <span class="badge badge-info right">${amendments?size}</span>
+                <#if amendments?size != 0 || user.username == dar.applicant || isAdministrator>
+                  <i class="fas fa-angle-left right mr-1"></i>
                 </#if>
-                <i class="fas fa-angle-left right mr-1"></i>
               </p>
             </a>
             <ul class="nav nav-treeview">

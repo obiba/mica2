@@ -101,7 +101,7 @@
                   <#if amendmentPermissions?seq_contains("EDIT_STATUS")>
                     <span class="float-right">
                     <#if amendment.status == "OPENED" || amendment.status == "CONDITIONALLY_APPROVED">
-                      <button type="button" class="btn btn-info" ng-disabled="!schema.readOnly" data-toggle="modal"
+                      <button type="button" class="btn btn-info" ng-hide="!schema.readOnly" data-toggle="modal"
                               data-target="#modal-submit"><@message "submit"/></button>
                       <button type="button" class="btn btn-success"
                               ng-click="validate()"><@message "validate"/></button>
@@ -129,9 +129,15 @@
               </div>
             </div>
             <div class="card-body">
+              <div class="d-none d-print-block">
+                <@dataAccessFormPrintHeader form=amendment type="data-access-amendment"/>
+              </div>
               <form name="forms.requestForm" class="bootstrap3">
                 <div sf-schema="schema" sf-form="form" sf-model="model"></div>
               </form>
+              <div class="d-none d-print-block">
+                <@dataAccessFormPrintFooter form=amendment/>
+              </div>
             </div>
           </div>
 

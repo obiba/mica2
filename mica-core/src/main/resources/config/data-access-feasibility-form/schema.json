@@ -23,7 +23,7 @@
       "type": "string"
     },
     "career": {
-      "title": "t(data-access-feasibility.default.career)",
+      "title": "t(data-access-feasibility.default.career.title)",
       "type": "string",
       "enum": [
         "inv-early",

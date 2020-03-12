@@ -18,6 +18,3 @@
   <#return txtColor/>
 </#function>
 
-<!-- Current user privilegies -->
-<#assign isAdministrator = user.roles?seq_contains("mica-administrator")/>
-<#assign isDAO = user.roles?seq_contains("mica-data-access-officer")/>
