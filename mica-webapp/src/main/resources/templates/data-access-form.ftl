@@ -5,7 +5,7 @@
 <html lang="${.lang}">
 <head>
     <#include "libs/head.ftl">
-  <title>${config.name!""} | Data Access Form ${dar.id}</title>
+  <title>${config.name!""} | <@message "data-access-form"/> ${dar.id}</title>
 </head>
 <body ng-app="formModule" class="hold-transition sidebar-mini">
 <!-- Site wrapper -->
@@ -27,7 +27,7 @@
         <div class="row">
           <div class="col-sm-6">
             <h1 class="m-0">
-              <span class="text-white-50">Data Access Form /</span> ${dar.id}
+              <span class="text-white-50"><@message "data-access-form"/> /</span> ${dar.id}
             </h1>
           </div>
           <div class="col-sm-6">
@@ -58,19 +58,19 @@
             <div class="card-header d-print-none">
               <h3 class="card-title"><@message "application-form"/></h3>
               <div>
-                  <#if permissions?seq_contains("EDIT")>
-                    <span class="float-right border-left ml-2 pl-2" ng-if="schema.readOnly">
+                <#if permissions?seq_contains("EDIT")>
+                  <span class="float-right border-left ml-2 pl-2" ng-if="schema.readOnly">
                     <a class="btn btn-primary" href="${dar.id}?edit=true"><i class="fas fa-pen"></i> <@message "edit"/></a>
                   </span>
-                    <span class="float-right border-left ml-2 pl-2" ng-hide="schema.readOnly">
+                  <span class="float-right border-left ml-2 pl-2" ng-hide="schema.readOnly">
                     <a class="btn btn-primary" href="#" ng-click="save('${dar.id}')"><@message "save"/></a>
                     <a class="btn btn-default" href="${dar.id}"><@message "cancel"/></a>
                   </span>
-                  </#if>
-                  <#if permissions?seq_contains("EDIT_STATUS")>
-                    <span class="float-right">
+                </#if>
+                <#if permissions?seq_contains("EDIT_STATUS")>
+                  <span class="float-right">
                     <#if dar.status == "OPENED" || dar.status == "CONDITIONALLY_APPROVED">
-                      <button type="button" class="btn btn-info" ng-disabled="!schema.readOnly" data-toggle="modal"
+                      <button type="button" class="btn btn-info" ng-hide="!schema.readOnly" data-toggle="modal"
                               data-target="#modal-submit"><@message "submit"/></button>
                       <button type="button" class="btn btn-success"
                               ng-click="validate()"><@message "validate"/></button>
@@ -81,10 +81,9 @@
                       <button type="button" class="btn btn-success" data-toggle="modal"
                               data-target="#modal-approve"><@message "approve"/></button>
                       <#if accessConfig.withConditionalApproval>
-                      <button type="button" class="btn btn-warning" data-toggle="modal"
-                              data-target="#modal-condition"><@message "conditionallyApprove"/></button>
-                    </#if>
-
+                         <button type="button" class="btn btn-warning" data-toggle="modal"
+                                 data-target="#modal-condition"><@message "conditionallyApprove"/></button>
+                      </#if>
                       <button type="button" class="btn btn-danger" data-toggle="modal"
                               data-target="#modal-reject"><@message "reject"/></button>
                     <#elseif dar.status == "APPROVED" && !accessConfig.approvedFinal>
@@ -95,13 +94,19 @@
                               data-target="#modal-cancel-reject"><@message "cancel-rejection"/></button>
                     </#if>
                   </span>
-                  </#if>
+                </#if>
               </div>
             </div>
             <div class="card-body">
+              <div class="d-none d-print-block">
+                <@dataAccessFormPrintHeader form=dar type="data-access-request"/>
+              </div>
               <form name="forms.requestForm" class="bootstrap3">
                 <div sf-schema="schema" sf-form="form" sf-model="model"></div>
               </form>
+              <div class="d-none d-print-block">
+                <@dataAccessFormPrintFooter form=dar/>
+              </div>
             </div>
           </div>
 

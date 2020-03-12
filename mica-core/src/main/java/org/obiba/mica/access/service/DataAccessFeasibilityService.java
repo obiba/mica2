@@ -57,7 +57,7 @@ public class DataAccessFeasibilityService extends DataAccessEntityService<DataAc
     if (feasibility.isNew()) {
       setAndLogStatus(saved, DataAccessEntityStatus.OPENED);
       int count = findByParentId(saved.getParentId()).size();
-      saved.setId(saved.getParentId() + "-" + (count + 1));
+      saved.setId(saved.getParentId() + "-F" + (count + 1));
     } else {
       saved = dataFeasibilityRequestRepository.findOne(feasibility.getId());
       if (saved != null) {

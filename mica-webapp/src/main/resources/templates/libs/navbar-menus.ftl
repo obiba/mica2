@@ -48,12 +48,12 @@
 <#macro rightmenus>
     <#if user??>
       <#if config?? && config.repositoryEnabled && (config.studyDatasetEnabled || config.harmonizationDatasetEnabled)>
-        <li class="nav-item">
+        <!--li class="nav-item">
           <a href="${pathPrefix!".."}/cart" class="nav-link">
             <i class="fas fa-shopping-basket"></i>
-            <!--<span class="badge badge-danger navbar-badge">3</span>-->
+            <span class="badge badge-danger navbar-badge">3</span>
           </a>
-        </li>
+        </li-->
       </#if>
       <#if config?? && config.locales?size != 1>
         <li class="nav-item dropdown">
