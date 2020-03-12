@@ -139,6 +139,14 @@
                 <@dataAccessFormPrintFooter form=amendment/>
               </div>
             </div>
+            <#if amendmentPermissions?seq_contains("EDIT")>
+              <div class="card-footer" ng-hide="schema.readOnly">
+                <span class="float-right">
+                  <a class="btn btn-primary" href="#" ng-click="save('${dar.id}', 'amendment', '${amendment.id}')"><@message "save"/></a>
+                  <a class="btn btn-default" href="${amendment.id}"><@message "cancel"/></a>
+                </span>
+              </div>
+            </#if>
           </div>
 
           <!-- Confirm submission modal -->
