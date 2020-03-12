@@ -63,7 +63,7 @@ public class DataAccessAmendmentService extends DataAccessEntityService<DataAcce
     if(amendment.isNew()) {
       setAndLogStatus(saved, DataAccessEntityStatus.OPENED);
       int count = findByParentId(saved.getParentId()).size();
-      saved.setId(saved.getParentId() + "-" + (count + 1));
+      saved.setId(saved.getParentId() + "-A" + (count + 1));
     } else {
       saved = dataAmendmentRequestRepository.findOne(amendment.getId());
       if(saved != null) {

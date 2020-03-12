@@ -1,5 +1,6 @@
 package org.obiba.mica.web.controller;
 
+import com.google.common.collect.Lists;
 import org.obiba.mica.project.domain.Project;
 import org.obiba.mica.project.service.PublishedProjectService;
 import org.springframework.stereotype.Controller;
@@ -24,9 +25,13 @@ public class ProjectsController extends BaseController {
   }
 
   private List<Project> getProjects() {
-    return publishedProjectService.findAll().stream()
-      .filter(p -> isAccessible("/project", p.getId()))
-      .collect(Collectors.toList());
+    try {
+      return publishedProjectService.findAll().stream()
+        .filter(p -> isAccessible("/project", p.getId()))
+        .collect(Collectors.toList());
+    } catch (Exception e) {
+      return Lists.newArrayList();
+    }
   }
 
 }

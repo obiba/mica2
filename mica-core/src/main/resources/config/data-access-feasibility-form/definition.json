@@ -26,15 +26,21 @@
                 "required": true
               },
               {
-                "key": "grantCompetition",
-                "required": true
-              },
-              {
                 "key": "grantDate",
                 "dateOptions": {
                   "dateFormat": "yyyy-MM-dd"
                 },
                 "validationMessage": "t(data-access-feasibility.default.date-error)",
+                "required": true
+              }
+            ]
+          },
+          {
+            "type": "section",
+            "htmlClass": "col-xs-6",
+            "items": [
+              {
+                "key": "grantCompetition",
                 "required": true
               }
             ]
@@ -99,7 +105,13 @@
                 "condition": "model.career === 'other'",
                 "required": true
               },
-              "currentPosition",
+              "currentPosition"
+            ]
+          },
+          {
+            "type": "section",
+            "htmlClass": "col-xs-6",
+            "items": [
               "piEmail",
               "piPhone",
               {
@@ -127,11 +139,9 @@
     "items": [
       {
         "type": "section",
-        "htmlClass": "row",
         "items": [
           {
             "type": "section",
-            "htmlClass": "col-xs-6",
             "items": [
               "projectTitle",
               {
@@ -158,11 +168,9 @@
     "items": [
       {
         "type": "section",
-        "htmlClass": "row",
         "items": [
           {
             "type": "section",
-            "htmlClass": "col-xs-6",
             "items": [
               {
                 "key": "datasets",
@@ -198,11 +206,9 @@
     "items": [
       {
         "type": "section",
-        "htmlClass": "row",
         "items": [
           {
             "type": "section",
-            "htmlClass": "col-xs-6",
             "items": [
               {
                 "key": "biospecimensType",
@@ -243,11 +249,9 @@
     "items": [
       {
         "type": "section",
-        "htmlClass": "row",
         "items": [
           {
             "type": "section",
-            "htmlClass": "col-xs-6",
             "items": [
               {
                 "key": "linkage",

@@ -27,6 +27,7 @@
     <!-- DataTable options -->
     const dataTablesDefaultOpts = {
         "paging": true,
+        "pageLength": 25,
         "lengthChange": true,
         "searching": true,
         "ordering": true,
@@ -60,6 +61,7 @@
     };
     const dataTablesNoSortSearchOpts = {
         "paging": true,
+        "pageLength": 25,
         "lengthChange": false,
         "searching": true,
         "ordering": false,
