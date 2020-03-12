@@ -99,7 +99,41 @@
           <!-- 3 - Operations Summary -->
           <div id="myDivBodyIndexThree" class="modal-body" ng-show="displayBodyIndexThree">
             <h4><span translate>study.import.summary</span></h4><br>
-            <label class="control-label ng-binding"><span translate>study.import.include-operations</span></label>
+            <!-- 3.1 - Include Operations -->
+            <label class="control-label ng-binding"><span translate>study.import.include-operations</span></label><br>
+            <table class="table table-bordered table-striped">
+              <thead>
+                <tr>
+                  <th data-column-name="id">ID</th>
+                  <th data-column-name="acronym">{{"study.acronym" | translate}}</th>
+                  <th data-column-name="name" class="col-md-8">{{"study.name" | translate}}</th>
+                </tr>
+              </thead>
+              <tbody id="myTableSummaryInclude">
+                <tr ng-repeat="studyModal in studiesToInclude">
+                  <td>
+                    <ul class="list-unstyled">
+                      <a translate>{{studyModal.id}}</a>
+                    </ul>
+                  </td>
+                  <td>
+                    <ul class="list-unstyled">
+                      <li ng-repeat="acronym in studyModal.acronym">
+                        <span class="badge">{{acronym.lang}}</span> {{acronym.value}}
+                      </li>
+                    </ul>
+                  </td>
+                  <td>
+                    <ul class="list-unstyled">
+                      <li ng-repeat="name in studyModal.name">
+                        <span class="badge">{{name.lang}}</span> {{name.value}}
+                      </li>
+                    </ul>
+                  </td>
+                </tr>  
+              </tbody>
+            </table>
+            <!-- 3.2 - Update Operations -->
             <label class="control-label ng-binding"><span translate>study.import.update-operations</span></label>
           </div>
           

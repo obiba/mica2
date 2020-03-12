@@ -277,6 +277,14 @@ mica.study
               });
             
         } else {
+        	//will display Index Three
+        	$scope.studiesToInclude = [];
+        	
+        	for (var i = 0; i < $scope.studiesToImport.length; i++) {	
+                if ($scope.studiesToImport[i].checked) {
+                	$scope.studiesToInclude.push($scope.studiesToImport[i]);
+                }
+            }
         	
         	$scope.displayBodyIndexOne = false;
             $scope.displayBodyIndexTwo = false;
@@ -330,7 +338,7 @@ mica.study
         	
             if ($scope.studiesToImport[i].checked){
             	
-            	listIds.push( studiesToImport[i].id );
+            	listIds.push( $scope.studiesToImport[i].id );
             }
         }
         
