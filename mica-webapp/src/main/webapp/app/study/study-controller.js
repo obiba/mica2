@@ -279,10 +279,12 @@ mica.study
         } else {
         	//will display Index Three
         	$scope.studiesToInclude = [];
+        	$scope.studiesToUpdate = [];
         	
         	for (var i = 0; i < $scope.studiesToImport.length; i++) {	
                 if ($scope.studiesToImport[i].checked) {
                 	$scope.studiesToInclude.push($scope.studiesToImport[i]);
+                	$scope.studiesToUpdate.push($scope.studiesToImport[i]);
                 }
             }
         	
