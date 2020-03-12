@@ -108,6 +108,14 @@
                 <@dataAccessFormPrintFooter form=dar/>
               </div>
             </div>
+            <#if permissions?seq_contains("EDIT")>
+              <div class="card-footer" ng-hide="schema.readOnly">
+                <span class="float-right">
+                  <a class="btn btn-primary" href="#" ng-click="save('${dar.id}')"><@message "save"/></a>
+                  <a class="btn btn-default" href="${dar.id}"><@message "cancel"/></a>
+                </span>
+              </div>
+            </#if>
           </div>
 
           <!-- Confirm submission modal -->
