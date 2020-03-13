@@ -106,11 +106,7 @@
             <div class="col-lg-6">
               <div class="card card-info card-outline">
                 <div class="card-header">
-                  <h3 class="card-title">Population</h3>
-                  <div class="card-tools">
-                    <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="Collapse">
-                      <i class="fas fa-minus"></i></button>
-                  </div>
+                  <h3 class="card-title"><@message "population"/></h3>
                 </div>
                 <div class="card-body">
                   <h5>${population.name[.lang]!""}</h5>
@@ -127,11 +123,7 @@
             <div class="col-lg-6">
               <div class="card card-info card-outline">
                 <div class="card-header">
-                  <h3 class="card-title">Data Collection Event</h3>
-                  <div class="card-tools">
-                    <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="Collapse">
-                      <i class="fas fa-minus"></i></button>
-                  </div>
+                  <h3 class="card-title"><@message "data-collection-event"/></h3>
                 </div>
                 <div class="card-body">
                   <h5>${dce.name[.lang]!""}</h5>
@@ -148,7 +140,7 @@
             <div class="col-lg-6">
               <div class="card card-info card-outline">
                 <div class="card-header">
-                  <h3 class="card-title">Studies Included</h3>
+                  <h3 class="card-title"><@message "studies-included"/></h3>
                   <div class="card-tools">
                     <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="Collapse">
                       <i class="fas fa-minus"></i></button>
@@ -160,9 +152,9 @@
                     <table class="table table-striped mb-3">
                       <thead>
                       <tr>
-                        <th>Study</th>
-                        <th>Population</th>
-                        <th>DCE</th>
+                        <th><@message "study"/></th>
+                        <th><@message "population"/></th>
+                        <th><@message "data-collection-event"/></th>
                       </tr>
                       </thead>
                       <tbody>
@@ -197,8 +189,8 @@
                       <table class="table table-striped">
                         <thead>
                         <tr>
-                          <th>Study</th>
-                          <th>Population</th>
+                          <th><@message "study"/></th>
+                          <th><@message "population"/></th>
                         </tr>
                         </thead>
                         <tbody>
@@ -234,10 +226,6 @@
               <div class="card card-info card-outline">
                 <div class="card-header">
                   <h3 class="card-title"><@message "harmonization"/></h3>
-                  <div class="card-tools">
-                    <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="Collapse">
-                      <i class="fas fa-minus"></i></button>
-                  </div>
                 </div>
                 <div class="card-body">
                   <img id="loadingSummary" src="../assets/images/loading.gif">

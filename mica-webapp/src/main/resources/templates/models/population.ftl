@@ -12,10 +12,6 @@
             <h5 class="card-title">
               <@message "study.selection-criteria.label"/>
             </h5>
-            <div class="card-tools">
-              <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="Collapse">
-                <i class="fas fa-minus"></i></button>
-            </div>
           </div>
           <!-- /.card-header -->
           <div class="card-body">
@@ -168,10 +164,6 @@
               <h3 class="card-title">
                   <@message "population.recruitment"/>
               </h3>
-              <div class="card-tools">
-                <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="Collapse">
-                  <i class="fas fa-minus"></i></button>
-              </div>
             </div>
             <!-- /.card-header -->
             <div class="card-body">
@@ -256,10 +248,6 @@
               <h3 class="card-title">
                 <@message "numberOfParticipants.label"/>
               </h3>
-              <div class="card-tools">
-                <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="Collapse">
-                  <i class="fas fa-minus"></i></button>
-              </div>
             </div>
             <!-- /.card-header -->
             <div class="card-body">

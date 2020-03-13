@@ -1,3 +1,7 @@
+.info-box .info-box-text, .info-box .progress-description {
+  white-space: initial !important;
+}
+
 @font-face {
   font-family: 'obiba';
   src: url('../fonts/obiba.eot');
