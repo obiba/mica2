@@ -285,7 +285,7 @@ public class DataAccessRequestUtilService {
 
   private void checkConditionallyApprovedStatusTransition(DataAccessEntity request, DataAccessEntityStatus to) {
     DataAccessForm dataAccessForm = dataAccessFormService.find().get();
-    if (dataAccessForm.isWithReview()) {
+    if (!isDataAccessFeasibility(request) && dataAccessForm.isWithReview()) {
       if (to != DataAccessEntityStatus.SUBMITTED && to != DataAccessEntityStatus.REVIEWED)
         throw new IllegalArgumentException("Conditionally approved data access form can only be resubmitted or be under review");
     } else if (to != DataAccessEntityStatus.SUBMITTED) {
@@ -298,8 +298,8 @@ public class DataAccessRequestUtilService {
     if (dataAccessForm.isApprovedFinal())
       throw new IllegalArgumentException("Approved data access form cannot be modified");
 
-    if (dataAccessForm.isWithReview() && to != DataAccessEntityStatus.REVIEWED) {
-      throw new IllegalArgumentException("Approved data access fomr can only be put under review");
+    if (!isDataAccessFeasibility(request) && dataAccessForm.isWithReview() && to != DataAccessEntityStatus.REVIEWED) {
+      throw new IllegalArgumentException("Approved data access form can only be put under review");
     }
 
     if (!dataAccessForm.isWithReview() && to != DataAccessEntityStatus.SUBMITTED) {

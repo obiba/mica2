@@ -89,43 +89,47 @@
             <div class="card-header d-print-none">
               <h3 class="card-title"><@message "amendment-form"/></h3>
               <div>
-                  <#if amendmentPermissions?seq_contains("EDIT")>
-                    <span class="float-right border-left ml-2 pl-2" ng-if="schema.readOnly">
+                <#if amendmentPermissions?seq_contains("EDIT")>
+                  <span class="float-right border-left ml-2 pl-2" ng-if="schema.readOnly">
                     <a class="btn btn-primary" href="${amendment.id}?edit=true"><i class="fas fa-pen"></i> <@message "edit"/></a>
                   </span>
-                    <span class="float-right border-left ml-2 pl-2" ng-hide="schema.readOnly">
+                  <span class="float-right border-left ml-2 pl-2" ng-hide="schema.readOnly">
                     <a class="btn btn-primary" href="#" ng-click="save('${dar.id}', 'amendment', '${amendment.id}')"><@message "save"/></a>
                     <a class="btn btn-default" href="${amendment.id}"><@message "cancel"/></a>
                   </span>
-                  </#if>
-                  <#if amendmentPermissions?seq_contains("EDIT_STATUS")>
-                    <span class="float-right">
+                </#if>
+                <#if amendmentPermissions?seq_contains("EDIT_STATUS")>
+                  <span class="float-right">
                     <#if amendment.status == "OPENED" || amendment.status == "CONDITIONALLY_APPROVED">
                       <button type="button" class="btn btn-info" ng-hide="!schema.readOnly" data-toggle="modal"
                               data-target="#modal-submit"><@message "submit"/></button>
                       <button type="button" class="btn btn-success"
                               ng-click="validate()"><@message "validate"/></button>
-                    <#elseif (amendment.status == "SUBMITTED" && accessConfig.withReview)>
-                      <button type="button" class="btn btn-primary"
-                              onclick="micajs.dataAccess.review('${dar.id}', 'amendment', '${amendment.id}')"><@message "review"/></button>
-                    <#elseif amendment.status == "REVIEWED" || (amendment.status == "SUBMITTED" && !accessConfig.withReview)>
-                      <button type="button" class="btn btn-success" data-toggle="modal"
-                              data-target="#modal-approve"><@message "approve"/></button>
-                      <#if accessConfig.withConditionalApproval>
-                      <button type="button" class="btn btn-warning" data-toggle="modal"
-                              data-target="#modal-condition"><@message "conditionallyApprove"/></button>
-                      </#if>
-                      <button type="button" class="btn btn-danger" data-toggle="modal"
-                              data-target="#modal-reject"><@message "reject"/></button>
                     <#elseif amendment.status == "APPROVED" && !accessConfig.approvedFinal>
                       <button type="button" class="btn btn-outline-secondary" data-toggle="modal"
                               data-target="#modal-cancel-approve"><@message "cancel-approval"/></button>
                     <#elseif amendment.status == "REJECTED" && !accessConfig.rejectedFinal>
                       <button type="button" class="btn btn-outline-secondary" data-toggle="modal"
                               data-target="#modal-cancel-reject"><@message "cancel-rejection"/></button>
+                    <#else>
+                      <button type="button" class="btn btn-primary"
+                              onclick="micajs.dataAccess.reopen('${dar.id}', 'amendment', '${amendment.id}')"><@message "reopen"/></button>
+                      <#if (amendment.status == "SUBMITTED" && accessConfig.withReview)>
+                        <button type="button" class="btn btn-primary"
+                                onclick="micajs.dataAccess.review('${dar.id}', 'amendment', '${amendment.id}')"><@message "review"/></button>
+                      <#elseif amendment.status == "REVIEWED" || (amendment.status == "SUBMITTED" && !accessConfig.withReview)>
+                        <button type="button" class="btn btn-success" data-toggle="modal"
+                                data-target="#modal-approve"><@message "approve"/></button>
+                        <#if accessConfig.withConditionalApproval>
+                        <button type="button" class="btn btn-warning" data-toggle="modal"
+                                data-target="#modal-condition"><@message "conditionallyApprove"/></button>
+                        </#if>
+                        <button type="button" class="btn btn-danger" data-toggle="modal"
+                                data-target="#modal-reject"><@message "reject"/></button>
+                      </#if>
                     </#if>
                   </span>
-                  </#if>
+                </#if>
               </div>
             </div>
             <div class="card-body">
