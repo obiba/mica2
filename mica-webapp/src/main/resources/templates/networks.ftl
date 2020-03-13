@@ -51,9 +51,9 @@
                       <table id="networks" class="table table-bordered table-striped">
                         <thead>
                         <tr>
-                          <th>Acronym</th>
-                          <th>Name</th>
-                          <th>Description</th>
+                          <th><@message "acronym"/></th>
+                          <th><@message "name"/></th>
+                          <th><@message "description"/></th>
                         </tr>
                         </thead>
                         <tbody>
@@ -72,7 +72,7 @@
                       <div class="row d-flex align-items-stretch">
                         <#list networks as ntwk>
                           <div class="col-12 col-sm-6 col-md-4 d-flex align-items-stretch">
-                            <div class="card bg-light">
+                            <div class="card bg-light w-100">
                               <div class="card-header text-dark border-bottom-0">
                                 <h2 class="lead"><b>${ntwk.acronym[.lang]!""}</b></h2>
                               </div>
@@ -86,7 +86,7 @@
                                         <img class="img-fluid" style="max-height: 200px" alt="${ntwk.acronym[.lang]!""} logo" src="../ws/network/${ntwk.id}/file/${ntwk.logo.id}/_download"/>
                                       <#else >
                                         <p class="text-black-50 text-center mr-5 ml-5 pr-5">
-                                          <i class="ion ion-filing fa-4x"></i>
+                                          <i class="${networkIcon} fa-3x"></i>
                                         </p>
                                       </#if>
                                   </div>

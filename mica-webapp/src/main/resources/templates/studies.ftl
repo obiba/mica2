@@ -66,11 +66,11 @@
                       <table id="studies" class="table table-bordered table-striped">
                         <thead>
                         <tr>
-                          <th>Acronym</th>
-                          <th>Name</th>
-                          <th>Description</th>
+                          <th><@message "acronym"/></th>
+                          <th><@message "name"/></th>
+                          <th><@message "description"/></th>
                           <#if showTypeColumn>
-                            <th>Type</th>
+                            <th><@message "type"/></th>
                           </#if>
                         </tr>
                         </thead>
@@ -83,9 +83,9 @@
                             <#if showTypeColumn>
                               <td>
                                 <#if std.class.simpleName == "HarmonizationStudy">
-                                  Harmonization
+                                  <@message "harmonization"/>
                                 <#else>
-                                  Individual
+                                  <@message "individual"/>
                                 </#if>
                               </td>
                             </#if>
@@ -99,7 +99,7 @@
                       <div class="row d-flex align-items-stretch">
                         <#list studies as std>
                           <div class="col-12 col-sm-6 col-md-4 d-flex align-items-stretch">
-                            <div class="card bg-light">
+                            <div class="card bg-light w-100">
                               <div class="card-header text-dark border-bottom-0">
                                 <h2 class="lead"><b>${std.acronym[.lang]!""}</b></h2>
                               </div>
@@ -113,7 +113,7 @@
                                         <img class="img-fluid" style="max-height: 200px" alt="${std.acronym[.lang]!""} logo" src="../ws/study/${std.id}/file/${std.logo.id}/_download"/>
                                       <#else >
                                         <p class="text-black-50 text-center mr-5 ml-5 pr-5">
-                                          <i class="ion ion-folder fa-4x"></i>
+                                          <i class="${studyIcon} fa-3x"></i>
                                         </p>
                                       </#if>
                                   </div>

@@ -119,9 +119,9 @@
                   <dd class="col-sm-8">
                     <a class="btn btn-success" href="../dataset/${variable.datasetId}">
                       <#if type == "Collected">
-                        <i class="ion ion-grid"></i>
+                        <i class="${datasetIcon}"></i>
                       <#else>
-                        <i class="ion ion-gear-b"></i>
+                        <i class="${harmoDatasetIcon}"></i>
                       </#if>
                       ${variable.datasetAcronym[.lang]!variable.datasetId}
                     </a>
@@ -144,7 +144,7 @@
                   </#if>
                   <#if type == "Harmonized">
                     <dt class="col-sm-4"><@message "dataschema-variable"/></dt>
-                    <dd class="col-sm-8"><a href="../variable/${variable.datasetId}:${variable.name}:Dataschema" class="btn btn-primary"><i class="ion ion-pie-graph"></i> ${variable.name}</a></dd>
+                    <dd class="col-sm-8"><a href="../variable/${variable.datasetId}:${variable.name}:Dataschema" class="btn btn-primary"><i class="${variableIcon}"></i> ${variable.name}</a></dd>
                   </#if>
                   <#if opalTable?? && (opalTable.name?? || opalTable.description??)>
                     <dt class="col-sm-4"><@message "datasource-info"/></dt>

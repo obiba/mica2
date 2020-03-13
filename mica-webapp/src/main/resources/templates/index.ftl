@@ -41,7 +41,7 @@
                     <p><@message "networks"/></p>
                   </div>
                   <div class="icon">
-                    <i class="ion ion-filing"></i>
+                    <i class="${networkIcon}"></i>
                   </div>
                   <a href="../search#lists?type=networks" class="small-box-footer"><@message "more-info"/> <i class="fas fa-arrow-circle-right"></i></a>
                 </div>
@@ -58,7 +58,7 @@
                     <p><@message "studies"/></p>
                   </div>
                   <div class="icon">
-                    <i class="ion ion-folder"></i>
+                    <i class="${studyIcon}"></i>
                   </div>
                   <a href="../search#lists?type=studies" class="small-box-footer"><@message "more-info"/> <i class="fas fa-arrow-circle-right"></i></a>
                 </div>
@@ -75,7 +75,7 @@
                     <p><@message "datasets"/></p>
                   </div>
                   <div class="icon">
-                    <i class="ion ion-grid"></i>
+                    <i class="${datasetIcon}"></i>
                   </div>
                   <a href="../search#lists?type=datasets" class="small-box-footer"><@message "more-info"/> <i class="fas fa-arrow-circle-right"></i></a>
                 </div>
@@ -89,7 +89,7 @@
                     <p><@message "variables"/></p>
                   </div>
                   <div class="icon">
-                    <i class="ion ion-pie-graph"></i>
+                    <i class="${variableIcon}"></i>
                   </div>
                   <a href="../search#lists?type=variables" class="small-box-footer"><@message "more-info"/> <i class="fas fa-arrow-circle-right"></i></a>
                 </div>
