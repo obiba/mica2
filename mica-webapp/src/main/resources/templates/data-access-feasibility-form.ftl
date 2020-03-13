@@ -75,6 +75,8 @@
                       <button type="button" class="btn btn-success"
                               ng-click="validate()"><@message "validate"/></button>
                     <#elseif feasibility.status == "SUBMITTED">
+                      <button type="button" class="btn btn-primary"
+                              onclick="micajs.dataAccess.reopen('${dar.id}', 'feasibility', '${feasibility.id}')"><@message "reopen"/></button>
                       <button type="button" class="btn btn-success" data-toggle="modal"
                               data-target="#modal-approve"><@message "approve"/></button>
                       <button type="button" class="btn btn-danger" data-toggle="modal"
