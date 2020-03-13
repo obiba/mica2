@@ -61,6 +61,13 @@
 </#macro>
 <#macro dataAccessFormPrintFooter form>
   <div class="border-top mt-3 pt-3">
-    <small><span class="moment-datetime text-muted">${.now}</span></small>
+    <div class="float-left">
+      <small><span class="moment-datetime text-muted">${.now}</span></small>
+    </div>
+    <div class="float-right">
+      <#if form.submissionDate??>
+        <small><@message "form-submitted-on"/> <span class="moment-datetime text-muted">${form.submissionDate.toString()}</span></small>
+      </#if>
+    </div>
   </div>
 </#macro>

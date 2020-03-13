@@ -30,7 +30,7 @@
                 "dateOptions": {
                   "dateFormat": "yyyy-MM-dd"
                 },
-                "validationMessage": "t(data-access-feasibility.default.date-error)",
+                "validationMessage": "t(data-access-request.default.date-error)",
                 "required": true
               }
             ]
