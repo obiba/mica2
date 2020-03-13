@@ -42,9 +42,9 @@
                   <div class="col-md-3 col-sm-6 col-12">
                     <p class="text-muted text-center">
                       <#if type == "Collected">
-                        <i class="ion ion-grid fa-5x"></i>
+                        <i class="${datasetIcon} fa-5x"></i>
                       <#else >
-                        <i class="ion ion-gear-b fa-5x"></i>
+                        <i class="${harmoDatasetIcon} fa-5x"></i>
                       </#if>
                     </p>
                   </div>
@@ -54,7 +54,7 @@
                       <div class="info-box">
                         <span class="info-box-icon bg-info">
                           <a href="../search#lists?type=networks&query=dataset(in(Mica_dataset.id,${dataset.id}))">
-                            <i class="ion ion-filing"></i>
+                            <i class="${networkIcon}"></i>
                           </a>
                         </span>
                         <div class="info-box-content">
@@ -70,7 +70,7 @@
                     <div class="info-box">
                       <span class="info-box-icon bg-danger">
                         <a href="../search#lists?type=variables&query=dataset(in(Mica_dataset.id,${dataset.id}))">
-                          <i class="ion ion-pie-graph"></i>
+                          <i class="${variableIcon}"></i>
                         </a>
                       </span>
                       <div class="info-box-content">
@@ -92,7 +92,7 @@
                   <div class="card-footer">
                     <@message "associated-study"/>
                     <a class="btn btn-success ml-2" href="../study/${study.id}">
-                      <i class="ion ion-folder"></i> ${study.acronym[.lang]!""}
+                      <i class="${studyIcon}"></i> ${study.acronym[.lang]!""}
                     </a>
                   </div>
                 </#if>

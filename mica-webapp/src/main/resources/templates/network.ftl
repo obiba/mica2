@@ -40,7 +40,7 @@
                       <img class="img-fluid" style="max-height: 200px" alt="${network.acronym[.lang]!""} logo" src="../ws/network/${network.id}/file/${network.logo.id}/_download"/>
                     <#else >
                       <p class="text-light text-center">
-                        <i class="ion ion-filing fa-5x"></i>
+                        <i class="${networkIcon} fa-5x"></i>
                       </p>
                     </#if>
                   </div>
@@ -50,7 +50,7 @@
                       <div class="info-box">
                         <span class="info-box-icon bg-success">
                           <a href="../search#lists?type=studies&query=network(in(Mica_network.id,${network.id}))">
-                            <i class="ion ion-folder"></i>
+                            <i class="${studyIcon}"></i>
                           </a></span>
                         <div class="info-box-content">
                           <span class="info-box-text"><@message "studies"/></span>
@@ -66,7 +66,7 @@
                       <div class="info-box">
                         <span class="info-box-icon bg-warning">
                           <a href="../search#lists?type=datasets&query=network(in(Mica_network.id,${network.id}))">
-                            <i class="ion ion-grid"></i>
+                            <i class="${datasetIcon}"></i>
                           </a>
                         </span>
                         <div class="info-box-content">
@@ -80,7 +80,7 @@
                       <div class="info-box">
                         <span class="info-box-icon bg-danger">
                           <a href="../search#lists?type=variables&query=network(in(Mica_network.id,${network.id}))">
-                            <i class="ion ion-pie-graph"></i>
+                            <i class="${variableIcon}"></i>
                           </a>
                         </span>
                         <div class="info-box-content">

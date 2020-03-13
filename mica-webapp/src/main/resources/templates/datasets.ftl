@@ -66,11 +66,11 @@
                       <table id="datasets" class="table table-bordered table-striped">
                         <thead>
                         <tr>
-                          <th>Acronym</th>
-                          <th>Name</th>
-                          <th>Description</th>
+                          <th><@message "acronym"/></th>
+                          <th><@message "name"/></th>
+                          <th><@message "description"/></th>
                           <#if showTypeColumn>
-                            <th>Type</th>
+                            <th><@message "type"/></th>
                           </#if>
                         </tr>
                         </thead>
@@ -83,9 +83,9 @@
                             <#if showTypeColumn>
                               <td>
                                 <#if ds.class.simpleName == "HarmonizationDataset">
-                                  Harmonized
+                                  <@message "harmonized"/>
                                 <#else>
-                                  Collected
+                                  <@message "collected"/>
                                 </#if>
                               </td>
                             </#if>
@@ -99,7 +99,7 @@
                       <div class="row d-flex align-items-stretch">
                         <#list datasets as ds>
                           <div class="col-12 col-sm-6 col-md-4 d-flex align-items-stretch">
-                            <div class="card bg-light">
+                            <div class="card bg-light w-100">
                               <div class="card-header text-dark border-bottom-0">
                                 <h2 class="lead"><b>${ds.acronym[.lang]!""}</b></h2>
                               </div>
@@ -111,9 +111,9 @@
                                   <div class="col-5 text-center">
                                     <p class="text-black-50 text-center mr-5 ml-5 pr-5">
                                       <#if ds.class.simpleName == "HarmonizationDataset">
-                                        <i class="ion ion-gear-b fa-4x"></i>
+                                        <i class="${harmoDatasetIcon} fa-3x"></i>
                                       <#else>
-                                        <i class="ion ion-grid fa-4x"></i>
+                                        <i class="${datasetIcon} fa-3x"></i>
                                       </#if>
                                     </p>
                                   </div>

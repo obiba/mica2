@@ -56,22 +56,22 @@ new Vue({
       criteriaMenu: {
         items: {
           variable: {
-            icon: 'ion ion-pie-graph',
+            icon: 'io io-variable',
             title: 'Variables',
             menus: []
           },
           dataset: {
-            icon: 'ion ion-grid',
+            icon: 'io io-dataset',
             title: 'Datasets',
             menus: []
           },
           study: {
-            icon: 'ion ion-folder',
+            icon: 'io io-study',
             title: 'Studies',
             menus: []
           },
           network: {
-            icon: 'ion ion-filing',
+            icon: 'io io-network',
             title: 'Networks',
             menus: []
           },
