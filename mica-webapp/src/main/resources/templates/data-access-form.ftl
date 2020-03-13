@@ -74,25 +74,30 @@
                               data-target="#modal-submit"><@message "submit"/></button>
                       <button type="button" class="btn btn-success"
                               ng-click="validate()"><@message "validate"/></button>
-                    <#elseif (dar.status == "SUBMITTED" && accessConfig.withReview)>
-                      <button type="button" class="btn btn-primary"
-                              onclick="micajs.dataAccess.review('${dar.id}')"><@message "review"/></button>
-                    <#elseif dar.status == "REVIEWED" || (dar.status == "SUBMITTED" && !accessConfig.withReview)>
-                      <button type="button" class="btn btn-success" data-toggle="modal"
-                              data-target="#modal-approve"><@message "approve"/></button>
-                      <#if accessConfig.withConditionalApproval>
-                         <button type="button" class="btn btn-warning" data-toggle="modal"
-                                 data-target="#modal-condition"><@message "conditionallyApprove"/></button>
-                      </#if>
-                      <button type="button" class="btn btn-danger" data-toggle="modal"
-                              data-target="#modal-reject"><@message "reject"/></button>
                     <#elseif dar.status == "APPROVED" && !accessConfig.approvedFinal>
                       <button type="button" class="btn btn-outline-secondary" data-toggle="modal"
                               data-target="#modal-cancel-approve"><@message "cancel-approval"/></button>
                     <#elseif dar.status == "REJECTED" && !accessConfig.rejectedFinal>
                       <button type="button" class="btn btn-outline-secondary" data-toggle="modal"
                               data-target="#modal-cancel-reject"><@message "cancel-rejection"/></button>
+                    <#else>
+                      <button type="button" class="btn btn-primary"
+                              onclick="micajs.dataAccess.reopen('${dar.id}')"><@message "reopen"/></button>
+                      <#if (dar.status == "SUBMITTED" && accessConfig.withReview)>
+                        <button type="button" class="btn btn-primary"
+                                onclick="micajs.dataAccess.review('${dar.id}')"><@message "review"/></button>
+                      <#elseif dar.status == "REVIEWED" || (dar.status == "SUBMITTED" && !accessConfig.withReview)>
+                        <button type="button" class="btn btn-success" data-toggle="modal"
+                                data-target="#modal-approve"><@message "approve"/></button>
+                        <#if accessConfig.withConditionalApproval>
+                          <button type="button" class="btn btn-warning" data-toggle="modal"
+                                  data-target="#modal-condition"><@message "conditionallyApprove"/></button>
+                        </#if>
+                        <button type="button" class="btn btn-danger" data-toggle="modal"
+                                data-target="#modal-reject"><@message "reject"/></button>
+                      </#if>
                     </#if>
+
                   </span>
                 </#if>
               </div>

@@ -279,6 +279,24 @@ var micajs = (function() {
       });
   };
 
+  const micaReopenDataAccess = function(id, type, aId) {
+    var url = '../../ws/data-access-request/' + id + '/_status?to=OPENED';
+    var redirect = '../data-access-form/' + id;
+    if (type && aId) {
+      url = '../../ws/data-access-request/' + id + '/' + type + '/' + aId + '/_status?to=OPENED';
+      redirect = '../data-access-' + type + '-form/' + aId;
+    }
+    axios.put(url)
+      .then(response => {
+        //console.dir(response);
+        micaRedirect(redirect);
+      })
+      .catch(response => {
+        console.dir(response);
+        micaError('Reopen failed.');
+      });
+  };
+
   const micaReviewDataAccess = function(id, type, aId) {
     var url = '../../ws/data-access-request/' + id + '/_status?to=REVIEWED';
     var redirect = '../data-access-form/' + id;
@@ -646,6 +664,7 @@ var micajs = (function() {
       'create': micaCreateDataAccess,
       'delete': micaDeleteDataAccess,
       'submit': micaSubmitDataAccess,
+      'reopen': micaReopenDataAccess,
       'review': micaReviewDataAccess,
       'approve': micaApproveDataAccess,
       'conditionallyApprove': micaConditionallyApproveDataAccess,
