@@ -23,9 +23,12 @@
 <link rel="stylesheet" href="${pathPrefix!".."}/assets/libs/node_modules/admin-lte/plugins/datatables-bs4/css/dataTables.bootstrap4.css">
 <!-- Toastr -->
 <link rel="stylesheet" href="${pathPrefix!".."}/assets/libs/node_modules/admin-lte/plugins/toastr/toastr.min.css">
-
 <!-- Bootstrap 3 to 4 -->
 <link rel="stylesheet" href="${pathPrefix!".."}/assets/css/bootstrap-3-4.css">
+<!-- Obiba style -->
+<link rel="stylesheet" href="${pathPrefix!".."}/assets/css/obiba.css">
+<!-- Custm CSS rules -->
+<link rel="stylesheet" href="${pathPrefix!".."}/assets/css/custom.css">
 
 <style>
   .info-box .info-box-text, .info-box .progress-description {

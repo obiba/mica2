@@ -43,7 +43,7 @@
                       <img class="img-fluid" style="max-height: 200px" alt="${study.acronym[.lang]!""} logo" src="../ws/study/${study.id}/file/${study.logo.id}/_download"/>
                     <#else >
                       <p class="text-light text-center">
-                        <i class="ion ion-folder fa-5x"></i>
+                        <i class="${studyIcon} fa-5x"></i>
                       </p>
                     </#if>
                   </div>
@@ -53,7 +53,7 @@
                       <div class="info-box">
                         <span class="info-box-icon bg-info">
                           <a href="../search#lists?type=networks&query=study(in(Mica_study.id,${study.id}))">
-                            <i class="ion ion-filing"></i>
+                            <i class="${networkIcon}"></i>
                           </a>
                         </span>
                         <div class="info-box-content">
@@ -70,7 +70,7 @@
                       <div class="info-box">
                         <span class="info-box-icon bg-warning">
                           <a href="../search#lists?type=datasets&query=study(in(Mica_study.id,${study.id}))">
-                            <i class="ion ion-grid"></i>
+                            <i class="${datasetIcon}"></i>
                           </a>
                         </span>
                         <div class="info-box-content">
@@ -87,7 +87,7 @@
                       <div class="info-box">
                         <span class="info-box-icon bg-danger">
                           <a href="../search#lists?type=variables&query=study(in(Mica_study.id,${study.id}))">
-                            <i class="ion ion-pie-graph"></i>
+                            <i class="${variableIcon}"></i>
                           </a>
                         </span>
                         <div class="info-box-content">

@@ -22,6 +22,9 @@
 <script src="${pathPrefix!".."}/assets/libs/node_modules/js-cookie/src/js.cookie.js"></script>
 <script src="${pathPrefix!".."}/assets/js/mica.js"></script>
 
+<!-- Custom js -->
+<script src="${pathPrefix!".."}/assets/js/custom.js"></script>
+
 <!-- Global js variables -->
 <script>
     <!-- DataTable options -->
