@@ -35,10 +35,10 @@
                 <div class="card-header d-flex p-0">
                   <h3 class="card-title p-3"><@message "networks"/></h3>
                   <ul class="nav nav-pills ml-auto p-2">
-                    <li class="nav-item"><a class="nav-link" href="#list" data-toggle="tab">
+                    <li class="nav-item"><a class="nav-link <#if datasetListDefaultDisplay == "table">active</#if>" href="#table" data-toggle="tab">
                         <i class="fas fa-grip-lines"></i></a>
                     </li>
-                    <li class="nav-item"><a class="nav-link active" href="#cards" data-toggle="tab">
+                    <li class="nav-item"><a class="nav-link <#if datasetListDefaultDisplay == "cards">active</#if>" href="#cards" data-toggle="tab">
                         <i class="fas fa-grip-horizontal"></i></a>
                     </li>
                   </ul>
@@ -47,7 +47,7 @@
 
                 <div class="card-body">
                   <div class="tab-content">
-                    <div class="tab-pane" id="list">
+                    <div class="tab-pane <#if datasetListDefaultDisplay == "table">active</#if>" id="table">
                       <table id="networks" class="table table-bordered table-striped">
                         <thead>
                         <tr>
@@ -68,7 +68,7 @@
                       </table>
                     </div>
 
-                    <div class="tab-pane active" id="cards">
+                    <div class="tab-pane <#if datasetListDefaultDisplay == "cards">active</#if>" id="cards">
                       <div class="row d-flex align-items-stretch">
                         <#list networks as ntwk>
                           <div class="col-12 col-sm-6 col-md-4 d-flex align-items-stretch">

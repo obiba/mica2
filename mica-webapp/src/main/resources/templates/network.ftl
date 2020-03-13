@@ -101,7 +101,7 @@
                 </p>
                   <#if network.model.website??>
                     <blockquote>
-                      Visit <a href="${network.model.website}" target="_blank" class="card-link">${network.acronym[.lang]!""}</a>
+                      <@message "visit"/> <a href="${network.model.website}" target="_blank" class="card-link">${network.acronym[.lang]!""}</a>
                     </blockquote>
                   </#if>
               </div>
@@ -115,7 +115,7 @@
             <div class="col-12">
               <div class="card card-primary card-outline">
                 <div class="card-header">
-                  <h3 class="card-title">Members</h3>
+                  <h3 class="card-title"><@message "members"/></h3>
                   <div class="card-tools float-right">
                     <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="Collapse">
                       <i class="fas fa-minus"></i></button>
@@ -128,8 +128,8 @@
                   <table class="table">
                     <thead>
                     <tr>
-                      <th>Investigators</th>
-                      <th>Contacts</th>
+                      <th><@message "investigators"/></th>
+                      <th><@message "contacts"/></th>
                     </tr>
                     </thead>
                     <tbody>
@@ -174,8 +174,8 @@
                   <table id="networks" class="table table-bordered table-striped">
                     <thead>
                     <tr>
-                      <th>Acronym</th>
-                      <th>Name</th>
+                      <th><@message "acronym"/></th>
+                      <th><@message "name"/></th>
                       <@networkTHs/>
                     </tr>
                     </thead>
@@ -212,8 +212,8 @@
                   <table id="individual-studies" class="table table-bordered table-striped">
                     <thead>
                     <tr>
-                      <th>Acronym</th>
-                      <th>Name</th>
+                      <th><@message "acronym"/></th>
+                      <th><@message "name"/></th>
                       <@individualStudyTHs/>
                     </tr>
                     </thead>
@@ -249,8 +249,8 @@
                   <table id="harmonization-studies" class="table table-bordered table-striped">
                     <thead>
                     <tr>
-                      <th>Acronym</th>
-                      <th>Name</th>
+                      <th><@message "acronym"/></th>
+                      <th><@message "name"/></th>
                       <@harmonizationStudyTHs/>
                     </tr>
                     </thead>

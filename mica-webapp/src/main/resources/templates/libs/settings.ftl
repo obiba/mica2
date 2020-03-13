@@ -11,5 +11,20 @@
 <#assign projectIcon = "io io-project"/>
 <#assign taxonomyIcon = "io io-taxonomy"/>
 
-<!-- Search settings -->
+<!-- Home page settings -->
+<#assign networksLink = "../networks"/>
+<!--#assign networksLink = "../search#lists?type=networks"/-->
+<#assign studiesLink = "../studies"/>
+<!--#assign studiesLink = "../search#lists?type=studies"/-->
+<#assign datasetsLink = "../datasets"/>
+<!--#assign datasetsLink = "../search#lists?type=datasets"/-->
+
+<!-- List pages settings -->
+<#assign listDefaultDisplay = "cards"/> <!-- cards or table -->
+<#assign networkListDefaultDisplay = listDefaultDisplay/>
+<#assign studyListDefaultDisplay = listDefaultDisplay/>
+<#assign datasetListDefaultDisplay = listDefaultDisplay/>
+
+
+<!-- Search page settings -->
 <#assign defaultSearchState = "#lists?type=studies"/>

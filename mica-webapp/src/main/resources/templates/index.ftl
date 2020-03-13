@@ -43,7 +43,7 @@
                   <div class="icon">
                     <i class="${networkIcon}"></i>
                   </div>
-                  <a href="../search#lists?type=networks" class="small-box-footer"><@message "more-info"/> <i class="fas fa-arrow-circle-right"></i></a>
+                  <a href="${networksLink}" class="small-box-footer"><@message "more-info"/> <i class="fas fa-arrow-circle-right"></i></a>
                 </div>
               </div>
               <!-- ./col -->
@@ -60,7 +60,7 @@
                   <div class="icon">
                     <i class="${studyIcon}"></i>
                   </div>
-                  <a href="../search#lists?type=studies" class="small-box-footer"><@message "more-info"/> <i class="fas fa-arrow-circle-right"></i></a>
+                  <a href="${studiesLink}" class="small-box-footer"><@message "more-info"/> <i class="fas fa-arrow-circle-right"></i></a>
                 </div>
               </div>
               <!-- ./col -->
@@ -77,7 +77,7 @@
                   <div class="icon">
                     <i class="${datasetIcon}"></i>
                   </div>
-                  <a href="../search#lists?type=datasets" class="small-box-footer"><@message "more-info"/> <i class="fas fa-arrow-circle-right"></i></a>
+                  <a href="${datasetsLink}" class="small-box-footer"><@message "more-info"/> <i class="fas fa-arrow-circle-right"></i></a>
                 </div>
               </div>
               <!-- ./col -->

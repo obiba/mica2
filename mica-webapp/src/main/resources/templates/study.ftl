@@ -108,7 +108,7 @@
                 </p>
                   <#if study.model.website??>
                     <blockquote>
-                      Visit <a href="${study.model.website}" target="_blank">${study.acronym[.lang]!""}</a>
+                      <@message "visit"/> <a href="${study.model.website}" target="_blank">${study.acronym[.lang]!""}</a>
                     </blockquote>
                   </#if>
               </div>
@@ -122,7 +122,7 @@
             <div class="col-12">
               <div class="card card-primary card-outline">
                 <div class="card-header">
-                  <h3 class="card-title">Members</h3>
+                  <h3 class="card-title"><@message "members"/></h3>
                   <div class="card-tools float-right">
                     <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="Collapse">
                       <i class="fas fa-minus"></i></button>
@@ -133,20 +133,20 @@
                   <table class="table">
                     <thead>
                     <tr>
-                      <th>Investigators</th>
-                      <th>Contacts</th>
+                      <th><@message "investigators"/></th>
+                      <th><@message "contacts"/></th>
                     </tr>
                     </thead>
                     <tbody>
                     <tr>
                       <td>
                         <#if study.memberships.investigator??>
-                            <@memberList members=study.memberships.investigator role="investigator"/>
+                          <@memberList members=study.memberships.investigator role="investigator"/>
                         </#if>
                       </td>
                       <td>
                         <#if study.memberships.contact??>
-                            <@memberList members=study.memberships.contact role="contact"/>
+                          <@memberList members=study.memberships.contact role="contact"/>
                         </#if>
                       </td>
                     </tr>
@@ -169,11 +169,7 @@
             <div class="col-lg-12">
               <div class="card card-info card-outline">
                 <div class="card-header">
-                  <h3 class="card-title">Timeline</h3>
-                  <div class="card-tools">
-                    <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="Collapse">
-                      <i class="fas fa-minus"></i></button>
-                  </div>
+                  <h3 class="card-title"><@message "timeline"/></h3>
                 </div>
                 <div class="card-body">
                   <div id="timeline"></div>
@@ -191,15 +187,11 @@
                 <div class="card-header">
                   <h3 class="card-title">
                     <#if study.populations?size == 1>
-                      Population
+                      <@message "population"/>
                     <#else>
-                      Populations
+                      <@message "populations"/>
                     </#if>
                   </h3>
-                  <div class="card-tools">
-                    <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="Collapse">
-                      <i class="fas fa-minus"></i></button>
-                  </div>
                 </div>
                 <div class="card-body">
                   <#if study.populations?size == 1>
@@ -226,10 +218,10 @@
                           <table id="population-${pop.id}-dces" class="table table-bordered table-striped">
                             <thead>
                             <tr>
-                              <th>Name</th>
-                              <th>Description</th>
-                              <th>Start</th>
-                              <th>End</th>
+                              <th><@message "name"/></th>
+                              <th><@message "description"/></th>
+                              <th><@message "start"/></th>
+                              <th><@message "end"/></th>
                             </tr>
                             </thead>
                             <tbody>
