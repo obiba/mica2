@@ -6,6 +6,7 @@
 
 <!-- App settings -->
 <#include "settings.ftl"/>
+<#include "../models/settings.ftl"/>
 
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -13,8 +14,6 @@
 
 <!-- Font Awesome Icons -->
 <link rel="stylesheet" href="${pathPrefix!".."}/assets/libs/node_modules/admin-lte/plugins/fontawesome-free/css/all.min.css">
-<!-- Ionicons -->
-<link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
 <!-- Theme style -->
 <link rel="stylesheet" href="${pathPrefix!".."}/assets/libs/node_modules/admin-lte/dist/css/adminlte.min.css">
 <!-- Google Font: Source Sans Pro -->
@@ -27,14 +26,8 @@
 <link rel="stylesheet" href="${pathPrefix!".."}/assets/css/bootstrap-3-4.css">
 <!-- Obiba style -->
 <link rel="stylesheet" href="${pathPrefix!".."}/assets/css/obiba.css">
-<!-- Custm CSS rules -->
+<!-- Custom CSS rules -->
 <link rel="stylesheet" href="${pathPrefix!".."}/assets/css/custom.css">
-
-<style>
-  .info-box .info-box-text, .info-box .progress-description {
-    white-space: initial !important;
-  }
-</style>
 
 <!-- Current user privilegies -->
 <#if user??>
