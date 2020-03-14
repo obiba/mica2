@@ -28,8 +28,12 @@ import com.google.common.base.Strings;
 public class LocalizedStringDtos {
 
   Iterable<Mica.LocalizedStringDto> asDto(@SuppressWarnings("TypeMayBeWeakened") LocalizedString localizedString) {
+    return asDto(localizedString, null);
+  }
+
+  Iterable<Mica.LocalizedStringDto> asDto(@SuppressWarnings("TypeMayBeWeakened") LocalizedString localizedString, String language) {
     if (localizedString == null) return Collections.emptyList();
-    return localizedString.entrySet().stream().map(
+    return localizedString.entrySet().stream().filter(entry -> language == null || language.equals(entry.getKey())).map(
         entry -> Mica.LocalizedStringDto.newBuilder().setLang(entry.getKey()).setValue(entry.getValue())
             .build()
     ).collect(Collectors.toList());

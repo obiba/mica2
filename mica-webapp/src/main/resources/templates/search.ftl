@@ -272,12 +272,6 @@
 </div>
 <!-- ./wrapper -->
 
-<!-- MicaConfig in JSON Format -->
-<script>
-  const Mica = { config: ${configJson!"{}"} };
-</script>
-
-
 <#include "libs/scripts.ftl">
 <#include "libs/search-scripts.ftl">
 
