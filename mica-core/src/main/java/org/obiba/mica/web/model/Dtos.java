@@ -270,8 +270,13 @@ public class Dtos {
   }
 
   @NotNull
+  public MicaConfigDto asDto(@NotNull MicaConfig micaConfig, String language) {
+    return micaConfigDtos.asDto(micaConfig, language);
+  }
+
+  @NotNull
   public MicaConfigDto asDto(@NotNull MicaConfig micaConfig) {
-    return micaConfigDtos.asDto(micaConfig);
+    return micaConfigDtos.asDto(micaConfig, null);
   }
 
   @NotNull

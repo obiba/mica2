@@ -85,6 +85,11 @@ class MicaConfigDtos {
 
   @NotNull
   Mica.MicaConfigDto asDto(@NotNull MicaConfig config) {
+    return asDto(config, null);
+  }
+
+  @NotNull
+  Mica.MicaConfigDto asDto(@NotNull MicaConfig config, String language) {
     Mica.MicaConfigDto.Builder builder = Mica.MicaConfigDto.newBuilder() //
       .setName(config.getName()) //
       .setDefaultCharSet(config.getDefaultCharacterSet())//
@@ -139,7 +144,7 @@ class MicaConfigDtos {
 
     if(config.hasStyle()) builder.setStyle(config.getStyle());
 
-    if(config.hasTranslations()) builder.addAllTranslations(localizedStringDtos.asDto(config.getTranslations()));
+    if(config.hasTranslations()) builder.addAllTranslations(localizedStringDtos.asDto(config.getTranslations(), language));
 
     builder.addAllAvailableLayoutOptions(Arrays.asList(MicaConfig.LAYOUT_OPTIONS));
     builder.setSearchLayout(config.getSearchLayout());
