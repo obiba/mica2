@@ -153,6 +153,28 @@ Vue.use(VueObibaSearchResult, {
       tr: (key) => {
         return Mica.tr[key] ? Mica.tr[key] : key;
       },
+      showHits: (data) => {
+        if (data && data.variableResultDto && data.variableResultDto.totalHits) {
+          $('#variable-count').text(data.variableResultDto.totalHits.toLocaleString());
+        } else {
+          $('#variable-count').text(0);
+        }
+        if (data && data.datasetResultDto && data.datasetResultDto.totalHits) {
+          $('#dataset-count').text(data.datasetResultDto.totalHits.toLocaleString());
+        } else {
+          $('#dataset-count').text(0);
+        }
+        if (data && data.studyResultDto && data.studyResultDto.totalHits) {
+          $('#study-count').text(data.studyResultDto.totalHits.toLocaleString());
+        } else {
+          $('#study-count').text(0);
+        }
+        if (data && data.networkResultDto && data.networkResultDto.totalHits) {
+          $('#network-count').text(data.networkResultDto.totalHits.toLocaleString());
+        } else {
+          $('#network-count').text(0);
+        }
+      },
       registerDataTable: (tableId, options) => {
         const mergedOptions = Object.assign(options, DataTableDefaults);
         return $('#' + tableId).DataTable(mergedOptions);
