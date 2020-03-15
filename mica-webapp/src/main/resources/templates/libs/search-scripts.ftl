@@ -20,6 +20,7 @@
     "harmonization": '<@message "harmonization"/>',
     "collected": '<@message "collected"/>',
     "harmonized": '<@message "harmonized"/>',
+    "dataschema": '<@message "Dataschema"/>',
     "no-variable-found": '<@message "no-variable-found"/>',
     "no-dataset-found": '<@message "no-dataset-found"/>',
     "no-study-found": '<@message "no-study-found"/>',
