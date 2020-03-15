@@ -6,6 +6,22 @@
     "datasets": '<@message "datasets"/>',
     "studies": '<@message "studies"/>',
     "networks": '<@message "networks"/>',
+    "name": '<@message "name"/>',
+    "label": '<@message "label"/>',
+    "annotations": '<@message "annotations"/>',
+    "study": '<@message "study"/>',
+    "dataset": '<@message "dataset"/>',
+    "acronym": '<@message "acronym"/>',
+    "type": '<@message "type"/>',
+    "study-design": '<@message "study-design"/>',
+    "data-sources-available": '<@message "data-sources-available"/>',
+    "participants": '<@message "participants"/>',
+    "individual": '<@message "individual"/>',
+    "harmonization": '<@message "harmonization"/>',
+    "no-variable-found": '<@message "no-variable-found"/>',
+    "no-dataset-found": '<@message "no-dataset-found"/>',
+    "no-study-found": '<@message "no-study-found"/>',
+    "no-network-found": '<@message "no-network-found"/>'
   };
   Mica.icons = {
     variable: '${variableIcon}',
