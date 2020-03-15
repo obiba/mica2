@@ -31,7 +31,7 @@ const DataTableDefaults = {
   lengthMenu: [10, 20, 50, 100],
   pageLength: 20,
   // Paginatiom on top (the bottom one still remains)
-  dom: "<'right'i><'row'<'col-sm-3'l><'col-sm-3'f><'col-sm-6'p>><'row'<'col-sm-12'tr>><'row'<'col-sm-5'i><'col-sm-7'p>>" // pager top
+  dom: "<'row'<'col-sm-3'l><'col-sm-3'f><'col-sm-6'p>><'row'<'col-sm-12'tr>><'row'<'col-sm-5'i><'col-sm-7'p>>"
 };
 
 //
@@ -150,7 +150,9 @@ Vue.use(VueObibaSearchResult, {
     methods: {
       getEventBus: () => EventBus,
       getMicaConfig: () => Mica.config,
-      getTranslations: () => Mica.tr,
+      tr: (key) => {
+        return Mica.tr[key] ? Mica.tr[key] : key;
+      },
       registerDataTable: (tableId, options) => {
         const mergedOptions = Object.assign(options, DataTableDefaults);
         return $('#' + tableId).DataTable(mergedOptions);
