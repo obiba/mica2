@@ -107,7 +107,7 @@
                     <h5 class="modal-title">{{ selectedTaxonomy ? selectedTaxonomy.title[0].text : "" }}</h5>
                     <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
                   </div>
-                  <div class="modal-body">
+                  <div class="modal-body" v-if="selectedTarget">
                     <rql-panel v-bind:target="selectedTarget" v-bind:taxonomy="selectedTaxonomy" v-bind:query="selectedQuery" @update-query="onQueryUpdate" @remove-query="onQueryRemove"></rql-panel>
                   </div>
                 </div>
@@ -133,17 +133,20 @@
             <div class="card-header d-flex p-0">
               <h3 class="card-title p-3"><@message "results"/></h3>
               <ul class="nav nav-pills ml-auto p-2">
-                <li class="nav-item"><a id="lists-tab" class="nav-link active" href="#tab_lists" data-toggle="tab"><@message "lists"/></a></li>
+                <li class="nav-item"><a id="lists-tab" class="nav-link active" href="#tab_lists" data-toggle="tab" @click="onSelectSearch"><@message "lists"/></a></li>
                 <#if config.studyDatasetEnabled || config.harmonizationDatasetEnabled>
-                  <li class="nav-item"><a id="coverage-tab" class="nav-link" href="#tab_coverage" data-toggle="tab"><@message "coverage"/></a></li>
+                  <li class="nav-item"><a id="coverage-tab" class="nav-link" href="#tab_coverage" data-toggle="tab" @click="onSelectCoverage"><@message "coverage"/></a></li>
                 </#if>
                 <#if config.networkEnabled && !config.singleStudyEnabled>
-                  <li class="nav-item"><a id="graphics-tab" class="nav-link" href="#tab_graphics" data-toggle="tab"><@message "graphics"/></a></li>
+                  <li class="nav-item"><a id="graphics-tab" class="nav-link" href="#tab_graphics" data-toggle="tab" @click="onSelectGraphics"><@message "graphics"/></a></li>
                 </#if>
               </ul>
             </div><!-- /.card-header -->
             <div class="card-body">
-              <div class="tab-content">
+              <div class="tab-content" id="results-tab-content">
+
+                <study-filter-shortcut></study-filter-shortcut>
+
                 <div class="tab-pane active" id="tab_lists">
                   <p class="text-muted">
                     <@message "results-lists-text"/>
@@ -153,24 +156,24 @@
                     <ul class="nav nav-pills" id="results-tab" role="tablist">
                       <#if config.studyDatasetEnabled || config.harmonizationDatasetEnabled>
                         <li class="nav-item">
-                          <a class="nav-link active" id="variables-tab" data-toggle="pill" href="#variables" role="tab"
-                             aria-controls="variables" aria-selected="true"><@message "variables"/> <span id="variable-count" class="badge badge-light"></span></a>
+                          <a class="nav-link active" id="variables-tab" data-toggle="pill" href="#variables" role="tab" @click="onSelectResult('variables', 'variable')"
+                             aria-controls="variables" aria-selected="true"><@message "variables"/> <span id="variable-count" class="badge badge-light">{{counts.variables}}</span></a>
                         </li>
                         <li class="nav-item">
-                          <a class="nav-link" id="datasets-tab" data-toggle="pill" href="#datasets" role="tab"
-                             aria-controls="datasets" aria-selected="false"><@message "datasets"/> <span id="dataset-count" class="badge badge-light"></span></a>
+                          <a class="nav-link" id="datasets-tab" data-toggle="pill" href="#datasets" role="tab" @click="onSelectResult('datasets', 'dataset')"
+                             aria-controls="datasets" aria-selected="false"><@message "datasets"/> <span id="dataset-count" class="badge badge-light">{{counts.datasets}}</span></a>
                         </li>
                       </#if>
                       <#if !config.singleStudyEnabled>
                         <li class="nav-item">
-                          <a class="nav-link" id="studies-tab" data-toggle="pill" href="#studies" role="tab"
-                             aria-controls="studies" aria-selected="false"><@message "studies"/> <span id="study-count" class="badge badge-light"></span></a>
+                          <a class="nav-link" id="studies-tab" data-toggle="pill" href="#studies" role="tab" @click="onSelectResult('studies', 'study')"
+                             aria-controls="studies" aria-selected="false"><@message "studies"/> <span id="study-count" class="badge badge-light">{{counts.studies}}</span></a>
                         </li>
                       </#if>
                       <#if config.networkEnabled && !config.singleNetworkEnabled>
                         <li class="nav-item">
-                          <a class="nav-link" id="networks-tab" data-toggle="pill" href="#networks" role="tab"
-                             aria-controls="networks" aria-selected="false"><@message "networks"/> <span id="network-count" class="badge badge-light"></span></a>
+                          <a class="nav-link" id="networks-tab" data-toggle="pill" href="#networks" role="tab" @click="onSelectResult('networks', 'network')"
+                             aria-controls="networks" aria-selected="false"><@message "networks"/> <span id="network-count" class="badge badge-light">{{counts.networks}}</span></a>
                         </li>
                       </#if>
                     </ul>
@@ -183,14 +186,12 @@
                              aria-labelledby="variables-tab">
                           <p class="text-muted"><@message "results-list-of-variables-text"/></p>
                           <div id="list-variables">
-                            {{ result }}
                             <variables-result></variables-result>
                           </div>
                         </div>
                         <div class="tab-pane fade" id="datasets" role="tabpanel" aria-labelledby="datasets-tab">
                           <p class="text-muted"><@message "results-list-of-datasets-text"/></p>
                           <div id="list-datasets">
-                            {{ result }}
                             <datasets-result></datasets-result>
                           </div>
                         </div>
@@ -199,7 +200,6 @@
                         <div class="tab-pane fade" id="studies" role="tabpanel" aria-labelledby="studies-tab">
                           <p class="text-muted"><@message "results-list-of-studies-text"/></p>
                           <div id="list-studies">
-                            {{ result }}
                             <studies-result></studies-result>
                           </div>
                         </div>
@@ -208,7 +208,6 @@
                         <div class="tab-pane fade" id="networks" role="tabpanel" aria-labelledby="networks-tab">
                           <p class="text-muted"><@message "results-list-of-networks-text"/></p>
                           <div id="list-networks">
-                            {{ result }}
                             <networks-result></networks-result>
                           </div>
                         </div>
@@ -220,11 +219,8 @@
 
                 <#if config.studyDatasetEnabled || config.harmonizationDatasetEnabled>
                   <div class="tab-pane" id="tab_coverage">
-                    <p class="text-muted">
-                      <@message "results-coverage-text"/>
-                    </p>
                     <div id="coverage">
-                      <coverage-result></coverage-result>
+                      <coverage-result class="mt-2"></coverage-result>
                     </div>
                   </div>
                 </#if>
@@ -236,7 +232,6 @@
                       <@message "results-graphics-text"/>
                     </p>
                     <div id="graphics">
-                      {{ result }}
                     </div>
                   </div>
                 </#if>

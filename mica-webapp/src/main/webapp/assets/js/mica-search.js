@@ -30,7 +30,6 @@ const DataTableDefaults = {
   ordering: false,
   lengthMenu: [10, 20, 50, 100],
   pageLength: 20,
-  // Paginatiom on top (the bottom one still remains)
   dom: "<'row'<'col-sm-3'l><'col-sm-3'f><'col-sm-6'p>><'row'<'col-sm-12'tr>><'row'<'col-sm-5'i><'col-sm-7'p>>"
 };
 
@@ -39,7 +38,9 @@ const DataTableDefaults = {
 // sidebar menus for taxonomy selection. Terms selection is delegated to the main app (query builder)
 //
 
-// Taxonomy sidebar menu
+/**
+ * Taxonomy sidebar menu component
+ */
 Vue.component('taxonomy-menu', {
   props: ['taxonomy'],
   template: `
@@ -117,34 +118,73 @@ new Vue({
 // results display app, with some filtering criteria selection, and requests for query execution
 //
 
-$('#variables-tab').click(function () {
-  EventBus.$emit('query-type-selection', {display: 'list', type: TYPES.VARIABLES, target: TARGETS.VARIABLE});
+/**
+ * Component used to filter results by Study className vocabulary
+ */
+const StudyFilterShortcutComponent = Vue.component('study-filter-shortcut', {
+  name: 'StudyFilterShortcut',
+  template: `
+  <div>
+    <div class="btn-group" role="group" aria-label="Basic example">
+      <button type="button" v-bind:class="{active: selection.all}" class="btn btn-sm btn-info" v-on:click="onSelectionClicked('all')">All</button>
+      <button type="button" v-bind:class="{active: selection.study}" class="btn btn-sm btn-info" v-on:click="onSelectionClicked('study')">Study</button>
+      <button type="button" v-bind:class="{active: selection.harmonization}" class="btn btn-sm btn-info" v-on:click="onSelectionClicked('harmonization')">Harmonization</button>
+    </div>
+  </div>
+  `,
+  data() {
+    return {
+      selection: {all: true, study: false, harmonization: false}
+    }
+  },
+  methods: {
+    buildClassNameArgs(key) {
+      switch (key) {
+        case 'study':
+          return 'Study';
+
+        case 'harmonization':
+          return 'HarmonizationStudy';
+      }
+
+      return ['Study', 'HarmonizationStudy'];
+    },
+    isAll(values) {
+      return !values || Array.isArray(values) && values.length > 1;
+    },
+    isClassName(name, values) {
+      return Array.isArray(values) ? values.length === 1 && values.indexOf(name) > -1 : values === name;
+    },
+    onLocationChanged(payload) {
+      console.log('StudyFilterShortcut::onLocationChanged()');
+      const tree = payload.tree;
+      const classNameQuery = tree.search((name, args) => args.indexOf('Mica_study.className') > -1);
+      if (classNameQuery) {
+        const values = classNameQuery.args[1];
+        this.selection.all = this.isAll(values);
+        this.selection.study = this.isClassName('Study', values);
+        this.selection.harmonization = this.isClassName('HarmonizationStudy', values);
+      } else {
+        this.selection = {all: true, study: false, harmonization: false};
+      }
+    },
+    onSelectionClicked(selectionKey) {
+      const classNameQuery = new RQL.Query('in', ['Mica_study.className', this.buildClassNameArgs(selectionKey)]);
+      EventBus.$emit('query-type-update', {target: 'study', query: classNameQuery});
+    }
+  },
+  mounted() {
+    console.log('Mounted study-filter-shortcut');
+    EventBus.register('location-changed', this.onLocationChanged.bind(this));
+  },
+  beforeDestory() {
+    EventBus.unregister('location-changed', this.onLocationChanged);
+  }
 });
 
-$('#datasets-tab').click(function () {
-  EventBus.$emit('query-type-selection', {display: 'list', type: TYPES.DATASETS, target: TARGETS.DATASET});
-});
-
-$('#studies-tab').click(function () {
-  EventBus.$emit('query-type-selection', {display: 'list', type: TYPES.STUDIES, target: TARGETS.STUDY});
-});
-
-$('#networks-tab').click(function () {
-  EventBus.$emit('query-type-selection', {display: 'list', type: TYPES.NETWORKS, target: TARGETS.NETWORK});
-});
-
-$('#lists-tab').click(function () {
-  EventBus.$emit('query-type-selection', {display: 'lists'});
-});
-
-$('#coverage-tab').click(function () {
-  EventBus.$emit('query-type-coverage', {display: 'coverage'});
-});
-
-$('#graphics-tab').click(function () {
-  EventBus.$emit('query-type-selection', {display: 'graphics'});
-});
-
+/**
+ * Registering plugins defined in VueObibaSearchResult
+ */
 Vue.use(VueObibaSearchResult, {
   mixin: {
     methods: {
@@ -152,28 +192,6 @@ Vue.use(VueObibaSearchResult, {
       getMicaConfig: () => Mica.config,
       tr: (key) => {
         return Mica.tr[key] ? Mica.tr[key] : key;
-      },
-      showHits: (data) => {
-        if (data && data.variableResultDto && data.variableResultDto.totalHits) {
-          $('#variable-count').text(data.variableResultDto.totalHits.toLocaleString());
-        } else {
-          $('#variable-count').text(0);
-        }
-        if (data && data.datasetResultDto && data.datasetResultDto.totalHits) {
-          $('#dataset-count').text(data.datasetResultDto.totalHits.toLocaleString());
-        } else {
-          $('#dataset-count').text(0);
-        }
-        if (data && data.studyResultDto && data.studyResultDto.totalHits) {
-          $('#study-count').text(data.studyResultDto.totalHits.toLocaleString());
-        } else {
-          $('#study-count').text(0);
-        }
-        if (data && data.networkResultDto && data.networkResultDto.totalHits) {
-          $('#network-count').text(data.networkResultDto.totalHits.toLocaleString());
-        } else {
-          $('#network-count').text(0);
-        }
       },
       registerDataTable: (tableId, options) => {
         const mergedOptions = Object.assign(options, DataTableDefaults);
@@ -183,11 +201,12 @@ Vue.use(VueObibaSearchResult, {
   }
 });
 
-//
-// Querybuilder Vue
-// main app that orchestrates the query display, criteria selection, query execution and dispatch of the results
-//
-
+/**
+ * Querybuilder Vue
+ *
+ * Main app that orchestrates the query display, criteria selection, query execution and dispatch of the results
+ *
+ */
 new Vue({
   el: '#query-builder',
   data() {
@@ -277,7 +296,7 @@ new Vue({
     console.log('Mounted QueryBuilder');
     EventBus.register('taxonomy-selection', this.onTaxonomySelection);
     EventBus.register('query-type-selection', this.onQueryTypeSelection);
-    EventBus.register('location-updated', this.onLocationChanged.bind(this));
+    EventBus.register(EVENTS.LOCATION_CHANGED, this.onLocationChanged.bind(this));
 
     // Emit 'query-type-selection' to pickup a URL query to be executed; if nothing found a Variable query is executed
     EventBus.$emit('query-type-selection', {});
@@ -304,136 +323,80 @@ new Vue({
   },
   beforeDestory() {
     console.log('Before destroy query builder');
-    EventBus.unregister('location-updated', this.onLocationChanged);
+    EventBus.unregister(EVENTS.LOCATION_CHANGED, this.onLocationChanged);
     EventBus.unregister('taxonomy-selection', this.onTaxonomySelection);
     EventBus.unregister('query-type-selection', this.onQueryTypeSelection);
     this.queryExecutor.destroy();
   }
 });
 
-if (Mica.config.isCollectedDatasetEnabled || Mica.config.isHarmonizedDatasetEnabled) {
-  new Vue({
-    el: '#list-variables',
-    data() {
-      return {
-        result: null,
-        count: 0
-      };
-    },
-    methods: {
-      onResult: function (payload) {
-        this.count++;
-        this.result = payload + ' ' + this.count;
-      }
-    },
-    beforeMount() {
-      console.log('Before mounted List Variables');
-    },
-    mounted() {
-      EventBus.register('variables-list', this.onResult);
-    }
-  });
 
-  new Vue({
-    el: '#list-datasets',
-    data() {
-      return {
-        result: null,
-        count: 0
-      };
-    },
-    methods: {
-      onResult: function (payload) {
-        this.count++;
-        this.result = payload + ' ' + this.count;
-      },
-      beforeMount() {
-        console.log('Before mounted List Datasets');
-      },
-    },
-    mounted() {
-      EventBus.register('datasets-list', this.onResult);
-    }
-  });
-
-  new Vue({
-    el: '#coverage',
-    data() {
-      return {
-        result: null,
-        count: 0
-      };
-    },
-    methods: {
-      onResult: function (payload) {
-        this.count++;
-        this.result = payload + ' ' + this.count;
-      }
-    },
-    mounted() {
-      EventBus.register('coverage', this.onResult);
-    }
-  });
-}
-
-if (!Mica.config.isSingleStudyEnabled) {
-  new Vue({
-    el: '#list-studies',
-    data() {
-      return {
-        result: null,
-        count: 0
-      };
-    },
-    methods: {
-      onResult: function (payload) {
-        this.count++;
-        this.result = payload + ' ' + this.count;
-      }
-    },
-    mounted() {
-      EventBus.register('studies-list', this.onResult);
-    }
-  });
-}
-
-if (Mica.config.isNetworkEnabled && !Mica.config.isSingleNetworkEnabled) {
-  new Vue({
-    el: '#list-networks',
-    data() {
-      return {
-        result: null,
-        count: 0
-      };
-    },
-    methods: {
-      onResult: function (payload) {
-        this.count++;
-        this.result = payload + ' ' + this.count;
-      }
-    },
-    mounted() {
-      EventBus.register('networks-list', this.onResult);
-    }
-  });
-}
-
-
+/**
+ * Component for all results related functionality
+ */
 new Vue({
-  el: '#graphics',
+  el: '#results-tab-content',
+  components: {
+    'study-filter-shortcut': StudyFilterShortcutComponent
+  },
   data() {
     return {
-      result: null,
-      count: 0
-    };
-  },
-  methods: {
-    onResult: function (payload) {
-      this.count++;
-      this.result = payload + ' ' + this.count;
+      counts: {}
     }
   },
-  mounted() {
-    EventBus.register('graphics', this.onResult);
+  methods: {
+    onSelectResult(type, target) {
+      EventBus.$emit('query-type-selection', {display: 'list', type, target});
+    },
+    onSelectSearch() {
+      EventBus.$emit('query-type-selection', {display: DISPLAYS.LISTS});
+    },
+    onSelectCoverage() {
+      EventBus.$emit('query-type-coverage', {display: DISPLAYS.COVERAGE});
+    },
+    onSelectGraphics() {
+      EventBus.$emit('query-type-selection', {display: DISPLAYS.GRAPHICS});
+    },
+    onResult(payload) {
+      const data = payload.response;
+      this.counts = {
+        variables: "0",
+        datasets: "0",
+        studies: "0",
+        networks: "0",
+      };
+
+      if (data && data.variableResultDto && data.variableResultDto.totalHits) {
+        // $('#variable-count').text(data.variableResultDto.totalHits.toLocaleString());
+        this.counts.variables = data.variableResultDto.totalHits.toLocaleString();
+      }
+
+      if (data && data.datasetResultDto && data.datasetResultDto.totalHits) {
+        // $('#dataset-count').text(data.datasetResultDto.totalHits.toLocaleString());
+        this.counts.datasets = data.datasetResultDto.totalHits.toLocaleString();
+      }
+
+      if (data && data.studyResultDto && data.studyResultDto.totalHits) {
+        // $('#study-count').text(data.studyResultDto.totalHits.toLocaleString());
+        this.counts.studies = data.studyResultDto.totalHits.toLocaleString();
+      }
+
+      if (data && data.networkResultDto && data.networkResultDto.totalHits) {
+        // $('#network-count').text(data.networkResultDto.totalHits.toLocaleString());
+        this.counts.networks = data.networkResultDto.totalHits.toLocaleString();
+      }
+    }
+  },
+  beforeMount() {
+    EventBus.register('variables-results', this.onResult);
+    EventBus.register('datasets-results', this.onResult);
+    EventBus.register('studies-results', this.onResult);
+    EventBus.register('networks-results', this.onResult);
+  },
+  beforeDestory() {
+    EventBus.unregister('variables-results', this.onResult);
+    EventBus.unregister('datasets-results', this.onResult);
+    EventBus.unregister('studies-results', this.onResult);
+    EventBus.unregister('networks-results', this.onResult);
   }
 });
