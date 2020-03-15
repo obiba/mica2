@@ -1,14 +1,18 @@
 <!-- MicaConfig in JSON Format -->
 <script>
   const Mica = { config: ${configJson!"{}"} };
-  if (Mica.config.translations) {
-    Mica.config.translations.forEach(function(tr) {
-      if (tr.value) {
-        tr.value = JSON.parse(tr.value);
-      }
-    });
-  }
-  console.dir(Mica.config);
+  Mica.tr = {
+    "variables": '<@message "variables"/>',
+    "datasets": '<@message "datasets"/>',
+    "studies": '<@message "studies"/>',
+    "networks": '<@message "networks"/>',
+  };
+  Mica.icons = {
+    variable: '${variableIcon}',
+    dataset: '${datasetIcon}',
+    study: '${studyIcon}',
+    network: '${networkIcon}'
+  };
 </script>
 
 <!-- Mica Search and dependencies -->
