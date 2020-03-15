@@ -1,6 +1,8 @@
 package org.obiba.mica.web.controller;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import org.obiba.mica.core.domain.BaseStudyTable;
 import org.obiba.mica.core.domain.HarmonizationStudyTable;
 import org.obiba.mica.core.domain.StudyTable;
 import org.obiba.mica.dataset.NoSuchDatasetException;
@@ -45,12 +47,18 @@ public class DatasetController extends BaseController {
     } else {
       HarmonizationDataset harmoDataset = (HarmonizationDataset) dataset;
       addHarmonizationTableParameters(params, harmoDataset.getHarmonizationTable());
+      Map<String, BaseStudy> allStudies = Maps.newHashMap();
+      List<BaseStudyTable> allTables = Lists.newArrayList();
       List<Map<String, Object>> studyTables = Lists.newArrayList();
       List<String> ids = Lists.newArrayList();
       for (StudyTable sTable : harmoDataset.getStudyTables()) {
         Map<String, Object> p = new HashMap<String, Object>();
         addStudyTableParameters(p, sTable, ids);
-        if (!p.isEmpty()) studyTables.add(p);
+        if (!p.isEmpty()) {
+          studyTables.add(p);
+          allStudies.put(sTable.getStudyId(), (BaseStudy) p.get("study"));
+        }
+        allTables.add(sTable);
       }
       params.put("studyTables", studyTables);
       List<Map<String, Object>> harmonizationTables = Lists.newArrayList();
@@ -58,9 +66,15 @@ public class DatasetController extends BaseController {
       for (HarmonizationStudyTable hTable : harmoDataset.getHarmonizationTables()) {
         Map<String, Object> p = new HashMap<String, Object>();
         addHarmonizationTableParameters(p, hTable, ids);
-        if (!p.isEmpty()) harmonizationTables.add(p);
+        if (!p.isEmpty()) {
+          harmonizationTables.add(p);
+          allStudies.put(hTable.getStudyId(), (BaseStudy) p.get("study"));
+        }
+        allTables.add(hTable);
       }
       params.put("harmonizationTables", harmonizationTables);
+      params.put("allTables", allTables);
+      params.put("allStudies", allStudies);
     }
     return new ModelAndView("dataset", params);
   }
