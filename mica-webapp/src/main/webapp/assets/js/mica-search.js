@@ -4,22 +4,22 @@
 // its data are callback functions, registered by event name
 const EventBus = new Vue({
   data: {
-      callbacks: {}
+    callbacks: {}
   },
   methods: {
-    register: function(eventName, callback) {
+    register: function (eventName, callback) {
       if (!this.callbacks[eventName]) {
         this.callbacks[eventName] = [];
-        this.$on(eventName, function(payload) {
+        this.$on(eventName, function (payload) {
           for (let callback of this.callbacks[eventName]) {
-            callback(payload)
+            callback(payload);
           }
         });
       }
       this.callbacks[eventName].push(callback);
       //console.dir(this.callbacks)
     },
-    unregister: function(eventName) {
+    unregister: function (eventName) {
       this.callbacks[eventName] = undefined;
     }
   }
@@ -31,7 +31,7 @@ const DataTableDefaults = {
   lengthMenu: [10, 20, 50, 100],
   pageLength: 20,
   // Paginatiom on top (the bottom one still remains)
-  dom: "<'right'i><'row'<'col-sm-3'l><'col-sm-3'f><'col-sm-6'p>><'row'<'col-sm-12'tr>><'row'<'col-sm-5'i><'col-sm-7'p>>", // pager top
+  dom: "<'right'i><'row'<'col-sm-3'l><'col-sm-3'f><'col-sm-6'p>><'row'<'col-sm-12'tr>><'row'<'col-sm-5'i><'col-sm-7'p>>" // pager top
 };
 
 //
@@ -43,10 +43,10 @@ const DataTableDefaults = {
 Vue.component('taxonomy-menu', {
   props: ['taxonomy'],
   template: `
-    <li class="nav-item">
-        <a href="#" class="nav-link" data-toggle="modal" data-target="#taxonomy-modal" :title="taxonomy.description[0].text" @click.prevent="$emit('taxonomy-selection', taxonomy.name)"><i class="far fa-circle nav-icon"></i><p>{{ taxonomy.title[0].text }}</p></a>
-    </li>
-  `
+  <li class="nav-item">
+      <a href="#" class="nav-link" data-toggle="modal" data-target="#taxonomy-modal" :title="taxonomy.description[0].text" @click.prevent="$emit('taxonomy-selection', taxonomy.name)"><i class="far fa-circle nav-icon"></i><p>{{ taxonomy.title[0].text }}</p></a>
+  </li>
+`
 });
 
 new Vue({
@@ -56,23 +56,23 @@ new Vue({
       criteriaMenu: {
         items: {
           variable: {
-            icon: 'io io-variable',
-            title: 'Variables',
+            icon: Mica.icons.variable,
+            title: Mica.tr.variables,
             menus: []
           },
           dataset: {
-            icon: 'io io-dataset',
-            title: 'Datasets',
+            icon: Mica.icons.dataset,
+            title: Mica.tr.datasets,
             menus: []
           },
           study: {
-            icon: 'io io-study',
-            title: 'Studies',
+            icon: Mica.icons.study,
+            title: Mica.tr.studies,
             menus: []
           },
           network: {
-            icon: 'io io-network',
-            title: 'Networks',
+            icon: Mica.icons.network,
+            title: Mica.tr.networks,
             menus: []
           },
         },
@@ -82,10 +82,10 @@ new Vue({
   },
   methods: {
     // make the menu
-    onMicaTaxonomies: function(payload) {
+    onMicaTaxonomies: function (payload) {
       for (let target of payload) {
         this.criteriaMenu.items[target.name].title = target.title[0].text;
-        switch(target.name) {
+        switch (target.name) {
           case 'variable':
             // TODO handle multi level
             this.criteriaMenu.items.variable.menus = target.terms[0].terms;
@@ -96,13 +96,13 @@ new Vue({
             this.criteriaMenu.items[target.name].menus = target.terms;
             break;
         }
-        if (this.criteriaMenu.items[target.name].menus && this.criteriaMenu.items[target.name].menus.length>0) {
+        if (this.criteriaMenu.items[target.name].menus && this.criteriaMenu.items[target.name].menus.length > 0) {
           this.criteriaMenu.order.push(target.name);
         }
       }
     },
     // forward taxonomy selection
-    onTaxonomySelection: function(payload, target) {
+    onTaxonomySelection: function (payload, target) {
       console.dir(payload);
       EventBus.$emit('taxonomy-selection', {target, taxonomyName: payload});
     }
@@ -117,31 +117,31 @@ new Vue({
 // results display app, with some filtering criteria selection, and requests for query execution
 //
 
-$('#variables-tab').click(function(){
+$('#variables-tab').click(function () {
   EventBus.$emit('query-type-selection', {display: 'list', type: TYPES.VARIABLES, target: TARGETS.VARIABLE});
 });
 
-$('#datasets-tab').click(function(){
+$('#datasets-tab').click(function () {
   EventBus.$emit('query-type-selection', {display: 'list', type: TYPES.DATASETS, target: TARGETS.DATASET});
 });
 
-$('#studies-tab').click(function(){
+$('#studies-tab').click(function () {
   EventBus.$emit('query-type-selection', {display: 'list', type: TYPES.STUDIES, target: TARGETS.STUDY});
 });
 
-$('#networks-tab').click(function(){
+$('#networks-tab').click(function () {
   EventBus.$emit('query-type-selection', {display: 'list', type: TYPES.NETWORKS, target: TARGETS.NETWORK});
 });
 
-$('#lists-tab').click(function(){
+$('#lists-tab').click(function () {
   EventBus.$emit('query-type-selection', {display: 'lists'});
 });
 
-$('#coverage-tab').click(function(){
+$('#coverage-tab').click(function () {
   EventBus.$emit('query-type-coverage', {display: 'coverage'});
 });
 
-$('#graphics-tab').click(function(){
+$('#graphics-tab').click(function () {
   EventBus.$emit('query-type-selection', {display: 'graphics'});
 });
 
@@ -150,6 +150,7 @@ Vue.use(VueObibaSearchResult, {
     methods: {
       getEventBus: () => EventBus,
       getMicaConfig: () => Mica.config,
+      getTranslations: () => Mica.tr,
       registerDataTable: (tableId, options) => {
         const mergedOptions = Object.assign(options, DataTableDefaults);
         return $('#' + tableId).DataTable(mergedOptions);
@@ -188,18 +189,24 @@ new Vue({
 
       for (const taxonomy in this.taxonomies) {
         if (TARGETS.VARIABLE === selectedTarget) {
-          if (taxonomy === 'Mica_' + selectedTarget || taxonomy.indexOf('Mica_') === -1) result.push(this.taxonomies[taxonomy]);
+          if (taxonomy === 'Mica_' + selectedTarget || taxonomy.indexOf('Mica_') === -1) {
+            result.push(this.taxonomies[taxonomy]);
+          }
         } else {
-          if (taxonomy === 'Mica_' + selectedTarget) result.push(this.taxonomies[taxonomy]);
+          if (taxonomy === 'Mica_' + selectedTarget) {
+            result.push(this.taxonomies[taxonomy]);
+          }
         }
       }
 
-      if (result.length > 1) return result;
+      if (result.length > 1) {
+        return result;
+      }
       return result[0];
     },
     // show a modal with all the vocabularies/terms of the selected taxonomy
     // initialized by the query terms and update/trigger the query on close
-    onTaxonomySelection: function(payload) {
+    onTaxonomySelection: function (payload) {
       this.selectedTaxonomy = this.taxonomies[payload.taxonomyName];
       this.selectedTarget = payload.target;
 
@@ -208,7 +215,7 @@ new Vue({
       this.message = this.message + this.selectedTaxonomy.vocabularies.map(voc => voc.title[0].text).join(', ');
     },
     // set the type of query to be executed, on result component selection
-    onQueryTypeSelection: function(payload) {
+    onQueryTypeSelection: function (payload) {
       // TODO need cleaning, may be use the QueryExecutor for taxos as well
       // if (payload.type === 'lists') {
       //   this.queryType = this.lastList;
@@ -220,11 +227,11 @@ new Vue({
       // }
       // this.onExecuteQuery();
     },
-    onExecuteQuery: function() {
+    onExecuteQuery: function () {
       console.log('Executing ' + this.queryType + ' query ...');
       EventBus.$emit(this.queryType, 'I am the result of a ' + this.queryType + ' query');
     },
-    onLocationChanged: function(payload) {
+    onLocationChanged: function (payload) {
       $(`.nav-pills #${payload.display}-tab`).tab('show');
       $(`.nav-pills #${payload.type}-tab`).tab('show');
       this.refreshQueries();
@@ -280,106 +287,113 @@ new Vue({
   }
 });
 
-new Vue({
-  el: '#list-variables',
-  data() {
-    return {
-      result: null,
-      count: 0
-    };
-  },
-  methods: {
-    onResult: function(payload) {
-      this.count++;
-      this.result = payload + ' ' + this.count;
-    }
-  },
-  beforeMount() {
-    console.log('Before mounted List Variables');
-  },
-  mounted() {
-    EventBus.register('variables-list', this.onResult);
-  }
-});
-
-new Vue({
-  el: '#list-datasets',
-  data() {
-    return {
-      result: null,
-      count: 0
-    };
-  },
-  methods: {
-    onResult: function(payload) {
-      this.count++;
-      this.result = payload + ' ' + this.count;
+if (Mica.config.isCollectedDatasetEnabled || Mica.config.isHarmonizedDatasetEnabled) {
+  new Vue({
+    el: '#list-variables',
+    data() {
+      return {
+        result: null,
+        count: 0
+      };
+    },
+    methods: {
+      onResult: function (payload) {
+        this.count++;
+        this.result = payload + ' ' + this.count;
+      }
     },
     beforeMount() {
-      console.log('Before mounted List Datasets');
+      console.log('Before mounted List Variables');
     },
-  },
-  mounted() {
-    EventBus.register('datasets-list', this.onResult);
-  }
-});
-
-new Vue({
-  el: '#list-studies',
-  data() {
-    return {
-      result: null,
-      count: 0
-    };
-  },
-  methods: {
-    onResult: function(payload) {
-      this.count++;
-      this.result = payload + ' ' + this.count;
+    mounted() {
+      EventBus.register('variables-list', this.onResult);
     }
-  },
-  mounted() {
-    EventBus.register('studies-list', this.onResult);
-  }
-});
+  });
 
-new Vue({
-  el: '#list-networks',
-  data() {
-    return {
-      result: null,
-      count: 0
-    };
-  },
-  methods: {
-    onResult: function(payload) {
-      this.count++;
-      this.result = payload + ' ' + this.count;
+  new Vue({
+    el: '#list-datasets',
+    data() {
+      return {
+        result: null,
+        count: 0
+      };
+    },
+    methods: {
+      onResult: function (payload) {
+        this.count++;
+        this.result = payload + ' ' + this.count;
+      },
+      beforeMount() {
+        console.log('Before mounted List Datasets');
+      },
+    },
+    mounted() {
+      EventBus.register('datasets-list', this.onResult);
     }
-  },
-  mounted() {
-    EventBus.register('networks-list', this.onResult);
-  }
-});
+  });
 
-new Vue({
-  el: '#coverage',
-  data() {
-    return {
-      result: null,
-      count: 0
-    };
-  },
-  methods: {
-    onResult: function(payload) {
-      this.count++;
-      this.result = payload + ' ' + this.count;
+  new Vue({
+    el: '#coverage',
+    data() {
+      return {
+        result: null,
+        count: 0
+      };
+    },
+    methods: {
+      onResult: function (payload) {
+        this.count++;
+        this.result = payload + ' ' + this.count;
+      }
+    },
+    mounted() {
+      EventBus.register('coverage', this.onResult);
     }
-  },
-  mounted() {
-    EventBus.register('coverage', this.onResult);
-  }
-});
+  });
+}
+
+if (!Mica.config.isSingleStudyEnabled) {
+  new Vue({
+    el: '#list-studies',
+    data() {
+      return {
+        result: null,
+        count: 0
+      };
+    },
+    methods: {
+      onResult: function (payload) {
+        this.count++;
+        this.result = payload + ' ' + this.count;
+      }
+    },
+    mounted() {
+      EventBus.register('studies-list', this.onResult);
+    }
+  });
+}
+
+if (Mica.config.isNetworkEnabled && !Mica.config.isSingleNetworkEnabled) {
+  new Vue({
+    el: '#list-networks',
+    data() {
+      return {
+        result: null,
+        count: 0
+      };
+    },
+    methods: {
+      onResult: function (payload) {
+        this.count++;
+        this.result = payload + ' ' + this.count;
+      }
+    },
+    mounted() {
+      EventBus.register('networks-list', this.onResult);
+    }
+  });
+}
+
 
 new Vue({
   el: '#graphics',
@@ -390,7 +404,7 @@ new Vue({
     };
   },
   methods: {
-    onResult: function(payload) {
+    onResult: function (payload) {
       this.count++;
       this.result = payload + ' ' + this.count;
     }
@@ -399,5 +413,3 @@ new Vue({
     EventBus.register('graphics', this.onResult);
   }
 });
-
-
