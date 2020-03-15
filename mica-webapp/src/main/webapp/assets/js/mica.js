@@ -551,7 +551,7 @@ var micajs = (function() {
   };
 
   const micaDatasetHarmonizedVariables = function(id, from, limit, onsuccess, onfailure) {
-    var url = '../ws/harmonized-dataset/' + id + '/variables/harmonizations/_summary?from=' + 0 + '&limit=' + limit;
+    var url = '../ws/harmonized-dataset/' + id + '/variables/harmonizations/_summary?from=' + from + '&limit=' + limit;
     axios.get(url)
       .then(response => {
         //console.dir(response);
