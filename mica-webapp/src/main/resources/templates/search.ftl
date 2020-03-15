@@ -154,23 +154,23 @@
                       <#if config.studyDatasetEnabled || config.harmonizationDatasetEnabled>
                         <li class="nav-item">
                           <a class="nav-link active" id="variables-tab" data-toggle="pill" href="#variables" role="tab"
-                             aria-controls="variables" aria-selected="true"><@message "variables"/></a>
+                             aria-controls="variables" aria-selected="true"><@message "variables"/> <span id="variable-count" class="badge badge-light"></span></a>
                         </li>
                         <li class="nav-item">
                           <a class="nav-link" id="datasets-tab" data-toggle="pill" href="#datasets" role="tab"
-                             aria-controls="datasets" aria-selected="false"><@message "datasets"/></a>
+                             aria-controls="datasets" aria-selected="false"><@message "datasets"/> <span id="dataset-count" class="badge badge-light"></span></a>
                         </li>
                       </#if>
                       <#if !config.singleStudyEnabled>
                         <li class="nav-item">
                           <a class="nav-link" id="studies-tab" data-toggle="pill" href="#studies" role="tab"
-                             aria-controls="studies" aria-selected="false"><@message "studies"/></a>
+                             aria-controls="studies" aria-selected="false"><@message "studies"/> <span id="study-count" class="badge badge-light"></span></a>
                         </li>
                       </#if>
                       <#if config.networkEnabled && !config.singleNetworkEnabled>
                         <li class="nav-item">
                           <a class="nav-link" id="networks-tab" data-toggle="pill" href="#networks" role="tab"
-                             aria-controls="networks" aria-selected="false"><@message "networks"/></a>
+                             aria-controls="networks" aria-selected="false"><@message "networks"/> <span id="network-count" class="badge badge-light"></span></a>
                         </li>
                       </#if>
                     </ul>
