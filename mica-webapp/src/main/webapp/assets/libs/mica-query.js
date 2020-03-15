@@ -58,7 +58,8 @@ const EVENTS = {
   QUERY_TYPE_UPDATES_SELECTION: 'query-type-updates-selection',
   QUERY_TYPE_DELETE: 'query-type-delete',
   QUERY_TYPE_PAGINATE: 'query-type-paginate',
-  QUERY_TYPE_COVERAGE: 'query-type-coverage'
+  QUERY_TYPE_COVERAGE: 'query-type-coverage',
+  LOCATION_CHANGED: 'location-changed'
 };
 
 const OPERATOR_NODES = ['and','or'];
@@ -503,7 +504,7 @@ class MicaQueryExecutor {
         tree.findAndDeleteQuery((name) => 'fields' === name);
         tree.findAndDeleteQuery((name) => 'sort' === name);
         const limitQuery = tree.search((name, args, parent) => 'limit' === name && TYPES_TARGETS_MAP[type] === parent.name);
-        this.__updateLocation(type, display, tree.serialize(), noUrlUpdate);
+        this.__updateLocation(type, display, tree, noUrlUpdate);
 
         EventBus.$emit(`${type}-results`, {response: response.data, from: limitQuery.args[0], size: limitQuery.args[1]});
       });
@@ -525,12 +526,13 @@ class MicaQueryExecutor {
       .get(`../ws/variables/_coverage?query=${tree.serialize()}`)
       .then(response => {
         tree.findAndDeleteQuery((name) => AGGREGATE === name);
-        this.__updateLocation(type, display, tree.serialize(), noUrlUpdate, bucket);
+        this.__updateLocation(type, display, tree, noUrlUpdate, bucket);
         EventBus.$emit(`coverage-results`, {bucket, response: response.data});
       });
   }
 
-  __updateLocation(type, display, query, replace, bucket) {
+  __updateLocation(type, display, tree, replace, bucket) {
+    const query = tree.serialize();
     console.log(`__updateLocation ${type} ${display} ${query} - history states ${history.length}`);
     let params = [`type=${type}`, `query=${query}`];
     if (bucket) {
@@ -545,7 +547,7 @@ class MicaQueryExecutor {
       history.pushState(null, "", `#${hash}`);
     }
 
-    this._eventBus.$emit('location-updated', {type: type, display: display});
+    this._eventBus.$emit(EVENTS.LOCATION_CHANGED, {type, display, tree});
   }
 
   /**
