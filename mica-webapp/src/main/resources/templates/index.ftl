@@ -20,8 +20,16 @@
 
     <div class="jumbotron jumbotron-fluid">
       <div class="container">
-        <h1 class="display-4"><@message "data-portal-title"/></h1>
-        <p class="lead"><@message "data-portal-text"/></p>
+        <#if config.repositoryEnabled && config.dataAccessEnabled>
+          <h1 class="display-4"><@message "data-portal-title"/></h1>
+          <p class="lead"><@message "data-portal-text"/></p>
+        <#elseif config.repositoryEnabled>
+          <h1 class="display-4"><@message "data-repository-portal-title"/></h1>
+          <p class="lead"><@message "data-repository-portal-text"/></p>
+        <#elseif config.dataAccessEnabled>
+          <h1 class="display-4"><@message "data-access-portal-title"/></h1>
+          <p class="lead"><@message "data-access-portal-text"/></p>
+        </#if>
       </div>
     </div>
 
