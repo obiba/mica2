@@ -3,12 +3,12 @@
   <div class="container">
     <#if config??>
     <a href="${config.portalUrl!".."}" class="navbar-brand">
-      <img src="../assets/images/logo.png" alt="Logo" class="brand-image img-circle elevation-3"
+      <img src="${brandImageSrc}" alt="Logo" class="brand-image ${brandImageClass}"
            style="opacity: .8">
       <span class="brand-text font-weight-light">${config.name!"Mica"}</span>
     </a>
     <#else>
-      <img src="../assets/images/logo.png" alt="Logo" class="brand-image img-circle elevation-3"
+      <img src="${brandImageSrc}" alt="Logo" class="brand-image ${brandImageClass}"
            style="opacity: .8">
       <span class="brand-text font-weight-light"></span>
     </#if>

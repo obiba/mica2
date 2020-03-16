@@ -51,7 +51,7 @@
 <#macro dataAccessFormPrintHeader form type>
   <div class="clearfix border-bottom pb-3 mb-3">
     <div class="float-left">
-      <img src="../assets/images/logo.png" alt="Logo" class="brand-image img-circle mr-2" style="opacity: .8; max-height: 33px">
+      <img src="${brandImageSrc}" alt="Logo" class="brand-image ${brandImageClass} mr-2" style="opacity: .8; max-height: 33px">
       <span class="brand-text font-weight-light" style="font-size: larger">${config.name!"Mica"}</span>
     </div>
     <div class="float-right text-muted">
