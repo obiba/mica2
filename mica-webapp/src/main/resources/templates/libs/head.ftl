@@ -26,11 +26,12 @@
 <link rel="stylesheet" href="${pathPrefix!".."}/assets/css/bootstrap-3-4.css">
 <!-- Obiba style -->
 <link rel="stylesheet" href="${pathPrefix!".."}/assets/css/obiba.css">
-<!-- Custom CSS rules -->
-<link rel="stylesheet" href="${pathPrefix!".."}/assets/css/custom.css">
 
 <!-- Current user privilegies -->
 <#if user??>
   <#assign isAdministrator = user.roles?seq_contains("mica-administrator")/>
   <#assign isDAO = user.roles?seq_contains("mica-data-access-officer")/>
 </#if>
+
+<!-- Custom head -->
+<#include "../models/head.ftl"/>

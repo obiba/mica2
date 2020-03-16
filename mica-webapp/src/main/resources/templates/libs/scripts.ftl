@@ -23,7 +23,7 @@
 <script src="${pathPrefix!".."}/assets/js/mica.js"></script>
 
 <!-- Custom js -->
-<script src="${pathPrefix!".."}/assets/js/custom.js"></script>
+<#include "../models/scripts.ftl"/>
 
 <!-- Global js variables -->
 <script>
