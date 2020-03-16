@@ -11,6 +11,10 @@
 <#assign projectIcon = "io io-project"/>
 <#assign taxonomyIcon = "io io-taxonomy"/>
 
+<!-- Branding -->
+<#assign brandImageSrc = "../assets/images/logo.png"/>
+<#assign brandImageClass = "img-circle elevation-3"/>
+
 <!-- Home page settings -->
 <#assign networksLink = "../networks"/>
 <!--#assign networksLink = "../search#lists?type=networks"/-->
@@ -24,7 +28,6 @@
 <#assign networkListDefaultDisplay = listDefaultDisplay/>
 <#assign studyListDefaultDisplay = listDefaultDisplay/>
 <#assign datasetListDefaultDisplay = listDefaultDisplay/>
-
 
 <!-- Search page settings -->
 <#assign defaultSearchState = "#lists?type=studies"/>
