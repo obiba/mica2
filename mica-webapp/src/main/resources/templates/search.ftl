@@ -115,8 +115,6 @@
             </div>
             <!-- /.modal -->
 
-            <button class="btn btn-success" @click.prevent="onExecuteQuery()"><i class="fas fa-sync"></i> <@message "refresh"/></button>
-            <span class="badge badge-danger">{{ queryType }}</span>
             <!-- Query Builder -->
             <rql-query-builder v-for="(query, target) in queries" v-bind:target="target.toLowerCase()" v-bind:taxonomy="getTaxonomyForTarget(target)" v-bind:query="query" @update-query="onQueryUpdate" @remove-query="onQueryRemove"></rql-query-builder>
           </div>
