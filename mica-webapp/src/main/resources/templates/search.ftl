@@ -126,24 +126,24 @@
       <!-- /.card -->
 
       <!-- Results box -->
-      <div class="row">
+      <div class="row" id="results-tab-content">
         <div class="col-12">
           <!-- Custom Tabs -->
           <div class="card">
             <div class="card-header d-flex p-0">
               <h3 class="card-title p-3"><@message "results"/></h3>
               <ul class="nav nav-pills ml-auto p-2">
-                <li class="nav-item"><a id="lists-tab" class="nav-link active" href="#tab_lists" data-toggle="tab" @click="onSelectSearch"><@message "lists"/></a></li>
+                <li class="nav-item"><a id="lists-tab" class="nav-link active" href="#tab_lists" data-toggle="tab" @click="onSelectSearch()"><@message "lists"/></a></li>
                 <#if config.studyDatasetEnabled || config.harmonizationDatasetEnabled>
-                  <li class="nav-item"><a id="coverage-tab" class="nav-link" href="#tab_coverage" data-toggle="tab" @click="onSelectCoverage"><@message "coverage"/></a></li>
+                  <li class="nav-item"><a id="coverage-tab" class="nav-link" href="#tab_coverage" data-toggle="tab" @click="onSelectCoverage()"><@message "coverage"/></a></li>
                 </#if>
                 <#if config.networkEnabled && !config.singleStudyEnabled>
-                  <li class="nav-item"><a id="graphics-tab" class="nav-link" href="#tab_graphics" data-toggle="tab" @click="onSelectGraphics"><@message "graphics"/></a></li>
+                  <li class="nav-item"><a id="graphics-tab" class="nav-link" href="#tab_graphics" data-toggle="tab" @click="onSelectGraphics()"><@message "graphics"/></a></li>
                 </#if>
               </ul>
             </div><!-- /.card-header -->
             <div class="card-body">
-              <div class="tab-content" id="results-tab-content">
+              <div class="tab-content">
 
                 <study-filter-shortcut></study-filter-shortcut>
 
