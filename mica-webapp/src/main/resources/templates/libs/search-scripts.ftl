@@ -2,6 +2,7 @@
 <script>
   const Mica = { config: ${configJson!"{}"} };
   Mica.tr = {
+    "all": '<@message "all"/>',
     "variables": '<@message "variables"/>',
     "datasets": '<@message "datasets"/>',
     "studies": '<@message "studies"/>',

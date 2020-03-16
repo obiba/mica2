@@ -124,11 +124,11 @@ new Vue({
 const StudyFilterShortcutComponent = Vue.component('study-filter-shortcut', {
   name: 'StudyFilterShortcut',
   template: `
-  <div>
+  <div v-if="showFilter">
     <div class="btn-group" role="group" aria-label="Basic example">
-      <button type="button" v-bind:class="{active: selection.all}" class="btn btn-sm btn-info" v-on:click="onSelectionClicked('all')">All</button>
-      <button type="button" v-bind:class="{active: selection.study}" class="btn btn-sm btn-info" v-on:click="onSelectionClicked('study')">Study</button>
-      <button type="button" v-bind:class="{active: selection.harmonization}" class="btn btn-sm btn-info" v-on:click="onSelectionClicked('harmonization')">Harmonization</button>
+      <button type="button" v-bind:class="{active: selection.all}" class="btn btn-sm btn-info" v-on:click="onSelectionClicked('all')">{{tr('all')}}</button>
+      <button type="button" v-bind:class="{active: selection.study}" class="btn btn-sm btn-info" v-on:click="onSelectionClicked('study')">{{tr('individual')}}</button>
+      <button type="button" v-bind:class="{active: selection.harmonization}" class="btn btn-sm btn-info" v-on:click="onSelectionClicked('harmonization')">{{tr('harmonization')}}</button>
     </div>
   </div>
   `,
@@ -137,7 +137,13 @@ const StudyFilterShortcutComponent = Vue.component('study-filter-shortcut', {
       selection: {all: true, study: false, harmonization: false}
     }
   },
+  computed: {
+    showFilter: () => Mica.config.isCollectedDatasetEnabled && Mica.config.isHarmonizedDatasetEnabled
+  },
   methods: {
+    tr(key) {
+      return Mica.tr[key]
+    },
     buildClassNameArgs(key) {
       switch (key) {
         case 'study':
