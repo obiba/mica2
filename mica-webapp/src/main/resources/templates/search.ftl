@@ -130,7 +130,7 @@
           <div class="card">
             <div class="card-header d-flex p-0">
               <h3 class="card-title p-3"><@message "results"/></h3>
-              <ul class="nav nav-pills ml-auto p-2">
+              <ul id="search-tabs" class="nav nav-pills ml-auto p-2">
                 <li class="nav-item"><a id="lists-tab" class="nav-link active" href="#tab_lists" data-toggle="tab" @click="onSelectSearch()"><@message "lists"/></a></li>
                 <#if config.studyDatasetEnabled || config.harmonizationDatasetEnabled>
                   <li class="nav-item"><a id="coverage-tab" class="nav-link" href="#tab_coverage" data-toggle="tab" @click="onSelectCoverage()"><@message "coverage"/></a></li>
