@@ -471,14 +471,14 @@ class MicaQueryExecutor {
     const validNodes = CRITERIA_NODES.concat(OPERATOR_NODES);
     let queries = {};
 
-    for (const target in TARGETS) {
+    for (const key in TARGETS) {
       let targetQuery = tree.search((name) => {
-        return name === TARGETS[target]
+        return name === TARGETS[key]
       });
 
       if (targetQuery) {
         targetQuery.args = targetQuery.args.filter(arg => validNodes.indexOf(arg.name) > -1);
-        queries[target] = targetQuery;
+        queries[TARGETS[key]] = targetQuery;
       }
     }
 

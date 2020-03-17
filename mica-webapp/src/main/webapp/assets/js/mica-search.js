@@ -25,6 +25,12 @@ const EventBus = new Vue({
   }
 });
 
+// global translate filter for use in imported components
+Vue.filter("translate", (key) => {
+  let value = Mica.tr[key];
+  return value !== undefined || value !== null ? value : key;
+});
+
 const DataTableDefaults = {
   searching: false,
   ordering: false,
@@ -234,23 +240,22 @@ new Vue({
     },
     getTaxonomyForTarget(target) {
       let result = [];
-      const selectedTarget = TARGETS[target];
 
-      for (const taxonomy in this.taxonomies) {
-        if (TARGETS.VARIABLE === selectedTarget) {
-          if (taxonomy === 'Mica_' + selectedTarget || taxonomy.indexOf('Mica_') === -1) {
-            result.push(this.taxonomies[taxonomy]);
-          }
-        } else {
-          if (taxonomy === 'Mica_' + selectedTarget) {
-            result.push(this.taxonomies[taxonomy]);
+      if (TARGETS.VARIABLE === target) {
+        let taxonomies = [];
+        for (let taxonomy in this.taxonomies) {
+          if (taxonomy === `Mica_${target}` || !taxonomy.startsWith('Mica_')) {
+            const found = this.taxonomies[taxonomy];
+            if (found) taxonomies.push(found);
           }
         }
+
+        result.push(taxonomies);
+      } else {
+        let taxonomy = this.taxonomies[`Mica_${target}`];
+        result.push(taxonomy);
       }
 
-      if (result.length > 1) {
-        return result;
-      }
       return result[0];
     },
     // show a modal with all the vocabularies/terms of the selected taxonomy
@@ -259,7 +264,7 @@ new Vue({
       this.selectedTaxonomy = this.taxonomies[payload.taxonomyName];
       this.selectedTarget = payload.target;
 
-      this.selectedQuery = this.queries[this.selectedTarget.toUpperCase()];
+      this.selectedQuery = this.queries[this.selectedTarget];
       this.message = '[' + payload.taxonomyName + '] ' + this.selectedTaxonomy.title[0].text + ': ';
       this.message = this.message + this.selectedTaxonomy.vocabularies.map(voc => voc.title[0].text).join(', ');
     },
@@ -314,17 +319,25 @@ new Vue({
         let targets = response.data.vocabularies;
         EventBus.$emit('mica-taxonomy', targets);
 
+        const targetQueries = [];
+
         for (let target of targets) {
           // then load the taxonomies
-          axios
-            .get('../ws/taxonomies/_filter?target=' + target.name)
-            .then(response => {
-              for (let taxo of response.data) {
-                this.taxonomies[taxo.name] = taxo;
-              }
-            });
+
+          targetQueries.push(`../ws/taxonomies/_filter?target=${target.name}`);
         }
-      });
+
+        return axios.all(targetQueries.map(query => axios.get(query))).then(axios.spread((...responses) => {
+          responses.forEach((response) => {
+            for (let taxo of response.data) {
+              this.taxonomies[taxo.name] = taxo;
+            }
+          });
+
+          this.refreshQueries();
+          return this.taxonomies;
+        }));
+      });  
     this.onExecuteQuery();
   },
   beforeDestory() {
