@@ -5,12 +5,12 @@
     <a href="${config.portalUrl!".."}" class="navbar-brand">
       <img src="${brandImageSrc}" alt="Logo" class="brand-image ${brandImageClass}"
            style="opacity: .8">
-      <span class="brand-text font-weight-light">${config.name!"Mica"}</span>
+      <span class="brand-text ${brandTextClass}">${config.name!"Mica"}</span>
     </a>
     <#else>
       <img src="${brandImageSrc}" alt="Logo" class="brand-image ${brandImageClass}"
            style="opacity: .8">
-      <span class="brand-text font-weight-light"></span>
+      <span class="brand-text ${brandTextClass}"></span>
     </#if>
 
     <button class="navbar-toggler order-1" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
