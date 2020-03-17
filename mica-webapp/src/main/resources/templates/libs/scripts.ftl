@@ -1,18 +1,18 @@
 <!-- REQUIRED SCRIPTS -->
 
 <!-- jQuery -->
-<script src="${pathPrefix!".."}/assets/libs/node_modules/admin-lte/plugins/jquery/jquery.min.js"></script>
+<script src="${pathPrefix!".."}${adminLTEPath}/plugins/jquery/jquery.min.js"></script>
 <!-- Bootstrap 4 -->
-<script src="${pathPrefix!".."}/assets/libs/node_modules/admin-lte/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="${pathPrefix!".."}${adminLTEPath}/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
 <!-- AdminLTE App -->
-<script src="${pathPrefix!".."}/assets/libs/node_modules/admin-lte/dist/js/adminlte.min.js"></script>
+<script src="${pathPrefix!".."}${adminLTEPath}/dist/js/adminlte.min.js"></script>
 <!-- Moment -->
-<script src="${pathPrefix!".."}/assets/libs/node_modules/admin-lte/plugins/moment/moment-with-locales.min.js"></script>
+<script src="${pathPrefix!".."}${adminLTEPath}/plugins/moment/moment-with-locales.min.js"></script>
 <!-- DataTables -->
-<script src="${pathPrefix!".."}/assets/libs/node_modules/admin-lte/plugins/datatables/jquery.dataTables.js"></script>
-<script src="${pathPrefix!".."}/assets/libs/node_modules/admin-lte/plugins/datatables-bs4/js/dataTables.bootstrap4.js"></script>
+<script src="${pathPrefix!".."}${adminLTEPath}/plugins/datatables/jquery.dataTables.js"></script>
+<script src="${pathPrefix!".."}${adminLTEPath}/plugins/datatables-bs4/js/dataTables.bootstrap4.js"></script>
 <!-- Toastr -->
-<script src="${pathPrefix!".."}/assets/libs/node_modules/admin-lte/plugins/toastr/toastr.min.js"></script>
+<script src="${pathPrefix!".."}${adminLTEPath}/plugins/toastr/toastr.min.js"></script>
 <!-- Axios -->
 <script src="${pathPrefix!".."}/assets/libs/node_modules/axios/dist/axios.min.js"></script>
 <!-- Marked -->

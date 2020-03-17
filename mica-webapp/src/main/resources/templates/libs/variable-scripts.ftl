@@ -1,5 +1,5 @@
 <!-- ChartJS -->
-<script src="../assets/libs/node_modules/admin-lte/plugins/chart.js/Chart.min.js"></script>
+<script src="..${adminLTEPath}/plugins/chart.js/Chart.min.js"></script>
 <#if user?? || !config.variableSummaryRequiresAuthentication>
 <script>
   $(function () {
