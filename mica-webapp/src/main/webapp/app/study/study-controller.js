@@ -242,7 +242,7 @@ mica.study
 
       $scope.displayBodyIndexOne = true;
       $scope.displayBodyIndexTwo = false;
-      $scope.displayBodyIndexTwo = false;
+      $scope.displayBodyIndexThree = false;
       
       var listIds = [];
 
@@ -277,22 +277,53 @@ mica.study
               });
             
         } else {
+        	
         	//will display Index Three
+        	console.log('[NEXT] will display Index Three');
+        	
         	$scope.studiesToInclude = [];
         	$scope.studiesToUpdate = [];
+
+        	var studiesToCheck = [];
         	
-        	for (var i = 0; i < $scope.studiesToImport.length; i++) {	
-                if ($scope.studiesToImport[i].checked) {
+        	//check if studies exist locally
+        	for (var i = 0; i < $scope.studiesToImport.length; i++) {
+                if ( $scope.studiesToImport[i].checked ) {
+                	
+                	studiesToCheck.push($scope.studiesToImport[i].id);
                 	$scope.studiesToInclude.push($scope.studiesToImport[i]);
-                	$scope.studiesToUpdate.push($scope.studiesToImport[i]);
                 }
-            }
+        	}
+            
+        	$http({
+                url: 'ws/draft/studies/import/_summary',
+                method: 'GET',
+                params: {ids: studiesToCheck}
+
+              }).then(function(response) {
+        		
+                console.log('[NEXT-SUMMARY2(response)]');
+                console.log(response.data);
+                
+                var resp = response.data;
+                
+            	for (var j in $scope.studiesToImport) {
+            		
+            		if (resp.includes($scope.studiesToImport[j].id)) {
+            			
+            			$scope.studiesToUpdate.push($scope.studiesToImport[j]);
+            			
+            			delete $scope.studiesToInclude[j];
+            		} 
+            	}
+            	
+            	$scope.studiesToInclude = $scope.studiesToInclude.filter(function (el) { return el != null; });
+            });
         	
         	$scope.displayBodyIndexOne = false;
             $scope.displayBodyIndexTwo = false;
             $scope.displayBodyIndexThree = true;
         }
-        
       };
 
       //PREVIOUS
@@ -317,43 +348,59 @@ mica.study
       };
 
       //CLICK_CHECK_BOX
-      $scope.clickCheckbox = function(studyModal) {
-    	  
-        console.log('[CLICK_CHECKBOX]');
+      $scope.clickCheckbox = function() {
+		console.log('[CLICK_CHECKBOX]');
+		
+		for (var i = 0; i < $scope.studiesToImport.length; i++) {	
+		    if ($scope.studiesToImport[i].checked) {
+		    	$scope.studiesToImport.checked = true;
+		    	return;
+		    }
+		}
+		
+		$scope.studiesToImport.checked = false;
+      };
+      
+      //REMOVE_FROM_LIST
+      $scope.removeFromList = function(studyModal, isInIncludeList) {	  
+		console.log('[REMOVE_FROM_LIST]');
+		
+		console.log(studyModal);
+		console.log(isInIncludeList);
+		var newDataList=[];
+		
+		if (isInIncludeList) {
 
-        for (var i = 0; i < $scope.studiesToImport.length; i++) {	
-            if ($scope.studiesToImport[i].checked) {
-            	$scope.studiesToImport.checked = true;
-            	return;
-            }
-        }
-        
-        $scope.studiesToImport.checked = false;
+	        angular.forEach($scope.studiesToInclude, function(v) {
+		        if (v.id != studyModal.id) {
+		            newDataList.push(v);
+		        }
+	        });    
+	        
+	        $scope.studiesToInclude = newDataList;
+	        
+		} else {
+			
+	        angular.forEach($scope.studiesToUpdate, function(v) {
+		        if (v.id != studyModal.id) {
+		            newDataList.push(v);
+		        }
+	        });    
+	        
+	        $scope.studiesToUpdate = newDataList;
+		}
       };
 
+        
       //FINISH
-      $scope.finish = function(importModel, studiesToImport) {
+      $scope.finish = function() {
         console.log('[FINISH]');
         
-        
-        for (var i = 0; i < $scope.studiesToImport.length; i++) {
-        	
+        for (var i = 0; i < $scope.studiesToImport.length; i++) {	
             if ($scope.studiesToImport[i].checked){
-            	
             	listIds.push( $scope.studiesToImport[i].id );
             }
         }
-        
-        /*
-        $('#myTable input:checkbox:checked').each(function(i) {
-        	
-          var array = $(this).parent().siblings().map(function() {
-            return $(this).text().trim();
-          }).get();
-
-          listIds.push( JSON.stringify(array[0]) );
-        });
-        */
 
         console.log('listIds = ' + listIds);
 
@@ -378,20 +425,6 @@ mica.study
           console.log(JSON.parse(response.data));
         });*/
       };
-      
-      //PAGE_CHANGED
-      /*$scope.pageChanged = function (page, oldPage) {
-    	  
-    	  $('#myTable input:checkbox:checked').each(function(i) {
-    		  var array = $(this).parent().siblings().map(function() {
-    			  return $(this).text().trim();
-    		  }).get();
-
-    		  listIds.push( JSON.stringify(array[0]) );
-    	  });
-    	
-    	  console.log('listIdsPG = ' + listIds);
-      };*/
 
   }])
 

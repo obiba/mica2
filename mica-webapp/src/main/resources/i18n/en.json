@@ -556,7 +556,9 @@
       "update-operations": "Update operation(s):",
       "finish": "Finish",
       "previous": "< Previous",
-      "next": "Next >"
+      "next": "Next >",
+      "remove": "Remove from the list",
+      "action": "Action"
     },
     "access": {
       "label": "Access",

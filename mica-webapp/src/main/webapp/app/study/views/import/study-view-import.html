@@ -64,7 +64,7 @@
               <tbody id="myTable">
                 <tr dir-paginate="studyModal in studiesToImport | filter:query | itemsPerPage: pageSize" pagination-id="myPaginationId" current-page="currentPage">
                   <td>
-                    <input type="checkbox" class="myCheckBox" ng-checked="studyModal.checked" ng-model="studyModal.checked" ng-change="clickCheckbox(studyModal)"/>&nbsp;
+                    <input type="checkbox" class="myCheckBox" ng-checked="studyModal.checked" ng-model="studyModal.checked" ng-change="clickCheckbox()"/>&nbsp;
                   </td>
                   <td>
                     <ul class="list-unstyled">
@@ -107,6 +107,7 @@
                   <th data-column-name="id">ID</th>
                   <th data-column-name="acronym">{{"study.acronym" | translate}}</th>
                   <th data-column-name="name" class="col-md-8">{{"study.name" | translate}}</th>
+                  <th translate>study.import.action</th>
                 </tr>
               </thead>
               <tbody id="myTableSummaryInclude">
@@ -130,6 +131,11 @@
                       </li>
                     </ul>
                   </td>
+                  <td>
+                    <a ng-click="removeFromList(studyModal, true)" class="delete" title="{{'study.import.remove' | translate}}" data-toggle="tooltip">
+                      <i class="fa fa-trash-o"></i>
+                    </a>
+                  </td>
                 </tr>  
               </tbody>
             </table>
@@ -141,6 +147,7 @@
                   <th data-column-name="id">ID</th>
                   <th data-column-name="acronym">{{"study.acronym" | translate}}</th>
                   <th data-column-name="name" class="col-md-8">{{"study.name" | translate}}</th>
+                  <th translate>study.import.action</th>
                 </tr>
               </thead>
               <tbody id="myTableSummaryUpdate">
@@ -164,6 +171,11 @@
                       </li>
                     </ul>
                   </td>
+                  <td>
+                    <a ng-click="removeFromList(studyModal, false)" class="delete" title="{{'study.import.remove' | translate}}" data-toggle="tooltip">
+                      <i class="fa fa-trash-o"></i>
+                    </a>
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -177,7 +189,7 @@
             <button id="myNextButton" type="button" class="btn btn-info" aria-hidden="true" ng-click="next(importModel, path, displayBodyIndexOne)" ng-disabled="(myForm.$invalid && !displayBodyIndexOne) || (!studiesToImport.checked && displayBodyIndexTwo) || displayBodyIndexThree">
               <span translate>study.import.next</span>
             </button>
-            <button id="myFinishButton" type="button" class="btn btn-default" aria-hidden="true" ng-click="finish(importModel, studiesToImport)" ng-disabled="!displayBodyIndexThree">
+            <button id="myFinishButton" type="button" class="btn btn-default" aria-hidden="true" ng-click="finish()" ng-disabled="!displayBodyIndexThree">
               <span translate>study.import.finish</span>
             </button>
             <button id="myCancelButton" type="button" class="btn btn-default" data-dismiss="modal" aria-hidden="true" ng-click="close()">

@@ -16,6 +16,8 @@ import java.io.InputStreamReader;
 import java.net.ProtocolException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
 
@@ -35,7 +37,9 @@ import org.apache.http.HttpStatus;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
-import org.obiba.mica.study.service.StudyPackageImportService;
+import org.obiba.mica.NoSuchEntityException;
+import org.obiba.mica.study.domain.BaseStudy;
+import org.obiba.mica.study.service.StudyService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpMethod;
@@ -45,23 +49,24 @@ import org.springframework.http.MediaType;
 @RequiresAuthentication
 public class StudiesImportResource {
 
-	private static final String USERNAME = "username";
-	private static final String PASSWORD = "password";
+	private static final String BASIC_AUTHENTICATION = "Basic ";
+	private static final String USERNAME_PARAM = "username";
+	private static final String PWORD_PARAM = "password";
 	private static final String TYPE = "type";
 	private static final String IDS = "ids";
 	
 	private static final Logger log = LoggerFactory.getLogger(StudiesImportResource.class);
-
+	
 	@Inject
-	private StudyPackageImportService studyPackageImportService;
+	private StudyService studyService;
 
 	@GET
 	@Path("/studies/import/_preview")
 	@RequiresPermissions("/draft/individual-study:ADD")
 	@Produces({"application/xml", "application/json", "text/plain", "text/html"})
 	public Response listRemoteSourceIndividualStudies(@QueryParam("url") String url, 
-			@QueryParam(USERNAME) String username, 
-			@QueryParam(PASSWORD) String password, 
+			@QueryParam(USERNAME_PARAM) String username, 
+			@QueryParam(PWORD_PARAM) String password, 
 			@QueryParam(TYPE) String type) {
 		
 		try {
@@ -72,19 +77,13 @@ public class StudiesImportResource {
 
 			int status = con.getResponseCode();
 			
-			StringBuffer content = this.getContent(con);
-			
-			log.info("listRemoteSourceIndividualStudies CONTENT: {}", content);
+			StringBuilder content = this.getContent(con);
 			
 			con.disconnect();
 			
 			return Response.ok(content).status(status).build();
 			
-		} catch (URISyntaxException e) {
-			
-			return Response.status(HttpStatus.SC_BAD_REQUEST).build();
-			
-		} catch (ProtocolException e) {
+		} catch (URISyntaxException|ProtocolException e) {
 			
 			return Response.status(HttpStatus.SC_BAD_REQUEST).build();
 			
@@ -94,16 +93,45 @@ public class StudiesImportResource {
 		}
 	}
 	
+	@GET
+	@Path("/studies/import/_summary")
+	@Produces({"application/xml", "application/json", "text/plain", "text/html"})
+	public Response checkIfAlreadyExistsLocally(@QueryParam(IDS) List<String> ids) {
+		
+		log.info("checkIfAlreadyExistsLocally ids: {}", ids);
+		
+		List<String> existingIds = new ArrayList<>();
+		
+		existingIds.add("action");
+		
+		for (String id : ids) {
+
+			try {
+				
+				BaseStudy baseStudy = studyService.findStudy(id);
+				
+				existingIds.add( baseStudy.getId());
+				
+			} catch(NoSuchEntityException ex) {
+				//ignore if study doesn't exist locally.
+				log.info("checkIfAlreadyExistsLocally - id not exists: {}", id);
+			}
+		}
+		
+		return Response.ok(existingIds).build();		
+	}
+	
+		
 	@POST
 	@Path("/individual-studies/_import")
 	@RequiresPermissions("/draft/individual-study:ADD")
 	public Response importIndividualStudies(@QueryParam("url") String url, 
-			@QueryParam(USERNAME) String username, 
-			@QueryParam(PASSWORD) String password, 
+			@QueryParam(USERNAME_PARAM) String username, 
+			@QueryParam(PWORD_PARAM) String password, 
 			@QueryParam(IDS) List<String> ids) {
 	
 		log.info("POST importIndividualStudies called: ");
-		log.info("importIndividualStudies ids: " + ids);
+		log.info("importIndividualStudies ids: {} ", ids);
 		
 		try {
 			
@@ -119,11 +147,9 @@ public class StudiesImportResource {
 				
 				Object result = con.getContent();
 				
-				DraftIndividualStudyResource r;
+				log.info( "{}", result );
 				
-				log.info( result.toString() );
-				
-				StringBuffer content = this.getContent(con);
+				StringBuilder content = this.getContent(con);
 				
 				log.info("importIndividualStudies CONTENT: {}", content);
 				
@@ -132,21 +158,15 @@ public class StudiesImportResource {
 			
 			return Response.ok().build();
 						
-		} catch (URISyntaxException e) {
+		} catch (URISyntaxException|ProtocolException e) {
 			
-			e.printStackTrace();
-			
-			return Response.status(HttpStatus.SC_BAD_REQUEST).build();
-			
-		} catch (ProtocolException e) {
-			
-			e.printStackTrace();
+			log.error( Arrays.toString( e.getStackTrace()) );
 			
 			return Response.status(HttpStatus.SC_BAD_REQUEST).build();
 			
 		} catch (IOException e) {
 			
-			e.printStackTrace();
+			log.error( Arrays.toString( e.getStackTrace()) );
 			
 			return Response.status(HttpStatus.SC_NOT_FOUND).build();
 		}
@@ -157,14 +177,14 @@ public class StudiesImportResource {
 	@RequiresPermissions("/draft/harmonization-study:ADD")
 	public Response importHarmonizationStudies(@Context HttpServletRequest request) {
 		
-		log.info("POST importHarmonizationStudies called: " + request.toString());
+		log.info("POST importHarmonizationStudies called: {} ",  request);
 
 	    return Response.ok().build();	
 	}
 	
 	
 	private HttpsURLConnection prepareConnection(String url, String username, String password, String type, String endpoint)
-			throws IOException, ProtocolException, URISyntaxException {	
+			throws IOException, URISyntaxException {	
 		
 		URI preparedURI = new URI((url.endsWith("/")) ? url.substring(0, url.length() - 1) : url);
 		
@@ -190,18 +210,18 @@ public class StudiesImportResource {
 		String encodedString = Base64.getEncoder().encodeToString(originalInput.getBytes());
 		
 		con.setRequestProperty(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE);
-		con.setRequestProperty(HttpHeaders.AUTHORIZATION, "Basic " + encodedString );
+		con.setRequestProperty(HttpHeaders.AUTHORIZATION, BASIC_AUTHENTICATION + encodedString );
 		con.setRequestProperty(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_UTF8_VALUE );
 		
 		return con;
 	}
 	
 	
-	private StringBuffer getContent(HttpsURLConnection con) throws IOException {
+	private StringBuilder getContent(HttpsURLConnection con) throws IOException {
 		
 		BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
 		String inputLine;
-		StringBuffer content = new StringBuffer();
+		StringBuilder content = new StringBuilder();
 		while ((inputLine = in.readLine()) != null) {
 			content.append(inputLine);
 		}
