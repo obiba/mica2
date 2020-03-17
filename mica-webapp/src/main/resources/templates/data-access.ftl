@@ -409,25 +409,6 @@
         <!-- /.col-6 -->
         <div class="col-sm-12 col-lg-6">
 
-          <#if user.username != applicant.username>
-            <div class="card card-info card-outline">
-              <div class="card-header">
-                <h3 class="card-title"><@message "applicant"/></h3>
-                <div class="card-tools">
-                  <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i>
-                  </button>
-                </div>
-              </div>
-              <div class="card-body">
-                <@userProfile profile=applicant/>
-              </div>
-              <div class="card-footer">
-                <a href="${pathPrefix}/data-access-comments/${dar.id}"><@message "send-message"/> <i
-                          class="fas fa-arrow-circle-right"></i></a>
-              </div>
-            </div>
-          </#if>
-
           <#if accessConfig.feasibilityEnabled>
             <div class="card card-info card-outline">
               <div class="card-header">
@@ -498,6 +479,21 @@
                   </#list>
                   </tbody>
                 </table>
+              </div>
+            </div>
+          </#if>
+
+          <#if user.username != applicant.username>
+            <div class="card card-info card-outline">
+              <div class="card-header">
+                <h3 class="card-title"><@message "applicant"/></h3>
+              </div>
+              <div class="card-body">
+                <@userProfile profile=applicant/>
+              </div>
+              <div class="card-footer">
+                <a href="${pathPrefix}/data-access-comments/${dar.id}"><@message "send-message"/> <i
+                          class="fas fa-arrow-circle-right"></i></a>
               </div>
             </div>
           </#if>
