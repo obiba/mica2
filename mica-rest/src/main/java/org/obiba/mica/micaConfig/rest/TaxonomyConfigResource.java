@@ -12,10 +12,7 @@ package org.obiba.mica.micaConfig.rest;
 
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
-import javax.ws.rs.GET;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
@@ -41,13 +38,24 @@ public class TaxonomyConfigResource {
   @Inject
   private CacheService cacheService;
 
-
   @GET
   public Response getTaxonomy(@NotNull @PathParam("target") String target) {
     try {
       return Response.ok().entity(Dtos.asDto(taxonomyConfigService.findByTarget(TaxonomyTarget.fromId(target)))).build();
     } catch(IllegalArgumentException e) {
       return Response.status(Response.Status.NOT_FOUND).build();
+    }
+  }
+
+  @DELETE
+  @RequiresRoles(Roles.MICA_ADMIN)
+  public Response deleteTaxonomy(@NotNull @PathParam("target") String target) {
+    try {
+      taxonomyConfigService.delete(TaxonomyTarget.fromId(target));
+      cacheService.clearMicaConfigCache();
+      return Response.noContent().build();
+    } catch(IllegalArgumentException e) {
+      return Response.noContent().build();
     }
   }
 
