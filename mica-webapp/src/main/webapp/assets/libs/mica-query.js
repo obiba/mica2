@@ -20,9 +20,15 @@ const TYPES_TARGETS_MAP = {
 };
 
 BUCKETS = {
-  studyId: 'studyId',
-  dceId: 'dceId',
-  datasetId: 'datasetId'
+  study: 'studyId',
+  dce: 'dceId',
+  dataset: 'datasetId'
+};
+
+TAREGT_ID_BUCKET_MAP = {
+  studyId: 'study',
+  dceId: 'dce',
+  datasetId: 'dataset'
 };
 
 const TARGETS_TYPES_MAP = {
@@ -374,7 +380,7 @@ class MicaQueryExecutor {
    */
   __getBucketType(urlSearchParams, display) {
     if (DISPLAYS.COVERAGE === display) {
-      return urlSearchParams.hasOwnProperty(BUCKET) ? BUCKETS[urlSearchParams[BUCKET]]: BUCKETS.studyId;
+      return urlSearchParams.hasOwnProperty(BUCKET) ? BUCKETS[urlSearchParams[BUCKET]]: BUCKETS.study;
     }
 
     return null;
@@ -536,7 +542,7 @@ class MicaQueryExecutor {
     console.log(`__updateLocation ${type} ${display} ${query} - history states ${history.length}`);
     let params = [`type=${type}`, `query=${query}`];
     if (bucket) {
-      params.push(`bucket=${bucket}`);
+      params.push(`bucket=${TAREGT_ID_BUCKET_MAP[bucket]}`);
     }
 
     const urlSearch = params.join('&');
