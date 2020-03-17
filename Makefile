@@ -144,3 +144,8 @@ elasticsearch-head:
 	@echo "ElasticSearch-Head is available at:"
 	@echo "file://${current_dir}/.work/elasticsearch-head/index.html"
 	@echo
+
+vue-search:
+	cd ../epigeny/vue-obiba-search-result && \
+	yarn build-lib && \
+	cp dist/* ../../mica2/mica-webapp/src/main/webapp/assets/libs/node_modules/vue-obiba-search-result/dist/

@@ -20,7 +20,7 @@
            alt="Logo"
            class="brand-image ${brandImageClass}"
            style="opacity: .8">
-      <span class="brand-text font-weight-light">${config.name!""}</span>
+      <span class="brand-text ${brandTextClass}">${config.name!""}</span>
     </a>
 
     <!-- Sidebar -->
