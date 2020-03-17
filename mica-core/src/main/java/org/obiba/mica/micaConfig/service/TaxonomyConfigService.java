@@ -49,15 +49,16 @@ public class TaxonomyConfigService {
   private EventBus eventBus;
 
   public TaxonomyConfigService() {
-    defaultStudyTaxonomy = readTaxonomyFromYaml("/taxonomies/mica-study.yml");
-    defaultNetworkTaxonomy = readTaxonomyFromYaml("/taxonomies/mica-network.yml");
-    defaultDatasetTaxonomy = readTaxonomyFromYaml("/taxonomies/mica-dataset.yml");
-    defaultVariableTaxonomy = readTaxonomyFromYaml("/taxonomies/mica-variable.yml");
-    defaultTaxonomyTaxonomy = readTaxonomyFromYaml("/taxonomies/mica-taxonomy.yml");
+    initDefaults();
   }
 
   public Taxonomy findByTarget(TaxonomyTarget target) {
     return findByTargetInternal(target);
+  }
+
+  public void delete(TaxonomyTarget target) {
+    taxonomyConfigRepository.delete(target.asId());
+    initDefaults();
   }
 
   public void update(TaxonomyTarget target, Taxonomy taxonomy) {
@@ -105,6 +106,14 @@ public class TaxonomyConfigService {
         }
       }
     });
+  }
+
+  private void initDefaults() {
+    defaultStudyTaxonomy = readTaxonomyFromYaml("/taxonomies/mica-study.yml");
+    defaultNetworkTaxonomy = readTaxonomyFromYaml("/taxonomies/mica-network.yml");
+    defaultDatasetTaxonomy = readTaxonomyFromYaml("/taxonomies/mica-dataset.yml");
+    defaultVariableTaxonomy = readTaxonomyFromYaml("/taxonomies/mica-variable.yml");
+    defaultTaxonomyTaxonomy = readTaxonomyFromYaml("/taxonomies/mica-taxonomy.yml");
   }
 
   private void updateInternal(TaxonomyTarget target, Taxonomy taxonomy) {
