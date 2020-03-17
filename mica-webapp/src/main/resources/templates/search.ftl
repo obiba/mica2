@@ -116,7 +116,7 @@
             <!-- /.modal -->
 
             <!-- Query Builder -->
-            <rql-query-builder v-for="(query, target) in queries" v-bind:target="target.toLowerCase()" v-bind:taxonomy="getTaxonomyForTarget(target)" v-bind:query="query" @update-query="onQueryUpdate" @remove-query="onQueryRemove"></rql-query-builder>
+            <rql-query-builder v-for="(query, target) in queries" v-bind:target="target" v-bind:taxonomy="getTaxonomyForTarget(target)" v-bind:query="query" @update-query="onQueryUpdate" @remove-query="onQueryRemove"></rql-query-builder>
           </div>
         </div>
         <!-- /.card-body -->
