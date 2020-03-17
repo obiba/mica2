@@ -25,14 +25,6 @@ const EventBus = new Vue({
   }
 });
 
-const DataTableDefaults = {
-  searching: false,
-  ordering: false,
-  lengthMenu: [10, 20, 50, 100],
-  pageLength: 20,
-  dom: "<'row'<'col-sm-3'l><'col-sm-3'f><'col-sm-6'p>><'row'<'col-sm-12'tr>><'row'<'col-sm-5'i><'col-sm-7'p>>"
-};
-
 //
 // Search criteria Vue
 // sidebar menus for taxonomy selection. Terms selection is delegated to the main app (query builder)
@@ -138,7 +130,9 @@ const StudyFilterShortcutComponent = Vue.component('study-filter-shortcut', {
     }
   },
   computed: {
-    showFilter: () => Mica.config.isCollectedDatasetEnabled && Mica.config.isHarmonizedDatasetEnabled
+    showFilter: () => Mica.config.isCollectedDatasetEnabled
+      && Mica.config.isHarmonizedDatasetEnabled
+      && !Mica.config.isSingleStudyEnabled
   },
   methods: {
     tr(key) {
@@ -188,6 +182,22 @@ const StudyFilterShortcutComponent = Vue.component('study-filter-shortcut', {
   }
 });
 
+const DataTableDefaults = {
+  searching: false,
+  ordering: false,
+  lengthMenu: [10, 20, 50, 100],
+  pageLength: 20,
+  dom: "<'row'<'col-sm-3'l><'col-sm-3'f><'col-sm-6'p>><'row'<'col-sm-12'tr>><'row'<'col-sm-5'i><'col-sm-7'p>>"
+};
+
+class StringLocalizer {
+  static localize(entries) {
+    const locale = Mica.locale;
+    const result = (Array.isArray(entries) ? entries : [entries]).filter((entry) => locale === entry.lang).pop();
+    return result ? result.value : "";
+  }
+}
+
 /**
  * Registering plugins defined in VueObibaSearchResult
  */
@@ -196,6 +206,7 @@ Vue.use(VueObibaSearchResult, {
     methods: {
       getEventBus: () => EventBus,
       getMicaConfig: () => Mica.config,
+      localize: (entries) => StringLocalizer.localize(entries),
       tr: (key) => {
         return Mica.tr[key] ? Mica.tr[key] : key;
       },

@@ -1,6 +1,6 @@
 <!-- MicaConfig in JSON Format -->
 <script>
-  const Mica = { config: ${configJson!"{}"} };
+  const Mica = { config: ${configJson!"{}"} , locale: "${.lang}" };
   Mica.tr = {
     "all": '<@message "all"/>',
     "variables": '<@message "variables"/>',
@@ -25,7 +25,10 @@
     "no-variable-found": '<@message "no-variable-found"/>',
     "no-dataset-found": '<@message "no-dataset-found"/>',
     "no-study-found": '<@message "no-study-found"/>',
-    "no-network-found": '<@message "no-network-found"/>'
+    "no-network-found": '<@message "no-network-found"/>',
+    "coverage-buckets-study": '<@message "coverage-buckets-study"/>',
+    "coverage-buckets-dce": '<@message "coverage-buckets-dce"/>',
+    "coverage-buckets-dataset": '<@message "coverage-buckets-dataset"/>'
   };
   Mica.icons = {
     variable: '${variableIcon}',
