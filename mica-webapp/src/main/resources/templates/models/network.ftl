@@ -6,9 +6,9 @@
 
 <!-- Individual study list: headers -->
 <#macro individualStudyTHs>
-  <th>Study Design</th>
-  <th>Participants</th>
-  <th>Countries</th>
+  <th><@message "study-design"/></th>
+  <th><@message "participants"/></th>
+  <th><@message "countries"/></th>
 </#macro>
 <!-- Individual study list: data -->
 <#macro individualStudyTDs study>
