@@ -94,7 +94,7 @@
 
                 </div>
 
-                <p class="card-text">
+                <p class="card-text marked">
                   <#if network.description??>
                     ${network.description[.lang]!""}
                   </#if>

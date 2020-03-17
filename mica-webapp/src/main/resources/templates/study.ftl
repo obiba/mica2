@@ -101,7 +101,7 @@
 
                 </div>
 
-                <p class="card-text">
+                <p class="card-text marked">
                   <#if study.objectives??>
                     ${study.objectives[.lang]!""}
                   </#if>
