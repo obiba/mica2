@@ -82,7 +82,7 @@
                   </div>
                 </div>
 
-                <p class="card-text">
+                <p class="card-text marked">
                   <#if dataset.description?? && dataset.description[.lang]??>
                       ${dataset.description[.lang]!""}
                   </#if>
