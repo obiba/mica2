@@ -37,13 +37,13 @@
                     <h3 class="mb-4">${study.name[.lang]!""}</h3>
                   </div>
                 </div>
-                <div class="row mb-4">
+                <div class="row">
                   <div class="col-md-3 col-sm-6 col-12">
                     <#if study.logo??>
                       <img class="img-fluid" style="max-height: 200px" alt="${study.acronym[.lang]!""} logo" src="../ws/study/${study.id}/file/${study.logo.id}/_download"/>
                     <#else >
                       <p class="text-light text-center">
-                        <i class="${studyIcon} fa-5x"></i>
+                        <i class="${studyIcon} fa-4x"></i>
                       </p>
                     </#if>
                   </div>
@@ -101,11 +101,11 @@
 
                 </div>
 
-                <p class="card-text marked">
+                <div class="card-text marked">
                   <#if study.objectives??>
                     ${study.objectives[.lang]!""}
                   </#if>
-                </p>
+                </div>
                   <#if study.model.website??>
                     <blockquote>
                       <@message "visit"/> <a href="${study.model.website}" target="_blank">${study.acronym[.lang]!""}</a>

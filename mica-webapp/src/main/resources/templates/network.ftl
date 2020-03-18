@@ -34,13 +34,13 @@
                     <h3 class="mb-4">${network.name[.lang]!""}</h3>
                   </div>
                 </div>
-                <div class="row mb-4">
+                <div class="row">
                   <div class="col-md-3 col-sm-6 col-12">
                     <#if network.logo??>
                       <img class="img-fluid" style="max-height: 200px" alt="${network.acronym[.lang]!""} logo" src="../ws/network/${network.id}/file/${network.logo.id}/_download"/>
                     <#else >
                       <p class="text-light text-center">
-                        <i class="${networkIcon} fa-5x"></i>
+                        <i class="${networkIcon} fa-4x"></i>
                       </p>
                     </#if>
                   </div>
@@ -94,16 +94,16 @@
 
                 </div>
 
-                <p class="card-text marked">
+                <div class="card-text marked">
                   <#if network.description??>
                     ${network.description[.lang]!""}
                   </#if>
-                </p>
-                  <#if network.model.website??>
-                    <blockquote>
-                      <@message "visit"/> <a href="${network.model.website}" target="_blank" class="card-link">${network.acronym[.lang]!""}</a>
-                    </blockquote>
-                  </#if>
+                </div>
+                <#if network.model.website??>
+                  <blockquote>
+                    <@message "visit"/> <a href="${network.model.website}" target="_blank" class="card-link">${network.acronym[.lang]!""}</a>
+                  </blockquote>
+                </#if>
               </div>
             </div>
           </div>
