@@ -38,13 +38,13 @@
                     <h3 class="mb-4">${dataset.name[.lang]!""}</h3>
                   </div>
                 </div>
-                <div class="row mb-4">
+                <div class="row">
                   <div class="col-md-3 col-sm-6 col-12">
                     <p class="text-muted text-center">
                       <#if type == "Collected">
-                        <i class="${datasetIcon} fa-5x"></i>
+                        <i class="${datasetIcon} fa-4x"></i>
                       <#else >
-                        <i class="${harmoDatasetIcon} fa-5x"></i>
+                        <i class="${harmoDatasetIcon} fa-4x"></i>
                       </#if>
                     </p>
                   </div>
@@ -82,11 +82,11 @@
                   </div>
                 </div>
 
-                <p class="card-text marked">
+                <div class="card-text marked">
                   <#if dataset.description?? && dataset.description[.lang]??>
                       ${dataset.description[.lang]!""}
                   </#if>
-                </p>
+                </div>
               </div>
                 <#if study??>
                   <div class="card-footer">
