@@ -70,7 +70,7 @@ public class PublishedStudiesSearchResource {
   @Timed
   public JoinQueryResultDto rqlQuery(@QueryParam("query") String query) throws IOException {
     String queryStr = query;
-    if (Strings.isNullOrEmpty(queryStr)) queryStr = "study(exists(Mica_study.id))";
+    if (Strings.isNullOrEmpty(queryStr)) queryStr = "study(limit(0,0)),network(limit(0,0))";
     return joinQueryExecutor.query(QueryType.STUDY, searcher.makeJoinQuery(queryStr));
   }
 
