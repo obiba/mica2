@@ -444,11 +444,15 @@ class MicaQueryExecutor {
         if (tree) {
           switch (display) {
             case DISPLAYS.COVERAGE:
-              const coverageTree = entityQuery.prepareForCoverage(tree, bucket);
-              if (!coverageTree) {
-                this.__ignoreCoverage(tree, type, display, payload.noUrlUpdate, bucket);
+              if (EVENTS.QUERY_TYPE_COVERAGE === eventId) {
+                this.__executeCoverage(tree, type, display, payload.noUrlUpdate, bucket);
               } else {
-                this.__executeCoverage(coverageTree, type, display, payload.noUrlUpdate, bucket);
+                const coverageTree = entityQuery.prepareForCoverage(tree, bucket);
+                if (!coverageTree) {
+                  this.__ignoreCoverage(tree, type, display, payload.noUrlUpdate, bucket);
+                } else {
+                  this.__executeCoverage(coverageTree, type, display, payload.noUrlUpdate, bucket);
+                }
               }
               break;
 
