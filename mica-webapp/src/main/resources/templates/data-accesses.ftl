@@ -64,7 +64,7 @@
                     <tr>
                       <th>ID</th>
                       <#if isAdministrator || isDAO>
-                        <th>Applicant</th>
+                        <th><@message "applicant"/></th>
                       </#if>
                       <th><@message "title"/></th>
                       <th><@message "last-update"/></th>
@@ -187,10 +187,14 @@
 <!-- page script -->
 <script>
     $(function () {
+      let options = dataTablesDefaultOpts;
       <#if users??>
-        $("#dars").DataTable(dataTablesDefaultOpts);
+        options.order = [[3, 'desc']];
+        $("#dars").DataTable(options);
       <#else>
-        $("#dars").DataTable(dataTablesSortSearchOpts);
+        options = dataTablesSortSearchOpts;
+        options.order = [[2, 'desc']];
+        $("#dars").DataTable();
       </#if>
       $("#users").DataTable(dataTablesDefaultOpts);
     });
