@@ -61,7 +61,7 @@
     <metrics-spring.version>3.0.0</metrics-spring.version>
     <mongodb-driver.version>3.9.1</mongodb-driver.version>
     <nosqlunit.version>0.7.9</nosqlunit.version>
-    <obiba-commons.version>1.13-SNAPSHOT</obiba-commons.version>
+    <obiba-commons.version>1.13.4</obiba-commons.version>
     <opal.version>2.13.1</opal.version>
     <opencsv.version>2.3</opencsv.version>
     <poi.version>3.9</poi.version>
