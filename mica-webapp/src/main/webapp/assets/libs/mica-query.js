@@ -63,6 +63,7 @@ const EVENTS = {
   QUERY_TYPE_UPDATE: 'query-type-update',
   QUERY_TYPE_UPDATES_SELECTION: 'query-type-updates-selection',
   QUERY_TYPE_DELETE: 'query-type-delete',
+  QUERY_TYPE_DELETE_ARGS: 'query-type-delete-args',
   QUERY_TYPE_PAGINATE: 'query-type-paginate',
   QUERY_TYPE_COVERAGE: 'query-type-coverage',
   LOCATION_CHANGED: 'location-changed'
@@ -146,7 +147,18 @@ class EntityQuery {
       ).pop();
   }
 
-  prepareForSelection(tree, type, bucket) {
+  /**
+   * Final preparation by making sure the limit, size and especially the type related target query is added
+   *
+   * @param type
+   * @param tree
+   */
+  prepareForQuery(type, tree) {
+    this.__ensureLimitFieldsSizeQueries(tree, this.__ensureDestinationTargetQuery(type, tree));
+    return tree;
+  }
+
+  prepareForSelection(tree, type) {
     let theTree = tree || new RQL.QueryTree(null, QueryTreeOptions);
     let targetQuery = theTree.search((name) => name === this._target);
 
@@ -155,15 +167,10 @@ class EntityQuery {
       theTree.addQuery(null, targetQuery);
     }
 
-    if (bucket) {
-      return this.prepareForCoverage(tree, bucket);
-    }
-
-    this.__ensureLimitFieldsSizeQueries(theTree, this.__ensureDestinationTargetQuery(type, theTree));
     return theTree;
   }
 
-  prepareForUpdate(tree, type, target, updateQuery, bucket) {
+  prepareForUpdate(tree, type, target, updateQuery) {
     let theTree = tree || new RQL.QueryTree(null, QueryTreeOptions);
     let targetQuery = theTree.search((name) => name === target);
 
@@ -181,11 +188,6 @@ class EntityQuery {
       query.args = updateQuery.args;
     }
 
-    if (bucket) {
-      return this.prepareForCoverage(tree, bucket)
-    }
-
-    this.__ensureLimitFieldsSizeQueries(theTree, this.__ensureDestinationTargetQuery(type, theTree));
     return theTree;
   }
 
@@ -197,7 +199,7 @@ class EntityQuery {
    * @param type
    * @param updateInfo - [{target, query, operator}]
    */
-  prepareForUpdatesAndSelection(tree, type, updateInfo, bucket) {
+  prepareForUpdatesAndSelection(tree, type, updateInfo) {
     let theTree = tree || new RQL.QueryTree(null, QueryTreeOptions);
 
     (updateInfo || []).forEach(info => {
@@ -234,15 +236,10 @@ class EntityQuery {
       }
     });
 
-    if (bucket) {
-      return this.prepareForCoverage(tree, bucket);
-    }
-
-    this.__ensureLimitFieldsSizeQueries(theTree, this.__ensureDestinationTargetQuery(type, theTree));
     return theTree;
   }
 
-  prepareForDelete(tree, type, target, deleteQuery, bucket) {
+  prepareForDelete(tree, type, target, deleteQuery, exact) {
     let theTree = tree || new RQL.QueryTree(null, QueryTreeOptions);
     let targetQuery = theTree.search((name) => name === target);
 
@@ -257,13 +254,47 @@ class EntityQuery {
       theTree.deleteQuery(query);
     }
 
-    if (bucket) {
-      return this.prepareForCoverage(tree, bucket);
-    }
-
-    this.__ensureLimitFieldsSizeQueries(theTree, this.__ensureDestinationTargetQuery(type, theTree));
     return theTree;
   }
+
+  // prepareForDeleteArgs(tree, type, target, deleteQuery, args) {
+  //   let theTree = tree || new RQL.QueryTree(null, QueryTreeOptions);
+  //   let targetQuery = theTree.search((name) => name === target);
+  //
+  //   if (!targetQuery) {
+  //     console.debug(`Cannot delete query, target ${target} does not exits.`);
+  //     return;
+  //   }
+  //
+  //   // Finds by criterion name (vocabulary)
+  //   let query = this.__findQuery(theTree, deleteQuery);
+  //
+  //   if (query && args) {
+  //     const argsIndex =  query.name === 'match' ? 2 : 1;
+  //     if (argsIndex > -1) {
+  //       let targetArgs = query.args[argsIndex];
+  //       if (targetArgs) {
+  //         if (Array.isArray(targetArgs)) {
+  //           const remainingArgs = targetArgs.filter(arg => args.indexOf(arg) === -1);
+  //           if (remainingArgs.length < 1) {
+  //             query.args.splice(argsIndex, 1);
+  //           } else {
+  //             query.args[argsIndex] = remainingArgs;
+  //           }
+  //         } else if (args.indexOf(targetArgs) > -1) {
+  //           query.args.splice(argsIndex, 1);
+  //         }
+  //       }
+  //     }
+  //
+  //     if (query.args.length === 1) {
+  //       // there are no value args
+  //       theTree.deleteQuery(query);
+  //     }
+  //   }
+  //
+  //   return theTree;
+  // }
 
   prepareForPaginate(tree, type, target, from, size) {
     let limitQuery = tree.search((name, args, parent) => 'limit' === name && target === parent.name);
@@ -426,23 +457,29 @@ class MicaQueryExecutor {
       case TYPES.NETWORKS:
         const entityQuery = this._query[type];
         const display = this.__ensureValidDisplay(urlParts.hash, payload.display);
-        const forCoverage = DISPLAYS.COVERAGE === display;
         const bucket = this.__getBucketType(urlParts.searchParams, display);
         let tree = this.getTree(urlParts);
 
         switch (eventId) {
           case EVENTS.QUERY_TYPE_SELECTION:
-            tree = entityQuery.prepareForSelection(tree, type, forCoverage ? bucket : null);
+            tree = entityQuery.prepareForSelection(tree, type);
             break;
           case EVENTS.QUERY_TYPE_UPDATE:
-            tree = entityQuery.prepareForUpdate(tree, type, payload.target, payload.query, forCoverage ? bucket : null);
+            tree = entityQuery.prepareForUpdate(tree, type, payload.target, payload.query);
             break;
           case EVENTS.QUERY_TYPE_UPDATES_SELECTION:
-            tree = entityQuery.prepareForUpdatesAndSelection(tree, type, payload.updates, forCoverage ? bucket : null);
+            tree = entityQuery.prepareForUpdatesAndSelection(tree, type, payload.updates);
             break;
           case EVENTS.QUERY_TYPE_DELETE:
-            tree = entityQuery.prepareForDelete(tree, type, payload.target, payload.query, forCoverage ? bucket : null);
+            tree = entityQuery.prepareForDelete(tree, type, payload.target, payload.query);
             break;
+          // case EVENTS.QUERY_TYPE_DELETE_ARGS:
+          //   let args = payload.args;
+          //   if (args) {
+          //     args = Array.isArray(args) ? args : [args];
+          //     tree = entityQuery.prepareForDeleteArgs(tree, type, payload.target, payload.query, args);
+          //   }
+          //   break;
           case EVENTS.QUERY_TYPE_PAGINATE:
             tree = entityQuery.prepareForPaginate(tree, type, payload.target, payload.from, payload.size);
             break;
@@ -454,15 +491,18 @@ class MicaQueryExecutor {
         if (tree) {
           switch (display) {
             case DISPLAYS.COVERAGE:
-              this.__executeCoverage(tree, type, display, payload.noUrlUpdate, bucket);
+              const coverageTree = entityQuery.prepareForCoverage(tree, bucket);
+              if (!coverageTree) {
+                this.__ignoreCoverage(tree, type, display, payload.noUrlUpdate, bucket);
+              } else {
+                this.__executeCoverage(coverageTree, type, display, payload.noUrlUpdate, bucket);
+              }
               break;
 
             case DISPLAYS.LISTS:
-              this.__executeQuery(tree, type, display, payload.noUrlUpdate);
+              this.__executeQuery(entityQuery.prepareForQuery(type, tree), type, display, payload.noUrlUpdate);
               break;
           }
-
-          break;
         }
     }
   }
@@ -514,6 +554,23 @@ class MicaQueryExecutor {
 
         EventBus.$emit(`${type}-results`, {response: response.data, from: limitQuery.args[0], size: limitQuery.args[1]});
       });
+  }
+
+  /**
+   * Ignores coverage as a result of a query that does not yield any 'coverage query'.
+   *
+   * @param tree
+   * @param type
+   * @param display
+   * @param noUrlUpdate
+   * @param bucket
+   * @private
+   */
+  __ignoreCoverage(tree, type, display, noUrlUpdate, bucket) {
+    const aggQuery = tree.search((name) => AGGREGATE === name);
+    if (aggQuery) tree.deleteQuery(aggQuery);
+    this.__updateLocation(type, display, tree, noUrlUpdate, bucket);
+    EventBus.$emit(`coverage-results`, {bucket, response: []});
   }
 
   /**
@@ -605,6 +662,11 @@ class MicaQueryExecutor {
     console.log(`__onQueryTypeSelection ${payload}`);
     this.__prepareAndExecuteQuery(EVENTS.QUERY_TYPE_DELETE, payload);
   }
+  //
+  // __onQueryTypeDeleteArgs(payload) {
+  //   console.log(`__onQueryTypeSelection ${payload}`);
+  //   this.__prepareAndExecuteQuery(EVENTS.QUERY_TYPE_DELETE_ARGS, payload);
+  // }
 
   __onQueryTypePaginate(payload) {
     console.log(`__onQueryTypeSelection ${payload}`);
@@ -621,6 +683,7 @@ class MicaQueryExecutor {
     this._eventBus.register(EVENTS.QUERY_TYPE_UPDATE, this.__onQueryTypeUpdate.bind(this));
     this._eventBus.register(EVENTS.QUERY_TYPE_UPDATES_SELECTION, this.__onQueryTypeUpdatesSelection.bind(this));
     this._eventBus.register(EVENTS.QUERY_TYPE_DELETE, this.__onQueryTypeDelete.bind(this));
+    // this._eventBus.register(EVENTS.QUERY_TYPE_DELETE_ARGS, this.__onQueryTypeDeleteArgs.bind(this));
     this._eventBus.register(EVENTS.QUERY_TYPE_PAGINATE, this.__onQueryTypePaginate.bind(this));
     this._eventBus.register(EVENTS.QUERY_TYPE_COVERAGE, this.__onQueryTypeCoverage.bind(this));
     window.addEventListener('hashchange', this.__onHashChanged.bind(this));
@@ -630,8 +693,10 @@ class MicaQueryExecutor {
   destroy() {
     this._eventBus.unregister(EVENTS.QUERY_TYPE_SELECTION, this.__onQueryTypeSelection);
     this._eventBus.unregister(EVENTS.QUERY_TYPE_UPDATE, this.__onQueryTypeUpdate);
+    this._eventBus.unregister(EVENTS.QUERY_TYPE_UPDATES_SELECTION, this.__onQueryTypeUpdatesSelection);
     this._eventBus.unregister(EVENTS.QUERY_TYPE_DELETE, this.__onQueryTypeDelete);
-    this._eventBus.unregister(EVENTS.QUERY_TYPE_DELETE, this.__onQueryTypePaginate);
+    // this._eventBus.unregister(EVENTS.QUERY_TYPE_DELETE_ARGS, this.__onQueryTypeDeleteArgs);
+    this._eventBus.unregister(EVENTS.QUERY_TYPE_COVERAGE, this.__onQueryTypeCoverage);
   }
 }
 
