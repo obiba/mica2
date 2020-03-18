@@ -28,7 +28,15 @@
     "no-network-found": '<@message "no-network-found"/>',
     "coverage-buckets-study": '<@message "coverage-buckets-study"/>',
     "coverage-buckets-dce": '<@message "coverage-buckets-dce"/>',
-    "coverage-buckets-dataset": '<@message "coverage-buckets-dataset"/>'
+    "coverage-buckets-dataset": '<@message "coverage-buckets-dataset"/>',
+    "taxonomy": '<@message "taxonomy"/>',
+    "select-all": '<@message "select-all"/>',
+    "clear-selection": '<@message "clear-selection"/>',
+    "search.filter": '<@message "search.filter"/>',
+    "search.in": '<@message "search.in"/>',
+    "search.out": '<@message "search.out"/>',
+    "search.none": '<@message "search.none"/>',
+    "search.any": '<@message "search.any"/>'
   };
   Mica.icons = {
     variable: '${variableIcon}',
