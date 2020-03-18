@@ -43,7 +43,7 @@
           <ul v-for="name in criteriaMenu.order"
               class="nav nav-pills nav-sidebar flex-column" data-widget="treeview"
               role="menu" data-accordion="false">
-            <li class="nav-item has-treeview">
+            <li class="nav-item has-treeview menu-open">
               <a href="#" class="nav-link">
                 <i class="nav-icon" v-bind:class="criteriaMenu.items[name].icon"></i>
                 <p>
@@ -131,12 +131,12 @@
             <div class="card-header d-flex p-0">
               <h3 class="card-title p-3"><@message "results"/></h3>
               <ul id="search-tabs" class="nav nav-pills ml-auto p-2">
-                <li class="nav-item"><a id="lists-tab" class="nav-link active" href="#tab_lists" data-toggle="tab" @click="onSelectSearch()"><@message "lists"/></a></li>
                 <#if config.studyDatasetEnabled || config.harmonizationDatasetEnabled>
+                  <li class="nav-item"><a id="lists-tab" class="nav-link active" href="#tab_lists" data-toggle="tab" @click="onSelectSearch()"><@message "lists"/></a></li>
                   <li class="nav-item"><a id="coverage-tab" class="nav-link" href="#tab_coverage" data-toggle="tab" @click="onSelectCoverage()"><@message "coverage"/></a></li>
                 </#if>
                 <#if config.networkEnabled && !config.singleStudyEnabled>
-                  <li class="nav-item"><a id="graphics-tab" class="nav-link" href="#tab_graphics" data-toggle="tab" @click="onSelectGraphics()"><@message "graphics"/></a></li>
+                  <!--li class="nav-item"><a id="graphics-tab" class="nav-link" href="#tab_graphics" data-toggle="tab" @click="onSelectGraphics()"><@message "graphics"/></a></li-->
                 </#if>
               </ul>
             </div><!-- /.card-header -->
