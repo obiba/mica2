@@ -28,7 +28,12 @@ const EventBus = new Vue({
 // global translate filter for use in imported components
 Vue.filter("translate", (key) => {
   let value = Mica.tr[key];
-  return value !== undefined || value !== null ? value : key;
+  return typeof value === "string" ? value : key;
+});
+
+Vue.filter("localize-string", (input) => {
+  if (typeof input === "string") return input;
+  return StringLocalizer.localize(input);
 });
 
 //
@@ -199,8 +204,13 @@ const DataTableDefaults = {
 class StringLocalizer {
   static localize(entries) {
     const locale = Mica.locale;
-    const result = (Array.isArray(entries) ? entries : [entries]).filter((entry) => locale === entry.lang).pop();
-    return result ? result.value : "";
+    const result = (Array.isArray(entries) ? entries : [entries]).filter((entry) => locale === entry.lang || locale === entry.locale).pop();
+
+    if (result) {
+      let value = result.value ? result.value : result.text;
+      return value ? value : "";
+    }
+    return "";
   }
 }
 
