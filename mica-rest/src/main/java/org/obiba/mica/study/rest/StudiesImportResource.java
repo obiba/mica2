@@ -38,8 +38,10 @@ import org.apache.http.client.utils.URIBuilder;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.obiba.mica.NoSuchEntityException;
-import org.obiba.mica.study.domain.BaseStudy;
-import org.obiba.mica.study.service.StudyService;
+import org.obiba.mica.study.domain.HarmonizationStudy;
+import org.obiba.mica.study.domain.Study;
+import org.obiba.mica.study.service.HarmonizationStudyService;
+import org.obiba.mica.study.service.IndividualStudyService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpMethod;
@@ -54,11 +56,16 @@ public class StudiesImportResource {
 	private static final String PWORD_PARAM = "password";
 	private static final String TYPE = "type";
 	private static final String IDS = "ids";
+	private static final String HARMONIZATION_STUDY = "harmonization-study";
+	private static final String INDIVIDUAL_STUDY = "individual-study";
 	
 	private static final Logger log = LoggerFactory.getLogger(StudiesImportResource.class);
 	
 	@Inject
-	private StudyService studyService;
+	private IndividualStudyService individualStudyService;
+
+	@Inject
+	private HarmonizationStudyService harmonizationStudyService;
 
 	@GET
 	@Path("/studies/import/_preview")
@@ -96,21 +103,28 @@ public class StudiesImportResource {
 	@GET
 	@Path("/studies/import/_summary")
 	@Produces({"application/xml", "application/json", "text/plain", "text/html"})
-	public Response checkIfAlreadyExistsLocally(@QueryParam(IDS) List<String> ids) {
+	public Response checkIfAlreadyExistsLocally(@QueryParam(IDS) List<String> ids, @QueryParam(TYPE) String type) {
 		
 		log.info("checkIfAlreadyExistsLocally ids: {}", ids);
 		
 		List<String> existingIds = new ArrayList<>();
 		
-		existingIds.add("action");
-		
 		for (String id : ids) {
 
 			try {
 				
-				BaseStudy baseStudy = studyService.findStudy(id);
-				
-				existingIds.add( baseStudy.getId());
+				if (type.equals(INDIVIDUAL_STUDY)) {
+					
+					Study study = individualStudyService.findStudy(id);
+					
+					existingIds.add( study.getId());
+					
+				} else if (type.equals(HARMONIZATION_STUDY)) {
+					
+					HarmonizationStudy study = harmonizationStudyService.findStudy(id);
+					
+					existingIds.add( study.getId());
+				}
 				
 			} catch(NoSuchEntityException ex) {
 				//ignore if study doesn't exist locally.

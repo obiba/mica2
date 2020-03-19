@@ -243,8 +243,6 @@ mica.study
       $scope.displayBodyIndexOne = true;
       $scope.displayBodyIndexTwo = false;
       $scope.displayBodyIndexThree = false;
-      
-      var listIds = [];
 
       //NEXT
       $scope.next = function(importModel, path, isDisplayedIndexOne) {
@@ -298,7 +296,8 @@ mica.study
         	$http({
                 url: 'ws/draft/studies/import/_summary',
                 method: 'GET',
-                params: {ids: studiesToCheck}
+                params: {ids: studiesToCheck, 
+                		 type: path.indexOf('harmonization') > -1 ? 'harmonization-study' : 'individual-study'}
 
               }).then(function(response) {
         		
@@ -395,7 +394,7 @@ mica.study
       //FINISH
       $scope.finish = function() {
         console.log('[FINISH]');
-        
+        /*
         for (var i = 0; i < $scope.studiesToImport.length; i++) {	
             if ($scope.studiesToImport[i].checked){
             	listIds.push( $scope.studiesToImport[i].id );
@@ -403,7 +402,7 @@ mica.study
         }
 
         console.log('listIds = ' + listIds);
-
+         */
         //var endpoint = importModel.type.indexOf('harmonization') > -1 ? '/harmonization-studies/_import' : '/individual-studies/_import';
 
         //listIds = [];
