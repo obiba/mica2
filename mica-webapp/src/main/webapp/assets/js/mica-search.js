@@ -248,7 +248,6 @@ new Vue({
       message: '',
       selectedTaxonomy: null,
       selectedTarget: null,
-      selectedQuery: null,
       queryType: 'variables-list',
       lastList: '',
       queryExecutor: new MicaQueryExecutor(EventBus, DataTableDefaults.pageLength),
@@ -285,7 +284,6 @@ new Vue({
       this.selectedTaxonomy = this.taxonomies[payload.taxonomyName];
       this.selectedTarget = payload.target;
 
-      this.selectedQuery = this.queries[this.selectedTarget];
       this.message = '[' + payload.taxonomyName + '] ' + this.selectedTaxonomy.title[0].text + ': ';
       this.message = this.message + this.selectedTaxonomy.vocabularies.map(voc => voc.title[0].text).join(', ');
     },
@@ -318,6 +316,15 @@ new Vue({
     onQueryRemove(payload) {
       console.log('query-builder update', payload);
       EventBus.$emit(EVENTS.QUERY_TYPE_DELETE, payload);
+    }
+  },
+  computed: {
+    selectedQuery() {
+      if (this.selectedTarget) {
+        return this.queries[this.selectedTarget];
+      }
+      
+      return undefined;
     }
   },
   beforeMount() {
