@@ -59,7 +59,7 @@ public class AuthConfiguration {
   public String getUserAccountUrl() {
     String url = getPublicUrl();
     if (!url.endsWith("/")) url = url + "/";
-    url = url + "#/profile";
+    url = url + "/profile";
     return url;
   }
 
