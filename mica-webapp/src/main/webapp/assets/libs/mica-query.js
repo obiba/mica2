@@ -146,6 +146,43 @@ class EntityQuery {
       ).pop();
   }
 
+  static isOpalTaxonomy(args) {
+    return args.some(arg => typeof arg === 'string' && arg.search(/Mlstr/) > -1);
+  }
+
+  __isOpalTaxonomy(args) {
+    return EntityQuery.isOpalTaxonomy(args);
+  }
+
+  __reduce(parent, query) {
+    if (parent.name === 'or') {
+      let grandparent = parent.parent;
+      var parentIndex = grandparent.args.indexOf(parent);
+      grandparent.args[parentIndex] = query;
+      if (grandparent.name !== TARGETS.VARIABLE) {
+        this.__reduce(grandparent, query);
+      }
+    }
+    else if (query.name !== TARGETS.VARIABLE && parent.name === 'and') {
+      // Reduce until parent is Variable node or another AND node
+      this.__reduce(parent.parent, parent);
+    }
+  }
+
+  /**
+   * @param tree
+   * @param updates
+   * @returns null or the query to reduce to
+   */
+  __findQueryToReduceTo(tree, updates) {
+    const update = updates.filter(update => "reduceKey" in update).pop();
+    if (update) {
+      return tree.search((name, args) => args.indexOf(update.reduceKey) > -1);
+    }
+
+    return null;
+  }
+
   /**
    * Final preparation by making sure the limit, size and especially the type related target query is added
    *
@@ -196,14 +233,15 @@ class EntityQuery {
    *
    * @param tree
    * @param type
-   * @param updateInfo - [{target, query, operator}]
+   * @param updates - [{target, query, operator}]
    */
-  prepareForUpdatesAndSelection(tree, type, updateInfo) {
+  prepareForUpdatesAndSelection(tree, type, updates) {
     let theTree = tree || new RQL.QueryTree(null, QueryTreeOptions);
 
-    (updateInfo || []).forEach(info => {
+    (updates || []).forEach(info => {
       if (info.target && info.query) {
-        const operator = {and: 'and', or: 'or'}[info.operator] || 'and';
+        const operator = {and: 'and', or: 'or'}[info.operator]
+          || this.__isOpalTaxonomy(info.query.args) ? 'or' : 'and';
 
         let targetQuery = theTree.search((name) => name === info.target);
         if (!targetQuery) {
@@ -220,7 +258,7 @@ class EntityQuery {
           } else {
             let opOrCriteriaChild = this.__getOpOrCriteriaChild(theTree, targetQuery);
             if (opOrCriteriaChild) {
-              // there is a an operator or criteria child, use the proposed operator and modify theTree
+              // there is an operator or criteria child, use the proposed operator and modify theTree
               const operatorQuery = new RQL.Query(operator);
               theTree.addQuery(targetQuery, operatorQuery);
               theTree.deleteQuery(opOrCriteriaChild);
@@ -234,6 +272,12 @@ class EntityQuery {
         }
       }
     });
+
+    // Weed out irrelevant queries once the tree is updated
+    const queryToReduceTo = this.__findQueryToReduceTo(tree, updates);
+    if (queryToReduceTo) {
+      this.__reduce(queryToReduceTo.parent, queryToReduceTo);
+    }
 
     return theTree;
   }
@@ -271,9 +315,7 @@ class EntityQuery {
       let variableQuery = tree.search(name => TARGETS.VARIABLE === name);
       if (variableQuery) {
         // TODO: should the coverage be limited to MLSTR taxonomies?
-        const coveragePossible = tree.search((name, args) => {
-          return args.some(arg => typeof arg === 'string' && arg.search(/Mlstr/) > -1)
-        });
+        const coveragePossible = tree.search((name, args) => this.__isOpalTaxonomy(args));
 
         if (coveragePossible) {
           // aggregation
@@ -445,6 +487,7 @@ class MicaQueryExecutor {
           switch (display) {
             case DISPLAYS.COVERAGE:
               if (EVENTS.QUERY_TYPE_COVERAGE === eventId) {
+                // get coverage from the current queries in the URL
                 this.__executeCoverage(tree, type, display, payload.noUrlUpdate, bucket);
               } else {
                 const coverageTree = entityQuery.prepareForCoverage(tree, bucket);
