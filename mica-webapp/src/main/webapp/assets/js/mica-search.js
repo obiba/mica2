@@ -311,7 +311,7 @@ new Vue({
     },
     onQueryUpdate(payload) {
       console.log('query-builder update', payload);
-      EventBus.$emit(EVENTS.QUERY_TYPE_UPDATE, payload);
+      EventBus.$emit(EVENTS.QUERY_TYPE_UPDATES_SELECTION, {updates: [payload]});
     },
     onQueryRemove(payload) {
       console.log('query-builder update', payload);
@@ -323,7 +323,7 @@ new Vue({
       if (this.selectedTarget) {
         return this.queries[this.selectedTarget];
       }
-      
+
       return undefined;
     }
   },
@@ -365,7 +365,7 @@ new Vue({
           this.refreshQueries();
           return this.taxonomies;
         }));
-      });  
+      });
     this.onExecuteQuery();
   },
   beforeDestory() {
