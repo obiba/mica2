@@ -49,10 +49,16 @@
           </div>
           <div>
             <dl>
-              <dt>custom.message</dt>
-              <dd><@message "custom.message"/></dd>
-              <dt>search.query</dt>
-              <dd><@message "search.query"/></dd>
+              <dt><@message "search.query"/></dt>
+              <dd>
+                <#if query??>
+                  <ul>
+                    <#list query?keys as key>
+                      <li>${key} = ${query[key]}</li>
+                    </#list>
+                  </ul>
+                </#if>
+              </dd>
               <dt>study_taxonomy.vocabulary.methods-design.term.cross_sectional.title</dt>
               <dd>
                 <#assign code="study_taxonomy.vocabulary.methods-design.term." + "cross_sectional" + ".title"/>
