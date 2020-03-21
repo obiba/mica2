@@ -555,10 +555,14 @@
       "include-operations": "Include operation(s):",
       "update-operations": "Update operation(s):",
       "finish": "Finish",
+      "close": "Close",
+      "cancel": "Cancel",
       "previous": "< Previous",
       "next": "Next >",
       "remove": "Remove from the list",
-      "action": "Action"
+      "action": "Action",
+      "success": "The selected studies were imported successfully.",
+      "problem": "Problems occurred when importing selected studies."
     },
     "access": {
       "label": "Access",

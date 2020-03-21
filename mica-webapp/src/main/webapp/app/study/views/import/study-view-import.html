@@ -21,17 +21,17 @@
             </h3>
           </div>
           
-          <!-- 1 -Connections params -->
+          <!-- 1 - Connections params -->
           <div id="myDivBodyIndexOne" class="modal-body" ng-show="displayBodyIndexOne">
             <h4><span translate>study.import.sub-title</span></h4><br>
             <label class="control-label ng-binding"><span translate>study.import.address</span></label>
-            <input ng-init="importModel.url = 'https://recap-preterm.inesctec.pt/pub'" type="url" name="address" ng-model="importModel.url" class="form-control ng-pristine ng-valid ng-scope ng-empty ng-touched" required>
+            <input ng-init="importVO.url = 'https://recap-preterm.inesctec.pt/pub'" type="url" name="address" ng-model="importVO.url" class="form-control ng-pristine ng-valid ng-scope ng-empty ng-touched" required>
             <div class="help-block"><span translate>study.import.address-help</span></div>
             <label class="control-label ng-binding"><span translate>study.import.user</span></label>
-            <input ng-init="importModel.username = 'administrator'" type="text" name="user" ng-model="importModel.username" class="form-control ng-pristine ng-valid ng-scope ng-empty ng-touched" required>
+            <input ng-init="importVO.username = 'administrator'" type="text" name="user" ng-model="importVO.username" class="form-control ng-pristine ng-valid ng-scope ng-empty ng-touched" required>
             <div class="help-block"><span translate>study.import.user-help</span></div>
             <label class="control-label ng-binding"><span translate>study.import.password</span></label>
-            <input ng-init="importModel.password = 'correctduckpretermsubject'" type="password" name="password" ng-model="importModel.password" class="form-control ng-pristine ng-valid ng-scope ng-empty ng-touched" required><br>
+            <input ng-init="importVO.password = 'correctduckpretermsubject'" type="password" name="password" ng-model="importVO.password" class="form-control ng-pristine ng-valid ng-scope ng-empty ng-touched" required><br>
           </div>
           
           <!-- 2 - Remote studies -->
@@ -46,7 +46,7 @@
       		    </span>
       	      </div> 
       		  <div class="col-xs-8">
-         	   	<dir-pagination-controls class="pull-right" pagination-id="myPaginationId" on-page-change="pageChanged(newPageNumber, oldPageNumber)" />
+         	   	<dir-pagination-controls class="pull-right" pagination-id="myPaginationId" on-page-change="pageChanged(newPageNumberModal, oldPageNumberModal)" />
       		  </div>
     	    </div>
       		  
@@ -62,34 +62,34 @@
               </tr>
               </thead>
               <tbody id="myTable">
-                <tr dir-paginate="studyModal in studiesToImport | filter:query | itemsPerPage: pageSize" pagination-id="myPaginationId" current-page="currentPage">
+                <tr dir-paginate="studyVO in studiesToImport | filter:query | itemsPerPage: pageSize" pagination-id="myPaginationId" current-page="currentPage">
                   <td>
-                    <input type="checkbox" class="myCheckBox" ng-checked="studyModal.checked" ng-model="studyModal.checked" ng-change="clickCheckbox()"/>&nbsp;
+                    <input type="checkbox" class="myCheckBox" ng-checked="studyVO.checked" ng-model="studyVO.checked" ng-change="clickCheckBox()"/>&nbsp;
                   </td>
                   <td>
                     <ul class="list-unstyled">
-                      <a translate>{{studyModal.id}}</a>
+                      <a translate>{{studyVO.id}}</a>
                     </ul>
                   </td>
                   <td>
                     <ul class="list-unstyled">
-                      <li ng-repeat="acronym in studyModal.acronym">
+                      <li ng-repeat="acronym in studyVO.acronym">
                         <span class="badge">{{acronym.lang}}</span> {{acronym.value}}
                       </li>
                     </ul>
                   </td>
                   <td>
                     <ul class="list-unstyled">
-                      <li ng-repeat="name in studyModal.name">
+                      <li ng-repeat="name in studyVO.name">
                         <span class="badge">{{name.lang}}</span> {{name.value}}
                       </li>
                     </ul>
                   </td>
                   <td>
-                    <div publish-status state="studyModal['obiba.mica.EntityStateDto.studySummaryState']"></div>
+                    <div publish-status state="studyVO['obiba.mica.EntityStateDto.studySummaryState']"></div>
                   </td>
                   <td>
-                    {{'publish.status.' + studyModal['obiba.mica.EntityStateDto.studySummaryState'].revisionStatus | translate}}
+                    {{'publish.status.' + studyVO['obiba.mica.EntityStateDto.studySummaryState'].revisionStatus | translate}}
                   </td>
                 </tr>
               </tbody>
@@ -99,6 +99,7 @@
           <!-- 3 - Operations Summary -->
           <div id="myDivBodyIndexThree" class="modal-body" ng-show="displayBodyIndexThree">
             <h4><span translate>study.import.summary</span></h4><br>
+            
             <!-- 3.1 - Include Operations -->
             <label class="control-label ng-binding"><span translate>study.import.include-operations</span></label><br>
             <table class="table table-bordered table-striped">
@@ -111,28 +112,28 @@
                 </tr>
               </thead>
               <tbody id="myTableSummaryInclude">
-                <tr ng-repeat="studyModal in studiesToInclude">
+                <tr ng-repeat="studyToInclude in studiesToInclude">
                   <td>
                     <ul class="list-unstyled">
-                      <a translate>{{studyModal.id}}</a>
+                      <a translate>{{studyToInclude.id}}</a>
                     </ul>
                   </td>
                   <td>
                     <ul class="list-unstyled">
-                      <li ng-repeat="acronym in studyModal.acronym">
+                      <li ng-repeat="acronym in studyToInclude.acronym">
                         <span class="badge">{{acronym.lang}}</span> {{acronym.value}}
                       </li>
                     </ul>
                   </td>
                   <td>
                     <ul class="list-unstyled">
-                      <li ng-repeat="name in studyModal.name">
+                      <li ng-repeat="name in studyToInclude.name">
                         <span class="badge">{{name.lang}}</span> {{name.value}}
                       </li>
                     </ul>
                   </td>
                   <td>
-                    <a ng-click="removeFromList(studyModal, true)" class="delete" title="{{'study.import.remove' | translate}}" data-toggle="tooltip">
+                    <a ng-click="removeFromList(studyToInclude, true)" class="delete" title="{{'study.import.remove' | translate}}" data-toggle="tooltip">
                       <i class="fa fa-remove"></i>
                     </a>
                   </td>
@@ -151,52 +152,59 @@
                 </tr>
               </thead>
               <tbody id="myTableSummaryUpdate">
-                <tr ng-repeat="studyModal in studiesToUpdate">
+                <tr ng-repeat="studyToUpdate in studiesToUpdate">
                   <td>
                     <ul class="list-unstyled">
-                      <a translate>{{studyModal.id}}</a>
+                      <a translate>{{studyToUpdate.id}}</a>
                     </ul>
                   </td>
                   <td>
                     <ul class="list-unstyled">
-                      <li ng-repeat="acronym in studyModal.acronym">
+                      <li ng-repeat="acronym in studyToUpdate.acronym">
                         <span class="badge">{{acronym.lang}}</span> {{acronym.value}}
                       </li>
                     </ul>
                   </td>
                   <td>
                     <ul class="list-unstyled">
-                      <li ng-repeat="name in studyModal.name">
+                      <li ng-repeat="name in studyToUpdate.name">
                         <span class="badge">{{name.lang}}</span> {{name.value}}
                       </li>
                     </ul>
                   </td>
                   <td>
-                    <a ng-click="removeFromList(studyModal, false)" class="delete" title="{{'study.import.remove' | translate}}" data-toggle="tooltip">
+                    <a ng-click="removeFromList(studyToUpdate, false)" class="delete" title="{{'study.import.remove' | translate}}" data-toggle="tooltip">
                       <i class="fa fa-remove"></i>
                     </a>
                   </td>
                 </tr>
               </tbody>
             </table>
+            
+            <div id="myFooterMessageSuccessfully" ng-show="displayMsgImportedSuccessfully">
+            	<h5><span translate>study.import.success</span></h5><br>
+            </div>
+            <div id="myFooterMessageProblem" ng-show="displayMsgImportedProblem">
+            	<h5><span translate>study.import.problem</span></h5><br>
+            </div>
           </div>
           
           <!-- Footer navigation Buttons -->
           <div class="modal-footer">
-            <button id="myPreviousButton" type="button" class="btn btn-info" aria-hidden="true" ng-click="previous(displayBodyIndexTwo)" ng-disabled="displayBodyIndexOne">
+            <a id="myPreviousButton" type="button" class="btn btn-info" ng-click="previous()" ng-disabled="displayBodyIndexOne" aria-hidden="true">
               <span translate>study.import.previous</span>
-            </button>
-            <button id="myNextButton" type="button" class="btn btn-info" aria-hidden="true" ng-click="next(importModel, path, displayBodyIndexOne)" ng-disabled="(myForm.$invalid && !displayBodyIndexOne) || (!studiesToImport.checked && displayBodyIndexTwo) || displayBodyIndexThree">
+            </a>
+            <a id="myNextButton" type="button" class="btn btn-info" ng-click="next()" ng-disabled="(myForm.$invalid && !displayBodyIndexOne) || (!studiesToImport.checked && displayBodyIndexTwo) || displayBodyIndexThree" aria-hidden="true">
               <span translate>study.import.next</span>
-            </button>
-            <button id="myFinishButton" type="button" class="btn btn-default" aria-hidden="true" ng-click="finish()" ng-disabled="!displayBodyIndexThree">
+            </a>
+            <a id="myFinishButton" type="button" class="btn btn-default" ng-click="finish()" ng-disabled="!displayBodyIndexThree || ( studiesToInclude.length < 1  && studiesToUpdate.length < 1)" aria-hidden="true" >
               <span translate>study.import.finish</span>
-            </button>
-            <button id="myCancelButton" type="button" class="btn btn-default" data-dismiss="modal" aria-hidden="true" ng-click="close()">
-              <span translate>cancel</span>
-            </button>
+            </a>
+            <a id="myCancelButton" type="button" class="btn btn-default" ng-click="cancel()" data-dismiss="modal" aria-hidden="true" >
+              <span translate>study.import.cancel</span>
+            </a>
           </div>
-             
+            
         </form>
       </div>
     </div>

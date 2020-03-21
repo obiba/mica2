@@ -16,10 +16,15 @@ public class TestImportMain {
 		
 		//log.info("Response \"/ws/draft/study-states\" : " +	sir.listRemoteSourceIndividualStudies("https://recap-test.inesctec.pt/pub", "gfcg", "password", "harmonization-study").getEntity());
 		
-		List<String> ids = new ArrayList<String>();
-		ids.add("epibel");
+		List<String> idsToInclude = new ArrayList<>();
+		idsToInclude.add("epice");
 		
 		log.info("Response \"/individual-study/{id}\" : " + 
-				sir.importIndividualStudies("https://recap-test.inesctec.pt/pub", "gfcg", "password", ids).getEntity());
+				sir.includeStudies("https://recap-preterm.inesctec.pt/pub", "administrator", "correctduckpretermsubject", "individual-study", idsToInclude).getEntity());
+
+	
+		List<String> idsToUpdate = new ArrayList<>();
+		idsToUpdate.add("action");
+		
 	}
 }		

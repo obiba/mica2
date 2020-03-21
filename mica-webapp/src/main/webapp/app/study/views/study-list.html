@@ -41,7 +41,7 @@
       </span>
       </div>
       <div class="col-xs-8">
-        <dir-pagination-controls class="pull-right" on-page-change="pageChanged(newPageNumber, oldPageNumber)"></dir-pagination-controls>
+        <dir-pagination-controls class="pull-right" pagination-id="myPaginationList" on-page-change="pageChanged(newPageNumber, oldPageNumber)"></dir-pagination-controls>
       </div>
     </div>
 
@@ -59,7 +59,7 @@
         </thead>
         
         <tbody>
-        <tr dir-paginate="study in documents | itemsPerPage: limit" total-items="totalCount" current-page="pagination.current">
+        <tr dir-paginate="study in documents | itemsPerPage: limit" pagination-id="myPaginationList" total-items="totalCount" current-page="pagination.current">
           <td>
             <a ng-href="{{path}}/{{study.id}}" translate>{{study.id}}</a>
           </td>

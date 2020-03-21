@@ -23,34 +23,50 @@ import java.util.List;
 
 import javax.inject.Inject;
 import javax.net.ssl.HttpsURLConnection;
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.math3.util.Pair;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.obiba.mica.NoSuchEntityException;
+import org.obiba.mica.file.Attachment;
+import org.obiba.mica.study.domain.BaseStudy;
 import org.obiba.mica.study.domain.HarmonizationStudy;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.service.HarmonizationStudyService;
 import org.obiba.mica.study.service.IndividualStudyService;
+import org.obiba.mica.web.model.Dtos;
+import org.obiba.mica.web.model.Mica;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
+import org.springframework.web.client.RestTemplate;
+
+import com.google.common.base.Charsets;
+import com.google.protobuf.ExtensionRegistry;
+import com.googlecode.protobuf.format.JsonFormat;
 
 @Path("/draft")
 @RequiresAuthentication
 public class StudiesImportResource {
 
+	private static final String WS_DRAFT_STUDY_STATES = "/ws/draft/study-states";
+	private static final String WS_DRAFT_HARMONIZATION_STUDY_ID = "/ws/draft/harmonization-study/{id}";
+	private static final String WS_DRAFT_INDIVIDUAL_STUDY_ID = "/ws/draft/individual-study/{id}";
+	
+	private static final String IDS_TO_UPDATE = "idsToUpdate";
+	private static final String IDS_TO_INCLUDE = "idsToInclude";
+	
 	private static final String BASIC_AUTHENTICATION = "Basic ";
 	private static final String USERNAME_PARAM = "username";
 	private static final String PWORD_PARAM = "password";
@@ -66,19 +82,22 @@ public class StudiesImportResource {
 
 	@Inject
 	private HarmonizationStudyService harmonizationStudyService;
+	
+	@Inject
+	private Dtos dtos;
 
 	@GET
 	@Path("/studies/import/_preview")
-	@RequiresPermissions("/draft/individual-study:ADD")
+	@RequiresPermissions( {"/draft/individual-study:ADD", "/draft/harmonization-study:ADD" })
 	@Produces({"application/xml", "application/json", "text/plain", "text/html"})
-	public Response listRemoteSourceIndividualStudies(@QueryParam("url") String url, 
+	public Response listRemoteSourceStudies(@QueryParam("url") String url, 
 			@QueryParam(USERNAME_PARAM) String username, 
 			@QueryParam(PWORD_PARAM) String password, 
 			@QueryParam(TYPE) String type) {
 		
 		try {
 			
-			HttpsURLConnection con = this.prepareConnection(url, username, password, type, "/ws/draft/study-states");
+			HttpsURLConnection con = this.prepareRemoteConnection(url, username, password, type, WS_DRAFT_STUDY_STATES);
 			
 			con.connect();
 
@@ -137,41 +156,53 @@ public class StudiesImportResource {
 	
 		
 	@POST
-	@Path("/individual-studies/_import")
-	@RequiresPermissions("/draft/individual-study:ADD")
-	public Response importIndividualStudies(@QueryParam("url") String url, 
+	@Path("/studies/import/_include")
+	@RequiresPermissions( {"/draft/individual-study:ADD", "/draft/harmonization-study:ADD" })
+	public Response includeStudies(@QueryParam("url") String url, 
 			@QueryParam(USERNAME_PARAM) String username, 
 			@QueryParam(PWORD_PARAM) String password, 
-			@QueryParam(IDS) List<String> ids) {
+			@QueryParam(TYPE) String type,
+			@QueryParam(IDS_TO_INCLUDE) List<String> ids) {
 	
-		log.info("POST importIndividualStudies called: ");
-		log.info("importIndividualStudies ids: {} ", ids);
+		log.info("POST includeStudies. ids = {}", ids);
 		
 		try {
-			
+				
 			for (String id : ids) {
-			
-				HttpsURLConnection con = this.prepareConnection(url, username, password, null, "/ws/draft/individual-study/{id}".replace("{id}", id ));
 				
-				con.connect();
+				StringBuilder content = this.getRemoteContent(url, username, password, type, id);
+				
+				log.info("CONTENT: {}", content);
+				
+				Mica.StudyDto.Builder builder = Mica.StudyDto.newBuilder();
+				 
+				ExtensionRegistry extensionRegistry = ExtensionRegistry.newInstance();
+				extensionRegistry.add(Mica.CollectionStudyDto.type);
+				extensionRegistry.add(Mica.HarmonizationStudyDto.type);
+		      
+				JsonFormat.merge(content, extensionRegistry, builder);
+				
+				if ( type.equals(INDIVIDUAL_STUDY) ) {
+					
+					Study study = (Study)dtos.fromDto( builder);
 
-				int status = con.getResponseCode();
-				
-				log.info("importIndividualStudies RESPONSE CODE: {}", status);
-				
-				Object result = con.getContent();
-				
-				log.info( "{}", result );
-				
-				StringBuilder content = this.getContent(con);
-				
-				log.info("importIndividualStudies CONTENT: {}", content);
-				
-				con.disconnect();				
+					individualStudyService.save(study);
+					
+					log.info("individualStudyService: {}", study);
+					
+				} else if ( type.equals(HARMONIZATION_STUDY) ) {
+					
+					HarmonizationStudy study = (HarmonizationStudy)dtos.fromDto( builder);
+					
+					harmonizationStudyService.save(study);
+					
+					log.info("harmonizationStudyService: {}", study);
+				}				
 			}
 			
 			return Response.ok().build();
-						
+			
+			
 		} catch (URISyntaxException|ProtocolException e) {
 			
 			log.error( Arrays.toString( e.getStackTrace()) );
@@ -186,19 +217,66 @@ public class StudiesImportResource {
 		}
 	}
 	
-	@POST
-	@Path("/harmonization-studies/_import")
-	@RequiresPermissions("/draft/harmonization-study:ADD")
-	public Response importHarmonizationStudies(@Context HttpServletRequest request) {
+	@PUT
+	@Path("/studies/import/_update")
+	@RequiresPermissions( {"/draft/individual-study:ADD", "/draft/harmonization-study:ADD" })
+	public Response updateStudies(@QueryParam("url") String url, 
+			@QueryParam(USERNAME_PARAM) String username, 
+			@QueryParam(PWORD_PARAM) String password, 
+			@QueryParam(TYPE) String type,
+			@QueryParam(IDS_TO_UPDATE) List<String> ids) {
+	
+		log.info("POST updateStudies. ids = {}", ids);
 		
-		log.info("POST importHarmonizationStudies called: {} ",  request);
+		try {
+				
+			for (String id : ids) {
+				
+				StringBuilder content = this.getRemoteContent(url, username, password, type, id);
+				
+				log.info("CONTENT: {}", content);
+			}
+			
+			return Response.ok().build();
+			
+			
+		} catch (URISyntaxException|ProtocolException e) {
+			
+			log.error( Arrays.toString( e.getStackTrace()) );
+			
+			return Response.status(HttpStatus.SC_BAD_REQUEST).build();
+			
+		} catch (IOException e) {
+			
+			log.error( Arrays.toString( e.getStackTrace()) );
+			
+			return Response.status(HttpStatus.SC_NOT_FOUND).build();
+		}
+	}
 
-	    return Response.ok().build();	
+	
+	private StringBuilder getRemoteContent(String url, String username, String password, String type, String id)
+			throws IOException, URISyntaxException {
+		
+		HttpsURLConnection con = this.prepareRemoteConnection(url, username, password, null, 
+				(type.equals(INDIVIDUAL_STUDY) ? WS_DRAFT_INDIVIDUAL_STUDY_ID : WS_DRAFT_HARMONIZATION_STUDY_ID).replace("{id}", id ));
+		
+		con.connect();
+
+		int status = con.getResponseCode();
+		
+		log.info("RESPONSE CODE: {}", status);
+		
+		StringBuilder content = this.getContent(con);
+		
+		con.disconnect();
+		
+		return content;
 	}
 	
-	
-	private HttpsURLConnection prepareConnection(String url, String username, String password, String type, String endpoint)
+	private HttpsURLConnection prepareRemoteConnection(String url, String username, String password, String type, String endpoint)
 			throws IOException, URISyntaxException {	
+		
 		
 		URI preparedURI = new URI((url.endsWith("/")) ? url.substring(0, url.length() - 1) : url);
 		
@@ -236,6 +314,7 @@ public class StudiesImportResource {
 		BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
 		String inputLine;
 		StringBuilder content = new StringBuilder();
+		
 		while ((inputLine = in.readLine()) != null) {
 			content.append(inputLine);
 		}

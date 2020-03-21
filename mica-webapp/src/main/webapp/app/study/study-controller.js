@@ -243,14 +243,16 @@ mica.study
       $scope.displayBodyIndexOne = true;
       $scope.displayBodyIndexTwo = false;
       $scope.displayBodyIndexThree = false;
+      $scope.studyType = ($scope.path.indexOf('harmonization') > -1) ? 'harmonization-study' : 'individual-study';
 
       //NEXT
-      $scope.next = function(importModel, path, isDisplayedIndexOne) {
-        console.log('[NEXT] ' + String(isDisplayedIndexOne) );
+      $scope.next = function() {
+        
 
-        if (isDisplayedIndexOne) {
+        if ($scope.displayBodyIndexOne) {
         	
-            importModel.type = path.indexOf('harmonization') > -1 ? 'harmonization-study' : 'individual-study';
+        	console.log('[NEXT-2]');
+        	
             $scope.currentPage = 1;
             $scope.pageSize = 7;
             $('body').css('cursor', 'progress');
@@ -258,11 +260,11 @@ mica.study
             $http({
                 url: 'ws/draft/studies/import/_preview',
                 method: 'GET',
-                params: {url: importModel.url, username: importModel.username, 
-                         password: importModel.password, type: importModel.type}
+                params: {url: $scope.importVO.url, username: $scope.importVO.username, 
+                         password: $scope.importVO.password, type: $scope.studyType}
             
               }).then(function(response) {
-                console.log('[NEXT(response)]');
+                console.log('[NEXT-2(response)]');
               	
                 $('#myModalDialog').addClass('modal-lg');
                 $('#myPreviousButton').prop('disabled', false);
@@ -277,18 +279,18 @@ mica.study
         } else {
         	
         	//will display Index Three
-        	console.log('[NEXT] will display Index Three');
+        	console.log('[NEXT-3]');
         	
         	$scope.studiesToInclude = [];
         	$scope.studiesToUpdate = [];
 
-        	var studiesToCheck = [];
+        	var idStudiesToCheck = [];
         	
         	//check if studies exist locally
         	for (var i = 0; i < $scope.studiesToImport.length; i++) {
                 if ( $scope.studiesToImport[i].checked ) {
                 	
-                	studiesToCheck.push($scope.studiesToImport[i].id);
+                	idStudiesToCheck.push($scope.studiesToImport[i].id);
                 	$scope.studiesToInclude.push($scope.studiesToImport[i]);
                 }
         	}
@@ -296,12 +298,12 @@ mica.study
         	$http({
                 url: 'ws/draft/studies/import/_summary',
                 method: 'GET',
-                params: {ids: studiesToCheck, 
-                		 type: path.indexOf('harmonization') > -1 ? 'harmonization-study' : 'individual-study'}
+                params: {ids: idStudiesToCheck, 
+                		 type: $scope.studyType }
 
               }).then(function(response) {
         		
-                console.log('[NEXT-SUMMARY2(response)]');
+                console.log('[NEXT-3(response)]');
                 console.log(response.data);
                 
                 var resp = response.data;
@@ -326,10 +328,12 @@ mica.study
       };
 
       //PREVIOUS
-      $scope.previous = function(isDisplayedIndexTwo) {
-        console.log('[PREVIOUS] ' + String(isDisplayedIndexTwo) );
+      $scope.previous = function() {
 
-        if (isDisplayedIndexTwo) {
+        if ($scope.displayBodyIndexTwo) {
+        	
+        	console.log('[PREVIOUS-1]');
+        	
         	$scope.displayBodyIndexOne = true;
             $scope.displayBodyIndexTwo = false;
             $scope.displayBodyIndexThree = false;
@@ -337,7 +341,10 @@ mica.study
             $('#myPreviousButton').prop('disabled', true);
             $('#myNextButton').prop('disabled', false);
             $('#myFinishButton').prop('disabled', true);	
+            
         } else {
+        	console.log('[PREVIOUS-2]');
+        	
         	$scope.displayBodyIndexOne = false;
             $scope.displayBodyIndexTwo = true;
             $scope.displayBodyIndexThree = false;
@@ -346,8 +353,8 @@ mica.study
 
       };
 
-      //CLICK_CHECK_BOX
-      $scope.clickCheckbox = function() {
+      //CLICK_CHECKBOX
+      $scope.clickCheckBox = function() {
 		console.log('[CLICK_CHECKBOX]');
 		
 		for (var i = 0; i < $scope.studiesToImport.length; i++) {	
@@ -361,70 +368,92 @@ mica.study
       };
       
       //REMOVE_FROM_LIST
-      $scope.removeFromList = function(studyModal, isInIncludeList) {	  
+      $scope.removeFromList = function(studySummary, isInIncludeList) {	  
 		console.log('[REMOVE_FROM_LIST]');
+		console.log(studySummary);
 		
-		console.log(studyModal);
-		console.log(isInIncludeList);
-		var newDataList=[];
-		
-		if (isInIncludeList) {
+		var newDataList = [];
 
-	        angular.forEach($scope.studiesToInclude, function(v) {
-		        if (v.id != studyModal.id) {
-		            newDataList.push(v);
-		        }
-	        });    
-	        
-	        $scope.studiesToInclude = newDataList;
-	        
-		} else {
-			
-	        angular.forEach($scope.studiesToUpdate, function(v) {
-		        if (v.id != studyModal.id) {
-		            newDataList.push(v);
-		        }
-	        });    
-	        
-	        $scope.studiesToUpdate = newDataList;
-		}
+        angular.forEach(isInIncludeList ? $scope.studiesToInclude : $scope.studiesToUpdate, function(v) {
+	        if (v.id != studySummary.id) {
+	            newDataList.push(v);
+	        }
+        });    
+        
+        (isInIncludeList) ? $scope.studiesToInclude = newDataList : $scope.studiesToUpdate = newDataList;
+
       };
 
-        
+      
+      //CANCEL
+      $scope.cancel = function() {	  
+  		console.log('[CANCEL]');
+  		
+  		//$scope.$apply();
+      };
+      
+      
       //FINISH
       $scope.finish = function() {
         console.log('[FINISH]');
-        /*
-        for (var i = 0; i < $scope.studiesToImport.length; i++) {	
-            if ($scope.studiesToImport[i].checked){
-            	listIds.push( $scope.studiesToImport[i].id );
-            }
+
+        var idsToInclude = [];
+        var idsToUpdate = [];
+        
+        $('body').css('cursor', 'progress');
+        
+        for (var i in $scope.studiesToInclude) idsToInclude.push( $scope.studiesToInclude[i].id );
+        for (var j in $scope.studiesToUpdate) idsToUpdate.push( $scope.studiesToUpdate[j].id );
+        
+        if (idsToInclude.length > 0) {
+
+	        $http({
+	          url: 'ws/draft/studies/import/_include',
+	          method: 'POST',
+	          params: {url: $scope.importVO.url, 
+	                   username: $scope.importVO.username, 
+	                   password: $scope.importVO.password, 
+	                   type: $scope.studyType,
+	                   idsToInclude: idsToInclude}
+	
+	        }).then(function(response) {
+	          console.log('[FINISH(response)]');
+	          console.log( response.data );
+	          
+	          $scope.displayMsgImportedSuccessfully = true;
+	          $scope.displayMsgImportedProblem = true;
+	          
+	          $scope.location.reload(true);
+	          
+	        });
         }
-
-        console.log('listIds = ' + listIds);
-         */
-        //var endpoint = importModel.type.indexOf('harmonization') > -1 ? '/harmonization-studies/_import' : '/individual-studies/_import';
-
-        //listIds = [];
         
-        //TODO:  
-        //1) Obter o estudo remoto completo (GET); 
-        //2) Incluir o estudo localmente (POST); (o codigo abaixo esta incompleto)
-        
-        /*$http({
-          url: 'ws/draft' + endpoint,
-          method: 'POST',
-          params: {url: importModel.url, 
-                   username: importModel.username, 
-                   password: importModel.password, 
-                   ids: ids}
+        if (idsToUpdate.length > 0) {
 
-        }).then(function(response) {
-          console.log('[FINISH(response)]');
-          console.log(JSON.parse(response.data));
-        });*/
+	        $http({
+	          url: 'ws/draft/studies/import/_update',
+	          method: 'PUT',
+	          params: {url: $scope.importVO.url, 
+	                   username: $scope.importVO.username, 
+	                   password: $scope.importVO.password, 
+	                   type: $scope.studyType,
+	                   idsToUpdate: idsToUpdate}
+	
+	        }).then(function(response) {
+	          console.log('[FINISH(response)]');
+	          console.log( response.data );
+	          
+	          $scope.displayMsgImportedSuccessfully = true;
+	          $scope.displayMsgImportedProblem = true;
+	          
+	          $scope.location.reload(true);
+	          
+	        });
+        }
+        
+        $('body').css('cursor', 'default');
+
       };
-
   }])
 
 
