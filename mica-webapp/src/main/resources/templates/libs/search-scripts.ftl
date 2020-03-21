@@ -36,7 +36,9 @@
     "search.in": '<@message "search.in"/>',
     "search.out": '<@message "search.out"/>',
     "search.none": '<@message "search.none"/>',
-    "search.any": '<@message "search.any"/>'
+    "search.any": '<@message "search.any"/>',
+    "search.from": '<@message "search.from"/>',
+    "search.to": '<@message "search.to"/>'
   };
   Mica.icons = {
     variable: '${variableIcon}',
