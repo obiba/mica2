@@ -421,9 +421,7 @@ mica.study
 	          console.log( response.data );
 	          
 	          $scope.displayMsgImportedSuccessfully = true;
-	          $scope.displayMsgImportedProblem = true;
-	          
-	          $scope.location.reload(true);
+	          $scope.displayMsgImportedProblem = false;
 	          
 	        });
         }
@@ -444,9 +442,7 @@ mica.study
 	          console.log( response.data );
 	          
 	          $scope.displayMsgImportedSuccessfully = true;
-	          $scope.displayMsgImportedProblem = true;
-	          
-	          $scope.location.reload(true);
+	          $scope.displayMsgImportedProblem = false;
 	          
 	        });
         }
