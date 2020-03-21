@@ -55,7 +55,7 @@
 <#include "libs/scripts.ftl">
 
 <script>
-  micajs.resetPassword("#form", function() {
+  micajs.forgotPassword("#form", function() {
     var alertId = "#alertFailure";
     $(alertId).removeClass("d-none");
     setTimeout(function() {

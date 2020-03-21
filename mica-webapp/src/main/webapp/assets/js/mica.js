@@ -51,7 +51,7 @@ var micajs = (function() {
       var data = form.serialize(); // serializes the form's elements.
 
       axios.post(url, data)
-        .then(response => {
+        .then(() => {
           //console.dir(response);
           let redirect = '/';
           const q = new URLSearchParams(window.location.search);
@@ -113,7 +113,7 @@ var micajs = (function() {
       const realmField = getField('realm');
 
       axios.post(url, data)
-        .then(response => {
+        .then(() => {
           //console.dir(response);
           let redirect = '/';
           let values = {};
@@ -154,7 +154,7 @@ var micajs = (function() {
     });
   };
 
-  const micaResetPassword = function(formId, onFailure) {
+  const micaForgotPassword = function(formId, onFailure) {
     $(formId).submit(function(e) {
       e.preventDefault(); // avoid to execute the actual submit of the form.
       var form = $(this);
@@ -166,7 +166,7 @@ var micajs = (function() {
       }
 
       axios.post(url, data)
-        .then(response => {
+        .then(() => {
           //console.dir(response);
           $.redirect('/', {}, 'GET');
         })
@@ -225,7 +225,7 @@ var micajs = (function() {
       }
     }
     axios.post(url)
-      .then(response => {
+      .then(() => {
         //console.dir(response);
         if (response.status === 201) {
           const tokens = response.headers.location.split('/');
@@ -251,7 +251,7 @@ var micajs = (function() {
       redirect = '../../data-access/' + id;
     }
     axios.delete(url)
-      .then(response => {
+      .then(() => {
         //console.dir(response);
         micaRedirect(redirect);
       })
@@ -269,7 +269,7 @@ var micajs = (function() {
       redirect = '../data-access-' + type + '-form/' + aId;
     }
     axios.put(url)
-      .then(response => {
+      .then(() => {
         console.dir(response);
         micaRedirect(redirect);
       })
@@ -287,7 +287,7 @@ var micajs = (function() {
       redirect = '../data-access-' + type + '-form/' + aId;
     }
     axios.put(url)
-      .then(response => {
+      .then(() => {
         //console.dir(response);
         micaRedirect(redirect);
       })
@@ -305,7 +305,7 @@ var micajs = (function() {
       redirect = '../data-access-' + type + '-form/' + aId;
     }
     axios.put(url)
-      .then(response => {
+      .then(() => {
         //console.dir(response);
         micaRedirect(redirect);
       })
@@ -323,7 +323,7 @@ var micajs = (function() {
       redirect = '../data-access-' + type + '-form/' + aId;
     }
     axios.put(url)
-      .then(response => {
+      .then(() => {
         //console.dir(response);
         micaRedirect(redirect);
       })
@@ -341,7 +341,7 @@ var micajs = (function() {
       redirect = '../data-access-' + type + '-form/' + aId;
     }
     axios.put(url)
-      .then(response => {
+      .then(() => {
         //console.dir(response);
         micaRedirect(redirect);
       })
@@ -382,7 +382,7 @@ var micajs = (function() {
       url: url,
       data: message
     })
-      .then(response => {
+      .then(() => {
         //console.dir(response);
         micaRedirect(redirect);
       })
@@ -400,7 +400,7 @@ var micajs = (function() {
       redirect = '../data-access-private-comments/' + id;
     }
     axios.delete(url)
-      .then(response => {
+      .then(() => {
         //console.dir(response);
         micaRedirect(redirect);
       })
@@ -415,7 +415,7 @@ var micajs = (function() {
     var url = '../../ws/data-access-request/' + id + '/_log-actions';
     var redirect = '../data-access-history/' + id;
     axios.post(url, action)
-      .then(response => {
+      .then(() => {
         //console.dir(response);
         micaRedirect(redirect);
       })
@@ -430,7 +430,7 @@ var micajs = (function() {
     var url = '../../ws/data-access-request/' + id + '/_start-date?date=' + startDate;
     var redirect = '../data-access/' + id;
     axios.put(url)
-      .then(response => {
+      .then(() => {
         //console.dir(response);
         micaRedirect(redirect);
       })
@@ -444,7 +444,7 @@ var micajs = (function() {
     var url = '../../ws/data-access-request/' + id + '/attachments/' + fileId;
     var redirect = '../data-access-documents/' + id;
     axios.delete(url)
-      .then(response => {
+      .then(() => {
         //console.dir(response);
         micaRedirect(redirect);
       })
@@ -496,7 +496,7 @@ var micajs = (function() {
   const micaVariableSummary = function(id, onsuccess, onfailure) {
     var url = '../ws/variable/' + id + '/summary';
     axios.get(url)
-      .then(response => {
+      .then(() => {
         //console.dir(response);
         if (onsuccess) {
           onsuccess(response.data);
@@ -513,7 +513,7 @@ var micajs = (function() {
   const micaVariableAggregation = function(id, onsuccess, onfailure) {
     var url = '../ws/variable/' + id + '/aggregation';
     axios.get(url)
-      .then(response => {
+      .then(() => {
         //console.dir(response);
         if (onsuccess) {
           onsuccess(response.data);
@@ -536,7 +536,7 @@ var micajs = (function() {
   const micaVariableHarmonizations = function(id, onsuccess, onfailure) {
     var url = '../ws/variable/' + id + '/harmonizations';
     axios.get(url)
-      .then(response => {
+      .then(() => {
         //console.dir(response);
         if (onsuccess) {
           onsuccess(response.data);
@@ -553,7 +553,7 @@ var micajs = (function() {
   const micaDatasetHarmonizedVariables = function(id, from, limit, onsuccess, onfailure) {
     var url = '../ws/harmonized-dataset/' + id + '/variables/harmonizations/_summary?from=' + from + '&limit=' + limit;
     axios.get(url)
-      .then(response => {
+      .then(() => {
         //console.dir(response);
         if (onsuccess) {
           onsuccess(response.data);
@@ -655,7 +655,7 @@ var micajs = (function() {
     'signin': micaSignin,
     'signup': micaSignup,
     'signout': micaSignout,
-    'resetPassword': micaResetPassword,
+    'forgotPassword': micaForgotPassword,
     'changeLanguage': micaChangeLanguage,
     'success': micaSuccess,
     'warning': micaWarning,

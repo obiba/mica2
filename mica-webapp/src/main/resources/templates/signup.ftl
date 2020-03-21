@@ -23,7 +23,7 @@
   <!-- /.login-logo -->
   <div class="card">
     <div class="card-body login-card-body">
-      <p class="login-box-msg">Register a new membership</p>
+      <p class="login-box-msg"><@message "sign-up-caption"/></p>
 
       <div id="alertFailure" class="alert alert-danger d-none">
         <small><@message "sign-up-auth-failed"/></small>
