@@ -385,9 +385,9 @@ mica.study
       };
 
       
-      //CANCEL
-      $scope.cancel = function() {	  
-  		console.log('[CANCEL]');
+      //CLOSE
+      $scope.close = function() {	  
+  		console.log('[CLOSE]');
   		
   		//$scope.$apply();
       };
@@ -422,6 +422,8 @@ mica.study
 	          
 	          $scope.displayMsgImportedSuccessfully = true;
 	          $scope.displayMsgImportedProblem = false;
+	          $scope.studiesToInclude = [];
+	          $scope.studiesToUpdate = [];
 	          
 	        });
         }
@@ -443,6 +445,8 @@ mica.study
 	          
 	          $scope.displayMsgImportedSuccessfully = true;
 	          $scope.displayMsgImportedProblem = false;
+	          $scope.studiesToInclude = [];
+	          $scope.studiesToUpdate = [];
 	          
 	        });
         }

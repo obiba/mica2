@@ -185,6 +185,8 @@ public class StudiesImportResource {
 				if ( type.equals(INDIVIDUAL_STUDY) ) {
 					
 					Study study = (Study)dtos.fromDto( builder);
+					
+					study.setId(null);
 
 					individualStudyService.save(study);
 					
@@ -193,6 +195,8 @@ public class StudiesImportResource {
 				} else if ( type.equals(HARMONIZATION_STUDY) ) {
 					
 					HarmonizationStudy study = (HarmonizationStudy)dtos.fromDto( builder);
+					
+					study.setId(null);
 					
 					harmonizationStudyService.save(study);
 					
