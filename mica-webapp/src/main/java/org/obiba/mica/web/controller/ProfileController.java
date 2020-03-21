@@ -29,9 +29,9 @@ public class ProfileController {
     }
   }
 
-  @GetMapping("/reset-password")
-  public ModelAndView resetPassword() {
-    ModelAndView mv = new ModelAndView("reset-password");
+  @GetMapping("/forgot-password")
+  public ModelAndView forgotPassword() {
+    ModelAndView mv = new ModelAndView("forgot-password");
     return mv;
   }
 
