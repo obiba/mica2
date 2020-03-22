@@ -67,10 +67,7 @@ public class SignController {
   }
 
   @GetMapping("/signup-with")
-  public ModelAndView signup(HttpServletRequest request, @RequestParam(value = "redirect", required = false) String redirect,
-                             @CookieValue(value = "u_auth", required = false, defaultValue = "{}") String uAuth,
-                             @CookieValue(value = "NG_TRANSLATE_LANG_KEY", required = false, defaultValue = "en") String locale,
-                             @RequestParam(value = "language", required = false) String language) {
+  public ModelAndView signupWith(@CookieValue(value = "u_auth", required = false, defaultValue = "{}") String uAuth) {
     if (!micaConfigService.getConfig().isSignupEnabled())
       return new ModelAndView("redirect:/");
 
@@ -132,7 +129,7 @@ public class SignController {
     if (!Strings.isNullOrEmpty(redirect))
       redirectUrl = String.format("%s%s", baseUrl, redirect.startsWith("/") ? redirect : "/" + redirect);
 
-    String signinErrorUrl = baseUrl + "/signup";
+    String signinErrorUrl = baseUrl + "/signup-with";
 
     try {
       return String.format("%s/auth/signin/%s?redirect=%s&signin_error=%s", agateUrl, oidcName, URLEncoder.encode(redirectUrl, "UTF-8"), URLEncoder.encode(signinErrorUrl, "UTF-8"));

@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html lang="${.lang}">
 <head>
-  <#include "libs/head.ftl">  <meta charset="utf-8">
+  <#include "libs/head.ftl">
+  <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <title>${config.name!""} | <@message "sign-in"/></title>
   <!-- Tell the browser to be responsive to screen width -->
