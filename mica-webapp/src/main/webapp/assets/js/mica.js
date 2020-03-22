@@ -149,7 +149,7 @@ var micajs = (function() {
       url: pathPrefix + '/ws/auth/session/_current'
     })
     .always(function() {
-      var redirect = pathPrefix + '/';
+      let redirect = pathPrefix + '/';
       $.redirect(redirect, {}, 'GET');
     });
   };
@@ -157,9 +157,9 @@ var micajs = (function() {
   const micaForgotPassword = function(formId, onFailure) {
     $(formId).submit(function(e) {
       e.preventDefault(); // avoid to execute the actual submit of the form.
-      var form = $(this);
-      var url = '../ws/users/_forgot_password';
-      var data = form.serialize(); // serializes the form's elements.
+      let form = $(this);
+      let url = '../ws/users/_forgot_password';
+      let data = form.serialize(); // serializes the form's elements.
 
       if (decodeURI(data).trim() === 'username=') {
         return;
@@ -225,12 +225,12 @@ var micajs = (function() {
       }
     }
     axios.post(url)
-      .then(() => {
+      .then(response => {
         //console.dir(response);
         if (response.status === 201) {
           const tokens = response.headers.location.split('/');
           const createdId = tokens[tokens.length - 1];
-          var redirect = '../data-access/' + createdId;
+          let redirect = '../data-access/' + createdId;
           if (type) {
             redirect = '../data-access-' + type + '-form/' + createdId;
           }
@@ -270,7 +270,7 @@ var micajs = (function() {
     }
     axios.put(url)
       .then(() => {
-        console.dir(response);
+        //console.dir(response);
         micaRedirect(redirect);
       })
       .catch(response => {
@@ -359,8 +359,8 @@ var micajs = (function() {
       redirect = '../data-access-' + type + '-form/' + aId;
     }
     axios.put(url)
-      .then(response => {
-        console.dir(response);
+      .then(() => {
+        //console.dir(response);
         micaRedirect(redirect);
       })
       .catch(response => {
@@ -465,7 +465,7 @@ var micajs = (function() {
     };
     axios.post('../../ws/files/temp', data, config)
       .then(response => {
-        console.dir(response);
+        //console.dir(response);
         var fileId = response.headers.location.split('/').pop();
         onsuccess(fileId);
       })
@@ -479,8 +479,8 @@ var micajs = (function() {
     var url = '../../ws/data-access-request/' + id + '/attachments/' + fileId;
     var redirect = '../data-access-documents/' + id;
     axios.post(url)
-      .then(response => {
-        console.dir(response);
+      .then(() => {
+        //console.dir(response);
         micaRedirect(redirect);
       })
       .catch(response => {
@@ -496,7 +496,7 @@ var micajs = (function() {
   const micaVariableSummary = function(id, onsuccess, onfailure) {
     var url = '../ws/variable/' + id + '/summary';
     axios.get(url)
-      .then(() => {
+      .then(response => {
         //console.dir(response);
         if (onsuccess) {
           onsuccess(response.data);
@@ -513,7 +513,7 @@ var micajs = (function() {
   const micaVariableAggregation = function(id, onsuccess, onfailure) {
     var url = '../ws/variable/' + id + '/aggregation';
     axios.get(url)
-      .then(() => {
+      .then(response => {
         //console.dir(response);
         if (onsuccess) {
           onsuccess(response.data);
@@ -536,7 +536,7 @@ var micajs = (function() {
   const micaVariableHarmonizations = function(id, onsuccess, onfailure) {
     var url = '../ws/variable/' + id + '/harmonizations';
     axios.get(url)
-      .then(() => {
+      .then(response => {
         //console.dir(response);
         if (onsuccess) {
           onsuccess(response.data);
@@ -553,7 +553,7 @@ var micajs = (function() {
   const micaDatasetHarmonizedVariables = function(id, from, limit, onsuccess, onfailure) {
     var url = '../ws/harmonized-dataset/' + id + '/variables/harmonizations/_summary?from=' + from + '&limit=' + limit;
     axios.get(url)
-      .then(() => {
+      .then(response => {
         //console.dir(response);
         if (onsuccess) {
           onsuccess(response.data);

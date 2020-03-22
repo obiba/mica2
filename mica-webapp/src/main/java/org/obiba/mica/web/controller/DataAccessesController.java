@@ -64,7 +64,7 @@ public class DataAccessesController extends BaseController {
         .collect(Collectors.toMap(u -> u, u -> userProfileService.getProfileMap(u, true))));
       return new ModelAndView("data-accesses", params);
     } else {
-      return new ModelAndView("redirect:signin?redirect=data-accesses");
+      return new ModelAndView("redirect:signin?redirect=/data-accesses");
     }
   }
 
