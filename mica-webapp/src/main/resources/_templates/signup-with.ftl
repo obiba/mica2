@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html lang="${.lang}">
 <head>
+  <#include "libs/head.ftl">
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>${config.name!""} | Sign up</title>
+  <title>${config.name!""} | <@message "sign-up"/></title>
   <!-- Tell the browser to be responsive to screen width -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <#include "libs/head.ftl">
   <script type="text/javascript">
     var onloadCallback = function() {
       grecaptcha.render('html_element', {
@@ -23,7 +23,7 @@
   <!-- /.login-logo -->
   <div class="card">
     <div class="card-body login-card-body">
-      <p class="login-box-msg">Register a new membership</p>
+      <p class="login-box-msg"><@message "sign-up-caption"/></p>
 
       <div id="alertFailure" class="alert alert-danger d-none">
         <small><@message "sign-up-auth-failed"/></small>
