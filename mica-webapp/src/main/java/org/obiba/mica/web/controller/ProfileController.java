@@ -25,7 +25,7 @@ public class ProfileController {
       mv.getModel().put("authConfig", new AuthConfiguration(userAuthService.getPublicConfiguration(), null));
       return mv;
     } else {
-      return new ModelAndView("redirect:signin?redirect=profile");
+      return new ModelAndView("redirect:signin?redirect=/profile");
     }
   }
 
