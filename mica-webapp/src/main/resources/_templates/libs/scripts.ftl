@@ -37,7 +37,7 @@
         "info": true,
         "autoWidth": true,
         "language": {
-            "url": "${pathPrefix!".."}/assets/i18n/datatables.${.lang}.json"
+            "url": "/assets/i18n/datatables.${.lang}.json"
         }
     };
     const dataTablesSortSearchOpts = {
@@ -48,7 +48,7 @@
         "info": false,
         "autoWidth": true,
         "language": {
-            "url": "${pathPrefix!".."}/assets/i18n/datatables.${.lang}.json"
+            "url": "/assets/i18n/datatables.${.lang}.json"
         }
     };
     const dataTablesSortOpts = {
@@ -59,7 +59,7 @@
         "info": false,
         "autoWidth": true,
         "language": {
-            "url": "${pathPrefix!".."}/assets/i18n/datatables.${.lang}.json"
+            "url": "/assets/i18n/datatables.${.lang}.json"
         }
     };
     const dataTablesNoSortSearchOpts = {
@@ -71,7 +71,7 @@
         "info": false,
         "autoWidth": true,
         "language": {
-            "url": "${pathPrefix!".."}/assets/i18n/datatables.${.lang}.json"
+            "url": "/assets/i18n/datatables.${.lang}.json"
         }
     };
     <!-- Dto utility functions -->

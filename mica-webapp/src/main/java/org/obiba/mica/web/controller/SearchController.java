@@ -13,7 +13,7 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.inject.Inject;
 
 @Controller
-public class SearchController {
+public class SearchController extends BaseController {
 
   @Inject
   private MicaConfigService micaConfigService;
@@ -25,7 +25,7 @@ public class SearchController {
   public ModelAndView search(@CookieValue(value = "NG_TRANSLATE_LANG_KEY", required = false, defaultValue = "en") String locale,
                              @RequestParam(value = "language", required = false) String language) {
     ModelAndView mv = new ModelAndView("search");
-    mv.getModel().put("configJson", getMicaConfigAsJson(language == null ? locale : language));
+    mv.getModel().put("configJson", getMicaConfigAsJson(getLang(locale, language)));
     return mv;
   }
 

@@ -95,7 +95,7 @@ public class DataAccessController extends BaseController {
     Subject subject = SecurityUtils.getSubject();
     if (subject.isAuthenticated()) {
       Map<String, Object> params = newParameters(id);
-      addDataAccessFormConfiguration(params, getDataAccessRequest(params), !edit, language == null ? locale : language);
+      addDataAccessFormConfiguration(params, getDataAccessRequest(params), !edit, getLang(locale, language));
       return new ModelAndView("data-access-form", params);
     } else {
       return new ModelAndView("redirect:../signin?redirect=/data-access-form%2F" + id);
@@ -146,7 +146,7 @@ public class DataAccessController extends BaseController {
     if (subject.isAuthenticated()) {
       Map<String, Object> params = newFeasibilityParameters(id);
       DataAccessFeasibility feasibility = getDataAccessFeasibility(params);
-      addDataAccessFeasibilityFormConfiguration(params, feasibility, !edit, language == null ? locale : language);
+      addDataAccessFeasibilityFormConfiguration(params, feasibility, !edit, getLang(locale, language));
 
       return new ModelAndView("data-access-feasibility-form", params);
     } else {
@@ -163,7 +163,7 @@ public class DataAccessController extends BaseController {
     if (subject.isAuthenticated()) {
       Map<String, Object> params = newAmendmentParameters(id);
       DataAccessAmendment amendment = getDataAccessAmendment(params);
-      addDataAccessAmendmentFormConfiguration(params, amendment, !edit, language == null ? locale : language);
+      addDataAccessAmendmentFormConfiguration(params, amendment, !edit, getLang(locale, language));
 
       return new ModelAndView("data-access-amendment-form", params);
     } else {

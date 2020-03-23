@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Controller
-public class SignController {
+public class SignController extends BaseController {
 
   @Inject
   private MicaConfigService micaConfigService;
@@ -41,7 +41,7 @@ public class SignController {
                              @RequestParam(value = "language", required = false) String language) {
     ModelAndView mv = new ModelAndView("signin");
 
-    String lang = getLang(language, locale);
+    String lang = getLang(locale, language);
     List<OidcProvider> providers = getOidcProviders(lang, false).stream()
       .map(o -> new OidcProvider(o, getOidcSigninUrl(o.getName(), request, redirect))).collect(Collectors.toList());
     mv.getModel().put("oidcProviders", providers);
@@ -57,7 +57,7 @@ public class SignController {
 
     ModelAndView mv = new ModelAndView("signup");
 
-    String lang = getLang(language, locale);
+    String lang = getLang(locale, language);
     List<OidcProvider> providers = getOidcProviders(lang, true).stream()
       .map(o -> new OidcProvider(o, getOidcSignupUrl(o.getName(), request, redirect))).collect(Collectors.toList());
     mv.getModel().put("oidcProviders", providers);
@@ -110,10 +110,6 @@ public class SignController {
     } catch (Exception e) {
       return new AuthConfiguration(new JSONObject(), new JSONObject());
     }
-  }
-
-  private String getLang(String language, String locale) {
-    return language == null ? locale : language;
   }
 
   private String getOidcSigninUrl(String oidcName, HttpServletRequest request, String redirect) {
