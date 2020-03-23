@@ -14,6 +14,7 @@
 <!-- Branding -->
 <#assign brandImageSrc = "../assets/images/logo.png"/>
 <#assign brandImageClass = "img-circle elevation-3"/>
+<#assign brandTextEnabled = false/>
 <#assign brandTextClass = "font-weight-light"/>
 
 <!-- Theme -->
