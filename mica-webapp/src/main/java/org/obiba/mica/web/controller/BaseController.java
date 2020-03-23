@@ -32,4 +32,16 @@ public class BaseController {
   Map<String, Object> newParameters() {
     return Maps.newHashMap();
   }
+
+  /**
+   * Get and clean lang identifier.
+   *
+   * @param locale from cookie (dirty string)
+   * @param language from query param
+   * @return
+   */
+  protected String getLang(String locale, String language) {
+    String lang = language == null ? locale : language;
+    return lang == null ? "en" : lang.replaceAll("\"", "");
+  }
 }

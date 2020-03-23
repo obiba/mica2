@@ -28,15 +28,15 @@
 <script src="${pathPrefix}/bower_components/sf-radio-group-collection/dist/sf-radio-group-collection.js"></script>
 
 <script>
-    var formSchema = ${formConfig.schema!"{}"};
+    const formSchema = ${formConfig.schema!"{}"};
     formSchema.readOnly = ${formConfig.readOnly?c};
-    var formDefinition = ${formConfig.definition!"['*']"};
-    var formModel = ${formConfig.model!"{}"};
-    var formMessages = {
-        validationSuccess: '<@message "form-validation-success"/>',
-        validationError: '<@message "form-validation-error"/>',
-        validationErrorOnSubmit: '<@message "form-validation-submit-error"/>',
-        errorOnSave: '<@message "form-save-error"/>'
+    const formDefinition = ${formConfig.definition!"['*']"};
+    const formModel = ${formConfig.model!"{}"};
+    const formMessages = {
+        validationSuccess: "<@message "form-validation-success"/>",
+        validationError: "<@message "form-validation-error"/>",
+        validationErrorOnSubmit: "<@message "form-validation-submit-error"/>",
+        errorOnSave: "<@message "form-save-error"/>"
     };
 </script>
 

@@ -44,11 +44,11 @@
           </div>
         </div>
         <div class="row">
-          <div class="col-8">
+          <div class="col-6">
 
           </div>
           <!-- /.col -->
-          <div class="col-4">
+          <div class="col-6">
             <button type="submit" class="btn btn-primary btn-block"><@message "sign-in-submit"/></button>
           </div>
           <!-- /.col -->

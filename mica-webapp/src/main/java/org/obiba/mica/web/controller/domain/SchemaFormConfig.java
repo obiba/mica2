@@ -12,17 +12,13 @@ import org.obiba.mica.web.controller.DataAccessController;
  */
 public class SchemaFormConfig {
 
-  private MicaConfigService micaConfigService;
-
   private final String schema;
   private final String definition;
   private final String model;
   private final boolean readOnly;
 
-  public SchemaFormConfig(MicaConfigService micaConfigService, String schema, String definition, String model, String locale, boolean readOnly) {
-    this.micaConfigService = micaConfigService;
+  public SchemaFormConfig(MicaConfigService micaConfigService, String schema, String definition, String model, String lang, boolean readOnly) {
     this.readOnly = readOnly;
-    String lang = locale == null ? "en" : locale.replaceAll("\"", "");
     Translator translator = JsonTranslator.buildSafeTranslator(() -> micaConfigService.getTranslations(lang, false));
     translator = new PrefixedValueTranslator(translator);
 
