@@ -12,6 +12,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="x-ua-compatible" content="ie=edge">
 
+<!-- Favicon -->
+<link rel="shortcut icon" href="${faviconPath}" />
+
 <!-- Font Awesome Icons -->
 <link rel="stylesheet" href="${pathPrefix!".."}${adminLTEPath}/plugins/fontawesome-free/css/all.min.css">
 <!-- Theme style -->
