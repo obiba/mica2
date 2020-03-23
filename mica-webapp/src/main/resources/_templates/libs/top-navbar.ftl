@@ -2,11 +2,15 @@
 <nav class="main-header navbar navbar-expand-md navbar-light navbar-white">
   <div class="container">
     <#if config??>
-    <a href="${config.portalUrl!".."}" class="navbar-brand">
-      <img src="${brandImageSrc}" alt="Logo" class="brand-image ${brandImageClass}"
-           style="opacity: .8">
-      <span class="brand-text ${brandTextClass}">${config.name!"Mica"}</span>
-    </a>
+      <a href="${config.portalUrl!".."}" class="navbar-brand">
+        <img src="${brandImageSrc}" alt="Logo" class="brand-image ${brandImageClass}"
+             style="opacity: .8">
+        <span class="brand-text ${brandTextClass}">
+          <#if brandTextEnabled>
+            ${config.name!""}
+          </#if>
+        </span>
+      </a>
     <#else>
       <img src="${brandImageSrc}" alt="Logo" class="brand-image ${brandImageClass}"
            style="opacity: .8">

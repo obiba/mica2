@@ -52,7 +52,11 @@
   <div class="clearfix border-bottom pb-3 mb-3">
     <div class="float-left">
       <img src="${brandImageSrc}" alt="Logo" class="brand-image ${brandImageClass} mr-2" style="opacity: .8; max-height: 33px">
-      <span class="brand-text ${brandTextClass}" style="font-size: larger">${config.name!"Mica"}</span>
+      <span class="brand-text ${brandTextClass}" style="font-size: larger">
+        <#if brandTextEnabled>
+          ${config.name!""}
+        </#if>
+      </span>
     </div>
     <div class="float-right text-muted">
       <span><@message type/> - ${form.id} - [<@message form.status.toString()/>] - ${applicant.fullName}</span>
