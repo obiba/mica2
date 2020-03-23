@@ -235,7 +235,7 @@
                         <th><@message "variable"/></th>
                         <#list allTables as table>
                           <th>
-                            <a href="../study/${table.studyId}">${allStudies[table.studyId].acronym[.lang]}</a>
+                            <a href="../study/${table.studyId}">${allStudies[table.studyId].acronym[.lang]!""}</a>
                             <#if table.name??>${table.name[.lang]!""}</#if>
                             <#if table.description??><i class="fas fa-info-circle" title="${table.description[.lang]!""}"></i></#if>
                           </th>

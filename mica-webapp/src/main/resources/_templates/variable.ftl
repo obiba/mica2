@@ -175,11 +175,11 @@
                   <dl class="row">
                     <#list annotations as annotation>
                       <dt class="col-sm-4" title="<#if annotation.vocabularyDescription??>${annotation.vocabularyDescription[.lang]!""}</#if>">
-                        ${annotation.vocabularyTitle[.lang]}
+                        ${annotation.vocabularyTitle[.lang]!""}
                       </dt>
                       <dd class="col-sm-8" title="<#if annotation.termDescription??>${annotation.termDescription[.lang]!""}</#if>">
                         <#if annotation.termTitle[.lang]??>
-                          ${annotation.termTitle[.lang]}
+                          ${annotation.termTitle[.lang]!""}
                         <#elseif annotation.termTitle["und"]??>
                           <span class="marked">${annotation.termTitle["und"]}</span>
                         </#if>

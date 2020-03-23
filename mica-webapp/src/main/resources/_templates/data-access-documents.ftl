@@ -79,7 +79,7 @@
                 <#list dar.attachments as attachment>
                   <tr>
                     <td><a href="../../ws/data-access-request/${dar.id}/attachments/${attachment.id}/_download" download="${attachment.name}">${attachment.name}</a></td>
-                    <td class="moment-datetime">${attachment.createdDate.toString(datetimeFormat)}</td>
+                    <td data-sort="${attachment.createdDate.toString(datetimeFormat)}" class="moment-datetime">${attachment.createdDate.toString(datetimeFormat)}</td>
                     <td>${si(attachment.size)}</td>
                     <td><a href="#" onclick="micajs.dataAccess.deleteAttachment('${dar.id}','${attachment.id}')"><i class="fas fa-trash text-danger"></i></a></td>
                   </tr>

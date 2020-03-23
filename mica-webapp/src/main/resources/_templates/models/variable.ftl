@@ -76,7 +76,7 @@
 <#macro attributeLocaleValue attribute>
   <#if attribute??>
     <#if attribute[.lang]??>
-      ${attribute[.lang]}
+      ${attribute[.lang]!""}
     <#elseif attribute["und"]??>
       ${attribute["und"]}
     </#if>
