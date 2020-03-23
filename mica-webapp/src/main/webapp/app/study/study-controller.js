@@ -243,6 +243,7 @@ mica.study
       $scope.displayBodyIndexOne = true;
       $scope.displayBodyIndexTwo = false;
       $scope.displayBodyIndexThree = false;
+      $scope.displayBodyIndexFour = false;
       $scope.studyType = ($scope.path.indexOf('harmonization') > -1) ? 'harmonization-study' : 'individual-study';
 
       //NEXT
@@ -274,6 +275,7 @@ mica.study
                 $scope.displayBodyIndexOne = false;
               	$scope.displayBodyIndexTwo = true;
               	$scope.displayBodyIndexThree = false;
+              	$scope.displayBodyIndexFour = false;
               });
             
         } else {
@@ -281,8 +283,9 @@ mica.study
         	//will display Index Three
         	console.log('[NEXT-3]');
         	
-        	$scope.studiesToInclude = [];
+        	$scope.studiesToCreate = [];
         	$scope.studiesToUpdate = [];
+        	$scope.studiesConflict = [];
 
         	var idStudiesToCheck = [];
         	
@@ -291,7 +294,7 @@ mica.study
                 if ( $scope.studiesToImport[i].checked ) {
                 	
                 	idStudiesToCheck.push($scope.studiesToImport[i].id);
-                	$scope.studiesToInclude.push($scope.studiesToImport[i]);
+                	$scope.studiesToCreate.push($scope.studiesToImport[i]);
                 }
         	}
             
@@ -304,26 +307,36 @@ mica.study
               }).then(function(response) {
         		
                 console.log('[NEXT-3(response)]');
-                console.log(response.data);
+               
+                var resp_enum = response.data;
+                var resp = [];
                 
-                var resp = response.data;
-                
+                for (var prop in resp_enum) resp.push(prop);
+
             	for (var j in $scope.studiesToImport) {
-            		
-            		if (resp.includes($scope.studiesToImport[j].id)) {
+
+            		if (resp_enum[ $scope.studiesToImport[j].id] ) {
+
+            			$scope.studiesConflict.push($scope.studiesToImport[j]);
+            			
+            			delete $scope.studiesToCreate[j];
+            			
+            		} else if (resp.includes($scope.studiesToImport[j].id)) {
             			
             			$scope.studiesToUpdate.push($scope.studiesToImport[j]);
             			
-            			delete $scope.studiesToInclude[j];
+            			delete $scope.studiesToCreate[j];
             		} 
             	}
             	
-            	$scope.studiesToInclude = $scope.studiesToInclude.filter(function (el) { return el != null; });
+            	$scope.studiesToCreate = $scope.studiesToCreate.filter(function (el) { return el != null; });
+            	
             });
         	
         	$scope.displayBodyIndexOne = false;
             $scope.displayBodyIndexTwo = false;
             $scope.displayBodyIndexThree = true;
+            $scope.displayBodyIndexFour = false;
         }
       };
 
@@ -337,6 +350,8 @@ mica.study
         	$scope.displayBodyIndexOne = true;
             $scope.displayBodyIndexTwo = false;
             $scope.displayBodyIndexThree = false;
+            $scope.displayBodyIndexFour = false;
+            
             $('#myModalDialog').removeClass('modal-lg');
             $('#myPreviousButton').prop('disabled', true);
             $('#myNextButton').prop('disabled', false);
@@ -348,6 +363,8 @@ mica.study
         	$scope.displayBodyIndexOne = false;
             $scope.displayBodyIndexTwo = true;
             $scope.displayBodyIndexThree = false;
+            $scope.displayBodyIndexFour = false;
+            
             $('#myFinishButton').prop('disabled', true);
         }
 
@@ -368,19 +385,19 @@ mica.study
       };
       
       //REMOVE_FROM_LIST
-      $scope.removeFromList = function(studySummary, isInIncludeList) {	  
+      $scope.removeFromList = function(studySummary, isInCreateList) {	  
 		console.log('[REMOVE_FROM_LIST]');
 		console.log(studySummary);
 		
 		var newDataList = [];
 
-        angular.forEach(isInIncludeList ? $scope.studiesToInclude : $scope.studiesToUpdate, function(v) {
+        angular.forEach(isInCreateList ? $scope.studiesToCreate : $scope.studiesToUpdate, function(v) {
 	        if (v.id != studySummary.id) {
 	            newDataList.push(v);
 	        }
         });    
         
-        (isInIncludeList) ? $scope.studiesToInclude = newDataList : $scope.studiesToUpdate = newDataList;
+        (isInCreateList) ? $scope.studiesToCreate = newDataList : $scope.studiesToUpdate = newDataList;
 
       };
 
@@ -397,15 +414,18 @@ mica.study
       $scope.finish = function() {
         console.log('[FINISH]');
 
-        var idsToInclude = [];
+        var idsToCreate = [];
         var idsToUpdate = [];
+        $scope.statusErrorImport = '';
+        $scope.idsCreated = '';
+        $scope.idsUpdated = '';
         
         $('body').css('cursor', 'progress');
         
-        for (var i in $scope.studiesToInclude) idsToInclude.push( $scope.studiesToInclude[i].id );
+        for (var i in $scope.studiesToCreate) idsToCreate.push( $scope.studiesToCreate[i].id );
         for (var j in $scope.studiesToUpdate) idsToUpdate.push( $scope.studiesToUpdate[j].id );
         
-        if (idsToInclude.length > 0) {
+        if (idsToCreate.length > 0) {
 
 	        $http({
 	          url: 'ws/draft/studies/import/_include',
@@ -414,17 +434,18 @@ mica.study
 	                   username: $scope.importVO.username, 
 	                   password: $scope.importVO.password, 
 	                   type: $scope.studyType,
-	                   idsToInclude: idsToInclude}
+	                   idsToCreate: idsToCreate}
 	
 	        }).then(function(response) {
-	          console.log('[FINISH(response)]');
-	          console.log( response.data );
+	          console.log('[FINISH-CREATE(response)]');
 	          
-	          $scope.displayMsgImportedSuccessfully = true;
-	          $scope.displayMsgImportedProblem = false;
-	          $scope.studiesToInclude = [];
-	          $scope.studiesToUpdate = [];
+	          $scope.displayMsgImportedSuccessfully = (response.status === 200);
+		      $scope.displayMsgImportedProblem = !(response.status === 200);
 	          
+		      if ($scope.displayMsgImportedProblem) $scope.statusErrorImport += (response.status + ' ');
+		    
+	          $scope.studiesToCreate = [];
+	          $scope.studiesConflict = [];
 	        });
         }
         
@@ -440,18 +461,37 @@ mica.study
 	                   idsToUpdate: idsToUpdate}
 	
 	        }).then(function(response) {
-	          console.log('[FINISH(response)]');
+	          console.log('[FINISH-UPDATE(response)]');
 	          console.log( response.data );
 	          
-	          $scope.displayMsgImportedSuccessfully = true;
-	          $scope.displayMsgImportedProblem = false;
-	          $scope.studiesToInclude = [];
+	          $scope.displayMsgImportedSuccessfully = (response.status === 200);
+		      $scope.displayMsgImportedProblem = !(response.status === 200);
+	          
+		      if ($scope.displayMsgImportedProblem) $scope.statusErrorImport += (response.status + ' ');
+		      
 	          $scope.studiesToUpdate = [];
+	          $scope.studiesConflict = [];
 	          
 	        });
         }
-        
+
+    	var ids_tmp = '';
+
+    	for (var m in idsToCreate) ids_tmp += ('"' + idsToCreate[m] + '", ');
+    	if (ids_tmp.localeCompare('') != 0) $scope.idsCreated = ids_tmp.slice(0, -2);
+    	
+    	ids_tmp = '';
+    	for (var l in idsToUpdate) ids_tmp += ('"' + idsToUpdate[l] + '", ');
+    	if (ids_tmp.localeCompare('') != 0) $scope.idsUpdated = ids_tmp.slice(0, -2);
+    	
         $('body').css('cursor', 'default');
+        
+        if (idsToCreate.length > 0 || idsToUpdate.length > 0) {
+        	$scope.displayBodyIndexOne = false;
+            $scope.displayBodyIndexTwo = false;
+            $scope.displayBodyIndexThree = false;
+            $scope.displayBodyIndexFour = true;
+        }
 
       };
   }])

@@ -19,7 +19,9 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.net.ssl.HttpsURLConnection;
@@ -44,6 +46,7 @@ import org.obiba.mica.study.domain.HarmonizationStudy;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.service.HarmonizationStudyService;
 import org.obiba.mica.study.service.IndividualStudyService;
+import org.obiba.mica.study.service.StudyService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.slf4j.Logger;
@@ -82,6 +85,9 @@ public class StudiesImportResource {
 
 	@Inject
 	private HarmonizationStudyService harmonizationStudyService;
+	
+	@Inject
+	private StudyService studyService;
 	
 	@Inject
 	private Dtos dtos;
@@ -126,25 +132,20 @@ public class StudiesImportResource {
 		
 		log.info("checkIfAlreadyExistsLocally ids: {}", ids);
 		
-		List<String> existingIds = new ArrayList<>();
+		//List<String> existingIds = new ArrayList<>();
+		
+		Map<String, Boolean> existingIds = new HashMap<>();
 		
 		for (String id : ids) {
 
 			try {
 				
-				if (type.equals(INDIVIDUAL_STUDY)) {
-					
-					Study study = individualStudyService.findStudy(id);
-					
-					existingIds.add( study.getId());
-					
-				} else if (type.equals(HARMONIZATION_STUDY)) {
-					
-					HarmonizationStudy study = harmonizationStudyService.findStudy(id);
-					
-					existingIds.add( study.getId());
-				}
+				BaseStudy study = studyService.findStudy(id);
 				
+				existingIds.put( study.getId(), !study.getResourcePath().equals(type) /*conflict condition*/ ); 
+									
+				//existingIds.add( study.getId());
+
 			} catch(NoSuchEntityException ex) {
 				//ignore if study doesn't exist locally.
 				log.info("checkIfAlreadyExistsLocally - id not exists: {}", id);
@@ -166,6 +167,28 @@ public class StudiesImportResource {
 	
 		log.info("POST includeStudies. ids = {}", ids);
 		
+		return this.saveStudiesLocally(url, username, password, type, ids, Boolean.TRUE);
+	}
+
+	
+	
+	@PUT
+	@Path("/studies/import/_update")
+	@RequiresPermissions( {"/draft/individual-study:ADD", "/draft/harmonization-study:ADD" })
+	public Response updateStudies(@QueryParam("url") String url, 
+			@QueryParam(USERNAME_PARAM) String username, 
+			@QueryParam(PWORD_PARAM) String password, 
+			@QueryParam(TYPE) String type,
+			@QueryParam(IDS_TO_UPDATE) List<String> ids) {
+	
+		log.info("PUT updateStudies. ids = {}", ids);
+		
+		return this.saveStudiesLocally(url, username, password, type, ids, Boolean.FALSE);
+	}
+
+	
+	private Response saveStudiesLocally(String url, String username, String password, String type, List<String> ids, Boolean isToInclude) {
+		
 		try {
 				
 			for (String id : ids) {
@@ -186,7 +209,10 @@ public class StudiesImportResource {
 					
 					Study study = (Study)dtos.fromDto( builder);
 					
-					study.setId(null);
+					if ( Boolean.TRUE.equals(isToInclude) ) {
+						
+						study.setId(null);
+					}
 
 					individualStudyService.save(study);
 					
@@ -196,49 +222,15 @@ public class StudiesImportResource {
 					
 					HarmonizationStudy study = (HarmonizationStudy)dtos.fromDto( builder);
 					
-					study.setId(null);
+					if ( Boolean.TRUE.equals(isToInclude) ) {
+						
+						study.setId(null);
+					}
 					
 					harmonizationStudyService.save(study);
 					
 					log.info("harmonizationStudyService: {}", study);
 				}				
-			}
-			
-			return Response.ok().build();
-			
-			
-		} catch (URISyntaxException|ProtocolException e) {
-			
-			log.error( Arrays.toString( e.getStackTrace()) );
-			
-			return Response.status(HttpStatus.SC_BAD_REQUEST).build();
-			
-		} catch (IOException e) {
-			
-			log.error( Arrays.toString( e.getStackTrace()) );
-			
-			return Response.status(HttpStatus.SC_NOT_FOUND).build();
-		}
-	}
-	
-	@PUT
-	@Path("/studies/import/_update")
-	@RequiresPermissions( {"/draft/individual-study:ADD", "/draft/harmonization-study:ADD" })
-	public Response updateStudies(@QueryParam("url") String url, 
-			@QueryParam(USERNAME_PARAM) String username, 
-			@QueryParam(PWORD_PARAM) String password, 
-			@QueryParam(TYPE) String type,
-			@QueryParam(IDS_TO_UPDATE) List<String> ids) {
-	
-		log.info("POST updateStudies. ids = {}", ids);
-		
-		try {
-				
-			for (String id : ids) {
-				
-				StringBuilder content = this.getRemoteContent(url, username, password, type, id);
-				
-				log.info("CONTENT: {}", content);
 			}
 			
 			return Response.ok().build();

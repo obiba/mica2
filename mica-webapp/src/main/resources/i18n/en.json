@@ -552,8 +552,12 @@
       "study-name": "Remote study",
       "study-name-help": "Name of the study from which data will be imported.",
       "summary": "The following operations will be executed. Are you sure?",
-      "include-operations": "Include operation(s):",
-      "update-operations": "Update operation(s):",
+      "conflicts": "Conflicts (these studies will not be imported):",
+      "conflict": "Conflict",
+      "conflict-individual-study": "There is already an individual study with the same ID registered locally.",
+      "conflict-harmonization-study": "There is already a harmonization study with the same ID registered locally.",
+      "create-operations": "Studies to create:",
+      "update-operations": "Studies to update:",
       "finish": "Finish",
       "close": "Close",
       "cancel": "Cancel",
@@ -561,8 +565,10 @@
       "next": "Next >",
       "remove": "Remove from the list",
       "action": "Action",
-      "success": "The selected studies were imported successfully.",
-      "problem": "Problems occurred when importing selected studies."
+      "created": "Created: ",
+      "updated": "Updated: ",
+      "success": "The selected studies were imported successfully: ",
+      "problem": "Problems occurred when importing selected studies. HTTP Status: "
     },
     "access": {
       "label": "Access",

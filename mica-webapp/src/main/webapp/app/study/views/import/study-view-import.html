@@ -98,111 +98,164 @@
           
           <!-- 3 - Operations Summary -->
           <div id="myDivBodyIndexThree" class="modal-body" ng-show="displayBodyIndexThree">
-            <h4><span translate>study.import.summary</span></h4><br>
-            
-            <!-- 3.1 - Include Operations -->
-            <label class="control-label ng-binding"><span translate>study.import.include-operations</span></label><br>
-            <table class="table table-bordered table-striped">
-              <thead>
-                <tr>
-                  <th data-column-name="id">ID</th>
-                  <th data-column-name="acronym">{{"study.acronym" | translate}}</th>
-                  <th data-column-name="name" class="col-md-8">{{"study.name" | translate}}</th>
-                  <th translate>study.import.action</th>
-                </tr>
-              </thead>
-              <tbody id="myTableSummaryInclude">
-                <tr ng-repeat="studyToInclude in studiesToInclude">
-                  <td>
-                    <ul class="list-unstyled">
-                      <a translate>{{studyToInclude.id}}</a>
-                    </ul>
-                  </td>
-                  <td>
-                    <ul class="list-unstyled">
-                      <li ng-repeat="acronym in studyToInclude.acronym">
-                        <span class="badge">{{acronym.lang}}</span> {{acronym.value}}
-                      </li>
-                    </ul>
-                  </td>
-                  <td>
-                    <ul class="list-unstyled">
-                      <li ng-repeat="name in studyToInclude.name">
-                        <span class="badge">{{name.lang}}</span> {{name.value}}
-                      </li>
-                    </ul>
-                  </td>
-                  <td>
-                    <a ng-click="removeFromList(studyToInclude, true)" class="delete" title="{{'study.import.remove' | translate}}" data-toggle="tooltip">
-                      <i class="fa fa-remove"></i>
-                    </a>
-                  </td>
-                </tr>  
-              </tbody>
-            </table>
-            <!-- 3.2 - Update Operations -->
-            <label class="control-label ng-binding"><span translate>study.import.update-operations</span></label>
-            <table class="table table-bordered table-striped">
-              <thead>
-                <tr>
-                  <th data-column-name="id">ID</th>
-                  <th data-column-name="acronym">{{"study.acronym" | translate}}</th>
-                  <th data-column-name="name" class="col-md-8">{{"study.name" | translate}}</th>
-                  <th translate>study.import.action</th>
-                </tr>
-              </thead>
-              <tbody id="myTableSummaryUpdate">
-                <tr ng-repeat="studyToUpdate in studiesToUpdate">
-                  <td>
-                    <ul class="list-unstyled">
-                      <a translate>{{studyToUpdate.id}}</a>
-                    </ul>
-                  </td>
-                  <td>
-                    <ul class="list-unstyled">
-                      <li ng-repeat="acronym in studyToUpdate.acronym">
-                        <span class="badge">{{acronym.lang}}</span> {{acronym.value}}
-                      </li>
-                    </ul>
-                  </td>
-                  <td>
-                    <ul class="list-unstyled">
-                      <li ng-repeat="name in studyToUpdate.name">
-                        <span class="badge">{{name.lang}}</span> {{name.value}}
-                      </li>
-                    </ul>
-                  </td>
-                  <td>
-                    <a ng-click="removeFromList(studyToUpdate, false)" class="delete" title="{{'study.import.remove' | translate}}" data-toggle="tooltip">
-                      <i class="fa fa-remove"></i>
-                    </a>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-            
-            <div id="myFooterMessageSuccessfully" ng-show="displayMsgImportedSuccessfully">
-            	<h5><span translate>study.import.success</span></h5><br>
+          
+            <div ng-show="studiesToCreate.length > 0 || studiesToUpdate.length > 0">
+            	<h4><span translate>study.import.summary</span></h4><br>
             </div>
-            <div id="myFooterMessageProblem" ng-show="displayMsgImportedProblem">
-            	<h5><span translate>study.import.problem</span></h5><br>
+            
+            <!-- 3.1 - Studies to Create -->
+            <div ng-show="studiesToCreate.length > 0">
+	            <label class="control-label ng-binding"><span translate>study.import.create-operations</span></label><br>
+	            <table class="table table-bordered table-striped">
+	              <thead>
+	                <tr>
+	                  <th data-column-name="id">ID</th>
+	                  <th data-column-name="acronym">{{"study.acronym" | translate}}</th>
+	                  <th data-column-name="name" class="col-md-8">{{"study.name" | translate}}</th>
+	                  <th translate>study.import.action</th>
+	                </tr>
+	              </thead>
+	              <tbody id="myTableSummaryCreate">
+	                <tr ng-repeat="studyToCreate in studiesToCreate">
+	                  <td>
+	                    <ul class="list-unstyled">
+	                      <a translate>{{studyToCreate.id}}</a>
+	                    </ul>
+	                  </td>
+	                  <td>
+	                    <ul class="list-unstyled">
+	                      <li ng-repeat="acronym in studyToCreate.acronym">
+	                        <span class="badge">{{acronym.lang}}</span> {{acronym.value}}
+	                      </li>
+	                    </ul>
+	                  </td>
+	                  <td>
+	                    <ul class="list-unstyled">
+	                      <li ng-repeat="name in studyToCreate.name">
+	                        <span class="badge">{{name.lang}}</span> {{name.value}}
+	                      </li>
+	                    </ul>
+	                  </td>
+	                  <td>
+	                    <a ng-click="removeFromList(studyToCreate, true)" class="delete" title="{{'study.import.remove' | translate}}" data-toggle="tooltip">
+	                      <i class="fa fa-remove"></i>
+	                    </a>
+	                  </td>
+	                </tr>  
+	              </tbody>
+	            </table>
+	        </div>
+	        
+            <!-- 3.2 - Studies to Update -->
+            <div ng-show="studiesToUpdate.length > 0">
+	            <label class="control-label ng-binding"><span translate>study.import.update-operations</span></label>
+	            <table class="table table-bordered table-striped">
+	              <thead>
+	                <tr>
+	                  <th data-column-name="id">ID</th>
+	                  <th data-column-name="acronym">{{"study.acronym" | translate}}</th>
+	                  <th data-column-name="name" class="col-md-8">{{"study.name" | translate}}</th>
+	                  <th translate>study.import.action</th>
+	                </tr>
+	              </thead>
+	              <tbody id="myTableSummaryUpdate">
+	                <tr ng-repeat="studyToUpdate in studiesToUpdate">
+	                  <td>
+	                    <ul class="list-unstyled">
+	                      <a translate>{{studyToUpdate.id}}</a>
+	                    </ul>
+	                  </td>
+	                  <td>
+	                    <ul class="list-unstyled">
+	                      <li ng-repeat="acronym in studyToUpdate.acronym">
+	                        <span class="badge">{{acronym.lang}}</span> {{acronym.value}}
+	                      </li>
+	                    </ul>
+	                  </td>
+	                  <td>
+	                    <ul class="list-unstyled">
+	                      <li ng-repeat="name in studyToUpdate.name">
+	                        <span class="badge">{{name.lang}}</span> {{name.value}}
+	                      </li>
+	                    </ul>
+	                  </td>
+	                  <td>
+	                    <a ng-click="removeFromList(studyToUpdate, false)" class="delete" title="{{'study.import.remove' | translate}}" data-toggle="tooltip">
+	                      <i class="fa fa-remove"></i>
+	                    </a>
+	                  </td>
+	                </tr>
+	              </tbody>
+	            </table>
+            </div>
+            
+            <!-- 3.3 - Studies Conflicts -->
+            <div ng-show="studiesConflict.length > 0">
+	            <label class="control-label ng-binding"><span translate>study.import.conflicts</span></label><br>
+	            <table class="table table-bordered table-striped">
+	              <thead>
+	                <tr>
+	                  <th data-column-name="id">ID</th>
+	                  <th data-column-name="acronym">{{"study.acronym" | translate}}</th>
+	                  <th class="col-md-8" translate>study.import.conflict</th>
+	                </tr>
+	              </thead>
+	              <tbody id="myTableSummaryConflict">
+	                <tr ng-repeat="studyConfict in studiesConflict">
+	                  <td>
+	                    <ul class="list-unstyled">
+	                      <a translate>{{studyConfict.id}}</a>
+	                    </ul>
+	                  </td>
+	                  <td>
+	                    <ul class="list-unstyled">
+	                      <li ng-repeat="acronym in studyConfict.acronym">
+	                        <span class="badge">{{acronym.lang}}</span> {{acronym.value}}
+	                      </li>
+	                    </ul>
+	                  </td>
+	                  <td>
+	                    <ul class="list-unstyled">
+	                     <span translate>{{path.indexOf('harmonization') > -1 ? 'study.import.conflict-individual-study' : 'study.import.conflict-harmonization-study'}}</span>
+	                    </ul>
+	                  </td>
+	                </tr>  
+	              </tbody>
+	            </table>
             </div>
           </div>
           
+          <!-- 4 - Finish Response Messages -->
+          <div id="myDivBodyIndexFour" class="modal-body" div ng-show="displayBodyIndexFour">
+          
+            <div id="myMessageSuccessfully" ng-show="displayMsgImportedSuccessfully">
+            	<h4><span translate>study.import.success</span></h4><br>
+            	<div ng-show="idsCreated.length > 0">
+            		<h5><span translate>study.import.created</span>{{idsCreated}}.</h5>
+            	</div>
+            	<div ng-show="idsUpdated.length > 0">
+            		<h5><span translate>study.import.updated</span>{{idsUpdated}}.</h5>
+            	</div>
+            </div>
+            <div id="myMessageProblem" ng-show="displayMsgImportedProblem">
+            	<h4><span translate>study.import.problem</span>{{statusErrorImport}}</h4>
+            </div>
+	      </div>
+	      
           <!-- Footer navigation Buttons -->
           <div class="modal-footer">
-            <a id="myPreviousButton" type="button" class="btn btn-info" ng-click="previous()" ng-disabled="displayBodyIndexOne" aria-hidden="true">
+            <button id="myPreviousButton" type="button" class="btn btn-info" ng-click="previous()" ng-disabled="displayBodyIndexOne" aria-hidden="true">
               <span translate>study.import.previous</span>
-            </a>
-            <a id="myNextButton" type="button" class="btn btn-info" ng-click="next()" ng-disabled="(myForm.$invalid && !displayBodyIndexOne) || (!studiesToImport.checked && displayBodyIndexTwo) || displayBodyIndexThree" aria-hidden="true">
+            </button>
+            <button id="myNextButton" type="button" class="btn btn-info" ng-click="next()" ng-disabled="(myForm.$invalid && !displayBodyIndexOne) || (!studiesToImport.checked && displayBodyIndexTwo) || displayBodyIndexThree || displayBodyIndexFour " aria-hidden="true">
               <span translate>study.import.next</span>
-            </a>
-            <a id="myFinishButton" type="button" class="btn btn-default" ng-click="finish()" ng-disabled="!displayBodyIndexThree || ( studiesToInclude.length < 1  && studiesToUpdate.length < 1)" aria-hidden="true" >
+            </button>
+            <button id="myFinishButton" type="button" class="btn btn-default" ng-click="finish()" ng-disabled="!displayBodyIndexThree || ( studiesToCreate.length < 1  && studiesToUpdate.length < 1)" aria-hidden="true" >
               <span translate>study.import.finish</span>
-            </a>
-            <a id="myCloseButton" type="button" class="btn btn-default" ng-click="close()" data-dismiss="modal" aria-hidden="true" >
+            </button>
+            <button id="myCloseButton" type="button" class="btn btn-default" ng-click="close()" data-dismiss="modal" aria-hidden="true" >
               <span translate>study.import.close</span>
-            </a>
+            </button>
           </div>
             
         </form>
