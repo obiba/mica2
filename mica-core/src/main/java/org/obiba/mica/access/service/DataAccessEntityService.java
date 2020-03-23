@@ -31,6 +31,7 @@ import java.io.OutputStream;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 import static com.jayway.jsonpath.Configuration.defaultConfiguration;
@@ -169,31 +170,37 @@ public abstract class DataAccessEntityService<T extends DataAccessEntity> {
    * @param request
    * @param from
    */
-  protected void sendNotificationEmails(T request, @Nullable DataAccessEntityStatus from) {
-    if (from == null) { // check is new request
-      sendCreatedNotificationEmail(request);
-    } else if (request.getStatus() != from) { // check there is a transition
-      switch (request.getStatus()) {
-        case SUBMITTED:
-          sendSubmittedNotificationEmail(request);
-          break;
-        case REVIEWED:
-          sendReviewedNotificationEmail(request);
-          break;
-        case OPENED:
-          sendOpenedNotificationEmail(request);
-          break;
-        case CONDITIONALLY_APPROVED:
-          sendConditionallyApprovedEmail(request);
-          break;
-        case APPROVED:
-          sendApprovedNotificationEmail(request);
-          break;
-        case REJECTED:
-          sendRejectedNotificationEmail(request);
-          break;
+  protected void sendNotificationEmails(final T request, final @Nullable DataAccessEntityStatus from) {
+    Executors.newCachedThreadPool().execute(() -> {
+      try {
+        if (from == null) { // check is new request
+          sendCreatedNotificationEmail(request);
+        } else if (request.getStatus() != from) { // check there is a transition
+          switch (request.getStatus()) {
+            case SUBMITTED:
+              sendSubmittedNotificationEmail(request);
+              break;
+            case REVIEWED:
+              sendReviewedNotificationEmail(request);
+              break;
+            case OPENED:
+              sendOpenedNotificationEmail(request);
+              break;
+            case CONDITIONALLY_APPROVED:
+              sendConditionallyApprovedEmail(request);
+              break;
+            case APPROVED:
+              sendApprovedNotificationEmail(request);
+              break;
+            case REJECTED:
+              sendRejectedNotificationEmail(request);
+              break;
+          }
+        }
+      } catch (Exception e) {
+        log.error("Failed at sending data access notification email", e);
       }
-    }
+    });
   }
 
   //
