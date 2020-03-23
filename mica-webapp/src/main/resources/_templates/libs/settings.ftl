@@ -2,6 +2,9 @@
 <#assign datetimeFormat = "yyyy-MM-dd hh:mm"/>
 <#assign dateFormat = "yyyy-MM-dd"/>
 
+<!-- Favicon -->
+<#assign faviconPath = "/favicon.ico"/>
+
 <!-- Icons -->
 <#assign networkIcon = "io io-network"/>
 <#assign studyIcon = "io io-study"/>
