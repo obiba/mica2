@@ -43,4 +43,5 @@
       <a href="${pathPrefix!".."}/data-accesses" class="btn btn-warning"><@message "data-access"/> <i class="fas fa-arrow-circle-right"></i></a>
     </li>
   </#if>
+  <#include "../models/navbar-menus-left.ftl"/>
 </#macro>
