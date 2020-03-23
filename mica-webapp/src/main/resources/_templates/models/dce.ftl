@@ -33,7 +33,7 @@
               <#assign txt = "study_taxonomy.vocabulary.populations-dataCollectionEvents-bioSamples.term." + item + ".title"/>
               <@message txt/>
               <#if item == "tissues" && dce.model.tissueTypes??>
-                : ${dce.model.tissueTypes[.lang]}
+                : ${dce.model.tissueTypes[.lang]!""}
               <#elseif item == "others" && dce.model.otherBioSamples??>
                 : ${dce.model.otherBioSamples[.lang]!""}
               </#if>

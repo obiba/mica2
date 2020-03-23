@@ -88,8 +88,8 @@
                           </td>
                         </#if>
                         <td>${dar.title!""}</td>
-                        <td class="moment-datetime">${dar.lastUpdate.toString(datetimeFormat)}</td>
-                        <td class="moment-datetime"><#if dar.submitDate??>${dar.submitDate.toString(datetimeFormat)}</#if></td>
+                        <td data-sort="${dar.lastUpdate.toString(datetimeFormat)}" class="moment-datetime">${dar.lastUpdate.toString(datetimeFormat)}</td>
+                        <td data-sort="<#if dar.submitDate??>${dar.submitDate.toString(datetimeFormat)}</#if>" class="moment-datetime"><#if dar.submitDate??>${dar.submitDate.toString(datetimeFormat)}</#if></td>
                         <#if accessConfig.feasibilityEnabled>
                           <td>${dar.pendingFeasibilities}/${dar.totalFeasibilities}</td>
                         </#if>
@@ -128,8 +128,8 @@
                             <span class="badge badge-info">${group}</span>
                           </#list>
                         </td>
-                        <td class="moment-datetime">${profile.attributes["createdDate"].toString(datetimeFormat)}</td>
-                        <td class="moment-datetime"><#if profile.attributes["lastLogin"]??>${profile.attributes["lastLogin"].toString(datetimeFormat)}</#if></td>
+                        <td data-sort="${profile.attributes["createdDate"].toString(datetimeFormat)}" class="moment-datetime">${profile.attributes["createdDate"].toString(datetimeFormat)}</td>
+                        <td data-sort="<#if profile.attributes["lastLogin"]??>${profile.attributes["lastLogin"].toString(datetimeFormat)}</#if>" class="moment-datetime"><#if profile.attributes["lastLogin"]??>${profile.attributes["lastLogin"].toString(datetimeFormat)}</#if></td>
                         <@userProfileTDs profile=profile/>
                       </tr>
                     </#list>
