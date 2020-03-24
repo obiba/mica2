@@ -15,7 +15,7 @@
       </div>
 
       <div class="col-sm-12 col-lg-6">
-        <#if study.model.methods.recruitments??>
+        <#if study.model.methods?? && study.model.methods.recruitments??>
           <@studyRecruitments study=study/>
         </#if>
 
@@ -71,16 +71,18 @@
     <div class="card-body">
 
       <dl class="row">
-        <dt class="col-sm-4" title="<@message "study_taxonomy.vocabulary.methods-design.description"/>">
+        <#if study.model.methods?? && study.model.methods.design??>
+          <dt class="col-sm-4" title="<@message "study_taxonomy.vocabulary.methods-design.description"/>">
             <@message "study_taxonomy.vocabulary.methods-design.title"/>
-        </dt>
-        <dd class="col-sm-8">
+          </dt>
+          <dd class="col-sm-8">
             <#assign text = "study_taxonomy.vocabulary.methods-design.term." + study.model.methods.design + ".title"/>
             <@message text/>
             <#if study.model.methods.design == "other" && study.model.methods.otherDesign??>
               : ${localize(study.model.methods.otherDesign)}
             </#if>
-        </dd>
+          </dd>
+        </#if>
 
         <#if study.model.startYear??>
           <dt class="col-sm-4">
@@ -109,7 +111,7 @@
           </dd>
         </#if>
 
-        <#if study.model.methods.followUpInfo??>
+        <#if study.model.methods?? && study.model.methods.followUpInfo??>
           <dt class="col-sm-4">
             <@message "study.follow-up"/>
           </dt>
@@ -478,29 +480,35 @@
 
   <table class="table table-sm table-striped mb-2">
     <tbody>
-    <tr>
-      <td><@message "study_taxonomy.vocabulary.access_data.title"/></td>
-      <td>
-          <@yesnoToIcon value=study.model.access.access_data/>
-      </td>
-    </tr>
-    <tr>
-      <td><@message "study_taxonomy.vocabulary.access_bio_samples.title"/></td>
-      <td>
-          <@yesnoToIcon value=study.model.access.access_bio_samples/>
-      </td>
-    </tr>
-    <tr>
-      <td><@message "study_taxonomy.vocabulary.access_other.title"/></td>
-      <td>
-          <@yesnoToIcon value=study.model.access.access_other/>
-          <#if study.model.otherAccess??>
-            <div>
-                ${localize(study.model.otherAccess)}
-            </div>
+      <tr>
+        <td><@message "study_taxonomy.vocabulary.access_data.title"/></td>
+        <td>
+          <#if study.model.access??>
+            <@yesnoToIcon value=study.model.access.access_data/>
           </#if>
-      </td>
-    </tr>
+        </td>
+      </tr>
+      <tr>
+        <td><@message "study_taxonomy.vocabulary.access_bio_samples.title"/></td>
+        <td>
+          <#if study.model.access??>
+            <@yesnoToIcon value=study.model.access.access_bio_samples/>
+          </#if>
+        </td>
+      </tr>
+      <tr>
+        <td><@message "study_taxonomy.vocabulary.access_other.title"/></td>
+        <td>
+          <#if study.model.access??>
+          <@yesnoToIcon value=study.model.access.access_other/>
+            <#if study.model.otherAccess??>
+              <div>
+                ${localize(study.model.otherAccess)}
+              </div>
+            </#if>
+          </#if>
+        </td>
+      </tr>
     </tbody>
   </table>
 
@@ -558,7 +566,7 @@
 </#macro>
 
 <!-- Yes-no etc. coded answers -->
-<#macro yesnoToIcon value>
+<#macro yesnoToIcon value="">
   <#if value??>
     <#if value == "yes">
       <i class="fas fa-check"></i>

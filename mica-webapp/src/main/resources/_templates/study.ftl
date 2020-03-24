@@ -163,24 +163,24 @@
         <!-- Study model -->
         <@studyModel study=study type=type/>
 
-        <!-- Timeline -->
-        <#if type == "Individual">
-          <div class="row">
-            <div class="col-lg-12">
-              <div class="card card-info card-outline">
-                <div class="card-header">
-                  <h3 class="card-title"><@message "timeline"/></h3>
-                </div>
-                <div class="card-body">
-                  <div id="timeline"></div>
+        <#if study.populations?? && study.populations?size != 0>
+          <!-- Timeline -->
+          <#if type == "Individual">
+            <div class="row">
+              <div class="col-lg-12">
+                <div class="card card-info card-outline">
+                  <div class="card-header">
+                    <h3 class="card-title"><@message "timeline"/></h3>
+                  </div>
+                  <div class="card-body">
+                    <div id="timeline"></div>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        </#if>
+          </#if>
 
-        <!-- Populations -->
-        <#if study.populations?? && study.populations?size != 0>
+          <!-- Populations -->
           <div class="row">
             <div class="col-lg-12">
               <div class="card card-info card-outline">
