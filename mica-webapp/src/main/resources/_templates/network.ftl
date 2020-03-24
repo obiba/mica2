@@ -119,7 +119,9 @@
                       <i class="fas fa-minus"></i></button>
                   </div>
                   <#if affiliatedMembersQuery??>
-                    <a href="../ws/persons/_search/_download?limit=1000&query=${affiliatedMembersQuery?url('utf-8')}" class="btn btn-primary float-right mr-2"><i class="fas fa-download"></i> Affiliated Members</a>
+                    <a href="../ws/persons/_search/_download?limit=1000&query=${affiliatedMembersQuery?url('utf-8')}" class="btn btn-primary float-right mr-2">
+                      <i class="fas fa-download"></i> <@message "network.associated-people"/>
+                    </a>
                   </#if>
                 </div>
                 <div class="card-body">
