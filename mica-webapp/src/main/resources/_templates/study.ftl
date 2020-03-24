@@ -125,7 +125,9 @@
                     <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="Collapse">
                       <i class="fas fa-minus"></i></button>
                   </div>
-                  <a href="../ws/persons/_search/_download?limit=1000&query=studyMemberships.parentId:(${study.id})" class="btn btn-primary float-right mr-2"><i class="fas fa-download"></i> Download</a>
+                  <a href="../ws/persons/_search/_download?limit=1000&query=studyMemberships.parentId:(${study.id})" class="btn btn-primary float-right mr-2">
+                    <i class="fas fa-download"></i> <@message "download"/>
+                  </a>
                 </div>
                 <div class="card-body">
                   <table class="table">
@@ -212,7 +214,7 @@
 
                         <!-- DCE list -->
                         <#if pop.dataCollectionEvents?? && pop.dataCollectionEvents?size != 0>
-                          <h5>Data Collection Events</h5>
+                          <h5><@message "study.data-collection-events"/></h5>
                           <table id="population-${pop.id}-dces" class="table table-bordered table-striped">
                             <thead>
                             <tr>
