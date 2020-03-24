@@ -51,101 +51,111 @@
             </div>
           </#if>
           <div class="card-body">
-            <div class="tab-content" id="tabs-tabContent">
-              <div class="tab-pane fade show active" id="tabs-dars" role="tabpanel" aria-labelledby="tabs-dars-tab">
-                <div class="mb-3">
-                  <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal-add">
-                    <i class="fas fa-plus"></i> <@message "new-data-access-request"/>
-                  </button>
-                </div>
-                <#if dars?? && dars?size gt 0>
-                  <table id="dars" class="table table-bordered table-striped">
-                    <thead>
+
+            <#macro darList>
+              <div class="mb-3">
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal-add">
+                  <i class="fas fa-plus"></i> <@message "new-data-access-request"/>
+                </button>
+              </div>
+              <#if dars?? && dars?size gt 0>
+                <table id="dars" class="table table-bordered table-striped">
+                  <thead>
+                  <tr>
+                    <th>ID</th>
+                    <#if isAdministrator || isDAO>
+                      <th><@message "applicant"/></th>
+                    </#if>
+                    <th><@message "title"/></th>
+                    <th><@message "last-update"/></th>
+                    <th><@message "submission-date"/></th>
+                    <#if accessConfig.feasibilityEnabled>
+                      <th><@message "feasibilities-pending-total"/></th>
+                    </#if>
+                    <#if accessConfig.amendmentsEnabled>
+                      <th><@message "amendments-pending-total"/></th>
+                    </#if>
+                    <th><@message "status"/></th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  <#list dars as dar>
                     <tr>
-                      <th>ID</th>
+                      <td><a href="../data-access/${dar.id}">${dar.id}</a></td>
                       <#if isAdministrator || isDAO>
-                        <th><@message "applicant"/></th>
+                        <td>
+                          <a href="#" data-toggle="modal" data-target="#modal-${dar.applicant}">${applicants[dar.applicant].fullName}</a>
+                        </td>
                       </#if>
-                      <th><@message "title"/></th>
-                      <th><@message "last-update"/></th>
-                      <th><@message "submission-date"/></th>
+                      <td>${dar.title!""}</td>
+                      <td data-sort="${dar.lastUpdate.toString(datetimeFormat)}" class="moment-datetime">${dar.lastUpdate.toString(datetimeFormat)}</td>
+                      <td data-sort="<#if dar.submitDate??>${dar.submitDate.toString(datetimeFormat)}</#if>" class="moment-datetime"><#if dar.submitDate??>${dar.submitDate.toString(datetimeFormat)}</#if></td>
                       <#if accessConfig.feasibilityEnabled>
-                        <th><@message "feasibilities-pending-total"/></th>
+                        <td>${dar.pendingFeasibilities}/${dar.totalFeasibilities}</td>
                       </#if>
                       <#if accessConfig.amendmentsEnabled>
-                        <th><@message "amendments-pending-total"/></th>
+                        <td>${dar.pendingAmendments}/${dar.totalAmendments}</td>
                       </#if>
-                      <th><@message "status"/></th>
+                      <td><i class="fas fa-circle text-${statusColor(dar.status.toString())}"></i> <@message dar.status.toString()/></td>
                     </tr>
-                    </thead>
-                    <tbody>
-                    <#list dars as dar>
-                      <tr>
-                        <td><a href="../data-access/${dar.id}">${dar.id}</a></td>
-                        <#if isAdministrator || isDAO>
-                          <td>
-                            <a href="#" data-toggle="modal" data-target="#modal-${dar.applicant}">${applicants[dar.applicant].fullName}</a>
-                          </td>
-                        </#if>
-                        <td>${dar.title!""}</td>
-                        <td data-sort="${dar.lastUpdate.toString(datetimeFormat)}" class="moment-datetime">${dar.lastUpdate.toString(datetimeFormat)}</td>
-                        <td data-sort="<#if dar.submitDate??>${dar.submitDate.toString(datetimeFormat)}</#if>" class="moment-datetime"><#if dar.submitDate??>${dar.submitDate.toString(datetimeFormat)}</#if></td>
-                        <#if accessConfig.feasibilityEnabled>
-                          <td>${dar.pendingFeasibilities}/${dar.totalFeasibilities}</td>
-                        </#if>
-                        <#if accessConfig.amendmentsEnabled>
-                          <td>${dar.pendingAmendments}/${dar.totalAmendments}</td>
-                        </#if>
-                        <td><i class="fas fa-circle text-${statusColor(dar.status.toString())}"></i> <@message dar.status.toString()/></td>
-                      </tr>
-                    </#list>
-                    </tbody>
-                  </table>
-                <#else>
-                  <div class="mt-3 text-muted"><@message "no-data-access-requests"/></div>
-                </#if>
-              </div>
-              <div class="tab-pane fade" id="tabs-users" role="tabpanel" aria-labelledby="tabs-users-tab">
-                <#if users?? && users?size gt 0>
-                  <table id="users" class="table table-bordered table-striped">
-                    <thead>
-                    <tr>
-                      <th><@message "full-name"/></th>
-                      <th><@message "groups"/></th>
-                      <th><@message "createdDate"/></th>
-                      <th><@message "lastLogin"/></th>
-                      <@userProfileTHs/>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <#list users as profile>
-                      <tr>
-                        <td>
-                          <a href="#" data-toggle="modal" data-target="#modal-${profile.username}">${profile.fullName}</a>
-                        </td>
-                        <td>
-                          <#list profile.groups as group>
-                            <span class="badge badge-info">${group}</span>
-                          </#list>
-                        </td>
-                        <td data-sort="${profile.attributes["createdDate"].toString(datetimeFormat)}" class="moment-datetime">${profile.attributes["createdDate"].toString(datetimeFormat)}</td>
-                        <td data-sort="<#if profile.attributes["lastLogin"]??>${profile.attributes["lastLogin"].toString(datetimeFormat)}</#if>" class="moment-datetime"><#if profile.attributes["lastLogin"]??>${profile.attributes["lastLogin"].toString(datetimeFormat)}</#if></td>
-                        <@userProfileTDs profile=profile/>
-                      </tr>
-                    </#list>
-                    </tbody>
-                  </table>
-                <#else>
-                  <span class="text-muted"><@message "no-users"/></span>
-                </#if>
-              </div>
-              <#if users?? && users?size gt 0>
-                <#list users as profile>
-                  <@userProfileDialog profile=profile/>
-                </#list>
+                  </#list>
+                  </tbody>
+                </table>
+              <#else>
+                <div class="mt-3 text-muted"><@message "no-data-access-requests"/></div>
               </#if>
-            </div>
+            </#macro>
+
+            <#if users??>
+              <div class="tab-content" id="tabs-tabContent">
+                <div class="tab-pane fade show active" id="tabs-dars" role="tabpanel" aria-labelledby="tabs-dars-tab">
+                  <@darList/>
+                </div>
+                <div class="tab-pane fade" id="tabs-users" role="tabpanel" aria-labelledby="tabs-users-tab">
+                  <#if users?? && users?size gt 0>
+                    <table id="users" class="table table-bordered table-striped">
+                      <thead>
+                      <tr>
+                        <th><@message "full-name"/></th>
+                        <th><@message "groups"/></th>
+                        <th><@message "createdDate"/></th>
+                        <th><@message "lastLogin"/></th>
+                        <@userProfileTHs/>
+                      </tr>
+                      </thead>
+                      <tbody>
+                      <#list users as profile>
+                        <tr>
+                          <td>
+                            <a href="#" data-toggle="modal" data-target="#modal-${profile.username}">${profile.fullName}</a>
+                          </td>
+                          <td>
+                            <#list profile.groups as group>
+                              <span class="badge badge-info">${group}</span>
+                            </#list>
+                          </td>
+                          <td data-sort="${profile.attributes["createdDate"].toString(datetimeFormat)}" class="moment-datetime">${profile.attributes["createdDate"].toString(datetimeFormat)}</td>
+                          <td data-sort="<#if profile.attributes["lastLogin"]??>${profile.attributes["lastLogin"].toString(datetimeFormat)}</#if>" class="moment-datetime"><#if profile.attributes["lastLogin"]??>${profile.attributes["lastLogin"].toString(datetimeFormat)}</#if></td>
+                          <@userProfileTDs profile=profile/>
+                        </tr>
+                      </#list>
+                      </tbody>
+                    </table>
+                  <#else>
+                    <span class="text-muted"><@message "no-users"/></span>
+                  </#if>
+                </div>
+                <#if users?? && users?size gt 0>
+                  <#list users as profile>
+                    <@userProfileDialog profile=profile/>
+                  </#list>
+                </#if>
+              </div>
+            <#else>
+              <@darList/>
+            </#if>
           </div>
+
           <!-- /.card -->
         </div>
 
@@ -194,7 +204,7 @@
       <#else>
         options = dataTablesSortSearchOpts;
         options.order = [[2, 'desc']];
-        $("#dars").DataTable();
+        $("#dars").DataTable(options);
       </#if>
       $("#users").DataTable(dataTablesDefaultOpts);
     });
