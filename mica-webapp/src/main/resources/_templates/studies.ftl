@@ -77,9 +77,9 @@
                         <tbody>
                         <#list studies as std>
                           <tr>
-                            <td><a href="../study/${std.id}">${std.acronym[.lang]!""}</a></td>
-                            <td><small>${std.name[.lang]!""}</small></td>
-                            <td><small><#if std.objectives?? && std.objectives[.lang]??>${std.objectives[.lang]?trim?truncate_w(100, "...")}</#if></small></td>
+                            <td><a href="../study/${std.id}">${localize(std.acronym)}</a></td>
+                            <td><small>${localize(std.name)}</small></td>
+                            <td><small>${localize(std.objectives)?trim?truncate_w(100, "...")}</small></td>
                             <#if showTypeColumn>
                               <td>
                                 <#if std.class.simpleName == "HarmonizationStudy">
@@ -101,16 +101,16 @@
                           <div class="col-12 col-sm-6 col-md-4 d-flex align-items-stretch">
                             <div class="card bg-light w-100">
                               <div class="card-header text-dark border-bottom-0">
-                                <h2 class="lead"><b>${std.acronym[.lang]!""}</b></h2>
+                                <h2 class="lead"><b>${localize(std.acronym)}</b></h2>
                               </div>
                               <div class="card-body pt-0">
                                 <div class="row">
                                   <div class="col-7">
-                                    <p class="text-muted text-sm">${std.name[.lang]!""}</p>
+                                    <p class="text-muted text-sm">${localize(std.name)}</p>
                                   </div>
                                   <div class="col-5 text-center">
                                       <#if std.logo??>
-                                        <img class="img-fluid" style="max-height: 200px" alt="${std.acronym[.lang]!""} logo" src="../ws/study/${std.id}/file/${std.logo.id}/_download"/>
+                                        <img class="img-fluid" style="max-height: 200px" alt="${localize(std.acronym)} logo" src="../ws/study/${std.id}/file/${std.logo.id}/_download"/>
                                       <#else >
                                         <p class="text-black-50 text-center mr-5 ml-5 pr-5">
                                           <i class="${studyIcon} fa-3x"></i>
@@ -121,8 +121,8 @@
                               </div>
                               <div class="card-footer">
                                 <div class="text-right">
-                                  <a href="../study/${std.id}" class="btn btn-sm btn-primary">
-                                    <i class="fas fa-eye"></i> View ${std.acronym[.lang]!""}
+                                  <a href="../study/${std.id}" class="btn btn-sm btn-outline-info">
+                                    <i class="fas fa-eye"></i> ${localize(std.acronym)}
                                   </a>
                                 </div>
                               </div>

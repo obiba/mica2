@@ -22,7 +22,7 @@
     <!-- Content Header (Page header) -->
     <#assign title = variable.name/>
     <#if opalTable?? && opalTable.name??>
-      <#assign title = (variable.name + " [" + (opalTable.name[.lang]!"") + "]")/>
+      <#assign title = (variable.name + " [" + localize(opalTable.name) + "]")/>
     </#if>
     <@header titlePrefix=(type?lower_case + "-variable") title=title subtitle=""/>
     <!-- /.content-header -->
@@ -32,12 +32,12 @@
       <div class="container">
         <div class="callout callout-info">
           <#if variable.attributes?? && variable.attributes.label??>
-            <p><@attributeLocaleValue attribute = variable.attributes.label/></p>
+            <p>${localize(variable.attributes.label)}</p>
           <#else>
             <p class="text-muted"><@message "no-label"/></p>
           </#if>
           <#if variable.attributes?? && variable.attributes.description??>
-            <p class="text-muted"><i class="fas fa-info-circle"></i> <@attributeLocaleValue attribute = variable.attributes.description/></p>
+            <p class="text-muted"><i class="fas fa-info-circle"></i> ${localize(variable.attributes.description)}</p>
           </#if>
         </div>
 
@@ -93,7 +93,7 @@
                             <td>${category.name}</td>
                             <td>
                               <#if category.attributes??>
-                                <@attributeLocaleValue attribute = category.attributes.label/>
+                                ${localize(category.attributes.label)}
                               </#if>
                             </td>
                             <td><#if category.missing><i class="fas fa-check"></i></#if></td>
@@ -123,22 +123,22 @@
                       <#else>
                         <i class="${harmoDatasetIcon}"></i>
                       </#if>
-                      ${variable.datasetAcronym[.lang]!variable.datasetId}
+                      ${localize(variable.datasetAcronym, variable.datasetId)}
                     </a>
                   </dd>
 
                   <dt class="col-sm-4"><@message "study"/></dt>
-                  <dd class="col-sm-8"><a href="../study/${study.id}">${study.acronym[.lang]!study.id}</a></dd>
+                  <dd class="col-sm-8"><a href="../study/${study.id}">${localize(study.acronym, study.id)}</a></dd>
                   <dt class="col-sm-4"><@message "population"/></dt>
                   <dd class="col-sm-8">
-                    <a href="#" data-toggle="modal" data-target="#modal-${population.id}">${population.name[.lang]!population.id}</a>
+                    <a href="#" data-toggle="modal" data-target="#modal-${population.id}">${localize(population.name, population.id)}</a>
                     <@populationDialog id=population.id population=population></@populationDialog>
                   </dd>
                   <#if dce??>
                     <dt class="col-sm-4"><@message "data-collection-event"/></dt>
                     <dd class="col-sm-8">
                       <#assign dceId="${population.id}-${dce.id}">
-                      <a href="#" data-toggle="modal" data-target="#modal-${dceId}">${dce.name[.lang]!""}</a>
+                      <a href="#" data-toggle="modal" data-target="#modal-${dceId}">${localize(dce.name, dce.id)}</a>
                       <@dceDialog id=dceId dce=dce></@dceDialog>
                     </dd>
                   </#if>
@@ -150,10 +150,10 @@
                     <dt class="col-sm-4"><@message "datasource-info"/></dt>
                     <dd class="col-sm-8">
                       <#if opalTable.name??>
-                        [${opalTable.name[.lang]!""}]
+                        [${localize(opalTable.name)}]
                       </#if>
                       <#if opalTable.description??>
-                        <span class="text-muted">${opalTable.description[.lang]!""}</span>
+                        <span class="text-muted">${localize(opalTable.description)}</span>
                       </#if>
                     </dd>
                   </#if>
@@ -174,15 +174,11 @@
                 <div class="card-body">
                   <dl class="row">
                     <#list annotations as annotation>
-                      <dt class="col-sm-4" title="<#if annotation.vocabularyDescription??>${annotation.vocabularyDescription[.lang]!""}</#if>">
-                        ${annotation.vocabularyTitle[.lang]!""}
+                      <dt class="col-sm-4" title="<#if annotation.vocabularyDescription??>${localize(annotation.vocabularyDescription)}</#if>">
+                        ${localize(annotation.vocabularyTitle)}
                       </dt>
-                      <dd class="col-sm-8" title="<#if annotation.termDescription??>${annotation.termDescription[.lang]!""}</#if>">
-                        <#if annotation.termTitle[.lang]??>
-                          ${annotation.termTitle[.lang]!""}
-                        <#elseif annotation.termTitle["und"]??>
-                          <span class="marked">${annotation.termTitle["und"]}</span>
-                        </#if>
+                      <dd class="col-sm-8" title="<#if annotation.termDescription??>${localize(annotation.termDescription)}</#if>">
+                        <span class="marked">${localize(annotation.termTitle)}</span>
                       </dd>
                     </#list>
                   </dl>
@@ -202,7 +198,7 @@
                   <h3 class="card-title"><@message "harmonization"/>
                   <#if harmoAnnotations.hasStatus()>
                     <span class=" badge badge-${harmoAnnotations.statusClass}">
-                      ${harmoAnnotations.statusValueTitle[.lang]!harmoAnnotations.statusValue!"-"}
+                      ${localize(harmoAnnotations.statusValueTitle, harmoAnnotations.statusValue!"-")}
                     </span>
                   </#if>
                   </h3>
@@ -213,17 +209,17 @@
                   <#else>
                     <dl>
                       <#if harmoAnnotations.hasStatusDetail()>
-                        <dt title="${harmoAnnotations.statusDetailDescription[.lang]!""}">
-                          ${harmoAnnotations.statusDetailTitle[.lang]!"Status detail"}
+                        <dt title="${localize(harmoAnnotations.statusDetailDescription)}">
+                          ${localize(harmoAnnotations.statusDetailTitle, "Status detail")}
                         </dt>
-                        <dd title="<#if harmoAnnotations.statusDetailValueDescription??>${harmoAnnotations.statusDetailValueDescription[.lang]!""}</#if>">
-                          ${harmoAnnotations.statusDetailValueTitle[.lang]!harmoAnnotations.statusDetailValue!"-"}
+                        <dd title="${localize(harmoAnnotations.statusDetailValueDescription)}">
+                          ${localize(harmoAnnotations.statusDetailValueTitle, harmoAnnotations.statusDetailValue!"-")}
                         </dd>
                       </#if>
 
                       <#if harmoAnnotations.hasAlgorithm()>
-                        <dt title="${harmoAnnotations.algorithmDescription[.lang]!""}">
-                          ${harmoAnnotations.algorithmTitle[.lang]!"Algorithm"}
+                        <dt title="${localize(harmoAnnotations.algorithmDescription)}">
+                          ${localize(harmoAnnotations.algorithmTitle, "Algorithm")}
                         </dt>
                         <dd>
                           <span class="marked mt-3">${harmoAnnotations.algorithmValue!""}</span>
@@ -231,8 +227,8 @@
                       </#if>
 
                       <#if harmoAnnotations.hasComment()>
-                        <dt title="${harmoAnnotations.commentDescription[.lang]!""}">
-                          ${harmoAnnotations.commentTitle[.lang]!"Comment"}
+                        <dt title="${localize(harmoAnnotations.commentDescription)}">
+                          ${localize(harmoAnnotations.commentTitle, "Comment")}
                         </dt>
                         <dd>
                           <span class="marked">${harmoAnnotations.commentValue!""}</span>

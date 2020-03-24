@@ -49,9 +49,9 @@
                   <#list projects as project>
                     <div class="border-bottom mb-3">
                       <p>
-                        <strong><i class="${projectIcon}"></i> ${project.title[.lang]!""}</strong>
+                        <strong><i class="${projectIcon}"></i> ${localize(project.title)}</strong>
                       </p>
-                      <p class="text-muted">${project.summary[.lang]!""}</p>
+                      <p class="text-muted">${localize(project.summary)}</p>
                       <p>
                         <@projectModel project=project/>
                       </p>

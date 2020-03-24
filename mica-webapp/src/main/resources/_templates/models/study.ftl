@@ -46,7 +46,7 @@
             </div>
             <!-- /.card-header -->
             <div class="card-body">
-              ${study.model.harmonizationDesign[.lang]!""}
+              ${localize(study.model.harmonizationDesign)}
             </div>
           </div>
         </div>
@@ -78,7 +78,7 @@
             <#assign text = "study_taxonomy.vocabulary.methods-design.term." + study.model.methods.design + ".title"/>
             <@message text/>
             <#if study.model.methods.design == "other" && study.model.methods.otherDesign??>
-              : ${study.model.methods.otherDesign[.lang]!""}
+              : ${localize(study.model.methods.otherDesign)}
             </#if>
         </dd>
 
@@ -105,7 +105,7 @@
             <@message "funding"/>
           </dt>
           <dd class="col-sm-8">
-            ${study.model.funding[.lang]!""}
+            ${localize(study.model.funding)}
           </dd>
         </#if>
 
@@ -114,7 +114,7 @@
             <@message "study.follow-up"/>
           </dt>
           <dd class="col-sm-8">
-            ${study.model.methods.followUpInfo[.lang]!""}
+            ${localize(study.model.methods.followUpInfo)}
           </dd>
         </#if>
 
@@ -123,7 +123,7 @@
             <@message "suppl-info"/>
           </dt>
           <dd class="col-sm-8">
-            ${study.model.info[.lang]!""}
+            ${localize(study.model.info)}
           </dd>
         </#if>
       </dl>
@@ -180,7 +180,7 @@
                     <#assign text = "study_taxonomy.vocabulary.methods-recruitments.term." + type + ".title"/>
                     <@message text/>
                     <#if type == "other" && study.model.methods.otherRecruitment??>
-                      : ${study.model.methods.otherRecruitment[.lang]!""}
+                      : ${localize(study.model.methods.otherRecruitment)}
                     </#if>
                 </li>
               </#list>
@@ -256,7 +256,7 @@
                 <@message "suppl-info"/>
             </dt>
             <dd class="col-sm-6">
-                ${study.model.numberOfParticipants.info[.lang]!""}
+                ${localize(study.model.numberOfParticipants.info)}
             </dd>
           </#if>
       </dl>
@@ -355,7 +355,7 @@
                   </table>
 
                     <#if study.model.access_permission_additional_info??>
-                      <p class="text-muted">${study.model.access_permission_additional_info[.lang]!""}</p>
+                      <p class="text-muted">${localize(study.model.access_permission_additional_info)}</p>
                     </#if>
 
                   <p><b><@message "study.access.access_restrictions.transfer.title"/></b></p>
@@ -393,7 +393,7 @@
                   </table>
 
                     <#if study.model.access_special_conditions_to_leave??>
-                      <p class="text-muted">${study.model.access_special_conditions_to_leave[.lang]!""}</p>
+                      <p class="text-muted">${localize(study.model.access_special_conditions_to_leave)}</p>
                     </#if>
                 </div>
               </#if>
@@ -420,7 +420,7 @@
                   </table>
 
                     <#if study.model.access_cost_additional_information??>
-                      <p class="text-muted">${study.model.access_cost_additional_information[.lang]!""}</p>
+                      <p class="text-muted">${localize(study.model.access_cost_additional_information)}</p>
                     </#if>
 
                   <p><b><@message "study.access.access_data_sharing_cost.cost-reduction-title"/></b></p>
@@ -443,7 +443,7 @@
                   </table>
 
                     <#if study.model.access_cost_reduction_consideration_specification??>
-                      <p class="text-muted">${study.model.access_cost_reduction_consideration_specification[.lang]!""}</p>
+                      <p class="text-muted">${localize(study.model.access_cost_reduction_consideration_specification)}</p>
                     </#if>
                 </div>
               </#if>
@@ -458,7 +458,7 @@
       <#if study.model.access_supplementary_info??>
         <p><b><@message "suppl-info"/></b></p>
         <div>
-            ${study.model.access_supplementary_info[.lang]!""}
+            ${localize(study.model.access_supplementary_info)}
         </div>
       </#if>
     </div>
@@ -496,7 +496,7 @@
           <@yesnoToIcon value=study.model.access.access_other/>
           <#if study.model.otherAccess??>
             <div>
-                ${study.model.otherAccess[.lang]!""}
+                ${localize(study.model.otherAccess)}
             </div>
           </#if>
       </td>

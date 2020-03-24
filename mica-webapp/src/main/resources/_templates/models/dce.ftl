@@ -14,7 +14,7 @@
               <#assign txt = "study_taxonomy.vocabulary.populations-dataCollectionEvents-dataSources.term." + item + ".title"/>
               <@message txt/>
               <#if item == "others" && dce.model.otherDataSources??>
-                : ${dce.model.otherDataSources[.lang]!""}
+                : ${localize(dce.model.otherDataSources)}
               </#if>
             </li>
           </#list>
@@ -33,9 +33,9 @@
               <#assign txt = "study_taxonomy.vocabulary.populations-dataCollectionEvents-bioSamples.term." + item + ".title"/>
               <@message txt/>
               <#if item == "tissues" && dce.model.tissueTypes??>
-                : ${dce.model.tissueTypes[.lang]!""}
+                : ${localize(dce.model.tissueTypes)}
               <#elseif item == "others" && dce.model.otherBioSamples??>
-                : ${dce.model.otherBioSamples[.lang]!""}
+                : ${localize(dce.model.otherBioSamples)}
               </#if>
             </li>
           </#list>
@@ -67,15 +67,13 @@
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
         <div class="modal-header">
-          <h4 class="modal-title">${dce.name[.lang]!""}</h4>
+          <h4 class="modal-title">${localize(dce.name)}</h4>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
         <div class="modal-body">
-          <#if dce.description??>
-            <div>${dce.description[.lang]!""}</div>
-          </#if>
+          <div>${localize(dce.description)}</div>
           <dl class="row">
             <#if dce.start??>
               <dt class="col-sm-4">

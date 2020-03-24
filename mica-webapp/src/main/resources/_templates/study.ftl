@@ -9,7 +9,7 @@
 <html lang="${.lang}">
 <head>
   <#include "libs/head.ftl">
-  <title>${config.name!""} | ${study.acronym[.lang]!""}</title>
+  <title>${config.name!""} | ${localize(study.acronym)}</title>
   <link rel="stylesheet" href="../bower_components/mica-study-timeline/dist/mica-study-timeline.css" />
 </head>
 <body class="hold-transition layout-top-nav layout-navbar-fixed">
@@ -22,7 +22,7 @@
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
     <!-- Content Header (Page header) -->
-    <@header titlePrefix=(type?lower_case + "-study") title=study.acronym[.lang]!"" subtitle=study.name[.lang]!"" breadcrumb=[["..", "home"], ["../studies", "studies"], [study.acronym[.lang]!""]]/>
+    <@header titlePrefix=(type?lower_case + "-study") title=localize(study.acronym) subtitle=localize(study.name) breadcrumb=[["..", "home"], ["../studies", "studies"], [localize(study.acronym)]]/>
     <!-- /.content-header -->
 
     <!-- Main content -->
@@ -34,13 +34,13 @@
               <div class="card-body">
                 <div class="row">
                   <div class="col-lg-12">
-                    <h3 class="mb-4">${study.name[.lang]!""}</h3>
+                    <h3 class="mb-4">${localize(study.name)}</h3>
                   </div>
                 </div>
                 <div class="row">
                   <div class="col-md-3 col-sm-6 col-12">
                     <#if study.logo??>
-                      <img class="img-fluid" style="max-height: 200px" alt="${study.acronym[.lang]!""} logo" src="../ws/study/${study.id}/file/${study.logo.id}/_download"/>
+                      <img class="img-fluid" style="max-height: 200px" alt="${localize(study.acronym)} logo" src="../ws/study/${study.id}/file/${study.logo.id}/_download"/>
                     <#else >
                       <p class="text-light text-center">
                         <i class="${studyIcon} fa-4x"></i>
@@ -102,13 +102,11 @@
                 </div>
 
                 <div class="card-text marked">
-                  <#if study.objectives??>
-                    ${study.objectives[.lang]!""}
-                  </#if>
+                  ${localize(study.objectives)}
                 </div>
                   <#if study.model.website??>
                     <blockquote>
-                      <@message "visit"/> <a href="${study.model.website}" target="_blank">${study.acronym[.lang]!""}</a>
+                      <@message "visit"/> <a href="${study.model.website}" target="_blank">${localize(study.acronym)}</a>
                     </blockquote>
                   </#if>
               </div>
@@ -199,7 +197,7 @@
                     <ul class="nav nav-pills mb-3">
                       <#list study.populations as pop>
                         <li class="nav-item"><a class="nav-link <#if pop?index == 0>active</#if>" href="#population-${pop.id}" data-toggle="tab">
-                          ${pop.name[.lang]!""}</a>
+                          ${localize(pop.name)}</a>
                         </li>
                       </#list>
                     </ul>
@@ -208,7 +206,7 @@
                     <#list study.populations as pop>
                       <div class="tab-pane <#if pop?index == 0>active</#if>" id="population-${pop.id}">
                         <div>
-                          <#if pop.description??>${pop.description[.lang]!""}</#if>
+                          ${localize(pop.description)}
                         </div>
                         <@populationModel population=pop/>
 
@@ -230,11 +228,11 @@
                                   <td>
                                     <#assign dceId="${pop.id}-${dce.id}">
                                     <a href="#" data-toggle="modal" data-target="#modal-${dceId}">
-                                      ${dce.name[.lang]!""}
+                                      ${localize(dce.name)}
                                     </a>
                                     <@dceDialog id=dceId dce=dce></@dceDialog>
                                   </td>
-                                  <td><small><#if dce.description?? && dce.description[.lang]??>${dce.description[.lang]?trim?truncate(200, "...")}</#if></small></td>
+                                  <td><small>${localize(dce.description)?trim?truncate(200, "...")}</small></td>
                                   <td><#if dce.start?? && dce.start.yearMonth??>${dce.start.yearMonth}</#if></td>
                                   <td><#if dce.end?? && dce.end.yearMonth??>${dce.end.yearMonth}</#if></td>
                                 </tr>

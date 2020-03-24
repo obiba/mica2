@@ -4,6 +4,20 @@
   <@spring.messageText code code/>
 </#macro>
 
+<!-- From a localized text get the value in the current language or in the default one or in the undefined one -->
+<#function localize txt={} default="">
+  <#if txt??>
+    <#if txt[.lang]??>
+      <#return txt[.lang]/>
+    <#elseif txt["en"]??>
+      <#return txt["en"]/>
+    <#elseif txt["und"]??>
+      <#return txt["und"]/>
+    </#if>
+  </#if>
+  <#return default/>
+</#function>
+
 <!-- App settings -->
 <#include "settings.ftl"/>
 <#include "../models/settings.ftl"/>
