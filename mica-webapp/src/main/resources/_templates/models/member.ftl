@@ -4,39 +4,39 @@
 <#macro memberModel member>
   <dl class="row">
     <#if member.person.title??>
-      <dt class="col-sm-4">Title</dt>
+      <dt class="col-sm-4"><@message "contact.title"/></dt>
       <dd class="col-sm-8">${member.person.title}</dd>
     </#if>
-    <dt class="col-sm-4">Name</dt>
+    <dt class="col-sm-4"><@message "contact.name"/></dt>
     <dd class="col-sm-8">${member.person.firstName!" "} ${member.person.lastName}</dd>
 
       <#if member.person.email??>
-        <dt class="col-sm-4">Email</dt>
+        <dt class="col-sm-4"><@message "contact.email"/></dt>
         <dd class="col-sm-8">${member.person.email}</dd>
       </#if>
 
       <#if member.person.phone??>
-        <dt class="col-sm-4">Phone</dt>
+        <dt class="col-sm-4"><@message "contact.phone"/></dt>
         <dd class="col-sm-8">${member.person.phone}</dd>
       </#if>
 
       <#if member.person.institution??>
         <#if member.person.institution.name??>
-          <dt class="col-sm-4">Institution</dt>
-          <dd class="col-sm-8">${member.person.institution.name[.lang]!""}</dd>
+          <dt class="col-sm-4"><@message "contact.institution"/></dt>
+          <dd class="col-sm-8">${localize(member.person.institution.name)}</dd>
         </#if>
         <#if member.person.institution.department??>
-          <dt class="col-sm-4">Department</dt>
-          <dd class="col-sm-8">${member.person.institution.department[.lang]!""}</dd>
+          <dt class="col-sm-4"><@message "contact.department"/></dt>
+          <dd class="col-sm-8">${localize(member.person.institution.department)}</dd>
         </#if>
         <#if member.person.institution.address?? && (member.person.institution.address.street?? || member.person.institution.address.city??)>
-          <dt class="col-sm-4">Address</dt>
+          <dt class="col-sm-4"><@message "address.label"/></dt>
           <dd class="col-sm-8">
             <#if member.person.institution.address.street??>
-              ${member.person.institution.address.street[.lang]!""}
+              ${localize(member.person.institution.address.street)}
             </#if>
             <#if member.person.institution.address.city??>
-              ${member.person.institution.address.city[.lang]!""}
+              ${localize(member.person.institution.address.city)}
             </#if>
             <#if member.person.institution.address.countryIso??>
               <@message member.person.institution.address.countryIso/>
@@ -83,7 +83,7 @@
           ${member.person.title!""} ${member.person.firstName!""} ${member.person.lastName}
         </a>
         <#if member.person.institution?? && member.person.institution.name??>
-          <div><small>${member.person.institution.name[.lang]!""}</small></div>
+          <div><small>${localize(member.person.institution.name)}</small></div>
         </#if>
         <@memberDialog id="${role}-${i}" member=member/>
       </li>

@@ -6,8 +6,8 @@
 <!DOCTYPE html>
 <html lang="${.lang}">
 <head>
-  <title>${config.name!""} | ${network.acronym[.lang]!""}</title>
   <#include "libs/head.ftl">
+  <title>${config.name!""} | ${localize(network.acronym)}</title>
 </head>
 <body class="hold-transition layout-top-nav layout-navbar-fixed">
 <div class="wrapper">
@@ -19,7 +19,7 @@
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
     <!-- Content Header (Page header) -->
-    <@header titlePrefix="network" title=network.acronym[.lang]!"" subtitle=network.name[.lang]!"" breadcrumb=[["..", "home"], ["../networks", "networks"], [network.acronym[.lang]!""]]/>
+    <@header titlePrefix="network" title=localize(network.acronym) subtitle=localize(network.name) breadcrumb=[["..", "home"], ["../networks", "networks"], [localize(network.acronym)]]/>
     <!-- /.content-header -->
 
     <!-- Main content -->
@@ -31,13 +31,13 @@
               <div class="card-body">
                 <div class="row">
                   <div class="col-lg-12">
-                    <h3 class="mb-4">${network.name[.lang]!""}</h3>
+                    <h3 class="mb-4">${localize(network.name)}</h3>
                   </div>
                 </div>
                 <div class="row">
                   <div class="col-md-3 col-sm-6 col-12">
                     <#if network.logo??>
-                      <img class="img-fluid" style="max-height: 200px" alt="${network.acronym[.lang]!""} logo" src="../ws/network/${network.id}/file/${network.logo.id}/_download"/>
+                      <img class="img-fluid" style="max-height: 200px" alt="${localize(network.acronym)} logo" src="../ws/network/${network.id}/file/${network.logo.id}/_download"/>
                     <#else >
                       <p class="text-light text-center">
                         <i class="${networkIcon} fa-4x"></i>
@@ -95,13 +95,11 @@
                 </div>
 
                 <div class="card-text marked">
-                  <#if network.description??>
-                    ${network.description[.lang]!""}
-                  </#if>
+                  ${localize(network.description)}
                 </div>
                 <#if network.model.website??>
                   <blockquote>
-                    <@message "visit"/> <a href="${network.model.website}" target="_blank" class="card-link">${network.acronym[.lang]!""}</a>
+                    <@message "visit"/> <a href="${network.model.website}" target="_blank" class="card-link">${localize(network.acronym)}</a>
                   </blockquote>
                 </#if>
               </div>
@@ -182,8 +180,8 @@
                     <tbody>
                     <#list networks as netwk>
                       <tr>
-                        <td><a href="../network/${netwk.id}">${netwk.acronym[.lang]!""}</a></td>
-                        <td><small>${netwk.name[.lang]!""}</small></td>
+                        <td><a href="../network/${netwk.id}">${localize(netwk.acronym)}</a></td>
+                        <td><small>${localize(netwk.name)}</small></td>
                         <@networkTDs network=netwk/>
                       </tr>
                     </#list>
@@ -220,8 +218,8 @@
                     <tbody>
                     <#list individualStudies as study>
                       <tr>
-                        <td><a href="../study/${study.id}">${study.acronym[.lang]!""}</a></td>
-                        <td><small>${study.name[.lang]!""}</small></td>
+                        <td><a href="../study/${study.id}">${localize(study.acronym)}</a></td>
+                        <td><small>${localize(study.name)}</small></td>
                         <@individualStudyTDs study=study/>
                       </tr>
                     </#list>
@@ -257,8 +255,8 @@
                     <tbody>
                     <#list harmonizationStudies as study>
                       <tr>
-                        <td><a href="../study/${study.id}">${study.acronym[.lang]!""}</a></td>
-                        <td><small>${study.name[.lang]!""}</small></td>
+                        <td><a href="../study/${study.id}">${localize(study.acronym)}</a></td>
+                        <td><small>${localize(study.name)}</small></td>
                         <@harmonizationStudyTDs study=study/>
                       </tr>
                     </#list>

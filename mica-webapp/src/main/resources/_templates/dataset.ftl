@@ -6,8 +6,8 @@
 <!DOCTYPE html>
 <html lang="${.lang}">
 <head>
-  <title>${config.name!""} | ${dataset.acronym[.lang]!""}</title>
   <#include "libs/head.ftl">
+  <title>${config.name!""} | ${localize(dataset.acronym)}</title>
   <!-- Ionicons -->
   <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
 </head>
@@ -21,7 +21,7 @@
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
     <!-- Content Header (Page header) -->
-    <@header titlePrefix=(type?lower_case + "-dataset") title=dataset.acronym[.lang]!"" subtitle=dataset.name[.lang]!"" breadcrumb=[["..", "home"], ["../datasets", "datasets"], [dataset.acronym[.lang]!""]]/>
+    <@header titlePrefix=(type?lower_case + "-dataset") title=localize(dataset.acronym) subtitle=localize(dataset.name) breadcrumb=[["..", "home"], ["../datasets", "datasets"], [localize(dataset.acronym)]]/>
     <!-- /.content-header -->
 
     <!-- Main content -->
@@ -35,7 +35,7 @@
               <div class="card-body">
                 <div class="row">
                   <div class="col-lg-12">
-                    <h3 class="mb-4">${dataset.name[.lang]!""}</h3>
+                    <h3 class="mb-4">${localize(dataset.name)}</h3>
                   </div>
                 </div>
                 <div class="row">
@@ -83,16 +83,14 @@
                 </div>
 
                 <div class="card-text marked">
-                  <#if dataset.description?? && dataset.description[.lang]??>
-                      ${dataset.description[.lang]!""}
-                  </#if>
+                  ${localize(dataset.description)}
                 </div>
               </div>
                 <#if study??>
                   <div class="card-footer">
                     <@message "associated-study"/>
                     <a class="btn btn-success ml-2" href="../study/${study.id}">
-                      <i class="${studyIcon}"></i> ${study.acronym[.lang]!""}
+                      <i class="${studyIcon}"></i> ${localize(study.acronym)}
                     </a>
                   </div>
                 </#if>
@@ -109,8 +107,8 @@
                   <h3 class="card-title"><@message "population"/></h3>
                 </div>
                 <div class="card-body">
-                  <h5>${population.name[.lang]!""}</h5>
-                  <div><#if population.description??>${population.description[.lang]!""}</#if></div>
+                  <h5>${localize(population.name)}</h5>
+                  <div>${localize(population.description)}</div>
                   <@populationDialog id=population.id population=population></@populationDialog>
                 </div>
                 <div class="card-footer">
@@ -126,8 +124,8 @@
                   <h3 class="card-title"><@message "data-collection-event"/></h3>
                 </div>
                 <div class="card-body">
-                  <h5>${dce.name[.lang]!""}</h5>
-                  <div><#if dce.description??>${dce.description[.lang]!""}</#if></div>
+                  <h5>${localize(dce.name)}</h5>
+                  <div>${localize(dce.description)}</div>
                   <#assign dceId="${population.id}-${dce.id}">
                   <@dceDialog id=dceId dce=dce></@dceDialog>
                 </div>
@@ -162,21 +160,21 @@
                         <tr>
                           <td>
                             <a href="../study/${table.study.id}">
-                              ${table.study.acronym[.lang]!""}
+                              ${localize(table.study.acronym)}
                             </a>
                           </td>
                           <td>
                             <#assign popId="${table.study.id}-${table.population.id}">
                             <@populationDialog id=popId population=table.population></@populationDialog>
                             <a href="#" data-toggle="modal" data-target="#modal-${popId}">
-                              ${table.population.name[.lang]!""}
+                              ${localize(table.population.name)}
                             </a>
                           </td>
                           <td>
                             <#assign dceId="${table.study.id}-${table.population.id}-${table.dce.id}">
                             <@dceDialog id=dceId dce=table.dce></@dceDialog>
                             <a href="#" data-toggle="modal" data-target="#modal-${dceId}">
-                              ${table.dce.name[.lang]!""}
+                              ${localize(table.dce.name)}
                             </a>
                           </td>
                         </tr>
@@ -198,14 +196,14 @@
                           <tr>
                             <td>
                               <a href="../study/${table.study.id}">
-                                ${table.study.acronym[.lang]!""}
+                                ${localize(table.study.acronym)}
                               </a>
                             </td>
                             <td>
                               <#assign popId="${table.study.id}-${table.population.id}">
                               <@populationDialog id=popId population=table.population></@populationDialog>
                               <a href="#" data-toggle="modal" data-target="#modal-${popId}">
-                                ${table.population.name[.lang]!""}
+                                ${localize(table.population.name)}
                               </a>
                             </td>
                           </tr>
@@ -235,9 +233,9 @@
                         <th><@message "variable"/></th>
                         <#list allTables as table>
                           <th>
-                            <a href="../study/${table.studyId}">${allStudies[table.studyId].acronym[.lang]!""}</a>
-                            <#if table.name??>${table.name[.lang]!""}</#if>
-                            <#if table.description??><i class="fas fa-info-circle" title="${table.description[.lang]!""}"></i></#if>
+                            <a href="../study/${table.studyId}">${localize(allStudies[table.studyId].acronym)}</a>
+                            <#if table.name??>${localize(table.name)}</#if>
+                            <#if table.description??><i class="fas fa-info-circle" title="${localize(table.description)}"></i></#if>
                           </th>
                         </#list>
                       </tr>

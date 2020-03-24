@@ -59,9 +59,9 @@
                         <tbody>
                         <#list networks as ntwk>
                           <tr>
-                            <td><a href="../network/${ntwk.id}">${ntwk.acronym[.lang]!""}</a></td>
-                            <td><small>${ntwk.name[.lang]!""}</small></td>
-                            <td><small><#if ntwk.description?? && ntwk.description[.lang]??>${ntwk.description[.lang]?trim?truncate_w(100, "...")}</#if></small></td>
+                            <td><a href="../network/${ntwk.id}">${localize(ntwk.acronym)}</a></td>
+                            <td><small>${localize(ntwk.name)}</small></td>
+                            <td><small>${localize(ntwk.description)?trim?truncate_w(100, "...")}</small></td>
                           </tr>
                         </#list>
                         </tbody>
@@ -74,16 +74,16 @@
                           <div class="col-12 col-sm-6 col-md-4 d-flex align-items-stretch">
                             <div class="card bg-light w-100">
                               <div class="card-header text-dark border-bottom-0">
-                                <h2 class="lead"><b>${ntwk.acronym[.lang]!""}</b></h2>
+                                <h2 class="lead"><b>${localize(ntwk.acronym)}</b></h2>
                               </div>
                               <div class="card-body pt-0">
                                 <div class="row">
                                   <div class="col-7">
-                                    <p class="text-muted text-sm">${ntwk.name[.lang]!""}</p>
+                                    <p class="text-muted text-sm">${localize(ntwk.name)}</p>
                                   </div>
                                   <div class="col-5 text-center">
                                       <#if ntwk.logo??>
-                                        <img class="img-fluid" style="max-height: 200px" alt="${ntwk.acronym[.lang]!""} logo" src="../ws/network/${ntwk.id}/file/${ntwk.logo.id}/_download"/>
+                                        <img class="img-fluid" style="max-height: 200px" alt="${localize(ntwk.acronym)} logo" src="../ws/network/${ntwk.id}/file/${ntwk.logo.id}/_download"/>
                                       <#else >
                                         <p class="text-black-50 text-center mr-5 ml-5 pr-5">
                                           <i class="${networkIcon} fa-3x"></i>
@@ -94,8 +94,8 @@
                               </div>
                               <div class="card-footer">
                                 <div class="text-right">
-                                  <a href="../network/${ntwk.id}" class="btn btn-sm btn-primary">
-                                    <i class="fas fa-eye"></i> View ${ntwk.acronym[.lang]!""}
+                                  <a href="../network/${ntwk.id}" class="btn btn-sm btn-outline-info">
+                                    <i class="fas fa-eye"></i> ${localize(ntwk.acronym)}
                                   </a>
                                 </div>
                               </div>

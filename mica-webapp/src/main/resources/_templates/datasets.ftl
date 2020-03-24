@@ -77,9 +77,9 @@
                         <tbody>
                         <#list datasets as ds>
                           <tr>
-                            <td><a href="../dataset/${ds.id}">${ds.acronym[.lang]!""}</a></td>
-                            <td><small>${ds.name[.lang]!""}</small></td>
-                            <td><small><#if ds.description?? && ds.description[.lang]??>${ds.description[.lang]?trim?truncate_w(100, "...")}</#if></small></td>
+                            <td><a href="../dataset/${ds.id}">${localize(ds.acronym)}</a></td>
+                            <td><small>${localize(ds.name)}</small></td>
+                            <td><small>${localize(ds.description)?trim?truncate_w(100, "...")}</small></td>
                             <#if showTypeColumn>
                               <td>
                                 <#if ds.class.simpleName == "HarmonizationDataset">
@@ -101,12 +101,12 @@
                           <div class="col-12 col-sm-6 col-md-4 d-flex align-items-stretch">
                             <div class="card bg-light w-100">
                               <div class="card-header text-dark border-bottom-0">
-                                <h2 class="lead"><b>${ds.acronym[.lang]!""}</b></h2>
+                                <h2 class="lead"><b>${localize(ds.acronym)}</b></h2>
                               </div>
                               <div class="card-body pt-0">
                                 <div class="row">
                                   <div class="col-7">
-                                    <p class="text-muted text-sm">${ds.name[.lang]!""}</p>
+                                    <p class="text-muted text-sm">${localize(ds.name)}</p>
                                   </div>
                                   <div class="col-5 text-center">
                                     <p class="text-black-50 text-center mr-5 ml-5 pr-5">
@@ -121,8 +121,8 @@
                               </div>
                               <div class="card-footer">
                                 <div class="text-right">
-                                  <a href="../dataset/${ds.id}" class="btn btn-sm btn-primary">
-                                    <i class="fas fa-eye"></i> View ${ds.acronym[.lang]!""}
+                                  <a href="../dataset/${ds.id}" class="btn btn-sm btn-outline-info">
+                                    <i class="fas fa-eye"></i> ${localize(ds.acronym)}
                                   </a>
                                 </div>
                               </div>

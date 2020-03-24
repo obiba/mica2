@@ -101,7 +101,7 @@
                     <@message "study.selection-criteria.territory"/>
                 </dt>
                 <dd class="col-sm-8">
-                  ${population.model.selectionCriteria.territory[.lang]!""}
+                  ${localize(population.model.selectionCriteria.territory)}
                 </dd>
               </#if>
 
@@ -112,7 +112,7 @@
                 <dd class="col-sm-8">
                   <ul class="pl-3">
                     <#list population.model.selectionCriteria.ethnicOrigin as item>
-                      <li>${item[.lang]!""}</li>
+                      <li>${localize(item)}</li>
                     </#list>
                   </ul>
                 </dd>
@@ -125,7 +125,7 @@
                 <dd class="col-sm-8">
                   <ul class="pl-3">
                     <#list population.model.selectionCriteria.healthStatus as item>
-                      <li>${item[.lang]!""}</li>
+                      <li>${localize(item)}</li>
                     </#list>
                   </ul>
                 </dd>
@@ -136,7 +136,7 @@
                     <@message "population.otherCriteria"/>
                 </dt>
                 <dd class="col-sm-8">
-                    ${population.model.selectionCriteria.otherCriteria[.lang]!""}
+                    ${localize(population.model.selectionCriteria.otherCriteria)}
                 </dd>
               </#if>
 
@@ -145,7 +145,7 @@
                     <@message "population.info"/>
                 </dt>
                 <dd class="col-sm-8">
-                    ${population.model.selectionCriteria.info[.lang]!""}
+                    ${localize(population.model.selectionCriteria.info)}
                 </dd>
               </#if>
             </dl>
@@ -180,7 +180,7 @@
                           <#assign text = "study_taxonomy.vocabulary.populations-recruitment-dataSources.term." + type + ".title"/>
                           <@message text/>
                           <#if type == "other" && population.model.recruitment.otherSource??>
-                            : ${population.model.recruitment.otherSource[.lang]!""}
+                            : ${localize(population.model.recruitment.otherSource)}
                           </#if>
                         </li>
                       </#list>
@@ -215,7 +215,7 @@
                           <#assign text = "study_taxonomy.vocabulary.populations-recruitment-specificPopulationSources.term." + type + ".title"/>
                           <@message text/>
                           <#if type == "other" && population.model.recruitment.otherSpecificPopulationSource??>
-                            : ${population.model.recruitment.otherSpecificPopulationSource[.lang]!""}
+                            : ${localize(population.model.recruitment.otherSpecificPopulationSource)}
                           </#if>
                         </li>
                       </#list>
@@ -230,7 +230,7 @@
                   <dd class="col-sm-6">
                     <ul class="pl-3">
                       <#list population.model.recruitment.studies as item>
-                        <li>${item[.lang]!""}</li>
+                        <li>${localize(item)}</li>
                       </#list>
                     </ul>
                   </dd>
@@ -303,7 +303,7 @@
                     <@message "population.info"/>
                   </dt>
                   <dd class="col-sm-6">
-                    ${population.model.numberOfParticipants.info[.lang]!""}
+                    ${localize(population.model.numberOfParticipants.info)}
                   </dd>
                 </#if>
               </dl>
@@ -326,15 +326,13 @@
     <div class="modal-dialog modal-xl">
       <div class="modal-content">
         <div class="modal-header">
-          <h4 class="modal-title">${population.name[.lang]!""}</h4>
+          <h4 class="modal-title">${localize(population.name)}</h4>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
         <div class="modal-body">
-          <#if population.description??>
-            <div>${population.description[.lang]!""}</div>
-          </#if>
+          <div>${localize(population.description)}</div>
           <@populationModel population=population/>
         </div>
         <div class="modal-footer">
