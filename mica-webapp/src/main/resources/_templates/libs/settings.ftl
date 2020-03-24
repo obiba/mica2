@@ -39,3 +39,6 @@
 
 <!-- Search page settings -->
 <#assign defaultSearchState = "#lists?type=studies"/>
+
+<!-- Data Access -->
+<#assign dataAccessInstructionsEnabled = true/>

@@ -24,10 +24,10 @@
     <div class="user-panel mt-3 pb-3 mb-3 d-flex">
       <div>
         <span title="<@message dar.status.toString()/>"><i
-                  class="fas fa-circle fa-2x pl-2 text-${statusColor(dar.status.toString())}"></i></span>
+              class="fas fa-circle fa-2x pl-2 text-${statusColor(dar.status.toString())}"></i></span>
       </div>
       <div class="info">
-        <a href="#" class="d-inline">${applicant.fullName} </a>
+        <a href="../data-access/${dar.id}" class="d-inline">${applicant.fullName} </a>
       </div>
     </div>
 
