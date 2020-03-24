@@ -31,7 +31,9 @@
     <!-- Main content -->
     <div class="content">
       <div class="container">
-
+        <div class="callout callout-info">
+          <p><@message "data-access-process-callout"/></p>
+        </div>
       </div><!-- /.container-fluid -->
     </div>
     <!-- /.content -->

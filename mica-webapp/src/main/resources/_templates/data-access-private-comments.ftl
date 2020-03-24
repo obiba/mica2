@@ -6,7 +6,7 @@
 <head>
     <#include "libs/head.ftl">
     <#include "libs/data-access-comments-head.ftl">
-  <title>${config.name!""} | Data Access Comments ${dar.id}</title>
+  <title>${config.name!""} | <@message "data-access-private-comments"/> ${dar.id}</title>
 </head>
 <body class="hold-transition sidebar-mini">
 <!-- Site wrapper -->
@@ -28,7 +28,7 @@
         <div class="row">
           <div class="col-sm-6">
             <h1 class="m-0">
-              <span class="text-white-50">Data Access Private Comments /</span> ${dar.id}
+              <span class="text-white-50"><@message "data-access-private-comments"/> /</span> ${dar.id}
             </h1>
           </div>
           <div class="col-sm-6">
@@ -45,8 +45,7 @@
         <div class="col-12">
           <div class="callout callout-info">
             <p>
-              These are the private comments (i.e. visible only by data access officers and administrators) related to
-              the data access request.
+              <@message "data-access-private-comments-callout"/>
             </p>
           </div>
         </div>

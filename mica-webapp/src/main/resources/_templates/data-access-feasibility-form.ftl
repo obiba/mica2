@@ -237,18 +237,20 @@
             <!-- /.modal-dialog -->
           </div>
           <!-- /.modal -->
-
         </div>
-        <div class="col-sm-12 col-lg-4 d-print-none">
-          <div class="card card-info card-outline">
-            <div class="card-header">
-              <h3 class="card-title"><@message "instructions"/></h3>
-            </div>
-            <div class="card-body">
-              <@dataAccessFeasibilityFormHelp feasibility=feasibility/>
+
+        <#if dataAccessInstructionsEnabled>
+          <div class="col-sm-12 col-lg-4 d-print-none">
+            <div class="card card-info card-outline">
+              <div class="card-header">
+                <h3 class="card-title"><@message "instructions"/></h3>
+              </div>
+              <div class="card-body">
+                <@dataAccessFeasibilityFormHelp feasibility=feasibility/>
+              </div>
             </div>
           </div>
-        </div>
+        </#if>
       </div>
       <!-- /.row -->
 

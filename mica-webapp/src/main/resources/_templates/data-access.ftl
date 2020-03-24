@@ -422,26 +422,30 @@
                 </div>
               </div>
               <div class="card-body">
-                <table id="feasibilities" class="table table-bordered table-striped">
-                  <thead>
-                  <tr>
-                    <th>ID</th>
-                    <th><@message "last-update"/></th>
-                    <th><@message "submission-date"/></th>
-                    <th><@message "status"/></th>
-                  </tr>
-                  </thead>
-                  <tbody>
-                  <#list feasibilities as feasibility>
+                <#if feasibilities?? && feasibilities?size gt 0>
+                  <table id="feasibilities" class="table table-bordered table-striped">
+                    <thead>
                     <tr>
-                      <td><a href="../data-access-feasibility-form/${feasibility.id}">${feasibility.id}</a></td>
-                      <td data-sort="${feasibility.lastModifiedDate.toString(datetimeFormat)}" class="moment-datetime">${feasibility.lastModifiedDate.toString(datetimeFormat)}</td>
-                      <td data-sort="<#if feasibility.submissionDate??>${feasibility.submissionDate.toString(datetimeFormat)}</#if>" class="moment-datetime"><#if feasibility.submissionDate??>${feasibility.submissionDate.toString(datetimeFormat)}</#if></td>
-                      <td><i class="fas fa-circle text-${statusColor(feasibility.status.toString())}"></i> <@message feasibility.status.toString()/></td>
+                      <th>ID</th>
+                      <th><@message "last-update"/></th>
+                      <th><@message "submission-date"/></th>
+                      <th><@message "status"/></th>
                     </tr>
-                  </#list>
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                    <#list feasibilities as feasibility>
+                      <tr>
+                        <td><a href="../data-access-feasibility-form/${feasibility.id}">${feasibility.id}</a></td>
+                        <td data-sort="${feasibility.lastModifiedDate.toString(datetimeFormat)}" class="moment-datetime">${feasibility.lastModifiedDate.toString(datetimeFormat)}</td>
+                        <td data-sort="<#if feasibility.submissionDate??>${feasibility.submissionDate.toString(datetimeFormat)}</#if>" class="moment-datetime"><#if feasibility.submissionDate??>${feasibility.submissionDate.toString(datetimeFormat)}</#if></td>
+                        <td><i class="fas fa-circle text-${statusColor(feasibility.status.toString())}"></i> <@message feasibility.status.toString()/></td>
+                      </tr>
+                    </#list>
+                    </tbody>
+                  </table>
+                <#else>
+                  <@message "no-feasibilities"/>
+                </#if>
               </div>
             </div>
           </#if>
@@ -459,26 +463,30 @@
                 </div>
               </div>
               <div class="card-body">
-                <table id="amendments" class="table table-bordered table-striped">
-                  <thead>
-                  <tr>
-                    <th>ID</th>
-                    <th><@message "last-update"/></th>
-                    <th><@message "submission-date"/></th>
-                    <th><@message "status"/></th>
-                  </tr>
-                  </thead>
-                  <tbody>
-                  <#list amendments as amendment>
-                  <tr>
-                    <td><a href="../data-access-amendment-form/${amendment.id}">${amendment.id}</a></td>
-                    <td data-sort="${amendment.lastModifiedDate.toString(datetimeFormat)}" class="moment-datetime">${amendment.lastModifiedDate.toString(datetimeFormat)}</td>
-                    <td data-sort="<#if amendment.submissionDate??>${amendment.submissionDate.toString(datetimeFormat)}</#if>" class="moment-datetime"><#if amendment.submissionDate??>${amendment.submissionDate.toString(datetimeFormat)}</#if></td>
-                    <td><i class="fas fa-circle text-${statusColor(amendment.status.toString())}"></i> <@message amendment.status.toString()/></td>
-                  </tr>
-                  </#list>
-                  </tbody>
-                </table>
+                <#if amendments?? && amendments?size gt 0>
+                  <table id="amendments" class="table table-bordered table-striped">
+                    <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th><@message "last-update"/></th>
+                      <th><@message "submission-date"/></th>
+                      <th><@message "status"/></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <#list amendments as amendment>
+                    <tr>
+                      <td><a href="../data-access-amendment-form/${amendment.id}">${amendment.id}</a></td>
+                      <td data-sort="${amendment.lastModifiedDate.toString(datetimeFormat)}" class="moment-datetime">${amendment.lastModifiedDate.toString(datetimeFormat)}</td>
+                      <td data-sort="<#if amendment.submissionDate??>${amendment.submissionDate.toString(datetimeFormat)}</#if>" class="moment-datetime"><#if amendment.submissionDate??>${amendment.submissionDate.toString(datetimeFormat)}</#if></td>
+                      <td><i class="fas fa-circle text-${statusColor(amendment.status.toString())}"></i> <@message amendment.status.toString()/></td>
+                    </tr>
+                    </#list>
+                    </tbody>
+                  </table>
+                <#else>
+                  <@message "no-amendments"/>
+                </#if>
               </div>
             </div>
           </#if>
