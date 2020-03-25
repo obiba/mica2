@@ -7,6 +7,8 @@ import java.util.stream.Stream;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.ForbiddenException;
 import javax.ws.rs.core.Response;
+
+import org.apache.shiro.SecurityUtils;
 import org.obiba.mica.access.domain.DataAccessEntity;
 import org.obiba.mica.access.domain.DataAccessEntityStatus;
 import org.obiba.mica.access.service.DataAccessEntityService;
@@ -14,6 +16,7 @@ import org.obiba.mica.file.FileStoreService;
 import org.obiba.mica.micaConfig.event.DataAccessFormUpdatedEvent;
 import org.obiba.mica.micaConfig.service.DataAccessFormService;
 import org.obiba.mica.security.Roles;
+import org.obiba.mica.security.SubjectUtils;
 import org.obiba.mica.security.service.SubjectAclService;
 
 public abstract class DataAccessEntityResource<T extends DataAccessEntity> {
@@ -60,7 +63,7 @@ public abstract class DataAccessEntityResource<T extends DataAccessEntity> {
     DataAccessEntity request = getService().findById(id);
     boolean fromOpened = request.getStatus() == DataAccessEntityStatus.OPENED;
     boolean fromConditionallyApproved = request.getStatus() == DataAccessEntityStatus.CONDITIONALLY_APPROVED;
-    if(fromOpened && !subjectAclService.isCurrentUser(request.getApplicant())) {
+    if(fromOpened && !subjectAclService.isCurrentUser(request.getApplicant()) && !SecurityUtils.getSubject().hasRole(Roles.MICA_ADMIN)) {
       // only applicant can submit an opened request
       throw new ForbiddenException();
     }
