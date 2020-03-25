@@ -3,8 +3,12 @@
 <script src="../bower_components/mica-study-timeline/dist/mica-study-timeline.js"></script>
 <script>
     $(function () {
+        let options = dataTablesDefaultOpts;
+        options.columnDefs = [
+          { "type": "num", "targets": 0, "visible": false }
+        ];
         <#list study.populations as pop>
-        $("#population-${pop.id}-dces").DataTable(dataTablesDefaultOpts);
+        $("#population-${pop.id}-dces").DataTable(options);
         </#list>
 
         micajs.stats('studies', { query: "study(in(Mica_study.id,${study.id}))" }, function(stats) {

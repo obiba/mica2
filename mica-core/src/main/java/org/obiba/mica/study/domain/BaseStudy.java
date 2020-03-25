@@ -18,12 +18,8 @@ import org.obiba.mica.file.Attachment;
 import org.obiba.mica.spi.search.Indexable;
 
 import javax.validation.constraints.NotNull;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.beans.Transient;
+import java.util.*;
 
 import static java.util.stream.Collectors.toList;
 
@@ -173,6 +169,12 @@ public abstract class BaseStudy extends AbstractModelAware implements PersonAwar
 
   public SortedSet<Population> getPopulations() {
     return populations;
+  }
+
+  @Transient
+  public List<Population> getPopulationsSorted() {
+    return populations.stream().sorted(Comparator.comparing(Population::getWeight))
+      .collect(toList());
   }
 
   public void addPopulation(@NotNull Population population) {
