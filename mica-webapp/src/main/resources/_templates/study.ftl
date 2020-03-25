@@ -207,7 +207,7 @@
                   <div class="tab-content">
                     <#list study.populations as pop>
                       <div class="tab-pane <#if pop?index == 0>active</#if>" id="population-${pop.id}">
-                        <div>
+                        <div class="mb-3 marked">
                           ${localize(pop.description)}
                         </div>
                         <@populationModel population=pop/>
@@ -218,15 +218,17 @@
                           <table id="population-${pop.id}-dces" class="table table-bordered table-striped">
                             <thead>
                             <tr>
+                              <th>#</th>
                               <th><@message "name"/></th>
                               <th><@message "description"/></th>
-                              <th><@message "start"/></th>
-                              <th><@message "end"/></th>
+                              <th><@message "study.start"/></th>
+                              <th><@message "study.end"/></th>
                             </tr>
                             </thead>
                             <tbody>
                               <#list pop.dataCollectionEvents as dce>
                                 <tr>
+                                  <td>${dce.weight}</td>
                                   <td>
                                     <#assign dceId="${pop.id}-${dce.id}">
                                     <a href="#" data-toggle="modal" data-target="#modal-${dceId}">

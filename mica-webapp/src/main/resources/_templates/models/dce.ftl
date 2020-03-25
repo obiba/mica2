@@ -73,7 +73,9 @@
           </button>
         </div>
         <div class="modal-body">
-          <div>${localize(dce.description)}</div>
+          <div class="mb-3 marked">
+            ${localize(dce.description)}
+          </div>
           <dl class="row">
             <#if dce.start??>
               <dt class="col-sm-4">
