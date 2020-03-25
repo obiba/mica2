@@ -197,7 +197,7 @@
                   <#if study.populations?size == 1>
                   <#else>
                     <ul class="nav nav-pills mb-3">
-                      <#list study.populations as pop>
+                      <#list study.populationsSorted as pop>
                         <li class="nav-item"><a class="nav-link <#if pop?index == 0>active</#if>" href="#population-${pop.id}" data-toggle="tab">
                           ${localize(pop.name)}</a>
                         </li>
@@ -205,7 +205,7 @@
                     </ul>
                   </#if>
                   <div class="tab-content">
-                    <#list study.populations as pop>
+                    <#list study.populationsSorted as pop>
                       <div class="tab-pane <#if pop?index == 0>active</#if>" id="population-${pop.id}">
                         <div class="mb-3 marked">
                           ${localize(pop.description)}
@@ -226,7 +226,7 @@
                             </tr>
                             </thead>
                             <tbody>
-                              <#list pop.dataCollectionEvents as dce>
+                              <#list pop.dataCollectionEventsSorted as dce>
                                 <tr>
                                   <td>${dce.weight}</td>
                                   <td>

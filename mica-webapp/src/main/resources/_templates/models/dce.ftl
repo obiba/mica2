@@ -79,7 +79,7 @@
           <dl class="row">
             <#if dce.start??>
               <dt class="col-sm-4">
-                Start date
+                <@message "start-date"/>
               </dt>
               <dd class="col-sm-8">
                 <div>${dce.start.yearMonth!""}</div>
@@ -87,7 +87,7 @@
             </#if>
             <#if dce.end??>
               <dt class="col-sm-4">
-                End date
+                <@message "end-date"/>
               </dt>
               <dd class="col-sm-8">
                 <div>${dce.end.yearMonth!""}</div>
