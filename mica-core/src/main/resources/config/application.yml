@@ -8,11 +8,11 @@ spring:
         protocol: smtp
         tls: false
         auth: false
-    thymeleaf:
-        mode: XHTML
-        cache: true
     messageSource:
         cacheSeconds: 1
+    freemarker:
+      template-loader-path: classpath:/web/,classpath:/static/templates/,classpath:/public/templates/,classpath:/templates/,classpath:/_templates/
+      request-context-attribute: rc
 
 metrics:
     jmx.enabled: true

@@ -71,6 +71,11 @@
     </dependency>
 
     <dependency>
+      <groupId>org.freemarker</groupId>
+      <artifactId>freemarker</artifactId>
+    </dependency>
+
+    <dependency>
       <groupId>org.eclipse.jetty</groupId>
       <artifactId>jetty-servlets</artifactId>
     </dependency>
@@ -172,6 +177,9 @@
             <includes>
               <include>**/*</include>
             </includes>
+            <excludes>
+              <exclude>**/*.ftl</exclude>
+            </excludes>
           </resource>
           <resource>
             <directory>src/main/conf</directory>
@@ -205,6 +213,9 @@
             <includes>
               <include>**/*</include>
             </includes>
+            <excludes>
+              <exclude>**/*.ftl</exclude>
+            </excludes>
           </resource>
           <resource>
             <directory>src/main/conf</directory>

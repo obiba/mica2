@@ -14,11 +14,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 import javax.inject.Inject;
-import javax.ws.rs.BadRequestException;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.math3.util.Pair;
@@ -43,7 +39,6 @@ import com.google.common.base.Strings;
 
 @Component
 @Scope("request")
-@RequiresAuthentication
 public class PublishedCollectedDatasetVariableResource extends AbstractPublishedDatasetResource<StudyDataset>
   implements DatasetVariableResource {
 
@@ -65,6 +60,7 @@ public class PublishedCollectedDatasetVariableResource extends AbstractPublished
   @Path("/summary")
   @Timed
   public org.obiba.opal.web.model.Math.SummaryStatisticsDto getVariableSummary() {
+    checkVariableSummaryAccess();
     return datasetService.getVariableSummary(getDataset(StudyDataset.class, datasetId), variableName).getWrappedDto();
   }
 
@@ -72,22 +68,23 @@ public class PublishedCollectedDatasetVariableResource extends AbstractPublished
   @Path("/facet")
   @Timed
   public Search.QueryResultDto getVariableFacet() {
+    checkVariableSummaryAccess();
     return datasetService.getVariableFacet(getDataset(StudyDataset.class, datasetId), variableName);
   }
 
   @GET
   @Path("/aggregation")
   @Timed
-  public Mica.DatasetVariableAggregationDto getVariableAggregations() {
+  public Mica.DatasetVariableAggregationDto getVariableAggregations(@QueryParam("study") @DefaultValue("true") boolean withStudySummary) {
+    checkVariableSummaryAccess();
     StudyDataset dataset = getDataset(StudyDataset.class, datasetId);
     StudyTable studyTable = dataset.getSafeStudyTable();
-    Mica.DatasetVariableAggregationDto.Builder aggDto = Mica.DatasetVariableAggregationDto.newBuilder() //
-      .setStudyTable(dtos.asDto(studyTable));
+    Mica.DatasetVariableAggregationDto.Builder aggDto = Mica.DatasetVariableAggregationDto.newBuilder();
     try {
-      return dtos.asDto(studyTable, datasetService.getVariableSummary(dataset, variableName).getWrappedDto()).build();
+      return dtos.asDto(studyTable, datasetService.getVariableSummary(dataset, variableName).getWrappedDto(), withStudySummary).build();
     } catch(Exception e) {
       log.warn("Unable to retrieve statistics: " + e.getMessage(), e);
-      return dtos.asDto(studyTable, null).build();
+      return dtos.asDto(studyTable, null, withStudySummary).build();
     }
   }
 
@@ -95,8 +92,8 @@ public class PublishedCollectedDatasetVariableResource extends AbstractPublished
   @Path("/contingency")
   @Timed
   public Mica.DatasetVariableContingencyDto getContingency(@QueryParam("by") String crossVariable) {
+    checkVariableSummaryAccess();
     Pair<DatasetVariable, DatasetVariable> variables = getContingencyVariables(crossVariable);
-
     return getContingencyDto(variables.getFirst(), variables.getSecond());
   }
 
@@ -119,6 +116,7 @@ public class PublishedCollectedDatasetVariableResource extends AbstractPublished
   @Produces("text/csv")
   @Timed
   public Response getContingencyCsv(@QueryParam("by") String crossVariable) throws IOException {
+    checkVariableSummaryAccess();
     Pair<DatasetVariable, DatasetVariable> variables = getContingencyVariables(crossVariable);
     ByteArrayOutputStream res = new CsvContingencyWriter(variables.getFirst(), variables.getSecond())
       .write(getContingencyDto(variables.getFirst(), variables.getSecond()));
@@ -132,6 +130,7 @@ public class PublishedCollectedDatasetVariableResource extends AbstractPublished
   @Produces("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
   @Timed
   public Response getContingencyExcel(@QueryParam("by") String crossVariable) throws IOException {
+    checkVariableSummaryAccess();
     Pair<DatasetVariable, DatasetVariable> variables = getContingencyVariables(crossVariable);
     ByteArrayOutputStream res = new ExcelContingencyWriter(variables.getFirst(), variables.getSecond())
       .write(getContingencyDto(variables.getFirst(), variables.getSecond()));

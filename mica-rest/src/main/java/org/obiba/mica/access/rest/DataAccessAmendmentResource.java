@@ -7,7 +7,6 @@ import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.JSONUtils;
 import org.obiba.mica.access.NoSuchDataAccessRequestException;
 import org.obiba.mica.access.domain.DataAccessAmendment;
-import org.obiba.mica.access.domain.DataAccessEntityStatus;
 import org.obiba.mica.access.service.DataAccessAmendmentService;
 import org.obiba.mica.access.service.DataAccessEntityService;
 import org.obiba.mica.file.FileStoreService;
@@ -58,7 +57,7 @@ public class DataAccessAmendmentResource extends DataAccessEntityResource<DataAc
   public Mica.DataAccessRequestDto getAmendment() {
     subjectAclService.checkPermission(getParentResourcePath(), "VIEW", parentId);
     DataAccessAmendment amendment = dataAccessAmendmentService.findById(id);
-    return dtos.asAmendentDto(amendment);
+    return dtos.asAmendmentDto(amendment);
   }
 
   @GET
@@ -67,6 +66,17 @@ public class DataAccessAmendmentResource extends DataAccessEntityResource<DataAc
   public Map<String, Object> getModel() {
     subjectAclService.checkPermission(getResourcePath(), "VIEW", id);
     return JSONUtils.toMap(dataAccessAmendmentService.findById(id).getContent());
+  }
+
+  @PUT
+  @Path("/model")
+  @Consumes("application/json")
+  public Response setModel(String content) {
+    subjectAclService.checkPermission(getResourcePath(), "EDIT", id);
+    DataAccessAmendment amendment = dataAccessAmendmentService.findById(id);
+    amendment.setContent(content);
+    dataAccessAmendmentService.save(amendment);
+    return Response.ok().build();
   }
 
   @PUT

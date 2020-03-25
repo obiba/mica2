@@ -270,6 +270,7 @@ public class MicaConfigService {
   }
 
   public JsonNode mergeJson(JsonNode mainNode, JsonNode updateNode) {
+    if (updateNode == null) return mainNode;
     Iterator<String> fieldNames = updateNode.fieldNames();
     while (fieldNames.hasNext()) {
       String fieldName = fieldNames.next();

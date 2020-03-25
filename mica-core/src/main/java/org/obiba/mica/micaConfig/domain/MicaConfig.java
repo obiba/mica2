@@ -42,6 +42,8 @@ public class MicaConfig extends AbstractAuditableDocument {
 
   public static final String DEFAULT_OPAL = "https://localhost:8443";
 
+  public static final String DEFAULT_PUBLIC_URL = "http://localhost:8082";
+
   public static final String[] LAYOUT_OPTIONS = {"layout1", "layout2"};
 
   public static final long DEFAULT_MAX_ITEMS_PER_SET = 20000;
@@ -104,6 +106,10 @@ public class MicaConfig extends AbstractAuditableDocument {
 
   private String projectNotificationsSubject;
 
+  private boolean isRepositoryEnabled = true;
+
+  private boolean isDataAccessEnabled = true;
+
   private boolean isSingleStudyEnabled = false;
 
   private boolean isSingleNetworkEnabled = false;
@@ -113,6 +119,8 @@ public class MicaConfig extends AbstractAuditableDocument {
   private boolean isStudyDatasetEnabled = true;
 
   private boolean isHarmonizationDatasetEnabled = true;
+
+  private boolean variableSummaryRequiresAuthentication = false;
 
   private String style;
 
@@ -135,6 +143,12 @@ public class MicaConfig extends AbstractAuditableDocument {
   private boolean setsAnalysisEnabled = true;
 
   private boolean setsSearchEnabled = true;
+
+  private boolean signupEnabled = true;
+
+  private List<String> signupGroups = Lists.newArrayList("mica-user");
+
+  private boolean signupWithPassword = true;
 
   private OpalViewsGrouping opalViewsGrouping = OpalViewsGrouping.PROJECT_TABLE;
 
@@ -233,6 +247,30 @@ public class MicaConfig extends AbstractAuditableDocument {
 
   public void setRoles(List<String> roles) {
     this.roles = roles == null ? Lists.newArrayList() : Lists.newArrayList(Sets.newLinkedHashSet(roles));
+  }
+
+  public boolean isSignupEnabled() {
+    return signupEnabled;
+  }
+
+  public void setSignupEnabled(boolean signupEnabled) {
+    this.signupEnabled = signupEnabled;
+  }
+
+  public void setSignupGroups(List<String> signupGroups) {
+    this.signupGroups = signupGroups == null || signupGroups.isEmpty() ? Lists.newArrayList("mica-user") : Lists.newArrayList(Sets.newLinkedHashSet(signupGroups));
+  }
+
+  public List<String> getSignupGroups() {
+    return signupGroups;
+  }
+
+  public void setSignupWithPassword(boolean signupWithPassword) {
+    this.signupWithPassword = signupWithPassword;
+  }
+
+  public boolean isSignupWithPassword() {
+    return signupWithPassword;
   }
 
   public void setOpenAccess(boolean openAccess) {
@@ -355,6 +393,22 @@ public class MicaConfig extends AbstractAuditableDocument {
     this.projectNotificationsSubject = projectNotificationsSubject;
   }
 
+  public boolean isRepositoryEnabled() {
+    return isRepositoryEnabled;
+  }
+
+  public void setRepositoryEnabled(boolean repositoryEnabled) {
+    isRepositoryEnabled = repositoryEnabled;
+  }
+
+  public boolean isDataAccessEnabled() {
+    return isDataAccessEnabled;
+  }
+
+  public void setDataAccessEnabled(boolean dataAccessEnabled) {
+    isDataAccessEnabled = dataAccessEnabled;
+  }
+
   public boolean isSingleStudyEnabled() {
     return isSingleStudyEnabled;
   }
@@ -393,6 +447,14 @@ public class MicaConfig extends AbstractAuditableDocument {
 
   public void setHarmonizationDatasetEnabled(boolean harmonizationDatasetEnabled) {
     isHarmonizationDatasetEnabled = harmonizationDatasetEnabled;
+  }
+
+  public boolean isVariableSummaryRequiresAuthentication() {
+    return variableSummaryRequiresAuthentication;
+  }
+
+  public void setVariableSummaryRequiresAuthentication(boolean variableSummaryRequiresAuthentication) {
+    this.variableSummaryRequiresAuthentication = variableSummaryRequiresAuthentication;
   }
 
   public boolean hasStyle() {

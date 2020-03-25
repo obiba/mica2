@@ -2,6 +2,7 @@ package org.obiba.mica.access.domain;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import org.joda.time.DateTime;
 import org.obiba.mica.core.domain.AbstractAuditableDocument;
 import org.obiba.mica.core.domain.SchemaFormContentAware;
 
@@ -59,6 +60,16 @@ public abstract class DataAccessEntity extends AbstractAuditableDocument impleme
   @Override
   public void setContent(String content) {
     this.content = content;
+  }
+
+  public DateTime getSubmissionDate() {
+    for (int i = getStatusChangeHistory().size()-1; i>=0; i--) {
+      StatusChange chg = getStatusChangeHistory().get(i);
+      if (chg.getTo().equals(DataAccessEntityStatus.SUBMITTED)) {
+        return chg.getChangedOn();
+      }
+    }
+    return null;
   }
 
   public boolean hasStatusChangeHistory() {

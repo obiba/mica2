@@ -437,6 +437,12 @@ message MicaConfigDto {
   required bool isSetsSearchEnabled = 43;
   required bool downloadOpalViewsFromSetsAllowed = 44 [default = false];
   required string opalViewsGrouping = 45;
+  optional bool signupEnabled = 46;
+  repeated string signupGroups = 47;
+  required bool signupWithPassword = 48;
+  optional bool isRepositoryEnabled = 49;
+  optional bool isDataAccessEnabled = 50;
+  optional bool variableSummaryRequiresAuthentication = 51;
 }
 
 message PublicMicaConfigDto {
@@ -647,10 +653,41 @@ message DatasetVariablesHarmonizationsDto {
   repeated DatasetVariableHarmonizationDto variableHarmonizations = 4;
 }
 
+message DatasetHarmonizedVariableSummaryDto {
+  // harmonized variable Mlstr_harmo.status
+  required string status = 1;
+  // harmonized variable reference (might not exists)
+  optional DatasetVariableResolverDto harmonizedVariableRef = 2;
+}
+
+message DatasetVariableHarmonizationSummaryDto {
+  // dataschema variable reference
+  required DatasetVariableResolverDto dataschemaVariableRef = 1;
+  // harmonized variables
+  repeated DatasetHarmonizedVariableSummaryDto harmonizedVariables = 2;
+}
+
+message DatasetVariablesHarmonizationSummaryDto {
+  required int32 total = 1;
+  required int32 from = 2;
+  required int32 limit = 3;
+  // columns
+  repeated DatasetDto.StudyTableDto studyTable = 4;
+  repeated DatasetDto.HarmonizationTableDto harmonizationStudyTable = 5;
+  // rows
+  repeated DatasetVariableHarmonizationSummaryDto variableHarmonizations = 6;
+}
+
 message FrequencyDto {
   required string value = 1;
   required int32 count = 2;
   optional bool missing = 3;
+}
+
+message IntervalFrequencyDto {
+  required int32 count = 1;
+  required double lower  = 2;
+  required double upper  = 3;
 }
 
 message StatisticsDto {
@@ -672,6 +709,7 @@ message DatasetVariableAggregationDto {
   optional string term = 6;
   optional bool missing = 7;
   optional DatasetDto.HarmonizationTableDto harmonizationStudyTable = 8;
+  repeated IntervalFrequencyDto intervalFrequencies = 9;
 }
 
 message DatasetVariableAggregationsDto {
@@ -770,6 +808,14 @@ message DataAccessAmendmentDto {
   }
 }
 
+message DataAccessFeasibilityDto {
+  required string parentId = 1;
+
+  extend DataAccessRequestDto {
+    required DataAccessFeasibilityDto feasibility = 1001;
+  }
+}
+
 message TimelineDto {
   required string startDate = 1;
   required string endDate = 2;
@@ -861,6 +907,13 @@ message DataAccessFormDto {
   required bool notifyIntermediateReport = 40;
   optional string intermediateReportSubject = 41;
   optional int32 nbOfDaysBeforeReport = 42;
+  required bool feasibilityEnabled = 43;
+}
+
+message DataAccessFeasibilityFormDto {
+  required string schema = 1;
+  required string definition = 2;
+  optional string csvExportFormat = 6;
 }
 
 message DataAccessAmendmentFormDto {

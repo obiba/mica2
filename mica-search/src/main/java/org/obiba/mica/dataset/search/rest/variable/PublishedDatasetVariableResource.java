@@ -32,7 +32,6 @@ import org.springframework.stereotype.Component;
 @Component
 @Scope("request")
 @Path("/")
-@RequiresAuthentication
 public class PublishedDatasetVariableResource {
 
   @Inject

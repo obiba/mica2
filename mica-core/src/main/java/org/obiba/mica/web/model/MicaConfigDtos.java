@@ -85,6 +85,11 @@ class MicaConfigDtos {
 
   @NotNull
   Mica.MicaConfigDto asDto(@NotNull MicaConfig config) {
+    return asDto(config, null);
+  }
+
+  @NotNull
+  Mica.MicaConfigDto asDto(@NotNull MicaConfig config, String language) {
     Mica.MicaConfigDto.Builder builder = Mica.MicaConfigDto.newBuilder() //
       .setName(config.getName()) //
       .setDefaultCharSet(config.getDefaultCharacterSet())//
@@ -128,15 +133,18 @@ class MicaConfigDtos {
     builder.setIsProjectNotificationsEnabled(config.isProjectNotificationsEnabled());
     if(config.getProjectNotificationsSubject() != null) builder.setProjectNotificationsSubject(config.getProjectNotificationsSubject());
 
+    builder.setIsRepositoryEnabled(config.isRepositoryEnabled());
+    builder.setIsDataAccessEnabled(config.isDataAccessEnabled());
     builder.setIsSingleNetworkEnabled(config.isSingleNetworkEnabled());
     builder.setIsSingleStudyEnabled(config.isSingleStudyEnabled());
     builder.setIsNetworkEnabled(config.isNetworkEnabled());
     builder.setIsCollectedDatasetEnabled(config.isStudyDatasetEnabled());
     builder.setIsHarmonizedDatasetEnabled(config.isHarmonizationDatasetEnabled());
+    builder.setVariableSummaryRequiresAuthentication(config.isVariableSummaryRequiresAuthentication());
 
     if(config.hasStyle()) builder.setStyle(config.getStyle());
 
-    if(config.hasTranslations()) builder.addAllTranslations(localizedStringDtos.asDto(config.getTranslations()));
+    if(config.hasTranslations()) builder.addAllTranslations(localizedStringDtos.asDto(config.getTranslations(), language));
 
     builder.addAllAvailableLayoutOptions(Arrays.asList(MicaConfig.LAYOUT_OPTIONS));
     builder.setSearchLayout(config.getSearchLayout());
@@ -158,6 +166,10 @@ class MicaConfigDtos {
       builder.setCurrentUserCanCreateCart(config.isCartEnabled());
       builder.setCurrentUserCanCreateSets(true);
     }
+
+    builder.setSignupEnabled(config.isSignupEnabled());
+    builder.setSignupWithPassword(config.isSignupWithPassword());
+    config.getSignupGroups().forEach(builder::addSignupGroups);
 
     builder.setDownloadOpalViewsFromSetsAllowed(subjectAclService.isPermitted("/set/documents", "VIEW", "_opal"));
 
@@ -198,11 +210,18 @@ class MicaConfigDtos {
     config.setProjectNotificationsEnabled(dto.getIsProjectNotificationsEnabled());
     if(dto.hasProjectNotificationsSubject()) config.setProjectNotificationsSubject(dto.getProjectNotificationsSubject());
 
+    if (dto.hasIsRepositoryEnabled()) config.setRepositoryEnabled(dto.getIsRepositoryEnabled());
+    if (dto.hasIsDataAccessEnabled()) config.setDataAccessEnabled(dto.getIsDataAccessEnabled());
     config.setSingleNetworkEnabled(dto.getIsSingleNetworkEnabled());
     config.setSingleStudyEnabled(dto.getIsSingleStudyEnabled());
     config.setNetworkEnabled(dto.getIsNetworkEnabled());
     config.setStudyDatasetEnabled(dto.getIsCollectedDatasetEnabled());
     config.setHarmonizationDatasetEnabled(dto.getIsHarmonizedDatasetEnabled());
+    if (dto.hasVariableSummaryRequiresAuthentication()) config.setVariableSummaryRequiresAuthentication(dto.getVariableSummaryRequiresAuthentication());
+
+    if (dto.hasSignupEnabled()) config.setSignupEnabled(dto.getSignupEnabled());
+    config.setSignupWithPassword(dto.getSignupWithPassword());
+    config.setSignupGroups(dto.getSignupGroupsList());
 
     boolean cartEnabled = dto.getIsCartEnabled();
     config.setCartEnabled(cartEnabled);
@@ -308,6 +327,7 @@ class MicaConfigDtos {
 
     builder.setPdfDownloadType(Mica.DataAccessFormDto.PdfDownloadType.valueOf(dataAccessForm.getPdfDownloadType().name()));
 
+    builder.setFeasibilityEnabled(dataAccessForm.isFeasibilityEnabled());
     builder.setAmendmentsEnabled(dataAccessForm.isAmendmentsEnabled());
 
     return builder.build();
@@ -388,9 +408,28 @@ class MicaConfigDtos {
     dataAccessForm.setConditionallyApprovedSubject(dto.getConditionallyApprovedSubject());
     dataAccessForm.setPdfDownloadType(PdfDownloadType.valueOf(dto.getPdfDownloadType().name()));
     dataAccessForm.setPredefinedActions(dto.getPredefinedActionsList());
+    dataAccessForm.setFeasibilityEnabled(dto.getFeasibilityEnabled());
     dataAccessForm.setAmendmentsEnabled(dto.getAmendmentsEnabled());
 
     return dataAccessForm;
+  }
+
+  Mica.DataAccessFeasibilityFormDto asDto(@NotNull DataAccessFeasibilityForm dataAccessFeasibilityForm,
+                                        @NotNull DataAccessForm dataAccessForm) {
+    Mica.DataAccessFeasibilityFormDto.Builder builder = Mica.DataAccessFeasibilityFormDto.newBuilder()
+      .setDefinition(dataAccessFeasibilityForm.getDefinition()).setSchema(dataAccessFeasibilityForm.getSchema())
+      .setCsvExportFormat(dataAccessFeasibilityForm.getCsvExportFormat());
+    return builder.build();
+  }
+
+  DataAccessFeasibilityForm fromDto(@NotNull Mica.DataAccessFeasibilityFormDto dto) {
+    DataAccessFeasibilityForm dataAccessFeasibilityForm = new DataAccessFeasibilityForm();
+
+    dataAccessFeasibilityForm.setSchema(dto.getSchema());
+    dataAccessFeasibilityForm.setDefinition(dto.getDefinition());
+    dataAccessFeasibilityForm.setCsvExportFormat(dto.getCsvExportFormat());
+
+    return dataAccessFeasibilityForm;
   }
 
   Mica.DataAccessAmendmentFormDto asDto(@NotNull DataAccessAmendmentForm dataAccessAmendmentForm,

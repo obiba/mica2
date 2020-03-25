@@ -14,11 +14,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 import javax.inject.Inject;
-import javax.ws.rs.BadRequestException;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 
 import com.codahale.metrics.annotation.Timed;
@@ -44,7 +40,6 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @Scope("request")
-@RequiresAuthentication
 public class PublishedHarmonizedDatasetVariableResource extends AbstractPublishedDatasetResource<HarmonizationDataset>
   implements DatasetVariableResource {
 
@@ -76,6 +71,7 @@ public class PublishedHarmonizedDatasetVariableResource extends AbstractPublishe
   @Path("/summary")
   @Timed
   public org.obiba.opal.web.model.Math.SummaryStatisticsDto getVariableSummary() {
+    checkVariableSummaryAccess();
     return datasetService
       .getVariableSummary(getDataset(HarmonizationDataset.class, datasetId), variableName, studyId, project, table)
       .getWrappedDto();
@@ -85,6 +81,7 @@ public class PublishedHarmonizedDatasetVariableResource extends AbstractPublishe
   @Path("/facet")
   @Timed
   public Search.QueryResultDto getVariableFacet() {
+    checkVariableSummaryAccess();
     return datasetService
       .getVariableFacet(getDataset(HarmonizationDataset.class, datasetId), variableName, studyId, project, table);
   }
@@ -92,17 +89,18 @@ public class PublishedHarmonizedDatasetVariableResource extends AbstractPublishe
   @GET
   @Path("/aggregation")
   @Timed
-  public Mica.DatasetVariableAggregationDto getVariableAggregations() {
+  public Mica.DatasetVariableAggregationDto getVariableAggregations(@QueryParam("study") @DefaultValue("true") boolean withStudySummary) {
+    checkVariableSummaryAccess();
     HarmonizationDataset dataset = getDataset(HarmonizationDataset.class, datasetId);
     for(BaseStudyTable opalTable : dataset.getBaseStudyTables()) {
       String opalTableId = studyId;
       if(opalTable.isFor(opalTableId, project, table)) {
         try {
           return dtos.asDto(opalTable,
-            datasetService.getVariableSummary(dataset, variableName, studyId, project, table).getWrappedDto()).build();
+            datasetService.getVariableSummary(dataset, variableName, studyId, project, table).getWrappedDto(), withStudySummary).build();
         } catch(Exception e) {
           log.warn("Unable to retrieve statistics: " + e.getMessage(), e);
-          return dtos.asDto(opalTable, null).build();
+          return dtos.asDto(opalTable, null, withStudySummary).build();
         }
       }
     }
@@ -114,8 +112,8 @@ public class PublishedHarmonizedDatasetVariableResource extends AbstractPublishe
   @Path("/contingency")
   @Timed
   public Mica.DatasetVariableContingencyDto getContingency(@QueryParam("by") String crossVariable) {
+    checkVariableSummaryAccess();
     Pair<DatasetVariable, DatasetVariable> variables = getContingencyVariables(crossVariable);
-
     return getContingencyDto(variables.getFirst(), variables.getSecond());
   }
 
@@ -143,6 +141,7 @@ public class PublishedHarmonizedDatasetVariableResource extends AbstractPublishe
   @Produces("text/csv")
   @Timed
   public Response getContingencyCsv(@QueryParam("by") String crossVariable) throws IOException {
+    checkVariableSummaryAccess();
     Pair<DatasetVariable, DatasetVariable> variables = getContingencyVariables(crossVariable);
     ByteArrayOutputStream res = new CsvContingencyWriter(variables.getFirst(), variables.getSecond())
       .write(getContingencyDto(variables.getFirst(), variables.getSecond()));
@@ -156,6 +155,7 @@ public class PublishedHarmonizedDatasetVariableResource extends AbstractPublishe
   @Produces("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
   @Timed
   public Response getContingencyExcel(@QueryParam("by") String crossVariable) throws IOException {
+    checkVariableSummaryAccess();
     Pair<DatasetVariable, DatasetVariable> variables = getContingencyVariables(crossVariable);
     ByteArrayOutputStream res = new ExcelContingencyWriter(variables.getFirst(), variables.getSecond())
       .write(getContingencyDto(variables.getFirst(), variables.getSecond()));

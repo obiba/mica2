@@ -430,6 +430,10 @@ mica.config
         }
       };
 
+      $scope.signupGroupsUpdated = function() {
+        $scope.micaConfig.signupGroups = $scope.signupGroups.split(' ').filter(function(g) { return g.length>0; });
+      };
+
       $scope.micaConfig.$promise.then(function() {
         $scope.selectedSearchLayout = {
           get design() {
@@ -449,7 +453,9 @@ mica.config
           };
         });
 
-        $scope.$watchGroup(['name', 'isNetworkEnabled', 'isSingleNetworkEnabled',
+        $scope.signupGroups = $scope.micaConfig.signupGroups.join(' ');
+
+        $scope.$watchGroup(['name', 'isRepositoryEnabled', 'isDataAccessEnabled', 'isNetworkEnabled', 'isSingleNetworkEnabled',
           'isSingleStudyEnabled', 'isCollectedDatasetEnabled', 'isHarmonizedDatasetEnabled', 'languages', 'searchLayout'].map(function(p) { return 'micaConfig.' + p; }), function(value, oldValue) {
           if(!angular.equals(value,oldValue)) {
             reload = true;

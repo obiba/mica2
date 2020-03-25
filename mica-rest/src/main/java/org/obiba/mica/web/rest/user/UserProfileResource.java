@@ -10,22 +10,24 @@
 
 package org.obiba.mica.web.rest.user;
 
-import java.util.NoSuchElementException;
+import com.google.common.base.Strings;
+import org.apache.shiro.authz.annotation.RequiresAuthentication;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.apache.shiro.authz.annotation.RequiresRoles;
+import org.obiba.mica.security.Roles;
+import org.obiba.mica.security.service.SubjectAclService;
+import org.obiba.mica.user.UserProfileService;
+import org.obiba.mica.web.model.Dtos;
+import org.obiba.mica.web.model.Mica;
+import org.obiba.shiro.realm.ObibaRealm;
+import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
-
-import org.apache.shiro.authz.annotation.RequiresAuthentication;
-import org.apache.shiro.authz.annotation.RequiresRoles;
-import org.obiba.mica.security.Roles;
-import org.obiba.mica.user.UserProfileService;
-import org.obiba.mica.web.model.Dtos;
-import org.obiba.mica.web.model.Mica;
-import org.obiba.shiro.realm.ObibaRealm;
-import org.springframework.stereotype.Component;
+import java.util.NoSuchElementException;
 
 @Component
 @Path("/user/{username}")
@@ -38,21 +40,30 @@ public class UserProfileResource {
   @Inject
   private Dtos dtos;
 
+  @Inject
+  private SubjectAclService subjectAclService;
+
   @GET
-  public Mica.UserProfileDto getProfile(@PathParam("username") String username) {
-    return dtos.asDto(userProfileService.getProfile(username));
+  public Mica.UserProfileDto getProfile(@PathParam("username") String username, @QueryParam("group") String group) {
+    // can query itself or must have permission
+    if (!subjectAclService.isCurrentUser(username))
+      subjectAclService.checkPermission("/user", "VIEW");
+
+    ObibaRealm.Subject subject = Strings.isNullOrEmpty(group) ?
+      userProfileService.getProfile(username) : userProfileService.getProfileByGroup(username, group);
+
+    if (subject == null)
+      throw new NoSuchElementException("User '" + username + "' was not found" + (Strings.isNullOrEmpty(group) ? "" : " in group '" + group + "'"));
+
+    return dtos.asDto(subject);
   }
 
   @GET
   @Path("/application/{application}")
   @RequiresRoles(Roles.MICA_DAO)
+  @Deprecated
   public Mica.UserProfileDto getProfileByApplication(@PathParam("username") String username, @PathParam("application") String application,
-    @QueryParam("group") String group) {
-    ObibaRealm.Subject subject = userProfileService.getProfileByApplication(username, application, group);
-    if (subject == null) {
-      throw new NoSuchElementException("User '" + username + "' with application '" + application + "' was not found.");
-    }
-
-    return dtos.asDto(subject);
+                                                     @QueryParam("group") String group) {
+    return getProfile(username, group);
   }
 }

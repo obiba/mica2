@@ -270,8 +270,13 @@ public class Dtos {
   }
 
   @NotNull
+  public MicaConfigDto asDto(@NotNull MicaConfig micaConfig, String language) {
+    return micaConfigDtos.asDto(micaConfig, language);
+  }
+
+  @NotNull
   public MicaConfigDto asDto(@NotNull MicaConfig micaConfig) {
-    return micaConfigDtos.asDto(micaConfig);
+    return micaConfigDtos.asDto(micaConfig, null);
   }
 
   @NotNull
@@ -377,8 +382,23 @@ public class Dtos {
   }
 
   @NotNull
+  public Mica.DatasetHarmonizedVariableSummaryDto asHarmonizedSummaryDto(@NotNull DatasetVariable variable) {
+    return datasetDtos.asHarmonizedSummaryDto(variable);
+  }
+
+  @NotNull
   public Mica.DatasetVariableSummaryDto asSummaryDto(@NotNull DatasetVariable variable, OpalTable opalTable, boolean includeSummaries) {
     return datasetDtos.asSummaryDto(variable, opalTable, includeSummaries);
+  }
+
+  @NotNull
+  public Mica.DatasetDto.StudyTableDto.Builder asDto(StudyTable studyTable, boolean includeSummary) {
+    return datasetDtos.asDto(studyTable, includeSummary);
+  }
+
+  @NotNull
+  public Mica.DatasetDto.HarmonizationTableDto.Builder asDto(HarmonizationStudyTable harmonizationTable, boolean includeSummary) {
+    return datasetDtos.asDto(harmonizationTable, includeSummary);
   }
 
   @NotNull
@@ -398,8 +418,8 @@ public class Dtos {
 
   @NotNull
   public Mica.DatasetVariableAggregationDto.Builder asDto(@NotNull OpalTable opalTable,
-    @Nullable Math.SummaryStatisticsDto summary) {
-    return datasetDtos.asDto(opalTable, summary);
+    @Nullable Math.SummaryStatisticsDto summary, boolean withStudySummary) {
+    return datasetDtos.asDto(opalTable, summary, withStudySummary);
   }
 
   @NotNull
@@ -423,7 +443,17 @@ public class Dtos {
   }
 
   @NotNull
-  public Mica.DataAccessRequestDto asAmendentDto(@NotNull DataAccessAmendment amendment) {
+  public Mica.DataAccessRequestDto asFeasibilityDto(@NotNull DataAccessFeasibility feasibility) {
+    return dataAccessRequestDtos.asFeasibilityDto(feasibility);
+  }
+
+  @NotNull
+  public DataAccessFeasibility fromFeasibilityDto(@NotNull Mica.DataAccessRequestDto dto) {
+    return dataAccessRequestDtos.fromFeasibilityDto(dto);
+  }
+
+  @NotNull
+  public Mica.DataAccessRequestDto asAmendmentDto(@NotNull DataAccessAmendment amendment) {
     return dataAccessRequestDtos.asAmendmentDto(amendment);
   }
 
@@ -480,6 +510,16 @@ public class Dtos {
 
   @NotNull
   public DataAccessForm fromDto(@NotNull Mica.DataAccessFormDto dto) {
+    return micaConfigDtos.fromDto(dto);
+  }
+
+  @NotNull
+  public Mica.DataAccessFeasibilityFormDto asDto(@NotNull DataAccessFeasibilityForm dataAccessFeasibilityForm, DataAccessForm dataAccessForm) {
+    return micaConfigDtos.asDto(dataAccessFeasibilityForm, dataAccessForm);
+  }
+
+  @NotNull
+  public DataAccessFeasibilityForm fromDto(@NotNull Mica.DataAccessFeasibilityFormDto dto) {
     return micaConfigDtos.fromDto(dto);
   }
 

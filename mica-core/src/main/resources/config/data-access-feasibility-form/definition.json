@@ -1,0 +1,266 @@
+[
+  {
+    "type": "fieldset",
+    "items": [
+      {
+        "type": "help",
+        "helpvalue": "<h3>t(data-access-feasibility.default.grant-submission.title)</h3>"
+      },
+      "grantSubmission"
+    ]
+  },
+  {
+    "type": "fieldset",
+    "condition": "model.grantSubmission",
+    "items": [
+      {
+        "type": "section",
+        "htmlClass": "row",
+        "items": [
+          {
+            "type": "section",
+            "htmlClass": "col-xs-6",
+            "items": [
+              {
+                "key": "grantingAgency",
+                "required": true
+              },
+              {
+                "key": "grantDate",
+                "dateOptions": {
+                  "dateFormat": "yyyy-MM-dd"
+                },
+                "validationMessage": "t(data-access-request.default.date-error)",
+                "required": true
+              }
+            ]
+          },
+          {
+            "type": "section",
+            "htmlClass": "col-xs-6",
+            "items": [
+              {
+                "key": "grantCompetition",
+                "required": true
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "fieldset",
+    "items": [
+      {
+        "type": "help",
+        "helpvalue": "<h3>t(data-access-feasibility.default.applicant-info.title)</h3>"
+      }
+    ]
+  },
+  {
+    "type": "fieldset",
+    "items": [
+      {
+        "type": "section",
+        "htmlClass": "row",
+        "items": [
+          {
+            "type": "section",
+            "htmlClass": "col-xs-6",
+            "items": [
+              "pi",
+              {
+                "key": "career",
+                "type": "radios",
+                "titleMap": [
+                  {
+                    "value": "inv-early",
+                    "name": "t(data-access-feasibility.default.career.inv-early)"
+                  },
+                  {
+                    "value": "inv-mid",
+                    "name": "t(data-access-feasibility.default.career.inv-mid)"
+                  },
+                  {
+                    "value": "inv-senior",
+                    "name": "t(data-access-feasibility.default.career.inv-senior)"
+                  },
+                  {
+                    "value": "student",
+                    "name": "t(data-access-feasibility.default.career.student)"
+                  },
+                  {
+                    "value": "postdoc",
+                    "name": "t(data-access-feasibility.default.career.postdoc)"
+                  },
+                  {
+                    "value": "other",
+                    "name": "t(data-access-feasibility.default.career.other)"
+                  }
+                ]
+              },
+              {
+                "key": "careerOther",
+                "condition": "model.career === 'other'",
+                "required": true
+              },
+              "currentPosition"
+            ]
+          },
+          {
+            "type": "section",
+            "htmlClass": "col-xs-6",
+            "items": [
+              "piEmail",
+              "piPhone",
+              {
+                "key": "piAddress",
+                "type": "textarea",
+                "required": true
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "fieldset",
+    "items": [
+      {
+        "type": "help",
+        "helpvalue": "<h3>t(data-access-feasibility.default.project-info.title)</h3>"
+      }
+    ]
+  },
+  {
+    "type": "fieldset",
+    "items": [
+      {
+        "type": "section",
+        "items": [
+          {
+            "type": "section",
+            "items": [
+              "projectTitle",
+              {
+                "key": "projectObjectives",
+                "type": "textarea"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "fieldset",
+    "items": [
+      {
+        "type": "help",
+        "helpvalue": "<h3>t(data-access-feasibility.default.data.title)</h3>"
+      }
+    ]
+  },
+  {
+    "type": "fieldset",
+    "items": [
+      {
+        "type": "section",
+        "items": [
+          {
+            "type": "section",
+            "items": [
+              {
+                "key": "datasets",
+                "type": "textarea"
+              },
+              {
+                "key": "selectionCriteria",
+                "type": "textarea"
+              },
+              {
+                "key": "studyDesign",
+                "type": "textarea"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "fieldset",
+    "items": [
+      {
+        "type": "help",
+        "helpvalue": "<h3>t(data-access-feasibility.default.biospecimens.title)</h3>"
+      },
+      "includeBiospecimens"
+    ]
+  },
+  {
+    "type": "fieldset",
+    "condition": "model.includeBiospecimens",
+    "items": [
+      {
+        "type": "section",
+        "items": [
+          {
+            "type": "section",
+            "items": [
+              {
+                "key": "biospecimensType",
+                "type": "textarea",
+                "required": true
+              },
+              {
+                "key": "biospecimensSelectionCriteria",
+                "type": "textarea",
+                "required": true
+              },
+              {
+                "key": "biospecimensPreAnalyticalCharacteristics",
+                "type": "textarea"
+              },
+              {
+                "key": "biospecimensAnalyzeMethods",
+                "type": "textarea",
+                "required": true
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "fieldset",
+    "items": [
+      {
+        "type": "help",
+        "helpvalue": "<h3>t(data-access-feasibility.default.linkage.title)</h3>"
+      }
+    ]
+  },
+  {
+    "type": "fieldset",
+    "items": [
+      {
+        "type": "section",
+        "items": [
+          {
+            "type": "section",
+            "items": [
+              {
+                "key": "linkage",
+                "type": "textarea"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]

@@ -1,0 +1,116 @@
+{
+  "type": "object",
+  "properties": {
+    "grantSubmission": {
+      "title": "t(data-access-feasibility.default.grant-submission.check)",
+      "type": "boolean"
+    },
+    "grantingAgency": {
+      "title": "t(data-access-feasibility.default.granting-agency)",
+      "type": "string"
+    },
+    "grantCompetition": {
+      "title": "t(data-access-feasibility.default.grant-competition)",
+      "type": "string"
+    },
+    "grantDate": {
+      "title": "t(data-access-feasibility.default.grant-date)",
+      "type": "string",
+      "format": "datepicker"
+    },
+    "pi": {
+      "title": "t(data-access-feasibility.default.pi)",
+      "type": "string"
+    },
+    "career": {
+      "title": "t(data-access-feasibility.default.career.title)",
+      "type": "string",
+      "enum": [
+        "inv-early",
+        "inv-mid",
+        "inv-senior",
+        "student",
+        "postdoc",
+        "other"
+      ]
+    },
+    "careerOther": {
+      "title": "t(data-access-feasibility.default.career.other-career)",
+      "type": "string"
+    },
+    "currentPosition": {
+      "title": "t(data-access-feasibility.default.current-position)",
+      "type": "string"
+    },
+    "piEmail": {
+      "title": "t(data-access-feasibility.default.pi-email)",
+      "type": "string",
+      "pattern": "^\\S+@\\S+$"
+    },
+    "piPhone": {
+      "title": "t(data-access-feasibility.default.pi-phone)",
+      "type": "string"
+    },
+    "piAddress": {
+      "title": "t(data-access-feasibility.default.pi-address)",
+      "type": "string"
+    },
+    "projectTitle": {
+      "title": "t(data-access-feasibility.default.project-title)",
+      "type": "string"
+    },
+    "projectObjectives": {
+      "title": "t(data-access-feasibility.default.project-objectives)",
+      "type": "string"
+    },
+    "datasets": {
+      "title": "t(data-access-feasibility.default.datasets)",
+      "type": "string"
+    },
+    "selectionCriteria": {
+      "title": "t(data-access-feasibility.default.selection-criteria)",
+      "type": "string"
+    },
+    "studyDesign": {
+      "title": "t(data-access-feasibility.default.study-design)",
+      "type": "string"
+    },
+    "includeBiospecimens": {
+      "title": "t(data-access-feasibility.default.biospecimens.check)",
+      "type": "boolean"
+    },
+    "biospecimensType": {
+      "title": "t(data-access-feasibility.default.biospecimens-type)",
+      "type": "string"
+    },
+    "biospecimensSelectionCriteria": {
+      "title": "t(data-access-feasibility.default.biospecimens-selection-criteria)",
+      "type": "string"
+    },
+    "biospecimensPreAnalyticalCharacteristics": {
+      "title": "t(data-access-feasibility.default.biospecimens-pre-analytical-characteristics)",
+      "type": "string"
+    },
+    "biospecimensAnalyzeMethods": {
+      "title": "t(data-access-feasibility.default.biospecimens-analyze-methods)",
+      "type": "string"
+    },
+    "linkage": {
+      "title": "t(data-access-feasibility.default.data-linkage)",
+      "type": "string"
+    }
+  },
+  "required": [
+    "pi",
+    "career",
+    "currentPosition",
+    "piEmail",
+    "piPhone",
+    "piAddress",
+    "projectTitle",
+    "projectObjectives",
+    "datasets",
+    "selectionCriteria",
+    "studyDesign"
+  ]
+}

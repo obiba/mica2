@@ -21,6 +21,8 @@
 
   <div class="row">
     <div class="col-md-6">
+
+      <h4 ng-class="{'no-margin-top': screen.is('lg')}" translate>config.serverIdentification</h4>
       <table class="table table-bordered table-striped">
         <tbody>
         <tr>
@@ -44,6 +46,44 @@
           </td>
           <td>{{micaConfig.portalUrl}}</td>
         </tr>
+        </tbody>
+      </table>
+
+
+
+
+    </div>
+    <div class="col-md-6">
+      <h4 ng-class="{'no-margin-top': screen.is('lg')}" translate>config.dataSource</h4>
+      <table class="table table-bordered table-striped">
+        <tbody>
+        <tr>
+          <td>
+            <span translate>config.opal</span>
+            <span class="help-block" translate>config.opal-help</span>
+          </td>
+          <td><a ng-href="{{micaConfig.opal}}" target="_blank">{{micaConfig.opal}}</a></td>
+        </tr>
+        <tr>
+          <td>
+            <span translate>config.privacy-threshold</span>
+            <span class="help-block" translate>config.privacy-threshold-help</span>
+          </td>
+          <td>{{micaConfig.privacyThreshold}}</td>
+        </tr>
+        </tbody>
+      </table>
+
+    </div>
+  </div>
+
+  <h4 translate>config.content</h4>
+
+  <div class="row">
+    <div class="col-md-6">
+      <h5 translate>config.content-edition</h5>
+      <table class="table table-bordered table-striped">
+        <tbody>
         <tr>
           <td>
             <span translate>config.languages</span>
@@ -63,20 +103,12 @@
           </td>
           <td>{{micaConfig.defaultCharSet}}</td>
         </tr>
-        <tr>
-          <td>
-            <span translate>config.opal</span>
-            <span class="help-block" translate>config.opal-help</span>
-          </td>
-          <td><a ng-href="{{micaConfig.opal}}" target="_blank">{{micaConfig.opal}}</a></td>
-        </tr>
-        <tr>
-          <td>
-            <span translate>config.privacy-threshold</span>
-            <span class="help-block" translate>config.privacy-threshold-help</span>
-          </td>
-          <td>{{micaConfig.privacyThreshold}}</td>
-        </tr>
+        </tbody>
+      </table>
+
+      <h5 translate class="voffset4">config.content-access</h5>
+      <table class="table table-bordered table-striped">
+        <tbody>
         <tr>
           <td>
             <span translate>config.openAccess</span>
@@ -89,79 +121,51 @@
         </tr>
         <tr>
           <td>
-            <span translate>config.searchLayout.title</span>
-            <span class="help-block" translate>config.searchLayout.help</span>
+            <span translate>config.variableSummaryRequiresAuthentication</span>
+            <span class="help-block" translate>config.variableSummaryRequiresAuthentication-help</span>
           </td>
           <td>
-            {{'config.searchLayout.' + micaConfig.searchLayout | translate}}
-          </td>
-        </tr>
-        </tbody>
-      </table>
-    </div>
-    <div class="col-md-6">
-
-      <table class="table table-bordered table-striped">
-        <tbody>
-        <tr>
-          <td>
-            <span translate>config.single-study-enabled</span>
-            <span class="help-block" translate>config.single-study-enabled-help</span>
-          </td>
-          <td>
-            <i class="fa fa-check-square-o" ng-hide="!micaConfig.isSingleStudyEnabled"></i>
-            <i class="fa fa-square-o" ng-hide="micaConfig.isSingleStudyEnabled"></i>
+            <i class="fa fa-check-square-o" ng-hide="!micaConfig.variableSummaryRequiresAuthentication"></i>
+            <i class="fa fa-square-o" ng-hide="micaConfig.variableSummaryRequiresAuthentication"></i>
           </td>
         </tr>
         <tr>
           <td>
-            <span translate>config.network-enabled</span>
-            <span class="help-block" translate>config.network-enabled-help</span>
+            <span translate>config.signup-enabled</span>
+            <span class="help-block" translate>config.signup-enabled-help</span>
           </td>
           <td>
-            <i class="fa fa-check-square-o" ng-hide="!micaConfig.isNetworkEnabled"></i>
-            <i class="fa fa-square-o" ng-hide="micaConfig.isNetworkEnabled"></i>
-          </td>
-        </tr>
-        <tr ng-class="{'text-muted': !micaConfig.isNetworkEnabled}">
-          <td>
-            <span translate>config.single-network-enabled</span>
-            <span class="help-block" translate>config.single-network-enabled-help</span>
-          </td>
-          <td>
-            <i class="fa fa-check-square-o" ng-hide="!micaConfig.isSingleNetworkEnabled"></i>
-            <i class="fa fa-square-o" ng-hide="micaConfig.isSingleNetworkEnabled"></i>
+            <i class="fa fa-check-square-o" ng-hide="!micaConfig.signupEnabled"></i>
+            <i class="fa fa-square-o" ng-hide="micaConfig.signupEnabled"></i>
           </td>
         </tr>
         <tr>
           <td>
-            <span translate>config.collected-dataset-enabled</span>
-            <span class="help-block" translate>config.collected-dataset-enabled-help</span>
+            <span translate>config.signup-with-password</span>
+            <span class="help-block" translate>config.signup-with-password-help</span>
           </td>
           <td>
-            <i class="fa fa-check-square-o" ng-hide="!micaConfig.isCollectedDatasetEnabled"></i>
-            <i class="fa fa-square-o" ng-hide="micaConfig.isCollectedDatasetEnabled"></i>
+            <i class="fa fa-check-square-o" ng-hide="!micaConfig.signupWithPassword"></i>
+            <i class="fa fa-square-o" ng-hide="micaConfig.signupWithPassword"></i>
           </td>
         </tr>
         <tr>
           <td>
-            <span translate>config.harmonized-dataset-enabled</span>
-            <span class="help-block" translate>config.harmonized-dataset-enabled-help</span>
+            <span translate>config.signup-groups</span>
+            <span class="help-block" translate>config.signup-groups-help</span>
           </td>
           <td>
-            <i class="fa fa-check-square-o" ng-hide="!micaConfig.isHarmonizedDatasetEnabled"></i>
-            <i class="fa fa-square-o" ng-hide="micaConfig.isHarmonizedDatasetEnabled"></i>
+            <ul class="list-inline">
+              <li ng-repeat="group in micaConfig.signupGroups">
+                <span class="badge">{{group}}</span>
+              </li>
+            </ul>
           </td>
         </tr>
         </tbody>
       </table>
 
-    </div>
-  </div>
-
-  <div class="row">
-    <div class="col-md-6">
-      <h4 translate>config.sets</h4>
+      <h5 translate>config.sets</h5>
 
       <table class="table table-bordered table-striped">
         <tbody>
@@ -252,21 +256,100 @@
 
         </tbody>
       </table>
+
     </div>
 
     <div class="col-md-6">
-      <p>&nbsp;</p>
+      <h5 translate>config.sections</h5>
+      <table class="table table-bordered table-striped">
+        <tbody>
+        <tr>
+          <td>
+            <span translate>config.repository-enabled</span>
+            <span class="help-block" translate>config.repository-enabled-help</span>
+          </td>
+          <td>
+            <i class="fa fa-check-square-o" ng-hide="!micaConfig.isRepositoryEnabled"></i>
+            <i class="fa fa-square-o" ng-hide="micaConfig.isRepositoryEnabled"></i>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <span translate>config.single-study-enabled</span>
+            <span class="help-block" translate>config.single-study-enabled-help</span>
+          </td>
+          <td>
+            <i class="fa fa-check-square-o" ng-hide="!micaConfig.isSingleStudyEnabled"></i>
+            <i class="fa fa-square-o" ng-hide="micaConfig.isSingleStudyEnabled"></i>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <span translate>config.network-enabled</span>
+            <span class="help-block" translate>config.network-enabled-help</span>
+          </td>
+          <td>
+            <i class="fa fa-check-square-o" ng-hide="!micaConfig.isNetworkEnabled"></i>
+            <i class="fa fa-square-o" ng-hide="micaConfig.isNetworkEnabled"></i>
+          </td>
+        </tr>
+        <tr ng-class="{'text-muted': !micaConfig.isNetworkEnabled}">
+          <td>
+            <span translate>config.single-network-enabled</span>
+            <span class="help-block" translate>config.single-network-enabled-help</span>
+          </td>
+          <td>
+            <i class="fa fa-check-square-o" ng-hide="!micaConfig.isSingleNetworkEnabled"></i>
+            <i class="fa fa-square-o" ng-hide="micaConfig.isSingleNetworkEnabled"></i>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <span translate>config.collected-dataset-enabled</span>
+            <span class="help-block" translate>config.collected-dataset-enabled-help</span>
+          </td>
+          <td>
+            <i class="fa fa-check-square-o" ng-hide="!micaConfig.isCollectedDatasetEnabled"></i>
+            <i class="fa fa-square-o" ng-hide="micaConfig.isCollectedDatasetEnabled"></i>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <span translate>config.harmonized-dataset-enabled</span>
+            <span class="help-block" translate>config.harmonized-dataset-enabled-help</span>
+          </td>
+          <td>
+            <i class="fa fa-check-square-o" ng-hide="!micaConfig.isHarmonizedDatasetEnabled"></i>
+            <i class="fa fa-square-o" ng-hide="micaConfig.isHarmonizedDatasetEnabled"></i>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <span translate>config.data-access-enabled</span>
+            <span class="help-block" translate>config.data-access-enabled-help</span>
+          </td>
+          <td>
+            <i class="fa fa-check-square-o" ng-hide="!micaConfig.isDataAccessEnabled"></i>
+            <i class="fa fa-square-o" ng-hide="micaConfig.isDataAccessEnabled"></i>
+          </td>
+        </tr>
+        </tbody>
+      </table>
 
-      <div class="help-block">{{'config.opal-sets-views-download-permission-help' | translate}}</div>
-      <permission-config-table
-        overridden-role-help-texts="overriddenRoleHelpTexts"
-        name="'opal-views'"
-        allow-blocked-principals="true"
-        permissions="documentSetsAcls"
-        on-add="onAddDocumentSetsAcl"
-        on-delete="onRemoveDocumentSetsAcl"
-        on-load="onLoadDocumentSetsAcls">
-      </permission-config-table>
+      <h5 translate>config.searchLayout.title</h5>
+      <table class="table table-bordered table-striped">
+        <tbody>
+        <tr>
+          <td>
+            <span translate>config.searchLayout.title</span>
+            <span class="help-block" translate>config.searchLayout.help</span>
+          </td>
+          <td>
+            {{'config.searchLayout.' + micaConfig.searchLayout | translate}}
+          </td>
+        </tr>
+        </tbody>
+      </table>
     </div>
   </div>
 
@@ -381,6 +464,18 @@
           </table>
         </div>
       </div>
+
+      <h3 translate>permissions</h3>
+      <div class="help-block">{{'config.opal-sets-views-download-permission-help' | translate}}</div>
+      <permission-config-table
+        overridden-role-help-texts="overriddenRoleHelpTexts"
+        name="'opal-views'"
+        allow-blocked-principals="true"
+        permissions="documentSetsAcls"
+        on-add="onAddDocumentSetsAcl"
+        on-delete="onRemoveDocumentSetsAcl"
+        on-load="onLoadDocumentSetsAcls">
+      </permission-config-table>
     </div>
   </div>
 

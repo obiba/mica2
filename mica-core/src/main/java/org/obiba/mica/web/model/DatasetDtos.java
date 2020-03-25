@@ -311,6 +311,23 @@ class DatasetDtos {
   }
 
   @NotNull
+  Mica.DatasetHarmonizedVariableSummaryDto asHarmonizedSummaryDto(@NotNull DatasetVariable variable) {
+    if (variable == null) return Mica.DatasetHarmonizedVariableSummaryDto.newBuilder().setStatus("").build();
+    Mica.DatasetHarmonizedVariableSummaryDto.Builder builder = Mica.DatasetHarmonizedVariableSummaryDto.newBuilder() //
+      .setHarmonizedVariableRef(asDto(DatasetVariable.IdResolver.from(variable.getId())));
+
+    if(variable.getAttributes() != null) {
+      variable.getAttributes().asAttributeList()
+        .forEach(attribute -> {
+          if ("Mlstr_harmo".equals(attribute.getNamespace()) && "status".equals(attribute.getName()))
+            builder.setStatus(attribute.getValues().getUndetermined());
+        });
+    }
+
+    return builder.build();
+  }
+
+  @NotNull
   Mica.DatasetVariableSummaryDto asSummaryDto(@NotNull DatasetVariable variable, OpalTable opalTable,
     boolean includeSummaries) {
     Mica.DatasetVariableSummaryDto.Builder builder = Mica.DatasetVariableSummaryDto.newBuilder() //
@@ -422,7 +439,7 @@ class DatasetDtos {
   }
 
   public Mica.DatasetVariableAggregationDto.Builder asDto(@NotNull OpalTable opalTable,
-    @Nullable Math.SummaryStatisticsDto summary) {
+    @Nullable Math.SummaryStatisticsDto summary, boolean withStudySummary) {
     Mica.DatasetVariableAggregationDto.Builder aggDto = Mica.DatasetVariableAggregationDto.newBuilder();
 
     if(summary == null) return aggDto;
@@ -442,9 +459,9 @@ class DatasetDtos {
     }
 
     if(opalTable instanceof StudyTable)
-      aggDto.setStudyTable(asDto((StudyTable) opalTable, true));
+      aggDto.setStudyTable(asDto((StudyTable) opalTable, withStudySummary));
     else if (opalTable instanceof HarmonizationStudyTable)
-      aggDto.setHarmonizationStudyTable(asDto((HarmonizationStudyTable) opalTable, true));
+      aggDto.setHarmonizationStudyTable(asDto((HarmonizationStudyTable) opalTable, withStudySummary));
 
     return aggDto;
   }
@@ -593,6 +610,11 @@ class DatasetDtos {
       .setMissing(freq.getMissing());
   }
 
+  private Mica.IntervalFrequencyDto.Builder asDto(Math.IntervalFrequencyDto inter) {
+    return Mica.IntervalFrequencyDto.newBuilder().setCount((int)inter.getFreq())
+      .setLower(inter.getLower()).setUpper(inter.getUpper());
+  }
+
   private void addFrequenciesDto(Mica.DatasetVariableAggregationDto.Builder aggDto,
     List<Math.FrequencyDto> frequencies) {
     addFrequenciesDto(aggDto, frequencies, 0);
@@ -635,6 +657,10 @@ class DatasetDtos {
 
     if(summary.getFrequenciesCount() > 0) {
       summary.getFrequenciesList().forEach(freq -> aggDto.addFrequencies(asDto(freq)));
+    }
+
+    if (summary.getIntervalFrequencyCount() > 0) {
+      summary.getIntervalFrequencyList().forEach(inter -> aggDto.addIntervalFrequencies(asDto(inter)));
     }
 
     int total = 0;

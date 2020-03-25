@@ -57,6 +57,10 @@ public abstract class AgateRestService {
   @PostConstruct
   public void init() {}
 
+  protected String getApplicationName() {
+    return agateServerConfigService.getServiceName();
+  }
+
   protected String getApplicationAuth() {
     String token = agateServerConfigService.buildToken();
     return APPLICATION_AUTH_SCHEMA + " " + Base64.encodeToString(token.getBytes());

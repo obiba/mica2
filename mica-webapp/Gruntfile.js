@@ -149,6 +149,7 @@ module.exports = function (grunt) {
           }
         ]
       },
+      assets: ['src/main/webapp/assets/libs/node_modules'],
       server: '.tmp'
     },
 
@@ -158,7 +159,8 @@ module.exports = function (grunt) {
       },
       all: [
         'Gruntfile.js',
-        'src/main/webapp/app/**/*.js'
+        'src/main/webapp/app/**/*.js',
+        'src/main/webapp/mica.js'
       ]
     },
 
@@ -254,7 +256,7 @@ module.exports = function (grunt) {
     },
     // generated dynamically by useminPrepare
     //cssmin: {
-    //  // By default, your `index.html` <!-- Usemin Block --> will take care of
+    //  // By default, your `admin.html` <!-- Usemin Block --> will take care of
     //  // minification. This option is pre-configured if you do not wish to use
     //  // Usemin blocks.
     //  dist: {
@@ -302,7 +304,8 @@ module.exports = function (grunt) {
               '*.{ico,png,txt}',
               '.htaccess',
               'images/{,*/}*.{png,gif,webp}',
-              'fonts/*'
+              'fonts/*',
+              'styles/*'
             ]
           },
           {
@@ -364,6 +367,28 @@ module.exports = function (grunt) {
         cwd: 'src/main/webapp/styles',
         dest: '.tmp/styles/',
         src: '{,*/}*.css'
+      },
+      assets: {
+        files: [
+          {expand: true, src: ['node_modules/admin-lte/dist/**'], dest: 'src/main/webapp/assets/libs/'},
+          {expand: true, src: ['node_modules/admin-lte/plugins/bootstrap/**'], dest: 'src/main/webapp/assets/libs/'},
+          {expand: true, src: ['node_modules/admin-lte/plugins/chart.js/**'], dest: 'src/main/webapp/assets/libs/'},
+          {expand: true, src: ['node_modules/admin-lte/plugins/datatables/**'], dest: 'src/main/webapp/assets/libs/'},
+          {expand: true, src: ['node_modules/admin-lte/plugins/datatables-bs4/**'], dest: 'src/main/webapp/assets/libs/'},
+          {expand: true, src: ['node_modules/admin-lte/plugins/fontawesome-free/**'], dest: 'src/main/webapp/assets/libs/'},
+          {expand: true, src: ['node_modules/admin-lte/plugins/jquery/**'], dest: 'src/main/webapp/assets/libs/'},
+          {expand: true, src: ['node_modules/admin-lte/plugins/moment/**'], dest: 'src/main/webapp/assets/libs/'},
+          {expand: true, src: ['node_modules/admin-lte/plugins/toastr/**'], dest: 'src/main/webapp/assets/libs/'},
+          {expand: true, src: ['node_modules/simplemde/dist/**'], dest: 'src/main/webapp/assets/libs/'},
+          {expand: true, src: ['node_modules/vue/dist/**'], dest: 'src/main/webapp/assets/libs/'},
+          {expand: true, src: ['node_modules/rql/dist/**'], dest: 'src/main/webapp/assets/libs/'},
+          {expand: true, src: ['node_modules/vue-obiba-search-result/dist/**'], dest: 'src/main/webapp/assets/libs/'},
+          {expand: true, src: ['node_modules/axios/dist/**'], dest: 'src/main/webapp/assets/libs/'},
+          {expand: true, src: ['node_modules/marked/lib/**'], dest: 'src/main/webapp/assets/libs/'},
+          {expand: true, src: ['node_modules/jquery.redirect/**'], dest: 'src/main/webapp/assets/libs/'},
+          {expand: true, src: ['node_modules/js-cookie/**'], dest: 'src/main/webapp/assets/libs/'},
+          {expand: true, src: ['node_modules/bootstrap-datepicker/dist/**'], dest: 'src/main/webapp/assets/libs/'},
+        ]
       }
     },
     concurrent: {
@@ -391,21 +416,9 @@ module.exports = function (grunt) {
         html: ['<%= yeoman.dist %>/*.html']
       }
     },
-    replace: {
-      dist: {
-        src: ['<%= yeoman.dist %>/index.html'],
-        overwrite: true,                 // overwrite matched source files
-        replacements: [
-          {
-            from: '<div class="development"></div>',
-            to: ''
-          }
-        ]
-      }
-    },
     wiredep: {
       task: {
-        src: 'src/main/webapp/index.html'
+        src: 'src/main/resources/templates/admin.ftl'
       }
     }
     // generated dynamically by useminPrepare
@@ -446,19 +459,20 @@ module.exports = function (grunt) {
 
   grunt.registerTask('build', [
     'clean:dist',
+    'clean:assets',
     'less',
     'jshint',
-    'useminPrepare',
+    //'useminPrepare',
     'concurrent:dist',
-    'autoprefixer',
-    'concat',
+    //'autoprefixer',
+    //'concat',
     'copy:dist',
-    'cssmin',
-    //'replace',
-    'uglify',
-    'rev',
-    'usemin',
-    'copy:distLibsImages'
+    //'cssmin',
+    //'uglify',
+    //'rev',
+    //'usemin',
+    'copy:distLibsImages',
+    'copy:assets'
   ]);
 
   grunt.registerTask('default', [

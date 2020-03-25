@@ -16,11 +16,7 @@ import java.util.List;
 import java.util.concurrent.Future;
 
 import javax.inject.Inject;
-import javax.ws.rs.BadRequestException;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.math3.util.Pair;
@@ -58,7 +54,6 @@ import com.google.common.collect.Multimap;
  */
 @Component
 @Scope("request")
-@RequiresAuthentication
 public class PublishedDataschemaDatasetVariableResource extends AbstractPublishedDatasetResource<HarmonizationDataset>
   implements DatasetVariableResource {
 
@@ -84,6 +79,7 @@ public class PublishedDataschemaDatasetVariableResource extends AbstractPublishe
   @Path("/summary")
   @Timed
   public List<Math.SummaryStatisticsDto> getVariableSummaries() {
+    checkVariableSummaryAccess();
     ImmutableList.Builder<Math.SummaryStatisticsDto> builder = ImmutableList.builder();
     HarmonizationDataset dataset = getDataset(HarmonizationDataset.class, datasetId);
     dataset.getBaseStudyTables().forEach(table -> {
@@ -104,6 +100,7 @@ public class PublishedDataschemaDatasetVariableResource extends AbstractPublishe
   @Path("/facet")
   @Timed
   public List<Search.QueryResultDto> getVariableFacets() {
+    checkVariableSummaryAccess();
     ImmutableList.Builder<Search.QueryResultDto> builder = ImmutableList.builder();
     HarmonizationDataset dataset = getDataset(HarmonizationDataset.class, datasetId);
     dataset.getBaseStudyTables().forEach(table -> {
@@ -122,7 +119,8 @@ public class PublishedDataschemaDatasetVariableResource extends AbstractPublishe
   @GET
   @Path("/aggregation")
   @Timed
-  public Mica.DatasetVariableAggregationsDto getVariableAggregations() {
+  public Mica.DatasetVariableAggregationsDto getVariableAggregations(@QueryParam("study") @DefaultValue("true") boolean withStudySummary) {
+    checkVariableSummaryAccess();
     ImmutableList.Builder<Mica.DatasetVariableAggregationDto> builder = ImmutableList.builder();
     HarmonizationDataset dataset = getDataset(HarmonizationDataset.class, datasetId);
     Mica.DatasetVariableAggregationsDto.Builder aggDto = Mica.DatasetVariableAggregationsDto.newBuilder();
@@ -134,10 +132,10 @@ public class PublishedDataschemaDatasetVariableResource extends AbstractPublishe
       BaseStudyTable opalTable = dataset.getBaseStudyTables().get(i);
       Future<Math.SummaryStatisticsDto> futureResult = results.get(i);
       try {
-        builder.add(dtos.asDto(opalTable, futureResult.get()).build());
+        builder.add(dtos.asDto(opalTable, futureResult.get(), withStudySummary).build());
       } catch(Exception e) {
         log.warn("Unable to retrieve statistics: " + e.getMessage(), e);
-        builder.add(dtos.asDto(opalTable, null).build());
+        builder.add(dtos.asDto(opalTable, null, withStudySummary).build());
       }
     }
 
@@ -157,8 +155,8 @@ public class PublishedDataschemaDatasetVariableResource extends AbstractPublishe
   @Path("/contingency")
   @Timed
   public Mica.DatasetVariableContingenciesDto getContingency(@QueryParam("by") String crossVariable) {
+    checkVariableSummaryAccess();
     Pair<DatasetVariable, DatasetVariable> variables = getContingencyVariables(crossVariable);
-
     return getDatasetVariableContingenciesDto(variables.getFirst(), variables.getSecond());
   }
 
@@ -210,6 +208,7 @@ public class PublishedDataschemaDatasetVariableResource extends AbstractPublishe
   @Produces("text/csv")
   @Timed
   public Response getContingencyCsv(@QueryParam("by") String crossVariable) throws IOException {
+    checkVariableSummaryAccess();
     Pair<DatasetVariable, DatasetVariable> variables = getContingencyVariables(crossVariable);
     ByteArrayOutputStream value = new CsvContingencyWriter(variables.getFirst(), variables.getSecond())
       .write(getDatasetVariableContingenciesDto(variables.getFirst(), variables.getSecond()));
@@ -223,6 +222,7 @@ public class PublishedDataschemaDatasetVariableResource extends AbstractPublishe
   @Produces("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
   @Timed
   public Response getContingencyExcel(@QueryParam("by") String crossVariable) throws IOException {
+    checkVariableSummaryAccess();
     Pair<DatasetVariable, DatasetVariable> variables = getContingencyVariables(crossVariable);
     ByteArrayOutputStream value = new ExcelContingencyWriter(variables.getFirst(), variables.getSecond())
       .write(getDatasetVariableContingenciesDto(variables.getFirst(), variables.getSecond()));

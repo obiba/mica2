@@ -72,14 +72,22 @@
         <h4 translate class="voffset4">config.content-access</h4>
         <div form-checkbox min="0" name="openAccess" model="micaConfig.openAccess" label="config.openAccess"
             help="config.openAccess-help"></div>
+        <div form-checkbox min="0" name="variableSummaryRequiresAuthentication" model="micaConfig.variableSummaryRequiresAuthentication" label="config.variableSummaryRequiresAuthentication"
+             help="config.variableSummaryRequiresAuthentication-help"></div>
 
-        <h4 translate class="voffset4">config.searchLayout.title</h4>
-        <span class="help-block" translate>config.searchLayout.help</span>
-        <div form-radio-group options="searchLayoutOptions" model="selectedSearchLayout"></div>
+        <div form-checkbox name="signupEnabled" model="micaConfig.signupEnabled"
+             label="config.signup-enabled" help="config.signup-enabled-help"></div>
+        <div form-checkbox name="signupWithPassword" model="micaConfig.signupWithPassword"
+             label="config.signup-with-password" help="config.signup-with-password-help"></div>
+        <div form-input name="signupGroups" model="signupGroups" label="config.signup-groups" help="config.signup-groups-form-help"
+             required="false" ng-keyup="signupGroupsUpdated()"></div>
+
 
       </div>
       <div class="col-md-6">
         <h4 translate>config.sections</h4>
+          <div form-checkbox name="isRepositoryEnabled" model="micaConfig.isRepositoryEnabled"
+              label="config.repository-enabled" help="config.repository-enabled-help"></div>
           <div form-checkbox name="isSingleStudyEnabled" model="micaConfig.isSingleStudyEnabled"
               label="config.single-study-enabled" help="config.single-study-enabled-help"></div>
           <div form-checkbox name="isNetworkEnabled" model="micaConfig.isNetworkEnabled" label="config.network-enabled"
@@ -87,11 +95,16 @@
           <div form-checkbox name="isSingleNetworkEnabled" model="micaConfig.isSingleNetworkEnabled"
               label="config.single-network-enabled" help="config.single-network-enabled-help"
               disabled="!micaConfig.isNetworkEnabled"></div>
-
           <div form-checkbox name="isCollectedDatasetEnabled" model="micaConfig.isCollectedDatasetEnabled"
               label="config.collected-dataset-enabled" help="config.collected-dataset-enabled-help"></div>
           <div form-checkbox name="isHarmonizedDatasetEnabled" model="micaConfig.isHarmonizedDatasetEnabled"
               label="config.harmonized-dataset-enabled" help="config.harmonized-dataset-enabled-help"></div>
+          <div form-checkbox name="isDataAccessEnabled" model="micaConfig.isDataAccessEnabled"
+              label="config.data-access-enabled" help="config.data-access-enabled-help"></div>
+
+        <h4 translate class="voffset4">config.searchLayout.title</h4>
+        <span class="help-block" translate>config.searchLayout.help</span>
+        <div form-radio-group options="searchLayoutOptions" model="selectedSearchLayout"></div>
       </div>
     </div>
 

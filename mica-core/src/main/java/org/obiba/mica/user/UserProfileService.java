@@ -10,16 +10,16 @@
 
 package org.obiba.mica.user;
 
-import java.util.Arrays;
-import java.util.List;
-
-import javax.annotation.Nullable;
-import javax.validation.constraints.NotNull;
-
 import com.google.common.base.Strings;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import org.apache.shiro.SecurityUtils;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.obiba.mica.core.service.AgateRestService;
+import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.shiro.realm.ObibaRealm;
 import org.obiba.shiro.realm.ObibaRealm.Subject;
 import org.slf4j.Logger;
@@ -28,15 +28,40 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
-import org.springframework.web.client.RestClientException;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.util.ErrorHandler;
+import org.springframework.web.client.*;
 import org.springframework.web.util.UriComponentsBuilder;
+
+import javax.annotation.Nullable;
+import javax.inject.Inject;
+import javax.validation.constraints.NotNull;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class UserProfileService extends AgateRestService {
+
   private static final Logger log = LoggerFactory.getLogger(UserProfileService.class);
+
+  private static final DateTimeFormatter ISO_8601 = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+
+  @Inject
+  private MicaConfigService micaConfigService;
+
+  private Cache<String, Subject> subjectCache = CacheBuilder.newBuilder()
+    .maximumSize(100)
+    .expireAfterWrite(1, TimeUnit.MINUTES)
+    .build();
 
   public synchronized Subject getProfile(@NotNull String username) {
     Assert.notNull(username, "Username cannot be null");
@@ -51,27 +76,38 @@ public class UserProfileService extends AgateRestService {
     return subject;
   }
 
-  public synchronized Subject getProfileByApplication(@NotNull String username, @NotNull String application,
-    @Nullable String group) {
-    Assert.notNull(username, "Username cannot be null");
-    Assert.notNull(application, "Application name cannot be null");
-    return getProfileInternal(getProfileServiceUrlByApp(username, application, group));
+  public synchronized Subject getProfile(@NotNull String username, boolean cached) {
+    if (!cached) return getProfile(username);
+
+    ObibaRealm.Subject profile = subjectCache.getIfPresent(username);
+    if (profile == null) {
+      profile = getProfile(username);
+      subjectCache.put(username, profile);
+    }
+    return profile;
   }
 
-  public synchronized List<Subject> getProfilesByApplication(@NotNull String application, @Nullable String group) {
+  public synchronized Map<String, Object> getProfileMap(@NotNull String username, boolean cached) {
+    return asMap(getProfile(username, cached));
+  }
 
-    Assert.notNull(application, "Application name cannot be null");
+  public synchronized Subject getProfileByGroup(@NotNull String username, @Nullable String group) {
+    Assert.notNull(username, "Username cannot be null");
+    return getProfileInternal(getProfileServiceUrlByGroup(username, group));
+  }
 
+  public synchronized List<Subject> getProfilesByGroup(@Nullable String group) {
+    List<Subject> subjects;
     try {
-
-      String profileServiceUrl = getProfileServiceUrlByApp(null, application, group);
-      return Arrays.asList(executeQuery(profileServiceUrl, Subject[].class));
-
-    } catch(RestClientException e) {
+      String profileServiceUrl = getProfileServiceUrlByGroup(null, group);
+      subjects = Arrays.asList(executeQuery(profileServiceUrl, Subject[].class));
+      subjects.forEach(s -> subjectCache.put(s.getUsername(), s));
+    } catch (RestClientException e) {
       log.error("Agate connection failure: {}", e.getMessage());
+      subjects = Lists.newArrayList();
     }
 
-    return Lists.newArrayList();
+    return subjects;
   }
 
   public String getUserProfileTranslations(String locale) {
@@ -93,16 +129,107 @@ public class UserProfileService extends AgateRestService {
 
     String username = subject.getPrincipal().toString();
 
-    if (username.equals("administrator")) { return true; }
+    if (username.equals("administrator")) {
+      return true;
+    }
 
     ObibaRealm.Subject profile = getProfile(username);
     return profile != null && profile.getGroups() != null && profile.getGroups().stream().filter(g -> g.equals(role)).count() > 0;
   }
 
+  public void createUser(Map<String, String[]> params) {
+    RestTemplate template = newRestTemplate();
+    HttpHeaders headers = new HttpHeaders();
+    headers.set(APPLICATION_AUTH_HEADER, getApplicationAuth());
+    headers.set(HttpHeaders.CONTENT_TYPE, "application/x-www-form-urlencoded");
+
+    StringBuffer query = new StringBuffer();
+    for (String group : micaConfigService.getConfig().getSignupGroups()) {
+      if (query.length() > 0) query.append("&");
+      query.append("group=").append(group);
+    }
+    for (String field : params.keySet()) {
+      for (String value : params.get(field)) {
+        if (!Strings.isNullOrEmpty(value)) {
+          query.append("&");
+          try {
+            if ("g-recaptcha-response".equals(field))
+              query.append("reCaptchaResponse");
+            else
+              query.append(field);
+            query.append("=").append(URLEncoder.encode(value, "UTF-8"));
+          } catch (UnsupportedEncodingException e) {
+            // ignore
+          }
+        }
+      }
+    }
+
+    HttpEntity<String> entity = new HttpEntity<>(query.toString(), headers);
+    try {
+      ResponseEntity<String> response = template.exchange(getUsersJoinUrl(), HttpMethod.POST, entity, String.class);
+      log.info(response.getHeaders().getLocation().toString());
+    } catch (HttpClientErrorException e) {
+      String message = e.getResponseBodyAsString();
+      log.error("Client error on user creation: {}", message);
+      throw e;
+    } catch (HttpServerErrorException e) {
+      String message = e.getResponseBodyAsString();
+      log.error("Server error on user creation: {}", message);
+      throw e;
+    }
+  }
+
+  public void resetPassword(String username) {
+    RestTemplate template = newRestTemplate();
+    HttpHeaders headers = new HttpHeaders();
+    headers.set(HttpHeaders.CONTENT_TYPE, "application/x-www-form-urlencoded");
+
+    String query = "username=";
+    try {
+      query = query + URLEncoder.encode(username, "UTF-8");
+    } catch (UnsupportedEncodingException e) {
+      // ignore
+    }
+    HttpEntity<String> entity = new HttpEntity<>(query, headers);
+    ResponseEntity<String> response = template.exchange(getUsersForgotPasswordUrl(), HttpMethod.POST, entity, String.class);
+  }
+
+  public Map<String, Object> asMap(@NotNull Subject profile) {
+    Map<String, Object> params = Maps.newHashMap();
+    String fullName = profile.getUsername();
+    Map<String, Object> attributes = Maps.newHashMap();
+    if (profile.getAttributes() != null) {
+      profile.getAttributes().forEach(attr -> {
+        String key = attr.get("key");
+        Object value;
+        if ("lastLogin".equals(key) || "createdDate".equals(key)) {
+          try {
+            attributes.put(key, ISO_8601.parseDateTime(attr.get("value")));
+          } catch (Exception e) {
+            // ignore
+          }
+        }
+        else
+          attributes.put(key, attr.get("value"));
+      });
+      fullName = attributes.getOrDefault("firstName", "") + (attributes.containsKey("firstName") ? " " : "") + attributes.getOrDefault("lastName", profile.getUsername());
+    }
+    params.put("username", profile.getUsername());
+    params.put("fullName", fullName);
+    params.put("groups", profile.getGroups());
+    params.put("attributes", attributes);
+    return params;
+  }
+
+  //
+  // Private methods
+  //
+
   private synchronized Subject getProfileInternal(String serviceUrl) {
     try {
       return executeQuery(serviceUrl, Subject.class);
-    } catch(RestClientException e) {
+    } catch (RestClientException e) {
       log.error("Agate connection failure: {}", e.getMessage());
     }
 
@@ -120,6 +247,22 @@ public class UserProfileService extends AgateRestService {
     return response.getBody();
   }
 
+  private String getUsersJoinUrl() {
+    return UriComponentsBuilder
+      .fromHttpUrl(agateServerConfigService.getAgateUrl())
+      .path(DEFAULT_REST_PREFIX)
+      .path("/users/_join")
+      .build().toUriString();
+  }
+
+  private String getUsersForgotPasswordUrl() {
+    return UriComponentsBuilder
+      .fromHttpUrl(agateServerConfigService.getAgateUrl())
+      .path(DEFAULT_REST_PREFIX)
+      .path("/users/_forgot_password")
+      .build().toUriString();
+  }
+
   private String getProfileServiceUrl(String username) {
     return UriComponentsBuilder
       .fromHttpUrl(agateServerConfigService.getAgateUrl())
@@ -128,14 +271,14 @@ public class UserProfileService extends AgateRestService {
       .build().toUriString();
   }
 
-  private String getProfileServiceUrlByApp(String username, String application, String group) {
+  private String getProfileServiceUrlByGroup(String username, String group) {
     UriComponentsBuilder urlBuilder =
       UriComponentsBuilder.fromHttpUrl(agateServerConfigService.getAgateUrl()).path(DEFAULT_REST_PREFIX);
 
     if (Strings.isNullOrEmpty(username)) {
-      urlBuilder.path(String.format("/application/%s/users", application));
+      urlBuilder.path(String.format("/application/%s/users", getApplicationName()));
     } else {
-      urlBuilder.path(String.format("/application/%s/user/%s", application, username));
+      urlBuilder.path(String.format("/application/%s/user/%s", getApplicationName(), username));
     }
 
     if (!Strings.isNullOrEmpty(group)) {

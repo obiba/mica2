@@ -21,7 +21,9 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
+import javax.ws.rs.ForbiddenException;
 
+import org.apache.shiro.SecurityUtils;
 import org.obiba.magma.NoSuchVariableException;
 import org.obiba.mica.core.domain.BaseStudyTable;
 import org.obiba.mica.core.domain.OpalTable;
@@ -30,6 +32,7 @@ import org.obiba.mica.dataset.NoSuchDatasetException;
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
+import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.micaConfig.service.OpalService;
 import org.obiba.mica.spi.search.Indexer;
 import org.obiba.mica.spi.search.Searcher;
@@ -66,6 +69,9 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
 
   @Inject
   protected OpalService opalService;
+
+  @Inject
+  protected MicaConfigService micaConfigService;
 
   private String locale;
 
@@ -135,6 +141,30 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
     return builder.build();
   }
 
+  protected List<DatasetVariable> getDatasetVariablesInternal(String rql, int from, int limit, @Nullable String sort, @Nullable String order, boolean harmonized) {
+    String rqlSort = "";
+    if (!Strings.isNullOrEmpty(sort)) {
+      String orderOp = !Strings.isNullOrEmpty(order) && "DESC".equals(order.toUpperCase()) ? "-" : "";
+      rqlSort = String.format(",sort(%s)", orderOp + sort);
+    }
+    String query = String.format("variable(%s,limit(%s,%s)%s)", rql, from, limit, rqlSort);
+    Searcher.DocumentResults results = searcher.find(harmonized ? Indexer.PUBLISHED_HVARIABLE_INDEX : Indexer.PUBLISHED_VARIABLE_INDEX,
+      harmonized ? Indexer.HARMONIZED_VARIABLE_TYPE : Indexer.VARIABLE_TYPE, query);
+
+    List<DatasetVariable> variables = results.getDocuments().stream().map(res -> {
+      try {
+        return objectMapper.readValue(res.getSourceInputStream(), DatasetVariable.class);
+      } catch(IOException e) {
+        log.error("Failed retrieving {}", DatasetVariable.class.getSimpleName(), e);
+        return null;
+      }
+    }).filter(Objects::nonNull).collect(Collectors.toList());
+
+    log.info("Response /{}/{}", Indexer.PUBLISHED_VARIABLE_INDEX, Indexer.VARIABLE_TYPE);
+
+    return variables;
+  }
+
   protected Mica.DatasetVariableHarmonizationDto getVariableHarmonizationDto(HarmonizationDataset dataset,
                                                                              String variableName, boolean includeSummaries) {
     DatasetVariable.IdResolver variableResolver = DatasetVariable.IdResolver
@@ -151,6 +181,18 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
         log.debug("ignore (case the study has not implemented this dataschema variable)", e);
       }
     });
+
+    return builder.build();
+  }
+
+  protected Mica.DatasetVariableHarmonizationSummaryDto getVariableHarmonizationSummaryDto(HarmonizationDataset dataset, String variableName) {
+    DatasetVariable.IdResolver variableResolver = DatasetVariable.IdResolver
+      .from(dataset.getId(), variableName, DatasetVariable.Type.Dataschema);
+    Mica.DatasetVariableHarmonizationSummaryDto.Builder builder = Mica.DatasetVariableHarmonizationSummaryDto.newBuilder();
+    builder.setDataschemaVariableRef(dtos.asDto(variableResolver));
+
+    dataset.getBaseStudyTables().forEach(table ->
+      builder.addHarmonizedVariables(getDatasetHarmonizedVariableSummaryDto(dataset.getId(), variableResolver.getName(), DatasetVariable.Type.Harmonized, table)));
 
     return builder.build();
   }
@@ -220,6 +262,17 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
         getTaxonomies(), getLocale());
   }
 
+  protected Mica.DatasetHarmonizedVariableSummaryDto getDatasetHarmonizedVariableSummaryDto(@NotNull String datasetId,
+                                                                        @NotNull String variableName, DatasetVariable.Type variableType, @Nullable OpalTable opalTable) {
+    try {
+      DatasetVariable variable = getDatasetVariable(datasetId, variableName, variableType, opalTable);
+      return dtos.asHarmonizedSummaryDto(variable);
+    } catch (NoSuchVariableException e) {
+      return Mica.DatasetHarmonizedVariableSummaryDto.newBuilder().setStatus("").build();
+    }
+  }
+
+
   protected Mica.DatasetVariableSummaryDto getDatasetVariableSummaryDto(@NotNull String datasetId,
                                                                         @NotNull String variableName, DatasetVariable.Type variableType, @Nullable OpalTable opalTable) {
     DatasetVariable variable = getDatasetVariable(datasetId, variableName, variableType, opalTable);
@@ -244,6 +297,11 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
       // ignore
     }
     return taxonomies == null ? Collections.emptyList() : taxonomies;
+  }
+
+  protected void checkVariableSummaryAccess() {
+    if (!SecurityUtils.getSubject().isAuthenticated() && micaConfigService.getConfig().isVariableSummaryRequiresAuthentication())
+      throw new ForbiddenException();
   }
 
   private DatasetVariable getHarmonizedDatasetVariable(String datasetId, String variableId, String variableName) {

@@ -28,6 +28,22 @@
     "$": true,
     "ace": true,
     "FileReader": true,
-    "window": false
+    "window": false,
+    "URLSearchParams": true,
+    "Vue": true,
+    "axios": true,
+    "formSchema": true,
+    "formDefinition": true,
+    "formModel": true,
+    "formMessages": true,
+    "toastr": true,
+    "micajs": true,
+    "Blob": true,
+    "document": true,
+    "Mica": true,
+    "TYPE": true,
+    "TARGETS": true,
+    "TYPES": true,
+    "EVENTS": true
   }
 }

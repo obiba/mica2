@@ -63,7 +63,7 @@ public class DataAccessAmendmentService extends DataAccessEntityService<DataAcce
     if(amendment.isNew()) {
       setAndLogStatus(saved, DataAccessEntityStatus.OPENED);
       int count = findByParentId(saved.getParentId()).size();
-      saved.setId(saved.getParentId() + "-" + (count + 1));
+      saved.setId(saved.getParentId() + "-A" + (count + 1));
     } else {
       saved = dataAmendmentRequestRepository.findOne(amendment.getId());
       if(saved != null) {
@@ -127,6 +127,14 @@ public class DataAccessAmendmentService extends DataAccessEntityService<DataAcce
 
   public List<DataAccessAmendment> findByParentId(@NotNull String parentId) {
     return dataAmendmentRequestRepository.findByParentId(parentId);
+  }
+
+  public int countByParentId(@NotNull String parentId) {
+    return dataAmendmentRequestRepository.countByParentId(parentId);
+  }
+
+  public int countPendingByParentId(@NotNull String parentId) {
+    return dataAmendmentRequestRepository.countPendingByParentId(parentId);
   }
 
   public Map<String, List<StatusChange>> getCongregatedAmendmentStatusChangesFor(@NotNull String dataAccessRequestId) {

@@ -10,6 +10,7 @@
 
 package org.obiba.mica.study.domain;
 
+import java.beans.Transient;
 import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -113,6 +114,12 @@ public class Population extends AbstractAttributeModelAware implements Serializa
 
   public SortedSet<DataCollectionEvent> getDataCollectionEvents() {
     return dataCollectionEvents;
+  }
+
+  @Transient
+  public List<DataCollectionEvent> getDataCollectionEventsSorted() {
+    return dataCollectionEvents.stream().sorted(Comparator.comparing(DataCollectionEvent::getWeight))
+      .collect(Collectors.toList());
   }
 
   public boolean hasDataCollectionEvents() {

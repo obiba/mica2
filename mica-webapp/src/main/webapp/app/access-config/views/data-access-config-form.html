@@ -24,6 +24,9 @@
       <li ng-class="{'active': tab.name === 'form'}">
         <a href ng-click="tab.name = 'form'" title="{{'form' | translate}}"><i class="fa fa-list"></i></a>
       </li>
+      <li ng-class="{'active': tab.name === 'feasibility'}">
+        <a href ng-click="tab.name = 'feasibility'" title="{{'data-access-config.feasibility.schema-form.title' | translate}}"><i class="fa fa-question-circle"></i></a>
+      </li>
       <li ng-class="{'active': tab.name === 'amendment'}">
         <a href ng-click="tab.name = 'amendment'" title="{{'data-access-config.amendment.schema-form.title' | translate}}"><i class="fa fa-wpforms"></i></a>
       </li>
@@ -46,26 +49,16 @@
 
     <entity-sf-config form="form" alert-id="DataAccessConfigController" dirty-observable="state.getDirtyObservable()"></entity-sf-config>
 
-    <h3 translate>data-access-config.properties.title</h3>
-
-    <p class="help-block" translate>data-access-config.properties.info</p>
-
-    <form>
-      <div class="row">
-        <div class="col-md-6">
+    <div class="row">
+      <div class="col-md-6">
+        <h3 translate>data-access-config.properties.title</h3>
+        <p class="help-block" translate>data-access-config.properties.info</p>
+        <form>
           <div form-input name="titleFieldPath" model="dataAccessForm.titleFieldPath" label="data-access-config.title-field" required="false" help="data-access-config.title-field-help"></div>
           <div form-input name="summaryFieldPath" model="dataAccessForm.summaryFieldPath" label="data-access-config.summary-field" required="false" help="data-access-config.summary-field-help"></div>
           <div form-input name="endDateFieldPath" model="dataAccessForm.endDateFieldPath" label="data-access-config.end-date-field" required="false" help="data-access-config.end-date-field-help"></div>
-        </div>
-        <div class="col-md-6">
-          <div form-checkbox name="amendmentsEnabled" model="dataAccessForm.amendmentsEnabled" label="data-access-config.amendments-enabled" help="data-access-config.amendments-enabled-help"></div>
-          <div form-checkbox name="daoCanEdit" model="dataAccessForm.daoCanEdit" label="data-access-config.dao-can-edit"></div>
-          <p class="help-block" translate>data-access-config.dao-can-edit-help</p>
-        </div>
+        </form>
       </div>
-    </form>
-
-    <div class="row">
       <div class="col-md-6">
         <h3 translate>data-access-config.pdf-download.title</h3>
         <p class="help-block" translate>data-access-config.pdf-download.info</p>
@@ -97,17 +90,16 @@
           <p class="help-block" translate>data-access-config.pdf-embedded.info</p>
         </div>
       </div>
-      <div class="col-md-6">
-        <key-list title-key="data-access-config.action-log.title"
-                  help-key="data-access-config.action-log.help"
-                  keys="dataAccessForm.predefinedActions"
-                  translation-prefix="data-access-request.action-log.config.label"
-                  on-update-keys="onUpdateActionKeys(keys)">
-        </key-list>
-      </div>
     </div>
 
   </div>
+
+  <div ng-show="tab.name === 'feasibility'">
+    <span class="config-navigation"><h3 class="config-navigation-item" ng-class="{'active': tab.name === 'feasibility'}" translate>data-access-config.feasibility.schema-form.title</h3></span>
+    <p class="help-block" translate>data-access-config.feasibility.schema-form.info</p>
+    <entity-sf-config form="formFeasibility" alert-id="DataAccessConfigController" dirty-observable="state.getDirtyObservable()"></entity-sf-config>
+  </div>
+
   <div ng-show="tab.name === 'amendment'">
     <span class="config-navigation"><h3 class="config-navigation-item" ng-class="{'active': tab.name === 'amendment'}" translate>data-access-config.amendment.schema-form.title</h3></span>
     <p class="help-block" translate>data-access-config.amendment.schema-form.info</p>
@@ -132,41 +124,49 @@
   </div>
 
   <div ng-show="tab.name === 'settings'">
-    <h3 translate>data-access-config.id-generation.title</h3>
 
-    <p class="help-block" translate>data-access-config.id-generation.info</p>
-
-    <form>
-      <div class="row">
-        <div class="col-md-6">
+    <div class="row">
+      <div class="col-md-6">
+        <h3 translate>data-access-config.settings.title</h3>
+        <p class="help-block" translate>data-access-config.settings.info</p>
+        <form>
+          <div form-checkbox name="feasibilityEnabled" model="dataAccessForm.feasibilityEnabled" label="data-access-config.feasibility-enabled" help="data-access-config.feasibility-enabled-help"></div>
+          <div form-checkbox name="amendmentsEnabled" model="dataAccessForm.amendmentsEnabled" label="data-access-config.amendments-enabled" help="data-access-config.amendments-enabled-help"></div>
+          <div form-checkbox name="daoCanEdit" model="dataAccessForm.daoCanEdit" label="data-access-config.dao-can-edit"></div>
+          <p class="help-block" translate>data-access-config.dao-can-edit-help</p>
+        </form>
+      </div>
+      <div class="col-md-6">
+        <h3 translate>data-access-config.id-generation.title</h3>
+        <p class="help-block" translate>data-access-config.id-generation.info</p>
+        <form>
           <div form-input name="idPrefix" model="dataAccessForm.idPrefix" label="data-access-config.id-generation.prefix" pattern="'[a-zA-Z0-9_-]+'" required="false" help="data-access-config.id-generation.prefix-help"></div>
-
           <div form-input name="idLength" model="dataAccessForm.idLength" label="data-access-config.id-generation.length" type="number" required="false" help="data-access-config.id-generation.length-help"></div>
-
           <div form-checkbox name="allowIdWithLeadingZeros" model="dataAccessForm.allowIdWithLeadingZeros" label="data-access-config.id-generation.allow-id-with-leading-zeros" help="data-access-config.id-generation.allow-id-with-leading-zeros-help"></div>
-        </div>
+        </form>
       </div>
-    </form>
+    </div>
 
-    <h3 translate>data-access-config.workflow.title</h3>
-
-    <p class="help-block" translate>data-access-config.workflow.info</p>
-
-    <form>
-      <div class="row">
-        <div class="col-md-6">
+    <div class="row">
+      <div class="col-md-6">
+        <h3 translate>data-access-config.workflow.title</h3>
+        <p class="help-block" translate>data-access-config.workflow.info</p>
+        <form>
           <div form-checkbox name="withReview" model="dataAccessForm.withReview" label="data-access-config.workflow.with-review" help="data-access-config.workflow.with-review-help"></div>
-
           <div form-checkbox name="withConditionalApproval" model="dataAccessForm.withConditionalApproval" label="data-access-config.workflow.with-conditional-approval" help="data-access-config.workflow.with-conditional-approval-help"></div>
-        </div>
-        <div class="col-md-6">
           <div form-checkbox name="approvedFinal" model="dataAccessForm.approvedFinal" label="data-access-config.workflow.approved-final" help="data-access-config.workflow.approved-final-help"></div>
-
           <div form-checkbox name="rejectedFinal" model="dataAccessForm.rejectedFinal" label="data-access-config.workflow.rejected-final" help="data-access-config.workflow.rejected-final-help"></div>
-        </div>
+        </form>
       </div>
-
-    </form>
+      <div class="col-md-6">
+        <key-list title-key="data-access-config.action-log.title"
+                  help-key="data-access-config.action-log.help"
+                  keys="dataAccessForm.predefinedActions"
+                  translation-prefix="data-access-request.action-log.config.label"
+                  on-update-keys="onUpdateActionKeys(keys)">
+        </key-list>
+      </div>
+    </div>
   </div>
 
   <div ng-show="tab.name === 'notifications'">

@@ -340,7 +340,7 @@
     "publicUrl": "Public URL",
     "publicUrl-help": "Public base URL of the server that will be used when sending notification emails.",
     "portalUrl": "Portal URL",
-    "portalUrl-help": "Public base URL of the portal that will be used when sharing draft.",
+    "portalUrl-help": "Public base URL of the organisation portal.",
     "defaultCharSet": "Default Character Set",
     "languages": "Languages",
     "languages-help": "Languages into which the content must be capture.",
@@ -384,7 +384,13 @@
     },
     "openAccess": "Open access",
     "openAccess-help": "Access to published documents is opened to everyone.",
+    "variableSummaryRequiresAuthentication": "Restricted access to variable summary statistics",
+    "variableSummaryRequiresAuthentication-help": "The user needs to be identified when accessing to the variable summary statistics (and related operations like contingency table).",
     "sections": "Sections",
+    "repository-enabled": "Repository enabled",
+    "repository-enabled-help": "Show network, study, dataset, variable pages with the search interface.",
+    "data-access-enabled": "Data access enabled",
+    "data-access-enabled-help": "Show data access and approved projects pages.",
     "single-network-enabled": "Single network enabled",
     "single-network-enabled-help": "Only one network is present in Mica.",
     "single-study-enabled": "Single study enabled",
@@ -395,6 +401,13 @@
     "collected-dataset-enabled-help": "Collected datasets section is accessible.",
     "harmonized-dataset-enabled": "Harmonized datasets section enabled",
     "harmonized-dataset-enabled-help": "Harmonized datasets section is accessible.",
+    "signup-enabled": "Sign-up enabled",
+    "signup-enabled-help": "New users can sign-up.",
+    "signup-with-password": "Sign-up with password",
+    "signup-with-password-help": "Sign-up form with password, in which case the new user is automatically Active (without email validation).",
+    "signup-groups": "Sign-up groups",
+    "signup-groups-help": "Sign-up groups to automatically apply to new users.",
+    "signup-groups-form-help": "Space separated group names that will be to automatically apply to new users.",
     "roles": "Membership Roles",
     "roles-help": "A person can be member of a study or of a network with one of the listed roles. * Use the prefix <a href='#/admin/translations/edit?filter=contact.label.'>'contact.label.'</a> to change the translation.",
     "add-role": "Add Role",
@@ -1507,6 +1520,59 @@
       }
     }
   },
+  "data-access-feasibility": {
+    "default": {
+      "form-title": "Feasibility Inquiry",
+      "grant-submission": {
+        "title": "Grant Submission Details",
+        "check": "This feasibility form is for a grant submission?"
+      },
+      "granting-agency": "Name of granting agency",
+      "grant-competition": "Name of grant competition",
+      "grant-date": "Grant due date",
+      "applicant-info": {
+        "title": "Applicant Information"
+      },
+      "pi": "Principal Investigator",
+      "career": {
+        "title": "Career",
+        "inv-early": "Independent Investigator - Early Career (0 - 5 years)",
+        "inv-mid": "Independent Investigator - Mid Career (5 - 15 years)",
+        "inv-senior": "Independent Investigator - Senior (15+ years)",
+        "student": "Graduate Student",
+        "postdoc": "Postdoc Fellow",
+        "other": "Other",
+        "other-career": "Other Career"
+      },
+      "current-position": "Current Position",
+      "pi-email": "PI Email Address",
+      "pi-phone": "PI Phone Number",
+      "pi-address": "PI Mailing Address",
+      "project-info": {
+        "title": "Project Overview"
+      },
+      "project-title": "Title of project",
+      "project-objectives": "Project background and objectives",
+      "data": {
+        "title": "Data Sought"
+      },
+      "datasets":  "Specify dataset(s) and type of data",
+      "selection-criteria": "Selection criteria for participants on whom data is sought",
+      "study-design": "Proposed study design and statistical methods for analyzing data",
+      "biospecimens": {
+        "title": "Biospecimens Sought",
+        "check": "This feasibility form includes access to biospecimens?"
+      },
+      "biospecimens-type": "Specify type, number, and volume",
+      "biospecimens-selection-criteria": "Selection criteria for participants on whom biospecimens are sought",
+      "biospecimens-pre-analytical-characteristics": "Biospecimens pre-analytical characteristics required, if applicable",
+      "biospecimens-analyze-methods": "Proposed methods for analyzing biospecimens",
+      "linkage": {
+        "title": "Linkage of Participants with Other Datasets"
+      },
+      "data-linkage": "Data to be linked (specify dataset(s), type of data, and their source), if applicable"
+    }
+  },
   "data-access-requests": "Data Access Requests",
   "data-access-request": {
     "applicant": "Applicant",
@@ -1753,6 +1819,8 @@
     "saved": "Data Access Form is successfully updated.",
     "amendments-enabled": "Enable Amendments.",
     "amendments-enabled-help":"Enable the capability of requesting amendments to an approved data access request.",
+    "feasibility-enabled": "Enable Feasibility Inquiry.",
+    "feasibility-enabled-help":"Enable the capability of inquiring for feasibility of a data access request.",
     "pdf-download": {
       "title": "PDF Download",
       "info": "The data collected in the form can be rendered in a PDF file. Choose one of the following options:"
@@ -1793,6 +1861,10 @@
       "title": "Predefined Action Names",
       "help": "An action name is a translation key that must be preceded by <strong>data-access-request.action-log.config.label.</strong>, <a href='#/admin/translations/edit?filter=data-access-request.action-log.config.label.'>here is</a> where you can add new translations.",
       "action-logs-permission": "Apply the same permission to associated action logs"
+    },
+    "settings": {
+      "title": "General",
+      "info": "Alternate forms and permissions can be enabled."
     },
     "id-generation": {
       "title": "ID Generation",
@@ -1884,6 +1956,12 @@
       "summary-field-help": "The lay summary of the amendment.",
       "end-date-field": "End Date Field",
       "end-date-field-help": "The end date of the project declared in the amendment. If no end date can be identified either in the request form or in an amendment form, no report notifications will be sent."
+    },
+    "feasibility": {
+      "schema-form": {
+        "title": "Feasibility Form",
+        "info": "The feasibility form can be specified both in terms of data structure (schema) and data display and validation (definition). See <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>form schema documentation</a> for more details."
+      }
     }
   },
   "key-list": {
@@ -2031,9 +2109,9 @@
         "title": "Status",
         "help": "Specify the timeline of the project.",
         "start": "Start Date",
-        "start-help": "Start date of the project. Date format: dd-mm-yyyy.",
+        "start-help": "Start date of the project.",
         "end": "End Date",
-        "end-help": "Expected or effective end date of the project. Date format: dd-mm-yyyy.",
+        "end-help": "Expected or effective end date of the project.",
         "date-error": "Not a valid date."
       },
       "contact": {

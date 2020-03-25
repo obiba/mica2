@@ -26,7 +26,6 @@ import com.codahale.metrics.annotation.Timed;
 
 @Component
 @Path("/taxonomy/{name}")
-@RequiresAuthentication
 public class TaxonomyResource {
 
   @Inject

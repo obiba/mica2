@@ -341,7 +341,7 @@
     "publicUrl": "URL publique",
     "publicUrl-help": "URL publique du serveur qui sera utilisée lors de l'envoi des courriels de notification.",
     "portalUrl": "URL du portail",
-    "portalUrl-help": "URL publique du portail qui sera utilisée pour la génération de lien partageable.",
+    "portalUrl-help": "URL publique du portail de l'organisation.",
     "defaultCharSet": "Jeu de caractères par défaut",
     "languages": "Langues",
     "languages-help": "Langues dans lesquelles le contenu du site doit être saisie.",
@@ -385,6 +385,8 @@
     },
     "openAccess": "Accès libre",
     "openAccess-help": "L'accès aux documents publiés est ouvert à tout le monde.",
+    "variableSummaryRequiresAuthentication": "Accès restreint aux statistiques des variables",
+    "variableSummaryRequiresAuthentication-help": "L'utilistaeur doit être identifié afin d'avoir accès aux statistiques de variables (sommaire, table de contingence etc.).",
     "sections": "Sections",
     "single-network-enabled": "Réseau unique activé",
     "single-network-enabled-help": "Un seul réseau est présent dans Mica.",
@@ -396,6 +398,13 @@
     "collected-dataset-enabled-help": "Des ensembles de données de collecte sont présents dans Mica.",
     "harmonized-dataset-enabled": "Section ensemble de données d'harmonisation activée",
     "harmonized-dataset-enabled-help": "Des ensembles de données d'harmonisation sont présents dans Mica.",
+    "signup-enabled": "Enregistrement activé",
+    "signup-enabled-help": "Les nouveaux utilisateurs peuvent s'enregistrer.",
+    "signup-with-password": "Formulaire d'enregistrement avec mot de passe",
+    "signup-with-password-help": "Les nouveaux utilisateurs peuvent fournir leur mot de passe, ce qui leur permet d'être immédiatement Actif (sans validation de courriel).",
+    "signup-groups": "Groupes des nouveaux utilisateur",
+    "signup-groups-help": "Groupes étant appliqués automatiquement aux nouveaux utilisateurs.",
+    "signup-groups-form-help": "Noms des groupes étant appliqués automatiquement aux nouveaux utilisateurs, séparés par des espaces.",
     "roles": "Rôles des personnes membres",
     "roles-help": "Une personne peut être membre d'une étude ou d'un réseau avec l'un des rôles énumérés. * Utiliser le préfixe <a href='#/admin/translations/edit?filter=contact.label.'>'contact.label.'</a> pour changer la traduction.",
     "add-role": "Ajouter un rôle",
@@ -950,7 +959,7 @@
   "submit": "Soumettre",
   "review": "Révision",
   "conditionallyApprove": "Approuver sous conditions",
-  "reopen": "Rouvrir",
+  "reopen": "Réouvrir",
   "approve": "Approuver",
   "reject": "Rejeter",
   "close": "Fermer",
@@ -1508,6 +1517,59 @@
       }
     }
   },
+  "data-access-feasibility": {
+    "default": {
+      "form-title": "Demande de faisabilité",
+      "grant-submission": {
+        "title": "Détails de la demande de finance",
+        "check": "Ce formulaire de faisabilité est-il pour une demande de financement?"
+      },
+      "granting-agency": "Nom de l'agence de financement",
+      "grant-competition": "Nom de l'appel à projets",
+      "grant-date": "Date limite de soumission de la demande de financement",
+      "applicant-info": {
+        "title": "Information sur le demandeur"
+      },
+      "pi": "Investigateur principal",
+      "career": {
+        "title": "Carrière",
+        "inv-early": "Chercheur indépendant - Débutant (0 - 5 ans)",
+        "inv-mid": "Chercheur indépendant - Intermédiaire (5 - 15 ans)",
+        "inv-senior": "Chercheur indépendant - Senior (15+ ans)",
+        "student": "Etudiant diplomé",
+        "postdoc": "Postdoc",
+        "other": "Autre",
+        "other-career": "Autre carrière"
+      },
+      "current-position": "Poste actuel",
+      "pi-email": "Courriel de l'investigateur",
+      "pi-phone": "Numéro de téléphone de l'investigateur",
+      "pi-address": "Adresse postale de l'investigateur",
+      "project-info": {
+        "title": "Présentation du projet"
+      },
+      "project-title": "Titre du projet",
+      "project-objectives": "Contexte et objectifs du projet",
+      "data": {
+        "title": "Données demandées"
+      },
+      "datasets":  "Préciser les ensembles de données et le type de données",
+      "selection-criteria": "Critère de sélection des participants pour lesquels des données sont demandées",
+      "study-design": "Conception de l'étude proposée et méthodes d'analyse statistique envisagées",
+      "biospecimens": {
+        "title": "Echantillons biologiques demandés",
+        "check": "Ce formulaire de faisabilité inclut-il un accès à des échantillons biologiques?"
+      },
+      "biospecimens-type": "Préciser le type, le nombre et le volume",
+      "biospecimens-selection-criteria": "Critères de sélection des participants pour lesquels des échantillons biologiques sont demandés",
+      "biospecimens-pre-analytical-characteristics": "Caractéristiques pré-analyse des échantillons biologiques, si applicable",
+      "biospecimens-analyze-methods": "Méthodes d'analyse envisagées pour les échantillons biologiques",
+      "linkage": {
+        "title": "Liens avec d'autres ensembles de données"
+      },
+      "data-linkage": "Données qui seront liées aux données demandées (préciser quel(s) ensembles de données, le type de données et leur origine), si applicable"
+    }
+  },
   "data-access-requests": "Demandes d'accès aux données",
   "data-access-request": {
     "applicant": "Demandeur",
@@ -1754,6 +1816,8 @@
     "saved": "Formulaire d'accès aux données a été mis à jour avec succès.",
     "amendments-enabled": "Activer les amendements.",
     "amendments-enabled-help":"Permet d'amender des modifications à une demande d'accès aux données approuvée.",
+    "feasibility-enabled": "Activer la demande de faisabilité.",
+    "feasibility-enabled-help":"Permet d'investiguer la faisabilité d'une demande d'accès aux données.",
     "pdf-download": {
       "title": "Télécharger le PDF",
       "info": "Les données collectées dans le formulaire peuvent être représentées dans un fichier PDF. Choisissez l'une des options suivantes:"
@@ -1794,6 +1858,10 @@
       "title": "Noms d'actions prédéfinies",
       "help": "Un nom d'action est une clé de traduction qui doit être précédée de <strong>data-access-request.action-log.config.label.</strong>, <a href='#/admin/translations/edit?filter=data-access-request.action-log.config.label.'>voici</a> où vous pouvez ajouter de nouvelles traductions.",
       "action-logs-permission": "Appliquer la même permission à tous les actions associées"
+    },
+    "settings": {
+      "title": "Paramètres",
+      "info": "Activer des formulaires complémentaires et modifier des permissions."
     },
     "id-generation": {
       "title": "Generation d'ID",
@@ -1883,6 +1951,12 @@
       "summary-field-help": "Le résumé simplifié de l'amendement.",
       "end-date-field": "Champ Date de fin",
       "end-date-field-help": "La date de fin déclarée dans l'amendement."
+    },
+    "feasibility": {
+      "schema-form": {
+        "title": "Formulaire de faisabilité",
+        "info": "Le formulaire de faisabilité peut être spécifié à la fois en termes de structure de données (schéma) et d'affichage des données et validation (définition). Voir <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>documentation du Schema Form</a> pour plus de détails."
+      }
     }
   },
   "key-list": {
@@ -2030,9 +2104,9 @@
         "title": "Statut",
         "help": "Spécifier le calendrier du projet.",
         "start": "Date de début",
-        "start-help": "Date de début du projet. Format de date : dd-mm-yyyy.",
+        "start-help": "Date de début du projet.",
         "end": "Date de fin",
-        "end-help": "Date de fin attendue ou effective du projet. Format de date : dd-mm-yyyy.",
+        "end-help": "Date de fin attendue ou effective du projet.",
         "date-error": "Date non valide."
       },
       "contact": {

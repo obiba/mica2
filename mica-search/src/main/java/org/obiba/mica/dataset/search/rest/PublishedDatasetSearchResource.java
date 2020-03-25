@@ -33,7 +33,6 @@ import com.google.common.base.Strings;
 
 @Component
 @Path("/datasets")
-@RequiresAuthentication
 @Scope("request")
 public class PublishedDatasetSearchResource {
 
