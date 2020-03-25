@@ -171,6 +171,9 @@ public abstract class DataAccessEntityService<T extends DataAccessEntity> {
    * @param from
    */
   protected void sendNotificationEmails(final T request, final @Nullable DataAccessEntityStatus from) {
+    // no notification when administrator operates, make sure to use a DAO account so that applicant get informed
+    if (SecurityUtils.getSubject().hasRole(Roles.MICA_ADMIN) && !SecurityUtils.getSubject().hasRole(Roles.MICA_DAO)) return;
+
     Executors.newCachedThreadPool().execute(() -> {
       try {
         if (from == null) { // check is new request
