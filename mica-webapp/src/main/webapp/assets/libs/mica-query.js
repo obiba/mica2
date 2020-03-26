@@ -146,12 +146,8 @@ class EntityQuery {
       ).pop();
   }
 
-  static isOpalTaxonomy(args) {
-    return args.some(arg => typeof arg === 'string' && arg.search(/Mlstr/) > -1);
-  }
-
   __isOpalTaxonomy(args) {
-    return EntityQuery.isOpalTaxonomy(args);
+    return args.some(arg => typeof arg === 'string' && arg.search(/Mlstr/) > -1);
   }
 
   __reduce(parent, query) {
@@ -362,23 +358,15 @@ class NetworkQuery extends EntityQuery {
   }
 }
 
-class MicaQueryExecutor {
-
-  constructor(eventBus, defaultSize) {
-    this._eventBus = eventBus;
-    this._query = {};
-    this._query[TYPES.VARIABLES] = new VariableQuery(defaultSize);
-    this._query[TYPES.DATASETS] = new DatasetQuery(defaultSize);
-    this._query[TYPES.STUDIES] = new StudyQuery(defaultSize);
-    this._query[TYPES.NETWORKS] = new NetworkQuery(defaultSize);
-  }
-
+/**
+ * Utility class to retrieve query related operation from URL; all operations are R/O
+ */
+class MicaTreeQueryUrl {
   /**
    * @returns {{hash: string, searchParams: {}}}
-   * @private
    */
-  __parseUrl() {
-    let urlParts ={
+  static parseUrl() {
+    let urlParts = {
       hash: "",
       searchParams: {}
     };
@@ -402,6 +390,56 @@ class MicaQueryExecutor {
   }
 
   /**
+   * If the URL has query param, a QueryTree is returned
+   *
+   * @param urlSearchParams
+   * @returns {QueryTree|null}
+   */
+  static getQueryTreeFromUrl(urlSearchParams) {
+    if (Object.keys(urlSearchParams).length > 0) {
+      return new RQL.QueryTree(RQL.Parser.parseQuery(urlSearchParams.query), QueryTreeOptions);
+    }
+
+    return null;
+  }
+
+  static getTree(parts) {
+    const urlParts = parts || MicaTreeQueryUrl.parseUrl();
+    return MicaTreeQueryUrl.getQueryTreeFromUrl(urlParts.searchParams);
+  }
+
+  static getTreeQueries(parts) {
+    const tree = MicaTreeQueryUrl.getTree(parts);
+    const validNodes = CRITERIA_NODES.concat(OPERATOR_NODES);
+    let queries = {};
+
+    for (const key in TARGETS) {
+      let targetQuery = tree.search((name) => {
+        return name === TARGETS[key]
+      });
+
+      if (targetQuery) {
+        targetQuery.args = targetQuery.args.filter(arg => validNodes.indexOf(arg.name) > -1);
+        queries[TARGETS[key]] = targetQuery;
+      }
+    }
+
+    return queries;
+  }
+}
+
+class MicaQueryExecutor {
+
+  constructor(eventBus, defaultSize) {
+    this._eventBus = eventBus;
+    this._query = {};
+    this._query[TYPES.VARIABLES] = new VariableQuery(defaultSize);
+    this._query[TYPES.DATASETS] = new DatasetQuery(defaultSize);
+    this._query[TYPES.STUDIES] = new StudyQuery(defaultSize);
+    this._query[TYPES.NETWORKS] = new NetworkQuery(defaultSize);
+  }
+
+  /**
    * Ensure a valid type either supplied by the payload or url
    */
   __ensureValidType(urlSearchParams, type) {
@@ -411,9 +449,9 @@ class MicaQueryExecutor {
   /**
    * Ensure a valid type either supplied by the payload or url
    */
-  __getBucketType(urlSearchParams, display) {
+  __ensureValidBucketType(urlSearchParams, bucket, display) {
     if (DISPLAYS.COVERAGE === display) {
-      return urlSearchParams.hasOwnProperty(BUCKET) ? BUCKETS[urlSearchParams[BUCKET]]: BUCKETS.study;
+      return BUCKETS[bucket] || (urlSearchParams.hasOwnProperty(BUCKET) ? BUCKETS[urlSearchParams[BUCKET]]: BUCKETS.study);
     }
 
     return null;
@@ -426,20 +464,6 @@ class MicaQueryExecutor {
     return DISPLAYS[(display || hash || "").toUpperCase()] || DISPLAYS.LISTS;
   }
 
-  /**
-   * If the URL has query param, a QueryTree is returned
-   *
-   * @private
-   * @param urlSearchParams
-   * @returns {QueryTree|null}
-   */
-  __getQueryTreeFromUrl(urlSearchParams) {
-    if (Object.keys(urlSearchParams).length > 0) {
-      return new RQL.QueryTree(RQL.Parser.parseQuery(urlSearchParams.query), QueryTreeOptions);
-    }
-
-    return null;
-  }
 
   /**
    * Common handler for all query-type events
@@ -449,7 +473,7 @@ class MicaQueryExecutor {
    * @private
    */
   __prepareAndExecuteQuery(eventId, payload) {
-    const urlParts = this.__parseUrl();
+    const urlParts = MicaTreeQueryUrl.parseUrl();
     const type = this.__ensureValidType(urlParts.searchParams, payload.type);
 
     switch (type) {
@@ -459,8 +483,8 @@ class MicaQueryExecutor {
       case TYPES.NETWORKS:
         const entityQuery = this._query[type];
         const display = this.__ensureValidDisplay(urlParts.hash, payload.display);
-        const bucket = this.__getBucketType(urlParts.searchParams, display);
-        let tree = this.getTree(urlParts);
+        const bucket = this.__ensureValidBucketType(urlParts.searchParams, payload.bucket, display);
+        let tree = MicaTreeQueryUrl.getTree(urlParts);
 
         switch (eventId) {
           case EVENTS.QUERY_TYPE_SELECTION:
@@ -478,24 +502,16 @@ class MicaQueryExecutor {
           case EVENTS.QUERY_TYPE_PAGINATE:
             tree = entityQuery.prepareForPaginate(tree, type, payload.target, payload.from, payload.size);
             break;
-          case EVENTS.QUERY_TYPE_COVERAGE:
-            tree = entityQuery.prepareForCoverage(tree, bucket);
-            break;
         }
 
         if (tree) {
           switch (display) {
             case DISPLAYS.COVERAGE:
-              if (EVENTS.QUERY_TYPE_COVERAGE === eventId) {
-                // get coverage from the current queries in the URL
-                this.__executeCoverage(tree, type, display, payload.noUrlUpdate, bucket);
+              const coverageTree = entityQuery.prepareForCoverage(tree, bucket);
+              if (!coverageTree) {
+                this.__ignoreCoverage(tree, type, display, payload.noUrlUpdate, bucket);
               } else {
-                const coverageTree = entityQuery.prepareForCoverage(tree, bucket);
-                if (!coverageTree) {
-                  this.__ignoreCoverage(tree, type, display, payload.noUrlUpdate, bucket);
-                } else {
-                  this.__executeCoverage(coverageTree, type, display, payload.noUrlUpdate, bucket);
-                }
+                this.__executeCoverage(coverageTree, type, display, payload.noUrlUpdate, bucket);
               }
               break;
 
@@ -505,30 +521,6 @@ class MicaQueryExecutor {
           }
         }
     }
-  }
-
-  getTree(parts) {
-    const urlParts = parts || this.__parseUrl();
-    return this.__getQueryTreeFromUrl(urlParts.searchParams);
-  }
-
-  getTreeQueries(parts) {
-    const tree = this.getTree(parts);
-    const validNodes = CRITERIA_NODES.concat(OPERATOR_NODES);
-    let queries = {};
-
-    for (const key in TARGETS) {
-      let targetQuery = tree.search((name) => {
-        return name === TARGETS[key]
-      });
-
-      if (targetQuery) {
-        targetQuery.args = targetQuery.args.filter(arg => validNodes.indexOf(arg.name) > -1);
-        queries[TARGETS[key]] = targetQuery;
-      }
-    }
-
-    return queries;
   }
 
   /**
@@ -610,7 +602,7 @@ class MicaQueryExecutor {
       history.pushState(null, "", `#${hash}`);
     }
 
-    this._eventBus.$emit(EVENTS.LOCATION_CHANGED, {type, display, tree});
+    this._eventBus.$emit(EVENTS.LOCATION_CHANGED, {type, display, tree, bucket});
   }
 
   /**
@@ -621,7 +613,7 @@ class MicaQueryExecutor {
    */
   __onHashChanged(event) {
     console.log(`On hash changed ${event}`);
-    const urlParts = this.__parseUrl();
+    const urlParts = MicaTreeQueryUrl.parseUrl();
     const searchParams = urlParts.searchParams || {};
     this.__prepareAndExecuteQuery(EVENTS.QUERY_TYPE_SELECTION, {
       type: searchParams.type || TYPES.VARIABLES,
