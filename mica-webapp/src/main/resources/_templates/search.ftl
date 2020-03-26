@@ -221,8 +221,33 @@
                 <!-- /.tab-pane -->
 
                 <#if config.studyDatasetEnabled || config.harmonizationDatasetEnabled>
-                  <div class="tab-pane" id="tab_coverage">
+
+                  <span class="mt-2" v-show="!hasVariableQuery">{{ "missing-variable-query" | translate }}</span>
+
+                  <div class="tab-pane" id="tab_coverage" v-show="hasVariableQuery">
                     <div id="coverage">
+                      <div class="mt-4 mb-2">
+                        <ul class="nav nav-pills" role="tablist">
+                          <li class="nav-item">
+                            <a class="nav-link active"
+                               data-toggle="pill"
+                               id="bucket-study-tab"
+                               href role="tab"
+                               @click="onSelectBucket('study')"
+                               aria-controls="study"
+                               aria-selected="true">{{ bucketTitles.study }}</a>
+                          </li>
+                          <li class="nav-item">
+                            <a class="nav-link"
+                               data-toggle="pill"
+                               id="bucket-dataset-tab"
+                               href role="tab" @click="onSelectBucket('dataset')"
+                               aria-controls="dataset"
+                               aria-selected="true">{{ bucketTitles.dataset }}</a>
+                          </li>
+                        </ul>
+                      </div>
+
                       <coverage-result class="mt-2"></coverage-result>
                     </div>
                   </div>
