@@ -245,9 +245,9 @@ angular.module('ngObibaMica', ['ngResource'])
 
 function NgObibaMicaUrlProvider() {
   var registry = {
-    'TempFileUploadResource': '../../ws/files/temp',
-    'TempFileResource': '../../ws/files/temp/:id',
-    'SchemaFormAttachmentDownloadResource': '../../ws/:path/form/attachments/:attachmentName/:attachmentId/_download'
+    'TempFileUploadResource': '/ws/files/temp',
+    'TempFileResource': '/ws/files/temp/:id',
+    'SchemaFormAttachmentDownloadResource': '/ws/:path/form/attachments/:attachmentName/:attachmentId/_download'
   };
 
   function UrlProvider(registry) {
@@ -301,11 +301,11 @@ angular.module('formModule', ['schemaForm', 'hc.marked', 'angularMoment', 'schem
       }
     };
     $scope.save = function (id, type, aId) {
-      var url = '../../ws/data-access-request/' + id + '/model';
-      var redirect = '../../data-access-form/' + id;
+      var url = '/ws/data-access-request/' + id + '/model';
+      var redirect = '/data-access-form/' + id;
       if (type && aId) {
-        url = '../../ws/data-access-request/' + id + '/' + type + '/' + aId + '/model';
-        redirect = '../../data-access-' + type + '-form/' + aId;
+        url = '/ws/data-access-request/' + id + '/' + type + '/' + aId + '/model';
+        redirect = '/data-access-' + type + '-form/' + aId;
       }
       axios.put(
         url,

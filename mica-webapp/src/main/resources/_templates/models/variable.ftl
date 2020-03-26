@@ -1,5 +1,5 @@
 <#macro variableSummary variable>
-  <img id="loadingSummary" src="../assets/images/loading.gif">
+  <img id="loadingSummary" src="/assets/images/loading.gif">
 
   <div id="counts" style="display: none;">
     <div class="row">

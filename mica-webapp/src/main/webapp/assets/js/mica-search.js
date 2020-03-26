@@ -353,7 +353,7 @@ new Vue({
 
     // fetch the configured search criteria, in the form of a taxonomy of taxonomies
     axios
-      .get('../ws/taxonomy/Mica_taxonomy/_filter?target=taxonomy')
+      .get('/ws/taxonomy/Mica_taxonomy/_filter?target=taxonomy')
       .then(response => {
         let targets = response.data.vocabularies;
         EventBus.$emit('mica-taxonomy', targets);
@@ -363,7 +363,7 @@ new Vue({
         for (let target of targets) {
           // then load the taxonomies
 
-          targetQueries.push(`../ws/taxonomies/_filter?target=${target.name}`);
+          targetQueries.push(`/ws/taxonomies/_filter?target=${target.name}`);
         }
 
         return axios.all(targetQueries.map(query => axios.get(query))).then(axios.spread((...responses) => {

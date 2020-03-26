@@ -17,7 +17,7 @@
         "info": false,
         "autoWidth": true,
         "language": {
-          "url": "../assets/i18n/datatables.${.lang}.json"
+          "url": "/assets/i18n/datatables.${.lang}.json"
         },
         "processing": true,
         "serverSide": true,
