@@ -10,7 +10,9 @@
 
 package org.obiba.mica.network.rest;
 
+import com.google.common.base.Strings;
 import org.obiba.mica.AbstractGitPersistableResource;
+import org.obiba.mica.JSONUtils;
 import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.core.domain.PublishCascadingScope;
 import org.obiba.mica.core.domain.RevisionStatus;
@@ -34,9 +36,11 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -73,10 +77,21 @@ public class DraftNetworkResource extends AbstractGitPersistableResource<Network
 
   @GET
   @Path("/model")
-  @Produces("application/json")
+  @Produces(MediaType.APPLICATION_JSON)
   public Map<String, Object> getModel() {
     checkPermission("/draft/network", "VIEW");
     return networkService.findById(id).getModel();
+  }
+
+  @PUT
+  @Path("/model")
+  @Consumes(MediaType.APPLICATION_JSON)
+  public Response updateModel(String body) {
+    checkPermission("/draft/network", "EDIT");
+    Network network = networkService.findById(id);
+    network.setModel(Strings.isNullOrEmpty(body) ? new HashMap<>() : JSONUtils.toMap(body));
+    networkService.save(network);
+    return Response.ok().build();
   }
 
   @PUT
@@ -141,7 +156,7 @@ public class DraftNetworkResource extends AbstractGitPersistableResource<Network
     FileResource fileResource = applicationContext.getBean(FileResource.class);
     Network network = networkService.findById(id);
 
-    if(network.getLogo() == null) throw NoSuchEntityException.withId(Attachment.class, fileId);
+    if (network.getLogo() == null) throw NoSuchEntityException.withId(Attachment.class, fileId);
 
     fileResource.setAttachment(network.getLogo());
 
