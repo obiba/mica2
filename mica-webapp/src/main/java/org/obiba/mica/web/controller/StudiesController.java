@@ -1,6 +1,7 @@
 package org.obiba.mica.web.controller;
 
 import com.google.common.collect.Lists;
+import org.obiba.mica.core.domain.AbstractGitPersistable;
 import org.obiba.mica.study.domain.BaseStudy;
 import org.obiba.mica.study.domain.HarmonizationStudy;
 import org.obiba.mica.study.domain.Study;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.inject.Inject;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,8 +50,9 @@ public class StudiesController extends BaseController {
     try {
       return publishedStudyService.findAll().stream()
         .filter(s -> isAccessible((s instanceof Study) ? "/individual-study" : "/harmonization-study", s.getId()))
+        .sorted(Comparator.comparing(AbstractGitPersistable::getId))
         .collect(Collectors.toList());
-    } catch(Exception e) {
+    } catch (Exception e) {
       return Lists.newArrayList();
     }
   }
