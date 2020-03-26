@@ -41,17 +41,19 @@
     <!-- Main content -->
     <section class="content">
 
-      <div class="row">
-        <div class="col-12">
-          <div class="callout callout-info">
-            <p>
-              <@message "data-access-comments-callout"/>
-            </p>
+      <#if dataAccessCalloutsEnabled>
+        <div class="row">
+          <div class="col-12">
+            <div class="callout callout-info">
+              <p>
+                <@message "data-access-comments-callout"/>
+              </p>
+              </div>
           </div>
+          <!-- /.col-12 -->
         </div>
-        <!-- /.col-12 -->
-      </div>
-      <!-- /.row -->
+        <!-- /.row -->
+      </#if>
 
       <!-- Timelime of comments  -->
       <div class="row">
