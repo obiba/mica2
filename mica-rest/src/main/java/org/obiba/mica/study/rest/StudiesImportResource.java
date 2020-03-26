@@ -13,9 +13,11 @@ package org.obiba.mica.study.rest;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 import java.net.ProtocolException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
@@ -24,7 +26,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
-import javax.net.ssl.HttpsURLConnection;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -34,13 +35,13 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 
-import org.apache.commons.math3.util.Pair;
 import org.apache.http.HttpStatus;
+import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.message.BasicNameValuePair;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.obiba.mica.NoSuchEntityException;
-import org.obiba.mica.file.Attachment;
 import org.obiba.mica.study.domain.BaseStudy;
 import org.obiba.mica.study.domain.HarmonizationStudy;
 import org.obiba.mica.study.domain.Study;
@@ -53,9 +54,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
-import org.springframework.web.client.RestTemplate;
 
-import com.google.common.base.Charsets;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.protobuf.ExtensionRegistry;
 import com.googlecode.protobuf.format.JsonFormat;
 
@@ -63,10 +63,16 @@ import com.googlecode.protobuf.format.JsonFormat;
 @RequiresAuthentication
 public class StudiesImportResource {
 
+	private static final String WS_CONFIG_HARMONIZATION_POPULATION_FORM_CUSTOM = "/ws/config/harmonization-population/form-custom";
+	private static final String WS_CONFIG_HARMONIZATION_STUDY_FORM_CUSTOM = "/ws/config/harmonization-study/form-custom";
+	private static final String WS_CONFIG_DATA_COLLECTION_EVENT_FORM_CUSTOM = "/ws/config/data-collection-event/form-custom";
+	private static final String WS_CONFIG_POPULATION_FORM_CUSTOM = "/ws/config/population/form-custom";
+	private static final String WS_CONFIG_INDIVIDUAL_STUDY_FORM_CUSTOM = "/ws/config/individual-study/form-custom";
+	
 	private static final String WS_DRAFT_STUDY_STATES = "/ws/draft/study-states";
 	private static final String WS_DRAFT_HARMONIZATION_STUDY_ID = "/ws/draft/harmonization-study/{id}";
 	private static final String WS_DRAFT_INDIVIDUAL_STUDY_ID = "/ws/draft/individual-study/{id}";
-	
+
 	private static final String IDS_TO_UPDATE = "idsToUpdate";
 	private static final String IDS_TO_INCLUDE = "idsToInclude";
 	
@@ -103,17 +109,25 @@ public class StudiesImportResource {
 		
 		try {
 			
-			HttpsURLConnection con = this.prepareRemoteConnection(url, username, password, type, WS_DRAFT_STUDY_STATES);
+			Boolean hasSameSchemasAndDefintions = this.checkSchemasAndDefinitions(url, username, password, type);
 			
-			con.connect();
+			if (hasSameSchemasAndDefintions) {
+				
+				List<NameValuePair> params = new ArrayList<>();
+				params.add(new BasicNameValuePair(TYPE, type));
+				
+				HttpURLConnection con = this.prepareRemoteConnection(url, username, password, params, WS_DRAFT_STUDY_STATES);
 
-			int status = con.getResponseCode();
-			
-			StringBuilder content = this.getContent(con);
-			
-			con.disconnect();
-			
-			return Response.ok(content).status(status).build();
+				int status = con.getResponseCode();
+				
+				
+				return Response.ok( this.getRawContent(con) ).status(status).build();
+				
+			} else {
+				
+				return Response.ok("Different schemas and Definitions").build();
+			}
+
 			
 		} catch (URISyntaxException|ProtocolException e) {
 			
@@ -125,14 +139,37 @@ public class StudiesImportResource {
 		}
 	}
 	
+	private Boolean checkSchemasAndDefinitions(String url, String username, String password, String type) throws IOException, URISyntaxException {
+		
+		Boolean areEquals = Boolean.FALSE;
+		
+		if (type.equals(INDIVIDUAL_STUDY)) {
+			
+			Map<String, Object> content = this.getJSONContent(url, username, password, null, WS_CONFIG_INDIVIDUAL_STUDY_FORM_CUSTOM);
+			
+			//TODO
+			
+			content = this.getJSONContent(url, username, password, null, WS_CONFIG_POPULATION_FORM_CUSTOM);
+			
+			content = this.getJSONContent(url, username, password, null, WS_CONFIG_DATA_COLLECTION_EVENT_FORM_CUSTOM);
+			
+		} else if ( type.equals(HARMONIZATION_STUDY) ) {
+			
+			Map<String, Object> content = this.getJSONContent(url, username, password, null, WS_CONFIG_HARMONIZATION_STUDY_FORM_CUSTOM);
+			
+			content = this.getJSONContent(url, username, password, null, WS_CONFIG_HARMONIZATION_POPULATION_FORM_CUSTOM);
+		}
+		
+		
+		return areEquals;
+	}
+
 	@GET
 	@Path("/studies/import/_summary")
 	@Produces({"application/xml", "application/json", "text/plain", "text/html"})
 	public Response checkIfAlreadyExistsLocally(@QueryParam(IDS) List<String> ids, @QueryParam(TYPE) String type) {
 		
-		log.info("checkIfAlreadyExistsLocally ids: {}", ids);
-		
-		//List<String> existingIds = new ArrayList<>();
+		log.info("GET checkIfAlreadyExistsLocally ids: {}", ids);
 		
 		Map<String, Boolean> existingIds = new HashMap<>();
 		
@@ -142,9 +179,7 @@ public class StudiesImportResource {
 				
 				BaseStudy study = studyService.findStudy(id);
 				
-				existingIds.put( study.getId(), !study.getResourcePath().equals(type) /*conflict condition*/ ); 
-									
-				//existingIds.add( study.getId());
+				existingIds.put( study.getId(), !study.getResourcePath().equals(type) /*conflict condition*/ );
 
 			} catch(NoSuchEntityException ex) {
 				//ignore if study doesn't exist locally.
@@ -193,16 +228,15 @@ public class StudiesImportResource {
 				
 			for (String id : ids) {
 				
-				StringBuilder content = this.getRemoteContent(url, username, password, type, id);
-				
-				log.info("CONTENT: {}", content);
+				String content = this.getRawContent(url, username, password, null,
+						(type.equals(INDIVIDUAL_STUDY) ? WS_DRAFT_INDIVIDUAL_STUDY_ID : WS_DRAFT_HARMONIZATION_STUDY_ID).replace("{id}", id ));
 				
 				Mica.StudyDto.Builder builder = Mica.StudyDto.newBuilder();
 				 
 				ExtensionRegistry extensionRegistry = ExtensionRegistry.newInstance();
 				extensionRegistry.add(Mica.CollectionStudyDto.type);
 				extensionRegistry.add(Mica.HarmonizationStudyDto.type);
-		      
+				
 				JsonFormat.merge(content, extensionRegistry, builder);
 				
 				if ( type.equals(INDIVIDUAL_STUDY) ) {
@@ -251,26 +285,42 @@ public class StudiesImportResource {
 	}
 
 	
-	private StringBuilder getRemoteContent(String url, String username, String password, String type, String id)
+	Map<String, Object> getJSONContent(String url, String username, String password, List<NameValuePair> param, String endpoint)
 			throws IOException, URISyntaxException {
 		
-		HttpsURLConnection con = this.prepareRemoteConnection(url, username, password, null, 
-				(type.equals(INDIVIDUAL_STUDY) ? WS_DRAFT_INDIVIDUAL_STUDY_ID : WS_DRAFT_HARMONIZATION_STUDY_ID).replace("{id}", id ));
-		
-		con.connect();
-
-		int status = con.getResponseCode();
-		
-		log.info("RESPONSE CODE: {}", status);
-		
-		StringBuilder content = this.getContent(con);
-		
-		con.disconnect();
-		
-		return content;
+		return this.getJSONContent( this.prepareRemoteConnection(url, username, password, param, endpoint) );
 	}
 	
-	private HttpsURLConnection prepareRemoteConnection(String url, String username, String password, String type, String endpoint)
+	String getRawContent(String url, String username, String password, List<NameValuePair> param, String endpoint)
+			throws IOException, URISyntaxException {
+		
+		return this.getRawContent( this.prepareRemoteConnection(url, username, password, param, endpoint) );
+	}
+	
+	private Map<String, Object> getJSONContent(HttpURLConnection con) throws IOException {
+		
+		ObjectMapper mapper = new ObjectMapper();
+		Map<String, Object> jsonMap = mapper.readValue(con.getInputStream(), Map.class);
+		
+		return jsonMap;
+	}
+	
+	private String getRawContent(HttpURLConnection con) throws IOException {
+	
+		BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+		String inputLine;
+		StringBuilder content = new StringBuilder();
+		
+		while ((inputLine = in.readLine()) != null) {
+			content.append(inputLine);
+		}
+		
+		in.close();
+		
+		return content.toString();
+	}
+	
+	private HttpURLConnection prepareRemoteConnection(String url, String username, String password, List<NameValuePair> param, String endpoint)
 			throws IOException, URISyntaxException {	
 		
 		
@@ -281,13 +331,15 @@ public class StudiesImportResource {
 			.setHost(preparedURI.getHost())
 			.setPath(preparedURI.getPath() + endpoint);
 		
-		if (type != null) {
-			builder.setParameter(TYPE, type);
+		if (param != null) {
+			builder.setParameters(param);
 		}
 		    
 		URI uri = builder.build();
 		
-		HttpsURLConnection con = (HttpsURLConnection) (uri.toURL()).openConnection();
+		URLConnection urlCon = uri.toURL().openConnection();
+		
+		HttpURLConnection con = (HttpURLConnection)urlCon;
 		con.setReadTimeout(5000);
 		con.setConnectTimeout(5000);
 		con.setRequestMethod(HttpMethod.GET.toString());
@@ -302,21 +354,5 @@ public class StudiesImportResource {
 		con.setRequestProperty(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_UTF8_VALUE );
 		
 		return con;
-	}
-	
-	
-	private StringBuilder getContent(HttpsURLConnection con) throws IOException {
-		
-		BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-		String inputLine;
-		StringBuilder content = new StringBuilder();
-		
-		while ((inputLine = in.readLine()) != null) {
-			content.append(inputLine);
-		}
-		
-		in.close();
-		
-		return content;
 	}
 }
