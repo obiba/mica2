@@ -135,6 +135,7 @@ class MicaConfigDtos {
 
     builder.setIsRepositoryEnabled(config.isRepositoryEnabled());
     builder.setIsDataAccessEnabled(config.isDataAccessEnabled());
+    builder.setIsProjectEnabled(config.isProjectEnabled());
     builder.setIsSingleNetworkEnabled(config.isSingleNetworkEnabled());
     builder.setIsSingleStudyEnabled(config.isSingleStudyEnabled());
     builder.setIsNetworkEnabled(config.isNetworkEnabled());
@@ -212,6 +213,7 @@ class MicaConfigDtos {
 
     if (dto.hasIsRepositoryEnabled()) config.setRepositoryEnabled(dto.getIsRepositoryEnabled());
     if (dto.hasIsDataAccessEnabled()) config.setDataAccessEnabled(dto.getIsDataAccessEnabled());
+    if (dto.hasIsProjectEnabled()) config.setProjectEnabled(dto.getIsProjectEnabled());
     config.setSingleNetworkEnabled(dto.getIsSingleNetworkEnabled());
     config.setSingleStudyEnabled(dto.getIsSingleStudyEnabled());
     config.setNetworkEnabled(dto.getIsNetworkEnabled());

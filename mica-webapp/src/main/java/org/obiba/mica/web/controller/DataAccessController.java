@@ -243,8 +243,6 @@ public class DataAccessController extends BaseController {
     Map<String, Object> params = newParameters();
     DataAccessRequest dar = getDataAccessRequest(id);
     params.put("dar", dar);
-    params.put("pathPrefix", "../..");
-
     params.put("applicant", userProfileService.getProfileMap(dar.getApplicant(), true));
 
     List<String> permissions = Lists.newArrayList("VIEW", "EDIT", "DELETE").stream()

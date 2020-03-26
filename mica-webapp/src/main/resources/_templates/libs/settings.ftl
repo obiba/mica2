@@ -15,7 +15,7 @@
 <#assign taxonomyIcon = "io io-taxonomy"/>
 
 <!-- Branding -->
-<#assign brandImageSrc = "../assets/images/logo.png"/>
+<#assign brandImageSrc = "/assets/images/logo.png"/>
 <#assign brandImageClass = "img-circle elevation-3"/>
 <#assign brandTextEnabled = true/>
 <#assign brandTextClass = "font-weight-light"/>
@@ -24,25 +24,25 @@
 <#assign adminLTEPath = "/assets/libs/node_modules/admin-lte"/>
 
 <!-- Home page settings -->
-<#assign networksLink = "../networks"/>
-<!--#assign networksLink = "../search#lists?type=networks"/-->
-<#assign studiesLink = "../studies"/>
-<!--#assign studiesLink = "../search#lists?type=studies"/-->
-<#assign datasetsLink = "../datasets"/>
-<!--#assign datasetsLink = "../search#lists?type=datasets"/-->
+<#assign networksLink = "/networks"/>
+<!--#assign networksLink = "/search#lists?type=networks"/-->
+<#assign studiesLink = "/studies"/>
+<!--#assign studiesLink = "/search#lists?type=studies"/-->
+<#assign datasetsLink = "/datasets"/>
+<!--#assign datasetsLink = "/search#lists?type=datasets"/-->
 
-<!-- List pages settings -->
+<!-- List pages -->
 <#assign listDefaultDisplay = "cards"/> <!-- cards or table -->
 <#assign networkListDefaultDisplay = listDefaultDisplay/>
 <#assign studyListDefaultDisplay = listDefaultDisplay/>
 <#assign datasetListDefaultDisplay = listDefaultDisplay/>
 
-<!-- Search page settings -->
+<!-- Search page -->
 <#if config.singleStudyEnabled>
-<#assign defaultSearchState = "#lists?type=variables"/>
+  <#assign defaultSearchState = "#lists?type=variables"/>
 <#else>
-<#assign defaultSearchState = "#lists?type=studies"/>
+  <#assign defaultSearchState = "#lists?type=studies"/>
 </#if>
 
-<!-- Data Access -->
+<!-- Data Access pages -->
 <#assign dataAccessInstructionsEnabled = true/>

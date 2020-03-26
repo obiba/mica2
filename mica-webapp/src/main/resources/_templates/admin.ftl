@@ -101,17 +101,17 @@
             <span>{{'harmonized-datasets' | translate}}</span>
           </a>
         </li>
-        <li class="dropdown clearfix" ng-if="authenticated && micaConfig.isDataAccessEnabled">
+        <li class="dropdown clearfix" ng-if="authenticated && (micaConfig.isDataAccessEnabled || micaConfig.isProjectEnabled)">
           <a href="" class="dropdown-toggle" data-toggle="dropdown">
             <span translate>research</span>
             <i class="fa fa-caret-down"></i></a>
           <ul class="dropdown-menu pull-left">
-            <li>
+            <li ng-if="micaConfig.isProjectEnabled">
               <a href="#/project">
                 <span translate>research-projects</span>
               </a>
             </li>
-            <li ng-if="hasRole(['mica-administrator', 'mica-data-access-officer', 'mica-user'])">
+            <li ng-if="micaConfig.isDataAccessEnabled && hasRole(['mica-administrator', 'mica-data-access-officer', 'mica-user'])">
               <a href="#/data-access-requests">
                 <span translate>data-access-requests</span>
               </a>

@@ -110,6 +110,8 @@ public class MicaConfig extends AbstractAuditableDocument {
 
   private boolean isDataAccessEnabled = true;
 
+  private boolean isProjectEnabled = true;
+
   private boolean isSingleStudyEnabled = false;
 
   private boolean isSingleNetworkEnabled = false;
@@ -407,6 +409,14 @@ public class MicaConfig extends AbstractAuditableDocument {
 
   public void setDataAccessEnabled(boolean dataAccessEnabled) {
     isDataAccessEnabled = dataAccessEnabled;
+  }
+
+  public boolean isProjectEnabled() {
+    return isProjectEnabled;
+  }
+
+  public void setProjectEnabled(boolean projectEnabled) {
+    isProjectEnabled = projectEnabled;
   }
 
   public boolean isSingleStudyEnabled() {

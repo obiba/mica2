@@ -455,7 +455,7 @@ mica.config
 
         $scope.signupGroups = $scope.micaConfig.signupGroups.join(' ');
 
-        $scope.$watchGroup(['name', 'isRepositoryEnabled', 'isDataAccessEnabled', 'isNetworkEnabled', 'isSingleNetworkEnabled',
+        $scope.$watchGroup(['name', 'isRepositoryEnabled', 'isDataAccessEnabled', 'isProjectEnabled', 'isNetworkEnabled', 'isSingleNetworkEnabled',
           'isSingleStudyEnabled', 'isCollectedDatasetEnabled', 'isHarmonizedDatasetEnabled', 'languages', 'searchLayout'].map(function(p) { return 'micaConfig.' + p; }), function(value, oldValue) {
           if(!angular.equals(value,oldValue)) {
             reload = true;
