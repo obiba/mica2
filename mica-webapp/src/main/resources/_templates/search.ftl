@@ -94,7 +94,7 @@
       <!-- Query box -->
       <div class="card card-info card-outline">
         <div class="card-header">
-          <h3 class="card-title">Query</h3>
+          <h3 class="card-title"><@message "query"/></h3>
 
           <div class="card-tools">
             <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip"
@@ -119,6 +119,10 @@
               </div>
             </div>
             <!-- /.modal -->
+
+            <div class="text-muted" v-show="noQueries">
+              <@message "no-query"/>
+            </div>
 
             <!-- Query Builder -->
             <rql-query-builder v-for="(query, target) in queries" v-bind:target="target" v-bind:taxonomy="getTaxonomyForTarget(target)" v-bind:query="query" @update-query="onQueryUpdate" @remove-query="onQueryRemove"></rql-query-builder>

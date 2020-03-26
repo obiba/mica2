@@ -258,6 +258,9 @@ Vue.use(VueObibaSearchResult, {
       localize: (entries) => StringLocalizer.localize(entries),
       registerDataTable: (tableId, options) => {
         const mergedOptions = Object.assign(options, DataTableDefaults);
+        mergedOptions.language = {
+          url: '/assets/i18n/datatables.' + Mica.locale + '.json'
+        };
         return $('#' + tableId).DataTable(mergedOptions);
       }
     }
@@ -281,12 +284,23 @@ new Vue({
       queryType: 'variables-list',
       lastList: '',
       queryExecutor: new MicaQueryExecutor(EventBus, DataTableDefaults.pageLength),
-      queries: null
+      queries: null,
+      noQueries: true
     };
   },
   methods: {
     refreshQueries() {
       this.queries = MicaTreeQueryUrl.getTreeQueries();
+      this.noQueries = true;
+      if (this.queries) {
+        for (let key of ['variable', 'dataset', 'study', 'network']) {
+          let target = this.queries[key];
+          if (target && target.args && target.args.length > 0) {
+            this.noQueries = false;
+            break;
+          }
+        }
+      }
     },
     getTaxonomyForTarget(target) {
       let result = [];
