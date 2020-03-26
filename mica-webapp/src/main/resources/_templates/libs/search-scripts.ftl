@@ -12,6 +12,7 @@
     "annotations": "<@message "annotations"/>",
     "study": "<@message "study"/>",
     "dataset": "<@message "dataset"/>",
+    "data-collection-event": "<@message "data-collection-event"/>",
     "acronym": "<@message "acronym"/>",
     "type": "<@message "type"/>",
     "study-design": "<@message "study-design"/>",
@@ -29,6 +30,9 @@
     "coverage-buckets-study": "<@message "coverage-buckets-study"/>",
     "coverage-buckets-dce": "<@message "coverage-buckets-dce"/>",
     "coverage-buckets-dataset": "<@message "coverage-buckets-dataset"/>",
+    "no-coverage-available": "<@message "no-coverage-available"/>",
+    "coverage-end-date-ongoing": "<@message "coverage-end-date-ongoing"/>",
+    "missing-variable-query": "<@message "missing-variable-query"/>",
     "taxonomy": "<@message "taxonomy"/>",
     "select-all": "<@message "select-all"/>",
     "clear-selection": "<@message "clear-selection"/>",
@@ -38,7 +42,8 @@
     "search.none": "<@message "search.none"/>",
     "search.any": "<@message "search.any"/>",
     "search.from": "<@message "search.from"/>",
-    "search.to": "<@message "search.to"/>"
+    "search.to": "<@message "search.to"/>",
+    "to": "<@message "to"/>",
   };
   Mica.icons = {
     variable: '${variableIcon}',

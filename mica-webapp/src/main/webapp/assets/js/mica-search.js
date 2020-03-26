@@ -214,7 +214,39 @@ class StringLocalizer {
   }
 }
 
-/**
+class TaxonomyTitleFinder {
+  initialize(taxonomies) {
+    this.taxonomies = taxonomies;
+  }
+
+  title(taxonomyName, vocabularyName, termName) {
+    if (taxonomyName) {
+      const taxonomy = this.taxonomies[taxonomyName];
+      if (taxonomy) {
+        if (!vocabularyName && !termName) return StringLocalizer.localize(taxonomy.title);
+        else if (vocabularyName) {
+          let foundVocabulary = (taxonomy.vocabularies || []).filter(vocabulary => vocabulary.name === vocabularyName)[0];
+
+          if (foundVocabulary) {
+            if (!termName) return StringLocalizer.localize(foundVocabulary.title);
+            else {
+              let foundTerm = (foundVocabulary.terms || []).filter(term => term.name === termName)[0];
+
+              if (foundTerm) return StringLocalizer.localize(foundTerm.title);
+            }
+          }
+        }
+      }
+    }
+
+    return null;
+  }
+}
+
+const taxonomyTitleFinder  = new TaxonomyTitleFinder();
+
+
+  /**
  * Registering plugins defined in VueObibaSearchResult
  */
 Vue.use(VueObibaSearchResult, {
@@ -222,10 +254,8 @@ Vue.use(VueObibaSearchResult, {
     methods: {
       getEventBus: () => EventBus,
       getMicaConfig: () => Mica.config,
+      getLocale: () => Mica.locale,
       localize: (entries) => StringLocalizer.localize(entries),
-      tr: (key) => {
-        return Mica.tr[key] ? Mica.tr[key] : key;
-      },
       registerDataTable: (tableId, options) => {
         const mergedOptions = Object.assign(options, DataTableDefaults);
         return $('#' + tableId).DataTable(mergedOptions);
@@ -256,7 +286,7 @@ new Vue({
   },
   methods: {
     refreshQueries() {
-      this.queries = this.queryExecutor.getTreeQueries();
+      this.queries = MicaTreeQueryUrl.getTreeQueries();
     },
     getTaxonomyForTarget(target) {
       let result = [];
@@ -287,26 +317,11 @@ new Vue({
       this.message = '[' + payload.taxonomyName + '] ' + this.selectedTaxonomy.title[0].text + ': ';
       this.message = this.message + this.selectedTaxonomy.vocabularies.map(voc => voc.title[0].text).join(', ');
     },
-    // set the type of query to be executed, on result component selection
-    onQueryTypeSelection: function (payload) {
-      // TODO need cleaning, may be use the QueryExecutor for taxos as well
-      // if (payload.type === 'lists') {
-      //   this.queryType = this.lastList;
-      // } else {
-      //   this.queryType = payload.type;
-      //   if (this.queryType.endsWith('-list')) {
-      //     this.lastList = payload.type;
-      //   }
-      // }
-      // this.onExecuteQuery();
-    },
     onExecuteQuery: function () {
       console.log('Executing ' + this.queryType + ' query ...');
       EventBus.$emit(this.queryType, 'I am the result of a ' + this.queryType + ' query');
     },
     onLocationChanged: function (payload) {
-      $(`.nav-pills #${payload.display}-tab`).tab('show');
-      $(`.nav-pills #${payload.type}-tab`).tab('show');
       this.refreshQueries();
     },
     onQueryUpdate(payload) {
@@ -334,11 +349,7 @@ new Vue({
   mounted() {
     console.log('Mounted QueryBuilder');
     EventBus.register('taxonomy-selection', this.onTaxonomySelection);
-    EventBus.register('query-type-selection', this.onQueryTypeSelection);
     EventBus.register(EVENTS.LOCATION_CHANGED, this.onLocationChanged.bind(this));
-
-    // Emit 'query-type-selection' to pickup a URL query to be executed; if nothing found a Variable query is executed
-    EventBus.$emit('query-type-selection', {});
 
     // fetch the configured search criteria, in the form of a taxonomy of taxonomies
     axios
@@ -363,6 +374,18 @@ new Vue({
           });
 
           this.refreshQueries();
+
+          taxonomyTitleFinder.initialize(this.taxonomies);
+
+          Vue.filter("taxonomy-title", (input) => {
+            const [taxonomy, vocabulary, term] = input.split(/\./);
+            return  taxonomyTitleFinder.title(taxonomy, vocabulary, term) || input;
+          });
+
+
+          // Emit 'query-type-selection' to pickup a URL query to be executed; if nothing found a Variable query is executed
+          EventBus.$emit('query-type-selection', {});
+
           return this.taxonomies;
         }));
       });
@@ -388,7 +411,13 @@ new Vue({
   },
   data() {
     return {
-      counts: {}
+      counts: {},
+      hasVariableQuery: false,
+      bucketTitles: {
+        study: Mica.tr.study,
+        dataset: Mica.tr.dataset,
+        dce: Mica.tr['data-collection-event'],
+      }
     }
   },
   methods: {
@@ -404,6 +433,9 @@ new Vue({
     onSelectGraphics() {
       EventBus.$emit('query-type-selection', {display: DISPLAYS.GRAPHICS});
     },
+    onSelectBucket(bucket) {
+      EventBus.$emit('query-type-selection', {bucket});
+    },
     onResult(payload) {
       const data = payload.response;
       this.counts = {
@@ -414,31 +446,37 @@ new Vue({
       };
 
       if (data && data.variableResultDto && data.variableResultDto.totalHits) {
-        // $('#variable-count').text(data.variableResultDto.totalHits.toLocaleString());
         this.counts.variables = data.variableResultDto.totalHits.toLocaleString();
       }
 
       if (data && data.datasetResultDto && data.datasetResultDto.totalHits) {
-        // $('#dataset-count').text(data.datasetResultDto.totalHits.toLocaleString());
         this.counts.datasets = data.datasetResultDto.totalHits.toLocaleString();
       }
 
       if (data && data.studyResultDto && data.studyResultDto.totalHits) {
-        // $('#study-count').text(data.studyResultDto.totalHits.toLocaleString());
         this.counts.studies = data.studyResultDto.totalHits.toLocaleString();
       }
 
       if (data && data.networkResultDto && data.networkResultDto.totalHits) {
-        // $('#network-count').text(data.networkResultDto.totalHits.toLocaleString());
         this.counts.networks = data.networkResultDto.totalHits.toLocaleString();
       }
+    },
+    onLocationChanged: function (payload) {
+      $(`.nav-pills #${payload.display}-tab`).tab('show');
+      $(`.nav-pills #${payload.type}-tab`).tab('show');
+      if (payload.bucket) $(`.nav-pills #bucket-${TAREGT_ID_BUCKET_MAP[payload.bucket]}-tab`).tab('show');
+
+      const targetQueries = MicaTreeQueryUrl.getTreeQueries();
+      this.hasVariableQuery = TARGETS.VARIABLE in targetQueries && targetQueries[TARGETS.VARIABLE].args.length > 0;
+      console.log(`Mica var query ${this.hasVariableQuery}`);
     }
   },
   beforeMount() {
-    EventBus.register('variables-results', this.onResult);
-    EventBus.register('datasets-results', this.onResult);
-    EventBus.register('studies-results', this.onResult);
-    EventBus.register('networks-results', this.onResult);
+    EventBus.register('variables-results', this.onResult.bind(this));
+    EventBus.register('datasets-results', this.onResult.bind(this));
+    EventBus.register('studies-results', this.onResult.bind(this));
+    EventBus.register('networks-results', this.onResult.bind(this));
+    EventBus.register(EVENTS.LOCATION_CHANGED, this.onLocationChanged.bind(this));
   },
   beforeDestory() {
     EventBus.unregister('variables-results', this.onResult);
