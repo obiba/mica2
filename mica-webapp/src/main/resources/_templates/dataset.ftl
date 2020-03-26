@@ -226,7 +226,7 @@
                   <h3 class="card-title"><@message "harmonization"/></h3>
                 </div>
                 <div class="card-body">
-                  <img id="loadingSummary" src="../assets/images/loading.gif">
+                  <img id="loadingSummary" src="/assets/images/loading.gif">
                   <table id="harmonizedTable" class="table table-striped">
                     <thead>
                       <tr>
