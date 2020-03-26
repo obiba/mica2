@@ -5,7 +5,7 @@
 <html lang="${.lang}">
 <head>
     <#include "libs/head.ftl">
-  <link rel="stylesheet" href="${pathPrefix!".."}/assets/libs/node_modules/bootstrap-datepicker/dist/css/bootstrap-datepicker3.css"></link>
+  <link rel="stylesheet" href="/assets/libs/node_modules/bootstrap-datepicker/dist/css/bootstrap-datepicker3.css"></link>
   <title>${config.name!""} | <@message "data-access"/> ${dar.id}</title>
 </head>
 <body class="hold-transition sidebar-mini">
@@ -500,7 +500,7 @@
                 <@userProfile profile=applicant/>
               </div>
               <div class="card-footer">
-                <a href="${pathPrefix}/data-access-comments/${dar.id}"><@message "send-message"/> <i
+                <a href="/data-access-comments/${dar.id}"><@message "send-message"/> <i
                           class="fas fa-arrow-circle-right"></i></a>
               </div>
             </div>
@@ -560,7 +560,7 @@
 
 <#include "libs/scripts.ftl">
 <!-- Datepicker -->
-<script src="${pathPrefix!".."}/assets/libs/node_modules/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js"></script>
+<script src="/assets/libs/node_modules/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js"></script>
 <script>
   $(function () {
     $('#dashboard-menu').addClass('active').attr('href', '#');
