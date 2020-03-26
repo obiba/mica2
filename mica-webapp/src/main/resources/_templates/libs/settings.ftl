@@ -46,3 +46,4 @@
 
 <!-- Data Access pages -->
 <#assign dataAccessInstructionsEnabled = true/>
+<#assign dataAccessCalloutsEnabled = true/>

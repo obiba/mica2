@@ -223,17 +223,19 @@
 
       </div>
 
-      <div class="row">
-        <div class="col-12">
-          <div class="callout callout-info">
-            <p>
-              <@message "data-access-dashboard-callout"/>
-            </p>
+      <#if dataAccessCalloutsEnabled>
+        <div class="row">
+          <div class="col-12">
+            <div class="callout callout-info">
+              <p>
+                <@message "data-access-dashboard-callout"/>
+              </p>
+            </div>
           </div>
+          <!-- /.col-12 -->
         </div>
-        <!-- /.col-12 -->
-      </div>
-      <!-- /.row -->
+        <!-- /.row -->
+      </#if>
 
       <div class="row">
         <div class="col-sm-12 col-lg-6">

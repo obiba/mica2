@@ -40,17 +40,19 @@
     <!-- Main content -->
     <section class="content">
 
-      <div class="row d-print-none">
-        <div class="col-12">
-          <div class="callout callout-info">
-            <p>
-              <@message "data-access-feasibility-callout"/>
-            </p>
+      <#if dataAccessCalloutsEnabled>
+        <div class="row d-print-none">
+          <div class="col-12">
+            <div class="callout callout-info">
+              <p>
+                <@message "data-access-feasibility-callout"/>
+              </p>
+            </div>
           </div>
+          <!-- /.col-12 -->
         </div>
-        <!-- /.col-12 -->
-      </div>
-      <!-- /.row -->
+        <!-- /.row -->
+      </#if>
 
       <div class="row" ng-controller="FormController">
         <div class="col-sm-12 col-lg-8">
