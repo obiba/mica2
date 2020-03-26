@@ -13,6 +13,7 @@ package org.obiba.mica.dataset.rest.collection;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import org.obiba.mica.AbstractGitPersistableResource;
+import org.obiba.mica.JSONUtils;
 import org.obiba.mica.core.domain.PublishCascadingScope;
 import org.obiba.mica.core.domain.RevisionStatus;
 import org.obiba.mica.core.service.AbstractGitPersistableService;
@@ -34,16 +35,18 @@ import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @Component
 @Scope("request")
 public class DraftCollectedDatasetResource extends
-  AbstractGitPersistableResource<StudyDatasetState,StudyDataset> {
+  AbstractGitPersistableResource<StudyDatasetState, StudyDataset> {
 
   @Inject
   private ApplicationContext applicationContext;
@@ -68,10 +71,21 @@ public class DraftCollectedDatasetResource extends
 
   @GET
   @Path("/model")
-  @Produces("application/json")
+  @Produces(MediaType.APPLICATION_JSON)
   public Map<String, Object> getModel() {
     checkPermission("/draft/collected-dataset", "VIEW");
     return datasetService.findById(id).getModel();
+  }
+
+  @PUT
+  @Path("/model")
+  @Consumes(MediaType.APPLICATION_JSON)
+  public Response updateModel(String body) {
+    checkPermission("/draft/collected-dataset", "EDIT");
+    StudyDataset dataset = getDataset();
+    dataset.setModel(Strings.isNullOrEmpty(body) ? new HashMap<>() : JSONUtils.toMap(body));
+    datasetService.save(dataset);
+    return Response.ok().build();
   }
 
   @DELETE
@@ -84,9 +98,10 @@ public class DraftCollectedDatasetResource extends
   public Response update(Mica.DatasetDto datasetDto, @Context UriInfo uriInfo,
                          @Nullable @QueryParam("comment") String comment) {
     checkPermission("/draft/collected-dataset", "EDIT");
-    if (!datasetDto.hasId() || !datasetDto.getId().equals(id)) throw new IllegalArgumentException("Not the expected dataset id");
+    if (!datasetDto.hasId() || !datasetDto.getId().equals(id))
+      throw new IllegalArgumentException("Not the expected dataset id");
     Dataset dataset = dtos.fromDto(datasetDto);
-    if(!(dataset instanceof StudyDataset)) throw new IllegalArgumentException("A study dataset is expected");
+    if (!(dataset instanceof StudyDataset)) throw new IllegalArgumentException("A study dataset is expected");
 
     datasetService.save((StudyDataset) dataset, comment);
     return Response.noContent().build();

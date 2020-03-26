@@ -10,28 +10,13 @@
 
 package org.obiba.mica.study.rest;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import javax.annotation.Nullable;
-import javax.inject.Inject;
-import javax.validation.constraints.NotNull;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-
+import com.codahale.metrics.annotation.Timed;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import org.obiba.mica.AbstractGitPersistableResource;
+import org.obiba.mica.JSONUtils;
 import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.core.domain.PublishCascadingScope;
 import org.obiba.mica.core.domain.RevisionStatus;
@@ -52,9 +37,17 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import com.codahale.metrics.annotation.Timed;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
+import javax.annotation.Nullable;
+import javax.inject.Inject;
+import javax.validation.constraints.NotNull;
+import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * REST controller for managing draft Study.
@@ -87,7 +80,7 @@ public class DraftHarmonizationStudyResource extends AbstractGitPersistableResou
   @GET
   @Timed
   public Mica.StudyDto get(@QueryParam("locale") String locale, @QueryParam("key") String key,
-    @QueryParam("participatingStudies") @DefaultValue("false") boolean participatingStudies) {
+                           @QueryParam("participatingStudies") @DefaultValue("false") boolean participatingStudies) {
     checkPermission("/draft/harmonization-study", "VIEW", key);
     List<HarmonizationDataset> datasets = participatingStudies
       ? harmonizedDatasetService.findAllDatasetsByHarmonizationStudy(id)
@@ -98,10 +91,21 @@ public class DraftHarmonizationStudyResource extends AbstractGitPersistableResou
 
   @GET
   @Path("/model")
-  @Produces("application/json")
+  @Produces(MediaType.APPLICATION_JSON)
   public Map<String, Object> getModel() {
     checkPermission("/draft/harmonization-study", "VIEW");
     return studyService.findDraft(id).getModel();
+  }
+
+  @PUT
+  @Path("/model")
+  @Consumes(MediaType.APPLICATION_JSON)
+  public Response updateModel(String body) {
+    checkPermission("/draft/harmonization-study", "EDIT");
+    HarmonizationStudy study = studyService.findDraft(id);
+    study.setModel(Strings.isNullOrEmpty(body) ? new HashMap<>() : JSONUtils.toMap(body));
+    studyService.save(study);
+    return Response.ok().build();
   }
 
   @GET
@@ -116,12 +120,12 @@ public class DraftHarmonizationStudyResource extends AbstractGitPersistableResou
   @PUT
   @Timed
   public Response update(@SuppressWarnings("TypeMayBeWeakened") Mica.StudyDto studyDto,
-    @Nullable @QueryParam("comment") String comment) {
+                         @Nullable @QueryParam("comment") String comment) {
     checkPermission("/draft/harmonization-study", "EDIT");
     // ensure study exists
     studyService.findDraft(id);
 
-    HarmonizationStudy study = (HarmonizationStudy)dtos.fromDto(studyDto);
+    HarmonizationStudy study = (HarmonizationStudy) dtos.fromDto(studyDto);
 
     HashMap<Object, Object> response = Maps.newHashMap();
     response.put("study", study);
@@ -182,13 +186,13 @@ public class DraftHarmonizationStudyResource extends AbstractGitPersistableResou
     FileResource fileResource = applicationContext.getBean(FileResource.class);
     HarmonizationStudy study = studyService.findDraft(id);
 
-    if(study.hasLogo() && study.getLogo().getId().equals(fileId)) {
+    if (study.hasLogo() && study.getLogo().getId().equals(fileId)) {
       fileResource.setAttachment(study.getLogo());
     } else {
       List<Attachment> attachments = fileSystemService
         .findAttachments(String.format("^/harmonization-study/%s", study.getId()), false).stream()
         .filter(a -> a.getId().equals(fileId)).collect(Collectors.toList());
-      if(attachments.isEmpty()) throw NoSuchEntityException.withId(Attachment.class, fileId);
+      if (attachments.isEmpty()) throw NoSuchEntityException.withId(Attachment.class, fileId);
       fileResource.setAttachment(attachments.get(0));
     }
 

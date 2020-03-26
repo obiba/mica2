@@ -10,11 +10,14 @@
 
 package org.obiba.mica.project.rest;
 
+import com.google.common.base.Strings;
 import org.obiba.mica.AbstractGitPersistableResource;
+import org.obiba.mica.JSONUtils;
 import org.obiba.mica.core.domain.PublishCascadingScope;
 import org.obiba.mica.core.domain.RevisionStatus;
 import org.obiba.mica.core.service.AbstractGitPersistableService;
 import org.obiba.mica.file.rest.FileResource;
+import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.project.domain.Project;
 import org.obiba.mica.project.domain.ProjectState;
 import org.obiba.mica.project.service.NoSuchProjectException;
@@ -30,8 +33,10 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 @Component
@@ -66,10 +71,21 @@ public class DraftProjectResource extends AbstractGitPersistableResource<Project
 
   @GET
   @Path("/model")
-  @Produces("application/json")
+  @Produces(MediaType.APPLICATION_JSON)
   public Map<String, Object> getModel() {
     checkPermission("/draft/project", "VIEW");
     return projectService.findById(id).getModel();
+  }
+
+  @PUT
+  @Path("/model")
+  @Consumes(MediaType.APPLICATION_JSON)
+  public Response updateModel(String body) {
+    checkPermission("/draft/project", "EDIT");
+    Project project = projectService.findById(id);
+    project.setModel(Strings.isNullOrEmpty(body) ? new HashMap<>() : JSONUtils.toMap(body));
+    projectService.save(project);
+    return Response.ok().build();
   }
 
   @PUT

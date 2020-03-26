@@ -11,8 +11,10 @@
 package org.obiba.mica.dataset.rest.harmonization;
 
 import com.codahale.metrics.annotation.Timed;
+import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import org.obiba.mica.AbstractGitPersistableResource;
+import org.obiba.mica.JSONUtils;
 import org.obiba.mica.core.domain.BaseStudyTable;
 import org.obiba.mica.core.domain.PublishCascadingScope;
 import org.obiba.mica.core.domain.RevisionStatus;
@@ -33,26 +35,20 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @Component
 @Scope("request")
 public class DraftHarmonizedDatasetResource extends
-  AbstractGitPersistableResource<HarmonizationDatasetState,HarmonizationDataset> {
+  AbstractGitPersistableResource<HarmonizationDatasetState, HarmonizationDataset> {
 
   @Inject
   private ApplicationContext applicationContext;
@@ -77,14 +73,25 @@ public class DraftHarmonizedDatasetResource extends
 
   @GET
   @Path("/model")
-  @Produces("application/json")
+  @Produces(MediaType.APPLICATION_JSON)
   public Map<String, Object> getModel() {
     checkPermission("/draft/harmonized-dataset", "VIEW");
     return getDataset().getModel();
   }
 
+  @PUT
+  @Path("/model")
+  @Consumes(MediaType.APPLICATION_JSON)
+  public Response updateModel(String body) {
+    checkPermission("/draft/harmonized-dataset", "EDIT");
+    HarmonizationDataset dataset = getDataset();
+    dataset.setModel(Strings.isNullOrEmpty(body) ? new HashMap<>() : JSONUtils.toMap(body));
+    datasetService.save(dataset);
+    return Response.ok().build();
+  }
+
   @DELETE
-  public void delete(){
+  public void delete() {
     checkPermission("/draft/harmonized-dataset", "DELETE");
     datasetService.delete(id);
   }
@@ -94,10 +101,11 @@ public class DraftHarmonizedDatasetResource extends
   public Response update(Mica.DatasetDto datasetDto, @Context UriInfo uriInfo,
                          @Nullable @QueryParam("comment") String comment) {
     checkPermission("/draft/harmonized-dataset", "EDIT");
-    if(!datasetDto.hasId() || !datasetDto.getId().equals(id))
+    if (!datasetDto.hasId() || !datasetDto.getId().equals(id))
       throw new IllegalArgumentException("Not the expected dataset id");
     Dataset dataset = dtos.fromDto(datasetDto);
-    if(!(dataset instanceof HarmonizationDataset)) throw new IllegalArgumentException("An harmonization dataset is expected");
+    if (!(dataset instanceof HarmonizationDataset))
+      throw new IllegalArgumentException("An harmonization dataset is expected");
 
     datasetService.save((HarmonizationDataset) dataset, comment);
     return Response.noContent().build();
@@ -169,7 +177,7 @@ public class DraftHarmonizedDatasetResource extends
     checkPermission("/draft/harmonized-dataset", "VIEW");
     ImmutableList.Builder<Search.QueryResultDto> builder = ImmutableList.builder();
     HarmonizationDataset dataset = getDataset();
-    for(BaseStudyTable table : dataset.getBaseStudyTables()) {
+    for (BaseStudyTable table : dataset.getBaseStudyTables()) {
       builder.add(datasetService.getFacets(query, table));
     }
     return builder.build();
