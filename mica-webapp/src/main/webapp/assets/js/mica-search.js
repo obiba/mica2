@@ -209,7 +209,7 @@ const DataTableDefaults = {
 
 class StringLocalizer {
   static __localizeInternal(entries, locale) {
-    const result = (Array.isArray(entries) ? entries : [entries]).filter((entry) => locale === entry.lang || locale === entry.locale).pop();
+    const result = (Array.isArray(entries) ? entries : [entries]).filter((entry) => entry && (locale === entry.lang || locale === entry.locale)).pop();
 
     if (result) {
       let value = result.value ? result.value : result.text;
@@ -348,7 +348,7 @@ new Vue({
       console.log('Executing ' + this.queryType + ' query ...');
       EventBus.$emit(this.queryType, 'I am the result of a ' + this.queryType + ' query');
     },
-    onLocationChanged: function (payload) {
+    onLocationChanged: function () {
       this.refreshQueries();
     },
     onQueryUpdate(payload) {
