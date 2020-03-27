@@ -2,16 +2,36 @@ package org.obiba.mica.web.controller;
 
 import com.google.common.collect.Maps;
 import org.obiba.mica.security.service.SubjectAclService;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 public class BaseController {
 
   @Inject
   private SubjectAclService subjectAclService;
+
+  @ExceptionHandler(NoSuchElementException.class)
+  public ModelAndView notFoundError(Exception ex) {
+    return makeErrorModelAndView("404", ex.getMessage());
+  }
+
+  @ExceptionHandler(Exception.class)
+  public ModelAndView anyError(Exception ex) {
+    return makeErrorModelAndView("500", ex.getMessage());
+  }
+
+  protected ModelAndView makeErrorModelAndView(String status, String message) {
+    ModelAndView mv = new ModelAndView("error");
+    mv.getModel().put("status", status);
+    mv.getModel().put("msg", message);
+    return mv;
+  }
 
   void checkAccess(String resource, String id) {
     subjectAclService.checkAccess(resource, id);

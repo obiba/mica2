@@ -38,7 +38,7 @@
 <#assign datasetListDefaultDisplay = listDefaultDisplay/>
 
 <!-- Search page -->
-<#if config.singleStudyEnabled>
+<#if config?? && config.singleStudyEnabled>
   <#assign defaultSearchState = "#lists?type=variables"/>
 <#else>
   <#assign defaultSearchState = "#lists?type=studies"/>
