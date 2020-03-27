@@ -94,7 +94,7 @@ new Vue({
     // make the menu
     onMicaTaxonomies: function (payload) {
       for (let target of payload) {
-        this.criteriaMenu.items[target.name].title = target.title[0].text;
+        this.criteriaMenu.items[target.name].title = StringLocalizer.localize(target.title);
         switch (target.name) {
           case 'variable':
             // TODO handle multi level
