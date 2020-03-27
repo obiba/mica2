@@ -165,8 +165,15 @@ public abstract class AbstractDocumentService<T> implements DocumentService<T> {
 
   private List<T> executeQueryInternal(String rql) {
     Searcher.IdFilter accessibleIdFilter = getAccessibleIdFilter();
-    Searcher.DocumentResults documentResults = searcher.find(getIndexName(), getType(), rql, accessibleIdFilter);
-    return processHits(documentResults);
+    try {
+      Searcher.DocumentResults documentResults = searcher.find(getIndexName(), getType(), rql, accessibleIdFilter);
+      return processHits(documentResults);
+    } catch (Exception e) {
+      log.error("Query execution error [{}]", e.getMessage());
+      if (log.isDebugEnabled())
+        log.error("Query execution error", e);
+      return Lists.newArrayList();
+    }
   }
 
   private List<T> processHits(Searcher.DocumentResults documentResults) {

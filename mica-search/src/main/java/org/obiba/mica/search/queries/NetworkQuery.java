@@ -181,7 +181,9 @@ public class NetworkQuery extends AbstractDocumentQuery {
               aggregation -> aggregation.asTerms().getBuckets().stream().filter(bucket -> bucket.getDocCount() > 0)
                   .forEach(bucket -> map.put(bucket.getKeyAsString(), getStudyCounts(bucket.getAggregations()))));
     } catch (Exception e) {
-      log.warn("Study counts by network failed", e);
+      log.warn("Study counts by network failed: {}", e.getMessage());
+      if (log.isDebugEnabled())
+        log.error("Study counts by network failed", e);
     }
     return map;
   }
