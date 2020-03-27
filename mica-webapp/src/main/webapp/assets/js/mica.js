@@ -143,14 +143,13 @@ var micajs = (function() {
     });
   };
 
-  const micaSignout = function(pathPrefix) {
+  const micaSignout = function(redirect) {
     $.ajax({
       type: 'DELETE',
-      url: pathPrefix + '/ws/auth/session/_current'
+      url: '/ws/auth/session/_current'
     })
     .always(function() {
-      let redirect = pathPrefix + '/';
-      $.redirect(redirect, {}, 'GET');
+      $.redirect(redirect || '/', {}, 'GET');
     });
   };
 

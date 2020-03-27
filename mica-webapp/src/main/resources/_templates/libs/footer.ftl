@@ -8,5 +8,5 @@
   </#if>
   <a href="/admin" title="<@message "administration"/>" class="float-right"><i class="fas fa-lock"></i></a>
   <!-- Default to the left -->
-  <@message "powered-by"/> <a href="https://www.obiba.org">OBiBa Mica</a>.
+  <small><@message "powered-by"/> <a href="https://www.obiba.org">OBiBa Mica</a></small>
 </footer>
