@@ -1,5 +1,5 @@
 <#macro leftmenus>
-  <li class="nav-item">
+  <li id="homeMenu" class="nav-item">
     <a href="/" class="nav-link"><@message "home"/></a>
   </li>
   <#if config??>
