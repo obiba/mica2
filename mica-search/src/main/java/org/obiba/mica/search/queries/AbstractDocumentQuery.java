@@ -157,7 +157,7 @@ public abstract class AbstractDocumentQuery implements DocumentQueryInterface {
             Class clazz = Class.forName(defaultClass.getPackage().getName() + "." + result.getClassName());
             published.add(objectMapper.convertValue(result.getSource(), clazz != null ? clazz : defaultClass));
           } catch (ClassNotFoundException e) {
-            log.error("Mandatory field className is not in the source {}", e);
+            log.error("Mandatory field className is not in the source [{}]", getSearchType(), e);
           }
         });
     return published;
@@ -266,7 +266,7 @@ public abstract class AbstractDocumentQuery implements DocumentQueryInterface {
     try {
       props.load(new StringReader(getAggJoinFields().stream().reduce((t, s) -> t + "=\r" + s).get()));
     } catch (IOException e) {
-      log.error("Failed to create properties from query join fields: {}", e);
+      log.error("Failed to create properties from query join fields [{}]", getSearchType(), e);
     }
 
     return props;
@@ -303,7 +303,9 @@ public abstract class AbstractDocumentQuery implements DocumentQueryInterface {
       resultDto = builder.build();
       getResponseStudyIds(resultDto.getAggsList());
     } catch (Exception e) {
-      log.error("Query execution error", e);
+      log.error("Query execution error [{}]: {}", getSearchType(), e.getMessage());
+      if (log.isDebugEnabled())
+        log.error("Query execution error", e);
     } finally {
       aggregationTitleResolver.unregisterProviders(getAggregationMetaDataProviders());
     }
@@ -326,7 +328,9 @@ public abstract class AbstractDocumentQuery implements DocumentQueryInterface {
       resultDto = builder.build();
       getResponseStudyIds(resultDto.getAggsList());
     } catch (Exception e) {
-      log.error("Coverage execution error", e);
+      log.error("Coverage execution error [{}]: {}", getSearchType(), e.getMessage());
+      if (log.isDebugEnabled())
+        log.error("Coverage execution error", e);
     } finally {
       aggregationTitleResolver.unregisterProviders(getAggregationMetaDataProviders());
     }
