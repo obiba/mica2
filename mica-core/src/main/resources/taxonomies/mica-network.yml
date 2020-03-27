@@ -59,8 +59,10 @@
 - "name": "investigator"
   "title":
     "en": "Investigator name"
+    "fr": "Nom de l'investigateur"
   "description":
     "en": "Investigator full name."
+    "fr": "Nom complet de l'investigateur."
   "attributes":
     "field": "memberships.investigator.person.fullName"
     "alias": "memberships-investigator-person-fullName"
@@ -69,8 +71,10 @@
 - "name": "investigator-institution"
   "title":
     "en": "Investigator institution"
+    "fr": "Institution de l'investigateur"
   "description":
     "en": "Investigator institution name."
+    "fr": "Nom de l'institution de l'investigateur."
   "attributes":
     "field": "memberships.investigator.person.institution.name"
     "alias": "memberships-investigator-person-institution-name"
@@ -79,8 +83,10 @@
 - "name": "contact"
   "title":
     "en": "Contact name"
+    "fr": "Nom du contact"
   "description":
     "en": "Contact full name."
+    "fr": "Nom complet du contact."
   "attributes":
     "field": "memberships.contact.person.fullName"
     "alias": "memberships-contact-person-fullName"
@@ -89,8 +95,10 @@
 - "name": "contact-institution"
   "title":
     "en": "Contact institution"
+    "fr": "Institution du contact"
   "description":
     "en": "Contact institution name."
+    "fr": "Nom de l'institution du contact."
   "attributes":
     "field": "memberships.contact.person.institution.name"
     "alias": "memberships-contact-person-institution-name"
