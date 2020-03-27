@@ -278,7 +278,7 @@ class EntityQuery {
     return theTree;
   }
 
-  prepareForDelete(tree, type, target, deleteQuery, exact) {
+  prepareForDelete(tree, type, target, deleteQuery) {
     let theTree = tree || new RQL.QueryTree(null, QueryTreeOptions);
     let targetQuery = theTree.search((name) => name === target);
 
