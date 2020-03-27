@@ -255,9 +255,16 @@ public abstract class AbstractDocumentQuery implements DocumentQueryInterface {
     Query updatedQuery = updateWithJoinKeyQuery(localQuery);
     Searcher.IdFilter idFilter = getAccessibleIdFilter();
 
-    Searcher.DocumentResults results = searcher.aggregate(getSearchIndex(), getSearchType(), updatedQuery, getJoinFieldsAsProperties(), idFilter);
-    DocumentQueryJoinKeys joinKeys = processJoinKeys(results);
-    return joinKeys.studyIds.stream().distinct().collect(Collectors.toList());
+    try {
+      Searcher.DocumentResults results = searcher.aggregate(getSearchIndex(), getSearchType(), updatedQuery, getJoinFieldsAsProperties(), idFilter);
+      DocumentQueryJoinKeys joinKeys = processJoinKeys(results);
+      return joinKeys.studyIds.stream().distinct().collect(Collectors.toList());
+    } catch (Exception e) {
+      log.error("Query study IDs execution error [{}]: {}", getSearchType(), e.getMessage());
+      if (log.isDebugEnabled())
+        log.error("Query study IDs execution error", e);
+    }
+    return Lists.newArrayList();
   }
 
   private Properties getJoinFieldsAsProperties() {
