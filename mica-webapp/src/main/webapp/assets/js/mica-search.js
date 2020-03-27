@@ -48,7 +48,13 @@ Vue.component('taxonomy-menu', {
   props: ['taxonomy'],
   template: `
   <li class="nav-item">
-      <a href="#" class="nav-link" data-toggle="modal" data-target="#taxonomy-modal" :title="taxonomy.description[0].text" @click.prevent="$emit('taxonomy-selection', taxonomy.name)"><i class="far fa-circle nav-icon"></i><p>{{ taxonomy.title[0].text }}</p></a>
+      <a href="#"
+        class="nav-link"
+        data-toggle="modal"
+        data-target="#taxonomy-modal"
+        :title="taxonomy.description | localize-string"
+        @click.prevent="$emit('taxonomy-selection', taxonomy.name)"><i class="far fa-circle nav-icon"></i><p>{{ taxonomy.title | localize-string }}</p>
+      </a>
   </li>
 `
 });
@@ -202,15 +208,22 @@ const DataTableDefaults = {
 };
 
 class StringLocalizer {
-  static localize(entries) {
-    const locale = Mica.locale;
+  static __localizeInternal(entries, locale) {
     const result = (Array.isArray(entries) ? entries : [entries]).filter((entry) => locale === entry.lang || locale === entry.locale).pop();
 
     if (result) {
       let value = result.value ? result.value : result.text;
-      return value ? value : "";
+      return value ? value : null;
     }
-    return "";
+    return null;
+  }
+
+  static localize(entries) {
+    const result = StringLocalizer.__localizeInternal(entries, Mica.locale)
+      || StringLocalizer.__localizeInternal(entries, 'en')
+      || StringLocalizer.__localizeInternal(entries, 'und');
+
+    return result ? result : "";
   }
 }
 
