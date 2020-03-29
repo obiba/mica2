@@ -4,7 +4,7 @@
   <#include "libs/head.ftl">
   <title>${config.name!""} | <@message "just-registered"/></title>
 </head>
-<body class="hold-transition layout-top-nav layout-navbar-fixed">
+<body id="just-registered-page" class="hold-transition layout-top-nav layout-navbar-fixed">
 <div class="wrapper">
 
   <!-- Navbar -->

@@ -15,7 +15,7 @@
     };
   </script>
 </head>
-<body class="hold-transition login-page">
+<body id="signup-page" class="hold-transition login-page">
 <div class="login-box">
   <div class="login-logo">
     <a href=".."><b>${config.name!""}</b></a>
