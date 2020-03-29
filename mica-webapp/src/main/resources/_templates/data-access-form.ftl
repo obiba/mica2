@@ -7,7 +7,7 @@
     <#include "libs/head.ftl">
   <title>${config.name!""} | <@message "data-access-form"/> ${dar.id}</title>
 </head>
-<body ng-app="formModule" class="hold-transition sidebar-mini">
+<body id="data-access-form-page" ng-app="formModule" class="hold-transition sidebar-mini">
 <!-- Site wrapper -->
 <div class="wrapper">
 

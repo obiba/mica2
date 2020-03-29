@@ -9,7 +9,7 @@
   <#include "libs/head.ftl">
   <title>${config.name!""} | ${localize(network.acronym)}</title>
 </head>
-<body class="hold-transition layout-top-nav layout-navbar-fixed">
+<body id="network-page" class="hold-transition layout-top-nav layout-navbar-fixed">
 <div class="wrapper">
 
   <!-- Navbar -->

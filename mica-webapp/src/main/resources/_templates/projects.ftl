@@ -7,7 +7,7 @@
   <#include "libs/head.ftl">
   <title>${config.name!""} | <@message "approved-projects"/></title>
 </head>
-<body class="hold-transition layout-top-nav layout-navbar-fixed">
+<body id="projects-page" class="hold-transition layout-top-nav layout-navbar-fixed">
 <div class="wrapper">
 
   <!-- Navbar -->
