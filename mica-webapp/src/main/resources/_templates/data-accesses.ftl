@@ -9,7 +9,7 @@
   <#include "libs/head.ftl">
   <title>${config.name!""} | <@message "data-access-requests"/></title>
 </head>
-<body class="hold-transition layout-top-nav layout-navbar-fixed">
+<body id="data-accesses-page" class="hold-transition layout-top-nav layout-navbar-fixed">
 <div class="wrapper">
 
   <!-- Navbar -->

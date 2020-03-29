@@ -4,11 +4,11 @@
 <!DOCTYPE html>
 <html lang="${.lang}">
 <head>
-    <#include "libs/head.ftl">
-    <#include "libs/data-access-comments-head.ftl">
+  <#include "libs/head.ftl">
+  <#include "libs/data-access-comments-head.ftl">
   <title>${config.name!""} | <@message "data-access-private-comments"/> ${dar.id}</title>
 </head>
-<body class="hold-transition sidebar-mini">
+<body id="data-access-private-comments-page" class="hold-transition sidebar-mini">
 <!-- Site wrapper -->
 <div class="wrapper">
 

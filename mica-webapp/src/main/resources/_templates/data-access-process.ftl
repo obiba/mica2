@@ -4,7 +4,7 @@
   <#include "libs/head.ftl">
   <title>${config.name!""} | <@message "data-access-process"/></title>
 </head>
-<body class="hold-transition layout-top-nav layout-navbar-fixed">
+<body id="data-access-process-page" class="hold-transition layout-top-nav layout-navbar-fixed">
 <div class="wrapper">
 
   <!-- Navbar -->

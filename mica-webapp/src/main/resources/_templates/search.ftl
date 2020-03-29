@@ -4,7 +4,7 @@
   <#include "libs/head.ftl">
   <title>${config.name!""} | <@message "search"/></title>
 </head>
-<body class="hold-transition sidebar-mini">
+<body id="search-page" class="hold-transition sidebar-mini">
 <!-- Site wrapper -->
 <div class="wrapper">
 
