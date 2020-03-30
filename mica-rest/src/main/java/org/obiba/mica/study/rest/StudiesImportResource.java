@@ -42,6 +42,13 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.obiba.mica.NoSuchEntityException;
+import org.obiba.mica.micaConfig.domain.EntityConfig;
+import org.obiba.mica.micaConfig.service.DataCollectionEventConfigService;
+import org.obiba.mica.micaConfig.service.EntityConfigService;
+import org.obiba.mica.micaConfig.service.HarmonizationPopulationConfigService;
+import org.obiba.mica.micaConfig.service.HarmonizationStudyConfigService;
+import org.obiba.mica.micaConfig.service.IndividualStudyConfigService;
+import org.obiba.mica.micaConfig.service.PopulationConfigService;
 import org.obiba.mica.study.domain.BaseStudy;
 import org.obiba.mica.study.domain.HarmonizationStudy;
 import org.obiba.mica.study.domain.Study;
@@ -55,6 +62,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.protobuf.ExtensionRegistry;
 import com.googlecode.protobuf.format.JsonFormat;
@@ -62,7 +70,7 @@ import com.googlecode.protobuf.format.JsonFormat;
 @Path("/draft")
 @RequiresAuthentication
 public class StudiesImportResource {
-
+	
 	private static final String WS_CONFIG_HARMONIZATION_POPULATION_FORM_CUSTOM = "/ws/config/harmonization-population/form-custom";
 	private static final String WS_CONFIG_HARMONIZATION_STUDY_FORM_CUSTOM = "/ws/config/harmonization-study/form-custom";
 	private static final String WS_CONFIG_DATA_COLLECTION_EVENT_FORM_CUSTOM = "/ws/config/data-collection-event/form-custom";
@@ -73,6 +81,9 @@ public class StudiesImportResource {
 	private static final String WS_DRAFT_HARMONIZATION_STUDY_ID = "/ws/draft/harmonization-study/{id}";
 	private static final String WS_DRAFT_INDIVIDUAL_STUDY_ID = "/ws/draft/individual-study/{id}";
 
+	private static final String SCHEMA = "schema";
+	private static final String DEFINITION = "definition";
+	
 	private static final String IDS_TO_UPDATE = "idsToUpdate";
 	private static final String IDS_TO_INCLUDE = "idsToInclude";
 	
@@ -84,6 +95,15 @@ public class StudiesImportResource {
 	private static final String HARMONIZATION_STUDY = "harmonization-study";
 	private static final String INDIVIDUAL_STUDY = "individual-study";
 	
+	private static final String INDIVIDUAL_STUDY_FORM_TITLE = "study";
+	private static final String POPULATION_FORM_TITLE = "study-population";
+	private static final String DATA_COLLECTION_EVENT_FORM_TITLE = "data-collection-event";
+	
+	private static final String HARMONIZATION_STUDY_FORM_TITLE = "harmonization-study";
+	private static final String HARMONIZATION_POPULATION_FORM_TITLE = "harmonization-study-population";
+
+	
+	
 	private static final Logger log = LoggerFactory.getLogger(StudiesImportResource.class);
 	
 	@Inject
@@ -94,6 +114,21 @@ public class StudiesImportResource {
 	
 	@Inject
 	private StudyService studyService;
+	
+	@Inject
+	private IndividualStudyConfigService individualStudyConfigService;
+	
+	@Inject
+	private PopulationConfigService populationConfigService;
+	
+	@Inject
+	private DataCollectionEventConfigService dataCollectionEventConfigService;
+	
+	@Inject
+	private HarmonizationStudyConfigService harmonizationStudyConfigService;
+	
+	@Inject
+	private HarmonizationPopulationConfigService harmonizationPopulationConfigService;
 	
 	@Inject
 	private Dtos dtos;
@@ -109,61 +144,86 @@ public class StudiesImportResource {
 		
 		try {
 			
-			Boolean hasSameSchemasAndDefintions = this.checkSchemasAndDefinitions(url, username, password, type);
+			List<NameValuePair> params = new ArrayList<>();
+			params.add(new BasicNameValuePair(TYPE, type));
 			
-			if (hasSameSchemasAndDefintions) {
-				
-				List<NameValuePair> params = new ArrayList<>();
-				params.add(new BasicNameValuePair(TYPE, type));
-				
-				HttpURLConnection con = this.prepareRemoteConnection(url, username, password, params, WS_DRAFT_STUDY_STATES);
+			HttpURLConnection con = this.prepareRemoteConnection(url, username, password, params, WS_DRAFT_STUDY_STATES);
 
-				int status = con.getResponseCode();
-				
-				
-				return Response.ok( this.getRawContent(con) ).status(status).build();
-				
-			} else {
-				
-				return Response.ok("Different schemas and Definitions").build();
-			}
+			int status = con.getResponseCode();
+			
+			Map<String, Object> result = new HashMap<>();
+			result.put("studies", this.getRawContent(con));
+			result.put("configs", this.validateConfigStudies(url, username, password, type) );
 
+			return Response.ok( result ).status(status).build();
 			
 		} catch (URISyntaxException|ProtocolException e) {
+			
+			log.error( Arrays.toString( e.getStackTrace()) );
 			
 			return Response.status(HttpStatus.SC_BAD_REQUEST).build();
 			
 		} catch (IOException e) {
 			
+			log.error( Arrays.toString( e.getStackTrace()) );
+			
 			return Response.status(HttpStatus.SC_NOT_FOUND).build();
 		}
 	}
 	
-	private Boolean checkSchemasAndDefinitions(String url, String username, String password, String type) throws IOException, URISyntaxException {
+	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	private Map<String, Boolean> validateConfigStudies(String url, String username, String password,  String type) 
+			throws IOException, URISyntaxException {
 		
-		Boolean areEquals = Boolean.FALSE;
+		Map<String, Boolean> result = new HashMap<>();
 		
 		if (type.equals(INDIVIDUAL_STUDY)) {
 			
-			Map<String, Object> content = this.getJSONContent(url, username, password, null, WS_CONFIG_INDIVIDUAL_STUDY_FORM_CUSTOM);
+			this.processComparisonSchemasDefinitions(url, username, password, WS_CONFIG_INDIVIDUAL_STUDY_FORM_CUSTOM, 
+					(EntityConfigService)individualStudyConfigService, INDIVIDUAL_STUDY_FORM_TITLE, result);
 			
-			//TODO
+			this.processComparisonSchemasDefinitions(url, username, password, WS_CONFIG_POPULATION_FORM_CUSTOM, 
+					(EntityConfigService)populationConfigService, POPULATION_FORM_TITLE, result);
 			
-			content = this.getJSONContent(url, username, password, null, WS_CONFIG_POPULATION_FORM_CUSTOM);
-			
-			content = this.getJSONContent(url, username, password, null, WS_CONFIG_DATA_COLLECTION_EVENT_FORM_CUSTOM);
+			this.processComparisonSchemasDefinitions(url, username, password, WS_CONFIG_DATA_COLLECTION_EVENT_FORM_CUSTOM, 
+					(EntityConfigService)dataCollectionEventConfigService, DATA_COLLECTION_EVENT_FORM_TITLE, result);
 			
 		} else if ( type.equals(HARMONIZATION_STUDY) ) {
 			
-			Map<String, Object> content = this.getJSONContent(url, username, password, null, WS_CONFIG_HARMONIZATION_STUDY_FORM_CUSTOM);
+			this.processComparisonSchemasDefinitions(url, username, password, WS_CONFIG_HARMONIZATION_STUDY_FORM_CUSTOM, 
+					(EntityConfigService)harmonizationStudyConfigService, HARMONIZATION_STUDY_FORM_TITLE, result);
 			
-			content = this.getJSONContent(url, username, password, null, WS_CONFIG_HARMONIZATION_POPULATION_FORM_CUSTOM);
+			this.processComparisonSchemasDefinitions(url, username, password, WS_CONFIG_HARMONIZATION_POPULATION_FORM_CUSTOM, 
+					(EntityConfigService)harmonizationPopulationConfigService, HARMONIZATION_POPULATION_FORM_TITLE, result);
 		}
 		
+		return result;
+	}
+	
+
+	private void processComparisonSchemasDefinitions(String url, String username, String password, 
+			String endpoint, EntityConfigService<EntityConfig> configService, String formTitle,
+			Map<String, Boolean> result) throws IOException, URISyntaxException {
 		
-		return areEquals;
+		ObjectMapper mapper = new ObjectMapper();
+		
+		Map<String, Object> content = this.getJSONContent(url, username, password, null, endpoint);
+		
+		String schema = (mapper.readValue( (String)content.get(SCHEMA), JsonNode.class)).toString();
+		String definition = (mapper.readValue( (String)content.get(DEFINITION), JsonNode.class)).toString();
+		
+		String localSchema = (mapper.readValue( configService.findPartial().get().getSchema(), JsonNode.class)).toString();
+		String localDefinition = (mapper.readValue( configService.findPartial().get().getDefinition(), JsonNode.class)).toString();
+		
+		String keySchema = "{ \"form_title\" : \"" + formTitle + "\", \"template\" : \"" + SCHEMA + "\", \"endpoint\" : \"" + endpoint + "\" }";
+		String keyDefinition = "{ \"form_title\" : \"" + formTitle + "\", \"template\" : \"" + DEFINITION + "\", \"endpoint\" : \"" + endpoint + "\" }";
+		
+		result.put(keySchema, Boolean.valueOf(schema.equals(localSchema)) );
+		result.put(keyDefinition, Boolean.valueOf(definition.equals(localDefinition)) );
 	}
 
+	
 	@GET
 	@Path("/studies/import/_summary")
 	@Produces({"application/xml", "application/json", "text/plain", "text/html"})
@@ -297,12 +357,12 @@ public class StudiesImportResource {
 		return this.getRawContent( this.prepareRemoteConnection(url, username, password, param, endpoint) );
 	}
 	
+	@SuppressWarnings("unchecked")
 	private Map<String, Object> getJSONContent(HttpURLConnection con) throws IOException {
 		
 		ObjectMapper mapper = new ObjectMapper();
-		Map<String, Object> jsonMap = mapper.readValue(con.getInputStream(), Map.class);
 		
-		return jsonMap;
+		return mapper.readValue(con.getInputStream(), Map.class);
 	}
 	
 	private String getRawContent(HttpURLConnection con) throws IOException {
@@ -340,8 +400,8 @@ public class StudiesImportResource {
 		URLConnection urlCon = uri.toURL().openConnection();
 		
 		HttpURLConnection con = (HttpURLConnection)urlCon;
-		con.setReadTimeout(5000);
-		con.setConnectTimeout(5000);
+		con.setReadTimeout(7000);
+		con.setConnectTimeout(7000);
 		con.setRequestMethod(HttpMethod.GET.toString());
 		con.setDoInput(true);
 		con.setDoOutput(true);
@@ -352,6 +412,8 @@ public class StudiesImportResource {
 		con.setRequestProperty(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE);
 		con.setRequestProperty(HttpHeaders.AUTHORIZATION, BASIC_AUTHENTICATION + encodedString );
 		con.setRequestProperty(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_UTF8_VALUE );
+		
+		con.connect();
 		
 		return con;
 	}

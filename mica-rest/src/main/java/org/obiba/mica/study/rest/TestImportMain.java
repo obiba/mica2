@@ -55,9 +55,9 @@ public class TestImportMain {
 			String definition2 = (String)remoteContent2.get("definition");
 			
 			
-			//testJSONCompare(schema, schema2);
+			testJSONCompare(schema, schema2);
 			
-			testJSONCompare(definition, definition2);
+			//testJSONCompare(definition, definition2);
 			
 			
 		

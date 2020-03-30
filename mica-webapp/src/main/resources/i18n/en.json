@@ -567,6 +567,13 @@
       "action": "Action",
       "created": "Created: ",
       "updated": "Updated: ",
+      "diff-subtitle": "Differences in ",
+      "diff-custom-form": "The remote custom study form is different. It's not possible import studies from the specified source.",
+      "diff-section": "Form Section",
+      "diff-template": "Template",
+      "diff-endpoint": "Endpoint",
+      "diff-schema": "Schema",
+      "diff-definition": "Definition",
       "success": "The selected studies were imported successfully: ",
       "problem": "Problems occurred when importing selected studies. HTTP Status: "
     },

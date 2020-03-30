@@ -21,8 +21,8 @@
             </h3>
           </div>
           
-          <!-- 1 - Connections params -->
-          <div id="myDivBodyIndexOne" class="modal-body" ng-show="displayBodyIndexOne">
+          <!-- 0 - Connections params -->
+          <div class="modal-body" ng-show="(modalIndex == 0)">
             <h4><span translate>study.import.sub-title</span></h4><br>
             <label class="control-label ng-binding"><span translate>study.import.address</span></label>
             <input ng-init="importVO.url = 'https://recap-preterm.inesctec.pt/pub'" type="url" name="address" ng-model="importVO.url" class="form-control ng-pristine ng-valid ng-scope ng-empty ng-touched" required>
@@ -34,8 +34,48 @@
             <input ng-init="importVO.password = 'correctduckpretermsubject'" type="password" name="password" ng-model="importVO.password" class="form-control ng-pristine ng-valid ng-scope ng-empty ng-touched" required><br>
           </div>
           
+          <!-- 1 - Difference from Remote Custom Study Form -->
+          <div class="modal-body" ng-show="(modalIndex == 1)">
+
+           	<h4><span translate>study.import.diff-custom-form</span></h4><br>
+           	
+            <label class="control-label ng-binding">
+            	<span translate>study.import.diff-subtitle</span><span translate>{{path.indexOf('harmonization') > -1 ? 'harmonization-study-config.title' : 'individual-study-config.title'}}</span>
+            </label><br>
+            <table class="table table-bordered table-striped">
+              <thead>
+                <tr>
+                  <th translate>study.import.diff-section</th>
+                  <th translate>study.import.diff-template</th>
+                  <th class="col-md-8" translate>study.import.diff-endpoint</th>
+                </tr>
+              </thead>
+              <tbody id="myTableSummaryConflict">
+                <tr ng-repeat="diffVO in diffsCustomForm">
+                  <td>
+                   	<ul class="list-unstyled">
+                      <span translate>{{diffVO.form_title}}</span>
+                   	</ul>
+                  </td>
+                  <td>
+                    <ul class="list-unstyled">
+                     <span translate>{{diffVO.template.indexOf('schema') > -1 ? 'study.import.diff-schema' : 'study.import.diff-definition'}}</span>
+                    </ul>
+                  </td>
+                  <td>
+                   	<ul class="list-unstyled">
+                      {{diffVO.endpoint}}
+                   	</ul>
+                  </td>
+                </tr>  
+              </tbody>
+            </table>
+            
+             
+	      </div>
+          
           <!-- 2 - Remote studies -->
-          <div id="myDivBodyIndexTwo" class="modal-body" ng-show="displayBodyIndexTwo">
+          <div class="modal-body" ng-show="(modalIndex == 2)">
           
             <!-- Search field and pagination controls -->
           	<div class="row voffset2">
@@ -97,7 +137,7 @@
           </div>
           
           <!-- 3 - Operations Summary -->
-          <div id="myDivBodyIndexThree" class="modal-body" ng-show="displayBodyIndexThree">
+          <div class="modal-body" ng-show="(modalIndex == 3)">
           
             <div ng-show="studiesToCreate.length > 0 || studiesToUpdate.length > 0">
             	<h4><span translate>study.import.summary</span></h4><br>
@@ -226,9 +266,9 @@
           </div>
           
           <!-- 4 - Finish Response Messages -->
-          <div id="myDivBodyIndexFour" class="modal-body" div ng-show="displayBodyIndexFour">
+          <div class="modal-body" ng-show="(modalIndex == 4)">
           
-            <div id="myMessageSuccessfully" ng-show="displayMsgImportedSuccessfully">
+            <div ng-show="(idsCreated.length > 0 || idsUpdated.length > 0)">
             	<h4><span translate>study.import.success</span></h4><br>
             	<div ng-show="idsCreated.length > 0">
             		<h5><span translate>study.import.created</span>{{idsCreated}}.</h5>
@@ -237,20 +277,20 @@
             		<h5><span translate>study.import.updated</span>{{idsUpdated}}.</h5>
             	</div>
             </div>
-            <div id="myMessageProblem" ng-show="displayMsgImportedProblem">
+            <div ng-show="statusErrorImport.length > 0">
             	<h4><span translate>study.import.problem</span>{{statusErrorImport}}</h4>
             </div>
 	      </div>
 	      
           <!-- Footer navigation Buttons -->
           <div class="modal-footer">
-            <button id="myPreviousButton" type="button" class="btn btn-info" ng-click="previous()" ng-disabled="displayBodyIndexOne" aria-hidden="true">
+            <button id="myPreviousButton" type="button" class="btn btn-info" ng-click="previous()" ng-disabled="(modalIndex == 0)" aria-hidden="true">
               <span translate>study.import.previous</span>
             </button>
-            <button id="myNextButton" type="button" class="btn btn-info" ng-click="next()" ng-disabled="(myForm.$invalid && !displayBodyIndexOne) || (!studiesToImport.checked && displayBodyIndexTwo) || displayBodyIndexThree || displayBodyIndexFour " aria-hidden="true">
+            <button id="myNextButton" type="button" class="btn btn-info" ng-click="next()" ng-disabled="(myForm.$invalid && !(modalIndex == 0) ) || (!studiesToImport.checked && (modalIndex == 1) ) || (modalIndex == 2) || (modalIndex == 3) " aria-hidden="true">
               <span translate>study.import.next</span>
             </button>
-            <button id="myFinishButton" type="button" class="btn btn-default" ng-click="finish()" ng-disabled="!displayBodyIndexThree || ( studiesToCreate.length < 1  && studiesToUpdate.length < 1)" aria-hidden="true" >
+            <button id="myFinishButton" type="button" class="btn btn-default" ng-click="finish()" ng-disabled="!(modalIndex == 2) || ( studiesToCreate.length < 1  && studiesToUpdate.length < 1)" aria-hidden="true" >
               <span translate>study.import.finish</span>
             </button>
             <button id="myCloseButton" type="button" class="btn btn-default" ng-click="close()" data-dismiss="modal" aria-hidden="true" >

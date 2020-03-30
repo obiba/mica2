@@ -240,23 +240,39 @@ mica.study
     '$http', 
     function ($scope, $http) {
 
-      $scope.displayBodyIndexOne = true;
-      $scope.displayBodyIndexTwo = false;
-      $scope.displayBodyIndexThree = false;
-      $scope.displayBodyIndexFour = false;
-      $scope.studyType = ($scope.path.indexOf('harmonization') > -1) ? 'harmonization-study' : 'individual-study';
+      const CONNECTIONS_PARAMS_0 = 0;
+      const DIFF_CUSTOM_FORM_1 = 1;
+      const REMOTE_STUDIES_2 = 2;
+      const OPERATIONS_SUMMARY_3 = 3;
+      const FINISH_RESPONSE_MESSAGES_4 = 4;
+      const HARMONIZATION_STUDY = 'harmonization-study';
+      const INDIVIDUAL_STUDY = 'individual-study';
+
+      const CONFIG_FORM_TITLE = {
+    		    'study': 'individual-study-config.individual-study-form-title',
+    		    'study-population': 'individual-study-config.population-form-title',
+    		    'data-collection-event': 'individual-study-config.data-collection-event-form-title',
+    		    'harmonization-study': 'harmonization-study-config.harmonization-study-form-title',
+    		    'harmonization-study-population': 'harmonization-study-config.harmonization-population-form-title'
+         	}
+      
+      
+      $scope.modalIndex = CONNECTIONS_PARAMS_0;
+      $scope.studyType = ($scope.path.indexOf('harmonization') > -1) ? HARMONIZATION_STUDY : INDIVIDUAL_STUDY;
 
       //NEXT
       $scope.next = function() {
-        
+    	  
+    	$scope.diffsCustomForm = [];
 
-        if ($scope.displayBodyIndexOne) {
+        if ($scope.modalIndex == CONNECTIONS_PARAMS_0) {
         	
         	console.log('[NEXT-2]');
         	
             $scope.currentPage = 1;
             $scope.pageSize = 7;
             $('body').css('cursor', 'progress');
+            
             
             $http({
                 url: 'ws/draft/studies/import/_preview',
@@ -266,21 +282,45 @@ mica.study
             
               }).then(function(response) {
                 console.log('[NEXT-2(response)]');
-              	
-                $('#myModalDialog').addClass('modal-lg');
-                $('#myPreviousButton').prop('disabled', false);
-                $('body').css('cursor', 'default');
 
-                $scope.studiesToImport = JSON.parse(response.data);
-                $scope.displayBodyIndexOne = false;
-              	$scope.displayBodyIndexTwo = true;
-              	$scope.displayBodyIndexThree = false;
-              	$scope.displayBodyIndexFour = false;
+                var configs_enum = response.data['configs'];
+               
+                var equal_config = true;
+                
+                for (var prop in configs_enum) {
+                	
+                	if (!configs_enum[prop]) {
+                		
+                		var jsonProp = JSON.parse(String(prop));
+                		
+                		$scope.diffsCustomForm.push(
+                  		  {
+                  			form_title : CONFIG_FORM_TITLE[jsonProp.form_title], 
+                  			template : jsonProp.template, 
+              				endpoint : jsonProp.endpoint 
+              			  }		
+                  		);
+                		
+                		equal_config = false;
+                	}
+                }
+
+                if (!equal_config) {
+                	 $scope.modalIndex = DIFF_CUSTOM_FORM_1;
+                	
+                } else {
+                	
+                	 $scope.studiesToImport = JSON.parse( response.data['studies'] );
+                     $scope.modalIndex = REMOTE_STUDIES_2;
+                }
+
+                $('#myModalDialog').addClass('modal-lg');
+                $('body').css('cursor', 'default');
+                
               });
-            
+        
         } else {
         	
-        	//will display Index Three
         	console.log('[NEXT-3]');
         	
         	$scope.studiesToCreate = [];
@@ -333,24 +373,18 @@ mica.study
             	
             });
         	
-        	$scope.displayBodyIndexOne = false;
-            $scope.displayBodyIndexTwo = false;
-            $scope.displayBodyIndexThree = true;
-            $scope.displayBodyIndexFour = false;
+        	$scope.modalIndex = OPERATIONS_SUMMARY_3;
         }
       };
 
       //PREVIOUS
       $scope.previous = function() {
 
-        if ($scope.displayBodyIndexTwo) {
+        if ($scope.modalIndex == DIFF_CUSTOM_FORM_1 || $scope.modalIndex == REMOTE_STUDIES_2) {
         	
         	console.log('[PREVIOUS-1]');
         	
-        	$scope.displayBodyIndexOne = true;
-            $scope.displayBodyIndexTwo = false;
-            $scope.displayBodyIndexThree = false;
-            $scope.displayBodyIndexFour = false;
+        	$scope.modalIndex = CONNECTIONS_PARAMS_0;
             
             $('#myModalDialog').removeClass('modal-lg');
             $('#myPreviousButton').prop('disabled', true);
@@ -360,10 +394,7 @@ mica.study
         } else {
         	console.log('[PREVIOUS-2]');
         	
-        	$scope.displayBodyIndexOne = false;
-            $scope.displayBodyIndexTwo = true;
-            $scope.displayBodyIndexThree = false;
-            $scope.displayBodyIndexFour = false;
+        	$scope.modalIndex = REMOTE_STUDIES_2;
             
             $('#myFinishButton').prop('disabled', true);
         }
@@ -439,10 +470,7 @@ mica.study
 	        }).then(function(response) {
 	          console.log('[FINISH-CREATE(response)]');
 	          
-	          $scope.displayMsgImportedSuccessfully = (response.status === 200);
-		      $scope.displayMsgImportedProblem = !(response.status === 200);
-	          
-		      if ($scope.displayMsgImportedProblem) $scope.statusErrorImport += (response.status + ' ');
+	          if (!(response.status === 200)) $scope.statusErrorImport += (response.status + ' ');
 		    
 	          $scope.studiesToCreate = [];
 	          $scope.studiesConflict = [];
@@ -462,12 +490,8 @@ mica.study
 	
 	        }).then(function(response) {
 	          console.log('[FINISH-UPDATE(response)]');
-	          console.log( response.data );
 	          
-	          $scope.displayMsgImportedSuccessfully = (response.status === 200);
-		      $scope.displayMsgImportedProblem = !(response.status === 200);
-	          
-		      if ($scope.displayMsgImportedProblem) $scope.statusErrorImport += (response.status + ' ');
+		      if (!(response.status === 200)) $scope.statusErrorImport += (response.status + ' ');
 		      
 	          $scope.studiesToUpdate = [];
 	          $scope.studiesConflict = [];
@@ -487,10 +511,7 @@ mica.study
         $('body').css('cursor', 'default');
         
         if (idsToCreate.length > 0 || idsToUpdate.length > 0) {
-        	$scope.displayBodyIndexOne = false;
-            $scope.displayBodyIndexTwo = false;
-            $scope.displayBodyIndexThree = false;
-            $scope.displayBodyIndexFour = true;
+        	$scope.modalIndex = FINISH_RESPONSE_MESSAGES_4;
         }
 
       };
