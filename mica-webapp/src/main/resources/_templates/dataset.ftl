@@ -8,8 +8,6 @@
 <head>
   <#include "libs/head.ftl">
   <title>${config.name!""} | ${localize(dataset.acronym)}</title>
-  <!-- Ionicons -->
-  <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
 </head>
 <body id="dataset-page" class="hold-transition layout-top-nav layout-navbar-fixed">
 <div class="wrapper">
@@ -245,9 +243,9 @@
                 </div>
               </div>
             </div>
-            </div>
           </div>
         </#if>
+      </div>
     </div>
     <!-- /.content -->
   </div>
