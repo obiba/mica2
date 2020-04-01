@@ -34,20 +34,21 @@
             <input ng-init="importVO.password = 'correctduckpretermsubject'" type="password" name="password" ng-model="importVO.password" class="form-control ng-pristine ng-valid ng-scope ng-empty ng-touched" required><br>
           </div>
           
-          <!-- 1 - Difference from Remote Custom Study Form -->
+          <!-- 1 - Differences from Remote Custom Study Form -->
           <div class="modal-body" ng-show="(modalIndex == 1)">
 
-           	<h4><span translate>study.import.diff-custom-form</span></h4><br>
+           	<h4>
+           		<span translate>study.import.diff-subtitle</span>
+            	<span translate>{{path.indexOf('harmonization') > -1 ? 'harmonization-study-config.title' : 'individual-study-config.title'}}:</span>
+            </h4><br>
            	
-            <label class="control-label ng-binding">
-            	<span translate>study.import.diff-subtitle</span><span translate>{{path.indexOf('harmonization') > -1 ? 'harmonization-study-config.title' : 'individual-study-config.title'}}</span>
-            </label><br>
+            <label class="control-label ng-binding"><span>{{ importVO.url }}</span></label><br>
             <table class="table table-bordered table-striped">
               <thead>
                 <tr>
                   <th translate>study.import.diff-section</th>
                   <th translate>study.import.diff-template</th>
-                  <th class="col-md-8" translate>study.import.diff-endpoint</th>
+                  <th translate>study.import.diff-observation</th>
                 </tr>
               </thead>
               <tbody id="myTableSummaryConflict">
@@ -59,13 +60,14 @@
                   </td>
                   <td>
                     <ul class="list-unstyled">
-                     <span translate>{{diffVO.template.indexOf('schema') > -1 ? 'study.import.diff-schema' : 'study.import.diff-definition'}}</span>
+                     <span translate>{{diffVO.is_equal}}</span>
                     </ul>
                   </td>
+                  
                   <td>
-                   	<ul class="list-unstyled">
-                      {{diffVO.endpoint}}
-                   	</ul>
+                    <ul class="list-unstyled">
+                     blablablabla
+                    </ul>
                   </td>
                 </tr>  
               </tbody>
@@ -287,10 +289,12 @@
             <button id="myPreviousButton" type="button" class="btn btn-info" ng-click="previous()" ng-disabled="(modalIndex == 0)" aria-hidden="true">
               <span translate>study.import.previous</span>
             </button>
-            <button id="myNextButton" type="button" class="btn btn-info" ng-click="next()" ng-disabled="(myForm.$invalid && !(modalIndex == 0) ) || (!studiesToImport.checked && (modalIndex == 1) ) || (modalIndex == 2) || (modalIndex == 3) " aria-hidden="true">
+            <button id="myNextButton" type="button" class="btn btn-info" ng-click="next()" 
+            	ng-disabled="((modalIndex == 0) && myForm.$invalid) || ((modalIndex == 1) && !isPossibleImport) || ((modalIndex == 2) && !studiesToImport.checked) || (modalIndex == 3) || (modalIndex == 4) " aria-hidden="true">
               <span translate>study.import.next</span>
             </button>
-            <button id="myFinishButton" type="button" class="btn btn-default" ng-click="finish()" ng-disabled="!(modalIndex == 2) || ( studiesToCreate.length < 1  && studiesToUpdate.length < 1)" aria-hidden="true" >
+            <button id="myFinishButton" type="button" class="btn btn-default" ng-click="finish()" 
+            	ng-disabled="(!(modalIndex == 3) || !(studiesToCreate.length > 0 || studiesToUpdate.length > 0) )" aria-hidden="true" >
               <span translate>study.import.finish</span>
             </button>
             <button id="myCloseButton" type="button" class="btn btn-default" ng-click="close()" data-dismiss="modal" aria-hidden="true" >

@@ -95,15 +95,13 @@ public class StudiesImportResource {
 	private static final String HARMONIZATION_STUDY = "harmonization-study";
 	private static final String INDIVIDUAL_STUDY = "individual-study";
 	
-	private static final String INDIVIDUAL_STUDY_FORM_TITLE = "study";
+	private static final String INDIVIDUAL_STUDY_FORM_TITLE = INDIVIDUAL_STUDY;
 	private static final String POPULATION_FORM_TITLE = "study-population";
 	private static final String DATA_COLLECTION_EVENT_FORM_TITLE = "data-collection-event";
 	
-	private static final String HARMONIZATION_STUDY_FORM_TITLE = "harmonization-study";
+	private static final String HARMONIZATION_STUDY_FORM_TITLE = HARMONIZATION_STUDY;
 	private static final String HARMONIZATION_POPULATION_FORM_TITLE = "harmonization-study-population";
 
-	
-	
 	private static final Logger log = LoggerFactory.getLogger(StudiesImportResource.class);
 	
 	@Inject
@@ -132,30 +130,42 @@ public class StudiesImportResource {
 	
 	@Inject
 	private Dtos dtos;
-
+	
 	@GET
-	@Path("/studies/import/_preview")
+	@Path("/studies/import/_differences")
 	@RequiresPermissions( {"/draft/individual-study:ADD", "/draft/harmonization-study:ADD" })
 	@Produces({"application/xml", "application/json", "text/plain", "text/html"})
-	public Response listRemoteSourceStudies(@QueryParam("url") String url, 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public Response listDifferences(@QueryParam("url") String url, 
 			@QueryParam(USERNAME_PARAM) String username, 
 			@QueryParam(PWORD_PARAM) String password, 
 			@QueryParam(TYPE) String type) {
 		
 		try {
+		
+			Map<String, Boolean> result = new HashMap<>();
 			
-			List<NameValuePair> params = new ArrayList<>();
-			params.add(new BasicNameValuePair(TYPE, type));
+			if (type.equals(INDIVIDUAL_STUDY)) {
+				
+				this.processComparisonSchemasDefinitions(url, username, password, WS_CONFIG_INDIVIDUAL_STUDY_FORM_CUSTOM, 
+						(EntityConfigService)individualStudyConfigService, INDIVIDUAL_STUDY_FORM_TITLE, result);
+				
+				this.processComparisonSchemasDefinitions(url, username, password, WS_CONFIG_POPULATION_FORM_CUSTOM, 
+						(EntityConfigService)populationConfigService, POPULATION_FORM_TITLE, result);
+				
+				this.processComparisonSchemasDefinitions(url, username, password, WS_CONFIG_DATA_COLLECTION_EVENT_FORM_CUSTOM, 
+						(EntityConfigService)dataCollectionEventConfigService, DATA_COLLECTION_EVENT_FORM_TITLE, result);
+				
+			} else if ( type.equals(HARMONIZATION_STUDY) ) {
+				
+				this.processComparisonSchemasDefinitions(url, username, password, WS_CONFIG_HARMONIZATION_STUDY_FORM_CUSTOM, 
+						(EntityConfigService)harmonizationStudyConfigService, HARMONIZATION_STUDY_FORM_TITLE, result);
+				
+				this.processComparisonSchemasDefinitions(url, username, password, WS_CONFIG_HARMONIZATION_POPULATION_FORM_CUSTOM, 
+						(EntityConfigService)harmonizationPopulationConfigService, HARMONIZATION_POPULATION_FORM_TITLE, result);
+			}
 			
-			HttpURLConnection con = this.prepareRemoteConnection(url, username, password, params, WS_DRAFT_STUDY_STATES);
-
-			int status = con.getResponseCode();
-			
-			Map<String, Object> result = new HashMap<>();
-			result.put("studies", this.getRawContent(con));
-			result.put("configs", this.validateConfigStudies(url, username, password, type) );
-
-			return Response.ok( result ).status(status).build();
+			return Response.ok( result ).build();
 			
 		} catch (URISyntaxException|ProtocolException e) {
 			
@@ -172,35 +182,39 @@ public class StudiesImportResource {
 	}
 	
 	
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private Map<String, Boolean> validateConfigStudies(String url, String username, String password,  String type) 
-			throws IOException, URISyntaxException {
+	@GET
+	@Path("/studies/import/_preview")
+	@RequiresPermissions( {"/draft/individual-study:ADD", "/draft/harmonization-study:ADD" })
+	@Produces({"application/xml", "application/json", "text/plain", "text/html"})
+	public Response listRemoteStudies(@QueryParam("url") String url, 
+			@QueryParam(USERNAME_PARAM) String username, 
+			@QueryParam(PWORD_PARAM) String password, 
+			@QueryParam(TYPE) String type) {
 		
-		Map<String, Boolean> result = new HashMap<>();
-		
-		if (type.equals(INDIVIDUAL_STUDY)) {
+		try {
 			
-			this.processComparisonSchemasDefinitions(url, username, password, WS_CONFIG_INDIVIDUAL_STUDY_FORM_CUSTOM, 
-					(EntityConfigService)individualStudyConfigService, INDIVIDUAL_STUDY_FORM_TITLE, result);
+			List<NameValuePair> params = new ArrayList<>();
+			params.add(new BasicNameValuePair(TYPE, type));
 			
-			this.processComparisonSchemasDefinitions(url, username, password, WS_CONFIG_POPULATION_FORM_CUSTOM, 
-					(EntityConfigService)populationConfigService, POPULATION_FORM_TITLE, result);
+			HttpURLConnection con = this.prepareRemoteConnection(url, username, password, params, WS_DRAFT_STUDY_STATES);
+
+			int status = con.getResponseCode();
+
+			return Response.ok( this.getRawContent(con) ).status(status).build();
 			
-			this.processComparisonSchemasDefinitions(url, username, password, WS_CONFIG_DATA_COLLECTION_EVENT_FORM_CUSTOM, 
-					(EntityConfigService)dataCollectionEventConfigService, DATA_COLLECTION_EVENT_FORM_TITLE, result);
+		} catch (URISyntaxException|ProtocolException e) {
 			
-		} else if ( type.equals(HARMONIZATION_STUDY) ) {
+			log.error( Arrays.toString( e.getStackTrace()) );
 			
-			this.processComparisonSchemasDefinitions(url, username, password, WS_CONFIG_HARMONIZATION_STUDY_FORM_CUSTOM, 
-					(EntityConfigService)harmonizationStudyConfigService, HARMONIZATION_STUDY_FORM_TITLE, result);
+			return Response.status(HttpStatus.SC_BAD_REQUEST).build();
 			
-			this.processComparisonSchemasDefinitions(url, username, password, WS_CONFIG_HARMONIZATION_POPULATION_FORM_CUSTOM, 
-					(EntityConfigService)harmonizationPopulationConfigService, HARMONIZATION_POPULATION_FORM_TITLE, result);
+		} catch (IOException e) {
+			
+			log.error( Arrays.toString( e.getStackTrace()) );
+			
+			return Response.status(HttpStatus.SC_NOT_FOUND).build();
 		}
-		
-		return result;
 	}
-	
 
 	private void processComparisonSchemasDefinitions(String url, String username, String password, 
 			String endpoint, EntityConfigService<EntityConfig> configService, String formTitle,
@@ -216,11 +230,9 @@ public class StudiesImportResource {
 		String localSchema = (mapper.readValue( configService.findPartial().get().getSchema(), JsonNode.class)).toString();
 		String localDefinition = (mapper.readValue( configService.findPartial().get().getDefinition(), JsonNode.class)).toString();
 		
-		String keySchema = "{ \"form_title\" : \"" + formTitle + "\", \"template\" : \"" + SCHEMA + "\", \"endpoint\" : \"" + endpoint + "\" }";
-		String keyDefinition = "{ \"form_title\" : \"" + formTitle + "\", \"template\" : \"" + DEFINITION + "\", \"endpoint\" : \"" + endpoint + "\" }";
+		String formSection = "{ \"form_title\" : \"" + formTitle + "\", \"endpoint\" : \"" + endpoint + "\" }";
 		
-		result.put(keySchema, Boolean.valueOf(schema.equals(localSchema)) );
-		result.put(keyDefinition, Boolean.valueOf(definition.equals(localDefinition)) );
+		result.put(formSection, Boolean.valueOf(schema.equals(localSchema) && definition.equals(localDefinition)) );
 	}
 
 	
@@ -288,7 +300,7 @@ public class StudiesImportResource {
 				
 			for (String id : ids) {
 				
-				String content = this.getRawContent(url, username, password, null,
+				String remoteContent = this.getRawContent(url, username, password, null,
 						(type.equals(INDIVIDUAL_STUDY) ? WS_DRAFT_INDIVIDUAL_STUDY_ID : WS_DRAFT_HARMONIZATION_STUDY_ID).replace("{id}", id ));
 				
 				Mica.StudyDto.Builder builder = Mica.StudyDto.newBuilder();
@@ -297,33 +309,33 @@ public class StudiesImportResource {
 				extensionRegistry.add(Mica.CollectionStudyDto.type);
 				extensionRegistry.add(Mica.HarmonizationStudyDto.type);
 				
-				JsonFormat.merge(content, extensionRegistry, builder);
+				JsonFormat.merge(remoteContent, extensionRegistry, builder);
 				
 				if ( type.equals(INDIVIDUAL_STUDY) ) {
 					
-					Study study = (Study)dtos.fromDto( builder);
+					Study localStudy = (Study)dtos.fromDto( builder);
 					
 					if ( Boolean.TRUE.equals(isToInclude) ) {
 						
-						study.setId(null);
+						localStudy.setId(null);
 					}
 
-					individualStudyService.save(study);
+					individualStudyService.save(localStudy);
 					
-					log.info("individualStudyService: {}", study);
+					log.info("individualStudyService: {}", localStudy);
 					
 				} else if ( type.equals(HARMONIZATION_STUDY) ) {
 					
-					HarmonizationStudy study = (HarmonizationStudy)dtos.fromDto( builder);
+					HarmonizationStudy localStudy = (HarmonizationStudy)dtos.fromDto( builder);
 					
 					if ( Boolean.TRUE.equals(isToInclude) ) {
 						
-						study.setId(null);
+						localStudy.setId(null);
 					}
 					
-					harmonizationStudyService.save(study);
+					harmonizationStudyService.save(localStudy);
 					
-					log.info("harmonizationStudyService: {}", study);
+					log.info("harmonizationStudyService: {}", localStudy);
 				}				
 			}
 			

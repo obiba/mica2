@@ -247,33 +247,72 @@ mica.study
       const FINISH_RESPONSE_MESSAGES_4 = 4;
       const HARMONIZATION_STUDY = 'harmonization-study';
       const INDIVIDUAL_STUDY = 'individual-study';
-
+      
       const CONFIG_FORM_TITLE = {
-    		    'study': 'individual-study-config.individual-study-form-title',
-    		    'study-population': 'individual-study-config.population-form-title',
-    		    'data-collection-event': 'individual-study-config.data-collection-event-form-title',
-    		    'harmonization-study': 'harmonization-study-config.harmonization-study-form-title',
-    		    'harmonization-study-population': 'harmonization-study-config.harmonization-population-form-title'
-         	}
-      
-      
+    		'individual-study' : 'individual-study-config.individual-study-form-title',
+		    'study-population' : 'individual-study-config.population-form-title',
+		    'data-collection-event' : 'individual-study-config.data-collection-event-form-title',
+		    'harmonization-study' : 'harmonization-study-config.harmonization-study-form-title',
+		    'harmonization-study-population' : 'harmonization-study-config.harmonization-population-form-title'
+         }
+
       $scope.modalIndex = CONNECTIONS_PARAMS_0;
       $scope.studyType = ($scope.path.indexOf('harmonization') > -1) ? HARMONIZATION_STUDY : INDIVIDUAL_STUDY;
+      $scope.diffsCustomForm = [];
 
       //NEXT
       $scope.next = function() {
-    	  
-    	$scope.diffsCustomForm = [];
 
-        if ($scope.modalIndex == CONNECTIONS_PARAMS_0) {
+    	$scope.isPossibleImport = false;
+
+    	if ($scope.modalIndex == CONNECTIONS_PARAMS_0) {
+    		console.log('[NEXT-0]');
         	
-        	console.log('[NEXT-2]');
-        	
+            $('body').css('cursor', 'progress');
+            
+            $http({
+                url: 'ws/draft/studies/import/_differences',
+                method: 'GET',
+                params: {url: $scope.importVO.url, username: $scope.importVO.username, 
+                         password: $scope.importVO.password, type: $scope.studyType}
+            
+              }).then(function(response) {
+                console.log('[NEXT-0(response)]');
+
+                var diffs_enum = response.data;
+                
+                $scope.diffsCustomForm = [];
+                
+                for (var prop in diffs_enum) {
+                	
+	            	var jsonProp = JSON.parse(String(prop));
+	        		
+	        		$scope.diffsCustomForm.push({
+	          			form_title : CONFIG_FORM_TITLE[jsonProp.form_title], 
+	      				endpoint : jsonProp.endpoint,
+	      				is_equal : diffs_enum[prop]
+	      			  });
+                	
+                	if ((jsonProp.form_title == INDIVIDUAL_STUDY || jsonProp.form_title == HARMONIZATION_STUDY) 
+                			&& diffs_enum[prop]) {
+                		
+                		$scope.isPossibleImport = true;
+                	}
+                }
+
+                $('#myModalDialog').addClass('modal-lg');
+                $scope.modalIndex = DIFF_CUSTOM_FORM_1;
+                $('body').css('cursor', 'default');
+                
+              });
+    		
+    	} else if ($scope.modalIndex == DIFF_CUSTOM_FORM_1) {
+    		console.log('[NEXT-1]');
+
             $scope.currentPage = 1;
             $scope.pageSize = 7;
             $('body').css('cursor', 'progress');
-            
-            
+
             $http({
                 url: 'ws/draft/studies/import/_preview',
                 method: 'GET',
@@ -281,47 +320,18 @@ mica.study
                          password: $scope.importVO.password, type: $scope.studyType}
             
               }).then(function(response) {
-                console.log('[NEXT-2(response)]');
-
-                var configs_enum = response.data['configs'];
-               
-                var equal_config = true;
-                
-                for (var prop in configs_enum) {
-                	
-                	if (!configs_enum[prop]) {
-                		
-                		var jsonProp = JSON.parse(String(prop));
-                		
-                		$scope.diffsCustomForm.push(
-                  		  {
-                  			form_title : CONFIG_FORM_TITLE[jsonProp.form_title], 
-                  			template : jsonProp.template, 
-              				endpoint : jsonProp.endpoint 
-              			  }		
-                  		);
-                		
-                		equal_config = false;
-                	}
-                }
-
-                if (!equal_config) {
-                	 $scope.modalIndex = DIFF_CUSTOM_FORM_1;
-                	
-                } else {
-                	
-                	 $scope.studiesToImport = JSON.parse( response.data['studies'] );
-                     $scope.modalIndex = REMOTE_STUDIES_2;
-                }
-
-                $('#myModalDialog').addClass('modal-lg');
-                $('body').css('cursor', 'default');
-                
+                console.log('[NEXT-1(response)]');
+                               	
+            	 $scope.studiesToImport = JSON.parse( response.data );
+            	 
+                 $('body').css('cursor', 'default');
+                 
+                 $scope.modalIndex = REMOTE_STUDIES_2; 
               });
         
-        } else {
+        } else if ($scope.modalIndex == REMOTE_STUDIES_2) {
         	
-        	console.log('[NEXT-3]');
+        	console.log('[NEXT-2]');
         	
         	$scope.studiesToCreate = [];
         	$scope.studiesToUpdate = [];
@@ -346,7 +356,7 @@ mica.study
 
               }).then(function(response) {
         		
-                console.log('[NEXT-3(response)]');
+                console.log('[NEXT-2(response)]');
                
                 var resp_enum = response.data;
                 var resp = [];
@@ -371,34 +381,31 @@ mica.study
             	
             	$scope.studiesToCreate = $scope.studiesToCreate.filter(function (el) { return el != null; });
             	
+            	$scope.modalIndex = OPERATIONS_SUMMARY_3;
+            	
             });
-        	
-        	$scope.modalIndex = OPERATIONS_SUMMARY_3;
         }
       };
 
       //PREVIOUS
       $scope.previous = function() {
 
-        if ($scope.modalIndex == DIFF_CUSTOM_FORM_1 || $scope.modalIndex == REMOTE_STUDIES_2) {
-        	
+        if ($scope.modalIndex == DIFF_CUSTOM_FORM_1) {
         	console.log('[PREVIOUS-1]');
         	
+        	$('#myModalDialog').removeClass('modal-lg');
         	$scope.modalIndex = CONNECTIONS_PARAMS_0;
             
-            $('#myModalDialog').removeClass('modal-lg');
-            $('#myPreviousButton').prop('disabled', true);
-            $('#myNextButton').prop('disabled', false);
-            $('#myFinishButton').prop('disabled', true);	
-            
-        } else {
+        } else if ($scope.modalIndex == REMOTE_STUDIES_2) {
         	console.log('[PREVIOUS-2]');
         	
+        	$scope.modalIndex = DIFF_CUSTOM_FORM_1;
+        	
+        } else if ($scope.modalIndex == OPERATIONS_SUMMARY_3) {
+        	console.log('[PREVIOUS-3]');
+        	
         	$scope.modalIndex = REMOTE_STUDIES_2;
-            
-            $('#myFinishButton').prop('disabled', true);
         }
-
       };
 
       //CLICK_CHECKBOX
