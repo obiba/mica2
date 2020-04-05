@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -71,6 +72,7 @@ import com.googlecode.protobuf.format.JsonFormat;
 @RequiresAuthentication
 public class StudiesImportResource {
 	
+	private static final String DIFFS_CUSTOM_FORM = "diffsCustomForm";
 	private static final String WS_CONFIG_HARMONIZATION_POPULATION_FORM_CUSTOM = "/ws/config/harmonization-population/form-custom";
 	private static final String WS_CONFIG_HARMONIZATION_STUDY_FORM_CUSTOM = "/ws/config/harmonization-study/form-custom";
 	private static final String WS_CONFIG_DATA_COLLECTION_EVENT_FORM_CUSTOM = "/ws/config/data-collection-event/form-custom";
@@ -83,9 +85,6 @@ public class StudiesImportResource {
 
 	private static final String SCHEMA = "schema";
 	private static final String DEFINITION = "definition";
-	
-	private static final String IDS_TO_UPDATE = "idsToUpdate";
-	private static final String IDS_TO_INCLUDE = "idsToInclude";
 	
 	private static final String BASIC_AUTHENTICATION = "Basic ";
 	private static final String USERNAME_PARAM = "username";
@@ -143,7 +142,7 @@ public class StudiesImportResource {
 		
 		try {
 		
-			Map<String, Boolean> result = new HashMap<>();
+			Map<String, Boolean> result = new LinkedHashMap<>(); //to keep the keys in the order they were inserted
 			
 			if (type.equals(INDIVIDUAL_STUDY)) {
 				
@@ -262,42 +261,24 @@ public class StudiesImportResource {
 		return Response.ok(existingIds).build();		
 	}
 	
-		
-	@POST
-	@Path("/studies/import/_include")
-	@RequiresPermissions( {"/draft/individual-study:ADD", "/draft/harmonization-study:ADD" })
-	public Response includeStudies(@QueryParam("url") String url, 
-			@QueryParam(USERNAME_PARAM) String username, 
-			@QueryParam(PWORD_PARAM) String password, 
-			@QueryParam(TYPE) String type,
-			@QueryParam(IDS_TO_INCLUDE) List<String> ids) {
-	
-		log.info("POST includeStudies. ids = {}", ids);
-		
-		return this.saveStudiesLocally(url, username, password, type, ids, Boolean.TRUE);
-	}
-
-	
 	
 	@PUT
-	@Path("/studies/import/_update")
+	@Path("/studies/import/_save")
 	@RequiresPermissions( {"/draft/individual-study:ADD", "/draft/harmonization-study:ADD" })
-	public Response updateStudies(@QueryParam("url") String url, 
+	public Response saveStudies(@QueryParam("url") String url, 
 			@QueryParam(USERNAME_PARAM) String username, 
 			@QueryParam(PWORD_PARAM) String password, 
 			@QueryParam(TYPE) String type,
-			@QueryParam(IDS_TO_UPDATE) List<String> ids) {
+			@QueryParam(IDS) List<String> ids,
+			@QueryParam(DIFFS_CUSTOM_FORM) List<String> diffsCustomForm) {
 	
-		log.info("PUT updateStudies. ids = {}", ids);
-		
-		return this.saveStudiesLocally(url, username, password, type, ids, Boolean.FALSE);
-	}
+		log.info("PUT saveStudies. ids = {}", ids);
+		log.info("PUT saveStudies. diffsCustomForm = {}", diffsCustomForm);
 
-	
-	private Response saveStudiesLocally(String url, String username, String password, String type, List<String> ids, Boolean isToInclude) {
-		
 		try {
-				
+			
+			List<String> idsSaved = new ArrayList<>();
+			
 			for (String id : ids) {
 				
 				String remoteContent = this.getRawContent(url, username, password, null,
@@ -314,32 +295,26 @@ public class StudiesImportResource {
 				if ( type.equals(INDIVIDUAL_STUDY) ) {
 					
 					Study localStudy = (Study)dtos.fromDto( builder);
-					
-					if ( Boolean.TRUE.equals(isToInclude) ) {
-						
-						localStudy.setId(null);
-					}
-
+			
 					individualStudyService.save(localStudy);
+					
+					idsSaved.add(localStudy.getId());
 					
 					log.info("individualStudyService: {}", localStudy);
 					
 				} else if ( type.equals(HARMONIZATION_STUDY) ) {
 					
 					HarmonizationStudy localStudy = (HarmonizationStudy)dtos.fromDto( builder);
-					
-					if ( Boolean.TRUE.equals(isToInclude) ) {
-						
-						localStudy.setId(null);
-					}
-					
+				
 					harmonizationStudyService.save(localStudy);
+					
+					idsSaved.add(localStudy.getId());
 					
 					log.info("harmonizationStudyService: {}", localStudy);
 				}				
 			}
 			
-			return Response.ok().build();
+			return Response.ok(idsSaved).build();
 			
 			
 		} catch (URISyntaxException|ProtocolException e) {

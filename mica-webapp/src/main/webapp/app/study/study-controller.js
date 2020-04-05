@@ -259,11 +259,10 @@ mica.study
       $scope.modalIndex = CONNECTIONS_PARAMS_0;
       $scope.studyType = ($scope.path.indexOf('harmonization') > -1) ? HARMONIZATION_STUDY : INDIVIDUAL_STUDY;
       $scope.diffsCustomForm = [];
+      $scope.diffsConfigIsPossibleImport = false;
 
       //NEXT
       $scope.next = function() {
-
-    	$scope.isPossibleImport = false;
 
     	if ($scope.modalIndex == CONNECTIONS_PARAMS_0) {
     		console.log('[NEXT-0]');
@@ -282,7 +281,7 @@ mica.study
                 var diffs_enum = response.data;
                 
                 $scope.diffsCustomForm = [];
-                
+
                 for (var prop in diffs_enum) {
                 	
 	            	var jsonProp = JSON.parse(String(prop));
@@ -296,7 +295,7 @@ mica.study
                 	if ((jsonProp.form_title == INDIVIDUAL_STUDY || jsonProp.form_title == HARMONIZATION_STUDY) 
                 			&& diffs_enum[prop]) {
                 		
-                		$scope.isPossibleImport = true;
+                		$scope.diffsConfigIsPossibleImport = true;
                 	}
                 }
 
@@ -305,7 +304,7 @@ mica.study
                 $('body').css('cursor', 'default');
                 
               });
-    		
+            
     	} else if ($scope.modalIndex == DIFF_CUSTOM_FORM_1) {
     		console.log('[NEXT-1]');
 
@@ -320,15 +319,15 @@ mica.study
                          password: $scope.importVO.password, type: $scope.studyType}
             
               }).then(function(response) {
-                console.log('[NEXT-1(response)]');
-                               	
-            	 $scope.studiesToImport = JSON.parse( response.data );
+                 console.log('[NEXT-1(response)]');
+                 
+                 $scope.studiesToImport = response.data;
             	 
                  $('body').css('cursor', 'default');
                  
-                 $scope.modalIndex = REMOTE_STUDIES_2; 
+                 $scope.modalIndex = REMOTE_STUDIES_2;
               });
-        
+            
         } else if ($scope.modalIndex == REMOTE_STUDIES_2) {
         	
         	console.log('[NEXT-2]');
@@ -363,17 +362,17 @@ mica.study
                 
                 for (var prop in resp_enum) resp.push(prop);
 
-            	for (var j in $scope.studiesToImport) {
+            	for (var j in $scope.studiesToCreate) {
 
-            		if (resp_enum[ $scope.studiesToImport[j].id] ) {
+            		if (resp_enum[ $scope.studiesToCreate[j].id] ) {
 
-            			$scope.studiesConflict.push($scope.studiesToImport[j]);
+            			$scope.studiesConflict.push($scope.studiesToCreate[j]);
             			
             			delete $scope.studiesToCreate[j];
             			
-            		} else if (resp.includes($scope.studiesToImport[j].id)) {
+            		} else if (resp.includes($scope.studiesToCreate[j].id)) {
             			
-            			$scope.studiesToUpdate.push($scope.studiesToImport[j]);
+            			$scope.studiesToUpdate.push($scope.studiesToCreate[j]);
             			
             			delete $scope.studiesToCreate[j];
             		} 
@@ -381,8 +380,7 @@ mica.study
             	
             	$scope.studiesToCreate = $scope.studiesToCreate.filter(function (el) { return el != null; });
             	
-            	$scope.modalIndex = OPERATIONS_SUMMARY_3;
-            	
+            	$scope.modalIndex = OPERATIONS_SUMMARY_3;      	
             });
         }
       };
@@ -405,6 +403,11 @@ mica.study
         	console.log('[PREVIOUS-3]');
         	
         	$scope.modalIndex = REMOTE_STUDIES_2;
+        	
+        } else if ($scope.modalIndex == FINISH_RESPONSE_MESSAGES_4) {
+        	console.log('[PREVIOUS-4]');
+        	
+        	$scope.modalIndex = DIFF_CUSTOM_FORM_1;
         }
       };
 
@@ -436,6 +439,18 @@ mica.study
         });    
         
         (isInCreateList) ? $scope.studiesToCreate = newDataList : $scope.studiesToUpdate = newDataList;
+        
+        angular.forEach($scope.studiesConflict, function(v) {
+	        if (v.id == studySummary.id) {
+	        	delete $scope.studiesConflict[v];
+	        }
+        }); 
+        
+        $scope.studiesConflict = $scope.studiesConflict.filter(function (el) { return el != null; });
+        
+        if ($scope.studiesToCreate.length == 0 && $scope.studiesToUpdate.length == 0) {
+        	$scope.modalIndex = REMOTE_STUDIES_2;
+        }
 
       };
 
@@ -443,8 +458,6 @@ mica.study
       //CLOSE
       $scope.close = function() {	  
   		console.log('[CLOSE]');
-  		
-  		//$scope.$apply();
       };
       
       
@@ -452,75 +465,54 @@ mica.study
       $scope.finish = function() {
         console.log('[FINISH]');
 
-        var idsToCreate = [];
-        var idsToUpdate = [];
+        var idsToSave = [];
+        $scope.studiesSaved = [];
         $scope.statusErrorImport = '';
-        $scope.idsCreated = '';
-        $scope.idsUpdated = '';
+        
         
         $('body').css('cursor', 'progress');
         
-        for (var i in $scope.studiesToCreate) idsToCreate.push( $scope.studiesToCreate[i].id );
-        for (var j in $scope.studiesToUpdate) idsToUpdate.push( $scope.studiesToUpdate[j].id );
+        for (var i in $scope.studiesToCreate) idsToSave.push( $scope.studiesToCreate[i].id );
+        for (var j in $scope.studiesToUpdate) idsToSave.push( $scope.studiesToUpdate[j].id );
         
-        if (idsToCreate.length > 0) {
+        if (idsToSave.length > 0) {
 
 	        $http({
-	          url: 'ws/draft/studies/import/_include',
-	          method: 'POST',
-	          params: {url: $scope.importVO.url, 
-	                   username: $scope.importVO.username, 
-	                   password: $scope.importVO.password, 
-	                   type: $scope.studyType,
-	                   idsToCreate: idsToCreate}
-	
-	        }).then(function(response) {
-	          console.log('[FINISH-CREATE(response)]');
-	          
-	          if (!(response.status === 200)) $scope.statusErrorImport += (response.status + ' ');
-		    
-	          $scope.studiesToCreate = [];
-	          $scope.studiesConflict = [];
-	        });
-        }
-        
-        if (idsToUpdate.length > 0) {
-
-	        $http({
-	          url: 'ws/draft/studies/import/_update',
+	          url: 'ws/draft/studies/import/_save',
 	          method: 'PUT',
 	          params: {url: $scope.importVO.url, 
 	                   username: $scope.importVO.username, 
 	                   password: $scope.importVO.password, 
 	                   type: $scope.studyType,
-	                   idsToUpdate: idsToUpdate}
+	                   ids: idsToSave,
+	                   diffsCustomForm: $scope.diffsCustomForm
+	                   }
 	
 	        }).then(function(response) {
-	          console.log('[FINISH-UPDATE(response)]');
+	          console.log('[FINISH(response)]');
 	          
-		      if (!(response.status === 200)) $scope.statusErrorImport += (response.status + ' ');
-		      
+	          if (!(response.status === 200)) $scope.statusErrorImport += (response.status + ' ');
+	          
+	          $scope.idsSaved = response.data;
+	          
+	          angular.forEach($scope.studiesToUpdate, function(v) {
+	  	        if ($scope.idsSaved.includes(v.id)) $scope.studiesSaved.push(v);
+	          }); 
+	          
+	          angular.forEach($scope.studiesToCreate, function(v) {
+	        	if ($scope.idsSaved.includes(v.id)) $scope.studiesSaved.push(v);
+		      });
+	          
+		    
 	          $scope.studiesToUpdate = [];
+	          $scope.studiesToCreate = [];
 	          $scope.studiesConflict = [];
 	          
+	          $('body').css('cursor', 'default');
+	          $scope.modalIndex = FINISH_RESPONSE_MESSAGES_4;
+	         
 	        });
         }
-
-    	var ids_tmp = '';
-
-    	for (var m in idsToCreate) ids_tmp += ('"' + idsToCreate[m] + '", ');
-    	if (ids_tmp.localeCompare('') != 0) $scope.idsCreated = ids_tmp.slice(0, -2);
-    	
-    	ids_tmp = '';
-    	for (var l in idsToUpdate) ids_tmp += ('"' + idsToUpdate[l] + '", ');
-    	if (ids_tmp.localeCompare('') != 0) $scope.idsUpdated = ids_tmp.slice(0, -2);
-    	
-        $('body').css('cursor', 'default');
-        
-        if (idsToCreate.length > 0 || idsToUpdate.length > 0) {
-        	$scope.modalIndex = FINISH_RESPONSE_MESSAGES_4;
-        }
-
       };
   }])
 

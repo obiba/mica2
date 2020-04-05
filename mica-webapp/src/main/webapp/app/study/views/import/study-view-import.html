@@ -42,38 +42,35 @@
             	<span translate>{{path.indexOf('harmonization') > -1 ? 'harmonization-study-config.title' : 'individual-study-config.title'}}:</span>
             </h4><br>
            	
-            <label class="control-label ng-binding"><span>{{ importVO.url }}</span></label><br>
             <table class="table table-bordered table-striped">
               <thead>
                 <tr>
                   <th translate>study.import.diff-section</th>
-                  <th translate>study.import.diff-template</th>
-                  <th translate>study.import.diff-observation</th>
+                  <th>{{ importVO.url }}</th>
                 </tr>
               </thead>
               <tbody id="myTableSummaryConflict">
                 <tr ng-repeat="diffVO in diffsCustomForm">
+                
                   <td>
                    	<ul class="list-unstyled">
                       <span translate>{{diffVO.form_title}}</span>
                    	</ul>
                   </td>
                   <td>
-                    <ul class="list-unstyled">
-                     <span translate>{{diffVO.is_equal}}</span>
-                    </ul>
+                  	<a ng-show="{{!diffVO.is_equal}}">
+        				<span class="glyphicon glyphicon-alert" style="color:red"></span>
+                  	</a>
+                  	<a ng-show="{{diffVO.is_equal}}">
+                  		<span class="glyphicon glyphicon-ok"></span> 
+                  	</a>
                   </td>
                   
-                  <td>
-                    <ul class="list-unstyled">
-                     blablablabla
-                    </ul>
-                  </td>
                 </tr>  
               </tbody>
             </table>
-            
-             
+			<span translate>{{studyType == 'individual-study' ? 'study.import.diff-msg-individual' : 'study.import.diff-msg-harmonization'}}</span>
+			<br>
 	      </div>
           
           <!-- 2 - Remote studies -->
@@ -110,7 +107,7 @@
                   </td>
                   <td>
                     <ul class="list-unstyled">
-                      <a translate>{{studyVO.id}}</a>
+                      <span translate>{{studyVO.id}}</span>
                     </ul>
                   </td>
                   <td>
@@ -161,7 +158,7 @@
 	                <tr ng-repeat="studyToCreate in studiesToCreate">
 	                  <td>
 	                    <ul class="list-unstyled">
-	                      <a translate>{{studyToCreate.id}}</a>
+	                      <span translate>{{studyToCreate.id}}</span>
 	                    </ul>
 	                  </td>
 	                  <td>
@@ -204,7 +201,7 @@
 	                <tr ng-repeat="studyToUpdate in studiesToUpdate">
 	                  <td>
 	                    <ul class="list-unstyled">
-	                      <a translate>{{studyToUpdate.id}}</a>
+	                      <span translate>{{studyToUpdate.id}}</span>
 	                    </ul>
 	                  </td>
 	                  <td>
@@ -246,7 +243,7 @@
 	                <tr ng-repeat="studyConfict in studiesConflict">
 	                  <td>
 	                    <ul class="list-unstyled">
-	                      <a translate>{{studyConfict.id}}</a>
+	                      <span translate>{{studyConfict.id}}</span>
 	                    </ul>
 	                  </td>
 	                  <td>
@@ -270,14 +267,40 @@
           <!-- 4 - Finish Response Messages -->
           <div class="modal-body" ng-show="(modalIndex == 4)">
           
-            <div ng-show="(idsCreated.length > 0 || idsUpdated.length > 0)">
-            	<h4><span translate>study.import.success</span></h4><br>
-            	<div ng-show="idsCreated.length > 0">
-            		<h5><span translate>study.import.created</span>{{idsCreated}}.</h5>
-            	</div>
-            	<div ng-show="idsUpdated.length > 0">
-            		<h5><span translate>study.import.updated</span>{{idsUpdated}}.</h5>
-            	</div>
+            <div ng-show="(idsSaved.length > 0)">
+            	<label class="control-label ng-binding"><span translate>study.import.success</span></label><br>
+	            <table class="table table-bordered table-striped" >
+	              <thead>
+	                <tr>
+	                  <th data-column-name="id">ID</th>
+	                  <th data-column-name="acronym">{{"study.acronym" | translate}}</th>
+	                  <th data-column-name="name" class="col-md-8">{{"study.name" | translate}}</th>
+	                </tr>
+	              </thead>
+	              <tbody>
+	                <tr ng-repeat="studySaved in studiesSaved">
+	                  <td>
+	                    <ul class="list-unstyled">
+	                    	<span>{{studySaved.id}}</span>
+	                    </ul>
+	                  </td>
+	                  <td>
+	                    <ul class="list-unstyled">
+	                      <li ng-repeat="acronym in studySaved.acronym">
+	                        <span class="badge">{{acronym.lang}}</span> {{acronym.value}}
+	                      </li>
+	                    </ul>
+	                  </td>
+	                  <td>
+	                    <ul class="list-unstyled">
+	                      <li ng-repeat="name in studySaved.name">
+	                        <span class="badge">{{name.lang}}</span> {{name.value}}
+	                      </li>
+	                    </ul>
+	                  </td>
+	                </tr>
+	              </tbody>
+	            </table>
             </div>
             <div ng-show="statusErrorImport.length > 0">
             	<h4><span translate>study.import.problem</span>{{statusErrorImport}}</h4>
@@ -290,7 +313,7 @@
               <span translate>study.import.previous</span>
             </button>
             <button id="myNextButton" type="button" class="btn btn-info" ng-click="next()" 
-            	ng-disabled="((modalIndex == 0) && myForm.$invalid) || ((modalIndex == 1) && !isPossibleImport) || ((modalIndex == 2) && !studiesToImport.checked) || (modalIndex == 3) || (modalIndex == 4) " aria-hidden="true">
+            	ng-disabled="( ((modalIndex == 0) && myForm.$invalid) || ((modalIndex == 1) && !diffsConfigIsPossibleImport) || ((modalIndex == 2) && !studiesToImport.checked) || (modalIndex == 3) || (modalIndex == 4) )" aria-hidden="true">
               <span translate>study.import.next</span>
             </button>
             <button id="myFinishButton" type="button" class="btn btn-default" ng-click="finish()" 

@@ -20,11 +20,19 @@ import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 
 import com.codahale.metrics.annotation.Timed;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Strings;
+
+import jdk.internal.org.jline.utils.Log;
 
 import org.obiba.mica.core.domain.EntityState;
 import org.obiba.mica.core.service.DocumentService;
@@ -38,9 +46,12 @@ import org.obiba.mica.study.service.HarmonizationStudyService;
 import org.obiba.mica.study.service.StudyService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
+import org.obiba.mica.web.model.Mica.LocalizedStringDto;
 import org.springframework.context.ApplicationContext;
 
 import static java.util.stream.Collectors.toList;
+
+import java.util.ArrayList;
 
 @Path("/draft")
 public class StudyStatesResource {
