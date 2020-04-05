@@ -28,7 +28,6 @@ import java.util.Map;
 
 import javax.inject.Inject;
 import javax.ws.rs.GET;
-import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -52,6 +51,7 @@ import org.obiba.mica.micaConfig.service.IndividualStudyConfigService;
 import org.obiba.mica.micaConfig.service.PopulationConfigService;
 import org.obiba.mica.study.domain.BaseStudy;
 import org.obiba.mica.study.domain.HarmonizationStudy;
+import org.obiba.mica.study.domain.Population;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.service.HarmonizationStudyService;
 import org.obiba.mica.study.service.IndividualStudyService;
@@ -67,12 +67,13 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.protobuf.ExtensionRegistry;
 import com.googlecode.protobuf.format.JsonFormat;
+import com.googlecode.protobuf.format.JsonFormat.ParseException;
 
 @Path("/draft")
 @RequiresAuthentication
 public class StudiesImportResource {
 	
-	private static final String DIFFS_CUSTOM_FORM = "diffsCustomForm";
+	private static final String LIST_DIFFS_FORM = "listDiffsForm";
 	private static final String WS_CONFIG_HARMONIZATION_POPULATION_FORM_CUSTOM = "/ws/config/harmonization-population/form-custom";
 	private static final String WS_CONFIG_HARMONIZATION_STUDY_FORM_CUSTOM = "/ws/config/harmonization-study/form-custom";
 	private static final String WS_CONFIG_DATA_COLLECTION_EVENT_FORM_CUSTOM = "/ws/config/data-collection-event/form-custom";
@@ -94,12 +95,12 @@ public class StudiesImportResource {
 	private static final String HARMONIZATION_STUDY = "harmonization-study";
 	private static final String INDIVIDUAL_STUDY = "individual-study";
 	
-	private static final String INDIVIDUAL_STUDY_FORM_TITLE = INDIVIDUAL_STUDY;
-	private static final String POPULATION_FORM_TITLE = "study-population";
-	private static final String DATA_COLLECTION_EVENT_FORM_TITLE = "data-collection-event";
+	private static final String INDIVIDUAL_STUDY_FORM_SECTION = INDIVIDUAL_STUDY;
+	private static final String POPULATION_FORM_SECTION = "study-population";
+	private static final String DATA_COLLECTION_EVENT_FORM_SECTION = "data-collection-event";
 	
-	private static final String HARMONIZATION_STUDY_FORM_TITLE = HARMONIZATION_STUDY;
-	private static final String HARMONIZATION_POPULATION_FORM_TITLE = "harmonization-study-population";
+	private static final String HARMONIZATION_STUDY_FORM_SECTION = HARMONIZATION_STUDY;
+	private static final String HARMONIZATION_POPULATION_FORM_SECTION = "harmonization-study-population";
 
 	private static final Logger log = LoggerFactory.getLogger(StudiesImportResource.class);
 	
@@ -147,21 +148,21 @@ public class StudiesImportResource {
 			if (type.equals(INDIVIDUAL_STUDY)) {
 				
 				this.processComparisonSchemasDefinitions(url, username, password, WS_CONFIG_INDIVIDUAL_STUDY_FORM_CUSTOM, 
-						(EntityConfigService)individualStudyConfigService, INDIVIDUAL_STUDY_FORM_TITLE, result);
+						(EntityConfigService)individualStudyConfigService, INDIVIDUAL_STUDY_FORM_SECTION, result);
 				
 				this.processComparisonSchemasDefinitions(url, username, password, WS_CONFIG_POPULATION_FORM_CUSTOM, 
-						(EntityConfigService)populationConfigService, POPULATION_FORM_TITLE, result);
+						(EntityConfigService)populationConfigService, POPULATION_FORM_SECTION, result);
 				
 				this.processComparisonSchemasDefinitions(url, username, password, WS_CONFIG_DATA_COLLECTION_EVENT_FORM_CUSTOM, 
-						(EntityConfigService)dataCollectionEventConfigService, DATA_COLLECTION_EVENT_FORM_TITLE, result);
+						(EntityConfigService)dataCollectionEventConfigService, DATA_COLLECTION_EVENT_FORM_SECTION, result);
 				
 			} else if ( type.equals(HARMONIZATION_STUDY) ) {
 				
 				this.processComparisonSchemasDefinitions(url, username, password, WS_CONFIG_HARMONIZATION_STUDY_FORM_CUSTOM, 
-						(EntityConfigService)harmonizationStudyConfigService, HARMONIZATION_STUDY_FORM_TITLE, result);
+						(EntityConfigService)harmonizationStudyConfigService, HARMONIZATION_STUDY_FORM_SECTION, result);
 				
 				this.processComparisonSchemasDefinitions(url, username, password, WS_CONFIG_HARMONIZATION_POPULATION_FORM_CUSTOM, 
-						(EntityConfigService)harmonizationPopulationConfigService, HARMONIZATION_POPULATION_FORM_TITLE, result);
+						(EntityConfigService)harmonizationPopulationConfigService, HARMONIZATION_POPULATION_FORM_SECTION, result);
 			}
 			
 			return Response.ok( result ).build();
@@ -229,7 +230,7 @@ public class StudiesImportResource {
 		String localSchema = (mapper.readValue( configService.findPartial().get().getSchema(), JsonNode.class)).toString();
 		String localDefinition = (mapper.readValue( configService.findPartial().get().getDefinition(), JsonNode.class)).toString();
 		
-		String formSection = "{ \"form_title\" : \"" + formTitle + "\", \"endpoint\" : \"" + endpoint + "\" }";
+		String formSection = "{ \"formTitle\" : \"" + formTitle + "\", \"endpoint\" : \"" + endpoint + "\" }";
 		
 		result.put(formSection, Boolean.valueOf(schema.equals(localSchema) && definition.equals(localDefinition)) );
 	}
@@ -270,10 +271,10 @@ public class StudiesImportResource {
 			@QueryParam(PWORD_PARAM) String password, 
 			@QueryParam(TYPE) String type,
 			@QueryParam(IDS) List<String> ids,
-			@QueryParam(DIFFS_CUSTOM_FORM) List<String> diffsCustomForm) {
+			@QueryParam(LIST_DIFFS_FORM) List<String> listDiffsForm) {
 	
 		log.info("PUT saveStudies. ids = {}", ids);
-		log.info("PUT saveStudies. diffsCustomForm = {}", diffsCustomForm);
+		log.info("PUT saveStudies. listDiffsForm = {}", listDiffsForm);
 
 		try {
 			
@@ -285,32 +286,15 @@ public class StudiesImportResource {
 						(type.equals(INDIVIDUAL_STUDY) ? WS_DRAFT_INDIVIDUAL_STUDY_ID : WS_DRAFT_HARMONIZATION_STUDY_ID).replace("{id}", id ));
 				
 				Mica.StudyDto.Builder builder = Mica.StudyDto.newBuilder();
-				 
 				ExtensionRegistry extensionRegistry = ExtensionRegistry.newInstance();
-				extensionRegistry.add(Mica.CollectionStudyDto.type);
-				extensionRegistry.add(Mica.HarmonizationStudyDto.type);
-				
-				JsonFormat.merge(remoteContent, extensionRegistry, builder);
 				
 				if ( type.equals(INDIVIDUAL_STUDY) ) {
 					
-					Study localStudy = (Study)dtos.fromDto( builder);
-			
-					individualStudyService.save(localStudy);
-					
-					idsSaved.add(localStudy.getId());
-					
-					log.info("individualStudyService: {}", localStudy);
+					this.saveIndividualStudy(idsSaved, id, remoteContent, builder, extensionRegistry, listDiffsForm);
 					
 				} else if ( type.equals(HARMONIZATION_STUDY) ) {
 					
-					HarmonizationStudy localStudy = (HarmonizationStudy)dtos.fromDto( builder);
-				
-					harmonizationStudyService.save(localStudy);
-					
-					idsSaved.add(localStudy.getId());
-					
-					log.info("harmonizationStudyService: {}", localStudy);
+					this.saveHarmonizationStudy(idsSaved, id, remoteContent, builder, extensionRegistry, listDiffsForm);
 				}				
 			}
 			
@@ -328,6 +312,113 @@ public class StudiesImportResource {
 			log.error( Arrays.toString( e.getStackTrace()) );
 			
 			return Response.status(HttpStatus.SC_NOT_FOUND).build();
+		}
+	}
+
+
+	private void saveHarmonizationStudy(List<String> idsSaved, String id, String remoteContent,
+			Mica.StudyDto.Builder builder, ExtensionRegistry extensionRegistry, List<String> listDiffsForm) throws ParseException {
+		
+		extensionRegistry.add(Mica.HarmonizationStudyDto.type);
+		JsonFormat.merge(remoteContent, extensionRegistry, builder);
+		
+		HarmonizationStudy remoteStudy = (HarmonizationStudy)dtos.fromDto( builder);
+
+		if (!listDiffsForm.contains(HARMONIZATION_STUDY_FORM_SECTION)) {
+			
+			if (!this.studyIdExistLocally(id)) {
+				remoteStudy.setId(null);
+				
+				if (listDiffsForm.contains(HARMONIZATION_POPULATION_FORM_SECTION)) {
+					remoteStudy.setPopulations(null);
+				}
+				
+			} else {
+				HarmonizationStudy localStudy =  harmonizationStudyService.findStudy(id);
+				
+				if (listDiffsForm.contains(HARMONIZATION_POPULATION_FORM_SECTION)) {
+					
+					remoteStudy.setPopulations(localStudy.getPopulations());
+					
+				}
+			}
+			
+			harmonizationStudyService.save(remoteStudy);
+			
+			idsSaved.add(remoteStudy.getId());
+			
+			log.info("harmonizationStudyService: {}", remoteStudy);
+		}
+
+	}
+
+
+	private void saveIndividualStudy(List<String> idsSaved, String id, String remoteContent,
+			Mica.StudyDto.Builder builder, ExtensionRegistry extensionRegistry, List<String> listDiffsForm) throws ParseException {
+		
+		extensionRegistry.add(Mica.CollectionStudyDto.type);
+		JsonFormat.merge(remoteContent, extensionRegistry, builder);
+		
+		Study remoteStudy = (Study)dtos.fromDto( builder);
+
+		if (!listDiffsForm.contains(INDIVIDUAL_STUDY_FORM_SECTION)) {
+			
+			if (!this.studyIdExistLocally(id)) {
+				remoteStudy.setId(null);
+
+				if (listDiffsForm.contains(POPULATION_FORM_SECTION)) {
+					remoteStudy.setPopulations(null);
+					
+				} else if (listDiffsForm.contains(DATA_COLLECTION_EVENT_FORM_SECTION)) {
+					
+					for (Population population : remoteStudy.getPopulations()) {
+						population.setDataCollectionEvents(null);
+					}
+				}			
+			} else {
+				
+				Study localStudy = individualStudyService.findStudy(id);
+				
+				if (listDiffsForm.contains(POPULATION_FORM_SECTION)) {
+					
+					remoteStudy.setPopulations(localStudy.getPopulations());
+					
+				} else if (listDiffsForm.contains(DATA_COLLECTION_EVENT_FORM_SECTION)) {
+					
+					/*for (Population remotePopulation : remoteStudy.getPopulations()) {
+						
+						for (Population localPopulation : localStudy.getPopulations() ) {
+							
+							if (remotePopulation.equals(localPopulation) ) {
+								
+								//TODO: O que fazer neste caso?
+								//remotePopulation.getDataCollectionEvents();//??
+							}
+						}
+					}*/
+				}
+				
+			}
+			
+			individualStudyService.save(remoteStudy);
+			
+			idsSaved.add(remoteStudy.getId());
+			
+			log.info("individualStudyService: {}", remoteStudy);
+		
+		}
+	}
+
+
+	private boolean studyIdExistLocally(String id) {
+		
+		try {
+			studyService.findStudy(id);
+			
+			return true;
+
+		} catch(NoSuchEntityException ex) {
+			return false;
 		}
 	}
 

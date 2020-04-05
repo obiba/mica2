@@ -50,18 +50,18 @@
                 </tr>
               </thead>
               <tbody id="myTableSummaryConflict">
-                <tr ng-repeat="diffVO in diffsCustomForm">
+                <tr ng-repeat="diffVO in diffsCustomFormJSON">
                 
                   <td>
                    	<ul class="list-unstyled">
-                      <span translate>{{diffVO.form_title}}</span>
+                      <span translate>{{diffVO.formTitle}}</span>
                    	</ul>
                   </td>
                   <td>
-                  	<a ng-show="{{!diffVO.is_equal}}">
+                  	<a ng-show="{{!diffVO.isEqual}}">
         				<span class="glyphicon glyphicon-alert" style="color:red"></span>
                   	</a>
-                  	<a ng-show="{{diffVO.is_equal}}">
+                  	<a ng-show="{{diffVO.isEqual}}">
                   		<span class="glyphicon glyphicon-ok"></span> 
                   	</a>
                   </td>

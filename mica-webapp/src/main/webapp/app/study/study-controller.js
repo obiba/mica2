@@ -254,17 +254,18 @@ mica.study
 		    'data-collection-event' : 'individual-study-config.data-collection-event-form-title',
 		    'harmonization-study' : 'harmonization-study-config.harmonization-study-form-title',
 		    'harmonization-study-population' : 'harmonization-study-config.harmonization-population-form-title'
-         }
+         };
 
       $scope.modalIndex = CONNECTIONS_PARAMS_0;
       $scope.studyType = ($scope.path.indexOf('harmonization') > -1) ? HARMONIZATION_STUDY : INDIVIDUAL_STUDY;
-      $scope.diffsCustomForm = [];
+      $scope.diffsCustomFormJSON = [];
+      $scope.listDiffsForm = [];
       $scope.diffsConfigIsPossibleImport = false;
 
       //NEXT
       $scope.next = function() {
 
-    	if ($scope.modalIndex == CONNECTIONS_PARAMS_0) {
+    	if ($scope.modalIndex === CONNECTIONS_PARAMS_0) {
     		console.log('[NEXT-0]');
         	
             $('body').css('cursor', 'progress');
@@ -278,22 +279,26 @@ mica.study
               }).then(function(response) {
                 console.log('[NEXT-0(response)]');
 
-                var diffs_enum = response.data;
+                var diffsEnum = response.data;
                 
-                $scope.diffsCustomForm = [];
+                $scope.diffsCustomFormJSON = [];
+                $scope.listDiffsForm = [];
 
-                for (var prop in diffs_enum) {
+                for (var prop in diffsEnum) {
                 	
 	            	var jsonProp = JSON.parse(String(prop));
 	        		
-	        		$scope.diffsCustomForm.push({
-	          			form_title : CONFIG_FORM_TITLE[jsonProp.form_title], 
+	        		$scope.diffsCustomFormJSON.push({
+	          			formTitle : CONFIG_FORM_TITLE[jsonProp.formTitle], 
 	      				endpoint : jsonProp.endpoint,
-	      				is_equal : diffs_enum[prop]
+	      				isEqual :  diffsEnum[prop]
 	      			  });
                 	
-                	if ((jsonProp.form_title == INDIVIDUAL_STUDY || jsonProp.form_title == HARMONIZATION_STUDY) 
-                			&& diffs_enum[prop]) {
+	        		if (!diffsEnum[prop]) {
+	        			$scope.listDiffsForm.push(jsonProp.formTitle);
+	        		}
+	        		
+                	if ((jsonProp.formTitle === INDIVIDUAL_STUDY || jsonProp.formTitle === HARMONIZATION_STUDY) &&  diffsEnum[prop]) {
                 		
                 		$scope.diffsConfigIsPossibleImport = true;
                 	}
@@ -305,7 +310,7 @@ mica.study
                 
               });
             
-    	} else if ($scope.modalIndex == DIFF_CUSTOM_FORM_1) {
+    	} else if ($scope.modalIndex === DIFF_CUSTOM_FORM_1) {
     		console.log('[NEXT-1]');
 
             $scope.currentPage = 1;
@@ -328,7 +333,7 @@ mica.study
                  $scope.modalIndex = REMOTE_STUDIES_2;
               });
             
-        } else if ($scope.modalIndex == REMOTE_STUDIES_2) {
+        } else if ($scope.modalIndex === REMOTE_STUDIES_2) {
         	
         	console.log('[NEXT-2]');
         	
@@ -357,14 +362,16 @@ mica.study
         		
                 console.log('[NEXT-2(response)]');
                
-                var resp_enum = response.data;
+                var respEnum = response.data;
                 var resp = [];
                 
-                for (var prop in resp_enum) resp.push(prop);
+                for (var prop in respEnum) {
+                	resp.push(prop);
+                }                	
 
             	for (var j in $scope.studiesToCreate) {
 
-            		if (resp_enum[ $scope.studiesToCreate[j].id] ) {
+            		if (respEnum[ $scope.studiesToCreate[j].id] ) {
 
             			$scope.studiesConflict.push($scope.studiesToCreate[j]);
             			
@@ -378,7 +385,7 @@ mica.study
             		} 
             	}
             	
-            	$scope.studiesToCreate = $scope.studiesToCreate.filter(function (el) { return el != null; });
+            	$scope.studiesToCreate = $scope.studiesToCreate.filter(function (el) { return el !== null; });
             	
             	$scope.modalIndex = OPERATIONS_SUMMARY_3;      	
             });
@@ -388,23 +395,23 @@ mica.study
       //PREVIOUS
       $scope.previous = function() {
 
-        if ($scope.modalIndex == DIFF_CUSTOM_FORM_1) {
+        if ($scope.modalIndex === DIFF_CUSTOM_FORM_1) {
         	console.log('[PREVIOUS-1]');
         	
         	$('#myModalDialog').removeClass('modal-lg');
         	$scope.modalIndex = CONNECTIONS_PARAMS_0;
             
-        } else if ($scope.modalIndex == REMOTE_STUDIES_2) {
+        } else if ($scope.modalIndex === REMOTE_STUDIES_2) {
         	console.log('[PREVIOUS-2]');
         	
         	$scope.modalIndex = DIFF_CUSTOM_FORM_1;
         	
-        } else if ($scope.modalIndex == OPERATIONS_SUMMARY_3) {
+        } else if ($scope.modalIndex === OPERATIONS_SUMMARY_3) {
         	console.log('[PREVIOUS-3]');
         	
         	$scope.modalIndex = REMOTE_STUDIES_2;
         	
-        } else if ($scope.modalIndex == FINISH_RESPONSE_MESSAGES_4) {
+        } else if ($scope.modalIndex === FINISH_RESPONSE_MESSAGES_4) {
         	console.log('[PREVIOUS-4]');
         	
         	$scope.modalIndex = DIFF_CUSTOM_FORM_1;
@@ -433,22 +440,26 @@ mica.study
 		var newDataList = [];
 
         angular.forEach(isInCreateList ? $scope.studiesToCreate : $scope.studiesToUpdate, function(v) {
-	        if (v.id != studySummary.id) {
+	        if (v.id !== studySummary.id) {
 	            newDataList.push(v);
 	        }
         });    
         
-        (isInCreateList) ? $scope.studiesToCreate = newDataList : $scope.studiesToUpdate = newDataList;
+        if (isInCreateList) {
+        	$scope.studiesToCreate = newDataList;
+        } else {
+        	$scope.studiesToUpdate = newDataList;
+        }
         
         angular.forEach($scope.studiesConflict, function(v) {
-	        if (v.id == studySummary.id) {
+	        if (v.id === studySummary.id) {
 	        	delete $scope.studiesConflict[v];
 	        }
         }); 
         
-        $scope.studiesConflict = $scope.studiesConflict.filter(function (el) { return el != null; });
+        $scope.studiesConflict = $scope.studiesConflict.filter(function (el) { return el !== null; });
         
-        if ($scope.studiesToCreate.length == 0 && $scope.studiesToUpdate.length == 0) {
+        if ($scope.studiesToCreate.length === 0 && $scope.studiesToUpdate.length === 0) {
         	$scope.modalIndex = REMOTE_STUDIES_2;
         }
 
@@ -472,8 +483,13 @@ mica.study
         
         $('body').css('cursor', 'progress');
         
-        for (var i in $scope.studiesToCreate) idsToSave.push( $scope.studiesToCreate[i].id );
-        for (var j in $scope.studiesToUpdate) idsToSave.push( $scope.studiesToUpdate[j].id );
+        for (var i in $scope.studiesToCreate) {
+        	idsToSave.push( $scope.studiesToCreate[i].id );
+        }
+        
+        for (var j in $scope.studiesToUpdate) {
+        	idsToSave.push( $scope.studiesToUpdate[j].id );
+        }
         
         if (idsToSave.length > 0) {
 
@@ -485,22 +501,28 @@ mica.study
 	                   password: $scope.importVO.password, 
 	                   type: $scope.studyType,
 	                   ids: idsToSave,
-	                   diffsCustomForm: $scope.diffsCustomForm
+	                   listDiffsForm: $scope.listDiffsForm
 	                   }
 	
 	        }).then(function(response) {
 	          console.log('[FINISH(response)]');
 	          
-	          if (!(response.status === 200)) $scope.statusErrorImport += (response.status + ' ');
+	          if (response.status !== 200) {
+	        	  $scope.statusErrorImport += (response.status + ' ');
+	          }
 	          
 	          $scope.idsSaved = response.data;
 	          
 	          angular.forEach($scope.studiesToUpdate, function(v) {
-	  	        if ($scope.idsSaved.includes(v.id)) $scope.studiesSaved.push(v);
+	  	        if ($scope.idsSaved.includes(v.id)) {
+	  	        	$scope.studiesSaved.push(v);
+	  	        }
 	          }); 
 	          
 	          angular.forEach($scope.studiesToCreate, function(v) {
-	        	if ($scope.idsSaved.includes(v.id)) $scope.studiesSaved.push(v);
+	        	if ($scope.idsSaved.includes(v.id)) {
+	        		$scope.studiesSaved.push(v);
+	        	}
 		      });
 	          
 		    
