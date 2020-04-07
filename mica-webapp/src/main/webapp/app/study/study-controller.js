@@ -245,17 +245,23 @@ mica.study
       const REMOTE_STUDIES_2 = 2;
       const OPERATIONS_SUMMARY_3 = 3;
       const FINISH_RESPONSE_MESSAGES_4 = 4;
-      const HARMONIZATION_STUDY = 'harmonization-study';
+      
       const INDIVIDUAL_STUDY = 'individual-study';
+      const HARMONIZATION_STUDY = 'harmonization-study';
+      const NONE = 'none';
+      
+      const REPLACE = 'replace';
+      const CREATE = 'create';
       
       const CONFIG_FORM_TITLE = {
     		'individual-study' : 'individual-study-config.individual-study-form-title',
 		    'study-population' : 'individual-study-config.population-form-title',
 		    'data-collection-event' : 'individual-study-config.data-collection-event-form-title',
+		    
 		    'harmonization-study' : 'harmonization-study-config.harmonization-study-form-title',
 		    'harmonization-study-population' : 'harmonization-study-config.harmonization-population-form-title'
          };
-
+      
       $scope.modalIndex = CONNECTIONS_PARAMS_0;
       $scope.studyType = ($scope.path.indexOf('harmonization') > -1) ? HARMONIZATION_STUDY : INDIVIDUAL_STUDY;
       $scope.diffsCustomFormJSON = [];
@@ -281,24 +287,33 @@ mica.study
 
                 var diffsEnum = response.data;
                 
+                var mapDiffsFormParent = new Map();
+                mapDiffsFormParent.set(NONE, true);
+                
                 $scope.diffsCustomFormJSON = [];
                 $scope.listDiffsForm = [];
 
                 for (var prop in diffsEnum) {
                 	
-	            	var jsonProp = JSON.parse(String(prop));
-	        		
-	        		$scope.diffsCustomFormJSON.push({
-	          			formTitle : CONFIG_FORM_TITLE[jsonProp.formTitle], 
-	      				endpoint : jsonProp.endpoint,
-	      				isEqual :  diffsEnum[prop]
-	      			  });
+	            	var propJSON = JSON.parse(String(prop));
+	        	
+	            	mapDiffsFormParent.set(propJSON.formSection, diffsEnum[prop] && mapDiffsFormParent.get(propJSON.parentFormSection) );
+	            	
+	            	var diffVO = {
+		          			formSection : propJSON.formSection,
+	            			formTitle : CONFIG_FORM_TITLE[propJSON.formSection], 
+		      				endpoint : propJSON.endpoint,
+		      				isEqual : diffsEnum[prop],
+		      				parentIsImportable : mapDiffsFormParent.get(propJSON.parentFormSection)
+		      			  }
+	            	
+	        		$scope.diffsCustomFormJSON.push(diffVO);
                 	
 	        		if (!diffsEnum[prop]) {
-	        			$scope.listDiffsForm.push(jsonProp.formTitle);
+	        			$scope.listDiffsForm.push(propJSON.formSection);
 	        		}
 	        		
-                	if ((jsonProp.formTitle === INDIVIDUAL_STUDY || jsonProp.formTitle === HARMONIZATION_STUDY) &&  diffsEnum[prop]) {
+                	if ((propJSON.formSection === INDIVIDUAL_STUDY || propJSON.formSection === HARMONIZATION_STUDY) &&  diffsEnum[prop]) {
                 		
                 		$scope.diffsConfigIsPossibleImport = true;
                 	}
@@ -338,9 +353,16 @@ mica.study
         	console.log('[NEXT-2]');
         	
         	$scope.studiesToCreate = [];
-        	$scope.studiesToUpdate = [];
+        	$scope.studiesToReplace = [];
         	$scope.studiesConflict = [];
-
+        	$scope.replacements = [];
+        	
+    		angular.forEach($scope.diffsCustomFormJSON, function(v) {
+    	        if (v.isEqual && v.parentIsImportable) {
+    	        	$scope.replacements.push(v.formSection);
+    	        }
+            });
+        	
         	var idStudiesToCheck = [];
         	
         	//check if studies exist locally
@@ -379,7 +401,7 @@ mica.study
             			
             		} else if (resp.includes($scope.studiesToCreate[j].id)) {
             			
-            			$scope.studiesToUpdate.push($scope.studiesToCreate[j]);
+            			$scope.studiesToReplace.push($scope.studiesToCreate[j]);
             			
             			delete $scope.studiesToCreate[j];
             		} 
@@ -439,7 +461,7 @@ mica.study
 		
 		var newDataList = [];
 
-        angular.forEach(isInCreateList ? $scope.studiesToCreate : $scope.studiesToUpdate, function(v) {
+        angular.forEach(isInCreateList ? $scope.studiesToCreate : $scope.studiesToReplace, function(v) {
 	        if (v.id !== studySummary.id) {
 	            newDataList.push(v);
 	        }
@@ -448,7 +470,7 @@ mica.study
         if (isInCreateList) {
         	$scope.studiesToCreate = newDataList;
         } else {
-        	$scope.studiesToUpdate = newDataList;
+        	$scope.studiesToReplace = newDataList;
         }
         
         angular.forEach($scope.studiesConflict, function(v) {
@@ -459,7 +481,7 @@ mica.study
         
         $scope.studiesConflict = $scope.studiesConflict.filter(function (el) { return el !== null; });
         
-        if ($scope.studiesToCreate.length === 0 && $scope.studiesToUpdate.length === 0) {
+        if ($scope.studiesToCreate.length === 0 && $scope.studiesToReplace.length === 0) {
         	$scope.modalIndex = REMOTE_STUDIES_2;
         }
 
@@ -487,13 +509,13 @@ mica.study
         	idsToSave.push( $scope.studiesToCreate[i].id );
         }
         
-        for (var j in $scope.studiesToUpdate) {
-        	idsToSave.push( $scope.studiesToUpdate[j].id );
+        for (var j in $scope.studiesToReplace) {
+        	idsToSave.push( $scope.studiesToReplace[j].id );
         }
         
         if (idsToSave.length > 0) {
-
-	        $http({
+        	
+        	$http({
 	          url: 'ws/draft/studies/import/_save',
 	          method: 'PUT',
 	          params: {url: $scope.importVO.url, 
@@ -513,20 +535,24 @@ mica.study
 	          
 	          $scope.idsSaved = response.data;
 	          
-	          angular.forEach($scope.studiesToUpdate, function(v) {
+	          angular.forEach($scope.studiesToReplace, function(v) {
 	  	        if ($scope.idsSaved.includes(v.id)) {
+	  	        	
+	  	        	v.operation = REPLACE;
 	  	        	$scope.studiesSaved.push(v);
 	  	        }
 	          }); 
 	          
 	          angular.forEach($scope.studiesToCreate, function(v) {
 	        	if ($scope.idsSaved.includes(v.id)) {
+	        		
+	        		v.operation = CREATE;
 	        		$scope.studiesSaved.push(v);
 	        	}
 		      });
 	          
 		    
-	          $scope.studiesToUpdate = [];
+	          $scope.studiesToReplace = [];
 	          $scope.studiesToCreate = [];
 	          $scope.studiesConflict = [];
 	          

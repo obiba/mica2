@@ -101,7 +101,8 @@ public class StudiesImportResource {
 	
 	private static final String HARMONIZATION_STUDY_FORM_SECTION = HARMONIZATION_STUDY;
 	private static final String HARMONIZATION_POPULATION_FORM_SECTION = "harmonization-study-population";
-
+	private static final String NONE = "none";
+	
 	private static final Logger log = LoggerFactory.getLogger(StudiesImportResource.class);
 	
 	@Inject
@@ -148,21 +149,21 @@ public class StudiesImportResource {
 			if (type.equals(INDIVIDUAL_STUDY)) {
 				
 				this.processComparisonSchemasDefinitions(url, username, password, WS_CONFIG_INDIVIDUAL_STUDY_FORM_CUSTOM, 
-						(EntityConfigService)individualStudyConfigService, INDIVIDUAL_STUDY_FORM_SECTION, result);
+						(EntityConfigService)individualStudyConfigService, INDIVIDUAL_STUDY_FORM_SECTION, NONE, result);
 				
 				this.processComparisonSchemasDefinitions(url, username, password, WS_CONFIG_POPULATION_FORM_CUSTOM, 
-						(EntityConfigService)populationConfigService, POPULATION_FORM_SECTION, result);
+						(EntityConfigService)populationConfigService, POPULATION_FORM_SECTION, INDIVIDUAL_STUDY_FORM_SECTION, result);
 				
 				this.processComparisonSchemasDefinitions(url, username, password, WS_CONFIG_DATA_COLLECTION_EVENT_FORM_CUSTOM, 
-						(EntityConfigService)dataCollectionEventConfigService, DATA_COLLECTION_EVENT_FORM_SECTION, result);
+						(EntityConfigService)dataCollectionEventConfigService, DATA_COLLECTION_EVENT_FORM_SECTION, POPULATION_FORM_SECTION, result);
 				
 			} else if ( type.equals(HARMONIZATION_STUDY) ) {
 				
 				this.processComparisonSchemasDefinitions(url, username, password, WS_CONFIG_HARMONIZATION_STUDY_FORM_CUSTOM, 
-						(EntityConfigService)harmonizationStudyConfigService, HARMONIZATION_STUDY_FORM_SECTION, result);
+						(EntityConfigService)harmonizationStudyConfigService, HARMONIZATION_STUDY_FORM_SECTION, NONE, result);
 				
 				this.processComparisonSchemasDefinitions(url, username, password, WS_CONFIG_HARMONIZATION_POPULATION_FORM_CUSTOM, 
-						(EntityConfigService)harmonizationPopulationConfigService, HARMONIZATION_POPULATION_FORM_SECTION, result);
+						(EntityConfigService)harmonizationPopulationConfigService, HARMONIZATION_POPULATION_FORM_SECTION, HARMONIZATION_STUDY_FORM_SECTION, result);
 			}
 			
 			return Response.ok( result ).build();
@@ -217,8 +218,8 @@ public class StudiesImportResource {
 	}
 
 	private void processComparisonSchemasDefinitions(String url, String username, String password, 
-			String endpoint, EntityConfigService<EntityConfig> configService, String formTitle,
-			Map<String, Boolean> result) throws IOException, URISyntaxException {
+			String endpoint, EntityConfigService<EntityConfig> configService, String formSection,
+			String parentFormSection, Map<String, Boolean> result) throws IOException, URISyntaxException {
 		
 		ObjectMapper mapper = new ObjectMapper();
 		
@@ -230,9 +231,11 @@ public class StudiesImportResource {
 		String localSchema = (mapper.readValue( configService.findPartial().get().getSchema(), JsonNode.class)).toString();
 		String localDefinition = (mapper.readValue( configService.findPartial().get().getDefinition(), JsonNode.class)).toString();
 		
-		String formSection = "{ \"formTitle\" : \"" + formTitle + "\", \"endpoint\" : \"" + endpoint + "\" }";
+		String key = "{ \"formSection\" : \"" + formSection + "\", "
+					 + "\"parentFormSection\" : \"" + parentFormSection + "\","
+					 + "\"endpoint\" : \"" + endpoint + "\" }";
 		
-		result.put(formSection, Boolean.valueOf(schema.equals(localSchema) && definition.equals(localDefinition)) );
+		result.put(key, Boolean.valueOf(schema.equals(localSchema) && definition.equals(localDefinition)) );
 	}
 
 	
@@ -364,40 +367,12 @@ public class StudiesImportResource {
 		if (!listDiffsForm.contains(INDIVIDUAL_STUDY_FORM_SECTION)) {
 			
 			if (!this.studyIdExistLocally(id)) {
-				remoteStudy.setId(null);
-
-				if (listDiffsForm.contains(POPULATION_FORM_SECTION)) {
-					remoteStudy.setPopulations(null);
-					
-				} else if (listDiffsForm.contains(DATA_COLLECTION_EVENT_FORM_SECTION)) {
-					
-					for (Population population : remoteStudy.getPopulations()) {
-						population.setDataCollectionEvents(null);
-					}
-				}			
+				
+				this.prepareCreateOperation(listDiffsForm, remoteStudy);
+				
 			} else {
 				
-				Study localStudy = individualStudyService.findStudy(id);
-				
-				if (listDiffsForm.contains(POPULATION_FORM_SECTION)) {
-					
-					remoteStudy.setPopulations(localStudy.getPopulations());
-					
-				} else if (listDiffsForm.contains(DATA_COLLECTION_EVENT_FORM_SECTION)) {
-					
-					/*for (Population remotePopulation : remoteStudy.getPopulations()) {
-						
-						for (Population localPopulation : localStudy.getPopulations() ) {
-							
-							if (remotePopulation.equals(localPopulation) ) {
-								
-								//TODO: O que fazer neste caso?
-								//remotePopulation.getDataCollectionEvents();//??
-							}
-						}
-					}*/
-				}
-				
+				this.prepareReplaceOperation(id, listDiffsForm, remoteStudy);
 			}
 			
 			individualStudyService.save(remoteStudy);
@@ -406,6 +381,53 @@ public class StudiesImportResource {
 			
 			log.info("individualStudyService: {}", remoteStudy);
 		
+		}
+	}
+
+
+	private void prepareReplaceOperation(String id, List<String> listDiffsForm, Study remoteStudy) {
+		
+		Study localStudy = individualStudyService.findStudy(id);
+		
+		if (listDiffsForm.contains(POPULATION_FORM_SECTION)) {
+			
+			remoteStudy.setPopulations(localStudy.getPopulations());
+			
+		} else if (listDiffsForm.contains(DATA_COLLECTION_EVENT_FORM_SECTION)) {
+			
+			for (Population remotePopulation : remoteStudy.getPopulations()) {
+				
+				if (!localStudy.getPopulations().contains(remotePopulation)) {
+					
+					remotePopulation.setDataCollectionEvents(null);
+					
+				} else {
+					
+					for (Population localPopulation : localStudy.getPopulations()) {
+						
+						if (localPopulation.equals(remotePopulation)) {
+							
+							remotePopulation.setDataCollectionEvents( localPopulation.getDataCollectionEvents() );
+						}
+					}
+				}
+			}
+		}
+	}
+
+
+	private void prepareCreateOperation(List<String> listDiffsForm, Study remoteStudy) {
+		
+		remoteStudy.setId(null);
+
+		if (listDiffsForm.contains(POPULATION_FORM_SECTION)) {
+			remoteStudy.setPopulations(null);
+			
+		} else if (listDiffsForm.contains(DATA_COLLECTION_EVENT_FORM_SECTION)) {
+			
+			for (Population population : remoteStudy.getPopulations()) {
+				population.setDataCollectionEvents(null);
+			}
 		}
 	}
 

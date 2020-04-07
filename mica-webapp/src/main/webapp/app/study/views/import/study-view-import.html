@@ -41,12 +41,12 @@
            		<span translate>study.import.diff-subtitle</span>
             	<span translate>{{path.indexOf('harmonization') > -1 ? 'harmonization-study-config.title' : 'individual-study-config.title'}}:</span>
             </h4><br>
-           	
+           	<label class="control-label ng-binding">{{ importVO.url }}</label>
             <table class="table table-bordered table-striped">
               <thead>
                 <tr>
                   <th translate>study.import.diff-section</th>
-                  <th>{{ importVO.url }}</th>
+                  <th translate>study.import.status</th>
                 </tr>
               </thead>
               <tbody id="myTableSummaryConflict">
@@ -58,18 +58,26 @@
                    	</ul>
                   </td>
                   <td>
-                  	<a ng-show="{{!diffVO.isEqual}}">
+                  	<div ng-show="{{!diffVO.isEqual}}">
         				<span class="glyphicon glyphicon-alert" style="color:red"></span>
-                  	</a>
-                  	<a ng-show="{{diffVO.isEqual}}">
-                  		<span class="glyphicon glyphicon-ok"></span> 
-                  	</a>
+        				<span translate>study.import.form-section-diff</span>
+                  	</div>
+                  	<div ng-show="{{diffVO.isEqual && diffVO.parentIsImportable}}">
+                  		<span class="glyphicon glyphicon-ok" style="color:green"></span> 
+                  		<span translate>study.import.form-section-equals</span>
+                  	</div>
+                  	<div ng-show="{{diffVO.isEqual  && !diffVO.parentIsImportable}}">
+                  		<span class="glyphicon glyphicon-ok" style="color:gold"></span> 
+                  		<span translate>study.import.form-section-equals-restrict</span>
+                  	</div>
                   </td>
                   
                 </tr>  
               </tbody>
             </table>
-			<span translate>{{studyType == 'individual-study' ? 'study.import.diff-msg-individual' : 'study.import.diff-msg-harmonization'}}</span>
+			<span translate>study.import.diff-msg-part-1</span>
+			<span translate>{{studyType == 'individual-study' ? 'study.label' : 'global.harmonization-study'}}</span>
+			<span translate>study.import.diff-msg-part-2</span>
 			<br>
 	      </div>
           
@@ -138,7 +146,7 @@
           <!-- 3 - Operations Summary -->
           <div class="modal-body" ng-show="(modalIndex == 3)">
           
-            <div ng-show="studiesToCreate.length > 0 || studiesToUpdate.length > 0">
+            <div ng-show="studiesToCreate.length > 0 || studiesToReplace.length > 0">
             	<h4><span translate>study.import.summary</span></h4><br>
             </div>
             
@@ -185,20 +193,21 @@
 	            </table>
 	        </div>
 	        
-            <!-- 3.2 - Studies to Update -->
-            <div ng-show="studiesToUpdate.length > 0">
+            <!-- 3.2 - Studies to Replace -->
+            <div ng-show="studiesToReplace.length > 0">
 	            <label class="control-label ng-binding"><span translate>study.import.update-operations</span></label>
 	            <table class="table table-bordered table-striped">
 	              <thead>
 	                <tr>
 	                  <th data-column-name="id">ID</th>
 	                  <th data-column-name="acronym">{{"study.acronym" | translate}}</th>
-	                  <th data-column-name="name" class="col-md-8">{{"study.name" | translate}}</th>
+	                  <th data-column-name="name" class="col-md-6">{{"study.name" | translate}}</th>
+	                  <th translate>study.import.changes</th>
 	                  <th translate>study.import.action</th>
 	                </tr>
 	              </thead>
 	              <tbody id="myTableSummaryUpdate">
-	                <tr ng-repeat="studyToUpdate in studiesToUpdate">
+	                <tr ng-repeat="studyToUpdate in studiesToReplace">
 	                  <td>
 	                    <ul class="list-unstyled">
 	                      <span translate>{{studyToUpdate.id}}</span>
@@ -216,6 +225,19 @@
 	                      <li ng-repeat="name in studyToUpdate.name">
 	                        <span class="badge">{{name.lang}}</span> {{name.value}}
 	                      </li>
+	                    </ul>
+	                  </td>
+	                  <td>
+	                    <ul class="list-unstyled">
+	                      <span ng-show="(replacements.indexOf('individual-study') > -1) || (replacements.indexOf('harmonization-study') > -1)">
+	                      	<span class="label label-pill label-success" title="{{'study.label' | translate}}" data-toggle="tooltip">S</span>
+	                      </span>
+	                      <span ng-show="(replacements.indexOf('study-population') > -1) || (replacements.indexOf('harmonization-study-population') > -1)">
+	                      	<span class="label label-pill label-success" title="{{'study.population' | translate}}" data-toggle="tooltip">P</span>
+	                      </span>
+	                      <span ng-disabled="true" ng-show="(replacements.indexOf('data-collection-event') > -1) && (studyType == 'individual-study')">
+	                     	<span class="label label-pill label-default" title="{{'study.data-collection-event' | translate}}" data-toggle="tooltip">D</span>
+	                      </span>
 	                    </ul>
 	                  </td>
 	                  <td>
@@ -275,6 +297,7 @@
 	                  <th data-column-name="id">ID</th>
 	                  <th data-column-name="acronym">{{"study.acronym" | translate}}</th>
 	                  <th data-column-name="name" class="col-md-8">{{"study.name" | translate}}</th>
+	                  <th translate>study.import.operation</th>
 	                </tr>
 	              </thead>
 	              <tbody>
@@ -298,6 +321,11 @@
 	                      </li>
 	                    </ul>
 	                  </td>
+	                  <td>
+	                    <ul class="list-unstyled">
+	                    	<span translate>{{studySaved.operation.indexOf('create') > -1 ? 'study.import.operation-create' : 'study.import.operation-replace'}}</span>
+	                    </ul>
+	                  </td>
 	                </tr>
 	              </tbody>
 	            </table>
@@ -317,7 +345,7 @@
               <span translate>study.import.next</span>
             </button>
             <button id="myFinishButton" type="button" class="btn btn-default" ng-click="finish()" 
-            	ng-disabled="(!(modalIndex == 3) || !(studiesToCreate.length > 0 || studiesToUpdate.length > 0) )" aria-hidden="true" >
+            	ng-disabled="(!(modalIndex == 3) || !(studiesToCreate.length > 0 || studiesToReplace.length > 0) )" aria-hidden="true" >
               <span translate>study.import.finish</span>
             </button>
             <button id="myCloseButton" type="button" class="btn btn-default" ng-click="close()" data-dismiss="modal" aria-hidden="true" >
