@@ -246,15 +246,27 @@ public class StudiesImportResource {
 		
 		log.info("GET checkIfAlreadyExistsLocally ids: {}", ids);
 		
-		Map<String, Boolean> existingIds = new HashMap<>();
+		Map<String, String> existingIds = new HashMap<>();
 		
 		for (String id : ids) {
 
 			try {
 				
-				BaseStudy study = studyService.findStudy(id);
+				BaseStudy localStudy = studyService.findStudy(id);
+	
+				Integer localPopulationSize = localStudy.getPopulations().size();
+				Integer localDCEsSize = 0;
 				
-				existingIds.put( study.getId(), !study.getResourcePath().equals(type) /*conflict condition*/ );
+				for (Population localPopulation : localStudy.getPopulations()) {
+					
+					localDCEsSize += localPopulation.getDataCollectionEvents().size();
+				}
+				
+				String value = "{ \"conflict\" : \"" + !localStudy.getResourcePath().equals(type) + "\", " /*conflict condition*/
+						 + "\"localPopulationSize\" : \"" + localPopulationSize + "\", "
+						 + "\"localDCEsSize\" : \"" + localDCEsSize + "\" }";
+				
+				existingIds.put( localStudy.getId(),  value );
 
 			} catch(NoSuchEntityException ex) {
 				//ignore if study doesn't exist locally.

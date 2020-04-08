@@ -12,16 +12,17 @@
   <div id="myModalDialog" class="modal-dialog vertical-align-center">
     <div class="modal-content">
       <div ng-controller="StudyImportController">
-        <form name="myForm" novalidate class="simple-form">
-          <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-hidden="true" ng-click="close()">&times;</button>
-            <h3 class="modal-title">
-              <span translate>study.import.label</span>
-              <span translate>{{path.indexOf('harmonization') > -1 ? 'global.harmonization-studies' : 'global.individual-studies'}}</span>
-            </h3>
-          </div>
+      	<!-- Header -->
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true" ng-click="close()">&times;</button>
+          <h3 class="modal-title">
+            <span translate>study.import.label</span>
+            <span translate>{{path.indexOf('harmonization') > -1 ? 'global.harmonization-studies' : 'global.individual-studies'}}</span>
+          </h3>
+        </div>
           
-          <!-- 0 - Connections params -->
+        <!-- 0 - Connections params -->
+        <form name="myFormConn" novalidate class="simple-form">
           <div class="modal-body" ng-show="(modalIndex == 0)">
             <h4><span translate>study.import.sub-title</span></h4><br>
             <label class="control-label ng-binding"><span translate>study.import.address</span></label>
@@ -33,327 +34,341 @@
             <label class="control-label ng-binding"><span translate>study.import.password</span></label>
             <input ng-init="importVO.password = 'correctduckpretermsubject'" type="password" name="password" ng-model="importVO.password" class="form-control ng-pristine ng-valid ng-scope ng-empty ng-touched" required><br>
           </div>
+        </form>
           
-          <!-- 1 - Differences from Remote Custom Study Form -->
-          <div class="modal-body" ng-show="(modalIndex == 1)">
-
-           	<h4>
-           		<span translate>study.import.diff-subtitle</span>
-            	<span translate>{{path.indexOf('harmonization') > -1 ? 'harmonization-study-config.title' : 'individual-study-config.title'}}:</span>
-            </h4><br>
-           	<label class="control-label ng-binding">{{ importVO.url }}</label>
-            <table class="table table-bordered table-striped">
-              <thead>
-                <tr>
-                  <th translate>study.import.diff-section</th>
-                  <th translate>study.import.status</th>
-                </tr>
-              </thead>
-              <tbody id="myTableSummaryConflict">
-                <tr ng-repeat="diffVO in diffsCustomFormJSON">
-                
-                  <td>
-                   	<ul class="list-unstyled">
-                      <span translate>{{diffVO.formTitle}}</span>
-                   	</ul>
-                  </td>
-                  <td>
-                  	<div ng-show="{{!diffVO.isEqual}}">
-        				<span class="glyphicon glyphicon-alert" style="color:red"></span>
-        				<span translate>study.import.form-section-diff</span>
-                  	</div>
-                  	<div ng-show="{{diffVO.isEqual && diffVO.parentIsImportable}}">
-                  		<span class="glyphicon glyphicon-ok" style="color:green"></span> 
-                  		<span translate>study.import.form-section-equals</span>
-                  	</div>
-                  	<div ng-show="{{diffVO.isEqual  && !diffVO.parentIsImportable}}">
-                  		<span class="glyphicon glyphicon-ok" style="color:gold"></span> 
-                  		<span translate>study.import.form-section-equals-restrict</span>
-                  	</div>
-                  </td>
-                  
-                </tr>  
-              </tbody>
-            </table>
-			<span translate>study.import.diff-msg-part-1</span>
-			<span translate>{{studyType == 'individual-study' ? 'study.label' : 'global.harmonization-study'}}</span>
-			<span translate>study.import.diff-msg-part-2</span>
-			<br>
-	      </div>
-          
-          <!-- 2 - Remote studies -->
-          <div class="modal-body" ng-show="(modalIndex == 2)">
-          
-            <!-- Search field and pagination controls -->
-          	<div class="row voffset2">
-      		  <div class="col-xs-4">
-      		    <span class="input-group input-group-sm no-padding-top">
-        		  <span class="input-group-addon" id="study-search"><i class="fa fa-search"></i></span>
-        		    <input id="myInput" type="text" ng-model="query.$"  placeholder="{{'search.placeholder.meta-taxonomy-filter.studies' | translate}}..." class="form-control">
-      		    </span>
-      	      </div> 
-      		  <div class="col-xs-8">
-         	   	<dir-pagination-controls class="pull-right" pagination-id="myPaginationId" on-page-change="pageChanged(newPageNumberModal, oldPageNumberModal)" />
-      		  </div>
-    	    </div>
-      		  
-            <table class="table table-bordered table-striped">
-              <thead>
+        <!-- 1 - Differences from Remote Custom Study Form -->
+        <div class="modal-body" ng-show="(modalIndex == 1)">
+          <h4>
+         	<span translate>study.import.diff-subtitle</span>
+          	<span translate>{{path.indexOf('harmonization') > -1 ? 'harmonization-study-config.title' : 'individual-study-config.title'}}:</span>
+          </h4><br>
+          <label class="control-label ng-binding"><span translate>study.import.host</span>{{ importVO.url }}</label>
+          <table class="table table-bordered table-striped">
+            <thead>
               <tr>
-                <th data-column-name="selected">#</th>
-                <th data-column-name="id">ID</th>
-                <th data-column-name="acronym">{{"study.acronym" | translate}}</th>
-                <th data-column-name="name" class="col-md-6">{{"study.name" | translate}}</th>
-                <th data-column-name="published">{{"publish.published" | translate}}</th>
-                <th data-column-name="obiba.mica.EntityStateDto.studySummaryState::revisionStatus">{{"status" | translate}}</th>
+                <th translate>study.import.diff-section</th>
+                <th translate>study.import.status</th>
               </tr>
+            </thead>
+            <tbody id="myTableSummaryConflict">
+              <tr ng-repeat="diffVO in diffsCustomFormJSON">  
+                <td>
+                  <ul class="list-unstyled">
+                    <span translate>{{diffVO.formTitle}}</span>
+                  </ul>
+                </td>
+                <td>
+                  <div ng-show="{{!diffVO.isEqual}}">
+      				<span class="glyphicon glyphicon-alert" style="color:red"></span>
+      				<span translate>study.import.form-section-diff</span>
+                  </div>
+                  <div ng-show="{{diffVO.isEqual && diffVO.parentIsImportable}}">
+                	<span class="glyphicon glyphicon-ok" style="color:green"></span> 
+                	<span translate>study.import.form-section-equals</span>
+                  </div>
+                  <div ng-show="{{diffVO.isEqual  && !diffVO.parentIsImportable}}">
+                	<span class="glyphicon glyphicon-ok" style="color:gold"></span> 
+                	<span translate>study.import.form-section-equals-restrict</span>
+                  </div>
+                </td>
+              </tr>  
+            </tbody>
+          </table>
+		  <span translate>study.import.diff-msg-part-1</span>
+		  <span translate>{{studyType == 'individual-study' ? 'study.label' : 'global.harmonization-study'}}</span>
+		  <span translate>study.import.diff-msg-part-2</span>
+		  <br>
+     	</div>
+          
+        <!-- 2 - Remote studies -->
+        <div class="modal-body" ng-show="(modalIndex == 2)">
+          <!-- Search field and pagination controls -->
+       	  <div class="row voffset2">
+   		  	<div class="col-xs-4">
+   		      <span class="input-group input-group-sm no-padding-top">
+     		  	<span class="input-group-addon" id="study-search"><i class="fa fa-search"></i></span>
+     		    <input id="myInput" type="text" ng-model="query.$"  placeholder="{{'search.placeholder.meta-taxonomy-filter.studies' | translate}}..." class="form-control">
+   		      </span>
+   	      	</div> 
+   		  	<div class="col-xs-8">
+      	   	  <dir-pagination-controls class="pull-right" pagination-id="myPaginationId" on-page-change="pageChanged(newPageNumberModal, oldPageNumberModal)" />
+   		  	</div>
+ 	      </div>
+   		  
+		  <table class="table table-bordered table-striped">
+          	<thead>
+           	  <tr>
+             	<th data-column-name="selected">#</th>
+             	<th data-column-name="id">ID</th>
+             	<th data-column-name="acronym">{{"study.acronym" | translate}}</th>
+             	<th data-column-name="name" class="col-md-6">{{"study.name" | translate}}</th>
+             	<th data-column-name="published">{{"publish.published" | translate}}</th>
+             	<th data-column-name="obiba.mica.EntityStateDto.studySummaryState::revisionStatus">{{"status" | translate}}</th>
+           	  </tr>
+           	</thead>
+           	<tbody id="myTable">
+              <tr dir-paginate="studyVO in studiesToImport | filter:query | itemsPerPage: pageSize" pagination-id="myPaginationId" current-page="currentPage">
+              	<td>
+                  <input type="checkbox" class="myCheckBox" ng-checked="studyVO.checked" ng-model="studyVO.checked" ng-change="clickCheckBox()"/>&nbsp;
+               	</td>
+               	<td>
+                  <ul class="list-unstyled">
+                  	<span translate>{{studyVO.id}}</span>
+                  </ul>
+                </td>
+               	<td>
+                  <ul class="list-unstyled">
+                    <li ng-repeat="acronym in studyVO.acronym">
+                      <span class="badge">{{acronym.lang}}</span> {{acronym.value}}
+                    </li>
+                  </ul>
+                </td>
+            	<td>
+                  <ul class="list-unstyled">
+                    <li ng-repeat="name in studyVO.name">
+                      <span class="badge">{{name.lang}}</span> {{name.value}}
+                    </li>
+                  </ul>
+                </td>
+                <td>
+                  <div publish-status state="studyVO['obiba.mica.EntityStateDto.studySummaryState']"></div>
+                </td>
+               	<td>
+                  {{'publish.status.' + studyVO['obiba.mica.EntityStateDto.studySummaryState'].revisionStatus | translate}}
+               	</td>
+              </tr>
+			</tbody>
+          </table>
+       	</div>
+          
+		<!-- 3 - Operations Summary -->
+		<div class="modal-body" ng-show="(modalIndex == 3)">  
+		  <div ng-show="studiesToCreate.length > 0 || studiesToReplace.length > 0">
+		    <h4><span translate>study.import.summary</span></h4><br>
+		  </div>  
+          <!-- 3.1 - Studies to Create -->
+          <div ng-show="studiesToCreate.length > 0">
+	      	<label class="control-label ng-binding"><span translate>study.import.create-operations</span></label><br>
+	        <table class="table table-bordered table-striped">
+              <thead>
+              	<tr>
+                  <th data-column-name="id">ID</th>
+                  <th data-column-name="acronym">{{"study.acronym" | translate}}</th>
+                  <th data-column-name="name" class="col-md-8">{{"study.name" | translate}}</th>
+                  <th translate>study.import.action</th>
+              	</tr>
               </thead>
-              <tbody id="myTable">
-                <tr dir-paginate="studyVO in studiesToImport | filter:query | itemsPerPage: pageSize" pagination-id="myPaginationId" current-page="currentPage">
-                  <td>
-                    <input type="checkbox" class="myCheckBox" ng-checked="studyVO.checked" ng-model="studyVO.checked" ng-change="clickCheckBox()"/>&nbsp;
-                  </td>
+	          <tbody id="myTableSummaryCreate">
+                <tr ng-repeat="studyToCreate in studiesToCreate">
                   <td>
                     <ul class="list-unstyled">
-                      <span translate>{{studyVO.id}}</span>
+                      <span translate>{{studyToCreate.id}}</span>
                     </ul>
                   </td>
                   <td>
                     <ul class="list-unstyled">
-                      <li ng-repeat="acronym in studyVO.acronym">
+                      <li ng-repeat="acronym in studyToCreate.acronym">
                         <span class="badge">{{acronym.lang}}</span> {{acronym.value}}
                       </li>
                     </ul>
                   </td>
                   <td>
                     <ul class="list-unstyled">
-                      <li ng-repeat="name in studyVO.name">
+                      <li ng-repeat="name in studyToCreate.name">
                         <span class="badge">{{name.lang}}</span> {{name.value}}
                       </li>
                     </ul>
                   </td>
                   <td>
-                    <div publish-status state="studyVO['obiba.mica.EntityStateDto.studySummaryState']"></div>
+                    <a ng-click="removeFromList(studyToCreate, true)" class="delete" title="{{'study.import.remove' | translate}}" data-toggle="tooltip">
+                      <i class="fa fa-remove"></i>
+                    </a>
+                  </td>
+                </tr>  
+              </tbody>
+	        </table>
+	      </div>
+	        
+          <!-- 3.2 - Studies to Replace -->
+          <form name="myFormSummary" novalidate class="simple-form">
+          <div ng-show="studiesToReplace.length > 0">
+          
+          	
+            	<label class="control-label ng-binding">
+              		<span translate>study.import.update-operations</span>
+            	</label>
+            	<!-- <p style="float: right"><font size="2">* <span translate>study.import.confirmation-hint</span></font></p>  -->
+            
+           
+            <table class="table table-bordered table-striped">
+              <thead>
+                <tr>
+                  <th data-column-name="id">ID</th>
+                  <!-- <th data-column-name="acronym">{{"study.acronym" | translate}}</th>  --> 
+                  <th data-column-name="confirmation">{{"study.import.confirmation" | translate}}</th> 
+                  <th data-column-name="name" class="col-md-6">{{"study.name" | translate}}</th>
+                  <th translate>study.import.changes</th>
+                  <th translate>study.import.action</th>
+                </tr>
+              </thead>
+              <tbody id="myTableSummaryUpdate">
+                <tr ng-repeat="studyToUpdate in studiesToReplace">
+                  <td>
+                    <ul class="list-unstyled">
+                      <span ng-model="studyToUpdate.id" translate>{{studyToUpdate.id}}</span>
+                    </ul>
                   </td>
                   <td>
-                    {{'publish.status.' + studyVO['obiba.mica.EntityStateDto.studySummaryState'].revisionStatus | translate}}
+                  	<input type="text" name="confirmation" ng-pattern="studyToUpdate.id" title="{{'study.import.confirmation-hint' | translate}}" 
+                  		   ng-model="studyToUpdate.confirmation" class="form-control ng-pristine ng-valid ng-scope ng-not-empty ng-touched" required/>
+                  	<!--  
+                    <ul class="list-unstyled">
+                      <li ng-repeat="acronym in studyToUpdate.acronym">
+                        <span class="badge">{{acronym.lang}}</span> {{acronym.value}}
+                      </li>
+                    </ul>
+                    -->
+                  </td>
+                  <td>
+                    <ul class="list-unstyled">
+                      <li ng-repeat="name in studyToUpdate.name">
+                        <span class="badge">{{name.lang}}</span> {{name.value}}
+                      </li>
+                    </ul>
+                  </td>
+                  <td>
+                    <ul class="list-unstyled">
+                      <span ng-show="(replacements.indexOf('individual-study') > -1) || (replacements.indexOf('harmonization-study') > -1)">
+                      	<span class="label label-pill label-info" 
+                      		  title="{{'study.import.diff-hint-part-0' | translate}}1{{'study.import.diff-hint-part-1' | translate}}{{'study.label' | translate}}{{'study.import.diff-hint-part-2' | translate}}" 
+                      		  data-toggle="tooltip">S</span>
+                      </span>
+                      <span ng-show="( {{ studyToUpdate.localPopulationSize }} > 0) && (replacements.indexOf('study-population') > -1) || (replacements.indexOf('harmonization-study-population') > -1)">
+                      	<span class="label label-pill label-info" 
+                      		  title="{{'study.import.diff-hint-part-0' | translate}}{{ studyToUpdate.localPopulationSize }}{{'study.import.diff-hint-part-1' | translate}}{{'study.population' | translate}}{{'study.import.diff-hint-part-2' | translate}}" 
+                      		  data-toggle="tooltip">P</span>
+                      </span>
+	                  <span ng-show="( {{ studyToUpdate.localDCEsSize }} > 0) && (replacements.indexOf('data-collection-event') > -1) && (studyType == 'individual-study')">
+	                    <span class="label label-pill label-info" 
+	                     	  title="{{'study.import.diff-hint-part-0' | translate}}{{ studyToUpdate.localDCEsSize }}{{'study.import.diff-hint-part-1' | translate}}{{'study.data-collection-event' | translate}}{{'study.import.diff-hint-part-2' | translate}}" 
+	                     	  data-toggle="tooltip">D</span>
+	                  </span>
+                    </ul>
+                  </td>
+                  <td>
+                    <a ng-click="removeFromList(studyToUpdate, false)" class="delete" title="{{'study.import.remove' | translate}}" data-toggle="tooltip">
+                      <i class="fa fa-remove"></i>
+                    </a>
                   </td>
                 </tr>
               </tbody>
             </table>
           </div>
           
-          <!-- 3 - Operations Summary -->
-          <div class="modal-body" ng-show="(modalIndex == 3)">
-          
-            <div ng-show="studiesToCreate.length > 0 || studiesToReplace.length > 0">
-            	<h4><span translate>study.import.summary</span></h4><br>
-            </div>
-            
-            <!-- 3.1 - Studies to Create -->
-            <div ng-show="studiesToCreate.length > 0">
-	            <label class="control-label ng-binding"><span translate>study.import.create-operations</span></label><br>
-	            <table class="table table-bordered table-striped">
-	              <thead>
-	                <tr>
-	                  <th data-column-name="id">ID</th>
-	                  <th data-column-name="acronym">{{"study.acronym" | translate}}</th>
-	                  <th data-column-name="name" class="col-md-8">{{"study.name" | translate}}</th>
-	                  <th translate>study.import.action</th>
-	                </tr>
-	              </thead>
-	              <tbody id="myTableSummaryCreate">
-	                <tr ng-repeat="studyToCreate in studiesToCreate">
-	                  <td>
-	                    <ul class="list-unstyled">
-	                      <span translate>{{studyToCreate.id}}</span>
-	                    </ul>
-	                  </td>
-	                  <td>
-	                    <ul class="list-unstyled">
-	                      <li ng-repeat="acronym in studyToCreate.acronym">
-	                        <span class="badge">{{acronym.lang}}</span> {{acronym.value}}
-	                      </li>
-	                    </ul>
-	                  </td>
-	                  <td>
-	                    <ul class="list-unstyled">
-	                      <li ng-repeat="name in studyToCreate.name">
-	                        <span class="badge">{{name.lang}}</span> {{name.value}}
-	                      </li>
-	                    </ul>
-	                  </td>
-	                  <td>
-	                    <a ng-click="removeFromList(studyToCreate, true)" class="delete" title="{{'study.import.remove' | translate}}" data-toggle="tooltip">
-	                      <i class="fa fa-remove"></i>
-	                    </a>
-	                  </td>
-	                </tr>  
-	              </tbody>
-	            </table>
-	        </div>
-	        
-            <!-- 3.2 - Studies to Replace -->
-            <div ng-show="studiesToReplace.length > 0">
-	            <label class="control-label ng-binding"><span translate>study.import.update-operations</span></label>
-	            <table class="table table-bordered table-striped">
-	              <thead>
-	                <tr>
-	                  <th data-column-name="id">ID</th>
-	                  <th data-column-name="acronym">{{"study.acronym" | translate}}</th>
-	                  <th data-column-name="name" class="col-md-6">{{"study.name" | translate}}</th>
-	                  <th translate>study.import.changes</th>
-	                  <th translate>study.import.action</th>
-	                </tr>
-	              </thead>
-	              <tbody id="myTableSummaryUpdate">
-	                <tr ng-repeat="studyToUpdate in studiesToReplace">
-	                  <td>
-	                    <ul class="list-unstyled">
-	                      <span translate>{{studyToUpdate.id}}</span>
-	                    </ul>
-	                  </td>
-	                  <td>
-	                    <ul class="list-unstyled">
-	                      <li ng-repeat="acronym in studyToUpdate.acronym">
-	                        <span class="badge">{{acronym.lang}}</span> {{acronym.value}}
-	                      </li>
-	                    </ul>
-	                  </td>
-	                  <td>
-	                    <ul class="list-unstyled">
-	                      <li ng-repeat="name in studyToUpdate.name">
-	                        <span class="badge">{{name.lang}}</span> {{name.value}}
-	                      </li>
-	                    </ul>
-	                  </td>
-	                  <td>
-	                    <ul class="list-unstyled">
-	                      <span ng-show="(replacements.indexOf('individual-study') > -1) || (replacements.indexOf('harmonization-study') > -1)">
-	                      	<span class="label label-pill label-success" title="{{'study.label' | translate}}" data-toggle="tooltip">S</span>
-	                      </span>
-	                      <span ng-show="(replacements.indexOf('study-population') > -1) || (replacements.indexOf('harmonization-study-population') > -1)">
-	                      	<span class="label label-pill label-success" title="{{'study.population' | translate}}" data-toggle="tooltip">P</span>
-	                      </span>
-	                      <span ng-disabled="true" ng-show="(replacements.indexOf('data-collection-event') > -1) && (studyType == 'individual-study')">
-	                     	<span class="label label-pill label-default" title="{{'study.data-collection-event' | translate}}" data-toggle="tooltip">D</span>
-	                      </span>
-	                    </ul>
-	                  </td>
-	                  <td>
-	                    <a ng-click="removeFromList(studyToUpdate, false)" class="delete" title="{{'study.import.remove' | translate}}" data-toggle="tooltip">
-	                      <i class="fa fa-remove"></i>
-	                    </a>
-	                  </td>
-	                </tr>
-	              </tbody>
-	            </table>
-            </div>
-            
-            <!-- 3.3 - Studies Conflicts -->
-            <div ng-show="studiesConflict.length > 0">
-	            <label class="control-label ng-binding"><span translate>study.import.conflicts</span></label><br>
-	            <table class="table table-bordered table-striped">
-	              <thead>
-	                <tr>
-	                  <th data-column-name="id">ID</th>
-	                  <th data-column-name="acronym">{{"study.acronym" | translate}}</th>
-	                  <th class="col-md-8" translate>study.import.conflict</th>
-	                </tr>
-	              </thead>
-	              <tbody id="myTableSummaryConflict">
-	                <tr ng-repeat="studyConfict in studiesConflict">
-	                  <td>
-	                    <ul class="list-unstyled">
-	                      <span translate>{{studyConfict.id}}</span>
-	                    </ul>
-	                  </td>
-	                  <td>
-	                    <ul class="list-unstyled">
-	                      <li ng-repeat="acronym in studyConfict.acronym">
-	                        <span class="badge">{{acronym.lang}}</span> {{acronym.value}}
-	                      </li>
-	                    </ul>
-	                  </td>
-	                  <td>
-	                    <ul class="list-unstyled">
-	                     <span translate>{{path.indexOf('harmonization') > -1 ? 'study.import.conflict-individual-study' : 'study.import.conflict-harmonization-study'}}</span>
-	                    </ul>
-	                  </td>
-	                </tr>  
-	              </tbody>
-	            </table>
-            </div>
+          </form>
+          <!-- 3.3 - Studies Conflicts -->
+          <div ng-show="studiesConflict.length > 0">
+            <label class="control-label ng-binding"><span translate>study.import.conflicts</span></label><br>
+            <table class="table table-bordered table-striped">
+              <thead>
+                <tr>
+                  <th data-column-name="id">ID</th>
+                  <th data-column-name="acronym">{{"study.acronym" | translate}}</th>
+                  <th class="col-md-8" translate>study.import.conflict</th>
+                </tr>
+              </thead>
+              <tbody id="myTableSummaryConflict">
+                <tr ng-repeat="studyConfict in studiesConflict">
+                  <td>
+                    <ul class="list-unstyled">
+                      <span translate>{{studyConfict.id}}</span>
+                    </ul>
+                  </td>
+                  <td>
+                    <ul class="list-unstyled">
+                      <li ng-repeat="acronym in studyConfict.acronym">
+                        <span class="badge">{{acronym.lang}}</span> {{acronym.value}}
+                      </li>
+                    </ul>
+                  </td>
+                  <td>
+                    <ul class="list-unstyled">
+                     <span translate>{{path.indexOf('harmonization') > -1 ? 'study.import.conflict-individual-study' : 'study.import.conflict-harmonization-study'}}</span>
+                    </ul>
+                  </td>
+                </tr>  
+              </tbody>
+            </table>
           </div>
-          
-          <!-- 4 - Finish Response Messages -->
-          <div class="modal-body" ng-show="(modalIndex == 4)">
-          
-            <div ng-show="(idsSaved.length > 0)">
-            	<label class="control-label ng-binding"><span translate>study.import.success</span></label><br>
-	            <table class="table table-bordered table-striped" >
-	              <thead>
-	                <tr>
-	                  <th data-column-name="id">ID</th>
-	                  <th data-column-name="acronym">{{"study.acronym" | translate}}</th>
-	                  <th data-column-name="name" class="col-md-8">{{"study.name" | translate}}</th>
-	                  <th translate>study.import.operation</th>
-	                </tr>
-	              </thead>
-	              <tbody>
-	                <tr ng-repeat="studySaved in studiesSaved">
-	                  <td>
-	                    <ul class="list-unstyled">
-	                    	<span>{{studySaved.id}}</span>
-	                    </ul>
-	                  </td>
-	                  <td>
-	                    <ul class="list-unstyled">
-	                      <li ng-repeat="acronym in studySaved.acronym">
-	                        <span class="badge">{{acronym.lang}}</span> {{acronym.value}}
-	                      </li>
-	                    </ul>
-	                  </td>
-	                  <td>
-	                    <ul class="list-unstyled">
-	                      <li ng-repeat="name in studySaved.name">
-	                        <span class="badge">{{name.lang}}</span> {{name.value}}
-	                      </li>
-	                    </ul>
-	                  </td>
-	                  <td>
-	                    <ul class="list-unstyled">
-	                    	<span translate>{{studySaved.operation.indexOf('create') > -1 ? 'study.import.operation-create' : 'study.import.operation-replace'}}</span>
-	                    </ul>
-	                  </td>
-	                </tr>
-	              </tbody>
-	            </table>
-            </div>
-            <div ng-show="statusErrorImport.length > 0">
-            	<h4><span translate>study.import.problem</span>{{statusErrorImport}}</h4>
-            </div>
-	      </div>
-	      
-          <!-- Footer navigation Buttons -->
-          <div class="modal-footer">
-            <button id="myPreviousButton" type="button" class="btn btn-info" ng-click="previous()" ng-disabled="(modalIndex == 0)" aria-hidden="true">
-              <span translate>study.import.previous</span>
-            </button>
-            <button id="myNextButton" type="button" class="btn btn-info" ng-click="next()" 
-            	ng-disabled="( ((modalIndex == 0) && myForm.$invalid) || ((modalIndex == 1) && !diffsConfigIsPossibleImport) || ((modalIndex == 2) && !studiesToImport.checked) || (modalIndex == 3) || (modalIndex == 4) )" aria-hidden="true">
-              <span translate>study.import.next</span>
-            </button>
-            <button id="myFinishButton" type="button" class="btn btn-default" ng-click="finish()" 
-            	ng-disabled="(!(modalIndex == 3) || !(studiesToCreate.length > 0 || studiesToReplace.length > 0) )" aria-hidden="true" >
-              <span translate>study.import.finish</span>
-            </button>
-            <button id="myCloseButton" type="button" class="btn btn-default" ng-click="close()" data-dismiss="modal" aria-hidden="true" >
-              <span translate>study.import.close</span>
-            </button>
+          <div ng-show="studiesToReplace.length > 0">
+          	<font size="2">* <span translate>study.import.confirmation-hint</span></font>
           </div>
-            
-        </form>
+        </div>
+       
+        <!-- 4 - Finish Response Messages -->
+        <div class="modal-body" ng-show="(modalIndex == 4)">
+       	  <div ng-show="(idsSaved.length > 0)">
+           	<label class="control-label ng-binding"><span translate>study.import.success</span></label><br>
+            <table class="table table-bordered table-striped" >
+              <thead>
+                <tr>
+                  <th data-column-name="id">ID</th>
+                  <th data-column-name="acronym">{{"study.acronym" | translate}}</th>
+                  <th data-column-name="name" class="col-md-8">{{"study.name" | translate}}</th>
+                  <th translate>study.import.operation</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr ng-repeat="studySaved in studiesSaved">
+                  <td>
+                    <ul class="list-unstyled">
+                    	<span>{{studySaved.id}}</span>
+                    </ul>
+                  </td>
+                  <td>
+                    <ul class="list-unstyled">
+                      <li ng-repeat="acronym in studySaved.acronym">
+                        <span class="badge">{{acronym.lang}}</span> {{acronym.value}}
+                      </li>
+                    </ul>
+                  </td>
+                  <td>
+                    <ul class="list-unstyled">
+                      <li ng-repeat="name in studySaved.name">
+                        <span class="badge">{{name.lang}}</span> {{name.value}}
+                      </li>
+                    </ul>
+                  </td>
+                  <td>
+                    <ul class="list-unstyled">
+                    	<span translate>{{studySaved.operation.indexOf('create') > -1 ? 'study.import.operation-create' : 'study.import.operation-replace'}}</span>
+                    </ul>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div ng-show="statusErrorImport.length > 0">
+          	<h4><span translate>study.import.problem</span>{{statusErrorImport}}</h4>
+          </div>
+	    </div>
+        <!-- Footer navigation Buttons -->
+        <div class="modal-footer">
+          <button id="myPreviousButton" type="button" class="btn btn-info" ng-click="previous()" ng-disabled="(modalIndex == 0)" aria-hidden="true">
+            <span translate>study.import.previous</span>
+          </button>
+          <button id="myNextButton" type="button" class="btn btn-info" ng-click="next()" 
+          	ng-disabled="( ((modalIndex == 0) && myFormConn.$invalid) || ((modalIndex == 1) && !diffsConfigIsPossibleImport) || ((modalIndex == 2) && !studiesToImport.checked) || (modalIndex == 3) || (modalIndex == 4) )" aria-hidden="true">
+            <span translate>study.import.next</span>
+          </button>
+          <button id="myFinishButton" type="button" class="btn btn-success" ng-click="finish()" 
+          	ng-disabled="myFormSummary.$invalid" ng-show="!(!(modalIndex == 3) || !(studiesToCreate.length > 0 || studiesToReplace.length > 0) )" aria-hidden="true" >
+            <span translate>study.import.finish</span>
+          </button>
+          <button id="myCloseButton" type="button" class="btn btn-default" ng-click="close()" data-dismiss="modal" aria-hidden="true" >
+            <span translate>study.import.close</span>
+          </button>
+        </div>
       </div>
     </div>
   </div>

@@ -237,8 +237,10 @@ mica.study
 
   .controller('StudyImportController', [
     '$scope',
+    '$route',
+    '$rootScope',
     '$http', 
-    function ($scope, $http) {
+    function ($scope, $route, $rootScope, $http) {
 
       const CONNECTIONS_PARAMS_0 = 0;
       const DIFF_CUSTOM_FORM_1 = 1;
@@ -383,33 +385,36 @@ mica.study
               }).then(function(response) {
         		
                 console.log('[NEXT-2(response)]');
-               
-                var respEnum = response.data;
-                var resp = [];
                 
-                for (var prop in respEnum) {
-                	resp.push(prop);
-                }                	
+                var responseData = response.data;
+ 
+                if (Object.keys(responseData).length > 0) {
+                	
+                	for (var j in $scope.studiesToCreate) {
+                		if ($scope.studiesToCreate[j].id in responseData) {
+                			
+                			var valueJSON = JSON.parse( responseData[ $scope.studiesToCreate[j].id ]);
+                    		
+                    		if ( valueJSON.conflict === 'true' ) {
+                    			
+                    		    $scope.studiesConflict.push( $scope.studiesToCreate[j] );
+                    			delete $scope.studiesToCreate[j];
+                    			
+                    		} else {
+                    			
+                    			var studyToReplace = $scope.studiesToCreate[j];
+                    			studyToReplace.localPopulationSize = parseInt(valueJSON.localPopulationSize);
+                    			studyToReplace.localDCEsSize = parseInt(valueJSON.localDCEsSize);
+                    			
+                    			$scope.studiesToReplace.push( studyToReplace );
+                    			delete $scope.studiesToCreate[j];
+                    		}
+                		}
+                	}
+                }
 
-            	for (var j in $scope.studiesToCreate) {
-
-            		if (respEnum[ $scope.studiesToCreate[j].id] ) {
-
-            			$scope.studiesConflict.push($scope.studiesToCreate[j]);
-            			
-            			delete $scope.studiesToCreate[j];
-            			
-            		} else if (resp.includes($scope.studiesToCreate[j].id)) {
-            			
-            			$scope.studiesToReplace.push($scope.studiesToCreate[j]);
-            			
-            			delete $scope.studiesToCreate[j];
-            		} 
-            	}
-            	
             	$scope.studiesToCreate = $scope.studiesToCreate.filter(function (el) { return el !== null; });
-            	
-            	$scope.modalIndex = OPERATIONS_SUMMARY_3;      	
+            	$scope.modalIndex = OPERATIONS_SUMMARY_3;
             });
         }
       };
@@ -487,10 +492,14 @@ mica.study
 
       };
 
-      
+      self.emitStudyUpdated = function () {
+    	  $scope.$emit(STUDY_EVENTS.studyUpdated, $scope.study);
+      };
+    	  
       //CLOSE
-      $scope.close = function() {	  
+      $scope.close = function() {
   		console.log('[CLOSE]');
+  		window.top.location.reload();
       };
       
       
@@ -535,14 +544,6 @@ mica.study
 	          
 	          $scope.idsSaved = response.data;
 	          
-	          angular.forEach($scope.studiesToReplace, function(v) {
-	  	        if ($scope.idsSaved.includes(v.id)) {
-	  	        	
-	  	        	v.operation = REPLACE;
-	  	        	$scope.studiesSaved.push(v);
-	  	        }
-	          }); 
-	          
 	          angular.forEach($scope.studiesToCreate, function(v) {
 	        	if ($scope.idsSaved.includes(v.id)) {
 	        		
@@ -550,6 +551,14 @@ mica.study
 	        		$scope.studiesSaved.push(v);
 	        	}
 		      });
+	          
+	          angular.forEach($scope.studiesToReplace, function(v) {
+	  	        if ($scope.idsSaved.includes(v.id)) {
+	  	        	
+	  	        	v.operation = REPLACE;
+	  	        	$scope.studiesSaved.push(v);
+	  	        }
+	          }); 
 	          
 		    
 	          $scope.studiesToReplace = [];
