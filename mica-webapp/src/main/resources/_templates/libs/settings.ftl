@@ -15,7 +15,7 @@
 <#assign taxonomyIcon = "io io-taxonomy"/>
 
 <!-- Branding -->
-<#assign brandImageSrc = "/assets/images/logo.png"/>
+<#assign brandImageSrc = "/assets/images/mica-logo.png"/>
 <#assign brandImageClass = "img-circle elevation-3"/>
 <#assign brandTextEnabled = true/>
 <#assign brandTextClass = "font-weight-light"/>
