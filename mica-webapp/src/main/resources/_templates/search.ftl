@@ -247,13 +247,23 @@
                               <a class="nav-link"
                                  data-toggle="pill"
                                  id="bucket-dataset-tab"
-                                 href role="tab" @click="onSelectBucket('dataset')"
+                                 href role="tab"
+                                 @click="onSelectBucket('dataset')"
                                  aria-controls="dataset"
                                  aria-selected="true">{{ bucketTitles.dataset }}</a>
                             </li>
+                            <li v-if="selectedBucket!=='dataset'" class="ml-auto float-right">
+                              <div class="form-check">
+                                <input type="checkbox"
+                                       id="bucket-dce"
+                                       v-model="dceChecked"
+                                       @change="onSelectBucket(dceChecked ? 'dce' : 'study')"
+                                       class="form-check-input">
+                                <label for="bucket-dce" class="form-check-label">{{ bucketTitles.dce }}</label>
+                              </div>
+                            </li>
                           </ul>
                         </div>
-
                         <coverage-result class="mt-2"></coverage-result>
                       </div>
                     </div>

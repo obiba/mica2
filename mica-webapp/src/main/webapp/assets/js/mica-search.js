@@ -173,7 +173,6 @@ const StudyFilterShortcutComponent = Vue.component('study-filter-shortcut', {
       return Array.isArray(values) ? values.length === 1 && values.indexOf(name) > -1 : values === name;
     },
     onLocationChanged(payload) {
-      console.log('StudyFilterShortcut::onLocationChanged()');
       const tree = payload.tree;
       const classNameQuery = tree.search((name, args) => args.indexOf('Mica_study.className') > -1);
       if (classNameQuery) {
@@ -191,7 +190,6 @@ const StudyFilterShortcutComponent = Vue.component('study-filter-shortcut', {
     }
   },
   mounted() {
-    console.log('Mounted study-filter-shortcut');
     EventBus.register('location-changed', this.onLocationChanged.bind(this));
   },
   beforeDestory() {
@@ -345,18 +343,18 @@ new Vue({
       this.message = this.message + this.selectedTaxonomy.vocabularies.map(voc => voc.title[0].text).join(', ');
     },
     onExecuteQuery: function () {
-      console.log('Executing ' + this.queryType + ' query ...');
+      console.debug('Executing ' + this.queryType + ' query ...');
       EventBus.$emit(this.queryType, 'I am the result of a ' + this.queryType + ' query');
     },
     onLocationChanged: function () {
       this.refreshQueries();
     },
     onQueryUpdate(payload) {
-      console.log('query-builder update', payload);
+      console.debug('query-builder update', payload);
       EventBus.$emit(EVENTS.QUERY_TYPE_UPDATES_SELECTION, {updates: [payload]});
     },
     onQueryRemove(payload) {
-      console.log('query-builder update', payload);
+      console.debug('query-builder update', payload);
       EventBus.$emit(EVENTS.QUERY_TYPE_DELETE, payload);
     }
   },
@@ -370,11 +368,11 @@ new Vue({
     }
   },
   beforeMount() {
+    console.debug('Before mounted QueryBuilder');
     this.queryExecutor.init();
-    console.log('Before mounted QueryBuilder');
   },
   mounted() {
-    console.log('Mounted QueryBuilder');
+    console.debug('Mounted QueryBuilder');
     EventBus.register('taxonomy-selection', this.onTaxonomySelection);
     EventBus.register(EVENTS.LOCATION_CHANGED, this.onLocationChanged.bind(this));
 
@@ -419,7 +417,7 @@ new Vue({
     this.onExecuteQuery();
   },
   beforeDestory() {
-    console.log('Before destroy query builder');
+    console.debug('Before destroy query builder');
     EventBus.unregister(EVENTS.LOCATION_CHANGED, this.onLocationChanged);
     EventBus.unregister('taxonomy-selection', this.onTaxonomySelection);
     EventBus.unregister('query-type-selection', this.onQueryTypeSelection);
@@ -440,6 +438,8 @@ new Vue({
     return {
       counts: {},
       hasVariableQuery: false,
+      selectedBucket: BUCKETS.study,
+      dceChecked: false,
       bucketTitles: {
         study: Mica.tr.study,
         dataset: Mica.tr.dataset,
@@ -461,6 +461,8 @@ new Vue({
       EventBus.$emit('query-type-selection', {display: DISPLAYS.GRAPHICS});
     },
     onSelectBucket(bucket) {
+      console.debug(`onSelectBucket : ${bucket} - ${this.dceChecked}`);
+      this.selectedBucket = bucket;
       EventBus.$emit('query-type-selection', {bucket});
     },
     onResult(payload) {
@@ -491,11 +493,17 @@ new Vue({
     onLocationChanged: function (payload) {
       $(`.nav-pills #${payload.display}-tab`).tab('show');
       $(`.nav-pills #${payload.type}-tab`).tab('show');
-      if (payload.bucket) $(`.nav-pills #bucket-${TAREGT_ID_BUCKET_MAP[payload.bucket]}-tab`).tab('show');
+      if (payload.bucket) {
+        this.selectedBucket = TAREGT_ID_BUCKET_MAP[payload.bucket];
+        const tabPill = [TAREGT_ID_BUCKET_MAP.studyId, TAREGT_ID_BUCKET_MAP.dceId].indexOf(this.selectedBucket) > -1
+          ? TAREGT_ID_BUCKET_MAP.studyId
+          : TAREGT_ID_BUCKET_MAP.datasetId;
+        this.dceChecked = TAREGT_ID_BUCKET_MAP.dceId === this.selectedBucket;
+        $(`.nav-pills #bucket-${tabPill}-tab`).tab('show');
+      }
 
       const targetQueries = MicaTreeQueryUrl.getTreeQueries();
       this.hasVariableQuery = TARGETS.VARIABLE in targetQueries && targetQueries[TARGETS.VARIABLE].args.length > 0;
-      console.log(`Mica var query ${this.hasVariableQuery}`);
     }
   },
   beforeMount() {
