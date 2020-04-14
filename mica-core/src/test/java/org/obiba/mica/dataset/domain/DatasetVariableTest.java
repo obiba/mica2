@@ -41,11 +41,22 @@ public class DatasetVariableTest {
     DatasetVariable.IdResolver.from("53c3ef8804a61f0e17f6fe78:LAB_TSC:pwel");
   }
 
+  @Test
+  public void test_id_encoderDecoder() {
+    String source = "53c3ef8804a61f0e17f6fe78:LAB_TSC (Month) <year>,a=b|2&2:Dataschema";
+    String expected = "53c3ef8804a61f0e17f6fe78:LAB_TSC _28Month_29 _3cyear_3e_2ca_3db_7c2_262:Dataschema";
+    DatasetVariable.IdResolver resolver = DatasetVariable.IdResolver.from(source);
+    assertThat(resolver.getId()).isEqualTo(expected);
+    String decoded = DatasetVariable.IdEncoderDecoder.decode(expected);
+    assertThat(decoded).isEqualTo(source);
+    assertThat(resolver.getName()).isEqualTo("LAB_TSC (Month) <year>,a=b|2&2");
+  }
+
   private void checkIdResolver(String id, String expectedDatasetId, String expectedName,
       DatasetVariable.Type expectedType, String expectedStudyId) {
     DatasetVariable.IdResolver resolver = DatasetVariable.IdResolver.from(id);
     assertThat(resolver.getDatasetId()).isEqualTo(expectedDatasetId);
-    assertThat(resolver.getName()).isEqualTo(expectedName);
+    assertThat(DatasetVariable.IdEncoderDecoder.decode(resolver.getName())).isEqualTo(expectedName);
     assertThat(resolver.getType()).isEqualTo(expectedType);
     if(expectedStudyId == null) {
       assertThat(resolver.getStudyId()).isNull();
