@@ -159,7 +159,7 @@
                     <@message "results-lists-text"/>
                   </p>
 
-                  <div class="mt-3">
+                  <div class="mt-3" v-cloak>
                     <ul class="nav nav-pills" id="results-tab" role="tablist">
                       <#if config.studyDatasetEnabled || config.harmonizationDatasetEnabled>
                         <li class="nav-item">
