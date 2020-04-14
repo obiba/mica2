@@ -35,7 +35,7 @@
     <div class="content">
       <div class="container">
         <div class="row">
-          <div class="col-6">
+          <div class="col-sm-12 col-lg-6">
             <div class="card card-primary card-outline">
               <div class="card-header">
                 <h3 class="card-title"><@message "attributes"/></h3>
@@ -45,7 +45,7 @@
               </div>
             </div>
           </div>
-          <div class="col-6">
+          <div class="col-sm-12 col-lg-6">
             <div class="card card-primary card-outline">
               <div class="card-header">
                 <h3 class="card-title"><@message "credentials"/></h3>
