@@ -12,6 +12,7 @@
     "annotations": "<@message "annotations"/>",
     "study": "<@message "study"/>",
     "dataset": "<@message "dataset"/>",
+    "population": "<@message "population"/>",
     "data-collection-event": "<@message "data-collection-event"/>",
     "acronym": "<@message "acronym"/>",
     "type": "<@message "type"/>",
