@@ -60,3 +60,7 @@
 .small-box:hover .icon > i.io {
   font-size: 75px;
 }
+
+[v-cloak] {
+  display: none;
+}

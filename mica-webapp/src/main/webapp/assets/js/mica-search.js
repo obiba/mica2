@@ -186,14 +186,14 @@ const StudyFilterShortcutComponent = Vue.component('study-filter-shortcut', {
     },
     onSelectionClicked(selectionKey) {
       const classNameQuery = new RQL.Query('in', ['Mica_study.className', this.buildClassNameArgs(selectionKey)]);
-      EventBus.$emit('query-type-update', {target: 'study', query: classNameQuery});
+      EventBus.$emit(EVENTS.QUERY_TYPE_UPDATE, {target: 'study', query: classNameQuery});
     }
   },
   mounted() {
-    EventBus.register('location-changed', this.onLocationChanged.bind(this));
+    EventBus.register(EVENTS.LOCATION_CHANGED, this.onLocationChanged.bind(this));
   },
   beforeDestory() {
-    EventBus.unregister('location-changed', this.onLocationChanged);
+    EventBus.unregister(EVENTS.LOCATION_CHANGED, this.onLocationChanged);
   }
 });
 
@@ -256,180 +256,10 @@ class TaxonomyTitleFinder {
 
 const taxonomyTitleFinder  = new TaxonomyTitleFinder();
 
-
-  /**
- * Registering plugins defined in VueObibaSearchResult
- */
-Vue.use(VueObibaSearchResult, {
-  mixin: {
-    methods: {
-      getEventBus: () => EventBus,
-      getMicaConfig: () => Mica.config,
-      getLocale: () => Mica.locale,
-      localize: (entries) => StringLocalizer.localize(entries),
-      registerDataTable: (tableId, options) => {
-        const mergedOptions = Object.assign(options, DataTableDefaults);
-        mergedOptions.language = {
-          url: '/assets/i18n/datatables.' + Mica.locale + '.json'
-        };
-        return $('#' + tableId).DataTable(mergedOptions);
-      }
-    }
-  }
-});
-
-/**
- * Querybuilder Vue
- *
- * Main app that orchestrates the query display, criteria selection, query execution and dispatch of the results
- *
- */
-new Vue({
-  el: '#query-builder',
-  data() {
-    return {
-      taxonomies: {},
-      message: '',
-      selectedTaxonomy: null,
-      selectedTarget: null,
-      queryType: 'variables-list',
-      lastList: '',
-      queryExecutor: new MicaQueryExecutor(EventBus, DataTableDefaults.pageLength),
-      queries: null,
-      noQueries: true
-    };
-  },
-  methods: {
-    refreshQueries() {
-      this.queries = MicaTreeQueryUrl.getTreeQueries();
-      this.noQueries = true;
-      if (this.queries) {
-        for (let key of ['variable', 'dataset', 'study', 'network']) {
-          let target = this.queries[key];
-          if (target && target.args && target.args.length > 0) {
-            this.noQueries = false;
-            break;
-          }
-        }
-      }
-    },
-    getTaxonomyForTarget(target) {
-      let result = [];
-
-      if (TARGETS.VARIABLE === target) {
-        let taxonomies = [];
-        for (let taxonomy in this.taxonomies) {
-          if (taxonomy === `Mica_${target}` || !taxonomy.startsWith('Mica_')) {
-            const found = this.taxonomies[taxonomy];
-            if (found) taxonomies.push(found);
-          }
-        }
-
-        result.push(taxonomies);
-      } else {
-        let taxonomy = this.taxonomies[`Mica_${target}`];
-        result.push(taxonomy);
-      }
-
-      return result[0];
-    },
-    // show a modal with all the vocabularies/terms of the selected taxonomy
-    // initialized by the query terms and update/trigger the query on close
-    onTaxonomySelection: function (payload) {
-      this.selectedTaxonomy = this.taxonomies[payload.taxonomyName];
-      this.selectedTarget = payload.target;
-
-      this.message = '[' + payload.taxonomyName + '] ' + this.selectedTaxonomy.title[0].text + ': ';
-      this.message = this.message + this.selectedTaxonomy.vocabularies.map(voc => voc.title[0].text).join(', ');
-    },
-    onExecuteQuery: function () {
-      console.debug('Executing ' + this.queryType + ' query ...');
-      EventBus.$emit(this.queryType, 'I am the result of a ' + this.queryType + ' query');
-    },
-    onLocationChanged: function () {
-      this.refreshQueries();
-    },
-    onQueryUpdate(payload) {
-      console.debug('query-builder update', payload);
-      EventBus.$emit(EVENTS.QUERY_TYPE_UPDATES_SELECTION, {updates: [payload]});
-    },
-    onQueryRemove(payload) {
-      console.debug('query-builder update', payload);
-      EventBus.$emit(EVENTS.QUERY_TYPE_DELETE, payload);
-    }
-  },
-  computed: {
-    selectedQuery() {
-      if (this.selectedTarget) {
-        return this.queries[this.selectedTarget];
-      }
-
-      return undefined;
-    }
-  },
-  beforeMount() {
-    console.debug('Before mounted QueryBuilder');
-    this.queryExecutor.init();
-  },
-  mounted() {
-    console.debug('Mounted QueryBuilder');
-    EventBus.register('taxonomy-selection', this.onTaxonomySelection);
-    EventBus.register(EVENTS.LOCATION_CHANGED, this.onLocationChanged.bind(this));
-
-    // fetch the configured search criteria, in the form of a taxonomy of taxonomies
-    axios
-      .get('/ws/taxonomy/Mica_taxonomy/_filter?target=taxonomy')
-      .then(response => {
-        let targets = response.data.vocabularies;
-        EventBus.$emit('mica-taxonomy', targets);
-
-        const targetQueries = [];
-
-        for (let target of targets) {
-          // then load the taxonomies
-
-          targetQueries.push(`/ws/taxonomies/_filter?target=${target.name}`);
-        }
-
-        return axios.all(targetQueries.map(query => axios.get(query))).then(axios.spread((...responses) => {
-          responses.forEach((response) => {
-            for (let taxo of response.data) {
-              this.taxonomies[taxo.name] = taxo;
-            }
-          });
-
-          this.refreshQueries();
-
-          taxonomyTitleFinder.initialize(this.taxonomies);
-
-          Vue.filter("taxonomy-title", (input) => {
-            const [taxonomy, vocabulary, term] = input.split(/\./);
-            return  taxonomyTitleFinder.title(taxonomy, vocabulary, term) || input;
-          });
-
-
-          // Emit 'query-type-selection' to pickup a URL query to be executed; if nothing found a Variable query is executed
-          EventBus.$emit('query-type-selection', {});
-
-          return this.taxonomies;
-        }));
-      });
-    this.onExecuteQuery();
-  },
-  beforeDestory() {
-    console.debug('Before destroy query builder');
-    EventBus.unregister(EVENTS.LOCATION_CHANGED, this.onLocationChanged);
-    EventBus.unregister('taxonomy-selection', this.onTaxonomySelection);
-    EventBus.unregister('query-type-selection', this.onQueryTypeSelection);
-    this.queryExecutor.destroy();
-  }
-});
-
-
 /**
  * Component for all results related functionality
  */
-new Vue({
+const ResultsTabContent = {
   el: '#results-tab-content',
   components: {
     'study-filter-shortcut': StudyFilterShortcutComponent
@@ -518,5 +348,174 @@ new Vue({
     EventBus.unregister('datasets-results', this.onResult);
     EventBus.unregister('studies-results', this.onResult);
     EventBus.unregister('networks-results', this.onResult);
+  }
+};
+
+/**
+ * Registering plugins defined in VueObibaSearchResult
+ */
+Vue.use(VueObibaSearchResult, {
+  mixin: {
+    methods: {
+      getEventBus: () => EventBus,
+      getMicaConfig: () => Mica.config,
+      getLocale: () => Mica.locale,
+      localize: (entries) => StringLocalizer.localize(entries),
+      registerDataTable: (tableId, options) => {
+        const mergedOptions = Object.assign(options, DataTableDefaults);
+        mergedOptions.language = {
+          url: '/assets/i18n/datatables.' + Mica.locale + '.json'
+        };
+        return $('#' + tableId).DataTable(mergedOptions);
+      }
+    }
+  }
+});
+
+/**
+ * Querybuilder Vue
+ *
+ * Main app that orchestrates the query display, criteria selection, query execution and dispatch of the results
+ *
+ */
+new Vue({
+  el: '#query-builder',
+  data() {
+    return {
+      taxonomies: {},
+      message: '',
+      selectedTaxonomy: null,
+      selectedTarget: null,
+      queryType: 'variables-list',
+      lastList: '',
+      queryExecutor: new MicaQueryExecutor(EventBus, DataTableDefaults.pageLength),
+      queries: null,
+      noQueries: true
+    };
+  },
+  methods: {
+    refreshQueries() {
+      this.queries = MicaTreeQueryUrl.getTreeQueries();
+      this.noQueries = true;
+      if (this.queries) {
+        for (let key of [TARGETS.VARIABLE, TARGETS.DATASET, TARGETS.STUDY, TARGETS.NETWORK]) {
+          let target = this.queries[key];
+          if (target && target.args && target.args.length > 0) {
+            this.noQueries = false;
+            break;
+          }
+        }
+      }
+    },
+    getTaxonomyForTarget(target) {
+      let result = [];
+
+      if (TARGETS.VARIABLE === target) {
+        let taxonomies = [];
+        for (let taxonomy in this.taxonomies) {
+          if (taxonomy === `Mica_${target}` || !taxonomy.startsWith('Mica_')) {
+            const found = this.taxonomies[taxonomy];
+            if (found) taxonomies.push(found);
+          }
+        }
+
+        result.push(taxonomies);
+      } else {
+        let taxonomy = this.taxonomies[`Mica_${target}`];
+        result.push(taxonomy);
+      }
+
+      return result[0];
+    },
+    // show a modal with all the vocabularies/terms of the selected taxonomy
+    // initialized by the query terms and update/trigger the query on close
+    onTaxonomySelection: function (payload) {
+      this.selectedTaxonomy = this.taxonomies[payload.taxonomyName];
+      this.selectedTarget = payload.target;
+
+      this.message = '[' + payload.taxonomyName + '] ' + this.selectedTaxonomy.title[0].text + ': ';
+      this.message = this.message + this.selectedTaxonomy.vocabularies.map(voc => voc.title[0].text).join(', ');
+    },
+    onExecuteQuery: function () {
+      console.debug('Executing ' + this.queryType + ' query ...');
+      EventBus.$emit(this.queryType, 'I am the result of a ' + this.queryType + ' query');
+    },
+    onLocationChanged: function () {
+      this.refreshQueries();
+    },
+    onQueryUpdate(payload) {
+      console.debug('query-builder update', payload);
+      EventBus.$emit(EVENTS.QUERY_TYPE_UPDATES_SELECTION, {updates: [payload]});
+    },
+    onQueryRemove(payload) {
+      console.debug('query-builder update', payload);
+      EventBus.$emit(EVENTS.QUERY_TYPE_DELETE, payload);
+    }
+  },
+  computed: {
+    selectedQuery() {
+      if (this.selectedTarget) {
+        return this.queries[this.selectedTarget];
+      }
+
+      return undefined;
+    }
+  },
+  beforeMount() {
+    console.debug('Before mounted QueryBuilder');
+    this.queryExecutor.init();
+  },
+  mounted() {
+    console.debug('Mounted QueryBuilder');
+    EventBus.register('taxonomy-selection', this.onTaxonomySelection);
+    EventBus.register(EVENTS.LOCATION_CHANGED, this.onLocationChanged.bind(this));
+
+    // fetch the configured search criteria, in the form of a taxonomy of taxonomies
+    axios
+      .get('/ws/taxonomy/Mica_taxonomy/_filter?target=taxonomy')
+      .then(response => {
+        let targets = response.data.vocabularies;
+        EventBus.$emit('mica-taxonomy', targets);
+
+        const targetQueries = [];
+
+        for (let target of targets) {
+          // then load the taxonomies
+          targetQueries.push(`/ws/taxonomies/_filter?target=${target.name}`);
+        }
+
+        return axios.all(targetQueries.map(query => axios.get(query))).then(axios.spread((...responses) => {
+          responses.forEach((response) => {
+            for (let taxo of response.data) {
+              this.taxonomies[taxo.name] = taxo;
+            }
+          });
+
+          this.refreshQueries();
+
+          taxonomyTitleFinder.initialize(this.taxonomies);
+
+          Vue.filter("taxonomy-title", (input) => {
+            const [taxonomy, vocabulary, term] = input.split(/\./);
+            return  taxonomyTitleFinder.title(taxonomy, vocabulary, term) || input;
+          });
+
+          // Delay ResultsTabContent to ensure taxonomy translations
+          new Vue(ResultsTabContent);
+
+          // Emit 'query-type-selection' to pickup a URL query to be executed; if nothing found a Variable query is executed
+          EventBus.$emit(EVENTS.QUERY_TYPE_SELECTION, {});
+
+          return this.taxonomies;
+        }));
+      });
+    this.onExecuteQuery();
+  },
+  beforeDestory() {
+    console.debug('Before destroy query builder');
+    EventBus.unregister(EVENTS.LOCATION_CHANGED, this.onLocationChanged);
+    EventBus.unregister('taxonomy-selection', this.onTaxonomySelection);
+    EventBus.unregister('query-type-selection', this.onQueryTypeSelection);
+    this.queryExecutor.destroy();
   }
 });
