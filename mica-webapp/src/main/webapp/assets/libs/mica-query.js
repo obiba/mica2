@@ -409,18 +409,21 @@ class MicaTreeQueryUrl {
   }
 
   static getTreeQueries(parts) {
-    const tree = MicaTreeQueryUrl.getTree(parts);
-    const validNodes = CRITERIA_NODES.concat(OPERATOR_NODES);
     let queries = {};
+    const tree = MicaTreeQueryUrl.getTree(parts);
 
-    for (const key in TARGETS) {
-      let targetQuery = tree.search((name) => {
-        return name === TARGETS[key]
-      });
+    if (tree) {
+      const validNodes = CRITERIA_NODES.concat(OPERATOR_NODES);
 
-      if (targetQuery) {
-        targetQuery.args = targetQuery.args.filter(arg => validNodes.indexOf(arg.name) > -1);
-        queries[TARGETS[key]] = targetQuery;
+      for (const key in TARGETS) {
+        let targetQuery = tree.search((name) => {
+          return name === TARGETS[key]
+        });
+
+        if (targetQuery) {
+          targetQuery.args = targetQuery.args.filter(arg => validNodes.indexOf(arg.name) > -1);
+          queries[TARGETS[key]] = targetQuery;
+        }
       }
     }
 
