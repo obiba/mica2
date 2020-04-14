@@ -423,7 +423,7 @@ public class DatasetVariable implements Indexable, AttributeAware {
   }
 
   public static class IdEncoderDecoder {
-    private static Pattern encodePattern = Pattern.compile("&\\||\\(|\\)|=|<|>|,");
+    private static Pattern encodePattern = Pattern.compile("&|\\||\\(|\\)|=|<|>|,");
     // Use underscore to make sure the RQLParser does not try to decode
     private static final Map<String, String> encodeMap = Stream.of(new String[][] {
       { "&", "_26" },
@@ -464,7 +464,8 @@ public class DatasetVariable implements Indexable, AttributeAware {
       matcher.appendReplacement(sb, map.get(matcher.group()));
 
       while (matcher.find()) {
-        matcher.appendReplacement(sb, map.get(matcher.group()));
+        String group = matcher.group();
+        matcher.appendReplacement(sb, map.get(group));
       }
 
       matcher.appendTail(sb);

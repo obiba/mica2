@@ -20,8 +20,6 @@ public class DatasetVariableTest {
   public void test_id_resolver() throws Exception {
     checkIdResolver("53c3ef8804a61f0e17f6fe78:LAB_TSC:Dataschema", "53c3ef8804a61f0e17f6fe78", "LAB_TSC",
         DatasetVariable.Type.Dataschema, null);
-    checkIdResolver("53c3ef8804a61f0e17f6fe78:LAB_TSC (mois) <titi>:Dataschema", "53c3ef8804a61f0e17f6fe78", "LAB_TSC (mois) <titi>",
-        DatasetVariable.Type.Dataschema, null);
     checkIdResolver("53c3ef8804a61f0e17f6fe78:LAB_TSC:Collected", "53c3ef8804a61f0e17f6fe78", "LAB_TSC",
         DatasetVariable.Type.Collected, null);
     checkIdResolver("53c3ef8804a61f0e17f6fe78:LAB_TSC:Harmonized:Study:53c3ef8704a61f0e17f6fe72", "53c3ef8804a61f0e17f6fe78", "LAB_TSC",
@@ -41,6 +39,17 @@ public class DatasetVariableTest {
   @Test(expected = IllegalArgumentException.class)
   public void test_id_resolver_invalid_type() throws Exception {
     DatasetVariable.IdResolver.from("53c3ef8804a61f0e17f6fe78:LAB_TSC:pwel");
+  }
+
+  @Test
+  public void test_id_encoderDecoder() {
+    String source = "53c3ef8804a61f0e17f6fe78:LAB_TSC (Month) <year>,a=b|2&2:Dataschema";
+    String expected = "53c3ef8804a61f0e17f6fe78:LAB_TSC _28Month_29 _3cyear_3e_2ca_3db_7c2_262:Dataschema";
+    DatasetVariable.IdResolver resolver = DatasetVariable.IdResolver.from(source);
+    assertThat(resolver.getId()).isEqualTo(expected);
+    String decoded = DatasetVariable.IdEncoderDecoder.decode(expected);
+    assertThat(decoded).isEqualTo(source);
+    assertThat(resolver.getName()).isEqualTo("LAB_TSC (Month) <year>,a=b|2&2");
   }
 
   private void checkIdResolver(String id, String expectedDatasetId, String expectedName,
