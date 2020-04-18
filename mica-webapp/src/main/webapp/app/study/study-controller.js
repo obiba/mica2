@@ -287,6 +287,10 @@ mica.study
               }).then(function(response) {
                 console.log('[NEXT-0(response)]');
 
+                /*TODO tratar: 
+                 * response = 400 (BAD REQUEST)
+                 * response = 404 (NOT FOUND) 
+                 */
                 var diffsEnum = response.data;
                 
                 var mapDiffsFormParent = new Map();
@@ -342,6 +346,11 @@ mica.study
             
               }).then(function(response) {
                  console.log('[NEXT-1(response)]');
+                 
+                 /*TODO tratar: 
+                  * response = 400 (BAD REQUEST)
+                  * response = 404 (NOT FOUND) 
+                  */
                  
                  $scope.studiesToImport = response.data;
             	 
@@ -492,18 +501,11 @@ mica.study
 
       };
 
-      /*var self = this;
-      
-      self.emitStudyUpdated = function () {
-    	  $scope.$emit(mica.study.constant('STUDY_EVENTS').studyUpdated, $scope.study);
-      };*/
-    	  
       //CLOSE
       $scope.close = function() {
   		console.log('[CLOSE]');
   		window.top.location.reload();
       };
-      
       
       //FINISH
       $scope.finish = function() {
@@ -540,7 +542,13 @@ mica.study
 	        }).then(function(response) {
 	          console.log('[FINISH(response)]');
 	          
-	          if (response.status !== 200) {
+              /*TODO tratar: 
+               * response = 400 (BAD REQUEST)
+               * response = 404 (NOT FOUND) 
+               * response = 204 (SC_NO_CONTENT) //Logo problem
+               */
+	          
+	          if (response.status !== 200) {//refactoring
 	        	  $scope.statusErrorImport += (response.status + ' ');
 	          }
 	          

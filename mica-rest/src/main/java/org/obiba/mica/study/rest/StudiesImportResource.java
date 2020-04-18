@@ -35,6 +35,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.fileupload.FileUploadException;
 import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URIBuilder;
@@ -67,6 +68,7 @@ import org.springframework.http.MediaType;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.protobuf.ExtensionRegistry;
 import com.googlecode.protobuf.format.JsonFormat;
 import com.googlecode.protobuf.format.JsonFormat.ParseException;
@@ -158,22 +160,22 @@ public class StudiesImportResource {
 			
 			if (type.equals(INDIVIDUAL_STUDY)) {
 				
-				this.processComparisonSchemasDefinitions(url, username, password, WS_CONFIG_INDIVIDUAL_STUDY_FORM_CUSTOM, 
-						(EntityConfigService)individualStudyConfigService, INDIVIDUAL_STUDY_FORM_SECTION, NONE, result);
+				result.putAll( this.processComparisonSchemasDefinitions(url, username, password, WS_CONFIG_INDIVIDUAL_STUDY_FORM_CUSTOM, 
+						(EntityConfigService)individualStudyConfigService, INDIVIDUAL_STUDY_FORM_SECTION, NONE) );
 				
-				this.processComparisonSchemasDefinitions(url, username, password, WS_CONFIG_POPULATION_FORM_CUSTOM, 
-						(EntityConfigService)populationConfigService, POPULATION_FORM_SECTION, INDIVIDUAL_STUDY_FORM_SECTION, result);
+				result.putAll( this.processComparisonSchemasDefinitions(url, username, password, WS_CONFIG_POPULATION_FORM_CUSTOM, 
+						(EntityConfigService)populationConfigService, POPULATION_FORM_SECTION, INDIVIDUAL_STUDY_FORM_SECTION) );
 				
-				this.processComparisonSchemasDefinitions(url, username, password, WS_CONFIG_DATA_COLLECTION_EVENT_FORM_CUSTOM, 
-						(EntityConfigService)dataCollectionEventConfigService, DATA_COLLECTION_EVENT_FORM_SECTION, POPULATION_FORM_SECTION, result);
+				result.putAll( this.processComparisonSchemasDefinitions(url, username, password, WS_CONFIG_DATA_COLLECTION_EVENT_FORM_CUSTOM, 
+						(EntityConfigService)dataCollectionEventConfigService, DATA_COLLECTION_EVENT_FORM_SECTION, POPULATION_FORM_SECTION) );
 				
 			} else if ( type.equals(HARMONIZATION_STUDY) ) {
 				
-				this.processComparisonSchemasDefinitions(url, username, password, WS_CONFIG_HARMONIZATION_STUDY_FORM_CUSTOM, 
-						(EntityConfigService)harmonizationStudyConfigService, HARMONIZATION_STUDY_FORM_SECTION, NONE, result);
+				result.putAll( this.processComparisonSchemasDefinitions(url, username, password, WS_CONFIG_HARMONIZATION_STUDY_FORM_CUSTOM, 
+						(EntityConfigService)harmonizationStudyConfigService, HARMONIZATION_STUDY_FORM_SECTION, NONE) );
 				
-				this.processComparisonSchemasDefinitions(url, username, password, WS_CONFIG_HARMONIZATION_POPULATION_FORM_CUSTOM, 
-						(EntityConfigService)harmonizationPopulationConfigService, HARMONIZATION_POPULATION_FORM_SECTION, HARMONIZATION_STUDY_FORM_SECTION, result);
+				result.putAll( this.processComparisonSchemasDefinitions(url, username, password, WS_CONFIG_HARMONIZATION_POPULATION_FORM_CUSTOM, 
+						(EntityConfigService)harmonizationPopulationConfigService, HARMONIZATION_POPULATION_FORM_SECTION, HARMONIZATION_STUDY_FORM_SECTION) );
 			}
 			
 			return Response.ok( result ).build();
@@ -182,16 +184,15 @@ public class StudiesImportResource {
 			
 			log.error( Arrays.toString( e.getStackTrace()) );
 			
-			return Response.status(HttpStatus.SC_BAD_REQUEST).build();
+			return Response.ok(HttpStatus.SC_BAD_REQUEST).build();
 			
 		} catch (IOException e) {
 			
 			log.error( Arrays.toString( e.getStackTrace()) );
 			
-			return Response.status(HttpStatus.SC_NOT_FOUND).build();
+			return Response.ok(HttpStatus.SC_NOT_FOUND).build();
 		}
 	}
-	
 	
 	@GET
 	@Path("/studies/import/_preview")
@@ -209,54 +210,29 @@ public class StudiesImportResource {
 			
 			HttpURLConnection con = this.prepareRemoteConnection(url, username, password, params, WS_DRAFT_STUDY_STATES);
 
-			int status = con.getResponseCode();
-
-			return Response.ok( this.getRawContent(con) ).status(status).build();
+			return Response.ok( this.getRawContent(con) ).build();
 			
 		} catch (URISyntaxException|ProtocolException e) {
 			
 			log.error( Arrays.toString( e.getStackTrace()) );
 			
-			return Response.status(HttpStatus.SC_BAD_REQUEST).build();
+			return Response.ok(HttpStatus.SC_BAD_REQUEST).build();
 			
 		} catch (IOException e) {
 			
 			log.error( Arrays.toString( e.getStackTrace()) );
 			
-			return Response.status(HttpStatus.SC_NOT_FOUND).build();
+			return Response.ok(HttpStatus.SC_NOT_FOUND).build();
 		}
 	}
-
-	private void processComparisonSchemasDefinitions(String url, String username, String password, 
-			String endpoint, EntityConfigService<EntityConfig> configService, String formSection,
-			String parentFormSection, Map<String, Boolean> result) throws IOException, URISyntaxException {
-		
-		ObjectMapper mapper = new ObjectMapper();
-		
-		Map<String, Object> content = this.getJSONContent(url, username, password, null, endpoint);
-		
-		String schema = (mapper.readValue( (String)content.get(SCHEMA), JsonNode.class)).toString();
-		String definition = (mapper.readValue( (String)content.get(DEFINITION), JsonNode.class)).toString();
-		
-		String localSchema = (mapper.readValue( configService.findPartial().get().getSchema(), JsonNode.class)).toString();
-		String localDefinition = (mapper.readValue( configService.findPartial().get().getDefinition(), JsonNode.class)).toString();
-		
-		String key = "{ \"formSection\" : \"" + formSection + "\", "
-					 + "\"parentFormSection\" : \"" + parentFormSection + "\","
-					 + "\"endpoint\" : \"" + endpoint + "\" }";
-		
-		result.put(key, Boolean.valueOf(schema.equals(localSchema) && definition.equals(localDefinition)) );
-	}
-
 	
 	@GET
 	@Path("/studies/import/_summary")
 	@Produces({"application/xml", "application/json", "text/plain", "text/html"})
 	public Response checkIfAlreadyExistsLocally(@QueryParam(IDS) List<String> ids, @QueryParam(TYPE) String type) {
-		
-		log.info("GET checkIfAlreadyExistsLocally ids: {}", ids);
-		
+	
 		Map<String, String> existingIds = new HashMap<>();
+		ObjectMapper mapper = new ObjectMapper();
 		
 		for (String id : ids) {
 
@@ -272,21 +248,21 @@ public class StudiesImportResource {
 					localDCEsSize += localPopulation.getDataCollectionEvents().size();
 				}
 				
-				String value = "{ \"conflict\" : \"" + !localStudy.getResourcePath().equals(type) + "\", " /*conflict condition*/
-						 + "\"localPopulationSize\" : \"" + localPopulationSize + "\", "
-						 + "\"localDCEsSize\" : \"" + localDCEsSize + "\" }";
+				JsonNode jsonDTO = mapper.createObjectNode();
+				((ObjectNode) jsonDTO).put("conflict", !localStudy.getResourcePath().equals(type) );
+				((ObjectNode) jsonDTO).put("localPopulationSize", localPopulationSize );
+				((ObjectNode) jsonDTO).put("localDCEsSize", localDCEsSize );
 				
-				existingIds.put( localStudy.getId(),  value );
+				existingIds.put( localStudy.getId(),  jsonDTO.toString() );
 
 			} catch(NoSuchEntityException ex) {
 				//ignore if study doesn't exist locally.
-				log.info("checkIfAlreadyExistsLocally - id not exists: {}", id);
+				log.info("Study id not exist locally: {}", id);
 			}
 		}
 		
 		return Response.ok(existingIds).build();		
 	}
-	
 	
 	@PUT
 	@Path("/studies/import/_save")
@@ -297,9 +273,6 @@ public class StudiesImportResource {
 			@QueryParam(TYPE) String type,
 			@QueryParam(IDS) List<String> ids,
 			@QueryParam(LIST_DIFFS_FORM) List<String> listDiffsForm) {
-	
-		log.info("PUT saveStudies. ids = {}", ids);
-		log.info("PUT saveStudies. listDiffsForm = {}", listDiffsForm);
 
 		try {
 			
@@ -321,7 +294,6 @@ public class StudiesImportResource {
 					if (newLogoId != null) {
 						
 						studySaved.getLogo().setId(newLogoId);
-						
 						studySaved.getLogo().setJustUploaded(true);
 						
 						individualStudyService.save(studySaved);
@@ -335,7 +307,6 @@ public class StudiesImportResource {
 					if (newLogoId != null) {
 						
 						studySaved.getLogo().setId(newLogoId);
-						
 						studySaved.getLogo().setJustUploaded(true);
 						
 						harmonizationStudyService.save(studySaved);
@@ -345,21 +316,51 @@ public class StudiesImportResource {
 			
 			return Response.ok(idsSaved).build();
 			
-			
 		} catch (URISyntaxException|ProtocolException e) {
 			
 			log.error( Arrays.toString( e.getStackTrace()) );
 			
-			return Response.status(HttpStatus.SC_BAD_REQUEST).build();
+			return Response.ok(HttpStatus.SC_BAD_REQUEST).build();
 			
 		} catch (IOException e) {
 			
 			log.error( Arrays.toString( e.getStackTrace()) );
 			
-			return Response.status(HttpStatus.SC_NOT_FOUND).build();
+			return Response.ok(HttpStatus.SC_NOT_FOUND).build();
+			
+		} catch (FileUploadException e) {
+			
+			log.error( Arrays.toString( e.getStackTrace()) );
+			
+			return Response.ok(HttpStatus.SC_NO_CONTENT).build();
 		}
+		
 	}
+	
+	private Map<String, Boolean> processComparisonSchemasDefinitions(String url, String username, String password, 
+			String endpoint, EntityConfigService<EntityConfig> configService, String formSection,
+			String parentFormSection) throws IOException, URISyntaxException {
+		
+		ObjectMapper mapper = new ObjectMapper();
+		Map<String, Boolean> result = new LinkedHashMap<>();
+		
+		Map<String, Object> content = this.getJSONContent(url, username, password, null, endpoint);
+		
+		String schema = (mapper.readValue( (String)content.get(SCHEMA), JsonNode.class)).toString();
+		String definition = (mapper.readValue( (String)content.get(DEFINITION), JsonNode.class)).toString();
+		
+		String localSchema = (mapper.readValue( configService.findPartial().get().getSchema(), JsonNode.class)).toString();
+		String localDefinition = (mapper.readValue( configService.findPartial().get().getDefinition(), JsonNode.class)).toString();
 
+		JsonNode jsonDTO = mapper.createObjectNode();
+		((ObjectNode) jsonDTO).put("formSection", formSection );
+		((ObjectNode) jsonDTO).put("parentFormSection", parentFormSection );
+		((ObjectNode) jsonDTO).put("endpoint", endpoint );
+		
+		result.put(jsonDTO.toString(), Boolean.valueOf(schema.equals(localSchema) && definition.equals(localDefinition)) );
+		
+		return result;
+	}
 	
 	private Study saveIndividualStudy(List<String> idsSaved, String id, String remoteContent,
 			Mica.StudyDto.Builder builder, ExtensionRegistry extensionRegistry, List<String> listDiffsForm) throws ParseException {
@@ -384,23 +385,19 @@ public class StudiesImportResource {
 			
 			idsSaved.add(remoteStudy.getId());
 			
-			log.info("individualStudyService: {}", remoteStudy);
-			
 			return remoteStudy;
-		
 		}
 		
 		return null;
 	}
 
 
-	private String saveLogoImage(BaseStudy remoteStudy, String url, String username, String password) {
+	private String saveLogoImage(BaseStudy remoteStudy, String url, String username, String password) throws FileUploadException {
 		
 		if ( remoteStudy != null && remoteStudy.hasLogo() ) {
 			
 			String studyLogoId = remoteStudy.getLogo().getId();
-			
-			//ws/draft/individual-study/best_bls/file/5c79216eb73a78026367630a/_download
+
 			StringBuilder endpoint = new StringBuilder(WS_DRAFT_STUDY_LOGO);
 		
 		    endpoint.replace(endpoint.indexOf(RESOURCE_PATH), endpoint.indexOf(RESOURCE_PATH) + RESOURCE_PATH.length(), remoteStudy.getResourcePath());
@@ -414,23 +411,15 @@ public class StudiesImportResource {
 				String disposition = con.getHeaderField(HttpHeaders.CONTENT_DISPOSITION);
 				
 				String fileName = disposition.replaceFirst("(?i)^.*filename=\"?([^\"]+)\"?.*$", "$1");
-	
-				log.info("con AFTER (filename): " + fileName);
 				
 				TempFile tempFile = tempFileService.addTempFile(fileName, con.getInputStream() );
-				
-				log.info("tempFile.getId: " + tempFile.getId());
-				
+
 				return tempFile.getId();
 								
-			} catch (IOException e) {
-				log.error("IOException e");
-				log.error( Arrays.toString( e.getStackTrace()) );
+			} catch (IOException|URISyntaxException e) {
 				
-			} catch (URISyntaxException e) {
-				log.error("URISyntaxException e");
-				log.error( Arrays.toString( e.getStackTrace()) );
-			}	
+				throw new FileUploadException();
+			} 	
 		}
 		
 		return null;
@@ -455,12 +444,11 @@ public class StudiesImportResource {
 				}
 				
 			} else {
-				HarmonizationStudy localStudy =  harmonizationStudyService.findStudy(id);
+				HarmonizationStudy localStudy = harmonizationStudyService.findStudy(id);
 				
 				if (listDiffsForm.contains(HARMONIZATION_POPULATION_FORM_SECTION)) {
 					
 					remoteStudy.setPopulations(localStudy.getPopulations());
-					
 				}
 			}
 			
@@ -468,13 +456,10 @@ public class StudiesImportResource {
 			
 			idsSaved.add(remoteStudy.getId());
 			
-			log.info("harmonizationStudyService: {}", remoteStudy);
-			
 			return remoteStudy;
 		}
 		
 		return null;
-
 	}
 
 
@@ -508,7 +493,6 @@ public class StudiesImportResource {
 		}
 	}
 
-
 	private void prepareCreateOperation(List<String> listDiffsForm, Study remoteStudy) {
 		
 		remoteStudy.setId(null);
@@ -524,7 +508,6 @@ public class StudiesImportResource {
 		}
 	}
 
-
 	private boolean studyIdExistLocally(String id) {
 		
 		try {
@@ -532,11 +515,10 @@ public class StudiesImportResource {
 			
 			return true;
 
-		} catch(NoSuchEntityException ex) {
+		} catch (NoSuchEntityException ex) {
 			return false;
 		}
 	}
-
 	
 	Map<String, Object> getJSONContent(String url, String username, String password, List<NameValuePair> param, String endpoint)
 			throws IOException, URISyntaxException {
@@ -573,7 +555,7 @@ public class StudiesImportResource {
 		return content.toString();
 	}
 	
-	 HttpURLConnection prepareRemoteConnection(String url, String username, String password, List<NameValuePair> param, String endpoint)
+	HttpURLConnection prepareRemoteConnection(String url, String username, String password, List<NameValuePair> param, String endpoint)
 			throws IOException, URISyntaxException {	
 		
 		
