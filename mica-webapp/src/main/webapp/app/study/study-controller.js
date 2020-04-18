@@ -307,7 +307,7 @@ mica.study
 		      				endpoint : propJSON.endpoint,
 		      				isEqual : diffsEnum[prop],
 		      				parentIsImportable : mapDiffsFormParent.get(propJSON.parentFormSection)
-		      			  }
+		      			  };
 	            	
 	        		$scope.diffsCustomFormJSON.push(diffVO);
                 	
@@ -492,9 +492,11 @@ mica.study
 
       };
 
+      /*var self = this;
+      
       self.emitStudyUpdated = function () {
-    	  $scope.$emit(STUDY_EVENTS.studyUpdated, $scope.study);
-      };
+    	  $scope.$emit(mica.study.constant('STUDY_EVENTS').studyUpdated, $scope.study);
+      };*/
     	  
       //CLOSE
       $scope.close = function() {

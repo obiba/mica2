@@ -42,6 +42,8 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.obiba.mica.NoSuchEntityException;
+import org.obiba.mica.file.TempFile;
+import org.obiba.mica.file.service.TempFileService;
 import org.obiba.mica.micaConfig.domain.EntityConfig;
 import org.obiba.mica.micaConfig.service.DataCollectionEventConfigService;
 import org.obiba.mica.micaConfig.service.EntityConfigService;
@@ -80,6 +82,11 @@ public class StudiesImportResource {
 	private static final String WS_CONFIG_POPULATION_FORM_CUSTOM = "/ws/config/population/form-custom";
 	private static final String WS_CONFIG_INDIVIDUAL_STUDY_FORM_CUSTOM = "/ws/config/individual-study/form-custom";
 	
+	private static final String RESOURCE_PATH = "<resource_path>";
+	private static final String STUDY_ID = "<study_id>";
+	private static final String LOGO_ID = "<logo_id>";
+	
+	private static final String WS_DRAFT_STUDY_LOGO = "/ws/draft/" + RESOURCE_PATH + "/" + STUDY_ID + "/file/" + LOGO_ID + "/_download";
 	private static final String WS_DRAFT_STUDY_STATES = "/ws/draft/study-states";
 	private static final String WS_DRAFT_HARMONIZATION_STUDY_ID = "/ws/draft/harmonization-study/{id}";
 	private static final String WS_DRAFT_INDIVIDUAL_STUDY_ID = "/ws/draft/individual-study/{id}";
@@ -128,6 +135,9 @@ public class StudiesImportResource {
 	
 	@Inject
 	private HarmonizationPopulationConfigService harmonizationPopulationConfigService;
+	
+	@Inject
+	private TempFileService tempFileService;
 	
 	@Inject
 	private Dtos dtos;
@@ -305,12 +315,32 @@ public class StudiesImportResource {
 				
 				if ( type.equals(INDIVIDUAL_STUDY) ) {
 					
-					this.saveIndividualStudy(idsSaved, id, remoteContent, builder, extensionRegistry, listDiffsForm);
+					Study studySaved = this.saveIndividualStudy(idsSaved, id, remoteContent, builder, extensionRegistry, listDiffsForm);
+					String newLogoId = this.saveLogoImage(studySaved, url, username, password);
+					
+					if (newLogoId != null) {
+						
+						studySaved.getLogo().setId(newLogoId);
+						
+						studySaved.getLogo().setJustUploaded(true);
+						
+						individualStudyService.save(studySaved);
+					}
 					
 				} else if ( type.equals(HARMONIZATION_STUDY) ) {
 					
-					this.saveHarmonizationStudy(idsSaved, id, remoteContent, builder, extensionRegistry, listDiffsForm);
-				}				
+					HarmonizationStudy studySaved = this.saveHarmonizationStudy(idsSaved, id, remoteContent, builder, extensionRegistry, listDiffsForm);
+					String newLogoId = this.saveLogoImage(studySaved, url, username, password);
+					
+					if (newLogoId != null) {
+						
+						studySaved.getLogo().setId(newLogoId);
+						
+						studySaved.getLogo().setJustUploaded(true);
+						
+						harmonizationStudyService.save(studySaved);
+					}
+				}			
 			}
 			
 			return Response.ok(idsSaved).build();
@@ -330,8 +360,84 @@ public class StudiesImportResource {
 		}
 	}
 
+	
+	private Study saveIndividualStudy(List<String> idsSaved, String id, String remoteContent,
+			Mica.StudyDto.Builder builder, ExtensionRegistry extensionRegistry, List<String> listDiffsForm) throws ParseException {
+		
+		extensionRegistry.add(Mica.CollectionStudyDto.type);
+		JsonFormat.merge(remoteContent, extensionRegistry, builder);
+		
+		Study remoteStudy = (Study)dtos.fromDto( builder);
 
-	private void saveHarmonizationStudy(List<String> idsSaved, String id, String remoteContent,
+		if (!listDiffsForm.contains(INDIVIDUAL_STUDY_FORM_SECTION)) {
+			
+			if (!this.studyIdExistLocally(id)) {
+				
+				this.prepareCreateOperation(listDiffsForm, remoteStudy);
+				
+			} else {
+				
+				this.prepareReplaceOperation(id, listDiffsForm, remoteStudy);
+			}
+			
+			individualStudyService.save(remoteStudy);
+			
+			idsSaved.add(remoteStudy.getId());
+			
+			log.info("individualStudyService: {}", remoteStudy);
+			
+			return remoteStudy;
+		
+		}
+		
+		return null;
+	}
+
+
+	private String saveLogoImage(BaseStudy remoteStudy, String url, String username, String password) {
+		
+		if ( remoteStudy != null && remoteStudy.hasLogo() ) {
+			
+			String studyLogoId = remoteStudy.getLogo().getId();
+			
+			//ws/draft/individual-study/best_bls/file/5c79216eb73a78026367630a/_download
+			StringBuilder endpoint = new StringBuilder(WS_DRAFT_STUDY_LOGO);
+		
+		    endpoint.replace(endpoint.indexOf(RESOURCE_PATH), endpoint.indexOf(RESOURCE_PATH) + RESOURCE_PATH.length(), remoteStudy.getResourcePath());
+		    endpoint.replace(endpoint.indexOf(STUDY_ID), endpoint.indexOf(STUDY_ID) + STUDY_ID.length(), remoteStudy.getId());
+		    endpoint.replace(endpoint.indexOf(LOGO_ID), endpoint.indexOf(LOGO_ID) + LOGO_ID.length(), studyLogoId);
+			
+			try {
+				
+				HttpURLConnection con = this.prepareRemoteConnection(url, username, password, null, endpoint.toString());
+
+				String disposition = con.getHeaderField(HttpHeaders.CONTENT_DISPOSITION);
+				
+				String fileName = disposition.replaceFirst("(?i)^.*filename=\"?([^\"]+)\"?.*$", "$1");
+	
+				log.info("con AFTER (filename): " + fileName);
+				
+				TempFile tempFile = tempFileService.addTempFile(fileName, con.getInputStream() );
+				
+				log.info("tempFile.getId: " + tempFile.getId());
+				
+				return tempFile.getId();
+								
+			} catch (IOException e) {
+				log.error("IOException e");
+				log.error( Arrays.toString( e.getStackTrace()) );
+				
+			} catch (URISyntaxException e) {
+				log.error("URISyntaxException e");
+				log.error( Arrays.toString( e.getStackTrace()) );
+			}	
+		}
+		
+		return null;
+	}
+	
+	
+	private HarmonizationStudy saveHarmonizationStudy(List<String> idsSaved, String id, String remoteContent,
 			Mica.StudyDto.Builder builder, ExtensionRegistry extensionRegistry, List<String> listDiffsForm) throws ParseException {
 		
 		extensionRegistry.add(Mica.HarmonizationStudyDto.type);
@@ -363,37 +469,12 @@ public class StudiesImportResource {
 			idsSaved.add(remoteStudy.getId());
 			
 			log.info("harmonizationStudyService: {}", remoteStudy);
+			
+			return remoteStudy;
 		}
-
-	}
-
-
-	private void saveIndividualStudy(List<String> idsSaved, String id, String remoteContent,
-			Mica.StudyDto.Builder builder, ExtensionRegistry extensionRegistry, List<String> listDiffsForm) throws ParseException {
 		
-		extensionRegistry.add(Mica.CollectionStudyDto.type);
-		JsonFormat.merge(remoteContent, extensionRegistry, builder);
-		
-		Study remoteStudy = (Study)dtos.fromDto( builder);
+		return null;
 
-		if (!listDiffsForm.contains(INDIVIDUAL_STUDY_FORM_SECTION)) {
-			
-			if (!this.studyIdExistLocally(id)) {
-				
-				this.prepareCreateOperation(listDiffsForm, remoteStudy);
-				
-			} else {
-				
-				this.prepareReplaceOperation(id, listDiffsForm, remoteStudy);
-			}
-			
-			individualStudyService.save(remoteStudy);
-			
-			idsSaved.add(remoteStudy.getId());
-			
-			log.info("individualStudyService: {}", remoteStudy);
-		
-		}
 	}
 
 
@@ -492,7 +573,7 @@ public class StudiesImportResource {
 		return content.toString();
 	}
 	
-	private HttpURLConnection prepareRemoteConnection(String url, String username, String password, List<NameValuePair> param, String endpoint)
+	 HttpURLConnection prepareRemoteConnection(String url, String username, String password, List<NameValuePair> param, String endpoint)
 			throws IOException, URISyntaxException {	
 		
 		

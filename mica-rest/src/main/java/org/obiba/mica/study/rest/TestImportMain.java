@@ -1,14 +1,17 @@
 package org.obiba.mica.study.rest;
 
 import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.net.URISyntaxException;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import org.obiba.mica.JSONUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpHeaders;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParseException;
@@ -36,6 +39,25 @@ public class TestImportMain {
 					"https://recap-test.inesctec.pt/pub", "gfcg", "password", 
 					null, "/ws/draft/individual-study/epibel" );*/
 			
+			
+			String rawContent = resource.getRawContent(
+					"https://recap-test.inesctec.pt/pub", "gfcg", "password", 
+					null, "/ws/draft/individual-study/epibel/file/5e9723cee1728601bcfec31b/_download" );
+			
+			log.debug(rawContent);
+			
+			
+			HttpURLConnection con = resource.prepareRemoteConnection(
+					"https://recap-test.inesctec.pt/pub", "gfcg", "password", 
+					null, "/ws/draft/individual-study/epibel/file/5e9723cee1728601bcfec31b/_download");
+			
+			String disposition = con.getHeaderField(HttpHeaders.CONTENT_DISPOSITION);
+			
+			String fileName = disposition.replaceFirst("(?i)^.*filename=\"?([^\"]+)\"?.*$", "$1");
+			
+			log.debug( fileName );
+			
+			/*
 			Map<String, Object> remoteContent = resource.getJSONContent(
 					//"https://recap.inesctec.pt/pub", "gfcg", "password", 
 					//"https://recap-test.inesctec.pt/pub", "testaccess", "password", 
@@ -58,7 +80,7 @@ public class TestImportMain {
 			testJSONCompare(schema, schema2);
 			
 			//testJSONCompare(definition, definition2);
-			
+			*/
 			
 		
 		} catch (IOException e) {
