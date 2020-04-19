@@ -46,6 +46,16 @@
           </td>
           <td>{{micaConfig.portalUrl}}</td>
         </tr>
+        <tr>
+          <td>
+            <span translate>config.usePublicUrlForSharedLink</span>
+            <span class="help-block" translate>config.usePublicUrlForSharedLink-help</span>
+          </td>
+          <td>
+            <i class="fa fa-check-square-o" ng-hide="!micaConfig.isUsePublicUrlForSharedLink"></i>
+            <i class="fa fa-square-o" ng-hide="micaConfig.isUsePublicUrlForSharedLink"></i>
+          </td>
+        </tr>
         </tbody>
       </table>
 

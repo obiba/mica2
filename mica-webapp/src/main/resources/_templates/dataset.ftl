@@ -26,6 +26,12 @@
     <div class="content">
       <div class="container">
 
+        <#if draft>
+          <div class="alert alert-warning" role="alert">
+            <i class="icon fas fa-exclamation-triangle"></i> <@messageArgs code="viewing-draft-version" args=["/dataset/${dataset.id}"]/>
+          </div>
+        </#if>
+
         <!-- General Information content -->
         <div class="row">
           <div class="col-lg-12">
