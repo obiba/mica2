@@ -1,5 +1,6 @@
 package org.obiba.mica.web.controller;
 
+import com.google.common.base.Strings;
 import com.googlecode.protobuf.format.JsonFormat;
 import org.obiba.mica.study.NoSuchStudyException;
 import org.obiba.mica.study.date.PersistableYearMonth;
@@ -8,11 +9,13 @@ import org.obiba.mica.study.domain.DataCollectionEvent;
 import org.obiba.mica.study.domain.Population;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.service.PublishedStudyService;
+import org.obiba.mica.study.service.StudyService;
 import org.obiba.mica.web.model.LocalizedStringDtos;
 import org.obiba.mica.web.model.Mica;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.inject.Inject;
@@ -25,14 +28,18 @@ public class StudyController extends BaseController {
   private PublishedStudyService publishedStudyService;
 
   @Inject
+  private StudyService draftStudyService;
+
+  @Inject
   private LocalizedStringDtos localizedStringDtos;
 
   @GetMapping("/study/{id}")
-  public ModelAndView study(@PathVariable String id) {
+  public ModelAndView study(@PathVariable String id, @RequestParam(value = "draft", required = false) String shareKey) {
     Map<String, Object> params = newParameters();
-    BaseStudy study = getStudy(id);
+    BaseStudy study = getStudy(id, shareKey);
     params.put("study", study);
     params.put("type", (study instanceof Study) ? "Individual" : "Harmonization");
+    params.put("draft", !Strings.isNullOrEmpty(shareKey));
 
     if (study instanceof Study) {
       String timelineData = asJSONTimelineData((Study) study);
@@ -42,15 +49,20 @@ public class StudyController extends BaseController {
     return new ModelAndView("study", params);
   }
 
-  private BaseStudy getStudy(String id) {
+  private BaseStudy getStudy(String id, String shareKey) {
     BaseStudy study;
-    if ("_".equals(id))
-      study = publishedStudyService.findAll().stream().findFirst().orElse(null);
-    else
-      study = publishedStudyService.findById(id);
-
-    if (study == null) throw NoSuchStudyException.withId(id);
-    checkAccess((study instanceof Study) ? "/individual-study" : "/harmonization-study", id);
+    if (Strings.isNullOrEmpty(shareKey)) {
+      if ("_".equals(id))
+        study = publishedStudyService.findAll().stream().findFirst().orElse(null);
+      else
+        study = publishedStudyService.findById(id);
+      if (study == null) throw NoSuchStudyException.withId(id);
+      checkAccess((study instanceof Study) ? "/individual-study" : "/harmonization-study", id);
+    } else {
+      study = draftStudyService.findStudy(id);
+      if (study == null) throw NoSuchStudyException.withId(id);
+      checkPermission("/draft/" + ((study instanceof Study) ? "individual-study" : "harmonization-study"), "VIEW", id, shareKey);
+    }
     return study;
   }
 

@@ -1,7 +1,9 @@
 package org.obiba.mica.web.controller;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.core.domain.BaseStudyTable;
 import org.obiba.mica.core.domain.HarmonizationStudyTable;
 import org.obiba.mica.core.domain.StudyTable;
@@ -9,6 +11,8 @@ import org.obiba.mica.dataset.NoSuchDatasetException;
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.domain.StudyDataset;
+import org.obiba.mica.dataset.service.CollectedDatasetService;
+import org.obiba.mica.dataset.service.HarmonizedDatasetService;
 import org.obiba.mica.dataset.service.PublishedDatasetService;
 import org.obiba.mica.study.NoSuchStudyException;
 import org.obiba.mica.study.domain.*;
@@ -18,6 +22,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.inject.Inject;
@@ -34,14 +39,22 @@ public class DatasetController extends BaseController {
   private PublishedDatasetService publishedDatasetService;
 
   @Inject
+  private CollectedDatasetService draftCollectedDatasetService;
+
+  @Inject
+  private HarmonizedDatasetService draftHarmonizedDatasetService;
+
+  @Inject
   private PublishedStudyService publishedStudyService;
 
   @GetMapping("/dataset/{id}")
-  public ModelAndView study(@PathVariable String id) {
+  public ModelAndView study(@PathVariable String id, @RequestParam(value = "draft", required = false) String shareKey) {
     Map<String, Object> params = newParameters();
-    Dataset dataset = getDataset(id);
+    Dataset dataset = getDataset(id, shareKey);
     params.put("dataset", dataset);
     params.put("type", (dataset instanceof StudyDataset) ? "Collected" : "Harmonized");
+    params.put("draft", !Strings.isNullOrEmpty(shareKey));
+
     if (dataset instanceof StudyDataset) {
       addStudyTableParameters(params, ((StudyDataset) dataset).getStudyTable());
     } else {
@@ -52,7 +65,7 @@ public class DatasetController extends BaseController {
       List<Map<String, Object>> studyTables = Lists.newArrayList();
       List<String> ids = Lists.newArrayList();
       for (StudyTable sTable : harmoDataset.getStudyTables()) {
-        Map<String, Object> p = new HashMap<String, Object>();
+        Map<String, Object> p = new HashMap<>();
         addStudyTableParameters(p, sTable, ids);
         if (!p.isEmpty()) {
           studyTables.add(p);
@@ -64,7 +77,7 @@ public class DatasetController extends BaseController {
       List<Map<String, Object>> harmonizationTables = Lists.newArrayList();
       ids.clear();
       for (HarmonizationStudyTable hTable : harmoDataset.getHarmonizationTables()) {
-        Map<String, Object> p = new HashMap<String, Object>();
+        Map<String, Object> p = new HashMap<>();
         addHarmonizationTableParameters(p, hTable, ids);
         if (!p.isEmpty()) {
           harmonizationTables.add(p);
@@ -121,10 +134,21 @@ public class DatasetController extends BaseController {
     }
   }
 
-  private Dataset getDataset(String id) {
-    Dataset dataset = publishedDatasetService.findById(id);
-    if (dataset == null) throw NoSuchDatasetException.withId(id);
-    checkAccess((dataset instanceof StudyDataset) ? "/collected-dataset" : "/harmonized-dataset", id);
+  private Dataset getDataset(String id, String shareKey) {
+    Dataset dataset;
+    if (Strings.isNullOrEmpty(shareKey)) {
+      dataset = publishedDatasetService.findById(id);
+      if (dataset == null) throw NoSuchDatasetException.withId(id);
+      checkAccess((dataset instanceof StudyDataset) ? "/collected-dataset" : "/harmonized-dataset", id);
+    } else {
+      try {
+        dataset = draftCollectedDatasetService.findById(id);
+        checkPermission("/draft/collected-dataset", "VIEW", id, shareKey);
+      } catch(NoSuchDatasetException ex) {
+        dataset = draftHarmonizedDatasetService.findById(id);
+        checkPermission("/draft/harmonized-dataset", "VIEW", id, shareKey);
+      }
+    }
     return dataset;
   }
 

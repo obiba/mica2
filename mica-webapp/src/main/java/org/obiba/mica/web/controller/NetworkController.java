@@ -1,11 +1,13 @@
 package org.obiba.mica.web.controller;
 
 import com.google.common.base.Joiner;
+import com.google.common.base.Strings;
 import org.obiba.mica.core.domain.AbstractGitPersistable;
 import org.obiba.mica.core.domain.Membership;
 import org.obiba.mica.core.service.PersonService;
 import org.obiba.mica.network.NoSuchNetworkException;
 import org.obiba.mica.network.domain.Network;
+import org.obiba.mica.network.service.NetworkService;
 import org.obiba.mica.network.service.PublishedNetworkService;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.study.domain.BaseStudy;
@@ -15,10 +17,10 @@ import org.obiba.mica.study.service.PublishedStudyService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.inject.Inject;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -30,6 +32,9 @@ public class NetworkController extends BaseController {
   private SubjectAclService subjectAclService;
 
   @Inject
+  private NetworkService draftNetworkService;
+
+  @Inject
   private PublishedNetworkService publishedNetworkService;
 
   @Inject
@@ -39,11 +44,12 @@ public class NetworkController extends BaseController {
   private PersonService personService;
 
   @GetMapping("/network/{id}")
-  public ModelAndView network(@PathVariable String id) {
+  public ModelAndView network(@PathVariable String id, @RequestParam(value = "draft", required = false) String shareKey) {
 
     Map<String, Object> params = newParameters();
-    Network network = getNetwork(id);
+    Network network = getNetwork(id, shareKey);
     params.put("network", network);
+    params.put("draft", !Strings.isNullOrEmpty(shareKey));
 
     List<Network> networks = publishedNetworkService.findByIds(network.getNetworkIds());
     params.put("networks", networks.stream()
@@ -63,7 +69,7 @@ public class NetworkController extends BaseController {
     List<String> ids = individualStudies.stream().map(AbstractGitPersistable::getId).collect(Collectors.toList());
     ids.addAll(harmonizationStudies.stream().map(AbstractGitPersistable::getId).collect(Collectors.toList()));
     if (!ids.isEmpty()) {
-      params.put("affiliatedMembersQuery","studyMemberships.parentId:(" + Joiner.on(" ").join(ids) + ")");
+      params.put("affiliatedMembersQuery", "studyMemberships.parentId:(" + Joiner.on(" ").join(ids) + ")");
     }
 
     Map<String, List<Membership>> membershipMap = personService.getNetworkMembershipMap(network.getId());
@@ -72,15 +78,21 @@ public class NetworkController extends BaseController {
     return new ModelAndView("network", params);
   }
 
-  private Network getNetwork(String id) {
+  private Network getNetwork(String id, String shareKey) {
     Network network;
-    if ("_".equals(id)) {
-      network = publishedNetworkService.findAll().stream().findFirst().orElse(null);
+    if (Strings.isNullOrEmpty(shareKey)) {
+      if ("_".equals(id)) {
+        network = publishedNetworkService.findAll().stream().findFirst().orElse(null);
+      } else {
+        network = publishedNetworkService.findById(id);
+      }
+      if (network == null) throw NoSuchNetworkException.withId(id);
+      checkAccess("/network", id);
     } else {
-      network = publishedNetworkService.findById(id);
+      network = draftNetworkService.findById(id);
+      if (network == null) throw NoSuchNetworkException.withId(id);
+      checkPermission("/draft/network", "VIEW", id, shareKey);
     }
-    if (network == null) throw NoSuchNetworkException.withId(id);
-    checkAccess("/network", id);
     return network;
   }
 

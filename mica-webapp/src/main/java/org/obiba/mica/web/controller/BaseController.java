@@ -45,6 +45,19 @@ public class BaseController {
     subjectAclService.checkPermission(resource, action, id);
   }
 
+  /**
+   * Check the permission (action on a resource). If a key is provided and is valid, the permission check is by-passed.
+   * If the provided key is not valid, permission check is applied.
+   * @param resource
+   * @param action
+   * @param id
+   * @param shareKey
+   */
+  void checkPermission(String resource, String action, String id, String shareKey) {
+    subjectAclService.checkPermission(resource, action, id, shareKey);
+  }
+
+
   boolean isPermitted(String resource, String action, String id) {
     return subjectAclService.isPermitted(resource, action, id);
   }

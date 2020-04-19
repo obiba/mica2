@@ -62,6 +62,8 @@ public abstract class AbstractGitPersistableResource<T extends EntityState, T1 e
   @Value("${portal.draftResource.urlPattern}")
   private String portalUrlPattern;
 
+  private String publicUrlPattern = "{publicUrl}/{resourceType}/{resourceId}?draft={shareKey}";
+
   private static final Logger log = LoggerFactory.getLogger(AbstractGitPersistableResource.class);
 
   @GET
@@ -116,7 +118,7 @@ public abstract class AbstractGitPersistableResource<T extends EntityState, T1 e
   public Response getShareURL(@QueryParam("expire") String expire) {
     checkPermission("/draft/" + getService().getTypeName(), "EDIT");
     log.debug("Get share url for {}", getService().getTypeName());
-    return Response.ok().entity(generatePortalLinkForDraftResource(createShareKey(expire))).build();
+    return Response.ok().entity(generateSharedLinkForDraftResource(createShareKey(expire))).build();
   }
 
   /**
@@ -156,11 +158,22 @@ public abstract class AbstractGitPersistableResource<T extends EntityState, T1 e
     return String.format("Restored revision from '%s' (%s...)", formatted, commitInfo.getCommitId().substring(0,9));
   }
 
-  private String generatePortalLinkForDraftResource(String shareKey) {
-    return portalUrlPattern
-      .replace("{portalUrl}", micaConfigService.getPortalUrl())
-      .replace("{resourceType}", getService().getTypeName())
-      .replace("{resourceId}", getId())
-      .replace("{shareKey}", shareKey);
+  private String generateSharedLinkForDraftResource(String shareKey) {
+    if (micaConfigService.getConfig().isUsePublicUrlForSharedLink()) {
+      String type = getService().getTypeName();
+      if (type.contains("-"))
+        type = type.split("-")[1];
+      return publicUrlPattern
+        .replace("{publicUrl}", micaConfigService.getPublicUrl())
+        .replace("{resourceType}", type)
+        .replace("{resourceId}", getId())
+        .replace("{shareKey}", shareKey);
+    } else {
+      return portalUrlPattern
+        .replace("{portalUrl}", micaConfigService.getPortalUrl())
+        .replace("{resourceType}", getService().getTypeName())
+        .replace("{resourceId}", getId())
+        .replace("{shareKey}", shareKey);
+    }
   }
 }

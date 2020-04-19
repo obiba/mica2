@@ -3,6 +3,9 @@
 <#macro message code>
   <@spring.messageText code code/>
 </#macro>
+<#macro messageArgs code args>
+  <@spring.messageArgsText code args code/>
+</#macro>
 
 <!-- From a localized text get the value in the current language or in the default one or in the undefined one -->
 <#function localize txt={} default="">
