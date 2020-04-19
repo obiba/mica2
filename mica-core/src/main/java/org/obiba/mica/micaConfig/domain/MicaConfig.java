@@ -124,6 +124,8 @@ public class MicaConfig extends AbstractAuditableDocument {
 
   private boolean variableSummaryRequiresAuthentication = false;
 
+  private boolean usePublicUrlForSharedLink = true;
+
   private String style;
 
   private LocalizedString translations;
@@ -208,6 +210,14 @@ public class MicaConfig extends AbstractAuditableDocument {
 
   public void setPortalUrl(String portalUrl) {
     this.portalUrl = portalUrl;
+  }
+
+  public void setUsePublicUrlForSharedLink(boolean usePublicUrlForSharedLink) {
+    this.usePublicUrlForSharedLink = usePublicUrlForSharedLink;
+  }
+
+  public boolean isUsePublicUrlForSharedLink() {
+    return usePublicUrlForSharedLink;
   }
 
   public String getSecretKey() {

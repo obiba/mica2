@@ -342,6 +342,8 @@
     "publicUrl-help": "URL publique du serveur qui sera utilisée lors de l'envoi des courriels de notification.",
     "portalUrl": "URL du portail",
     "portalUrl-help": "URL publique du portail de l'organisation.",
+    "usePublicUrlForSharedLink": "Utiliser l'URL publique pour créer les liens de partage",
+    "usePublicUrlForSharedLink-help": "Utiliser l'URL publique plutôt que celle du portail pour créer les liens de partage des documents en mode brouillon. En d'autres termes, utiliser les pages publiques au lieu des pages Drupal pour montrer un document dans sa version non publiée.",
     "defaultCharSet": "Jeu de caractères par défaut",
     "languages": "Langues",
     "languages-help": "Langues dans lesquelles le contenu du site doit être saisie.",

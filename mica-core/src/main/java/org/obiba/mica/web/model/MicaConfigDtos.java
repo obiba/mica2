@@ -102,6 +102,7 @@ class MicaConfigDtos {
     if(!Strings.isNullOrEmpty(config.getPortalUrl())) {
       builder.setPortalUrl(config.getPortalUrl());
     }
+    builder.setIsUsePublicUrlForSharedLink(config.isUsePublicUrlForSharedLink());
 
     builder.setOpal(config.getOpal());
     builder.setPrivacyThreshold(config.getPrivacyThreshold());
@@ -190,6 +191,7 @@ class MicaConfigDtos {
 
     if(dto.hasPublicUrl()) config.setPublicUrl(dto.getPublicUrl());
     if(dto.hasPortalUrl()) config.setPortalUrl(dto.getPortalUrl());
+    if(dto.hasIsUsePublicUrlForSharedLink()) config.setUsePublicUrlForSharedLink(dto.getIsUsePublicUrlForSharedLink());
 
     dto.getLanguagesList().forEach(lang -> config.getLocales().add(new Locale(lang)));
     config.setOpal(dto.getOpal());
