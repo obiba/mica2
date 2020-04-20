@@ -164,21 +164,21 @@ public class StudiesImportResource {
 			
 			if (type.equals(INDIVIDUAL_STUDY)) {
 				
-				result.putAll( this.processComparisonSchemasDefinitions(url, username, password, WS_CONFIG_INDIVIDUAL_STUDY_FORM_CUSTOM, 
+				result.putAll( this.compareSchemaDefinition(url, username, password, WS_CONFIG_INDIVIDUAL_STUDY_FORM_CUSTOM, 
 						(EntityConfigService)individualStudyConfigService, INDIVIDUAL_STUDY_FORM_SECTION, NONE) );
 				
-				result.putAll( this.processComparisonSchemasDefinitions(url, username, password, WS_CONFIG_POPULATION_FORM_CUSTOM, 
+				result.putAll( this.compareSchemaDefinition(url, username, password, WS_CONFIG_POPULATION_FORM_CUSTOM, 
 						(EntityConfigService)populationConfigService, POPULATION_FORM_SECTION, INDIVIDUAL_STUDY_FORM_SECTION) );
 				
-				result.putAll( this.processComparisonSchemasDefinitions(url, username, password, WS_CONFIG_DATA_COLLECTION_EVENT_FORM_CUSTOM, 
+				result.putAll( this.compareSchemaDefinition(url, username, password, WS_CONFIG_DATA_COLLECTION_EVENT_FORM_CUSTOM, 
 						(EntityConfigService)dataCollectionEventConfigService, DATA_COLLECTION_EVENT_FORM_SECTION, POPULATION_FORM_SECTION) );
 				
 			} else if ( type.equals(HARMONIZATION_STUDY) ) {
 				
-				result.putAll( this.processComparisonSchemasDefinitions(url, username, password, WS_CONFIG_HARMONIZATION_STUDY_FORM_CUSTOM, 
+				result.putAll( this.compareSchemaDefinition(url, username, password, WS_CONFIG_HARMONIZATION_STUDY_FORM_CUSTOM, 
 						(EntityConfigService)harmonizationStudyConfigService, HARMONIZATION_STUDY_FORM_SECTION, NONE) );
 				
-				result.putAll( this.processComparisonSchemasDefinitions(url, username, password, WS_CONFIG_HARMONIZATION_POPULATION_FORM_CUSTOM, 
+				result.putAll( this.compareSchemaDefinition(url, username, password, WS_CONFIG_HARMONIZATION_POPULATION_FORM_CUSTOM, 
 						(EntityConfigService)harmonizationPopulationConfigService, HARMONIZATION_POPULATION_FORM_SECTION, HARMONIZATION_STUDY_FORM_SECTION) );
 			}
 			
@@ -205,10 +205,8 @@ public class StudiesImportResource {
 			
 			List<NameValuePair> params = new ArrayList<>();
 			params.add(new BasicNameValuePair(TYPE, type));
-			
-			HttpURLConnection con = this.prepareRemoteConnection(url, username, password, params, WS_DRAFT_STUDY_STATES);
 
-			return Response.ok( this.getRawContent(con) ).build();
+			return Response.ok( this.getRawContent(url, username, password, params, WS_DRAFT_STUDY_STATES) ).build();
 			
 		} catch (Exception e) {
 			
@@ -248,7 +246,7 @@ public class StudiesImportResource {
 				existingIds.put( localStudy.getId(),  jsonDTO.toString() );
 
 			} catch(NoSuchEntityException ex) {
-				//ignore if study doesn't exist locally.
+				//if study doesn't exist locally, ignore.
 				log.info("Study id not exist locally: {}", id);
 			}
 		}
@@ -266,7 +264,6 @@ public class StudiesImportResource {
 			@QueryParam(IDS) List<String> ids,
 			@QueryParam(LIST_DIFFS_FORM) List<String> listDiffsForm) {
 
-			
 		Map<String, Integer> idsSavedStatus = new LinkedHashMap<>();
 		
 		for (String id : ids) {
@@ -305,8 +302,7 @@ public class StudiesImportResource {
 		return Response.ok(idsSavedStatus).build();
 	}
 	
-	
-	private Map<String, Boolean> processComparisonSchemasDefinitions(String url, String username, String password, 
+	private Map<String, Boolean> compareSchemaDefinition(String url, String username, String password, 
 			String endpoint, EntityConfigService<EntityConfig> configService, String formSection,
 			String parentFormSection) throws IOException, URISyntaxException {
 		
@@ -356,7 +352,6 @@ public class StudiesImportResource {
 		return remoteStudy;
 	}
 
-
 	private void saveLogoImage(BaseStudy remoteStudy, String url, String username, String password) throws FileUploadException {
 		
 		if ( remoteStudy != null && remoteStudy.hasLogo() ) {
@@ -391,7 +386,6 @@ public class StudiesImportResource {
 		}
 	}
 	
-	
 	private HarmonizationStudy saveHarmonizationStudy(String id, String remoteContent,
 			Mica.StudyDto.Builder builder, ExtensionRegistry extensionRegistry, List<String> listDiffsForm) throws ParseException {
 		
@@ -423,7 +417,6 @@ public class StudiesImportResource {
 		
 		return remoteStudy;
 	}
-
 
 	private void prepareReplaceOperation(String id, List<String> listDiffsForm, Study remoteStudy) {
 		
@@ -470,7 +463,6 @@ public class StudiesImportResource {
 		}
 	}
 	
-	
 	private int handleException(Exception e) {
 		
 		if (e instanceof UnknownHostException) return HttpStatus.SC_NOT_FOUND;
@@ -494,28 +486,23 @@ public class StudiesImportResource {
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
 	private Map<String, Object> getJSONContent(String url, String username, String password, List<NameValuePair> param, String endpoint)
 			throws IOException, URISyntaxException {
 		
-		return this.getJSONContent( this.prepareRemoteConnection(url, username, password, param, endpoint) );
-	}
-	
-	private String getRawContent(String url, String username, String password, List<NameValuePair> param, String endpoint)
-			throws IOException, URISyntaxException {
-		
-		return this.getRawContent( this.prepareRemoteConnection(url, username, password, param, endpoint) );
-	}
-	
-	@SuppressWarnings("unchecked")
-	private Map<String, Object> getJSONContent(HttpURLConnection con) throws IOException {
+		HttpURLConnection con = this.prepareRemoteConnection(url, username, password, param, endpoint);
 		
 		ObjectMapper mapper = new ObjectMapper();
 		
 		return mapper.readValue(con.getInputStream(), Map.class);
 	}
 	
-	private String getRawContent(HttpURLConnection con) throws IOException {
-	
+	private String getRawContent(String url, String username, String password, List<NameValuePair> param, String endpoint)
+			throws IOException, URISyntaxException {
+		
+		HttpURLConnection con = this.prepareRemoteConnection(url, username, password, param, endpoint);
+		
+		
 		BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
 		String inputLine;
 		StringBuilder content = new StringBuilder();
