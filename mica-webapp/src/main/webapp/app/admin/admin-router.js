@@ -56,5 +56,17 @@ mica.admin
           access: {
             authorizedRoles: ['mica-administrator']
           }
-        });
+        })
+        .when('/persons', {
+          templateUrl: 'app/admin/views/persons.html',
+          access: {
+            authorizedRoles: ['mica-administrator']
+          }
+        })
+        .when('/person/:id', {
+          templateUrl: 'app/admin/views/person.html',
+          access: {
+            authorizedRoles: ['mica-administrator']
+          }
+      });
     }]);

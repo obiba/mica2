@@ -1,0 +1,67 @@
+<div>
+  <h2>
+    <ol class="breadcrumb mica-breadcrumb">
+      <li class="active" translate>persons.title</li>
+    </ol>
+  </h2>
+
+  <div class="row voffset4" ng-if="$ctrl.query || $ctrl.persons.length > 0">
+    <div class="col-xs-4">
+          <span class="input-group input-group-sm no-padding-top">
+            <span class="input-group-addon" id="person-search"><i class="fa fa-search"></i></span>
+            <input ng-model="$ctrl.query" type="text" class="form-control" aria-describedby="person-search">
+          </span>
+    </div>
+    <div class="col-xs-8">
+      <dir-pagination-controls
+        pagination-id="persons"
+        class="pull-right"
+        on-page-change="$ctrl.onPageChanged(newPageNumber, oldPageNumber)">
+      </dir-pagination-controls>
+    </div>
+  </div>
+
+  <p ng-if="$ctrl.loading" class="voffset2 loading">
+  </p>
+
+  <p ng-if="!$ctrl.loading && $ctrl.persons.length < 1" translate>persons.none</p>
+
+  <div class="table-responsive" ng-if="$ctrl.persons.length > 0">
+    <table class="table table-bordered table-striped">
+      <thead>
+      <tr>
+        <th translate>contact.name</th>
+        <th translate>contact.email</th>
+        <th translate>studies</th>
+        <th translate>networks</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr dir-paginate="person in $ctrl.persons | itemsPerPage: $ctrl.limit" total-items="$ctrl.total" pagination-id="persons">
+        <td>
+          <a ng-href="#/person/{{person.id}}">{{person.firstName}} {{person.lastName}}</a>
+        </td>
+        <td>
+          {{person.email}}
+        </td>
+        <td>
+            <span ng-repeat="membership in person.studyMemberships">
+              <a ng-href="#/{{membership['obiba.mica.PersonDto.StudyMembershipDto.meta'].type}}/{{membership.parentId}}" ng-click="cancel()">
+                <localized value="membership.parentAcronym" lang="lang"></localized>
+              </a>
+              (<em>{{'contact.label.' + membership.role | translate}}</em>)<span ng-if="!$last">,</span>
+            </span>
+        </td>
+        <td>
+            <span ng-repeat="membership in person.networkMemberships">
+              <a ng-href="#/network/{{membership.parentId}}">
+                <localized value="membership.parentAcronym" lang="lang"></localized>
+              </a>
+              (<em>{{'contact.label.' + membership.role | translate}}</em>)<span ng-if="!$last">,</span>
+            </span>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

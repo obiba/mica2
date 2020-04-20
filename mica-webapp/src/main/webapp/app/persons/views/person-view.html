@@ -1,0 +1,12 @@
+<div>
+  <h2>
+    <ol class="breadcrumb mica-breadcrumb">
+      <li><a href="#/persons" translate>persons.title</a></li>
+      <li class="active" >{{$ctrl.person.firstName}}</li>
+    </ol>
+  </h2>
+
+  <div sf-model="$ctrl.person" sf-form="$ctrl.sfForm.definition" sf-schema="$ctrl.sfForm.schema" sf-options="$ctrl.sfOptions"></div>
+
+  <person-memberships person="$ctrl.person"></person-memberships>
+</div>
