@@ -286,49 +286,55 @@ mica.study
             
               }).then(function(response) {
                 console.log('[NEXT-0(response)]');
-
-                /*TODO tratar: 
-                 * response = 400 (BAD REQUEST)
-                 * response = 404 (NOT FOUND) 
-                 */
-                var diffsEnum = response.data;
                 
-                var mapDiffsFormParent = new Map();
-                mapDiffsFormParent.set(NONE, true);
-                
-                $scope.diffsCustomFormJSON = [];
-                $scope.listDiffsForm = [];
+                if (typeof(response.data) === 'number') {
+               	 
+               	 	$scope.statusErrorImport = response.data;
+               	 
+                } else {
+                	
+                	$scope.statusErrorImport = 0;
+                	
+                	var diffsEnum = response.data;
+                    
+                    var mapDiffsFormParent = new Map();
+                    mapDiffsFormParent.set(NONE, true);
+                    
+                    $scope.diffsCustomFormJSON = [];
+                    $scope.listDiffsForm = [];
 
-                for (var prop in diffsEnum) {
-                	
-	            	var propJSON = JSON.parse(String(prop));
-	        	
-	            	mapDiffsFormParent.set(propJSON.formSection, diffsEnum[prop] && mapDiffsFormParent.get(propJSON.parentFormSection) );
-	            	
-	            	var diffVO = {
-		          			formSection : propJSON.formSection,
-	            			formTitle : CONFIG_FORM_TITLE[propJSON.formSection], 
-		      				endpoint : propJSON.endpoint,
-		      				isEqual : diffsEnum[prop],
-		      				parentIsImportable : mapDiffsFormParent.get(propJSON.parentFormSection)
-		      			  };
-	            	
-	        		$scope.diffsCustomFormJSON.push(diffVO);
-                	
-	        		if (!diffsEnum[prop]) {
-	        			$scope.listDiffsForm.push(propJSON.formSection);
-	        		}
-	        		
-                	if ((propJSON.formSection === INDIVIDUAL_STUDY || propJSON.formSection === HARMONIZATION_STUDY) &&  diffsEnum[prop]) {
-                		
-                		$scope.diffsConfigIsPossibleImport = true;
-                	}
+                    for (var prop in diffsEnum) {
+                    	
+    	            	var propJSON = JSON.parse(String(prop));
+    	        	
+    	            	mapDiffsFormParent.set(propJSON.formSection, diffsEnum[prop] && mapDiffsFormParent.get(propJSON.parentFormSection) );
+    	            	
+    	            	var diffVO = {
+    		          			formSection : propJSON.formSection,
+    	            			formTitle : CONFIG_FORM_TITLE[propJSON.formSection], 
+    		      				endpoint : propJSON.endpoint,
+    		      				isEqual : diffsEnum[prop],
+    		      				parentIsImportable : mapDiffsFormParent.get(propJSON.parentFormSection)
+    		      			  };
+    	            	
+    	        		$scope.diffsCustomFormJSON.push(diffVO);
+                    	
+    	        		if (!diffsEnum[prop]) {
+    	        			$scope.listDiffsForm.push(propJSON.formSection);
+    	        		}
+    	        		
+                    	if ((propJSON.formSection === INDIVIDUAL_STUDY || propJSON.formSection === HARMONIZATION_STUDY) &&  diffsEnum[prop]) {
+                    		
+                    		$scope.diffsConfigIsPossibleImport = true;
+                    	}
+                    }
+
+                    $('#myModalDialog').addClass('modal-lg');
+                    $scope.modalIndex = DIFF_CUSTOM_FORM_1;
                 }
-
-                $('#myModalDialog').addClass('modal-lg');
-                $scope.modalIndex = DIFF_CUSTOM_FORM_1;
-                $('body').css('cursor', 'default');
                 
+                $('body').css('cursor', 'default');
+
               });
             
     	} else if ($scope.modalIndex === DIFF_CUSTOM_FORM_1) {
@@ -347,16 +353,16 @@ mica.study
               }).then(function(response) {
                  console.log('[NEXT-1(response)]');
                  
-                 /*TODO tratar: 
-                  * response = 400 (BAD REQUEST)
-                  * response = 404 (NOT FOUND) 
-                  */
+                 if (typeof(response.data) === 'number') {
+                	 $scope.statusErrorImport = response.data;
+                	 
+                 } else {
+                	 $scope.statusErrorImport = 0;
+                	 $scope.studiesToImport = response.data; 
+                     $scope.modalIndex = REMOTE_STUDIES_2;
+                 }
                  
-                 $scope.studiesToImport = response.data;
-            	 
                  $('body').css('cursor', 'default');
-                 
-                 $scope.modalIndex = REMOTE_STUDIES_2;
               });
             
         } else if ($scope.modalIndex === REMOTE_STUDIES_2) {
@@ -471,7 +477,6 @@ mica.study
       //REMOVE_FROM_LIST
       $scope.removeFromList = function(studySummary, isInCreateList) {	  
 		console.log('[REMOVE_FROM_LIST]');
-		console.log(studySummary);
 		
 		var newDataList = [];
 
@@ -513,7 +518,6 @@ mica.study
 
         var idsToSave = [];
         $scope.studiesSaved = [];
-        $scope.statusErrorImport = '';
         
         
         $('body').css('cursor', 'progress');
@@ -542,21 +546,14 @@ mica.study
 	        }).then(function(response) {
 	          console.log('[FINISH(response)]');
 	          
-              /*TODO tratar: 
-               * response = 400 (BAD REQUEST)
-               * response = 404 (NOT FOUND) 
-               * response = 204 (SC_NO_CONTENT) //Logo problem
-               */
+	          var responseData = response.data;
 	          
-	          if (response.status !== 200) {//refactoring
-	        	  $scope.statusErrorImport += (response.status + ' ');
-	          }
-	          
-	          $scope.idsSaved = response.data;
+	          $scope.idsSaved = Object.keys(responseData);
 	          
 	          angular.forEach($scope.studiesToCreate, function(v) {
 	        	if ($scope.idsSaved.includes(v.id)) {
 	        		
+	        		v.statusImport = responseData[v.id];
 	        		v.operation = CREATE;
 	        		$scope.studiesSaved.push(v);
 	        	}
@@ -565,11 +562,11 @@ mica.study
 	          angular.forEach($scope.studiesToReplace, function(v) {
 	  	        if ($scope.idsSaved.includes(v.id)) {
 	  	        	
+	  	        	v.statusImport = responseData[v.id];
 	  	        	v.operation = REPLACE;
 	  	        	$scope.studiesSaved.push(v);
 	  	        }
-	          }); 
-	          
+	          });  
 		    
 	          $scope.studiesToReplace = [];
 	          $scope.studiesToCreate = [];

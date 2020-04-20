@@ -11,6 +11,7 @@
 package org.obiba.mica.study.rest;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -18,8 +19,8 @@ import java.net.ProtocolException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLConnection;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -77,6 +78,9 @@ import com.googlecode.protobuf.format.JsonFormat.ParseException;
 @RequiresAuthentication
 public class StudiesImportResource {
 	
+	private static final String SAVE_STUDIES = "saveStudies";
+	private static final String LIST_DIFFERENCES = "listDifferences";
+	private static final String LIST_REMOTE_STUDIES = "listRemoteStudies";
 	private static final String LIST_DIFFS_FORM = "listDiffsForm";
 	private static final String WS_CONFIG_HARMONIZATION_POPULATION_FORM_CUSTOM = "/ws/config/harmonization-population/form-custom";
 	private static final String WS_CONFIG_HARMONIZATION_STUDY_FORM_CUSTOM = "/ws/config/harmonization-study/form-custom";
@@ -180,17 +184,11 @@ public class StudiesImportResource {
 			
 			return Response.ok( result ).build();
 			
-		} catch (URISyntaxException|ProtocolException e) {
+		} catch (Exception e) {
 			
-			log.error( Arrays.toString( e.getStackTrace()) );
+			log.error(LIST_DIFFERENCES, e);
 			
-			return Response.ok(HttpStatus.SC_BAD_REQUEST).build();
-			
-		} catch (IOException e) {
-			
-			log.error( Arrays.toString( e.getStackTrace()) );
-			
-			return Response.ok(HttpStatus.SC_NOT_FOUND).build();
+			return Response.ok(this.handleException(e)).build();
 		}
 	}
 	
@@ -212,18 +210,12 @@ public class StudiesImportResource {
 
 			return Response.ok( this.getRawContent(con) ).build();
 			
-		} catch (URISyntaxException|ProtocolException e) {
+		} catch (Exception e) {
 			
-			log.error( Arrays.toString( e.getStackTrace()) );
+			log.error(LIST_REMOTE_STUDIES, e);
 			
-			return Response.ok(HttpStatus.SC_BAD_REQUEST).build();
-			
-		} catch (IOException e) {
-			
-			log.error( Arrays.toString( e.getStackTrace()) );
-			
-			return Response.ok(HttpStatus.SC_NOT_FOUND).build();
-		}
+			return Response.ok(this.handleException(e)).build();
+		} 
 	}
 	
 	@GET
@@ -274,12 +266,13 @@ public class StudiesImportResource {
 			@QueryParam(IDS) List<String> ids,
 			@QueryParam(LIST_DIFFS_FORM) List<String> listDiffsForm) {
 
-		try {
 			
-			List<String> idsSaved = new ArrayList<>();
+		Map<String, Integer> idsSavedStatus = new LinkedHashMap<>();
+		
+		for (String id : ids) {
 			
-			for (String id : ids) {
-				
+			try {
+			
 				String remoteContent = this.getRawContent(url, username, password, null,
 						(type.equals(INDIVIDUAL_STUDY) ? WS_DRAFT_INDIVIDUAL_STUDY_ID : WS_DRAFT_HARMONIZATION_STUDY_ID).replace("{id}", id ));
 				
@@ -288,54 +281,30 @@ public class StudiesImportResource {
 				
 				if ( type.equals(INDIVIDUAL_STUDY) ) {
 					
-					Study studySaved = this.saveIndividualStudy(idsSaved, id, remoteContent, builder, extensionRegistry, listDiffsForm);
-					String newLogoId = this.saveLogoImage(studySaved, url, username, password);
+					Study studySaved = this.saveIndividualStudy(id, remoteContent, builder, extensionRegistry, listDiffsForm);
+					this.saveLogoImage(studySaved, url, username, password);
 					
-					if (newLogoId != null) {
-						
-						studySaved.getLogo().setId(newLogoId);
-						studySaved.getLogo().setJustUploaded(true);
-						
-						individualStudyService.save(studySaved);
-					}
+					idsSavedStatus.put(studySaved.getId(), HttpStatus.SC_OK);
 					
 				} else if ( type.equals(HARMONIZATION_STUDY) ) {
 					
-					HarmonizationStudy studySaved = this.saveHarmonizationStudy(idsSaved, id, remoteContent, builder, extensionRegistry, listDiffsForm);
-					String newLogoId = this.saveLogoImage(studySaved, url, username, password);
+					HarmonizationStudy studySaved = this.saveHarmonizationStudy(id, remoteContent, builder, extensionRegistry, listDiffsForm);
+					this.saveLogoImage(studySaved, url, username, password);
 					
-					if (newLogoId != null) {
-						
-						studySaved.getLogo().setId(newLogoId);
-						studySaved.getLogo().setJustUploaded(true);
-						
-						harmonizationStudyService.save(studySaved);
-					}
-				}			
+					idsSavedStatus.put(studySaved.getId(), HttpStatus.SC_OK);
+				}
+				
+			} catch (Exception e) {
+				
+				log.error(SAVE_STUDIES, e );
+				
+				idsSavedStatus.put(id, this.handleException(e));
 			}
-			
-			return Response.ok(idsSaved).build();
-			
-		} catch (URISyntaxException|ProtocolException e) {
-			
-			log.error( Arrays.toString( e.getStackTrace()) );
-			
-			return Response.ok(HttpStatus.SC_BAD_REQUEST).build();
-			
-		} catch (IOException e) {
-			
-			log.error( Arrays.toString( e.getStackTrace()) );
-			
-			return Response.ok(HttpStatus.SC_NOT_FOUND).build();
-			
-		} catch (FileUploadException e) {
-			
-			log.error( Arrays.toString( e.getStackTrace()) );
-			
-			return Response.ok(HttpStatus.SC_NO_CONTENT).build();
 		}
 		
+		return Response.ok(idsSavedStatus).build();
 	}
+	
 	
 	private Map<String, Boolean> processComparisonSchemasDefinitions(String url, String username, String password, 
 			String endpoint, EntityConfigService<EntityConfig> configService, String formSection,
@@ -362,7 +331,7 @@ public class StudiesImportResource {
 		return result;
 	}
 	
-	private Study saveIndividualStudy(List<String> idsSaved, String id, String remoteContent,
+	private Study saveIndividualStudy(String id, String remoteContent,
 			Mica.StudyDto.Builder builder, ExtensionRegistry extensionRegistry, List<String> listDiffsForm) throws ParseException {
 		
 		extensionRegistry.add(Mica.CollectionStudyDto.type);
@@ -382,17 +351,13 @@ public class StudiesImportResource {
 			}
 			
 			individualStudyService.save(remoteStudy);
-			
-			idsSaved.add(remoteStudy.getId());
-			
-			return remoteStudy;
 		}
 		
-		return null;
+		return remoteStudy;
 	}
 
 
-	private String saveLogoImage(BaseStudy remoteStudy, String url, String username, String password) throws FileUploadException {
+	private void saveLogoImage(BaseStudy remoteStudy, String url, String username, String password) throws FileUploadException {
 		
 		if ( remoteStudy != null && remoteStudy.hasLogo() ) {
 			
@@ -413,20 +378,21 @@ public class StudiesImportResource {
 				String fileName = disposition.replaceFirst("(?i)^.*filename=\"?([^\"]+)\"?.*$", "$1");
 				
 				TempFile tempFile = tempFileService.addTempFile(fileName, con.getInputStream() );
-
-				return tempFile.getId();
-								
+					
+				remoteStudy.getLogo().setId(tempFile.getId());
+				remoteStudy.getLogo().setJustUploaded(true);
+				
+				studyService.save(remoteStudy, null);
+						
 			} catch (IOException|URISyntaxException e) {
 				
 				throw new FileUploadException();
 			} 	
 		}
-		
-		return null;
 	}
 	
 	
-	private HarmonizationStudy saveHarmonizationStudy(List<String> idsSaved, String id, String remoteContent,
+	private HarmonizationStudy saveHarmonizationStudy(String id, String remoteContent,
 			Mica.StudyDto.Builder builder, ExtensionRegistry extensionRegistry, List<String> listDiffsForm) throws ParseException {
 		
 		extensionRegistry.add(Mica.HarmonizationStudyDto.type);
@@ -453,13 +419,9 @@ public class StudiesImportResource {
 			}
 			
 			harmonizationStudyService.save(remoteStudy);
-			
-			idsSaved.add(remoteStudy.getId());
-			
-			return remoteStudy;
 		}
 		
-		return null;
+		return remoteStudy;
 	}
 
 
@@ -507,6 +469,18 @@ public class StudiesImportResource {
 			}
 		}
 	}
+	
+	
+	private int handleException(Exception e) {
+		
+		if (e instanceof UnknownHostException) return HttpStatus.SC_NOT_FOUND;
+		else if (e instanceof URISyntaxException) return HttpStatus.SC_BAD_REQUEST;
+		else if (e instanceof ProtocolException) return HttpStatus.SC_BAD_REQUEST;
+		else if (e instanceof FileNotFoundException) return HttpStatus.SC_SERVICE_UNAVAILABLE;
+		else if (e instanceof IOException) return HttpStatus.SC_UNAUTHORIZED;
+		else if (e instanceof FileUploadException) return HttpStatus.SC_NO_CONTENT;
+		else return HttpStatus.SC_METHOD_FAILURE;
+	}
 
 	private boolean studyIdExistLocally(String id) {
 		
@@ -520,13 +494,13 @@ public class StudiesImportResource {
 		}
 	}
 	
-	Map<String, Object> getJSONContent(String url, String username, String password, List<NameValuePair> param, String endpoint)
+	private Map<String, Object> getJSONContent(String url, String username, String password, List<NameValuePair> param, String endpoint)
 			throws IOException, URISyntaxException {
 		
 		return this.getJSONContent( this.prepareRemoteConnection(url, username, password, param, endpoint) );
 	}
 	
-	String getRawContent(String url, String username, String password, List<NameValuePair> param, String endpoint)
+	private String getRawContent(String url, String username, String password, List<NameValuePair> param, String endpoint)
 			throws IOException, URISyntaxException {
 		
 		return this.getRawContent( this.prepareRemoteConnection(url, username, password, param, endpoint) );
@@ -555,9 +529,8 @@ public class StudiesImportResource {
 		return content.toString();
 	}
 	
-	HttpURLConnection prepareRemoteConnection(String url, String username, String password, List<NameValuePair> param, String endpoint)
-			throws IOException, URISyntaxException {	
-		
+	private HttpURLConnection prepareRemoteConnection(String url, String username, String password, 
+			List<NameValuePair> param, String endpoint) throws IOException, URISyntaxException {	
 		
 		URI preparedURI = new URI((url.endsWith("/")) ? url.substring(0, url.length() - 1) : url);
 		

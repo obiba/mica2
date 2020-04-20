@@ -192,19 +192,13 @@
           <!-- 3.2 - Studies to Replace -->
           <form name="myFormSummary" novalidate class="simple-form">
           <div ng-show="studiesToReplace.length > 0">
-          
-          	
             	<label class="control-label ng-binding">
               		<span translate>study.import.update-operations</span>
-            	</label>
-            	<!-- <p style="float: right"><font size="2">* <span translate>study.import.confirmation-hint</span></font></p>  -->
-            
-           
+            	</label>    
             <table class="table table-bordered table-striped">
               <thead>
                 <tr>
                   <th data-column-name="id">ID</th>
-                  <!-- <th data-column-name="acronym">{{"study.acronym" | translate}}</th>  --> 
                   <th data-column-name="confirmation">{{"study.import.confirmation" | translate}}</th> 
                   <th data-column-name="name" class="col-md-6">{{"study.name" | translate}}</th>
                   <th translate>study.import.changes</th>
@@ -221,13 +215,6 @@
                   <td>
                   	<input type="text" name="confirmation" ng-pattern="studyToUpdate.id" title="{{'study.import.confirmation-hint' | translate}}" 
                   		   ng-model="studyToUpdate.confirmation" class="form-control ng-pristine ng-valid ng-scope ng-not-empty ng-touched" required/>
-                  	<!--  
-                    <ul class="list-unstyled">
-                      <li ng-repeat="acronym in studyToUpdate.acronym">
-                        <span class="badge">{{acronym.lang}}</span> {{acronym.value}}
-                      </li>
-                    </ul>
-                    -->
                   </td>
                   <td>
                     <ul class="list-unstyled">
@@ -313,9 +300,9 @@
               <thead>
                 <tr>
                   <th data-column-name="id">ID</th>
-                  <th data-column-name="acronym">{{"study.acronym" | translate}}</th>
-                  <th data-column-name="name" class="col-md-8">{{"study.name" | translate}}</th>
+                  <th data-column-name="name" class="col-md-6">{{"study.name" | translate}}</th>
                   <th translate>study.import.operation</th>
+                  <th translate>study.import.status</th>
                 </tr>
               </thead>
               <tbody>
@@ -323,13 +310,6 @@
                   <td>
                     <ul class="list-unstyled">
                     	<span>{{studySaved.id}}</span>
-                    </ul>
-                  </td>
-                  <td>
-                    <ul class="list-unstyled">
-                      <li ng-repeat="acronym in studySaved.acronym">
-                        <span class="badge">{{acronym.lang}}</span> {{acronym.value}}
-                      </li>
                     </ul>
                   </td>
                   <td>
@@ -344,14 +324,27 @@
                     	<span translate>{{studySaved.operation.indexOf('create') > -1 ? 'study.import.operation-create' : 'study.import.operation-replace'}}</span>
                     </ul>
                   </td>
+                  <td>
+                    <ul class="list-unstyled">
+                    	<span ng_show="studySaved.statusImport === 200" translate>{{'study.import.status-ok'}}</span>
+                    	<span ng_show="studySaved.statusImport === 400" class="text-danger" translate>{{'study.import.problems.problem-400'}}</span>
+                    	<span ng_show="studySaved.statusImport === 401" class="text-danger" translate>{{'study.import.problems.problem-401'}}</span>
+                    	<span ng_show="studySaved.statusImport === 404" class="text-danger" translate>{{'study.import.problems.problem-404'}}</span>
+                    	<span ng_show="studySaved.statusImport === 503" class="text-danger" translate>{{'study.import.problems.problem-503'}}</span>
+                    	<span ng_show="studySaved.statusImport === 204" class="text-danger" translate>{{'study.import.problems.problem-204'}}</span>
+                    </ul>
+                  </td>
                 </tr>
               </tbody>
             </table>
           </div>
-          <div ng-show="statusErrorImport.length > 0">
-          	<h4><span translate>study.import.problem</span>{{statusErrorImport}}</h4>
-          </div>
 	    </div>
+	    <a class="modal-body" ng_show="statusErrorImport > 0">
+           	<span ng_show="statusErrorImport === 400" class="text-danger" translate>{{'study.import.problems.problem-400'}}</span>
+           	<span ng_show="statusErrorImport === 401" class="text-danger" translate>{{'study.import.problems.problem-401'}}</span>
+           	<span ng_show="statusErrorImport === 404" class="text-danger" translate>{{'study.import.problems.problem-404'}}</span>
+            <span ng_show="statusErrorImport === 503" class="text-danger" translate>{{'study.import.problems.problem-503'}}</span>
+        </a>
         <!-- Footer navigation Buttons -->
         <div class="modal-footer">
           <button id="myPreviousButton" type="button" class="btn btn-info" ng-click="previous()" ng-disabled="(modalIndex == 0)" aria-hidden="true">
