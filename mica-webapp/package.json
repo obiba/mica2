@@ -11,7 +11,7 @@
     "rql": "git+https://github.com/epigeny/rql.git#1.0.0",
     "simplemde": "^1.11.2",
     "vue": "^2.6.11",
-    "vue-obiba-search-result": "git+https://github.com/epigeny/vue-obiba-search-result.git#1.1.0"
+    "vue-obiba-search-result": "git+https://github.com/epigeny/vue-obiba-search-result.git#1.1.1"
   },
   "devDependencies": {
     "grunt": "1.0.1",
