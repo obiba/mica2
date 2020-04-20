@@ -166,23 +166,8 @@ const StudyFilterShortcutComponent = Vue.component('study-filter-shortcut', {
 
       return ['Study', 'HarmonizationStudy'];
     },
-    isAll(values) {
-      return !values || Array.isArray(values) && values.length > 1;
-    },
-    isClassName(name, values) {
-      return Array.isArray(values) ? values.length === 1 && values.indexOf(name) > -1 : values === name;
-    },
     onLocationChanged(payload) {
-      const tree = payload.tree;
-      const classNameQuery = tree.search((name, args) => args.indexOf('Mica_study.className') > -1);
-      if (classNameQuery) {
-        const values = classNameQuery.args[1];
-        this.selection.all = this.isAll(values);
-        this.selection.study = this.isClassName('Study', values);
-        this.selection.harmonization = this.isClassName('HarmonizationStudy', values);
-      } else {
-        this.selection = {all: true, study: false, harmonization: false};
-      }
+      this.selection = MicaTreeQueryUrl.getStudyTypeSelection(payload.tree);
     },
     onSelectionClicked(selectionKey) {
       const classNameQuery = new RQL.Query('in', ['Mica_study.className', this.buildClassNameArgs(selectionKey)]);

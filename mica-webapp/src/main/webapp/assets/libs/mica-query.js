@@ -429,6 +429,27 @@ class MicaTreeQueryUrl {
 
     return queries;
   }
+
+  static getStudyTypeSelection(tree) {
+    const isAll = values => !values || Array.isArray(values) && values.length > 1;
+    const isClassName = (name, values) => Array.isArray(values)
+        ? values.length === 1 && values.indexOf(name) > -1
+        : values === name;
+
+    let selection = {all: true, study: false, harmonization: false};
+    const theTree = tree || MicaTreeQueryUrl.getTree();
+    const classNameQuery = theTree.search((name, args) => args.indexOf('Mica_study.className') > -1);
+    if (classNameQuery) {
+      const values = classNameQuery.args[1];
+      selection.all = isAll.apply(null, [values]);
+      selection.study = isClassName.apply(null, ['Study', values]);
+      selection.harmonization = isClassName.apply(null, ['HarmonizationStudy', values]);
+    } else {
+      selection = {all: true, study: false, harmonization: false};
+    }
+
+    return selection;
+  }
 }
 
 class MicaQueryExecutor {
@@ -585,7 +606,14 @@ class MicaQueryExecutor {
       .then(response => {
         tree.findAndDeleteQuery((name) => AGGREGATE === name);
         this.__updateLocation(type, display, tree, noUrlUpdate, bucket);
-        EventBus.$emit(`coverage-results`, {bucket, response: response.data});
+        EventBus.$emit(
+          `coverage-results`,
+          {
+            bucket, response:
+            response.data,
+            studyTypeSelection:  MicaTreeQueryUrl.getStudyTypeSelection(tree)
+          }
+        );
       });
   }
 
