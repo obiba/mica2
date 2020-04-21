@@ -10,61 +10,17 @@
 
 'use strict';
 
-/* global CONTACT_SCHEMA */
-/* global CONTACT_DEFINITION */
-
 (function () {
+  // const DEFAULT_LIMIT = 20;
 
   class PersonMembershipsController {
-    static DEFAULT_LIMIT = 20;
 
-    constructor($filter,
-                $translate,
-                LocalizedValues) {
-      this.$filter = $filter;
-      this.$translate = $translate;
-      this.LocalizedValues = LocalizedValues;
-    }
-
-    __initMembershipTableData(type, memberships) {
-      const lang = this.$translate.use();
-      const data = {
-        title: this.$filter('translate')(type),
-        entity: {}
-      };
-
-      let entityMap = data.entity;
-
-      memberships.forEach(membership => {
-        let entity = entityMap[membership.parentId];
-        if (!entity) {
-          entity = entityMap[membership.parentId] = {};
-          entity.id = membership.parentId;
-          entity.acronym = this.LocalizedValues.forLang(membership.parentAcronym, lang);
-          entity.name = this.LocalizedValues.forLang(membership.parentName, lang);
-          entity.roles = [this.$filter('translate')(`contact.label.${membership.role}`)];
-        } else {
-          entity.roles = [].concat([this.$filter('translate')(`contact.label.${membership.role}`)], entity.roles);
-        }
-      });
-
-      return data;
-    }
-
-    __initMembershipsTableData() {
-      this.memberships = {};
-      if (this.person.networkMemberships) {
-        this.memberships.networks = this.__initMembershipTableData('networks', this.person.networkMemberships);
-      }
-
-      if (this.person.studyMemberships) {
-        this.memberships.studies = this.__initMembershipTableData('studies', this.person.studyMemberships);
-      }
+    constructor() {
     }
 
     $onChanges() {
-      if (this.person) {
-        this.__initMembershipsTableData();
+      if (this.membership) {
+        console.debug(`Membership ${this.membership.title}`);
       }
     }
   }
@@ -72,14 +28,11 @@
   mica.persons
     .component('personMemberships', {
       bindings: {
-        person: "<"
+        membership: '<'
       },
       templateUrl: 'app/persons/views/person-memberships.html',
       controllerAs: '$ctrl',
       controller: [
-        '$filter',
-        '$translate',
-        'LocalizedValues',
         PersonMembershipsController
       ]
     });

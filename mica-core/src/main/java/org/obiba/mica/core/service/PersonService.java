@@ -19,6 +19,7 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
+import org.obiba.mica.contact.event.PersonDeletedEvent;
 import org.obiba.mica.contact.event.PersonUpdatedEvent;
 import org.obiba.mica.core.domain.Membership;
 import org.obiba.mica.core.domain.Person;
@@ -65,7 +66,9 @@ public class PersonService {
   }
 
   public void delete(String id) {
+    Person personToDelete = findById(id);
     personRepository.delete(id);
+    eventBus.post(new PersonDeletedEvent(personToDelete));
   }
 
   public Map<String, List<Membership>> getStudyMembershipMap(String studyId) {

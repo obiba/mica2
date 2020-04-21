@@ -12,15 +12,14 @@
 
 (function () {
 
+  const DEFAULT_LIMIT = 20;
+
   class PersonsListController {
-
-    static DEFAULT_LIMIT = 20;
-
     constructor($timeout, ContactsSearchResource) {
       this.$timeout = $timeout;
       this.ContactsSearchResource = ContactsSearchResource;
       this.loading = false;
-      this.limit = PersonsListController.DEFAULT_LIMIT;
+      this.limit = DEFAULT_LIMIT;
       this.persons = [];
       this.total = 0;
       this._query = null;
@@ -34,7 +33,9 @@
     set query(text) {
       this._query = text || null;
 
-      if (text.length === 1) return;
+      if (text.length === 1) {
+        return;
+      }
 
       if (this.timeoutHandler) {
         this.$timeout.cancel(this.timeoutHandler);
@@ -48,7 +49,7 @@
       this.ContactsSearchResource.get({
         query: query,
         from: from,
-        limit: limit || PersonsListController.DEFAULT_LIMIT
+        limit: limit || DEFAULT_LIMIT
       }).$promise.then(result => {
         this.loading = false;
         this.persons = result.persons || [];
@@ -62,8 +63,8 @@
 
     onPageChanged(newPage, oldPage) {
       console.debug(`PageChanged ${oldPage} ${newPage}`);
-      const from = PersonsListController.DEFAULT_LIMIT * (newPage - 1);
-      this.getPersons(null, from)
+      const from = DEFAULT_LIMIT * (newPage - 1);
+      this.getPersons(null, from);
     }
   }
 

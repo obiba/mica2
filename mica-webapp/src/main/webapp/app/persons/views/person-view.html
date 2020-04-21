@@ -2,11 +2,42 @@
   <h2>
     <ol class="breadcrumb mica-breadcrumb">
       <li><a href="#/persons" translate>persons.title</a></li>
-      <li class="active" >{{$ctrl.person.firstName}}</li>
+      <li class="active" >{{$ctrl.person.firstName}} {{$ctrl.person.lastName}}</li>
     </ol>
   </h2>
 
-  <div sf-model="$ctrl.person" sf-form="$ctrl.sfForm.definition" sf-schema="$ctrl.sfForm.schema" sf-options="$ctrl.sfOptions"></div>
+  <div ng-if="$ctrl.mode === 'view'" class="pull-right">
+    <a ng-href="#/person/{{$ctrl.person.id}}/edit" class="btn btn-primary">
+      <i class="fa fa-pencil-square-o"></i> <span translate>edit</span>
+    </a>
+    <a href class="btn btn-danger" ng-click="$ctrl.onDelete()">
+      <i class="fa fa-trash"></i> <span translate>delete</span>
+    </a>
+  </div>
 
-  <person-memberships person="$ctrl.person"></person-memberships>
+  <div class="clearfix"></div>
+
+  <form name="form" role="form" novalidate class="ng-scope ng-invalid ng-invalid-required ng-dirty ng-valid-minlength">
+    <div sf-model="$ctrl.person" sf-form="$ctrl.sfForm.definition" sf-schema="$ctrl.sfForm.schema" sf-options="$ctrl.sfOptions"></div>
+  </form>
+
+  <div ng-if="$ctrl.mode !== 'view'">
+    <a href class="btn btn-default" ng-click="$ctrl.onCancel()">
+      <span translate>cancel</span>
+    </a>
+    <a href class="btn btn-primary" ng-click="$ctrl.onSave()">
+      <span translate>save</span>
+    </a>
+  </div>
+
+
+  <!--  <a href class="btn btn-primary" ng-click="$ctrl.onSave()">-->
+<!--    <i class="fa fa-plus"></i> <span translate>save</span>-->
+<!--  </a>-->
+  <person-memberships membership="$ctrl.memberships.networks"></person-memberships>
+
+<!--  <a href class="btn btn-primary" ng-click="$ctrl.onSave()">-->
+<!--    <i class="fa fa-plus"></i> <span translate>save</span>-->
+<!--  </a>-->
+  <person-memberships membership="$ctrl.memberships.studies"></person-memberships>
 </div>
