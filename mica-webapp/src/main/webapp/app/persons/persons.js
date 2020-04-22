@@ -11,9 +11,9 @@
 'use strict';
 
 mica.persons = angular.module('mica.persons', [
+  'obiba.form',
   'mica.config',
   'obiba.notification',
-  'obiba.form',
   'obiba.mica.localized',
   'pascalprecht.translate',
   'ui.bootstrap'

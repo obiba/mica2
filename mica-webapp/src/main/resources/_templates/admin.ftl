@@ -349,6 +349,8 @@
 <script src="app/persons/persons-list.js"></script>
 <script src="app/persons/person-view.js"></script>
 <script src="app/persons/person-memberships.js"></script>
+<script src="app/persons/entity-list.js"></script>
+<script src="app/persons/membership-roles.js"></script>
 
 <!-- endbuild -->
 </body>

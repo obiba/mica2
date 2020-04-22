@@ -1,0 +1,46 @@
+<div ng-if="$ctrl.entities.length > 0">
+<membership-roles roles="$ctrl.roles" on-selected="$ctrl.onSelected(selectedRoles)"></membership-roles>
+
+  <div class="row voffset4" ng-if="$ctrl.query || $ctrl.entities.length > 0">
+    <div class="col-xs-4">
+          <span class="input-group input-group-sm no-padding-top">
+            <span class="input-group-addon" id="entity-search"><i class="fa fa-search"></i></span>
+            <input ng-model="$ctrl.query" type="text" class="form-control" aria-describedby="entity-search">
+          </span>
+    </div>
+    <div class="col-xs-8">
+      <dir-pagination-controls
+        pagination-id="entities"
+        class="pull-right"
+        on-page-change="$ctrl.onPageChanged(newPageNumber, oldPageNumber)">
+      </dir-pagination-controls>
+    </div>
+  </div>
+
+  <p ng-if="$ctrl.loading" class="voffset2 loading"></p>
+
+  <div ng-if="!$ctrl.loading" class="table-responsive">
+    <table class="table table-bordered table-striped">
+      <thead>
+      <tr>
+        <th></th>
+        <th class="col-xs-4" translate>acronym</th>
+        <th class="col-xs-8" translate>name</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr dir-paginate="entity in $ctrl.entities | itemsPerPage: $ctrl.limit" total-items="$ctrl.total" pagination-id="entities">
+        <td>
+          <input type="checkbox" ng-model="$ctrl.selectedEntities[entity.id]">
+        </td>
+        <td>
+          <localized value="entity.acronym" lang="$ctrl.language"></localized>
+        </td>
+        <td>
+          <localized value="entity.name" lang="$ctrl.language"></localized>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

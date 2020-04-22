@@ -27,24 +27,28 @@
                 $routeParams,
                 $filter,
                 $translate,
+                $uibModal,
                 LocalizedValues,
                 LocalizedSchemaFormService,
                 MicaConfigResource,
                 PersonResource,
                 ContactSerializationService,
-                NOTIFICATION_EVENTS) {
+                NOTIFICATION_EVENTS,
+                FormDirtyStateObserver) {
       this.$rootScope = $rootScope;
       this.$scope = $scope;
       this.$location = $location;
       this.$routeParams = $routeParams;
       this.$filter = $filter;
       this.$translate = $translate;
+      this.$uibModal= $uibModal;
       this.LocalizedSchemaFormService = LocalizedSchemaFormService;
       this.LocalizedValues = LocalizedValues;
       this.MicaConfigResource = MicaConfigResource;
       this.PersonResource = PersonResource;
       this.ContactSerializationService = ContactSerializationService;
       this.NOTIFICATION_EVENTS = NOTIFICATION_EVENTS;
+      this.FormDirtyStateObserver = FormDirtyStateObserver;
     }
 
     __getMode() {
@@ -109,12 +113,52 @@
       });
     }
 
+    __observeFormDirtyState() {
+      if (MODE.VIEW !== this.mode) {
+        this.FormDirtyStateObserver.observe(this.$scope);
+      }
+    }
+
+    __unobserveFormDirtyState() {
+      if (MODE.VIEW !== this.mode) {
+        this.FormDirtyStateObserver.unobserve();
+      }
+    }
+    __navigateOut(path) {
+      this.__unobserveFormDirtyState();
+      this.$location.path(path).replace();
+    }
+
     __deletePerson(id) {
       this.PersonResource.delete({id}).$promise
         .then(() => {
-          this.$location.path('/persons').replace()
           this.listenerRegistry.unregisterAll();
+          this.__navigateOut('/persons');
         });
+    }
+
+    __openModal(roles, membership, searchResource) {
+      this.$uibModal.open({
+        templateUrl: 'app/persons/views/entity-list-modal.html',
+        controllerAs: '$ctrl',
+        controller: ['$uibModalInstance',
+          function($uibModalInstance) {
+            this.selectedRoles = [];
+            this.roles = roles;
+            this.membership = membership;
+            this.searchResource = searchResource;
+            this.onRolesSelected = (selectedRoles) => {
+              console.log(`### ${selectedRoles}`);
+              this.selectedRoles = selectedRoles;
+            }
+            this.onClose = () => $uibModalInstance.dismiss('close');
+          }],
+        resolve: {
+          roles: () => roles,
+          membership: () => membership,
+          searchResource: () => searchResource
+        }
+      });
     }
 
     $onInit() {
@@ -138,16 +182,17 @@
           this.person = {};
         }
 
+        this.__observeFormDirtyState();
       });
     }
 
     onCancel() {
       switch (this.mode) {
         case MODE.NEW:
-          this.$location.path('/persons').replace();
+          this.__navigateOut('/persons');
           break;
         case MODE.EDIT:
-          this.$location.path(`/person/${this.$routeParams.id}`).replace();
+          this.__navigateOut(`/person/${this.$routeParams.id}`);
           break;
       }
     }
@@ -185,6 +230,14 @@
         }, {}
       );
     }
+
+    addNetworks() {
+      this.__openModal(this.config.roles, this.memberships.networks,'NetworksResource');
+    }
+
+    addStudies() {
+      this.__openModal(this.config.roles, this.memberships.studies,'StudyStatesSearchResource');
+    }
   }
 
   mica.persons
@@ -200,13 +253,16 @@
         '$routeParams',
         '$filter',
         '$translate',
+        '$uibModal',
         'LocalizedValues',
         'LocalizedSchemaFormService',
         'MicaConfigResource',
         'PersonResource',
         'ContactSerializationService',
         'NOTIFICATION_EVENTS',
-        PersonViewController
+        'FormDirtyStateObserver',
+        PersonViewController,
+
       ]
     });
 

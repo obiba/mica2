@@ -2232,6 +2232,8 @@
   "persons": {
     "title": "Persons",
     "none": "No persons.",
+    "add-networks": "Add Networks",
+    "add-studies": "Add Studies",
     "delete-dialog":{
       "title": "Delete Person",
       "message": "Are you sure you want to delete the person '{{arg0}}'?"

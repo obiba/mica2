@@ -1,0 +1,14 @@
+<div class="row">
+  <div class="col-xs-4" ng-if="$ctrl.roles.length > 5">
+    <span class="input-group input-group-sm no-padding-top">
+      <span class="input-group-addon" id="person-search"><i class="fa fa-search"></i></span>
+      <input ng-model="$ctrl.query" type="text" class="form-control" aria-describedby="person-search">
+    </span>
+  </div>
+
+  <form class="col-xs-12">
+    <div ng-repeat="role in $ctrl.roles | filter: $ctrl.query" form-checkbox name="role" model="$ctrl.selections[role]"
+         label="{{'contact.label.' + role | translate}}" ng-click="$ctrl.onRoleSelected($event, role)">
+    </div>
+  </form>
+</div>

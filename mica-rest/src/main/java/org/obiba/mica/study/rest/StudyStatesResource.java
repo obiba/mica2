@@ -11,6 +11,7 @@
 package org.obiba.mica.study.rest;
 
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.inject.Inject;
@@ -71,10 +72,22 @@ public class StudyStatesResource {
   @GET
   @Path("/study-states")
   @Timed
-  public List<Mica.StudySummaryDto> listCollectionStudyStates(@QueryParam("query") String query, @QueryParam("from") @DefaultValue("0") Integer from,
-                                         @QueryParam("limit") Integer limit, @QueryParam("type") String type, @Context HttpServletResponse response) {
+  public List<Mica.StudySummaryDto> listCollectionStudyStates(@QueryParam("query") String query,
+                                                              @QueryParam("from")
+                                                              @DefaultValue("0") Integer from,
+                                                              @QueryParam("limit") Integer limit,
+                                                              @QueryParam("type") String type,
+                                                              @QueryParam("exclude") List<String> excludes,
+                                                              @Context HttpServletResponse response) {
     Stream<? extends EntityState> result;
     long totalCount;
+
+    String ids = excludes.stream().map(s -> "id:" + s).collect(Collectors.joining(" "));
+
+    if(!Strings.isNullOrEmpty(ids)) {
+      if (Strings.isNullOrEmpty(query)) query = String.format("NOT(%s)", ids);
+      else query += String.format(" AND NOT(%s)", ids);
+    }
 
     if(limit == null) limit = MAX_LIMIT;
 
