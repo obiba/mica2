@@ -7,8 +7,10 @@
   </div>
 
   <form class="col-xs-12">
-    <div ng-repeat="role in $ctrl.roles | filter: $ctrl.query" form-checkbox name="role" model="$ctrl.selections[role]"
-         label="{{'contact.label.' + role | translate}}" ng-click="$ctrl.onRoleSelected($event, role)">
+    <div class="checkbox" ng-repeat="role in $ctrl.roles | filter: $ctrl.query" ng-click="$ctrl.onRoleSelected()">
+      <label>
+        <input type="checkbox" name="role" ng-model="$ctrl.selections[role]"> {{'contact.label.' + role | translate}}
+      </label>
     </div>
   </form>
 </div>

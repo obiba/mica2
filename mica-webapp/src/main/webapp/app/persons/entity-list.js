@@ -62,6 +62,7 @@
       this.language = this.$translate.use();
       this.limit = DEFAULT_LIMIT;
       this.selectedEntities = {};
+      this.selectedEntitiesData = {};
       this.loading = false;
     }
 
@@ -71,8 +72,23 @@
       this.__getEntities(null, from);
     }
 
-    onSelected(selectedRoles) {
+    onSelectedRoles(selectedRoles) {
       this.onRolesSelected({selectedRoles: selectedRoles});
+    }
+
+    onEntitySelected(entity)
+    {
+      if (this.selectedEntities[entity.id]) {
+        this.selectedEntitiesData[entity.id] = entity;
+      } else {
+        delete this.selectedEntitiesData[entity.id];
+      }
+
+      this.onEntitiesSelected(
+        {
+          selectedEntities: Object.values(this.selectedEntitiesData)
+        }
+      );
     }
   }
 
@@ -82,7 +98,9 @@
         roles: '<',
         membership: '<',
         entitySearchResource: '<',
-        onRolesSelected: '&'
+        entityType: '<',
+        onRolesSelected: '&',
+        onEntitiesSelected: '&'
       },
       templateUrl: 'app/persons/views/entity-list.html',
       controllerAs: '$ctrl',

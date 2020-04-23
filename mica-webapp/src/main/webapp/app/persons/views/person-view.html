@@ -30,16 +30,23 @@
     </a>
   </div>
 
-  <a href class="btn btn-primary" ng-click="$ctrl.addNetworks()">
-    <i class="fa fa-plus"></i> <span translate>persons.add-networks</span>
-  </a>
-  <person-memberships membership="$ctrl.memberships.networks"></person-memberships>
 
-  <a href class="btn btn-primary" ng-click="$ctrl.addStudies()">
-    <i class="fa fa-plus"></i> <span translate>persons.add-studies</span>
-  </a>
-  <person-memberships membership="$ctrl.memberships.studies"></person-memberships>
+  <div>
+    <h4 translate>networks</h4>
 
+    <a href class="btn btn-primary" ng-click="$ctrl.addNetworks()">
+      <i class="fa fa-plus"></i> <span translate>persons.add-networks</span>
+    </a>
+    <person-memberships membership="$ctrl.memberships.networks"></person-memberships>
+  </div>
 
+  <div class="voffset7">
+    <h4 translate>studies</h4>
+
+    <a href class="btn btn-primary" ng-click="$ctrl.addStudies()">
+      <i class="fa fa-plus"></i> <span translate>persons.add-studies</span>
+    </a>
+    <person-memberships membership="$ctrl.memberships.studies"></person-memberships>
+  </div>
 
 </div>

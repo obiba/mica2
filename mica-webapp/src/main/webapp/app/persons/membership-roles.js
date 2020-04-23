@@ -22,11 +22,10 @@
           return map;
         }, {});
       }
+
     }
 
-    onRoleSelected(event, role) {
-      event.preventDefault();
-      this.selections[role] = !this.selections[role];
+    onRoleSelected() {
       const roles = Object.keys(this.selections).filter( selection => this.selections[selection]);
       this.onSelected({selectedRoles: roles});
     }
@@ -38,6 +37,7 @@
     .component('membershipRoles', {
       bindings: {
         roles: '<',
+        entityType: '<',
         onSelected: '&'
       },
       templateUrl: 'app/persons/views/membership-roles.html',

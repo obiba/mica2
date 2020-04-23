@@ -1,28 +1,31 @@
-<div class="table-responsive" ng-if="$ctrl.membership.entities.length > 0">
-  <h4>{{$ctrl.membership.title}}</h4>
+<div>
+  <p class="help-block"  ng-if="!$ctrl.hasMembership"><span translate>persons.no-membership</span></p>
 
-  <table class="table table-bordered table-striped">
-    <thead>
-    <tr>
-      <th class="col-xs-3" translate>study.acronym</th>
-      <th class="col-md-5" translate>study.name</th>
-      <th translate>roles</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr dir-paginate="entity in $ctrl.membership.entities | itemsPerPage: $ctrl.limit" total-items="$ctrl.total" pagination-id="memberships">
-      <td>
-        <a ng-href="#/{{$ctrl.entityType}}/{{membership.parentId}}">
-          {{entity.acronym}}
-        </a>
-      </td>
-      <td>
-        {{entity.name}}
-      </td>
-      <td>
-         {{(entity.roles || []).join(', ')}}
-      </td>
-    </tr>
-    </tbody>
-  </table>
+  <div class="table-responsive" ng-if="$ctrl.hasMembership">
+
+    <table class="table table-bordered table-striped">
+      <thead>
+      <tr>
+        <th class="col-xs-3" translate>study.acronym</th>
+        <th class="col-md-5" translate>study.name</th>
+        <th translate>roles</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr dir-paginate="entity in $ctrl.membership.entities | itemsPerPage: $ctrl.limit" total-items="$ctrl.total" pagination-id="memberships">
+        <td>
+          <a ng-href="#{{entity.url}}">
+            {{entity.acronym}}
+          </a>
+        </td>
+        <td>
+          {{entity.name}}
+        </td>
+        <td>
+           {{(entity.roles || []).join(', ')}}
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
 </div>

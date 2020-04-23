@@ -1,18 +1,20 @@
 <div class="modal-content">
   <div class="modal-header">
     <button type="button" class="close" aria-hidden="true" ng-click="$ctrl.onClose()">&times;</button>
-    <h4 class="modal-title" id="myStudyLabel">
-      <span>{{'contact.edit.member' | translate:{type: type} }}</span>
+    <h4 class="modal-title" id="entity-list-modal">
+      <span>{{'persons.entity-list-dialog.title' | translate:{entities: $ctrl.entityTitle} }}</span>
     </h4>
   </div>
 
   <div class="modal-body">
-    <pre>{{$ctrl.onRolesSelected}}</pre>
     <person-entity-list
       roles="$ctrl.roles"
-      entity-search-resource="$ctrl.searchResource"
+      entity-type="$ctrl.entityType"
+      entity-search-resource="$ctrl.entitySearchResource"
       membership="$ctrl.membership"
-      on-roles-selected="$ctrl.onRolesSelected(selectedRoles)">
+      entity-type="$ctrl.entityType"
+      on-roles-selected="$ctrl.onRolesSelected(selectedRoles)"
+      on-entities-selected="$ctrl.onEntitiesSelected(selectedEntities)">
     </person-entity-list>
   </div>
 
@@ -20,8 +22,8 @@
     <button type="button" class="btn btn-default" ng-click="$ctrl.onClose()">
       <span translate>cancel</span>
     </button>
-    <button ng-disabled="$ctrl.selectedRoles.length < 1" type="submit" class="btn btn-primary">
-      <span translate>save</span>
+    <button ng-disabled="$ctrl.addDisabled" ng-click="$ctrl.onAdd()" class="btn btn-primary">
+      <span translate>global.add</span>
     </button>
   </div>
 </div>

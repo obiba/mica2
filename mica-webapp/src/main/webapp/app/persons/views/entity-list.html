@@ -1,5 +1,5 @@
 <div ng-if="$ctrl.entities.length > 0">
-<membership-roles roles="$ctrl.roles" on-selected="$ctrl.onSelected(selectedRoles)"></membership-roles>
+  <membership-roles roles="$ctrl.roles" entity-type="$ctrl.entityType" on-selected="$ctrl.onSelectedRoles(selectedRoles)"></membership-roles>
 
   <div class="row voffset4" ng-if="$ctrl.query || $ctrl.entities.length > 0">
     <div class="col-xs-4">
@@ -17,9 +17,9 @@
     </div>
   </div>
 
-  <p ng-if="$ctrl.loading" class="voffset2 loading"></p>
+  <p ng-show="$ctrl.loading" class="voffset2 loading"></p>
 
-  <div ng-if="!$ctrl.loading" class="table-responsive">
+  <div ng-show="!$ctrl.loading" class="table-responsive">
     <table class="table table-bordered table-striped">
       <thead>
       <tr>
@@ -31,7 +31,7 @@
       <tbody>
       <tr dir-paginate="entity in $ctrl.entities | itemsPerPage: $ctrl.limit" total-items="$ctrl.total" pagination-id="entities">
         <td>
-          <input type="checkbox" ng-model="$ctrl.selectedEntities[entity.id]">
+          <input type="checkbox" ng-model="$ctrl.selectedEntities[entity.id]" ng-click="$ctrl.onEntitySelected(entity)">
         </td>
         <td>
           <localized value="entity.acronym" lang="$ctrl.language"></localized>

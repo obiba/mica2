@@ -85,6 +85,12 @@
           entity.acronym = this.LocalizedValues.forLang(membership.parentAcronym, lang);
           entity.name = this.LocalizedValues.forLang(membership.parentName, lang);
           entity.roles = [this.$filter('translate')(`contact.label.${membership.role}`)];
+          if ('obiba.mica.PersonDto.StudyMembershipDto.meta' in membership) {
+            entity.url = `/${membership['obiba.mica.PersonDto.StudyMembershipDto.meta'].type}/${entity.id}`;
+          } else {
+            entity.url = `/network/${entity.id}`;
+          }
+          console.debug(`URL ${entity.url}`);
         } else {
           entity.roles = [].concat([this.$filter('translate')(`contact.label.${membership.role}`)], entity.roles);
         }
@@ -106,10 +112,14 @@
       }
     }
 
+    __initPerson(person) {
+      this.person = this.ContactSerializationService.deserialize(person);
+      this.__initMembershipsTableData();
+    }
+
     __getPerson(id) {
       this.PersonResource.get({id}).$promise.then(person => {
-        this.person = this.ContactSerializationService.deserialize(person);
-        this.__initMembershipsTableData();
+        this.__initPerson(person);
       });
     }
 
@@ -137,27 +147,70 @@
         });
     }
 
-    __openModal(roles, membership, searchResource) {
+    __addMembership(roles, entities, entityType) {
+      console.debug(JSON.stringify(this.person));
+
+      let entityMemberhips = this.person[`${entityType}Memberships`] || [];
+      roles.forEach(role => {
+        entities.forEach(entity => {
+          let membership = {
+            role,
+            parentId: entity.id,
+            parentAcronym: entity.acronym,
+            parentName: entity.name
+          };
+
+          if ('study' === entityType) {
+            membership['obiba.mica.PersonDto.StudyMembershipDto.meta'] = {type: entity.studyResourcePath};
+          }
+          entityMemberhips.push(membership);
+        });
+      });
+
+      this.person[`${entityType}Memberships`] = entityMemberhips;
+      this.PersonResource.update(this.ContactSerializationService.serialize(this.person)).$promise
+        .then((person) => this.__initPerson(person));
+    }
+
+    __openModal(roles, membership, entitySearchResource, entityType) {
+      const entityTitle = this.$filter('translate')(entityType === 'network' ? 'networks' : 'studies');
       this.$uibModal.open({
         templateUrl: 'app/persons/views/entity-list-modal.html',
         controllerAs: '$ctrl',
         controller: ['$uibModalInstance',
           function($uibModalInstance) {
             this.selectedRoles = [];
+            this.selectedEntities = [];
             this.roles = roles;
-            this.membership = membership;
-            this.searchResource = searchResource;
+            this.membership = membership || [];
+            this.entitySearchResource = entitySearchResource;
+            this.entityType = entityType;
+            this.entityTitle = entityTitle;
+            this.addDisabled = true;
+
+            const updateAddDisable =
+              () => this.addDisabled = this.selectedRoles.length < 1 || this.selectedEntities.length < 1;
+
             this.onRolesSelected = (selectedRoles) => {
-              console.log(`### ${selectedRoles}`);
               this.selectedRoles = selectedRoles;
+              updateAddDisable.call(this);
             }
+            this.onEntitiesSelected = (selectedEntities) => {
+              this.selectedEntities = selectedEntities;
+              updateAddDisable.call(this);
+            }
+
+            this.onAdd = () => $uibModalInstance.close(
+              {
+                roles: this.selectedRoles,
+                entities: this.selectedEntities
+              }
+            );
+
             this.onClose = () => $uibModalInstance.dismiss('close');
-          }],
-        resolve: {
-          roles: () => roles,
-          membership: () => membership,
-          searchResource: () => searchResource
-        }
+          }]
+      }).result.then(selections => {
+        this.__addMembership(selections.roles, selections.entities, entityType);
       });
     }
 
@@ -232,11 +285,11 @@
     }
 
     addNetworks() {
-      this.__openModal(this.config.roles, this.memberships.networks,'NetworksResource');
+      this.__openModal(this.config.roles, this.memberships.networks,'NetworksResource', 'network');
     }
 
     addStudies() {
-      this.__openModal(this.config.roles, this.memberships.studies,'StudyStatesSearchResource');
+      this.__openModal(this.config.roles, this.memberships.studies,'StudyStatesSearchResource', 'study');
     }
   }
 

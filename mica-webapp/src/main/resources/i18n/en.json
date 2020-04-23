@@ -2234,6 +2234,11 @@
     "none": "No persons.",
     "add-networks": "Add Networks",
     "add-studies": "Add Studies",
+    "no-membership": "No memberships present.",
+    "roles-help": "Select at least one role before adding a member to one or more {{entities}}.",
+    "entity-list-dialog": {
+      "title": "Add Member to {{entities}}"
+    },
     "delete-dialog":{
       "title": "Delete Person",
       "message": "Are you sure you want to delete the person '{{arg0}}'?"

@@ -11,24 +11,26 @@
 'use strict';
 
 (function () {
-  // const DEFAULT_LIMIT = 20;
-
   class PersonMembershipsController {
 
     constructor() {
+      this.hasMembership = false;
     }
 
     $onChanges() {
+      console.debug(`On Changes`);
       if (this.membership) {
-        console.debug(`Membership ${this.membership.title}`);
+        this.hasMembership = this.membership.entities && this.membership.entities.length > 0;
       }
     }
+
   }
 
   mica.persons
     .component('personMemberships', {
       bindings: {
-        membership: '<'
+        membership: '<',
+        entityType: '@'
       },
       templateUrl: 'app/persons/views/person-memberships.html',
       controllerAs: '$ctrl',
