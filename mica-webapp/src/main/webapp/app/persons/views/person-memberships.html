@@ -1,18 +1,44 @@
 <div>
   <p class="help-block"  ng-if="!$ctrl.hasMembership"><span translate>persons.no-membership</span></p>
 
-  <div class="table-responsive" ng-if="$ctrl.hasMembership">
+  <div class="row voffset4" ng-if="$ctrl.query || $ctrl.membership.entities.length > 0">
+    <div class="col-xs-4">
+          <span class="input-group input-group-sm no-padding-top">
+            <span class="input-group-addon" id="person-search"><i class="fa fa-search"></i></span>
+            <input ng-model="$ctrl.query" type="text" class="form-control" aria-describedby="person-search">
+          </span>
+    </div>
+    <div class="col-xs-8">
+      <dir-pagination-controls
+        pagination-id="$ctrl.entityType"
+        class="pull-right"
+        on-page-change="$ctrl.onPageChanged(newPageNumber, oldPageNumber)">
+      </dir-pagination-controls>
+    </div>
+  </div>
 
+  <div class="table-responsive" ng-if="$ctrl.hasMembership">
+    <memberships-table-alert-header
+      all-selected="$ctrl.selectedAllPages"
+      selections-count="$ctrl.selectionsCount"
+      entity-type="$ctrl.entityType"
+      on-select-all="$ctrl.onSelectAll()"
+      ng-show="$ctrl.selectionsCount > 0">
+    </memberships-table-alert-header>
     <table class="table table-bordered table-striped">
       <thead>
       <tr>
+        <th><input type="checkbox" ng-model="$ctrl.selectedAllPage"></th>
         <th class="col-xs-3" translate>study.acronym</th>
-        <th class="col-md-5" translate>study.name</th>
-        <th translate>roles</th>
+        <th class="col-xs-5" translate>study.name</th>
+        <th class="col-xs-4"translate>roles</th>
       </tr>
       </thead>
       <tbody>
-      <tr dir-paginate="entity in $ctrl.membership.entities | itemsPerPage: $ctrl.limit" total-items="$ctrl.total" pagination-id="memberships">
+      <tr dir-paginate="entity in $ctrl.membership.entities | itemsPerPage: $ctrl.limit" pagination-id="$ctrl.entityType">
+        <td>
+          <input type="checkbox" ng-model="$ctrl.selections[entity.id]" ng-click="$ctrl.onSelection(entity.id)">
+        </td>
         <td>
           <a ng-href="#{{entity.url}}">
             {{entity.acronym}}

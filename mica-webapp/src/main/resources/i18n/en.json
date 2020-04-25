@@ -2236,6 +2236,8 @@
     "add-studies": "Add Studies",
     "no-membership": "No memberships present.",
     "roles-help": "Select at least one role before adding a member to one or more {{entities}}.",
+    "add-person": "Add Person",
+    "selected-entities": "{{count}} {{entities}} are selected",
     "entity-list-dialog": {
       "title": "Add Member to {{entities}}"
     },

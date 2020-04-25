@@ -90,7 +90,6 @@
           } else {
             entity.url = `/network/${entity.id}`;
           }
-          console.debug(`URL ${entity.url}`);
         } else {
           entity.roles = [].concat([this.$filter('translate')(`contact.label.${membership.role}`)], entity.roles);
         }
