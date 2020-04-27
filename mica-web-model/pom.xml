@@ -68,6 +68,11 @@
                     <os name="linux" arch="x86_64" />
                   </or>
                 </condition>
+                <condition property="os.protoc" value="${protobuf.version}-osx-x86_64">
+                  <or>
+                    <os name="Mac OS X" arch="x86_64" />
+                  </or>
+                </condition>
                 <condition property="os.protoc" value="${protobuf.version}-linux-x86_32">
                   <or>
                     <os name="linux" arch="x86" />
@@ -78,7 +83,7 @@
                   <os family="windows" />
                 </condition>
 
-                <fail message="No protoc binary for your OS: ${os.name} ${os.arch}." unless="os.protoc" />
+                <fail message="No protoc binary for your OS: ${os.name} - ${os.arch}. See ${protobuf.version}" unless="os.protoc" />
 
                 <path id="protofiles">
                   <fileset dir="src/main/protobuf">

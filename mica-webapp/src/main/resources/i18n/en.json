@@ -393,6 +393,8 @@
     "collected-dataset-enabled-help": "Collected datasets section is accessible.",
     "harmonized-dataset-enabled": "Harmonized datasets section enabled",
     "harmonized-dataset-enabled-help": "Harmonized datasets section is accessible.",
+    "import-studies-feature-enabled": "Import studies feature enabled",
+    "import-studies-feature-enabled-help": "Import studies feature is accessible.",
     "roles": "Membership Roles",
     "roles-help": "A person can be member of a study or of a network with one of the listed roles. * Use the prefix <a href='#/admin/translations/edit?filter=contact.label.'>'contact.label.'</a> to change the translation.",
     "add-role": "Add Role",

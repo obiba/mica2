@@ -1,3 +1,5 @@
+syntax = "proto2";
+
 package obiba.mica;
 option java_package = "org.obiba.mica.web.model";
 
@@ -437,6 +439,7 @@ message MicaConfigDto {
   required bool isSetsSearchEnabled = 43;
   required bool downloadOpalViewsFromSetsAllowed = 44 [default = false];
   required string opalViewsGrouping = 45;
+  optional bool isImportStudiesFeatureEnabled = 46;
 }
 
 message PublicMicaConfigDto {
@@ -764,7 +767,7 @@ message DataAccessAmendmentDto {
   required string parentId = 1;
 
   extend DataAccessRequestDto {
-    required DataAccessAmendmentDto amendment = 1000;
+    optional DataAccessAmendmentDto amendment = 1000;
   }
 }
 
@@ -784,7 +787,7 @@ message DataAccessRequestSummaryDto {
 
 message DataAccessAmendmentSummaryDto {
   extend DataAccessRequestSummaryDto {
-    required string parentId = 1000;
+    optional string parentId = 1000;
   }
 }
 

@@ -68,7 +68,7 @@
     <opal.version>2.13.1</opal.version>
     <opencsv.version>2.3</opencsv.version>
     <poi.version>3.9</poi.version>
-    <protobuf.version>2.5.0</protobuf.version>
+    <protobuf.version>3.11.4</protobuf.version>
     <protobuf-java-format.version>1.2.1-obiba</protobuf-java-format.version>
     <rql-parser.version>0.3.3-obiba</rql-parser.version>
     <shiro.version>1.4.0</shiro.version>

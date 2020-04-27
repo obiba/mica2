@@ -113,6 +113,8 @@ public class MicaConfig extends AbstractAuditableDocument {
   private boolean isStudyDatasetEnabled = true;
 
   private boolean isHarmonizationDatasetEnabled = true;
+  
+  private boolean isImportStudiesFeatureEnabled = true;
 
   private String style;
 
@@ -499,7 +501,15 @@ public class MicaConfig extends AbstractAuditableDocument {
     this.opalViewsGrouping = opalViewsGrouping;
   }
 
-  public enum OpalViewsGrouping {
+  public boolean isImportStudiesFeatureEnabled() {
+	return isImportStudiesFeatureEnabled;
+}
+
+public void setImportStudiesFeatureEnabled(boolean isImportStudiesFeatureEnabled) {
+	this.isImportStudiesFeatureEnabled = isImportStudiesFeatureEnabled;
+}
+
+public enum OpalViewsGrouping {
     PROJECT_TABLE,
     PROJECT_ENTITY_TYPE,
     ENTITY_TYPE

@@ -393,6 +393,8 @@
     "collected-dataset-enabled-help": "Des ensembles de données de collecte sont présents dans Mica.",
     "harmonized-dataset-enabled": "Section ensemble de données d'harmonisation activée",
     "harmonized-dataset-enabled-help": "Des ensembles de données d'harmonisation sont présents dans Mica.",
+    "import-studies-feature-enabled": "Please translate", //"Import studies feature enabled"
+    "import-studies-feature-enabled-help": "Please translate.", //"Import studies feature is accessible."
     "roles": "Rôles des personnes membres",
     "roles-help": "Une personne peut être membre d'une étude ou d'un réseau avec l'un des rôles énumérés. * Utiliser le préfixe <a href='#/admin/translations/edit?filter=contact.label.'>'contact.label.'</a> pour changer la traduction.",
     "add-role": "Ajouter un rôle",
