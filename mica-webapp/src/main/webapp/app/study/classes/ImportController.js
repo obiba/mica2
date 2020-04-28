@@ -50,6 +50,7 @@ mica.study.StudiesImportController = function (
   $scope.studyType = ($scope.path.indexOf('harmonization') > -1) ? HARMONIZATION_STUDY : INDIVIDUAL_STUDY;
   $scope.diffsCustomFormJSON = [];
   $scope.listDiffsForm = [];
+  $scope.studiesSaved = [];
   $scope.diffsConfigIsPossibleImport = false;      
 
   //NEXT
@@ -118,8 +119,10 @@ mica.study.StudiesImportController = function (
   };
 
   //CLOSE
-  $scope.close = function() {
-	window.top.location.reload();
+  $scope.close = function() { 
+	if ($scope.studiesSaved.length > 0) {
+		window.top.location.reload();
+	}
   };
   
   //FINISH
@@ -154,7 +157,7 @@ mica.study.StudiesImportController = function (
           $scope.idsSaved = Object.keys(responseData);
           angular.forEach($scope.studiesToCreate, function(v) {
         	if ($scope.idsSaved.includes(v.id)) {
-        		v.statusImport = responseData[v.id];
+        		v.statusImport =  handleHTTPStatus( responseData[v.id] );
         		v.operation = CREATE;
         		$scope.studiesSaved.push(v);
         	}
@@ -162,7 +165,7 @@ mica.study.StudiesImportController = function (
           
           angular.forEach($scope.studiesToReplace, function(v) {
   	        if ($scope.idsSaved.includes(v.id)) {
-  	        	v.statusImport = responseData[v.id];
+  	        	v.statusImport = handleHTTPStatus( responseData[v.id] );
   	        	v.operation = REPLACE;
   	        	$scope.studiesSaved.push(v);
   	        }
@@ -172,7 +175,7 @@ mica.study.StudiesImportController = function (
           $scope.studiesToCreate = [];
           $scope.studiesConflict = [];
           $('body').css('cursor', 'default');
-          $scope.modalIndex = FINISH_RESPONSE_MESSAGES_4;       
+          $scope.modalIndex = FINISH_RESPONSE_MESSAGES_4;
         });
     }
   };  
@@ -186,9 +189,9 @@ mica.study.StudiesImportController = function (
                  password: $scope.importVO.password, type: $scope.studyType}
       }).then(function(response) {        
         if (typeof(response.data) === 'number') {
-       	 	$scope.statusErrorImport = response.data;
+       	 	$scope.statusErrorImport = handleHTTPStatus(response.data);
         } else {
-        	$scope.statusErrorImport = 0;
+        	$scope.statusErrorImport = '';
         	
         	var diffsEnum = response.data;
             var mapDiffsFormParent = new Map();
@@ -240,9 +243,9 @@ mica.study.StudiesImportController = function (
                  password: $scope.importVO.password, type: $scope.studyType}
       }).then(function(response) {
          if (typeof(response.data) === 'number') {
-        	 $scope.statusErrorImport = response.data;
+        	 $scope.statusErrorImport = handleHTTPStatus(response.data);
          } else {
-        	 $scope.statusErrorImport = 0;
+        	 $scope.statusErrorImport = '';
         	 $scope.studiesToImport = response.data; 
              $scope.modalIndex = REMOTE_STUDIES_2;
          }
@@ -250,7 +253,32 @@ mica.study.StudiesImportController = function (
          $('body').css('cursor', 'default');
       });
   }
+  
+  
+  function handleHTTPStatus(code) {
+	  switch(code) {
+	    case 200:
+	  	  return 'study.import.status-ok';  
+	    case 204: 
+		  return 'study.import.problems.problem-204';	
+	    case 400: 
+		  return 'study.import.problems.problem-400';
+	  	case 401: 
+		  return 'study.import.problems.problem-401';
+	  	case 404: 
+		  return 'study.import.problems.problem-404';
+	  	case 408: 
+	  	  return 'study.import.problems.problem-408';
+	  	case 500: 
+		  return 'study.import.problems.problem-500';
+	  	case 503: 
+		  return 'study.import.problems.problem-503';
+	  	default: 
+	  	  return 'study.import.status-ok';
+	  } 
+  }
 
+  
   function nextRemoteStudies() {
 	$scope.studiesToCreate = [];
 	$scope.studiesToReplace = [];
@@ -286,10 +314,14 @@ mica.study.StudiesImportController = function (
         		if ($scope.studiesToCreate[j].id in responseData) {
         			var valueJSON = JSON.parse( responseData[ $scope.studiesToCreate[j].id ]);
             		
-            		if ( valueJSON.conflict === 'true' ) {
+        			console.log( typeof(valueJSON.conflict) );
+        			
+            		if ( valueJSON.conflict === true ) {
+            			
             		    $scope.studiesConflict.push( $scope.studiesToCreate[j] );
             			delete $scope.studiesToCreate[j];
             		} else {
+            			
             			var studyToReplace = $scope.studiesToCreate[j];
             			
             			studyToReplace.localPopulationSize = parseInt(valueJSON.localPopulationSize);

@@ -14,6 +14,7 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.net.ProtocolException;
 import java.net.URI;
@@ -52,6 +53,7 @@ import org.obiba.mica.micaConfig.service.EntityConfigService;
 import org.obiba.mica.micaConfig.service.HarmonizationPopulationConfigService;
 import org.obiba.mica.micaConfig.service.HarmonizationStudyConfigService;
 import org.obiba.mica.micaConfig.service.IndividualStudyConfigService;
+import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.micaConfig.service.PopulationConfigService;
 import org.obiba.mica.study.domain.BaseStudy;
 import org.obiba.mica.study.domain.HarmonizationStudy;
@@ -70,6 +72,7 @@ import org.springframework.http.MediaType;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.common.collect.Sets;
 import com.google.protobuf.ExtensionRegistry;
 import com.googlecode.protobuf.format.JsonFormat;
 import com.googlecode.protobuf.format.JsonFormat.ParseException;
@@ -146,11 +149,14 @@ public class StudiesImportResource {
 	private TempFileService tempFileService;
 	
 	@Inject
+	private MicaConfigService micaConfigService;
+	
+	@Inject
 	private Dtos dtos;
 	
 	@GET
 	@Path("/studies/import/_differences")
-	@RequiresPermissions( {"/draft/individual-study:ADD", "/draft/harmonization-study:ADD" })
+	@RequiresPermissions({"/draft/individual-study:ADD", "/draft/harmonization-study:ADD"})
 	@Produces({"application/xml", "application/json", "text/plain", "text/html"})
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public Response listDifferences(@QueryParam("url") String url, 
@@ -160,6 +166,8 @@ public class StudiesImportResource {
 		
 		try {
 		
+			if (!micaConfigService.getConfig().isImportStudiesFeatureEnabled()) return null;
+			
 			Map<String, Boolean> result = new LinkedHashMap<>(); //to keep the keys in the order they were inserted
 			
 			if (type.equals(INDIVIDUAL_STUDY)) {
@@ -203,6 +211,8 @@ public class StudiesImportResource {
 		
 		try {
 			
+			if (!micaConfigService.getConfig().isImportStudiesFeatureEnabled()) return null;
+				
 			List<NameValuePair> params = new ArrayList<>();
 			params.add(new BasicNameValuePair(TYPE, type));
 
@@ -218,12 +228,15 @@ public class StudiesImportResource {
 	
 	@GET
 	@Path("/studies/import/_summary")
+	@RequiresPermissions( {"/draft/individual-study:ADD", "/draft/harmonization-study:ADD" })
 	@Produces({"application/xml", "application/json", "text/plain", "text/html"})
 	public Response checkIfAlreadyExistsLocally(@QueryParam(IDS) List<String> ids, @QueryParam(TYPE) String type) {
 	
+		if (!micaConfigService.getConfig().isImportStudiesFeatureEnabled()) return null;
+		
 		Map<String, String> existingIds = new HashMap<>();
 		ObjectMapper mapper = new ObjectMapper();
-		
+	
 		for (String id : ids) {
 
 			try {
@@ -247,12 +260,13 @@ public class StudiesImportResource {
 
 			} catch(NoSuchEntityException ex) {
 				//if study doesn't exist locally, ignore.
-				log.info("Study id not exist locally: {}", id);
+				log.info("Study id does not exist locally: {}", id);
 			}
 		}
 		
-		return Response.ok(existingIds).build();		
+		return Response.ok(existingIds).build();
 	}
+	
 	
 	@PUT
 	@Path("/studies/import/_save")
@@ -263,7 +277,9 @@ public class StudiesImportResource {
 			@QueryParam(TYPE) String type,
 			@QueryParam(IDS) List<String> ids,
 			@QueryParam(LIST_DIFFS_FORM) List<String> listDiffsForm) {
-
+		
+		if (!micaConfigService.getConfig().isImportStudiesFeatureEnabled()) return null;
+			
 		Map<String, Integer> idsSavedStatus = new LinkedHashMap<>();
 		
 		for (String id : ids) {
@@ -301,6 +317,7 @@ public class StudiesImportResource {
 		
 		return Response.ok(idsSavedStatus).build();
 	}
+	
 	
 	private Map<String, Boolean> compareSchemaDefinition(String url, String username, String password, 
 			String endpoint, EntityConfigService<EntityConfig> configService, String formSection,
@@ -400,7 +417,7 @@ public class StudiesImportResource {
 				remoteStudy.setId(null);
 				
 				if (listDiffsForm.contains(HARMONIZATION_POPULATION_FORM_SECTION)) {
-					remoteStudy.setPopulations(null);
+					remoteStudy.setPopulations(Sets.newTreeSet());
 				}
 				
 			} else {
@@ -432,7 +449,7 @@ public class StudiesImportResource {
 				
 				if (!localStudy.getPopulations().contains(remotePopulation)) {
 					
-					remotePopulation.setDataCollectionEvents(null);
+					remotePopulation.setDataCollectionEvents(Sets.newTreeSet());
 					
 				} else {
 					
@@ -453,12 +470,12 @@ public class StudiesImportResource {
 		remoteStudy.setId(null);
 
 		if (listDiffsForm.contains(POPULATION_FORM_SECTION)) {
-			remoteStudy.setPopulations(null);
+			remoteStudy.setPopulations( Sets.newTreeSet() );
 			
 		} else if (listDiffsForm.contains(DATA_COLLECTION_EVENT_FORM_SECTION)) {
 			
 			for (Population population : remoteStudy.getPopulations()) {
-				population.setDataCollectionEvents(null);
+				population.setDataCollectionEvents( Sets.newTreeSet() );
 			}
 		}
 	}
@@ -469,9 +486,10 @@ public class StudiesImportResource {
 		else if (e instanceof URISyntaxException) return HttpStatus.SC_BAD_REQUEST;
 		else if (e instanceof ProtocolException) return HttpStatus.SC_BAD_REQUEST;
 		else if (e instanceof FileNotFoundException) return HttpStatus.SC_SERVICE_UNAVAILABLE;
+		else if (e instanceof ConnectException) return HttpStatus.SC_REQUEST_TIMEOUT;
 		else if (e instanceof IOException) return HttpStatus.SC_UNAUTHORIZED;
 		else if (e instanceof FileUploadException) return HttpStatus.SC_NO_CONTENT;
-		else return HttpStatus.SC_METHOD_FAILURE;
+		else return HttpStatus.SC_INTERNAL_SERVER_ERROR;
 	}
 
 	private boolean studyIdExistLocally(String id) {

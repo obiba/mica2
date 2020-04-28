@@ -54,6 +54,8 @@
               <tr ng-repeat="diffVO in diffsCustomFormJSON">  
                 <td>
                   <ul class="list-unstyled">
+                    <span ng-show="$index === 1">└─</span>
+                    <span ng-show="$index === 2">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─</span>
                     <span translate>{{diffVO.formTitle}}</span>
                   </ul>
                 </td>
@@ -82,6 +84,9 @@
           
         <!-- 2 - Remote studies -->
         <div class="modal-body" ng-show="(modalIndex == 2)">
+          <div>
+         	<h4><span translate>study.import.sub-title-summary</span></h4><br>
+          </div>	
           <!-- Search field and pagination controls -->
        	  <div class="row voffset2">
    		  	<div class="col-xs-4">
@@ -205,20 +210,20 @@
                   <th translate>study.import.action</th>
                 </tr>
               </thead>
-              <tbody id="myTableSummaryUpdate">
-                <tr ng-repeat="studyToUpdate in studiesToReplace">
+              <tbody id="myTableSummaryReplace">
+                <tr ng-repeat="studyToReplace in studiesToReplace">
                   <td>
                     <ul class="list-unstyled">
-                      <span ng-model="studyToUpdate.id" translate>{{studyToUpdate.id}}</span>
+                      <span ng-model="studyToReplace.id" translate>{{studyToReplace.id}}</span>
                     </ul>
                   </td>
                   <td>
-                  	<input type="text" name="confirmation" ng-pattern="studyToUpdate.id" title="{{'study.import.confirmation-hint' | translate}}" 
-                  		   ng-model="studyToUpdate.confirmation" class="form-control ng-pristine ng-valid ng-scope ng-not-empty ng-touched" required/>
+                  	<input type="text" name="confirmation" ng-pattern="studyToReplace.id" title="{{'study.import.confirmation-hint' | translate}}" 
+                  		   ng-model="studyToReplace.confirmation" class="form-control ng-pristine ng-valid ng-scope ng-not-empty ng-touched" required/>
                   </td>
                   <td>
                     <ul class="list-unstyled">
-                      <li ng-repeat="name in studyToUpdate.name">
+                      <li ng-repeat="name in studyToReplace.name">
                         <span class="badge">{{name.lang}}</span> {{name.value}}
                       </li>
                     </ul>
@@ -227,23 +232,23 @@
                     <ul class="list-unstyled">
                       <span ng-show="(replacements.indexOf('individual-study') > -1) || (replacements.indexOf('harmonization-study') > -1)">
                       	<span class="label label-pill label-info" 
-                      		  title="{{'study.import.diff-hint-part-0' | translate}}1{{'study.import.diff-hint-part-1' | translate}}{{'study.label' | translate}}{{'study.import.diff-hint-part-2' | translate}}" 
+                      		  title="{{'study.import.diff-hint-part-0' | translate}}1{{'study.import.diff-hint-part-1' | translate}}{{'study.label' | translate}}{{'study.import.diff-hint-part-1.1' | translate}}{{'study.import.diff-hint-part-2' | translate}}" 
                       		  data-toggle="tooltip">S</span>
                       </span>
-                      <span ng-show="( {{ studyToUpdate.localPopulationSize }} > 0) && (replacements.indexOf('study-population') > -1) || (replacements.indexOf('harmonization-study-population') > -1)">
+                      <span ng-show="( {{ studyToReplace.localPopulationSize }} > 0) && ((replacements.indexOf('study-population') > -1) || (replacements.indexOf('harmonization-study-population') > -1))">
                       	<span class="label label-pill label-info" 
-                      		  title="{{'study.import.diff-hint-part-0' | translate}}{{ studyToUpdate.localPopulationSize }}{{'study.import.diff-hint-part-1' | translate}}{{'study.population' | translate}}{{'study.import.diff-hint-part-2' | translate}}" 
+                      		  title="{{'study.import.diff-hint-part-0' | translate}}{{ studyToReplace.localPopulationSize }}{{'study.import.diff-hint-part-1' | translate}}{{'study.population' | translate}}{{'study.import.diff-hint-part-1.2' | translate}}{{'study.import.diff-hint-part-2' | translate}}" 
                       		  data-toggle="tooltip">P</span>
                       </span>
-	                  <span ng-show="( {{ studyToUpdate.localDCEsSize }} > 0) && (replacements.indexOf('data-collection-event') > -1) && (studyType == 'individual-study')">
+	                  <span ng-show="( {{ studyToReplace.localDCEsSize }} > 0) && (replacements.indexOf('data-collection-event') > -1) && (studyType == 'individual-study')">
 	                    <span class="label label-pill label-info" 
-	                     	  title="{{'study.import.diff-hint-part-0' | translate}}{{ studyToUpdate.localDCEsSize }}{{'study.import.diff-hint-part-1' | translate}}{{'study.data-collection-event' | translate}}{{'study.import.diff-hint-part-2' | translate}}" 
+	                     	  title="{{'study.import.diff-hint-part-0' | translate}}{{ studyToReplace.localDCEsSize }}{{'study.import.diff-hint-part-1' | translate}}{{'study.data-collection-event' | translate}}{{'study.import.diff-hint-part-1.2' | translate}}{{'study.import.diff-hint-part-2' | translate}}" 
 	                     	  data-toggle="tooltip">D</span>
 	                  </span>
                     </ul>
                   </td>
                   <td>
-                    <a ng-click="removeFromList(studyToUpdate, false)" class="delete" title="{{'study.import.remove' | translate}}" data-toggle="tooltip">
+                    <a ng-click="removeFromList(studyToReplace, false)" class="delete" title="{{'study.import.remove' | translate}}" data-toggle="tooltip">
                       <i class="fa fa-remove"></i>
                     </a>
                   </td>
@@ -326,12 +331,9 @@
                   </td>
                   <td>
                     <ul class="list-unstyled">
-                    	<span ng_show="studySaved.statusImport === 200" translate>{{'study.import.status-ok'}}</span>
-                    	<span ng_show="studySaved.statusImport === 400" class="text-danger" translate>{{'study.import.problems.problem-400'}}</span>
-                    	<span ng_show="studySaved.statusImport === 401" class="text-danger" translate>{{'study.import.problems.problem-401'}}</span>
-                    	<span ng_show="studySaved.statusImport === 404" class="text-danger" translate>{{'study.import.problems.problem-404'}}</span>
-                    	<span ng_show="studySaved.statusImport === 503" class="text-danger" translate>{{'study.import.problems.problem-503'}}</span>
-                    	<span ng_show="studySaved.statusImport === 204" class="text-danger" translate>{{'study.import.problems.problem-204'}}</span>
+                    	<span ng_show="studySaved.statusImport.indexOf('study.import.status-ok') > -1" translate>{{ studySaved.statusImport }}</span>
+                    	<span ng_show="studySaved.statusImport.indexOf('study.import.status-ok') <= -1" class="text-danger" translate>{{ studySaved.statusImport }}</span>
+                    	
                     </ul>
                   </td>
                 </tr>
@@ -339,11 +341,8 @@
             </table>
           </div>
 	    </div>
-	    <a class="modal-body" ng_show="statusErrorImport > 0">
-           	<span ng_show="statusErrorImport === 400" class="text-danger" translate>{{'study.import.problems.problem-400'}}</span>
-           	<span ng_show="statusErrorImport === 401" class="text-danger" translate>{{'study.import.problems.problem-401'}}</span>
-           	<span ng_show="statusErrorImport === 404" class="text-danger" translate>{{'study.import.problems.problem-404'}}</span>
-            <span ng_show="statusErrorImport === 503" class="text-danger" translate>{{'study.import.problems.problem-503'}}</span>
+	    <a class="modal-body" ng_show="statusErrorImport.length > 0">
+           	<span class="text-danger" translate>{{ statusErrorImport }}</span>
         </a>
         <!-- Footer navigation Buttons -->
         <div class="modal-footer">
