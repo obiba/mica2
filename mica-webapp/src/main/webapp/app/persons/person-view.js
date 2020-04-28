@@ -34,7 +34,8 @@
                 PersonResource,
                 ContactSerializationService,
                 NOTIFICATION_EVENTS,
-                FormDirtyStateObserver) {
+                FormDirtyStateObserver,
+                EntityTitleService) {
       this.$rootScope = $rootScope;
       this.$scope = $scope;
       this.$location = $location;
@@ -49,6 +50,7 @@
       this.ContactSerializationService = ContactSerializationService;
       this.NOTIFICATION_EVENTS = NOTIFICATION_EVENTS;
       this.FormDirtyStateObserver = FormDirtyStateObserver;
+      this.EntityTitleService = EntityTitleService;
     }
 
     __getMode() {
@@ -146,6 +148,45 @@
         });
     }
 
+    __updatePerson() {
+      this.PersonResource.update(this.ContactSerializationService.serialize(this.person)).$promise
+        .then((person) => {
+          this.listenerRegistry.unregisterAll();
+          this.__initPerson(person)
+        });
+    }
+
+    __deleteEntities(entityType, entities) {
+      let membership = this.person[`${entityType}Memberships`];
+      membership = membership.filter((item) => entities.indexOf(item.parentId) === -1);
+      if (membership.length === 0) {
+        delete this.person[`${entityType}Memberships`];
+      } else {
+        this.person[`${entityType}Memberships`] = membership;
+      }
+
+      this.__updatePerson();
+    }
+
+    __onDelete(titleKey, titleArgs, msgKey, msgArgs, callback) {
+      this.listenerRegistry.register(
+        this.$scope.$on(this.NOTIFICATION_EVENTS.confirmDialogRejected, () => this.listenerRegistry.unregisterAll())
+      );
+
+      this.listenerRegistry.register(
+        this.$scope.$on(this.NOTIFICATION_EVENTS.confirmDialogAccepted, callback)
+      );
+
+      this.$rootScope.$broadcast(this.NOTIFICATION_EVENTS.showConfirmDialog,
+        {
+          titleKey: titleKey,
+          titleArgs: titleArgs,
+          messageKey: msgKey,
+          messageArgs: msgArgs
+        }, {}
+      );
+    }
+
     __addMembership(roles, entities, entityType) {
       console.debug(JSON.stringify(this.person));
 
@@ -167,12 +208,11 @@
       });
 
       this.person[`${entityType}Memberships`] = entityMemberhips;
-      this.PersonResource.update(this.ContactSerializationService.serialize(this.person)).$promise
-        .then((person) => this.__initPerson(person));
+      this.__updatePerson();
     }
 
     __openModal(roles, membership, entitySearchResource, entityType) {
-      const entityTitle = this.$filter('translate')(entityType === 'network' ? 'networks' : 'studies');
+      const entityTitle = this.EntityTitleService.translate(entityType, true);
       this.$uibModal.open({
         templateUrl: 'app/persons/views/entity-list-modal.html',
         controllerAs: '$ctrl',
@@ -266,20 +306,24 @@
     }
 
     onDelete() {
-      this.listenerRegistry.register(
-        this.$scope.$on(this.NOTIFICATION_EVENTS.confirmDialogRejected, () => this.listenerRegistry.unregisterAll())
+      this.__onDelete(
+        'persons.delete-dialog.title',
+        null,
+        'persons.delete-dialog.message',
+        [`${this.person.firstName} ${this.person.lastName}`.trim()],
+        () => this.__deletePerson(this.person.id)
       );
+     }
 
-      this.listenerRegistry.register(
-        this.$scope.$on(this.NOTIFICATION_EVENTS.confirmDialogAccepted, () => this.__deletePerson(this.person.id))
-      );
-
-      this.$rootScope.$broadcast(this.NOTIFICATION_EVENTS.showConfirmDialog,
-        {
-          titleKey: 'persons.delete-dialog.title',
-          messageKey: 'persons.delete-dialog.message',
-          messageArgs: [`${this.person.firstName} ${this.person.lastName}`.trim()]
-        }, {}
+    onDeleteEntities(entityType, entities) {
+      const entityTitle = this.EntityTitleService.translate(entityType);
+      const entitiesTitle = this.EntityTitleService.translate(entityType, entities.length > 1);
+      this.__onDelete(
+        'persons.delete-entities-dialog.title',
+        [entityTitle],
+        'persons.delete-entities-dialog.message',
+        [entities.length, entitiesTitle],
+        () => this.__deleteEntities(entityType, entities)
       );
     }
 
@@ -313,6 +357,7 @@
         'ContactSerializationService',
         'NOTIFICATION_EVENTS',
         'FormDirtyStateObserver',
+        'EntityTitleService',
         PersonViewController,
 
       ]

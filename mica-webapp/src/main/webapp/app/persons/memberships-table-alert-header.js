@@ -32,10 +32,6 @@
 
     $onChanges() {
     }
-
-    selectAll() {
-      this.onSelectAll({});
-    }
   }
 
   mica.persons
@@ -44,7 +40,9 @@
         allSelected: '<',
         selectionsCount: '<',
         entityType: '<',
-        onSelectAll: '&'
+        roles: '<',
+        onSelectAll: '&',
+        onDeleteSelections: '&'
       },
       templateUrl: 'app/persons/views/memberships-table-alert-header.html',
       controllerAs: '$ctrl',

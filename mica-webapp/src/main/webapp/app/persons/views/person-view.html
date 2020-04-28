@@ -30,14 +30,18 @@
     </a>
   </div>
 
-
   <div>
     <h4 translate>networks</h4>
 
     <a href class="btn btn-primary" ng-click="$ctrl.addNetworks()">
       <i class="fa fa-plus"></i> <span translate>persons.add-networks</span>
     </a>
-    <person-memberships entity-type="network" membership="$ctrl.memberships.networks"></person-memberships>
+    <person-memberships
+      entity-type="network"
+      membership="$ctrl.memberships.networks"
+      roles="$ctrl.config.roles"
+      on-delete-entities="$ctrl.onDeleteEntities(entityType, entities)">
+    </person-memberships>
   </div>
 
   <div class="voffset7">
@@ -46,7 +50,12 @@
     <a href class="btn btn-primary" ng-click="$ctrl.addStudies()">
       <i class="fa fa-plus"></i> <span translate>persons.add-studies</span>
     </a>
-    <person-memberships entity-type="study" membership="$ctrl.memberships.studies"></person-memberships>
+    <person-memberships
+      entity-type="study"
+      membership="$ctrl.memberships.studies"
+      roles="$ctrl.config.roles"
+      on-delete-entities="$ctrl.onDeleteEntities(entityType, entities)">
+    </person-memberships>
   </div>
 
 </div>

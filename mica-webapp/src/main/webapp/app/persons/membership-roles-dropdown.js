@@ -11,9 +11,9 @@
 'use strict';
 
 (function () {
-  const DEFAULT_LIMIT = 3;
+  const DEFAULT_LIMIT = 10;
 
-  class MembershipRolesController {
+  class MembershipRolesDropdownController {
     constructor() {
       this.limit = DEFAULT_LIMIT;
     }
@@ -35,16 +35,17 @@
 
   }
 
+
   mica.persons
-    .component('membershipRoles', {
+    .component('membershipRolesDropdown', {
       bindings: {
         roles: '<',
         entityType: '<',
         onSelected: '&'
       },
-      templateUrl: 'app/persons/views/membership-roles.html',
+      templateUrl: 'app/persons/views/membership-roles-dropdown.html',
       controllerAs: '$ctrl',
-      controller: [MembershipRolesController]
+      controller: [MembershipRolesDropdownController]
     });
 
 })();

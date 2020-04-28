@@ -89,6 +89,9 @@
         for (let i = 0; i < this.pages.count; i++) {
           this.pages[i+1] = {all: false, selections: []};
         }
+
+        this.selections = {};
+        this.selectionsCount = 0;
       }
     }
 
@@ -98,10 +101,15 @@
     }
 
     onSelectAll() {
+      console.debug(`onSelectAll()`);
       this.selectedAllPages = !this.selectedAllPages;
       for (let i = 0; i < this.pages.count; i++) {
         this.__selectAllPage(i+1, this.selectedAllPages);
       }
+    }
+
+    onDeleteSelections() {
+      this.onDeleteEntities({entityType: this.entityType, entities: Object.keys(this.selections)});
     }
   }
 
@@ -109,7 +117,9 @@
     .component('personMemberships', {
       bindings: {
         membership: '<',
-        entityType: '@'
+        entityType: '@',
+        roles: '<',
+        onDeleteEntities: '&'
       },
       templateUrl: 'app/persons/views/person-memberships.html',
       controllerAs: '$ctrl',

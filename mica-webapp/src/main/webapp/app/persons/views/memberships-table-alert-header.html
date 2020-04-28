@@ -1,18 +1,53 @@
 <div class="alert alert-warning actions-select">
   <span ng-show="!$ctrl.allSelected && $ctrl.selectionsCount > 0">
-    <a href ng-click="$ctrl.selectAll()" class="hoffset1">
-      <i class="fa fa-square-o"></i>
-      <span translate>table-selections.select-all</span>
-    </a>
+    <strong>
+      <a href ng-click="$ctrl.onSelectAll({})" class="hoffset1">
+        <i class="fa fa-square-o"></i>
+        <span translate>table-selections.select-all</span>
+      </a>
+    </strong>
     <span class="pull-right">
       {{'persons.selected-entities' | translate:{count: $ctrl.selectionsCount, entities: $ctrl.entitiesType} }}
     </span>
   </span>
+
   <span ng-show="$ctrl.allSelected">
-    <a href ng-click="$ctrl.selectAll()" class="hoffset1">
-      <i class="fa fa-check-square-o"></i>
-      <b><span translate>table-selections.unselect-all</span></b>
-    </a>
-  <span class="pull-right" translate>table-selections.all-selected</span>
+    <strong>
+      <a href ng-click="$ctrl.selectAll()" class="hoffset1">
+        <i class="fa fa-check-square-o"></i>
+        <b><span translate>table-selections.unselect-all</span></b>
+      </a>
+    </strong>
+    <span class="pull-right" translate>table-selections.all-selected</span>
+  </span>
+
+  <span>
+    <membership-roles-dropdown
+      roles="$ctrl.roles"
+      entity-type="$ctrl.entityType"
+      on-selected="$ctrl.onSelectedRoles(selectedRoles)">
+    </membership-roles-dropdown>
+<!--      <a href ng-click="$ctrl.onAddRoles({})" class="hoffset1">-->
+<!--        <i class="fa fa-plus-circle"></i> <span translate>persons.add-roles</span>-->
+<!--      </a>-->
+  </span>
+
+  <span>
+      <membership-roles-dropdown
+        roles="$ctrl.roles"
+        entity-type="$ctrl.entityType"
+        on-selected="$ctrl.onSelectedRoles(selectedRoles)">
+      </membership-roles-dropdown>
+<!--      <a href ng-click="$ctrl.onDeleteRoles({})" class="hoffset1">-->
+<!--        <i class="fa fa-minus-circle"></i> <span translate>persons.delete-roles</span>-->
+<!--      </a>-->
+  </span>
+
+  <span>
+    <strong>
+      <a href ng-click="$ctrl.onDeleteSelections({})" class="hoffset1">
+        <i class="fa fa-trash"></i> <span translate>remove</span>
+      </a>
+    </strong>
   </span>
 </div>

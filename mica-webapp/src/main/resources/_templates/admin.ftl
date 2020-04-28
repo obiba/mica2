@@ -352,6 +352,7 @@
 <script src="app/persons/entity-list.js"></script>
 <script src="app/persons/memberships-table-alert-header.js"></script>
 <script src="app/persons/membership-roles.js"></script>
+<script src="app/persons/membership-roles-dropdown.js"></script>
 
 <!-- endbuild -->
 </body>

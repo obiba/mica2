@@ -1,0 +1,18 @@
+<div class="btn-group">
+  <button type="button" class="btn btn-link role-btn-link dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    <strong><i class="fa fa-plus-circle"></i> {{'persons.add-roles' | translate}} <span class="caret"></span></strong>
+  </button>
+  <ul class="dropdown-menu role-list" ng-if="$ctrl.roles.length">
+    <li ng-if="$ctrl.roles.length > $ctrl.limit" class="role-list-item">
+        <span class="input-group input-group-sm no-padding-top">
+          <span class="input-group-addon" id="person-search"><i class="fa fa-search"></i></span>
+          <input ng-model="$ctrl.query" type="text" class="form-control" aria-describedby="person-search">
+        </span>
+    </li>
+    <li class="role-list-item" ng-repeat="role in $ctrl.roles | filter: $ctrl.query">
+      <label>
+        <input type="checkbox" name="role" ng-model="$ctrl.selections[role]"> {{'contact.label.' + role | translate}}
+      </label>
+    </li>
+  </ul>
+</div>

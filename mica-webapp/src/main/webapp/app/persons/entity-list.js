@@ -14,15 +14,18 @@
   const DEFAULT_LIMIT = 10;
 
   class PersonEntityListController {
-    constructor($injector, $translate, $timeout) {
+    constructor($injector, $translate, $timeout, EntityTitleService) {
       this.$injector = $injector;
       this.$translate = $translate;
       this.$timeout = $timeout;
+      this.EntityTitleService = EntityTitleService;
     }
 
     __getEntities(query, from, limit) {
+      const excludes = this.membership.entities.map(entity => entity.id);
+      console.debug(`__getEntities ${excludes}`)
       this.loading = true;
-      this.searchResource.query({query: query, from:from , limit: limit || DEFAULT_LIMIT}, (entities, headers) => {
+      this.searchResource.query({query: query, from:from , limit: limit || DEFAULT_LIMIT, exclude: excludes  }, (entities, headers) => {
         this.entities = entities;
         this.total = parseInt(headers('X-Total-Count'), 10) || entities.length;
         this.loading = false;
@@ -59,6 +62,7 @@
     }
 
     $onInit() {
+      this.entitiesTitle = this.EntityTitleService.translate(this.entityType, true);
       this.language = this.$translate.use();
       this.limit = DEFAULT_LIMIT;
       this.selectedEntities = {};
@@ -104,7 +108,7 @@
       },
       templateUrl: 'app/persons/views/entity-list.html',
       controllerAs: '$ctrl',
-      controller: ['$injector', '$translate', '$timeout', PersonEntityListController]
+      controller: ['$injector', '$translate', '$timeout', 'EntityTitleService', PersonEntityListController]
     });
 
 })();

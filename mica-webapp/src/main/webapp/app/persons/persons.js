@@ -18,3 +18,15 @@ mica.persons = angular.module('mica.persons', [
   'pascalprecht.translate',
   'ui.bootstrap'
 ]);
+
+mica.persons.service('EntityTitleService', ['$filter', function($filter) {
+    function translate(entityType, plural) {
+      return plural
+        ? $filter('translate')(entityType === 'network' ? 'networks' : 'studies')
+        : $filter('translate')(`${entityType}.label`);
+    }
+
+    this.translate = translate;
+
+    return this;
+  }]);

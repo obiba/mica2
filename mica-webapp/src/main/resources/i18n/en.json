@@ -2237,13 +2237,19 @@
     "no-membership": "No memberships present.",
     "roles-help": "Select at least one role before adding a member to one or more {{entities}}.",
     "add-person": "Add Person",
-    "selected-entities": "{{count}} {{entities}} are selected",
+    "selected-entities": "{{count}} {{entities}} selected",
+    "add-roles": "Add Roles",
+    "delete-roles": "Delete Roles",
     "entity-list-dialog": {
       "title": "Add Member to {{entities}}"
     },
     "delete-dialog":{
       "title": "Delete Person",
       "message": "Are you sure you want to delete the person '{{arg0}}'?"
+    },
+    "delete-entities-dialog":{
+      "title": "Delete {{arg0}} Memberships",
+      "message": "Are you sure you want to delete {{arg0}} {{arg1}}?"
     }
   }
 }
