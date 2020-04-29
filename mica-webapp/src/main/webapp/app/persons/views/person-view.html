@@ -6,6 +6,21 @@
     </ol>
   </h2>
 
+  <p ng-if="$ctrl.loading" class="voffset2 loading"></p>
+
+  <div class="alert alert-warning" role="alert" ng-if="$ctrl.person && $ctrl.person.id && !$ctrl.memberships.networks && !$ctrl.memberships.studies">
+    <span>{{'persons.no-memberships' |translate:{fullname: $ctrl.person.firstName+' '+ $ctrl.person.lastName} }}</span>
+  </div>
+
+  <div ng-if="$ctrl.mode !== 'view'" class="pull-right">
+    <a href class="btn btn-default" ng-click="$ctrl.onCancel()">
+      <span translate>cancel</span>
+    </a>
+    <a href class="btn btn-primary" ng-click="$ctrl.onSave()">
+      <span translate>save</span>
+    </a>
+  </div>
+
   <div ng-if="$ctrl.mode === 'view'" class="pull-right">
     <a ng-href="#/person/{{$ctrl.person.id}}/edit" class="btn btn-primary">
       <i class="fa fa-pencil-square-o"></i> <span translate>edit</span>
@@ -17,45 +32,42 @@
 
   <div class="clearfix"></div>
 
-  <form name="form" role="form" novalidate class="ng-scope ng-invalid ng-invalid-required ng-dirty ng-valid-minlength">
+  <form name="form" role="form" novalidate>
     <div sf-model="$ctrl.person" sf-form="$ctrl.sfForm.definition" sf-schema="$ctrl.sfForm.schema" sf-options="$ctrl.sfOptions"></div>
   </form>
 
-  <div ng-if="$ctrl.mode !== 'view'">
-    <a href class="btn btn-default" ng-click="$ctrl.onCancel()">
-      <span translate>cancel</span>
-    </a>
-    <a href class="btn btn-primary" ng-click="$ctrl.onSave()">
-      <span translate>save</span>
-    </a>
+  <div ng-if="$ctrl.person.id">
+    <div class="voffset5">
+      <h4 translate>networks</h4>
+      <p class="help-block" ><span translate>persons.networks-roles-table-help</span></p>
+
+      <a href class="btn btn-primary" ng-click="$ctrl.addNetworks()">
+        <i class="fa fa-plus"></i> <span translate>persons.add-networks</span>
+      </a>
+
+      <person-memberships
+        entity-type="network"
+        memberships="$ctrl.memberships.networks"
+        roles="$ctrl.config.roles"
+        on-delete-entity="$ctrl.onDeleteEntity(entityType, entity)"
+        on-edit-entity="$ctrl.onEditEntity(entityType, entity)">
+      </person-memberships>
+    </div>
+
+    <div class="voffset5">
+      <h4 translate>studies</h4>
+      <p class="help-block" ><span translate>persons.studies-roles-table-help</span></p>
+
+      <a href class="btn btn-primary" ng-click="$ctrl.addStudies()">
+        <i class="fa fa-plus"></i> <span translate>persons.add-studies</span>
+      </a>
+      <person-memberships
+        entity-type="study"
+        memberships="$ctrl.memberships.studies"
+        roles="$ctrl.config.roles"
+        on-delete-entity="$ctrl.onDeleteEntity(entityType, entity)"
+        on-edit-entity="$ctrl.onEditEntity(entityType, entity)">
+      </person-memberships>
+    </div>
   </div>
-
-  <div>
-    <h4 translate>networks</h4>
-
-    <a href class="btn btn-primary" ng-click="$ctrl.addNetworks()">
-      <i class="fa fa-plus"></i> <span translate>persons.add-networks</span>
-    </a>
-    <person-memberships
-      entity-type="network"
-      membership="$ctrl.memberships.networks"
-      roles="$ctrl.config.roles"
-      on-delete-entities="$ctrl.onDeleteEntities(entityType, entities)">
-    </person-memberships>
-  </div>
-
-  <div class="voffset7">
-    <h4 translate>studies</h4>
-
-    <a href class="btn btn-primary" ng-click="$ctrl.addStudies()">
-      <i class="fa fa-plus"></i> <span translate>persons.add-studies</span>
-    </a>
-    <person-memberships
-      entity-type="study"
-      membership="$ctrl.memberships.studies"
-      roles="$ctrl.config.roles"
-      on-delete-entities="$ctrl.onDeleteEntities(entityType, entities)">
-    </person-memberships>
-  </div>
-
 </div>

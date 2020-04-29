@@ -22,8 +22,7 @@
     }
 
     __getEntities(query, from, limit) {
-      const excludes = this.membership.entities.map(entity => entity.id);
-      console.debug(`__getEntities ${excludes}`)
+      const excludes = (this.memberships.entities || []).map(entity => entity.id);
       this.loading = true;
       this.searchResource.query({query: query, from:from , limit: limit || DEFAULT_LIMIT, exclude: excludes  }, (entities, headers) => {
         this.entities = entities;
@@ -51,7 +50,7 @@
     }
 
     $onChanges() {
-      if (this.roles && this.entitySearchResource && this.membership) {
+      if (this.roles && this.entitySearchResource && this.memberships) {
         this.searchResource = this.$injector.get(this.entitySearchResource);
         if (!this.searchResource) {
           throw new Error(`Failed to inject resource ${this.entitySearchResource}`);
@@ -62,7 +61,7 @@
     }
 
     $onInit() {
-      this.entitiesTitle = this.EntityTitleService.translate(this.entityType, true);
+      this.entityTitle = this.EntityTitleService.translate(this.entityType, false);
       this.language = this.$translate.use();
       this.limit = DEFAULT_LIMIT;
       this.selectedEntities = {};
@@ -71,7 +70,6 @@
     }
 
     onPageChanged(newPage, oldPage) {
-      console.debug(`PageChanged ${oldPage} ${newPage}`);
       const from = DEFAULT_LIMIT * (newPage - 1);
       this.__getEntities(null, from);
     }
@@ -100,7 +98,7 @@
     .component('personEntityList', {
       bindings: {
         roles: '<',
-        membership: '<',
+        memberships: '<',
         entitySearchResource: '<',
         entityType: '<',
         onRolesSelected: '&',

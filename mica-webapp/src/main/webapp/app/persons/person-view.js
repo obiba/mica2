@@ -70,6 +70,14 @@
       return mode;
     }
 
+    /**
+     * To simplify translation, this method translates and formats membership data for the tables
+     *
+     * @param type
+     * @param memberships
+     * @returns {{entities: [], title: *}}
+     * @private
+     */
     __initMembershipTableData(type, memberships) {
       const lang = this.$translate.use();
       const data = {
@@ -156,13 +164,13 @@
         });
     }
 
-    __deleteEntities(entityType, entities) {
-      let membership = this.person[`${entityType}Memberships`];
-      membership = membership.filter((item) => entities.indexOf(item.parentId) === -1);
-      if (membership.length === 0) {
+    __deleteEntity(entityType, entity) {
+      let memberships = this.person[`${entityType}Memberships`];
+      memberships = memberships.filter((item) => item.parentId !== entity.id);
+      if (memberships.length === 0) {
         delete this.person[`${entityType}Memberships`];
       } else {
-        this.person[`${entityType}Memberships`] = membership;
+        this.person[`${entityType}Memberships`] = memberships;
       }
 
       this.__updatePerson();
@@ -187,10 +195,8 @@
       );
     }
 
-    __addMembership(roles, entities, entityType) {
-      console.debug(JSON.stringify(this.person));
-
-      let entityMemberhips = this.person[`${entityType}Memberships`] || [];
+    __addMemberships(roles, entities, entityType) {
+      let entityMemberships = this.person[`${entityType}Memberships`] || [];
       roles.forEach(role => {
         entities.forEach(entity => {
           let membership = {
@@ -203,16 +209,31 @@
           if ('study' === entityType) {
             membership['obiba.mica.PersonDto.StudyMembershipDto.meta'] = {type: entity.studyResourcePath};
           }
-          entityMemberhips.push(membership);
+          entityMemberships.push(membership);
         });
       });
 
-      this.person[`${entityType}Memberships`] = entityMemberhips;
+      this.person[`${entityType}Memberships`] = entityMemberships;
       this.__updatePerson();
     }
 
-    __openModal(roles, membership, entitySearchResource, entityType) {
-      const entityTitle = this.EntityTitleService.translate(entityType, true);
+    __updateEntityRoles(selections) {
+      const membershipEntity = selections.membershipEntities[0];
+      let memberships = this.person[`${selections.entityType}Memberships`];
+      // remove to recreate from scratch
+      this.person[`${selections.entityType}Memberships`] = memberships.filter(membership => membership.parentId !== membershipEntity.parentId)
+
+      let result = selections.roles.forEach((role) => {
+        let item = Object.assign({}, membershipEntity);
+        item.role = role;
+        this.person[`${selections.entityType}Memberships`].push(item);
+      });
+
+      this.__updatePerson();
+    }
+
+    __openMembershipsModal(roles, memberships, entitySearchResource, entityType) {
+      const entitiesTitle = this.EntityTitleService.translate(entityType, true);
       this.$uibModal.open({
         templateUrl: 'app/persons/views/entity-list-modal.html',
         controllerAs: '$ctrl',
@@ -221,11 +242,11 @@
             this.selectedRoles = [];
             this.selectedEntities = [];
             this.roles = roles;
-            this.membership = membership || [];
+            this.memberships = memberships || [];
             this.entitySearchResource = entitySearchResource;
             this.entityType = entityType;
-            this.entityTitle = entityTitle;
-            this.addDisabled = true;
+            this.entitiesTitle = entitiesTitle;
+              this.addDisabled = true;
 
             const updateAddDisable =
               () => this.addDisabled = this.selectedRoles.length < 1 || this.selectedEntities.length < 1;
@@ -249,11 +270,44 @@
             this.onClose = () => $uibModalInstance.dismiss('close');
           }]
       }).result.then(selections => {
-        this.__addMembership(selections.roles, selections.entities, entityType);
+        this.__addMemberships(selections.roles, selections.entities, entityType);
+      });
+    }
+
+    __openEntityRolesModal(roles, membershipEntities, entityType, entity) {
+      const currentRoles = membershipEntities.map((item) => item.role);
+      const entityTitle = this.EntityTitleService.translate(entityType);
+      this.$uibModal.open({
+        templateUrl: 'app/persons/views/entity-roles-modal.html',
+        controllerAs: '$ctrl',
+        controller: ['$uibModalInstance',
+          function($uibModalInstance) {
+            this.roles = roles;
+            this.entityType = entityType;
+            this.entityTitle = entityTitle;
+            this.selectedRoles = currentRoles;
+            this.entity = entity;
+            this.membershipEntities = membershipEntities;
+
+            this.onRolesSelected = (selectedRoles) => {
+              this.selectedRoles = selectedRoles;
+            }
+
+            this.onUpdate = () => $uibModalInstance.close({
+              roles: this.selectedRoles,
+              membershipEntities: this.membershipEntities,
+              entityType: this.entityType
+            });
+
+            this.onClose = () => $uibModalInstance.dismiss('close');
+          }]
+      }).result.then(selections => {
+        this.__updateEntityRoles(selections);
       });
     }
 
     $onInit() {
+      this.loading = false;
       this.MicaConfigResource.get().$promise.then(config => {
         this.listenerRegistry = new obiba.utils.EventListenerRegistry();
         this.mode = this.__getMode();
@@ -262,7 +316,19 @@
           map[locale] = this.$filter('translate')('language.' + locale);
           return map;
         }, {});
-        this.sfOptions = {formDefaults: {languages: languages, readonly: MODE.VIEW === this.mode}};
+
+        this.sfOptions = {
+          formDefaults: {
+            languages: languages,
+            readonly: MODE.VIEW === this.mode,
+            pristine:
+              {
+                errors: true,
+                success: false
+              }
+          }
+        };
+
         this.sfForm = {
           schema: this.LocalizedSchemaFormService.translate(angular.copy(CONTACT_SCHEMA)),
           definition: this.LocalizedSchemaFormService.translate(angular.copy(CONTACT_DEFINITION))
@@ -275,6 +341,7 @@
         }
 
         this.__observeFormDirtyState();
+        this.loading = false;
       });
     }
 
@@ -294,12 +361,12 @@
       if (this.$scope.form.$valid) {
         switch (this.mode) {
           case MODE.NEW:
-            this.PersonResource.create(this.person).$promise
-              .then((person) => this.$location.path(`/person/${person.id}`).replace());
+            this.PersonResource.create(this.ContactSerializationService.serialize(angular.copy(this.person))).$promise
+              .then((person) => this.__navigateOut(`/person/${person.id}`));
             break;
           case MODE.EDIT:
-            this.PersonResource.update(this.ContactSerializationService.serialize(this.person)).$promise
-              .then((person) => this.$location.path(`/person/${person.id}`).replace());
+            this.PersonResource.update(this.ContactSerializationService.serialize(angular.copy(this.person))).$promise
+              .then((person) => this.__navigateOut(`/person/${person.id}`));
             break;
         }
       }
@@ -315,24 +382,32 @@
       );
      }
 
-    onDeleteEntities(entityType, entities) {
+    onDeleteEntity(entityType, entity) {
       const entityTitle = this.EntityTitleService.translate(entityType);
-      const entitiesTitle = this.EntityTitleService.translate(entityType, entities.length > 1);
+      const entitiesTitle = this.EntityTitleService.translate(entityType);
       this.__onDelete(
         'persons.delete-entities-dialog.title',
         [entityTitle],
         'persons.delete-entities-dialog.message',
-        [entities.length, entitiesTitle],
-        () => this.__deleteEntities(entityType, entities)
+        [entity.acronym],
+        () => this.__deleteEntity(entityType, entity)
       );
     }
 
+    onEditEntity(entityType, entity) {
+      const membership = this.person[`${entityType}Memberships`];
+      const membershipEntities = membership.filter((item) => item.parentId === entity.id);
+      if (membershipEntities) {
+        this.__openEntityRolesModal(this.config.roles, membershipEntities, entityType, entity);
+      }
+    }
+
     addNetworks() {
-      this.__openModal(this.config.roles, this.memberships.networks,'NetworksResource', 'network');
+      this.__openMembershipsModal(this.config.roles, this.memberships.networks,'NetworksResource', 'network');
     }
 
     addStudies() {
-      this.__openModal(this.config.roles, this.memberships.studies,'StudyStatesSearchResource', 'study');
+      this.__openMembershipsModal(this.config.roles, this.memberships.studies,'StudyStatesSearchResource', 'study');
     }
   }
 

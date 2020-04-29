@@ -2234,12 +2234,17 @@
     "none": "No persons.",
     "add-networks": "Add Networks",
     "add-studies": "Add Studies",
-    "no-membership": "No memberships present.",
-    "roles-help": "Select at least one role before adding a member to one or more {{entities}}.",
+    "no-entity-memberships": "No membership roles.",
+    "entities-roles-help": "To add a membership select at least one role and one {{entity}}.",
+    "entity-roles-help": "At least one role must be selected.",
     "add-person": "Add Person",
-    "selected-entities": "{{count}} {{entities}} selected",
-    "add-roles": "Add Roles",
-    "delete-roles": "Delete Roles",
+    "no-memberships": "{{fullname}} is not a member of any networks or studies.",
+    "networks-roles-table-help": "List of membership roles for each network.",
+    "studies-roles-table-help": "List of membership roles for each study.",
+    "update-roles-dialog": {
+      "title": "Update Roles",
+      "message": "Select one or more roles to assign to {{member}}."
+    },
     "entity-list-dialog": {
       "title": "Add Member to {{entities}}"
     },
@@ -2248,8 +2253,8 @@
       "message": "Are you sure you want to delete the person '{{arg0}}'?"
     },
     "delete-entities-dialog":{
-      "title": "Delete {{arg0}} Memberships",
-      "message": "Are you sure you want to delete {{arg0}} {{arg1}}?"
+      "title": "Delete Membership",
+      "message": "Are you sure you want to delete all roles from {{arg0}}?"
     }
   }
 }

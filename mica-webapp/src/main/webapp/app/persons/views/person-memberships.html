@@ -1,7 +1,7 @@
 <div>
-  <p class="help-block"  ng-if="!$ctrl.hasMembership"><span translate>persons.no-membership</span></p>
+  <p class="help-block"  ng-if="!$ctrl.hasMembership"><span translate>persons.no-entity-memberships</span></p>
 
-  <div class="row voffset4" ng-if="$ctrl.query || $ctrl.membership.entities.length > 0">
+  <div class="row voffset4" ng-if="$ctrl.memberships.entities.length > 0">
     <div class="col-xs-4">
           <span class="input-group input-group-sm no-padding-top">
             <span class="input-group-addon" id="person-search"><i class="fa fa-search"></i></span>
@@ -17,32 +17,21 @@
     </div>
   </div>
 
-  <div class="table-responsive" ng-if="$ctrl.hasMembership">
-    <memberships-table-alert-header
-      all-selected="$ctrl.selectedAllPages"
-      selections-count="$ctrl.selectionsCount"
-      entity-type="$ctrl.entityType"
-      roles="$ctrl.roles"
-      on-select-all="$ctrl.onSelectAll()"
-      on-delete-selections="$ctrl.onDeleteSelections()"
-      ng-show="$ctrl.selectionsCount > 0">
-    </memberships-table-alert-header>
+  <div class="table-responsive" ng-show="$ctrl.hasMembership && $ctrl.filtered.length > 0">
     <table class="table table-bordered table-striped">
       <thead>
       <tr>
-        <th><input type="checkbox" ng-model="$ctrl.selectedAllPage"></th>
         <th class="col-xs-3" translate>study.acronym</th>
         <th class="col-xs-5" translate>study.name</th>
         <th class="col-xs-4"translate>roles</th>
+        <th class="col-xs-4"translate>actions</th>
       </tr>
       </thead>
       <tbody>
-      <tr dir-paginate="entity in $ctrl.membership.entities | itemsPerPage: $ctrl.limit" pagination-id="$ctrl.entityType">
-        <td>
-          <input type="checkbox" ng-model="$ctrl.selections[entity.id]" ng-click="$ctrl.onSelection(entity.id)">
-        </td>
+      <tr dir-paginate="entity in $ctrl.filtered = ($ctrl.memberships.entities | filter:$ctrl.query) | orderBy:'acronym' | itemsPerPage: $ctrl.limit" pagination-id="$ctrl.entityType">
         <td>
           <a ng-href="#{{entity.url}}">
+
             {{entity.acronym}}
           </a>
         </td>
@@ -52,8 +41,20 @@
         <td>
            {{(entity.roles || []).join(', ')}}
         </td>
+        <td>
+          <ul class="list-inline">
+            <li>
+              <a href ng-click="$ctrl.editEntity(entity)" title="{{'edit' | translate}}"><i class="fa fa-pencil"></i></a>
+            </li>
+            <li>
+              <a href ng-click="$ctrl.deleteEntity(entity)" title="{{'delete' | translate}}"><i class="fa fa-trash-o"></i></a>
+            </li>
+          </ul>
+        </td>
       </tr>
       </tbody>
     </table>
+
+
   </div>
 </div>

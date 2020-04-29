@@ -1,6 +1,8 @@
-<div ng-if="$ctrl.entities.length > 0">
-  <span class="h4 no-padding-bottom" translate>roles</span>
+<div>
+  <div class="help-block">{{'persons.entities-roles-help' | translate:{entity: $ctrl.entityTitle.toLowerCase()} }}</div>
+
   <membership-roles
+    class="voffset5"
     roles="$ctrl.roles"
     entity-type="$ctrl.entityType"
     on-selected="$ctrl.onSelectedRoles(selectedRoles)">
@@ -27,7 +29,7 @@
 
     <p ng-show="$ctrl.loading" class="voffset2 loading"></p>
 
-    <div ng-show="!$ctrl.loading" class="table-responsive">
+    <div ng-show="!$ctrl.loading && $ctrl.entities.length > 0" class="table-responsive">
       <table class="table table-bordered table-striped">
         <thead>
         <tr>

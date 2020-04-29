@@ -21,7 +21,6 @@
       "decimal": "Décimal",
       "keyword": "Mot-clé",
       "keyword_string": "Mot-clé et string"
-
     },
     "sort-by": "Trier par",
     "read-more": "En savoir plus",
@@ -1318,6 +1317,7 @@
   "draft": "Brouillon",
   "published": "Publié",
   "role": "Rôle",
+  "roles": "Rôles",
   "files": "Fichiers",
   "items": "items",
   "item": "item",
@@ -1393,7 +1393,8 @@
       "classifications": "Parcourir les taxonomies.",
       "translations": "Gérer les traductions des libellés.",
       "cart": "Panier de variables.",
-      "sets": "Listes de variables."
+      "sets": "Listes de variables.",
+      "persons": "Gérer les personnes associées aux études et aux réseaux par un rôle tel que contact ou enquêteur."
     }
   },
   "server": {
@@ -1884,6 +1885,7 @@
     "notifications": {
       "title": "Notifications",
       "info": "Les courriels peuvent être envoyés au demandeur et aux agents d'accès aux données lorsqu'un événement se produit sur la demande d'accès aux données. Les événements peuvent être: changement de statut ou un commentaire. Les objets de notifications par courriel peuvent contenir les information suivantes : ${organisation}, ${title} et ${id} pour l'ID de la demande.",
+      "events": "Événements",
       "created": "A la création",
       "createdSubject": "Objet du courriel de Création",
       "created-help": "Le courriel est envoyé aux agents d'accès aux données à la création de la demande d'accès aux données (i.e. avant d'avoir été soumise).",
@@ -1911,6 +1913,7 @@
       "conditionallyApproved": "Sur approbation conditionnelle",
       "conditionallyApprovedSubject": "Objet du courriel Sur approbation conditionnelle",
       "conditionallyApproved-help": "Le courriel est envoyé au demandeur lorsque sa demande d'accès aux données est approuvée conditionnellement.",
+      "reports":  "Rapports",
       "finalReport": "Rappel de rapport final",
       "finalReportSubject": "Objet du courriel rappelant de soummettre le rapport final",
       "finalReport-help": "Le courriel est envoyé au demandeur pour lui rappeler que le rapport final doit être soumis. Ce courriel ne s'applique qu'aux demande d'accès aux données ayant été approuvées.",
@@ -2224,6 +2227,34 @@
       "image": "Insérer une image",
       "table": "Insérer une table",
       "preview": "Basculer l'aperçu"
+    }
+  },
+  "persons": {
+    "title": "Personnes",
+    "none": "Aucune personne.",
+    "add-networks": "Ajouter des réseaux",
+    "add-studies": "Ajouter des études",
+    "no-entity-memberships": "Aucun rôle d'adhésion.",
+    "entities-roles-help": "Pour ajouter une adhésion sélectionner au moins un rôle et un {{entity}}.",
+    "entity-roles-help": "Au moins un rôle doit être sélectionné.",
+    "add-person": "Ajouter une personne",
+    "no-memberships": "{{fullname}} n'est membre d'aucun réseau ou étude.",
+    "networks-roles-table-help": "Liste des rôles d'adhésion pour chaque réseau.",
+    "studies-roles-table-help": "Liste des rôles d'adhésion pour chaque étude.",
+    "update-roles-dialog": {
+      "title": "Mettre à jour les rôles",
+      "message": "Sélectionnez un ou plusieurs rôles à attribuer à {{member}}."
+    },
+    "entity-list-dialog": {
+      "title": "Ajouter un membre à {{entities}}"
+    },
+    "delete-dialog":{
+      "title": "Supprimer une personne",
+      "message": "Êtes-vous sûr de vouloir supprimer la personne '{{arg0}}'"
+    },
+    "delete-entities-dialog":{
+      "title": "Supprimer l'adhésion",
+      "message": "Êtes-vous sûr de vouloir supprimer tous les rôles de {{arg0}}?"
     }
   }
 }

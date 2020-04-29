@@ -11,21 +11,19 @@
 'use strict';
 
 (function () {
-  const DEFAULT_LIMIT = 3;
+  const DEFAULT_LIMIT = 10;
 
   class MembershipRolesController {
     constructor() {
       this.limit = DEFAULT_LIMIT;
     }
 
-    $onChanges() {
-      if (this.roles) {
-        this.selections = this.roles.reduce((map, role) => {
-          map[role] = false;
-          return map;
-        }, {});
-      }
-
+    $onInit() {
+      this.selectedRoles = this.selectedRoles || [];
+      this.selections = this.roles.reduce((map, role) => {
+        map[role] = this.selectedRoles.indexOf(role) > -1;
+        return map;
+      }, {});
     }
 
     onRoleSelected() {
@@ -39,6 +37,7 @@
     .component('membershipRoles', {
       bindings: {
         roles: '<',
+        selectedRoles: '<',
         entityType: '<',
         onSelected: '&'
       },

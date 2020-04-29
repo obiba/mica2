@@ -62,7 +62,6 @@
     }
 
     onPageChanged(newPage, oldPage) {
-      console.debug(`PageChanged ${oldPage} ${newPage}`);
       const from = DEFAULT_LIMIT * (newPage - 1);
       this.getPersons(null, from);
     }
