@@ -166,7 +166,7 @@ public class StudiesImportResource {
 		
 		try {
 		
-			if (!micaConfigService.getConfig().isImportStudiesFeatureEnabled()) return null;
+			if (!micaConfigService.getConfig().isImportStudiesFeatureEnabled()) return Response.status(HttpStatus.SC_UNAUTHORIZED).build();
 			
 			Map<String, Boolean> result = new LinkedHashMap<>(); //to keep the keys in the order they were inserted
 			
@@ -211,7 +211,7 @@ public class StudiesImportResource {
 		
 		try {
 			
-			if (!micaConfigService.getConfig().isImportStudiesFeatureEnabled()) return null;
+			if (!micaConfigService.getConfig().isImportStudiesFeatureEnabled()) return Response.status(HttpStatus.SC_UNAUTHORIZED).build();
 				
 			List<NameValuePair> params = new ArrayList<>();
 			params.add(new BasicNameValuePair(TYPE, type));
@@ -232,7 +232,7 @@ public class StudiesImportResource {
 	@Produces({"application/xml", "application/json", "text/plain", "text/html"})
 	public Response checkIfAlreadyExistsLocally(@QueryParam(IDS) List<String> ids, @QueryParam(TYPE) String type) {
 	
-		if (!micaConfigService.getConfig().isImportStudiesFeatureEnabled()) return null;
+		if (!micaConfigService.getConfig().isImportStudiesFeatureEnabled()) return Response.status(HttpStatus.SC_UNAUTHORIZED).build();
 		
 		Map<String, String> existingIds = new HashMap<>();
 		ObjectMapper mapper = new ObjectMapper();
@@ -278,7 +278,7 @@ public class StudiesImportResource {
 			@QueryParam(IDS) List<String> ids,
 			@QueryParam(LIST_DIFFS_FORM) List<String> listDiffsForm) {
 		
-		if (!micaConfigService.getConfig().isImportStudiesFeatureEnabled()) return null;
+		if (!micaConfigService.getConfig().isImportStudiesFeatureEnabled()) return Response.status(HttpStatus.SC_UNAUTHORIZED).build();
 			
 		Map<String, Integer> idsSavedStatus = new LinkedHashMap<>();
 		
@@ -317,7 +317,6 @@ public class StudiesImportResource {
 		
 		return Response.ok(idsSavedStatus).build();
 	}
-	
 	
 	private Map<String, Boolean> compareSchemaDefinition(String url, String username, String password, 
 			String endpoint, EntityConfigService<EntityConfig> configService, String formSection,
