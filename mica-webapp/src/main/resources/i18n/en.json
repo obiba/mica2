@@ -45,6 +45,7 @@
     "server-error": "An unknown error has occurred, please contact your administrator for assistance.",
     "new": "New",
     "add": "Add",
+    "update": "Update",
     "documentation": "Documentation",
     "sources": "Sources",
     "down": "Down",
@@ -2235,18 +2236,22 @@
     "add-networks": "Add Networks",
     "add-studies": "Add Studies",
     "no-entity-memberships": "No membership roles.",
-    "entities-roles-help": "To add a membership select at least one role and one {{entity}}.",
-    "entity-roles-help": "At least one role must be selected.",
     "add-person": "Add Person",
     "no-memberships": "{{fullname}} is not a member of any networks or studies.",
-    "networks-roles-table-help": "List of membership roles for each network.",
-    "studies-roles-table-help": "List of membership roles for each study.",
+    "entity-roles-help": "At least one role must be selected.",
+    "network-entities-roles-help": "To add a membership select at least one role and one network.",
+    "study-entities-roles-help": "To add a membership select at least one role and one study.",
+    "network-roles-table-help": "List of membership roles for each network.",
+    "study-roles-table-help": "List of membership roles for each study.",
+    "network-member-of-all": "{{fullname}} is member of all networks.",
+    "study-member-of-all": "{{fullname}} is member of all studies.",
     "update-roles-dialog": {
       "title": "Update Roles",
       "message": "Select one or more roles to assign to {{member}}."
     },
     "entity-list-dialog": {
-      "title": "Add Member to {{entities}}"
+      "network-title": "Add Member to Networks",
+      "study-title": "Add Member to Studies"
     },
     "delete-dialog":{
       "title": "Delete Person",

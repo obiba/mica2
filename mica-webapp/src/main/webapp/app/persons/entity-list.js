@@ -49,17 +49,6 @@
       this.timeoutHandler = this.$timeout((this.__getEntities(this._query, 0)), 500);
     }
 
-    $onChanges() {
-      if (this.roles && this.entitySearchResource && this.memberships) {
-        this.searchResource = this.$injector.get(this.entitySearchResource);
-        if (!this.searchResource) {
-          throw new Error(`Failed to inject resource ${this.entitySearchResource}`);
-        }
-
-        this.__getEntities(null, 0);
-      }
-    }
-
     $onInit() {
       this.entityTitle = this.EntityTitleService.translate(this.entityType, false);
       this.language = this.$translate.use();
@@ -67,9 +56,16 @@
       this.selectedEntities = {};
       this.selectedEntitiesData = {};
       this.loading = false;
+
+      this.searchResource = this.$injector.get(this.entitySearchResource);
+      if (!this.searchResource) {
+        throw new Error(`Failed to inject resource ${this.entitySearchResource}`);
+      }
+
+      this.__getEntities(null, 0);
     }
 
-    onPageChanged(newPage, oldPage) {
+    onPageChanged(newPage/*, oldPage*/) {
       const from = DEFAULT_LIMIT * (newPage - 1);
       this.__getEntities(null, from);
     }
@@ -101,6 +97,7 @@
         memberships: '<',
         entitySearchResource: '<',
         entityType: '<',
+        fullname: '<',
         onRolesSelected: '&',
         onEntitiesSelected: '&'
       },

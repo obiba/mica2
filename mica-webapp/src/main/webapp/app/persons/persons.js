@@ -21,9 +21,9 @@ mica.persons = angular.module('mica.persons', [
 
 mica.persons.service('EntityTitleService', ['$filter', function($filter) {
     function translate(entityType, plural) {
-      return plural
-        ? $filter('translate')(entityType === 'network' ? 'networks' : 'studies')
-        : $filter('translate')(`${entityType}.label`);
+      return plural ?
+        $filter('translate')(entityType === 'network' ? 'networks' : 'studies') :
+        $filter('translate')(`${entityType}.label`);
     }
 
     this.translate = translate;

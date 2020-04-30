@@ -344,7 +344,6 @@
 <script src="app/project/project-router.js"></script>
 <script src="app/project/project-controller.js"></script>
 <script src="app/project/project-service.js"></script>
-
 <script src="app/persons/persons.js"></script>
 <script src="app/persons/persons-list.js"></script>
 <script src="app/persons/person-view.js"></script>

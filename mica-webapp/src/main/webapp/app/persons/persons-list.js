@@ -41,7 +41,7 @@
         this.$timeout.cancel(this.timeoutHandler);
       }
 
-      this.timeoutHandler = this.$timeout((this.getPersons(this._query, 0)), 500);
+      this.timeoutHandler = this.$timeout((this.getPersons(this._query + '*', 0)), 500);
     }
 
     getPersons(query, from, limit) {
@@ -61,7 +61,7 @@
       this.getPersons(null, 0);
     }
 
-    onPageChanged(newPage, oldPage) {
+    onPageChanged(newPage/*, oldPage*/) {
       const from = DEFAULT_LIMIT * (newPage - 1);
       this.getPersons(null, from);
     }

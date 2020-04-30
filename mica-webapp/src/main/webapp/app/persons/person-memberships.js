@@ -36,7 +36,7 @@
       }
     }
 
-    onPageChanged(newPage, oldPage) {
+    onPageChanged(newPage/*, oldPage*/) {
       this.currentPage = newPage;
     }
   }

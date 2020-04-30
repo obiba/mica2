@@ -1,5 +1,5 @@
 <div>
-  <div class="help-block">{{'persons.entities-roles-help' | translate:{entity: $ctrl.entityTitle.toLowerCase()} }}</div>
+  <div class="help-block">{{ 'persons.' + $ctrl.entityType +'-entities-roles-help' | translate }}</div>
 
   <membership-roles
     class="voffset5"
@@ -25,6 +25,10 @@
           on-page-change="$ctrl.onPageChanged(newPageNumber, oldPageNumber)">
         </dir-pagination-controls>
       </div>
+    </div>
+
+    <div class="alert alert-warning" role="alert" ng-if="!$ctrl.loading && $ctrl.entities.length < 1">
+      <span>{{'persons.'+$ctrl.entityType + '-member-of-all' |translate:{fullname: $ctrl.fullname} }}</span>
     </div>
 
     <p ng-show="$ctrl.loading" class="voffset2 loading"></p>

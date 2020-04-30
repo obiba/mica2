@@ -45,6 +45,7 @@
     "server-error": "Une erreur inconnue est survenue, veuillez contacter votre administrateur pour obtenir de l'aide.",
     "new": "Nouveau",
     "add": "Ajouter",
+    "update": "Mise à jour",
     "documentation": "Documentation",
     "sources": "Code sources",
     "down": "Descendre",
@@ -2235,22 +2236,26 @@
     "add-networks": "Ajouter des réseaux",
     "add-studies": "Ajouter des études",
     "no-entity-memberships": "Aucun rôle d'adhésion.",
-    "entities-roles-help": "Pour ajouter une adhésion sélectionner au moins un rôle et un {{entity}}.",
-    "entity-roles-help": "Au moins un rôle doit être sélectionné.",
     "add-person": "Ajouter une personne",
     "no-memberships": "{{fullname}} n'est membre d'aucun réseau ou étude.",
-    "networks-roles-table-help": "Liste des rôles d'adhésion pour chaque réseau.",
-    "studies-roles-table-help": "Liste des rôles d'adhésion pour chaque étude.",
+    "entity-roles-help": "Au moins un rôle doit être sélectionné.",
+    "network-entities-roles-help": "Pour ajouter une adhésion sélectionner au moins un rôle et un réseau.",
+    "study-entities-roles-help": "Pour ajouter une adhésion sélectionner au moins un rôle et une étude.",
+    "network-roles-table-help": "Liste des rôles d'adhésion pour chaque réseau.",
+    "study-roles-table-help": "Liste des rôles d'adhésion pour chaque étude.",
+    "network-member-of-all": "{{fullname}} est membre de tous les réseaux.",
+    "study-member-of-all": "{{fullname}} est membre de toutes les études.",
     "update-roles-dialog": {
       "title": "Mettre à jour les rôles",
       "message": "Sélectionnez un ou plusieurs rôles à attribuer à {{member}}."
     },
     "entity-list-dialog": {
-      "title": "Ajouter un membre à {{entities}}"
+      "network-title": "Ajouter un membre aux réseaux",
+      "study-title": "Ajouter un membre aux études"
     },
     "delete-dialog":{
       "title": "Supprimer une personne",
-      "message": "Êtes-vous sûr de vouloir supprimer la personne '{{arg0}}'"
+      "message": "Êtes-vous sûr de vouloir supprimer la personne '{{arg0}}'?"
     },
     "delete-entities-dialog":{
       "title": "Supprimer l'adhésion",

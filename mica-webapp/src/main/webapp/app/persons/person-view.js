@@ -110,6 +110,10 @@
       return data;
     }
 
+    __getFullname() {
+      return `${this.person.firstName} ${this.person.lastName}`.trim();
+    }
+
     __initMembershipsTableData() {
       this.memberships = {};
       if (this.person.networkMemberships) {
@@ -160,7 +164,7 @@
       this.PersonResource.update(this.ContactSerializationService.serialize(this.person)).$promise
         .then((person) => {
           this.listenerRegistry.unregisterAll();
-          this.__initPerson(person)
+          this.__initPerson(person);
         });
     }
 
@@ -221,9 +225,10 @@
       const membershipEntity = selections.membershipEntities[0];
       let memberships = this.person[`${selections.entityType}Memberships`];
       // remove to recreate from scratch
-      this.person[`${selections.entityType}Memberships`] = memberships.filter(membership => membership.parentId !== membershipEntity.parentId)
+      this.person[`${selections.entityType}Memberships`] =
+        memberships.filter(membership => membership.parentId !== membershipEntity.parentId);
 
-      let result = selections.roles.forEach((role) => {
+      selections.roles.forEach((role) => {
         let item = Object.assign({}, membershipEntity);
         item.role = role;
         this.person[`${selections.entityType}Memberships`].push(item);
@@ -232,7 +237,7 @@
       this.__updatePerson();
     }
 
-    __openMembershipsModal(roles, memberships, entitySearchResource, entityType) {
+    __openMembershipsModal(fullname, roles, memberships, entitySearchResource, entityType) {
       const entitiesTitle = this.EntityTitleService.translate(entityType, true);
       this.$uibModal.open({
         templateUrl: 'app/persons/views/entity-list-modal.html',
@@ -246,7 +251,8 @@
             this.entitySearchResource = entitySearchResource;
             this.entityType = entityType;
             this.entitiesTitle = entitiesTitle;
-              this.addDisabled = true;
+            this.addDisabled = true;
+            this.fullname = fullname;
 
             const updateAddDisable =
               () => this.addDisabled = this.selectedRoles.length < 1 || this.selectedEntities.length < 1;
@@ -254,11 +260,12 @@
             this.onRolesSelected = (selectedRoles) => {
               this.selectedRoles = selectedRoles;
               updateAddDisable.call(this);
-            }
+            };
+
             this.onEntitiesSelected = (selectedEntities) => {
               this.selectedEntities = selectedEntities;
               updateAddDisable.call(this);
-            }
+            };
 
             this.onAdd = () => $uibModalInstance.close(
               {
@@ -291,7 +298,7 @@
 
             this.onRolesSelected = (selectedRoles) => {
               this.selectedRoles = selectedRoles;
-            }
+            };
 
             this.onUpdate = () => $uibModalInstance.close({
               roles: this.selectedRoles,
@@ -306,7 +313,8 @@
       });
     }
 
-    $onInit() {
+    __initializeForm() {
+      console.debug(`initializeForm ${this.$translate.use()}`);
       this.loading = false;
       this.MicaConfigResource.get().$promise.then(config => {
         this.listenerRegistry = new obiba.utils.EventListenerRegistry();
@@ -320,12 +328,7 @@
         this.sfOptions = {
           formDefaults: {
             languages: languages,
-            readonly: MODE.VIEW === this.mode,
-            pristine:
-              {
-                errors: true,
-                success: false
-              }
+            readonly: MODE.VIEW === this.mode
           }
         };
 
@@ -343,6 +346,12 @@
         this.__observeFormDirtyState();
         this.loading = false;
       });
+    }
+
+    $onInit() {
+      console.debug(`$onInit ${this.$translate.use()}`);
+      this.$rootScope.$on('$translateChangeSuccess', () => this.__initializeForm());
+      this.__initializeForm();
     }
 
     onCancel() {
@@ -377,14 +386,13 @@
         'persons.delete-dialog.title',
         null,
         'persons.delete-dialog.message',
-        [`${this.person.firstName} ${this.person.lastName}`.trim()],
+        [this.__getFullname()],
         () => this.__deletePerson(this.person.id)
       );
      }
 
     onDeleteEntity(entityType, entity) {
       const entityTitle = this.EntityTitleService.translate(entityType);
-      const entitiesTitle = this.EntityTitleService.translate(entityType);
       this.__onDelete(
         'persons.delete-entities-dialog.title',
         [entityTitle],
@@ -403,11 +411,23 @@
     }
 
     addNetworks() {
-      this.__openMembershipsModal(this.config.roles, this.memberships.networks,'NetworksResource', 'network');
+      this.__openMembershipsModal(
+        this.__getFullname(),
+        this.config.roles,
+        this.memberships.networks,
+        'NetworksResource',
+        'network'
+      );
     }
 
     addStudies() {
-      this.__openMembershipsModal(this.config.roles, this.memberships.studies,'StudyStatesSearchResource', 'study');
+      this.__openMembershipsModal(
+        this.__getFullname(),
+        this.config.roles,
+        this.memberships.studies,
+        'StudyStatesSearchResource',
+        'study'
+      );
     }
   }
 
