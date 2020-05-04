@@ -15,9 +15,11 @@
   const DEFAULT_LIMIT = 20;
 
   class PersonsListController {
-    constructor($timeout, ContactsSearchResource) {
+    constructor($timeout, $location, ContactsSearchResource, EntityMembershipService) {
       this.$timeout = $timeout;
+      this.$location = $location;
       this.ContactsSearchResource = ContactsSearchResource;
+      this.EntityMembershipService = EntityMembershipService;
       this.loading = false;
       this.limit = DEFAULT_LIMIT;
       this.persons = [];
@@ -41,29 +43,47 @@
         this.$timeout.cancel(this.timeoutHandler);
       }
 
-      this.timeoutHandler = this.$timeout((this.getPersons(this._query + '*', 0)), 500);
+      this.timeoutHandler = this.$timeout((this.getPersons(this._query, 0)), 250);
     }
 
-    getPersons(query, from, limit) {
+    getPersons(query, from, limit, exclude) {
+      const searchQuery = query ? query + '*' : query;
       this.loading = true;
       this.ContactsSearchResource.get({
-        query: query,
+        query: searchQuery,
         from: from,
-        limit: limit || DEFAULT_LIMIT
+        limit: limit || DEFAULT_LIMIT,
+        exclude: exclude
       }).$promise.then(result => {
         this.loading = false;
-        this.persons = result.persons || [];
+        this.persons = (result.persons || []).map((person) => {
+          if (person.networkMemberships) {
+            person.networks = this.EntityMembershipService.groupRolesByEntity('networks', person.networkMemberships);
+          }
+
+          if (person.studyMemberships) {
+            person.studies = this.EntityMembershipService.groupRolesByEntity('studies', person.studyMemberships);
+          }
+
+          return person;
+        });
         this.total = result.total;
       });
     }
 
     $onInit() {
-      this.getPersons(null, 0);
+      const search = this.$location.search();
+      if (search && 'exclude' in search) {
+        this.getPersons(this._query, 0, this.limit, search.exclude);
+        this.$location.search({}).replace();
+      } else {
+        this.getPersons(null, 0);
+      }
     }
 
     onPageChanged(newPage/*, oldPage*/) {
       const from = DEFAULT_LIMIT * (newPage - 1);
-      this.getPersons(null, from);
+      this.getPersons(this.query, from);
     }
   }
 
@@ -73,7 +93,13 @@
       },
       templateUrl: 'app/persons/views/persons-list.html',
       controllerAs: '$ctrl',
-      controller: ['$timeout', 'ContactsSearchResource', PersonsListController]
+      controller: [
+        '$timeout',
+        '$location',
+        'ContactsSearchResource',
+        'EntityMembershipService',
+        PersonsListController
+      ]
     });
 
 })();

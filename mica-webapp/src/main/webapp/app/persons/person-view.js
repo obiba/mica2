@@ -26,9 +26,8 @@
                 $location,
                 $routeParams,
                 $filter,
-                $translate,
                 $uibModal,
-                LocalizedValues,
+                EntityMembershipService,
                 LocalizedSchemaFormService,
                 MicaConfigResource,
                 PersonResource,
@@ -41,10 +40,9 @@
       this.$location = $location;
       this.$routeParams = $routeParams;
       this.$filter = $filter;
-      this.$translate = $translate;
       this.$uibModal= $uibModal;
       this.LocalizedSchemaFormService = LocalizedSchemaFormService;
-      this.LocalizedValues = LocalizedValues;
+      this.EntityMembershipService = EntityMembershipService;
       this.MicaConfigResource = MicaConfigResource;
       this.PersonResource = PersonResource;
       this.ContactSerializationService = ContactSerializationService;
@@ -70,46 +68,6 @@
       return mode;
     }
 
-    /**
-     * To simplify translation, this method translates and formats membership data for the tables
-     *
-     * @param type
-     * @param memberships
-     * @returns {{entities: [], title: *}}
-     * @private
-     */
-    __initMembershipTableData(type, memberships) {
-      const lang = this.$translate.use();
-      const data = {
-        title: this.$filter('translate')(type),
-        entities: []
-      };
-
-      let entityMap = {};
-
-      memberships.forEach(membership => {
-        let entity = entityMap[membership.parentId];
-        if (!entity) {
-          entity = entityMap[membership.parentId] = {};
-          entity.id = membership.parentId;
-          entity.acronym = this.LocalizedValues.forLang(membership.parentAcronym, lang);
-          entity.name = this.LocalizedValues.forLang(membership.parentName, lang);
-          entity.roles = [this.$filter('translate')(`contact.label.${membership.role}`)];
-          if ('obiba.mica.PersonDto.StudyMembershipDto.meta' in membership) {
-            entity.url = `/${membership['obiba.mica.PersonDto.StudyMembershipDto.meta'].type}/${entity.id}`;
-          } else {
-            entity.url = `/network/${entity.id}`;
-          }
-        } else {
-          entity.roles = [].concat([this.$filter('translate')(`contact.label.${membership.role}`)], entity.roles);
-        }
-      });
-
-      data.entities = Object.values(entityMap) || [];
-
-      return data;
-    }
-
     __getFullname() {
       return `${this.person.firstName} ${this.person.lastName}`.trim();
     }
@@ -117,11 +75,11 @@
     __initMembershipsTableData() {
       this.memberships = {};
       if (this.person.networkMemberships) {
-        this.memberships.networks = this.__initMembershipTableData('networks', this.person.networkMemberships);
+        this.memberships.networks = this.EntityMembershipService.groupRolesByEntity('networks', this.person.networkMemberships);
       }
 
       if (this.person.studyMemberships) {
-        this.memberships.studies = this.__initMembershipTableData('studies', this.person.studyMemberships);
+        this.memberships.studies = this.EntityMembershipService.groupRolesByEntity('studies', this.person.studyMemberships);
       }
     }
 
@@ -147,16 +105,20 @@
         this.FormDirtyStateObserver.unobserve();
       }
     }
-    __navigateOut(path) {
+    __navigateOut(path, exclude) {
       this.__unobserveFormDirtyState();
-      this.$location.path(path).replace();
+      if (exclude) {
+        this.$location.path(path).search({exclude: exclude}).replace();
+      } else {
+        this.$location.path(path).replace();
+      }
     }
 
     __deletePerson(id) {
       this.PersonResource.delete({id}).$promise
         .then(() => {
           this.listenerRegistry.unregisterAll();
-          this.__navigateOut('/persons');
+          this.__navigateOut('/persons', id);
         });
     }
 
@@ -314,7 +276,6 @@
     }
 
     __initializeForm() {
-      console.debug(`initializeForm ${this.$translate.use()}`);
       this.loading = false;
       this.MicaConfigResource.get().$promise.then(config => {
         this.listenerRegistry = new obiba.utils.EventListenerRegistry();
@@ -349,7 +310,6 @@
     }
 
     $onInit() {
-      console.debug(`$onInit ${this.$translate.use()}`);
       this.$rootScope.$on('$translateChangeSuccess', () => this.__initializeForm());
       this.__initializeForm();
     }
@@ -443,9 +403,8 @@
         '$location',
         '$routeParams',
         '$filter',
-        '$translate',
         '$uibModal',
-        'LocalizedValues',
+        'EntityMembershipService',
         'LocalizedSchemaFormService',
         'MicaConfigResource',
         'PersonResource',

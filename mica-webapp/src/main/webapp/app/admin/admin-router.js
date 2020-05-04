@@ -59,6 +59,7 @@ mica.admin
         })
         .when('/persons', {
           templateUrl: 'app/admin/views/persons.html',
+          reloadOnSearch: false,
           access: {
             authorizedRoles: ['mica-administrator']
           }

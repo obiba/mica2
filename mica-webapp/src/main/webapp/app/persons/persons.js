@@ -19,7 +19,8 @@ mica.persons = angular.module('mica.persons', [
   'ui.bootstrap'
 ]);
 
-mica.persons.service('EntityTitleService', ['$filter', function($filter) {
+mica.persons
+  .service('EntityTitleService', ['$filter', function($filter) {
     function translate(entityType, plural) {
       return plural ?
         $filter('translate')(entityType === 'network' ? 'networks' : 'studies') :
@@ -29,4 +30,42 @@ mica.persons.service('EntityTitleService', ['$filter', function($filter) {
     this.translate = translate;
 
     return this;
+  }])
+  .service('EntityMembershipService', ['$filter', '$translate', 'LocalizedValues',
+    function($filter, $translate, LocalizedValues) {
+
+      function groupRolesByEntity(type, memberships) {
+        const lang = $translate.use();
+        const data = {
+          title: $filter('translate')(type),
+          entities: []
+        };
+
+        let entityMap = {};
+
+        memberships.forEach(membership => {
+          let entity = entityMap[membership.parentId];
+          if (!entity) {
+            entity = entityMap[membership.parentId] = {};
+            entity.id = membership.parentId;
+            entity.acronym = LocalizedValues.forLang(membership.parentAcronym, lang);
+            entity.name = LocalizedValues.forLang(membership.parentName, lang);
+            entity.roles = [$filter('translate')(`contact.label.${membership.role}`)];
+            if ('obiba.mica.PersonDto.StudyMembershipDto.meta' in membership) {
+              entity.url = `/${membership['obiba.mica.PersonDto.StudyMembershipDto.meta'].type}/${entity.id}`;
+            } else {
+              entity.url = `/network/${entity.id}`;
+            }
+          } else {
+            entity.roles = [].concat([$filter('translate')(`contact.label.${membership.role}`)], entity.roles);
+          }
+        });
+
+        data.entities = Object.values(entityMap) || [];
+
+        return data;
+      }
+
+      this.groupRolesByEntity = groupRolesByEntity;
+      return this;
   }]);
