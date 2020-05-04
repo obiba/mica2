@@ -53,7 +53,7 @@ mica.study
           controller: 'StudyPopulationController'
         })
         .when('/individual-study/:id/population/:pid/edit', {
-          templateUrl: 'app/study/views/import/population/collection-population-form.html',
+          templateUrl: 'app/study/views/population/collection-population-form.html',
           controller: 'StudyPopulationController'
         })
         .when('/individual-study/:id/population/:pid/dce/add', {
