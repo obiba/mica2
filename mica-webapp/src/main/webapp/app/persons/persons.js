@@ -57,7 +57,7 @@ mica.persons
               entity.url = `/network/${entity.id}`;
             }
           } else {
-            entity.roles = [].concat([$filter('translate')(`contact.label.${membership.role}`)], entity.roles);
+            entity.roles = [].concat([$filter('translate')(`contact.label.${membership.role}`)], entity.roles).sort();
           }
         });
 

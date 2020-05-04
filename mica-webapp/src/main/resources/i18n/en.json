@@ -2237,7 +2237,7 @@
     "add-studies": "Add Studies",
     "no-entity-memberships": "No membership roles.",
     "add-person": "Add Person",
-    "no-memberships": "{{fullname}} is not a member of any networks or studies.",
+    "no-memberships": "{{fullname}} is not a member of any network or study.",
     "entity-roles-help": "At least one role must be selected.",
     "network-entities-roles-help": "To add a membership select at least one role and one network.",
     "study-entities-roles-help": "To add a membership select at least one role and one study.",

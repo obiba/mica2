@@ -26,6 +26,16 @@
       this.total = 0;
       this._query = null;
       this.timeoutHandler = null;
+      this.ngObibaStringUtils = new obiba.utils.NgObibaStringUtils();
+    }
+
+    __cleanupQuery(text) {
+      let cleaned = this.ngObibaStringUtils.cleanOrEscapeSpecialLuceneBrackets(text);
+      if (cleaned.length > 0) {
+        cleaned = this.ngObibaStringUtils.cleanDoubleQuotesLeftUnclosed(cleaned);
+      }
+
+      return cleaned.match(/\s|^".*"$/) === null ? cleaned.replace(/\s|^".*"$/) + '*' : cleaned;
     }
 
     get query() {
@@ -47,7 +57,7 @@
     }
 
     getPersons(query, from, limit, exclude) {
-      const searchQuery = query ? query + '*' : query;
+      const searchQuery = query ? this.__cleanupQuery(query) : query;
       this.loading = true;
       this.ContactsSearchResource.get({
         query: searchQuery,
