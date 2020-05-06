@@ -1,0 +1,23 @@
+<div>
+  <div class="row" ng-if="$ctrl.roles.length < 3">
+    <div class="col-xs-12">
+      <div class="checkbox" ng-repeat="role in $ctrl.roles" ng-click="$ctrl.onRoleSelected()">
+        <label>
+          <input type="checkbox" name="role" ng-model="$ctrl.selections[role]"> {{'contact.label.' + role | translate}}
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <div ng-if="$ctrl.roles.length >= 3">
+    <div ng-repeat="row in [].constructor($ctrl.roles.length) track by $index" ng-if="$index % 3 == 0" class="row">
+      <div class="col-xs-4" ng-repeat="col in [0,1,2]" ng-init="role=$ctrl.roles[$parent.$index + $index]">
+        <div class="checkbox" ng-click="$ctrl.onRoleSelected()" ng-show="role">
+          <label>
+            <input type="checkbox" name="role" ng-model="$ctrl.selections[role]"> {{'contact.label.' + role | translate}}
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

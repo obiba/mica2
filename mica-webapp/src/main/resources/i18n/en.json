@@ -45,6 +45,7 @@
     "server-error": "An unknown error has occurred, please contact your administrator for assistance.",
     "new": "New",
     "add": "Add",
+    "update": "Update",
     "documentation": "Documentation",
     "sources": "Sources",
     "down": "Down",
@@ -1317,6 +1318,7 @@
   "draft": "Draft",
   "published": "Published",
   "role": "Role",
+  "roles": "Roles",
   "files": "Files",
   "items": "items",
   "item": "item",
@@ -1392,7 +1394,8 @@
       "classifications": "Browse taxonomies.",
       "translations": "Manage labels translations.",
       "cart": "Cart of variables.",
-      "sets": "Lists of variables."
+      "sets": "Lists of variables.",
+      "persons": "Manage persons who are associated to studies and/or networks by a role such as Contact or Investigator."
     }
   },
   "server": {
@@ -2225,6 +2228,38 @@
       "image": "Insert Image",
       "table": "Insert Table",
       "preview": "Toggle Preview"
+    }
+  },
+  "persons": {
+    "title": "Persons",
+    "none": "No persons.",
+    "add-networks": "Add Networks",
+    "add-studies": "Add Studies",
+    "no-entity-memberships": "No membership roles.",
+    "add-person": "Add Person",
+    "no-memberships": "{{fullname}} is not a member of any network or study.",
+    "entity-roles-help": "At least one role must be selected.",
+    "network-entities-roles-help": "To add a membership select at least one role and one network.",
+    "study-entities-roles-help": "To add a membership select at least one role and one study.",
+    "network-roles-table-help": "List of membership roles for each network.",
+    "study-roles-table-help": "List of membership roles for each study.",
+    "network-member-of-all": "{{fullname}} is member of all networks.",
+    "study-member-of-all": "{{fullname}} is member of all studies.",
+    "update-roles-dialog": {
+      "title": "Update Roles",
+      "message": "Select one or more roles to assign to {{member}}."
+    },
+    "entity-list-dialog": {
+      "network-title": "Add Member to Networks",
+      "study-title": "Add Member to Studies"
+    },
+    "delete-dialog":{
+      "title": "Delete Person",
+      "message": "Are you sure you want to delete the person '{{arg0}}'?"
+    },
+    "delete-entities-dialog":{
+      "title": "Delete Membership",
+      "message": "Are you sure you want to delete all roles from {{arg0}}?"
     }
   }
 }

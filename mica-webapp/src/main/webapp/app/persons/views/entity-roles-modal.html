@@ -1,0 +1,29 @@
+<div class="modal-content">
+  <div class="modal-header">
+    <button type="button" class="close" aria-hidden="true" ng-click="$ctrl.onClose()">&times;</button>
+    <h4 class="modal-title" id="entity-list-modal">
+      <span>{{'persons.update-roles-dialog.title' | translate}}</span>
+    </h4>
+  </div>
+
+  <div class="modal-body">
+
+    <div class="help-block">{{'persons.entity-roles-help' | translate}}</div>
+
+    <membership-roles
+      roles="$ctrl.roles"
+      selected-roles="$ctrl.selectedRoles"
+      entity-type="$ctrl.entityType"
+      on-selected="$ctrl.onRolesSelected(selectedRoles)">
+    </membership-roles>
+  </div>
+
+  <div class="modal-footer">
+    <button type="button" class="btn btn-default" ng-click="$ctrl.onClose()">
+      <span translate>cancel</span>
+    </button>
+    <button ng-disabled="$ctrl.selectedRoles.length === 0" ng-click="$ctrl.onUpdate()" class="btn btn-primary">
+      <span translate>global.update</span>
+    </button>
+  </div>
+</div>

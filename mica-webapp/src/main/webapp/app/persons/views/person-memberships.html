@@ -1,0 +1,60 @@
+<div>
+  <p class="help-block"  ng-if="!$ctrl.hasMembership"><span translate>persons.no-entity-memberships</span></p>
+
+  <div class="row voffset4" ng-if="$ctrl.memberships.entities.length > 0">
+    <div class="col-xs-4">
+          <span class="input-group input-group-sm no-padding-top">
+            <span class="input-group-addon" id="person-search"><i class="fa fa-search"></i></span>
+            <input ng-model="$ctrl.query" type="text" class="form-control" aria-describedby="person-search">
+          </span>
+    </div>
+    <div class="col-xs-8">
+      <dir-pagination-controls
+        pagination-id="$ctrl.entityType"
+        class="pull-right"
+        on-page-change="$ctrl.onPageChanged(newPageNumber, oldPageNumber)">
+      </dir-pagination-controls>
+    </div>
+  </div>
+
+  <div class="table-responsive" ng-show="$ctrl.hasMembership && $ctrl.filtered.length > 0">
+    <table class="table table-bordered table-striped">
+      <thead>
+      <tr>
+        <th class="col-xs-3" translate>study.acronym</th>
+        <th class="col-xs-5" translate>study.name</th>
+        <th class="col-xs-4"translate>roles</th>
+        <th class="col-xs-4"translate>actions</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr dir-paginate="entity in $ctrl.filtered = ($ctrl.memberships.entities | filter:$ctrl.query) | orderBy:'acronym' | itemsPerPage: $ctrl.limit" pagination-id="$ctrl.entityType">
+        <td>
+          <a ng-href="#{{entity.url}}">
+
+            {{entity.acronym}}
+          </a>
+        </td>
+        <td>
+          {{entity.name}}
+        </td>
+        <td>
+           {{(entity.roles || []).join(', ')}}
+        </td>
+        <td>
+          <ul class="list-inline">
+            <li>
+              <a href ng-click="$ctrl.editEntity(entity)" title="{{'edit' | translate}}"><i class="fa fa-pencil"></i></a>
+            </li>
+            <li>
+              <a href ng-click="$ctrl.deleteEntity(entity)" title="{{'delete' | translate}}"><i class="fa fa-trash-o"></i></a>
+            </li>
+          </ul>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+
+
+  </div>
+</div>
