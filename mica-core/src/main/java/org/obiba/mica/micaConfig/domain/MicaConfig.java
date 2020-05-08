@@ -121,6 +121,8 @@ public class MicaConfig extends AbstractAuditableDocument {
   private boolean isStudyDatasetEnabled = true;
 
   private boolean isHarmonizationDatasetEnabled = true;
+  
+  private boolean isImportStudiesFeatureEnabled = true;
 
   private boolean variableSummaryRequiresAuthentication = false;
 
@@ -585,5 +587,13 @@ public class MicaConfig extends AbstractAuditableDocument {
     PROJECT_TABLE,
     PROJECT_ENTITY_TYPE,
     ENTITY_TYPE
+  }
+  
+  public boolean isImportStudiesFeatureEnabled() {
+	return isImportStudiesFeatureEnabled;
+  }
+
+  public void setImportStudiesFeatureEnabled(boolean isImportStudiesFeatureEnabled) {
+	this.isImportStudiesFeatureEnabled = isImportStudiesFeatureEnabled;
   }
 }

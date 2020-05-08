@@ -253,4 +253,12 @@ mica.study
     'FormDirtyStateObserver',
     'StudyUpdateWarningService',
     mica.study.HarmonizationStudyEditController
+  ])
+  
+  .controller('StudiesImportController', [
+    '$scope',
+    '$route',
+    '$rootScope',
+    '$http', 
+    mica.study.StudiesImportController
   ]);

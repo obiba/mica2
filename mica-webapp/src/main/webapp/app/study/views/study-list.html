@@ -9,6 +9,7 @@
   -->
 
 <div>
+  <div ng-include="'app/study/views/import/study-view-import.html'"></div>
 
   <h2>
     <span>{{path.indexOf('harmonization') > -1 ? 'global.harmonization-studies' : 'global.individual-studies' | translate}}</span>
@@ -17,6 +18,9 @@
   <a ng-href="{{path}}/new" class="btn btn-info" ng-if="hasRole(['mica-administrator','mica-reviewer','mica-editor'])">
     <i class="fa fa-plus"></i> <span translate>study.add</span>
   </a>
+  <button type="button" class="btn btn-default" data-toggle="modal" data-target="#myModal" ng-show="micaConfig.isImportStudiesFeatureEnabled" ng-if="hasRole(['mica-administrator','mica-reviewer','mica-editor'])">
+    <i class="fa fa-upload"></i> <span translate>study.import.label</span> 
+  </button>
 
   <p class="help-block" ng-if="!searching && !hasDocuments() && !loading">
     <span translate>study.none</span>
@@ -34,7 +38,7 @@
       </span>
       </div>
       <div class="col-xs-8">
-        <dir-pagination-controls class="pull-right" on-page-change="pageChanged(newPageNumber, oldPageNumber)"></dir-pagination-controls>
+        <dir-pagination-controls class="pull-right" pagination-id="myPaginationList" on-page-change="pageChanged(newPageNumber, oldPageNumber)"></dir-pagination-controls>
       </div>
     </div>
 
@@ -52,7 +56,7 @@
         </thead>
         <tbody>
 
-        <tr dir-paginate="study in documents | itemsPerPage: limit" total-items="totalCount" current-page="pagination.current">
+        <tr dir-paginate="study in documents | itemsPerPage: limit" pagination-id="myPaginationList" total-items="totalCount" current-page="pagination.current">
           <td>
             <a ng-href="{{path}}/{{study.id}}" translate>{{study.id}}</a>
           </td>
