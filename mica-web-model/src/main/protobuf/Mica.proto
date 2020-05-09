@@ -445,6 +445,7 @@ message MicaConfigDto {
   optional bool variableSummaryRequiresAuthentication = 51;
   optional bool isProjectEnabled = 52;
   optional bool isUsePublicUrlForSharedLink = 53;
+  optional bool isImportStudiesFeatureEnabled = 54;
 }
 
 message PublicMicaConfigDto {
