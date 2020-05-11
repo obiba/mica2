@@ -16,11 +16,16 @@
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-hidden="true" ng-click="close()">&times;</button>
           <h3 class="modal-title">
-            <span translate>study.import.label</span>
-            <span translate>{{path.indexOf('harmonization') > -1 ? 'global.harmonization-studies' : 'global.individual-studies'}}</span>
+            <span>{{'study.import.'+studyType+'-title' | translate}}</span>
           </h3>
         </div>
-          
+
+        <div class="modal-body" ng-show="statusErrorImport.length > 0">
+          <div class="alert alert-danger" >
+            <span translate>{{ statusErrorImport }}</span>
+          </div>
+        </div>
+
         <!-- 0 - Connections params -->
         <form name="myFormConn" novalidate class="simple-form">
           <div class="modal-body" ng-show="(modalIndex == 0)">
@@ -35,12 +40,11 @@
             <input type="password" name="password" ng-model="importVO.password" class="form-control ng-pristine ng-valid ng-scope ng-empty ng-touched" required><br>
           </div>
         </form>
-          
+
         <!-- 1 - Differences from Remote Custom Study Form -->
         <div class="modal-body" ng-show="(modalIndex == 1)">
           <h4>
          	<span translate>study.import.diff-subtitle</span>
-          	<span translate>{{path.indexOf('harmonization') > -1 ? 'harmonization-study-config.title' : 'individual-study-config.title'}}:</span>
           </h4><br>
           <label class="control-label ng-binding"><span translate>study.import.host</span>{{ importVO.url }}</label>
           <table class="table table-bordered table-striped">
@@ -51,7 +55,7 @@
               </tr>
             </thead>
             <tbody id="myTableSummaryConflict">
-              <tr ng-repeat="diffVO in diffsCustomFormJSON">  
+              <tr ng-repeat="diffVO in diffsCustomFormJSON">
                 <td>
                   <ul class="list-unstyled">
                     <span ng-show="$index === 1">└─</span>
@@ -65,28 +69,26 @@
       				<span translate>study.import.form-section-diff</span>
                   </div>
                   <div ng-show="{{diffVO.isEqual && diffVO.parentIsImportable}}">
-                	<span class="glyphicon glyphicon-ok" style="color:green"></span> 
+                	<span class="glyphicon glyphicon-ok" style="color:green"></span>
                 	<span translate>study.import.form-section-equals</span>
                   </div>
                   <div ng-show="{{diffVO.isEqual  && !diffVO.parentIsImportable}}">
-                	<span class="glyphicon glyphicon-ok" style="color:gold"></span> 
+                	<span class="glyphicon glyphicon-ok" style="color:gold"></span>
                 	<span translate>study.import.form-section-equals-restrict</span>
                   </div>
                 </td>
-              </tr>  
+              </tr>
             </tbody>
           </table>
-		  <span translate>study.import.diff-msg-part-1</span>
-		  <span translate>{{studyType == 'individual-study' ? 'study.label' : 'global.harmonization-study'}}</span>
-		  <span translate>study.import.diff-msg-part-2</span>
+		  <span>{{'study.import.diff-msg-part-1'|translate}}{{studyType == 'individual-study' ? 'study.label' : 'global.harmonization-study' | translate | lowercase}}{{'study.import.diff-msg-part-2'|translate}}</span>
 		  <br>
      	</div>
-          
+
         <!-- 2 - Remote studies -->
         <div class="modal-body" ng-show="(modalIndex == 2)">
           <div>
          	<h4><span translate>study.import.sub-title-summary</span></h4><br>
-          </div>	
+          </div>
           <!-- Search field and pagination controls -->
        	  <div class="row voffset2">
    		  	<div class="col-xs-4">
@@ -94,12 +96,12 @@
      		  	<span class="input-group-addon" id="study-search"><i class="fa fa-search"></i></span>
      		    <input id="myInput" type="text" ng-model="query.$"  placeholder="{{'search.placeholder.meta-taxonomy-filter.studies' | translate}}..." class="form-control">
    		      </span>
-   	      	</div> 
+   	      	</div>
    		  	<div class="col-xs-8">
       	   	  <dir-pagination-controls class="pull-right" pagination-id="myPaginationId" on-page-change="pageChanged(newPageNumberModal, oldPageNumberModal)" />
    		  	</div>
  	      </div>
-   		  
+
 		  <table class="table table-bordered table-striped">
           	<thead>
            	  <tr>
@@ -145,12 +147,12 @@
 			</tbody>
           </table>
        	</div>
-          
+
 		<!-- 3 - Operations Summary -->
-		<div class="modal-body" ng-show="(modalIndex == 3)">  
+		<div class="modal-body" ng-show="(modalIndex == 3)">
 		  <div ng-show="studiesToCreate.length > 0 || studiesToReplace.length > 0">
 		    <h4><span translate>study.import.summary</span></h4><br>
-		  </div>  
+		  </div>
           <!-- 3.1 - Studies to Create -->
           <div ng-show="studiesToCreate.length > 0">
 	      	<label class="control-label ng-binding"><span translate>study.import.create-operations</span></label><br>
@@ -189,22 +191,22 @@
                       <i class="fa fa-remove"></i>
                     </a>
                   </td>
-                </tr>  
+                </tr>
               </tbody>
 	        </table>
 	      </div>
-	        
+
           <!-- 3.2 - Studies to Replace -->
           <form name="myFormSummary" novalidate class="simple-form">
           <div ng-show="studiesToReplace.length > 0">
             	<label class="control-label ng-binding">
               		<span translate>study.import.update-operations</span>
-            	</label>    
+            	</label>
             <table class="table table-bordered table-striped">
               <thead>
                 <tr>
                   <th data-column-name="id">ID</th>
-                  <th data-column-name="confirmation">{{"study.import.confirmation" | translate}}</th> 
+                  <th data-column-name="confirmation">{{"study.import.confirmation" | translate}}</th>
                   <th data-column-name="name" class="col-md-6">{{"study.name" | translate}}</th>
                   <th translate>study.import.changes</th>
                   <th translate>study.import.action</th>
@@ -218,7 +220,7 @@
                     </ul>
                   </td>
                   <td>
-                  	<input type="text" name="confirmation" ng-pattern="studyToReplace.id" title="{{'study.import.confirmation-hint' | translate}}" 
+                  	<input type="text" name="confirmation" ng-pattern="studyToReplace.id" title="{{'study.import.confirmation-hint' | translate}}"
                   		   ng-model="studyToReplace.confirmation" class="form-control ng-pristine ng-valid ng-scope ng-not-empty ng-touched" required/>
                   </td>
                   <td>
@@ -231,18 +233,18 @@
                   <td>
                     <ul class="list-unstyled">
                       <span ng-show="(replacements.indexOf('individual-study') > -1) || (replacements.indexOf('harmonization-study') > -1)">
-                      	<span class="label label-pill label-info" 
-                      		  title="{{'study.import.diff-hint-part-0' | translate}}1{{'study.import.diff-hint-part-1' | translate}}{{'study.label' | translate}}{{'study.import.diff-hint-part-1.1' | translate}}{{'study.import.diff-hint-part-2' | translate}}" 
-                      		  data-toggle="tooltip">S</span>
+                      	<span class="label label-pill label-info"
+                      		  title="{{'study.import.diff-hint-part-study' | translate}}"
+                            data-toggle="tooltip">S</span>
                       </span>
                       <span ng-show="( {{ studyToReplace.localPopulationSize }} > 0) && ((replacements.indexOf('study-population') > -1) || (replacements.indexOf('harmonization-study-population') > -1))">
-                      	<span class="label label-pill label-info" 
-                      		  title="{{'study.import.diff-hint-part-0' | translate}}{{ studyToReplace.localPopulationSize }}{{'study.import.diff-hint-part-1' | translate}}{{'study.population' | translate}}{{'study.import.diff-hint-part-1.2' | translate}}{{'study.import.diff-hint-part-2' | translate}}" 
+                      	<span class="label label-pill label-info"
+                      		  title="{{'study.import.diff-hint-part-population' | translate:{count: studyToReplace.localPopulationSize} }}"
                       		  data-toggle="tooltip">P</span>
                       </span>
 	                  <span ng-show="( {{ studyToReplace.localDCEsSize }} > 0) && (replacements.indexOf('data-collection-event') > -1) && (studyType == 'individual-study')">
-	                    <span class="label label-pill label-info" 
-	                     	  title="{{'study.import.diff-hint-part-0' | translate}}{{ studyToReplace.localDCEsSize }}{{'study.import.diff-hint-part-1' | translate}}{{'study.data-collection-event' | translate}}{{'study.import.diff-hint-part-1.2' | translate}}{{'study.import.diff-hint-part-2' | translate}}" 
+	                    <span class="label label-pill label-info"
+	                     	  title="{{'study.import.diff-hint-part-dce' | translate:{count: studyToReplace.localDCEsSize} }}"
 	                     	  data-toggle="tooltip">D</span>
 	                  </span>
                     </ul>
@@ -256,7 +258,7 @@
               </tbody>
             </table>
           </div>
-          
+
           </form>
           <!-- 3.3 - Studies Conflicts -->
           <div ng-show="studiesConflict.length > 0">
@@ -288,7 +290,7 @@
                      <span translate>{{path.indexOf('harmonization') > -1 ? 'study.import.conflict-individual-study' : 'study.import.conflict-harmonization-study'}}</span>
                     </ul>
                   </td>
-                </tr>  
+                </tr>
               </tbody>
             </table>
           </div>
@@ -296,7 +298,7 @@
           	<font size="2">* <span translate>study.import.confirmation-hint</span></font>
           </div>
         </div>
-       
+
         <!-- 4 - Finish Response Messages -->
         <div class="modal-body" ng-show="(modalIndex == 4)">
        	  <div ng-show="(idsSaved.length > 0)">
@@ -333,7 +335,7 @@
                     <ul class="list-unstyled">
                     	<span ng_show="studySaved.statusImport.indexOf('study.import.status-ok') > -1" translate>{{ studySaved.statusImport }}</span>
                     	<span ng_show="studySaved.statusImport.indexOf('study.import.status-ok') <= -1" class="text-danger" translate>{{ studySaved.statusImport }}</span>
-                    	
+
                     </ul>
                   </td>
                 </tr>
@@ -341,19 +343,17 @@
             </table>
           </div>
 	    </div>
-	    <a class="modal-body" ng_show="statusErrorImport.length > 0">
-           	<span class="text-danger" translate>{{ statusErrorImport }}</span>
-        </a>
+
         <!-- Footer navigation Buttons -->
         <div class="modal-footer">
           <button id="myPreviousButton" type="button" class="btn btn-info" ng-click="previous()" ng-disabled="(modalIndex == 0)" aria-hidden="true">
             <span translate>study.import.previous</span>
           </button>
-          <button id="myNextButton" type="button" class="btn btn-info" ng-click="next()" 
+          <button id="myNextButton" type="button" class="btn btn-info" ng-click="next()"
           	ng-disabled="( ((modalIndex == 0) && myFormConn.$invalid) || ((modalIndex == 1) && !diffsConfigIsPossibleImport) || ((modalIndex == 2) && !studiesToImport.checked) || (modalIndex == 3) || (modalIndex == 4) )" aria-hidden="true">
             <span translate>study.import.next</span>
           </button>
-          <button id="myFinishButton" type="button" class="btn btn-success" ng-click="finish()" 
+          <button id="myFinishButton" type="button" class="btn btn-success" ng-click="finish()"
           	ng-disabled="myFormSummary.$invalid" ng-show="!(!(modalIndex == 3) || !(studiesToCreate.length > 0 || studiesToReplace.length > 0) )" aria-hidden="true" >
             <span translate>study.import.finish</span>
           </button>
