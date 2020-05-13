@@ -121,7 +121,7 @@
         <li ng-if="authenticated">
           <a href="#/files"><span>{{'files' | translate}}</span></a>
         </li>
-        <li ng-if="authenticated">
+        <li ng-if="authenticated && hasRole(['mica-administrator'])">
           <a href="#/persons"><span>{{'persons.title' | translate}}</span></a>
         </li>
       </ul>

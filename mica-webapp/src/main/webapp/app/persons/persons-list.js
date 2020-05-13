@@ -30,12 +30,17 @@
     }
 
     __cleanupQuery(text) {
-      let cleaned = this.ngObibaStringUtils.cleanOrEscapeSpecialLuceneBrackets(text);
-      if (cleaned.length > 0) {
-        cleaned = this.ngObibaStringUtils.cleanDoubleQuotesLeftUnclosed(cleaned);
-      }
+      const cleaners = [
+        this.ngObibaStringUtils.cleanOrEscapeSpecialLuceneBrackets,
+        this.ngObibaStringUtils.cleanDoubleQuotesLeftUnclosed,
+        (text) => text.replace(/[!^~\\/]/g,''),
+        (text) => text.match(/\*$/) === null ? `${text}*` : text,
+      ];
 
-      return cleaned.match(/\s|^".*"$/) === null ? cleaned.replace(/\s|^".*"$/) + '*' : cleaned;
+      let cleaned = text;
+      cleaners.forEach(cleaner => cleaned = cleaner.apply(null, [cleaned.trim()]));
+
+      return cleaned && cleaned.length > 1 ? cleaned : null;
     }
 
     get query() {
@@ -43,9 +48,9 @@
     }
 
     set query(text) {
-      this._query = text || null;
+      this._query = text ? text.trim() : null;
 
-      if (text.length === 1) {
+      if (this._query === 1) {
         return;
       }
 
@@ -59,26 +64,33 @@
     getPersons(query, from, limit, exclude) {
       const searchQuery = query ? this.__cleanupQuery(query) : query;
       this.loading = true;
-      this.ContactsSearchResource.get({
+      this.ContactsSearchResource.search({
         query: searchQuery,
         from: from,
         limit: limit || DEFAULT_LIMIT,
         exclude: exclude
-      }).$promise.then(result => {
-        this.loading = false;
-        this.persons = (result.persons || []).map((person) => {
-          if (person.networkMemberships) {
-            person.networks = this.EntityMembershipService.groupRolesByEntity('networks', person.networkMemberships);
-          }
+      }).$promise
+        .then(result => {
+          this.loading = false;
+          this.persons = (result.persons || []).map((person) => {
+            if (person.networkMemberships) {
+              person.networks = this.EntityMembershipService.groupRolesByEntity('networks', person.networkMemberships);
+            }
 
-          if (person.studyMemberships) {
-            person.studies = this.EntityMembershipService.groupRolesByEntity('studies', person.studyMemberships);
-          }
+            if (person.studyMemberships) {
+              person.studies = this.EntityMembershipService.groupRolesByEntity('studies', person.studyMemberships);
+            }
 
-          return person;
+            return person;
+          });
+          this.total = result.total;
+        })
+        .catch(error => {
+          console.error(`Search failed for ${searchQuery} - ${error.data ? error.data.message : error.statusText}`);
+          this.loading = false;
+          this.persons = [];
+          this.total = 0;
         });
-        this.total = result.total;
-      });
     }
 
     $onInit() {
