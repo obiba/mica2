@@ -109,6 +109,7 @@ mica.study
     'dce',
     'sfOptions',
     'sfForm',
+    'canViewFiles',
     'study',
     'path',
     'StudyTaxonomyService',
@@ -122,6 +123,7 @@ mica.study
               dce,
               sfOptions,
               sfForm,
+              canViewFiles,
               study,
               path,
               StudyTaxonomyService,
@@ -133,6 +135,7 @@ mica.study
       $scope.path = path;
       $scope.sfOptions = sfOptions;
       $scope.dceSfForm = sfForm;
+      $scope.canViewFiles = canViewFiles;
 
       $scope.close = function () {
         $uibModalInstance.close();
@@ -259,6 +262,6 @@ mica.study
 	'$scope',
 	'$route',
 	'$rootScope',
-	'$http', 
+	'$http',
 	mica.study.StudiesImportController
   ]);
