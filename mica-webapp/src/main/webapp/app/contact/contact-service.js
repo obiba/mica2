@@ -14,7 +14,12 @@ mica.contact
   .factory('ContactsSearchResource', ['$resource', 'ContactSerializationService',
     function ($resource, ContactSerializationService) {
       return $resource('ws/draft/persons/_search?', {}, {
-        'search': {method: 'GET', params: {query: '@query', 'exclude': '@exclude'}, transformResponse: ContactSerializationService.deserializeList}
+        'search': {
+          method: 'GET',
+          params: {query: '@query', 'exclude': '@exclude'},
+          transformResponse: ContactSerializationService.deserializeList,
+          errorHandler: true
+        }
       });
     }])
   .factory('PersonResource', ['$resource', function ($resource) {
