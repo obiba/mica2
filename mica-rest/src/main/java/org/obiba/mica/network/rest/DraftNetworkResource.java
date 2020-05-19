@@ -10,7 +10,10 @@
 
 package org.obiba.mica.network.rest;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.base.Strings;
+import com.google.common.collect.MapDifference;
+
 import org.obiba.mica.AbstractGitPersistableResource;
 import org.obiba.mica.JSONUtils;
 import org.obiba.mica.NoSuchEntityException;
@@ -25,6 +28,7 @@ import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.network.domain.NetworkState;
 import org.obiba.mica.network.service.NetworkService;
 import org.obiba.mica.security.rest.SubjectAclResource;
+import org.obiba.mica.study.service.DocumentDifferenceService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.opal.web.model.Projects;
@@ -168,6 +172,31 @@ public class DraftNetworkResource extends AbstractGitPersistableResource<Network
   public Mica.NetworkDto getFromCommit(@NotNull @PathParam("commitId") String commitId) throws IOException {
     checkPermission("/draft/network", "VIEW");
     return dtos.asDto(networkService.getFromCommit(networkService.findDraft(id), commitId), true);
+  }
+
+  @GET
+  @Path("/diff")
+  public Response diff(@NotNull @QueryParam("left") String left, @NotNull @QueryParam("right") String right) {
+    checkPermission("/draft/individual-study", "VIEW");
+
+    Network leftCommit = networkService.getFromCommit(networkService.findDraft(id), left);
+    Network rightCommit = networkService.getFromCommit(networkService.findDraft(id), right);
+
+    Map<String, Object> data = new HashMap<>();
+
+    try {
+      MapDifference<String, Object> difference = DocumentDifferenceService.diff(leftCommit, rightCommit);
+
+      data.put("differing", DocumentDifferenceService.fromEntriesDifferenceMap(difference.entriesDiffering()));
+      data.put("onlyLeft", difference.entriesOnlyOnLeft());
+      data.put("onlyRight", difference.entriesOnlyOnRight());
+      data.put("inCommon", difference.entriesInCommon());
+
+    } catch (JsonProcessingException e) {
+      //
+    }
+
+    return Response.ok(data, MediaType.APPLICATION_JSON_TYPE).build();
   }
 
   @Path("/permissions")
