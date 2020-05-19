@@ -22,12 +22,8 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import au.com.bytecode.opencsv.CSVWriter;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jayway.jsonpath.Configuration;
-import com.jayway.jsonpath.JsonPath;
-import com.jayway.jsonpath.Option;
-import net.minidev.json.JSONArray;
 import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.core.ModelAwareTranslator;
 import org.obiba.mica.core.domain.EntityState;
@@ -61,7 +57,7 @@ import com.google.common.eventbus.Subscribe;
 import static java.util.stream.Collectors.toList;
 
 public abstract class AbstractStudyService<S extends EntityState, T extends BaseStudy>
-  extends AbstractGitPersistableService<S, T> {
+    extends AbstractGitPersistableService<S, T> {
 
   private static final Logger log = LoggerFactory.getLogger(AbstractStudyService.class);
 
@@ -99,24 +95,17 @@ public abstract class AbstractStudyService<S extends EntityState, T extends Base
 
   public ByteArrayOutputStream writeCsv(String id) throws JsonProcessingException {
     BaseStudy draft = findDraft(id);
-    ObjectMapper mapper = new ObjectMapper();
-    final String string = mapper.writeValueAsString(draft);
 
-    JSONArray array = JsonPath.using(Configuration.builder().options(Option.AS_PATH_LIST).build()).parse(string).read("$..*");
+    Map<String, Object> map = DocumentDifferenceService.flatten(draft);
 
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     try (CSVWriter writer = new CSVWriter(new PrintWriter(baos))) {
-      writer.writeNext(new String[]{"Field", "Value"});
+      writer.writeNext(new String[] { "Field", "Value" });
 
-      array.stream()
-        .map(Object::toString)
-        .filter(key -> !key.startsWith("$['logo']") && !key.startsWith("$['createdDate']") && !key.startsWith("$['lastModifiedDate']"))
-        .forEach(key -> {
-          Object read = JsonPath.parse(string).read(key);
-          if (read != null && !(read instanceof Map) && !(read instanceof List)) {
-            writer.writeNext(new String[]{key, read.toString()});
-          }
-        });
+      map.forEach((key, value) -> {
+        writer.writeNext(new String[] { key, value.toString() });
+      });
+
     } catch (IOException e) {
       //
     }
@@ -131,7 +120,8 @@ public abstract class AbstractStudyService<S extends EntityState, T extends Base
   public T findStudy(@NotNull String id) throws NoSuchEntityException {
     // ensure study exists
     T study = getRepository().findOne(id);
-    if (study == null) throw NoSuchEntityException.withId(getType(), id);
+    if (study == null)
+      throw NoSuchEntityException.withId(getType(), id);
     return study;
   }
 
@@ -141,11 +131,13 @@ public abstract class AbstractStudyService<S extends EntityState, T extends Base
 
   public List<T> findAllPublishedStudies() {
     return findPublishedStates().stream() //
-      .filter(studyState ->
-        gitService.hasGitRepository(studyState) && !Strings.isNullOrEmpty(studyState.getPublishedTag()))
-      .map(studyState -> gitService.readFromTag(studyState, studyState.getPublishedTag(), getType()))
-      .map(s -> { s.getModel(); return s; }) // make sure dynamic model is initialized
-      .collect(toList());
+        .filter(studyState -> gitService.hasGitRepository(studyState)
+            && !Strings.isNullOrEmpty(studyState.getPublishedTag()))
+        .map(studyState -> gitService.readFromTag(studyState, studyState.getPublishedTag(), getType())).map(s -> {
+          s.getModel();
+          return s;
+        }) // make sure dynamic model is initialized
+        .collect(toList());
   }
 
   public List<T> findAllDraftStudies() {
@@ -156,8 +148,8 @@ public abstract class AbstractStudyService<S extends EntityState, T extends Base
     return Lists.newArrayList(getRepository().findAll(ids));
   }
 
-  @Caching(evict = {@CacheEvict(value = "aggregations-metadata", allEntries = true),
-    @CacheEvict(value = {"studies-draft", "studies-published"}, key = "#id")})
+  @Caching(evict = { @CacheEvict(value = "aggregations-metadata", allEntries = true),
+      @CacheEvict(value = { "studies-draft", "studies-published" }, key = "#id") })
   public void delete(@NotNull String id) {
     T study = getRepository().findOne(id);
 
@@ -178,7 +170,7 @@ public abstract class AbstractStudyService<S extends EntityState, T extends Base
 
   protected abstract EntityStateRepository<S> getEntityStateRepository();
 
-  protected abstract  Class<T> getType();
+  protected abstract Class<T> getType();
 
   @Override
   public String getTypeName() {
@@ -204,16 +196,16 @@ public abstract class AbstractStudyService<S extends EntityState, T extends Base
 
   protected abstract void saveInternal(T study, String comment, boolean cascade);
 
-
-  @Caching(evict = {@CacheEvict(value = "aggregations-metadata", allEntries = true),
-    @CacheEvict(value = {"studies-draft", "studies-published"}, key = "#id")})
+  @Caching(evict = { @CacheEvict(value = "aggregations-metadata", allEntries = true),
+      @CacheEvict(value = { "studies-draft", "studies-published" }, key = "#id") })
   public void publish(@NotNull String id, boolean publish) throws NoSuchEntityException {
     publish(id, publish, PublishCascadingScope.NONE);
   }
 
-  @Caching(evict = {@CacheEvict(value = "aggregations-metadata", allEntries = true),
-    @CacheEvict(value = {"studies-draft", "studies-published"}, key = "#id")})
-  public void publish(@NotNull String id, boolean publish, PublishCascadingScope cascadingScope) throws NoSuchEntityException {
+  @Caching(evict = { @CacheEvict(value = "aggregations-metadata", allEntries = true),
+      @CacheEvict(value = { "studies-draft", "studies-published" }, key = "#id") })
+  public void publish(@NotNull String id, boolean publish, PublishCascadingScope cascadingScope)
+      throws NoSuchEntityException {
     log.info("Publish study: {}", id);
     T study = getRepository().findOne(id);
 
@@ -230,7 +222,7 @@ public abstract class AbstractStudyService<S extends EntityState, T extends Base
   @Subscribe
   public void micaConfigUpdated(MicaConfigUpdatedEvent event) {
     log.info("Mica config updated. Removing roles.");
-    if(!event.getRemovedRoles().isEmpty())
+    if (!event.getRemovedRoles().isEmpty())
       findAllDraftStudies().forEach(s -> removeRoles(s, event.getRemovedRoles()));
   }
 
@@ -255,7 +247,7 @@ public abstract class AbstractStudyService<S extends EntityState, T extends Base
     saveInternal(study, String.format("Removed roles: %s", Joiner.on(", ").join(roles)), false);
     S state = findStateById(study.getId());
 
-    if(state.isPublished()) {
+    if (state.isPublished()) {
       publishState(study.getId());
       eventBus.post(new StudyPublishedEvent(study, getCurrentUsername(), PublishCascadingScope.NONE));
     }
