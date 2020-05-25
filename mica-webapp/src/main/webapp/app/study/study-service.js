@@ -81,7 +81,8 @@ mica.study
         'get': {method: 'GET', params: {id: '@id'}},
         'restore': {method: 'PUT', url: 'ws/draft/individual-study/:id/commit/:commitId/restore', params: {id: '@id', commitId: '@commitId'}},
         'view': {method: 'GET', url: 'ws/draft/individual-study/:id/commit/:commitId/view', params: {id: '@id', commitId: '@commitId'},
-          transformResponse: StudyModelService.deserialize}
+          transformResponse: StudyModelService.deserialize},
+        'diff': {method: 'GET', url: 'ws/draft/individual-study/:id/diff', params: {id: '@id'}}
       });
     }])
 
@@ -501,7 +502,8 @@ mica.study
         'get': {method: 'GET', params: {id: '@id'}},
         'restore': {method: 'PUT', url: 'ws/draft/harmonization-study/:id/commit/:commitId/restore', params: {id: '@id', commitId: '@commitId'}},
         'view': {method: 'GET', url: 'ws/draft/harmonization-study/:id/commit/:commitId/view', params: {id: '@id', commitId: '@commitId'},
-          transformResponse: StudyModelService.deserialize}
+          transformResponse: StudyModelService.deserialize},
+        'diff': {method: 'GET', url: 'ws/draft/harmonization-study/:id/diff', params: {id: '@id'}}
       });
     }])
 

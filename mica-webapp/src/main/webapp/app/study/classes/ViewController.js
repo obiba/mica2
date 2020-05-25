@@ -544,6 +544,12 @@ function revisionManagement($rootScope, $scope, $filter, DraftStudyRevisionsReso
       }, args);
     }
   };
+
+  $scope.viewDiff = function(id, leftCommitInfo, rightCommitInfo) {
+    if (leftCommitInfo && rightCommitInfo) {
+      return DraftStudyRevisionsResource.diff({id: id, left: leftCommitInfo.commitId, right: rightCommitInfo.commitId});
+    }
+  };
 }
 
 /**
