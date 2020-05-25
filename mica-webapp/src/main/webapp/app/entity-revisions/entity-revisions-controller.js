@@ -37,17 +37,25 @@ mica.revisions
       var viewDiff = function(id, leftSideCommitInfo, rightSideCommitInfo) {
         var response = $scope.onViewDiff()(id, leftSideCommitInfo, rightSideCommitInfo);
 
-        $uibModal.open({
-          templateUrl: 'app/entity-revisions/entity-revisions-diff-modal-template.html',
-          controller: 'RevisionDiffModalController',
-          resolve: {
-            diff: function () {
-              console.log('view diff', response);
-              return response;
-            }
-          }
-        }).result.then(function () {
-          restoreRevision(id, rightSideCommitInfo);
+        response.$promise.then(function (data) {
+          $uibModal.open({
+            templateUrl: 'app/entity-revisions/entity-revisions-diff-modal-template.html',
+            controller: ['$scope', '$uibModalInstance',
+            function($scope, $uibModalInstance) {
+              $scope.diff = data;
+
+              $scope.cancel = function () {
+                $uibModalInstance.dismiss();
+              };
+
+              $scope.restoreRevision = function () {
+                $uibModalInstance.close();
+              };
+            }],
+            size: 'lg'
+          }).result.then(function () {
+            restoreRevision(id, rightSideCommitInfo);
+          });
         });
       };
 
@@ -68,17 +76,4 @@ mica.revisions
       $scope.restoreRevision = restoreRevision;
       $scope.canPaginate = canPaginate;
       $scope.viewDiff = viewDiff;
-    }])
-
-    .controller('RevisionDiffModalController', ['$scope', '$uibModalinstance', 'diff',
-    function($scope, $uibModalInstance, diff) {
-      $scope.diff = diff;
-
-      $scope.cancel = function () {
-        $uibModalInstance.dismiss();
-      };
-
-      $scope.restoreRevision = function () {
-        $uibModalInstance.close();
-      };
     }]);
