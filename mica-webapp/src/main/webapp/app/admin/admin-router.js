@@ -76,8 +76,8 @@ mica.admin
             authorizedRoles: ['mica-administrator']
           }
         })
-        .when('/person/new', {
-          templateUrl: 'app/admin/views/person.html',
+        .when('/admin/content-stats', {
+          templateUrl: 'app/admin/views/content-stats.html',
           access: {
             authorizedRoles: ['mica-administrator']
           }

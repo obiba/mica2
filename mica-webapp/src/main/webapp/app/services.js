@@ -261,7 +261,7 @@ mica.factory('IndexService', ['$resource',
     };
   }]);
 
-mica.factory('MicaMetricsService', ['$resource',
+mica.factory('MicaMetricsResource', ['$resource',
   function($resource) {
     return $resource('ws/config/metrics', {}, {
       get: {method: 'GET'}

@@ -352,6 +352,10 @@
 <script src="app/persons/entity-list.js"></script>
 <script src="app/persons/membership-roles.js"></script>
 
+<script src="app/content-stats/content-stats.js"></script>
+<script src="app/content-stats/content-stats-view.js"></script>
+<script src="app/content-stats/content-stats-item.js"></script>
+
 <!-- endbuild -->
 </body>
 </html>

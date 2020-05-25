@@ -1,0 +1,15 @@
+<div>
+
+  <h2>
+    <ol class="breadcrumb mica-breadcrumb">
+      <li><a href="#/admin" translate>global.menu.admin</a></li>
+      <li class="active" translate>content-stats.title</li>
+    </ol>
+  </h2>
+
+  <div ng-repeat="document in $ctrl.stats.documents track by $index" ng-if="$index % 2 == 0" class="row">
+    <content-stats-item class="col-md-6" document="$ctrl.stats.documents[$index]"></content-stats-item>
+    <content-stats-item class="col-md-6" document="$ctrl.stats.documents[$index+1]"></content-stats-item>
+  </div>
+
+</div>
