@@ -13,6 +13,7 @@ package org.obiba.mica.dataset;
 import java.util.List;
 
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
+import org.obiba.mica.study.EntityStateRepositoryCustom;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 

@@ -13,6 +13,7 @@ package org.obiba.mica.dataset;
 import org.obiba.mica.core.repository.EntityStateRepository;
 import org.obiba.mica.dataset.domain.StudyDatasetState;
 import org.obiba.mica.network.domain.NetworkState;
+import org.obiba.mica.study.EntityStateRepositoryCustom;
 
-public interface StudyDatasetStateRepository extends EntityStateRepository<StudyDatasetState> {
+public interface StudyDatasetStateRepository extends EntityStateRepository<StudyDatasetState>, EntityStateRepositoryCustom {
 }

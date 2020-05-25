@@ -13,6 +13,8 @@ package org.obiba.mica.dataset;
 import org.obiba.mica.core.repository.EntityStateRepository;
 import org.obiba.mica.dataset.domain.HarmonizationDatasetState;
 import org.obiba.mica.dataset.domain.StudyDatasetState;
+import org.obiba.mica.study.EntityStateRepositoryCustom;
 
-public interface HarmonizationDatasetStateRepository extends EntityStateRepository<HarmonizationDatasetState> {
+public interface HarmonizationDatasetStateRepository extends EntityStateRepository<HarmonizationDatasetState>,
+  EntityStateRepositoryCustom {
 }

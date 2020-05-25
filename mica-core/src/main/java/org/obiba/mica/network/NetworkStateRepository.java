@@ -12,6 +12,7 @@ package org.obiba.mica.network;
 
 import org.obiba.mica.core.repository.EntityStateRepository;
 import org.obiba.mica.network.domain.NetworkState;
+import org.obiba.mica.study.EntityStateRepositoryCustom;
 
-public interface NetworkStateRepository extends EntityStateRepository<NetworkState> {
+public interface NetworkStateRepository extends EntityStateRepository<NetworkState>, EntityStateRepositoryCustom {
 }

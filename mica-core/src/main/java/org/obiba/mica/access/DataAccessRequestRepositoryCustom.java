@@ -10,13 +10,16 @@
 
 package org.obiba.mica.access;
 
+import com.mongodb.BasicDBObject;
 import org.obiba.mica.access.domain.DataAccessRequest;
 import org.obiba.mica.core.repository.DBRefAwareRepository;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 public interface DataAccessRequestRepositoryCustom extends DBRefAwareRepository<DataAccessRequest> {
   Map<Object, LinkedHashMap> getAllAmendmentsSummary();
   Map<Object, LinkedHashMap> getAmendmentsSummary(String id);
+  List<LinkedHashMap> getCountByStatus();
 }

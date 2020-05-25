@@ -266,6 +266,7 @@ class DataAccessRequestDtos {
     if (requests != null) {
 
       Map<String, Subject> micaProfiles = userProfileService.getProfilesByGroup(null).stream().collect(Collectors.toMap(Subject::getUsername, profile -> profile));
+
       Map<Object, LinkedHashMap> allAmendmentsSummary = dataAccessRequestRepository.getAllAmendmentsSummary();
 
       return requests.stream()
@@ -327,8 +328,8 @@ class DataAccessRequestDtos {
       builder.setAmendmentsSummary(
         Mica.DataAccessRequestDto.AmendmentsSummaryDto.newBuilder()
           .setId(map.get("_id") + "")
-          .setPending((double) map.get("pending"))
-          .setTotal((double) map.get("total"))
+          .setPending((int)map.get("pending"))
+          .setTotal((int)map.get("total"))
           .setLastModifiedDate(map.get("lastModified") instanceof Date ? ((Date) map.get("lastModified")).toInstant().atOffset(ZoneOffset.systemDefault().getRules().getOffset(Instant.now())).toString() : "")
           .build()
       );

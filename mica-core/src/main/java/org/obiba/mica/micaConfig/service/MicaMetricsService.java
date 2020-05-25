@@ -10,8 +10,6 @@
 
 package org.obiba.mica.micaConfig.service;
 
-import javax.inject.Inject;
-
 import org.obiba.mica.dataset.HarmonizationDatasetRepository;
 import org.obiba.mica.dataset.HarmonizationDatasetStateRepository;
 import org.obiba.mica.dataset.StudyDatasetRepository;
@@ -27,7 +25,7 @@ import org.obiba.mica.network.service.PublishedNetworkService;
 import org.obiba.mica.project.ProjectRepository;
 import org.obiba.mica.project.ProjectStateRepository;
 import org.obiba.mica.project.service.PublishedProjectService;
-import org.obiba.mica.study.HarmonizationStudyRepository;
+import org.obiba.mica.study.EntityStateRepositoryCustom;
 import org.obiba.mica.study.HarmonizationStudyStateRepository;
 import org.obiba.mica.study.StudyRepository;
 import org.obiba.mica.study.StudyStateRepository;
@@ -36,6 +34,10 @@ import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.service.PublishedDatasetVariableService;
 import org.obiba.mica.study.service.PublishedStudyService;
 import org.springframework.stereotype.Service;
+
+import javax.inject.Inject;
+import java.util.LinkedHashMap;
+import java.util.List;
 
 @Service
 public class MicaMetricsService {
@@ -94,7 +96,22 @@ public class MicaMetricsService {
   @Inject
   private PublishedFileService publishedFileService;
 
+  private LinkedHashMap<String, Object> getStateCount(EntityStateRepositoryCustom repository) {
+    List<LinkedHashMap> linkedHashMaps = repository.countByEachStateStatus();
+    if (linkedHashMaps.isEmpty()) {
+      return new LinkedHashMap();
+    } else {
+      LinkedHashMap linkedHashMap = linkedHashMaps.get(0);
+      linkedHashMap.remove("_id");
+      return linkedHashMap;
+    }
+  }
+
   // Individual Study
+  public LinkedHashMap<String, Object> getIndividualStudiesStateCount() {
+    return getStateCount(studyStateRepository);
+  }
+
   public long getDraftIndividualStudiesCount() {
     return studyRepository.count();
   }
@@ -125,6 +142,10 @@ public class MicaMetricsService {
 
   // Harmonization Study
 
+  public LinkedHashMap<String, Object> getHarmonizationStudiesStateCount() {
+    return getStateCount(harmonizationStudyStateRepository);
+  }
+
   public long getDraftHarmonizationStudiesCount() {
     return harmonizationStudyStateRepository.count();
   }
@@ -150,6 +171,11 @@ public class MicaMetricsService {
   }
 
   // Network
+
+  public LinkedHashMap<String, Object> getNetworksStateCount() {
+    return getStateCount(networkStateRepository);
+  }
+
   public long getDraftNetworksCount() {
     return networkRepository.count();
   }
@@ -171,6 +197,11 @@ public class MicaMetricsService {
   }
 
   // Study Dataset
+
+  public LinkedHashMap<String, Object> getStudyDatasetsStateCount() {
+    return getStateCount(studyDatasetStateRepository);
+  }
+
   public long getDraftStudyDatasetsCount() {
     return studyDatasetRepository.count();
   }
@@ -192,7 +223,12 @@ public class MicaMetricsService {
   }
 
   // Harmonization Dataset
-  public long getDraftHarmonizarionDatasetsCount() {
+
+  public LinkedHashMap<String, Object> getHarmonizationDatasetsStateCount() {
+    return getStateCount(harmonizationDatasetStateRepository);
+  }
+
+  public long getDraftHarmonizationDatasetsCount() {
     return harmonizationDatasetRepository.count();
   }
 
@@ -213,6 +249,11 @@ public class MicaMetricsService {
   }
 
   // Project
+
+  public LinkedHashMap<String, Object> getProjectsStateCount() {
+    return getStateCount(projectStateRepository);
+  }
+
   public long getDraftProjectsCount() {
     return projectRepository.count();
   }
