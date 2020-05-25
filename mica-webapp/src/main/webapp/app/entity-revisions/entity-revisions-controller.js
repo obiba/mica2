@@ -14,9 +14,8 @@ mica.revisions
   .controller('RevisionsController', [
     '$rootScope',
     '$scope',
-    '$filter',
-    'LocaleStringUtils',
-    function ($rootScope, $scope) {
+    '$uibModal',
+    function ($rootScope, $scope, $uibModal) {
       var onSuccess = function(revisions) {
         $scope.commitInfos = revisions;
         viewRevision($scope.active.index, $scope.id, $scope.commitInfos[$scope.active.index]);
@@ -32,6 +31,23 @@ mica.revisions
       var restoreRevision = function(id, commitInfo) {
         $scope.onRestoreRevision()(id, commitInfo, function() {
           $scope.onFetchRevisions()($scope.id, onSuccess);
+        });
+      };
+
+      var viewDiff = function(id, leftSideCommitInfo, rightSideCommitInfo) {
+        var response = $scope.onViewDiff()(id, leftSideCommitInfo, rightSideCommitInfo);
+
+        $uibModal.open({
+          templateUrl: 'app/entity-revisions/entity-revisions-diff-modal-template.html',
+          controller: 'RevisionDiffModalController',
+          resolve: {
+            diff: function () {
+              console.log('view diff', response);
+              return response;
+            }
+          }
+        }).result.then(function () {
+          restoreRevision(id, rightSideCommitInfo);
         });
       };
 
@@ -51,4 +67,18 @@ mica.revisions
       $scope.viewRevision = viewRevision;
       $scope.restoreRevision = restoreRevision;
       $scope.canPaginate = canPaginate;
+      $scope.viewDiff = viewDiff;
+    }])
+
+    .controller('RevisionDiffModalController', ['$scope', '$uibModalinstance', 'diff',
+    function($scope, $uibModalInstance, diff) {
+      $scope.diff = diff;
+
+      $scope.cancel = function () {
+        $uibModalInstance.dismiss();
+      };
+
+      $scope.restoreRevision = function () {
+        $uibModalInstance.close();
+      };
     }]);

@@ -610,6 +610,12 @@ mica.dataset
         });
       };
 
+      $scope.viewDiff = function (id, leftCommitInfo, rightCommitInfo) {
+        if (leftCommitInfo && rightCommitInfo) {
+          return DraftDatasetRevisionsResource.diff({id: id, type: $scope.type, left: leftCommitInfo.commitId, right: rightCommitInfo.commitId});
+        }
+      };
+
       var fetchDataset = function (datasetId) {
         DatasetResource.get({id: datasetId, type: $scope.type}, initializeDataset);
       };

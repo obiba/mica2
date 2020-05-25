@@ -11,7 +11,7 @@
 <div>
   <div ng-include="'app/network/views/network-view-header.html'" ng-init="tabName='revisions'"></div>
 
-  <entity-revisions id="{{networkId}}" title="{{'revisions' | translate}}" state="network['obiba.mica.EntityStateDto.state']" on-fetch-revisions="fetchRevisions" on-restore-revision="restoreRevision" on-view-revision="viewRevision"></entity-revisions>
+  <entity-revisions id="{{networkId}}" title="{{'revisions' | translate}}" state="network['obiba.mica.EntityStateDto.state']" on-fetch-revisions="fetchRevisions" on-restore-revision="restoreRevision" on-view-revision="viewRevision" on-view-diff="viewDiff"></entity-revisions>
 
   <h3 class="voffset5" translate>network.label</h3>
 

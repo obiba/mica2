@@ -88,7 +88,8 @@ mica.network
   .factory('DraftNetworkRevisionsResource', ['$resource',
     function ($resource) {
       return $resource('ws/draft/network/:id/commits', {}, {
-        'get': {method: 'GET', params: {id: '@id'}}
+        'get': {method: 'GET', params: {id: '@id'}},
+        'diff': {method: 'GET', url: 'ws/draft/network/:id/diff', params: {id: '@id'}}
       });
     }])
 
