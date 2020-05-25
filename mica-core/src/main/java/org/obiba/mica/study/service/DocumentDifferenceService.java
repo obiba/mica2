@@ -39,7 +39,7 @@ public class DocumentDifferenceService {
     .forEach(key -> {
       Object read = JsonPath.parse(string).read(key);
       if (read != null && !(read instanceof Map) && !(read instanceof List)) {
-        map.put(key, read);
+        map.put(key.replaceAll("(\\$\\[')|('\\])", "").replaceAll("(\\[')", "."), read);
       }
     });
 
