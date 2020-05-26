@@ -1468,7 +1468,8 @@
       "translations": "Manage labels translations.",
       "cart": "Cart of variables.",
       "sets": "Lists of variables.",
-      "persons": "Manage persons who are associated to studies and/or networks by a role such as Contact or Investigator."
+      "persons": "Manage persons who are associated to studies and/or networks by a role such as Contact or Investigator.",
+      "entity-statistics-summary": "Statistics summary of Mica content documents."
     }
   },
   "server": {
@@ -2334,5 +2335,24 @@
       "title": "Delete Membership",
       "message": "Are you sure you want to delete all roles from {{arg0}}?"
     }
+  },
+  "entity-statistics-summary": {
+    "title": "Statistics Summary",
+    "breadcrumb": "Content Statistics Summary",
+    "Study": "Individual Studies",
+    "HarmonizationStudy": "Harmonization Studies",
+    "StudyDataset": "Collected Datasets",
+    "HarmonizationDataset": "Harmonized Datasets",
+    "Network": "Networks",
+    "Project": "Projects",
+    "DatasetVariable": "Variables",
+    "total": "Total",
+    "published": "Published",
+    "reviewing": "Under Review",
+    "deleting": "To Delete",
+    "editing": "In Edition",
+    "indexed": "Indexed",
+    "variables": "Associated Variables",
+    "totalWithVariable": "Studies With Variables"
   }
 }

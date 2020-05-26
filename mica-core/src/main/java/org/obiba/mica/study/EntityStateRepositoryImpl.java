@@ -43,11 +43,11 @@ public class EntityStateRepositoryImpl implements EntityStateRepositoryCustom {
         "      \"reviewing\": {\n" +
         "        \"$sum\": { \"$cond\": [ { \"$eq\": [ \"UNDER_REVIEW\", \"$revisionStatus\" ] }, 1, 0 ] }\n" +
         "      },\n" +
-        "      \"deleting\": {\n" +
-        "        \"$sum\": { \"$cond\": [ { \"$eq\": [ \"DELETED\", \"$revisionStatus\" ] }, 1, 0 ] }\n" +
-        "      },\n" +
         "      \"editing\": {\n" +
         "        \"$sum\": {\"$cond\": [{\"$and\": [{\"$gt\": [\"$revisionsAhead\", 0 ] }, {\"$ifNull\": [\"$publishedTag\", false ] } ] }, 1, 0 ] }\n" +
+        "      },\n" +
+        "      \"deleting\": {\n" +
+        "        \"$sum\": { \"$cond\": [ { \"$eq\": [ \"DELETED\", \"$revisionStatus\" ] }, 1, 0 ] }\n" +
         "      }\n" +
         "    }\n" +
         "  }"

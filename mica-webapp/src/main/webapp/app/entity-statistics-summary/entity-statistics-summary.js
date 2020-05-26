@@ -10,7 +10,7 @@
 
 'use strict';
 
-mica.contentStats = angular.module('mica.contentStats', [
+mica.entityStatisticsSummary = angular.module('mica.entityStatisticsSummary', [
   'mica.config',
   'obiba.notification',
   'obiba.mica.localized',

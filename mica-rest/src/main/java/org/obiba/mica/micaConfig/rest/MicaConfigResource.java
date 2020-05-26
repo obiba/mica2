@@ -349,7 +349,7 @@ public class MicaConfigResource {
           .addProperties(
             Mica.MicaMetricsDto.PropertyDto.newBuilder()
               .setName("indexed")
-              .setValue(micaMetricsService.getPublishedIndividualStudiesCount())
+              .setValue(micaMetricsService.getPublishedNetworksCount())
               .build()
             )
         )
