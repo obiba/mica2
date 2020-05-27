@@ -220,7 +220,6 @@ public class DraftHarmonizedDatasetResource extends
       data.put("differing", DocumentDifferenceService.fromEntriesDifferenceMap(difference.entriesDiffering()));
       data.put("onlyLeft", difference.entriesOnlyOnLeft());
       data.put("onlyRight", difference.entriesOnlyOnRight());
-      data.put("inCommon", difference.entriesInCommon());
 
     } catch (JsonProcessingException e) {
       //
