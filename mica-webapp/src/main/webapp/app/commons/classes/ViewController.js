@@ -21,6 +21,10 @@ mica.commons.ViewController = function ($location) {
     return self.getViewMode() === self.Mode.View;
   };
 
+  self.inRevisionMode = function () {
+    return self.getViewMode() === self.Mode.Revision;
+  };
+
   self.getViewMode = function () {
     var result = /\/(revision[s\/]*|files|permissions|comments)/.exec($location.path());
     if (result && result.length > 1) {
