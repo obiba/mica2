@@ -13,7 +13,6 @@ package org.obiba.mica.study.rest;
 import com.codahale.metrics.annotation.Timed;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.base.Strings;
-import com.google.common.collect.MapDifference;
 import com.google.common.collect.Maps;
 import org.obiba.mica.AbstractGitPersistableResource;
 import org.obiba.mica.JSONUtils;
@@ -28,7 +27,6 @@ import org.obiba.mica.security.rest.SubjectAclResource;
 import org.obiba.mica.study.ConstraintException;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.domain.StudyState;
-import org.obiba.mica.study.service.DocumentDifferenceService;
 import org.obiba.mica.study.service.IndividualStudyService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
@@ -196,30 +194,6 @@ public class DraftIndividualStudyResource extends AbstractGitPersistableResource
   public Mica.StudyDto getStudyFromCommit(@NotNull @PathParam("commitId") String commitId) throws IOException {
     checkPermission("/draft/individual-study", "VIEW");
     return dtos.asDto(individualStudyService.getFromCommit(individualStudyService.findDraft(id), commitId), true);
-  }
-
-  @GET
-  @Path("/diff")
-  public Response diff(@NotNull @QueryParam("left") String left, @NotNull @QueryParam("right") String right) {
-    checkPermission("/draft/individual-study", "VIEW");
-
-    Study leftCommit = individualStudyService.getFromCommit(individualStudyService.findDraft(id), left);
-    Study rightCommit = individualStudyService.getFromCommit(individualStudyService.findDraft(id), right);
-
-    Map<String, Object> data = new HashMap<>();
-
-    try {
-      MapDifference<String, Object> difference = DocumentDifferenceService.diff(leftCommit, rightCommit);
-
-      data.put("differing", DocumentDifferenceService.fromEntriesDifferenceMap(difference.entriesDiffering()));
-      data.put("onlyLeft", difference.entriesOnlyOnLeft());
-      data.put("onlyRight", difference.entriesOnlyOnRight());
-
-    } catch (JsonProcessingException e) {
-      //
-    }
-
-    return Response.ok(data, MediaType.APPLICATION_JSON_TYPE).build();
   }
 
   @Path("/permissions")
