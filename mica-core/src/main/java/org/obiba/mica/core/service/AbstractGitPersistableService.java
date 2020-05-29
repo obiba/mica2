@@ -36,6 +36,7 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Null;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -182,7 +183,7 @@ public abstract class AbstractGitPersistableService<T extends EntityState, T1 ex
     return getEntityStateRepository().save(entityState);
   }
 
-  public T publishState(@NotNull String id) throws NoSuchEntityException {
+  protected T publishStateInternal(@Nullable String id) {
     T entityState = findStateById(id);
     if(entityState != null) {
       entityState.setRevisionStatus(DRAFT);
@@ -193,20 +194,37 @@ public abstract class AbstractGitPersistableService<T extends EntityState, T1 ex
       entityState.setPublishedBy(getCurrentUsername());
       entityState.resetRevisionsAhead();
       entityState.setPublicationDate(DateTime.now());
+    }
+
+    return entityState;
+  }
+
+  public T publishState(@NotNull String id) throws NoSuchEntityException {
+    T entityState = publishStateInternal(id);
+    if(entityState != null) {
       getEntityStateRepository().save(entityState);
     }
     idsCache.invalidate(PUBLISHED_CACHE_KEY);
     return entityState;
   }
 
-  public T unPublishState(@NotNull String id) {
+  protected T unPublishStateInternal(@Null String id) {
     T entityState = findStateById(id);
     if(entityState != null) {
+      entityState.resetRevisionsAhead();
       entityState.resetRevisionsAhead();
       entityState.setPublishedTag(null);
       entityState.setPublicationDate(null);
       entityState.setPublishedBy(null);
       if(entityState.getRevisionStatus() != DELETED) entityState.setRevisionStatus(DRAFT);
+    }
+
+    return entityState;
+  }
+
+  public T unPublishState(@NotNull String id) {
+    T entityState = unPublishStateInternal(id);
+    if(entityState != null) {
       getEntityStateRepository().save(entityState);
     }
     idsCache.invalidate(PUBLISHED_CACHE_KEY);

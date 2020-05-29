@@ -15,8 +15,18 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document
 public class StudyDatasetState extends EntityState {
+  private boolean requireIndexing = false;
+
   @Override
   public String pathPrefix() {
     return "studyDatasets";
+  }
+
+  public boolean isRequireIndexing() {
+    return requireIndexing;
+  }
+
+  public void setRequireIndexing(boolean requireIndexing) {
+    this.requireIndexing = requireIndexing;
   }
 }

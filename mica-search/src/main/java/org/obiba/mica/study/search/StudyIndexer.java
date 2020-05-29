@@ -11,28 +11,22 @@
 package org.obiba.mica.study.search;
 
 import com.google.common.eventbus.Subscribe;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-import javax.inject.Inject;
 import org.obiba.mica.core.domain.Membership;
 import org.obiba.mica.core.service.PersonService;
-import org.obiba.mica.dataset.service.CollectedDatasetService;
 import org.obiba.mica.spi.search.Indexable;
 import org.obiba.mica.spi.search.Indexer;
 import org.obiba.mica.study.domain.BaseStudy;
-import org.obiba.mica.study.domain.Study;
-import org.obiba.mica.study.event.DraftStudyUpdatedEvent;
-import org.obiba.mica.study.event.IndexStudiesEvent;
-import org.obiba.mica.study.event.StudyDeletedEvent;
-import org.obiba.mica.study.event.StudyPublishedEvent;
-import org.obiba.mica.study.event.StudyUnpublishedEvent;
+import org.obiba.mica.study.event.*;
 import org.obiba.mica.study.service.StudyService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+
+import javax.inject.Inject;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Component
 public class StudyIndexer {
@@ -44,9 +38,6 @@ public class StudyIndexer {
 
   @Inject
   private StudyService studyService;
-
-  @Inject
-  private CollectedDatasetService collectedDatasetService;
 
   @Inject
   private PersonService personService;

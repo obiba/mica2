@@ -10,17 +10,11 @@
 
 package org.obiba.mica.dataset.service;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
-
-import javax.inject.Inject;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-
+import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 import org.joda.time.DateTime;
 import org.obiba.magma.NoSuchValueTableException;
 import org.obiba.magma.NoSuchVariableException;
@@ -32,6 +26,7 @@ import org.obiba.mica.core.repository.EntityStateRepository;
 import org.obiba.mica.dataset.NoSuchDatasetException;
 import org.obiba.mica.dataset.StudyDatasetRepository;
 import org.obiba.mica.dataset.StudyDatasetStateRepository;
+import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.dataset.domain.StudyDatasetState;
@@ -49,7 +44,7 @@ import org.obiba.mica.study.domain.BaseStudy;
 import org.obiba.mica.study.domain.DataCollectionEvent;
 import org.obiba.mica.study.domain.Population;
 import org.obiba.mica.study.domain.Study;
-import org.obiba.mica.study.domain.StudyState;
+import org.obiba.mica.study.event.DraftStudyPopulationDceWeightChangedEvent;
 import org.obiba.mica.study.service.IndividualStudyService;
 import org.obiba.mica.study.service.PublishedStudyService;
 import org.obiba.mica.study.service.StudyService;
@@ -67,10 +62,15 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
-import com.google.common.eventbus.EventBus;
+import javax.inject.Inject;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import static java.util.stream.Collectors.toList;
 
@@ -212,6 +212,20 @@ public class CollectedDatasetService extends DatasetService<StudyDataset, StudyD
     }
   }
 
+  @Override
+  protected StudyDatasetState publishStateInternal(String id) throws NoSuchEntityException {
+    StudyDatasetState studyDatasetState = super.publishStateInternal(id);
+    studyDatasetState.setRequireIndexing(false);
+    return studyDatasetState;
+  }
+
+  @Override
+  protected StudyDatasetState unPublishStateInternal(String id) {
+    StudyDatasetState studyDatasetState = super.unPublishStateInternal(id);
+    studyDatasetState.setRequireIndexing(false);
+    return studyDatasetState;
+  }
+
   private List<StudyDataset> mapPublishedDatasets(Stream<StudyDatasetState> studyDatasetStateStream) {
     return studyDatasetStateStream
       .map(state -> gitService.readFromTag(state, state.getPublishedTag(), StudyDataset.class))
@@ -295,16 +309,17 @@ public class CollectedDatasetService extends DatasetService<StudyDataset, StudyD
     indexDatasets(Sets.newHashSet(findAllPublishedDatasets()), findAllDatasets(), mustIndexVariables);
   }
 
-  public void indexAllDatasetsForStudyIdIfPopulationOrDceWeightChanged(String studyId) {
-    if (individualStudyService.getEntityState(studyId).isPopulationOrDceWeightChange()) {
-      List<StudyDataset> datasets = findAllDatasets(studyId);
-      HashSet<StudyDataset> publishedDatasets = Sets
-        .newHashSet(findPublishedDatasets(datasets.stream().map(AbstractGitPersistable::getId).collect(toList())));
+  public void indexAllDatasetsRequiredIndexing() {
+    List<String> datasetIds = studyDatasetStateRepository.findAllByRequireIndexingIsTrue()
+      .stream()
+      .map(StudyDatasetState::getId)
+      .collect(toList());
 
-      indexDatasets(publishedDatasets, datasets, true);
+    List<StudyDataset> datasets = findAllDatasets(datasetIds);
+    HashSet<StudyDataset> publishedDatasets =
+      Sets.newHashSet(findPublishedDatasets(datasets.stream().map(AbstractGitPersistable::getId).collect(toList())));
 
-      resetCollectionStudyStatePopulationDceWeightChangeStatus(studyId);
-    }
+    indexDatasets(publishedDatasets, datasets, true);
   }
 
   public List<DatasetVariable> processVariablesForStudyDataset(StudyDataset dataset, Iterable<DatasetVariable> variables) {
@@ -400,6 +415,27 @@ public class CollectedDatasetService extends DatasetService<StudyDataset, StudyD
     eventBus.post(new DatasetDeletedEvent(dataset));
   }
 
+  /**
+   * Upon an order change of a population or DCE, corresponding published datasets must be indexed to preserve the
+   * correct of their variables.
+   *
+   * @param event
+   */
+  @Async
+  @Subscribe
+  public void studyPopulationDceWeightChanged(DraftStudyPopulationDceWeightChangedEvent event) {
+    BaseStudy study = event.getPersistable();
+    if (study != null) {
+      List<String> datasetIds = findAllDatasets(study.getId()).stream().map(Dataset::getId).collect(toList());
+      // Only published datasets require indexing.
+      studyDatasetStateRepository.findByPublishedTagNotNullAndIdIn(datasetIds)
+        .forEach(state -> {
+          state.setRequireIndexing(true);
+          studyDatasetStateRepository.save(state);
+        });
+    }
+  }
+
   @Override
   protected OpalService getOpalService() {
     return opalService;
@@ -434,15 +470,6 @@ public class CollectedDatasetService extends DatasetService<StudyDataset, StudyD
    */
   private <T> T execute(StudyTable studyTable, DatasourceCallback<T> callback) {
     return execute(getDatasource(studyTable), callback);
-  }
-
-  private void resetCollectionStudyStatePopulationDceWeightChangeStatus(String studyId) {
-    StudyState studyState = individualStudyService.getEntityState(studyId);
-
-    if (!studyState.hasRevisionsAhead()) {
-      studyState.setPopulationOrDceWeightChange(false);
-      individualStudyService.saveState(studyState);
-    }
   }
 
   private void saveInternal(StudyDataset dataset, String comment) {

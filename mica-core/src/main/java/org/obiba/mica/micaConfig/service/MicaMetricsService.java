@@ -99,12 +99,12 @@ public class MicaMetricsService {
   private LinkedHashMap<String, Object> getStateCount(EntityStateRepositoryCustom repository) {
     List<LinkedHashMap> linkedHashMaps = repository.countByEachStateStatus();
     if (linkedHashMaps.isEmpty()) {
-      return new LinkedHashMap();
-    } else {
-      LinkedHashMap linkedHashMap = linkedHashMaps.get(0);
-      linkedHashMap.remove("_id");
-      return linkedHashMap;
+      linkedHashMaps = repository.createEmptyCountByEachStateStatus();
     }
+
+    LinkedHashMap linkedHashMap = linkedHashMaps.get(0);
+    linkedHashMap.remove("_id");
+    return linkedHashMap;
   }
 
   // Individual Study
@@ -216,10 +216,6 @@ public class MicaMetricsService {
 
   public long getPublishedStudyDatasetFilesCount() {
     return publishedFileService.getCount("collected-dataset");
-  }
-
-  public long getEditingStudyDatasetsCount() {
-    return studyDatasetStateRepository.countByPublishedTagNotNullAndRevisionsAheadGreaterThanEqual(1);
   }
 
   // Harmonization Dataset

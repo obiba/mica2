@@ -5,4 +5,5 @@ import java.util.List;
 
 public interface EntityStateRepositoryCustom {
   List<LinkedHashMap> countByEachStateStatus();
+  List<LinkedHashMap> createEmptyCountByEachStateStatus();
 }

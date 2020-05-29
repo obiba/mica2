@@ -2353,6 +2353,7 @@
     "editing": "In Edition",
     "indexed": "Indexed",
     "variables": "Associated Variables",
-    "totalWithVariable": "Studies With Variables"
+    "totalWithVariable": "Studies With Variables",
+    "requireIndexing": "Require Indexing"
   }
 }

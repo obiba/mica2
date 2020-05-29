@@ -14,4 +14,14 @@ public class StudyDatasetStateRepositoryImpl extends EntityStateRepositoryImpl {
   public StudyDatasetStateRepositoryImpl(MongoTemplate mongoTemplate) {
     super(mongoTemplate, StudyDatasetState.class.getSimpleName());
   }
+
+  @Override
+  protected String getDefaultAggregationCounts() {
+    return super.getDefaultAggregationCounts()
+      + ",\"requireIndexing\": {\n" +
+      "    \"$sum\": {\n" +
+      "      \"$cond\": [{\"$and\": [{\"$ifNull\": [\"$requireIndexing\", false ]}, {\"$eq\": [\"$requireIndexing\", true ] } ] }, 1, 0 ]\n" +
+      "    }\n" +
+      "  }";
+  }
 }

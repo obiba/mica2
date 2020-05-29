@@ -29,6 +29,7 @@ import org.obiba.mica.study.StudyRepository;
 import org.obiba.mica.study.StudyStateRepository;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.domain.StudyState;
+import org.obiba.mica.study.event.DraftStudyPopulationDceWeightChangedEvent;
 import org.obiba.mica.study.event.DraftStudyUpdatedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -149,6 +150,25 @@ public class IndividualStudyService extends AbstractStudyService<StudyState, Stu
     } catch (JSONException e) {
       throw Throwables.propagate(e);
     }
+  }
+
+  @Override
+  protected StudyState publishStateInternal(@Nullable String id) {
+    StudyState studyState = super.publishStateInternal(id);
+    if (studyState.isPopulationOrDceWeightChange()) {
+      studyState.setPopulationOrDceWeightChange(false);
+      eventBus.post(new DraftStudyPopulationDceWeightChangedEvent(findStudy(studyState.getId())));
+    }
+
+    return studyState;
+  }
+
+  @Override
+  protected StudyState unPublishStateInternal(String id) {
+    StudyState studyState = super.unPublishStateInternal(id);
+    // reaching here implies that none of the dependent documents are published
+    studyState.setPopulationOrDceWeightChange(false);
+    return studyState;
   }
 
   public Map<String, List<String>> getPotentialUnpublishingConflicts(Study study) {

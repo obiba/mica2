@@ -1,6 +1,7 @@
 package org.obiba.mica.study;
 
 import com.google.common.base.CaseFormat;
+import com.google.common.collect.Lists;
 import org.obiba.mica.core.support.MongoAggregationExecutor;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
@@ -34,25 +35,41 @@ public class EntityStateRepositoryImpl implements EntityStateRepositoryCustom {
       "{\n" +
         "    \"$group\": {\n" +
         "      \"_id\": \"" + collection + "\",\n" +
-        "      \"total\": {\n" +
-        "        \"$sum\": 1\n" +
-        "      },\n" +
-        "      \"published\": {\n" +
-        "        \"$sum\": { \"$cond\": [ { \"$ifNull\": [ \"$publishedTag\", false ] }, 1, 0 ] }\n" +
-        "      },     \n" +
-        "      \"reviewing\": {\n" +
-        "        \"$sum\": { \"$cond\": [ { \"$eq\": [ \"UNDER_REVIEW\", \"$revisionStatus\" ] }, 1, 0 ] }\n" +
-        "      },\n" +
-        "      \"editing\": {\n" +
-        "        \"$sum\": {\"$cond\": [{\"$and\": [{\"$gt\": [\"$revisionsAhead\", 0 ] }, {\"$ifNull\": [\"$publishedTag\", false ] } ] }, 1, 0 ] }\n" +
-        "      },\n" +
-        "      \"deleting\": {\n" +
-        "        \"$sum\": { \"$cond\": [ { \"$eq\": [ \"DELETED\", \"$revisionStatus\" ] }, 1, 0 ] }\n" +
-        "      }\n" +
+        getDefaultAggregationCounts() +
         "    }\n" +
         "  }"
     );
 
     return aggregationExecutor.execute(aggOperations, collection);
+  }
+
+  public List<LinkedHashMap> createEmptyCountByEachStateStatus() {
+    return Lists.newArrayList(
+      new LinkedHashMap<String, Object>() {{
+        put("total", 0);
+        put("published", 0);
+        put("reviewing", 0);
+        put("editing", 0);
+        put("deleting", 0);
+      }}
+    );
+  }
+
+  protected String getDefaultAggregationCounts() {
+    return "\"total\": {\n" +
+      "        \"$sum\": 1\n" +
+      "      },\n" +
+      "      \"published\": {\n" +
+      "        \"$sum\": { \"$cond\": [ { \"$ifNull\": [ \"$publishedTag\", false ] }, 1, 0 ] }\n" +
+      "      },     \n" +
+      "      \"reviewing\": {\n" +
+      "        \"$sum\": { \"$cond\": [ { \"$eq\": [ \"UNDER_REVIEW\", \"$revisionStatus\" ] }, 1, 0 ] }\n" +
+      "      },\n" +
+      "      \"editing\": {\n" +
+      "        \"$sum\": {\"$cond\": [{\"$and\": [{\"$gt\": [\"$revisionsAhead\", 0 ] }, {\"$ifNull\": [\"$publishedTag\", false ] } ] }, 1, 0 ] }\n" +
+      "      },\n" +
+      "      \"deleting\": {\n" +
+      "        \"$sum\": { \"$cond\": [ { \"$eq\": [ \"DELETED\", \"$revisionStatus\" ] }, 1, 0 ] }\n" +
+      "      }\n";
   }
 }

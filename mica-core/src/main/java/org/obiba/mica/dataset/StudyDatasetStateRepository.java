@@ -12,8 +12,10 @@ package org.obiba.mica.dataset;
 
 import org.obiba.mica.core.repository.EntityStateRepository;
 import org.obiba.mica.dataset.domain.StudyDatasetState;
-import org.obiba.mica.network.domain.NetworkState;
 import org.obiba.mica.study.EntityStateRepositoryCustom;
 
+import java.util.List;
+
 public interface StudyDatasetStateRepository extends EntityStateRepository<StudyDatasetState>, EntityStateRepositoryCustom {
+  List<StudyDatasetState> findAllByRequireIndexingIsTrue();
 }
