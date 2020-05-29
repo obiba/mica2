@@ -126,7 +126,7 @@ mica.dataset
     function ($resource) {
       return $resource('ws/draft/:type/:id/commits', {}, {
         'get': {method: 'GET'},
-        'diff': {method: 'GET', url: 'ws/draft/:type/:id/diff', params: {id: '@id', type: '@type'}}
+        'diff': {method: 'GET', url: 'ws/draft/:type/:id/_diff', params: {id: '@id', type: '@type'}}
       });
     }])
 

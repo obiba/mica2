@@ -82,7 +82,7 @@ mica.study
         'restore': {method: 'PUT', url: 'ws/draft/individual-study/:id/commit/:commitId/restore', params: {id: '@id', commitId: '@commitId'}},
         'view': {method: 'GET', url: 'ws/draft/individual-study/:id/commit/:commitId/view', params: {id: '@id', commitId: '@commitId'},
           transformResponse: StudyModelService.deserialize},
-        'diff': {method: 'GET', url: 'ws/draft/individual-study/:id/diff', params: {id: '@id'}}
+        'diff': {method: 'GET', url: 'ws/draft/individual-study/:id/_diff', params: {id: '@id'}}
       });
     }])
 
@@ -503,7 +503,7 @@ mica.study
         'restore': {method: 'PUT', url: 'ws/draft/harmonization-study/:id/commit/:commitId/restore', params: {id: '@id', commitId: '@commitId'}},
         'view': {method: 'GET', url: 'ws/draft/harmonization-study/:id/commit/:commitId/view', params: {id: '@id', commitId: '@commitId'},
           transformResponse: StudyModelService.deserialize},
-        'diff': {method: 'GET', url: 'ws/draft/harmonization-study/:id/diff', params: {id: '@id'}}
+        'diff': {method: 'GET', url: 'ws/draft/harmonization-study/:id/_diff', params: {id: '@id'}}
       });
     }])
 

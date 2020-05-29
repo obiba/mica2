@@ -18,6 +18,7 @@ import org.obiba.mica.core.domain.GitPersistable;
 import org.obiba.mica.core.service.AbstractGitPersistableService;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.security.service.SubjectAclService;
+import org.obiba.mica.study.service.DocumentDifferenceService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.slf4j.Logger;
@@ -32,11 +33,18 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.google.common.collect.MapDifference;
+
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public abstract class AbstractGitPersistableResource<T extends EntityState, T1 extends GitPersistable> {
 
@@ -119,6 +127,30 @@ public abstract class AbstractGitPersistableResource<T extends EntityState, T1 e
     checkPermission("/draft/" + getService().getTypeName(), "EDIT");
     log.debug("Get share url for {}", getService().getTypeName());
     return Response.ok().entity(generateSharedLinkForDraftResource(createShareKey(expire))).build();
+  }
+
+  @GET
+  @Path("/_diff")
+  public Response diff(@NotNull @QueryParam("left") String left, @NotNull @QueryParam("right") String right) {
+    checkPermission("/draft/" + getService().getTypeName(), "VIEW");
+
+    T1 leftCommit = getService().getFromCommit(getService().findDraft(getId()), left);
+    T1 rightCommit = getService().getFromCommit(getService().findDraft(getId()), right);
+
+    Map<String, Object> data = new HashMap<>();
+
+    try {
+      MapDifference<String, Object> difference = DocumentDifferenceService.diff(leftCommit, rightCommit);
+
+      data.put("differing", DocumentDifferenceService.fromEntriesDifferenceMap(difference.entriesDiffering()));
+      data.put("onlyLeft", difference.entriesOnlyOnLeft());
+      data.put("onlyRight", difference.entriesOnlyOnRight());
+
+    } catch (JsonProcessingException e) {
+      //
+    }
+
+    return Response.ok(data, MediaType.APPLICATION_JSON_TYPE).build();
   }
 
   /**

@@ -89,7 +89,7 @@ mica.network
     function ($resource) {
       return $resource('ws/draft/network/:id/commits', {}, {
         'get': {method: 'GET', params: {id: '@id'}},
-        'diff': {method: 'GET', url: 'ws/draft/network/:id/diff', params: {id: '@id'}}
+        'diff': {method: 'GET', url: 'ws/draft/network/:id/_diff', params: {id: '@id'}}
       });
     }])
 
