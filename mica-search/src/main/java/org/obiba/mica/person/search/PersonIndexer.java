@@ -12,11 +12,14 @@ package org.obiba.mica.person.search;
 
 import javax.inject.Inject;
 
+import org.obiba.mica.contact.event.PersonDeletedEvent;
 import org.obiba.mica.contact.event.PersonUpdatedEvent;
 import org.obiba.mica.contact.event.IndexContactsEvent;
 import org.obiba.mica.core.domain.Person;
 import org.obiba.mica.core.repository.PersonRepository;
+import org.obiba.mica.spi.search.Indexable;
 import org.obiba.mica.spi.search.Indexer;
+import org.obiba.mica.study.event.StudyDeletedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -58,5 +61,12 @@ public class PersonIndexer {
       persons = personRepository.findAll(pageRequest);
       indexer.indexAll(Indexer.PERSON_INDEX, persons);
     } while((pageRequest = persons.nextPageable()) != null);
+  }
+
+  @Async
+  @Subscribe
+  public void personDeleted(PersonDeletedEvent event) {
+    log.info("Study {} was deleted", event.getPersistable());
+    indexer.delete(Indexer.PERSON_INDEX, event.getPersistable());
   }
 }

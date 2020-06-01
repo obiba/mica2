@@ -19,11 +19,17 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
+import org.obiba.mica.contact.event.PersonDeletedEvent;
 import org.obiba.mica.contact.event.PersonUpdatedEvent;
 import org.obiba.mica.core.domain.Membership;
 import org.obiba.mica.core.domain.Person;
 import org.obiba.mica.core.repository.PersonRepository;
 import org.obiba.mica.micaConfig.event.MicaConfigUpdatedEvent;
+import org.obiba.mica.network.domain.Network;
+import org.obiba.mica.network.event.NetworkDeletedEvent;
+import org.obiba.mica.study.domain.BaseStudy;
+import org.obiba.mica.study.domain.Study;
+import org.obiba.mica.study.event.StudyDeletedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
@@ -65,7 +71,9 @@ public class PersonService {
   }
 
   public void delete(String id) {
+    Person personToDelete = findById(id);
     personRepository.delete(id);
+    eventBus.post(new PersonDeletedEvent(personToDelete));
   }
 
   public Map<String, List<Membership>> getStudyMembershipMap(String studyId) {
@@ -121,6 +129,28 @@ public class PersonService {
     });
 
     return membershipMap;
+  }
+
+  @Async
+  @Subscribe
+  public void networkDeleted(NetworkDeletedEvent event) {
+    Network network = event.getPersistable();
+    List<Person> networkMembers = getNetworkMemberships(network.getId());
+    networkMembers.forEach(person -> {
+      person.removeNetwork(network);
+      save(person);
+    });
+  }
+
+  @Async
+  @Subscribe
+  public void studyDeleted(StudyDeletedEvent event) {
+    BaseStudy study = event.getPersistable();
+    List<Person> studyMembers = getStudyMemberships(study.getId());
+    studyMembers.forEach(person -> {
+      person.removeStudy(study);
+      save(person);
+    });
   }
 
   @Async

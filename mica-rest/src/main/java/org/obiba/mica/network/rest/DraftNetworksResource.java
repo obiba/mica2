@@ -11,6 +11,7 @@
 package org.obiba.mica.network.rest;
 
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
@@ -75,15 +76,24 @@ public class DraftNetworksResource {
   @GET
   @Path("/networks")
   @Timed
-  public List<Mica.NetworkSummaryDto> list(@QueryParam("study") String studyId, @QueryParam("query") String query,
-                                               @QueryParam("from") @DefaultValue("0") Integer from,
-                                               @QueryParam("limit") Integer limit, @Context HttpServletResponse response) {
-    Stream<Network> result;
+  public List<Mica.NetworkSummaryDto> list(@QueryParam("study") String studyId,
+                                           @QueryParam("query") String query,
+                                           @QueryParam("from") @DefaultValue("0") Integer from,
+                                           @QueryParam("limit") Integer limit,
+                                           @QueryParam("exclude") List<String> excludes,
+                                           @Context HttpServletResponse response) { Stream<Network> result;
     long totalCount;
 
     if(limit == null) limit = MAX_LIMIT;
 
     if(limit < 0) throw new IllegalArgumentException("limit cannot be negative");
+
+    String ids = excludes.stream().map(s -> "id:" + s).collect(Collectors.joining(" "));
+
+    if(!Strings.isNullOrEmpty(ids)) {
+      if (Strings.isNullOrEmpty(query)) query = String.format("NOT(%s)", ids);
+      else query += String.format(" AND NOT(%s)", ids);
+    }
 
     if(Strings.isNullOrEmpty(query)) {
       List<Network> networks = networkService.findAllNetworks(studyId).stream()

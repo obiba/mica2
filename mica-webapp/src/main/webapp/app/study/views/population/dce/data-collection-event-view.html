@@ -18,7 +18,7 @@
 
   <div class="modal-body">
     <div sf-model="dce.model" sf-form="dceSfForm.definition" sf-schema="dceSfForm.schema" sf-options="sfOptions"></div>
-    <a href ng-click="viewFiles()"><span><i class="fa fa-file"></i> {{'view-files' | translate}}</span></a>
+    <a ng-if="canViewFiles" href ng-click="viewFiles()"><span><i class="fa fa-file"></i> {{'view-files' | translate}}</span></a>
 
   </div>
   <div class="modal-footer">

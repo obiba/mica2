@@ -21,7 +21,6 @@
       "decimal": "Décimal",
       "keyword": "Mot-clé",
       "keyword_string": "Mot-clé et string"
-
     },
     "sort-by": "Trier par",
     "read-more": "En savoir plus",
@@ -46,6 +45,7 @@
     "server-error": "Une erreur inconnue est survenue, veuillez contacter votre administrateur pour obtenir de l'aide.",
     "new": "Nouveau",
     "add": "Ajouter",
+    "update": "Mise à jour",
     "documentation": "Documentation",
     "sources": "Code sources",
     "down": "Descendre",
@@ -406,6 +406,8 @@
     "collected-dataset-enabled-help": "Des ensembles de données de collecte sont présents dans Mica.",
     "harmonized-dataset-enabled": "Section ensemble de données d'harmonisation activée",
     "harmonized-dataset-enabled-help": "Des ensembles de données d'harmonisation sont présents dans Mica.",
+    "import-studies-feature-enabled": "Please translate",
+    "import-studies-feature-enabled-help": "Please translate.",
     "signup-enabled": "Enregistrement activé",
     "signup-enabled-help": "Les nouveaux utilisateurs peuvent s'enregistrer.",
     "signup-with-password": "Formulaire d'enregistrement avec mot de passe",
@@ -561,6 +563,66 @@
     "follow-up": "Suivi",
     "follow-up-help": "Informations générales sur le suivi (profil, fréquence).",
     "recruitment-target": "Cible de recrutement",
+    "import": {
+      "button": "Importer des études",
+      "label": "Importer",
+      "individual-study-title": "Importer des études individuelles",
+      "harmonization-study-title": "Importer des études harmonisées",
+      "sub-title": "Importer des études à partir d'un serveur Mica distant.",
+      "sub-title-summary": "Sélectionnez les études à importer.",
+      "address": "URL de Mica",
+      "address-help": "L'URL du Mica commence par http:// ou https://",
+      "user": "Nom d'utilisateur",
+      "user-help": "Nom d'utilisateur de Mica distant",
+      "password": "Mot de passe",
+      "summary": "Veuillez revoir les opérations qui seront exécutées.",
+      "conflicts": "Conflits (ces études ne seront pas importées):",
+      "conflict": "Conflict",
+      "conflict-individual-study": "Il existe déjà une étude individuelle avec le même ID localement.",
+      "conflict-harmonization-study": "Il existe déjà une étude d'harmonisation avec le même ID localement.",
+      "create-operations": "Etudes à créer:",
+      "update-operations": "Etudes à remplacer:",
+      "operation": "Opération",
+      "operation-create": "Créer",
+      "operation-replace": "Remplacer",
+      "finish": "Terminer",
+      "close": "Fermer",
+      "cancel": "Annuler",
+      "previous": "< Précédent",
+      "next": "Suivant >",
+      "changes" : "Remplaçants",
+      "confirmation" : "Confirmation*",
+      "confirmation-hint" : "Pour continuer, tapez les ID des études qui seront remplacés.",
+      "host": "Hôte: ",
+      "local": "Locale",
+      "remove": "Supprimer de la liste",
+      "status": "Statut",
+      "action": "Action",
+      "saved": "Sauvegardé",
+      "form-section-diff": "a une configuration différente.",
+      "form-section-equals": "a la même configuration.",
+      "form-section-equals-restrict": "a la même configuration, mais pas une section de formulaire parent.",
+      "diff-hint-part-0": "Il y a ",
+      "diff-hint-part-study": "L'étude locale sera remplacée",
+      "diff-hint-part-population": "Populations locales qui seront remplacées: {{count}}",
+      "diff-hint-part-dce": "Événements de collecte de données locaux qui seront remplacés: {{count}}",
+      "diff-subtitle": "Comparaison des configurations",
+      "diff-section": "Section Formulaire",
+      "diff-template": "Même template?",
+      "diff-msg-part-1": "Pour procéder à l'importation, au moins la section du formulaire d'",
+      "diff-msg-part-2":" de l'hôte spécifié doit avoir la même configuration. Si d'autres sections de formulaire sont différentes, l'importation peut toujours se produire, mais ces sections et leurs sections enfants seront ignorées.",
+      "success": "Les études sélectionnées ont été soumises pour importation: ",
+      "status-ok": "Etudes importées avec succès.",
+      "problems" : {
+	      "problem-204": "L'image du logo ne peut pas être récupérée.",
+	      "problem-400": "L'adresse http pour récupérer le contenu n'est pas valide.",
+	      "problem-401": "L'utilisateur et / ou le mot de passe ne sont pas valides.",
+	      "problem-404": "L'hôte distant est introuvable.",
+	      "problem-408": "Le réseau est inaccessible.",
+	      "problem-500": "Erreur de serveur inattendue. Veuillez consulter le journal pour plus de détails.",
+	      "problem-503": "L'hôte distant n'est pas accessible."
+      }
+    },
     "export": "Export CSV",
     "access": {
       "label": "Accès",
@@ -1318,6 +1380,7 @@
   "draft": "Brouillon",
   "published": "Publié",
   "role": "Rôle",
+  "roles": "Rôles",
   "files": "Fichiers",
   "items": "items",
   "item": "item",
@@ -1393,7 +1456,8 @@
       "classifications": "Parcourir les taxonomies.",
       "translations": "Gérer les traductions des libellés.",
       "cart": "Panier de variables.",
-      "sets": "Listes de variables."
+      "sets": "Listes de variables.",
+      "persons": "Gérer les personnes associées aux études et aux réseaux par un rôle tel que contact ou enquêteur."
     }
   },
   "server": {
@@ -1884,6 +1948,7 @@
     "notifications": {
       "title": "Notifications",
       "info": "Les courriels peuvent être envoyés au demandeur et aux agents d'accès aux données lorsqu'un événement se produit sur la demande d'accès aux données. Les événements peuvent être: changement de statut ou un commentaire. Les objets de notifications par courriel peuvent contenir les information suivantes : ${organisation}, ${title} et ${id} pour l'ID de la demande.",
+      "events": "Événements",
       "created": "A la création",
       "createdSubject": "Objet du courriel de Création",
       "created-help": "Le courriel est envoyé aux agents d'accès aux données à la création de la demande d'accès aux données (i.e. avant d'avoir été soumise).",
@@ -1911,6 +1976,7 @@
       "conditionallyApproved": "Sur approbation conditionnelle",
       "conditionallyApprovedSubject": "Objet du courriel Sur approbation conditionnelle",
       "conditionallyApproved-help": "Le courriel est envoyé au demandeur lorsque sa demande d'accès aux données est approuvée conditionnellement.",
+      "reports":  "Rapports",
       "finalReport": "Rappel de rapport final",
       "finalReportSubject": "Objet du courriel rappelant de soummettre le rapport final",
       "finalReport-help": "Le courriel est envoyé au demandeur pour lui rappeler que le rapport final doit être soumis. Ce courriel ne s'applique qu'aux demande d'accès aux données ayant été approuvées.",
@@ -2224,6 +2290,38 @@
       "image": "Insérer une image",
       "table": "Insérer une table",
       "preview": "Basculer l'aperçu"
+    }
+  },
+  "persons": {
+    "title": "Personnes",
+    "none": "Aucune personne.",
+    "add-networks": "Ajouter des réseaux",
+    "add-studies": "Ajouter des études",
+    "no-entity-memberships": "Aucun rôle d'adhésion.",
+    "add-person": "Ajouter une personne",
+    "no-memberships": "{{fullname}} n'est membre d'aucun réseau ou étude.",
+    "entity-roles-help": "Au moins un rôle doit être sélectionné.",
+    "network-entities-roles-help": "Pour ajouter une adhésion sélectionner au moins un rôle et un réseau.",
+    "study-entities-roles-help": "Pour ajouter une adhésion sélectionner au moins un rôle et une étude.",
+    "network-roles-table-help": "Liste des rôles d'adhésion pour chaque réseau.",
+    "study-roles-table-help": "Liste des rôles d'adhésion pour chaque étude.",
+    "network-member-of-all": "{{fullname}} est membre de tous les réseaux.",
+    "study-member-of-all": "{{fullname}} est membre de toutes les études.",
+    "update-roles-dialog": {
+      "title": "Mettre à jour les rôles",
+      "message": "Sélectionnez un ou plusieurs rôles à attribuer à {{member}}."
+    },
+    "entity-list-dialog": {
+      "network-title": "Ajouter un membre aux réseaux",
+      "study-title": "Ajouter un membre aux études"
+    },
+    "delete-dialog":{
+      "title": "Supprimer une personne",
+      "message": "Êtes-vous sûr de vouloir supprimer la personne '{{arg0}}'?"
+    },
+    "delete-entities-dialog":{
+      "title": "Supprimer l'adhésion",
+      "message": "Êtes-vous sûr de vouloir supprimer tous les rôles de {{arg0}}?"
     }
   }
 }

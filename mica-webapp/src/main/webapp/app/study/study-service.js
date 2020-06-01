@@ -11,6 +11,13 @@
 'use strict';
 
 mica.study
+  .factory('StudyStatesSearchResource',['$resource',
+    function ($resource) {
+      return $resource('ws/draft/study-states', {}, {
+        'query': {method: 'GET', errorHandler: true, isArray: true},
+      });
+    }])
+
   .factory('StudyStatesResource', ['$resource',
     function ($resource) {
       return $resource('ws/draft/study-states?type=:type', {}, {

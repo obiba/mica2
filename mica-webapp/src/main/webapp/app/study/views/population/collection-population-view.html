@@ -51,7 +51,7 @@
       <th translate>study.name</th>
       <th translate>study.start</th>
       <th translate>study.end</th>
-      <th ng-if="inViewMode()" class="hidden-print" translate>actions</th>
+      <th ng-if="inViewMode() || inRevisionMode()" class="hidden-print" translate>actions</th>
     </tr>
     </thead>
     <tbody>
@@ -78,8 +78,12 @@
           {{'search.coverage-end-date-ongoing' | translate}}
         </span>
       </td>
+      <td ng-if="inRevisionMode()" class="action-column hidden-print">
+        <a ng-click="showDataCollectionEvent(study, selectedPopulation, dce)" class="hand action"><i
+          class="fa fa-eye"></i></a>
+      </td>
       <td ng-if="inViewMode()" class="action-column hidden-print">
-        <span ng-if="selectedPopulation.dataCollectionEvents.length > 1">
+        <span ng-if="permissions.canEdit() && selectedPopulation.dataCollectionEvents.length > 1">
           <a href="" ng-hide="$last" title="Down"><i ng-click="updateCollectionItemWeight(dce, dce.weight + 1, selectedPopulation.dataCollectionEvents)" class="fa fa-arrow-down"></i></a>
           <a href="" ng-hide="$first" title="Up"><i ng-click="updateCollectionItemWeight(dce, dce.weight - 1, selectedPopulation.dataCollectionEvents)" class="fa fa-arrow-up"></i></a>
         </span>

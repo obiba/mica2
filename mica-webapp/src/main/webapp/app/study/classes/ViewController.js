@@ -410,6 +410,9 @@ function populationDceManagement($rootScope, $scope, $location, $translate, $uib
         },
         sfForm: function() {
           return $scope.dceSfForm;
+        },
+        canViewFiles: function() {
+          return !$scope.inRevisionMode() && $scope.permissions.canEdit();
         }
       }
     });

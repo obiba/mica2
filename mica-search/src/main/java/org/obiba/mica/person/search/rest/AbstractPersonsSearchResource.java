@@ -54,7 +54,8 @@ public abstract class AbstractPersonsSearchResource {
     String ids = excludes.stream().map(s -> "id:" + s).collect(Collectors.joining(" "));
 
     if(!Strings.isNullOrEmpty(ids)) {
-      query += String.format(" AND NOT(%s)", ids);
+      if (Strings.isNullOrEmpty(query)) query = String.format("NOT(%s)", ids);
+      else query += String.format(" AND NOT(%s)", ids);
     }
 
     PublishedDocumentService.Documents<Person> contacts = esPersonService.find(from, limit, sort, order, null, query);
@@ -62,7 +63,7 @@ public abstract class AbstractPersonsSearchResource {
     List<Mica.PersonDto> persons = contacts.getList().stream().map(p -> dtos.asDto(p, isDraft())).collect(Collectors.toList());
 
     Mica.PersonsDto.Builder builder = Mica.PersonsDto.newBuilder().setFrom(from).setLimit(limit)
-      .setTotal(persons.size());
+      .setTotal(contacts.getTotal());
     builder.addAllPersons(persons);
 
     return builder.build();

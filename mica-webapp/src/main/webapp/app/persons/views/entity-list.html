@@ -1,0 +1,61 @@
+<div>
+  <div class="help-block">{{ 'persons.' + $ctrl.entityType +'-entities-roles-help' | translate }}</div>
+
+  <membership-roles
+    class="voffset5"
+    roles="$ctrl.roles"
+    entity-type="$ctrl.entityType"
+    on-selected="$ctrl.onSelectedRoles(selectedRoles)">
+  </membership-roles>
+
+  <div class="voffset4">
+    <span class="h4">{{$ctrl.entitiesTitle}}</span>
+
+    <div class="row voffset2" ng-if="$ctrl.query || $ctrl.entities.length > 0">
+      <div class="col-xs-4">
+            <span class="input-group input-group-sm no-padding-top">
+              <span class="input-group-addon" id="entity-search"><i class="fa fa-search"></i></span>
+              <input ng-model="$ctrl.query" type="text" class="form-control" aria-describedby="entity-search">
+            </span>
+      </div>
+      <div class="col-xs-8">
+        <dir-pagination-controls
+          pagination-id="entities"
+          class="pull-right"
+          on-page-change="$ctrl.onPageChanged(newPageNumber, oldPageNumber)">
+        </dir-pagination-controls>
+      </div>
+    </div>
+
+    <div class="alert alert-warning" role="alert" ng-if="!$ctrl.loading && $ctrl.entities.length < 1">
+      <span>{{'persons.'+$ctrl.entityType + '-member-of-all' |translate:{fullname: $ctrl.fullname} }}</span>
+    </div>
+
+    <p ng-show="$ctrl.loading" class="voffset2 loading"></p>
+
+    <div ng-show="!$ctrl.loading && $ctrl.entities.length > 0" class="table-responsive">
+      <table class="table table-bordered table-striped">
+        <thead>
+        <tr>
+          <th></th>
+          <th class="col-xs-4" translate>acronym</th>
+          <th class="col-xs-8" translate>name</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr dir-paginate="entity in $ctrl.entities | itemsPerPage: $ctrl.limit" total-items="$ctrl.total" pagination-id="entities">
+          <td>
+            <input type="checkbox" ng-model="$ctrl.selectedEntities[entity.id]" ng-click="$ctrl.onEntitySelected(entity)">
+          </td>
+          <td>
+            <localized value="entity.acronym" lang="$ctrl.language"></localized>
+          </td>
+          <td>
+            <localized value="entity.name" lang="$ctrl.language"></localized>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

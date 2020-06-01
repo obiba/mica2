@@ -121,6 +121,9 @@
         <li ng-if="authenticated">
           <a href="#/files"><span>{{'files' | translate}}</span></a>
         </li>
+        <li ng-if="authenticated && hasRole(['mica-administrator'])">
+          <a href="#/persons"><span>{{'persons.title' | translate}}</span></a>
+        </li>
       </ul>
 
       <ul class="nav navbar-nav navbar-right" ng-hide="!authenticated">
@@ -297,6 +300,7 @@
 <script src="app/study/study.js"></script>
 <script src="app/study/classes/EditController.js"></script>
 <script src="app/study/classes/ViewController.js"></script>
+<script src="app/study/classes/ImportController.js"></script>
 <script src="app/study/study-directives.js"></script>
 <script src="app/study/study-router.js"></script>
 <script src="app/study/study-controller.js"></script>
@@ -341,6 +345,12 @@
 <script src="app/project/project-router.js"></script>
 <script src="app/project/project-controller.js"></script>
 <script src="app/project/project-service.js"></script>
+<script src="app/persons/persons.js"></script>
+<script src="app/persons/persons-list.js"></script>
+<script src="app/persons/person-view.js"></script>
+<script src="app/persons/person-memberships.js"></script>
+<script src="app/persons/entity-list.js"></script>
+<script src="app/persons/membership-roles.js"></script>
 
 <!-- endbuild -->
 </body>

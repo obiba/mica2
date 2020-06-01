@@ -1,0 +1,81 @@
+<div>
+  <h2>
+    <span translate>persons.title</span>
+  </h2>
+
+  <span>
+    <a ng-href="#/person/new" class="btn btn-info">
+      <i class="fa fa-plus"></i> <span translate>persons.add-person</span>
+    </a>
+    <a ng-href="ws/draft/persons/_search/_download?limit={{$ctrl.total}}" class="btn btn-info pull-right">
+      <i class="fa fa-download"></i> <span translate>download</span>
+    </a>
+  </span>
+
+  <div class="row voffset4">
+    <div class="col-xs-4">
+          <span class="input-group input-group-sm no-padding-top">
+            <span class="input-group-addon" id="person-search"><i class="fa fa-search"></i></span>
+            <input ng-model="$ctrl.query" type="text" class="form-control" aria-describedby="person-search">
+          </span>
+    </div>
+    <div class="col-xs-8" ng-if="$ctrl.persons.length > 0">
+      <dir-pagination-controls
+        pagination-id="persons"
+        class="pull-right"
+        on-page-change="$ctrl.onPageChanged(newPageNumber, oldPageNumber)">
+      </dir-pagination-controls>
+    </div>
+  </div>
+
+  <p ng-if="$ctrl.loading" class="voffset2 loading"></p>
+
+  <p class="help-block" ng-if="!$ctrl.loading && $ctrl.persons.length < 1" translate>persons.none</p>
+
+  <div class="table-responsive" ng-if="$ctrl.persons.length > 0">
+    <table class="table table-bordered table-striped">
+      <thead>
+      <tr>
+        <th style="width:25%" translate>contact.name</th>
+        <th style="width:25%" translate>contact.email</th>
+        <th style="width:25%" translate>studies</th>
+        <th style="width:25%" translate>networks</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr dir-paginate="person in $ctrl.persons | itemsPerPage: $ctrl.limit" total-items="$ctrl.total" pagination-id="persons">
+        <td>
+          <a ng-href="#/person/{{person.id}}">{{person.firstName}} {{person.lastName}}</a>
+        </td>
+        <td>
+          {{person.email}}
+        </td>
+        <td>
+            <ul class="list-no-style list-inline" ng-repeat="entity in person.studies.entities | orderBy:'acronym'">
+              <li>
+                <span>
+                  <a ng-href="#{{entity.url}}" ng-click="cancel()">{{entity.acronym}}</a>
+                  <span class="hoffset">
+                    (<span ng-repeat="role in entity.roles"><em>{{role}}</em><span ng-show=" !$last ">, </span></span>)
+                  </span>
+                </span>
+              </li>
+            </ul>
+        </td>
+        <td>
+          <ul class="list-no-style list-inline" ng-repeat="entity in person.networks.entities">
+            <li>
+              <span>
+                <a ng-href="#{{entity.url}}" ng-click="cancel()">{{entity.acronym}}</a>
+                <span class="hoffset">
+                  (<span ng-repeat="role in entity.roles"><em>{{role}}</em><span ng-show=" !$last ">, </span></span>)
+                </span>
+              </span>
+            </li>
+          </ul>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
