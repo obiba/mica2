@@ -65,9 +65,7 @@ import org.springframework.validation.annotation.Validated;
 import javax.inject.Inject;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -167,6 +165,21 @@ public class CollectedDatasetService extends DatasetService<StudyDataset, StudyD
       .filter(state -> {
         return gitService.hasGitRepository(state) && !Strings.isNullOrEmpty(state.getPublishedTag());
       }));
+  }
+
+  public List<StudyDataset> findAllRequireIndexing() {
+    List<String> ids = findDatasetStatesRequireIndexing(new ArrayList<>())
+      .stream()
+      .map(StudyDatasetState::getId)
+      .collect(toList());
+
+    return findAllDatasets(ids);
+  }
+
+  private List<StudyDatasetState> findDatasetStatesRequireIndexing(List<String> ids) {
+    return ids.isEmpty()
+      ? studyDatasetStateRepository.findAllByRequireIndexingIsTrue()
+      : studyDatasetStateRepository.findAllByRequireIndexingIsTrueAndIdIn(ids);
   }
 
   /**
@@ -306,20 +319,55 @@ public class CollectedDatasetService extends DatasetService<StudyDataset, StudyD
   }
 
   public void indexAll(boolean mustIndexVariables) {
-    indexDatasets(Sets.newHashSet(findAllPublishedDatasets()), findAllDatasets(), mustIndexVariables);
+    indexByIds(new ArrayList<>(), mustIndexVariables);
   }
 
-  public void indexAllDatasetsRequiredIndexing() {
-    List<String> datasetIds = studyDatasetStateRepository.findAllByRequireIndexingIsTrue()
-      .stream()
-      .map(StudyDatasetState::getId)
-      .collect(toList());
+  public void indexByIds(List<String> ids, boolean mustIndexVariables) {
+    List<StudyDatasetState> datasetsRequireIndexing = findDatasetStatesRequireIndexing(ids);
+    List<String> excludeIds = datasetsRequireIndexing.stream().map(StudyDatasetState::getId).collect(toList());
 
-    List<StudyDataset> datasets = findAllDatasets(datasetIds);
-    HashSet<StudyDataset> publishedDatasets =
-      Sets.newHashSet(findPublishedDatasets(datasets.stream().map(AbstractGitPersistable::getId).collect(toList())));
+    if (excludeIds.isEmpty()) {
+      indexDatasets(Sets.newHashSet(findAllPublishedDatasets()), findAllDatasets(), mustIndexVariables);
+    } else {
+      // To make sure requireIndexing is properly maintained set/cleared, index these separately
+      indexRequireIndexing(datasetsRequireIndexing);
 
-    indexDatasets(publishedDatasets, datasets, true);
+      List<StudyDataset> datasets = studyDatasetRepository.findByIdNotIn(excludeIds);
+      HashSet<StudyDataset> publishedDatasets =
+        Sets.newHashSet(findPublishedDatasets(datasets.stream().map(Dataset::getId).collect(toList())));
+      indexDatasets(publishedDatasets, datasets, mustIndexVariables);
+    }
+  }
+
+  private void indexRequireIndexing(List<StudyDatasetState> states) {
+    if (!states.isEmpty()) {
+      // to minimize discrepancy clear flag here
+      List<String> datasetIds = states.stream()
+        .map(state -> {
+          state.setRequireIndexing(false);
+          return state.getId();
+        })
+        .collect(toList());
+      studyDatasetStateRepository.save(states);
+
+      // index datasets
+      List<StudyDataset> datasets = findAllDatasets(datasetIds);
+      HashSet<StudyDataset> publishedDatasets =
+        Sets.newHashSet(findPublishedDatasets(datasets.stream().map(AbstractGitPersistable::getId).collect(toList())));
+
+      // reset the flag for datasets that were not processed
+      Collection<StudyDataset> unprocessedDatasets = indexDatasets(publishedDatasets, datasets, true);
+
+      if (!unprocessedDatasets.isEmpty()) {
+        datasetIds = unprocessedDatasets.stream().map(Dataset::getId).collect(toList());
+        // to minimize discrepancy get the states from repository again
+        states = studyDatasetStateRepository.findByPublishedTagNotNullAndIdIn(datasetIds)
+          .stream()
+          .peek(state -> state.setRequireIndexing(true))
+          .collect(toList());
+        studyDatasetStateRepository.save(states);
+      }
+    }
   }
 
   public List<DatasetVariable> processVariablesForStudyDataset(StudyDataset dataset, Iterable<DatasetVariable> variables) {
@@ -427,12 +475,13 @@ public class CollectedDatasetService extends DatasetService<StudyDataset, StudyD
     BaseStudy study = event.getPersistable();
     if (study != null) {
       List<String> datasetIds = findAllDatasets(study.getId()).stream().map(Dataset::getId).collect(toList());
-      // Only published datasets require indexing.
-      studyDatasetStateRepository.findByPublishedTagNotNullAndIdIn(datasetIds)
-        .forEach(state -> {
-          state.setRequireIndexing(true);
-          studyDatasetStateRepository.save(state);
-        });
+
+      // Only published datasets to require indexing.
+      List<StudyDatasetState> states = studyDatasetStateRepository.findByPublishedTagNotNullAndIdIn(datasetIds)
+        .stream()
+        .peek(state -> state.setRequireIndexing(true))
+        .collect(toList());
+      studyDatasetStateRepository.save(states);
     }
   }
 
@@ -503,7 +552,9 @@ public class CollectedDatasetService extends DatasetService<StudyDataset, StudyD
     }
   }
 
-  private void indexDatasets(Set<StudyDataset> publishedDatasets, List<StudyDataset> datasets, boolean mustIndexVariables) {
+  private Collection<StudyDataset> indexDatasets(Set<StudyDataset> publishedDatasets, List<StudyDataset> datasets, boolean mustIndexVariables) {
+    List<StudyDataset> unprocessedDatasets = new ArrayList<>();
+
     datasets
       .forEach(dataset -> {
         try {
@@ -515,9 +566,12 @@ public class CollectedDatasetService extends DatasetService<StudyDataset, StudyD
             eventBus.post(new DatasetPublishedEvent(dataset, variables, getCurrentUsername()));
           }
         } catch (Exception e) {
+          unprocessedDatasets.add(dataset);
           log.error(String.format("Error indexing dataset %s", dataset), e);
         }
       });
+
+    return unprocessedDatasets;
   }
 
   @Override

@@ -48,6 +48,8 @@ public interface DocumentService<T> {
 
   List<String> suggest(int limit, String locale, String query);
 
+  List<String> suggest(int limit, String locale, String query, @Nullable List<String> suggestedFields);
+
   long getCount();
 
   /**

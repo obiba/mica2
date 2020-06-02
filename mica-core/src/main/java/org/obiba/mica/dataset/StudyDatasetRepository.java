@@ -31,4 +31,6 @@ public interface StudyDatasetRepository extends MongoRepository<StudyDataset, St
 
   @Query(value = "{}", fields = "{_id : 1}")
   List<StudyDataset> findAllExistingIds();
+
+  List<StudyDataset> findByIdNotIn(Iterable<String> ids);
 }

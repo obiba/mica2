@@ -18,4 +18,6 @@ import java.util.List;
 
 public interface StudyDatasetStateRepository extends EntityStateRepository<StudyDatasetState>, EntityStateRepositoryCustom {
   List<StudyDatasetState> findAllByRequireIndexingIsTrue();
+
+  List<StudyDatasetState> findAllByRequireIndexingIsTrueAndIdIn(Iterable<String> datasetIds);
 }

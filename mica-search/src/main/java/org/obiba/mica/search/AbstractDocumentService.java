@@ -108,6 +108,26 @@ public abstract class AbstractDocumentService<T> implements DocumentService<T> {
   }
 
   @Override
+  public List<String> suggest(int limit, String locale, String queryString, List<String> suggestedFields) {
+    Set<String> suggestions = Sets.newLinkedHashSet();
+
+    if (suggestedFields == null || suggestedFields.isEmpty()) {
+      suggestedFields = getSuggestionFields();
+    }
+
+    // query default fields separately otherwise we do not know which field has matched and suggestion might not be correct
+    suggestedFields.forEach(df -> suggestions.addAll(searcher.suggest(getIndexName(), getType(), limit, locale, queryString, df)));
+    return Lists.newArrayList(suggestions.stream().map(s -> s
+      .replace("'s", "") // english thing that confuses RQL
+      .replace("l'", "") // french thing that confuses RQL
+      .replaceAll("['\",:;?!\\(\\)]", "") // chars that might confuse RQL
+      .replace(" - ", " ") // isolated hyphen
+      .replaceAll("(\\.\\w+)", "") // remove chars after "dot"
+      .trim().replaceAll(" +", " ")) // duplicated spaces
+      .collect(Collectors.toSet()));
+  }
+
+  @Override
   public long getCount() {
     return getCountByRql("");
   }

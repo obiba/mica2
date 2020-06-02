@@ -1049,3 +1049,13 @@ message SetOperationDto {
   repeated string sets = 3;
   repeated ComposedSetDto compositions = 4;
 }
+
+message EntityIndexHealthDto {
+
+  message ItemDto {
+    required string id = 1;
+    required string title = 2;
+  }
+
+  repeated ItemDto requireIndexing = 1;
+}
