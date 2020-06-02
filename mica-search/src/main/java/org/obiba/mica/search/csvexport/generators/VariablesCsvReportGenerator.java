@@ -81,7 +81,7 @@ public class VariablesCsvReportGenerator extends CsvReportGeneratorImpl {
       else line.add(datasetVariableDto.getPopulationId());
 
       if (datasetVariableDto.getDceNameCount() > 0) line.add(datasetVariableDto.getDceName(0).getValue());
-      else line.add(datasetVariableDto.getDceId());
+      else line.add("");
     }
     if (mustShow("showVariablesDatasetsColumn"))
       line.add(datasetVariableDto.getDatasetAcronym(0).getValue());
