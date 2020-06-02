@@ -77,7 +77,7 @@
     $onInit() {
       this.MicaMetricsResource.get().$promise.then((stats) => {
         try {
-          this.__processDocuments(stats)
+          this.__processDocuments(stats);
           this.stats = stats;
         } catch (e) {
           console.debug(e);

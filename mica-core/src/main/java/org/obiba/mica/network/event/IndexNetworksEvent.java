@@ -10,6 +10,19 @@
 
 package org.obiba.mica.network.event;
 
-public class IndexNetworksEvent {
+import org.obiba.mica.core.event.IndexPersistablesEvent;
+import org.obiba.mica.network.domain.Network;
+
+import java.util.List;
+
+public class IndexNetworksEvent extends IndexPersistablesEvent<Network> {
+
+  public IndexNetworksEvent() {
+    super();
+  }
+
+  public IndexNetworksEvent(List<String> ids) {
+    super(ids);
+  }
 
 }

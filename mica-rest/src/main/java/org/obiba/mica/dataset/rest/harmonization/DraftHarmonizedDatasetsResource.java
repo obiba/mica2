@@ -124,8 +124,12 @@ public class DraftHarmonizedDatasetsResource {
   @Path("/harmonized-datasets/_index")
   @Timed
   @RequiresPermissions({ "/draft/harmonized-dataset:PUBLISH" })
-  public Response reIndex() {
-    helper.indexAll();
+  public Response reIndex(@Nullable @QueryParam("id") List<String> ids) {
+    if (ids == null || ids.isEmpty()) {
+      helper.indexAll();
+    } else {
+      helper.indexByIds(ids);
+    }
     return Response.noContent().build();
   }
 
@@ -145,6 +149,10 @@ public class DraftHarmonizedDatasetsResource {
     @Async
     public void indexAll() {
       harmonizedDatasetService.indexAll();
+    }
+    @Async
+    public void indexByIds(List<String> ids) {
+      harmonizedDatasetService.indexByIds(ids, true);
     }
   }
 }

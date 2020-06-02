@@ -133,7 +133,11 @@ public class DraftCollectedDatasetsResource {
   @Timed
   @RequiresPermissions({ "/draft/collected-dataset:PUBLISH" })
   public Response reIndex(@Nullable @QueryParam("id") List<String> ids) {
-    helper.indexAll();
+    if (ids == null || ids.isEmpty()) {
+      helper.indexAll();
+    } else {
+      helper.indexByIds(ids);
+    }
     return Response.noContent().build();
   }
 
@@ -157,7 +161,7 @@ public class DraftCollectedDatasetsResource {
 
     @Async
     public void indexByIds(List<String> ids) {
-//      collectedDatasetService.indexRequireIndexing(ids);
+      collectedDatasetService.indexByIds(ids, true);
     }
   }
 

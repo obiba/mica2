@@ -323,20 +323,19 @@ public class CollectedDatasetService extends DatasetService<StudyDataset, StudyD
   }
 
   public void indexByIds(List<String> ids, boolean mustIndexVariables) {
+    // make sure to exclude datasets needing their 'requireIndexing' flag to be safely cleared
     List<StudyDatasetState> datasetsRequireIndexing = findDatasetStatesRequireIndexing(ids);
     List<String> excludeIds = datasetsRequireIndexing.stream().map(StudyDatasetState::getId).collect(toList());
 
-    if (excludeIds.isEmpty()) {
-      indexDatasets(Sets.newHashSet(findAllPublishedDatasets()), findAllDatasets(), mustIndexVariables);
-    } else {
-      // To make sure requireIndexing is properly maintained set/cleared, index these separately
-      indexRequireIndexing(datasetsRequireIndexing);
+    // the rest of the datasets to be indexed
+    List<String> includeIds = ids.isEmpty() ? findAllIds() : ids;
+    includeIds.removeAll(excludeIds);
 
-      List<StudyDataset> datasets = studyDatasetRepository.findByIdNotIn(excludeIds);
-      HashSet<StudyDataset> publishedDatasets =
-        Sets.newHashSet(findPublishedDatasets(datasets.stream().map(Dataset::getId).collect(toList())));
-      indexDatasets(publishedDatasets, datasets, mustIndexVariables);
-    }
+    List<StudyDataset> datasets  = findAllDatasets(includeIds);
+    HashSet<StudyDataset> publishedDatasets = Sets.newHashSet(findPublishedDatasets(includeIds));
+
+    indexRequireIndexing(datasetsRequireIndexing);
+    indexDatasets(publishedDatasets, datasets, mustIndexVariables);
   }
 
   private void indexRequireIndexing(List<StudyDatasetState> states) {

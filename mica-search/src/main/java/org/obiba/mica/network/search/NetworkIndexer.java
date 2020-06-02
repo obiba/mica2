@@ -30,6 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+import sun.nio.ch.Net;
 
 @Component
 public class NetworkIndexer {
@@ -78,8 +79,33 @@ public class NetworkIndexer {
   @Subscribe
   public void reIndexNetworks(IndexNetworksEvent event) {
     log.info("Reindexing all networks");
-    reIndexAll(Indexer.PUBLISHED_NETWORK_INDEX, networkService.findAllPublishedNetworks().stream().map(this::addMemberships).collect(Collectors.toList()));
-    reIndexAll(Indexer.DRAFT_NETWORK_INDEX, networkService.findAllNetworks().stream().map(this::addMemberships).collect(Collectors.toList()));
+    List<String> networkdIds = event.getIds();
+    List<Network> publishedNetworks = networkService.findAllPublishedNetworks(networkdIds)
+      .stream()
+      .map(this::addMemberships)
+      .collect(Collectors.toList());
+
+    if (!publishedNetworks.isEmpty()) {
+      reIndexAll(
+        Indexer.PUBLISHED_NETWORK_INDEX,
+        networkService.findAllPublishedNetworks(networkdIds)
+          .stream()
+          .map(this::addMemberships)
+          .collect(Collectors.toList())
+      );
+    }
+
+    List<Network> draftNetworks = networkService.findAllNetworks(networkdIds)
+      .stream()
+      .map(this::addMemberships)
+      .collect(Collectors.toList());
+
+    if (!draftNetworks.isEmpty()) {
+      reIndexAll(
+        Indexer.DRAFT_NETWORK_INDEX,
+        draftNetworks
+      );
+    }
   }
 
   private void reIndexAll(String indexName, Iterable<Network> networks) {

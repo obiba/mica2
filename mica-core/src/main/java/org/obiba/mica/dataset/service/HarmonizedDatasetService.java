@@ -12,19 +12,16 @@ package org.obiba.mica.dataset.service;
 
 import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.common.eventbus.EventBus;
 import org.joda.time.DateTime;
-import org.obiba.magma.MagmaRuntimeException;
-import org.obiba.magma.NoSuchValueTableException;
-import org.obiba.magma.NoSuchVariableException;
-import org.obiba.magma.ValueTable;
-import org.obiba.magma.Variable;
+import org.obiba.magma.*;
 import org.obiba.mica.NoSuchEntityException;
-import org.obiba.mica.core.domain.*;
+import org.obiba.mica.core.domain.BaseStudyTable;
+import org.obiba.mica.core.domain.OpalTable;
+import org.obiba.mica.core.domain.PublishCascadingScope;
 import org.obiba.mica.core.repository.EntityStateRepository;
 import org.obiba.mica.dataset.HarmonizationDatasetRepository;
 import org.obiba.mica.dataset.HarmonizationDatasetStateRepository;
@@ -65,10 +62,7 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.function.Supplier;
@@ -194,7 +188,15 @@ public class HarmonizedDatasetService extends DatasetService<HarmonizationDatase
    * @return
    */
   public List<HarmonizationDataset> findAllPublishedDatasets() {
-    return harmonizationDatasetStateRepository.findByPublishedTagNotNull().stream()
+    return findPublishedDatasets(new ArrayList<>());
+  }
+
+  public List<HarmonizationDataset> findPublishedDatasets(List<String> datasetIds) {
+    List<HarmonizationDatasetState> states = datasetIds != null && !datasetIds.isEmpty()
+      ? harmonizationDatasetStateRepository.findByPublishedTagNotNullAndIdIn(datasetIds)
+      : harmonizationDatasetStateRepository.findByPublishedTagNotNull();
+
+    return states.stream()
       .filter(state -> { //
         return gitService.hasGitRepository(state) && !Strings.isNullOrEmpty(state.getPublishedTag()); //
       }) //
@@ -221,14 +223,23 @@ public class HarmonizedDatasetService extends DatasetService<HarmonizationDatase
   }
 
   public void indexAll(boolean mustIndexVariables) {
-    Set<HarmonizationDataset> publishedDatasets = Sets.newHashSet(findAllPublishedDatasets());
+    indexByIds(new ArrayList<>(), mustIndexVariables);
+  }
 
-    findAllDatasets().forEach(dataset -> {
+  public void indexByIds(List<String> ids, boolean mustIndexVariables) {
+    List<String> includeIds = ids.isEmpty() ? findAllIds() : ids;
+    List<HarmonizationDataset> datasets  = findAllDatasets(includeIds);
+    HashSet<HarmonizationDataset> publishedDatasets = Sets.newHashSet(findPublishedDatasets(includeIds));
+    datasets.forEach(dataset -> {
       try {
         eventBus.post(new DatasetUpdatedEvent(dataset));
 
         if (publishedDatasets.contains(dataset)) {
-          Map<String, List<DatasetVariable>> harmonizationVariables = mustIndexVariables && publishedDatasets.contains(dataset) ? populateHarmonizedVariablesMap(dataset) : null;
+          Map<String, List<DatasetVariable>> harmonizationVariables =
+            mustIndexVariables && publishedDatasets.contains(dataset)
+              ? populateHarmonizedVariablesMap(dataset)
+              : null;
+
           Iterable<DatasetVariable> datasetVariables = mustIndexVariables && publishedDatasets.contains(dataset) ? wrappedGetDatasetVariables(dataset) : null;
           eventBus.post(new DatasetPublishedEvent(dataset, datasetVariables, harmonizationVariables, getCurrentUsername()));
         }
@@ -485,6 +496,12 @@ public class HarmonizedDatasetService extends DatasetService<HarmonizationDatase
     return (RestValueTable.RestVariableValueSource) getTable(opalTable).getVariableValueSource(variableName);
   }
 
+  /**
+   * TODO Index variables by OpalTables to prevent retrieving all in memory before indexing them.
+   *
+   * @param dataset
+   * @return
+   */
   protected Map<String, List<DatasetVariable>> populateHarmonizedVariablesMap(HarmonizationDataset dataset) {
     Map<String, List<DatasetVariable>> map = Maps.newHashMap();
 
