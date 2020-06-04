@@ -22,6 +22,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
+import java.util.List;
 
 @Component
 public class ProjectIndexer {
@@ -67,8 +68,22 @@ public class ProjectIndexer {
   @Subscribe
   public void reIndexProjects(IndexProjectsEvent event) {
     log.info("Reindexing all projects");
-    reIndexAll(Indexer.PUBLISHED_PROJECT_INDEX, projectService.findAllPublishedProjects());
-    reIndexAll(Indexer.DRAFT_PROJECT_INDEX, projectService.findAllProjects());
+    List<String> projectIds = event.getIds();
+    List<Project> publishedProjects = projectIds.isEmpty()
+      ? projectService.findAllPublishedProjects()
+      : projectService.findAllPublishedProjects(projectIds);
+
+    if (!publishedProjects.isEmpty()) {
+      reIndexAll(Indexer.PUBLISHED_PROJECT_INDEX, publishedProjects);
+    }
+
+    List<Project> draftProjects = projectIds.isEmpty()
+      ? projectService.findAllProjects()
+      : projectService.findAllProjects(projectIds);
+
+    if (!draftProjects.isEmpty()) {
+      reIndexAll(Indexer.DRAFT_PROJECT_INDEX, draftProjects);
+    }
   }
 
   private void reIndexAll(String indexName, Iterable<Project> projects) {

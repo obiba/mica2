@@ -23,7 +23,7 @@ public interface EntityStateRepository<T extends EntityState> extends MongoRepos
 
   Long countByPublishedTagNotNullAndRevisionsAheadGreaterThanEqual(int value);
 
-  List<T> findByPublishedTagNotNullAndIdIn(Iterable<String> datasetIds);
+  List<T> findByPublishedTagNotNullAndIdIn(Iterable<String> ids);
 
   @Query(value = "{ publishedTag : { $exists: true } }", fields = "{_id : 1}")
   List<T> findAllPublishedIds();

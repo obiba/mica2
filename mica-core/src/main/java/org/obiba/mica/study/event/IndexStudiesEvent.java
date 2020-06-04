@@ -10,6 +10,19 @@
 
 package org.obiba.mica.study.event;
 
-public class IndexStudiesEvent {
+import org.obiba.mica.core.event.IndexPersistablesEvent;
+import org.obiba.mica.study.domain.BaseStudy;
+
+import java.util.List;
+
+public class IndexStudiesEvent extends IndexPersistablesEvent<BaseStudy> {
+
+  public IndexStudiesEvent() {
+    super();
+  }
+
+  public IndexStudiesEvent(List<String> ids) {
+    super(ids);
+  }
 
 }

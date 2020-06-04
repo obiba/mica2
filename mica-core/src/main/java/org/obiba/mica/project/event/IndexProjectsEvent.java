@@ -10,6 +10,18 @@
 
 package org.obiba.mica.project.event;
 
-public class IndexProjectsEvent {
+import org.obiba.mica.core.event.IndexPersistablesEvent;
+import org.obiba.mica.project.domain.Project;
+
+import java.util.List;
+
+public class IndexProjectsEvent extends IndexPersistablesEvent<Project> {
+  public IndexProjectsEvent() {
+    super();
+  }
+
+  public IndexProjectsEvent(List<String> ids) {
+    super(ids);
+  }
 
 }

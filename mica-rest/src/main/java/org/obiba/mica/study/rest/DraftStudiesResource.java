@@ -14,12 +14,20 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.ws.rs.GET;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Response;
 
+import com.google.common.eventbus.EventBus;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.obiba.mica.core.domain.AbstractGitPersistable;
+import org.obiba.mica.network.event.IndexNetworksEvent;
 import org.obiba.mica.security.service.SubjectAclService;
+import org.obiba.mica.study.event.IndexStudiesEvent;
 import org.obiba.mica.study.service.StudyService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
@@ -38,6 +46,9 @@ public class DraftStudiesResource {
   @Inject
   private Dtos dtos;
 
+  @Inject
+  private EventBus eventBus;
+
   @GET
   @Path("/studies")
   @Timed
@@ -47,6 +58,16 @@ public class DraftStudiesResource {
       .sorted(Comparator.comparing(AbstractGitPersistable::getId))
       .map(s -> dtos.asDto(s, true))
       .collect(Collectors.toList());
+  }
+
+
+  @PUT
+  @Path("/studies/_index")
+  @Timed
+  @RequiresPermissions({"/draft/individual-study:PUBLISH", "/draft/harmonization-study:PUBLISH"})
+  public Response reIndex(@Nullable @QueryParam("id") List<String> ids) {
+    eventBus.post(new IndexStudiesEvent(ids));
+    return Response.noContent().build();
   }
 
 }

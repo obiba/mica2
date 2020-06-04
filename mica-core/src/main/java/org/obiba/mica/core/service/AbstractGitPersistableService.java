@@ -158,6 +158,10 @@ public abstract class AbstractGitPersistableService<T extends EntityState, T1 ex
     return getEntityStateRepository().findByPublishedTagNotNull();
   }
 
+  public List<T> findPublishedStates(List<String> ids) {
+    return getEntityStateRepository().findByPublishedTagNotNullAndIdIn(ids);
+  }
+
   /**
    * Get the published entity identifiers from the repository (with short-term cache).
    *

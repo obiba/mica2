@@ -209,11 +209,29 @@ public class NetworkService extends AbstractGitPersistableService<NetworkState, 
    *
    * @return
    */
-  public List<Network> findAllPublishedNetworks(List<String> ids) {
-    List<NetworkState> states = ids != null && !ids.isEmpty()
-      ? networkStateRepository.findByPublishedTagNotNullAndIdIn(ids)
-      : networkStateRepository.findByPublishedTagNotNull();
+  public List<Network> findAllPublishedNetworks() {
+    List<NetworkState> states = networkStateRepository.findByPublishedTagNotNull();
 
+    return findAllPublishedNetworksInternal(states);
+  }
+
+  /**
+   * Get all published {@link Network}s.
+   *
+   * @return
+   */
+  public List<Network> findAllPublishedNetworks(List<String> ids) {
+    List<NetworkState> states = networkStateRepository.findByPublishedTagNotNullAndIdIn(ids);
+    return findAllPublishedNetworksInternal(states);
+  }
+
+  /**
+   * Retrieves published Network documents from repository
+   *
+   * @param states
+   * @return List of Network documents
+   */
+  private List<Network> findAllPublishedNetworksInternal(List<NetworkState> states) {
     return states.stream()
       .filter(networkState -> gitService.hasGitRepository(networkState) && !Strings.isNullOrEmpty(networkState.getPublishedTag()))
       .map(networkState -> gitService.readFromTag(networkState, networkState.getPublishedTag(), Network.class))

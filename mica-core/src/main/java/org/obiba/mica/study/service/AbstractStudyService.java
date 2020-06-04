@@ -22,7 +22,6 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import au.com.bytecode.opencsv.CSVWriter;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.core.ModelAwareTranslator;
@@ -130,14 +129,20 @@ public abstract class AbstractStudyService<S extends EntityState, T extends Base
   }
 
   public List<T> findAllPublishedStudies() {
-    return findPublishedStates().stream() //
-        .filter(studyState -> gitService.hasGitRepository(studyState)
-            && !Strings.isNullOrEmpty(studyState.getPublishedTag()))
-        .map(studyState -> gitService.readFromTag(studyState, studyState.getPublishedTag(), getType())).map(s -> {
-          s.getModel();
-          return s;
-        }) // make sure dynamic model is initialized
-        .collect(toList());
+    return findAllPublishedStudiesInternal(findPublishedStates());
+  }
+
+  public List<T> findAllPublishedStudies(List<String> ids) {
+    return findAllPublishedStudiesInternal(findPublishedStates(ids));
+  }
+
+  protected List<T> findAllPublishedStudiesInternal(List<S> states) {
+    return states.stream() //
+      .filter(studyState ->
+        gitService.hasGitRepository(studyState) && !Strings.isNullOrEmpty(studyState.getPublishedTag()))
+      .map(studyState -> gitService.readFromTag(studyState, studyState.getPublishedTag(), getType()))
+      .map(s -> { s.getModel(); return s; }) // make sure dynamic model is initialized
+      .collect(toList());
   }
 
   public List<T> findAllDraftStudies() {

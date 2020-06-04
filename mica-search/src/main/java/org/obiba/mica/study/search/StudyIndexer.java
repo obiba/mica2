@@ -75,8 +75,28 @@ public class StudyIndexer {
   @Async
   @Subscribe
   public void reIndexStudies(IndexStudiesEvent event) {
-    reIndexAllPublished(studyService.findAllPublishedStudies().stream().map(this::addMemberships).collect(Collectors.toList()));
-    reIndexAllDraft(studyService.findAllDraftStudies().stream().map(this::addMemberships).collect(Collectors.toList()));
+    List<String> studyIds = event.getIds();
+    List<BaseStudy> publishedStudies = studyIds.isEmpty()
+      ? studyService.findAllPublishedStudies()
+      : studyService.findAllPublishedStudies(studyIds)
+        .stream()
+        .map(this::addMemberships)
+        .collect(Collectors.toList());
+
+    if (!publishedStudies.isEmpty()) {
+      reIndexAllPublished(publishedStudies);
+    }
+
+    List<BaseStudy> draftStudies = studyIds.isEmpty()
+     ? studyService.findAllDraftStudies()
+     : studyService.findAllDraftStudies(studyIds)
+        .stream()
+        .map(this::addMemberships)
+        .collect(Collectors.toList());
+
+    if (!draftStudies.isEmpty()) {
+      reIndexAllDraft(draftStudies);
+    }
   }
 
   private void reIndexAllDraft(Iterable<BaseStudy> studies) {

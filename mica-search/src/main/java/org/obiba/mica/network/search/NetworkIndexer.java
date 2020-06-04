@@ -1,4 +1,4 @@
-/*
+  /*
  * Copyright (c) 2018 OBiBa. All rights reserved.
  *
  * This program and the accompanying materials
@@ -79,32 +79,27 @@ public class NetworkIndexer {
   @Subscribe
   public void reIndexNetworks(IndexNetworksEvent event) {
     log.info("Reindexing all networks");
-    List<String> networkdIds = event.getIds();
-    List<Network> publishedNetworks = networkService.findAllPublishedNetworks(networkdIds)
+    List<String> networkIds = event.getIds();
+    List<Network> publishedNetworks = networkIds.isEmpty()
+    ? networkService.findAllPublishedNetworks()
+    : networkService.findAllPublishedNetworks(networkIds)
       .stream()
       .map(this::addMemberships)
       .collect(Collectors.toList());
 
     if (!publishedNetworks.isEmpty()) {
-      reIndexAll(
-        Indexer.PUBLISHED_NETWORK_INDEX,
-        networkService.findAllPublishedNetworks(networkdIds)
-          .stream()
-          .map(this::addMemberships)
-          .collect(Collectors.toList())
-      );
+      reIndexAll(Indexer.PUBLISHED_NETWORK_INDEX, publishedNetworks);
     }
 
-    List<Network> draftNetworks = networkService.findAllNetworks(networkdIds)
-      .stream()
-      .map(this::addMemberships)
-      .collect(Collectors.toList());
+    List<Network> draftNetworks = networkIds.isEmpty()
+      ? networkService.findAllNetworks()
+      : networkService.findAllNetworks(networkIds)
+        .stream()
+        .map(this::addMemberships)
+        .collect(Collectors.toList());
 
     if (!draftNetworks.isEmpty()) {
-      reIndexAll(
-        Indexer.DRAFT_NETWORK_INDEX,
-        draftNetworks
-      );
+      reIndexAll(Indexer.DRAFT_NETWORK_INDEX, draftNetworks);
     }
   }
 
