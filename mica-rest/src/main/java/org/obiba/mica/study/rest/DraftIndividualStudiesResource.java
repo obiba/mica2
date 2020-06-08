@@ -104,8 +104,8 @@ public class DraftIndividualStudiesResource {
   @Path("/individual-studies/_index")
   @Timed
   @RequiresPermissions("/draft/individual-study:PUBLISH")
-  public Response reIndex() {
-    eventBus.post(new IndexStudiesEvent());
+  public Response reIndex(@Nullable @QueryParam("id") List<String> ids) {
+    eventBus.post(new IndexStudiesEvent(ids));
     return Response.noContent().build();
   }
 }

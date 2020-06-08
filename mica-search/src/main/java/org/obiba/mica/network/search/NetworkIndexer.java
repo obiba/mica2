@@ -14,6 +14,8 @@ import com.google.common.eventbus.Subscribe;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.inject.Inject;
 import org.obiba.mica.core.domain.Membership;
@@ -80,31 +82,25 @@ public class NetworkIndexer {
   public void reIndexNetworks(IndexNetworksEvent event) {
     log.info("Reindexing all networks");
     List<String> networkIds = event.getIds();
-    List<Network> publishedNetworks = networkIds.isEmpty()
-    ? networkService.findAllPublishedNetworks()
-    : networkService.findAllPublishedNetworks(networkIds)
-      .stream()
-      .map(this::addMemberships)
-      .collect(Collectors.toList());
 
-    if (!publishedNetworks.isEmpty()) {
-      reIndexAll(Indexer.PUBLISHED_NETWORK_INDEX, publishedNetworks);
-    }
-
-    List<Network> draftNetworks = networkIds.isEmpty()
-      ? networkService.findAllNetworks()
-      : networkService.findAllNetworks(networkIds)
-        .stream()
-        .map(this::addMemberships)
-        .collect(Collectors.toList());
-
-    if (!draftNetworks.isEmpty()) {
-      reIndexAll(Indexer.DRAFT_NETWORK_INDEX, draftNetworks);
+    if (networkIds.isEmpty()) {
+      reIndexAll(Indexer.PUBLISHED_NETWORK_INDEX, addMemberships(networkService.findAllPublishedNetworks()));
+      reIndexAll(Indexer.DRAFT_NETWORK_INDEX, addMemberships(networkService.findAllNetworks()));
+    } else {
+      // indexAll does not deletes the index before
+      indexer.indexAll(Indexer.PUBLISHED_NETWORK_INDEX, addMemberships(networkService.findAllPublishedNetworks(networkIds)));
+      indexer.indexAll(Indexer.DRAFT_NETWORK_INDEX, addMemberships(networkService.findAllNetworks(networkIds)));
     }
   }
 
   private void reIndexAll(String indexName, Iterable<Network> networks) {
     indexer.reindexAll(indexName, networks);
+  }
+
+  private List<Network> addMemberships(List<Network> networks) {
+    return networks.stream()
+      .map(this::addMemberships)
+      .collect(Collectors.toList());
   }
 
   private Network addMemberships(Network network) {

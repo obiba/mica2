@@ -212,7 +212,7 @@ public abstract class AbstractGitPersistableService<T extends EntityState, T1 ex
     return entityState;
   }
 
-  protected T unPublishStateInternal(@Null String id) {
+  protected T unPublishStateInternal(@NotNull String id) {
     T entityState = findStateById(id);
     if(entityState != null) {
       entityState.resetRevisionsAhead();

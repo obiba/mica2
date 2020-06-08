@@ -10,34 +10,13 @@
 
 package org.obiba.mica.micaConfig.rest;
 
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.io.Writer;
-import java.net.URISyntaxException;
-import java.security.KeyStoreException;
-import java.util.*;
-import java.util.stream.Collectors;
-
-import javax.inject.Inject;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.StreamingOutput;
-import javax.ws.rs.core.UriInfo;
-
+import com.codahale.metrics.annotation.Timed;
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
+import com.google.common.eventbus.EventBus;
+import com.jayway.jsonpath.DocumentContext;
+import com.jayway.jsonpath.JsonPath;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.obiba.mica.JSONUtils;
@@ -50,12 +29,7 @@ import org.obiba.mica.dataset.service.KeyStoreService;
 import org.obiba.mica.file.event.IndexFilesEvent;
 import org.obiba.mica.micaConfig.domain.MicaConfig;
 import org.obiba.mica.micaConfig.event.TaxonomiesUpdatedEvent;
-import org.obiba.mica.micaConfig.service.CacheService;
-import org.obiba.mica.micaConfig.service.MicaConfigService;
-import org.obiba.mica.micaConfig.service.MicaMetricsService;
-import org.obiba.mica.micaConfig.service.OpalCredentialService;
-import org.obiba.mica.micaConfig.service.OpalService;
-import org.obiba.mica.micaConfig.service.TaxonomyService;
+import org.obiba.mica.micaConfig.service.*;
 import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.network.event.IndexNetworksEvent;
 import org.obiba.mica.project.domain.Project;
@@ -75,12 +49,14 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
 
-import com.codahale.metrics.annotation.Timed;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
-import com.google.common.eventbus.EventBus;
-import com.jayway.jsonpath.DocumentContext;
-import com.jayway.jsonpath.JsonPath;
+import javax.inject.Inject;
+import javax.ws.rs.*;
+import javax.ws.rs.core.*;
+import java.io.*;
+import java.net.URISyntaxException;
+import java.security.KeyStoreException;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 
@@ -494,7 +470,7 @@ public class MicaConfigResource {
         )
       )
 
-      // HarmonizarionDataset
+      // HarmonizationDataset
       .addDocuments(
         Mica.MicaMetricsDto.DocumentMetricsDto.newBuilder()
           .setType(HarmonizationDataset.class.getSimpleName())

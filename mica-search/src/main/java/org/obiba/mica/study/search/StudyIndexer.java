@@ -76,26 +76,14 @@ public class StudyIndexer {
   @Subscribe
   public void reIndexStudies(IndexStudiesEvent event) {
     List<String> studyIds = event.getIds();
-    List<BaseStudy> publishedStudies = studyIds.isEmpty()
-      ? studyService.findAllPublishedStudies()
-      : studyService.findAllPublishedStudies(studyIds)
-        .stream()
-        .map(this::addMemberships)
-        .collect(Collectors.toList());
 
-    if (!publishedStudies.isEmpty()) {
-      reIndexAllPublished(publishedStudies);
-    }
-
-    List<BaseStudy> draftStudies = studyIds.isEmpty()
-     ? studyService.findAllDraftStudies()
-     : studyService.findAllDraftStudies(studyIds)
-        .stream()
-        .map(this::addMemberships)
-        .collect(Collectors.toList());
-
-    if (!draftStudies.isEmpty()) {
-      reIndexAllDraft(draftStudies);
+    if (studyIds.isEmpty()) {
+      reIndexAllPublished(addMemberships(studyService.findAllPublishedStudies()));
+      reIndexAllDraft(addMemberships(studyService.findAllDraftStudies()));
+    } else {
+      // indexAll does not deletes the index before
+      indexer.indexAllIndexables(Indexer.PUBLISHED_STUDY_INDEX, addMemberships(studyService.findAllPublishedStudies(studyIds)));
+      indexer.indexAllIndexables(Indexer.DRAFT_STUDY_INDEX, addMemberships(studyService.findAllDraftStudies(studyIds)));
     }
   }
 
@@ -109,6 +97,10 @@ public class StudyIndexer {
 
   private void reIndexAll(String indexName, Iterable<BaseStudy> studies) {
     indexer.reIndexAllIndexables(indexName, studies);
+  }
+
+  private List<BaseStudy> addMemberships(List<BaseStudy> studies) {
+    return studies.stream().map(this::addMemberships).collect(Collectors.toList());
   }
 
   private BaseStudy addMemberships(BaseStudy study) {

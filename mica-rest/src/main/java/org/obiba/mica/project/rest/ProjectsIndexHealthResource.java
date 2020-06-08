@@ -1,6 +1,5 @@
 package org.obiba.mica.project.rest;
 
-import com.google.common.collect.Lists;
 import org.obiba.mica.EntityIndexHealthResource;
 import org.obiba.mica.project.domain.Project;
 import org.obiba.mica.project.service.ProjectService;
@@ -45,4 +44,8 @@ public class ProjectsIndexHealthResource extends EntityIndexHealthResource<Proje
     return entity.getTitle().get(locale);
   }
 
+  @Override
+  protected String createEsQuery(Class clazz) {
+    return String.format("*");
+  }
 }

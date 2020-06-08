@@ -69,20 +69,14 @@ public class ProjectIndexer {
   public void reIndexProjects(IndexProjectsEvent event) {
     log.info("Reindexing all projects");
     List<String> projectIds = event.getIds();
-    List<Project> publishedProjects = projectIds.isEmpty()
-      ? projectService.findAllPublishedProjects()
-      : projectService.findAllPublishedProjects(projectIds);
 
-    if (!publishedProjects.isEmpty()) {
-      reIndexAll(Indexer.PUBLISHED_PROJECT_INDEX, publishedProjects);
-    }
-
-    List<Project> draftProjects = projectIds.isEmpty()
-      ? projectService.findAllProjects()
-      : projectService.findAllProjects(projectIds);
-
-    if (!draftProjects.isEmpty()) {
-      reIndexAll(Indexer.DRAFT_PROJECT_INDEX, draftProjects);
+    if (projectIds.isEmpty()) {
+      reIndexAll(Indexer.PUBLISHED_PROJECT_INDEX, projectService.findAllPublishedProjects());
+      reIndexAll(Indexer.DRAFT_PROJECT_INDEX, projectService.findAllProjects());
+    } else {
+      // indexAll does not deletes the index before
+      indexer.indexAll(Indexer.PUBLISHED_PROJECT_INDEX, projectService.findAllPublishedProjects(projectIds));
+      indexer.indexAll(Indexer.DRAFT_PROJECT_INDEX, projectService.findAllProjects(projectIds));
     }
   }
 

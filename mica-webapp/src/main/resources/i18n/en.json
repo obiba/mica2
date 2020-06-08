@@ -76,6 +76,7 @@
     "definition": "Definition",
     "display": "Display",
     "key": "Key",
+    "refresh": "Refresh",
     "messages": {
       "error": {
         "unique-id": "ID must be unique.",
@@ -2354,6 +2355,11 @@
     "indexed": "Indexed",
     "variables": "Associated Variables",
     "totalWithVariable": "Studies With Variables",
-    "requireIndexing": "Require Indexing"
+    "requireIndexing": "Require Indexing",
+    "require-indexing": "Re-indexing required, click to complete",
+    "indexing-dialog": {
+      "title": "Re-Indexing {{entity}}",
+      "message": "Published {{entity}} requiring a re-index"
+    }
   }
 }

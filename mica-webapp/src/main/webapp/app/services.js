@@ -268,6 +268,20 @@ mica.factory('MicaMetricsResource', ['$resource',
     });
   }]);
 
+mica.factory('EntityIndexHealthResource', ['$resource',
+  function($resource) {
+    return $resource('ws/:entityResource/index/health', {}, {
+      get: {method: 'GET'}
+    });
+  }]);
+
+mica.factory('DraftEntitiesIndexResource', ['$resource',
+  function($resource) {
+    return $resource('ws/draft/:entityResource/_index', {}, {
+      build: {method: 'PUT', params: {entityResource: '@entityResource', id: '@id', errorHandler: true}}
+    });
+  }]);
+
 mica.factory('OidcProvidersResource', ['$resource',
   function ($resource) {
     return $resource('ws/auth/providers', {locale: '@locale'}, {

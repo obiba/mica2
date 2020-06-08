@@ -24,6 +24,7 @@
   class EntityStatisticsSummaryView {
     constructor(MicaMetricsResource) {
       this.MicaMetricsResource = MicaMetricsResource;
+      this.loading = false;
     }
 
     __processIndexedProperty(properties) {
@@ -33,17 +34,16 @@
 
       if (notIndexed > 0) {
         published.errors = notIndexed;
-        published.tooltip = `${notIndexed} published studies are not indexed`;
       }
     }
 
     __processRequireIndexingProperty(properties) {
-      let requireIndexing = properties.requireIndexing;
-      const notIndexed = requireIndexing.value;
+      let published = properties.published;
+      const notIndexed = properties.requireIndexing.value;
+      delete properties.requireIndexing;
 
       if (notIndexed > 0) {
-        requireIndexing.errors = notIndexed;
-        requireIndexing.tooltip = `The order of the associated populations/data collection events have changed, ${notIndexed} need to be re-indexed.`;
+        published.errors = notIndexed;
       }
     }
 
@@ -74,17 +74,24 @@
       stats.documents.forEach(document => this.__processProperties(document));
     }
 
-    $onInit() {
-      this.MicaMetricsResource.get().$promise.then((stats) => {
-        try {
+    __fetchData() {
+      this.loading = true;
+      this.MicaMetricsResource.get().$promise
+        .then(stats => {
+          this.loading = false;
           this.__processDocuments(stats);
           this.stats = stats;
-        } catch (e) {
-          console.debug(e);
-        }
-      });
+        })
+        .catch(this.loading = false);
     }
 
+    $onInit() {
+      this.__fetchData();
+    }
+
+    onRefresh() {
+      this.__fetchData();
+    }
   }
 
 
