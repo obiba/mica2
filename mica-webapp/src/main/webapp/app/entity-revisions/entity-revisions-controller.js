@@ -51,6 +51,8 @@ mica.revisions
               $scope.restoreRevision = function () {
                 $uibModalInstance.close();
               };
+
+              $scope.commitInfo = rightSideCommitInfo;
             }],
             size: 'lg'
           }).result.then(function () {
