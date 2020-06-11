@@ -38,11 +38,14 @@ mica.revisions
         var response = $scope.onViewDiff()(id, leftSideCommitInfo, rightSideCommitInfo);
 
         response.$promise.then(function (data) {
+          var diffIsEmpty = Object.keys(data.onlyLeft).length === 0 && Object.keys(data.differing).length === 0 && Object.keys(data.onlyRight).length === 0;
+
           $uibModal.open({
             templateUrl: 'app/entity-revisions/entity-revisions-diff-modal-template.html',
             controller: ['$scope', '$uibModalInstance',
             function($scope, $uibModalInstance) {
               $scope.diff = data;
+              $scope.diffIsEmpty = diffIsEmpty;
 
               $scope.cancel = function () {
                 $uibModalInstance.dismiss();

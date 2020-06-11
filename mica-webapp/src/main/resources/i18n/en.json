@@ -1401,6 +1401,7 @@
   "revisions-difference-field": "Field",
   "revisions-difference-left": "Current",
   "revisions-difference-right": "Previous",
+  "revisions-difference-none": "No difference",
   "comment-label": "Comment",
   "restore": "Restore",
   "history": "History",

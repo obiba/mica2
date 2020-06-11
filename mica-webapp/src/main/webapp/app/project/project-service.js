@@ -47,7 +47,8 @@ mica.project
   .factory('DraftProjectRevisionsResource', ['$resource',
     function ($resource) {
       return $resource('ws/draft/project/:id/commits', {}, {
-        'get': {method: 'GET', params: {id: '@id'}}
+        'get': {method: 'GET', params: {id: '@id'}},
+        'diff': {method: 'GET', url: 'ws/draft/project/:id/_diff', params: {id: '@id'}}
       });
     }])
 

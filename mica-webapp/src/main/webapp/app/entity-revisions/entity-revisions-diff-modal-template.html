@@ -32,6 +32,9 @@
           <td></td>
           <td>{{value}}</td>
         </tr>
+        <tr ng-if="diffIsEmpty">
+          <td colspan="3" translate>revisions-difference-none</td>
+        </tr>
       </tbody>
     </table>
   </div>
@@ -39,7 +42,7 @@
     <button type="button" class="btn btn-default" ng-click="cancel()">
       <span translate>cancel</span>
     </button>
-    <button type="button" class="btn btn-primary" ng-click="restoreRevision()">
+    <button type="button" class="btn btn-primary" ng-click="restoreRevision()" ng-if="!diffIsEmpty">
       <span translate>revisions-difference-accept</span>
     </button>
   </div>
