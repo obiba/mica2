@@ -43,7 +43,7 @@
         {{commitInfo.comment}}
       </td>
       <td class="no-wrap">
-        <span><a ng-click="viewRevision($index, id, commitInfo)" href="" translate>view</a></span>
+        <span><a ng-click="viewRevision($index, id, commitInfo)" href title="" translate>view</a></span>
         <span ng-if="!$last">
           <a ng-click="viewDiff(id, commitInfo, commitInfos[$index + 1], true)" href title="{{'revisions-previous-difference-tooltip' | translate}}"><span>{{'revisions-previous-difference'|translate}}</span></a>
         </span>
@@ -51,7 +51,7 @@
           <a ng-click="viewDiff(id, commitInfos[0], commitInfo)" href title="{{'revisions-difference-tooltip' | translate}}"><span>{{'revisions-difference' | translate}}</span></a>
         </span>
         <span ng-if="pages.index > 1 || $index > 0">
-          <a ng-click="restoreRevision(id, commitInfo)" href><span>{{'restore' | translate}}</span></a>
+          <a ng-click="restoreRevision(id, commitInfo)" href title=""><span>{{'restore' | translate}}</span></a>
         </span>
       </td>
     </tr>

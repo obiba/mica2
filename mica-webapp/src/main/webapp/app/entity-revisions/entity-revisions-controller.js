@@ -41,6 +41,7 @@ mica.revisions
           var diffIsEmpty = Object.keys(data.onlyLeft).length === 0 && Object.keys(data.differing).length === 0 && Object.keys(data.onlyRight).length === 0;
 
           $uibModal.open({
+            windowClass: 'entity-revision-diff-modal',
             templateUrl: 'app/entity-revisions/entity-revisions-diff-modal-template.html',
             controller: ['$scope', '$uibModalInstance',
             function($scope, $uibModalInstance) {
@@ -55,10 +56,8 @@ mica.revisions
                 $uibModalInstance.close();
               };
 
-              if (comparedWithPrevious) {
-                $scope.currentCommit = leftSideCommitInfo;
-              }
-
+              $scope.comparedWithPrevious = comparedWithPrevious;
+              $scope.currentCommit = leftSideCommitInfo;
               $scope.commitInfo = rightSideCommitInfo;
             }],
             size: 'lg'
