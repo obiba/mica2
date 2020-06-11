@@ -13,6 +13,7 @@ package org.obiba.mica.dataset.rest.harmonization;
 import com.codahale.metrics.annotation.Timed;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
+
 import org.obiba.mica.AbstractGitPersistableResource;
 import org.obiba.mica.JSONUtils;
 import org.obiba.mica.core.domain.BaseStudyTable;

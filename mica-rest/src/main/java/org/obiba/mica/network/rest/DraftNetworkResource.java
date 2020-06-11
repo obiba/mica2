@@ -11,6 +11,7 @@
 package org.obiba.mica.network.rest;
 
 import com.google.common.base.Strings;
+
 import org.obiba.mica.AbstractGitPersistableResource;
 import org.obiba.mica.JSONUtils;
 import org.obiba.mica.NoSuchEntityException;

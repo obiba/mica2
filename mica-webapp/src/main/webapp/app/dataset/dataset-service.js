@@ -125,7 +125,8 @@ mica.dataset
   .factory('DraftDatasetRevisionsResource', ['$resource',
     function ($resource) {
       return $resource('ws/draft/:type/:id/commits', {}, {
-        'get': {method: 'GET'}
+        'get': {method: 'GET'},
+        'diff': {method: 'GET', url: 'ws/draft/:type/:id/_diff', params: {id: '@id', type: '@type'}}
       });
     }])
 

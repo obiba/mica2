@@ -103,13 +103,13 @@ public class DraftIndividualStudyResource extends AbstractGitPersistableResource
   @Produces("text/csv")
   public Response exportAsCsv() throws JsonProcessingException {
     return Response.ok(individualStudyService.writeCsv(getId()).toByteArray(), "text/csv")
-      .header("Content-Disposition", "attachment; filename=\"" + getId() + ".csv\"").build();
+        .header("Content-Disposition", "attachment; filename=\"" + getId() + ".csv\"").build();
   }
 
   @PUT
   @Timed
   public Response update(@SuppressWarnings("TypeMayBeWeakened") Mica.StudyDto studyDto,
-                         @Nullable @QueryParam("comment") String comment, @QueryParam("weightChanged") boolean weightChanged) {
+      @Nullable @QueryParam("comment") String comment, @QueryParam("weightChanged") boolean weightChanged) {
     checkPermission("/draft/individual-study", "EDIT");
     // ensure study exists
     individualStudyService.findDraft(id);

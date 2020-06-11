@@ -258,6 +258,12 @@ mica.project
         });
       };
 
+      var viewDiff = function (id, leftCommitInfo, rightCommitInfo) {
+        if (leftCommitInfo && rightCommitInfo) {
+          return DraftProjectRevisionsResource.diff({id: id, left: leftCommitInfo.commitId, right: rightCommitInfo.commitId});
+        }
+      };
+
       var restoreRevision = function (projectId, commitInfo, onSuccess) {
         if (commitInfo && $scope.projectId === projectId) {
           var args = {commitId: commitInfo.commitId, restoreSuccessCallback: onSuccess};
@@ -314,6 +320,7 @@ mica.project
       $scope.restoreRevision = restoreRevision;
       $scope.fetchRevisions = fetchRevisions;
       $scope.publish = publish;
+      $scope.viewDiff = viewDiff;
 
       $scope.$on(NOTIFICATION_EVENTS.confirmDialogAccepted, onRestore);
 

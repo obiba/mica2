@@ -456,6 +456,12 @@ mica.network
         }, initializeNetwork);
       };
 
+      function viewDiff (id, leftCommitInfo, rightCommitInfo) {
+        if (leftCommitInfo && rightCommitInfo) {
+          return DraftNetworkRevisionsResource.diff({id: id, left: leftCommitInfo.commitId, right: rightCommitInfo.commitId});
+        }
+      }
+
       var fetchNetwork = function (networkId) {
         $scope.network = DraftNetworkResource.get({id: networkId}, initializeNetwork);
       };
@@ -505,6 +511,7 @@ mica.network
       $scope.viewRevision = viewRevision;
       $scope.restoreRevision = restoreRevision;
       $scope.fetchRevisions = fetchRevisions;
+      $scope.viewDiff = viewDiff;
 
       $scope.$on(NOTIFICATION_EVENTS.confirmDialogAccepted, onRestore);
 

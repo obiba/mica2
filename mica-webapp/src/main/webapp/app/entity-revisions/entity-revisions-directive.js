@@ -21,7 +21,8 @@ mica.revisions
         state: '=',
         onFetchRevisions: '&',
         onViewRevision: '&',
-        onRestoreRevision: '&'
+        onRestoreRevision: '&',
+        onViewDiff: '&'
       },
       templateUrl: 'app/entity-revisions/entity-revisions-template.html',
       controller: 'RevisionsController'

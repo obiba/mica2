@@ -10,4 +10,4 @@
 
 'use strict';
 
-mica.revisions = angular.module('mica.revisions', []);
+mica.revisions = angular.module('mica.revisions', ['ui.bootstrap']);

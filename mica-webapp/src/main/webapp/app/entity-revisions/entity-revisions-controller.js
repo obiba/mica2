@@ -14,9 +14,8 @@ mica.revisions
   .controller('RevisionsController', [
     '$rootScope',
     '$scope',
-    '$filter',
-    'LocaleStringUtils',
-    function ($rootScope, $scope) {
+    '$uibModal',
+    function ($rootScope, $scope, $uibModal) {
       var onSuccess = function(revisions) {
         $scope.commitInfos = revisions;
         viewRevision($scope.active.index, $scope.id, $scope.commitInfos[$scope.active.index]);
@@ -32,6 +31,39 @@ mica.revisions
       var restoreRevision = function(id, commitInfo) {
         $scope.onRestoreRevision()(id, commitInfo, function() {
           $scope.onFetchRevisions()($scope.id, onSuccess);
+        });
+      };
+
+      var viewDiff = function(id, leftSideCommitInfo, rightSideCommitInfo, comparedWithPrevious) {
+        var response = $scope.onViewDiff()(id, leftSideCommitInfo, rightSideCommitInfo);
+
+        response.$promise.then(function (data) {
+          var diffIsEmpty = Object.keys(data.onlyLeft).length === 0 && Object.keys(data.differing).length === 0 && Object.keys(data.onlyRight).length === 0;
+
+          $uibModal.open({
+            windowClass: 'entity-revision-diff-modal',
+            templateUrl: 'app/entity-revisions/entity-revisions-diff-modal-template.html',
+            controller: ['$scope', '$uibModalInstance',
+            function($scope, $uibModalInstance) {
+              $scope.diff = data;
+              $scope.diffIsEmpty = diffIsEmpty;
+
+              $scope.cancel = function () {
+                $uibModalInstance.dismiss();
+              };
+
+              $scope.restoreRevision = function () {
+                $uibModalInstance.close();
+              };
+
+              $scope.comparedWithPrevious = comparedWithPrevious;
+              $scope.currentCommit = leftSideCommitInfo;
+              $scope.commitInfo = rightSideCommitInfo;
+            }],
+            size: 'lg'
+          }).result.then(function () {
+            restoreRevision(id, rightSideCommitInfo);
+          });
         });
       };
 
@@ -51,4 +83,5 @@ mica.revisions
       $scope.viewRevision = viewRevision;
       $scope.restoreRevision = restoreRevision;
       $scope.canPaginate = canPaginate;
+      $scope.viewDiff = viewDiff;
     }]);

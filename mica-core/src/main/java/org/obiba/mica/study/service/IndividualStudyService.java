@@ -11,10 +11,8 @@
 package org.obiba.mica.study.service;
 
 import com.google.common.base.Throwables;
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import org.joda.time.DateTime;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -25,7 +23,6 @@ import org.obiba.mica.dataset.StudyDatasetRepository;
 import org.obiba.mica.dataset.StudyDatasetStateRepository;
 import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.file.FileStoreService;
-import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.network.NetworkRepository;
 import org.obiba.mica.study.ConstraintException;
 import org.obiba.mica.study.StudyRepository;
@@ -39,7 +36,6 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
-import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 import java.io.ByteArrayInputStream;
@@ -81,9 +77,6 @@ public class IndividualStudyService extends AbstractStudyService<StudyState, Stu
 
   @Inject
   private HarmonizationDatasetRepository harmonizationDatasetRepository;
-
-  @Inject
-  private MicaConfigService micaConfigService;
 
   @Override
   protected void saveInternal(final Study study, String comment, boolean cascade) {
