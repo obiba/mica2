@@ -1,19 +1,18 @@
 package org.obiba.mica.dataset.rest.harmonization;
 
-import com.google.common.collect.Lists;
 import org.obiba.mica.EntityIndexHealthResource;
+import org.obiba.mica.dataset.HarmonizationDatasetStateRepository;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
-import org.obiba.mica.dataset.domain.StudyDataset;
-import org.obiba.mica.dataset.service.CollectedDatasetService;
+import org.obiba.mica.dataset.domain.HarmonizationDatasetState;
 import org.obiba.mica.dataset.service.HarmonizedDatasetService;
 import org.obiba.mica.dataset.service.PublishedDatasetService;
-import org.obiba.mica.study.domain.HarmonizationStudy;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 import javax.ws.rs.Path;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 @Path("/harmonized-datasets/index/health")
@@ -22,25 +21,33 @@ public class HarmonizedDatasetsIndexHealthResource extends EntityIndexHealthReso
 
   final private HarmonizedDatasetService harmonizedDatasetService;
 
+  final private HarmonizationDatasetStateRepository harmonizationDatasetStateRepository;
+
   final private PublishedDatasetService publishedDatasetService;
 
   @Inject
   public HarmonizedDatasetsIndexHealthResource(HarmonizedDatasetService harmonizedDatasetService,
+                                               HarmonizationDatasetStateRepository harmonizationDatasetStateRepository,
                                                PublishedDatasetService publishedDatasetService) {
     this.harmonizedDatasetService = harmonizedDatasetService;
+    this.harmonizationDatasetStateRepository = harmonizationDatasetStateRepository;
     this.publishedDatasetService = publishedDatasetService;
   }
 
 
   @Override
   protected List<HarmonizationDataset> findAllPublished() {
-    return harmonizedDatasetService.findAllPublishedDatasets();
-  }
+    List<String> ids = harmonizationDatasetStateRepository.findByPublishedTagNotNull()
+      .stream()
+      .map(HarmonizationDatasetState::getId)
+      .collect(Collectors.toList());
 
+    return harmonizedDatasetService.findPublishedDatasets(ids);
+  }
 
   @Override
   protected List<String> findAllIndexedIds() {
-    return publishedDatasetService.suggest(MAX_VALUE, "en", createEsQuery(HarmonizationDataset.class), ES_QUERY_FIELDS);
+    return publishedDatasetService.suggest(MAX_VALUE, "en", createEsQuery(HarmonizationDataset.class), ES_QUERY_FIELDS, null);
   }
 
   @Override
