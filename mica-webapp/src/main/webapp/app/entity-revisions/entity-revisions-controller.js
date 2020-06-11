@@ -34,7 +34,7 @@ mica.revisions
         });
       };
 
-      var viewDiff = function(id, leftSideCommitInfo, rightSideCommitInfo) {
+      var viewDiff = function(id, leftSideCommitInfo, rightSideCommitInfo, comparedWithPrevious) {
         var response = $scope.onViewDiff()(id, leftSideCommitInfo, rightSideCommitInfo);
 
         response.$promise.then(function (data) {
@@ -54,6 +54,10 @@ mica.revisions
               $scope.restoreRevision = function () {
                 $uibModalInstance.close();
               };
+
+              if (comparedWithPrevious) {
+                $scope.currentCommit = leftSideCommitInfo;
+              }
 
               $scope.commitInfo = rightSideCommitInfo;
             }],

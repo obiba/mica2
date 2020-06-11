@@ -1,7 +1,7 @@
 <div class="modal-content">
   <div class="modal-header">
     <button type="button" class="close" aria-hidden="true" ng-click="cancel()">&times;</button>
-    <h4 class="modal-title" translate>revisions-difference</h4>
+    <h4 class="modal-title">{{ currentCommit ? 'revisions-previous-difference' : 'revisions-difference' | translate}}</h4>
   </div>
   <div class="modal-body table-responsive">
     <div class="help-block">
@@ -12,8 +12,8 @@
       <thead>
         <tr>
           <th translate>revisions-difference-field</th>
-          <th translate>revisions-difference-left</th>
-          <th translate>revisions-difference-right</th>
+          <th title="{{currentCommit.date | amDateFormat : 'lll'}} ({{currentCommit.author}})" translate>revisions-difference-left</th>
+          <th title="{{commitInfo.date | amDateFormat : 'lll'}} ({{commitInfo.author}})" translate>revisions-difference-right</th>
         </tr>
       </thead>
       <tbody>
@@ -42,7 +42,7 @@
     <button type="button" class="btn btn-default" ng-click="cancel()">
       <span translate>cancel</span>
     </button>
-    <button type="button" class="btn btn-primary" ng-click="restoreRevision()" ng-if="!diffIsEmpty">
+    <button type="button" class="btn btn-primary" ng-click="restoreRevision()" ng-if="!diffIsEmpty && !currentCommit">
       <span translate>restore</span>
     </button>
   </div>

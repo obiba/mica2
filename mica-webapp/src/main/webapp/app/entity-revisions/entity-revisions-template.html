@@ -43,22 +43,16 @@
         {{commitInfo.comment}}
       </td>
       <td>
-        <ul ng-if="pages.index === 1 && $index === 0" class="list-inline">
-          <li>
-            <a ng-click="viewRevision($index, id, commitInfo)" href="" title="{{'view' | translate}}"><i class="fa fa-eye"></i></a>
-          </li>
-        </ul>
-        <ul ng-if="pages.index > 1 || $index > 0" class="list-inline">
-          <li>
-            <a ng-click="viewRevision($index, id, commitInfo)" href="" title="{{'view' | translate}}"><i class="fa fa-eye"></i></a>
-          </li>
-          <li>
-            <a ng-click="viewDiff(id, commitInfos[0], commitInfo)" href="" title="{{'revisions-difference' | translate}}"><i class="fa fa-files-o"></i></a>
-          </li>
-          <li ng-if="state.permissions.edit && state.revisionStatus === 'DRAFT'">
-            <a ng-click="restoreRevision(id, commitInfo)" href="" title="{{'restore' | translate}}"><i class="fa fa-rotate-left"></i></a>
-          </li>
-        </ul>
+        <span><a ng-click="viewRevision($index, id, commitInfo)" href="" title="{{'view' | translate}}"><i class="fa fa-eye"></i></a></span>
+        <span ng-if="!$last">
+          <a ng-click="viewDiff(id, commitInfo, commitInfos[$index + 1], true)" href="" title="{{'revisions-previous-difference' | translate}}"><i class="fa fa-tags"></i></a>
+        </span>
+        <span ng-if="pages.index > 1 || $index > 0">
+          <a ng-click="viewDiff(id, commitInfos[0], commitInfo)" href="" title="{{'revisions-difference' | translate}}"><i class="fa fa-files-o"></i></a>
+        </span>
+        <span ng-if="pages.index > 1 || $index > 0">
+          <a ng-click="restoreRevision(id, commitInfo)" href="" title="{{'restore' | translate}}"><i class="fa fa-rotate-left"></i></a>
+        </span>
       </td>
     </tr>
     </tbody>
