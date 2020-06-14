@@ -71,7 +71,7 @@ public class DataAccessController extends BaseController {
   @Inject
   private DataAccessRequestReportNotificationService dataAccessRequestReportNotificationService;
 
-  @GetMapping("/data-access/{id}")
+  @GetMapping("/data-access/{id:.+}")
   public ModelAndView get(@PathVariable String id) {
     Subject subject = SecurityUtils.getSubject();
     if (subject.isAuthenticated()) {
@@ -87,7 +87,7 @@ public class DataAccessController extends BaseController {
     }
   }
 
-  @GetMapping("/data-access-form/{id}")
+  @GetMapping("/data-access-form/{id:.+}")
   public ModelAndView getForm(@PathVariable String id,
                               @RequestParam(value = "edit", defaultValue = "false") boolean edit,
                               @CookieValue(value = "NG_TRANSLATE_LANG_KEY", required = false, defaultValue = "en") String locale,
@@ -102,7 +102,7 @@ public class DataAccessController extends BaseController {
     }
   }
 
-  @GetMapping("/data-access-history/{id}")
+  @GetMapping("/data-access-history/{id:.+}")
   public ModelAndView getHistory(@PathVariable String id) {
     Subject subject = SecurityUtils.getSubject();
     if (subject.isAuthenticated()) {
@@ -137,7 +137,7 @@ public class DataAccessController extends BaseController {
     }
   }
 
-  @GetMapping("/data-access-feasibility-form/{id}")
+  @GetMapping("/data-access-feasibility-form/{id:.+}")
   public ModelAndView getFeasibilityForm(@PathVariable String id,
                                        @RequestParam(value = "edit", defaultValue = "false") boolean edit,
                                        @CookieValue(value = "NG_TRANSLATE_LANG_KEY", required = false, defaultValue = "en") String locale,
@@ -154,7 +154,7 @@ public class DataAccessController extends BaseController {
     }
   }
 
-  @GetMapping("/data-access-amendment-form/{id}")
+  @GetMapping("/data-access-amendment-form/{id:.+}")
   public ModelAndView getAmendmentForm(@PathVariable String id,
                                        @RequestParam(value = "edit", defaultValue = "false") boolean edit,
                                        @CookieValue(value = "NG_TRANSLATE_LANG_KEY", required = false, defaultValue = "en") String locale,
@@ -171,7 +171,7 @@ public class DataAccessController extends BaseController {
     }
   }
 
-  @GetMapping("/data-access-documents/{id}")
+  @GetMapping("/data-access-documents/{id:.+}")
   public ModelAndView getDocuments(@PathVariable String id) {
     Subject subject = SecurityUtils.getSubject();
     if (subject.isAuthenticated()) {
@@ -183,7 +183,7 @@ public class DataAccessController extends BaseController {
     }
   }
 
-  @GetMapping("/data-access-comments/{id}")
+  @GetMapping("/data-access-comments/{id:.+}")
   public ModelAndView getComments(@PathVariable String id) {
     Subject subject = SecurityUtils.getSubject();
     if (subject.isAuthenticated()) {
@@ -201,7 +201,7 @@ public class DataAccessController extends BaseController {
     }
   }
 
-  @GetMapping("/data-access-private-comments/{id}")
+  @GetMapping("/data-access-private-comments/{id:.+}")
   public ModelAndView getPrivateComments(@PathVariable String id) {
     Subject subject = SecurityUtils.getSubject();
     if (subject.isAuthenticated()) {
