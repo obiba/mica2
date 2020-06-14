@@ -43,7 +43,7 @@ public class NetworkController extends BaseController {
   @Inject
   private PersonService personService;
 
-  @GetMapping("/network/{id}")
+  @GetMapping("/network/{id:.+}")
   public ModelAndView network(@PathVariable String id, @RequestParam(value = "draft", required = false) String shareKey) {
 
     Map<String, Object> params = newParameters();

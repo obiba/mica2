@@ -33,7 +33,7 @@ public class StudyController extends BaseController {
   @Inject
   private LocalizedStringDtos localizedStringDtos;
 
-  @GetMapping("/study/{id}")
+  @GetMapping("/study/{id:.+}")
   public ModelAndView study(@PathVariable String id, @RequestParam(value = "draft", required = false) String shareKey) {
     Map<String, Object> params = newParameters();
     BaseStudy study = getStudy(id, shareKey);
