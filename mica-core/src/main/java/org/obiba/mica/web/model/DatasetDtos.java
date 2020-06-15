@@ -299,10 +299,7 @@ class DatasetDtos {
 
     if(variable.getStudyId() != null) {
       builder.setStudyId(variable.getStudyId());
-
-      String[] splitId = variable.getDceId().split(":");
-
-      builder.setStudySummary(studySummaryDtos.asDto(splitId[0], splitId[1], splitId[2]));
+      builder.setStudySummary(studySummaryDtos.asDtoFromDceUid(variable.getDceId()));
     }
 
     return builder.build();
