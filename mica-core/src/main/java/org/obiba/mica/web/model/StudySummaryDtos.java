@@ -311,6 +311,58 @@ class StudySummaryDtos {
     return asDto(studyState);
   }
 
+  Mica.StudySummaryDto asDto(String studyId, String populationId, String dceId) {
+    EntityState studyState = studyService.getEntityState(studyId);
+
+    BaseStudy study = null;
+    Mica.StudySummaryDto.Builder builder = Mica.StudySummaryDto.newBuilder();
+
+    if (studyState.isPublished()) {
+      study = publishedStudyService.findById(studyId);
+
+    } else {
+      study = studyService.findStudy(studyId);
+    }
+
+    builder
+    .setPublished(studyState.isPublished())
+    .setId(study.getId())
+    .setTimestamps(TimestampsDtos.asDto(study))
+    .addAllName(localizedStringDtos.asDto(study.getName()))
+    .addAllAcronym(localizedStringDtos.asDto(study.getAcronym()))
+    .addAllObjectives(localizedStringDtos.asDto(study.getObjectives()));
+
+    Optional<Population> optionalPopulation = study.getPopulations().stream().filter(population -> population.getId().equals(populationId)).findFirst();
+    if (optionalPopulation.isPresent()) {
+      Population population = optionalPopulation.get();
+
+      Mica.PopulationSummaryDto.Builder populationBuilder = Mica.PopulationSummaryDto.newBuilder()
+      .setId(population.getId())
+      .addAllName(localizedStringDtos.asDto(population.getName()));
+
+      if (population.getDescription() != null) populationBuilder.addAllDescription(localizedStringDtos.asDto(population.getDescription()));
+
+      Optional<DataCollectionEvent> optionalDce = population.getDataCollectionEvents().stream().filter(dce -> dce.getId().equals(dceId)).findFirst();
+      if (optionalDce.isPresent()) {
+        DataCollectionEvent dce = optionalDce.get();
+
+        Mica.DataCollectionEventSummaryDto.Builder dceBuilder = Mica.DataCollectionEventSummaryDto.newBuilder()
+        .setId(dce.getId())
+        .addAllName(localizedStringDtos.asDto(dce.getName()));
+
+        if (dce.getDescription() != null) dceBuilder.addAllDescription(localizedStringDtos.asDto(dce.getDescription()));
+        if (dce.hasStart()) dceBuilder.setStart(dce.getStart().getYearMonth());
+        if (dce.hasEnd()) dceBuilder.setEnd(dce.getEnd().getYearMonth());
+
+        populationBuilder.addDataCollectionEventSummaries(dceBuilder.build());
+      }
+
+      builder.addPopulationSummaries(populationBuilder.build());
+    }
+
+    return builder.build();
+  }
+
   List<Mica.StudySummaryDto> asDtos(Collection<String> studyIds) {
     return studyIds.stream().map(this::asDto).collect(Collectors.toList());
   }
