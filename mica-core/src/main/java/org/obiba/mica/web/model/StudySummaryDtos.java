@@ -311,7 +311,12 @@ class StudySummaryDtos {
     return asDto(studyState);
   }
 
-  Mica.StudySummaryDto asDto(String studyId, String populationId, String dceId) {
+  Mica.StudySummaryDto asDtoFromDceUid(String dceUid) {
+    String[] splitId = dceUid.split(":");
+    String studyId = splitId[0];
+    String populationId = splitId[1];
+    String dceId = splitId[2];
+
     EntityState studyState = studyService.getEntityState(studyId);
 
     BaseStudy study = null;
@@ -347,7 +352,7 @@ class StudySummaryDtos {
         DataCollectionEvent dce = optionalDce.get();
 
         Mica.DataCollectionEventSummaryDto.Builder dceBuilder = Mica.DataCollectionEventSummaryDto.newBuilder()
-        .setId(dce.getId())
+        .setId(dceUid)
         .addAllName(localizedStringDtos.asDto(dce.getName()));
 
         if (dce.getDescription() != null) dceBuilder.addAllDescription(localizedStringDtos.asDto(dce.getDescription()));
