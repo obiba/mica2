@@ -416,6 +416,7 @@ mica.dataset
     'HarmonizedDatasetResource',
     'SfOptionsService',
     'AlertBuilder',
+    'AlertService',
     '$timeout',
 
     function ($rootScope,
@@ -445,6 +446,7 @@ mica.dataset
               HarmonizedDatasetResource,
               SfOptionsService,
               AlertBuilder,
+              AlertService,
               $timeout) {
 
       function initializeForm() {
@@ -515,8 +517,8 @@ mica.dataset
 
       var initializeDataset = function(dataset) {
         $scope.selectedLocale = $translate.use();
-
-        $scope.permissions = DocumentPermissionsService.state(dataset['obiba.mica.EntityStateDto.datasetState']);
+        const datasetState = dataset['obiba.mica.EntityStateDto.datasetState'];
+        $scope.permissions = DocumentPermissionsService.state(datasetState);
         if($scope.type === 'harmonized-dataset') {
           if(dataset['obiba.mica.HarmonizedDatasetDto.type'].harmonizationTable) {
             StudyStatesResource.get({id: dataset['obiba.mica.HarmonizedDatasetDto.type'].harmonizationTable.studyId}).$promise.then(function (harmonizationStudy) {
@@ -567,6 +569,15 @@ mica.dataset
           };
 
         } else {
+          if (datasetState.requireIndexing) {
+            AlertService.alert({
+              id: 'DatasetViewController',
+              type: 'warning',
+              msgKey: 'dataset.require-indexing-alert',
+              msgArgs: [dataset['obiba.mica.CollectedDatasetDto.type'].studyTable.studyId]
+            });
+          }
+
           $scope.editStudyTable = function () {
             addUpdateOpalTable();
           };

@@ -12,6 +12,7 @@ package org.obiba.mica.access;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
+import org.obiba.mica.access.domain.DataAccessEntityStatus;
 import org.obiba.mica.access.domain.DataAccessRequest;
 import org.obiba.mica.core.repository.AttachmentAwareRepository;
 import org.obiba.mica.core.repository.AttachmentRepository;
@@ -22,10 +23,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
@@ -138,9 +136,26 @@ public class DataAccessRequestRepositoryImpl
   public List<LinkedHashMap> getCountByStatus() {
     String aggOperation = "" +
       "{" +
-      "  $group : {_id: '$status', count: {$sum : 1}}},\n" +
-      "  { $project: { _id: 0 } " +
+      "  $group : {_id: '$status', count: {$sum : 1}}}\n" +
       "}";
-    return aggrgationExecutor.execute(Arrays.asList(aggOperation), "dataAccessRequest");
+    List<LinkedHashMap> result = aggrgationExecutor.execute(Arrays.asList(aggOperation), "dataAccessRequest");
+
+    LinkedHashMap<String, Object> counts = createCountMap();
+    result.forEach(count -> {
+      counts.put(count.get("_id").toString(), count.get("count"));
+    });
+
+    return Arrays.asList(counts);
+  }
+
+  private LinkedHashMap<String, Object> createCountMap() {
+    return new LinkedHashMap<String, Object>() {{
+      put(DataAccessEntityStatus.OPENED.toString(), 0);
+      put(DataAccessEntityStatus.SUBMITTED.toString(), 0);
+      put(DataAccessEntityStatus.REVIEWED.toString(), 0);
+      put(DataAccessEntityStatus.CONDITIONALLY_APPROVED.toString(), 0);
+      put(DataAccessEntityStatus.APPROVED.toString(), 0);
+      put(DataAccessEntityStatus.REJECTED.toString(), 0);
+    }};
   }
 }

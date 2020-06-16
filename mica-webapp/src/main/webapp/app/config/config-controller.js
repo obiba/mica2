@@ -430,6 +430,18 @@ mica.config
         }
       };
 
+      $scope.projectEnabledChanged = function() {
+        if (!$scope.micaConfig.isProjectEnabled) {
+          $scope.micaConfig.isProjectsCountEnabled = false;
+        }
+      };
+
+      $scope.dataAccessEnabledChanged = function() {
+        if (!$scope.micaConfig.isDataAccessEnabled) {
+          $scope.micaConfig.isDataAccessRequestsCountEnabled = false;
+        }
+      };
+
       $scope.signupGroupsUpdated = function() {
         $scope.micaConfig.signupGroups = $scope.signupGroups.split(' ').filter(function(g) { return g.length>0; });
       };

@@ -176,6 +176,10 @@ class MicaConfigDtos {
 
     builder.setDownloadOpalViewsFromSetsAllowed(subjectAclService.isPermitted("/set/documents", "VIEW", "_opal"));
 
+    builder.setIsVariablesCountEnabled(config.isVariablesCountEnabled());
+    builder.setIsProjectsCountEnabled(config.isProjectsCountEnabled());
+    builder.setIsDataAccessRequestsCountEnabled(config.isDataAccessRequestCountEnabled());
+
     return builder.build();
   }
 
@@ -243,6 +247,10 @@ class MicaConfigDtos {
     if(dto.hasStyle()) config.setStyle(dto.getStyle());
 
     if(dto.getTranslationsCount() > 0) config.setTranslations(localizedStringDtos.fromDto(dto.getTranslationsList()));
+
+    config.setVariablesCountEnabled(dto.getIsVariablesCountEnabled());
+    config.setProjectsCountEnabled(dto.getIsProjectsCountEnabled());
+    config.setDataAccessRequestCountEnabled(dto.getIsDataAccessRequestsCountEnabled());
 
     return config;
   }

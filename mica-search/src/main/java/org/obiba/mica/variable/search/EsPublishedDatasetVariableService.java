@@ -17,6 +17,7 @@ import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.service.CollectedDatasetService;
 import org.obiba.mica.dataset.service.HarmonizedDatasetService;
 import org.obiba.mica.search.AbstractIdentifiedDocumentService;
+import org.obiba.mica.spi.search.Indexer;
 import org.obiba.mica.spi.search.Searcher;
 import org.obiba.mica.study.service.PublishedDatasetVariableService;
 import org.slf4j.Logger;
@@ -61,6 +62,15 @@ public class EsPublishedDatasetVariableService extends AbstractIdentifiedDocumen
   @Override
   public long countVariables(String rql) {
     return getCountByRql(String.format("variable(%s)", rql));
+  }
+
+  @Override
+  public long getHarmonizedCount() {
+    try {
+      return searcher.count(Indexer.PUBLISHED_HVARIABLE_INDEX, Indexer.HARMONIZED_VARIABLE_TYPE, "").getTotal();
+    } catch (RuntimeException e) {
+      return 0;
+    }
   }
 
   public Map<String, Long> getCountByStudyIds(List<String> studyIds) {

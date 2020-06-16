@@ -505,7 +505,13 @@
       "layout2": "Layout 2",
       "layout1-help": "Layout emphasizing a search bar that maps keywords to available taxonomies.",
       "layout2-help": "Layout providing a search panel on the left-hand-side that displays the full taxonomy of various search categories (variable, study, and network)."
-    }
+    },
+    "variables-count-enabled": "Variables count enabled",
+    "variables-count-enabled-help": "Show variables count in the statistics summary.",
+    "projects-count-enabled": "Projects count enabled",
+    "projects-count-enabled-help": "Show projects count in the statistics summary.",
+    "data-access-requests-count-enabled": "Data Access Requests count enabled",
+    "data-access-requests-count-enabled-help": "Show data access requests count in the statistics summary."
   },
   "publish": {
     "label": "Publish",
@@ -912,7 +918,8 @@
     "collection":{
       "study-not-published":"Before publishing a collected dataset, its linked individual study must already be published",
       "population-not-published":"Before publishing a collected dataset, its linked population must already be published"
-    }
+    },
+    "require-indexing-alert": "An update in study '{{arg0}}' requires a re-indexing, visit the <a href=\"#/admin/statistics-summary\"><u>administration</u> page to complete.</a>"
   },
   "attributes": "Attributes",
   "attribute": {
@@ -2339,11 +2346,12 @@
   },
   "entity-statistics-summary": {
     "title": "Statistics Summary",
-    "breadcrumb": "Content Statistics Summary",
+    "full-title": "Content Statistics Summary",
     "Study": "Individual Studies",
     "HarmonizationStudy": "Harmonization Studies",
     "StudyDataset": "Collected Datasets",
     "HarmonizationDataset": "Harmonized Datasets",
+    "DataAccessRequest": "Data Access Requests",
     "Network": "Networks",
     "Project": "Projects",
     "DatasetVariable": "Variables",
@@ -2353,6 +2361,15 @@
     "deleting": "To Delete",
     "editing": "In Edition",
     "indexed": "Indexed",
+    "harmonized": "Harmonized",
+    "OPENED": "Opened",
+    "SUBMITTED": "Submitted",
+    "REVIEWED": "Under Review",
+    "CONDITIONALLY_APPROVED": "Conditionally Approved",
+    "APPROVED": "Approved",
+    "REJECTED": "Rejected",
+    "totalFiles": "Total Files",
+    "publishedFiles": "Published Files",
     "variables": "Associated Variables",
     "totalWithVariable": "Studies With Variables",
     "requireIndexing": "Require Indexing",

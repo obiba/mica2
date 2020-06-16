@@ -10,11 +10,11 @@
 
 package org.obiba.mica.micaConfig.domain;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.stream.Collectors;
-
+import com.google.common.base.Charsets;
+import com.google.common.base.MoreObjects;
+import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.NotEmpty;
 import org.obiba.mica.core.domain.AbstractAuditableDocument;
@@ -23,11 +23,10 @@ import org.obiba.mica.core.domain.Membership;
 import org.obiba.runtime.Version;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import com.google.common.base.Charsets;
-import com.google.common.base.MoreObjects;
-import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.stream.Collectors;
 
 @Document
 public class MicaConfig extends AbstractAuditableDocument {
@@ -121,7 +120,7 @@ public class MicaConfig extends AbstractAuditableDocument {
   private boolean isStudyDatasetEnabled = true;
 
   private boolean isHarmonizationDatasetEnabled = true;
-  
+
   private boolean isImportStudiesFeatureEnabled = true;
 
   private boolean variableSummaryRequiresAuthentication = false;
@@ -157,6 +156,12 @@ public class MicaConfig extends AbstractAuditableDocument {
   private boolean signupWithPassword = true;
 
   private OpalViewsGrouping opalViewsGrouping = OpalViewsGrouping.PROJECT_TABLE;
+
+  private boolean isVariablesCountEnabled = true;
+
+  private boolean isProjectsCountEnabled = true;
+
+  private boolean isDataAccessRequestCountEnabled = true;
 
   public String getName() {
     return name;
@@ -583,12 +588,36 @@ public class MicaConfig extends AbstractAuditableDocument {
     this.opalViewsGrouping = opalViewsGrouping;
   }
 
+  public boolean isVariablesCountEnabled() {
+    return isVariablesCountEnabled;
+  }
+
+  public void setVariablesCountEnabled(boolean variablesCountEnabled) {
+    isVariablesCountEnabled = variablesCountEnabled;
+  }
+
+  public boolean isProjectsCountEnabled() {
+    return isProjectsCountEnabled;
+  }
+
+  public void setProjectsCountEnabled(boolean projectsCountEnabled) {
+    isProjectsCountEnabled = projectsCountEnabled;
+  }
+
+  public boolean isDataAccessRequestCountEnabled() {
+    return isDataAccessRequestCountEnabled;
+  }
+
+  public void setDataAccessRequestCountEnabled(boolean dataAccessRequestCountEnabled) {
+    isDataAccessRequestCountEnabled = dataAccessRequestCountEnabled;
+  }
+
   public enum OpalViewsGrouping {
     PROJECT_TABLE,
     PROJECT_ENTITY_TYPE,
     ENTITY_TYPE
   }
-  
+
   public boolean isImportStudiesFeatureEnabled() {
 	return isImportStudiesFeatureEnabled;
   }

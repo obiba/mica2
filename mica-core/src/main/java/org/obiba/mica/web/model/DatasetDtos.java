@@ -102,8 +102,11 @@ class DatasetDtos {
       StudyDatasetState state = studyDatasetStateRepository.findOne(dataset.getId());
       if(state != null) {
         builder.setPublished(state.isPublished());
-        builder.setExtension(Mica.EntityStateDto.datasetState,
-          entityStateDtos.asDto(state).setPermissions(permissionsDto).build());
+        Mica.EntityStateDto.Builder stateBuilder = entityStateDtos.asDto(state).setPermissions(permissionsDto);
+        builder.setExtension(
+          Mica.EntityStateDto.datasetState,
+          stateBuilder.setPermissions(permissionsDto).setRequireIndexing(state.isRequireIndexing()).build()
+        );
       }
     }
 

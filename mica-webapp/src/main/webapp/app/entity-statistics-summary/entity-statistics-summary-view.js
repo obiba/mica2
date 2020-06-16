@@ -12,19 +12,24 @@
 
 (function () {
 
-  const SORT_ORDER = [
-    'Study',
-    'HarmonizationStudy',
-    'StudyDataset',
-    'HarmonizationDataset',
-    'Network',
-    'Project'
-  ];
+  const SORT_ORDER = {
+    'Study': true,
+    'HarmonizationStudy': true,
+    'StudyDataset': true,
+    'HarmonizationDataset': true,
+    'Network': true,
+    'DatasetVariable': true,
+    'Project': true,
+    'DataAccessRequest': true
+  };
 
   class EntityStatisticsSummaryView {
-    constructor(MicaMetricsResource) {
+    constructor($q, MicaConfigResource, MicaMetricsResource) {
+      this.$q = $q;
+      this.MicaConfigResource = MicaConfigResource;
       this.MicaMetricsResource = MicaMetricsResource;
       this.loading = false;
+      this.errors = false;
     }
 
     __processIndexedProperty(properties) {
@@ -34,6 +39,7 @@
 
       if (notIndexed > 0) {
         published.errors = notIndexed;
+        this.errors = true;
       }
     }
 
@@ -44,6 +50,7 @@
 
       if (notIndexed > 0) {
         published.errors = notIndexed;
+        this.errors = true;
       }
     }
 
@@ -63,11 +70,23 @@
       }
     }
 
-    __processDocuments(stats) {
-      stats.documents = stats.documents.filter((document) => SORT_ORDER.indexOf(document.type) > -1);
+    __processDocuments(stats, config) {
+      let sortOrder = Object.assign({}, SORT_ORDER);
+      if (!config.isVariablesCountEnabled) {
+        delete sortOrder.DatasetVariable;
+      }
+      if (!config.isProjectsCountEnabled) {
+        delete sortOrder.Project;
+      }
+      if (!config.isDataAccessRequestsCountEnabled) {
+        delete sortOrder.DataAccessRequest;
+      }
+      sortOrder = Object.keys(sortOrder);
+
+      stats.documents = stats.documents.filter((document) => sortOrder.indexOf(document.type) > -1);
       stats.documents.sort((a, b) => {
-        const ia = SORT_ORDER.indexOf(a.type);
-        const ib = SORT_ORDER.indexOf(b.type);
+        const ia = sortOrder.indexOf(a.type);
+        const ib = sortOrder.indexOf(b.type);
         return ia - ib;
       });
 
@@ -75,14 +94,19 @@
     }
 
     __fetchData() {
+      this.errors = false;
       this.loading = true;
-      this.MicaMetricsResource.get().$promise
-        .then(stats => {
+      this.$q
+        .all([this.MicaConfigResource.get().$promise, this.MicaMetricsResource.get().$promise])
+        .then(results => {
+          const config = results[0]
+          const stats = results[1]
           this.loading = false;
-          this.__processDocuments(stats);
+          this.__processDocuments(stats, config);
           this.stats = stats;
         })
         .catch(this.loading = false);
+
     }
 
     $onInit() {
@@ -102,6 +126,8 @@
     templateUrl: 'app/entity-statistics-summary/views/entity-statistics-summary-view.html',
     controllerAs: '$ctrl',
     controller: [
+      '$q',
+      'MicaConfigResource',
       'MicaMetricsResource',
       EntityStatisticsSummaryView
     ]

@@ -66,6 +66,7 @@ message EntityStateDto {
   optional string publishedBy = 5;
   optional string publishedId = 6;
   optional PermissionsDto permissions = 7;
+  optional bool requireIndexing = 8;
 
   extend NetworkDto {
     optional EntityStateDto state = 1000;
@@ -446,6 +447,9 @@ message MicaConfigDto {
   optional bool isProjectEnabled = 52;
   optional bool isUsePublicUrlForSharedLink = 53;
   optional bool isImportStudiesFeatureEnabled = 54;
+  optional bool isVariablesCountEnabled = 55;
+  optional bool isProjectsCountEnabled = 56;
+  optional bool isDataAccessRequestsCountEnabled = 57;
 }
 
 message PublicMicaConfigDto {
@@ -1006,7 +1010,6 @@ message AttachmentStateDto {
 }
 
 message MicaMetricsDto {
-
     message DocumentMetricsDto {
       required string type = 1;
       repeated PropertyDto properties = 7;
@@ -1018,7 +1021,6 @@ message MicaMetricsDto {
     }
 
     repeated DocumentMetricsDto documents = 1;
-    repeated DocumentMetricsDto files = 2;
 }
 
 message DocumentSetDto {

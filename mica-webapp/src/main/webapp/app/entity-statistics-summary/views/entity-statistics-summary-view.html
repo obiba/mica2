@@ -3,12 +3,14 @@
   <h2>
     <ol class="breadcrumb mica-breadcrumb">
       <li><a href="#/admin" translate>global.menu.admin</a></li>
-      <li class="active" translate>entity-statistics-summary.breadcrumb</li>
+      <li class="active" translate>entity-statistics-summary.full-title</li>
     </ol>
   </h2>
 
+  <p class="alert alert-warning" ng-if="$ctrl.errors" translate>Published documents highlighted in red require indexing.</p>
+
   <a href ng-click="$ctrl.onRefresh()" class="btn btn-info">
-    <i class="fa fa-plus"></i> <span translate>global.refresh</span>
+    <i class="fa fa-refresh"></i> <span translate>global.refresh</span>
   </a>
 
   <p ng-if="$ctrl.loading" class="voffset2 loading"></p>

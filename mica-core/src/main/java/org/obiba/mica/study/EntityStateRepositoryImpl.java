@@ -30,7 +30,7 @@ public class EntityStateRepositoryImpl implements EntityStateRepositoryCustom {
   }
 
   @Override
-  public List<LinkedHashMap> countByEachStateStatus() {
+  public List<LinkedHashMap> countByEachStateStatus(boolean createEmpty) {
     List<String> aggOperations = Arrays.asList(
       "{\n" +
         "    \"$group\": {\n" +
@@ -40,10 +40,16 @@ public class EntityStateRepositoryImpl implements EntityStateRepositoryCustom {
         "  }"
     );
 
-    return aggregationExecutor.execute(aggOperations, collection);
+    List<LinkedHashMap> counts = aggregationExecutor.execute(aggOperations, collection);
+
+    if (counts.isEmpty() && createEmpty) {
+      return createEmptyCountByEachStateStatus();
+    }
+
+    return counts;
   }
 
-  public List<LinkedHashMap> createEmptyCountByEachStateStatus() {
+  protected List<LinkedHashMap> createEmptyCountByEachStateStatus() {
     return Lists.newArrayList(
       new LinkedHashMap<String, Object>() {{
         put("total", 0);

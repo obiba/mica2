@@ -10,6 +10,7 @@
 
 package org.obiba.mica.micaConfig.service;
 
+import org.obiba.mica.access.DataAccessRequestRepository;
 import org.obiba.mica.dataset.HarmonizationDatasetRepository;
 import org.obiba.mica.dataset.HarmonizationDatasetStateRepository;
 import org.obiba.mica.dataset.StudyDatasetRepository;
@@ -38,6 +39,8 @@ import org.springframework.stereotype.Service;
 import javax.inject.Inject;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class MicaMetricsService {
@@ -96,12 +99,11 @@ public class MicaMetricsService {
   @Inject
   private PublishedFileService publishedFileService;
 
-  private LinkedHashMap<String, Object> getStateCount(EntityStateRepositoryCustom repository) {
-    List<LinkedHashMap> linkedHashMaps = repository.countByEachStateStatus();
-    if (linkedHashMaps.isEmpty()) {
-      linkedHashMaps = repository.createEmptyCountByEachStateStatus();
-    }
+  @Inject
+  private DataAccessRequestRepository dataAccessRequestRepository;
 
+  private LinkedHashMap<String, Object> getStateCount(EntityStateRepositoryCustom repository) {
+    List<LinkedHashMap> linkedHashMaps = repository.countByEachStateStatus(true);
     LinkedHashMap linkedHashMap = linkedHashMaps.get(0);
     linkedHashMap.remove("_id");
     return linkedHashMap;
@@ -270,8 +272,18 @@ public class MicaMetricsService {
     return publishedFileService.getCount("project");
   }
 
+  // Data Access
+
+  public LinkedHashMap<String, Object> getDataAccessRequestsStateCount() {
+    return dataAccessRequestRepository.getCountByStatus().get(0);
+  }
+
   // Variables
   public long getPublishedVariablesCount() {
     return publishedDatasetVariableService.getCount();
+  }
+
+  public long getHarmonizedVariablesCount() {
+    return publishedDatasetVariableService.getHarmonizedCount();
   }
 }
