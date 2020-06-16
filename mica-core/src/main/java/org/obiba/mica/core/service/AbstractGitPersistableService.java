@@ -36,7 +36,6 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Null;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -187,7 +186,7 @@ public abstract class AbstractGitPersistableService<T extends EntityState, T1 ex
     return getEntityStateRepository().save(entityState);
   }
 
-  protected T publishStateInternal(@Nullable String id) {
+  protected T publishStateInternal(@NotNull String id) {
     T entityState = findStateById(id);
     if(entityState != null) {
       entityState.setRevisionStatus(DRAFT);
@@ -215,7 +214,6 @@ public abstract class AbstractGitPersistableService<T extends EntityState, T1 ex
   protected T unPublishStateInternal(@NotNull String id) {
     T entityState = findStateById(id);
     if(entityState != null) {
-      entityState.resetRevisionsAhead();
       entityState.resetRevisionsAhead();
       entityState.setPublishedTag(null);
       entityState.setPublicationDate(null);

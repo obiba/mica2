@@ -150,6 +150,7 @@ public class DraftHarmonizedDatasetsResource {
     public void indexAll() {
       harmonizedDatasetService.indexAll();
     }
+
     @Async
     public void indexByIds(List<String> ids) {
       harmonizedDatasetService.indexByIds(ids, true);

@@ -10,7 +10,6 @@
 
 package org.obiba.mica.access;
 
-import com.mongodb.BasicDBObject;
 import org.obiba.mica.access.domain.DataAccessRequest;
 import org.obiba.mica.core.repository.DBRefAwareRepository;
 

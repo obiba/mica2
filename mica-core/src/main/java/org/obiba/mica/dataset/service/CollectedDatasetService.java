@@ -463,8 +463,8 @@ public class CollectedDatasetService extends DatasetService<StudyDataset, StudyD
   }
 
   /**
-   * Upon an order change of a population or DCE, corresponding published datasets must be indexed to preserve the
-   * correct of their variables.
+   * Upon an order change of a population or DCE, corresponding published datasets must be indexed so that their
+   * corresponding variables have the same order.
    *
    * @param event
    */

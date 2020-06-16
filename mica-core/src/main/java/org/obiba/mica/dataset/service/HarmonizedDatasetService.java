@@ -240,8 +240,13 @@ public class HarmonizedDatasetService extends DatasetService<HarmonizationDatase
               ? populateHarmonizedVariablesMap(dataset)
               : null;
 
-          Iterable<DatasetVariable> datasetVariables = mustIndexVariables && publishedDatasets.contains(dataset) ? wrappedGetDatasetVariables(dataset) : null;
-          eventBus.post(new DatasetPublishedEvent(dataset, datasetVariables, harmonizationVariables, getCurrentUsername()));
+          Iterable<DatasetVariable> datasetVariables = mustIndexVariables && publishedDatasets.contains(dataset)
+            ? wrappedGetDatasetVariables(dataset)
+            : null;
+
+          eventBus.post(
+            new DatasetPublishedEvent(dataset, datasetVariables, harmonizationVariables, getCurrentUsername())
+          );
         }
 
       } catch (Exception e) {
@@ -497,7 +502,7 @@ public class HarmonizedDatasetService extends DatasetService<HarmonizationDatase
   }
 
   /**
-   * TODO Index variables by OpalTables to prevent retrieving all in memory before indexing them.
+   * TODO Index variables by OpalTables to prevent retrieving all variables in memory before indexing them.
    *
    * @param dataset
    * @return

@@ -266,7 +266,6 @@ class DataAccessRequestDtos {
     if (requests != null) {
 
       Map<String, Subject> micaProfiles = userProfileService.getProfilesByGroup(null).stream().collect(Collectors.toMap(Subject::getUsername, profile -> profile));
-
       Map<Object, LinkedHashMap> allAmendmentsSummary = dataAccessRequestRepository.getAllAmendmentsSummary();
 
       return requests.stream()

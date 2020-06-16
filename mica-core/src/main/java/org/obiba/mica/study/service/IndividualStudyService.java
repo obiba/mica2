@@ -154,7 +154,7 @@ public class IndividualStudyService extends AbstractStudyService<StudyState, Stu
   }
 
   @Override
-  protected StudyState publishStateInternal(@Nullable String id) {
+  protected StudyState publishStateInternal(@NotNull String id) {
     StudyState studyState = super.publishStateInternal(id);
     if (studyState.isPopulationOrDceWeightChange()) {
       studyState.setPopulationOrDceWeightChange(false);
@@ -165,7 +165,7 @@ public class IndividualStudyService extends AbstractStudyService<StudyState, Stu
   }
 
   @Override
-  protected StudyState unPublishStateInternal(String id) {
+  protected StudyState unPublishStateInternal(@NotNull String id) {
     StudyState studyState = super.unPublishStateInternal(id);
     // reaching here implies that none of the dependent documents are published
     studyState.setPopulationOrDceWeightChange(false);

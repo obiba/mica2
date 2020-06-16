@@ -12,7 +12,7 @@
 
 (function () {
 
-  const ENTITY_RESOUSRCE_MAP = {
+  const ENTITY_RESOURCE_MAP = {
     'Study': 'individual-studies',
     'HarmonizationStudy': 'harmonization-studies',
     'StudyDataset': 'collected-datasets',
@@ -39,7 +39,7 @@
             this.document = document;
             this.loading = true;
             this.entityTitle = $filter('translate')(`entity-statistics-summary.${document.type}`);
-            EntityIndexHealthResource.get({entityResource: ENTITY_RESOUSRCE_MAP[document.type]}).$promise
+            EntityIndexHealthResource.get({entityResource: ENTITY_RESOURCE_MAP[document.type]}).$promise
               .then(response => {
                 this.loading = false;
                 this.requireIndexing = response.requireIndexing
@@ -61,7 +61,7 @@
 
             this.onIndex = () => {
               const ids = this.requireIndexing.map(item => item.id);
-              DraftEntitiesIndexResource.build({entityResource: ENTITY_RESOUSRCE_MAP[document.type], id: ids}).$promise
+              DraftEntitiesIndexResource.build({entityResource: ENTITY_RESOURCE_MAP[document.type], id: ids}).$promise
                 .then($uibModalInstance.dismiss('close'))
                 .catch(response => console.debug(response));
             };

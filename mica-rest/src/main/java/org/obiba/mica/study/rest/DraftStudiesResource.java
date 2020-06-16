@@ -25,7 +25,6 @@ import javax.ws.rs.core.Response;
 import com.google.common.eventbus.EventBus;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.obiba.mica.core.domain.AbstractGitPersistable;
-import org.obiba.mica.network.event.IndexNetworksEvent;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.study.event.IndexStudiesEvent;
 import org.obiba.mica.study.service.StudyService;

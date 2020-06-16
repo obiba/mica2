@@ -11,11 +11,8 @@
 package org.obiba.mica.network.search;
 
 import com.google.common.eventbus.Subscribe;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.inject.Inject;
 import org.obiba.mica.core.domain.Membership;
@@ -32,7 +29,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
-import sun.nio.ch.Net;
 
 @Component
 public class NetworkIndexer {

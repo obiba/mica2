@@ -40,7 +40,7 @@ public class DataAccessRequestRepositoryImpl
   final
   MongoTemplate mongoTemplate;
 
-  private final MongoAggregationExecutor aggrgationExecutor;
+  private final MongoAggregationExecutor aggregationExecutor;
 
   @Inject
   public DataAccessRequestRepositoryImpl(AttachmentRepository attachmentRepository,
@@ -49,7 +49,7 @@ public class DataAccessRequestRepositoryImpl
     this.attachmentRepository = attachmentRepository;
     this.fileStoreService = fileStoreService;
     this.mongoTemplate = mongoTemplate;
-    this.aggrgationExecutor = MongoAggregationExecutor.newInstance(mongoTemplate);
+    this.aggregationExecutor = MongoAggregationExecutor.newInstance(mongoTemplate);
   }
 
   @Override
@@ -122,7 +122,7 @@ public class DataAccessRequestRepositoryImpl
     }
 
     try {
-      List<LinkedHashMap> results = aggrgationExecutor.execute(aggScripts, "dataAccessAmendment");
+      List<LinkedHashMap> results = aggregationExecutor.execute(aggScripts, "dataAccessAmendment");
       return results.stream().collect(Collectors.toMap(entry -> entry.get("_id"), entry -> entry));
 
 
@@ -138,7 +138,7 @@ public class DataAccessRequestRepositoryImpl
       "{" +
       "  $group : {_id: '$status', count: {$sum : 1}}}\n" +
       "}";
-    List<LinkedHashMap> result = aggrgationExecutor.execute(Arrays.asList(aggOperation), "dataAccessRequest");
+    List<LinkedHashMap> result = aggregationExecutor.execute(Arrays.asList(aggOperation), "dataAccessRequest");
 
     LinkedHashMap<String, Object> counts = createCountMap();
     result.forEach(count -> {

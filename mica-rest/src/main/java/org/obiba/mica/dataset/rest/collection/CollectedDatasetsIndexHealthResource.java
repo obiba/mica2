@@ -6,14 +6,11 @@ import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.dataset.domain.StudyDatasetState;
 import org.obiba.mica.dataset.service.CollectedDatasetService;
 import org.obiba.mica.dataset.service.PublishedDatasetService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 import javax.ws.rs.Path;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -22,7 +19,6 @@ import java.util.stream.Collectors;
 @Path("/collected-datasets/index/health")
 @Scope("request")
 public class CollectedDatasetsIndexHealthResource extends EntityIndexHealthResource<StudyDataset> {
-  private static final Logger logger = LoggerFactory.getLogger(CollectedDatasetsIndexHealthResource.class);
 
   final private CollectedDatasetService collectedDatasetService;
 
@@ -57,7 +53,6 @@ public class CollectedDatasetsIndexHealthResource extends EntityIndexHealthResou
 
   @Override
   protected List<String> findAllIndexedIds() {
-    logger.info("##### found findAllIndexedIds for DS {}", new Date());
     return publishedDatasetService.suggest(MAX_VALUE, "en", createEsQuery(StudyDataset.class), ES_QUERY_FIELDS, null);
   }
 

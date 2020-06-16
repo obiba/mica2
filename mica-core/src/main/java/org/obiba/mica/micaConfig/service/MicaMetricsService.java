@@ -39,8 +39,6 @@ import org.springframework.stereotype.Service;
 import javax.inject.Inject;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 @Service
 public class MicaMetricsService {
@@ -226,16 +224,9 @@ public class MicaMetricsService {
     return getStateCount(harmonizationDatasetStateRepository);
   }
 
-  public long getDraftHarmonizationDatasetsCount() {
-    return harmonizationDatasetRepository.count();
-  }
 
   public long getPublishedHarmonizationDatasetsCount() {
     return publishedDatasetService.getHarmonizationDatasetsCount();
-  }
-
-  public long getEditingHarmonizationDatasetsCount() {
-    return harmonizationDatasetStateRepository.countByPublishedTagNotNullAndRevisionsAheadGreaterThanEqual(1);
   }
 
   public long getDraftHarmonizationDatasetFilesCount() {
@@ -252,16 +243,8 @@ public class MicaMetricsService {
     return getStateCount(projectStateRepository);
   }
 
-  public long getDraftProjectsCount() {
-    return projectRepository.count();
-  }
-
   public long getPublishedProjectsCount() {
     return publishedProjectService.getCount();
-  }
-
-  public long getEditingProjectsCount() {
-    return projectStateRepository.countByPublishedTagNotNullAndRevisionsAheadGreaterThanEqual(1);
   }
 
   public long getDraftProjectFilesCount() {

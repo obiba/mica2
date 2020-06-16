@@ -919,7 +919,7 @@
       "study-not-published":"Before publishing a collected dataset, its linked individual study must already be published",
       "population-not-published":"Before publishing a collected dataset, its linked population must already be published"
     },
-    "require-indexing-alert": "Due to an update in study '{{arg0}}' this dataset requires a re-index, visit the <a href=\"#/admin/statistics-summary\"><u>administration</u></a> page to proceed."
+    "require-indexing-alert": "Due to an update in study '{{arg0}}' this dataset requires to be indexed, visit the <a href=\"#/admin/statistics-summary\"><u>administration</u></a> page to proceed."
   },
   "attributes": "Attributes",
   "attribute": {

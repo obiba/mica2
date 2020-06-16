@@ -351,7 +351,6 @@
 <script src="app/persons/person-memberships.js"></script>
 <script src="app/persons/entity-list.js"></script>
 <script src="app/persons/membership-roles.js"></script>
-
 <script src="app/entity-statistics-summary/entity-statistics-summary.js"></script>
 <script src="app/entity-statistics-summary/entity-statistics-summary-view.js"></script>
 <script src="app/entity-statistics-summary/entity-statistics-summary-item.js"></script>
