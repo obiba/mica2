@@ -33,6 +33,7 @@ var mica = angular.module('mica', [
   'mica.analysis',
   'mica.project',
   'mica.persons',
+  'mica.entityStatisticsSummary',
   'ngCookies',
   'ngResource',
   'ngRoute',

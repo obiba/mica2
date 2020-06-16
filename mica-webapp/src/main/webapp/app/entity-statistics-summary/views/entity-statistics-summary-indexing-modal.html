@@ -1,0 +1,49 @@
+<div class="modal-content">
+  <div class="modal-header">
+    <button type="button" class="close" aria-hidden="true" ng-click="$ctrl.onClose()">&times;</button>
+    <h4 class="modal-title" id="entity-list-modal">
+      <span>{{'entity-statistics-summary.indexing-dialog.title' | translate:{entity:$ctrl.entityTitle} }}</span>
+    </h4>
+  </div>
+
+  <div class="modal-body">
+    <div class="help-block">{{'entity-statistics-summary.indexing-dialog.message' | translate:{entity:$ctrl.entityTitle} }}</div>
+    <p ng-if="$ctrl.loading" class="voffset2 loading"></p>
+    <div ng-if="!$ctrl.loading" class="table-responsive">
+
+      <dir-pagination-controls
+        pagination-id="entities"
+        class="pull-right"
+        on-page-change="$ctrl.onPageChanged(newPageNumber, oldPageNumber)">
+      </dir-pagination-controls>
+
+      <table class="table table-bordered table-striped">
+        <thead>
+        <tr>
+          <th class="col-xs-3" translate>id</th>
+          <th class="col-xs-5" translate>acronym</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr dir-paginate="item in $ctrl.requireIndexing | itemsPerPage:10" pagination-id="entities">
+          <td>
+              {{item.id}}
+          </td>
+          <td>
+            {{item.title}}
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="modal-footer">
+    <button type="button" class="btn btn-default" ng-click="$ctrl.onClose()">
+      <span translate>cancel</span>
+    </button>
+    <button ng-disabled="$ctrl.addDisabled" ng-click="$ctrl.onIndex()" class="btn btn-primary">
+      <span translate>Index</span>
+    </button>
+  </div>
+</div>

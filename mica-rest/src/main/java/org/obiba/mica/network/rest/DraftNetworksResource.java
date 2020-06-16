@@ -128,8 +128,8 @@ public class DraftNetworksResource {
   @Path("/networks/_index")
   @Timed
   @RequiresPermissions("/draft/network:PUBLISH")
-  public Response reIndex() {
-    eventBus.post(new IndexNetworksEvent());
+  public Response reIndex(@Nullable @QueryParam("id") List<String> ids) {
+    eventBus.post(new IndexNetworksEvent(ids));
     return Response.noContent().build();
   }
 

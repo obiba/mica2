@@ -1,4 +1,4 @@
-/*
+  /*
  * Copyright (c) 2018 OBiBa. All rights reserved.
  *
  * This program and the accompanying materials
@@ -11,7 +11,6 @@
 package org.obiba.mica.network.search;
 
 import com.google.common.eventbus.Subscribe;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -78,12 +77,26 @@ public class NetworkIndexer {
   @Subscribe
   public void reIndexNetworks(IndexNetworksEvent event) {
     log.info("Reindexing all networks");
-    reIndexAll(Indexer.PUBLISHED_NETWORK_INDEX, networkService.findAllPublishedNetworks().stream().map(this::addMemberships).collect(Collectors.toList()));
-    reIndexAll(Indexer.DRAFT_NETWORK_INDEX, networkService.findAllNetworks().stream().map(this::addMemberships).collect(Collectors.toList()));
+    List<String> networkIds = event.getIds();
+
+    if (networkIds.isEmpty()) {
+      reIndexAll(Indexer.PUBLISHED_NETWORK_INDEX, addMemberships(networkService.findAllPublishedNetworks()));
+      reIndexAll(Indexer.DRAFT_NETWORK_INDEX, addMemberships(networkService.findAllNetworks()));
+    } else {
+      // indexAll does not deletes the index before
+      indexer.indexAll(Indexer.PUBLISHED_NETWORK_INDEX, addMemberships(networkService.findAllPublishedNetworks(networkIds)));
+      indexer.indexAll(Indexer.DRAFT_NETWORK_INDEX, addMemberships(networkService.findAllNetworks(networkIds)));
+    }
   }
 
   private void reIndexAll(String indexName, Iterable<Network> networks) {
     indexer.reindexAll(indexName, networks);
+  }
+
+  private List<Network> addMemberships(List<Network> networks) {
+    return networks.stream()
+      .map(this::addMemberships)
+      .collect(Collectors.toList());
   }
 
   private Network addMemberships(Network network) {

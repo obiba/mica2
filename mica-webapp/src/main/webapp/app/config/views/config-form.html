@@ -102,13 +102,13 @@
               label="config.collected-dataset-enabled" help="config.collected-dataset-enabled-help"></div>
           <div form-checkbox name="isHarmonizedDatasetEnabled" model="micaConfig.isHarmonizedDatasetEnabled"
               label="config.harmonized-dataset-enabled" help="config.harmonized-dataset-enabled-help"></div>
-          <div form-checkbox name="isProjectEnabled" model="micaConfig.isProjectEnabled"
+          <div form-checkbox name="isProjectEnabled" ng-click="projectEnabledChanged()" model="micaConfig.isProjectEnabled"
                label="config.project-enabled" help="config.project-enabled-help"></div>
-          <div form-checkbox name="isDataAccessEnabled" model="micaConfig.isDataAccessEnabled"
+          <div form-checkbox name="isDataAccessEnabled" ng-click="dataAccessEnabledChanged()"  model="micaConfig.isDataAccessEnabled"
                label="config.data-access-enabled" help="config.data-access-enabled-help"></div>
 		  <div form-checkbox name="isImportStudiesFeatureEnabled" model="micaConfig.isImportStudiesFeatureEnabled"
                label="config.import-studies-feature-enabled" help="config.import-studies-feature-enabled-help"></div>
-               
+
         <h4 translate class="voffset4">config.searchLayout.title</h4>
         <span class="help-block" translate>config.searchLayout.help</span>
         <div form-radio-group options="searchLayoutOptions" model="selectedSearchLayout"></div>
@@ -158,6 +158,22 @@
             <span ng-show="form.opalViewsGrouping.$error.required" translate>required</span>
           </p>
           <p class="help-block">{{'config.opal-views-grouping-' + micaConfig.opalViewsGrouping + '-help' | translate}}</p>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="row">
+      <h4 class="voffset5" translate>entity-statistics-summary.full-title</h4>
+      <div class="col-md-6">
+        <div form-checkbox name="showVariablesCount" model="micaConfig.isVariablesCountEnabled"
+             label="config.variables-count-enabled" help="config.variables-count-enabled-help">
+        </div>
+        <div form-checkbox name="showProjectsCount" model="micaConfig.isProjectsCountEnabled"
+             label="config.projects-count-enabled" disabled="!micaConfig.isProjectEnabled" help="config.projects-count-enabled-help">
+        </div>
+        <div form-checkbox name="showDataAccessRequestsCount" model="micaConfig.isDataAccessRequestsCountEnabled"
+             label="config.data-access-requests-count-enabled" disabled="!micaConfig.isDataAccessEnabled" help="config.data-access-requests-count-enabled-help">
         </div>
       </div>
     </div>

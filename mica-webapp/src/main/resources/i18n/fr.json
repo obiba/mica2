@@ -76,6 +76,7 @@
     "definition": "Définition",
     "display": "Affichage",
     "key": "Clé",
+    "refresh": "Rafraîchir",
     "messages": {
       "error": {
           "unique-id": "L'ID doit être unique.",
@@ -504,7 +505,13 @@
       "layout2": "Mise en page 2",
       "layout1-help": "Mise en page mettant l'accent sur une barre de recherche qui mappe les mots clés en taxonomies disponibles.",
       "layout2-help": "Disposition fournissant un panneau de recherche sur le côté gauche qui affiche la taxonomie complète des différentes catégories de recherche (variable, étude et réseau)."
-    }
+    },
+    "variables-count-enabled": "Statistiques des variables activées",
+    "variables-count-enabled-help": "Afficher le résumé des statistiques des variables dans la section d'administration.",
+    "projects-count-enabled": "Statistiques des projets activées",
+    "projects-count-enabled-help": "Afficher le résumé des statistiques des projets dans la section d'administration.",
+    "data-access-requests-count-enabled": "Statistiques des demandes d'accès aux données activées",
+    "data-access-requests-count-enabled-help": "Afficher le résumé des statistiques des demandes d'accès aux données dans la section d'administration."
   },
   "publish": {
     "label": "Publier",
@@ -911,7 +918,8 @@
     "collection":{
       "study-not-published":"Pour publier un ensemble de données collectées, l'étude de collecte qui lui est liée doit aussi être publiée",
       "population-not-published":"Pour publier un ensemble de données collectées, la population qui lui est liée doit aussi être publiée"
-    }
+    },
+    "require-indexing-alert": "En raison d'une mise à jour dans l'étude '{{arg0}}', cet ensemble de données doit être indexé, visitez la page <a href=\"#/admin/statistics-summary\"> <u> administration </u> </a> pour procéder."
   },
   "attributes": "Attributs",
   "attribute": {
@@ -1468,7 +1476,8 @@
       "translations": "Gérer les traductions des libellés.",
       "cart": "Panier de variables.",
       "sets": "Listes de variables.",
-      "persons": "Gérer les personnes associées aux études et aux réseaux par un rôle tel que contact ou enquêteur."
+      "persons": "Gérer les personnes associées aux études et aux réseaux par un rôle tel que contact ou enquêteur.",
+      "entity-statistics-summary": "Résumé statistique des documents de contenu Mica."
     }
   },
   "server": {
@@ -2333,6 +2342,41 @@
     "delete-entities-dialog":{
       "title": "Supprimer l'adhésion",
       "message": "Êtes-vous sûr de vouloir supprimer tous les rôles de {{arg0}}?"
+    }
+  },
+  "entity-statistics-summary": {
+    "title": "Résumé des statistiques",
+    "full-title": "Résumé des statistiques de contenu",
+    "Study": "Étude individuelles",
+    "HarmonizationStudy": "Études harmonisées",
+    "StudyDataset": "Ensemble de données de collecte",
+    "HarmonizationDataset": "Ensemble de données harmonisées",
+    "DataAccessRequest": "Demande d'accès aux données",
+    "Network": "Réseaux",
+    "Project": "Pro jects",
+    "DatasetVariable": "Variables",
+    "total": "Total",
+    "published": "Publiés",
+    "reviewing": "En révision",
+    "deleting": "À supprimer",
+    "editing": "En édition",
+    "harmonized": "Harmonisés",
+    "OPENED": "Ouvertes",
+    "SUBMITTED": "Soumise",
+    "REVIEWED": "En révisions",
+    "CONDITIONALLY_APPROVED": "Approuvée sous conditions",
+    "APPROVED": "Approuvées",
+    "REJECTED": "Rejetées",
+    "totalFiles": "Total des fichiers",
+    "publishedFiles": "Fichiers publiés",
+    "variables": "Variables associées",
+    "totalWithVariable": "Études avec variables",
+    "requireIndexing": "Indexation requise",
+    "require-indexing": "Indexation requise, cliquez pour terminer",
+    "require-indexing-warning": "Les documents publiés surlignés en rouge nécessitent une indexation.",
+    "indexing-dialog": {
+      "title": "Indexation des {{entity}}",
+      "message": "Liste des {{entity}} à l'indexer:"
     }
   }
 }

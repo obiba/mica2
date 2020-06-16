@@ -157,6 +157,10 @@ public abstract class AbstractGitPersistableService<T extends EntityState, T1 ex
     return getEntityStateRepository().findByPublishedTagNotNull();
   }
 
+  public List<T> findPublishedStates(List<String> ids) {
+    return getEntityStateRepository().findByPublishedTagNotNullAndIdIn(ids);
+  }
+
   /**
    * Get the published entity identifiers from the repository (with short-term cache).
    *
@@ -182,7 +186,7 @@ public abstract class AbstractGitPersistableService<T extends EntityState, T1 ex
     return getEntityStateRepository().save(entityState);
   }
 
-  public T publishState(@NotNull String id) throws NoSuchEntityException {
+  protected T publishStateInternal(@NotNull String id) {
     T entityState = findStateById(id);
     if(entityState != null) {
       entityState.setRevisionStatus(DRAFT);
@@ -193,13 +197,21 @@ public abstract class AbstractGitPersistableService<T extends EntityState, T1 ex
       entityState.setPublishedBy(getCurrentUsername());
       entityState.resetRevisionsAhead();
       entityState.setPublicationDate(DateTime.now());
+    }
+
+    return entityState;
+  }
+
+  public T publishState(@NotNull String id) throws NoSuchEntityException {
+    T entityState = publishStateInternal(id);
+    if(entityState != null) {
       getEntityStateRepository().save(entityState);
     }
     idsCache.invalidate(PUBLISHED_CACHE_KEY);
     return entityState;
   }
 
-  public T unPublishState(@NotNull String id) {
+  protected T unPublishStateInternal(@NotNull String id) {
     T entityState = findStateById(id);
     if(entityState != null) {
       entityState.resetRevisionsAhead();
@@ -207,6 +219,14 @@ public abstract class AbstractGitPersistableService<T extends EntityState, T1 ex
       entityState.setPublicationDate(null);
       entityState.setPublishedBy(null);
       if(entityState.getRevisionStatus() != DELETED) entityState.setRevisionStatus(DRAFT);
+    }
+
+    return entityState;
+  }
+
+  public T unPublishState(@NotNull String id) {
+    T entityState = unPublishStateInternal(id);
+    if(entityState != null) {
       getEntityStateRepository().save(entityState);
     }
     idsCache.invalidate(PUBLISHED_CACHE_KEY);

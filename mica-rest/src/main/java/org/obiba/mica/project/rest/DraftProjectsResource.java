@@ -121,8 +121,8 @@ public class DraftProjectsResource {
   @Path("/projects/_index")
   @Timed
   @RequiresPermissions("/draft/project:PUBLISH")
-  public Response reIndex() {
-    eventBus.post(new IndexProjectsEvent());
+  public Response reIndex(@Nullable @QueryParam("id") List<String> ids) {
+    eventBus.post(new IndexProjectsEvent(ids));
     return Response.noContent().build();
   }
 

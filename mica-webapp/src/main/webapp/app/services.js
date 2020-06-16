@@ -261,10 +261,24 @@ mica.factory('IndexService', ['$resource',
     };
   }]);
 
-mica.factory('MicaMetricsService', ['$resource',
+mica.factory('MicaMetricsResource', ['$resource',
   function($resource) {
     return $resource('ws/config/metrics', {}, {
       get: {method: 'GET'}
+    });
+  }]);
+
+mica.factory('EntityIndexHealthResource', ['$resource',
+  function($resource) {
+    return $resource('ws/:entityResource/index/health', {}, {
+      get: {method: 'GET'}
+    });
+  }]);
+
+mica.factory('DraftEntitiesIndexResource', ['$resource',
+  function($resource) {
+    return $resource('ws/draft/:entityResource/_index', {}, {
+      build: {method: 'PUT', params: {entityResource: '@entityResource', id: '@id', errorHandler: true}}
     });
   }]);
 

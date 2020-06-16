@@ -24,9 +24,8 @@ import sun.util.locale.LanguageTag;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -94,22 +93,52 @@ public abstract class AbstractDocumentService<T> implements DocumentService<T> {
 
   @Override
   public List<String> suggest(int limit, String locale, String queryString) {
+    return suggest(limit, locale, queryString, null, this::filterSuggestions);
+  }
+
+  @Override
+  public List<String> suggest(int limit,
+                              String locale,
+                              String queryString,
+                              List<String> suggestedFields,
+                              Function<Set<String>, Set<String>> filterFunction) {
+
     Set<String> suggestions = Sets.newLinkedHashSet();
+
+    if (suggestedFields == null || suggestedFields.isEmpty()) {
+      suggestedFields = getSuggestionFields();
+    }
+
     // query default fields separately otherwise we do not know which field has matched and suggestion might not be correct
-    getSuggestionFields().forEach(df -> suggestions.addAll(searcher.suggest(getIndexName(), getType(), limit, locale, queryString, df)));
-    return Lists.newArrayList(suggestions.stream().map(s -> s
+    suggestedFields.forEach(df -> suggestions.addAll(searcher.suggest(getIndexName(), getType(), limit, locale, queryString, df)));
+
+    if (filterFunction == null) {
+      return new ArrayList<>(new HashSet<>(suggestions));
+    }
+
+    return Lists.newArrayList(filterFunction.apply(suggestions));
+  }
+
+  @Override
+  public long getCount() {
+    return getCountByRql("");
+  }
+
+  /**
+   * Removes all characters that will break RQL query parsing
+   *
+   * @param suggestions
+   * @return sanitized list of suggestions
+   */
+  protected Set<String> filterSuggestions(Set<String> suggestions) {
+    return suggestions.stream().map(s -> s
       .replace("'s", "") // english thing that confuses RQL
       .replace("l'", "") // french thing that confuses RQL
       .replaceAll("['\",:;?!\\(\\)]", "") // chars that might confuse RQL
       .replace(" - ", " ") // isolated hyphen
       .replaceAll("(\\.\\w+)", "") // remove chars after "dot"
       .trim().replaceAll(" +", " ")) // duplicated spaces
-      .collect(Collectors.toSet()));
-  }
-
-  @Override
-  public long getCount() {
-    return getCountByRql("");
+      .collect(Collectors.toSet());
   }
 
   protected long getCountByRql(String rql) {

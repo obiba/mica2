@@ -10,17 +10,14 @@
 
 package org.obiba.mica.project.service;
 
-import java.util.List;
-
-import javax.inject.Inject;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 import org.joda.time.DateTime;
 import org.obiba.mica.NoSuchEntityException;
-import org.obiba.mica.access.domain.DataAccessRequest;
 import org.obiba.mica.access.domain.DataAccessEntityStatus;
+import org.obiba.mica.access.domain.DataAccessRequest;
 import org.obiba.mica.access.event.DataAccessRequestDeletedEvent;
 import org.obiba.mica.access.event.DataAccessRequestUpdatedEvent;
 import org.obiba.mica.access.service.DataAccessRequestUtilService;
@@ -35,20 +32,17 @@ import org.obiba.mica.project.ProjectRepository;
 import org.obiba.mica.project.ProjectStateRepository;
 import org.obiba.mica.project.domain.Project;
 import org.obiba.mica.project.domain.ProjectState;
-import org.obiba.mica.project.event.IndexProjectsEvent;
-import org.obiba.mica.project.event.ProjectDeletedEvent;
-import org.obiba.mica.project.event.ProjectPublishedEvent;
-import org.obiba.mica.project.event.ProjectUnpublishedEvent;
-import org.obiba.mica.project.event.ProjectUpdatedEvent;
+import org.obiba.mica.project.event.*;
 import org.springframework.beans.BeanUtils;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import com.google.common.base.Strings;
-import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
+import javax.inject.Inject;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import java.util.List;
 
 import static java.util.stream.Collectors.toList;
 
@@ -206,7 +200,15 @@ public class ProjectService extends AbstractGitPersistableService<ProjectState, 
    * @return
    */
   public List<Project> findAllPublishedProjects() {
-    return findPublishedStates().stream() //
+    return findAllPublishedProjectsInternal(findPublishedStates());
+  }
+
+  public List<Project> findAllPublishedProjects(List<String> ids) {
+    return findAllPublishedProjectsInternal(findPublishedStates(ids));
+  }
+
+  private List<Project> findAllPublishedProjectsInternal(List<ProjectState> states) {
+    return states.stream() //
       .filter(projectState -> { //
         return gitService.hasGitRepository(projectState) && !Strings.isNullOrEmpty(projectState.getPublishedTag()); //
       }) //

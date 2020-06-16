@@ -1,0 +1,28 @@
+<div>
+
+  <h3 translate>{{'entity-statistics-summary.'+$ctrl.document.type}}</h3>
+  <div class="table-responsive">
+    <table class="table table-bordered table-striped">
+      <tbody>
+      <tr ng-repeat="(name, data) in $ctrl.document.properties track by $index">
+        <td class="col-xs-9">
+          <span translate>{{'entity-statistics-summary.'+name}}</span>
+        </td>
+        <td class="col-xs-3 text-right">
+          <span ng-if="!data.errors">{{data.value}}</span>
+          <a href ng-if="data.errors"
+             ng-click="$ctrl.onIndex()"
+             uib-popover="{{'entity-statistics-summary.require-indexing'| translate}}"
+             popover-trigger="'mouseenter'"
+             popover-placement="top-right"
+             class="text-danger">
+            <span class="text-danger">{{data.value}}</span>
+          </a>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+
+  </div>
+
+</div>

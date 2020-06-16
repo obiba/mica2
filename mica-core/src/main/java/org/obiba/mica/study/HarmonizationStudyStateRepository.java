@@ -14,5 +14,5 @@ import org.obiba.mica.core.repository.EntityStateRepository;
 import org.obiba.mica.study.domain.HarmonizationStudyState;
 import org.obiba.mica.study.domain.StudyState;
 
-public interface HarmonizationStudyStateRepository extends EntityStateRepository<HarmonizationStudyState> {
+public interface HarmonizationStudyStateRepository extends EntityStateRepository<HarmonizationStudyState>, EntityStateRepositoryCustom {
 }

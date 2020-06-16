@@ -14,6 +14,8 @@ import com.google.common.collect.Lists;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Set;
+import java.util.function.Function;
 
 public interface DocumentService<T> {
 
@@ -47,6 +49,9 @@ public interface DocumentService<T> {
   List<String> getSuggestionFields();
 
   List<String> suggest(int limit, String locale, String query);
+
+  List<String> suggest(int limit, String locale, String query, @Nullable List<String> suggestedFields,
+                       @Nullable Function<Set<String>, Set<String>> filterFunction);
 
   long getCount();
 

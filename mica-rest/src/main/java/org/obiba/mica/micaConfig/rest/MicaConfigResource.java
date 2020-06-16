@@ -10,42 +10,17 @@
 
 package org.obiba.mica.micaConfig.rest;
 
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.io.Writer;
-import java.net.URISyntaxException;
-import java.security.KeyStoreException;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Properties;
-import java.util.stream.Collectors;
-
-import javax.inject.Inject;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.StreamingOutput;
-import javax.ws.rs.core.UriInfo;
-
+import com.codahale.metrics.annotation.Timed;
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
+import com.google.common.eventbus.EventBus;
+import com.jayway.jsonpath.DocumentContext;
+import com.jayway.jsonpath.JsonPath;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.obiba.mica.JSONUtils;
+import org.obiba.mica.access.domain.DataAccessRequest;
 import org.obiba.mica.contact.event.IndexContactsEvent;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
@@ -55,12 +30,7 @@ import org.obiba.mica.dataset.service.KeyStoreService;
 import org.obiba.mica.file.event.IndexFilesEvent;
 import org.obiba.mica.micaConfig.domain.MicaConfig;
 import org.obiba.mica.micaConfig.event.TaxonomiesUpdatedEvent;
-import org.obiba.mica.micaConfig.service.CacheService;
-import org.obiba.mica.micaConfig.service.MicaConfigService;
-import org.obiba.mica.micaConfig.service.MicaMetricsService;
-import org.obiba.mica.micaConfig.service.OpalCredentialService;
-import org.obiba.mica.micaConfig.service.OpalService;
-import org.obiba.mica.micaConfig.service.TaxonomyService;
+import org.obiba.mica.micaConfig.service.*;
 import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.network.event.IndexNetworksEvent;
 import org.obiba.mica.project.domain.Project;
@@ -80,12 +50,14 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
 
-import com.codahale.metrics.annotation.Timed;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
-import com.google.common.eventbus.EventBus;
-import com.jayway.jsonpath.DocumentContext;
-import com.jayway.jsonpath.JsonPath;
+import javax.inject.Inject;
+import javax.ws.rs.*;
+import javax.ws.rs.core.*;
+import java.io.*;
+import java.net.URISyntaxException;
+import java.security.KeyStoreException;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 
@@ -343,84 +315,242 @@ public class MicaConfigResource {
       .addDocuments(
         Mica.MicaMetricsDto.DocumentMetricsDto.newBuilder()
           .setType(Network.class.getSimpleName())
-          .setTotal(micaMetricsService.getDraftNetworksCount())
-          .setPublished(micaMetricsService.getPublishedNetworksCount())
-          .setEditing(micaMetricsService.getEditingNetworksCount()))
-      .addFiles(Mica.MicaMetricsDto.DocumentMetricsDto.newBuilder()
-        .setType(Network.class.getSimpleName())
-        .setTotal(micaMetricsService.getDraftNetworkFilesCount())
-        .setPublished(micaMetricsService.getPublishedNetworkFilesCount()))
+          .addAllProperties(
+            micaMetricsService.getNetworksStateCount()
+              .entrySet()
+              .stream()
+              .map(entry -> Mica.MicaMetricsDto.PropertyDto.newBuilder()
+                .setName(entry.getKey()).setValue(Long.parseLong(entry.getValue().toString())).build())
+              .collect(Collectors.toList())
+          )
+          .addProperties(
+            Mica.MicaMetricsDto.PropertyDto.newBuilder()
+              .setName("indexed")
+              .setValue(micaMetricsService.getPublishedNetworksCount())
+              .build()
+            )
+          .addProperties(
+            Mica.MicaMetricsDto.PropertyDto.newBuilder()
+              .setName("totalFiles")
+              .setValue(micaMetricsService.getDraftNetworkFilesCount())
+              .build()
+          )
+          .addProperties(
+            Mica.MicaMetricsDto.PropertyDto.newBuilder()
+              .setName("publishedFiles")
+              .setValue(micaMetricsService.getPublishedNetworkFilesCount())
+              .build()
+          )
+        )
 
       // Individual Study
-      .addDocuments(
-        Mica.MicaMetricsDto.DocumentMetricsDto.newBuilder()
-          .setType(Study.class.getSimpleName())
-          .setTotal(micaMetricsService.getDraftIndividualStudiesCount())
-          .setPublished(micaMetricsService.getPublishedIndividualStudiesCount())
-          .setEditing(micaMetricsService.getEditingIndividualStudiesCount())
-          .setTotalWithVariable(micaMetricsService.getPublishedIndividualStudiesWithVariablesCount())
-          .setVariables(micaMetricsService.getPublishedIndividualStudiesVariablesCount()))
-
-      .addFiles(Mica.MicaMetricsDto.DocumentMetricsDto.newBuilder()
+      .addDocuments(Mica.MicaMetricsDto.DocumentMetricsDto.newBuilder()
         .setType(Study.class.getSimpleName())
-        .setTotal(micaMetricsService.getDraftIndividualStudiesFilesCount())
-        .setPublished(micaMetricsService.getPublishedIndividualStudiesFilesCount()))
+        .addAllProperties(
+          micaMetricsService.getIndividualStudiesStateCount()
+          .entrySet()
+          .stream()
+          .map(entry -> Mica.MicaMetricsDto.PropertyDto.newBuilder()
+            .setName(entry.getKey()).setValue(Long.parseLong(entry.getValue().toString())).build())
+          .collect(Collectors.toList())
+        )
+        .addProperties(
+          Mica.MicaMetricsDto.PropertyDto.newBuilder()
+            .setName("indexed")
+            .setValue(micaMetricsService.getPublishedIndividualStudiesCount())
+            .build()
+        )
+        .addProperties(
+          Mica.MicaMetricsDto.PropertyDto.newBuilder()
+            .setName("variables")
+            .setValue(micaMetricsService.getPublishedIndividualStudiesVariablesCount())
+            .build()
+        )
+        .addProperties(
+          Mica.MicaMetricsDto.PropertyDto.newBuilder()
+            .setName("totalWithVariable")
+            .setValue(micaMetricsService.getPublishedIndividualStudiesWithVariablesCount())
+            .build()
+        )
+        .addProperties(
+          Mica.MicaMetricsDto.PropertyDto.newBuilder()
+            .setName("totalFiles")
+            .setValue(micaMetricsService.getDraftIndividualStudiesFilesCount())
+            .build()
+        )
+        .addProperties(
+          Mica.MicaMetricsDto.PropertyDto.newBuilder()
+            .setName("publishedFiles")
+            .setValue(micaMetricsService.getPublishedIndividualStudiesFilesCount())
+            .build()
+        )
+      )
 
       // Harmonization Study
       .addDocuments(
         Mica.MicaMetricsDto.DocumentMetricsDto.newBuilder()
           .setType(HarmonizationStudy.class.getSimpleName())
-          .setTotal(micaMetricsService.getDraftHarmonizationStudiesCount())
-          .setPublished(micaMetricsService.getPublishedHarmonizationStudiesCount())
-          .setEditing(micaMetricsService.getEditingHarmonizationStudiesCount())
-          .setVariables(micaMetricsService.getPublishedHarmonizationStudiesVariablesCount()))
-      .addFiles(Mica.MicaMetricsDto.DocumentMetricsDto.newBuilder()
-        .setType(HarmonizationStudy.class.getSimpleName())
-        .setTotal(micaMetricsService.getDraftHarmonizationStudiesFilesCount())
-        .setPublished(micaMetricsService.getPublishedHarmonizationStudiesFilesCount()))
+          .addAllProperties(
+            micaMetricsService.getHarmonizationStudiesStateCount()
+              .entrySet()
+              .stream()
+              .map(entry -> Mica.MicaMetricsDto.PropertyDto.newBuilder()
+                .setName(entry.getKey()).setValue(Long.parseLong(entry.getValue().toString())).build())
+              .collect(Collectors.toList())
+          )
+          .addProperties(
+            Mica.MicaMetricsDto.PropertyDto.newBuilder()
+              .setName("indexed")
+              .setValue(micaMetricsService.getPublishedHarmonizationStudiesCount())
+              .build()
+          )
+          .addProperties(
+            Mica.MicaMetricsDto.PropertyDto.newBuilder()
+              .setName("variables")
+              .setValue(micaMetricsService.getPublishedHarmonizationStudiesVariablesCount())
+              .build()
+          )
+          .addProperties(
+            Mica.MicaMetricsDto.PropertyDto.newBuilder()
+              .setName("totalFiles")
+              .setValue(micaMetricsService.getDraftHarmonizationStudiesFilesCount())
+              .build()
+          )
+          .addProperties(
+            Mica.MicaMetricsDto.PropertyDto.newBuilder()
+              .setName("publishedFiles")
+              .setValue(micaMetricsService.getDraftHarmonizationStudiesFilesCount())
+              .build()
+          )
+        )
 
       // StudyDataset
       .addDocuments(
         Mica.MicaMetricsDto.DocumentMetricsDto.newBuilder()
           .setType(StudyDataset.class.getSimpleName())
-          .setTotal(micaMetricsService.getDraftStudyDatasetsCount())
-          .setPublished(micaMetricsService.getPublishedStudyDatasetsCount())
-          .setEditing(micaMetricsService.getEditingStudyDatasetsCount()))
-      .addFiles(Mica.MicaMetricsDto.DocumentMetricsDto.newBuilder()
-        .setType(StudyDataset.class.getSimpleName())
-        .setTotal(micaMetricsService.getDraftStudyDatasetFilesCount())
-        .setPublished(micaMetricsService.getPublishedStudyDatasetFilesCount()))
+          .addAllProperties(
+            micaMetricsService.getStudyDatasetsStateCount()
+              .entrySet()
+              .stream()
+              .map(entry -> Mica.MicaMetricsDto.PropertyDto.newBuilder()
+                .setName(entry.getKey()).setValue(Long.parseLong(entry.getValue().toString())).build())
+              .collect(Collectors.toList())
+          )
+          .addProperties(
+            Mica.MicaMetricsDto.PropertyDto.newBuilder()
+              .setName("indexed")
+              .setValue(micaMetricsService.getPublishedStudyDatasetsCount())
+              .build()
+          )
+          .addProperties(
+            Mica.MicaMetricsDto.PropertyDto.newBuilder()
+              .setName("totalFiles")
+              .setValue(micaMetricsService.getDraftStudyDatasetFilesCount())
+              .build()
+          )
+          .addProperties(
+            Mica.MicaMetricsDto.PropertyDto.newBuilder()
+              .setName("publishedFiles")
+              .setValue(micaMetricsService.getPublishedStudyDatasetFilesCount())
+              .build()
+          )
+      )
 
-      // HarmonizarionDataset
+      // HarmonizationDataset
       .addDocuments(
         Mica.MicaMetricsDto.DocumentMetricsDto.newBuilder()
           .setType(HarmonizationDataset.class.getSimpleName())
-          .setTotal(micaMetricsService.getDraftHarmonizarionDatasetsCount())
-          .setPublished(micaMetricsService.getPublishedHarmonizationDatasetsCount())
-          .setEditing(micaMetricsService.getEditingHarmonizationDatasetsCount()))
-      .addFiles(Mica.MicaMetricsDto.DocumentMetricsDto.newBuilder()
-        .setType(HarmonizationDataset.class.getSimpleName())
-        .setTotal(micaMetricsService.getDraftHarmonizationDatasetFilesCount())
-        .setPublished(micaMetricsService.getPublishedHarmonizationDatasetFilesCount()))
+          .addAllProperties(
+            micaMetricsService.getHarmonizationDatasetsStateCount()
+              .entrySet()
+              .stream()
+              .map(entry -> Mica.MicaMetricsDto.PropertyDto.newBuilder()
+                .setName(entry.getKey()).setValue(Long.parseLong(entry.getValue().toString())).build())
+              .collect(Collectors.toList())
+          )
+          .addProperties(
+            Mica.MicaMetricsDto.PropertyDto.newBuilder()
+              .setName("indexed")
+              .setValue(micaMetricsService.getPublishedHarmonizationDatasetsCount())
+              .build()
+          )
+          .addProperties(
+            Mica.MicaMetricsDto.PropertyDto.newBuilder()
+              .setName("totalFiles")
+              .setValue(micaMetricsService.getDraftHarmonizationDatasetFilesCount())
+              .build()
+          )
+          .addProperties(
+            Mica.MicaMetricsDto.PropertyDto.newBuilder()
+              .setName("publishedFiles")
+              .setValue(micaMetricsService.getPublishedHarmonizationDatasetFilesCount())
+              .build()
+          )
+        )
 
       // Projects
       .addDocuments(
         Mica.MicaMetricsDto.DocumentMetricsDto.newBuilder()
           .setType(Project.class.getSimpleName())
-          .setTotal(micaMetricsService.getDraftProjectsCount())
-          .setPublished(micaMetricsService.getPublishedProjectsCount())
-          .setEditing(micaMetricsService.getEditingProjectsCount()))
-      .addFiles(Mica.MicaMetricsDto.DocumentMetricsDto.newBuilder()
-        .setType(Project.class.getSimpleName())
-        .setTotal(micaMetricsService.getDraftProjectFilesCount())
-        .setPublished(micaMetricsService.getPublishedProjectFilesCount()))
+          .addAllProperties(
+            micaMetricsService.getProjectsStateCount()
+              .entrySet()
+              .stream()
+              .map(entry -> Mica.MicaMetricsDto.PropertyDto.newBuilder()
+                .setName(entry.getKey()).setValue(Long.parseLong(entry.getValue().toString())).build())
+              .collect(Collectors.toList())
+          )
+          .addProperties(
+            Mica.MicaMetricsDto.PropertyDto.newBuilder()
+              .setName("indexed")
+              .setValue(micaMetricsService.getPublishedProjectsCount())
+              .build()
+          )
+          .addProperties(
+            Mica.MicaMetricsDto.PropertyDto.newBuilder()
+              .setName("totalFiles")
+              .setValue(micaMetricsService.getDraftProjectFilesCount())
+              .build()
+          )
+          .addProperties(
+            Mica.MicaMetricsDto.PropertyDto.newBuilder()
+              .setName("publishedFiles")
+              .setValue(micaMetricsService.getPublishedProjectFilesCount())
+              .build()
+          )
+        )
+
+      // Data Access Requests
+      .addDocuments(
+        Mica.MicaMetricsDto.DocumentMetricsDto.newBuilder()
+          .setType(DataAccessRequest.class.getSimpleName())
+          .addAllProperties(
+            micaMetricsService.getDataAccessRequestsStateCount()
+              .entrySet()
+              .stream()
+              .map(entry -> Mica.MicaMetricsDto.PropertyDto.newBuilder()
+                .setName(entry.getKey()).setValue(Long.parseLong(entry.getValue().toString())).build())
+              .collect(Collectors.toList())
+          )
+      )
 
       // Variables
       .addDocuments(
         Mica.MicaMetricsDto.DocumentMetricsDto.newBuilder()
           .setType(DatasetVariable.class.getSimpleName())
-          .setTotal(micaMetricsService.getPublishedVariablesCount())
-          .setPublished(micaMetricsService.getPublishedVariablesCount()))
+          .addProperties(
+            Mica.MicaMetricsDto.PropertyDto.newBuilder()
+              .setName("published")
+              .setValue(micaMetricsService.getPublishedVariablesCount())
+              .build()
+          )
+          .addProperties(
+            Mica.MicaMetricsDto.PropertyDto.newBuilder()
+              .setName("harmonized")
+              .setValue(micaMetricsService.getHarmonizedVariablesCount())
+              .build()
+          )
+      )
       .build();
   }
 

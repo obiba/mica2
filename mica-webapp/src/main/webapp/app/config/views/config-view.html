@@ -380,6 +380,42 @@
         </tr>
         </tbody>
       </table>
+
+      <h5 translate>entity-statistics-summary.full-title</h5>
+      <table class="table table-bordered table-striped">
+        <tbody>
+        <tr>
+          <td>
+            <span translate>config.variables-count-enabled</span>
+            <span class="help-block" translate>config.variables-count-enabled.help</span>
+          </td>
+          <td>
+            <i class="fa fa-check-square-o" ng-hide="!micaConfig.isVariablesCountEnabled"></i>
+            <i class="fa fa-square-o" ng-hide="micaConfig.isVariablesCountEnabled"></i>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <span translate>config.projects-count-enabled</span>
+            <span class="help-block" translate>config.projects-count-enabled.help</span>
+          </td>
+          <td>
+            <i class="fa fa-check-square-o" ng-hide="!micaConfig.isProjectsCountEnabled"></i>
+            <i class="fa fa-square-o" ng-hide="micaConfig.isProjectsCountEnabled"></i>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <span translate>config.data-access-requests-count-enabled</span>
+            <span class="help-block" translate>config.data-access-requests-count-enabled.help</span>
+          </td>
+          <td>
+            <i class="fa fa-check-square-o" ng-hide="!micaConfig.isDataAccessRequestsCountEnabled"></i>
+            <i class="fa fa-square-o" ng-hide="micaConfig.isDataAccessRequestsCountEnabled"></i>
+          </td>
+        </tr>
+        </tbody>
+      </table>
     </div>
   </div>
 

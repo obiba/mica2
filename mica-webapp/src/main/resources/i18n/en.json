@@ -76,6 +76,7 @@
     "definition": "Definition",
     "display": "Display",
     "key": "Key",
+    "refresh": "Refresh",
     "messages": {
       "error": {
         "unique-id": "ID must be unique.",
@@ -504,7 +505,13 @@
       "layout2": "Layout 2",
       "layout1-help": "Layout emphasizing a search bar that maps keywords to available taxonomies.",
       "layout2-help": "Layout providing a search panel on the left-hand-side that displays the full taxonomy of various search categories (variable, study, and network)."
-    }
+    },
+    "variables-count-enabled": "Variables statistics enabled",
+    "variables-count-enabled-help": "Show variables statistics summary in the administration section.",
+    "projects-count-enabled": "Projects statistics enabled",
+    "projects-count-enabled-help": "Show projects statistics summary in the administration section.",
+    "data-access-requests-count-enabled": "Data Access Requests statistics enabled",
+    "data-access-requests-count-enabled-help": "Show data access requests statistics summary in the administration section."
   },
   "publish": {
     "label": "Publish",
@@ -911,7 +918,8 @@
     "collection":{
       "study-not-published":"Before publishing a collected dataset, its linked individual study must already be published",
       "population-not-published":"Before publishing a collected dataset, its linked population must already be published"
-    }
+    },
+    "require-indexing-alert": "Due to an update in study '{{arg0}}' this dataset requires to be indexed, visit the <a href=\"#/admin/statistics-summary\"><u>administration</u></a> page to proceed."
   },
   "attributes": "Attributes",
   "attribute": {
@@ -1468,7 +1476,8 @@
       "translations": "Manage labels translations.",
       "cart": "Cart of variables.",
       "sets": "Lists of variables.",
-      "persons": "Manage persons who are associated to studies and/or networks by a role such as Contact or Investigator."
+      "persons": "Manage persons who are associated to studies and/or networks by a role such as Contact or Investigator.",
+      "entity-statistics-summary": "Statistics summary of Mica content documents."
     }
   },
   "server": {
@@ -2333,6 +2342,41 @@
     "delete-entities-dialog":{
       "title": "Delete Membership",
       "message": "Are you sure you want to delete all roles from {{arg0}}?"
+    }
+  },
+  "entity-statistics-summary": {
+    "title": "Statistics Summary",
+    "full-title": "Content Statistics Summary",
+    "Study": "Individual Studies",
+    "HarmonizationStudy": "Harmonization Studies",
+    "StudyDataset": "Collected Datasets",
+    "HarmonizationDataset": "Harmonized Datasets",
+    "DataAccessRequest": "Data Access Requests",
+    "Network": "Networks",
+    "Project": "Projects",
+    "DatasetVariable": "Variables",
+    "total": "Total",
+    "published": "Published",
+    "reviewing": "Under Review",
+    "deleting": "To Delete",
+    "editing": "In Edition",
+    "harmonized": "Harmonized",
+    "OPENED": "Opened",
+    "SUBMITTED": "Submitted",
+    "REVIEWED": "Under Review",
+    "CONDITIONALLY_APPROVED": "Conditionally Approved",
+    "APPROVED": "Approved",
+    "REJECTED": "Rejected",
+    "totalFiles": "Total Files",
+    "publishedFiles": "Published Files",
+    "variables": "Associated Variables",
+    "totalWithVariable": "Studies With Variables",
+    "requireIndexing": "Require Indexing",
+    "require-indexing": "Indexing required, click to complete",
+    "require-indexing-warning": "Published documents highlighted in red require indexing.",
+    "indexing-dialog": {
+      "title": "Indexing {{entity}}",
+      "message": "List of {{entity}} to index:"
     }
   }
 }

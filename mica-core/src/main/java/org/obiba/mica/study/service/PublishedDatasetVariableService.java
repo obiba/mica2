@@ -25,4 +25,5 @@ public interface PublishedDatasetVariableService extends PublishedDocumentServic
 
   long countVariables(String rql);
 
+  long getHarmonizedCount();
 }

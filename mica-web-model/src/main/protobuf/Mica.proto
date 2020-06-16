@@ -66,6 +66,7 @@ message EntityStateDto {
   optional string publishedBy = 5;
   optional string publishedId = 6;
   optional PermissionsDto permissions = 7;
+  optional bool requireIndexing = 8;
 
   extend NetworkDto {
     optional EntityStateDto state = 1000;
@@ -446,6 +447,9 @@ message MicaConfigDto {
   optional bool isProjectEnabled = 52;
   optional bool isUsePublicUrlForSharedLink = 53;
   optional bool isImportStudiesFeatureEnabled = 54;
+  optional bool isVariablesCountEnabled = 55;
+  optional bool isProjectsCountEnabled = 56;
+  optional bool isDataAccessRequestsCountEnabled = 57;
 }
 
 message PublicMicaConfigDto {
@@ -778,8 +782,8 @@ message DataAccessRequestDto {
 
   message AmendmentsSummaryDto {
     required string id = 1;
-    required double pending = 2;
-    required double total = 3;
+    required int32 pending = 2;
+    required int32 total = 3;
     optional string lastModifiedDate = 4;
   }
 
@@ -1006,24 +1010,17 @@ message AttachmentStateDto {
 }
 
 message MicaMetricsDto {
-
     message DocumentMetricsDto {
       required string type = 1;
-      required int64 total = 2;
-      required int64 published = 3;
-      optional int64 editing = 4;
-      optional int64 variables = 5;
-      optional int64 totalWithVariable = 6;
+      repeated PropertyDto properties = 7;
     }
 
-    message OpalServerStatusDto {
+    message PropertyDto {
       required string name = 1;
-      required bool up = 2;
+      optional int64 value = 2;
     }
 
     repeated DocumentMetricsDto documents = 1;
-    repeated DocumentMetricsDto files = 2;
-    repeated OpalServerStatusDto opalServers = 3;
 }
 
 message DocumentSetDto {
@@ -1053,4 +1050,14 @@ message SetOperationDto {
   required string type = 2;
   repeated string sets = 3;
   repeated ComposedSetDto compositions = 4;
+}
+
+message EntityIndexHealthDto {
+
+  message ItemDto {
+    required string id = 1;
+    required string title = 2;
+  }
+
+  repeated ItemDto requireIndexing = 1;
 }

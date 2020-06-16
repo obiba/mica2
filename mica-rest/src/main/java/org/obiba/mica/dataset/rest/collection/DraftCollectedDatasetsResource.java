@@ -52,23 +52,32 @@ public class DraftCollectedDatasetsResource {
 
   private static final int MAX_LIMIT = 10000; //default ElasticSearch limit
 
-  @Inject
-  private CollectedDatasetService datasetService;
+  private final CollectedDatasetService datasetService;
+
+  private final SubjectAclService subjectAclService;
+
+  private final Dtos dtos;
+
+  private final ApplicationContext applicationContext;
+
+  private final Helper helper;
+
+  private final DraftCollectedDatasetService draftCollectedDatasetService;
 
   @Inject
-  private SubjectAclService subjectAclService;
-
-  @Inject
-  private Dtos dtos;
-
-  @Inject
-  private ApplicationContext applicationContext;
-
-  @Inject
-  private Helper helper;
-
-  @Inject
-  private DraftCollectedDatasetService draftCollectedDatasetService;
+  public DraftCollectedDatasetsResource(CollectedDatasetService datasetService,
+                                        SubjectAclService subjectAclService,
+                                        Dtos dtos,
+                                        ApplicationContext applicationContext,
+                                        Helper helper,
+                                        DraftCollectedDatasetService draftCollectedDatasetService) {
+    this.datasetService = datasetService;
+    this.subjectAclService = subjectAclService;
+    this.dtos = dtos;
+    this.applicationContext = applicationContext;
+    this.helper = helper;
+    this.draftCollectedDatasetService = draftCollectedDatasetService;
+  }
 
   /**
    * Get all {@link org.obiba.mica.dataset.domain.StudyDataset}, optionally filtered by study.
@@ -123,8 +132,12 @@ public class DraftCollectedDatasetsResource {
   @Path("/collected-datasets/_index")
   @Timed
   @RequiresPermissions({ "/draft/collected-dataset:PUBLISH" })
-  public Response reIndex() {
-    helper.indexAll();
+  public Response reIndex(@Nullable @QueryParam("id") List<String> ids) {
+    if (ids == null || ids.isEmpty()) {
+      helper.indexAll();
+    } else {
+      helper.indexByIds(ids);
+    }
     return Response.noContent().build();
   }
 
@@ -144,6 +157,11 @@ public class DraftCollectedDatasetsResource {
     @Async
     public void indexAll() {
       collectedDatasetService.indexAll();
+    }
+
+    @Async
+    public void indexByIds(List<String> ids) {
+      collectedDatasetService.indexByIds(ids, true);
     }
   }
 

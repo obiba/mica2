@@ -130,10 +130,24 @@ public class StudyService {
       .collect(Collectors.toList());
   }
 
+  public List<BaseStudy> findAllPublishedStudies(List<String> ids) {
+    return Stream
+      .concat(individualStudyService.findAllPublishedStudies(ids).stream(),
+        harmonizationStudyService.findAllPublishedStudies(ids).stream())
+      .collect(Collectors.toList());
+  }
+
   public List<BaseStudy> findAllDraftStudies() {
     return Stream
       .concat(individualStudyService.findAllDraftStudies().stream(),
         harmonizationStudyService.findAllDraftStudies().stream())
+      .collect(Collectors.toList());
+  }
+
+  public List<BaseStudy> findAllDraftStudies(List<String> ids) {
+    return Stream
+      .concat(individualStudyService.findAllDraftStudies(ids).stream(),
+        harmonizationStudyService.findAllDraftStudies(ids).stream())
       .collect(Collectors.toList());
   }
 

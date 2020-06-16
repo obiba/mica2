@@ -98,9 +98,9 @@ public class DraftHarmonizationStudiesResource {
   @Path("/harmonization-studies/_index")
   @Timed
   @RequiresPermissions("/draft/harmonization-study:PUBLISH")
-  public Response reIndex() {
+  public Response reIndex(@Nullable @QueryParam("id") List<String> ids) {
     // TODO: reindex only the harmonization studies
-    eventBus.post(new IndexStudiesEvent());
+    eventBus.post(new IndexStudiesEvent(ids));
     return Response.noContent().build();
   }
 }

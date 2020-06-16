@@ -10,15 +10,13 @@
 
 package org.obiba.mica.network.service;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.Nullable;
-import javax.inject.Inject;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-
+import com.google.common.base.Joiner;
+import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 import org.joda.time.DateTime;
 import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.core.domain.LocalizedString;
@@ -36,11 +34,7 @@ import org.obiba.mica.network.NetworkStateRepository;
 import org.obiba.mica.network.NoSuchNetworkException;
 import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.network.domain.NetworkState;
-import org.obiba.mica.network.event.IndexNetworksEvent;
-import org.obiba.mica.network.event.NetworkDeletedEvent;
-import org.obiba.mica.network.event.NetworkPublishedEvent;
-import org.obiba.mica.network.event.NetworkUnpublishedEvent;
-import org.obiba.mica.network.event.NetworkUpdatedEvent;
+import org.obiba.mica.network.event.*;
 import org.obiba.mica.study.ConstraintException;
 import org.obiba.mica.study.service.StudyService;
 import org.slf4j.Logger;
@@ -52,13 +46,13 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
-import com.google.common.base.Joiner;
-import com.google.common.base.Strings;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
-import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
+import javax.annotation.Nullable;
+import javax.inject.Inject;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static java.util.stream.Collectors.toList;
 
@@ -216,7 +210,29 @@ public class NetworkService extends AbstractGitPersistableService<NetworkState, 
    * @return
    */
   public List<Network> findAllPublishedNetworks() {
-    return findPublishedStates().stream()
+    List<NetworkState> states = networkStateRepository.findByPublishedTagNotNull();
+
+    return findAllPublishedNetworksInternal(states);
+  }
+
+  /**
+   * Get all published {@link Network}s.
+   *
+   * @return
+   */
+  public List<Network> findAllPublishedNetworks(List<String> ids) {
+    List<NetworkState> states = networkStateRepository.findByPublishedTagNotNullAndIdIn(ids);
+    return findAllPublishedNetworksInternal(states);
+  }
+
+  /**
+   * Retrieves published Network documents from repository
+   *
+   * @param states
+   * @return List of Network documents
+   */
+  private List<Network> findAllPublishedNetworksInternal(List<NetworkState> states) {
+    return states.stream()
       .filter(networkState -> gitService.hasGitRepository(networkState) && !Strings.isNullOrEmpty(networkState.getPublishedTag()))
       .map(networkState -> gitService.readFromTag(networkState, networkState.getPublishedTag(), Network.class))
       .map(n -> { n.getModel(); return processNetworkForPublishedNumberOfStudies(n); }) // make sure dynamic model is initialized

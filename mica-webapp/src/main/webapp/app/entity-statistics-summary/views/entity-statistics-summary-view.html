@@ -1,0 +1,24 @@
+<div>
+
+  <h2>
+    <ol class="breadcrumb mica-breadcrumb">
+      <li><a href="#/admin" translate>global.menu.admin</a></li>
+      <li class="active" translate>entity-statistics-summary.full-title</li>
+    </ol>
+  </h2>
+
+  <p class="alert alert-warning" ng-if="$ctrl.errors" translate>entity-statistics-summary.require-indexing-warning</p>
+
+  <a href ng-click="$ctrl.onRefresh()" class="btn btn-info">
+    <i class="fa fa-refresh"></i> <span translate>global.refresh</span>
+  </a>
+
+  <p ng-if="$ctrl.loading" class="voffset2 loading"></p>
+  <div ng-if="!$ctrl.loading">
+    <div ng-repeat="document in $ctrl.stats.documents track by $index" ng-if="$index % 2 == 0" class="row">
+      <entity-statistics-summary-item class="col-md-6" document="$ctrl.stats.documents[$index]"></entity-statistics-summary-item>
+      <entity-statistics-summary-item ng-if="$ctrl.stats.documents[$index+1]" class="col-md-6" document="$ctrl.stats.documents[$index+1]"></entity-statistics-summary-item>
+    </div>
+  </div>
+
+</div>

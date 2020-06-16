@@ -11,7 +11,6 @@ import org.obiba.mica.micaConfig.service.PluginsService;
 import org.obiba.mica.micaConfig.service.TaxonomyConfigService;
 import org.obiba.mica.network.event.IndexNetworksEvent;
 import org.obiba.mica.network.service.NetworkService;
-import org.obiba.mica.spi.search.Indexer;
 import org.obiba.mica.spi.search.TaxonomyTarget;
 import org.obiba.mica.study.event.IndexStudiesEvent;
 import org.obiba.mica.study.service.StudyService;
