@@ -318,6 +318,69 @@
   <!-- Harmonization study -->
   <!-- place model rules here -->
 
+  <!-- DCE list -->
+  <#if population.dataCollectionEvents?? && population.dataCollectionEvents?size != 0>
+    <#if population.dataCollectionEvents?size == 1>
+      <h5><@message "study.data-collection-event"/></h5>
+      <#assign dce = population.dataCollectionEvents[0]/>
+      <div class="mb-3 marked">
+        ${localize(dce.description)}
+      </div>
+      <dl class="row">
+        <#if dce.start??>
+          <dt class="col-sm-4">
+            <#if dce.model.publicationDate>
+              <@message "data-collection-event.pub-date.title"/>
+            <#else>
+              <@message "start-date"/>
+            </#if>
+          </dt>
+          <dd class="col-sm-8">
+            <div>${dce.start.yearMonth!""}</div>
+          </dd>
+        </#if>
+        <#if dce.end??>
+          <dt class="col-sm-4">
+            <@message "end-date"/>
+          </dt>
+          <dd class="col-sm-8">
+            <div>${dce.end.yearMonth!""}</div>
+          </dd>
+        </#if>
+      </dl>
+      <@dceModel dce=dce/>
+    <#else>
+      <h5><@message "study.data-collection-events"/></h5>
+      <table id="population-${population.id}-dces" class="table table-bordered table-striped">
+        <thead>
+        <tr>
+          <th>#</th>
+          <th><@message "name"/></th>
+          <th><@message "description"/></th>
+          <th><@message "study.start"/></th>
+          <th><@message "study.end"/></th>
+        </tr>
+        </thead>
+        <tbody>
+        <#list population.dataCollectionEventsSorted as dce>
+          <tr>
+            <td>${dce.weight}</td>
+            <td>
+              <#assign dceId="${population.id}-${dce.id}">
+              <a href="#" data-toggle="modal" data-target="#modal-${dceId}">
+                ${localize(dce.name)}
+              </a>
+              <@dceDialog id=dceId dce=dce></@dceDialog>
+            </td>
+            <td><small>${localize(dce.description)?trim?truncate(200, "...")}</small></td>
+            <td><#if dce.start?? && dce.start.yearMonth??>${dce.start.yearMonth}</#if></td>
+            <td><#if dce.end?? && dce.end.yearMonth??>${dce.end.yearMonth}</#if></td>
+          </tr>
+        </#list>
+        </tbody>
+      </table>
+    </#if>
+  </#if>
 </#macro>
 
 <!-- Population modal dialog -->

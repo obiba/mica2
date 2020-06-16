@@ -218,39 +218,6 @@
                           ${localize(pop.description)}
                         </div>
                         <@populationModel population=pop/>
-
-                        <!-- DCE list -->
-                        <#if pop.dataCollectionEvents?? && pop.dataCollectionEvents?size != 0>
-                          <h5><@message "study.data-collection-events"/></h5>
-                          <table id="population-${pop.id}-dces" class="table table-bordered table-striped">
-                            <thead>
-                            <tr>
-                              <th>#</th>
-                              <th><@message "name"/></th>
-                              <th><@message "description"/></th>
-                              <th><@message "study.start"/></th>
-                              <th><@message "study.end"/></th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                              <#list pop.dataCollectionEventsSorted as dce>
-                                <tr>
-                                  <td>${dce.weight}</td>
-                                  <td>
-                                    <#assign dceId="${pop.id}-${dce.id}">
-                                    <a href="#" data-toggle="modal" data-target="#modal-${dceId}">
-                                      ${localize(dce.name)}
-                                    </a>
-                                    <@dceDialog id=dceId dce=dce></@dceDialog>
-                                  </td>
-                                  <td><small>${localize(dce.description)?trim?truncate(200, "...")}</small></td>
-                                  <td><#if dce.start?? && dce.start.yearMonth??>${dce.start.yearMonth}</#if></td>
-                                  <td><#if dce.end?? && dce.end.yearMonth??>${dce.end.yearMonth}</#if></td>
-                                </tr>
-                              </#list>
-                            </tbody>
-                          </table>
-                        </#if>
                       </div>
                     </#list>
                   </div>
