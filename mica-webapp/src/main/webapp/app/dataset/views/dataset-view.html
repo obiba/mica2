@@ -11,7 +11,9 @@
 <div>
   <div ng-include="'app/dataset/views/dataset-view-header.html'" ng-init="tabName='view'"></div>
 
-  <obiba-alert id="DatasetViewController"></obiba-alert>
+  <p ng-if="dataset['obiba.mica.EntityStateDto.datasetState'].requireIndexing"
+     class="alert alert-warning"
+     ng-bind-html="'dataset.require-indexing-alert' | translate: {entity:dataset['obiba.mica.CollectedDatasetDto.type'].studyTable.studyId}"></p>
 
   <div ng-class="{'voffset3': !screen.is('lg')}" class="clearfix hidden-print">
     <h3 class="pull-left no-margin-top" translate>view</h3>
