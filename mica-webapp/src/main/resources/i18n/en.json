@@ -506,12 +506,12 @@
       "layout1-help": "Layout emphasizing a search bar that maps keywords to available taxonomies.",
       "layout2-help": "Layout providing a search panel on the left-hand-side that displays the full taxonomy of various search categories (variable, study, and network)."
     },
-    "variables-count-enabled": "Variables count enabled",
-    "variables-count-enabled-help": "Show variables count in the statistics summary.",
-    "projects-count-enabled": "Projects count enabled",
-    "projects-count-enabled-help": "Show projects count in the statistics summary.",
-    "data-access-requests-count-enabled": "Data Access Requests count enabled",
-    "data-access-requests-count-enabled-help": "Show data access requests count in the statistics summary."
+    "variables-count-enabled": "Variables statistics enabled",
+    "variables-count-enabled-help": "Show variables statistics summary in the administration section.",
+    "projects-count-enabled": "Projects statistics enabled",
+    "projects-count-enabled-help": "Show projects statistics summary in the administration section.",
+    "data-access-requests-count-enabled": "Data Access Requests statistics enabled",
+    "data-access-requests-count-enabled-help": "Show data access requests statistics summary in the administration section."
   },
   "publish": {
     "label": "Publish",
@@ -919,7 +919,7 @@
       "study-not-published":"Before publishing a collected dataset, its linked individual study must already be published",
       "population-not-published":"Before publishing a collected dataset, its linked population must already be published"
     },
-    "require-indexing-alert": "An update in study '{{arg0}}' requires a re-indexing, visit the <a href=\"#/admin/statistics-summary\"><u>administration</u> page to complete.</a>"
+    "require-indexing-alert": "Due to an update in study '{{arg0}}' this dataset requires a re-index, visit the <a href=\"#/admin/statistics-summary\"><u>administration</u></a> page to proceed."
   },
   "attributes": "Attributes",
   "attribute": {
@@ -2360,7 +2360,6 @@
     "reviewing": "Under Review",
     "deleting": "To Delete",
     "editing": "In Edition",
-    "indexed": "Indexed",
     "harmonized": "Harmonized",
     "OPENED": "Opened",
     "SUBMITTED": "Submitted",
@@ -2373,10 +2372,11 @@
     "variables": "Associated Variables",
     "totalWithVariable": "Studies With Variables",
     "requireIndexing": "Require Indexing",
-    "require-indexing": "Re-indexing required, click to complete",
+    "require-indexing": "Indexing required, click to complete",
+    "require-indexing-warning": "Published documents highlighted in red require indexing.",
     "indexing-dialog": {
-      "title": "Re-Indexing {{entity}}",
-      "message": "Published {{entity}} requiring a re-index"
+      "title": "Indexing {{entity}}",
+      "message": "List of {{entity}} to index:"
     }
   }
 }

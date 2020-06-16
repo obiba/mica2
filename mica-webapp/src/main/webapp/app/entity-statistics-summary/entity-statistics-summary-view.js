@@ -99,8 +99,8 @@
       this.$q
         .all([this.MicaConfigResource.get().$promise, this.MicaMetricsResource.get().$promise])
         .then(results => {
-          const config = results[0]
-          const stats = results[1]
+          const config = results[0];
+          const stats = results[1];
           this.loading = false;
           this.__processDocuments(stats, config);
           this.stats = stats;
