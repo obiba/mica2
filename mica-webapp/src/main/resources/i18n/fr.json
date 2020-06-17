@@ -919,7 +919,7 @@
       "study-not-published":"Pour publier un ensemble de données collectées, l'étude de collecte qui lui est liée doit aussi être publiée",
       "population-not-published":"Pour publier un ensemble de données collectées, la population qui lui est liée doit aussi être publiée"
     },
-    "require-indexing-alert": "En raison d'une mise à jour dans l'étude '{{arg0}}', cet ensemble de données doit être indexé, visitez la page <a href=\"#/admin/statistics-summary\"> <u> administration </u> </a> pour procéder."
+    "require-indexing-alert": "En raison d'une mise à jour dans l'étude '{{entity}}', cet ensemble de données doit être indexé, visitez la page <a href=\"#/admin/statistics-summary\"> <u> administration </u> </a> pour procéder."
   },
   "attributes": "Attributs",
   "attribute": {
