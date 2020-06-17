@@ -15,7 +15,9 @@
   const DEFAULT_LIMIT = 20;
 
   class PersonsListController {
-    constructor($timeout, $location, ContactsSearchResource, EntityMembershipService) {
+      constructor($rootScope, $timeout, $location, ContactsSearchResource, EntityMembershipService) {
+
+      this.onLocationChangeHandler = $rootScope.$on('$locationChangeSuccess', this.onLocationChange.bind(this));
       this.$timeout = $timeout;
       this.$location = $location;
       this.ContactsSearchResource = ContactsSearchResource;
@@ -93,19 +95,70 @@
         });
     }
 
-    $onInit() {
+    __getPageFromUrl(search) {
+      if (search && 'page' in search) {
+        return search.page;
+      }
+
+      return 1;
+    }
+
+    __setPageInUrl(page) {
       const search = this.$location.search();
-      if (search && 'exclude' in search) {
-        this.getPersons(this._query, 0, this.limit, search.exclude);
-        this.$location.search({}).replace();
-      } else {
-        this.getPersons(null, 0);
+      search.page = page;
+      this.$location.search(search);
+    }
+
+    __calculateFromByPage(page) {
+      return DEFAULT_LIMIT * (page - 1);
+    }
+
+    __setFocusOnSearchInput() {
+      const searchInput = document.querySelectorAll("#persons-listing #persons-search-input");
+      if (searchInput) {
+        searchInput[0].focus();
       }
     }
 
+    $onInit() {
+      this.__setFocusOnSearchInput();
+      const search = this.$location.search();
+
+      if (search && 'exclude' in search) {
+        // Exclude the deleted user before retrieving users, there may be a delay for the opertaion and if the exclusion
+        // is not made, the same user might be include in the new list
+        this.getPersons(this._query, 0, this.limit, search.exclude);
+        this.$location.search({}).replace();
+      } else {
+        this.currentPage = this.__getPageFromUrl(search);
+        const from = this.__calculateFromByPage(this.currentPage);
+        this.getPersons(null, from);
+      }
+    }
+
+    $onDestroy() {
+      this.onLocationChangeHandler();
+    }
+
     onPageChanged(newPage/*, oldPage*/) {
-      const from = DEFAULT_LIMIT * (newPage - 1);
+      this.currentPage = newPage;
+      this.__setPageInUrl(newPage);
+      const from = this.__calculateFromByPage(newPage);
       this.getPersons(this.query, from);
+      this.__setFocusOnSearchInput();
+    }
+
+    onLocationChange() {
+      const path = this.$location.path();
+      if (path.startsWith('/persons')) {
+        const page = this.__getPageFromUrl(this.$location.search());
+        if (page !== this.currentPage) {
+          this.currentPage = page;
+          const from = this.__calculateFromByPage(this.currentPage);
+          this.getPersons(this._query, from);
+          this.__setFocusOnSearchInput();
+        }
+      }
     }
   }
 
@@ -116,6 +169,7 @@
       templateUrl: 'app/persons/views/persons-list.html',
       controllerAs: '$ctrl',
       controller: [
+        '$rootScope',
         '$timeout',
         '$location',
         'ContactsSearchResource',

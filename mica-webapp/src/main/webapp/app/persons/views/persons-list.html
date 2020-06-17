@@ -1,4 +1,4 @@
-<div>
+<div id="persons-listing">
   <h2>
     <span translate>persons.title</span>
   </h2>
@@ -15,8 +15,8 @@
   <div class="row voffset4">
     <div class="col-xs-4">
           <span class="input-group input-group-sm no-padding-top">
-            <span class="input-group-addon" id="person-search"><i class="fa fa-search"></i></span>
-            <input ng-model="$ctrl.query" type="text" class="form-control" aria-describedby="person-search">
+            <span class="input-group-addon" id="persons-search"><i class="fa fa-search"></i></span>
+            <input id="persons-search-input" ng-model="$ctrl.query" type="text" class="form-control" aria-describedby="persons-search">
           </span>
     </div>
     <div class="col-xs-8" ng-if="$ctrl.persons.length > 0">
@@ -43,7 +43,10 @@
       </tr>
       </thead>
       <tbody>
-      <tr dir-paginate="person in $ctrl.persons | itemsPerPage: $ctrl.limit" total-items="$ctrl.total" pagination-id="persons">
+      <tr dir-paginate="person in $ctrl.persons | itemsPerPage: $ctrl.limit"
+          total-items="$ctrl.total"
+          pagination-id="persons"
+          current-page="$ctrl.currentPage">
         <td>
           <a ng-href="#/person/{{person.id}}">{{person.firstName}} {{person.lastName}}</a>
         </td>
