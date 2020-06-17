@@ -59,10 +59,10 @@ mica.project
       });
     }])
 
-  .factory('DraftProjectViewRevisionResource', ['$resource',
-    function ($resource) {
+  .factory('DraftProjectViewRevisionResource', ['$resource', 'ProjectModelFactory',
+    function ($resource, ProjectModelFactory) {
       return $resource('ws/draft/project/:id/commit/:commitId/view', {}, {
-        'view': {method: 'GET', params: {id: '@id', commitId: '@commitId'}}
+        'view': {method: 'GET', params: {id: '@id', commitId: '@commitId'}, transformResponse: ProjectModelFactory.deserialize}
       });
     }])
 
