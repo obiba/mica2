@@ -1,6 +1,7 @@
 package org.obiba.mica.network.rest;
 
 import org.obiba.mica.EntityIndexHealthResource;
+import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.network.NetworkStateRepository;
 import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.network.domain.NetworkState;
@@ -50,8 +51,8 @@ public class NetworksIndexHealthResource extends EntityIndexHealthResource<Netwo
   }
 
   @Override
-  protected String getEntityTitle(Network entity, String locale) {
-    return entity.getAcronym().get(locale);
+  protected LocalizedString getEntityTitle(Network entity) {
+    return entity.getAcronym();
   }
 
   @Override

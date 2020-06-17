@@ -22,14 +22,15 @@
   };
 
   class EntityStatisticsSummaryItem {
-    constructor($uibModal, $filter, EntityIndexHealthResource, DraftEntitiesIndexResource) {
+    constructor($uibModal, $translate, EntityIndexHealthResource, DraftEntitiesIndexResource) {
       this.$uibModal = $uibModal;
-      this.$filter = $filter;
+      this.$translate = $translate;
       this.EntityIndexHealthResource = EntityIndexHealthResource;
       this.DraftEntitiesIndexResource = DraftEntitiesIndexResource;
     }
 
-    __openIndexingModal(document, $filter, EntityIndexHealthResource, DraftEntitiesIndexResource) {
+    __openIndexingModal(document, EntityIndexHealthResource, DraftEntitiesIndexResource) {
+      const locale = this.$translate.use();
 
       this.$uibModal.open({
         templateUrl: 'app/entity-statistics-summary/views/entity-statistics-summary-indexing-modal.html',
@@ -38,8 +39,9 @@
           function($uibModalInstance) {
             this.document = document;
             this.loading = true;
-            this.entityTitle = $filter('translate')(`entity-statistics-summary.${document.type}`);
-            EntityIndexHealthResource.get({entityResource: ENTITY_RESOURCE_MAP[document.type]}).$promise
+            this.locale = locale;
+            EntityIndexHealthResource.get(
+              {entityResource: ENTITY_RESOURCE_MAP[document.type]}).$promise
               .then(response => {
                 this.loading = false;
                 this.requireIndexing = response.requireIndexing
@@ -73,7 +75,7 @@
 
     onIndex() {
       try {
-        this.__openIndexingModal(this.document, this.$filter, this.EntityIndexHealthResource, this.DraftEntitiesIndexResource);
+        this.__openIndexingModal(this.document, this.EntityIndexHealthResource, this.DraftEntitiesIndexResource);
       } catch (e) {
         console.debug(e);
       }
@@ -89,7 +91,7 @@
       controllerAs: '$ctrl',
       controller: [
         '$uibModal',
-        '$filter',
+        '$translate',
         'EntityIndexHealthResource',
         'DraftEntitiesIndexResource',
         EntityStatisticsSummaryItem

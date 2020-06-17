@@ -1,6 +1,7 @@
 package org.obiba.mica.project.rest;
 
 import org.obiba.mica.EntityIndexHealthResource;
+import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.project.ProjectStateRepository;
 import org.obiba.mica.project.domain.Project;
 import org.obiba.mica.project.domain.ProjectState;
@@ -49,8 +50,8 @@ public class ProjectsIndexHealthResource extends EntityIndexHealthResource<Proje
   }
 
   @Override
-  protected String getEntityTitle(Project entity, String locale) {
-    return entity.getTitle().get(locale);
+  protected LocalizedString getEntityTitle(Project entity) {
+    return entity.getTitle();
   }
 
   @Override

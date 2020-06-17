@@ -1056,7 +1056,7 @@ message EntityIndexHealthDto {
 
   message ItemDto {
     required string id = 1;
-    required string title = 2;
+    repeated LocalizedStringDto title = 2;
   }
 
   repeated ItemDto requireIndexing = 1;
