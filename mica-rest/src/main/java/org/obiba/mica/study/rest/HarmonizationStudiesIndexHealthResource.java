@@ -1,6 +1,7 @@
 package org.obiba.mica.study.rest;
 
 import org.obiba.mica.EntityIndexHealthResource;
+import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.study.HarmonizationStudyStateRepository;
 import org.obiba.mica.study.domain.HarmonizationStudy;
 import org.obiba.mica.study.domain.HarmonizationStudyEntityState;
@@ -49,7 +50,7 @@ public class HarmonizationStudiesIndexHealthResource extends EntityIndexHealthRe
   }
 
   @Override
-  protected String getEntityTitle(HarmonizationStudy entity, String locale) {
-    return entity.getAcronym().get(locale);
+  protected LocalizedString getEntityTitle(HarmonizationStudy entity) {
+    return entity.getAcronym();
   }
 }

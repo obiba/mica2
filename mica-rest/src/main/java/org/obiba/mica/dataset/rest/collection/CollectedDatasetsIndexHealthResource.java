@@ -1,6 +1,7 @@
 package org.obiba.mica.dataset.rest.collection;
 
 import org.obiba.mica.EntityIndexHealthResource;
+import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.dataset.StudyDatasetStateRepository;
 import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.dataset.domain.StudyDatasetState;
@@ -36,8 +37,8 @@ public class CollectedDatasetsIndexHealthResource extends EntityIndexHealthResou
   }
 
   @Override
-  public Map<String, StudyDataset> findRequireIndexingInternal(String locale) {
-    Map<String, StudyDataset> requireIndexing = super.findRequireIndexingInternal(locale);
+  public Map<String, StudyDataset> findRequireIndexingInternal() {
+    Map<String, StudyDataset> requireIndexing = super.findRequireIndexingInternal();
     collectedDatasetService.findAllRequireIndexing().forEach(dataset -> requireIndexing.put(dataset.getId(), dataset));
     return requireIndexing;
   }
@@ -57,7 +58,7 @@ public class CollectedDatasetsIndexHealthResource extends EntityIndexHealthResou
   }
 
   @Override
-  protected String getEntityTitle(StudyDataset entity, String locale) {
-    return entity.getAcronym().get(locale);
+  protected LocalizedString getEntityTitle(StudyDataset entity) {
+    return entity.getAcronym();
   }
 }
