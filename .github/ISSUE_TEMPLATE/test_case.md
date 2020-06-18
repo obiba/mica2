@@ -1,5 +1,6 @@
 ---
 name: Test Case
+about: THis ia template to list test cases related to an existing issue
 ---
 
 Related Issue: obiba/<REPO-NAME>#<ISSUE-NUMBER>
