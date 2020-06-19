@@ -113,12 +113,12 @@
     __setPaginationInUrl(pagination) {
       const search = this.$location.search();
       search.page = pagination.page;
-      search.size = this.pagination.size;
+      search.size = pagination.size;
       this.$location.search(search);
     }
 
     __calculateFromByPage(page) {
-      return DEFAULT_LIMIT * (page - 1);
+      return this.pagination.size * (page - 1);
     }
 
     __setFocusOnSearchInput() {
