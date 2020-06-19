@@ -1,7 +1,7 @@
 <div>
   <h2>
     <ol class="breadcrumb mica-breadcrumb">
-      <li><a href="#/persons" translate>persons.title</a></li>
+      <li><a href ng-click="$ctrl.navigateOut('/persons')" translate>persons.title</a></li>
       <li class="active" >{{$ctrl.person.firstName}} {{$ctrl.person.lastName}}</li>
     </ol>
   </h2>
@@ -22,7 +22,7 @@
   </div>
 
   <div ng-if="$ctrl.mode === 'view'" class="pull-right">
-    <a ng-href="#/person/{{$ctrl.person.id}}/edit" class="btn btn-primary">
+    <a href ng-click="$ctrl.navigateOut('/person/'+$ctrl.person.id+'/edit')" class="btn btn-primary">
       <i class="fa fa-pencil-square-o"></i> <span translate>edit</span>
     </a>
     <a href class="btn btn-danger" ng-click="$ctrl.onDelete()">
