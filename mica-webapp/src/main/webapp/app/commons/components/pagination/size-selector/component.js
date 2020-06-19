@@ -11,7 +11,12 @@
 'use strict';
 
 (function () {
+
+  const DEFAULT_LIMIT = 20;
   const DEFAULT_SIZES = [10, 20, 50, 100];
+
+  mica.commons.DEFAULT_SIZES = DEFAULT_SIZES;
+  mica.commons.DEFAULT_LIMIT = DEFAULT_LIMIT;
 
   class PaginationSizeSelector {
 
