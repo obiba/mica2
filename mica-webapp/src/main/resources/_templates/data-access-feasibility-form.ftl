@@ -59,7 +59,7 @@
           <div class="card card-primary card-outline">
             <div class="card-header d-print-none">
               <h3 class="card-title"><@message "feasibility-inquiry-form"/></h3>
-              <div>
+              <div ng-cloak>
                 <#if feasibilityPermissions?seq_contains("EDIT")>
                   <span class="float-right border-left ml-2 pl-2" ng-if="schema.readOnly">
                     <a class="btn btn-primary" href="${feasibility.id}?edit=true"><i class="fas fa-pen"></i> <@message "edit"/></a>
@@ -92,6 +92,11 @@
                     </#if>
                   </span>
                 </#if>
+                <span class="float-right <#if feasibilityPermissions?seq_contains("EDIT")>border-right mr-2 pr-2</#if>" ng-if="schema.readOnly">
+                  <a href="#" onclick="window.print()" class="btn btn-default">
+                    <i class="fas fa-print"></i> <@message "global.print"/>
+                  </a>
+                </span>
               </div>
             </div>
             <div class="card-body">
@@ -106,7 +111,7 @@
               </div>
             </div>
             <#if feasibilityPermissions?seq_contains("EDIT")>
-              <div class="card-footer" ng-hide="schema.readOnly">
+              <div class="card-footer" ng-hide="schema.readOnly" ng-cloak>
                 <span class="float-right">
                   <a class="btn btn-primary" href="#" ng-click="save('${dar.id}', 'feasibility', '${feasibility.id}')"><@message "save"/></a>
                   <a class="btn btn-default" href="${feasibility.id}"><@message "cancel"/></a>

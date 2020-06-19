@@ -59,7 +59,7 @@
           <div class="card card-primary card-outline">
             <div class="card-header d-print-none">
               <h3 class="card-title"><@message "application-form"/></h3>
-              <div>
+              <div ng-cloak>
                 <#if permissions?seq_contains("EDIT")>
                   <span class="float-right border-left ml-2 pl-2" ng-if="schema.readOnly">
                     <a class="btn btn-primary" href="${dar.id}?edit=true"><i class="fas fa-pen"></i> <@message "edit"/></a>
@@ -99,9 +99,19 @@
                                 data-target="#modal-reject"><@message "reject"/></button>
                       </#if>
                     </#if>
-
                   </span>
                 </#if>
+                <span class="float-right <#if permissions?seq_contains("EDIT")>border-right mr-2 pr-2</#if>" ng-if="schema.readOnly">
+                  <#if accessConfig.downloadPdf>
+                    <a href="../ws/data-access-request/${dar.id}/_pdf?lang=${.lang}" class="btn btn-default">
+                      <i class="fas fa-file-pdf"></i> <@message "download"/>
+                    </a>
+                  <#else>
+                    <a href="#" onclick="window.print()" class="btn btn-default">
+                      <i class="fas fa-print"></i> <@message "global.print"/>
+                    </a>
+                  </#if>
+                </span>
               </div>
             </div>
             <div class="card-body">
@@ -116,7 +126,7 @@
               </div>
             </div>
             <#if permissions?seq_contains("EDIT")>
-              <div class="card-footer" ng-hide="schema.readOnly">
+              <div class="card-footer" ng-hide="schema.readOnly" ng-cloak>
                 <span class="float-right">
                   <a class="btn btn-primary" href="#" ng-click="save('${dar.id}')"><@message "save"/></a>
                   <a class="btn btn-default" href="${dar.id}"><@message "cancel"/></a>

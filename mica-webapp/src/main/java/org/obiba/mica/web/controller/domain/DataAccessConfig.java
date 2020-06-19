@@ -1,5 +1,6 @@
 package org.obiba.mica.web.controller.domain;
 
+import org.obiba.mica.micaConfig.PdfDownloadType;
 import org.obiba.mica.micaConfig.domain.DataAccessForm;
 
 /**
@@ -13,6 +14,7 @@ public class DataAccessConfig {
   private final boolean rejectedFinal;
   private final boolean feasibilityEnabled;
   private final boolean amendmentsEnabled;
+  private final boolean downloadPdf;
 
   public DataAccessConfig(DataAccessForm form) {
     this.withReview = form.isWithReview();
@@ -21,6 +23,7 @@ public class DataAccessConfig {
     this.rejectedFinal = form.isRejectedFinal();
     this.feasibilityEnabled = form.isFeasibilityEnabled();
     this.amendmentsEnabled = form.isAmendmentsEnabled();
+    this.downloadPdf = PdfDownloadType.Template.equals(form.getPdfDownloadType());
   }
 
   public boolean isWithReview() {
@@ -45,5 +48,9 @@ public class DataAccessConfig {
 
   public boolean isFeasibilityEnabled() {
     return feasibilityEnabled;
+  }
+
+  public boolean isDownloadPdf() {
+    return downloadPdf;
   }
 }
