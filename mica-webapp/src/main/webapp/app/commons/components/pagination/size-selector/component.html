@@ -1,0 +1,4 @@
+<select class="form-control input-sm form-select"
+        ng-model="$ctrl.pagination.selected"
+        ng-options="size.label for size in $ctrl.pagination.sizes"
+        ng-change="$ctrl.onChanged()"></select>

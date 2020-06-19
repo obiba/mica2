@@ -15,15 +15,14 @@
   const DEFAULT_LIMIT = 20;
 
   class PersonsListController {
-      constructor($rootScope, $timeout, $location, ContactsSearchResource, EntityMembershipService) {
-
-      this.onLocationChangeHandler = $rootScope.$on('$locationChangeSuccess', this.onLocationChange.bind(this));
+    constructor($rootScope, $timeout, $location, ContactsSearchResource, EntityMembershipService) {
+      this.onLocationChangeHandler = $rootScope.$on('$locationChangeSuccess', () => this.onLocationChange(arguments));
       this.$timeout = $timeout;
       this.$location = $location;
       this.ContactsSearchResource = ContactsSearchResource;
       this.EntityMembershipService = EntityMembershipService;
       this.loading = false;
-      this.limit = DEFAULT_LIMIT;
+      this.pagination = {page: 1, size: DEFAULT_LIMIT};
       this.persons = [];
       this.total = 0;
       this._query = null;
@@ -95,17 +94,26 @@
         });
     }
 
-    __getPageFromUrl(search) {
-      if (search && 'page' in search) {
-        return search.page;
+    __getPaginationFromUrl(search) {
+      let pagination = {page: 1, size: DEFAULT_LIMIT}
+
+      if (search) {
+        if ('page' in search) {
+          pagination.page = parseInt(search.page);
+        }
+
+        if ('size' in search) {
+          pagination.size = parseInt(search.size);
+        }
       }
 
-      return 1;
+      return pagination;
     }
 
-    __setPageInUrl(page) {
+    __setPaginationInUrl(pagination) {
       const search = this.$location.search();
-      search.page = page;
+      search.page = pagination.page;
+      search.size = this.pagination.size;
       this.$location.search(search);
     }
 
@@ -120,19 +128,29 @@
       }
     }
 
+    __fetchPersons(exclude) {
+      const from = this.__calculateFromByPage(this.pagination.page);
+      this.getPersons(this.query, from, this.pagination.size, exclude);
+    }
+
+    navigateOut(path) {
+      this.$location.path(path).search(this.pagination || {});
+    }
+
     $onInit() {
       this.__setFocusOnSearchInput();
       const search = this.$location.search();
+      this.pagination = this.__getPaginationFromUrl(search);
 
       if (search && 'exclude' in search) {
-        // Exclude the deleted user before retrieving users, there may be a delay for the opertaion and if the exclusion
-        // is not made, the same user might be include in the new list
-        this.getPersons(this._query, 0, this.limit, search.exclude);
-        this.$location.search({}).replace();
+        // Exclude the deleted user before retrieving users, there may be a delay in indexing persons and if the exclusion
+        // is not made, the deleted user will be included in the new list
+        this.exclude = search.exclude;
+        delete search.exclude;
+        // Location change will fetch users
+        this.$location.search(search).replace();
       } else {
-        this.currentPage = this.__getPageFromUrl(search);
-        const from = this.__calculateFromByPage(this.currentPage);
-        this.getPersons(null, from);
+        this.__fetchPersons();
       }
     }
 
@@ -141,23 +159,24 @@
     }
 
     onPageChanged(newPage/*, oldPage*/) {
-      this.currentPage = newPage;
-      this.__setPageInUrl(newPage);
-      const from = this.__calculateFromByPage(newPage);
-      this.getPersons(this.query, from);
-      this.__setFocusOnSearchInput();
+      this.pagination.page = newPage;
+      this.__setPaginationInUrl(this.pagination);
+    }
+
+    onPageSizeSelected(size) {
+      this.pagination.size = size;
+      this.pagination.page = 1;
+      this.__setPaginationInUrl(this.pagination, true);
     }
 
     onLocationChange() {
       const path = this.$location.path();
       if (path.startsWith('/persons')) {
-        const page = this.__getPageFromUrl(this.$location.search());
-        if (page !== this.currentPage) {
-          this.currentPage = page;
-          const from = this.__calculateFromByPage(this.currentPage);
-          this.getPersons(this._query, from);
-          this.__setFocusOnSearchInput();
-        }
+        this.pagination = this.__getPaginationFromUrl(this.$location.search());
+        const exclude = this.exclude;
+        this.exclude = null;
+        this.__fetchPersons(exclude);
+        this.__setFocusOnSearchInput();
       }
     }
   }

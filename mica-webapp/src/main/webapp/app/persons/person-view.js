@@ -40,7 +40,7 @@
       this.$location = $location;
       this.$routeParams = $routeParams;
       this.$filter = $filter;
-      this.$uibModal= $uibModal;
+      this.$uibModal = $uibModal;
       this.LocalizedSchemaFormService = LocalizedSchemaFormService;
       this.EntityMembershipService = EntityMembershipService;
       this.MicaConfigResource = MicaConfigResource;
@@ -105,20 +105,12 @@
         this.FormDirtyStateObserver.unobserve();
       }
     }
-    __navigateOut(path, exclude) {
-      this.__unobserveFormDirtyState();
-      if (exclude) {
-        this.$location.path(path).search({exclude: exclude}).replace();
-      } else {
-        this.$location.path(path).replace();
-      }
-    }
 
     __deletePerson(id) {
       this.PersonResource.delete({id}).$promise
         .then(() => {
           this.listenerRegistry.unregisterAll();
-          this.__navigateOut('/persons', id);
+          this.navigateOut('/persons', id);
         });
     }
 
@@ -309,18 +301,33 @@
       });
     }
 
+    navigateOut(path, exclude) {
+      this.__unobserveFormDirtyState();
+      let search = this.pagination || {};
+      if (exclude) {
+        search.exclude = exclude;
+      }
+      this.$location.path(path).search(search).replace();
+    }
+
     $onInit() {
-      this.$rootScope.$on('$translateChangeSuccess', () => this.__initializeForm());
+      this.$translateChangeSuccessHandler = this.$rootScope.$on('$translateChangeSuccess', () => this.__initializeForm());
       this.__initializeForm();
+      this.pagination = this.$location.search();
+      this.$location.search({}).replace();
+    }
+
+    $onDestroy() {
+      this.$translateChangeSuccessHandler();
     }
 
     onCancel() {
       switch (this.mode) {
         case MODE.NEW:
-          this.__navigateOut('/persons');
+          this.navigateOut('/persons');
           break;
         case MODE.EDIT:
-          this.__navigateOut(`/person/${this.$routeParams.id}`);
+          this.navigateOut(`/person/${this.$routeParams.id}`);
           break;
       }
     }
@@ -331,11 +338,11 @@
         switch (this.mode) {
           case MODE.NEW:
             this.PersonResource.create(this.ContactSerializationService.serialize(angular.copy(this.person))).$promise
-              .then((person) => this.__navigateOut(`/person/${person.id}`));
+              .then((person) => this.navigateOut(`/person/${person.id}`));
             break;
           case MODE.EDIT:
             this.PersonResource.update(this.ContactSerializationService.serialize(angular.copy(this.person))).$promise
-              .then((person) => this.__navigateOut(`/person/${person.id}`));
+              .then((person) => this.navigateOut(`/person/${person.id}`));
             break;
         }
       }

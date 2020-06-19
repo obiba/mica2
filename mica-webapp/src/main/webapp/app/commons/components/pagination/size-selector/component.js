@@ -1,0 +1,57 @@
+/*
+ * Copyright (c) 2020 OBiBa. All rights reserved.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the GNU Public License v3.0.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+'use strict';
+
+(function () {
+  const DEFAULT_SIZES = [10, 20, 50, 100];
+  const DEFAULT_SIZE = DEFAULT_SIZES[1];
+
+  class PaginationSizeSelector {
+
+    constructor() {
+      this.pagination = {};
+    }
+
+    onChanged() {
+      this.onSelected({size: this.pagination.selected.value})
+    }
+
+    $onChanges() {
+      if (!this.sizes || this.sizes.length <1) {
+        this.sizes = DEFAULT_SIZES;
+      }
+
+      this.pagination.sizes = this.sizes.map(size => ({label: size.toString(), value: size}));
+
+      if (!this.size) {
+        this.size = DEFAULT_SIZES[1];
+      }
+
+      const index = this.sizes.indexOf(this.size);
+      this.pagination.selected = this.pagination.sizes[index > -1 ? index : 1];
+    }
+  }
+
+  mica.commons
+    .component('paginationSizeSelector', {
+      bindings: {
+        sizes: '<',
+        size: '<',
+        onSelected: '&'
+      },
+      templateUrl: 'app/commons/components/pagination/size-selector/component.html',
+      controllerAs: '$ctrl',
+      controller: [
+        PaginationSizeSelector
+      ]
+    });
+
+})();

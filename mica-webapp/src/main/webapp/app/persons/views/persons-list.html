@@ -4,7 +4,7 @@
   </h2>
 
   <span>
-    <a ng-href="#/person/new" class="btn btn-info">
+    <a href ng-click="$ctrl.navigateOut('/person/new')" class="btn btn-info">
       <i class="fa fa-plus"></i> <span translate>persons.add-person</span>
     </a>
     <a ng-href="ws/draft/persons/_search/_download?limit={{$ctrl.total}}" class="btn btn-info pull-right">
@@ -20,11 +20,19 @@
           </span>
     </div>
     <div class="col-xs-8" ng-if="$ctrl.persons.length > 0">
-      <dir-pagination-controls
-        pagination-id="persons"
-        class="pull-right"
-        on-page-change="$ctrl.onPageChanged(newPageNumber, oldPageNumber)">
-      </dir-pagination-controls>
+      <div class="pull-right">
+        <pagination-size-selector
+          class="padding-right-5"
+          style="display: inline-block"
+          size="$ctrl.pagination.size"
+          on-selected="$ctrl.onPageSizeSelected(size)">
+        </pagination-size-selector>
+        <dir-pagination-controls
+          pagination-id="persons"
+          class="pull-right"
+          on-page-change="$ctrl.onPageChanged(newPageNumber, oldPageNumber)">
+        </dir-pagination-controls>
+      </div>
     </div>
   </div>
 
@@ -43,12 +51,12 @@
       </tr>
       </thead>
       <tbody>
-      <tr dir-paginate="person in $ctrl.persons | itemsPerPage: $ctrl.limit"
+      <tr dir-paginate="person in $ctrl.persons | itemsPerPage: $ctrl.pagination.size"
           total-items="$ctrl.total"
           pagination-id="persons"
-          current-page="$ctrl.currentPage">
+          current-page="$ctrl.pagination.page">
         <td>
-          <a ng-href="#/person/{{person.id}}">{{person.firstName}} {{person.lastName}}</a>
+          <a href ng-click="$ctrl.navigateOut('/person/'+person.id)">{{person.firstName}} {{person.lastName}}</a>
         </td>
         <td>
           {{person.email}}
