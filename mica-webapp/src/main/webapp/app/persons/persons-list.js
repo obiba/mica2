@@ -12,8 +12,6 @@
 
 (function () {
 
-  const DEFAULT_LIMIT = 20;
-
   class PersonsListController {
     constructor($rootScope, $timeout, $location, ContactsSearchResource, EntityMembershipService) {
       this.onLocationChangeHandler = $rootScope.$on('$locationChangeSuccess', () => this.onLocationChange(arguments));
@@ -22,7 +20,7 @@
       this.ContactsSearchResource = ContactsSearchResource;
       this.EntityMembershipService = EntityMembershipService;
       this.loading = false;
-      this.pagination = {page: 1, size: DEFAULT_LIMIT};
+      this.pagination = {page: 1, size: mica.commons.DEFAULT_LIMIT};
       this.persons = [];
       this.total = 0;
       this._query = null;
@@ -49,9 +47,9 @@
     }
 
     set query(text) {
-      this._query = text ? text.trim() : null;
+      this._query = text ? text.trim() : '';
 
-      if (this._query === 1) {
+      if (this._query.length === 1) {
         return;
       }
 
@@ -68,7 +66,7 @@
       this.ContactsSearchResource.search({
         query: searchQuery,
         from: from,
-        limit: limit || DEFAULT_LIMIT,
+        limit: limit || mica.commons.DEFAULT_LIMIT,
         exclude: exclude
       }).$promise
         .then(result => {
@@ -95,7 +93,7 @@
     }
 
     __getPaginationFromUrl(search) {
-      let pagination = {page: 1, size: DEFAULT_LIMIT};
+      let pagination = {page: 1, size: mica.commons.DEFAULT_LIMIT};
 
       if (search) {
         if ('page' in search) {
@@ -133,8 +131,30 @@
       this.getPersons(this.query, from, this.pagination.size, exclude);
     }
 
+    __getValidPage(pagination, userDeleted) {
+      const total = 'total' in pagination ? parseInt(pagination.total) : this.total;
+      const from = this.__calculateFromByPage(pagination.page);
+
+      if (userDeleted) {
+        if (total - 1 === from) {
+          // last item was deleted, go to previous page
+          return Math.max(1, pagination.page - 1);
+        }
+      } else if (from >= total) {
+        return 1;
+      }
+
+      return pagination.page;
+    }
+
     navigateOut(path) {
-      this.$location.path(path).search(this.pagination || {});
+      let pagination = this.pagination;
+      if (pagination) {
+        pagination.total = this.total;
+        pagination.query = this.query;
+      }
+
+      this.$location.path(path).search(pagination || {});
     }
 
     $onInit() {
@@ -142,11 +162,16 @@
       const search = this.$location.search();
       this.pagination = this.__getPaginationFromUrl(search);
 
-      if (search && 'exclude' in search) {
+      if (search && 'total' in search) {
         // Exclude the deleted user before retrieving users, there may be a delay in indexing persons and if the exclusion
         // is not made, the deleted user will be included in the new list
         this.exclude = search.exclude;
+        this.total = search.total;
+        this._query = search.query || '';
+        search.page = this.__getValidPage(this.pagination, 'exclude' in search);
         delete search.exclude;
+        delete search.total;
+        delete search.query;
         // Location change will fetch users
         this.$location.search(search).replace();
       } else {
@@ -172,11 +197,19 @@
     onLocationChange() {
       const path = this.$location.path();
       if (path.startsWith('/persons')) {
-        this.pagination = this.__getPaginationFromUrl(this.$location.search());
-        const exclude = this.exclude;
-        this.exclude = null;
-        this.__fetchPersons(exclude);
-        this.__setFocusOnSearchInput();
+        const search = this.$location.search();
+        this.pagination = this.__getPaginationFromUrl(search);
+        const validPage = this.__getValidPage(this.pagination);
+        if (validPage !== this.pagination.page) {
+          // correct URL
+          this.pagination.page = validPage;
+          this.$location.search(this.pagination).replace();
+        } else {
+          const exclude = this.exclude;
+          this.exclude = null;
+          this.__fetchPersons(exclude);
+          this.__setFocusOnSearchInput();
+        }
       }
     }
   }
