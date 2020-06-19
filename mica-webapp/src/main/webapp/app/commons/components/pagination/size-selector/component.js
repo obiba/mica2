@@ -12,7 +12,6 @@
 
 (function () {
   const DEFAULT_SIZES = [10, 20, 50, 100];
-  const DEFAULT_SIZE = DEFAULT_SIZES[1];
 
   class PaginationSizeSelector {
 
@@ -21,7 +20,7 @@
     }
 
     onChanged() {
-      this.onSelected({size: this.pagination.selected.value})
+      this.onSelected({size: this.pagination.selected.value});
     }
 
     $onChanges() {

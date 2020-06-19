@@ -95,7 +95,7 @@
     }
 
     __getPaginationFromUrl(search) {
-      let pagination = {page: 1, size: DEFAULT_LIMIT}
+      let pagination = {page: 1, size: DEFAULT_LIMIT};
 
       if (search) {
         if ('page' in search) {
@@ -122,7 +122,7 @@
     }
 
     __setFocusOnSearchInput() {
-      const searchInput = document.querySelectorAll("#persons-listing #persons-search-input");
+      const searchInput = document.querySelectorAll('#persons-listing #persons-search-input');
       if (searchInput) {
         searchInput[0].focus();
       }
