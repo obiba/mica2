@@ -11,6 +11,7 @@
 package org.obiba.mica.core.service;
 
 import com.google.common.collect.Lists;
+import org.obiba.mica.spi.search.Searcher;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -44,7 +45,8 @@ public interface DocumentService<T> {
                     @Nullable String query, @Nullable List<String> fields);
 
   Documents<T> find(int from, int limit, @Nullable String sort, @Nullable String order, @Nullable String studyId,
-                    @Nullable String query, @Nullable List<String> fields, @Nullable List<String> excludedFields);
+                    @Nullable String query, @Nullable List<String> fields, @Nullable List<String> excludedFields,
+                    @Nullable Searcher.IdFilter idFilter);
 
   List<String> getSuggestionFields();
 

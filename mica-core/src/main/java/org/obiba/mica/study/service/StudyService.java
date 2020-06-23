@@ -21,6 +21,7 @@ import javax.validation.constraints.NotNull;
 
 import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.core.domain.EntityState;
+import org.obiba.mica.core.domain.EntityStateFilter;
 import org.obiba.mica.core.domain.PublishCascadingScope;
 import org.obiba.mica.study.domain.BaseStudy;
 import org.obiba.mica.study.domain.HarmonizationStudy;
@@ -161,6 +162,13 @@ public class StudyService {
     return Stream.concat(individualStudyService.findAllStates(ids).stream(),
       harmonizationStudyService.findAllStates(ids).stream())
       .collect(Collectors.toList());
+  }
+
+  public List<String> getIdsByStateFilter(EntityStateFilter filter) {
+    return Stream.concat(
+      individualStudyService.getIdsByStateFilter(filter).stream(),
+      harmonizationStudyService.getIdsByStateFilter(filter).stream()
+    ).collect(Collectors.toList());
   }
 
   public static <E> List<E> listAddAll(List<E> accumulator, List<E> list) {

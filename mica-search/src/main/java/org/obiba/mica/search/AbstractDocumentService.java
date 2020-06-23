@@ -62,16 +62,20 @@ public abstract class AbstractDocumentService<T> implements DocumentService<T> {
   @Override
   public Documents<T> find(int from, int limit, @Nullable String sort, @Nullable String order, @Nullable String studyId,
                            @Nullable String queryString, @Nullable List<String> fields) {
-    return find(from, limit, sort, order, studyId, queryString, fields, null);
+    return find(from, limit, sort, order, studyId, queryString, fields, null, null);
   }
 
   @Override
   public Documents<T> find(int from, int limit, @Nullable String sort, @Nullable String order, @Nullable String studyId,
-                           @Nullable String queryString, @Nullable List<String> fields, @Nullable List<String> excludedFields) {
+                           @Nullable String queryString, @Nullable List<String> fields, @Nullable List<String> excludedFields,
+                           Searcher.IdFilter idFilter) {
     if (!indexExists()) return new Documents<>(0, from, limit);
 
     Searcher.TermFilter studyIdFilter = getStudyIdFilter(studyId);
-    Searcher.IdFilter idFilter = getAccessibleIdFilter();
+
+    if (idFilter == null) {
+      idFilter = getAccessibleIdFilter();
+    }
 
     Searcher.DocumentResults results = searcher.getDocuments(getIndexName(), getType(), from, limit, sort, order, queryString, studyIdFilter, idFilter, fields, excludedFields);
 

@@ -25,6 +25,7 @@ import org.obiba.git.command.AbstractGitWriteCommand;
 import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.core.domain.DefaultEntityBase;
 import org.obiba.mica.core.domain.EntityState;
+import org.obiba.mica.core.domain.EntityStateFilter;
 import org.obiba.mica.core.domain.GitPersistable;
 import org.obiba.mica.core.domain.RevisionStatus;
 import org.obiba.mica.core.notification.EntityPublicationFlowMailNotification;
@@ -40,8 +41,8 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
@@ -49,6 +50,7 @@ import java.util.stream.Collectors;
 
 import static org.obiba.mica.core.domain.RevisionStatus.DELETED;
 import static org.obiba.mica.core.domain.RevisionStatus.DRAFT;
+import static org.obiba.mica.core.domain.RevisionStatus.UNDER_REVIEW;
 
 public abstract class AbstractGitPersistableService<T extends EntityState, T1 extends GitPersistable> {
 
@@ -130,6 +132,32 @@ public abstract class AbstractGitPersistableService<T extends EntityState, T1 ex
     }
 
     return existingState;
+  }
+
+
+  public List<String> getIdsByStateFilter(EntityStateFilter filter) {
+    EntityStateRepository<T> repository = getEntityStateRepository();
+    List<T> entities = new ArrayList<>();
+
+    switch (filter) {
+      case PUBLISHED:
+        entities = repository.findAllPublishedIds();
+        break;
+      case UNDER_REVIEW:
+        entities = repository.findAllByRevisionStatusIds(UNDER_REVIEW.toString());
+        break;
+      case TO_DELETE:
+        entities = repository.findAllByRevisionStatusIds(DELETED.toString());
+        break;
+      case IN_EDITION:
+        entities = repository.findAllInEditionIds();
+        break;
+      default:
+        entities = repository.findAllExistingIds();
+        break;
+    }
+
+    return entities.stream().map(DefaultEntityBase::getId).collect(Collectors.toList());
   }
 
   protected abstract String generateId(@NotNull T1 gitPersistable);
