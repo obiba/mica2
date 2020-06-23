@@ -218,6 +218,7 @@
                           ${localize(pop.description)}
                         </div>
                         <@populationModel population=pop/>
+                        <@dceList population=pop/>
                       </div>
                     </#list>
                   </div>
