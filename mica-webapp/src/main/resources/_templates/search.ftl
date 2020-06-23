@@ -91,6 +91,8 @@
     <!-- Main content -->
     <section class="content">
 
+      <#include "models/search.ftl">
+
       <!-- Query box -->
       <div class="card card-info card-outline">
         <div class="card-header">
