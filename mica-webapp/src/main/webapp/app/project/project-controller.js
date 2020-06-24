@@ -24,6 +24,7 @@ mica.project
     'DraftProjectsResource',
     'DraftProjectResource',
     'AlertBuilder',
+    'EntityStateFilterService',
 
     function ($rootScope,
               $scope,
@@ -32,7 +33,16 @@ mica.project
               $timeout,
               DraftProjectsResource,
               DraftProjectResource,
-              AlertBuilder) {
+              AlertBuilder,
+              EntityStateFilterService) {
+
+     function onFilterSelected(filter) {
+        EntityStateFilterService.updateUrl(filter);
+        $scope.filter = filter;
+        $scope.pagination.current = 1
+        loadPage($scope.pagination.current);
+      }
+
       var onSuccess = function(response) {
         $scope.projects = response.projects;
         $scope.totalCount = parseInt(response.total, 10);
@@ -49,6 +59,8 @@ mica.project
         $scope.loading = false;
       };
 
+      $scope.onFilterSelected = onFilterSelected;
+
       $scope.deleteProject = function(project) {
         DraftProjectResource.delete(project, function() {
           refreshPage();
@@ -60,7 +72,11 @@ mica.project
       };
 
       function loadPage(page) {
-        var data = {from:(page - 1) * $scope.limit, limit: $scope.limit};
+        let data = {
+          from:(page - 1) * $scope.limit,
+          limit: $scope.limit,
+          filter: $scope.filter
+        };
 
         if($scope.pagination.searchText) {
           data.query = $scope.pagination.searchText + '*';
@@ -98,7 +114,14 @@ mica.project
         }, 500);
       });
 
-      loadPage($scope.pagination.current);
+      function update() {
+        $scope.filter = EntityStateFilterService.getFilterAndValidateUrl();
+        loadPage($scope.pagination.current);
+      }
+
+      $scope.$on('$locationChangeSuccess', () => update());
+
+      update();
     }])
 
 

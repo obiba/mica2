@@ -30,15 +30,19 @@ import javax.ws.rs.core.UriInfo;
 
 import com.codahale.metrics.annotation.Timed;
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import com.google.common.eventbus.EventBus;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.obiba.mica.core.domain.AbstractGitPersistable;
+import org.obiba.mica.core.domain.EntityStateFilter;
 import org.obiba.mica.core.service.DocumentService;
 import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.network.event.IndexNetworksEvent;
 import org.obiba.mica.network.service.DraftNetworkService;
 import org.obiba.mica.network.service.NetworkService;
+import org.obiba.mica.search.AccessibleIdFilterBuilder;
 import org.obiba.mica.security.service.SubjectAclService;
+import org.obiba.mica.spi.search.Searcher;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.springframework.context.ApplicationContext;
@@ -81,8 +85,18 @@ public class DraftNetworksResource {
                                            @QueryParam("from") @DefaultValue("0") Integer from,
                                            @QueryParam("limit") Integer limit,
                                            @QueryParam("exclude") List<String> excludes,
+                                           @QueryParam("filter") @DefaultValue("ALL") String filter,
                                            @Context HttpServletResponse response) { Stream<Network> result;
     long totalCount;
+
+    EntityStateFilter entityStateFilter = EntityStateFilter.valueOf(filter);
+    List<String> filteredIds = networkService.getIdsByStateFilter(entityStateFilter);
+
+    Searcher.IdFilter accessibleIdFilter = AccessibleIdFilterBuilder.newBuilder()
+      .aclService(subjectAclService)
+      .resources(Lists.newArrayList("/draft/network"))
+      .ids(filteredIds)
+      .build();
 
     if(limit == null) limit = MAX_LIMIT;
 
@@ -95,17 +109,9 @@ public class DraftNetworksResource {
       else query += String.format(" AND NOT(%s)", ids);
     }
 
-    if(Strings.isNullOrEmpty(query)) {
-      List<Network> networks = networkService.findAllNetworks(studyId).stream()
-        .filter(n -> subjectAclService.isPermitted("/draft/network", "VIEW", n.getId())).collect(toList());
-      totalCount = networks.size();
-      result = networks.stream().sorted((o1, o2) -> o1.getId().compareTo(o2.getId()))//
-        .skip(from).limit(limit);
-    } else {
-      DocumentService.Documents<Network> networkDocuments = draftNetworkService.find(from, limit, null, null, studyId, query);
-      totalCount = networkDocuments.getTotal();
-      result = networkService.findAllNetworks(networkDocuments.getList().stream().map(AbstractGitPersistable::getId).collect(toList())).stream();
-    }
+    DocumentService.Documents<Network> networkDocuments = draftNetworkService.find(from, limit, null, null, studyId, query, null, null, accessibleIdFilter);
+    totalCount = networkDocuments.getTotal();
+    result = networkService.findAllNetworks(networkDocuments.getList().stream().map(AbstractGitPersistable::getId).collect(toList())).stream();
 
     response.addHeader("X-Total-Count", Long.toString(totalCount));
 

@@ -1,0 +1,10 @@
+<span class="input-group-btn">
+  <button type="button"
+          class="btn btn-default dropdown-toggle"
+          data-toggle="dropdown"
+          aria-haspopup="true"
+          aria-expanded="false">{{$ctrl.selected.label}} <span class="caret"></span></button>
+  <ul class="dropdown-menu">
+    <li ng-repeat="filter in $ctrl.filters" ><a href ng-click="$ctrl.onChange(filter)">{{filter.label}}</a></li>
+  </ul>
+</span>

@@ -283,6 +283,7 @@
 <script src="app/commons/commons-service.js"></script>
 <script src="app/commons/components/key-list/component.js"></script>
 <script src="app/commons/components/pagination/size-selector/component.js"></script>
+<script src="app/commons/components/entity-state-filter/component.js"></script>
 <script src="app/permission/permission.js"></script>
 <script src="app/permission/permission-directives.js"></script>
 <script src="app/contact/contact.js"></script>

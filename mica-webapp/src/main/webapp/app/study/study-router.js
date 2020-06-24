@@ -17,7 +17,8 @@ mica.study
         // individual-study
         .when('/individual-study', {
           templateUrl: 'app/study/views/collection-study-main.html',
-          controller: 'StudyMainController'
+          controller: 'StudyMainController',
+          reloadOnSearch: false
         })
         .when('/individual-study/new', {
           templateUrl: 'app/study/views/collection-study-form.html',
@@ -68,7 +69,8 @@ mica.study
         // harmonization-study
         .when('/harmonization-study', {
           templateUrl: 'app/study/views/harmonization-study-main.html',
-          controller: 'HarmonizationStudyListController'
+          controller: 'HarmonizationStudyListController',
+          reloadOnSearch: false
         })
         .when('/harmonization-study/new', {
           templateUrl: 'app/study/views/harmonization-study-form.html',
