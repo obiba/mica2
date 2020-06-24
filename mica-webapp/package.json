@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "description": "Description for mica",
   "dependencies": {
-    "admin-lte": "^3.0.4",
+    "admin-lte": "^3.0.5",
     "axios": "^0.19.2",
     "bootstrap-datepicker": "^1.9.0",
     "jquery.redirect": "^1.1.4",
