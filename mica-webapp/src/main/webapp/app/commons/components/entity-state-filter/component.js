@@ -35,24 +35,20 @@
           label: this.$filter('translate')(`entity-state-filter.${value}`),
           value
         }));
-      this._filter = mica.commons.ENTITY_STATE_FILTER.ALL;
       this.selected = null;
-    }
-
-    get filter() {
-      return this._filter;
-    }
-
-    set filter(value) {
-      if (value && !this.selected) {
-        this._filter = value;
-        const found = Object.keys(this.filters).filter(key => this.filters[key].value === this.filter);
-        this.selected = this.filters[found] || mica.commons.ENTITY_STATE_FILTER.ALL;
-      }
     }
 
     $onInit() {
       this.selected = this.selected || this.filters[0];
+    }
+
+    $onChanges(changesObj) {
+      if (this.filter) {
+        const found = Object.keys(this.filters).filter(key => this.filters[key].value === this.filter);
+        this.selected = this.filters[found] || mica.commons.ENTITY_STATE_FILTER.ALL;
+      } else if (!changesObj.filter.currentValue) {
+        this.selected = this.filters[0];
+      }
     }
 
     onChange(filter) {
