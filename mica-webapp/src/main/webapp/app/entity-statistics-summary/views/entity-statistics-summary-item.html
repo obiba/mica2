@@ -9,7 +9,8 @@
           <span translate>{{'entity-statistics-summary.'+name}}</span>
         </td>
         <td class="col-xs-3 text-right">
-          <span ng-if="!data.errors">{{data.value}}</span>
+          <a ng-if="!data.errors && data.url" href="{{data.url}}"><span>{{data.value}}</span></a>
+          <span ng-if="!data.errors && !data.url">{{data.value}}</span>
           <a href ng-if="data.errors"
              ng-click="$ctrl.onIndex()"
              uib-popover="{{'entity-statistics-summary.require-indexing'| translate}}"

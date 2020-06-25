@@ -23,6 +23,24 @@
     'DataAccessRequest': true
   };
 
+  const COUNT_TO_FILTER = {
+    total: 'ALL',
+    published: 'PUBLISHED',
+    under_review: 'UNDER_REVIEW',
+    in_edition: 'IN_EDITION',
+    to_delete: 'TO_DELETE'
+  };
+
+
+  const ENTITY_LISTING_URL = {
+    Study: (filter) => `#/individual-study?filter=${filter}`,
+    HarmonizationStudy: (filter) => `#/harmonization-study?filter=${filter}`,
+    StudyDataset: (filter) => `#/collected-dataset?filter=${filter}`,
+    HarmonizationDataset: (filter) => `#/harmonized-dataset?filter=${filter}`,
+    Network: (filter) => `#/network?filter=${filter}`,
+    Project: (filter) => `#/project?filter=${filter}`
+  };
+
   class EntityStatisticsSummaryView {
     constructor($q, MicaConfigResource, MicaMetricsResource) {
       this.$q = $q;
@@ -54,10 +72,86 @@
       }
     }
 
+    __getSearchUrl(type, property) {
+      let data = {value: property.value};
+      let query;
+      let searchType;
+
+      switch (type) {
+        case 'Study':
+          query = `study(in(Mica_study.className,Study))`;
+          searchType = 'published' === property.name ? 'studies' : 'variables';
+          if ('totalWithVariable' === property.name) {
+            searchType = 'studies';
+            query = `variable(in(Mica_variable.variableType,(Collected))),${query}`;
+          }
+          break;
+
+        case 'HarmonizationStudy':
+          query = `study(in(Mica_study.className,HarmonizationStudy))`;
+          searchType = 'published' === property.name ? 'studies' : 'variables';
+          break;
+
+        case 'StudyDataset':
+          query = `study(in(Mica_study.className,Study))`;
+          searchType = 'datasets';
+          break;
+
+        case 'HarmonizationDataset':
+          query = `study(in(Mica_study.className,HarmonizationStudy))`;
+          searchType = 'datasets';
+          break;
+        case 'Network':
+          searchType = 'networks';
+          break;
+        case 'DatasetVariable':
+          searchType = 'variables';
+          break;
+      }
+
+      return Object.assign(data, {
+        url: query
+          ? `#/search?type=${searchType}&display=list&query=${query}`
+          : `#/search?type=${searchType}&display=list`
+      });
+    }
+
+    __getListingUrl(type, property) {
+      let data = {value: property.value};
+      if ((property.name in COUNT_TO_FILTER)) {
+        switch (type) {
+          case 'Study':
+          case 'HarmonizationStudy':
+          case 'StudyDataset':
+          case 'HarmonizationDataset':
+          case 'Network':
+          case 'DatasetVariable':
+          case 'Project':
+            data = Object.assign(data, {url: ENTITY_LISTING_URL[type](COUNT_TO_FILTER[property.name])});
+        }
+      }
+
+      return data;
+    }
+
+    __createPropertyValue(type, property) {
+      if ('Project' === type) {
+        return this.__getListingUrl(type, property);
+      }
+
+      if (['published','variables','totalWithVariable'].indexOf(property.name) > -1) {
+        return this.__getSearchUrl(type, property);
+      }
+
+      return this.__getListingUrl(type, property);
+    }
+
     __processProperties(document) {
       // convert to map
       document.properties = document.properties.reduce((acc, property) => {
-        acc[property.name] = {value: property.value};
+        acc[property.name] = property.value > 0
+          ? this.__createPropertyValue(document.type, property)
+          : {value: property.value};
         return acc;
       }, {});
 
