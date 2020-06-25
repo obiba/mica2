@@ -28,16 +28,19 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import com.codahale.metrics.annotation.Timed;
-import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import com.google.common.eventbus.EventBus;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.obiba.mica.core.domain.AbstractGitPersistable;
+import org.obiba.mica.core.domain.EntityStateFilter;
 import org.obiba.mica.core.service.DocumentService;
 import org.obiba.mica.project.domain.Project;
 import org.obiba.mica.project.event.IndexProjectsEvent;
 import org.obiba.mica.project.service.DraftProjectService;
 import org.obiba.mica.project.service.ProjectService;
+import org.obiba.mica.search.AccessibleIdFilterBuilder;
 import org.obiba.mica.security.service.SubjectAclService;
+import org.obiba.mica.spi.search.Searcher;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.springframework.context.ApplicationContext;
@@ -74,25 +77,29 @@ public class DraftProjectsResource {
   @Path("/projects")
   @Timed
   public Mica.ProjectsDto list(@QueryParam("query") String query,
-                                    @QueryParam("from") @DefaultValue("0") Integer from,
-                                    @QueryParam("limit") Integer limit, @Context HttpServletResponse response) {
+                               @QueryParam("from") @DefaultValue("0") Integer from,
+                               @QueryParam("limit") Integer limit,
+                               @QueryParam("filter") @DefaultValue("ALL") String filter,
+                               @Context HttpServletResponse response) {
     Stream<Project> result;
     long totalCount;
+
+    EntityStateFilter entityStateFilter = EntityStateFilter.valueOf(filter);
+    List<String> filteredIds = projectService.getIdsByStateFilter(entityStateFilter);
+
+    Searcher.IdFilter accessibleIdFilter = AccessibleIdFilterBuilder.newBuilder()
+      .aclService(subjectAclService)
+      .resources(Lists.newArrayList("/draft/project"))
+      .ids(filteredIds)
+      .build();
 
     if(limit == null) limit = MAX_LIMIT;
 
     if(limit < 0) throw new IllegalArgumentException("limit cannot be negative");
 
-    if(Strings.isNullOrEmpty(query)) {
-      List<Project> projects = projectService.findAllProjects().stream()
-        .filter(n -> subjectAclService.isPermitted("/draft/project", "VIEW", n.getId())).collect(toList());
-      totalCount = projects.size();
-      result = projects.stream().sorted((o1, o2) -> o1.getId().compareTo(o2.getId())).skip(from).limit(limit);
-    } else {
-      DocumentService.Documents<Project> projectDocuments = draftProjectService.find(from, limit, null, null, null, query);
-      totalCount = projectDocuments.getTotal();
-      result = projectService.findAllProjects(projectDocuments.getList().stream().map(AbstractGitPersistable::getId).collect(toList())).stream();
-    }
+    DocumentService.Documents<Project> projectDocuments = draftProjectService.find(from, limit, null, null, null, query, null, null, accessibleIdFilter);
+    totalCount = projectDocuments.getTotal();
+    result = projectService.findAllProjects(projectDocuments.getList().stream().map(AbstractGitPersistable::getId).collect(toList())).stream();
 
     Mica.ProjectsDto.Builder builder = Mica.ProjectsDto.newBuilder();
     builder.setFrom(from).setLimit(limit).setTotal(Long.valueOf(totalCount).intValue());

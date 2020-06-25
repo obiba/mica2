@@ -91,7 +91,7 @@ public class AbstractTaxonomySearchResource {
   protected List<String> filterVocabularies(TaxonomyTarget target, String query, String locale) {
     try {
       return esTaxonomyVocabularyService.find(0, MAX_SIZE, DEFAULT_SORT, "asc", null, getTargettedQuery(target, query),
-          getFields(locale, VOCABULARY_FIELDS), null).getList();
+          getFields(locale, VOCABULARY_FIELDS), null, null).getList();
     } catch (Exception e) {
       initTaxonomies();
       // for a 404 response

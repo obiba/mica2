@@ -10,9 +10,25 @@
 
 package org.obiba.mica.study.rest;
 
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import com.codahale.metrics.annotation.Timed;
+import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
+import org.obiba.mica.core.domain.EntityState;
+import org.obiba.mica.core.domain.EntityStateFilter;
+import org.obiba.mica.core.service.DocumentService;
+import org.obiba.mica.search.AccessibleIdFilterBuilder;
+import org.obiba.mica.security.service.SubjectAclService;
+import org.obiba.mica.spi.search.Searcher;
+import org.obiba.mica.study.domain.BaseStudy;
+import org.obiba.mica.study.domain.Study;
+import org.obiba.mica.study.service.AbstractStudyService;
+import org.obiba.mica.study.service.DraftStudyService;
+import org.obiba.mica.study.service.HarmonizationStudyService;
+import org.obiba.mica.study.service.IndividualStudyService;
+import org.obiba.mica.study.service.StudyService;
+import org.obiba.mica.web.model.Dtos;
+import org.obiba.mica.web.model.Mica;
+import org.springframework.context.ApplicationContext;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
@@ -23,23 +39,9 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
-
-import com.codahale.metrics.annotation.Timed;
-import com.google.common.base.Strings;
-
-import org.obiba.mica.core.domain.EntityState;
-import org.obiba.mica.core.service.DocumentService;
-import org.obiba.mica.security.service.SubjectAclService;
-import org.obiba.mica.study.domain.BaseStudy;
-import org.obiba.mica.study.domain.Study;
-import org.obiba.mica.study.service.AbstractStudyService;
-import org.obiba.mica.study.service.DraftStudyService;
-import org.obiba.mica.study.service.IndividualStudyService;
-import org.obiba.mica.study.service.HarmonizationStudyService;
-import org.obiba.mica.study.service.StudyService;
-import org.obiba.mica.web.model.Dtos;
-import org.obiba.mica.web.model.Mica;
-import org.springframework.context.ApplicationContext;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
 
@@ -78,9 +80,22 @@ public class StudyStatesResource {
                                                               @QueryParam("limit") Integer limit,
                                                               @QueryParam("type") String type,
                                                               @QueryParam("exclude") List<String> excludes,
+                                                              @QueryParam("filter") @DefaultValue("ALL") String filter,
                                                               @Context HttpServletResponse response) {
     Stream<? extends EntityState> result;
     long totalCount;
+
+    EntityStateFilter entityStateFilter = EntityStateFilter.valueOf(filter);
+    List<String> filteredIds = Strings.isNullOrEmpty(type)
+      ? studyService.getIdsByStateFilter(entityStateFilter)
+      : getStudyServiceByType(type).getIdsByStateFilter(entityStateFilter);
+
+    Searcher.IdFilter accessibleIdFilter = AccessibleIdFilterBuilder.newBuilder()
+      .aclService(subjectAclService)
+      .resources(getPermissionResources(type))
+      .ids(filteredIds)
+      .build();
+
 
     String ids = excludes.stream().map(s -> "id:" + s).collect(Collectors.joining(" "));
 
@@ -90,25 +105,16 @@ public class StudyStatesResource {
     }
 
     if(limit == null) limit = MAX_LIMIT;
-
     if(limit < 0) throw new IllegalArgumentException("limit cannot be negative");
 
-    if(Strings.isNullOrEmpty(query)) {
-      List<? extends EntityState> studyStates =
-        (!Strings.isNullOrEmpty(type) ? getStudyServiceByType(type).findAllStates() : studyService.findAllStates()).stream()
-        .filter(s -> subjectAclService.isPermitted("/draft/individual-study", "VIEW", s.getId())
-          || subjectAclService.isPermitted("/draft/harmonization-study", "VIEW", s.getId()))
-          .collect(toList());
-      totalCount = studyStates.size();
-      result = studyStates.stream().sorted((o1, o2) -> o1.getId().compareTo(o2.getId())).skip(from).limit(limit);
-    } else {
-      DocumentService.Documents<Study> studyDocuments = draftStudyService.find(from, limit, null, null, null, query);
-      totalCount = studyDocuments.getTotal();
-      result = (!Strings.isNullOrEmpty(type)
-        ? getStudyServiceByType(type).findAllStates(studyDocuments.getList().stream().map(Study::getId).collect(toList()))
-        : studyService.findAllStates(studyDocuments.getList().stream().map(Study::getId).collect(toList())))
-        .stream();
-    }
+    DocumentService.Documents<Study> studyDocuments = draftStudyService.find(from, limit, null, null,
+      null, query, null, null, accessibleIdFilter);
+
+    totalCount = studyDocuments.getTotal();
+    result = (!Strings.isNullOrEmpty(type)
+      ? getStudyServiceByType(type).findAllStates(studyDocuments.getList().stream().map(Study::getId).collect(toList()))
+      : studyService.findAllStates(studyDocuments.getList().stream().map(Study::getId).collect(toList())))
+      .stream();
 
     response.addHeader("X-Total-Count", Long.toString(totalCount));
 
@@ -124,5 +130,15 @@ public class StudyStatesResource {
 
   private AbstractStudyService<? extends EntityState, ? extends BaseStudy> getStudyServiceByType(@NotNull String type) {
     return "individual-study".equals(type) ? individualStudyService : harmonizationStudyService;
+  }
+
+  private List<String> getPermissionResources(@NotNull String type) {
+    if (Strings.isNullOrEmpty(type)) {
+      return Lists.newArrayList("/draft/individual-study", "/draft/harmonization-study");
+    }
+
+    return "individual-study".equals(type)
+      ? Lists.newArrayList("/draft/individual-study")
+      : Lists.newArrayList("/draft/harmonization-study");
   }
 }

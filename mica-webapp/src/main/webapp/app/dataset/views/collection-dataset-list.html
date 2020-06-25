@@ -25,12 +25,13 @@
   <p ng-if="loading" class="voffset2 loading">
   </p>
 
-  <div ng-show="searching || hasDocuments()">
+  <div ng-show="searching || hasDocuments() || filter">
     <div class="row voffset2">
       <div class="col-xs-4">
       <span class="input-group input-group-sm no-padding-top">
         <span class="input-group-addon" id="dataset-search"><i class="fa fa-search"></i></span>
         <input ng-model="pagination.searchText" type="text" class="form-control" aria-describedby="dataset-search">
+        <entity-state-filter filter="filter" on-selected="onFilterSelected(filter)"></entity-state-filter>
       </span>
       </div>
       <div class="col-xs-8">

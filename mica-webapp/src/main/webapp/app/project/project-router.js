@@ -16,7 +16,8 @@ mica.project
       $routeProvider
         .when('/project', {
           templateUrl: 'app/project/views/project-list.html',
-          controller: 'ProjectListController'
+          controller: 'ProjectListController',
+          reloadOnSearch: false
         })
         .when('/project/new', {
           templateUrl: 'app/project/views/project-form.html',

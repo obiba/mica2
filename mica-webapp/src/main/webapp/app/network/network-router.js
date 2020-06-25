@@ -16,7 +16,8 @@ mica.network
       $routeProvider
         .when('/network', {
           templateUrl: 'app/network/views/network-main.html',
-          controller: 'NetworkMainController'
+          controller: 'NetworkMainController',
+          reloadOnSearch: false
         })
         .when('/network/new', {
           templateUrl: 'app/network/views/network-form.html',

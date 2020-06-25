@@ -27,4 +27,13 @@ public interface EntityStateRepository<T extends EntityState> extends MongoRepos
 
   @Query(value = "{ publishedTag : { $exists: true } }", fields = "{_id : 1}")
   List<T> findAllPublishedIds();
+
+  @Query(value = "{$and: [{ revisionsAhead : { $gt: 0 } }, { publishedTag : { $exists: true } }]}", fields = "{_id : 1}")
+  List<T> findAllInEditionIds();
+
+  @Query(value = "{revisionStatus : ?0}", fields = "{_id : 1}")
+  List<T> findAllByRevisionStatusIds(String revisionStatus);
+
+  @Query(value = "{}", fields = "{_id : 1}")
+  List<T> findAllExistingIds();
 }

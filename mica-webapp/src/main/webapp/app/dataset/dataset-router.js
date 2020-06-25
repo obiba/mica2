@@ -16,7 +16,8 @@ mica.dataset
       $routeProvider
         .when('/collected-dataset', {
           templateUrl: 'app/dataset/views/collection-dataset-list.html',
-          controller: 'CollectedDatasetListController'
+          controller: 'CollectedDatasetListController',
+          reloadOnSearch: false
         })
         .when('/collected-dataset/new', {
           templateUrl: 'app/dataset/views/collection-dataset-form.html',
@@ -28,7 +29,8 @@ mica.dataset
         })
         .when('/harmonized-dataset', {
           templateUrl: 'app/dataset/views/harmonization-dataset-list.html',
-          controller: 'HarmonizedDatasetListController'
+          controller: 'HarmonizedDatasetListController',
+          reloadOnSearch: false
         })
         .when('/harmonized-dataset/new', {
           templateUrl: 'app/dataset/views/harmonization-dataset-form.html',

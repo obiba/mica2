@@ -15,6 +15,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -25,6 +27,7 @@ import au.com.bytecode.opencsv.CSVWriter;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.core.ModelAwareTranslator;
+import org.obiba.mica.core.domain.AbstractGitPersistable;
 import org.obiba.mica.core.domain.EntityState;
 import org.obiba.mica.core.domain.PublishCascadingScope;
 import org.obiba.mica.core.repository.EntityStateRepository;
@@ -114,6 +117,13 @@ public abstract class AbstractStudyService<S extends EntityState, T extends Base
 
   @NotNull
   public abstract List<String> findAllIds();
+
+  @NotNull
+  public List<String> findIds(List<String> ids) {
+    return StreamSupport.stream(getRepository().findAll(ids).spliterator(), false)
+      .map(AbstractGitPersistable::getId)
+      .collect(Collectors.toList());
+  }
 
   @NotNull
   public T findStudy(@NotNull String id) throws NoSuchEntityException {

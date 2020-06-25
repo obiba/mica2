@@ -2358,9 +2358,9 @@
     "DatasetVariable": "Variables",
     "total": "Total",
     "published": "Published",
-    "reviewing": "Under Review",
-    "deleting": "To Delete",
-    "editing": "In Edition",
+    "under_review": "Under Review",
+    "to_delete": "To Delete",
+    "in_edition": "In Edition",
     "harmonized": "Harmonized",
     "OPENED": "Opened",
     "SUBMITTED": "Submitted",
@@ -2379,5 +2379,12 @@
       "title": "Indexing {{entity}}",
       "message": "List of {{entity}} to index:"
     }
+  },
+  "entity-state-filter": {
+    "ALL": "All",
+    "PUBLISHED": "Published",
+    "UNDER_REVIEW": "Under Review",
+    "TO_DELETE": "To Delete",
+    "IN_EDITION": "In Edition"
   }
 }

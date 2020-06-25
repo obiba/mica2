@@ -28,14 +28,17 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import com.codahale.metrics.annotation.Timed;
-import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.obiba.mica.core.domain.EntityStateFilter;
 import org.obiba.mica.core.service.DocumentService;
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.service.DraftHarmonizationDatasetService;
 import org.obiba.mica.dataset.service.HarmonizedDatasetService;
+import org.obiba.mica.search.AccessibleIdFilterBuilder;
 import org.obiba.mica.security.service.SubjectAclService;
+import org.obiba.mica.spi.search.Searcher;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.springframework.context.ApplicationContext;
@@ -78,26 +81,31 @@ public class DraftHarmonizedDatasetsResource {
   @GET
   @Path("/harmonized-datasets")
   @Timed
-  public List<Mica.DatasetDto> list(@QueryParam("study") String studyId, @QueryParam("query") String query,
+  public List<Mica.DatasetDto> list(@QueryParam("study") String studyId,
+                                    @QueryParam("query") String query,
                                     @QueryParam("from") @DefaultValue("0") Integer from,
-                                    @QueryParam("limit") Integer limit, @Context HttpServletResponse response) {
+                                    @QueryParam("limit") Integer limit,
+                                    @QueryParam("filter") @DefaultValue("ALL") String filter,
+                                    @Context HttpServletResponse response) {
     Stream<Mica.DatasetDto> result;
     long totalCount;
+
+    EntityStateFilter entityStateFilter = EntityStateFilter.valueOf(filter);
+    List<String> filteredIds = datasetService.getIdsByStateFilter(entityStateFilter);
+
+    Searcher.IdFilter accessibleIdFilter = AccessibleIdFilterBuilder.newBuilder()
+      .aclService(subjectAclService)
+      .resources(Lists.newArrayList("/draft/harmonized-dataset"))
+      .ids(filteredIds)
+      .build();
 
     if(limit == null) limit = MAX_LIMIT;
 
     if(limit < 0) throw new IllegalArgumentException("limit cannot be negative");
 
-    if(Strings.isNullOrEmpty(query)) {
-      List<HarmonizationDataset> datasets = datasetService.findAllDatasets(studyId).stream()
-        .filter(s -> subjectAclService.isPermitted("/draft/harmonized-dataset", "VIEW", s.getId())).collect(toList());
-      totalCount = datasets.size();
-      result = datasets.stream().map(d -> dtos.asDto(d, true)).skip(from).limit(limit);
-    } else {
-      DocumentService.Documents<HarmonizationDataset> datasets = draftDatasetService.find(from, limit, null, null, studyId, query);
-      totalCount = datasets.getTotal();
-      result = datasetService.findAllDatasets(datasets.getList().stream().map(Dataset::getId).collect(toList())).stream().map(d -> dtos.asDto(d, true));
-    }
+    DocumentService.Documents<HarmonizationDataset> datasets = draftDatasetService.find(from, limit, null, null, studyId, query, null, null, accessibleIdFilter);
+    totalCount = datasets.getTotal();
+    result = datasetService.findAllDatasets(datasets.getList().stream().map(Dataset::getId).collect(toList())).stream().map(d -> dtos.asDto(d, true));
 
     response.addHeader("X-Total-Count", Long.toString(totalCount));
 

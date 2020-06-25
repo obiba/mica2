@@ -54,9 +54,9 @@ public class EntityStateRepositoryImpl implements EntityStateRepositoryCustom {
       new LinkedHashMap<String, Object>() {{
         put("total", 0);
         put("published", 0);
-        put("reviewing", 0);
-        put("editing", 0);
-        put("deleting", 0);
+        put("under_review", 0);
+        put("in_edition", 0);
+        put("to_delete", 0);
       }}
     );
   }
@@ -68,13 +68,13 @@ public class EntityStateRepositoryImpl implements EntityStateRepositoryCustom {
       "      \"published\": {\n" +
       "        \"$sum\": { \"$cond\": [ { \"$ifNull\": [ \"$publishedTag\", false ] }, 1, 0 ] }\n" +
       "      },     \n" +
-      "      \"reviewing\": {\n" +
+      "      \"under_review\": {\n" +
       "        \"$sum\": { \"$cond\": [ { \"$eq\": [ \"UNDER_REVIEW\", \"$revisionStatus\" ] }, 1, 0 ] }\n" +
       "      },\n" +
-      "      \"editing\": {\n" +
+      "      \"in_edition\": {\n" +
       "        \"$sum\": {\"$cond\": [{\"$and\": [{\"$gt\": [\"$revisionsAhead\", 0 ] }, {\"$ifNull\": [\"$publishedTag\", false ] } ] }, 1, 0 ] }\n" +
       "      },\n" +
-      "      \"deleting\": {\n" +
+      "      \"to_delete\": {\n" +
       "        \"$sum\": { \"$cond\": [ { \"$eq\": [ \"DELETED\", \"$revisionStatus\" ] }, 1, 0 ] }\n" +
       "      }\n";
   }

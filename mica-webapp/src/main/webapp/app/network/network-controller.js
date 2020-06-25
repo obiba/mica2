@@ -29,7 +29,7 @@ mica.network
     }])
 
   .controller('NetworkListController', [
-    '$scope', '$timeout', 'NetworksResource', 'NetworkService', 'AlertBuilder', mica.commons.ListController])
+    '$scope', '$timeout', 'NetworksResource', 'NetworkService', 'AlertBuilder', 'EntityStateFilterService', mica.commons.ListController])
 
   .controller('NetworkEditController', [
     '$rootScope',
