@@ -100,7 +100,7 @@
         updateUrl: (filter) => {
           let search = $location.search();
           search.filter = filter;
-          $location.search(search).replace();
+          $location.search(search);
         }
       };
 
