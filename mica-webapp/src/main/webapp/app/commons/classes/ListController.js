@@ -73,9 +73,9 @@
     self.onFilterSelected = function (filter) {
       EntityStateFilterService.updateUrl(filter);
       self.filter = filter;
-      self.pagination.current = 1
+      self.pagination.current = 1;
       loadPage(self.pagination.current);
-    }
+    };
 
     function onSuccess(response, responseHeaders) {
       self.searching = angular.isDefined($scope.pagination) && '' !== $scope.pagination.searchText;

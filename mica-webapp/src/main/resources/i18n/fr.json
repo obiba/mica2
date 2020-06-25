@@ -2379,5 +2379,12 @@
       "title": "Indexation des {{entity}}",
       "message": "Liste des {{entity}} à l'indexer:"
     }
+  },
+  "entity-state-filter": {
+    "ALL": "Tout",
+    "PUBLISHED": "Publiés",
+    "UNDER_REVIEW": "En révision",
+    "TO_DELETE": "À supprimer",
+    "IN_EDITION": "En édition"
   }
 }

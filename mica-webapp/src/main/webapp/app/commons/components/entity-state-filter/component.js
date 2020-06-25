@@ -21,21 +21,36 @@
         filter: '<',
         onSelected: '&'
       };
-      this.templateUrl = 'app/commons/components/entity-state-filter/component.html',
+      this.templateUrl = 'app/commons/components/entity-state-filter/component.html';
       this.controllerAs = '$ctrl';
-      this.controller = ['$filter', EntityStateFilterController];
+      this.controller = ['$rootScope', '$filter', EntityStateFilterController];
     }
   }
 
   class EntityStateFilterController {
-    constructor($filter) {
+    constructor($rootScope, $filter) {
+      this.$rootScope = $rootScope;
       this.$filter = $filter;
+      this.selected = null;
+      this.__onLocaleChangedHandler = $rootScope.$on('$translateChangeSuccess', () => {
+        this.__initializeFilters();
+        this.__findAndSetSelectedFilter(this.selected ? this.selected.value : null);
+      });
+
+      this.__initializeFilters();
+    }
+
+    __initializeFilters() {
       this.filters = Object.values(mica.commons.ENTITY_STATE_FILTER)
         .map(value => ({
           label: this.$filter('translate')(`entity-state-filter.${value}`),
           value
         }));
-      this.selected = null;
+    }
+
+    __findAndSetSelectedFilter(filter) {
+      const found = Object.keys(this.filters).filter(key => this.filters[key].value === filter);
+      this.selected = this.filters[found] || this.filters[0];
     }
 
     $onInit() {
@@ -44,11 +59,14 @@
 
     $onChanges(changesObj) {
       if (this.filter) {
-        const found = Object.keys(this.filters).filter(key => this.filters[key].value === this.filter);
-        this.selected = this.filters[found] || mica.commons.ENTITY_STATE_FILTER.ALL;
+        this.__findAndSetSelectedFilter(this.filter);
       } else if (!changesObj.filter.currentValue) {
         this.selected = this.filters[0];
       }
+    }
+
+    $onDestroy() {
+      this.__onLocaleChangedHandler();
     }
 
     onChange(filter) {

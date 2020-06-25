@@ -39,7 +39,7 @@ mica.project
      function onFilterSelected(filter) {
         EntityStateFilterService.updateUrl(filter);
         $scope.filter = filter;
-        $scope.pagination.current = 1
+        $scope.pagination.current = 1;
         loadPage($scope.pagination.current);
       }
 
