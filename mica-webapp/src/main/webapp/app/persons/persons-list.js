@@ -47,11 +47,7 @@
     }
 
     set query(text) {
-      this._query = text ? text.trim() : '';
-
-      if (this._query.length === 1) {
-        return;
-      }
+      this._query = text ? text.trim() : null;
 
       if (this.timeoutHandler) {
         this.$timeout.cancel(this.timeoutHandler);
