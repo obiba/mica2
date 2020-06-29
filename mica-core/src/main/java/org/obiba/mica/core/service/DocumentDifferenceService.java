@@ -1,4 +1,4 @@
-package org.obiba.mica.study.service;
+package org.obiba.mica.core.service;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -22,11 +22,17 @@ public class DocumentDifferenceService {
 
   private DocumentDifferenceService() { }
 
-  public static MapDifference<String, Object> diff(Object left, Object right) throws JsonProcessingException {
-    return Maps.difference(flatten(left), flatten(right));
+  public static MapDifference<String, Object> diff(Object left, Object right, Map<String, String> translationMap) throws JsonProcessingException {
+    if (translationMap == null || translationMap.size() == 0) translationMap = new HashMap<>();
+
+    return Maps.difference(flatten(left, translationMap), flatten(right, translationMap));
   }
 
-  public static Map<String, Object> flatten(Object object) throws JsonProcessingException {
+  public static MapDifference<String, Object> diff(Object left, Object right) throws JsonProcessingException {
+    return diff(left, right, new HashMap<>());
+  }
+
+  public static Map<String, Object> flatten(Object object, Map<String, String> translationMap) throws JsonProcessingException {
     Map<String, Object> map = new HashMap<>();
     if (object == null) return map;
 
@@ -39,11 +45,17 @@ public class DocumentDifferenceService {
     .forEach(key -> {
       Object read = JsonPath.parse(string).read(key);
       if (read != null && !(read instanceof Map) && !(read instanceof List)) {
-        map.put(key.replaceAll("(\\$\\[')|('\\])", "").replaceAll("(\\[')", "."), read);
+        String processedKey = key.replaceAll("(\\$\\[')|('\\])", "").replaceAll("(\\[')", ".");
+
+        map.put(translationMap.containsKey(processedKey) ? translationMap.get(processedKey) : processedKey, read);
       }
     });
 
     return map;
+  }
+
+  public static Map<String, Object> flatten(Object object) throws JsonProcessingException {
+    return flatten(object, new HashMap<>());
   }
 
   public static Map<String, List<Object>> fromEntriesDifferenceMap(Map<String, ValueDifference<Object>> entriesDiffering) {
