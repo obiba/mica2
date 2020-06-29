@@ -31,8 +31,6 @@
     }
 
     __openIndexingModal(document, $filter, EntityIndexHealthResource, DraftEntitiesIndexResource) {
-      const locale = this.$translate.use();
-
       this.$uibModal.open({
         templateUrl: 'app/entity-statistics-summary/views/entity-statistics-summary-indexing-modal.html',
         controllerAs: '$ctrl',

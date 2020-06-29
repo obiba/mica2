@@ -24,11 +24,11 @@
   };
 
   const COUNT_TO_FILTER = {
-    total: 'ALL',
-    published: 'PUBLISHED',
-    under_review: 'UNDER_REVIEW',
-    in_edition: 'IN_EDITION',
-    to_delete: 'TO_DELETE'
+    'total': 'ALL',
+    'published': 'PUBLISHED',
+    'under_review': 'UNDER_REVIEW',
+    'in_edition': 'IN_EDITION',
+    'to_delete': 'TO_DELETE'
   };
 
 
@@ -110,9 +110,7 @@
       }
 
       return Object.assign(data, {
-        url: query
-          ? `#/search?type=${searchType}&display=list&query=${query}`
-          : `#/search?type=${searchType}&display=list`
+        url: query ? `#/search?type=${searchType}&display=list&query=${query}` : `#/search?type=${searchType}&display=list`
       });
     }
 
@@ -149,9 +147,7 @@
     __processProperties(document) {
       // convert to map
       document.properties = document.properties.reduce((acc, property) => {
-        acc[property.name] = property.value > 0
-          ? this.__createPropertyValue(document.type, property)
-          : {value: property.value};
+        acc[property.name] = property.value > 0 ? this.__createPropertyValue(document.type, property) : {value: property.value};
         return acc;
       }, {});
 
