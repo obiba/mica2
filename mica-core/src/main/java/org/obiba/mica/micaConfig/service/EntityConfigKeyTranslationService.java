@@ -198,15 +198,15 @@ public class EntityConfigKeyTranslationService {
     if (locales == null || locales.size() == 0) locales = Arrays.asList("en");
     String joinedLocales = locales.stream().map(locale -> "\\." + locale).collect(Collectors.joining("|"));
 
-    List<String> collect = array.stream().map(Object::toString)
-    .filter(key -> key.endsWith("['title']")).collect(Collectors.toList());
-
     array.stream().map(Object::toString)
     .filter(key -> key.endsWith("['title']"))
     .forEach(key -> {
       Object read = JsonPath.parse(string).read(key);
       if (read != null) {
-         String processedKey = (key.startsWith("_") ? prefix : prefix + "model\\.") + Pattern.quote((key.startsWith("_") ? key.substring(1) : key).replaceAll("(\\$\\[')|('\\])", "").replaceAll("(\\[')", ".").replaceAll("\\.title$", "").replaceAll("^properties\\.", "").replaceAll("\\.properties", "")) + "(" + joinedLocales + ")?";
+        String cleanKey = key.replaceAll("(\\$\\[')|('\\])", "").replaceAll("(\\[')", ".").replaceAll("\\.title$", "").replaceAll("^properties\\.", "").replaceAll("\\.properties", "");
+
+        String processedKey = (cleanKey.startsWith("_") ? prefix : prefix + "model\\.") + Pattern.quote((cleanKey.startsWith("_") ? cleanKey.substring(1) : cleanKey)) + "(" + joinedLocales + ")?";
+        
         map.put(processedKey, read.toString());
       }
     });
