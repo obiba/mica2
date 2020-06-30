@@ -1,8 +1,10 @@
 package org.obiba.mica.micaConfig.service;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -14,6 +16,7 @@ import org.obiba.core.translator.JsonTranslator;
 import org.obiba.core.translator.PrefixedValueTranslator;
 import org.obiba.core.translator.TranslationUtils;
 import org.obiba.core.translator.Translator;
+import org.obiba.mica.core.support.RegexHashMap;
 import org.obiba.mica.micaConfig.domain.DataCollectionEventConfig;
 import org.obiba.mica.micaConfig.domain.EntityConfig;
 import org.obiba.mica.micaConfig.domain.HarmonizationDatasetConfig;
@@ -29,7 +32,7 @@ import org.springframework.stereotype.Component;
 import net.minidev.json.JSONArray;
 
 @Component
-public class ReadOnlyEntityConfigService {
+public class EntityConfigKeyTranslationService {
 
   private final MicaConfigService micaConfigService;
 
@@ -44,7 +47,7 @@ public class ReadOnlyEntityConfigService {
   private final StudyDatasetConfigService studyDatasetConfigService;
 
   @Inject
-  public ReadOnlyEntityConfigService(MicaConfigService micaConfigService,
+  public EntityConfigKeyTranslationService(MicaConfigService micaConfigService,
       DataCollectionEventConfigService dataCollectionEventConfigService,
       HarmonizationDatasetConfigService harmonizationDatasetConfigService,
       HarmonizationPopulationConfigService harmonizationPopulationConfigService,
@@ -66,8 +69,8 @@ public class ReadOnlyEntityConfigService {
     this.studyDatasetConfigService = studyDatasetConfigService;
   }
 
-  public Map<String, String> getCompleteConfigTranslationMap(String serviceTypename, String locale) {
-    Map<String, String> translationMap = new HashMap<>();
+  public RegexHashMap getCompleteConfigTranslationMap(String serviceTypename, String locale) {
+    RegexHashMap translationMap = new RegexHashMap();
 
     switch (serviceTypename) {
       case "individual-study":
@@ -87,14 +90,14 @@ public class ReadOnlyEntityConfigService {
           PopulationConfig populationSchemaForm = optionalPopulationSchemaForm.get();
           translateSchemaForm(populationSchemaForm, locale);
 
-          translationMap.putAll(getTranslationMap(populationSchemaForm, "populations[]."));
+          translationMap.putAll(getTranslationMap(populationSchemaForm, "^populations\\[\\d+\\]\\."));
         }
 
         if (optionalDataCollectionEventSchemaForm.isPresent()) {
           DataCollectionEventConfig dataCollectionEventSchemaForm = optionalDataCollectionEventSchemaForm.get();
           translateSchemaForm(dataCollectionEventSchemaForm, locale);
 
-          translationMap.putAll(getTranslationMap(dataCollectionEventSchemaForm, "populations[].dataCollectionEvents[]."));
+          translationMap.putAll(getTranslationMap(dataCollectionEventSchemaForm, "^populations\\[\\d+\\]\\.dataCollectionEvents\\[\\d+\\]\\."));
         }
 
         break;
@@ -115,7 +118,7 @@ public class ReadOnlyEntityConfigService {
           HarmonizationPopulationConfig harmonizationPopulationSchemaForm = optionalHarmonizationPopulationSchemaForm.get();
           translateSchemaForm(harmonizationPopulationSchemaForm, locale);
 
-          translationMap.putAll(getTranslationMap(harmonizationPopulationSchemaForm, "populations[]."));
+          translationMap.putAll(getTranslationMap(harmonizationPopulationSchemaForm, "^populations\\[\\d+\\]\\."));
         }
 
         break;
@@ -184,19 +187,26 @@ public class ReadOnlyEntityConfigService {
     config.setDefinition(translationUtils.translate(config.getDefinition(), translator));
   }
 
-  private Map<String, String> getTranslationMap(EntityConfig config, String prefix) {
+  private RegexHashMap getTranslationMap(EntityConfig config, String prefix) {
     String string = config.getSchema();
 
     JSONArray array = JsonPath.using(Configuration.builder().options(Option.AS_PATH_LIST).build()).parse(string).read("$..*");
 
-    Map<String, String> map = new HashMap<>();
+    RegexHashMap map = new RegexHashMap();
+
+    List<String> locales = micaConfigService.getLocales();
+    if (locales == null || locales.size() == 0) locales = Arrays.asList("en");
+    String joinedLocales = locales.stream().map(locale -> "\\." + locale).collect(Collectors.joining("|"));
+
+    List<String> collect = array.stream().map(Object::toString)
+    .filter(key -> key.endsWith("['title']")).collect(Collectors.toList());
 
     array.stream().map(Object::toString)
     .filter(key -> key.endsWith("['title']"))
     .forEach(key -> {
       Object read = JsonPath.parse(string).read(key);
       if (read != null) {
-        String processedKey = prefix + "model." + key.replaceAll("(\\$\\[')|('\\])", "").replaceAll("(\\[')", ".").replaceAll("\\.title$", "").replaceAll("^properties\\.", "").replaceAll("\\.properties", "");
+         String processedKey = (key.startsWith("_") ? prefix : prefix + "model\\.") + Pattern.quote((key.startsWith("_") ? key.substring(1) : key).replaceAll("(\\$\\[')|('\\])", "").replaceAll("(\\[')", ".").replaceAll("\\.title$", "").replaceAll("^properties\\.", "").replaceAll("\\.properties", "")) + "(" + joinedLocales + ")?";
         map.put(processedKey, read.toString());
       }
     });

@@ -14,6 +14,8 @@ import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.Option;
 
+import org.obiba.mica.core.support.RegexHashMap;
+
 import net.minidev.json.JSONArray;
 
 public class DocumentDifferenceService {
@@ -22,18 +24,18 @@ public class DocumentDifferenceService {
 
   private DocumentDifferenceService() { }
 
-  public static MapDifference<String, Object> diff(Object left, Object right, Map<String, String> translationMap) throws JsonProcessingException {
-    if (translationMap == null || translationMap.size() == 0) translationMap = new HashMap<>();
+  public static MapDifference<String, Object> diff(Object left, Object right, RegexHashMap translationMap) throws JsonProcessingException {
+    if (translationMap == null || translationMap.size() == 0) translationMap = new RegexHashMap();
 
     return Maps.difference(flatten(left, translationMap), flatten(right, translationMap));
   }
 
   public static MapDifference<String, Object> diff(Object left, Object right) throws JsonProcessingException {
-    return diff(left, right, new HashMap<>());
+    return diff(left, right, new RegexHashMap());
   }
 
-  public static Map<String, Object> flatten(Object object, Map<String, String> translationMap) throws JsonProcessingException {
-    Map<String, Object> map = new HashMap<>();
+  public static Map<String, Object> flatten(Object object, RegexHashMap translationMap) throws JsonProcessingException {
+    Map<String, Object> map = new RegexHashMap();
     if (object == null) return map;
 
     final String string = mapper.writeValueAsString(object);
@@ -46,8 +48,10 @@ public class DocumentDifferenceService {
       Object read = JsonPath.parse(string).read(key);
       if (read != null && !(read instanceof Map) && !(read instanceof List)) {
         String processedKey = key.replaceAll("(\\$\\[')|('\\])", "").replaceAll("(\\[')", ".");
+        
+        Object translatedKey = translationMap.get(processedKey);
 
-        map.put(translationMap.containsKey(processedKey) ? translationMap.get(processedKey) : processedKey, read);
+        map.put(translatedKey != null ? translatedKey.toString() : processedKey, read);
       }
     });
 
@@ -55,7 +59,7 @@ public class DocumentDifferenceService {
   }
 
   public static Map<String, Object> flatten(Object object) throws JsonProcessingException {
-    return flatten(object, new HashMap<>());
+    return flatten(object, new RegexHashMap());
   }
 
   public static Map<String, List<Object>> fromEntriesDifferenceMap(Map<String, ValueDifference<Object>> entriesDiffering) {

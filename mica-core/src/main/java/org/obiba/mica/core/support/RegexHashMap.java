@@ -9,6 +9,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+/**
+ * Object that matches regex patterns to values.
+ */
 public class RegexHashMap implements Map<String, Object> {
 
   private class PatterMatcher {

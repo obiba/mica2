@@ -17,8 +17,8 @@ import org.obiba.mica.core.domain.EntityState;
 import org.obiba.mica.core.domain.GitPersistable;
 import org.obiba.mica.core.service.AbstractGitPersistableService;
 import org.obiba.mica.core.service.DocumentDifferenceService;
+import org.obiba.mica.micaConfig.service.EntityConfigKeyTranslationService;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
-import org.obiba.mica.micaConfig.service.ReadOnlyEntityConfigService;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
@@ -57,7 +57,7 @@ public abstract class AbstractGitPersistableResource<T extends EntityState, T1 e
   private SubjectAclService subjectAclService;
 
   @Inject
-  private ReadOnlyEntityConfigService readOnlyEntityConfigService;
+  private EntityConfigKeyTranslationService entityConfigKeyTranslationService;
 
   protected abstract String getId();
 
@@ -145,7 +145,7 @@ public abstract class AbstractGitPersistableResource<T extends EntityState, T1 e
     Map<String, Object> data = new HashMap<>();
 
     try {
-      MapDifference<String, Object> difference = DocumentDifferenceService.diff(leftCommit, rightCommit, readOnlyEntityConfigService.getCompleteConfigTranslationMap(getService().getTypeName(), locale));
+      MapDifference<String, Object> difference = DocumentDifferenceService.diff(leftCommit, rightCommit, entityConfigKeyTranslationService.getCompleteConfigTranslationMap(getService().getTypeName(), locale));
 
       data.put("differing", DocumentDifferenceService.fromEntriesDifferenceMap(difference.entriesDiffering()));
       data.put("onlyLeft", difference.entriesOnlyOnLeft());
