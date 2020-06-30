@@ -283,7 +283,7 @@ mica.project
 
       var viewDiff = function (id, leftCommitInfo, rightCommitInfo) {
         if (leftCommitInfo && rightCommitInfo) {
-          return DraftProjectRevisionsResource.diff({id: id, left: leftCommitInfo.commitId, right: rightCommitInfo.commitId});
+          return DraftProjectRevisionsResource.diff({id: id, left: leftCommitInfo.commitId, right: rightCommitInfo.commitId, locale: $translate.use()});
         }
       };
 

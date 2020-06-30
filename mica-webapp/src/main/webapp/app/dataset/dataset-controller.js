@@ -612,7 +612,7 @@ mica.dataset
 
       $scope.viewDiff = function (id, leftCommitInfo, rightCommitInfo) {
         if (leftCommitInfo && rightCommitInfo) {
-          return DraftDatasetRevisionsResource.diff({id: id, type: $scope.type, left: leftCommitInfo.commitId, right: rightCommitInfo.commitId});
+          return DraftDatasetRevisionsResource.diff({id: id, type: $scope.type, left: leftCommitInfo.commitId, right: rightCommitInfo.commitId, locale: $translate.use()});
         }
       };
 
