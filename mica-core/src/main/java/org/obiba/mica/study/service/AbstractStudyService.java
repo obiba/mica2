@@ -32,6 +32,7 @@ import org.obiba.mica.core.domain.EntityState;
 import org.obiba.mica.core.domain.PublishCascadingScope;
 import org.obiba.mica.core.repository.EntityStateRepository;
 import org.obiba.mica.core.service.AbstractGitPersistableService;
+import org.obiba.mica.core.service.DocumentDifferenceService;
 import org.obiba.mica.core.service.StudyIdGeneratorService;
 import org.obiba.mica.file.FileUtils;
 import org.obiba.mica.file.service.FileSystemService;

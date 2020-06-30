@@ -16,9 +16,11 @@ import org.obiba.mica.comment.rest.CommentsResource;
 import org.obiba.mica.core.domain.EntityState;
 import org.obiba.mica.core.domain.GitPersistable;
 import org.obiba.mica.core.service.AbstractGitPersistableService;
+import org.obiba.mica.core.service.DocumentDifferenceService;
+import org.obiba.mica.core.support.RegexHashMap;
+import org.obiba.mica.micaConfig.service.EntityConfigKeyTranslationService;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.security.service.SubjectAclService;
-import org.obiba.mica.study.service.DocumentDifferenceService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.slf4j.Logger;
@@ -28,6 +30,7 @@ import org.springframework.beans.factory.annotation.Value;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
@@ -53,6 +56,9 @@ public abstract class AbstractGitPersistableResource<T extends EntityState, T1 e
 
   @Inject
   private SubjectAclService subjectAclService;
+
+  @Inject
+  private EntityConfigKeyTranslationService entityConfigKeyTranslationService;
 
   protected abstract String getId();
 
@@ -131,7 +137,7 @@ public abstract class AbstractGitPersistableResource<T extends EntityState, T1 e
 
   @GET
   @Path("/_diff")
-  public Response diff(@NotNull @QueryParam("left") String left, @NotNull @QueryParam("right") String right) {
+  public Response diff(@NotNull @QueryParam("left") String left, @NotNull @QueryParam("right") String right, @QueryParam("locale") @DefaultValue("en") String locale) {
     checkPermission("/draft/" + getService().getTypeName(), "VIEW");
 
     T1 leftCommit = getService().getFromCommit(getService().findDraft(getId()), left);
@@ -141,10 +147,9 @@ public abstract class AbstractGitPersistableResource<T extends EntityState, T1 e
 
     try {
       MapDifference<String, Object> difference = DocumentDifferenceService.diff(leftCommit, rightCommit);
+      RegexHashMap completeConfigTranslationMap = entityConfigKeyTranslationService.getCompleteConfigTranslationMap(getService().getTypeName(), locale);
 
-      data.put("differing", DocumentDifferenceService.fromEntriesDifferenceMap(difference.entriesDiffering()));
-      data.put("onlyLeft", difference.entriesOnlyOnLeft());
-      data.put("onlyRight", difference.entriesOnlyOnRight());
+      data = DocumentDifferenceService.withTranslations(difference, completeConfigTranslationMap);
 
     } catch (JsonProcessingException e) {
       //

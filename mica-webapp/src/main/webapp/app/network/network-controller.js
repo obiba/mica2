@@ -458,7 +458,7 @@ mica.network
 
       function viewDiff (id, leftCommitInfo, rightCommitInfo) {
         if (leftCommitInfo && rightCommitInfo) {
-          return DraftNetworkRevisionsResource.diff({id: id, left: leftCommitInfo.commitId, right: rightCommitInfo.commitId});
+          return DraftNetworkRevisionsResource.diff({id: id, left: leftCommitInfo.commitId, right: rightCommitInfo.commitId, locale: $translate.use()});
         }
       }
 

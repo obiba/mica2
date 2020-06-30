@@ -340,7 +340,7 @@ mica.study.ViewController = function (
   populationManagement($rootScope, $scope, $location, NOTIFICATION_EVENTS);
   populationDceManagement($rootScope, $scope, $location, $translate, $uibModal, EntityPathBuilder, NOTIFICATION_EVENTS);
   contactManagement($scope, $routeParams, CONTACT_EVENTS, self.fetchStudy);
-  revisionManagement($rootScope, $scope, $filter, DraftStudyRevisionsResource, NOTIFICATION_EVENTS, self.initializeStudy);
+  revisionManagement($rootScope, $scope, $filter, $translate, DraftStudyRevisionsResource, NOTIFICATION_EVENTS, self.initializeStudy);
 };
 
 mica.study.ViewController.prototype = Object.create(mica.study.BaseViewController.prototype);
@@ -519,7 +519,7 @@ function contactManagement($scope, $routeParams, CONTACT_EVENTS, fetchStudy) {
   });
 }
 
-function revisionManagement($rootScope, $scope, $filter, DraftStudyRevisionsResource, NOTIFICATION_EVENTS, initializeStudy) {
+function revisionManagement($rootScope, $scope, $filter, $translate, DraftStudyRevisionsResource, NOTIFICATION_EVENTS, initializeStudy) {
   $scope.fetchRevisions = function (id, onSuccess) {
     DraftStudyRevisionsResource.query({id: id}, function (response) {
       if (onSuccess) {
@@ -547,7 +547,7 @@ function revisionManagement($rootScope, $scope, $filter, DraftStudyRevisionsReso
 
   $scope.viewDiff = function(id, leftCommitInfo, rightCommitInfo) {
     if (leftCommitInfo && rightCommitInfo) {
-      return DraftStudyRevisionsResource.diff({id: id, left: leftCommitInfo.commitId, right: rightCommitInfo.commitId});
+      return DraftStudyRevisionsResource.diff({id: id, left: leftCommitInfo.commitId, right: rightCommitInfo.commitId, locale: $translate.use()});
     }
   };
 }
@@ -720,7 +720,7 @@ mica.study.HarmonizationStudyViewController = function (
 
   populationManagement($rootScope, $scope, $location, NOTIFICATION_EVENTS);
   contactManagement($scope, $routeParams, CONTACT_EVENTS, self.fetchStudy);
-  revisionManagement($rootScope, $scope, $filter, DraftStudyRevisionsResource, NOTIFICATION_EVENTS, self.initializeStudy);
+  revisionManagement($rootScope, $scope, $filter, $translate, DraftStudyRevisionsResource, NOTIFICATION_EVENTS, self.initializeStudy);
 };
 
 mica.study.HarmonizationStudyViewController.prototype = Object.create(mica.study.BaseViewController.prototype);
