@@ -205,8 +205,8 @@ public class EntityConfigKeyTranslationService {
       if (read != null) {
         String cleanKey = key.replaceAll("(\\$\\[')|('\\])", "").replaceAll("(\\[')", ".").replaceAll("\\.title$", "").replaceAll("^properties\\.", "").replaceAll("\\.properties", "");
 
-        String processedKey = (cleanKey.startsWith("_") ? prefix : prefix + "model\\.") + Pattern.quote((cleanKey.startsWith("_") ? cleanKey.substring(1) : cleanKey)) + "(" + joinedLocales + ")?";
-        
+        String processedKey = (cleanKey.startsWith("_") ? prefix : prefix + "model\\.") + Pattern.quote((cleanKey.startsWith("_") ? cleanKey.substring(1) : cleanKey)) + "(\\[\\d+\\])?" + "(" + joinedLocales + ")?";
+
         map.put(processedKey, read.toString());
       }
     });
