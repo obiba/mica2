@@ -24,17 +24,11 @@ public class DocumentDifferenceService {
 
   private DocumentDifferenceService() { }
 
-  public static MapDifference<String, Object> diff(Object left, Object right, RegexHashMap translationMap) throws JsonProcessingException {
-    if (translationMap == null || translationMap.size() == 0) translationMap = new RegexHashMap();
-
-    return Maps.difference(flatten(left, translationMap), flatten(right, translationMap));
-  }
-
   public static MapDifference<String, Object> diff(Object left, Object right) throws JsonProcessingException {
-    return diff(left, right, new RegexHashMap());
+    return Maps.difference(flatten(left), flatten(right));
   }
 
-  public static Map<String, Object> flatten(Object object, RegexHashMap translationMap) throws JsonProcessingException {
+  public static Map<String, Object> flatten(Object object) throws JsonProcessingException {
     Map<String, Object> map = new RegexHashMap();
     if (object == null) return map;
 
@@ -48,24 +42,35 @@ public class DocumentDifferenceService {
       Object read = JsonPath.parse(string).read(key);
       if (read != null && !(read instanceof Map) && !(read instanceof List)) {
         String processedKey = key.replaceAll("(\\$\\[')|('\\])", "").replaceAll("(\\[')", ".");
-        
-        Object translatedKey = translationMap.get(processedKey);
-
-        map.put(translatedKey != null ? translatedKey.toString() : processedKey, read);
+        map.put(processedKey, read);
       }
     });
 
     return map;
   }
 
-  public static Map<String, Object> flatten(Object object) throws JsonProcessingException {
-    return flatten(object, new RegexHashMap());
+  public static Map<String, Object> withTranslations(MapDifference<String, Object> difference, RegexHashMap completeConfigTranslationMap) {
+    Map<String, Object> data = new HashMap<>();
+
+    data.put("differing", fromEntriesDifferenceMap(difference.entriesDiffering(), completeConfigTranslationMap));
+    data.put("onlyLeft", fromEntries(difference.entriesOnlyOnLeft(), completeConfigTranslationMap));
+    data.put("onlyRight", fromEntries(difference.entriesOnlyOnRight(), completeConfigTranslationMap));
+
+    return data;
   }
 
-  public static Map<String, List<Object>> fromEntriesDifferenceMap(Map<String, ValueDifference<Object>> entriesDiffering) {
+  private static Map<String, List<Object>> fromEntriesDifferenceMap(Map<String, ValueDifference<Object>> entriesDiffering, RegexHashMap completeConfigTranslationMap) {
     Map<String, List<Object>> result = new HashMap<>();
 
-    entriesDiffering.forEach((key, valueDifference) -> result.put(key, Arrays.asList(valueDifference.leftValue(), valueDifference.rightValue())));
+    entriesDiffering.forEach((key, valueDifference) -> result.put(key, Arrays.asList(completeConfigTranslationMap.get(key), valueDifference.leftValue(), valueDifference.rightValue())));
+
+    return result;
+  }
+
+  private static Map<String, List<Object>> fromEntries(Map<String, Object> entries, RegexHashMap completeConfigTranslationMap) {
+    Map<String, List<Object>> result = new HashMap<>();
+
+    entries.forEach((key, value) -> result.put(key, Arrays.asList(completeConfigTranslationMap.get(key), value)));
 
     return result;
   }
