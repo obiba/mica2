@@ -22,17 +22,26 @@
         </thead>
         <tbody>
           <tr ng-repeat="(key, value) in diff.onlyLeft">
-            <td title="{{key}}">{{value[0] || key}}</td>
+            <td>
+              <strong style="display: block;">{{value[0] || key}}</strong>
+              <small ng-if="value[0]">{{key}}</small>
+            </td>
             <td>{{value[1]}}</td>
             <td></td>
           </tr>
           <tr ng-repeat="(key, value) in diff.differing">
-            <td title="{{key}}">{{value[0] || key}}</td>
+            <td>
+              <strong style="display: block;">{{value[0] || key}}</strong>
+              <small ng-if="value[0]">{{key}}</small>
+            </td>
             <td>{{value[1]}}</td>
             <td>{{value[2]}}</td>
           </tr>
           <tr ng-repeat="(key, value) in diff.onlyRight">
-            <td title="{{key}}">{{value[0] || key}}</td>
+            <td>
+              <strong style="display: block;">{{value[0] || key}}</strong>
+              <small ng-if="value[0]">{{key}}</small>
+            </td>
             <td></td>
             <td>{{value[1]}}</td>
           </tr>
