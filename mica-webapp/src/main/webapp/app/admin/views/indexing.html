@@ -38,15 +38,6 @@
       </tr>
       <tr>
         <td>
-          <span translate>indexing.networks</span>
-          <span class="help-block no-margin-bottom" translate>indexing.networks-help</span>
-        </td>
-        <td>
-          <a ng-click="indexNetworks()" class="hand action" title="{{'indexing.build-index' | translate}}"><i class="fa fa-play-circle-o"></i></a>
-        </td>
-      </tr>
-      <tr>
-        <td>
           <span translate>indexing.studies</span>
           <span class="help-block no-margin-bottom" translate>indexing.studies-help</span>
         </td>
@@ -54,7 +45,16 @@
           <a ng-click="indexStudies()" class="hand action" title="{{'indexing.build-index' | translate}}"><i class="fa fa-play-circle-o"></i></a>
         </td>
       </tr>
-      <tr>
+      <tr ng-if="micaConfig.isNetworkEnabled">
+        <td>
+          <span translate>indexing.networks</span>
+          <span class="help-block no-margin-bottom" translate>indexing.networks-help</span>
+        </td>
+        <td>
+          <a ng-click="indexNetworks()" class="hand action" title="{{'indexing.build-index' | translate}}"><i class="fa fa-play-circle-o"></i></a>
+        </td>
+      </tr>
+      <tr ng-if="micaConfig.isCollectedDatasetEnabled && micaConfig.isHarmonizedDatasetEnabled">
         <td>
           <span translate>indexing.datasets</span>
           <span class="help-block no-margin-bottom" translate>indexing.datasets-help</span>
@@ -63,7 +63,7 @@
           <a ng-click="indexDatasets()" class="hand action" title="{{'indexing.build-index' | translate}}"><i class="fa fa-play-circle-o"></i></a>
         </td>
       </tr>
-      <tr>
+      <tr ng-if="micaConfig.isCollectedDatasetEnabled">
         <td>
           <span translate>indexing.collected-datasets</span>
           <span class="help-block no-margin-bottom" translate>indexing.collected-datasets-help</span>
@@ -72,7 +72,7 @@
           <a ng-click="indexCollectedDatasets()" class="hand action" title="{{'indexing.build-index' | translate}}"><i class="fa fa-play-circle-o"></i></a>
         </td>
       </tr>
-      <tr>
+      <tr ng-if="micaConfig.isHarmonizedDatasetEnabled">
         <td>
           <span translate>indexing.harmonized-datasets</span>
           <span class="help-block no-margin-bottom" translate>indexing.harmonized-datasets-help</span>
@@ -88,6 +88,24 @@
         </td>
         <td>
           <a ng-click="indexPersons()" class="hand action" title="{{'indexing.build-index' | translate}}"><i class="fa fa-play-circle-o"></i></a>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <span translate>indexing.files</span>
+          <span class="help-block no-margin-bottom" translate>indexing.files-help</span>
+        </td>
+        <td>
+          <a ng-click="indexFiles()" class="hand action" title="{{'indexing.build-index' | translate}}"><i class="fa fa-play-circle-o"></i></a>
+        </td>
+      </tr>
+      <tr ng-if="micaConfig.isProjectEnabled">
+        <td>
+          <span translate>indexing.projects</span>
+          <span class="help-block no-margin-bottom" translate>indexing.projects-help</span>
+        </td>
+        <td>
+          <a ng-click="indexProjects()" class="hand action" title="{{'indexing.build-index' | translate}}"><i class="fa fa-play-circle-o"></i></a>
         </td>
       </tr>
       <tr>

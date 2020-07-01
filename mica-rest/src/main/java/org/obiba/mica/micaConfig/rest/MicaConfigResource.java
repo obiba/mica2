@@ -34,6 +34,7 @@ import org.obiba.mica.micaConfig.service.*;
 import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.network.event.IndexNetworksEvent;
 import org.obiba.mica.project.domain.Project;
+import org.obiba.mica.project.event.IndexProjectsEvent;
 import org.obiba.mica.security.Roles;
 import org.obiba.mica.security.rest.SubjectAclResource;
 import org.obiba.mica.study.domain.HarmonizationStudy;
@@ -302,6 +303,7 @@ public class MicaConfigResource {
     eventBus.post(new IndexContactsEvent());
     eventBus.post(new IndexNetworksEvent());
     eventBus.post(new IndexDatasetsEvent());
+    eventBus.post(new IndexProjectsEvent());
     eventBus.post(new TaxonomiesUpdatedEvent());
     return Response.noContent().build();
   }

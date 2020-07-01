@@ -252,6 +252,10 @@
     "harmonized-datasets-help": "Index that allows to search for harmonized datasets and associated variables.",
     "persons": "Persons",
     "persons-help": "Index that allows to search persons who can be associated to studies or networks.",
+    "files": "Files",
+    "files-help": "Index that allows to search files associated with studies or networks.",
+    "projects": "Projects",
+    "projects-help": "Index that allows to search projects.",
     "taxonomies": "Taxonomies",
     "taxonomies-help": "Index that allows to search for taxonomy terms (i.e. the search criteria)."
   },

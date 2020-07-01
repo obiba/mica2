@@ -255,6 +255,12 @@ mica.factory('IndexService', ['$resource',
       persons: $resource('ws/draft/persons/_index', {}, {
         'build': {method: 'PUT'}
       }),
+      files: $resource('ws/draft/files/_index', {}, {
+        'build': {method: 'PUT'}
+      }),
+      projects: $resource('ws/draft/projects/_index', {}, {
+        'build': {method: 'PUT'}
+      }),
       taxonomies: $resource('ws/taxonomies/_index', {}, {
         'build': {method: 'PUT'}
       })
