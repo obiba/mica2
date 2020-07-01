@@ -1,7 +1,6 @@
 package org.obiba.mica.micaConfig.service;
 
 import java.util.Arrays;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -32,7 +31,6 @@ import org.obiba.mica.micaConfig.domain.StudyDatasetConfig;
 import org.springframework.stereotype.Component;
 
 import net.minidev.json.JSONArray;
-import net.minidev.json.JSONObject;
 
 @Component
 public class EntityConfigKeyTranslationService {
