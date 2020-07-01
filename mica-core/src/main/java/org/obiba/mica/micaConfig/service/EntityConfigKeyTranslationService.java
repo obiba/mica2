@@ -191,8 +191,8 @@ public class EntityConfigKeyTranslationService {
   private RegexHashMap getTranslationMap(EntityConfig config, String prefix) {
     String string = config.getSchema();
 
-    JSONArray normalArray = JsonPath.using(Configuration.builder().options(Option.AS_PATH_LIST).build()).parse(string).read("$..*");
-    JSONArray itemsArray = JsonPath.using(Configuration.builder().options(Option.AS_PATH_LIST).build()).parse(string).read("$..items");
+    JSONArray normalArray = JsonPath.using(Configuration.builder().options(Option.AS_PATH_LIST, Option.ALWAYS_RETURN_LIST, Option.SUPPRESS_EXCEPTIONS).build()).parse(string).read("$..*");
+    JSONArray itemsArray = JsonPath.using(Configuration.builder().options(Option.AS_PATH_LIST, Option.ALWAYS_RETURN_LIST, Option.SUPPRESS_EXCEPTIONS).build()).parse(string).read("$..items");
 
     RegexHashMap map = new RegexHashMap();
 
