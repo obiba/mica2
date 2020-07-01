@@ -183,8 +183,11 @@ mica.admin
       };
     }])
 
-  .controller('IndexingController', ['$scope', '$rootScope', 'IndexService', 'NOTIFICATION_EVENTS',
-    function ($scope, $rootScope, IndexService, NOTIFICATION_EVENTS) {
+  .controller('IndexingController', ['$scope', '$rootScope', 'IndexService', 'MicaConfigResource', 'NOTIFICATION_EVENTS',
+    function ($scope, $rootScope, IndexService, MicaConfigResource, NOTIFICATION_EVENTS) {
+      MicaConfigResource.get(function(config){
+        $scope.micaConfig = config;
+      });
 
       $scope.$on(NOTIFICATION_EVENTS.confirmDialogAccepted, function (ev, callback) {
         callback();
@@ -237,6 +240,18 @@ mica.admin
       $scope.indexPersons = function () {
         withConfirm(function () {
           IndexService.persons.build();
+        });
+      };
+
+      $scope.indexFiles = function () {
+        withConfirm(function () {
+          IndexService.files.build();
+        });
+      };
+
+      $scope.indexProjects = function () {
+        withConfirm(function () {
+          IndexService.projects.build();
         });
       };
 
