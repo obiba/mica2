@@ -18,6 +18,27 @@
 
   mica.commons.ENTITY_STATE_FILTER = ENTITY_STATE_FILTER;
 
+  /**
+   * Utility function used to cleanup full-text queries in entity and person listing pages.
+   *
+   * @param text
+   * @returns {*}
+   */
+  mica.commons.cleanupQuery = function(text) {
+    const ngObibaStringUtils = new obiba.utils.NgObibaStringUtils();
+    const cleaners = [
+      ngObibaStringUtils.cleanOrEscapeSpecialLuceneBrackets,
+      ngObibaStringUtils.cleanDoubleQuotesLeftUnclosed,
+      (text) => text.replace(/[!^~\\/]/g,'?'),
+      (text) => text.match(/\*$/) === null ? `${text}*` : text,
+    ];
+
+    let cleaned = text;
+    cleaners.forEach(cleaner => cleaned = cleaner.apply(null, [cleaned.trim()]));
+
+    return cleaned && cleaned.length > 0 ? cleaned : null;
+  };
+
   mica.commons
 
     .factory('CommentsResource', ['$resource',
