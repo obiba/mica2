@@ -28,20 +28,6 @@
       this.ngObibaStringUtils = new obiba.utils.NgObibaStringUtils();
     }
 
-    __cleanupQuery(text) {
-      const cleaners = [
-        this.ngObibaStringUtils.cleanOrEscapeSpecialLuceneBrackets,
-        this.ngObibaStringUtils.cleanDoubleQuotesLeftUnclosed,
-        (text) => text.replace(/[!^~\\/]/g,''),
-        (text) => text.match(/\*$/) === null ? `${text}*` : text,
-      ];
-
-      let cleaned = text;
-      cleaners.forEach(cleaner => cleaned = cleaner.apply(null, [cleaned.trim()]));
-
-      return cleaned && cleaned.length > 1 ? cleaned : null;
-    }
-
     get query() {
       return this._query || null;
     }
@@ -57,7 +43,7 @@
     }
 
     getPersons(query, from, limit, exclude) {
-      const searchQuery = query ? this.__cleanupQuery(query) : query;
+      const searchQuery = query ? mica.commons.cleanupQuery(query) : query;
       this.loading = true;
       this.ContactsSearchResource.search({
         query: searchQuery,

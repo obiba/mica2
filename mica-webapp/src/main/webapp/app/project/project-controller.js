@@ -79,7 +79,7 @@ mica.project
         };
 
         if($scope.pagination.searchText) {
-          data.query = $scope.pagination.searchText + '*';
+          data.query = mica.commons.cleanupQuery($scope.pagination.searchText);
         }
 
         DraftProjectsResource.get(data, onSuccess, AlertBuilder.newBuilder().onError(onError));

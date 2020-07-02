@@ -105,7 +105,7 @@
       };
 
       if (self.pagination.searchText) {
-        data.query = new obiba.utils.NgObibaStringUtils().cleanDoubleQuotesLeftUnclosed(self.pagination.searchText) + '*';
+        data.query = mica.commons.cleanupQuery(self.pagination.searchText);
       }
       self.documents = StatesResource.query(data, onSuccess, AlertBuilder.newBuilder().onError(onError));
     }
