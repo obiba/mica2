@@ -37,7 +37,7 @@
     cleaners.forEach(cleaner => cleaned = cleaner.apply(null, [cleaned.trim()]));
 
     return cleaned && cleaned.length > 0 ? cleaned : null;
-  }
+  };
 
   mica.commons
 
