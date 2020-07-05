@@ -672,7 +672,7 @@ mica.entityTaxonomyConfig
               'description': $filter('translate')('taxonomy-config.term-dialog.keywords-help')
             }
           ],
-          model: {isRange: valueType !== 'string'}
+          model: {isRange: ['keyword','string'].indexOf(valueType) < 0}
         };
 
         data.definition.unshift(
