@@ -228,8 +228,9 @@ public class EntityConfigKeyTranslationService {
 
   private void translateSchemaForm(Translator translator, EntityConfig config) {
     TranslationUtils translationUtils = new TranslationUtils();
-    config.setSchema(translationUtils.translate(config.getSchema(), new PrefixedValueTranslator(translator)));
-    config.setDefinition(translationUtils.translate(config.getDefinition(), new PrefixedValueTranslator(translator)));
+    PrefixedValueTranslator prefixedValueTranslator = new PrefixedValueTranslator(translator);
+    config.setSchema(translationUtils.translate(config.getSchema(), prefixedValueTranslator));
+    config.setDefinition(translationUtils.translate(config.getDefinition(), prefixedValueTranslator));
   }
 
   private String getJoinedLocales() {
