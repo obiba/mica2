@@ -1,6 +1,7 @@
 package org.obiba.mica.micaConfig.service;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -47,6 +48,8 @@ public class EntityConfigKeyTranslationService {
   private final ProjectConfigService projectConfigService;
   private final StudyDatasetConfigService studyDatasetConfigService;
 
+  private final Map<String, String> beanFieldToTranslationKeyMap;
+
   @Inject
   public EntityConfigKeyTranslationService(MicaConfigService micaConfigService,
       DataCollectionEventConfigService dataCollectionEventConfigService,
@@ -68,10 +71,54 @@ public class EntityConfigKeyTranslationService {
     this.populationConfigService = populationConfigService;
     this.projectConfigService = projectConfigService;
     this.studyDatasetConfigService = studyDatasetConfigService;
+
+    String joinedLocales = getJoinedLocales();
+
+    beanFieldToTranslationKeyMap = new HashMap<>();
+    // collected dataset
+    beanFieldToTranslationKeyMap.put("studyTable\\.name" + "(" + joinedLocales + ")?", "dataset.table-name");
+    beanFieldToTranslationKeyMap.put("studyTable\\.description" + "(" + joinedLocales + ")?", "dataset.table-description");
+    beanFieldToTranslationKeyMap.put("studyTable\\.project", "dataset.project");
+    beanFieldToTranslationKeyMap.put("studyTable\\.table", "dataset.table");
+    beanFieldToTranslationKeyMap.put("studyTable\\.studyId", "study.label");
+    beanFieldToTranslationKeyMap.put("studyTable\\.populationId", "study.population");
+    beanFieldToTranslationKeyMap.put("studyTable\\.dataCollectionEventId", "study.data-collection-event");
+
+    // harmonized dataset
+    beanFieldToTranslationKeyMap.put("studyTables\\[\\d+\\]\\.name" + "(" + joinedLocales + ")?", "dataset.table-name");
+    beanFieldToTranslationKeyMap.put("studyTables\\[\\d+\\]\\.description" + "(" + joinedLocales + ")?", "dataset.table-description");
+    beanFieldToTranslationKeyMap.put("studyTables\\[\\d+\\]\\.project", "dataset.project");
+    beanFieldToTranslationKeyMap.put("studyTables\\[\\d+\\]\\.table", "dataset.table");
+    beanFieldToTranslationKeyMap.put("studyTables\\[\\d+\\]\\.studyId", "study.label");
+    beanFieldToTranslationKeyMap.put("studyTables\\[\\d+\\]\\.populationId", "study.population");
+    beanFieldToTranslationKeyMap.put("studyTables\\[\\d+\\]\\.dataCollectionEventId", "study.data-collection-event");
+
+    beanFieldToTranslationKeyMap.put("harmonizationTables\\[\\d+\\]\\.name" + "(" + joinedLocales + ")?", "dataset.table-name");
+    beanFieldToTranslationKeyMap.put("harmonizationTables\\[\\d+\\]\\.description" + "(" + joinedLocales + ")?", "dataset.table-description");
+    beanFieldToTranslationKeyMap.put("harmonizationTables\\[\\d+\\]\\.project", "dataset.project");
+    beanFieldToTranslationKeyMap.put("harmonizationTables\\[\\d+\\]\\.table", "dataset.table");
+    beanFieldToTranslationKeyMap.put("harmonizationTables\\[\\d+\\]\\.studyId", "study.label");
+    beanFieldToTranslationKeyMap.put("harmonizationTables\\[\\d+\\]\\.populationId", "study.population");
+
+    beanFieldToTranslationKeyMap.put("harmonizationTable\\.project", "dataset.project");
+    beanFieldToTranslationKeyMap.put("harmonizationTable\\.table", "dataset.table");
+    beanFieldToTranslationKeyMap.put("harmonizationTable\\.studyId", "study.label");
+    beanFieldToTranslationKeyMap.put("harmonizationTable\\.populationId", "study.population");
+
+    // network
+    beanFieldToTranslationKeyMap.put("studyIds\\[\\d+\\]", "studies");
+
+    // study
+    beanFieldToTranslationKeyMap.put("populations\\[\\d+\\].dataCollectionEvents\\[\\d+\\]\\.start\\.yearMonth", "study.start");
+    beanFieldToTranslationKeyMap.put("populations\\[\\d+\\].dataCollectionEvents\\[\\d+\\]\\.end\\.yearMonth", "study.end");
   }
 
   public RegexHashMap getCompleteConfigTranslationMap(String serviceTypename, String locale) {
     RegexHashMap translationMap = new RegexHashMap();
+
+    Translator translator = JsonTranslator.buildSafeTranslator(() -> micaConfigService.getTranslations(locale, false));
+
+    beanFieldToTranslationKeyMap.forEach((key, translationKey) -> translationMap.put(key, translator.translate(translationKey)));
 
     switch (serviceTypename) {
       case "individual-study":
@@ -82,21 +129,21 @@ public class EntityConfigKeyTranslationService {
 
         if (optionalIndividualStudySchemaForm.isPresent()) {
           StudyConfig individualStudySchemaForm = optionalIndividualStudySchemaForm.get();
-          translateSchemaForm(individualStudySchemaForm, locale);
+          translateSchemaForm(translator, individualStudySchemaForm);
 
           translationMap.putAll(getTranslationMap(individualStudySchemaForm, ""));
         }
 
         if (optionalPopulationSchemaForm.isPresent()) {
           PopulationConfig populationSchemaForm = optionalPopulationSchemaForm.get();
-          translateSchemaForm(populationSchemaForm, locale);
+          translateSchemaForm(translator, populationSchemaForm);
 
           translationMap.putAll(getTranslationMap(populationSchemaForm, "^populations\\[\\d+\\]\\."));
         }
 
         if (optionalDataCollectionEventSchemaForm.isPresent()) {
           DataCollectionEventConfig dataCollectionEventSchemaForm = optionalDataCollectionEventSchemaForm.get();
-          translateSchemaForm(dataCollectionEventSchemaForm, locale);
+          translateSchemaForm(translator, dataCollectionEventSchemaForm);
 
           translationMap.putAll(getTranslationMap(dataCollectionEventSchemaForm, "^populations\\[\\d+\\]\\.dataCollectionEvents\\[\\d+\\]\\."));
         }
@@ -110,14 +157,14 @@ public class EntityConfigKeyTranslationService {
 
         if (optionalHarmonizationStudySchemaForm.isPresent()) {
           HarmonizationStudyConfig harmonizationStudySchemaForm = optionalHarmonizationStudySchemaForm.get();
-          translateSchemaForm(harmonizationStudySchemaForm, locale);
+          translateSchemaForm(translator, harmonizationStudySchemaForm);
 
           translationMap.putAll(getTranslationMap(harmonizationStudySchemaForm, ""));
         }
 
         if (optionalHarmonizationPopulationSchemaForm.isPresent()) {
           HarmonizationPopulationConfig harmonizationPopulationSchemaForm = optionalHarmonizationPopulationSchemaForm.get();
-          translateSchemaForm(harmonizationPopulationSchemaForm, locale);
+          translateSchemaForm(translator, harmonizationPopulationSchemaForm);
 
           translationMap.putAll(getTranslationMap(harmonizationPopulationSchemaForm, "^populations\\[\\d+\\]\\."));
         }
@@ -129,7 +176,7 @@ public class EntityConfigKeyTranslationService {
 
         if (optionalNetworkSchemaForm.isPresent()) {
           NetworkConfig networkSchemaForm = optionalNetworkSchemaForm.get();
-          translateSchemaForm(networkSchemaForm, locale);
+          translateSchemaForm(translator, networkSchemaForm);
 
           translationMap.putAll(getTranslationMap(networkSchemaForm, ""));
         }
@@ -141,7 +188,7 @@ public class EntityConfigKeyTranslationService {
 
         if (optionalStudyDatasetSchemaForm.isPresent()) {
           StudyDatasetConfig studyDatasetSchemaForm = optionalStudyDatasetSchemaForm.get();
-          translateSchemaForm(studyDatasetSchemaForm, locale);
+          translateSchemaForm(translator, studyDatasetSchemaForm);
 
           translationMap.putAll(getTranslationMap(studyDatasetSchemaForm, ""));
         }
@@ -153,7 +200,7 @@ public class EntityConfigKeyTranslationService {
 
         if (optionalHarmonizationDatasetSchemaForm.isPresent()) {
           HarmonizationDatasetConfig harmonizationDatasetSchemaForm = optionalHarmonizationDatasetSchemaForm.get();
-          translateSchemaForm(harmonizationDatasetSchemaForm, locale);
+          translateSchemaForm(translator, harmonizationDatasetSchemaForm);
 
           translationMap.putAll(getTranslationMap(harmonizationDatasetSchemaForm, ""));
         }
@@ -165,7 +212,7 @@ public class EntityConfigKeyTranslationService {
 
         if (optionalProjectSchemaForm.isPresent()) {
           ProjectConfig projectSchemaForm = optionalProjectSchemaForm.get();
-          translateSchemaForm(projectSchemaForm, locale);
+          translateSchemaForm(translator, projectSchemaForm);
 
           translationMap.putAll(getTranslationMap(projectSchemaForm, ""));
         }
@@ -179,13 +226,17 @@ public class EntityConfigKeyTranslationService {
     return translationMap;
   }
 
-  private void translateSchemaForm(EntityConfig config, String locale) {
-    Translator translator = JsonTranslator.buildSafeTranslator(() -> micaConfigService.getTranslations(locale, false));
-    translator = new PrefixedValueTranslator(translator);
-
+  private void translateSchemaForm(Translator translator, EntityConfig config) {
     TranslationUtils translationUtils = new TranslationUtils();
-    config.setSchema(translationUtils.translate(config.getSchema(), translator));
-    config.setDefinition(translationUtils.translate(config.getDefinition(), translator));
+    PrefixedValueTranslator prefixedValueTranslator = new PrefixedValueTranslator(translator);
+    config.setSchema(translationUtils.translate(config.getSchema(), prefixedValueTranslator));
+    config.setDefinition(translationUtils.translate(config.getDefinition(), prefixedValueTranslator));
+  }
+
+  private String getJoinedLocales() {
+    List<String> locales = micaConfigService.getLocales();
+    if (locales == null || locales.size() == 0) locales = Arrays.asList("en");
+    return locales.stream().map(locale -> "\\." + locale).collect(Collectors.joining("|"));
   }
 
   private RegexHashMap getTranslationMap(EntityConfig config, String prefix) {
@@ -196,9 +247,7 @@ public class EntityConfigKeyTranslationService {
 
     RegexHashMap map = new RegexHashMap();
 
-    List<String> locales = micaConfigService.getLocales();
-    if (locales == null || locales.size() == 0) locales = Arrays.asList("en");
-    String joinedLocales = locales.stream().map(locale -> "\\." + locale).collect(Collectors.joining("|"));
+    String joinedLocales = getJoinedLocales();
 
     normalArray.stream().map(Object::toString)
     .filter(key -> key.endsWith("['title']"))
