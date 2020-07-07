@@ -161,15 +161,14 @@
       </div>
     </div>
   </div>
-
-  <div class="col-xs-6">
+  <div class="col-xs-6" ng-if="inViewMode()">
     <h3 translate>members</h3>
 
     <div class="row-fluid">
       <membership-management docid="network.id" doctype="NETWORK" order="network.membershipSortOrder" permissions="permissions" on-update="setOrder(newOrder)"></membership-management>
     </div>
 
-    <a ng-if="inViewMode() && (network.studyIds.length > 0 || network.networkIds.length > 0)" href
+    <a ng-if="network.studyIds.length > 0 || network.networkIds.length > 0" href
       class="btn btn-responsive btn-info hidden-print" ng-click="showAllContacts()"><i class="fa fa-group"></i> <span
       translate>network.associated-people</span></a>
   </div>
