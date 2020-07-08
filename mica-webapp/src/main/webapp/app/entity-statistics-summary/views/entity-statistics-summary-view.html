@@ -13,12 +13,14 @@
     <i class="fa fa-refresh"></i> <span translate>global.refresh</span>
   </a>
 
-  <p ng-if="$ctrl.loading" class="voffset2 loading"></p>
-  <div ng-if="!$ctrl.loading">
-    <div ng-repeat="document in $ctrl.stats.documents track by $index" ng-if="$index % 2 == 0" class="row">
-      <entity-statistics-summary-item class="col-md-6" document="$ctrl.stats.documents[$index]"></entity-statistics-summary-item>
-      <entity-statistics-summary-item ng-if="$ctrl.stats.documents[$index+1]" class="col-md-6" document="$ctrl.stats.documents[$index+1]"></entity-statistics-summary-item>
+  <p ng-if="!$ctrl.stats.documents" class="help-block" translate="entity-statistics-summary.none"></p>
+  <div g-if="$ctrl.stats.documents">
+    <p ng-if="$ctrl.loading" class="voffset2 loading"></p>
+    <div ng-if="!$ctrl.loading">
+      <div ng-repeat="document in $ctrl.stats.documents track by $index" ng-if="$index % 2 == 0" class="row">
+        <entity-statistics-summary-item class="col-md-6" document="$ctrl.stats.documents[$index]"></entity-statistics-summary-item>
+        <entity-statistics-summary-item ng-if="$ctrl.stats.documents[$index+1]" class="col-md-6" document="$ctrl.stats.documents[$index+1]"></entity-statistics-summary-item>
+      </div>
     </div>
   </div>
-
 </div>

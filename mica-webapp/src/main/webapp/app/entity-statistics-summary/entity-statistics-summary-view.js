@@ -171,6 +171,17 @@
       if (!config.isDataAccessRequestsCountEnabled) {
         delete sortOrder.DataAccessRequest;
       }
+      if (!config.isNetworkEnabled) {
+        delete sortOrder.Network;
+      }
+      if (!config.isCollectedDatasetEnabled) {
+        delete sortOrder.StudyDataset;
+      }
+      if (!config.isHarmonizedDatasetEnabled) {
+        delete sortOrder.HarmonizationDataset;
+        delete sortOrder.HarmonizationStudy;
+      }
+
       sortOrder = Object.keys(sortOrder);
 
       stats.documents = stats.documents.filter((document) => sortOrder.indexOf(document.type) > -1);
@@ -192,7 +203,9 @@
           const config = results[0];
           const stats = results[1];
           this.loading = false;
-          this.__processDocuments(stats, config);
+          if (stats.documents) {
+            this.__processDocuments(stats, config);
+          }
           this.stats = stats;
         })
         .catch(this.loading = false);

@@ -2379,6 +2379,7 @@
     "requireIndexing": "Indexation requise",
     "require-indexing": "Indexation requise, cliquez pour terminer",
     "require-indexing-warning": "Les documents publiés surlignés en rouge nécessitent une indexation.",
+    "none": "Aucune statistique disponible.",
     "indexing-dialog": {
       "title": "Indexation des {{entity}}",
       "message": "Liste des {{entity}} à l'indexer:"
