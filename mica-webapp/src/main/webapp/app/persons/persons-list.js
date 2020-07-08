@@ -39,10 +39,19 @@
         this.$timeout.cancel(this.timeoutHandler);
       }
 
-      this.timeoutHandler = this.$timeout((this.getPersons(this._query, 0)), 250);
+      this.timeoutHandler = this.$timeout((this.__getPersons(this._query, 0)), 250);
     }
 
-    getPersons(query, from, limit, exclude) {
+    __getDownloadUrl() {
+      let url = `ws/draft/persons/_search/_download?limit=${this.total}`;
+      if (this.query) {
+        url = `${url}&query=${mica.commons.cleanupQuery(this.query)}`;
+      }
+
+      return url;
+    }
+
+    __getPersons(query, from, limit, exclude) {
       const searchQuery = query ? mica.commons.cleanupQuery(query) : query;
       this.loading = true;
       this.ContactsSearchResource.search({
@@ -65,6 +74,7 @@
             return person;
           });
           this.total = result.total;
+          this.downloadUrl = this.__getDownloadUrl();
         })
         .catch(error => {
           console.error(`Search failed for ${searchQuery} - ${error.data ? error.data.message : error.statusText}`);
@@ -110,7 +120,7 @@
 
     __fetchPersons(exclude) {
       const from = this.__calculateFromByPage(this.pagination.page);
-      this.getPersons(this.query, from, this.pagination.size, exclude);
+      this.__getPersons(this.query, from, this.pagination.size, exclude);
     }
 
     __getValidPage(pagination, userDeleted) {
