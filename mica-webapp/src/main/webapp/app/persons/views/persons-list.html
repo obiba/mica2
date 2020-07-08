@@ -7,7 +7,7 @@
     <a href ng-click="$ctrl.navigateOut('/person/new')" class="btn btn-info">
       <i class="fa fa-plus"></i> <span translate>persons.add-person</span>
     </a>
-    <a ng-href="ws/draft/persons/_search/_download?limit={{$ctrl.total}}" class="btn btn-info pull-right">
+    <a ng-href="{{$ctrl.downloadUrl}}" class="btn btn-info pull-right">
       <i class="fa fa-download"></i> <span translate>download</span>
     </a>
   </span>
