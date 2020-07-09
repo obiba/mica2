@@ -1,8 +1,11 @@
 package org.obiba.mica.core.service;
 
+import com.google.common.collect.Lists;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.obiba.oidc.OIDCAuthProviderSummary;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
@@ -18,6 +21,8 @@ import java.util.Map;
 @Component
 public class UserAuthService extends AgateRestService {
 
+  private static final Logger log = LoggerFactory.getLogger(UserAuthService.class);
+
   public synchronized List<OIDCAuthProviderSummary> getOidcProviders(String locale) {
     return getOidcProviders(locale, false);
   }
@@ -27,15 +32,24 @@ public class UserAuthService extends AgateRestService {
     HttpHeaders headers = new HttpHeaders();
     headers.set(APPLICATION_AUTH_HEADER, getApplicationAuth());
     HttpEntity<String> entity = new HttpEntity<>(null, headers);
-    ResponseEntity<List<OIDCAuthProviderSummary>> response =
-      template.exchange(
-        getProvidersUrl(locale, signupOnly),
-        HttpMethod.GET,
-        entity,
-        new ParameterizedTypeReference<List<OIDCAuthProviderSummary>>(){}
-      );
 
-    return response.getBody();
+    try {
+      ResponseEntity<List<OIDCAuthProviderSummary>> response =
+        template.exchange(
+          getProvidersUrl(locale, signupOnly),
+          HttpMethod.GET,
+          entity,
+          new ParameterizedTypeReference<List<OIDCAuthProviderSummary>>() {
+          }
+        );
+
+      return response.getBody();
+    } catch (Exception e) {
+      log.warn("Cannot get OIDC providers: {}", e.getMessage());
+      if (log.isDebugEnabled())
+        log.debug("Cannot get OIDC providers", e);
+      return Lists.newArrayList();
+    }
   }
 
   public synchronized JSONObject getPublicConfiguration() {
@@ -65,17 +79,19 @@ public class UserAuthService extends AgateRestService {
     headers.set(APPLICATION_AUTH_HEADER, getApplicationAuth());
     headers.set("Accept", "application/json");
     HttpEntity<String> entity = new HttpEntity<>(null, headers);
-    ResponseEntity<String> response =
-      template.exchange(
-        url,
-        HttpMethod.GET,
-        entity,
-        new ParameterizedTypeReference<String>(){}
-      );
 
     try {
+      ResponseEntity<String> response =
+        template.exchange(
+          url,
+          HttpMethod.GET,
+          entity,
+          new ParameterizedTypeReference<String>(){}
+        );
       return new JSONObject(response.getBody());
-    } catch (JSONException e) {
+    } catch (Exception e) {
+      if (log.isDebugEnabled())
+        log.debug("Cannot get JSON object from {}", url, e);
       return new JSONObject();
     }
   }
