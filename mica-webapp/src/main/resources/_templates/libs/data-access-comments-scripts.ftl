@@ -1,6 +1,6 @@
 <#macro commentScripts isPrivate="false">
   <!-- SimpleMDE -->
-  <script src="/assets/libs/node_modules/simplemde/dist/simplemde.min.js"></script>
+  <script src="${assetsPath}/libs/node_modules/simplemde/dist/simplemde.min.js"></script>
 
   <script>
       var simpleMDEDefaults = {

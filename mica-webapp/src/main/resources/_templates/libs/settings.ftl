@@ -3,7 +3,7 @@
 <#assign dateFormat = "yyyy-MM-dd"/>
 
 <!-- Favicon -->
-<#assign faviconPath = "/favicon.ico"/>
+<#assign faviconPath = "${contextPath}/favicon.ico"/>
 
 <!-- Icons -->
 <#assign networkIcon = "io io-network"/>
@@ -14,22 +14,25 @@
 <#assign projectIcon = "io io-project"/>
 <#assign taxonomyIcon = "io io-taxonomy"/>
 
+<!-- Assets location -->
+<#assign assetsPath = "${contextPath}/assets"/>
+
 <!-- Branding -->
-<#assign brandImageSrc = "/assets/images/mica-logo.png"/>
+<#assign brandImageSrc = "${assetsPath}/images/mica-logo.png"/>
 <#assign brandImageClass = "img-circle elevation-3"/>
 <#assign brandTextEnabled = true/>
 <#assign brandTextClass = "font-weight-light"/>
 
 <!-- Theme -->
-<#assign adminLTEPath = "/assets/libs/node_modules/admin-lte"/>
+<#assign adminLTEPath = "${assetsPath}/libs/node_modules/admin-lte"/>
 
 <!-- Home page settings -->
-<#assign networksLink = "/networks"/>
-<!--#assign networksLink = "/search#lists?type=networks"/-->
-<#assign studiesLink = "/studies"/>
-<!--#assign studiesLink = "/search#lists?type=studies"/-->
-<#assign datasetsLink = "/datasets"/>
-<!--#assign datasetsLink = "/search#lists?type=datasets"/-->
+<#assign networksLink = "${contextPath}/networks"/>
+<!--#assign networksLink = "${contextPath}/search#lists?type=networks"/-->
+<#assign studiesLink = "${contextPath}/studies"/>
+<!--#assign studiesLink = "${contextPath}/search#lists?type=studies"/-->
+<#assign datasetsLink = "${contextPath}/datasets"/>
+<!--#assign datasetsLink = "${contextPath}/search#lists?type=datasets"/-->
 
 <!-- List pages -->
 <#assign listDefaultDisplay = "cards"/> <!-- cards or table -->

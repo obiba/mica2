@@ -253,7 +253,7 @@
                   <@variableSummary variable=variable/>
                 <#else>
                   <@message "sign-in-for-variable-statistics"/>
-                  <a href="../signin?redirect=/variable/${variable.id}" class="btn btn-info"><@message "sign-in"/></a>
+                  <a href="../signin?redirect=${contextPath}/variable/${variable.id}" class="btn btn-info"><@message "sign-in"/></a>
                 </#if>
               </div>
             </div>
@@ -268,7 +268,7 @@
                   <h3 class="card-title"><@message "harmonized-variables"/></h3>
                 </div>
                 <div class="card-body">
-                  <img id="loadingHarmonizedVariables" src="/assets/images/loading.gif">
+                  <img id="loadingHarmonizedVariables" src="${assetsPath}/images/loading.gif">
 
                   <table id="harmonizedVariables" class="table table-striped" style="display: none">
                     <thead>

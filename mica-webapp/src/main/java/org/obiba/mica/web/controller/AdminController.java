@@ -4,6 +4,7 @@ import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import org.obiba.mica.dataset.service.CollectedDatasetService;
 import org.obiba.mica.dataset.service.HarmonizedDatasetService;
+import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.network.service.NetworkService;
 import org.obiba.mica.project.service.ProjectService;
 import org.obiba.mica.security.Roles;
@@ -18,6 +19,9 @@ import javax.inject.Inject;
 
 @Controller
 public class AdminController extends BaseController {
+
+  @Inject
+  private MicaConfigService micaConfigService;
 
   @Inject
   private NetworkService networkService;
@@ -40,8 +44,9 @@ public class AdminController extends BaseController {
   @GetMapping("/admin")
   public ModelAndView admin() {
     Subject subject = SecurityUtils.getSubject();
+    String contextPath = micaConfigService.getContextPath();
     if (!subject.isAuthenticated())
-      return new ModelAndView("redirect:signin?redirect=/admin");
+      return new ModelAndView("redirect:signin?redirect=" + contextPath + "/admin");
 
     if (subject.hasRole(Roles.MICA_ADMIN) || subject.hasRole(Roles.MICA_DAO) || subject.hasRole(Roles.MICA_EDITOR) || subject.hasRole(Roles.MICA_REVIEWER))
       return new ModelAndView("admin");
@@ -61,7 +66,7 @@ public class AdminController extends BaseController {
       .anyMatch(id -> isPermitted("/draft/project", "VIEW", id)))
       return new ModelAndView("admin");
 
-    return new ModelAndView("redirect:/");
+    return new ModelAndView("redirect:" + contextPath + "/");
   }
 
 }

@@ -13,6 +13,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.IntStream;
 
+import javax.inject.Inject;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -25,6 +26,7 @@ import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.session.InvalidSessionException;
 import org.apache.shiro.session.Session;
 import org.apache.shiro.subject.Subject;
+import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.security.Roles;
 import org.obiba.mica.web.model.Mica;
 import org.springframework.stereotype.Component;
@@ -35,6 +37,9 @@ import org.springframework.stereotype.Component;
 public class CurrentSessionResource {
 
   private static final String OBIBA_ID_COOKIE_NAME = "obibaid";
+
+  @Inject
+  private MicaConfigService micaConfigService;
 
   @DELETE
   public Response deleteSession() {
@@ -48,7 +53,7 @@ public class CurrentSessionResource {
         NewCookie cookie = NewCookie.valueOf(cookieValue.toString());
         if (OBIBA_ID_COOKIE_NAME.equals(cookie.getName())) {
           return Response.ok().header(HttpHeaders.SET_COOKIE,
-            new NewCookie(OBIBA_ID_COOKIE_NAME, null, "/", cookie.getDomain(), "Obiba session deleted", 0, cookie.isSecure())).build();
+            new NewCookie(OBIBA_ID_COOKIE_NAME, null, micaConfigService.getContextPath() + "/", cookie.getDomain(), "Obiba session deleted", 0, cookie.isSecure())).build();
         }
       }
     } catch(InvalidSessionException e) {

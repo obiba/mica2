@@ -349,7 +349,7 @@ Vue.use(VueObibaSearchResult, {
       registerDataTable: (tableId, options) => {
         const mergedOptions = Object.assign(options, DataTableDefaults);
         mergedOptions.language = {
-          url: '/assets/i18n/datatables.' + Mica.locale + '.json'
+          url: contextPath + '/assets/i18n/datatables.' + Mica.locale + '.json'
         };
         return $('#' + tableId).DataTable(mergedOptions);
       }
@@ -457,7 +457,7 @@ new Vue({
 
     // fetch the configured search criteria, in the form of a taxonomy of taxonomies
     axios
-      .get('/ws/taxonomy/Mica_taxonomy/_filter?target=taxonomy')
+      .get(contextPath + '/ws/taxonomy/Mica_taxonomy/_filter?target=taxonomy')
       .then(response => {
         let targets = response.data.vocabularies;
         EventBus.$emit('mica-taxonomy', targets);
@@ -466,7 +466,7 @@ new Vue({
 
         for (let target of targets) {
           // then load the taxonomies
-          targetQueries.push(`/ws/taxonomies/_filter?target=${target.name}`);
+          targetQueries.push(`${contextPath}/ws/taxonomies/_filter?target=${target.name}`);
         }
 
         return axios.all(targetQueries.map(query => axios.get(query))).then(axios.spread((...responses) => {

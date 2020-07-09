@@ -6,7 +6,7 @@
       <strong><@message "copyright"/> &copy; 2020 <a href="${config.portalUrl!"#"}">${config.name!""}</a>.</strong> <@message "all-rights-reserved"/>
     </div>
   </#if>
-  <a href="/admin" title="<@message "administration"/>" class="float-right"><i class="fas fa-lock"></i></a>
+  <a href="${contextPath}/admin" title="<@message "administration"/>" class="float-right"><i class="fas fa-lock"></i></a>
   <!-- Default to the left -->
   <small><@message "powered-by"/> <a href="https://www.obiba.org">OBiBa Mica</a></small>
 </footer>

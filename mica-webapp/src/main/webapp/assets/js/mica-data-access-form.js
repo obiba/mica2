@@ -245,9 +245,9 @@ angular.module('ngObibaMica', ['ngResource'])
 
 function NgObibaMicaUrlProvider() {
   var registry = {
-    'TempFileUploadResource': '/ws/files/temp',
-    'TempFileResource': '/ws/files/temp/:id',
-    'SchemaFormAttachmentDownloadResource': '/ws/:path/form/attachments/:attachmentName/:attachmentId/_download'
+    'TempFileUploadResource': micajs.normalizeUrl('/ws/files/temp'),
+    'TempFileResource': micajs.normalizeUrl('/ws/files/temp/:id'),
+    'SchemaFormAttachmentDownloadResource': micajs.normalizeUrl('/ws/:path/form/attachments/:attachmentName/:attachmentId/_download')
   };
 
   function UrlProvider(registry) {
@@ -308,12 +308,12 @@ angular.module('formModule', ['schemaForm', 'hc.marked', 'angularMoment', 'schem
         redirect = '/data-access-' + type + '-form/' + aId;
       }
       axios.put(
-        url,
+        micajs.normalizeUrl(url),
         $scope.model,
         {headers: {'Content-Type': 'application/json'}}
       ).then(function() {
         // check if the form was valid
-        micajs.redirect(redirect);
+        micajs.redirect(micajs.normalizeUrl(redirect));
       }).catch(response =>  {
         micajs.error(formMessages.errorOnSave);
         console.dir(response);

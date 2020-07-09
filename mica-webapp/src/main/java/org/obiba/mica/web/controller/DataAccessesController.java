@@ -9,6 +9,7 @@ import org.obiba.mica.access.service.DataAccessRequestUtilService;
 import org.obiba.mica.micaConfig.NoSuchDataAccessFormException;
 import org.obiba.mica.micaConfig.domain.DataAccessForm;
 import org.obiba.mica.micaConfig.service.DataAccessFormService;
+import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.security.Roles;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.user.UserProfileService;
@@ -27,6 +28,9 @@ import java.util.stream.Collectors;
 
 @Controller
 public class DataAccessesController extends BaseController {
+
+  @Inject
+  private MicaConfigService micaConfigService;
 
   @Inject
   private DataAccessRequestService dataAccessRequestService;
@@ -64,7 +68,7 @@ public class DataAccessesController extends BaseController {
         .collect(Collectors.toMap(u -> u, u -> userProfileService.getProfileMap(u, true))));
       return new ModelAndView("data-accesses", params);
     } else {
-      return new ModelAndView("redirect:signin?redirect=/data-accesses");
+      return new ModelAndView("redirect:signin?redirect=" + micaConfigService.getContextPath() + "/data-accesses");
     }
   }
 

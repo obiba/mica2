@@ -100,7 +100,7 @@
           "info": false,
           "autoWidth": true,
           "language": {
-            "url": "/assets/i18n/datatables.${.lang}.json"
+            "url": "${assetsPath}/i18n/datatables.${.lang}.json"
           }
         };
         $("#frequencyTable").DataTable(dataTableOpts);

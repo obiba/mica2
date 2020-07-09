@@ -14,19 +14,20 @@
 <!-- Toastr -->
 <script src="${adminLTEPath}/plugins/toastr/toastr.min.js"></script>
 <!-- Axios -->
-<script src="/assets/libs/node_modules/axios/dist/axios.min.js"></script>
+<script src="${assetsPath}/libs/node_modules/axios/dist/axios.min.js"></script>
 <!-- Marked -->
-<script src="/assets/libs/node_modules/marked/lib/marked.js"></script>
+<script src="${assetsPath}/libs/node_modules/marked/lib/marked.js"></script>
 <!-- Mica Utils and dependencies -->
-<script src="/assets/libs/node_modules/jquery.redirect/jquery.redirect.js"></script>
-<script src="/assets/libs/node_modules/js-cookie/src/js.cookie.js"></script>
-<script src="/assets/js/mica.js"></script>
+<script src="${assetsPath}/libs/node_modules/jquery.redirect/jquery.redirect.js"></script>
+<script src="${assetsPath}/libs/node_modules/js-cookie/src/js.cookie.js"></script>
+<script src="${assetsPath}/js/mica.js"></script>
 
 <!-- Custom js -->
 <#include "../models/scripts.ftl"/>
 
 <!-- Global js variables -->
 <script>
+    const contextPath = "${contextPath}";
     <!-- DataTable options -->
     const dataTablesDefaultOpts = {
         "paging": true,
@@ -37,7 +38,7 @@
         "info": true,
         "autoWidth": true,
         "language": {
-            "url": "/assets/i18n/datatables.${.lang}.json"
+            "url": "${assetsPath}/i18n/datatables.${.lang}.json"
         }
     };
     const dataTablesSortSearchOpts = {
@@ -48,7 +49,7 @@
         "info": false,
         "autoWidth": true,
         "language": {
-            "url": "/assets/i18n/datatables.${.lang}.json"
+            "url": "${assetsPath}/i18n/datatables.${.lang}.json"
         }
     };
     const dataTablesSortOpts = {
@@ -59,7 +60,7 @@
         "info": false,
         "autoWidth": true,
         "language": {
-            "url": "/assets/i18n/datatables.${.lang}.json"
+            "url": "${assetsPath}/i18n/datatables.${.lang}.json"
         }
     };
     const dataTablesNoSortSearchOpts = {
@@ -71,7 +72,7 @@
         "info": false,
         "autoWidth": true,
         "language": {
-            "url": "/assets/i18n/datatables.${.lang}.json"
+            "url": "${assetsPath}/i18n/datatables.${.lang}.json"
         }
     };
     <!-- Dto utility functions -->

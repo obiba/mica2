@@ -14,6 +14,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.eventbus.EventBus;
@@ -152,6 +153,15 @@ public class MicaConfigService {
 
     micaConfigRepository.save(savedConfig);
     eventBus.post(new MicaConfigUpdatedEvent(getConfig(), removedRoles));
+  }
+
+  /**
+   * Get the http server context path, if configured.
+   * @return
+   */
+  public String getContextPath() {
+    String contextPath = env.getProperty("server.context-path", "");
+    return Strings.isNullOrEmpty(contextPath) ? env.getProperty("server.servlet.context-path", "") : contextPath;
   }
 
   /**
