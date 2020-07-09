@@ -36,6 +36,8 @@ mica.study.BaseViewController = function (
 
   mica.commons.ViewController.call(this, $location);
 
+  $scope.contextPath = contextPath;
+
   var self = this;
   self.months = moment.months();
   self.languages = [];

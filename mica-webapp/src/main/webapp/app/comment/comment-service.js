@@ -13,7 +13,7 @@
 mica.comment
   .factory('CommentsResource', ['$resource',
     function ($resource) {
-      return $resource('/ws/draft/:type/:id/comments', {}, {
+      return $resource(contextPath + '/ws/draft/:type/:id/comments', {}, {
         'save': {
           method: 'POST',
           params: {type: '@type', id: '@id'},
@@ -26,7 +26,7 @@ mica.comment
 
   .factory('CommentResource', ['$resource',
     function ($resource) {
-      return $resource('/ws/draft/:type/:id/comment/:commentId', {}, {
+      return $resource(contextPath + '/ws/draft/:type/:id/comment/:commentId', {}, {
         'delete': {
           method: 'DELETE',
           params: {type: '@type', id: '@id', commentId: '@commentId'},
