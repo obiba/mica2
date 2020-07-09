@@ -55,7 +55,7 @@
       </#if>
 
       <div class="row" ng-controller="FormController">
-        <div class="col-sm-12 col-lg-8">
+        <div class="col-sm-12 <#if dataAccessInstructionsEnabled>col-lg-8<#else>col-lg-12</#if>">
           <div class="card card-primary card-outline">
             <div class="card-header d-print-none">
               <h3 class="card-title"><@message "feasibility-inquiry-form"/></h3>
