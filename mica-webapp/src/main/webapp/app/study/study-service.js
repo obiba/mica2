@@ -13,43 +13,43 @@
 mica.study
   .factory('StudyStatesSearchResource',['$resource',
     function ($resource) {
-      return $resource('ws/draft/study-states', {}, {
+      return $resource(contextPath + '/ws/draft/study-states', {}, {
         'query': {method: 'GET', errorHandler: true, isArray: true},
       });
     }])
 
   .factory('StudyStatesResource', ['$resource',
     function ($resource) {
-      return $resource('ws/draft/study-states?type=:type', {}, {
+      return $resource(contextPath + '/ws/draft/study-states?type=:type', {}, {
         'query': {method: 'GET', params: {type: 'individual-study'}, errorHandler: true, isArray: true},
-        'get': {method: 'GET', url: 'ws/draft/study-state/:id', params: {id: '@id'}}
+        'get': {method: 'GET', url: contextPath + '/ws/draft/study-state/:id', params: {id: '@id'}}
       });
     }])
 
   .factory('DraftStudiesResource', ['$resource', 'StudyModelService',
     function ($resource, StudyModelService) {
-      return $resource('ws/draft/individual-studies?comment:comment', {}, {
+      return $resource(contextPath + '/ws/draft/individual-studies?comment:comment', {}, {
         'save': {method: 'POST', errorHandler: true, transformRequest: StudyModelService.serialize}
       });
     }])
 
   .factory('DraftStudyResource', ['$resource', 'StudyModelService',
     function ($resource, StudyModelService) {
-      return $resource('ws/draft/individual-study/:id', {id: '@id'}, {
+      return $resource(contextPath + '/ws/draft/individual-study/:id', {id: '@id'}, {
         // override $resource.save method because it uses POST by default
         'save': {method: 'PUT', errorHandler: true, transformRequest: StudyModelService.serialize},
         'delete': {method: 'DELETE', errorHandler: true},
         'get': {method: 'GET', transformResponse: StudyModelService.deserialize},
-        'indexDatasets': {method: 'PUT', url: 'ws/draft/individual-study/:id/index-datasets'},
-        'publish': {method: 'PUT', url: 'ws/draft/individual-study/:id/_publish', params: {id: '@id', cascading: '@cascading'}},
-        'unPublish': {method: 'DELETE', url: 'ws/draft/individual-study/:id/_publish', errorHandler: true},
-        'toStatus': {method: 'PUT', url: 'ws/draft/individual-study/:id/_status', params: {id: '@id', value: '@value'}}
+        'indexDatasets': {method: 'PUT', url: contextPath + '/ws/draft/individual-study/:id/index-datasets'},
+        'publish': {method: 'PUT', url: contextPath + '/ws/draft/individual-study/:id/_publish', params: {id: '@id', cascading: '@cascading'}},
+        'unPublish': {method: 'DELETE', url: contextPath + '/ws/draft/individual-study/:id/_publish', errorHandler: true},
+        'toStatus': {method: 'PUT', url: contextPath + '/ws/draft/individual-study/:id/_status', params: {id: '@id', value: '@value'}}
       });
     }])
 
   .factory('DraftStudyPermissionsResource', ['$resource',
     function ($resource) {
-      return $resource('ws/draft/individual-study/:id/permissions', {}, {
+      return $resource(contextPath + '/ws/draft/individual-study/:id/permissions', {}, {
         'save': {
           method: 'PUT',
           params: {id: '@id', type: '@type', principal: '@principal', role: '@role', file: '@file'},
@@ -63,7 +63,7 @@ mica.study
 
   .factory('DraftStudyAccessesResource', ['$resource',
     function ($resource) {
-      return $resource('ws/draft/individual-study/:id/accesses', {}, {
+      return $resource(contextPath + '/ws/draft/individual-study/:id/accesses', {}, {
         'save': {
           method: 'PUT',
           params: {id: '@id', type: '@type', principal: '@principal', file: '@file'},
@@ -77,25 +77,25 @@ mica.study
 
   .factory('DraftStudyRevisionsResource', ['$resource', 'StudyModelService',
     function ($resource, StudyModelService) {
-      return $resource('ws/draft/individual-study/:id/commits', {}, {
+      return $resource(contextPath + '/ws/draft/individual-study/:id/commits', {}, {
         'get': {method: 'GET', params: {id: '@id'}},
-        'restore': {method: 'PUT', url: 'ws/draft/individual-study/:id/commit/:commitId/restore', params: {id: '@id', commitId: '@commitId'}},
-        'view': {method: 'GET', url: 'ws/draft/individual-study/:id/commit/:commitId/view', params: {id: '@id', commitId: '@commitId'},
+        'restore': {method: 'PUT', url: contextPath + '/ws/draft/individual-study/:id/commit/:commitId/restore', params: {id: '@id', commitId: '@commitId'}},
+        'view': {method: 'GET', url: contextPath + '/ws/draft/individual-study/:id/commit/:commitId/view', params: {id: '@id', commitId: '@commitId'},
           transformResponse: StudyModelService.deserialize},
-        'diff': {method: 'GET', url: 'ws/draft/individual-study/:id/_diff', params: {id: '@id'}}
+        'diff': {method: 'GET', url: contextPath + '/ws/draft/individual-study/:id/_diff', params: {id: '@id'}}
       });
     }])
 
   .factory('MicaStudiesConfigResource', ['$resource',
     function ($resource) {
-      return $resource('ws/taxonomies/_filter', {target: 'study'}, {
+      return $resource(contextPath + '/ws/taxonomies/_filter', {target: 'study'}, {
         'get': {method: 'GET', isArray: true}
       });
     }])
 
   .factory('DraftStudiesSummariesResource', ['$resource',
     function ($resource) {
-      return $resource('ws/draft/individual-studies/summaries?', {}, {
+      return $resource(contextPath + '/ws/draft/individual-studies/summaries?', {}, {
         'summaries': {method: 'GET', isArray: true, params: {id: '@id'}}
       });
     }])
@@ -442,35 +442,35 @@ mica.study
 
   .factory('HarmonizationStudyStatesResource', ['$resource',
     function ($resource) {
-      return $resource('ws/draft/study-states?type=harmonization-study', {}, {
+      return $resource(contextPath + '/ws/draft/study-states?type=harmonization-study', {}, {
         'query': {method: 'GET', errorHandler: true, isArray: true},
-        'get': {method: 'GET', url: 'ws/draft/study-state/:id', params: {id: '@id'}}
+        'get': {method: 'GET', url: contextPath + '/ws/draft/study-state/:id', params: {id: '@id'}}
       });
     }])
 
   .factory('DraftHarmonizationStudiesResource', ['$resource', 'StudyModelService',
     function ($resource, StudyModelService) {
-      return $resource('ws/draft/harmonization-studies?comment:comment', {}, {
+      return $resource(contextPath + '/ws/draft/harmonization-studies?comment:comment', {}, {
         'save': {method: 'POST', errorHandler: true, transformRequest: StudyModelService.serialize}
       });
     }])
 
   .factory('DraftHarmonizationStudyResource', ['$resource', 'StudyModelService',
     function ($resource, StudyModelService) {
-      return $resource('ws/draft/harmonization-study/:id', {id: '@id'}, {
+      return $resource(contextPath + '/ws/draft/harmonization-study/:id', {id: '@id'}, {
         // override $resource.save method because it uses POST by default
         'save': {method: 'PUT', errorHandler: true, transformRequest: StudyModelService.serialize},
         'delete': {method: 'DELETE', errorHandler: true},
         'get': {method: 'GET', transformResponse: StudyModelService.deserialize},
-        'publish': {method: 'PUT', url: 'ws/draft/harmonization-study/:id/_publish', params: {id: '@id', cascading: '@cascading'}},
-        'unPublish': {method: 'DELETE', url: 'ws/draft/harmonization-study/:id/_publish', errorHandler: true},
-        'toStatus': {method: 'PUT', url: 'ws/draft/harmonization-study/:id/_status', params: {id: '@id', value: '@value'}}
+        'publish': {method: 'PUT', url: contextPath + '/ws/draft/harmonization-study/:id/_publish', params: {id: '@id', cascading: '@cascading'}},
+        'unPublish': {method: 'DELETE', url: contextPath + '/ws/draft/harmonization-study/:id/_publish', errorHandler: true},
+        'toStatus': {method: 'PUT', url: contextPath + '/ws/draft/harmonization-study/:id/_status', params: {id: '@id', value: '@value'}}
       });
     }])
 
   .factory('DraftHarmonizationStudyPermissionsResource', ['$resource',
     function ($resource) {
-      return $resource('ws/draft/harmonization-study/:id/permissions', {}, {
+      return $resource(contextPath + '/ws/draft/harmonization-study/:id/permissions', {}, {
         'save': {
           method: 'PUT',
           params: {id: '@id', type: '@type', principal: '@principal', role: '@role', file: '@file'},
@@ -484,7 +484,7 @@ mica.study
 
   .factory('DraftHarmonizationStudyAccessesResource', ['$resource',
     function ($resource) {
-      return $resource('ws/draft/harmonization-study/:id/accesses', {}, {
+      return $resource(contextPath + '/ws/draft/harmonization-study/:id/accesses', {}, {
         'save': {
           method: 'PUT',
           params: {id: '@id', type: '@type', principal: '@principal', file: '@file'},
@@ -498,25 +498,25 @@ mica.study
 
   .factory('DraftHarmonizationStudyRevisionsResource', ['$resource', 'StudyModelService',
     function ($resource, StudyModelService) {
-      return $resource('ws/draft/harmonization-study/:id/commits', {}, {
+      return $resource(contextPath + '/ws/draft/harmonization-study/:id/commits', {}, {
         'get': {method: 'GET', params: {id: '@id'}},
-        'restore': {method: 'PUT', url: 'ws/draft/harmonization-study/:id/commit/:commitId/restore', params: {id: '@id', commitId: '@commitId'}},
-        'view': {method: 'GET', url: 'ws/draft/harmonization-study/:id/commit/:commitId/view', params: {id: '@id', commitId: '@commitId'},
+        'restore': {method: 'PUT', url: contextPath + '/ws/draft/harmonization-study/:id/commit/:commitId/restore', params: {id: '@id', commitId: '@commitId'}},
+        'view': {method: 'GET', url: contextPath + '/ws/draft/harmonization-study/:id/commit/:commitId/view', params: {id: '@id', commitId: '@commitId'},
           transformResponse: StudyModelService.deserialize},
-        'diff': {method: 'GET', url: 'ws/draft/harmonization-study/:id/_diff', params: {id: '@id'}}
+        'diff': {method: 'GET', url: contextPath + '/ws/draft/harmonization-study/:id/_diff', params: {id: '@id'}}
       });
     }])
 
   .factory('MicaHarmonizationStudiesConfigResource', ['$resource',
     function ($resource) {
-      return $resource('ws/taxonomies/_filter', {target: 'study'}, {
+      return $resource(contextPath + '/ws/taxonomies/_filter', {target: 'study'}, {
         'get': {method: 'GET', isArray: true}
       });
     }])
 
   .factory('DraftHarmonizationStudiesSummariesResource', ['$resource',
     function ($resource) {
-      return $resource('ws/draft/harmonization-studies/summaries?', {}, {
+      return $resource(contextPath + '/ws/draft/harmonization-studies/summaries?', {}, {
         'summaries': {method: 'GET', isArray: true, params: {id: '@id'}}
       });
     }]);

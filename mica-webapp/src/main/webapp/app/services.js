@@ -35,25 +35,25 @@ mica.factory('BrowserDetector', ['$window',
 
 mica.factory('CurrentSession', ['$resource',
   function ($resource) {
-    return $resource('ws/auth/session/_current');
+    return $resource(contextPath + '/ws/auth/session/_current');
   }]);
 
 mica.factory('UserProfile', ['$resource',
   function ($resource) {
-    return $resource('ws/user/:id', {}, {
+    return $resource(contextPath + '/ws/user/:id', {}, {
       'get': {method: 'GET', params: {id: '@id'}}
     });
   }]);
 
 mica.factory('Account', ['$resource',
   function ($resource) {
-    return $resource('ws/user/_current', {}, {
+    return $resource(contextPath + '/ws/user/_current', {}, {
     });
   }]);
 
 mica.factory('Password', ['$resource',
   function ($resource) {
-    return $resource('ws/user/_current/password', {}, {
+    return $resource(contextPath + '/ws/user/_current/password', {}, {
     });
   }]);
 
@@ -132,7 +132,7 @@ mica.service('AuthenticationSharedService', ['$rootScope', '$q', '$http', '$cook
         $rootScope.authenticationError = false;
         $rootScope.userBannedError = false;
         var data = 'username=' + param.username + '&password=' + param.password;
-        $http.post('ws/auth/sessions', data, {
+        $http.post(contextPath + '/ws/auth/sessions', data, {
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded'
           },
@@ -179,7 +179,7 @@ mica.service('AuthenticationSharedService', ['$rootScope', '$q', '$http', '$cook
     this.logout = function () {
         $rootScope.authenticationError = false;
         $rootScope.userBanned = false;
-        $http({method: 'DELETE', url: 'ws/auth/session/_current', errorHandler: true})
+        $http({method: 'DELETE', url: contextPath + '/ws/auth/session/_current', errorHandler: true})
           .then(
             function success() {
               Session.destroy();
@@ -212,7 +212,7 @@ mica.factory('ThreadDumpService', ['$http',
 
 mica.factory('LogsService', ['$resource',
   function ($resource) {
-    return $resource('ws/logs', {}, {
+    return $resource(contextPath + '/ws/logs', {}, {
       'findAll': { method: 'GET', isArray: true},
       'changeLevel': { method: 'PUT'}
     });
@@ -221,10 +221,10 @@ mica.factory('LogsService', ['$resource',
 mica.factory('CacheService', ['$resource',
   function ($resource) {
     return {
-      caches: $resource('ws/caches', {}, {
+      caches: $resource(contextPath + '/ws/caches', {}, {
         'clear': {method: 'DELETE'}
       }),
-      cache: $resource('ws/cache/:id', {id : '@id'}, {
+      cache: $resource(contextPath + '/ws/cache/:id', {id : '@id'}, {
         'clear': {method: 'DELETE'},
         'build': {method: 'PUT'}
       })
@@ -234,34 +234,34 @@ mica.factory('CacheService', ['$resource',
 mica.factory('IndexService', ['$resource',
   function ($resource) {
     return {
-      all: $resource('ws/config/_index', {}, {
+      all: $resource(contextPath + '/ws/config/_index', {}, {
         'build': {method: 'PUT'}
       }),
-      networks: $resource('ws/draft/networks/_index', {}, {
+      networks: $resource(contextPath + '/ws/draft/networks/_index', {}, {
         'build': {method: 'PUT'}
       }),
-      studies: $resource('ws/draft/individual-studies/_index', {}, {
+      studies: $resource(contextPath + '/ws/draft/individual-studies/_index', {}, {
         'build': {method: 'PUT'}
       }),
-      datasets: $resource('ws/draft/datasets/_index', {}, {
+      datasets: $resource(contextPath + '/ws/draft/datasets/_index', {}, {
         'build': {method: 'PUT'}
       }),
-      collectedDatasets: $resource('ws/draft/collected-datasets/_index', {}, {
+      collectedDatasets: $resource(contextPath + '/ws/draft/collected-datasets/_index', {}, {
         'build': {method: 'PUT'}
       }),
-      harmonizedDatasets: $resource('ws/draft/harmonized-datasets/_index', {}, {
+      harmonizedDatasets: $resource(contextPath + '/ws/draft/harmonized-datasets/_index', {}, {
         'build': {method: 'PUT'}
       }),
-      persons: $resource('ws/draft/persons/_index', {}, {
+      persons: $resource(contextPath + '/ws/draft/persons/_index', {}, {
         'build': {method: 'PUT'}
       }),
-      files: $resource('ws/draft/files/_index', {}, {
+      files: $resource(contextPath + '/ws/draft/files/_index', {}, {
         'build': {method: 'PUT'}
       }),
-      projects: $resource('ws/draft/projects/_index', {}, {
+      projects: $resource(contextPath + '/ws/draft/projects/_index', {}, {
         'build': {method: 'PUT'}
       }),
-      taxonomies: $resource('ws/taxonomies/_index', {}, {
+      taxonomies: $resource(contextPath + '/ws/taxonomies/_index', {}, {
         'build': {method: 'PUT'}
       })
     };
@@ -269,28 +269,28 @@ mica.factory('IndexService', ['$resource',
 
 mica.factory('MicaMetricsResource', ['$resource',
   function($resource) {
-    return $resource('ws/config/metrics', {}, {
+    return $resource(contextPath + '/ws/config/metrics', {}, {
       get: {method: 'GET'}
     });
   }]);
 
 mica.factory('EntityIndexHealthResource', ['$resource',
   function($resource) {
-    return $resource('ws/:entityResource/index/health', {}, {
+    return $resource(contextPath + '/ws/:entityResource/index/health', {}, {
       get: {method: 'GET'}
     });
   }]);
 
 mica.factory('DraftEntitiesIndexResource', ['$resource',
   function($resource) {
-    return $resource('ws/draft/:entityResource/_index', {}, {
+    return $resource(contextPath + '/ws/draft/:entityResource/_index', {}, {
       build: {method: 'PUT', params: {entityResource: '@entityResource', id: '@id', errorHandler: true}}
     });
   }]);
 
 mica.factory('OidcProvidersResource', ['$resource',
   function ($resource) {
-    return $resource('ws/auth/providers', {locale: '@locale'}, {
+    return $resource(contextPath + '/ws/auth/providers', {locale: '@locale'}, {
       'get': { method: 'GET', errorHandler: true, isArray: true }
     });
   }]);
@@ -299,12 +299,12 @@ mica.factory('AuditsService', ['$http',
   function ($http) {
     return {
       findAll: function () {
-        return $http.get('ws/audits/all').then(function (response) {
+        return $http.get(contextPath + '/ws/audits/all').then(function (response) {
           return response.data;
         });
       },
       findByDates: function (fromDate, toDate) {
-        return $http.get('ws/audits/byDates', {params: {fromDate: fromDate, toDate: toDate}}).then(function (response) {
+        return $http.get(contextPath + '/ws/audits/byDates', {params: {fromDate: fromDate, toDate: toDate}}).then(function (response) {
           return response.data;
         });
       }

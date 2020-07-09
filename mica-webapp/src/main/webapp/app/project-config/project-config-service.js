@@ -14,14 +14,14 @@ mica.projectConfig
 
   .factory('ProjectFormResource', ['$resource',
     function ($resource) {
-      return $resource('ws/config/project/form', {}, {
+      return $resource(contextPath + '/ws/config/project/form', {}, {
         'get': {method: 'GET', params: {locale: '@locale'}, errorHandler: true}
       });
     }])
 
   .factory('ProjectFormCustomResource', ['$resource',
     function ($resource) {
-      return $resource('ws/config/project/form-custom', {}, {
+      return $resource(contextPath + '/ws/config/project/form-custom', {}, {
         'get': {method: 'GET', errorHandler: true},
         'save': {method: 'PUT', errorHandler: true}
       });
@@ -29,7 +29,7 @@ mica.projectConfig
 
   .factory('ProjectFormPermissionsResource', ['$resource',
     function ($resource) {
-      return $resource('ws/config/project/permissions', {}, {
+      return $resource(contextPath + '/ws/config/project/permissions', {}, {
         'save': {
           method: 'PUT',
           params: {draft: '@draft', type: '@type', principal: '@principal', role: '@role', file: '@file'},
@@ -42,7 +42,7 @@ mica.projectConfig
 
   .factory('ProjectFormAccessesResource', ['$resource',
     function ($resource) {
-      return $resource('ws/config/project/accesses', {}, {
+      return $resource(contextPath + '/ws/config/project/accesses', {}, {
         'save': {
           method: 'PUT',
           params: {draft: '@draft', type: '@type', principal: '@principal', role: '@role', file: '@file'},

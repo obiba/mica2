@@ -45,7 +45,7 @@ mica.config
       $scope.micaConfig = MicaConfigResource.get();
 
       function getAvailableLanguages() {
-        $scope.availableLanguages = $resource('ws/config/languages').get({locale: $translate.use()});
+        $scope.availableLanguages = $resource(contextPath + '/ws/config/languages').get({locale: $translate.use()});
       }
 
       $rootScope.$on('$translateChangeSuccess', function () {
@@ -71,7 +71,7 @@ mica.config
       };
 
       $scope.downloadCertificate = function () {
-        $window.open('ws/config/keystore/system/https', '_blank', '');
+        $window.open(contextPath + '/ws/config/keystore/system/https', '_blank', '');
       };
 
       $scope.createKeyPair = function () {
@@ -177,7 +177,7 @@ mica.config
       };
 
       $scope.downloadOpalCredentialCertificate = function (opalCredential) {
-        $window.open('ws/config/opal-credential/' + encodeURIComponent(opalCredential.opalUrl) + '/certificate', '_blank', '');
+        $window.open(contextPath + '/ws/config/opal-credential/' + encodeURIComponent(opalCredential.opalUrl) + '/certificate', '_blank', '');
       };
 
       var roleToDelete;
@@ -407,7 +407,7 @@ mica.config
       $scope.micaConfig = MicaConfigResource.get();
 
       function getAvailableLanguages() {
-        $resource('ws/config/languages').get({locale: $translate.use()}).$promise.then(function (languages) {
+        $resource(contextPath + '/ws/config/languages').get({locale: $translate.use()}).$promise.then(function (languages) {
           $scope.availableLanguages = languages;
         });
       }

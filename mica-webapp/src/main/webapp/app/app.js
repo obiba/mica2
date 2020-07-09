@@ -145,7 +145,7 @@ mica
       // Initialize angular-translate
       $translateProvider
         .useStaticFilesLoader({
-          prefix: 'ws/config/i18n/',
+          prefix: contextPath + '/ws/config/i18n/',
           suffix: '.json'
         })
         .registerAvailableLanguageKeys(['en', 'fr'], {

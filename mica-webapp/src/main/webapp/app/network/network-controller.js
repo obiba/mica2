@@ -346,7 +346,7 @@ mica.network
         $scope.$broadcast('sfLocalizedStringLocaleChanged', $translate.use());
 
         if (network.logo) {
-          $scope.logoUrl = 'ws/draft/network/'+network.id+'/file/'+network.logo.id+'/_download';
+          $scope.logoUrl = contextPath + '/ws/draft/network/'+network.id+'/file/'+network.logo.id+'/_download';
         }
 
         $scope.permissions = DocumentPermissionsService.state(network['obiba.mica.EntityStateDto.state']);

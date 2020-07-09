@@ -14,7 +14,7 @@ mica.entityConfig
 
   .factory('EntityFormResource', ['$resource',
     function ($resource) {
-      return $resource('ws/config/:target/form', {}, {
+      return $resource(contextPath + '/ws/config/:target/form', {}, {
         'get': {method: 'GET', params: {locale: '@locale'}, errorHandler: true, transformResponse: function (response) {
           var form = angular.fromJson(response);
           return {schema: angular.fromJson(form.schema), definition: angular.fromJson(form.definition)};
@@ -24,7 +24,7 @@ mica.entityConfig
 
   .factory('EntityFormCustomResource', ['$resource',
     function ($resource) {
-      return $resource('ws/config/:target/form-custom', {}, {
+      return $resource(contextPath + '/ws/config/:target/form-custom', {}, {
         'get': {method: 'GET', errorHandler: true},
         'save': {method: 'PUT', errorHandler: true}
       });
@@ -32,7 +32,7 @@ mica.entityConfig
 
   .factory('EntityFormPermissionsResource', ['$resource',
     function ($resource) {
-      return $resource('ws/config/:target/permissions', {}, {
+      return $resource(contextPath + '/ws/config/:target/permissions', {}, {
         'save': {
           method: 'PUT',
           params: {target: '@target', type: '@type', principal: '@principal', role: '@role', file: '@file'},
@@ -45,7 +45,7 @@ mica.entityConfig
 
   .factory('EntityFormAccessesResource', ['$resource',
     function ($resource) {
-      return $resource('ws/config/:target/accesses', {}, {
+      return $resource(contextPath + '/ws/config/:target/accesses', {}, {
         'save': {
           method: 'PUT',
           params: {target: '@target', type: '@type', principal: '@principal', role: '@role', file: '@file'},

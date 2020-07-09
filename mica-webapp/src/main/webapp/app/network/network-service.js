@@ -13,21 +13,21 @@
 mica.network
   .factory('NetworksResource', ['$resource',
     function ($resource) {
-      return $resource('ws/draft/networks', {}, {
+      return $resource(contextPath + '/ws/draft/networks', {}, {
         query: {method: 'GET', isArray: true, errorHandler: true}
       });
     }])
 
   .factory('DraftNetworksResource', ['$resource', 'NetworkModelService',
     function ($resource, NetworkModelService) {
-      return $resource('ws/draft/networks?comment:comment', {}, {
+      return $resource(contextPath + '/ws/draft/networks?comment:comment', {}, {
         'save': {method: 'POST', errorHandler: true, transformRequest: NetworkModelService.serialize}
       });
     }])
 
   .factory('DraftNetworkResource', ['$resource', 'NetworkModelService',
     function ($resource, NetworkModelService) {
-      return $resource('ws/draft/network/:id', {}, {
+      return $resource(contextPath + '/ws/draft/network/:id', {}, {
         'save': {method: 'PUT', params: {id: '@id'}, errorHandler: true, transformRequest: NetworkModelService.serialize},
         'delete': {method: 'DELETE', params: {id: '@id'}, errorHandler: true},
         'get': {method: 'GET', errorHandler: true, transformResponse: NetworkModelService.deserialize},
@@ -37,14 +37,14 @@ mica.network
 
   .factory('DraftNetworkProjectsResource', ['$resource',
     function ($resource) {
-      return $resource('ws/draft/network/:id/projects', {}, {
+      return $resource(contextPath + '/ws/draft/network/:id/projects', {}, {
         'get': {method: 'GET', errorHandler: true}
       });
     }])
 
   .factory('DraftNetworkPermissionsResource', ['$resource',
     function ($resource) {
-      return $resource('ws/draft/network/:id/permissions', {}, {
+      return $resource(contextPath + '/ws/draft/network/:id/permissions', {}, {
         'save': {
           method: 'PUT',
           params: {id: '@id', type: '@type', principal: '@principal', role: '@role', file: '@file'},
@@ -58,7 +58,7 @@ mica.network
 
   .factory('DraftNetworkAccessesResource', ['$resource',
     function ($resource) {
-      return $resource('ws/draft/network/:id/accesses', {}, {
+      return $resource(contextPath + '/ws/draft/network/:id/accesses', {}, {
         'save': {
           method: 'PUT',
           params: {id: '@id', type: '@type', principal: '@principal', file: '@file'},
@@ -72,7 +72,7 @@ mica.network
 
   .factory('DraftNetworkPublicationResource', ['$resource',
     function ($resource) {
-      return $resource('ws/draft/network/:id/_publish', {id: '@id'}, {
+      return $resource(contextPath + '/ws/draft/network/:id/_publish', {id: '@id'}, {
         'publish': {method: 'PUT', params: {cascading: '@cascading'}},
         'unPublish': {method: 'DELETE'}
       });
@@ -80,29 +80,29 @@ mica.network
 
   .factory('DraftNetworkStatusResource', ['$resource',
     function ($resource) {
-      return $resource('ws/draft/network/:id/_status', {}, {
+      return $resource(contextPath + '/ws/draft/network/:id/_status', {}, {
         'toStatus': {method: 'PUT', params: {id: '@id', value: '@value'}}
       });
     }])
 
   .factory('DraftNetworkRevisionsResource', ['$resource',
     function ($resource) {
-      return $resource('ws/draft/network/:id/commits', {}, {
+      return $resource(contextPath + '/ws/draft/network/:id/commits', {}, {
         'get': {method: 'GET', params: {id: '@id'}},
-        'diff': {method: 'GET', url: 'ws/draft/network/:id/_diff', params: {id: '@id'}}
+        'diff': {method: 'GET', url: contextPath + '/ws/draft/network/:id/_diff', params: {id: '@id'}}
       });
     }])
 
   .factory('DraftNetworkRestoreRevisionResource', ['$resource',
     function ($resource) {
-      return $resource('ws/draft/network/:id/commit/:commitId/restore', {}, {
+      return $resource(contextPath + '/ws/draft/network/:id/commit/:commitId/restore', {}, {
         'restore': {method: 'PUT', params: {id: '@id', commitId: '@commitId'}}
       });
     }])
 
   .factory('DraftNetworkViewRevisionResource', ['$resource', 'NetworkModelService',
     function ($resource, NetworkModelService) {
-      return $resource('ws/draft/network/:id/commit/:commitId/view', {}, {
+      return $resource(contextPath + '/ws/draft/network/:id/commit/:commitId/view', {}, {
         'view': {method: 'GET', params: {id: '@id', commitId: '@commitId'}, transformResponse: NetworkModelService.deserialize}
       });
     }])

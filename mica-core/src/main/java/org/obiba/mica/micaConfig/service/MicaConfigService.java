@@ -177,7 +177,7 @@ public class MicaConfigService {
     } else {
       String host = env.getProperty("server.address");
       String port = env.getProperty("https.port");
-      return "https://" + host + ":" + port;
+      return "https://" + host + ":" + port + getContextPath();
     }
   }
 

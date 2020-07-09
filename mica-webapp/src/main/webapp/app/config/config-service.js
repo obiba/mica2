@@ -13,7 +13,7 @@
 mica.config
   .factory('MicaConfigResource', ['$resource',
     function ($resource) {
-      return $resource('ws/config', {}, {
+      return $resource(contextPath + '/ws/config', {}, {
         // override $resource.save method because it uses POST by default
         'save': {method: 'PUT'},
         'get': {method: 'GET'}
@@ -21,44 +21,44 @@ mica.config
     }])
   .factory('MicaConfigOpalProjectsResource', ['$resource',
     function ($resource) {
-      return $resource('ws/config/opal-projects', {}, {
+      return $resource(contextPath + '/ws/config/opal-projects', {}, {
         'get': {method: 'GET', isArray: true}
       });
     }])
   .factory('PublicMicaConfigResource', ['$resource',
     function ($resource) {
-      return $resource('ws/config/_public', {}, {
+      return $resource(contextPath + '/ws/config/_public', {}, {
         'get': {method: 'GET'}
       });
     }])
   .factory('KeyStoreResource', ['$resource',
     function ($resource) {
-      return $resource('ws/config/keystore/system/https', {}, {
+      return $resource(contextPath + '/ws/config/keystore/system/https', {}, {
         'save': {method: 'PUT'}
       });
     }])
   .factory('OpalCredentialsResource', ['$resource',
     function ($resource) {
-      return $resource('ws/config/opal-credentials', {}, {});
+      return $resource(contextPath + '/ws/config/opal-credentials', {}, {});
     }])
   .factory('OpalCredentialResource', ['$resource',
     function ($resource) {
-      return $resource('ws/config/opal-credential', {}, {});
+      return $resource(contextPath + '/ws/config/opal-credential', {}, {});
     }])
   .factory('TranslationsResource', ['$resource',
     function ($resource) {
-      return $resource('ws/config/i18n/:id.json');
+      return $resource(contextPath + '/ws/config/i18n/:id.json');
     }])
   .factory('CustomTranslationsResource', ['$resource',
     function ($resource) {
-      return $resource('ws/config/i18n/custom/:locale.json', {locale: '@locale'}, {
+      return $resource(contextPath + '/ws/config/i18n/custom/:locale.json', {locale: '@locale'}, {
         'save': {method: 'PUT', params: {merge: false}},
-        'import': {method: 'PUT', url: 'ws/config/i18n/custom/import', params: {merge: false}},
-        'export': {method: 'GET', url: 'ws/config/i18n/custom/export'}
+        'import': {method: 'PUT', url: contextPath + '/ws/config/i18n/custom/import', params: {merge: false}},
+        'export': {method: 'GET', url: contextPath + '/ws/config/i18n/custom/export'}
       }, {});
     }])
   .factory('DocumentSetsPermissionsResource', ['$resource', function ($resource) {
-    return $resource('ws/config/document-sets/permissions', {}, {
+    return $resource(contextPath + '/ws/config/document-sets/permissions', {}, {
       'save': {
         method: 'PUT',
         params: {type: '@type', principal: '@principal', role: '@role', otherResources: '@otherResources'},

@@ -13,15 +13,15 @@
 mica.dataset
   .factory('CollectedDatasetsResource', ['$resource',
     function ($resource) {
-      return $resource('ws/draft/collected-datasets', {}, {
+      return $resource(contextPath + '/ws/draft/collected-datasets', {}, {
         'query': {method: 'GET', errorHandler: true, isArray: true},
-        'delete': {method: 'DELETE', url: 'ws/draft/collected-dataset/:id', params: {id: '@id'}, errorHandler: true}
+        'delete': {method: 'DELETE', url: contextPath + '/ws/draft/collected-dataset/:id', params: {id: '@id'}, errorHandler: true}
       });
     }])
 
   .factory('DraftCollectedDatasetsResource', ['$resource', 'DatasetModelService',
     function ($resource, DatasetModelService) {
-      return $resource('ws/draft/collected-datasets?comment:comment', {}, {
+      return $resource(contextPath + '/ws/draft/collected-datasets?comment:comment', {}, {
         'save': {method: 'POST', errorHandler: true, transformRequest: function(dataset) {
           return DatasetModelService.serialize(dataset);
         }}
@@ -30,7 +30,7 @@ mica.dataset
 
   .factory('CollectedDatasetResource', ['$resource', 'DatasetModelService',
     function ($resource, DatasetModelService) {
-      return $resource('ws/draft/collected-dataset/:id', {}, {
+      return $resource(contextPath + '/ws/draft/collected-dataset/:id', {}, {
         'save': {method: 'PUT', params: {id: '@id'}, errorHandler: true, transformRequest: function(dataset) {
           return DatasetModelService.serialize(dataset);
         }},
@@ -42,7 +42,7 @@ mica.dataset
 
   .factory('CollectedDatasetPublicationResource', ['$resource',
     function ($resource) {
-      return $resource('ws/draft/collected-dataset/:id/_publish', {}, {
+      return $resource(contextPath + '/ws/draft/collected-dataset/:id/_publish', {}, {
         'publish': {method: 'PUT', params: {id: '@id'}},
         'handledPublish': {method: 'PUT', params: {id: '@id'}, errorHandler: true},
         'unPublish': {method: 'DELETE', params: {id: '@id'}}
@@ -51,22 +51,22 @@ mica.dataset
 
   .factory('StudyStateProjectsResource', ['$resource',
     function ($resource) {
-      return $resource('ws/draft/study-state/:id/projects', {}, {
+      return $resource(contextPath + '/ws/draft/study-state/:id/projects', {}, {
         'get': {method: 'GET', params: {id: '@id'}}
       });
     }])
 
   .factory('HarmonizedDatasetsResource', ['$resource',
     function ($resource) {
-      return $resource('ws/draft/harmonized-datasets?comment:comment', {}, {
+      return $resource(contextPath + '/ws/draft/harmonized-datasets?comment:comment', {}, {
         'query': {method: 'GET', errorHandler: true, isArray: true},
-        'delete': {method: 'DELETE', url: 'ws/draft/harmonized-dataset/:id', params: {id: '@id'}, errorHandler: true}
+        'delete': {method: 'DELETE', url: contextPath + '/ws/draft/harmonized-dataset/:id', params: {id: '@id'}, errorHandler: true}
       });
     }])
 
   .factory('DraftHarmonizedDatasetsResource', ['$resource', 'DatasetModelService',
     function ($resource, DatasetModelService) {
-      return $resource('ws/draft/harmonized-datasets', {}, {
+      return $resource(contextPath + '/ws/draft/harmonized-datasets', {}, {
         'save': {method: 'POST', errorHandler: true, transformRequest: function(dataset) {
           return DatasetModelService.serialize(dataset);
         }}
@@ -75,7 +75,7 @@ mica.dataset
 
   .factory('HarmonizedDatasetResource', ['$resource', 'DatasetModelService',
     function ($resource, DatasetModelService) {
-      return $resource('ws/draft/harmonized-dataset/:id', {}, {
+      return $resource(contextPath + '/ws/draft/harmonized-dataset/:id', {}, {
         'save': {method: 'PUT', params: {id: '@id'}, errorHandler: true, transformRequest: function(dataset) {
           return DatasetModelService.serialize(dataset);
         }},
@@ -87,7 +87,7 @@ mica.dataset
 
   .factory('HarmonizedDatasetPublicationResource', ['$resource',
     function ($resource) {
-      return $resource('ws/draft/harmonized-dataset/:id/_publish', {}, {
+      return $resource(contextPath + '/ws/draft/harmonized-dataset/:id/_publish', {}, {
         'publish': {method: 'PUT', params: {id: '@id'}},
         'unPublish': {method: 'DELETE', params: {id: '@id'}}
       });
@@ -95,7 +95,7 @@ mica.dataset
 
   .factory('DatasetResource', ['$resource', 'DatasetModelService',
     function ($resource, DatasetModelService) {
-      return $resource('ws/draft/:type/:id', {}, {
+      return $resource(contextPath + '/ws/draft/:type/:id', {}, {
         'save': {method: 'PUT', params: {id: '@id', type: '@type'}, errorHandler: true, transformRequest: function(dataset) {
           return DatasetModelService.serialize(dataset);
         }},
@@ -108,7 +108,7 @@ mica.dataset
 
   .factory('DatasetPublicationResource', ['$resource',
     function ($resource) {
-      return $resource('ws/draft/:type/:id/_publish', {id: '@id', type: '@type'}, {
+      return $resource(contextPath + '/ws/draft/:type/:id/_publish', {id: '@id', type: '@type'}, {
         'publish': {method: 'PUT', params: {cascading: '@cascading'}},
         'handledPublish': {method: 'PUT', params: {cascading: '@cascading'}, errorHandler: true},
         'unPublish': {method: 'DELETE'}
@@ -117,22 +117,22 @@ mica.dataset
 
   .factory('DraftDatasetStatusResource', ['$resource',
     function ($resource) {
-      return $resource('ws/draft/:type/:id/_status', {}, {
+      return $resource(contextPath + '/ws/draft/:type/:id/_status', {}, {
         'toStatus': {method: 'PUT', params: {id: '@id', type: '@type', value: '@value'}}
       });
     }])
 
   .factory('DraftDatasetRevisionsResource', ['$resource',
     function ($resource) {
-      return $resource('ws/draft/:type/:id/commits', {}, {
+      return $resource(contextPath + '/ws/draft/:type/:id/commits', {}, {
         'get': {method: 'GET'},
-        'diff': {method: 'GET', url: 'ws/draft/:type/:id/_diff', params: {id: '@id', type: '@type'}}
+        'diff': {method: 'GET', url: contextPath + '/ws/draft/:type/:id/_diff', params: {id: '@id', type: '@type'}}
       });
     }])
 
   .factory('DraftDatasetPermissionsResource', ['$resource',
     function ($resource) {
-      return $resource('ws/draft/:datasetType/:id/permissions', {}, {
+      return $resource(contextPath + '/ws/draft/:datasetType/:id/permissions', {}, {
         'save': {
           method: 'PUT',
           params: {id: '@id', type: '@type', principal: '@principal', role: '@role', file: '@file'},
@@ -146,7 +146,7 @@ mica.dataset
 
   .factory('DraftDatasetAccessesResource', ['$resource',
     function ($resource) {
-      return $resource('ws/draft/:datasetType/:id/accesses', {}, {
+      return $resource(contextPath + '/ws/draft/:datasetType/:id/accesses', {}, {
         'save': {
           method: 'PUT',
           params: {id: '@id', type: '@type', principal: '@principal', file: '@file'},
@@ -160,14 +160,14 @@ mica.dataset
 
   .factory('DraftDatasetRestoreRevisionResource', ['$resource',
     function ($resource) {
-      return $resource('ws/draft/:type/:id/commit/:commitId/restore', {}, {
+      return $resource(contextPath + '/ws/draft/:type/:id/commit/:commitId/restore', {}, {
         'restore': {method: 'PUT', params: {type: '@type', id: '@id', commitId: '@commitId'}}
       });
     }])
 
   .factory('DraftDatasetViewRevisionResource', ['$resource', 'DatasetModelService',
     function ($resource, DatasetModelService) {
-      return $resource('ws/draft/:type/:id/commit/:commitId/view', {}, {
+      return $resource(contextPath + '/ws/draft/:type/:id/commit/:commitId/view', {}, {
         'view': {method: 'GET', transformResponse: function(data) {
           return DatasetModelService.deserialize(data);
         }}
