@@ -15,7 +15,7 @@
   <!-- Main Sidebar Container -->
   <aside class="main-sidebar sidebar-dark-primary">
     <!-- Brand Logo -->
-    <a href="${config.portalUrl!".."}" class="brand-link bg-white">
+    <a href="${portalLink}" class="brand-link bg-white">
       <img src="${brandImageSrc}"
            alt="Logo"
            class="brand-image ${brandImageClass}"

@@ -81,7 +81,7 @@
                   <tbody>
                   <#list dars as dar>
                     <tr>
-                      <td><a href="../data-access/${dar.id}">${dar.id}</a></td>
+                      <td><a href="${contextPath}/data-access/${dar.id}">${dar.id}</a></td>
                       <#if isAdministrator || isDAO>
                         <td>
                           <a href="#" data-toggle="modal" data-target="#modal-${dar.applicant}">${applicants[dar.applicant].fullName}</a>

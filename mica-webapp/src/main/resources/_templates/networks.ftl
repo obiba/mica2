@@ -17,7 +17,7 @@
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
     <!-- Content Header (Page header) -->
-    <@header title="networks" breadcrumb=[["..", "home"], ["networks"]]/>
+    <@header title="networks" breadcrumb=[["${contextPath}/", "home"], ["networks"]]/>
     <!-- /.content-header -->
 
     <!-- Main content -->
@@ -59,7 +59,7 @@
                         <tbody>
                         <#list networks as ntwk>
                           <tr>
-                            <td><a href="../network/${ntwk.id}">${localize(ntwk.acronym)}</a></td>
+                            <td><a href="${contextPath}/network/${ntwk.id}">${localize(ntwk.acronym)}</a></td>
                             <td><small>${localize(ntwk.name)}</small></td>
                             <td><small>${localize(ntwk.description)?trim?truncate_w(100, "...")}</small></td>
                           </tr>
@@ -83,7 +83,7 @@
                                   </div>
                                   <div class="col-5 text-center">
                                       <#if ntwk.logo??>
-                                        <img class="img-fluid" style="max-height: 200px" alt="${localize(ntwk.acronym)} logo" src="../ws/network/${ntwk.id}/file/${ntwk.logo.id}/_download"/>
+                                        <img class="img-fluid" style="max-height: 200px" alt="${localize(ntwk.acronym)} logo" src="${contextPath}/ws/network/${ntwk.id}/file/${ntwk.logo.id}/_download"/>
                                       <#else >
                                         <p class="text-black-50 text-center mr-5 ml-5 pr-5">
                                           <i class="${networkIcon} fa-3x"></i>
@@ -94,7 +94,7 @@
                               </div>
                               <div class="card-footer">
                                 <div class="text-right">
-                                  <a href="../network/${ntwk.id}" class="btn btn-sm btn-outline-info">
+                                  <a href="${contextPath}/network/${ntwk.id}" class="btn btn-sm btn-outline-info">
                                     <i class="fas fa-eye"></i> ${localize(ntwk.acronym)}
                                   </a>
                                 </div>

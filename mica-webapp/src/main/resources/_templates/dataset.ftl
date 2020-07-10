@@ -19,7 +19,7 @@
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
     <!-- Content Header (Page header) -->
-    <@header titlePrefix=(type?lower_case + "-dataset") title=localize(dataset.acronym) subtitle=localize(dataset.name) breadcrumb=[["..", "home"], ["../datasets", "datasets"], [localize(dataset.acronym)]]/>
+    <@header titlePrefix=(type?lower_case + "-dataset") title=localize(dataset.acronym) subtitle=localize(dataset.name) breadcrumb=[["../", "home"], ["../datasets", "datasets"], [localize(dataset.acronym)]]/>
     <!-- /.content-header -->
 
     <!-- Main content -->

@@ -33,6 +33,7 @@
 <!--#assign studiesLink = "${contextPath}/search#lists?type=studies"/-->
 <#assign datasetsLink = "${contextPath}/datasets"/>
 <!--#assign datasetsLink = "${contextPath}/search#lists?type=datasets"/-->
+<#assign portalLink = "${config.portalUrl!contextPath}" + "/"/>
 
 <!-- List pages -->
 <#assign listDefaultDisplay = "cards"/> <!-- cards or table -->

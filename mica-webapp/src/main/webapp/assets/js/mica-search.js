@@ -309,11 +309,11 @@ const ResultsTabContent = {
       $(`.nav-pills #${payload.display}-tab`).tab('show');
       $(`.nav-pills #${payload.type}-tab`).tab('show');
       if (payload.bucket) {
-        this.selectedBucket = TAREGT_ID_BUCKET_MAP[payload.bucket];
-        const tabPill = [TAREGT_ID_BUCKET_MAP.studyId, TAREGT_ID_BUCKET_MAP.dceId].indexOf(this.selectedBucket) > -1
-          ? TAREGT_ID_BUCKET_MAP.studyId
-          : TAREGT_ID_BUCKET_MAP.datasetId;
-        this.dceChecked = TAREGT_ID_BUCKET_MAP.dceId === this.selectedBucket;
+        this.selectedBucket = TARGET_ID_BUCKET_MAP[payload.bucket];
+        const tabPill = [TARGET_ID_BUCKET_MAP.studyId, TARGET_ID_BUCKET_MAP.dceId].indexOf(this.selectedBucket) > -1
+          ? TARGET_ID_BUCKET_MAP.studyId
+          : TARGET_ID_BUCKET_MAP.datasetId;
+        this.dceChecked = TARGET_ID_BUCKET_MAP.dceId === this.selectedBucket;
         $(`.nav-pills #bucket-${tabPill}-tab`).tab('show');
       }
 
@@ -345,6 +345,9 @@ Vue.use(VueObibaSearchResult, {
       getEventBus: () => EventBus,
       getMicaConfig: () => Mica.config,
       getLocale: () => Mica.locale,
+      normalizePath: (path) => {
+        return contextPath + path;
+      },
       localize: (entries) => StringLocalizer.localize(entries),
       registerDataTable: (tableId, options) => {
         const mergedOptions = Object.assign(options, DataTableDefaults);

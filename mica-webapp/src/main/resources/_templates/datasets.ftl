@@ -32,7 +32,7 @@
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
     <!-- Content Header (Page header) -->
-    <@header title=title breadcrumb=[["..", "home"], [title]]/>
+    <@header title=title breadcrumb=[["${contextPath}/", "home"], [title]]/>
     <!-- /.content-header -->
 
     <!-- Main content -->
@@ -77,7 +77,7 @@
                         <tbody>
                         <#list datasets as ds>
                           <tr>
-                            <td><a href="../dataset/${ds.id}">${localize(ds.acronym)}</a></td>
+                            <td><a href="${contextPath}/dataset/${ds.id}">${localize(ds.acronym)}</a></td>
                             <td><small>${localize(ds.name)}</small></td>
                             <td><small>${localize(ds.description)?trim?truncate_w(100, "...")}</small></td>
                             <#if showTypeColumn>
@@ -121,7 +121,7 @@
                               </div>
                               <div class="card-footer">
                                 <div class="text-right">
-                                  <a href="../dataset/${ds.id}" class="btn btn-sm btn-outline-info">
+                                  <a href="${contextPath}/dataset/${ds.id}" class="btn btn-sm btn-outline-info">
                                     <i class="fas fa-eye"></i> ${localize(ds.acronym)}
                                   </a>
                                 </div>

@@ -25,7 +25,7 @@ BUCKETS = {
   dataset: 'datasetId'
 };
 
-TAREGT_ID_BUCKET_MAP = {
+TARGET_ID_BUCKET_MAP = {
   studyId: 'study',
   dceId: 'dce',
   datasetId: 'dataset'
@@ -560,7 +560,7 @@ class MicaQueryExecutor {
     console.log(`__executeQuery`);
 
     axios
-      .get(`../ws/${type}/_rql?query=${tree.serialize()}`)
+      .get(`${contextPath}/ws/${type}/_rql?query=${tree.serialize()}`)
       .then(response => {
         // remove hidden queries
         tree.findAndDeleteQuery((name) => 'fields' === name);
@@ -602,7 +602,7 @@ class MicaQueryExecutor {
     console.log(`__executeCoverage`);
 
     axios
-      .get(`../ws/variables/_coverage?query=${tree.serialize()}`)
+      .get(`${contextPath}/ws/variables/_coverage?query=${tree.serialize()}`)
       .then(response => {
         tree.findAndDeleteQuery((name) => AGGREGATE === name);
         this.__updateLocation(type, display, tree, noUrlUpdate, bucket);
@@ -622,7 +622,7 @@ class MicaQueryExecutor {
     console.log(`__updateLocation ${type} ${display} ${query} - history states ${history.length}`);
     let params = [`type=${type}`, `query=${query}`];
     if (bucket) {
-      params.push(`bucket=${TAREGT_ID_BUCKET_MAP[bucket]}`);
+      params.push(`bucket=${TARGET_ID_BUCKET_MAP[bucket]}`);
     }
 
     const urlSearch = params.join('&');
