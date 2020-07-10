@@ -78,7 +78,7 @@ var micajs = (function() {
     $(formId).submit(function(e) {
       e.preventDefault(); // avoid to execute the actual submit of the form.
       var form = $(this);
-      var url = contextPath + '/ws/users';
+      var url = '/ws/users';
       var data = form.serialize(); // serializes the form's elements.
 
       var formData = form.serializeArray();

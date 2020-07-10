@@ -119,7 +119,7 @@ public class SignController extends BaseController {
 
     String requestUrl = request.getRequestURL().toString();
     String requestUri = request.getRequestURI();
-    String baseUrl = requestUrl.replaceFirst(requestUri, "");
+    String baseUrl = requestUrl.replaceFirst(requestUri, "") + micaConfigService.getContextPath();
 
     String redirectUrl = baseUrl;
     if (!Strings.isNullOrEmpty(redirect))
@@ -142,7 +142,7 @@ public class SignController extends BaseController {
 
     String requestUrl = request.getRequestURL().toString();
     String requestUri = request.getRequestURI();
-    String baseUrl = requestUrl.replaceFirst(requestUri, "");
+    String baseUrl = requestUrl.replaceFirst(requestUri, "") + micaConfigService.getContextPath();
 
     String redirectUrl = baseUrl + "/signup-with";
     if (!Strings.isNullOrEmpty(redirect))
