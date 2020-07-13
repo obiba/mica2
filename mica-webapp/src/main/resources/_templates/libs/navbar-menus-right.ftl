@@ -9,6 +9,13 @@
         </a>
       </li-->
     </#if>
+    <#if isAdministrator || isReviewer || isEditor>
+      <li class="nav-item">
+        <a href="${contextPath}/admin" class="nav-link">
+          <@message "administration"/>
+        </a>
+      </li>
+    </#if>
     <#if config?? && config.locales?size != 1>
       <li class="nav-item dropdown">
         <a id="userMenu" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle"> ${.lang?upper_case}</a>
