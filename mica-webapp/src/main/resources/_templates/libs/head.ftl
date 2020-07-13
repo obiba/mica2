@@ -43,9 +43,9 @@
 <!-- Toastr -->
 <link rel="stylesheet" href="${adminLTEPath}/plugins/toastr/toastr.min.css">
 <!-- Bootstrap 3 to 4 -->
-<link rel="stylesheet" href="/assets/css/bootstrap-3-4.css">
+<link rel="stylesheet" href="${assetsPath}/css/bootstrap-3-4.css">
 <!-- Obiba style -->
-<link rel="stylesheet" href="/assets/css/obiba.css">
+<link rel="stylesheet" href="${assetsPath}/css/obiba.css">
 
 <!-- Current user privilegies -->
 <#if user??>

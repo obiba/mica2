@@ -3,6 +3,7 @@ package org.obiba.mica.web.controller;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import org.obiba.mica.core.service.UserAuthService;
+import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.web.controller.domain.AuthConfiguration;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,6 +13,9 @@ import javax.inject.Inject;
 
 @Controller
 public class ProfileController {
+
+  @Inject
+  private MicaConfigService micaConfigService;
 
   @Inject
   private UserAuthService userAuthService;
@@ -25,7 +29,7 @@ public class ProfileController {
       mv.getModel().put("authConfig", new AuthConfiguration(userAuthService.getPublicConfiguration(), null));
       return mv;
     } else {
-      return new ModelAndView("redirect:signin?redirect=/profile");
+      return new ModelAndView("redirect:signin?redirect=" + micaConfigService.getContextPath() + "/profile");
     }
   }
 

@@ -45,7 +45,7 @@
           <li><a ng-href="ws/config/i18n/custom/export" target="_self" title="{{'config.translations.export-json.help' | translate}}" download="mica-all.json" translate>
             config.translations.export-json.label</a></li>
           <li ng-repeat="tab in tabs">
-            <a ng-href="{{'ws/config/i18n/' + tab.lang + '.po'}}" target="_self" title="{{'config.translations.export-gettext.help' | translate}}" download="{{'mica-' + tab.lang + '.po'}}">
+            <a ng-href="{{contextPath + '/ws/config/i18n/' + tab.lang + '.po'}}" target="_self" title="{{'config.translations.export-gettext.help' | translate}}" download="{{'mica-' + tab.lang + '.po'}}">
               {{'config.translations.export-gettext.label' | translate}} ({{'language.' + tab.lang | translate}})</a>
           </li>
         </ul>

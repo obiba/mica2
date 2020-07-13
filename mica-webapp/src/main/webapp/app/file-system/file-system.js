@@ -24,7 +24,7 @@ mica.fileSystem = angular.module('mica.fileSystem', [
 
 mica.fileSystem.factory('FileSystemInterceptor', ['$q', function ($q) {
   var encodedSlash = new RegExp('%2F', 'g');
-  var interceptULRS = [new RegExp('ws/draft/file.*'), new RegExp('ws/file.*')];
+  var interceptULRS = [new RegExp(contextPath + '/ws/draft/file.*'), new RegExp(contextPath + '/ws/file.*')];
 
   return {
     'request': function (config) {

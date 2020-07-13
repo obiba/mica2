@@ -36,6 +36,8 @@ mica.study.BaseViewController = function (
 
   mica.commons.ViewController.call(this, $location);
 
+  $scope.contextPath = contextPath;
+
   var self = this;
   self.months = moment.months();
   self.languages = [];
@@ -260,7 +262,7 @@ mica.study.ViewController = function (
 
   self.initializeStudy = function (study) {
     if (study.logo) {
-      $scope.logoUrl = 'ws/draft/individual-study/' + study.id + '/file/' + study.logo.id + '/_download';
+      $scope.logoUrl = contextPath + '/ws/draft/individual-study/' + study.id + '/file/' + study.logo.id + '/_download';
     }
 
     safeUpdateStudyTimeline(study);
@@ -671,7 +673,7 @@ mica.study.HarmonizationStudyViewController = function (
 
   self.initializeStudy = function (study) {
     if (study.logo) {
-      self.logoUrl = 'ws/draft/harmonization-study/' + study.id + '/file/' + study.logo.id + '/_download';
+      self.logoUrl = contextPath + '/ws/draft/harmonization-study/' + study.id + '/file/' + study.logo.id + '/_download';
     }
 
     study.populations = study.populations || [];

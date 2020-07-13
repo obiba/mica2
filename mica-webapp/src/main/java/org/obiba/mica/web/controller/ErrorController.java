@@ -14,7 +14,7 @@ import java.util.Map;
 public class ErrorController implements org.springframework.boot.autoconfigure.web.ErrorController {
 
   @GetMapping("/error")
-  public ModelAndView error(@RequestParam(value = "error", required = false, defaultValue = "999") String status, @RequestParam(defaultValue = "") String message) {
+  public ModelAndView error(@RequestParam(value = "error", required = false, defaultValue = "500") String status, @RequestParam(defaultValue = "") String message) {
     return makeModelAndView(status, message);
   }
 

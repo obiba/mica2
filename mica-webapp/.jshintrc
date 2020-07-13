@@ -44,6 +44,7 @@
     "TYPE": true,
     "TARGETS": true,
     "TYPES": true,
-    "EVENTS": true
+    "EVENTS": true,
+    "contextPath": true
   }
 }

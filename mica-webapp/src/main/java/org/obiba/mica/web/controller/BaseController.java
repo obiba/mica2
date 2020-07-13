@@ -1,24 +1,47 @@
 package org.obiba.mica.web.controller;
 
 import com.google.common.collect.Maps;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authz.UnauthorizedException;
+import org.apache.shiro.subject.Subject;
+import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.security.service.SubjectAclService;
+import org.obiba.mica.user.UserProfileService;
+import org.obiba.mica.web.interceptor.SessionInterceptor;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
+import javax.ws.rs.ForbiddenException;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
 public class BaseController {
 
   @Inject
+  protected MicaConfigService micaConfigService;
+
+  @Inject
   private SubjectAclService subjectAclService;
+
+  @Inject
+  private UserProfileService userProfileService;
 
   @ExceptionHandler(NoSuchElementException.class)
   public ModelAndView notFoundError(Exception ex) {
     return makeErrorModelAndView("404", ex.getMessage());
+  }
+
+  @ExceptionHandler(UnauthorizedException.class)
+  public ModelAndView unauthorizedError(Exception ex) {
+    return makeErrorModelAndView("403", ex.getMessage());
+  }
+
+  @ExceptionHandler(ForbiddenException.class)
+  public ModelAndView forbiddenError(Exception ex) {
+    return unauthorizedError(ex);
   }
 
   @ExceptionHandler(Exception.class)
@@ -30,6 +53,9 @@ public class BaseController {
     ModelAndView mv = new ModelAndView("error");
     mv.getModel().put("status", status);
     mv.getModel().put("msg", message);
+    mv.getModel().put("contextPath", micaConfigService.getContextPath());
+    mv.getModel().put("config", micaConfigService.getConfig());
+    SessionInterceptor.populateUserEntries(mv, userProfileService);
     return mv;
   }
 

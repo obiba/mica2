@@ -2,7 +2,7 @@
 <html lang="${.lang}">
 <head>
   <#include "libs/head.ftl">
-  <link rel="stylesheet" href="/assets/libs/node_modules/bootstrap-datepicker/dist/css/bootstrap-datepicker3.css"></link>
+  <link rel="stylesheet" href="${assetsPath}/libs/node_modules/bootstrap-datepicker/dist/css/bootstrap-datepicker3.css"></link>
   <title>${config.name!""} | <@message "data-access-history"/> ${dar.id}</title>
 </head>
 <body id="data-access-history-page" class="hold-transition sidebar-mini">
@@ -182,7 +182,7 @@
 
 <#include "libs/scripts.ftl">
 <!-- Datepicker -->
-<script src="/assets/libs/node_modules/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js"></script>
+<script src="${assetsPath}/libs/node_modules/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js"></script>
 <script>
     $(function () {
         $('#history-menu').addClass('active').attr('href', '#')

@@ -23,7 +23,7 @@ mica.shareResource
   .factory('ShareService', ['$resource',
     function ($resource) {
 
-      return $resource('ws/draft/:resourceType/:resourceId/_share', {}, {
+      return $resource(contextPath + '/ws/draft/:resourceType/:resourceId/_share', {}, {
         'getShareLink': {
           method: 'PUT',
           params: {resourceType: '@resourceType', resourceId: '@resourceId', expire: '@expire'},

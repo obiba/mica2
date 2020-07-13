@@ -14,7 +14,7 @@ mica.project
 
   .factory('DraftProjectsResource', ['$resource', 'ProjectModelFactory',
     function ($resource, ProjectModelFactory) {
-      return $resource('ws/draft/projects?comment:comment', {}, {
+      return $resource(contextPath + '/ws/draft/projects?comment:comment', {}, {
         'get' : {method: 'GET', errorHandler: true},
         'save': {method: 'POST', errorHandler: true, transformRequest: ProjectModelFactory.serialize}
       });
@@ -22,7 +22,7 @@ mica.project
 
   .factory('DraftProjectResource', ['$resource', 'ProjectModelFactory',
     function ($resource, ProjectModelFactory) {
-      return $resource('ws/draft/project/:id', {}, {
+      return $resource(contextPath + '/ws/draft/project/:id', {}, {
         'save': {method: 'PUT', params: {id: '@id'}, errorHandler: true, transformRequest: ProjectModelFactory.serialize},
         'delete': {method: 'DELETE', params: {id: '@id'}, errorHandler: true},
         'get': {method: 'GET', errorHandler: true, transformResponse: ProjectModelFactory.deserialize}
@@ -31,7 +31,7 @@ mica.project
 
   .factory('DraftProjectPublicationResource', ['$resource',
     function ($resource) {
-      return $resource('ws/draft/project/:id/_publish', {id: '@id'}, {
+      return $resource(contextPath + '/ws/draft/project/:id/_publish', {id: '@id'}, {
         'publish': {method: 'PUT', params: {cascading: '@cascading'}},
         'unPublish': {method: 'DELETE'}
       });
@@ -39,36 +39,36 @@ mica.project
 
   .factory('DraftProjectStatusResource', ['$resource',
     function ($resource) {
-      return $resource('ws/draft/project/:id/_status', {}, {
+      return $resource(contextPath + '/ws/draft/project/:id/_status', {}, {
         'toStatus': {method: 'PUT', params: {id: '@id', value: '@value'}}
       });
     }])
 
   .factory('DraftProjectRevisionsResource', ['$resource',
     function ($resource) {
-      return $resource('ws/draft/project/:id/commits', {}, {
+      return $resource(contextPath + '/ws/draft/project/:id/commits', {}, {
         'get': {method: 'GET', params: {id: '@id'}},
-        'diff': {method: 'GET', url: 'ws/draft/project/:id/_diff', params: {id: '@id'}}
+        'diff': {method: 'GET', url: contextPath + '/ws/draft/project/:id/_diff', params: {id: '@id'}}
       });
     }])
 
   .factory('DraftProjectRestoreRevisionResource', ['$resource',
     function ($resource) {
-      return $resource('ws/draft/project/:id/commit/:commitId/restore', {}, {
+      return $resource(contextPath + '/ws/draft/project/:id/commit/:commitId/restore', {}, {
         'restore': {method: 'PUT', params: {id: '@id', commitId: '@commitId'}}
       });
     }])
 
   .factory('DraftProjectViewRevisionResource', ['$resource', 'ProjectModelFactory',
     function ($resource, ProjectModelFactory) {
-      return $resource('ws/draft/project/:id/commit/:commitId/view', {}, {
+      return $resource(contextPath + '/ws/draft/project/:id/commit/:commitId/view', {}, {
         'view': {method: 'GET', params: {id: '@id', commitId: '@commitId'}, transformResponse: ProjectModelFactory.deserialize}
       });
     }])
 
   .factory('DraftProjectPermissionsResource', ['$resource',
     function ($resource) {
-      return $resource('ws/draft/project/:id/permissions', {}, {
+      return $resource(contextPath + '/ws/draft/project/:id/permissions', {}, {
         'save': {
           method: 'PUT',
           params: {id: '@id', type: '@type', principal: '@principal', role: '@role', file: '@file'},
@@ -82,7 +82,7 @@ mica.project
 
   .factory('DraftProjectAccessesResource', ['$resource',
     function ($resource) {
-      return $resource('ws/draft/project/:id/accesses', {}, {
+      return $resource(contextPath + '/ws/draft/project/:id/accesses', {}, {
         'save': {
           method: 'PUT',
           params: {id: '@id', type: '@type', principal: '@principal', file: '@file'},

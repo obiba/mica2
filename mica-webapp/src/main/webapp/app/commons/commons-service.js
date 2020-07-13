@@ -43,7 +43,7 @@
 
     .factory('CommentsResource', ['$resource',
       function ($resource) {
-        return $resource('/ws/draft/:type/:id/comments', {}, {
+        return $resource(contextPath + '/ws/draft/:type/:id/comments', {}, {
           'save': {
             method: 'POST',
             params: {type: '@type', id: '@id'},

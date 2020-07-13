@@ -1,5 +1,5 @@
 <!-- ChartJS -->
-<script src="..${adminLTEPath}/plugins/chart.js/Chart.min.js"></script>
+<script src="${adminLTEPath}/plugins/chart.js/Chart.min.js"></script>
 <#if user?? || !config.variableSummaryRequiresAuthentication>
 <script>
   $(function () {
@@ -100,7 +100,7 @@
           "info": false,
           "autoWidth": true,
           "language": {
-            "url": "/assets/i18n/datatables.${.lang}.json"
+            "url": "${assetsPath}/i18n/datatables.${.lang}.json"
           }
         };
         $("#frequencyTable").DataTable(dataTableOpts);

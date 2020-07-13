@@ -99,7 +99,7 @@
                   <div class="icon">
                     <i class="${variableIcon}"></i>
                   </div>
-                  <a href="../search#lists?type=variables" class="small-box-footer"><@message "more-info"/> <i class="fas fa-arrow-circle-right"></i></a>
+                  <a href="${contextPath}/search#lists?type=variables" class="small-box-footer"><@message "more-info"/> <i class="fas fa-arrow-circle-right"></i></a>
                 </div>
               </div>
               <!-- ./col -->

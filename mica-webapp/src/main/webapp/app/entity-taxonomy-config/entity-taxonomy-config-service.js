@@ -14,7 +14,7 @@ mica.entityTaxonomyConfig
 
   .factory('EntityTaxonomyConfigResource', ['$resource',
     function ($resource) {
-      return $resource('ws/config/:target/taxonomy', {}, {
+      return $resource(contextPath + '/ws/config/:target/taxonomy', {}, {
         'get': {method: 'GET', errorHandler: true},
         'save': {method: 'PUT', errorHandler: true}
       });

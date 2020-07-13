@@ -14,15 +14,15 @@
  * Studies Import controller class
  *
  * @param $scope
- * @param $route, 
- * @param $rootScope, 
+ * @param $route,
+ * @param $rootScope,
  * @param $http
  * @constructor
  */
 mica.study.StudiesImportController = function (
-	$scope, 
-	$route, 
-	$rootScope, 
+	$scope,
+	$route,
+	$rootScope,
 	$http) {
 
   const CONNECTIONS_PARAMS_0 = 0;
@@ -51,7 +51,7 @@ mica.study.StudiesImportController = function (
   $scope.diffsCustomFormJSON = [];
   $scope.listDiffsForm = [];
   $scope.studiesSaved = [];
-  $scope.diffsConfigIsPossibleImport = false;      
+  $scope.diffsConfigIsPossibleImport = false;
 
   //NEXT
   $scope.next = function() {
@@ -80,7 +80,7 @@ mica.study.StudiesImportController = function (
 
   //CLICK_CHECKBOX
   $scope.clickCheckBox = function() {
-	for (var i = 0; i < $scope.studiesToImport.length; i++) {	
+	for (var i = 0; i < $scope.studiesToImport.length; i++) {
 	    if ($scope.studiesToImport[i].checked) {
 	    	$scope.studiesToImport.checked = true;
 	    	return;
@@ -98,7 +98,7 @@ mica.study.StudiesImportController = function (
         if (v.id !== studySummary.id) {
             newDataList.push(v);
         }
-    });    
+    });
 
     if (isInCreateList) {
     	$scope.studiesToCreate = newDataList;
@@ -110,7 +110,7 @@ mica.study.StudiesImportController = function (
         if (v.id === studySummary.id) {
         	delete $scope.studiesConflict[v];
         }
-    }); 
+    });
 
     $scope.studiesConflict = $scope.studiesConflict.filter(function (el) { return el !== null; });
     if ($scope.studiesToCreate.length === 0 && $scope.studiesToReplace.length === 0) {
@@ -119,7 +119,7 @@ mica.study.StudiesImportController = function (
   };
 
   //CLOSE
-  $scope.close = function() { 
+  $scope.close = function() {
 	if ($scope.studiesSaved.length > 0) {
 		window.top.location.reload();
 	}
@@ -142,16 +142,16 @@ mica.study.StudiesImportController = function (
 
     if (idsToSave.length > 0) {
     	$http({
-          url: 'ws/draft/studies/import/_save',
+          url: contextPath + '/ws/draft/studies/import/_save',
           method: 'PUT',
-          params: {url: $scope.importVO.url, 
-                   username: $scope.importVO.username, 
-                   password: $scope.importVO.password, 
+          params: {url: $scope.importVO.url,
+                   username: $scope.importVO.username,
+                   password: $scope.importVO.password,
                    type: $scope.studyType,
                    ids: idsToSave,
                    listDiffsForm: $scope.listDiffsForm
                    }
-        }).then(function(response) {   
+        }).then(function(response) {
           var responseData = response.data;
 
           $scope.idsSaved = Object.keys(responseData);
@@ -178,16 +178,16 @@ mica.study.StudiesImportController = function (
           $scope.modalIndex = FINISH_RESPONSE_MESSAGES_4;
         });
     }
-  };  
+  };
 
-  function nextConnectionParams() {	
+  function nextConnectionParams() {
     $('body').css('cursor', 'progress');
     $http({
-        url: 'ws/draft/studies/import/_differences',
+        url: contextPath + '/ws/draft/studies/import/_differences',
         method: 'GET',
-        params: {url: $scope.importVO.url, username: $scope.importVO.username, 
+        params: {url: $scope.importVO.url, username: $scope.importVO.username,
                  password: $scope.importVO.password, type: $scope.studyType}
-      }).then(function(response) {        
+      }).then(function(response) {
         if (typeof(response.data) === 'number') {
        	 	$scope.statusErrorImport = handleHTTPStatus(response.data);
         } else {
@@ -207,7 +207,7 @@ mica.study.StudiesImportController = function (
 
             	var diffVO = {
 	          			formSection : propJSON.formSection,
-            			formTitle : CONFIG_FORM_TITLE[propJSON.formSection], 
+            			formTitle : CONFIG_FORM_TITLE[propJSON.formSection],
 	      				endpoint : propJSON.endpoint,
 	      				isEqual : diffsEnum[prop],
 	      				parentIsImportable : mapDiffsFormParent.get(propJSON.parentFormSection)
@@ -218,7 +218,7 @@ mica.study.StudiesImportController = function (
         			$scope.listDiffsForm.push(propJSON.formSection);
         		}
 
-            	if ((propJSON.formSection === INDIVIDUAL_STUDY || propJSON.formSection === HARMONIZATION_STUDY) &&  diffsEnum[prop]) {	
+            	if ((propJSON.formSection === INDIVIDUAL_STUDY || propJSON.formSection === HARMONIZATION_STUDY) &&  diffsEnum[prop]) {
             		$scope.diffsConfigIsPossibleImport = true;
             	}
             }
@@ -237,16 +237,16 @@ mica.study.StudiesImportController = function (
     $('body').css('cursor', 'progress');
 
     $http({
-        url: 'ws/draft/studies/import/_preview',
+        url: contextPath + '/ws/draft/studies/import/_preview',
         method: 'GET',
-        params: {url: $scope.importVO.url, username: $scope.importVO.username, 
+        params: {url: $scope.importVO.url, username: $scope.importVO.username,
                  password: $scope.importVO.password, type: $scope.studyType}
       }).then(function(response) {
          if (typeof(response.data) === 'number') {
         	 $scope.statusErrorImport = handleHTTPStatus(response.data);
          } else {
         	 $scope.statusErrorImport = '';
-        	 $scope.studiesToImport = response.data; 
+        	 $scope.studiesToImport = response.data;
              $scope.modalIndex = REMOTE_STUDIES_2;
          }
 
@@ -258,24 +258,24 @@ mica.study.StudiesImportController = function (
   function handleHTTPStatus(code) {
 	  switch(code) {
 	    case 200:
-	  	  return 'study.import.status-ok';  
-	    case 204: 
-		  return 'study.import.problems.problem-204';	
-	    case 400: 
-		  return 'study.import.problems.problem-400';
-	  	case 401: 
-		  return 'study.import.problems.problem-401';
-	  	case 404: 
-		  return 'study.import.problems.problem-404';
-	  	case 408: 
-	  	  return 'study.import.problems.problem-408';
-	  	case 500: 
-		  return 'study.import.problems.problem-500';
-	  	case 503: 
-		  return 'study.import.problems.problem-503';
-	  	default: 
 	  	  return 'study.import.status-ok';
-	  } 
+	    case 204:
+		  return 'study.import.problems.problem-204';
+	    case 400:
+		  return 'study.import.problems.problem-400';
+	  	case 401:
+		  return 'study.import.problems.problem-401';
+	  	case 404:
+		  return 'study.import.problems.problem-404';
+	  	case 408:
+	  	  return 'study.import.problems.problem-408';
+	  	case 500:
+		  return 'study.import.problems.problem-500';
+	  	case 503:
+		  return 'study.import.problems.problem-503';
+	  	default:
+	  	  return 'study.import.status-ok';
+	  }
   }
 
 
@@ -302,9 +302,9 @@ mica.study.StudiesImportController = function (
 	}
 
 	$http({
-        url: 'ws/draft/studies/import/_summary',
+        url: contextPath + '/ws/draft/studies/import/_summary',
         method: 'GET',
-        params: {ids: idStudiesToCheck, 
+        params: {ids: idStudiesToCheck,
         		 type: $scope.studyType }
       }).then(function(response) {
         var responseData = response.data;

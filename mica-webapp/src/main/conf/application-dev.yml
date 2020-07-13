@@ -1,7 +1,8 @@
-# used for developement when application is run with dev profile
+# used for development when application is run with dev profile
 server:
     port: 8082
     address: localhost
+    #context-path: /myca
 
 https:
     port: 8445

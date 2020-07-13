@@ -25,6 +25,7 @@ import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.subject.Subject;
 import org.obiba.mica.config.JerseyConfiguration;
+import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.user.UserProfileService;
 import org.obiba.shiro.realm.ObibaRealm;
 import org.obiba.shiro.web.filter.AuthenticationExecutor;
@@ -47,6 +48,9 @@ public class SessionsResource {
   private static final Logger log = LoggerFactory.getLogger(SessionsResource.class);
 
   @Inject
+  private MicaConfigService micaConfigService;
+
+  @Inject
   private AuthenticationExecutor authenticationExecutor;
 
   @Inject
@@ -67,7 +71,7 @@ public class SessionsResource {
         .created(UriBuilder.fromPath(JerseyConfiguration.WS_ROOT).path(SessionResource.class).build(sessionId));
 
       if (!Strings.isNullOrEmpty(locale))
-        builder.cookie(new NewCookie("NG_TRANSLATE_LANG_KEY", locale, "/", null, DEFAULT_VERSION, null, DEFAULT_MAX_AGE, null, false, false));
+        builder.cookie(new NewCookie("NG_TRANSLATE_LANG_KEY", locale, micaConfigService.getContextPath() + "/", null, DEFAULT_VERSION, null, DEFAULT_MAX_AGE, null, false, false));
 
       return builder.build();
     } catch(UserBannedException e) {

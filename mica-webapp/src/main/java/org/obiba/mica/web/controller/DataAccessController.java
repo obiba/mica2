@@ -60,9 +60,6 @@ public class DataAccessController extends BaseController {
   private DataAccessFeasibilityFormService dataAccessFeasibilityFormService;
 
   @Inject
-  private MicaConfigService micaConfigService;
-
-  @Inject
   private UserProfileService userProfileService;
 
   @Inject
@@ -83,7 +80,7 @@ public class DataAccessController extends BaseController {
 
       return new ModelAndView("data-access", params);
     } else {
-      return new ModelAndView("redirect:../signin?redirect=data-access%2F" + id);
+      return new ModelAndView("redirect:../signin?redirect=" + micaConfigService.getContextPath() + "/data-access%2F" + id);
     }
   }
 
@@ -98,7 +95,7 @@ public class DataAccessController extends BaseController {
       addDataAccessFormConfiguration(params, getDataAccessRequest(params), !edit, getLang(locale, language));
       return new ModelAndView("data-access-form", params);
     } else {
-      return new ModelAndView("redirect:../signin?redirect=/data-access-form%2F" + id);
+      return new ModelAndView("redirect:../signin?redirect=" + micaConfigService.getContextPath() + "/data-access-form%2F" + id);
     }
   }
 
@@ -133,7 +130,7 @@ public class DataAccessController extends BaseController {
 
       return new ModelAndView("data-access-history", params);
     } else {
-      return new ModelAndView("redirect:../signin?redirect=/data-access-history%2F" + id);
+      return new ModelAndView("redirect:../signin?redirect=" + micaConfigService.getContextPath() + "/data-access-history%2F" + id);
     }
   }
 
@@ -150,7 +147,7 @@ public class DataAccessController extends BaseController {
 
       return new ModelAndView("data-access-feasibility-form", params);
     } else {
-      return new ModelAndView("redirect:../signin?redirect=/data-access-feasibility-form%2F" + id);
+      return new ModelAndView("redirect:../signin?redirect=" + micaConfigService.getContextPath() + "/data-access-feasibility-form%2F" + id);
     }
   }
 
@@ -167,7 +164,7 @@ public class DataAccessController extends BaseController {
 
       return new ModelAndView("data-access-amendment-form", params);
     } else {
-      return new ModelAndView("redirect:../signin?redirect=/data-access-amendment-form%2F" + id);
+      return new ModelAndView("redirect:../signin?redirect=" + micaConfigService.getContextPath() + "/data-access-amendment-form%2F" + id);
     }
   }
 
@@ -179,7 +176,7 @@ public class DataAccessController extends BaseController {
       addDataAccessConfiguration(params);
       return new ModelAndView("data-access-documents", params);
     } else {
-      return new ModelAndView("redirect:../signin?redirect=/data-access-documents%2F" + id);
+      return new ModelAndView("redirect:../signin?redirect=" + micaConfigService.getContextPath() + "/data-access-documents%2F" + id);
     }
   }
 
@@ -197,7 +194,7 @@ public class DataAccessController extends BaseController {
 
       return new ModelAndView("data-access-comments", params);
     } else {
-      return new ModelAndView("redirect:../signin?redirect=/data-access-comments%2F" + id);
+      return new ModelAndView("redirect:../signin?redirect=" + micaConfigService.getContextPath() + "/data-access-comments%2F" + id);
     }
   }
 
@@ -218,7 +215,7 @@ public class DataAccessController extends BaseController {
 
       return new ModelAndView("data-access-private-comments", params);
     } else {
-      return new ModelAndView("redirect:../signin?redirect=/data-access-private-comments%2F" + id);
+      return new ModelAndView("redirect:../signin?redirect=" + micaConfigService.getContextPath() + "/data-access-private-comments%2F" + id);
     }
   }
 

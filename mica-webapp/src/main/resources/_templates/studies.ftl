@@ -32,7 +32,7 @@
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
     <!-- Content Header (Page header) -->
-    <@header title=title breadcrumb=[["..", "home"], [title]]/>
+    <@header title=title breadcrumb=[["${contextPath}/", "home"], [title]]/>
     <!-- /.content-header -->
 
     <!-- Main content -->
@@ -77,7 +77,7 @@
                         <tbody>
                         <#list studies as std>
                           <tr>
-                            <td><a href="../study/${std.id}">${localize(std.acronym)}</a></td>
+                            <td><a href="${contextPath}/study/${std.id}">${localize(std.acronym)}</a></td>
                             <td><small>${localize(std.name)}</small></td>
                             <td><small>${localize(std.objectives)?trim?truncate_w(100, "...")}</small></td>
                             <#if showTypeColumn>
@@ -110,7 +110,7 @@
                                   </div>
                                   <div class="col-5 text-center">
                                       <#if std.logo??>
-                                        <img class="img-fluid" style="max-height: 200px" alt="${localize(std.acronym)} logo" src="../ws/study/${std.id}/file/${std.logo.id}/_download"/>
+                                        <img class="img-fluid" style="max-height: 200px" alt="${localize(std.acronym)} logo" src="${contextPath}/ws/study/${std.id}/file/${std.logo.id}/_download"/>
                                       <#else >
                                         <p class="text-black-50 text-center mr-5 ml-5 pr-5">
                                           <i class="${studyIcon} fa-3x"></i>
@@ -121,7 +121,7 @@
                               </div>
                               <div class="card-footer">
                                 <div class="text-right">
-                                  <a href="../study/${std.id}" class="btn btn-sm btn-outline-info">
+                                  <a href="${contextPath}/study/${std.id}" class="btn btn-sm btn-outline-info">
                                     <i class="fas fa-eye"></i> ${localize(std.acronym)}
                                   </a>
                                 </div>

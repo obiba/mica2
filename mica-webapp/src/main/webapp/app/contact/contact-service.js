@@ -13,7 +13,7 @@
 mica.contact
   .factory('ContactsSearchResource', ['$resource', 'ContactSerializationService',
     function ($resource, ContactSerializationService) {
-      return $resource('ws/draft/persons/_search?', {}, {
+      return $resource(contextPath + '/ws/draft/persons/_search?', {}, {
         'search': {
           method: 'GET',
           params: {query: '@query', 'exclude': '@exclude'},
@@ -23,13 +23,13 @@ mica.contact
       });
     }])
   .factory('PersonResource', ['$resource', function ($resource) {
-    return $resource('ws/draft/person/:id', {}, {
+    return $resource(contextPath + '/ws/draft/person/:id', {}, {
       'get': {method: 'GET', params: {id: '@id'}},
       'update': {method: 'PUT', params: {id: '@id'}},
       'delete': {method: 'DELETE', params: {id: '@id'}},
-      'create': {url: 'ws/draft/persons', method: 'POST'},
-      'getStudyMemberships': {url: 'ws/draft/persons/study/:studyId', method: 'GET', isArray: true, params: {studyId: '@studyId'}},
-      'getNetworkMemberships': {url: 'ws/draft/persons/network/:networkId', method: 'GET', isArray: true, params: {networkId: '@networkId'}}
+      'create': {url: contextPath + '/ws/draft/persons', method: 'POST'},
+      'getStudyMemberships': {url: contextPath + '/ws/draft/persons/study/:studyId', method: 'GET', isArray: true, params: {studyId: '@studyId'}},
+      'getNetworkMemberships': {url: contextPath + '/ws/draft/persons/network/:networkId', method: 'GET', isArray: true, params: {networkId: '@networkId'}}
     });
   }])
   .factory('ContactSerializationService', ['LocalizedValues',

@@ -14,7 +14,7 @@ mica.dataAccessConfig
 
   .factory('DataAccessFormResource', ['$resource',
     function ($resource) {
-      return $resource('ws/config/data-access-form', {}, {
+      return $resource(contextPath + '/ws/config/data-access-form', {}, {
         'get': {method: 'GET', errorHandler: true},
         'save': {method: 'PUT', errorHandler: true}
       });
@@ -22,7 +22,7 @@ mica.dataAccessConfig
 
   .factory('DataAccessFormPermissionsResource', ['$resource',
     function ($resource) {
-      return $resource('ws/config/data-access-form/permissions', {}, {
+      return $resource(contextPath + '/ws/config/data-access-form/permissions', {}, {
         'save': {
           method: 'PUT',
           params: {type: '@type', principal: '@principal', role: '@role', otherResources: '@otherResources'},
@@ -34,14 +34,14 @@ mica.dataAccessConfig
     }])
   .factory('DataAccessFeasibilityFormResource', ['$resource',
     function ($resource) {
-      return $resource('ws/config/data-access-feasibility-form', {}, {
+      return $resource(contextPath + '/ws/config/data-access-feasibility-form', {}, {
         'get': {method: 'GET', errorHandler: true},
         'save': {method: 'PUT', errorHandler: true}
       });
     }])
   .factory('DataAccessAmendmentFormResource', ['$resource',
     function ($resource) {
-      return $resource('ws/config/data-access-amendment-form', {}, {
+      return $resource(contextPath + '/ws/config/data-access-amendment-form', {}, {
         'get': {method: 'GET', errorHandler: true},
         'save': {method: 'PUT', errorHandler: true}
       });

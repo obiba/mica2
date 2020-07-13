@@ -15,7 +15,7 @@ mica.fileSystem
 
   .factory('DraftFileSystemFileResource', ['$resource',
     function ($resource) {
-      return $resource('ws/draft/file/:path/', {path: '@path'}, {
+      return $resource(contextPath + '/ws/draft/file/:path/', {path: '@path'}, {
         'get': {method: 'GET', errorHandler: true, ignoreAuthModule: true},
         'delete': {method: 'DELETE', errorHandler: true},
         'rename': {method: 'PUT', params: {name: '@name'}, errorHandler: true},
@@ -29,14 +29,14 @@ mica.fileSystem
 
   .factory('DraftFileSystemFilesResource', ['$resource',
     function ($resource) {
-      return $resource('ws/draft/files', {}, {
+      return $resource(contextPath + '/ws/draft/files', {}, {
         'update': {method: 'POST', errorHandler: true}
       });
     }])
 
   .factory('DraftFileSystemSearchResource', ['$resource',
     function ($resource) {
-      return $resource('ws/draft/files-search/:path', {path: '@path'}, {
+      return $resource(contextPath + '/ws/draft/files-search/:path', {path: '@path'}, {
         'search': { method: 'GET', isArray: true, errorHandler: true, ignoreAuthModule: true},
         'searchUnderReview': {
           method: 'GET',
@@ -49,7 +49,7 @@ mica.fileSystem
 
   .factory('DraftFilePermissionResource', ['$resource',
     function ($resource) {
-      return $resource('ws/draft/file-permission/:path', {path: '@path'}, {
+      return $resource(contextPath + '/ws/draft/file-permission/:path', {path: '@path'}, {
         'save': {
           method: 'PUT',
           params: {path: '@path', type: '@type', principal: '@principal', role: '@role'},
@@ -63,7 +63,7 @@ mica.fileSystem
 
   .factory('DraftFileAccessResource', ['$resource',
     function ($resource) {
-      return $resource('ws/draft/file-access/:path', {path: '@path'}, {
+      return $resource(contextPath + '/ws/draft/file-access/:path', {path: '@path'}, {
         'save': {
           method: 'PUT',
           params: {path: '@path', type: '@type', principal: '@principal'},
@@ -152,7 +152,7 @@ mica.fileSystem
         files.forEach(function (file) {
           Upload
             .upload({
-              url: 'ws/files/temp',
+              url: contextPath + '/ws/files/temp',
               method: 'POST',
               file: file
             })
