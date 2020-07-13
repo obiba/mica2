@@ -39,7 +39,7 @@
     </#if>
     <#if !config.openAccess || config.dataAccessEnabled>
       <li class="nav-item">
-        <a class="nav-link" href="${contextPath}/signin<#if rc.requestUri != "/" && !rc.requestUri?starts_with("/forgot-password") && !rc.requestUri?starts_with("/just-registered") && !rc.requestUri?starts_with("/error") && !rc.requestUri?starts_with("/signin")>?redirect=${rc.requestUri}</#if>"><@message "sign-in"/></a>
+        <a class="nav-link" href="${contextPath}/signin<#if rc.requestUri != "/" && !rc.requestUri?contains("/forgot-password") && !rc.requestUri?contains("/just-registered") && !rc.requestUri?contains("/error") && !rc.requestUri?contains("/signin")>?redirect=${rc.requestUri}</#if>"><@message "sign-in"/></a>
       </li>
     </#if>
     <#if config.signupEnabled>

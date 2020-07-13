@@ -53,7 +53,7 @@ public class SignController extends BaseController {
                              @CookieValue(value = "NG_TRANSLATE_LANG_KEY", required = false, defaultValue = "en") String locale,
                              @RequestParam(value = "language", required = false) String language) {
     if (!micaConfigService.getConfig().isSignupEnabled())
-      return new ModelAndView("redirect:/");
+      return new ModelAndView("redirect:" + micaConfigService.getContextPath() + "/");
 
     ModelAndView mv = new ModelAndView("signup");
 
@@ -69,7 +69,7 @@ public class SignController extends BaseController {
   @GetMapping("/signup-with")
   public ModelAndView signupWith(@CookieValue(value = "u_auth", required = false, defaultValue = "{}") String uAuth) {
     if (!micaConfigService.getConfig().isSignupEnabled())
-      return new ModelAndView("redirect:/");
+      return new ModelAndView("redirect:" + micaConfigService.getContextPath() + "/");
 
     ModelAndView mv = new ModelAndView("signup-with");
     try {

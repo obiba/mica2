@@ -45,7 +45,7 @@
 
             <p>
               We could not access the page you were looking for.
-              Meanwhile, you may <a href="..">return to home</a> or try to <a href="../search">search the repository</a>.
+              Meanwhile, you may <a href="${contextPath + "/"}">return to home</a> or try to <a href="${contextPath + "/search"}">search the repository</a>.
             </p>
           </div>
           <!-- /.error-content -->
