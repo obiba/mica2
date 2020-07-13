@@ -11,7 +11,7 @@
     </#if>
     <#if isAdministrator || isReviewer || isEditor>
       <li class="nav-item">
-        <a href="${contextPath}/admin" class="nav-link">
+        <a href="/admin" class="nav-link">
           <@message "administration"/>
         </a>
       </li>
