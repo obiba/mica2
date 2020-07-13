@@ -50,6 +50,8 @@
 <!-- Current user privilegies -->
 <#if user??>
   <#assign isAdministrator = user.roles?seq_contains("mica-administrator")/>
+  <#assign isReviewer = user.roles?seq_contains("mica-reviewer")/>
+  <#assign isEditor = user.roles?seq_contains("mica-editor")/>
   <#assign isDAO = user.roles?seq_contains("mica-data-access-officer")/>
 </#if>
 
