@@ -8,7 +8,7 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<div class="panel panel-default table-responsive" ng-if="!data.search.active || data.document.children.length>0">
+<div class="panel panel-default">
   <div class="panel-heading" ng-if="selected.length > 0">
     <small>
       {{selected.length}} <span>{{selected.length > 1 ? 'files-selected' : 'file-selected'| translate}}</span>.
@@ -16,72 +16,74 @@
       <a href="" ng-click="clearSelection()"><i class="fa fa-times"></i> <span translate>clear-selection</span></a>
     </small>
   </div>
-  <table class="table table-bordered table-striped no-padding no-margin">
-    <thead>
-    <tr>
-      <th><input type="checkbox" ng-checked="!hasUnselected && data.document.children.length" ng-click="selectPage()"></th>
-      <th translate>name</th>
-      <th translate>last-modified</th>
-      <th translate>size</th>
-      <th ng-if="data.search.active" translate>path</th>
-      <th translate>status</th>
-      <th translate>actions</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr ng-show="!data.isRoot && !data.search.active">
-      <td></td>
-      <td colspan="5">
-        <i class="fa fa-folder"></i>
-        <span><a href class="no-text-decoration" ng-click="navigateBack()"> ..</a></span>
-      </td>
-    </tr>
-    <tr dir-paginate="document in data.document.children | itemsPerPage: pagination.itemsPerPage" ng-init="fileDocument = isFile(document)" current-page="pagination.currentPage">
+  <div class="table-responsive" ng-if="!data.search.active || data.document.children.length>0">
+      <table class="table table-bordered table-striped no-padding no-margin">
+      <thead>
+      <tr>
+        <th><input type="checkbox" ng-checked="!hasUnselected && data.document.children.length" ng-click="selectPage()"></th>
+        <th translate>name</th>
+        <th translate>last-modified</th>
+        <th translate>size</th>
+        <th ng-if="data.search.active" translate>path</th>
+        <th translate>status</th>
+        <th translate>actions</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr ng-show="!data.isRoot && !data.search.active">
+        <td></td>
+        <td colspan="5">
+          <i class="fa fa-folder"></i>
+          <span><a href class="no-text-decoration" ng-click="navigateBack()"> ..</a></span>
+        </td>
+      </tr>
+      <tr dir-paginate="document in data.document.children | itemsPerPage: pagination.itemsPerPage" ng-init="fileDocument = isFile(document)" current-page="pagination.currentPage">
 
-      <td><input type="checkbox" ng-model="document.selected"></td>
-      <td class="text-nowrap">
-        <span ng-if="document.permissions.view">
-          <i class="fa {{getDocumentIcon(document)}}"></i>
-          <a href style="text-decoration: none" ng-click="navigateTo(document)">
+        <td><input type="checkbox" ng-model="document.selected"></td>
+        <td class="text-nowrap">
+          <span ng-if="document.permissions.view">
+            <i class="fa {{getDocumentIcon(document)}}"></i>
+            <a href style="text-decoration: none" ng-click="navigateTo(document)">
+              {{document.name}}
+            </a>
+          </span>
+          <span ng-if="!document.permissions.view">
+            <i class="fa {{getDocumentIcon(document)}}"></i>
             {{document.name}}
+          </span>
+        </td>
+        <td>
+          {{document.timestamps.lastUpdate | amTimeAgo}}
+        </td>
+        <td class="no-wrap" ng-if="fileDocument">
+          {{document.size | bytes}}
+        </td>
+        <td class="no-wrap" ng-if="!fileDocument">
+          {{document.size}} {{document.size === 1 ? 'item' : 'items' | translate}}
+        </td>
+        <td ng-if="data.search.active">
+          <a href class="no-text-decoration" ng-click="navigateToParent(document)">
+            {{document.state.attachment.path}}
           </a>
-        </span>
-        <span ng-if="!document.permissions.view">
-          <i class="fa {{getDocumentIcon(document)}}"></i>
-          {{document.name}}
-        </span>
-      </td>
-      <td>
-        {{document.timestamps.lastUpdate | amTimeAgo}}
-      </td>
-      <td class="no-wrap" ng-if="fileDocument">
-        {{document.size | bytes}}
-      </td>
-      <td class="no-wrap" ng-if="!fileDocument">
-        {{document.size}} {{document.size === 1 ? 'item' : 'items' | translate}}
-      </td>
-      <td ng-if="data.search.active">
-        <a href class="no-text-decoration" ng-click="navigateToParent(document)">
-          {{document.state.attachment.path}}
-        </a>
-      </td>
-      <td class="no-wrap">
-        {{'publish.status.' + document.revisionStatus | translate}}
-        <i class="fa fa-star" ng-if="document.state.publicationDate !== undefined" title="{{'publish.published' | translate}} ({{document.state.publicationDate | amDateFormat : 'lll'}} [{{document.state.publishedBy}}])"></i>
+        </td>
+        <td class="no-wrap">
+          {{'publish.status.' + document.revisionStatus | translate}}
+          <i class="fa fa-star" ng-if="document.state.publicationDate !== undefined" title="{{'publish.published' | translate}} ({{document.state.publicationDate | amDateFormat : 'lll'}} [{{document.state.publishedBy}}])"></i>
 
-        <i class="fa fa-star-o" ng-if="document.state.publicationDate === undefined" title="{{'publish.not-published' | translate}}"></i>
-      </td>
-      <td>
-        <ul class="list-inline">
-          <li ng-if="document.permissions.view">
-            <a target="_self" ng-href="ws/draft/file-dl/{{document.path}}"><i class="fa fa-download"></i></a>
-          </li>
-          <li ng-if="document.permissions.delete && document.revisionStatus === 'DELETED'">
-            <a href ng-click="deleteDocument(document)"><i class="fa fa-trash"></i></a>
-          </li>
-        </ul>
-      </td>
-    </tr>
-    </tbody>
-  </table>
+          <i class="fa fa-star-o" ng-if="document.state.publicationDate === undefined" title="{{'publish.not-published' | translate}}"></i>
+        </td>
+        <td>
+          <ul class="list-inline">
+            <li ng-if="document.permissions.view">
+              <a target="_self" ng-href="ws/draft/file-dl/{{document.path}}"><i class="fa fa-download"></i></a>
+            </li>
+            <li ng-if="document.permissions.delete && document.revisionStatus === 'DELETED'">
+              <a href ng-click="deleteDocument(document)"><i class="fa fa-trash"></i></a>
+            </li>
+          </ul>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
 </div>
