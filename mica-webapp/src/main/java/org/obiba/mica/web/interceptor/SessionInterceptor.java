@@ -31,6 +31,10 @@ public class SessionInterceptor extends HandlerInterceptorAdapter {
 
   @Override
   public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
+    populateUserEntries(modelAndView, userProfileService);
+  }
+
+  public static void populateUserEntries(ModelAndView modelAndView, UserProfileService userProfileService) {
     Subject subject = SecurityUtils.getSubject();
     if (subject.isAuthenticated()) {
       String username = subject.getPrincipal().toString();

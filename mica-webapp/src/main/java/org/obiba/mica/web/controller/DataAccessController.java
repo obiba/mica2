@@ -60,9 +60,6 @@ public class DataAccessController extends BaseController {
   private DataAccessFeasibilityFormService dataAccessFeasibilityFormService;
 
   @Inject
-  private MicaConfigService micaConfigService;
-
-  @Inject
   private UserProfileService userProfileService;
 
   @Inject
@@ -83,7 +80,7 @@ public class DataAccessController extends BaseController {
 
       return new ModelAndView("data-access", params);
     } else {
-      return new ModelAndView("redirect:../signin?redirect=data-access%2F" + id);
+      return new ModelAndView("redirect:../signin?redirect=" + micaConfigService.getContextPath() + "/data-access%2F" + id);
     }
   }
 

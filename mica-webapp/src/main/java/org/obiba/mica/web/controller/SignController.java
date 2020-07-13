@@ -119,13 +119,13 @@ public class SignController extends BaseController {
 
     String requestUrl = request.getRequestURL().toString();
     String requestUri = request.getRequestURI();
-    String baseUrl = requestUrl.replaceFirst(requestUri, "") + micaConfigService.getContextPath();
+    String baseUrl = requestUrl.replaceFirst(requestUri, "");
 
     String redirectUrl = baseUrl;
     if (!Strings.isNullOrEmpty(redirect))
       redirectUrl = String.format("%s%s", baseUrl, redirect.startsWith("/") ? redirect : "/" + redirect);
 
-    String signinErrorUrl = baseUrl + "/signup-with";
+    String signinErrorUrl = baseUrl + micaConfigService.getContextPath() + "/signup-with";
 
     try {
       return String.format("%s/auth/signin/%s?redirect=%s&signin_error=%s", agateUrl, oidcName, URLEncoder.encode(redirectUrl, "UTF-8"), URLEncoder.encode(signinErrorUrl, "UTF-8"));
