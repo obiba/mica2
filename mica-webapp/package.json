@@ -8,7 +8,7 @@
     "bootstrap-datepicker": "^1.9.0",
     "jquery.redirect": "^1.1.4",
     "js-cookie": "^2.2.1",
-    "rql": "git+https://github.com/epigeny/rql.git#master",
+    "rql": "git+https://github.com/epigeny/rql.git#1.0.1",
     "simplemde": "^1.11.2",
     "vue": "^2.6.11",
     "vue-obiba-search-result": "git+https://github.com/epigeny/vue-obiba-search-result.git#master"
