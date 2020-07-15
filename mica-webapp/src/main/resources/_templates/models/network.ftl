@@ -13,10 +13,16 @@
 <!-- Individual study list: data -->
 <#macro individualStudyTDs study>
   <td>
-    <#assign code="study_taxonomy.vocabulary.methods-design.term." + study.model.methods.design + ".title"/>
-    <@message code/>
+    <#if study.model.methods?? && study.model.methods.design??>
+      <#assign code="study_taxonomy.vocabulary.methods-design.term." + study.model.methods.design + ".title"/>
+      <@message code/>
+    </#if>
   </td>
-  <td>${study.model.numberOfParticipants.participant.number}</td>
+  <td>
+    <#if study.model.numberOfParticipants.participant.number??>
+      ${study.model.numberOfParticipants.participant.number}
+    </#if>
+  </td>
   <td>
     <#if study.populations?? && study.populations?size != 0>
       <#assign countries = []/>
