@@ -81,11 +81,6 @@ public class HarmonizedDatasetServiceTest {
     doReturn(l).when(datasetService).getDatasetVariables(any(HarmonizationDataset.class));
     doReturn(l).when(datasetService).getDatasetVariables(any(HarmonizationDataset.class), any(StudyTable.class));
 
-    Map<String, List<DatasetVariable>> res = datasetService.populateHarmonizedVariablesMap(dataset);
-
-    assertEquals(2, res.keySet().size());
-    assertEquals(2, res.get("testds:v1:Dataschema").size());
-    assertEquals(2, res.get("testds:v2:Dataschema").size());
   }
 
   private HarmonizationDataset buildHarmonizationDataset(String id, StudyTable... studyTables) {

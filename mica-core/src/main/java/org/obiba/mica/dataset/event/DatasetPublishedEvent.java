@@ -10,9 +10,6 @@
 
 package org.obiba.mica.dataset.event;
 
-import java.util.List;
-import java.util.Map;
-
 import org.obiba.mica.core.domain.PublishCascadingScope;
 import org.obiba.mica.core.event.PersistableCascadingPublishedEvent;
 import org.obiba.mica.dataset.domain.Dataset;
@@ -22,7 +19,7 @@ public class DatasetPublishedEvent extends PersistableCascadingPublishedEvent<Da
 
   private final Iterable<DatasetVariable> variables;
 
-  private final Map<String, List<DatasetVariable>> harmonizationVariables;
+  private final Iterable<DatasetVariable> harmonizationVariables;
 
   private final String publisher;
 
@@ -37,12 +34,14 @@ public class DatasetPublishedEvent extends PersistableCascadingPublishedEvent<Da
   }
 
   public DatasetPublishedEvent(Dataset persistable, Iterable<DatasetVariable> variables,
-    Map<String, List<DatasetVariable>> harmonizationVariables, String publisher) {
+                               Iterable<DatasetVariable> harmonizationVariables, String publisher) {
     this(persistable, variables, harmonizationVariables, publisher, PublishCascadingScope.NONE);
   }
 
   public DatasetPublishedEvent(Dataset persistable, Iterable<DatasetVariable> variables,
-    Map<String, List<DatasetVariable>> harmonizationVariables, String publisher, PublishCascadingScope cascadingScope) {
+                               Iterable<DatasetVariable> harmonizationVariables,
+                               String publisher,
+                               PublishCascadingScope cascadingScope) {
     super(persistable, cascadingScope);
     this.publisher = publisher;
     this.variables = variables;
@@ -58,10 +57,10 @@ public class DatasetPublishedEvent extends PersistableCascadingPublishedEvent<Da
   }
 
   public boolean hasHarmonizationVariables() {
-    return harmonizationVariables != null && !harmonizationVariables.isEmpty();
+    return harmonizationVariables != null && harmonizationVariables.iterator().hasNext();
   }
 
-  public Map<String, List<DatasetVariable>> getHarmonizationVariables() {
+  public Iterable<DatasetVariable> getHarmonizationVariables() {
     return harmonizationVariables;
   }
 }
