@@ -67,8 +67,9 @@ public class VariableIndexer {
       }
     }
 
-    if (event.hasHarmonizationVariables())
-      indexHarmonizedVariables(Indexer.PUBLISHED_HVARIABLE_INDEX, event.getHarmonizationVariables());
+    if (event.hasHarmonizationVariables()) {
+      indexDatasetVariables(Indexer.PUBLISHED_HVARIABLE_INDEX, event.getHarmonizationVariables());
+    }
   }
 
   @Async
@@ -140,11 +141,6 @@ public class VariableIndexer {
         if (ds.getIdentifiers().contains(variable.getId())) variable.addSet(ds.getId());
       }));
     indexer.indexAllIndexables(indexName, variables);
-  }
-
-  private void indexHarmonizedVariables(String indexName, Map<String, List<DatasetVariable>> harmonizationVariables) {
-    harmonizationVariables.keySet().forEach(
-      parentId -> indexer.indexAllIndexables(indexName, harmonizationVariables.get(parentId)));
   }
 
   private void deleteDatasetVariables(String indexName, String type, Dataset dataset) {

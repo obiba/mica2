@@ -235,24 +235,40 @@ public class HarmonizedDatasetService extends DatasetService<HarmonizationDatase
         eventBus.post(new DatasetUpdatedEvent(dataset));
 
         if (publishedDatasets.contains(dataset)) {
-          Map<String, List<DatasetVariable>> harmonizationVariables =
-            mustIndexVariables && publishedDatasets.contains(dataset)
-              ? populateHarmonizedVariablesMap(dataset)
-              : null;
+          if (mustIndexVariables && publishedDatasets.contains(dataset)) {
+            eventBus.post(
+              new DatasetPublishedEvent(dataset, wrappedGetDatasetVariables(dataset), null, getCurrentUsername())
+            );
 
-          Iterable<DatasetVariable> datasetVariables = mustIndexVariables && publishedDatasets.contains(dataset)
-            ? wrappedGetDatasetVariables(dataset)
-            : null;
-
-          eventBus.post(
-            new DatasetPublishedEvent(dataset, datasetVariables, harmonizationVariables, getCurrentUsername())
-          );
+            indexHarmonizedVariables(dataset);
+          }
         }
 
       } catch (Exception e) {
         log.error(String.format("Error indexing dataset %s", dataset), e);
       }
     });
+  }
+
+  private void indexHarmonizedVariables(HarmonizationDataset dataset) {
+    if(!dataset.getBaseStudyTables().isEmpty()) {
+      dataset.getBaseStudyTables()
+        .forEach(studyTable -> {
+          Future<Iterable<DatasetVariable>> future = helper.asyncGetDatasetVariables(() -> getDatasetVariables(dataset, studyTable));
+          try {
+            Iterable<DatasetVariable> harmonizationVariables = future.get();
+            eventBus.post(new DatasetPublishedEvent(dataset, null, harmonizationVariables, getCurrentUsername()));
+          } catch (InterruptedException e) {
+            if(e.getCause() instanceof MagmaRuntimeException) {
+              throw new DatasourceNotAvailableException(e.getCause());
+            }
+
+            throw Throwables.propagate(e.getCause());
+          } catch (ExecutionException e) {
+            throw Throwables.propagate(e);
+          }
+        });
+    }
   }
 
   @Caching(evict = { @CacheEvict(value = "aggregations-metadata", key = "'dataset'") })
@@ -274,10 +290,9 @@ public class HarmonizedDatasetService extends DatasetService<HarmonizationDatase
     if(published) {
       checkIsPublishable(dataset);
       publishState(id);
-      Map<String, List<DatasetVariable>> harmonizationVariables = populateHarmonizedVariablesMap(dataset);
-      eventBus.post(new DatasetPublishedEvent(dataset, wrappedGetDatasetVariables(dataset), harmonizationVariables,
+      eventBus.post(new DatasetPublishedEvent(dataset, wrappedGetDatasetVariables(dataset), null,
         getCurrentUsername(), cascadingScope));
-      //helper.asyncBuildDatasetVariablesCache(dataset, harmonizationVariables);
+      indexHarmonizedVariables(dataset);
     } else {
       unPublishState(id);
       eventBus.post(new DatasetUnpublishedEvent(dataset));
@@ -499,46 +514,6 @@ public class HarmonizedDatasetService extends DatasetService<HarmonizationDatase
   private RestValueTable.RestVariableValueSource getVariableValueSource(String variableName, OpalTable opalTable)
     throws NoSuchStudyException, NoSuchValueTableException, NoSuchVariableException {
     return (RestValueTable.RestVariableValueSource) getTable(opalTable).getVariableValueSource(variableName);
-  }
-
-  /**
-   * TODO Index variables by OpalTables to prevent retrieving all variables in memory before indexing them.
-   *
-   * @param dataset
-   * @return
-   */
-  protected Map<String, List<DatasetVariable>> populateHarmonizedVariablesMap(HarmonizationDataset dataset) {
-    Map<String, List<DatasetVariable>> map = Maps.newHashMap();
-
-    if(!dataset.getBaseStudyTables().isEmpty()) {
-      Iterable<DatasetVariable> res = dataset.getBaseStudyTables().stream()
-        .map(s -> helper.asyncGetDatasetVariables(() -> getDatasetVariables(dataset, s))).map(f -> {
-          try {
-            return f.get();
-          } catch(ExecutionException e) {
-            if(e.getCause() instanceof NoSuchValueTableException) {
-              return Lists.<DatasetVariable>newArrayList();  // ignore (case the study does not implement this harmonization dataset))
-            }
-            if(e.getCause() instanceof MagmaRuntimeException) {
-              throw new DatasourceNotAvailableException(e.getCause());
-            }
-
-            throw Throwables.propagate(e.getCause());
-          } catch(InterruptedException ie) {
-            throw Throwables.propagate(ie);
-          }
-        }).collect(ArrayList::new, (c, e) -> c.addAll(Lists.newArrayList(e)), ArrayList::addAll);
-
-      for(DatasetVariable variable : res) {
-        if(!map.containsKey(variable.getParentId())) {
-          map.put(variable.getParentId(), Lists.newArrayList());
-        }
-
-        map.get(variable.getParentId()).add(variable);
-      }
-    }
-
-    return map;
   }
 
   /**
