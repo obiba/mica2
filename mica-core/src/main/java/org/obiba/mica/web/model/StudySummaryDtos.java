@@ -335,7 +335,8 @@ class StudySummaryDtos {
     .setTimestamps(TimestampsDtos.asDto(study))
     .addAllName(localizedStringDtos.asDto(study.getName()))
     .addAllAcronym(localizedStringDtos.asDto(study.getAcronym()))
-    .addAllObjectives(localizedStringDtos.asDto(study.getObjectives()));
+    .addAllObjectives(localizedStringDtos.asDto(study.getObjectives()))
+    .setStudyResourcePath(study.getResourcePath());
 
     Optional<Population> optionalPopulation = study.getPopulations().stream().filter(population -> population.getId().equals(populationId)).findFirst();
     if (optionalPopulation.isPresent()) {
