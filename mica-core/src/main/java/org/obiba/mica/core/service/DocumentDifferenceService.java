@@ -65,7 +65,7 @@ public class DocumentDifferenceService {
     StringJoiner joiner = new StringJoiner(" ");
 
     for (int index = 0; index < rightWords.length; index++) {
-      String leftWord = leftWords[index];
+      String leftWord = index >= leftWords.length ? null : leftWords[index];
       String rightWord = rightWords[index];
 
       if (rightWord.equals(leftWord)) {
