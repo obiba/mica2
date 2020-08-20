@@ -1,9 +1,8 @@
 package org.obiba.mica.core.service;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -59,10 +58,30 @@ public class DocumentDifferenceService {
     return data;
   }
 
+  private static String highlight(String left, String right) {
+    String[] leftWords = left.split("\\s");
+    String[] rightWords = right.split("\\s");
+
+    StringJoiner joiner = new StringJoiner(" ");
+
+    for (int index = 0; index < rightWords.length; index++) {
+      String leftWord = leftWords[index];
+      String rightWord = rightWords[index];
+
+      if (rightWord.equals(leftWord)) {
+        joiner.add(rightWord);
+      } else {
+        joiner.add("<strong>" + rightWord + "</strong>");
+      }
+    }
+
+    return joiner.toString();
+  }
+
   private static Map<String, List<Object>> fromEntriesDifferenceMap(Map<String, ValueDifference<Object>> entriesDiffering, RegexHashMap completeConfigTranslationMap) {
     Map<String, List<Object>> result = new HashMap<>();
 
-    entriesDiffering.forEach((key, valueDifference) -> result.put(key, Arrays.asList(completeConfigTranslationMap.get(key), valueDifference.leftValue(), valueDifference.rightValue())));
+    entriesDiffering.forEach((key, valueDifference) -> result.put(key, Arrays.asList(completeConfigTranslationMap.get(key), valueDifference.leftValue(), highlight(valueDifference.leftValue().toString(), valueDifference.rightValue().toString()))));
 
     return result;
   }

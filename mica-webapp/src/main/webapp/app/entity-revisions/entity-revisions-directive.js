@@ -27,4 +27,9 @@ mica.revisions
       templateUrl: 'app/entity-revisions/entity-revisions-template.html',
       controller: 'RevisionsController'
     };
+  }])
+  .filter('trustHtml', ['$sce', function ($sce) {
+    return function (val) {
+      return $sce.trustAsHtml(val);
+    };
   }]);
