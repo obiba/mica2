@@ -1,5 +1,5 @@
 <!-- Date and Datetime formats -->
-<#assign datetimeFormat = "yyyy-MM-dd hh:mm"/>
+<#assign datetimeFormat = "yyyy-MM-dd HH:mm"/>
 <#assign dateFormat = "yyyy-MM-dd"/>
 
 <!-- Favicon -->
