@@ -37,6 +37,7 @@ import org.eclipse.jetty.server.handler.gzip.GzipHandler;
 import org.eclipse.jetty.servlets.GzipFilter;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.obiba.mica.web.filter.CachingHttpHeadersFilter;
+import org.obiba.mica.web.filter.ClickjackingHttpHeadersFilter;
 import org.obiba.mica.web.filter.StaticResourcesProductionFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -167,7 +168,7 @@ public class WebConfiguration implements ServletContextInitializer, JettyServerC
       initStaticResourcesProductionFilter(servletContext, disps);
       initCachingHttpHeadersFilter(servletContext, disps);
     }
-
+    initClickjackingHttpHeadersFilter(servletContext, disps);
     initGzipFilter(servletContext, disps);
 
     log.info("Web application fully configured");
@@ -235,6 +236,18 @@ public class WebConfiguration implements ServletContextInitializer, JettyServerC
     cachingFilter.addMappingForUrlPatterns(disps, true, "/fonts/*");
     cachingFilter.addMappingForUrlPatterns(disps, true, "/scripts/*");
     cachingFilter.addMappingForUrlPatterns(disps, true, "/styles/*");
+    cachingFilter.setAsyncSupported(true);
+  }
+
+  /**
+   * Initializes the clickjacking HTTP Headers Filter.
+   */
+  private void initClickjackingHttpHeadersFilter(ServletContext servletContext, EnumSet<DispatcherType> disps) {
+    log.debug("Registering Clickjacking HTTP Headers Filter");
+    FilterRegistration.Dynamic cachingFilter = servletContext
+      .addFilter("clickjackingHttpHeadersFilter", new ClickjackingHttpHeadersFilter());
+
+    cachingFilter.addMappingForUrlPatterns(disps, true, "/*");
     cachingFilter.setAsyncSupported(true);
   }
 
