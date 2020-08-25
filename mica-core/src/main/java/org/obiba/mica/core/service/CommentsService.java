@@ -11,6 +11,8 @@
 package org.obiba.mica.core.service;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -85,7 +87,15 @@ public class CommentsService {
   }
 
   public List<Comment> findCommentAndNext(String commentId, String resourceId, String instanceId) {
-    return commentsRepository.findCommentAndNext(new ObjectId(commentId), resourceId, instanceId, LIMITER);
+    List<Comment> comments = commentsRepository.findCommentAndNext(new ObjectId(commentId), resourceId, instanceId, LIMITER);
+    if (comments.size()>1) {
+      Optional<Comment> cmt = comments.stream().filter(c -> c.getId().equals(commentId)).findFirst();
+      if (cmt.isPresent()) {
+        // filter replies of the same type
+        comments = comments.stream().filter(c -> c.getAdmin() == cmt.get().getAdmin()).collect(Collectors.toList());
+      }
+    }
+    return comments;
   }
 
   public List<Comment> findByResourceAndInstance(String name, String id) {
