@@ -19,7 +19,6 @@ import org.obiba.mica.access.NoSuchDataAccessRequestException;
 import org.obiba.mica.access.domain.DataAccessAmendment;
 import org.obiba.mica.access.domain.DataAccessEntityStatus;
 import org.obiba.mica.access.domain.DataAccessRequest;
-import org.obiba.mica.access.domain.StatusChange;
 import org.obiba.mica.access.event.DataAccessAmendmentDeletedEvent;
 import org.obiba.mica.access.event.DataAccessAmendmentUpdatedEvent;
 import org.slf4j.Logger;
@@ -60,18 +59,18 @@ public class DataAccessAmendmentService extends DataAccessEntityService<DataAcce
     DataAccessAmendment saved = amendment;
     DataAccessEntityStatus from = null;
 
-    if(amendment.isNew()) {
+    if (amendment.isNew()) {
       setAndLogStatus(saved, DataAccessEntityStatus.OPENED);
       int count = findByParentId(saved.getParentId()).size();
       saved.setId(saved.getParentId() + "-A" + (count + 1));
     } else {
       saved = dataAmendmentRequestRepository.findOne(amendment.getId());
-      if(saved != null) {
+      if (saved != null) {
         from = saved.getStatus();
         // validate the status
         dataAccessRequestUtilService.checkStatusTransition(saved, amendment.getStatus());
         saved.setStatus(amendment.getStatus());
-        if(amendment.hasStatusChangeHistory()) saved.setStatusChangeHistory(amendment.getStatusChangeHistory());
+        if (amendment.hasStatusChangeHistory()) saved.setStatusChangeHistory(amendment.getStatusChangeHistory());
         // merge beans
         BeanUtils.copyProperties(amendment, saved, "id", "version", "createdBy", "createdDate", "lastModifiedBy",
           "lastModifiedDate", "statusChangeHistory");
@@ -95,6 +94,7 @@ public class DataAccessAmendmentService extends DataAccessEntityService<DataAcce
 
   /**
    * If the amendment document does not have a project title, get it from the parent request.
+   *
    * @param amendment
    */
   private void ensureProjectTitle(@NotNull DataAccessAmendment amendment) {
@@ -116,7 +116,7 @@ public class DataAccessAmendmentService extends DataAccessEntityService<DataAcce
   }
 
   public List<DataAccessAmendment> findByStatus(@Nullable String parentId, @Nullable List<String> status) {
-    if(status == null || status.isEmpty()) return dataAmendmentRequestRepository.findByParentId(parentId);
+    if (status == null || status.isEmpty()) return dataAmendmentRequestRepository.findByParentId(parentId);
 
     List<DataAccessEntityStatus> statusList = status.stream().map(DataAccessEntityStatus::valueOf)
       .collect(Collectors.toList());
@@ -135,11 +135,6 @@ public class DataAccessAmendmentService extends DataAccessEntityService<DataAcce
 
   public int countPendingByParentId(@NotNull String parentId) {
     return dataAmendmentRequestRepository.countPendingByParentId(parentId);
-  }
-
-  public Map<String, List<StatusChange>> getCongregatedAmendmentStatusChangesFor(@NotNull String dataAccessRequestId) {
-    return dataAmendmentRequestRepository.findByParentId(dataAccessRequestId).stream()
-      .collect(Collectors.toMap(DataAccessAmendment::getId, DataAccessAmendment::getStatusChangeHistory));
   }
 
   /**

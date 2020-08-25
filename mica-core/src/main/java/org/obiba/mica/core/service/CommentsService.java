@@ -14,10 +14,14 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import com.google.common.eventbus.EventBus;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
+import org.obiba.mica.access.event.DataAccessRequestUpdatedEvent;
 import org.obiba.mica.core.domain.Comment;
 import org.obiba.mica.core.domain.NoSuchCommentException;
+import org.obiba.mica.core.event.CommentDeletedEvent;
+import org.obiba.mica.core.event.CommentUpdatedEvent;
 import org.obiba.mica.core.notification.MailNotification;
 import org.obiba.mica.core.repository.CommentsRepository;
 import org.springframework.beans.BeanUtils;
@@ -29,6 +33,9 @@ import org.springframework.validation.annotation.Validated;
 @Service
 @Validated
 public class CommentsService {
+
+  @Inject
+  protected EventBus eventBus;
 
   @Inject
   CommentsRepository commentsRepository;
@@ -53,11 +60,14 @@ public class CommentsService {
 
     if (mailNotification != null) mailNotification.send(saved);
 
-    return commentsRepository.save(saved);
+    commentsRepository.save(saved);
+    eventBus.post(new CommentUpdatedEvent(comment));
+    return saved;
   }
 
   public void delete(Comment comment)throws NoSuchCommentException  {
     commentsRepository.delete(comment);
+    eventBus.post(new CommentDeletedEvent(comment));
   }
 
   public void delete(String id) throws NoSuchCommentException {

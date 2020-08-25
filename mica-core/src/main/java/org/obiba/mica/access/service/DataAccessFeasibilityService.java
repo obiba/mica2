@@ -16,7 +16,6 @@ import org.obiba.mica.access.DataAccessFeasibilityRepository;
 import org.obiba.mica.access.NoSuchDataAccessRequestException;
 import org.obiba.mica.access.domain.DataAccessEntityStatus;
 import org.obiba.mica.access.domain.DataAccessFeasibility;
-import org.obiba.mica.access.domain.StatusChange;
 import org.obiba.mica.access.event.DataAccessFeasibilityDeletedEvent;
 import org.obiba.mica.access.event.DataAccessFeasibilityUpdatedEvent;
 import org.slf4j.Logger;
@@ -113,11 +112,6 @@ public class DataAccessFeasibilityService extends DataAccessEntityService<DataAc
 
   public int countPendingByParentId(@NotNull String parentId) {
     return dataFeasibilityRequestRepository.countPendingByParentId(parentId);
-  }
-
-  public Map<String, List<StatusChange>> getCongregatedFeasibilityStatusChangesFor(@NotNull String dataAccessRequestId) {
-    return dataFeasibilityRequestRepository.findByParentId(dataAccessRequestId).stream()
-      .collect(Collectors.toMap(DataAccessFeasibility::getId, DataAccessFeasibility::getStatusChangeHistory));
   }
 
   /**
