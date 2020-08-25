@@ -12,6 +12,7 @@ package org.obiba.mica.access.service;
 
 import com.google.common.base.Throwables;
 import com.google.common.collect.Sets;
+import com.google.common.eventbus.Subscribe;
 import com.google.common.io.ByteStreams;
 import com.itextpdf.text.DocumentException;
 import org.apache.shiro.SecurityUtils;
@@ -21,9 +22,10 @@ import org.obiba.mica.access.DataAccessRequestRepository;
 import org.obiba.mica.access.NoSuchDataAccessRequestException;
 import org.obiba.mica.access.domain.DataAccessEntityStatus;
 import org.obiba.mica.access.domain.DataAccessRequest;
-import org.obiba.mica.access.domain.StatusChange;
-import org.obiba.mica.access.event.DataAccessRequestDeletedEvent;
-import org.obiba.mica.access.event.DataAccessRequestUpdatedEvent;
+import org.obiba.mica.access.event.*;
+import org.obiba.mica.core.domain.Comment;
+import org.obiba.mica.core.event.CommentDeletedEvent;
+import org.obiba.mica.core.event.CommentUpdatedEvent;
 import org.obiba.mica.core.repository.AttachmentRepository;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.FileStoreService;
@@ -34,6 +36,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
@@ -52,8 +55,6 @@ import static com.jayway.jsonpath.Configuration.defaultConfiguration;
 public class DataAccessRequestService extends DataAccessEntityService<DataAccessRequest> {
 
   private static final Logger log = LoggerFactory.getLogger(DataAccessRequestService.class);
-
-  public static final String DAR_ROOT_KEY =  "###ROOT###";
 
   @Inject
   private DataAccessAmendmentService dataAccessAmendmentService;
@@ -80,72 +81,13 @@ public class DataAccessRequestService extends DataAccessEntityService<DataAccess
 
   @Override
   public DataAccessRequest save(@NotNull DataAccessRequest request) {
-    DataAccessRequest saved = request;
-    DataAccessEntityStatus from = null;
-    Iterable<Attachment> attachmentsToDelete = null;
-    Iterable<Attachment> attachmentsToSave = null;
-
-    if(request.isNew()) {
-      setAndLogStatus(saved, DataAccessEntityStatus.OPENED);
-      saved.setId(generateId());
-      attachmentsToSave = saved.getAttachments();
-    } else {
-      saved = dataAccessRequestRepository.findOne(request.getId());
-      if(saved != null) {
-        if (!SecurityUtils.getSubject().hasRole(Roles.MICA_DAO) &&
-          !SecurityUtils.getSubject().hasRole(Roles.MICA_ADMIN)) {
-          // preserve current actionLogs as no other user role can add or remove them
-          request.setActionLogHistory(saved.getActionLogHistory());
-        }
-
-        attachmentsToDelete = Sets.difference(Sets.newHashSet(saved.getAttachments()), Sets.newHashSet(request.getAttachments()));
-        attachmentsToSave = Sets.difference(Sets.newHashSet(request.getAttachments()), Sets.newHashSet(saved.getAttachments()));
-
-        from = saved.getStatus();
-        // validate the status
-        dataAccessRequestUtilService.checkStatusTransition(saved, request.getStatus());
-        saved.setStatus(request.getStatus());
-        if(request.hasStatusChangeHistory()) saved.setStatusChangeHistory(request.getStatusChangeHistory());
-        // merge beans
-        BeanUtils.copyProperties(request, saved, "id", "version", "createdBy", "createdDate", "lastModifiedBy",
-          "lastModifiedDate", "statusChangeHistory");
-      } else {
-        saved = request;
-        setAndLogStatus(saved, DataAccessEntityStatus.OPENED);
-      }
-    }
-
-    schemaFormContentFileService.save(saved, dataAccessRequestRepository.findOne(request.getId()),
-        String.format("/data-access-request/%s", saved.getId()));
-
-    if(attachmentsToSave != null) attachmentsToSave.forEach(a -> {
-      fileStoreService.save(a.getId());
-      a.setJustUploaded(false);
-      attachmentRepository.save(a);
-    });
-
-    saved.setLastModifiedDate(DateTime.now());
-    dataAccessRequestRepository.saveWithReferences(saved);
-
-    if(attachmentsToDelete != null) attachmentsToDelete.forEach(a -> fileStoreService.delete(a.getId()));
-
-    eventBus.post(new DataAccessRequestUpdatedEvent(saved));
-    sendNotificationEmails(saved, from);
-    return saved;
-  }
-
-  public Map<String, List<StatusChange>> getMergedStatusChangHistory(String dataAccessRequestId) {
-    Map<String, List<StatusChange>> congregatedAmendmentStatusChanges = dataAccessAmendmentService
-      .getCongregatedAmendmentStatusChangesFor(dataAccessRequestId);
-
-    congregatedAmendmentStatusChanges.put(DAR_ROOT_KEY, findById(dataAccessRequestId).getStatusChangeHistory());
-    return congregatedAmendmentStatusChanges;
+    return save(request, DateTime.now());
   }
 
   public DataAccessRequest saveActionsLogs(@NotNull DataAccessRequest request) {
     DataAccessRequest saved = findById(request.getId());
     saved.setActionLogHistory(request.getActionLogHistory());
-    save(saved);
+    save(saved, null);
     return saved;
   }
 
@@ -183,7 +125,7 @@ public class DataAccessRequestService extends DataAccessEntityService<DataAccess
     Object content = defaultConfiguration().jsonProvider().parse(dataAccessRequest.getContent());
     try {
       fillPdfTemplateFromRequest(getTemplate(Locale.forLanguageTag(lang)), ba, content);
-    } catch(IOException | DocumentException e) {
+    } catch (IOException | DocumentException e) {
       throw Throwables.propagate(e);
     }
 
@@ -198,12 +140,123 @@ public class DataAccessRequestService extends DataAccessEntityService<DataAccess
     return dataAccessFormService.find().map(DataAccessForm::isAmendmentsEnabled).orElse(false);
   }
 
+  //
+  // Event handling
+  //
+
+  @Async
+  @Subscribe
+  public void dataAccessFeasibilityUpdated(DataAccessFeasibilityUpdatedEvent event) {
+    touch(findById(event.getPersistable().getParentId()));
+  }
+
+  @Async
+  @Subscribe
+  public void dataAccessFeasibilityDeleted(DataAccessFeasibilityDeletedEvent event) {
+    touch(findById(event.getPersistable().getParentId()));
+  }
+
+  @Async
+  @Subscribe
+  public void dataAccessAmendmentUpdated(DataAccessAmendmentUpdatedEvent event) {
+    touch(findById(event.getPersistable().getParentId()));
+  }
+
+  @Async
+  @Subscribe
+  public void dataAccessAmendmentDeleted(DataAccessAmendmentDeletedEvent event) {
+    touch(findById(event.getPersistable().getParentId()));
+  }
+
+  @Async
+  @Subscribe
+  public void commentUpdated(CommentUpdatedEvent event) {
+    Comment comment = event.getComment();
+    if (comment.getResourceId().equals("/data-access-request") && !comment.getAdmin()) {
+      touch(findById(comment.getInstanceId()));
+    }
+  }
+
+  @Async
+  @Subscribe
+  public void commentDeleted(CommentDeletedEvent event) {
+    Comment comment = event.getComment();
+    if (comment.getResourceId().equals("/data-access-request") && !comment.getAdmin()) {
+      touch(findById(comment.getInstanceId()));
+    }
+  }
+
+  //
+  // Private methods
+  //
+
+  private void touch(@NotNull DataAccessRequest request) {
+    request.setLastModifiedDate(DateTime.now());
+    dataAccessRequestRepository.saveWithReferences(request);
+  }
+
+  private DataAccessRequest save(@NotNull DataAccessRequest request, DateTime lastModifiedDate) {
+    DataAccessRequest saved = request;
+    DataAccessEntityStatus from = null;
+    Iterable<Attachment> attachmentsToDelete = null;
+    Iterable<Attachment> attachmentsToSave = null;
+
+    if (request.isNew()) {
+      setAndLogStatus(saved, DataAccessEntityStatus.OPENED);
+      saved.setId(generateId());
+      attachmentsToSave = saved.getAttachments();
+    } else {
+      saved = dataAccessRequestRepository.findOne(request.getId());
+      if (saved != null) {
+        if (!SecurityUtils.getSubject().hasRole(Roles.MICA_DAO) &&
+          !SecurityUtils.getSubject().hasRole(Roles.MICA_ADMIN)) {
+          // preserve current actionLogs as no other user role can add or remove them
+          request.setActionLogHistory(saved.getActionLogHistory());
+        }
+
+        attachmentsToDelete = Sets.difference(Sets.newHashSet(saved.getAttachments()), Sets.newHashSet(request.getAttachments()));
+        attachmentsToSave = Sets.difference(Sets.newHashSet(request.getAttachments()), Sets.newHashSet(saved.getAttachments()));
+
+        from = saved.getStatus();
+        // validate the status
+        dataAccessRequestUtilService.checkStatusTransition(saved, request.getStatus());
+        saved.setStatus(request.getStatus());
+        if (request.hasStatusChangeHistory()) saved.setStatusChangeHistory(request.getStatusChangeHistory());
+        // merge beans
+        BeanUtils.copyProperties(request, saved, "id", "version", "createdBy", "createdDate", "lastModifiedBy",
+          "lastModifiedDate", "statusChangeHistory");
+      } else {
+        saved = request;
+        setAndLogStatus(saved, DataAccessEntityStatus.OPENED);
+      }
+    }
+
+    schemaFormContentFileService.save(saved, dataAccessRequestRepository.findOne(request.getId()),
+      String.format("/data-access-request/%s", saved.getId()));
+
+    if (attachmentsToSave != null) attachmentsToSave.forEach(a -> {
+      fileStoreService.save(a.getId());
+      a.setJustUploaded(false);
+      attachmentRepository.save(a);
+    });
+
+    if (lastModifiedDate != null)
+      saved.setLastModifiedDate(lastModifiedDate);
+    dataAccessRequestRepository.saveWithReferences(saved);
+
+    if (attachmentsToDelete != null) attachmentsToDelete.forEach(a -> fileStoreService.delete(a.getId()));
+
+    eventBus.post(new DataAccessRequestUpdatedEvent(saved));
+    sendNotificationEmails(saved, from);
+    return saved;
+  }
+
   private void deleteAmendments(String id) {
-    dataAccessAmendmentService.findByParentId(id).stream().forEach(dataAccessAmendmentService::delete);
+    dataAccessAmendmentService.findByParentId(id).forEach(dataAccessAmendmentService::delete);
   }
 
   private void deleteFeasibilities(String id) {
-    dataAccessFeasibilityService.findByParentId(id).stream().forEach(dataAccessFeasibilityService::delete);
+    dataAccessFeasibilityService.findByParentId(id).forEach(dataAccessFeasibilityService::delete);
   }
 
   private byte[] getTemplate(Locale locale) throws IOException {
