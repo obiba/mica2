@@ -108,7 +108,7 @@
                   <tr>
                     <th><@message "action"/></th>
                     <th><@message "author"/></th>
-                    <th><@message "date"/>></th>
+                    <th><@message "date"/></th>
                   </tr>
                   </thead>
                   <tbody>
