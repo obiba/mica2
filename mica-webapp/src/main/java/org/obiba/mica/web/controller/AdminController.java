@@ -66,7 +66,7 @@ public class AdminController extends BaseController {
       .anyMatch(id -> isPermitted("/draft/project", "VIEW", id)))
       return new ModelAndView("admin");
 
-    return new ModelAndView("redirect:" + contextPath + "/");
+    return new ModelAndView("redirect:/");
   }
 
 }
