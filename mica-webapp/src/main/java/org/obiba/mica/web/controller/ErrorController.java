@@ -7,11 +7,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.util.HashMap;
-import java.util.Map;
-
 @Controller
-public class ErrorController implements org.springframework.boot.autoconfigure.web.ErrorController {
+public class ErrorController {
 
   @GetMapping("/error")
   public ModelAndView error(@RequestParam(value = "error", required = false, defaultValue = "500") String status, @RequestParam(defaultValue = "") String message) {
@@ -27,12 +24,7 @@ public class ErrorController implements org.springframework.boot.autoconfigure.w
   public ModelAndView anyError(Exception ex) {
     return makeModelAndView("500", ex.getMessage());
   }
-
-  @Override
-  public String getErrorPath() {
-    return "/error";
-  }
-
+  
   private ModelAndView makeModelAndView(String status, String message) {
     ModelAndView mv = new ModelAndView("error");
     mv.getModel().put("status", status);
