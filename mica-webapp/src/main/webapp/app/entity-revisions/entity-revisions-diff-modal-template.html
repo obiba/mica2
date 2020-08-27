@@ -35,7 +35,7 @@
               <small ng-if="value[0]">{{key}}</small>
             </td>
             <td>{{value[1]}}</td>
-            <td>{{value[2]}}</td>
+            <td><span ng-bind-html="value[2] | diffHighlight: value[1]"></span></td>
           </tr>
           <tr ng-repeat="(key, value) in diff.onlyRight">
             <td>
