@@ -7,6 +7,9 @@
   <@spring.messageArgsText code args code/>
 </#macro>
 
+<!-- Context path setting -->
+<#assign contextPath = "${config.contextPath}"/>
+
 <!-- From a localized text get the value in the current language or in the default one or in the undefined one -->
 <#function localize txt={} default="">
   <#if txt??>

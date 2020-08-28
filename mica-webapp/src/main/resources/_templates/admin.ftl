@@ -22,6 +22,8 @@
 <html class="no-js">
 <!--<![endif]-->
 <head>
+  <!-- Context path setting -->
+  <#assign contextPath = "${config.contextPath}"/>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <title></title>

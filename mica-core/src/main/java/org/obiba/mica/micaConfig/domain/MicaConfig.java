@@ -21,6 +21,7 @@ import org.obiba.mica.core.domain.AbstractAuditableDocument;
 import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.core.domain.Membership;
 import org.obiba.runtime.Version;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.ArrayList;
@@ -162,6 +163,9 @@ public class MicaConfig extends AbstractAuditableDocument {
   private boolean isProjectsCountEnabled = true;
 
   private boolean isDataAccessRequestCountEnabled = true;
+
+  @Transient
+  private String contextPath;
 
   public String getName() {
     return name;
@@ -610,6 +614,14 @@ public class MicaConfig extends AbstractAuditableDocument {
 
   public void setDataAccessRequestCountEnabled(boolean dataAccessRequestCountEnabled) {
     isDataAccessRequestCountEnabled = dataAccessRequestCountEnabled;
+  }
+
+  public void setContextPath(String contextPath) {
+    this.contextPath = contextPath;
+  }
+
+  public String getContextPath() {
+    return contextPath;
   }
 
   public enum OpalViewsGrouping {

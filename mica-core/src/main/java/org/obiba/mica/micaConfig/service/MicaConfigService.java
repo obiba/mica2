@@ -129,15 +129,17 @@ public class MicaConfigService {
   }
 
   private MicaConfig getOrCreateMicaConfig() {
+    MicaConfig config;
     if(micaConfigRepository.count() == 0) {
       MicaConfig micaConfig = new MicaConfig();
       micaConfig.getLocales().add(MicaConfig.DEFAULT_LOCALE);
       micaConfig.setSecretKey(generateSecretKey());
       micaConfigRepository.save(micaConfig);
-      return getConfig();
     }
 
-    return micaConfigRepository.findAll().get(0);
+    config = micaConfigRepository.findAll().get(0);
+    config.setContextPath(getContextPath());
+    return config;
   }
 
   @CacheEvict(value = "micaConfig", allEntries = true)
