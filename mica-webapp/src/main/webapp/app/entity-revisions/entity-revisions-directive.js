@@ -22,6 +22,7 @@ mica.revisions
         onFetchRevisions: '&',
         onViewRevision: '&',
         onRestoreRevision: '&',
+        onRestoreFromFields: '&',
         onViewDiff: '&'
       },
       templateUrl: 'app/entity-revisions/entity-revisions-template.html',

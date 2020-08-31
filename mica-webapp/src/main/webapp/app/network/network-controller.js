@@ -474,6 +474,10 @@ mica.network
         });
       };
 
+      var restoreFromFields = function (transformFn) {
+        console.log(transformFn($scope.network));
+      }
+
       var restoreRevision = function (networkId, commitInfo, onSuccess) {
         if (commitInfo && $scope.networkId === networkId) {
           var args = {commitId: commitInfo.commitId, restoreSuccessCallback: onSuccess};
@@ -511,6 +515,7 @@ mica.network
       $scope.viewRevision = viewRevision;
       $scope.restoreRevision = restoreRevision;
       $scope.fetchRevisions = fetchRevisions;
+      $scope.restoreFromFields = restoreFromFields;
       $scope.viewDiff = viewDiff;
 
       $scope.$on(NOTIFICATION_EVENTS.confirmDialogAccepted, onRestore);

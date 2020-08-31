@@ -287,6 +287,10 @@ mica.project
         }
       };
 
+      var restoreFromFields = function (transformFn) {
+        console.log(transformFn($scope.project));
+      }
+
       var restoreRevision = function (projectId, commitInfo, onSuccess) {
         if (commitInfo && $scope.projectId === projectId) {
           var args = {commitId: commitInfo.commitId, restoreSuccessCallback: onSuccess};
@@ -342,6 +346,7 @@ mica.project
       $scope.viewRevision = viewRevision;
       $scope.restoreRevision = restoreRevision;
       $scope.fetchRevisions = fetchRevisions;
+      $scope.restoreFromFields = restoreFromFields;
       $scope.publish = publish;
       $scope.viewDiff = viewDiff;
 

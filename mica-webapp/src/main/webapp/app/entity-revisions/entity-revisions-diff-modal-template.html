@@ -15,6 +15,7 @@
       <table class="table table-bordered table-striped diff-comparison">
         <thead>
           <tr>
+            <th ng-if="!diffIsEmpty && !comparedWithPrevious"></th>
             <th class="col-xs-4" translate>revisions-difference-field</th>
             <th class="col-xs-4" title="{{currentCommit.date | amDateFormat : 'lll'}} ({{currentCommit.author}})" translate>revisions-difference-left</th>
             <th class="col-xs-4" title="{{commitInfo.date | amDateFormat : 'lll'}} ({{commitInfo.author}})" translate>revisions-difference-right</th>
@@ -22,6 +23,9 @@
         </thead>
         <tbody>
           <tr ng-repeat="(key, value) in diff.onlyLeft">
+            <td ng-if="!diffIsEmpty && !comparedWithPrevious">
+<!--              <input type="checkbox" ng-checked="findField(key) > -1" ng-click="toggleCheckedField(key)">-->
+            </td>
             <td>
               <strong style="display: block;">{{value[0] || key}}</strong>
               <small ng-if="value[0]">{{key}}</small>
@@ -30,6 +34,9 @@
             <td></td>
           </tr>
           <tr ng-repeat="(key, value) in diff.differing">
+            <td ng-if="!diffIsEmpty && !comparedWithPrevious">
+              <input type="checkbox" ng-checked="findField(key) > -1" ng-click="toggleCheckedField({name: key, value: value[2]})">
+            </td>
             <td>
               <strong style="display: block;">{{value[0] || key}}</strong>
               <small ng-if="value[0]">{{key}}</small>
@@ -38,6 +45,9 @@
             <td><span ng-bind-html="value[2] | diffHighlight: value[1]"></span></td>
           </tr>
           <tr ng-repeat="(key, value) in diff.onlyRight">
+            <td ng-if="!diffIsEmpty && !comparedWithPrevious">
+              <input type="checkbox" ng-checked="findField(key) > -1" ng-click="toggleCheckedField({name: key, value: value[1]})">
+            </td>
             <td>
               <strong style="display: block;">{{value[0] || key}}</strong>
               <small ng-if="value[0]">{{key}}</small>
@@ -58,6 +68,7 @@
     </button>
     <button type="button" class="btn btn-primary" ng-click="restoreRevision()" ng-if="!diffIsEmpty && !comparedWithPrevious">
       <span translate>restore</span>
+      <span ng-if="checkedFields.length > 0">{{"(" + checkedFields.length + ")"}}</span>
     </button>
   </div>
 </div>

@@ -628,6 +628,10 @@ mica.dataset
         });
       };
 
+      var restoreFromFields = function (transformFn) {
+        console.log(transformFn($scope.dataset));
+      }
+
       function saveAndUpdateDataset() {
         if($scope.type === 'harmonized-dataset') {
           HarmonizedDatasetResource.save({id: $scope.dataset.id}, $scope.dataset).$promise.then(function () {
@@ -722,6 +726,7 @@ mica.dataset
       $scope.viewRevision = viewRevision;
       $scope.restoreRevision = restoreRevision;
       $scope.fetchRevisions = fetchRevisions;
+      $scope.restoreFromFields = restoreFromFields;
 
       $scope.print = function () {
         setTimeout(function(){ window.print();}, 250);

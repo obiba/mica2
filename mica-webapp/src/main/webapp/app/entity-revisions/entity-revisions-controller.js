@@ -16,44 +16,72 @@ mica.revisions
     '$scope',
     '$uibModal',
     function ($rootScope, $scope, $uibModal) {
-      var onSuccess = function(revisions) {
+      var onSuccess = function (revisions) {
         $scope.commitInfos = revisions;
         viewRevision($scope.active.index, $scope.id, $scope.commitInfos[$scope.active.index]);
       };
 
-      var viewRevision = function(index, id, commitInfo) {
+      var viewRevision = function (index, id, commitInfo) {
         $scope.active.realIndex = $scope.commitInfos.indexOf(commitInfo);
         $scope.active.index = index;
         $scope.active.page = $scope.pages.index;
         $scope.onViewRevision()(id, commitInfo);
       };
 
-      var restoreRevision = function(id, commitInfo) {
-        $scope.onRestoreRevision()(id, commitInfo, function() {
+      var restoreRevision = function (id, commitInfo) {
+        $scope.onRestoreRevision()(id, commitInfo, function () {
           $scope.onFetchRevisions()($scope.id, onSuccess);
         });
       };
 
-      var viewDiff = function(id, leftSideCommitInfo, rightSideCommitInfo, comparedWithPrevious) {
-        var response = $scope.onViewDiff()(id, leftSideCommitInfo, rightSideCommitInfo);
+      var viewDiff = function (id, leftSideCommitInfo, rightSideCommitInfo, comparedWithPrevious) {
+        const response = $scope.onViewDiff()(id, leftSideCommitInfo, rightSideCommitInfo);
 
         response.$promise.then(function (data) {
-          var diffIsEmpty = Object.keys(data.onlyLeft).length === 0 && Object.keys(data.differing).length === 0 && Object.keys(data.onlyRight).length === 0;
+          const diffIsEmpty = Object.keys(data.onlyLeft).length === 0 && Object.keys(data.differing).length === 0 && Object.keys(data.onlyRight).length === 0;
+          const totalNumberOfFields = Object.keys(data.onlyLeft).length + Object.keys(data.differing).length + Object.keys(data.onlyRight).length;
 
           $uibModal.open({
             windowClass: 'entity-revision-diff-modal',
             templateUrl: 'app/entity-revisions/entity-revisions-diff-modal-template.html',
             controller: ['$scope', '$uibModalInstance',
             function($scope, $uibModalInstance) {
+              $scope.checkedFields = [];
               $scope.diff = data;
               $scope.diffIsEmpty = diffIsEmpty;
+
+              $scope.toggleCheckedField = function (field) {
+                if (field) {
+                  const fieldIndex = $scope.findField(typeof field === 'string' ? field : field.name);
+                  if (fieldIndex > -1) {
+                    $scope.checkedFields.splice(fieldIndex, 1);
+                  } else {
+                    $scope.checkedFields.push(field);
+                  }
+                }
+              };
+
+              $scope.findField = function (fieldName) {
+                let foundIndex = -1;
+                let index = 0;
+
+                while (foundIndex === -1 && index < $scope.checkedFields.length) {
+                  if ((typeof $scope.checkedFields[index] === 'string' && $scope.checkedFields[index] === fieldName) || $scope.checkedFields[index].name === fieldName) {
+                    foundIndex = index;
+                  } else {
+                    index++;
+                  }
+                }
+
+                return foundIndex;
+              };
 
               $scope.cancel = function () {
                 $uibModalInstance.dismiss();
               };
 
               $scope.restoreRevision = function () {
-                $uibModalInstance.close();
+                $uibModalInstance.close($scope.checkedFields);
               };
 
               $scope.comparedWithPrevious = comparedWithPrevious;
@@ -61,19 +89,81 @@ mica.revisions
               $scope.commitInfo = rightSideCommitInfo;
             }],
             size: 'lg'
-          }).result.then(function () {
-            restoreRevision(id, rightSideCommitInfo);
+          }).result.then(function (chosenFields) {
+            if (chosenFields && chosenFields.length > 0 && chosenFields.length < totalNumberOfFields) {
+              $scope.onRestoreFromFields()(function (entity) {
+                const actions = createObjectFromChosenFields(chosenFields);
+                console.log('final object', actions, entity);
+
+                return entity;
+              });
+            } else {
+              // restoreRevision(id, rightSideCommitInfo);
+            }
           });
         });
       };
 
-      var onWatchId = function() {
+      function createObjectFromChosenFields(chosenFields) {
+        const objectFromChosenFields = {};
+        const keysToRemove = [];
+
+        chosenFields.forEach(function (current) {
+          if (typeof current === 'string') {
+            keysToRemove.push(current);
+          } else {
+            const splitName = current.name.split('.');
+            const arrayPathRegxp = /^(\w+)(\[\d+])$/;
+
+            splitName.reduce(function (acc, cur, idx) {
+              const found = cur.match(arrayPathRegxp);
+              const trueCur = found === null ? cur : cur.replace(arrayPathRegxp, '$1');
+
+              if (idx === (splitName.length - 1)) {
+                if (found === null) {
+                  acc[trueCur] = current.value;
+                } else {
+                  if (Array.isArray(acc[trueCur])) {
+                    acc[trueCur].push(current.value);
+                  } else {
+                    acc[trueCur] = [current.value];
+                  }
+                }
+              } else {
+                let newObject = {};
+
+                if (found === null) {
+                  if (acc[trueCur]) {
+                    newObject = acc[trueCur];
+                  } else {
+                    acc[trueCur] = newObject;
+                  }
+
+                  return newObject;
+                } else {
+                  if (Array.isArray(acc[trueCur])) {
+                    acc[trueCur].push(newObject);
+                  } else {
+                    acc[trueCur] = [newObject];
+                  }
+
+                  return newObject;
+                }
+              }
+            }, objectFromChosenFields);
+          }
+        });
+
+        return { add: objectFromChosenFields, remove: keysToRemove };
+      }
+
+      var onWatchId = function () {
         if ($scope.id) {
           $scope.onFetchRevisions()($scope.id, onSuccess);
         }
       };
 
-      var canPaginate = function() {
+      var canPaginate = function () {
         return $scope.commitInfos && $scope.commitInfos.length > $scope.pages.perPage;
       };
 

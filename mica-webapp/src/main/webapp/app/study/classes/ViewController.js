@@ -547,11 +547,15 @@ function revisionManagement($rootScope, $scope, $filter, $translate, DraftStudyR
     }
   };
 
-  $scope.viewDiff = function(id, leftCommitInfo, rightCommitInfo) {
+  $scope.viewDiff = function (id, leftCommitInfo, rightCommitInfo) {
     if (leftCommitInfo && rightCommitInfo) {
       return DraftStudyRevisionsResource.diff({id: id, left: leftCommitInfo.commitId, right: rightCommitInfo.commitId, locale: $translate.use()});
     }
   };
+
+  $scope.restoreFromFields = function (transformFn) {
+    console.log(transformFn($scope.study));
+  }
 }
 
 /**

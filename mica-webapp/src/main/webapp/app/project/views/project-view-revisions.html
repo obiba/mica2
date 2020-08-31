@@ -11,7 +11,7 @@
 <div>
   <div ng-include="'app/project/views/project-view-header.html'" ng-init="tabName='revisions'"></div>
 
-  <entity-revisions id="{{projectId}}" title="{{'revisions' | translate}}" state="project['obiba.mica.EntityStateDto.projectState']" on-fetch-revisions="fetchRevisions" on-restore-revision="restoreRevision" on-view-revision="viewRevision" on-view-diff="viewDiff"></entity-revisions>
+  <entity-revisions id="{{projectId}}" title="{{'revisions' | translate}}" state="project['obiba.mica.EntityStateDto.projectState']" on-fetch-revisions="fetchRevisions" on-restore-revision="restoreRevision" on-restore-from-fields="restoreFromFields" on-view-revision="viewRevision" on-view-diff="viewDiff"></entity-revisions>
 
   <h3 class="voffset5" translate>research-project.label</h3>
 
