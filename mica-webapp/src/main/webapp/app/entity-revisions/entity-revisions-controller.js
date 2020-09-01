@@ -106,21 +106,23 @@ mica.revisions
         });
       };
 
-      function addFromChosenFields(splitName, arrayPathRegxp, entity) {
-        return splitName.reduce(function (acc, cur, idx) {
+      function addFromChosenFields(splitName, value, arrayPathRegxp, entity) {
+        let acc = entity;
+
+        splitName.forEach(function (cur, idx) {
           const found = cur.match(arrayPathRegxp);
           const trueCur = found === null ? cur : cur.replace(arrayPathRegxp, '$1');
 
           if (idx === (splitName.length - 1)) {
             if (found === null) {
-              acc[trueCur] = current.value;
+              acc[trueCur] = value;
             } else {
               if (Array.isArray(acc[trueCur])) {
-                if (acc[trueCur].indexOf(current.value) === -1) {
-                  acc[trueCur].push(current.value);
+                if (acc[trueCur].indexOf(value) === -1) {
+                  acc[trueCur].push(value);
                 }
               } else {
-                acc[trueCur] = [current.value];
+                acc[trueCur] = [value];
               }
             }
           } else {
@@ -133,7 +135,7 @@ mica.revisions
                 acc[trueCur] = newObject;
               }
 
-              return newObject;
+              acc = newObject;
             } else {
               if (Array.isArray(acc[trueCur])) {
                 acc[trueCur].push(newObject);
@@ -141,14 +143,18 @@ mica.revisions
                 acc[trueCur] = [newObject];
               }
 
-              return newObject;
+              acc = newObject;
             }
           }
-        }, entity);
+        });
+
+        return entity;
       }
 
       function removeFromChosenFields(splitName, arrayPathRegxp, entity) {
-        return splitName.reduce(function (acc, cur, idx) {
+        let acc = entity;
+
+        splitName.forEach(function (cur, idx) {
           const found = cur.match(arrayPathRegxp);
           const trueCur = found === null ? cur : cur.replace(arrayPathRegxp, '$1');
 
@@ -168,18 +174,20 @@ mica.revisions
             }
           } else {
             if (found === null) {
-              return acc[trueCur];
+              acc = acc[trueCur];
             } else {
               const index = cur.replace(arrayPathRegxp, '$3');
               if (index) {
                 const parsedIndex = Number.parseInt(index);
-                return acc[trueCur][parsedIndex];
+                acc = acc[trueCur][parsedIndex];
               }
 
-              return acc[trueCur];
+              acc = acc[trueCur];
             }
           }
-        }, entity);
+        });
+
+        return entity;
       }
 
       function createObjectFromChosenFields(chosenFields, entity) {
@@ -187,11 +195,11 @@ mica.revisions
         const objectFromChosenFields = entity || {};
 
         chosenFields.forEach(function (current) {
-          const splitName = current.name.split('.');
+          const splitName = (current.name || current).split('.');
           if (typeof current === 'string') {
             console.log('remove', current, removeFromChosenFields(splitName, arrayPathRegxp, objectFromChosenFields));
           } else {
-            console.log('add', current, addFromChosenFields(splitName, arrayPathRegxp, objectFromChosenFields));
+            console.log('add', current, addFromChosenFields(splitName, current.value, arrayPathRegxp, objectFromChosenFields));
           }
         });
 
