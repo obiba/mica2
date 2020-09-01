@@ -92,8 +92,12 @@ mica.revisions
           }).result.then(function (chosenFields) {
             if (chosenFields && chosenFields.length > 0 && chosenFields.length < totalNumberOfFields) {
               $scope.onRestoreFromFields()(function (entity) {
-                console.log('final object', chosenFields, entity);
-                return createObjectFromChosenFields(chosenFields, angular.copy(entity));
+                console.log('args', chosenFields, entity);
+
+                const res = createObjectFromChosenFields(chosenFields, angular.copy(entity));
+
+                console.log('final', res);
+                return res;
               });
             } else {
               // restoreRevision(id, rightSideCommitInfo);
@@ -103,7 +107,7 @@ mica.revisions
       };
 
       function addFromChosenFields(splitName, arrayPathRegxp, entity) {
-        splitName.reduce(function (acc, cur, idx) {
+        return splitName.reduce(function (acc, cur, idx) {
           const found = cur.match(arrayPathRegxp);
           const trueCur = found === null ? cur : cur.replace(arrayPathRegxp, '$1');
 
@@ -144,7 +148,7 @@ mica.revisions
       }
 
       function removeFromChosenFields(splitName, arrayPathRegxp, entity) {
-        splitName.reduce(function (acc, cur, idx) {
+        return splitName.reduce(function (acc, cur, idx) {
           const found = cur.match(arrayPathRegxp);
           const trueCur = found === null ? cur : cur.replace(arrayPathRegxp, '$1');
 
@@ -153,25 +157,41 @@ mica.revisions
               delete acc[trueCur];
             } else {
               if (Array.isArray(acc[trueCur])) {
-                // splice?
+                const index = cur.replace(arrayPathRegxp, '$3');
+                if (index) {
+                  const parsedIndex = Number.parseInt(index);
+                  acc[trueCur].splice(parsedIndex, 1);
+                }
               } else {
                 delete acc[trueCur];
               }
+            }
+          } else {
+            if (found === null) {
+              return acc[trueCur];
+            } else {
+              const index = cur.replace(arrayPathRegxp, '$3');
+              if (index) {
+                const parsedIndex = Number.parseInt(index);
+                return acc[trueCur][parsedIndex];
+              }
+
+              return acc[trueCur];
             }
           }
         }, entity);
       }
 
       function createObjectFromChosenFields(chosenFields, entity) {
-        const arrayPathRegxp = /^(\w+)(\[\d+])$/;
+        const arrayPathRegxp = /^(\w+)(\[(\d+)])$/;
         const objectFromChosenFields = entity || {};
 
         chosenFields.forEach(function (current) {
           const splitName = current.name.split('.');
           if (typeof current === 'string') {
-            removeFromChosenFields(splitName, arrayPathRegxp, objectFromChosenFields);
+            console.log('remove', current, removeFromChosenFields(splitName, arrayPathRegxp, objectFromChosenFields));
           } else {
-            addFromChosenFields(splitName, arrayPathRegxp, objectFromChosenFields);
+            console.log('add', current, addFromChosenFields(splitName, arrayPathRegxp, objectFromChosenFields));
           }
         });
 
