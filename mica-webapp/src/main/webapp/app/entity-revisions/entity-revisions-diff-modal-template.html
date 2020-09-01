@@ -24,7 +24,7 @@
         <tbody>
           <tr ng-repeat="(key, value) in diff.onlyLeft">
             <td ng-if="!diffIsEmpty && !comparedWithPrevious">
-<!--              <input type="checkbox" ng-checked="findField(key) > -1" ng-click="toggleCheckedField(key)">-->
+              <input type="checkbox" ng-checked="findField(key) > -1" ng-click="toggleCheckedField(key)">
             </td>
             <td>
               <strong style="display: block;">{{value[0] || key}}</strong>

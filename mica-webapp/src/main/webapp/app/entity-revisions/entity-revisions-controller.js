@@ -92,10 +92,8 @@ mica.revisions
           }).result.then(function (chosenFields) {
             if (chosenFields && chosenFields.length > 0 && chosenFields.length < totalNumberOfFields) {
               $scope.onRestoreFromFields()(function (entity) {
-                const actions = createObjectFromChosenFields(chosenFields);
-                console.log('final object', actions, entity);
-
-                return entity;
+                console.log('final object', chosenFields, entity);
+                return createObjectFromChosenFields(chosenFields, angular.copy(entity));
               });
             } else {
               // restoreRevision(id, rightSideCommitInfo);
@@ -104,57 +102,80 @@ mica.revisions
         });
       };
 
-      function createObjectFromChosenFields(chosenFields) {
-        const objectFromChosenFields = {};
-        const keysToRemove = [];
+      function addFromChosenFields(splitName, arrayPathRegxp, entity) {
+        splitName.reduce(function (acc, cur, idx) {
+          const found = cur.match(arrayPathRegxp);
+          const trueCur = found === null ? cur : cur.replace(arrayPathRegxp, '$1');
 
-        chosenFields.forEach(function (current) {
-          if (typeof current === 'string') {
-            keysToRemove.push(current);
-          } else {
-            const splitName = current.name.split('.');
-            const arrayPathRegxp = /^(\w+)(\[\d+])$/;
-
-            splitName.reduce(function (acc, cur, idx) {
-              const found = cur.match(arrayPathRegxp);
-              const trueCur = found === null ? cur : cur.replace(arrayPathRegxp, '$1');
-
-              if (idx === (splitName.length - 1)) {
-                if (found === null) {
-                  acc[trueCur] = current.value;
-                } else {
-                  if (Array.isArray(acc[trueCur])) {
-                    acc[trueCur].push(current.value);
-                  } else {
-                    acc[trueCur] = [current.value];
-                  }
+          if (idx === (splitName.length - 1)) {
+            if (found === null) {
+              acc[trueCur] = current.value;
+            } else {
+              if (Array.isArray(acc[trueCur])) {
+                if (acc[trueCur].indexOf(current.value) === -1) {
+                  acc[trueCur].push(current.value);
                 }
               } else {
-                let newObject = {};
-
-                if (found === null) {
-                  if (acc[trueCur]) {
-                    newObject = acc[trueCur];
-                  } else {
-                    acc[trueCur] = newObject;
-                  }
-
-                  return newObject;
-                } else {
-                  if (Array.isArray(acc[trueCur])) {
-                    acc[trueCur].push(newObject);
-                  } else {
-                    acc[trueCur] = [newObject];
-                  }
-
-                  return newObject;
-                }
+                acc[trueCur] = [current.value];
               }
-            }, objectFromChosenFields);
+            }
+          } else {
+            let newObject = {};
+
+            if (found === null) {
+              if (acc[trueCur]) {
+                newObject = acc[trueCur];
+              } else {
+                acc[trueCur] = newObject;
+              }
+
+              return newObject;
+            } else {
+              if (Array.isArray(acc[trueCur])) {
+                acc[trueCur].push(newObject);
+              } else {
+                acc[trueCur] = [newObject];
+              }
+
+              return newObject;
+            }
+          }
+        }, entity);
+      }
+
+      function removeFromChosenFields(splitName, arrayPathRegxp, entity) {
+        splitName.reduce(function (acc, cur, idx) {
+          const found = cur.match(arrayPathRegxp);
+          const trueCur = found === null ? cur : cur.replace(arrayPathRegxp, '$1');
+
+          if (idx === (splitName.length - 1)) {
+            if (found === null) {
+              delete acc[trueCur];
+            } else {
+              if (Array.isArray(acc[trueCur])) {
+                // splice?
+              } else {
+                delete acc[trueCur];
+              }
+            }
+          }
+        }, entity);
+      }
+
+      function createObjectFromChosenFields(chosenFields, entity) {
+        const arrayPathRegxp = /^(\w+)(\[\d+])$/;
+        const objectFromChosenFields = entity || {};
+
+        chosenFields.forEach(function (current) {
+          const splitName = current.name.split('.');
+          if (typeof current === 'string') {
+            removeFromChosenFields(splitName, arrayPathRegxp, objectFromChosenFields);
+          } else {
+            addFromChosenFields(splitName, arrayPathRegxp, objectFromChosenFields);
           }
         });
 
-        return { add: objectFromChosenFields, remove: keysToRemove };
+        return objectFromChosenFields;
       }
 
       var onWatchId = function () {
