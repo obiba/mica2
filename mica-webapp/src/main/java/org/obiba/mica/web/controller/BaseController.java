@@ -10,6 +10,7 @@ import org.obiba.mica.user.UserProfileService;
 import org.obiba.mica.web.interceptor.SessionInterceptor;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.util.UriUtils;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -102,5 +103,13 @@ public class BaseController {
   protected String getLang(String locale, String language) {
     String lang = language == null ? locale : language;
     return lang == null ? "en" : lang.replaceAll("\"", "");
+  }
+
+  protected String encode(String path) {
+    try {
+      return UriUtils.encode(path, "UTF-8");
+    } catch(Exception e) {
+      return path;
+    }
   }
 }

@@ -5,9 +5,12 @@
 <html lang="${.lang}">
 <head>
   <#include "libs/head.ftl">
+  <!-- Select2 -->
+  <link rel="stylesheet" href="${adminLTEPath}/plugins/select2/css/select2.css">
+  <link rel="stylesheet" href="${adminLTEPath}/plugins/select2-bootstrap4-theme/select2-bootstrap4.css">
   <title>${config.name!""} | ${localize(dataset.acronym)} | <@message "dataset.crosstab.title"/></title>
 </head>
-<body class="hold-transition layout-top-nav layout-navbar-fixed">
+<body id="dataset-crosstab-page" class="hold-transition layout-top-nav layout-navbar-fixed">
 <div class="wrapper">
 
   <!-- Navbar -->
@@ -17,7 +20,7 @@
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
     <!-- Content Header (Page header) -->
-    <@header titlePrefix=(type?lower_case + "-dataset") title=(localize(dataset.acronym) + " - " + "dataset.crosstab.title") subtitle=localize(dataset.name) breadcrumb=[["/", "home"], ["/datasets", "datasets"], ["/dataset/" + dataset.id, localize(dataset.acronym)]]/>
+    <@header titlePrefix=(type?lower_case + "-dataset-crosstab") title=(localize(dataset.acronym)) subtitle=localize(dataset.name) breadcrumb=[["/", "home"], ["/datasets", "datasets"], ["", localize(dataset.acronym)]]/>
     <!-- /.content-header -->
 
     <!-- Main content -->
@@ -25,10 +28,62 @@
       <div class="container">
         <div class="callout callout-info">
           <p>
-            <@message "crosstab-callout"/>
+            <@message "dataset-crosstab-callout"/>
           </p>
         </div>
-      </div><!-- /.container-fluid -->
+
+        <div class="card card-info card-outline">
+          <div class="card-header">
+            <h3 class="card-title"><@message "query"/></h3>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-3">
+                <select id="select-var1" class="form-control select2" style="width: 100%;"></select>
+              </div>
+              <div class="col-1 text-center">
+                <i class="fa fa-2x fa-times"></i>
+              </div>
+              <div class="col-3">
+                <select id="select-var2" class="form-control select2" style="width: 100%;"></select>
+              </div>
+              <div class="col-3">
+                <a id="submit" class="btn btn-primary" href="#"><@message "submit"/></a>
+                <a id="invert" class="btn btn-default" href="#">
+                  <i class="fas fa-exchange-alt"></i>
+                  <@message "invert"/>
+                </a>
+                <button id="clear" class="btn btn-default" onclick="clearCrosstab()"><@message "clear"/></button>
+              </div>
+            </div>
+          </div>
+          <div class="card-footer">
+            <@message "associated-dataset"/>
+            <a class="btn btn-success ml-2" href="${contextPath}/dataset/${dataset.id}">
+              <#if type == "Collected">
+                <i class="${datasetIcon}"></i>
+              <#else>
+                <i class="${harmoDatasetIcon}"></i>
+              </#if>
+              ${localize(dataset.acronym, dataset.id)}
+            </a>
+          </div>
+        </div>
+
+        <div id="results" class="card" style="display: none;">
+          <div class="card-header">
+            <h3 class="card-title"><@message "results"/></h3>
+            <a id="download" href="#" class="btn btn-primary float-right">
+              <i class="fas fa-download"></i> <@message "download"/>
+            </a>
+          </div>
+          <div class="card-body">
+            <img id="loadingCrosstab" src="${assetsPath}/images/loading.gif">
+            <table id="crosstab" class="table table-striped"></table>
+          </div>
+        </div>
+      </div>
+      <!-- /.container -->
     </div>
     <!-- /.content -->
   </div>
@@ -39,6 +94,7 @@
 <!-- ./wrapper -->
 
 <#include "libs/scripts.ftl">
+<#include "libs/dataset-crosstab-scripts.ftl">
 
 </body>
 </html>

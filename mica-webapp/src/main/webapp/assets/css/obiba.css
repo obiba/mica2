@@ -64,3 +64,7 @@
 [v-cloak] {
   display: none;
 }
+
+.total {
+  font-weight: bold;
+}
