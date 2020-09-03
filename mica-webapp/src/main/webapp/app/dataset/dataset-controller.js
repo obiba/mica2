@@ -629,7 +629,12 @@ mica.dataset
       };
 
       var restoreFromFields = function (transformFn) {
-        console.log(transformFn($scope.dataset));
+        DatasetResource.get({id: $scope.datasetId, type: $scope.type}, function (dataset) {
+          var result = transformFn(dataset);
+          result.$save(function () {
+            fetchRevisions($scope.datasetId);
+          });
+        });
       }
 
       function saveAndUpdateDataset() {

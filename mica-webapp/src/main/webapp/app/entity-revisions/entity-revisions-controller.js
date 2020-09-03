@@ -92,15 +92,10 @@ mica.revisions
           }).result.then(function (chosenFields) {
             if (chosenFields && chosenFields.length > 0 && chosenFields.length < totalNumberOfFields) {
               $scope.onRestoreFromFields()(function (entity) {
-                console.log('args', chosenFields, entity);
-
-                const res = createObjectFromChosenFields(chosenFields, angular.copy(entity));
-
-                console.log('final', res);
-                return res;
+                return createObjectFromChosenFields(chosenFields, angular.copy(entity));
               });
             } else {
-              // restoreRevision(id, rightSideCommitInfo);
+              restoreRevision(id, rightSideCommitInfo);
             }
           });
         });
@@ -197,9 +192,9 @@ mica.revisions
         chosenFields.forEach(function (current) {
           const splitName = (current.name || current).split('.');
           if (typeof current === 'string') {
-            console.log('remove', current, removeFromChosenFields(splitName, arrayPathRegxp, objectFromChosenFields));
+            removeFromChosenFields(splitName, arrayPathRegxp, objectFromChosenFields);
           } else {
-            console.log('add', current, addFromChosenFields(splitName, current.value, arrayPathRegxp, objectFromChosenFields));
+            addFromChosenFields(splitName, current.value, arrayPathRegxp, objectFromChosenFields);
           }
         });
 

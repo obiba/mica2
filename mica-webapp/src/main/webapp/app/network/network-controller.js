@@ -475,7 +475,12 @@ mica.network
       };
 
       var restoreFromFields = function (transformFn) {
-        console.log(transformFn($scope.network));
+        DraftNetworkResource.get({id: $scope.networkId}, function (network) {
+          var result = transformFn(network);
+          result.$save(function () {
+            fetchRevisions($scope.networkId);
+          }, onError);
+        });
       }
 
       var restoreRevision = function (networkId, commitInfo, onSuccess) {
