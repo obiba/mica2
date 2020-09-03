@@ -35,7 +35,20 @@
       </span>
       </div>
       <div class="col-xs-8">
-        <dir-pagination-controls class="pull-right" on-page-change="pageChanged(newPageNumber, oldPageNumber)"></dir-pagination-controls>
+        <div class="pull-right">
+          <pagination-size-selector
+            class="padding-right-5"
+            style="display: inline-block"
+            size="pagination.size"
+            total="totalCount"
+            on-selected="onPageSizeSelected(size)">
+          </pagination-size-selector>
+          <dir-pagination-controls
+            pagination-id="myPaginationList"
+            class="pull-right"
+            on-page-change="pageChanged(newPageNumber, oldPageNumber)">
+          </dir-pagination-controls>
+        </div>
       </div>
     </div>
 
@@ -48,16 +61,17 @@
           <th data-column-name="name">{{"network.name" | translate}}</th>
           <th data-column-name="published">{{"publish.published" | translate}}</th>
           <th data-column-name="obiba.mica.EntityStateDto.networkSummaryState::revisionStatus">{{"status" | translate}}</th>
+          <th data-column-name="timeStamps.lastUpdated">{{"global.lastUpdate" | translate}}</th>
           <th translate>actions</th>
         </tr>
         </thead>
         <tbody>
 
-        <tr dir-paginate="network in documents | itemsPerPage: limit" total-items="totalCount" current-page="pagination.current">
-          <td>
+        <tr dir-paginate="network in documents | itemsPerPage: pagination.size" pagination-id="myPaginationList" total-items="totalCount" current-page="pagination.current">
+          <td class="text-nowrap">
             <a ng-href="#/network/{{network.id}}" translate>{{network.id}}</a>
           </td>
-          <td>
+          <td class="text-nowrap">
             <ul class="list-unstyled">
               <li ng-repeat="acronym in network.acronym">
                 <span class="badge">{{acronym.lang}}</span> {{acronym.value}}
@@ -76,6 +90,9 @@
           </td>
           <td>
             {{'publish.status.' + network['obiba.mica.EntityStateDto.networkSummaryState'].revisionStatus | translate}}
+          </td>
+          <td class="text-nowrap">
+            {{network.timestamps.lastUpdate | amDateFormat : 'lll'}}
           </td>
           <td>
             <ul class="list-inline">

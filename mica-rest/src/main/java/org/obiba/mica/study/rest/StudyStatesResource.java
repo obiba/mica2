@@ -75,9 +75,10 @@ public class StudyStatesResource {
   @Path("/study-states")
   @Timed
   public List<Mica.StudySummaryDto> listCollectionStudyStates(@QueryParam("query") String query,
-                                                              @QueryParam("from")
-                                                              @DefaultValue("0") Integer from,
+                                                              @QueryParam("from") @DefaultValue("0") Integer from,
                                                               @QueryParam("limit") Integer limit,
+                                                              @QueryParam("sort") @DefaultValue("id") String sort,
+                                                              @QueryParam("order") @DefaultValue("asc") String order,
                                                               @QueryParam("type") String type,
                                                               @QueryParam("exclude") List<String> excludes,
                                                               @QueryParam("filter") @DefaultValue("ALL") String filter,
@@ -107,18 +108,25 @@ public class StudyStatesResource {
     if(limit == null) limit = MAX_LIMIT;
     if(limit < 0) throw new IllegalArgumentException("limit cannot be negative");
 
-    DocumentService.Documents<Study> studyDocuments = draftStudyService.find(from, limit, null, null,
+    DocumentService.Documents<Study> studyDocuments = draftStudyService.find(from, limit, sort, order,
       null, query, null, null, accessibleIdFilter);
 
     totalCount = studyDocuments.getTotal();
-    result = (!Strings.isNullOrEmpty(type)
-      ? getStudyServiceByType(type).findAllStates(studyDocuments.getList().stream().map(Study::getId).collect(toList()))
-      : studyService.findAllStates(studyDocuments.getList().stream().map(Study::getId).collect(toList())))
-      .stream();
-
     response.addHeader("X-Total-Count", Long.toString(totalCount));
 
-    return result.map(dtos::asDto).collect(toList());
+    return studyDocuments.getList()
+      .stream()
+      .map(study -> dtos.asDto(study, studyService.getEntityState(study.getId())))
+      .collect(toList());
+
+//
+//    result = (!Strings.isNullOrEmpty(type)
+//      ? getStudyServiceByType(type).findAllStates(studyDocuments.getList().stream().map(Study::getId).collect(toList()))
+//      : studyService.findAllStates(studyDocuments.getList().stream().map(Study::getId).collect(toList())))
+//      .stream();
+//
+//
+//    return result.map(dtos::asDto).collect(toList());
   }
 
   @Path("/study-state/{id}")

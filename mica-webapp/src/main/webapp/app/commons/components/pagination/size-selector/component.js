@@ -31,6 +31,9 @@
     $onChanges() {
       if (!this.sizes || this.sizes.length <1) {
         this.sizes = DEFAULT_SIZES;
+      } else {
+        // Sort in case the order is not correct
+        this.sizes.sort((a,b) => a - b);
       }
 
       this.pagination.sizes = this.sizes.map(size => ({label: size.toString(), value: size}));
@@ -38,6 +41,8 @@
       if (!this.size) {
         this.size = DEFAULT_SIZES[1];
       }
+
+      this.visible = !this.total || this.total > this.sizes[0];
 
       const index = this.sizes.indexOf(this.size);
       this.pagination.selected = this.pagination.sizes[index > -1 ? index : 1];
@@ -47,6 +52,7 @@
   mica.commons
     .component('paginationSizeSelector', {
       bindings: {
+        total: '<',
         sizes: '<',
         size: '<',
         onSelected: '&'

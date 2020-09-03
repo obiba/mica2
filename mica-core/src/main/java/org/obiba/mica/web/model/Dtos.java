@@ -220,6 +220,11 @@ public class Dtos {
   }
 
   @NotNull
+  public StudySummaryDto asDto(@NotNull BaseStudy study, @NotNull EntityState studyState) {
+    return studySummaryDtos.asDto(study, studyState);
+  }
+
+  @NotNull
   public StudySummaryDto asDto(@NotNull HarmonizationStudyState studyState) {
     return studySummaryDtos.asDto(studyState);
   }

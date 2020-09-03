@@ -34,10 +34,10 @@
     var self = this;
     var currentSearch = null;
     self.totalCount = 0;
-    self.limit = 20;
     self.documents = [];
     self.loading = true;
     self.pagination = {
+      size: mica.commons.DEFAULT_LIMIT,
       current: 1,
       get searchText() {
         return this._searchText || '';
@@ -56,6 +56,12 @@
 
     self.hasDocuments = function () {
       return $scope.totalCount && angular.isDefined($scope.pagination.searchText);
+    };
+
+    self.onPageSizeSelected = function(size) {
+      self.pagination.size = size;
+      self.pagination.current = 1;
+      loadPage(self.pagination.current);
     };
 
     self.pageChanged = function (page, oldPage) {
@@ -98,9 +104,10 @@
     }
 
     function loadPage(page) {
+      const limit = self.pagination.size;
       let data = {
-        from:(page - 1) * self.limit,
-        limit: self.limit,
+        from:(page - 1) * limit,
+        limit: limit,
         filter: self.filter
       };
 
