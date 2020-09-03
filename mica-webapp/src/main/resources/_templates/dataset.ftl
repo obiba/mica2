@@ -96,6 +96,9 @@
                     <a class="btn btn-success ml-2" href="../study/${study.id}">
                       <i class="${studyIcon}"></i> ${localize(study.acronym)}
                     </a>
+                    <a class="btn btn-primary float-right" href="../dataset-crosstab/${dataset.id}">
+                      <i class="fas fa-cog"></i> <@message "dataset.crosstab.title"/>
+                    </a>
                   </div>
                 </#if>
             </div>

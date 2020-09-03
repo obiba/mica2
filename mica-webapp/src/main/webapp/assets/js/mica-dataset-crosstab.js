@@ -80,12 +80,21 @@ class ChiSquaredCalculator {
 /**
  * Helper class to prepare the crosstab data.
  */
-class CollectedDatasetCrosstab {
+class DatasetCrosstab {
   constructor(var1, var2, data) {
     this._var1 = var1;
     this._var2 = var2;
     this._data = data;
-    this._contingencies = this._normalizeData(data.contingencies ? data.contingencies : [data]);
+    if (data.contingencies) {
+      this._contingencies = this._normalizeData(data.contingencies);
+      this._mainContingency = this._normalizeData([data.all]).pop();
+    } else {
+      this._mainContingency = this._normalizeData([data]).pop();
+    }
+  }
+
+  getMainContingency() {
+    return this._mainContingency;
   }
 
   getContingencies() {
@@ -116,6 +125,14 @@ class CollectedDatasetCrosstab {
     return this._var2.categories ? this._var2.categories : [];
   }
 
+  isVariable2Statistical() {
+    return this._isStatistical(this.getVariable2());
+  }
+
+  //
+  // Private
+  //
+
   _isStatistical(variable) {
     return variable && variable.nature === 'CONTINUOUS';
   }
@@ -125,7 +142,7 @@ class CollectedDatasetCrosstab {
    * @param opalTable
    * @returns {{summary: *, population: *, dce: *, project: *, table: *}}
    */
-  _extractSummaryInfo(opalTable) {
+  _extractStudyInfo(opalTable) {
     var summary = opalTable.studySummary;
     var pop = {};
     var dce = {};
@@ -138,32 +155,39 @@ class CollectedDatasetCrosstab {
     }
 
     let currentLanguage = Mica.locale;
-
-    function extractVariableInfo(variable) {
-      let varInfo = {
-        label: LocalizedValues.extractLabel(variable.attributes, currentLanguage),
-        categories: {}
-      };
-      let categories = variable.categories;
-      if (categories) {
-        categories.forEach(cat => {
-          varInfo.categories[cat.name] = LocalizedValues.extractLabel(cat.attributes, currentLanguage);
-        });
-      }
-      return varInfo;
-    }
-
     return {
       summary: LocalizedValues.forLang(summary.acronym, currentLanguage),
       population: pop ? LocalizedValues.forLang(pop.name, currentLanguage) : '',
       dce: dce ? LocalizedValues.forLang(dce[0].name, currentLanguage) : '',
       project: opalTable.project,
       table: opalTable.table,
-      tableName: LocalizedValues.forLang(opalTable.name, currentLanguage),
-      var1: extractVariableInfo(this.getVariable1()),
-      var2: extractVariableInfo(this.getVariable2())
+      tableName: opalTable.name ? LocalizedValues.forLang(opalTable.name, currentLanguage) : undefined,
+      tableDescription: opalTable.description ? LocalizedValues.forLang(opalTable.description, currentLanguage) : undefined
     };
   }
+
+  _extractVariableInfo(variable, studyTable) {
+    let currentLanguage = Mica.locale;
+    let varInfo = {
+      label: LocalizedValues.extractLabel(variable.attributes, currentLanguage),
+      categories: {},
+    };
+    let categories = variable.categories;
+    if (categories) {
+      categories.forEach(cat => {
+        varInfo.categories[cat.name] = LocalizedValues.extractLabel(cat.attributes, currentLanguage);
+      });
+    }
+    if (Mica.type === 'collected') {
+      varInfo.href = Mica.contextPath + '/variable/' + variable.id;
+    } else if (studyTable) {
+      varInfo.href = Mica.contextPath + '/variable/' + variable.id.replace(':Dataschema', ':Harmonized:Study:' + studyTable.studyId + ':' + studyTable.project + ':' + studyTable.table);
+    } else {
+      varInfo.href = Mica.contextPath + '/variable/' + variable.id;
+    }
+    return varInfo;
+  }
+
   /**
    * Normalized data; fills collection with dummy values (statistical or categorical)
    * @param contingencies
@@ -181,14 +205,20 @@ class CollectedDatasetCrosstab {
         if (!contingency.totalPrivacyCheck || contingency.all.n > 0) {
           if (that._isStatistical(that.getVariable2())) {
             that._normalizeStatistics(contingency, v1Cats);
-          } else {
+          }
+          if (v2Cats) {
             that._normalizeFrequencies(contingency, v2Cats);
           }
         }
 
         if (contingency.studyTable) {
-          contingency.info = that._extractSummaryInfo(contingency.studyTable);
+          contingency.info = that._extractStudyInfo(contingency.studyTable);
+        } else {
+          contingency.info = {};
         }
+
+        contingency.info.var1 = that._extractVariableInfo(that.getVariable1(), contingency.studyTable);
+        contingency.info.var2 = that._extractVariableInfo(that.getVariable2(), contingency.studyTable);
       });
     }
 
@@ -229,6 +259,9 @@ class CollectedDatasetCrosstab {
   _normalizeFrequencies(contingency, v2Cats) {
 
     function percentage(value, total) {
+      if (value === '-') {
+        return undefined;
+      }
       return total === 0 ? 0 : value / total * 100;
     }
 
@@ -326,7 +359,7 @@ class CollectedDatasetCrosstab {
   }
 }
 
-var initVariableSelectors = function() {
+const initVariableSelectors = function() {
   let options = {
     ajax: {
       url: Mica.contextPath + '/ws/' + Mica.type + '-dataset/' + Mica.dataset + '/variables/_search',
@@ -360,10 +393,12 @@ var initVariableSelectors = function() {
   options1.placeholder = 'Select a categorical variable';
   $('#select-var1').select2(options1).on('select2:select', function (e) {
     let data = e.params.data;
-    console.log(data);
     Mica.var1 = data;
     refreshCrosstabOnSelection();
   });
+  if (Mica.var1) {
+    $('#select-var1').append(new Option(Mica.var1.name, Mica.var1.name, false, true));
+  }
 
   // var2 selector
   let options2 = Object.assign({}, options);
@@ -376,10 +411,12 @@ var initVariableSelectors = function() {
   options2.placeholder = 'Select a variable';
   $('#select-var2').select2(options2).on('select2:select', function (e) {
     let data = e.params.data;
-    console.log(data);
     Mica.var2 = data;
     refreshCrosstabOnSelection();
   });
+  if (Mica.var2) {
+    $('#select-var2').append(new Option(Mica.var2.name, Mica.var2.name, false, true));
+  }
 
   refreshSubmit();
 
@@ -399,108 +436,182 @@ var initVariableSelectors = function() {
 
   function refreshCrosstabOnSelection() {
     refreshSubmit();
-    if (Mica.var1 && Mica.var2) {
-      const var1Name = Mica.var1.name;
-      const var2Name = Mica.var2.name;
-      window.history.pushState({ var1: var1Name, var2: var2Name }, 'Crosstab ' + var1Name + ' x ' + var2Name,
-        Mica.contextPath + '/dataset-crosstab/' + Mica.dataset + '?var1=' + var1Name + '&var2=' + var2Name);
-      refreshCrosstab();
-    }
   }
 
   function refreshSubmit() {
     let url = Mica.contextPath + '/dataset-crosstab/' + Mica.dataset;
-    let urli = url;
     if (Mica.var1) {
       url = url + '?var1=' + Mica.var1.name;
-      urli = urli + '?var2=' + Mica.var1.name;
       if (Mica.var2) {
         url = url + '&var2=' + Mica.var2.name;
-        urli = urli + '&var1=' + Mica.var2.name;
       }
     } else if (Mica.var2) {
       url = url + '?var2=' + Mica.var2.name;
-      urli = urli + '?var1=' + Mica.var2.name;
     }
 
     $('#submit').attr('href', url);
-    $('#invert').attr('href', urli).attr('disabled', !(Mica.var2 && Mica.var2.nature === 'CATEGORICAL'));
+    if (Mica.var2 && Mica.var2.nature === 'CATEGORICAL') {
+      $('#transpose').show();
+    } else {
+      $('#transpose').hide();
+    }
   }
 
 };
 
-const initCrosstabElement = function() {
-  $('#loadingCrosstab').show();
-  $('#crosstab').hide();
-  $('#crosstab > thead').remove();
-  $('#crosstab > tbody').remove();
-  $('#crosstab > tfoot').remove();
-  $('#crosstab').append('<thead></thead>').append('<tbody></tbody>').append('<tfoot></tfoot>');
+const initStudySelector = function() {
+  $('#select-study').select2({
+    theme: 'bootstrap4'
+  }).on('select2:select', function (e) {
+    let data = e.params.data;
+    //console.log(data);
+    if (data.id === '-1') {
+      renderDatasetCrosstab(Mica.crosstab.getMainContingency());
+    } else {
+      renderDatasetCrosstab(Mica.crosstab.getContingencies()[data.id]);
+    }
+  });
 };
 
-const renderCollectedDatasetCrosstab = function(crosstab) {
-  initCrosstabElement();
+const renderDatasetCrosstab = function(contingency) {
+  // init Crosstab element
+  const crosstabElem = $('#crosstab');
+  crosstabElem.children().remove();
+  crosstabElem.append('<thead></thead>').append('<tbody></tbody>').append('<tfoot></tfoot>');
 
-  const contingency = crosstab.getContingencies()[0];
+  const crosstab = Mica.crosstab;
 
   // header
   const var2CatsCount = crosstab.getVariable2Categories().length;
-  let head = '<th rowspan="2"><a href="' + crosstab.getVariable1Href() + '" target="_blank">' + Mica.var1.name + '</a><div><small>' + contingency.info.var1.label + '</small></div></th>' +
-    '<th colspan="' + (var2CatsCount === 0 ? 1 : var2CatsCount) + '"><a href="' + crosstab.getVariable2Href() + '" target="_blank">' + Mica.var2.name + '</a><div><small>' + contingency.info.var2.label + '</small></div></th>' +
+  const var2Colspan = var2CatsCount + (crosstab.isVariable2Statistical() ? 4 : 0);
+  let head = '<th rowspan="2"><a href="' + contingency.info.var1.href + '" target="_blank">' + Mica.var1.name + '</a><div><small>' + contingency.info.var1.label + '</small></div></th>' +
+    '<th colspan="' + var2Colspan + '"><a href="' + contingency.info.var2.href + '" target="_blank">' + Mica.var2.name + '</a><div><small>' + contingency.info.var2.label + '</small></div></th>' +
     '<th rowspan="2">N</th>';
   const thead = $('#crosstab > thead');
   thead.append('<tr>' + head + '</tr>');
-  if (crosstab.getVariable2Categories().length > 0) {
-    head = '';
+
+  head = '';
+  if (var2CatsCount > 0) {
     crosstab.getVariable2Categories().forEach(cat => {
       head = head + '<th>' + cat.name + '<div><small>' + contingency.info.var2.categories[cat.name] + '</small></div></th>';
     });
-    thead.append('<tr>' + head + '</tr>');
+  }
+  if (crosstab.isVariable2Statistical()) {
+    head = head + '<th>' + Mica.tr.min + '</th>' +
+      '<th>' + Mica.tr.max + '</th>' +
+      '<th>' + Mica.tr.mean + '</th>' +
+      '<th>' + Mica.tr.stdDev + '</th>';
+  }
+  thead.append('<tr>' + head + '</tr>');
+
+  function formatStatistics(value) {
+    if (value === '-') {
+      return value;
+    }
+    if (value) {
+      return value.toFixed(2);
+    } else if (value === 0) {
+      return value;
+    }
+    return '-';
   }
 
   // for each category
   contingency.aggregations.forEach(aggregation => {
     let row = '<td>' + aggregation.term + '<div><small>' + contingency.info.var1.categories[aggregation.term] + '</small></div></td>';
-    aggregation.frequencies.forEach(freq => {
-      row = row + '<td>' + freq.count + ' <small>(' + freq.percent.toFixed(2) + '%)</small>' + '</td>';
-    });
+    if (aggregation.frequencies) {
+      aggregation.frequencies.forEach(freq => {
+        row = row + '<td>' + freq.count + (freq.percent ? ' <small>(' + freq.percent.toFixed(2) + '%)</small>' : '') + '</td>';
+      });
+    }
+    if (aggregation.statistics) {
+      row = row + '<td>' + formatStatistics(aggregation.statistics.min) + '</td>' +
+        '<td>' + formatStatistics(aggregation.statistics.max) + '</td>' +
+        '<td>' + formatStatistics(aggregation.statistics.mean) + '</td>' +
+        '<td>' + formatStatistics(aggregation.statistics.stdDeviation) + '</td>';
+    }
     row = row + '<td class="total">' + aggregation.n + '</td>';
     $('#crosstab > tbody').append('<tr>' + row + '</tr>');
   });
 
   // total
-  let row = '<td class="total">N</td>';
+  let row = '<td class="total">' + Mica.tr.all + '</td>';
   const all = contingency.all;
-  all.frequencies.forEach(freq => {
-    row = row + '<td class="total">' + freq.count + ' <small>(' + freq.percent.toFixed(2) + '%)</small>' + '</td>';
-  });
+  if (all.frequencies) {
+    all.frequencies.forEach(freq => {
+      row = row + '<td class="total">' + freq.count + (freq.percent ? ' <small>(' + freq.percent.toFixed(2) + '%)</small>' : '') + '</td>';
+    });
+  }
+  if (all.statistics) {
+    row = row + '<td class="total">' + formatStatistics(all.statistics.min) + '</td>' +
+      '<td class="total">' + formatStatistics(all.statistics.max) + '</td>' +
+      '<td class="total">' + formatStatistics(all.statistics.mean) + '</td>' +
+      '<td class="total">' + formatStatistics(all.statistics.stdDeviation) + '</td>';
+  }
   row = row + '<td class="total">' + all.n + '</td>';
   $('#crosstab > tbody').append('<tr>' + row + '</tr>');
 
   // chi-squared test
-  const colspan = var2CatsCount + 1;
-  let chitest = 'χ² = ' + contingency.chiSquaredInfo.sum.toFixed(4) + ', df = ' + contingency.chiSquaredInfo.df + ', p-value = ' + contingency.chiSquaredInfo.pValue.toFixed(4);
-  $('#crosstab > tfoot').append('<tr><td class="total">' + Mica.tr['chi-squared-test'] + '</td><td colspan="' + colspan + '">' + chitest + '</td></tr>')
-    .append('<tr><td class="total">' + Mica.tr['n-total'] + '</td><td colspan="' + colspan + '">' + all.total + '</td></tr>');
+  if (!crosstab.isVariable2Statistical() && contingency.chiSquaredInfo) {
+    let chitest = 'χ² = ' + contingency.chiSquaredInfo.sum.toFixed(4) + ', df = ' + contingency.chiSquaredInfo.df + ', p-value = ' + contingency.chiSquaredInfo.pValue.toFixed(4);
+    $('#crosstab > tfoot').append('<tr><td class="total">' + Mica.tr['chi-squared-test'] + '</td><td colspan="' + (var2Colspan + 1) + '">' + chitest + '</td></tr>');
+  }
 
-  $('#crosstab').show();
-  $('#loadingCrosstab').hide();
+  // grand total
+  $('#crosstab > tfoot').append('<tr><td class="total">' + Mica.tr['n-total'] + '</td><td colspan="' + (var2Colspan + 1) + '" class="total">' + all.total + '</td></tr>');
+
+
+  $('#download').attr('href', Mica.contextPath + '/ws/' + Mica.type + '-dataset/' + Mica.dataset + '/variable/' + Mica.var1.name + '/contingency/_export?by=' + Mica.var2.name);
 };
 
 const refreshCrosstab = function() {
   $('#results').show();
-  if (Mica.type === 'collected') {
-    micajs.dataset.datasetContingency(Mica.type, Mica.dataset, Mica.var1.name, Mica.var2.name, function (data) {
-      console.log(data);
-      // build a data object to make sure that all categories are covered
-      const crosstab = new CollectedDatasetCrosstab(Mica.var1, Mica.var2, data);
-      console.log(crosstab.getContingencies());
-      renderCollectedDatasetCrosstab(crosstab);
-    }, function(response) {
-      // TODO
-      console.log(response);
-    });
-  }
+  $('#loadingCrosstab').show();
+  $('#result-panel').hide();
+  micajs.dataset.datasetContingency(Mica.type, Mica.dataset, Mica.var1.name, Mica.var2.name, function (data) {
+    // build a data object to make sure that all categories are covered
+    const crosstab = new DatasetCrosstab(Mica.var1, Mica.var2, data);
+    Mica.crosstab = crosstab;
+    console.log(crosstab);
+
+    // study tables
+    let selectStudy = $('#select-study');
+    selectStudy.parent().hide();
+    if (Mica.type === 'harmonized') {
+      if (selectStudy.children().length === 0) {
+        selectStudy.append(new Option('All', -1, true, true));
+        crosstab.getContingencies().forEach((cont, i) => {
+          if (cont.info.summary) {
+            let text = cont.info.summary + ' / ' + cont.info.population + ' / ' + cont.info.dce;
+            if (cont.info.tableName || cont.info.tableDescription) {
+              let sep = cont.info.tableName ? ': ' : '';
+              text = text + ' [' + cont.info.tableName + (cont.info.tableDescription ? sep + cont.info.tableDescription : '') + ']';
+            }
+            selectStudy.append(new Option(text, i, false, false));
+          }
+        });
+      } else {
+        selectStudy.val('-1').trigger('change');
+      }
+      selectStudy.parent().show();
+    }
+
+    renderDatasetCrosstab(crosstab.getMainContingency());
+    $('#result-panel').show();
+    $('#loadingCrosstab').hide();
+  }, function(response) {
+    // TODO
+    console.log(response);
+    toastr.error('crosstab-error');
+    $('#results').hide();
+  });
+};
+
+const transposeCrosstab = function() {
+  const tmp = Mica.var1;
+  Mica.var1 = Mica.var2;
+  Mica.var2 = tmp;
+  refreshCrosstab();
 };
 
 const clearCrosstab = function() {
@@ -510,17 +621,12 @@ const clearCrosstab = function() {
   $('#select-var1').val(null).trigger('change');
   $('#select-var2').val(null).trigger('change');
   $('#submit').attr('href', '#');
-  $('#invert').attr('href', '#').attr('disabled', true);
+  $('#transpose').hide();
 };
 
 $(function () {
   initVariableSelectors();
-  if (Mica.var1) {
-    $('#select-var1').append(new Option(Mica.var1.name, Mica.var1.name, false, true));
-  }
-  if (Mica.var2) {
-    $('#select-var2').append(new Option(Mica.var2.name, Mica.var2.name, false, true));
-  }
+  initStudySelector();
   if (Mica.var1 && Mica.var2) {
     refreshCrosstab();
   } else {

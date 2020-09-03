@@ -105,7 +105,7 @@ var micajs = (function() {
   };
 
   const micaRedirect = function(path) {
-    $.redirect(path, null, 'GET');
+    window.location.assign(path);
   };
 
   const micaSignin = function(formId, onFailure) {
@@ -123,7 +123,7 @@ var micajs = (function() {
           if (q.get('redirect')) {
             redirect = q.get('redirect');
           }
-          $.redirect(redirect, {}, 'GET');
+          micaRedirect(redirect);
         })
         .catch(handle => {
           console.dir(handle);
@@ -180,7 +180,7 @@ var micajs = (function() {
       axios.post(normalizeUrl(url), data)
         .then(() => {
           //console.dir(response);
-          let redirect = contextPath + '/';
+          let redirect = normalizeUrl('/');
           let values = {};
           const q = new URLSearchParams(window.location.search);
           if (q.get('redirect')) {
@@ -191,7 +191,7 @@ var micajs = (function() {
           } else {
             redirect = 'just-registered';
           }
-          $.redirect(redirect, values, 'GET');
+          micaRedirect(redirect);
         })
         .catch(handle => {
           console.dir(handle);
@@ -214,7 +214,7 @@ var micajs = (function() {
       url: normalizeUrl('/ws/auth/session/_current')
     })
     .always(function() {
-      $.redirect(redirect || normalizeUrl('/'), {}, 'GET');
+      micaRedirect(redirect || normalizeUrl('/'));
     });
   };
 
@@ -232,7 +232,7 @@ var micajs = (function() {
       axios.post(normalizeUrl(url), data)
         .then(() => {
           //console.dir(response);
-          $.redirect(normalizeUrl('/'), {}, 'GET');
+          micaRedirect(normalizeUrl('/'));
         })
         .catch(handle => {
           console.dir(handle);

@@ -9,7 +9,12 @@
     locale: "${.lang}",
     tr: {
       "chi-squared-test": "<@message "chi-squared-test"/>",
-      "n-total": "<@message "n-total"/>"
+      "n-total": "<@message "n-total"/>",
+      "min": "<@message "min"/>",
+      "max": "<@message "max"/>",
+      "mean": "<@message "mean"/>",
+      "stdDev": "<@message "stdDev"/>",
+      "all": "<@message "all"/>",
     }
   };
 </script>

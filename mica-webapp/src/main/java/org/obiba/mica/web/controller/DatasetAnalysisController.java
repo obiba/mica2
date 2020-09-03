@@ -74,17 +74,18 @@ public class DatasetAnalysisController extends BaseController {
     Dataset dataset = getDataset(id);
     mv.getModelMap().addAttribute("dataset", dataset);
     String type = (dataset instanceof StudyDataset) ? "Collected" : "Harmonized";
+    String variableType = (dataset instanceof StudyDataset) ? "Collected" : "Dataschema";
     mv.getModelMap().addAttribute("type", type);
 
     if (!Strings.isNullOrEmpty(var1)) {
       mv.getModelMap().addAttribute("var1", var1);
-      DatasetVariable variable1 = getDatasetVariable(id + ":" + var1 + ":" + type, var1);
+      DatasetVariable variable1 = getDatasetVariable(id + ":" + var1 + ":" + variableType, var1);
       mv.getModelMap().addAttribute("variable1", getDatasetVariableJSON(variable1));
     }
 
     if (!Strings.isNullOrEmpty(var2)) {
       mv.getModelMap().addAttribute("var2", var2);
-      DatasetVariable variable2 = getDatasetVariable(id + ":" + var2 + ":" + type, var2);
+      DatasetVariable variable2 = getDatasetVariable(id + ":" + var2 + ":" + variableType, var2);
       mv.getModelMap().addAttribute("variable2", getDatasetVariableJSON(variable2));
     }
 

@@ -20,7 +20,7 @@
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
     <!-- Content Header (Page header) -->
-    <@header titlePrefix=(type?lower_case + "-dataset-crosstab") title=(localize(dataset.acronym)) subtitle=localize(dataset.name) breadcrumb=[["/", "home"], ["/datasets", "datasets"], ["", localize(dataset.acronym)]]/>
+    <@header titlePrefix=(type?lower_case + "-dataset-crosstab") title=(localize(dataset.acronym)) subtitle=localize(dataset.name) breadcrumb=[["/", "home"], ["/datasets", "datasets"], [localize(dataset.acronym)]]/>
     <!-- /.content-header -->
 
     <!-- Main content -->
@@ -49,10 +49,6 @@
               </div>
               <div class="col-3">
                 <a id="submit" class="btn btn-primary" href="#"><@message "submit"/></a>
-                <a id="invert" class="btn btn-default" href="#">
-                  <i class="fas fa-exchange-alt"></i>
-                  <@message "invert"/>
-                </a>
                 <button id="clear" class="btn btn-default" onclick="clearCrosstab()"><@message "clear"/></button>
               </div>
             </div>
@@ -76,10 +72,19 @@
             <a id="download" href="#" class="btn btn-primary float-right">
               <i class="fas fa-download"></i> <@message "download"/>
             </a>
+            <button id="transpose" class="btn btn-default float-right mr-2" onclick="transposeCrosstab()">
+              <i class="fas fa-exchange-alt"></i>
+              <@message "transpose"/>
+            </button>
           </div>
           <div class="card-body">
             <img id="loadingCrosstab" src="${assetsPath}/images/loading.gif">
-            <table id="crosstab" class="table table-striped"></table>
+            <div id="result-panel" style="overflow-x: auto;">
+              <div style="display: none;" class="mb-4">
+                <select id="select-study" class="form-control select2 float-right" style="width: 100%;"></select>
+              </div>
+              <table id="crosstab" class="table table-striped"></table>
+            </div>
           </div>
         </div>
       </div>
