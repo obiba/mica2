@@ -13,6 +13,7 @@ import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.dataset.service.PublishedDatasetService;
 import org.obiba.mica.micaConfig.service.OpalService;
+import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.spi.search.Indexer;
 import org.obiba.mica.spi.search.Searcher;
 import org.obiba.mica.web.model.Dtos;
@@ -28,6 +29,7 @@ import org.springframework.web.util.UriUtils;
 import sun.net.util.URLUtil;
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
@@ -53,14 +55,23 @@ public class DatasetAnalysisController extends BaseController {
   @Inject
   private PublishedDatasetService publishedDatasetService;
 
+  @Inject
+  private SubjectAclService subjectAclService;
+
   @GetMapping("/dataset-crosstab/{id:.+}")
-  public ModelAndView crosstab(@PathVariable String id,
+  public ModelAndView crosstab(HttpServletRequest request, @PathVariable String id,
                                @RequestParam(value = "var1", required = false) String var1,
                                @RequestParam(value = "var2", required = false) String var2) {
 
+    // check if service is available
+    if (!micaConfigService.getConfig().isContingencyEnabled()) {
+      return new ModelAndView("redirect:/dataset/" + id);
+    }
+
     Subject subject = SecurityUtils.getSubject();
     String contextPath = micaConfigService.getContextPath();
-    if (!subject.isAuthenticated()) {
+    if (!subject.isAuthenticated() &&
+      (micaConfigService.getConfig().isVariableSummaryRequiresAuthentication() || subjectAclService.hasDatasetContingencyPermissions())) {
       String query = "";
       if (!Strings.isNullOrEmpty(var1))
         query = "var1=" + var1;
@@ -68,6 +79,11 @@ public class DatasetAnalysisController extends BaseController {
         query = (Strings.isNullOrEmpty(query) ? "" : query + "&") + "var2=" + var2;
       String redirect = encode(contextPath + "/dataset-crosstab/" + id + (Strings.isNullOrEmpty(query) ? "" : "?") + query);
       return new ModelAndView("redirect:/signin?redirect=" + redirect);
+    }
+
+    // check if user is permitted
+    if (!subjectAclService.isDatasetContingencyPermitted()) {
+      return new ModelAndView("redirect:/dataset/" + id);
     }
 
     ModelAndView mv = new ModelAndView("dataset-crosstab");

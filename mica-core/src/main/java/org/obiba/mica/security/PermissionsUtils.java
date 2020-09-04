@@ -18,6 +18,8 @@ import com.google.common.collect.Lists;
 
 public class PermissionsUtils {
 
+  public static final List<String> ANALYST_ACTIONS = Lists.newArrayList("EXECUTE");
+
   public static final List<String> READER_ACTIONS = Lists.newArrayList("VIEW");
 
   public static final List<String> EDITOR_ACTIONS = Lists.newArrayList("ADD", "VIEW", "EDIT");
@@ -33,6 +35,7 @@ public class PermissionsUtils {
     if(actions.containsAll(REVIEWER_ACTIONS)) return "REVIEWER";
     if(actions.containsAll(EDITOR_ACTIONS)) return "EDITOR";
     if(actions.containsAll(READER_ACTIONS)) return "READER";
+    if(actions.containsAll(ANALYST_ACTIONS)) return "ANALYST";
     throw new NoSuchElementException("Unknown role for the set of actions: " + Joiner.on(",").join(actions));
   }
 
@@ -50,6 +53,8 @@ public class PermissionsUtils {
 
   public static String asActions(String role) {
     switch(role) {
+      case "ANALYST":
+        return Joiner.on(",").join(ANALYST_ACTIONS);
       case "READER":
         return Joiner.on(",").join(READER_ACTIONS);
       case "EDITOR":

@@ -34,6 +34,7 @@ import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.micaConfig.service.OpalService;
+import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.spi.search.Indexer;
 import org.obiba.mica.spi.search.Searcher;
 import org.obiba.mica.web.model.Dtos;
@@ -72,6 +73,9 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
 
   @Inject
   protected MicaConfigService micaConfigService;
+
+  @Inject
+  protected SubjectAclService subjectAclService;
 
   private String locale;
 
@@ -297,6 +301,11 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
       // ignore
     }
     return taxonomies == null ? Collections.emptyList() : taxonomies;
+  }
+
+  protected void checkContingencyAccess() {
+    if (!micaConfigService.getConfig().isContingencyEnabled())
+      throw new ForbiddenException();
   }
 
   protected void checkVariableSummaryAccess() {

@@ -16,14 +16,12 @@ import org.obiba.mica.core.domain.StudyTable;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.search.rest.AbstractPublishedDatasetResource;
-import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.web.model.Mica;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import java.io.ByteArrayOutputStream;
@@ -39,9 +37,6 @@ public class PublishedHarmonizedDatasetResource extends AbstractPublishedDataset
 
   private static final Logger log = LoggerFactory.getLogger(PublishedHarmonizedDatasetResource.class);
 
-  @Inject
-  private SubjectAclService subjectAclService;
-
   /**
    * Get {@link HarmonizationDataset} from published index.
    *
@@ -50,7 +45,7 @@ public class PublishedHarmonizedDatasetResource extends AbstractPublishedDataset
   @GET
   @Timed
   public Mica.DatasetDto get(@PathParam("id") String id) {
-    checkAccess(id);
+    checkDatasetAccess(id);
     return getDatasetDto(HarmonizationDataset.class, id);
   }
 
@@ -70,7 +65,7 @@ public class PublishedHarmonizedDatasetResource extends AbstractPublishedDataset
   public Mica.DatasetVariablesDto queryVariables(@PathParam("id") String id, @QueryParam("query") String queryString,
                                                  @QueryParam("from") @DefaultValue("0") int from, @QueryParam("limit") @DefaultValue("10") int limit,
                                                  @QueryParam("sort") String sort, @QueryParam("order") String order) {
-    checkAccess(id);
+    checkDatasetAccess(id);
     return getDatasetVariableDtos(queryString, id, DatasetVariable.Type.Dataschema, from, limit, sort, order);
   }
 
@@ -89,7 +84,7 @@ public class PublishedHarmonizedDatasetResource extends AbstractPublishedDataset
   public Mica.DatasetVariablesDto getVariables(@PathParam("id") String id,
                                                @QueryParam("from") @DefaultValue("0") int from, @QueryParam("limit") @DefaultValue("10") int limit,
                                                @QueryParam("sort") String sort, @QueryParam("order") String order) {
-    checkAccess(id);
+    checkDatasetAccess(id);
     return getDatasetVariableDtos(id, DatasetVariable.Type.Dataschema, from, limit, sort, order);
   }
 
@@ -143,7 +138,7 @@ public class PublishedHarmonizedDatasetResource extends AbstractPublishedDataset
   @Path("/variable/{variable}")
   public PublishedDataschemaDatasetVariableResource getVariable(@PathParam("id") String id,
                                                                 @PathParam("variable") String variable) {
-    checkAccess(id);
+    checkDatasetAccess(id);
     PublishedDataschemaDatasetVariableResource resource = applicationContext
       .getBean(PublishedDataschemaDatasetVariableResource.class);
     resource.setDatasetId(id);
@@ -157,7 +152,7 @@ public class PublishedHarmonizedDatasetResource extends AbstractPublishedDataset
   public Mica.DatasetVariablesDto getVariables(@PathParam("id") String id, @PathParam("study") String studyId,
                                                @QueryParam("from") @DefaultValue("0") int from, @QueryParam("limit") @DefaultValue("10") int limit,
                                                @QueryParam("sort") String sort, @QueryParam("order") String order) {
-    checkAccess(id);
+    checkDatasetAccess(id);
     String rql = String.format("and(eq(datasetId,%s),eq(studyId,%s),eq(variableType,%s))", id, studyId, DatasetVariable.Type.Dataschema.toString());
     return getDatasetVariableDtosInternal(rql, from, limit, sort, order);
   }
@@ -166,7 +161,7 @@ public class PublishedHarmonizedDatasetResource extends AbstractPublishedDataset
   public PublishedHarmonizedDatasetVariableResource getVariable(@PathParam("id") String id,
                                                                 @PathParam("study") String studyId, @PathParam("population") String populationId, @PathParam("dce") String dceId,
                                                                 @PathParam("variable") String variable) {
-    checkAccess(id);
+    checkDatasetAccess(id);
     PublishedHarmonizedDatasetVariableResource resource = applicationContext
       .getBean(PublishedHarmonizedDatasetVariableResource.class);
     resource.setDatasetId(id);
@@ -184,7 +179,7 @@ public class PublishedHarmonizedDatasetResource extends AbstractPublishedDataset
   private Mica.DatasetVariablesHarmonizationsDto getVariableHarmonizationsInternal(String id,
                                                                                    int from, int limit, String sort, String order, boolean includeSummaries) {
 
-    checkAccess(id);
+    checkDatasetAccess(id);
     Mica.DatasetVariablesHarmonizationsDto.Builder builder = Mica.DatasetVariablesHarmonizationsDto.newBuilder();
     HarmonizationDataset dataset = getDataset(HarmonizationDataset.class, id);
     Mica.DatasetVariablesDto variablesDto = getDatasetVariableDtos(id, DatasetVariable.Type.Dataschema, from, limit,
@@ -202,7 +197,7 @@ public class PublishedHarmonizedDatasetResource extends AbstractPublishedDataset
   private Mica.DatasetVariablesHarmonizationSummaryDto getVariableHarmonizationsSummaryInternal(String id,
                                                                                                 int from, int limit, String sort, String order, boolean includeSummaries) {
 
-    checkAccess(id);
+    checkDatasetAccess(id);
     Mica.DatasetVariablesHarmonizationSummaryDto.Builder builder = Mica.DatasetVariablesHarmonizationSummaryDto.newBuilder();
     HarmonizationDataset dataset = getDataset(HarmonizationDataset.class, id);
     Mica.DatasetVariablesDto variablesDto = getDatasetVariableDtos(id, DatasetVariable.Type.Dataschema, from, limit,
@@ -239,7 +234,7 @@ public class PublishedHarmonizedDatasetResource extends AbstractPublishedDataset
 
   }
 
-  private void checkAccess(String id) {
+  private void checkDatasetAccess(String id) {
     subjectAclService.checkAccess("/harmonized-dataset", id);
   }
 }

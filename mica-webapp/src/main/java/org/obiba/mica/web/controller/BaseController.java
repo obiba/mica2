@@ -3,7 +3,6 @@ package org.obiba.mica.web.controller;
 import com.google.common.collect.Maps;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.UnauthorizedException;
-import org.apache.shiro.subject.Subject;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.user.UserProfileService;
@@ -12,9 +11,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.util.UriUtils;
 
-import javax.annotation.Nullable;
 import javax.inject.Inject;
-import javax.validation.constraints.NotNull;
 import javax.ws.rs.ForbiddenException;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -25,7 +22,7 @@ public class BaseController {
   protected MicaConfigService micaConfigService;
 
   @Inject
-  private SubjectAclService subjectAclService;
+  protected SubjectAclService subjectAclService;
 
   @Inject
   private UserProfileService userProfileService;
@@ -75,6 +72,7 @@ public class BaseController {
   /**
    * Check the permission (action on a resource). If a key is provided and is valid, the permission check is by-passed.
    * If the provided key is not valid, permission check is applied.
+   *
    * @param resource
    * @param action
    * @param id
@@ -84,9 +82,19 @@ public class BaseController {
     subjectAclService.checkPermission(resource, action, id, shareKey);
   }
 
-
   boolean isPermitted(String resource, String action, String id) {
     return subjectAclService.isPermitted(resource, action, id);
+  }
+
+  /**
+   * Check whether the dataset contingency service is available and if it is (potentially) permitted.
+   *
+   * @return
+   */
+  boolean showDatasetContingencyLink() {
+    return micaConfigService.getConfig().isContingencyEnabled() &&
+      (!subjectAclService.hasDatasetContingencyPermissions() ||
+        (!SecurityUtils.getSubject().isAuthenticated() || subjectAclService.isDatasetContingencyPermitted()));
   }
 
   Map<String, Object> newParameters() {
@@ -96,7 +104,7 @@ public class BaseController {
   /**
    * Get and clean lang identifier.
    *
-   * @param locale from cookie (dirty string)
+   * @param locale   from cookie (dirty string)
    * @param language from query param
    * @return
    */
@@ -108,7 +116,7 @@ public class BaseController {
   protected String encode(String path) {
     try {
       return UriUtils.encode(path, "UTF-8");
-    } catch(Exception e) {
+    } catch (Exception e) {
       return path;
     }
   }

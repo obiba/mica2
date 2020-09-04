@@ -3,7 +3,6 @@ package org.obiba.mica.web.controller;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.core.domain.BaseStudyTable;
 import org.obiba.mica.core.domain.HarmonizationStudyTable;
 import org.obiba.mica.core.domain.StudyTable;
@@ -89,6 +88,9 @@ public class DatasetController extends BaseController {
       params.put("allTables", allTables);
       params.put("allStudies", allStudies);
     }
+
+    params.put("showDatasetContingencyLink", showDatasetContingencyLink());
+
     return new ModelAndView("dataset", params);
   }
 
@@ -144,7 +146,7 @@ public class DatasetController extends BaseController {
       try {
         dataset = draftCollectedDatasetService.findById(id);
         checkPermission("/draft/collected-dataset", "VIEW", id, shareKey);
-      } catch(NoSuchDatasetException ex) {
+      } catch (NoSuchDatasetException ex) {
         dataset = draftHarmonizedDatasetService.findById(id);
         checkPermission("/draft/harmonized-dataset", "VIEW", id, shareKey);
       }

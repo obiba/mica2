@@ -10,15 +10,9 @@
 
 package org.obiba.mica.dataset.search.rest.collection;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-
-import javax.inject.Inject;
-import javax.ws.rs.*;
-import javax.ws.rs.core.Response;
-
+import com.codahale.metrics.annotation.Timed;
+import com.google.common.base.Strings;
 import org.apache.commons.math3.util.Pair;
-import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.core.domain.StudyTable;
 import org.obiba.mica.dataset.DatasetVariableResource;
 import org.obiba.mica.dataset.domain.DatasetVariable;
@@ -34,8 +28,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import com.codahale.metrics.annotation.Timed;
-import com.google.common.base.Strings;
+import javax.inject.Inject;
+import javax.ws.rs.*;
+import javax.ws.rs.core.Response;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
 @Component
 @Scope("request")
@@ -53,6 +50,7 @@ public class PublishedCollectedDatasetVariableResource extends AbstractPublished
 
   @GET
   public Mica.DatasetVariableDto getVariable() {
+    checkDatasetAccess();
     return getDatasetVariableDto(datasetId, variableName, DatasetVariable.Type.Collected);
   }
 
@@ -60,6 +58,7 @@ public class PublishedCollectedDatasetVariableResource extends AbstractPublished
   @Path("/summary")
   @Timed
   public org.obiba.opal.web.model.Math.SummaryStatisticsDto getVariableSummary() {
+    checkDatasetAccess();
     checkVariableSummaryAccess();
     return datasetService.getVariableSummary(getDataset(StudyDataset.class, datasetId), variableName).getWrappedDto();
   }
@@ -68,6 +67,7 @@ public class PublishedCollectedDatasetVariableResource extends AbstractPublished
   @Path("/facet")
   @Timed
   public Search.QueryResultDto getVariableFacet() {
+    checkDatasetAccess();
     checkVariableSummaryAccess();
     return datasetService.getVariableFacet(getDataset(StudyDataset.class, datasetId), variableName);
   }
@@ -76,13 +76,14 @@ public class PublishedCollectedDatasetVariableResource extends AbstractPublished
   @Path("/aggregation")
   @Timed
   public Mica.DatasetVariableAggregationDto getVariableAggregations(@QueryParam("study") @DefaultValue("true") boolean withStudySummary) {
+    checkDatasetAccess();
     checkVariableSummaryAccess();
     StudyDataset dataset = getDataset(StudyDataset.class, datasetId);
     StudyTable studyTable = dataset.getSafeStudyTable();
     Mica.DatasetVariableAggregationDto.Builder aggDto = Mica.DatasetVariableAggregationDto.newBuilder();
     try {
       return dtos.asDto(studyTable, datasetService.getVariableSummary(dataset, variableName).getWrappedDto(), withStudySummary).build();
-    } catch(Exception e) {
+    } catch (Exception e) {
       log.warn("Unable to retrieve statistics: " + e.getMessage(), e);
       return dtos.asDto(studyTable, null, withStudySummary).build();
     }
@@ -92,7 +93,9 @@ public class PublishedCollectedDatasetVariableResource extends AbstractPublished
   @Path("/contingency")
   @Timed
   public Mica.DatasetVariableContingencyDto getContingency(@QueryParam("by") String crossVariable) {
+    checkDatasetAccess();
     checkVariableSummaryAccess();
+    checkContingencyAccess();
     Pair<DatasetVariable, DatasetVariable> variables = getContingencyVariables(crossVariable);
     return getContingencyDto(variables.getFirst(), variables.getSecond());
   }
@@ -105,7 +108,7 @@ public class PublishedCollectedDatasetVariableResource extends AbstractPublished
       return dtos
         .asContingencyDto(studyTable, var, crossVar, datasetService.getContingencyTable(dataset, var, crossVar))
         .build();
-    } catch(Exception e) {
+    } catch (Exception e) {
       log.warn("Unable to retrieve contingency table: " + e.getMessage(), e);
       return dtos.asContingencyDto(studyTable, var, crossVar, null).build();
     }
@@ -116,7 +119,9 @@ public class PublishedCollectedDatasetVariableResource extends AbstractPublished
   @Produces("text/csv")
   @Timed
   public Response getContingencyCsv(@QueryParam("by") String crossVariable) throws IOException {
+    checkDatasetAccess();
     checkVariableSummaryAccess();
+    checkContingencyAccess();
     Pair<DatasetVariable, DatasetVariable> variables = getContingencyVariables(crossVariable);
     ByteArrayOutputStream res = new CsvContingencyWriter(variables.getFirst(), variables.getSecond())
       .write(getContingencyDto(variables.getFirst(), variables.getSecond()));
@@ -130,7 +135,9 @@ public class PublishedCollectedDatasetVariableResource extends AbstractPublished
   @Produces("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
   @Timed
   public Response getContingencyExcel(@QueryParam("by") String crossVariable) throws IOException {
+    checkDatasetAccess();
     checkVariableSummaryAccess();
+    checkContingencyAccess();
     Pair<DatasetVariable, DatasetVariable> variables = getContingencyVariables(crossVariable);
     ByteArrayOutputStream res = new ExcelContingencyWriter(variables.getFirst(), variables.getSecond())
       .write(getContingencyDto(variables.getFirst(), variables.getSecond()));
@@ -150,12 +157,16 @@ public class PublishedCollectedDatasetVariableResource extends AbstractPublished
   }
 
   private Pair<DatasetVariable, DatasetVariable> getContingencyVariables(String crossVariable) {
-    if(Strings.isNullOrEmpty(crossVariable))
+    if (Strings.isNullOrEmpty(crossVariable))
       throw new BadRequestException("Cross variable name is required for the contingency table");
 
     DatasetVariable var = getDatasetVariable(datasetId, variableName, DatasetVariable.Type.Collected, null);
     DatasetVariable crossVar = getDatasetVariable(datasetId, crossVariable, DatasetVariable.Type.Collected, null);
 
     return Pair.create(var, crossVar);
+  }
+
+  private void checkDatasetAccess() {
+    subjectAclService.checkAccess("/collected-dataset", datasetId);
   }
 }

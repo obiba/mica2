@@ -165,7 +165,7 @@ public class SubjectAclService {
    */
   @Timed
   public void checkPermission(@NotNull String resource, @NotNull String action,
-    @Nullable String instance, @Nullable String shareKey) throws AuthorizationException {
+                              @Nullable String instance, @Nullable String shareKey) throws AuthorizationException {
 
     if (isAccessWithShareKeyApplicable(resource, action, instance, shareKey)) {
       if (validateShareKey(shareKey, draftRessourcesValidatorForShareKeyAccess(resource, instance)))
@@ -175,16 +175,15 @@ public class SubjectAclService {
       .checkPermission(resource + ":" + action + (Strings.isNullOrEmpty(instance) ? "" : ":" + encode(instance)));
   }
 
-
   /**
    * Create share key usable to give access to draft resources.
    *
    * @param content used to define access granted by the key
-   * @param expire (Optional) expiration date
+   * @param expire  (Optional) expiration date
    * @return
    */
   public String createShareKey(String content, String expire) {
-    if(!Strings.isNullOrEmpty(expire)) {
+    if (!Strings.isNullOrEmpty(expire)) {
       try {
         iso8601.parse(expire);
       } catch (ParseException e) {
@@ -195,6 +194,41 @@ public class SubjectAclService {
     logger.debug("createShareKey, encrypting...");
     return micaConfigService.encrypt(String.format("%s|%s|%s",
       content, Strings.isNullOrEmpty(expire) ? "" : expire, SecurityUtils.getSubject().getPrincipal()));
+  }
+
+  /**
+   * Check whether some permissions are defined for performing dataset contingency analyses. If not,
+   * any authenticated user can access this service.
+   *
+   * @return
+   */
+  public boolean hasDatasetContingencyPermissions() {
+    return hasPermissions("/analyses/contingencies", "EXECUTE", "_opal");
+  }
+
+  /**
+   * Check whether there are permissions defined for performing dataset contingency analyses. If there are
+   * some, get if the current user is permitted.
+   *
+   * @return
+   */
+  public boolean isDatasetContingencyPermitted() {
+    if (hasDatasetContingencyPermissions()) {
+      return isPermitted("/analyses/contingencies", "EXECUTE", "_opal");
+    }
+    return true;
+  }
+
+  /**
+   * Check whether there are permissions defined for performing dataset contingency analyses. If there are
+   * some, check if the current user is permitted.
+   *
+   * @throws AuthorizationException
+   */
+  public void checkDatasetContingencyPermission() {
+    if (hasDatasetContingencyPermissions()) {
+      checkPermission("/analyses/contingencies", "EXECUTE", "_opal");
+    }
   }
 
   /**
@@ -229,7 +263,7 @@ public class SubjectAclService {
    */
   @Timed
   public void checkAccess(@NotNull String resource, @Nullable String instance) {
-    if(micaConfigService.getConfig().isOpenAccess()) return;
+    if (micaConfigService.getConfig().isOpenAccess()) return;
     checkPermission(resource, "VIEW", instance);
   }
 
@@ -237,7 +271,7 @@ public class SubjectAclService {
    * Add a permission for the current user.
    *
    * @param resource
-   * @param action multiple actions can be comma-separated
+   * @param action   multiple actions can be comma-separated
    */
   public void addPermission(@NotNull String resource, @Nullable String action) {
     addPermission(resource, action, null);
@@ -247,7 +281,7 @@ public class SubjectAclService {
    * Add a permission for the current user on a given instance.
    *
    * @param resource
-   * @param action multiple actions can be comma-separated
+   * @param action   multiple actions can be comma-separated
    * @param instance any instances if null
    */
   public void addPermission(@NotNull String resource, @Nullable String action, @Nullable String instance) {
@@ -259,11 +293,11 @@ public class SubjectAclService {
    *
    * @param principal
    * @param resource
-   * @param action multiple actions can be comma-separated
-   * @param instance any instances if null
+   * @param action    multiple actions can be comma-separated
+   * @param instance  any instances if null
    */
   public void addUserPermission(@NotNull String principal, @NotNull String resource, @Nullable String action,
-    @Nullable String instance) {
+                                @Nullable String instance) {
     addSubjectPermission(SubjectAcl.Type.USER, principal, resource, action, instance);
   }
 
@@ -272,11 +306,11 @@ public class SubjectAclService {
    *
    * @param principal
    * @param resource
-   * @param action multiple actions can be comma-separated
-   * @param instance any instances if null
+   * @param action    multiple actions can be comma-separated
+   * @param instance  any instances if null
    */
   public void addGroupPermission(@NotNull String principal, @NotNull String resource, @Nullable String action,
-    @Nullable String instance) {
+                                 @Nullable String instance) {
     addSubjectPermission(SubjectAcl.Type.GROUP, principal, resource, action, instance);
   }
 
@@ -290,11 +324,11 @@ public class SubjectAclService {
    * @param instance
    */
   synchronized public void addSubjectPermission(@NotNull SubjectAcl.Type type, @NotNull String principal,
-    @NotNull String resource, @Nullable String action, @Nullable String instance) {
+                                                @NotNull String resource, @Nullable String action, @Nullable String instance) {
     List<SubjectAcl> acls = subjectAclRepository
       .findByPrincipalAndTypeAndResourceAndInstance(principal, type, resource, encode(instance));
     SubjectAcl acl;
-    if(acls == null || acls.isEmpty()) {
+    if (acls == null || acls.isEmpty()) {
       acl = SubjectAcl.newBuilder(principal, type).resource(resource).action(action).instance(encode(instance)).build();
     } else {
       acl = acls.get(0);
@@ -310,7 +344,7 @@ public class SubjectAclService {
    * Remove a user permission for the current user on a given instance.
    *
    * @param resource
-   * @param action multiple actions can be comma-separated
+   * @param action   multiple actions can be comma-separated
    * @param instance
    */
   public void removePermission(@NotNull String resource, @NotNull String action, @NotNull String instance) {
@@ -322,11 +356,11 @@ public class SubjectAclService {
    *
    * @param principal
    * @param resource
-   * @param action multiple actions can be comma-separated
+   * @param action    multiple actions can be comma-separated
    * @param instance
    */
   public void removeUserPermission(@NotNull String principal, @NotNull String resource, @NotNull String action,
-    @NotNull String instance) {
+                                   @NotNull String instance) {
     removeSubjectPermission(SubjectAcl.Type.USER, principal, resource, action, instance);
   }
 
@@ -335,11 +369,11 @@ public class SubjectAclService {
    *
    * @param principal
    * @param resource
-   * @param action multiple actions can be comma-separated
+   * @param action    multiple actions can be comma-separated
    * @param instance
    */
   public void removeGroupPermission(@NotNull String principal, @NotNull String resource, @NotNull String action,
-    @NotNull String instance) {
+                                    @NotNull String instance) {
     removeSubjectPermission(SubjectAcl.Type.GROUP, principal, resource, action, instance);
   }
 
@@ -352,7 +386,7 @@ public class SubjectAclService {
    * @param instance
    */
   public void removeSubjectPermissions(@NotNull SubjectAcl.Type type, @NotNull String principal,
-    @NotNull String resource, @Nullable String instance) {
+                                       @NotNull String resource, @Nullable String instance) {
     subjectAclRepository.findByPrincipalAndTypeAndResourceAndInstance(principal, type, resource, encode(instance))
       .forEach(subjectAclRepository::delete);
     // inform acls update (for caching)
@@ -386,21 +420,21 @@ public class SubjectAclService {
   @Subscribe
   public void dataAccessRequestDeleted(DataAccessRequestDeletedEvent event) {
     DataAccessRequest request = event.getPersistable();
-    String resource  = "/data-access-request";
-    String id  = request.getId();
+    String resource = "/data-access-request";
+    String id = request.getId();
     removeResourcePermissions(resource, id);
     removeResourcePermissions(resource + "/" + id, "_status");
-    removeResourcePermissions(resource + "/" + id+ "/amendment", null);
+    removeResourcePermissions(resource + "/" + id + "/amendment", null);
     removeResourcePermissions(resource + "/" + id + "/_attachments", null);
-    removeResourcePermissions(resource + "/" + id+ "/comment", null);
+    removeResourcePermissions(resource + "/" + id + "/comment", null);
   }
 
   @Async
   @Subscribe
   public void dataAccessAmendmentDeleted(DataAccessAmendmentDeletedEvent event) {
     DataAccessAmendment amendment = event.getPersistable();
-    String resource  = String.format("/data-access-request/%s/amendment", amendment.getParentId());
-    String id  = amendment.getId();
+    String resource = String.format("/data-access-request/%s/amendment", amendment.getParentId());
+    String id = amendment.getId();
     removeResourcePermissions(resource, id);
     removeResourcePermissions(resource + "/" + id, "_status");
   }
@@ -444,6 +478,18 @@ public class SubjectAclService {
   //
 
   /**
+   * Check if there are any permissions defined.
+   *
+   * @param resource
+   * @param action
+   * @return
+   */
+  private boolean hasPermissions(@NotNull String resource, @NotNull String action, @Nullable String instance) {
+    return subjectAclRepository.findByResourceAndInstance(resource, instance).stream()
+      .anyMatch(acl -> acl.getActions().contains(action));
+  }
+
+  /**
    * Remove all access controls associated to the instance: draft and published, entity and files.
    *
    * @param resource
@@ -466,12 +512,12 @@ public class SubjectAclService {
   }
 
   public void removeSubjectPermission(@NotNull SubjectAcl.Type type, @NotNull String principal,
-    @NotNull String resource, @NotNull String action, @NotNull String instance) {
+                                      @NotNull String resource, @NotNull String action, @NotNull String instance) {
     subjectAclRepository.findByPrincipalAndTypeAndResourceAndInstance(principal, type, resource, encode(instance))
       .forEach(acl -> {
-        if(acl.hasAction(action)) {
+        if (acl.hasAction(action)) {
           acl.removeAction(action);
-          if(acl.hasActions()) {
+          if (acl.hasActions()) {
             subjectAclRepository.save(acl);
           } else {
             subjectAclRepository.delete(acl);
@@ -482,7 +528,7 @@ public class SubjectAclService {
     broadcastSubjectAclUpdateEvent(type, principal);
   }
 
-  private void  broadcastSubjectAclUpdateEvent(SubjectAcl.Type type, String principal) {
+  private void broadcastSubjectAclUpdateEvent(SubjectAcl.Type type, String principal) {
     permissionCache.invalidateAll();
     permissionCache.cleanUp();
 

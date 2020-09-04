@@ -10,17 +10,9 @@
 
 package org.obiba.mica.dataset.search.rest.harmonization;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-
-import javax.inject.Inject;
-import javax.ws.rs.*;
-import javax.ws.rs.core.Response;
-
 import com.codahale.metrics.annotation.Timed;
 import com.google.common.base.Strings;
 import org.apache.commons.math3.util.Pair;
-import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.magma.NoSuchValueTableException;
 import org.obiba.mica.core.domain.BaseStudyTable;
 import org.obiba.mica.dataset.DatasetVariableResource;
@@ -34,6 +26,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+
+import javax.inject.Inject;
+import javax.ws.rs.*;
+import javax.ws.rs.core.Response;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
 /**
  * Harmonized variable resource: variable of an harmonization dataset, implementing the dataschema variable with the same name.
@@ -63,6 +61,7 @@ public class PublishedHarmonizedDatasetVariableResource extends AbstractPublishe
   @GET
   @Timed
   public Mica.DatasetVariableDto getVariable() {
+    checkDatasetAccess();
     return getDatasetVariableDto(datasetId, variableName, DatasetVariable.Type.Harmonized, studyId, project, table,
       tableType);
   }
@@ -71,6 +70,7 @@ public class PublishedHarmonizedDatasetVariableResource extends AbstractPublishe
   @Path("/summary")
   @Timed
   public org.obiba.opal.web.model.Math.SummaryStatisticsDto getVariableSummary() {
+    checkDatasetAccess();
     checkVariableSummaryAccess();
     return datasetService
       .getVariableSummary(getDataset(HarmonizationDataset.class, datasetId), variableName, studyId, project, table)
@@ -81,6 +81,7 @@ public class PublishedHarmonizedDatasetVariableResource extends AbstractPublishe
   @Path("/facet")
   @Timed
   public Search.QueryResultDto getVariableFacet() {
+    checkDatasetAccess();
     checkVariableSummaryAccess();
     return datasetService
       .getVariableFacet(getDataset(HarmonizationDataset.class, datasetId), variableName, studyId, project, table);
@@ -90,15 +91,16 @@ public class PublishedHarmonizedDatasetVariableResource extends AbstractPublishe
   @Path("/aggregation")
   @Timed
   public Mica.DatasetVariableAggregationDto getVariableAggregations(@QueryParam("study") @DefaultValue("true") boolean withStudySummary) {
+    checkDatasetAccess();
     checkVariableSummaryAccess();
     HarmonizationDataset dataset = getDataset(HarmonizationDataset.class, datasetId);
-    for(BaseStudyTable opalTable : dataset.getBaseStudyTables()) {
+    for (BaseStudyTable opalTable : dataset.getBaseStudyTables()) {
       String opalTableId = studyId;
-      if(opalTable.isFor(opalTableId, project, table)) {
+      if (opalTable.isFor(opalTableId, project, table)) {
         try {
           return dtos.asDto(opalTable,
             datasetService.getVariableSummary(dataset, variableName, studyId, project, table).getWrappedDto(), withStudySummary).build();
-        } catch(Exception e) {
+        } catch (Exception e) {
           log.warn("Unable to retrieve statistics: " + e.getMessage(), e);
           return dtos.asDto(opalTable, null, withStudySummary).build();
         }
@@ -112,6 +114,7 @@ public class PublishedHarmonizedDatasetVariableResource extends AbstractPublishe
   @Path("/contingency")
   @Timed
   public Mica.DatasetVariableContingencyDto getContingency(@QueryParam("by") String crossVariable) {
+    checkDatasetAccess();
     checkVariableSummaryAccess();
     Pair<DatasetVariable, DatasetVariable> variables = getContingencyVariables(crossVariable);
     return getContingencyDto(variables.getFirst(), variables.getSecond());
@@ -120,13 +123,13 @@ public class PublishedHarmonizedDatasetVariableResource extends AbstractPublishe
   private Mica.DatasetVariableContingencyDto getContingencyDto(DatasetVariable var, DatasetVariable crossVar) {
     HarmonizationDataset dataset = getDataset(HarmonizationDataset.class, datasetId);
 
-    for(BaseStudyTable opalTable : dataset.getBaseStudyTables()) {
+    for (BaseStudyTable opalTable : dataset.getBaseStudyTables()) {
       String opalTableId = studyId;
-      if(opalTable.isFor(opalTableId, project, table)) {
+      if (opalTable.isFor(opalTableId, project, table)) {
         try {
           return dtos.asContingencyDto(opalTable, var, crossVar,
             datasetService.getContingencyTable(opalTable, var, crossVar)).build();
-        } catch(Exception e) {
+        } catch (Exception e) {
           log.warn("Unable to retrieve contingency table: " + e.getMessage(), e);
           return dtos.asContingencyDto(opalTable, var, crossVar, null).build();
         }
@@ -141,6 +144,7 @@ public class PublishedHarmonizedDatasetVariableResource extends AbstractPublishe
   @Produces("text/csv")
   @Timed
   public Response getContingencyCsv(@QueryParam("by") String crossVariable) throws IOException {
+    checkDatasetAccess();
     checkVariableSummaryAccess();
     Pair<DatasetVariable, DatasetVariable> variables = getContingencyVariables(crossVariable);
     ByteArrayOutputStream res = new CsvContingencyWriter(variables.getFirst(), variables.getSecond())
@@ -155,6 +159,7 @@ public class PublishedHarmonizedDatasetVariableResource extends AbstractPublishe
   @Produces("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
   @Timed
   public Response getContingencyExcel(@QueryParam("by") String crossVariable) throws IOException {
+    checkDatasetAccess();
     checkVariableSummaryAccess();
     Pair<DatasetVariable, DatasetVariable> variables = getContingencyVariables(crossVariable);
     ByteArrayOutputStream res = new ExcelContingencyWriter(variables.getFirst(), variables.getSecond())
@@ -191,7 +196,7 @@ public class PublishedHarmonizedDatasetVariableResource extends AbstractPublishe
   }
 
   private Pair<DatasetVariable, DatasetVariable> getContingencyVariables(String crossVariable) {
-    if(Strings.isNullOrEmpty(crossVariable))
+    if (Strings.isNullOrEmpty(crossVariable))
       throw new BadRequestException("Cross variable name is required for the contingency table");
 
     DatasetVariable var = getDatasetVariable(datasetId, variableName, DatasetVariable.Type.Harmonized, studyId, project,
@@ -200,6 +205,10 @@ public class PublishedHarmonizedDatasetVariableResource extends AbstractPublishe
       project, table, tableType);
 
     return Pair.create(var, crossVar);
+  }
+
+  private void checkDatasetAccess() {
+    subjectAclService.checkAccess("/harmonized-dataset", datasetId);
   }
 
 }

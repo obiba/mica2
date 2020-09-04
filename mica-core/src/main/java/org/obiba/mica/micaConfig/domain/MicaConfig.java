@@ -146,6 +146,8 @@ public class MicaConfig extends AbstractAuditableDocument {
 
   private int setTimeToLive = 365; // year
 
+  private boolean contingencyEnabled = true;
+
   private boolean setsAnalysisEnabled = true;
 
   private boolean setsSearchEnabled = true;
@@ -566,6 +568,14 @@ public class MicaConfig extends AbstractAuditableDocument {
 
   public void setSetTimeToLive(int setTimeToLive) {
     this.setTimeToLive = setTimeToLive;
+  }
+
+  public boolean isContingencyEnabled() {
+    return contingencyEnabled;
+  }
+
+  public void setContingencyEnabled(boolean contingencyEnabled) {
+    this.contingencyEnabled = contingencyEnabled;
   }
 
   public boolean isSetsAnalysisEnabled() {

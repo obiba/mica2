@@ -10,12 +10,7 @@
 
 package org.obiba.mica.dataset.search.rest.harmonization;
 
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.QueryParam;
-
-import org.apache.shiro.authz.annotation.RequiresAuthentication;
+import com.codahale.metrics.annotation.Timed;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.search.rest.AbstractPublishedDatasetsResource;
 import org.obiba.mica.web.model.Mica;
@@ -24,12 +19,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import com.codahale.metrics.annotation.Timed;
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.QueryParam;
 
 @Component
 @Scope("request")
 @Path("/harmonized-datasets")
-@RequiresAuthentication
 public class PublishedHarmonizedDatasetsResource extends AbstractPublishedDatasetsResource<HarmonizationDataset> {
 
   private static final Logger log = LoggerFactory.getLogger(PublishedHarmonizedDatasetsResource.class);
@@ -47,8 +44,8 @@ public class PublishedHarmonizedDatasetsResource extends AbstractPublishedDatase
   @GET
   @Timed
   public Mica.DatasetsDto list(@QueryParam("from") @DefaultValue("0") int from,
-      @QueryParam("limit") @DefaultValue("10") int limit, @QueryParam("sort") String sort,
-      @QueryParam("order") String order, @QueryParam("study") String studyId, @QueryParam("query") String query) {
+                               @QueryParam("limit") @DefaultValue("10") int limit, @QueryParam("sort") String sort,
+                               @QueryParam("order") String order, @QueryParam("study") String studyId, @QueryParam("query") String query) {
 
     return getDatasetDtos(HarmonizationDataset.class, from, limit, sort, order, studyId, query);
   }

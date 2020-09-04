@@ -26,6 +26,7 @@ mica.config
     'FormServerValidation',
     'NOTIFICATION_EVENTS',
     'DocumentSetsPermissionsResource',
+    'CrosstabsPermissionsResource',
 
     function ($rootScope,
               $scope,
@@ -41,7 +42,8 @@ mica.config
               KeyStoreResource,
               FormServerValidation,
               NOTIFICATION_EVENTS,
-              DocumentSetsPermissionsResource) {
+              DocumentSetsPermissionsResource,
+              CrosstabsPermissionsResource) {
       $scope.micaConfig = MicaConfigResource.get();
 
       function getAvailableLanguages() {
@@ -241,22 +243,35 @@ mica.config
       };
 
       $scope.documentSetsAcls = [];
-
       $scope.onAddDocumentSetsAcl = function (acl) {
         return DocumentSetsPermissionsResource.save(acl);
       };
-
       $scope.onRemoveDocumentSetsAcl = function (acl) {
         return DocumentSetsPermissionsResource.delete(acl);
       };
-
       $scope.onLoadDocumentSetsAcls = function () {
         $scope.documentSetsAcls = DocumentSetsPermissionsResource.query();
         return $scope.documentSetsAcls;
       };
-
-      $scope.overriddenRoleHelpTexts = {
+      $scope.documentSetsRoles = ['READER'];
+      $scope.documentSetsRoleHelpTexts = {
         'READER': 'config.opal-sets-views-download-permission'
+      };
+
+      $scope.crosstabsAcls = [];
+      $scope.onAddCrosstabsAcl = function (acl) {
+        return CrosstabsPermissionsResource.save(acl);
+      };
+      $scope.onRemoveCrosstabsAcl = function (acl) {
+        return CrosstabsPermissionsResource.delete(acl);
+      };
+      $scope.onLoadCrosstabsAcls = function () {
+        $scope.crosstabsAcls = CrosstabsPermissionsResource.query();
+        return $scope.crosstabsAcls;
+      };
+      $scope.crosstabsRoles = ['ANALYST'];
+      $scope.crosstabsRoleHelpTexts = {
+        'ANALYST': 'config.crosstabs-permission'
       };
 
     }])
