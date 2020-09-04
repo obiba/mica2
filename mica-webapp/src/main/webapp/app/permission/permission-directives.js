@@ -43,6 +43,7 @@ mica.permission
       onDelete: '=',
       onLoad: '=',
       name: '=',
+      roles: '<',
       otherResources: '<',
       overriddenRoleHelpTexts: '<',
       allowBlockedPrincipals: '<'
@@ -70,6 +71,9 @@ mica.permission
           name: function () {
             return $scope.name;
           },
+          roles: function () {
+            return $scope.roles;
+          },
           otherResources: function () {
             return $scope.otherResources;
           },
@@ -88,7 +92,7 @@ mica.permission
     }
 
     $scope.addPermission = function() {
-      editPermission({role: 'READER', type: 'USER', file: true});
+      editPermission({role: $scope.roles[0], type: 'USER', file: true});
     };
 
     $scope.editPermission = function (acl) {
@@ -117,9 +121,9 @@ mica.permission
     $scope.onLoad();
   }])
 
-.controller('PermissionsConfigModalController', ['$scope', '$uibModalInstance', 'AlertService', 'ServerErrorUtils', '$filter', 'acl', 'onAdd', 'name', 'otherResources', 'allowBlockedPrincipals', 'overriddenRoleHelpTexts',
-  function ($scope, $uibModalInstance, AlertService, ServerErrorUtils, $filter, acl, onAdd, name, otherResources, allowBlockedPrincipals, overriddenRoleHelpTexts) {
-    $scope.ROLES = ['READER'];
+.controller('PermissionsConfigModalController', ['$scope', '$uibModalInstance', 'AlertService', 'ServerErrorUtils', '$filter', 'acl', 'onAdd', 'name', 'roles', 'otherResources', 'allowBlockedPrincipals', 'overriddenRoleHelpTexts',
+  function ($scope, $uibModalInstance, AlertService, ServerErrorUtils, $filter, acl, onAdd, name, roles, otherResources, allowBlockedPrincipals, overriddenRoleHelpTexts) {
+    $scope.ROLES = roles ? roles : ['READER'];
     $scope.TYPES = [
       {name: 'USER', label: $filter('translate')('permission.user')},
       {name: 'GROUP', label: $filter('translate')('permission.group')}

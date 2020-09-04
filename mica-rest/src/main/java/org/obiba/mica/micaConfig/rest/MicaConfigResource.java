@@ -217,10 +217,18 @@ public class MicaConfigResource {
 
     return Response.status(Response.Status.NOT_FOUND).build();
   }
+
   @Path("/document-sets/permissions")
-  public SubjectAclResource documentSetsResource() {
+  public SubjectAclResource documentSetsPermissionsResource() {
     SubjectAclResource subjectAclResource = applicationContext.getBean(SubjectAclResource.class);
     subjectAclResource.setResourceInstance("/set/documents", "_opal");
+    return subjectAclResource;
+  }
+
+  @Path("/contingencies/permissions")
+  public SubjectAclResource crosstabsPermissionsResource() {
+    SubjectAclResource subjectAclResource = applicationContext.getBean(SubjectAclResource.class);
+    subjectAclResource.setResourceInstance("/analyses/contingencies", "_opal");
     return subjectAclResource;
   }
 

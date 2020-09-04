@@ -75,7 +75,7 @@ const BUCKET = 'bucket';
 
 
 /**
- * Base class used to build quries and for CRUD operations
+ * Base class used to build queries and for CRUD operations
  */
 class EntityQuery {
   constructor(type, target, defaultSize) {

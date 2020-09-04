@@ -241,7 +241,7 @@
         <div class="col-sm-12 col-lg-6">
           <div class="card card-info card-outline">
             <div class="card-header">
-              <h3 class="card-title"><@message "todo-title"/></h3>
+              <h3 class="card-title"><@message "notes-title"/></h3>
             </div>
             <div class="card-body">
               <#if dar.status == "OPENED">

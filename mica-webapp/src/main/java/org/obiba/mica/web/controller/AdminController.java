@@ -46,7 +46,7 @@ public class AdminController extends BaseController {
     Subject subject = SecurityUtils.getSubject();
     String contextPath = micaConfigService.getContextPath();
     if (!subject.isAuthenticated())
-      return new ModelAndView("redirect:signin?redirect=" + contextPath + "/admin");
+      return new ModelAndView("redirect:/signin?redirect=" + contextPath + "/admin");
 
     if (subject.hasRole(Roles.MICA_ADMIN) || subject.hasRole(Roles.MICA_DAO) || subject.hasRole(Roles.MICA_EDITOR) || subject.hasRole(Roles.MICA_REVIEWER))
       return new ModelAndView("admin");

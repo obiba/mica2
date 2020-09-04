@@ -450,6 +450,7 @@ message MicaConfigDto {
   optional bool isVariablesCountEnabled = 55;
   optional bool isProjectsCountEnabled = 56;
   optional bool isDataAccessRequestsCountEnabled = 57;
+  optional bool isContingencyEnabled = 58;
 }
 
 message PublicMicaConfigDto {

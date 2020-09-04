@@ -116,6 +116,8 @@ public class VariableController extends BaseController {
     params.put("harmoAnnotations", new HarmonizationAnnotations(harmoAnnotations));
     params.put("query", "variable(" + query.toString() + ")");
 
+    params.put("showDatasetContingencyLink", showDatasetContingencyLink());
+
     return new ModelAndView("variable", params);
   }
 

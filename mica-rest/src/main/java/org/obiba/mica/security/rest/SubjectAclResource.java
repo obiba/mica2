@@ -76,12 +76,13 @@ public class SubjectAclResource {
         .setRole(PermissionsUtils.asRole(a.getActions())).setInstance(FileUtils.decode(instance)))
       .collect(Collectors.toMap(AclDto.Builder::getPrincipal, aclDto -> aclDto));
 
-
     for (String otherResource : otherResources) {
       subjectAclService.findByResourceInstance(mergeWithResourceName(otherResource), instance).forEach(subjectAcl -> builderMap.get(subjectAcl.getPrincipal()).addOtherResources(otherResource));
     }
 
-    subjectAclService.findByResourceInstance(fileResource, fileInstance).forEach(subjectAcl -> builderMap.get(subjectAcl.getPrincipal()).setFile(true));
+    if (fileResource != null && fileInstance != null) {
+      subjectAclService.findByResourceInstance(fileResource, fileInstance).forEach(subjectAcl -> builderMap.get(subjectAcl.getPrincipal()).setFile(true));
+    }
 
     return builderMap.values().stream().map(AclDto.Builder::build).collect(Collectors.toList());
   }
@@ -102,17 +103,19 @@ public class SubjectAclResource {
   @PUT
   public Response update(@QueryParam("principal") String principal,
     @QueryParam("type") @DefaultValue("USER") String typeStr, @QueryParam("role") @DefaultValue("READER") String role,
-    @QueryParam("file") @DefaultValue("true") boolean file, @QueryParam("otherResources") List<String> others) {
+    @QueryParam("file") @DefaultValue("true") boolean file, @QueryParam("config") @DefaultValue("false") boolean config, @QueryParam("otherResources") List<String> others) {
     if(principal == null) return Response.status(Response.Status.BAD_REQUEST).build();
     checkPermission();
 
     SubjectAcl.Type type = SubjectAcl.Type.valueOf(typeStr.toUpperCase());
-    String actions = PermissionsUtils.asActions(isDraft() ? role.toUpperCase() : "READER");
+    String actions = PermissionsUtils.asActions(config ? role.toUpperCase() : (isDraft() ? role.toUpperCase() : "READER"));
     subjectAclService.addSubjectPermission(type, principal, resource, actions, instance);
 
-    subjectAclService.removeSubjectPermissions(type, principal, fileResource, fileInstance);
-    if(file) {
-      subjectAclService.addSubjectPermission(type, principal, fileResource, actions, fileInstance);
+    if (fileResource != null && fileInstance != null) {
+      subjectAclService.removeSubjectPermissions(type, principal, fileResource, fileInstance);
+      if (file) {
+        subjectAclService.addSubjectPermission(type, principal, fileResource, actions, fileInstance);
+      }
     }
 
     otherResources.forEach(otherResourceName -> subjectAclService.removeSubjectPermissions(type, principal, mergeWithResourceName(otherResourceName), instance));

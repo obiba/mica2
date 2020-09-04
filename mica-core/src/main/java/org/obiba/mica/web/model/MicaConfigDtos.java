@@ -158,6 +158,7 @@ class MicaConfigDtos {
     builder.setIsCartEnabled(config.isCartEnabled());
     builder.setSetTimeToLive(config.getSetTimeToLive());
     builder.setCartTimeToLive(config.getCartTimeToLive());
+    builder.setIsContingencyEnabled(config.isContingencyEnabled());
     builder.setIsSetsAnalysisEnabled(config.isSetsAnalysisEnabled());
     builder.setIsSetsSearchEnabled(config.isSetsSearchEnabled());
     builder.setOpalViewsGrouping(config.getOpalViewsGrouping().name());
@@ -237,6 +238,7 @@ class MicaConfigDtos {
     config.setCartEnabled(cartEnabled);
     config.setAnonymousCanCreateCart(cartEnabled && dto.getAnonymousCanCreateCart());
     config.setSetsAnalysisEnabled(dto.getIsSetsAnalysisEnabled());
+    config.setContingencyEnabled(dto.getIsContingencyEnabled());
     config.setSetsSearchEnabled(dto.getIsSetsSearchEnabled());
 
     if (dto.hasMaxItemsPerSet() && dto.getMaxItemsPerSet() > 0) config.setMaxItemsPerSet(dto.getMaxItemsPerSet());

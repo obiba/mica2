@@ -61,7 +61,18 @@ mica.config
     return $resource(contextPath + '/ws/config/document-sets/permissions', {}, {
       'save': {
         method: 'PUT',
-        params: {type: '@type', principal: '@principal', role: '@role', otherResources: '@otherResources'},
+        params: {type: '@type', principal: '@principal', role: '@role', otherResources: '@otherResources', file: 'false', config: 'true'},
+        errorHandler: true
+      },
+      'delete': {method: 'DELETE', params: {type: '@type', principal: '@principal'}, errorHandler: true},
+      'get': {method: 'GET', isArray: true}
+    });
+  }])
+  .factory('CrosstabsPermissionsResource', ['$resource', function ($resource) {
+    return $resource(contextPath + '/ws/config/contingencies/permissions', {}, {
+      'save': {
+        method: 'PUT',
+        params: {type: '@type', principal: '@principal', role: '@role', otherResources: '@otherResources', file: 'false', config: 'true'},
         errorHandler: true
       },
       'delete': {method: 'DELETE', params: {type: '@type', principal: '@principal'}, errorHandler: true},

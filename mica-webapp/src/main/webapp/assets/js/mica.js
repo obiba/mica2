@@ -1,6 +1,67 @@
 /* exported micajs */
 'use strict';
 
+class LocalizedValues {
+  static for(values, lang, keyLang, keyValue) {
+    if (Array.isArray(values)) {
+      var result = values.filter(function (item) {
+        return item[keyLang] === lang;
+      });
+
+      if (result && result.length > 0) {
+        return result[0][keyValue];
+      } else {
+
+        var langs = values.map(function(value) {
+          return value[keyLang];
+        });
+
+        if (langs.length > 0) {
+          return this.for(values, langs.length === 1 ? langs[0] : 'en', keyLang, keyValue);
+        }
+      }
+
+    } else if (values) {
+      return this.for(Object.keys(values).map(function(k) {
+        return {lang: k, value: values[k]};
+      }), lang, keyLang, keyValue);
+    }
+
+    return values || '';
+  }
+
+  static forLang(values, lang) {
+    var rval = this.for(values, lang, 'lang', 'value');
+    if (!rval || rval === '') {
+      rval = this.for(values, 'und', 'lang', 'value');
+    }
+    if (!rval || rval === '') {
+      rval = this.for(values, 'en', 'lang', 'value');
+    }
+    return rval;
+  }
+
+  static forLocale(values, lang) {
+    var rval = this.for(values, lang, 'locale', 'text');
+    if (!rval || rval === '') {
+      rval = this.for(values, 'und', 'locale', 'text');
+    }
+    if (!rval || rval === '') {
+      rval = this.for(values, 'en', 'locale', 'text');
+    }
+    return rval;
+  }
+
+  static extractLabel(attributes, lang) {
+    let labelAttr = attributes ? attributes.filter(attr => attr.name === 'label').pop() : undefined;
+    let label;
+    if (labelAttr) {
+      label = this.forLang(labelAttr.values, lang);
+    }
+    return label ? label : '';
+  }
+}
+
 var micajs = (function() {
 
   const normalizeUrl = function(url) {
@@ -44,7 +105,7 @@ var micajs = (function() {
   };
 
   const micaRedirect = function(path) {
-    $.redirect(path, null, 'GET');
+    window.location.assign(path);
   };
 
   const micaSignin = function(formId, onFailure) {
@@ -62,7 +123,7 @@ var micajs = (function() {
           if (q.get('redirect')) {
             redirect = q.get('redirect');
           }
-          $.redirect(redirect, {}, 'GET');
+          micaRedirect(redirect);
         })
         .catch(handle => {
           console.dir(handle);
@@ -119,7 +180,7 @@ var micajs = (function() {
       axios.post(normalizeUrl(url), data)
         .then(() => {
           //console.dir(response);
-          let redirect = contextPath + '/';
+          let redirect = normalizeUrl('/');
           let values = {};
           const q = new URLSearchParams(window.location.search);
           if (q.get('redirect')) {
@@ -130,7 +191,7 @@ var micajs = (function() {
           } else {
             redirect = 'just-registered';
           }
-          $.redirect(redirect, values, 'GET');
+          micaRedirect(redirect);
         })
         .catch(handle => {
           console.dir(handle);
@@ -153,7 +214,7 @@ var micajs = (function() {
       url: normalizeUrl('/ws/auth/session/_current')
     })
     .always(function() {
-      $.redirect(redirect || normalizeUrl('/'), {}, 'GET');
+      micaRedirect(redirect || normalizeUrl('/'));
     });
   };
 
@@ -171,7 +232,7 @@ var micajs = (function() {
       axios.post(normalizeUrl(url), data)
         .then(() => {
           //console.dir(response);
-          $.redirect(normalizeUrl('/'), {}, 'GET');
+          micaRedirect(normalizeUrl('/'));
         })
         .catch(handle => {
           console.dir(handle);
@@ -571,6 +632,23 @@ var micajs = (function() {
       });
   };
 
+  const micaDatasetContingency = function(type, id, var1, var2, onsuccess, onfailure) {
+    var url = '/ws/' + type.toLowerCase() + '-dataset/' + id + '/variable/' + var1 + '/contingency?by=' + var2;
+    axios.get(normalizeUrl(url))
+      .then(response => {
+        //console.dir(response);
+        if (onsuccess) {
+          onsuccess(response.data);
+        }
+      })
+      .catch(response => {
+        console.dir(response);
+        if (onfailure) {
+          onfailure(response);
+        }
+      });
+  };
+
   //
   // Harmo
   //
@@ -689,7 +767,8 @@ var micajs = (function() {
       'attributeValue': micaVariableAttributeValue
     },
     'dataset': {
-      'harmonizedVariables': micaDatasetHarmonizedVariables
+      'harmonizedVariables': micaDatasetHarmonizedVariables,
+      'datasetContingency': micaDatasetContingency
     },
     'harmo': {
       'status': micaHarmoStatus,

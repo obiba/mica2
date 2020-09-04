@@ -378,6 +378,8 @@ module.exports = function (grunt) {
           {expand: true, src: ['node_modules/admin-lte/plugins/fontawesome-free/**'], dest: 'src/main/webapp/assets/libs/'},
           {expand: true, src: ['node_modules/admin-lte/plugins/jquery/**'], dest: 'src/main/webapp/assets/libs/'},
           {expand: true, src: ['node_modules/admin-lte/plugins/moment/**'], dest: 'src/main/webapp/assets/libs/'},
+          {expand: true, src: ['node_modules/admin-lte/plugins/select2/**'], dest: 'src/main/webapp/assets/libs/'},
+          {expand: true, src: ['node_modules/admin-lte/plugins/select2-bootstrap4-theme/**'], dest: 'src/main/webapp/assets/libs/'},
           {expand: true, src: ['node_modules/admin-lte/plugins/toastr/**'], dest: 'src/main/webapp/assets/libs/'},
           {expand: true, src: ['node_modules/simplemde/dist/**'], dest: 'src/main/webapp/assets/libs/'},
           {expand: true, src: ['node_modules/vue/dist/**'], dest: 'src/main/webapp/assets/libs/'},

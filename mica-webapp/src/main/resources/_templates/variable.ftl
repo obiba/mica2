@@ -247,6 +247,17 @@
             <div class="card card-info card-outline">
               <div class="card-header">
                 <h3 class="card-title"><@message "summary-statistics"/></h3>
+                <#if showDatasetContingencyLink>
+                  <#if variable.nature == "CATEGORICAL">
+                    <a class="btn btn-primary float-right" href="../dataset-crosstab/${variable.datasetId}?var1=${variable.name}">
+                      <i class="fas fa-cog"></i> <@message "dataset.crosstab.title"/>
+                    </a>
+                  <#elseif variable.nature == "CONTINUOUS">
+                    <a class="btn btn-primary float-right" href="../dataset-crosstab/${variable.datasetId}?var2=${variable.name}">
+                      <i class="fas fa-cog"></i> <@message "dataset.crosstab.title"/>
+                    </a>
+                  </#if>
+                </#if>
               </div>
               <div class="card-body">
                 <#if user?? || !config.variableSummaryRequiresAuthentication>

@@ -89,25 +89,34 @@
       </div>
       <div class="col-md-6">
         <h4 translate>config.sections</h4>
-          <div form-checkbox name="isRepositoryEnabled" model="micaConfig.isRepositoryEnabled"
-              label="config.repository-enabled" help="config.repository-enabled-help"></div>
-          <div form-checkbox name="isSingleStudyEnabled" model="micaConfig.isSingleStudyEnabled"
-              label="config.single-study-enabled" help="config.single-study-enabled-help"></div>
-          <div form-checkbox name="isNetworkEnabled" model="micaConfig.isNetworkEnabled" label="config.network-enabled"
-              help="config.network-enabled-help"></div>
-          <div form-checkbox name="isSingleNetworkEnabled" model="micaConfig.isSingleNetworkEnabled"
-              label="config.single-network-enabled" help="config.single-network-enabled-help"
-              disabled="!micaConfig.isNetworkEnabled"></div>
-          <div form-checkbox name="isCollectedDatasetEnabled" model="micaConfig.isCollectedDatasetEnabled"
-              label="config.collected-dataset-enabled" help="config.collected-dataset-enabled-help"></div>
-          <div form-checkbox name="isHarmonizedDatasetEnabled" model="micaConfig.isHarmonizedDatasetEnabled"
-              label="config.harmonized-dataset-enabled" help="config.harmonized-dataset-enabled-help"></div>
-          <div form-checkbox name="isProjectEnabled" ng-click="projectEnabledChanged()" model="micaConfig.isProjectEnabled"
-               label="config.project-enabled" help="config.project-enabled-help"></div>
-          <div form-checkbox name="isDataAccessEnabled" ng-click="dataAccessEnabledChanged()"  model="micaConfig.isDataAccessEnabled"
-               label="config.data-access-enabled" help="config.data-access-enabled-help"></div>
-		  <div form-checkbox name="isImportStudiesFeatureEnabled" model="micaConfig.isImportStudiesFeatureEnabled"
-               label="config.import-studies-feature-enabled" help="config.import-studies-feature-enabled-help"></div>
+        <div form-checkbox name="isRepositoryEnabled" model="micaConfig.isRepositoryEnabled"
+            label="config.repository-enabled" help="config.repository-enabled-help"></div>
+        <div form-checkbox name="isSingleStudyEnabled" model="micaConfig.isSingleStudyEnabled"
+            label="config.single-study-enabled" help="config.single-study-enabled-help"></div>
+        <div form-checkbox name="isNetworkEnabled" model="micaConfig.isNetworkEnabled" label="config.network-enabled"
+            help="config.network-enabled-help"></div>
+        <div form-checkbox name="isSingleNetworkEnabled" model="micaConfig.isSingleNetworkEnabled"
+            label="config.single-network-enabled" help="config.single-network-enabled-help"
+            disabled="!micaConfig.isNetworkEnabled"></div>
+        <div form-checkbox name="isCollectedDatasetEnabled" model="micaConfig.isCollectedDatasetEnabled"
+            label="config.collected-dataset-enabled" help="config.collected-dataset-enabled-help"></div>
+        <div form-checkbox name="isHarmonizedDatasetEnabled" model="micaConfig.isHarmonizedDatasetEnabled"
+            label="config.harmonized-dataset-enabled" help="config.harmonized-dataset-enabled-help"></div>
+        <div form-checkbox name="isProjectEnabled" ng-click="projectEnabledChanged()" model="micaConfig.isProjectEnabled"
+             label="config.project-enabled" help="config.project-enabled-help"></div>
+        <div form-checkbox name="isDataAccessEnabled" ng-click="dataAccessEnabledChanged()"  model="micaConfig.isDataAccessEnabled"
+             label="config.data-access-enabled" help="config.data-access-enabled-help"></div>
+        <div form-checkbox name="isImportStudiesFeatureEnabled" model="micaConfig.isImportStudiesFeatureEnabled"
+             label="config.import-studies-feature-enabled" help="config.import-studies-feature-enabled-help"></div>
+
+        <h4 translate class="voffset4">config.data-analyses.title</h4>
+        <span class="help-block" translate>config.data-analyses.help</span>
+        <div form-checkbox name="isContingencyEnabled" model="micaConfig.isContingencyEnabled"
+             label="config.contingency-enabled" help="config.contingency-enabled-help">
+        </div>
+        <div form-checkbox name="isSetsAnalysisEnabled" model="micaConfig.isSetsAnalysisEnabled"
+             label="config.sets-analysis-enabled" help="config.sets-analysis-enabled-help">
+        </div>
 
         <h4 translate class="voffset4">config.searchLayout.title</h4>
         <span class="help-block" translate>config.searchLayout.help</span>
@@ -123,9 +132,6 @@
         </div>
         <div form-checkbox name="anonymousCanCreateCart" model="micaConfig.anonymousCanCreateCart"
              label="config.anonymous-create-cart" disabled="!micaConfig.isCartEnabled"  help="config.anonymous-create-cart-help">
-        </div>
-        <div form-checkbox name="isSetsAnalysisEnabled" model="micaConfig.isSetsAnalysisEnabled"
-             label="config.sets-analysis-enabled" help="config.sets-analysis-enabled-help">
         </div>
         <div form-checkbox name="isSetsSearchEnabled" model="micaConfig.isSetsSearchEnabled"
              label="config.sets-search-enabled" help="config.sets-search-enabled-help">
