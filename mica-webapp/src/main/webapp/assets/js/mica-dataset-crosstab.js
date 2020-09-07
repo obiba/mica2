@@ -568,7 +568,7 @@ const refreshCrosstab = function() {
   $('#results').show();
   $('#loadingCrosstab').show();
   $('#result-panel').hide();
-  micajs.dataset.datasetContingency(Mica.type, Mica.dataset, Mica.var1.name, Mica.var2.name, function (data) {
+  micajs.dataset.contingency(Mica.type, Mica.dataset, Mica.var1.name, Mica.var2.name, function (data) {
     // build a data object to make sure that all categories are covered
     const crosstab = new DatasetCrosstab(Mica.var1, Mica.var2, data);
     Mica.crosstab = crosstab;
