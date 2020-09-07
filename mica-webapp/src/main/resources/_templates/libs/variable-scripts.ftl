@@ -1,5 +1,7 @@
 <!-- ChartJS -->
 <script src="${adminLTEPath}/plugins/chart.js/Chart.min.js"></script>
+<script src="${assetsPath}/js/mica-variable.js"></script>
+
 <#if user?? || !config.variableSummaryRequiresAuthentication>
 <script>
   $(function () {
@@ -51,44 +53,28 @@
       $('#counts').show();
 
       if (data.frequencies) {
-        const labels = [];
-        const dataset = {
-          data: [],
-          backgroundColor: ['#f56954', '#00a65a', '#f39c12', '#00c0ef', '#3c8dbc', '#d2d6de',
-            '#007bff', '#6610f2','#20c997', '#6f42c1', '#e83e8c', '#dc3545', '#fd7e14', '#ffc107',
-            '#28a745',  '#17a2b8'],
-        };
+        // frequencies chart
+        const frequencyChartElem = $('#frequencyChart');
+        const chartCanvas = frequencyChartElem.get(0).getContext('2d');
+        // TODO make color panel configurable
+        const backgroundColors = ['#f56954', '#00a65a', '#f39c12', '#00c0ef', '#3c8dbc', '#d2d6de',
+          '#007bff', '#6610f2','#20c997', '#6f42c1', '#e83e8c', '#dc3545', '#fd7e14', '#ffc107',
+          '#28a745',  '#17a2b8'];
+        new Chart(chartCanvas, makeVariableFrequenciesChartSettings(data.frequencies, backgroundColors));
+        frequencyChartElem.show();
+
+        // frequencies table
         let frequencyRows = '';
         data.frequencies.forEach(frequency => {
-          if (frequency.count>0) {
-            labels.push(frequency.value);
-            dataset.data.push(frequency.count);
-          }
-
           const pct = data.n === 0 ? 0 : (frequency.count / data.n) * 100;
-          frequencyRows = frequencyRows + '<tr>' +
+          frequencyRows = frequencyRows +
+                  '<tr>' +
                   '<td>' + frequency.value + '</td>' +
                   '<td>' + frequency.count + '</td>' +
                   '<td>' + pct.toFixed(2) + '</td>' +
                   '<td>' + (frequency.missing ? '<i class="fas fa-check"></i>' : '') + '</td>' +
-                  '</tr>'
+                  '</tr>';
         });
-        const chartData = {
-          labels: labels,
-          datasets: [dataset]
-        };
-        const chartCanvas = $('#frequencyChart').get(0).getContext('2d');
-        const chartOptions = {
-          maintainAspectRatio: false,
-          responsive: true,
-        };
-        new Chart(chartCanvas, {
-          type: 'doughnut',
-          data: chartData,
-          options: chartOptions
-        });
-        $('#frequencyChart').show();
-
         $('#frequencyValues').html(frequencyRows);
 
         const dataTableOpts = {
@@ -107,6 +93,7 @@
 
         $('#categoricalSummary').show();
       }
+
       if (data.statistics) {
         const summary = data.statistics;
 
@@ -119,49 +106,12 @@
         $('#max').html(summary.n === 0 ? '-' : summary.max.toFixed(2));
 
         if (data.intervalFrequencies) {
-          const labels = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'];
-          let dataPoints = [];
-          data.intervalFrequencies.forEach(item => {
-            dataPoints.push(item.count);
-          });
-
-          const chartOptions = {
-            responsive: true,
-            legend: {
-              position: 'top',
-            },
-            title: {
-              display: true,
-              text: 'Histogram'
-            },
-            scales: {
-              yAxes: [{
-                ticks: {
-                  min: 0,
-                },
-                labelString: 'coucou'
-              }]
-            }
-          };
-
-          const chartCanvas = $('#histogramChart').get(0).getContext('2d');
-          new Chart(chartCanvas, {
-            type: 'bar',
-            data: {
-              labels: labels,
-              datasets: [{
-                label: 'Frequencies',
-                data: dataPoints,
-                barPercentage: 1,
-                categoryPercentage: 1,
-                borderWidth: 1,
-                borderColor: 'rgb(54, 162, 235)',
-                backgroundColor: '#3c8dbc'
-              }]
-            },
-            options: chartOptions
-          });
-          $('#histogramChart').show();
+          // histogram chart
+          const histogramChartElem = $('#histogramChart');
+          const chartCanvas = histogramChartElem.get(0).getContext('2d');
+          // TODO make color configurable
+          new Chart(chartCanvas, makeVariableHistogramChartSettings(data.intervalFrequencies, 'rgb(54, 162, 235)', '#3c8dbc'));
+          histogramChartElem.show();
         }
 
         $('#continuousSummary').show();
