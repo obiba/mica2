@@ -2,6 +2,7 @@
 <#include "libs/header.ftl">
 <#include "models/population.ftl">
 <#include "models/dce.ftl">
+<#include "models/dataset.ftl">
 
 <!DOCTYPE html>
 <html lang="${.lang}">
@@ -226,6 +227,9 @@
           </#if>
         </div>
 
+        <!-- Dataset model -->
+        <@datasetModel dataset=dataset type=type/>
+
         <!-- Harmonization content -->
         <#if type == "Harmonized">
           <div class="row">
@@ -256,6 +260,12 @@
             </div>
           </div>
         </#if>
+
+        <!-- Variables classifications -->
+        <#if datasetVariablesClassificationsTaxonomies?? && datasetVariablesClassificationsTaxonomies?size gt 0>
+          <@variablesClassifications dataset=dataset/>
+        </#if>
+
       </div>
     </div>
     <!-- /.content -->

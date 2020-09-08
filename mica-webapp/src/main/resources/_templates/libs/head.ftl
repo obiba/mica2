@@ -49,6 +49,9 @@
 <link rel="stylesheet" href="${assetsPath}/css/bootstrap-3-4.css">
 <!-- Obiba style -->
 <link rel="stylesheet" href="${assetsPath}/css/obiba.css">
+<!-- Select2 -->
+<link rel="stylesheet" href="${adminLTEPath}/plugins/select2/css/select2.css">
+<link rel="stylesheet" href="${adminLTEPath}/plugins/select2-bootstrap4-theme/select2-bootstrap4.css">
 
 <!-- Current user privilegies -->
 <#if user??>

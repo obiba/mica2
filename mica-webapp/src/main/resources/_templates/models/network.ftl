@@ -55,3 +55,26 @@
 <!-- Network list: data -->
 <#macro networkTDs network>
 </#macro>
+
+<!-- Variables classifications -->
+<#macro variablesClassifications network studyAcronyms>
+  <div class="card card-info card-outline">
+    <div class="card-header">
+      <h3 class="card-title"><@message "variables-classifications"/></h3>
+    </div>
+    <div class="card-body">
+      <img id="loadingClassifications" src="${assetsPath}/images/loading.gif">
+      <div id="classificationsContainer" style="display: none;">
+        <div class="mb-4">
+          <select id="select-bucket" class="form-control select2">
+            <option value="_all" selected><@message "all-studies"/></option>
+          </select>
+        </div>
+        <div id="chartsContainer"></div>
+      </div>
+      <div id="noVariablesClassifications" style="display: none">
+        <span class="text-muted"><@message "no-variables-classifications"/></span>
+      </div>
+    </div>
+  </div>
+</#macro>

@@ -56,10 +56,7 @@
         // frequencies chart
         const frequencyChartElem = $('#frequencyChart');
         const chartCanvas = frequencyChartElem.get(0).getContext('2d');
-        // TODO make color panel configurable
-        const backgroundColors = ['#f56954', '#00a65a', '#f39c12', '#00c0ef', '#3c8dbc', '#d2d6de',
-          '#007bff', '#6610f2','#20c997', '#6f42c1', '#e83e8c', '#dc3545', '#fd7e14', '#ffc107',
-          '#28a745',  '#17a2b8'];
+        const backgroundColors = ['${colors?join("', '")}'];
         new Chart(chartCanvas, makeVariableFrequenciesChartSettings(data.frequencies, backgroundColors));
         frequencyChartElem.show();
 
@@ -109,8 +106,7 @@
           // histogram chart
           const histogramChartElem = $('#histogramChart');
           const chartCanvas = histogramChartElem.get(0).getContext('2d');
-          // TODO make color configurable
-          new Chart(chartCanvas, makeVariableHistogramChartSettings(data.intervalFrequencies, 'rgb(54, 162, 235)', '#3c8dbc'));
+          new Chart(chartCanvas, makeVariableHistogramChartSettings(data.intervalFrequencies, '${barChartBorderColor}', '${barChartBackgroundColor}'));
           histogramChartElem.show();
         }
 

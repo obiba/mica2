@@ -277,6 +277,11 @@
           </div>
         </#if>
 
+        <!-- Variables classifications -->
+        <#if networkVariablesClassificationsTaxonomies?? && (networkVariablesClassificationsTaxonomies?size gt 0) && studyAcronyms?? && (studyAcronyms?size gt 0)>
+          <@variablesClassifications network=network studyAcronyms=studyAcronyms/>
+        </#if>
+
       </div><!-- /.container-fluid -->
     </div>
     <!-- /.content -->
