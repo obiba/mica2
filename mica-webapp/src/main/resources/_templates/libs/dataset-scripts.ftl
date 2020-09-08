@@ -1,4 +1,33 @@
+<!-- ChartJS -->
+<script src="${adminLTEPath}/plugins/chart.js/Chart.min.js"></script>
+<script src="${assetsPath}/js/mica-variable.js"></script>
+
 <script>
+  const Mica = {};
+
+  const renderVariablesClassifications = function() {
+    $('#loadingClassifications').hide();
+    const chartsElem = $('#chartsContainer');
+    chartsElem.children().remove();
+    if (Mica.variablesCoverage) {
+      Mica.variablesCoverage.forEach(chartData => {
+        chartsElem.append('<h5>' + chartData.title + '</h5>');
+        chartsElem.append('<p>' + chartData.subtitle + '</p>');
+        chartsElem.append('<canvas class="mb-4"></canvas>');
+        const chartCanvas = $('#chartsContainer canvas:last-child').get(0).getContext('2d');
+        new Chart(chartCanvas, makeVariablesClassificationsChartSettings(chartData, {
+          key: '${dataset.id}',
+          label: '<@message "variables"/>',
+          borderColor: '${barChartBorderColor}',
+          backgroundColor: '${barChartBackgroundColor}'
+        }));
+      });
+      $('#classificationsContainer').show();
+    } else {
+
+    }
+  };
+
   $(function () {
     micajs.stats('datasets', {query: "dataset(in(Mica_dataset.id,${dataset.id}))"}, function (stats) {
       $('#network-hits').text(new Intl.NumberFormat().format(stats.networkResultDto.totalHits));
@@ -63,6 +92,18 @@
         console.dir(info);
       } );
       */
+    </#if>
+
+    <#if datasetVariablesClassificationsTaxonomies?? && datasetVariablesClassificationsTaxonomies?size gt 0>
+      const taxonomies = ['${datasetVariablesClassificationsTaxonomies?join("', '")}'];
+      micajs.dataset.variablesCoverage('${dataset.id}', taxonomies, '${.lang}', function(data) {
+        if (data && data.charts) {
+          Mica.variablesCoverage = data.charts.map(chart => prepareVariablesClassificationsData(chart));
+        }
+        renderVariablesClassifications();
+      }, function(response) {
+
+      });
     </#if>
   });
 </script>

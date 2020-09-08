@@ -5,9 +5,6 @@
 <html lang="${.lang}">
 <head>
   <#include "libs/head.ftl">
-  <!-- Select2 -->
-  <link rel="stylesheet" href="${adminLTEPath}/plugins/select2/css/select2.css">
-  <link rel="stylesheet" href="${adminLTEPath}/plugins/select2-bootstrap4-theme/select2-bootstrap4.css">
   <title>${config.name!""} | ${localize(dataset.acronym)} | <@message "dataset.crosstab.title"/></title>
 </head>
 <body id="dataset-crosstab-page" class="hold-transition layout-top-nav layout-navbar-fixed">

@@ -228,6 +228,11 @@
           </div>
         </#if>
 
+        <!-- Variables classifications -->
+        <#if studyVariablesClassificationsTaxonomies?? && studyVariablesClassificationsTaxonomies?size gt 0>
+          <@variablesClassifications study=study/>
+        </#if>
+
       </div><!-- /.container-fluid -->
     </div>
     <!-- /.content -->

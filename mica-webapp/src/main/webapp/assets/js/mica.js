@@ -672,7 +672,7 @@ const micajs = (function() {
   // Harmo
   //
 
-  const micaVariableAttributeValue = function(variable, namespace, name) {
+  const variableAttributeValue = function(variable, namespace, name) {
     if (!variable || !variable.attributes) {
       return undefined;
     }
@@ -689,7 +689,7 @@ const micajs = (function() {
    * @param status
    * @returns {string}
    */
-  const micaHarmoStatusClass = function(status) {
+  const harmoStatusClass = function(status) {
     let iconClass = 'fas fa-minus text-muted';
     if (status === 'complete') {
       iconClass = 'fas fa-check text-success';
@@ -701,16 +701,16 @@ const micajs = (function() {
     return iconClass;
   };
 
-  const micaHarmoStatus = function(variable) {
-    return micaVariableAttributeValue(variable, 'Mlstr_harmo', 'status');
+  const harmoStatus = function(variable) {
+    return variableAttributeValue(variable, 'Mlstr_harmo', 'status');
   };
 
-  const micaHarmoStatusDetail = function(variable) {
-    return micaVariableAttributeValue(variable, 'Mlstr_harmo', 'status_detail');
+  const harmoStatusDetail = function(variable) {
+    return variableAttributeValue(variable, 'Mlstr_harmo', 'status_detail');
   };
 
-  const micaHarmoComment = function(variable) {
-    return micaVariableAttributeValue(variable, 'Mlstr_harmo', 'comment');
+  const harmoComment = function(variable) {
+    return variableAttributeValue(variable, 'Mlstr_harmo', 'comment');
   };
 
   //
@@ -721,7 +721,7 @@ const micajs = (function() {
    * Find population in study by ID
    * @param study
    */
-  const micaStudyPopulation = function(study, id) {
+  const studyPopulation = function(study, id) {
     if (study.populationSummaries) {
       for (const pop of study.populationSummaries) {
         if (pop.id === id) {
@@ -738,7 +738,7 @@ const micajs = (function() {
    * @param id
    * @returns {undefined|any}
    */
-  const micaStudyPopulationDCE = function(population, id) {
+  const studyPopulationDCE = function(population, id) {
     if (population.dataCollectionEventSummaries) {
       for (const dce of population.dataCollectionEventSummaries) {
         if (dce.id === id) {
@@ -747,6 +747,48 @@ const micajs = (function() {
       }
     }
     return undefined;
+  };
+
+  const studyVariablesCoverage = function(id, taxonomies, lang, onsuccess, onfailure) {
+    let url = '/ws/variables/charts/_coverage';
+    let query = 'variable(eq(studyId,' + id + '),sort(name),aggregate(re(' + taxonomies.map(tx => tx + '*').join(',') + '),bucket(dceId))),locale(' + lang + ')';
+    url = url + '?query=' + query;
+    axios.get(normalizeUrl(url))
+      .then(response => {
+        //console.dir(response);
+        if (onsuccess) {
+          onsuccess(response.data);
+        }
+      })
+      .catch(response => {
+        console.dir(response);
+        if (onfailure) {
+          onfailure(response);
+        }
+      });
+  };
+
+  //
+  // Network
+  //
+
+  const networkVariablesCoverage = function(id, taxonomies, lang, onsuccess, onfailure) {
+    let url = '/ws/variables/charts/_coverage';
+    let query = 'network(eq(Mica_network.id,' + id + ')),variable(sort(name),aggregate(re(' + taxonomies.map(tx => tx + '*').join(',') + '),bucket(studyId))),locale(' + lang + ')';
+    url = url + '?query=' + query;
+    axios.get(normalizeUrl(url))
+      .then(response => {
+        //console.dir(response);
+        if (onsuccess) {
+          onsuccess(response.data);
+        }
+      })
+      .catch(response => {
+        console.dir(response);
+        if (onfailure) {
+          onfailure(response);
+        }
+      });
   };
 
   return {
@@ -783,7 +825,7 @@ const micajs = (function() {
       'summary': variableSummary,
       'aggregation': variableAggregation,
       'harmonizations': variableHarmonizations,
-      'attributeValue': micaVariableAttributeValue
+      'attributeValue': variableAttributeValue
     },
     'dataset': {
       'harmonizedVariables': datasetHarmonizedVariables,
@@ -791,14 +833,18 @@ const micajs = (function() {
       'variablesCoverage': datasetVariablesCoverage
     },
     'harmo': {
-      'status': micaHarmoStatus,
-      'statusDetail': micaHarmoStatusDetail,
-      'comment': micaHarmoComment,
-      'statusClass': micaHarmoStatusClass
+      'status': harmoStatus,
+      'statusDetail': harmoStatusDetail,
+      'comment': harmoComment,
+      'statusClass': harmoStatusClass
     },
     'study': {
-      'population': micaStudyPopulation,
-      'populationDCE': micaStudyPopulationDCE
+      'population': studyPopulation,
+      'populationDCE': studyPopulationDCE,
+      'variablesCoverage': studyVariablesCoverage
+    },
+    'network': {
+      'variablesCoverage': networkVariablesCoverage
     }
   };
 

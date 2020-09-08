@@ -2,7 +2,9 @@ package org.obiba.mica.web.controller;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import org.obiba.mica.core.domain.AbstractGitPersistable;
+import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.core.domain.Membership;
 import org.obiba.mica.core.service.PersonService;
 import org.obiba.mica.network.NoSuchNetworkException;
@@ -65,6 +67,9 @@ public class NetworkController extends BaseController {
       .filter(s -> (s instanceof HarmonizationStudy) && subjectAclService.isAccessible("/harmonization-study", s.getId()))
       .collect(Collectors.toList());
     params.put("harmonizationStudies", harmonizationStudies);
+
+    Map<String, LocalizedString> studyAcronyms = studies.stream().collect(Collectors.toMap(AbstractGitPersistable::getId, BaseStudy::getAcronym));
+    params.put("studyAcronyms", studyAcronyms);
 
     List<String> ids = individualStudies.stream().map(AbstractGitPersistable::getId).collect(Collectors.toList());
     ids.addAll(harmonizationStudies.stream().map(AbstractGitPersistable::getId).collect(Collectors.toList()));
