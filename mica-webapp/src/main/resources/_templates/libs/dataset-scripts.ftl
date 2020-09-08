@@ -24,7 +24,7 @@
       });
       $('#classificationsContainer').show();
     } else {
-
+      $('#noVariablesClassifications').show();
     }
   };
 

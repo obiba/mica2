@@ -32,14 +32,14 @@
       });
       $('#classificationsContainer').show();
     } else {
-
+      $('#noVariablesClassifications').show();
     }
   };
 
   const initSelectBucket = function() {
     // scan for bucket ids
-    const buckets = [];
     if (Mica.variablesCoverage) {
+      const buckets = [];
       Mica.variablesCoverage.forEach(chartData => {
         Object.keys(chartData.itemCounts).forEach(k => {
           if (k !== '_all' && !buckets.includes(k)) {
@@ -47,20 +47,20 @@
           }
         });
       });
+      const selectBucketElem = $('#select-bucket');
+      selectBucketElem.select2({
+        theme: 'bootstrap4'
+      }).on('select2:select', function (e) {
+        let data = e.params.data;
+        //console.log(data);
+        $('#classificationsContainer').hide();
+        renderVariablesClassifications(data.id);
+      });
+      buckets.forEach(k => {
+        let newOption = new Option(Mica.options[k], k, false, false);
+        selectBucketElem.append(newOption);
+      });
     }
-    const selectBucketElem = $('#select-bucket');
-    selectBucketElem.select2({
-      theme: 'bootstrap4'
-    }).on('select2:select', function (e) {
-      let data = e.params.data;
-      //console.log(data);
-      $('#classificationsContainer').hide();
-      renderVariablesClassifications(data.id);
-    });
-    buckets.forEach(k => {
-      let newOption = new Option(Mica.options[k], k, false, false);
-      selectBucketElem.append(newOption);
-    });
   };
 
   $(function () {

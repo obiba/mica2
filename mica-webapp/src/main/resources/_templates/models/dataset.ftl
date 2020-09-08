@@ -15,6 +15,9 @@
       <div id="classificationsContainer" style="display: none;">
         <div id="chartsContainer"></div>
       </div>
+      <div id="noVariablesClassifications" style="display: none">
+        <span class="text-muted"><@message "no-variables-classifications"/></span>
+      </div>
     </div>
   </div>
 </#macro>
