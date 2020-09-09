@@ -105,8 +105,8 @@ public class DraftHarmonizedDatasetsResource {
 
     if(limit < 0) throw new IllegalArgumentException("limit cannot be negative");
 
-    DocumentService.Documents<HarmonizationDataset> datasets = draftDatasetService.find(from, limit, null,
-      null, studyId, query, null, null, accessibleIdFilter);
+    DocumentService.Documents<HarmonizationDataset> datasets = draftDatasetService.find(from, limit, sort,
+      order, studyId, query, null, null, accessibleIdFilter);
     totalCount = datasets.getTotal();
     response.addHeader("X-Total-Count", Long.toString(totalCount));
 
@@ -114,11 +114,6 @@ public class DraftHarmonizedDatasetsResource {
       .stream()
       .map(dataset -> dtos.asDto(dataset, true))
       .collect(toList());
-
-//    result = datasetService.findAllDatasets(datasets.getList().stream().map(Dataset::getId).collect(toList())).stream().map(d -> dtos.asDto(d, true));
-//
-//    return result.collect(toList());
-
   }
 
   @POST

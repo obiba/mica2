@@ -118,15 +118,6 @@ public class StudyStatesResource {
       .stream()
       .map(study -> dtos.asDto(study, studyService.getEntityState(study.getId())))
       .collect(toList());
-
-//
-//    result = (!Strings.isNullOrEmpty(type)
-//      ? getStudyServiceByType(type).findAllStates(studyDocuments.getList().stream().map(Study::getId).collect(toList()))
-//      : studyService.findAllStates(studyDocuments.getList().stream().map(Study::getId).collect(toList())))
-//      .stream();
-//
-//
-//    return result.map(dtos::asDto).collect(toList());
   }
 
   @Path("/study-state/{id}")

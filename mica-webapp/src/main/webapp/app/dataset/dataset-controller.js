@@ -20,7 +20,7 @@ mica.dataset.OPAL_TABLE_TYPES = {STUDY_TABLE: 'studyTable', HARMONIZATION_TABLE:
 mica.dataset
 
   .controller('CollectedDatasetListController', [
-    '$scope', '$timeout', 'CollectedDatasetsResource', 'DatasetService', 'AlertBuilder', 'EntityStateFilterService', mica.commons.ListController
+    '$scope', '$timeout', '$translate', 'CollectedDatasetsResource', 'DatasetService', 'AlertBuilder', 'EntityStateFilterService', mica.commons.ListController
   ])
 
   .controller('CollectedDatasetEditController', ['$rootScope',
@@ -788,7 +788,7 @@ mica.dataset
   }])
 
   .controller('HarmonizedDatasetListController', [
-    '$scope', '$timeout', 'HarmonizedDatasetsResource', 'DatasetService', 'AlertBuilder', 'EntityStateFilterService', mica.commons.ListController
+    '$scope', '$timeout', '$translate', 'HarmonizedDatasetsResource', 'DatasetService', 'AlertBuilder', 'EntityStateFilterService', mica.commons.ListController
   ])
 
   .controller('StudyTableModalController', [

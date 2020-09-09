@@ -125,10 +125,6 @@ public class DraftCollectedDatasetsResource {
       .stream()
       .map(dataset -> dtos.asDto(dataset, true))
       .collect(toList());
-
-//    result = datasetService.findAllDatasets(datasets.getList().stream().map(Dataset::getId).collect(toList())).stream().map(d -> dtos.asDto(d, true));
-//
-//    return result.collect(toList());
   }
 
   @POST

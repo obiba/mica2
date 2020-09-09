@@ -26,6 +26,7 @@
   mica.commons.ListController = function (
     $scope,
     $timeout,
+    $translate,
     StatesResource,
     DraftDeleteService,
     AlertBuilder,
@@ -36,6 +37,12 @@
     self.totalCount = 0;
     self.documents = [];
     self.loading = true;
+    self.locale = $translate.use();
+    self.sort = {
+      column: `id`,
+      order: 'asc'
+    };
+
     self.pagination = {
       size: mica.commons.DEFAULT_LIMIT,
       current: 1,
@@ -52,6 +59,12 @@
           refreshPage();
         }, 500);
       }
+    };
+
+    self.onSortColumn = function(column, order) {
+      self.sort.column = column || 'id';
+      self.sort.order = order || 'asc';
+      loadPage(self.pagination.current);
     };
 
     self.hasDocuments = function () {
@@ -108,7 +121,9 @@
       let data = {
         from:(page - 1) * limit,
         limit: limit,
-        filter: self.filter
+        filter: self.filter,
+        sort: self.sort.column,
+        order: self.sort.order
       };
 
       if (self.pagination.searchText) {

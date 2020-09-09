@@ -53,15 +53,15 @@
     </div>
 
     <div ng-show="hasDocuments()" class="table-responsive">
-      <table class="table table-bordered table-striped">
+      <table class="table table-bordered table-striped" obiba-table-sorter="onSortColumn" data-column-name="{{sort.column}}" data-order="{{sort.order}}">
         <thead>
         <tr>
           <th data-column-name="id">ID</th>
-          <th data-column-name="acronym">{{"network.acronym" | translate}}</th>
-          <th data-column-name="name">{{"network.name" | translate}}</th>
-          <th data-column-name="published">{{"publish.published" | translate}}</th>
-          <th data-column-name="obiba.mica.EntityStateDto.networkSummaryState::revisionStatus">{{"status" | translate}}</th>
-          <th data-column-name="timeStamps.lastUpdated">{{"global.lastUpdate" | translate}}</th>
+          <th data-column-name="acronym.{{locale}}">{{"network.acronym" | translate}}</th>
+          <th data-column-name="name.{{locale}}">{{"network.name" | translate}}</th>
+          <th>{{"publish.published" | translate}}</th>
+          <th>{{"status" | translate}}</th>
+          <th data-column-name="lastModifiedDate">{{"global.lastUpdate" | translate}}</th>
           <th translate>actions</th>
         </tr>
         </thead>

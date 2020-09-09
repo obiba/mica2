@@ -31,11 +31,11 @@ mica.study
   }])
 
   .controller('StudyListController', [
-    '$scope', '$timeout', 'StudyStatesResource', 'DraftStudyDeleteService', 'AlertBuilder', 'EntityStateFilterService', mica.commons.ListController
+    '$scope', '$timeout', '$translate', 'StudyStatesResource', 'DraftStudyDeleteService', 'AlertBuilder', 'EntityStateFilterService', mica.commons.ListController
   ])
 
   .controller('HarmonizationStudyListController', [
-    '$scope', '$timeout', 'HarmonizationStudyStatesResource', 'DraftHarmonizationStudyDeleteService', 'AlertBuilder', 'EntityStateFilterService', mica.commons.ListController
+    '$scope', '$timeout', '$translate', 'HarmonizationStudyStatesResource', 'DraftHarmonizationStudyDeleteService', 'AlertBuilder', 'EntityStateFilterService', mica.commons.ListController
   ])
 
   .controller('StudyViewController', [

@@ -57,15 +57,15 @@
     </div>
 
     <div ng-show="hasDocuments()" class="table-responsive">
-      <table class="table table-bordered table-striped">
+      <table class="table table-bordered table-striped" obiba-table-sorter="onSortColumn" data-column-name="{{sort.column}}" data-order="{{sort.order}}">
         <thead>
         <tr>
           <th data-column-name="id">ID</th>
-          <th data-column-name="acronym">{{"study.acronym" | translate}}</th>
-          <th data-column-name="name" class="col-md-6">{{"study.name" | translate}}</th>
-          <th data-column-name="published">{{"publish.published" | translate}}</th>
-          <th data-column-name="obiba.mica.EntityStateDto.studySummaryState::revisionStatus">{{"status" | translate}}</th>
-          <th data-column-name="timeStamps.lastUpdated">{{"global.lastUpdate" | translate}}</th>
+          <th data-column-name="acronym.{{locale}}">{{"study.acronym" | translate}}</th>
+          <th data-column-name="name.{{locale}}" class="col-md-6">{{"study.name" | translate}}</th>
+          <th>{{"publish.published" | translate}}</th>
+          <th>{{"status" | translate}}</th>
+          <th data-column-name="lastModifiedDate">{{"global.lastUpdate" | translate}}</th>
           <th translate>actions</th>
         </tr>
         </thead>

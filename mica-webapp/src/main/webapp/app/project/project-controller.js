@@ -77,7 +77,9 @@ mica.project
         let data = {
           from:(page - 1) * $scope.limit,
           limit: $scope.limit,
-          filter: $scope.filter
+          filter: $scope.filter,
+          sort: $scope.sort.column,
+          order: $scope.sort.order
         };
 
         if($scope.pagination.searchText) {
@@ -86,11 +88,6 @@ mica.project
 
         DraftProjectsResource.get(data, onSuccess, AlertBuilder.newBuilder().onError(onError));
       }
-
-      $scope.loading = true;
-      $scope.pagination = {current: 1, searchText: ''};
-      $scope.totalCount = 0;
-      $scope.limit = 3;
 
       var currentSearch = null;
 
@@ -101,6 +98,12 @@ mica.project
           loadPage(1);
         }
       }
+
+      $scope.onSortColumn = function(column, order) {
+        $scope.sort.column = column || 'id';
+        $scope.sort.order = order || 'asc';
+        loadPage($scope.pagination.current);
+      };
 
       $scope.$watch('pagination.searchText', function(newVal, oldVal) {
         if (!newVal && !oldVal) {
@@ -122,6 +125,15 @@ mica.project
       }
 
       $scope.$on('$locationChangeSuccess', () => update());
+      $scope.loading = true;
+      $scope.pagination = {current: 1, searchText: ''};
+      $scope.totalCount = 0;
+      $scope.limit = 3;
+      $scope.locale = $translate.use();
+      $scope.sort = {
+        column: `id`,
+        order: 'asc'
+      };
 
       update();
     }])

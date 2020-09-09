@@ -79,10 +79,10 @@ public class DraftProjectsResource {
   public Mica.ProjectsDto list(@QueryParam("query") String query,
                                @QueryParam("from") @DefaultValue("0") Integer from,
                                @QueryParam("limit") Integer limit,
+                               @QueryParam("sort") @DefaultValue("id") String sort,
+                               @QueryParam("order") @DefaultValue("asc") String order,
                                @QueryParam("filter") @DefaultValue("ALL") String filter,
                                @Context HttpServletResponse response) {
-    Stream<Project> result;
-    long totalCount;
 
     EntityStateFilter entityStateFilter = EntityStateFilter.valueOf(filter);
     List<String> filteredIds = projectService.getIdsByStateFilter(entityStateFilter);
@@ -97,13 +97,18 @@ public class DraftProjectsResource {
 
     if(limit < 0) throw new IllegalArgumentException("limit cannot be negative");
 
-    DocumentService.Documents<Project> projectDocuments = draftProjectService.find(from, limit, null, null, null, query, null, null, accessibleIdFilter);
-    totalCount = projectDocuments.getTotal();
-    result = projectService.findAllProjects(projectDocuments.getList().stream().map(AbstractGitPersistable::getId).collect(toList())).stream();
+    DocumentService.Documents<Project> projectDocuments = draftProjectService.find(from, limit, sort, order,
+      null, query, null, null, accessibleIdFilter);
+    long totalCount = projectDocuments.getTotal();
+
+    List<Mica.ProjectDto> result = projectDocuments.getList()
+      .stream()
+      .map(n -> dtos.asDto(n, true))
+      .collect(toList());
 
     Mica.ProjectsDto.Builder builder = Mica.ProjectsDto.newBuilder();
     builder.setFrom(from).setLimit(limit).setTotal(Long.valueOf(totalCount).intValue());
-    builder.addAllProjects(result.map(n -> dtos.asDto(n, true)).collect(toList()));
+    builder.addAllProjects(result);
 
     if (subjectAclService.isPermitted("/draft/project", "ADD")) {
       builder.addActions("ADD");
