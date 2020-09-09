@@ -29,8 +29,10 @@ mica.network
     function ($resource, NetworkModelService) {
       return $resource(contextPath + '/ws/draft/network/:id', {}, {
         'save': {method: 'PUT', params: {id: '@id'}, errorHandler: true, transformRequest: NetworkModelService.serialize},
+        'rSave': {method: 'PUT', params: {id: '@id'}, errorHandler: true, transformRequest: NetworkModelService.simpleSerialize},
         'delete': {method: 'DELETE', params: {id: '@id'}, errorHandler: true},
         'get': {method: 'GET', errorHandler: true, transformResponse: NetworkModelService.deserialize},
+        'rGet': {method: 'GET', errorHandler: true, transformResponse: NetworkModelService.simpleDeserialize},
         'projects': {method: 'GET', params: {id: '@id'}, errorHandler: true}
       });
     }])
@@ -109,26 +111,52 @@ mica.network
 
   .factory('NetworkModelService', ['LocalizedValues', function (LocalizedValues) {
     this.serialize = function (network) {
-      var networkCopy = angular.copy(network);
-      networkCopy.name = LocalizedValues.objectToArray(networkCopy.model._name);
-      networkCopy.acronym = LocalizedValues.objectToArray(networkCopy.model._acronym);
-      networkCopy.description = LocalizedValues.objectToArray(networkCopy.model._description);
-      delete networkCopy.model._name;
-      delete networkCopy.model._acronym;
-      delete networkCopy.model._description;
-      networkCopy.content = networkCopy.model ? angular.toJson(networkCopy.model) : null;
-      delete networkCopy.model; // NOTICE: must be removed to avoid protobuf exception in dto.
-      return angular.toJson(networkCopy);
+      return serialize(network, true);
     };
 
     this.deserialize = function (data) {
+      return deserialize(data, true);
+    };
+
+    this.simpleSerialize = function (network) {
+      return serialize(network, false);
+    };
+
+    this.simpleDeserialize = function (data) {
+      return deserialize(data, false);
+    };
+
+    function serialize(network, all) {
+      var networkCopy = angular.copy(network);
+
+      if (all) {
+        networkCopy.name = LocalizedValues.objectToArray(networkCopy.model._name);
+        networkCopy.acronym = LocalizedValues.objectToArray(networkCopy.model._acronym);
+        networkCopy.description = LocalizedValues.objectToArray(networkCopy.model._description);
+        delete networkCopy.model._name;
+        delete networkCopy.model._acronym;
+        delete networkCopy.model._description;
+      }
+
+      delete networkCopy.$promise;
+      delete networkCopy.$resolved;
+
+      networkCopy.content = networkCopy.model ? angular.toJson(networkCopy.model) : null;
+      delete networkCopy.model; // NOTICE: must be removed to avoid protobuf exception in dto.
+      return angular.toJson(networkCopy);
+    }
+
+    function deserialize(data, all) {
       var network = angular.fromJson(data);
       network.model = network.content ? angular.fromJson(network.content) : {};
-      network.model._name = LocalizedValues.arrayToObject(network.name);
-      network.model._acronym = LocalizedValues.arrayToObject(network.acronym);
-      network.model._description = LocalizedValues.arrayToObject(network.description);
+      if (all) {
+        network.model._name = LocalizedValues.arrayToObject(network.name);
+        network.model._acronym = LocalizedValues.arrayToObject(network.acronym);
+        network.model._description = LocalizedValues.arrayToObject(network.description);
+      }
+
       return network;
-    };
+    }
 
     return this;
   }])

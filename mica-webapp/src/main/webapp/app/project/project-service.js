@@ -24,8 +24,10 @@ mica.project
     function ($resource, ProjectModelFactory) {
       return $resource(contextPath + '/ws/draft/project/:id', {}, {
         'save': {method: 'PUT', params: {id: '@id'}, errorHandler: true, transformRequest: ProjectModelFactory.serialize},
+        'rSave': {method: 'PUT', params: {id: '@id'}, errorHandler: true, transformRequest: ProjectModelFactory.simpleSerialize},
         'delete': {method: 'DELETE', params: {id: '@id'}, errorHandler: true},
-        'get': {method: 'GET', errorHandler: true, transformResponse: ProjectModelFactory.deserialize}
+        'get': {method: 'GET', errorHandler: true, transformResponse: ProjectModelFactory.deserialize},
+        'rGet': {method: 'GET', errorHandler: true, transformResponse: ProjectModelFactory.simpleDeserialize}
       });
     }])
 
@@ -97,28 +99,54 @@ mica.project
   .factory('ProjectModelFactory', ['LocalizedValues',
     function (LocalizedValues) {
       this.serialize = function (project) {
-        console.log('serialize begin', project);
-        var projectCopy = angular.copy(project);
-        projectCopy.title = LocalizedValues.objectToArray(projectCopy.model._title);
-        projectCopy.summary = LocalizedValues.objectToArray(projectCopy.model._summary);
-        delete projectCopy.model._title;
-        delete projectCopy.model._summary;
-        projectCopy.content = projectCopy.model ? angular.toJson(projectCopy.model) : null;
-        delete projectCopy.model;
-        return angular.toJson(projectCopy);
+        return serialize(project, true);
       };
 
       this.deserialize = function (data) {
+        return deserialize(data, true);
+      };
+
+      this.simpleSerialize = function (project) {
+        return serialize(project, false);
+      };
+
+      this.simpleDeserialize = function (data) {
+        return deserialize(data, false);
+      };
+
+      function serialize(project, all) {
+        var projectCopy = angular.copy(project);
+
+        if (all) {
+          projectCopy.title = LocalizedValues.objectToArray(projectCopy.model._title);
+          projectCopy.summary = LocalizedValues.objectToArray(projectCopy.model._summary);
+          delete projectCopy.model._title;
+          delete projectCopy.model._summary;
+        }
+
+        delete projectCopy.$promise;
+        delete projectCopy.$resolved;
+
+        projectCopy.content = projectCopy.model ? angular.toJson(projectCopy.model) : null;
+        delete projectCopy.model;
+        return angular.toJson(projectCopy);
+      }
+
+      function deserialize(data, all) {
         if (!data) {
           return {model: {}};
         }
 
         var project = angular.fromJson(data);
         project.model = project.content ? angular.fromJson(project.content) : {};
-        project.model._title = LocalizedValues.arrayToObject(project.title);
-        project.model._summary = LocalizedValues.arrayToObject(project.summary);
+
+        if (all) {
+          project.model._title = LocalizedValues.arrayToObject(project.title);
+          project.model._summary = LocalizedValues.arrayToObject(project.summary);
+        }
+
         return project;
-      };
+      }
 
       return this;
     }]);

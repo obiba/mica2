@@ -629,13 +629,13 @@ mica.dataset
       };
 
       var restoreFromFields = function (transformFn) {
-        DatasetResource.get({id: $scope.datasetId, type: $scope.type}, function (dataset) {
+        DatasetResource.rGet({id: $scope.datasetId, type: $scope.type}, function (dataset) {
           var result = transformFn(dataset);
-          result.$save(function () {
-            fetchRevisions($scope.datasetId);
+          DatasetResource.rSave({id: $scope.datasetId}, result).$promise.then(function () {
+            $location.reload();
           });
         });
-      }
+      };
 
       function saveAndUpdateDataset() {
         if($scope.type === 'harmonized-dataset') {

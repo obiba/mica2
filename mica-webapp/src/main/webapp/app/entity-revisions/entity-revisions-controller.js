@@ -40,6 +40,7 @@ mica.revisions
         response.$promise.then(function (data) {
           const diffIsEmpty = Object.keys(data.onlyLeft).length === 0 && Object.keys(data.differing).length === 0 && Object.keys(data.onlyRight).length === 0;
           const totalNumberOfFields = Object.keys(data.onlyLeft).length + Object.keys(data.differing).length + Object.keys(data.onlyRight).length;
+          const id = $scope.id;
 
           $uibModal.open({
             windowClass: 'entity-revision-diff-modal',
@@ -92,7 +93,7 @@ mica.revisions
           }).result.then(function (chosenFields) {
             if (chosenFields && chosenFields.length > 0 && chosenFields.length < totalNumberOfFields) {
               $scope.onRestoreFromFields()(function (entity) {
-                return createObjectFromChosenFields(chosenFields, angular.copy(entity));
+                return createObjectFromChosenFields(chosenFields, Object.assign({}, entity));
               });
             } else {
               restoreRevision(id, rightSideCommitInfo);

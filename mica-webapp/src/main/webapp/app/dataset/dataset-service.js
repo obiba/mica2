@@ -22,21 +22,17 @@ mica.dataset
   .factory('DraftCollectedDatasetsResource', ['$resource', 'DatasetModelService',
     function ($resource, DatasetModelService) {
       return $resource(contextPath + '/ws/draft/collected-datasets?comment:comment', {}, {
-        'save': {method: 'POST', errorHandler: true, transformRequest: function(dataset) {
-          return DatasetModelService.serialize(dataset);
-        }}
+        'save': {method: 'POST', errorHandler: true, transformRequest: DatasetModelService.serialize}
       });
     }])
 
   .factory('CollectedDatasetResource', ['$resource', 'DatasetModelService',
     function ($resource, DatasetModelService) {
       return $resource(contextPath + '/ws/draft/collected-dataset/:id', {}, {
-        'save': {method: 'PUT', params: {id: '@id'}, errorHandler: true, transformRequest: function(dataset) {
-          return DatasetModelService.serialize(dataset);
-        }},
-        'get': {method: 'GET', transformResponse: function(data) {
-          return DatasetModelService.deserialize(data);
-        }}
+        'save': {method: 'PUT', params: {id: '@id'}, errorHandler: true, transformRequest: DatasetModelService.serialize},
+        'get': {method: 'GET', transformResponse: DatasetModelService.deserialize},
+        'rSave': {method: 'PUT', params: {id: '@id'}, errorHandler: true, transformRequest: DatasetModelService.simpleSerialize},
+        'rGet': {method: 'GET', transformResponse: DatasetModelService.simpleDeserialize}
       });
     }])
 
@@ -76,12 +72,10 @@ mica.dataset
   .factory('HarmonizedDatasetResource', ['$resource', 'DatasetModelService',
     function ($resource, DatasetModelService) {
       return $resource(contextPath + '/ws/draft/harmonized-dataset/:id', {}, {
-        'save': {method: 'PUT', params: {id: '@id'}, errorHandler: true, transformRequest: function(dataset) {
-          return DatasetModelService.serialize(dataset);
-        }},
-        'get': {method: 'GET', transformResponse: function(data) {
-          return DatasetModelService.deserialize(data);
-        }}
+        'save': {method: 'PUT', params: {id: '@id'}, errorHandler: true, transformRequest: DatasetModelService.serialize},
+        'get': {method: 'GET', transformResponse: DatasetModelService.deserialize},
+        'rSave': {method: 'PUT', params: {id: '@id'}, errorHandler: true, transformRequest: DatasetModelService.simpleSerialize},
+        'rGget': {method: 'GET', transformResponse: DatasetModelService.simpleDeserialize}
       });
     }])
 
@@ -340,30 +334,59 @@ mica.dataset
   }])
 
   .service('DatasetModelService',['LocalizedValues', function(LocalizedValues) {
-    this.serialize = function(dataset) {
+    this.serialize = function (network) {
+      return serialize(network, true);
+    };
+
+    this.deserialize = function (data) {
+      return deserialize(data, true);
+    };
+
+    this.simpleSerialize = function (network) {
+      return serialize(network, false);
+    };
+
+    this.simpleDeserialize = function (data) {
+      return deserialize(data, false);
+    };
+
+    function serialize(dataset, all) {
       var datasetCopy = angular.copy(dataset);
-      datasetCopy.name = LocalizedValues.objectToArray(datasetCopy.model._name);
-      datasetCopy.acronym = LocalizedValues.objectToArray(datasetCopy.model._acronym);
-      datasetCopy.description = LocalizedValues.objectToArray(datasetCopy.model._description);
-      datasetCopy.entityType = datasetCopy.model._entityType;
-      delete datasetCopy.model._name;
-      delete datasetCopy.model._acronym;
-      delete datasetCopy.model._description;
-      delete datasetCopy.model._entityType;
+
+      if (all) {
+        datasetCopy.name = LocalizedValues.objectToArray(datasetCopy.model._name);
+        datasetCopy.acronym = LocalizedValues.objectToArray(datasetCopy.model._acronym);
+        datasetCopy.description = LocalizedValues.objectToArray(datasetCopy.model._description);
+        datasetCopy.entityType = datasetCopy.model._entityType;
+        delete datasetCopy.model._name;
+        delete datasetCopy.model._acronym;
+        delete datasetCopy.model._description;
+        delete datasetCopy.model._entityType;
+      }
+
+      delete datasetCopy.$promise;
+      delete datasetCopy.$resolved;
+
       datasetCopy.content = datasetCopy.model ? angular.toJson(datasetCopy.model) : null;
       delete datasetCopy.model; // NOTICE: must be removed to avoid protobuf exception in dto.
       return angular.toJson(datasetCopy);
-    };
+    }
 
-    this.deserialize = function(data) {
+
+
+    function deserialize(data, all) {
       var dataset = angular.fromJson(data);
       dataset.model = dataset.content ? angular.fromJson(dataset.content) : {};
-      dataset.model._name = LocalizedValues.arrayToObject(dataset.name);
-      dataset.model._acronym = LocalizedValues.arrayToObject(dataset.acronym);
-      dataset.model._description = LocalizedValues.arrayToObject(dataset.description);
-      dataset.model._entityType = dataset.entityType;
+
+      if (all) {
+        dataset.model._name = LocalizedValues.arrayToObject(dataset.name);
+        dataset.model._acronym = LocalizedValues.arrayToObject(dataset.acronym);
+        dataset.model._description = LocalizedValues.arrayToObject(dataset.description);
+        dataset.model._entityType = dataset.entityType;
+      }
+
       return dataset;
-    };
+    }
 
     return this;
   }]);

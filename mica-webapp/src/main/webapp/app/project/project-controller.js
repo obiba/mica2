@@ -288,13 +288,13 @@ mica.project
       };
 
       var restoreFromFields = function (transformFn) {
-        DraftProjectResource.get({id: $scope.projectId}, function (project) {
+        DraftProjectResource.rGet({id: $scope.projectId}, function (project) {
           var result = transformFn(project);
-          result.$save(function () {
-            fetchRevisions($scope.projectId);
-          }, onError);
+          DraftProjectResource.rSave({id: $scope.projectId}, result).$promise.then(function () {
+            $location.reload();
+          });
         });
-      }
+      };
 
       var restoreRevision = function (projectId, commitInfo, onSuccess) {
         if (commitInfo && $scope.projectId === projectId) {
