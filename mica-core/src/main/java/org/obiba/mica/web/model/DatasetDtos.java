@@ -21,6 +21,7 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
+import org.obiba.magma.type.BooleanType;
 import org.obiba.mica.JSONUtils;
 import org.obiba.mica.core.domain.*;
 import org.obiba.mica.dataset.HarmonizationDatasetStateRepository;
@@ -495,8 +496,10 @@ class DatasetDtos {
     boolean totalPrivacyChecks = validateTotalPrivacyThreshold(results, privacyThreshold);
 
     // add facet results in the same order as the variable categories
-    variable.getCategories().forEach(cat -> results.getFacetsList().stream()
-      .filter(facet -> facet.hasFacet() && cat.getName().equals(facet.getFacet())).forEach(facet -> {
+    List<String> catNames = variable.getValueType().equals(BooleanType.get().getName()) ?
+      Lists.newArrayList("true", "false") : variable.getCategories().stream().map(DatasetCategory::getName).collect(Collectors.toList());
+    catNames.forEach(catName -> results.getFacetsList().stream()
+      .filter(facet -> facet.hasFacet() && catName.equals(facet.getFacet())).forEach(facet -> {
         boolean privacyCheck = privacyChecks && checkPrivacyThreshold(facet.getFilters(0).getCount(), privacyThreshold);
         Mica.DatasetVariableAggregationDto.Builder aggBuilder = Mica.DatasetVariableAggregationDto.newBuilder();
         aggBuilder.setTotal(totalPrivacyChecks ? results.getTotalHits() : 0);
@@ -539,12 +542,15 @@ class DatasetDtos {
     aggBuilder.setN(totalPrivacyCheck ? facet.getFilters(0).getCount() : -1);
     if(!privacyCheck) return;
 
-    if(crossVariable.hasCategories()) {
-      // order results as the order of cross variable categories
-      crossVariable.getCategories().forEach(
-        cat -> facet.getFrequenciesList().stream().filter(freq -> cat.getName().equals(freq.getTerm()))
-          .forEach(freq -> aggBuilder.addFrequencies(asDto(crossVariable, freq))));
-    }
+    List<String> catNames = crossVariable.getValueType().equals(BooleanType.get().getName()) ?
+      Lists.newArrayList("1", "0") :
+      (crossVariable.hasCategories() ? crossVariable.getCategories().stream().map(DatasetCategory::getName).collect(Collectors.toList()) : Lists.newArrayList());
+    // order results as the order of cross variable categories
+    catNames.forEach(catName -> facet.getFrequenciesList().stream().filter(freq -> catName.equals(freq.getTerm()))
+        .forEach(freq -> aggBuilder.addFrequencies(asDto(crossVariable, freq))));
+    // observed terms, not described by categories
+    facet.getFrequenciesList().stream().filter(freq -> !catNames.contains(freq.getTerm()))
+      .forEach(freq -> aggBuilder.addFrequencies(asDto(crossVariable, freq)));
 
     if(facet.hasStatistics()) {
       aggBuilder.setStatistics(asDto(facet.getStatistics()));
@@ -553,11 +559,25 @@ class DatasetDtos {
 
   private Mica.FrequencyDto.Builder asDto(DatasetVariable crossVariable,
     Search.FacetResultDto.TermFrequencyResultDto result) {
-    DatasetCategory category = crossVariable.getCategory(result.getTerm());
-    return Mica.FrequencyDto.newBuilder() //
-      .setValue(result.getTerm()) //
-      .setCount(result.getCount()) //
-      .setMissing(category != null && category.isMissing());
+    if (crossVariable.getValueType().equals(BooleanType.get().getName())) {
+      // for some reason 0/1 is returned instead of false/true
+      return Mica.FrequencyDto.newBuilder()
+        .setValue("1".equals(result.getTerm()) ? "true" : "false")
+        .setCount(result.getCount())
+        .setMissing(false);
+    } else if (crossVariable.getCategory(result.getTerm()) != null) {
+      DatasetCategory category = crossVariable.getCategory(result.getTerm());
+      return Mica.FrequencyDto.newBuilder()
+        .setValue(result.getTerm())
+        .setCount(result.getCount())
+        .setMissing(category != null && category.isMissing());
+    } else {
+      // observed value, not described by a category
+      return Mica.FrequencyDto.newBuilder()
+        .setValue(result.getTerm())
+        .setCount(result.getCount())
+        .setMissing(false);
+    }
   }
 
   private Mica.StatisticsDto.Builder asDto(Search.FacetResultDto.StatisticalResultDto result) {
@@ -632,6 +652,9 @@ class DatasetDtos {
         if(!freq.getMissing()) n += freq.getFreq();
       }
     }
+    if (otherFrequency>0)
+      aggDto.addFrequencies(Mica.FrequencyDto.newBuilder().setValue("???").setCount(otherFrequency)
+        .setMissing(false));
     aggDto.setN(n);
   }
 

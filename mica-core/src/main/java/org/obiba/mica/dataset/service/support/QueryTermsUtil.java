@@ -82,7 +82,7 @@ public class QueryTermsUtil {
 
   private static List<String> getCategories(DatasetVariable variable) {
     List<String> categories = Lists.newArrayList();
-    if(variable.getValueType().equals(BooleanType.get())) {
+    if(variable.getValueType().equals(BooleanType.get().getName())) {
       categories.add("true");
       categories.add("false");
     } else if(variable.hasCategories()) {

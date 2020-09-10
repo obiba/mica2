@@ -122,6 +122,9 @@ class DatasetCrosstab {
   }
 
   getVariable2Categories() {
+    if (this._var2.valueType === 'boolean') {
+      return [ { name: 'true' }, { name: 'false' } ]
+    }
     return this._var2.categories ? this._var2.categories : [];
   }
 
@@ -177,6 +180,9 @@ class DatasetCrosstab {
       categories.forEach(cat => {
         varInfo.categories[cat.name] = LocalizedValues.extractLabel(cat.attributes, currentLanguage);
       });
+    } else if (variable.valueType === 'boolean') {
+      varInfo.categories['true'] = '';
+      varInfo.categories['false'] = '';
     }
     if (Mica.type === 'collected') {
       varInfo.href = Mica.contextPath + '/variable/' + variable.id;
@@ -518,22 +524,24 @@ const renderDatasetCrosstab = function(contingency) {
   }
 
   // for each category
-  contingency.aggregations.forEach(aggregation => {
-    let row = '<td>' + aggregation.term + '<div><small>' + contingency.info.var1.categories[aggregation.term] + '</small></div></td>';
-    if (!crosstab.isVariable2Statistical() && aggregation.frequencies) {
-      aggregation.frequencies.forEach(freq => {
-        row = row + '<td>' + freq.count + (freq.percent ? ' <small>(' + freq.percent.toFixed(2) + '%)</small>' : '') + '</td>';
-      });
-    }
-    if (aggregation.statistics) {
-      row = row + '<td>' + formatStatistics(aggregation.statistics.min) + '</td>' +
-        '<td>' + formatStatistics(aggregation.statistics.max) + '</td>' +
-        '<td>' + formatStatistics(aggregation.statistics.mean) + '</td>' +
-        '<td>' + formatStatistics(aggregation.statistics.stdDeviation) + '</td>';
-    }
-    row = row + '<td class="total">' + aggregation.n + '</td>';
-    $('#crosstab > tbody').append('<tr>' + row + '</tr>');
-  });
+  if (contingency.aggregations) {
+    contingency.aggregations.forEach(aggregation => {
+      let row = '<td>' + aggregation.term + '<div><small>' + contingency.info.var1.categories[aggregation.term] + '</small></div></td>';
+      if (!crosstab.isVariable2Statistical() && aggregation.frequencies) {
+        aggregation.frequencies.forEach(freq => {
+          row = row + '<td>' + freq.count + (freq.percent ? ' <small>(' + freq.percent.toFixed(2) + '%)</small>' : '') + '</td>';
+        });
+      }
+      if (aggregation.statistics) {
+        row = row + '<td>' + formatStatistics(aggregation.statistics.min) + '</td>' +
+          '<td>' + formatStatistics(aggregation.statistics.max) + '</td>' +
+          '<td>' + formatStatistics(aggregation.statistics.mean) + '</td>' +
+          '<td>' + formatStatistics(aggregation.statistics.stdDeviation) + '</td>';
+      }
+      row = row + '<td class="total">' + aggregation.n + '</td>';
+      $('#crosstab > tbody').append('<tr>' + row + '</tr>');
+    });
+  }
 
   // total
   let row = '<td class="total">' + Mica.tr.all + '</td>';

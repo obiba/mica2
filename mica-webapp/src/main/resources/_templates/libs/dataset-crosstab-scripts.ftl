@@ -14,7 +14,7 @@
       "max": "<@message "max"/>",
       "mean": "<@message "mean"/>",
       "stdDev": "<@message "stdDev"/>",
-      "all": "<@message "all"/>",
+      "all": "<@message "all"/>"
     }
   };
 </script>

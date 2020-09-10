@@ -1,6 +1,7 @@
 package org.obiba.mica.web.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.Lists;
 import org.obiba.magma.NoSuchVariableException;
 import org.obiba.mica.core.domain.HarmonizationStudyTable;
 import org.obiba.mica.core.domain.StudyTable;
@@ -90,10 +91,10 @@ public class VariableController extends BaseController {
       .collect(Collectors.toMap(TaxonomyEntity::getName, e -> e));
 
     // annotations are attributes described by some taxonomies
-    List<Annotation> annotations = variable.getAttributes().asAttributeList().stream()
+    List<Annotation> annotations = variable.hasAttributes() ? variable.getAttributes().asAttributeList().stream()
       .filter(attr -> attr.hasNamespace() && taxonomies.containsKey(attr.getNamespace()) && taxonomies.get(attr.getNamespace()).hasVocabulary(attr.getName()))
       .map(attr -> new Annotation(attr, taxonomies.get(attr.getNamespace())))
-      .collect(Collectors.toList());
+      .collect(Collectors.toList()) : Lists.newArrayList();
 
     List<Annotation> harmoAnnotations = annotations.stream()
       .filter(annot -> annot.getTaxonomyName().equals("Mlstr_harmo"))
