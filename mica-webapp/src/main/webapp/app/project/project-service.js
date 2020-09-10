@@ -99,25 +99,25 @@ mica.project
   .factory('ProjectModelFactory', ['LocalizedValues',
     function (LocalizedValues) {
       this.serialize = function (project) {
-        return serialize(project, true);
-      };
-
-      this.deserialize = function (data) {
-        return deserialize(data, true);
-      };
-
-      this.serializeForRestoringFields = function (project) {
         return serialize(project, false);
       };
 
-      this.deserializeForRestoringFields = function (data) {
+      this.deserialize = function (data) {
         return deserialize(data, false);
       };
 
-      function serialize(project, normal) {
+      this.serializeForRestoringFields = function (project) {
+        return serialize(project, true);
+      };
+
+      this.deserializeForRestoringFields = function (data) {
+        return deserialize(data, true);
+      };
+
+      function serialize(project, restore) {
         var projectCopy = angular.copy(project);
 
-        if (normal) {
+        if (!restore) {
           projectCopy.title = LocalizedValues.objectToArray(projectCopy.model._title);
           projectCopy.summary = LocalizedValues.objectToArray(projectCopy.model._summary);
           delete projectCopy.model._title;
@@ -132,7 +132,7 @@ mica.project
         return angular.toJson(projectCopy);
       }
 
-      function deserialize(data, normal) {
+      function deserialize(data, restore) {
         if (!data) {
           return {model: {}};
         }
@@ -140,7 +140,7 @@ mica.project
         var project = angular.fromJson(data);
         project.model = project.content ? angular.fromJson(project.content) : {};
 
-        if (normal) {
+        if (!restore) {
           project.model._title = LocalizedValues.arrayToObject(project.title);
           project.model._summary = LocalizedValues.arrayToObject(project.summary);
         } else {

@@ -105,26 +105,26 @@ mica.study
   .factory('StudyModelService', ['LocalizedValues', function (LocalizedValues) {
 
     this.serialize = function (study) {
-      return serialize(study, true);
-    };
-
-    this.deserialize = function (studyData) {
-      return deserialize(studyData, true);
-    };
-
-    this.serializeForRestoringFields = function (study) {
       return serialize(study, false);
     };
 
-    this.deserializeForRestoringFields = function (studyData) {
+    this.deserialize = function (studyData) {
       return deserialize(studyData, false);
     };
 
-    function serialize (study, normal) {
+    this.serializeForRestoringFields = function (study) {
+      return serialize(study, true);
+    };
+
+    this.deserializeForRestoringFields = function (studyData) {
+      return deserialize(studyData, true);
+    };
+
+    function serialize (study, restore) {
 
       var studyCopy = angular.copy(study);
 
-      if (normal) {
+      if (!restore) {
         studyCopy.name = LocalizedValues.objectToArray(studyCopy.model._name);
         studyCopy.acronym = LocalizedValues.objectToArray(studyCopy.model._acronym);
         studyCopy.objectives = LocalizedValues.objectToArray(studyCopy.model._objectives);
@@ -145,15 +145,15 @@ mica.study
 
       if(studyCopy.populations) {
         studyCopy.populations.forEach(function(population) {
-          populationSerialize(population, normal);
+          populationSerialize(population, restore);
         });
       }
 
       return angular.toJson(studyCopy);
     }
 
-    function populationSerialize(population, normal) {
-      if (normal) {
+    function populationSerialize(population, restore) {
+      if (!restore) {
         population.id = population.model._id;
         population.name = LocalizedValues.objectToArray(population.model._name);
         population.description = LocalizedValues.objectToArray(population.model._description);
@@ -171,13 +171,13 @@ mica.study
 
       if(population.dataCollectionEvents) {
         population.dataCollectionEvents.forEach(function(dce) {
-          dceSerialize(dce, normal);
+          dceSerialize(dce, restore);
         });
       }
     }
 
-    function dceSerialize(dce, normal) {
-      if (normal) {
+    function dceSerialize(dce, restore) {
+      if (!restore) {
         dce.id = dce.model._id;
         dce.name = LocalizedValues.objectToArray(dce.model._name);
         dce.description = LocalizedValues.objectToArray(dce.model._description);
@@ -202,11 +202,11 @@ mica.study
       delete dce.model;
     }
 
-    function deserialize (studyData, normal) {
+    function deserialize (studyData, restore) {
       var study = angular.fromJson(studyData);
       study.model = study.content ? angular.fromJson(study.content) : {};
 
-      if (normal) {
+      if (!restore) {
         study.model._name = LocalizedValues.arrayToObject(study.name);
         study.model._acronym = LocalizedValues.arrayToObject(study.acronym);
         study.model._objectives = LocalizedValues.arrayToObject(study.objectives);
@@ -219,17 +219,17 @@ mica.study
 
       if (study.populations) {
         study.populations.forEach(function (population) {
-          populationDeserialize(population, normal);
+          populationDeserialize(population, restore);
         });
       }
 
       return study;
     }
 
-    function populationDeserialize(population, normal) {
+    function populationDeserialize(population, restore) {
       population.model = population.content ? angular.fromJson(population.content) : {};
 
-      if (normal) {
+      if (!restore) {
         population.model._id = population.id;
         population.model._name = LocalizedValues.arrayToObject(population.name);
         population.model._description = LocalizedValues.arrayToObject(population.description);
@@ -240,15 +240,15 @@ mica.study
 
       if (population.dataCollectionEvents) {
         population.dataCollectionEvents.forEach(function (dce) {
-          dceDeserialize(dce, normal);
+          dceDeserialize(dce, restore);
         });
       }
     }
 
-    function dceDeserialize(dce, normal) {
+    function dceDeserialize(dce, restore) {
       dce.model = dce.content ? angular.fromJson(dce.content) : {};
 
-      if (normal) {
+      if (!restore) {
         dce.model._id = dce.id;
         dce.model._name = LocalizedValues.arrayToObject(dce.name);
         dce.model._description = LocalizedValues.arrayToObject(dce.description);

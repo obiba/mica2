@@ -111,25 +111,25 @@ mica.network
 
   .factory('NetworkModelService', ['LocalizedValues', function (LocalizedValues) {
     this.serialize = function (network) {
-      return serialize(network, true);
-    };
-
-    this.deserialize = function (data) {
-      return deserialize(data, true);
-    };
-
-    this.serializeForRestoringFields = function (network) {
       return serialize(network, false);
     };
 
-    this.deserializeForRestoringFields = function (data) {
+    this.deserialize = function (data) {
       return deserialize(data, false);
     };
 
-    function serialize(network, normal) {
+    this.serializeForRestoringFields = function (network) {
+      return serialize(network, true);
+    };
+
+    this.deserializeForRestoringFields = function (data) {
+      return deserialize(data, true);
+    };
+
+    function serialize(network, restore) {
       var networkCopy = angular.copy(network);
 
-      if (normal) {
+      if (!restore) {
         networkCopy.name = LocalizedValues.objectToArray(networkCopy.model._name);
         networkCopy.acronym = LocalizedValues.objectToArray(networkCopy.model._acronym);
         networkCopy.description = LocalizedValues.objectToArray(networkCopy.model._description);
@@ -147,10 +147,10 @@ mica.network
       return angular.toJson(networkCopy);
     }
 
-    function deserialize(data, normal) {
+    function deserialize(data, restore) {
       var network = angular.fromJson(data);
       network.model = network.content ? angular.fromJson(network.content) : {};
-      if (normal) {
+      if (!restore) {
         network.model._name = LocalizedValues.arrayToObject(network.name);
         network.model._acronym = LocalizedValues.arrayToObject(network.acronym);
         network.model._description = LocalizedValues.arrayToObject(network.description);

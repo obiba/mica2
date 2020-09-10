@@ -335,25 +335,25 @@ mica.dataset
 
   .service('DatasetModelService',['LocalizedValues', function(LocalizedValues) {
     this.serialize = function (network) {
-      return serialize(network, true);
-    };
-
-    this.deserialize = function (data) {
-      return deserialize(data, true);
-    };
-
-    this.serializeForRestoringFields = function (network) {
       return serialize(network, false);
     };
 
-    this.deserializeForRestoringFields = function (data) {
+    this.deserialize = function (data) {
       return deserialize(data, false);
     };
 
-    function serialize(dataset, normal) {
+    this.serializeForRestoringFields = function (network) {
+      return serialize(network, true);
+    };
+
+    this.deserializeForRestoringFields = function (data) {
+      return deserialize(data, true);
+    };
+
+    function serialize(dataset, restore) {
       var datasetCopy = angular.copy(dataset);
 
-      if (normal) {
+      if (!restore) {
         datasetCopy.name = LocalizedValues.objectToArray(datasetCopy.model._name);
         datasetCopy.acronym = LocalizedValues.objectToArray(datasetCopy.model._acronym);
         datasetCopy.description = LocalizedValues.objectToArray(datasetCopy.model._description);
@@ -375,11 +375,11 @@ mica.dataset
       return angular.toJson(datasetCopy);
     }
 
-    function deserialize(data, normal) {
+    function deserialize(data, restore) {
       var dataset = angular.fromJson(data);
       dataset.model = dataset.content ? angular.fromJson(dataset.content) : {};
 
-      if (normal) {
+      if (!restore) {
         dataset.model._name = LocalizedValues.arrayToObject(dataset.name);
         dataset.model._acronym = LocalizedValues.arrayToObject(dataset.acronym);
         dataset.model._description = LocalizedValues.arrayToObject(dataset.description);
