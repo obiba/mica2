@@ -31,8 +31,8 @@ mica.dataset
       return $resource(contextPath + '/ws/draft/collected-dataset/:id', {}, {
         'save': {method: 'PUT', params: {id: '@id'}, errorHandler: true, transformRequest: DatasetModelService.serialize},
         'get': {method: 'GET', transformResponse: DatasetModelService.deserialize},
-        'rSave': {method: 'PUT', params: {id: '@id'}, errorHandler: true, transformRequest: DatasetModelService.simpleSerialize},
-        'rGet': {method: 'GET', transformResponse: DatasetModelService.simpleDeserialize}
+        'rSave': {method: 'PUT', params: {id: '@id'}, errorHandler: true, transformRequest: DatasetModelService.serializeForRestoringFields},
+        'rGet': {method: 'GET', transformResponse: DatasetModelService.deserializeForRestoringFields}
       });
     }])
 
@@ -74,8 +74,8 @@ mica.dataset
       return $resource(contextPath + '/ws/draft/harmonized-dataset/:id', {}, {
         'save': {method: 'PUT', params: {id: '@id'}, errorHandler: true, transformRequest: DatasetModelService.serialize},
         'get': {method: 'GET', transformResponse: DatasetModelService.deserialize},
-        'rSave': {method: 'PUT', params: {id: '@id'}, errorHandler: true, transformRequest: DatasetModelService.simpleSerialize},
-        'rGget': {method: 'GET', transformResponse: DatasetModelService.simpleDeserialize}
+        'rSave': {method: 'PUT', params: {id: '@id'}, errorHandler: true, transformRequest: DatasetModelService.serializeForRestoringFields},
+        'rGget': {method: 'GET', transformResponse: DatasetModelService.deserializeForRestoringFields}
       });
     }])
 
@@ -342,18 +342,18 @@ mica.dataset
       return deserialize(data, true);
     };
 
-    this.simpleSerialize = function (network) {
+    this.serializeForRestoringFields = function (network) {
       return serialize(network, false);
     };
 
-    this.simpleDeserialize = function (data) {
+    this.deserializeForRestoringFields = function (data) {
       return deserialize(data, false);
     };
 
-    function serialize(dataset, all) {
+    function serialize(dataset, normal) {
       var datasetCopy = angular.copy(dataset);
 
-      if (all) {
+      if (normal) {
         datasetCopy.name = LocalizedValues.objectToArray(datasetCopy.model._name);
         datasetCopy.acronym = LocalizedValues.objectToArray(datasetCopy.model._acronym);
         datasetCopy.description = LocalizedValues.objectToArray(datasetCopy.model._description);
@@ -362,6 +362,10 @@ mica.dataset
         delete datasetCopy.model._acronym;
         delete datasetCopy.model._description;
         delete datasetCopy.model._entityType;
+      } else {
+        datasetCopy.name = LocalizedValues.objectToArray(datasetCopy.name);
+        datasetCopy.acronym = LocalizedValues.objectToArray(datasetCopy.acronym);
+        datasetCopy.description = LocalizedValues.objectToArray(datasetCopy.description);
       }
 
       datasetCopy.content = datasetCopy.model ? angular.toJson(datasetCopy.model) : null;
@@ -371,15 +375,19 @@ mica.dataset
 
 
 
-    function deserialize(data, all) {
+    function deserialize(data, normal) {
       var dataset = angular.fromJson(data);
       dataset.model = dataset.content ? angular.fromJson(dataset.content) : {};
 
-      if (all) {
+      if (normal) {
         dataset.model._name = LocalizedValues.arrayToObject(dataset.name);
         dataset.model._acronym = LocalizedValues.arrayToObject(dataset.acronym);
         dataset.model._description = LocalizedValues.arrayToObject(dataset.description);
         dataset.model._entityType = dataset.entityType;
+      } else {
+        dataset.name = LocalizedValues.arrayToObject(dataset.name);
+        dataset.acronym = LocalizedValues.arrayToObject(dataset.acronym);
+        dataset.description = LocalizedValues.arrayToObject(dataset.description);
       }
 
       return dataset;

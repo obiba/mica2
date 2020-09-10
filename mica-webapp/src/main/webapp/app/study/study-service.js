@@ -38,10 +38,10 @@ mica.study
       return $resource(contextPath + '/ws/draft/individual-study/:id', {id: '@id'}, {
         // override $resource.save method because it uses POST by default
         'save': {method: 'PUT', errorHandler: true, transformRequest: StudyModelService.serialize},
-        'rSave': {method: 'PUT', errorHandler: true, transformRequest: StudyModelService.simpleSerialize},
+        'rSave': {method: 'PUT', errorHandler: true, transformRequest: StudyModelService.serializeForRestoringFields},
         'delete': {method: 'DELETE', errorHandler: true},
         'get': {method: 'GET', transformResponse: StudyModelService.deserialize},
-        'rGet': {method: 'GET', transformResponse: StudyModelService.simpleDeserialize},
+        'rGet': {method: 'GET', transformResponse: StudyModelService.deserializeForRestoringFields},
         'indexDatasets': {method: 'PUT', url: contextPath + '/ws/draft/individual-study/:id/index-datasets'},
         'publish': {method: 'PUT', url: contextPath + '/ws/draft/individual-study/:id/_publish', params: {id: '@id', cascading: '@cascading'}},
         'unPublish': {method: 'DELETE', url: contextPath + '/ws/draft/individual-study/:id/_publish', errorHandler: true},
@@ -112,19 +112,19 @@ mica.study
       return deserialize(studyData, true);
     };
 
-    this.simpleSerialize = function (study) {
+    this.serializeForRestoringFields = function (study) {
       return serialize(study, false);
     };
 
-    this.simpleDeserialize = function (studyData) {
+    this.deserializeForRestoringFields = function (studyData) {
       return deserialize(studyData, false);
     };
 
-    function serialize (study, all) {
+    function serialize (study, normal) {
 
       var studyCopy = angular.copy(study);
 
-      if (all) {
+      if (normal) {
         studyCopy.name = LocalizedValues.objectToArray(studyCopy.model._name);
         studyCopy.acronym = LocalizedValues.objectToArray(studyCopy.model._acronym);
         studyCopy.objectives = LocalizedValues.objectToArray(studyCopy.model._objectives);
@@ -133,6 +133,10 @@ mica.study
         delete studyCopy.model._acronym;
         delete studyCopy.model._objectives;
         delete studyCopy.model._opal;
+      } else {
+        studyCopy.name = LocalizedValues.objectToArray(studyCopy.name);
+        studyCopy.acronym = LocalizedValues.objectToArray(studyCopy.acronym);
+        studyCopy.objectives = LocalizedValues.objectToArray(studyCopy.objectives);
       }
 
       studyCopy.content = studyCopy.model ? angular.toJson(studyCopy.model) : null;
@@ -141,21 +145,24 @@ mica.study
 
       if(studyCopy.populations) {
         studyCopy.populations.forEach(function(population) {
-          populationSerialize(population, all);
+          populationSerialize(population, normal);
         });
       }
 
       return angular.toJson(studyCopy);
     }
 
-    function populationSerialize(population, all) {
-      if (all) {
+    function populationSerialize(population, normal) {
+      if (normal) {
         population.id = population.model._id;
         population.name = LocalizedValues.objectToArray(population.model._name);
         population.description = LocalizedValues.objectToArray(population.model._description);
         delete population.model._id;
         delete population.model._name;
         delete population.model._description;
+      } else {
+        population.name = LocalizedValues.objectToArray(population.name);
+        population.description = LocalizedValues.objectToArray(population.description);
       }
 
       population.content = population.model ? angular.toJson(population.model) : null;
@@ -164,13 +171,13 @@ mica.study
 
       if(population.dataCollectionEvents) {
         population.dataCollectionEvents.forEach(function(dce) {
-          dceSerialize(dce, all);
+          dceSerialize(dce, normal);
         });
       }
     }
 
-    function dceSerialize(dce, all) {
-      if (all) {
+    function dceSerialize(dce, normal) {
+      if (normal) {
         dce.id = dce.model._id;
         dce.name = LocalizedValues.objectToArray(dce.model._name);
         dce.description = LocalizedValues.objectToArray(dce.model._description);
@@ -185,6 +192,9 @@ mica.study
         delete dce.model._startMonth;
         delete dce.model._endYear;
         delete dce.model._endMonth;
+      } else {
+        dce.name = LocalizedValues.objectToArray(dce.name);
+        dce.description = LocalizedValues.objectToArray(dce.description);
       }
 
       dce.content = dce.model ? angular.toJson(dce.model) : null;
@@ -192,46 +202,53 @@ mica.study
       delete dce.model;
     }
 
-    function deserialize (studyData, all) {
+    function deserialize (studyData, normal) {
       var study = angular.fromJson(studyData);
       study.model = study.content ? angular.fromJson(study.content) : {};
 
-      if (all) {
+      if (normal) {
         study.model._name = LocalizedValues.arrayToObject(study.name);
         study.model._acronym = LocalizedValues.arrayToObject(study.acronym);
         study.model._objectives = LocalizedValues.arrayToObject(study.objectives);
         study.model._opal = study.opal;
+      } else {
+        study.name = LocalizedValues.arrayToObject(study.name);
+        study.acronym = LocalizedValues.arrayToObject(study.acronym);
+        study.objectives = LocalizedValues.arrayToObject(study.objectives);
       }
 
       if (study.populations) {
         study.populations.forEach(function (population) {
-          populationDeserialize(population, all);
+          populationDeserialize(population, normal);
         });
       }
 
       return study;
     }
 
-    function populationDeserialize(population, all) {
+    function populationDeserialize(population, normal) {
       population.model = population.content ? angular.fromJson(population.content) : {};
 
-      if (all) {
+      if (normal) {
         population.model._id = population.id;
         population.model._name = LocalizedValues.arrayToObject(population.name);
         population.model._description = LocalizedValues.arrayToObject(population.description);
+      } else {
+        population.name = LocalizedValues.arrayToObject(population.name);
+        population.description = LocalizedValues.arrayToObject(population.description);
       }
 
       if (population.dataCollectionEvents) {
         population.dataCollectionEvents.forEach(function (dce) {
-          dceDeserialize(dce, all);
+          dceDeserialize(dce, normal);
         });
       }
     }
 
-    function dceDeserialize(dce, all) {
+    function dceDeserialize(dce, normal) {
       dce.model = dce.content ? angular.fromJson(dce.content) : {};
 
-      if (all) {
+      if (normal) {
         dce.model._id = dce.id;
         dce.model._name = LocalizedValues.arrayToObject(dce.name);
         dce.model._description = LocalizedValues.arrayToObject(dce.description);
@@ -239,6 +256,9 @@ mica.study
         dce.model._startMonth = dce.startMonth;
         dce.model._endYear = dce.endYear;
         dce.model._endMonth = dce.endMonth;
+      } else {
+        dce.name = LocalizedValues.arrayToObject(dce.name);
+        dce.description = LocalizedValues.arrayToObject(dce.description);
       }
 
     }
@@ -498,10 +518,10 @@ mica.study
       return $resource(contextPath + '/ws/draft/harmonization-study/:id', {id: '@id'}, {
         // override $resource.save method because it uses POST by defaultt
         'save': {method: 'PUT', errorHandler: true, transformRequest: StudyModelService.serialize},
-        'rSave': {method: 'PUT', errorHandler: true, transformRequest: StudyModelService.simpleSerialize},
+        'rSave': {method: 'PUT', errorHandler: true, transformRequest: StudyModelService.serializeForRestoringFields},
         'delete': {method: 'DELETE', errorHandler: true},
         'get': {method: 'GET', transformResponse: StudyModelService.deserialize},
-        'rGet': {method: 'GET', transformResponse: StudyModelService.simpleDeserialize},
+        'rGet': {method: 'GET', transformResponse: StudyModelService.deserializeForRestoringFields},
         'publish': {method: 'PUT', url: contextPath + '/ws/draft/harmonization-study/:id/_publish', params: {id: '@id', cascading: '@cascading'}},
         'unPublish': {method: 'DELETE', url: contextPath + '/ws/draft/harmonization-study/:id/_publish', errorHandler: true},
         'toStatus': {method: 'PUT', url: contextPath + '/ws/draft/harmonization-study/:id/_status', params: {id: '@id', value: '@value'}}

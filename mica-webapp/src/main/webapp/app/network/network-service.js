@@ -29,10 +29,10 @@ mica.network
     function ($resource, NetworkModelService) {
       return $resource(contextPath + '/ws/draft/network/:id', {}, {
         'save': {method: 'PUT', params: {id: '@id'}, errorHandler: true, transformRequest: NetworkModelService.serialize},
-        'rSave': {method: 'PUT', params: {id: '@id'}, errorHandler: true, transformRequest: NetworkModelService.simpleSerialize},
+        'rSave': {method: 'PUT', params: {id: '@id'}, errorHandler: true, transformRequest: NetworkModelService.serializeForRestoringFields},
         'delete': {method: 'DELETE', params: {id: '@id'}, errorHandler: true},
         'get': {method: 'GET', errorHandler: true, transformResponse: NetworkModelService.deserialize},
-        'rGet': {method: 'GET', errorHandler: true, transformResponse: NetworkModelService.simpleDeserialize},
+        'rGet': {method: 'GET', errorHandler: true, transformResponse: NetworkModelService.deserializeForRestoringFields},
         'projects': {method: 'GET', params: {id: '@id'}, errorHandler: true}
       });
     }])
@@ -118,24 +118,28 @@ mica.network
       return deserialize(data, true);
     };
 
-    this.simpleSerialize = function (network) {
+    this.serializeForRestoringFields = function (network) {
       return serialize(network, false);
     };
 
-    this.simpleDeserialize = function (data) {
+    this.deserializeForRestoringFields = function (data) {
       return deserialize(data, false);
     };
 
-    function serialize(network, all) {
+    function serialize(network, normal) {
       var networkCopy = angular.copy(network);
 
-      if (all) {
+      if (normal) {
         networkCopy.name = LocalizedValues.objectToArray(networkCopy.model._name);
         networkCopy.acronym = LocalizedValues.objectToArray(networkCopy.model._acronym);
         networkCopy.description = LocalizedValues.objectToArray(networkCopy.model._description);
         delete networkCopy.model._name;
         delete networkCopy.model._acronym;
         delete networkCopy.model._description;
+      } else {
+        networkCopy.name = LocalizedValues.objectToArray(networkCopy.name);
+        networkCopy.acronym = LocalizedValues.objectToArray(networkCopy.acronym);
+        networkCopy.description = LocalizedValues.objectToArray(networkCopy.description);
       }
 
       networkCopy.content = networkCopy.model ? angular.toJson(networkCopy.model) : null;
@@ -143,13 +147,17 @@ mica.network
       return angular.toJson(networkCopy);
     }
 
-    function deserialize(data, all) {
+    function deserialize(data, normal) {
       var network = angular.fromJson(data);
       network.model = network.content ? angular.fromJson(network.content) : {};
-      if (all) {
+      if (normal) {
         network.model._name = LocalizedValues.arrayToObject(network.name);
         network.model._acronym = LocalizedValues.arrayToObject(network.acronym);
         network.model._description = LocalizedValues.arrayToObject(network.description);
+      } else {
+        network.name = LocalizedValues.arrayToObject(network.name);
+        network.acronym = LocalizedValues.arrayToObject(network.acronym);
+        network.description = LocalizedValues.arrayToObject(network.description);
       }
 
       return network;

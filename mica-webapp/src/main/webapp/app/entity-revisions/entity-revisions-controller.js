@@ -10,6 +10,8 @@
 
 'use strict';
 
+/* global JSON */
+
 mica.revisions
   .controller('RevisionsController', [
     '$rootScope',
@@ -188,7 +190,7 @@ mica.revisions
 
       function createObjectFromChosenFields(chosenFields, entity) {
         const arrayPathRegxp = /^(\w+)(\[(\d+)])$/;
-        const objectFromChosenFields = Object.assign({}, entity || {});
+        const objectFromChosenFields = JSON.parse(JSON.stringify(entity));
 
         chosenFields.forEach(function (current) {
           const splitName = (current.name || current).split('.');
