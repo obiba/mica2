@@ -127,7 +127,7 @@ mica.network
     };
 
     function serialize(network, all) {
-      var networkCopy = angular.copy(network);
+      var networkCopy = Object.assign({}, network);
 
       if (all) {
         networkCopy.name = LocalizedValues.objectToArray(networkCopy.model._name);
@@ -137,9 +137,6 @@ mica.network
         delete networkCopy.model._acronym;
         delete networkCopy.model._description;
       }
-
-      delete networkCopy.$promise;
-      delete networkCopy.$resolved;
 
       networkCopy.content = networkCopy.model ? angular.toJson(networkCopy.model) : null;
       delete networkCopy.model; // NOTICE: must be removed to avoid protobuf exception in dto.

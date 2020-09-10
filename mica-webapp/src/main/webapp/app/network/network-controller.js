@@ -10,6 +10,8 @@
 
 'use strict';
 
+/* global location */
+
 mica.network
 
   .constant('NETWORK_EVENTS', {
@@ -477,8 +479,12 @@ mica.network
       var restoreFromFields = function (transformFn) {
         DraftNetworkResource.rGet({id: $scope.networkId}, function (network) {
           var result = transformFn(network);
-          DraftNetworkResource.rSave({id: $scope.networkId}, result).$promise.then(function () {
-            $location.reload();
+
+          delete result.$resolved;
+          delete result.$promise;
+
+          DraftNetworkResource.rSave({id: $scope.networkId, comment: 'Restored Fields'}, result).$promise.then(function () {
+            location.reload();
           });
         });
       };

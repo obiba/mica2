@@ -10,6 +10,8 @@
 
 'use strict';
 
+/* global location */
+
 mica.project
 
   .constant('PROJECT_EVENTS', {
@@ -290,8 +292,12 @@ mica.project
       var restoreFromFields = function (transformFn) {
         DraftProjectResource.rGet({id: $scope.projectId}, function (project) {
           var result = transformFn(project);
-          DraftProjectResource.rSave({id: $scope.projectId}, result).$promise.then(function () {
-            $location.reload();
+
+          delete result.$resolved;
+          delete result.$promise;
+
+          DraftProjectResource.rSave({id: $scope.projectId, comment: 'Restored Fields'}, result).$promise.then(function () {
+            location.reload();
           });
         });
       };

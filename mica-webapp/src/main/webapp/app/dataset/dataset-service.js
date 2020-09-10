@@ -351,7 +351,7 @@ mica.dataset
     };
 
     function serialize(dataset, all) {
-      var datasetCopy = angular.copy(dataset);
+      var datasetCopy = Object.assign({}, dataset);
 
       if (all) {
         datasetCopy.name = LocalizedValues.objectToArray(datasetCopy.model._name);
@@ -363,9 +363,6 @@ mica.dataset
         delete datasetCopy.model._description;
         delete datasetCopy.model._entityType;
       }
-
-      delete datasetCopy.$promise;
-      delete datasetCopy.$resolved;
 
       datasetCopy.content = datasetCopy.model ? angular.toJson(datasetCopy.model) : null;
       delete datasetCopy.model; // NOTICE: must be removed to avoid protobuf exception in dto.

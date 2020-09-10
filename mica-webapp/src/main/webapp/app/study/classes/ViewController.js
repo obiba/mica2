@@ -10,7 +10,7 @@
 
 'use strict';
 /* global processMemberships, STUDY_EVENTS, moment */
-/* global obiba */
+/* global obiba, location */
 
 /**
  * Basic study view controller class
@@ -555,9 +555,13 @@ function revisionManagement($rootScope, $scope, $location, $filter, $translate, 
 
   $scope.restoreFromFields = function (transformFn) {
     DraftStudyResource.rGet({id: $scope.studyId}, function (study) {
-      var result = transformFn(study);
-      DraftStudyResource.rSave({id: $scope.studyId}, result).$promise.then(function () {
-        $location.reload();
+      const result = transformFn(study);
+
+      delete result.$resolved;
+      delete result.$promise;
+
+      DraftStudyResource.rSave({id: $scope.studyId, comment: 'Restored Fields'}, result).$promise.then(function () {
+        location.reload();
       });
     });
   };

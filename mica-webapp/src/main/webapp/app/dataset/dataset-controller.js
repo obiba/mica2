@@ -13,6 +13,8 @@
 /* global OPAL_TABLE_SCHEMA */
 /* global OPAL_TABLE_DEFINITION */
 
+/* global location */
+
 mica.dataset.OPAL_TABLE_TYPES = {STUDY_TABLE: 'studyTable', HARMONIZATION_TABLE: 'harmonizationTable'};
 
 mica.dataset
@@ -631,8 +633,12 @@ mica.dataset
       var restoreFromFields = function (transformFn) {
         DatasetResource.rGet({id: $scope.datasetId, type: $scope.type}, function (dataset) {
           var result = transformFn(dataset);
-          DatasetResource.rSave({id: $scope.datasetId}, result).$promise.then(function () {
-            $location.reload();
+
+          delete result.$resolved;
+          delete result.$promise;
+
+          DatasetResource.rSave({id: $scope.datasetId, comment: 'Restored Fields'}, result).$promise.then(function () {
+            location.reload();
           });
         });
       };
