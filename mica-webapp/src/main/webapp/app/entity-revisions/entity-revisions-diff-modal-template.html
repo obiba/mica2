@@ -30,7 +30,7 @@
               <strong style="display: block;">{{value[0] || key}}</strong>
               <small ng-if="value[0]">{{key}}</small>
             </td>
-            <td>{{value[1]}}</td>
+            <td><span ng-bind-html="value[1]"></span></td>
             <td></td>
           </tr>
           <tr ng-repeat="(key, value) in diff.differing">
@@ -41,7 +41,7 @@
               <strong style="display: block;">{{value[0] || key}}</strong>
               <small ng-if="value[0]">{{key}}</small>
             </td>
-            <td>{{value[1]}}</td>
+            <td><span ng-bind-html="value[1]"></span></td>
             <td><span ng-bind-html="value[2] | diffHighlight: value[1]"></span></td>
           </tr>
           <tr ng-repeat="(key, value) in diff.onlyRight">
@@ -53,7 +53,7 @@
               <small ng-if="value[0]">{{key}}</small>
             </td>
             <td></td>
-            <td>{{value[1]}}</td>
+            <td><span ng-bind-html="value[1]"></span></td>
           </tr>
           <tr ng-if="diffIsEmpty">
             <td colspan="3" translate>revisions-difference-none</td>
