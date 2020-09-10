@@ -10,7 +10,7 @@
 
 'use strict';
 /* global processMemberships, STUDY_EVENTS, moment */
-/* global obiba */
+/* global obiba, location */
 
 /**
  * Basic study view controller class
@@ -342,7 +342,7 @@ mica.study.ViewController = function (
   populationManagement($rootScope, $scope, $location, NOTIFICATION_EVENTS);
   populationDceManagement($rootScope, $scope, $location, $translate, $uibModal, EntityPathBuilder, NOTIFICATION_EVENTS);
   contactManagement($scope, $routeParams, CONTACT_EVENTS, self.fetchStudy);
-  revisionManagement($rootScope, $scope, $filter, $translate, DraftStudyRevisionsResource, NOTIFICATION_EVENTS, self.initializeStudy);
+  revisionManagement($rootScope, $scope, $location, $filter, $translate, DraftStudyRevisionsResource, NOTIFICATION_EVENTS, self.initializeStudy, DraftStudyResource);
 };
 
 mica.study.ViewController.prototype = Object.create(mica.study.BaseViewController.prototype);
@@ -521,7 +521,7 @@ function contactManagement($scope, $routeParams, CONTACT_EVENTS, fetchStudy) {
   });
 }
 
-function revisionManagement($rootScope, $scope, $filter, $translate, DraftStudyRevisionsResource, NOTIFICATION_EVENTS, initializeStudy) {
+function revisionManagement($rootScope, $scope, $location, $filter, $translate, DraftStudyRevisionsResource, NOTIFICATION_EVENTS, initializeStudy, DraftStudyResource) {
   $scope.fetchRevisions = function (id, onSuccess) {
     DraftStudyRevisionsResource.query({id: id}, function (response) {
       if (onSuccess) {
@@ -547,10 +547,22 @@ function revisionManagement($rootScope, $scope, $filter, $translate, DraftStudyR
     }
   };
 
-  $scope.viewDiff = function(id, leftCommitInfo, rightCommitInfo) {
+  $scope.viewDiff = function (id, leftCommitInfo, rightCommitInfo) {
     if (leftCommitInfo && rightCommitInfo) {
       return DraftStudyRevisionsResource.diff({id: id, left: leftCommitInfo.commitId, right: rightCommitInfo.commitId, locale: $translate.use()});
     }
+  };
+
+  $scope.restoreFromFields = function (transformFn) {
+    DraftStudyResource.rGet({id: $scope.studyId}).$promise.then(function (study) {
+      return transformFn(study.toJSON());
+    }).then(function (result) {
+      DraftStudyResource.rSave({id: $scope.studyId, comment: 'Restored Fields'}, result).$promise.then(function () {
+        location.reload();
+      });
+
+      return result;
+    });
   };
 }
 
@@ -722,7 +734,7 @@ mica.study.HarmonizationStudyViewController = function (
 
   populationManagement($rootScope, $scope, $location, NOTIFICATION_EVENTS);
   contactManagement($scope, $routeParams, CONTACT_EVENTS, self.fetchStudy);
-  revisionManagement($rootScope, $scope, $filter, $translate, DraftStudyRevisionsResource, NOTIFICATION_EVENTS, self.initializeStudy);
+  revisionManagement($rootScope, $scope, $location, $filter, $translate, DraftStudyRevisionsResource, NOTIFICATION_EVENTS, self.initializeStudy, DraftStudyResource);
 };
 
 mica.study.HarmonizationStudyViewController.prototype = Object.create(mica.study.BaseViewController.prototype);

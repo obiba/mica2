@@ -10,6 +10,8 @@
 
 'use strict';
 
+/* global JSON */
+
 mica.dataset
   .factory('CollectedDatasetsResource', ['$resource',
     function ($resource) {
@@ -22,21 +24,17 @@ mica.dataset
   .factory('DraftCollectedDatasetsResource', ['$resource', 'DatasetModelService',
     function ($resource, DatasetModelService) {
       return $resource(contextPath + '/ws/draft/collected-datasets?comment:comment', {}, {
-        'save': {method: 'POST', errorHandler: true, transformRequest: function(dataset) {
-          return DatasetModelService.serialize(dataset);
-        }}
+        'save': {method: 'POST', errorHandler: true, transformRequest: DatasetModelService.serialize}
       });
     }])
 
   .factory('CollectedDatasetResource', ['$resource', 'DatasetModelService',
     function ($resource, DatasetModelService) {
       return $resource(contextPath + '/ws/draft/collected-dataset/:id', {}, {
-        'save': {method: 'PUT', params: {id: '@id'}, errorHandler: true, transformRequest: function(dataset) {
-          return DatasetModelService.serialize(dataset);
-        }},
-        'get': {method: 'GET', transformResponse: function(data) {
-          return DatasetModelService.deserialize(data);
-        }}
+        'save': {method: 'PUT', params: {id: '@id'}, errorHandler: true, transformRequest: DatasetModelService.serialize},
+        'get': {method: 'GET', transformResponse: DatasetModelService.deserialize},
+        'rSave': {method: 'PUT', params: {id: '@id'}, errorHandler: true, transformRequest: DatasetModelService.serializeForRestoringFields},
+        'rGet': {method: 'GET', transformResponse: DatasetModelService.deserializeForRestoringFields}
       });
     }])
 
@@ -76,12 +74,10 @@ mica.dataset
   .factory('HarmonizedDatasetResource', ['$resource', 'DatasetModelService',
     function ($resource, DatasetModelService) {
       return $resource(contextPath + '/ws/draft/harmonized-dataset/:id', {}, {
-        'save': {method: 'PUT', params: {id: '@id'}, errorHandler: true, transformRequest: function(dataset) {
-          return DatasetModelService.serialize(dataset);
-        }},
-        'get': {method: 'GET', transformResponse: function(data) {
-          return DatasetModelService.deserialize(data);
-        }}
+        'save': {method: 'PUT', params: {id: '@id'}, errorHandler: true, transformRequest: DatasetModelService.serialize},
+        'get': {method: 'GET', transformResponse: DatasetModelService.deserialize},
+        'rSave': {method: 'PUT', params: {id: '@id'}, errorHandler: true, transformRequest: DatasetModelService.serializeForRestoringFields},
+        'rGget': {method: 'GET', transformResponse: DatasetModelService.deserializeForRestoringFields}
       });
     }])
 
@@ -96,13 +92,11 @@ mica.dataset
   .factory('DatasetResource', ['$resource', 'DatasetModelService',
     function ($resource, DatasetModelService) {
       return $resource(contextPath + '/ws/draft/:type/:id', {}, {
-        'save': {method: 'PUT', params: {id: '@id', type: '@type'}, errorHandler: true, transformRequest: function(dataset) {
-          return DatasetModelService.serialize(dataset);
-        }},
+        'save': {method: 'PUT', params: {id: '@id', type: '@type'}, errorHandler: true, transformRequest: DatasetModelService.serialize},
+        'rSave': {method: 'PUT', params: {id: '@id', type: '@type'}, errorHandler: true, transformRequest: DatasetModelService.serializeForRestoringFields},
         'delete': {method: 'DELETE', params: {id: '@id', type: '@type'}, errorHandler: true},
-        'get': {method: 'GET', params: {id: '@id', type: '@type'}, transformResponse: function(data) {
-          return DatasetModelService.deserialize(data);
-        }}
+        'get': {method: 'GET', params: {id: '@id', type: '@type'}, transformResponse: DatasetModelService.deserialize},
+        'rGet': {method: 'GET', params: {id: '@id', type: '@type'}, transformResponse: DatasetModelService.deserializeForRestoringFields}
       });
     }])
 
@@ -340,30 +334,104 @@ mica.dataset
   }])
 
   .service('DatasetModelService',['LocalizedValues', function(LocalizedValues) {
-    this.serialize = function(dataset) {
+    this.serialize = function (network) {
+      return serialize(network, false);
+    };
+
+    this.deserialize = function (data) {
+      return deserialize(data, false);
+    };
+
+    this.serializeForRestoringFields = function (network) {
+      return serialize(network, true);
+    };
+
+    this.deserializeForRestoringFields = function (data) {
+      return deserialize(data, true);
+    };
+
+    function serialize(dataset, restore) {
       var datasetCopy = angular.copy(dataset);
-      datasetCopy.name = LocalizedValues.objectToArray(datasetCopy.model._name);
-      datasetCopy.acronym = LocalizedValues.objectToArray(datasetCopy.model._acronym);
-      datasetCopy.description = LocalizedValues.objectToArray(datasetCopy.model._description);
-      datasetCopy.entityType = datasetCopy.model._entityType;
-      delete datasetCopy.model._name;
-      delete datasetCopy.model._acronym;
-      delete datasetCopy.model._description;
-      delete datasetCopy.model._entityType;
+
+      if (!restore) {
+        datasetCopy.name = LocalizedValues.objectToArray(datasetCopy.model._name);
+        datasetCopy.acronym = LocalizedValues.objectToArray(datasetCopy.model._acronym);
+        datasetCopy.description = LocalizedValues.objectToArray(datasetCopy.model._description);
+        datasetCopy.entityType = datasetCopy.model._entityType;
+        delete datasetCopy.model._name;
+        delete datasetCopy.model._acronym;
+        delete datasetCopy.model._description;
+        delete datasetCopy.model._entityType;
+      } else {
+        datasetCopy.name = LocalizedValues.objectToArray(datasetCopy.name);
+        datasetCopy.acronym = LocalizedValues.objectToArray(datasetCopy.acronym);
+        datasetCopy.description = LocalizedValues.objectToArray(datasetCopy.description);
+
+        serializeOpalTableForRestoringFields(datasetCopy);
+      }
+
       datasetCopy.content = datasetCopy.model ? angular.toJson(datasetCopy.model) : null;
       delete datasetCopy.model; // NOTICE: must be removed to avoid protobuf exception in dto.
       return angular.toJson(datasetCopy);
-    };
+    }
 
-    this.deserialize = function(data) {
+    function deserialize(data, restore) {
       var dataset = angular.fromJson(data);
       dataset.model = dataset.content ? angular.fromJson(dataset.content) : {};
-      dataset.model._name = LocalizedValues.arrayToObject(dataset.name);
-      dataset.model._acronym = LocalizedValues.arrayToObject(dataset.acronym);
-      dataset.model._description = LocalizedValues.arrayToObject(dataset.description);
-      dataset.model._entityType = dataset.entityType;
+
+      if (!restore) {
+        dataset.model._name = LocalizedValues.arrayToObject(dataset.name);
+        dataset.model._acronym = LocalizedValues.arrayToObject(dataset.acronym);
+        dataset.model._description = LocalizedValues.arrayToObject(dataset.description);
+        dataset.model._entityType = dataset.entityType;
+      } else {
+        dataset.name = LocalizedValues.arrayToObject(dataset.name);
+        dataset.acronym = LocalizedValues.arrayToObject(dataset.acronym);
+        dataset.description = LocalizedValues.arrayToObject(dataset.description);
+
+        deserializeOpalTableForRestoringFields(dataset);
+      }
+
       return dataset;
-    };
+    }
+
+    function serializeOpalTableForRestoringFields(dataset) {
+      if (typeof dataset['obiba.mica.HarmonizedDatasetDto.type'] === 'object') {
+        dataset['obiba.mica.HarmonizedDatasetDto.type'].harmonizationTables = (dataset.harmonizationTables || []).map(serializeTable);
+        dataset['obiba.mica.HarmonizedDatasetDto.type'].studyTables = (dataset.studyTables || []).map(serializeTable);
+        dataset['obiba.mica.HarmonizedDatasetDto.type'].harmonizationTable = serializeTable(dataset.harmonizationTable || {});
+      } else if (typeof dataset['obiba.mica.CollectedDatasetDto.type'] === 'object') {
+        dataset['obiba.mica.CollectedDatasetDto.type'].studyTable = serializeTable(dataset.studyTable || {});
+      }
+
+      function serializeTable(table) {
+        const result = JSON.parse(JSON.stringify(table));
+
+        result.name = LocalizedValues.objectToArray(result.name);
+        result.description = LocalizedValues.objectToArray(result.description);
+
+        return result;
+      }
+    }
+
+    function deserializeOpalTableForRestoringFields(dataset) {
+      if (typeof dataset['obiba.mica.HarmonizedDatasetDto.type'] === 'object') {
+        dataset.harmonizationTables = (dataset['obiba.mica.HarmonizedDatasetDto.type'].harmonizationTables || []).map(deserializeTable);
+        dataset.studyTables = (dataset['obiba.mica.HarmonizedDatasetDto.type'].studyTables || []).map(deserializeTable);
+        dataset.harmonizationTable = deserializeTable(dataset['obiba.mica.HarmonizedDatasetDto.type'].harmonizationTable || {});
+      } else if (typeof dataset['obiba.mica.CollectedDatasetDto.type'] === 'object') {
+        dataset.studyTable = deserializeTable(dataset['obiba.mica.CollectedDatasetDto.type'].studyTable || {});
+      }
+
+      function deserializeTable(table) {
+        const result = JSON.parse(JSON.stringify(table));
+
+        result.name = LocalizedValues.arrayToObject(result.name);
+        result.description = LocalizedValues.arrayToObject(result.description);
+
+        return result;
+      }
+    }
 
     return this;
   }]);

@@ -38,8 +38,10 @@ mica.study
       return $resource(contextPath + '/ws/draft/individual-study/:id', {id: '@id'}, {
         // override $resource.save method because it uses POST by default
         'save': {method: 'PUT', errorHandler: true, transformRequest: StudyModelService.serialize},
+        'rSave': {method: 'PUT', errorHandler: true, transformRequest: StudyModelService.serializeForRestoringFields},
         'delete': {method: 'DELETE', errorHandler: true},
         'get': {method: 'GET', transformResponse: StudyModelService.deserialize},
+        'rGet': {method: 'GET', transformResponse: StudyModelService.deserializeForRestoringFields},
         'indexDatasets': {method: 'PUT', url: contextPath + '/ws/draft/individual-study/:id/index-datasets'},
         'publish': {method: 'PUT', url: contextPath + '/ws/draft/individual-study/:id/_publish', params: {id: '@id', cascading: '@cascading'}},
         'unPublish': {method: 'DELETE', url: contextPath + '/ws/draft/individual-study/:id/_publish', errorHandler: true},
@@ -103,106 +105,162 @@ mica.study
   .factory('StudyModelService', ['LocalizedValues', function (LocalizedValues) {
 
     this.serialize = function (study) {
+      return serialize(study, false);
+    };
+
+    this.deserialize = function (studyData) {
+      return deserialize(studyData, false);
+    };
+
+    this.serializeForRestoringFields = function (study) {
+      return serialize(study, true);
+    };
+
+    this.deserializeForRestoringFields = function (studyData) {
+      return deserialize(studyData, true);
+    };
+
+    function serialize (study, restore) {
 
       var studyCopy = angular.copy(study);
 
-      studyCopy.name = LocalizedValues.objectToArray(studyCopy.model._name);
-      studyCopy.acronym = LocalizedValues.objectToArray(studyCopy.model._acronym);
-      studyCopy.objectives = LocalizedValues.objectToArray(studyCopy.model._objectives);
-      studyCopy.opal = studyCopy.model._opal;
-      delete studyCopy.model._name;
-      delete studyCopy.model._acronym;
-      delete studyCopy.model._objectives;
-      delete studyCopy.model._opal;
+      if (!restore) {
+        studyCopy.name = LocalizedValues.objectToArray(studyCopy.model._name);
+        studyCopy.acronym = LocalizedValues.objectToArray(studyCopy.model._acronym);
+        studyCopy.objectives = LocalizedValues.objectToArray(studyCopy.model._objectives);
+        studyCopy.opal = studyCopy.model._opal;
+        delete studyCopy.model._name;
+        delete studyCopy.model._acronym;
+        delete studyCopy.model._objectives;
+        delete studyCopy.model._opal;
+      } else {
+        studyCopy.name = LocalizedValues.objectToArray(studyCopy.name);
+        studyCopy.acronym = LocalizedValues.objectToArray(studyCopy.acronym);
+        studyCopy.objectives = LocalizedValues.objectToArray(studyCopy.objectives);
+      }
+
       studyCopy.content = studyCopy.model ? angular.toJson(studyCopy.model) : null;
 
       delete studyCopy.model; // NOTICE: must be removed to avoid protobuf exception in dto.
 
       if(studyCopy.populations) {
         studyCopy.populations.forEach(function(population) {
-          populationSerialize(population);
+          populationSerialize(population, restore);
         });
       }
 
       return angular.toJson(studyCopy);
-    };
+    }
 
-    function populationSerialize(population) {
-      population.id = population.model._id;
-      population.name = LocalizedValues.objectToArray(population.model._name);
-      population.description = LocalizedValues.objectToArray(population.model._description);
-      delete population.model._id;
-      delete population.model._name;
-      delete population.model._description;
+    function populationSerialize(population, restore) {
+      if (!restore) {
+        population.id = population.model._id;
+        population.name = LocalizedValues.objectToArray(population.model._name);
+        population.description = LocalizedValues.objectToArray(population.model._description);
+        delete population.model._id;
+        delete population.model._name;
+        delete population.model._description;
+      } else {
+        population.name = LocalizedValues.objectToArray(population.name);
+        population.description = LocalizedValues.objectToArray(population.description);
+      }
+
       population.content = population.model ? angular.toJson(population.model) : null;
 
       delete population.model;
 
       if(population.dataCollectionEvents) {
         population.dataCollectionEvents.forEach(function(dce) {
-          dceSerialize(dce);
+          dceSerialize(dce, restore);
         });
       }
     }
 
-    function dceSerialize(dce) {
-      dce.id = dce.model._id;
-      dce.name = LocalizedValues.objectToArray(dce.model._name);
-      dce.description = LocalizedValues.objectToArray(dce.model._description);
-      dce.startYear = dce.model._startYear;
-      dce.startMonth = dce.model._startMonth;
-      dce.endYear = dce.model._endYear;
-      dce.endMonth = dce.model._endMonth;
-      delete dce.model._id;
-      delete dce.model._name;
-      delete dce.model._description;
-      delete dce.model._startYear;
-      delete dce.model._startMonth;
-      delete dce.model._endYear;
-      delete dce.model._endMonth;
+    function dceSerialize(dce, restore) {
+      if (!restore) {
+        dce.id = dce.model._id;
+        dce.name = LocalizedValues.objectToArray(dce.model._name);
+        dce.description = LocalizedValues.objectToArray(dce.model._description);
+        dce.startYear = dce.model._startYear;
+        dce.startMonth = dce.model._startMonth;
+        dce.endYear = dce.model._endYear;
+        dce.endMonth = dce.model._endMonth;
+        delete dce.model._id;
+        delete dce.model._name;
+        delete dce.model._description;
+        delete dce.model._startYear;
+        delete dce.model._startMonth;
+        delete dce.model._endYear;
+        delete dce.model._endMonth;
+      } else {
+        dce.name = LocalizedValues.objectToArray(dce.name);
+        dce.description = LocalizedValues.objectToArray(dce.description);
+      }
+
       dce.content = dce.model ? angular.toJson(dce.model) : null;
 
       delete dce.model;
     }
 
-    this.deserialize = function (studyData) {
+    function deserialize (studyData, restore) {
       var study = angular.fromJson(studyData);
       study.model = study.content ? angular.fromJson(study.content) : {};
-      study.model._name = LocalizedValues.arrayToObject(study.name);
-      study.model._acronym = LocalizedValues.arrayToObject(study.acronym);
-      study.model._objectives = LocalizedValues.arrayToObject(study.objectives);
-      study.model._opal = study.opal;
+
+      if (!restore) {
+        study.model._name = LocalizedValues.arrayToObject(study.name);
+        study.model._acronym = LocalizedValues.arrayToObject(study.acronym);
+        study.model._objectives = LocalizedValues.arrayToObject(study.objectives);
+        study.model._opal = study.opal;
+      } else {
+        study.name = LocalizedValues.arrayToObject(study.name);
+        study.acronym = LocalizedValues.arrayToObject(study.acronym);
+        study.objectives = LocalizedValues.arrayToObject(study.objectives);
+      }
 
       if (study.populations) {
         study.populations.forEach(function (population) {
-          populationDeserialize(population);
+          populationDeserialize(population, restore);
         });
       }
-      return study;
-    };
 
-    function populationDeserialize(population) {
+      return study;
+    }
+
+    function populationDeserialize(population, restore) {
       population.model = population.content ? angular.fromJson(population.content) : {};
-      population.model._id = population.id;
-      population.model._name = LocalizedValues.arrayToObject(population.name);
-      population.model._description = LocalizedValues.arrayToObject(population.description);
+
+      if (!restore) {
+        population.model._id = population.id;
+        population.model._name = LocalizedValues.arrayToObject(population.name);
+        population.model._description = LocalizedValues.arrayToObject(population.description);
+      } else {
+        population.name = LocalizedValues.arrayToObject(population.name);
+        population.description = LocalizedValues.arrayToObject(population.description);
+      }
 
       if (population.dataCollectionEvents) {
         population.dataCollectionEvents.forEach(function (dce) {
-          dceDeserialize(dce);
+          dceDeserialize(dce, restore);
         });
       }
     }
 
-    function dceDeserialize(dce) {
+    function dceDeserialize(dce, restore) {
       dce.model = dce.content ? angular.fromJson(dce.content) : {};
-      dce.model._id = dce.id;
-      dce.model._name = LocalizedValues.arrayToObject(dce.name);
-      dce.model._description = LocalizedValues.arrayToObject(dce.description);
-      dce.model._startYear = dce.startYear;
-      dce.model._startMonth = dce.startMonth;
-      dce.model._endYear = dce.endYear;
-      dce.model._endMonth = dce.endMonth;
+
+      if (!restore) {
+        dce.model._id = dce.id;
+        dce.model._name = LocalizedValues.arrayToObject(dce.name);
+        dce.model._description = LocalizedValues.arrayToObject(dce.description);
+        dce.model._startYear = dce.startYear;
+        dce.model._startMonth = dce.startMonth;
+        dce.model._endYear = dce.endYear;
+        dce.model._endMonth = dce.endMonth;
+      } else {
+        dce.name = LocalizedValues.arrayToObject(dce.name);
+        dce.description = LocalizedValues.arrayToObject(dce.description);
+      }
+
     }
 
     return this;
@@ -458,10 +516,12 @@ mica.study
   .factory('DraftHarmonizationStudyResource', ['$resource', 'StudyModelService',
     function ($resource, StudyModelService) {
       return $resource(contextPath + '/ws/draft/harmonization-study/:id', {id: '@id'}, {
-        // override $resource.save method because it uses POST by default
+        // override $resource.save method because it uses POST by defaultt
         'save': {method: 'PUT', errorHandler: true, transformRequest: StudyModelService.serialize},
+        'rSave': {method: 'PUT', errorHandler: true, transformRequest: StudyModelService.serializeForRestoringFields},
         'delete': {method: 'DELETE', errorHandler: true},
         'get': {method: 'GET', transformResponse: StudyModelService.deserialize},
+        'rGet': {method: 'GET', transformResponse: StudyModelService.deserializeForRestoringFields},
         'publish': {method: 'PUT', url: contextPath + '/ws/draft/harmonization-study/:id/_publish', params: {id: '@id', cascading: '@cascading'}},
         'unPublish': {method: 'DELETE', url: contextPath + '/ws/draft/harmonization-study/:id/_publish', errorHandler: true},
         'toStatus': {method: 'PUT', url: contextPath + '/ws/draft/harmonization-study/:id/_status', params: {id: '@id', value: '@value'}}

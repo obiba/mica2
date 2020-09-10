@@ -13,6 +13,8 @@
 /* global OPAL_TABLE_SCHEMA */
 /* global OPAL_TABLE_DEFINITION */
 
+/* global location */
+
 mica.dataset.OPAL_TABLE_TYPES = {STUDY_TABLE: 'studyTable', HARMONIZATION_TABLE: 'harmonizationTable'};
 
 mica.dataset
@@ -628,6 +630,18 @@ mica.dataset
         });
       };
 
+      var restoreFromFields = function (transformFn) {
+        DatasetResource.rGet({id: $scope.datasetId, type: $scope.type}).$promise.then(function (dataset) {
+          return transformFn(dataset.toJSON());
+        }).then(function (result) {
+          DatasetResource.rSave({id: $scope.datasetId, type: $scope.type, comment: 'Restored Fields'}, result).$promise.then(function () {
+            location.reload();
+          });
+
+          return result;
+        });
+      };
+
       function saveAndUpdateDataset() {
         if($scope.type === 'harmonized-dataset') {
           HarmonizedDatasetResource.save({id: $scope.dataset.id}, $scope.dataset).$promise.then(function () {
@@ -722,6 +736,7 @@ mica.dataset
       $scope.viewRevision = viewRevision;
       $scope.restoreRevision = restoreRevision;
       $scope.fetchRevisions = fetchRevisions;
+      $scope.restoreFromFields = restoreFromFields;
 
       $scope.print = function () {
         setTimeout(function(){ window.print();}, 250);

@@ -24,8 +24,10 @@ mica.project
     function ($resource, ProjectModelFactory) {
       return $resource(contextPath + '/ws/draft/project/:id', {}, {
         'save': {method: 'PUT', params: {id: '@id'}, errorHandler: true, transformRequest: ProjectModelFactory.serialize},
+        'rSave': {method: 'PUT', params: {id: '@id'}, errorHandler: true, transformRequest: ProjectModelFactory.serializeForRestoringFields},
         'delete': {method: 'DELETE', params: {id: '@id'}, errorHandler: true},
-        'get': {method: 'GET', errorHandler: true, transformResponse: ProjectModelFactory.deserialize}
+        'get': {method: 'GET', errorHandler: true, transformResponse: ProjectModelFactory.deserialize},
+        'rGet': {method: 'GET', errorHandler: true, transformResponse: ProjectModelFactory.deserializeForRestoringFields}
       });
     }])
 
@@ -97,28 +99,57 @@ mica.project
   .factory('ProjectModelFactory', ['LocalizedValues',
     function (LocalizedValues) {
       this.serialize = function (project) {
-        console.log('serialize begin', project);
-        var projectCopy = angular.copy(project);
-        projectCopy.title = LocalizedValues.objectToArray(projectCopy.model._title);
-        projectCopy.summary = LocalizedValues.objectToArray(projectCopy.model._summary);
-        delete projectCopy.model._title;
-        delete projectCopy.model._summary;
-        projectCopy.content = projectCopy.model ? angular.toJson(projectCopy.model) : null;
-        delete projectCopy.model;
-        return angular.toJson(projectCopy);
+        return serialize(project, false);
       };
 
       this.deserialize = function (data) {
+        return deserialize(data, false);
+      };
+
+      this.serializeForRestoringFields = function (project) {
+        return serialize(project, true);
+      };
+
+      this.deserializeForRestoringFields = function (data) {
+        return deserialize(data, true);
+      };
+
+      function serialize(project, restore) {
+        var projectCopy = angular.copy(project);
+
+        if (!restore) {
+          projectCopy.title = LocalizedValues.objectToArray(projectCopy.model._title);
+          projectCopy.summary = LocalizedValues.objectToArray(projectCopy.model._summary);
+          delete projectCopy.model._title;
+          delete projectCopy.model._summary;
+        } else {
+          projectCopy.title = LocalizedValues.objectToArray(projectCopy.title);
+          projectCopy.summary = LocalizedValues.objectToArray(projectCopy.summary);
+        }
+
+        projectCopy.content = projectCopy.model ? angular.toJson(projectCopy.model) : null;
+        delete projectCopy.model;
+        return angular.toJson(projectCopy);
+      }
+
+      function deserialize(data, restore) {
         if (!data) {
           return {model: {}};
         }
 
         var project = angular.fromJson(data);
         project.model = project.content ? angular.fromJson(project.content) : {};
-        project.model._title = LocalizedValues.arrayToObject(project.title);
-        project.model._summary = LocalizedValues.arrayToObject(project.summary);
+
+        if (!restore) {
+          project.model._title = LocalizedValues.arrayToObject(project.title);
+          project.model._summary = LocalizedValues.arrayToObject(project.summary);
+        } else {
+          project.title = LocalizedValues.arrayToObject(project.title);
+          project.summary = LocalizedValues.arrayToObject(project.summary);
+        }
+
         return project;
-      };
+      }
 
       return this;
     }]);

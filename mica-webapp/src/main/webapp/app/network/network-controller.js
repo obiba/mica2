@@ -10,6 +10,8 @@
 
 'use strict';
 
+/* global location */
+
 mica.network
 
   .constant('NETWORK_EVENTS', {
@@ -474,6 +476,18 @@ mica.network
         });
       };
 
+      var restoreFromFields = function (transformFn) {
+        DraftNetworkResource.rGet({id: $scope.networkId}).$promise.then(function (network) {
+          return transformFn(network.toJSON());
+        }).then(function (result) {
+          DraftNetworkResource.rSave({id: $scope.networkId, comment: 'Restored Fields'}, result).$promise.then(function () {
+            location.reload();
+          });
+
+          return result;
+        });
+      };
+
       var restoreRevision = function (networkId, commitInfo, onSuccess) {
         if (commitInfo && $scope.networkId === networkId) {
           var args = {commitId: commitInfo.commitId, restoreSuccessCallback: onSuccess};
@@ -511,6 +525,7 @@ mica.network
       $scope.viewRevision = viewRevision;
       $scope.restoreRevision = restoreRevision;
       $scope.fetchRevisions = fetchRevisions;
+      $scope.restoreFromFields = restoreFromFields;
       $scope.viewDiff = viewDiff;
 
       $scope.$on(NOTIFICATION_EVENTS.confirmDialogAccepted, onRestore);
