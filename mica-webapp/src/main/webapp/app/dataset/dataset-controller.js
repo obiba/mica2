@@ -631,15 +631,14 @@ mica.dataset
       };
 
       var restoreFromFields = function (transformFn) {
-        DatasetResource.rGet({id: $scope.datasetId, type: $scope.type}, function (dataset) {
-          var result = transformFn(dataset);
-
-          delete result.$resolved;
-          delete result.$promise;
-
+        DatasetResource.rGet({id: $scope.datasetId, type: $scope.type}).$promise.then(function (dataset) {
+          return transformFn(dataset.toJSON());
+        }).then(function (result) {
           DatasetResource.rSave({id: $scope.datasetId, comment: 'Restored Fields'}, result).$promise.then(function () {
             location.reload();
           });
+
+          return result;
         });
       };
 

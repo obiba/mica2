@@ -290,15 +290,14 @@ mica.project
       };
 
       var restoreFromFields = function (transformFn) {
-        DraftProjectResource.rGet({id: $scope.projectId}, function (project) {
-          var result = transformFn(project);
-
-          delete result.$resolved;
-          delete result.$promise;
-
+        DraftProjectResource.rGet({id: $scope.projectId}).$promise.then(function (project) {
+          return transformFn(project.toJSON());
+        }).then(function (result) {
           DraftProjectResource.rSave({id: $scope.projectId, comment: 'Restored Fields'}, result).$promise.then(function () {
             location.reload();
           });
+
+          return result;
         });
       };
 

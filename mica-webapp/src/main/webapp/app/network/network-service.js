@@ -127,7 +127,7 @@ mica.network
     };
 
     function serialize(network, all) {
-      var networkCopy = Object.assign({}, network);
+      var networkCopy = angular.copy(network);
 
       if (all) {
         networkCopy.name = LocalizedValues.objectToArray(networkCopy.model._name);

@@ -351,7 +351,7 @@ mica.dataset
     };
 
     function serialize(dataset, all) {
-      var datasetCopy = Object.assign({}, dataset);
+      var datasetCopy = angular.copy(dataset);
 
       if (all) {
         datasetCopy.name = LocalizedValues.objectToArray(datasetCopy.model._name);

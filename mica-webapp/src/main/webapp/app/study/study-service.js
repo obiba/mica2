@@ -122,7 +122,7 @@ mica.study
 
     function serialize (study, all) {
 
-      var studyCopy = Object.assign({}, study);
+      var studyCopy = angular.copy(study);
 
       if (all) {
         studyCopy.name = LocalizedValues.objectToArray(studyCopy.model._name);

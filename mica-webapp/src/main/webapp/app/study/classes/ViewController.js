@@ -554,15 +554,14 @@ function revisionManagement($rootScope, $scope, $location, $filter, $translate, 
   };
 
   $scope.restoreFromFields = function (transformFn) {
-    DraftStudyResource.rGet({id: $scope.studyId}, function (study) {
-      const result = transformFn(study);
-
-      delete result.$resolved;
-      delete result.$promise;
-
+    DraftStudyResource.rGet({id: $scope.studyId}).$promise.then(function (study) {
+      return transformFn(study.toJSON());
+    }).then(function (result) {
       DraftStudyResource.rSave({id: $scope.studyId, comment: 'Restored Fields'}, result).$promise.then(function () {
         location.reload();
       });
+
+      return result;
     });
   };
 }

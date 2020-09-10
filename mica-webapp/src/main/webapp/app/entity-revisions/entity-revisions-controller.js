@@ -93,7 +93,7 @@ mica.revisions
           }).result.then(function (chosenFields) {
             if (chosenFields && chosenFields.length > 0 && chosenFields.length < totalNumberOfFields) {
               $scope.onRestoreFromFields()(function (entity) {
-                return createObjectFromChosenFields(chosenFields, Object.assign({}, entity));
+                return createObjectFromChosenFields(chosenFields, entity);
               });
             } else {
               restoreRevision(id, rightSideCommitInfo);
@@ -188,7 +188,7 @@ mica.revisions
 
       function createObjectFromChosenFields(chosenFields, entity) {
         const arrayPathRegxp = /^(\w+)(\[(\d+)])$/;
-        const objectFromChosenFields = entity || {};
+        const objectFromChosenFields = Object.assign({}, entity || {});
 
         chosenFields.forEach(function (current) {
           const splitName = (current.name || current).split('.');

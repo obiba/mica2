@@ -115,7 +115,7 @@ mica.project
       };
 
       function serialize(project, all) {
-        var projectCopy = Object.assign({}, project);
+        var projectCopy = angular.copy(project);
 
         if (all) {
           projectCopy.title = LocalizedValues.objectToArray(projectCopy.model._title);

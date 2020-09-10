@@ -477,15 +477,14 @@ mica.network
       };
 
       var restoreFromFields = function (transformFn) {
-        DraftNetworkResource.rGet({id: $scope.networkId}, function (network) {
-          var result = transformFn(network);
-
-          delete result.$resolved;
-          delete result.$promise;
-
+        DraftNetworkResource.rGet({id: $scope.networkId}).$promise.then(function (network) {
+          return transformFn(network.toJSON());
+        }).then(function (result) {
           DraftNetworkResource.rSave({id: $scope.networkId, comment: 'Restored Fields'}, result).$promise.then(function () {
             location.reload();
           });
+
+          return result;
         });
       };
 
