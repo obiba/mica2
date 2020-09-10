@@ -483,7 +483,8 @@ const renderDatasetCrosstab = function(contingency) {
 
   // header
   const var2CatsCount = crosstab.getVariable2Categories().length;
-  const var2Colspan = var2CatsCount + (crosstab.isVariable2Statistical() ? 4 : 0);
+  // for continuous variable, we do not have the frequencies of the "missing" categories (if any)
+  const var2Colspan = (crosstab.isVariable2Statistical() ? 4 : var2CatsCount);
   let head = '<th rowspan="2"><a href="' + contingency.info.var1.href + '" target="_blank">' + Mica.var1.name + '</a><div><small>' + contingency.info.var1.label + '</small></div></th>' +
     '<th colspan="' + var2Colspan + '"><a href="' + contingency.info.var2.href + '" target="_blank">' + Mica.var2.name + '</a><div><small>' + contingency.info.var2.label + '</small></div></th>' +
     '<th rowspan="2">N</th>';
@@ -491,7 +492,7 @@ const renderDatasetCrosstab = function(contingency) {
   thead.append('<tr>' + head + '</tr>');
 
   head = '';
-  if (var2CatsCount > 0) {
+  if (!crosstab.isVariable2Statistical() && var2CatsCount > 0) {
     crosstab.getVariable2Categories().forEach(cat => {
       head = head + '<th>' + cat.name + '<div><small>' + contingency.info.var2.categories[cat.name] + '</small></div></th>';
     });
@@ -519,7 +520,7 @@ const renderDatasetCrosstab = function(contingency) {
   // for each category
   contingency.aggregations.forEach(aggregation => {
     let row = '<td>' + aggregation.term + '<div><small>' + contingency.info.var1.categories[aggregation.term] + '</small></div></td>';
-    if (aggregation.frequencies) {
+    if (!crosstab.isVariable2Statistical() && aggregation.frequencies) {
       aggregation.frequencies.forEach(freq => {
         row = row + '<td>' + freq.count + (freq.percent ? ' <small>(' + freq.percent.toFixed(2) + '%)</small>' : '') + '</td>';
       });
@@ -537,7 +538,7 @@ const renderDatasetCrosstab = function(contingency) {
   // total
   let row = '<td class="total">' + Mica.tr.all + '</td>';
   const all = contingency.all;
-  if (all.frequencies) {
+  if (!crosstab.isVariable2Statistical() && all.frequencies) {
     all.frequencies.forEach(freq => {
       row = row + '<td class="total">' + freq.count + (freq.percent ? ' <small>(' + freq.percent.toFixed(2) + '%)</small>' : '') + '</td>';
     });
