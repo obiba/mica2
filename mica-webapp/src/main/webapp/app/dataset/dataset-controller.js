@@ -634,7 +634,7 @@ mica.dataset
         DatasetResource.rGet({id: $scope.datasetId, type: $scope.type}).$promise.then(function (dataset) {
           return transformFn(dataset.toJSON());
         }).then(function (result) {
-          DatasetResource.rSave({id: $scope.datasetId, comment: 'Restored Fields'}, result).$promise.then(function () {
+          DatasetResource.rSave({id: $scope.datasetId, type: $scope.type, comment: 'Restored Fields'}, result).$promise.then(function () {
             location.reload();
           });
 
