@@ -62,6 +62,76 @@ class LocalizedValues {
   }
 }
 
+class MicaAlert {
+  static getBuilder() {
+    const classAddons = 'shadow mt-2 mr-2';
+
+    class Builder {
+      constructor() {
+        this.options = {
+          autohide: true,
+          delay: 5000,
+          class: `bg-info ${classAddons}`,
+          fixed: true,
+          close: false
+        };
+      }
+
+      delay(value) {
+        this.options.delay = value;
+        return this;
+      }
+
+      close(value) {
+        this.options.close = value;
+        return this;
+      }
+
+      warn() {
+        this.options.class = `bg-warning ${classAddons}`;
+        return this;
+      }
+
+      info() {
+        this.options.class = `bg-info ${classAddons}`;
+        return this;
+      }
+
+      normal() {
+        this.options.class = `bg-secondary ${classAddons}`;
+        return this;
+      }
+
+      success() {
+        this.options.class = `bg-success ${classAddons}`;
+        return this;
+      }
+
+      danger() {
+        this.options.class = `bg-danger ${classAddons}`;
+        return this;
+      }
+
+      message(value) {
+        this.options.title = value;
+        return this;
+      }
+
+      /**
+       * Builds a Toastr alert
+       *
+       * @param options can override any of the builder options.
+       */
+      build(options) {
+        $(document).Toasts('create', {...this.options, ...options});
+      }
+    }
+
+    return new Builder();
+  }
+
+}
+
 const micajs = (function() {
 
   const normalizeUrl = function(url) {
