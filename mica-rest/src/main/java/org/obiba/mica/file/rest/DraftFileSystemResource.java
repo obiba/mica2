@@ -81,8 +81,8 @@ public class DraftFileSystemResource extends AbstractFileSystemResource {
 
   @GET
   @Path("/file/{path:.*}")
-  public Mica.FileDto getFile(@PathParam("path") String path, @QueryParam("key") String shareKey) {
-    return doGetFile(path, shareKey);
+  public Mica.FileDto getFile(@PathParam("path") String path, @QueryParam("key") String shareKey, @QueryParam("recursive") @DefaultValue("false") boolean recursive) {
+    return doGetFile(path, shareKey, recursive);
   }
 
   @DELETE

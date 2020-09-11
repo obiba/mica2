@@ -26,6 +26,7 @@ import org.obiba.mica.web.model.Mica;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
+import java.util.Comparator;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
@@ -84,21 +85,21 @@ public abstract class AbstractFileSystemResource {
     return attachments.get(0);
   }
 
-  protected Mica.FileDto doGetFile(String path) {
-    return doGetFile(path, null);
+  protected Mica.FileDto doGetFile(String path, boolean recursively) {
+    return doGetFile(path, null, recursively);
   }
 
-  protected Mica.FileDto doGetFile(String path, String shareKey) {
+  protected Mica.FileDto doGetFile(String path, String shareKey, boolean recursively) {
     String basePath = normalizePath(path);
     if(isPublishedFileSystem()) subjectAclService.checkAccess("/file", basePath);
     else subjectAclService.checkPermission("/draft/file", "VIEW", basePath, shareKey);
 
-    if(path.endsWith("/")) return getFolderDto(basePath);
+    if(path.endsWith("/")) return getFolderDto(basePath, recursively);
 
     try {
       return getFileDto(basePath);
     } catch(NoSuchEntityException ex) {
-      return getFolderDto(basePath);
+      return getFolderDto(basePath, recursively);
     }
   }
 
@@ -260,45 +261,48 @@ public abstract class AbstractFileSystemResource {
     return dtos.asFileDto(state, isPublishedFileSystem());
   }
 
-  private Mica.FileDto getFolderDto(String basePath) {
+  private Mica.FileDto getFolderDto(String basePath, boolean recursively) {
     AttachmentState state = fileSystemService
       .getAttachmentState(basePath, FileSystemService.DIR_NAME, isPublishedFileSystem());
 
+    return getFolderDto(state, recursively);
+  }
+
+  private Mica.FileDto getFolderDto(AttachmentState state, boolean recursively) {
     Mica.FileDto.Builder builder = dtos.asFileDto(state, isPublishedFileSystem()).toBuilder();
-    builder.addAllChildren(getChildrenFolders(basePath)) //
-      .addAllChildren(getChildrenFiles(basePath, false));
+    builder.addAllChildren(getChildrenFolders(state.getPath(), recursively))
+      .addAllChildren(getChildrenFiles(state.getPath()));
 
     return builder.build();
   }
 
-  private Iterable<Mica.FileDto> getChildrenFolders(String basePath) {
+  private Iterable<Mica.FileDto> getChildrenFolders(String basePath, boolean recursively) {
     List<Mica.FileDto> folders = Lists.newArrayList();
     String pathRegEx = isRoot(basePath) ? "^/[^/]+$" : String.format("^%s/[^/]+$", basePath);
-    fileSystemService.findAttachmentStates(pathRegEx, isPublishedFileSystem()).stream() //
-      .filter(FileUtils::isDirectory) //
-      .filter(s -> isPublishedFileSystem() ? subjectAclService.isAccessible("/file", s.getFullPath()) : true) //
-      .sorted((o1, o2) -> o1.getPath().compareTo(o2.getPath())) //
-      .forEach(s -> folders.add(dtos.asFileDto(s, isPublishedFileSystem(), false)));
+    fileSystemService.findAttachmentStates(pathRegEx, isPublishedFileSystem()).stream()
+      .filter(FileUtils::isDirectory)
+      .filter(s -> !isPublishedFileSystem() || subjectAclService.isAccessible("/file", s.getFullPath()))
+      .sorted(Comparator.comparing(AttachmentState::getPath))
+      .forEach(s -> {
+        if (recursively) {
+          folders.add(getFolderDto(s, recursively));
+        } else {
+          folders.add(dtos.asFileDto(s, isPublishedFileSystem(), false));
+        }
+      });
+
     return folders;
   }
 
-  private List<Mica.FileDto> getChildrenFiles(String basePath, boolean recursively) {
+  private List<Mica.FileDto> getChildrenFiles(String basePath) {
     List<AttachmentState> states = fileSystemService
       .findAttachmentStates(String.format("^%s$", basePath), isPublishedFileSystem()).stream()
-      .filter(s -> !FileUtils.isDirectory(s)) //
-      .filter(s -> isPublishedFileSystem() ? subjectAclService.isAccessible("/file", s.getFullPath()) : true) //
+      .filter(s -> !FileUtils.isDirectory(s))
+      .filter(s -> !isPublishedFileSystem() || subjectAclService.isAccessible("/file", s.getFullPath()))
       .collect(Collectors.toList());
 
-    if(recursively) {
-      states.addAll(
-        fileSystemService.findAttachmentStates(String.format("^%s/", basePath), isPublishedFileSystem()).stream()
-          .filter(s -> !FileUtils.isDirectory(s)) //
-          .filter(s -> isPublishedFileSystem() ? subjectAclService.isAccessible("/file", s.getFullPath()) : true) //
-          .collect(Collectors.toList()));
-    }
-
-    return states.stream() //
-      .sorted((o1, o2) -> o1.getFullPath().compareTo(o2.getFullPath())) //
+    return states.stream()
+      .sorted(Comparator.comparing(AttachmentState::getFullPath))
       .map(s -> {
         Mica.FileDto f = dtos.asFileDto(s, isPublishedFileSystem(), false);
         if(isPublishedFileSystem()) f = f.toBuilder().clearRevisionStatus().build();

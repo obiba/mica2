@@ -66,9 +66,6 @@ class AttachmentDtos {
 
     if(publishedFileSystem) {
       builder.clearRevisionStatus();
-      if(state.isPublished()) {
-        builder.setAttachment(asDto(state.getPublishedAttachment()));
-      }
     } else {
       builder.setState(asDto(state, detailed));
       builder.setPermissions(permissionsDtos.asDto(state));

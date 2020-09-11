@@ -74,7 +74,7 @@ public class PublishedFileSystemResource extends AbstractFileSystemResource {
   @GET
   @Path("/file/{path:.*}")
   @Timed
-  public Mica.FileDto getFile(@PathParam("path") String path) {
-    return doGetFile(path);
+  public Mica.FileDto getFile(@PathParam("path") String path, @QueryParam("recursive") @DefaultValue("false") boolean recursive) {
+    return doGetFile(path, recursive);
   }
 }
