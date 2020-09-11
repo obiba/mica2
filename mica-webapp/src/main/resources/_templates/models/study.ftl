@@ -598,13 +598,13 @@
 
 <!-- Variables classifications -->
 <#macro variablesClassifications study>
-  <div class="card card-info card-outline">
+  <img id="loadingClassifications" src="${assetsPath}/images/loading.gif">
+  <div id="classificationsContainer" style="display: none;" class="card card-info card-outline">
     <div class="card-header">
       <h3 class="card-title"><@message "variables-classifications"/></h3>
     </div>
     <div class="card-body">
-      <img id="loadingClassifications" src="${assetsPath}/images/loading.gif">
-      <div id="classificationsContainer" style="display: none;">
+      <div>
         <div class="mb-4">
           <select id="select-bucket" class="form-control select2">
             <option value="_all" selected><#if type == "Individual"><@message "all-dces"/><#else><@message "all-populations"/></#if></option>
