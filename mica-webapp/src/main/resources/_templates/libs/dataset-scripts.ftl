@@ -2,6 +2,10 @@
 <script src="${adminLTEPath}/plugins/chart.js/Chart.min.js"></script>
 <script src="${assetsPath}/js/mica-variable.js"></script>
 
+<!-- Files -->
+<script src="${assetsPath}/libs/node_modules/vue/dist/vue.js"></script>
+<script src="${assetsPath}/js/mica-files.js"></script>
+
 <script>
   const Mica = {};
 
@@ -93,6 +97,22 @@
       } );
       */
     </#if>
+
+    <!-- Files -->
+    const filesData = {
+      type: '${type?lower_case}-dataset',
+      id: '${dataset.id}',
+      basePath: '',
+      path: '/',
+      folder: {},
+      tr: {
+        'item': '<@message "item"/>',
+        'items': '<@message "items"/>',
+        'download': '<@message "download"/>'
+      },
+      locale: '${.lang}'
+    };
+    makeFilesVue('#files-app', filesData);
 
     <#if datasetVariablesClassificationsTaxonomies?? && datasetVariablesClassificationsTaxonomies?size gt 0>
       const taxonomies = ['${datasetVariablesClassificationsTaxonomies?join("', '")}'];

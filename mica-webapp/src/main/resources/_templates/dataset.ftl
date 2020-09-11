@@ -3,6 +3,7 @@
 <#include "models/population.ftl">
 <#include "models/dce.ftl">
 <#include "models/dataset.ftl">
+<#include "models/files.ftl">
 
 <!DOCTYPE html>
 <html lang="${.lang}">
@@ -260,6 +261,9 @@
             </div>
           </div>
         </#if>
+
+        <!-- Files -->
+        <@datasetFilesBrowser dataset=dataset/>
 
         <!-- Variables classifications -->
         <#if datasetVariablesClassificationsTaxonomies?? && datasetVariablesClassificationsTaxonomies?size gt 0>

@@ -4,6 +4,7 @@
 <#include "models/member.ftl">
 <#include "models/population.ftl">
 <#include "models/dce.ftl">
+<#include "models/files.ftl">
 
 <!DOCTYPE html>
 <html lang="${.lang}">
@@ -227,6 +228,9 @@
             </div>
           </div>
         </#if>
+
+        <!-- Files -->
+        <@studyFilesBrowser study=study/>
 
         <!-- Variables classifications -->
         <#if studyVariablesClassificationsTaxonomies?? && studyVariablesClassificationsTaxonomies?size gt 0>

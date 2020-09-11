@@ -12,8 +12,6 @@ package org.obiba.mica.file.rest;
 
 import com.codahale.metrics.annotation.Timed;
 import com.google.common.io.Files;
-import java.io.UnsupportedEncodingException;
-import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.FileStoreService;
@@ -21,15 +19,15 @@ import org.obiba.mica.file.service.TempFileService;
 import org.obiba.mica.file.support.FileMediaType;
 import org.obiba.mica.web.model.Mica;
 import org.springframework.stereotype.Component;
+import org.springframework.web.util.UriUtils;
 
 import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
-import org.springframework.web.util.UriUtils;
+import java.io.UnsupportedEncodingException;
 
 @Component
 @Path("/")
-@RequiresAuthentication
 public class PublishedFileSystemResource extends AbstractFileSystemResource {
 
   @Inject
@@ -47,7 +45,7 @@ public class PublishedFileSystemResource extends AbstractFileSystemResource {
   @Path("/file-dl/{path:.*}")
   @Timed
   public Response downloadFile(@PathParam("path") String path,
-    @QueryParam("inline") @DefaultValue("false") boolean inline) {
+                               @QueryParam("inline") @DefaultValue("false") boolean inline) {
 
     try {
       Attachment attachment = doGetAttachment(path);

@@ -5,6 +5,10 @@
 <script src="${adminLTEPath}/plugins/select2/js/select2.js"></script>
 <script src="${adminLTEPath}/plugins/select2/js/i18n/${.lang}.js"></script>
 
+<!-- Files -->
+<script src="${assetsPath}/libs/node_modules/vue/dist/vue.js"></script>
+<script src="${assetsPath}/js/mica-files.js"></script>
+
 <script>
   const Mica = { options: {} };
   <#if studyAcronyms??>
@@ -72,6 +76,22 @@
       $('#dataset-hits').text(new Intl.NumberFormat().format(stats.datasetResultDto.totalHits));
       $('#variable-hits').text(new Intl.NumberFormat().format(stats.variableResultDto.totalHits));
     });
+
+    <!-- Files -->
+    const filesData = {
+      type: 'network',
+      id: '${network.id}',
+      basePath: '',
+      path: '/',
+      folder: {},
+      tr: {
+        'item': '<@message "item"/>',
+        'items': '<@message "items"/>',
+        'download': '<@message "download"/>'
+      },
+      locale: '${.lang}'
+    };
+    makeFilesVue('#files-app', filesData);
 
     <#if networkVariablesClassificationsTaxonomies?? && networkVariablesClassificationsTaxonomies?size gt 0 && studyAcronyms?? && studyAcronyms?size gt 0>
       const taxonomies = ['${networkVariablesClassificationsTaxonomies?join("', '")}'];
