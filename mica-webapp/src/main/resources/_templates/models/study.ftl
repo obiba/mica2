@@ -513,7 +513,7 @@
   </table>
 
   <#if study.model.access_info_location?? && study.model.access_info_location?size != 0>
-    <p><b><@message "study.access.external_researchers_obtaining_study_data_bio_info.title"/></p></b></p>
+    <p><b><@message "study.access.external_researchers_obtaining_study_data_bio_info.title"/></b></p>
 
     <#if study.model.access_info_location?seq_contains("study_website")>
       <p>
@@ -530,6 +530,7 @@
             <@message "study.access.external_researchers_obtaining_study_data_bio_info.access_info_location.study_representative"/>
           <i class="fas fa-info-circle"></i>
         </a>
+      </p>
       <div class="modal fade" id="modal-rep">
         <div class="modal-dialog">
           <div class="modal-content">
@@ -559,7 +560,6 @@
         </div>
         <!-- /.modal-dialog -->
       </div>
-      </p>
     </#if>
   </#if>
 
@@ -603,11 +603,9 @@
       <h3 class="card-title"><@message "files"/></h3>
     </div>
     <div class="card-body">
-
       <div id="study-files-app">
         <@filesBrowser/>
       </div>
-
     </div>
   </div>
 </#macro>

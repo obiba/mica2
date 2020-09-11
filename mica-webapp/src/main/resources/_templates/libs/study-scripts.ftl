@@ -101,20 +101,48 @@
     </#if>
 
     <!-- Files -->
-    const studyFilesData = {
-      type: '${type?lower_case}-study',
-      id: '${study.id}',
-      basePath: '',
-      path: '/',
-      folder: {},
-      tr: {
-        'item': '<@message "item"/>',
-        'items': '<@message "items"/>',
-        'download': '<@message "download"/>'
-      },
-      locale: '${.lang}'
-    };
-    makeFilesVue('#study-files-app', studyFilesData);
+    <#if showStudyFiles>
+      makeFilesVue('#study-files-app', {
+        type: '${type?lower_case}-study',
+        id: '${study.id}',
+        basePath: '',
+        path: '/',
+        folder: {},
+        tr: {
+          'item': '<@message "item"/>',
+          'items': '<@message "items"/>',
+          'download': '<@message "download"/>'
+        },
+        locale: '${.lang}'
+      }, function(file) {
+        return !(file.type === 'FOLDER' && file.name === 'population');
+      });
+    </#if>
+    <#if showStudyDCEFiles>
+      <#if study.populations?? && study.populations?size != 0>
+        <#list study.populations as population>
+          <#if type == "Individual">
+            <#if population.dataCollectionEvents?? && population.dataCollectionEvents?size != 0>
+              <#list population.dataCollectionEventsSorted as dce>
+                makeFilesVue('#study-${population.id}-${dce.id}-files-app', {
+                  type: '${type?lower_case}-study',
+                  id: '${study.id}',
+                  basePath: '/population/${population.id}/data-collection-event/${dce.id}',
+                  path: '/',
+                  folder: {},
+                  tr: {
+                    'item': '<@message "item"/>',
+                    'items': '<@message "items"/>',
+                    'download': '<@message "download"/>'
+                  },
+                  locale: '${.lang}'
+                });
+              </#list>
+            </#if>
+          </#if>
+        </#list>
+      </#if>
+    </#if>
 
     <!-- Variables classifications -->
     <#if studyVariablesClassificationsTaxonomies?? && studyVariablesClassificationsTaxonomies?size gt 0>

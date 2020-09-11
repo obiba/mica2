@@ -263,7 +263,9 @@
         </#if>
 
         <!-- Files -->
-        <@datasetFilesBrowser dataset=dataset/>
+        <#if showDatasetFiles>
+          <@datasetFilesBrowser dataset=dataset/>
+        </#if>
 
         <!-- Variables classifications -->
         <#if datasetVariablesClassificationsTaxonomies?? && datasetVariablesClassificationsTaxonomies?size gt 0>

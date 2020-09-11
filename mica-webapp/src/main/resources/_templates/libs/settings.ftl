@@ -57,6 +57,13 @@
 <#assign barChartBorderColor = "#3c8dbc"/>
 <#assign colors = ["#f56954", "#00a65a", "#f39c12", "#00c0ef", "#3c8dbc", "#d2d6de", "#007bff", "#6610f2", "#20c997", "#6f42c1", "#e83e8c", "#dc3545", "#fd7e14", "#ffc107", "#28a745",  "#17a2b8"]>
 
+<!-- Files -->
+<#assign showFiles = true/>
+<#assign showNetworkFiles = showFiles/>
+<#assign showStudyFiles = showFiles/>
+<#assign showStudyDCEFiles = showStudyFiles/>
+<#assign showDatasetFiles = showFiles/>
+
 <!-- Variables classifications charts -->
 <!-- if taxonomies list is null or empty, no variables classifications is showned -->
 <#assign variablesClassificationsTaxonomies = ["Mlstr_area"]/>

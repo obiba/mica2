@@ -99,20 +99,55 @@
     </#if>
 
     <!-- Files -->
-    const filesData = {
-      type: '${type?lower_case}-dataset',
-      id: '${dataset.id}',
-      basePath: '',
-      path: '/',
-      folder: {},
-      tr: {
-        'item': '<@message "item"/>',
-        'items': '<@message "items"/>',
-        'download': '<@message "download"/>'
-      },
-      locale: '${.lang}'
-    };
-    makeFilesVue('#files-app', filesData);
+    <#if showDatasetFiles>
+      makeFilesVue('#files-app', {
+        type: '${type?lower_case}-dataset',
+        id: '${dataset.id}',
+        basePath: '',
+        path: '/',
+        folder: {},
+        tr: {
+          'item': '<@message "item"/>',
+          'items': '<@message "items"/>',
+          'download': '<@message "download"/>'
+        },
+        locale: '${.lang}'
+      });
+    </#if>
+    <#if showStudyDCEFiles>
+      <#if study?? && population?? && dce??>
+        makeFilesVue('#study-${population.id}-${dce.id}-files-app', {
+          type: 'individual-study',
+          id: '${study.id}',
+          basePath: '/population/${population.id}/data-collection-event/${dce.id}',
+          path: '/',
+          folder: {},
+          tr: {
+            'item': '<@message "item"/>',
+            'items': '<@message "items"/>',
+            'download': '<@message "download"/>'
+          },
+          locale: '${.lang}'
+        });
+      </#if>
+      <#if studyTables?? && studyTables?size != 0>
+        <#list studyTables as table>
+          makeFilesVue('#study-${table.study.id}-${table.population.id}-${table.dce.id}-files-app', {
+            type: 'individual-study',
+            id: '${table.study.id}',
+            basePath: '/population/${table.population.id}/data-collection-event/${table.dce.id}',
+            path: '/',
+            folder: {},
+            tr: {
+              'item': '<@message "item"/>',
+              'items': '<@message "items"/>',
+              'download': '<@message "download"/>'
+            },
+            locale: '${.lang}'
+          });
+        </#list>
+      </#if>
+    </#if>
 
     <#if datasetVariablesClassificationsTaxonomies?? && datasetVariablesClassificationsTaxonomies?size gt 0>
       const taxonomies = ['${datasetVariablesClassificationsTaxonomies?join("', '")}'];

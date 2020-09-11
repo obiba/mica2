@@ -114,7 +114,7 @@ Vue.component('file-row', {
     '<td><i v-bind:class="iconClass"></i></td>' +
     '<td v-if="isFile">{{ file.name }} <span class="badge badge-info" v-if="hasMediaType">{{ file.mediaType }}</span></td>' +
     '<td v-else>' +
-    '  <button class="btn btn-link p-0" v-if="file.size>0" type="button" v-on:click="$emit(\'select-folder\', file.path)">{{ file.name }}</button>' +
+    '  <a v-if="file.size>0" href="javascript:void(0)" v-on:click="$emit(\'select-folder\', file.path)">{{ file.name }}</a>' +
     '  <span v-else>{{ file.name }}</span></td>' +
     '<td><small>{{ descriptionLabel }}</small> <i class="fas fa-info-circle" :title="descriptionTitle" v-if="hasDescriptionTitle"></i></td>' +
     '<td>{{ sizeLabel }}</td>' +
@@ -122,7 +122,17 @@ Vue.component('file-row', {
     '</tr>'
 });
 
-const makeFilesVue = function(el, data) {
+const makeFilesVue = function(el, data, childrenFilter) {
+  const prepareFolder = function(data) {
+    const folder = data;
+    if (childrenFilter && data.children) {
+      folder.children = data.children.filter(f => childrenFilter(f));
+      if (folder.children.length === 0) {
+        delete folder.children;
+      }
+    }
+    return folder;
+  };
   const settings = {
     el: el,
     data: data,
@@ -133,7 +143,7 @@ const makeFilesVue = function(el, data) {
           (folderPath.replace('/' + settings.data.type + '/' + settings.data.id, ''));
         console.log(relativePath);
         micajs.files.list(this.type, this.id, relativePath, function(data) {
-          settings.data.folder = data;
+          settings.data.folder = prepareFolder(data);
           settings.data.path = settings.data.basePath ? relativePath.replace(settings.data.basePath, '') : relativePath;
         }, function(response) {
 
@@ -143,7 +153,7 @@ const makeFilesVue = function(el, data) {
   };
   new Vue(settings);
   micajs.files.list(settings.data.type, settings.data.id, settings.data.basePath + settings.data.path, function(data) {
-    settings.data.folder = data;
+    settings.data.folder = prepareFolder(data);
   }, function(response) {
 
   });
