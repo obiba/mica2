@@ -230,7 +230,9 @@
         </#if>
 
         <!-- Files -->
-        <@studyFilesBrowser study=study/>
+        <#if showStudyFiles>
+          <@studyFilesBrowser study=study/>
+        </#if>
 
         <!-- Variables classifications -->
         <#if studyVariablesClassificationsTaxonomies?? && studyVariablesClassificationsTaxonomies?size gt 0>

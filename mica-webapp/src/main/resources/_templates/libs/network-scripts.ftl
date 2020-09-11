@@ -78,20 +78,21 @@
     });
 
     <!-- Files -->
-    const filesData = {
-      type: 'network',
-      id: '${network.id}',
-      basePath: '',
-      path: '/',
-      folder: {},
-      tr: {
-        'item': '<@message "item"/>',
-        'items': '<@message "items"/>',
-        'download': '<@message "download"/>'
-      },
-      locale: '${.lang}'
-    };
-    makeFilesVue('#files-app', filesData);
+    <#if showNetworkFiles>
+      makeFilesVue('#files-app', {
+        type: 'network',
+        id: '${network.id}',
+        basePath: '',
+        path: '/',
+        folder: {},
+        tr: {
+          'item': '<@message "item"/>',
+          'items': '<@message "items"/>',
+          'download': '<@message "download"/>'
+        },
+        locale: '${.lang}'
+      });
+    </#if>
 
     <#if networkVariablesClassificationsTaxonomies?? && networkVariablesClassificationsTaxonomies?size gt 0 && studyAcronyms?? && studyAcronyms?size gt 0>
       const taxonomies = ['${networkVariablesClassificationsTaxonomies?join("', '")}'];

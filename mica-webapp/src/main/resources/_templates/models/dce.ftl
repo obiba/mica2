@@ -61,6 +61,20 @@
   </dl>
 </#macro>
 
+<!-- Files -->
+<#macro dceFilesBrowser id>
+  <dl class="row">
+    <dt class="col-sm-12">
+      <@message "files"/>
+    </dt>
+    <dd class="col-sm-12">
+      <div id="study-${id}-files-app" class="mt-2">
+        <@filesBrowser/>
+      </div>
+    </dd>
+  </dl>
+</#macro>
+
 <!-- DCE modal dialog -->
 <#macro dceDialog id dce>
   <div class="modal fade" id="modal-${id}">
@@ -94,7 +108,10 @@
               </dd>
             </#if>
           </dl>
-            <@dceModel dce=dce/>
+          <@dceModel dce=dce/>
+          <#if showStudyDCEFiles>
+            <@dceFilesBrowser id=id/>
+          </#if>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
@@ -113,8 +130,9 @@
   <!-- DCE list -->
   <#if population.dataCollectionEvents?? && population.dataCollectionEvents?size != 0>
     <#if population.dataCollectionEvents?size == 1>
-      <h5><@message "study.data-collection-event"/></h5>
       <#assign dce = population.dataCollectionEvents[0]/>
+      <#assign dceId="${population.id}-${dce.id}">
+      <h5><@message "study.data-collection-event"/></h5>
       <div class="mb-3 marked">
         ${localize(dce.description)}
       </div>
@@ -137,6 +155,9 @@
         </#if>
       </dl>
       <@dceModel dce=dce/>
+      <#if showStudyDCEFiles>
+        <@dceFilesBrowser id=dceId/>
+      </#if>
     <#else>
       <h5><@message "study.data-collection-events"/></h5>
       <table id="population-${population.id}-dces" class="table table-bordered table-striped">
@@ -151,10 +172,10 @@
         </thead>
         <tbody>
         <#list population.dataCollectionEventsSorted as dce>
+          <#assign dceId="${population.id}-${dce.id}">
           <tr>
             <td>${dce.weight}</td>
             <td>
-              <#assign dceId="${population.id}-${dce.id}">
               <a href="#" data-toggle="modal" data-target="#modal-${dceId}">
                 ${localize(dce.name)}
               </a>

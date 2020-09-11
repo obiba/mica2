@@ -279,7 +279,9 @@
         </#if>
 
         <!-- Files -->
-        <@networkFilesBrowser network=network/>
+        <#if showNetworkFiles>
+          <@networkFilesBrowser network=network/>
+        </#if>
 
         <!-- Variables classifications -->
         <#if networkVariablesClassificationsTaxonomies?? && (networkVariablesClassificationsTaxonomies?size gt 0) && studyAcronyms?? && (studyAcronyms?size gt 0)>
