@@ -114,11 +114,11 @@ Vue.component('file-row', {
     '<td><i v-bind:class="iconClass"></i></td>' +
     '<td v-if="isFile">{{ file.name }} <span class="badge badge-info" v-if="hasMediaType">{{ file.mediaType }}</span></td>' +
     '<td v-else>' +
-    '  <a v-if="file.size>0" href="javascript:void(0)" v-on:click="$emit(\'select-folder\', file.path)">{{ file.name }}</a>' +
+    '  <button class="btn btn-link p-0" v-if="file.size>0" type="button" v-on:click="$emit(\'select-folder\', file.path)">{{ file.name }}</button>' +
     '  <span v-else>{{ file.name }}</span></td>' +
     '<td><small>{{ descriptionLabel }}</small> <i class="fas fa-info-circle" :title="descriptionTitle" v-if="hasDescriptionTitle"></i></td>' +
     '<td>{{ sizeLabel }}</td>' +
-    '<td><a v-if="file.size>0" :href="\'/ws/file-dl\' + file.path"><i class="fa fa-download"></i></a></td>' +
+    '<td><a v-if="file.size>0" download :href="\'/ws/file-dl\' + file.path"><i class="fa fa-download"></i></a></td>' +
     '</tr>'
 });
 
