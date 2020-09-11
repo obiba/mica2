@@ -66,6 +66,11 @@ class AttachmentDtos {
 
     if(publishedFileSystem) {
       builder.clearRevisionStatus();
+      Attachment attachment = state.getAttachment();
+      if (!Strings.isNullOrEmpty(attachment.getType()))
+        builder.setMediaType(attachment.getType());
+      if(attachment.getDescription() != null)
+        builder.addAllDescription(localizedStringDtos.asDto(attachment.getDescription()));
     } else {
       builder.setState(asDto(state, detailed));
       builder.setPermissions(permissionsDtos.asDto(state));

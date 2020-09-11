@@ -2,6 +2,7 @@
 <#include "libs/header.ftl">
 <#include "models/network.ftl">
 <#include "models/member.ftl">
+<#include "models/files.ftl">
 
 <!DOCTYPE html>
 <html lang="${.lang}">
@@ -276,6 +277,9 @@
             </div>
           </div>
         </#if>
+
+        <!-- Files -->
+        <@networkFilesBrowser network=network/>
 
         <!-- Variables classifications -->
         <#if networkVariablesClassificationsTaxonomies?? && (networkVariablesClassificationsTaxonomies?size gt 0) && studyAcronyms?? && (studyAcronyms?size gt 0)>

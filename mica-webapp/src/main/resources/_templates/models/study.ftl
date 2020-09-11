@@ -596,6 +596,22 @@
   </#if>
 </#macro>
 
+<!-- Files -->
+<#macro studyFilesBrowser study>
+  <div class="card card-info card-outline">
+    <div class="card-header">
+      <h3 class="card-title"><@message "files"/></h3>
+    </div>
+    <div class="card-body">
+
+      <div id="study-files-app">
+        <@filesBrowser/>
+      </div>
+
+    </div>
+  </div>
+</#macro>
+
 <!-- Variables classifications -->
 <#macro variablesClassifications study>
   <img id="loadingClassifications" src="${assetsPath}/images/loading.gif">

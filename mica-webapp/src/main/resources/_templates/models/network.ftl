@@ -56,6 +56,22 @@
 <#macro networkTDs network>
 </#macro>
 
+<!-- Files -->
+<#macro networkFilesBrowser network>
+  <div class="card card-info card-outline">
+    <div class="card-header">
+      <h3 class="card-title"><@message "files"/></h3>
+    </div>
+    <div class="card-body">
+
+      <div id="files-app">
+        <@filesBrowser/>
+      </div>
+
+    </div>
+  </div>
+</#macro>
+
 <!-- Variables classifications -->
 <#macro variablesClassifications network studyAcronyms>
   <img id="loadingClassifications" src="${assetsPath}/images/loading.gif">

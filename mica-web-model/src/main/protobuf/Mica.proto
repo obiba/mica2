@@ -996,6 +996,8 @@ message FileDto {
   optional AttachmentDto attachment = 8;
   optional string revisionStatus = 9;
   optional PermissionsDto permissions = 10;
+  optional string mediaType = 11;
+  repeated LocalizedStringDto description = 12;
 }
 
 message AttachmentStateDto {

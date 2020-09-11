@@ -9,6 +9,10 @@
 <script src="${adminLTEPath}/plugins/select2/js/select2.js"></script>
 <script src="${adminLTEPath}/plugins/select2/js/i18n/${.lang}.js"></script>
 
+<!-- Files -->
+<script src="${assetsPath}/libs/node_modules/vue/dist/vue.js"></script>
+<script src="${assetsPath}/js/mica-files.js"></script>
+
 <script>
   const Mica = { options: {} };
   <#if study.populations?? && study.populations?size != 0>
@@ -96,6 +100,21 @@
       new $.MicaTimeline(new $.StudyDtoParser('${.lang}')).create('#timeline', timelineData).addLegend();
     </#if>
 
+    <!-- Files -->
+    const studyFilesData = {
+      type: '${type?lower_case}-study',
+      id: '${study.id}',
+      basePath: '',
+      path: '/',
+      folder: {},
+      tr: {
+        'item': '<@message "item"/>',
+        'items': '<@message "items"/>',
+        'download': '<@message "download"/>'
+      },
+      locale: '${.lang}'
+    };
+    makeFilesVue('#study-files-app', studyFilesData);
 
     <!-- Variables classifications -->
     <#if studyVariablesClassificationsTaxonomies?? && studyVariablesClassificationsTaxonomies?size gt 0>

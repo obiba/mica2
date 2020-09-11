@@ -791,6 +791,27 @@ const micajs = (function() {
       });
   };
 
+  //
+  // Files
+  //
+
+  const getFolder = function(type, id, path, onsuccess, onfailure) {
+    let url = '/ws/file/' + type + '/' + id + (path ? path : '/');
+    axios.get(normalizeUrl(url))
+      .then(response => {
+        //console.dir(response);
+        if (onsuccess) {
+          onsuccess(response.data);
+        }
+      })
+      .catch(response => {
+        console.dir(response);
+        if (onfailure) {
+          onfailure(response);
+        }
+      });
+  };
+
   return {
     'normalizeUrl': normalizeUrl,
     'stats': micaStats,
@@ -845,6 +866,9 @@ const micajs = (function() {
     },
     'network': {
       'variablesCoverage': networkVariablesCoverage
+    },
+    'files': {
+      'list': getFolder
     }
   };
 
