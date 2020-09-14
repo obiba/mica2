@@ -38,7 +38,7 @@ Vue.component('folder-breadcrumb', {
   },
   template:
     '<div>' +
-    '<ol class="breadcrumb float-left">' +
+    '<ol class="breadcrumb breadcrumb-sm float-left">' +
     '<li v-if="isRoot" class="breadcrumb-item active"><i class="fas fa-home"></i></li>' +
     '<li v-else class="breadcrumb-item"><a href="javascript:void(0)" v-on:click="$emit(\'select-folder\', \'/\')"><i class="fas fa-home"></i></a></li>' +
     '<li v-for="segment in segments" v-bind:class="segment.class">' +
@@ -46,7 +46,7 @@ Vue.component('folder-breadcrumb', {
     '  <span v-else>{{ segment.token }}</span>' +
     '</li>' +
     '</ol>' +
-    '<a :href="\'/ws/file-dl\' + folder.path" class="btn btn-info float-right"><i class="fa fa-download"></i> {{ tr.download }}</a>' +
+    '<a :href="\'/ws/file-dl\' + folder.path" class="btn btn-sm btn-info float-right"><i class="fa fa-download"></i> {{ tr.download }}</a>' +
     '</div>'
 });
 
@@ -123,38 +123,47 @@ Vue.component('file-row', {
 });
 
 const makeFilesVue = function(el, data, childrenFilter) {
-  const prepareFolder = function(data) {
-    const folder = data;
-    if (childrenFilter && data.children) {
-      folder.children = data.children.filter(f => childrenFilter(f));
-      if (folder.children.length === 0) {
-        delete folder.children;
-      }
-    }
-    return folder;
-  };
-  const settings = {
+  const vm = new Vue({
     el: el,
     data: data,
+    computed: {
+      rawFolder: {
+        get: function() { return this.folder; },
+        set: function(value) {
+          const folder = value;
+          if (childrenFilter && value.children) {
+            folder.children = value.children.filter(f => childrenFilter(f));
+            if (folder.children.length === 0) {
+              delete folder.children;
+            }
+          }
+          this.folder = folder;
+        }
+      }
+    },
     methods: {
       onSelectFolder: function(folderPath) {
         const relativePath = folderPath === '/' ?
-          settings.data.basePath :
-          (folderPath.replace('/' + settings.data.type + '/' + settings.data.id, ''));
+          this.basePath :
+          (folderPath.replace('/' + this.type + '/' + this.id, ''));
         console.log(relativePath);
+        const that = this;
         micajs.files.list(this.type, this.id, relativePath, function(data) {
-          settings.data.folder = prepareFolder(data);
-          settings.data.path = settings.data.basePath ? relativePath.replace(settings.data.basePath, '') : relativePath;
+          that.rawFolder = data;
+          that.path = that.basePath ? relativePath.replace(that.basePath, '') : relativePath;
         }, function(response) {
 
         });
       }
     }
-  };
-  new Vue(settings);
-  micajs.files.list(settings.data.type, settings.data.id, settings.data.basePath + settings.data.path, function(data) {
-    settings.data.folder = prepareFolder(data);
+  });
+  $(el + '-container').hide();
+  micajs.files.list(vm.type, vm.id, vm.basePath + vm.path, function(data) {
+    vm.rawFolder = data;
+    if (vm.folder.children) {
+      $(el + '-container').show();
+    }
   }, function(response) {
-
+    console.log(response);
   });
 };

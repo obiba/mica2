@@ -598,7 +598,7 @@
 
 <!-- Files -->
 <#macro studyFilesBrowser study>
-  <div class="card card-info card-outline">
+  <div  id="study-files-app-container" style="display: none;" class="card card-info card-outline">
     <div class="card-header">
       <h3 class="card-title"><@message "files"/></h3>
     </div>

@@ -72,3 +72,9 @@
 .wrapper {
   background: #f4f6f9;
 }
+
+.breadcrumb.breadcrumb-sm {
+  background-color: transparent;
+  border-color: transparent;
+  padding: 0;
+}

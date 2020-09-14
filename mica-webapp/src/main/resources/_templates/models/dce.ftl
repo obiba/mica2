@@ -63,7 +63,7 @@
 
 <!-- Files -->
 <#macro dceFilesBrowser id>
-  <dl class="row">
+  <dl id="study-${id}-files-app-container" style="display: none;" class="row">
     <dt class="col-sm-12">
       <@message "files"/>
     </dt>
