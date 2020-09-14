@@ -45,6 +45,21 @@ mica.project
         loadPage($scope.pagination.current);
       }
 
+
+      function onSearchFieldSelected(field) {
+        console.debug(`Search field: ${field}`);
+        let index = $scope.search.fields.indexOf(field);
+        if (index > -1) {
+          $scope.search.queryField = $scope.search.fields[index];
+        } else {
+          console.error("Invalid Field");
+        }
+
+        if ($scope.pagination.searchText) {
+          loadPage($scope.pagination.current);
+        }
+      }
+
       var onSuccess = function(response) {
         $scope.projects = response.projects;
         $scope.totalCount = parseInt(response.total, 10);
@@ -62,6 +77,7 @@ mica.project
       };
 
       $scope.onFilterSelected = onFilterSelected;
+      $scope.onSearchFieldSelected = onSearchFieldSelected;
 
       $scope.deleteProject = function(project) {
         DraftProjectResource.delete(project, function() {
@@ -83,7 +99,7 @@ mica.project
         };
 
         if($scope.pagination.searchText) {
-          data.query = mica.commons.cleanupQuery($scope.pagination.searchText);
+          data.query = mica.commons.addQueryFields(mica.commons.cleanupQuery($scope.pagination.searchText), $scope.search.queryField, $translate.use());
         }
 
         DraftProjectsResource.get(data, onSuccess, AlertBuilder.newBuilder().onError(onError));
@@ -124,6 +140,12 @@ mica.project
         loadPage($scope.pagination.current);
       }
 
+      const searchFields = [
+        {field: 'id', trKey: 'id'},
+        {field: 'title', trKey: 'title', localized: true},
+        {field: 'all', trKey: 'all'},
+      ];
+
       $scope.$on('$locationChangeSuccess', () => update());
       $scope.loading = true;
       $scope.pagination = {current: 1, searchText: ''};
@@ -133,6 +155,11 @@ mica.project
       $scope.sort = {
         column: `id`,
         order: 'asc'
+      };
+      $scope.search = {
+        fields: searchFields,
+        defaultField: searchFields[0],
+        queryField: searchFields[0]
       };
 
       update();

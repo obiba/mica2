@@ -291,6 +291,7 @@
 <script src="${contextPath}/app/commons/components/key-list/component.js"></script>
 <script src="${contextPath}/app/commons/components/pagination/size-selector/component.js"></script>
 <script src="${contextPath}/app/commons/components/entity-state-filter/component.js"></script>
+<script src="${contextPath}/app/commons/components/search-field-selector/component.js"></script>
 <script src="${contextPath}/app/permission/permission.js"></script>
 <script src="${contextPath}/app/permission/permission-directives.js"></script>
 <script src="${contextPath}/app/contact/contact.js"></script>

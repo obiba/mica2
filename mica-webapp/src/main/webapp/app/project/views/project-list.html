@@ -29,13 +29,19 @@
     <div class="row voffset2">
       <div class="col-xs-4">
       <span class="input-group input-group-sm no-padding-top">
-        <span class="input-group-addon" id="project-search"><i class="fa fa-search"></i></span>
+        <search-field-selector fields="search.fields" field="search.defaultField" on-selected="onSearchFieldSelected(field)"></search-field-selector>
         <input ng-model="pagination.searchText" type="text" class="form-control" aria-describedby="project-search">
         <entity-state-filter filter="filter" on-selected="onFilterSelected(filter)"></entity-state-filter>
       </span>
       </div>
       <div class="col-xs-8">
-        <dir-pagination-controls class="pull-right" on-page-change="pageChanged(newPageNumber, oldPageNumber)"></dir-pagination-controls>
+        <dir-pagination-controls
+          max-size="5"
+          boundary-links="true"
+          class="pull-right"
+          pagination-id="myPaginationList"
+          on-page-change="pageChanged(newPageNumber, oldPageNumber)">
+        </dir-pagination-controls>
       </div>
     </div>
 
@@ -53,7 +59,7 @@
         </thead>
         <tbody>
 
-        <tr dir-paginate="project in projects | itemsPerPage: limit" total-items="totalCount" current-page="pagination.current">
+        <tr dir-paginate="project in projects | itemsPerPage: limit" pagination-id="myPaginationList" total-items="totalCount" current-page="pagination.current">
           <td>
             <a ng-href="#/project/{{project.id}}">{{project.id}}</a>
           </td>

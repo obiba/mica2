@@ -32,15 +32,26 @@
     AlertBuilder,
     EntityStateFilterService) {
 
-    var self = this;
-    var currentSearch = null;
+    const self = this;
+    let currentSearch = null;
+    const searchFields = [
+      {field: 'id', trKey: 'id'},
+      {field: 'acronym', trKey: 'acronym', localized: true},
+      {field: 'name', trKey: 'name', localized: true},
+      {field: 'all', trKey: 'all'},
+    ];
+
     self.totalCount = 0;
     self.documents = [];
     self.loading = true;
-    self.locale = $translate.use();
     self.sort = {
-      column: `id`,
-      order: 'asc'
+      column: `lastModifiedDate`,
+      order: 'desc'
+    };
+    self.search = {
+      fields: searchFields,
+      defaultField: searchFields[0],
+      queryField: searchFields[0]
     };
 
     self.pagination = {
@@ -96,6 +107,20 @@
       loadPage(self.pagination.current);
     };
 
+    self.onSearchFieldSelected = function (field) {
+      console.debug(`Search field: ${field}`);
+      let index = self.search.fields.indexOf(field);
+      if (index > -1) {
+        self.search.queryField = self.search.fields[index];
+      } else {
+        console.error("Invalid Field");
+      }
+
+      if (self.pagination.searchText) {
+        loadPage(self.pagination.current);
+      }
+    };
+
     function onSuccess(response, responseHeaders) {
       self.searching = angular.isDefined($scope.pagination) && '' !== $scope.pagination.searchText;
       self.totalCount = parseInt(responseHeaders('X-Total-Count'), 10) || self.documents.length; // TODO remove last condition when harmo study is completed
@@ -127,7 +152,7 @@
       };
 
       if (self.pagination.searchText) {
-        data.query = mica.commons.cleanupQuery(self.pagination.searchText);
+        data.query = mica.commons.addQueryFields(mica.commons.cleanupQuery(self.pagination.searchText), self.search.queryField, $translate.use());
       }
       self.documents = StatesResource.query(data, onSuccess, AlertBuilder.newBuilder().onError(onError));
     }

@@ -29,7 +29,7 @@
     <div class="row voffset2">
       <div class="col-xs-4">
       <span class="input-group input-group-sm no-padding-top">
-        <span class="input-group-addon" id="network-search"><i class="fa fa-search"></i></span>
+        <search-field-selector fields="search.fields" field="search.defaultField" on-selected="onSearchFieldSelected(field)"></search-field-selector>
         <input ng-model="pagination.searchText" type="text" class="form-control" aria-describedby="network-search">
         <entity-state-filter filter="filter" on-selected="onFilterSelected(filter)"></entity-state-filter>
       </span>
@@ -44,6 +44,8 @@
             on-selected="onPageSizeSelected(size)">
           </pagination-size-selector>
           <dir-pagination-controls
+            max-size="5"
+            boundary-links="true"
             pagination-id="myPaginationList"
             class="pull-right"
             on-page-change="pageChanged(newPageNumber, oldPageNumber)">

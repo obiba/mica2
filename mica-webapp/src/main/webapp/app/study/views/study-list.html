@@ -31,14 +31,14 @@
 
   <div ng-show="searching || hasDocuments() || filter">
     <div class="row voffset2">
-      <div class="col-xs-4">
+      <div class="col-xs-12 col-sm-4">
       <span class="input-group input-group-sm no-padding-top">
-        <span class="input-group-addon" id="study-search"><i class="fa fa-search"></i></span>
+        <search-field-selector fields="search.fields" field="search.defaultField" on-selected="onSearchFieldSelected(field)"></search-field-selector>
         <input ng-model="pagination.searchText" type="text" class="form-control" aria-describedby="study-search">
         <entity-state-filter filter="filter" on-selected="onFilterSelected(filter)"></entity-state-filter>
       </span>
       </div>
-      <div class="col-xs-8">
+      <div class="col-xs-12 col-sm-8">
         <div class="pull-right">
           <pagination-size-selector
             class="padding-right-5"
@@ -48,6 +48,8 @@
             on-selected="onPageSizeSelected(size)">
           </pagination-size-selector>
           <dir-pagination-controls
+            max-size="5"
+            boundary-links="true"
             pagination-id="myPaginationList"
             class="pull-right"
             on-page-change="pageChanged(newPageNumber, oldPageNumber)">
