@@ -1,6 +1,6 @@
 <!-- ChartJS -->
 <script src="${adminLTEPath}/plugins/chart.js/Chart.min.js"></script>
-<script src="${assetsPath}/js/mica-variable.js"></script>
+<script src="${assetsPath}/js/mica-charts.js"></script>
 <!-- Select2 -->
 <script src="${adminLTEPath}/plugins/select2/js/select2.js"></script>
 <script src="${adminLTEPath}/plugins/select2/js/i18n/${.lang}.js"></script>

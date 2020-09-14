@@ -1,6 +1,6 @@
 <!-- ChartJS -->
 <script src="${adminLTEPath}/plugins/chart.js/Chart.min.js"></script>
-<script src="${assetsPath}/js/mica-variable.js"></script>
+<script src="${assetsPath}/js/mica-charts.js"></script>
 
 <#if user?? || !config.variableSummaryRequiresAuthentication>
 <script>
