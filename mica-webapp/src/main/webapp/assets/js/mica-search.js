@@ -238,8 +238,32 @@ class TaxonomyTitleFinder {
     return null;
   }
 }
-
 const taxonomyTitleFinder  = new TaxonomyTitleFinder();
+
+class MicaQueryAlertListener {
+  constructor() {
+    EventBus.register(EVENTS.QUERY_ALERT, this.__onQueryAlery.bind(this));
+  }
+
+  __getTaxonomyVocabularyNames(query) {
+    const parts = (query.name === 'match' ? query.args[1] : query.args[0]).split(/\./);
+    return parts.length === 2 ? {taxonomy: parts[0], vocabulary: parts[1]} : {};
+  }
+
+  __onQueryAlery(payload) {
+    const target = Mica.tr[payload.target];
+    const taxonomyInfo = this.__getTaxonomyVocabularyNames(payload.query || {});
+    const message = Mica.trArgs(
+      `criterion.${payload.action}`,
+      [taxonomyTitleFinder.title(taxonomyInfo.taxonomy, taxonomyInfo.vocabulary), target]
+    );
+
+    if (message) {
+      MicaAlert.getBuilder().success().message(message).build();
+    }
+  }
+}
+const queryAlertListener  = new MicaQueryAlertListener();
 
 /**
  * Component for all results related functionality

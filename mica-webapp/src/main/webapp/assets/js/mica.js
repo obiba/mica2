@@ -73,7 +73,7 @@ class MicaAlert {
           delay: 5000,
           class: `bg-info ${classAddons}`,
           fixed: true,
-          close: false
+          close: true
         };
       }
 
