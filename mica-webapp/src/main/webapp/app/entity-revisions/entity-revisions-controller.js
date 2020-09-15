@@ -136,7 +136,17 @@ mica.revisions
               acc = newObject;
             } else {
               if (Array.isArray(acc[trueCur])) {
-                acc[trueCur].push(newObject);
+                const index = cur.replace(arrayPathRegxp, '$3');
+                if (index) {
+                  const parsedIndex = Number.parseInt(index);
+                  if (acc[trueCur].length > parsedIndex) {
+                    newObject = acc[trueCur][parsedIndex];
+                  } else {
+                    acc[trueCur].push(newObject);
+                  }
+                } else {
+                  acc[trueCur].push(newObject);
+                }
               } else {
                 acc[trueCur] = [newObject];
               }

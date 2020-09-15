@@ -129,8 +129,8 @@ mica.revisions
     }
 
     function highlight(source, other) {
-      let sourceWithoutTrailingSpace = removeTrailingSpace(source);
-      let otherWithoutTrailingSpace = removeTrailingSpace(other);
+      let sourceWithoutTrailingSpace = removeTrailingSpace((source || '').toString());
+      let otherWithoutTrailingSpace = removeTrailingSpace((other || '').toString());
 
       let diffOutput = diff(toWordArray(sourceWithoutTrailingSpace), toWordArray(otherWithoutTrailingSpace));
       let result = '';
