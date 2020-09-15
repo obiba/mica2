@@ -73,7 +73,7 @@
     };
 
     self.onSortColumn = function(column, order) {
-      self.sort.column = column || 'id';
+      self.sort.column = column.replaceAll('__locale__', $translate.use()) || 'id';
       self.sort.order = order || 'asc';
       loadPage(self.pagination.current);
     };
@@ -113,7 +113,7 @@
       if (index > -1) {
         self.search.queryField = self.search.fields[index];
       } else {
-        console.error("Invalid Field");
+        console.error('Invalid Field');
       }
 
       if (self.pagination.searchText) {
@@ -163,7 +163,6 @@
     }
 
     $scope.$on('$locationChangeSuccess', () => update());
-
     update();
   };
 

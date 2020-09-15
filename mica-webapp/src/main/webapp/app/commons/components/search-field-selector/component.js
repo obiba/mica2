@@ -49,14 +49,14 @@
     }
 
     __findAndSetSelectedFilter(field) {
-      const index = this.fields.indexOf(this.field);
+      const index = this.fields.indexOf(field);
       this.selected = this.fieldsData[index] || this.fieldsData[0];
     }
 
     $onChanges(changesObj) {
       if (changesObj.fields.currentValue) {
         this.__initializeFilters();
-        this.__findAndSetSelectedFilter(this.field)
+        this.__findAndSetSelectedFilter(this.field);
       }
     }
 

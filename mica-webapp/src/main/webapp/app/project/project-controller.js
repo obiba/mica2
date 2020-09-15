@@ -52,7 +52,7 @@ mica.project
         if (index > -1) {
           $scope.search.queryField = $scope.search.fields[index];
         } else {
-          console.error("Invalid Field");
+          console.error('Invalid Field');
         }
 
         if ($scope.pagination.searchText) {
@@ -116,7 +116,7 @@ mica.project
       }
 
       $scope.onSortColumn = function(column, order) {
-        $scope.sort.column = column || 'id';
+        $scope.sort.column = column.replaceAll('__locale__', $translate.use()) || 'id';
         $scope.sort.order = order || 'asc';
         loadPage($scope.pagination.current);
       };
@@ -151,7 +151,6 @@ mica.project
       $scope.pagination = {current: 1, searchText: ''};
       $scope.totalCount = 0;
       $scope.limit = 3;
-      $scope.locale = $translate.use();
       $scope.sort = {
         column: `id`,
         order: 'asc'
