@@ -259,7 +259,7 @@ class MicaQueryAlertListener {
     );
 
     if (message) {
-      MicaAlert.getBuilder().success().message(message).build();
+      MicaAlert.getBuilder().success().title(Mica.tr['query-update']).message(message).build();
     }
   }
 }

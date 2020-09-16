@@ -65,14 +65,16 @@ class LocalizedValues {
 class MicaAlert {
   static getBuilder() {
     const classAddons = 'shadow mt-2 mr-2';
+    const position = 'topRight';
+    const cssClass = 'toasts-top-right';
 
     class Builder {
       constructor() {
         this.options = {
           autohide: true,
           delay: 5000,
+          position: position,
           class: `bg-info ${classAddons}`,
-          fixed: true,
           close: true
         };
       }
@@ -112,8 +114,13 @@ class MicaAlert {
         return this;
       }
 
-      message(value) {
+      title(value) {
         this.options.title = value;
+        return this;
+      }
+
+      message(value) {
+        this.options.body = value;
         return this;
       }
 
@@ -123,6 +130,11 @@ class MicaAlert {
        * @param options can override any of the builder options.
        */
       build(options) {
+        $('body').on('created.lte.toasts', function() {
+          $(`.${cssClass}`).css('zIndex', 99999);
+          $('body').off('created.lte.toasts');
+        });
+
         $(document).Toasts('create', {...this.options, ...options});
       }
     }

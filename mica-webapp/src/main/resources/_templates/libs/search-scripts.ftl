@@ -46,6 +46,7 @@
     "search.any": "<@message "search.any"/>",
     "search.from": "<@message "search.from"/>",
     "search.to": "<@message "search.to"/>",
+    "query-update": "<@message "query-update"/>",
     "criterion.created": "<@message "criterion.created"/>",
     "criterion.updated": "<@message "criterion.updated"/>",
     "to": "<@message "to"/>",
