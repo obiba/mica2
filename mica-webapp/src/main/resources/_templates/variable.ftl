@@ -3,6 +3,7 @@
 <#include "models/variable.ftl">
 <#include "models/population.ftl">
 <#include "models/dce.ftl">
+<#include "models/files.ftl">
 
 <!DOCTYPE html>
 <html lang="${.lang}">

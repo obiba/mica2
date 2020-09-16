@@ -2,6 +2,10 @@
 <script src="${adminLTEPath}/plugins/chart.js/Chart.min.js"></script>
 <script src="${assetsPath}/js/mica-charts.js"></script>
 
+<!-- Files -->
+<script src="${assetsPath}/libs/node_modules/vue/dist/vue.js"></script>
+<script src="${assetsPath}/js/mica-files.js"></script>
+
 <#if user?? || !config.variableSummaryRequiresAuthentication>
 <script>
   $(function () {
@@ -44,6 +48,24 @@
       });
     </#if>
 
+    <!-- Files -->
+    <#if showStudyDCEFiles && study?? && population?? && dce??>
+      makeFilesVue('#study-${population.id}-${dce.id}-files-app', {
+        type: 'individual-study',
+        id: '${study.id}',
+        basePath: '/population/${population.id}/data-collection-event/${dce.id}',
+        path: '/',
+        folder: {},
+        tr: {
+          'item': '<@message "item"/>',
+          'items': '<@message "items"/>',
+          'download': '<@message "download"/>'
+        },
+        locale: '${.lang}'
+      });
+    </#if>
+
+    <!-- Summary -->
     micajs.variable.aggregation('${variable.id}', function(data) {
       $('#loadingSummary').hide();
 
