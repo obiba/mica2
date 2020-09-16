@@ -295,6 +295,10 @@ mica.project
         }).then(function (result) {
           DraftProjectResource.rSave({id: $scope.projectId, comment: 'Restored Fields'}, result).$promise.then(function () {
             location.reload();
+          }).catch(function (response) {
+            $rootScope.$broadcast(NOTIFICATION_EVENTS.showNotificationDialog, {
+              message: response.data ? response.data : angular.fromJson(response)
+            });
           });
 
           return result;
