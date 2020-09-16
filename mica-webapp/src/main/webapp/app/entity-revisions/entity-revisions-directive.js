@@ -143,7 +143,7 @@ mica.revisions
           result += '<ins>' + escape(diffOutput.other[index]) + otherSpaces[index] + '</ins>';
         }
       } else {
-        if (!diffOutput.source[0].text) {
+        if (!diffOutput.source[0] || !diffOutput.source[0].text) {
           for (let index = 0; index < diffOutput.other.length && !diffOutput.other[index].text; index++) {
             result += '<ins>' + escape(diffOutput.other[index]) + otherSpaces[index] + '</ins>';
           }

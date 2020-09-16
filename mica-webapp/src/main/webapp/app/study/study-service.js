@@ -104,6 +104,8 @@ mica.study
 
   .factory('StudyModelService', ['LocalizedValues', function (LocalizedValues) {
 
+    const PERSISTABLE_DATE_REGEXP = /(\d{4})-?(\d{1,2})?/g;
+
     this.serialize = function (study) {
       return serialize(study, false);
     };
@@ -195,6 +197,27 @@ mica.study
       } else {
         dce.name = LocalizedValues.objectToArray(dce.name);
         dce.description = LocalizedValues.objectToArray(dce.description);
+
+        const persistableStartYearMonthData = getPersistableYearMonth((dce.start || {}).yearMonth);
+        const persistableEndYearMonthData = getPersistableYearMonth((dce.end || {}).yearMonth);
+
+        if (persistableStartYearMonthData) {
+          dce.startYear = persistableStartYearMonthData.year;
+          if (typeof persistableStartYearMonthData.month === 'number') {
+            dce.startMonth = persistableStartYearMonthData.month;
+          }
+
+          delete dce.start;
+        }
+
+        if (persistableEndYearMonthData) {
+          dce.endYear = persistableEndYearMonthData.year;
+          if (typeof persistableStartYearMonthData.month === 'number') {
+            dce.endMonth = persistableEndYearMonthData.month;
+          }
+
+          delete dce.end;
+        }
       }
 
       dce.content = dce.model ? angular.toJson(dce.model) : null;
@@ -261,6 +284,19 @@ mica.study
         dce.description = LocalizedValues.arrayToObject(dce.description);
       }
 
+    }
+
+    function getPersistableYearMonth(field) {
+      const found = PERSISTABLE_DATE_REGEXP.exec(field || '');
+      if (found) {
+        const result = {};
+        result.year = parseInt(found[1]);
+        if (found[2]) {
+          result.month = parseInt(found[2]);
+        }
+
+        return null;
+      }
     }
 
     return this;

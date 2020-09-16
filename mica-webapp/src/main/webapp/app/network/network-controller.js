@@ -482,6 +482,10 @@ mica.network
         }).then(function (result) {
           DraftNetworkResource.rSave({id: $scope.networkId, comment: 'Restored Fields'}, result).$promise.then(function () {
             location.reload();
+          }).catch(function (response) {
+            $rootScope.$broadcast(NOTIFICATION_EVENTS.showNotificationDialog, {
+              message: response.data ? response.data : angular.fromJson(response)
+            });
           });
 
           return result;
