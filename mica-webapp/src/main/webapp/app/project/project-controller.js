@@ -27,6 +27,7 @@ mica.project
     'DraftProjectResource',
     'AlertBuilder',
     'EntityStateFilterService',
+    'MicaConfigResource',
 
     function ($rootScope,
               $scope,
@@ -36,7 +37,8 @@ mica.project
               DraftProjectsResource,
               DraftProjectResource,
               AlertBuilder,
-              EntityStateFilterService) {
+              EntityStateFilterService,
+              MicaConfigResource) {
 
      function onFilterSelected(filter) {
         EntityStateFilterService.updateUrl(filter);
@@ -99,7 +101,7 @@ mica.project
         };
 
         if($scope.pagination.searchText) {
-          data.query = mica.commons.addQueryFields(mica.commons.cleanupQuery($scope.pagination.searchText), $scope.search.queryField, $translate.use());
+          data.query = mica.commons.addQueryFields(mica.commons.cleanupQuery($scope.pagination.searchText), $scope.search.queryField, getValidLocale());
         }
 
         DraftProjectsResource.get(data, onSuccess, AlertBuilder.newBuilder().onError(onError));
@@ -116,7 +118,7 @@ mica.project
       }
 
       $scope.onSortColumn = function(column, order) {
-        $scope.sort.column = column.replaceAll('__locale__', $translate.use()) || 'id';
+        $scope.sort.column = column.replaceAll('__locale__', getValidLocale()) || 'id';
         $scope.sort.order = order || 'asc';
         loadPage($scope.pagination.current);
       };
@@ -160,6 +162,16 @@ mica.project
         defaultField: searchFields[0],
         queryField: searchFields[0]
       };
+
+      function getValidLocale() {
+        const locale = $translate.use();
+        return $scope.micaConfig.languages.indexOf(locale) > -1 ? locale : 'en';
+      }
+
+      MicaConfigResource.get().$promise.then((config) => {
+        $scope.micaConfig = config;
+        update();
+      });
 
       update();
     }])

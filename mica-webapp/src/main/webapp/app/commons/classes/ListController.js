@@ -30,7 +30,8 @@
     StatesResource,
     DraftDeleteService,
     AlertBuilder,
-    EntityStateFilterService) {
+    EntityStateFilterService,
+    MicaConfigResource) {
 
     const self = this;
     let currentSearch = null;
@@ -73,7 +74,7 @@
     };
 
     self.onSortColumn = function(column, order) {
-      self.sort.column = column.replaceAll('__locale__', $translate.use()) || 'id';
+      self.sort.column = column.replaceAll('__locale__', getValidLocale()) || 'id';
       self.sort.order = order || 'asc';
       loadPage(self.pagination.current);
     };
@@ -152,9 +153,14 @@
       };
 
       if (self.pagination.searchText) {
-        data.query = mica.commons.addQueryFields(mica.commons.cleanupQuery(self.pagination.searchText), self.search.queryField, $translate.use());
+          data.query = mica.commons.addQueryFields(mica.commons.cleanupQuery(self.pagination.searchText), self.search.queryField, getValidLocale());
       }
       self.documents = StatesResource.query(data, onSuccess, AlertBuilder.newBuilder().onError(onError));
+    }
+
+    function getValidLocale() {
+      const locale = $translate.use();
+      return self.micaConfig.languages.indexOf(locale) > -1 ? locale : 'en';
     }
 
     function update() {
@@ -163,7 +169,13 @@
     }
 
     $scope.$on('$locationChangeSuccess', () => update());
-    update();
+
+    MicaConfigResource.get().$promise.then((config) => {
+      self.micaConfig = config;
+
+      update();
+    });
+
   };
 
 })();
