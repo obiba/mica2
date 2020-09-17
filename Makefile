@@ -149,3 +149,8 @@ vue-search:
 	cd ../epigeny/vue-obiba-search-result && \
 	yarn build-lib && \
 	cp dist/* ../../mica2/mica-webapp/src/main/webapp/assets/libs/node_modules/vue-obiba-search-result/dist/
+
+rql:
+	cd ../epigeny/rql && \
+		npm run build && \
+		cp dist/* ../../mica2/mica-webapp/src/main/webapp/assets/libs/node_modules/rql/dist/

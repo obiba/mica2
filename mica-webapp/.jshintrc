@@ -46,6 +46,7 @@
     "TYPES": true,
     "EVENTS": true,
     "contextPath": true,
-    "LocalizedValues": true
+    "LocalizedValues": true,
+    "navigator": true
   }
 }

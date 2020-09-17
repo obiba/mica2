@@ -378,7 +378,8 @@ new Vue({
       lastList: '',
       queryExecutor: new MicaQueryExecutor(EventBus, DataTableDefaults.pageLength),
       queries: null,
-      noQueries: true
+      noQueries: true,
+      queryStr: null
     };
   },
   methods: {
@@ -428,7 +429,10 @@ new Vue({
       console.debug('Executing ' + this.queryType + ' query ...');
       EventBus.$emit(this.queryType, 'I am the result of a ' + this.queryType + ' query');
     },
-    onLocationChanged: function () {
+    onLocationChanged: function (payload) {
+      this.queryStr = payload.tree.serialize(function(arg) {
+        return arg.name !== 'limit';
+      });
       this.refreshQueries();
     },
     onQueryUpdate(payload) {
@@ -438,6 +442,9 @@ new Vue({
     onQueryRemove(payload) {
       console.debug('query-builder update', payload);
       EventBus.$emit(EVENTS.QUERY_TYPE_DELETE, payload);
+    },
+    onCopyQuery() {
+      navigator.clipboard.writeText(this.queryStr);
     }
   },
   computed: {
