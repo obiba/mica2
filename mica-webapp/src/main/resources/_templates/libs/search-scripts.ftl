@@ -45,6 +45,8 @@
     "search.from": "<@message "search.from"/>",
     "search.to": "<@message "search.to"/>",
     "to": "<@message "to"/>",
+    "more": "<@message "search.facet.more"/>",
+    "less": "<@message "search.facet.less"/>",
   };
   Mica.icons = {
     variable: '${variableIcon}',
