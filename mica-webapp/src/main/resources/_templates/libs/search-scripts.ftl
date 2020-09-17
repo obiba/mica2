@@ -4,9 +4,11 @@
   Mica.tr = {
     "all": "<@message "all"/>",
     "variables": "<@message "variables"/>",
+    "variable": "<@message "variable"/>",
     "datasets": "<@message "datasets"/>",
     "studies": "<@message "studies"/>",
     "networks": "<@message "networks"/>",
+    "network": "<@message "network"/>",
     "name": "<@message "name"/>",
     "label": "<@message "label"/>",
     "annotations": "<@message "annotations"/>",
@@ -44,10 +46,20 @@
     "search.any": "<@message "search.any"/>",
     "search.from": "<@message "search.from"/>",
     "search.to": "<@message "search.to"/>",
+    "query-update": "<@message "query-update"/>",
+    "criterion.created": "<@message "criterion.created"/>",
+    "criterion.updated": "<@message "criterion.updated"/>",
     "to": "<@message "to"/>",
     "more": "<@message "search.facet.more"/>",
     "less": "<@message "search.facet.less"/>",
   };
+
+  Mica.trArgs = (msgKey, msgArgs) => {
+    let template = Mica.tr[msgKey] || msgKey;
+    (msgArgs || []).forEach((arg, index) => template = template.replace('{'+index+'}', arg));
+    return template;
+  };
+
   Mica.icons = {
     variable: '${variableIcon}',
     dataset: '${datasetIcon}',

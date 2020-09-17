@@ -65,6 +65,7 @@ const EVENTS = {
   QUERY_TYPE_DELETE: 'query-type-delete',
   QUERY_TYPE_PAGINATE: 'query-type-paginate',
   QUERY_TYPE_COVERAGE: 'query-type-coverage',
+  QUERY_ALERT: 'query-alert',
   LOCATION_CHANGED: 'location-changed'
 };
 
@@ -153,7 +154,7 @@ class EntityQuery {
   __reduce(parent, query) {
     if (parent.name === 'or') {
       let grandparent = parent.parent;
-      var parentIndex = grandparent.args.indexOf(parent);
+      const parentIndex = grandparent.args.indexOf(parent);
       grandparent.args[parentIndex] = query;
       if (grandparent.name !== TARGETS.VARIABLE) {
         this.__reduce(grandparent, query);
@@ -215,9 +216,11 @@ class EntityQuery {
 
     if (!query) {
       theTree.addQuery(targetQuery, updateQuery);
+      EventBus.$emit(EVENTS.QUERY_ALERT, {target, query: updateQuery, action: 'created'});
     } else {
       query.name = updateQuery.name;
       query.args = updateQuery.args;
+      EventBus.$emit(EVENTS.QUERY_ALERT, {target, query: updateQuery, action: 'updated'});
     }
 
     return theTree;
@@ -245,12 +248,14 @@ class EntityQuery {
           targetQuery = new RQL.Query(info.target);
           theTree.addQuery(null, targetQuery);
           theTree.addQuery(targetQuery, info.query)
+          EventBus.$emit(EVENTS.QUERY_ALERT, {target: info.target, query: info.query, action: 'created'});
         } else {
           let theQuery = this.__findQuery(theTree, info.query);
           if (theQuery) {
             // query exists, just update
             theQuery.name = info.query.name;
             theQuery.args = info.query.args;
+            EventBus.$emit(EVENTS.QUERY_ALERT, {target: info.target, query: info.query, action: 'updated'});
           } else {
             let opOrCriteriaChild = this.__getOpOrCriteriaChild(theTree, targetQuery);
             if (opOrCriteriaChild) {
@@ -260,9 +265,11 @@ class EntityQuery {
               theTree.deleteQuery(opOrCriteriaChild);
               theTree.addQuery(operatorQuery, opOrCriteriaChild);
               theTree.addQuery(operatorQuery, info.query);
+              EventBus.$emit(EVENTS.QUERY_ALERT, {target: info.target, query: info.query, action: 'created'});
             } else {
               // target has no operator or crtieria child, just add criteria
               theTree.addQuery(targetQuery, info.query);
+              EventBus.$emit(EVENTS.QUERY_ALERT, {target: info.target, query: info.query, action: 'created'});
             }
           }
         }
