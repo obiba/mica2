@@ -295,8 +295,10 @@ mica.study
           result.month = parseInt(found[2]);
         }
 
-        return null;
+        return result;
       }
+
+      return null;
     }
 
     return this;
