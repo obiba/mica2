@@ -123,7 +123,7 @@
                 <div class="card-header">
                   <h3 class="card-title"><@message "members"/></h3>
                   <div class="card-tools float-right">
-                    <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="Collapse">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="<@message "collapse"/>">
                       <i class="fas fa-minus"></i></button>
                   </div>
                   <#if affiliatedMembersQuery??>
@@ -174,7 +174,7 @@
                 <div class="card-header">
                   <h3 class="card-title"><@message "networks"/></h3>
                   <div class="card-tools">
-                    <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="Collapse">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="<@message "collapse"/>">
                       <i class="fas fa-minus"></i></button>
                   </div>
                 </div>
@@ -211,7 +211,7 @@
                 <div class="card-header">
                   <h3 class="card-title"><@message "individual-studies"/></h3>
                   <div class="card-tools">
-                    <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="Collapse">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="<@message "collapse"/>">
                       <i class="fas fa-minus"></i></button>
                   </div>
                 </div>
@@ -249,7 +249,7 @@
                 <div class="card-header">
                   <h3 class="card-title"><@message "harmonization-studies"/></h3>
                   <div class="card-tools">
-                    <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="Collapse">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="<@message "collapse"/>">
                       <i class="fas fa-minus"></i></button>
                   </div>
                 </div>

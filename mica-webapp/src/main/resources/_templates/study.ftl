@@ -130,7 +130,7 @@
                 <div class="card-header">
                   <h3 class="card-title"><@message "members"/></h3>
                   <div class="card-tools float-right">
-                    <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="Collapse">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="<@message "collapse"/>">
                       <i class="fas fa-minus"></i></button>
                   </div>
                   <a href="../ws/persons/_search/_download?limit=1000&query=studyMemberships.parentId:(${study.id})" class="btn btn-primary float-right mr-2">

@@ -151,7 +151,7 @@
                 <div class="card-header">
                   <h3 class="card-title"><@message "studies-included"/></h3>
                   <div class="card-tools">
-                    <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="Collapse">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="<@message "collapse"/>">
                       <i class="fas fa-minus"></i></button>
                   </div>
                 </div>
