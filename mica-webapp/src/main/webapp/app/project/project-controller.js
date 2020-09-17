@@ -27,6 +27,7 @@ mica.project
     'DraftProjectResource',
     'AlertBuilder',
     'EntityStateFilterService',
+    'MicaConfigResource',
 
     function ($rootScope,
               $scope,
@@ -36,13 +37,29 @@ mica.project
               DraftProjectsResource,
               DraftProjectResource,
               AlertBuilder,
-              EntityStateFilterService) {
+              EntityStateFilterService,
+              MicaConfigResource) {
 
      function onFilterSelected(filter) {
         EntityStateFilterService.updateUrl(filter);
         $scope.filter = filter;
         $scope.pagination.current = 1;
         loadPage($scope.pagination.current);
+      }
+
+
+      function onSearchFieldSelected(field) {
+        console.debug(`Search field: ${field}`);
+        let index = $scope.search.fields.indexOf(field);
+        if (index > -1) {
+          $scope.search.queryField = $scope.search.fields[index];
+        } else {
+          console.error('Invalid Field');
+        }
+
+        if ($scope.pagination.searchText) {
+          loadPage($scope.pagination.current);
+        }
       }
 
       var onSuccess = function(response) {
@@ -62,6 +79,7 @@ mica.project
       };
 
       $scope.onFilterSelected = onFilterSelected;
+      $scope.onSearchFieldSelected = onSearchFieldSelected;
 
       $scope.deleteProject = function(project) {
         DraftProjectResource.delete(project, function() {
@@ -77,20 +95,17 @@ mica.project
         let data = {
           from:(page - 1) * $scope.limit,
           limit: $scope.limit,
-          filter: $scope.filter
+          filter: $scope.filter,
+          sort: $scope.sort.column,
+          order: $scope.sort.order
         };
 
         if($scope.pagination.searchText) {
-          data.query = mica.commons.cleanupQuery($scope.pagination.searchText);
+          data.query = mica.commons.addQueryFields(mica.commons.cleanupQuery($scope.pagination.searchText), $scope.search.queryField, getValidLocale());
         }
 
         DraftProjectsResource.get(data, onSuccess, AlertBuilder.newBuilder().onError(onError));
       }
-
-      $scope.loading = true;
-      $scope.pagination = {current: 1, searchText: ''};
-      $scope.totalCount = 0;
-      $scope.limit = 3;
 
       var currentSearch = null;
 
@@ -101,6 +116,12 @@ mica.project
           loadPage(1);
         }
       }
+
+      $scope.onSortColumn = function(column, order) {
+        $scope.sort.column = column.replaceAll('__locale__', getValidLocale()) || 'id';
+        $scope.sort.order = order || 'asc';
+        loadPage($scope.pagination.current);
+      };
 
       $scope.$watch('pagination.searchText', function(newVal, oldVal) {
         if (!newVal && !oldVal) {
@@ -121,7 +142,36 @@ mica.project
         loadPage($scope.pagination.current);
       }
 
+      const searchFields = [
+        {field: 'id', trKey: 'id'},
+        {field: 'title', trKey: 'title', localized: true},
+        {field: 'all', trKey: 'all'},
+      ];
+
       $scope.$on('$locationChangeSuccess', () => update());
+      $scope.loading = true;
+      $scope.pagination = {current: 1, searchText: ''};
+      $scope.totalCount = 0;
+      $scope.limit = 3;
+      $scope.sort = {
+        column: `id`,
+        order: 'asc'
+      };
+      $scope.search = {
+        fields: searchFields,
+        defaultField: searchFields[0],
+        queryField: searchFields[0]
+      };
+
+      function getValidLocale() {
+        const locale = $translate.use();
+        return $scope.micaConfig.languages.indexOf(locale) > -1 ? locale : 'en';
+      }
+
+      MicaConfigResource.get().$promise.then((config) => {
+        $scope.micaConfig = config;
+        update();
+      });
 
       update();
     }])

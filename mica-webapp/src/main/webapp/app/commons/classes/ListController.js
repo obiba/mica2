@@ -26,18 +26,37 @@
   mica.commons.ListController = function (
     $scope,
     $timeout,
+    $translate,
     StatesResource,
     DraftDeleteService,
     AlertBuilder,
-    EntityStateFilterService) {
+    EntityStateFilterService,
+    MicaConfigResource) {
 
-    var self = this;
-    var currentSearch = null;
+    const self = this;
+    let currentSearch = null;
+    const searchFields = [
+      {field: 'id', trKey: 'id'},
+      {field: 'acronym', trKey: 'acronym', localized: true},
+      {field: 'name', trKey: 'name', localized: true},
+      {field: 'all', trKey: 'all'},
+    ];
+
     self.totalCount = 0;
-    self.limit = 20;
     self.documents = [];
     self.loading = true;
+    self.sort = {
+      column: `lastModifiedDate`,
+      order: 'desc'
+    };
+    self.search = {
+      fields: searchFields,
+      defaultField: searchFields[0],
+      queryField: searchFields[0]
+    };
+
     self.pagination = {
+      size: mica.commons.DEFAULT_LIMIT,
       current: 1,
       get searchText() {
         return this._searchText || '';
@@ -54,8 +73,20 @@
       }
     };
 
+    self.onSortColumn = function(column, order) {
+      self.sort.column = column.replaceAll('__locale__', getValidLocale()) || 'id';
+      self.sort.order = order || 'asc';
+      loadPage(self.pagination.current);
+    };
+
     self.hasDocuments = function () {
       return $scope.totalCount && angular.isDefined($scope.pagination.searchText);
+    };
+
+    self.onPageSizeSelected = function(size) {
+      self.pagination.size = size;
+      self.pagination.current = 1;
+      loadPage(self.pagination.current);
     };
 
     self.pageChanged = function (page, oldPage) {
@@ -75,6 +106,20 @@
       self.filter = filter;
       self.pagination.current = 1;
       loadPage(self.pagination.current);
+    };
+
+    self.onSearchFieldSelected = function (field) {
+      console.debug(`Search field: ${field}`);
+      let index = self.search.fields.indexOf(field);
+      if (index > -1) {
+        self.search.queryField = self.search.fields[index];
+      } else {
+        console.error('Invalid Field');
+      }
+
+      if (self.pagination.searchText) {
+        loadPage(self.pagination.current);
+      }
     };
 
     function onSuccess(response, responseHeaders) {
@@ -98,16 +143,24 @@
     }
 
     function loadPage(page) {
+      const limit = self.pagination.size;
       let data = {
-        from:(page - 1) * self.limit,
-        limit: self.limit,
-        filter: self.filter
+        from:(page - 1) * limit,
+        limit: limit,
+        filter: self.filter,
+        sort: self.sort.column,
+        order: self.sort.order
       };
 
       if (self.pagination.searchText) {
-        data.query = mica.commons.cleanupQuery(self.pagination.searchText);
+          data.query = mica.commons.addQueryFields(mica.commons.cleanupQuery(self.pagination.searchText), self.search.queryField, getValidLocale());
       }
       self.documents = StatesResource.query(data, onSuccess, AlertBuilder.newBuilder().onError(onError));
+    }
+
+    function getValidLocale() {
+      const locale = $translate.use();
+      return self.micaConfig.languages.indexOf(locale) > -1 ? locale : 'en';
     }
 
     function update() {
@@ -117,7 +170,12 @@
 
     $scope.$on('$locationChangeSuccess', () => update());
 
-    update();
+    MicaConfigResource.get().$promise.then((config) => {
+      self.micaConfig = config;
+
+      update();
+    });
+
   };
 
 })();

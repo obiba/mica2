@@ -84,6 +84,8 @@ public class DraftNetworksResource {
                                            @QueryParam("query") String query,
                                            @QueryParam("from") @DefaultValue("0") Integer from,
                                            @QueryParam("limit") Integer limit,
+                                           @QueryParam("sort") @DefaultValue("id") String sort,
+                                           @QueryParam("order") @DefaultValue("asc") String order,
                                            @QueryParam("exclude") List<String> excludes,
                                            @QueryParam("filter") @DefaultValue("ALL") String filter,
                                            @Context HttpServletResponse response) { Stream<Network> result;
@@ -109,13 +111,14 @@ public class DraftNetworksResource {
       else query += String.format(" AND NOT(%s)", ids);
     }
 
-    DocumentService.Documents<Network> networkDocuments = draftNetworkService.find(from, limit, null, null, studyId, query, null, null, accessibleIdFilter);
+    DocumentService.Documents<Network> networkDocuments = draftNetworkService.find(from, limit, sort, order, studyId, query, null, null, accessibleIdFilter);
     totalCount = networkDocuments.getTotal();
-    result = networkService.findAllNetworks(networkDocuments.getList().stream().map(AbstractGitPersistable::getId).collect(toList())).stream();
-
     response.addHeader("X-Total-Count", Long.toString(totalCount));
 
-    return result.map(n -> dtos.asSummaryDto(n, true)).collect(toList());
+    return networkDocuments.getList()
+      .stream()
+      .map(network -> dtos.asSummaryDto(network, true))
+      .collect(toList());
   }
 
   @POST

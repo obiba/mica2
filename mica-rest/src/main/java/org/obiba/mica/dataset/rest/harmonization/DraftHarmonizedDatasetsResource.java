@@ -85,6 +85,8 @@ public class DraftHarmonizedDatasetsResource {
                                     @QueryParam("query") String query,
                                     @QueryParam("from") @DefaultValue("0") Integer from,
                                     @QueryParam("limit") Integer limit,
+                                    @QueryParam("sort") @DefaultValue("id") String sort,
+                                    @QueryParam("order") @DefaultValue("asc") String order,
                                     @QueryParam("filter") @DefaultValue("ALL") String filter,
                                     @Context HttpServletResponse response) {
     Stream<Mica.DatasetDto> result;
@@ -103,14 +105,15 @@ public class DraftHarmonizedDatasetsResource {
 
     if(limit < 0) throw new IllegalArgumentException("limit cannot be negative");
 
-    DocumentService.Documents<HarmonizationDataset> datasets = draftDatasetService.find(from, limit, null, null, studyId, query, null, null, accessibleIdFilter);
+    DocumentService.Documents<HarmonizationDataset> datasets = draftDatasetService.find(from, limit, sort,
+      order, studyId, query, null, null, accessibleIdFilter);
     totalCount = datasets.getTotal();
-    result = datasetService.findAllDatasets(datasets.getList().stream().map(Dataset::getId).collect(toList())).stream().map(d -> dtos.asDto(d, true));
-
     response.addHeader("X-Total-Count", Long.toString(totalCount));
 
-    return result.collect(toList());
-
+    return datasets.getList()
+      .stream()
+      .map(dataset -> dtos.asDto(dataset, true))
+      .collect(toList());
   }
 
   @POST
