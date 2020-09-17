@@ -532,12 +532,13 @@ public class DatasetVariable implements Indexable, AttributeAware {
     private IdResolver(String id) {
       if (Strings.isNullOrEmpty(id)) throw new IllegalArgumentException("Dataset variable cannot be null or empty");
       this.id = IdEncoderDecoder.encode(id);
+      boolean encoded = !this.id.equals(id);
 
       String[] tokens = id.split(ID_SEPARATOR);
       if (tokens.length < 3) throw new IllegalArgumentException("Not a valid dataset variable ID: " + id);
 
       datasetId = tokens[0];
-      name = IdEncoderDecoder.decode(tokens[1]);
+      name = encoded ? IdEncoderDecoder.decode(tokens[1]) : tokens[1];
       type = Type.valueOf(tokens[2]);
 
       tableType = tokens.length > 3 ? tokens[3] : null;
