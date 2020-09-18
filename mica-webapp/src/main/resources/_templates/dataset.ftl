@@ -99,9 +99,22 @@
                       <i class="${studyIcon}"></i> ${localize(study.acronym)}
                     </a>
                     <#if showDatasetContingencyLink>
-                      <a class="btn btn-primary float-right" href="../dataset-crosstab/${dataset.id}">
+                      <a class="btn btn-primary float-right ml-2" href="../dataset-crosstab/${dataset.id}">
                         <i class="fas fa-cog"></i> <@message "dataset.crosstab.title"/>
                       </a>
+                    </#if>
+                    <#if cartEnabled>
+                      <div id="cart-add" class="float-right">
+                        <#if user??>
+                          <button type="button" class="btn btn-link" onclick="onVariablesCartAdd('${dataset.id}')">
+                            <@message "sets.cart.add-to-cart"/> <i class="fas fa-cart-plus"></i>
+                          </button>
+                        <#else>
+                          <button type="button" class="btn btn-link" onclick="window.location.href='../signin?redirect=${contextPath}/dataset/${dataset.id}';">
+                            <@message "sets.cart.add-to-cart"/> <i class="fas fa-cart-plus"></i>
+                          </button>
+                        </#if>
+                      </div>
                     </#if>
                   </div>
                 </#if>

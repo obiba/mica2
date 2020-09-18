@@ -1,14 +1,14 @@
 <#macro rightmenus>
   <#include "../models/navbar-menus-right.ftl"/>
+  <#if cartEnabled>
+    <li class="nav-item">
+      <a href="${contextPath}/cart" class="nav-link">
+        <i class="fas fa-shopping-cart"></i>
+        <span id="cart-count" class="badge badge-danger navbar-badge"></span>
+      </a>
+    </li>
+  </#if>
   <#if user??>
-    <#if config?? && config.repositoryEnabled && (config.studyDatasetEnabled || config.harmonizationDatasetEnabled)>
-      <!--li class="nav-item">
-        <a href="${contextPath}/cart" class="nav-link">
-          <i class="fas fa-shopping-basket"></i>
-          <span class="badge badge-danger navbar-badge">3</span>
-        </a>
-      </li-->
-    </#if>
     <#if isAdministrator || isReviewer || isEditor>
       <li class="nav-item">
         <a href="${contextPath}/admin" class="nav-link">

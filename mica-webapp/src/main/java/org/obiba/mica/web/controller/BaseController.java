@@ -3,6 +3,7 @@ package org.obiba.mica.web.controller;
 import com.google.common.collect.Maps;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.UnauthorizedException;
+import org.obiba.mica.dataset.service.VariableSetService;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.user.UserProfileService;
@@ -26,6 +27,9 @@ public class BaseController {
 
   @Inject
   private UserProfileService userProfileService;
+
+  @Inject
+  private VariableSetService variableSetService;
 
   @ExceptionHandler(NoSuchElementException.class)
   public ModelAndView notFoundError(Exception ex) {
@@ -53,7 +57,7 @@ public class BaseController {
     mv.getModel().put("msg", message);
     mv.getModel().put("contextPath", micaConfigService.getContextPath());
     mv.getModel().put("config", micaConfigService.getConfig());
-    SessionInterceptor.populateUserEntries(mv, userProfileService);
+    SessionInterceptor.populateUserEntries(mv, userProfileService, variableSetService);
     return mv;
   }
 

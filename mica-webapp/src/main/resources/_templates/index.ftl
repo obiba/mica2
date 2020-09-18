@@ -157,10 +157,10 @@
 
 <script>
   micajs.stats('studies', {}, function(stats) {
-    $('#network-hits').text(new Intl.NumberFormat().format(stats.networkResultDto.totalHits));
-    $('#study-hits').text(new Intl.NumberFormat().format(stats.studyResultDto.totalHits));
-    $('#dataset-hits').text(new Intl.NumberFormat().format(stats.datasetResultDto.totalHits));
-    $('#variable-hits').text(new Intl.NumberFormat().format(stats.variableResultDto.totalHits));
+    $('#network-hits').text(new Intl.NumberFormat('${.lang}').format(stats.networkResultDto.totalHits));
+    $('#study-hits').text(new Intl.NumberFormat('${.lang}').format(stats.studyResultDto.totalHits));
+    $('#dataset-hits').text(new Intl.NumberFormat('${.lang}').format(stats.datasetResultDto.totalHits));
+    $('#variable-hits').text(new Intl.NumberFormat('${.lang}').format(stats.variableResultDto.totalHits));
   });
 </script>
 

@@ -144,6 +144,200 @@ class MicaAlert {
 
 }
 
+/**
+ * A local storage that supports data types.
+ */
+class MicaLocalStorage {
+  /**
+   * MicaLocalStorage constructor
+   */
+  constructor (properties, namespace) {
+    this._properties = properties ? properties : {};
+    this._namespace = namespace ? namespace + '.' : '';
+    this._isSupported = true;
+  }
+
+  /**
+   * Namespace getter.
+   *
+   * @returns {string}
+   */
+  get namespace () {
+    return this._namespace;
+  }
+
+  /**
+   * Namespace setter.
+   *
+   * @param {string} value
+   */
+  set namespace (value) {
+    this._namespace = value ? `${value}.` : '';
+  }
+
+  /**
+   * Concatenates localStorage key with namespace prefix.
+   *
+   * @param {string} lsKey
+   * @returns {string}
+   * @private
+   */
+  _getLsKey (lsKey) {
+    return `${this._namespace}${lsKey}`;
+  }
+
+  /**
+   * Set a value to localStorage giving respect to the namespace.
+   *
+   * @param {string} lsKey
+   * @param {*} rawValue
+   * @param {*} type
+   * @private
+   */
+  _lsSet (lsKey, rawValue, type) {
+    const key = this._getLsKey(lsKey);
+    const value = type && [Array, Object].includes(type)
+      ? JSON.stringify(rawValue)
+      : rawValue;
+
+    window.localStorage.setItem(key, value);
+  }
+
+  /**
+   * Get value from localStorage giving respect to the namespace.
+   *
+   * @param {string} lsKey
+   * @returns {any}
+   * @private
+   */
+  _lsGet (lsKey) {
+    const key = this._getLsKey(lsKey);
+
+    return window.localStorage[key];
+  }
+
+  /**
+   * Get value from localStorage
+   *
+   * @param {String} lsKey
+   * @param {*} defaultValue
+   * @param {*} defaultType
+   * @returns {*}
+   */
+  get (lsKey, defaultValue = null, defaultType = String) {
+    if (!this._isSupported) {
+      return null;
+    }
+
+    if (this._lsGet(lsKey)) {
+      let type = defaultType;
+
+      for (const key in this._properties) {
+        if (key === lsKey) {
+          type = this._properties[key].type;
+          break;
+        }
+      }
+
+      return this._process(type, this._lsGet(lsKey));
+    }
+
+    return defaultValue !== null ? defaultValue : null;
+  }
+
+  /**
+   * Set localStorage value
+   *
+   * @param {String} lsKey
+   * @param {*} value
+   * @returns {*}
+   */
+  set (lsKey, value) {
+    if (!this._isSupported) {
+      return null;
+    }
+
+    for (const key in this._properties) {
+      const type = this._properties[key].type;
+
+      if ((key === lsKey)) {
+        this._lsSet(lsKey, value, type);
+
+        return value;
+      }
+    }
+
+    this._lsSet(lsKey, value);
+
+    return value;
+  }
+
+  /**
+   * Remove value from localStorage
+   *
+   * @param {String} lsKey
+   */
+  remove (lsKey) {
+    if (!this._isSupported) {
+      return null;
+    }
+
+    return window.localStorage.removeItem(lsKey);
+  }
+
+  /**
+   * Add new property to localStorage
+   *
+   * @param {String} key
+   * @param {function} type
+   * @param {*} defaultValue
+   */
+  addProperty (key, type, defaultValue = undefined) {
+    type = type || String;
+
+    this._properties[key] = { type };
+
+    if (!this._lsGet(key) && defaultValue !== null) {
+      this._lsSet(key, defaultValue, type);
+    }
+  }
+
+  /**
+   * Process the value before return it from localStorage
+   *
+   * @param {String} type
+   * @param {*} value
+   * @returns {*}
+   * @private
+   */
+  _process (type, value) {
+    switch (type) {
+      case Boolean:
+        return value === 'true';
+      case Number:
+        return parseFloat(value);
+      case Array:
+        try {
+          const array = JSON.parse(value);
+
+          return Array.isArray(array) ? array : [];
+        } catch (e) {
+          return [];
+        }
+      case Object:
+        try {
+          return JSON.parse(value);
+        } catch (e) {
+          return {};
+        }
+      default:
+        return value;
+    }
+  }
+}
+
+const cartStorage = new MicaLocalStorage({ 'variables': { type: Object } }, 'mica.cart');
+
 const micajs = (function() {
 
   const normalizeUrl = function(url) {
@@ -347,6 +541,9 @@ const micajs = (function() {
     window.location.search = kvp.join('&');
   };
 
+  const micaInfo = function(text) {
+    toastr.info(text);
+  };
   const micaSuccess = function(text) {
     toastr.success(text);
   };
@@ -640,6 +837,163 @@ const micajs = (function() {
   // Variable
   //
 
+  /**
+   * Get all variables sets, including the cart (set without a name).
+   *
+   * @param onsuccess
+   * @param onfailure
+   */
+  const variablesSets = function(onsuccess, onfailure) {
+    let url = '/ws/variables/sets';
+    axios.get(normalizeUrl(url))
+      .then(response => {
+        if (onsuccess) {
+          onsuccess(response.data);
+        }
+      })
+      .catch(response => {
+        console.dir(response);
+        if (onfailure) {
+          onfailure(response);
+        }
+      });
+  };
+
+  /**
+   * Get or create the variables cart.
+   *
+   * @param onsuccess
+   * @param onfailure
+   */
+  const variablesCart = function(onsuccess, onfailure) {
+    let url = '/ws/variables/sets/_cart';
+    axios.get(normalizeUrl(url))
+      .then(response => {
+        if (onsuccess) {
+          onsuccess(response.data);
+        }
+      })
+      .catch(response => {
+        console.dir(response);
+        if (onfailure) {
+          onfailure(response);
+        }
+      });
+  };
+
+  /**
+   * Add variable IDs to the cart (verifies that it exists and is valid).
+   * @param ids
+   * @param onsuccess
+   * @param onfailure
+   */
+  const variablesCartAdd = function(ids, onsuccess, onfailure) {
+    variablesCart(function(cart) {
+      let url = '/ws/variables/set/' + cart.id + '/documents/_import';
+      axios({
+        method: 'POST',
+        headers: { 'content-type': 'text/plain' },
+        url: normalizeUrl(url),
+        data: ids.join('\n')
+      })
+        .then(response => {
+          //cartStorage.set('variables', response.data);
+          if (onsuccess) {
+            onsuccess(response.data, cart);
+          }
+        })
+        .catch(response => {
+          console.dir(response);
+          if (onfailure) {
+            onfailure(response);
+          }
+        });
+    }, onfailure);
+  };
+
+  const variablesCartAddQuery = function(query, onsuccess, onfailure) {
+    variablesCart(function(cart) {
+      let url = '/ws/variables/set/' + cart.id + '/documents/_rql';
+      axios({
+        method: 'POST',
+        headers: {
+          'content-type': 'application/x-www-form-urlencoded'
+        },
+        url: normalizeUrl(url),
+        data: 'query=' + query
+      })
+        .then(response => {
+          //cartStorage.set('variables', response.data);
+          if (onsuccess) {
+            onsuccess(response.data, cart);
+          }
+        })
+        .catch(response => {
+          console.dir(response);
+          if (onfailure) {
+            onfailure(response);
+          }
+        });
+    }, onfailure);
+  };
+
+  /**
+   * Remove variable IDs from the cart (verifies that it exists and is valid).
+   * @param ids
+   * @param onsuccess
+   * @param onfailure
+   */
+  const variablesCartRemove = function(ids, onsuccess, onfailure) {
+    variablesCart(function(cart) {
+      let url = '/ws/variables/set/' + cart.id + '/documents/_delete';
+      axios({
+        method: 'POST',
+        headers: { 'content-type': 'text/plain' },
+        url: normalizeUrl(url),
+        data: ids.join('\n')
+      })
+        .then(response => {
+          //cartStorage.set('variables', response.data);
+          if (onsuccess) {
+            onsuccess(response.data, cart);
+          }
+        })
+        .catch(response => {
+          console.dir(response);
+          if (onfailure) {
+            onfailure(response);
+          }
+        });
+    }, onfailure);
+  };
+
+  const variablesCartShowCount = function(elem, cart, lang) {
+    $(elem).text(cart.count > 0 ? (cart.count > 50 ? '50+' : cart.count) : '')
+      .attr('title', cart.count > 50 ? cart.count.toLocaleString(lang) : '');
+  };
+
+  /**
+   * Check whether a variable is in the set.
+   * @param cart
+   * @param id
+   * @param onsuccess
+   * @param onfailure
+   */
+  const variablesSetContains = function(cart, id, onsuccess, onfailure) {
+    let url = '/ws/variables/set/' + cart.id + '/document/' + id + '/_exists';
+    axios.get(normalizeUrl(url))
+      .then(response => {
+        if (onsuccess) {
+          onsuccess(response.data, cart);
+        }
+      })
+      .catch(response => {
+        if (onfailure) {
+          onfailure(response);
+        }
+      });
+  };
+
   const variableSummary = function(id, onsuccess, onfailure) {
     let url = '/ws/variable/' + id + '/summary';
     axios.get(normalizeUrl(url))
@@ -904,6 +1258,7 @@ const micajs = (function() {
     'signout': signout,
     'forgotPassword': forgotPassword,
     'changeLanguage': changeLanguage,
+    'info': micaInfo,
     'success': micaSuccess,
     'warning': micaWarning,
     'error': micaError,
@@ -928,7 +1283,16 @@ const micajs = (function() {
       'summary': variableSummary,
       'aggregation': variableAggregation,
       'harmonizations': variableHarmonizations,
-      'attributeValue': variableAttributeValue
+      'attributeValue': variableAttributeValue,
+      'cart': {
+        'get': variablesCart,
+        'add': variablesCartAdd,
+        'addQuery': variablesCartAddQuery,
+        'remove': variablesCartRemove,
+        'contains': variablesSetContains,
+        'showCount': variablesCartShowCount
+      },
+      'sets': variablesSets
     },
     'dataset': {
       'harmonizedVariables': datasetHarmonizedVariables,

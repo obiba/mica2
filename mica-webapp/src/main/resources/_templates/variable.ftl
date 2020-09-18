@@ -106,6 +106,22 @@
                   </dl>
                 </#if>
               </div>
+              <#if cartEnabled>
+                <div class="card-footer">
+                  <#if user??>
+                    <a id="cart-add" href="javascript:void(0)" onclick="onVariablesCartAdd('${variable.id}')" style="display: none;">
+                      <@message "sets.cart.add-to-cart"/> <i class="fas fa-cart-plus"></i>
+                    </a>
+                    <a id="cart-remove" href="javascript:void(0)" onclick="onVariablesCartRemove('${variable.id}')" style="display: none;">
+                      <@message "sets.cart.remove-from-cart"/> <i class="fas fa-cart-arrow-down"></i>
+                    </a>
+                  <#else>
+                    <a href="../signin?redirect=${contextPath}/variable/${variable.id}">
+                      <@message "sets.cart.add-to-cart"/> <i class="fas fa-cart-plus"></i>
+                    </a>
+                  </#if>
+                </div>
+              </#if>
             </div>
           </div>
 
