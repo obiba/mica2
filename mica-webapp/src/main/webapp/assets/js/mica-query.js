@@ -48,12 +48,12 @@ const QUERY_ACTIONS = {
 const DISPLAYS = {
   LISTS: 'lists',
   COVERAGE: 'coverage',
-  GRAPHICS: 'grahics'
+  GRAPHICS: 'graphics'
 };
 const DISPLAY_TABS = {
   LISTS: 'tab-lists',
   COVERAGE: 'tab-coverage',
-  GRAPHICS: 'tab-grahics'
+  GRAPHICS: 'tab-graphics'
 };
 
 const QueryTreeOptions  = {containers: Object.values(TARGETS)};
@@ -65,6 +65,8 @@ const EVENTS = {
   QUERY_TYPE_DELETE: 'query-type-delete',
   QUERY_TYPE_PAGINATE: 'query-type-paginate',
   QUERY_TYPE_COVERAGE: 'query-type-coverage',
+  QUERY_TYPE_GRAPHICS: 'query-type-graphics',
+  QUERY_TYPE_GRAPHICS_RESULTS: 'query-type-graphics-results',
   QUERY_ALERT: 'query-alert',
   LOCATION_CHANGED: 'location-changed'
 };
@@ -73,6 +75,7 @@ const OPERATOR_NODES = ['and','or'];
 const CRITERIA_NODES = ['contains', 'in', 'out', 'eq', 'gt', 'ge', 'lt', 'le', 'between', 'match', 'exists', 'missing'];
 const AGGREGATE = 'aggregate';
 const BUCKET = 'bucket';
+const FACET = 'facet';
 
 
 /**
@@ -239,13 +242,17 @@ class EntityQuery {
    * @param type
    * @param updates - [{target, query, operator}]
    */
-  prepareForUpdatesAndSelection(tree, type, updates) {
+  prepareForUpdatesAndSelection(tree, type, updates, noAlerts) {
     let theTree = tree || new RQL.QueryTree(null, QueryTreeOptions);
 
     (updates || []).forEach(info => {
+      let alertEventData;
+
       if (info.target && info.query) {
-        const operator = {and: 'and', or: 'or'}[info.operator]
-          || this.__isOpalTaxonomy(info.query.args) ? 'or' : 'and';
+        let operator = ({and: 'and', or: 'or'})[info.operator];
+        if (!operator) {
+          operator = this.__isOpalTaxonomy(info.query.args) ? 'or' : 'and';
+        }
 
         let targetQuery = theTree.search((name) => name === info.target);
         if (!targetQuery) {
@@ -253,14 +260,14 @@ class EntityQuery {
           targetQuery = new RQL.Query(info.target);
           theTree.addQuery(null, targetQuery);
           theTree.addQuery(targetQuery, info.query)
-          EventBus.$emit(EVENTS.QUERY_ALERT, {target: info.target, query: info.query, action: 'created'});
+          alertEventData = {target: info.target, query: info.query, action: 'created'};
         } else {
           let theQuery = this.__findQuery(theTree, info.query);
           if (theQuery) {
             // query exists, just update
             theQuery.name = info.newName || info.query.name;
             theQuery.args = info.query.args;
-            EventBus.$emit(EVENTS.QUERY_ALERT, {target: info.target, query: info.query, action: 'updated'});
+            alertEventData =   {target: info.target, query: info.query, action: 'updated'};
           } else {
             let opOrCriteriaChild = this.__getOpOrCriteriaChild(theTree, targetQuery);
             if (opOrCriteriaChild) {
@@ -270,14 +277,18 @@ class EntityQuery {
               theTree.deleteQuery(opOrCriteriaChild);
               theTree.addQuery(operatorQuery, opOrCriteriaChild);
               theTree.addQuery(operatorQuery, info.query);
-              EventBus.$emit(EVENTS.QUERY_ALERT, {target: info.target, query: info.query, action: 'created'});
+              alertEventData = {target: info.target, query: info.query, action: 'created'};
             } else {
               // target has no operator or crtieria child, just add criteria
               theTree.addQuery(targetQuery, info.query);
-              EventBus.$emit(EVENTS.QUERY_ALERT, {target: info.target, query: info.query, action: 'created'});
+              alertEventData = {target: info.target, query: info.query, action: 'created'};
             }
           }
         }
+      }
+
+      if (!noAlerts) {
+        EventBus.$emit(EVENTS.QUERY_ALERT, alertEventData);
       }
     });
 
@@ -336,6 +347,9 @@ class EntityQuery {
     return null;
   }
 
+  prepareForGraphics(tree) {
+  }
+
 }
 
 class VariableQuery extends EntityQuery {
@@ -359,6 +373,27 @@ class StudyQuery extends EntityQuery {
     super(TYPES.STUDIES, TARGETS.STUDY, defaultSize);
     this._fields = ['acronym.*','name.*','model.methods.design','populations.dataCollectionEvents.model.dataSources','model.numberOfParticipants.participant'];
     this._sortFields = ['acronym'];
+  }
+
+  prepareForGraphics(tree) {
+    const buckets = [
+      'Mica_study.methods-design',
+      'Mica_study.start-range',
+      'Mica_study.numberOfParticipants-participant-number'
+    ];
+
+    const aggregations = [
+      'Mica_study.populations-selectionCriteria-countriesIso',
+      'Mica_study.populations-dataCollectionEvents-bioSamples',
+      'Mica_study.numberOfParticipants-participant-number'
+    ];
+
+    const query = new RQL.Query('in', ['Mica_study.className', 'Study']);
+    let theTree = this.prepareForUpdatesAndSelection(tree, TYPES.STUDIES, [{target: TARGETS.STUDY, query, operator: 'and'}], true);
+    let studyQuery = theTree.search(name => TARGETS.STUDY === name);
+    theTree.addQuery(studyQuery, new RQL.Query(AGGREGATE, [...aggregations, ...[new RQL.Query(BUCKET,buckets)]]));
+    theTree.addQuery(null, new RQL.Query(FACET));
+    return tree;
   }
 }
 
@@ -500,7 +535,6 @@ class MicaQueryExecutor {
     return DISPLAYS[(display || hash || "").toUpperCase()] || DISPLAYS.LISTS;
   }
 
-
   /**
    * Common handler for all query-type events
    *
@@ -511,6 +545,12 @@ class MicaQueryExecutor {
   __prepareAndExecuteQuery(eventId, payload) {
     const urlParts = MicaTreeQueryUrl.parseUrl();
     const type = this.__ensureValidType(urlParts.searchParams, payload.type);
+    const display = this.__ensureValidDisplay(urlParts.hash, payload.display);
+    //
+    // if (DISPLAYS.GRAPHICS === display) {
+    //   this.__prepareAndExecuteGraphicsQuery(payload);
+    //   return;
+    // }
 
     switch (type) {
       case TYPES.VARIABLES:
@@ -518,7 +558,6 @@ class MicaQueryExecutor {
       case TYPES.STUDIES:
       case TYPES.NETWORKS:
         const entityQuery = this._query[type];
-        const display = this.__ensureValidDisplay(urlParts.hash, payload.display);
         const bucket = this.__ensureValidBucketType(urlParts.searchParams, payload.bucket, display);
         let tree = MicaTreeQueryUrl.getTree(urlParts);
 
@@ -554,8 +593,30 @@ class MicaQueryExecutor {
             case DISPLAYS.LISTS:
               this.__executeQuery(entityQuery.prepareForQuery(type, tree), type, display, payload.noUrlUpdate);
               break;
+
+            case DISPLAYS.GRAPHICS:
+              this.__executeGraphicsQuery(entityQuery.prepareForGraphics(tree), type, display, payload.noUrlUpdate);
+              break;
           }
         }
+    }
+  }
+
+
+  /**
+   * Common handler for all query-type events
+   *
+   * @param eventId
+   * @param payload
+   * @private
+   */
+  __prepareAndExecuteGraphicsQuery(eventId, payload) {
+    const urlParts = MicaTreeQueryUrl.parseUrl();
+    const type = TYPES.STUDIES;
+    const entityQuery = this._query[type];
+    let tree = MicaTreeQueryUrl.getTree(urlParts);
+    if (tree) {
+      this.__executeGraphicsQuery(entityQuery.prepareForGraphics(tree), type, DISPLAYS.GRAPHICS);
     }
   }
 
@@ -626,6 +687,39 @@ class MicaQueryExecutor {
             studyTypeSelection:  MicaTreeQueryUrl.getStudyTypeSelection(tree)
           }
         );
+      });
+  }
+
+  /**
+   * Executes a query and emits a result event
+   *
+   * @param tree
+   * @param type
+   * @param display
+   * @param noUrlUpdate
+   * @private
+   */
+  __executeGraphicsQuery(tree, type, display, noUrlUpdate) {
+    console.debug(`__executeGraphicsQuery`);
+    axios
+      .get(`${contextPath}/ws/${type}/_rql?query=${tree.serialize()}`)
+      .then(response => {
+        // use original 'tree' since the graphics query is not part of the URL
+        const findStudyClassNameQuery = (name, args) => args.indexOf('Mica_study.className') > -1;
+        const originalTree = MicaTreeQueryUrl.getTree(MicaTreeQueryUrl.parseUrl());
+        const studyClassNameQuery = originalTree.search(findStudyClassNameQuery);
+
+        // cleanup
+        tree.findAndDeleteQuery((name) => AGGREGATE === name);
+        tree.findAndDeleteQuery((name) => FACET === name);
+        if (studyClassNameQuery) {
+          tree.findAndUpdateQuery(findStudyClassNameQuery, studyClassNameQuery.args);
+        } else {
+          tree.findAndDeleteQuery(findStudyClassNameQuery);
+        }
+
+        this.__updateLocation(type, display, tree, noUrlUpdate);
+        EventBus.$emit(EVENTS.QUERY_TYPE_GRAPHICS_RESULTS, {response: response.data});
       });
   }
 
@@ -708,6 +802,11 @@ class MicaQueryExecutor {
     this.__prepareAndExecuteQuery(EVENTS.QUERY_TYPE_COVERAGE, payload);
   }
 
+  __onQueryTypeGraphics(payload) {
+    console.log(`__onQueryTypeGraphics ${payload}`);
+    this.__prepareAndExecuteGraphicsQuery(EVENTS.QUERY_TYPE_GRAPHICS, payload);
+  }
+
   init() {
     this._eventBus.register(EVENTS.QUERY_TYPE_SELECTION, this.__onQueryTypeSelection.bind(this));
     this._eventBus.register(EVENTS.QUERY_TYPE_UPDATE, this.__onQueryTypeUpdate.bind(this));
@@ -715,6 +814,7 @@ class MicaQueryExecutor {
     this._eventBus.register(EVENTS.QUERY_TYPE_DELETE, this.__onQueryTypeDelete.bind(this));
     this._eventBus.register(EVENTS.QUERY_TYPE_PAGINATE, this.__onQueryTypePaginate.bind(this));
     this._eventBus.register(EVENTS.QUERY_TYPE_COVERAGE, this.__onQueryTypeCoverage.bind(this));
+    this._eventBus.register(EVENTS.QUERY_TYPE_GRAPHICS, this.__onQueryTypeGraphics.bind(this));
     window.addEventListener('hashchange', this.__onHashChanged.bind(this));
     window.addEventListener('beforeunload', this.__onBeforeUnload.bind(this));
   }
@@ -725,6 +825,7 @@ class MicaQueryExecutor {
     this._eventBus.unregister(EVENTS.QUERY_TYPE_UPDATES_SELECTION, this.__onQueryTypeUpdatesSelection);
     this._eventBus.unregister(EVENTS.QUERY_TYPE_DELETE, this.__onQueryTypeDelete);
     this._eventBus.unregister(EVENTS.QUERY_TYPE_COVERAGE, this.__onQueryTypeCoverage);
+    this._eventBus.unregister(EVENTS.QUERY_TYPE_GRAPHICS, this.__onQueryTypeGraphics);
   }
 }
 

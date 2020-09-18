@@ -72,6 +72,10 @@
   };
 </script>
 
+<!-- ChartJS -->
+<script src="${adminLTEPath}/plugins/chart.js/Chart.min.js"></script>
+<script src="${assetsPath}/js/mica-charts.js"></script>
+
 <!-- Mica Search and dependencies -->
 <script src="${assetsPath}/libs/node_modules/vue/dist/vue.js"></script>
 <script src="${assetsPath}/libs/node_modules/rql/dist/rql.js"></script>

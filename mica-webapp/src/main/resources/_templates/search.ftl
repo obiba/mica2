@@ -175,6 +175,7 @@
                 <#if config.studyDatasetEnabled || config.harmonizationDatasetEnabled>
                   <li class="nav-item"><a id="lists-tab" class="nav-link active" href="#tab_lists" data-toggle="tab" @click="onSelectSearch()"><@message "lists"/></a></li>
                   <li class="nav-item"><a id="coverage-tab" class="nav-link" href="#tab_coverage" data-toggle="tab" @click="onSelectCoverage()"><@message "coverage"/></a></li>
+                  <li class="nav-item"><a id="graphics-tab" class="nav-link" href="#tab_graphics" data-toggle="tab" @click="onSelectGraphics()"><@message "graphics"/></a></li>
                 </#if>
                 <#if config.networkEnabled && !config.singleStudyEnabled>
                   <!--li class="nav-item"><a id="graphics-tab" class="nav-link" href="#tab_graphics" data-toggle="tab" @click="onSelectGraphics()"><@message "graphics"/></a></li-->
@@ -309,6 +310,7 @@
                       <@message "results-graphics-text"/>
                     </p>
                     <div id="graphics">
+                      <div id="charts-container" style="max-height: 20em"></div>
                     </div>
                   </div>
                 </#if>

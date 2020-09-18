@@ -1325,6 +1325,30 @@ const micajs = (function() {
   };
 
   //
+  // Study RQL needed for Graphics
+  // TODO: use the MicaQuery class, that one takes care of current queries
+  //
+  const searchStudyRql = function(currentQuery, lang, onsuccess, onfailure) {
+    let url = '/ws/studies/_rql';
+    let query = `study(in(Mica_study.className,Study),aggregate(Mica_study.populations-selectionCriteria-countriesIso,Mica_study.populations-dataCollectionEvents-bioSamples,Mica_study.numberOfParticipants-participant-number,bucket(Mica_study.methods-design,Mica_study.start-range,Mica_study.numberOfParticipants-participant-number))),facet(),locale(${lang})`;
+    url = url + '?query=' + query;
+    axios.get(normalizeUrl(url))
+      .then(response => {
+        //console.dir(response);
+        if (onsuccess) {
+          onsuccess(response.data);
+        }
+      })
+      .catch(response => {
+        console.dir(response);
+        if (onfailure) {
+          onfailure(response);
+        }
+      });
+  };
+
+
+  //
   // Files
   //
 
@@ -1414,6 +1438,9 @@ const micajs = (function() {
     },
     'network': {
       'variablesCoverage': networkVariablesCoverage
+    },
+    'search': {
+      'searchStudyRql': searchStudyRql
     },
     'files': {
       'list': getFolder
