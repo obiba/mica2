@@ -99,24 +99,26 @@
           <h3 class="card-title"><@message "query"/></h3>
 
           <div class="card-tools">
-            <div class="btn-group">
-              <button type="button" class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><@message "global.copy-query"/></button>
-              <ul class="dropdown-menu dropdown-menu-right">
-                <li class="pr-3 pl-3 pt-3">
-                  <div class="input-group mb-2">
-                    <input v-model="queryStr" disabled type="text" class="form-control" style="width: 300px;">
-                    <div class="input-group-append">
-                      <button class="btn btn-outline-secondary" type="button" @click="onCopyQuery"
-                              title="<@message "global.copy-to-clipboard"/>">
-                        <i class="fas fa-copy"></i></button>
+            <#if showCopyQuery>
+              <div class="btn-group">
+                <button type="button" class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><@message "global.copy-query"/></button>
+                <ul class="dropdown-menu dropdown-menu-right">
+                  <li class="pr-3 pl-3 pt-3">
+                    <div class="input-group mb-2">
+                      <input v-model="queryStr" disabled type="text" class="form-control" style="width: 300px;">
+                      <div class="input-group-append">
+                        <button class="btn btn-outline-secondary" type="button" @click="onCopyQuery"
+                                title="<@message "global.copy-to-clipboard"/>">
+                          <i class="fas fa-copy"></i></button>
+                      </div>
                     </div>
-                  </div>
-                  <div class="text-muted">
-                    <small><@message "search.query-copy-help"/></small>
-                  </div>
-                </li>
-              </ul>
-            </div>
+                    <div class="text-muted">
+                      <small><@message "search.query-copy-help"/></small>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+            </#if>
             <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip"
                     title="<@message "collapse"/>">
               <i class="fas fa-minus"></i></button>

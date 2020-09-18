@@ -47,6 +47,9 @@
 <#else>
   <#assign defaultSearchState = "#lists?type=studies"/>
 </#if>
+<!-- Show copy query button depending on the role (check built-in ones or by role name). -->
+<#assign showCopyQuery = (isAdministrator || isReviewer || isEditor)/>
+<!--#assign showCopyQuery = (user?? && user.roles?? && user.roles?seq_contains("mica-user"))/-->
 
 <!-- Data Access pages -->
 <#assign dataAccessInstructionsEnabled = true/>

@@ -24,6 +24,12 @@
   <#return default/>
 </#function>
 
+<!-- Current user built-in roles -->
+<#assign isAdministrator = (user?? && user.roles?? && user.roles?seq_contains("mica-administrator"))/>
+<#assign isReviewer = (user?? && user.roles?? && user.roles?seq_contains("mica-reviewer"))/>
+<#assign isEditor = (user?? && user.roles?? && user.roles?seq_contains("mica-editor"))/>
+<#assign isDAO = (user?? && user.roles?? && user.roles?seq_contains("mica-data-access-officer"))/>
+
 <!-- App settings -->
 <#include "settings.ftl"/>
 <#include "../models/settings.ftl"/>
@@ -52,14 +58,6 @@
 <!-- Select2 -->
 <link rel="stylesheet" href="${adminLTEPath}/plugins/select2/css/select2.css">
 <link rel="stylesheet" href="${adminLTEPath}/plugins/select2-bootstrap4-theme/select2-bootstrap4.css">
-
-<!-- Current user privilegies -->
-<#if user??>
-  <#assign isAdministrator = user.roles?seq_contains("mica-administrator")/>
-  <#assign isReviewer = user.roles?seq_contains("mica-reviewer")/>
-  <#assign isEditor = user.roles?seq_contains("mica-editor")/>
-  <#assign isDAO = user.roles?seq_contains("mica-data-access-officer")/>
-</#if>
 
 <!-- Custom head -->
 <#include "../models/head.ftl"/>
