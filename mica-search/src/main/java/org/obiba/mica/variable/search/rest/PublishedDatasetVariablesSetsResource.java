@@ -36,6 +36,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
@@ -87,6 +88,23 @@ public class PublishedDatasetVariablesSetsResource {
 
     DocumentSet created = variableSetService.create(name, Lists.newArrayList());
     return Response.created(uriInfo.getBaseUriBuilder().segment("variables", "set", created.getId()).build()).build();
+  }
+
+  /**
+   * A cart is a set without name, associated to a user.
+   *
+   * @return
+   */
+  @GET
+  @Path("_cart")
+  public Mica.DocumentSetDto getOrCreateCart() {
+    if (!subjectAclService.hasMicaRole()) throw new AuthorizationException();
+    Optional<DocumentSet> cartOpt = variableSetService.getAllCurrentUser().stream().filter(set -> !set.hasName()).findFirst();
+    if (cartOpt.isPresent()) return dtos.asDto(cartOpt.get());
+
+    // not found
+    ensureUserIsAuthorized("");
+    return dtos.asDto(variableSetService.create("", Lists.newArrayList()));
   }
 
   @POST

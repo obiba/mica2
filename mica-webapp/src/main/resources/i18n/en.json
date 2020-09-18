@@ -1159,7 +1159,7 @@
       "no-variable-added": "No variable has been added to the cart.",
       "variables-added": "<a href='{{arg0}}' target='_self'><u>{{arg1}} new variable(s) were added to the cart.</u></a>",
       "variable-added": "<a href='{{arg0}}' target='_self'><u>Variable added to the cart.</u></a>",
-      "add-to-cart": "Add to Cart",
+      "add-to-cart": "Add to cart",
       "no-variable-removed": "No variable was removed from the cart.",
       "variable-removed": "<a href='{{arg0}}' target='_self'><u>Variable removed from the cart.</u></a>",
       "remove-from-cart": "Remove from Cart"

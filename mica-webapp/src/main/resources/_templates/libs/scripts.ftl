@@ -95,31 +95,38 @@
 
 <script>
     $(function () {
-        // apply markdown rendering
-        $('.marked').each(function () {
-            var msg = $.trim($(this).html());
-            if (msg && msg.length > 0) {
-                $(this).html(marked(msg));
-            }
-        });
+      // apply markdown rendering
+      $('.marked').each(function () {
+        var msg = $.trim($(this).html());
+        if (msg && msg.length > 0) {
+          $(this).html(marked(msg));
+        }
+      });
       $('.marked table').each(function () {
         $(this).addClass('table table-striped');
       });
         // set moment's locale
         moment.locale('${.lang}');
         $('.moment-date').each(function () {
-            var msg = $.trim($(this).html());
-            if (msg && msg.length > 0) {
-                msg = moment(msg).format('LL');
-                $(this).html(msg);
-            }
+          var msg = $.trim($(this).html());
+          if (msg && msg.length > 0) {
+            msg = moment(msg).format('LL');
+            $(this).html(msg);
+          }
         });
         $('.moment-datetime').each(function () {
-            var msg = $.trim($(this).html());
-            if (msg && msg.length > 0) {
-                msg = moment(msg).format('LLL');
-                $(this).html(msg);
-            }
+          var msg = $.trim($(this).html());
+          if (msg && msg.length > 0) {
+            msg = moment(msg).format('LLL');
+            $(this).html(msg);
+          }
         });
+        <#if cartEnabled && user?? && user.variablesCart??>
+          const cart = { id: '${user.variablesCart.id}', count: ${user.variablesCart.count?c} };
+          micajs.variable.cart.showCount('#cart-count', cart, '${.lang}');
+          if (onVariablesCartGet) {
+            onVariablesCartGet(cart);
+          }
+        </#if>
     });
 </script>

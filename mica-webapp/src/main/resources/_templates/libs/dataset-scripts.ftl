@@ -9,6 +9,20 @@
 <script>
   const Mica = {};
 
+  // cart
+  <#if cartEnabled>
+  const onVariablesCartAdd = function(id) {
+    micajs.variable.cart.addQuery('dataset(in(Mica_dataset.id,' + id + ')),variable(limit(0,10000),fields(variableType))', function(cart, oldCart) {
+      micajs.variable.cart.showCount('#cart-count', cart, '${.lang}');
+      if (cart.count === oldCart.count) {
+        micajs.info("<@message "sets.cart.no-variable-added"/>");
+      } else {
+        micajs.success("<@message "variables-added-to-cart"/>".replace('{0}', (cart.count - oldCart.count).toLocaleString()));
+      }
+    });
+  };
+  </#if>
+
   const renderVariablesClassifications = function() {
     $('#loadingClassifications').hide();
     const chartsElem = $('#chartsContainer');
@@ -34,9 +48,12 @@
 
   $(function () {
     micajs.stats('datasets', {query: "dataset(in(Mica_dataset.id,${dataset.id}))"}, function (stats) {
-      $('#network-hits').text(new Intl.NumberFormat().format(stats.networkResultDto.totalHits));
-      $('#study-hits').text(new Intl.NumberFormat().format(stats.studyResultDto.totalHits));
-      $('#variable-hits').text(new Intl.NumberFormat().format(stats.variableResultDto.totalHits));
+      $('#network-hits').text(new Intl.NumberFormat('${.lang}').format(stats.networkResultDto.totalHits));
+      $('#study-hits').text(new Intl.NumberFormat('${.lang}').format(stats.studyResultDto.totalHits));
+      $('#variable-hits').text(new Intl.NumberFormat('${.lang}').format(stats.variableResultDto.totalHits));
+      if (stats.variableResultDto.totalHits>0) {
+        $('#cart-add').show();
+      }
     });
 
     <#if type == "Harmonized">

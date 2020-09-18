@@ -78,3 +78,8 @@
   border-color: transparent;
   padding: 0;
 }
+
+.badge.navbar-badge {
+  font-weight: 700;
+  right: 0px;
+}

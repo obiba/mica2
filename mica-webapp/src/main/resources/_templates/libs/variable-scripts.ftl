@@ -8,6 +8,42 @@
 
 <#if user?? || !config.variableSummaryRequiresAuthentication>
 <script>
+  // cart
+  <#if cartEnabled>
+    const onVariablesCartGet = function(cart) {
+      micajs.variable.cart.contains(cart, '${variable.id}', function() {
+        $('#cart-remove').show();
+      }, function () {
+        $('#cart-add').show();
+      });
+    };
+    const onVariablesCartAdd = function(id) {
+      micajs.variable.cart.add([id], function(cart, oldCart) {
+        micajs.variable.cart.showCount('#cart-count', cart, '${.lang}');
+        if (cart.count === oldCart.count) {
+          micajs.info("<@message "sets.cart.no-variable-added"/>");
+        } else {
+          micajs.success("<@message "variable-added-to-cart"/>");
+        }
+        $('#cart-add').hide();
+        $('#cart-remove').show();
+      });
+    };
+    const onVariablesCartRemove = function(id) {
+      micajs.variable.cart.remove([id], function(cart, oldCart) {
+        micajs.variable.cart.showCount('#cart-count', cart, '${.lang}');
+        // TODO toast cart update
+        if (cart.count === oldCart.count) {
+          micajs.info("<@message "sets.cart.no-variable-removed"/>");
+        } else {
+          micajs.success("<@message "variable-removed-from-cart"/>");
+        }
+        $('#cart-remove').hide();
+        $('#cart-add').show();
+      });
+    };
+  </#if>
+
   $(function () {
 
     <#if type == "Dataschema">

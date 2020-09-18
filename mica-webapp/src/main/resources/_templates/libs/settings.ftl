@@ -35,6 +35,9 @@
 <!--#assign datasetsLink = "${contextPath}/search#lists?type=datasets"/-->
 <#assign portalLink = "${config.portalUrl!contextPath}" + "/"/>
 
+<!-- Cart settings -->
+<#assign cartEnabled = (config?? && config.cartEnabled)/>
+
 <!-- List pages -->
 <#assign listDefaultDisplay = "cards"/> <!-- cards or table -->
 <#assign networkListDefaultDisplay = listDefaultDisplay/>
