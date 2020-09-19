@@ -6,7 +6,7 @@
 <script src="${assetsPath}/libs/node_modules/vue/dist/vue.js"></script>
 <script src="${assetsPath}/js/mica-files.js"></script>
 
-<#if user?? || !config.variableSummaryRequiresAuthentication>
+
 <script>
   // cart
   <#if cartEnabled>
@@ -102,6 +102,7 @@
     </#if>
 
     <!-- Summary -->
+    <#if user?? || !config.variableSummaryRequiresAuthentication>
     micajs.variable.aggregation('${variable.id}', function(data) {
       $('#loadingSummary').hide();
 
@@ -177,6 +178,7 @@
       $('#loadingSummary').hide();
       $('#noSummary').show();
     });
+    </#if>
+
   });
 </script>
-</#if>

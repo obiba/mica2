@@ -51,7 +51,7 @@ public class SessionInterceptor extends HandlerInterceptorAdapter {
           if (!result[i]) roles.remove(i);
         }
         params.put("roles", roles);
-        variableSetService.getAllCurrentUser().stream().filter(set -> !set.hasName()).findFirst().ifPresent(set -> params.put("variablesCart", new Cart(set)));
+        params.put("variablesCart", new Cart(variableSetService.getCartCurrentUser()));
         modelAndView.getModel().put("user", params);
       } catch (Exception e) {
         log.warn("Cannot retrieve profile of user {}", username, e);

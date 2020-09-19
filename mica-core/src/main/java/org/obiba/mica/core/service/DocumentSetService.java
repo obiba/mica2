@@ -38,6 +38,7 @@ import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -99,6 +100,17 @@ public abstract class DocumentSetService {
     if (subject.isAuthenticated())
       return documentSetRepository.findByTypeAndUsername(getType(), subject.getPrincipal().toString());
     return Lists.newArrayList();
+  }
+
+  /**
+   * Get or create a set without name.
+   *
+   * @return
+   */
+  public DocumentSet getCartCurrentUser() {
+    Optional<DocumentSet> cartOpt = getAllCurrentUser().stream().filter(set -> !set.hasName()).findFirst();
+    if (cartOpt.isPresent()) return cartOpt.get();
+    return create("", Lists.newArrayList());
   }
 
   /**

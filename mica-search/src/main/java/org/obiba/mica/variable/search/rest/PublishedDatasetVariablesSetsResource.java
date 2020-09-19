@@ -99,12 +99,8 @@ public class PublishedDatasetVariablesSetsResource {
   @Path("_cart")
   public Mica.DocumentSetDto getOrCreateCart() {
     if (!subjectAclService.hasMicaRole()) throw new AuthorizationException();
-    Optional<DocumentSet> cartOpt = variableSetService.getAllCurrentUser().stream().filter(set -> !set.hasName()).findFirst();
-    if (cartOpt.isPresent()) return dtos.asDto(cartOpt.get());
-
-    // not found
     ensureUserIsAuthorized("");
-    return dtos.asDto(variableSetService.create("", Lists.newArrayList()));
+    return dtos.asDto(variableSetService.getCartCurrentUser());
   }
 
   @POST
