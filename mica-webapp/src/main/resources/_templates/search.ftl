@@ -310,7 +310,7 @@
                       <@message "results-graphics-text"/>
                     </p>
                     <div id="graphics">
-                      <div id="charts-container" style="max-height: 20em"></div>
+                      <graphics-result v-bind:chart-options="chartOptions"></graphics-result>
                     </div>
                   </div>
                 </#if>

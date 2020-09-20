@@ -284,7 +284,30 @@ const ResultsTabContent = {
         study: Mica.tr.study,
         dataset: Mica.tr.dataset,
         dce: Mica.tr['data-collection-event'],
-      }
+      },
+      chartOptions: [
+        {
+          type: 'horizontalBar',
+          agg: 'model-methods-design'
+        },
+        {
+          type: 'pie',
+          agg: 'model-numberOfParticipants-participant-number-range',
+          legend: {
+            display: true,
+            position: 'right',
+            align: 'start'
+          }
+        },
+        {
+          type: 'horizontalBar',
+          agg: 'model-numberOfParticipants-participant-number-range'
+        },
+        {
+          type: 'horizontalBar',
+          agg: 'model-numberOfParticipants-participant-number-range'
+        }
+      ]
     }
   },
   methods: {
@@ -330,58 +353,6 @@ const ResultsTabContent = {
         this.counts.networks = data.networkResultDto.totalHits.toLocaleString();
       }
     },
-    onGraphicsResult(payload) {
-      console.debug(`onGraphics ${payload}`);
-      const studyResult = payload.response.studyResultDto;
-      if (studyResult) {
-        // const aggStudyDesign = studyResult.aggs.filter((item => 'model-methods-design' === item.aggregation)).pop();
-        const aggStudyDesign = studyResult.aggs.filter((item => 'model-numberOfParticipants-participant-number-range' === item.aggregation)).pop();
-
-        let labels = [];
-        let data = [];
-        aggStudyDesign['obiba.mica.RangeAggregationResultDto.ranges']
-          .forEach(term => {
-            labels.push(term.title);
-            data.push(term.count);
-          });
-
-        let chartData = {
-          type: 'pie',
-          title: StringLocalizer.localize(aggStudyDesign.title),
-          data: {
-            labels: labels,
-            datasets: [{
-              label: 'Yoyo',
-              data: data
-            }]
-          },
-          options: {
-            indexAxis: 'y',
-            // Elements options apply to all of the options unless overridden in a dataset
-            // In this case, we are setting the border of each horizontal bar to be 2px wide
-            elements: {
-              rectangle: {
-                borderWidth: 2,
-              }
-            },
-            maintainAspectRatio: false,
-            responsive: true,
-            legend: {
-              display: true,
-              position: 'right',
-              align: 'start'
-            }
-          }
-        }
-
-        console.debug(aggStudyDesign['obiba.mica.TermsAggregationResultDto.terms']);
-        const chartsElem = $('#charts-container');
-        chartsElem.children().remove();
-        chartsElem.append('<canvas class="mb-4"></canvas>');
-        const chartCanvas = $('#charts-container canvas:last-child').get(0).getContext('2d');
-        new Chart(chartCanvas, chartData);
-      }
-    },
     onLocationChanged: function (payload) {
       $(`.nav-pills #${payload.display}-tab`).tab('show');
       $(`.nav-pills #${payload.type}-tab`).tab('show');
@@ -403,7 +374,6 @@ const ResultsTabContent = {
     EventBus.register('datasets-results', this.onResult.bind(this));
     EventBus.register('studies-results', this.onResult.bind(this));
     EventBus.register('networks-results', this.onResult.bind(this));
-    EventBus.register(EVENTS.QUERY_TYPE_GRAPHICS_RESULTS, this.onGraphicsResult.bind(this));
     EventBus.register(EVENTS.LOCATION_CHANGED, this.onLocationChanged.bind(this));
   },
   beforeDestory() {
@@ -411,7 +381,6 @@ const ResultsTabContent = {
     EventBus.unregister('datasets-results', this.onResult);
     EventBus.unregister('studies-results', this.onResult);
     EventBus.unregister('networks-results', this.onResult);
-    EventBus.unregister(EVENTS.QUERY_TYPE_GRAPHICS_RESULTS, this.onGraphicsResult);
     EventBus.unregister(EVENTS.LOCATION_CHANGED, this.onLocationChanged);
   }
 };

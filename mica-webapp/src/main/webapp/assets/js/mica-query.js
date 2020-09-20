@@ -602,24 +602,6 @@ class MicaQueryExecutor {
     }
   }
 
-
-  /**
-   * Common handler for all query-type events
-   *
-   * @param eventId
-   * @param payload
-   * @private
-   */
-  __prepareAndExecuteGraphicsQuery(eventId, payload) {
-    const urlParts = MicaTreeQueryUrl.parseUrl();
-    const type = TYPES.STUDIES;
-    const entityQuery = this._query[type];
-    let tree = MicaTreeQueryUrl.getTree(urlParts);
-    if (tree) {
-      this.__executeGraphicsQuery(entityQuery.prepareForGraphics(tree), type, DISPLAYS.GRAPHICS);
-    }
-  }
-
   /**
    * Executes a query and emits a result event
    *
@@ -804,7 +786,7 @@ class MicaQueryExecutor {
 
   __onQueryTypeGraphics(payload) {
     console.log(`__onQueryTypeGraphics ${payload}`);
-    this.__prepareAndExecuteGraphicsQuery(EVENTS.QUERY_TYPE_GRAPHICS, payload);
+    this.__prepareAndExecuteQuery(EVENTS.QUERY_TYPE_GRAPHICS, payload);
   }
 
   init() {
