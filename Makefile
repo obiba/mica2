@@ -154,3 +154,6 @@ rql:
 	cd ../epigeny/rql && \
 		npm run build && \
 		cp dist/* ../../mica2/mica-webapp/src/main/webapp/assets/libs/node_modules/rql/dist/
+
+templates:
+	cd mica-webapp && cp -r src/main/resources/_templates/ target/classes/

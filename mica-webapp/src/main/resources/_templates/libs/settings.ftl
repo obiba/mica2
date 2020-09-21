@@ -37,8 +37,12 @@
 
 <!-- Cart settings -->
 <#assign cartEnabled = (config?? && config.cartEnabled)/>
+<!-- To download the list of variable IDs (and the Opal views, if enabled) -->
+<#assign showCartDownload = (isAdministrator || isReviewer || isEditor || isDAO)/>
+<!-- To reinstate the cart as views in Opal -->
+<#assign showCartViewDownload = (isAdministrator || isReviewer || isEditor || isDAO)/>
 
-<!-- List pages -->
+<!-- Repository list pages -->
 <#assign listDefaultDisplay = "cards"/> <!-- cards or table -->
 <#assign networkListDefaultDisplay = listDefaultDisplay/>
 <#assign studyListDefaultDisplay = listDefaultDisplay/>
@@ -51,7 +55,7 @@
   <#assign defaultSearchState = "#lists?type=studies"/>
 </#if>
 <!-- Show copy query button depending on the role (check built-in ones or by role name). -->
-<#assign showCopyQuery = (isAdministrator || isReviewer || isEditor)/>
+<#assign showCopyQuery = (isAdministrator || isReviewer || isEditor || isDAO)/>
 <!--#assign showCopyQuery = (user?? && user.roles?? && user.roles?seq_contains("mica-user"))/-->
 
 <!-- Data Access pages -->
