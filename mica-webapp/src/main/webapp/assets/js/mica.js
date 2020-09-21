@@ -778,6 +778,80 @@ const micajs = (function() {
   };
 
   /**
+   * List the variables of a set.
+   *
+   * @param id
+   * @param from
+   * @param limit
+   * @param onsuccess
+   * @param onfailure
+   */
+  const variablesSetSearchDocuments = function(id, from, limit, onsuccess, onfailure) {
+    let url = '/ws/variables/_rql?query=variable(' +
+        'in(Mica_variable.sets,' + id + '),' +
+        'limit(' + from + ',' + limit + '),' +
+        'fields(attributes.label.*,variableType,datasetId,datasetAcronym,attributes.Mlstr_area*),' +
+        'sort(variableType,containerId,populationWeight,dataCollectionEventWeight,datasetId,index,name))';
+    axios.get(normalizeUrl(url))
+        .then(response => {
+          if (onsuccess) {
+            onsuccess(response.data);
+          }
+        })
+        .catch(response => {
+          console.dir(response);
+          if (onfailure) {
+            onfailure(response);
+          }
+        });
+  };
+
+  /**
+   * Delete all (no selection) or selected documents from the set.
+   *
+   * @param id
+   * @param selected
+   * @param onsuccess
+   * @param onfailure
+   */
+  const variablesSetDeleteDocuments = function(id, selected, onsuccess, onfailure) {
+    let url = '/ws/variables/set/' + id + '/documents';
+    if (selected && selected.length>1) {
+      url = url + '/_delete';
+      axios({
+        method: 'POST',
+        headers: { 'content-type': 'text/plain' },
+        url: normalizeUrl(url),
+        data: selected.join('\n')
+      })
+          .then(response => {
+            if (onsuccess) {
+              onsuccess(response.data);
+            }
+          })
+          .catch(response => {
+            console.dir(response);
+            if (onfailure) {
+              onfailure(response);
+            }
+          });
+    } else {
+      axios.delete(normalizeUrl(url))
+          .then(response => {
+            if (onsuccess) {
+              onsuccess(response.data);
+            }
+          })
+          .catch(response => {
+            console.dir(response);
+            if (onfailure) {
+              onfailure(response);
+            }
+          });
+    }
+  };
+
+  /**
    * Get or create the variables cart.
    *
    * @param onsuccess
@@ -1210,7 +1284,11 @@ const micajs = (function() {
         'contains': variablesSetContains,
         'showCount': variablesCartShowCount
       },
-      'sets': variablesSets
+      'sets': variablesSets,
+      'set': {
+        'searchDocuments': variablesSetSearchDocuments,
+        'deleteDocuments': variablesSetDeleteDocuments
+      }
     },
     'dataset': {
       'harmonizedVariables': datasetHarmonizedVariables,
