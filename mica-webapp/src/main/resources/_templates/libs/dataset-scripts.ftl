@@ -17,7 +17,7 @@
       if (cart.count === oldCart.count) {
         micajs.info("<@message "sets.cart.no-variable-added"/>");
       } else {
-        micajs.success("<@message "variables-added-to-cart"/>".replace('{0}', (cart.count - oldCart.count).toLocaleString()));
+        micajs.success("<@message "variables-added-to-cart"/>".replace('{0}', (cart.count - oldCart.count).toLocaleString('${.lang}')));
       }
     });
   };
