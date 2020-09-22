@@ -254,7 +254,112 @@ class MicaLocalStorage {
   }
 }
 
-const cartStorage = new MicaLocalStorage({ 'variables': { type: Object } }, 'mica.cart');
+/**
+ * Storage of the variables selections.
+ */
+class MicaSetStorage extends MicaLocalStorage {
+  constructor(ns) {
+    super({
+      //'variables': { type: Object },
+      'selections': { type: Array }
+    }, 'mica.' + ns);
+  }
+
+  /**
+   * Get the selected IDs or empty array.
+   *
+   * @returns {*|*[]}
+   */
+  getSelections() {
+    const selections = this.get('selections');
+    return selections ? selections : [];
+  }
+
+  /**
+   * Check if an ID is in the selection.
+   *
+   * @param id
+   * @returns {*}
+   */
+  selected(id) {
+    let selections = this.get('selections');
+    return selections && selections.includes(id);
+  }
+
+  /**
+   * Select an ID (ignore if present).
+   *
+   * @param id
+   */
+  select(id) {
+    let selections = this.get('selections');
+    if (!selections) {
+      selections = [id];
+    } else if (!selections.includes(id)) {
+      selections.push(id);
+    }
+    this.set('selections', selections);
+  }
+
+  /**
+   * Deselect an ID (ignore if not present).
+   *
+   * @param id
+   */
+  deselect(id) {
+    let selections = this.get('selections');
+    if (selections) {
+      const idx = selections.indexOf(id);
+      if (idx > -1) {
+        selections.splice(idx, 1);
+      }
+    }
+    this.set('selections', selections);
+  }
+
+  /**
+   * Select all the IDs (ignore if provided IDs is empty).
+   *
+   * @param ids
+   */
+  selectAll(ids) {
+    if (ids) {
+      let selections = this.get('selections');
+      if (!selections) {
+        selections = ids;
+      } else {
+        ids.forEach(id => {
+          if (!selections.includes(id)) {
+            selections.push(id);
+          }
+        });
+      }
+      this.set('selections', selections);
+    }
+  }
+
+  /**
+   * Deselect all the IDs or clear the selection if none is provided.
+   *
+   * @param ids
+   */
+  deselectAll(ids) {
+    if (ids) {
+      let selections = this.get('selections');
+      if (selections) {
+        ids.forEach(id => {
+          const idx = selections.indexOf(id);
+          if (idx > -1) {
+            selections.splice(idx, 1);
+          }
+        });
+      }
+      this.set('selections', selections);
+    } else {
+      this.set('selections', []);
+    }
+  }
+}
 
 const micajs = (function() {
 
@@ -1282,7 +1387,8 @@ const micajs = (function() {
         'addQuery': variablesCartAddQuery,
         'remove': variablesCartRemove,
         'contains': variablesSetContains,
-        'showCount': variablesCartShowCount
+        'showCount': variablesCartShowCount,
+        'storage': new MicaSetStorage('cart')
       },
       'sets': variablesSets,
       'set': {
