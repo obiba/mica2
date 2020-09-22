@@ -103,6 +103,7 @@
                   <thead>
                   <tr>
                     <th><i class="far fa-square"></i></th>
+                    <th></th>
                     <th><@message "name"/></th>
                     <th><@message "label"/></th>
                     <#if config.studyDatasetEnabled && config.harmonizationDatasetEnabled>
