@@ -288,7 +288,7 @@ const ResultsTabContent = {
   },
   methods: {
     onSelectResult(type, target) {
-      EventBus.$emit('query-type-selection', {display: 'list', type, target});
+      EventBus.$emit('query-type-selection', {display: DISPLAYS.LISTS, type, target});
     },
     onSelectSearch() {
       EventBus.$emit('query-type-selection', {display: DISPLAYS.LISTS});
@@ -403,7 +403,8 @@ new Vue({
       queryExecutor: new MicaQueryExecutor(EventBus, DataTableDefaults.pageLength),
       queries: null,
       noQueries: true,
-      queryStr: null
+      queryToCopy: null,
+      queryToCart: null
     };
   },
   methods: {
@@ -454,9 +455,22 @@ new Vue({
       EventBus.$emit(this.queryType, 'I am the result of a ' + this.queryType + ' query');
     },
     onLocationChanged: function (payload) {
-      this.queryStr = payload.tree.serialize(function(arg) {
-        return arg.name !== 'limit';
-      });
+      let tree = payload.tree;
+
+      // query string to copy
+      tree.findAndDeleteQuery((name) => 'limit' === name);
+      this.queryToCopy = tree.serialize();
+
+      // query string for adding variables to cart
+      let vQuery = tree.search((name) => name === 'variable');
+      if (!vQuery) {
+        vQuery = new RQL.Query('variable',[]);
+        tree.addQuery(null, vQuery);
+      }
+      tree.addQuery(vQuery, new RQL.Query('limit', [0, 100000]));
+      tree.addQuery(vQuery, new RQL.Query('fields', ['variableType']));
+      this.queryToCart = tree.serialize();
+
       this.refreshQueries();
     },
     onQueryUpdate(payload) {
@@ -468,7 +482,17 @@ new Vue({
       EventBus.$emit(EVENTS.QUERY_TYPE_DELETE, payload);
     },
     onCopyQuery() {
-      navigator.clipboard.writeText(this.queryStr);
+      navigator.clipboard.writeText(this.queryToCopy);
+    },
+    onAddQueryToCart() {
+      micajs.variable.cart.addQuery(this.queryToCart, function(cart, oldCart) {
+        micajs.variable.cart.showCount('#cart-count', cart, Mica.locale);
+        if (cart.count === oldCart.count) {
+          micajs.info(Mica.tr['no-variable-added']);
+        } else {
+          micajs.success(Mica.tr['variables-added-to-cart'].replace('{0}', (cart.count - oldCart.count).toLocaleString(Mica.locale)));
+        }
+      });
     }
   },
   computed: {

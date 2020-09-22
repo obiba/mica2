@@ -99,13 +99,20 @@
           <h3 class="card-title"><@message "query"/></h3>
 
           <div class="card-tools">
+            <#if cartEnabled>
+              <#if user??>
+                <button id="cart-add-variables" type="button" class="btn btn-sm btn-success" @click="onAddQueryToCart" title="<@message "sets.cart.add-to-cart"/>"><i class="fas fa-cart-plus"></i></button>
+              <#else>
+                <a href="../signin?redirect=${contextPath}/search" class="btn btn-sm btn-success" title="<@message "sets.cart.add-to-cart"/>"><i class="fas fa-cart-plus"></i></a>
+              </#if>
+              </#if>
             <#if showCopyQuery>
-              <div class="btn-group">
+              <div class="btn-group ml-2">
                 <button type="button" class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><@message "global.copy-query"/></button>
                 <ul class="dropdown-menu dropdown-menu-right">
                   <li class="pr-3 pl-3 pt-3">
                     <div class="input-group mb-2">
-                      <input v-model="queryStr" disabled type="text" class="form-control" style="width: 300px;">
+                      <input v-model="queryToCopy" disabled type="text" class="form-control" style="width: 300px;">
                       <div class="input-group-append">
                         <button class="btn btn-outline-secondary" type="button" @click="onCopyQuery"
                                 title="<@message "global.copy-to-clipboard"/>">
@@ -211,8 +218,7 @@
                   <div class="mt-3">
                     <div class="tab-content" id="results-tabContent">
                       <#if config.studyDatasetEnabled || config.harmonizationDatasetEnabled>
-                        <div class="tab-pane fade show active" id="variables" role="tabpanel"
-                             aria-labelledby="variables-tab">
+                        <div class="tab-pane fade show active" id="variables" role="tabpanel" aria-labelledby="variables-tab">
                           <p class="text-muted"><@message "results-list-of-variables-text"/></p>
                           <div id="list-variables">
                             <variables-result></variables-result>

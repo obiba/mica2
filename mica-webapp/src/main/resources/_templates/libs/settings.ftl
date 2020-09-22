@@ -36,7 +36,11 @@
 <#assign portalLink = "${config.portalUrl!contextPath}" + "/"/>
 
 <!-- Cart settings -->
-<#assign cartEnabled = (config?? && config.cartEnabled)/>
+<#assign cartEnabled = (config?? && config.cartEnabled && (config.studyDatasetEnabled || config.harmonizationDatasetEnabled))/>
+<!-- Cart feature is only visible to advanced users -->
+<!--#assign cartEnabled = cartEnabled && (isAdministrator || isReviewer || isEditor || isDAO)/-->
+<!-- Cart feature is only visible to any authenticated users -->
+<!--#assign cartEnabled = cartEnabled && user??/-->
 <!-- To download the list of variable IDs (and the Opal views, if enabled) -->
 <#assign showCartDownload = (isAdministrator || isReviewer || isEditor || isDAO)/>
 <!-- To reinstate the cart as views in Opal -->
