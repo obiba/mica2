@@ -11,6 +11,7 @@
 <!-- DataTables -->
 <script src="${adminLTEPath}/plugins/datatables/jquery.dataTables.js"></script>
 <script src="${adminLTEPath}/plugins/datatables-bs4/js/dataTables.bootstrap4.js"></script>
+<script src="${adminLTEPath}/plugins/datatables-select/js/dataTables.select.js"></script>
 <!-- Toastr -->
 <script src="${adminLTEPath}/plugins/toastr/toastr.min.js"></script>
 <!-- Axios -->

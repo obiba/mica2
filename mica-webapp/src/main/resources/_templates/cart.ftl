@@ -39,12 +39,13 @@
             </button>
           </div>
           <div class="modal-body">
-            <p><@message "cart-confirm-deletion-text"/></p>
+            <p id="delete-all-message"><@message "cart-confirm-deletion-text"/></p>
+            <p id="delete-selected-message" style="display: none;"><@message "cart-selected-confirm-deletion-text"/></p>
           </div>
           <div class="modal-footer justify-content-between">
             <button type="button" class="btn btn-default" data-dismiss="modal"><@message "cancel"/></button>
             <button type="button" class="btn btn-primary" data-dismiss="modal"
-                    onclick="micajs.variable.set.deleteDocuments('${user.variablesCart.id}', [], function() { window.location.reload(); })"><@message "confirm"/>
+                    onclick="micajs.variable.set.deleteDocuments('${user.variablesCart.id}', micajs.variable.cart.storage.getSelections(), function() { window.location.reload(); })"><@message "confirm"/>
             </button>
           </div>
         </div>
@@ -53,7 +54,6 @@
       <!-- /.modal-dialog -->
     </div>
     <!-- /.modal -->
-
 
     <!-- Main content -->
     <div class="content">
@@ -85,7 +85,7 @@
                   </#if>
                 </#if>
                 <button id="delete-all" type="button" class="btn btn-danger ml-2" data-toggle="modal" data-target="#modal-delete">
-                  <i class="fas fa-trash"></i> <@message "delete"/>
+                  <i class="fas fa-trash"></i> <@message "delete"/> <span id="selection-count" class="badge badge-light"></span>
                 </button>
                 <#if config.setsSearchEnabled>
                   <a class="btn btn-info ml-2" href="${contextPath}/search#lists?type=variables&query=variable(in(Mica_variable.sets,${user.variablesCart.id}))">
@@ -102,6 +102,7 @@
                 <table id="setTable" class="table table-striped">
                   <thead>
                   <tr>
+                    <th><i class="far fa-square"></i></th>
                     <th><@message "name"/></th>
                     <th><@message "label"/></th>
                     <#if config.studyDatasetEnabled && config.harmonizationDatasetEnabled>
