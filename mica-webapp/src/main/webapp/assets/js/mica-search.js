@@ -252,10 +252,11 @@ class MicaQueryAlertListener {
 
   __onQueryAlery(payload) {
     const target = Mica.tr[payload.target];
-    const taxonomyInfo = this.__getTaxonomyVocabularyNames(payload.query || {});
+    const query = payload.query || {};
+    const taxonomyInfo = ["and", "or"].indexOf(query.name) === -1 ? this.__getTaxonomyVocabularyNames(query) : undefined;
     const message = Mica.trArgs(
       `criterion.${payload.action}`,
-      [taxonomyTitleFinder.title(taxonomyInfo.taxonomy, taxonomyInfo.vocabulary), target]
+      [taxonomyInfo ? taxonomyTitleFinder.title(taxonomyInfo.taxonomy, taxonomyInfo.vocabulary) : "", target]
     );
 
     if (message) {
@@ -403,7 +404,8 @@ new Vue({
       queryExecutor: new MicaQueryExecutor(EventBus, DataTableDefaults.pageLength),
       queries: null,
       noQueries: true,
-      queryStr: null
+      queryStr: null,
+      advanceQueryMode: true
     };
   },
   methods: {
@@ -466,6 +468,10 @@ new Vue({
     onQueryRemove(payload) {
       console.debug('query-builder update', payload);
       EventBus.$emit(EVENTS.QUERY_TYPE_DELETE, payload);
+    },
+    onNodeUpdate(payload) {
+      console.debug('query-builder node update', payload);
+      EventBus.$emit(EVENTS.QUERY_TYPE_UPDATES_SELECTION, {updates: [payload]});
     },
     onCopyQuery() {
       navigator.clipboard.writeText(this.queryStr);
