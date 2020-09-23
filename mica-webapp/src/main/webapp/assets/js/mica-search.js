@@ -405,7 +405,7 @@ new Vue({
       queries: null,
       noQueries: true,
       queryToCopy: null,
-      queryToCart: null
+      queryToCart: null,
       advanceQueryMode: true
     };
   },
