@@ -98,6 +98,11 @@
         <div class="card-header">
           <h3 class="card-title"><@message "query"/></h3>
 
+          <span class="ml-1">
+            <input id="advanced-mode-button" type="checkbox" v-model="advanceQueryMode">
+            <label for="advanced-mode-button"><@message "search-advanced-mode"/></label>
+          </span>
+
           <div class="card-tools">
             <#if cartEnabled>
               <#if user??>
@@ -154,7 +159,7 @@
             </div>
 
             <!-- Query Builder -->
-            <rql-query-builder v-for="(query, target) in queries" v-bind:target="target" v-bind:taxonomy="getTaxonomyForTarget(target)" v-bind:query="query" @update-query="onQueryUpdate" @remove-query="onQueryRemove"></rql-query-builder>
+            <rql-query-builder v-for="(query, target) in queries" v-bind:key="target" v-bind:target="target" v-bind:taxonomy="getTaxonomyForTarget(target)" v-bind:query="query" v-bind:advanced-mode="advanceQueryMode" @update-node="onNodeUpdate" @update-query="onQueryUpdate" @remove-query="onQueryRemove"></rql-query-builder>
           </div>
         </div>
         <!-- /.card-body -->

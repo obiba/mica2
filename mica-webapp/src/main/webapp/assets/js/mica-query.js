@@ -132,11 +132,16 @@ class EntityQuery {
    * @private
    */
   __findQuery(tree, query) {
-    const fnSearch = query.name === 'match'
-      ? (name, args) => args.indexOf(query.args[1]) > -1
-      : (name, args) => args.indexOf(query.args[0]) > -1;
+    if (OPERATOR_NODES.indexOf(query.name) === -1) {
+      const fnSearch = query.name === 'match'
+        ? (name, args) => args.indexOf(query.args[1]) > -1
+        : (name, args) => args.indexOf(query.args[0]) > -1;
 
-    return tree.search(fnSearch);
+      return tree.search(fnSearch);
+    } else {
+      const fnSearch = (name, args) => (name === query.name && (args || []).every((arg, index) => arg.name === (query.args[index] || {}).name));
+      return tree.search(fnSearch);
+    }
   }
 
   __getOpOrCriteriaChild(tree, targetQuery) {
@@ -253,7 +258,7 @@ class EntityQuery {
           let theQuery = this.__findQuery(theTree, info.query);
           if (theQuery) {
             // query exists, just update
-            theQuery.name = info.query.name;
+            theQuery.name = info.newName || info.query.name;
             theQuery.args = info.query.args;
             EventBus.$emit(EVENTS.QUERY_ALERT, {target: info.target, query: info.query, action: 'updated'});
           } else {
