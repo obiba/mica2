@@ -54,6 +54,8 @@
     "to": "<@message "to"/>",
     "more": "<@message "search.facet.more"/>",
     "less": "<@message "search.facet.less"/>",
+    "no-variable-added": "<@message "sets.cart.no-variable-added"/>",
+    "variables-added-to-cart": "<@message "variables-added-to-cart"/>"
   };
 
   Mica.trArgs = (msgKey, msgArgs) => {
