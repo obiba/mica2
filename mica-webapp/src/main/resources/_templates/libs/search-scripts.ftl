@@ -52,14 +52,21 @@
     "criterion.created": "<@message "criterion-created"/>",
     "criterion.updated": "<@message "criterion-updated"/>",
     "study-design-chart-title": "<@message "study-design-chart-title"/>",
+    "study-design-chart-text": "<@message "study-design-chart-text"/>",
     "number-participants-chart-title": "<@message "number-participants-chart-title"/>",
+    "number-participants-chart-text": "<@message "number-participants-chart-text"/>",
     "bio-samples-chart-title": "<@message "bio-samples-chart-title"/>",
+    "bio-samples-chart-text": "<@message "bio-samples-chart-text"/>",
     "study-start-year-chart-title": "<@message "study-start-year-chart-title"/>",
+    "study-start-year-chart-text": "<@message "study-start-year-chart-text"/>",
     "to": "<@message "to"/>",
     "more": "<@message "search.facet.more"/>",
     "less": "<@message "search.facet.less"/>",
     "no-variable-added": "<@message "sets.cart.no-variable-added"/>",
-    "variables-added-to-cart": "<@message "variables-added-to-cart"/>"
+    "variables-added-to-cart": "<@message "variables-added-to-cart"/>",
+    "collapse": "<@message "collapse"/>",
+    "value": "<@message "value"/>",
+    "frequency": "<@message "frequency"/>"
   };
 
   Mica.trArgs = (msgKey, msgArgs) => {
@@ -74,6 +81,12 @@
     study: '${studyIcon}',
     network: '${networkIcon}'
   };
+
+  Mica.charts = {
+    backgroundColor: '${barChartBackgroundColor}',
+    borderColor: '${barChartBorderColor}',
+    backgroundColors: ['${colors?join("', '")}']
+  }
 </script>
 
 <!-- ChartJS -->

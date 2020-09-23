@@ -293,15 +293,21 @@ const ResultsTabContent = {
       },
       chartOptions: [
         {
-          title: 'study-design-chart-title',
+          title: Mica.tr['study-design-chart-title'],
+          text: Mica.tr['study-design-chart-text'],
           type: 'horizontalBar',
+          backgroundColor: Mica.charts.backgroundColor,
+          borderColor: Mica.charts.borderColor,
           agg: 'model-methods-design',
           dataKey: 'obiba.mica.TermsAggregationResultDto.terms',
           subAgg
         },
         {
-          title: 'number-participants-chart-title',
+          title: Mica.tr['number-participants-chart-title'],
+          text: Mica.tr['number-participants-chart-text'],
           type: 'pie',
+          backgroundColor: Mica.charts.backgroundColors,
+          borderColor: Mica.charts.borderColor,
           agg: 'model-numberOfParticipants-participant-number-range',
           dataKey: 'obiba.mica.RangeAggregationResultDto.ranges',
           subAgg,
@@ -312,14 +318,20 @@ const ResultsTabContent = {
           }
         },
         {
-          title: 'bio-samples-chart-title',
+          title: Mica.tr['bio-samples-chart-title'],
+          text: Mica.tr['bio-samples-chart-text'],
           type: 'horizontalBar',
+          backgroundColor: Mica.charts.backgroundColor,
+          borderColor: Mica.charts.borderColor,
           agg: 'populations-dataCollectionEvents-model-bioSamples',
           dataKey: 'obiba.mica.TermsAggregationResultDto.terms',
         },
         {
-          title: 'study-start-year-chart-title',
+          title: Mica.tr['study-start-year-chart-title'],
+          text: Mica.tr['study-start-year-chart-text'],
           type: 'horizontalBar',
+          backgroundColor: Mica.charts.backgroundColor,
+          borderColor: Mica.charts.borderColor,
           agg: 'model-startYear-range',
           dataKey: 'obiba.mica.RangeAggregationResultDto.ranges',
           subAgg

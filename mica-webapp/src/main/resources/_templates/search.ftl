@@ -188,7 +188,7 @@
                 <study-filter-shortcut></study-filter-shortcut>
 
                 <div class="tab-pane active" id="tab_lists">
-                  <p class="text-muted">
+                  <p class="text-muted mt-3">
                     <@message "results-lists-text"/>
                   </p>
 
@@ -306,7 +306,7 @@
 
                 <#if config.networkEnabled && !config.singleStudyEnabled>
                   <div class="tab-pane" id="tab_graphics">
-                    <p class="text-muted">
+                    <p class="text-muted mt-3">
                       <@message "results-graphics-text"/>
                     </p>
                     <div id="graphics">
