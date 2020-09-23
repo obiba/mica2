@@ -175,6 +175,7 @@
                 <#if config.studyDatasetEnabled || config.harmonizationDatasetEnabled>
                   <li class="nav-item"><a id="lists-tab" class="nav-link active" href="#tab_lists" data-toggle="tab" @click="onSelectSearch()"><@message "lists"/></a></li>
                   <li class="nav-item"><a id="coverage-tab" class="nav-link" href="#tab_coverage" data-toggle="tab" @click="onSelectCoverage()"><@message "coverage"/></a></li>
+                  <li class="nav-item"><a id="graphics-tab" class="nav-link" href="#tab_graphics" data-toggle="tab" @click="onSelectGraphics()"><@message "graphics"/></a></li>
                 </#if>
                 <#if config.networkEnabled && !config.singleStudyEnabled>
                   <!--li class="nav-item"><a id="graphics-tab" class="nav-link" href="#tab_graphics" data-toggle="tab" @click="onSelectGraphics()"><@message "graphics"/></a></li-->
@@ -187,7 +188,7 @@
                 <study-filter-shortcut></study-filter-shortcut>
 
                 <div class="tab-pane active" id="tab_lists">
-                  <p class="text-muted">
+                  <p class="text-muted mt-3">
                     <@message "results-lists-text"/>
                   </p>
 
@@ -305,10 +306,11 @@
 
                 <#if config.networkEnabled && !config.singleStudyEnabled>
                   <div class="tab-pane" id="tab_graphics">
-                    <p class="text-muted">
+                    <p class="text-muted mt-3">
                       <@message "results-graphics-text"/>
                     </p>
                     <div id="graphics">
+                      <graphics-result v-bind:chart-options="chartOptions"></graphics-result>
                     </div>
                   </div>
                 </#if>

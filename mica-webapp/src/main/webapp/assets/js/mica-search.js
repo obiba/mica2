@@ -275,6 +275,12 @@ const ResultsTabContent = {
     'study-filter-shortcut': StudyFilterShortcutComponent
   },
   data() {
+    const subAgg = {
+      agg: 'model-numberOfParticipants-participant-number',
+      dataKey: 'obiba.mica.StatsAggregationResultDto.stats',
+      title: Mica.tr['participants']
+    };
+
     return {
       counts: {},
       hasVariableQuery: false,
@@ -284,7 +290,53 @@ const ResultsTabContent = {
         study: Mica.tr.study,
         dataset: Mica.tr.dataset,
         dce: Mica.tr['data-collection-event'],
-      }
+      },
+      chartOptions: [
+        {
+          title: Mica.tr['study-design-chart-title'],
+          text: Mica.tr['study-design-chart-text'],
+          type: 'horizontalBar',
+          backgroundColor: Mica.charts.backgroundColor,
+          borderColor: Mica.charts.borderColor,
+          agg: 'model-methods-design',
+          dataKey: 'obiba.mica.TermsAggregationResultDto.terms',
+          subAgg
+        },
+        {
+          title: Mica.tr['number-participants-chart-title'],
+          text: Mica.tr['number-participants-chart-text'],
+          type: 'pie',
+          backgroundColor: Mica.charts.backgroundColors,
+          borderColor: Mica.charts.borderColor,
+          agg: 'model-numberOfParticipants-participant-number-range',
+          dataKey: 'obiba.mica.RangeAggregationResultDto.ranges',
+          subAgg,
+          legend: {
+            display: true,
+            position: 'right',
+            align: 'start',
+          }
+        },
+        {
+          title: Mica.tr['bio-samples-chart-title'],
+          text: Mica.tr['bio-samples-chart-text'],
+          type: 'horizontalBar',
+          backgroundColor: Mica.charts.backgroundColor,
+          borderColor: Mica.charts.borderColor,
+          agg: 'populations-dataCollectionEvents-model-bioSamples',
+          dataKey: 'obiba.mica.TermsAggregationResultDto.terms',
+        },
+        {
+          title: Mica.tr['study-start-year-chart-title'],
+          text: Mica.tr['study-start-year-chart-text'],
+          type: 'horizontalBar',
+          backgroundColor: Mica.charts.backgroundColor,
+          borderColor: Mica.charts.borderColor,
+          agg: 'model-startYear-range',
+          dataKey: 'obiba.mica.RangeAggregationResultDto.ranges',
+          subAgg
+        }
+      ]
     }
   },
   methods: {
@@ -298,7 +350,7 @@ const ResultsTabContent = {
       EventBus.$emit('query-type-coverage', {display: DISPLAYS.COVERAGE});
     },
     onSelectGraphics() {
-      EventBus.$emit('query-type-selection', {display: DISPLAYS.GRAPHICS});
+      EventBus.$emit(EVENTS.QUERY_TYPE_GRAPHICS, {type: TYPES.STUDIES, display: DISPLAYS.GRAPHICS});
     },
     onSelectBucket(bucket) {
       console.debug(`onSelectBucket : ${bucket} - ${this.dceChecked}`);
@@ -358,6 +410,7 @@ const ResultsTabContent = {
     EventBus.unregister('datasets-results', this.onResult);
     EventBus.unregister('studies-results', this.onResult);
     EventBus.unregister('networks-results', this.onResult);
+    EventBus.unregister(EVENTS.LOCATION_CHANGED, this.onLocationChanged);
   }
 };
 
