@@ -406,7 +406,7 @@ new Vue({
       noQueries: true,
       queryToCopy: null,
       queryToCart: null,
-      advanceQueryMode: true
+      advanceQueryMode: false
     };
   },
   methods: {
@@ -499,6 +499,9 @@ new Vue({
           micajs.success(Mica.tr['variables-added-to-cart'].replace('{0}', (cart.count - oldCart.count).toLocaleString(Mica.locale)));
         }
       });
+    },
+    onSearchModeToggle() {
+      this.advanceQueryMode = !this.advanceQueryMode;
     }
   },
   computed: {

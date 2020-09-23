@@ -97,20 +97,18 @@
       <div id="query-builder" class="card card-info card-outline">
         <div class="card-header">
           <h3 class="card-title"><@message "query"/></h3>
-
-          <span class="ml-1">
-            <input id="advanced-mode-button" type="checkbox" v-model="advanceQueryMode">
-            <label for="advanced-mode-button"><@message "search-advanced-mode"/></label>
-          </span>
-
           <div class="card-tools">
             <#if cartEnabled>
               <#if user??>
-                <button id="cart-add-variables" type="button" class="btn btn-sm btn-success" @click="onAddQueryToCart" title="<@message "sets.cart.add-to-cart"/>"><i class="fas fa-cart-plus"></i></button>
+                <button id="cart-add-variables" type="button" class="btn btn-sm btn-success ml-2" @click="onAddQueryToCart" title="<@message "sets.cart.add-to-cart"/>"><i class="fas fa-cart-plus"></i></button>
               <#else>
-                <a href="../signin?redirect=${contextPath}/search" class="btn btn-sm btn-success" title="<@message "sets.cart.add-to-cart"/>"><i class="fas fa-cart-plus"></i></a>
+                <a href="../signin?redirect=${contextPath}/search" class="btn btn-sm btn-success ml-2" title="<@message "sets.cart.add-to-cart"/>"><i class="fas fa-cart-plus"></i></a>
               </#if>
-              </#if>
+            </#if>
+            <a class="btn btn-secondary btn-sm ml-2" href="javascript:void(0)" @click="onSearchModeToggle">
+              <span v-if="advanceQueryMode" title="<@message "search.basic-help"/>"><@message "search-basic-mode"/></span>
+              <span v-else title="<@message "search.advanced-help"/>"><@message "search-advanced-mode"/></span>
+            </a>
             <#if showCopyQuery>
               <div class="btn-group ml-2">
                 <button type="button" class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><@message "global.copy-query"/></button>
