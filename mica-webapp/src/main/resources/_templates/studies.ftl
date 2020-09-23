@@ -111,35 +111,33 @@
 
                     <#if studyListDisplays?seq_contains("lines")>
                       <div class="tab-pane <#if studyListDefaultDisplay == "lines">active</#if>" id="lines">
-                        <ul class="list-group">
-                          <#list studies as std>
-                            <li class="list-group-item" style="min-height: 150px;">
-                              <div class="row">
-                                <div class="col-lg-3 col-sm-12">
-                                  <#if std.logo??>
-                                    <img class="img-fluid" style="max-height: 150px" alt="${localize(std.acronym)} logo" src="${contextPath}/ws/study/${std.id}/file/${std.logo.id}/_download"/>
-                                  <#else >
-                                    <div class="text-black-50 text-center mt-5">
-                                      <i class="${studyIcon} fa-3x"></i>
-                                    </div>
-                                  </#if>
+                        <#list studies as std>
+                          <div class="border-bottom mb-3 pb-3" style="min-height: 150px;">
+                            <div class="row">
+                              <div class="col-lg-3 col-sm-12">
+                                <#if std.logo??>
+                                  <img class="img-fluid" style="max-height: 150px" alt="${localize(std.acronym)} logo" src="${contextPath}/ws/study/${std.id}/file/${std.logo.id}/_download"/>
+                                <#else >
+                                  <div class="text-black-50 text-center mt-5">
+                                    <i class="${studyIcon} fa-3x"></i>
+                                  </div>
+                                </#if>
+                              </div>
+                              <div class="col-lg-9 col-sm-12">
+                                <h2 class="lead"><b>${localize(std.acronym)}</b></h2>
+                                <p class="text-muted text-sm">${localize(std.name)}</p>
+                                <div class="marked">
+                                  ${localize(std.objectives)?trim?truncate_w(200, "...")}
                                 </div>
-                                <div class="col-lg-9 col-sm-12">
-                                  <h2 class="lead"><b>${localize(std.acronym)}</b></h2>
-                                  <p class="text-muted text-sm">${localize(std.name)}</p>
-                                  <div class="marked">
-                                    ${localize(std.objectives)?trim?truncate_w(200, "...")}
-                                  </div>
-                                  <div class="mt-2">
-                                    <a href="${contextPath}/study/${std.id}" class="btn btn-sm btn-outline-info">
-                                      <@message "global.read-more"/>
-                                    </a>
-                                  </div>
+                                <div class="mt-2">
+                                  <a href="${contextPath}/study/${std.id}" class="btn btn-sm btn-outline-info">
+                                    <@message "global.read-more"/>
+                                  </a>
                                 </div>
                               </div>
-                            </li>
-                          </#list>
-                        </ul>
+                            </div>
+                          </div>
+                        </#list>
                       </div>
                     </#if>
 

@@ -54,7 +54,7 @@
 <#assign studyListDisplays = listDisplays/>
 <#assign studyListDefaultDisplay = listDefaultDisplay/>
 <#assign datasetListDisplays = listDisplays/>
-<#assign datasetListDefaultDisplay = listDefaultDisplay/>
+<#assign datasetListDefaultDisplay = "cards"/>
 
 <!-- Search page -->
 <#if config?? && config.singleStudyEnabled>

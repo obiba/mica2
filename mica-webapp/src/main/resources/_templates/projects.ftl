@@ -51,7 +51,7 @@
                       <p>
                         <strong><i class="${projectIcon}"></i> ${localize(project.title)}</strong>
                       </p>
-                      <p class="text-muted">${localize(project.summary)}</p>
+                      <p class="text-muted marked">${localize(project.summary)}</p>
                       <p>
                         <@projectModel project=project/>
                       </p>

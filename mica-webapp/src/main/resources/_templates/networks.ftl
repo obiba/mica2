@@ -84,35 +84,33 @@
 
                     <#if networkListDisplays?seq_contains("lines")>
                       <div class="tab-pane <#if networkListDefaultDisplay == "lines">active</#if>" id="lines">
-                        <ul class="list-group">
-                          <#list networks as ntwk>
-                            <li class="list-group-item" style="min-height: 150px;">
-                              <div class="row">
-                                <div class="col-lg-3 col-sm-12">
-                                  <#if ntwk.logo??>
-                                    <img class="img-fluid" style="max-height: 150px" alt="${localize(ntwk.acronym)} logo" src="${contextPath}/ws/network/${ntwk.id}/file/${ntwk.logo.id}/_download"/>
-                                  <#else >
-                                    <div class="text-black-50 text-center mt-5">
-                                      <i class="${networkIcon} fa-3x"></i>
-                                    </div>
-                                  </#if>
+                        <#list networks as ntwk>
+                          <div class="border-bottom mb-3 pb-3" style="min-height: 150px;">
+                            <div class="row">
+                              <div class="col-lg-3 col-sm-12">
+                                <#if ntwk.logo??>
+                                  <img class="img-fluid" style="max-height: 150px" alt="${localize(ntwk.acronym)} logo" src="${contextPath}/ws/network/${ntwk.id}/file/${ntwk.logo.id}/_download"/>
+                                <#else >
+                                  <div class="text-black-50 text-center mt-5">
+                                    <i class="${networkIcon} fa-3x"></i>
+                                  </div>
+                                </#if>
+                              </div>
+                              <div class="col-lg-9 col-sm-12">
+                                <h2 class="lead"><b>${localize(ntwk.acronym)}</b></h2>
+                                <p class="text-muted text-sm">${localize(ntwk.name)}</p>
+                                <div class="marked">
+                                  ${localize(ntwk.description)?trim?truncate_w(200, "...")}
                                 </div>
-                                <div class="col-lg-9 col-sm-12">
-                                  <h2 class="lead"><b>${localize(ntwk.acronym)}</b></h2>
-                                  <p class="text-muted text-sm">${localize(ntwk.name)}</p>
-                                  <div class="marked">
-                                    ${localize(ntwk.description)?trim?truncate_w(200, "...")}
-                                  </div>
-                                  <div class="mt-2">
-                                    <a href="${contextPath}/network/${ntwk.id}" class="btn btn-sm btn-outline-info">
-                                      <@message "global.read-more"/>
-                                    </a>
-                                  </div>
+                                <div class="mt-2">
+                                  <a href="${contextPath}/network/${ntwk.id}" class="btn btn-sm btn-outline-info">
+                                    <@message "global.read-more"/>
+                                  </a>
                                 </div>
                               </div>
-                            </li>
-                          </#list>
-                        </ul>
+                            </div>
+                          </div>
+                        </#list>
                       </div>
                     </#if>
 

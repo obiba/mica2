@@ -111,37 +111,35 @@
 
                     <#if datasetListDisplays?seq_contains("lines")>
                       <div class="tab-pane <#if datasetListDefaultDisplay == "lines">active</#if>" id="lines">
-                        <ul class="list-group">
-                          <#list datasets as ds>
-                            <li class="list-group-item" style="min-height: 150px;">
-                              <div class="row">
-                                <div class="col-lg-3 col-sm-12">
-                                    <#if ds.class.simpleName == "HarmonizationDataset">
-                                      <div class="text-black-50 text-center mt-5">
-                                          <i class="${harmoDatasetIcon} fa-3x"></i>
-                                      </div>
-                                    <#else>
-                                      <div class="text-black-50 text-center mt-4">
-                                          <i class="${datasetIcon} fa-3x"></i>
-                                      </div>
-                                    </#if>
+                        <#list datasets as ds>
+                          <div class="border-bottom mb-3 pb-3" style="min-height: 150px;">
+                            <div class="row">
+                              <div class="col-lg-3 col-sm-12">
+                                <#if ds.class.simpleName == "HarmonizationDataset">
+                                  <div class="text-black-50 text-center mt-5">
+                                      <i class="${harmoDatasetIcon} fa-3x"></i>
+                                  </div>
+                                <#else>
+                                  <div class="text-black-50 text-center mt-4">
+                                      <i class="${datasetIcon} fa-3x"></i>
+                                  </div>
+                                </#if>
+                              </div>
+                              <div class="col-lg-9 col-sm-12">
+                                <h2 class="lead"><b>${localize(ds.acronym)}</b></h2>
+                                <p class="text-muted text-sm">${localize(ds.name)}</p>
+                                <div class="marked">
+                                  ${localize(ds.description)?trim?truncate_w(200, "...")}
                                 </div>
-                                <div class="col-lg-9 col-sm-12">
-                                  <h2 class="lead"><b>${localize(ds.acronym)}</b></h2>
-                                  <p class="text-muted text-sm">${localize(ds.name)}</p>
-                                  <div class="marked">
-                                    ${localize(ds.description)?trim?truncate_w(200, "...")}
-                                  </div>
-                                  <div class="mt-2">
-                                    <a href="${contextPath}/dataset/${ds.id}" class="btn btn-sm btn-outline-info">
-                                      <@message "global.read-more"/>
-                                    </a>
-                                  </div>
+                                <div class="mt-2">
+                                  <a href="${contextPath}/dataset/${ds.id}" class="btn btn-sm btn-outline-info">
+                                    <@message "global.read-more"/>
+                                  </a>
                                 </div>
                               </div>
-                            </li>
-                          </#list>
-                        </ul>
+                            </div>
+                          </div>
+                        </#list>
                       </div>
                     </#if>
 
