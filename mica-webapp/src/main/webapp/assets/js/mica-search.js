@@ -275,6 +275,12 @@ const ResultsTabContent = {
     'study-filter-shortcut': StudyFilterShortcutComponent
   },
   data() {
+    const subAgg = {
+      agg: 'model-numberOfParticipants-participant-number',
+      dataKey: 'obiba.mica.StatsAggregationResultDto.stats',
+      title: Mica.tr['participants']
+    };
+
     return {
       counts: {},
       hasVariableQuery: false,
@@ -287,25 +293,36 @@ const ResultsTabContent = {
       },
       chartOptions: [
         {
+          title: 'study-design-chart-title',
           type: 'horizontalBar',
-          agg: 'model-methods-design'
+          agg: 'model-methods-design',
+          dataKey: 'obiba.mica.TermsAggregationResultDto.terms',
+          subAgg
         },
         {
+          title: 'number-participants-chart-title',
           type: 'pie',
           agg: 'model-numberOfParticipants-participant-number-range',
+          dataKey: 'obiba.mica.RangeAggregationResultDto.ranges',
+          subAgg,
           legend: {
             display: true,
             position: 'right',
-            align: 'start'
+            align: 'start',
           }
         },
         {
+          title: 'bio-samples-chart-title',
           type: 'horizontalBar',
-          agg: 'model-numberOfParticipants-participant-number-range'
+          agg: 'populations-dataCollectionEvents-model-bioSamples',
+          dataKey: 'obiba.mica.TermsAggregationResultDto.terms',
         },
         {
+          title: 'study-start-year-chart-title',
           type: 'horizontalBar',
-          agg: 'model-numberOfParticipants-participant-number-range'
+          agg: 'model-startYear-range',
+          dataKey: 'obiba.mica.RangeAggregationResultDto.ranges',
+          subAgg
         }
       ]
     }
