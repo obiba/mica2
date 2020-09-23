@@ -47,9 +47,13 @@
 <#assign showCartViewDownload = (isAdministrator || isReviewer || isEditor || isDAO)/>
 
 <!-- Repository list pages -->
-<#assign listDefaultDisplay = "cards"/> <!-- cards or table -->
+<#assign listDisplays = ["lines", "table", "cards"]/> <!-- order matters -->
+<#assign listDefaultDisplay = "lines"/> <!-- cards, lines or table -->
+<#assign networkListDisplays = listDisplays/>
 <#assign networkListDefaultDisplay = listDefaultDisplay/>
+<#assign studyListDisplays = listDisplays/>
 <#assign studyListDefaultDisplay = listDefaultDisplay/>
+<#assign datasetListDisplays = listDisplays/>
 <#assign datasetListDefaultDisplay = listDefaultDisplay/>
 
 <!-- Search page -->
