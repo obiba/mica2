@@ -407,6 +407,7 @@ mica.config
     'MicaConfigResource',
     'FormServerValidation',
     '$translate',
+    'AlertService',
 
     function ($rootScope,
               $scope,
@@ -417,7 +418,8 @@ mica.config
               $filter,
               MicaConfigResource,
               FormServerValidation,
-              $translate) {
+              $translate,
+              AlertService) {
       var reload = false;
       $scope.micaConfig = MicaConfigResource.get();
 
@@ -461,7 +463,9 @@ mica.config
         $scope.micaConfig.signupGroups = $scope.signupGroups.split(' ').filter(function(g) { return g.length>0; });
       };
 
-      $scope.micaConfig.$promise.then(function() {
+      $scope.micaConfig.$promise.then(function(config) {
+        $scope.currentLanguages = config.languages;
+
         $scope.selectedSearchLayout = {
           get design() {
             return $scope.micaConfig.searchLayout;
@@ -489,6 +493,19 @@ mica.config
           }
         });
       });
+
+      $scope.onLanguagesChanged = function () {
+        const currentLanguages =  $scope.currentLanguages;
+        const newLanguages = $scope.micaConfig.languages || [];
+        if (newLanguages.filter(x => !currentLanguages.includes(x)).length> 0) {
+          AlertService.alert({
+            id: 'MainController',
+            type: 'warning',
+            msgKey: 'config.languages-update-warning',
+            delay: 5000
+          });
+        }
+      };
 
       $scope.save = function () {
 

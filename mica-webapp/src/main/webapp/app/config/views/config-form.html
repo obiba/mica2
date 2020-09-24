@@ -60,7 +60,7 @@
             <span translate>config.languages</span> *
           </label>
           <select chosen multiple="multiple" id="languages" name="languages" ng-model="micaConfig.languages"
-              ng-options="code as name for (code, name) in availableLanguages" class="chosen-select" required>
+              ng-options="code as name for (code, name) in availableLanguages" class="chosen-select" ng-change="onLanguagesChanged()" required>
           </select>
           <p class="input-error" ng-show="form.languages.$dirty && form.languages.$invalid">
             <span ng-show="form.languages.$error.server">{{ errors.name }}</span>
