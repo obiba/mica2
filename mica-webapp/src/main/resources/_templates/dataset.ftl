@@ -253,7 +253,7 @@
                   <h3 class="card-title"><@message "harmonization"/></h3>
                 </div>
                 <div class="card-body">
-                  <img id="loadingSummary" src="${assetsPath}/images/loading.gif">
+                  <div id="loadingSummary" class="spinner-border spinner-border-sm" role="status"></div>
                   <table id="harmonizedTable" class="table table-striped">
                     <thead>
                       <tr>

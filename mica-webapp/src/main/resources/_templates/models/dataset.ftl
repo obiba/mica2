@@ -22,7 +22,7 @@
 
 <!-- Variables classifications -->
 <#macro variablesClassifications dataset>
-  <img id="loadingClassifications" src="${assetsPath}/images/loading.gif">
+  <div id="loadingClassifications" class="spinner-border spinner-border-sm" role="status"></div>
   <div id="classificationsContainer" style="display: none;" class="card card-info card-outline">
     <div class="card-header">
       <h3 class="card-title"><@message "variables-classifications"/></h3>

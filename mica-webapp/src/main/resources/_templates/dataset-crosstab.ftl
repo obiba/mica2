@@ -75,7 +75,7 @@
             </button>
           </div>
           <div class="card-body">
-            <img id="loadingCrosstab" src="${assetsPath}/images/loading.gif">
+            <div id="loadingCrosstab" class="spinner-border spinner-border-sm" role="status"></div>
             <div id="result-panel" style="overflow-x: auto;">
               <div style="display: none;" class="mb-4">
                 <select id="select-study" class="form-control select2 float-right" style="width: 100%;"></select>

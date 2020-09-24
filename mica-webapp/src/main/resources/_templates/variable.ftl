@@ -296,7 +296,7 @@
                   <h3 class="card-title"><@message "harmonized-variables"/></h3>
                 </div>
                 <div class="card-body">
-                  <img id="loadingHarmonizedVariables" src="${assetsPath}/images/loading.gif">
+                  <div id="loadingHarmonizedVariables" class="spinner-border spinner-border-sm" role="status"></div>
 
                   <table id="harmonizedVariables" class="table table-striped" style="display: none">
                     <thead>

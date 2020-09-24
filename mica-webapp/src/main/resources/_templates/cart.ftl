@@ -97,7 +97,7 @@
           </div>
           <div class="card-body">
             <#if user.variablesCart?? && user.variablesCart.count gt 0>
-              <img id="loadingSet" src="${assetsPath}/images/loading.gif">
+              <div id="loadingSet" class="spinner-border spinner-border-sm" role="status"></div>
               <div>
                 <table id="setTable" class="table table-striped">
                   <thead>

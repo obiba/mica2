@@ -1,5 +1,5 @@
 <#macro variableSummary variable>
-  <img id="loadingSummary" src="${assetsPath}/images/loading.gif">
+  <div id="loadingSummary" class="spinner-border spinner-border-sm" role="status"></div>
 
   <div id="counts" style="display: none;">
     <div class="row">
