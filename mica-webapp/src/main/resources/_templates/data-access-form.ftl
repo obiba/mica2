@@ -43,7 +43,7 @@
       <#if dataAccessCalloutsEnabled>
         <div class="row d-print-none">
           <div class="col-12">
-            <div class="callout callout-info">
+            <div id="data-access-form-callout" class="callout callout-info">
               <p>
                   <@message "data-access-form-callout"/>
               </p>

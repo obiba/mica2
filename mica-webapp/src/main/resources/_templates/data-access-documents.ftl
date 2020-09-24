@@ -40,7 +40,7 @@
       <#if dataAccessCalloutsEnabled>
         <div class="row">
           <div class="col-12">
-            <div class="callout callout-info">
+            <div id="data-access-documents-callout" class="callout callout-info">
               <p>
                 <@message "data-access-documents-callout"/>
               </p>

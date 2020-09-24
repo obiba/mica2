@@ -25,8 +25,14 @@
     <!-- Main content -->
     <div class="content">
       <div class="container">
-        <div class="callout callout-info">
-          <p><@message "data-access-requests-callout"/></p>
+        <div id="data-accesses-callout" class="callout callout-info">
+          <p>
+            <#if isAdministrator || isDAO>
+              <@message "data-access-requests-admin-callout"/>
+            <#else>
+              <@message "data-access-requests-callout"/>
+            </#if>
+          </p>
         </div>
 
         <div class="card card-primary card-outline card-outline-tabs">

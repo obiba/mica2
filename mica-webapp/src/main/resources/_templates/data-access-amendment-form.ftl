@@ -74,7 +74,7 @@
       <#if dataAccessCalloutsEnabled>
         <div class="row d-print-none">
           <div class="col-12">
-            <div class="callout callout-info">
+            <div id="data-access-amendment-form-callout" class="callout callout-info">
               <p>
                 <@message "data-access-amendment-form-callout"/>
               </p>

@@ -1,3 +1,7 @@
+<!-- Macros -->
+<#include "libs/header.ftl">
+<#include "models/data-access-process.ftl">
+
 <!DOCTYPE html>
 <html lang="${.lang}">
 <head>
@@ -31,9 +35,12 @@
     <!-- Main content -->
     <div class="content">
       <div class="container">
-        <div class="callout callout-info">
+        <div id="data-access-process-callout" class="callout callout-info">
           <p><@message "data-access-process-callout"/></p>
         </div>
+
+        <@dataAccessProcessModel/>
+
       </div><!-- /.container-fluid -->
     </div>
     <!-- /.content -->

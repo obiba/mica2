@@ -44,7 +44,7 @@
       <#if dataAccessCalloutsEnabled>
         <div class="row">
           <div class="col-12">
-            <div class="callout callout-info">
+            <div id="data-access-private-comments-callout" class="callout callout-info">
               <p>
                 <@message "data-access-private-comments-callout"/>
               </p>

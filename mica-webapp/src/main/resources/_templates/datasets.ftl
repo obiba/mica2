@@ -38,12 +38,12 @@
     <!-- Main content -->
     <div class="content">
       <div class="container">
-        <div class="callout callout-info">
+        <div id="datasets-callout" class="callout callout-info">
           <p><@message callout/></p>
         </div>
 
         <#if datasets?? && datasets?size != 0>
-          <div class="card card-info card-outline">
+          <div id="datasets-card" class="card card-info card-outline">
             <div class="card-header d-flex p-0">
               <h3 class="card-title p-3"><@message title/></h3>
               <#if datasetListDisplays?size gt 1>
