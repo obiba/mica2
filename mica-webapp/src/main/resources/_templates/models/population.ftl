@@ -1,7 +1,7 @@
 <!-- Population macros -->
 
 <!-- Population model -->
-<#macro populationModel population>
+<#macro populationModel population id=population.id>
 
   <!-- Individual study -->
   <div class="row">
@@ -317,6 +317,28 @@
 
   <!-- Harmonization study -->
   <!-- place model rules here -->
+
+  <!-- Files -->
+  <#if showStudyPopulationFiles>
+    <@populationFilesBrowser id=id/>
+  </#if>
+</#macro>
+
+<!-- Files -->
+<#macro populationFilesBrowser id>
+  <div id="study-${id}-files-app-container" class="card" style="display: none;">
+    <div class="card-header">
+      <h3 class="card-title">
+        <@message "files"/>
+      </h3>
+    </div>
+    <!-- /.card-header -->
+    <div class="card-body">
+      <div id="study-${id}-files-app" class="mt-2">
+        <@filesBrowser/>
+      </div>
+    </div>
+  </div>
 </#macro>
 
 <!-- Population modal dialog -->
@@ -332,7 +354,7 @@
         </div>
         <div class="modal-body">
           <div>${localize(population.description)}</div>
-          <@populationModel population=population/>
+          <@populationModel population=population id=id/>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>

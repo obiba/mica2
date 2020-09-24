@@ -101,6 +101,11 @@
     </#if>
 
     <!-- Files -->
+    const filesTr = {
+      'item': '<@message "item"/>',
+      'items': '<@message "items"/>',
+      'download': '<@message "download"/>'
+    };
     <#if showStudyFiles>
       makeFilesVue('#study-files-app', {
         type: '${type?lower_case}-study',
@@ -108,40 +113,44 @@
         basePath: '',
         path: '/',
         folder: {},
-        tr: {
-          'item': '<@message "item"/>',
-          'items': '<@message "items"/>',
-          'download': '<@message "download"/>'
-        },
+        tr: filesTr,
         locale: '${.lang}'
       }, function(file) {
         return !(file.type === 'FOLDER' && file.name === 'population');
       });
     </#if>
-    <#if showStudyDCEFiles>
-      <#if study.populations?? && study.populations?size != 0>
-        <#list study.populations as population>
-          <#if type == "Individual">
-            <#if population.dataCollectionEvents?? && population.dataCollectionEvents?size != 0>
-              <#list population.dataCollectionEventsSorted as dce>
-                makeFilesVue('#study-${population.id}-${dce.id}-files-app', {
-                  type: '${type?lower_case}-study',
-                  id: '${study.id}',
-                  basePath: '/population/${population.id}/data-collection-event/${dce.id}',
-                  path: '/',
-                  folder: {},
-                  tr: {
-                    'item': '<@message "item"/>',
-                    'items': '<@message "items"/>',
-                    'download': '<@message "download"/>'
-                  },
-                  locale: '${.lang}'
-                });
-              </#list>
-            </#if>
+
+    <#if study.populations?? && study.populations?size != 0>
+      <#list study.populations as population>
+        <#if showStudyPopulationFiles>
+          makeFilesVue('#study-${population.id}-files-app', {
+            type: '${type?lower_case}-study',
+            id: '${study.id}',
+            basePath: '/population/${population.id}',
+            path: '/',
+            folder: {},
+            tr: filesTr,
+            locale: '${.lang}'
+          }, function(file) {
+            return !(file.type === 'FOLDER' && file.name === 'data-collection-event');
+          });
+        </#if>
+        <#if type == "Individual" && showStudyDCEFiles>
+          <#if population.dataCollectionEvents?? && population.dataCollectionEvents?size != 0>
+            <#list population.dataCollectionEventsSorted as dce>
+              makeFilesVue('#study-${population.id}-${dce.id}-files-app', {
+                type: '${type?lower_case}-study',
+                id: '${study.id}',
+                basePath: '/population/${population.id}/data-collection-event/${dce.id}',
+                path: '/',
+                folder: {},
+                tr: filesTr,
+                locale: '${.lang}'
+              });
+            </#list>
           </#if>
-        </#list>
-      </#if>
+        </#if>
+      </#list>
     </#if>
 
     <!-- Variables classifications -->

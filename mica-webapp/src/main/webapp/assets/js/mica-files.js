@@ -13,7 +13,7 @@ Vue.component('folder-breadcrumb', {
       } else {
         let tokens = this.path.split('/').slice(1);
         const segments = [];
-        let spath = '';
+        let spath = this.folder.path.slice(0, this.folder.path.lastIndexOf(this.path));
         tokens.forEach((token, idx) => {
           if (idx === tokens.length - 1) {
             segments.push({

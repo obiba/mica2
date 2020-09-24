@@ -116,6 +116,11 @@
     </#if>
 
     <!-- Files -->
+    const filesTr = {
+      'item': '<@message "item"/>',
+      'items': '<@message "items"/>',
+      'download': '<@message "download"/>'
+    };
     <#if showDatasetFiles>
       makeFilesVue('#files-app', {
         type: '${type?lower_case}-dataset',
@@ -123,13 +128,39 @@
         basePath: '',
         path: '/',
         folder: {},
-        tr: {
-          'item': '<@message "item"/>',
-          'items': '<@message "items"/>',
-          'download': '<@message "download"/>'
-        },
+        tr: filesTr,
         locale: '${.lang}'
       });
+    </#if>
+    <#if showStudyPopulationFiles>
+      <#if study?? && population??>
+        makeFilesVue('#study-${population.id}-files-app', {
+          type: '<#if type == "Harmonized">harmonization<#else>individual</#if>-study',
+          id: '${study.id}',
+          basePath: '/population/${population.id}',
+          path: '/',
+          folder: {},
+          tr: filesTr,
+          locale: '${.lang}'
+        }, function(file) {
+          return !(file.type === 'FOLDER' && file.name === 'data-collection-event');
+        });
+      </#if>
+      <#if studyTables?? && studyTables?size != 0>
+        <#list studyTables as table>
+          makeFilesVue('#study-${table.study.id}-${table.population.id}-files-app', {
+            type: 'individual-study',
+            id: '${table.study.id}',
+            basePath: '/population/${table.population.id}',
+            path: '/',
+            folder: {},
+            tr: filesTr,
+            locale: '${.lang}'
+          }, function(file) {
+            return !(file.type === 'FOLDER' && file.name === 'data-collection-event');
+          });
+        </#list>
+      </#if>
     </#if>
     <#if showStudyDCEFiles>
       <#if study?? && population?? && dce??>
@@ -139,11 +170,7 @@
           basePath: '/population/${population.id}/data-collection-event/${dce.id}',
           path: '/',
           folder: {},
-          tr: {
-            'item': '<@message "item"/>',
-            'items': '<@message "items"/>',
-            'download': '<@message "download"/>'
-          },
+          tr: filesTr,
           locale: '${.lang}'
         });
       </#if>
@@ -155,11 +182,7 @@
             basePath: '/population/${table.population.id}/data-collection-event/${table.dce.id}',
             path: '/',
             folder: {},
-            tr: {
-              'item': '<@message "item"/>',
-              'items': '<@message "items"/>',
-              'download': '<@message "download"/>'
-            },
+            tr: filesTr,
             locale: '${.lang}'
           });
         </#list>

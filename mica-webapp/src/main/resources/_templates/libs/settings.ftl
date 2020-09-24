@@ -79,6 +79,7 @@
 <#assign showFiles = true/>
 <#assign showNetworkFiles = showFiles/>
 <#assign showStudyFiles = showFiles/>
+<#assign showStudyPopulationFiles = showStudyFiles/>
 <#assign showStudyDCEFiles = showStudyFiles/>
 <#assign showDatasetFiles = showFiles/>
 
