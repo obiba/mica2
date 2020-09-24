@@ -308,7 +308,7 @@ const ResultsTabContent = {
         {
           title: Mica.tr['number-participants-chart-title'],
           text: Mica.tr['number-participants-chart-text'],
-          type: 'pie',
+          type: 'doughnut',
           backgroundColor: Mica.charts.backgroundColors,
           borderColor: Mica.charts.borderColor,
           agg: 'model-numberOfParticipants-participant-number-range',
