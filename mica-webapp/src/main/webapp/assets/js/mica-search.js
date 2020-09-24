@@ -295,6 +295,16 @@ const ResultsTabContent = {
       },
       chartOptions: [
         {
+          title: 'Countries',
+          text: 'Countries text',
+          type: 'geo',
+          backgroundColor: Mica.charts.backgroundColor,
+          borderColor: Mica.charts.borderColor,
+          agg: 'populations-model-selectionCriteria-countriesIso',
+          vocabulary: 'populations-selectionCriteria-countriesIso',
+          dataKey: 'obiba.mica.TermsAggregationResultDto.terms'
+        },
+        {
           title: Mica.tr['study-design-chart-title'],
           text: Mica.tr['study-design-chart-text'],
           type: 'horizontalBar',
