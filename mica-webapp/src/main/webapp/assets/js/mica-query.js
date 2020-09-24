@@ -608,7 +608,7 @@ class MicaQueryExecutor {
    * @private
    */
   __executeQuery(tree, type ,display, noUrlUpdate) {
-    console.log(`__executeQuery`);
+    console.debug(`__executeQuery`);
 
     axios
       .get(`${contextPath}/ws/${type}/_rql?query=${tree.serialize()}`)
@@ -650,7 +650,7 @@ class MicaQueryExecutor {
    * @private
    */
   __executeCoverage(tree, type, display, noUrlUpdate, bucket) {
-    console.log(`__executeCoverage`);
+    console.debug(`__executeCoverage`);
 
     axios
       .get(`${contextPath}/ws/variables/_coverage?query=${tree.serialize()}`)
@@ -693,7 +693,7 @@ class MicaQueryExecutor {
 
   __updateLocation(type, display, tree, replace, bucket) {
     const query = tree.serialize();
-    console.log(`__updateLocation ${type} ${display} ${query} - history states ${history.length}`);
+    console.debug(`__updateLocation ${type} ${display} ${query} - history states ${history.length}`);
     let params = [`type=${type}`, `query=${query}`];
     if (bucket) {
       params.push(`bucket=${TARGET_ID_BUCKET_MAP[bucket]}`);
@@ -717,7 +717,7 @@ class MicaQueryExecutor {
    * @private
    */
   __onHashChanged(event) {
-    console.log(`On hash changed ${event}`);
+    console.debug(`On hash changed ${event}`);
     const urlParts = MicaTreeQueryUrl.parseUrl();
     const searchParams = urlParts.searchParams || {};
     this.__prepareAndExecuteQuery(EVENTS.QUERY_TYPE_SELECTION, {
@@ -735,43 +735,43 @@ class MicaQueryExecutor {
    * @private
    */
   __onBeforeUnload(event) {
-    console.log(`On before unload ${event}`);
+    console.debug(`On before unload ${event}`);
     window.removeEventListener('hashchange', this.__onHashChanged);
     window.removeEventListener('beforeunload', this.__onBeforeUnload);
   }
 
   __onQueryTypeSelection(payload) {
-    console.log(`__onQueryTypeSelection ${payload}`);
+    console.debug(`__onQueryTypeSelection ${payload}`);
     this.__prepareAndExecuteQuery(EVENTS.QUERY_TYPE_SELECTION, payload);
   }
 
   __onQueryTypeUpdate(payload) {
-    console.log(`__onQueryTypeSelection ${payload}`);
+    console.debug(`__onQueryTypeSelection ${payload}`);
     this.__prepareAndExecuteQuery(EVENTS.QUERY_TYPE_UPDATE, payload);
   }
 
   __onQueryTypeUpdatesSelection(payload) {
-    console.log(`__onQueryTypeUpdatesSelection ${payload}`);
+    console.debug(`__onQueryTypeUpdatesSelection ${payload}`);
     this.__prepareAndExecuteQuery(EVENTS.QUERY_TYPE_UPDATES_SELECTION, payload);
   }
 
   __onQueryTypeDelete(payload) {
-    console.log(`__onQueryTypeSelection ${payload}`);
+    console.debug(`__onQueryTypeSelection ${payload}`);
     this.__prepareAndExecuteQuery(EVENTS.QUERY_TYPE_DELETE, payload);
   }
 
   __onQueryTypePaginate(payload) {
-    console.log(`__onQueryTypeSelection ${payload}`);
+    console.debug(`__onQueryTypeSelection ${payload}`);
     this.__prepareAndExecuteQuery(EVENTS.QUERY_TYPE_PAGINATE, payload);
   }
 
   __onQueryTypeCoverage(payload) {
-    console.log(`__onQueryTypeSelection ${payload}`);
+    console.debug(`__onQueryTypeSelection ${payload}`);
     this.__prepareAndExecuteQuery(EVENTS.QUERY_TYPE_COVERAGE, payload);
   }
 
   __onQueryTypeGraphics(payload) {
-    console.log(`__onQueryTypeGraphics ${payload}`);
+    console.debug(`__onQueryTypeGraphics ${payload}`);
     this.__prepareAndExecuteQuery(EVENTS.QUERY_TYPE_GRAPHICS, payload);
   }
 

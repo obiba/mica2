@@ -113,7 +113,6 @@ new Vue({
     },
     // forward taxonomy selection
     onTaxonomySelection: function (payload, target) {
-      console.dir(payload);
       EventBus.$emit('taxonomy-selection', {target, taxonomyName: payload});
     }
   },
