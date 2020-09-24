@@ -362,6 +362,7 @@
     "defaultCharSet": "Jeu de caractères par défaut",
     "languages": "Langues",
     "languages-help": "Langues dans lesquelles le contenu du site doit être saisie.",
+    "languages-update-warning": "Les mises à jour de la configuration de la langue nécessitent une réindexation du contenu pour garantir des résultats de recherche corrects.",
     "opal": "URL publique du serveur Opal primaire",
     "opal-help": "URL publique du serveur Opal (source de variables et de sommaires de données) par défaut lorsque non spécifiquement définit par une étude.",
     "privacy-threshold": "Seuil de confidentialité du participant",
