@@ -546,11 +546,6 @@ class MicaQueryExecutor {
     const urlParts = MicaTreeQueryUrl.parseUrl();
     const type = this.__ensureValidType(urlParts.searchParams, payload.type);
     const display = this.__ensureValidDisplay(urlParts.hash, payload.display);
-    //
-    // if (DISPLAYS.GRAPHICS === display) {
-    //   this.__prepareAndExecuteGraphicsQuery(payload);
-    //   return;
-    // }
 
     switch (type) {
       case TYPES.VARIABLES:
@@ -595,7 +590,8 @@ class MicaQueryExecutor {
               break;
 
             case DISPLAYS.GRAPHICS:
-              this.__executeGraphicsQuery(entityQuery.prepareForGraphics(tree), type, display, payload.noUrlUpdate);
+              const graphicsTree = new RQL.QueryTree(RQL.Parser.parseQuery(tree.serialize(), QueryTreeOptions));
+              this.__executeGraphicsQuery(tree, entityQuery.prepareForGraphics(graphicsTree), type, display, payload.noUrlUpdate);
               break;
           }
         }
@@ -681,24 +677,14 @@ class MicaQueryExecutor {
    * @param noUrlUpdate
    * @private
    */
-  __executeGraphicsQuery(tree, type, display, noUrlUpdate) {
+  __executeGraphicsQuery(tree, graphicsTree, type, display, noUrlUpdate) {
     console.debug(`__executeGraphicsQuery`);
     axios
-      .get(`${contextPath}/ws/${type}/_rql?query=${tree.serialize()}`)
+      .get(`${contextPath}/ws/${type}/_rql?query=${graphicsTree.serialize()}`)
       .then(response => {
-        // use original 'tree' since the graphics query is not part of the URL
-        const findStudyClassNameQuery = (name, args) => args.indexOf('Mica_study.className') > -1;
-        const originalTree = MicaTreeQueryUrl.getTree(MicaTreeQueryUrl.parseUrl());
-        const studyClassNameQuery = originalTree.search(findStudyClassNameQuery);
-
-        // cleanup
-        tree.findAndDeleteQuery((name) => AGGREGATE === name);
-        tree.findAndDeleteQuery((name) => FACET === name);
-        if (studyClassNameQuery) {
-          tree.findAndUpdateQuery(findStudyClassNameQuery, studyClassNameQuery.args);
-        } else {
-          tree.findAndDeleteQuery(findStudyClassNameQuery);
-        }
+        // remove hidden queries
+        tree.findAndDeleteQuery((name) => 'fields' === name);
+        tree.findAndDeleteQuery((name) => 'sort' === name);
 
         this.__updateLocation(type, display, tree, noUrlUpdate);
         EventBus.$emit(EVENTS.QUERY_TYPE_GRAPHICS_RESULTS, {response: response.data});

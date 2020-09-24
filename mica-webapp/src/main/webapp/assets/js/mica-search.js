@@ -133,7 +133,7 @@ new Vue({
 const StudyFilterShortcutComponent = Vue.component('study-filter-shortcut', {
   name: 'StudyFilterShortcut',
   template: `
-  <div v-if="showFilter">
+  <div v-if="visible && showFilter">
     <div class="btn-group" role="group" aria-label="Basic example">
       <button type="button" v-bind:class="{active: selection.all}" class="btn btn-sm btn-info" v-on:click="onSelectionClicked('all')">{{tr('all')}}</button>
       <button type="button" v-bind:class="{active: selection.study}" class="btn btn-sm btn-info" v-on:click="onSelectionClicked('study')">{{tr('individual')}}</button>
@@ -143,7 +143,8 @@ const StudyFilterShortcutComponent = Vue.component('study-filter-shortcut', {
   `,
   data() {
     return {
-      selection: {all: true, study: false, harmonization: false}
+      selection: {all: true, study: false, harmonization: false},
+      visible: true
     }
   },
   computed: {
@@ -168,6 +169,7 @@ const StudyFilterShortcutComponent = Vue.component('study-filter-shortcut', {
     },
     onLocationChanged(payload) {
       this.selection = MicaTreeQueryUrl.getStudyTypeSelection(payload.tree);
+      this.visible = DISPLAYS.GRAPHICS !== payload.display;
     },
     onSelectionClicked(selectionKey) {
       const classNameQuery = new RQL.Query('in', ['Mica_study.className', this.buildClassNameArgs(selectionKey)]);
@@ -284,6 +286,7 @@ const ResultsTabContent = {
     return {
       counts: {},
       hasVariableQuery: false,
+      hasGraphicsResult: false,
       selectedBucket: BUCKETS.study,
       dceChecked: false,
       bucketTitles: {
@@ -299,6 +302,7 @@ const ResultsTabContent = {
           backgroundColor: Mica.charts.backgroundColor,
           borderColor: Mica.charts.borderColor,
           agg: 'model-methods-design',
+          vocabulary: 'methods-design',
           dataKey: 'obiba.mica.TermsAggregationResultDto.terms',
           subAgg
         },
@@ -309,6 +313,7 @@ const ResultsTabContent = {
           backgroundColor: Mica.charts.backgroundColors,
           borderColor: Mica.charts.borderColor,
           agg: 'model-numberOfParticipants-participant-number-range',
+          vocabulary: 'numberOfParticipants-participant-range',
           dataKey: 'obiba.mica.RangeAggregationResultDto.ranges',
           subAgg,
           legend: {
@@ -324,6 +329,7 @@ const ResultsTabContent = {
           backgroundColor: Mica.charts.backgroundColor,
           borderColor: Mica.charts.borderColor,
           agg: 'populations-dataCollectionEvents-model-bioSamples',
+          vocabulary: 'populations-dataCollectionEvents-bioSamples',
           dataKey: 'obiba.mica.TermsAggregationResultDto.terms',
         },
         {
@@ -333,6 +339,7 @@ const ResultsTabContent = {
           backgroundColor: Mica.charts.backgroundColor,
           borderColor: Mica.charts.borderColor,
           agg: 'model-startYear-range',
+          vocabulary: 'start-range',
           dataKey: 'obiba.mica.RangeAggregationResultDto.ranges',
           subAgg
         }
@@ -356,6 +363,9 @@ const ResultsTabContent = {
       console.debug(`onSelectBucket : ${bucket} - ${this.dceChecked}`);
       this.selectedBucket = bucket;
       EventBus.$emit('query-type-selection', {bucket});
+    },
+    onGraphicsResult(payload) {
+      this.hasGraphicsResult = payload.response.studyResultDto.totalHits > 0;
     },
     onResult(payload) {
       const data = payload.response;
@@ -403,6 +413,7 @@ const ResultsTabContent = {
     EventBus.register('datasets-results', this.onResult.bind(this));
     EventBus.register('studies-results', this.onResult.bind(this));
     EventBus.register('networks-results', this.onResult.bind(this));
+    EventBus.register(EVENTS.QUERY_TYPE_GRAPHICS_RESULTS, this.onGraphicsResult.bind(this));
     EventBus.register(EVENTS.LOCATION_CHANGED, this.onLocationChanged.bind(this));
   },
   beforeDestory() {
@@ -410,6 +421,7 @@ const ResultsTabContent = {
     EventBus.unregister('datasets-results', this.onResult);
     EventBus.unregister('studies-results', this.onResult);
     EventBus.unregister('networks-results', this.onResult);
+    EventBus.unregister(EVENTS.QUERY_TYPE_GRAPHICS_RESULTS, this.onGraphicsResult);
     EventBus.unregister(EVENTS.LOCATION_CHANGED, this.onLocationChanged);
   }
 };

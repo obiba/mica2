@@ -36,6 +36,7 @@
     "no-coverage-available": "<@message "no-coverage-available"/>",
     "coverage-end-date-ongoing": "<@message "coverage-end-date-ongoing"/>",
     "missing-variable-query": "<@message "missing-variable-query"/>",
+    "no-graphics-result":  "<@message "no-graphics-result"/>",
     "taxonomy": "<@message "taxonomy"/>",
     "select-all": "<@message "select-all"/>",
     "clear-selection": "<@message "clear-selection"/>",
