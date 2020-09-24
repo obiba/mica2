@@ -628,21 +628,20 @@ new Vue({
       });
 
     const targetQueries = MicaTreeQueryUrl.getTreeQueries();
-    if (TARGETS.VARIABLE in targetQueries) {
-      const variableQuery = targetQueries[TARGETS.VARIABLE];
 
-      if (variableQuery) {
-        let nodeCount = 0;
-
-        new RQL.QueryTree(variableQuery).visit(query => {
-          if (["and", "or"].indexOf(query.name) > -1) {
-            nodeCount++;
+    let advancedNodeCount = 0;
+    for (const target in targetQueries) {
+      let advancedOperator = target === TARGETS.VARIABLE ? 'and' : 'or';
+      const targetQuery = targetQueries[target];
+      if (targetQuery) {
+        new RQL.QueryTree(targetQuery).visit(query => {
+          if (query.name === advancedOperator) {
+            advancedNodeCount++;
           }
         });
-
-        this.advanceQueryMode = nodeCount > 0;
       }
     }
+    this.advanceQueryMode = advancedNodeCount > 0;
 
     this.onExecuteQuery();
   },
