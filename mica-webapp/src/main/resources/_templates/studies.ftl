@@ -73,6 +73,16 @@
                 </div><!-- /.card-header -->
 
                 <div class="card-body">
+                  <#if config.studyDatasetEnabled && config.harmonizationDatasetEnabled>
+                    <div class="mb-4">
+                      <div role="group" class="btn-group">
+                        <button onclick="window.location.href='${contextPath}/studies';" type="button" class="btn btn-sm btn-info <#if !type??>active</#if>"><@message "all"/></button>
+                        <button onclick="window.location.href='${contextPath}/individual-studies';" type="button" class="btn btn-sm btn-info <#if type?? && type == "Individual">active</#if>"><@message "individual"/></button>
+                        <button onclick="window.location.href='${contextPath}/harmonization-studies';" type="button" class="btn btn-sm btn-info <#if type?? && type == "Harmonization">active</#if>"><@message "harmonization"/></button>
+                      </div>
+                    </div>
+                  </#if>
+
                   <div class="tab-content">
                     <#if studyListDisplays?seq_contains("table")>
                       <div class="tab-pane <#if studyListDefaultDisplay == "table">active</#if>" id="table">
