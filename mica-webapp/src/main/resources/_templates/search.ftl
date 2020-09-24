@@ -306,7 +306,7 @@
 
                 <#if config.networkEnabled && !config.singleStudyEnabled>
                   <div class="tab-pane" id="tab_graphics">
-                    <p class="text-muted mt-3">
+                    <p class="text-muted">
                       <@message "results-graphics-text"/>
                     </p>
                     <div id="graphics">
