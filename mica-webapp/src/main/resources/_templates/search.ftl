@@ -310,7 +310,8 @@
                       <@message "results-graphics-text"/>
                     </p>
                     <div id="graphics">
-                      <graphics-result v-bind:chart-options="chartOptions"></graphics-result>
+                      <div class="mt-3 text-muted" v-show="!hasGraphicsResult">{{ "no-graphics-result" | translate }}</div>
+                      <graphics-result v-show="hasGraphicsResult" v-bind:chart-options="chartOptions"></graphics-result>
                     </div>
                   </div>
                 </#if>
