@@ -295,14 +295,54 @@ const ResultsTabContent = {
       },
       chartOptions: [
         {
-          title: 'Countries',
-          text: 'Countries text',
-          type: 'geo',
-          backgroundColor: Mica.charts.backgroundColor,
+          title: Mica.tr['geographical-distribution-chart-title'],
+          text: Mica.tr['geographical-distribution-chart-text'],
+          type: 'choropleth',
           borderColor: Mica.charts.borderColor,
           agg: 'populations-model-selectionCriteria-countriesIso',
           vocabulary: 'populations-selectionCriteria-countriesIso',
-          dataKey: 'obiba.mica.TermsAggregationResultDto.terms'
+          dataKey: 'obiba.mica.TermsAggregationResultDto.terms',
+          parseForChart: function(chartData) {
+            let labels = [];
+            let data = [];
+
+            let states;
+            let featureFinder = function(key) {
+              return states.filter(state => state.id === key).pop();
+            };
+            if (['world'].includes(Mica.map.name)) {
+              states = ChartGeo.topojson.feature(Mica.map.topo, Mica.map.topo.objects.countries1).features;
+            } else if (['europe'].includes(Mica.map.name)) {
+              states = ChartGeo.topojson.feature(Mica.map.topo, Mica.map.topo.objects.collection).features;
+            }
+            chartData.forEach(term => {
+              labels.push(term.title);
+              data.push({
+                feature: featureFinder(term.key),
+                value: term.count
+              });
+            });
+
+            return [labels, {
+              outline: states,
+              data: data
+            }];
+          },
+          options: {
+            showOutline: true,
+            showGraticule: false,
+            legend: {
+              display: false
+            },
+            scale: {
+              projection: 'mercator'//'equalEarth'//'naturalEarth1'
+            },
+            geo: {
+              colorScale: {
+                display: true,
+              },
+            }
+          }
         },
         {
           title: Mica.tr['study-design-chart-title'],

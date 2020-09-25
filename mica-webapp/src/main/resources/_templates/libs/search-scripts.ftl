@@ -52,6 +52,8 @@
     "query-update": "<@message "query-update"/>",
     "criterion.created": "<@message "criterion-created"/>",
     "criterion.updated": "<@message "criterion-updated"/>",
+    "geographical-distribution-chart-title": "<@message "geographical-distribution-chart-title"/>",
+    "geographical-distribution-chart-text": "<@message "geographical-distribution-chart-text"/>",
     "study-design-chart-title": "<@message "study-design-chart-title"/>",
     "study-design-chart-text": "<@message "study-design-chart-text"/>",
     "number-participants-chart-title": "<@message "number-participants-chart-title"/>",
@@ -88,16 +90,17 @@
     borderColor: '${barChartBorderColor}',
     backgroundColors: ['${colors?join("', '")}']
   }
+
+  fetch(contextPath + 'assets/topojson/${mapName}.json').then(r => r.json())
+          .then(data => Mica.map = {
+            name: '${mapName}',
+            topo: data
+          });
 </script>
 
 <!-- ChartJS -->
 <script src="${adminLTEPath}/plugins/chart.js/Chart.min.js"></script>
-<script src="${assetsPath}/js/mica-charts.js"></script>
-
-<!-- JQVMap -->
-<script src="${adminLTEPath}/plugins/jqvmap/jquery.vmap.min.js"></script>
-<script src="${adminLTEPath}/plugins/jqvmap/maps/jquery.vmap.world.js"></script>
-<!-- TODO add the contients -->
+<script src="${assetsPath}/libs/node_modules/chartjs-chart-geo/build/Chart.Geo.min.js"></script>
 
 <!-- Mica Search and dependencies -->
 <script src="${assetsPath}/libs/node_modules/vue/dist/vue.js"></script>

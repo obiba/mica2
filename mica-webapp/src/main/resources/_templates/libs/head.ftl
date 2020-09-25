@@ -58,9 +58,6 @@
 <!-- Select2 -->
 <link rel="stylesheet" href="${adminLTEPath}/plugins/select2/css/select2.css">
 <link rel="stylesheet" href="${adminLTEPath}/plugins/select2-bootstrap4-theme/select2-bootstrap4.css">
-<!-- MAP -->
-<link rel="stylesheet" href="${adminLTEPath}/plugins/jqvmap/jqvmap.min.css">
-
 
 <!-- Custom head -->
 <#include "../models/head.ftl"/>
