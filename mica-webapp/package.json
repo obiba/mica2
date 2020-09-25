@@ -6,6 +6,8 @@
     "admin-lte": "^3.0.5",
     "axios": "^0.19.2",
     "bootstrap-datepicker": "^1.9.0",
+    "chart.js": "^2.9.3",
+    "chartjs-chart-geo": "^2.1.0",
     "jquery.redirect": "^1.1.4",
     "js-cookie": "^2.2.1",
     "rql": "git+https://github.com/epigeny/rql.git#master",
