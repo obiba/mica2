@@ -312,7 +312,7 @@ const ResultsTabContent = {
             };
             if (['world'].includes(Mica.map.name)) {
               states = ChartGeo.topojson.feature(Mica.map.topo, Mica.map.topo.objects.countries1).features;
-            } else if (['europe'].includes(Mica.map.name)) {
+            } else {
               states = ChartGeo.topojson.feature(Mica.map.topo, Mica.map.topo.objects.collection).features;
             }
             chartData.forEach(term => {
