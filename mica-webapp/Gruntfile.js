@@ -373,6 +373,7 @@ module.exports = function (grunt) {
           {expand: true, src: ['node_modules/admin-lte/dist/**'], dest: 'src/main/webapp/assets/libs/'},
           {expand: true, src: ['node_modules/admin-lte/plugins/bootstrap/**'], dest: 'src/main/webapp/assets/libs/'},
           {expand: true, src: ['node_modules/admin-lte/plugins/chart.js/**'], dest: 'src/main/webapp/assets/libs/'},
+          {expand: true, src: ['node_modules/admin-lte/plugins/jqvmap/**'], dest: 'src/main/webapp/assets/libs/'},
           {expand: true, src: ['node_modules/admin-lte/plugins/datatables/**'], dest: 'src/main/webapp/assets/libs/'},
           {expand: true, src: ['node_modules/admin-lte/plugins/datatables-select/**'], dest: 'src/main/webapp/assets/libs/'},
           {expand: true, src: ['node_modules/admin-lte/plugins/datatables-bs4/**'], dest: 'src/main/webapp/assets/libs/'},

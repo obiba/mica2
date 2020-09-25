@@ -94,6 +94,11 @@
 <script src="${adminLTEPath}/plugins/chart.js/Chart.min.js"></script>
 <script src="${assetsPath}/js/mica-charts.js"></script>
 
+<!-- JQVMap -->
+<script src="${adminLTEPath}/plugins/jqvmap/jquery.vmap.min.js"></script>
+<script src="${adminLTEPath}/plugins/jqvmap/maps/jquery.vmap.world.js"></script>
+<!-- TODO add the contients -->
+
 <!-- Mica Search and dependencies -->
 <script src="${assetsPath}/libs/node_modules/vue/dist/vue.js"></script>
 <script src="${assetsPath}/libs/node_modules/rql/dist/rql.js"></script>
