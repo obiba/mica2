@@ -306,16 +306,14 @@ const ResultsTabContent = {
             let labels = [];
             let data = [];
 
-            let featureFinder = function(key) {
-              console.error('Feature finder not implemented for the map ' + Mica.map.name);
-              return {};
-            };
             let states;
-            if (Mica.map.name === 'world') {
+            let featureFinder = function(key) {
+              return states.filter(state => state.id === key).pop();
+            };
+            if (['world'].includes(Mica.map.name)) {
               states = ChartGeo.topojson.feature(Mica.map.topo, Mica.map.topo.objects.countries1).features;
-              featureFinder = function(key) {
-                return states.filter(state => state.id === key).pop();
-              };
+            } else if (['europe'].includes(Mica.map.name)) {
+              states = ChartGeo.topojson.feature(Mica.map.topo, Mica.map.topo.objects.collection).features;
             }
             chartData.forEach(term => {
               labels.push(term.title);
