@@ -66,7 +66,7 @@
 <#assign showCopyQuery = (isAdministrator || isReviewer || isEditor || isDAO)/>
 <!--#assign showCopyQuery = (user?? && user.roles?? && user.roles?seq_contains("mica-user"))/-->
 <#assign mapName = "world"/>
-<!-- Filter and order the charts available in the search page -->
+<!-- Filter and order the charts visible in the search page -->
 <#assign searchCharts = ["geographical-distribution-chart", "study-design-chart", "number-participants-chart", "bio-samples-chart", "study-start-year-chart"]/>
 
 <!-- Data Access pages -->
