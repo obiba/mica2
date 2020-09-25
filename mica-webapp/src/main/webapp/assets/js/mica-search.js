@@ -282,6 +282,113 @@ const ResultsTabContent = {
       title: Mica.tr['participants']
     };
 
+    const chartOptions = {
+      'geographical-distribution-chart': {
+
+        id: 'geographical-distribution-chart',
+        title: Mica.tr['geographical-distribution-chart-title'],
+        text: Mica.tr['geographical-distribution-chart-text'],
+        type: 'choropleth',
+        borderColor: Mica.charts.borderColor,
+        agg: 'populations-model-selectionCriteria-countriesIso',
+        vocabulary: 'populations-selectionCriteria-countriesIso',
+        dataKey: 'obiba.mica.TermsAggregationResultDto.terms',
+        parseForChart: function(chartData) {
+          let labels = [];
+          let data = [];
+
+          let states;
+          let featureFinder = function(key) {
+            return states.filter(state => state.id === key).pop();
+          };
+          if (['world'].includes(Mica.map.name)) {
+            states = ChartGeo.topojson.feature(Mica.map.topo, Mica.map.topo.objects.countries1).features;
+          } else {
+            states = ChartGeo.topojson.feature(Mica.map.topo, Mica.map.topo.objects.collection).features;
+          }
+          chartData.forEach(term => {
+            labels.push(term.title);
+            data.push({
+              feature: featureFinder(term.key),
+              value: term.count
+            });
+          });
+
+          return [labels, {
+            outline: states,
+            data: data
+          }];
+        },
+        options: {
+          showOutline: true,
+            showGraticule: false,
+            legend: {
+            display: false
+          },
+          scale: {
+            projection: 'mercator'//'equalEarth'//'naturalEarth1'
+          },
+          geo: {
+            colorScale: {
+              display: true,
+            },
+          }
+        }
+      },
+      'study-design-chart': {
+        id: 'study-design-chart',
+        title: Mica.tr['study-design-chart-title'],
+        text: Mica.tr['study-design-chart-text'],
+        type: 'horizontalBar',
+        backgroundColor: Mica.charts.backgroundColor,
+        borderColor: Mica.charts.borderColor,
+        agg: 'model-methods-design',
+        vocabulary: 'methods-design',
+        dataKey: 'obiba.mica.TermsAggregationResultDto.terms',
+        subAgg
+      },
+      'number-participants-chart': {
+        id: 'number-participants-chart',
+        title: Mica.tr['number-participants-chart-title'],
+        text: Mica.tr['number-participants-chart-text'],
+        type: 'doughnut',
+        backgroundColor: Mica.charts.backgroundColors,
+        borderColor: Mica.charts.borderColor,
+        agg: 'model-numberOfParticipants-participant-number-range',
+        vocabulary: 'numberOfParticipants-participant-range',
+        dataKey: 'obiba.mica.RangeAggregationResultDto.ranges',
+        subAgg,
+        legend: {
+        display: true,
+          position: 'right',
+          align: 'start',
+        }
+      },
+      'bio-samples-chart': {
+        id: 'bio-samples-chart',
+        title: Mica.tr['bio-samples-chart-title'],
+        text: Mica.tr['bio-samples-chart-text'],
+        type: 'horizontalBar',
+        backgroundColor: Mica.charts.backgroundColor,
+        borderColor: Mica.charts.borderColor,
+        agg: 'populations-dataCollectionEvents-model-bioSamples',
+        vocabulary: 'populations-dataCollectionEvents-bioSamples',
+        dataKey: 'obiba.mica.TermsAggregationResultDto.terms',
+      },
+      'study-start-year-chart': {
+        id: 'study-start-year-chart',
+        title: Mica.tr['study-start-year-chart-title'],
+        text: Mica.tr['study-start-year-chart-text'],
+        type: 'horizontalBar',
+        backgroundColor: Mica.charts.backgroundColor,
+        borderColor: Mica.charts.borderColor,
+        agg: 'model-startYear-range',
+        vocabulary: 'start-range',
+        dataKey: 'obiba.mica.RangeAggregationResultDto.ranges',
+        subAgg
+      }
+    }
+
     return {
       counts: {},
       hasVariableQuery: false,
@@ -293,106 +400,7 @@ const ResultsTabContent = {
         dataset: Mica.tr.dataset,
         dce: Mica.tr['data-collection-event'],
       },
-      chartOptions: [
-        {
-          title: Mica.tr['geographical-distribution-chart-title'],
-          text: Mica.tr['geographical-distribution-chart-text'],
-          type: 'choropleth',
-          borderColor: Mica.charts.borderColor,
-          agg: 'populations-model-selectionCriteria-countriesIso',
-          vocabulary: 'populations-selectionCriteria-countriesIso',
-          dataKey: 'obiba.mica.TermsAggregationResultDto.terms',
-          parseForChart: function(chartData) {
-            let labels = [];
-            let data = [];
-
-            let states;
-            let featureFinder = function(key) {
-              return states.filter(state => state.id === key).pop();
-            };
-            if (['world'].includes(Mica.map.name)) {
-              states = ChartGeo.topojson.feature(Mica.map.topo, Mica.map.topo.objects.countries1).features;
-            } else {
-              states = ChartGeo.topojson.feature(Mica.map.topo, Mica.map.topo.objects.collection).features;
-            }
-            chartData.forEach(term => {
-              labels.push(term.title);
-              data.push({
-                feature: featureFinder(term.key),
-                value: term.count
-              });
-            });
-
-            return [labels, {
-              outline: states,
-              data: data
-            }];
-          },
-          options: {
-            showOutline: true,
-            showGraticule: false,
-            legend: {
-              display: false
-            },
-            scale: {
-              projection: 'mercator'//'equalEarth'//'naturalEarth1'
-            },
-            geo: {
-              colorScale: {
-                display: true,
-              },
-            }
-          }
-        },
-        {
-          title: Mica.tr['study-design-chart-title'],
-          text: Mica.tr['study-design-chart-text'],
-          type: 'horizontalBar',
-          backgroundColor: Mica.charts.backgroundColor,
-          borderColor: Mica.charts.borderColor,
-          agg: 'model-methods-design',
-          vocabulary: 'methods-design',
-          dataKey: 'obiba.mica.TermsAggregationResultDto.terms',
-          subAgg
-        },
-        {
-          title: Mica.tr['number-participants-chart-title'],
-          text: Mica.tr['number-participants-chart-text'],
-          type: 'doughnut',
-          backgroundColor: Mica.charts.backgroundColors,
-          borderColor: Mica.charts.borderColor,
-          agg: 'model-numberOfParticipants-participant-number-range',
-          vocabulary: 'numberOfParticipants-participant-range',
-          dataKey: 'obiba.mica.RangeAggregationResultDto.ranges',
-          subAgg,
-          legend: {
-            display: true,
-            position: 'right',
-            align: 'start',
-          }
-        },
-        {
-          title: Mica.tr['bio-samples-chart-title'],
-          text: Mica.tr['bio-samples-chart-text'],
-          type: 'horizontalBar',
-          backgroundColor: Mica.charts.backgroundColor,
-          borderColor: Mica.charts.borderColor,
-          agg: 'populations-dataCollectionEvents-model-bioSamples',
-          vocabulary: 'populations-dataCollectionEvents-bioSamples',
-          dataKey: 'obiba.mica.TermsAggregationResultDto.terms',
-        },
-        {
-          title: Mica.tr['study-start-year-chart-title'],
-          text: Mica.tr['study-start-year-chart-text'],
-          type: 'horizontalBar',
-          backgroundColor: Mica.charts.backgroundColor,
-          borderColor: Mica.charts.borderColor,
-          agg: 'model-startYear-range',
-          vocabulary: 'start-range',
-          dataKey: 'obiba.mica.RangeAggregationResultDto.ranges',
-          subAgg
-        }
-      ]
+      chartOptions: Mica.charts.chartIds.map(id => chartOptions[id])
     }
   },
   methods: {

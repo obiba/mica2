@@ -65,6 +65,9 @@
 <!-- Show copy query button depending on the role (check built-in ones or by role name). -->
 <#assign showCopyQuery = (isAdministrator || isReviewer || isEditor || isDAO)/>
 <!--#assign showCopyQuery = (user?? && user.roles?? && user.roles?seq_contains("mica-user"))/-->
+<#assign mapName = "world"/>
+<!-- Filter and order the charts available in the search page -->
+<#assign searchCharts = ["geographical-distribution-chart", "study-design-chart", "number-participants-chart", "bio-samples-chart", "study-start-year-chart"]/>
 
 <!-- Data Access pages -->
 <#assign dataAccessInstructionsEnabled = true/>
@@ -74,7 +77,6 @@
 <#assign barChartBackgroundColor = "rgb(54, 162, 235)"/>
 <#assign barChartBorderColor = "#3c8dbc"/>
 <#assign colors = ["#f56954", "#00a65a", "#f39c12", "#00c0ef", "#3c8dbc", "#d2d6de", "#007bff", "#6610f2", "#20c997", "#6f42c1", "#e83e8c", "#dc3545", "#fd7e14", "#ffc107", "#28a745",  "#17a2b8"]>
-<#assign mapName = "world"/>
 
 <!-- Files -->
 <#assign showFiles = true/>

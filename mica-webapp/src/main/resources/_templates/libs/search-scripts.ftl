@@ -88,7 +88,8 @@
   Mica.charts = {
     backgroundColor: '${barChartBackgroundColor}',
     borderColor: '${barChartBorderColor}',
-    backgroundColors: ['${colors?join("', '")}']
+    backgroundColors: ['${colors?join("', '")}'],
+    chartIds: ['${searchCharts?join("', '")}']
   }
 
   fetch(contextPath + 'assets/topojson/${mapName}.json').then(r => r.json())
