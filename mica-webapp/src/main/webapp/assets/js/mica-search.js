@@ -306,7 +306,7 @@ const ResultsTabContent = {
           } else {
             states = ChartGeo.topojson.feature(Mica.map.topo, Mica.map.topo.objects.collection).features;
           }
-          chartData.forEach(term => {
+          chartData.filter(term => term.count>0).forEach(term => {
             labels.push(term.title);
             data.push({
               feature: featureFinder(term.key),
