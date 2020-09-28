@@ -35,7 +35,7 @@
 <!--#assign datasetsLink = "${contextPath}/search#lists?type=datasets"/-->
 <#assign portalLink = "${config.portalUrl!contextPath}" + "/"/>
 
-<!-- Cart settings -->
+<!-- Cart -->
 <#assign cartEnabled = (config?? && config.cartEnabled && (config.studyDatasetEnabled || config.harmonizationDatasetEnabled))/>
 <!-- Cart feature is only visible to advanced users -->
 <!--#assign cartEnabled = cartEnabled && (isAdministrator || isReviewer || isEditor || isDAO)/-->
@@ -45,6 +45,9 @@
 <#assign showCartDownload = (isAdministrator || isReviewer || isEditor || isDAO)/>
 <!-- To reinstate the cart as views in Opal -->
 <#assign showCartViewDownload = (isAdministrator || isReviewer || isEditor || isDAO)/>
+
+<!-- Contact -->
+<#assign contactEnabled = true/>
 
 <!-- Repository list pages -->
 <#assign listDisplays = ["lines", "table", "cards"]/> <!-- order matters -->

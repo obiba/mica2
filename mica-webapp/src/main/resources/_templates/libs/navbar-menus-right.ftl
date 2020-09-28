@@ -8,6 +8,13 @@
       </a>
     </li>
   </#if>
+  <#if contactEnabled>
+    <li class="nav-item">
+      <a href="${contextPath}/contact" class="nav-link" title="<@message "contact-menu"/>">
+        <i class="fas fa-envelope"></i>
+      </a>
+    </li>
+  </#if>
   <#if user??>
     <#if isAdministrator || isReviewer || isEditor>
       <li class="nav-item">
