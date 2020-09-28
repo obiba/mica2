@@ -17,4 +17,8 @@ public interface DraftProjectService extends DraftDocumentService<Project> {
 
   ProjectService getProjectService();
 
+  default Project findById(String id) {
+    return getProjectService().findById(id);
+  }
+
 }

@@ -47,7 +47,7 @@ public class DatasetController extends BaseController {
   private PublishedStudyService publishedStudyService;
 
   @GetMapping("/dataset/{id:.+}")
-  public ModelAndView study(@PathVariable String id, @RequestParam(value = "draft", required = false) String shareKey) {
+  public ModelAndView dataset(@PathVariable String id, @RequestParam(value = "draft", required = false) String shareKey) {
     Map<String, Object> params = newParameters();
     Dataset dataset = getDataset(id, shareKey);
     params.put("dataset", dataset);

@@ -51,10 +51,15 @@
                       <p>
                         <strong><i class="${projectIcon}"></i> ${localize(project.title)}</strong>
                       </p>
-                      <p class="text-muted marked">${localize(project.summary)}</p>
+                      <p class="text-muted marked">${localize(project.summary)?trim?truncate_w(300, "...")}</p>
                       <p>
-                        <@projectModel project=project/>
+                        <@projectSummaryModel project=project/>
                       </p>
+                      <div class="mt-2 mb-3">
+                        <a href="${contextPath}/project/${project.id}" class="btn btn-sm btn-outline-info">
+                          <@message "global.read-more"/>
+                        </a>
+                      </div>
                     </div>
                   </#list>
                 </div>
