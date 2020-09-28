@@ -19,7 +19,9 @@ import org.apache.shiro.SecurityUtils;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.obiba.mica.core.service.AgateRestService;
+import org.obiba.mica.core.service.MailService;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
+import org.obiba.mica.security.Roles;
 import org.obiba.shiro.realm.ObibaRealm;
 import org.obiba.shiro.realm.ObibaRealm.Subject;
 import org.slf4j.Logger;
@@ -55,8 +57,13 @@ public class UserProfileService extends AgateRestService {
 
   private static final DateTimeFormatter ISO_8601 = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
 
+  private static final String DEFAULT_NOTIFICATION_SUBJECT = "[${organization}] Contact";
+
   @Inject
   private MicaConfigService micaConfigService;
+
+  @Inject
+  private MailService mailService;
 
   private Cache<String, Subject> subjectCache = CacheBuilder.newBuilder()
     .maximumSize(100)
@@ -220,6 +227,21 @@ public class UserProfileService extends AgateRestService {
     params.put("groups", profile.getGroups());
     params.put("attributes", attributes);
     return params;
+  }
+
+  public void sendContactEmail(String name, String email, String subject, String message, String reCaptcha) {
+    Map<String, String> ctx = Maps.newHashMap();
+    ctx.put("organization", micaConfigService.getConfig().getName());
+    ctx.put("publicUrl", micaConfigService.getPublicUrl());
+    ctx.put("contactName", name);
+    ctx.put("contactEmail", email);
+    ctx.put("contactSubject", subject);
+    ctx.put("contactMessage", message);
+    ctx.put("reCaptcha", reCaptcha);
+
+    mailService.sendEmailToGroups(mailService.getSubject(DEFAULT_NOTIFICATION_SUBJECT, ctx, DEFAULT_NOTIFICATION_SUBJECT),
+      "contactUs", ctx, Roles.MICA_ADMIN, Roles.MICA_DAO);
+
   }
 
   //

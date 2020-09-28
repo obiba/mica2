@@ -454,7 +454,7 @@ const micajs = (function() {
         let missingFields = [];
         requiredFields.forEach(function(item) {
           let found = formData.filter(function(field) {
-            return field.name === item.name && field.value;
+            return field.name === item.name && field.value && field.value.trim().length>0;
           }).length;
           if (found === 0) {
              missingFields.push(item.title);
@@ -562,6 +562,56 @@ const micajs = (function() {
 
     //this will reload the page, it's likely better to store this until finished
     window.location.search = kvp.join('&');
+  };
+
+  const contact = function(formId, requiredFields, onSuccess, onFailure) {
+    $(formId).submit(function(e) {
+      e.preventDefault(); // avoid to execute the actual submit of the form.
+      let form = $(this);
+      let url = '/ws/users/_contact';
+      let data = form.serialize(); // serializes the form's elements.
+
+      let formData = form.serializeArray();
+
+      const getField = function(name) {
+        let fields = formData.filter(function(field) {
+          return field.name === name;
+        });
+        return fields.length > 0 ? fields[0] : undefined;
+      };
+
+      if (requiredFields) {
+        let missingFields = [];
+        requiredFields.forEach(function(item) {
+          $('#contact-' + item.name).removeClass('is-invalid');
+          let found = formData.filter(function(field) {
+            return field.name === item.name && field.value && field.value.trim().length>0;
+          }).length;
+          if (found === 0) {
+            missingFields.push(item);
+          }
+        });
+        if (missingFields.length>0) {
+          onFailure(missingFields);
+          return;
+        }
+      }
+
+      axios.post(normalizeUrl(url), data)
+        .then(() => {
+          onSuccess();
+        })
+        .catch(handle => {
+          console.dir(handle);
+          if (handle.response.data.message === 'Invalid reCaptcha response') {
+            onFailure('server.error.bad-captcha');
+          }else if (handle.response.data.messageTemplate) {
+            onFailure(handle.response.data.messageTemplate);
+          } else {
+            onFailure('server.error.bad-request');
+          }
+        });
+    });
   };
 
   const micaInfo = function(text) {
@@ -1355,6 +1405,7 @@ const micajs = (function() {
     'signout': signout,
     'forgotPassword': forgotPassword,
     'changeLanguage': changeLanguage,
+    'contact': contact,
     'info': micaInfo,
     'success': micaSuccess,
     'warning': micaWarning,
