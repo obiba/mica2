@@ -480,13 +480,11 @@ const micajs = (function() {
         .then(() => {
           //console.dir(response);
           let redirect = normalizeUrl('/');
-          let values = {};
           const q = new URLSearchParams(window.location.search);
           if (q.get('redirect')) {
             redirect = q.get('redirect');
           } else if (passwordField || realmField) {
-            redirect = 'just-registered';
-            values = { signin: true };
+            redirect = 'just-registered?signin=true';
           } else {
             redirect = 'just-registered';
           }
@@ -1338,7 +1336,7 @@ const micajs = (function() {
         }
       })
       .catch(response => {
-        console.dir(response);
+        //console.dir(response);
         if (onfailure) {
           onfailure(response);
         }
