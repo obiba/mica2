@@ -13,7 +13,7 @@
     <dd class="col-sm-8">${profile.fullName}</dd>
     <dt class="col-sm-4"><@message "username"/></dt>
     <dd class="col-sm-8">${profile.username}</dd>
-    <#if profile.groups??>
+    <#if showProfileGroups && profile.groups??>
       <dt class="col-sm-4"><@message "groups"/></dt>
       <dd class="col-sm-8">
         <#list profile.groups as group>
@@ -21,7 +21,7 @@
         </#list>
       </dd>
     </#if>
-    <#if profile.roles??>
+    <#if showProfileRole && profile.roles??>
       <dt class="col-sm-4"><@message "roles"/></dt>
       <dd class="col-sm-8">
         <#list profile.roles as role>

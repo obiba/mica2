@@ -49,6 +49,10 @@
 <!-- Contact -->
 <#assign contactEnabled = true/>
 
+<!-- Profile -->
+<#assign showProfileRole = false/>
+<#assign showProfileGroups = false/>
+
 <!-- Repository list pages -->
 <#assign listDisplays = ["lines", "table", "cards"]/> <!-- order matters -->
 <#assign listDefaultDisplay = "lines"/> <!-- cards, lines or table -->
