@@ -21,9 +21,14 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 
+import com.google.common.base.Strings;
+import com.google.common.collect.Maps;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.authz.annotation.RequiresRoles;
+import org.obiba.mica.access.service.DataAccessRequestUtilService;
+import org.obiba.mica.core.service.MailService;
+import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.security.Roles;
 import org.obiba.mica.user.UserProfileService;
 import org.obiba.mica.web.model.Dtos;
@@ -74,6 +79,18 @@ public class UsersProfileResource {
   @Path("/_forgot_password")
   public Response resetPassword(@FormParam("username") String username) {
     userProfileService.resetPassword(username);
+    return Response.ok().build();
+  }
+
+  @POST
+  @Path("/_contact")
+  public Response contact(@FormParam("name") String name, @FormParam("email") String email,
+                          @FormParam("subject") String subject, @FormParam("message") String message,
+                          @FormParam("g-recaptcha-response") String reCaptcha) {
+    if (Strings.isNullOrEmpty(name) || Strings.isNullOrEmpty(email) || Strings.isNullOrEmpty(subject) || Strings.isNullOrEmpty(message) || Strings.isNullOrEmpty(reCaptcha)) {
+      throw new BadRequestException();
+    }
+    userProfileService.sendContactEmail(name, email, subject, message, reCaptcha);
     return Response.ok().build();
   }
 }
