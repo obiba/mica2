@@ -640,6 +640,7 @@ message DatasetVariableResolverDto {
   repeated LocalizedStringDto description = 28;
   repeated LocalizedStringDto populationName = 29;
   repeated LocalizedStringDto dceName = 30;
+  optional string entityType = 31;
 }
 
 message DatasetVariableSummaryDto {
