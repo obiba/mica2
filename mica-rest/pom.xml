@@ -48,6 +48,11 @@
     </dependency>
 
     <dependency>
+      <groupId>com.codahale.metrics</groupId>
+      <artifactId>metrics-annotation</artifactId>
+    </dependency>
+
+    <dependency>
       <groupId>org.glassfish.jersey.containers</groupId>
       <artifactId>jersey-container-servlet</artifactId>
     </dependency>

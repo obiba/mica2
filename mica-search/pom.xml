@@ -75,6 +75,10 @@
       <groupId>org.obiba.commons</groupId>
       <artifactId>obiba-jersey-protobuf</artifactId>
     </dependency>
+    <dependency>
+      <groupId>com.codahale.metrics</groupId>
+      <artifactId>metrics-annotation</artifactId>
+    </dependency>
   </dependencies>
 
 </project>

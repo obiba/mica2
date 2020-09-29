@@ -141,6 +141,11 @@
       </dependency>
       <dependency>
         <groupId>com.codahale.metrics</groupId>
+        <artifactId>metrics-annotation</artifactId>
+        <version>${codahale-metrics.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.codahale.metrics</groupId>
         <artifactId>metrics-ehcache</artifactId>
         <version>${codahale-metrics.version}</version>
       </dependency>
