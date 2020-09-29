@@ -76,6 +76,9 @@
           </div>
           <div class="card-body">
             <div id="loadingCrosstab" class="spinner-border spinner-border-sm" role="status"></div>
+            <div id="privacy-alert" class="alert alert-warning" style="display: none;">
+              <i class="fas fa-exclamation-triangle"></i> <@message "privacy-threshold-applies"/>
+            </div>
             <div id="result-panel" style="overflow-x: auto;">
               <div style="display: none;" class="mb-4">
                 <select id="select-study" class="form-control select2 float-right" style="width: 100%;"></select>

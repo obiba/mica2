@@ -207,7 +207,7 @@ class DatasetCrosstab {
       const that = this;
       contingencies.forEach(function (contingency) {
         // Show the details anyway.
-        contingency.totalPrivacyCheck = contingency.all.n !== -1;
+        contingency.totalPrivacyCheck = contingency.all.n > -1;
         if (!contingency.totalPrivacyCheck || contingency.all.n > 0) {
           if (that._isStatistical(that.getVariable2())) {
             that._normalizeStatistics(contingency, v1Cats);
@@ -257,6 +257,12 @@ class DatasetCrosstab {
             n: '-',
             statistics: createEmptyStatistics()
           });
+        }
+      });
+      // category may not be missing but the statistics are
+      contingency.aggregations.forEach(agg => {
+        if (!agg.statistics) {
+          agg.statistics = createEmptyStatistics();
         }
       });
     }
@@ -480,6 +486,9 @@ const initStudySelector = function() {
 };
 
 const renderDatasetCrosstab = function(contingency) {
+  if (!contingency.privacyCheck || !contingency.totalPrivacyCheck) {
+    $('#privacy-alert').show();
+  }
   // init Crosstab element
   const crosstabElem = $('#crosstab');
   crosstabElem.children().remove();
@@ -538,7 +547,7 @@ const renderDatasetCrosstab = function(contingency) {
           '<td>' + formatStatistics(aggregation.statistics.mean) + '</td>' +
           '<td>' + formatStatistics(aggregation.statistics.stdDeviation) + '</td>';
       }
-      row = row + '<td class="total">' + aggregation.n + '</td>';
+      row = row + '<td class="total">' + (aggregation.n < 0 ? '-' : aggregation.n) + '</td>';
       $('#crosstab > tbody').append('<tr>' + row + '</tr>');
     });
   }
@@ -557,7 +566,7 @@ const renderDatasetCrosstab = function(contingency) {
       '<td class="total">' + formatStatistics(all.statistics.mean) + '</td>' +
       '<td class="total">' + formatStatistics(all.statistics.stdDeviation) + '</td>';
   }
-  row = row + '<td class="total">' + all.n + '</td>';
+  row = row + '<td class="total">' + (all.n < 0 ? '-' : all.n) + '</td>';
   $('#crosstab > tbody').append('<tr>' + row + '</tr>');
 
   // chi-squared test
@@ -577,11 +586,11 @@ const refreshCrosstab = function() {
   $('#results').show();
   $('#loadingCrosstab').show();
   $('#result-panel').hide();
+  $('#privacy-alert').hide();
   micajs.dataset.contingency(Mica.type, Mica.dataset, Mica.var1.name, Mica.var2.name, function (data) {
     // build a data object to make sure that all categories are covered
     const crosstab = new DatasetCrosstab(Mica.var1, Mica.var2, data);
     Mica.crosstab = crosstab;
-    console.log(crosstab);
 
     // study tables
     let selectStudy = $('#select-study');
