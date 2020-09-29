@@ -96,6 +96,8 @@
 
 <script>
     $(function () {
+      // bs tooltip
+      $('[data-toggle="tooltip"]').tooltip();
       // apply markdown rendering
       $('.marked').each(function () {
         var msg = $.trim($(this).html());

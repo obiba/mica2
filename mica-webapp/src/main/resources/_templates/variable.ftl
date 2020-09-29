@@ -33,12 +33,12 @@
       <div class="container">
         <div class="callout callout-info">
           <#if variable.attributes?? && variable.attributes.label??>
-            <p>${localize(variable.attributes.label)}</p>
+            <p class="marked">${localize(variable.attributes.label)}</p>
           <#else>
             <p class="text-muted"><@message "no-label"/></p>
           </#if>
           <#if variable.attributes?? && variable.attributes.description??>
-            <p class="text-muted"><i class="fas fa-info-circle"></i> ${localize(variable.attributes.description)}</p>
+            <p class="marked text-muted"><i class="fas fa-info-circle"></i> ${localize(variable.attributes.description)}</p>
           </#if>
         </div>
 

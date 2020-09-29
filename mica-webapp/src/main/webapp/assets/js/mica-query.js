@@ -355,7 +355,7 @@ class EntityQuery {
 class VariableQuery extends EntityQuery {
   constructor(defaultSize) {
     super(TYPES.VARIABLES, TARGETS.VARIABLE, defaultSize);
-    this._fields = ['attributes.label.*', 'variableType', 'datasetId', 'datasetAcronym', 'attributes.Mlstr_area*'];
+    this._fields = ['attributes.label.*', 'attributes.description.*', 'variableType', 'valueType', 'datasetId', 'datasetAcronym', 'attributes.Mlstr_area*'];
     this._sortFields = ['variableType,containerId', 'populationWeight', 'dataCollectionEventWeight', 'datasetId', 'index', 'name'];
   }
 }

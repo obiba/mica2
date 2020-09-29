@@ -501,7 +501,12 @@ Vue.use(VueObibaSearchResult, {
         mergedOptions.language = {
           url: contextPath + '/assets/i18n/datatables.' + Mica.locale + '.json'
         };
-        return $('#' + tableId).DataTable(mergedOptions);
+        const dTable = $('#' + tableId).DataTable(mergedOptions);
+        dTable.on('draw', function() {
+          // bs tooltip
+          $('[data-toggle="tooltip"]').tooltip();
+        });
+        return dTable;
       }
     }
   }

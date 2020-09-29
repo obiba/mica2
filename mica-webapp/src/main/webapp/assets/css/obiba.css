@@ -83,3 +83,7 @@
   font-weight: 700;
   right: 0px;
 }
+
+td p:last-child {
+  margin-bottom: 0;
+}
