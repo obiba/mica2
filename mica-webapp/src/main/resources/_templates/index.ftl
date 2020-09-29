@@ -38,7 +38,7 @@
       <div class="container">
 
         <#if config.repositoryEnabled>
-          <div class="row">
+          <div id="repository-metrics" class="row">
 
             <#if config.networkEnabled && !config.singleNetworkEnabled>
               <div class="col-lg-3 col-sm-6">
@@ -107,7 +107,7 @@
           </div>
 
           <#if !config.openAccess && !user??>
-            <div class="callout callout-info">
+            <div id="sign-in-repository-callout" class="callout callout-info">
               <div class="row">
                 <div class="col-sm-10">
                   <p class="text-justify">
@@ -125,7 +125,7 @@
             </div>
           </#if>
 
-          <div class="callout callout-info">
+          <div id="search-portal-callout" class="callout callout-info">
             <div class="row">
               <div class="col-sm-10">
                 <p class="text-justify">
@@ -144,7 +144,7 @@
         </#if>
 
         <#if config.dataAccessEnabled>
-          <div class="callout callout-info">
+          <div id="data-access-process-portal-callout" class="callout callout-info">
             <div class="row">
               <div class="col-sm-8">
                 <p class="text-justify">
