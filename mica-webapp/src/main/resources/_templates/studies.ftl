@@ -201,7 +201,7 @@
                 <p class="text-muted"><@message "no-studies"/></p>
               <#else>
                 <p class="text-muted"><@message "sign-in-studies"/></p>
-                <button type="button" onclick="location.href='${contextPath}/signin?redirect=/<#if type??>${type?lower_case}-</#if>studies';" class="btn btn-success btn-lg">
+                <button type="button" onclick="location.href='${contextPath}/signin?redirect=${contextPath}/<#if type??>${type?lower_case}-</#if>studies';" class="btn btn-success btn-lg">
                   <i class="fas fa-sign-in-alt"></i> <@message "sign-in"/>
                 </button>
               </#if>
