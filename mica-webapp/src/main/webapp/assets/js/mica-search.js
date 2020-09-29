@@ -649,6 +649,8 @@ new Vue({
         document.body.appendChild(form);
         form.submit();
         form.remove();
+      } else {
+        micajs.error(Mica.tr['no-coverage-available']);
       }
     },
     onSearchModeToggle() {
