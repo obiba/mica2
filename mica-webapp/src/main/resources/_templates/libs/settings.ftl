@@ -75,6 +75,8 @@
 <#assign mapName = "world"/>
 <!-- Filter and order the charts visible in the search page -->
 <#assign searchCharts = ["geographical-distribution-chart", "study-design-chart", "number-participants-chart", "bio-samples-chart", "study-start-year-chart"]/>
+<!-- Result tables ('name' column is always first) -->
+<#assign searchVariableColumns = ["label+description", "valueType", "annotations", "type", "study", "dataset"]/>
 
 <!-- Data Access pages -->
 <#assign dataAccessInstructionsEnabled = true/>

@@ -492,6 +492,7 @@ Vue.use(VueObibaSearchResult, {
       getEventBus: () => EventBus,
       getMicaConfig: () => Mica.config,
       getLocale: () => Mica.locale,
+      getDisplayOptions: () => Mica.display,
       normalizePath: (path) => {
         return contextPath + path;
       },

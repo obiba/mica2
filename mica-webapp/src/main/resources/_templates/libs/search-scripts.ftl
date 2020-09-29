@@ -102,7 +102,11 @@
     borderColor: '${barChartBorderColor}',
     backgroundColors: ['${colors?join("', '")}'],
     chartIds: ['${searchCharts?join("', '")}']
-  }
+  };
+
+  Mica.display = {
+    variableColumns: ['${searchVariableColumns?join("', '")}']
+  };
 
   fetch(contextPath + 'assets/topojson/${mapName}.json').then(r => r.json())
           .then(data => Mica.map = {
