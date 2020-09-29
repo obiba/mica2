@@ -536,7 +536,7 @@ new Vue({
       queryToCopy: null,
       queryToCart: null,
       advanceQueryMode: false,
-      searchDownloadUrl: ''
+      downloadUrlObject: ''
     };
   },
   methods: {
@@ -587,7 +587,7 @@ new Vue({
       EventBus.$emit(this.queryType, 'I am the result of a ' + this.queryType + ' query');
     },
     onLocationChanged: function (payload) {
-      this.searchDownloadUrl = `${contextPath}/ws/${MicaTreeQueryUrl.getSearchDownloadUrl(payload.type)}`;
+      this.downloadUrlObject = MicaTreeQueryUrl.getDownloadUrl(payload);
 
       let tree = payload.tree;
 
@@ -633,7 +633,23 @@ new Vue({
       });
     },
     onDownloadQueryResult() {
+      if (this.downloadUrlObject) {
+        const form = document.createElement('form');
+        form.setAttribute('class', 'hidden');
+        form.setAttribute('method', 'post');
 
+        form.action = this.downloadUrlObject.url;
+        form.accept = 'text/csv';
+
+        const input = document.createElement('input');
+        input.name = 'query';
+        input.value = this.downloadUrlObject.query;
+        form.appendChild(input);
+
+        document.body.appendChild(form);
+        form.submit();
+        form.remove();
+      }
     },
     onSearchModeToggle() {
       this.advanceQueryMode = !this.advanceQueryMode;

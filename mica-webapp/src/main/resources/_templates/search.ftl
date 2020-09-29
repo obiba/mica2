@@ -106,7 +106,7 @@
               </#if>
             </#if>
             <#if downloadQueryEnabled>
-              <a id="download-query" v-bind:href="searchDownloadUrl" download class="btn btn-sm btn-info ml-2" @click="onDownloadQueryResult" title="<@message "download"/>"><i class="fas fa-download"></i></a>
+              <a id="download-query" href="javascript:void(0)" class="btn btn-sm btn-info ml-2" @click="onDownloadQueryResult" title="<@message "download"/>"><i class="fas fa-download"></i></a>
             </#if>
             <a class="btn btn-secondary btn-sm ml-2" href="javascript:void(0)" @click="onSearchModeToggle" v-cloak>
               <span v-if="advanceQueryMode" title="<@message "search.basic-help"/>"><@message "search-basic-mode"/></span>

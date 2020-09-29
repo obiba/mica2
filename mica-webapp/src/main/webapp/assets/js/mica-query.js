@@ -510,7 +510,25 @@ class MicaTreeQueryUrl {
     return selection;
   }
 
-  static getSearchDownloadUrl(type) {
+  static getDownloadUrl(payload) {
+    let url, query;
+
+    if (DISPLAYS.COVERAGE === payload.display) {
+      url = `${contextPath}/ws/variables/_coverage_download`;
+      query = MicaTreeQueryUrl.getCoverageDownloadUrl(payload.bucket, payload.tree);
+    } else {
+      url = `${contextPath}/ws/${payload.type}/_rql_csv`;
+      query = MicaTreeQueryUrl.getSearchDownloadUrl(payload.type, payload.tree);
+    }
+
+    if (query) {
+      return {string: `${url}?query=${query}`, url, query};
+    } else {
+      return null;
+    }
+  }
+
+  static getSearchDownloadUrl(type, tree) {
     const target = TYPES_TARGETS_MAP[type];
     let fields, sortFields;
 
@@ -533,7 +551,6 @@ class MicaTreeQueryUrl {
         break;
     }
 
-    let tree = MicaTreeQueryUrl.getTree();
     let targetQuery = tree.search((name) => name === target);
     if (!targetQuery) {
       tree.addQuery(null, targetQuery);
@@ -551,7 +568,18 @@ class MicaTreeQueryUrl {
 
     tree.addQuery(null, new RQL.Query('locale', [Mica.locale]));
 
-    return `${type}/_rql_csv?query=${tree.serialize()}`;
+    return tree.serialize();
+  }
+
+  static getCoverageDownloadUrl(bucket, tree) {
+    let variableQuery = tree.search(name => TARGETS.VARIABLE === name);
+
+    if (variableQuery) {
+      tree.addQuery(variableQuery, new RQL.Query(AGGREGATE, [new RQL.Query(BUCKET, [bucket])]));
+      return tree.serialize();
+    } else {
+      return null;
+    }
   }
 }
 
