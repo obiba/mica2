@@ -628,6 +628,9 @@ new Vue({
         }
       });
     },
+    onDownloadQueryResult() {
+
+    },
     onSearchModeToggle() {
       this.advanceQueryMode = !this.advanceQueryMode;
     }

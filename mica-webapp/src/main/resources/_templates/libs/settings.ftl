@@ -69,6 +69,8 @@
 <#else>
   <#assign defaultSearchState = "#lists?type=studies"/>
 </#if>
+<!-- Download the search results -->
+<#assign downloadQueryEnabled = true />
 <!-- Show copy query button depending on the role (check built-in ones or by role name). -->
 <#assign showCopyQuery = (isAdministrator || isReviewer || isEditor || isDAO)/>
 <!--#assign showCopyQuery = (user?? && user.roles?? && user.roles?seq_contains("mica-user"))/-->
