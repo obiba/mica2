@@ -53,7 +53,7 @@
                       </p>
                       <p class="text-muted marked">${localize(project.summary)?trim?truncate_w(300, "...")}</p>
                       <p>
-                        <@projectSummaryModel project=project/>
+                        <@projectModelSummary project=project/>
                       </p>
                       <div class="mt-2 mb-3">
                         <a href="${contextPath}/project/${project.id}" class="btn btn-sm btn-outline-info">
