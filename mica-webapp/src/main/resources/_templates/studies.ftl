@@ -191,6 +191,22 @@
               </div>
             </div>
           </div>
+        <#else>
+          <div id="studies-card" class="card card-info card-outline">
+            <div class="card-header d-flex p-0">
+              <h3 class="card-title p-3"><@message "studies"/></h3>
+            </div><!-- /.card-header -->
+            <div class="card-body">
+              <#if config.openAccess || user??>
+                <p class="text-muted"><@message "no-studies"/></p>
+              <#else>
+                <p class="text-muted"><@message "sign-in-studies"/></p>
+                <button type="button" onclick="location.href='${contextPath}/signin?redirect=/<#if type??>${type?lower_case}-</#if>studies';" class="btn btn-success btn-lg">
+                  <i class="fas fa-sign-in-alt"></i> <@message "sign-in"/>
+                </button>
+              </#if>
+            </div>
+          </div>
         </#if>
 
       </div><!-- /.container-fluid -->

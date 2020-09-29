@@ -106,6 +106,25 @@
             </#if>
           </div>
 
+          <#if !config.openAccess && !user??>
+            <div class="callout callout-info">
+              <div class="row">
+                <div class="col-sm-10">
+                  <p class="text-justify">
+                    <@message "sign-in-repository"/>
+                  </p>
+                </div><!-- /.col -->
+                <div class="col-sm-2">
+                  <div class="text-right">
+                    <button type="button"  onclick="location.href='${contextPath}/signin';" class="btn btn-primary btn-lg">
+                      <i class="fas fa-sign-in-alt"></i> <@message "sign-in"/>
+                    </button>
+                  </div>
+                </div><!-- /.col -->
+              </div><!-- /.row -->
+            </div>
+          </#if>
+
           <div class="callout callout-info">
             <div class="row">
               <div class="col-sm-10">
@@ -115,7 +134,7 @@
               </div><!-- /.col -->
               <div class="col-sm-2">
                 <div class="text-right">
-                  <button type="button"  onclick="location.href='search${defaultSearchState}';" class="btn btn-success btn-lg">
+                  <button type="button"  onclick="location.href='<#if !config.openAccess && !user??>${contextPath}/signin?redirect=${contextPath}/search${defaultSearchState?url('UTF-8')}<#else>${contextPath}/search${defaultSearchState}</#if>';" class="btn btn-success btn-lg">
                     <i class="fas fa-search"></i> <@message "search"/>
                   </button>
                 </div>
@@ -134,7 +153,7 @@
               </div><!-- /.col -->
               <div class="col-sm-4">
                 <div class="text-right">
-                  <button type="button"  onclick="location.href='data-access-process';" class="btn btn-info btn-lg">
+                  <button type="button"  onclick="location.href='${contextPath}/data-access-process';" class="btn btn-info btn-lg">
                     <i class="fas fa-info-circle"></i> <@message "data-access-process"/>
                   </button>
                 </div>

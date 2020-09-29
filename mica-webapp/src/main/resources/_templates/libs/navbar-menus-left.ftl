@@ -29,7 +29,9 @@
         </ul>
       </li>
       <li id="searchMenu" class="nav-item">
-        <a href="${contextPath}/search${defaultSearchState}" class="btn btn-success"><@message "search"/> <i class="fas fa-search"></i></a>
+        <a href="<#if !config.openAccess && !user??>${contextPath}/signin?redirect=${contextPath}/search${defaultSearchState?url('UTF-8')}<#else>${contextPath}/search${defaultSearchState}</#if>" class="btn btn-success">
+          <@message "search"/> <i class="fas fa-search"></i>
+        </a>
       </li>
     </#if>
 
