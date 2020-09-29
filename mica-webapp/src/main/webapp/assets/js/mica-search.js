@@ -452,6 +452,7 @@ const ResultsTabContent = {
     onLocationChanged: function (payload) {
       $(`.nav-pills #${payload.display}-tab`).tab('show');
       $(`.nav-pills #${payload.type}-tab`).tab('show');
+
       if (payload.bucket) {
         this.selectedBucket = TARGET_ID_BUCKET_MAP[payload.bucket];
         const tabPill = [TARGET_ID_BUCKET_MAP.studyId, TARGET_ID_BUCKET_MAP.dceId].indexOf(this.selectedBucket) > -1
@@ -534,7 +535,8 @@ new Vue({
       noQueries: true,
       queryToCopy: null,
       queryToCart: null,
-      advanceQueryMode: false
+      advanceQueryMode: false,
+      searchDownloadUrl: ''
     };
   },
   methods: {
@@ -585,6 +587,8 @@ new Vue({
       EventBus.$emit(this.queryType, 'I am the result of a ' + this.queryType + ' query');
     },
     onLocationChanged: function (payload) {
+      this.searchDownloadUrl = `${contextPath}/ws/${MicaTreeQueryUrl.getSearchDownloadUrl(payload.type)}`;
+
       let tree = payload.tree;
 
       // query string to copy
