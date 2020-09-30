@@ -140,7 +140,7 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
 
     builder.addAllVariables(dtos.asDtoList(studyIdVariableMap, taxonomies));
 
-    log.info("Response /{}/{}", Indexer.PUBLISHED_VARIABLE_INDEX, Indexer.VARIABLE_TYPE);
+    log.debug("Response /{}/{}", Indexer.PUBLISHED_VARIABLE_INDEX, Indexer.VARIABLE_TYPE);
 
     return builder.build();
   }
@@ -164,7 +164,7 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
       }
     }).filter(Objects::nonNull).collect(Collectors.toList());
 
-    log.info("Response /{}/{}", Indexer.PUBLISHED_VARIABLE_INDEX, Indexer.VARIABLE_TYPE);
+    log.debug("Response /{}/{}", Indexer.PUBLISHED_VARIABLE_INDEX, Indexer.VARIABLE_TYPE);
 
     return variables;
   }
