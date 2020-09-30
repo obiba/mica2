@@ -353,7 +353,7 @@ class EntityQuery {
 }
 
 class VariableQuery extends EntityQuery {
-  static FIELDS = ['attributes.label.*', 'attributes.description.*', 'variableType', 'valueType', 'datasetId', 'datasetAcronym', 'attributes.Mlstr_area*'];
+  static FIELDS = ['attributes.label.*', 'attributes.description.*', 'variableType', 'valueType', 'categories.*', 'populationId', 'dceId', 'datasetId', 'datasetAcronym', 'attributes.Mlstr_area*'];
   static SORT_FIELDS = ['attributes.label.*', 'attributes.description.*', 'variableType', 'valueType', 'datasetId', 'datasetAcronym', 'attributes.Mlstr_area*'];
 
   constructor(defaultSize) {

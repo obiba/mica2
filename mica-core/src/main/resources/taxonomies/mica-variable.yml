@@ -136,7 +136,7 @@
     "type": "keyword"
 - "name": "valueType"
   "title":
-    "en": "Type of value"
+    "en": "Value type"
     "fr": "Type de valeur"
   "description":
     "en": "Raw type of variable's values."

@@ -12,6 +12,8 @@ package org.obiba.mica.search.csvexport.generators;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.obiba.core.translator.Translator;
 import org.obiba.mica.web.model.Mica;
@@ -40,6 +42,10 @@ public class VariablesCsvReportGenerator extends CsvReportGeneratorImpl {
 
     line.add("name");
     line.add("search.variable.label");
+    if (mustShow("showVariablesValueTypeColumn"))
+      line.add("variable_taxonomy.vocabulary.valueType.title");
+    if (mustShow("showVariablesCategoriesColumn"))
+      line.add("client.label.variable.categories");
     if (mustShow("showVariablesTypeColumn"))
       line.add("type");
     if (mustShow("showVariablesStudiesColumn")) {
@@ -70,6 +76,24 @@ public class VariablesCsvReportGenerator extends CsvReportGeneratorImpl {
 
     line.add(datasetVariableDto.getName());
     line.add(datasetVariableDto.getVariableLabelCount()>0 ? datasetVariableDto.getVariableLabel(0).getValue() : "");
+    if (mustShow("showVariablesValueTypeColumn")) {
+      if (datasetVariableDto.hasValueType())
+      line.add(translator.translate(
+        String.format("variable_taxonomy.vocabulary.valueType.term.%s.title", datasetVariableDto.getValueType())));
+      else line.add("");
+    }
+    if (mustShow("showVariablesCategoriesColumn")) {
+      if (datasetVariableDto.getCategoriesCount()>0)
+        line.add(datasetVariableDto.getCategoriesList().stream().map(cat -> {
+          String rval = cat.getName();
+          Optional<Mica.AttributeDto> lblAttrOpt = cat.getAttributesList().stream().filter(attr -> attr.getName().equals("label")).findFirst();
+          if (lblAttrOpt.isPresent()) {
+            rval = rval + ": " + lblAttrOpt.get().getValuesList().get(0).getValue();
+          }
+          return rval;
+        }).collect(Collectors.joining(" | ")));
+      else line.add("");
+    }
     if (mustShow("showVariablesTypeColumn"))
       line.add(translator.translate(
         String.format("variable_taxonomy.vocabulary.variableType.term.%s.title", datasetVariableDto.getVariableType())));

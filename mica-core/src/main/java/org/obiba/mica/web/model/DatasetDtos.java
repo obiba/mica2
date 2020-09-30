@@ -240,6 +240,10 @@ class DatasetDtos {
       builder.setValueType(variable.getValueType());
     }
 
+    if (!Strings.isNullOrEmpty(variable.getEntityType())) {
+      builder.setEntityType(variable.getEntityType());
+    }
+
     if (!Strings.isNullOrEmpty(variable.getReferencedEntityType())) {
       builder.setReferencedEntityType(variable.getReferencedEntityType());
     }
