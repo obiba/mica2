@@ -69,8 +69,8 @@ public class DatasetController extends BaseController {
         if (!p.isEmpty()) {
           studyTables.add(p);
           allStudies.put(sTable.getStudyId(), (BaseStudy) p.get("study"));
+          allTables.add(sTable);
         }
-        allTables.add(sTable);
       }
       params.put("studyTables", studyTables);
       List<Map<String, Object>> harmonizationTables = Lists.newArrayList();
@@ -81,8 +81,8 @@ public class DatasetController extends BaseController {
         if (!p.isEmpty()) {
           harmonizationTables.add(p);
           allStudies.put(hTable.getStudyId(), (BaseStudy) p.get("study"));
+          allTables.add(hTable);
         }
-        allTables.add(hTable);
       }
       params.put("harmonizationTables", harmonizationTables);
       params.put("allTables", allTables);
