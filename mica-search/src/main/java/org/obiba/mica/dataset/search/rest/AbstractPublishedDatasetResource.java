@@ -84,7 +84,7 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
     if (inputStream == null) throw NoSuchDatasetException.withId(datasetId);
     try {
       T rval = objectMapper.readValue(inputStream, clazz);
-      log.info("Response /{}/{}", Indexer.PUBLISHED_DATASET_INDEX, Indexer.DATASET_TYPE);
+      log.debug("Response /{}/{}", Indexer.PUBLISHED_DATASET_INDEX, Indexer.DATASET_TYPE);
       return rval;
     } catch (IOException e) {
       log.error("Failed retrieving {}", clazz.getSimpleName(), e);
