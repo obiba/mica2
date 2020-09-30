@@ -452,6 +452,7 @@ const ResultsTabContent = {
     onLocationChanged: function (payload) {
       $(`.nav-pills #${payload.display}-tab`).tab('show');
       $(`.nav-pills #${payload.type}-tab`).tab('show');
+
       if (payload.bucket) {
         this.selectedBucket = TARGET_ID_BUCKET_MAP[payload.bucket];
         const tabPill = [TARGET_ID_BUCKET_MAP.studyId, TARGET_ID_BUCKET_MAP.dceId].indexOf(this.selectedBucket) > -1
@@ -534,7 +535,8 @@ new Vue({
       noQueries: true,
       queryToCopy: null,
       queryToCart: null,
-      advanceQueryMode: false
+      advanceQueryMode: false,
+      downloadUrlObject: ''
     };
   },
   methods: {
@@ -585,6 +587,8 @@ new Vue({
       EventBus.$emit(this.queryType, 'I am the result of a ' + this.queryType + ' query');
     },
     onLocationChanged: function (payload) {
+      this.downloadUrlObject = MicaTreeQueryUrl.getDownloadUrl(payload);
+
       let tree = payload.tree;
 
       // query string to copy
@@ -629,7 +633,25 @@ new Vue({
       });
     },
     onDownloadQueryResult() {
+      if (this.downloadUrlObject) {
+        const form = document.createElement('form');
+        form.setAttribute('class', 'hidden');
+        form.setAttribute('method', 'post');
 
+        form.action = this.downloadUrlObject.url;
+        form.accept = 'text/csv';
+
+        const input = document.createElement('input');
+        input.name = 'query';
+        input.value = this.downloadUrlObject.query;
+        form.appendChild(input);
+
+        document.body.appendChild(form);
+        form.submit();
+        form.remove();
+      } else {
+        micajs.error(Mica.tr['no-coverage-available']);
+      }
     },
     onSearchModeToggle() {
       this.advanceQueryMode = !this.advanceQueryMode;

@@ -353,26 +353,35 @@ class EntityQuery {
 }
 
 class VariableQuery extends EntityQuery {
+  static FIELDS = ['attributes.label.*', 'attributes.description.*', 'variableType', 'valueType', 'datasetId', 'datasetAcronym', 'attributes.Mlstr_area*'];
+  static SORT_FIELDS = ['attributes.label.*', 'attributes.description.*', 'variableType', 'valueType', 'datasetId', 'datasetAcronym', 'attributes.Mlstr_area*'];
+
   constructor(defaultSize) {
     super(TYPES.VARIABLES, TARGETS.VARIABLE, defaultSize);
-    this._fields = ['attributes.label.*', 'attributes.description.*', 'variableType', 'valueType', 'datasetId', 'datasetAcronym', 'attributes.Mlstr_area*'];
-    this._sortFields = ['variableType,containerId', 'populationWeight', 'dataCollectionEventWeight', 'datasetId', 'index', 'name'];
+    this._fields = VariableQuery.FIELDS;
+    this._sortFields = VariableQuery.SORT_FIELDS;
   }
 }
 
 class DatasetQuery extends EntityQuery {
+  static FIELDS = ['acronym.*','name.*','variableType','studyTable.studyId','studyTable.project','studyTable.table','studyTable.populationId','studyTable.dataCollectionEventId','harmonizationTable.studyId','harmonizationTable.project','harmonizationTable.table','harmonizationTable.populationId'];
+  static SORT_FIELDS = ['studyTable.studyId','studyTable.populationWeight','studyTable.dataCollectionEventWeight','acronym'];
+
   constructor(defaultSize) {
     super(TYPES.DATASETS, TARGETS.DATASET, defaultSize);
-    this._fields = ['acronym.*','name.*','variableType','studyTable.studyId','studyTable.project','studyTable.table','studyTable.populationId','studyTable.dataCollectionEventId','harmonizationTable.studyId','harmonizationTable.project','harmonizationTable.table','harmonizationTable.populationId'];
-    this._sortFields = ['studyTable.studyId','studyTable.populationWeight','studyTable.dataCollectionEventWeight','acronym'];
+    this._fields = DatasetQuery.FIELDS;
+    this._sortFields = DatasetQuery.SORT_FIELDS;
   }
 }
 
 class StudyQuery extends EntityQuery {
+  static FIELDS = ['acronym.*','name.*','model.methods.design','populations.dataCollectionEvents.model.dataSources','model.numberOfParticipants.participant'];
+  static SORT_FIELDS = ['acronym'];
+
   constructor(defaultSize) {
     super(TYPES.STUDIES, TARGETS.STUDY, defaultSize);
-    this._fields = ['acronym.*','name.*','model.methods.design','populations.dataCollectionEvents.model.dataSources','model.numberOfParticipants.participant'];
-    this._sortFields = ['acronym'];
+    this._fields = StudyQuery.FIELDS;
+    this._sortFields = StudyQuery.SORT_FIELDS;
   }
 
   prepareForGraphics(tree) {
@@ -398,10 +407,13 @@ class StudyQuery extends EntityQuery {
 }
 
 class NetworkQuery extends EntityQuery {
+  static FIELDS = ['acronym.*','name.*','studyIds'];
+  static SORT_FIELDS = ['acronym'];
+
   constructor(defaultSize) {
     super(TYPES.NETWORKS, TARGETS.NETWORK, defaultSize);
-    this._fields = ['acronym.*','name.*','studyIds'];
-    this._sortFields = ['acronym'];
+    this._fields = NetworkQuery.FIELDS;
+    this._sortFields = NetworkQuery.SORT_FIELDS;
   }
 }
 
@@ -496,6 +508,78 @@ class MicaTreeQueryUrl {
     }
 
     return selection;
+  }
+
+  static getDownloadUrl(payload) {
+    let url, query;
+
+    if (DISPLAYS.COVERAGE === payload.display) {
+      url = `${contextPath}/ws/variables/_coverage_download`;
+      query = MicaTreeQueryUrl.getCoverageDownloadUrl(payload.bucket, payload.tree);
+    } else {
+      url = `${contextPath}/ws/${payload.type}/_rql_csv`;
+      query = MicaTreeQueryUrl.getSearchDownloadUrl(payload.type, payload.tree);
+    }
+
+    if (query) {
+      return {string: `${url}?query=${query}`, url, query};
+    } else {
+      return null;
+    }
+  }
+
+  static getSearchDownloadUrl(type, tree) {
+    const target = TYPES_TARGETS_MAP[type];
+    let fields, sortFields;
+
+    switch (target) {
+      case TARGETS.VARIABLE:
+        fields = VariableQuery.FIELDS;
+        sortFields = VariableQuery.SORT_FIELDS;
+        break;
+      case TARGETS.DATASET:
+        fields = DatasetQuery.FIELDS;
+        sortFields = DatasetQuery.SORT_FIELDS;
+        break;
+      case TARGETS.STUDY:
+        fields = StudyQuery.FIELDS;
+        sortFields = StudyQuery.SORT_FIELDS;
+        break;
+      case TARGETS.NETWORK:
+        fields = NetworkQuery.FIELDS;
+        sortFields = NetworkQuery.SORT_FIELDS;
+        break;
+    }
+
+    let targetQuery = tree.search((name) => name === target);
+    if (!targetQuery) {
+      tree.addQuery(null, targetQuery);
+    }
+
+    tree.addQuery(targetQuery, new RQL.Query('fields', fields));
+    tree.addQuery(targetQuery, new RQL.Query('sort', sortFields));
+
+    let limitQuery = tree.search((name, args, parent) => 'limit' === name && target === parent.name);
+    if (limitQuery) {
+      limitQuery.args = [0, 100000]
+    } else {
+      tree.addQuery(targetQuery, new RQL.Query('limit', [0, 100000]));
+    }
+
+    tree.addQuery(null, new RQL.Query('locale', [Mica.locale]));
+
+    return tree.serialize();
+  }
+
+  static getCoverageDownloadUrl(bucket, tree) {
+    let variableQuery = tree.search(name => TARGETS.VARIABLE === name);
+
+    if (variableQuery) {
+      tree.addQuery(variableQuery, new RQL.Query(AGGREGATE, [new RQL.Query(BUCKET, [bucket])]));
+      return tree.serialize();
+    } else {
+      return null;
+    }
   }
 }
 
