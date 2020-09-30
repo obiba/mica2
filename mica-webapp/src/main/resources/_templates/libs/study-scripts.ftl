@@ -1,6 +1,6 @@
 <!-- Timeline -->
-<script src="../bower_components/d3/d3.js"></script>
-<script src="../bower_components/mica-study-timeline/dist/mica-study-timeline.js"></script>
+<script src="${contextPath}/bower_components/d3/d3.js"></script>
+<script src="${contextPath}/bower_components/mica-study-timeline/dist/mica-study-timeline.js"></script>
 
 <!-- ChartJS -->
 <script src="${adminLTEPath}/plugins/chart.js/Chart.min.js"></script>
@@ -13,6 +13,9 @@
 <script src="${assetsPath}/libs/node_modules/vue/dist/vue.js"></script>
 <script src="${assetsPath}/js/mica-files.js"></script>
 
+<!-- Repository -->
+<script src="${assetsPath}/js/mica-repo.js"></script>
+
 <script>
   const Mica = { options: {} };
   <#if study.populations?? && study.populations?size != 0>
@@ -21,7 +24,7 @@
         <#if population.dataCollectionEvents?? && population.dataCollectionEvents?size != 0>
           <#list population.dataCollectionEventsSorted as dce>
             Mica.options['${study.id}:${population.id}:${dce.id}'] =
-              <#if study.populations?size == 1>'${localize(dce.name)}'<#else>'${localize(population.name)} / ${localize(dce.name)}'</#if>;
+              <#if study.populations?size == 1>"${localize(dce.name)}"<#else>"${localize(population.name)} / ${localize(dce.name)}"</#if>;
           </#list>
         </#if>
       <#else>
@@ -89,7 +92,7 @@
       $("#population-${pop.id}-dces").DataTable(options);
     </#list>
 
-    micajs.stats('studies', { query: "study(in(Mica_study.id,${study.id}))" }, function(stats) {
+    QueryService.getCounts('studies', { query: "study(in(Mica_study.id,${study.id}))" }, function(stats) {
       $('#network-hits').text(new Intl.NumberFormat('${.lang}').format(stats.networkResultDto.totalHits));
       $('#dataset-hits').text(new Intl.NumberFormat('${.lang}').format(stats.datasetResultDto.totalHits));
       $('#variable-hits').text(new Intl.NumberFormat('${.lang}').format(stats.variableResultDto.totalHits));
@@ -157,7 +160,7 @@
     <#if studyVariablesClassificationsTaxonomies?? && studyVariablesClassificationsTaxonomies?size gt 0>
       const taxonomies = ['${networkVariablesClassificationsTaxonomies?join("', '")}'];
       $('#classificationsContainer').hide();
-      micajs.study.variablesCoverage('${study.id}', taxonomies, '${.lang}', function(data) {
+      StudyService.getVariablesCoverage('${study.id}', taxonomies, '${.lang}', function(data) {
         if (data && data.charts) {
           Mica.variablesCoverage = data.charts.map(chart => prepareVariablesClassificationsData(chart));
         }

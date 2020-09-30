@@ -58,7 +58,7 @@
           <div class="modal-footer justify-content-between">
             <button type="button" class="btn btn-default" data-dismiss="modal"><@message "cancel"/></button>
             <button type="button" class="btn btn-primary" data-dismiss="modal"
-                    onclick="micajs.dataAccess.delete('${dar.id}', 'amendment', '${amendment.id}')"><@message "confirm"/>
+                    onclick="DataAccessService.delete('${dar.id}', 'amendment', '${amendment.id}')"><@message "confirm"/>
             </button>
           </div>
         </div>
@@ -115,10 +115,10 @@
                               data-target="#modal-cancel-reject"><@message "cancel-rejection"/></button>
                     <#else>
                       <button type="button" class="btn btn-primary"
-                              onclick="micajs.dataAccess.reopen('${dar.id}', 'amendment', '${amendment.id}')"><@message "reopen"/></button>
+                              onclick="DataAccessService.reopen('${dar.id}', 'amendment', '${amendment.id}')"><@message "reopen"/></button>
                       <#if (amendment.status == "SUBMITTED" && accessConfig.withReview)>
                         <button type="button" class="btn btn-primary"
-                                onclick="micajs.dataAccess.review('${dar.id}', 'amendment', '${amendment.id}')"><@message "review"/></button>
+                                onclick="DataAccessService.review('${dar.id}', 'amendment', '${amendment.id}')"><@message "review"/></button>
                       <#elseif amendment.status == "REVIEWED" || (amendment.status == "SUBMITTED" && !accessConfig.withReview)>
                         <button type="button" class="btn btn-success" data-toggle="modal"
                                 data-target="#modal-approve"><@message "approve"/></button>
@@ -201,7 +201,7 @@
                 <div class="modal-footer justify-content-between">
                   <button type="button" class="btn btn-default" data-dismiss="modal"><@message "cancel"/></button>
                   <button type="button" class="btn btn-primary" data-dismiss="modal"
-                          onclick="micajs.dataAccess.approve('${dar.id}', 'amendment', '${amendment.id}')"><@message "confirm"/></button>
+                          onclick="DataAccessService.approve('${dar.id}', 'amendment', '${amendment.id}')"><@message "confirm"/></button>
                 </div>
               </div>
               <!-- /.modal-content -->
@@ -226,7 +226,7 @@
                 <div class="modal-footer justify-content-between">
                   <button type="button" class="btn btn-default" data-dismiss="modal"><@message "cancel"/></button>
                   <button type="button" class="btn btn-primary" data-dismiss="modal"
-                          onclick="micajs.dataAccess.conditionallyApprove('${dar.id}', 'amendment', '${amendment.id}')"><@message "confirm"/></button>
+                          onclick="DataAccessService.conditionallyApprove('${dar.id}', 'amendment', '${amendment.id}')"><@message "confirm"/></button>
                 </div>
               </div>
               <!-- /.modal-content -->
@@ -251,7 +251,7 @@
                 <div class="modal-footer justify-content-between">
                   <button type="button" class="btn btn-default" data-dismiss="modal"><@message "cancel"/></button>
                   <button type="button" class="btn btn-primary" data-dismiss="modal"
-                          onclick="micajs.dataAccess.reject('${dar.id}', 'amendment', '${amendment.id}')"><@message "confirm"/></button>
+                          onclick="DataAccessService.reject('${dar.id}', 'amendment', '${amendment.id}')"><@message "confirm"/></button>
                 </div>
               </div>
               <!-- /.modal-content -->
@@ -277,10 +277,10 @@
                   <button type="button" class="btn btn-default" data-dismiss="modal"><@message "cancel"/></button>
                     <#if accessConfig.withReview>
                       <button type="button" class="btn btn-primary" data-dismiss="modal"
-                              onclick="micajs.dataAccess.review('${dar.id}', 'amendment', '${amendment.id}')"><@message "confirm"/></button>
+                              onclick="DataAccessService.review('${dar.id}', 'amendment', '${amendment.id}')"><@message "confirm"/></button>
                     <#else>
                       <button type="button" class="btn btn-primary" data-dismiss="modal"
-                              onclick="micajs.dataAccess.submit('${dar.id}', 'amendment', '${amendment.id}')"><@message "confirm"/></button>
+                              onclick="DataAccessService.submit('${dar.id}', 'amendment', '${amendment.id}')"><@message "confirm"/></button>
                     </#if>
                 </div>
               </div>
@@ -307,10 +307,10 @@
                   <button type="button" class="btn btn-default" data-dismiss="modal"><@message "cancel"/></button>
                     <#if accessConfig.withReview>
                       <button type="button" class="btn btn-primary" data-dismiss="modal"
-                              onclick="micajs.dataAccess.review('${dar.id}', 'amendment', '${amendment.id}')"><@message "confirm"/></button>
+                              onclick="DataAccessService.review('${dar.id}', 'amendment', '${amendment.id}')"><@message "confirm"/></button>
                     <#else>
                       <button type="button" class="btn btn-primary" data-dismiss="modal"
-                              onclick="micajs.dataAccess.submit('${dar.id}', 'amendment', '${amendment.id}')"><@message "confirm"/></button>
+                              onclick="DataAccessService.submit('${dar.id}', 'amendment', '${amendment.id}')"><@message "confirm"/></button>
                     </#if>
                 </div>
               </div>
@@ -351,6 +351,7 @@
 <!-- ./wrapper -->
 
 <#include "libs/scripts.ftl">
+<#include "libs/data-access-scripts.ftl">
 <script>
     $(function () {
         $('#amendment-form-menu').addClass('active');

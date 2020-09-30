@@ -84,10 +84,10 @@
                               data-target="#modal-cancel-reject"><@message "cancel-rejection"/></button>
                     <#else>
                       <button type="button" class="btn btn-primary"
-                              onclick="micajs.dataAccess.reopen('${dar.id}')"><@message "reopen"/></button>
+                              onclick="DataAccessService.reopen('${dar.id}')"><@message "reopen"/></button>
                       <#if (dar.status == "SUBMITTED" && accessConfig.withReview)>
                         <button type="button" class="btn btn-primary"
-                                onclick="micajs.dataAccess.review('${dar.id}')"><@message "review"/></button>
+                                onclick="DataAccessService.review('${dar.id}')"><@message "review"/></button>
                       <#elseif dar.status == "REVIEWED" || (dar.status == "SUBMITTED" && !accessConfig.withReview)>
                         <button type="button" class="btn btn-success" data-toggle="modal"
                                 data-target="#modal-approve"><@message "approve"/></button>
@@ -103,7 +103,7 @@
                 </#if>
                 <span class="float-right <#if permissions?seq_contains("EDIT")>border-right mr-2 pr-2</#if>" ng-if="schema.readOnly">
                   <#if accessConfig.downloadPdf>
-                    <a href="../ws/data-access-request/${dar.id}/_pdf?lang=${.lang}" class="btn btn-default">
+                    <a href="${contextPath}/ws/data-access-request/${dar.id}/_pdf?lang=${.lang}" class="btn btn-default">
                       <i class="fas fa-file-pdf"></i> <@message "download"/>
                     </a>
                   <#else>
@@ -176,7 +176,7 @@
                 <div class="modal-footer justify-content-between">
                   <button type="button" class="btn btn-default" data-dismiss="modal"><@message "cancel"/></button>
                   <button type="button" class="btn btn-primary" data-dismiss="modal"
-                          onclick="micajs.dataAccess.approve('${dar.id}')"><@message "confirm"/></button>
+                          onclick="DataAccessService.approve('${dar.id}')"><@message "confirm"/></button>
                 </div>
               </div>
               <!-- /.modal-content -->
@@ -201,7 +201,7 @@
                 <div class="modal-footer justify-content-between">
                   <button type="button" class="btn btn-default" data-dismiss="modal"><@message "cancel"/></button>
                   <button type="button" class="btn btn-primary" data-dismiss="modal"
-                          onclick="micajs.dataAccess.conditionallyApprove('${dar.id}')"><@message "confirm"/></button>
+                          onclick="DataAccessService.conditionallyApprove('${dar.id}')"><@message "confirm"/></button>
                 </div>
               </div>
               <!-- /.modal-content -->
@@ -226,7 +226,7 @@
                 <div class="modal-footer justify-content-between">
                   <button type="button" class="btn btn-default" data-dismiss="modal"><@message "cancel"/></button>
                   <button type="button" class="btn btn-primary" data-dismiss="modal"
-                          onclick="micajs.dataAccess.reject('${dar.id}')"><@message "confirm"/></button>
+                          onclick="DataAccessService.reject('${dar.id}')"><@message "confirm"/></button>
                 </div>
               </div>
               <!-- /.modal-content -->
@@ -252,10 +252,10 @@
                   <button type="button" class="btn btn-default" data-dismiss="modal"><@message "cancel"/></button>
                     <#if accessConfig.withReview>
                       <button type="button" class="btn btn-primary" data-dismiss="modal"
-                              onclick="micajs.dataAccess.review('${dar.id}')"><@message "confirm"/></button>
+                              onclick="DataAccessService.review('${dar.id}')"><@message "confirm"/></button>
                     <#else>
                       <button type="button" class="btn btn-primary" data-dismiss="modal"
-                              onclick="micajs.dataAccess.submit('${dar.id}')"><@message "confirm"/></button>
+                              onclick="DataAccessService.submit('${dar.id}')"><@message "confirm"/></button>
                     </#if>
                 </div>
               </div>
@@ -282,10 +282,10 @@
                   <button type="button" class="btn btn-default" data-dismiss="modal"><@message "cancel"/></button>
                     <#if accessConfig.withReview>
                       <button type="button" class="btn btn-primary" data-dismiss="modal"
-                              onclick="micajs.dataAccess.review('${dar.id}')"><@message "confirm"/></button>
+                              onclick="DataAccessService.review('${dar.id}')"><@message "confirm"/></button>
                     <#else>
                       <button type="button" class="btn btn-primary" data-dismiss="modal"
-                              onclick="micajs.dataAccess.submit('${dar.id}')"><@message "confirm"/></button>
+                              onclick="DataAccessService.submit('${dar.id}')"><@message "confirm"/></button>
                     </#if>
                 </div>
               </div>
@@ -326,6 +326,7 @@
 <!-- ./wrapper -->
 
 <#include "libs/scripts.ftl">
+<#include "libs/data-access-scripts.ftl">
 <script>
     $(function () {
         $('#form-menu').addClass('active');//.attr('href', '#');

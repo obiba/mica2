@@ -1,3 +1,6 @@
+<!-- Repository -->
+<script src="${assetsPath}/js/mica-repo.js"></script>
+
 <!-- MicaConfig in JSON Format -->
 <script>
   const Mica = { config: ${configJson!"{}"}, locale: "${.lang}" };

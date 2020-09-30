@@ -20,7 +20,7 @@
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
     <!-- Content Header (Page header) -->
-    <@header titlePrefix="network" title=localize(network.acronym) subtitle=localize(network.name) breadcrumb=[["..", "home"], ["../networks", "networks"], [localize(network.acronym)]]/>
+    <@header titlePrefix="network" title=localize(network.acronym) subtitle=localize(network.name) breadcrumb=[["${contextPath}/", "home"], ["${contextPath}/networks", "networks"], [localize(network.acronym)]]/>
     <!-- /.content-header -->
 
     <!-- Main content -->
@@ -45,7 +45,7 @@
                 <div class="row">
                   <div class="col-md-3 col-sm-6 col-12">
                     <#if network.logo??>
-                      <img class="img-fluid" style="max-height: 200px" alt="${localize(network.acronym)} logo" src="../ws/network/${network.id}/file/${network.logo.id}/_download"/>
+                      <img class="img-fluid" style="max-height: 200px" alt="${localize(network.acronym)} logo" src="${contextPath}/ws/network/${network.id}/file/${network.logo.id}/_download"/>
                     <#else >
                       <p class="text-light text-center">
                         <i class="${networkIcon} fa-4x"></i>
@@ -57,7 +57,7 @@
                     <div class="col-md-3 col-sm-6 col-12">
                       <div class="info-box">
                         <span class="info-box-icon bg-success">
-                          <a href="../search#lists?type=studies&query=network(in(Mica_network.id,${network.id}))">
+                          <a href="${contextPath}/search#lists?type=studies&query=network(in(Mica_network.id,${network.id}))">
                             <i class="${studyIcon}"></i>
                           </a></span>
                         <div class="info-box-content">
@@ -73,7 +73,7 @@
                     <div class="col-md-3 col-sm-6 col-12">
                       <div class="info-box">
                         <span class="info-box-icon bg-warning">
-                          <a href="../search#lists?type=datasets&query=network(in(Mica_network.id,${network.id}))">
+                          <a href="${contextPath}/search#lists?type=datasets&query=network(in(Mica_network.id,${network.id}))">
                             <i class="${datasetIcon}"></i>
                           </a>
                         </span>
@@ -87,7 +87,7 @@
                     <div class="col-md-3 col-sm-6 col-12">
                       <div class="info-box">
                         <span class="info-box-icon bg-danger">
-                          <a href="../search#lists?type=variables&query=network(in(Mica_network.id,${network.id}))">
+                          <a href="${contextPath}/search#lists?type=variables&query=network(in(Mica_network.id,${network.id}))">
                             <i class="${variableIcon}"></i>
                           </a>
                         </span>
@@ -127,7 +127,7 @@
                       <i class="fas fa-minus"></i></button>
                   </div>
                   <#if affiliatedMembersQuery??>
-                    <a href="../ws/persons/_search/_download?limit=1000&query=${affiliatedMembersQuery?url('utf-8')}" class="btn btn-primary float-right mr-2">
+                    <a href="${contextPath}/ws/persons/_search/_download?limit=1000&query=${affiliatedMembersQuery?url('utf-8')}" class="btn btn-primary float-right mr-2">
                       <i class="fas fa-download"></i> <@message "network.associated-people"/>
                     </a>
                   </#if>
@@ -190,7 +190,7 @@
                     <tbody>
                     <#list networks as netwk>
                       <tr>
-                        <td><a href="../network/${netwk.id}">${localize(netwk.acronym)}</a></td>
+                        <td><a href="${contextPath}/network/${netwk.id}">${localize(netwk.acronym)}</a></td>
                         <td><small>${localize(netwk.name)}</small></td>
                         <@networkTDs network=netwk/>
                       </tr>
@@ -228,7 +228,7 @@
                     <tbody>
                     <#list individualStudies as study>
                       <tr>
-                        <td><a href="../study/${study.id}">${localize(study.acronym)}</a></td>
+                        <td><a href="${contextPath}/study/${study.id}">${localize(study.acronym)}</a></td>
                         <td><small>${localize(study.name)}</small></td>
                         <@individualStudyTDs study=study/>
                       </tr>
@@ -265,7 +265,7 @@
                     <tbody>
                     <#list harmonizationStudies as study>
                       <tr>
-                        <td><a href="../study/${study.id}">${localize(study.acronym)}</a></td>
+                        <td><a href="${contextPath}/study/${study.id}">${localize(study.acronym)}</a></td>
                         <td><small>${localize(study.name)}</small></td>
                         <@harmonizationStudyTDs study=study/>
                       </tr>

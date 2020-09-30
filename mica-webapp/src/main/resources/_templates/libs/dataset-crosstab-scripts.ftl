@@ -1,3 +1,5 @@
+<!-- Repository -->
+<script src="${assetsPath}/js/mica-repo.js"></script>
 
 <script>
   const Mica = {

@@ -102,7 +102,7 @@
               <#if user??>
                 <button id="cart-add-variables" type="button" class="btn btn-sm btn-success ml-2" @click="onAddQueryToCart" title="<@message "sets.cart.add-to-cart"/>"><i class="fas fa-cart-plus"></i></button>
               <#else>
-                <a href="../signin?redirect=${contextPath}/search" class="btn btn-sm btn-success ml-2" title="<@message "sets.cart.add-to-cart"/>"><i class="fas fa-cart-plus"></i></a>
+                <a href="${contextPath}/signin?redirect=${contextPath}/search" class="btn btn-sm btn-success ml-2" title="<@message "sets.cart.add-to-cart"/>"><i class="fas fa-cart-plus"></i></a>
               </#if>
             </#if>
             <#if downloadQueryEnabled>

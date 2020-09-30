@@ -21,7 +21,7 @@
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
     <!-- Content Header (Page header) -->
-    <@header titlePrefix=(type?lower_case + "-dataset") title=localize(dataset.acronym) subtitle=localize(dataset.name) breadcrumb=[["../", "home"], ["../datasets", "datasets"], [localize(dataset.acronym)]]/>
+    <@header titlePrefix=(type?lower_case + "-dataset") title=localize(dataset.acronym) subtitle=localize(dataset.name) breadcrumb=[["${contextPath}/", "home"], ["${contextPath}/datasets", "datasets"], [localize(dataset.acronym)]]/>
     <!-- /.content-header -->
 
     <!-- Main content -->
@@ -59,7 +59,7 @@
                     <div class="col-md-3 col-sm-6 col-12">
                       <div class="info-box">
                         <span class="info-box-icon bg-info">
-                          <a href="../search#lists?type=networks&query=dataset(in(Mica_dataset.id,${dataset.id}))">
+                          <a href="${contextPath}/search#lists?type=networks&query=dataset(in(Mica_dataset.id,${dataset.id}))">
                             <i class="${networkIcon}"></i>
                           </a>
                         </span>
@@ -75,7 +75,7 @@
                   <div class="col-md-3 col-sm-6 col-12">
                     <div class="info-box">
                       <span class="info-box-icon bg-danger">
-                        <a href="../search#lists?type=variables&query=dataset(in(Mica_dataset.id,${dataset.id}))">
+                        <a href="${contextPath}/search#lists?type=variables&query=dataset(in(Mica_dataset.id,${dataset.id}))">
                           <i class="${variableIcon}"></i>
                         </a>
                       </span>
@@ -95,11 +95,11 @@
                 <#if study??>
                   <div class="card-footer">
                     <@message "associated-study"/>
-                    <a class="btn btn-success ml-2" href="../study/${study.id}">
+                    <a class="btn btn-success ml-2" href="${contextPath}/study/${study.id}">
                       <i class="${studyIcon}"></i> ${localize(study.acronym)}
                     </a>
                     <#if showDatasetContingencyLink>
-                      <a class="btn btn-primary float-right ml-2" href="../dataset-crosstab/${dataset.id}">
+                      <a class="btn btn-primary float-right ml-2" href="${contextPath}/dataset-crosstab/${dataset.id}">
                         <i class="fas fa-cog"></i> <@message "dataset.crosstab.title"/>
                       </a>
                     </#if>
@@ -110,7 +110,7 @@
                             <@message "sets.cart.add-to-cart"/> <i class="fas fa-cart-plus"></i>
                           </button>
                         <#else>
-                          <button type="button" class="btn btn-link" onclick="window.location.href='../signin?redirect=${contextPath}/dataset/${dataset.id}';">
+                          <button type="button" class="btn btn-link" onclick="window.location.href='${contextPath}/signin?redirect=${contextPath}/dataset/${dataset.id}';">
                             <@message "sets.cart.add-to-cart"/> <i class="fas fa-cart-plus"></i>
                           </button>
                         </#if>
@@ -183,7 +183,7 @@
                       <#list studyTables as table>
                         <tr>
                           <td>
-                            <a href="../study/${table.study.id}">
+                            <a href="${contextPath}/study/${table.study.id}">
                               ${localize(table.study.acronym)}
                             </a>
                           </td>
@@ -219,7 +219,7 @@
                         <#list harmonizationTables as table>
                           <tr>
                             <td>
-                              <a href="../study/${table.study.id}">
+                              <a href="${contextPath}/study/${table.study.id}">
                                 ${localize(table.study.acronym)}
                               </a>
                             </td>
@@ -260,7 +260,7 @@
                         <th><@message "variable"/></th>
                         <#list allTables as table>
                           <th>
-                            <a href="../study/${table.studyId}">${localize(allStudies[table.studyId].acronym)}</a>
+                            <a href="${contextPath}/study/${table.studyId}">${localize(allStudies[table.studyId].acronym)}</a>
                             <#if table.name??>${localize(table.name)}</#if>
                             <#if table.description??><i class="fas fa-info-circle" title="${localize(table.description)}"></i></#if>
                           </th>

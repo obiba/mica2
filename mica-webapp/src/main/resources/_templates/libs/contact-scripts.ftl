@@ -11,8 +11,8 @@
       { name: 'message', title: '<@message "contact-message"/>' },
       { name: 'g-recaptcha-response', title: '<@message "captcha"/>' }
     ];
-    micajs.contact("#form", requiredFields, function() {
-      micajs.info("<@message "contact-sent"/>");
+    UserService.contact("#form", requiredFields, function() {
+      MicaService.toastInfo("<@message "contact-sent"/>");
     }, function (messageItems) {
       var alertId = "#alertFailure";
       var msg = "";

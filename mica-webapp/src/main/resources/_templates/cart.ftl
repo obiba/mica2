@@ -45,7 +45,7 @@
           <div class="modal-footer justify-content-between">
             <button type="button" class="btn btn-default" data-dismiss="modal"><@message "cancel"/></button>
             <button type="button" class="btn btn-primary" data-dismiss="modal"
-                    onclick="micajs.variable.set.deleteDocuments('${user.variablesCart.id}', micajs.variable.cart.storage.getSelections(), function() { window.location.reload(); })"><@message "confirm"/>
+                    onclick="VariablesSetService.deleteVariables('${user.variablesCart.id}', variablesCartStorage.getSelections(), function() { window.location.reload(); })"><@message "confirm"/>
             </button>
           </div>
         </div>

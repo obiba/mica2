@@ -52,6 +52,7 @@
 <!-- ./wrapper -->
 
 <#include "libs/scripts.ftl">
+<#include "libs/data-access-scripts.ftl">
 
 </body>
 </html>

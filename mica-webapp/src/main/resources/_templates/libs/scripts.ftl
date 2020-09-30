@@ -126,7 +126,7 @@
         });
         <#if cartEnabled && user?? && user.variablesCart??>
           const cart = { id: '${user.variablesCart.id}', count: ${user.variablesCart.count?c} };
-          micajs.variable.cart.showCount('#cart-count', cart, '${.lang}');
+          VariablesSetService.showCount('#cart-count', cart, '${.lang}');
           if (typeof onVariablesCartGet === 'function') {
             onVariablesCartGet(cart);
           }

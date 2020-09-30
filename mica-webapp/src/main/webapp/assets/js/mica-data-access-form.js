@@ -245,9 +245,9 @@ angular.module('ngObibaMica', ['ngResource'])
 
 function NgObibaMicaUrlProvider() {
   var registry = {
-    'TempFileUploadResource': micajs.normalizeUrl('/ws/files/temp'),
-    'TempFileResource': micajs.normalizeUrl('/ws/files/temp/:id'),
-    'SchemaFormAttachmentDownloadResource': micajs.normalizeUrl('/ws/:path/form/attachments/:attachmentName/:attachmentId/_download')
+    'TempFileUploadResource': MicaService.normalizeUrl('/ws/files/temp'),
+    'TempFileResource': MicaService.normalizeUrl('/ws/files/temp/:id'),
+    'SchemaFormAttachmentDownloadResource': MicaService.normalizeUrl('/ws/:path/form/attachments/:attachmentName/:attachmentId/_download')
   };
 
   function UrlProvider(registry) {
@@ -294,10 +294,10 @@ angular.module('formModule', ['schemaForm', 'hc.marked', 'angularMoment', 'schem
       $scope.$broadcast('schemaFormValidate');
       // check if the form is valid
       if ($scope.forms.requestForm.$valid) {
-        micajs.success(formMessages.validationSuccess);
+        MicaService.toastSuccess(formMessages.validationSuccess);
       } else {
         // an invalid form can be saved with warning
-        micajs.warning(formMessages.validationError);
+        MicaService.toastWarning(formMessages.validationError);
       }
     };
     $scope.save = function (id, type, aId) {
@@ -308,14 +308,14 @@ angular.module('formModule', ['schemaForm', 'hc.marked', 'angularMoment', 'schem
         redirect = '/data-access-' + type + '-form/' + aId;
       }
       axios.put(
-        micajs.normalizeUrl(url),
+        MicaService.normalizeUrl(url),
         $scope.model,
         {headers: {'Content-Type': 'application/json'}}
       ).then(function() {
         // check if the form was valid
-        micajs.redirect(micajs.normalizeUrl(redirect));
+        MicaService.redirect(MicaService.normalizeUrl(redirect));
       }).catch(response =>  {
-        micajs.error(formMessages.errorOnSave);
+        MicaService.toastError(formMessages.errorOnSave);
         console.dir(response);
       });
     };
@@ -323,10 +323,10 @@ angular.module('formModule', ['schemaForm', 'hc.marked', 'angularMoment', 'schem
       $scope.$broadcast('schemaFormValidate');
       // check if the form is valid
       if ($scope.forms.requestForm.$valid) {
-        micajs.dataAccess.submit(id, type, aId);
+        DataAccessService.submit(id, type, aId);
       } else {
         // an invalid form cannot be submitted
-        micajs.error(formMessages.validationErrorOnSubmit);
+        MicaService.toastError(formMessages.validationErrorOnSubmit);
       }
     };
   }]);

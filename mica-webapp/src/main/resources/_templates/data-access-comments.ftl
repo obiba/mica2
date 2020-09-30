@@ -95,6 +95,7 @@
 <!-- ./wrapper -->
 
 <#include "libs/scripts.ftl">
+<#include "libs/data-access-scripts.ftl">
 <#include "libs/data-access-comments-scripts.ftl">
 <@commentScripts/>
 <script>

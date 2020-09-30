@@ -148,7 +148,7 @@ const makeFilesVue = function(el, data, childrenFilter) {
           (folderPath.replace('/' + this.type + '/' + this.id, ''));
         console.log(relativePath);
         const that = this;
-        micajs.files.list(this.type, this.id, relativePath, function(data) {
+        FilesService.getFolder(this.type, this.id, relativePath, function(data) {
           that.rawFolder = data;
           that.path = that.basePath ? relativePath.replace(that.basePath, '') : relativePath;
         }, function(response) {
@@ -158,7 +158,7 @@ const makeFilesVue = function(el, data, childrenFilter) {
     }
   });
   $(el + '-container').hide();
-  micajs.files.list(vm.type, vm.id, vm.basePath + vm.path, function(data) {
+  FilesService.getFolder(vm.type, vm.id, vm.basePath + vm.path, function(data) {
     vm.rawFolder = data;
     if (vm.folder.children) {
       $(el + '-container').show();

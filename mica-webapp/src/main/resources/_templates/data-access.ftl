@@ -59,7 +59,7 @@
           <div class="modal-footer justify-content-between">
             <button type="button" class="btn btn-default" data-dismiss="modal"><@message "cancel"/></button>
             <button type="button" class="btn btn-primary" data-dismiss="modal"
-                    onclick="micajs.dataAccess.delete('${dar.id}')"><@message "confirm"/>
+                    onclick="DataAccessService.delete('${dar.id}')"><@message "confirm"/>
             </button>
           </div>
         </div>
@@ -152,7 +152,7 @@
               <span class="info-box-icon"><i class="${boxIcon}"></i></span>
 
               <div class="info-box-content">
-                <span class="info-box-text"><@message "last-feasibility-status"/> - <a class="text-white" href="../data-access-feasibility-form/${lastFeasibility.id}">${lastFeasibility.id}</a></span>
+                <span class="info-box-text"><@message "last-feasibility-status"/> - <a class="text-white" href="${contextPath}/data-access-feasibility-form/${lastFeasibility.id}">${lastFeasibility.id}</a></span>
                 <span class="info-box-number"><@message lastFeasibility.status.toString()/></span>
 
                 <div class="progress">
@@ -205,7 +205,7 @@
               <span class="info-box-icon"><i class="${boxIcon}"></i></span>
 
               <div class="info-box-content">
-                <span class="info-box-text"><@message "last-amendment-status"/> - <a class="text-white" href="../data-access-amendment-form/${lastAmendment.id}">${lastAmendment.id}</a></span>
+                <span class="info-box-text"><@message "last-amendment-status"/> - <a class="text-white" href="${contextPath}/data-access-amendment-form/${lastAmendment.id}">${lastAmendment.id}</a></span>
                 <span class="info-box-number"><@message lastAmendment.status.toString()/></span>
 
                 <div class="progress">
@@ -250,7 +250,7 @@
                 <#if user.username == dar.applicant>
                   <p><@message "opened-applicant-text"/></p>
                   <div>
-                    <a href="../data-access-form/${dar.id}" class="btn btn-primary" >
+                    <a href="${contextPath}/data-access-form/${dar.id}" class="btn btn-primary" >
                       <i class="fas fa-pen"></i> <@message "application-form"/>
                     </a>
                   </div>
@@ -264,7 +264,7 @@
                 <#if user.username == dar.applicant>
                   <p><@message "conditionally-approved-applicant-text"/></p>
                   <div>
-                    <a href="../data-access-form/${dar.id}" class="btn btn-primary" >
+                    <a href="${contextPath}/data-access-form/${dar.id}" class="btn btn-primary" >
                       <i class="fas fa-pen"></i> <@message "application-form"/>
                     </a>
                   </div>
@@ -280,7 +280,7 @@
                 <#else>
                   <p><@message "submitted-dao-text"/></p>
                   <div>
-                    <a href="../data-access-form/${dar.id}" class="btn btn-primary" >
+                    <a href="${contextPath}/data-access-form/${dar.id}" class="btn btn-primary" >
                       <i class="fas fa-pen"></i> <@message "application-form"/>
                     </a>
                   </div>
@@ -294,7 +294,7 @@
                 <#else>
                   <p><@message "reviewed-dao-text"/></p>
                   <div>
-                    <a href="../data-access-form/${dar.id}" class="btn btn-primary" >
+                    <a href="${contextPath}/data-access-form/${dar.id}" class="btn btn-primary" >
                       <i class="fas fa-pen"></i> <@message "application-form"/>
                     </a>
                   </div>
@@ -398,7 +398,7 @@
                 <#else>
                   <p><@message "rejected-dao-text"/></p>
                   <div>
-                    <a href="../data-access-form/${dar.id}" class="btn btn-primary" >
+                    <a href="${contextPath}/data-access-form/${dar.id}" class="btn btn-primary" >
                       <i class="fas fa-pen"></i> <@message "application-form"/>
                     </a>
                   </div>
@@ -437,7 +437,7 @@
                     <tbody>
                     <#list feasibilities as feasibility>
                       <tr>
-                        <td><a href="../data-access-feasibility-form/${feasibility.id}">${feasibility.id}</a></td>
+                        <td><a href="${contextPath}/data-access-feasibility-form/${feasibility.id}">${feasibility.id}</a></td>
                         <td data-sort="${feasibility.lastModifiedDate.toString(datetimeFormat)}" class="moment-datetime">${feasibility.lastModifiedDate.toString(datetimeFormat)}</td>
                         <td data-sort="<#if feasibility.submissionDate??>${feasibility.submissionDate.toString(datetimeFormat)}</#if>" class="moment-datetime"><#if feasibility.submissionDate??>${feasibility.submissionDate.toString(datetimeFormat)}</#if></td>
                         <td><i class="fas fa-circle text-${statusColor(feasibility.status.toString())}"></i> <@message feasibility.status.toString()/></td>
@@ -478,7 +478,7 @@
                     <tbody>
                     <#list amendments as amendment>
                     <tr>
-                      <td><a href="../data-access-amendment-form/${amendment.id}">${amendment.id}</a></td>
+                      <td><a href="${contextPath}/data-access-amendment-form/${amendment.id}">${amendment.id}</a></td>
                       <td data-sort="${amendment.lastModifiedDate.toString(datetimeFormat)}" class="moment-datetime">${amendment.lastModifiedDate.toString(datetimeFormat)}</td>
                       <td data-sort="<#if amendment.submissionDate??>${amendment.submissionDate.toString(datetimeFormat)}</#if>" class="moment-datetime"><#if amendment.submissionDate??>${amendment.submissionDate.toString(datetimeFormat)}</#if></td>
                       <td><i class="fas fa-circle text-${statusColor(amendment.status.toString())}"></i> <@message amendment.status.toString()/></td>
@@ -561,6 +561,7 @@
 <!-- ./wrapper -->
 
 <#include "libs/scripts.ftl">
+<#include "libs/data-access-scripts.ftl">
 <!-- Datepicker -->
 <script src="${assetsPath}/libs/node_modules/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js"></script>
 <script>
@@ -572,7 +573,7 @@
       format: 'yyyy-mm-dd'
     });
     $('#start-date-submit').click(function() {
-      micajs.dataAccess.startDate('${dar.id}', $('#start-date').val());
+      DataAccessService.setStartDate('${dar.id}', $('#start-date').val());
     });
   });
 </script>

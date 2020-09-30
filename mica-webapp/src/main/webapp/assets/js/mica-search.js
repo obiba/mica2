@@ -261,7 +261,7 @@ class MicaQueryAlertListener {
     );
 
     if (message) {
-      micajs.success(message);
+      MicaService.toastSuccess(message);
     }
   }
 }
@@ -623,12 +623,12 @@ new Vue({
       navigator.clipboard.writeText(this.queryToCopy);
     },
     onAddQueryToCart() {
-      micajs.variable.cart.addQuery(this.queryToCart, function(cart, oldCart) {
-        micajs.variable.cart.showCount('#cart-count', cart, Mica.locale);
+      VariablesSetService.addQueryToCart(this.queryToCart, function(cart, oldCart) {
+        VariablesSetService.showCount('#cart-count', cart, Mica.locale);
         if (cart.count === oldCart.count) {
-          micajs.info(Mica.tr['no-variable-added']);
+          MicaService.toastInfo(Mica.tr['no-variable-added']);
         } else {
-          micajs.success(Mica.tr['variables-added-to-cart'].replace('{0}', (cart.count - oldCart.count).toLocaleString(Mica.locale)));
+          MicaService.toastSuccess(Mica.tr['variables-added-to-cart'].replace('{0}', (cart.count - oldCart.count).toLocaleString(Mica.locale)));
         }
       });
     },
@@ -650,7 +650,7 @@ new Vue({
         form.submit();
         form.remove();
       } else {
-        micajs.error(Mica.tr['no-coverage-available']);
+        MicaService.toastError(Mica.tr['no-coverage-available']);
       }
     },
     onSearchModeToggle() {

@@ -80,10 +80,10 @@
                 <tbody>
                 <#list dar.attachments as attachment>
                   <tr>
-                    <td><a href="../../ws/data-access-request/${dar.id}/attachments/${attachment.id}/_download" download="${attachment.name}">${attachment.name}</a></td>
+                    <td><a href="${contextPath}/ws/data-access-request/${dar.id}/attachments/${attachment.id}/_download" download="${attachment.name}">${attachment.name}</a></td>
                     <td data-sort="${attachment.createdDate.toString(datetimeFormat)}" class="moment-datetime">${attachment.createdDate.toString(datetimeFormat)}</td>
                     <td>${si(attachment.size)}</td>
-                    <td><a href="#" onclick="micajs.dataAccess.deleteAttachment('${dar.id}','${attachment.id}')"><i class="fas fa-trash text-danger"></i></a></td>
+                    <td><a href="#" onclick="DataAccessService.deleteAttachment('${dar.id}','${attachment.id}')"><i class="fas fa-trash text-danger"></i></a></td>
                   </tr>
                 </#list>
                 </tbody>
@@ -148,6 +148,7 @@
 <!-- ./wrapper -->
 
 <#include "libs/scripts.ftl">
+<#include "libs/data-access-scripts.ftl">
 <script>
   $(function () {
     $('#documents-menu').addClass('active').attr('href', '#');
@@ -155,7 +156,7 @@
     $('#upload-document-submit').click(function() {
       var fileId = $('#file-id').val();
       if (fileId) {
-        micajs.dataAccess.attachFile('${dar.id}', fileId);
+        DataAccessService.attachFile('${dar.id}', fileId);
       }
     }).prop('disabled', true);
   });
@@ -165,7 +166,7 @@
       $('#progress-text').text(file.name);
       $('#progress-bar').css('width', '0%');
       $('#progress').show();
-      micajs.uploadTempFile(file, function(fileId) {
+      FilesService.uploadTempFile(file, function(fileId) {
         $('#file-id').val(fileId);
       }, function(percentCompleted) {
         $('#progress-bar').css('width', percentCompleted + '%');

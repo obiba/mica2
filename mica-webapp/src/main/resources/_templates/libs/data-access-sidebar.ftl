@@ -27,14 +27,14 @@
               class="fas fa-circle fa-2x pl-2 text-${statusColor(dar.status.toString())}"></i></span>
       </div>
       <div class="info">
-        <a href="../data-access/${dar.id}" class="d-inline">${applicant.fullName} </a>
+        <a href="${contextPath}/data-access/${dar.id}" class="d-inline">${applicant.fullName} </a>
       </div>
     </div>
 
     <nav class="mt-2">
       <ul data-widget="treeview" role="menu" data-accordion="false" class="nav nav-pills nav-sidebar flex-column">
         <li class="nav-item">
-          <a id="dashboard-menu" href="../data-access/${dar.id}" class="nav-link">
+          <a id="dashboard-menu" href="${contextPath}/data-access/${dar.id}" class="nav-link">
             <i class="fas fa-tachometer-alt nav-icon"></i>
             <p><@message "dashboard"/></p>
           </a>
@@ -54,7 +54,7 @@
             <ul class="nav nav-treeview">
               <#list feasibilities as feasibility>
                 <li class="nav-item">
-                  <a id="feasibility-form-menu-${feasibility.id}" href="../data-access-feasibility-form/${feasibility.id}" class="nav-link">
+                  <a id="feasibility-form-menu-${feasibility.id}" href="${contextPath}/data-access-feasibility-form/${feasibility.id}" class="nav-link">
                     <i class="fas fa-circle nav-icon text-${statusColor(feasibility.status.toString())}"
                        title="<@message feasibility.status.toString()/>"></i>
                     <p>${feasibility.id}</p>
@@ -73,7 +73,7 @@
           </li>
         </#if>
         <li class="nav-item">
-          <a id="form-menu" href="../data-access-form/${dar.id}" class="nav-link">
+          <a id="form-menu" href="${contextPath}/data-access-form/${dar.id}" class="nav-link">
             <i class="fas fa-book nav-icon"></i>
             <p>
               <@message "application-form"/>
@@ -100,7 +100,7 @@
             <ul class="nav nav-treeview">
               <#list amendments as amendment>
                 <li class="nav-item">
-                  <a id="amendment-form-menu-${amendment.id}" href="../data-access-amendment-form/${amendment.id}" class="nav-link">
+                  <a id="amendment-form-menu-${amendment.id}" href="${contextPath}/data-access-amendment-form/${amendment.id}" class="nav-link">
                     <i class="fas fa-circle nav-icon text-${statusColor(amendment.status.toString())}"
                        title="<@message amendment.status.toString()/>"></i>
                     <p>${amendment.id}</p>
@@ -119,7 +119,7 @@
           </li>
         </#if>
         <li class="nav-item">
-          <a id="documents-menu" href="../data-access-documents/${dar.id}" class="nav-link">
+          <a id="documents-menu" href="${contextPath}/data-access-documents/${dar.id}" class="nav-link">
             <i class="fas fa-copy nav-icon"></i>
             <p><@message "documents"/></p>
             <#if dar.attachments?size != 0>
@@ -128,7 +128,7 @@
           </a>
         </li>
         <li class="nav-item">
-          <a id="comments-menu" href="../data-access-comments/${dar.id}" class="nav-link">
+          <a id="comments-menu" href="${contextPath}/data-access-comments/${dar.id}" class="nav-link">
             <i class="fas fa-comments nav-icon"></i>
             <p><@message "comments"/></p>
             <#if commentsCount != 0>
@@ -138,7 +138,7 @@
         </li>
           <#if isAdministrator || isDAO>
             <li class="nav-item">
-              <a id="private-comments-menu" href="../data-access-private-comments/${dar.id}" class="nav-link">
+              <a id="private-comments-menu" href="${contextPath}/data-access-private-comments/${dar.id}" class="nav-link">
                 <i class="fas fa-lock nav-icon"></i>
                 <p><@message "private-comments"/></p>
                 <#if privateCommentsCount != 0>
@@ -148,7 +148,7 @@
             </li>
           </#if>
         <li class="nav-item">
-          <a id="history-menu" href="../data-access-history/${dar.id}" class="nav-link">
+          <a id="history-menu" href="${contextPath}/data-access-history/${dar.id}" class="nav-link">
             <i class="fas fa-calendar-alt nav-icon"></i>
             <p><@message "history"/></p>
           </a>
@@ -178,7 +178,7 @@
       <div class="modal-footer justify-content-between">
         <button type="button" class="btn btn-default" data-dismiss="modal"><@message "cancel"/></button>
         <button type="button" class="btn btn-primary" data-dismiss="modal"
-                onclick="micajs.dataAccess.create('${dar.id}', 'feasibility')"><@message "confirm"/>
+                onclick="DataAccessService.create('${dar.id}', 'feasibility')"><@message "confirm"/>
         </button>
       </div>
     </div>
@@ -204,7 +204,7 @@
       <div class="modal-footer justify-content-between">
         <button type="button" class="btn btn-default" data-dismiss="modal"><@message "cancel"/></button>
         <button type="button" class="btn btn-primary" data-dismiss="modal"
-                onclick="micajs.dataAccess.create('${dar.id}', 'amendment')"><@message "confirm"/>
+                onclick="DataAccessService.create('${dar.id}', 'amendment')"><@message "confirm"/>
         </button>
       </div>
     </div>

@@ -6,18 +6,21 @@
 <script src="${assetsPath}/libs/node_modules/vue/dist/vue.js"></script>
 <script src="${assetsPath}/js/mica-files.js"></script>
 
+<!-- Repository -->
+<script src="${assetsPath}/js/mica-repo.js"></script>
+
 <script>
   const Mica = {};
 
   // cart
   <#if cartEnabled>
   const onVariablesCartAdd = function(id) {
-    micajs.variable.cart.addQuery('dataset(in(Mica_dataset.id,' + id + ')),variable(limit(0,10000),fields(variableType))', function(cart, oldCart) {
-      micajs.variable.cart.showCount('#cart-count', cart, '${.lang}');
+    VariablesSetService.addQueryToCart('dataset(in(Mica_dataset.id,' + id + ')),variable(limit(0,10000),fields(variableType))', function(cart, oldCart) {
+      VariablesSetService.showCount('#cart-count', cart, '${.lang}');
       if (cart.count === oldCart.count) {
-        micajs.info("<@message "sets.cart.no-variable-added"/>");
+        MicaService.toastInfo("<@message "sets.cart.no-variable-added"/>");
       } else {
-        micajs.success("<@message "variables-added-to-cart"/>".replace('{0}', (cart.count - oldCart.count).toLocaleString('${.lang}')));
+        MicaService.toastSuccess("<@message "variables-added-to-cart"/>".replace('{0}', (cart.count - oldCart.count).toLocaleString('${.lang}')));
       }
     });
   };
@@ -47,7 +50,7 @@
   };
 
   $(function () {
-    micajs.stats('datasets', {query: "dataset(in(Mica_dataset.id,${dataset.id}))"}, function (stats) {
+    QueryService.getCounts('datasets', {query: "dataset(in(Mica_dataset.id,${dataset.id}))"}, function (stats) {
       $('#network-hits').text(new Intl.NumberFormat('${.lang}').format(stats.networkResultDto.totalHits));
       $('#study-hits').text(new Intl.NumberFormat('${.lang}').format(stats.studyResultDto.totalHits));
       $('#variable-hits').text(new Intl.NumberFormat('${.lang}').format(stats.variableResultDto.totalHits));
@@ -72,7 +75,7 @@
         "processing": true,
         "serverSide": true,
         "ajax": function(data, callback) {
-          micajs.dataset.harmonizedVariables('${dataset.id}', data.start, data.length, function(response) {
+          DatasetService.getHarmonizedVariables('${dataset.id}', data.start, data.length, function(response) {
             $('#loadingSummary').hide();
             if (response.variableHarmonizations) {
               let rows = [];
@@ -80,10 +83,10 @@
                 let row = [];
                 const variableHarmonization = response.variableHarmonizations[i];
                 const name = variableHarmonization.dataschemaVariableRef.name;
-                row.push('<a href="../variable/${dataset.id}:' + name + ':Dataschema">' + name + '</a>');
+                row.push('<a href="${contextPath}/variable/${dataset.id}:' + name + ':Dataschema">' + name + '</a>');
                 for (const j in variableHarmonization.harmonizedVariables) {
                   const harmonizedVariable = variableHarmonization.harmonizedVariables[j];
-                  let iconClass = micajs.harmo.statusClass(harmonizedVariable.status);
+                  let iconClass = VariableService.getHarmoStatusClass(harmonizedVariable.status);
                   if (!harmonizedVariable.status || harmonizedVariable.status.length === 0) {
                     row.push('<i class="' + iconClass + '"></i>');
                   } else {
@@ -191,7 +194,7 @@
 
     <#if datasetVariablesClassificationsTaxonomies?? && datasetVariablesClassificationsTaxonomies?size gt 0>
       const taxonomies = ['${datasetVariablesClassificationsTaxonomies?join("', '")}'];
-      micajs.dataset.variablesCoverage('${dataset.id}', taxonomies, '${.lang}', function(data) {
+      DatasetService.getVariablesCoverage('${dataset.id}', taxonomies, '${.lang}', function(data) {
         if (data && data.charts) {
           Mica.variablesCoverage = data.charts.map(chart => prepareVariablesClassificationsData(chart));
         }

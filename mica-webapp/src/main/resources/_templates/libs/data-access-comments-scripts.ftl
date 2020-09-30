@@ -33,7 +33,7 @@
           );
           $("#send-comment").click(function() {
               console.log(newCommentMDE.value());
-              micajs.dataAccess.sendComment('${dar.id}', newCommentMDE.value(), ${isPrivate})
+              DataAccessService.sendComment('${dar.id}', newCommentMDE.value(), ${isPrivate})
           });
       });
   </script>

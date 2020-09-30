@@ -1,4 +1,3 @@
-/* exported micajs */
 'use strict';
 
 class LocalizedValues {
@@ -361,68 +360,125 @@ class MicaSetStorage extends MicaLocalStorage {
   }
 }
 
-const micajs = (function() {
+/**
+ * General utility services.
+ */
+class MicaService {
 
-  const normalizeUrl = function(url) {
+  static normalizeUrl(url) {
     return contextPath + url;
-  };
+  }
 
-  // get the stats
-  const micaStats = function(type, params, onSuccess, onFailure) {
-    let url = '/ws/' + type + '/_rql';
-    if (params && Object.keys(params).length>0) {
-      let query = Object.keys(params).map(key => key + '=' + params[key]).join('&');
-      url = url + '?' + query;
-    }
-    $.ajax({
-      url: normalizeUrl(url),
-      type: 'GET',
-      dataType : 'json',
-    })
-      .done(function(json) {
-        //console.log(json);
-        if (onSuccess) {
-          onSuccess(json);
+  static toastInfo(text) {
+    toastr.info(text);
+  }
+
+  static toastSuccess(text) {
+    toastr.success(text);
+  }
+
+  static toastWarning(text) {
+    toastr.warning(text);
+  }
+
+  static toastError(text) {
+    toastr.error(text);
+  }
+
+  static redirect(path) {
+    window.location.assign(path);
+  }
+
+}
+
+/**
+ * Files service.
+ */
+class FilesService {
+
+  /**
+   * Get the document's folder content at path.
+   *
+   * @param type
+   * @param id
+   * @param path
+   * @param onsuccess
+   * @param onfailure
+   */
+  static getFolder(type, id, path, onsuccess, onfailure) {
+    let url = '/ws/file/' + type + '/' + id + (path ? path : '/');
+    axios.get(MicaService.normalizeUrl(url))
+      .then(response => {
+        //console.dir(response);
+        if (onsuccess) {
+          onsuccess(response.data);
         }
       })
-      .fail(function(xhr, status, errorThrown) {
-        console.log('The request has failed');
-        console.log('  Error: ' + errorThrown);
-        console.log('  Status: ' + status + ' ' + xhr.status);
-        console.dir(xhr);
-        if (onFailure) {
-          onFailure(xhr, errorThrown);
+      .catch(response => {
+        //console.dir(response);
+        if (onfailure) {
+          onfailure(response);
         }
       });
-  };
+  }
 
-  const micaRedirectError = function(xhr, errorThrown) {
-    $.redirect(normalizeUrl('/error'), {
-      'status': xhr.status,
-      'message': errorThrown
-    }, 'POST');
-  };
+  /**
+   * Upload a file in the temporary location.
+   *
+   * @param file
+   * @param onsuccess
+   * @param onprogress
+   */
+  static uploadTempFile(file, onsuccess, onprogress) {
+    let data = new FormData();
+    data.append('file', file);
+    let config = {
+      onUploadProgress: function(progressEvent) {
+        let percentCompleted = Math.round( (progressEvent.loaded * 100) / progressEvent.total );
+        onprogress(percentCompleted);
+      }
+    };
+    let url = '/ws/files/temp';
+    axios.post(MicaService.normalizeUrl(url), data, config)
+      .then(response => {
+        //console.dir(response);
+        let fileId = response.headers.location.split('/').pop();
+        onsuccess(fileId);
+      })
+      .catch(response => {
+        console.dir(response);
+        MicaService.toastError('File upload failed.');
+      });
+  }
+}
 
-  const micaRedirect = function(path) {
-    window.location.assign(path);
-  };
+/**
+ * User management.
+ */
+class UserService {
 
-  const signin = function(formId, onFailure) {
+  /**
+   * Check and submit signin form.
+   *
+   * @param formId
+   * @param onFailure
+   */
+  static signin(formId, onFailure) {
     $(formId).submit(function(e) {
       e.preventDefault(); // avoid to execute the actual submit of the form.
       let form = $(this);
       let url = '/ws/auth/sessions';
       let data = form.serialize(); // serializes the form's elements.
 
-      axios.post(normalizeUrl(url), data)
+      axios.post(MicaService.normalizeUrl(url), data)
         .then(() => {
           //console.dir(response);
-          let redirect = normalizeUrl('/');
+          let redirect = MicaService.normalizeUrl('/');
           const q = new URLSearchParams(window.location.search);
           if (q.get('redirect')) {
             redirect = q.get('redirect');
           }
-          micaRedirect(redirect);
+          MicaService.redirect(redirect);
         })
         .catch(handle => {
           console.dir(handle);
@@ -432,9 +488,16 @@ const micajs = (function() {
           }
         });
     });
-  };
+  }
 
-  const signup = function(formId, requiredFields, onFailure) {
+  /**
+   * Check and submit signup form.
+   *
+   * @param formId
+   * @param requiredFields
+   * @param onFailure
+   */
+  static signup(formId, requiredFields, onFailure) {
     $(formId).submit(function(e) {
       e.preventDefault(); // avoid to execute the actual submit of the form.
       let form = $(this);
@@ -457,7 +520,7 @@ const micajs = (function() {
             return field.name === item.name && field.value && field.value.trim().length>0;
           }).length;
           if (found === 0) {
-             missingFields.push(item.title);
+            missingFields.push(item.title);
           }
         });
         if (missingFields.length>0) {
@@ -476,10 +539,10 @@ const micajs = (function() {
 
       const realmField = getField('realm');
 
-      axios.post(normalizeUrl(url), data)
+      axios.post(MicaService.normalizeUrl(url), data)
         .then(() => {
           //console.dir(response);
-          let redirect = normalizeUrl('/');
+          let redirect = MicaService.normalizeUrl('/');
           const q = new URLSearchParams(window.location.search);
           if (q.get('redirect')) {
             redirect = q.get('redirect');
@@ -488,7 +551,7 @@ const micajs = (function() {
           } else {
             redirect = 'just-registered';
           }
-          micaRedirect(redirect);
+          MicaService.redirect(redirect);
         })
         .catch(handle => {
           console.dir(handle);
@@ -505,17 +568,28 @@ const micajs = (function() {
     });
   };
 
-  const signout = function(redirect) {
+  /**
+   * Signout current user.
+   *
+   * @param redirect
+   */
+  static signout(redirect) {
     $.ajax({
       type: 'DELETE',
-      url: normalizeUrl('/ws/auth/session/_current')
+      url: MicaService.normalizeUrl('/ws/auth/session/_current')
     })
-    .always(function() {
-      micaRedirect(redirect || normalizeUrl('/'));
-    });
-  };
+      .always(function() {
+        MicaService.redirect(redirect || MicaService.normalizeUrl('/'));
+      });
+  }
 
-  const forgotPassword = function(formId, onFailure) {
+  /**
+   * Check and submit forgot password form.
+   *
+   * @param formId
+   * @param onFailure
+   */
+  static forgotPassword(formId, onFailure) {
     $(formId).submit(function(e) {
       e.preventDefault(); // avoid to execute the actual submit of the form.
       let form = $(this);
@@ -526,19 +600,24 @@ const micajs = (function() {
         return;
       }
 
-      axios.post(normalizeUrl(url), data)
+      axios.post(MicaService.normalizeUrl(url), data)
         .then(() => {
           //console.dir(response);
-          micaRedirect(normalizeUrl('/'));
+          MicaService.redirect(MicaService.normalizeUrl('/'));
         })
         .catch(handle => {
           console.dir(handle);
           onFailure();
         });
     });
-  };
+  }
 
-  const changeLanguage = function(lang) {
+  /**
+   * Switch page language.
+   *
+   * @param lang
+   */
+  static changeLanguage(lang) {
     let key = 'language';
     let value = encodeURI(lang);
     let kvp = window.location.search.substr(1).split('&');
@@ -562,7 +641,15 @@ const micajs = (function() {
     window.location.search = kvp.join('&');
   };
 
-  const contact = function(formId, requiredFields, onSuccess, onFailure) {
+  /**
+   * Check and submit contact request form.
+   *
+   * @param formId
+   * @param requiredFields
+   * @param onSuccess
+   * @param onFailure
+   */
+  static contact(formId, requiredFields, onSuccess, onFailure) {
     $(formId).submit(function(e) {
       e.preventDefault(); // avoid to execute the actual submit of the form.
       let form = $(this);
@@ -595,7 +682,7 @@ const micajs = (function() {
         }
       }
 
-      axios.post(normalizeUrl(url), data)
+      axios.post(MicaService.normalizeUrl(url), data)
         .then(() => {
           onSuccess();
         })
@@ -610,303 +697,14 @@ const micajs = (function() {
           }
         });
     });
-  };
+  }
 
-  const micaInfo = function(text) {
-    toastr.info(text);
-  };
-  const micaSuccess = function(text) {
-    toastr.success(text);
-  };
-  const micaWarning = function(text) {
-    toastr.warning(text);
-  };
-  const micaError = function(text) {
-    toastr.error(text);
-  };
+}
 
-  //
-  // Data access
-  //
-
-  const createDataAccess = function(id, type) {
-    let url = '/ws/data-access-requests/_empty';
-    if (type && id) {
-      if (type === 'amendment') {
-        url = '/ws/data-access-request/' + id + '/amendments/_empty';
-      } else {
-        url = '/ws/data-access-request/' + id + '/feasibilities/_empty';
-      }
-    }
-    axios.post(normalizeUrl(url))
-      .then(response => {
-        //console.dir(response);
-        if (response.status === 201) {
-          const tokens = response.headers.location.split('/');
-          const createdId = tokens[tokens.length - 1];
-          let redirect = '/data-access/' + createdId;
-          if (type) {
-            redirect = '/data-access-' + type + '-form/' + createdId;
-          }
-          micaRedirect(normalizeUrl(redirect));
-        }
-      })
-      .catch(response => {
-        console.dir(response);
-        micaError('Creation failed.');
-      });
-  };
-
-  const deleteDataAccess = function(id, type, aId) {
-    let url = '/ws/data-access-request/' + id;
-    let redirect = '/data-accesses';
-    if (type && aId) {
-      url = url + '/' + type + '/' + aId;
-      redirect = '/data-access/' + id;
-    }
-    axios.delete(normalizeUrl(url))
-      .then(() => {
-        //console.dir(response);
-        micaRedirect(normalizeUrl(redirect));
-      })
-      .catch(response => {
-        console.dir(response);
-        micaError('Deletion failed.');
-      });
-  };
-
-  const submitDataAccess = function(id, type, aId) {
-    let url = '/ws/data-access-request/' + id + '/_status?to=SUBMITTED';
-    let redirect = '/data-access-form/' + id;
-    if (type && aId) {
-      url = '/ws/data-access-request/' + id + '/' + type + '/' + aId + '/_status?to=SUBMITTED';
-      redirect = '/data-access-' + type + '-form/' + aId;
-    }
-    axios.put(normalizeUrl(url))
-      .then(() => {
-        //console.dir(response);
-        micaRedirect(normalizeUrl(redirect));
-      })
-      .catch(response => {
-        console.dir(response);
-        micaError('Submission failed.');
-      });
-  };
-
-  const reopenDataAccess = function(id, type, aId) {
-    let url = '/ws/data-access-request/' + id + '/_status?to=OPENED';
-    let redirect = '/data-access-form/' + id;
-    if (type && aId) {
-      url = '/ws/data-access-request/' + id + '/' + type + '/' + aId + '/_status?to=OPENED';
-      redirect = '/data-access-' + type + '-form/' + aId;
-    }
-    axios.put(normalizeUrl(url))
-      .then(() => {
-        //console.dir(response);
-        micaRedirect(normalizeUrl(redirect));
-      })
-      .catch(response => {
-        console.dir(response);
-        micaError('Reopen failed.');
-      });
-  };
-
-  const reviewDataAccess = function(id, type, aId) {
-    let url = '/ws/data-access-request/' + id + '/_status?to=REVIEWED';
-    let redirect = '/data-access-form/' + id;
-    if (type && aId) {
-      url = '/ws/data-access-request/' + id + '/' + type + '/' + aId + '/_status?to=REVIEWED';
-      redirect = '/data-access-' + type + '-form/' + aId;
-    }
-    axios.put(normalizeUrl(url))
-      .then(() => {
-        //console.dir(response);
-        micaRedirect(normalizeUrl(redirect));
-      })
-      .catch(response => {
-        console.dir(response);
-        micaError('Review failed.');
-      });
-  };
-
-  const approveDataAccess = function(id, type, aId) {
-    let url = '/ws/data-access-request/' + id + '/_status?to=APPROVED';
-    let redirect = '/data-access-form/' + id;
-    if (type && aId) {
-      url = '/ws/data-access-request/' + id + '/' + type + '/' + aId + '/_status?to=APPROVED';
-      redirect = '/data-access-' + type + '-form/' + aId;
-    }
-    axios.put(normalizeUrl(url))
-      .then(() => {
-        //console.dir(response);
-        micaRedirect(normalizeUrl(redirect));
-      })
-      .catch(response => {
-        console.dir(response);
-        micaError('Approval failed.');
-      });
-  };
-
-  const conditionallyApproveDataAccess = function(id, type, aId) {
-    let url = '/ws/data-access-request/' + id + '/_status?to=CONDITIONALLY_APPROVED';
-    let redirect = '/data-access-form/' + id;
-    if (type && aId) {
-      url = '/ws/data-access-request/' + id + '/' + type + '/' + aId + '/_status?to=CONDITIONALLY_APPROVED';
-      redirect = '/data-access-' + type + '-form/' + aId;
-    }
-    axios.put(normalizeUrl(url))
-      .then(() => {
-        //console.dir(response);
-        micaRedirect(normalizeUrl(redirect));
-      })
-      .catch(response => {
-        console.dir(response);
-        micaError('Conditional approval failed.');
-      });
-  };
-
-  const rejectDataAccess = function(id, type, aId) {
-    let url = '/ws/data-access-request/' + id + '/_status?to=REJECTED';
-    let redirect = '/data-access-form/' + id;
-    if (type && aId) {
-      url = '/ws/data-access-request/' + id + '/' + type + '/' + aId + '/_status?to=REJECTED';
-      redirect = '/data-access-' + type + '-form/' + aId;
-    }
-    axios.put(normalizeUrl(url))
-      .then(() => {
-        //console.dir(response);
-        micaRedirect(normalizeUrl(redirect));
-      })
-      .catch(response => {
-        console.dir(response);
-        micaError('Rejection failed.');
-      });
-  };
-
-  const sendDataAccessComment = function(id, message, isPrivate) {
-    let url = '/ws/data-access-request/' + id + '/comments';
-    let redirect = '/data-access-comments/' + id;
-    if (isPrivate) {
-      url = url + '?admin=true';
-      redirect = '/data-access-private-comments/' + id;
-    }
-    axios({
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      url: normalizeUrl(url),
-      data: message
-    })
-      .then(() => {
-        //console.dir(response);
-        micaRedirect(normalizeUrl(redirect));
-      })
-      .catch(response => {
-        console.dir(response);
-        micaError('Sending comment failed.');
-      });
-  };
-
-  const deleteDataAccessComment = function(id, cid, isPrivate) {
-    let url = '/ws/data-access-request/' + id + '/comment/' + cid;
-    let redirect = '/data-access-comments/' + id;
-    if (isPrivate) {
-      url = url + '?admin=true';
-      redirect = '/data-access-private-comments/' + id;
-    }
-    axios.delete(normalizeUrl(url))
-      .then(() => {
-        //console.dir(response);
-        micaRedirect(normalizeUrl(redirect));
-      })
-      .catch(response => {
-        console.dir(response);
-        micaError('Deleting comment failed.');
-      });
-  };
-
-  const addDataAccessAction = function(id, action) {
-    //console.dir(action);
-    let url = '/ws/data-access-request/' + id + '/_log-actions';
-    let redirect = '/data-access-history/' + id;
-    axios.post(normalizeUrl(url), action)
-      .then(() => {
-        //console.dir(response);
-        micaRedirect(normalizeUrl(redirect));
-      })
-      .catch(response => {
-        console.dir(response);
-        micaError('Adding action failed.');
-      });
-  };
-
-  const setDataAccessStartDate = function(id, startDate) {
-    //console.log(startDate);
-    let url = '/ws/data-access-request/' + id + '/_start-date?date=' + startDate;
-    let redirect = '/data-access/' + id;
-    axios.put(normalizeUrl(url))
-      .then(() => {
-        //console.dir(response);
-        micaRedirect(normalizeUrl(redirect));
-      })
-      .catch(response => {
-        console.dir(response);
-        micaError('Setting start date failed.');
-      });
-  };
-
-  const deleteDataAccessAttachment = function(id, fileId) {
-    let url = '/ws/data-access-request/' + id + '/attachments/' + fileId;
-    let redirect = '/data-access-documents/' + id;
-    axios.delete(normalizeUrl(url))
-      .then(() => {
-        //console.dir(response);
-        micaRedirect(normalizeUrl(redirect));
-      })
-      .catch(response => {
-        console.dir(response);
-        micaError('File deletion failed.');
-      });
-  };
-
-  const uploadTempFile = function(file, onsuccess, onprogress) {
-    let data = new FormData();
-    data.append('file', file);
-    let config = {
-      onUploadProgress: function(progressEvent) {
-        let percentCompleted = Math.round( (progressEvent.loaded * 100) / progressEvent.total );
-        onprogress(percentCompleted);
-      }
-    };
-    let url = '/ws/files/temp';
-    axios.post(normalizeUrl(url), data, config)
-      .then(response => {
-        //console.dir(response);
-        let fileId = response.headers.location.split('/').pop();
-        onsuccess(fileId);
-      })
-      .catch(response => {
-        console.dir(response);
-        micaError('File upload failed.');
-      });
-  };
-
-  const attachDataAccessFile = function(id, fileId) {
-    let url = '/ws/data-access-request/' + id + '/attachments/' + fileId;
-    let redirect = '/data-access-documents/' + id;
-    axios.post(normalizeUrl(url))
-      .then(() => {
-        //console.dir(response);
-        micaRedirect(normalizeUrl(redirect));
-      })
-      .catch(response => {
-        console.dir(response);
-        micaError('File attachment failed.');
-      });
-  };
-
-  //
-  // Variable
-  //
+/**
+ * Variables set utils.
+ */
+class VariablesSetService {
 
   /**
    * Get all variables sets, including the cart (set without a name).
@@ -914,9 +712,9 @@ const micajs = (function() {
    * @param onsuccess
    * @param onfailure
    */
-  const variablesSets = function(onsuccess, onfailure) {
+  static getSets(onsuccess, onfailure) {
     let url = '/ws/variables/sets';
-    axios.get(normalizeUrl(url))
+    axios.get(MicaService.normalizeUrl(url))
       .then(response => {
         if (onsuccess) {
           onsuccess(response.data);
@@ -928,7 +726,7 @@ const micajs = (function() {
           onfailure(response);
         }
       });
-  };
+  }
 
   /**
    * List the variables of a set.
@@ -939,13 +737,44 @@ const micajs = (function() {
    * @param onsuccess
    * @param onfailure
    */
-  const variablesSetSearchDocuments = function(id, from, limit, onsuccess, onfailure) {
+  static search(id, from, limit, onsuccess, onfailure) {
     let url = '/ws/variables/_rql?query=variable(' +
-        'in(Mica_variable.sets,' + id + '),' +
-        'limit(' + from + ',' + limit + '),' +
-        'fields(attributes.label.*,variableType,datasetId,datasetAcronym,attributes.Mlstr_area*),' +
-        'sort(variableType,containerId,populationWeight,dataCollectionEventWeight,datasetId,index,name))';
-    axios.get(normalizeUrl(url))
+      'in(Mica_variable.sets,' + id + '),' +
+      'limit(' + from + ',' + limit + '),' +
+      'fields(attributes.label.*,variableType,datasetId,datasetAcronym,attributes.Mlstr_area*),' +
+      'sort(variableType,containerId,populationWeight,dataCollectionEventWeight,datasetId,index,name))';
+    axios.get(MicaService.normalizeUrl(url))
+      .then(response => {
+        if (onsuccess) {
+          onsuccess(response.data);
+        }
+      })
+      .catch(response => {
+        console.dir(response);
+        if (onfailure) {
+          onfailure(response);
+        }
+      });
+  }
+
+  /**
+   * Delete all (no selection) or selected documents from the set.
+   *
+   * @param id
+   * @param selected
+   * @param onsuccess
+   * @param onfailure
+   */
+  static deleteVariables(id, selected, onsuccess, onfailure) {
+    let url = '/ws/variables/set/' + id + '/documents';
+    if (selected && selected.length>1) {
+      url = url + '/_delete';
+      axios({
+        method: 'POST',
+        headers: { 'content-type': 'text/plain' },
+        url: MicaService.normalizeUrl(url),
+        data: selected.join('\n')
+      })
         .then(response => {
           if (onsuccess) {
             onsuccess(response.data);
@@ -957,52 +786,21 @@ const micajs = (function() {
             onfailure(response);
           }
         });
-  };
-
-  /**
-   * Delete all (no selection) or selected documents from the set.
-   *
-   * @param id
-   * @param selected
-   * @param onsuccess
-   * @param onfailure
-   */
-  const variablesSetDeleteDocuments = function(id, selected, onsuccess, onfailure) {
-    let url = '/ws/variables/set/' + id + '/documents';
-    if (selected && selected.length>1) {
-      url = url + '/_delete';
-      axios({
-        method: 'POST',
-        headers: { 'content-type': 'text/plain' },
-        url: normalizeUrl(url),
-        data: selected.join('\n')
-      })
-          .then(response => {
-            if (onsuccess) {
-              onsuccess(response.data);
-            }
-          })
-          .catch(response => {
-            console.dir(response);
-            if (onfailure) {
-              onfailure(response);
-            }
-          });
     } else {
-      axios.delete(normalizeUrl(url))
-          .then(response => {
-            if (onsuccess) {
-              onsuccess(response.data);
-            }
-          })
-          .catch(response => {
-            console.dir(response);
-            if (onfailure) {
-              onfailure(response);
-            }
-          });
+      axios.delete(MicaService.normalizeUrl(url))
+        .then(response => {
+          if (onsuccess) {
+            onsuccess(response.data);
+          }
+        })
+        .catch(response => {
+          console.dir(response);
+          if (onfailure) {
+            onfailure(response);
+          }
+        });
     }
-  };
+  }
 
   /**
    * Get or create the variables cart.
@@ -1010,9 +808,9 @@ const micajs = (function() {
    * @param onsuccess
    * @param onfailure
    */
-  const variablesCart = function(onsuccess, onfailure) {
+  static getOrCreateCart(onsuccess, onfailure) {
     let url = '/ws/variables/sets/_cart';
-    axios.get(normalizeUrl(url))
+    axios.get(MicaService.normalizeUrl(url))
       .then(response => {
         if (onsuccess) {
           onsuccess(response.data);
@@ -1024,7 +822,7 @@ const micajs = (function() {
           onfailure(response);
         }
       });
-  };
+  }
 
   /**
    * Add variable IDs to the cart (verifies that it exists and is valid).
@@ -1032,13 +830,13 @@ const micajs = (function() {
    * @param onsuccess
    * @param onfailure
    */
-  const variablesCartAdd = function(ids, onsuccess, onfailure) {
-    variablesCart(function(cart) {
+  static addToCart(ids, onsuccess, onfailure) {
+    this.getOrCreateCart(function(cart) {
       let url = '/ws/variables/set/' + cart.id + '/documents/_import';
       axios({
         method: 'POST',
         headers: { 'content-type': 'text/plain' },
-        url: normalizeUrl(url),
+        url: MicaService.normalizeUrl(url),
         data: ids.join('\n')
       })
         .then(response => {
@@ -1054,17 +852,17 @@ const micajs = (function() {
           }
         });
     }, onfailure);
-  };
+  }
 
-  const variablesCartAddQuery = function(query, onsuccess, onfailure) {
-    variablesCart(function(cart) {
+  static addQueryToCart(query, onsuccess, onfailure) {
+    this.getOrCreateCart(function(cart) {
       let url = '/ws/variables/set/' + cart.id + '/documents/_rql';
       axios({
         method: 'POST',
         headers: {
           'content-type': 'application/x-www-form-urlencoded'
         },
-        url: normalizeUrl(url),
+        url: MicaService.normalizeUrl(url),
         data: 'query=' + query
       })
         .then(response => {
@@ -1080,7 +878,7 @@ const micajs = (function() {
           }
         });
     }, onfailure);
-  };
+  }
 
   /**
    * Remove variable IDs from the cart (verifies that it exists and is valid).
@@ -1088,13 +886,13 @@ const micajs = (function() {
    * @param onsuccess
    * @param onfailure
    */
-  const variablesCartRemove = function(ids, onsuccess, onfailure) {
-    variablesCart(function(cart) {
+  static removeFromCart(ids, onsuccess, onfailure) {
+    this.getOrCreateCart(function(cart) {
       let url = '/ws/variables/set/' + cart.id + '/documents/_delete';
       axios({
         method: 'POST',
         headers: { 'content-type': 'text/plain' },
-        url: normalizeUrl(url),
+        url: MicaService.normalizeUrl(url),
         data: ids.join('\n')
       })
         .then(response => {
@@ -1110,26 +908,26 @@ const micajs = (function() {
           }
         });
     }, onfailure);
-  };
+  }
 
-  const variablesCartShowCount = function(elem, cart, lang) {
-    $(elem).text(cart.count > 0 ? (cart.count > 50 ? '50+' : cart.count) : '')
-      .attr('title', cart.count > 50 ? cart.count.toLocaleString(lang) : '');
-  };
+  static showCount(elem, set, lang) {
+    $(elem).text(set.count > 0 ? (set.count > 50 ? '50+' : set.count) : '')
+      .attr('title', set.count > 50 ? set.count.toLocaleString(lang) : '');
+  }
 
   /**
    * Check whether a variable is in the set.
-   * @param cart
+   * @param set
    * @param id
    * @param onsuccess
    * @param onfailure
    */
-  const variablesSetContains = function(cart, id, onsuccess, onfailure) {
-    let url = '/ws/variables/set/' + cart.id + '/document/' + id + '/_exists';
-    axios.get(normalizeUrl(url))
+  static contains = function(set, id, onsuccess, onfailure) {
+    let url = '/ws/variables/set/' + set.id + '/document/' + id + '/_exists';
+    axios.get(MicaService.normalizeUrl(url))
       .then(response => {
         if (onsuccess) {
-          onsuccess(response.data, cart);
+          onsuccess(response.data, set);
         }
       })
       .catch(response => {
@@ -1139,334 +937,4 @@ const micajs = (function() {
       });
   };
 
-  const variableSummary = function(id, onsuccess, onfailure) {
-    let url = '/ws/variable/' + id + '/summary';
-    axios.get(normalizeUrl(url))
-      .then(response => {
-        //console.dir(response);
-        if (onsuccess) {
-          onsuccess(response.data);
-        }
-      })
-      .catch(response => {
-        console.dir(response);
-        if (onfailure) {
-          onfailure(response);
-        }
-      });
-  };
-
-  const variableAggregation = function(id, onsuccess, onfailure) {
-    let url = '/ws/variable/' + id + '/aggregation';
-    axios.get(normalizeUrl(url))
-      .then(response => {
-        //console.dir(response);
-        if (onsuccess) {
-          onsuccess(response.data);
-        }
-      })
-      .catch(response => {
-        console.dir(response);
-        if (onfailure) {
-          onfailure(response);
-        }
-      });
-  };
-
-  /**
-   * Get the harmonized variables of a Dataschema variable.
-   * @param id
-   * @param onsuccess
-   * @param onfailure
-   */
-  const variableHarmonizations = function(id, onsuccess, onfailure) {
-    let url = '/ws/variable/' + id + '/harmonizations';
-    axios.get(normalizeUrl(url))
-      .then(response => {
-        //console.dir(response);
-        if (onsuccess) {
-          onsuccess(response.data);
-        }
-      })
-      .catch(response => {
-        console.dir(response);
-        if (onfailure) {
-          onfailure(response);
-        }
-      });
-  };
-
-  const datasetHarmonizedVariables = function(id, from, limit, onsuccess, onfailure) {
-    let url = '/ws/harmonized-dataset/' + id + '/variables/harmonizations/_summary?from=' + from + '&limit=' + limit;
-    axios.get(normalizeUrl(url))
-      .then(response => {
-        //console.dir(response);
-        if (onsuccess) {
-          onsuccess(response.data);
-        }
-      })
-      .catch(response => {
-        console.dir(response);
-        if (onfailure) {
-          onfailure(response);
-        }
-      });
-  };
-
-  const datasetContingency = function(type, id, var1, var2, onsuccess, onfailure) {
-    let url = '/ws/' + type.toLowerCase() + '-dataset/' + id + '/variable/' + var1 + '/contingency?by=' + var2;
-    axios.get(normalizeUrl(url))
-      .then(response => {
-        //console.dir(response);
-        if (onsuccess) {
-          onsuccess(response.data);
-        }
-      })
-      .catch(response => {
-        console.dir(response);
-        if (onfailure) {
-          onfailure(response);
-        }
-      });
-  };
-
-  const datasetVariablesCoverage = function(id, taxonomies, lang, onsuccess, onfailure) {
-    let url = '/ws/variables/charts/_coverage';
-    let query = 'variable(eq(datasetId,' + id + '),sort(name),aggregate(re(' + taxonomies.map(tx => tx + '*').join(',') + '),bucket(datasetId))),locale(' + lang + ')';
-    url = url + '?query=' + query;
-    axios.get(normalizeUrl(url))
-      .then(response => {
-        //console.dir(response);
-        if (onsuccess) {
-          onsuccess(response.data);
-        }
-      })
-      .catch(response => {
-        console.dir(response);
-        if (onfailure) {
-          onfailure(response);
-        }
-      });
-  };
-
-  //
-  // Harmo
-  //
-
-  const variableAttributeValue = function(variable, namespace, name) {
-    if (!variable || !variable.attributes) {
-      return undefined;
-    }
-    for (const attr of variable.attributes) {
-      if (attr.namespace === namespace && attr.name === name) {
-        return attr.values;
-      }
-    }
-    return undefined;
-  };
-
-  /**
-   * Get the css class that represents the harmonization status.
-   * @param status
-   * @returns {string}
-   */
-  const harmoStatusClass = function(status) {
-    let iconClass = 'fas fa-minus text-muted';
-    if (status === 'complete') {
-      iconClass = 'fas fa-check text-success';
-    } else if (status === 'impossible') {
-      iconClass = 'fas fa-times text-danger';
-    } else if (status === 'undetermined') {
-      iconClass = 'fas fa-question text-warning';
-    }
-    return iconClass;
-  };
-
-  const harmoStatus = function(variable) {
-    return variableAttributeValue(variable, 'Mlstr_harmo', 'status');
-  };
-
-  const harmoStatusDetail = function(variable) {
-    return variableAttributeValue(variable, 'Mlstr_harmo', 'status_detail');
-  };
-
-  const harmoComment = function(variable) {
-    return variableAttributeValue(variable, 'Mlstr_harmo', 'comment');
-  };
-
-  //
-  // Study
-  //
-
-  /**
-   * Find population in study by ID
-   * @param study
-   */
-  const studyPopulation = function(study, id) {
-    if (study.populationSummaries) {
-      for (const pop of study.populationSummaries) {
-        if (pop.id === id) {
-          return pop;
-        }
-      }
-    }
-    return undefined;
-  };
-
-  /**
-   * Find DCE in study population by ID
-   * @param population
-   * @param id
-   * @returns {undefined|any}
-   */
-  const studyPopulationDCE = function(population, id) {
-    if (population.dataCollectionEventSummaries) {
-      for (const dce of population.dataCollectionEventSummaries) {
-        if (dce.id === id) {
-          return dce;
-        }
-      }
-    }
-    return undefined;
-  };
-
-  const studyVariablesCoverage = function(id, taxonomies, lang, onsuccess, onfailure) {
-    let url = '/ws/variables/charts/_coverage';
-    let query = 'variable(eq(studyId,' + id + '),sort(name),aggregate(re(' + taxonomies.map(tx => tx + '*').join(',') + '),bucket(dceId))),locale(' + lang + ')';
-    url = url + '?query=' + query;
-    axios.get(normalizeUrl(url))
-      .then(response => {
-        //console.dir(response);
-        if (onsuccess) {
-          onsuccess(response.data);
-        }
-      })
-      .catch(response => {
-        console.dir(response);
-        if (onfailure) {
-          onfailure(response);
-        }
-      });
-  };
-
-  //
-  // Network
-  //
-
-  const networkVariablesCoverage = function(id, taxonomies, lang, onsuccess, onfailure) {
-    let url = '/ws/variables/charts/_coverage';
-    let query = 'network(eq(Mica_network.id,' + id + ')),variable(sort(name),aggregate(re(' + taxonomies.map(tx => tx + '*').join(',') + '),bucket(studyId))),locale(' + lang + ')';
-    url = url + '?query=' + query;
-    axios.get(normalizeUrl(url))
-      .then(response => {
-        //console.dir(response);
-        if (onsuccess) {
-          onsuccess(response.data);
-        }
-      })
-      .catch(response => {
-        console.dir(response);
-        if (onfailure) {
-          onfailure(response);
-        }
-      });
-  };
-
-  //
-  // Files
-  //
-
-  const getFolder = function(type, id, path, onsuccess, onfailure) {
-    let url = '/ws/file/' + type + '/' + id + (path ? path : '/');
-    axios.get(normalizeUrl(url))
-      .then(response => {
-        //console.dir(response);
-        if (onsuccess) {
-          onsuccess(response.data);
-        }
-      })
-      .catch(response => {
-        //console.dir(response);
-        if (onfailure) {
-          onfailure(response);
-        }
-      });
-  };
-
-  return {
-    'normalizeUrl': normalizeUrl,
-    'stats': micaStats,
-    'redirectError': micaRedirectError,
-    'redirect': micaRedirect,
-    'signin': signin,
-    'signup': signup,
-    'signout': signout,
-    'forgotPassword': forgotPassword,
-    'changeLanguage': changeLanguage,
-    'contact': contact,
-    'info': micaInfo,
-    'success': micaSuccess,
-    'warning': micaWarning,
-    'error': micaError,
-    'dataAccess': {
-      'create': createDataAccess,
-      'delete': deleteDataAccess,
-      'submit': submitDataAccess,
-      'reopen': reopenDataAccess,
-      'review': reviewDataAccess,
-      'approve': approveDataAccess,
-      'conditionallyApprove': conditionallyApproveDataAccess,
-      'reject': rejectDataAccess,
-      'sendComment': sendDataAccessComment,
-      'deleteComment': deleteDataAccessComment,
-      'addAction': addDataAccessAction,
-      'startDate': setDataAccessStartDate,
-      'deleteAttachment': deleteDataAccessAttachment,
-      'attachFile': attachDataAccessFile
-    },
-    'uploadTempFile': uploadTempFile,
-    'variable': {
-      'summary': variableSummary,
-      'aggregation': variableAggregation,
-      'harmonizations': variableHarmonizations,
-      'attributeValue': variableAttributeValue,
-      'cart': {
-        'get': variablesCart,
-        'add': variablesCartAdd,
-        'addQuery': variablesCartAddQuery,
-        'remove': variablesCartRemove,
-        'contains': variablesSetContains,
-        'showCount': variablesCartShowCount,
-        'storage': new MicaSetStorage('cart')
-      },
-      'sets': variablesSets,
-      'set': {
-        'searchDocuments': variablesSetSearchDocuments,
-        'deleteDocuments': variablesSetDeleteDocuments
-      }
-    },
-    'dataset': {
-      'harmonizedVariables': datasetHarmonizedVariables,
-      'contingency': datasetContingency,
-      'variablesCoverage': datasetVariablesCoverage
-    },
-    'harmo': {
-      'status': harmoStatus,
-      'statusDetail': harmoStatusDetail,
-      'comment': harmoComment,
-      'statusClass': harmoStatusClass
-    },
-    'study': {
-      'population': studyPopulation,
-      'populationDCE': studyPopulationDCE,
-      'variablesCoverage': studyVariablesCoverage
-    },
-    'network': {
-      'variablesCoverage': networkVariablesCoverage
-    },
-    'files': {
-      'list': getFolder
-    }
-  };
-
-}());
+}

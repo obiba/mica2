@@ -9,6 +9,9 @@
 <script src="${assetsPath}/libs/node_modules/vue/dist/vue.js"></script>
 <script src="${assetsPath}/js/mica-files.js"></script>
 
+<!-- Repository -->
+<script src="${assetsPath}/js/mica-repo.js"></script>
+
 <script>
   const Mica = { options: {} };
   <#if studyAcronyms??>
@@ -71,7 +74,7 @@
     $("#networks").DataTable(dataTablesDefaultOpts);
     $("#individual-studies").DataTable(dataTablesDefaultOpts);
     $("#harmonization-studies").DataTable(dataTablesDefaultOpts);
-    micajs.stats('networks', { query: "network(in(Mica_network.id,${network.id}))" }, function(stats) {
+    QueryService.getCounts('networks', { query: "network(in(Mica_network.id,${network.id}))" }, function(stats) {
       $('#study-hits').text(new Intl.NumberFormat('${.lang}').format(stats.studyResultDto.totalHits));
       $('#dataset-hits').text(new Intl.NumberFormat('${.lang}').format(stats.datasetResultDto.totalHits));
       $('#variable-hits').text(new Intl.NumberFormat('${.lang}').format(stats.variableResultDto.totalHits));
@@ -97,7 +100,7 @@
     <#if networkVariablesClassificationsTaxonomies?? && networkVariablesClassificationsTaxonomies?size gt 0 && studyAcronyms?? && studyAcronyms?size gt 0>
       const taxonomies = ['${networkVariablesClassificationsTaxonomies?join("', '")}'];
       $('#classificationsContainer').hide();
-      micajs.network.variablesCoverage('${network.id}', taxonomies, '${.lang}', function(data) {
+      NetworkService.getVariablesCoverage('${network.id}', taxonomies, '${.lang}', function(data) {
         if (data && data.charts) {
           Mica.variablesCoverage = data.charts.map(chart => prepareVariablesClassificationsData(chart));
         }

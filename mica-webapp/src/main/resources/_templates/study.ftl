@@ -11,7 +11,7 @@
 <head>
   <#include "libs/head.ftl">
   <title>${config.name!""} | ${localize(study.acronym)}</title>
-  <link rel="stylesheet" href="../bower_components/mica-study-timeline/dist/mica-study-timeline.css" />
+  <link rel="stylesheet" href="${contextPath}/bower_components/mica-study-timeline/dist/mica-study-timeline.css" />
 </head>
 <body id="study-page" class="hold-transition layout-top-nav layout-navbar-fixed">
 <div class="wrapper">
@@ -23,7 +23,7 @@
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
     <!-- Content Header (Page header) -->
-    <@header titlePrefix=(type?lower_case + "-study") title=localize(study.acronym) subtitle=localize(study.name) breadcrumb=[["..", "home"], ["../studies", "studies"], [localize(study.acronym)]]/>
+    <@header titlePrefix=(type?lower_case + "-study") title=localize(study.acronym) subtitle=localize(study.name) breadcrumb=[["..", "home"], ["${contextPath}/studies", "studies"], [localize(study.acronym)]]/>
     <!-- /.content-header -->
 
     <!-- Main content -->
@@ -48,7 +48,7 @@
                 <div class="row">
                   <div class="col-md-3 col-sm-6 col-12">
                     <#if study.logo??>
-                      <img class="img-fluid" style="max-height: 200px" alt="${localize(study.acronym)} logo" src="../ws/study/${study.id}/file/${study.logo.id}/_download"/>
+                      <img class="img-fluid" style="max-height: 200px" alt="${localize(study.acronym)} logo" src="${contextPath}/ws/study/${study.id}/file/${study.logo.id}/_download"/>
                     <#else >
                       <p class="text-light text-center">
                         <i class="${studyIcon} fa-4x"></i>
@@ -60,7 +60,7 @@
                     <div class="col-md-3 col-sm-6 col-12">
                       <div class="info-box">
                         <span class="info-box-icon bg-info">
-                          <a href="../search#lists?type=networks&query=study(in(Mica_study.id,${study.id}))">
+                          <a href="${contextPath}/search#lists?type=networks&query=study(in(Mica_study.id,${study.id}))">
                             <i class="${networkIcon}"></i>
                           </a>
                         </span>
@@ -77,7 +77,7 @@
                     <div class="col-md-3 col-sm-6 col-12">
                       <div class="info-box">
                         <span class="info-box-icon bg-warning">
-                          <a href="../search#lists?type=datasets&query=study(in(Mica_study.id,${study.id}))">
+                          <a href="${contextPath}/search#lists?type=datasets&query=study(in(Mica_study.id,${study.id}))">
                             <i class="${datasetIcon}"></i>
                           </a>
                         </span>
@@ -94,7 +94,7 @@
                     <div class="col-md-3 col-sm-6 col-12">
                       <div class="info-box">
                         <span class="info-box-icon bg-danger">
-                          <a href="../search#lists?type=variables&query=study(in(Mica_study.id,${study.id}))">
+                          <a href="${contextPath}/search#lists?type=variables&query=study(in(Mica_study.id,${study.id}))">
                             <i class="${variableIcon}"></i>
                           </a>
                         </span>
@@ -133,7 +133,7 @@
                     <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="<@message "collapse"/>">
                       <i class="fas fa-minus"></i></button>
                   </div>
-                  <a href="../ws/persons/_search/_download?limit=1000&query=studyMemberships.parentId:(${study.id})" class="btn btn-primary float-right mr-2">
+                  <a href="${contextPath}/ws/persons/_search/_download?limit=1000&query=studyMemberships.parentId:(${study.id})" class="btn btn-primary float-right mr-2">
                     <i class="fas fa-download"></i> <@message "download"/>
                   </a>
                 </div>

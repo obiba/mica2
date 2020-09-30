@@ -76,11 +76,11 @@
                     <#if accessConfig.amendmentsEnabled>
                       <td>
                         <#if event.amendment>
-                          <a href="../data-access-amendment-form/${event.form.id}"><i class="fas fa-file-import"></i> ${event.form.id}</a>
+                          <a href="${contextPath}/data-access-amendment-form/${event.form.id}"><i class="fas fa-file-import"></i> ${event.form.id}</a>
                         <#elseif event.feasibility>
-                          <a href="../data-access-feasibility-form/${event.form.id}"><i class="far fa-question-circle"></i> ${event.form.id}</a>
+                          <a href="${contextPath}/data-access-feasibility-form/${event.form.id}"><i class="far fa-question-circle"></i> ${event.form.id}</a>
                         <#else>
-                          <a href="../data-access-form/${event.form.id}"><i class="fas fa-book"></i> ${event.form.id}</a>
+                          <a href="${contextPath}/data-access-form/${event.form.id}"><i class="fas fa-book"></i> ${event.form.id}</a>
                         </#if>
                       </td>
                     </#if>
@@ -181,6 +181,7 @@
 <!-- ./wrapper -->
 
 <#include "libs/scripts.ftl">
+<#include "libs/data-access-scripts.ftl">
 <!-- Datepicker -->
 <script src="${assetsPath}/libs/node_modules/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js"></script>
 <script>
@@ -197,7 +198,7 @@
             text: $('#action-text').val(),
             date: $('#action-date').val()
           };
-          micajs.dataAccess.addAction('${dar.id}', action);
+          DataAccessService.addAction('${dar.id}', action);
         });
     });
 </script>

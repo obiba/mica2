@@ -78,7 +78,7 @@
                               ng-click="validate()"><@message "validate"/></button>
                     <#elseif feasibility.status == "SUBMITTED">
                       <button type="button" class="btn btn-primary"
-                              onclick="micajs.dataAccess.reopen('${dar.id}', 'feasibility', '${feasibility.id}')"><@message "reopen"/></button>
+                              onclick="DataAccessService.reopen('${dar.id}', 'feasibility', '${feasibility.id}')"><@message "reopen"/></button>
                       <button type="button" class="btn btn-success" data-toggle="modal"
                               data-target="#modal-approve"><@message "approve"/></button>
                       <button type="button" class="btn btn-danger" data-toggle="modal"
@@ -161,7 +161,7 @@
                 <div class="modal-footer justify-content-between">
                   <button type="button" class="btn btn-default" data-dismiss="modal"><@message "cancel"/></button>
                   <button type="button" class="btn btn-primary" data-dismiss="modal"
-                          onclick="micajs.dataAccess.approve('${dar.id}', 'feasibility', '${feasibility.id}')"><@message "confirm"/></button>
+                          onclick="DataAccessService.approve('${dar.id}', 'feasibility', '${feasibility.id}')"><@message "confirm"/></button>
                 </div>
               </div>
               <!-- /.modal-content -->
@@ -186,7 +186,7 @@
                 <div class="modal-footer justify-content-between">
                   <button type="button" class="btn btn-default" data-dismiss="modal"><@message "cancel"/></button>
                   <button type="button" class="btn btn-primary" data-dismiss="modal"
-                          onclick="micajs.dataAccess.reject('${dar.id}', 'feasibility', '${feasibility.id}')"><@message "confirm"/></button>
+                          onclick="DataAccessService.reject('${dar.id}', 'feasibility', '${feasibility.id}')"><@message "confirm"/></button>
                 </div>
               </div>
               <!-- /.modal-content -->
@@ -211,7 +211,7 @@
                 <div class="modal-footer justify-content-between">
                   <button type="button" class="btn btn-default" data-dismiss="modal"><@message "cancel"/></button>
                   <button type="button" class="btn btn-primary" data-dismiss="modal"
-                          onclick="micajs.dataAccess.submit('${dar.id}', 'feasibility', '${feasibility.id}')"><@message "confirm"/></button>
+                          onclick="DataAccessService.submit('${dar.id}', 'feasibility', '${feasibility.id}')"><@message "confirm"/></button>
                 </div>
               </div>
               <!-- /.modal-content -->
@@ -236,7 +236,7 @@
                 <div class="modal-footer justify-content-between">
                   <button type="button" class="btn btn-default" data-dismiss="modal"><@message "cancel"/></button>
                   <button type="button" class="btn btn-primary" data-dismiss="modal"
-                          onclick="micajs.dataAccess.submit('${dar.id}', 'feasibility', '${feasibility.id}')"><@message "confirm"/></button>
+                          onclick="DataAccessService.submit('${dar.id}', 'feasibility', '${feasibility.id}')"><@message "confirm"/></button>
                 </div>
               </div>
               <!-- /.modal-content -->
@@ -277,6 +277,7 @@
 <!-- ./wrapper -->
 
 <#include "libs/scripts.ftl">
+<#include "libs/data-access-scripts.ftl">
 <script>
     $('#feasibility-form-menu').addClass('active').attr('href', '#');
     $('#feasibility-form-menu-${feasibility.id}').addClass('active');

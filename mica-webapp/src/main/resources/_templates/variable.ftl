@@ -116,7 +116,7 @@
                       <@message "sets.cart.remove-from-cart"/> <i class="fas fa-cart-arrow-down"></i>
                     </a>
                   <#else>
-                    <a href="../signin?redirect=${contextPath}/variable/${variable.id}">
+                    <a href="${contextPath}/signin?redirect=${contextPath}/variable/${variable.id}">
                       <@message "sets.cart.add-to-cart"/> <i class="fas fa-cart-plus"></i>
                     </a>
                   </#if>
@@ -134,7 +134,7 @@
                 <dl class="row">
                   <dt class="col-sm-4"><@message "dataset"/></dt>
                   <dd class="col-sm-8">
-                    <a class="btn btn-success" href="../dataset/${variable.datasetId}">
+                    <a class="btn btn-success" href="${contextPath}/dataset/${variable.datasetId}">
                       <#if type == "Collected">
                         <i class="${datasetIcon}"></i>
                       <#else>
@@ -145,7 +145,7 @@
                   </dd>
 
                   <dt class="col-sm-4"><@message "study"/></dt>
-                  <dd class="col-sm-8"><a href="../study/${study.id}">${localize(study.acronym, study.id)}</a></dd>
+                  <dd class="col-sm-8"><a href="${contextPath}/study/${study.id}">${localize(study.acronym, study.id)}</a></dd>
                   <dt class="col-sm-4"><@message "population"/></dt>
                   <dd class="col-sm-8">
                     <a href="#" data-toggle="modal" data-target="#modal-${population.id}">${localize(population.name, population.id)}</a>
@@ -161,7 +161,7 @@
                   </#if>
                   <#if type == "Harmonized">
                     <dt class="col-sm-4"><@message "dataschema-variable"/></dt>
-                    <dd class="col-sm-8"><a href="../variable/${variable.datasetId}:${variable.name}:Dataschema" class="btn btn-primary"><i class="${variableIcon}"></i> ${variable.name}</a></dd>
+                    <dd class="col-sm-8"><a href="${contextPath}/variable/${variable.datasetId}:${variable.name}:Dataschema" class="btn btn-primary"><i class="${variableIcon}"></i> ${variable.name}</a></dd>
                   </#if>
                   <#if opalTable?? && (opalTable.name?? || opalTable.description??)>
                     <dt class="col-sm-4"><@message "datasource-info"/></dt>
@@ -201,7 +201,7 @@
                   </dl>
                 </div>
                 <div class="card-footer">
-                  <a href="../search#lists?type=variables&query=${query}">
+                  <a href="${contextPath}/search#lists?type=variables&query=${query}">
                     <@message "find-similar-variables"/> <i class="fas fa-search"></i>
                   </a>
                 </div>
@@ -266,11 +266,11 @@
                 <h3 class="card-title"><@message "summary-statistics"/></h3>
                 <#if showDatasetContingencyLink>
                   <#if variable.nature == "CATEGORICAL">
-                    <a class="btn btn-primary float-right" href="../dataset-crosstab/${variable.datasetId}?var1=${variable.name}">
+                    <a class="btn btn-primary float-right" href="${contextPath}/dataset-crosstab/${variable.datasetId}?var1=${variable.name}">
                       <i class="fas fa-cog"></i> <@message "dataset.crosstab.title"/>
                     </a>
                   <#elseif variable.nature == "CONTINUOUS">
-                    <a class="btn btn-primary float-right" href="../dataset-crosstab/${variable.datasetId}?var2=${variable.name}">
+                    <a class="btn btn-primary float-right" href="${contextPath}/dataset-crosstab/${variable.datasetId}?var2=${variable.name}">
                       <i class="fas fa-cog"></i> <@message "dataset.crosstab.title"/>
                     </a>
                   </#if>
@@ -281,7 +281,7 @@
                   <@variableSummary variable=variable/>
                 <#else>
                   <@message "sign-in-for-variable-statistics"/>
-                  <a href="../signin?redirect=${contextPath}/variable/${variable.id}" class="btn btn-info"><@message "sign-in"/></a>
+                  <a href="${contextPath}/signin?redirect=${contextPath}/variable/${variable.id}" class="btn btn-info"><@message "sign-in"/></a>
                 </#if>
               </div>
             </div>

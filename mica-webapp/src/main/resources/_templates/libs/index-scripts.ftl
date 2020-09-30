@@ -1,7 +1,10 @@
+<!-- Repository -->
+<script src="${assetsPath}/js/mica-repo.js"></script>
+
 <script>
   $(function () {
     <#if config.openAccess || user??>
-      micajs.stats('studies', {}, function (stats) {
+      QueryService.getCounts('studies', {}, function (stats) {
         $('#network-hits').text(new Intl.NumberFormat('${.lang}').format(stats.networkResultDto.totalHits));
         $('#study-hits').text(new Intl.NumberFormat('${.lang}').format(stats.studyResultDto.totalHits));
         $('#dataset-hits').text(new Intl.NumberFormat('${.lang}').format(stats.datasetResultDto.totalHits));

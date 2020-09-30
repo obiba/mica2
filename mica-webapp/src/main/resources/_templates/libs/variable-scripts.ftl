@@ -6,37 +6,39 @@
 <script src="${assetsPath}/libs/node_modules/vue/dist/vue.js"></script>
 <script src="${assetsPath}/js/mica-files.js"></script>
 
+<!-- Repository -->
+<script src="${assetsPath}/js/mica-repo.js"></script>
 
 <script>
   // cart
   <#if cartEnabled>
     const onVariablesCartGet = function(cart) {
-      micajs.variable.cart.contains(cart, '${variable.id}', function() {
+      VariablesSetService.contains(cart, '${variable.id}', function() {
         $('#cart-remove').show();
       }, function () {
         $('#cart-add').show();
       });
     };
     const onVariablesCartAdd = function(id) {
-      micajs.variable.cart.add([id], function(cart, oldCart) {
-        micajs.variable.cart.showCount('#cart-count', cart, '${.lang}');
+      VariablesSetService.addToCart([id], function(cart, oldCart) {
+        VariablesSetService.showCount('#cart-count', cart, '${.lang}');
         if (cart.count === oldCart.count) {
-          micajs.info("<@message "sets.cart.no-variable-added"/>");
+          MicaService.toastInfo("<@message "sets.cart.no-variable-added"/>");
         } else {
-          micajs.success("<@message "variable-added-to-cart"/>");
+          MicaService.toastSuccess("<@message "variable-added-to-cart"/>");
         }
         $('#cart-add').hide();
         $('#cart-remove').show();
       });
     };
     const onVariablesCartRemove = function(id) {
-      micajs.variable.cart.remove([id], function(cart, oldCart) {
-        micajs.variable.cart.showCount('#cart-count', cart, '${.lang}');
+      VariablesSetService.removeFromCart([id], function(cart, oldCart) {
+        VariablesSetService.showCount('#cart-count', cart, '${.lang}');
         // TODO toast cart update
         if (cart.count === oldCart.count) {
-          micajs.info("<@message "sets.cart.no-variable-removed"/>");
+          MicaService.toastInfo("<@message "sets.cart.no-variable-removed"/>");
         } else {
-          micajs.success("<@message "variable-removed-from-cart"/>");
+          MicaService.toastSuccess("<@message "variable-removed-from-cart"/>");
         }
         $('#cart-remove').hide();
         $('#cart-add').show();
@@ -47,29 +49,28 @@
   $(function () {
 
     <#if type == "Dataschema">
-      micajs.variable.harmonizations('${variable.id}', function(data) {
-        console.dir(data);
+      VariableService.getHarmonizations('${variable.id}', function(data) {
         $('#loadingHarmonizedVariables').hide();
         const harmonizedVariablesTableBody = $('#harmonizedVariables > tbody');
         if (data.datasetVariableSummaries) {
           for (const harmonizedVariable of data.datasetVariableSummaries) {
-            const status = micajs.harmo.status(harmonizedVariable);
-            const statusDetail = micajs.harmo.statusDetail(harmonizedVariable);
-            const comment = micajs.harmo.comment(harmonizedVariable);
+            const status = VariableService.getHarmoStatus(harmonizedVariable);
+            const statusDetail = VariableService.getHarmoStatusDetail(harmonizedVariable);
+            const comment = VariableService.getHarmoComment(harmonizedVariable);
             const baseStudyTable = harmonizedVariable.studyTable ? harmonizedVariable.studyTable : harmonizedVariable.harmonizationStudyTable;
-            const population = micajs.study.population(baseStudyTable.studySummary, baseStudyTable.populationId);
-            const dce = population ? micajs.study.populationDCE(population, baseStudyTable.dataCollectionEventId) : undefined;
+            const population = StudyService.findPopulation(baseStudyTable.studySummary, baseStudyTable.populationId);
+            const dce = population ? StudyService.findPopulationDCE(population, baseStudyTable.dataCollectionEventId) : undefined;
             let dceName = population ? localizedString(population.name) : "";
             if (dce) {
               dceName = dceName + ' -- ' + localizedString(dce.name);
             }
             harmonizedVariablesTableBody.append('<tr>' +
-                    '<td title=""><a href="../variable/' + harmonizedVariable.resolver.id + '">' + harmonizedVariable.resolver.name + '</a> ' + localizedString(baseStudyTable.name) + '' +
+                    '<td title=""><a href="${contextPath}/variable/' + harmonizedVariable.resolver.id + '">' + harmonizedVariable.resolver.name + '</a> ' + localizedString(baseStudyTable.name) + '' +
                     '<div class="text-muted">' + localizedString(baseStudyTable.description) + '</div>' +
                     '</td>' +
-                    '<td><a href="../study/' + baseStudyTable.studyId + '">' + localizedString(baseStudyTable.studySummary.acronym) + '</a></td>' +
+                    '<td><a href="${contextPath}/study/' + baseStudyTable.studyId + '">' + localizedString(baseStudyTable.studySummary.acronym) + '</a></td>' +
                     '<td>' + dceName + '</td>' +
-                    '<td><i class=" ' + micajs.harmo.statusClass(localizedString(status)) + '"></i></td>' +
+                    '<td><i class=" ' + VariableService.getHarmoStatusClass(localizedString(status)) + '"></i></td>' +
                     '<td>' + localizedString(statusDetail) + '</td>' +
                     '<td>' + localizedString(comment) + '</td>' +
                     '</tr>')
@@ -103,7 +104,7 @@
 
     <!-- Summary -->
     <#if user?? || !config.variableSummaryRequiresAuthentication>
-    micajs.variable.aggregation('${variable.id}', function(data) {
+    VariableService.getAggregation('${variable.id}', function(data) {
       $('#loadingSummary').hide();
 
       $('#n').html(data.total);

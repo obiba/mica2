@@ -2,9 +2,12 @@
 <script src="${assetsPath}/js/mica-tables.js"></script>
 
 <script>
+  const variablesCartStorage = new MicaSetStorage('cart');
+
   $(function () {
+
     // clear any previous selections from local storage
-    micajs.variable.cart.storage.deselectAll();
+    variablesCartStorage.deselectAll();
 
     const dataTableOpts = {
       "paging": true,
@@ -34,7 +37,7 @@
         info: false
       },
       "ajax": function(data, callback) {
-        micajs.variable.set.searchDocuments('${set.id}', data.start, data.length, function(response) {
+        VariablesSetService.search('${set.id}', data.start, data.length, function(response) {
           $('#loadingSet').hide();
           if (response.variableResultDto && response.variableResultDto['obiba.mica.DatasetVariableResultDto.result']) {
             const result = response.variableResultDto;
@@ -47,15 +50,15 @@
               row.push('<i class="far fa-square"></i>');
               // ID
               row.push(summary.id);
-              row.push('<a href="../variable/' + summary.id + '">' + summary.name + '</a>');
+              row.push('<a href="${contextPath}/variable/' + summary.id + '">' + summary.name + '</a>');
               row.push(summary.variableLabel ? LocalizedValues.forLang(summary.variableLabel, '${.lang}') : '');
               <#if config.studyDatasetEnabled && config.harmonizationDatasetEnabled>
                 row.push(summary.variableType);
               </#if>
               <#if !config.singleStudyEnabled>
-                row.push('<a href="../study/' + summary.studyId + '">' + LocalizedValues.forLang(summary.studyAcronym, '${.lang}') + '</a>');
+                row.push('<a href="${contextPath}/study/' + summary.studyId + '">' + LocalizedValues.forLang(summary.studyAcronym, '${.lang}') + '</a>');
               </#if>
-              row.push('<a href="../dataset/' + summary.datasetId + '">' + LocalizedValues.forLang(summary.datasetAcronym, '${.lang}') + '</a>');
+              row.push('<a href="${contextPath}/dataset/' + summary.datasetId + '">' + LocalizedValues.forLang(summary.datasetAcronym, '${.lang}') + '</a>');
               rows.push(row);
             }
             callback({
@@ -73,15 +76,15 @@
 
     initSelectDataTable($("#setTable").DataTable(dataTableOpts), {
       isSelected: function(id) {
-        return micajs.variable.cart.storage.selected(id);
+        return variablesCartStorage.selected(id);
       },
       onSelectionChanged: function (ids, selected) {
         if (selected) {
-          micajs.variable.cart.storage.selectAll(ids);
+          variablesCartStorage.selectAll(ids);
         } else {
-          micajs.variable.cart.storage.deselectAll(ids);
+          variablesCartStorage.deselectAll(ids);
         }
-        const count = micajs.variable.cart.storage.getSelections().length;
+        const count = variablesCartStorage.getSelections().length;
         if (count === 0) {
           $('#selection-count').hide();
           $('#delete-all-message').show();

@@ -84,7 +84,7 @@
 <#include "libs/scripts.ftl">
 
 <script>
-  micajs.signin("#form", function (banned) {
+  UserService.signin("#form", function (banned) {
     var alertId = banned ? "#alertBanned" : "#alertFailure";
     $(alertId).removeClass("d-none");
     setTimeout(function() {
