@@ -111,7 +111,7 @@
     variableColumns: ['${searchVariableColumns?join("', '")}']
   };
 
-  fetch(contextPath + 'assets/topojson/${mapName}.json').then(r => r.json())
+  fetch(contextPath + '/assets/topojson/${mapName}.json').then(r => r.json())
           .then(data => Mica.map = {
             name: '${mapName}',
             topo: data
