@@ -512,13 +512,14 @@ class MicaTreeQueryUrl {
 
   static getDownloadUrl(payload) {
     let url, query;
+    const tree = MicaTreeQueryUrl.getTree();
 
     if (DISPLAYS.COVERAGE === payload.display) {
       url = `${contextPath}/ws/variables/_coverage_download`;
-      query = MicaTreeQueryUrl.getCoverageDownloadUrl(payload.bucket, payload.tree);
+      query = MicaTreeQueryUrl.getCoverageDownloadUrl(payload.bucket, tree);
     } else {
       url = `${contextPath}/ws/${payload.type}/_rql_csv`;
-      query = MicaTreeQueryUrl.getSearchDownloadUrl(payload.type, payload.tree);
+      query = MicaTreeQueryUrl.getSearchDownloadUrl(payload.type, tree);
     }
 
     if (query) {
