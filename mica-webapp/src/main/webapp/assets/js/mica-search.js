@@ -589,7 +589,7 @@ new Vue({
     onLocationChanged: function (payload) {
       this.downloadUrlObject = MicaTreeQueryUrl.getDownloadUrl(payload);
 
-      let tree = payload.tree;
+      let tree = MicaTreeQueryUrl.getTree();
 
       // query string to copy
       tree.findAndDeleteQuery((name) => 'limit' === name);
