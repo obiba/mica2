@@ -44,7 +44,7 @@
               </#if>
 
               <#if population.model.selectionCriteria.pregnantWomen?? && population.model.selectionCriteria.pregnantWomen?size != 0>
-                <dt class="col-sm-6" title="<@message "study_taxonomy.vocabulary.populations-selectionCriteria-pregnantWomen.description"/>">
+                <dt class="col-sm-4" title="<@message "study_taxonomy.vocabulary.populations-selectionCriteria-pregnantWomen.description"/>">
                   <@message "study.selection-criteria.pregnant-women"/>
                 </dt>
                 <dd class="col-sm-8">
