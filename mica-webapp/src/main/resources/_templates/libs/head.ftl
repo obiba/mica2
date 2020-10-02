@@ -12,13 +12,19 @@
 
 <!-- From a localized text get the value in the current language or in the default one or in the undefined one -->
 <#function localize txt={} default="">
-  <#if txt??>
+  <#if txt?? && txt?keys??>
     <#if txt[.lang]??>
+      <!-- page language -->
       <#return txt[.lang]/>
-    <#elseif txt["en"]??>
-      <#return txt["en"]/>
+    <#elseif txt[defaultLang]??>
+      <!-- default language setting -->
+      <#return txt[defaultLang]/>
     <#elseif txt["und"]??>
+      <!-- undefined lang, can happen in variables -->
       <#return txt["und"]/>
+    <#elseif txt?values[0]??>
+      <!-- first non null value -->
+      <#return txt?values[0]/>
     </#if>
   </#if>
   <#return default/>
