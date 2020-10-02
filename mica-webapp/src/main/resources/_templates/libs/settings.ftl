@@ -1,3 +1,6 @@
+<!-- Language -->
+<#assign defaultLang = "en"/>
+
 <!-- Date and Datetime formats -->
 <#assign datetimeFormat = "yyyy-MM-dd HH:mm"/>
 <#assign dateFormat = "yyyy-MM-dd"/>
