@@ -46,8 +46,8 @@
     self.documents = [];
     self.loading = true;
     self.sort = {
-      column: `lastModifiedDate`,
-      order: 'desc'
+      column: `id`,
+      order: 'asc'
     };
     self.search = {
       fields: searchFields,
