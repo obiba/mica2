@@ -203,11 +203,15 @@ class StringLocalizer {
   }
 
   static localize(entries) {
-    const result = StringLocalizer.__localizeInternal(entries, Mica.locale)
-      || StringLocalizer.__localizeInternal(entries, 'en')
-      || StringLocalizer.__localizeInternal(entries, 'und');
+    if (entries) {
+      const result = StringLocalizer.__localizeInternal(entries, Mica.locale)
+        || StringLocalizer.__localizeInternal(entries, Mica.defaultLocale)
+        || StringLocalizer.__localizeInternal(entries, 'und');
 
-    return result ? result : "";
+      return result ? result : '';
+    } else {
+      return '';
+    }
   }
 }
 

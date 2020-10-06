@@ -3,7 +3,12 @@
 
 <!-- MicaConfig in JSON Format -->
 <script>
-  const Mica = { config: ${configJson!"{}"}, locale: "${.lang}" };
+  const Mica = {
+    config: ${configJson!"{}"},
+    locale: "${.lang}",
+    defaultLocale: "${defaultLang}"
+  };
+
   Mica.tr = {
     "all": "<@message "all"/>",
     "variables": "<@message "variables"/>",
