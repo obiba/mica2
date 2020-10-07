@@ -113,7 +113,10 @@
   };
 
   Mica.display = {
-    variableColumns: ['${searchVariableColumns?join("', '")}']
+    variableColumns: ['${searchVariableColumns?join("', '")}'],
+    datasetColumns: ['${searchDatasetColumns?join("', '")}'],
+    studyColumns: ['${searchStudyColumns?join("', '")}'],
+    networkColumns: ['${searchNetworkColumns?join("', '")}']
   };
 
   fetch(contextPath + '/assets/topojson/${mapName}.json').then(r => r.json())

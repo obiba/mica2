@@ -80,8 +80,11 @@
 <#assign mapName = "world"/>
 <!-- Filter and order the charts visible in the search page -->
 <#assign searchCharts = ["geographical-distribution-chart", "study-design-chart", "number-participants-chart", "bio-samples-chart", "study-start-year-chart"]/>
-<!-- Result tables ('name' column is always first) -->
+<!-- Result tables (ID column ('name' or 'acronym') is always first) -->
 <#assign searchVariableColumns = ["label+description", "valueType", "annotations", "type", "study", "dataset"]/>
+<#assign searchDatasetColumns = ["name", "type", "networks", "studies", "variables"]/>
+<#assign searchStudyColumns = ["name", "type", "study-design", "data-sources-available", "participants", "networks", "individual", "harmonization"]/>
+<#assign searchNetworkColumns = ["name", "studies", "datasets", "variables"]/>
 
 <!-- Data Access pages -->
 <#assign dataAccessInstructionsEnabled = true/>
