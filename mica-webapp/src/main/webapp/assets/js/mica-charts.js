@@ -41,10 +41,11 @@ const makeVariableFrequenciesChartSettings = function(frequencies, backgroundCol
  * @returns Chartjs settings
  */
 const makeVariableHistogramChartSettings = function(intervalFrequencies, borderColor, backgroundColor) {
-  const labels = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'];
+  const labels = [];
   let dataPoints = [];
   intervalFrequencies.forEach(item => {
     dataPoints.push(item.count);
+    labels.push(item.lower + ' - ' + item.upper);
   });
 
   const chartOptions = {
