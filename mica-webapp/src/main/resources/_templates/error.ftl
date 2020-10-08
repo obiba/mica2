@@ -37,15 +37,13 @@
           <div class="error-content">
             <h3><i class="fas fa-exclamation-triangle text-warning"></i>
               <#if msg??>
-                  ${msg}
+                  <@message msg/>
               <#else >
-                  "Not found"
+                  <@message "http-" + status/>
               </#if>
             </h3>
-
             <p>
-              We could not access the page you were looking for.
-              Meanwhile, you may <a href="${contextPath + "/"}">return to home</a> or try to <a href="${contextPath + "/search"}">search the repository</a>.
+              <@message "error-help"/>
             </p>
           </div>
           <!-- /.error-content -->

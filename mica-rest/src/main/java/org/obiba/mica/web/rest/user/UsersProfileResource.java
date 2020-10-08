@@ -33,6 +33,7 @@ import org.obiba.mica.security.Roles;
 import org.obiba.mica.user.UserProfileService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
+import org.owasp.esapi.ESAPI;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
@@ -90,7 +91,8 @@ public class UsersProfileResource {
     if (Strings.isNullOrEmpty(name) || Strings.isNullOrEmpty(email) || Strings.isNullOrEmpty(subject) || Strings.isNullOrEmpty(message) || Strings.isNullOrEmpty(reCaptcha)) {
       throw new BadRequestException();
     }
-    userProfileService.sendContactEmail(name, email, subject, message, reCaptcha);
+    userProfileService.sendContactEmail(ESAPI.encoder().encodeForHTML(name), ESAPI.encoder().encodeForHTML(email),
+      ESAPI.encoder().encodeForHTML(subject), ESAPI.encoder().encodeForHTML(message), reCaptcha);
     return Response.ok().build();
   }
 }

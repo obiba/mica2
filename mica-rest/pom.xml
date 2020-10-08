@@ -48,6 +48,11 @@
     </dependency>
 
     <dependency>
+      <groupId>org.owasp.esapi</groupId>
+      <artifactId>esapi</artifactId>
+    </dependency>
+
+    <dependency>
       <groupId>com.codahale.metrics</groupId>
       <artifactId>metrics-annotation</artifactId>
     </dependency>
