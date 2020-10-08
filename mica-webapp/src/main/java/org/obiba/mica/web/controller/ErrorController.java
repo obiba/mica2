@@ -1,5 +1,6 @@
 package org.obiba.mica.web.controller;
 
+import org.owasp.esapi.ESAPI;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,11 +25,11 @@ public class ErrorController {
   public ModelAndView anyError(Exception ex) {
     return makeModelAndView("500", ex.getMessage());
   }
-  
+
   private ModelAndView makeModelAndView(String status, String message) {
     ModelAndView mv = new ModelAndView("error");
     mv.getModel().put("status", status);
-    mv.getModel().put("msg", message);
+    mv.getModel().put("msg", ESAPI.encoder().encodeForHTML(message));
     return mv;
   }
 }

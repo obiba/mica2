@@ -44,6 +44,7 @@
     <commons-io.version>2.4</commons-io.version>
     <commons-lang.version>2.6</commons-lang.version>
     <embed-mongo.version>1.50.0</embed-mongo.version>
+    <esapi.version>2.2.1.1</esapi.version>
     <freemarker.version>2.3.29</freemarker.version>
     <guava.version>19.0</guava.version>
     <geronimo-javamail_1.4_mail.version>1.8.3</geronimo-javamail_1.4_mail.version>
@@ -295,6 +296,12 @@
         <groupId>net.jazdw</groupId>
         <artifactId>rql-parser</artifactId>
         <version>${rql-parser.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.owasp.esapi</groupId>
+        <artifactId>esapi</artifactId>
+        <version>${esapi.version}</version>
       </dependency>
 
       <dependency>
