@@ -107,7 +107,7 @@ public class CoverageByBucketFactory {
           .setHits(taxonomyHeader.hits);
 
         if (taxonomyHeader.taxonomy != null) {
-          header.setTermsCount(taxonomyTermCounts.get(taxonomyHeader.taxonomy.getName()));
+          header.setTermsCount(taxonomyTermCounts.getOrDefault(taxonomyHeader.taxonomy.getName(), 0));
         }
 
         builder.addTaxonomyHeaders(header);
@@ -118,7 +118,7 @@ public class CoverageByBucketFactory {
           .setHits(vocabularyHeader.hits);
 
         if (vocabularyHeader.vocabulary != null) {
-          header.setTermsCount(vocabularyTermCounts.get(vocabularyHeader.vocabulary.getName()));
+          header.setTermsCount(vocabularyTermCounts.getOrDefault(vocabularyHeader.vocabulary.getName(), 0));
         }
 
         builder.addVocabularyHeaders(header);
