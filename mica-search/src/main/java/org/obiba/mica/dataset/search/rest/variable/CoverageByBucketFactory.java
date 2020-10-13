@@ -104,15 +104,23 @@ public class CoverageByBucketFactory {
       coverageByBucket.getTaxonomyHeaders().forEach(taxonomyHeader -> {
         MicaSearch.BucketsCoverageDto.HeaderDto.Builder header = MicaSearch.BucketsCoverageDto.HeaderDto.newBuilder();
         header.setEntity(taxonomyHeader.taxonomy) //
-          .setHits(taxonomyHeader.hits) //
-          .setTermsCount(taxonomyTermCounts.get(taxonomyHeader.taxonomy.getName()));
+          .setHits(taxonomyHeader.hits);
+
+        if (taxonomyHeader.taxonomy != null) {
+          header.setTermsCount(taxonomyTermCounts.get(taxonomyHeader.taxonomy.getName()));
+        }
+
         builder.addTaxonomyHeaders(header);
       });
       coverageByBucket.getVocabularyHeaders().forEach(vocabularyHeader -> {
         MicaSearch.BucketsCoverageDto.HeaderDto.Builder header = MicaSearch.BucketsCoverageDto.HeaderDto.newBuilder();
         header.setEntity(vocabularyHeader.vocabulary) //
-          .setHits(vocabularyHeader.hits) //
-          .setTermsCount(vocabularyTermCounts.get(vocabularyHeader.vocabulary.getName()));
+          .setHits(vocabularyHeader.hits);
+
+        if (vocabularyHeader.vocabulary != null) {
+          header.setTermsCount(vocabularyTermCounts.get(vocabularyHeader.vocabulary.getName()));
+        }
+
         builder.addVocabularyHeaders(header);
       });
     }
