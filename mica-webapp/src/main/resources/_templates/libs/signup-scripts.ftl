@@ -10,7 +10,7 @@
       var alertId = "#alertFailure";
       var msg = message;
       if (Array.isArray(message)) {
-        msg = '<@message "sign-up-fields-required"/>: ' + message.join(", ");
+        msg = "<@message "sign-up-fields-required"/>: " + message.join(", ");
       } else if (errorMessages[msg]) {
         msg = errorMessages[msg];
       }

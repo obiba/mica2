@@ -38,7 +38,7 @@
         const chartCanvas = $('#chartsContainer canvas:last-child').get(0).getContext('2d');
         new Chart(chartCanvas, makeVariablesClassificationsChartSettings(chartData, {
           key: '${dataset.id}',
-          label: '<@message "variables"/>',
+          label: "<@message "variables"/>",
           borderColor: '${barChartBorderColor}',
           backgroundColor: '${barChartBackgroundColor}'
         }));
@@ -120,9 +120,9 @@
 
     <!-- Files -->
     const filesTr = {
-      'item': '<@message "item"/>',
-      'items': '<@message "items"/>',
-      'download': '<@message "download"/>'
+      'item': "<@message "item"/>",
+      'items': "<@message "items"/>",
+      'download': "<@message "download"/>"
     };
     <#if showDatasetFiles>
       makeFilesVue('#files-app', {

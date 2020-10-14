@@ -94,9 +94,9 @@
         path: '/',
         folder: {},
         tr: {
-          'item': '<@message "item"/>',
-          'items': '<@message "items"/>',
-          'download': '<@message "download"/>'
+          "item": "<@message "item"/>",
+          "items": "<@message "items"/>",
+          "download": "<@message "download"/>"
         },
         locale: '${.lang}'
       });
