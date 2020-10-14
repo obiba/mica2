@@ -32,7 +32,7 @@
         const chartCanvas = $('#chartsContainer canvas:last-child').get(0).getContext('2d');
         new Chart(chartCanvas, makeVariablesClassificationsChartSettings(chartData, {
           key: key,
-          label: '<@message "variables"/>',
+          label: "<@message "variables"/>",
           borderColor: '${barChartBorderColor}',
           backgroundColor: '${barChartBackgroundColor}'
         }));
@@ -89,9 +89,9 @@
         path: '/',
         folder: {},
         tr: {
-          'item': '<@message "item"/>',
-          'items': '<@message "items"/>',
-          'download': '<@message "download"/>'
+          "item": "<@message "item"/>",
+          "items": "<@message "items"/>",
+          "download": "<@message "download"/>"
         },
         locale: '${.lang}'
       });

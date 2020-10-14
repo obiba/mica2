@@ -154,21 +154,21 @@
 <#include "libs/scripts.ftl">
 <script>
   const requiredFields = [
-    { name: 'email', title: '<@message "email"/>' },
+    { name: "email", title: "<@message "email"/>" },
     <#if config.signupWithPassword>
-      { name: 'password', title: '<@message "password"/>' },
+      { name: "password", title: "<@message "password"/>" },
     </#if>
-    { name: 'firstname', title: '<@message "firstname"/>' },
-    { name: 'lastname', title: '<@message "lastname"/>' },
+    { name: "firstname", title: "<@message "firstname"/>" },
+    { name: "lastname", title: "<@message "lastname"/>" },
     <#if authConfig.joinWithUsername>
-      { name: 'username', title: '<@message "username"/>' },
+      { name: "username", title: "<@message "username"/>" },
     </#if>
     <#list authConfig.userAttributes as attribute>
       <#if attribute.required>
-        { name: '${attribute.name}', title: '<@message attribute.name/>' },
+        { name: "${attribute.name}", title: "<@message attribute.name/>" },
       </#if>
     </#list>
-    { name: 'g-recaptcha-response', title: '<@message "captcha"/>' }
+    { name: "g-recaptcha-response", title: "<@message "captcha"/>" }
   ];
 </script>
 <#include "libs/signup-scripts.ftl">
