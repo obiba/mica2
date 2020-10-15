@@ -87,3 +87,8 @@
 .card-body p:last-child, td p:last-child {
   margin-bottom: 0;
 }
+
+.card-body > div.border-bottom:last-child ,
+#lines > div.border-bottom:last-child {
+  border-bottom: none !important;
+}
