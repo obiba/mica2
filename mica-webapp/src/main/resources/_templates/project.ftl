@@ -8,7 +8,7 @@
   <#include "libs/head.ftl">
   <title>${config.name!""} | ${localize(project.title)}</title>
 </head>
-<body id="projects-page" class="hold-transition layout-top-nav layout-navbar-fixed">
+<body id="project-page" class="hold-transition layout-top-nav layout-navbar-fixed">
 <div class="wrapper">
 
   <!-- Navbar -->
