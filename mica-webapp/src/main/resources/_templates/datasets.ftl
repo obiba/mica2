@@ -1,33 +1,30 @@
 <!-- Macros -->
 <#include "libs/header.ftl">
 
+<!-- Template variables -->
+<#if !type??>
+  <#assign title = "datasets">
+  <#assign showTypeColumn = true>
+<#elseif type == "Harmonized">
+  <#assign title = "harmonized-datasets">
+  <#assign showTypeColumn = false>
+<#else>
+  <#assign title = "collected-datasets">
+  <#assign showTypeColumn = false>
+</#if>
+
 <!DOCTYPE html>
 <html lang="${.lang}">
 <head>
   <#include "libs/head.ftl">
-  <title>${config.name!""} | <@message "datasets"/></title>
+  <title>${config.name!""} | <@message title/></title>
 </head>
-<body id="datasets-page" class="hold-transition layout-top-nav layout-navbar-fixed">
+<body id="${title}-page" class="hold-transition layout-top-nav layout-navbar-fixed">
 <div class="wrapper">
 
   <!-- Navbar -->
   <#include "libs/top-navbar.ftl">
   <!-- /.navbar -->
-
-  <!-- Template variables -->
-  <#if !type??>
-    <#assign title = "datasets">
-    <#assign callout = "datasets-callout">
-    <#assign showTypeColumn = true>
-  <#elseif type == "Harmonized">
-    <#assign title = "harmonized-datasets">
-    <#assign callout = "harmonized-datasets-callout">
-    <#assign showTypeColumn = false>
-  <#else>
-    <#assign title = "collected-datasets">
-    <#assign callout = "collected-datasets-callout">
-    <#assign showTypeColumn = false>
-  </#if>
 
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
@@ -38,12 +35,12 @@
     <!-- Main content -->
     <div class="content">
       <div class="container">
-        <div id="datasets-callout" class="callout callout-info">
-          <p><@message callout/></p>
+        <div id="${title}-callout" class="callout callout-info">
+          <p><@message (title + "-callout")/></p>
         </div>
 
         <#if datasets?? && datasets?size != 0>
-          <div id="datasets-card" class="card card-info card-outline">
+          <div id="${title}-card" class="card card-info card-outline">
             <div class="card-header d-flex p-0">
               <h3 class="card-title p-3"><@message title/></h3>
               <#if datasetListDisplays?size gt 1>
@@ -82,7 +79,7 @@
               <div class="tab-content">
                 <#if datasetListDisplays?seq_contains("table")>
                   <div class="tab-pane <#if datasetListDefaultDisplay == "table">active</#if>" id="table">
-                    <table id="datasets" class="table table-bordered table-striped">
+                    <table id="${title}" class="table table-bordered table-striped">
                       <thead>
                       <tr>
                         <th><@message "acronym"/></th>
@@ -192,7 +189,7 @@
             </div>
           </div>
         <#else>
-          <div id="datasets-card" class="card card-info card-outline">
+          <div id="${title}-card" class="card card-info card-outline">
             <div class="card-header d-flex p-0">
               <h3 class="card-title p-3"><@message "datasets"/></h3>
             </div><!-- /.card-header -->
