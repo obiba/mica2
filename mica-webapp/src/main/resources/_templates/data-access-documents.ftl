@@ -24,7 +24,7 @@
         <div class="row">
           <div class="col-sm-6">
             <h1 class="m-0">
-              <span class="text-white-50">Data Access Documents /</span> ${dar.id}
+              <span class="text-white-50"><@message "data-access-documents"/> /</span> ${dar.id}
             </h1>
           </div>
           <div class="col-sm-6">
