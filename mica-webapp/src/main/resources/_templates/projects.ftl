@@ -34,7 +34,7 @@
     <!-- Main content -->
     <div class="content">
       <div class="container">
-        <div class="callout callout-info">
+        <div id="projects-callout" class="callout callout-info">
           <p><@message "projects-callout"/></p>
         </div>
 
