@@ -5,6 +5,12 @@
 <#include "models/dce.ftl">
 <#include "models/files.ftl">
 
+<#if type == "Harmonized">
+  <#assign variableCartId = (variable.datasetId + ":" + variable.name + ":Dataschema")/>
+<#else>
+  <#assign variableCartId = variable.id/>
+</#if>
+
 <!DOCTYPE html>
 <html lang="${.lang}">
 <head>
@@ -109,10 +115,10 @@
               <#if cartEnabled>
                 <div class="card-footer">
                   <#if user??>
-                    <a id="cart-add" href="javascript:void(0)" onclick="onVariablesCartAdd('${variable.id}')" style="display: none;">
+                    <a id="cart-add" href="javascript:void(0)" onclick="onVariablesCartAdd('${variableCartId}')" style="display: none;">
                       <@message "sets.cart.add-to-cart"/> <i class="fas fa-cart-plus"></i>
                     </a>
-                    <a id="cart-remove" href="javascript:void(0)" onclick="onVariablesCartRemove('${variable.id}')" style="display: none;">
+                    <a id="cart-remove" href="javascript:void(0)" onclick="onVariablesCartRemove('${variableCartId}')" style="display: none;">
                       <@message "sets.cart.remove-from-cart"/> <i class="fas fa-cart-arrow-down"></i>
                     </a>
                   <#else>
