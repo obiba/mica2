@@ -13,7 +13,7 @@
   // cart
   <#if cartEnabled>
     const onVariablesCartGet = function(cart) {
-      VariablesSetService.contains(cart, '${variable.id}', function() {
+      VariablesSetService.contains(cart, '${variableCartId}', function() {
         $('#cart-remove').show();
       }, function () {
         $('#cart-add').show();
