@@ -88,7 +88,7 @@
                   </div>
                 </div>
 
-                <div class="card-text marked">
+                <div class="card-text marked mt-3">
                   ${localize(dataset.description)}
                 </div>
               </div>
