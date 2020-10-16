@@ -109,7 +109,7 @@
 
                 </div>
 
-                <div class="card-text marked">
+                <div class="card-text marked mt-3">
                   ${localize(study.objectives)}
                 </div>
                   <#if study.model.website??>
