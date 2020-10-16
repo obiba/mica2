@@ -11,7 +11,7 @@
   <#include "libs/head.ftl">
   <title>${config.name!""} | ${localize(dataset.acronym)}</title>
 </head>
-<body id="dataset-page" class="hold-transition layout-top-nav layout-navbar-fixed">
+<body id="${type?lower_case}-dataset-page" class="hold-transition layout-top-nav layout-navbar-fixed">
 <div class="wrapper">
 
   <!-- Navbar -->

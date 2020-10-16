@@ -1,33 +1,30 @@
 <!-- Macros -->
 <#include "libs/header.ftl">
 
+<!-- Template variables -->
+<#if !type??>
+  <#assign title = "studies">
+  <#assign showTypeColumn = true>
+<#elseif type == "Harmonization">
+  <#assign title = "harmonization-studies">
+  <#assign showTypeColumn = false>
+<#else>
+  <#assign title = "individual-studies">
+  <#assign showTypeColumn = false>
+</#if>
+
 <!DOCTYPE html>
 <html lang="${.lang}">
 <head>
   <#include "libs/head.ftl">
-  <title>${config.name!""} | <@message "studies"/></title>
+  <title>${config.name!""} | <@message title/></title>
 </head>
-<body id="studies-page" class="hold-transition layout-top-nav layout-navbar-fixed">
+<body id="${title}-page" class="hold-transition layout-top-nav layout-navbar-fixed">
 <div class="wrapper">
 
   <!-- Navbar -->
   <#include "libs/top-navbar.ftl">
   <!-- /.navbar -->
-
-  <!-- Template variables -->
-  <#if !type??>
-    <#assign title = "studies">
-    <#assign callout = "studies-callout">
-    <#assign showTypeColumn = true>
-  <#elseif type == "Harmonization">
-    <#assign title = "harmonization-studies">
-    <#assign callout = "harmonization-studies-callout">
-    <#assign showTypeColumn = false>
-  <#else>
-    <#assign title = "individual-studies">
-    <#assign callout = "individual-studies-callout">
-    <#assign showTypeColumn = false>
-  </#if>
 
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
@@ -38,12 +35,12 @@
     <!-- Main content -->
     <div class="content">
       <div class="container">
-        <div id="studies-callout" class="callout callout-info">
-          <p><@message callout/></p>
+        <div id="${title}-callout" class="callout callout-info">
+          <p><@message (title + "-callout")/></p>
         </div>
 
         <#if studies?? && studies?size != 0>
-          <div id="studies-card" class="card card-info card-outline">
+          <div id="${title}-card" class="card card-info card-outline">
 
             <div class="card-header d-flex p-0">
               <h3 class="card-title p-3"><@message "studies"/></h3>
@@ -84,7 +81,7 @@
               <div class="tab-content">
                 <#if studyListDisplays?seq_contains("table")>
                   <div class="tab-pane <#if studyListDefaultDisplay == "table">active</#if>" id="table">
-                    <table id="studies" class="table table-bordered table-striped">
+                    <table id="${title}" class="table table-bordered table-striped">
                       <thead>
                       <tr>
                         <th><@message "acronym"/></th>
@@ -192,7 +189,7 @@
             </div>
           </div>
         <#else>
-          <div id="studies-card" class="card card-info card-outline">
+          <div id="${title}-card" class="card card-info card-outline">
             <div class="card-header d-flex p-0">
               <h3 class="card-title p-3"><@message "studies"/></h3>
             </div><!-- /.card-header -->

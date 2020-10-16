@@ -11,7 +11,7 @@
   <#include "libs/head.ftl">
   <title>${config.name!""} | ${variable.name}</title>
 </head>
-<body id="variable-page" class="hold-transition layout-top-nav layout-navbar-fixed">
+<body id="${type?lower_case}-variable-page" class="hold-transition layout-top-nav layout-navbar-fixed">
 <div class="wrapper">
 
   <!-- Navbar -->

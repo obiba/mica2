@@ -13,7 +13,7 @@
   <title>${config.name!""} | ${localize(study.acronym)}</title>
   <link rel="stylesheet" href="${contextPath}/bower_components/mica-study-timeline/dist/mica-study-timeline.css" />
 </head>
-<body id="study-page" class="hold-transition layout-top-nav layout-navbar-fixed">
+<body id="${type?lower_case}-study-page" class="hold-transition layout-top-nav layout-navbar-fixed">
 <div class="wrapper">
 
   <!-- Navbar -->
