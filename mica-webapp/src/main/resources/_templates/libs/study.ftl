@@ -2,58 +2,108 @@
 
 <!-- Study model template -->
 <#macro studyModel study type>
-
-  <!-- Individual study -->
-  <#if type == "Individual">
-    <div class="row">
-      <div class="col-sm-12 col-lg-6">
-        <@studyDesign study=study/>
-
-        <#if study.model.markerPaper??>
-          <@studyMarkerPaper study=study/>
-        </#if>
-      </div>
-
-      <div class="col-sm-12 col-lg-6">
-        <#if study.model.methods?? && study.model.methods.recruitments??>
-          <@studyRecruitments study=study/>
-        </#if>
-
-        <#if study.model.numberOfParticipants??>
-          <@studyParticipants study=study/>
-        </#if>
-
-        <@studyAccess study=study/>
-
-      </div>
-    </div>
-  </#if>
-
-  <!-- Harmonization study -->
-  <#if type == "Harmonization">
-    <#if study.model.harmonizationDesign??>
+  <#if study.model??>
+    <!-- Individual study -->
+    <#if type == "Individual">
       <div class="row">
-        <div class="col-12">
-          <div class="card card-info card-outline">
-            <div class="card-header">
-              <h3 class="card-title">
-                <@message "study.design"/>
-              </h3>
-              <div class="card-tools">
-                <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="<@message "collapse"/>">
-                  <i class="fas fa-minus"></i></button>
-              </div>
-            </div>
-            <!-- /.card-header -->
-            <div class="card-body">
-              ${localize(study.model.harmonizationDesign)}
-            </div>
-          </div>
+        <div class="col-sm-12 col-lg-6">
+          <#if study.model.methods??>
+            <@studyDesign study=study/>
+          </#if>
+
+          <#if study.model.markerPaper??>
+            <@studyMarkerPaper study=study/>
+          </#if>
+        </div>
+
+        <div class="col-sm-12 col-lg-6">
+          <#if study.model.methods?? && study.model.methods.recruitments??>
+            <@studyRecruitments study=study/>
+          </#if>
+
+          <#if study.model.numberOfParticipants??>
+            <@studyParticipants study=study/>
+          </#if>
+
+          <@studyAccess study=study/>
+
         </div>
       </div>
     </#if>
-  </#if>
 
+    <!-- Harmonization study -->
+    <#if type == "Harmonization">
+      <#if study.model.harmonizationDesign??>
+        <div class="row">
+          <div class="col-12">
+            <div class="card card-info card-outline">
+              <div class="card-header">
+                <h3 class="card-title">
+                  <@message "study.design"/>
+                </h3>
+                <div class="card-tools">
+                  <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="<@message "collapse"/>">
+                    <i class="fas fa-minus"></i></button>
+                </div>
+              </div>
+              <!-- /.card-header -->
+              <div class="card-body">
+                ${localize(study.model.harmonizationDesign)}
+              </div>
+            </div>
+          </div>
+        </div>
+      </#if>
+    </#if>
+  </#if>
+</#macro>
+
+<#macro studyDefinition study type>
+  <#if study.model??>
+    <dl class="row mt-3">
+      <#if study.model.startYear??>
+        <dt class="col-sm-4">
+          <@message "study.start-year"/>
+        </dt>
+        <dd class="col-sm-8">
+          ${study.model.startYear?c}
+        </dd>
+      </#if>
+
+      <#if study.model.endYear??>
+        <dt class="col-sm-4">
+          <@message "study.end-year"/>
+        </dt>
+        <dd class="col-sm-8">
+          ${study.model.endYear?c}
+        </dd>
+      </#if>
+
+      <#if study.model.funding??>
+        <dt class="col-sm-4">
+          <@message "funding"/>
+        </dt>
+        <dd class="col-sm-8">
+          ${localize(study.model.funding)}
+        </dd>
+      </#if>
+
+      <#if study.model.info??>
+        <dt class="col-sm-4">
+          <@message "suppl-info"/>
+        </dt>
+        <dd class="col-sm-8">
+          ${localize(study.model.info)}
+        </dd>
+      </#if>
+    </dl>
+
+    <#if study.model.website??>
+      <blockquote>
+        <@message "visit"/> <a href="${study.model.website}" target="_blank">${localize(study.acronym)}</a>
+      </blockquote>
+    </#if>
+  </#if>
 </#macro>
 
 <#macro studyDesign study>
@@ -71,7 +121,7 @@
     <div class="card-body">
 
       <dl class="row">
-        <#if study.model.methods?? && study.model.methods.design??>
+        <#if study.model.methods.design??>
           <dt class="col-sm-4" title="<@message "study_taxonomy.vocabulary.methods-design.description"/>">
             <@message "study_taxonomy.vocabulary.methods-design.title"/>
           </dt>
@@ -84,34 +134,7 @@
           </dd>
         </#if>
 
-        <#if study.model.startYear??>
-          <dt class="col-sm-4">
-            <@message "study.start-year"/>
-          </dt>
-          <dd class="col-sm-8">
-            ${study.model.startYear?c}
-          </dd>
-        </#if>
-
-        <#if study.model.endYear??>
-          <dt class="col-sm-4">
-            <@message "study.end-year"/>
-          </dt>
-          <dd class="col-sm-8">
-            ${study.model.endYear?c}
-          </dd>
-        </#if>
-
-        <#if study.model.funding??>
-          <dt class="col-sm-4">
-            <@message "funding"/>
-          </dt>
-          <dd class="col-sm-8">
-            ${localize(study.model.funding)}
-          </dd>
-        </#if>
-
-        <#if study.model.methods?? && study.model.methods.followUpInfo??>
+        <#if study.model.methods.followUpInfo??>
           <dt class="col-sm-4">
             <@message "study.follow-up"/>
           </dt>
@@ -120,12 +143,12 @@
           </dd>
         </#if>
 
-        <#if study.model.info??>
+        <#if study.model.methods.info??>
           <dt class="col-sm-4">
             <@message "suppl-info"/>
           </dt>
           <dd class="col-sm-8">
-            ${localize(study.model.info)}
+            ${localize(study.model.methods.info)}
           </dd>
         </#if>
       </dl>

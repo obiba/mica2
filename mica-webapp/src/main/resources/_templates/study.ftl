@@ -112,11 +112,10 @@
                 <div class="card-text marked mt-3">
                   ${localize(study.objectives)}
                 </div>
-                  <#if study.model.website??>
-                    <blockquote>
-                      <@message "visit"/> <a href="${study.model.website}" target="_blank">${localize(study.acronym)}</a>
-                    </blockquote>
-                  </#if>
+
+                <!-- Study definition model -->
+                <@studyDefinition study=study type=type/>
+
               </div>
             </div>
           </div>
