@@ -216,6 +216,8 @@ class VariableService {
       iconClass = 'fas fa-times text-danger';
     } else if (status === 'undetermined') {
       iconClass = 'fas fa-question text-warning';
+    } else if (status === 'na') {
+      iconClass = 'fas fa-ban text-black';
     }
     return iconClass;
   };

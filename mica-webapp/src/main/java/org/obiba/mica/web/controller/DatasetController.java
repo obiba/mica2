@@ -65,11 +65,11 @@ public class DatasetController extends BaseController {
       List<String> ids = Lists.newArrayList();
       for (StudyTable sTable : harmoDataset.getStudyTables()) {
         Map<String, Object> p = new HashMap<>();
-        addStudyTableParameters(p, sTable, ids);
+        if (addStudyTableParameters(p, sTable, ids))
+          allTables.add(sTable);
         if (!p.isEmpty()) {
           studyTables.add(p);
           allStudies.put(sTable.getStudyId(), (BaseStudy) p.get("study"));
-          allTables.add(sTable);
         }
       }
       params.put("studyTables", studyTables);
@@ -77,11 +77,11 @@ public class DatasetController extends BaseController {
       ids.clear();
       for (HarmonizationStudyTable hTable : harmoDataset.getHarmonizationTables()) {
         Map<String, Object> p = new HashMap<>();
-        addHarmonizationTableParameters(p, hTable, ids);
+        if (addHarmonizationTableParameters(p, hTable, ids))
+          allTables.add(hTable);
         if (!p.isEmpty()) {
           harmonizationTables.add(p);
           allStudies.put(hTable.getStudyId(), (BaseStudy) p.get("study"));
-          allTables.add(hTable);
         }
       }
       params.put("harmonizationTables", harmonizationTables);
@@ -98,7 +98,7 @@ public class DatasetController extends BaseController {
     addStudyTableParameters(params, studyTable, Lists.newArrayList());
   }
 
-  private void addStudyTableParameters(Map<String, Object> params, StudyTable studyTable, List<String> ids) {
+  private boolean addStudyTableParameters(Map<String, Object> params, StudyTable studyTable, List<String> ids) {
     try {
       Study study = (Study) getStudy(studyTable.getStudyId());
       Population population = study.findPopulation(studyTable.getPopulationId());
@@ -110,17 +110,19 @@ public class DatasetController extends BaseController {
         params.put("dce", dce);
         ids.add(id);
       }
+      return true;
     } catch (Exception e) {
       // ignore
       log.warn("Failed at retrieving collected dataset's study/population/dce", e);
     }
+    return false;
   }
 
   private void addHarmonizationTableParameters(Map<String, Object> params, HarmonizationStudyTable studyTable) {
     addHarmonizationTableParameters(params, studyTable, Lists.newArrayList());
   }
 
-  private void addHarmonizationTableParameters(Map<String, Object> params, HarmonizationStudyTable studyTable, List<String> ids) {
+  private boolean addHarmonizationTableParameters(Map<String, Object> params, HarmonizationStudyTable studyTable, List<String> ids) {
     try {
       HarmonizationStudy study = (HarmonizationStudy) getStudy(studyTable.getStudyId());
       Population population = study.findPopulation(studyTable.getPopulationId());
@@ -130,10 +132,12 @@ public class DatasetController extends BaseController {
         params.put("population", population);
         ids.add(id);
       }
+      return true;
     } catch (Exception e) {
       // ignore
       log.warn("Failed at retrieving harmonized dataset's study/population", e);
     }
+    return false;
   }
 
   private Dataset getDataset(String id, String shareKey) {

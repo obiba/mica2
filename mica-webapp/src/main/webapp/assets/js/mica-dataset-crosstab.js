@@ -601,9 +601,10 @@ const refreshCrosstab = function() {
         crosstab.getContingencies().forEach((cont, i) => {
           if (cont.info.summary) {
             let text = cont.info.summary + ' / ' + cont.info.population + ' / ' + cont.info.dce;
-            if (cont.info.tableName || cont.info.tableDescription) {
-              let sep = cont.info.tableName ? ': ' : '';
-              text = text + ' [' + cont.info.tableName + (cont.info.tableDescription ? sep + cont.info.tableDescription : '') + ']';
+            if (cont.info.tableName) {
+              text = text + ' [' + cont.info.tableName + (cont.info.tableDescription ? ': ' + cont.info.tableDescription : '') + ']';
+            } else if (cont.info.tableDescription) {
+              text = text + ' [' + cont.info.tableDescription + ']';
             }
             selectStudy.append(new Option(text, i, false, false));
           }

@@ -246,31 +246,46 @@
 
         <!-- Harmonization content -->
         <#if type == "Harmonized">
-          <div class="row">
-            <div class="col-lg-12">
-              <div class="card card-info card-outline">
-                <div class="card-header">
-                  <h3 class="card-title"><@message "harmonization"/></h3>
+          <div class="card card-info card-outline">
+            <div class="card-header">
+              <h3 class="card-title"><@message "harmonization"/></h3>
+            </div>
+            <div class="card-body">
+              <div class="row">
+                <div class="col-lg-8 col-sm-6">
+                  <dl id="harmonization-legend" class="row">
+                    <dt class="col-sm-1"><i class="fas fa-check text-success"></i></dt>
+                    <dd class="col-sm-11"><small><@message "harmonization-complete"/></small></dd>
+                    <dt class="col-sm-1"><i class="fas fa-times text-danger"></i></dt>
+                    <dd class="col-sm-11"><small><@message "harmonization-impossible"/></small></dd>
+                    <dt class="col-sm-1"><i class="fas fa-question text-warning"></i></dt>
+                    <dd class="col-sm-11"><small><@message "harmonization-undetermined"/></small></dd>
+                    <dt class="col-sm-1"><i class="fas fa-ban text-black"></i></dt>
+                    <dd class="col-sm-11"><small><@message "harmonization-na"/></small></dd>
+                  </dl>
                 </div>
-                <div class="card-body">
-                  <div id="loadingSummary" class="spinner-border spinner-border-sm" role="status"></div>
-                  <table id="harmonizedTable" class="table table-striped">
-                    <thead>
-                      <tr>
-                        <th><@message "variable"/></th>
-                        <#list allTables as table>
-                          <th>
-                            <a href="${contextPath}/study/${table.studyId}">${localize(allStudies[table.studyId].acronym)}</a>
-                            <#if table.name??>${localize(table.name)}</#if>
-                            <#if table.description??><i class="fas fa-info-circle" title="${localize(table.description)}"></i></#if>
-                          </th>
-                        </#list>
-                      </tr>
-                    </thead>
-                    <tbody></tbody>
-                  </table>
+                <div class="col-lg-4 col-sm-6">
+                  <a href="${contextPath}/ws/harmonized-dataset/${dataset.id}/variables/harmonizations/_export" class="btn btn-primary float-right mb-3">
+                    <i class="fas fa-download"></i> <@message "download"/>
+                  </a>
                 </div>
               </div>
+              <div id="loadingSummary" class="spinner-border spinner-border-sm" role="status"></div>
+              <table id="harmonizedTable" class="table table-striped">
+                <thead>
+                  <tr>
+                    <th><@message "variable"/></th>
+                    <#list allTables as table>
+                      <th>
+                        <a href="${contextPath}/study/${table.studyId}">${localize(allStudies[table.studyId].acronym)}</a>
+                        <#if table.name??>${localize(table.name)}</#if>
+                        <#if table.description??><i class="fas fa-info-circle" title="${localize(table.description)}"></i></#if>
+                      </th>
+                    </#list>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
             </div>
           </div>
         </#if>
