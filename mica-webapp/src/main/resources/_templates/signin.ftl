@@ -49,7 +49,9 @@
           </div>
           <!-- /.col -->
           <div class="col-6">
-            <button type="submit" class="btn btn-primary btn-block"><@message "sign-in-submit"/></button>
+            <button type="submit" class="btn btn-primary btn-block">
+              <i class="spinner-border spinner-border-sm" style="display: none;"></i> <@message "sign-in-submit"/>
+            </button>
           </div>
           <!-- /.col -->
         </div>
@@ -84,7 +86,7 @@
 <#include "libs/scripts.ftl">
 
 <script>
-  UserService.signin("#form", function (banned) {
+  UserService.signin("form", function (banned) {
     var alertId = banned ? "#alertBanned" : "#alertFailure";
     $(alertId).removeClass("d-none");
     setTimeout(function() {
