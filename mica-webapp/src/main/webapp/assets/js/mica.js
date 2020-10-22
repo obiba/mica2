@@ -464,12 +464,23 @@ class UserService {
    * @param onFailure
    */
   static signin(formId, onFailure) {
-    $(formId).submit(function(e) {
+    const toggleSubmitButton = function(enable)  {
+      const submitSelect = '#' + formId + ' button[type="submit"]';
+      if (enable) {
+        $(submitSelect).prop("disabled",false);
+        $( submitSelect + ' i').hide();
+      } else {
+        $(submitSelect).prop("disabled",true);
+        $( submitSelect + ' i').show();
+      }
+    };
+    $('#' + formId).submit(function(e) {
       e.preventDefault(); // avoid to execute the actual submit of the form.
       let form = $(this);
       let url = '/ws/auth/sessions';
       let data = form.serialize(); // serializes the form's elements.
 
+      toggleSubmitButton(false);
       axios.post(MicaService.normalizeUrl(url), data)
         .then(() => {
           //console.dir(response);
@@ -481,6 +492,7 @@ class UserService {
           MicaService.redirect(redirect);
         })
         .catch(handle => {
+          toggleSubmitButton(true);
           console.dir(handle);
           if (onFailure) {
             let banned = handle.response.data && handle.response.data.message === 'User is banned';
@@ -498,7 +510,17 @@ class UserService {
    * @param onFailure
    */
   static signup(formId, requiredFields, onFailure) {
-    $(formId).submit(function(e) {
+    const toggleSubmitButton = function(enable)  {
+      const submitSelect = '#' + formId + ' button[type="submit"]';
+      if (enable) {
+        $(submitSelect).prop("disabled",false);
+        $( submitSelect + ' i').hide();
+      } else {
+        $(submitSelect).prop("disabled",true);
+        $( submitSelect + ' i').show();
+      }
+    };
+    $('#' + formId).submit(function(e) {
       e.preventDefault(); // avoid to execute the actual submit of the form.
       let form = $(this);
       let url = '/ws/users';
@@ -539,6 +561,7 @@ class UserService {
 
       const realmField = getField('realm');
 
+      toggleSubmitButton(false);
       axios.post(MicaService.normalizeUrl(url), data)
         .then(() => {
           //console.dir(response);
@@ -555,6 +578,7 @@ class UserService {
         })
         .catch(handle => {
           console.dir(handle);
+          toggleSubmitButton(true);
           if (handle.response.data.message === 'Email already in use') {
             onFailure('server.error.email-already-assigned');
           } else if (handle.response.data.message === 'Invalid reCaptcha response') {

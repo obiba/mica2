@@ -6,7 +6,7 @@
       'server.error.bad-captcha': "<@message "server.error.bad-captcha"/>",
       'server.error.email-already-assigned': "<@message "server.error.email-already-assigned"/>",
     };
-    UserService.signup("#form", requiredFields, function (message) {
+    UserService.signup("form", requiredFields, function (message) {
       var alertId = "#alertFailure";
       var msg = message;
       if (Array.isArray(message)) {

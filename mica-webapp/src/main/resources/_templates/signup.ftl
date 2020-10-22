@@ -120,7 +120,9 @@
           </div>
           <!-- /.col -->
           <div class="col-6">
-            <button type="submit" class="btn btn-primary btn-block"><@message "sign-up-submit"/></button>
+            <button type="submit" class="btn btn-primary btn-block">
+              <i class="spinner-border spinner-border-sm" style="display: none;"></i> <@message "sign-up-submit"/>
+            </button>
           </div>
           <!-- /.col -->
         </div>
