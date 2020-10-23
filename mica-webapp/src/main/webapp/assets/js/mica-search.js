@@ -589,14 +589,16 @@ new Vue({
     onTaxonomySelection: function (payload) {
       this.selectedTaxonomy = this.findTaxonomy(payload.taxonomyName, payload.target);
       this.selectedTarget = payload.target;
-      
+
       let selectedTaxonomyTitle = '';
+      let selectedTaxonomyVocabulariesTitle = '';
       if (!Array.isArray(this.selectedTaxonomy)) {
         selectedTaxonomyTitle = this.selectedTaxonomy.title[0].text;
+        selectedTaxonomyVocabulariesTitle = this.selectedTaxonomy.vocabularies.map(voc => voc.title[0].text).join(', ');
       }
 
       this.message = '[' + payload.taxonomyName + '] ' + selectedTaxonomyTitle + ': ';
-      this.message = this.message + this.selectedTaxonomy.vocabularies.map(voc => voc.title[0].text).join(', ');
+      this.message = this.message + selectedTaxonomyVocabulariesTitle;
     },
     findTaxonomy: function (taxonomyName, target) {
       if (target !== TARGETS.VARIABLE) { // only target variable has an alternative design
