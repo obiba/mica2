@@ -589,8 +589,13 @@ new Vue({
     onTaxonomySelection: function (payload) {
       this.selectedTaxonomy = this.findTaxonomy(payload.taxonomyName, payload.target);
       this.selectedTarget = payload.target;
+      
+      let selectedTaxonomyTitle = '';
+      if (!Array.isArray(this.selectedTaxonomy)) {
+        selectedTaxonomyTitle = this.selectedTaxonomy.title[0].text;
+      }
 
-      this.message = '[' + payload.taxonomyName + '] ' + this.selectedTaxonomy.title[0].text + ': ';
+      this.message = '[' + payload.taxonomyName + '] ' + selectedTaxonomyTitle + ': ';
       this.message = this.message + this.selectedTaxonomy.vocabularies.map(voc => voc.title[0].text).join(', ');
     },
     findTaxonomy: function (taxonomyName, target) {
@@ -605,7 +610,12 @@ new Vue({
 
         if (foundTaxonomyGroup) {
           found = [];
-          foundTaxonomyGroup.terms.forEach(term => found.push(this.taxonomies[term.name]));
+          foundTaxonomyGroup.terms.forEach(term => {
+            const taxonomy = this.taxonomies[term.name];
+            if (taxonomy) {
+              found.push(taxonomy);
+            }
+          });
         }
       }
 
