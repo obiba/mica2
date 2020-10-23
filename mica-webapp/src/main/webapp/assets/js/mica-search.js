@@ -97,8 +97,14 @@ new Vue({
         this.criteriaMenu.items[target.name].title = StringLocalizer.localize(target.title);
         switch (target.name) {
           case 'variable':
-            // TODO handle multi level
-            this.criteriaMenu.items.variable.menus = target.terms[0].terms;
+            let level = target.terms[0].terms;
+            const theRest = target.terms.slice(1);
+
+            if (theRest.length > 0) {
+              this.criteriaMenu.items.variable.menus = level.concat(theRest);
+            } else {
+              this.criteriaMenu.items.variable.menus = level;
+            }
             break;
           case 'dataset':
           case 'study':
@@ -529,6 +535,7 @@ new Vue({
   data() {
     return {
       taxonomies: {},
+      targets: [],
       message: '',
       selectedTaxonomy: null,
       selectedTarget: null,
@@ -580,11 +587,29 @@ new Vue({
     // show a modal with all the vocabularies/terms of the selected taxonomy
     // initialized by the query terms and update/trigger the query on close
     onTaxonomySelection: function (payload) {
-      this.selectedTaxonomy = this.taxonomies[payload.taxonomyName];
+      this.selectedTaxonomy = this.findTaxonomy(payload.taxonomyName, payload.target);
       this.selectedTarget = payload.target;
 
       this.message = '[' + payload.taxonomyName + '] ' + this.selectedTaxonomy.title[0].text + ': ';
       this.message = this.message + this.selectedTaxonomy.vocabularies.map(voc => voc.title[0].text).join(', ');
+    },
+    findTaxonomy: function (taxonomyName, target) {
+      if (target !== TARGETS.VARIABLE) { // only target variable has an alternative design
+        return this.taxonomies[taxonomyName];
+      }
+
+      let found = this.taxonomies[taxonomyName];
+      if (!found) {
+        const foundTarget = this.targets.filter(it => it.name === target)[0];
+        let foundTaxonomyGroup = foundTarget.terms.filter(it => it.name === taxonomyName)[0];
+
+        if (foundTaxonomyGroup) {
+          found = [];
+          foundTaxonomyGroup.terms.forEach(term => found.push(this.taxonomies[term.name]));
+        }
+      }
+
+      return found;
     },
     onExecuteQuery: function () {
       console.debug('Executing ' + this.queryType + ' query ...');
@@ -683,12 +708,12 @@ new Vue({
     axios
       .get(contextPath + '/ws/taxonomy/Mica_taxonomy/_filter?target=taxonomy')
       .then(response => {
-        let targets = response.data.vocabularies;
-        EventBus.$emit('mica-taxonomy', targets);
+        this.targets = response.data.vocabularies;
+        EventBus.$emit('mica-taxonomy', this.targets);
 
         const targetQueries = [];
 
-        for (let target of targets) {
+        for (let target of this.targets) {
           // then load the taxonomies
           targetQueries.push(`${contextPath}/ws/taxonomies/_filter?target=${target.name}`);
         }
