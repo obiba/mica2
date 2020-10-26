@@ -538,6 +538,7 @@ new Vue({
       targets: [],
       message: '',
       selectedTaxonomy: null,
+      selectedTaxonomyTitle: null,
       selectedTarget: null,
       queryType: 'variables-list',
       lastList: '',
@@ -587,38 +588,39 @@ new Vue({
     // show a modal with all the vocabularies/terms of the selected taxonomy
     // initialized by the query terms and update/trigger the query on close
     onTaxonomySelection: function (payload) {
-      this.selectedTaxonomy = this.findTaxonomy(payload.taxonomyName, payload.target);
+      this.selectedTaxonomy = this.taxonomies[payload.taxonomyName];
       this.selectedTarget = payload.target;
 
-      let selectedTaxonomyTitle = '';
       let selectedTaxonomyVocabulariesTitle = '';
-      if (!Array.isArray(this.selectedTaxonomy)) {
-        selectedTaxonomyTitle = this.selectedTaxonomy.title[0].text;
+      if (this.selectedTaxonomy) {
+        this.selectedTaxonomyTitle = this.selectedTaxonomy.title;
         selectedTaxonomyVocabulariesTitle = this.selectedTaxonomy.vocabularies.map(voc => voc.title[0].text).join(', ');
+      } else {
+        const foundTaxonomyGroup = this.findTaxonomyGroup(payload.taxonomyName, payload.target);
+        this.selectedTaxonomy = foundTaxonomyGroup.taxonomies;
+        this.selectedTaxonomyTitle = foundTaxonomyGroup.title;
       }
 
-      this.message = '[' + payload.taxonomyName + '] ' + selectedTaxonomyTitle + ': ';
+      this.message = '[' + payload.taxonomyName + '] ' + this.selectedTaxonomyTitle[0].text + ': ';
       this.message = this.message + selectedTaxonomyVocabulariesTitle;
     },
-    findTaxonomy: function (taxonomyName, target) {
-      if (target !== TARGETS.VARIABLE) { // only target variable has an alternative design
-        return this.taxonomies[taxonomyName];
-      }
+    findTaxonomyGroup: function (taxonomyName, target) {
+      let found = {};
 
-      let found = this.taxonomies[taxonomyName];
-      if (!found) {
-        const foundTarget = this.targets.filter(it => it.name === target)[0];
-        let foundTaxonomyGroup = foundTarget.terms.filter(it => it.name === taxonomyName)[0];
+      const foundTarget = this.targets.filter(it => it.name === target)[0];
+      let foundTaxonomyGroup = foundTarget.terms.filter(it => it.name === taxonomyName)[0];
 
-        if (foundTaxonomyGroup) {
-          found = [];
-          foundTaxonomyGroup.terms.forEach(term => {
-            const taxonomy = this.taxonomies[term.name];
-            if (taxonomy) {
-              found.push(taxonomy);
-            }
-          });
-        }
+      if (foundTaxonomyGroup) {
+        found.title = foundTaxonomyGroup.title;
+        let taxonomies = [];
+        foundTaxonomyGroup.terms.forEach(term => {
+          const taxonomy = this.taxonomies[term.name];
+          if (taxonomy) {
+            taxonomies.push(taxonomy);
+          }
+        });
+
+        found.taxonomies = taxonomies;
       }
 
       return found;
