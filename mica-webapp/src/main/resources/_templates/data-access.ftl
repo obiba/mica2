@@ -8,7 +8,7 @@
   <link rel="stylesheet" href="${assetsPath}/libs/node_modules/bootstrap-datepicker/dist/css/bootstrap-datepicker3.css"></link>
   <title>${config.name!""} | <@message "data-access"/> ${dar.id}</title>
 </head>
-<body id="data-access-page" class="hold-transition sidebar-mini">
+<body id="data-access-page" class="hold-transition sidebar-mini layout-fixed layout-navbar-fixed">
 <!-- Site wrapper -->
 <div class="wrapper">
 

@@ -7,7 +7,7 @@
     <#include "libs/head.ftl">
   <title>${config.name!""} | <@message "data-access-amendment"/> ${amendment.id}</title>
 </head>
-<body id="data-access-amendment-form-page" ng-app="formModule" class="hold-transition sidebar-mini">
+<body id="data-access-amendment-form-page" ng-app="formModule" class="hold-transition sidebar-mini layout-fixed layout-navbar-fixed">
 <!-- Site wrapper -->
 <div class="wrapper">
 
