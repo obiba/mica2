@@ -4,7 +4,7 @@
     <#include "libs/head.ftl">
   <title>${config.name!""} | Data Access Documents ${dar.id}</title>
 </head>
-<body id="data-access-documents-page" class="hold-transition sidebar-mini">
+<body id="data-access-documents-page" class="hold-transition sidebar-mini layout-fixed layout-navbar-fixed">
 <!-- Site wrapper -->
 <div class="wrapper">
 
