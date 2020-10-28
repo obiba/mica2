@@ -7,7 +7,7 @@
   <#include "libs/head.ftl">
   <title>${config.name!""} | <@message "networks"/></title>
 </head>
-<body id="networks-page" class="hold-transition layout-top-nav">
+<body id="networks-page" class="hold-transition layout-top-nav layout-navbar-fixed">
 <div class="wrapper">
 
   <!-- Navbar -->
