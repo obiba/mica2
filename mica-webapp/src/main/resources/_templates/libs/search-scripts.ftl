@@ -133,6 +133,6 @@
 <!-- Mica Search and dependencies -->
 <script src="${assetsPath}/libs/node_modules/vue/dist/vue.js"></script>
 <script src="${assetsPath}/libs/node_modules/rql/dist/rql.js"></script>
-<script src="${assetsPath}/libs/node_modules/vue-obiba-search-result/dist/VueObibaSearchResult.umd.js"></script>
+<script src="${assetsPath}/libs/node_modules/vue-mica-search/dist/VueMicaSearch.umd.js"></script>
 <script src="${assetsPath}/js/mica-query.js"></script>
 <script src="${assetsPath}/js/mica-search.js"></script>

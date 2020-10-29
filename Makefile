@@ -145,10 +145,10 @@ elasticsearch-head:
 	@echo "file://${current_dir}/.work/elasticsearch-head/index.html"
 	@echo
 
-vue-search:
-	cd ../epigeny/vue-obiba-search-result && \
+vue-mica-search:
+	cd ../vue-mica-search && \
 	yarn build-lib && \
-	cp dist/* ../../mica2/mica-webapp/src/main/webapp/assets/libs/node_modules/vue-obiba-search-result/dist/
+	cp dist/* ../../mica2/mica-webapp/src/main/webapp/assets/libs/node_modules/vue-mica-search/dist/
 
 rql:
 	cd ../epigeny/rql && \

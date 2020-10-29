@@ -495,9 +495,9 @@ const ResultsTabContent = {
 };
 
 /**
- * Registering plugins defined in VueObibaSearchResult
+ * Registering plugins defined in VueMicaSearch
  */
-Vue.use(VueObibaSearchResult, {
+Vue.use(VueMicaSearch, {
   mixin: {
     methods: {
       getEventBus: () => EventBus,
