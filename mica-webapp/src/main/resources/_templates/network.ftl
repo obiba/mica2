@@ -126,10 +126,11 @@
                     <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="<@message "collapse"/>">
                       <i class="fas fa-minus"></i></button>
                   </div>
+
                   <#if affiliatedMembersQuery??>
-                    <a href="${contextPath}/ws/persons/_search/_download?limit=1000&query=${affiliatedMembersQuery?url('utf-8')}" class="btn btn-primary float-right mr-2">
-                      <i class="fas fa-download"></i> <@message "network.associated-people"/>
-                    </a>
+                    <button type="button" class="btn btn-primary float-right mr-2" data-toggle="modal" data-target="#affiliatedMembersModal">
+                      <@message "network.associated-people"/>
+                    </button>
                   </#if>
                 </div>
                 <div class="card-body">
@@ -287,6 +288,36 @@
         <#if networkVariablesClassificationsTaxonomies?? && (networkVariablesClassificationsTaxonomies?size gt 0) && studyAcronyms?? && (studyAcronyms?size gt 0)>
           <@variablesClassifications network=network studyAcronyms=studyAcronyms/>
         </#if>
+
+        <!-- Affiliated Members Modal -->
+        <div class="modal fade" id="affiliatedMembersModal" data-keyboard="false" tabindex="-1">
+          <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title"><@message "network.associated-people"/></h5>
+                <button type="button" class="close" data-dismiss="modal">
+                  <span>&times;</span>
+                </button>
+              </div>
+
+              <div class="modal-body">
+                <div class="container-fluid">
+                  <div class="row">
+                    <a href="${contextPath}/ws/persons/_search/_download?limit=1000&query=${affiliatedMembersQuery?url('utf-8')}" class="btn btn-primary mb-2">
+                      <i class="fas fa-download"></i> <@message "download"/>
+                    </a>
+                  </div>
+
+                  <div class="row">
+                    <div class="table-responsive">
+                      <table id="affiliatedMembersTable" class="table" style="width: 100%"></table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
       </div><!-- /.container-fluid -->
     </div>

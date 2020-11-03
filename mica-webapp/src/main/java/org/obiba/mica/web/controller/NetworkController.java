@@ -74,7 +74,7 @@ public class NetworkController extends BaseController {
     List<String> ids = individualStudies.stream().map(AbstractGitPersistable::getId).collect(Collectors.toList());
     ids.addAll(harmonizationStudies.stream().map(AbstractGitPersistable::getId).collect(Collectors.toList()));
     if (!ids.isEmpty()) {
-      params.put("affiliatedMembersQuery", "studyMemberships.parentId:(" + Joiner.on(" ").join(ids) + ")");
+      params.put("affiliatedMembersQuery", "studyMemberships.parentId:(" + Joiner.on(" OR ").join(ids) + ")");
     }
 
     Map<String, List<Membership>> membershipMap = personService.getNetworkMembershipMap(network.getId());

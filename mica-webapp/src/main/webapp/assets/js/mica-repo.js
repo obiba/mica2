@@ -123,6 +123,23 @@ class NetworkService {
         }
       });
   }
+
+  static getAffiliatedMembers(affiliatedMembersQuery, onSuccess, onFailure) {
+    const url = '/ws/persons/_search?limit=1000&query=' + affiliatedMembersQuery;
+
+    axios.get(MicaService.normalizeUrl(url))
+      .then(response => {
+        if (onSuccess) {
+          onSuccess(response.data);
+        }
+      })
+      .catch(response => {
+        console.dir(response);
+        if (onFailure) {
+          onFailure(response);
+        }
+      });
+  }
 }
 
 /**
