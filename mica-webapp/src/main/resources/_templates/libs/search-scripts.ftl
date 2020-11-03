@@ -117,7 +117,7 @@
     datasetColumns: ['${searchDatasetColumns?join("', '")}'],
     studyColumns: ['${searchStudyColumns?join("', '")}'],
     networkColumns: ['${searchNetworkColumns?join("', '")}'],
-    visibleTargets: ['${visibleTargets?join("', '")}']
+    searchCriteriaMenus: ['${searchCriteriaMenus?join("', '")}']
   };
 
   fetch(contextPath + '/assets/topojson/${mapName}.json').then(r => r.json())

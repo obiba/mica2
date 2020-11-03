@@ -94,11 +94,11 @@ new Vue({
     // make the menu
     onMicaTaxonomies: function (payload) {
       // sort and include configured targets
-      const visibleTargets = Mica.display.visibleTargets || [];
-      const filteredTargets = payload.filter(p => visibleTargets.indexOf(p.name) > -1);
+      const visibleMenus = Mica.display.searchCriteriaMenus || [];
+      const filteredTargets = payload.filter(p => visibleMenus.indexOf(p.name) > -1);
       filteredTargets.sort((a, b) => {
-        const ai = visibleTargets.indexOf(a.name);
-        const bi = visibleTargets.indexOf(b.name);
+        const ai = visibleMenus.indexOf(a.name);
+        const bi = visibleMenus.indexOf(b.name);
         return ai - bi;
       });
 
