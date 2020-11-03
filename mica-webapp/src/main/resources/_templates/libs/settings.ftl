@@ -85,6 +85,7 @@
 <#assign searchDatasetColumns = ["name", "type", "networks", "studies", "variables"]/>
 <#assign searchStudyColumns = ["name", "type", "study-design", "data-sources-available", "participants", "networks", "individual", "harmonization"]/>
 <#assign searchNetworkColumns = ["name", "studies", "datasets", "variables"]/>
+<#assign searchCriteriaMenus = ["variable", "dataset", "study", "network"]/>
 
 <!-- Data Access pages -->
 <#assign dataAccessInstructionsEnabled = true/>

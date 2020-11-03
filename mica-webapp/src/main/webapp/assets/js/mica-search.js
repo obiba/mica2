@@ -93,7 +93,16 @@ new Vue({
   methods: {
     // make the menu
     onMicaTaxonomies: function (payload) {
-      for (let target of payload) {
+      // sort and include configured targets
+      const visibleMenus = Mica.display.searchCriteriaMenus || [];
+      const filteredTargets = payload.filter(p => visibleMenus.indexOf(p.name) > -1);
+      filteredTargets.sort((a, b) => {
+        const ai = visibleMenus.indexOf(a.name);
+        const bi = visibleMenus.indexOf(b.name);
+        return ai - bi;
+      });
+
+      for (let target of filteredTargets) {
         this.criteriaMenu.items[target.name].title = StringLocalizer.localize(target.title);
         switch (target.name) {
           case 'variable':
