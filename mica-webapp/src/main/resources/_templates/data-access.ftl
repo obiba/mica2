@@ -306,7 +306,7 @@
                 <p><@message "report-timeline-text"/></p>
 
                 <#function isPast date>
-                  <#return .now?datetime gt date?datetime>
+                  <#return date?? && .now?datetime gt date?datetime>
                 </#function>
 
                 <!-- Timeline -->
