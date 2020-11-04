@@ -70,6 +70,32 @@
     }
   };
 
+  const toMembershipsAnchors = function(urlPrefix, membershipsArray) {
+    const roleTr = {'contact': "<@message "contact.label.contact"/>", 'investigator': "<@message "contact.label.investigator"/>"};
+
+    const memberships = (membershipsArray || []).reduce((accumulator, membership) => {
+      const item = accumulator[membership.parentId] || {};
+      accumulator[membership.parentId] = item;
+
+      if (!Array.isArray(item.roles)) {
+        item.roles = [];
+      }
+
+      item.roles.push(roleTr[membership.role]);
+      item.acronym = LocalizedValues.forLang(membership.parentAcronym, '${.lang}');
+
+      return accumulator;
+    }, {});
+
+    return (Object.keys(memberships) || []).map(key => {
+      let url = MicaService.normalizeUrl(urlPrefix + key);
+      let acronym = memberships[key].acronym;
+      let roles = '<span class="ml-1">(' + (memberships[key].roles || []).join(", ") + ')</span>';
+
+      return '<a href="' + url + '">' + acronym + '</a>' + roles;
+    });
+  };
+
   $(function () {
     $("#networks").DataTable(dataTablesDefaultOpts);
     $("#individual-studies").DataTable(dataTablesDefaultOpts);
@@ -79,6 +105,36 @@
       $('#dataset-hits').text(new Intl.NumberFormat('${.lang}').format(stats.datasetResultDto.totalHits));
       $('#variable-hits').text(new Intl.NumberFormat('${.lang}').format(stats.variableResultDto.totalHits));
     });
+
+    <!-- Affiliated Members -->
+    <#if affiliatedMembersQuery??>
+      NetworkService.getAffiliatedMembers('${affiliatedMembersQuery}', function(data) {
+        if (data && data.total > 0) {
+          const dataset = data.persons.map(person => {
+            const item = [];
+            item.push(person.firstName + ' ' + person.lastName);
+            item.push(person.email || '');
+
+            const studyMemberships = toMembershipsAnchors('/study/', person.studyMemberships);
+            const networkMemberships = toMembershipsAnchors('/network', person.networkMemberships);
+
+            item.push(studyMemberships.length > 0 ? studyMemberships.join(', ') : '');
+            item.push(networkMemberships.length > 0 ? networkMemberships.join(', ') : '');
+
+            return item;
+          });
+
+          $('#affiliatedMembersTable').dataTable({
+            columns: [{ title: "<@message "full-name"/>" }, { title: "<@message "email"/>" }, { title: "<@message "studies"/>" }, { title: "<@message "networks"/>" }],
+            data: dataset
+          });
+
+          $('#affiliatedMembersModal').modal('handleUpdate');
+        }
+      }, function(response) {
+
+      });
+    </#if>
 
     <!-- Files -->
     <#if showNetworkFiles>
