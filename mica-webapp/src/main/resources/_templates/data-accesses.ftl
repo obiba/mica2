@@ -90,7 +90,7 @@
                       <td><a href="${contextPath}/data-access/${dar.id}">${dar.id}</a></td>
                       <#if isAdministrator || isDAO>
                         <td>
-                          <a href="#" data-toggle="modal" data-target="#modal-${dar.applicant}">${applicants[dar.applicant].fullName}</a>
+                          <a href="#" data-toggle="modal" data-target="#modal-${dar.applicant?replace(".", "-")}">${applicants[dar.applicant].fullName}</a>
                         </td>
                       </#if>
                       <td>${dar.title!""}</td>
@@ -133,7 +133,7 @@
                       <#list users as profile>
                         <tr>
                           <td>
-                            <a href="#" data-toggle="modal" data-target="#modal-${profile.username}">${profile.fullName}</a>
+                            <a href="#" data-toggle="modal" data-target="#modal-${profile.username?replace(".", "-")}">${profile.fullName}</a>
                           </td>
                           <td>
                             <#list profile.groups as group>
