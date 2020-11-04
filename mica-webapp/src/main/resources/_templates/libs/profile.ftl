@@ -58,7 +58,7 @@
 
 <!-- User profile modal -->
 <#macro userProfileDialog profile>
-  <div class="modal fade" id="modal-${profile.username}">
+  <div class="modal fade" id="modal-${profile.username?replace(".", "-")}">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
