@@ -556,6 +556,8 @@ new Vue({
       noQueries: true,
       queryToCopy: null,
       queryToCart: null,
+      newVariableSetName: '',
+      variableSets: [],
       advanceQueryMode: false,
       downloadUrlObject: ''
     };
@@ -684,6 +686,20 @@ new Vue({
         }
       });
     },
+    onAddQueryToSet(setId) {
+      if (setId || (this.newVariableSetName && this.newVariableSetName.length > 0)) {
+        VariablesSetService.addQueryToSet(setId, this.newVariableSetName, this.queryToCart, (set, oldSet) => {
+          if (set.count === oldSet.count) {
+            MicaService.toastInfo(Mica.tr['no-variable-added-set'].replace('{arg0}', set.name));
+          } else {
+            MicaService.toastSuccess(Mica.tr['variables-added-to-set'].replace('{0}', (set.count - oldSet.count).toLocaleString(Mica.locale)).replace('{1}', set.name));
+          }
+
+          this.newVariableSetName = '';
+          this.reloadSetsList();
+        });
+      }
+    },
     onDownloadQueryResult() {
       if (this.downloadUrlObject) {
         const form = document.createElement('form');
@@ -707,6 +723,15 @@ new Vue({
     },
     onSearchModeToggle() {
       this.advanceQueryMode = !this.advanceQueryMode;
+    },
+    reloadSetsList() {
+      VariablesSetService.getSets(data => {
+        if (Array.isArray(data)) {
+          this.variableSets = data.filter(set => set.name);
+        }
+      }, response => {
+
+      });
     }
   },
   computed: {
@@ -716,6 +741,9 @@ new Vue({
       }
 
       return undefined;
+    },
+    numberOfSetsRemaining() {
+      return Mica.maxNumberOfSets - (this.variableSets || []).length;
     }
   },
   beforeMount() {
@@ -783,6 +811,12 @@ new Vue({
     }
     this.advanceQueryMode = advancedNodeCount > 0;
 
+    // don't close sets' dropdown when clicking inside of it
+    if (this.$refs.setsDropdownMenu) {
+      this.$refs.setsDropdownMenu.addEventListener("click", event => event.stopPropagation());
+    }
+
+    this.reloadSetsList();
     this.onExecuteQuery();
   },
   beforeDestory() {

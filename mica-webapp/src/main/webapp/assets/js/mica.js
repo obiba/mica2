@@ -849,6 +849,49 @@ class VariablesSetService {
   }
 
   /**
+   * Get or create a variable set.
+   *
+   * @param setId
+   * @param name
+   * @param onsuccess
+   * @param onfailure
+   */
+  static getOrCreateSet(setId, name, onsuccess, onfailure) {
+    if (!setId) {
+      let url = '/ws/variables/sets?name=' + name;
+      axios({
+        method: 'POST',
+        url: MicaService.normalizeUrl(url),
+      })
+        .then(response => {
+          if (onsuccess) {
+            onsuccess(response.data);
+          }
+        })
+        .catch(response => {
+          console.dir(response);
+          if (onfailure) {
+            onfailure(response);
+          }
+        });
+    } else {
+      let url = '/ws/variables/set/' + setId;
+      axios.get(MicaService.normalizeUrl(url))
+        .then(response => {
+          if (onsuccess) {
+            onsuccess(response.data);
+          }
+        })
+        .catch(response => {
+          console.dir(response);
+          if (onfailure) {
+            onfailure(response);
+          }
+        });
+    }
+  }
+
+  /**
    * Add variable IDs to the cart (verifies that it exists and is valid).
    * @param ids
    * @param onsuccess
@@ -878,6 +921,30 @@ class VariablesSetService {
     }, onfailure);
   }
 
+  static addToSet(setId, name, ids, onsuccess, onfailure) {
+    this.getOrCreateSet(setId, name, function(set) {
+      let url = '/ws/variables/set/' + set.id + '/documents/_import';
+      axios({
+        method: 'POST',
+        headers: { 'content-type': 'text/plain' },
+        url: MicaService.normalizeUrl(url),
+        data: ids.join('\n')
+      })
+        .then(response => {
+          //cartStorage.set('variables', response.data);
+          if (onsuccess) {
+            onsuccess(response.data, set);
+          }
+        })
+        .catch(response => {
+          console.dir(response);
+          if (onfailure) {
+            onfailure(response);
+          }
+        });
+    }, onfailure);
+  }
+
   static addQueryToCart(query, onsuccess, onfailure) {
     this.getOrCreateCart(function(cart) {
       let url = '/ws/variables/set/' + cart.id + '/documents/_rql';
@@ -893,6 +960,31 @@ class VariablesSetService {
           //cartStorage.set('variables', response.data);
           if (onsuccess) {
             onsuccess(response.data, cart);
+          }
+        })
+        .catch(response => {
+          console.dir(response);
+          if (onfailure) {
+            onfailure(response);
+          }
+        });
+    }, onfailure);
+  }
+
+  static addQueryToSet(setId, name, query, onsuccess, onfailure) {
+    this.getOrCreateSet(setId, name, function(set) {
+      let url = '/ws/variables/set/' + set.id + '/documents/_rql';
+      axios({
+        method: 'POST',
+        headers: {
+          'content-type': 'application/x-www-form-urlencoded'
+        },
+        url: MicaService.normalizeUrl(url),
+        data: 'query=' + query
+      })
+        .then(response => {
+          if (onsuccess) {
+            onsuccess(response.data, set);
           }
         })
         .catch(response => {

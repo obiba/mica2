@@ -87,7 +87,7 @@ public class PublishedDatasetVariablesSetsResource {
     if (!Strings.isNullOrEmpty(name)) checkSetsNumberLimit();
 
     DocumentSet created = variableSetService.create(name, Lists.newArrayList());
-    return Response.created(uriInfo.getBaseUriBuilder().segment("variables", "set", created.getId()).build()).build();
+    return Response.created(uriInfo.getBaseUriBuilder().segment("variables", "set", created.getId()).build()).entity(dtos.asDto(created)).build();
   }
 
   /**
