@@ -86,7 +86,9 @@
     "more": "<@message "search.facet.more"/>",
     "less": "<@message "search.facet.less"/>",
     "no-variable-added": "<@message "sets.cart.no-variable-added"/>",
+    "no-variable-added-set": "<@message "sets.set.no-variable-added"/>",
     "variables-added-to-cart": "<@message "variables-added-to-cart"/>",
+    "variables-added-to-set": "<@message "variables-added-to-set"/>",
     "collapse": "<@message "collapse"/>",
     "value": "<@message "value"/>",
     "frequency": "<@message "frequency"/>"
@@ -97,6 +99,8 @@
     (msgArgs || []).forEach((arg, index) => template = template.replace('{'+index+'}', arg));
     return template;
   };
+
+  Mica.maxNumberOfSets = ${maxNumberOfSets};
 
   Mica.icons = {
     variable: '${variableIcon}',
