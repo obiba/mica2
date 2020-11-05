@@ -219,7 +219,7 @@
 <#include "libs/scripts.ftl">
 <script>
     $(function () {
-        $("#studies").DataTable(dataTablesDefaultOpts);
+        $("#${title}").DataTable(dataTablesDefaultOpts);
     });
 </script>
 </body>
