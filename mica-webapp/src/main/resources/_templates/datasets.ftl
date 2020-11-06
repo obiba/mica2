@@ -95,7 +95,7 @@
                         <tr>
                           <td><a href="${contextPath}/dataset/${ds.id}">${localize(ds.acronym)}</a></td>
                           <td><small>${localize(ds.name)}</small></td>
-                          <td class="marked"><small>${localize(ds.description)?trim?truncate_w(100, "...")}</small></td>
+                          <td class="marked"><template><small>${localize(ds.description)?trim?truncate_w(100, "...")}</small></template></td>
                           <#if showTypeColumn>
                             <td>
                               <#if ds.class.simpleName == "HarmonizationDataset">
@@ -132,7 +132,7 @@
                             <h2 class="lead"><b>${localize(ds.acronym)}</b></h2>
                             <p class="text-muted text-sm">${localize(ds.name)}</p>
                             <div class="marked">
-                              ${localize(ds.description)?trim?truncate_w(200, "...")}
+                              <template>${localize(ds.description)?trim?truncate_w(200, "...")}</template>
                             </div>
                             <div class="mt-2">
                               <a href="${contextPath}/dataset/${ds.id}" class="btn btn-sm btn-outline-info">

@@ -49,7 +49,7 @@
                   <p>
                     <strong><i class="${projectIcon}"></i> ${localize(project.title)}</strong>
                   </p>
-                  <p class="text-muted marked">${localize(project.summary)?trim?truncate_w(300, "...")}</p>
+                  <p class="text-muted marked"><template>${localize(project.summary)?trim?truncate_w(300, "...")}</template></p>
                   <p>
                     <@projectModelSummary project=project/>
                   </p>

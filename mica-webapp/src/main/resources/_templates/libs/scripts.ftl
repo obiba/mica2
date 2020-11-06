@@ -96,13 +96,25 @@
 
 <script>
     $(function () {
+      /**
+       * Uses browser to normalize input html (closing/removing tags)
+       * @param html
+       * @returns {*}
+       */
+      function tidy(html) {
+        var d = document.createElement('div');
+        d.innerHTML = html;
+        return d.innerHTML;
+      }
+
       // bs tooltip
       $('[data-toggle="tooltip"]').tooltip();
       // apply markdown rendering
       $('.marked').each(function () {
-        var msg = $.trim($(this).html());
+        const template = $(this).find('template');
+        var msg = $.trim($(template).html());
         if (msg && msg.length > 0) {
-          $(this).html(marked(msg));
+          $(this).html(marked(tidy(msg)));
         }
       });
       $('.marked table').each(function () {
