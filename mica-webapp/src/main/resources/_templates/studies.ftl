@@ -97,7 +97,7 @@
                         <tr>
                           <td><a href="${contextPath}/study/${std.id}">${localize(std.acronym)}</a></td>
                           <td><small>${localize(std.name)}</small></td>
-                          <td class="marked"><small>${localize(std.objectives)?trim?truncate_w(100, "...")}</small></td>
+                          <td class="marked"><template><small>${localize(std.objectives)?trim?truncate_w(100, "...")}</small></template></td>
                           <#if showTypeColumn>
                             <td>
                               <#if std.class.simpleName == "HarmonizationStudy">
@@ -132,7 +132,7 @@
                             <h2 class="lead"><b>${localize(std.acronym)}</b></h2>
                             <p class="text-muted text-sm">${localize(std.name)}</p>
                             <div class="marked">
-                              ${localize(std.objectives)?trim?truncate_w(200, "...")}
+                              <template>${localize(std.objectives)?trim?truncate_w(200, "...")}</template>
                             </div>
                             <div class="mt-2">
                               <a href="${contextPath}/study/${std.id}" class="btn btn-sm btn-outline-info">

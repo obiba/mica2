@@ -72,7 +72,7 @@
                         <tr>
                           <td><a href="${contextPath}/network/${ntwk.id}">${localize(ntwk.acronym)}</a></td>
                           <td><small>${localize(ntwk.name)}</small></td>
-                          <td class="marked"><small>${localize(ntwk.description)?trim?truncate_w(100, "...")}</small></td>
+                          <td class="marked"><template><small>${localize(ntwk.description)?trim?truncate_w(100, "...")}</small></template></td>
                         </tr>
                       </#list>
                       </tbody>
@@ -98,7 +98,7 @@
                             <h2 class="lead"><b>${localize(ntwk.acronym)}</b></h2>
                             <p class="text-muted text-sm">${localize(ntwk.name)}</p>
                             <div class="marked">
-                              ${localize(ntwk.description)?trim?truncate_w(200, "...")}
+                              <template>${localize(ntwk.description)?trim?truncate_w(200, "...")}</template>
                             </div>
                             <div class="mt-2">
                               <a href="${contextPath}/network/${ntwk.id}" class="btn btn-sm btn-outline-info">
