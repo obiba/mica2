@@ -112,7 +112,7 @@
       // apply markdown rendering
       $('.marked').each(function () {
         const template = $(this).find('template');
-        var msg = $.trim($(template).html());
+        var msg = template && template.length > 0 ? $.trim($(template).html()) : $.trim($(this).html());
         if (msg && msg.length > 0) {
           $(this).html(marked(tidy(msg)));
         }

@@ -88,7 +88,7 @@
         </div>
         <div class="modal-body">
           <div class="mb-3 marked">
-            ${localize(dce.description)}
+            <template>${localize(dce.description)}</template>
           </div>
           <dl class="row">
             <#if dce.start??>
@@ -134,7 +134,7 @@
       <#assign dceId="${population.id}-${dce.id}">
       <h5><@message "study.data-collection-event"/></h5>
       <div class="mb-3 marked">
-        ${localize(dce.description)}
+        <template>${localize(dce.description)}</template>
       </div>
       <dl class="row">
         <#if dce.start??>

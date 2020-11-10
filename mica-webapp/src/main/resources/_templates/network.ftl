@@ -103,7 +103,7 @@
                 </div>
 
                 <div class="card-text marked mt-3">
-                  ${localize(network.description)}
+                  <template>${localize(network.description)}</template>
                 </div>
                 <#if network.model.website??>
                   <blockquote>
