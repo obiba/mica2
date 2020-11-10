@@ -39,12 +39,12 @@
       <div class="container">
         <div class="callout callout-info">
           <#if variable.attributes?? && variable.attributes.label??>
-            <p class="marked">${localize(variable.attributes.label)}</p>
+            <p class="marked"><template>${localize(variable.attributes.label)}</template></p>
           <#else>
             <p class="text-muted"><@message "no-label"/></p>
           </#if>
           <#if variable.attributes?? && variable.attributes.description??>
-            <p class="marked text-muted"><i class="fas fa-info-circle"></i> ${localize(variable.attributes.description)}</p>
+            <p class="marked text-muted"><template><i class="fas fa-info-circle"></i> ${localize(variable.attributes.description)}</template></p>
           </#if>
         </div>
 
@@ -201,7 +201,7 @@
                         ${localize(annotation.vocabularyTitle)}
                       </dt>
                       <dd class="col-sm-8" title="<#if annotation.termDescription??>${localize(annotation.termDescription)}</#if>">
-                        <span class="marked">${localize(annotation.termTitle)}</span>
+                        <template><span class="marked">${localize(annotation.termTitle)}</span></template>
                       </dd>
                     </#list>
                   </dl>
@@ -245,7 +245,7 @@
                           ${localize(harmoAnnotations.algorithmTitle, "Algorithm")}
                         </dt>
                         <dd>
-                          <span class="marked mt-3">${harmoAnnotations.algorithmValue!""}</span>
+                          <span class="marked mt-3"><template>${harmoAnnotations.algorithmValue!""}</template></span>
                         </dd>
                       </#if>
 
@@ -254,7 +254,7 @@
                           ${localize(harmoAnnotations.commentTitle, "Comment")}
                         </dt>
                         <dd>
-                          <span class="marked">${harmoAnnotations.commentValue!""}</span>
+                          <span class="marked"><template>${harmoAnnotations.commentValue!""}</template></span>
                         </dd>
                       </#if>
                     </dl>

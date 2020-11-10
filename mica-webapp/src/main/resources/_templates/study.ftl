@@ -110,7 +110,7 @@
                 </div>
 
                 <div class="card-text marked mt-3">
-                  ${localize(study.objectives)}
+                  <template>${localize(study.objectives)}</template>
                 </div>
 
                 <!-- Study definition model -->
@@ -215,7 +215,7 @@
                     <#list study.populationsSorted as pop>
                       <div class="tab-pane <#if pop?index == 0>active</#if>" id="population-${pop.id}">
                         <div class="mb-3 marked">
-                          ${localize(pop.description)}
+                          <template>${localize(pop.description)}</template>
                         </div>
                         <@populationModel population=pop/>
                         <@dceList population=pop/>
