@@ -11,7 +11,7 @@
             <@studyDesign study=study/>
           </#if>
 
-          <#if study.model.markerPaper??>
+          <#if (study.model.markerPaper)?has_content>
             <@studyMarkerPaper study=study/>
           </#if>
         </div>
@@ -160,7 +160,7 @@
   <div class="card card-info card-outline">
     <div class="card-header">
       <h3 class="card-title">
-          <@message "study.marker-paper"/>
+        <@message "study.marker-paper"/>
       </h3>
       <div class="card-tools">
         <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="<@message "collapse"/>">
@@ -170,13 +170,13 @@
     <!-- /.card-header -->
     <div class="card-body">
       <p>
-          ${study.model.markerPaper}
+        ${study.model.markerPaper}
       </p>
-        <#if study.model.pubmedId??>
-          <blockquote>
-            <a href="http://www.ncbi.nlm.nih.gov/pubmed/${study.model.pubmedId}" target="_blank">PUBMED ${study.model.pubmedId}</a>
-          </blockquote>
-        </#if>
+      <#if (study.model.pubmedId)?has_content>
+        <blockquote>
+          <a href="http://www.ncbi.nlm.nih.gov/pubmed/${study.model.pubmedId}" target="_blank">PUBMED ${study.model.pubmedId}</a>
+        </blockquote>
+      </#if>
     </div>
   </div>
 </#macro>
@@ -185,7 +185,7 @@
   <div class="card card-info card-outline">
     <div class="card-header">
       <h3 class="card-title">
-          <@message "population.recruitment"/>
+        <@message "population.recruitment"/>
       </h3>
       <div class="card-tools">
         <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="<@message "collapse"/>">
@@ -196,19 +196,19 @@
     <div class="card-body">
       <dl class="row">
         <dt class="col-sm-6" title="<@message "study_taxonomy.vocabulary.methods-recruitments.description"/>">
-            <@message "study.recruitment-sources.label"/>
+          <@message "study.recruitment-sources.label"/>
         </dt>
         <dd class="col-sm-6">
           <ul class="pl-3">
-              <#list study.model.methods.recruitments as type>
-                <li>
-                    <#assign text = "study_taxonomy.vocabulary.methods-recruitments.term." + type + ".title"/>
-                    <@message text/>
-                    <#if type == "other" && study.model.methods.otherRecruitment??>
-                      : ${localize(study.model.methods.otherRecruitment)}
-                    </#if>
-                </li>
-              </#list>
+            <#list study.model.methods.recruitments as type>
+              <li>
+                <#assign text = "study_taxonomy.vocabulary.methods-recruitments.term." + type + ".title"/>
+                <@message text/>
+                <#if type == "other" && study.model.methods.otherRecruitment??>
+                  : ${localize(study.model.methods.otherRecruitment)}
+                </#if>
+              </li>
+            </#list>
           </ul>
         </dd>
       </dl>
@@ -220,7 +220,7 @@
   <div class="card card-info card-outline">
     <div class="card-header">
       <h3 class="card-title">
-          <@message "numberOfParticipants.label"/>
+        <@message "numberOfParticipants.label"/>
       </h3>
       <div class="card-tools">
         <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="<@message "collapse"/>">
@@ -230,60 +230,60 @@
     <!-- /.card-header -->
     <div class="card-body">
       <dl class="row">
-          <#if study.model.numberOfParticipants.participant.number??>
-            <dt class="col-sm-6">
-                <@message "numberOfParticipants.participants"/>
-            </dt>
-            <dd class="col-sm-6">
-                ${study.model.numberOfParticipants.participant.number}
-                <#if study.model.numberOfParticipants.participant.noLimit == true>
-                  (<@message "numberOfParticipants.no-limit"/>)
-                </#if>
-            </dd>
-          <#else>
-            <dt class="col-sm-6">
-                <@message "numberOfParticipants.participants"/>
-            </dt>
-            <dd class="col-sm-6">
-                <#if study.model.numberOfParticipants.participant.noLimit?? && study.model.numberOfParticipants.participant.noLimit == true>
-                    <@message "numberOfParticipants.no-limit"/>
-                <#else>
-                  <i class="fas fa-minus"></i>
-                </#if>
-            </dd>
-          </#if>
+        <#if study.model.numberOfParticipants.participant.number??>
+          <dt class="col-sm-6">
+            <@message "numberOfParticipants.participants"/>
+          </dt>
+          <dd class="col-sm-6">
+            ${study.model.numberOfParticipants.participant.number}
+            <#if study.model.numberOfParticipants.participant.noLimit == true>
+              (<@message "numberOfParticipants.no-limit"/>)
+            </#if>
+          </dd>
+        <#else>
+          <dt class="col-sm-6">
+            <@message "numberOfParticipants.participants"/>
+          </dt>
+          <dd class="col-sm-6">
+            <#if study.model.numberOfParticipants.participant.noLimit?? && study.model.numberOfParticipants.participant.noLimit == true>
+              <@message "numberOfParticipants.no-limit"/>
+            <#else>
+              <i class="fas fa-minus"></i>
+            </#if>
+          </dd>
+        </#if>
 
-          <#if study.model.numberOfParticipants.sample.number??>
-            <dt class="col-sm-6">
-                <@message "numberOfParticipants.sample"/>
-            </dt>
-            <dd class="col-sm-6">
-                ${study.model.numberOfParticipants.sample.number}
-                <#if study.model.numberOfParticipants.sample.noLimit == true>
-                  (<@message "numberOfParticipants.no-limit"/>)
-                </#if>
-            </dd>
-          <#else>
-            <dt class="col-sm-6">
-                <@message "numberOfParticipants.sample"/>
-            </dt>
-            <dd class="col-sm-6">
-                <#if study.model.numberOfParticipants.sample.noLimit?? && study.model.numberOfParticipants.sample.noLimit == true>
-                    <@message "numberOfParticipants.no-limit"/>
-                <#else>
-                  <i class="fas fa-minus"></i>
-                </#if>
-            </dd>
-          </#if>
+        <#if study.model.numberOfParticipants.sample.number??>
+          <dt class="col-sm-6">
+            <@message "numberOfParticipants.sample"/>
+          </dt>
+          <dd class="col-sm-6">
+            ${study.model.numberOfParticipants.sample.number}
+            <#if study.model.numberOfParticipants.sample.noLimit == true>
+              (<@message "numberOfParticipants.no-limit"/>)
+            </#if>
+          </dd>
+        <#else>
+          <dt class="col-sm-6">
+            <@message "numberOfParticipants.sample"/>
+          </dt>
+          <dd class="col-sm-6">
+            <#if study.model.numberOfParticipants.sample.noLimit?? && study.model.numberOfParticipants.sample.noLimit == true>
+              <@message "numberOfParticipants.no-limit"/>
+            <#else>
+              <i class="fas fa-minus"></i>
+            </#if>
+          </dd>
+        </#if>
 
-          <#if study.model.numberOfParticipants.info??>
-            <dt class="col-sm-6">
-                <@message "suppl-info"/>
-            </dt>
-            <dd class="col-sm-6">
-                ${localize(study.model.numberOfParticipants.info)}
-            </dd>
-          </#if>
+        <#if study.model.numberOfParticipants.info??>
+          <dt class="col-sm-6">
+            <@message "suppl-info"/>
+          </dt>
+          <dd class="col-sm-6">
+            ${localize(study.model.numberOfParticipants.info)}
+          </dd>
+        </#if>
       </dl>
     </div>
   </div>
@@ -293,7 +293,7 @@
   <div class="card card-info card-outline">
     <div class="card-header">
       <h3 class="card-title">
-          <@message "study.access.label"/>
+        <@message "study.access.label"/>
       </h3>
       <div class="card-tools">
         <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="<@message "collapse"/>">
@@ -312,20 +312,20 @@
                   <@message "study.general-info"/>
                 </a>
               </li>
-                <#if study.model.access_restrictions?? && study.model.access_restrictions == true>
-                  <li class="nav-item">
-                    <a class="nav-link" id="access-restrictions-tab" data-toggle="pill" href="#access-restrictions" role="tab" aria-controls="access-restrictions" aria-selected="false">
-                        <@message "study.access.access_restrictions.title"/>
-                    </a>
-                  </li>
-                </#if>
-                <#if study.model.access_fees?? && study.model.access_fees == true>
-                  <li class="nav-item">
-                    <a class="nav-link" id="access-fees-tab" data-toggle="pill" href="#access-fees" role="tab" aria-controls="access-fees" aria-selected="false">
-                        <@message "study.access.access_fees.title"/>
-                    </a>
-                  </li>
-                </#if>
+              <#if study.model.access_restrictions?? && study.model.access_restrictions == true>
+                <li class="nav-item">
+                  <a class="nav-link" id="access-restrictions-tab" data-toggle="pill" href="#access-restrictions" role="tab" aria-controls="access-restrictions" aria-selected="false">
+                    <@message "study.access.access_restrictions.title"/>
+                  </a>
+                </li>
+              </#if>
+              <#if study.model.access_fees?? && study.model.access_fees == true>
+                <li class="nav-item">
+                  <a class="nav-link" id="access-fees-tab" data-toggle="pill" href="#access-fees" role="tab" aria-controls="access-fees" aria-selected="false">
+                    <@message "study.access.access_fees.title"/>
+                  </a>
+                </li>
+              </#if>
             </ul>
           </div>
           <div class="card-body">
@@ -342,46 +342,46 @@
                     <thead>
                     <th></th>
                     <th>
-                        <@message "study_taxonomy.vocabulary.access_data.title"/>
+                      <@message "study_taxonomy.vocabulary.access_data.title"/>
                     </th>
                     <th>
-                        <@message "study_taxonomy.vocabulary.access_bio_samples.title"/>
+                      <@message "study_taxonomy.vocabulary.access_bio_samples.title"/>
                     </th>
                     </thead>
                     <tbody>
                     <tr>
                       <td><@message "study.access.access_permission_data.public_sector"/></td>
                       <td class="col-sm-2">
-                          <@yesnoToIcon value=study.model.access_permission_data.public_sector/>
+                        <@yesnoToIcon value=study.model.access_permission_data.public_sector/>
                       </td>
                       <td class="col-sm-2">
-                          <@yesnoToIcon value=study.model.access_permission_biological_samples.public_sector/>
+                        <@yesnoToIcon value=study.model.access_permission_biological_samples.public_sector/>
                       </td>
                     </tr>
                     <tr>
                       <td><@message "study.access.access_permission_data.private_sector"/></td>
                       <td class="col-sm-2">
-                          <@yesnoToIcon value=study.model.access_permission_data.private_sector/>
+                        <@yesnoToIcon value=study.model.access_permission_data.private_sector/>
                       </td>
                       <td class="col-sm-2">
-                          <@yesnoToIcon value=study.model.access_permission_biological_samples.private_sector/>
+                        <@yesnoToIcon value=study.model.access_permission_biological_samples.private_sector/>
                       </td>
                     </tr>
                     <tr>
                       <td><@message "study.access.access_permission_data.not_for_profit_organization"/></td>
                       <td class="col-sm-2">
-                          <@yesnoToIcon value=study.model.access_permission_data.not_for_profit_organization/>
+                        <@yesnoToIcon value=study.model.access_permission_data.not_for_profit_organization/>
                       </td>
                       <td class="col-sm-2">
-                          <@yesnoToIcon value=study.model.access_permission_biological_samples.not_for_profit_organization/>
+                        <@yesnoToIcon value=study.model.access_permission_biological_samples.not_for_profit_organization/>
                       </td>
                     </tr>
                     </tbody>
                   </table>
 
-                    <#if study.model.access_permission_additional_info??>
-                      <p class="text-muted">${localize(study.model.access_permission_additional_info)}</p>
-                    </#if>
+                  <#if study.model.access_permission_additional_info??>
+                    <p class="text-muted">${localize(study.model.access_permission_additional_info)}</p>
+                  </#if>
 
                   <p><b><@message "study.access.access_restrictions.transfer.title"/></b></p>
 
@@ -389,37 +389,37 @@
                     <thead>
                     <th></th>
                     <th>
-                        <@message "study_taxonomy.vocabulary.access_data.title"/>
+                      <@message "study_taxonomy.vocabulary.access_data.title"/>
                     </th>
                     <th>
-                        <@message "study_taxonomy.vocabulary.access_bio_samples.title"/>
+                      <@message "study_taxonomy.vocabulary.access_bio_samples.title"/>
                     </th>
                     </thead>
                     <tbody>
                     <tr>
                       <td><@message "study.access.access_data_can_leave.study_facility"/></td>
                       <td class="col-sm-2">
-                          <@yesnoToIcon value=study.model.access_data_can_leave.study_facility/>
+                        <@yesnoToIcon value=study.model.access_data_can_leave.study_facility/>
                       </td>
                       <td class="col-sm-2">
-                          <@yesnoToIcon value=study.model.access_biological_samples_can_leave.study_facility/>
+                        <@yesnoToIcon value=study.model.access_biological_samples_can_leave.study_facility/>
                       </td>
                     </tr>
                     <tr>
                       <td><@message "study.access.access_data_can_leave.country"/></td>
                       <td class="col-sm-2">
-                          <@yesnoToIcon value=study.model.access_data_can_leave.country/>
+                        <@yesnoToIcon value=study.model.access_data_can_leave.country/>
                       </td>
                       <td class="col-sm-2">
-                          <@yesnoToIcon value=study.model.access_biological_samples_can_leave.country/>
+                        <@yesnoToIcon value=study.model.access_biological_samples_can_leave.country/>
                       </td>
                     </tr>
                     </tbody>
                   </table>
 
-                    <#if study.model.access_special_conditions_to_leave??>
-                      <p class="text-muted">${localize(study.model.access_special_conditions_to_leave)}</p>
-                    </#if>
+                  <#if study.model.access_special_conditions_to_leave??>
+                    <p class="text-muted">${localize(study.model.access_special_conditions_to_leave)}</p>
+                  </#if>
                 </div>
               </#if>
               <#if study.model.access_fees?? && study.model.access_fees == true>
@@ -432,21 +432,21 @@
                     <tr>
                       <td><@message "study_taxonomy.vocabulary.access_data.title"/></td>
                       <td class="col-sm-6">
-                          <@costToLabel value=study.model.access_data_sharing_cost.data/>
+                        <@costToLabel value=study.model.access_data_sharing_cost.data/>
                       </td>
                     </tr>
                     <tr>
                       <td><@message "study_taxonomy.vocabulary.access_bio_samples.title"/></td>
                       <td>
-                          <@costToLabel value=study.model.access_data_sharing_cost.biological_samples/>
+                        <@costToLabel value=study.model.access_data_sharing_cost.biological_samples/>
                       </td>
                     </tr>
                     </tbody>
                   </table>
 
-                    <#if study.model.access_cost_additional_information??>
-                      <p class="text-muted">${localize(study.model.access_cost_additional_information)}</p>
-                    </#if>
+                  <#if study.model.access_cost_additional_information??>
+                    <p class="text-muted">${localize(study.model.access_cost_additional_information)}</p>
+                  </#if>
 
                   <p><b><@message "study.access.access_data_sharing_cost.cost-reduction-title"/></b></p>
 
@@ -455,21 +455,21 @@
                     <tr>
                       <td><@message "study_taxonomy.vocabulary.access_data.title"/></td>
                       <td class="col-sm-6">
-                          <@yesnoToIcon value=study.model.access_cost_reduction_consideration.data/>
+                        <@yesnoToIcon value=study.model.access_cost_reduction_consideration.data/>
                       </td>
                     </tr>
                     <tr>
                       <td><@message "study_taxonomy.vocabulary.access_bio_samples.title"/></td>
                       <td>
-                          <@yesnoToIcon value=study.model.access_cost_reduction_consideration.bio_samples/>
+                        <@yesnoToIcon value=study.model.access_cost_reduction_consideration.bio_samples/>
                       </td>
                     </tr>
                     </tbody>
                   </table>
 
-                    <#if study.model.access_cost_reduction_consideration_specification??>
-                      <p class="text-muted">${localize(study.model.access_cost_reduction_consideration_specification)}</p>
-                    </#if>
+                  <#if study.model.access_cost_reduction_consideration_specification??>
+                    <p class="text-muted">${localize(study.model.access_cost_reduction_consideration_specification)}</p>
+                  </#if>
                 </div>
               </#if>
             </div>
@@ -483,7 +483,7 @@
       <#if study.model.access_supplementary_info??>
         <p><b><@message "suppl-info"/></b></p>
         <div>
-            ${localize(study.model.access_supplementary_info)}
+          ${localize(study.model.access_supplementary_info)}
         </div>
       </#if>
     </div>
@@ -503,35 +503,35 @@
 
   <table class="table table-sm table-striped mb-2">
     <tbody>
-      <tr>
-        <td><@message "study_taxonomy.vocabulary.access_data.title"/></td>
-        <td>
-          <#if study.model.access??>
-            <@yesnoToIcon value=study.model.access.access_data/>
-          </#if>
-        </td>
-      </tr>
-      <tr>
-        <td><@message "study_taxonomy.vocabulary.access_bio_samples.title"/></td>
-        <td>
-          <#if study.model.access??>
-            <@yesnoToIcon value=study.model.access.access_bio_samples/>
-          </#if>
-        </td>
-      </tr>
-      <tr>
-        <td><@message "study_taxonomy.vocabulary.access_other.title"/></td>
-        <td>
-          <#if study.model.access??>
+    <tr>
+      <td><@message "study_taxonomy.vocabulary.access_data.title"/></td>
+      <td>
+        <#if study.model.access??>
+          <@yesnoToIcon value=study.model.access.access_data/>
+        </#if>
+      </td>
+    </tr>
+    <tr>
+      <td><@message "study_taxonomy.vocabulary.access_bio_samples.title"/></td>
+      <td>
+        <#if study.model.access??>
+          <@yesnoToIcon value=study.model.access.access_bio_samples/>
+        </#if>
+      </td>
+    </tr>
+    <tr>
+      <td><@message "study_taxonomy.vocabulary.access_other.title"/></td>
+      <td>
+        <#if study.model.access??>
           <@yesnoToIcon value=study.model.access.access_other/>
-            <#if study.model.otherAccess??>
-              <div>
-                ${localize(study.model.otherAccess)}
-              </div>
-            </#if>
+          <#if study.model.otherAccess??>
+            <div>
+              ${localize(study.model.otherAccess)}
+            </div>
           </#if>
-        </td>
-      </tr>
+        </#if>
+      </td>
+    </tr>
     </tbody>
   </table>
 
@@ -540,17 +540,17 @@
 
     <#if study.model.access_info_location?seq_contains("study_website")>
       <p>
-          <@message "study.access.external_researchers_obtaining_study_data_bio_info.access_info_location.study_website"/>
-          <#if study.model.website??>
-            : <a href="${study.model.website}" target="_blank">${study.model.website?truncate(50, "...")}</a>
-          </#if>
+        <@message "study.access.external_researchers_obtaining_study_data_bio_info.access_info_location.study_website"/>
+        <#if study.model.website??>
+          : <a href="${study.model.website}" target="_blank">${study.model.website?truncate(50, "...")}</a>
+        </#if>
       </p>
     </#if>
 
     <#if study.model.access_info_location?seq_contains("study_representative")>
       <p>
         <a href="#" data-toggle="modal" data-target="#modal-rep">
-            <@message "study.access.external_researchers_obtaining_study_data_bio_info.access_info_location.study_representative"/>
+          <@message "study.access.external_researchers_obtaining_study_data_bio_info.access_info_location.study_representative"/>
           <i class="fas fa-info-circle"></i>
         </a>
       </p>
