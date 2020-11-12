@@ -92,3 +92,8 @@
 #lines > div.border-bottom:last-child {
   border-bottom: none !important;
 }
+
+.dropdown-menu {
+  z-index: 1040;
+}
+
