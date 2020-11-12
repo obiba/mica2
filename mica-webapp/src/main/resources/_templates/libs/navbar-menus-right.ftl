@@ -10,7 +10,7 @@
     <li class="nav-item">
       <a href="${contextPath}/lists" class="nav-link">
         <i class="far fa-list-alt"></i>
-        <#if user.variablesLists?size gt 0>
+        <#if user?? && user.variablesLists?size gt 0>
           <span class="badge badge-danger navbar-badge">${user.variablesLists?size}</span>
         </#if>
       </a>
