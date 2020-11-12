@@ -4,7 +4,7 @@
   <#include "libs/head.ftl">
   <title>${config.name!""} | ${set.name}</title>
 </head>
-<body id="search-page" class="hold-transition sidebar-mini layout-fixed layout-navbar-fixed">
+<body id="list-page" class="hold-transition sidebar-mini layout-fixed layout-navbar-fixed">
 <!-- Site wrapper -->
 <div class="wrapper">
   <!-- Navbar -->
@@ -153,8 +153,8 @@
                       <i class="fas fa-download"></i> <@message "download"/>
                     </button>
                     <div class="dropdown-menu">
-                      <a class="dropdown-item" href="../ws/variables/set/${set.id}/documents/_export" download><@message "download-cart-ids"/></a>
-                      <a class="dropdown-item" href="../ws/variables/set/${set.id}/documents/_opal" download><@message "download-cart-views"/></a>
+                      <a class="dropdown-item" href="${contextPath}/ws/variables/set/${set.id}/documents/_export" download><@message "download-cart-ids"/></a>
+                      <a class="dropdown-item" href="${contextPath}/ws/variables/set/${set.id}/documents/_opal" download><@message "download-cart-views"/></a>
                     </div>
                   </div>
                 <#else>
