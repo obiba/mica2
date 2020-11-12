@@ -74,8 +74,8 @@
                         <i class="fas fa-download"></i> <@message "download"/>
                       </button>
                       <div class="dropdown-menu">
-                        <a class="dropdown-item" href="../ws/variables/set/${user.variablesCart.id}/documents/_export" download><@message "download-cart-ids"/></a>
-                        <a class="dropdown-item" href="../ws/variables/set/${user.variablesCart.id}/documents/_opal" download><@message "download-cart-views"/></a>
+                        <a class="dropdown-item" href="${contextPath}/ws/variables/set/${user.variablesCart.id}/documents/_export" download><@message "download-cart-ids"/></a>
+                        <a class="dropdown-item" href="${contextPath}/ws/variables/set/${user.variablesCart.id}/documents/_opal" download><@message "download-cart-views"/></a>
                       </div>
                     </div>
                   <#else>
