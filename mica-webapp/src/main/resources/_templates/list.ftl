@@ -119,11 +119,13 @@
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
-          <div class="modal-body"></div>
+          <div class="modal-body">
+            <p><@message "list-confirm-complete-deletion-text"/></p>
+          </div>
           <div class="modal-footer justify-content-between">
             <button type="button" class="btn btn-default" data-dismiss="modal"><@message "cancel"/></button>
             <button type="button" class="btn btn-primary" data-dismiss="modal"
-                    onclick="VariablesSetService.deleteSet('${set.id}', function () { window.location.href = '${contextPath}/lists'; })"><@message "confirm"/>
+                    onclick="VariablesSetService.deleteSet('${set.id}', function () { window.location.replace('${contextPath}/lists'); })"><@message "confirm"/>
             </button>
           </div>
         </div>
