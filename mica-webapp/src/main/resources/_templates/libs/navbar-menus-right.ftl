@@ -7,6 +7,12 @@
         <span id="cart-count" class="badge badge-danger navbar-badge"></span>
       </a>
     </li>
+    <li class="nav-item">
+      <a href="${contextPath}/lists" class="nav-link">
+        <i class="far fa-list-alt"></i>
+        <span class="badge badge-danger navbar-badge">${user.variablesLists?size}</span>
+      </a>
+    </li>
   </#if>
   <#if contactEnabled>
     <li class="nav-item">

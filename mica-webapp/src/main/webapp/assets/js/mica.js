@@ -1026,6 +1026,27 @@ class VariablesSetService {
     }, onfailure);
   }
 
+  static deleteSet(id, onsuccess, onfailure) {
+    let url = '/ws/variables/set/' + id;
+
+    axios({
+      method: 'DELETE',
+      headers: { 'content-type': 'text/plain' },
+      url: MicaService.normalizeUrl(url)
+    })
+      .then(response => {
+        if (onsuccess) {
+          onsuccess(response.data);
+        }
+      })
+      .catch(response => {
+        console.dir(response);
+        if (onfailure) {
+          onfailure(response);
+        }
+      });
+  }
+
   static showCount(elem, set, lang) {
     $(elem).text(set.count > 0 ? (set.count > 50 ? '50+' : set.count) : '')
       .attr('title', set.count > 50 ? set.count.toLocaleString(lang) : '');

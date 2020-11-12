@@ -3,6 +3,7 @@ package org.obiba.mica.web.interceptor;
 import com.google.common.collect.Lists;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
+import org.obiba.mica.core.domain.DocumentSet;
 import org.obiba.mica.dataset.service.VariableSetService;
 import org.obiba.mica.security.Roles;
 import org.obiba.mica.user.UserProfileService;
@@ -18,6 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Component
 public class SessionInterceptor extends HandlerInterceptorAdapter {
@@ -52,6 +54,7 @@ public class SessionInterceptor extends HandlerInterceptorAdapter {
         }
         params.put("roles", roles);
         params.put("variablesCart", new Cart(variableSetService.getCartCurrentUser()));
+        params.put("variablesLists", variableSetService.getAllCurrentUser().stream().filter(DocumentSet::hasName).collect(Collectors.toList()));
         modelAndView.getModel().put("user", params);
       } catch (Exception e) {
         log.warn("Cannot retrieve profile of user {}", username, e);
