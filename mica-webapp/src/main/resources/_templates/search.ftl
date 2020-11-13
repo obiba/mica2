@@ -106,7 +106,7 @@
                 <div class="btn-group ml-2">
                   <button id="cart-add-variables" type="button" class="btn btn-sm btn-success" @click="onAddQueryToCart" title="<@message "sets.cart.add-to-cart"/>"><i class="fas fa-cart-plus"></i></button>
                   <button type="button" class="btn btn-sm btn-success dropdown-toggle dropdown-toggle-split" data-toggle="dropdown"></button>
-                  <div ref="listsDropdownMenu" class="dropdown-menu" style="min-width: 24em;">
+                  <div ref="listsDropdownMenu" class="dropdown-menu dropdown-menu-right" style="min-width: 24em;">
                     <form class="px-3 py-3" v-if="numberOfSetsRemaining > 0">
 
                       <div class="form-group mb-0">

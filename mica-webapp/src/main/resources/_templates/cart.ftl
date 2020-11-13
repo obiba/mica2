@@ -94,7 +94,7 @@
                         <#list user.variablesLists as variableList>
                           <button type="button" class="dropdown-item"
                                   onclick="onClickAddToSet('${variableList.id}', '${variableList.name}')">
-                            ${variableList.name} <span class="badge badge-light">${variableList.identifiers?size}</span>
+                            ${variableList.name} <span class="badge badge-light float-right">${variableList.identifiers?size}</span>
                           </button>
                         </#list>
                       </#if>

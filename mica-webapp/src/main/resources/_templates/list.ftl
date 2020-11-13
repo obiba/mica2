@@ -46,8 +46,8 @@
                 <a class="nav-link ${variableListActiveClass}" href="${contextPath}/list/${variableList.id}">
                   <i class="far fa-circle nav-icon"></i>
                   <p>
-                    <span>${variableList.name}</span>
-                    <span class="badge badge-light">${variableList.identifiers?size}</span>
+                    <span title="${variableList.name}">${variableList.name?truncate_c(20, "...")}</span>
+                    <span class="badge badge-light right">${variableList.identifiers?size}</span>
                   </p>
                 </a>
               </li>
