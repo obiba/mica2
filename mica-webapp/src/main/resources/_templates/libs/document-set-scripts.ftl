@@ -86,11 +86,11 @@
         }
         const count = variablesCartStorage.getSelections().length;
         if (count === 0) {
-          $('#selection-count').hide();
+          $('.selection-count').hide();
           $('#delete-all-message').show();
           $('#delete-selected-message').hide();
         } else {
-          $('#selection-count').text(count.toLocaleString('${.lang}')).show();
+          $('.selection-count').text(count.toLocaleString('${.lang}')).show();
           $('#delete-all-message').hide();
           $('#delete-selected-message').show();
         }

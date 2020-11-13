@@ -41,10 +41,14 @@
         <#if user?? && user.variablesLists?? && user.variablesLists?size gt 0>
           <ul class="nav nav-pills nav-sidebar flex-column">
             <#list user.variablesLists as variableList>
+              <#assign variableListActiveClass = (variableList.id == set.id)?then("active", "") />
               <li class="nav-item">
-                <a class="nav-link" href="${contextPath}/list/${variableList.id}">
+                <a class="nav-link ${variableListActiveClass}" href="${contextPath}/list/${variableList.id}">
                   <i class="far fa-circle nav-icon"></i>
-                  <p>${variableList.name}</p>
+                  <p>
+                    <span>${variableList.name}</span>
+                    <span class="badge badge-light">${variableList.identifiers?size}</span>
+                  </p>
                 </a>
               </li>
             </#list>
@@ -163,7 +167,7 @@
                 </#if>
               </#if>
               <button id="delete-all" type="button" class="btn btn-danger ml-2" data-toggle="modal" data-target="#modal-delete">
-                <i class="fas fa-trash"></i> <@message "delete"/> <span id="selection-count" class="badge badge-light"></span>
+                <i class="fas fa-trash"></i> <@message "delete"/> <span class="badge badge-light selection-count"></span>
               </button>
               <#if config.setsSearchEnabled>
                 <a class="btn btn-info ml-2" href="${contextPath}/search#lists?type=variables&query=variable(in(Mica_variable.sets,${set.id}))">
@@ -173,7 +177,7 @@
             </div>
           </div>
           <div class="card-body">
-            <#if set??>
+            <#if set?? && set.identifiers?size gt 0>
               <div id="loadingSet" class="spinner-border spinner-border-sm" role="status"></div>
               <div>
                 <table id="setTable" class="table table-striped">
@@ -196,7 +200,7 @@
                 </table>
               </div>
             <#else>
-              <div class="text-muted"><@message "sets.set.no-variables-added"/></div>
+              <div class="text-muted"><@message "empty-list"/></div>
             </#if>
           </div>
         </div>

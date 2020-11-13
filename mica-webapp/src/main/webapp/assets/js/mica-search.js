@@ -728,6 +728,7 @@ new Vue({
       VariablesSetService.getSets(data => {
         if (Array.isArray(data)) {
           this.variableSets = data.filter(set => set.name);
+          document.getElementById('list-count').innerHTML = this.variableSets.length;
         }
       }, response => {
 
@@ -812,8 +813,8 @@ new Vue({
     this.advanceQueryMode = advancedNodeCount > 0;
 
     // don't close sets' dropdown when clicking inside of it
-    if (this.$refs.setsDropdownMenu) {
-      this.$refs.setsDropdownMenu.addEventListener("click", event => event.stopPropagation());
+    if (this.$refs.listsDropdownMenu) {
+      this.$refs.listsDropdownMenu.addEventListener("click", event => event.stopPropagation());
     }
 
     this.reloadSetsList();
