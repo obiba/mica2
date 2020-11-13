@@ -67,6 +67,41 @@
             <h3 class="card-title"><@message "variables"/></h3>
             <#if user.variablesCart?? && user.variablesCart.count gt 0>
               <div class="float-right">
+
+                <#if user.variablesLists?size lt maxNumberOfSets>
+                  <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown">
+                      <@message "sets.add.button.set-label"/>
+                      <span class="badge badge-light selection-count"></span>
+                    </button>
+                    <div id="listsDropdownMenu" class="dropdown-menu" style="min-width: 24em;">
+                      <div class="px-3 py-3">
+
+                        <div class="form-group mb-0">
+                          <div class="input-group">
+                            <input id="newVariableSetName" type="text" class="form-control" placeholder="<@message "sets.add.modal.create-new"/>">
+                            <div class="input-group-append">
+                              <button id="addToNewSetButton" class="btn btn-success disabled" type="button" onclick="onClickAddToNewSet()">
+                                <i class="fa fa-plus"></i> <@message "global.add"/>
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+
+                      </div>
+                      <#if user.variablesLists?size gt 0>
+                        <div class="dropdown-divider"></div>
+                        <#list user.variablesLists as variableList>
+                          <button type="button" class="dropdown-item"
+                                  onclick="onClickAddToSet('${variableList.id}', '${variableList.name}')">
+                            ${variableList.name} <span class="badge badge-light">${variableList.identifiers?size}</span>
+                          </button>
+                        </#list>
+                      </#if>
+                    </div>
+                  </div>
+                </#if>
+
                 <#if showCartDownload>
                   <#if showCartViewDownload>
                     <div class="btn-group" role="group">
@@ -85,7 +120,7 @@
                   </#if>
                 </#if>
                 <button id="delete-all" type="button" class="btn btn-danger ml-2" data-toggle="modal" data-target="#modal-delete">
-                  <i class="fas fa-trash"></i> <@message "delete"/> <span id="selection-count" class="badge badge-light"></span>
+                  <i class="fas fa-trash"></i> <@message "delete"/> <span class="badge badge-light selection-count"></span>
                 </button>
                 <#if config.setsSearchEnabled>
                   <a class="btn btn-info ml-2" href="${contextPath}/search#lists?type=variables&query=variable(in(Mica_variable.sets,${user.variablesCart.id}))">
@@ -138,6 +173,61 @@
 <#if user.variablesCart?? && user.variablesCart.count gt 0>
   <#assign set = user.variablesCart.set/>
   <#include "libs/document-set-scripts.ftl">
+
+  <script>
+    function onClickAddToSet(id, name) {
+      addToSet(id, name);
+    }
+
+    function onClickAddToNewSet() {
+      const input = document.getElementById('newVariableSetName');
+
+      if ((input.value || "").trim().length > 0) {
+        addToSet(null, input.value.trim());
+      }
+    }
+
+    function onKeyUpAddToNewSet(event) {
+      const keyCode = event.keyCode ? event.keyCode : event.which ? event.which : event.charCode;
+      const input = document.getElementById('newVariableSetName');
+      const button = document.getElementById('addToNewSetButton');
+
+      if (input) {
+        if (button && (input.value || "").trim().length > 0) {
+          button.className = "btn btn-success";
+        } else {
+          button.className = "btn btn-success disabled";
+        }
+
+        if (keyCode === 13) { // enter Key
+          event.stopPropagation();
+          event.preventDefault();
+          addToSet(null, input.value.trim());
+        }
+      }
+    }
+
+    function addToSet(setId, setName) {
+      const selections = variablesCartStorage.getSelections();
+      if (selections.length === 0) {
+        VariablesSetService.addQueryToSet(setId, setName, 'variable(in(Mica_variable.sets,${set.id}),limit(0,100000),fields(variableType))', function() { window.location.reload(); });
+      } else {
+        VariablesSetService.addToSet(setId, setName, selections, function() { window.location.reload(); });
+      }
+    }
+
+    $(function () {
+      const newVariableSetNameInput = document.getElementById('newVariableSetName');
+      if (newVariableSetNameInput) {
+        newVariableSetNameInput.addEventListener('keyup', onKeyUpAddToNewSet);
+      }
+
+      const listsDropdownMenu = document.getElementById('listsDropdownMenu');
+      if (listsDropdownMenu) {
+        listsDropdownMenu.addEventListener('click', event => event.stopPropagation());
+      }
+    });
+  </script>
 </#if>
 
 </body>

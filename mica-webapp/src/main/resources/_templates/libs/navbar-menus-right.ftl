@@ -7,13 +7,11 @@
         <span id="cart-count" class="badge badge-danger navbar-badge"></span>
       </a>
     </li>
-    <#if setsEnabled>
+    <#if listsEnabled>
       <li class="nav-item">
         <a href="${contextPath}/lists" class="nav-link" title="<@message "sets.set.title"/>">
           <i class="far fa-list-alt"></i>
-          <#if user?? && user.variablesLists?size gt 0>
-            <span class="badge badge-danger navbar-badge">${user.variablesLists?size}</span>
-          </#if>
+          <span id="list-count" class="badge badge-danger navbar-badge">${user.variablesLists?size}</span>
         </a>
       </li>
     </#if>

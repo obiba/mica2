@@ -102,26 +102,26 @@
           <h3 class="card-title"><@message "query"/></h3>
           <div class="card-tools">
             <#if cartEnabled>
-              <#if setsEnabled>
+              <#if listsEnabled>
                 <div class="btn-group ml-2">
                   <button id="cart-add-variables" type="button" class="btn btn-sm btn-success" @click="onAddQueryToCart" title="<@message "sets.cart.add-to-cart"/>"><i class="fas fa-cart-plus"></i></button>
-                  <button type="button" class="btn btn-sm btn-success dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" v-if="numberOfSetsRemaining > 0"></button>
-                  <div ref="setsDropdownMenu" class="dropdown-menu" style="min-width: 24em;">
-                    <form class="px-3 py-3">
+                  <button type="button" class="btn btn-sm btn-success dropdown-toggle dropdown-toggle-split" data-toggle="dropdown"></button>
+                  <div ref="listsDropdownMenu" class="dropdown-menu" style="min-width: 24em;">
+                    <form class="px-3 py-3" v-if="numberOfSetsRemaining > 0">
 
                       <div class="form-group mb-0">
                         <div class="input-group">
-                          <input type="text" class="form-control" placeholder="<@message "sets.add.modal.create-new"/>" v-model="newVariableSetName">
+                          <input type="text" class="form-control" placeholder="<@message "sets.add.modal.create-new"/>" v-model="newVariableSetName" @keyup.enter.prevent.stop="onAddQueryToSet()">
                           <div class="input-group-append">
                             <button v-bind:class="{ disabled: !newVariableSetName }" class="btn btn-success" type="button" @click="onAddQueryToSet()">
-                              <i class="fas fa-pencil-alt"></i>
+                              <i class="fa fa-plus"></i> <@message "global.add"/>
                             </button>
                           </div>
                         </div>
                       </div>
 
                     </form>
-                    <div class="dropdown-divider" v-if="variableSets.length > 0"></div>
+                    <div class="dropdown-divider" v-if="variableSets.length > 0 && numberOfSetsRemaining > 0"></div>
                     <button type="button" class="dropdown-item" v-for="set in variableSets" v-bind:key="set.id" @click="onAddQueryToSet(set.id)">{{ set.name }}</button>
                   </div>
                 </div>
