@@ -52,7 +52,7 @@ public class CartController extends BaseController {
       params.put("set", variableSetService.get(id));
       return new ModelAndView("list", params);
     } else {
-      return new ModelAndView("redirect:signin?redirect=" + micaConfigService.getContextPath() + "/lists");
+      return new ModelAndView("redirect:/signin?redirect=" + micaConfigService.getContextPath() + "/list/" + id);
     }
   }
 
