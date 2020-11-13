@@ -44,7 +44,7 @@
 <!--#assign cartEnabled = cartEnabled && (isAdministrator || isReviewer || isEditor || isDAO)/-->
 <!-- Cart feature is only visible to any authenticated users -->
 <!--#assign cartEnabled = cartEnabled && user??/-->
-<#assign listsEnabled = cartEnabled && true/>
+<#assign listsEnabled = user?? && cartEnabled && true/>
 <#assign maxNumberOfSets = config.maxNumberOfSets/>
 <!-- To download the list of variable IDs (and the Opal views, if enabled) -->
 <#assign showCartDownload = (isAdministrator || isReviewer || isEditor || isDAO)/>
