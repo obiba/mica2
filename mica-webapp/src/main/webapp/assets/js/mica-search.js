@@ -690,9 +690,9 @@ new Vue({
       if (setId || (this.newVariableSetName && this.newVariableSetName.length > 0)) {
         VariablesSetService.addQueryToSet(setId, this.newVariableSetName, this.queryToCart, (set, oldSet) => {
           if (set.count === oldSet.count) {
-            MicaService.toastInfo(Mica.tr['no-variable-added-set'].replace('{arg0}', set.name));
+            MicaService.toastInfo(Mica.tr['no-variable-added-set'].replace('{{arg0}}', '"' + set.name + '"'));
           } else {
-            MicaService.toastSuccess(Mica.tr['variables-added-to-set'].replace('{0}', (set.count - oldSet.count).toLocaleString(Mica.locale)).replace('{1}', set.name));
+            MicaService.toastSuccess(Mica.tr['variables-added-to-set'].replace('{0}', (set.count - oldSet.count).toLocaleString(Mica.locale)).replace('{1}', '"' + set.name + '"'));
           }
 
           this.newVariableSetName = '';
