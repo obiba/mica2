@@ -2,19 +2,21 @@
   <#include "../models/navbar-menus-right.ftl"/>
   <#if cartEnabled>
     <li class="nav-item">
-      <a href="${contextPath}/cart" class="nav-link">
+      <a href="${contextPath}/cart" class="nav-link" title="<@message "sets.cart.title"/>">
         <i class="fas fa-shopping-cart"></i>
         <span id="cart-count" class="badge badge-danger navbar-badge"></span>
       </a>
     </li>
-    <li class="nav-item">
-      <a href="${contextPath}/lists" class="nav-link">
-        <i class="far fa-list-alt"></i>
-        <#if user?? && user.variablesLists?size gt 0>
-          <span class="badge badge-danger navbar-badge">${user.variablesLists?size}</span>
-        </#if>
-      </a>
-    </li>
+    <#if setsEnabled>
+      <li class="nav-item">
+        <a href="${contextPath}/lists" class="nav-link" title="<@message "sets.set.title"/>">
+          <i class="far fa-list-alt"></i>
+          <#if user?? && user.variablesLists?size gt 0>
+            <span class="badge badge-danger navbar-badge">${user.variablesLists?size}</span>
+          </#if>
+        </a>
+      </li>
+    </#if>
   </#if>
   <#if contactEnabled>
     <li class="nav-item">

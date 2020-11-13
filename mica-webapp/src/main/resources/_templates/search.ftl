@@ -107,9 +107,9 @@
                   <button id="cart-add-variables" type="button" class="btn btn-sm btn-success" @click="onAddQueryToCart" title="<@message "sets.cart.add-to-cart"/>"><i class="fas fa-cart-plus"></i></button>
                   <button type="button" class="btn btn-sm btn-success dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" v-if="numberOfSetsRemaining > 0"></button>
                   <div ref="setsDropdownMenu" class="dropdown-menu" style="min-width: 24em;">
-                    <form class="px-4 py-3">
+                    <form class="px-3 py-3">
 
-                      <div class="form-group">
+                      <div class="form-group mb-0">
                         <div class="input-group">
                           <input type="text" class="form-control" placeholder="<@message "sets.add.modal.create-new"/>" v-model="newVariableSetName">
                           <div class="input-group-append">

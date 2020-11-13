@@ -67,15 +67,14 @@
     <!-- Content Header (Page header) -->
     <div class="content-header bg-info mb-4">
       <div class="container-fluid">
-        <div class="row mb-2">
-          <div class="col-sm-6 float-left">
-            <h1 class="m-0">
-              <span class="text-white-50"><@message "sets.set.title"/> /</span> ${set.name}
-              <button type="button" class="btn btn-info btn-sm mb-1" data-toggle="modal" data-target="#modal-delete-list" title="<@message "delete"/>"><i class="fas fa-trash"></i></button>
+        <div class="row">
+          <div class="col-sm-12">
+            <h1 class="m-0 float-left">
+              <span class="text-white-50"><@message "search.list"/> /</span> ${set.name}
             </h1>
-          </div><!-- /.col -->
-          <div class="col-sm-6">
-
+            <button type="button" class="btn btn-danger ml-4" data-toggle="modal" data-target="#modal-delete-list">
+              <i class="fas fa-trash"></i> <@message "delete"/>
+            </button>
           </div><!-- /.col -->
         </div><!-- /.row -->
       </div><!-- /.container-fluid -->
