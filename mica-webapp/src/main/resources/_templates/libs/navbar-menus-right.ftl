@@ -11,7 +11,9 @@
       <li class="nav-item">
         <a href="${contextPath}/lists" class="nav-link" title="<@message "sets.set.title"/>">
           <i class="far fa-list-alt"></i>
-          <span id="list-count" class="badge badge-danger navbar-badge">${user.variablesLists?size}</span>
+          <#if user?? && user.variablesLists?has_content>
+            <span id="list-count" class="badge badge-danger navbar-badge">${user.variablesLists?size}</span>
+          </#if>
         </a>
       </li>
     </#if>
