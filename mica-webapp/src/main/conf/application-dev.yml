@@ -2,7 +2,7 @@
 server:
     port: 8082
     address: localhost
-    context-path: /myca
+#    context-path: /myca
 
 https:
     port: 8445
