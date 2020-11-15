@@ -101,7 +101,7 @@
                     </#if>
                   </span>
                 </#if>
-                <span class="float-right <#if permissions?seq_contains("EDIT")>border-right mr-2 pr-2</#if>" ng-if="schema.readOnly">
+                <span class="float-right <#if permissions?seq_contains("EDIT_STATUS")>border-right mr-2 pr-2</#if>" ng-if="schema.readOnly">
                   <#if accessConfig.downloadPdf>
                     <a href="${contextPath}/ws/data-access-request/${dar.id}/_pdf?lang=${.lang}" class="btn btn-default">
                       <i class="fas fa-file-pdf"></i> <@message "download"/>

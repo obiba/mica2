@@ -92,6 +92,7 @@
 <!-- Data Access pages -->
 <#assign dataAccessInstructionsEnabled = true/>
 <#assign dataAccessCalloutsEnabled = true/>
+<#assign dataAccessReportTimelineEnabled = true/>
 
 <!-- Charts -->
 <#assign barChartBackgroundColor = "rgb(54, 162, 235)"/>
