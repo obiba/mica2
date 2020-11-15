@@ -1,6 +1,6 @@
 <!-- Macros -->
 <#include "libs/header.ftl">
-<#include "libs/data-access.ftl"/>
+<#include "models/data-access.ftl"/>
 <#include "models/profile.ftl"/>
 
 <!DOCTYPE html>
