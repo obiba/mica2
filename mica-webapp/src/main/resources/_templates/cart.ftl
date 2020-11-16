@@ -104,7 +104,7 @@
 
                 <#if showCartDownload>
                   <#if showCartViewDownload>
-                    <div class="btn-group" role="group">
+                    <div class="btn-group ml-2" role="group">
                       <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <i class="fas fa-download"></i> <@message "download"/>
                       </button>
