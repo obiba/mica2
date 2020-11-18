@@ -104,7 +104,7 @@
             <#if cartEnabled>
               <#if listsEnabled>
                 <div class="btn-group ml-2">
-                  <button id="cart-add-variables" type="button" class="btn btn-sm btn-success" @click="onAddQueryToCart" title="<@message "sets.cart.add-to-cart"/>"><i class="fas fa-cart-plus"></i></button>
+                  <button id="cart-add-variables" type="button" class="btn btn-sm btn-success" @click="onAddToCart" title="<@message "sets.cart.add-to-cart"/>"><i class="fas fa-cart-plus"></i></button>
                   <button type="button" class="btn btn-sm btn-success dropdown-toggle dropdown-toggle-split" data-toggle="dropdown"></button>
                   <div ref="listsDropdownMenu" class="dropdown-menu dropdown-menu-right" style="min-width: 24em;">
                     <form class="px-3 py-3" v-if="numberOfSetsRemaining > 0">
@@ -113,7 +113,7 @@
                         <div class="input-group">
                           <input type="text" class="form-control" placeholder="<@message "sets.add.modal.create-new"/>" v-model="newVariableSetName" @keyup.enter.prevent.stop="onAddQueryToSet()">
                           <div class="input-group-append">
-                            <button v-bind:class="{ disabled: !newVariableSetName }" class="btn btn-success" type="button" @click="onAddQueryToSet()">
+                            <button v-bind:class="{ disabled: !newVariableSetName }" class="btn btn-success" type="button" @click="onAddToSet()">
                               <i class="fa fa-plus"></i> <@message "global.add"/>
                             </button>
                           </div>
@@ -122,7 +122,10 @@
 
                     </form>
                     <div class="dropdown-divider" v-if="variableSets.length > 0 && numberOfSetsRemaining > 0"></div>
-                    <button type="button" class="dropdown-item" v-for="set in variableSets" v-bind:key="set.id" @click="onAddQueryToSet(set.id)">{{ set.name }}</button>
+                    <button type="button" class="dropdown-item" v-for="set in variableSets" v-bind:key="set.id" @click="onAddToSet(set.id)">
+                      {{ set.name }}
+                      <span class="badge badge-light float-right">{{ set.count }}</span>
+                    </button>
                   </div>
                 </div>
 
