@@ -99,7 +99,7 @@ public class DataAccessRequestReportNotificationService {
   }
 
   @Async
-  @Scheduled(cron = "${dar.reminder.cron:0 0 * * * ?}")
+  @Scheduled(cron = "${dar.reminder.cron:0 0 0 * * ?}")
   public void remindDataAccessReports() {
     DataAccessForm dataAccessForm = dataAccessFormService.find().get();
     if (!dataAccessForm.isNotifyFinalReport() && !dataAccessForm.isNotifyIntermediateReport()) return;
