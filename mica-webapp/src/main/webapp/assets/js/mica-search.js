@@ -188,6 +188,7 @@ const StudyFilterShortcutComponent = Vue.component('study-filter-shortcut', {
     onSelectionClicked(selectionKey) {
       const classNameQuery = new RQL.Query('in', ['Mica_study.className', this.buildClassNameArgs(selectionKey)]);
       EventBus.$emit(EVENTS.QUERY_TYPE_UPDATE, {target: 'study', query: classNameQuery});
+      EventBus.$emit(EVENTS.CLEAR_RESULTS_SELECTIONS);
     }
   },
   mounted() {
@@ -527,6 +528,12 @@ Vue.use(VueMicaSearch, {
           // bs tooltip
           $('[data-toggle="tooltip"]').tooltip();
         });
+
+        // checkboxes only for variables
+        if ('vosr-variables-result' === tableId) {
+          initSelectDataTable(dTable, options);
+        }
+
         return dTable;
       }
     }
@@ -559,7 +566,8 @@ new Vue({
       newVariableSetName: '',
       variableSets: [],
       advanceQueryMode: false,
-      downloadUrlObject: ''
+      downloadUrlObject: '',
+      variableSelections: []
     };
   },
   methods: {
@@ -664,40 +672,58 @@ new Vue({
     onQueryUpdate(payload) {
       console.debug('query-builder update', payload);
       EventBus.$emit(EVENTS.QUERY_TYPE_UPDATES_SELECTION, {updates: [payload]});
+
+      EventBus.$emit(EVENTS.CLEAR_RESULTS_SELECTIONS);
     },
     onQueryRemove(payload) {
       console.debug('query-builder update', payload);
       EventBus.$emit(EVENTS.QUERY_TYPE_DELETE, payload);
+
+      EventBus.$emit(EVENTS.CLEAR_RESULTS_SELECTIONS);
     },
     onNodeUpdate(payload) {
       console.debug('query-builder node update', payload);
       EventBus.$emit(EVENTS.QUERY_TYPE_UPDATES_SELECTION, {updates: [payload]});
+
+      EventBus.$emit(EVENTS.CLEAR_RESULTS_SELECTIONS);
     },
     onCopyQuery() {
       navigator.clipboard.writeText(this.queryToCopy);
     },
-    onAddQueryToCart() {
-      VariablesSetService.addQueryToCart(this.queryToCart, function(cart, oldCart) {
+    onAddToCart() {
+      const onsuccess = function(cart, oldCart) {
         VariablesSetService.showCount('#cart-count', cart, Mica.locale);
         if (cart.count === oldCart.count) {
           MicaService.toastInfo(Mica.tr['no-variable-added']);
         } else {
           MicaService.toastSuccess(Mica.tr['variables-added-to-cart'].replace('{0}', (cart.count - oldCart.count).toLocaleString(Mica.locale)));
         }
-      });
-    },
-    onAddQueryToSet(setId) {
-      if (setId || (this.newVariableSetName && this.newVariableSetName.length > 0)) {
-        VariablesSetService.addQueryToSet(setId, this.newVariableSetName, this.queryToCart, (set, oldSet) => {
-          if (set.count === oldSet.count) {
-            MicaService.toastInfo(Mica.tr['no-variable-added-set'].replace('{{arg0}}', '"' + set.name + '"'));
-          } else {
-            MicaService.toastSuccess(Mica.tr['variables-added-to-set'].replace('{0}', (set.count - oldSet.count).toLocaleString(Mica.locale)).replace('{1}', '"' + set.name + '"'));
-          }
+      };
 
-          this.newVariableSetName = '';
-          this.reloadSetsList();
-        });
+      if (Array.isArray(this.variableSelections) && this.variableSelections.length > 0) {
+        VariablesSetService.addToCart(this.variableSelections, onsuccess);
+      } else {
+        VariablesSetService.addQueryToCart(this.queryToCart, onsuccess);
+      }
+    },
+    onAddToSet(setId) {
+      const onsuccess = (set, oldSet) => {
+        if (set.count === oldSet.count) {
+          MicaService.toastInfo(Mica.tr['no-variable-added-set'].replace('{{arg0}}', '"' + set.name + '"'));
+        } else {
+          MicaService.toastSuccess(Mica.tr['variables-added-to-set'].replace('{0}', (set.count - oldSet.count).toLocaleString(Mica.locale)).replace('{1}', '"' + set.name + '"'));
+        }
+
+        this.newVariableSetName = '';
+        this.reloadSetsList();
+      }
+
+      if (setId || (this.newVariableSetName && this.newVariableSetName.length > 0)) {
+        if (Array.isArray(this.variableSelections) && this.variableSelections.length > 0) {
+          VariablesSetService.addToSet(setId, this.newVariableSetName, this.variableSelections, onsuccess);
+        } else {
+          VariablesSetService.addQueryToSet(setId, this.newVariableSetName, this.queryToCart, onsuccess);
+        }
       }
     },
     onDownloadQueryResult() {
@@ -755,6 +781,12 @@ new Vue({
     console.debug('Mounted QueryBuilder');
     EventBus.register('taxonomy-selection', this.onTaxonomySelection);
     EventBus.register(EVENTS.LOCATION_CHANGED, this.onLocationChanged.bind(this));
+
+    EventBus.register(EVENTS.CLEAR_RESULTS_SELECTIONS, () => this.variableSelections = []);
+
+    for (const typeKey in TYPES) {
+      EventBus.register(`${TYPES[typeKey]}-selections-updated`, payload => this.variableSelections = payload.selections || []);
+    }
 
     // fetch the configured search criteria, in the form of a taxonomy of taxonomies
     axios

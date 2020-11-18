@@ -68,7 +68,8 @@ const EVENTS = {
   QUERY_TYPE_GRAPHICS: 'query-type-graphics',
   QUERY_TYPE_GRAPHICS_RESULTS: 'query-type-graphics-results',
   QUERY_ALERT: 'query-alert',
-  LOCATION_CHANGED: 'location-changed'
+  LOCATION_CHANGED: 'location-changed',
+  CLEAR_RESULTS_SELECTIONS: 'clear-results-selections'
 };
 
 const OPERATOR_NODES = ['and','or'];
