@@ -791,7 +791,7 @@ class VariablesSetService {
    */
   static deleteVariables(id, selected, onsuccess, onfailure) {
     let url = '/ws/variables/set/' + id + '/documents';
-    if (selected && selected.length>1) {
+    if (selected && selected.length>0) {
       url = url + '/_delete';
       axios({
         method: 'POST',
