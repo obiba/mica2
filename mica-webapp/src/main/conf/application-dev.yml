@@ -71,5 +71,11 @@ hotReload:
 sets:
   cleanup:
     # "<second> <minute> <hour> <day-of-month> <month> <day-of-week> <year>"
-    # Current cron set to run every day at mid-night
+    # Current cron set to run every hour every day
     cron: "0 0 * * * ?"
+
+dar:
+  reminder:
+    # "<second> <minute> <hour> <day-of-month> <month> <day-of-week> <year>"
+    # Current cron set to run every day at mid-night
+    cron: "0 * * * * ?"
