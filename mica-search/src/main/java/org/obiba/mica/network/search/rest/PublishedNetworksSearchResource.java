@@ -36,7 +36,7 @@ import static org.obiba.mica.web.model.MicaSearch.JoinQueryResultDto;
 @Path("/networks")
 @Scope("request")
 @Component
-public class PublishedNetworksSearchResource {
+public class  PublishedNetworksSearchResource {
 
   public static final String DEFAULT_SORT = "script";
 
@@ -52,9 +52,10 @@ public class PublishedNetworksSearchResource {
   @GET
   @Timed
   public JoinQueryResultDto rqlList(@QueryParam("from") @DefaultValue("0") int from,
-                                    @QueryParam("limit") @DefaultValue("10") int limit, @QueryParam("sort") @DefaultValue("name") String sort,
-                                    @QueryParam("order") @DefaultValue("asc") String order, @QueryParam("locale") @DefaultValue("en") String locale)
-      throws IOException {
+                                    @QueryParam("limit") @DefaultValue("10") int limit,
+                                    @QueryParam("sort") @DefaultValue("name") String sort,
+                                    @QueryParam("order") @DefaultValue("asc") String order,
+                                    @QueryParam("locale") @DefaultValue("en") String locale) {
 
     String rql = RQLQueryBuilder.newInstance().target(
         RQLQueryBuilder.TargetQueryBuilder.networkInstance().exists("id").limit(from, limit).sort(sort, order).build())
@@ -66,17 +67,21 @@ public class PublishedNetworksSearchResource {
   @GET
   @Path("/_rql")
   @Timed
-  public JoinQueryResultDto rqlQuery(@QueryParam("query") String query) throws IOException {
+  public JoinQueryResultDto rqlQuery(@QueryParam("query") String query,
+                                     @QueryParam("withoutCountStats") @DefaultValue("false") boolean withoutCountStats) {
     String queryStr = query;
     if (Strings.isNullOrEmpty(queryStr)) queryStr = "network(exists(Mica_network.id))";
-    return joinQueryExecutor.query(QueryType.NETWORK, searcher.makeJoinQuery(queryStr));
+    return withoutCountStats
+      ? joinQueryExecutor.queryWithoutCountStats(QueryType.NETWORK, searcher.makeJoinQuery(queryStr))
+      : joinQueryExecutor.query(QueryType.NETWORK, searcher.makeJoinQuery(queryStr));
   }
 
   @POST
   @Path("/_rql")
   @Timed
-  public MicaSearch.JoinQueryResultDto rqlLargeQuery(@FormParam("query") String query) throws IOException {
-    return rqlQuery(query);
+  public MicaSearch.JoinQueryResultDto rqlLargeQuery(@FormParam("query") String query,
+                                                     @FormParam("withoutCountStats") @DefaultValue("false")  boolean withoutCountStats) {
+    return rqlQuery(query, withoutCountStats);
   }
 
   @GET

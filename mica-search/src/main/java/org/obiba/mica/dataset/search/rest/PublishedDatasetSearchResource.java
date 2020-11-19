@@ -48,8 +48,10 @@ public class PublishedDatasetSearchResource {
   @GET
   @Timed
   public MicaSearch.JoinQueryResultDto rqlList(@QueryParam("from") @DefaultValue("0") int from,
-                                               @QueryParam("limit") @DefaultValue("10") int limit, @QueryParam("sort") @DefaultValue("name") String sort,
-                                               @QueryParam("order") String order, @QueryParam("locale") @DefaultValue("en") String locale) throws IOException {
+                                               @QueryParam("limit") @DefaultValue("10") int limit,
+                                               @QueryParam("sort") @DefaultValue("name") String sort,
+                                               @QueryParam("order") String order,
+                                               @QueryParam("locale") @DefaultValue("en") String locale) {
 
     String rql = RQLQueryBuilder.newInstance().target(
         RQLQueryBuilder.TargetQueryBuilder.datasetInstance().exists("id").limit(from, limit).sort(sort, order).build())
@@ -61,17 +63,21 @@ public class PublishedDatasetSearchResource {
   @GET
   @Path("/_rql")
   @Timed
-  public MicaSearch.JoinQueryResultDto rqlQuery(@QueryParam("query") String query) throws IOException {
+  public MicaSearch.JoinQueryResultDto rqlQuery(@QueryParam("query") String query,
+                                                @QueryParam("withoutCountStats") @DefaultValue("false") boolean withoutCountStats) {
     String queryStr = query;
     if (Strings.isNullOrEmpty(queryStr)) queryStr = "dataset(exists(Mica_dataset.id))";
-    return joinQueryExecutor.query(QueryType.DATASET, searcher.makeJoinQuery(queryStr));
+    return withoutCountStats
+      ? joinQueryExecutor.queryWithoutCountStats(QueryType.DATASET, searcher.makeJoinQuery(queryStr))
+      : joinQueryExecutor.query(QueryType.DATASET, searcher.makeJoinQuery(queryStr));
   }
 
   @POST
   @Path("/_rql")
   @Timed
-  public MicaSearch.JoinQueryResultDto rqlLargeQuery(@FormParam("query") String query) throws IOException {
-    return rqlQuery(query);
+  public MicaSearch.JoinQueryResultDto rqlLargeQuery(@FormParam("query") String query,
+                                                     @FormParam("withoutCountStats") @DefaultValue("false")  boolean withoutCountStats) {
+    return rqlQuery(query, withoutCountStats);
   }
 
   @GET

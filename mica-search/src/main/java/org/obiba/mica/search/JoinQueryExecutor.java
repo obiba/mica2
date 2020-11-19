@@ -92,6 +92,11 @@ public class JoinQueryExecutor {
   private Dtos dtos;
 
   @Timed
+  public JoinQueryResultDto queryWithoutCountStats(QueryType type, JoinQuery joinQuery) {
+    return query(type, joinQuery, null, DETAIL, QueryMode.SEARCH);
+  }
+
+  @Timed
   public JoinQueryResultDto query(QueryType type, JoinQuery joinQuery) {
     return query(type, joinQuery, CountStatsData.newBuilder(), DETAIL, QueryMode.SEARCH);
   }
