@@ -75,21 +75,25 @@ public class PublishedDatasetVariablesSearchResource {
       targetBuilder.sort(sort, order);
     }
 
-    return rqlQuery(RQLQueryBuilder.newInstance().target(targetBuilder.build()).locale(locale).buildArgsAsString());
+    return rqlQuery(RQLQueryBuilder.newInstance().target(targetBuilder.build()).locale(locale).buildArgsAsString(), true);
   }
 
   @GET
   @Path("/_rql")
   @Timed
-  public MicaSearch.JoinQueryResultDto rqlQuery(@QueryParam("query") String query) throws IOException {
-    return joinQueryExecutor.query(QueryType.VARIABLE, searcher.makeJoinQuery(query));
+  public MicaSearch.JoinQueryResultDto rqlQuery(@QueryParam("query") String query,
+                                                @QueryParam("withoutCountStats") @DefaultValue("false") boolean withoutCountStats) {
+    return withoutCountStats
+      ? joinQueryExecutor.queryWithoutCountStats(QueryType.VARIABLE, searcher.makeJoinQuery(query))
+      : joinQueryExecutor.query(QueryType.VARIABLE, searcher.makeJoinQuery(query));
   }
 
   @POST
   @Path("/_rql")
   @Timed
-  public MicaSearch.JoinQueryResultDto rqlLargeQuery(@FormParam("query") String query) throws IOException {
-    return rqlQuery(query);
+  public MicaSearch.JoinQueryResultDto rqlLargeQuery(@FormParam("query") String query,
+                                                     @QueryParam("withoutCountStats") @DefaultValue("false") boolean withoutCountStats) {
+    return rqlQuery(query, withoutCountStats);
   }
 
   @GET
