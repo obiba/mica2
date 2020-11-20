@@ -1059,7 +1059,7 @@ class VariablesSetService {
    * @param onsuccess
    * @param onfailure
    */
-  static contains = function(set, id, onsuccess, onfailure) {
+  static contains(set, id, onsuccess, onfailure) {
     let url = '/ws/variables/set/' + set.id + '/document/' + id + '/_exists';
     axios.get(MicaService.normalizeUrl(url))
       .then(response => {
