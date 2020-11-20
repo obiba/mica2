@@ -203,7 +203,7 @@ class DataAccessService {
       });
   }
 
-  static addAction = function(id, action) {
+  static addAction(id, action) {
     //console.dir(action);
     let url = '/ws/data-access-request/' + id + '/_log-actions';
     let redirect = '/data-access-history/' + id;
@@ -218,7 +218,7 @@ class DataAccessService {
       });
   }
 
-  static setStartDate = function(id, startDate) {
+  static setStartDate(id, startDate) {
     //console.log(startDate);
     let url = '/ws/data-access-request/' + id + '/_start-date?date=' + startDate;
     let redirect = '/data-access/' + id;
