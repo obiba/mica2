@@ -354,8 +354,13 @@ class EntityQuery {
 }
 
 class VariableQuery extends EntityQuery {
-  static FIELDS = ['attributes.label.*', 'attributes.description.*', 'variableType', 'valueType', 'categories.*', 'populationId', 'dceId', 'datasetId', 'datasetAcronym', 'attributes.Mlstr_area*'];
-  static SORT_FIELDS = ['attributes.label.*', 'attributes.description.*', 'variableType', 'valueType', 'datasetId', 'datasetAcronym', 'attributes.Mlstr_area*'];
+  static get FIELDS() {
+    return ['attributes.label.*', 'attributes.description.*', 'variableType', 'valueType', 'categories.*', 'populationId', 'dceId', 'datasetId', 'datasetAcronym', 'attributes.Mlstr_area*'];
+  }
+
+  static get SORT_FIELDS() {
+    return ['attributes.label.*', 'attributes.description.*', 'variableType', 'valueType', 'datasetId', 'datasetAcronym', 'attributes.Mlstr_area*'];
+  }
 
   constructor(defaultSize) {
     super(TYPES.VARIABLES, TARGETS.VARIABLE, defaultSize);
@@ -365,8 +370,13 @@ class VariableQuery extends EntityQuery {
 }
 
 class DatasetQuery extends EntityQuery {
-  static FIELDS = ['acronym.*','name.*','variableType','studyTable.studyId','studyTable.project','studyTable.table','studyTable.populationId','studyTable.dataCollectionEventId','harmonizationTable.studyId','harmonizationTable.project','harmonizationTable.table','harmonizationTable.populationId'];
-  static SORT_FIELDS = ['studyTable.studyId','studyTable.populationWeight','studyTable.dataCollectionEventWeight','acronym'];
+  static get FIELDS() {
+    return ['acronym.*','name.*','variableType','studyTable.studyId','studyTable.project','studyTable.table','studyTable.populationId','studyTable.dataCollectionEventId','harmonizationTable.studyId','harmonizationTable.project','harmonizationTable.table','harmonizationTable.populationId'];
+  }
+
+  static get SORT_FIELDS() {
+    return ['studyTable.studyId','studyTable.populationWeight','studyTable.dataCollectionEventWeight','acronym'];
+  }
 
   constructor(defaultSize) {
     super(TYPES.DATASETS, TARGETS.DATASET, defaultSize);
@@ -376,8 +386,14 @@ class DatasetQuery extends EntityQuery {
 }
 
 class StudyQuery extends EntityQuery {
-  static FIELDS = ['acronym.*','name.*','model.methods.design','populations.dataCollectionEvents.model.dataSources','model.numberOfParticipants.participant'];
-  static SORT_FIELDS = ['acronym'];
+  static get FIELDS() {
+    return ['acronym.*','name.*','model.methods.design','populations.dataCollectionEvents.model.dataSources','model.numberOfParticipants.participant'];
+  }
+
+  static get SORT_FIELDS() {
+   return ['acronym'];
+  }
+
 
   constructor(defaultSize) {
     super(TYPES.STUDIES, TARGETS.STUDY, defaultSize);
@@ -408,8 +424,13 @@ class StudyQuery extends EntityQuery {
 }
 
 class NetworkQuery extends EntityQuery {
-  static FIELDS = ['acronym.*','name.*','studyIds'];
-  static SORT_FIELDS = ['acronym'];
+  static get FIELDS() {
+   return ['acronym.*','name.*','studyIds'];
+  }
+
+  static get SORT_FIELDS() {
+    return ['acronym'];
+  }
 
   constructor(defaultSize) {
     super(TYPES.NETWORKS, TARGETS.NETWORK, defaultSize);
