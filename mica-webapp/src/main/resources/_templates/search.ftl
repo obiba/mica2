@@ -313,12 +313,12 @@
                                 <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown"><@message "search.filter"/></button>
 
                                 <div class="dropdown-menu">
-                                  <a @click="onFullCoverage()" class="dropdown-item" v-bind:class="{ disabled: !canDoFullCoverage }">
+                                  <button type="button" @click="onFullCoverage()" class="dropdown-item" v-bind:class="{ disabled: !canDoFullCoverage }">
                                     <@message "search.coverage-select.full"/>
-                                  </a>
-                                  <a @click="onZeroColumnsToggle()" class="dropdown-item" v-bind:class="{ disabled: !hasCoverageTermsWithZeroHits }">
+                                  </button>
+                                  <button type="button" @click="onZeroColumnsToggle()" class="dropdown-item" v-bind:class="{ disabled: !hasCoverageTermsWithZeroHits }">
                                     <@message "search.coverage-without-zeros"/>
-                                  </a>
+                                  </button>
                                 </div>
                               </div>
                             </li>
