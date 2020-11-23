@@ -420,18 +420,20 @@ const ResultsTabContent = {
         dataset: Mica.tr.dataset,
         dce: Mica.tr['data-collection-event'],
       },
-      chartOptions: Mica.charts.chartIds.map(id => chartOptions[id])
+      chartOptions: Mica.charts.chartIds.map(id => chartOptions[id]),
+      canDoFullCoverage: false,
+      queryForFullCoverage: null
     }
   },
   methods: {
     onSelectResult(type, target) {
-      EventBus.$emit('query-type-selection', {display: DISPLAYS.LISTS, type, target});
+      EventBus.$emit(EVENTS.QUERY_TYPE_SELECTION, {display: DISPLAYS.LISTS, type, target});
     },
     onSelectSearch() {
-      EventBus.$emit('query-type-selection', {display: DISPLAYS.LISTS});
+      EventBus.$emit(EVENTS.QUERY_TYPE_SELECTION, {display: DISPLAYS.LISTS});
     },
     onSelectCoverage() {
-      EventBus.$emit('query-type-coverage', {display: DISPLAYS.COVERAGE});
+      EventBus.$emit(EVENTS.QUERY_TYPE_COVERAGE, {display: DISPLAYS.COVERAGE});
     },
     onSelectGraphics() {
       EventBus.$emit(EVENTS.QUERY_TYPE_GRAPHICS, {type: TYPES.STUDIES, display: DISPLAYS.GRAPHICS});
@@ -439,7 +441,7 @@ const ResultsTabContent = {
     onSelectBucket(bucket) {
       console.debug(`onSelectBucket : ${bucket} - ${this.dceChecked}`);
       this.selectedBucket = bucket;
-      EventBus.$emit('query-type-selection', {bucket});
+      EventBus.$emit(EVENTS.QUERY_TYPE_SELECTION, {bucket});
     },
     onGraphicsResult(payload) {
       this.hasGraphicsResult = payload.response.studyResultDto.totalHits > 0;
@@ -469,6 +471,34 @@ const ResultsTabContent = {
         this.counts.networks = data.networkResultDto.totalHits.toLocaleString();
       }
     },
+    onCoverageResult(payload) {
+      if (payload.response.rows !== undefined) {
+        // filters
+        let rowsEligibleForFullCoverage = [];
+        payload.response.rows.forEach(row => {
+          if (Array.isArray(row.hits)) {
+            if (row.hits.filter(hit => hit === 0).length === 0) {
+              rowsEligibleForFullCoverage.push(row);
+            }
+          }
+        });
+
+        // filter for full coverage
+        let coverageVocabulary = this.selectedBucket.startsWith('dce') ? 'dceId' : 'id';
+
+        let coverageArgs = ['Mica_' + fromBucketToTarget(this.selectedBucket) + '.' + coverageVocabulary];
+        coverageArgs.push(rowsEligibleForFullCoverage.map(selection => selection.value));
+
+        this.canDoFullCoverage = rowsEligibleForFullCoverage.length > 0;
+
+        if (this.canDoFullCoverage) {
+          this.queryForFullCoverage = new RQL.Query('in', coverageArgs);
+        }
+      }
+    },
+    onFullCoverage() {
+      EventBus.$emit(EVENTS.QUERY_TYPE_UPDATES_SELECTION, {updates: [{target: fromBucketToTarget(this.selectedBucket), query: this.queryForFullCoverage}], display: DISPLAYS.COVERAGE});
+    },
     onLocationChanged: function (payload) {
       $(`.nav-pills #${payload.display}-tab`).tab('show');
       $(`.nav-pills #${payload.type}-tab`).tab('show');
@@ -491,6 +521,7 @@ const ResultsTabContent = {
     EventBus.register('datasets-results', this.onResult.bind(this));
     EventBus.register('studies-results', this.onResult.bind(this));
     EventBus.register('networks-results', this.onResult.bind(this));
+    EventBus.register('coverage-results', this.onCoverageResult.bind(this));
     EventBus.register(EVENTS.QUERY_TYPE_GRAPHICS_RESULTS, this.onGraphicsResult.bind(this));
     EventBus.register(EVENTS.LOCATION_CHANGED, this.onLocationChanged.bind(this));
   },
@@ -499,6 +530,7 @@ const ResultsTabContent = {
     EventBus.unregister('datasets-results', this.onResult);
     EventBus.unregister('studies-results', this.onResult);
     EventBus.unregister('networks-results', this.onResult);
+    EventBus.unregister('coverage-results', this.onResult);
     EventBus.unregister(EVENTS.QUERY_TYPE_GRAPHICS_RESULTS, this.onGraphicsResult);
     EventBus.unregister(EVENTS.LOCATION_CHANGED, this.onLocationChanged);
   }
@@ -856,7 +888,7 @@ new Vue({
     console.debug('Before destroy query builder');
     EventBus.unregister(EVENTS.LOCATION_CHANGED, this.onLocationChanged);
     EventBus.unregister('taxonomy-selection', this.onTaxonomySelection);
-    EventBus.unregister('query-type-selection', this.onQueryTypeSelection);
+    EventBus.unregister(EVENTS.QUERY_TYPE_SELECTION, this.onQueryTypeSelection);
     this.queryExecutor.destroy();
   }
 });

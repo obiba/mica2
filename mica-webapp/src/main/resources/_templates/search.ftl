@@ -275,8 +275,8 @@
 
                     <div v-show="hasVariableQuery">
                       <div id="coverage">
-                        <div class="mt-4 mb-2">
-                          <ul class="nav nav-pills" role="tablist">
+                        <div class="mt-4 mb-2 clearfix">
+                          <ul class="nav nav-pills float-left" role="tablist">
                             <li class="nav-item">
                               <a class="nav-link active"
                                  data-toggle="pill"
@@ -295,7 +295,10 @@
                                  aria-controls="dataset"
                                  aria-selected="true">{{ bucketTitles.dataset }}</a>
                             </li>
-                            <li v-if="selectedBucket!=='dataset'" class="ml-auto float-right">
+                          </ul>
+
+                          <ul class="nav nav-pills float-right" role="tablist">
+                            <li v-if="selectedBucket !==' dataset'" class="mt-auto mb-auto">
                               <div class="form-check">
                                 <input type="checkbox"
                                        id="bucket-dce"
@@ -303,6 +306,17 @@
                                        @change="onSelectBucket(dceChecked ? 'dce' : 'study')"
                                        class="form-check-input">
                                 <label for="bucket-dce" class="form-check-label">{{ bucketTitles.dce }}</label>
+                              </div>
+                            </li>
+                            <li class="ml-3">
+                              <div class="dropleft">
+                                <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown"><@message "search.filter"/></button>
+
+                                <div class="dropdown-menu">
+                                  <a @click="onFullCoverage()" class="dropdown-item" v-bind:class="{ disabled: !canDoFullCoverage }">
+                                    <@message "search.coverage-select.full"/>
+                                  </a>
+                                </div>
                               </div>
                             </li>
                           </ul>

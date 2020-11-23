@@ -19,13 +19,13 @@ const TYPES_TARGETS_MAP = {
   networks: 'network'
 };
 
-BUCKETS = {
+const BUCKETS = {
   study: 'studyId',
   dce: 'dceId',
   dataset: 'datasetId'
 };
 
-TARGET_ID_BUCKET_MAP = {
+const TARGET_ID_BUCKET_MAP = {
   studyId: 'study',
   dceId: 'dce',
   datasetId: 'dataset'
@@ -50,11 +50,25 @@ const DISPLAYS = {
   COVERAGE: 'coverage',
   GRAPHICS: 'graphics'
 };
+
 const DISPLAY_TABS = {
   LISTS: 'tab-lists',
   COVERAGE: 'tab-coverage',
   GRAPHICS: 'tab-graphics'
 };
+
+function fromBucketToTarget(bucket) {
+  let target;
+  if (bucket === 'dce') {
+    target = TARGETS.VARIABLE;
+  } else if (bucket === 'study') {
+    target = TARGETS.STUDY;
+  } else {
+    target = TARGETS.DATASET;
+  }
+
+  return target;
+}
 
 const QueryTreeOptions  = {containers: Object.values(TARGETS)};
 
