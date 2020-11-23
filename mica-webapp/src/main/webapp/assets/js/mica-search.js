@@ -492,7 +492,7 @@ const ResultsTabContent = {
 
         const numberOfTerms = payload.response.termHeaders.length;
 
-        this.canDoFullCoverage = rowsEligibleForFullCoverage.length > 0 && rowsEligibleForFullCoverage < numberOfTerms; // active?
+        this.canDoFullCoverage = rowsEligibleForFullCoverage.length > 0; // active?
 
         if (this.canDoFullCoverage) {
           this.queryForFullCoverage = new RQL.Query('in', coverageArgs);
