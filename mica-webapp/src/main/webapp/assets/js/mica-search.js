@@ -494,8 +494,6 @@ const ResultsTabContent = {
 
         this.canDoFullCoverage = rowsEligibleForFullCoverage.length > 0 && rowsEligibleForFullCoverage.length < payload.response.rows.length; // active?
 
-        console.log(rowsEligibleForFullCoverage.length, payload.response.rows.length);
-
         if (this.canDoFullCoverage) {
           this.queryForFullCoverage = new RQL.Query('in', coverageArgs);
         }
