@@ -422,7 +422,9 @@ const ResultsTabContent = {
       },
       chartOptions: Mica.charts.chartIds.map(id => chartOptions[id]),
       canDoFullCoverage: false,
-      queryForFullCoverage: null
+      hasCoverageTermsWithZeroHits: false,
+      queryForFullCoverage: null,
+      queriesWithZeroHitsToRemove: []
     }
   },
   methods: {
@@ -472,8 +474,7 @@ const ResultsTabContent = {
       }
     },
     onCoverageResult(payload) {
-      if (payload.response.rows !== undefined) {
-        // filters
+      if (payload.response.rows !== undefined) { // for filters
         let rowsEligibleForFullCoverage = [];
         payload.response.rows.forEach(row => {
           if (Array.isArray(row.hits)) {
@@ -489,15 +490,50 @@ const ResultsTabContent = {
         let coverageArgs = ['Mica_' + fromBucketToTarget(this.selectedBucket) + '.' + coverageVocabulary];
         coverageArgs.push(rowsEligibleForFullCoverage.map(selection => selection.value));
 
-        this.canDoFullCoverage = rowsEligibleForFullCoverage.length > 0;
+        const numberOfTerms = payload.response.termHeaders.length;
+
+        this.canDoFullCoverage = rowsEligibleForFullCoverage.length > 0 && rowsEligibleForFullCoverage < numberOfTerms; // active?
 
         if (this.canDoFullCoverage) {
           this.queryForFullCoverage = new RQL.Query('in', coverageArgs);
         }
+
+        // filter for subdomains with variables
+        const taxonomyNames = Array(numberOfTerms), vocabularyNames = Array(numberOfTerms);
+        let lastTaxonomyHeaderIndex = 0, lastVocabularyHeaderIndex = 0;
+        payload.response.taxonomyHeaders.forEach(taxonomyHeader => {
+          const name = taxonomyHeader.entity.name, termsCount = taxonomyHeader.termsCount;
+
+          taxonomyNames.fill(name, lastTaxonomyHeaderIndex, lastTaxonomyHeaderIndex + termsCount);
+          lastTaxonomyHeaderIndex += termsCount;
+        });
+
+        payload.response.vocabularyHeaders.forEach(vocabularyHeader => {
+          const name = vocabularyHeader.entity.name, termsCount = vocabularyHeader.termsCount;
+
+          vocabularyNames.fill(name, lastVocabularyHeaderIndex, lastVocabularyHeaderIndex + termsCount);
+          lastVocabularyHeaderIndex += termsCount;
+        });
+
+        this.queriesWithZeroHitsToRemove = [];
+        payload.response.termHeaders.forEach((termHeader, index) => {
+          const key = taxonomyNames[index] + '.' + vocabularyNames[index], name = termHeader.entity.name;
+
+          if (termHeader.hits === 0) {
+            this.queriesWithZeroHitsToRemove.push(new RQL.Query('in', [key, [name]]));
+          }
+        });
+
+        this.hasCoverageTermsWithZeroHits = this.queriesWithZeroHitsToRemove.length > 0; // active?
       }
     },
+    onZeroColumnsToggle() {
+      this.queriesWithZeroHitsToRemove.forEach(query => {
+        EventBus.$emit(EVENTS.QUERY_TYPE_DELETE, {target: TARGETS.VARIABLE, query, display: DISPLAYS.COVERAGE});
+      });
+    },
     onFullCoverage() {
-      EventBus.$emit(EVENTS.QUERY_TYPE_UPDATES_SELECTION, {updates: [{target: fromBucketToTarget(this.selectedBucket), query: this.queryForFullCoverage}], display: DISPLAYS.COVERAGE});
+      EventBus.$emit(EVENTS.QUERY_TYPE_UPDATE, {target: fromBucketToTarget(this.selectedBucket), query: this.queryForFullCoverage, display: DISPLAYS.COVERAGE});
     },
     onLocationChanged: function (payload) {
       $(`.nav-pills #${payload.display}-tab`).tab('show');

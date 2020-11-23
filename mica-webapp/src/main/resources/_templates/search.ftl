@@ -316,6 +316,9 @@
                                   <a @click="onFullCoverage()" class="dropdown-item" v-bind:class="{ disabled: !canDoFullCoverage }">
                                     <@message "search.coverage-select.full"/>
                                   </a>
+                                  <a @click="onZeroColumnsToggle()" class="dropdown-item" v-bind:class="{ disabled: !hasCoverageTermsWithZeroHits }">
+                                    <@message "search.coverage-without-zeros"/>
+                                  </a>
                                 </div>
                               </div>
                             </li>
