@@ -111,7 +111,7 @@
 
                       <div class="form-group mb-0">
                         <div class="input-group">
-                          <input type="text" class="form-control" placeholder="<@message "sets.add.modal.create-new"/>" v-model="newVariableSetName" @keyup.enter.prevent.stop="onAddQueryToSet()">
+                          <input type="text" class="form-control" placeholder="<@message "sets.add.modal.create-new"/>" v-model="newVariableSetName" @keyup.enter.prevent.stop="onAddToSet()">
                           <div class="input-group-append">
                             <button v-bind:class="{ disabled: !newVariableSetName }" class="btn btn-success" type="button" @click="onAddToSet()">
                               <i class="fa fa-plus"></i> <@message "global.add"/>
@@ -130,7 +130,7 @@
                 </div>
 
               <#elseif user??>
-                <button id="cart-add-variables" type="button" class="btn btn-sm btn-success ml-2" @click="onAddQueryToCart" title="<@message "sets.cart.add-to-cart"/>"><i class="fas fa-cart-plus"></i></button>
+                <button id="cart-add-variables" type="button" class="btn btn-sm btn-success ml-2" @click="onAddToCart" title="<@message "sets.cart.add-to-cart"/>"><i class="fas fa-cart-plus"></i></button>
               <#else>
                 <a href="${contextPath}/signin?redirect=${contextPath}/search" class="btn btn-sm btn-success ml-2" title="<@message "sets.cart.add-to-cart"/>"><i class="fas fa-cart-plus"></i></a>
               </#if>
