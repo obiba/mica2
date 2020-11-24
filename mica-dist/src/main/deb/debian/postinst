@@ -71,7 +71,7 @@ case "$1" in
       chown -R mica:adm /var/lib/mica2 /var/log/mica2 /etc/mica2 /tmp/mica2
       chmod -R 750      /var/lib/mica2 /var/log/mica2 /etc/mica2 /tmp/mica2
       chmod +x /usr/share/mica2/tools/shiro-hasher
-      find /etc/mica2 -type f | xargs chmod 640
+      find /etc/mica2 -type f -print0 | xargs -0 chmod 640
 
     ;;
 

@@ -68,7 +68,7 @@ case "$1" in
 
     chown -R mica:adm /var/lib/mica2 /var/log/mica2 /etc/mica2 /tmp/mica2
     chmod -R 750      /var/lib/mica2 /var/log/mica2 /etc/mica2/ /tmp/mica2
-    find /etc/mica2/ -type f | xargs chmod 640
+    find /etc/mica2/ -type f -print0 | xargs -0 chmod 640
 
     # if upgrading to 2.0, delete old log4j config
     if [ -f "/etc/mica2/log4j.properties" ]; then
