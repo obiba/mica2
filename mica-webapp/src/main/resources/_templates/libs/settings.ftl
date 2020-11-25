@@ -82,11 +82,23 @@
 <#assign mapName = "world"/>
 <!-- Filter and order the charts visible in the search page -->
 <#assign searchCharts = ["geographical-distribution-chart", "study-design-chart", "number-participants-chart", "bio-samples-chart", "study-start-year-chart"]/>
-<!-- Result tables (ID column ('name' or 'acronym') is always first) -->
+<!-- List tabs by type -->
+<#assign searchVariableListDisplay = (config.studyDatasetEnabled || config.harmonizationDatasetEnabled)/>
+<#assign searchDatasetListDisplay = searchVariableListDisplay/>
+<#assign searchStudyListDisplay = !config.singleStudyEnabled/>
+<#assign searchNetworkListDisplay = (config.networkEnabled && !config.singleNetworkEnabled)/>
+<!-- List tables by type (ID column ('name' or 'acronym') is always first) -->
 <#assign searchVariableColumns = ["label+description", "valueType", "annotations", "type", "study", "dataset"]/>
 <#assign searchDatasetColumns = ["name", "type", "networks", "studies", "variables"]/>
 <#assign searchStudyColumns = ["name", "type", "study-design", "data-sources-available", "participants", "networks", "individual", "harmonization"]/>
 <#assign searchNetworkColumns = ["name", "studies", "datasets", "variables"]/>
+<!-- Coverage tab -->
+<#assign searchCoverageDisplay = (config.studyDatasetEnabled || config.harmonizationDatasetEnabled)/>
+<!-- Graphics tab -->
+<#assign searchGraphicsDisplay = (config.networkEnabled && !config.singleStudyEnabled && searchCharts?has_content)/>
+<!-- List tab -->
+<#assign searchListDisplay = (searchCoverageDisplay || searchGraphicsDisplay)/>
+<!-- Search criteria display by type -->
 <#assign searchCriteriaMenus = ["variable", "dataset", "study", "network"]/>
 
 <!-- Data Access pages -->
