@@ -56,7 +56,12 @@
           <div class="card card-info card-outline">
             <div class="card-header">
               <h3 class="card-title"><@message "documents"/></h3>
-              <div class="float-right"><a href="#" class="btn btn-primary" data-toggle="modal" data-target="#modal-upload"><i class="fas fa-upload"></i> <@message "upload-document"/></a></div>
+              <#if !dar.archived>
+                <div class="float-right">
+                  <a href="#" class="btn btn-primary" data-toggle="modal" data-target="#modal-upload">
+                    <i class="fas fa-upload"></i> <@message "upload-document"/></a>
+                </div>
+              </#if>
             </div>
             <div class="card-body">
               <!-- Format Number of Bytes in SI Units -->

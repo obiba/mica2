@@ -4,10 +4,7 @@ import com.google.common.collect.Lists;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import org.obiba.mica.access.NoSuchDataAccessRequestException;
-import org.obiba.mica.access.domain.DataAccessAmendment;
-import org.obiba.mica.access.domain.DataAccessFeasibility;
-import org.obiba.mica.access.domain.DataAccessRequest;
-import org.obiba.mica.access.domain.DataAccessRequestTimeline;
+import org.obiba.mica.access.domain.*;
 import org.obiba.mica.access.notification.DataAccessRequestReportNotificationService;
 import org.obiba.mica.access.service.DataAccessAmendmentService;
 import org.obiba.mica.access.service.DataAccessFeasibilityService;
@@ -23,6 +20,7 @@ import org.obiba.mica.micaConfig.service.DataAccessAmendmentFormService;
 import org.obiba.mica.micaConfig.service.DataAccessFeasibilityFormService;
 import org.obiba.mica.micaConfig.service.DataAccessFormService;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
+import org.obiba.mica.security.Roles;
 import org.obiba.mica.user.UserProfileService;
 import org.obiba.mica.web.controller.domain.DataAccessConfig;
 import org.obiba.mica.web.controller.domain.FormStatusChangeEvent;
@@ -32,10 +30,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.inject.Inject;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Controller
@@ -77,6 +72,13 @@ public class DataAccessController extends BaseController {
 
       DataAccessRequestTimeline timeline = dataAccessRequestReportNotificationService.getReportsTimeline(getDataAccessRequest(params));
       params.put("reportTimeline", timeline);
+
+      List<String> permissions = getPermissions(params);
+      if (isArchivePermitted(getDataAccessRequest(params), timeline))
+        permissions.add("ARCHIVE");
+      else if (isUnArchivePermitted(getDataAccessRequest(params)))
+        permissions.add("UNARCHIVE");
+      params.put("permissions", permissions);
 
       return new ModelAndView("data-access", params);
     } else {
@@ -136,9 +138,9 @@ public class DataAccessController extends BaseController {
 
   @GetMapping("/data-access-feasibility-form/{id:.+}")
   public ModelAndView getFeasibilityForm(@PathVariable String id,
-                                       @RequestParam(value = "edit", defaultValue = "false") boolean edit,
-                                       @CookieValue(value = "NG_TRANSLATE_LANG_KEY", required = false, defaultValue = "en") String locale,
-                                       @RequestParam(value = "language", required = false) String language) {
+                                         @RequestParam(value = "edit", defaultValue = "false") boolean edit,
+                                         @CookieValue(value = "NG_TRANSLATE_LANG_KEY", required = false, defaultValue = "en") String locale,
+                                         @RequestParam(value = "language", required = false) String language) {
     Subject subject = SecurityUtils.getSubject();
     if (subject.isAuthenticated()) {
       Map<String, Object> params = newFeasibilityParameters(id);
@@ -243,8 +245,8 @@ public class DataAccessController extends BaseController {
     params.put("applicant", userProfileService.getProfileMap(dar.getApplicant(), true));
 
     List<String> permissions = Lists.newArrayList("VIEW", "EDIT", "DELETE").stream()
-      .filter(action -> isPermitted(action, id)).collect(Collectors.toList());
-    if (isPermitted("/data-access-request/" + id, "EDIT", "_status"))
+      .filter(action -> ("VIEW".equals(action) || !dar.isArchived()) && isPermitted(action, id)).collect(Collectors.toList());
+    if (!dar.isArchived() && isPermitted("/data-access-request/" + id, "EDIT", "_status"))
       permissions.add("EDIT_STATUS");
     params.put("permissions", permissions);
 
@@ -271,9 +273,10 @@ public class DataAccessController extends BaseController {
     Map<String, Object> params = newParameters(feasibility.getParentId());
     params.put("feasibility", feasibility);
 
+    DataAccessRequest dar = getDataAccessRequest(params);
     List<String> permissions = Lists.newArrayList("VIEW", "EDIT", "DELETE").stream()
-      .filter(action -> isFeasibilityPermitted(action,feasibility.getParentId(), id)).collect(Collectors.toList());
-    if (isPermitted("/data-access-request/" + feasibility.getParentId() + "/feasibility/" + id, "EDIT", "_status"))
+      .filter(action -> ("VIEW".equals(action) || !dar.isArchived()) && isFeasibilityPermitted(action, feasibility.getParentId(), id)).collect(Collectors.toList());
+    if (!dar.isArchived() && isPermitted("/data-access-request/" + feasibility.getParentId() + "/feasibility/" + id, "EDIT", "_status"))
       permissions.add("EDIT_STATUS");
     params.put("feasibilityPermissions", permissions);
 
@@ -285,9 +288,10 @@ public class DataAccessController extends BaseController {
     Map<String, Object> params = newParameters(amendment.getParentId());
     params.put("amendment", amendment);
 
+    DataAccessRequest dar = getDataAccessRequest(params);
     List<String> permissions = Lists.newArrayList("VIEW", "EDIT", "DELETE").stream()
-      .filter(action -> isAmendmentPermitted(action, amendment.getParentId(), id)).collect(Collectors.toList());
-    if (isPermitted("/data-access-request/" + amendment.getParentId() + "/amendment/" + id, "EDIT", "_status"))
+      .filter(action -> ("VIEW".equals(action) || !dar.isArchived()) && isAmendmentPermitted(action, amendment.getParentId(), id)).collect(Collectors.toList());
+    if (!dar.isArchived() && isPermitted("/data-access-request/" + amendment.getParentId() + "/amendment/" + id, "EDIT", "_status"))
       permissions.add("EDIT_STATUS");
     params.put("amendmentPermissions", permissions);
 
@@ -296,6 +300,18 @@ public class DataAccessController extends BaseController {
 
   private boolean isPermitted(String action, String id) {
     return isPermitted("/data-access-request", action, id);
+  }
+
+  private boolean isArchivePermitted(DataAccessRequest dar, DataAccessRequestTimeline timeline) {
+    if (dar.isArchived()
+      || !DataAccessEntityStatus.APPROVED.equals(dar.getStatus())
+      || (!SecurityUtils.getSubject().hasRole(Roles.MICA_DAO) && !SecurityUtils.getSubject().hasRole(Roles.MICA_ADMIN))
+      || !timeline.hasEndDate()) return false;
+    return new Date().after(timeline.getEndDate());
+  }
+
+  private boolean isUnArchivePermitted(DataAccessRequest dar) {
+    return dar.isArchived() && SecurityUtils.getSubject().hasRole(Roles.MICA_ADMIN);
   }
 
   private boolean isFeasibilityPermitted(String action, String id, String feasibilityId) {
@@ -308,6 +324,10 @@ public class DataAccessController extends BaseController {
 
   private DataAccessRequest getDataAccessRequest(Map<String, Object> params) {
     return (DataAccessRequest) params.get("dar");
+  }
+
+  private List<String> getPermissions(Map<String, Object> params) {
+    return (List<String>) params.get("permissions");
   }
 
   private DataAccessFeasibility getDataAccessFeasibility(Map<String, Object> params) {

@@ -36,6 +36,18 @@
                   <i class="fas fa-trash"></i> <@message "delete"/>
                 </button>
               </#if>
+              <#if dataAccessArchiveEnabled>
+                <#if permissions?seq_contains("ARCHIVE")>
+                  <button type="button" class="btn btn-warning ml-4" data-toggle="modal" data-target="#modal-archive">
+                    <i class="fas fa-box"></i> <@message "archive"/>
+                  </button>
+                </#if>
+                <#if permissions?seq_contains("UNARCHIVE")>
+                  <button type="button" class="btn btn-warning ml-4" data-toggle="modal" data-target="#modal-unarchive">
+                    <i class="fas fa-box-open"></i> <@message "unarchive"/>
+                  </button>
+                </#if>
+              </#if>
           </div>
           <div class="col-sm-6">
               <#include "libs/data-access-breadcrumb.ftl">
@@ -61,6 +73,58 @@
             <button type="button" class="btn btn-default" data-dismiss="modal"><@message "cancel"/></button>
             <button type="button" class="btn btn-primary" data-dismiss="modal"
                     onclick="DataAccessService.delete('${dar.id}')"><@message "confirm"/>
+            </button>
+          </div>
+        </div>
+        <!-- /.modal-content -->
+      </div>
+      <!-- /.modal-dialog -->
+    </div>
+    <!-- /.modal -->
+
+    <!-- Confirm archive modal -->
+    <div class="modal fade" id="modal-archive">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title"><@message "confirm-archive-title"/></h4>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <p><@message "confirm-archive-text"/></p>
+          </div>
+          <div class="modal-footer justify-content-between">
+            <button type="button" class="btn btn-default" data-dismiss="modal"><@message "cancel"/></button>
+            <button type="button" class="btn btn-primary" data-dismiss="modal"
+                    onclick="DataAccessService.archive('${dar.id}')"><@message "confirm"/>
+            </button>
+          </div>
+        </div>
+        <!-- /.modal-content -->
+      </div>
+      <!-- /.modal-dialog -->
+    </div>
+    <!-- /.modal -->
+
+    <!-- Confirm archive modal -->
+    <div class="modal fade" id="modal-unarchive">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title"><@message "confirm-unarchive-title"/></h4>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <p><@message "confirm-unarchive-text"/></p>
+          </div>
+          <div class="modal-footer justify-content-between">
+            <button type="button" class="btn btn-default" data-dismiss="modal"><@message "cancel"/></button>
+            <button type="button" class="btn btn-primary" data-dismiss="modal"
+                    onclick="DataAccessService.unarchive('${dar.id}')"><@message "confirm"/>
             </button>
           </div>
         </div>
@@ -348,7 +412,7 @@
               <div class="card-header">
                 <h3 class="card-title"><@message "feasibilities"/></h3>
                 <div class="float-right">
-                  <#if user.username == dar.applicant || isAdministrator>
+                  <#if !dar.archived && (user.username == dar.applicant || isAdministrator)>
                     <button type="button" class="btn btn-primary ml-4" data-toggle="modal" data-target="#modal-feasibility-add">
                       <i class="fas fa-plus"></i> <@message "new-feasibility"/>
                     </button>
@@ -389,7 +453,7 @@
               <div class="card-header">
                 <h3 class="card-title"><@message "amendments"/></h3>
                 <div class="float-right">
-                  <#if user.username == dar.applicant || isAdministrator>
+                  <#if !dar.archived && (user.username == dar.applicant || isAdministrator)>
                     <button type="button" class="btn btn-primary ml-4" data-toggle="modal" data-target="#modal-amendment-add">
                       <i class="fas fa-plus"></i> <@message "new-amendment"/>
                     </button>
@@ -433,10 +497,12 @@
               <div class="card-body">
                 <@userProfile profile=applicant/>
               </div>
-              <div class="card-footer">
-                <a href="/data-access-comments/${dar.id}"><@message "send-message"/> <i
-                          class="fas fa-arrow-circle-right"></i></a>
-              </div>
+              <#if !dar.archived>
+                <div class="card-footer">
+                  <a href="/data-access-comments/${dar.id}"><@message "send-message"/> <i
+                            class="fas fa-arrow-circle-right"></i></a>
+                </div>
+              </#if>
             </div>
           </#if>
 

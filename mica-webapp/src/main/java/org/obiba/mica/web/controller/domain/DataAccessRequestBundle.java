@@ -69,4 +69,8 @@ public class DataAccessRequestBundle {
   public int getPendingFeasibilities() {
     return pendingFeasibilities;
   }
+
+  public boolean isArchived() {
+    return request.isArchived();
+  }
 }

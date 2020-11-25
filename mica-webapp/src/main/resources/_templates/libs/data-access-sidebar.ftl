@@ -61,7 +61,7 @@
                   </a>
                 </li>
               </#list>
-              <#if user.username == dar.applicant || isAdministrator>
+              <#if !dar.archived && (user.username == dar.applicant || isAdministrator)>
                 <li class="nav-item">
                   <a class="nav-link" data-toggle="modal" data-target="#modal-feasibility-add">
                     <i class="fas fa-plus nav-icon"></i>
@@ -107,7 +107,7 @@
                   </a>
                 </li>
               </#list>
-              <#if user.username == dar.applicant || isAdministrator>
+              <#if !dar.archived && (user.username == dar.applicant || isAdministrator)>
                 <li class="nav-item">
                   <a class="nav-link" data-toggle="modal" data-target="#modal-amendment-add">
                     <i class="fas fa-plus nav-icon"></i>

@@ -99,8 +99,13 @@
           <div class="col-sm-12 col-lg-6">
             <div class="card card-info card-outline">
               <div class="card-header">
-                <h3 class="card-title">Action Log</h3>
-                <div class="float-right"><a href="#" class="btn btn-primary" data-toggle="modal" data-target="#modal-add"><i class="fas fa-plus"></i> <@message "add"/></a></div>
+                <h3 class="card-title"><@message "actions-log"/></h3>
+                <#if !dar.archived>
+                  <div class="float-right">
+                    <a href="#" class="btn btn-primary" data-toggle="modal" data-target="#modal-add">
+                      <i class="fas fa-plus"></i> <@message "add"/></a>
+                  </div>
+                </#if>
               </div>
               <div class="card-body">
                 <table id="actions" class="table table-bordered table-striped">

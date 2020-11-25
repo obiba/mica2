@@ -6,8 +6,10 @@ import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.JSONUtils;
 import org.obiba.mica.access.NoSuchDataAccessRequestException;
 import org.obiba.mica.access.domain.DataAccessFeasibility;
+import org.obiba.mica.access.domain.DataAccessRequest;
 import org.obiba.mica.access.service.DataAccessFeasibilityService;
 import org.obiba.mica.access.service.DataAccessEntityService;
+import org.obiba.mica.access.service.DataAccessRequestService;
 import org.obiba.mica.file.FileStoreService;
 import org.obiba.mica.micaConfig.service.DataAccessFormService;
 import org.obiba.mica.security.service.SubjectAclService;
@@ -32,9 +34,11 @@ public class DataAccessFeasibilityResource extends DataAccessEntityResource<Data
 
   private static final Logger log = getLogger(DataAccessFeasibilityResource.class);
 
-  private Dtos dtos;
+  private final Dtos dtos;
 
-  private DataAccessFeasibilityService dataAccessFeasibilityService;
+  private final DataAccessRequestService dataAccessRequestService;
+
+  private final DataAccessFeasibilityService dataAccessFeasibilityService;
 
   @Inject
   public DataAccessFeasibilityResource(
@@ -42,9 +46,11 @@ public class DataAccessFeasibilityResource extends DataAccessEntityResource<Data
     FileStoreService fileStoreService,
     DataAccessFormService dataAccessFormService,
     Dtos dtos,
+    DataAccessRequestService dataAccessRequestService,
     DataAccessFeasibilityService dataAccessFeasibilityService) {
     super(subjectAclService, fileStoreService, dataAccessFormService);
     this.dtos = dtos;
+    this.dataAccessRequestService = dataAccessRequestService;
     this.dataAccessFeasibilityService = dataAccessFeasibilityService;
   }
 
@@ -73,6 +79,9 @@ public class DataAccessFeasibilityResource extends DataAccessEntityResource<Data
   @Consumes("application/json")
   public Response setModel(String content) {
     subjectAclService.checkPermission(getResourcePath(), "EDIT", id);
+    DataAccessRequest request = dataAccessRequestService.findById(parentId);
+    if (request.isArchived()) throw new BadRequestException("Data access request is archived");
+
     DataAccessFeasibility feasibility = dataAccessFeasibilityService.findById(id);
     feasibility.setContent(content);
     dataAccessFeasibilityService.save(feasibility);
@@ -84,8 +93,11 @@ public class DataAccessFeasibilityResource extends DataAccessEntityResource<Data
   public Response update(Mica.DataAccessRequestDto dto) {
     subjectAclService.checkPermission(getResourcePath(), "EDIT", id);
     if(!id.equals(dto.getId())) throw new BadRequestException();
-    DataAccessFeasibility request = dtos.fromFeasibilityDto(dto);
-    dataAccessFeasibilityService.save(request);
+    DataAccessRequest request = dataAccessRequestService.findById(parentId);
+    if (request.isArchived()) throw new BadRequestException("Data access request is archived");
+
+    DataAccessFeasibility feasibility = dtos.fromFeasibilityDto(dto);
+    dataAccessFeasibilityService.save(feasibility);
     return Response.noContent().build();
   }
 
@@ -93,6 +105,8 @@ public class DataAccessFeasibilityResource extends DataAccessEntityResource<Data
   public Response delete() {
     String resource = getResourcePath();
     subjectAclService.checkPermission(resource, "DELETE", id);
+    DataAccessRequest request = dataAccessRequestService.findById(parentId);
+    if (request.isArchived()) throw new BadRequestException("Data access request is archived");
 
     try {
       dataAccessFeasibilityService.delete(id);
@@ -106,6 +120,8 @@ public class DataAccessFeasibilityResource extends DataAccessEntityResource<Data
   @PUT
   @Path("/_status")
   public Response updateStatus(@QueryParam("to") String status) {
+    DataAccessRequest request = dataAccessRequestService.findById(parentId);
+    if (request.isArchived()) throw new BadRequestException("Data access request is archived");
     return super.doUpdateStatus(id, status);
   }
 

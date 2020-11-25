@@ -37,6 +37,8 @@ public class DataAccessRequest extends DataAccessEntity implements AttachmentAwa
 
   private Date startDate;
 
+  private boolean archived;
+
   public boolean hasStartDate() {
     return startDate != null;
   }
@@ -68,6 +70,14 @@ public class DataAccessRequest extends DataAccessEntity implements AttachmentAwa
   public Date getStartDateOrDefault() {
     if (!DataAccessEntityStatus.APPROVED.equals(getStatus())) return null;
     return hasStartDate() ? getStartDate() : getDefaultStartDate();
+  }
+
+  public void setArchived(boolean archived) {
+    this.archived = archived;
+  }
+
+  public boolean isArchived() {
+    return archived;
   }
 
   //

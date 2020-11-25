@@ -124,27 +124,31 @@ class DataAccessRequestDtos {
         .addAllIntermediateDates(timeline.getIntermediateDates().stream().map(d -> ISO_8601.format(d)).collect(Collectors.toList())));
     }
 
+    builder.setArchived(request.isArchived());
+
     request.getAttachments().forEach(attachment -> builder.addAttachments(attachmentDtos.asDto(attachment)));
 
-    builder.addAllActions(addDataAccessEntityActions(request, "/data-access-request"));
+    if (!request.isArchived()) {
+      builder.addAllActions(addDataAccessEntityActions(request, "/data-access-request"));
 
-    if (subjectAclService
-      .isPermitted(Paths.get("/data-access-request", request.getId(), "/amendment").toString(), "ADD")) {
-      builder.addActions("ADD_AMENDMENTS");
-    }
+      if (subjectAclService
+        .isPermitted(Paths.get("/data-access-request", request.getId(), "/amendment").toString(), "ADD")) {
+        builder.addActions("ADD_AMENDMENTS");
+      }
 
-    boolean hasAdministrativeRole = SecurityUtils.getSubject().hasRole(Roles.MICA_DAO) || SecurityUtils.getSubject().hasRole(Roles.MICA_ADMIN);
+      boolean hasAdministrativeRole = SecurityUtils.getSubject().hasRole(Roles.MICA_DAO) || SecurityUtils.getSubject().hasRole(Roles.MICA_ADMIN);
 
-    if (hasAdministrativeRole || subjectAclService.isPermitted("/data-access-request/private-comment", "VIEW")) {
-      builder.addActions("VIEW_PRIVATE_COMMENTS");
-    }
+      if (hasAdministrativeRole || subjectAclService.isPermitted("/data-access-request/private-comment", "VIEW")) {
+        builder.addActions("VIEW_PRIVATE_COMMENTS");
+      }
 
-    if (hasAdministrativeRole || subjectAclService.isPermitted(Paths.get("/data-access-request", request.getId(), "_attachments").toString(), "EDIT")) {
-      builder.addActions("EDIT_ATTACHMENTS");
+      if (hasAdministrativeRole || subjectAclService.isPermitted(Paths.get("/data-access-request", request.getId(), "_attachments").toString(), "EDIT")) {
+        builder.addActions("EDIT_ATTACHMENTS");
 
-      if (hasAdministrativeRole) {
-        builder.addActions("DELETE_ATTACHMENTS");
-        builder.addActions("EDIT_ACTION_LOGS");
+        if (hasAdministrativeRole) {
+          builder.addActions("DELETE_ATTACHMENTS");
+          builder.addActions("EDIT_ACTION_LOGS");
+        }
       }
     }
 
@@ -182,6 +186,8 @@ class DataAccessRequestDtos {
         // ignore
       }
     }
+
+    request.setArchived(dto.getArchived());
 
     if (dto.getActionLogHistoryCount() > 0) {
       request.setActionLogHistory(

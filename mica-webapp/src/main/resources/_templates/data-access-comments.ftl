@@ -63,21 +63,23 @@
         <!-- /.col -->
       </div>
 
-      <div class="row">
-        <div class="col-sm-12 col-lg-6">
-          <div class="card timeline-block">
-            <div class="card-body p-0">
-              <textarea id="comment-add-write-text"></textarea>
-            </div><!-- /.card-body -->
-            <div class="card-footer">
-              <button id="send-comment" type="button" class="btn btn-secondary float-right">
-                <i class="fa fa-paper-plane"></i> <@message "send-comment"/>
-              </button>
-            </div><!-- /.card-footer -->
-          </div>
+      <#if !dar.archived>
+        <div class="row">
+          <div class="col-sm-12 col-lg-6">
+            <div class="card timeline-block">
+              <div class="card-body p-0">
+                <textarea id="comment-add-write-text"></textarea>
+              </div><!-- /.card-body -->
+              <div class="card-footer">
+                <button id="send-comment" type="button" class="btn btn-secondary float-right">
+                  <i class="fa fa-paper-plane"></i> <@message "send-comment"/>
+                </button>
+              </div><!-- /.card-footer -->
+            </div>
 
+          </div>
         </div>
-      </div>
+      </#if>
 
     </section>
     <!-- /.content -->

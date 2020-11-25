@@ -54,6 +54,34 @@ class DataAccessService {
       });
   }
 
+  static archive(id, type, aId) {
+    let url = '/ws/data-access-request/' + id + '/_archive';
+    let redirect = '/data-access/' + id;
+    axios.put(MicaService.normalizeUrl(url))
+      .then(() => {
+        //console.dir(response);
+        MicaService.redirect(MicaService.normalizeUrl(redirect));
+      })
+      .catch(response => {
+        console.dir(response);
+        MicaService.toastError('Archive failed.');
+      });
+  }
+
+  static unarchive(id, type, aId) {
+    let url = '/ws/data-access-request/' + id + '/_archive';
+    let redirect = '/data-access/' + id;
+    axios.delete(MicaService.normalizeUrl(url))
+      .then(() => {
+        //console.dir(response);
+        MicaService.redirect(MicaService.normalizeUrl(redirect));
+      })
+      .catch(response => {
+        console.dir(response);
+        MicaService.toastError('Unarchive failed.');
+      });
+  }
+
   static submit(id, type, aId) {
     let url = '/ws/data-access-request/' + id + '/_status?to=SUBMITTED';
     let redirect = '/data-access-form/' + id;
