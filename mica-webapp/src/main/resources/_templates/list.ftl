@@ -161,7 +161,7 @@
                     </div>
                   </div>
                 <#else>
-                  <a href="../ws/variables/set/${set.id}/documents/_opal" download class="btn btn-primary ml-2">
+                  <a href="../ws/variables/set/${set.id}/documents/_export" download class="btn btn-primary ml-2">
                     <i class="fas fa-download"></i> <@message "download"/>
                   </a>
                 </#if>
