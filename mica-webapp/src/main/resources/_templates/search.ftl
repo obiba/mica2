@@ -205,11 +205,13 @@
             <div class="card-header d-flex p-0">
               <h3 class="card-title p-3"><@message "results"/></h3>
               <ul id="search-tabs" class="nav nav-pills ml-auto p-2">
-                <li class="nav-item"><a id="lists-tab" class="nav-link active" href="#tab_lists" data-toggle="tab" @click="onSelectSearch()"><@message "lists"/></a></li>
-                <#if config.studyDatasetEnabled || config.harmonizationDatasetEnabled>
+                <#if searchListDisplay>
+                  <li class="nav-item"><a id="lists-tab" class="nav-link active" href="#tab_lists" data-toggle="tab" @click="onSelectSearch()"><@message "lists"/></a></li>
+                </#if>
+                <#if searchCoverageDisplay>
                   <li class="nav-item"><a id="coverage-tab" class="nav-link" href="#tab_coverage" data-toggle="tab" @click="onSelectCoverage()"><@message "coverage"/></a></li>
                 </#if>
-                <#if config.networkEnabled && !config.singleStudyEnabled && searchCharts?size gt 0>
+                <#if searchGraphicsDisplay>
                   <li class="nav-item"><a id="graphics-tab" class="nav-link" href="#tab_graphics" data-toggle="tab" @click="onSelectGraphics()"><@message "graphics"/></a></li>
                 </#if>
               </ul>
@@ -226,19 +228,44 @@
 
                   <div class="mt-3" v-cloak>
                     <ul class="nav nav-pills" id="results-tab" role="tablist">
-                      <@searchResultTabs/>
+                      <#if searchVariableListDisplay>
+                        <li class="nav-item">
+                          <a class="nav-link active" id="variables-tab" data-toggle="pill" href="#variables" role="tab" @click="onSelectResult('variables', 'variable')"
+                             aria-controls="variables" aria-selected="true"><@message "variables"/> <span id="variable-count" class="badge badge-light">{{counts.variables}}</span></a>
+                        </li>
+                      </#if>
+                      <#if searchDatasetListDisplay>
+                        <li class="nav-item">
+                          <a class="nav-link" id="datasets-tab" data-toggle="pill" href="#datasets" role="tab" @click="onSelectResult('datasets', 'dataset')"
+                             aria-controls="datasets" aria-selected="false"><@message "datasets"/> <span id="dataset-count" class="badge badge-light">{{counts.datasets}}</span></a>
+                        </li>
+                      </#if>
+                      <#if searchStudyListDisplay>
+                        <li class="nav-item">
+                          <a class="nav-link" id="studies-tab" data-toggle="pill" href="#studies" role="tab" @click="onSelectResult('studies', 'study')"
+                             aria-controls="studies" aria-selected="false"><@message "studies"/> <span id="study-count" class="badge badge-light">{{counts.studies}}</span></a>
+                        </li>
+                      </#if>
+                      <#if searchNetworkListDisplay>
+                        <li class="nav-item">
+                          <a class="nav-link" id="networks-tab" data-toggle="pill" href="#networks" role="tab" @click="onSelectResult('networks', 'network')"
+                             aria-controls="networks" aria-selected="false"><@message "networks"/> <span id="network-count" class="badge badge-light">{{counts.networks}}</span></a>
+                        </li>
+                      </#if>
                     </ul>
                   </div>
 
                   <div class="mt-3">
                     <div class="tab-content" id="results-tabContent">
-                      <#if config.studyDatasetEnabled || config.harmonizationDatasetEnabled>
+                      <#if searchVariableListDisplay>
                         <div class="tab-pane fade show active" id="variables" role="tabpanel" aria-labelledby="variables-tab">
                           <p class="text-muted"><@message "results-list-of-variables-text"/></p>
                           <div id="list-variables">
                             <variables-result></variables-result>
                           </div>
                         </div>
+                      </#if>
+                      <#if searchDatasetListDisplay>
                         <div class="tab-pane fade" id="datasets" role="tabpanel" aria-labelledby="datasets-tab">
                           <p class="text-muted"><@message "results-list-of-datasets-text"/></p>
                           <div id="list-datasets">
@@ -246,7 +273,7 @@
                           </div>
                         </div>
                       </#if>
-                      <#if !config.singleStudyEnabled>
+                      <#if searchStudyListDisplay>
                         <div class="tab-pane fade" id="studies" role="tabpanel" aria-labelledby="studies-tab">
                           <p class="text-muted"><@message "results-list-of-studies-text"/></p>
                           <div id="list-studies">
@@ -254,7 +281,7 @@
                           </div>
                         </div>
                       </#if>
-                      <#if config.networkEnabled && !config.singleNetworkEnabled>
+                      <#if searchNetworkListDisplay>
                         <div class="tab-pane fade" id="networks" role="tabpanel" aria-labelledby="networks-tab">
                           <p class="text-muted"><@message "results-list-of-networks-text"/></p>
                           <div id="list-networks">
@@ -267,7 +294,7 @@
                 </div>
                 <!-- /.tab-pane -->
 
-                <#if config.studyDatasetEnabled || config.harmonizationDatasetEnabled>
+                <#if searchCoverageDisplay>
 
                   <div class="tab-pane" id="tab_coverage">
 
@@ -332,7 +359,7 @@
                 </#if>
                 <!-- /.tab-pane -->
 
-                <#if config.networkEnabled && !config.singleStudyEnabled>
+                <#if searchGraphicsDisplay>
                   <div class="tab-pane" id="tab_graphics">
                     <p class="text-muted">
                       <@message "results-graphics-text"/>
