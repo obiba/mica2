@@ -1,3 +1,4 @@
+<!-- Default model macros -->
 <#include "../libs/search.ftl">
 
-<!-- Custom panel, that will be prepended at the top of the search page (introduction, tutorial, examples etc.) -->
+<!-- Custom model macros, to redefine some default model macros -->

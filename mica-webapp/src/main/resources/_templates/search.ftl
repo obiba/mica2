@@ -94,7 +94,7 @@
     <!-- Main content -->
     <section class="content">
 
-      <#include "models/search.ftl">
+      <@searchInfo/>
 
       <!-- Query box -->
       <div id="query-builder" class="card card-info card-outline">
