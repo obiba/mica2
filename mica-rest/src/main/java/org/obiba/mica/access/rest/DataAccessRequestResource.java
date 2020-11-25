@@ -20,11 +20,9 @@ import org.joda.time.DateTime;
 import org.obiba.mica.JSONUtils;
 import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.access.NoSuchDataAccessRequestException;
-import org.obiba.mica.access.domain.ActionLog;
-import org.obiba.mica.access.domain.DataAccessEntityStatus;
-import org.obiba.mica.access.domain.DataAccessFeasibility;
-import org.obiba.mica.access.domain.DataAccessRequest;
+import org.obiba.mica.access.domain.*;
 import org.obiba.mica.access.notification.DataAccessRequestCommentMailNotification;
+import org.obiba.mica.access.notification.DataAccessRequestReportNotificationService;
 import org.obiba.mica.access.service.DataAccessEntityService;
 import org.obiba.mica.access.service.DataAccessRequestService;
 import org.obiba.mica.access.service.DataAccessRequestUtilService;
@@ -54,6 +52,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.text.ParseException;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -73,6 +72,8 @@ public class DataAccessRequestResource extends DataAccessEntityResource<DataAcce
 
   private DataAccessRequestCommentMailNotification commentMailNotification;
 
+  private DataAccessRequestReportNotificationService reportNotificationService;
+
   private CommentsService commentsService;
 
   private TempFileService tempFileService;
@@ -88,6 +89,7 @@ public class DataAccessRequestResource extends DataAccessEntityResource<DataAcce
   public DataAccessRequestResource(
     DataAccessRequestService dataAccessRequestService,
     DataAccessRequestCommentMailNotification commentMailNotification,
+    DataAccessRequestReportNotificationService reportNotificationService,
     CommentsService commentsService,
     ApplicationContext applicationContext,
     EventBus eventBus,
@@ -99,6 +101,7 @@ public class DataAccessRequestResource extends DataAccessEntityResource<DataAcce
     super(subjectAclService, fileStoreService, dataAccessFormService);
     this.dataAccessRequestService = dataAccessRequestService;
     this.commentMailNotification = commentMailNotification;
+    this.reportNotificationService = reportNotificationService;
     this.commentsService = commentsService;
     this.tempFileService = tempFileService;
     this.applicationContext = applicationContext;
@@ -128,6 +131,7 @@ public class DataAccessRequestResource extends DataAccessEntityResource<DataAcce
   public Response setModel(@PathParam("id") String id, String content) {
     subjectAclService.checkPermission("/data-access-request", "EDIT", id);
     DataAccessRequest request = dataAccessRequestService.findById(id);
+    if (request.isArchived()) throw new BadRequestException("Data access request is archived");
     request.setContent(content);
     dataAccessRequestService.save(request);
     return Response.ok().build();
@@ -138,6 +142,9 @@ public class DataAccessRequestResource extends DataAccessEntityResource<DataAcce
   public Response put(@PathParam("id") String id, Mica.DataAccessRequestDto dto) {
     subjectAclService.checkPermission("/data-access-request", "EDIT", id);
     if (!id.equals(dto.getId())) throw new BadRequestException();
+    DataAccessRequest originalRequest = dataAccessRequestService.findById(id);
+    if (originalRequest.isArchived()) throw new BadRequestException("Data access request is archived");
+
     DataAccessRequest request = dtos.fromDto(dto);
     dataAccessRequestService.save(request);
     return Response.noContent().build();
@@ -156,6 +163,39 @@ public class DataAccessRequestResource extends DataAccessEntityResource<DataAcce
   }
 
   @PUT
+  @Path("/_archive")
+  public Response archive(@PathParam("id") String id) {
+    if (!SecurityUtils.getSubject().hasRole(Roles.MICA_DAO) && !SecurityUtils.getSubject().hasRole(Roles.MICA_ADMIN)) {
+      throw new AuthorizationException();
+    }
+    DataAccessRequest request = dataAccessRequestService.findById(id);
+    if (DataAccessEntityStatus.APPROVED.equals(request.getStatus())) {
+      DataAccessRequestTimeline timeline = reportNotificationService.getReportsTimeline(request);
+      if (!timeline.hasEndDate())
+        throw new BadRequestException("Cannot archive: no data access request end date is defined");
+      if (new Date().before(timeline.getEndDate()))
+        throw new BadRequestException("Cannot archive: data access request end date not reached");
+      request.setArchived(true);
+      dataAccessRequestService.save(request);
+    } else {
+      throw new BadRequestException("Cannot archive: data access request must have been approved before being archived");
+    }
+    return Response.noContent().build();
+  }
+
+  @DELETE
+  @Path("/_archive")
+  public Response unarchive(@PathParam("id") String id) {
+    if (!SecurityUtils.getSubject().hasRole(Roles.MICA_ADMIN)) {
+      throw new AuthorizationException();
+    }
+    DataAccessRequest request = dataAccessRequestService.findById(id);
+    request.setArchived(false);
+    dataAccessRequestService.save(request);
+    return Response.noContent().build();
+  }
+
+  @PUT
   @Path("/_start-date")
   @Timed
   public Response updateStartDate(@PathParam("id") String id, @QueryParam("date") String date) {
@@ -163,6 +203,7 @@ public class DataAccessRequestResource extends DataAccessEntityResource<DataAcce
       throw new AuthorizationException();
     }
     DataAccessRequest request = dataAccessRequestService.findById(id);
+    if (request.isArchived()) throw new BadRequestException("Data access request is archived");
     if (Strings.isNullOrEmpty(date))
       request.setStartDate(null);
     else {
@@ -184,6 +225,9 @@ public class DataAccessRequestResource extends DataAccessEntityResource<DataAcce
       throw new AuthorizationException();
     }
     if (!id.equals(dto.getId())) throw new BadRequestException();
+    DataAccessRequest originalRequest = dataAccessRequestService.findById(id);
+    if (originalRequest.isArchived()) throw new BadRequestException("Data access request is archived");
+
     DataAccessRequest request = dtos.fromDto(dto);
     dataAccessRequestService.saveActionsLogs(request);
     return Response.noContent().build();
@@ -197,6 +241,7 @@ public class DataAccessRequestResource extends DataAccessEntityResource<DataAcce
       throw new AuthorizationException();
     }
     DataAccessRequest request = dataAccessRequestService.findById(id);
+    if (request.isArchived()) throw new BadRequestException("Data access request is archived");
     if (Strings.isNullOrEmpty(action.get("text"))) return Response.status(Response.Status.BAD_REQUEST).build();
     try {
       request.getActionLogHistory().add(ActionLog.newBuilder().action(action.get("text"))
@@ -216,6 +261,9 @@ public class DataAccessRequestResource extends DataAccessEntityResource<DataAcce
   public Response updateAttachments(@PathParam("id") String id, Mica.DataAccessRequestDto dto) {
     subjectAclService.checkPermission("/data-access-request", "VIEW", id);
     if (!id.equals(dto.getId())) throw new BadRequestException();
+    DataAccessRequest originalRequest = dataAccessRequestService.findById(id);
+    if (originalRequest.isArchived()) throw new BadRequestException("Data access request is archived");
+
     DataAccessRequest request = dtos.fromDto(dto);
     dataAccessRequestService.saveAttachments(request);
     return Response.noContent().build();
@@ -241,6 +289,8 @@ public class DataAccessRequestResource extends DataAccessEntityResource<DataAcce
   public Response addAttachment(@PathParam("id") String id, @PathParam("attachmentId") String attachmentId) throws IOException {
     subjectAclService.checkPermission("/data-access-request", "VIEW", id);
     DataAccessRequest request = dataAccessRequestService.findById(id);
+    if (request.isArchived()) throw new BadRequestException("Data access request is archived");
+
     TempFile tempFile = tempFileService.getMetadata(attachmentId);
 
     Attachment attachment = new Attachment();
@@ -262,6 +312,8 @@ public class DataAccessRequestResource extends DataAccessEntityResource<DataAcce
   public Response deleteAttachment(@PathParam("id") String id, @PathParam("attachmentId") String attachmentId) throws IOException {
     subjectAclService.checkPermission("/data-access-request", "VIEW", id);
     DataAccessRequest request = dataAccessRequestService.findById(id);
+    if (request.isArchived()) throw new BadRequestException("Data access request is archived");
+
     request.setAttachments(request.getAttachments().stream().filter(a -> !a.getId().equals(attachmentId)).collect(Collectors.toList()));
     dataAccessRequestService.saveAttachments(request);
     return Response.noContent().build();
@@ -309,7 +361,9 @@ public class DataAccessRequestResource extends DataAccessEntityResource<DataAcce
   @Path("/comments")
   public Response createComment(@PathParam("id") String id, String message, @QueryParam("admin") @DefaultValue("false") boolean admin) {
     subjectAclService.checkPermission("/data-access-request", "VIEW", id);
-    dataAccessRequestService.findById(id);
+    DataAccessRequest request = dataAccessRequestService.findById(id);
+    if (request.isArchived()) throw new BadRequestException("Data access request is archived");
+
     Comment.Builder buildComment = Comment.newBuilder() //
       .createdBy(SecurityUtils.getSubject().getPrincipal().toString()) //
       .message(message) //
@@ -349,7 +403,9 @@ public class DataAccessRequestResource extends DataAccessEntityResource<DataAcce
   @Path("/comment/{commentId}")
   public Response updateComment(@PathParam("id") String id, @PathParam("commentId") String commentId, String message) {
     subjectAclService.checkPermission("/data-access-request/" + id + "/comment", "EDIT", commentId);
-    dataAccessRequestService.findById(id);
+    DataAccessRequest request = dataAccessRequestService.findById(id);
+    if (request.isArchived()) throw new BadRequestException("Data access request is archived");
+
     commentsService.save(Comment.newBuilder(getCommentIfNotRepliedTo(id, commentId)) //
       .message(message) //
       .modifiedBy(SecurityUtils.getSubject().getPrincipal().toString()) //
@@ -362,8 +418,9 @@ public class DataAccessRequestResource extends DataAccessEntityResource<DataAcce
   @Path("/comment/{commentId}")
   public Response deleteComment(@PathParam("id") String id, @PathParam("commentId") String commentId) {
     subjectAclService.checkPermission("/data-access-request/" + id + "/comment", "DELETE", commentId);
+    DataAccessRequest request = dataAccessRequestService.findById(id);
+    if (request.isArchived()) throw new BadRequestException("Data access request is archived");
 
-    dataAccessRequestService.findById(id);
     commentsService.delete(getCommentIfNotRepliedTo(id, commentId));
     eventBus.post(new ResourceDeletedEvent("/data-access-request/" + id + "/comment", commentId));
 
@@ -373,6 +430,8 @@ public class DataAccessRequestResource extends DataAccessEntityResource<DataAcce
   @PUT
   @Path("/_status")
   public Response updateStatus(@PathParam("id") String id, @QueryParam("to") String status) {
+    DataAccessRequest request = dataAccessRequestService.findById(id);
+    if (request.isArchived()) throw new BadRequestException("Data access request is archived");
     return super.doUpdateStatus(id, status);
   }
 

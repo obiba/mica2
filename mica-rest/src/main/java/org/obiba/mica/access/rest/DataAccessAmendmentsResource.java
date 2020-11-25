@@ -5,10 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.QueryParam;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
@@ -17,7 +14,9 @@ import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.access.domain.DataAccessAmendment;
 import org.obiba.mica.access.domain.DataAccessEntityStatus;
+import org.obiba.mica.access.domain.DataAccessRequest;
 import org.obiba.mica.access.service.DataAccessAmendmentService;
+import org.obiba.mica.access.service.DataAccessRequestService;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
@@ -37,6 +36,9 @@ public class DataAccessAmendmentsResource {
 
   @Inject
   private SubjectAclService subjectAclService;
+
+  @Inject
+  private DataAccessRequestService dataAccessRequestService;
 
   @Inject
   private DataAccessAmendmentService dataAccessAmendmentService;
@@ -61,6 +63,8 @@ public class DataAccessAmendmentsResource {
   private Response saveNew(DataAccessAmendment amendment, UriInfo uriInfo) {
     String resource = String.format("/data-access-request/%s/amendment", parentId);
     subjectAclService.checkPermission(resource, "ADD");
+    DataAccessRequest request = dataAccessRequestService.findById(parentId);
+    if (request.isArchived()) throw new BadRequestException("Data access request is archived");
 
     // force applicant and make sure it is a new request
     String applicant = SecurityUtils.getSubject().getPrincipal().toString();

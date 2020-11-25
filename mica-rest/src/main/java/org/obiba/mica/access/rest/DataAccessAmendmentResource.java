@@ -7,8 +7,10 @@ import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.JSONUtils;
 import org.obiba.mica.access.NoSuchDataAccessRequestException;
 import org.obiba.mica.access.domain.DataAccessAmendment;
+import org.obiba.mica.access.domain.DataAccessRequest;
 import org.obiba.mica.access.service.DataAccessAmendmentService;
 import org.obiba.mica.access.service.DataAccessEntityService;
+import org.obiba.mica.access.service.DataAccessRequestService;
 import org.obiba.mica.file.FileStoreService;
 import org.obiba.mica.micaConfig.service.DataAccessFormService;
 import org.obiba.mica.security.service.SubjectAclService;
@@ -32,9 +34,11 @@ public class DataAccessAmendmentResource extends DataAccessEntityResource<DataAc
 
   private static final Logger log = getLogger(DataAccessAmendmentResource.class);
 
-  private Dtos dtos;
+  private final Dtos dtos;
 
-  private DataAccessAmendmentService dataAccessAmendmentService;
+  private final DataAccessRequestService dataAccessRequestService;
+
+  private final DataAccessAmendmentService dataAccessAmendmentService;
 
   @Inject
   public DataAccessAmendmentResource(
@@ -42,9 +46,11 @@ public class DataAccessAmendmentResource extends DataAccessEntityResource<DataAc
     FileStoreService fileStoreService,
     DataAccessFormService dataAccessFormService,
     Dtos dtos,
+    DataAccessRequestService dataAccessRequestService,
     DataAccessAmendmentService dataAccessAmendmentService) {
     super(subjectAclService, fileStoreService, dataAccessFormService);
     this.dtos = dtos;
+    this.dataAccessRequestService = dataAccessRequestService;
     this.dataAccessAmendmentService = dataAccessAmendmentService;
   }
 
@@ -73,6 +79,9 @@ public class DataAccessAmendmentResource extends DataAccessEntityResource<DataAc
   @Consumes("application/json")
   public Response setModel(String content) {
     subjectAclService.checkPermission(getResourcePath(), "EDIT", id);
+    DataAccessRequest request = dataAccessRequestService.findById(parentId);
+    if (request.isArchived()) throw new BadRequestException("Data access request is archived");
+
     DataAccessAmendment amendment = dataAccessAmendmentService.findById(id);
     amendment.setContent(content);
     dataAccessAmendmentService.save(amendment);
@@ -84,8 +93,11 @@ public class DataAccessAmendmentResource extends DataAccessEntityResource<DataAc
   public Response update(Mica.DataAccessRequestDto dto) {
     subjectAclService.checkPermission(getResourcePath(), "EDIT", id);
     if(!id.equals(dto.getId())) throw new BadRequestException();
-    DataAccessAmendment request = dtos.fromAmendmentDto(dto);
-    dataAccessAmendmentService.save(request);
+    DataAccessAmendment amendment = dtos.fromAmendmentDto(dto);
+    DataAccessRequest request = dataAccessRequestService.findById(parentId);
+    if (request.isArchived()) throw new BadRequestException("Data access request is archived");
+
+    dataAccessAmendmentService.save(amendment);
     return Response.noContent().build();
   }
 
@@ -93,6 +105,8 @@ public class DataAccessAmendmentResource extends DataAccessEntityResource<DataAc
   public Response delete() {
     String resource = getResourcePath();
     subjectAclService.checkPermission(resource, "DELETE", id);
+    DataAccessRequest request = dataAccessRequestService.findById(parentId);
+    if (request.isArchived()) throw new BadRequestException("Data access request is archived");
 
     try {
       dataAccessAmendmentService.delete(id);
@@ -106,6 +120,8 @@ public class DataAccessAmendmentResource extends DataAccessEntityResource<DataAc
   @PUT
   @Path("/_status")
   public Response updateStatus(@QueryParam("to") String status) {
+    DataAccessRequest request = dataAccessRequestService.findById(parentId);
+    if (request.isArchived()) throw new BadRequestException("Data access request is archived");
     return super.doUpdateStatus(id, status);
   }
 

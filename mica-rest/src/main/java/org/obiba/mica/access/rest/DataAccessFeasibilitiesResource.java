@@ -5,7 +5,9 @@ import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.access.domain.DataAccessFeasibility;
 import org.obiba.mica.access.domain.DataAccessEntityStatus;
+import org.obiba.mica.access.domain.DataAccessRequest;
 import org.obiba.mica.access.service.DataAccessFeasibilityService;
+import org.obiba.mica.access.service.DataAccessRequestService;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
@@ -14,10 +16,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.QueryParam;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
@@ -35,6 +34,9 @@ public class DataAccessFeasibilitiesResource {
 
   @Inject
   private SubjectAclService subjectAclService;
+
+  @Inject
+  private DataAccessRequestService dataAccessRequestService;
 
   @Inject
   private DataAccessFeasibilityService dataAccessFeasibilityService;
@@ -59,6 +61,8 @@ public class DataAccessFeasibilitiesResource {
   private Response saveNew(DataAccessFeasibility feasibility, UriInfo uriInfo) {
     String resource = String.format("/data-access-request/%s/feasibilities", parentId);
     subjectAclService.checkPermission(resource, "ADD");
+    DataAccessRequest request = dataAccessRequestService.findById(parentId);
+    if (request.isArchived()) throw new BadRequestException("Data access request is archived");
 
     // force applicant and make sure it is a new request
     String applicant = SecurityUtils.getSubject().getPrincipal().toString();

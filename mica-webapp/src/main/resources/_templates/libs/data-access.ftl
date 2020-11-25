@@ -43,7 +43,7 @@
           <#else>
             <p><@message "start-date-dao-text"/></p>
             <div>
-              <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modal-start-date">
+              <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modal-start-date" <#if dar.archived>disabled</#if>>
                 <i class="fas fa-clock"></i> <@message "start-date"/>
               </button>
             </div>

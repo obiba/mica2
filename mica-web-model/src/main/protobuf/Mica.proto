@@ -805,6 +805,7 @@ message DataAccessRequestDto {
   optional AmendmentsSummaryDto amendmentsSummary = 14;
   optional string startDate = 15;
   optional TimelineDto reportsTimeline = 16;
+  required bool archived = 17 [default = false];
 
   extensions 1000 to max;
 }

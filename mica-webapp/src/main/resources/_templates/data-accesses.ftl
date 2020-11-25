@@ -82,6 +82,9 @@
                       <th><@message "amendments-pending-total"/></th>
                     </#if>
                     <th><@message "status"/></th>
+                    <#if dataAccessArchiveEnabled>
+                      <th><@message "archived"/></th>
+                    </#if>
                   </tr>
                   </thead>
                   <tbody>
@@ -103,6 +106,9 @@
                         <td>${dar.pendingAmendments}/${dar.totalAmendments}</td>
                       </#if>
                       <td><i class="fas fa-circle text-${statusColor(dar.status.toString())}"></i> <@message dar.status.toString()/></td>
+                      <#if dataAccessArchiveEnabled>
+                        <td><#if dar.archived><i class="fas fa-check"></i></#if></td>
+                      </#if>
                     </tr>
                   </#list>
                   </tbody>
