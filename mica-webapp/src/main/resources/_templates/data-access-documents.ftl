@@ -79,7 +79,9 @@
                   <th><@message "name"/></th>
                   <th><@message "upload-date"/></th>
                   <th><@message "size"/></th>
-                  <th></th>
+                  <#if !dar.archived>
+                    <th></th>
+                  </#if>
                 </tr>
                 </thead>
                 <tbody>
@@ -88,7 +90,11 @@
                     <td><a href="${contextPath}/ws/data-access-request/${dar.id}/attachments/${attachment.id}/_download" download="${attachment.name}">${attachment.name}</a></td>
                     <td data-sort="${attachment.createdDate.toString(datetimeFormat)}" class="moment-datetime">${attachment.createdDate.toString(datetimeFormat)}</td>
                     <td>${si(attachment.size)}</td>
-                    <td><a href="#" onclick="DataAccessService.deleteAttachment('${dar.id}','${attachment.id}')"><i class="fas fa-trash text-danger"></i></a></td>
+                    <#if !dar.archived>
+                      <td>
+                        <a href="#" onclick="DataAccessService.deleteAttachment('${dar.id}','${attachment.id}')"><i class="fas fa-trash text-danger"></i></a>
+                      </td>
+                    </#if>
                   </tr>
                 </#list>
                 </tbody>

@@ -24,7 +24,7 @@
           </#if>
 
           <div class="timeline-item">
-            <#if !comment?has_next && (user.username == comment.createdBy || isAdministrator)>
+            <#if !dar.archived && !comment?has_next && (user.username == comment.createdBy || isAdministrator)>
               <a class="time text-danger" onclick="DataAccessService.deleteComment('${dar.id}', '${comment.id}', ${isPrivate})"><i class="fa fa-trash"></i></a>
             </#if>
             <span class="time"><i class="fas fa-clock"></i> <span
