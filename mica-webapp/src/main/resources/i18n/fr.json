@@ -1155,7 +1155,7 @@
     "maximum-number-attained": "Votre limite de {{arg0}} <a href='{{arg1}}' target='_self'><strong><u>listes</u></strong></a> a été atteinte.",
     "cart": {
       "title": "Panier",
-      "help": "Utiliser le panier pour constituer une liste de variables. Cette liste de variables peut ensuite être analysé ou vu dans la page de recherche.",
+      "help": "Utiliser le panier pour constituer une liste de variables. Cette liste de variables peut ensuite être analysée ou vu dans la page de recherche.",
       "no-variables": "Le panier de variables est vide.",
       "no-variable-added": "Aucune variable n'a été ajoutée au panier.",
       "variables-added": "<a href='{{arg0}}' target='_self'><u>{{arg1}} nouvelle(s) variable(s) ont été ajoutées au panier.</u></a>",
