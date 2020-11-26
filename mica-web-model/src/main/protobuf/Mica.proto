@@ -451,6 +451,9 @@ message MicaConfigDto {
   optional bool isProjectsCountEnabled = 56;
   optional bool isDataAccessRequestsCountEnabled = 57;
   optional bool isContingencyEnabled = 58;
+  optional bool isContactNotificationsEnabled = 59;
+  optional string contactNotificationsSubject = 60;
+  repeated string contactGroups = 61;
 }
 
 message PublicMicaConfigDto {

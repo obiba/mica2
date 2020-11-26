@@ -534,6 +534,14 @@ mica.config
     function ($scope, $resource, $window, $location, $log, MicaConfigResource, FormServerValidation) {
       $scope.micaConfig = MicaConfigResource.get();
 
+      $scope.micaConfig.$promise.then(function(config) {
+        $scope.contactGroups = config.contactGroups.join(' ');
+      });
+
+      $scope.contactGroupsUpdated = function() {
+        $scope.micaConfig.contactGroups = $scope.contactGroups.split(' ').filter(function(g) { return g.length>0; });
+      };
+
       $scope.save = function () {
         $scope.micaConfig.$save(
           function () {

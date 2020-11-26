@@ -20,8 +20,8 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.obiba.mica.core.service.AgateRestService;
 import org.obiba.mica.core.service.MailService;
+import org.obiba.mica.micaConfig.domain.MicaConfig;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
-import org.obiba.mica.security.Roles;
 import org.obiba.shiro.realm.ObibaRealm;
 import org.obiba.shiro.realm.ObibaRealm.Subject;
 import org.slf4j.Logger;
@@ -30,21 +30,16 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
-import org.springframework.util.ErrorHandler;
 import org.springframework.web.client.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -57,7 +52,7 @@ public class UserProfileService extends AgateRestService {
 
   private static final DateTimeFormatter ISO_8601 = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
 
-  private static final String DEFAULT_NOTIFICATION_SUBJECT = "[${organization}] Contact";
+  private static final String DEFAULT_CONTACT_NOTIFICATION_SUBJECT = "[${organization}] Contact";
 
   @Inject
   private MicaConfigService micaConfigService;
@@ -230,8 +225,11 @@ public class UserProfileService extends AgateRestService {
   }
 
   public void sendContactEmail(String name, String email, String subject, String message, String reCaptcha) {
+    MicaConfig config = micaConfigService.getConfig();
+    if (!config.isContactNotificationsEnabled()) return;
+
     Map<String, String> ctx = Maps.newHashMap();
-    ctx.put("organization", micaConfigService.getConfig().getName());
+    ctx.put("organization", config.getName());
     ctx.put("publicUrl", micaConfigService.getPublicUrl());
     ctx.put("contactName", name);
     ctx.put("contactEmail", email);
@@ -239,9 +237,11 @@ public class UserProfileService extends AgateRestService {
     ctx.put("contactMessage", message);
     ctx.put("reCaptcha", reCaptcha);
 
-    mailService.sendEmailToGroups(mailService.getSubject(DEFAULT_NOTIFICATION_SUBJECT, ctx, DEFAULT_NOTIFICATION_SUBJECT),
-      "contactUs", ctx, Roles.MICA_ADMIN, Roles.MICA_DAO);
-
+    List<String> contactGroups = config.getContactGroups();
+    String[] groups = new String[contactGroups.size()];
+    contactGroups.toArray(groups);
+    mailService.sendEmailToGroups(mailService.getSubject(config.getContactNotificationsSubject(), ctx, DEFAULT_CONTACT_NOTIFICATION_SUBJECT),
+      "contactUs", ctx, groups);
   }
 
   //

@@ -134,6 +134,10 @@ class MicaConfigDtos {
     builder.setIsProjectNotificationsEnabled(config.isProjectNotificationsEnabled());
     if(config.getProjectNotificationsSubject() != null) builder.setProjectNotificationsSubject(config.getProjectNotificationsSubject());
 
+    builder.setIsContactNotificationsEnabled(config.isContactNotificationsEnabled());
+    if(config.getContactNotificationsSubject() != null) builder.setContactNotificationsSubject(config.getContactNotificationsSubject());
+    config.getContactGroups().forEach(builder::addContactGroups);
+
     builder.setIsRepositoryEnabled(config.isRepositoryEnabled());
     builder.setIsDataAccessEnabled(config.isDataAccessEnabled());
     builder.setIsProjectEnabled(config.isProjectEnabled());
@@ -218,6 +222,9 @@ class MicaConfigDtos {
     if(dto.hasHarmonizedDatasetNotificationsSubject()) config.setHarmonizationDatasetNotificationsSubject(dto.getHarmonizedDatasetNotificationsSubject());
     config.setProjectNotificationsEnabled(dto.getIsProjectNotificationsEnabled());
     if(dto.hasProjectNotificationsSubject()) config.setProjectNotificationsSubject(dto.getProjectNotificationsSubject());
+    config.setContactNotificationsEnabled(dto.getIsContactNotificationsEnabled());
+    if(dto.hasContactNotificationsSubject()) config.setContactNotificationsSubject(dto.getContactNotificationsSubject());
+    config.setContactGroups(dto.getContactGroupsList());
 
     if (dto.hasIsRepositoryEnabled()) config.setRepositoryEnabled(dto.getIsRepositoryEnabled());
     if (dto.hasIsDataAccessEnabled()) config.setDataAccessEnabled(dto.getIsDataAccessEnabled());
