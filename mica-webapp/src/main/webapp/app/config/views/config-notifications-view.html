@@ -98,6 +98,29 @@
             <i class="fa fa-square-o" ng-hide="micaConfig.isProjectNotificationsEnabled"></i>
           </td>
         </tr>
+        <tr>
+          <td>
+            <span translate>config.notifications.contact</span>
+            <span class="help-block" translate>config.notifications.contact-help</span>
+          </td>
+          <td>
+            <i class="fa fa-check-square-o" ng-hide="!micaConfig.isContactNotificationsEnabled"></i>
+            <i class="fa fa-square-o" ng-hide="micaConfig.isContactNotificationsEnabled"></i>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <span translate>config.notifications.contact-groups</span>
+            <span class="help-block" translate>config.notifications.contact-groups-help</span>
+          </td>
+          <td>
+            <ul class="list-inline">
+              <li ng-repeat="group in micaConfig.contactGroups">
+                <span class="badge">{{group}}</span>
+              </li>
+            </ul>
+          </td>
+        </tr>
         </tbody>
       </table>
     </div>

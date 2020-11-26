@@ -20,6 +20,7 @@ import org.hibernate.validator.constraints.NotEmpty;
 import org.obiba.mica.core.domain.AbstractAuditableDocument;
 import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.core.domain.Membership;
+import org.obiba.mica.security.Roles;
 import org.obiba.runtime.Version;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -106,6 +107,12 @@ public class MicaConfig extends AbstractAuditableDocument {
 
   private String projectNotificationsSubject;
 
+  private String contactNotificationsSubject;
+
+  private boolean isContactNotificationsEnabled = true;
+
+  private List<String> contactGroups = Lists.newArrayList(Roles.MICA_ADMIN, Roles.MICA_DAO);
+
   private boolean isRepositoryEnabled = true;
 
   private boolean isDataAccessEnabled = true;
@@ -154,7 +161,7 @@ public class MicaConfig extends AbstractAuditableDocument {
 
   private boolean signupEnabled = true;
 
-  private List<String> signupGroups = Lists.newArrayList("mica-user");
+  private List<String> signupGroups = Lists.newArrayList(Roles.MICA_USER);
 
   private boolean signupWithPassword = true;
 
@@ -283,7 +290,9 @@ public class MicaConfig extends AbstractAuditableDocument {
   }
 
   public void setSignupGroups(List<String> signupGroups) {
-    this.signupGroups = signupGroups == null || signupGroups.isEmpty() ? Lists.newArrayList("mica-user") : Lists.newArrayList(Sets.newLinkedHashSet(signupGroups));
+    this.signupGroups = signupGroups == null || signupGroups.isEmpty() ?
+      Lists.newArrayList(Roles.MICA_USER) :
+      Lists.newArrayList(Sets.newLinkedHashSet(signupGroups));
   }
 
   public List<String> getSignupGroups() {
@@ -416,6 +425,32 @@ public class MicaConfig extends AbstractAuditableDocument {
 
   public void setProjectNotificationsSubject(String projectNotificationsSubject) {
     this.projectNotificationsSubject = projectNotificationsSubject;
+  }
+
+  public boolean isContactNotificationsEnabled() {
+    return isContactNotificationsEnabled;
+  }
+
+  public void setContactNotificationsEnabled(boolean contactNotificationsEnabled) {
+    isContactNotificationsEnabled = contactNotificationsEnabled;
+  }
+
+  public String getContactNotificationsSubject() {
+    return contactNotificationsSubject;
+  }
+
+  public void setContactNotificationsSubject(String contactNotificationsSubject) {
+    this.contactNotificationsSubject = contactNotificationsSubject;
+  }
+
+  public void setContactGroups(List<String> contactGroups) {
+    this.contactGroups = contactGroups == null || contactGroups.isEmpty() ?
+      Lists.newArrayList(Roles.MICA_ADMIN, Roles.MICA_DAO) :
+      Lists.newArrayList(Sets.newLinkedHashSet(contactGroups));
+  }
+
+  public List<String> getContactGroups() {
+    return contactGroups;
   }
 
   public boolean isRepositoryEnabled() {

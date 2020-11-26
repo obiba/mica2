@@ -483,7 +483,16 @@
       "project": "On research project status changed notification",
       "project-subject": "Subject of research project status notification",
       "project-help": "Send email notifications when research project status changes to Deleted, to Under review or to Draft.",
-      "project-subject-help-long": "Email subject can contain the following placeholders: ${organization}, ${documentType}, ${documentId}, ${status}."
+      "project-subject-help-long": "Email subject can contain the following placeholders: ${organization}, ${documentType}, ${documentId}, ${status}.",
+      "contact-title": "Contact Request",
+      "contact-info": "Recipients of a contact notification will handle help requests.",
+      "contact": "On contact notification",
+      "contact-subject": "Subject of contact notification",
+      "contact-help": "Send email notifications when a user requests help.",
+      "contact-subject-help-long": "Email subject can contain the following placeholders: ${organization}, ${contactName}, ${contactSubject}.",
+      "contact-groups": "Contact recipients groups",
+      "contact-groups-help": "Groups receiving the contact requests.",
+      "contact-groups-form-help": "Space separated group names that will receive the contact notifications."
     },
     "style": {
       "title": "Style",

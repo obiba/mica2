@@ -52,7 +52,7 @@
 <#assign showCartViewDownload = (isAdministrator || isReviewer || isEditor || isDAO)/>
 
 <!-- Contact -->
-<#assign contactEnabled = true/>
+<#assign contactEnabled = config.contactNotificationsEnabled/>
 
 <!-- Profile -->
 <#assign showProfileRole = false/>
