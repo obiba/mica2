@@ -820,9 +820,17 @@ new Vue({
     },
     reloadSetsList() {
       VariablesSetService.getSets(data => {
+        const listElem = $('#list-count');
         if (Array.isArray(data)) {
           this.variableSets = data.filter(set => set.name);
-          document.getElementById('list-count').innerHTML = this.variableSets.length;
+          if (this.variableSets.length === 0) {
+            listElem.hide();
+          } else {
+            listElem.show();
+          }
+          listElem.text(this.variableSets.length);
+        } else {
+          listElem.hide();
         }
       }, response => {
 
