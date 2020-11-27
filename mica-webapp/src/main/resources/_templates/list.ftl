@@ -141,7 +141,7 @@
     <!-- Main content -->
     <div class="content">
       <div class="container-fluid">
-        <div class="callout callout-info">
+        <div id="list-callout" class="callout callout-info">
           <p><@message "sets.set.help"/></p>
         </div>
 

@@ -58,7 +58,7 @@
     <!-- Main content -->
     <div class="content">
       <div class="container">
-        <div class="callout callout-info">
+        <div id="cart-callout" class="callout callout-info">
           <p><@message "sets.cart.help"/></p>
         </div>
 
