@@ -61,6 +61,7 @@
     "select-all": "<@message "select-all"/>",
     "clear-selection": "<@message "clear-selection"/>",
     "search.filter": "<@message "search-filter"/>",
+    "search.filter-help": "<@message "search-filter-help"/>",
     "search.in": "<@message "search-in"/>",
     "search.out": "<@message "search-out"/>",
     "search.none": "<@message "search-none"/>",
