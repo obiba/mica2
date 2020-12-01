@@ -92,6 +92,17 @@
 <#assign searchDatasetColumns = ["name", "type", "networks", "studies", "variables"]/>
 <#assign searchStudyColumns = ["name", "type", "study-design", "data-sources-available", "participants", "networks", "individual", "harmonization"]/>
 <#assign searchNetworkColumns = ["name", "studies", "datasets", "variables"]/>
+<!-- Extracted fields on search by type -->
+<#assign searchVariableFields = ["attributes.label.*", "attributes.description.*", "variableType", "valueType", "categories.*", "populationId", "dceId", "datasetId", "datasetAcronym", "attributes.Mlstr_area*"]/>
+<#assign searchDatasetFields = ["acronym.*","name.*","variableType","studyTable.studyId","studyTable.project","studyTable.table","studyTable.populationId","studyTable.dataCollectionEventId","harmonizationTable.studyId","harmonizationTable.project","harmonizationTable.table","harmonizationTable.populationId"]/>
+<#assign searchStudyFields = ["acronym.*","name.*","model.methods.design","populations.dataCollectionEvents.model.dataSources","model.numberOfParticipants.participant"]/>
+<#assign searchNetworkFields = ["acronym.*","name.*","studyIds"]/>
+<!-- Sort fields on search by type -->
+<#assign searchVariableSortFields = ["attributes.label.*", "attributes.description.*", "variableType", "valueType", "datasetId", "datasetAcronym", "attributes.Mlstr_area*"]/>
+<#assign searchVariableSortFields = ["datasetAcronym.*", "index"]/>
+<#assign searchDatasetSortFields = ["studyTable.studyId","studyTable.populationWeight","studyTable.dataCollectionEventWeight","acronym"]/>
+<#assign searchStudySortFields = ["acronym"]/>
+<#assign searchNetworkSortFields = ["acronym"]/>
 <!-- Coverage tab -->
 <#assign searchCoverageDisplay = (config.studyDatasetEnabled || config.harmonizationDatasetEnabled)/>
 <!-- Graphics tab -->
@@ -100,6 +111,7 @@
 <#assign searchListDisplay = (searchCoverageDisplay || searchGraphicsDisplay)/>
 <!-- Search criteria display by type -->
 <#assign searchCriteriaMenus = ["variable", "dataset", "study", "network"]/>
+
 
 <!-- Data Access pages -->
 <#assign dataAccessInstructionsEnabled = true/>

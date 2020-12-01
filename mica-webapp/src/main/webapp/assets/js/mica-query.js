@@ -376,10 +376,10 @@ class VariableQuery extends EntityQuery {
     return ['attributes.label.*', 'attributes.description.*', 'variableType', 'valueType', 'datasetId', 'datasetAcronym', 'attributes.Mlstr_area*'];
   }
 
-  constructor(defaultSize) {
+  constructor(defaultSize, settings) {
     super(TYPES.VARIABLES, TARGETS.VARIABLE, defaultSize);
-    this._fields = VariableQuery.FIELDS;
-    this._sortFields = VariableQuery.SORT_FIELDS;
+    this._fields = settings.fields ? settings.fields : VariableQuery.FIELDS;
+    this._sortFields = settings.sortFields ? settings.sortFields : VariableQuery.SORT_FIELDS;
   }
 }
 
@@ -392,10 +392,10 @@ class DatasetQuery extends EntityQuery {
     return ['studyTable.studyId','studyTable.populationWeight','studyTable.dataCollectionEventWeight','acronym'];
   }
 
-  constructor(defaultSize) {
+  constructor(defaultSize, settings) {
     super(TYPES.DATASETS, TARGETS.DATASET, defaultSize);
-    this._fields = DatasetQuery.FIELDS;
-    this._sortFields = DatasetQuery.SORT_FIELDS;
+    this._fields = settings.fields ? settings.fields : DatasetQuery.FIELDS;
+    this._sortFields = settings.sortFields ? settings.sortFields : DatasetQuery.SORT_FIELDS;
   }
 }
 
@@ -409,10 +409,10 @@ class StudyQuery extends EntityQuery {
   }
 
 
-  constructor(defaultSize) {
+  constructor(defaultSize, settings) {
     super(TYPES.STUDIES, TARGETS.STUDY, defaultSize);
-    this._fields = StudyQuery.FIELDS;
-    this._sortFields = StudyQuery.SORT_FIELDS;
+    this._fields = settings.fields ? settings.fields : StudyQuery.FIELDS;
+    this._sortFields = settings.sortFields ? settings.sortFields : StudyQuery.SORT_FIELDS;
   }
 
   prepareForGraphics(tree) {
@@ -446,10 +446,10 @@ class NetworkQuery extends EntityQuery {
     return ['acronym'];
   }
 
-  constructor(defaultSize) {
+  constructor(defaultSize, settings) {
     super(TYPES.NETWORKS, TARGETS.NETWORK, defaultSize);
-    this._fields = NetworkQuery.FIELDS;
-    this._sortFields = NetworkQuery.SORT_FIELDS;
+    this._fields = settings.fields ? settings.fields : NetworkQuery.FIELDS;
+    this._sortFields = settings.sortFields ? settings.sortFields : NetworkQuery.SORT_FIELDS;
   }
 }
 
@@ -622,13 +622,13 @@ class MicaTreeQueryUrl {
 
 class MicaQueryExecutor {
 
-  constructor(eventBus, defaultSize) {
+  constructor(eventBus, defaultSize, settings) {
     this._eventBus = eventBus;
     this._query = {};
-    this._query[TYPES.VARIABLES] = new VariableQuery(defaultSize);
-    this._query[TYPES.DATASETS] = new DatasetQuery(defaultSize);
-    this._query[TYPES.STUDIES] = new StudyQuery(defaultSize);
-    this._query[TYPES.NETWORKS] = new NetworkQuery(defaultSize);
+    this._query[TYPES.VARIABLES] = new VariableQuery(defaultSize, settings.variable);
+    this._query[TYPES.DATASETS] = new DatasetQuery(defaultSize, settings.dataset);
+    this._query[TYPES.STUDIES] = new StudyQuery(defaultSize, settings.study);
+    this._query[TYPES.NETWORKS] = new NetworkQuery(defaultSize, settings.network);
   }
 
   /**
