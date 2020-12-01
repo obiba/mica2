@@ -103,6 +103,25 @@
 
   Mica.maxNumberOfSets = ${maxNumberOfSets};
 
+  Mica.querySettings = {
+    variable: {
+      fields: ['${searchVariableFields?join("', '")}'],
+      sortFields: ['${searchVariableSortFields?join("', '")}']
+    },
+    dataset: {
+      fields: ['${searchDatasetFields?join("', '")}'],
+      sortFields: ['${searchDatasetSortFields?join("', '")}']
+    },
+    study: {
+      fields: ['${searchStudyFields?join("', '")}'],
+      sortFields: ['${searchStudySortFields?join("', '")}']
+    },
+    network: {
+      fields: ['${searchNetworkFields?join("', '")}'],
+      sortFields: ['${searchNetworkSortFields?join("', '")}']
+    }
+  }
+
   Mica.icons = {
     variable: '${variableIcon}',
     dataset: '${datasetIcon}',

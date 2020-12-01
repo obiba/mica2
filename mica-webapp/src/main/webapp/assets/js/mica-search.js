@@ -626,7 +626,7 @@ new Vue({
       selectedTarget: null,
       queryType: 'variables-list',
       lastList: '',
-      queryExecutor: new MicaQueryExecutor(EventBus, DataTableDefaults.pageLength),
+      queryExecutor: new MicaQueryExecutor(EventBus, DataTableDefaults.pageLength, Mica.querySettings),
       queries: null,
       noQueries: true,
       queryToCopy: null,
