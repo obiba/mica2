@@ -175,7 +175,7 @@
                 <div class="modal-content">
                   <div class="modal-header">
                     <h5 class="modal-title"><@message "select-criteria"/></h5>
-                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
+                    <button type="button" class="btn btn-sm btn-success" data-dismiss="modal"><span aria-hidden="true"><@message "display-results"/></span></button>
                   </div>
                   <div class="modal-body" v-if="selectedTarget">
                     <rql-panel v-bind:target="selectedTarget" v-bind:taxonomy="selectedTaxonomy" v-bind:query="selectedQuery" @update-query="onQueryUpdate" @remove-query="onQueryRemove"></rql-panel>
