@@ -783,8 +783,10 @@ new Vue({
         }
 
         this.newVariableSetName = '';
-        this.reloadSetsList();
-      }
+        VariablesSetService.showSetsCount($('#list-count'), sets => {
+          this.variableSets = sets;
+        });
+      };
 
       if (setId || (this.newVariableSetName && this.newVariableSetName.length > 0)) {
         if (Array.isArray(this.variableSelections) && this.variableSelections.length > 0) {
@@ -817,24 +819,6 @@ new Vue({
     },
     onSearchModeToggle() {
       this.advanceQueryMode = !this.advanceQueryMode;
-    },
-    reloadSetsList() {
-      VariablesSetService.getSets(data => {
-        const listElem = $('#list-count');
-        if (Array.isArray(data)) {
-          this.variableSets = data.filter(set => set.name);
-          if (this.variableSets.length === 0) {
-            listElem.hide();
-          } else {
-            listElem.show();
-          }
-          listElem.text(this.variableSets.length);
-        } else {
-          listElem.hide();
-        }
-      }, response => {
-
-      });
     }
   },
   computed: {
@@ -925,7 +909,10 @@ new Vue({
       this.$refs.listsDropdownMenu.addEventListener("click", event => event.stopPropagation());
     }
 
-    this.reloadSetsList();
+    VariablesSetService.getSets(data => {
+      if (Array.isArray(data)) {
+        this.variableSets = data.filter(set => set.name);
+      }});
     this.onExecuteQuery();
   },
   beforeDestory() {

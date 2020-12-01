@@ -89,15 +89,17 @@
                         </div>
 
                       </div>
-                      <#if user.variablesLists?size gt 0>
-                        <div class="dropdown-divider"></div>
-                        <#list user.variablesLists as variableList>
-                          <button type="button" class="dropdown-item"
-                                  onclick="onClickAddToSet('${variableList.id}', '${variableList.name}')">
-                            ${variableList.name} <span class="badge badge-light float-right">${variableList.identifiers?size}</span>
-                          </button>
-                        </#list>
-                      </#if>
+                      <div id="add-set-divider" class="dropdown-divider" <#if !user.variablesLists?has_content>style="display: none"</#if>></div>
+                      <div id="add-set-choices">
+                        <#if user.variablesLists?has_content>
+                          <#list user.variablesLists as variableList>
+                            <button type="button" class="dropdown-item"
+                                    onclick="onClickAddToSet('${variableList.id}', '${variableList.name}')">
+                              ${variableList.name} <span class="badge badge-light float-right">${variableList.identifiers?size}</span>
+                            </button>
+                          </#list>
+                        </#if>
+                      </div>
                     </div>
                   </div>
                 </#if>
@@ -114,7 +116,7 @@
                       </div>
                     </div>
                   <#else>
-                    <a href="../ws/variables/set/${user.variablesCart.id}/documents/_export" download class="btn btn-primary ml-2">
+                    <a href="${contextPath}/ws/variables/set/${user.variablesCart.id}/documents/_export" download class="btn btn-primary ml-2">
                       <i class="fas fa-download"></i> <@message "download"/>
                     </a>
                   </#if>
@@ -172,62 +174,7 @@
 <#include "libs/scripts.ftl">
 <#if user.variablesCart?? && user.variablesCart.count gt 0>
   <#assign set = user.variablesCart.set/>
-  <#include "libs/document-set-scripts.ftl">
-
-  <script>
-    function onClickAddToSet(id, name) {
-      addToSet(id, name);
-    }
-
-    function onClickAddToNewSet() {
-      const input = document.getElementById('newVariableSetName');
-
-      if ((input.value || "").trim().length > 0) {
-        addToSet(null, input.value.trim());
-      }
-    }
-
-    function onKeyUpAddToNewSet(event) {
-      const keyCode = event.keyCode ? event.keyCode : event.which ? event.which : event.charCode;
-      const input = document.getElementById('newVariableSetName');
-      const button = document.getElementById('addToNewSetButton');
-
-      if (input) {
-        if (button && (input.value || "").trim().length > 0) {
-          button.className = "btn btn-success";
-        } else {
-          button.className = "btn btn-success disabled";
-        }
-
-        if (keyCode === 13) { // enter Key
-          event.stopPropagation();
-          event.preventDefault();
-          addToSet(null, input.value.trim());
-        }
-      }
-    }
-
-    function addToSet(setId, setName) {
-      const selections = variablesCartStorage.getSelections();
-      if (selections.length === 0) {
-        VariablesSetService.addQueryToSet(setId, setName, 'variable(in(Mica_variable.sets,${set.id}),limit(0,100000),fields(variableType))', function() { window.location.reload(); });
-      } else {
-        VariablesSetService.addToSet(setId, setName, selections, function() { window.location.reload(); });
-      }
-    }
-
-    $(function () {
-      const newVariableSetNameInput = document.getElementById('newVariableSetName');
-      if (newVariableSetNameInput) {
-        newVariableSetNameInput.addEventListener('keyup', onKeyUpAddToNewSet);
-      }
-
-      const listsDropdownMenu = document.getElementById('listsDropdownMenu');
-      if (listsDropdownMenu) {
-        listsDropdownMenu.addEventListener('click', event => event.stopPropagation());
-      }
-    });
-  </script>
+  <#include "libs/document-cart-scripts.ftl">
 </#if>
 
 </body>

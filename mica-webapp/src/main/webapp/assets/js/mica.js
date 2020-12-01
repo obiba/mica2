@@ -1047,9 +1047,40 @@ class VariablesSetService {
       });
   }
 
+  /**
+   * Show the count of variables in the cart (or an estimate).
+   * @param elem
+   * @param set
+   * @param lang
+   */
   static showCount(elem, set, lang) {
     $(elem).text(set.count > 0 ? (set.count > 50 ? '50+' : set.count) : '')
       .attr('title', set.count > 50 ? set.count.toLocaleString(lang) : '');
+  }
+
+  /**
+   * Show the count of lists.
+   * @param listElem
+   */
+  static showSetsCount(listElem, onVariablesSet) {
+    VariablesSetService.getSets(data => {
+      if (Array.isArray(data)) {
+        const variableSets = data.filter(set => set.name);
+        if (variableSets.length === 0) {
+          listElem.hide();
+        } else {
+          listElem.show();
+        }
+        listElem.text(variableSets.length);
+        if (onVariablesSet) {
+          onVariablesSet(variableSets);
+        }
+      } else {
+        listElem.hide();
+      }
+    }, response => {
+
+    });
   }
 
   /**
