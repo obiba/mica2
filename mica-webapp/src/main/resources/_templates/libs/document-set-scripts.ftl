@@ -39,6 +39,7 @@
       "ajax": function(data, callback) {
         VariablesSetService.search('${set.id}', data.start, data.length, function(response) {
           $('#loadingSet').hide();
+          $('#setTable').show();
           if (response.variableResultDto && response.variableResultDto['obiba.mica.DatasetVariableResultDto.result']) {
             const result = response.variableResultDto;
             let rows = [];
@@ -96,6 +97,7 @@
         }
       }
     });
+    $('#setTable').css('width', '100%').hide();
 
   });
 </script>
