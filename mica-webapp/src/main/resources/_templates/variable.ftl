@@ -201,7 +201,7 @@
                         ${localize(annotation.vocabularyTitle)}
                       </dt>
                       <dd class="col-sm-8" title="<#if annotation.termDescription??>${localize(annotation.termDescription)}</#if>">
-                        <template><span class="marked">${localize(annotation.termTitle)}</span></template>
+                        <span class="marked"><template>${localize(annotation.termTitle)}</template></span>
                       </dd>
                     </#list>
                   </dl>
