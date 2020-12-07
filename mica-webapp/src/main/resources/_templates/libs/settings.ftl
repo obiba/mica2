@@ -133,7 +133,7 @@
 <#assign showDatasetFiles = showFiles/>
 
 <!-- Variables classifications charts -->
-<!-- if taxonomies list is null or empty, no variables classifications is showned -->
+<!-- if taxonomies list is null or empty, no variables classifications is shown -->
 <#assign variablesClassificationsTaxonomies = ["Mlstr_area"]/>
 <#assign networkVariablesClassificationsTaxonomies = variablesClassificationsTaxonomies/>
 <#assign studyVariablesClassificationsTaxonomies = variablesClassificationsTaxonomies/>
