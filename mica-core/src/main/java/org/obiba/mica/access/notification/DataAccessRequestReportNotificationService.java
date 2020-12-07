@@ -22,6 +22,7 @@ import org.obiba.mica.core.service.MailService;
 import org.obiba.mica.micaConfig.domain.DataAccessForm;
 import org.obiba.mica.micaConfig.service.DataAccessFormService;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
+import org.obiba.mica.security.Roles;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
@@ -136,6 +137,10 @@ public class DataAccessRequestReportNotificationService {
     mailService.sendEmailToUsers(mailService.getSubject(dataAccessForm.getFinalReportSubject(), ctx,
       DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), "dataAccessRequestFinalReportApplicantEmail", ctx,
       request.getApplicant());
+
+    mailService.sendEmailToGroups(mailService.getSubject(dataAccessForm.getFinalReportSubject(), ctx,
+      DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), "dataAccessRequestFinalReportDAOEmail", ctx,
+      Roles.MICA_DAO);
   }
 
   private void remindDataAccessIntermediateReport(DataAccessForm dataAccessForm, DataAccessRequest request, Date reportDate, int nbOfDaysBeforeReport) {
@@ -144,6 +149,10 @@ public class DataAccessRequestReportNotificationService {
     mailService.sendEmailToUsers(mailService.getSubject(dataAccessForm.getIntermediateReportSubject(), ctx,
       DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), "dataAccessRequestIntermediateReportApplicantEmail", ctx,
       request.getApplicant());
+
+    mailService.sendEmailToGroups(mailService.getSubject(dataAccessForm.getIntermediateReportSubject(), ctx,
+      DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), "dataAccessRequestIntermediateReportDAOEmail", ctx,
+      Roles.MICA_DAO);
   }
 
   /**
