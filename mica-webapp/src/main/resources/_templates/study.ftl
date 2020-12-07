@@ -194,7 +194,7 @@
                 <div class="card-header">
                   <h3 class="card-title">
                     <#if study.populations?size == 1>
-                      <@message "population"/>
+                      ${localize(study.populations[0].name)}
                     <#else>
                       <@message "populations"/>
                     </#if>
