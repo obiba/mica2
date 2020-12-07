@@ -7,7 +7,7 @@
                            v-on:select-folder="onSelectFolder"></folder-breadcrumb>
       </div>
       <div>
-        <table class="table table-sm table-stripped">
+        <table class="table table-sm table-striped">
           <thead>
           <tr>
             <th>#</th>
