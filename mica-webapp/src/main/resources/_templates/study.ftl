@@ -190,7 +190,7 @@
           <!-- Populations -->
           <div class="row">
             <div class="col-lg-12">
-              <div class="card card-info card-outline">
+              <div id="populations" class="card card-info card-outline">
                 <div class="card-header">
                   <h3 class="card-title">
                     <#if study.populations?size == 1>

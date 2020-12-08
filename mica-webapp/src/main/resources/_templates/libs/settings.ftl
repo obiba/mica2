@@ -88,7 +88,7 @@
 <#assign searchStudyListDisplay = !config.singleStudyEnabled/>
 <#assign searchNetworkListDisplay = (config.networkEnabled && !config.singleNetworkEnabled)/>
 <!-- List tables by type (ID column ('name' or 'acronym') is always first) -->
-<#assign searchVariableColumns = ["label+description", "valueType", "annotations", "type", "study", "dataset"]/>
+<#assign searchVariableColumns = ["label+description", "valueType", "annotations", "type", "study", "population", "dce", "dataset"]/>
 <#assign searchDatasetColumns = ["name", "type", "networks", "studies", "variables"]/>
 <#assign searchStudyColumns = ["name", "type", "study-design", "data-sources-available", "participants", "networks", "individual", "harmonization"]/>
 <#assign searchNetworkColumns = ["name", "studies", "datasets", "variables"]/>
