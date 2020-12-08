@@ -24,7 +24,7 @@
     "dataset": "<@message "dataset"/>",
     "population": "<@message "population"/>",
     "data-collection-event": "<@message "data-collection-event"/>",
-    "dce": "<@message "data-collection-event"/>",
+    "dce": "<@message "search.study.dce-name"/>",
     "acronym": "<@message "acronym"/>",
     "valueType": "<@message "value-type"/>",
     "text-type": "<@message "text-type"/>",
