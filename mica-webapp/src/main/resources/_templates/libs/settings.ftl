@@ -98,8 +98,7 @@
 <#assign searchStudyFields = ["acronym.*","name.*","model.methods.design","populations.dataCollectionEvents.model.dataSources","model.numberOfParticipants.participant"]/>
 <#assign searchNetworkFields = ["acronym.*","name.*","studyIds"]/>
 <!-- Sort fields on search by type -->
-<#assign searchVariableSortFields = ["attributes.label.*", "attributes.description.*", "variableType", "valueType", "datasetId", "datasetAcronym", "attributes.Mlstr_area*"]/>
-<#assign searchVariableSortFields = ["datasetAcronym.*", "index"]/>
+<#assign searchVariableSortFields = ["studyId", "datasetId", "index"]/>
 <#assign searchDatasetSortFields = ["studyTable.studyId","studyTable.populationWeight","studyTable.dataCollectionEventWeight","acronym"]/>
 <#assign searchStudySortFields = ["acronym"]/>
 <#assign searchNetworkSortFields = ["acronym"]/>

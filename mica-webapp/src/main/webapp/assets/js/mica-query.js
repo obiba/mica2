@@ -373,7 +373,7 @@ class VariableQuery extends EntityQuery {
   }
 
   static get SORT_FIELDS() {
-    return ['attributes.label.*', 'attributes.description.*', 'variableType', 'valueType', 'datasetId', 'datasetAcronym', 'attributes.Mlstr_area*'];
+    return ['studyId', 'datasetId', 'index'];
   }
 
   constructor(defaultSize, settings) {
