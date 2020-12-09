@@ -64,13 +64,43 @@ const makeSummary = function() {
       // frequencies table
       let frequencyRows = '';
       data.frequencies.forEach(frequency => {
-        const pct = data.n === 0 ? 0 : (frequency.count / data.n) * 100;
+        // % over not empty values
+        let pctValues = data.n === 0 ? 0 : (frequency.count / data.n) * 100;
+        pctValues = numberFormatter.format(pctValues.toFixed(2));
+        let pctMissings = data.n === data.total ? 0 : (frequency.count / (data.total - data.n)) * 100;
+        pctMissings = numberFormatter.format(pctMissings.toFixed(2));
+        if (frequency.missing) {
+          pctValues = '';
+        } else {
+          pctMissings = '';
+        }
+        let pctTotal = data.total === 0 ? 0 : (frequency.count / data.total) * 100;
+        pctTotal = numberFormatter.format(pctTotal.toFixed(2));
+        let value = frequency.value;
+        try {
+          value = numberFormatter.format(frequency.value);
+          if (isNaN(value)) {
+            value = frequency.value;
+          }
+        } catch(e) {}
+        let valueTxt = Mica.categories[frequency.value] ? Mica.categories[frequency.value] : '';
+        if (valueTxt === '') {
+          if (value === 'NOT_NULL') {
+            value = Mica.tr['not-empty-values'];
+            valueTxt = Mica.tr['not-empty-values-description'];
+          } else if (value === 'N/A') {
+            value = Mica.tr['empty-values'];
+            valueTxt = Mica.tr['empty-values-description'];
+          }
+        }
         frequencyRows = frequencyRows +
           '<tr>' +
-          '<td data-sort="' + frequency.value + '">' + numberFormatter.format(frequency.value) +
-          '<p class="text-muted">' + (Mica.categories[frequency.value] ? Mica.categories[frequency.value] : '') + '</p>' + '</td>' +
+          '<td data-sort="' + value + '">' + value +
+          '<p class="text-muted">' + valueTxt + '</p>' + '</td>' +
           '<td data-sort="' + frequency.count + '">' + numberFormatter.format(frequency.count) + '</td>' +
-          '<td data-sort="' + pct + '">' + numberFormatter.format(pct.toFixed(2)) + '</td>' +
+          '<td data-sort="' + pctValues + '">' + pctValues + '</td>' +
+          '<td data-sort="' + pctMissings + '">' + pctMissings + '</td>' +
+          '<td data-sort="' + pctTotal + '">' + pctTotal + '</td>' +
           '<td>' + (frequency.missing ? '<i class="fas fa-check"></i>' : '') + '</td>' +
           '</tr>';
       });
