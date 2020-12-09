@@ -9,7 +9,50 @@
 <!-- Repository -->
 <script src="${assetsPath}/js/mica-repo.js"></script>
 
+<!-- Mica variable and dependencies -->
+<script src="${adminLTEPath}/plugins/select2/js/select2.js"></script>
+<script src="${adminLTEPath}/plugins/select2/js/i18n/${.lang}.js"></script>
+<script src="${assetsPath}/js/mica-variable.js"></script>
+
 <script>
+  const Mica = {
+    contextPath: "${contextPath}",
+    currentLanguage: '${.lang}',
+    variableId: '${variable.id}',
+    categories: {},
+    backgroundColors: ['${colors?join("', '")}'],
+    barChartBorderColor: '${barChartBorderColor}',
+    barChartBackgroundColor: '${barChartBackgroundColor}',
+    dataTableOpts: {
+      "paging": false,
+      "lengthChange": false,
+      "searching": false,
+      "ordering": true,
+      "order": [[1, "desc"]],
+      "info": false,
+      "autoWidth": true,
+      "language": {
+        "url": "${assetsPath}/i18n/datatables.${.lang}.json"
+      }
+    },
+    tr: {
+      "chi-squared-test": "<@message "chi-squared-test"/>",
+      "n-total": "<@message "n-total"/>",
+      "min": "<@message "min"/>",
+      "max": "<@message "max"/>",
+      "mean": "<@message "mean"/>",
+      "stdDev": "<@message "stdDev"/>",
+      "all": "<@message "all"/>"
+    }
+  };
+
+  // categories
+  <#if variable.categories??>
+  <#list variable.categories as cat>
+  Mica.categories['${cat.name}'] = escapeQuotes("${localize(cat.attributes.label)}");
+  </#list>
+  </#if>
+
   // cart
   <#if cartEnabled>
     const onVariablesCartGet = function(cart) {
@@ -49,40 +92,7 @@
   $(function () {
 
     <#if type == "Dataschema">
-      VariableService.getHarmonizations('${variable.id}', function(data) {
-        $('#loadingHarmonizedVariables').hide();
-        const harmonizedVariablesTableBody = $('#harmonizedVariables > tbody');
-        if (data.datasetVariableSummaries) {
-          for (const harmonizedVariable of data.datasetVariableSummaries) {
-            const status = VariableService.getHarmoStatus(harmonizedVariable);
-            const statusDetail = VariableService.getHarmoStatusDetail(harmonizedVariable);
-            const comment = VariableService.getHarmoComment(harmonizedVariable);
-            const baseStudyTable = harmonizedVariable.studyTable ? harmonizedVariable.studyTable : harmonizedVariable.harmonizationStudyTable;
-            const population = StudyService.findPopulation(baseStudyTable.studySummary, baseStudyTable.populationId);
-            const dce = population ? StudyService.findPopulationDCE(population, baseStudyTable.dataCollectionEventId) : undefined;
-            let dceName = population ? localizedString(population.name) : "";
-            if (dce) {
-              dceName = dceName + ' -- ' + localizedString(dce.name);
-            }
-            harmonizedVariablesTableBody.append('<tr>' +
-                    '<td title=""><a href="${contextPath}/variable/' + harmonizedVariable.resolver.id + '">' + harmonizedVariable.resolver.name + '</a> ' + localizedString(baseStudyTable.name) + '' +
-                    '<div class="text-muted">' + localizedString(baseStudyTable.description) + '</div>' +
-                    '</td>' +
-                    '<td><a href="${contextPath}/study/' + baseStudyTable.studyId + '">' + localizedString(baseStudyTable.studySummary.acronym) + '</a></td>' +
-                    '<td>' + dceName + '</td>' +
-                    '<td><i class=" ' + VariableService.getHarmoStatusClass(localizedString(status)) + '"></i></td>' +
-                    '<td>' + localizedString(statusDetail) + '</td>' +
-                    '<td>' + localizedString(comment) + '</td>' +
-                    '</tr>')
-          }
-          $('#harmonizedVariables').show();
-        } else {
-          $('#noHarmonizedVariables').show();
-        }
-      }, function (data) {
-        $('#loadingHarmonizedVariables').hide();
-        $('#noHarmonizedVariables').show();
-      });
+      makeHarmonizedVariablesTable();
     </#if>
 
     <!-- Files -->
@@ -102,92 +112,8 @@
       });
     </#if>
 
-    <!-- Summary -->
     <#if user?? || !config.variableSummaryRequiresAuthentication>
-    VariableService.getAggregation('${variable.id}', function(data) {
-      $('#loadingSummary').hide();
-
-      $('#n').html(numberFormatter.format(data.total));
-      $('#n-values').html(numberFormatter.format(data.n));
-      $('#n-missings').html(numberFormatter.format(data.total - data.n));
-      $('#counts').show();
-
-      if (data.frequencies) {
-        // categories
-        const categories = {};
-        <#if variable.categories??>
-        <#list variable.categories as cat>
-          categories['${cat.name}'] = escapeQuotes("${localize(cat.attributes.label)}");
-        </#list>
-        </#if>
-
-        // frequencies chart
-        const frequencyChartElem = $('#frequencyChart');
-        const chartCanvas = frequencyChartElem.get(0).getContext('2d');
-        const backgroundColors = ['${colors?join("', '")}'];
-        new Chart(chartCanvas, makeVariableFrequenciesChartSettings(data.frequencies, backgroundColors));
-        frequencyChartElem.show();
-
-        // frequencies table
-        let frequencyRows = '';
-        data.frequencies.forEach(frequency => {
-          const pct = data.n === 0 ? 0 : (frequency.count / data.n) * 100;
-          frequencyRows = frequencyRows +
-                  '<tr>' +
-                  '<td data-sort="' + frequency.value + '">' + numberFormatter.format(frequency.value) +
-                    '<p class="text-muted">' + (categories[frequency.value] ? categories[frequency.value] : '') + '</p>' + '</td>' +
-                  '<td data-sort="' + frequency.count + '">' + numberFormatter.format(frequency.count) + '</td>' +
-                  '<td data-sort="' + pct + '">' + numberFormatter.format(pct.toFixed(2)) + '</td>' +
-                  '<td>' + (frequency.missing ? '<i class="fas fa-check"></i>' : '') + '</td>' +
-                  '</tr>';
-        });
-        $('#frequencyValues').html(frequencyRows);
-
-        const dataTableOpts = {
-          "paging": false,
-          "lengthChange": false,
-          "searching": false,
-          "ordering": true,
-          "order": [[1, "desc"]],
-          "info": false,
-          "autoWidth": true,
-          "language": {
-            "url": "${assetsPath}/i18n/datatables.${.lang}.json"
-          }
-        };
-        $("#frequencyTable").DataTable(dataTableOpts);
-
-        $('#categoricalSummary').show();
-      }
-
-      if (data.statistics) {
-        const summary = data.statistics;
-
-        $('#mean').html(summary.n === 0 ? '-' : summary.mean.toFixed(2));
-        $('#stdDev').html(summary.n === 0 ? '-' : summary.stdDeviation.toFixed(2));
-        $('#variance').html(summary.n === 0 ? '-' : summary.variance.toFixed(2));
-        $('#sum').html(summary.n === 0 ? '-' : summary.sum.toFixed(2));
-        $('#sum-of-squares').html(summary.n === 0 ? '-' : summary.sumOfSquares.toFixed(2));
-        $('#min').html(summary.n === 0 ? '-' : summary.min.toFixed(2));
-        $('#max').html(summary.n === 0 ? '-' : summary.max.toFixed(2));
-
-        if (data.intervalFrequencies) {
-          // histogram chart
-          const histogramChartElem = $('#histogramChart');
-          const chartCanvas = histogramChartElem.get(0).getContext('2d');
-          new Chart(chartCanvas, makeVariableHistogramChartSettings(data.intervalFrequencies, '${barChartBorderColor}', '${barChartBackgroundColor}'));
-          histogramChartElem.show();
-        }
-
-        $('#continuousSummary').show();
-      }
-      if (!data.frequencies && !data.statistics) {
-        $('#noSummary').show();
-      }
-    }, function (data) {
-      $('#loadingSummary').hide();
-      $('#noSummary').show();
-    });
+      makeSummary();
     </#if>
 
   });

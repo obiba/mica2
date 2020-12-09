@@ -1,6 +1,10 @@
 <#macro variableSummary variable>
   <div id="loadingSummary" class="spinner-border spinner-border-sm" role="status"></div>
 
+  <div style="display: none;" class="mb-4">
+    <select id="select-study" class="form-control select2 float-right" style="width: 100%;"></select>
+  </div>
+
   <div id="counts" style="display: none;">
     <div class="row">
       <div class="col-xs-12 col-lg-6">

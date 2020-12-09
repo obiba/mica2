@@ -597,7 +597,7 @@ const refreshCrosstab = function() {
     selectStudy.parent().hide();
     if (Mica.type === 'harmonized') {
       if (selectStudy.children().length === 0) {
-        selectStudy.append(new Option('All', -1, true, true));
+        selectStudy.append(new Option(Mica.tr.all, -1, true, true));
         crosstab.getContingencies().forEach((cont, i) => {
           if (cont.info.summary) {
             let text = cont.info.summary + ' / ' + cont.info.population + ' / ' + cont.info.dce;
