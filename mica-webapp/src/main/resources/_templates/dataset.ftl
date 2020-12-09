@@ -132,7 +132,7 @@
                 </div>
                 <div class="card-body">
                   <h5>${localize(population.name)}</h5>
-                  <div>${localize(population.description)}</div>
+                  <div class="marked"><template>${localize(population.description)}</template></div>
                   <@populationDialog id=population.id population=population></@populationDialog>
                 </div>
                 <div class="card-footer">
@@ -149,7 +149,7 @@
                 </div>
                 <div class="card-body">
                   <h5>${localize(dce.name)}</h5>
-                  <div>${localize(dce.description)}</div>
+                  <div class="marked"><template>${localize(dce.description)}</template></div>
                   <#assign dceId="${population.id}-${dce.id}">
                   <@dceDialog id=dceId dce=dce></@dceDialog>
                 </div>

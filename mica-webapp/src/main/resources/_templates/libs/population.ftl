@@ -353,7 +353,7 @@
           </button>
         </div>
         <div class="modal-body">
-          <div>${localize(population.description)}</div>
+          <div class="mb-3 marked"><template>${localize(population.description)}</template></div>
           <@populationModel population=population id=id/>
         </div>
         <div class="modal-footer">
