@@ -107,9 +107,9 @@
     VariableService.getAggregation('${variable.id}', function(data) {
       $('#loadingSummary').hide();
 
-      $('#n').html(new Intl.NumberFormat('${.lang}').format(data.total));
-      $('#n-values').html(new Intl.NumberFormat('${.lang}').format(data.n));
-      $('#n-missings').html(new Intl.NumberFormat('${.lang}').format(data.total - data.n));
+      $('#n').html(numberFormatter.format(data.total));
+      $('#n-values').html(numberFormatter.format(data.n));
+      $('#n-missings').html(numberFormatter.format(data.total - data.n));
       $('#counts').show();
 
       if (data.frequencies) {
@@ -117,7 +117,7 @@
         const categories = {};
         <#if variable.categories??>
         <#list variable.categories as cat>
-        categories['${cat.name}'] = "${localize(cat.attributes.label)}";
+          categories['${cat.name}'] = escapeQuotes("${localize(cat.attributes.label)}");
         </#list>
         </#if>
 
@@ -134,10 +134,10 @@
           const pct = data.n === 0 ? 0 : (frequency.count / data.n) * 100;
           frequencyRows = frequencyRows +
                   '<tr>' +
-                  '<td data-sort="' + frequency.value + '">' + frequency.value +
+                  '<td data-sort="' + frequency.value + '">' + numberFormatter.format(frequency.value) +
                     '<p class="text-muted">' + (categories[frequency.value] ? categories[frequency.value] : '') + '</p>' + '</td>' +
-                  '<td>' + frequency.count + '</td>' +
-                  '<td>' + pct.toFixed(2) + '</td>' +
+                  '<td data-sort="' + frequency.count + '">' + numberFormatter.format(frequency.count) + '</td>' +
+                  '<td data-sort="' + pct + '">' + numberFormatter.format(pct.toFixed(2)) + '</td>' +
                   '<td>' + (frequency.missing ? '<i class="fas fa-check"></i>' : '') + '</td>' +
                   '</tr>';
         });

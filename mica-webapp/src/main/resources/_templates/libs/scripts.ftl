@@ -29,6 +29,8 @@
 <!-- Global js variables -->
 <script>
     const contextPath = "${contextPath}";
+    <!-- Number formatting -->
+    const numberFormatter = new Intl.NumberFormat('${.lang}');
     <!-- DataTable options -->
     const dataTablesDefaultOpts = {
         "paging": true,
@@ -91,6 +93,11 @@
         }
       }
       return '';
+    };
+    const escapeQuotes = function(str, quote) {
+      const q = quote ? quote : '"';
+      const regex = new RegExp(q, 'g');
+      return str ? str.replace(regex, '\\' + q) : str;
     };
 </script>
 

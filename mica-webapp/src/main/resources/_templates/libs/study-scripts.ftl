@@ -93,9 +93,9 @@
     </#list>
 
     QueryService.getCounts('studies', { query: "study(in(Mica_study.id,${study.id}))" }, function(stats) {
-      $('#network-hits').text(new Intl.NumberFormat('${.lang}').format(stats.networkResultDto.totalHits));
-      $('#dataset-hits').text(new Intl.NumberFormat('${.lang}').format(stats.datasetResultDto.totalHits));
-      $('#variable-hits').text(new Intl.NumberFormat('${.lang}').format(stats.variableResultDto.totalHits));
+      $('#network-hits').text(numberFormatter.format(stats.networkResultDto.totalHits));
+      $('#dataset-hits').text(numberFormatter.format(stats.datasetResultDto.totalHits));
+      $('#variable-hits').text(numberFormatter.format(stats.variableResultDto.totalHits));
     });
 
     <#if timelineData??>

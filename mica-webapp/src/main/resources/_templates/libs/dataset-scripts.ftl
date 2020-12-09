@@ -51,9 +51,9 @@
 
   $(function () {
     QueryService.getCounts('datasets', {query: "dataset(in(Mica_dataset.id,${dataset.id}))"}, function (stats) {
-      $('#network-hits').text(new Intl.NumberFormat('${.lang}').format(stats.networkResultDto.totalHits));
-      $('#study-hits').text(new Intl.NumberFormat('${.lang}').format(stats.studyResultDto.totalHits));
-      $('#variable-hits').text(new Intl.NumberFormat('${.lang}').format(stats.variableResultDto.totalHits));
+      $('#network-hits').text(numberFormatter.format(stats.networkResultDto.totalHits));
+      $('#study-hits').text(numberFormatter.format(stats.studyResultDto.totalHits));
+      $('#variable-hits').text(numberFormatter.format(stats.variableResultDto.totalHits));
       if (stats.variableResultDto.totalHits>0) {
         $('#cart-add').show();
       }
