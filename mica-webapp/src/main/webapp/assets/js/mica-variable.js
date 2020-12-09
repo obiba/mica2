@@ -1,5 +1,5 @@
 <!-- Summary -->
-const makeSummary = function() {
+const makeSummary = function(showHarmonizedVariableSummarySelector) {
 
   const initStudySelector = function(data) {
     let selectStudy = $('#select-study');
@@ -144,8 +144,8 @@ const makeSummary = function() {
     Mica.data = data;
     $('#loadingSummary').hide();
 
-    if (data.frequencies || data.statistics) {
-      // study tables
+    if (showHarmonizedVariableSummarySelector && (data.frequencies || data.statistics)) {
+      // study tables selector
       initStudySelector(data);
     }
     renderSummary(data);

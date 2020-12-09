@@ -1,9 +1,11 @@
 <#macro variableSummary variable>
   <div id="loadingSummary" class="spinner-border spinner-border-sm" role="status"></div>
 
-  <div style="display: none;" class="mb-4">
-    <select id="select-study" class="form-control select2 float-right" style="width: 100%;"></select>
-  </div>
+  <#if showHarmonizedVariableSummarySelector>
+    <div style="display: none;" class="mb-4">
+      <select id="select-study" class="form-control select2 float-right" style="width: 100%;"></select>
+    </div>
+  </#if>
 
   <div id="counts" style="display: none;">
     <div class="row">

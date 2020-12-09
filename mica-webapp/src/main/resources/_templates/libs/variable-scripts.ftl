@@ -117,7 +117,7 @@
     </#if>
 
     <#if user?? || !config.variableSummaryRequiresAuthentication>
-      makeSummary();
+      makeSummary(${showHarmonizedVariableSummarySelector?c});
     </#if>
 
   });

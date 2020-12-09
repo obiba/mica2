@@ -68,7 +68,7 @@
 <#assign datasetListDisplays = listDisplays/>
 <#assign datasetListDefaultDisplay = "cards"/>
 
-<!-- Search page -->
+<!-- Search -->
 <#if config?? && config.singleStudyEnabled>
   <#assign defaultSearchState = "#lists?type=variables"/>
 <#else>
@@ -111,6 +111,8 @@
 <!-- Search criteria display by type -->
 <#assign searchCriteriaMenus = ["variable", "dataset", "study", "network"]/>
 
+<!-- Variable -->
+<#assign showHarmonizedVariableSummarySelector = true/>
 
 <!-- Data Access pages -->
 <#assign dataAccessInstructionsEnabled = true/>
