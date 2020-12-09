@@ -341,39 +341,51 @@
                   <table class="table table-sm table-striped mt-2">
                     <thead>
                     <th></th>
-                    <th>
+                    <th class="w-25">
                         <@message "study_taxonomy.vocabulary.access_data.title"/>
                     </th>
-                    <th>
+                    <th class="w-25">
                         <@message "study_taxonomy.vocabulary.access_bio_samples.title"/>
                     </th>
                     </thead>
                     <tbody>
                     <tr>
                       <td><@message "study.access.access_permission_data.public_sector"/></td>
-                      <td class="col-sm-2">
+                      <td>
+                        <#if (study.model.access_permission_data.public_sector)??>
                           <@yesnoToIcon value=study.model.access_permission_data.public_sector/>
+                        </#if>
                       </td>
-                      <td class="col-sm-2">
+                      <td>
+                        <#if (study.model.access_permission_biological_samples.public_sector)??>
                           <@yesnoToIcon value=study.model.access_permission_biological_samples.public_sector/>
+                        </#if>
                       </td>
                     </tr>
                     <tr>
                       <td><@message "study.access.access_permission_data.private_sector"/></td>
-                      <td class="col-sm-2">
+                      <td>
+                        <#if (study.model.access_permission_data.private_sector)??>
                           <@yesnoToIcon value=study.model.access_permission_data.private_sector/>
+                          </#if>
                       </td>
-                      <td class="col-sm-2">
+                      <td>
+                        <#if (study.model.access_permission_biological_samples.private_sector)??>
                           <@yesnoToIcon value=study.model.access_permission_biological_samples.private_sector/>
+                        </#if>
                       </td>
                     </tr>
                     <tr>
                       <td><@message "study.access.access_permission_data.not_for_profit_organization"/></td>
-                      <td class="col-sm-2">
+                      <td>
+                        <#if (study.model.access_permission_data.not_for_profit_organization)??>
                           <@yesnoToIcon value=study.model.access_permission_data.not_for_profit_organization/>
+                        </#if>
                       </td>
-                      <td class="col-sm-2">
+                      <td>
+                        <#if (study.model.access_permission_biological_samples.not_for_profit_organization)??>
                           <@yesnoToIcon value=study.model.access_permission_biological_samples.not_for_profit_organization/>
+                        </#if>
                       </td>
                     </tr>
                     </tbody>
@@ -388,30 +400,38 @@
                   <table class="table table-sm table-striped mt-2">
                     <thead>
                     <th></th>
-                    <th>
+                    <th class="w-25">
                         <@message "study_taxonomy.vocabulary.access_data.title"/>
                     </th>
-                    <th>
+                    <th class="w-25">
                         <@message "study_taxonomy.vocabulary.access_bio_samples.title"/>
                     </th>
                     </thead>
                     <tbody>
                     <tr>
                       <td><@message "study.access.access_data_can_leave.study_facility"/></td>
-                      <td class="col-sm-2">
+                      <td>
+                        <#if (study.model.access_data_can_leave.study_facility)??>
                           <@yesnoToIcon value=study.model.access_data_can_leave.study_facility/>
+                        </#if>
                       </td>
-                      <td class="col-sm-2">
+                      <td>
+                        <#if (study.model.access_biological_samples_can_leave.study_facility)??>
                           <@yesnoToIcon value=study.model.access_biological_samples_can_leave.study_facility/>
+                        </#if>
                       </td>
                     </tr>
                     <tr>
                       <td><@message "study.access.access_data_can_leave.country"/></td>
-                      <td class="col-sm-2">
+                      <td>
+                        <#if (study.model.access_data_can_leave.country)??>
                           <@yesnoToIcon value=study.model.access_data_can_leave.country/>
+                        </#if>
                       </td>
-                      <td class="col-sm-2">
+                      <td>
+                        <#if (study.model.access_biological_samples_can_leave.country)??>
                           <@yesnoToIcon value=study.model.access_biological_samples_can_leave.country/>
+                        </#if>
                       </td>
                     </tr>
                     </tbody>
@@ -431,14 +451,18 @@
                     <tbody>
                     <tr>
                       <td><@message "study_taxonomy.vocabulary.access_data.title"/></td>
-                      <td class="col-sm-6">
+                      <td class="w-50">
+                        <#if (study.model.access_data_sharing_cost.data)??>
                           <@costToLabel value=study.model.access_data_sharing_cost.data/>
+                        </#if>
                       </td>
                     </tr>
                     <tr>
                       <td><@message "study_taxonomy.vocabulary.access_bio_samples.title"/></td>
                       <td>
+                        <#if (study.model.access_data_sharing_cost.biological_samples)??>
                           <@costToLabel value=study.model.access_data_sharing_cost.biological_samples/>
+                        </#if>
                       </td>
                     </tr>
                     </tbody>
@@ -454,14 +478,18 @@
                     <tbody>
                     <tr>
                       <td><@message "study_taxonomy.vocabulary.access_data.title"/></td>
-                      <td class="col-sm-6">
+                      <td class="w-50">
+                        <#if (study.model.access_cost_reduction_consideration.data)??>
                           <@yesnoToIcon value=study.model.access_cost_reduction_consideration.data/>
+                        </#if>
                       </td>
                     </tr>
                     <tr>
                       <td><@message "study_taxonomy.vocabulary.access_bio_samples.title"/></td>
                       <td>
+                        <#if (study.model.access_cost_reduction_consideration.bio_samples)??>
                           <@yesnoToIcon value=study.model.access_cost_reduction_consideration.bio_samples/>
+                        </#if>
                       </td>
                     </tr>
                     </tbody>
