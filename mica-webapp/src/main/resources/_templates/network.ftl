@@ -134,28 +134,30 @@
                   </#if>
                 </div>
                 <div class="card-body">
-                  <table class="table">
-                    <thead>
-                    <tr>
-                      <th><@message "investigators"/></th>
-                      <th><@message "contacts"/></th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr>
-                      <td>
-                        <#if network.memberships.investigator??>
-                            <@memberList members=network.memberships.investigator role="investigator"/>
-                        </#if>
-                      </td>
-                      <td>
-                        <#if network.memberships.contact??>
-                            <@memberList members=network.memberships.contact role="contact"/>
-                        </#if>
-                      </td>
-                    </tr>
-                    </tbody>
-                  </table>
+                  <div class="table-responsive">
+                    <table class="table">
+                      <thead>
+                      <tr>
+                        <th><@message "investigators"/></th>
+                        <th><@message "contacts"/></th>
+                      </tr>
+                      </thead>
+                      <tbody>
+                      <tr>
+                        <td>
+                          <#if network.memberships.investigator??>
+                              <@memberList members=network.memberships.investigator role="investigator"/>
+                          </#if>
+                        </td>
+                        <td>
+                          <#if network.memberships.contact??>
+                              <@memberList members=network.memberships.contact role="contact"/>
+                          </#if>
+                        </td>
+                      </tr>
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               </div>
             </div>
@@ -180,24 +182,26 @@
                   </div>
                 </div>
                 <div class="card-body">
-                  <table id="networks" class="table table-bordered table-striped">
-                    <thead>
-                    <tr>
-                      <th><@message "acronym"/></th>
-                      <th><@message "name"/></th>
-                      <@networkTHs/>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <#list networks as netwk>
+                  <div class="table-responsive">
+                    <table id="networks" class="table table-bordered table-striped">
+                      <thead>
                       <tr>
-                        <td><a href="${contextPath}/network/${netwk.id}">${localize(netwk.acronym)}</a></td>
-                        <td><small>${localize(netwk.name)}</small></td>
-                        <@networkTDs network=netwk/>
+                        <th><@message "acronym"/></th>
+                        <th><@message "name"/></th>
+                        <@networkTHs/>
                       </tr>
-                    </#list>
-                    </tbody>
-                  </table>
+                      </thead>
+                      <tbody>
+                      <#list networks as netwk>
+                        <tr>
+                          <td><a href="${contextPath}/network/${netwk.id}">${localize(netwk.acronym)}</a></td>
+                          <td><small>${localize(netwk.name)}</small></td>
+                          <@networkTDs network=netwk/>
+                        </tr>
+                      </#list>
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               </div>
             </div>
@@ -217,25 +221,26 @@
                   </div>
                 </div>
                 <div class="card-body">
-
-                  <table id="individual-studies" class="table table-bordered table-striped">
-                    <thead>
-                    <tr>
-                      <th><@message "acronym"/></th>
-                      <th><@message "name"/></th>
-                      <@individualStudyTHs/>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <#list individualStudies as study>
+                  <div class="table-responsive">
+                    <table id="individual-studies" class="table table-bordered table-striped">
+                      <thead>
                       <tr>
-                        <td><a href="${contextPath}/study/${study.id}">${localize(study.acronym)}</a></td>
-                        <td><small>${localize(study.name)}</small></td>
-                        <@individualStudyTDs study=study/>
+                        <th><@message "acronym"/></th>
+                        <th><@message "name"/></th>
+                        <@individualStudyTHs/>
                       </tr>
-                    </#list>
-                    </tbody>
-                  </table>
+                      </thead>
+                      <tbody>
+                      <#list individualStudies as study>
+                        <tr>
+                          <td><a href="${contextPath}/study/${study.id}">${localize(study.acronym)}</a></td>
+                          <td><small>${localize(study.name)}</small></td>
+                          <@individualStudyTDs study=study/>
+                        </tr>
+                      </#list>
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               </div>
             </div>
@@ -255,24 +260,26 @@
                   </div>
                 </div>
                 <div class="card-body">
-                  <table id="harmonization-studies" class="table table-bordered table-striped">
-                    <thead>
-                    <tr>
-                      <th><@message "acronym"/></th>
-                      <th><@message "name"/></th>
-                      <@harmonizationStudyTHs/>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <#list harmonizationStudies as study>
+                  <div class="table-responsive">
+                    <table id="harmonization-studies" class="table table-bordered table-striped">
+                      <thead>
                       <tr>
-                        <td><a href="${contextPath}/study/${study.id}">${localize(study.acronym)}</a></td>
-                        <td><small>${localize(study.name)}</small></td>
-                        <@harmonizationStudyTDs study=study/>
+                        <th><@message "acronym"/></th>
+                        <th><@message "name"/></th>
+                        <@harmonizationStudyTHs/>
                       </tr>
-                    </#list>
-                    </tbody>
-                  </table>
+                      </thead>
+                      <tbody>
+                      <#list harmonizationStudies as study>
+                        <tr>
+                          <td><a href="${contextPath}/study/${study.id}">${localize(study.acronym)}</a></td>
+                          <td><small>${localize(study.name)}</small></td>
+                          <@harmonizationStudyTDs study=study/>
+                        </tr>
+                      </#list>
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               </div>
             </div>

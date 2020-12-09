@@ -73,32 +73,34 @@
                 <#assign siStr = (num / (siMap[thousands].factor))?string("0.#") + siMap[thousands].unit />
                 <#return siStr />
               </#function>
-              <table id="documents" class="table table-bordered table-striped">
-                <thead>
-                <tr>
-                  <th><@message "name"/></th>
-                  <th><@message "upload-date"/></th>
-                  <th><@message "size"/></th>
-                  <#if !dar.archived>
-                    <th></th>
-                  </#if>
-                </tr>
-                </thead>
-                <tbody>
-                <#list dar.attachments as attachment>
+              <div class="table-responsive">
+                <table id="documents" class="table table-bordered table-striped">
+                  <thead>
                   <tr>
-                    <td><a href="${contextPath}/ws/data-access-request/${dar.id}/attachments/${attachment.id}/_download" download="${attachment.name}">${attachment.name}</a></td>
-                    <td data-sort="${attachment.createdDate.toString(datetimeFormat)}" class="moment-datetime">${attachment.createdDate.toString(datetimeFormat)}</td>
-                    <td>${si(attachment.size)}</td>
+                    <th><@message "name"/></th>
+                    <th><@message "upload-date"/></th>
+                    <th><@message "size"/></th>
                     <#if !dar.archived>
-                      <td>
-                        <a href="#" onclick="DataAccessService.deleteAttachment('${dar.id}','${attachment.id}')"><i class="fas fa-trash text-danger"></i></a>
-                      </td>
+                      <th></th>
                     </#if>
                   </tr>
-                </#list>
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                  <#list dar.attachments as attachment>
+                    <tr>
+                      <td><a href="${contextPath}/ws/data-access-request/${dar.id}/attachments/${attachment.id}/_download" download="${attachment.name}">${attachment.name}</a></td>
+                      <td data-sort="${attachment.createdDate.toString(datetimeFormat)}" class="moment-datetime">${attachment.createdDate.toString(datetimeFormat)}</td>
+                      <td>${si(attachment.size)}</td>
+                      <#if !dar.archived>
+                        <td>
+                          <a href="#" onclick="DataAccessService.deleteAttachment('${dar.id}','${attachment.id}')"><i class="fas fa-trash text-danger"></i></a>
+                        </td>
+                      </#if>
+                    </tr>
+                  </#list>
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         </div>

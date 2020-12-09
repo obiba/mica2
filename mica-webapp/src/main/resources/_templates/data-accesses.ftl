@@ -65,54 +65,56 @@
                 </button>
               </div>
               <#if dars?? && dars?size gt 0>
-                <table id="dars" class="table table-bordered table-striped">
-                  <thead>
-                  <tr>
-                    <th>ID</th>
-                    <#if isAdministrator || isDAO>
-                      <th><@message "applicant"/></th>
-                    </#if>
-                    <th><@message "title"/></th>
-                    <th><@message "last-update"/></th>
-                    <th><@message "submission-date"/></th>
-                    <#if accessConfig.feasibilityEnabled>
-                      <th><@message "feasibilities-pending-total"/></th>
-                    </#if>
-                    <#if accessConfig.amendmentsEnabled>
-                      <th><@message "amendments-pending-total"/></th>
-                    </#if>
-                    <th><@message "status"/></th>
-                    <#if dataAccessArchiveEnabled>
-                      <th><@message "archived"/></th>
-                    </#if>
-                  </tr>
-                  </thead>
-                  <tbody>
-                  <#list dars as dar>
+                <div class="table-responsive">
+                  <table id="dars" class="table table-bordered table-striped">
+                    <thead>
                     <tr>
-                      <td><a href="${contextPath}/data-access/${dar.id}">${dar.id}</a></td>
+                      <th>ID</th>
                       <#if isAdministrator || isDAO>
-                        <td>
-                          <a href="#" data-toggle="modal" data-target="#modal-${dar.applicant?replace(".", "-")}">${applicants[dar.applicant].fullName}</a>
-                        </td>
+                        <th><@message "applicant"/></th>
                       </#if>
-                      <td>${dar.title!""}</td>
-                      <td data-sort="${dar.lastUpdate.toString(datetimeFormat)}" class="moment-datetime">${dar.lastUpdate.toString(datetimeFormat)}</td>
-                      <td data-sort="<#if dar.submitDate??>${dar.submitDate.toString(datetimeFormat)}</#if>" class="moment-datetime"><#if dar.submitDate??>${dar.submitDate.toString(datetimeFormat)}</#if></td>
+                      <th><@message "title"/></th>
+                      <th><@message "last-update"/></th>
+                      <th><@message "submission-date"/></th>
                       <#if accessConfig.feasibilityEnabled>
-                        <td>${dar.pendingFeasibilities}/${dar.totalFeasibilities}</td>
+                        <th><@message "feasibilities-pending-total"/></th>
                       </#if>
                       <#if accessConfig.amendmentsEnabled>
-                        <td>${dar.pendingAmendments}/${dar.totalAmendments}</td>
+                        <th><@message "amendments-pending-total"/></th>
                       </#if>
-                      <td><i class="fas fa-circle text-${statusColor(dar.status.toString())}"></i> <@message dar.status.toString()/></td>
+                      <th><@message "status"/></th>
                       <#if dataAccessArchiveEnabled>
-                        <td><#if dar.archived><i class="fas fa-check"></i></#if></td>
+                        <th><@message "archived"/></th>
                       </#if>
                     </tr>
-                  </#list>
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                    <#list dars as dar>
+                      <tr>
+                        <td><a href="${contextPath}/data-access/${dar.id}">${dar.id}</a></td>
+                        <#if isAdministrator || isDAO>
+                          <td>
+                            <a href="#" data-toggle="modal" data-target="#modal-${dar.applicant?replace(".", "-")}">${applicants[dar.applicant].fullName}</a>
+                          </td>
+                        </#if>
+                        <td>${dar.title!""}</td>
+                        <td data-sort="${dar.lastUpdate.toString(datetimeFormat)}" class="moment-datetime">${dar.lastUpdate.toString(datetimeFormat)}</td>
+                        <td data-sort="<#if dar.submitDate??>${dar.submitDate.toString(datetimeFormat)}</#if>" class="moment-datetime"><#if dar.submitDate??>${dar.submitDate.toString(datetimeFormat)}</#if></td>
+                        <#if accessConfig.feasibilityEnabled>
+                          <td>${dar.pendingFeasibilities}/${dar.totalFeasibilities}</td>
+                        </#if>
+                        <#if accessConfig.amendmentsEnabled>
+                          <td>${dar.pendingAmendments}/${dar.totalAmendments}</td>
+                        </#if>
+                        <td><i class="fas fa-circle text-${statusColor(dar.status.toString())}"></i> <@message dar.status.toString()/></td>
+                        <#if dataAccessArchiveEnabled>
+                          <td><#if dar.archived><i class="fas fa-check"></i></#if></td>
+                        </#if>
+                      </tr>
+                    </#list>
+                    </tbody>
+                  </table>
+                </div>
               <#else>
                 <div class="mt-3 text-muted"><@message "no-data-access-requests"/></div>
               </#if>
@@ -125,34 +127,36 @@
                 </div>
                 <div class="tab-pane fade" id="tabs-users" role="tabpanel" aria-labelledby="tabs-users-tab">
                   <#if users?? && users?size gt 0>
-                    <table id="users" class="table table-bordered table-striped">
-                      <thead>
-                      <tr>
-                        <th><@message "full-name"/></th>
-                        <th><@message "groups"/></th>
-                        <th><@message "createdDate"/></th>
-                        <th><@message "lastLogin"/></th>
-                        <@userProfileTHs/>
-                      </tr>
-                      </thead>
-                      <tbody>
-                      <#list users as profile>
+                    <div class="table-responsive">
+                      <table id="users" class="table table-bordered table-striped">
+                        <thead>
                         <tr>
-                          <td>
-                            <a href="#" data-toggle="modal" data-target="#modal-${profile.username?replace(".", "-")}">${profile.fullName}</a>
-                          </td>
-                          <td>
-                            <#list profile.groups as group>
-                              <span class="badge badge-info">${group}</span>
-                            </#list>
-                          </td>
-                          <td data-sort="${profile.attributes["createdDate"].toString(datetimeFormat)}" class="moment-datetime">${profile.attributes["createdDate"].toString(datetimeFormat)}</td>
-                          <td data-sort="<#if profile.attributes["lastLogin"]??>${profile.attributes["lastLogin"].toString(datetimeFormat)}</#if>" class="moment-datetime"><#if profile.attributes["lastLogin"]??>${profile.attributes["lastLogin"].toString(datetimeFormat)}</#if></td>
-                          <@userProfileTDs profile=profile/>
+                          <th><@message "full-name"/></th>
+                          <th><@message "groups"/></th>
+                          <th><@message "createdDate"/></th>
+                          <th><@message "lastLogin"/></th>
+                          <@userProfileTHs/>
                         </tr>
-                      </#list>
-                      </tbody>
-                    </table>
+                        </thead>
+                        <tbody>
+                        <#list users as profile>
+                          <tr>
+                            <td>
+                              <a href="#" data-toggle="modal" data-target="#modal-${profile.username?replace(".", "-")}">${profile.fullName}</a>
+                            </td>
+                            <td>
+                              <#list profile.groups as group>
+                                <span class="badge badge-info">${group}</span>
+                              </#list>
+                            </td>
+                            <td data-sort="${profile.attributes["createdDate"].toString(datetimeFormat)}" class="moment-datetime">${profile.attributes["createdDate"].toString(datetimeFormat)}</td>
+                            <td data-sort="<#if profile.attributes["lastLogin"]??>${profile.attributes["lastLogin"].toString(datetimeFormat)}</#if>" class="moment-datetime"><#if profile.attributes["lastLogin"]??>${profile.attributes["lastLogin"].toString(datetimeFormat)}</#if></td>
+                            <@userProfileTDs profile=profile/>
+                          </tr>
+                        </#list>
+                        </tbody>
+                      </table>
+                    </div>
                   <#else>
                     <span class="text-muted"><@message "no-users"/></span>
                   </#if>

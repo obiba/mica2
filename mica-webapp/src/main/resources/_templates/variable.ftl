@@ -303,20 +303,21 @@
                 </div>
                 <div class="card-body">
                   <div id="loadingHarmonizedVariables" class="spinner-border spinner-border-sm" role="status"></div>
-
-                  <table id="harmonizedVariables" class="table table-striped" style="display: none">
-                    <thead>
-                      <tr>
-                        <th><@message "variable"/></th>
-                        <th><@message "study"/></th>
-                        <th><@message "data-collection-event"/></th>
-                        <th><@message "status"/></th>
-                        <th><@message "status-detail"/></th>
-                        <th><@message "comment"/></th>
-                      </tr>
-                    </thead>
-                    <tbody></tbody>
-                  </table>
+                  <div class="table-responsive">
+                    <table id="harmonizedVariables" class="table table-striped" style="display: none">
+                      <thead>
+                        <tr>
+                          <th><@message "variable"/></th>
+                          <th><@message "study"/></th>
+                          <th><@message "data-collection-event"/></th>
+                          <th><@message "status"/></th>
+                          <th><@message "status-detail"/></th>
+                          <th><@message "comment"/></th>
+                        </tr>
+                      </thead>
+                      <tbody></tbody>
+                    </table>
+                  </div>
                   <div id="noHarmonizedVariables" style="display: none">
                     <span class="text-muted"><@message "no-harmonized-variables"/></span>
                   </div>

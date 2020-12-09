@@ -79,36 +79,38 @@
               <div class="tab-content">
                 <#if datasetListDisplays?seq_contains("table")>
                   <div class="tab-pane <#if datasetListDefaultDisplay == "table">active</#if>" id="table">
-                    <table id="${title}" class="table table-bordered table-striped">
-                      <thead>
-                      <tr>
-                        <th><@message "acronym"/></th>
-                        <th><@message "name"/></th>
-                        <th><@message "description"/></th>
-                        <#if showTypeColumn>
-                          <th><@message "type"/></th>
-                        </#if>
-                      </tr>
-                      </thead>
-                      <tbody>
-                      <#list datasets as ds>
+                    <div class="table-responsive">
+                      <table id="${title}" class="table table-bordered table-striped">
+                        <thead>
                         <tr>
-                          <td><a href="${contextPath}/dataset/${ds.id}">${localize(ds.acronym)}</a></td>
-                          <td><small>${localize(ds.name)}</small></td>
-                          <td class="marked"><template><small>${localize(ds.description)?trim?truncate_w(100, "...")}</small></template></td>
+                          <th><@message "acronym"/></th>
+                          <th><@message "name"/></th>
+                          <th><@message "description"/></th>
                           <#if showTypeColumn>
-                            <td>
-                              <#if ds.class.simpleName == "HarmonizationDataset">
-                                <@message "harmonized"/>
-                              <#else>
-                                <@message "collected"/>
-                              </#if>
-                            </td>
+                            <th><@message "type"/></th>
                           </#if>
                         </tr>
-                      </#list>
-                      </tbody>
-                    </table>
+                        </thead>
+                        <tbody>
+                        <#list datasets as ds>
+                          <tr>
+                            <td><a href="${contextPath}/dataset/${ds.id}">${localize(ds.acronym)}</a></td>
+                            <td><small>${localize(ds.name)}</small></td>
+                            <td class="marked"><template><small>${localize(ds.description)?trim?truncate_w(100, "...")}</small></template></td>
+                            <#if showTypeColumn>
+                              <td>
+                                <#if ds.class.simpleName == "HarmonizationDataset">
+                                  <@message "harmonized"/>
+                                <#else>
+                                  <@message "collected"/>
+                                </#if>
+                              </td>
+                            </#if>
+                          </tr>
+                        </#list>
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
                 </#if>
 

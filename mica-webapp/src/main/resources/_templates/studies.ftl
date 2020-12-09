@@ -81,36 +81,38 @@
               <div class="tab-content">
                 <#if studyListDisplays?seq_contains("table")>
                   <div class="tab-pane <#if studyListDefaultDisplay == "table">active</#if>" id="table">
-                    <table id="${title}" class="table table-bordered table-striped">
-                      <thead>
-                      <tr>
-                        <th><@message "acronym"/></th>
-                        <th><@message "name"/></th>
-                        <th><@message "description"/></th>
-                        <#if showTypeColumn>
-                          <th><@message "type"/></th>
-                        </#if>
-                      </tr>
-                      </thead>
-                      <tbody>
-                      <#list studies as std>
+                    <div class="table-responsive">
+                      <table id="${title}" class="table table-bordered table-striped">
+                        <thead>
                         <tr>
-                          <td><a href="${contextPath}/study/${std.id}">${localize(std.acronym)}</a></td>
-                          <td><small>${localize(std.name)}</small></td>
-                          <td class="marked"><template><small>${localize(std.objectives)?trim?truncate_w(100, "...")}</small></template></td>
+                          <th><@message "acronym"/></th>
+                          <th><@message "name"/></th>
+                          <th><@message "description"/></th>
                           <#if showTypeColumn>
-                            <td>
-                              <#if std.class.simpleName == "HarmonizationStudy">
-                                <@message "harmonization"/>
-                              <#else>
-                                <@message "individual"/>
-                              </#if>
-                            </td>
+                            <th><@message "type"/></th>
                           </#if>
                         </tr>
-                      </#list>
-                      </tbody>
-                    </table>
+                        </thead>
+                        <tbody>
+                        <#list studies as std>
+                          <tr>
+                            <td><a href="${contextPath}/study/${std.id}">${localize(std.acronym)}</a></td>
+                            <td><small>${localize(std.name)}</small></td>
+                            <td class="marked"><template><small>${localize(std.objectives)?trim?truncate_w(100, "...")}</small></template></td>
+                            <#if showTypeColumn>
+                              <td>
+                                <#if std.class.simpleName == "HarmonizationStudy">
+                                  <@message "harmonization"/>
+                                <#else>
+                                  <@message "individual"/>
+                                </#if>
+                              </td>
+                            </#if>
+                          </tr>
+                        </#list>
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
                 </#if>
 

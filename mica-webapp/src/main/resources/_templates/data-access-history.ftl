@@ -59,38 +59,40 @@
               <h3 class="card-title"><@message "status-changes"/></h3>
             </div>
             <div class="card-body">
-              <table id="status" class="table table-bordered table-striped">
-                <thead>
-                <tr>
-                  <#if accessConfig.amendmentsEnabled>
-                    <th><@message "form"/></th>
-                  </#if>
-                  <th><@message "status"/></th>
-                  <th><@message "author"/></th>
-                  <th><@message "date"/></th>
-                </tr>
-                </thead>
-                <tbody>
-                <#list statusChangeEvents?reverse as event>
+              <div class="table-responsive">
+                <table id="status" class="table table-bordered table-striped">
+                  <thead>
                   <tr>
                     <#if accessConfig.amendmentsEnabled>
-                      <td>
-                        <#if event.amendment>
-                          <a href="${contextPath}/data-access-amendment-form/${event.form.id}"><i class="fas fa-file-import"></i> ${event.form.id}</a>
-                        <#elseif event.feasibility>
-                          <a href="${contextPath}/data-access-feasibility-form/${event.form.id}"><i class="far fa-question-circle"></i> ${event.form.id}</a>
-                        <#else>
-                          <a href="${contextPath}/data-access-form/${event.form.id}"><i class="fas fa-book"></i> ${event.form.id}</a>
-                        </#if>
-                      </td>
+                      <th><@message "form"/></th>
                     </#if>
-                    <td><i class="fas fa-circle text-${statusColor(event.status.toString())}"></i> <@message event.status.toString()/></td>
-                    <td>${event.profile.fullName}</td>
-                    <td data-sort="${event.date.toString(datetimeFormat)}" class="moment-datetime">${event.date.toString(datetimeFormat)}</td>
+                    <th><@message "status"/></th>
+                    <th><@message "author"/></th>
+                    <th><@message "date"/></th>
                   </tr>
-                </#list>
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                  <#list statusChangeEvents?reverse as event>
+                    <tr>
+                      <#if accessConfig.amendmentsEnabled>
+                        <td>
+                          <#if event.amendment>
+                            <a href="${contextPath}/data-access-amendment-form/${event.form.id}"><i class="fas fa-file-import"></i> ${event.form.id}</a>
+                          <#elseif event.feasibility>
+                            <a href="${contextPath}/data-access-feasibility-form/${event.form.id}"><i class="far fa-question-circle"></i> ${event.form.id}</a>
+                          <#else>
+                            <a href="${contextPath}/data-access-form/${event.form.id}"><i class="fas fa-book"></i> ${event.form.id}</a>
+                          </#if>
+                        </td>
+                      </#if>
+                      <td><i class="fas fa-circle text-${statusColor(event.status.toString())}"></i> <@message event.status.toString()/></td>
+                      <td>${event.profile.fullName}</td>
+                      <td data-sort="${event.date.toString(datetimeFormat)}" class="moment-datetime">${event.date.toString(datetimeFormat)}</td>
+                    </tr>
+                  </#list>
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         </div>
@@ -108,24 +110,26 @@
                 </#if>
               </div>
               <div class="card-body">
-                <table id="actions" class="table table-bordered table-striped">
-                  <thead>
-                  <tr>
-                    <th><@message "action"/></th>
-                    <th><@message "author"/></th>
-                    <th><@message "date"/></th>
-                  </tr>
-                  </thead>
-                  <tbody>
-                  <#list dar.actionLogHistory as act>
+                <div class="table-responsive">
+                  <table id="actions" class="table table-bordered table-striped">
+                    <thead>
                     <tr>
-                      <td>${act.action}</td>
-                      <td>${act.author}</td>
-                      <td data-sort="${act.changedOn.toString(datetimeFormat)}" class="moment-date">${act.changedOn.toString(datetimeFormat)}</td>
+                      <th><@message "action"/></th>
+                      <th><@message "author"/></th>
+                      <th><@message "date"/></th>
                     </tr>
-                  </#list>
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                    <#list dar.actionLogHistory as act>
+                      <tr>
+                        <td>${act.action}</td>
+                        <td>${act.author}</td>
+                        <td data-sort="${act.changedOn.toString(datetimeFormat)}" class="moment-date">${act.changedOn.toString(datetimeFormat)}</td>
+                      </tr>
+                    </#list>
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
           </div>

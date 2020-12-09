@@ -28,20 +28,22 @@
         <dl>
           <dt><@message "frequencies"/></dt>
           <dd>
-            <table id="frequencyTable" class="table table-striped table-sm">
-              <thead>
-              <tr>
-                <th><@message "value"/></th>
-                <th><@message "frequency"/></th>
-                <th><@message "pct-values"/></th>
-                <th><@message "pct-missings"/></th>
-                <th><@message "pct-total"/></th>
-                <th><@message "missing"/></th>
-              </tr>
-              </thead>
-              <tbody id="frequencyValues">
-              </tbody>
-            </table>
+            <div class="table-responsive">
+              <table id="frequencyTable" class="table table-striped table-sm">
+                <thead>
+                <tr>
+                  <th><@message "value"/></th>
+                  <th><@message "frequency"/></th>
+                  <th><@message "pct-values"/></th>
+                  <th><@message "pct-missings"/></th>
+                  <th><@message "pct-total"/></th>
+                  <th><@message "missing"/></th>
+                </tr>
+                </thead>
+                <tbody id="frequencyValues">
+                </tbody>
+              </table>
+            </div>
           </dd>
         </dl>
       </div>

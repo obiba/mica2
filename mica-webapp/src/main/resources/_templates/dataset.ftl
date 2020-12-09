@@ -171,52 +171,17 @@
                 <div class="card-body">
                   <#if studyTables?? && studyTables?size != 0>
                     <h5><@message "individual-studies"/></h5>
-                    <table class="table table-striped mb-3">
-                      <thead>
-                      <tr>
-                        <th><@message "study"/></th>
-                        <th><@message "population"/></th>
-                        <th><@message "data-collection-event"/></th>
-                      </tr>
-                      </thead>
-                      <tbody>
-                      <#list studyTables as table>
-                        <tr>
-                          <td>
-                            <a href="${contextPath}/study/${table.study.id}">
-                              ${localize(table.study.acronym)}
-                            </a>
-                          </td>
-                          <td>
-                            <#assign popId="${table.study.id}-${table.population.id}">
-                            <@populationDialog id=popId population=table.population></@populationDialog>
-                            <a href="#" data-toggle="modal" data-target="#modal-${popId}">
-                              ${localize(table.population.name)}
-                            </a>
-                          </td>
-                          <td>
-                            <#assign dceId="${table.study.id}-${table.population.id}-${table.dce.id}">
-                            <@dceDialog id=dceId dce=table.dce></@dceDialog>
-                            <a href="#" data-toggle="modal" data-target="#modal-${dceId}">
-                              ${localize(table.dce.name)}
-                            </a>
-                          </td>
-                        </tr>
-                      </#list>
-                      </tbody>
-                    </table>
-                  </#if>
-                    <#if harmonizationTables?? && harmonizationTables?size != 0>
-                      <h5><@message "harmonization-studies"/></h5>
-                      <table class="table table-striped">
+                    <div class="table-responsive">
+                      <table class="table table-striped mb-3">
                         <thead>
                         <tr>
                           <th><@message "study"/></th>
                           <th><@message "population"/></th>
+                          <th><@message "data-collection-event"/></th>
                         </tr>
                         </thead>
                         <tbody>
-                        <#list harmonizationTables as table>
+                        <#list studyTables as table>
                           <tr>
                             <td>
                               <a href="${contextPath}/study/${table.study.id}">
@@ -230,10 +195,49 @@
                                 ${localize(table.population.name)}
                               </a>
                             </td>
+                            <td>
+                              <#assign dceId="${table.study.id}-${table.population.id}-${table.dce.id}">
+                              <@dceDialog id=dceId dce=table.dce></@dceDialog>
+                              <a href="#" data-toggle="modal" data-target="#modal-${dceId}">
+                                ${localize(table.dce.name)}
+                              </a>
+                            </td>
                           </tr>
                         </#list>
                         </tbody>
                       </table>
+                    </div>
+                  </#if>
+                    <#if harmonizationTables?? && harmonizationTables?size != 0>
+                      <h5><@message "harmonization-studies"/></h5>
+                      <div class="table-responsive">
+                        <table class="table table-striped">
+                          <thead>
+                          <tr>
+                            <th><@message "study"/></th>
+                            <th><@message "population"/></th>
+                          </tr>
+                          </thead>
+                          <tbody>
+                          <#list harmonizationTables as table>
+                            <tr>
+                              <td>
+                                <a href="${contextPath}/study/${table.study.id}">
+                                  ${localize(table.study.acronym)}
+                                </a>
+                              </td>
+                              <td>
+                                <#assign popId="${table.study.id}-${table.population.id}">
+                                <@populationDialog id=popId population=table.population></@populationDialog>
+                                <a href="#" data-toggle="modal" data-target="#modal-${popId}">
+                                  ${localize(table.population.name)}
+                                </a>
+                              </td>
+                            </tr>
+                          </#list>
+                          </tbody>
+                        </table>
+                      </div>
                     </#if>
                 </div>
               </div>
@@ -271,21 +275,23 @@
                 </div>
               </div>
               <div id="loadingSummary" class="spinner-border spinner-border-sm" role="status"></div>
-              <table id="harmonizedTable" class="table table-striped">
-                <thead>
-                  <tr>
-                    <th><@message "variable"/></th>
-                    <#list allTables as table>
-                      <th>
-                        <a href="${contextPath}/study/${table.studyId}">${localize(allStudies[table.studyId].acronym)}</a>
-                        <#if table.name??>${localize(table.name)}</#if>
-                        <#if table.description??><i class="fas fa-info-circle" title="${localize(table.description)}"></i></#if>
-                      </th>
-                    </#list>
-                  </tr>
-                </thead>
-                <tbody></tbody>
-              </table>
+              <div class="table-responsive">
+                <table id="harmonizedTable" class="table table-striped">
+                  <thead>
+                    <tr>
+                      <th><@message "variable"/></th>
+                      <#list allTables as table>
+                        <th>
+                          <a href="${contextPath}/study/${table.studyId}">${localize(allStudies[table.studyId].acronym)}</a>
+                          <#if table.name??>${localize(table.name)}</#if>
+                          <#if table.description??><i class="fas fa-info-circle" title="${localize(table.description)}"></i></#if>
+                        </th>
+                      </#list>
+                    </tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+              </div>
             </div>
           </div>
         </#if>

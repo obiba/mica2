@@ -83,7 +83,9 @@
               <div style="display: none;" class="mb-4">
                 <select id="select-study" class="form-control select2 float-right" style="width: 100%;"></select>
               </div>
-              <table id="crosstab" class="table table-striped"></table>
+              <div class="table-responsive">
+                <table id="crosstab" class="table table-striped"></table>
+              </div>
             </div>
           </div>
         </div>

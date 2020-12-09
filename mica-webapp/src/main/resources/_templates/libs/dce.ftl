@@ -160,34 +160,36 @@
       </#if>
     <#else>
       <h5><@message "study.data-collection-events"/></h5>
-      <table id="population-${population.id}-dces" class="table table-bordered table-striped">
-        <thead>
-        <tr>
-          <th>#</th>
-          <th><@message "name"/></th>
-          <th><@message "description"/></th>
-          <th><@message "study.start"/></th>
-          <th><@message "study.end"/></th>
-        </tr>
-        </thead>
-        <tbody>
-        <#list population.dataCollectionEventsSorted as dce>
-          <#assign dceId="${population.id}-${dce.id}">
+      <div class="table-responsive">
+        <table id="population-${population.id}-dces" class="table table-bordered table-striped">
+          <thead>
           <tr>
-            <td>${dce.weight}</td>
-            <td>
-              <a href="#" data-toggle="modal" data-target="#modal-${dceId}">
-                ${localize(dce.name)}
-              </a>
-              <@dceDialog id=dceId dce=dce></@dceDialog>
-            </td>
-            <td class="marked"><template>${localize(dce.description)?trim?truncate(200, "...")}</template></td>
-            <td><#if dce.start?? && dce.start.yearMonth??>${dce.start.yearMonth}</#if></td>
-            <td><#if dce.end?? && dce.end.yearMonth??>${dce.end.yearMonth}</#if></td>
+            <th>#</th>
+            <th><@message "name"/></th>
+            <th><@message "description"/></th>
+            <th><@message "study.start"/></th>
+            <th><@message "study.end"/></th>
           </tr>
-        </#list>
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+          <#list population.dataCollectionEventsSorted as dce>
+            <#assign dceId="${population.id}-${dce.id}">
+            <tr>
+              <td>${dce.weight}</td>
+              <td>
+                <a href="#" data-toggle="modal" data-target="#modal-${dceId}">
+                  ${localize(dce.name)}
+                </a>
+                <@dceDialog id=dceId dce=dce></@dceDialog>
+              </td>
+              <td class="marked"><template>${localize(dce.description)?trim?truncate(200, "...")}</template></td>
+              <td><#if dce.start?? && dce.start.yearMonth??>${dce.start.yearMonth}</#if></td>
+              <td><#if dce.end?? && dce.end.yearMonth??>${dce.end.yearMonth}</#if></td>
+            </tr>
+          </#list>
+          </tbody>
+        </table>
+      </div>
     </#if>
   </#if>
 </#macro>

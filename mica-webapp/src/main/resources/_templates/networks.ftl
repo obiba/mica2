@@ -59,24 +59,26 @@
               <div class="tab-content">
                 <#if networkListDisplays?seq_contains("table")>
                   <div class="tab-pane <#if networkListDefaultDisplay == "table">active</#if>" id="table">
-                    <table id="networks" class="table table-bordered table-striped">
-                      <thead>
-                      <tr>
-                        <th><@message "acronym"/></th>
-                        <th><@message "name"/></th>
-                        <th><@message "description"/></th>
-                      </tr>
-                      </thead>
-                      <tbody>
-                      <#list networks as ntwk>
+                    <div class="table-responsive">
+                      <table id="networks" class="table table-bordered table-striped">
+                        <thead>
                         <tr>
-                          <td><a href="${contextPath}/network/${ntwk.id}">${localize(ntwk.acronym)}</a></td>
-                          <td><small>${localize(ntwk.name)}</small></td>
-                          <td class="marked"><template><small>${localize(ntwk.description)?trim?truncate_w(100, "...")}</small></template></td>
+                          <th><@message "acronym"/></th>
+                          <th><@message "name"/></th>
+                          <th><@message "description"/></th>
                         </tr>
-                      </#list>
-                      </tbody>
-                    </table>
+                        </thead>
+                        <tbody>
+                        <#list networks as ntwk>
+                          <tr>
+                            <td><a href="${contextPath}/network/${ntwk.id}">${localize(ntwk.acronym)}</a></td>
+                            <td><small>${localize(ntwk.name)}</small></td>
+                            <td class="marked"><template><small>${localize(ntwk.description)?trim?truncate_w(100, "...")}</small></template></td>
+                          </tr>
+                        </#list>
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
                 </#if>
 

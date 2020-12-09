@@ -135,7 +135,7 @@
           <div class="card-body">
             <#if user.variablesCart?? && user.variablesCart.count gt 0>
               <div id="loadingSet" class="spinner-border spinner-border-sm" role="status"></div>
-              <div>
+              <div class="table-responsive">
                 <table id="setTable" class="table table-striped">
                   <thead>
                   <tr>

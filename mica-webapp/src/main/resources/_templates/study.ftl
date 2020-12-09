@@ -137,28 +137,30 @@
                   </a>
                 </div>
                 <div class="card-body">
-                  <table class="table">
-                    <thead>
-                    <tr>
-                      <th><@message "investigators"/></th>
-                      <th><@message "contacts"/></th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr>
-                      <td>
-                        <#if study.memberships.investigator??>
-                          <@memberList members=study.memberships.investigator role="investigator"/>
-                        </#if>
-                      </td>
-                      <td>
-                        <#if study.memberships.contact??>
-                          <@memberList members=study.memberships.contact role="contact"/>
-                        </#if>
-                      </td>
-                    </tr>
-                    </tbody>
-                  </table>
+                  <div class="table-responsive">
+                    <table class="table">
+                      <thead>
+                      <tr>
+                        <th><@message "investigators"/></th>
+                        <th><@message "contacts"/></th>
+                      </tr>
+                      </thead>
+                      <tbody>
+                      <tr>
+                        <td>
+                          <#if study.memberships.investigator??>
+                            <@memberList members=study.memberships.investigator role="investigator"/>
+                          </#if>
+                        </td>
+                        <td>
+                          <#if study.memberships.contact??>
+                            <@memberList members=study.memberships.contact role="contact"/>
+                          </#if>
+                        </td>
+                      </tr>
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               </div>
             </div>

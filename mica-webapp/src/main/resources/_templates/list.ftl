@@ -179,7 +179,7 @@
           <div class="card-body">
             <#if set?? && set.identifiers?size gt 0>
               <div id="loadingSet" class="spinner-border spinner-border-sm" role="status"></div>
-              <div>
+              <div class="table-responsive">
                 <table id="setTable" class="table table-striped">
                   <thead>
                   <tr>
