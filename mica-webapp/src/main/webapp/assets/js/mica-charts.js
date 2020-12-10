@@ -4,9 +4,11 @@
  * Extract variable values frequencies and make a ChartJS settings object of it.
  *
  * @param frequencies
+ * @param backgroundColors
+ * @param tr
  * @returns Chartjs settings
  */
-const makeVariableFrequenciesChartSettings = function(frequencies, backgroundColors) {
+const makeVariableFrequenciesChartSettings = function(frequencies, backgroundColors, tr) {
   const labels = [];
   const dataset = {
     data: [],
@@ -14,7 +16,7 @@ const makeVariableFrequenciesChartSettings = function(frequencies, backgroundCol
   };
   frequencies.forEach(frequency => {
     if (frequency.count>0) {
-      labels.push(frequency.value);
+      labels.push(tr[frequency.value] ? tr[frequency.value] : frequency.value);
       dataset.data.push(frequency.count);
     }
   });

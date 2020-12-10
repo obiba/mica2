@@ -58,7 +58,10 @@ const makeSummary = function(showHarmonizedVariableSummarySelector) {
     if (data.frequencies) {
       // frequencies chart
       const chartCanvas = frequencyChartElem.get(0).getContext('2d');
-      new Chart(chartCanvas, makeVariableFrequenciesChartSettings(data.frequencies, Mica.backgroundColors));
+      new Chart(chartCanvas, makeVariableFrequenciesChartSettings(data.frequencies, Mica.backgroundColors, {
+        'NOT_NULL': Mica.tr['not-empty-values'],
+        'N/A': Mica.tr['empty-values']
+      }));
       frequencyChartElem.show();
 
       // frequencies table
