@@ -24,11 +24,11 @@
         <#if population.dataCollectionEvents?? && population.dataCollectionEvents?size != 0>
           <#list population.dataCollectionEventsSorted as dce>
             Mica.options['${study.id}:${population.id}:${dce.id}'] =
-              <#if study.populations?size == 1>"${localize(dce.name)}"<#else>"${localize(population.name)} / ${localize(dce.name)}"</#if>;
+                    escapeQuotes(<#if study.populations?size == 1>"${localize(dce.name)}"<#else>"${localize(population.name)} / ${localize(dce.name)}"</#if>);
           </#list>
         </#if>
       <#else>
-        Mica.options['${study.id}:${population.id}:.'] = '${localize(population.name)}';
+        Mica.options['${study.id}:${population.id}:.'] = escapeQuotes("${localize(population.name)}");
       </#if>
     </#list>
   </#if>
