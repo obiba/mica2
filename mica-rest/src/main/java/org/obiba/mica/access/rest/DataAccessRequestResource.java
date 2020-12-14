@@ -20,7 +20,10 @@ import org.joda.time.DateTime;
 import org.obiba.mica.JSONUtils;
 import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.access.NoSuchDataAccessRequestException;
-import org.obiba.mica.access.domain.*;
+import org.obiba.mica.access.domain.ActionLog;
+import org.obiba.mica.access.domain.DataAccessEntityStatus;
+import org.obiba.mica.access.domain.DataAccessRequest;
+import org.obiba.mica.access.domain.DataAccessRequestTimeline;
 import org.obiba.mica.access.notification.DataAccessRequestCommentMailNotification;
 import org.obiba.mica.access.notification.DataAccessRequestReportNotificationService;
 import org.obiba.mica.access.service.DataAccessEntityService;
@@ -160,6 +163,27 @@ public class DataAccessRequestResource extends DataAccessEntityResource<DataAcce
 
     return Response.ok(dataAccessRequestService.getRequestPdf(id, lang))
       .header("Content-Disposition", "attachment; filename=\"" + "data-access-request-" + id + ".pdf" + "\"").build();
+  }
+
+  @PUT
+  @Path("/_applicant")
+  public Response changeApplicant(@PathParam("id") String id, @QueryParam("username") String applicant) {
+    if (!SecurityUtils.getSubject().hasRole(Roles.MICA_DAO) && !SecurityUtils.getSubject().hasRole(Roles.MICA_ADMIN)) {
+      throw new AuthorizationException();
+    }
+    if (Strings.isNullOrEmpty(applicant))
+      throw new IllegalArgumentException("An applicant name is required");
+
+    DataAccessRequest request = dataAccessRequestService.findById(id);
+    String originalApplicant = request.getApplicant();
+    dataAccessRequestService.changeApplicantAndSave(request, applicant);
+
+    commentsService.findPublicComments("/data-access-request", id).stream()
+      .filter(comment -> comment.getCreatedBy().equals(originalApplicant))
+      .map(comment -> Comment.newBuilder(comment).createdBy(applicant).build())
+      .forEach(comment -> commentsService.save(comment, null));
+
+    return Response.noContent().build();
   }
 
   @PUT

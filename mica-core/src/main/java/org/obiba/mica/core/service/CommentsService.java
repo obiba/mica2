@@ -10,16 +10,9 @@
 
 package org.obiba.mica.core.service;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import javax.inject.Inject;
-
 import com.google.common.eventbus.EventBus;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
-import org.obiba.mica.access.event.DataAccessRequestUpdatedEvent;
 import org.obiba.mica.core.domain.Comment;
 import org.obiba.mica.core.domain.NoSuchCommentException;
 import org.obiba.mica.core.event.CommentDeletedEvent;
@@ -31,6 +24,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
+
+import javax.inject.Inject;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Validated
@@ -54,7 +52,7 @@ public class CommentsService {
       if(saved == null) {
         saved = comment;
       } else {
-        BeanUtils.copyProperties(comment, saved, "id", "classId", "createdBy", "createdDate");
+        BeanUtils.copyProperties(comment, saved, "id", "classId", "createdDate");
       }
 
       saved.setLastModifiedDate(DateTime.now());

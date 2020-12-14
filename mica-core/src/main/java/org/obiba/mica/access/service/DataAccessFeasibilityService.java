@@ -14,6 +14,7 @@ import org.joda.time.DateTime;
 import org.obiba.mica.access.DataAccessEntityRepository;
 import org.obiba.mica.access.DataAccessFeasibilityRepository;
 import org.obiba.mica.access.NoSuchDataAccessRequestException;
+import org.obiba.mica.access.domain.DataAccessAmendment;
 import org.obiba.mica.access.domain.DataAccessEntityStatus;
 import org.obiba.mica.access.domain.DataAccessFeasibility;
 import org.obiba.mica.access.event.DataAccessFeasibilityDeletedEvent;
@@ -123,6 +124,11 @@ public class DataAccessFeasibilityService extends DataAccessEntityService<DataAc
   @Override
   public void delete(@NotNull String id) throws NoSuchDataAccessRequestException {
     delete(findById(id));
+  }
+
+  void changeApplicantAndSave(DataAccessFeasibility feasibility, String applicant) {
+    feasibility.setApplicant(applicant);
+    save(feasibility);
   }
 
   void delete(@NotNull DataAccessFeasibility feasibility) throws NoSuchDataAccessRequestException {

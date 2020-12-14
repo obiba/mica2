@@ -31,6 +31,8 @@ import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.FileStoreService;
 import org.obiba.mica.micaConfig.domain.DataAccessForm;
 import org.obiba.mica.security.Roles;
+import org.obiba.mica.security.domain.SubjectAcl;
+import org.obiba.mica.security.service.SubjectAclService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -47,6 +49,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static com.jayway.jsonpath.Configuration.defaultConfiguration;
 
@@ -55,6 +58,9 @@ import static com.jayway.jsonpath.Configuration.defaultConfiguration;
 public class DataAccessRequestService extends DataAccessEntityService<DataAccessRequest> {
 
   private static final Logger log = LoggerFactory.getLogger(DataAccessRequestService.class);
+
+  @Inject
+  private SubjectAclService subjectAclService;
 
   @Inject
   private DataAccessAmendmentService dataAccessAmendmentService;
@@ -97,6 +103,28 @@ public class DataAccessRequestService extends DataAccessEntityService<DataAccess
     save(saved);
     sendAttachmentsUpdatedNotificationEmail(request);
     return saved;
+  }
+
+  public DataAccessRequest changeApplicantAndSave(@NotNull DataAccessRequest request, String applicant) {
+    if (!request.getApplicant().equals(applicant)) {
+      String originalApplicant = request.getApplicant();
+      request.setApplicant(applicant);
+      save(request);
+
+      dataAccessAmendmentService.findByParentId(request.getId()).forEach(amendment -> {
+        dataAccessAmendmentService.changeApplicantAndSave(amendment, applicant);
+      });
+      dataAccessFeasibilityService.findByParentId(request.getId()).forEach(feasibility -> {
+        dataAccessFeasibilityService.changeApplicantAndSave(feasibility, applicant);
+      });
+
+      subjectAclService.applyPrincipal(
+        subjectAclService.findBySubject(originalApplicant, SubjectAcl.Type.USER).stream()
+          .filter(acl -> (acl.getResource().equals("/data-access-request") && acl.getInstance().equals(request.getId()))
+            || acl.getResource().startsWith(String.format("/data-access-request/%s/", request.getId()))).collect(Collectors.toList()),
+        SubjectAcl.Type.USER, applicant);
+    }
+    return request;
   }
 
   /**

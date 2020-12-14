@@ -77,6 +77,27 @@ public class SubjectAclService {
 
   private Cache<String, Boolean> permissionCache = CacheBuilder.newBuilder().maximumSize(1000).expireAfterWrite(10, TimeUnit.SECONDS).build();
 
+  /**
+   * Apply permissions to the provided subject.
+   *
+   * @param acls
+   * @param type
+   * @param principal
+   */
+  public void applyPrincipal(List<SubjectAcl> acls, SubjectAcl.Type type, String principal) {
+    acls.stream().map(acl -> {
+      acl.setType(type);
+      acl.setPrincipal(principal);
+      return acl;
+    }).forEach(acl -> subjectAclRepository.save(acl));
+  }
+
+  /**
+   * Check if current subject has the principal.
+   *
+   * @param principal
+   * @return
+   */
   public boolean isCurrentUser(String principal) {
     return SecurityUtils.getSubject().getPrincipal().toString().equals(principal);
   }
