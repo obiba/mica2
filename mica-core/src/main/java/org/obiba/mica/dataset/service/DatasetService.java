@@ -82,6 +82,10 @@ public abstract class DatasetService<T extends Dataset, T1 extends EntityState> 
   @NotNull
   protected abstract RestValueTable getTable(@NotNull T dataset) throws NoSuchValueTableException;
 
+  protected RestValueTable getTable(@NotNull String project, @NotNull String table) throws NoSuchValueTableException {
+    return execute(getDatasource(project), datasource -> (RestValueTable) datasource.getValueTable(table));
+  }
+
   protected abstract StudyService getStudyService();
 
   protected abstract NetworkService getNetworkService();
@@ -161,6 +165,11 @@ public abstract class DatasetService<T extends Dataset, T1 extends EntityState> 
   protected RestValueTable.RestVariableValueSource getVariableValueSource(@NotNull T dataset, String variableName)
       throws NoSuchValueTableException, NoSuchVariableException {
     return (RestValueTable.RestVariableValueSource) getTable(dataset).getVariableValueSource(variableName);
+  }
+
+  protected RestValueTable.RestVariableValueSource getVariableValueSource(String project, String table, String variableName)
+    throws NoSuchValueTableException, NoSuchVariableException {
+    return (RestValueTable.RestVariableValueSource) getTable(project, table).getVariableValueSource(variableName);
   }
 
   public Magma.TableDto getTableDto(@NotNull T dataset) {
