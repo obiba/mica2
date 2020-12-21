@@ -1,5 +1,6 @@
 <!-- Macros -->
 <#include "libs/header.ftl">
+<#include "models/studies.ftl">
 
 <!-- Template variables -->
 <#if !type??>
@@ -84,31 +85,11 @@
                     <div class="table-responsive">
                       <table id="${title}" class="table table-bordered table-striped">
                         <thead>
-                        <tr>
-                          <th><@message "acronym"/></th>
-                          <th><@message "name"/></th>
-                          <th><@message "description"/></th>
-                          <#if showTypeColumn>
-                            <th><@message "type"/></th>
-                          </#if>
-                        </tr>
+                        <@studyTableHeadModel/>
                         </thead>
                         <tbody>
                         <#list studies as std>
-                          <tr>
-                            <td><a href="${contextPath}/study/${std.id}">${localize(std.acronym)}</a></td>
-                            <td><small>${localize(std.name)}</small></td>
-                            <td class="marked"><template><small>${localize(std.objectives)?trim?truncate_w(100, "...")}</small></template></td>
-                            <#if showTypeColumn>
-                              <td>
-                                <#if std.class.simpleName == "HarmonizationStudy">
-                                  <@message "harmonization"/>
-                                <#else>
-                                  <@message "individual"/>
-                                </#if>
-                              </td>
-                            </#if>
-                          </tr>
+                          <@studyTableRowModel study=std/>
                         </#list>
                         </tbody>
                       </table>
@@ -121,27 +102,7 @@
                     <#list studies as std>
                       <div class="border-bottom mb-3 pb-3" style="min-height: 150px;">
                         <div class="row">
-                          <div class="col-lg-3 col-sm-12">
-                            <#if std.logo??>
-                              <img class="img-fluid" style="max-height: 150px" alt="${localize(std.acronym)} logo" src="${contextPath}/ws/study/${std.id}/file/${std.logo.id}/_download"/>
-                            <#else >
-                              <div class="text-black-50 text-center mt-5">
-                                <i class="${studyIcon} fa-3x"></i>
-                              </div>
-                            </#if>
-                          </div>
-                          <div class="col-lg-9 col-sm-12">
-                            <h2 class="lead"><b>${localize(std.acronym)}</b></h2>
-                            <p class="text-muted text-sm">${localize(std.name)}</p>
-                            <div class="marked">
-                              <template>${localize(std.objectives)?trim?truncate_w(200, "...")}</template>
-                            </div>
-                            <div class="mt-2">
-                              <a href="${contextPath}/study/${std.id}" class="btn btn-sm btn-outline-info">
-                                <@message "global.read-more"/>
-                              </a>
-                            </div>
-                          </div>
+                          <@studyLineModel study=std/>
                         </div>
                       </div>
                     </#list>
@@ -153,34 +114,7 @@
                     <div class="row d-flex align-items-stretch">
                       <#list studies as std>
                         <div class="col-12 col-sm-6 col-md-4 d-flex align-items-stretch">
-                          <div class="card bg-light w-100">
-                            <div class="card-header text-dark border-bottom-0">
-                              <h2 class="lead"><b>${localize(std.acronym)}</b></h2>
-                            </div>
-                            <div class="card-body pt-0">
-                              <div class="row">
-                                <div class="col-7">
-                                  <p class="text-muted text-sm">${localize(std.name)}</p>
-                                </div>
-                                <div class="col-5 text-center">
-                                    <#if std.logo??>
-                                      <img class="img-fluid" style="max-height: 200px" alt="${localize(std.acronym)} logo" src="${contextPath}/ws/study/${std.id}/file/${std.logo.id}/_download"/>
-                                    <#else >
-                                      <p class="text-black-50 text-center mr-5 ml-5 pr-5">
-                                        <i class="${studyIcon} fa-3x"></i>
-                                      </p>
-                                    </#if>
-                                </div>
-                              </div>
-                            </div>
-                            <div class="card-footer">
-                              <div class="text-right">
-                                <a href="${contextPath}/study/${std.id}" class="btn btn-sm btn-outline-info">
-                                  <i class="fas fa-eye"></i> <@message "global.read-more"/>
-                                </a>
-                              </div>
-                            </div>
-                          </div>
+                          <@studyCa study=std/>
                         </div>
                       </#list>
                     </div>
