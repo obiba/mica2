@@ -1,5 +1,6 @@
 <!-- Macros -->
 <#include "libs/header.ftl">
+<#include "models/networks.ftl">
 
 <!DOCTYPE html>
 <html lang="${.lang}">
@@ -62,19 +63,11 @@
                     <div class="table-responsive">
                       <table id="networks" class="table table-bordered table-striped">
                         <thead>
-                        <tr>
-                          <th><@message "acronym"/></th>
-                          <th><@message "name"/></th>
-                          <th><@message "description"/></th>
-                        </tr>
+                        <@networkTableHeadModel/>
                         </thead>
                         <tbody>
                         <#list networks as ntwk>
-                          <tr>
-                            <td><a href="${contextPath}/network/${ntwk.id}">${localize(ntwk.acronym)}</a></td>
-                            <td><small>${localize(ntwk.name)}</small></td>
-                            <td class="marked"><template><small>${localize(ntwk.description)?trim?truncate_w(100, "...")}</small></template></td>
-                          </tr>
+                          <@networkTableRowModel network=ntwk/>
                         </#list>
                         </tbody>
                       </table>
@@ -87,27 +80,7 @@
                     <#list networks as ntwk>
                       <div class="border-bottom mb-3 pb-3" style="min-height: 150px;">
                         <div class="row">
-                          <div class="col-lg-3 col-sm-12">
-                            <#if ntwk.logo??>
-                              <img class="img-fluid" style="max-height: 150px" alt="${localize(ntwk.acronym)} logo" src="${contextPath}/ws/network/${ntwk.id}/file/${ntwk.logo.id}/_download"/>
-                            <#else >
-                              <div class="text-black-50 text-center mt-5">
-                                <i class="${networkIcon} fa-3x"></i>
-                              </div>
-                            </#if>
-                          </div>
-                          <div class="col-lg-9 col-sm-12">
-                            <h2 class="lead"><b>${localize(ntwk.acronym)}</b></h2>
-                            <p class="text-muted text-sm">${localize(ntwk.name)}</p>
-                            <div class="marked">
-                              <template>${localize(ntwk.description)?trim?truncate_w(200, "...")}</template>
-                            </div>
-                            <div class="mt-2">
-                              <a href="${contextPath}/network/${ntwk.id}" class="btn btn-sm btn-outline-info">
-                                <@message "global.read-more"/>
-                              </a>
-                            </div>
-                          </div>
+                          <@networkLineModel network=ntwk/>
                         </div>
                       </div>
                     </#list>
@@ -119,34 +92,7 @@
                     <div class="row d-flex align-items-stretch">
                       <#list networks as ntwk>
                         <div class="col-12 col-sm-6 col-md-4 d-flex align-items-stretch">
-                          <div class="card bg-light w-100">
-                            <div class="card-header text-dark border-bottom-0">
-                              <h2 class="lead"><b>${localize(ntwk.acronym)}</b></h2>
-                            </div>
-                            <div class="card-body pt-0">
-                              <div class="row">
-                                <div class="col-7">
-                                  <p class="text-muted text-sm">${localize(ntwk.name)}</p>
-                                </div>
-                                <div class="col-5 text-center">
-                                    <#if ntwk.logo??>
-                                      <img class="img-fluid" style="max-height: 200px" alt="${localize(ntwk.acronym)} logo" src="${contextPath}/ws/network/${ntwk.id}/file/${ntwk.logo.id}/_download"/>
-                                    <#else >
-                                      <p class="text-black-50 text-center mr-5 ml-5 pr-5">
-                                        <i class="${networkIcon} fa-3x"></i>
-                                      </p>
-                                    </#if>
-                                </div>
-                              </div>
-                            </div>
-                            <div class="card-footer">
-                              <div class="text-right">
-                                <a href="${contextPath}/network/${ntwk.id}" class="btn btn-sm btn-outline-info">
-                                  <i class="fas fa-eye"></i> <@message "global.read-more"/>
-                                </a>
-                              </div>
-                            </div>
-                          </div>
+                          <@networkCardModel network=ntwk/>
                         </div>
                       </#list>
                     </div>
