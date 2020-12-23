@@ -32,7 +32,7 @@
     <!-- Number formatting -->
     const numberFormatter = new Intl.NumberFormat('${.lang}');
     <!-- DataTable options -->
-    const dataTablesDefaultOpts = {
+    let dataTablesDefaultOpts = {
         "paging": true,
         "pageLength": 25,
         "lengthChange": true,
@@ -44,7 +44,7 @@
             "url": "${assetsPath}/i18n/datatables.${.lang}.json"
         }
     };
-    const dataTablesSortSearchOpts = {
+    let dataTablesSortSearchOpts = {
         "paging": false,
         "lengthChange": false,
         "searching": true,
@@ -55,7 +55,7 @@
             "url": "${assetsPath}/i18n/datatables.${.lang}.json"
         }
     };
-    const dataTablesSortOpts = {
+    let dataTablesSortOpts = {
         "paging": false,
         "lengthChange": false,
         "searching": false,
@@ -66,7 +66,7 @@
             "url": "${assetsPath}/i18n/datatables.${.lang}.json"
         }
     };
-    const dataTablesNoSortSearchOpts = {
+    let dataTablesNoSortSearchOpts = {
         "paging": true,
         "pageLength": 25,
         "lengthChange": false,
