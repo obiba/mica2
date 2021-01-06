@@ -296,12 +296,6 @@ const ResultsTabContent = {
     'study-filter-shortcut': StudyFilterShortcutComponent
   },
   data() {
-    const subAgg = {
-      agg: 'model-numberOfParticipants-participant-number',
-      dataKey: 'obiba.mica.StatsAggregationResultDto.stats',
-      title: Mica.tr['participants']
-    };
-
     const chartOptions = {
       'geographical-distribution-chart': {
 
@@ -365,7 +359,6 @@ const ResultsTabContent = {
         agg: 'model-methods-design',
         vocabulary: 'methods-design',
         dataKey: 'obiba.mica.TermsAggregationResultDto.terms',
-        subAgg
       },
       'number-participants-chart': {
         id: 'number-participants-chart',
@@ -377,7 +370,6 @@ const ResultsTabContent = {
         agg: 'model-numberOfParticipants-participant-number-range',
         vocabulary: 'numberOfParticipants-participant-range',
         dataKey: 'obiba.mica.RangeAggregationResultDto.ranges',
-        subAgg,
         legend: {
         display: true,
           position: 'right',
@@ -405,7 +397,6 @@ const ResultsTabContent = {
         agg: 'model-startYear-range',
         vocabulary: 'start-range',
         dataKey: 'obiba.mica.RangeAggregationResultDto.ranges',
-        subAgg
       }
     }
 
