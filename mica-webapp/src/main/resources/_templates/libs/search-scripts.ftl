@@ -93,7 +93,8 @@
     "variables-added-to-set": "<@message "variables-added-to-set"/>",
     "collapse": "<@message "collapse"/>",
     "value": "<@message "value"/>",
-    "frequency": "<@message "frequency"/>"
+    "frequency": "<@message "frequency"/>",
+    "graphics.total": "<@message "graphics.total"/>",
   };
 
   Mica.trArgs = (msgKey, msgArgs) => {
