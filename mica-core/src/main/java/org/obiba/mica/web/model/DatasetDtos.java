@@ -450,6 +450,18 @@ class DatasetDtos {
     @Nullable Math.SummaryStatisticsDto summary, boolean withStudySummary) {
     Mica.DatasetVariableAggregationDto.Builder aggDto = Mica.DatasetVariableAggregationDto.newBuilder();
 
+    simpleAggregationDto(aggDto, summary);
+
+    if(opalTable instanceof StudyTable)
+      aggDto.setStudyTable(asDto((StudyTable) opalTable, withStudySummary));
+    else if (opalTable instanceof HarmonizationStudyTable)
+      aggDto.setHarmonizationStudyTable(asDto((HarmonizationStudyTable) opalTable, withStudySummary));
+
+    return aggDto;
+  }
+
+  public Mica.DatasetVariableAggregationDto.Builder simpleAggregationDto(@NotNull Mica.DatasetVariableAggregationDto.Builder aggDto, @Nullable Math.SummaryStatisticsDto summary) {
+
     if(summary == null) return aggDto;
 
     if(summary.hasExtension(Math.CategoricalSummaryDto.categorical)) {
@@ -465,11 +477,6 @@ class DatasetDtos {
     } else if(summary.hasExtension(Math.BinarySummaryDto.binarySummary)) {
       aggDto = asDto(summary.getExtension(Math.BinarySummaryDto.binarySummary));
     }
-
-    if(opalTable instanceof StudyTable)
-      aggDto.setStudyTable(asDto((StudyTable) opalTable, withStudySummary));
-    else if (opalTable instanceof HarmonizationStudyTable)
-      aggDto.setHarmonizationStudyTable(asDto((HarmonizationStudyTable) opalTable, withStudySummary));
 
     return aggDto;
   }
