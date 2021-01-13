@@ -32,7 +32,6 @@ import com.codahale.metrics.annotation.Timed;
 @Component
 @Path("/dataset/{id}")
 @Scope("request")
-@RequiresAuthentication
 public class PublishedDatasetResource {
 
   @Inject
