@@ -55,6 +55,7 @@
 <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
 <!-- DataTables -->
 <link rel="stylesheet" href="${adminLTEPath}/plugins/datatables-bs4/css/dataTables.bootstrap4.css">
+<link rel="stylesheet" href="${adminLTEPath}/plugins/datatables-fixedheader/css/fixedHeader.bootstrap4.css">
 <!-- Toastr -->
 <link rel="stylesheet" href="${adminLTEPath}/plugins/toastr/toastr.min.css">
 <!-- Bootstrap 3 to 4 -->
