@@ -462,7 +462,7 @@ class DatasetDtos {
 
   public Mica.DatasetVariableAggregationDto.Builder simpleAggregationDto(@NotNull Mica.DatasetVariableAggregationDto.Builder aggDto, @Nullable Math.SummaryStatisticsDto summary) {
 
-    if(summary == null) return aggDto;
+    if(summary == null) return aggDto.setTotal(0).setN(0);
 
     if(summary.hasExtension(Math.CategoricalSummaryDto.categorical)) {
       aggDto = asDto(summary.getExtension(Math.CategoricalSummaryDto.categorical));
