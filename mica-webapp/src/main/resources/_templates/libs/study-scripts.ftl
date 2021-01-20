@@ -117,7 +117,8 @@
         path: '/',
         folder: {},
         tr: filesTr,
-        locale: '${.lang}'
+        locale: '${.lang}',
+        contextPath: '${contextPath}'
       }, function(file) {
         return !(file.type === 'FOLDER' && file.name === 'population');
       });
@@ -133,7 +134,8 @@
             path: '/',
             folder: {},
             tr: filesTr,
-            locale: '${.lang}'
+            locale: '${.lang}',
+            contextPath: '${contextPath}'
           }, function(file) {
             return !(file.type === 'FOLDER' && file.name === 'data-collection-event');
           });
@@ -148,7 +150,8 @@
                 path: '/',
                 folder: {},
                 tr: filesTr,
-                locale: '${.lang}'
+                locale: '${.lang}',
+                contextPath: '${contextPath}'
               });
             </#list>
           </#if>

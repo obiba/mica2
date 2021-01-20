@@ -3,7 +3,7 @@
   <div class="files-browser" v-cloak>
     <div v-if="folder.children">
       <div>
-        <folder-breadcrumb v-bind:path="path" v-bind:folder="folder" v-bind:tr="tr"
+        <folder-breadcrumb v-bind:path="path" v-bind:folder="folder" v-bind:tr="tr" v-bind:context-path="contextPath"
                            v-on:select-folder="onSelectFolder"></folder-breadcrumb>
       </div>
       <div>
@@ -19,7 +19,7 @@
           </thead>
           <tbody>
           <tr is="file-row" v-for="file in folder.children" v-bind:key="file.name"
-              v-bind:file="file" v-bind:tr="tr" v-bind:locale="locale"
+              v-bind:file="file" v-bind:tr="tr" v-bind:locale="locale" v-bind:context-path="contextPath"
               v-on:select-folder="onSelectFolder"></tr>
           </tbody>
         </table>

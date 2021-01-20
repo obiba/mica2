@@ -4,7 +4,8 @@ Vue.component('folder-breadcrumb', {
   props: {
     path: String,   // relative path
     folder: Object, // current folder
-    tr: Object      // translations
+    tr: Object,     // translations
+    contextPath: String
   },
   computed: {
     segments: function() {
@@ -46,7 +47,7 @@ Vue.component('folder-breadcrumb', {
     '  <span v-else>{{ segment.token }}</span>' +
     '</li>' +
     '</ol>' +
-    '<a :href="\'/ws/file-dl\' + folder.path" class="btn btn-sm btn-info float-right"><i class="fa fa-download"></i> {{ tr.download }}</a>' +
+    '<a :href="contextPath + \'/ws/file-dl\' + folder.path" class="btn btn-sm btn-info float-right"><i class="fa fa-download"></i> {{ tr.download }}</a>' +
     '</div>'
 });
 
@@ -59,7 +60,8 @@ Vue.component('file-row', {
   props: {
     file: Object,  // the file in the row
     tr: Object,    // translations
-    locale: String
+    locale: String,
+    contextPath: String
   },
   computed: {
     iconClass: function() {
@@ -118,7 +120,7 @@ Vue.component('file-row', {
     '  <span v-else>{{ file.name }}</span></td>' +
     '<td><small>{{ descriptionLabel }}</small> <i class="fas fa-info-circle" :title="descriptionTitle" v-if="hasDescriptionTitle"></i></td>' +
     '<td>{{ sizeLabel }}</td>' +
-    '<td><a v-if="file.size>0" download :href="\'/ws/file-dl\' + file.path"><i class="fa fa-download"></i></a></td>' +
+    '<td><a v-if="file.size>0" download :href="contextPath + \'/ws/file-dl\' + file.path"><i class="fa fa-download"></i></a></td>' +
     '</tr>'
 });
 
@@ -146,7 +148,7 @@ const makeFilesVue = function(el, data, childrenFilter) {
         const relativePath = folderPath === '/' ?
           this.basePath :
           (folderPath.replace('/' + this.type + '/' + this.id, ''));
-        console.log(relativePath);
+        //console.log(relativePath);
         const that = this;
         FilesService.getFolder(this.type, this.id, relativePath, function(data) {
           that.rawFolder = data;

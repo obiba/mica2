@@ -132,7 +132,8 @@
         path: '/',
         folder: {},
         tr: filesTr,
-        locale: '${.lang}'
+        locale: '${.lang}',
+        contextPath: '${contextPath}'
       });
     </#if>
     <#if showStudyPopulationFiles>
@@ -144,7 +145,8 @@
           path: '/',
           folder: {},
           tr: filesTr,
-          locale: '${.lang}'
+          locale: '${.lang}',
+          contextPath: '${contextPath}'
         }, function(file) {
           return !(file.type === 'FOLDER' && file.name === 'data-collection-event');
         });
@@ -158,7 +160,8 @@
             path: '/',
             folder: {},
             tr: filesTr,
-            locale: '${.lang}'
+            locale: '${.lang}',
+            contextPath: '${contextPath}'
           }, function(file) {
             return !(file.type === 'FOLDER' && file.name === 'data-collection-event');
           });
@@ -174,7 +177,8 @@
           path: '/',
           folder: {},
           tr: filesTr,
-          locale: '${.lang}'
+          locale: '${.lang}',
+          contextPath: '${contextPath}'
         });
       </#if>
       <#if studyTables?? && studyTables?size != 0>
@@ -186,7 +190,8 @@
             path: '/',
             folder: {},
             tr: filesTr,
-            locale: '${.lang}'
+            locale: '${.lang}',
+            contextPath: '${contextPath}'
           });
         </#list>
       </#if>

@@ -149,7 +149,8 @@
           "items": "<@message "items"/>",
           "download": "<@message "download"/>"
         },
-        locale: '${.lang}'
+        locale: '${.lang}',
+        contextPath: '${contextPath}'
       });
     </#if>
 
