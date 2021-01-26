@@ -3,8 +3,8 @@
 <!-- jQuery -->
 <script src="${adminLTEPath}/plugins/jquery/jquery.min.js"></script>
 <!-- Popper -->
-<script src="${adminLTEPath}/plugins/popper/popper.min.js"></script>
-<script src="${adminLTEPath}/plugins/popper/popper-utils.min.js"></script>
+<script src="${adminLTEPath}/plugins/popper/umd/popper.min.js"></script>
+<script src="${adminLTEPath}/plugins/popper/umd/popper-utils.min.js"></script>
 
 <!-- Bootstrap 4 -->
 <script src="${adminLTEPath}/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
