@@ -712,17 +712,31 @@ new Vue({
 
       let tree = MicaTreeQueryUrl.getTree();
 
-      // query string to copy
-      tree.findAndDeleteQuery((name) => 'limit' === name);
-      this.queryToCopy = tree.serialize();
+      const target = TYPES_TARGETS_MAP[payload.type];
+      if (target) {
+        const limitQuery = tree.search((name, args, parent) => 'limit' === name && parent.name === target);
+        if (limitQuery) {
+          // Update the datatable's Size combo
+          const size = limitQuery.args[1];
+          const table = $(`table[id=vosr-${payload.type}-result]`).DataTable();
+          if (table) {
+            table.page.len(size); // do not use draw() otherwise the query gets executed forever!
+          }
+        }
+      }
 
       // query string for adding variables to cart
-      let vQuery = tree.search((name) => name === 'variable');
+      let vQuery = tree.search((name) => name === TARGETS.VARIABLE);
       if (!vQuery) {
-        vQuery = new RQL.Query('variable',[]);
+        vQuery = new RQL.Query(TARGETS.VARIABLE,[]);
         tree.addQuery(null, vQuery);
       }
-      tree.addQuery(vQuery, new RQL.Query('limit', [0, 100000]));
+      const limitQuery = tree.search((name, args, parent) => 'limit' === name && parent.name === TARGETS.VARIABLE);
+      if (limitQuery) {
+        limitQuery.args = [0, 100000];
+      } else {
+        tree.addQuery(vQuery, new RQL.Query('limit', [0, 100000]));
+      }
       tree.addQuery(vQuery, new RQL.Query('fields', ['variableType']));
       this.queryToCart = tree.serialize();
 
