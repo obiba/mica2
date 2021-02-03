@@ -203,21 +203,25 @@ public class PublishedHarmonizedDatasetResource extends AbstractPublishedDataset
     Mica.DatasetVariablesDto variablesDto = getDatasetVariableDtos(id, DatasetVariable.Type.Dataschema, from, limit,
       sort, order);
 
+    String ids = variablesDto.getVariablesList().stream().map(variableDto -> variableDto.getName()).collect(Collectors.joining(","));
+    String namesQuery = String.format("in(name,(%s))",ids);
+
     int hvariablesLimit = limit * (dataset.getStudyTables().size() + dataset.getHarmonizationTables().size());
-    
+
     // harmonized variables, extract one column per study table
     List<Map<String, DatasetVariable>> harmonizedVariables = Lists.newArrayList();
     builder.setTotal(variablesDto.getTotal()).setLimit(variablesDto.getLimit()).setFrom(variablesDto.getFrom());
-    String query = "and(eq(datasetId,%s),eq(studyId,%s),eq(populationId,%s),eq(dceId,%s),eq(opalTableType,%s),eq(project,%s),eq(table,%s))";
+    String query = "and(%s,eq(datasetId,%s),eq(studyId,%s),eq(populationId,%s),eq(dceId,%s),eq(opalTableType,%s),eq(project,%s),eq(table,%s))";
     dataset.getStudyTables().forEach(st -> {
       builder.addStudyTable(dtos.asDto(st, includeSummaries));
-      String rql = String.format(query, id, st.getStudyId(), st.getPopulationUId(), st.getDataCollectionEventUId(), DatasetVariable.OpalTableType.Study, st.getProject(), st.getTable());
-      harmonizedVariables.add(getDatasetVariablesInternal(rql, from, hvariablesLimit, sort, order, true).stream().collect(Collectors.toMap(DatasetVariable::getName, v -> v)));
+      String rql = String.format(query, namesQuery, id, st.getStudyId(), st.getPopulationUId(), st.getDataCollectionEventUId(), DatasetVariable.OpalTableType.Study, st.getProject(), st.getTable());
+      List<DatasetVariable> datasetVariablesInternal = getDatasetVariablesInternal(rql, 0, hvariablesLimit, sort, order, true);
+      harmonizedVariables.add(datasetVariablesInternal.stream().collect(Collectors.toMap(DatasetVariable::getName, v -> v)));
     });
     dataset.getHarmonizationTables().forEach(st -> {
       builder.addHarmonizationStudyTable(dtos.asDto(st, includeSummaries));
-      String rql = String.format(query, id, st.getStudyId(), st.getPopulationUId(), st.getDataCollectionEventUId(), DatasetVariable.OpalTableType.Harmonization, st.getProject(), st.getTable());
-      harmonizedVariables.add(getDatasetVariablesInternal(rql, from, hvariablesLimit, sort, order, true).stream().collect(Collectors.toMap(DatasetVariable::getName, v -> v)));
+      String rql = String.format(query, namesQuery, id, st.getStudyId(), st.getPopulationUId(), st.getDataCollectionEventUId(), DatasetVariable.OpalTableType.Harmonization, st.getProject(), st.getTable());
+      harmonizedVariables.add(getDatasetVariablesInternal(rql, 0, hvariablesLimit, sort, order, true).stream().collect(Collectors.toMap(DatasetVariable::getName, v -> v)));
     });
 
     variablesDto.getVariablesList()
