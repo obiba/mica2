@@ -42,6 +42,8 @@ public class VariablesCsvReportGenerator extends CsvReportGeneratorImpl {
 
     line.add("name");
     line.add("search.variable.label");
+    if (mustShow("showVariablesUnitColumn"))
+      line.add("client.label.variable.unit");
     if (mustShow("showVariablesValueTypeColumn"))
       line.add("variable_taxonomy.vocabulary.valueType.title");
     if (mustShow("showVariablesCategoriesColumn"))
@@ -76,6 +78,8 @@ public class VariablesCsvReportGenerator extends CsvReportGeneratorImpl {
 
     line.add(datasetVariableDto.getName());
     line.add(datasetVariableDto.getVariableLabelCount()>0 ? datasetVariableDto.getVariableLabel(0).getValue() : "");
+    if (mustShow("showVariablesUnitColumn"))
+      line.add(datasetVariableDto.getUnit());
     if (mustShow("showVariablesValueTypeColumn")) {
       if (datasetVariableDto.hasValueType())
       line.add(translator.translate(

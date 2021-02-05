@@ -369,11 +369,13 @@ class EntityQuery {
 
 class VariableQuery extends EntityQuery {
   static get FIELDS() {
-    return ['attributes.label.*', 'attributes.description.*', 'variableType', 'valueType', 'categories.*', 'populationId', 'dceId', 'datasetId', 'datasetAcronym', 'attributes.Mlstr_area*'];
+    return Mica.querySettings.variable.fields ? Mica.querySettings.variable.fields
+      : ['attributes.label.*', 'attributes.description.*', 'variableType', 'valueType', 'categories.*', 'populationId', 'dceId', 'datasetId', 'datasetAcronym', 'attributes.Mlstr_area*'];
   }
 
   static get SORT_FIELDS() {
-    return ['studyId', 'datasetId', 'index', 'name'];
+    return Mica.querySettings.variable.sortFields ? Mica.querySettings.variable.sortFields
+      : ['studyId', 'datasetId', 'index', 'name'];
   }
 
   constructor(defaultSize, settings) {
@@ -385,11 +387,13 @@ class VariableQuery extends EntityQuery {
 
 class DatasetQuery extends EntityQuery {
   static get FIELDS() {
-    return ['acronym.*','name.*','variableType','studyTable.studyId','studyTable.project','studyTable.table','studyTable.populationId','studyTable.dataCollectionEventId','harmonizationTable.studyId','harmonizationTable.project','harmonizationTable.table','harmonizationTable.populationId'];
+    return Mica.querySettings.dataset.fields ? Mica.querySettings.dataset.fields
+      : ['acronym.*','name.*','variableType','studyTable.studyId','studyTable.project','studyTable.table','studyTable.populationId','studyTable.dataCollectionEventId','harmonizationTable.studyId','harmonizationTable.project','harmonizationTable.table','harmonizationTable.populationId'];
   }
 
   static get SORT_FIELDS() {
-    return ['studyTable.studyId','studyTable.populationWeight','studyTable.dataCollectionEventWeight','acronym'];
+    return Mica.querySettings.dataset.sortFields ? Mica.querySettings.dataset.sortFields
+      : ['studyTable.studyId','studyTable.populationWeight','studyTable.dataCollectionEventWeight','acronym'];
   }
 
   constructor(defaultSize, settings) {
@@ -401,11 +405,13 @@ class DatasetQuery extends EntityQuery {
 
 class StudyQuery extends EntityQuery {
   static get FIELDS() {
-    return ['acronym.*','name.*','model.methods.design','populations.dataCollectionEvents.model.dataSources','model.numberOfParticipants.participant'];
+    return Mica.querySettings.study.fields ? Mica.querySettings.study.fields
+      : ['acronym.*','name.*','model.methods.design','populations.dataCollectionEvents.model.dataSources','model.numberOfParticipants.participant'];
   }
 
   static get SORT_FIELDS() {
-   return ['acronym'];
+   return Mica.querySettings.study.sortFields ? Mica.querySettings.study.sortFields
+     : ['acronym'];
   }
 
 
@@ -440,11 +446,13 @@ class StudyQuery extends EntityQuery {
 
 class NetworkQuery extends EntityQuery {
   static get FIELDS() {
-   return ['acronym.*','name.*','studyIds'];
+   return Mica.querySettings.network.fields ? Mica.querySettings.network.fields
+     : ['acronym.*','name.*','studyIds'];
   }
 
   static get SORT_FIELDS() {
-    return ['acronym'];
+    return Mica.querySettings.network.sortFields ? Mica.querySettings.network.sortFields
+      : ['acronym'];
   }
 
   constructor(defaultSize, settings) {
