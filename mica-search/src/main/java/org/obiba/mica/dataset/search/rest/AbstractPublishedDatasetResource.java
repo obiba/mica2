@@ -322,7 +322,9 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
         dataSchemaVariableId, variableName);
 
     dataSchemaVariable.getAttributes().asAttributeList().forEach(a -> {
-      if (!a.getName().startsWith("Mlstr_harmo")) harmonizedDatasetVariable.addAttribute(a);
+      if (a.hasNamespace() && !a.getNamespace().startsWith("Mlstr_harmo")) {
+        harmonizedDatasetVariable.addAttribute(a);
+      }
     });
 
     return harmonizedDatasetVariable;
