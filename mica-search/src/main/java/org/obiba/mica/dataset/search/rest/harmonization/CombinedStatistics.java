@@ -139,8 +139,8 @@ public class CombinedStatistics {
     Collection<Mica.DatasetVariableAggregationDto> aggDtos) {
     mergeFrequencies(aggDto, aggDtos);
     mergeStatistics(aggDto, aggDtos);
-    aggDto.setN(aggDtos.stream().mapToInt(Mica.DatasetVariableAggregationDto::getN).sum());
-    aggDto.setTotal(aggDtos.stream().mapToInt(Mica.DatasetVariableAggregationDto::getTotal).sum());
+    aggDto.setN(aggDtos.stream().filter(a -> a.hasStatistics() || a.getFrequenciesCount()>0).mapToInt(Mica.DatasetVariableAggregationDto::getN).sum());
+    aggDto.setTotal(aggDtos.stream().filter(a -> a.hasStatistics() || a.getFrequenciesCount()>0).mapToInt(Mica.DatasetVariableAggregationDto::getTotal).sum());
     aggDtos.forEach(a -> {
       if(a.hasTerm()) aggDto.setTerm(a.getTerm());
     });
