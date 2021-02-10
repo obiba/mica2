@@ -45,10 +45,6 @@ public class Annotation {
     return attribute.getValues().get("und");
   }
 
-  public LocalizedString getTermValues() {
-    return attribute.getValues();
-  }
-
   public LocalizedString getTermTitle() {
     Vocabulary vocabulary = getVocabulary();
     if (vocabulary.hasTerms() && vocabulary.hasTerm(getTermName())) {
