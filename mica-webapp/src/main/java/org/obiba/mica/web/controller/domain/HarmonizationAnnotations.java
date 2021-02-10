@@ -102,8 +102,8 @@ public class HarmonizationAnnotations {
     return algorithm.getVocabularyDescription();
   }
 
-  public String getAlgorithmValue() {
-    return algorithm.getTermName();
+  public LocalizedString getAlgorithmValue() {
+    return algorithm.getTermValues();
   }
 
   public boolean hasComment() {
