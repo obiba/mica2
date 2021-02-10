@@ -245,7 +245,7 @@
                           ${localize(harmoAnnotations.algorithmTitle, "Algorithm")}
                         </dt>
                         <dd>
-                          <span class="marked mt-3"><template>${harmoAnnotations.algorithmValue!""}</template></span>
+                          <span class="marked mt-3"><template>${localize(harmoAnnotations.algorithmValue!"")}</template></span>
                         </dd>
                       </#if>
 
@@ -254,7 +254,7 @@
                           ${localize(harmoAnnotations.commentTitle, "Comment")}
                         </dt>
                         <dd>
-                          <span class="marked"><template>${harmoAnnotations.commentValue!""}</template></span>
+                          <span class="marked"><template>${localize(harmoAnnotations.commentValue!"")}</template></span>
                         </dd>
                       </#if>
                     </dl>
