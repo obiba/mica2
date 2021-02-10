@@ -496,7 +496,7 @@ class DatasetDtos {
     MicaConfig micaConfig = micaConfigService.getConfig();
     int privacyThreshold = micaConfig.getPrivacyThreshold();
     crossDto.setPrivacyThreshold(privacyThreshold);
-    boolean privacyChecks = crossVariable.hasCategories() ? validatePrivacyThreshold(results, privacyThreshold) : true;
+    boolean privacyChecks = !crossVariable.hasCategories() || validatePrivacyThreshold(results, privacyThreshold);
     boolean totalPrivacyChecks = validateTotalPrivacyThreshold(results, privacyThreshold);
 
     // add facet results in the same order as the variable categories
@@ -517,7 +517,7 @@ class DatasetDtos {
     // add total facet for all variable categories
     results.getFacetsList().stream().filter(facet -> facet.hasFacet() && "_total".equals(facet.getFacet()))
       .forEach(facet -> {
-        boolean privacyCheck = privacyChecks && facet.getFilters(0).getCount() > micaConfig.getPrivacyThreshold();
+        boolean privacyCheck = privacyChecks && facet.getFilters(0).getCount() >= micaConfig.getPrivacyThreshold();
         addSummaryStatistics(crossVariable, allAggBuilder, facet, privacyCheck, totalPrivacyChecks);
       });
 

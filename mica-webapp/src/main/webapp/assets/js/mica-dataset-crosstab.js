@@ -88,6 +88,10 @@ class DatasetCrosstab {
     if (data.contingencies) {
       this._contingencies = this._normalizeData(data.contingencies);
       this._mainContingency = this._normalizeData([data.all]).pop();
+      const mergedPrivacyCheck = this._contingencies.every(c => c.privacyCheck);
+      const mergedTotalPrivacyCheck = this._contingencies.every(c => c.totalPrivacyCheck);
+      this._mainContingency.privacyCheck = this._mainContingency.privacyCheck && mergedPrivacyCheck;
+      this._mainContingency.totalPrivacyCheck = this._mainContingency.totalPrivacyCheck && mergedTotalPrivacyCheck;
     } else {
       this._mainContingency = this._normalizeData([data]).pop();
     }
@@ -211,8 +215,7 @@ class DatasetCrosstab {
         if (!contingency.totalPrivacyCheck || contingency.all.n > 0) {
           if (that._isStatistical(that.getVariable2())) {
             that._normalizeStatistics(contingency, v1Cats);
-          }
-          if (v2Cats) {
+          } else if (v2Cats) {
             that._normalizeFrequencies(contingency, v2Cats);
           }
         }
@@ -241,12 +244,16 @@ class DatasetCrosstab {
       };
     }
 
-    contingency.privacyCheck = contingency.aggregations.filter(aggregation => aggregation.statistics !== null).length === contingency.aggregations.length;
+    contingency.privacyCheck = contingency.aggregations.every(a => a.n>-1);//contingency.aggregations.filter(aggregation => aggregation.statistics !== null).length === contingency.aggregations.length;
     let terms = contingency.aggregations.map(aggregation => aggregation.term);
 
     if (!contingency.privacyCheck) {
       // server returns no aggregation, create empty ones
-      contingency.aggregations.forEach(aggregation => aggregation.statistics = createEmptyStatistics());
+      contingency.aggregations.forEach(aggregation => {
+        if (!aggregation.statistics) {
+          aggregation.statistics = createEmptyStatistics();
+        }
+      });
       contingency.all.statistics = createEmptyStatistics();
     } else {
       // create the missing category aggregations
@@ -488,6 +495,8 @@ const initStudySelector = function() {
 const renderDatasetCrosstab = function(contingency) {
   if (!contingency.privacyCheck || !contingency.totalPrivacyCheck) {
     $('#privacy-alert').show();
+  } else {
+    $('#privacy-alert').hide();
   }
   // init Crosstab element
   const crosstabElem = $('#crosstab');
