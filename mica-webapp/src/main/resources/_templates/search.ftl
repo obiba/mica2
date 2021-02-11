@@ -9,7 +9,7 @@
 </head>
 <body id="search-page" class="hold-transition sidebar-mini layout-fixed layout-navbar-fixed">
 <!-- Site wrapper -->
-<div class="wrapper">
+<div id="search-application" class="wrapper" v-cloak>
 
   <!-- Navbar -->
   <#include "libs/aside-navbar.ftl">
@@ -47,28 +47,7 @@
 
         </ul>
 
-        <div id="search-criteria">
-          <ul v-for="name in criteriaMenu.order"
-              class="nav nav-pills nav-sidebar flex-column" data-widget="treeview"
-              role="menu" data-accordion="false">
-            <li class="nav-item has-treeview menu-open">
-              <a href="#" class="nav-link">
-                <i class="nav-icon" v-bind:class="criteriaMenu.items[name].icon"></i>
-                <p>
-                  {{criteriaMenu.items[name].title}}
-                  <i class="right fas fa-angle-left"></i>
-                </p>
-              </a>
-              <ul class="nav nav-treeview">
-                <taxonomy-menu v-for="menu in criteriaMenu.items[name].menus"
-                               v-bind:key="menu.name"
-                               v-bind:taxonomy="menu"
-                               v-on:taxonomy-selection="onTaxonomySelection($event, name)">
-                </taxonomy-menu>
-              </ul>
-            </li>
-          </ul>
-        </div>
+        <search-criteria></search-criteria>
       </nav>
       <!-- /.sidebar-menu -->
     </div>
@@ -219,8 +198,6 @@
             <div class="card-body">
               <div class="tab-content">
 
-                <study-filter-shortcut></study-filter-shortcut>
-
                 <div class="tab-pane active" id="tab_lists">
                   <p class="text-muted mt-3">
                     <@message "results-lists-text"/>
@@ -253,6 +230,12 @@
                         </li>
                       </#if>
                     </ul>
+                  </div>
+
+                  <div id="study-filter-shortcut-container" class="mt-2">
+                    <div id="study-filter-shortcut" class="row">
+                      <div class="col"><study-filter-shortcut></study-filter-shortcut></div>
+                    </div>
                   </div>
 
                   <div class="mt-3">
@@ -351,6 +334,12 @@
                             </li>
                           </ul>
                         </div>
+
+                        <div class="row">
+                          <div class="col"><study-filter-shortcut></study-filter-shortcut></div>
+                        </div>
+
+                        <div v-if="loading" class="spinner-border spinner-border-sm" role="status"></div>
                         <coverage-result class="mt-2"></coverage-result>
                       </div>
                     </div>
