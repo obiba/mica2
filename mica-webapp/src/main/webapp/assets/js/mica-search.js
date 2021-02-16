@@ -366,7 +366,7 @@ class TableFixedHeaderUtility {
         vocabulary: vocabulary.replace(/model-/, ""),
         key: term.key,
         title: term.title,
-        count: term.count        
+        count: term.count
       };
 
       if (forSubAggData) {
@@ -503,7 +503,7 @@ class TableFixedHeaderUtility {
     initialize(taxonomies) {
       this.taxonomies = taxonomies;
     }
-  
+
     title(taxonomyName, vocabularyName, termName) {
       if (taxonomyName) {
         const taxonomy = this.taxonomies[taxonomyName];
@@ -511,19 +511,19 @@ class TableFixedHeaderUtility {
           if (!vocabularyName && !termName) return StringLocalizer.localize(taxonomy.title);
           else if (vocabularyName) {
             let foundVocabulary = (taxonomy.vocabularies || []).filter(vocabulary => vocabulary.name === vocabularyName)[0];
-  
+
             if (foundVocabulary) {
               if (!termName) return StringLocalizer.localize(foundVocabulary.title);
               else {
                 let foundTerm = (foundVocabulary.terms || []).filter(term => term.name === termName)[0];
-  
+
                 if (foundTerm) return StringLocalizer.localize(foundTerm.title);
               }
             }
           }
         }
       }
-  
+
       return null;
     }
   }
@@ -534,12 +534,12 @@ class TableFixedHeaderUtility {
     constructor() {
       EventBus.register(EVENTS.QUERY_ALERT, this.__onQueryAlery.bind(this));
     }
-  
+
     __getTaxonomyVocabularyNames(query) {
       const parts = (query.name === 'match' ? query.args[1] : query.args[0]).split(/\./);
       return parts.length === 2 ? {taxonomy: parts[0], vocabulary: parts[1]} : {};
     }
-  
+
     __onQueryAlery(payload) {
       const target = Mica.tr[payload.target];
       const query = payload.query || {};
@@ -548,7 +548,7 @@ class TableFixedHeaderUtility {
         `criterion.${payload.action}`,
         [taxonomyInfo ? taxonomyTitleFinder.title(taxonomyInfo.taxonomy, taxonomyInfo.vocabulary) : "", target]
       );
-  
+
       if (message) {
         MicaService.toastSuccess(message);
       }
@@ -672,7 +672,7 @@ class TableFixedHeaderUtility {
       },
       getTaxonomyForTarget(target) {
         let result = [];
-  
+
         if (TARGETS.VARIABLE === target) {
           let taxonomies = [];
           for (let taxonomy in this.taxonomies) {
@@ -681,13 +681,13 @@ class TableFixedHeaderUtility {
               if (found) taxonomies.push(found);
             }
           }
-  
+
           result.push(taxonomies);
         } else {
           let taxonomy = this.taxonomies[`Mica_${target}`];
           result.push(taxonomy);
         }
-  
+
         return result[0];
       },
       // show a modal with all the vocabularies/terms of the selected taxonomy
@@ -695,7 +695,7 @@ class TableFixedHeaderUtility {
       onTaxonomySelection(payload) {
         this.selectedTaxonomy = this.taxonomies[payload.taxonomyName];
         this.selectedTarget = payload.target;
-  
+
         let selectedTaxonomyVocabulariesTitle = '';
         if (this.selectedTaxonomy) {
           this.selectedTaxonomyTitle = this.selectedTaxonomy.title;
@@ -705,16 +705,16 @@ class TableFixedHeaderUtility {
           this.selectedTaxonomy = foundTaxonomyGroup.taxonomies;
           this.selectedTaxonomyTitle = foundTaxonomyGroup.title;
         }
-  
+
         this.message = '[' + payload.taxonomyName + '] ' + this.selectedTaxonomyTitle[0].text + ': ';
         this.message = this.message + selectedTaxonomyVocabulariesTitle;
       },
       findTaxonomyGroup(taxonomyName, target) {
         let found = {};
-  
+
         const foundTarget = this.targets.filter(it => it.name === target)[0];
         let foundTaxonomyGroup = foundTarget.terms.filter(it => it.name === taxonomyName)[0];
-  
+
         if (foundTaxonomyGroup) {
           found.title = foundTaxonomyGroup.title;
           let taxonomies = [];
@@ -724,10 +724,10 @@ class TableFixedHeaderUtility {
               taxonomies.push(taxonomy);
             }
           });
-  
+
           found.taxonomies = taxonomies;
         }
-  
+
         return found;
       },
       onExecuteQuery() {
@@ -738,20 +738,20 @@ class TableFixedHeaderUtility {
       onClearQuery() {
         const urlParts = MicaTreeQueryUrl.parseUrl();
         const searchParams = urlParts.searchParams || {};
-  
+
         const display = urlParts.hash || 'list';
         const type = searchParams.type || TYPES.VARIABLES;
-  
+
         let params = [`type=${type}`];
-  
+
         const urlSearch = params.join("&");
         const hash = `${display}?${urlSearch}`;
-  
+
         window.location.hash = `#${hash}`;
       },
       onLocationChanged(payload) {
         this.downloadUrlObject = MicaTreeQueryUrl.getDownloadUrl(payload);
-  
+
         let tree = MicaTreeQueryUrl.getTree();
 
         const target = TYPES_TARGETS_MAP[payload.type];
@@ -765,6 +765,10 @@ class TableFixedHeaderUtility {
             }
           }
         }
+
+        // query string to copy
+        tree.findAndDeleteQuery((name) => 'limit' === name);
+        this.queryToCopy = tree.serialize();
 
         // query string for adding variables to cart
         let vQuery = tree.search((name) => name === TARGETS.VARIABLE);
@@ -780,7 +784,7 @@ class TableFixedHeaderUtility {
         }
         tree.addQuery(vQuery, new RQL.Query('fields', ['variableType']));
         this.queryToCart = tree.serialize();
-  
+
         this.refreshQueries();
 
         // result
@@ -802,19 +806,19 @@ class TableFixedHeaderUtility {
       onQueryUpdate(payload) {
         console.debug('query-builder update', payload);
         EventBus.$emit(EVENTS.QUERY_TYPE_UPDATES_SELECTION, {updates: [payload]});
-  
+
         EventBus.$emit(EVENTS.CLEAR_RESULTS_SELECTIONS);
       },
       onQueryRemove(payload) {
         console.debug('query-builder update', payload);
         EventBus.$emit(EVENTS.QUERY_TYPE_DELETE, payload);
-  
+
         EventBus.$emit(EVENTS.CLEAR_RESULTS_SELECTIONS);
       },
       onNodeUpdate(payload) {
         console.debug('query-builder node update', payload);
         EventBus.$emit(EVENTS.QUERY_TYPE_UPDATES_SELECTION, {updates: [payload]});
-  
+
         EventBus.$emit(EVENTS.CLEAR_RESULTS_SELECTIONS);
       },
       onCopyQuery() {
@@ -829,7 +833,7 @@ class TableFixedHeaderUtility {
             MicaService.toastSuccess(Mica.tr['variables-added-to-cart'].replace('{0}', (cart.count - oldCart.count).toLocaleString(Mica.locale)));
           }
         };
-  
+
         if (Array.isArray(this.variableSelections) && this.variableSelections.length > 0) {
           VariablesSetService.addToCart(this.variableSelections, onsuccess);
         } else {
@@ -843,13 +847,13 @@ class TableFixedHeaderUtility {
           } else {
             MicaService.toastSuccess(Mica.tr['variables-added-to-set'].replace('{0}', (set.count - oldSet.count).toLocaleString(Mica.locale)).replace('{1}', '"' + set.name + '"'));
           }
-  
+
           this.newVariableSetName = '';
           VariablesSetService.showSetsCount($('#list-count'), sets => {
             this.variableSets = sets;
           });
         };
-  
+
         if (setId || (this.newVariableSetName && this.newVariableSetName.length > 0)) {
           if (Array.isArray(this.variableSelections) && this.variableSelections.length > 0) {
             VariablesSetService.addToSet(setId, this.newVariableSetName, this.variableSelections, onsuccess);
@@ -863,25 +867,25 @@ class TableFixedHeaderUtility {
           const form = document.createElement('form');
           form.setAttribute('class', 'hidden');
           form.setAttribute('method', 'post');
-  
+
           form.action = this.downloadUrlObject.url;
           form.accept = 'text/csv';
-  
+
           const input = document.createElement('input');
           input.name = 'query';
-          
+
           if (Array.isArray(this.variableSelections) && this.variableSelections.length > 0) {
             const queryAsTree = new RQL.QueryTree(RQL.Parser.parseQuery(this.downloadUrlObject.query));
             let variableQuery = queryAsTree.search((name) => name === "variable");
             queryAsTree.addQuery(variableQuery, new RQL.Query('in', ['id', this.variableSelections]));
-  
+
             input.value = queryAsTree.serialize();
           } else {
             input.value = this.downloadUrlObject.query;
           }
-  
+
           form.appendChild(input);
-  
+
           document.body.appendChild(form);
           form.submit();
           form.remove();
@@ -908,19 +912,19 @@ class TableFixedHeaderUtility {
           studies: "0",
           networks: "0",
         };
-  
+
         if (data && data.variableResultDto && data.variableResultDto.totalHits) {
           this.counts.variables = data.variableResultDto.totalHits.toLocaleString();
         }
-  
+
         if (data && data.datasetResultDto && data.datasetResultDto.totalHits) {
           this.counts.datasets = data.datasetResultDto.totalHits.toLocaleString();
         }
-  
+
         if (data && data.studyResultDto && data.studyResultDto.totalHits) {
           this.counts.studies = data.studyResultDto.totalHits.toLocaleString();
         }
-  
+
         if (data && data.networkResultDto && data.networkResultDto.totalHits) {
           this.counts.networks = data.networkResultDto.totalHits.toLocaleString();
         }
@@ -961,47 +965,47 @@ class TableFixedHeaderUtility {
               }
             }
           });
-  
+
           // filter for full coverage
           let coverageVocabulary = this.selectedBucket.startsWith('dce') ? 'dceId' : 'id';
-  
+
           let coverageArgs = ['Mica_' + fromBucketToTarget(this.selectedBucket) + '.' + coverageVocabulary];
           coverageArgs.push(rowsEligibleForFullCoverage.map(selection => selection.value));
-  
+
           const numberOfTerms = payload.response.termHeaders.length;
-  
+
           this.canDoFullCoverage = rowsEligibleForFullCoverage.length > 0 && rowsEligibleForFullCoverage.length < payload.response.rows.length; // active?
-  
+
           if (this.canDoFullCoverage) {
             this.queryForFullCoverage = new RQL.Query('in', coverageArgs);
           }
-  
+
           // filter for subdomains with variables
           const taxonomyNames = Array(numberOfTerms), vocabularyNames = Array(numberOfTerms);
           let lastTaxonomyHeaderIndex = 0, lastVocabularyHeaderIndex = 0;
           payload.response.taxonomyHeaders.forEach(taxonomyHeader => {
             const name = taxonomyHeader.entity.name, termsCount = taxonomyHeader.termsCount;
-  
+
             taxonomyNames.fill(name, lastTaxonomyHeaderIndex, lastTaxonomyHeaderIndex + termsCount);
             lastTaxonomyHeaderIndex += termsCount;
           });
-  
+
           payload.response.vocabularyHeaders.forEach(vocabularyHeader => {
             const name = vocabularyHeader.entity.name, termsCount = vocabularyHeader.termsCount;
-  
+
             vocabularyNames.fill(name, lastVocabularyHeaderIndex, lastVocabularyHeaderIndex + termsCount);
             lastVocabularyHeaderIndex += termsCount;
           });
-  
+
           this.queriesWithZeroHitsToRemove = [];
           payload.response.termHeaders.forEach((termHeader, index) => {
             const key = taxonomyNames[index] + '.' + vocabularyNames[index], name = termHeader.entity.name;
-  
+
             if (termHeader.hits === 0) {
               this.queriesWithZeroHitsToRemove.push(new RQL.Query('in', [key, [name]]));
             }
           });
-  
+
           this.hasCoverageTermsWithZeroHits = this.queriesWithZeroHitsToRemove.length > 0; // active?
         }
 
@@ -1021,7 +1025,7 @@ class TableFixedHeaderUtility {
         if (this.selectedTarget) {
           return this.queries[this.selectedTarget];
         }
-  
+
         return undefined;
       },
       numberOfSetsRemaining() {
@@ -1031,7 +1035,7 @@ class TableFixedHeaderUtility {
     beforeMount() {
       console.debug('Before mounted QueryBuilder');
       this.queryExecutor.init();
-  
+
       EventBus.register("variables-results", this.onResult.bind(this));
       EventBus.register("datasets-results", this.onResult.bind(this));
       EventBus.register("studies-results", this.onResult.bind(this));
@@ -1043,36 +1047,36 @@ class TableFixedHeaderUtility {
       console.debug('Mounted QueryBuilder');
       EventBus.register('taxonomy-selection', this.onTaxonomySelection);
       EventBus.register(EVENTS.LOCATION_CHANGED, this.onLocationChanged.bind(this));
-  
+
       EventBus.register(EVENTS.CLEAR_RESULTS_SELECTIONS, () => this.variableSelections = []);
-  
+
       for (const typeKey in TYPES) {
         EventBus.register(`${TYPES[typeKey]}-selections-updated`, payload => this.variableSelections = payload.selections || []);
       }
-  
+
       // fetch the configured search criteria, in the form of a taxonomy of taxonomies
       axios
         .get(contextPath + '/ws/taxonomy/Mica_taxonomy/_filter?target=taxonomy')
         .then(response => {
           this.targets = response.data.vocabularies;
           EventBus.$emit('mica-taxonomy', this.targets);
-  
+
           const targetQueries = [];
-  
+
           for (let target of this.targets) {
             // then load the taxonomies
             targetQueries.push(`${contextPath}/ws/taxonomies/_filter?target=${target.name}`);
           }
-  
+
           return axios.all(targetQueries.map(query => axios.get(query))).then(axios.spread((...responses) => {
             responses.forEach((response) => {
               for (let taxo of response.data) {
                 this.taxonomies[taxo.name] = taxo;
               }
             });
-  
+
             this.refreshQueries();
-  
+
             taxonomyTitleFinder.initialize(this.taxonomies);
             chartTableTermSorters.initialize(this.taxonomies['Mica_study']);
 
@@ -1080,16 +1084,16 @@ class TableFixedHeaderUtility {
               const [taxonomy, vocabulary, term] = input.split(/\./);
               return  taxonomyTitleFinder.title(taxonomy, vocabulary, term) || input;
             });
-  
+
             // Emit 'query-type-selection' to pickup a URL query to be executed; if nothing found a Variable query is executed
             EventBus.$emit(EVENTS.QUERY_TYPE_SELECTION, {});
-  
+
             return this.taxonomies;
           }));
         });
-  
+
       const targetQueries = MicaTreeQueryUrl.getTreeQueries();
-  
+
       let advancedNodeCount = 0;
       for (const target in targetQueries) {
         let advancedOperator = target === TARGETS.VARIABLE ? 'and' : 'or';
@@ -1103,12 +1107,12 @@ class TableFixedHeaderUtility {
         }
       }
       this.advanceQueryMode = advancedNodeCount > 0;
-  
+
       // don't close sets' dropdown when clicking inside of it
       if (this.$refs.listsDropdownMenu) {
         this.$refs.listsDropdownMenu.addEventListener("click", event => event.stopPropagation());
       }
-  
+
       VariablesSetService.getSets(data => {
         if (Array.isArray(data)) {
           this.variableSets = data.filter(set => set.name);
@@ -1117,14 +1121,14 @@ class TableFixedHeaderUtility {
     },
     updated() {
       $('.tab-content .card').removeClass('card-primary').addClass('card-success');
-  
+
       let coverageResultTableElement = document.querySelector('#vosr-coverage-result');
-  
+
       if (this.coverageFixedHeaderHandler) {
         this.coverageFixedHeaderHandler();
         this.coverageFixedHeaderHandler = null;
       }
-  
+
       if (coverageResultTableElement) {
         this.coverageFixedHeaderHandler = TableFixedHeaderUtility.applyTo(coverageResultTableElement, $("#menubar").outerHeight() + $("#loginbar").outerHeight());
       }
@@ -1135,7 +1139,7 @@ class TableFixedHeaderUtility {
       EventBus.unregister('taxonomy-selection', this.onTaxonomySelection);
       EventBus.unregister(EVENTS.QUERY_TYPE_SELECTION, this.onQueryTypeSelection);
       this.queryExecutor.destroy();
-  
+
       EventBus.unregister("variables-results", this.onResult);
       EventBus.unregister("datasets-results", this.onResult);
       EventBus.unregister("studies-results", this.onResult);
