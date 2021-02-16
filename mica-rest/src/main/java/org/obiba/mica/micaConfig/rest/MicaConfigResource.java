@@ -318,7 +318,6 @@ public class MicaConfigResource {
 
   @GET
   @Path("/metrics")
-  @RequiresAuthentication
   public Mica.MicaMetricsDto getMetrics() {
     MicaConfig config = micaConfigService.getConfig();
     Mica.MicaMetricsDto.Builder builder = Mica.MicaMetricsDto.newBuilder();
