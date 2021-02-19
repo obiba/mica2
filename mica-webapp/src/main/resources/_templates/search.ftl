@@ -240,11 +240,15 @@
 
                   <div class="mt-3">
                     <div class="tab-content" id="results-tabContent">
+
+                      <div v-show="loading" class="spinner-border spinner-border-sm" role="status"></div>
+
                       <#if searchVariableListDisplay>
                         <div class="tab-pane fade show active" id="variables" role="tabpanel" aria-labelledby="variables-tab">
                           <p class="text-muted"><@message "results-list-of-variables-text"/></p>
                           <div id="list-variables">
-                            <variables-result></variables-result>
+                            <div class="mt-3 text-muted" v-show="!loading && !hasListResult">{{ "no-variable-found" | translate }}</div>
+                            <variables-result v-show="!loading && hasListResult"></variables-result>
                           </div>
                         </div>
                       </#if>
@@ -252,7 +256,8 @@
                         <div class="tab-pane fade" id="datasets" role="tabpanel" aria-labelledby="datasets-tab">
                           <p class="text-muted"><@message "results-list-of-datasets-text"/></p>
                           <div id="list-datasets">
-                            <datasets-result></datasets-result>
+                            <div class="mt-3 text-muted" v-show="!loading && !hasListResult">{{ "no-dataset-found" | translate }}</div>
+                            <datasets-result v-show="!loading && hasListResult"></datasets-result>
                           </div>
                         </div>
                       </#if>
@@ -260,7 +265,8 @@
                         <div class="tab-pane fade" id="studies" role="tabpanel" aria-labelledby="studies-tab">
                           <p class="text-muted"><@message "results-list-of-studies-text"/></p>
                           <div id="list-studies">
-                            <studies-result></studies-result>
+                            <div class="mt-3 text-muted" v-show="!loading && !hasListResult">{{ "no-study-found" | translate }}</div>
+                            <studies-result v-show="!loading && hasListResult"></studies-result>
                           </div>
                         </div>
                       </#if>
@@ -268,7 +274,8 @@
                         <div class="tab-pane fade" id="networks" role="tabpanel" aria-labelledby="networks-tab">
                           <p class="text-muted"><@message "results-list-of-networks-text"/></p>
                           <div id="list-networks">
-                            <networks-result></networks-result>
+                            <div class="mt-3 text-muted" v-show="!loading && !hasListResult">{{ "no-network-found" | translate }}</div>
+                            <networks-result v-show="!loading && hasListResult"></networks-result>
                           </div>
                         </div>
                       </#if>
@@ -285,62 +292,66 @@
 
                     <div v-show="hasVariableQuery">
                       <div id="coverage">
-                        <div class="mt-4 mb-2 clearfix">
-                          <ul class="nav nav-pills float-left" role="tablist">
-                            <li class="nav-item">
-                              <a class="nav-link active"
-                                 data-toggle="pill"
-                                 id="bucket-study-tab"
-                                 href role="tab"
-                                 @click="onSelectBucket('study')"
-                                 aria-controls="study"
-                                 aria-selected="true">{{ bucketTitles.study }}</a>
-                            </li>
-                            <li class="nav-item">
-                              <a class="nav-link"
-                                 data-toggle="pill"
-                                 id="bucket-dataset-tab"
-                                 href role="tab"
-                                 @click="onSelectBucket('dataset')"
-                                 aria-controls="dataset"
-                                 aria-selected="true">{{ bucketTitles.dataset }}</a>
-                            </li>
-                          </ul>
 
-                          <ul class="nav nav-pills float-right" role="tablist">
-                            <li v-if="selectedBucket !==' dataset'" class="mt-auto mb-auto">
-                              <div class="form-check">
-                                <input type="checkbox"
-                                       id="bucket-dce"
-                                       v-model="dceChecked"
-                                       @change="onSelectBucket(dceChecked ? 'dce' : 'study')"
-                                       class="form-check-input">
-                                <label for="bucket-dce" class="form-check-label">{{ bucketTitles.dce }}</label>
-                              </div>
-                            </li>
-                            <li class="ml-3">
-                              <div class="dropleft">
-                                <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown"><@message "search.filter"/></button>
+                        <div v-show="!loading && hasCoverageResult">
+                          <div class="mt-4 mb-2 clearfix">
+                            <ul class="nav nav-pills float-left" role="tablist">
+                              <li class="nav-item">
+                                <a class="nav-link active"
+                                   data-toggle="pill"
+                                   id="bucket-study-tab"
+                                   href role="tab"
+                                   @click="onSelectBucket('study')"
+                                   aria-controls="study"
+                                   aria-selected="true">{{ bucketTitles.study }}</a>
+                              </li>
+                              <li class="nav-item">
+                                <a class="nav-link"
+                                   data-toggle="pill"
+                                   id="bucket-dataset-tab"
+                                   href role="tab"
+                                   @click="onSelectBucket('dataset')"
+                                   aria-controls="dataset"
+                                   aria-selected="true">{{ bucketTitles.dataset }}</a>
+                              </li>
+                            </ul>
 
-                                <div class="dropdown-menu">
-                                  <button type="button" @click="onFullCoverage()" class="dropdown-item" v-bind:class="{ disabled: !canDoFullCoverage }">
-                                    <@message "search.coverage-select.full"/>
-                                  </button>
-                                  <button type="button" @click="onZeroColumnsToggle()" class="dropdown-item" v-bind:class="{ disabled: !hasCoverageTermsWithZeroHits }">
-                                    <@message "search.coverage-without-zeros"/>
-                                  </button>
+                            <ul class="nav nav-pills float-right" role="tablist">
+                              <li v-if="selectedBucket !==' dataset'" class="mt-auto mb-auto">
+                                <div class="form-check">
+                                  <input type="checkbox"
+                                         id="bucket-dce"
+                                         v-model="dceChecked"
+                                         @change="onSelectBucket(dceChecked ? 'dce' : 'study')"
+                                         class="form-check-input">
+                                  <label for="bucket-dce" class="form-check-label">{{ bucketTitles.dce }}</label>
                                 </div>
-                              </div>
-                            </li>
-                          </ul>
+                              </li>
+                              <li class="ml-3">
+                                <div class="dropleft">
+                                  <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown"><@message "search.filter"/></button>
+
+                                  <div class="dropdown-menu">
+                                    <button type="button" @click="onFullCoverage()" class="dropdown-item" v-bind:class="{ disabled: !canDoFullCoverage }">
+                                      <@message "search.coverage-select.full"/>
+                                    </button>
+                                    <button type="button" @click="onZeroColumnsToggle()" class="dropdown-item" v-bind:class="{ disabled: !hasCoverageTermsWithZeroHits }">
+                                      <@message "search.coverage-without-zeros"/>
+                                    </button>
+                                  </div>
+                                </div>
+                              </li>
+                            </ul>
+                          </div>
+
+                          <div class="row">
+                            <div class="col"><study-filter-shortcut></study-filter-shortcut></div>
+                          </div>
                         </div>
 
-                        <div class="row">
-                          <div class="col"><study-filter-shortcut></study-filter-shortcut></div>
-                        </div>
-
-                        <div v-if="loading" class="spinner-border spinner-border-sm" role="status"></div>
-                        <coverage-result class="mt-2"></coverage-result>
+                        <div v-show="loading" class="spinner-border spinner-border-sm mt-3" role="status"></div>
+                        <div class="mt-3 text-muted" v-show="!loading && !hasCoverageResult">{{ "no-coverage-available" | translate }}</div>
+                        <coverage-result v-show="!loading && hasCoverageResult" class="mt-2"></coverage-result>
                       </div>
                     </div>
 
@@ -354,8 +365,9 @@
                       <@message "results-graphics-text"/>
                     </p>
                     <div id="graphics">
-                      <div class="mt-3 text-muted" v-show="!hasGraphicsResult">{{ "no-graphics-result" | translate }}</div>
-                      <graphics-result v-show="hasGraphicsResult" v-bind:chart-options="chartOptions"></graphics-result>
+                      <div v-show="loading" class="spinner-border spinner-border-sm" role="status"></div>
+                      <div class="mt-3 text-muted" v-show="!loading && !hasGraphicsResult">{{ "no-graphics-result" | translate }}</div>
+                      <graphics-result v-show="!loading && hasGraphicsResult" v-bind:chart-options="chartOptions"></graphics-result>
                     </div>
                   </div>
                 </#if>
