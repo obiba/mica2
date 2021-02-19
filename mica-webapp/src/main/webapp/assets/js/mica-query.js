@@ -749,7 +749,7 @@ class MicaQueryExecutor {
         const limitQuery = tree.search((name, args, parent) => 'limit' === name && TYPES_TARGETS_MAP[type] === parent.name);
         this.__updateLocation(type, display, tree, noUrlUpdate);
 
-        EventBus.$emit(`${type}-results`, {response: response.data, from: limitQuery.args[0], size: limitQuery.args[1]});
+        EventBus.$emit(`${type}-results`, {type, response: response.data, from: limitQuery.args[0], size: limitQuery.args[1]});
       });
   }
 

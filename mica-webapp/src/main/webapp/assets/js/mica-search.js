@@ -555,6 +555,35 @@ class TableFixedHeaderUtility {
     }
   }
 
+  class MicaQueryChangeListener {
+    constructor() {
+      this.loading = false;
+
+      EventBus.register(EVENTS.QUERY_TYPE_SELECTION, this.__onQueryExecute.bind(this));
+      EventBus.register(EVENTS.QUERY_TYPE_UPDATE, this.__onQueryExecute.bind(this));
+      EventBus.register(EVENTS.QUERY_TYPE_UPDATES_SELECTION, this.__onQueryExecute.bind(this));
+      EventBus.register(EVENTS.QUERY_TYPE_DELETE, this.__onQueryExecute.bind(this));
+      EventBus.register(EVENTS.QUERY_TYPE_PAGINATE, this.__onQueryExecute.bind(this));
+      EventBus.register(EVENTS.QUERY_TYPE_COVERAGE, this.__onQueryExecute.bind(this));
+      EventBus.register(EVENTS.QUERY_TYPE_GRAPHICS, this.__onQueryExecute.bind(this));
+
+      EventBus.register(EVENTS.QUERY_TYPE_GRAPHICS_RESULTS, this.__onQueryResult.bind(this));
+      EventBus.register(`${TYPES.VARIABLES}-results`, this.__onQueryResult.bind(this));
+      EventBus.register(`${TYPES.DATASETS}-results`, this.__onQueryResult.bind(this));
+      EventBus.register(`${TYPES.STUDIES}-results`, this.__onQueryResult.bind(this));
+      EventBus.register(`${TYPES.NETWORKS}-results`, this.__onQueryResult.bind(this));
+      EventBus.register(`coverage-results`, this.__onQueryResult.bind(this));
+    }
+
+    __onQueryExecute() {
+      this.loading = true;
+    }
+
+    __onQueryResult() {
+      this.loading = false;
+    }
+  }
+
   /**
     * Registering plugins defined in VueMicaSearch
     */
@@ -597,6 +626,7 @@ class TableFixedHeaderUtility {
     el: '#search-application',
     data() {
       return {
+        queryChangeListener: new MicaQueryChangeListener(),
         taxonomies: {},
         targets: [],
         display: DISPLAYS.LISTS,
@@ -623,6 +653,8 @@ class TableFixedHeaderUtility {
           networks: "0",
         },
         hasVariableQuery: false,
+        hasListResult: false,
+        hasCoverageResult: false,
         hasGraphicsResult: false,
         selectedBucket: BUCKETS.study,
         dceChecked: false,
@@ -636,8 +668,7 @@ class TableFixedHeaderUtility {
         hasCoverageTermsWithZeroHits: false,
         queryForFullCoverage: null,
         queriesWithZeroHitsToRemove: [],
-        coverageFixedHeaderHandler: null,
-        loading: false
+        coverageFixedHeaderHandler: null
       };
     },
     methods: {
@@ -733,7 +764,6 @@ class TableFixedHeaderUtility {
       onExecuteQuery() {
         console.debug('Executing ' + this.queryType + ' query ...');
         EventBus.$emit(this.queryType, 'I am the result of a ' + this.queryType + ' query');
-        this.loading = true;
       },
       onClearQuery() {
         const urlParts = MicaTreeQueryUrl.parseUrl();
@@ -900,8 +930,6 @@ class TableFixedHeaderUtility {
         console.debug(`onSelectBucket : ${bucket} - ${this.dceChecked}`);
         this.selectedBucket = bucket;
         EventBus.$emit(EVENTS.QUERY_TYPE_SELECTION, {bucket});
-
-        this.loading = true;
       },
       onResult(payload) {
         this.display = DISPLAYS.LISTS;
@@ -913,23 +941,45 @@ class TableFixedHeaderUtility {
           networks: "0",
         };
 
-        if (data && data.variableResultDto && data.variableResultDto.totalHits) {
-          this.counts.variables = data.variableResultDto.totalHits.toLocaleString();
-        }
+        if (data) {
+          let dto;
+          switch (payload.type) {
+            case TYPES.VARIABLES:
+              dto = 'variableResultDto';
+              break;
+            case TYPES.DATASETS:
+              dto = 'datasetResultDto';
+              break;
+            case TYPES.STUDIES:
+              dto = 'studyResultDto';
+              break;
+            case TYPES.NETWORKS:
+              dto = 'networkResultDto';
+              break;
+          }
 
-        if (data && data.datasetResultDto && data.datasetResultDto.totalHits) {
-          this.counts.datasets = data.datasetResultDto.totalHits.toLocaleString();
-        }
+          if (!dto) {
+            throw new Error(`Payload has invalid type ${payload.type}`);
+          }
 
-        if (data && data.studyResultDto && data.studyResultDto.totalHits) {
-          this.counts.studies = data.studyResultDto.totalHits.toLocaleString();
-        }
+          this.hasListResult = data[dto].totalHits > 0;
 
-        if (data && data.networkResultDto && data.networkResultDto.totalHits) {
-          this.counts.networks = data.networkResultDto.totalHits.toLocaleString();
-        }
+          if (data.variableResultDto && data.variableResultDto.totalHits) {
+            this.counts.variables = data.variableResultDto.totalHits.toLocaleString();
+          }
 
-        this.loading = false;
+          if (data.datasetResultDto && data.datasetResultDto.totalHits) {
+            this.counts.datasets = data.datasetResultDto.totalHits.toLocaleString();
+          }
+
+          if (data.studyResultDto && data.studyResultDto.totalHits) {
+            this.counts.studies = data.studyResultDto.totalHits.toLocaleString();
+          }
+
+          if (data.networkResultDto && data.networkResultDto.totalHits) {
+            this.counts.networks = data.networkResultDto.totalHits.toLocaleString();
+          }
+        }
 
         this.updateStudyTypeFilter();
       },
@@ -952,11 +1002,11 @@ class TableFixedHeaderUtility {
       onGraphicsResult(payload) {
         this.display = DISPLAYS.GRAPHICS;
         this.hasGraphicsResult = payload.response.studyResultDto.totalHits > 0;
-        this.loading = false;
       },
       onCoverageResult(payload) {
         this.display = DISPLAYS.COVERAGE;
-        if (payload.response.rows !== undefined) { // for filters
+        this.hasCoverageResult = payload.response.rows !== undefined;
+        if (this.hasCoverageResult) { // for filters
           let rowsEligibleForFullCoverage = [];
           payload.response.rows.forEach(row => {
             if (Array.isArray(row.hits)) {
@@ -1008,8 +1058,6 @@ class TableFixedHeaderUtility {
 
           this.hasCoverageTermsWithZeroHits = this.queriesWithZeroHitsToRemove.length > 0; // active?
         }
-
-        this.loading = false;
       },
       onZeroColumnsToggle() {
         this.queriesWithZeroHitsToRemove.forEach(query => {
@@ -1021,6 +1069,9 @@ class TableFixedHeaderUtility {
       }
     },
     computed: {
+      loading() {
+        return this.queryChangeListener.loading;
+      },
       selectedQuery() {
         if (this.selectedTarget) {
           return this.queries[this.selectedTarget];
