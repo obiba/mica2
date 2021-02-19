@@ -788,7 +788,7 @@ class TableFixedHeaderUtility {
         this.refreshQueries();
 
         // result
-        $(`.nav-tabs #${payload.display}-tab`).tab('show');
+        $(`.nav-pills #${payload.display}-tab`).tab('show');
         $(`.nav-pills #${payload.type}-tab`).tab('show');
 
         if (payload.bucket) {
