@@ -599,6 +599,7 @@ class MicaTreeQueryUrl {
 
     let targetQuery = tree.search((name) => name === target);
     if (!targetQuery) {
+      targetQuery = new RQL.Query(target);
       tree.addQuery(null, targetQuery);
     }
 
