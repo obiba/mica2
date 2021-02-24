@@ -29,7 +29,7 @@ import java.util.List;
 @Scope("request")
 public class GenericReportGenerator {
 
-  private static final int MAX_DOWNLOAD_STEP = 100000;
+  private static final int MAX_DOWNLOAD_STEP = 50000;
 
   @Inject
   private JoinQueryExecutor joinQueryExecutor;
