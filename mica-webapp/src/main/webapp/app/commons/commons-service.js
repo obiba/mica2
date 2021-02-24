@@ -18,6 +18,93 @@
 
   mica.commons.ENTITY_STATE_FILTER = ENTITY_STATE_FILTER;
 
+  const PERSON_DUPLICATE_STATUS = {
+    ERROR: 0,
+    WARNING: 1,
+    OK: 2
+  };
+
+  mica.commons.PERSON_DUPLICATE_STATUS = PERSON_DUPLICATE_STATUS;
+
+  class PersonsDuplicateFinder {
+    constructor($q, ContactsSearchResource) {
+      this.$q = $q;
+      this.ContactsSearchResource = ContactsSearchResource;
+    }
+
+    __buildQuery(searchFields) {
+      if (!searchFields) {
+        return '';
+      }
+
+      return Object.keys(searchFields)
+        .reduce((acc, key) => {
+          acc.push(`${key}:${searchFields[key].replaceAll(' ','\\ ')}`);
+          return acc;
+        }, [])
+        .join(' AND ');
+    }
+
+    __processResponse(persons, searchFields, targetEmail) {
+      const response = {status: PERSON_DUPLICATE_STATUS.OK, message:''};
+      let name, email;
+
+      if (persons) {
+        if (searchFields.lastName) {
+          response.status = PERSON_DUPLICATE_STATUS.WARNING;
+          name = `${searchFields.firstName || ''} ${searchFields.lastName || ''}`.trim();
+        }
+
+        if (targetEmail && persons.filter(person => person.email === targetEmail).pop()) {
+          response.status = PERSON_DUPLICATE_STATUS.ERROR;
+          email = `${targetEmail}`;
+        }
+
+        if (name && email) {
+          response.messageKey = 'contact.duplicate.name-email';
+          response.messageArgs = [name, email];
+        } else {
+          response.messageKey = 'contact.duplicate.name';
+          response.messageArgs = [name];
+        }
+      }
+
+      return response;
+    }
+
+    searchPerson(person) {
+      // cleanup empty fields
+      const defaultSearchFields = {firstName: person.firstName, lastName: person.lastName};
+      const searchFields = Object.keys(defaultSearchFields)
+        .reduce((acc, key) => {
+          if (defaultSearchFields[key] && defaultSearchFields[key] !== '') {
+            acc[key] = defaultSearchFields[key];
+          }
+          return acc;
+        }, {});
+
+
+      let deferred = this.$q.defer();
+      const query = this.__buildQuery(searchFields);
+      if (query.length < 1) {
+        deferred.resolve('');
+      }
+
+      this.ContactsSearchResource.search({
+        query,
+        from: 0,
+        limit: mica.commons.DEFAULT_LIMIT,
+        exclude: person.id
+      }).$promise
+        .then(result => {
+          return deferred.resolve(this.__processResponse(result.persons, searchFields, person.email, person.id));
+        })
+        .catch((error) => deferred.reject(error));
+
+      return deferred.promise;
+    }
+  }
+
   class QuerySearchUtils {
     /**
      * Utility function used to cleanup full-text queries in entity and person listing pages.
@@ -83,6 +170,8 @@
   mica.commons.addQueryFields = function(query, queryField, locale) {
     return QuerySearchUtils.addQueryFields(query, queryField, locale);
   };
+
+  mica.commons.PersonsDuplicateFinder = PersonsDuplicateFinder;
 
   mica.commons
 

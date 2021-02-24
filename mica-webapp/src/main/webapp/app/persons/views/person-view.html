@@ -12,11 +12,16 @@
     <span>{{'persons.no-memberships' |translate:{fullname: $ctrl.person.firstName+' '+ $ctrl.person.lastName} }}</span>
   </div>
 
+  <obiba-alert id="PersonViewComponent"></obiba-alert>
+
   <div ng-if="$ctrl.mode !== 'view'" class="pull-right">
     <a href class="btn btn-default" ng-click="$ctrl.onCancel()">
       <span translate>cancel</span>
     </a>
-    <a href class="btn btn-primary" ng-click="$ctrl.onSave()">
+    <a ng-if="!$ctrl.validated" href class="btn btn-info" ng-click="$ctrl.onValidate()">
+      <span translate>validate</span>
+    </a>
+    <a ng-if="$ctrl.mode !== 'view' && $ctrl.validated" href class="btn btn-primary" ng-click="$ctrl.onSave()">
       <span translate>save</span>
     </a>
   </div>

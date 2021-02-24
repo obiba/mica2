@@ -27,28 +27,35 @@
                 $routeParams,
                 $filter,
                 $uibModal,
+                $q,
                 EntityMembershipService,
                 LocalizedSchemaFormService,
                 MicaConfigResource,
                 PersonResource,
+                ContactsSearchResource,
                 ContactSerializationService,
                 NOTIFICATION_EVENTS,
                 FormDirtyStateObserver,
-                EntityTitleService) {
+                EntityTitleService,
+                AlertService) {
       this.$rootScope = $rootScope;
       this.$scope = $scope;
       this.$location = $location;
       this.$routeParams = $routeParams;
       this.$filter = $filter;
       this.$uibModal = $uibModal;
+      this.$q = $q;
       this.LocalizedSchemaFormService = LocalizedSchemaFormService;
       this.EntityMembershipService = EntityMembershipService;
       this.MicaConfigResource = MicaConfigResource;
       this.PersonResource = PersonResource;
+      this.ContactsSearchResource = ContactsSearchResource;
       this.ContactSerializationService = ContactSerializationService;
       this.NOTIFICATION_EVENTS = NOTIFICATION_EVENTS;
       this.FormDirtyStateObserver = FormDirtyStateObserver;
       this.EntityTitleService = EntityTitleService;
+      this.AlertService = AlertService;
+      this.validated = true;
     }
 
     __getMode() {
@@ -287,7 +294,7 @@
 
         this.sfForm = {
           schema: this.LocalizedSchemaFormService.translate(angular.copy(CONTACT_SCHEMA)),
-          definition: this.LocalizedSchemaFormService.translate(angular.copy(CONTACT_DEFINITION))
+          definition: this.LocalizedSchemaFormService.translate(angular.copy(CONTACT_DEFINITION(this.onFormChanged.bind(this))))
         };
 
         if (MODE.NEW !== this.mode) {
@@ -299,6 +306,11 @@
         this.__observeFormDirtyState();
         this.loading = false;
       });
+    }
+
+    onFormChanged() {
+      console.log(this);
+      this.validated = false;
     }
 
     navigateOut(path, exclude) {
@@ -329,6 +341,27 @@
         case MODE.EDIT:
           this.navigateOut(`/person/${this.$routeParams.id}`);
           break;
+      }
+    }
+
+    onValidate() {
+      this.$scope.$broadcast('schemaFormValidate');
+      if (this.$scope.form.$valid) {
+        new mica.commons.PersonsDuplicateFinder(this.$q, this.ContactsSearchResource)
+          .searchPerson(this.person)
+          .then(result => {
+            if (result.status !== mica.commons.PERSON_DUPLICATE_STATUS.OK) {
+              this.AlertService.alert({
+                id: 'PersonViewComponent',
+                type: result.status === mica.commons.PERSON_DUPLICATE_STATUS.WARNING ?  'warning' : 'danger',
+                msgKey: result.messageKey,
+                msgArgs: result.messageArgs
+              });
+
+            }
+            this.validated = result.status !== mica.commons.PERSON_DUPLICATE_STATUS.ERROR;
+          })
+          .catch(error => console.error('Error', error));
       }
     }
 
@@ -411,16 +444,18 @@
         '$routeParams',
         '$filter',
         '$uibModal',
+        '$q',
         'EntityMembershipService',
         'LocalizedSchemaFormService',
         'MicaConfigResource',
         'PersonResource',
+        'ContactsSearchResource',
         'ContactSerializationService',
         'NOTIFICATION_EVENTS',
         'FormDirtyStateObserver',
         'EntityTitleService',
+        'AlertService',
         PersonViewController,
-
       ]
     });
 
