@@ -279,11 +279,6 @@ class TableFixedHeaderUtility {
 
     let theadTop = null;
 
-    const allRows = tableElement.querySelectorAll('tbody tr');
-    const thresholdRows = tableElement.querySelectorAll('tbody tr:nth-child(' + PAGE_LENGTH + 'n)');
-    const numberOfPages = Math.ceil(allRows.length / PAGE_LENGTH);
-    let currentPage = 0;
-
     function onScroll() {
       theadTop = theadTop || TableFixedHeaderUtility.getElementRectangle(thead).top;
       const itemTop = theadTop + (offset || 0);
@@ -295,13 +290,6 @@ class TableFixedHeaderUtility {
         thead.style.transform = 'translateY(0)';
         thead.style.backgroundColor = initialTheadBackgroundColor;
       }
-
-      let next = thresholdRows[currentPage];
-
-      if (next && window.scrollY > TableFixedHeaderUtility.getElementRectangle(next).top) {
-        currentPage++;
-        Array.prototype.slice.call(allRows, ((currentPage * PAGE_LENGTH) || PAGE_LENGTH) + 1).forEach(row => row.style.display = 'table-row');
-      }
     }
 
     function onDestroy() {
@@ -309,8 +297,6 @@ class TableFixedHeaderUtility {
     }
 
     window.addEventListener("scroll", onScroll);
-
-    Array.prototype.slice.call(allRows, ((currentPage * PAGE_LENGTH) || PAGE_LENGTH) + 1).forEach(row => row.style.display = 'none');
 
     return onDestroy;
   }
