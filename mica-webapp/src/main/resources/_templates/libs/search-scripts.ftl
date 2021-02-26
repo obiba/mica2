@@ -95,6 +95,11 @@
     "value": "<@message "value"/>",
     "frequency": "<@message "frequency"/>",
     "graphics.total": "<@message "graphics.total"/>",
+    "search.coverage-dce-cols.study": "<@message "search.coverage-dce-cols.study"/>",
+    "search.coverage-dce-cols.population": "<@message "search.coverage-dce-cols.population"/>",
+    "search.coverage-dce-cols.dce": "<@message "search.coverage-dce-cols.dce"/>",
+    "search.coverage-buckets.dataset": "<@message "search.coverage-buckets.dataset"/>",
+    "search.coverage-buckets.study": "<@message "search.coverage-buckets.study"/>"
   };
 
   Mica.trArgs = (msgKey, msgArgs) => {
