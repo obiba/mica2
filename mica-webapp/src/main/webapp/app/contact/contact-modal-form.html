@@ -10,7 +10,7 @@
 
 <div class="modal-content">
 
-  <form name="form" role="form" novalidate class="ng-scope ng-invalid ng-invalid-required ng-dirty ng-valid-minlength" ng-submit="save(form)">
+  <form name="form" role="form" novalidate class="ng-scope ng-invalid ng-invalid-required ng-dirty ng-valid-minlength" >
 
     <div class="modal-header">
       <button type="button" class="close" aria-hidden="true" ng-click="cancel()">&times;</button>
@@ -37,6 +37,7 @@
           </ui-select-choices>
         </ui-select>
       </div>
+      <obiba-alert id="ContactModalController"></obiba-alert>
       <div sf-model="selected.contact" sf-form="sfForm.definition" sf-schema="sfForm.schema" sf-options="sfOptions"></div>
     </div>
 
@@ -44,7 +45,10 @@
       <button type="button" class="btn btn-default" ng-click="cancel()">
         <span translate>cancel</span>
       </button>
-      <button type="submit" class="btn btn-primary">
+      <button ng-show="!validated" type="button" class="btn btn-info" ng-click="validate($event)">
+        <span translate>validate</span>
+      </button>
+      <button ng-show="validated" type="button" class="btn btn-primary" ng-click="save(form)">
         <span translate>save</span>
       </button>
     </div>

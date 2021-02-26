@@ -32,7 +32,7 @@ mica.contact
 
       $scope.sfOptions = {formDefaults: {languages: formLanguages, readonly: true}};
       $scope.sfForm = {schema: LocalizedSchemaFormService.translate(angular.copy(CONTACT_SCHEMA)),
-        definition: LocalizedSchemaFormService.translate(angular.copy(CONTACT_DEFINITION))};
+        definition: LocalizedSchemaFormService.translate(angular.copy(CONTACT_DEFINITION()))};
       $scope.contact = contact;
       $scope.close = function () {
         $uibModalInstance.dismiss('close');
@@ -43,10 +43,12 @@ mica.contact
     '$uibModalInstance',
     '$translate',
     '$filter',
+    '$q',
     'ContactSerializationService',
     'LocalizedSchemaFormService',
     'LocalizedValues',
     'ContactsSearchResource',
+    'AlertService',
     'micaConfig',
     'contact',
     'excludes',
@@ -55,15 +57,17 @@ mica.contact
               $uibModalInstance,
               $translate,
               $filter,
+              $q,
               ContactSerializationService,
               LocalizedSchemaFormService,
               LocalizedValues,
               ContactsSearchResource,
+              AlertService,
               micaConfig,
               contact,
               excludes,
               type) {
-      $translate(type).then(function(translation) {
+      $translate('contact.label.' + type).then(function(translation) {
         $scope.type = translation;
       });
 
@@ -75,6 +79,26 @@ mica.contact
 
       var newResult = function() {
         return {persons: [], total: 0, current: 0};
+      };
+
+      var validate = function() {
+        console.log('Validate');
+        new mica.commons.PersonsDuplicateFinder($q, ContactsSearchResource)
+          .searchPerson(contact)
+          .then(result => {
+            if (result.status !== mica.commons.PERSON_DUPLICATE_STATUS.OK) {
+              AlertService.alert({
+                id: 'ContactModalController',
+                type: result.status === mica.commons.PERSON_DUPLICATE_STATUS.WARNING ?  'warning' : 'danger',
+                msgKey: result.messageKey,
+                msgArgs: result.messageArgs
+              });
+
+            }
+
+            $scope.validated = result.status !== mica.commons.PERSON_DUPLICATE_STATUS.ERROR;
+          })
+          .catch(error => console.error('Error', error));
       };
 
       var save = function (form) {
@@ -131,23 +155,30 @@ mica.contact
         }
       };
 
+      function onFormChanged() {
+        $scope.validated = false;
+      }
+
       var formLanguages = {};
       micaConfig.languages.forEach(function (loc) {
         formLanguages[loc] = $filter('translate')('language.' + loc);
       });
 
+      $scope.validated = true;
       $scope.sfOptions = {formDefaults: {languages: formLanguages}};
       $scope.sfForm = {schema: LocalizedSchemaFormService.translate(angular.copy(CONTACT_SCHEMA)),
-        definition: LocalizedSchemaFormService.translate(angular.copy(CONTACT_DEFINITION))};
+      definition: LocalizedSchemaFormService.translate(angular.copy(CONTACT_DEFINITION(onFormChanged.bind($scope))))};
       $scope.isNew = Object.getOwnPropertyNames(contact).length === 0;
       $scope.selected = {contact: contact};
       $scope.excludes = excludes;
       $scope.result = newResult();
       $scope.autoRefreshed = false;
       $scope.lang = $translate.use();
+      $scope.validate = validate;
       $scope.save = save;
       $scope.cancel = cancel;
       $scope.findContacts = findContacts;
       $scope.onHighlighted = onHighlighted;
+      $scope.onFormChanged = onFormChanged;
     }]);
 
