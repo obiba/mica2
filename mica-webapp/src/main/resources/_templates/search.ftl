@@ -6,6 +6,7 @@
 <head>
   <#include "libs/head.ftl">
   <title>${config.name!""} | <@message "search"/></title>
+  <link rel="stylesheet" href="${assetsPath}/libs/node_modules/vue-mica-search/dist/VueMicaSearch.css" />
 </head>
 <body id="search-page" class="hold-transition sidebar-mini layout-fixed layout-navbar-fixed">
 <!-- Site wrapper -->
