@@ -8,6 +8,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+'use strict';
+
 /* exported CONTACT_SCHEMA */
 var CONTACT_SCHEMA = {
   type: 'object',
@@ -87,59 +89,74 @@ var CONTACT_SCHEMA = {
 };
 
 /* exported CONTACT_DEFINITION */
-var CONTACT_DEFINITION = [
-  {
-    'type': 'section',
-    'htmlClass': 'row',
-    'items': [
-      {
-        'type': 'section',
-        'htmlClass': 'col-xs-6',
-        'items': [
-          {
-            type: 'help',
-            helpvalue: '<h4>t(contact.identification)</h4>'
-          },
-          'title',
-          'firstName',
-          'lastName',
-          'academicLevel',
-          'email',
-          'phone'
-        ]
-      },
-      {
-        'type': 'section',
-        'htmlClass': 'col-xs-6',
-        'items': [
-          {
-            type: 'help',
-            helpvalue: '<h4>t(contact.institution)</h4>'
-          },
-          {
-            key: 'institution.name',
-            type: 'localizedstring'
-          },
-          {
-            key: 'institution.department',
-            type: 'localizedstring'
-          },
-          {
-            key: 'institution.address.street',
-            type: 'localizedstring'
-          },
-          {
-            key: 'institution.address.city',
-            type: 'localizedstring'
-          },
-          'institution.address.zip',
-          'institution.address.state',
-          {
-            key: 'institution.address.country',
-            type: 'obibaCountriesUiSelect'
-          }
-        ]
-      }
-    ]
-  }
-];
+function CONTACT_DEFINITION(changeHandler) {
+  var handler = changeHandler || function() {};
+
+  return [
+    {
+      'type': 'section',
+      'htmlClass': 'row',
+      'items': [
+        {
+          'type': 'section',
+          'htmlClass': 'col-xs-6',
+          'items': [
+            {
+              type: 'help',
+              helpvalue: '<h4>t(contact.identification)</h4>'
+            },
+            'title',
+            {
+              'key': 'firstName',
+              'onChange': handler
+            },
+            {
+              'key': 'lastName',
+              'onChange': handler
+            },
+            'academicLevel',
+            {
+              'key': 'email',
+              'onChange': handler
+            },
+            'phone'
+          ]
+        },
+        {
+          'type': 'section',
+          'htmlClass': 'col-xs-6',
+          'items': [
+            {
+              type: 'help',
+              helpvalue: '<h4>t(contact.institution)</h4>'
+            },
+            {
+              key: 'institution.name',
+              type: 'localizedstring'
+            },
+            {
+              key: 'institution.department',
+              type: 'localizedstring'
+            },
+            {
+              key: 'institution.address.street',
+              type: 'localizedstring'
+            },
+            {
+              key: 'institution.address.city',
+              type: 'localizedstring'
+            },
+            'institution.address.zip',
+            'institution.address.state',
+            {
+              key: 'institution.address.country',
+              type: 'obibaCountriesUiSelect'
+            }
+          ]
+        }
+      ]
+    }
+  ];
+}
+
+

@@ -828,6 +828,10 @@
       "member": "Find an existing {{type}}",
       "placeholder": "Search by first name, last name or institution..."
     },
+    "duplicate": {
+      "name-email": "The name '{{arg0}}' and email '{{arg1}}' are already used!",
+      "name": "The name '{{arg0}}' is already used!"
+    },
     "identification": "Identification",
     "title": "Title",
     "firstName": "First Name",
