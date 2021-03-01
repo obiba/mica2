@@ -19,6 +19,7 @@ import org.obiba.mica.study.domain.DataCollectionEvent;
 import org.obiba.mica.study.domain.Population;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.service.PublishedStudyService;
+import org.obiba.mica.study.service.StudyService;
 import org.obiba.mica.web.controller.domain.Annotation;
 import org.obiba.mica.web.controller.domain.HarmonizationAnnotations;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
@@ -50,6 +51,9 @@ public class VariableController extends BaseController {
 
   @Inject
   private HarmonizedDatasetService harmonizedDatasetService;
+
+  @Inject
+  private StudyService studyService;
 
   @Inject
   private PublishedStudyService publishedStudyService;
@@ -166,7 +170,10 @@ public class VariableController extends BaseController {
 
   private void addStudyTableParameters(Map<String, Object> params, DatasetVariable variable) {
     try {
-      BaseStudy study = getStudy(variable.getStudyId());
+      String studyId = variable.getStudyId();
+      boolean published = studyService.isPublished(studyId);
+      BaseStudy study = getStudy(studyId, published);
+      params.put("studyPublished", published);
       params.put("study", study);
       Population population = study.findPopulation(variable.getPopulationId().replace(variable.getStudyId() + ":", ""));
       params.put("population", population);
@@ -194,8 +201,8 @@ public class VariableController extends BaseController {
     }
   }
 
-  private BaseStudy getStudy(String id) {
-    BaseStudy study = publishedStudyService.findById(id);
+  private BaseStudy getStudy(String id, boolean published) {
+    BaseStudy study = published ? publishedStudyService.findById(id) : studyService.findStudy(id);
     if (study == null) throw NoSuchStudyException.withId(id);
     checkAccess((study instanceof Study) ? "/individual-study" : "/harmonization-study", id);
     return study;
