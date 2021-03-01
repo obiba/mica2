@@ -151,18 +151,30 @@
                   </dd>
 
                   <dt class="col-sm-4"><@message "study"/></dt>
-                  <dd class="col-sm-8"><a href="${contextPath}/study/${study.id}">${localize(study.acronym, study.id)}</a></dd>
+                  <#if studyPublished>
+                    <dd class="col-sm-8"><a href="${contextPath}/study/${study.id}">${localize(study.acronym, study.id)}</a></dd>
+                  <#else>
+                    <dd class="col-sm-8">${localize(study.acronym)}</dd>
+                  </#if>
                   <dt class="col-sm-4"><@message "population"/></dt>
                   <dd class="col-sm-8">
-                    <a href="#" data-toggle="modal" data-target="#modal-${population.id}">${localize(population.name, population.id)}</a>
-                    <@populationDialog id=population.id population=population></@populationDialog>
+                    <#if studyPublished>
+                      <a href="#" data-toggle="modal" data-target="#modal-${population.id}">${localize(population.name, population.id)}</a>
+                      <@populationDialog id=population.id population=population></@populationDialog>
+                    <#else>
+                      ${localize(population.name, population.id)}
+                    </#if>
                   </dd>
                   <#if dce??>
                     <dt class="col-sm-4"><@message "data-collection-event"/></dt>
                     <dd class="col-sm-8">
+                      <#if studyPublished>
                       <#assign dceId="${population.id}-${dce.id}">
                       <a href="#" data-toggle="modal" data-target="#modal-${dceId}">${localize(dce.name, dce.id)}</a>
                       <@dceDialog id=dceId dce=dce></@dceDialog>
+                      <#else>
+                        ${localize(dce.name, dce.id)}
+                      </#if>
                     </dd>
                   </#if>
                   <#if type == "Harmonized">
