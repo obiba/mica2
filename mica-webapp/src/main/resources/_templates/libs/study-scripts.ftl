@@ -186,8 +186,11 @@
           dceId = matches[1][2].split(/:/).pop();
         }
 
+        const nav = $('nav.main-header');
+        const navOffset = nav ? nav.outerHeight() : 0;
+
         $([document.documentElement, document.body]).animate({
-          scrollTop: $("#populations").offset().top
+          scrollTop: $("#populations").offset().top - navOffset
         }, 250);
 
         setTimeout(() => {
