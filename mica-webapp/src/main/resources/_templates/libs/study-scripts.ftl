@@ -174,5 +174,32 @@
       });
     </#if>
 
+    function ensurePopulationDceSelection() {
+      const hash = new URL(window.location).hash;
+      const regex = /population\/([^\/]*)|data-collection-event\/(.*)$/g;
+
+      const matches = [...hash.matchAll(regex)]
+      if (matches.length > 0) {
+        const populationId = matches[0][1].split(/:/).pop();
+        let dceId = '';
+        if (matches.length > 1) {
+          dceId = matches[1][2].split(/:/).pop();
+        }
+
+        $([document.documentElement, document.body]).animate({
+          scrollTop: $("#populations").offset().top
+        }, 250);
+
+        setTimeout(() => {
+          $('a[href="#population-'+populationId+'"]').tab('show');
+          if (dceId) {
+            $('#modal-'+populationId+'-'+dceId).modal();
+          }
+        }, 250);
+
+      }
+    }
+
+    ensurePopulationDceSelection();
   });
 </script>
