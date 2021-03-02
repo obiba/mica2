@@ -653,7 +653,7 @@ class TableFixedHeaderUtility {
         canDoFullCoverage: false,
         hasCoverageTermsWithZeroHits: false,
         queryForFullCoverage: null,
-        queriesWithZeroHitsToRemove: [],
+        queriesWithZeroHitsToUpdate: [],
         coverageFixedHeaderHandler: null
       };
     },
@@ -1033,21 +1033,37 @@ class TableFixedHeaderUtility {
             lastVocabularyHeaderIndex += termsCount;
           });
 
-          this.queriesWithZeroHitsToRemove = [];
+          this.queriesWithZeroHitsToUpdate = [];
+          const taxonomyTermsMap = {};
+          const termsWithZeroHits = {};
           payload.response.termHeaders.forEach((termHeader, index) => {
             const key = taxonomyNames[index] + '.' + vocabularyNames[index], name = termHeader.entity.name;
 
+            if (!Array.isArray(taxonomyTermsMap[key])) {
+              taxonomyTermsMap[key] = [];
+            }
+            taxonomyTermsMap[key].push(name);
+
             if (termHeader.hits === 0) {
-              this.queriesWithZeroHitsToRemove.push(new RQL.Query('in', [key, [name]]));
+              if (!Array.isArray(termsWithZeroHits[key])) {
+                termsWithZeroHits[key] = [];
+              }
+
+              termsWithZeroHits[key].push(name);
             }
           });
-
-          this.hasCoverageTermsWithZeroHits = this.queriesWithZeroHitsToRemove.length > 0; // active?
+  
+          this.hasCoverageTermsWithZeroHits = Object.keys(termsWithZeroHits).length > 0; // active?
+          if (this.hasCoverageTermsWithZeroHits) {
+            for (const queryKey in termsWithZeroHits) {
+              this.queriesWithZeroHitsToUpdate.push(new RQL.Query('in', [queryKey, taxonomyTermsMap[queryKey].filter(x => !termsWithZeroHits[queryKey].includes(x))]));
+            }
+          }
         }
       },
       onZeroColumnsToggle() {
-        this.queriesWithZeroHitsToRemove.forEach(query => {
-          EventBus.$emit(EVENTS.QUERY_TYPE_DELETE, {target: TARGETS.VARIABLE, query, display: DISPLAYS.COVERAGE});
+        this.queriesWithZeroHitsToUpdate.forEach(query => {
+          EventBus.$emit(EVENTS.QUERY_TYPE_UPDATES_SELECTION, {updates: [{target: fromBucketToTarget(this.selectedBucket), query, display: DISPLAYS.COVERAGE}]});
         });
       },
       onFullCoverage() {
