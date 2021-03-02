@@ -410,8 +410,8 @@ class StudyQuery extends EntityQuery {
   }
 
   static get SORT_FIELDS() {
-   return Mica.querySettings.study.sortFields ? Mica.querySettings.study.sortFields
-     : ['acronym'];
+    return Mica.querySettings.study.sortFields ? Mica.querySettings.study.sortFields
+      : ['acronym'];
   }
 
 
@@ -446,8 +446,8 @@ class StudyQuery extends EntityQuery {
 
 class NetworkQuery extends EntityQuery {
   static get FIELDS() {
-   return Mica.querySettings.network.fields ? Mica.querySettings.network.fields
-     : ['acronym.*','name.*','studyIds'];
+    return Mica.querySettings.network.fields ? Mica.querySettings.network.fields
+      : ['acronym.*','name.*','studyIds'];
   }
 
   static get SORT_FIELDS() {
@@ -537,8 +537,8 @@ class MicaTreeQueryUrl {
   static getStudyTypeSelection(tree) {
     const isAll = values => !values || Array.isArray(values) && values.length > 1;
     const isClassName = (name, values) => Array.isArray(values)
-        ? values.length === 1 && values.indexOf(name) > -1
-        : values === name;
+      ? values.length === 1 && values.indexOf(name) > -1
+      : values === name;
 
     let selection = {all: true, study: false, harmonization: false};
     const theTree = tree || MicaTreeQueryUrl.getTree();
@@ -730,6 +730,34 @@ class MicaQueryExecutor {
   }
 
   /**
+   * Corrects LimitQuery when totalHits is inferior to 'from'
+   *
+   * @param type
+   * @param response
+   * @param limitQuery
+   * @returns {boolean}
+   * @private
+   */
+  __limitQueryCorrected(type, response, limitQuery) {
+    const dto = `${TYPES_TARGETS_MAP[type]}ResultDto`;
+    if (dto in response.data) {
+      const totalHits = response.data[dto].totalHits;
+      const from = limitQuery.args[0];
+
+      if (totalHits > 0 && from >= totalHits) {
+        console.debug(`Limit query needs correction: ${from} ${totalHits}`);
+        const size = limitQuery.args[1];
+        const pages = Math.ceil(totalHits / size);
+        // correct the from
+        limitQuery.args[0] = (pages - 1) * size;
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  /**
    * Executes a query and emits a result event
    *
    * @param tree
@@ -745,12 +773,16 @@ class MicaQueryExecutor {
       .get(`${contextPath}/ws/${type}/_rql?query=${tree.serialize()}`)
       .then(response => {
         // remove hidden queries
-        tree.findAndDeleteQuery((name) => 'fields' === name);
-        tree.findAndDeleteQuery((name) => 'sort' === name);
         const limitQuery = tree.search((name, args, parent) => 'limit' === name && TYPES_TARGETS_MAP[type] === parent.name);
-        this.__updateLocation(type, display, tree, noUrlUpdate);
 
-        EventBus.$emit(`${type}-results`, {type, response: response.data, from: limitQuery.args[0], size: limitQuery.args[1]});
+        if (this.__limitQueryCorrected(type, response, limitQuery)) {
+          this.__executeQuery(tree, type, display, noUrlUpdate);
+        } else {
+          tree.findAndDeleteQuery((name) => 'fields' === name);
+          tree.findAndDeleteQuery((name) => 'sort' === name);
+          this.__updateLocation(type, display, tree, noUrlUpdate);
+          EventBus.$emit(`${type}-results`, {type, response: response.data, from: limitQuery.args[0], size: limitQuery.args[1]});
+        }
       });
   }
 
