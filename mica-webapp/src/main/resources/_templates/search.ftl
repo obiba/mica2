@@ -294,7 +294,7 @@
                     <div v-show="hasVariableQuery">
                       <div id="coverage">
 
-                        <div v-show="!loading && hasCoverageResult">
+                        <div>
                           <div class="mt-4 mb-2 clearfix">
                             <ul class="nav nav-pills float-left" role="tablist">
                               <li class="nav-item">
