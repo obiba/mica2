@@ -383,6 +383,7 @@ class TableFixedHeaderUtility {
       agg: 'populations-model-selectionCriteria-countriesIso',
       vocabulary: 'populations-selectionCriteria-countriesIso',
       dataKey: 'obiba.mica.TermsAggregationResultDto.terms',
+      withSort: true,
       parseForChart: function(chartData) {
         let labels = [];
         let data = [];
