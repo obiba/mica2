@@ -966,6 +966,31 @@ class TableFixedHeaderUtility {
           if (data.networkResultDto && data.networkResultDto.totalHits) {
             this.counts.networks = data.networkResultDto.totalHits.toLocaleString();
           }
+
+          let tree = MicaTreeQueryUrl.getTree();
+
+          const target = TYPES_TARGETS_MAP[payload.type];
+          if (target) {
+            const limitQuery = tree.search((name, args, parent) => 'limit' === name && parent.name === target);
+            if (limitQuery) {
+              if (limitQuery.args[0] > data[dto].totalHits) {
+                limitQuery.args[0] = 0;
+
+                const urlParts = MicaTreeQueryUrl.parseUrl();
+                const searchParams = urlParts.searchParams || {};
+          
+                const display = urlParts.hash || 'list';
+                const type = searchParams.type || TYPES.VARIABLES;
+          
+                let params = [`type=${type}`, `query=${tree.serialize()}`];
+          
+                const urlSearch = params.join("&");
+                const hash = `${display}?${urlSearch}`;
+          
+                window.location.hash = `#${hash}`;
+              }
+            }
+          }
         }
 
         this.updateStudyTypeFilter();
