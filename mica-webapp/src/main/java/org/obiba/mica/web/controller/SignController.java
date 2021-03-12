@@ -72,15 +72,20 @@ public class SignController extends BaseController {
       return new ModelAndView("redirect:" + micaConfigService.getContextPath() + "/");
 
     ModelAndView mv = new ModelAndView("signup-with");
+    JSONObject uAuthObj;
     try {
       String fixedUAuth = uAuth.replaceAll("\\\\", "");
-      mv.getModel().put("uAuth", new JSONObject(fixedUAuth));
+      uAuthObj = new JSONObject(fixedUAuth);
     } catch (JSONException e) {
-      mv.getModel().put("uAuth", new JSONObject());
+      uAuthObj = new JSONObject();
     }
-    mv.getModel().put("authConfig", getAuthConfiguration());
 
-    return mv;
+    if (uAuthObj.has("username")) {
+      mv.getModel().put("uAuth", uAuthObj);
+      mv.getModel().put("authConfig", getAuthConfiguration());
+      return mv;
+    }
+    return new ModelAndView("redirect:/signup");
   }
 
   @GetMapping("/just-registered")

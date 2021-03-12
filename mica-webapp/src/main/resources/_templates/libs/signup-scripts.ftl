@@ -5,6 +5,7 @@
       'server.error.bad-request': "<@message "server.error.bad-request"/>",
       'server.error.bad-captcha': "<@message "server.error.bad-captcha"/>",
       'server.error.email-already-assigned': "<@message "server.error.email-already-assigned"/>",
+      'error.unhandledException': '<@message "server.error.unhandledException"/>'
     };
     UserService.signup("form", requiredFields, function (message) {
       var alertId = "#alertFailure";
