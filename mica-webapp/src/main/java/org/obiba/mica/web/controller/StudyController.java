@@ -2,6 +2,7 @@ package org.obiba.mica.web.controller;
 
 import com.google.common.base.Strings;
 import com.googlecode.protobuf.format.JsonFormat;
+import org.obiba.mica.core.service.PersonService;
 import org.obiba.mica.study.NoSuchStudyException;
 import org.obiba.mica.study.date.PersistableYearMonth;
 import org.obiba.mica.study.domain.BaseStudy;
@@ -29,6 +30,9 @@ public class StudyController extends BaseController {
 
   @Inject
   private StudyService draftStudyService;
+
+  @Inject
+  private PersonService personService;
 
   @Inject
   private LocalizedStringDtos localizedStringDtos;
@@ -62,6 +66,7 @@ public class StudyController extends BaseController {
       study = draftStudyService.findStudy(id);
       if (study == null) throw NoSuchStudyException.withId(id);
       checkPermission("/draft/" + ((study instanceof Study) ? "individual-study" : "harmonization-study"), "VIEW", id, shareKey);
+      study.setMemberships(personService.getStudyMembershipMap(id));
     }
     return study;
   }
