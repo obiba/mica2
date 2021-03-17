@@ -450,7 +450,7 @@ class DatasetDtos {
     @Nullable Math.SummaryStatisticsDto summary, boolean withStudySummary) {
     Mica.DatasetVariableAggregationDto.Builder aggDto = Mica.DatasetVariableAggregationDto.newBuilder();
 
-    simpleAggregationDto(aggDto, summary);
+    aggDto = simpleAggregationDto(aggDto, summary);
 
     if(opalTable instanceof StudyTable)
       aggDto.setStudyTable(asDto((StudyTable) opalTable, withStudySummary));
