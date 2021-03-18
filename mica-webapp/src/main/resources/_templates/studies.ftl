@@ -114,7 +114,7 @@
                     <div class="row d-flex align-items-stretch">
                       <#list studies as std>
                         <div class="col-12 col-sm-6 col-md-4 d-flex align-items-stretch">
-                          <@studyCa study=std/>
+                          <@studyCardModel study=std/>
                         </div>
                       </#list>
                     </div>
