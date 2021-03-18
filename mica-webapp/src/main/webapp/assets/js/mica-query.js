@@ -132,7 +132,7 @@ class EntityQuery {
     return destQuery;
   }
 
-  __ensureLimitFieldsSizeQueries(tree, targetQuery) {
+  __ensureLimitFieldsSizeAndLocaleQueries(tree, targetQuery) {
     let limitQuery = tree.search((name, args, parent) => name === 'limit' && this._target === parent.name);
 
     if (!limitQuery) {
@@ -141,6 +141,12 @@ class EntityQuery {
 
     tree.addQuery(targetQuery, new RQL.Query('fields', this.getFields()));
     tree.addQuery(targetQuery, new RQL.Query('sort', this.getSortFields()));
+
+    let localeQuery = tree.search((name, args, parent) => name === 'locale');
+    if (!localeQuery) {
+      localeQuery = new RQL.Query("locale", [Mica.locale]);
+      tree.addQuery(null, localeQuery);
+    }
   }
 
   /**
@@ -210,7 +216,7 @@ class EntityQuery {
    * @param tree
    */
   prepareForQuery(type, tree) {
-    this.__ensureLimitFieldsSizeQueries(tree, this.__ensureDestinationTargetQuery(type, tree));
+    this.__ensureLimitFieldsSizeAndLocaleQueries(tree, this.__ensureDestinationTargetQuery(type, tree));
     return tree;
   }
 
@@ -780,6 +786,7 @@ class MicaQueryExecutor {
         } else {
           tree.findAndDeleteQuery((name) => 'fields' === name);
           tree.findAndDeleteQuery((name) => 'sort' === name);
+          tree.findAndDeleteQuery((name) => 'locale' === name);
           this.__updateLocation(type, display, tree, noUrlUpdate);
           EventBus.$emit(`${type}-results`, {type, response: response.data, from: limitQuery.args[0], size: limitQuery.args[1]});
         }
@@ -848,6 +855,7 @@ class MicaQueryExecutor {
         // remove hidden queries
         tree.findAndDeleteQuery((name) => 'fields' === name);
         tree.findAndDeleteQuery((name) => 'sort' === name);
+        tree.findAndDeleteQuery((name) => 'locale' === name);
 
         this.__updateLocation(type, display, tree, noUrlUpdate);
         EventBus.$emit(EVENTS.QUERY_TYPE_GRAPHICS_RESULTS, {response: response.data});
