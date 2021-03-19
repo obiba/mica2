@@ -11,14 +11,19 @@
 package org.obiba.mica.dataset.rest;
 
 import javax.inject.Inject;
+import javax.ws.rs.ForbiddenException;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
-import org.apache.shiro.authz.annotation.RequiresAuthentication;
+import org.apache.shiro.SecurityUtils;
 import org.obiba.mica.dataset.NoSuchDatasetException;
 import org.obiba.mica.dataset.domain.Dataset;
+import org.obiba.mica.dataset.domain.DatasetVariable;
+import org.obiba.mica.dataset.domain.StudyDataset;
+import org.obiba.mica.dataset.service.CollectedDatasetService;
 import org.obiba.mica.dataset.service.PublishedDatasetService;
+import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.springframework.context.annotation.Scope;
@@ -34,18 +39,64 @@ import com.codahale.metrics.annotation.Timed;
 @Scope("request")
 public class PublishedDatasetResource {
 
-  @Inject
-  private PublishedDatasetService publishedDatasetService;
+  private final PublishedDatasetService publishedDatasetService;
+
+  private final CollectedDatasetService collectedDatasetService;
+
+  private final MicaConfigService micaConfigService;
+
+  private final Dtos dtos;
 
   @Inject
-  private Dtos dtos;
+  public PublishedDatasetResource(PublishedDatasetService publishedDatasetService, CollectedDatasetService collectedDatasetService, MicaConfigService micaConfigService, Dtos dtos) {
+    this.publishedDatasetService = publishedDatasetService;
+    this.collectedDatasetService = collectedDatasetService;
+    this.micaConfigService = micaConfigService;
+    this.dtos = dtos;
+  }
 
   @GET
   @Timed
   public Mica.DatasetDto get(@PathParam("id") String id) {
+    Dataset dataset = getDataset(id);
+    return dtos.asDto(dataset);
+  }
+
+  @GET
+  @Path("/collected/{project}/{table}/{variableName}")
+  public DatasetVariable getVariable(@PathParam("id") String id, @PathParam("project") String project, @PathParam("table") String table, @PathParam("variableName") String variableName) {
+    checkVariableSummaryAccess();
+    return collectedDatasetService.getDatasetVariable(alternativeStudyDataset(id, project, table), variableName);
+  }
+
+  @GET
+  @Path("/collected/{project}/{table}/{variableName}/_summary")
+  public Mica.DatasetVariableAggregationDto getVariableSummary(@PathParam("id") String id, @PathParam("project") String project, @PathParam("table") String table, @PathParam("variableName") String variableName) {
+    checkVariableSummaryAccess();
+    return dtos.asDto(collectedDatasetService.getVariableSummary(alternativeStudyDataset(id, project, table), variableName).getWrappedDto()).build();
+  }
+
+  private Dataset getDataset(String id) {
     Dataset dataset = publishedDatasetService.findById(id);
     if (dataset == null) throw NoSuchDatasetException.withId(id);
-    return dtos.asDto(dataset);
+
+    return dataset;
+  }
+
+  private StudyDataset alternativeStudyDataset(String id, String project, String table) {
+    Dataset dataset = getDataset(id);
+    if (!(dataset instanceof StudyDataset)) throw NoSuchDatasetException.withId(id);
+
+    StudyDataset asStudyDataset = (StudyDataset) dataset;
+    asStudyDataset.getStudyTable().setProject(project);
+    asStudyDataset.getStudyTable().setTable(table);
+
+    return asStudyDataset;
+  }
+
+  private void checkVariableSummaryAccess() {
+    if (!SecurityUtils.getSubject().isAuthenticated() && micaConfigService.getConfig().isVariableSummaryRequiresAuthentication())
+      throw new ForbiddenException();
   }
 
 }

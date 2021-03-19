@@ -424,21 +424,11 @@ public class CollectedDatasetService extends DatasetService<StudyDataset, StudyD
     return new DatasetVariable(dataset, getVariableValueSource(dataset, variableName).getVariable());
   }
 
-  public DatasetVariable getDatasetVariable(String project, String table, String variableName) throws NoSuchValueTableException, NoSuchVariableException {
-    return new DatasetVariable(new StudyDataset(), getVariableValueSource(project, table, variableName).getVariable());
-  }
-
   @Cacheable(value = "dataset-variables", cacheResolver = "datasetVariablesCacheResolver", key = "#variableName")
   public SummaryStatisticsWrapper getVariableSummary(@NotNull StudyDataset dataset, String variableName)
     throws NoSuchValueTableException, NoSuchVariableException {
     log.info("Caching variable summary {} {}", dataset.getId(), variableName);
     return new SummaryStatisticsWrapper(getVariableValueSource(dataset, variableName).getSummary());
-  }
-
-  public SummaryStatisticsWrapper getVariableSummary(String project, String table, String variableName)
-    throws NoSuchValueTableException, NoSuchVariableException {
-    log.debug("Getting variable summary \"{}\"/\"{}\" {}", project, table, variableName);
-    return new SummaryStatisticsWrapper(getVariableValueSource(project, table, variableName).getSummary());
   }
 
   public Search.QueryResultDto getVariableFacet(@NotNull StudyDataset dataset, String variableName)
