@@ -277,6 +277,27 @@ angular.module('formModule', ['schemaForm', 'hc.marked', 'angularMoment', 'schem
   .config(['$provide', function ($provide) {
     $provide.provider('ngObibaMicaUrl', NgObibaMicaUrlProvider);
   }])
+  .config(['schemaFormProvider',
+    function (schemaFormProvider) {
+      schemaFormProvider.postProcess(function (form) {
+        form.filter(function (e) {
+          return e.hasOwnProperty('wordLimit');
+        }).forEach(function (e) {
+          e.$validators = {
+            wordLimitError: function (value) {
+              if (angular.isDefined(value) && value !== null) {
+                var wordCount = (value.match(/\S+/g) || []).length;
+                if (wordCount > parseInt(e.wordLimit)) {
+                  return false;
+                }
+              }
+              return true;
+            }
+          };
+        });
+        return form;
+      });
+    }])
   .factory(['markedProvider', function (markedProvider) {
     markedProvider.setOptions({
       gfm: true,
