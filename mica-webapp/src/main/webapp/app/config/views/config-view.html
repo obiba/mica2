@@ -477,6 +477,7 @@
           <li><a href="" ng-click="createOpalCredentialKeyPair()" translate>config.create</a></li>
           <li><a href="" ng-click="importOpalCredentialKeyPair()" translate>config.import</a></li>
           <li><a href="" ng-click="addOpalCredentialUserPass()" translate>config.username</a></li>
+          <li><a href="" ng-click="addOpalCredentialToken()" translate>config.opalToken</a></li>
         </ul>
       </div>
 
@@ -499,7 +500,7 @@
                   <li>
                     <a ng-click="deleteOpalCredential(opalCredential)" class="hand action" title="{{'delete' | translate}}"><i class="fa fa-trash-o"></i></a>
                   </li>
-                  <li ng-if="opalCredential.type === 'USERNAME'">
+                  <li ng-if="opalCredential.type === 'USERNAME' || opalCredential.type === 'TOKEN'">
                     <a ng-click="editOpalCredentialCertificate(opalCredential)" class="hand action" title="{{'edit' | translate}}"><i class="fa fa-edit"></i></a>
                   </li>
                   <li ng-if="opalCredential.type === 'PUBLIC_KEY_CERTIFICATE'">

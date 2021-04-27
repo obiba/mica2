@@ -25,6 +25,8 @@ public class OpalCredential extends AbstractAuditableDocument {
 
   private String password;
 
+  private String token;
+
   private AuthType authType;
 
   public OpalCredential() {
@@ -48,6 +50,17 @@ public class OpalCredential extends AbstractAuditableDocument {
     this.username = username;
     this.password = password;
     this.authType = authType;
+  }
+
+  public OpalCredential(String opalUrl, AuthType authType, String token) {
+    if (authType == AuthType.TOKEN && token == null)
+      throw new IllegalArgumentException();
+    else if (authType != AuthType.TOKEN)
+      throw new IllegalArgumentException();
+
+    setId(opalUrl);
+    this.token = token;
+    this.authType = AuthType.TOKEN;
   }
 
   public String getOpalUrl() {
@@ -74,6 +87,14 @@ public class OpalCredential extends AbstractAuditableDocument {
     this.password = password;
   }
 
+  public String getToken() {
+    return token;
+  }
+
+  public void setToken(String token) {
+    this.token = token;
+  }
+
   public AuthType getAuthType() {
     return authType;
   }
@@ -84,7 +105,7 @@ public class OpalCredential extends AbstractAuditableDocument {
 
   @Override
   public int hashCode() {
-    return Arrays.hashCode(new Object[] {getId(), getVersion(), authType, username, password});
+    return Arrays.hashCode(new Object[] {getId(), getVersion(), authType, username, password, token});
   }
 
   @Override
@@ -97,6 +118,7 @@ public class OpalCredential extends AbstractAuditableDocument {
       getVersion() == ((OpalCredential) obj).getVersion() &&
       authType.equals(((OpalCredential) obj).getAuthType()) &&
       ((username == null && ((OpalCredential) obj).getUsername() == null) || username.equals(((OpalCredential) obj).getUsername())) &&
-      ((password == null && ((OpalCredential) obj).getPassword() == null) || password.equals(((OpalCredential) obj).getPassword()));
+      ((password == null && ((OpalCredential) obj).getPassword() == null) || password.equals(((OpalCredential) obj).getPassword())) &&
+      ((token == null && ((OpalCredential) obj).getToken() == null) || token.equals(((OpalCredential) obj).getToken()));
   }
 }

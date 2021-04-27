@@ -181,6 +181,7 @@ message HarmonizationStudyDto {
 enum OpalCredentialType {
   USERNAME = 0;
   PUBLIC_KEY_CERTIFICATE = 1;
+  TOKEN = 2;
 }
 
 message OpalCredentialDto {
@@ -189,6 +190,7 @@ message OpalCredentialDto {
   optional string username = 3;
   optional string password = 4;
   optional KeyForm keyForm = 5;
+  optional string token = 6;
 }
 
 enum KeyType {

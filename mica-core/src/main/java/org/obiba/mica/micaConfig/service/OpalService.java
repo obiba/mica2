@@ -10,14 +10,8 @@
 
 package org.obiba.mica.micaConfig.service;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.*;
-import java.util.stream.Collectors;
-
-import javax.annotation.Nullable;
-import javax.inject.Inject;
-
+import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.math3.util.Pair;
 import org.obiba.magma.support.Initialisables;
@@ -45,8 +39,12 @@ import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
+import javax.annotation.Nullable;
+import javax.inject.Inject;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 public class OpalService implements EnvironmentAware {
@@ -91,10 +89,10 @@ public class OpalService implements EnvironmentAware {
 
     OpalCredential opalCredential = getOpalCredential(opalUrl);
 
-    if(cachedDatasources.containsKey(projectUrl)) {
+    if (cachedDatasources.containsKey(projectUrl)) {
       Pair<OpalCredential, RestDatasource> p = cachedDatasources.get(projectUrl);
 
-      if(p.getKey().equals(opalCredential)) {
+      if (p.getKey().equals(opalCredential)) {
         log.debug("Using cached rest datasource to " + projectUrl);
         return p.getValue();
       }
@@ -108,22 +106,23 @@ public class OpalService implements EnvironmentAware {
     Initialisables.initialise(datasource);
     cachedDatasources.put(projectUrl, Pair.create(opalCredential, datasource));
 
-    log.debug("Initializaed rest datasource for " + projectUrl);
+    log.debug("Initialized rest datasource for " + projectUrl);
 
     return datasource;
   }
 
   private RestDatasource createRestDatasource(OpalCredential opalCredential, String projectUrl, String opalUrl,
-    String project) {
-    if(opalCredential.getAuthType() == AuthType.CERTIFICATE) {
+                                              String project) {
+    if (opalCredential.getAuthType() == AuthType.CERTIFICATE) {
       KeyStoreManager kms = keyStoreService.getKeyStore(OPAL_KEYSTORE);
 
-      if(!kms.aliasExists(opalCredential.getOpalUrl())) throw new IllegalStateException(
+      if (!kms.aliasExists(opalCredential.getOpalUrl())) throw new IllegalStateException(
         "Trying to use opal certificate credential but could not be found in keystore.");
 
       return (RestDatasource) new RestDatasourceFactory(projectUrl, opalUrl, kms.getKeyStore(), opalUrl,
         micaConfigService.getConfig().getSecretKey(), project).create();
-    }
+    } else if (opalCredential.getAuthType() == AuthType.TOKEN)
+      return (RestDatasource) new RestDatasourceFactory(projectUrl, opalUrl, opalCredential.getToken(), project).create();
 
     return (RestDatasource) new RestDatasourceFactory(projectUrl, opalUrl, opalCredential.getUsername(),
       opalCredential.getPassword(), project).create();
@@ -223,9 +222,9 @@ public class OpalService implements EnvironmentAware {
    * @return
    */
   public Opal.TaxonomiesDto.TaxonomySummaryDto.VocabularySummaryDto getTaxonomyVocabularySummaryDto(String name,
-    String vocabularyName) {
+                                                                                                    String vocabularyName) {
     for (Vocabulary voc : getTaxonomy(name).getVocabularies()) {
-      if(voc.getName().equals(vocabularyName)) return Dtos.asSummaryDto(voc);
+      if (voc.getName().equals(vocabularyName)) return Dtos.asSummaryDto(voc);
     }
     throw new NoSuchVocabularyException(name, vocabularyName);
   }
@@ -251,7 +250,7 @@ public class OpalService implements EnvironmentAware {
   public Opal.TaxonomyDto getTaxonomyDto(String name) {
     Map<String, Taxonomy> taxonomies = getTaxonomiesInternal();
 
-    if(!taxonomies.containsKey(name)) {
+    if (!taxonomies.containsKey(name)) {
       throw new NoSuchTaxonomyException(name);
     }
 
@@ -268,7 +267,7 @@ public class OpalService implements EnvironmentAware {
   public Opal.VocabularyDto getTaxonomyVocabularyDto(String name, String vocabularyName) {
     Map<String, Taxonomy> taxonomies = getTaxonomiesInternal();
 
-    if(!taxonomies.containsKey(name)) {
+    if (!taxonomies.containsKey(name)) {
       throw new NoSuchTaxonomyException(name);
     }
 
@@ -276,7 +275,7 @@ public class OpalService implements EnvironmentAware {
   }
 
   public List<Projects.ProjectDto> getProjectDtos(String opalUrl) throws URISyntaxException {
-    if(Strings.isNullOrEmpty(opalUrl)) opalUrl = getDefaultOpal();
+    if (Strings.isNullOrEmpty(opalUrl)) opalUrl = getDefaultOpal();
 
     OpalJavaClient opalJavaClient = getOpalJavaClient(opalUrl);
     URI uri = opalJavaClient.newUri().segment("projects").build();
@@ -291,7 +290,7 @@ public class OpalService implements EnvironmentAware {
   private synchronized Map<String, Taxonomy> getTaxonomiesInternal() {
     try {
       return opalServiceHelper.getTaxonomies(getOpalJavaClient());
-    } catch(URISyntaxException e) {
+    } catch (URISyntaxException e) {
       log.error("Malformed opal URI", e);
       throw new NoSuchElementException();
     }
@@ -304,7 +303,7 @@ public class OpalService implements EnvironmentAware {
   public Search.EntitiesResultDto getEntitiesCount(String opalUrl, String query, String entityType) {
     try {
       return opalServiceHelper.getEntitiesCount(getOpalJavaClient(opalUrl), query, entityType);
-    } catch(URISyntaxException e) {
+    } catch (URISyntaxException e) {
       log.error("Malformed opal URI", e);
       throw new NoSuchElementException();
     }
@@ -318,44 +317,55 @@ public class OpalService implements EnvironmentAware {
     return opalPropertyResolver.getProperty("password");
   }
 
-  private OpalJavaClient getOpalJavaClient() throws URISyntaxException {
-    if(opalJavaClient != null) return opalJavaClient;
+  private String getOpalToken() {
+    return opalPropertyResolver.getProperty("token");
+  }
 
-    return opalJavaClient = new OpalJavaClient(cleanupOpalUrl(getDefaultOpal()), getOpalUsername(), getOpalPassword());
+  private OpalJavaClient getOpalJavaClient() throws URISyntaxException {
+    if (opalJavaClient != null) return opalJavaClient;
+
+    if (Strings.isNullOrEmpty(getOpalToken()))
+      opalJavaClient = new OpalJavaClient(cleanupOpalUrl(getDefaultOpal()), getOpalUsername(), getOpalPassword());
+    else
+      opalJavaClient = new OpalJavaClient(cleanupOpalUrl(getDefaultOpal()), getOpalToken());
+
+    return opalJavaClient;
   }
 
   private OpalJavaClient getOpalJavaClient(String opalUrl) throws URISyntaxException {
     String alias = opalUrl;
     OpalCredential opalCredential = getOpalCredential(opalUrl);
 
-    if(opalCredential.getAuthType() == AuthType.CERTIFICATE) {
+    if (opalCredential.getAuthType() == AuthType.CERTIFICATE) {
       KeyStoreManager kms = keyStoreService.getKeyStore(OPAL_KEYSTORE);
 
-      if(!kms.aliasExists(alias)) throw new IllegalStateException(
+      if (!kms.aliasExists(alias)) throw new IllegalStateException(
         "Trying to use opal certificate credential but could not be found in keystore.");
 
       return new OpalJavaClient(cleanupOpalUrl(opalUrl), kms.getKeyStore(), alias,
         micaConfigService.getConfig().getSecretKey());
-    }
+    } else if (opalCredential.getAuthType() == AuthType.TOKEN)
+      return new OpalJavaClient(cleanupOpalUrl(opalCredential.getOpalUrl()), opalCredential.getToken());
 
     return new OpalJavaClient(cleanupOpalUrl(opalCredential.getOpalUrl()), opalCredential.getUsername(), opalCredential.getPassword());
   }
 
   private OpalCredential getOpalCredential(String opalUrl) {
     Optional<OpalCredential> opalCredential = opalCredentialService.findOpalCredentialById(opalUrl);
-    if (opalCredential.isPresent()) {
-      return opalCredential.get();
-    }
+    if (opalCredential.isPresent()) return opalCredential.get();
 
-    return new OpalCredential(getDefaultOpal(), AuthType.USERNAME, getOpalUsername(), getOpalPassword());
+    if (Strings.isNullOrEmpty(getOpalToken()))
+      return new OpalCredential(getDefaultOpal(), AuthType.USERNAME, getOpalUsername(), getOpalPassword());
+    else
+      return new OpalCredential(getDefaultOpal(), AuthType.TOKEN, getOpalToken());
   }
 
   private String cleanupOpalUrl(String opalUrl) {
-    while(opalUrl.endsWith("/")) {
+    while (opalUrl.endsWith("/")) {
       opalUrl = opalUrl.substring(0, opalUrl.length() - 1);
     }
 
-    if(!opalUrl.endsWith("/ws")) {
+    if (!opalUrl.endsWith("/ws")) {
       opalUrl = opalUrl + "/ws";
     }
 
