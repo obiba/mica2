@@ -5,12 +5,15 @@
 <!-- Template variables -->
 <#if !type??>
   <#assign title = "datasets">
+  <#assign className = "Study,HarmonizationStudy">
   <#assign showTypeColumn = true>
 <#elseif type == "Harmonized">
   <#assign title = "harmonized-datasets">
+  <#assign className = "HarmonizationStudy">
   <#assign showTypeColumn = false>
 <#else>
   <#assign title = "collected-datasets">
+  <#assign className = "Study">
   <#assign showTypeColumn = false>
 </#if>
 
@@ -109,13 +112,7 @@
 
                 <#if datasetListDisplays?seq_contains("cards")>
                   <div class="tab-pane <#if datasetListDefaultDisplay == "cards">active</#if>" id="cards">
-                    <div class="row d-flex align-items-stretch">
-                      <#list datasets as ds>
-                        <div class="col-12 col-sm-6 col-md-4 d-flex align-items-stretch">
-                          <@datasetCardModel dataset=ds/>
-                        </div>
-                      </#list>
-                    </div>
+                    <@datasetCardModel/>
                   </div>
                 </#if>
 
@@ -152,8 +149,47 @@
 
 <#include "libs/scripts.ftl">
 <script>
+  const Mica = {
+    config: ${configJson!"{}"},
+    locale: "${.lang}",
+    defaultLocale: "${defaultLang}"
+  };
+
+  Mica.tr = {
+    "collected-dataset": "<@message "collected-dataset"/>",
+    "collected-datasets": "<@message "collected-datasets"/>",
+    "harmonized-dataset": "<@message "harmonized-dataset"/>",
+    "harmonized-datasets": "<@message "harmonized-datasets"/>",
+    "collected-variable": "<@message "collected-variable"/>",
+    "collected-variables": "<@message "collected-variables"/>",
+    "harmonized-variable": "<@message "harmonized-variable"/>",
+    "harmonized-variables": "<@message "harmonized-variables"/>",
+    "number-participants": "<@message "number-participants"/>",
+    "cohort_study": "<@message "study_taxonomy.vocabulary.methods-design.term.cohort_study.title"/>",
+    "case_control": "<@message "study_taxonomy.vocabulary.methods-design.term.case_control.title"/>",
+    "case_only": "<@message "study_taxonomy.vocabulary.methods-design.term.case_only.title"/>",
+    "cross_sectional": "<@message "study_taxonomy.vocabulary.methods-design.term.cross_sectional.title"/>",
+    "clinical_trial": "<@message "study_taxonomy.vocabulary.methods-design.term.clinical_trial.title"/>",
+    "other": "<@message "study_taxonomy.vocabulary.methods-design.term.other.title"/>",
+    "listing-typeahead-placeholder": "<@message "global.list-search-placeholder"/>",
+  };
+</script>
+<script src="${assetsPath}/libs/node_modules/vue/dist/vue.js"></script>
+<script src="${assetsPath}/libs/node_modules/rql/dist/rql.js"></script>
+<script src="${assetsPath}/js/mica-list-entities.js"></script>
+<script>
     $(function () {
-        $("#${title}").DataTable(dataTablesDefaultOpts);
+      $("#${title}").DataTable(dataTablesDefaultOpts);
+
+      const sortOptionsTranslations = {
+        'name': '<@message "global.name"/>',
+        'acronym': '<@message "acronym"/>',
+        'studyTable.studyId,studyTable.populationWeight,studyTable.dataCollectionEventWeight,acronym': '<@message "global.chronological"/>'
+      };
+
+      if (document.querySelector("#cards")) {
+        MlstrDatasetsApp.build("#cards", "${title}", "${.lang}", sortOptionsTranslations);
+      }
     });
 </script>
 </body>

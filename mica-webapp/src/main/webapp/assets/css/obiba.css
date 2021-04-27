@@ -97,3 +97,7 @@
   z-index: 1040;
 }
 
+.dropdown-toggle:not(.nav-link)::after {
+  content: none;
+}
+
