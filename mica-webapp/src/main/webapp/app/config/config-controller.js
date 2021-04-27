@@ -143,7 +143,7 @@ mica.config
       $scope.addOpalCredentialUserPass = function () {
         $uibModal.open({
           templateUrl: 'app/config/views/config-modal-username-credential.html',
-          controller: 'UsernamePasswordModalController',
+          controller: 'OpalUsernamePasswordModalController',
           resolve: {
             opalCredential: function () {
               return null;
@@ -156,6 +156,22 @@ mica.config
           });
       };
 
+      $scope.addOpalCredentialToken = function () {
+        $uibModal.open({
+          templateUrl: 'app/config/views/config-modal-token-credential.html',
+          controller: 'OpalTokenModalController',
+          resolve: {
+            opalCredential: function () {
+              return null;
+            }
+          }
+        }).result.then(function (data) {
+          OpalCredentialsResource.save(data).$promise.then(function () {
+            $route.reload();
+          });
+        });
+      };
+
       $scope.deleteOpalCredential = function (opalCredential) {
         OpalCredentialResource.delete({id: opalCredential.opalUrl}).$promise.then(function () {
           $route.reload();
@@ -163,19 +179,36 @@ mica.config
       };
 
       $scope.editOpalCredentialCertificate = function(opalCredential) {
-        $uibModal.open({
-          templateUrl: 'app/config/views/config-modal-username-credential.html',
-          controller: 'UsernamePasswordModalController',
-          resolve: {
-            opalCredential: function () {
-              return opalCredential;
+        if (opalCredential.type === 'USERNAME') {
+          $uibModal.open({
+            templateUrl: 'app/config/views/config-modal-username-credential.html',
+            controller: 'OpalUsernamePasswordModalController',
+            resolve: {
+              opalCredential: function () {
+                return opalCredential;
+              }
             }
-          }
-        }).result.then(function (data) {
+          }).result.then(function (data) {
             OpalCredentialsResource.save(data).$promise.then(function () {
               $route.reload();
             });
           });
+        } else {
+          $uibModal.open({
+            templateUrl: 'app/config/views/config-modal-token-credential.html',
+            controller: 'OpalTokenModalController',
+            resolve: {
+              opalCredential: function () {
+                return opalCredential;
+              }
+            }
+          }).result.then(function (data) {
+            OpalCredentialsResource.save(data).$promise.then(function () {
+              $route.reload();
+            });
+          });
+        }
+
       };
 
       $scope.downloadOpalCredentialCertificate = function (opalCredential) {
@@ -371,7 +404,7 @@ mica.config
       };
     }])
 
-  .controller('UsernamePasswordModalController', ['$scope', '$location',
+  .controller('OpalUsernamePasswordModalController', ['$scope', '$location',
     '$uibModalInstance', 'opalCredential',
 
     function($scope, $location, $uibModalInstance, opalCredential) {
@@ -380,6 +413,32 @@ mica.config
       $scope.save = function (form) {
         if(form.$valid) {
           if ($scope.credential.confirm !== $scope.credential.password) {
+            form.confirm.$invalid = true;
+            form.$invalid = true;
+            form.saveAttempted = true;
+            return;
+          }
+
+          $uibModalInstance.close($scope.credential);
+        }
+
+        form.saveAttempted = true;
+      };
+
+      $scope.cancel = function () {
+        $uibModalInstance.dismiss('cancel');
+      };
+    }])
+
+  .controller('OpalTokenModalController', ['$scope', '$location',
+    '$uibModalInstance', 'opalCredential',
+
+    function($scope, $location, $uibModalInstance, opalCredential) {
+      $scope.credential = opalCredential || {opalUrl: '', token: '', type: 2};
+
+      $scope.save = function (form) {
+        if(form.$valid) {
+          if (!$scope.credential.token || $scope.credential.token.trim() === '') {
             form.confirm.$invalid = true;
             form.$invalid = true;
             form.saveAttempted = true;

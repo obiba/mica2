@@ -605,6 +605,9 @@ public class MicaConfigResource {
       opalCredentialService
         .createOrUpdateOpalCredential(opalCredentialDto.getOpalUrl(), opalCredentialDto.getUsername(),
           opalCredentialDto.getPassword());
+    } else if(opalCredentialDto.getType() == Mica.OpalCredentialType.TOKEN) {
+      opalCredentialService
+        .createOrUpdateOpalCredential(opalCredentialDto.getOpalUrl(), opalCredentialDto.getToken());
     } else {
       opalCredentialService.saveOrUpdateOpalCertificateCredential(opalCredentialDto.getOpalUrl());
 

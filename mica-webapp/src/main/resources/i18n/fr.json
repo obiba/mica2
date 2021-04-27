@@ -376,7 +376,8 @@
     "opal-credential-add": "Ajouter des identifiants Opal",
     "opal-credential-type": {
       "USERNAME": "Nom d'utilisateur",
-      "PUBLIC_KEY_CERTIFICATE": "Paire de clés"
+      "PUBLIC_KEY_CERTIFICATE": "Paire de clés",
+      "TOKEN": "Jeton d'accès personnel"
     },
     "opalCredentialTitle": "Identifiants Opal",
     "opalUrl": "URL du serveur Opal",
@@ -386,6 +387,7 @@
     "import": "Importer une paire de clés",
     "username": "Nom d'utilisateur",
     "password": "Mot de passe",
+    "opalToken": "Jeton d'accès personnel",
     "confirm": "Confirmer le mot de passe",
     "keys": {
       "titleCreate": "Créer un certificat",

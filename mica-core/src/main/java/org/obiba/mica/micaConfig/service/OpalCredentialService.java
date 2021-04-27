@@ -51,6 +51,8 @@ public class OpalCredentialService {
 
     if(opalCredential.getAuthType() == AuthType.USERNAME)
       opalCredential.setPassword(micaConfigService.decrypt(opalCredential.getPassword()));
+    else if(opalCredential.getAuthType() == AuthType.TOKEN)
+      opalCredential.setToken(micaConfigService.decrypt(opalCredential.getToken()));
 
     return opalCredential;
   }
@@ -58,8 +60,11 @@ public class OpalCredentialService {
   public Optional<OpalCredential> findOpalCredentialById(String id) {
     OpalCredential opalCredential = repository.findOne(id);
 
-    if(opalCredential != null &&  opalCredential.getAuthType() == AuthType.USERNAME)
-      opalCredential.setPassword(micaConfigService.decrypt(opalCredential.getPassword()));
+    if(opalCredential != null)
+      if (opalCredential.getAuthType() == AuthType.USERNAME)
+        opalCredential.setPassword(micaConfigService.decrypt(opalCredential.getPassword()));
+      else if (opalCredential.getAuthType() == AuthType.TOKEN)
+        opalCredential.setToken(micaConfigService.decrypt(opalCredential.getToken()));
 
     return Optional.ofNullable(opalCredential);
   }
@@ -68,6 +73,8 @@ public class OpalCredentialService {
     return repository.findAll().stream().map(c -> {
       if (c.getAuthType() == AuthType.USERNAME)
         c.setPassword(micaConfigService.decrypt(c.getPassword()));
+      else if (c.getAuthType() == AuthType.TOKEN)
+        c.setToken(micaConfigService.decrypt(c.getToken()));
 
       return c;
     }).collect(toList());
@@ -81,10 +88,28 @@ public class OpalCredentialService {
         c.setAuthType(AuthType.USERNAME);
         c.setUsername(username);
         c.setPassword(micaConfigService.encrypt(password));
+        c.setToken(null);
 
         return c;
       })
       .orElse(new OpalCredential(opalUrl, AuthType.USERNAME, username, micaConfigService.encrypt(password)));
+
+    repository.save(credential);
+  }
+
+  public void createOrUpdateOpalCredential(String opalUrl, String token) {
+    OpalCredential credential = Optional.ofNullable(repository.findOne(opalUrl))
+      .map(c -> {
+        if(c.getAuthType() == AuthType.CERTIFICATE)
+          keyStoreService.deleteKeyPair(OpalService.OPAL_KEYSTORE, opalUrl);
+        c.setAuthType(AuthType.TOKEN);
+        c.setUsername(null);
+        c.setPassword(null);
+        c.setToken(micaConfigService.encrypt(token));
+
+        return c;
+      })
+      .orElse(new OpalCredential(opalUrl, AuthType.TOKEN, micaConfigService.encrypt(token)));
 
     repository.save(credential);
   }
@@ -107,6 +132,7 @@ public class OpalCredentialService {
         c.setAuthType(AuthType.CERTIFICATE);
         c.setUsername(null);
         c.setPassword(null);
+        c.setToken(null);
 
         return c;
       })

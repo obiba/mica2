@@ -266,12 +266,22 @@ class MicaConfigDtos {
 
   @NotNull
   Mica.OpalCredentialDto asDto(@NotNull OpalCredential credential) {
-    Mica.OpalCredentialDto.Builder builder = Mica.OpalCredentialDto.newBuilder().setType(
-      credential.getAuthType() == AuthType.USERNAME
-        ? Mica.OpalCredentialType.USERNAME
-        : Mica.OpalCredentialType.PUBLIC_KEY_CERTIFICATE).setOpalUrl(credential.getOpalUrl());
+    Mica.OpalCredentialDto.Builder builder = Mica.OpalCredentialDto.newBuilder()
+      .setOpalUrl(credential.getOpalUrl());
 
-    if(!Strings.isNullOrEmpty(credential.getUsername())) builder.setUsername(credential.getUsername());
+    switch (credential.getAuthType()) {
+      case USERNAME:
+        builder.setType(Mica.OpalCredentialType.USERNAME);
+        if(!Strings.isNullOrEmpty(credential.getUsername()))
+          builder.setUsername(credential.getUsername());
+        break;
+      case CERTIFICATE:
+        builder.setType(Mica.OpalCredentialType.PUBLIC_KEY_CERTIFICATE);
+        break;
+      case TOKEN:
+        builder.setType(Mica.OpalCredentialType.TOKEN);
+        break;
+    }
 
     return builder.build();
   }
