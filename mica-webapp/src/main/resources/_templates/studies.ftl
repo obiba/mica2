@@ -196,7 +196,7 @@
     };
 
     if (document.querySelector("#cards")) {
-      MlstrStudiesApp.build("#cards", "${title}", "${.lang}", sortOptionsTranslations);
+      ObibaStudiesApp.build("#cards", "${title}", "${.lang}", sortOptionsTranslations);
     }
   });
 </script>

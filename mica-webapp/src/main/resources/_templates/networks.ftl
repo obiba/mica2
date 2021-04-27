@@ -166,7 +166,7 @@
     };
 
     if (document.querySelector("#cards")) {
-      MlstrNetworksApp.build("#cards", "${.lang}", sortOptionsTranslations);
+      ObibaNetworksApp.build("#cards", "${.lang}", sortOptionsTranslations);
     }
   });
 </script>

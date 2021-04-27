@@ -188,7 +188,7 @@
       };
 
       if (document.querySelector("#cards")) {
-        MlstrDatasetsApp.build("#cards", "${title}", "${.lang}", sortOptionsTranslations);
+        ObibaDatasetsApp.build("#cards", "${title}", "${.lang}", sortOptionsTranslations);
       }
     });
 </script>

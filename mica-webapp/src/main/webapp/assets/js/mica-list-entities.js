@@ -63,7 +63,7 @@ const DEFAULT_PAGE_SIZE = DEFAULT_PAGE_SIZES[2];
 /**
  * Base class for all entities (Srtudies, Networks, Datasets)
  */
-class MlstrEntitiesService {
+class ObibaEntitiesService {
 
   __getResource(url, onsuccess, onfailure) {
     axios.get(MicaService.normalizeUrl(url))
@@ -207,10 +207,10 @@ class MlstrEntitiesService {
 /**
  * Datasets servive class
  */
-class MlstrDatasetsService extends MlstrEntitiesService {
+class ObibaDatasetsService extends ObibaEntitiesService {
 
   static newInstance(type) {
-    return new MlstrDatasetsService(type);
+    return new ObibaDatasetsService(type);
   }
 
   constructor(type) {
@@ -266,10 +266,10 @@ class MlstrDatasetsService extends MlstrEntitiesService {
 /**
  * Studies servive class
  */
-class MlstrStudiesService extends MlstrEntitiesService {
+class ObibaStudiesService extends ObibaEntitiesService {
 
   static newInstance(type) {
-    return new MlstrStudiesService(type);
+    return new ObibaStudiesService(type);
   }
 
   constructor(type) {
@@ -344,10 +344,10 @@ class MlstrStudiesService extends MlstrEntitiesService {
 /**
  * Networks service class
  */
-class MlstrNetworksService extends MlstrEntitiesService {
+class ObibaNetworksService extends ObibaEntitiesService {
 
   static newInstance() {
-    return new MlstrNetworksService();
+    return new ObibaNetworksService();
   }
 
   get target() {
@@ -1013,7 +1013,7 @@ const TypeaheadComponent = {
  */
 const NAVIGATION_POSITIONS = ['bottom', 'top'];
 
-const MlstrEntitiesApp = {
+const ObibaEntitiesApp = {
   data() {
     return {
       loading: false,
@@ -1102,13 +1102,13 @@ const MlstrEntitiesApp = {
   }
 }
 
-class MlstrDatasetsApp {
+class ObibaDatasetsApp {
 
   static build(element, type, locale, sortOptionsTranslations) {
     return new Vue({
       locale,
       el: element,
-      extends: MlstrEntitiesApp,
+      extends: ObibaEntitiesApp,
       data() {
         return {
           sortOptionsTranslations,
@@ -1121,7 +1121,7 @@ class MlstrDatasetsApp {
         'sorting': EntitiesSortingComponent
       },
       mounted: function () {
-        this.service =  MlstrDatasetsService.newInstance(type);
+        this.service =  ObibaDatasetsService.newInstance(type);
         this.getEntities(this.service.prepareQuery(locale));
       },
       methods: {
@@ -1183,12 +1183,12 @@ class MlstrDatasetsApp {
   }
 }
 
-class MlstrStudiesApp {
+class ObibaStudiesApp {
 
   static build(element, type, locale, sortOptionsTranslations) {
     return new Vue({
       el: element,
-      extends: MlstrEntitiesApp,
+      extends: ObibaEntitiesApp,
       data() {
         return {
           locale,
@@ -1203,7 +1203,7 @@ class MlstrStudiesApp {
         'sorting': EntitiesSortingComponent
       },
       mounted: function () {
-        this.service =  MlstrStudiesService.newInstance(type);
+        this.service =  ObibaStudiesService.newInstance(type);
 
         const queryTree = this.service.prepareQuery(locale);
         this.service.updateSort(queryTree, this.initialSort);
@@ -1268,12 +1268,12 @@ class MlstrStudiesApp {
   }
 }
 
-class MlstrNetworksApp {
+class ObibaNetworksApp {
 
   static build(element, locale, sortOptionsTranslations) {
     return new Vue({
       el: element,
-      extends: MlstrEntitiesApp,
+      extends: ObibaEntitiesApp,
       data() {
         return {
           locale,
@@ -1287,7 +1287,7 @@ class MlstrNetworksApp {
         'sorting': EntitiesSortingComponent
       },
       mounted: function () {
-        this.service = MlstrNetworksService.newInstance();
+        this.service = ObibaNetworksService.newInstance();
         const queryTree = this.service.prepareQuery(locale);
         this.service.updateSort(queryTree, this.initialSort);
         this.getEntities(queryTree);
