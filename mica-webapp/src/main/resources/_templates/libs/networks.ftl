@@ -123,7 +123,7 @@
                 <stat-item
                         v-bind:count="network['obiba.mica.CountStatsDto.networkCountStats'].studyVariables"
                         v-bind:singular='"<@message "study-variable"/>"'
-                        v-bind:plural='"<@message "study-variables"/>'"
+                        v-bind:plural='"<@message "study-variables"/>"'
                         v-bind:url="individualStudyVariables(network.id)">
                 </stat-item>
                 <stat-item
