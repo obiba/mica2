@@ -59,7 +59,7 @@
 <!-- Datasets in cards model template -->
 <#macro datasetCardModel>
 <div v-show="loading" class="spinner-border spinner-border-sm" role="status"></div>
-<div v-show="!loading && entities && entities.length > 0" v-cloak>
+<div v-show="!loading && entities && entities.length > 0" v-cloak></div>
 <div id="datasets-card" class="card card-primary card-outline">
 
   <div class="card-header">
@@ -143,7 +143,7 @@
                   <!-- HACK used 'datasetsWithVariables' with opacity ZERO to have the same height as the longest stat item -->
                   <a href="url" class="btn btn-sm btn-link col text-left" style="opacity: 0">
                     <span class="h6 pb-0 mb-0 d-block">0</span>
-                    <span class="text-muted"><small>Empty</small></span>
+                    <span class="text-muted"><small><@message "analysis.empty"/></small></span>
                   </a>
                 </template>
               </div>

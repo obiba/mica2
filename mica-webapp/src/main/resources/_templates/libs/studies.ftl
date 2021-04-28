@@ -57,13 +57,13 @@
 <!-- Studies in cards model template -->
 <#macro studyCardModel>
 <div v-show="loading" class="spinner-border spinner-border-sm" role="status"></div>
-<div v-show="!loading && entities && entities.length > 0" v-cloak>
+<div v-show="!loading && entities && entities.length > 0" v-cloak></div>
 <div id="studies-card" class="card card-primary card-outline">
 
   <div class="card-header">
     <div class="row">
       <div class="col-3">
-        <h3 class="card-title pt-1">{{total | localize-number}} <@message countLabel/></h3>
+        <h3 class="card-title pt-1">{{total | localize-number}} <@message "studies"/></h3>
       </div>
       <div class="col-6">
         <typeahead @typing="onType" @select="onSelect" :items="suggestions" :external-text="initialFilter"></typeahead>
@@ -97,8 +97,7 @@
       <div class="row d-flex align-items-stretch">
         <div class="col-md-12 col-lg-6 d-flex align-items-stretch" v-for="study in entities" v-bind:key="study.id">
           <div v-if="study.id === ''" class="card w-100">
-            <div class="card-body pt-0 bg-light">
-            </div>
+            <div class="card-body pt-0 bg-light"></div>
           </div>
           <div v-else class="card w-100">
             <div class="card-body">
@@ -123,11 +122,11 @@
                 <template v-if="hasStats(study)">
                   <a v-if="study.model && study.model.methods" href="javascript:void(0)" style="cursor: initial;" class="btn btn-sm col text-left">
                     <span class="h6 pb-0 mb-0 d-block">{{study.model.methods.design | translate}}</span>
-                    <span class="text-muted"><small>Study Design</small></span>
+                    <span class="text-muted"><small><@message "study_taxonomy.vocabulary.methods-design.title"/></small></span>
                   </a>
                   <a v-if="study.model && study.model.numberOfParticipants" href="javascript:void(0)" style="cursor: initial;" class="btn btn-sm col text-left">
                     <span class="h6 pb-0 mb-0 d-block">{{study.model.numberOfParticipants.participant.number | localize-number}}</span>
-                    <span class="text-muted"><small>Number of Participants</small></span>
+                    <span class="text-muted"><small><@message "study_taxonomy.vocabulary.numberOfParticipants-participant-number.title"/></small></span>
                   </a>
                   <dataset-stat-item
                           v-bind:type="study.studyResourcePath"
@@ -143,7 +142,7 @@
                   <!-- HACK used 'studiesWithVariables' with opacity ZERO to have the same height as the longest stat item -->
                   <a href="url" class="btn btn-sm btn-link col text-left" style="opacity: 0">
                     <span class="h6 pb-0 mb-0 d-block">0</span>
-                    <span class="text-muted"><small>Empty</small></span>
+                    <span class="text-muted"><small><@message "analysis.empty"/></small></span>
                   </a>
                 </template>
               </div>
@@ -155,9 +154,9 @@
   </div>
 
   <div class="d-inline-flex card-body pt-0 ml-auto">
-            <span class="mr-1">
-                <select class="custom-select" id="obiba-page-size-selector-bottom"></select>
-            </span>
+    <span class="mr-1">
+        <select class="custom-select" id="obiba-page-size-selector-bottom"></select>
+    </span>
     <nav id="obiba-pagination-bottom" aria-label="Bottom pagination" class="mt-0">
       <ul class="pagination"></ul>
     </nav>

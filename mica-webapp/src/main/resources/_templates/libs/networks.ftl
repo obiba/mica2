@@ -45,7 +45,7 @@
 <!-- Networks in cards model template -->
 <#macro networkCardModel>
 <div v-show="loading" class="spinner-border spinner-border-sm" role="status"></div>
-<div v-show="!loading && entities && entities.length > 0" v-cloak>
+<div v-show="!loading && entities && entities.length > 0" v-cloak></div>
 <div id="networks-card" class="card card-primary card-outline">
 
   <div class="card-header">
