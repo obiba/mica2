@@ -6,6 +6,10 @@
   };
 
   Mica.tr = {
+    "individual-study": "<@message "individual-study"/>",
+    "individual-studies": "<@message "individual-studies"/>",
+    "harmonization-study": "<@message "harmonization-study"/>",
+    "harmonization-studies": "<@message "harmonization-studies"/>",
     "collected-dataset": "<@message "collected-dataset"/>",
     "collected-datasets": "<@message "collected-datasets"/>",
     "harmonized-dataset": "<@message "harmonized-dataset"/>",
@@ -14,6 +18,12 @@
     "collected-variables": "<@message "collected-variables"/>",
     "harmonized-variable": "<@message "harmonized-variable"/>",
     "harmonized-variables": "<@message "harmonized-variables"/>",
+    "study-variable": "<@message "study-variable"/>",
+    "study-variables": "<@message "study-variables"/>",
+    "harmonization-study-variable": "<@message "harmonization-study-variable"/>",
+    "harmonization-study-variables": "<@message "harmonization-study-variables"/>",
+    "study-with-variables": "<@message "study-with-variables"/>",
+    "studies-with-variables": "<@message "studies-with-variables"/>",
     "number-participants": "<@message "number-participants"/>",
     "cohort_study": "<@message "study_taxonomy.vocabulary.methods-design.term.cohort_study.title"/>",
     "case_control": "<@message "study_taxonomy.vocabulary.methods-design.term.case_control.title"/>",

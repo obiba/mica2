@@ -110,32 +110,32 @@
               <div v-if="hasStats(network['obiba.mica.CountStatsDto.networkCountStats'])" class="row pt-1 row-cols-5">
                 <stat-item
                         v-bind:count="network['obiba.mica.CountStatsDto.networkCountStats'].individualStudies"
-                        v-bind:singular='"<@message "individual-study"/>"'
-                        v-bind:plural='"<@message "individual-studies"/>"'
+                        v-bind:singular="'individual-study' | translate"
+                        v-bind:plural="'individual-studies' | translate"
                         v-bind:url="individualStudies(network.id)">
                 </stat-item>
                 <stat-item
                         v-bind:count="network['obiba.mica.CountStatsDto.networkCountStats'].studiesWithVariables"
-                        v-bind:singular='"<@message "study-with-variables"/>"'
-                        v-bind:plural='"<@message "studies-with-variables"/>"'
+                        v-bind:singular="'study-with-variables' | translate"
+                        v-bind:plural="'studies-with-variables' | translate"
                         v-bind:url="individualStudiesWithVariables(network.id)">
                 </stat-item>
                 <stat-item
                         v-bind:count="network['obiba.mica.CountStatsDto.networkCountStats'].studyVariables"
-                        v-bind:singular='"<@message "study-variable"/>"'
-                        v-bind:plural='"<@message "study-variables"/>"'
+                        v-bind:singular="'study-variable' | translate"
+                        v-bind:plural="'study-variables' | translate"
                         v-bind:url="individualStudyVariables(network.id)">
                 </stat-item>
                 <stat-item
                         v-bind:count="network['obiba.mica.CountStatsDto.networkCountStats'].harmonizationStudies"
-                        v-bind:singular='"<@message "harmonization-study"/>"'
-                        v-bind:plural='"<@message "harmonization-studies"/>"'
+                        v-bind:singular="'harmonization-study' | translate"
+                        v-bind:plural="'harmonization-studies' | translate"
                         v-bind:url="harmonizationStudies(network.id)">
                 </stat-item>
                 <stat-item
                         v-bind:count="network['obiba.mica.CountStatsDto.networkCountStats'].dataschemaVariables"
-                        v-bind:singular='"<@message "harmonization-study-variable"/>"'
-                        v-bind:plural='"<@message "harmonization-study-variables"/>"'
+                        v-bind:singular="'harmonization-study-variable' | translate"
+                        v-bind:plural="'harmonization-study-variables' | translate"
                         v-bind:url="harmonizationStudyVariables(network.id)">>
                 </stat-item>
               </div>
