@@ -132,20 +132,20 @@
                 <template v-if="hasStats(dataset)">
                   <stat-item
                           v-bind:count="dataset['obiba.mica.CountStatsDto.datasetCountStats'].networks"
-                          v-bind:singular="'<@message "network"/>'"
-                          v-bind:plural="'<@message "networks"/>'"
+                          v-bind:singular="'network' | translate"
+                          v-bind:plural="'networks' | translate"
                           v-bind:url="networks(dataset.id)">
                   </stat-item>
                   <stat-item
                           v-bind:count="dataset['obiba.mica.CountStatsDto.datasetCountStats'].studies"
-                          v-bind:singular="'<@message "study"/>'"
-                          v-bind:plural="'<@message "studies"/>'"
+                          v-bind:singular="'study' | translate"
+                          v-bind:plural="'studies' | translate"
                           v-bind:url="studies(dataset.id)">
                   </stat-item>
                   <stat-item
                           v-bind:count="dataset['obiba.mica.CountStatsDto.datasetCountStats'].variables"
-                          v-bind:singular="'<@message "variable"/>'"
-                          v-bind:plural="'<@message "variables"/>'"
+                          v-bind:singular="'variable' | translate"
+                          v-bind:plural="'variables' | translate"
                           v-bind:url="variables(dataset.id)">
                   </stat-item>
                 </template>

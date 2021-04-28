@@ -6,6 +6,12 @@
   };
 
   Mica.tr = {
+    "network": "<@message "network"/>",
+    "networks": "<@message "networks"/>",
+    "study": "<@message "study"/>",
+    "studies": "<@message "studies"/>",
+    "variable": "<@message "variable"/>",
+    "variables": "<@message "variables"/>",
     "individual-study": "<@message "individual-study"/>",
     "individual-studies": "<@message "individual-studies"/>",
     "harmonization-study": "<@message "harmonization-study"/>",
