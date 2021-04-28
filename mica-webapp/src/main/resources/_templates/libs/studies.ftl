@@ -99,7 +99,7 @@
         <typeahead @typing="onType" @select="onSelect" :items="suggestions" :external-text="initialFilter"></typeahead>
       </div>
       <div class="col-3">
-        <a href="/search#lists?type=studies&query=study(in(Mica_study.className,(${className})))" class="btn btn-sm btn-primary float-right">
+        <a href="${contextPath}/search#lists?type=studies&query=study(in(Mica_study.className,(${className})))" class="btn btn-sm btn-primary float-right">
           <@message "global.search"/> <i class="fas fa-search"></i>
         </a>
       </div>
