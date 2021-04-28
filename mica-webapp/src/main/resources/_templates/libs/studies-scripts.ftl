@@ -4,11 +4,11 @@
     $("#${title}").DataTable(dataTablesDefaultOpts);
 
     const sortOptionsTranslations = {
-      'name': '<@message "global.name"/>',
-      'acronym': '<@message "acronym"/>',
-      'lastModifiedDate': '<@message "last-modified"/>',
+      'name': "<@message "global.name"/>",
+      'acronym': "<@message "acronym"/>",
+      'lastModifiedDate': "<@message "last-modified"/>",
       <#if title == "individual-studies">
-      'numberOfParticipants-participant-number': '<@message "numberOfParticipants.label"/>'
+      'numberOfParticipants-participant-number': "<@message "numberOfParticipants.label"/>"
       </#if>
     };
 
