@@ -56,6 +56,16 @@
 
 <!-- Studies in cards model template -->
 <#macro studyCardModel>
+
+  <!-- Macro variables -->
+  <#if !type??>
+    <#assign className = "Study,HarmonizationStudy">
+  <#elseif type == "Harmonization">
+    <#assign className = "HarmonizationStudy">
+  <#else>
+    <#assign className = "Study">
+  </#if>
+
 <div v-show="loading" class="spinner-border spinner-border-sm" role="status"></div>
 <div v-show="!loading && entities && entities.length > 0" v-cloak></div>
 <div id="studies-card" class="card card-primary card-outline">

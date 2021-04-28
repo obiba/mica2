@@ -5,15 +5,12 @@
 <!-- Template variables -->
 <#if !type??>
   <#assign title = "datasets">
-  <#assign className = "Study,HarmonizationStudy">
   <#assign showTypeColumn = true>
 <#elseif type == "Harmonized">
   <#assign title = "harmonized-datasets">
-  <#assign className = "HarmonizationStudy">
   <#assign showTypeColumn = false>
 <#else>
   <#assign title = "collected-datasets">
-  <#assign className = "Study">
   <#assign showTypeColumn = false>
 </#if>
 

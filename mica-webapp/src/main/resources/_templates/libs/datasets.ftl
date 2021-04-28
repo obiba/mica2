@@ -58,6 +58,16 @@
 
 <!-- Datasets in cards model template -->
 <#macro datasetCardModel>
+
+  <!-- Macro variables -->
+  <#if !type??>
+    <#assign className = "Study,HarmonizationStudy">
+  <#elseif type == "Harmonized">
+    <#assign className = "HarmonizationStudy">
+  <#else>
+    <#assign className = "Study">
+  </#if>
+
 <div v-show="loading" class="spinner-border spinner-border-sm" role="status"></div>
 <div v-show="!loading && entities && entities.length > 0" v-cloak></div>
 <div id="datasets-card" class="card card-primary card-outline">
