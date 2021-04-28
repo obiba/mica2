@@ -147,24 +147,7 @@
 <!-- ./wrapper -->
 
 <#include "libs/scripts.ftl">
-<#include "libs/entities-list-scripts.ftl">
-<script>
-  $(function () {
-    $("#${title}").DataTable(dataTablesDefaultOpts);
+<#include "libs/studies-scripts.ftl">
 
-    const sortOptionsTranslations = {
-      'name': '<@message "global.name"/>',
-      'acronym': '<@message "acronym"/>',
-      'lastModifiedDate': '<@message "last-modified"/>',
-      <#if title == "individual-studies">
-      'numberOfParticipants-participant-number': '<@message "numberOfParticipants.label"/>'
-      </#if>
-    };
-
-    if (document.querySelector("#cards")) {
-      ObibaStudiesApp.build("#cards", "${title}", "${.lang}", sortOptionsTranslations);
-    }
-  });
-</script>
 </body>
 </html>

@@ -145,21 +145,7 @@
 <!-- ./wrapper -->
 
 <#include "libs/scripts.ftl">
-<#include "libs/entities-list-scripts.ftl">
-<script>
-    $(function () {
-      $("#${title}").DataTable(dataTablesDefaultOpts);
+<#include "libs/datasets-scripts.ftl">
 
-      const sortOptionsTranslations = {
-        'name': '<@message "global.name"/>',
-        'acronym': '<@message "acronym"/>',
-        'studyTable.studyId,studyTable.populationWeight,studyTable.dataCollectionEventWeight,acronym': '<@message "global.chronological"/>'
-      };
-
-      if (document.querySelector("#cards")) {
-        ObibaDatasetsApp.build("#cards", "${title}", "${.lang}", sortOptionsTranslations);
-      }
-    });
-</script>
 </body>
 </html>
