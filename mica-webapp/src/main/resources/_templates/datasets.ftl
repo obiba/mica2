@@ -109,13 +109,7 @@
 
                 <#if datasetListDisplays?seq_contains("cards")>
                   <div class="tab-pane <#if datasetListDefaultDisplay == "cards">active</#if>" id="cards">
-                    <div class="row d-flex align-items-stretch">
-                      <#list datasets as ds>
-                        <div class="col-12 col-sm-6 col-md-4 d-flex align-items-stretch">
-                          <@datasetCardModel dataset=ds/>
-                        </div>
-                      </#list>
-                    </div>
+                    <@datasetCardModel/>
                   </div>
                 </#if>
 
@@ -151,10 +145,7 @@
 <!-- ./wrapper -->
 
 <#include "libs/scripts.ftl">
-<script>
-    $(function () {
-        $("#${title}").DataTable(dataTablesDefaultOpts);
-    });
-</script>
+<#include "libs/datasets-scripts.ftl">
+
 </body>
 </html>

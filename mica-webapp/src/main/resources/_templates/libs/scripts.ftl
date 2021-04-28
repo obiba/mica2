@@ -100,6 +100,7 @@
       }
       return '';
     };
+
     const escapeQuotes = function(str, quote) {
       const q = quote ? quote : '"';
       const regex = new RegExp(q, 'g');

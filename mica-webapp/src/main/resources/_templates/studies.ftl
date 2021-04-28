@@ -111,13 +111,7 @@
 
                 <#if studyListDisplays?seq_contains("cards")>
                   <div class="tab-pane <#if studyListDefaultDisplay == "cards">active</#if>" id="cards">
-                    <div class="row d-flex align-items-stretch">
-                      <#list studies as std>
-                        <div class="col-12 col-sm-6 col-md-4 d-flex align-items-stretch">
-                          <@studyCardModel study=std/>
-                        </div>
-                      </#list>
-                    </div>
+                    <@studyCardModel/>
                   </div>
                 </#if>
 
@@ -153,10 +147,7 @@
 <!-- ./wrapper -->
 
 <#include "libs/scripts.ftl">
-<script>
-    $(function () {
-        $("#${title}").DataTable(dataTablesDefaultOpts);
-    });
-</script>
+<#include "libs/studies-scripts.ftl">
+
 </body>
 </html>

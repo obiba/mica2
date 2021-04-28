@@ -89,13 +89,7 @@
 
                 <#if networkListDisplays?seq_contains("cards")>
                   <div class="tab-pane <#if networkListDefaultDisplay == "cards">active</#if>" id="cards">
-                    <div class="row d-flex align-items-stretch">
-                      <#list networks as ntwk>
-                        <div class="col-12 col-sm-6 col-md-4 d-flex align-items-stretch">
-                          <@networkCardModel network=ntwk/>
-                        </div>
-                      </#list>
-                    </div>
+                    <@networkCardModel/>
                   </div>
                 </#if>
 
@@ -131,11 +125,7 @@
 <!-- ./wrapper -->
 
 <#include "libs/scripts.ftl">
-<!-- page script -->
-<script>
-    $(function () {
-        $("#networks").DataTable(dataTablesDefaultOpts);
-    });
-</script>
+<#include "libs/networks-scripts.ftl">
+
 </body>
 </html>
