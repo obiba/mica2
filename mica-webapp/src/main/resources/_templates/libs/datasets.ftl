@@ -82,7 +82,7 @@
       </div>
       <#if searchDatasetListDisplay>
         <div class="col-3">
-          <a href="/search#lists?type=datasets&query=study(in(Mica_study.className,(${className})))" class="btn btn-sm btn-primary float-right">
+          <a href="${contextPath}/search#lists?type=datasets&query=study(in(Mica_study.className,(${className})))" class="btn btn-sm btn-primary float-right">
             <@message "global.search"/> <i class="fas fa-search"></i>
           </a>
         </div>
