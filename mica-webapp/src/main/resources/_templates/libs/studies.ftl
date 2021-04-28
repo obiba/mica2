@@ -54,6 +54,26 @@
   </div>
 </#macro>
 
+<#macro studyCardModelStats>
+  <a v-if="study.model && study.model.methods" href="javascript:void(0)" style="cursor: initial;" class="btn btn-sm col text-left">
+    <span class="h6 pb-0 mb-0 d-block">{{study.model.methods.design | translate}}</span>
+    <span class="text-muted"><small><@message "study_taxonomy.vocabulary.methods-design.title"/></small></span>
+  </a>
+  <a v-if="study.model && study.model.numberOfParticipants" href="javascript:void(0)" style="cursor: initial;" class="btn btn-sm col text-left">
+    <span class="h6 pb-0 mb-0 d-block">{{study.model.numberOfParticipants.participant.number | localize-number}}</span>
+    <span class="text-muted"><small><@message "study_taxonomy.vocabulary.numberOfParticipants-participant-number.title"/></small></span>
+  </a>
+  <dataset-stat-item
+          v-bind:type="study.studyResourcePath"
+          v-bind:stats="study['obiba.mica.CountStatsDto.studyCountStats']">
+  </dataset-stat-item>
+  <variable-stat-item
+          v-bind:url="variablesUrl(study)"
+          v-bind:type="study.studyResourcePath"
+          v-bind:stats="study['obiba.mica.CountStatsDto.studyCountStats']">
+  </variable-stat-item>
+</#macro>
+
 <!-- Studies in cards model template -->
 <#macro studyCardModel>
 
@@ -130,23 +150,7 @@
             <div class="card-footer py-1">
               <div class="row pt-1 row-cols-4">
                 <template v-if="hasStats(study)">
-                  <a v-if="study.model && study.model.methods" href="javascript:void(0)" style="cursor: initial;" class="btn btn-sm col text-left">
-                    <span class="h6 pb-0 mb-0 d-block">{{study.model.methods.design | translate}}</span>
-                    <span class="text-muted"><small><@message "study_taxonomy.vocabulary.methods-design.title"/></small></span>
-                  </a>
-                  <a v-if="study.model && study.model.numberOfParticipants" href="javascript:void(0)" style="cursor: initial;" class="btn btn-sm col text-left">
-                    <span class="h6 pb-0 mb-0 d-block">{{study.model.numberOfParticipants.participant.number | localize-number}}</span>
-                    <span class="text-muted"><small><@message "study_taxonomy.vocabulary.numberOfParticipants-participant-number.title"/></small></span>
-                  </a>
-                  <dataset-stat-item
-                          v-bind:type="study.studyResourcePath"
-                          v-bind:stats="study['obiba.mica.CountStatsDto.studyCountStats']">
-                  </dataset-stat-item>
-                  <variable-stat-item
-                          v-bind:url="variablesUrl(study)"
-                          v-bind:type="study.studyResourcePath"
-                          v-bind:stats="study['obiba.mica.CountStatsDto.studyCountStats']">
-                  </variable-stat-item>
+                  <@studyCardModelStats/>
                 </template>
                 <template v-else>
                   <!-- HACK used 'studiesWithVariables' with opacity ZERO to have the same height as the longest stat item -->
