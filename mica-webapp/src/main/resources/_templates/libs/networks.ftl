@@ -46,41 +46,37 @@
 <#macro networkCardModel>
 <div v-show="loading" class="spinner-border spinner-border-sm" role="status"></div>
 <div v-show="!loading && entities && entities.length > 0" v-cloak></div>
-<div id="networks-card" class="card card-primary card-outline">
+<div id="networks-card">
 
-  <div class="card-header">
-    <div class="row">
-      <div class="col-3">
-        <h3 class="card-title pt-1">{{total | localize-number}} <@message "networks"/></h3>
-      </div>
-      <div class="col-6">
-        <typeahead @typing="onType" @select="onSelect" :items="suggestions" :external-text="initialFilter"></typeahead>
-      </div>
-      <div class="col-3">
-        <a href="${contextPath}/search#lists?type=networks" class="btn btn-sm btn-primary float-right">
-          <@message "global.search"/> <i class="fas fa-search"></i>
-        </a>
-      </div>
+  <div class="row">
+    <div class="col-3">
+      <h3 class="card-title pt-1">{{total | localize-number}} <@message "networks"/></h3>
     </div>
-  </div><!-- /.card-header -->
+    <div class="col-6">
+      <typeahead @typing="onType" @select="onSelect" :items="suggestions" :external-text="initialFilter"></typeahead>
+    </div>
+    <div class="col-3">
+      <a href="${contextPath}/search#lists?type=networks" class="btn btn-sm btn-primary float-right">
+        <@message "global.search"/> <i class="fas fa-search"></i>
+      </a>
+    </div>
+  </div>
 
-  <div class="card-body pb-0">
-    <div class="row">
-      <div class="col-12">
-        <div class="d-inline-flex float-right">
-          <sorting @sort-update="onSortUpdate" :initial-choice="initialSort" :options-translations="sortOptionsTranslations"></sorting>
-          <span class="ml-2 mr-1">
-                    <select class="custom-select" id="obiba-page-size-selector-top"></select>
-                  </span>
-          <nav id="obiba-pagination-top" aria-label="Top pagination" class="mt-0">
-            <ul class="pagination mb-0"></ul>
-          </nav>
-        </div>
+  <div class="row">
+    <div class="col-12">
+      <div class="d-inline-flex float-right mt-3 mb-3">
+        <sorting @sort-update="onSortUpdate" :initial-choice="initialSort" :options-translations="sortOptionsTranslations"></sorting>
+        <span class="ml-2">
+          <select class="custom-select" id="obiba-page-size-selector-top"></select>
+        </span>
+        <nav id="obiba-pagination-top" aria-label="Top pagination" class="ml-2 mt-0">
+          <ul class="pagination mb-0"></ul>
+        </nav>
       </div>
     </div>
   </div>
 
-  <div class="card-body pb-0">
+  <div class="pb-0">
     <div class="tab-pane">
       <div class="row d-flex align-items-stretch">
         <div class="col-md-12 col-lg-6 d-flex align-items-stretch" v-for="network in entities" v-bind:key="network.id">
@@ -114,36 +110,40 @@
                         v-bind:plural="'individual-studies' | translate"
                         v-bind:url="individualStudies(network.id)">
                 </stat-item>
-                <stat-item
-                        v-bind:count="network['obiba.mica.CountStatsDto.networkCountStats'].studiesWithVariables"
-                        v-bind:singular="'study-with-variables' | translate"
-                        v-bind:plural="'studies-with-variables' | translate"
-                        v-bind:url="individualStudiesWithVariables(network.id)">
-                </stat-item>
-                <stat-item
-                        v-bind:count="network['obiba.mica.CountStatsDto.networkCountStats'].studyVariables"
-                        v-bind:singular="'study-variable' | translate"
-                        v-bind:plural="'study-variables' | translate"
-                        v-bind:url="individualStudyVariables(network.id)">
-                </stat-item>
+                <#if config.studyDatasetEnabled>
+                  <stat-item
+                          v-bind:count="network['obiba.mica.CountStatsDto.networkCountStats'].studiesWithVariables"
+                          v-bind:singular="'study-with-variables' | translate"
+                          v-bind:plural="'studies-with-variables' | translate"
+                          v-bind:url="individualStudiesWithVariables(network.id)">
+                  </stat-item>
+                  <stat-item
+                          v-bind:count="network['obiba.mica.CountStatsDto.networkCountStats'].studyVariables"
+                          v-bind:singular="'study-variable' | translate"
+                          v-bind:plural="'study-variables' | translate"
+                          v-bind:url="individualStudyVariables(network.id)">
+                  </stat-item>
+                </#if>
                 <stat-item
                         v-bind:count="network['obiba.mica.CountStatsDto.networkCountStats'].harmonizationStudies"
                         v-bind:singular="'harmonization-study' | translate"
                         v-bind:plural="'harmonization-studies' | translate"
                         v-bind:url="harmonizationStudies(network.id)">
                 </stat-item>
-                <stat-item
-                        v-bind:count="network['obiba.mica.CountStatsDto.networkCountStats'].dataschemaVariables"
-                        v-bind:singular="'harmonization-study-variable' | translate"
-                        v-bind:plural="'harmonization-study-variables' | translate"
-                        v-bind:url="harmonizationStudyVariables(network.id)">>
-                </stat-item>
+                <#if config.harmonizationDatasetEnabled>
+                  <stat-item
+                          v-bind:count="network['obiba.mica.CountStatsDto.networkCountStats'].dataschemaVariables"
+                          v-bind:singular="'harmonization-study-variable' | translate"
+                          v-bind:plural="'harmonization-study-variables' | translate"
+                          v-bind:url="harmonizationStudyVariables(network.id)">>
+                  </stat-item>
+                </#if>
               </div>
               <div v-else class="row pt-1 row-cols-5" >
                 <!-- HACK used 'studiesWithVariables' with opacity ZERO to have the same height as the longest stat item -->
-                <a href="#" class="btn btn-sm btn-link col text-left" style="opacity: 0">
-                  <span class="h6 pb-0 mb-0 d-block">{{network['obiba.mica.CountStatsDto.networkCountStats'].studiesWithVariables | localize-number}}</span>
-                  <span class="text-muted"><small><@message "studies-with-variables"/></small></span>
+                <a href="javascript:void(0)" class="btn btn-sm" style="cursor: initial; opacity: 0">
+                  <span class="h6 pb-0 mb-0 d-block">0</span>
+                  <span class="text-muted"><small><@message "analysis.empty"/></small></span>
                 </a>
               </div>
             </div>
@@ -153,11 +153,11 @@
     </div>
   </div>
 
-  <div class="d-inline-flex card-body pt-0 ml-auto">
-    <span class="mr-1">
-        <select class="custom-select" id="obiba-page-size-selector-bottom"></select>
+  <div class="d-inline-flex pt-0 ml-auto">
+    <span>
+      <select class="custom-select" id="obiba-page-size-selector-bottom"></select>
     </span>
-    <nav id="obiba-pagination-bottom" aria-label="Bottom pagination" class="mt-0">
+    <nav id="obiba-pagination-bottom" aria-label="Bottom pagination" class="ml-2 mt-0">
       <ul class="pagination"></ul>
     </nav>
   </div>

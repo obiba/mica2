@@ -63,15 +63,6 @@
     <span class="h6 pb-0 mb-0 d-block">{{study.model.numberOfParticipants.participant.number | localize-number}}</span>
     <span class="text-muted"><small><@message "study_taxonomy.vocabulary.numberOfParticipants-participant-number.title"/></small></span>
   </a>
-  <dataset-stat-item
-          v-bind:type="study.studyResourcePath"
-          v-bind:stats="study['obiba.mica.CountStatsDto.studyCountStats']">
-  </dataset-stat-item>
-  <variable-stat-item
-          v-bind:url="variablesUrl(study)"
-          v-bind:type="study.studyResourcePath"
-          v-bind:stats="study['obiba.mica.CountStatsDto.studyCountStats']">
-  </variable-stat-item>
 </#macro>
 
 <!-- Studies in cards model template -->
@@ -88,41 +79,37 @@
 
 <div v-show="loading" class="spinner-border spinner-border-sm" role="status"></div>
 <div v-show="!loading && entities && entities.length > 0" v-cloak></div>
-<div id="studies-card" class="card card-primary card-outline">
+<div id="studies-card">
 
-  <div class="card-header">
-    <div class="row">
-      <div class="col-3">
-        <h3 class="card-title pt-1">{{total | localize-number}} <@message "studies"/></h3>
-      </div>
-      <div class="col-6">
-        <typeahead @typing="onType" @select="onSelect" :items="suggestions" :external-text="initialFilter"></typeahead>
-      </div>
-      <div class="col-3">
-        <a href="${contextPath}/search#lists?type=studies&query=study(in(Mica_study.className,(${className})))" class="btn btn-sm btn-primary float-right">
-          <@message "global.search"/> <i class="fas fa-search"></i>
-        </a>
-      </div>
+  <div class="row">
+    <div class="col-3">
+      <h3 class="card-title pt-1">{{total | localize-number}} <@message "studies"/></h3>
     </div>
-  </div><!-- /.card-header -->
+    <div class="col-6">
+      <typeahead @typing="onType" @select="onSelect" :items="suggestions" :external-text="initialFilter"></typeahead>
+    </div>
+    <div class="col-3">
+      <a href="${contextPath}/search#lists?type=studies&query=study(in(Mica_study.className,(${className})))" class="btn btn-sm btn-primary float-right">
+        <@message "global.search"/> <i class="fas fa-search"></i>
+      </a>
+    </div>
+  </div>
 
-  <div class="card-body pb-0">
-    <div class="row">
-      <div class="col-12">
-        <div class="d-inline-flex float-right">
-          <sorting @sort-update="onSortUpdate" :initial-choice="initialSort" :options-translations="sortOptionsTranslations"></sorting>
-          <span class="ml-2 mr-1">
-                    <select class="custom-select" id="obiba-page-size-selector-top"></select>
-                  </span>
-          <nav id="obiba-pagination-top" aria-label="Top pagination" class="mt-0">
-            <ul class="pagination mb-0"></ul>
-          </nav>
-        </div>
+  <div class="row">
+    <div class="col-12">
+      <div class="d-inline-flex float-right mt-3 mb-3">
+        <sorting @sort-update="onSortUpdate" :initial-choice="initialSort" :options-translations="sortOptionsTranslations"></sorting>
+        <span class="ml-2">
+          <select class="custom-select" id="obiba-page-size-selector-top"></select>
+        </span>
+        <nav id="obiba-pagination-top" aria-label="Top pagination" class="ml-2 mt-0">
+          <ul class="pagination mb-0"></ul>
+        </nav>
       </div>
     </div>
   </div>
 
-  <div class="card-body pb-0">
+  <div class="pb-0">
     <div class="tab-pane">
       <div class="row d-flex align-items-stretch">
         <div class="col-md-12 col-lg-6 d-flex align-items-stretch" v-for="study in entities" v-bind:key="study.id">
@@ -151,10 +138,26 @@
               <div class="row pt-1 row-cols-4">
                 <template v-if="hasStats(study)">
                   <@studyCardModelStats/>
+                  <#if config.studyDatasetEnabled || config.harmonizationDatasetEnabled>
+                    <dataset-stat-item
+                            v-bind:type="study.studyResourcePath"
+                            v-bind:stats="study['obiba.mica.CountStatsDto.studyCountStats']">
+                    </dataset-stat-item>
+                    <variable-stat-item
+                            v-bind:url="variablesUrl(study)"
+                            v-bind:type="study.studyResourcePath"
+                            v-bind:stats="study['obiba.mica.CountStatsDto.studyCountStats']">
+                    </variable-stat-item>
+                  <#else>
+                    <a href="javascript:void(0)" class="btn btn-sm" style="cursor: initial; opacity: 0">
+                      <span class="h6 pb-0 mb-0 d-block">0</span>
+                      <span class="text-muted"><small><@message "analysis.empty"/></small></span>
+                    </a>
+                  </#if>
                 </template>
                 <template v-else>
                   <!-- HACK used 'studiesWithVariables' with opacity ZERO to have the same height as the longest stat item -->
-                  <a href="url" class="btn btn-sm btn-link col text-left" style="opacity: 0">
+                  <a href="javascript:void(0)" class="btn btn-sm" style="cursor: initial; opacity: 0">
                     <span class="h6 pb-0 mb-0 d-block">0</span>
                     <span class="text-muted"><small><@message "analysis.empty"/></small></span>
                   </a>
@@ -167,11 +170,11 @@
     </div>
   </div>
 
-  <div class="d-inline-flex card-body pt-0 ml-auto">
-    <span class="mr-1">
-        <select class="custom-select" id="obiba-page-size-selector-bottom"></select>
+  <div class="d-inline-flex pt-0 ml-auto">
+    <span>
+      <select class="custom-select" id="obiba-page-size-selector-bottom"></select>
     </span>
-    <nav id="obiba-pagination-bottom" aria-label="Bottom pagination" class="mt-0">
+    <nav id="obiba-pagination-bottom" aria-label="Bottom pagination" class="ml-2 mt-0">
       <ul class="pagination"></ul>
     </nav>
   </div>

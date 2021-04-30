@@ -42,10 +42,10 @@
 
         <#if datasets?? && datasets?size != 0>
           <div id="${title}-card" class="card card-info card-outline">
-            <div class="card-header d-flex p-0">
-              <h3 class="card-title p-3"><@message title/></h3>
+            <div class="card-header">
+              <h3 class="card-title <#if datasetListDisplays?size gt 1>pt-2</#if>"><@message title/></h3>
               <#if datasetListDisplays?size gt 1>
-                <ul class="nav nav-pills ml-auto p-2">
+                <ul class="nav nav-pills ml-auto float-right">
                   <#list datasetListDisplays as display>
                     <#if display == "table">
                       <li class="nav-item"><a class="nav-link <#if datasetListDefaultDisplay == "table">active</#if>" href="#table" data-toggle="tab">
