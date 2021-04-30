@@ -31,10 +31,10 @@
         <#if networks?size != 0>
           <div id="networks-card" class="card card-info card-outline">
 
-            <div class="card-header d-flex p-0">
-              <h3 class="card-title p-3"><@message "networks"/></h3>
+            <div class="card-header">
+              <h3 class="card-title <#if networkListDisplays?size gt 1>pt-2</#if>"><@message "networks"/></h3>
               <#if networkListDisplays?size gt 1>
-                <ul class="nav nav-pills ml-auto p-2">
+                <ul class="nav nav-pills ml-auto float-right">
                   <#list networkListDisplays as display>
                     <#if display == "table">
                       <li class="nav-item"><a class="nav-link <#if networkListDefaultDisplay == "table">active</#if>" href="#table" data-toggle="tab">
