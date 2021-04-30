@@ -60,7 +60,7 @@
 
 <!-- Repository list pages -->
 <#assign listDisplays = ["lines", "table", "cards"]/> <!-- order matters -->
-<#assign listDefaultDisplay = "cards"/> <!-- cards, lines or table -->
+<#assign listDefaultDisplay = "lines"/> <!-- cards, lines or table -->
 <#assign networkListDisplays = listDisplays/>
 <#assign networkListDefaultDisplay = listDefaultDisplay/>
 <#assign studyListDisplays = listDisplays/>

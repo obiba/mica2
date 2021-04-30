@@ -110,36 +110,40 @@
                         v-bind:plural="'individual-studies' | translate"
                         v-bind:url="individualStudies(network.id)">
                 </stat-item>
-                <stat-item
-                        v-bind:count="network['obiba.mica.CountStatsDto.networkCountStats'].studiesWithVariables"
-                        v-bind:singular="'study-with-variables' | translate"
-                        v-bind:plural="'studies-with-variables' | translate"
-                        v-bind:url="individualStudiesWithVariables(network.id)">
-                </stat-item>
-                <stat-item
-                        v-bind:count="network['obiba.mica.CountStatsDto.networkCountStats'].studyVariables"
-                        v-bind:singular="'study-variable' | translate"
-                        v-bind:plural="'study-variables' | translate"
-                        v-bind:url="individualStudyVariables(network.id)">
-                </stat-item>
+                <#if config.studyDatasetEnabled>
+                  <stat-item
+                          v-bind:count="network['obiba.mica.CountStatsDto.networkCountStats'].studiesWithVariables"
+                          v-bind:singular="'study-with-variables' | translate"
+                          v-bind:plural="'studies-with-variables' | translate"
+                          v-bind:url="individualStudiesWithVariables(network.id)">
+                  </stat-item>
+                  <stat-item
+                          v-bind:count="network['obiba.mica.CountStatsDto.networkCountStats'].studyVariables"
+                          v-bind:singular="'study-variable' | translate"
+                          v-bind:plural="'study-variables' | translate"
+                          v-bind:url="individualStudyVariables(network.id)">
+                  </stat-item>
+                </#if>
                 <stat-item
                         v-bind:count="network['obiba.mica.CountStatsDto.networkCountStats'].harmonizationStudies"
                         v-bind:singular="'harmonization-study' | translate"
                         v-bind:plural="'harmonization-studies' | translate"
                         v-bind:url="harmonizationStudies(network.id)">
                 </stat-item>
-                <stat-item
-                        v-bind:count="network['obiba.mica.CountStatsDto.networkCountStats'].dataschemaVariables"
-                        v-bind:singular="'harmonization-study-variable' | translate"
-                        v-bind:plural="'harmonization-study-variables' | translate"
-                        v-bind:url="harmonizationStudyVariables(network.id)">>
-                </stat-item>
+                <#if config.harmonizationDatasetEnabled>
+                  <stat-item
+                          v-bind:count="network['obiba.mica.CountStatsDto.networkCountStats'].dataschemaVariables"
+                          v-bind:singular="'harmonization-study-variable' | translate"
+                          v-bind:plural="'harmonization-study-variables' | translate"
+                          v-bind:url="harmonizationStudyVariables(network.id)">>
+                  </stat-item>
+                </#if>
               </div>
               <div v-else class="row pt-1 row-cols-5" >
                 <!-- HACK used 'studiesWithVariables' with opacity ZERO to have the same height as the longest stat item -->
-                <a href="#" class="btn btn-sm btn-link col text-left" style="opacity: 0">
-                  <span class="h6 pb-0 mb-0 d-block">{{network['obiba.mica.CountStatsDto.networkCountStats'].studiesWithVariables | localize-number}}</span>
-                  <span class="text-muted"><small><@message "studies-with-variables"/></small></span>
+                <a href="javascript:void(0)" class="btn btn-sm" style="cursor: initial; opacity: 0">
+                  <span class="h6 pb-0 mb-0 d-block">0</span>
+                  <span class="text-muted"><small><@message "analysis.empty"/></small></span>
                 </a>
               </div>
             </div>

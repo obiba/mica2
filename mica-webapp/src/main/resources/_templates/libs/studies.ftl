@@ -63,15 +63,6 @@
     <span class="h6 pb-0 mb-0 d-block">{{study.model.numberOfParticipants.participant.number | localize-number}}</span>
     <span class="text-muted"><small><@message "study_taxonomy.vocabulary.numberOfParticipants-participant-number.title"/></small></span>
   </a>
-  <dataset-stat-item
-          v-bind:type="study.studyResourcePath"
-          v-bind:stats="study['obiba.mica.CountStatsDto.studyCountStats']">
-  </dataset-stat-item>
-  <variable-stat-item
-          v-bind:url="variablesUrl(study)"
-          v-bind:type="study.studyResourcePath"
-          v-bind:stats="study['obiba.mica.CountStatsDto.studyCountStats']">
-  </variable-stat-item>
 </#macro>
 
 <!-- Studies in cards model template -->
@@ -147,10 +138,26 @@
               <div class="row pt-1 row-cols-4">
                 <template v-if="hasStats(study)">
                   <@studyCardModelStats/>
+                  <#if config.studyDatasetEnabled || config.harmonizationDatasetEnabled>
+                    <dataset-stat-item
+                            v-bind:type="study.studyResourcePath"
+                            v-bind:stats="study['obiba.mica.CountStatsDto.studyCountStats']">
+                    </dataset-stat-item>
+                    <variable-stat-item
+                            v-bind:url="variablesUrl(study)"
+                            v-bind:type="study.studyResourcePath"
+                            v-bind:stats="study['obiba.mica.CountStatsDto.studyCountStats']">
+                    </variable-stat-item>
+                  <#else>
+                    <a href="javascript:void(0)" class="btn btn-sm" style="cursor: initial; opacity: 0">
+                      <span class="h6 pb-0 mb-0 d-block">0</span>
+                      <span class="text-muted"><small><@message "analysis.empty"/></small></span>
+                    </a>
+                  </#if>
                 </template>
                 <template v-else>
                   <!-- HACK used 'studiesWithVariables' with opacity ZERO to have the same height as the longest stat item -->
-                  <a href="url" class="btn btn-sm btn-link col text-left" style="opacity: 0">
+                  <a href="javascript:void(0)" class="btn btn-sm" style="cursor: initial; opacity: 0">
                     <span class="h6 pb-0 mb-0 d-block">0</span>
                     <span class="text-muted"><small><@message "analysis.empty"/></small></span>
                   </a>
