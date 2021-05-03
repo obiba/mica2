@@ -319,13 +319,13 @@
 
                             <ul class="nav nav-pills float-right" role="tablist">
                               <li v-if="selectedBucket !==' dataset'" class="mt-auto mb-auto">
-                                <div class="form-check">
+                                <div class="custom-control custom-switch">
                                   <input type="checkbox"
                                          id="bucket-dce"
                                          v-model="dceChecked"
                                          @change="onSelectBucket(dceChecked ? 'dce' : 'study')"
-                                         class="form-check-input">
-                                  <label for="bucket-dce" class="form-check-label">{{ bucketTitles.dce }}</label>
+                                         class="custom-control-input">
+                                  <label for="bucket-dce" class="custom-control-label">{{ bucketTitles.dce }}</label>
                                 </div>
                               </li>
                               <li class="ml-3">
