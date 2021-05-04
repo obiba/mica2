@@ -166,6 +166,30 @@
           <!-- /.row -->
         </#if>
 
+        <#--  Summary Statistics  -->
+        <div class="row" id="summary-statistics-container">
+          <div class="col-12">
+            <div class="card card-primary card-outline">
+              <div class="card-header">
+                <h3 class="card-title"><@message "client.label.network.summary-stats"/></h3>
+              </div>
+
+              <div class="card-body">
+                <div id="summary-statistics">
+                  <div class="mt-3 text-muted" v-show="!hasGraphicsResult"><@message "no-graphics-result"/></div>
+
+                  <template v-show="hasGraphicsResult">
+                    <ul class="nav nav-tabs">
+                      <li class="nav-item" v-for="(option, index) in chartOptions" v-bind:key="option.id"><a href="" class="nav-link" @click.prevent="onTabClick(index)">{{option.title}}</a></li>
+                    </ul>
+                    <graphics-result v-bind:chart-options="chartOptions" v-bind:hide-header="true"></graphics-result>
+                  </template>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <!-- Network model -->
         <@networkModel network=network/>
 
