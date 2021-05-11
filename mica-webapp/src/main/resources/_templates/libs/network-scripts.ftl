@@ -297,7 +297,7 @@
         registerDataTable: (tableId, options) => {
           const mergedOptions = Object.assign(options, DataTableDefaults);
           mergedOptions.language = {
-            url: contextPath + '/assets/i18n/mlstr-datatables.' + Mica.locale + '.json'
+            url: contextPath + '/assets/i18n/datatables.' + Mica.locale + '.json'
           };
           const dTable = $('#' + tableId).DataTable(mergedOptions);
           dTable.on('draw', function() {
@@ -383,6 +383,7 @@
       }
     },
     updated() {
+      $('#summary-statistics .card').removeClass('card-outline').removeClass('card-primary').addClass('card-none');
       $('#summary-statistics .card-tools').addClass('d-none');
       this.onTabClick(0);
     },

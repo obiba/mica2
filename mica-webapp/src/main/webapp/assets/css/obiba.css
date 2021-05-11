@@ -88,6 +88,11 @@
   margin-bottom: 0;
 }
 
+.card.card-none {
+  border: none;
+  box-shadow: none;
+}
+
 .card-body > div.border-bottom:last-child ,
 #lines > div.border-bottom:last-child {
   border-bottom: none !important;
