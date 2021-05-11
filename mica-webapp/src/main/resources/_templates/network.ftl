@@ -169,7 +169,7 @@
         <#--  Summary Statistics  -->
         <div class="row" id="summary-statistics-container">
           <div class="col-12">
-            <div class="card card-primary card-outline">
+            <div class="card card-info card-outline">
               <div class="card-header">
                 <h3 class="card-title"><@message "client.label.network.summary-stats"/></h3>
               </div>
