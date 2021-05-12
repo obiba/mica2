@@ -16,7 +16,7 @@ const makeVariableFrequenciesChartSettings = function(frequencies, backgroundCol
   };
   frequencies.forEach(frequency => {
     if (frequency.count>0) {
-      labels.push(tr[frequency.value] ? tr[frequency.value] : frequency.value);
+      labels.push(tr[frequency.label] ? tr[frequency.label] : frequency.label);
       dataset.data.push(frequency.count);
     }
   });
