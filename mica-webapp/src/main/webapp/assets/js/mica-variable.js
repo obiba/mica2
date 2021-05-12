@@ -168,7 +168,7 @@ const makeHarmonizedVariablesTable = function() {
     const harmonizedVariablesTableBody = $('#harmonizedVariables > tbody');
     if (data.datasetVariableSummaries) {
       for (const harmonizedVariable of data.datasetVariableSummaries) {
-        const status = VariableService.getHarmoStatus(harmonizedVariable);
+        const status = localizedString(VariableService.getHarmoStatus(harmonizedVariable));
         const statusDetail = VariableService.getHarmoStatusDetail(harmonizedVariable);
         const comment = VariableService.getHarmoComment(harmonizedVariable);
         const baseStudyTable = harmonizedVariable.studyTable ? harmonizedVariable.studyTable : harmonizedVariable.harmonizationStudyTable;
@@ -187,7 +187,7 @@ const makeHarmonizedVariablesTable = function() {
           '</td>' +
           '<td>' + studyAnchor(baseStudyTable.studySummary) + '</td>' +
           '<td>' + dceName + '</td>' +
-          '<td><i class=" ' + VariableService.getHarmoStatusClass(localizedString(status)) + '"></i></td>' +
+          '<td><i class=" ' + VariableService.getHarmoStatusClass(status) + '"></i></td>' +
           '<td>' + localizedString(statusDetail) + '</td>' +
           '<td>' + localizedString(comment) + '</td>' +
           '</tr>')

@@ -3,6 +3,7 @@
 <#include "models/population.ftl">
 <#include "models/dce.ftl">
 <#include "models/dataset.ftl">
+<#include "models/harmonization.ftl">
 <#include "models/files.ftl">
 
 <!DOCTYPE html>
@@ -257,16 +258,7 @@
             <div class="card-body">
               <div class="row">
                 <div class="col-lg-8 col-sm-6">
-                  <dl id="harmonization-legend" class="row">
-                    <dt class="col-sm-1"><i class="fas fa-check text-success"></i></dt>
-                    <dd class="col-sm-11"><small><@message "harmonization-complete"/></small></dd>
-                    <dt class="col-sm-1"><i class="fas fa-times text-danger"></i></dt>
-                    <dd class="col-sm-11"><small><@message "harmonization-impossible"/></small></dd>
-                    <dt class="col-sm-1"><i class="fas fa-question text-warning"></i></dt>
-                    <dd class="col-sm-11"><small><@message "harmonization-undetermined"/></small></dd>
-                    <dt class="col-sm-1"><i class="fas fa-ban text-black"></i></dt>
-                    <dd class="col-sm-11"><small><@message "harmonization-na"/></small></dd>
-                  </dl>
+                  <@harmonizationLegend/>
                 </div>
                 <div class="col-lg-4 col-sm-6">
                   <a href="${contextPath}/ws/harmonized-dataset/${dataset.id}/variables/harmonizations/_export" class="btn btn-primary float-right mb-3">

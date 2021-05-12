@@ -3,6 +3,7 @@
 <#include "models/variable.ftl">
 <#include "models/population.ftl">
 <#include "models/dce.ftl">
+<#include "models/harmonization.ftl">
 <#include "models/files.ftl">
 
 <#if type == "Harmonized">
@@ -314,6 +315,7 @@
                   <h3 class="card-title"><@message "harmonized-variables"/></h3>
                 </div>
                 <div class="card-body">
+                  <@harmonizationLegend/>
                   <div id="loadingHarmonizedVariables" class="spinner-border spinner-border-sm" role="status"></div>
                   <div class="table-responsive">
                     <table id="harmonizedVariables" class="table table-striped" style="display: none">

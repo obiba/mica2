@@ -229,6 +229,8 @@ class VariableService {
     let iconClass = 'fas fa-minus text-muted';
     if (status === 'complete') {
       iconClass = 'fas fa-check text-success';
+    } else if (status === 'partial') {
+      iconClass = 'fas fa-adjust text-muted';
     } else if (status === 'impossible') {
       iconClass = 'fas fa-times text-danger';
     } else if (status === 'undetermined') {
