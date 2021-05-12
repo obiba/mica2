@@ -146,6 +146,12 @@ const makeSummary = function(showHarmonizedVariableSummarySelector) {
 
   VariableService.getAggregation(Mica.variableId, function (data) {
     Mica.data = data;
+    if ('frequencies' in data) {
+      data.frequencies.forEach(frequency =>
+        frequency.label = Mica.categories[frequency.value] ? `${Mica.categories[frequency.value]} (${frequency.value})` : frequency.value
+      )
+    }
+
     $('#loadingSummary').hide();
 
     if (showHarmonizedVariableSummarySelector && (data.frequencies || data.statistics)) {
