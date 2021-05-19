@@ -2281,6 +2281,7 @@
         "target-number": "Target Number"
       },
       "variable": {
+        "annotations": "Annotations",
         "value-type": "Value Type",
         "unit": "Unit",
         "variable-type": "Variable Type",
