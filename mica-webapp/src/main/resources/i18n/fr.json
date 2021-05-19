@@ -2277,6 +2277,7 @@
         "target-number": "Nombre cible"
       },
       "variable": {
+        "annotations": "Annotations",
         "value-type": "Type de valeur",
         "unit": "Unité",
         "variable-type": "Type de variable",
