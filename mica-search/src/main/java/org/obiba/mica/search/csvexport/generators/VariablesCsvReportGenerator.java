@@ -43,7 +43,7 @@ public class VariablesCsvReportGenerator extends CsvReportGeneratorImpl {
     line.add("name");
     line.add("search.variable.label");
     if(mustShow("showVariablesAnnotationsColumn"))
-      line.add("lient.label.variable.annotations");
+      line.add("client.label.variable.annotations");
     if (mustShow("showVariablesUnitColumn"))
       line.add("client.label.variable.unit");
     if (mustShow("showVariablesValueTypeColumn"))
