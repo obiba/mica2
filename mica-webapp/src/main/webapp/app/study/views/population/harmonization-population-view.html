@@ -13,7 +13,7 @@
 </h3>
 
 <div class="inline pull-right hidden-print" ng-if="$parent.inViewMode() && permissions.canEdit()">
-  <a ng-click="editPopulation(study, selectedPopulation)" class="btn btn-responsive btn-primary"><i class="fa fa-pencil"></i></a>
+  <a ng-href="#/harmonization-study/{{study.id}}/population/{{selectedPopulation.id}}/edit" class="btn btn-responsive btn-primary"><i class="fa fa-pencil"></i></a>
   <a ng-click="deletePopulation(study, selectedPopulation)" class="btn btn-responsive btn-danger"><i class="fa fa-trash-o"></i></a>
 </div>
 

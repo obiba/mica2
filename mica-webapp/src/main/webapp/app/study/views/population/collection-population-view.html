@@ -18,7 +18,7 @@
     <a href="" class="btn btn-responsive btn-info" ng-hide="study.populations.indexOf(selectedPopulation) === 0" title="Up" ng-click="updateCollectionItemWeight(selectedPopulation, selectedPopulation.weight - 1, study.populations)"><i class="fa fa-arrow-up"></i></a>
   </span>
 
-  <a ng-click="editPopulation(study, selectedPopulation)" class="btn btn-responsive btn-primary"><i class="fa fa-pencil"></i></a>
+  <a ng-href="#/individual-study/{{study.id}}/population/{{selectedPopulation.id}}/edit" class="btn btn-responsive btn-primary"><i class="fa fa-pencil"></i></a>
   <a ng-click="deletePopulation(study, selectedPopulation)" class="btn btn-responsive btn-danger"><i class="fa fa-trash-o"></i></a>
 </div>
 
@@ -90,7 +90,7 @@
         <a ng-click="showDataCollectionEvent(study, selectedPopulation, dce)" class="hand action"><i
             class="fa fa-eye"></i></a>
         <div class="inline" ng-if="permissions.canEdit()">
-          <a ng-click="editDataCollectionEvent(study, selectedPopulation, dce)" class="hand action"><i
+          <a ng-href="#/individual-study/{{study.id}}/population/{{selectedPopulation.id}}/dce/{{dce.id}}/edit" class="hand action"><i
               class="fa fa-pencil"></i></a>
           <a ng-click="addDataCollectionEvent(study, selectedPopulation, dce)" class="hand action" translate
              title="{{'clone' | translate}}"><i class="fa fa-files-o"></i></a>
