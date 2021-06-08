@@ -119,7 +119,7 @@
                 <@dataAccessFormPrintHeader form=dar type="data-access-request"/>
               </div>
               <form name="forms.requestForm" class="bootstrap3">
-                <div sf-schema="schema" sf-form="form" sf-model="model"></div>
+                <div sf-schema="schema" sf-form="form" sf-model="model" sf-options="sfOptions"></div>
               </form>
               <div class="d-none d-print-block">
                 <@dataAccessFormPrintFooter form=dar/>

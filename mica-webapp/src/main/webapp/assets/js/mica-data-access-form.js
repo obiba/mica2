@@ -318,11 +318,29 @@ angular.module('formModule', ['schemaForm', 'hc.marked', 'angularMoment', 'schem
       sanitize: true
     });
   }])
-  .controller('FormController', ['$scope', function ($scope) {
-    $scope.forms = {};
-    $scope.schema = formSchema;
-    $scope.form = formDefinition;
-    $scope.model = formModel;
+  .controller('FormController', ['$scope', '$filter', '$translate', function ($scope, $filter, $translate) {
+
+
+    const langKey = 'language.'+ $translate.use();
+    $translate(['required', langKey], {}).then(function(translations) {
+      const languages = {};
+      languages[$translate.use()] = translations[langKey];
+
+      $scope.forms = {};
+      $scope.schema = formSchema;
+      $scope.form = formDefinition;
+      $scope.model = formModel;
+      $scope.sfOptions = {
+        validationMessage: {
+          '302': translations['required']
+        },
+        formDefaults: {
+          languages: languages
+        }
+      }
+    });
+
+
 
     $scope.validate = function () {
       $scope.$broadcast('schemaFormValidate');
