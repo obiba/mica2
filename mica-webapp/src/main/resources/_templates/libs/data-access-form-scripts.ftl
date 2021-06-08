@@ -24,6 +24,8 @@
 <script src="${contextPath}/bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
 <script src="${contextPath}/bower_components/ng-file-upload/ng-file-upload.js"></script>
 <script src="${contextPath}/bower_components/sf-typeahead/dist/sf-typeahead.min.js"></script>
+<script src="${contextPath}/bower_components/angular-translate/angular-translate.js"></script>
+<script src="${contextPath}/bower_components/angular-translate-loader-static-files/angular-translate-loader-static-files.js"></script>
 <script src="${contextPath}/bower_components/sf-obiba-countries-ui-select/dist/sf-obiba-countries-ui-select.js"></script>
 <script src="${contextPath}/bower_components/sf-radio-group-collection/dist/sf-radio-group-collection.js"></script>
 
