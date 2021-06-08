@@ -1,16 +1,16 @@
 'use strict';
 
 var attachmentTemplate = '<button ng-hide="{{disabled}}" type="button" class="btn btn-primary btn-xs" aria-hidden="true" ngf-multiple="{{multiple}}" ngf-select\n' +
-  '        ngf-change="onFileSelect($files)" translate>Upload\n' +
+  '        ngf-change="onFileSelect($files)" translate>upload\n' +
   '</button>\n' +
   '\n' +
   '<table ng-show="files.length" class="table table-bordered table-striped">\n' +
   '  <thead>\n' +
   '  <tr>\n' +
-  '    <th translate>Name</th>\n' +
-  '    <th class="col-xs-2"><span class="pull-right" translate>Date</span></th>\n' +
-  '    <th translate>Size</th>\n' +
-  '    <th ng-show="deleteAttachments" translate>Actions</th>\n' +
+  '    <th translate>name</th>\n' +
+  '    <th class="col-xs-2"><span class="pull-right" translate>date</span></th>\n' +
+  '    <th translate>size</th>\n' +
+  '    <th ng-show="deleteAttachments" translate>actions</th>\n' +
   '  </tr>\n' +
   '  </thead>\n' +
   '  <tbody>\n' +
@@ -46,9 +46,9 @@ var attachmentListTemplate = '<div>\n' +
   '  <table ng-if="hasAttachments" class="table table-bordered table-striped" >\n' +
   '    <thead>\n' +
   '    <tr>\n' +
-  '      <th translate>Name</th>\n' +
-  '      <th class="col-xs-2"><span class="pull-right" translate>Date</span></th>\n' +
-  '      <th translate>Size</th>\n' +
+  '      <th translate>name</th>\n' +
+  '      <th class="col-xs-2"><span class="pull-right" translate>date</span></th>\n' +
+  '      <th translate>size</th>\n' +
   '    </tr>\n' +
   '    </thead>\n' +
   '    <tbody>\n' +
@@ -70,7 +70,20 @@ var attachmentListTemplate = '<div>\n' +
   '\n' +
   '</div>';
 
-angular.module('ngObibaMica', ['ngResource'])
+angular.module('ngObibaMica', ['ngResource', 'pascalprecht.translate'])
+  .config(['$translateProvider', function($translateProvider) {
+    const ngTrLangKey = document.cookie.match("(^|[^;]+)\\s*NG_TRANSLATE_LANG_KEY\\s*=\\s*([^;]+)")
+    const language = ngTrLangKey ? decodeURIComponent(ngTrLangKey.pop()).replace(/["']/g,"") : "";
+    $translateProvider
+      .useStaticFilesLoader({
+        prefix: contextPath + '/ws/config/i18n/',
+        suffix: '.json'
+      })
+      .fallbackLanguage('en')
+      .useSanitizeValueStrategy('escaped')
+      .use(language)
+    ;
+  }])
   .service('LocaleStringUtils', ['$filter', function ($filter) {
     this.translate = function (key, args) {
 
