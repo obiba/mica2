@@ -669,7 +669,7 @@ message DatasetVariablesHarmonizationsDto {
 
 message DatasetHarmonizedVariableSummaryDto {
   // harmonized variable Mlstr_harmo.status
-  required string status = 1;
+  optional string status = 1;
   // harmonized variable reference (might not exists)
   optional DatasetVariableResolverDto harmonizedVariableRef = 2;
 }
