@@ -61,10 +61,13 @@ public class SessionsResource {
   public Response createSession(@SuppressWarnings("TypeMayBeWeakened") @Context HttpServletRequest servletRequest,
       @FormParam("username") String username, @FormParam("password") String password) {
     try {
-      authenticationExecutor.login(new UsernamePasswordToken(username, password));
+      ObibaRealm.Subject profile = userProfileService.getProfile(username);
+      String realUsername = profile == null ? username : profile.getUsername();
+      authenticationExecutor.login(new UsernamePasswordToken(realUsername, password));
+
       Subject subject = SecurityUtils.getSubject();
       String sessionId = subject.getSession().getId().toString();
-      log.info("Successful session creation for user '{}' session ID is '{}'.", username, sessionId);
+      log.info("Successful session creation for user '{}' session ID is '{}'.", realUsername, sessionId);
       String locale = getPreferredLocale(subject);
 
       Response.ResponseBuilder builder = Response
