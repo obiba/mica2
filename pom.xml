@@ -60,7 +60,7 @@
     <logback.version>1.2.3</logback.version>
     <logstash-logback.version>6.6</logstash-logback.version>
     <metrics-spring.version>3.0.0</metrics-spring.version>
-    <mongodb-driver.version>3.9.1</mongodb-driver.version>
+    <mongodb-driver.version>3.12.8</mongodb-driver.version>
     <nosqlunit.version>0.7.9</nosqlunit.version>
     <obiba-commons.version>1.15.2</obiba-commons.version>
     <opal.version>4.0.3</opal.version>
