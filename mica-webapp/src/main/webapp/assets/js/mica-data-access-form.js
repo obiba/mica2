@@ -319,14 +319,13 @@ angular.module('formModule', ['schemaForm', 'hc.marked', 'angularMoment', 'schem
     });
   }])
   .controller('FormController', ['$scope', '$filter', '$translate', function ($scope, $filter, $translate) {
-
+    $scope.forms = {};
 
     const langKey = 'language.'+ $translate.use();
     $translate(['required', langKey], {}).then(function(translations) {
       const languages = {};
       languages[$translate.use()] = translations[langKey];
 
-      $scope.forms = {};
       $scope.schema = formSchema;
       $scope.form = formDefinition;
       $scope.model = formModel;
@@ -349,7 +348,7 @@ angular.module('formModule', ['schemaForm', 'hc.marked', 'angularMoment', 'schem
         MicaService.toastSuccess(formMessages.validationSuccess);
       } else {
         // an invalid form can be saved with warning
-        MicaService.toastWarning(formMessages.validationError);
+        MicaService.toastError(formMessages.validationError);
       }
     };
     $scope.save = function (id, type, aId) {
