@@ -348,7 +348,7 @@ angular.module('formModule', ['schemaForm', 'hc.marked', 'angularMoment', 'schem
         MicaService.toastSuccess(formMessages.validationSuccess);
       } else {
         // an invalid form can be saved with warning
-        MicaService.toastError(formMessages.validationError);
+        MicaService.toastWarning(formMessages.validationError);
       }
     };
     $scope.save = function (id, type, aId) {
