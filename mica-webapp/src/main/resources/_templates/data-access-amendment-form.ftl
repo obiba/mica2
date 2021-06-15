@@ -226,7 +226,7 @@
                 <div class="modal-footer justify-content-between">
                   <button type="button" class="btn btn-default" data-dismiss="modal"><@message "cancel"/></button>
                   <button type="button" class="btn btn-primary" data-dismiss="modal"
-                          onclick="DataAccessService.conditionallyApprove('${dar.id}', 'amendment', '${amendment.id}')"><@message "confirm"/></button>
+                          onclick="DataAccessService.conditionally('${dar.id}', 'amendment', '${amendment.id}')"><@message "confirm"/></button>
                 </div>
               </div>
               <!-- /.modal-content -->
