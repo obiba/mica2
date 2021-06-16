@@ -20,7 +20,8 @@
       "integer": "Entier",
       "decimal": "Décimal",
       "keyword": "Mot-clé",
-      "keyword_string": "Mot-clé et string"
+      "keyword_string": "Mot-clé et string",
+      "boolean": "Booléen"
     },
     "sort-by": "Trier par",
     "read-more": "En savoir plus",
