@@ -20,8 +20,7 @@
       "integer": "Integer",
       "decimal": "Decimal",
       "keyword": "Keyword",
-      "keyword_string": "Keyword and String",
-      "boolean": "Boolean"
+      "keyword_string": "Keyword and String"
     },
     "sort-by": "Sort by",
     "read-more": "Read more",
