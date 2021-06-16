@@ -280,6 +280,10 @@ mica.entityTaxonomyConfig
             'name': $filter('translate')('global.types.keyword')
           },
           {
+            'value': 'boolean',
+            'name': $filter('translate')('global.types.boolean')
+          },
+          {
             'value': 'integer',
             'name': $filter('translate')('global.types.integer')
           },
