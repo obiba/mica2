@@ -23,6 +23,7 @@ import org.obiba.mica.core.domain.AbstractGitPersistable;
 import org.obiba.mica.core.domain.PublishCascadingScope;
 import org.obiba.mica.core.domain.StudyTable;
 import org.obiba.mica.core.repository.EntityStateRepository;
+import org.obiba.mica.core.service.MissingCommentException;
 import org.obiba.mica.dataset.NoSuchDatasetException;
 import org.obiba.mica.dataset.StudyDatasetRepository;
 import org.obiba.mica.dataset.StudyDatasetStateRepository;
@@ -37,6 +38,7 @@ import org.obiba.mica.dataset.event.DatasetUpdatedEvent;
 import org.obiba.mica.dataset.service.support.QueryTermsUtil;
 import org.obiba.mica.file.FileUtils;
 import org.obiba.mica.file.service.FileSystemService;
+import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.micaConfig.service.OpalService;
 import org.obiba.mica.network.service.NetworkService;
 import org.obiba.mica.study.NoSuchStudyException;
@@ -102,6 +104,9 @@ public class CollectedDatasetService extends DatasetService<StudyDataset, StudyD
 
   @Inject
   private PublishedStudyService publishedStudyService;
+
+  @Inject
+  private MicaConfigService micaConfigService;
 
   @Inject
   private EventBus eventBus;
@@ -521,6 +526,10 @@ public class CollectedDatasetService extends DatasetService<StudyDataset, StudyD
   }
 
   private void saveInternal(StudyDataset dataset, String comment) {
+    if (micaConfigService.getConfig().isCommentsRequiredOnDocumentSave() && Strings.isNullOrEmpty(comment)) {
+      throw new MissingCommentException("Due to the server configuration, comments are required when saving this document.");
+    }
+
     StudyDataset saved = prepareSave(dataset);
 
     StudyDatasetState studyDatasetState = findEntityState(dataset, StudyDatasetState::new);

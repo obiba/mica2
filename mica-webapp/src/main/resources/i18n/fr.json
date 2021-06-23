@@ -308,6 +308,8 @@
     "anonymous-username-help": "L'utilisateur configuré pour le fonctionnement anonyme du Portail.",
     "cart-enabled": "Panier activé",
     "cart-enabled-help": "La création et la gestion de panier est activée",
+    "comments-required": "Commentaires requis",
+    "comments-required-help": "Rendre l’ajout d’un commentaire obligatoire lors de l’enregistrement d’un document d’entité (p. ex. enregistrement d’un jeu de données)",
     "cart-time-to-live": "Durée de vie du panier",
     "cart-time-to-live-help": "Durée de vie du panier en jours.",
     "set-time-to-live": "Durée de vie de la liste",
@@ -1533,6 +1535,7 @@
         "range-criterion-missing-range-attribute": "Le critère '{{arg0}}' avec des termes doit être marqué comme ayant des intervalles de portée.",
         "duplicate-criterion-alias": "Le champ '{{arg0}}' a déjà un critère associé. Seul un champ numérique peut avoir deux critères, un critère discret et un critère de portée."
       },
+      "document-comment": "Les commentaires sont requis lors de l’enregistrement d’un document d’entité.",
       "data-access-amendment": {
         "not-enabled": "Les opérations d'amendement d'accès aux données sont désactivées. Contactez votre administrateur pour activer cette fonctionnalité."
       }

@@ -10,6 +10,7 @@
 
 package org.obiba.mica.study.service;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -17,6 +18,7 @@ import com.google.common.collect.Sets;
 import org.joda.time.DateTime;
 import org.obiba.mica.core.domain.AbstractGitPersistable;
 import org.obiba.mica.core.repository.EntityStateRepository;
+import org.obiba.mica.core.service.MissingCommentException;
 import org.obiba.mica.dataset.HarmonizationDatasetRepository;
 import org.obiba.mica.dataset.HarmonizationDatasetStateRepository;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
@@ -78,6 +80,10 @@ public class HarmonizationStudyService extends AbstractStudyService<Harmonizatio
 
   @Override
   protected void saveInternal(final HarmonizationStudy study, String comment, boolean cascade) {
+    if (micaConfigService.getConfig().isCommentsRequiredOnDocumentSave() && Strings.isNullOrEmpty(comment)) {
+      throw new MissingCommentException("Due to the server configuration, comments are required when saving this document.");
+    }
+
     log.info("Saving harmonization study: {}", study.getId());
 
     // checks if population and dce are still the same

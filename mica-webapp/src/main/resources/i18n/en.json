@@ -308,6 +308,8 @@
     "anonymous-username-help": "User that is configured for unauthenticated Portal usage.",
     "cart-enabled": "Cart enabled",
     "cart-enabled-help": "Cart creation and management is enabled.",
+    "comments-required": "Comments Required",
+    "comments-required-help": "Make adding a comment be mandatory when saving an entity document (e.g. saving a dataset)",
     "cart-time-to-live": "Cart Life Span",
     "cart-time-to-live-help": "Cart life span in days.",
     "set-time-to-live": "List Time Span",
@@ -1531,6 +1533,7 @@
           "delete-conflict-message": "Found conflicts when trying to delete network. Remove all references from the following networks: {{arg0}}."
         }
       },
+      "document-comment": "Comments are required when saving an entity document.",
       "taxonomy": {
         "name-not-found": "The taxonomy with the name '{{arg0}}' is not found.",
         "range-criterion-missing-terms": "The criterion '{{arg0}}' must have terms to define its range intervals.",

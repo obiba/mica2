@@ -23,6 +23,7 @@ import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.core.domain.PublishCascadingScope;
 import org.obiba.mica.core.repository.EntityStateRepository;
 import org.obiba.mica.core.service.AbstractGitPersistableService;
+import org.obiba.mica.core.service.MissingCommentException;
 import org.obiba.mica.dataset.HarmonizationDatasetRepository;
 import org.obiba.mica.file.FileStoreService;
 import org.obiba.mica.file.FileUtils;
@@ -102,6 +103,10 @@ public class NetworkService extends AbstractGitPersistableService<NetworkState, 
 
   @SuppressWarnings("OverlyLongMethod")
   private void saveInternal(@NotNull Network network, String comment, boolean cascade) {
+    if (micaConfigService.getConfig().isCommentsRequiredOnDocumentSave() && Strings.isNullOrEmpty(comment)) {
+      throw new MissingCommentException("Due to the server configuration, comments are required when saving this document.");
+    }
+
     Network saved = network;
 
     if(network.isNew()) {

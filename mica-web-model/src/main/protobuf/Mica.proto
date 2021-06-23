@@ -456,6 +456,7 @@ message MicaConfigDto {
   optional bool isContactNotificationsEnabled = 59;
   optional string contactNotificationsSubject = 60;
   repeated string contactGroups = 61;
+  optional bool isCommentsRequiredOnDocumentSave = 62 [default = false];
 }
 
 message PublicMicaConfigDto {
