@@ -1533,7 +1533,7 @@
           "delete-conflict-message": "Found conflicts when trying to delete network. Remove all references from the following networks: {{arg0}}."
         }
       },
-      "document-comment": "Comments are required when saving an entity document.",
+      "document-comment": "A comment is required on document save.",
       "taxonomy": {
         "name-not-found": "The taxonomy with the name '{{arg0}}' is not found.",
         "range-criterion-missing-terms": "The criterion '{{arg0}}' must have terms to define its range intervals.",
