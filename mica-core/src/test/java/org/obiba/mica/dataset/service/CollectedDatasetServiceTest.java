@@ -25,11 +25,12 @@ import org.obiba.mica.dataset.StudyDatasetRepository;
 import org.obiba.mica.dataset.StudyDatasetStateRepository;
 import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.dataset.domain.StudyDatasetState;
+import org.obiba.mica.micaConfig.domain.MicaConfig;
+import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.micaConfig.service.OpalService;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.service.IndividualStudyService;
 import org.obiba.opal.rest.client.magma.RestDatasource;
-
 import com.google.common.eventbus.EventBus;
 
 import static org.mockito.Matchers.any;
@@ -61,6 +62,9 @@ public class CollectedDatasetServiceTest {
   @Mock
   private StudyDatasetStateRepository studyDatasetStateRepository;
 
+  @Mock
+  private MicaConfigService micaConfigService;
+
   private Study study;
 
   private StudyDataset dataset;
@@ -75,6 +79,7 @@ public class CollectedDatasetServiceTest {
     state = buildStudyDatasetState(dataset);
     doNothing().when(gitService).save(any(StudyDataset.class), anyString());
     when(gitService.hasGitRepository(any(StudyDataset.class))).thenReturn(true);
+    when(micaConfigService.getConfig()).thenReturn(new MicaConfig());
   }
 
   @Test

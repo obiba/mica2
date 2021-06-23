@@ -173,6 +173,8 @@ public class MicaConfig extends AbstractAuditableDocument {
 
   private boolean isDataAccessRequestCountEnabled = true;
 
+  private boolean commentsRequiredOnDocumentSave = false;
+
   @Transient
   private String contextPath;
 
@@ -667,6 +669,14 @@ public class MicaConfig extends AbstractAuditableDocument {
 
   public String getContextPath() {
     return contextPath;
+  }
+
+  public boolean isCommentsRequiredOnDocumentSave() {
+    return commentsRequiredOnDocumentSave;
+  }
+
+  public void setCommentsRequiredOnDocumentSave(boolean commentsRequiredOnDocumentSave) {
+    this.commentsRequiredOnDocumentSave = commentsRequiredOnDocumentSave;
   }
 
   public enum OpalViewsGrouping {

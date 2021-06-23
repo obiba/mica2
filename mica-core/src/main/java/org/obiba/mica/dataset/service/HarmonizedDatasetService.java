@@ -13,7 +13,6 @@ package org.obiba.mica.dataset.service;
 import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.common.eventbus.EventBus;
 import org.joda.time.DateTime;
@@ -23,6 +22,7 @@ import org.obiba.mica.core.domain.BaseStudyTable;
 import org.obiba.mica.core.domain.OpalTable;
 import org.obiba.mica.core.domain.PublishCascadingScope;
 import org.obiba.mica.core.repository.EntityStateRepository;
+import org.obiba.mica.core.service.MissingCommentException;
 import org.obiba.mica.dataset.HarmonizationDatasetRepository;
 import org.obiba.mica.dataset.HarmonizationDatasetStateRepository;
 import org.obiba.mica.dataset.NoSuchDatasetException;
@@ -36,6 +36,7 @@ import org.obiba.mica.dataset.event.DatasetUpdatedEvent;
 import org.obiba.mica.dataset.service.support.QueryTermsUtil;
 import org.obiba.mica.file.FileUtils;
 import org.obiba.mica.file.service.FileSystemService;
+import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.micaConfig.service.OpalService;
 import org.obiba.mica.network.service.NetworkService;
 import org.obiba.mica.study.NoSuchStudyException;
@@ -97,15 +98,14 @@ public class HarmonizedDatasetService extends DatasetService<HarmonizationDatase
 
   private final FileSystemService fileSystemService;
 
+  private final MicaConfigService micaConfigService;
+
   @Inject
-  public HarmonizedDatasetService(
-    StudyService studyService,
-    NetworkService networkService, OpalService opalService,
+  public HarmonizedDatasetService(StudyService studyService, NetworkService networkService, OpalService opalService,
     HarmonizationDatasetRepository harmonizationDatasetRepository,
     HarmonizationDatasetStateRepository harmonizationDatasetStateRepository,
-    HarmonizationStudyService harmonizationStudyService,
-    PublishedStudyService publishedStudyService,
-    EventBus eventBus, FileSystemService fileSystemService) {
+    HarmonizationStudyService harmonizationStudyService, PublishedStudyService publishedStudyService, EventBus eventBus,
+    FileSystemService fileSystemService, MicaConfigService micaConfigService) {
     this.studyService = studyService;
     this.networkService = networkService;
     this.opalService = opalService;
@@ -115,6 +115,7 @@ public class HarmonizedDatasetService extends DatasetService<HarmonizationDatase
     this.publishedStudyService = publishedStudyService;
     this.eventBus = eventBus;
     this.fileSystemService = fileSystemService;
+    this.micaConfigService = micaConfigService;
 
     this.helper = new Helper(this, this.eventBus);
   }
@@ -445,6 +446,10 @@ public class HarmonizedDatasetService extends DatasetService<HarmonizationDatase
 
   @SuppressWarnings("OverlyLongMethod")
   private void saveInternal(HarmonizationDataset dataset, String comment) {
+    if (micaConfigService.getConfig().isCommentsRequiredOnDocumentSave() && Strings.isNullOrEmpty(comment)) {
+      throw new MissingCommentException("Due to the server configuration, comments are required when saving this document.");
+    }
+
     HarmonizationDataset saved = prepareSave(dataset);
 
     HarmonizationDatasetState harmonizationDatasetState = findEntityState(dataset, HarmonizationDatasetState::new);
