@@ -1535,7 +1535,7 @@
         "range-criterion-missing-range-attribute": "Le critère '{{arg0}}' avec des termes doit être marqué comme ayant des intervalles de portée.",
         "duplicate-criterion-alias": "Le champ '{{arg0}}' a déjà un critère associé. Seul un champ numérique peut avoir deux critères, un critère discret et un critère de portée."
       },
-      "document-comment": "Un commentaire un requis lors de la sauvegarde du document.",
+      "document-comment": "Un commentaire est requis lors de la sauvegarde du document.",
       "data-access-amendment": {
         "not-enabled": "Les opérations d'amendement d'accès aux données sont désactivées. Contactez votre administrateur pour activer cette fonctionnalité."
       }
