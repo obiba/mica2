@@ -111,6 +111,8 @@ class MicaConfigDtos {
       builder.setVersion(config.getMicaVersion().toString());
     }
 
+    builder.setIsCommentsRequiredOnDocumentSave(config.isCommentsRequiredOnDocumentSave());
+
     builder.addAllRoles(config.getRoles());
 
     builder.setIsFsNotificationsEnabled(config.isFsNotificationsEnabled());
@@ -196,6 +198,8 @@ class MicaConfigDtos {
     config.setOpenAccess(dto.getOpenAccess());
 
     config.setOpalViewsGrouping(OpalViewsGrouping.valueOf(dto.getOpalViewsGrouping()));
+
+    config.setCommentsRequiredOnDocumentSave(dto.getIsCommentsRequiredOnDocumentSave());
 
     if (dto.hasSearchLayout()) config.setSearchLayout(dto.getSearchLayout());
 

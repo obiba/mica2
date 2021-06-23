@@ -10,6 +10,7 @@
 
 package org.obiba.mica.study.service;
 
+import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -18,11 +19,13 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.obiba.mica.core.domain.AbstractGitPersistable;
 import org.obiba.mica.core.repository.EntityStateRepository;
+import org.obiba.mica.core.service.MissingCommentException;
 import org.obiba.mica.dataset.HarmonizationDatasetRepository;
 import org.obiba.mica.dataset.StudyDatasetRepository;
 import org.obiba.mica.dataset.StudyDatasetStateRepository;
 import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.file.FileStoreService;
+import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.network.NetworkRepository;
 import org.obiba.mica.study.ConstraintException;
 import org.obiba.mica.study.StudyRepository;
@@ -80,12 +83,19 @@ public class IndividualStudyService extends AbstractStudyService<StudyState, Stu
   @Inject
   private HarmonizationDatasetRepository harmonizationDatasetRepository;
 
+  @Inject
+  private MicaConfigService micaConfigService;
+
   @Override
   protected void saveInternal(final Study study, String comment, boolean cascade) {
     saveInternal(study, comment, cascade, false);
   }
 
   public void saveInternal(final Study study, String comment, boolean cascade, boolean weightChanged) {
+    if (micaConfigService.getConfig().isCommentsRequiredOnDocumentSave() && Strings.isNullOrEmpty(comment)) {
+      throw new MissingCommentException("Due to the server configuration, comments are required when saving this document.");
+    }
+
     log.info("Saving study: {}", study.getId());
 
     // checks if population and dce are still the same

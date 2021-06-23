@@ -25,6 +25,7 @@ import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.core.domain.PublishCascadingScope;
 import org.obiba.mica.core.repository.EntityStateRepository;
 import org.obiba.mica.core.service.AbstractGitPersistableService;
+import org.obiba.mica.core.service.MissingCommentException;
 import org.obiba.mica.file.FileUtils;
 import org.obiba.mica.file.service.FileSystemService;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
@@ -111,6 +112,10 @@ public class ProjectService extends AbstractGitPersistableService<ProjectState, 
 
   @Override
   public void save(@NotNull @Valid Project project, String comments) {
+    if (micaConfigService.getConfig().isCommentsRequiredOnDocumentSave() && Strings.isNullOrEmpty(comments)) {
+      throw new MissingCommentException("Due to the server configuration, comments are required when saving this document.");
+    }
+
     Project saved = project;
 
     if(project.isNew()) {
