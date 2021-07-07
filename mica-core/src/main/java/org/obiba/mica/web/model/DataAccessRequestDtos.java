@@ -290,6 +290,9 @@ class DataAccessRequestDtos {
       .setStatus(dataAccessEntity.getStatus().name())
       .setTimestamps(TimestampsDtos.asDto(dataAccessEntity));
 
+    if (dataAccessEntity instanceof DataAccessRequest)
+      builder.setArchived(((DataAccessRequest)dataAccessEntity).isArchived());
+
     if (dataAccessEntity.hasContent()) builder.setContent(dataAccessEntity.getContent());
     if (!dataAccessEntity.isNew()) builder.setId(dataAccessEntity.getId());
 
