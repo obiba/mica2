@@ -46,7 +46,6 @@ mica.contact
     '$q',
     'ContactSerializationService',
     'LocalizedSchemaFormService',
-    'LocalizedValues',
     'ContactsSearchResource',
     'AlertService',
     'micaConfig',
@@ -60,7 +59,6 @@ mica.contact
               $q,
               ContactSerializationService,
               LocalizedSchemaFormService,
-              LocalizedValues,
               ContactsSearchResource,
               AlertService,
               micaConfig,
@@ -70,16 +68,6 @@ mica.contact
       $translate('contact.label.' + type).then(function(translation) {
         $scope.type = translation;
       });
-
-      function clearResult() {
-        $scope.result.persons = [];
-        $scope.result.total = 0;
-        $scope.result.current = 0;
-      }
-
-      var newResult = function() {
-        return {persons: [], total: 0, current: 0};
-      };
 
       var validate = function() {
         console.log('Validate');
@@ -115,45 +103,16 @@ mica.contact
         $uibModalInstance.dismiss('cancel');
       };
 
-      var findContacts = function(search) {
-        if (search) {
-          if (!$scope.autoRefreshed) {
-            clearResult();
-          }
 
-          ContactsSearchResource.search(
-            {
-              query: search + '*',
-              exclude: $scope.excludes,
-              from: $scope.result.persons.length
-            },
-            function onSuccess(result) {
-              if (result.persons) {
-                $scope.result.persons = $scope.result.persons.concat(result.persons.map(function(person) {
-                  if (person.institution && person.institution.name) {
-                    var localized = LocalizedValues.forLang(person.institution.name, $translate.use());
-                    person.institutionName = localized.length > 0 ? localized : '';
-                  }
+      function onPersonSelected(value) {
+        console.debug('Got person', value)
+        $scope.selected.contact = value;
+      }
 
-                  return person;
-                }));
-                $scope.result.total = result.total;
-                $scope.result.current = $scope.result.persons.length;
-                $scope.autoRefreshed = false;
-              }
-            });
-        }
-        else {
-          clearResult();
-        }
-      };
-
-      var onHighlighted = function(index, isLast, search) {
-        if (isLast && !$scope.autoRefreshed) {
-          $scope.autoRefreshed = true;
-          $scope.findContacts(search);
-        }
-      };
+      function onInstitutionSelected(value) {
+        console.debug('Got institution', value)
+        $scope.selected.contact.institution = value;
+      }
 
       function onFormChanged() {
         $scope.validated = false;
@@ -171,14 +130,13 @@ mica.contact
       $scope.isNew = Object.getOwnPropertyNames(contact).length === 0;
       $scope.selected = {contact: contact};
       $scope.excludes = excludes;
-      $scope.result = newResult();
       $scope.autoRefreshed = false;
       $scope.lang = $translate.use();
       $scope.validate = validate;
       $scope.save = save;
       $scope.cancel = cancel;
-      $scope.findContacts = findContacts;
-      $scope.onHighlighted = onHighlighted;
+      $scope.onPersonSelected = onPersonSelected;
+      $scope.onInstitutionSelected = onInstitutionSelected;
       $scope.onFormChanged = onFormChanged;
     }]);
 

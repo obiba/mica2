@@ -1,0 +1,13 @@
+<div class="form-group">
+  <label class="control-label">
+    <span>{{'contact.search.institution' | translate }}</span>
+  </label>
+  <span class="pull-right" ng-show="$ctrl.result.total > 0">{{'total' | translate}} {{$ctrl.result.current}}</span>
+  <ui-select theme="bootstrap" ng-model="$ctrl.selected" reset-search-input="true">
+    <ui-select-match placeholder="{{'contact.search.institution-placeholder' | translate }}">{{institution.institutionName}}</ui-select-match>
+    <ui-select-choices repeat="institution in $ctrl.result.institutions track by $index" refresh="$ctrl.find($select.search)" refresh-delay="0" on-highlight="$ctrl.onHighlighted($index, $last, $select.search)">
+      {{institution.institutionName}}
+      <small ng-show="institution.departmentName"><br/>{{institution.departmentName}}</small>
+    </ui-select-choices>
+  </ui-select>
+</div>
