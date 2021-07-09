@@ -1,0 +1,14 @@
+<div class="form-group">
+  <label class="control-label">
+    <span>{{'contact.search.member' | translate:{type: type} }}</span>
+  </label>
+  <span class="pull-right" ng-show="result.total > 0">{{'total' | translate}} {{$ctrl.result.current}}</span>
+  <ui-select theme="bootstrap" ng-model="$ctrl.selected" reset-search-input="true">
+    <ui-select-match placeholder="{{'contact.search.placeholder' | translate }}">{{contact.firstName}} {{contact.lastName}}</ui-select-match>
+    <ui-select-choices repeat="contact in $ctrl.result.persons track by $index" refresh="$ctrl.find($select.search)" refresh-delay="0" on-highlight="$ctrl.onHighlighted($index, $last, $select.search)">
+      {{contact.firstName}} {{contact.lastName}}
+      <small ng-show="contact.email"><br/>{{contact.email}}</small>
+      <small ng-show="contact.institutionName"><br/>{{contact.institutionName}}</small>
+    </ui-select-choices>
+  </ui-select>
+</div>

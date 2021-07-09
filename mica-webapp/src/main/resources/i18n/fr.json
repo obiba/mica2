@@ -830,7 +830,9 @@
     },
     "search": {
       "member": "Trouver un {{type}} existant",
-      "placeholder": "Chercher par prénom, nom ou institution..."
+      "placeholder": "Chercher par prénom, nom ou institution...",
+      "institution": "Trouver une institution existante",
+      "institution-placeholder": "Recherche par nom d'institution..."
     },
     "identification": "Identification",
     "title": "Titre",

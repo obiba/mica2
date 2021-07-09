@@ -830,7 +830,9 @@
     },
     "search": {
       "member": "Find an existing {{type}}",
-      "placeholder": "Search by first name, last name or institution..."
+      "placeholder": "Search by first name, last name or institution...",
+      "institution": "Find an existing institution",
+      "institution-placeholder": "Search by name of the institution..."
     },
     "duplicate": {
       "name-email": "The name '{{arg0}}' and email '{{arg1}}' are already used!",
