@@ -309,8 +309,11 @@
     }
 
     onFormChanged() {
-      console.log(this);
       this.validated = false;
+    }
+
+    onInstitutionSelected(value) {
+      this.person.institution = value;
     }
 
     navigateOut(path, exclude) {

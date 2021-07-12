@@ -38,6 +38,14 @@
   <div class="clearfix"></div>
 
   <form name="form" role="form" novalidate>
+    <div ng-if="$ctrl.mode === 'new'" class="row">
+      <div class="col-xs-6 col-xs-offset-6">
+        <div class="">
+          <institution-selector on-selected="$ctrl.onInstitutionSelected(value)"></institution-selector>
+        </div>
+
+      </div>
+    </div>
     <div sf-model="$ctrl.person" sf-form="$ctrl.sfForm.definition" sf-schema="$ctrl.sfForm.schema" sf-options="$ctrl.sfOptions"></div>
   </form>
 
