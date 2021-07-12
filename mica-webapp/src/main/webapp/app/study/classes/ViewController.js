@@ -753,7 +753,7 @@ mica.study.HarmonizationStudyViewController = function (
     $scope.memberships = processMemberships(study);
   };
 
-  function doSave(comment) {
+  function doSave(studyUpdated, comment) {
     $log.debug('save study', studyUpdated);
 
     var payload = {};
@@ -802,10 +802,10 @@ mica.study.HarmonizationStudyViewController = function (
             };
           }]
         }).result.then(function (comment) {
-          doSave(comment);
+          doSave(studyUpdated, comment);
         });
       } else {
-        doSave();
+        doSave(studyUpdated);
       }
     }
   });
