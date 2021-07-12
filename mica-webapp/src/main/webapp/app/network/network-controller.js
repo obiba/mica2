@@ -541,13 +541,13 @@ mica.network
         setTimeout(function(){ window.print();}, 250);
       };
 
-      $scope.emitNetworkUpdated = function () {
-        $scope.$emit(NETWORK_EVENTS.networkUpdated, $scope.network);
+      $scope.emitNetworkUpdated = function (forAddContact) {
+        $scope.$emit(NETWORK_EVENTS.networkUpdated, $scope.network, forAddContact);
       };
 
-      $scope.$on(NETWORK_EVENTS.networkUpdated, function (event, networkUpdated) {
+      $scope.$on(NETWORK_EVENTS.networkUpdated, function (event, networkUpdated, ignorePopup) {
         if (networkUpdated === $scope.network) {
-          if ($scope.isCommentsRequiredOnDocumentSave) {
+          if ($scope.isCommentsRequiredOnDocumentSave && !ignorePopup) {
             $uibModal.open({
               templateUrl: 'app/comment/views/add-comment-modal.html',
               controller: ['$scope', '$uibModalInstance', function (scope, $uibModalInstance) {
@@ -606,7 +606,7 @@ mica.network
           updateExistingContact(contact, [].concat.apply([], members) || []);
           roleMemberships.members.push(contact);
 
-          $scope.emitNetworkUpdated();
+          $scope.emitNetworkUpdated(true);
         }
       });
 

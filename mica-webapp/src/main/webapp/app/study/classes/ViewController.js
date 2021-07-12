@@ -68,8 +68,8 @@ mica.study.BaseViewController = function (
   /* jshint unused:vars */
   self.publish = function (doPublish) { };
 
-  self.emitStudyUpdated = function () {
-    $scope.$emit(STUDY_EVENTS.studyUpdated, $scope.study);
+  self.emitStudyUpdated = function (forAddContact) {
+    $scope.$emit(STUDY_EVENTS.studyUpdated, $scope.study, forAddContact);
   };
 
   self.initializeForm = function () { };
@@ -364,9 +364,9 @@ mica.study.ViewController = function (
 
   $scope.studySummary = StudyStatesResource.get({id: $routeParams.id}, self.initializeState);
   $scope.$on(NOTIFICATION_EVENTS.confirmDialogAccepted, self.onRestore);
-  $scope.$on(STUDY_EVENTS.studyUpdated, function (event, studyUpdated) {
+  $scope.$on(STUDY_EVENTS.studyUpdated, function (event, studyUpdated, ignorePopup) {
     if (studyUpdated) {
-      if ($scope.isCommentsRequiredOnDocumentSave) {
+      if ($scope.isCommentsRequiredOnDocumentSave && !ignorePopup) {
         $uibModal.open({
           templateUrl: 'app/comment/views/add-comment-modal.html',
           controller: ['$scope', '$uibModalInstance', function (scope, $uibModalInstance) {
@@ -533,7 +533,7 @@ function contactManagement($scope, $routeParams, CONTACT_EVENTS, fetchStudy) {
       updateExistingContact(contact, [].concat.apply([], members) || []);
       roleMemberships.members.push(contact);
 
-      $scope.emitStudyUpdated();
+      $scope.emitStudyUpdated(true);
     }
   });
 
