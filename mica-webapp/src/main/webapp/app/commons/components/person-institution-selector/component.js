@@ -117,7 +117,7 @@
             sort: fieldName
           },
           function onSuccess(result) {
-            console.debug('ON INST SEARCH')
+            console.debug('ON INST SEARCH');
             if (result.persons) {
               this.result.count += result.persons.length;
 

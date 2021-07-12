@@ -105,12 +105,12 @@ mica.contact
 
 
       function onPersonSelected(value) {
-        console.debug('Got person', value)
+        console.debug('Got person', value);
         $scope.selected.contact = value;
       }
 
       function onInstitutionSelected(value) {
-        console.debug('Got institution', value)
+        console.debug('Got institution', value);
         $scope.selected.contact.institution = value;
       }
 
