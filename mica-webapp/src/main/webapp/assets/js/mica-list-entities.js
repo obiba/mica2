@@ -1145,7 +1145,11 @@ class ObibaDatasetsApp {
       },
       mounted: function () {
         this.service =  ObibaDatasetsService.newInstance(type);
-        this.getEntities(this.service.prepareQuery(locale));
+        const queryTree = this.service.prepareQuery(locale);
+        this.service.updateSort(queryTree, this.initialSort);
+        this.getEntities(queryTree);
+
+        this.initialFilter = this.service.getFilterQueryValue(this.service.prepareQuery(locale));
       },
       methods: {
         networks: function(id) {
