@@ -1099,6 +1099,29 @@ const ObibaEntitiesApp = {
         this.service.updateLocation(queryTree);
       });
     },
+    onType: function(text) {
+      this.suggestions = [];
+      if (this.suggestionTimeoutId) {
+        clearTimeout(this.suggestionTimeoutId);
+      }
+
+      this.suggestionTimeoutId = setTimeout(() => this.service.getSuggestions(text, this.locale, (response) => {
+        this.suggestions = Array.isArray(response) ? response : [];
+      }), 250);
+    },
+    onSelect: function(selectedText) {
+      const queryTree = this.service.prepareQuery(this.locale);
+      this.service.updateFilter(queryTree, selectedText);
+      this.getEntities(queryTree);
+
+      this.initialFilter = selectedText;
+    },
+    onSortUpdate: function(sort) {
+      const queryTree = this.service.prepareQuery(this.locale);
+      this.service.updateSort(queryTree, sort);
+
+      this.getEntities(queryTree);
+    }
   }
 }
 
@@ -1148,35 +1171,6 @@ class ObibaDatasetsApp {
             this.total = dto.totalHits;
             this.ensureEvenEntities();
           }
-        },
-        onType: function(text) {
-          this.suggestions = [];
-          if (this.suggestionTimeoutId) {
-            clearTimeout(this.suggestionTimeoutId);
-          }
-
-          this.suggestionTimeoutId = setTimeout(() => this.service.getSuggestions(text, locale, (response) => {
-            this.suggestions = Array.isArray(response) ? response : [];
-          }), 250);
-        },
-        onSelect: function(selectedText) {
-          const queryTree = this.service.prepareQuery(locale);
-          this.service.updateFilter(queryTree, selectedText);
-          this.service.getEntities(queryTree.serialize(), (response) => {
-            this.service.updateLocation(queryTree);
-            this.setEntities(response);
-          });
-
-          this.initialFilter = selectedText;
-        },
-        onSortUpdate: function(sort) {
-          const queryTree = this.service.prepareQuery(locale);
-          this.service.updateSort(queryTree, sort);
-
-          this.service.getEntities(queryTree.serialize(), (response) => {
-            this.service.updateLocation(queryTree);
-            this.setEntities(response);
-          });
         }
       }
     });
@@ -1233,35 +1227,6 @@ class ObibaStudiesApp {
             this.total = dto.totalHits;
             this.ensureEvenEntities();
           }
-        },
-        onType: function(text) {
-          this.suggestions = [];
-          if (this.suggestionTimeoutId) {
-            clearTimeout(this.suggestionTimeoutId);
-          }
-
-          this.suggestionTimeoutId = setTimeout(() => this.service.getSuggestions(text, locale, (response) => {
-            this.suggestions = Array.isArray(response) ? response : [];
-          }), 250);
-        },
-        onSelect: function(selectedText) {
-          const queryTree = this.service.prepareQuery(locale);
-          this.service.updateFilter(queryTree, selectedText);
-          this.service.getEntities(queryTree.serialize(), (response) => {
-            this.service.updateLocation(queryTree);
-            this.setEntities(response);
-          });
-
-          this.initialFilter = selectedText;
-        },
-        onSortUpdate: function(sort) {
-          const queryTree = this.service.prepareQuery(locale);
-          this.service.updateSort(queryTree, sort);
-
-          this.service.getEntities(queryTree.serialize(), (response) => {
-            this.service.updateLocation(queryTree);
-            this.setEntities(response);
-          });
         }
       }
     });
@@ -1321,35 +1286,6 @@ class ObibaNetworksApp {
             this.total = dto.totalHits;
             this.ensureEvenEntities();
           }
-        },
-        onType: function(text) {
-          this.suggestions = [];
-          if (this.suggestionTimeoutId) {
-            clearTimeout(this.suggestionTimeoutId);
-          }
-
-          this.suggestionTimeoutId = setTimeout(() => this.service.getSuggestions(text, locale, (response) => {
-            this.suggestions = Array.isArray(response) ? response : [];
-          }), 250);
-        },
-        onSelect: function(selectedText) {
-          const queryTree = this.service.prepareQuery(locale);
-          this.service.updateFilter(queryTree, selectedText);
-          this.service.getEntities(queryTree.serialize(), (response) => {
-            this.service.updateLocation(queryTree);
-            this.setEntities(response);
-          });
-
-          this.initialFilter = selectedText;
-        },
-        onSortUpdate: function(sort) {
-          const queryTree = this.service.prepareQuery(locale);
-          this.service.updateSort(queryTree, sort);
-
-          this.service.getEntities(queryTree.serialize(), (response) => {
-            this.service.updateLocation(queryTree);
-            this.setEntities(response);
-          });
         }
       }
     });
