@@ -84,6 +84,8 @@ mica.network
 
       function initializeForm() {
         MicaConfigResource.get(function (micaConfig) {
+          $scope.isCommentsRequiredOnDocumentSave = micaConfig.isCommentsRequiredOnDocumentSave;
+
           $scope.sfOptions = {};
 
           var formLanguages = {};
@@ -316,6 +318,7 @@ mica.network
 
       function initializeForm() {
         MicaConfigResource.get(function (micaConfig) {
+          $scope.isCommentsRequiredOnDocumentSave = micaConfig.isCommentsRequiredOnDocumentSave;
 
           $scope.openAccess = micaConfig.openAccess;
 
@@ -544,11 +547,32 @@ mica.network
 
       $scope.$on(NETWORK_EVENTS.networkUpdated, function (event, networkUpdated) {
         if (networkUpdated === $scope.network) {
-          $log.debug('save network', networkUpdated);
+          if ($scope.isCommentsRequiredOnDocumentSave) {
+            $uibModal.open({
+              templateUrl: 'app/comment/views/add-comment-modal.html',
+              controller: ['$scope', '$uibModalInstance', function (scope, $uibModalInstance) {
+                scope.ok = function (comment) {
+                  $uibModalInstance.close(comment);
+                };
 
-          $scope.network.$save(function () {
+                scope.cancel = function () {
+                  $uibModalInstance.dismiss('cancel');
+                };
+              }]
+            }).result.then(function (comment) {
+              $log.debug('save network', networkUpdated);
+
+              $scope.network.$save({comment: comment}, function () {
+                $scope.network = DraftNetworkResource.get({id: $routeParams.id}, initializeNetwork);
+              }, onError);
+            });
+          } else {
+            $log.debug('save network', networkUpdated);
+
+            $scope.network.$save(function () {
               $scope.network = DraftNetworkResource.get({id: $routeParams.id}, initializeNetwork);
             }, onError);
+          }
         }
       });
 

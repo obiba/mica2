@@ -446,7 +446,7 @@ public class HarmonizedDatasetService extends DatasetService<HarmonizationDatase
 
   @SuppressWarnings("OverlyLongMethod")
   private void saveInternal(HarmonizationDataset dataset, String comment) {
-    if (micaConfigService.getConfig().isCommentsRequiredOnDocumentSave() && Strings.isNullOrEmpty(comment)) {
+    if (!Strings.isNullOrEmpty(dataset.getId()) && micaConfigService.getConfig().isCommentsRequiredOnDocumentSave() && Strings.isNullOrEmpty(comment)) {
       throw new MissingCommentException("Due to the server configuration, comments are required when saving this document.");
     }
 
