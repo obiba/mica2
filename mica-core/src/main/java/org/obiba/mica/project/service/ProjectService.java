@@ -112,7 +112,7 @@ public class ProjectService extends AbstractGitPersistableService<ProjectState, 
 
   @Override
   public void save(@NotNull @Valid Project project, String comments) {
-    if (micaConfigService.getConfig().isCommentsRequiredOnDocumentSave() && Strings.isNullOrEmpty(comments)) {
+    if (!Strings.isNullOrEmpty(project.getId()) && micaConfigService.getConfig().isCommentsRequiredOnDocumentSave() && Strings.isNullOrEmpty(comments)) {
       throw new MissingCommentException("Due to the server configuration, comments are required when saving this document.");
     }
 

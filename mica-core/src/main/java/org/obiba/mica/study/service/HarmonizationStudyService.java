@@ -80,7 +80,7 @@ public class HarmonizationStudyService extends AbstractStudyService<Harmonizatio
 
   @Override
   protected void saveInternal(final HarmonizationStudy study, String comment, boolean cascade) {
-    if (micaConfigService.getConfig().isCommentsRequiredOnDocumentSave() && Strings.isNullOrEmpty(comment)) {
+    if (!Strings.isNullOrEmpty(study.getId()) && micaConfigService.getConfig().isCommentsRequiredOnDocumentSave() && Strings.isNullOrEmpty(comment)) {
       throw new MissingCommentException("Due to the server configuration, comments are required when saving this document.");
     }
 

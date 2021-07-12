@@ -486,6 +486,7 @@ mica.project
 
       function initializeForm() {
         MicaConfigResource.get(function (micaConfig) {
+          $scope.isCommentsRequiredOnDocumentSave = micaConfig.isCommentsRequiredOnDocumentSave;
           $scope.tabs = [];
           micaConfig.languages.forEach(function (lang) {
             $scope.tabs.push({lang: lang});

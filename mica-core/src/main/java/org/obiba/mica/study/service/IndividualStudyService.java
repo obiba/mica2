@@ -92,7 +92,7 @@ public class IndividualStudyService extends AbstractStudyService<StudyState, Stu
   }
 
   public void saveInternal(final Study study, String comment, boolean cascade, boolean weightChanged) {
-    if (micaConfigService.getConfig().isCommentsRequiredOnDocumentSave() && Strings.isNullOrEmpty(comment)) {
+    if (!Strings.isNullOrEmpty(study.getId()) && micaConfigService.getConfig().isCommentsRequiredOnDocumentSave() && Strings.isNullOrEmpty(comment)) {
       throw new MissingCommentException("Due to the server configuration, comments are required when saving this document.");
     }
 

@@ -71,6 +71,8 @@ mica.dataset
 
       function initializeForm() {
         MicaConfigResource.get(function (micaConfig) {
+          $scope.isCommentsRequiredOnDocumentSave = micaConfig.isCommentsRequiredOnDocumentSave;
+
           var formLanguages = {};
           micaConfig.languages.forEach(function (loc) {
             formLanguages[loc] = $filter('translate')('language.' + loc);
@@ -257,6 +259,8 @@ mica.dataset
 
       function initializeForm() {
         MicaConfigResource.get(function (micaConfig) {
+          $scope.isCommentsRequiredOnDocumentSave = micaConfig.isCommentsRequiredOnDocumentSave;
+
           var formLanguages = {};
           micaConfig.languages.forEach(function (loc) {
             formLanguages[loc] = $filter('translate')('language.' + loc);
@@ -451,6 +455,8 @@ mica.dataset
 
       function initializeForm() {
         MicaConfigResource.get(function (micaConfig) {
+          $scope.isCommentsRequiredOnDocumentSave = micaConfig.isCommentsRequiredOnDocumentSave;
+
           $scope.opal = micaConfig.opal;
           var formLanguages = {};
           micaConfig.languages.forEach(function (loc) {
@@ -483,6 +489,7 @@ mica.dataset
             templateUrl: 'app/dataset/views/opal-table-modal-form.html',
             controller: 'StudyTableModalController',
             resolve: {
+              isCommentsRequiredOnDocumentSave: $scope.isCommentsRequiredOnDocumentSave,
               table: function() {
                 if($scope.type === 'harmonized-dataset') {
                   return angular.isDefined(wrapper) ? wrapper.table : {weight: $scope.opalTables ? $scope.opalTables.length : 0};
@@ -507,7 +514,7 @@ mica.dataset
               } else {
                 OpalTablesService.setTable($scope.dataset, data.table);
               }
-              saveAndUpdateDataset();
+              saveAndUpdateDataset(data.table.comment);
             },
             function (what) {
               $log.error(what);
@@ -561,7 +568,25 @@ mica.dataset
             $scope.opalTables[index + 1] = studyToMoveDown;
 
             OpalTablesService.updateWeights($scope.opalTables);
-            saveAndUpdateDataset();
+
+            if ($scope.isCommentsRequiredOnDocumentSave) {
+              $uibModal.open({
+                templateUrl: 'app/comment/views/add-comment-modal.html',
+                controller: ['$scope', '$uibModalInstance', function (scope, $uibModalInstance) {
+                  scope.ok = function (comment) {
+                    $uibModalInstance.close(comment);
+                  };
+
+                  scope.cancel = function () {
+                    $uibModalInstance.dismiss('cancel');
+                  };
+                }]
+              }).result.then(function (comment) {
+                saveAndUpdateDataset(comment);
+              });
+            } else {
+              saveAndUpdateDataset();
+            }
           };
 
           $scope.moveOpalTableUp = function (index) {
@@ -646,13 +671,18 @@ mica.dataset
         });
       };
 
-      function saveAndUpdateDataset() {
+      function saveAndUpdateDataset(comment) {
+        var payload = {id: $scope.dataset.id};
+        if (comment) {
+          payload.comment = comment;
+        }
+
         if($scope.type === 'harmonized-dataset') {
-          HarmonizedDatasetResource.save({id: $scope.dataset.id}, $scope.dataset).$promise.then(function () {
+          HarmonizedDatasetResource.save(payload, $scope.dataset).$promise.then(function () {
             fetchDataset($scope.dataset.id);
           });
         } else {
-          CollectedDatasetResource.save({id: $scope.dataset.id}, $scope.dataset).$promise.then(function () {
+          CollectedDatasetResource.save(payload, $scope.dataset).$promise.then(function () {
             fetchDataset($scope.dataset.id);
           });
         }
@@ -801,6 +831,7 @@ mica.dataset
     'StudyStateProjectsResource',
     'LocalizedValues',
     'LocalizedSchemaFormService',
+    'isCommentsRequiredOnDocumentSave',
     'table',
     'tableType',
     'isHarmonizedDatasetScope',
@@ -813,6 +844,7 @@ mica.dataset
               StudyStateProjectsResource,
               LocalizedValues,
               LocalizedSchemaFormService,
+              isCommentsRequiredOnDocumentSave,
               table,
               tableType,
               isHarmonizedDatasetScope) {
@@ -820,6 +852,7 @@ mica.dataset
       $scope.studies = [];
       $scope.projects = [];
       $scope.isHarmonizedDatasetScope = isHarmonizedDatasetScope;
+      $scope.isCommentsRequiredOnDocumentSave = isCommentsRequiredOnDocumentSave;
       $scope.selected = {
         get isHarmonizationTable() {
           return this._isHarmonizationTable;

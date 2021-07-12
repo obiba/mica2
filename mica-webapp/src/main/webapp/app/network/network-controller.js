@@ -84,6 +84,8 @@ mica.network
 
       function initializeForm() {
         MicaConfigResource.get(function (micaConfig) {
+          $scope.isCommentsRequiredOnDocumentSave = micaConfig.isCommentsRequiredOnDocumentSave;
+
           $scope.sfOptions = {};
 
           var formLanguages = {};
@@ -316,6 +318,7 @@ mica.network
 
       function initializeForm() {
         MicaConfigResource.get(function (micaConfig) {
+          $scope.isCommentsRequiredOnDocumentSave = micaConfig.isCommentsRequiredOnDocumentSave;
 
           $scope.openAccess = micaConfig.openAccess;
 
@@ -538,17 +541,38 @@ mica.network
         setTimeout(function(){ window.print();}, 250);
       };
 
-      $scope.emitNetworkUpdated = function () {
-        $scope.$emit(NETWORK_EVENTS.networkUpdated, $scope.network);
+      $scope.emitNetworkUpdated = function (forAddContact) {
+        $scope.$emit(NETWORK_EVENTS.networkUpdated, $scope.network, forAddContact);
       };
 
-      $scope.$on(NETWORK_EVENTS.networkUpdated, function (event, networkUpdated) {
+      $scope.$on(NETWORK_EVENTS.networkUpdated, function (event, networkUpdated, ignorePopup) {
         if (networkUpdated === $scope.network) {
-          $log.debug('save network', networkUpdated);
+          if ($scope.isCommentsRequiredOnDocumentSave && !ignorePopup) {
+            $uibModal.open({
+              templateUrl: 'app/comment/views/add-comment-modal.html',
+              controller: ['$scope', '$uibModalInstance', function (scope, $uibModalInstance) {
+                scope.ok = function (comment) {
+                  $uibModalInstance.close(comment);
+                };
 
-          $scope.network.$save(function () {
+                scope.cancel = function () {
+                  $uibModalInstance.dismiss('cancel');
+                };
+              }]
+            }).result.then(function (comment) {
+              $log.debug('save network', networkUpdated);
+
+              $scope.network.$save({comment: comment}, function () {
+                $scope.network = DraftNetworkResource.get({id: $routeParams.id}, initializeNetwork);
+              }, onError);
+            });
+          } else {
+            $log.debug('save network', networkUpdated);
+
+            $scope.network.$save(function () {
               $scope.network = DraftNetworkResource.get({id: $routeParams.id}, initializeNetwork);
             }, onError);
+          }
         }
       });
 
@@ -582,7 +606,7 @@ mica.network
           updateExistingContact(contact, [].concat.apply([], members) || []);
           roleMemberships.members.push(contact);
 
-          $scope.emitNetworkUpdated();
+          $scope.emitNetworkUpdated(true);
         }
       });
 

@@ -526,7 +526,7 @@ public class CollectedDatasetService extends DatasetService<StudyDataset, StudyD
   }
 
   private void saveInternal(StudyDataset dataset, String comment) {
-    if (micaConfigService.getConfig().isCommentsRequiredOnDocumentSave() && Strings.isNullOrEmpty(comment)) {
+    if (!Strings.isNullOrEmpty(dataset.getId()) && micaConfigService.getConfig().isCommentsRequiredOnDocumentSave() && Strings.isNullOrEmpty(comment)) {
       throw new MissingCommentException("Due to the server configuration, comments are required when saving this document.");
     }
 
