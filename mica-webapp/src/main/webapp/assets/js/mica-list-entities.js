@@ -1206,6 +1206,8 @@ class ObibaStudiesApp {
         const queryTree = this.service.prepareQuery(locale);
         this.service.updateSort(queryTree, this.initialSort);
         this.getEntities(queryTree);
+
+        this.initialFilter = this.service.getFilterQueryValue(this.service.prepareQuery(locale));
       },
       methods: {
         variablesUrl: function(study) {
@@ -1260,6 +1262,8 @@ class ObibaNetworksApp {
         const queryTree = this.service.prepareQuery(locale);
         this.service.updateSort(queryTree, this.initialSort);
         this.getEntities(queryTree);
+
+        this.initialFilter = this.service.getFilterQueryValue(this.service.prepareQuery(locale));
       },
       methods: {
         individualStudies: function(id) {
