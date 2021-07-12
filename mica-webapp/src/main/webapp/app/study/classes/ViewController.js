@@ -19,6 +19,7 @@
  * @param $scope
  * @param $location
  * @param $routeParams
+ * @param $uibModal
  * @param DocumentPermissionsService
  * @param StudyStatesResource
  * @param DraftStudyResource
@@ -29,6 +30,7 @@ mica.study.BaseViewController = function (
   $scope,
   $location,
   $routeParams,
+  $uibModal,
   DocumentPermissionsService,
   StudyStatesResource,
   DraftStudyResource,
@@ -37,6 +39,17 @@ mica.study.BaseViewController = function (
   mica.commons.ViewController.call(this, $location);
 
   $scope.contextPath = contextPath;
+
+  function doPopulationDceUpdate(comment) {
+    DraftStudyResource.save({weightChanged: true, comment: comment}, $scope.study,
+      function () {
+        $scope.studySummary = StudyStatesResource.get({id: $routeParams.id}, self.initializeState);
+      },
+      function () {
+        $scope.fetchStudy($scope.study.id);
+      }
+    );
+  }
 
   var self = this;
   self.months = moment.months();
@@ -55,8 +68,8 @@ mica.study.BaseViewController = function (
   /* jshint unused:vars */
   self.publish = function (doPublish) { };
 
-  self.emitStudyUpdated = function () {
-    $scope.$emit(STUDY_EVENTS.studyUpdated, $scope.study);
+  self.emitStudyUpdated = function (forAddContact) {
+    $scope.$emit(STUDY_EVENTS.studyUpdated, $scope.study, forAddContact);
   };
 
   self.initializeForm = function () { };
@@ -120,14 +133,24 @@ mica.study.BaseViewController = function (
         collectionItem.weight = index;
       });
 
-      DraftStudyResource.save({weightChanged: true}, $scope.study,
-        function () {
-          $scope.studySummary = StudyStatesResource.get({id: $routeParams.id}, self.initializeState);
-        },
-        function () {
-          $scope.fetchStudy($scope.study.id);
-        }
-      );
+      if ($scope.isCommentsRequiredOnDocumentSave) {
+        $uibModal.open({
+          templateUrl: 'app/comment/views/add-comment-modal.html',
+          controller: ['$scope', '$uibModalInstance', function (scope, $uibModalInstance) {
+            scope.ok = function (comment) {
+              $uibModalInstance.close(comment);
+            };
+
+            scope.cancel = function () {
+              $uibModalInstance.dismiss('cancel');
+            };
+          }]
+        }).result.then(function (comment) {
+          doPopulationDceUpdate(comment);
+        });
+      } else {
+        doPopulationDceUpdate();
+      }
     }
   };
 };
@@ -192,7 +215,7 @@ mica.study.ViewController = function (
   StudyUpdateWarningService,
   EntityPathBuilder) {
 
-  mica.study.BaseViewController.call(this, $scope, $location, $routeParams, DocumentPermissionsService, StudyStatesResource, DraftStudyResource, DraftStudyRevisionsResource);
+  mica.study.BaseViewController.call(this, $scope, $location, $routeParams, $uibModal, DocumentPermissionsService, StudyStatesResource, DraftStudyResource, DraftStudyRevisionsResource);
 
   var self = this;
   self.populationSfForm = {};
@@ -242,6 +265,9 @@ mica.study.ViewController = function (
       EntityFormResource.get({target: 'data-collection-event', locale: $translate.use()}).$promise
     ]).then(function (data) {
       var micaConfig = data[0];
+
+      self.isCommentsRequiredOnDocumentSave = micaConfig.isCommentsRequiredOnDocumentSave;
+
       var formLanguages = {};
 
       micaConfig.languages.forEach(function (loc) {
@@ -307,6 +333,29 @@ mica.study.ViewController = function (
     }, 250);
   }
 
+  function doSave(comment) {
+    var payload = {};
+    if (comment) {
+      payload.comment = comment;
+    }
+    $scope.study.$save(payload, function onSuccess(response) {
+      $scope.study.content = $scope.study.model ? angular.toJson(response.study.model) : null;
+      $scope.studySummary = StudyStatesResource.get({id: $routeParams.id}, self.initializeState);
+      $scope.study = self.fetchStudy($routeParams.id);
+    }, function onError(response) {
+      $log.error('Error on study save:', response);
+      if (response.status === 409) {
+        StudyUpdateWarningService.popup(response, 'study.delete-conflict', 'study.population-or-dce-delete-conflict-message', function () {
+          $scope.study = self.fetchStudy($routeParams.id);
+        });
+      } else {
+        $rootScope.$broadcast(NOTIFICATION_EVENTS.showNotificationDialog, {
+          message: response.data ? response.data : angular.fromJson(response)
+        });
+      }
+    });
+  }
+
   if (self.getViewMode() !== self.Mode.Revision) {
     $scope.study = self.fetchStudy($routeParams.id);
   } else {
@@ -315,24 +364,26 @@ mica.study.ViewController = function (
 
   $scope.studySummary = StudyStatesResource.get({id: $routeParams.id}, self.initializeState);
   $scope.$on(NOTIFICATION_EVENTS.confirmDialogAccepted, self.onRestore);
-  $scope.$on(STUDY_EVENTS.studyUpdated, function (event, studyUpdated) {
+  $scope.$on(STUDY_EVENTS.studyUpdated, function (event, studyUpdated, ignorePopup) {
     if (studyUpdated) {
-      $scope.study.$save(function onSuccess(response) {
-        $scope.study.content = $scope.study.model ? angular.toJson(response.study.model) : null;
-        $scope.studySummary = StudyStatesResource.get({id: $routeParams.id}, self.initializeState);
-        $scope.study = self.fetchStudy($routeParams.id);
-      }, function onError(response) {
-        $log.error('Error on study save:', response);
-        if (response.status === 409) {
-          StudyUpdateWarningService.popup(response, 'study.delete-conflict', 'study.population-or-dce-delete-conflict-message', function () {
-            $scope.study = self.fetchStudy($routeParams.id);
-          });
-        } else {
-          $rootScope.$broadcast(NOTIFICATION_EVENTS.showNotificationDialog, {
-            message: response.data ? response.data : angular.fromJson(response)
-          });
-        }
-      });
+      if ($scope.isCommentsRequiredOnDocumentSave && !ignorePopup) {
+        $uibModal.open({
+          templateUrl: 'app/comment/views/add-comment-modal.html',
+          controller: ['$scope', '$uibModalInstance', function (scope, $uibModalInstance) {
+            scope.ok = function (comment) {
+              $uibModalInstance.close(comment);
+            };
+
+            scope.cancel = function () {
+              $uibModalInstance.dismiss('cancel');
+            };
+          }]
+        }).result.then(function (comment) {
+          doSave(comment);
+        });
+      } else {
+        doSave();
+      }
     }
   });
 
@@ -482,7 +533,7 @@ function contactManagement($scope, $routeParams, CONTACT_EVENTS, fetchStudy) {
       updateExistingContact(contact, [].concat.apply([], members) || []);
       roleMemberships.members.push(contact);
 
-      $scope.emitStudyUpdated();
+      $scope.emitStudyUpdated(true);
     }
   });
 
@@ -622,7 +673,7 @@ mica.study.HarmonizationStudyViewController = function (
   DraftStudyRevisionsResource,
   StudyUpdateWarningService) {
 
-  mica.study.BaseViewController.call(this, $scope, $location, $routeParams, DocumentPermissionsService, StudyStatesResource, DraftStudyResource, DraftStudyRevisionsResource);
+  mica.study.BaseViewController.call(this, $scope, $location, $routeParams, $uibModal, DocumentPermissionsService, StudyStatesResource, DraftStudyResource, DraftStudyRevisionsResource);
 
   var self = this;
   self.populationSfForm = {};
@@ -702,6 +753,32 @@ mica.study.HarmonizationStudyViewController = function (
     $scope.memberships = processMemberships(study);
   };
 
+  function doSave(studyUpdated, comment) {
+    $log.debug('save study', studyUpdated);
+
+    var payload = {};
+    if (comment) {
+      payload.comment = comment;
+    }
+
+    $scope.study.$save(comment, function onSuccess(response) {
+      $scope.study.content = $scope.study.model ? angular.toJson(response.study.model) : null;
+      $scope.studySummary = StudyStatesResource.get({id: $routeParams.id}, self.initializeState);
+      $scope.study = self.fetchStudy($routeParams.id);
+    }, function onError(response) {
+      $log.error('Error on study save:', response);
+      if (response.status === 409) {
+        StudyUpdateWarningService.popup(response, 'study.delete-conflict', 'study.population-delete-conflict-message', function () {
+          $scope.study = self.fetchStudy($routeParams.id);
+        });
+      } else {
+        $rootScope.$broadcast(NOTIFICATION_EVENTS.showNotificationDialog, {
+          message: response.data ? response.data : angular.fromJson(response)
+        });
+      }
+    });
+  }
+
   if (self.getViewMode() !== self.Mode.Revision) {
     $scope.study = self.fetchStudy($routeParams.id);
   } else {
@@ -712,24 +789,24 @@ mica.study.HarmonizationStudyViewController = function (
   $scope.$on(NOTIFICATION_EVENTS.confirmDialogAccepted, self.onRestore);
   $scope.$on(STUDY_EVENTS.studyUpdated, function (event, studyUpdated) {
     if (studyUpdated) {
-      $log.debug('save study', studyUpdated);
+      if ($scope.isCommentsRequiredOnDocumentSave) {
+        $uibModal.open({
+          templateUrl: 'app/comment/views/add-comment-modal.html',
+          controller: ['$scope', '$uibModalInstance', function (scope, $uibModalInstance) {
+            scope.ok = function (comment) {
+              $uibModalInstance.close(comment);
+            };
 
-      $scope.study.$save(function onSuccess(response) {
-        $scope.study.content = $scope.study.model ? angular.toJson(response.study.model) : null;
-        $scope.studySummary = StudyStatesResource.get({id: $routeParams.id}, self.initializeState);
-        $scope.study = self.fetchStudy($routeParams.id);
-      }, function onError(response) {
-        $log.error('Error on study save:', response);
-        if (response.status === 409) {
-          StudyUpdateWarningService.popup(response, 'study.delete-conflict', 'study.population-delete-conflict-message', function () {
-            $scope.study = self.fetchStudy($routeParams.id);
-          });
-        } else {
-          $rootScope.$broadcast(NOTIFICATION_EVENTS.showNotificationDialog, {
-            message: response.data ? response.data : angular.fromJson(response)
-          });
-        }
-      });
+            scope.cancel = function () {
+              $uibModalInstance.dismiss('cancel');
+            };
+          }]
+        }).result.then(function (comment) {
+          doSave(studyUpdated, comment);
+        });
+      } else {
+        doSave(studyUpdated);
+      }
     }
   });
 

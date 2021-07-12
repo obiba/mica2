@@ -138,6 +138,9 @@ mica.study.EditController = function (
       $routeParams.id ? DraftStudyResource.get({ id: $routeParams.id }).$promise : null
     ]).then(function (data) {
       var micaConfig = data[0];
+
+      self.isCommentsRequiredOnDocumentSave = micaConfig.isCommentsRequiredOnDocumentSave;
+
       var sfLanguages = {};
 
       micaConfig.languages.forEach(function (lang) {
@@ -321,6 +324,9 @@ mica.study.PopulationEditController = function (
       DraftStudyResource.get({ id: $routeParams.id }).$promise
     ]).then(function (data) {
       var micaConfig = data[0];
+
+      self.isCommentsRequiredOnDocumentSave = micaConfig.isCommentsRequiredOnDocumentSave;
+
       var sfLanguages = {};
 
       micaConfig.languages.forEach(function (loc) {
@@ -418,6 +424,9 @@ mica.study.HarmonizationPopulationEditController = function (
       DraftStudyResource.get({ id: $routeParams.id }).$promise
     ]).then(function (data) {
       var micaConfig = data[0];
+
+      self.isCommentsRequiredOnDocumentSave = micaConfig.isCommentsRequiredOnDocumentSave;
+
       var sfLanguages = {};
 
       micaConfig.languages.forEach(function (loc) {
@@ -514,6 +523,9 @@ mica.study.DataCollectionEventEditController = function (
       DraftStudyResource.get({ id: $routeParams.id }).$promise
     ]).then(function (data) {
       var micaConfig = data[0];
+
+      self.isCommentsRequiredOnDocumentSave = micaConfig.isCommentsRequiredOnDocumentSave;
+
       var sfLanguages = {};
 
       micaConfig.languages.forEach(function (lang) {
