@@ -54,6 +54,7 @@
             <th ng-if="inViewMode() && permissions.canEdit()" class="hidden-print"></th>
             <th translate>study.acronym</th>
             <th translate>study.name</th>
+            <th translate>published</th>
             <th translate>type</th>
             <th ng-if="inViewMode() && permissions.canEdit()" class="hidden-print" translate>actions</th>
           </tr>
@@ -81,6 +82,7 @@
                 </li>
               </ul>
             </td>
+            <td><i class="fa" ng-class="{'fa-star-o': !studySummary.published, 'fa-star': studySummary.published}"></i></td>
             <td>{{'global.' + studySummary.studyResourcePath | translate}}</td>
             <td ng-if="inViewMode() && permissions.canEdit()" class="hidden-print">
               <a ng-click="deleteStudyEvent(network, studySummary)" class="hand action"><i
@@ -124,6 +126,7 @@
             <th ng-if="inViewMode() && permissions.canEdit()" class="hidden-print"></th>
             <th translate>network.acronym</th>
             <th translate>network.name</th>
+            <th translate>published</th>
             <th ng-if="inViewMode() && permissions.canEdit()" class="hidden-print" translate>actions</th>
           </tr>
           </thead>
@@ -151,6 +154,7 @@
                 </li>
               </ul>
             </td>
+            <td><i class="fa" ng-class="{'fa-star-o': !networkSummary.published, 'fa-star': networkSummary.published}"></i></td>
             <td ng-if="inViewMode() && permissions.canEdit()" class="hidden-print">
               <a ng-click="deleteNetwork(network, networkSummary)" class="hand action"><i
                 class="fa fa-trash-o"></i></a>
