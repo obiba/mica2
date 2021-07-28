@@ -51,7 +51,7 @@ class EsDraftHarmonizedDatasetService extends AbstractIdentifiedDocumentService<
 
   @Override
   protected String getStudyIdField() {
-    return "studyTable.studyId";
+    return "harmonizationTable.studyId";
   }
 
   @Nullable
