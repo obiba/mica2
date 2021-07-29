@@ -227,11 +227,13 @@ angular.module('mica.contact')
           start: function() {
             ctrl.isOrdering = true;
           },
-          stop: function () {
-            orderUpdated();
-            $timeout(function () {
-              ctrl.isOrdering = false;
-            });
+          stop: function (event, ui) {
+            if (ui.item.sortable.dropindex && ui.item.sortable.index !== ui.item.sortable.dropindex) {
+              orderUpdated();
+              $timeout(function () {
+                ctrl.isOrdering = false;
+              });
+            }
           }
         };
 
