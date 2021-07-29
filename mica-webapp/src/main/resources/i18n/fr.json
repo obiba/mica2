@@ -804,6 +804,7 @@
   },
   "contact": {
     "add": {
+      "member": "Ajouter {{type}}",
       "contact": "Ajouter un contact",
       "investigator": "Ajouter un enquêteur"
     },

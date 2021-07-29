@@ -88,18 +88,18 @@
       const query = this.__buildQuery(searchFields);
       if (query.length < 1) {
         deferred.resolve('');
+      } else {
+        this.ContactsSearchResource.search({
+          query,
+          from: 0,
+          limit: mica.commons.DEFAULT_LIMIT,
+          exclude: person.id
+        }).$promise
+          .then(result => {
+            return deferred.resolve(this.__processResponse(result.persons, searchFields, person.email, person.id));
+          })
+          .catch((error) => deferred.reject(error));
       }
-
-      this.ContactsSearchResource.search({
-        query,
-        from: 0,
-        limit: mica.commons.DEFAULT_LIMIT,
-        exclude: person.id
-      }).$promise
-        .then(result => {
-          return deferred.resolve(this.__processResponse(result.persons, searchFields, person.email, person.id));
-        })
-        .catch((error) => deferred.reject(error));
 
       return deferred.promise;
     }
