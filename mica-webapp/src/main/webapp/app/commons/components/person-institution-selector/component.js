@@ -155,7 +155,8 @@
   mica.commons
     .component('personSelector', {
       bindings: {
-        onSelected: '&'
+        onSelected: '&',
+        excludes: '<'
       },
       templateUrl: 'app/commons/components/person-institution-selector/person-component.html',
       controllerAs: '$ctrl',
