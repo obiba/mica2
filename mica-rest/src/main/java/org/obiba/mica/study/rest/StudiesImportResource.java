@@ -27,7 +27,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.ws.rs.GET;
@@ -46,7 +45,6 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.obiba.mica.NoSuchEntityException;
-import org.obiba.mica.core.domain.Membership;
 import org.obiba.mica.core.service.PersonService;
 import org.obiba.mica.file.TempFile;
 import org.obiba.mica.file.service.TempFileService;
@@ -62,7 +60,6 @@ import org.obiba.mica.study.domain.BaseStudy;
 import org.obiba.mica.study.domain.HarmonizationStudy;
 import org.obiba.mica.study.domain.Population;
 import org.obiba.mica.study.domain.Study;
-import org.obiba.mica.core.domain.Membership;
 import org.obiba.mica.study.service.HarmonizationStudyService;
 import org.obiba.mica.study.service.IndividualStudyService;
 import org.obiba.mica.study.service.StudyService;
@@ -248,16 +245,13 @@ public class StudiesImportResource {
 		ObjectMapper mapper = new ObjectMapper();
 
 		for (String id : ids) {
-
 			try {
-
 				BaseStudy localStudy = studyService.findStudy(id);
 
 				Integer localPopulationSize = localStudy.getPopulations().size();
 				Integer localDCEsSize = 0;
 
 				for (Population localPopulation : localStudy.getPopulations()) {
-
 					localDCEsSize += localPopulation.getDataCollectionEvents().size();
 				}
 
@@ -277,7 +271,6 @@ public class StudiesImportResource {
 		return Response.ok(existingIds).build();
 	}
 
-
 	@PUT
 	@Path("/studies/import/_save")
 	@RequiresPermissions( {"/draft/individual-study:ADD", "/draft/harmonization-study:ADD" })
@@ -293,7 +286,6 @@ public class StudiesImportResource {
 		Map<String, Integer> idsSavedStatus = new LinkedHashMap<>();
 
 		for (String id : ids) {
-
 			try {
 
 				String remoteContent = this.getRawContent(url, username, password, null,
@@ -359,7 +351,7 @@ public class StudiesImportResource {
 		extensionRegistry.add(Mica.CollectionStudyDto.type);
 		JsonFormat.merge(remoteContent, extensionRegistry, builder);
 
-        Mica.StudyDtoOrBuilder dtoBuilder = (Mica.StudyDtoOrBuilder)builder;
+		Mica.StudyDtoOrBuilder dtoBuilder = (Mica.StudyDtoOrBuilder)builder;
 
 		Study remoteStudy = (Study)dtos.fromDto( builder);
 
@@ -371,17 +363,17 @@ public class StudiesImportResource {
 				this.prepareReplaceOperation(id, listDiffsForm, remoteStudy);
 			}
 
-            personService.getStudyMemberships(remoteStudy.getId()).forEach(person -> {
-                personService.delete( person.getId() );
-            });
+      personService.getStudyMemberships(remoteStudy.getId()).forEach(person -> {
+        personService.delete( person.getId() );
+      });
 
 			individualStudyService.save(remoteStudy);
 
-            for (MembershipsDto membershipsDto: dtoBuilder.getMembershipsList()) {
-                for (PersonDto personDto: membershipsDto.getMembersList() ) {
-                    personService.save(dtos.fromDto(personDto));
-                }
-            }
+      for (MembershipsDto membershipsDto: dtoBuilder.getMembershipsList()) {
+        for (PersonDto personDto: membershipsDto.getMembersList() ) {
+          personService.save(dtos.fromDto(personDto));
+        }
+      }
 		}
 
 		remoteStudy = individualStudyService.findStudy(remoteStudy.getId());
@@ -397,9 +389,9 @@ public class StudiesImportResource {
 
 			StringBuilder endpoint = new StringBuilder(WS_DRAFT_STUDY_LOGO);
 
-		    endpoint.replace(endpoint.indexOf(RESOURCE_PATH), endpoint.indexOf(RESOURCE_PATH) + RESOURCE_PATH.length(), remoteStudy.getResourcePath());
-		    endpoint.replace(endpoint.indexOf(STUDY_ID), endpoint.indexOf(STUDY_ID) + STUDY_ID.length(), remoteStudy.getId());
-		    endpoint.replace(endpoint.indexOf(LOGO_ID), endpoint.indexOf(LOGO_ID) + LOGO_ID.length(), studyLogoId);
+      endpoint.replace(endpoint.indexOf(RESOURCE_PATH), endpoint.indexOf(RESOURCE_PATH) + RESOURCE_PATH.length(), remoteStudy.getResourcePath());
+      endpoint.replace(endpoint.indexOf(STUDY_ID), endpoint.indexOf(STUDY_ID) + STUDY_ID.length(), remoteStudy.getId());
+      endpoint.replace(endpoint.indexOf(LOGO_ID), endpoint.indexOf(LOGO_ID) + LOGO_ID.length(), studyLogoId);
 
 			try {
 
@@ -429,7 +421,7 @@ public class StudiesImportResource {
 		extensionRegistry.add(Mica.HarmonizationStudyDto.type);
 		JsonFormat.merge(remoteContent, extensionRegistry, builder);
 
-        Mica.StudyDtoOrBuilder dtoBuilder = (Mica.StudyDtoOrBuilder)builder;
+		Mica.StudyDtoOrBuilder dtoBuilder = (Mica.StudyDtoOrBuilder)builder;
 
 		HarmonizationStudy remoteStudy = (HarmonizationStudy)dtos.fromDto( builder);
 
@@ -444,27 +436,25 @@ public class StudiesImportResource {
 
 			} else {
 				HarmonizationStudy localStudy = harmonizationStudyService.findStudy(id);
-
 				if (listDiffsForm.contains(HARMONIZATION_POPULATION_FORM_SECTION)) {
-
 					remoteStudy.setPopulations(localStudy.getPopulations());
 				}
 			}
 
-            personService.getStudyMemberships(remoteStudy.getId()).forEach(person -> {
-                personService.delete( person.getId() );
-            });
+      personService.getStudyMemberships(remoteStudy.getId()).forEach(person -> {
+        personService.delete( person.getId() );
+      });
 
-            harmonizationStudyService.save(remoteStudy);
+      harmonizationStudyService.save(remoteStudy);
 
-            for (MembershipsDto membershipsDto: dtoBuilder.getMembershipsList()) {
-                for (PersonDto personDto: membershipsDto.getMembersList() ) {
-                    personService.save(dtos.fromDto(personDto));
-                }
-            }
+      for (MembershipsDto membershipsDto: dtoBuilder.getMembershipsList()) {
+        for (PersonDto personDto: membershipsDto.getMembersList() ) {
+          personService.save(dtos.fromDto(personDto));
+        }
+      }
 		}
 
-        remoteStudy = harmonizationStudyService.findStudy(remoteStudy.getId());
+		remoteStudy = harmonizationStudyService.findStudy(remoteStudy.getId());
 
 		return remoteStudy;
 	}
@@ -474,23 +464,14 @@ public class StudiesImportResource {
 		Study localStudy = individualStudyService.findStudy(id);
 
 		if (listDiffsForm.contains(POPULATION_FORM_SECTION)) {
-
 			remoteStudy.setPopulations(localStudy.getPopulations());
-
 		} else if (listDiffsForm.contains(DATA_COLLECTION_EVENT_FORM_SECTION)) {
-
 			for (Population remotePopulation : remoteStudy.getPopulations()) {
-
 				if (!localStudy.getPopulations().contains(remotePopulation)) {
-
 					remotePopulation.setDataCollectionEvents(Sets.newTreeSet());
-
 				} else {
-
 					for (Population localPopulation : localStudy.getPopulations()) {
-
 						if (localPopulation.equals(remotePopulation)) {
-
 							remotePopulation.setDataCollectionEvents( localPopulation.getDataCollectionEvents() );
 						}
 					}
@@ -505,9 +486,7 @@ public class StudiesImportResource {
 
 		if (listDiffsForm.contains(POPULATION_FORM_SECTION)) {
 			remoteStudy.setPopulations( Sets.newTreeSet() );
-
 		} else if (listDiffsForm.contains(DATA_COLLECTION_EVENT_FORM_SECTION)) {
-
 			for (Population population : remoteStudy.getPopulations()) {
 				population.setDataCollectionEvents( Sets.newTreeSet() );
 			}
@@ -530,9 +509,7 @@ public class StudiesImportResource {
 
 		try {
 			studyService.findStudy(id);
-
 			return true;
-
 		} catch (NoSuchEntityException ex) {
 			return false;
 		}
@@ -543,7 +520,6 @@ public class StudiesImportResource {
 			throws IOException, URISyntaxException {
 
 		HttpURLConnection con = this.prepareRemoteConnection(url, username, password, param, endpoint);
-
 		ObjectMapper mapper = new ObjectMapper();
 
 		return mapper.readValue(con.getInputStream(), Map.class);
@@ -553,7 +529,6 @@ public class StudiesImportResource {
 			throws IOException, URISyntaxException {
 
 		HttpURLConnection con = this.prepareRemoteConnection(url, username, password, param, endpoint);
-
 
 		BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
 		String inputLine;
