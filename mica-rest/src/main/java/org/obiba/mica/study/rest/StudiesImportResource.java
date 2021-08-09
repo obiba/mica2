@@ -22,6 +22,7 @@ import java.net.URISyntaxException;
 import java.net.URLConnection;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -45,6 +46,7 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.obiba.mica.NoSuchEntityException;
+import org.obiba.mica.core.domain.Person;
 import org.obiba.mica.core.service.PersonService;
 import org.obiba.mica.file.TempFile;
 import org.obiba.mica.file.service.TempFileService;
@@ -299,14 +301,14 @@ public class StudiesImportResource {
 					Study studySaved = this.saveIndividualStudy(id, remoteContent, builder, extensionRegistry, listDiffsForm);
 					this.saveLogoImage(studySaved, url, username, password);
 
-					idsSavedStatus.put(studySaved.getId(), HttpStatus.SC_OK);
+					idsSavedStatus.put(id, HttpStatus.SC_OK);
 
 				} else if ( type.equals(HARMONIZATION_STUDY) ) {
 
 					HarmonizationStudy studySaved = this.saveHarmonizationStudy(id, remoteContent, builder, extensionRegistry, listDiffsForm);
 					this.saveLogoImage(studySaved, url, username, password);
 
-					idsSavedStatus.put(studySaved.getId(), HttpStatus.SC_OK);
+					idsSavedStatus.put(id, HttpStatus.SC_OK);
 				}
 
 			} catch (Exception e) {
@@ -353,7 +355,9 @@ public class StudiesImportResource {
 
 		Mica.StudyDtoOrBuilder dtoBuilder = (Mica.StudyDtoOrBuilder)builder;
 
-		Study remoteStudy = (Study)dtos.fromDto( builder);
+		Study remoteStudy = (Study)dtos.fromDto(builder);
+
+    remoteStudy.setId(id); //to make sure the same ID from the remote host
 
 		if (!listDiffsForm.contains(INDIVIDUAL_STUDY_FORM_SECTION)) {
 
@@ -363,7 +367,7 @@ public class StudiesImportResource {
 				this.prepareReplaceOperation(id, listDiffsForm, remoteStudy);
 			}
 
-      personService.getStudyMemberships(remoteStudy.getId()).forEach(person -> {
+      personService.getStudyMemberships(id).forEach(person -> {
         personService.delete( person.getId() );
       });
 
@@ -371,7 +375,16 @@ public class StudiesImportResource {
 
       for (MembershipsDto membershipsDto: dtoBuilder.getMembershipsList()) {
         for (PersonDto personDto: membershipsDto.getMembersList() ) {
-          personService.save(dtos.fromDto(personDto));
+          Person person = dtos.fromDto(personDto);
+
+          for (Iterator<Person.Membership> iterator = person.getStudyMemberships().iterator(); iterator.hasNext(); ) {
+            Person.Membership membership = iterator.next();
+            if (!this.studyIdExistLocally( membership.getParentId() )) {
+              iterator.remove();
+            }
+          }
+
+          personService.save(person);
         }
       }
 		}
@@ -423,7 +436,8 @@ public class StudiesImportResource {
 
 		Mica.StudyDtoOrBuilder dtoBuilder = (Mica.StudyDtoOrBuilder)builder;
 
-		HarmonizationStudy remoteStudy = (HarmonizationStudy)dtos.fromDto( builder);
+		HarmonizationStudy remoteStudy = (HarmonizationStudy)dtos.fromDto(builder);
+    remoteStudy.setId(id); //to make sure the same ID from the remote host
 
 		if (!listDiffsForm.contains(HARMONIZATION_STUDY_FORM_SECTION)) {
 
@@ -441,7 +455,7 @@ public class StudiesImportResource {
 				}
 			}
 
-      personService.getStudyMemberships(remoteStudy.getId()).forEach(person -> {
+      personService.getStudyMemberships(id).forEach(person -> {
         personService.delete( person.getId() );
       });
 
@@ -449,7 +463,16 @@ public class StudiesImportResource {
 
       for (MembershipsDto membershipsDto: dtoBuilder.getMembershipsList()) {
         for (PersonDto personDto: membershipsDto.getMembersList() ) {
-          personService.save(dtos.fromDto(personDto));
+          Person person = dtos.fromDto(personDto);
+
+          for (Iterator<Person.Membership> iterator = person.getStudyMemberships().iterator(); iterator.hasNext(); ) {
+            Person.Membership membership = iterator.next();
+            if (!this.studyIdExistLocally( membership.getParentId() )) {
+              iterator.remove();
+            }
+          }
+
+          personService.save(person);
         }
       }
 		}
