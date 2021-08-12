@@ -33,7 +33,7 @@ public abstract class AbstractDocumentService<T> implements DocumentService<T> {
 
   private static final Logger log = LoggerFactory.getLogger(AbstractDocumentService.class);
 
-  protected static final int MAX_SIZE = 1000;
+  protected static final int MAX_SIZE = 10000;
 
   @Inject
   protected Searcher searcher;
