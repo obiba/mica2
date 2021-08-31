@@ -181,7 +181,7 @@
       <div class="col-lg-12">
         <ul class="list-unstyled list-inline">
           <li class="pull-right">{{micaConfig.version}}</li>
-          <li>© 2020</li>
+          <li>© 2021</li>
           <li><a href="http://obiba.org" target="_blank"> OBiBa </a></li>
           <li><a href="http://micadoc.obiba.org" target="_blank" translate>
               global.documentation</a></li>
