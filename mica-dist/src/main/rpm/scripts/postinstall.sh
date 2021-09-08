@@ -1,5 +1,5 @@
 #!/bin/sh
-# postinst script for mica2
+# postinst script for mica
 #
 
 set -e
@@ -20,74 +20,62 @@ NAME=mica2
 
 [ -r /etc/default/$NAME ] && . /etc/default/$NAME
 
-case "$1" in
-  [1-2])
+# Mica2 file structure on Debian
+# /etc/mica2: configuration
+# /usr/share/mica2: executable
+# /var/lib/mica2: data runtime
+# /var/log: logs
 
-    # Mica2 file structure on Debian
-    # /etc/mica2: configuration
-    # /usr/share/mica2: executable
-    # /var/lib/mica2: data runtime
-    # /var/log: logs
+rm -f /usr/share/mica2
+new_release="$(ls -t /usr/share/ |grep mica2|head -1)"
+ln -s /usr/share/${new_release} /usr/share/mica2
 
-    rm -f /usr/share/mica2
-    new_release="$(ls -t /usr/share/ |grep mica2|head -1)"
-    ln -s /usr/share/${new_release} /usr/share/mica2
+if [ ! -e /var/lib/mica2/data ] ; then
+  mkdir /var/lib/mica2/data
+fi
 
-    if [ ! -e /var/lib/mica2/data ] ; then
-      mkdir /var/lib/mica2/data
-    fi
+if [ ! -e /var/lib/mica2/work ] ; then
+  mkdir /var/lib/mica2/work
+fi
 
-    if [ ! -e /var/lib/mica2/work ] ; then
-      mkdir /var/lib/mica2/work
-    fi
+if [ ! -e /var/lib/mica2/plugins ] ; then
+  mkdir /var/lib/mica2/plugins
+fi
 
-    if [ ! -e /var/lib/mica2/plugins ] ; then
-      mkdir /var/lib/mica2/plugins
-    fi
+if [ ! -e /var/lib/mica2/logs ] ; then
+  mkdir /var/lib/mica2/logs
+fi
 
-    if [ ! -e /var/lib/mica2/logs ] ; then
-      mkdir /var/lib/mica2/logs
-    fi
+if [ ! -e /var/log/mica2 ] ; then
+  mkdir /var/log/mica2
+fi
 
-    if [ ! -e /var/log/mica2 ] ; then
-      mkdir /var/log/mica2
-    fi
+if [ ! -e /var/lib/mica2/conf ] ; then
+  ln -s /etc/mica2 /var/lib/mica2/conf
+fi
 
-    if [ ! -e /var/lib/mica2/conf ] ; then
-      ln -s /etc/mica2 /var/lib/mica2/conf
-    fi
+# Some deprecated configuration files
+if [ -e /var/lib/mica2/conf/mica-categories.yml ] ; then
+  mv /var/lib/mica2/conf/mica-categories.yml.old
+fi
 
-    # Some deprecated configuration files
-    if [ -e /var/lib/mica2/conf/mica-categories.yml ] ; then
-      mv /var/lib/mica2/conf/mica-categories.yml.old
-    fi
+if [ -e /var/lib/mica2/conf/mica-aggregations.yml ] ; then
+  mv /var/lib/mica2/conf/mica-aggregations.yml.old
+fi
 
-    if [ -e /var/lib/mica2/conf/mica-aggregations.yml ] ; then
-      mv /var/lib/mica2/conf/mica-aggregations.yml.old
-    fi
+chown -R mica:adm /var/lib/mica2 /var/log/mica2 /etc/mica2
+chmod -R 750      /var/lib/mica2 /var/log/mica2 /etc/mica2
+find /etc/mica2/ -type f -print0 | xargs -0 chmod 640
 
-    chown -R mica:adm /var/lib/mica2 /var/log/mica2 /etc/mica2 /tmp/mica2
-    chmod -R 750      /var/lib/mica2 /var/log/mica2 /etc/mica2/ /tmp/mica2
-    find /etc/mica2/ -type f -print0 | xargs -0 chmod 640
+# if upgrading to 2.0, delete old log4j config
+if [ -f "/etc/mica2/log4j.properties" ]; then
+  mv /etc/mica2/log4j.properties /etc/mica2/log4j.properties.old
+fi
 
-    # if upgrading to 2.0, delete old log4j config
-    if [ -f "/etc/mica2/log4j.properties" ]; then
-      mv /etc/mica2/log4j.properties /etc/mica2/log4j.properties.old
-    fi
-
-    # auto start on reboot
-    chkconfig --add mica2
-
-    # start mica2
-    echo "### You can start mica2 service by executing:"
-    echo "sudo /etc/init.d/mica2 start"
-
-  ;;
-
-  *)
-    echo "postinst called with unknown argument \`$1'" >&2
-    exit 1
-  ;;
-esac
+# for clean install
+if [ $1 -eq 1 ] ; then
+  # Initial installation
+  systemctl preset mica2.service >/dev/null 2>&1 || :
+fi
 
 exit 0

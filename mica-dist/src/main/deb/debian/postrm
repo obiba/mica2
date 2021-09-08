@@ -21,8 +21,12 @@ set -e
 
 case "$1" in
 	purge)
-        deluser mica || true
-        rm -rf /var/lib/mica2 /var/log/mica2 /tmp/mica2 /etc/mica2 /usr/share/mica2
+        # Remove service
+        update-rc.d mica2 remove >/dev/null || true
+
+        # Remove user
+        userdel -f mica || true
+        rm -rf /var/lib/mica2 /var/log/mica2 /etc/mica2 /usr/share/mica2
     ;;
 
     remove|upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)

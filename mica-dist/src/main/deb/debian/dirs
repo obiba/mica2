@@ -3,6 +3,3 @@ var/lib/mica2
 
 # Store mica server log here
 var/log/mica2
-
-# Store mica server process id here
-tmp/mica2

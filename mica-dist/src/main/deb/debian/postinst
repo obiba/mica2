@@ -68,11 +68,18 @@ case "$1" in
         mv -f /var/lib/mica2/conf/mica-aggregations.yml /var/lib/mica2/conf/mica-aggregations.yml.old
       fi
 
-      chown -R mica:adm /var/lib/mica2 /var/log/mica2 /etc/mica2 /tmp/mica2
-      chmod -R 750      /var/lib/mica2 /var/log/mica2 /etc/mica2 /tmp/mica2
+      chown -R mica:adm /var/lib/mica2 /var/log/mica2 /etc/mica2
+      chmod -R 750      /var/lib/mica2 /var/log/mica2 /etc/mica2
       chmod +x /usr/share/mica2/tools/shiro-hasher
       find /etc/mica2 -type f -print0 | xargs -0 chmod 640
 
+      if [ -e /etc/init.d/mica2 ]; then
+        update-rc.d mica2 defaults >/dev/null
+        rm /etc/init.d/mica2
+      fi
+      systemctl daemon-reload
+      systemctl enable mica2
+      systemctl start mica2
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)

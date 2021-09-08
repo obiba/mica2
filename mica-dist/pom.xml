@@ -21,6 +21,15 @@
 
   <artifactId>mica-dist</artifactId>
 
+  <properties>
+    <install.dir>/usr/share</install.dir>
+    <mica.dir>${install.dir}/mica2-${project.version}</mica.dir>
+    <package.name>mica2-${project.version}</package.name>
+    <dist.location>${basedir}/target/${package.name}-dist/${package.name}</dist.location>
+    <deb.dir>${basedir}/target/deb</deb.dir>
+    <deb.version>${project.version}</deb.version>
+  </properties>
+
   <dependencies>
 
     <dependency>
@@ -106,18 +115,14 @@
                   <changelogFile>/usr/share/changelog</changelogFile>
                   <targetOS>Linux</targetOS>
                   <mappings>
-                    <!-- Add init.d files  -->
                     <mapping>
-                      <directory>/etc/init.d</directory>
+                      <directory>/usr/lib/systemd/system</directory>
+                      <filemode>644</filemode>
                       <directoryIncluded>false</directoryIncluded>
-                      <filemode>755</filemode>
                       <configuration>true</configuration>
                       <sources>
                         <source>
-                          <location>src/main/rpm/init.d</location>
-                          <includes>
-                            <include>mica2</include>
-                          </includes>
+                          <location>src/main/rpm/mica2.service</location>
                         </source>
                       </sources>
                     </mapping>
@@ -126,7 +131,7 @@
                       <filemode>755</filemode>
                       <sources>
                         <source>
-                          <location>src/main/rpm/mica2.sh</location>
+                          <location>src/main/rpm/start.sh</location>
                         </source>
                         <source>
                           <location>src/main/rpm/update.sh</location>
@@ -154,17 +159,6 @@
                       <sources>
                         <source>
                           <location>${dist.location}/conf</location>
-                        </source>
-                      </sources>
-                    </mapping>
-                    <mapping>
-                      <directory>/etc/init</directory>
-                      <filemode>644</filemode>
-                      <directoryIncluded>false</directoryIncluded>
-                      <sources>
-                        <source>
-                          <location>src/main/rpm/upstart.conf</location>
-                          <destination>mica2.conf</destination>
                         </source>
                       </sources>
                     </mapping>
@@ -233,12 +227,6 @@
                       <username>mica</username>
                       <groupname>adm</groupname>
                     </mapping>
-                    <mapping>
-                      <directory>/tmp/mica2</directory>
-                      <filemode>740</filemode>
-                      <username>mica</username>
-                      <groupname>adm</groupname>
-                    </mapping>
                   </mappings>
                   <preinstallScriptlet>
                     <scriptFile>src/main/rpm/scripts/preinstall.sh</scriptFile>
@@ -248,6 +236,14 @@
                     <scriptFile>src/main/rpm/scripts/postinstall.sh</scriptFile>
                     <fileEncoding>utf-8</fileEncoding>
                   </postinstallScriptlet>
+                  <pretransScriptlet>
+                    <scriptFile>src/main/rpm/scripts/pretrans.sh</scriptFile>
+                    <fileEncoding>utf-8</fileEncoding>
+                  </pretransScriptlet>
+                  <posttransScriptlet>
+                    <scriptFile>src/main/rpm/scripts/posttrans.sh</scriptFile>
+                    <fileEncoding>utf-8</fileEncoding>
+                  </posttransScriptlet>
                   <preremoveScriptlet>
                     <scriptFile>src/main/rpm/scripts/prerm.sh</scriptFile>
                     <fileEncoding>utf-8</fileEncoding>
@@ -271,8 +267,6 @@
                 </goals>
                 <configuration>
                   <target>
-                    <property name="deb.dir" value="${basedir}/target/deb" />
-                    <property name="deb.version" value="${project.version}" />
                     <tstamp>
                       <!-- http://www.debian.org/doc/debian-policy/ch-source.html -->
                       <format property="deb.date" pattern="EEE, d MMM yyyy HH:mm:ss Z" locale="en" />
@@ -287,8 +281,14 @@
                       </filterset>
                     </copy>
 
+                    <copy todir="${deb.dir}/usr/lib/systemd/system" file="src/main/deb/systemd/mica2.service" />
+                    <copy todir="${deb.dir}/etc/default" file="src/main/deb/default/mica2" />
+
                     <mkdir dir="${deb.dir}/usr/share" />
                     <unzip src="${basedir}/target/mica2-${project.version}-dist.zip" dest="${deb.dir}/usr/share" />
+                    <delete dir="${deb.dir}/usr/share/mica2-${project.version}/bin" />
+                    <copy todir="${deb.dir}/usr/share/mica2-${project.version}/bin" file="src/main/deb/systemd/start.sh" />
+                    <chmod file="${deb.dir}/usr/share/mica2-${project.version}/bin/start.sh" perm="+x" />
 
                     <mkdir dir="${deb.dir}/etc" />
                     <copy todir="${deb.dir}/etc/mica2">
@@ -347,12 +347,5 @@
 
     </profile>
   </profiles>
-
-  <properties>
-    <install.dir>/usr/share</install.dir>
-    <mica.dir>${install.dir}/mica2-${project.version}</mica.dir>
-    <package.name>mica2-${project.version}</package.name>
-    <dist.location>${basedir}/target/${package.name}-dist/${package.name}</dist.location>
-  </properties>
 
 </project>

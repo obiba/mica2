@@ -19,6 +19,18 @@ set -e
 
 case "$1" in
     remove|upgrade|deconfigure)
+        # Read configuration variable file if it is present
+        [ -r /etc/default/mica2 ] && . /etc/default/mica2
+
+        if [ -x "/etc/init.d/mica2" ]; then
+            if [ -x "`which invoke-rc.d 2>/dev/null`" ]; then
+              invoke-rc.d mica2 stop || true
+            else
+              /etc/init.d/mica2 stop || true
+            fi
+        elif [ $(systemctl list-unit-files "mica2.service" | wc -l) -gt 3 ]; then
+            systemctl stop mica2
+        fi
     ;;
 
     failed-upgrade)

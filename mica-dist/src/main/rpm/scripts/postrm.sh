@@ -1,5 +1,5 @@
 #!/bin/sh
-# postrm script for mica2
+# postrm script for mica
 #
 
 set -e
@@ -17,11 +17,13 @@ set -e
 # for details, see http://www.debian.org/doc/debian-policy/ or
 # the debian-policy package
 
-
+systemctl daemon-reload >/dev/null 2>&1 || :
 case "$1" in
   0)
     userdel -f mica || true
-    rm -rf /var/log/mica2 /tmp/mica2 /etc/mica2 /usr/share/mica2*
+    unlink /usr/share/mica2
+    # Remove logs and data
+    rm -rf /var/log/mica2 /etc/mica2 /usr/share/mica2*
 
     # Backup mica2 home
     timestamp="$(date '+%N')"
@@ -31,11 +33,9 @@ case "$1" in
   ;;
 
   1)
-  ;;
-
-  *)
-    echo "postrm called with unknown argument \`$1'" >&2
-    exit 1
+    # Package upgrade, not removal
+    find /usr/share/mica2-* -empty -type d -delete
+    systemctl try-restart mica2.service >/dev/null 2>&1 || :
   ;;
 esac
 
