@@ -24,6 +24,7 @@ import org.obiba.mica.access.domain.DataAccessEntityStatus;
 import org.obiba.mica.access.domain.DataAccessRequest;
 import org.obiba.mica.access.event.*;
 import org.obiba.mica.core.domain.Comment;
+import org.obiba.mica.core.domain.DocumentSet;
 import org.obiba.mica.core.event.CommentDeletedEvent;
 import org.obiba.mica.core.event.CommentUpdatedEvent;
 import org.obiba.mica.core.repository.AttachmentRepository;
@@ -273,6 +274,10 @@ public class DataAccessRequestService extends DataAccessEntityService<DataAccess
     dataAccessRequestRepository.saveWithReferences(saved);
 
     if (attachmentsToDelete != null) attachmentsToDelete.forEach(a -> fileStoreService.delete(a.getId()));
+
+    if (saved.hasVariablesSet() && DataAccessEntityStatus.OPENED.equals(saved.getStatus())) {
+      variableSetService.setLock(saved.getVariablesSet(), false);
+    }
 
     eventBus.post(new DataAccessRequestUpdatedEvent(saved));
     sendNotificationEmails(saved, from);

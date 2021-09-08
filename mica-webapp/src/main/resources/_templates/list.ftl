@@ -47,6 +47,9 @@
                   <i class="far fa-circle nav-icon"></i>
                   <p>
                     <span title="${variableList.name}">${variableList.name?truncate_c(20, "...")}</span>
+                    <#if variableList.locked>
+                      <i class="fas fa-lock ml-2"></i>
+                    </#if>
                     <span class="badge badge-light right">${variableList.identifiers?size}</span>
                   </p>
                 </a>
@@ -76,9 +79,11 @@
             <h1 class="m-0 float-left">
               <span class="text-white-50"><@message "search.list"/> /</span> ${set.name}
             </h1>
-            <button type="button" class="btn btn-danger ml-4" data-toggle="modal" data-target="#modal-delete-list">
-              <i class="fas fa-trash"></i> <@message "delete"/>
-            </button>
+            <#if !set.locked || isAdministrator>
+              <button type="button" class="btn btn-danger ml-4" data-toggle="modal" data-target="#modal-delete-list">
+                <i class="fas fa-trash"></i> <@message "delete"/>
+              </button>
+            </#if>
           </div><!-- /.col -->
         </div><!-- /.row -->
       </div><!-- /.container-fluid -->
@@ -166,9 +171,11 @@
                   </a>
                 </#if>
               </#if>
-              <button id="delete-all" type="button" class="btn btn-danger ml-2" data-toggle="modal" data-target="#modal-delete">
-                <i class="fas fa-trash"></i> <@message "delete"/> <span class="badge badge-light selection-count"></span>
-              </button>
+              <#if !set.locked || isAdministrator>
+                <button id="delete-all" type="button" class="btn btn-danger ml-2" data-toggle="modal" data-target="#modal-delete">
+                  <i class="fas fa-trash"></i> <@message "delete"/> <span class="badge badge-light selection-count"></span>
+                </button>
+              </#if>
               <#if config.setsSearchEnabled>
                 <a class="btn btn-info ml-2" href="${contextPath}/search#lists?type=variables&query=variable(in(Mica_variable.sets,${set.id}))">
                   <i class="fas fa-search"></i>
@@ -183,7 +190,11 @@
                 <table id="setTable" class="table table-striped">
                   <thead>
                   <tr>
-                    <th><i class="far fa-square"></i></th>
+                    <th>
+                    <#if !set.locked || isAdministrator>
+                      <i class="far fa-square"></i>
+                    </#if>
+                    </th>
                     <th></th>
                     <th><@message "name"/></th>
                     <th><@message "label"/></th>

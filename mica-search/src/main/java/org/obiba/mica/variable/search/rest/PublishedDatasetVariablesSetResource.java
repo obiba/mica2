@@ -114,8 +114,8 @@ public class PublishedDatasetVariablesSetResource {
   @Path("/documents/_opal")
   @Produces(MediaType.APPLICATION_OCTET_STREAM)
   public Response createOpalViewsGet(@PathParam("id") String id, @QueryParam("ids") String identifiers) {
-    subjectAclService.checkPermission("/set/documents", "VIEW", "_opal");
     DocumentSet set = getSecuredDocumentSet(id);
+    if (!subjectAclService.isAdministrator() && !subjectAclService.isDataAccessOfficer()) throw new AuthorizationException();
     StreamingOutput streamingOutput;
 
     if (!Strings.isNullOrEmpty(identifiers)) {
@@ -185,7 +185,7 @@ public class PublishedDatasetVariablesSetResource {
 
   private DocumentSet getSecuredDocumentSet(String id) {
     DocumentSet documentSet = variableSetService.get(id);
-    if (!subjectAclService.isCurrentUser(documentSet.getUsername())) throw new AuthorizationException();
+    if (!subjectAclService.isCurrentUser(documentSet.getUsername()) && !subjectAclService.isAdministrator() && !subjectAclService.isDataAccessOfficer()) throw new AuthorizationException();
 
     MicaConfig config = micaConfigService.getConfig();
     if (!config.isCartEnabled() && !documentSet.hasName()) throw new AuthorizationException(); // cart

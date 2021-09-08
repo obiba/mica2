@@ -16,6 +16,7 @@ import org.obiba.mica.core.service.MailService;
 import org.obiba.mica.core.service.SchemaFormContentFileService;
 import org.obiba.mica.core.support.IdentifierGenerator;
 import org.obiba.mica.core.support.YamlClassPathResourceReader;
+import org.obiba.mica.dataset.service.VariableSetService;
 import org.obiba.mica.micaConfig.domain.DataAccessForm;
 import org.obiba.mica.micaConfig.service.DataAccessFormService;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
@@ -59,6 +60,9 @@ public abstract class DataAccessEntityService<T extends DataAccessEntity> {
 
   @Inject
   protected MicaConfigService micaConfigService;
+
+  @Inject
+  protected VariableSetService variableSetService;
 
   private static final String EXCLUSION_IDS_YAML_RESOURCE_PATH = "config/data-access-form/data-access-request-exclusion-ids-list.yml";
 
@@ -150,19 +154,8 @@ public abstract class DataAccessEntityService<T extends DataAccessEntity> {
   }
 
   //
-  // Private methods
+  // Protected methods
   //
-
-  /**
-   * Sort by last modified first.
-   *
-   * @param list
-   * @return
-   */
-  private List<T> applyDefaultSort(List<T> list) {
-    list.sort(Comparator.comparing(AbstractAuditableDocument::getLastModifiedDate).reversed());
-    return list;
-  }
 
   /**
    * Send a notification email, depending on the status of the request.
@@ -172,7 +165,8 @@ public abstract class DataAccessEntityService<T extends DataAccessEntity> {
    */
   protected void sendNotificationEmails(final T request, final @Nullable DataAccessEntityStatus from) {
     // no notification when administrator operates, make sure to use a DAO account so that applicant get informed
-    if (SecurityUtils.getSubject().hasRole(Roles.MICA_ADMIN) && !SecurityUtils.getSubject().hasRole(Roles.MICA_DAO)) return;
+    if (SecurityUtils.getSubject().hasRole(Roles.MICA_ADMIN) && !SecurityUtils.getSubject().hasRole(Roles.MICA_DAO))
+      return;
 
     Executors.newCachedThreadPool().execute(() -> {
       try {
@@ -206,10 +200,6 @@ public abstract class DataAccessEntityService<T extends DataAccessEntity> {
     });
   }
 
-  //
-  // Private methods
-  //
-
   protected Map<String, String> getNotificationEmailContext(T request) {
     Map<String, String> ctx = Maps.newHashMap();
     String organization = micaConfigService.getConfig().getName();
@@ -238,7 +228,7 @@ public abstract class DataAccessEntityService<T extends DataAccessEntity> {
       Map<String, String> ctx = getNotificationEmailContext(request);
       if (ctx.get("parentId") == null) { // only original request, not amendments
         mailService.sendEmailToGroups(mailService.getSubject(dataAccessForm.getCreatedSubject(), ctx,
-          DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), "dataAccessRequestCreatedDAOEmail", ctx,
+            DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), "dataAccessRequestCreatedDAOEmail", ctx,
           Roles.MICA_DAO);
       }
     }
@@ -252,10 +242,10 @@ public abstract class DataAccessEntityService<T extends DataAccessEntity> {
       String prefix = getTemplatePrefix(ctx);
 
       mailService.sendEmailToUsers(mailService.getSubject(dataAccessForm.getSubmittedSubject(), ctx,
-        DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), prefix + "SubmittedApplicantEmail", ctx,
+          DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), prefix + "SubmittedApplicantEmail", ctx,
         request.getApplicant());
       mailService.sendEmailToGroups(mailService.getSubject(dataAccessForm.getSubmittedSubject(), ctx,
-        DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), prefix + "SubmittedDAOEmail", ctx,
+          DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), prefix + "SubmittedDAOEmail", ctx,
         Roles.MICA_DAO);
     }
   }
@@ -268,7 +258,7 @@ public abstract class DataAccessEntityService<T extends DataAccessEntity> {
       String prefix = getTemplatePrefix(ctx);
 
       mailService.sendEmailToUsers(mailService.getSubject(dataAccessForm.getConditionallyApprovedSubject(), ctx,
-        DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), prefix + "ConditionallyApprovedApplicantEmail", ctx,
+          DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), prefix + "ConditionallyApprovedApplicantEmail", ctx,
         request.getApplicant());
     }
   }
@@ -281,7 +271,7 @@ public abstract class DataAccessEntityService<T extends DataAccessEntity> {
       String prefix = getTemplatePrefix(ctx);
 
       mailService.sendEmailToUsers(mailService.getSubject(dataAccessForm.getReviewedSubject(), ctx,
-        DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), prefix + "ReviewedApplicantEmail", ctx,
+          DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), prefix + "ReviewedApplicantEmail", ctx,
         request.getApplicant());
     }
   }
@@ -294,7 +284,7 @@ public abstract class DataAccessEntityService<T extends DataAccessEntity> {
       String prefix = getTemplatePrefix(ctx);
 
       mailService.sendEmailToUsers(mailService.getSubject(dataAccessForm.getReopenedSubject(), ctx,
-        DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), prefix + "ReopenedApplicantEmail", ctx,
+          DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), prefix + "ReopenedApplicantEmail", ctx,
         request.getApplicant());
     }
   }
@@ -307,7 +297,7 @@ public abstract class DataAccessEntityService<T extends DataAccessEntity> {
       String prefix = getTemplatePrefix(ctx);
 
       mailService.sendEmailToUsers(mailService.getSubject(dataAccessForm.getApprovedSubject(), ctx,
-        DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), prefix + "ApprovedApplicantEmail", ctx,
+          DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), prefix + "ApprovedApplicantEmail", ctx,
         request.getApplicant());
     }
   }
@@ -320,7 +310,7 @@ public abstract class DataAccessEntityService<T extends DataAccessEntity> {
       String prefix = getTemplatePrefix(ctx);
 
       mailService.sendEmailToUsers(mailService.getSubject(dataAccessForm.getRejectedSubject(), ctx,
-        DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), prefix + "RejectedApplicantEmail", ctx,
+          DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), prefix + "RejectedApplicantEmail", ctx,
         request.getApplicant());
     }
   }
@@ -331,11 +321,11 @@ public abstract class DataAccessEntityService<T extends DataAccessEntity> {
       Map<String, String> ctx = getNotificationEmailContext(request);
 
       mailService.sendEmailToUsers(mailService.getSubject(dataAccessForm.getAttachmentSubject(), ctx,
-        DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), "dataAccessRequestAttachmentsUpdated", ctx,
+          DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), "dataAccessRequestAttachmentsUpdated", ctx,
         request.getApplicant());
 
       mailService.sendEmailToGroups(mailService.getSubject(dataAccessForm.getAttachmentSubject(), ctx,
-        DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), "dataAccessRequestAttachmentsUpdated", ctx,
+          DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), "dataAccessRequestAttachmentsUpdated", ctx,
         Roles.MICA_DAO);
     }
   }
@@ -411,6 +401,21 @@ public abstract class DataAccessEntityService<T extends DataAccessEntity> {
     if (isDataAccessFeasibilityContext(ctx))
       return "dataAccessFeasibility";
     return "dataAccessRequest";
+  }
+
+  //
+  // Private methods
+  //
+
+  /**
+   * Sort by last modified first.
+   *
+   * @param list
+   * @return
+   */
+  private List<T> applyDefaultSort(List<T> list) {
+    list.sort(Comparator.comparing(AbstractAuditableDocument::getLastModifiedDate).reversed());
+    return list;
   }
 
   private boolean isDataAccessAmendmentContext(Map<String, String> ctx) {

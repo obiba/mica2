@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.inject.Inject;
+import javax.ws.rs.ForbiddenException;
 import java.util.Map;
 import java.util.Optional;
 
@@ -48,8 +49,12 @@ public class CartController extends BaseController {
   public ModelAndView getNamed(@PathVariable String id) {
     Subject subject = SecurityUtils.getSubject();
     if (subject.isAuthenticated()) {
+      DocumentSet documentSet = variableSetService.get(id);
+      if (!subjectAclService.isCurrentUser(documentSet.getUsername()) && !subjectAclService.isAdministrator() && !subjectAclService.isDataAccessOfficer())
+        throw new ForbiddenException();
+
       Map<String, Object> params = newParameters();
-      params.put("set", variableSetService.get(id));
+      params.put("set", documentSet);
       return new ModelAndView("list", params);
     } else {
       return new ModelAndView("redirect:/signin?redirect=" + micaConfigService.getContextPath() + "/list/" + id);

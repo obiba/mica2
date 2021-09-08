@@ -12,6 +12,7 @@ package org.obiba.mica.access.rest;
 
 import com.codahale.metrics.annotation.Timed;
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import com.google.common.eventbus.EventBus;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.AuthorizationException;
@@ -30,9 +31,11 @@ import org.obiba.mica.access.service.DataAccessEntityService;
 import org.obiba.mica.access.service.DataAccessRequestService;
 import org.obiba.mica.access.service.DataAccessRequestUtilService;
 import org.obiba.mica.core.domain.Comment;
+import org.obiba.mica.core.domain.DocumentSet;
 import org.obiba.mica.core.domain.NoSuchCommentException;
 import org.obiba.mica.core.domain.UnauthorizedCommentException;
 import org.obiba.mica.core.service.CommentsService;
+import org.obiba.mica.dataset.service.VariableSetService;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.FileStoreService;
 import org.obiba.mica.file.TempFile;
@@ -100,8 +103,9 @@ public class DataAccessRequestResource extends DataAccessEntityResource<DataAcce
     SubjectAclService subjectAclService,
     FileStoreService fileStoreService,
     DataAccessFormService dataAccessFormService,
-    TempFileService tempFileService) {
-    super(subjectAclService, fileStoreService, dataAccessFormService);
+    TempFileService tempFileService,
+    VariableSetService variableSetService) {
+    super(subjectAclService, fileStoreService, dataAccessFormService, variableSetService);
     this.dataAccessRequestService = dataAccessRequestService;
     this.commentMailNotification = commentMailNotification;
     this.reportNotificationService = reportNotificationService;
@@ -216,6 +220,51 @@ public class DataAccessRequestResource extends DataAccessEntityResource<DataAcce
     DataAccessRequest request = dataAccessRequestService.findById(id);
     request.setArchived(false);
     dataAccessRequestService.save(request);
+    return Response.noContent().build();
+  }
+
+  @PUT
+  @Path("/_link")
+  public Response linkVariables(@PathParam("id") String id, @QueryParam("list") String setId) {
+    subjectAclService.checkPermission("/data-access-request", "EDIT", id);
+    DataAccessRequest request = dataAccessRequestService.findById(id);
+    if (DataAccessEntityStatus.OPENED.equals(request.getStatus())) {
+      DocumentSet set;
+      if (Strings.isNullOrEmpty(setId)) {
+        DocumentSet cart = variableSetService.getCartCurrentUser();
+        Optional<DocumentSet> setOpt = variableSetService.getAllCurrentUser().stream().filter(docset -> request.getId().equals(docset.getName())).findFirst();
+        if (setOpt.isPresent()) {
+          // reuse and overwrite an existing set with same name
+          set = variableSetService.setIdentifiers(setOpt.get().getId(), Lists.newArrayList(cart.getIdentifiers()));
+        } else {
+          // create a new one
+          set = variableSetService.create(request.getId(), Lists.newArrayList(cart.getIdentifiers()));
+        }
+      } else {
+        set = variableSetService.findOne(setId);
+      }
+      if (set != null) {
+        request.setVariablesSet(set);
+        dataAccessRequestService.save(request);
+      }
+    } else {
+      throw new BadRequestException("Cannot link variables: data access request must be opened");
+    }
+    return Response.noContent().build();
+  }
+
+  @DELETE
+  @Path("/_link")
+  public Response unlinkVariables(@PathParam("id") String id) {
+    subjectAclService.checkPermission("/data-access-request", "EDIT", id);
+    DataAccessRequest request = dataAccessRequestService.findById(id);
+    DocumentSet set = request.getVariablesSet();
+    if (set != null) {
+      if (set.getName().equals(request.getId()))
+        variableSetService.delete(set);
+      else
+        variableSetService.setLock(set, false);
+    }
     return Response.noContent().build();
   }
 

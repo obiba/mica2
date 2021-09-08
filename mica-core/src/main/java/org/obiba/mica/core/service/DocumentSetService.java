@@ -224,6 +224,17 @@ public abstract class DocumentSetService {
     saveInternal(documentSet);
   }
 
+  /**
+   * Lock/unlock the document set.
+   *
+   * @param documentSet
+   * @param locked
+   */
+  public void setLock(DocumentSet documentSet, boolean locked) {
+    documentSet.setLocked(locked);
+    saveInternal(documentSet);
+  }
+
   @Async
   @Subscribe
   public void datasetUnpublished(DatasetUnpublishedEvent event) {
@@ -247,7 +258,7 @@ public abstract class DocumentSetService {
       .forEach(set -> {
         int timeToLive = set.hasName() ? config.getSetTimeToLive() : config.getCartTimeToLive();
         DateTime deadline = DateTime.now().minusDays(timeToLive);
-        if (set.getLastModifiedDate().isBefore(deadline)) {
+        if (set.getLastModifiedDate().isBefore(deadline) && !set.isLocked()) {
           log.debug("Last updated {} - expiration {}", set.getLastModifiedDate(), deadline);
           log.info("{} {} has expired, deleting...", (set.hasName() ? "Set" : "Cart"), set.getId());
           delete(set);

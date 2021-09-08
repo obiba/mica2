@@ -1948,6 +1948,12 @@
     "amendments-enabled-help":"Enable the capability of requesting amendments to an approved data access request.",
     "feasibility-enabled": "Enable Feasibility Inquiry.",
     "feasibility-enabled-help":"Enable the capability of inquiring for feasibility of a data access request.",
+    "variables-enabled": "Enable Variables attachment.",
+    "variables-enabled-help":"Enable attaching a variable list to the main form.",
+    "amendment-variables-enabled": "Enable Variables attachment to an Amendment.",
+    "amendment-variables-enabled-help":"Enable attaching a variable list to an amendment form.",
+    "feasibility-variables-enabled": "Enable Variables attachment to a Feasibility Inquiry.",
+    "feasibility-variables-enabled-help":"Enable attaching a variable list to a feasibility inquiry form.",
     "pdf-download": {
       "title": "PDF Download",
       "info": "The data collected in the form can be rendered in a PDF file. Choose one of the following options:"
@@ -1991,7 +1997,10 @@
     },
     "settings": {
       "title": "General",
-      "info": "Alternate forms and permissions can be enabled."
+      "info": "Alternate forms and permissions can be enabled.",
+      "other-forms-title": "Other Forms",
+      "permissions-title": "Permissions",
+      "variables-title": "Variables"
     },
     "id-generation": {
       "title": "ID Generation",

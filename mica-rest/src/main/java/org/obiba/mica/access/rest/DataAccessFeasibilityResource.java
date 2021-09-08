@@ -10,6 +10,7 @@ import org.obiba.mica.access.domain.DataAccessRequest;
 import org.obiba.mica.access.service.DataAccessFeasibilityService;
 import org.obiba.mica.access.service.DataAccessEntityService;
 import org.obiba.mica.access.service.DataAccessRequestService;
+import org.obiba.mica.dataset.service.VariableSetService;
 import org.obiba.mica.file.FileStoreService;
 import org.obiba.mica.micaConfig.service.DataAccessFormService;
 import org.obiba.mica.security.service.SubjectAclService;
@@ -47,8 +48,9 @@ public class DataAccessFeasibilityResource extends DataAccessEntityResource<Data
     DataAccessFormService dataAccessFormService,
     Dtos dtos,
     DataAccessRequestService dataAccessRequestService,
-    DataAccessFeasibilityService dataAccessFeasibilityService) {
-    super(subjectAclService, fileStoreService, dataAccessFormService);
+    DataAccessFeasibilityService dataAccessFeasibilityService,
+    VariableSetService variableSetService) {
+    super(subjectAclService, fileStoreService, dataAccessFormService, variableSetService);
     this.dtos = dtos;
     this.dataAccessRequestService = dataAccessRequestService;
     this.dataAccessFeasibilityService = dataAccessFeasibilityService;

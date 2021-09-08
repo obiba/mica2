@@ -8,48 +8,49 @@ import org.obiba.mica.micaConfig.domain.DataAccessForm;
  */
 public class DataAccessConfig {
 
-  private final boolean withReview;
-  private final boolean withConditionalApproval;
-  private final boolean approvedFinal;
-  private final boolean rejectedFinal;
-  private final boolean feasibilityEnabled;
-  private final boolean amendmentsEnabled;
+  private final DataAccessForm form;
   private final boolean downloadPdf;
 
   public DataAccessConfig(DataAccessForm form) {
-    this.withReview = form.isWithReview();
-    this.withConditionalApproval = form.isWithConditionalApproval();
-    this.approvedFinal = form.isApprovedFinal();
-    this.rejectedFinal = form.isRejectedFinal();
-    this.feasibilityEnabled = form.isFeasibilityEnabled();
-    this.amendmentsEnabled = form.isAmendmentsEnabled();
+    this.form = form;
     this.downloadPdf = PdfDownloadType.Template.equals(form.getPdfDownloadType());
   }
 
   public boolean isWithReview() {
-    return withReview;
+    return form.isWithReview();
   }
 
   public boolean isWithConditionalApproval() {
-    return withConditionalApproval;
+    return form.isWithConditionalApproval();
   }
 
   public boolean isApprovedFinal() {
-    return approvedFinal;
+    return form.isApprovedFinal();
   }
 
   public boolean isRejectedFinal() {
-    return rejectedFinal;
+    return form.isRejectedFinal();
   }
 
   public boolean isAmendmentsEnabled() {
-    return amendmentsEnabled;
+    return form.isAmendmentsEnabled();
   }
 
   public boolean isFeasibilityEnabled() {
-    return feasibilityEnabled;
+    return form.isFeasibilityEnabled();
   }
 
+  public boolean isVariablesEnabled() {
+    return form.isVariablesEnabled();
+  }
+
+  public boolean isAmendmentVariablesEnabled() {
+    return form.isAmendmentVariablesEnabled();
+  }
+
+  public boolean isFeasibilityVariablesEnabled() {
+    return form.isFeasibilityVariablesEnabled();
+  }
   public boolean isDownloadPdf() {
     return downloadPdf;
   }

@@ -12,6 +12,8 @@ import org.apache.shiro.SecurityUtils;
 import org.obiba.mica.access.domain.DataAccessEntity;
 import org.obiba.mica.access.domain.DataAccessEntityStatus;
 import org.obiba.mica.access.service.DataAccessEntityService;
+import org.obiba.mica.core.domain.DocumentSet;
+import org.obiba.mica.dataset.service.VariableSetService;
 import org.obiba.mica.file.FileStoreService;
 import org.obiba.mica.micaConfig.event.DataAccessFormUpdatedEvent;
 import org.obiba.mica.micaConfig.service.DataAccessFormService;
@@ -25,7 +27,9 @@ public abstract class DataAccessEntityResource<T extends DataAccessEntity> {
 
   protected FileStoreService fileStoreService;
 
-  private DataAccessFormService dataAccessFormService;
+  protected DataAccessFormService dataAccessFormService;
+
+  protected VariableSetService variableSetService;
 
   protected abstract DataAccessEntityService<T> getService();
 
@@ -34,10 +38,12 @@ public abstract class DataAccessEntityResource<T extends DataAccessEntity> {
   public DataAccessEntityResource(
     SubjectAclService subjectAclService,
     FileStoreService fileStoreService,
-    DataAccessFormService dataAccessFormService) {
+    DataAccessFormService dataAccessFormService,
+    VariableSetService variableSetService) {
     this.subjectAclService = subjectAclService;
     this.fileStoreService = fileStoreService;
     this.dataAccessFormService = dataAccessFormService;
+    this.variableSetService = variableSetService;
   }
 
   @Subscribe
@@ -70,6 +76,10 @@ public abstract class DataAccessEntityResource<T extends DataAccessEntity> {
     getService().updateStatus(id, DataAccessEntityStatus.SUBMITTED);
     if (fromOpened || fromConditionallyApproved) {
       restoreDaoActions(id);
+    }
+    if (request.hasVariablesSet()) {
+      DocumentSet set = request.getVariablesSet();
+      variableSetService.setLock(set, true);
     }
     return Response.noContent().build();
   }

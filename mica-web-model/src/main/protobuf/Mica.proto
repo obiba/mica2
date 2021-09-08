@@ -924,6 +924,9 @@ message DataAccessFormDto {
   optional string intermediateReportSubject = 41;
   optional int32 nbOfDaysBeforeReport = 42;
   required bool feasibilityEnabled = 43;
+  required bool variablesEnabled = 44;
+  required bool feasibilityVariablesEnabled = 45;
+  required bool amendmentVariablesEnabled = 46;
 }
 
 message DataAccessFeasibilityFormDto {
@@ -1042,6 +1045,7 @@ message DocumentSetDto {
   optional string username = 5;
   repeated string identifiers = 6;
   required int64 count = 7;
+  required bool locked = 8;
 }
 
 message ComposedSetDto {

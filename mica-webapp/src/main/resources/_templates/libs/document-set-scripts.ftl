@@ -31,11 +31,13 @@
           searchable: false,
           targets: 1
       }],
+      <#if !set.locked || isAdministrator>
       select: {
         style: 'multi',
         selector: 'td:first-child',
         info: false
       },
+      </#if>
       "ajax": function(data, callback) {
         VariablesSetService.search('${set.id}', data.start, data.length, function(response) {
           $('#loadingSet').hide();
@@ -48,7 +50,11 @@
               let row = [];
               const summary = summaries[i];
               // checkbox
-              row.push('<i class="far fa-square"></i>');
+              if (${set.locked?c} && !${isAdministrator?c}) {
+                row.push('');
+              } else {
+                row.push('<i class="far fa-square"></i>');
+              }
               // ID
               row.push(summary.id);
               row.push('<a href="${contextPath}/variable/' + summary.id + '">' + summary.name + '</a>');

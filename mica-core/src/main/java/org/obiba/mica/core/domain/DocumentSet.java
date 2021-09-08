@@ -32,6 +32,8 @@ public class DocumentSet extends DefaultEntityBase {
 
   private Set<String> identifiers;
 
+  private boolean locked = false;
+
   public String getType() {
     return type;
   }
@@ -74,5 +76,13 @@ public class DocumentSet extends DefaultEntityBase {
 
   public void addAllIdentifiers(List<String> identifiers) {
     getIdentifiers().addAll(identifiers);
+  }
+
+  public void setLocked(boolean locked) {
+    this.locked = locked;
+  }
+
+  public boolean isLocked() {
+    return locked;
   }
 }

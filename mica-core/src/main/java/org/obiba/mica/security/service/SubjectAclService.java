@@ -130,6 +130,14 @@ public class SubjectAclService {
       .anyMatch(SecurityUtils.getSubject()::hasRole);
   }
 
+  public boolean isAdministrator() {
+    return SecurityUtils.getSubject().hasRole(Roles.MICA_ADMIN);
+  }
+
+  public boolean isDataAccessOfficer() {
+    return SecurityUtils.getSubject().hasRole(Roles.MICA_DAO);
+  }
+
   /**
    * Return if the permission applies to the current user.
    *

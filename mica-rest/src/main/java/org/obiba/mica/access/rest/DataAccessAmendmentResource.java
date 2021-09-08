@@ -11,6 +11,7 @@ import org.obiba.mica.access.domain.DataAccessRequest;
 import org.obiba.mica.access.service.DataAccessAmendmentService;
 import org.obiba.mica.access.service.DataAccessEntityService;
 import org.obiba.mica.access.service.DataAccessRequestService;
+import org.obiba.mica.dataset.service.VariableSetService;
 import org.obiba.mica.file.FileStoreService;
 import org.obiba.mica.micaConfig.service.DataAccessFormService;
 import org.obiba.mica.security.service.SubjectAclService;
@@ -47,8 +48,9 @@ public class DataAccessAmendmentResource extends DataAccessEntityResource<DataAc
     DataAccessFormService dataAccessFormService,
     Dtos dtos,
     DataAccessRequestService dataAccessRequestService,
-    DataAccessAmendmentService dataAccessAmendmentService) {
-    super(subjectAclService, fileStoreService, dataAccessFormService);
+    DataAccessAmendmentService dataAccessAmendmentService,
+    VariableSetService variableSetService) {
+    super(subjectAclService, fileStoreService, dataAccessFormService, variableSetService);
     this.dtos = dtos;
     this.dataAccessRequestService = dataAccessRequestService;
     this.dataAccessAmendmentService = dataAccessAmendmentService;
