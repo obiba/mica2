@@ -4,7 +4,7 @@
   "description": "Description for mica",
   "dependencies": {
     "admin-lte": "^3.0.5",
-    "axios": "^0.21.1",
+    "axios": "^0.21.2",
     "bootstrap-datepicker": "^1.9.0",
     "chart.js": "^2.9.3",
     "chartjs-chart-geo": "^2.1.0",
