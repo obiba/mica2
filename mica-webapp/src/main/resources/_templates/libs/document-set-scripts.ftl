@@ -4,6 +4,20 @@
 <script>
   const variablesCartStorage = new MicaSetStorage('cart');
 
+  // cart
+  <#if cartEnabled>
+  const onVariablesCartAdd = function(id) {
+    VariablesSetService.addQueryToCart('variable(in(Mica_variable.sets,' + id + '),limit(0,10000),fields(variableType))', function(cart, oldCart) {
+      VariablesSetService.showCount('#cart-count', cart, '${.lang}');
+      if (cart.count === oldCart.count) {
+        MicaService.toastInfo("<@message "sets.cart.no-variable-added"/>");
+      } else {
+        MicaService.toastSuccess("<@message "variables-added-to-cart"/>".replace('{0}', (cart.count - oldCart.count).toLocaleString('${.lang}')));
+      }
+    });
+  };
+  </#if>
+
   $(function () {
 
     // clear any previous selections from local storage

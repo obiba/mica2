@@ -1,7 +1,9 @@
 package org.obiba.mica.access.rest;
 
+import com.google.common.collect.Lists;
 import com.google.common.eventbus.Subscribe;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.ws.rs.BadRequestException;
@@ -64,6 +66,31 @@ public abstract class DataAccessEntityResource<T extends DataAccessEntity> {
   //
   // Private methods
   //
+
+  /**
+   * Create or update a variables set from user's cart.
+   *
+   * @param entity
+   * @return
+   */
+  protected DocumentSet createOrUpdateVariablesSet(DataAccessEntity entity) {
+    DocumentSet set;
+    DocumentSet cart = variableSetService.getCartCurrentUser();
+    String setId = String.format("dar:%s", entity.getId());
+    Optional<DocumentSet> setOpt = variableSetService.getAllCurrentUser().stream().filter(docset -> setId.equals(docset.getName())).findFirst();
+    if (setOpt.isPresent()) {
+      // reuse and append an existing set with same name
+      set = variableSetService.addIdentifiers(setId, Lists.newArrayList(cart.getIdentifiers()));
+    } else {
+      // create a new one
+      set = variableSetService.create(setId, Lists.newArrayList(cart.getIdentifiers()));
+    }
+    // case an administrator is by-passing the flow
+    if (!DataAccessEntityStatus.OPENED.equals(entity.getStatus())) {
+      variableSetService.setLock(set, true);
+    }
+    return set;
+  }
 
   protected Response submit(String id) {
     DataAccessEntity request = getService().findById(id);

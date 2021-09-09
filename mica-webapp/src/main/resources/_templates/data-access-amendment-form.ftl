@@ -86,7 +86,7 @@
       </#if>
 
       <div class="row" ng-controller="FormController">
-        <div class="col-sm-12 <#if dataAccessInstructionsEnabled>col-lg-8<#else>col-lg-12</#if>">
+        <div class="col-sm-12 <#if dataAccessInstructionsEnabled || (amendment.variablesSet?? || amendmentVariablesEnabled)>col-lg-8<#else>col-lg-12</#if>">
           <div class="card card-primary card-outline">
             <div class="card-header d-print-none">
               <h3 class="card-title"><@message "amendment-form"/></h3>
@@ -321,18 +321,51 @@
           <!-- /.modal -->
         </div>
 
-        <#if dataAccessInstructionsEnabled>
+        <#if dataAccessInstructionsEnabled || (amendment.variablesSet?? || amendmentVariablesEnabled)>
           <div class="col-sm-12 col-lg-4 d-print-none">
-            <div class="card card-info card-outline">
-              <div class="card-header">
-                <h3 class="card-title"><@message "instructions"/></h3>
+
+            <#if amendment.variablesSet?? || amendmentVariablesEnabled>
+              <div class="card card-primary card-outline">
+                <div class="card-header">
+                  <h3 class="card-title"><@message "variables"/></h3>
+                </div>
+                <div class="card-body">
+                    <#if amendment.variablesSet??>
+                      <a class="btn btn-info" href="${contextPath}/list/${amendment.variablesSet.id}">
+                        <i class="far fa-list-alt"></i>
+                        <span><@message "list-linked-variables"/></span>
+                        <span class="badge badge-light">${amendment.variablesSet.identifiers?size}</span>
+                      </a>
+                      <#if amendmentPermissions?seq_contains("EDIT")>
+                        <a class="ml-3" href="javascript:void(0)" onclick="DataAccessService.unlinkVariables('${amendment.parentId}', 'amendment', '${amendment.id}')">
+                          <i class="fas fa-unlink"></i> <@message "unlink-variables"/>
+                        </a>
+                      </#if>
+                    <#elseif amendmentVariablesEnabled && amendmentPermissions?seq_contains("EDIT")>
+                      <a class="btn btn-primary" href="javascript:void(0)" onclick="DataAccessService.linkVariables('${amendment.parentId}', 'amendment', '${amendment.id}')">
+                        <i class="fas fa-link"></i> <@message "link-cart-variables"/> <i class="fas fa-shopping-cart fa-xs"></i>
+                      </a>
+                    <#else>
+                      <span><@message "no-linked-variables"/></span>
+                    </#if>
+                </div>
               </div>
-              <div class="card-body">
-                  <@dataAccessAmendmentFormHelp amendment=amendment/>
+            </#if>
+
+            <#if dataAccessInstructionsEnabled>
+              <div class="card card-info card-outline">
+                <div class="card-header">
+                  <h3 class="card-title"><@message "instructions"/></h3>
+                </div>
+                <div class="card-body">
+                    <@dataAccessAmendmentFormHelp amendment=amendment/>
+                </div>
               </div>
-            </div>
+            </#if>
+
           </div>
         </#if>
+
       </div>
 
     </section>

@@ -172,7 +172,13 @@
             <p><@message "sets.set.dar-help"/></p>
             <btn class="btn btn-info" onclick="location.href='${contextPath}/data-access-form/${set.name?replace("dar:", "")}'">
               <i class="fas fa-link"></i>
-              <@message "data-access-request"/>
+                <#if set.name?matches(".+-F\\d+$")>
+                  <@message "data-access-feasibility"/>
+                <#elseif set.name?matches(".+-A\\d+$")>
+                  <@message "data-access-amendment"/>
+                <#else>
+                  <@message "data-access-request"/>
+                </#if>
             </btn>
           </div>
         <#else>
@@ -185,6 +191,9 @@
           <div class="card-header">
             <h3 class="card-title"><@message "variables"/></h3>
             <div class="float-right">
+              <button class="btn btn-success ml-2" onclick="onVariablesCartAdd('${set.id}')">
+                <i class="fas fa-cart-plus"></i> <@message "sets.cart.add-to-cart"/>
+              </button>
               <#if showCartDownload>
                 <#if showCartViewDownload>
                   <div class="btn-group" role="group">

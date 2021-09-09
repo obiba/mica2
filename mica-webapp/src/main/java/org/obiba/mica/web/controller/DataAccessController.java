@@ -31,6 +31,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.inject.Inject;
 import java.util.*;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Controller
@@ -63,6 +64,10 @@ public class DataAccessController extends BaseController {
   @Inject
   private DataAccessRequestReportNotificationService dataAccessRequestReportNotificationService;
 
+  private Pattern feasibilityIdPattern = Pattern.compile("-F\\d+$");
+
+  private Pattern amendmentIdPattern = Pattern.compile("-A\\d+$");
+
   @GetMapping("/data-access/{id:.+}")
   public ModelAndView get(@PathVariable String id) {
     Subject subject = SecurityUtils.getSubject();
@@ -91,6 +96,11 @@ public class DataAccessController extends BaseController {
                               @RequestParam(value = "edit", defaultValue = "false") boolean edit,
                               @CookieValue(value = "NG_TRANSLATE_LANG_KEY", required = false, defaultValue = "en") String locale,
                               @RequestParam(value = "language", required = false) String language) {
+    if (amendmentIdPattern.matcher(id).find()) {
+      return new ModelAndView("redirect:/data-access-amendment-form/" + id);
+    } else if (feasibilityIdPattern.matcher(id).find()) {
+      return new ModelAndView("redirect:/data-access-feasibility-form/" + id);
+    }
     Subject subject = SecurityUtils.getSubject();
     if (subject.isAuthenticated()) {
       Map<String, Object> params = newParameters(id);

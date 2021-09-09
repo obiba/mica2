@@ -12,7 +12,6 @@ package org.obiba.mica.access.rest;
 
 import com.codahale.metrics.annotation.Timed;
 import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
 import com.google.common.eventbus.EventBus;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.AuthorizationException;
@@ -31,7 +30,6 @@ import org.obiba.mica.access.service.DataAccessEntityService;
 import org.obiba.mica.access.service.DataAccessRequestService;
 import org.obiba.mica.access.service.DataAccessRequestUtilService;
 import org.obiba.mica.core.domain.Comment;
-import org.obiba.mica.core.domain.DocumentSet;
 import org.obiba.mica.core.domain.NoSuchCommentException;
 import org.obiba.mica.core.domain.UnauthorizedCommentException;
 import org.obiba.mica.core.service.CommentsService;
@@ -224,39 +222,22 @@ public class DataAccessRequestResource extends DataAccessEntityResource<DataAcce
   }
 
   @PUT
-  @Path("/_link")
-  public Response linkVariables(@PathParam("id") String id) {
+  @Path("/variables")
+  public Response setVariablesSet(@PathParam("id") String id) {
     subjectAclService.checkPermission("/data-access-request", "EDIT", id);
     DataAccessRequest request = dataAccessRequestService.findById(id);
-    DocumentSet set;
-    DocumentSet cart = variableSetService.getCartCurrentUser();
-    String setId = String.format("dar:%s", request.getId());
-    Optional<DocumentSet> setOpt = variableSetService.getAllCurrentUser().stream().filter(docset -> setId.equals(docset.getName())).findFirst();
-    if (setOpt.isPresent()) {
-      // reuse and overwrite an existing set with same name
-      set = variableSetService.setIdentifiers(setId, Lists.newArrayList(cart.getIdentifiers()));
-    } else {
-      // create a new one
-      set = variableSetService.create(setId, Lists.newArrayList(cart.getIdentifiers()));
-    }
-    if (!DataAccessEntityStatus.OPENED.equals(request.getStatus())) {
-      variableSetService.setLock(set, true);
-    }
-    if (set != null) {
-      request.setVariablesSet(set);
-      dataAccessRequestService.save(request);
-    }
+    request.setVariablesSet(createOrUpdateVariablesSet(request));
+    dataAccessRequestService.save(request);
     return Response.noContent().build();
   }
 
   @DELETE
-  @Path("/_link")
-  public Response unlinkVariables(@PathParam("id") String id) {
+  @Path("/variables")
+  public Response deleteVariablesSet(@PathParam("id") String id) {
     subjectAclService.checkPermission("/data-access-request", "EDIT", id);
     DataAccessRequest request = dataAccessRequestService.findById(id);
-    DocumentSet set = request.getVariablesSet();
-    if (set != null)
-      variableSetService.delete(set);
+    if (request.hasVariablesSet())
+      variableSetService.delete(request.getVariablesSet());
     return Response.noContent().build();
   }
 

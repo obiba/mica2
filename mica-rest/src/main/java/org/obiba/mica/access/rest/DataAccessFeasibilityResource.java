@@ -7,8 +7,8 @@ import org.obiba.mica.JSONUtils;
 import org.obiba.mica.access.NoSuchDataAccessRequestException;
 import org.obiba.mica.access.domain.DataAccessFeasibility;
 import org.obiba.mica.access.domain.DataAccessRequest;
-import org.obiba.mica.access.service.DataAccessFeasibilityService;
 import org.obiba.mica.access.service.DataAccessEntityService;
+import org.obiba.mica.access.service.DataAccessFeasibilityService;
 import org.obiba.mica.access.service.DataAccessRequestService;
 import org.obiba.mica.dataset.service.VariableSetService;
 import org.obiba.mica.file.FileStoreService;
@@ -94,7 +94,7 @@ public class DataAccessFeasibilityResource extends DataAccessEntityResource<Data
   @Timed
   public Response update(Mica.DataAccessRequestDto dto) {
     subjectAclService.checkPermission(getResourcePath(), "EDIT", id);
-    if(!id.equals(dto.getId())) throw new BadRequestException();
+    if (!id.equals(dto.getId())) throw new BadRequestException();
     DataAccessRequest request = dataAccessRequestService.findById(parentId);
     if (request.isArchived()) throw new BadRequestException("Data access request is archived");
 
@@ -112,7 +112,7 @@ public class DataAccessFeasibilityResource extends DataAccessEntityResource<Data
 
     try {
       dataAccessFeasibilityService.delete(id);
-    } catch(NoSuchDataAccessRequestException e) {
+    } catch (NoSuchDataAccessRequestException e) {
       log.error("Could not delete feasibility {}", e);
     }
 
@@ -134,8 +134,28 @@ public class DataAccessFeasibilityResource extends DataAccessEntityResource<Data
     subjectAclService.checkPermission(getResourcePath(), "VIEW", id);
     getService().findById(id);
     return Response.ok(fileStoreService.getFile(attachmentId)).header("Content-Disposition",
-      "attachment; filename=\"" + attachmentName + "\"")
+        "attachment; filename=\"" + attachmentName + "\"")
       .build();
+  }
+
+  @PUT
+  @Path("/variables")
+  public Response setVariablesSet() {
+    subjectAclService.checkPermission(getResourcePath(), "EDIT", id);
+    DataAccessFeasibility feasibility = getService().findById(id);
+    feasibility.setVariablesSet(createOrUpdateVariablesSet(feasibility));
+    dataAccessFeasibilityService.save(feasibility);
+    return Response.noContent().build();
+  }
+
+  @DELETE
+  @Path("/variables")
+  public Response deleteVariablesSet() {
+    subjectAclService.checkPermission(getResourcePath(), "EDIT", id);
+    DataAccessFeasibility feasibility = getService().findById(id);
+    if (feasibility.hasVariablesSet())
+      variableSetService.delete(feasibility.getVariablesSet());
+    return Response.noContent().build();
   }
 
   public void setId(String id) {
