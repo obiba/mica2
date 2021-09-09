@@ -44,7 +44,8 @@ public class SetsAggregationMetaDataHelper extends AbstractIdAggregationMetaData
           LocalizedString title = new LocalizedString();
           locales.forEach(locale -> {
             String setName = Strings.isNullOrEmpty(set.getName()) ?
-              translators.get(locale).translate("sets.cart.title") : set.getName();
+              translators.get(locale).translate("sets.cart.title") :
+              (set.getName().startsWith("dar:") ? set.getName().replace("dar:", "") : set.getName());
             title.forLanguageTag(locale, setName);
           });
           return new LocalizedMetaData(title, new LocalizedString(), set.getType());

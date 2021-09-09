@@ -33,6 +33,7 @@ import org.obiba.mica.core.domain.Comment;
 import org.obiba.mica.core.domain.NoSuchCommentException;
 import org.obiba.mica.core.domain.UnauthorizedCommentException;
 import org.obiba.mica.core.service.CommentsService;
+import org.obiba.mica.dataset.service.VariableSetService;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.FileStoreService;
 import org.obiba.mica.file.TempFile;
@@ -100,8 +101,9 @@ public class DataAccessRequestResource extends DataAccessEntityResource<DataAcce
     SubjectAclService subjectAclService,
     FileStoreService fileStoreService,
     DataAccessFormService dataAccessFormService,
-    TempFileService tempFileService) {
-    super(subjectAclService, fileStoreService, dataAccessFormService);
+    TempFileService tempFileService,
+    VariableSetService variableSetService) {
+    super(subjectAclService, fileStoreService, dataAccessFormService, variableSetService);
     this.dataAccessRequestService = dataAccessRequestService;
     this.commentMailNotification = commentMailNotification;
     this.reportNotificationService = reportNotificationService;
@@ -216,6 +218,26 @@ public class DataAccessRequestResource extends DataAccessEntityResource<DataAcce
     DataAccessRequest request = dataAccessRequestService.findById(id);
     request.setArchived(false);
     dataAccessRequestService.save(request);
+    return Response.noContent().build();
+  }
+
+  @PUT
+  @Path("/variables")
+  public Response setVariablesSet(@PathParam("id") String id) {
+    subjectAclService.checkPermission("/data-access-request", "EDIT", id);
+    DataAccessRequest request = dataAccessRequestService.findById(id);
+    request.setVariablesSet(createOrUpdateVariablesSet(request));
+    dataAccessRequestService.save(request);
+    return Response.noContent().build();
+  }
+
+  @DELETE
+  @Path("/variables")
+  public Response deleteVariablesSet(@PathParam("id") String id) {
+    subjectAclService.checkPermission("/data-access-request", "EDIT", id);
+    DataAccessRequest request = dataAccessRequestService.findById(id);
+    if (request.hasVariablesSet())
+      variableSetService.delete(request.getVariablesSet());
     return Response.noContent().build();
   }
 

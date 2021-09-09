@@ -1,7 +1,9 @@
 package org.obiba.mica.access.rest;
 
+import com.google.common.collect.Lists;
 import com.google.common.eventbus.Subscribe;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.ws.rs.BadRequestException;
@@ -12,6 +14,8 @@ import org.apache.shiro.SecurityUtils;
 import org.obiba.mica.access.domain.DataAccessEntity;
 import org.obiba.mica.access.domain.DataAccessEntityStatus;
 import org.obiba.mica.access.service.DataAccessEntityService;
+import org.obiba.mica.core.domain.DocumentSet;
+import org.obiba.mica.dataset.service.VariableSetService;
 import org.obiba.mica.file.FileStoreService;
 import org.obiba.mica.micaConfig.event.DataAccessFormUpdatedEvent;
 import org.obiba.mica.micaConfig.service.DataAccessFormService;
@@ -25,7 +29,9 @@ public abstract class DataAccessEntityResource<T extends DataAccessEntity> {
 
   protected FileStoreService fileStoreService;
 
-  private DataAccessFormService dataAccessFormService;
+  protected DataAccessFormService dataAccessFormService;
+
+  protected VariableSetService variableSetService;
 
   protected abstract DataAccessEntityService<T> getService();
 
@@ -34,10 +40,12 @@ public abstract class DataAccessEntityResource<T extends DataAccessEntity> {
   public DataAccessEntityResource(
     SubjectAclService subjectAclService,
     FileStoreService fileStoreService,
-    DataAccessFormService dataAccessFormService) {
+    DataAccessFormService dataAccessFormService,
+    VariableSetService variableSetService) {
     this.subjectAclService = subjectAclService;
     this.fileStoreService = fileStoreService;
     this.dataAccessFormService = dataAccessFormService;
+    this.variableSetService = variableSetService;
   }
 
   @Subscribe
@@ -59,6 +67,31 @@ public abstract class DataAccessEntityResource<T extends DataAccessEntity> {
   // Private methods
   //
 
+  /**
+   * Create or update a variables set from user's cart.
+   *
+   * @param entity
+   * @return
+   */
+  protected DocumentSet createOrUpdateVariablesSet(DataAccessEntity entity) {
+    DocumentSet set;
+    DocumentSet cart = variableSetService.getCartCurrentUser();
+    String setId = String.format("dar:%s", entity.getId());
+    Optional<DocumentSet> setOpt = variableSetService.getAllCurrentUser().stream().filter(docset -> setId.equals(docset.getName())).findFirst();
+    if (setOpt.isPresent()) {
+      // reuse and append an existing set with same name
+      set = variableSetService.addIdentifiers(setId, Lists.newArrayList(cart.getIdentifiers()));
+    } else {
+      // create a new one
+      set = variableSetService.create(setId, Lists.newArrayList(cart.getIdentifiers()));
+    }
+    // case an administrator is by-passing the flow
+    if (!DataAccessEntityStatus.OPENED.equals(entity.getStatus())) {
+      variableSetService.setLock(set, true);
+    }
+    return set;
+  }
+
   protected Response submit(String id) {
     DataAccessEntity request = getService().findById(id);
     boolean fromOpened = request.getStatus() == DataAccessEntityStatus.OPENED;
@@ -70,6 +103,10 @@ public abstract class DataAccessEntityResource<T extends DataAccessEntity> {
     getService().updateStatus(id, DataAccessEntityStatus.SUBMITTED);
     if (fromOpened || fromConditionallyApproved) {
       restoreDaoActions(id);
+    }
+    if (request.hasVariablesSet()) {
+      DocumentSet set = request.getVariablesSet();
+      variableSetService.setLock(set, true);
     }
     return Response.noContent().build();
   }

@@ -75,3 +75,8 @@
     </div>
   </div>
 </#macro>
+
+<!-- Variables linking -->
+<#assign variablesEnabled = accessConfig.variablesEnabled && config.cartEnabled/>
+<#assign feasibilityVariablesEnabled = accessConfig.feasibilityVariablesEnabled && config.cartEnabled/>
+<#assign amendmentVariablesEnabled = accessConfig.amendmentVariablesEnabled && config.cartEnabled/>

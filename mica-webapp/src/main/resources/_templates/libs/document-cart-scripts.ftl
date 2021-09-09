@@ -5,7 +5,8 @@
     locale: "${.lang}",
     tr: {
       "no-variable-added-set": "<@message "sets.set.no-variable-added"/>",
-      "variables-added-to-set": "<@message "variables-added-to-set"/>"
+      "variables-added-to-set": "<@message "variables-added-to-set"/>",
+      "data-access-request": "<@message "data-access-request"/>"
     }
   };
 
@@ -42,21 +43,28 @@
     }
   }
 
+  function normalizeSetName(set) {
+    if (set.name.startsWith('dar:')) {
+      return set.name.replace('dar:', '') + ' [' + Mica.tr['data-access-request'] + ']';
+    }
+    return set.name;
+  }
+
   function addToSet(setId, setName) {
     const onsuccess = (set, oldSet) => {
       if (set.count === oldSet.count) {
-        MicaService.toastInfo(Mica.tr['no-variable-added-set'].replace('{{arg0}}', '"' + set.name + '"'));
+        MicaService.toastInfo(Mica.tr['no-variable-added-set'].replace('{{arg0}}', '"' + normalizeSetName(set) + '"'));
       } else {
-        MicaService.toastSuccess(Mica.tr['variables-added-to-set'].replace('{0}', (set.count - oldSet.count).toLocaleString(Mica.locale)).replace('{1}', '"' + set.name + '"'));
+        MicaService.toastSuccess(Mica.tr['variables-added-to-set'].replace('{0}', (set.count - oldSet.count).toLocaleString(Mica.locale)).replace('{1}', '"' + normalizeSetName(set) + '"'));
       }
       VariablesSetService.showSetsCount($('#list-count'), sets => {
         $('#add-set-divider').show();
         const choicesElem = $('#add-set-choices');
         choicesElem.empty();
-        sets.forEach(set => {
+        sets.filter(set => !set.locked).forEach(set => {
           const btn = "<button type=\"button\" class=\"dropdown-item\"" +
-                  "            onclick=\"onClickAddToSet('" + set.id + "', '" + set.name + "')\">" +
-                  "          " + set.name + " <span class=\"badge badge-light float-right\">" + set.count + "</span>" +
+                  "            onclick=\"onClickAddToSet('" + set.id + "', '" + normalizeSetName(set) + "')\">" +
+                  "          " + normalizeSetName(set) + " <span class=\"badge badge-light float-right\">" + set.count + "</span>" +
                   "</button>";
           choicesElem.append(btn);
         });

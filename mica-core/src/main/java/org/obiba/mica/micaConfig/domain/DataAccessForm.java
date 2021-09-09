@@ -91,6 +91,12 @@ public class DataAccessForm extends AbstractDataAccessEntityForm {
 
   private boolean amendmentsEnabled = false;
 
+  private boolean variablesEnabled = false;
+
+  private boolean feasibilityVariablesEnabled = false;
+
+  private boolean amendmentVariablesEnabled = false;
+
   private boolean daoCanEdit = false;
 
   private int nbOfDaysBeforeReport = 7;
@@ -333,6 +339,30 @@ public class DataAccessForm extends AbstractDataAccessEntityForm {
 
   public void setAmendmentsEnabled(boolean amendmentsEnabled) {
     this.amendmentsEnabled = amendmentsEnabled;
+  }
+
+  public void setVariablesEnabled(boolean variablesEnabled) {
+    this.variablesEnabled = variablesEnabled;
+  }
+
+  public boolean isVariablesEnabled() {
+    return variablesEnabled;
+  }
+
+  public void setFeasibilityVariablesEnabled(boolean feasibilityVariablesEnabled) {
+    this.feasibilityVariablesEnabled = feasibilityVariablesEnabled;
+  }
+
+  public boolean isFeasibilityVariablesEnabled() {
+    return feasibilityVariablesEnabled;
+  }
+
+  public void setAmendmentVariablesEnabled(boolean amendmentVariablesEnabled) {
+    this.amendmentVariablesEnabled = amendmentVariablesEnabled;
+  }
+
+  public boolean isAmendmentVariablesEnabled() {
+    return amendmentVariablesEnabled;
   }
 
   public boolean isDaoCanEdit() {

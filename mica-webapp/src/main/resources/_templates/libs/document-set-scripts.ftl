@@ -4,6 +4,20 @@
 <script>
   const variablesCartStorage = new MicaSetStorage('cart');
 
+  // cart
+  <#if cartEnabled>
+  const onVariablesCartAdd = function(id) {
+    VariablesSetService.addQueryToCart('variable(in(Mica_variable.sets,' + id + '),limit(0,10000),fields(variableType))', function(cart, oldCart) {
+      VariablesSetService.showCount('#cart-count', cart, '${.lang}');
+      if (cart.count === oldCart.count) {
+        MicaService.toastInfo("<@message "sets.cart.no-variable-added"/>");
+      } else {
+        MicaService.toastSuccess("<@message "variables-added-to-cart"/>".replace('{0}', (cart.count - oldCart.count).toLocaleString('${.lang}')));
+      }
+    });
+  };
+  </#if>
+
   $(function () {
 
     // clear any previous selections from local storage
@@ -31,11 +45,13 @@
           searchable: false,
           targets: 1
       }],
+      <#if !set.locked || isAdministrator>
       select: {
         style: 'multi',
         selector: 'td:first-child',
         info: false
       },
+      </#if>
       "ajax": function(data, callback) {
         VariablesSetService.search('${set.id}', data.start, data.length, function(response) {
           $('#loadingSet').hide();
@@ -48,7 +64,11 @@
               let row = [];
               const summary = summaries[i];
               // checkbox
-              row.push('<i class="far fa-square"></i>');
+              if (${set.locked?c} && !${isAdministrator?c}) {
+                row.push('');
+              } else {
+                row.push('<i class="far fa-square"></i>');
+              }
               // ID
               row.push(summary.id);
               row.push('<a href="${contextPath}/variable/' + summary.id + '">' + summary.name + '</a>');

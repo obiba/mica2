@@ -1184,6 +1184,7 @@
     "set": {
       "title": "Listes",
       "help": "Gestion des listes de variables sauvegardées. Chaque liste peut ensuite être analysée ou vu dans la page de recherche.",
+      "dar-help": "Cette liste est liée à un formulaire de demande d'accès aux données. Elle est modifiable par le demandeur tant que le formulaire n'a pas été soumis.",
       "no-variable-added": "Aucune variable n'a été ajoutée à la liste {{arg0}}.",
       "variables-added": "<a href='{{arg0}}?id={{arg1}}' target='_self'><u>{{arg2}} variable(s) ont été ajoutées à la liste {{arg3}}.</u></a>"
     },
@@ -1944,6 +1945,12 @@
     "amendments-enabled-help":"Permet d'amender des modifications à une demande d'accès aux données approuvée.",
     "feasibility-enabled": "Activer la demande de faisabilité.",
     "feasibility-enabled-help":"Permet d'investiguer la faisabilité d'une demande d'accès aux données.",
+    "variables-enabled": "Enable Variables attachment.",
+    "variables-enabled-help":"Enable attaching a variable list to the main form.",
+    "amendment-variables-enabled": "Enable Variables attachment to an Amendment.",
+    "amendment-variables-enabled-help":"Enable attaching a variable list to an amendment form.",
+    "feasibility-variables-enabled": "Enable Variables attachment to a Feasibility Inquiry.",
+    "feasibility-variables-enabled-help":"Enable attaching a variable list to a feasibility inquiry form.",
     "pdf-download": {
       "title": "Télécharger le PDF",
       "info": "Les données collectées dans le formulaire peuvent être représentées dans un fichier PDF. Choisissez l'une des options suivantes:"
@@ -1987,7 +1994,10 @@
     },
     "settings": {
       "title": "Paramètres",
-      "info": "Activer des formulaires complémentaires et modifier des permissions."
+      "info": "Activer des formulaires complémentaires et modifier des permissions.",
+      "other-forms-title": "Autres Formulaires",
+      "permissions-title": "Permissions",
+      "variables-title": "Variables"
     },
     "id-generation": {
       "title": "Generation d'ID",

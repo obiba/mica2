@@ -17,6 +17,7 @@
     "studies": "<@message "studies"/>",
     "networks": "<@message "networks"/>",
     "network": "<@message "network"/>",
+    "data-access-request": "<@message "data-access-request"/>",
     "name": "<@message "name"/>",
     "label": "<@message "label"/>",
     "annotations": "<@message "annotations"/>",

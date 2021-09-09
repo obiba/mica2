@@ -36,6 +36,7 @@ class SetDtos {
 
     if (documentSet.hasName()) builder.setName(documentSet.getName());
     if (documentSet.hasUsername()) builder.setUsername(documentSet.getUsername());
+    builder.setLocked(documentSet.isLocked());
 
     return builder.build();
   }

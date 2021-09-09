@@ -4,7 +4,9 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import org.joda.time.DateTime;
 import org.obiba.mica.core.domain.AbstractAuditableDocument;
+import org.obiba.mica.core.domain.DocumentSet;
 import org.obiba.mica.core.domain.SchemaFormContentAware;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 
 import javax.validation.constraints.NotNull;
 import java.util.List;
@@ -27,6 +29,9 @@ public abstract class DataAccessEntity extends AbstractAuditableDocument impleme
   private List<StatusChange> statusChangeHistory;
 
   private List<ActionLog> actionLogHistory;
+
+  @DBRef
+  private DocumentSet variablesSet;
 
   //
   // Accessors
@@ -96,6 +101,18 @@ public abstract class DataAccessEntity extends AbstractAuditableDocument impleme
 
   public void setActionLogHistory(List<ActionLog> actionLogHistory) {
     this.actionLogHistory = actionLogHistory;
+  }
+
+  public DocumentSet getVariablesSet() {
+    return variablesSet;
+  }
+
+  public boolean hasVariablesSet() {
+    return variablesSet != null;
+  }
+
+  public void setVariablesSet(DocumentSet variablesSet) {
+    this.variablesSet = variablesSet;
   }
 
   public static Builder newBuilder() {

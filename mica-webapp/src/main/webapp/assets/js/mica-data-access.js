@@ -82,6 +82,44 @@ class DataAccessService {
       });
   }
 
+  static linkVariables(id, type, aId) {
+    let url = '/ws/data-access-request/' + id;
+    let redirect = '/data-access-form/' + id;
+    if (type && aId) {
+      url = url + '/' + type + '/' + aId;
+      redirect = '/data-access-' + type + '-form/' + aId;
+    }
+    url = url + '/variables';
+    axios.put(MicaService.normalizeUrl(url))
+      .then(() => {
+        //console.dir(response);
+        MicaService.redirect(MicaService.normalizeUrl(redirect));
+      })
+      .catch(response => {
+        console.dir(response);
+        MicaService.toastError('Linking variables failed.');
+      });
+  }
+
+  static unlinkVariables(id, type, aId) {
+    let url = '/ws/data-access-request/' + id;
+    let redirect = '/data-access-form/' + id;
+    if (type && aId) {
+      url = url + '/' + type + '/' + aId;
+      redirect = '/data-access-' + type + '-form/' + aId;
+    }
+    url = url + '/variables';
+    axios.delete(MicaService.normalizeUrl(url))
+      .then(() => {
+        //console.dir(response);
+        MicaService.redirect(MicaService.normalizeUrl(redirect));
+      })
+      .catch(response => {
+        console.dir(response);
+        MicaService.toastError('Unlink variables failed.');
+      });
+  }
+
   static submit(id, type, aId) {
     let url = '/ws/data-access-request/' + id + '/_status?to=SUBMITTED';
     let redirect = '/data-access-form/' + id;
