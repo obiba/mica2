@@ -103,7 +103,7 @@
                     </form>
                     <div class="dropdown-divider" v-if="variableSets.length > 0 && numberOfSetsRemaining > 0"></div>
                     <button type="button" class="dropdown-item" v-for="set in variableSets" v-bind:key="set.id" @click="onAddToSet(set.id)">
-                      {{ set.name }}
+                      {{ normalizeSetName(set) }}
                       <span class="badge badge-light float-right">{{ set.count }}</span>
                     </button>
                   </div>

@@ -1,8 +1,11 @@
+<!-- Macros -->
+<#include "models/list.ftl">
+
 <!DOCTYPE html>
 <html lang="${.lang}" xmlns:v-bind="http://www.w3.org/1999/xhtml">
 <head>
   <#include "libs/head.ftl">
-  <title>${config.name!""} | ${set.name}</title>
+  <title>${config.name!""} | ${listName(set)}</title>
 </head>
 <body id="list-page" class="hold-transition sidebar-mini layout-fixed layout-navbar-fixed">
 <!-- Site wrapper -->
@@ -46,7 +49,14 @@
                 <a class="nav-link ${variableListActiveClass}" href="${contextPath}/list/${variableList.id}">
                   <i class="far fa-circle nav-icon"></i>
                   <p>
-                    <span title="${variableList.name}">${variableList.name?truncate_c(20, "...")}</span>
+                    <span title="${listName(variableList)} <#if variableList.name?starts_with("dar:")>[<@message "data-access-request"/>]</#if>">
+                        ${listName(variableList)?truncate_c(20, "...")}
+                    </span>
+                    <#if variableList.name?starts_with("dar:")>
+                      <i class="fas fa-link ml-2"></i>
+                    <#else>
+                      <span></span>
+                    </#if>
                     <#if variableList.locked>
                       <i class="fas fa-lock ml-2"></i>
                     </#if>
@@ -56,6 +66,12 @@
               </li>
             </#list>
           </ul>
+        <#else >
+          <span class="pl-2 text-white-50">
+            <em>
+              <@message "no-personal-list"/>
+            </em>
+          </span>
         </#if>
       </nav>
       <!-- /.sidebar-menu -->
@@ -77,7 +93,11 @@
         <div class="row">
           <div class="col-sm-12">
             <h1 class="m-0 float-left">
-              <span class="text-white-50"><@message "search.list"/> /</span> ${set.name}
+              <span class="text-white-50"><@message "search.list"/> /</span>
+                ${listName(set)}
+                <#if set.name?starts_with("dar:")>
+                  [<@message "data-access-request"/>]
+                </#if>
             </h1>
             <#if !set.locked || isAdministrator>
               <button type="button" class="btn btn-danger ml-4" data-toggle="modal" data-target="#modal-delete-list">
@@ -95,7 +115,7 @@
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-            <h4 class="modal-title"><@message "cart-confirm-deletion-title"/> (${set.name})</h4>
+            <h4 class="modal-title"><@message "cart-confirm-deletion-title"/> (${listName(set)})</h4>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
@@ -122,7 +142,7 @@
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-            <h4 class="modal-title"><@message "cart-confirm-deletion-title"/> (${set.name})</h4>
+            <h4 class="modal-title"><@message "cart-confirm-deletion-title"/> (${listName(set)})</h4>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
@@ -146,9 +166,20 @@
     <!-- Main content -->
     <div class="content">
       <div class="container-fluid">
-        <div id="list-callout" class="callout callout-info">
-          <p><@message "sets.set.help"/></p>
-        </div>
+
+        <#if set.name?starts_with("dar:")>
+          <div id="dar-list-callout" class="callout callout-info">
+            <p><@message "sets.set.dar-help"/></p>
+            <btn class="btn btn-info" onclick="location.href='${contextPath}/data-access-form/${set.name?replace("dar:", "")}'">
+              <i class="fas fa-link"></i>
+              <@message "data-access-request"/>
+            </btn>
+          </div>
+        <#else>
+          <div id="list-callout" class="callout callout-info">
+            <p><@message "sets.set.help"/></p>
+          </div>
+        </#if>
 
         <div class="card card-info card-outline">
           <div class="card-header">

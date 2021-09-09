@@ -4,7 +4,7 @@
 <!DOCTYPE html>
 <html lang="${.lang}">
 <head>
-    <#include "libs/head.ftl">
+  <#include "libs/head.ftl">
   <title>${config.name!""} | <@message "data-access-form"/> ${dar.id}</title>
 </head>
 <body id="data-access-form-page" ng-app="formModule" class="hold-transition sidebar-mini layout-fixed layout-navbar-fixed">
@@ -12,11 +12,11 @@
 <div class="wrapper">
 
   <!-- Navbar -->
-    <#include "libs/aside-navbar.ftl">
+  <#include "libs/aside-navbar.ftl">
   <!-- /.navbar -->
 
   <!-- Sidebar -->
-    <#include "libs/data-access-sidebar.ftl">
+  <#include "libs/data-access-sidebar.ftl">
   <!-- /.sidebar -->
 
   <!-- Content Wrapper. Contains page content -->
@@ -55,7 +55,7 @@
       </#if>
 
       <div class="row" ng-controller="FormController">
-        <div class="col-sm-12 <#if dataAccessInstructionsEnabled || (accessConfig.variablesEnabled && cartEnabled)>col-lg-8<#else>col-lg-12</#if>">
+        <div class="col-sm-12 <#if dataAccessInstructionsEnabled || variablesEnabled>col-lg-8<#else>col-lg-12</#if>">
           <div class="card card-primary card-outline">
             <div class="card-header d-print-none">
               <h3 class="card-title"><@message "application-form"/></h3>
@@ -296,11 +296,11 @@
           <!-- /.modal -->
         </div>
 
-        <#if dataAccessInstructionsEnabled || (accessConfig.variablesEnabled && cartEnabled)>
+        <#if dataAccessInstructionsEnabled || variablesEnabled>
           <div class="col-sm-12 col-lg-4 d-print-none">
 
-            <#if accessConfig.variablesEnabled && cartEnabled>
-              <div class="card card-info card-outline">
+            <#if variablesEnabled>
+              <div class="card card-primary card-outline">
                 <div class="card-header">
                   <h3 class="card-title"><@message "variables"/></h3>
                 </div>
@@ -308,7 +308,7 @@
                   <#if dar.variablesSet??>
                     <a class="btn btn-info" href="${contextPath}/list/${dar.variablesSet.id}">
                       <i class="far fa-list-alt"></i>
-                      <span>${dar.variablesSet.name}</span>
+                      <span><@message "list-linked-variables"/></span>
                       <span class="badge badge-light">${dar.variablesSet.identifiers?size}</span>
                     </a>
                     <#if permissions?seq_contains("EDIT")>

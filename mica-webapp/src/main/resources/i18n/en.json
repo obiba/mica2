@@ -1188,6 +1188,7 @@
     "set": {
       "title": "Lists",
       "help": "Manage saved lists of variables. Each list can be analyzed or can be viewed in the search page.",
+      "dar-help": "This list is linked to a data access request form. It is modifiable by the applicant until the form is submitted.",
       "no-variable-added": "No variable has been added to the {{arg0}} list.",
       "variables-added": "<a href='{{arg0}}?id={{arg1}}' target='_self'><u>{{arg2}} variable(s) were added to list {{arg3}}.</u></a>"
     },

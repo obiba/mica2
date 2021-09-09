@@ -1,3 +1,6 @@
+<!-- Macros -->
+<#include "models/list.ftl">
+
 <!DOCTYPE html>
 <html lang="${.lang}">
 <head>
@@ -93,10 +96,12 @@
                       <div id="add-set-choices">
                         <#if user.variablesLists?has_content>
                           <#list user.variablesLists as variableList>
-                            <button type="button" class="dropdown-item"
-                                    onclick="onClickAddToSet('${variableList.id}', '${variableList.name}')">
-                              ${variableList.name} <span class="badge badge-light float-right">${variableList.identifiers?size}</span>
-                            </button>
+                            <#if !variableList.locked>
+                              <button type="button" class="dropdown-item"
+                                      onclick="onClickAddToSet('${variableList.id}', '${variableList.name}')">
+                                  ${listName(variableList)} <#if variableList.name?starts_with("dar:")>[<@message "data-access-request"/>]</#if> <span class="badge badge-light float-right">${variableList.identifiers?size}</span>
+                              </button>
+                            </#if>
                           </#list>
                         </#if>
                       </div>

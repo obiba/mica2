@@ -1184,6 +1184,7 @@
     "set": {
       "title": "Listes",
       "help": "Gestion des listes de variables sauvegardées. Chaque liste peut ensuite être analysée ou vu dans la page de recherche.",
+      "dar-help": "Cette liste est liée à un formulaire de demande d'accès aux données. Elle est modifiable par le demandeur tant que le formulaire n'a pas été soumis.",
       "no-variable-added": "Aucune variable n'a été ajoutée à la liste {{arg0}}.",
       "variables-added": "<a href='{{arg0}}?id={{arg1}}' target='_self'><u>{{arg2}} variable(s) ont été ajoutées à la liste {{arg3}}.</u></a>"
     },

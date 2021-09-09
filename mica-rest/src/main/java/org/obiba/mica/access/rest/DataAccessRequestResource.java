@@ -225,30 +225,26 @@ public class DataAccessRequestResource extends DataAccessEntityResource<DataAcce
 
   @PUT
   @Path("/_link")
-  public Response linkVariables(@PathParam("id") String id, @QueryParam("list") String setId) {
+  public Response linkVariables(@PathParam("id") String id) {
     subjectAclService.checkPermission("/data-access-request", "EDIT", id);
     DataAccessRequest request = dataAccessRequestService.findById(id);
-    if (DataAccessEntityStatus.OPENED.equals(request.getStatus())) {
-      DocumentSet set;
-      if (Strings.isNullOrEmpty(setId)) {
-        DocumentSet cart = variableSetService.getCartCurrentUser();
-        Optional<DocumentSet> setOpt = variableSetService.getAllCurrentUser().stream().filter(docset -> request.getId().equals(docset.getName())).findFirst();
-        if (setOpt.isPresent()) {
-          // reuse and overwrite an existing set with same name
-          set = variableSetService.setIdentifiers(setOpt.get().getId(), Lists.newArrayList(cart.getIdentifiers()));
-        } else {
-          // create a new one
-          set = variableSetService.create(request.getId(), Lists.newArrayList(cart.getIdentifiers()));
-        }
-      } else {
-        set = variableSetService.findOne(setId);
-      }
-      if (set != null) {
-        request.setVariablesSet(set);
-        dataAccessRequestService.save(request);
-      }
+    DocumentSet set;
+    DocumentSet cart = variableSetService.getCartCurrentUser();
+    String setId = String.format("dar:%s", request.getId());
+    Optional<DocumentSet> setOpt = variableSetService.getAllCurrentUser().stream().filter(docset -> setId.equals(docset.getName())).findFirst();
+    if (setOpt.isPresent()) {
+      // reuse and overwrite an existing set with same name
+      set = variableSetService.setIdentifiers(setId, Lists.newArrayList(cart.getIdentifiers()));
     } else {
-      throw new BadRequestException("Cannot link variables: data access request must be opened");
+      // create a new one
+      set = variableSetService.create(setId, Lists.newArrayList(cart.getIdentifiers()));
+    }
+    if (!DataAccessEntityStatus.OPENED.equals(request.getStatus())) {
+      variableSetService.setLock(set, true);
+    }
+    if (set != null) {
+      request.setVariablesSet(set);
+      dataAccessRequestService.save(request);
     }
     return Response.noContent().build();
   }
@@ -259,12 +255,8 @@ public class DataAccessRequestResource extends DataAccessEntityResource<DataAcce
     subjectAclService.checkPermission("/data-access-request", "EDIT", id);
     DataAccessRequest request = dataAccessRequestService.findById(id);
     DocumentSet set = request.getVariablesSet();
-    if (set != null) {
-      if (set.getName().equals(request.getId()))
-        variableSetService.delete(set);
-      else
-        variableSetService.setLock(set, false);
-    }
+    if (set != null)
+      variableSetService.delete(set);
     return Response.noContent().build();
   }
 

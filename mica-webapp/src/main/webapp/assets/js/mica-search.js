@@ -841,6 +841,12 @@ class TableFixedHeaderUtility {
       onCopyQuery() {
         navigator.clipboard.writeText(this.queryToCopy);
       },
+      normalizeSetName(set) {
+        if (set.name.startsWith('dar:')) {
+          return set.name.replace('dar:', '') + ' [' + Mica.tr['data-access-request'] + ']';
+        }
+        return set.name;
+      },
       onAddToCart() {
         const onsuccess = function(cart, oldCart) {
           VariablesSetService.showCount('#cart-count', cart, Mica.locale);
@@ -860,14 +866,14 @@ class TableFixedHeaderUtility {
       onAddToSet(setId) {
         const onsuccess = (set, oldSet) => {
           if (set.count === oldSet.count) {
-            MicaService.toastInfo(Mica.tr['no-variable-added-set'].replace('{{arg0}}', '"' + set.name + '"'));
+            MicaService.toastInfo(Mica.tr['no-variable-added-set'].replace('{{arg0}}', '"' + this.normalizeSetName(set) + '"'));
           } else {
-            MicaService.toastSuccess(Mica.tr['variables-added-to-set'].replace('{0}', (set.count - oldSet.count).toLocaleString(Mica.locale)).replace('{1}', '"' + set.name + '"'));
+            MicaService.toastSuccess(Mica.tr['variables-added-to-set'].replace('{0}', (set.count - oldSet.count).toLocaleString(Mica.locale)).replace('{1}', '"' + this.normalizeSetName(set) + '"'));
           }
 
           this.newVariableSetName = '';
           VariablesSetService.showSetsCount($('#list-count'), sets => {
-            this.variableSets = sets;
+            this.variableSets = sets.filter(set => set.name && !set.locked);
           });
         };
 
@@ -978,15 +984,15 @@ class TableFixedHeaderUtility {
 
                 const urlParts = MicaTreeQueryUrl.parseUrl();
                 const searchParams = urlParts.searchParams || {};
-          
+
                 const display = urlParts.hash || 'list';
                 const type = searchParams.type || TYPES.VARIABLES;
-          
+
                 let params = [`type=${type}`, `query=${tree.serialize()}`];
-          
+
                 const urlSearch = params.join("&");
                 const hash = `${display}?${urlSearch}`;
-          
+
                 window.location.hash = `#${hash}`;
               }
             }
@@ -1078,7 +1084,7 @@ class TableFixedHeaderUtility {
               termsWithZeroHits[key].push(name);
             }
           });
-  
+
           this.hasCoverageTermsWithZeroHits = Object.keys(termsWithZeroHits).length > 0; // active?
           if (this.hasCoverageTermsWithZeroHits) {
             for (const queryKey in termsWithZeroHits) {
@@ -1194,7 +1200,7 @@ class TableFixedHeaderUtility {
 
       VariablesSetService.getSets(data => {
         if (Array.isArray(data)) {
-          this.variableSets = data.filter(set => set.name);
+          this.variableSets = data.filter(set => set.name && !set.locked);
         }});
       this.onExecuteQuery();
     },
