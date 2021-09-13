@@ -17,13 +17,17 @@ import org.obiba.mica.access.domain.DataAccessRequest;
 import org.obiba.mica.core.repository.AttachmentAwareRepository;
 import org.obiba.mica.core.repository.AttachmentRepository;
 import org.obiba.mica.core.support.MongoAggregationExecutor;
+import org.obiba.mica.dataset.service.VariableSetService;
 import org.obiba.mica.file.FileStoreService;
 import org.slf4j.Logger;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
-import java.util.*;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Component
@@ -34,21 +38,22 @@ public class DataAccessRequestRepositoryImpl
 
   final AttachmentRepository attachmentRepository;
 
-  final
-  FileStoreService fileStoreService;
+  final FileStoreService fileStoreService;
 
-  final
-  MongoTemplate mongoTemplate;
+  final MongoTemplate mongoTemplate;
+
+  private final VariableSetService variableSetService;
 
   private final MongoAggregationExecutor aggregationExecutor;
 
   @Inject
   public DataAccessRequestRepositoryImpl(AttachmentRepository attachmentRepository,
                                          FileStoreService fileStoreService,
-                                         MongoTemplate mongoTemplate) {
+                                         MongoTemplate mongoTemplate, VariableSetService variableSetService) {
     this.attachmentRepository = attachmentRepository;
     this.fileStoreService = fileStoreService;
     this.mongoTemplate = mongoTemplate;
+    this.variableSetService = variableSetService;
     this.aggregationExecutor = MongoAggregationExecutor.newInstance(mongoTemplate);
   }
 
@@ -79,6 +84,9 @@ public class DataAccessRequestRepositoryImpl
   public void deleteWithReferences(DataAccessRequest dataAccessRequest) {
     mongoTemplate.remove(dataAccessRequest);
     deleteAttachments(dataAccessRequest);
+    if (dataAccessRequest.hasVariablesSet()) {
+      variableSetService.delete(dataAccessRequest.getVariablesSet());
+    }
   }
 
   @Override
@@ -96,25 +104,25 @@ public class DataAccessRequestRepositoryImpl
     List<String> aggScripts = Arrays.asList(
       "{$sort: {lastModifiedDate: 1}}",
       "    {\n" +
-      "      $group: {\n" +
-      "      _id: \"$parentId\",\n" +
-      "        pending: {\n" +
-      "          $sum: {\n" +
-      "            $cond: {\n" +
-      "              if: { $or: [ { $eq: [ \"$status\", \"APPROVED\" ] }, { $eq: [ \"$status\", \"REJECTED\" ] } ] }, \n" +
-      "              then: 0, \n" +
-      "              else: 1\n" +
-      "            }\n" +
-      "          }\n" +
-      "        },\n" +
-      "        lastModified: { \n" +
-      "          $last: \"$lastModifiedDate\"\n" +
-      "        },\n" +
-      "        total: {\n" +
-      "          $sum: 1\n" +
-      "        }\n" +
-      "      }\n" +
-      "    }"
+        "      $group: {\n" +
+        "      _id: \"$parentId\",\n" +
+        "        pending: {\n" +
+        "          $sum: {\n" +
+        "            $cond: {\n" +
+        "              if: { $or: [ { $eq: [ \"$status\", \"APPROVED\" ] }, { $eq: [ \"$status\", \"REJECTED\" ] } ] }, \n" +
+        "              then: 0, \n" +
+        "              else: 1\n" +
+        "            }\n" +
+        "          }\n" +
+        "        },\n" +
+        "        lastModified: { \n" +
+        "          $last: \"$lastModifiedDate\"\n" +
+        "        },\n" +
+        "        total: {\n" +
+        "          $sum: 1\n" +
+        "        }\n" +
+        "      }\n" +
+        "    }"
     );
 
     if (!Strings.isNullOrEmpty(id)) {

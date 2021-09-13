@@ -133,6 +133,8 @@ public class DataAccessFeasibilityService extends DataAccessEntityService<DataAc
 
   void delete(@NotNull DataAccessFeasibility feasibility) throws NoSuchDataAccessRequestException {
     schemaFormContentFileService.deleteFiles(feasibility);
+    if (feasibility.hasVariablesSet())
+      variableSetService.delete(feasibility.getVariablesSet());
     eventBus.post(new DataAccessFeasibilityDeletedEvent(feasibility));
     dataFeasibilityRequestRepository.delete(feasibility);
   }

@@ -42,6 +42,7 @@ import org.obiba.mica.core.service.AgateServerConfigService;
 import org.obiba.mica.core.service.GitService;
 import org.obiba.mica.core.service.MailService;
 import org.obiba.mica.core.service.StudyIdGeneratorService;
+import org.obiba.mica.dataset.service.VariableSetService;
 import org.obiba.mica.file.FileStoreService;
 import org.obiba.mica.file.impl.GridFsService;
 import org.obiba.mica.file.notification.FilePublicationFlowMailNotification;
@@ -381,6 +382,11 @@ public class IndividualStudyServiceTest {
     @Bean
     public FileSystemService fileSystemService() {
       return mock(FileSystemService.class);
+    }
+
+    @Bean
+    public VariableSetService variableSetService() {
+      return mock(VariableSetService.class);
     }
 
     @Bean

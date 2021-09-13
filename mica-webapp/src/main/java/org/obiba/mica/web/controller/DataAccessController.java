@@ -233,19 +233,12 @@ public class DataAccessController extends BaseController {
 
   @ExceptionHandler(NoSuchDataAccessRequestException.class)
   public ModelAndView notFoundError(NoSuchDataAccessRequestException ex) {
-    return makeErrorModelAndView(404, ex.getMessage());
+    return makeErrorModelAndView("404", ex.getMessage());
   }
 
   //
   // Private methods
   //
-
-  private ModelAndView makeErrorModelAndView(int status, String message) {
-    ModelAndView model = new ModelAndView("error");
-    model.addObject("status", status);
-    model.addObject("msg", message);
-    return model;
-  }
 
   private Map<String, Object> newParameters(String id) {
     checkPermission("/data-access-request", "VIEW", id);

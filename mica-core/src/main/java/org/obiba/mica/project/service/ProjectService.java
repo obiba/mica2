@@ -312,6 +312,10 @@ public class ProjectService extends AbstractGitPersistableService<ProjectState, 
   @Async
   @Subscribe
   public void dataAccessRequestDeleted(DataAccessRequestDeletedEvent event) {
-    delete(event.getPersistable().getId());
+    try {
+      delete(event.getPersistable().getId());
+    } catch (NoSuchProjectException e) {
+      // ignore
+    }
   }
 }

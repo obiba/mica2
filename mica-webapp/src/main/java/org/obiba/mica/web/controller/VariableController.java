@@ -126,12 +126,14 @@ public class VariableController extends BaseController {
     return new ModelAndView("variable", params);
   }
 
-  @ExceptionHandler({NoSuchDatasetException.class, NoSuchVariableException.class})
-  public ModelAndView notFoundError(NoSuchElementException ex) {
-    ModelAndView model = new ModelAndView("error");
-    model.addObject("status", 404);
-    model.addObject("msg", ex.getMessage());
-    return model;
+  @ExceptionHandler(NoSuchDatasetException.class)
+  public ModelAndView datasetNotFoundError(NoSuchDatasetException ex) {
+    return makeErrorModelAndView("404", ex.getMessage());
+  }
+
+  @ExceptionHandler(NoSuchVariableException.class)
+  public ModelAndView variableNotFoundError(NoSuchVariableException ex) {
+    return makeErrorModelAndView("404", ex.getMessage());
   }
 
   //
