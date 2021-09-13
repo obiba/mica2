@@ -71,8 +71,14 @@
             <#if user.variablesCart?? && user.variablesCart.count gt 0>
               <div class="float-right">
 
+                <#if canCreateDAR>
+                  <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal-add">
+                    <i class="fas fa-plus"></i> <@message "new-data-access-request"/>
+                  </button>
+                </#if>
+
                 <#if user.variablesLists?size lt maxNumberOfSets>
-                  <div class="btn-group" role="group">
+                  <div class="btn-group ml-2" role="group">
                     <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown">
                       <@message "sets.add.button.set-label"/>
                       <span class="badge badge-light selection-count"></span>
@@ -172,14 +178,44 @@
   </div>
   <!-- /.content-wrapper -->
 
+  <#if canCreateDAR>
+    <!-- Confirm DAR addition modal -->
+    <div class="modal fade" id="modal-add">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title"><@message "confirm-creation"/></h4>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <p><@message "confirm-data-access-request-creation-from-cart"/></p>
+          </div>
+          <div class="modal-footer justify-content-between">
+            <button type="button" class="btn btn-default" data-dismiss="modal"><@message "cancel"/></button>
+            <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="DataAccessService.createFromCart()"><@message "confirm"/></button>
+          </div>
+        </div>
+        <!-- /.modal-content -->
+      </div>
+      <!-- /.modal-dialog -->
+    </div>
+    <!-- /.modal -->
+  </#if>
+
   <#include "libs/footer.ftl">
 </div>
 <!-- ./wrapper -->
 
 <#include "libs/scripts.ftl">
+<#include "libs/data-access-scripts.ftl">
 <#if user.variablesCart?? && user.variablesCart.count gt 0>
   <#assign set = user.variablesCart.set/>
   <#include "libs/document-cart-scripts.ftl">
+  <#if canCreateDAR>
+    <#include "libs/data-access-scripts.ftl">
+  </#if>
 </#if>
 
 </body>

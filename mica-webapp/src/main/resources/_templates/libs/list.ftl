@@ -10,3 +10,5 @@
   <#return name/>
 </#function>
 
+<!-- Data Access Request creation -->
+<#assign canCreateDAR = accessConfig?? && accessConfig.variablesEnabled/>

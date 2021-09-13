@@ -36,6 +36,23 @@ class DataAccessService {
       });
   }
 
+  static createFromCart() {
+    let url = '/ws/data-access-requests/_empty';
+    axios.post(MicaService.normalizeUrl(url))
+      .then(response => {
+        //console.dir(response);
+        if (response.status === 201) {
+          const tokens = response.headers.location.split('/');
+          const createdId = tokens[tokens.length - 1];
+          this.linkVariables(createdId);
+        }
+      })
+      .catch(response => {
+        console.dir(response);
+        MicaService.toastError('Creation failed.');
+      });
+  }
+
   static delete(id, type, aId) {
     let url = '/ws/data-access-request/' + id;
     let redirect = '/data-accesses';

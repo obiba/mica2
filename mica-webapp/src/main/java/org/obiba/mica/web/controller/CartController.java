@@ -5,6 +5,7 @@ import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import org.obiba.mica.core.domain.DocumentSet;
 import org.obiba.mica.dataset.service.VariableSetService;
+import org.obiba.mica.micaConfig.service.DataAccessFormService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,14 +22,20 @@ public class CartController extends BaseController {
   @Inject
   private VariableSetService variableSetService;
 
+  @Inject
+  private DataAccessFormService dataAccessFormService;
+
   @GetMapping("/cart")
   public ModelAndView get() {
     Subject subject = SecurityUtils.getSubject();
     if (subject.isAuthenticated()) {
-      DocumentSet cart = variableSetService.getAllCurrentUser().stream().filter(set -> !set.hasName())
+      // make sure cart exists
+      variableSetService.getAllCurrentUser().stream().filter(set -> !set.hasName())
         .findFirst().orElseGet(() -> variableSetService.create("", Lists.newArrayList()));
       // note: the cart will be populated by the SessionInterceptor
-      return new ModelAndView("cart");
+      Map<String, Object> params = newParameters();
+      params.put("accessConfig", dataAccessFormService.find().get());
+      return new ModelAndView("cart", params);
     } else {
       return new ModelAndView("redirect:signin?redirect=" + micaConfigService.getContextPath() + "/cart");
     }
