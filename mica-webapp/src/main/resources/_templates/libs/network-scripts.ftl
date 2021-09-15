@@ -115,22 +115,6 @@
 
   const chartTableTermSorters = new ChartTableTermSorters();
 
-  function genericParseForChart(chartData, vocabulary) {
-    let labels = [];
-    let data = [];
-
-    if (vocabulary) {
-      chartTableTermSorters.sort(vocabulary, chartData);
-    }
-
-    chartData.forEach(term => {
-      labels.push(term.title);
-      data.push(term.count);
-    });
-
-    return [labels, { data: data }];
-  }
-
   function genericParseForTable(vocabulary, chartData, forSubAggData) {
     return chartTableTermSorters.sort(vocabulary, chartData).map(term => {
       let row = {
@@ -151,7 +135,6 @@
 
   const chartOptions = {
     'geographical-distribution-chart': {
-
       id: 'geographical-distribution-chart',
       title: Mica.tr['geographical-distribution-chart-title'],
       text: Mica.tr['geographical-distribution-chart-text'],
@@ -161,48 +144,8 @@
       vocabulary: 'populations-selectionCriteria-countriesIso',
       dataKey: 'obiba.mica.TermsAggregationResultDto.terms',
       withSort: true,
-      parseForChart: function(chartData) {
-        let labels = [];
-        let data = [];
-
-        let states;
-        let featureFinder = function(key) {
-          return states.filter(state => state.id === key).pop();
-        };
-        if (['world'].includes(Mica.map.name)) {
-          states = ChartGeo.topojson.feature(Mica.map.topo, Mica.map.topo.objects.countries1).features;
-        } else {
-          states = ChartGeo.topojson.feature(Mica.map.topo, Mica.map.topo.objects.collection).features;
-        }
-        chartData.filter(term => term.count>0).forEach(term => {
-          labels.push(term.title);
-          data.push({
-            feature: featureFinder(term.key),
-            value: term.count
-          });
-        });
-
-        return [labels, {
-          outline: states,
-          data: data
-        }];
-      },
-      parseForTable: genericParseForTable,
-      options: {
-        showOutline: true,
-        showGraticule: false,
-        legend: {
-          display: false
-        },
-        scale: {
-          projection: 'mercator'//'equalEarth'//'naturalEarth1'
-        },
-        geo: {
-          colorScale: {
-            display: true,
-          },
-        }
-      }
+      termsSorterFunction: chartTableTermSorters.sort,
+      parseForTable: genericParseForTable
     },
     'study-design-chart': {
       id: 'study-design-chart',
@@ -211,7 +154,7 @@
       type: 'horizontalBar',
       backgroundColor: Mica.charts.backgroundColor,
       borderColor: Mica.charts.borderColor,
-      parseForChart: genericParseForChart,
+      termsSorterFunction: chartTableTermSorters.sort,
       parseForTable: genericParseForTable,
       agg: 'model-methods-design',
       vocabulary: 'methods-design',
@@ -224,16 +167,11 @@
       type: 'doughnut',
       backgroundColor: Mica.charts.backgroundColors,
       borderColor: Mica.charts.borderColor,
-      parseForChart: genericParseForChart,
+      termsSorterFunction: chartTableTermSorters.sort,
       parseForTable: genericParseForTable,
       agg: 'model-numberOfParticipants-participant-number-range',
       vocabulary: 'numberOfParticipants-participant-range',
-      dataKey: 'obiba.mica.RangeAggregationResultDto.ranges',
-      legend: {
-        display: true,
-        position: 'right',
-        align: 'start',
-      }
+      dataKey: 'obiba.mica.RangeAggregationResultDto.ranges'
     },
     'bio-samples-chart': {
       id: 'bio-samples-chart',
@@ -242,7 +180,7 @@
       type: 'horizontalBar',
       backgroundColor: Mica.charts.backgroundColor,
       borderColor: Mica.charts.borderColor,
-      parseForChart: genericParseForChart,
+      termsSorterFunction: chartTableTermSorters.sort,
       parseForTable: genericParseForTable,
       agg: 'populations-dataCollectionEvents-model-bioSamples',
       vocabulary: 'populations-dataCollectionEvents-bioSamples',
@@ -255,7 +193,7 @@
       type: 'horizontalBar',
       backgroundColor: Mica.charts.backgroundColor,
       borderColor: Mica.charts.borderColor,
-      parseForChart: genericParseForChart,
+      termsSorterFunction: chartTableTermSorters.sort,
       parseForTable: genericParseForTable,
       agg: 'model-startYear-range',
       vocabulary: 'start-range',
@@ -344,56 +282,62 @@
     const requests = [MicaService.normalizeUrl('/ws/taxonomies/_filter?target=study'), MicaService.normalizeUrl(url)];
     axios.all(requests.map(request => axios.get(request)))
       .then(axios.spread((...responses) => {
-        chartTableTermSorters.initialize((responses[0].data||[]).pop());
-        EventBus.$emit('query-type-graphics-results', {response: responses[1].data})
-      }));
+        const studyTaxonomy = (responses[0].data||[]).pop();
+        chartTableTermSorters.initialize(studyTaxonomy);
+
+        new Vue({
+          el: '#summary-statistics',
+          data() {
+            return {
+              hasGraphicsResult: false,
+              chartOptions: Mica.charts.chartIds.map(id => chartOptions[id]),
+              studyTaxonomy: studyTaxonomy
+            };
+          },
+          methods: {
+            onGraphicsResult(payload) {
+              this.hasGraphicsResult = payload.response.studyResultDto.totalHits > 0;
+              if (!this.hasGraphicsResult) {
+                $('#summary-statistics-container').addClass('d-none');
+              }
+            },
+            onTabClick(index) {
+              $('#summary-statistics .card').each((i, card) => {
+                if (i === index) {
+                  $(card).removeClass('d-none');
+                } else {
+                  $(card).addClass('d-none');
+                }
+              });
+
+              $('#summary-statistics .nav-link').each((i, link) => {
+                if (i === index) {
+                  $(link).addClass('active');
+                } else {
+                  $(link).removeClass('active');
+                }
+              });
+            }
+          },
+          updated() {
+            $('#summary-statistics .card').removeClass('card-outline').removeClass('card-primary').addClass('card-none');
+            $('#summary-statistics .card-tools').addClass('d-none');
+            this.onTabClick(0);
+          },
+          beforeMount() {
+            EventBus.register('query-type-graphics-results', this.onGraphicsResult.bind(this));
+          },
+          beforeDestory() {
+            EventBus.unregister('query-type-graphics-results', this.onGraphicsResult);
+          }
+        });
+
+        return responses[1].data;
+      }))
+    .then(data => {
+      EventBus.$emit('query-type-graphics-results', {response: data})
+    });
   }
-
-  new Vue({
-    el: '#summary-statistics',
-    data() {
-      return {
-        hasGraphicsResult: false,
-        chartOptions: Mica.charts.chartIds.map(id => chartOptions[id])
-      };
-    },
-    methods: {
-      onGraphicsResult(payload) {
-        this.hasGraphicsResult = payload.response.studyResultDto.totalHits > 0;
-        if (!this.hasGraphicsResult) {
-          $('#summary-statistics-container').addClass('d-none');
-        }
-      },
-      onTabClick(index) {
-        $('#summary-statistics .card').each((i, card) => {
-          if (i === index) {
-            $(card).removeClass('d-none');
-          } else {
-            $(card).addClass('d-none');
-          }
-        });
-
-        $('#summary-statistics .nav-link').each((i, link) => {
-          if (i === index) {
-            $(link).addClass('active');
-          } else {
-            $(link).removeClass('active');
-          }
-        });
-      }
-    },
-    updated() {
-      $('#summary-statistics .card').removeClass('card-outline').removeClass('card-primary').addClass('card-none');
-      $('#summary-statistics .card-tools').addClass('d-none');
-      this.onTabClick(0);
-    },
-    beforeMount() {
-      EventBus.register('query-type-graphics-results', this.onGraphicsResult.bind(this));
-    },
-    beforeDestory() {
-      EventBus.unregister('query-type-graphics-results', this.onGraphicsResult);
-    }
-  });
 
   const renderVariablesClassifications = function(key) {
     $('#loadingClassifications').hide();

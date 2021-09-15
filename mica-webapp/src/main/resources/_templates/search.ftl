@@ -368,7 +368,7 @@
                     <div id="graphics">
                       <div v-show="loading" class="spinner-border spinner-border-sm" role="status"></div>
                       <div class="mt-3 text-muted" v-show="!loading && !hasGraphicsResult">{{ "no-graphics-result" | translate }}</div>
-                      <graphics-result v-show="!loading && hasGraphicsResult" v-bind:chart-options="chartOptions"></graphics-result>
+                      <graphics-result v-show="!loading && hasGraphicsResult" v-bind:chart-options="chartOptions" :taxonomy="taxonomies['Mica_study']"></graphics-result>
                     </div>
                   </div>
                 </#if>

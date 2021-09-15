@@ -330,22 +330,6 @@ class TableFixedHeaderUtility {
 
   const chartTableTermSorters = new ChartTableTermSorters();
 
-  function genericParseForChart(chartData, vocabulary) {
-    let labels = [];
-    let data = [];
-
-    if (vocabulary) {
-      chartTableTermSorters.sort(vocabulary, chartData);
-    }
-
-    chartData.forEach(term => {
-      labels.push(term.title);
-      data.push(term.count);
-    });
-
-    return [labels, { data: data }];
-  }
-
   function genericParseForTable(vocabulary, chartData, forSubAggData) {
     return chartTableTermSorters.sort(vocabulary, chartData).map(term => {
       let row = {
@@ -374,7 +358,6 @@ class TableFixedHeaderUtility {
 
   const chartOptions = {
     'geographical-distribution-chart': {
-
       id: 'geographical-distribution-chart',
       title: Mica.tr['geographical-distribution-chart-title'],
       text: Mica.tr['geographical-distribution-chart-text'],
@@ -384,48 +367,7 @@ class TableFixedHeaderUtility {
       vocabulary: 'populations-selectionCriteria-countriesIso',
       dataKey: 'obiba.mica.TermsAggregationResultDto.terms',
       withSort: true,
-      parseForChart: function(chartData) {
-        let labels = [];
-        let data = [];
-
-        let states;
-        let featureFinder = function(key) {
-          return states.filter(state => state.id === key).pop();
-        };
-        if (['world'].includes(Mica.map.name)) {
-          states = ChartGeo.topojson.feature(Mica.map.topo, Mica.map.topo.objects.countries1).features;
-        } else {
-          states = ChartGeo.topojson.feature(Mica.map.topo, Mica.map.topo.objects.collection).features;
-        }
-        chartData.filter(term => term.count>0).forEach(term => {
-          labels.push(term.title);
-          data.push({
-            feature: featureFinder(term.key),
-            value: term.count
-          });
-        });
-
-        return [labels, {
-          outline: states,
-          data: data
-        }];
-      },
-      parseForTable: genericParseForTable,
-      options: {
-        showOutline: true,
-          showGraticule: false,
-          legend: {
-          display: false
-        },
-        scale: {
-          projection: 'mercator'//'equalEarth'//'naturalEarth1'
-        },
-        geo: {
-          colorScale: {
-            display: true,
-          },
-        }
-      }
+      parseForTable: genericParseForTable
     },
     'study-design-chart': {
       id: 'study-design-chart',
@@ -434,7 +376,7 @@ class TableFixedHeaderUtility {
       type: 'horizontalBar',
       backgroundColor: Mica.charts.backgroundColor,
       borderColor: Mica.charts.borderColor,
-      parseForChart: genericParseForChart,
+      termsSorterFunction: chartTableTermSorters.sort,
       parseForTable: genericParseForTable,
       agg: 'model-methods-design',
       vocabulary: 'methods-design',
@@ -447,16 +389,11 @@ class TableFixedHeaderUtility {
       type: 'doughnut',
       backgroundColor: Mica.charts.backgroundColors,
       borderColor: Mica.charts.borderColor,
-      parseForChart: genericParseForChart,
+      termsSorterFunction: chartTableTermSorters.sort,
       parseForTable: genericParseForTable,
       agg: 'model-numberOfParticipants-participant-number-range',
       vocabulary: 'numberOfParticipants-participant-range',
       dataKey: 'obiba.mica.RangeAggregationResultDto.ranges',
-      legend: {
-      display: true,
-        position: 'right',
-        align: 'start',
-      }
     },
     'bio-samples-chart': {
       id: 'bio-samples-chart',
@@ -465,7 +402,7 @@ class TableFixedHeaderUtility {
       type: 'horizontalBar',
       backgroundColor: Mica.charts.backgroundColor,
       borderColor: Mica.charts.borderColor,
-      parseForChart: genericParseForChart,
+      termsSorterFunction: chartTableTermSorters.sort,
       parseForTable: genericParseForTable,
       agg: 'populations-dataCollectionEvents-model-bioSamples',
       vocabulary: 'populations-dataCollectionEvents-bioSamples',
@@ -478,7 +415,7 @@ class TableFixedHeaderUtility {
       type: 'horizontalBar',
       backgroundColor: Mica.charts.backgroundColor,
       borderColor: Mica.charts.borderColor,
-      parseForChart: genericParseForChart,
+      termsSorterFunction: chartTableTermSorters.sort,
       parseForTable: genericParseForTable,
       agg: 'model-startYear-range',
       vocabulary: 'start-range',
@@ -1205,8 +1142,6 @@ class TableFixedHeaderUtility {
       this.onExecuteQuery();
     },
     updated() {
-      $('.tab-content .card').removeClass('card-primary').addClass('card-success');
-
       let coverageResultTableElement = document.querySelector('#vosr-coverage-result');
 
       if (this.coverageFixedHeaderHandler) {
