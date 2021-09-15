@@ -379,6 +379,8 @@ class TableFixedHeaderUtility {
       title: Mica.tr['geographical-distribution-chart-title'],
       text: Mica.tr['geographical-distribution-chart-text'],
       type: 'choropleth',
+      plotlyType: 'geo',
+      colors: Mica.charts.backgroundColors,
       borderColor: Mica.charts.borderColor,
       agg: 'populations-model-selectionCriteria-countriesIso',
       vocabulary: 'populations-selectionCriteria-countriesIso',
@@ -432,6 +434,8 @@ class TableFixedHeaderUtility {
       title: Mica.tr['study-design-chart-title'],
       text: Mica.tr['study-design-chart-text'],
       type: 'horizontalBar',
+      plotlyType: 'bar',
+      colors: Mica.charts.backgroundColors,
       backgroundColor: Mica.charts.backgroundColor,
       borderColor: Mica.charts.borderColor,
       parseForChart: genericParseForChart,
@@ -445,6 +449,8 @@ class TableFixedHeaderUtility {
       title: Mica.tr['number-participants-chart-title'],
       text: Mica.tr['number-participants-chart-text'],
       type: 'doughnut',
+      plotlyType: 'pie',
+      colors: Mica.charts.backgroundColors,
       backgroundColor: Mica.charts.backgroundColors,
       borderColor: Mica.charts.borderColor,
       parseForChart: genericParseForChart,
@@ -462,6 +468,8 @@ class TableFixedHeaderUtility {
       id: 'bio-samples-chart',
       title: Mica.tr['bio-samples-chart-title'],
       text: Mica.tr['bio-samples-chart-text'],
+      plotlyType: 'bar',
+      colors: Mica.charts.backgroundColors,
       type: 'horizontalBar',
       backgroundColor: Mica.charts.backgroundColor,
       borderColor: Mica.charts.borderColor,
@@ -475,6 +483,8 @@ class TableFixedHeaderUtility {
       id: 'study-start-year-chart',
       title: Mica.tr['study-start-year-chart-title'],
       text: Mica.tr['study-start-year-chart-text'],
+      plotlyType: 'bar',
+      colors: Mica.charts.backgroundColors,
       type: 'horizontalBar',
       backgroundColor: Mica.charts.backgroundColor,
       borderColor: Mica.charts.borderColor,
@@ -643,6 +653,7 @@ class TableFixedHeaderUtility {
         hasListResult: false,
         hasCoverageResult: false,
         hasGraphicsResult: false,
+        graphResult: null,
         selectedBucket: BUCKETS.study,
         dceChecked: false,
         bucketTitles: {
@@ -650,6 +661,7 @@ class TableFixedHeaderUtility {
           dataset: Mica.tr.dataset,
           dce: Mica.tr['data-collection-event'],
         },
+        rawChartOptions: chartOptions,
         chartOptions: Mica.charts.chartIds.map(id => chartOptions[id]),
         canDoFullCoverage: false,
         hasCoverageTermsWithZeroHits: false,
@@ -1020,6 +1032,7 @@ class TableFixedHeaderUtility {
       onGraphicsResult(payload) {
         this.display = DISPLAYS.GRAPHICS;
         this.hasGraphicsResult = payload.response.studyResultDto.totalHits > 0;
+        this.graphResult = payload.response.studyResultDto;
       },
       onCoverageResult(payload) {
         this.display = DISPLAYS.COVERAGE;
@@ -1205,8 +1218,6 @@ class TableFixedHeaderUtility {
       this.onExecuteQuery();
     },
     updated() {
-      $('.tab-content .card').removeClass('card-primary').addClass('card-success');
-
       let coverageResultTableElement = document.querySelector('#vosr-coverage-result');
 
       if (this.coverageFixedHeaderHandler) {

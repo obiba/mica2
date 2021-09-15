@@ -182,7 +182,22 @@
                     <ul class="nav nav-tabs">
                       <li class="nav-item" v-for="(option, index) in chartOptions" v-bind:key="option.id"><a href="" class="nav-link" @click.prevent="onTabClick(index)">{{option.title}}</a></li>
                     </ul>
-                    <graphics-result v-bind:chart-options="chartOptions" v-bind:hide-header="true"></graphics-result>
+
+                    <div class="card card-info card-outline" v-for="chartOption in rawChartOptions">
+                      <div class="card-body">
+                        <p class="text-muted">{{chartOption.text | translate}}</p>
+
+                        <div class="row">
+                          <div class="col my-auto">
+                            <search-graph :aggregation-name="chartOption.agg" :default-graph-type="chartOption.plotlyType" :graph-colors="chartOption.borderColor" :study-result="graphResult" :study-taxonomy="studyTaxonomy"></search-graph>
+                          </div>
+
+                          <div class="col overflow-auto" style="max-height: 24em">
+                            <search-graph-table :study-result="graphResult" :chart-options="chartOption"></search-graph-table>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </template>
                 </div>
               </div>

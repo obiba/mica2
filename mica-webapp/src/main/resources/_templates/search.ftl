@@ -368,7 +368,31 @@
                     <div id="graphics">
                       <div v-show="loading" class="spinner-border spinner-border-sm" role="status"></div>
                       <div class="mt-3 text-muted" v-show="!loading && !hasGraphicsResult">{{ "no-graphics-result" | translate }}</div>
-                      <graphics-result v-show="!loading && hasGraphicsResult" v-bind:chart-options="chartOptions"></graphics-result>
+
+                      <div class="card card-info card-outline" v-for="chartOption in rawChartOptions">
+                        <div class="card-header">
+                          <h3 class="card-title">{{chartOption.title | translate}}</h3>
+                          <div class="card-tools float-right">
+                            <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" v-bind:title="'collapse' | translate">
+                              <i class="fas fa-minus"></i>
+                            </button>
+                          </div>
+                        </div>
+
+                        <div class="card-body">
+                          <p class="text-muted">{{chartOption.text | translate}}</p>
+
+                          <div class="row">
+                            <div class="col my-auto">
+                              <search-graph :aggregation-name="chartOption.agg" :default-graph-type="chartOption.plotlyType" :graph-colors="chartOption.borderColor" :study-result="graphResult" :study-taxonomy="taxonomies['Mica_study']"></search-graph>
+                            </div>
+
+                            <div class="col overflow-auto" style="max-height: 24em">
+                              <search-graph-table :study-result="graphResult" :chart-options="chartOption"></search-graph-table>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </#if>

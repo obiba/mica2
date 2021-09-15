@@ -156,6 +156,8 @@
       title: Mica.tr['geographical-distribution-chart-title'],
       text: Mica.tr['geographical-distribution-chart-text'],
       type: 'choropleth',
+      plotlyType: 'geo',
+      colors: Mica.charts.backgroundColors,
       borderColor: Mica.charts.borderColor,
       agg: 'populations-model-selectionCriteria-countriesIso',
       vocabulary: 'populations-selectionCriteria-countriesIso',
@@ -209,6 +211,8 @@
       title: Mica.tr['study-design-chart-title'],
       text: Mica.tr['study-design-chart-text'],
       type: 'horizontalBar',
+      plotlyType: 'bar',
+      colors: Mica.charts.backgroundColors,
       backgroundColor: Mica.charts.backgroundColor,
       borderColor: Mica.charts.borderColor,
       parseForChart: genericParseForChart,
@@ -222,6 +226,8 @@
       title: Mica.tr['number-participants-chart-title'],
       text: Mica.tr['number-participants-chart-text'],
       type: 'doughnut',
+      plotlyType: 'pie',
+      colors: Mica.charts.backgroundColors,
       backgroundColor: Mica.charts.backgroundColors,
       borderColor: Mica.charts.borderColor,
       parseForChart: genericParseForChart,
@@ -240,6 +246,8 @@
       title: Mica.tr['bio-samples-chart-title'],
       text: Mica.tr['bio-samples-chart-text'],
       type: 'horizontalBar',
+      plotlyType: 'bar',
+      colors: Mica.charts.backgroundColors,
       backgroundColor: Mica.charts.backgroundColor,
       borderColor: Mica.charts.borderColor,
       parseForChart: genericParseForChart,
@@ -253,6 +261,8 @@
       title: Mica.tr['study-start-year-chart-title'],
       text: Mica.tr['study-start-year-chart-text'],
       type: 'horizontalBar',
+      plotlyType: 'bar',
+      colors: Mica.charts.backgroundColors,
       backgroundColor: Mica.charts.backgroundColor,
       borderColor: Mica.charts.borderColor,
       parseForChart: genericParseForChart,
@@ -342,10 +352,11 @@
     url = url + '?query=' + tree.serialize();
 
     const requests = [MicaService.normalizeUrl('/ws/taxonomies/_filter?target=study'), MicaService.normalizeUrl(url)];
-    axios.all(requests.map(request => axios.get(request)))
+    return axios.all(requests.map(request => axios.get(request)))
       .then(axios.spread((...responses) => {
-        chartTableTermSorters.initialize((responses[0].data||[]).pop());
-        EventBus.$emit('query-type-graphics-results', {response: responses[1].data})
+        const studyTaxonomy = (responses[0].data||[]).pop();
+        chartTableTermSorters.initialize(studyTaxonomy);
+        EventBus.$emit('query-type-graphics-results', {response: responses[1].data}, studyTaxonomy);
       }));
   }
 
@@ -354,12 +365,17 @@
     data() {
       return {
         hasGraphicsResult: false,
+        graphResult: null,
+        studyTaxonomy: null,
+        rawChartOptions: chartOptions,
         chartOptions: Mica.charts.chartIds.map(id => chartOptions[id])
       };
     },
     methods: {
       onGraphicsResult(payload) {
         this.hasGraphicsResult = payload.response.studyResultDto.totalHits > 0;
+        this.studyTaxonomy = payload.studyTaxonomy;
+        this.graphResult = payload.response.studyResultDto;
         if (!this.hasGraphicsResult) {
           $('#summary-statistics-container').addClass('d-none');
         }
