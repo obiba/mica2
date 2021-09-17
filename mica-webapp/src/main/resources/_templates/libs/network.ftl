@@ -80,13 +80,15 @@
       <h3 class="card-title"><@message "variables-classifications"/></h3>
     </div>
     <div class="card-body">
-      <div>
-        <div class="mb-4">
+      <div class="row">
+        <div class="col mb-4">
           <select id="select-bucket" class="form-control select2">
             <option value="_all" selected><@message "all-studies"/></option>
           </select>
         </div>
-        <div id="chartsContainer"></div>
+      </div>
+      <div class="row">
+        <div class="col" id="chartsContainer"></div>
       </div>
       <div id="noVariablesClassifications" style="display: none">
         <span class="text-muted"><@message "no-variables-classifications"/></span>

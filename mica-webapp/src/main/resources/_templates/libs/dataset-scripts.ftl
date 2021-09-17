@@ -1,6 +1,7 @@
 <!-- ChartJS -->
 <script src="${adminLTEPath}/plugins/chart.js/Chart.min.js"></script>
 <script src="${assetsPath}/js/mica-charts.js"></script>
+<script src="${assetsPath}/libs/node_modules/plotly.js-dist-min/plotly.min.js"></script>
 
 <!-- Files -->
 <script src="${assetsPath}/libs/node_modules/vue/dist/vue.js"></script>
@@ -34,16 +35,20 @@
       Mica.variablesCoverage.forEach(chartData => {
         chartsElem.append('<h5>' + chartData.title + '</h5>');
         chartsElem.append('<p>' + chartData.subtitle + '</p>');
-        chartsElem.append('<canvas class="mb-4"></canvas>');
-        const chartCanvas = $('#chartsContainer canvas:last-child').get(0).getContext('2d');
-        new Chart(chartCanvas, makeVariablesClassificationsChartSettings(chartData, {
-          key: '${dataset.id}',
+        chartsElem.append('<div id="bar-graph" class="mb-4"></div>');
+
+        const chartConfig = makeVariablesClassificationsChartSettings(chartData, {
+          key: key,
           label: "<@message "variables"/>",
           borderColor: '${barChartBorderColor}',
           backgroundColor: '${barChartBackgroundColor}'
-        }));
+        });
+
+        Plotly.newPlot("bar-graph", chartConfig.data, chartConfig.layout, {responsive: true});
       });
       $('#classificationsContainer').show();
+
+      Plotly.relayout("bar-graph", {width: $('#classificationsContainer #bar-graph').width()});
     } else {
       $('#noVariablesClassifications').show();
     }

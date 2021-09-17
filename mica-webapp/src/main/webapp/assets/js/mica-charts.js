@@ -21,17 +21,17 @@ const makeVariableFrequenciesChartSettings = function(frequencies, backgroundCol
     }
   });
 
-  return {
-    type: 'doughnut',
-    data: {
-      labels: labels,
-      datasets: [dataset]
+  return [{
+    type: "pie",
+    sort: false,
+    hole: 0.5,
+    marker: {
+      colors: dataset.backgroundColors
     },
-    options: {
-      maintainAspectRatio: false,
-      responsive: true,
-    }
-  };
+    hoverinfo: "label+value",
+    values: dataset.data,
+    labels
+  }];
 };
 
 /**
@@ -133,38 +133,25 @@ const makeVariablesClassificationsChartSettings = function(chartData, chartDatas
   const datasets = [];
   Object.keys(chartData.itemCounts).filter(k => k === chartDataset.key).forEach(k => {
     const dataset = {
-      label: chartDataset.label,
-      data: names.map(n => {
+      type: "bar",
+      orientation: "h",
+      marker: {
+        color: chartDataset.backgroundColor
+      },
+      x: names.map(n => {
         return chartData.itemCounts[k][n] ? chartData.itemCounts[k][n] : 0;
       }),
-      borderColor: chartDataset.borderColor,
-      backgroundColor: chartDataset.backgroundColor
+      y: labels
     };
     datasets.push(dataset);
   });
 
   return {
-    type: 'horizontalBar',
-    data: {
-      labels: labels,
-      datasets: datasets
-    },
-    options: {
-      indexAxis: 'y',
-      // Elements options apply to all of the options unless overridden in a dataset
-      // In this case, we are setting the border of each horizontal bar to be 2px wide
-      elements: {
-        rectangle: {
-          borderWidth: 2,
-        }
-      },
-      responsive: true,
-      legend: {
-        display: false,
-      },
-      title: {
-        display: false,
-        text: chartData.title
+    data: datasets,
+    layout: {
+      yaxis: {
+        automargin: true,
+        ticksuffix: ' '
       }
     }
   };

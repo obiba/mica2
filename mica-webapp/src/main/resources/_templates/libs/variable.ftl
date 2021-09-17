@@ -48,7 +48,7 @@
         </dl>
       </div>
       <div class="col-xs-12 col-lg-4">
-        <canvas id="frequencyChart"></canvas>
+        <div id="frequencyChart"></div>
       </div>
     </div>
   </div>
