@@ -38,7 +38,7 @@
         chartsElem.append('<div id="bar-graph" class="mb-4"></div>');
 
         const chartConfig = makeVariablesClassificationsChartSettings(chartData, {
-          key: key,
+          key: '${dataset.id}',
           label: "<@message "variables"/>",
           borderColor: '${barChartBorderColor}',
           backgroundColor: '${barChartBackgroundColor}'
