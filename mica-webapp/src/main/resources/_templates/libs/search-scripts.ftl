@@ -162,6 +162,7 @@
 <!-- ChartJS -->
 <script src="${adminLTEPath}/plugins/chart.js/Chart.min.js"></script>
 <script src="${assetsPath}/libs/node_modules/chartjs-chart-geo/build/Chart.Geo.min.js"></script>
+<script src="${assetsPath}/libs/node_modules/plotly.js-dist-min/plotly.min.js"></script>
 
 <!-- Mica Search and dependencies -->
 <script src="${assetsPath}/libs/node_modules/vue/dist/vue.js"></script>

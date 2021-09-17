@@ -28,8 +28,8 @@
       <h3 class="card-title"><@message "variables-classifications"/></h3>
     </div>
     <div class="card-body">
-      <div>
-        <div id="chartsContainer"></div>
+      <div class="row">
+        <div class="col" id="chartsContainer"></div>
       </div>
       <div id="noVariablesClassifications" style="display: none">
         <span class="text-muted"><@message "no-variables-classifications"/></span>

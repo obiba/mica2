@@ -57,12 +57,13 @@ const makeSummary = function(showHarmonizedVariableSummarySelector) {
     const frequencyChartElem = $('#frequencyChart');
     if (data.frequencies) {
       // frequencies chart
-      const chartCanvas = frequencyChartElem.get(0).getContext('2d');
       const padStringWithZeros = (s) => !isNaN(s) ? '0'.repeat(10 - s.length) + s : s;
-      new Chart(chartCanvas, makeVariableFrequenciesChartSettings(data.frequencies, Mica.backgroundColors, {
+
+      const chartData = makeVariableFrequenciesChartSettings(data.frequencies, Mica.backgroundColors, {
         'NOT_NULL': Mica.tr['not-empty-values'],
         'N/A': Mica.tr['empty-values']
-      }));
+      });
+      Plotly.newPlot("frequencyChart", chartData, null, {responsive: true});
       frequencyChartElem.show();
 
       // frequencies table
@@ -110,6 +111,8 @@ const makeSummary = function(showHarmonizedVariableSummarySelector) {
       });
       $('#frequencyValues').html(frequencyRows);
       $('#categoricalSummary').show();
+
+      Plotly.relayout("frequencyChart", {width: frequencyChartElem.width(), height: frequencyChartElem.height()});
     } else {
       frequencyChartElem.hide();
       $('#categoricalSummary').hide();
