@@ -361,7 +361,7 @@
       });
       $('#classificationsContainer').show();
 
-      Plotly.relayout("bar-graph", {width: $('#classificationsContainer #bar-graph').width()});
+      Plotly.relayout("bar-graph", {width: $('#classificationsContainer #bar-graph').width(), height: (2*1.42857)*12*Mica.variablesCoverage[0].vocabularies.length});
     } else {
       $('#noVariablesClassifications').show();
     }
