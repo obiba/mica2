@@ -50,40 +50,16 @@ const makeVariableHistogramChartSettings = function(intervalFrequencies, borderC
     labels.push(item.lower + ' - ' + item.upper);
   });
 
-  const chartOptions = {
-    responsive: true,
-    legend: {
-      position: 'top',
-    },
-    title: {
-      display: true,
-      text: 'Histogram'
-    },
-    scales: {
-      yAxes: [{
-        ticks: {
-          min: 0,
-        }
-      }]
+  return [{
+    type: "histogram",
+    name: "Frequencies",
+    histfunc: "sum",
+    x: labels,
+    y: dataPoints,
+    marker: {
+      color: backgroundColor
     }
-  };
-
-  return {
-    type: 'bar',
-    data: {
-      labels: labels,
-      datasets: [{
-        label: 'Frequencies',
-        data: dataPoints,
-        barPercentage: 1,
-        categoryPercentage: 1,
-        borderWidth: 1,
-        borderColor: borderColor,
-        backgroundColor: backgroundColor
-      }]
-    },
-    options: chartOptions
-  };
+  }];
 };
 
 const prepareVariablesClassificationsData = function(chart) {

@@ -63,8 +63,11 @@ const makeSummary = function(showHarmonizedVariableSummarySelector) {
         'NOT_NULL': Mica.tr['not-empty-values'],
         'N/A': Mica.tr['empty-values']
       });
-      Plotly.newPlot("frequencyChart", chartData, null, {responsive: true});
-      frequencyChartElem.show();
+
+      if (frequencyChartElem.length) {
+        Plotly.newPlot("frequencyChart", chartData, null, {responsive: true});
+        frequencyChartElem.show();
+      }
 
       // frequencies table
       let frequencyRows = '';
@@ -112,7 +115,9 @@ const makeSummary = function(showHarmonizedVariableSummarySelector) {
       $('#frequencyValues').html(frequencyRows);
       $('#categoricalSummary').show();
 
-      Plotly.relayout("frequencyChart", {width: frequencyChartElem.width(), height: frequencyChartElem.height()});
+      if (frequencyChartElem.length) {
+        Plotly.relayout("frequencyChart", {width: frequencyChartElem.width(), height: frequencyChartElem.height()});
+      }
     } else {
       frequencyChartElem.hide();
       $('#categoricalSummary').hide();
@@ -134,9 +139,10 @@ const makeSummary = function(showHarmonizedVariableSummarySelector) {
       const histogramChartElem = $('#histogramChart');
       if (data.intervalFrequencies) {
         // histogram chart
-        const chartCanvas = histogramChartElem.get(0).getContext('2d');
-        new Chart(chartCanvas, makeVariableHistogramChartSettings(data.intervalFrequencies, Mica.barChartBorderColor, Mica.barChartBackgroundColor));
-        histogramChartElem.show();
+        if (histogramChartElem.length) {
+          histogramChartElem.show();
+          Plotly.newPlot("histogramChart", makeVariableHistogramChartSettings(data.intervalFrequencies, Mica.barChartBorderColor, Mica.barChartBackgroundColor), {title: 'Histogram', width: histogramChartElem.width()});
+        }
       } else {
         histogramChartElem.hide();
       }

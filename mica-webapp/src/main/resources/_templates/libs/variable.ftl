@@ -54,7 +54,7 @@
   </div>
   <div id="continuousSummary" style="display: none" class="border-top mt-3 pt-3">
     <div class="row">
-      <div class="col-xs-12 col-lg-6">
+      <div class="col-xs-12 col-lg">
         <dl class="row">
           <dt class="col-sm-4"><@message "mean"/></dt>
           <dd id="mean" class="col-sm-8"></dd>
@@ -72,9 +72,7 @@
           <dd id="max" class="col-sm-8"></dd>
         </dl>
       </div>
-      <div class="col-xs-12 col-lg-6">
-        <canvas id="histogramChart"></canvas>
-      </div>
+      <div id="histogramChart" class="col-xs-12 col-lg"></div>
     </div>
   </div>
   <div id="noSummary" style="display: none">
