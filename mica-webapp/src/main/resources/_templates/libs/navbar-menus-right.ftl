@@ -61,15 +61,15 @@
         </ul>
       </li>
     </#if>
-    <#if !config.openAccess || config.dataAccessEnabled>
+    <#if showSignin>
       <li class="nav-item">
         <a class="nav-link" href="${contextPath}/signin<#if rc.requestUri != "/" && !rc.requestUri?contains("/forgot-password") && !rc.requestUri?contains("/just-registered") && !rc.requestUri?contains("/error") && !rc.requestUri?contains("/signin")>?redirect=${rc.requestUri}</#if>"><@message "sign-in"/></a>
       </li>
-    </#if>
-    <#if config.signupEnabled>
-      <li class="nav-item">
-        <a class="btn btn-outline-primary" href="${contextPath}/signup"><@message "sign-up"/></a>
-      </li>
+      <#if config.signupEnabled>
+        <li class="nav-item">
+          <a class="btn btn-outline-primary" href="${contextPath}/signup"><@message "sign-up"/></a>
+        </li>
+      </#if>
     </#if>
   </#if>
 </#macro>

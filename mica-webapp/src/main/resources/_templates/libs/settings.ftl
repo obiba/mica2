@@ -54,6 +54,9 @@
 <!-- Contact -->
 <#assign contactEnabled = config.contactNotificationsEnabled/>
 
+<!-- Sign in -->
+<#assign showSignin = !config.openAccess || config.dataAccessEnabled || cartEnabled/>
+
 <!-- Profile -->
 <#assign showProfileRole = false/>
 <#assign showProfileGroups = false/>
