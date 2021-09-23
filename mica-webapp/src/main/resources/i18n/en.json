@@ -370,7 +370,7 @@
     "privacy-threshold": "Participant Privacy Threshold",
     "privacy-threshold-help": "No data summary will be returned if the number of participants is below this threshold.",
     "opal-credentials": "Opal Credentials",
-    "opal-credentials-help": "When Mica needs to connect to remote Opal server, some credentials must be provided for authentication. These credentials can be based on an encryption key pair (HTTPS only) or a user name and password. See also <a href='http://wiki.obiba.org/display/OPALDOC/Users+and+Groups+Administration' target='_blank'>Opal data access administration documentation</a>.",
+    "opal-credentials-help": "When Mica needs to connect to remote Opal server, some credentials must be provided for authentication. These credentials can be based on an encryption key pair (HTTPS only) or a user name and password. See also <a href='https://opaldoc.obiba.org/en/latest/web-user-guide/administration/users-groups.html' target='_blank'>Opal data access administration documentation</a>.",
     "encryption-keys": "Encryption Keys",
     "encryption-keys-help": "HTTPS connection requires to have a private key and a public key (certificate) defined. A self-signed key-pair is available by default. You can provide your own.",
     "addKeyPair": "Add Keys",
