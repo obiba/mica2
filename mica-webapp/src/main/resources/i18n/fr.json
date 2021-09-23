@@ -370,7 +370,7 @@
     "privacy-threshold": "Seuil de confidentialité du participant",
     "privacy-threshold-help": "Aucun sommaire de données ne sera retourné si le nombre de participants est inférieur à ce seuil.",
     "opal-credentials": "Identifiants Opal",
-    "opal-credentials-help": "Quand Mica a besoin de se connecter à un serveur Opal distant, certaines informations doivent être fournies à des fins d'authentification. Ces informations d'identification peuvent être basées sur une paire de clés de cryptage (HTTPS uniquement) ou un nom d'utilisateur et mot de passe. Voir aussi <a href='http://wiki.obiba.org/display/OPALDOC/Users+and+Groups+Administration' target='_blank'>la documentation sur l'administration de l'accès aux données dans Opal</a>.",
+    "opal-credentials-help": "Quand Mica a besoin de se connecter à un serveur Opal distant, certaines informations doivent être fournies à des fins d'authentification. Ces informations d'identification peuvent être basées sur une paire de clés de cryptage (HTTPS uniquement) ou un nom d'utilisateur et mot de passe. Voir aussi <a href='https://opaldoc.obiba.org/en/latest/web-user-guide/administration/users-groups.html' target='_blank'>la documentation sur l'administration de l'accès aux données dans Opal</a>.",
     "encryption-keys": "Clés de chiffrement",
     "encryption-keys-help": "la connexion HTTPS nécessite d'avoir une clé privée et une clé publique (certificat). Une paire de clés auto-signée est disponible par défaut. Vous pouvez également fournir votre propre clé.",
     "addKeyPair": "Ajouter des clés",
