@@ -6,7 +6,7 @@ Description=OBiBa Mica service
 [Service]
 WorkingDirectory=/var/lib/mica2
 EnvironmentFile=/etc/default/mica2
-User=mica2
+User=mica
 LimitNOFILE=16384
 StandardOutput=file:/var/log/mica2/stdout.log
 StandardError=file:/var/log/mica2/stderr.log
