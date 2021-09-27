@@ -89,7 +89,7 @@ class NetworkDtos {
 
   @NotNull
   Mica.NetworkDto.Builder asDtoBuilder(@NotNull Network network, boolean asDraft) {
-    Mica.NetworkDto.Builder builder = asDtoBuilderInternal(network, asDraft);
+    Mica.NetworkDto.Builder builder = asDtoBuilderInternal(network, asDraft, false);
     List<String> roles = micaConfigService.getConfig().getRoles();
 
     if (network.getMembershipSortOrder() != null) {
@@ -111,10 +111,10 @@ class NetworkDtos {
 
   @NotNull
   Mica.NetworkDto.Builder asDtoBuilderForSearchListing(@NotNull Network network, boolean asDraft) {
-    return asDtoBuilderInternal(network, asDraft);
+    return asDtoBuilderInternal(network, asDraft, true);
   }
 
-  private Mica.NetworkDto.Builder asDtoBuilderInternal(@NotNull Network network, boolean asDraft) {
+  private Mica.NetworkDto.Builder asDtoBuilderInternal(@NotNull Network network, boolean asDraft, boolean forListing) {
     Mica.NetworkDto.Builder builder = Mica.NetworkDto.newBuilder();
 
     if(network.hasModel()) builder.setContent(JSONUtils.toJSON(network.getModel()));
@@ -150,7 +150,7 @@ class NetworkDtos {
           || subjectAclService.isAccessible("/individual-study", sId))
         .collect(toList())), publishedStudyIds);
 
-    if(!publishedStudies.isEmpty()) {
+    if(!publishedStudies.isEmpty() && !forListing) {
       Map<String, Long> datasetVariableCounts = asDraft ? null :
         datasetVariableService.getCountByStudyIds(Lists.newArrayList(publishedStudyIds));
 
