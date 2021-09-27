@@ -167,7 +167,7 @@ class NetworkDtos {
 
     unpublishedStudyIds.forEach(studyId -> {
       try {
-        builder.addStudySummaries(studySummaryDtos.asDto(studyId));
+        if (!forListing) builder.addStudySummaries(studySummaryDtos.asDto(studyId));
         builder.addStudyIds(studyId);
       } catch(NoSuchEntityException e) {
         log.warn("Study not found in network {}: {}", network.getId(), studyId);
