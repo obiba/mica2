@@ -180,7 +180,7 @@ class NetworkDtos {
         || subjectAclService.isAccessible("/network", nId))
       .forEach(nId -> {
         try {
-          builder.addNetworkSummaries(networkSummaryDtos.asDtoBuilder(nId, asDraft));
+          if (!forListing) builder.addNetworkSummaries(networkSummaryDtos.asDtoBuilder(nId, asDraft));
           builder.addNetworkIds(nId);
         } catch(NoSuchEntityException e) {
           log.warn("Network not found in network {}: {}", network.getId(), nId);
