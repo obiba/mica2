@@ -150,15 +150,18 @@ class NetworkDtos {
           || subjectAclService.isAccessible("/individual-study", sId))
         .collect(toList())), publishedStudyIds);
 
-    if(!publishedStudies.isEmpty() && !forListing) {
+    if(!publishedStudies.isEmpty()) {
       Map<String, Long> datasetVariableCounts = asDraft ? null :
         datasetVariableService.getCountByStudyIds(Lists.newArrayList(publishedStudyIds));
 
       publishedStudies.forEach(study -> {
         builder.addStudyIds(study.getId());
-        builder.addStudySummaries(
-          studySummaryDtos.asDtoBuilder(study, true,
-            datasetVariableCounts == null ? 0 : datasetVariableCounts.get(study.getId())));
+
+        if (!forListing) {
+          builder.addStudySummaries(
+            studySummaryDtos.asDtoBuilder(study, true,
+              datasetVariableCounts == null ? 0 : datasetVariableCounts.get(study.getId())));
+        }
       });
     }
 
