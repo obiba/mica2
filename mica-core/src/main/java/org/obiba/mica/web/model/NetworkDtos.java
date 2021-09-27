@@ -92,37 +92,6 @@ class NetworkDtos {
     Mica.NetworkDto.Builder builder = asDtoBuilderInternal(network, asDraft);
     List<String> roles = micaConfigService.getConfig().getRoles();
 
-    List<BaseStudy> publishedStudies = publishedStudyService.findByIds(network.getStudyIds());
-    Set<String> publishedStudyIds = publishedStudies.stream().map(AbstractGitPersistable::getId)
-      .collect(Collectors.toSet());
-    Sets.SetView<String> unpublishedStudyIds = Sets.difference(ImmutableSet.copyOf(
-      network.getStudyIds().stream()
-        .filter(sId -> asDraft && subjectAclService.isPermitted("/draft/individual-study", "VIEW", sId)
-            || subjectAclService.isAccessible("/individual-study", sId))
-        .collect(toList())), publishedStudyIds);
-
-    if(!publishedStudies.isEmpty()) {
-      Map<String, Long> datasetVariableCounts = asDraft ? null :
-          datasetVariableService.getCountByStudyIds(Lists.newArrayList(publishedStudyIds));
-
-      publishedStudies.forEach(study -> {
-        builder.addStudyIds(study.getId());
-        builder.addStudySummaries(
-          studySummaryDtos.asDtoBuilder(study, true,
-              datasetVariableCounts == null ? 0 : datasetVariableCounts.get(study.getId())));
-      });
-    }
-
-    unpublishedStudyIds.forEach(studyId -> {
-      try {
-        builder.addStudySummaries(studySummaryDtos.asDto(studyId));
-        builder.addStudyIds(studyId);
-      } catch(NoSuchEntityException e) {
-        log.warn("Study not found in network {}: {}", network.getId(), studyId);
-        // ignore
-      }
-    });
-
     if (network.getMembershipSortOrder() != null) {
       network.getMembershipSortOrder().forEach((role, ids) -> builder.addMembershipSortOrder(MembershipSortOrderDto.newBuilder().setRole(role).addAllPersonIds(ids).build()));
     }
@@ -155,22 +124,53 @@ class NetworkDtos {
       .addAllDescription(localizedStringDtos.asDto(network.getDescription())) //
       .addAllAcronym(localizedStringDtos.asDto(network.getAcronym()));
 
-    Mica.PermissionsDto permissionsDto = permissionsDtos.asDto(network);
-
     NetworkState networkState = networkService.getEntityState(network.getId());
     builder.setPublished(networkState.isPublished());
     if(asDraft) {
+      Mica.PermissionsDto permissionsDto = permissionsDtos.asDto(network);
+
       builder.setTimestamps(TimestampsDtos.asDto(network)) //
         .setPublished(networkState.isPublished()) //
         .setExtension(Mica.EntityStateDto.state,
           entityStateDtos.asDto(networkState).setPermissions(permissionsDto).build());
-    }
 
-    builder.setPermissions(permissionsDto);
+      builder.setPermissions(permissionsDto);
+    }
 
     if(network.getLogo() != null) {
       builder.setLogo(attachmentDtos.asDto(network.getLogo()));
     }
+
+    List<BaseStudy> publishedStudies = publishedStudyService.findByIds(network.getStudyIds());
+    Set<String> publishedStudyIds = publishedStudies.stream().map(AbstractGitPersistable::getId)
+      .collect(Collectors.toSet());
+    Sets.SetView<String> unpublishedStudyIds = Sets.difference(ImmutableSet.copyOf(
+      network.getStudyIds().stream()
+        .filter(sId -> asDraft && subjectAclService.isPermitted("/draft/individual-study", "VIEW", sId)
+          || subjectAclService.isAccessible("/individual-study", sId))
+        .collect(toList())), publishedStudyIds);
+
+    if(!publishedStudies.isEmpty()) {
+      Map<String, Long> datasetVariableCounts = asDraft ? null :
+        datasetVariableService.getCountByStudyIds(Lists.newArrayList(publishedStudyIds));
+
+      publishedStudies.forEach(study -> {
+        builder.addStudyIds(study.getId());
+        builder.addStudySummaries(
+          studySummaryDtos.asDtoBuilder(study, true,
+            datasetVariableCounts == null ? 0 : datasetVariableCounts.get(study.getId())));
+      });
+    }
+
+    unpublishedStudyIds.forEach(studyId -> {
+      try {
+        builder.addStudySummaries(studySummaryDtos.asDto(studyId));
+        builder.addStudyIds(studyId);
+      } catch(NoSuchEntityException e) {
+        log.warn("Study not found in network {}: {}", network.getId(), studyId);
+        // ignore
+      }
+    });
 
     network.getNetworkIds().stream()
       .filter(nId -> asDraft && subjectAclService.isPermitted("/draft/network", "VIEW", nId)
