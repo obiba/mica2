@@ -1106,3 +1106,57 @@ class VariablesSetService {
   };
 
 }
+
+
+/**
+ * Helper class to perform sorting and decorating operations.
+ */
+class TaxonomyHelper {
+  constructor() {}
+
+  static newInstance() {
+    return new TaxonomyHelper();
+  }
+
+  __vocabularyAttributeValue(vocabulary, key, defaultValue) {
+    let value = defaultValue;
+    if (vocabulary.attributes) {
+      vocabulary.attributes.some(function (attribute) {
+        if (attribute.key === key) {
+          value = attribute.value;
+          return true;
+        }
+        return false;
+      });
+    }
+
+    return value;
+  }
+
+  sortVocabularyTerms(vocabulary, sortKey) {
+    const terms = vocabulary.terms || [];
+    const termsSortKey = sortKey || this.__vocabularyAttributeValue(vocabulary, 'termsSortKey', null);
+
+    if (termsSortKey && terms.length > 0) {
+      switch (termsSortKey) {
+        case 'name':
+          terms.sort(function (a, b) {
+            return a[termsSortKey].localeCompare(b[termsSortKey]);
+          });
+          break;
+        case 'title':
+          terms.sort(function (a, b) {
+            const titleA = StringLocalizer.localize(a[termsSortKey]);
+            const titleB = StringLocalizer.localize(b[termsSortKey]);
+            return titleA.localeCompare(titleB);
+          });
+          break;
+      }
+    }
+  }
+
+  sortVocabulariesTerms(taxonomy, sortKey) {
+    (taxonomy.vocabularies || []).forEach(vocabulary => this.sortVocabularyTerms(vocabulary, sortKey));
+  }
+}
+
