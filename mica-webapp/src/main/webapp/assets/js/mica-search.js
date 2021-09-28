@@ -1093,6 +1093,7 @@ class TableFixedHeaderUtility {
           return axios.all(targetQueries.map(query => axios.get(query))).then(axios.spread((...responses) => {
             responses.forEach((response) => {
               for (let taxo of response.data) {
+                TaxonomyHelper.newInstance().sortVocabulariesTerms(taxo);
                 this.taxonomies[taxo.name] = taxo;
               }
             });
