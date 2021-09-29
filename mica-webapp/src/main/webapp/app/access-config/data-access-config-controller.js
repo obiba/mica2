@@ -232,6 +232,8 @@ mica.dataAccessConfig
         return DataAccessFormPermissionsResource.delete(acl);
       };
 
+      $scope.darRoles = ['READER'];
+
       $scope.otherResources = [{
         value: 'action-logs',
         text: 'data-access-config.action-log.action-logs-permission'
