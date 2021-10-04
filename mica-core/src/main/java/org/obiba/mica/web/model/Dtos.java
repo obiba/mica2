@@ -514,6 +514,16 @@ public class Dtos {
   }
 
   @NotNull
+  public Mica.DataAccessConfigDto asDto(@NotNull DataAccessConfig dataAccessConfig) {
+    return micaConfigDtos.asDto(dataAccessConfig);
+  }
+
+  @NotNull
+  public DataAccessConfig fromDto(@NotNull Mica.DataAccessConfigDto dto) {
+    return micaConfigDtos.fromDto(dto);
+  }
+
+  @NotNull
   public Mica.DataAccessFormDto asDto(@NotNull DataAccessForm dataAccessForm) {
     return micaConfigDtos.asDto(dataAccessForm);
   }
@@ -524,8 +534,8 @@ public class Dtos {
   }
 
   @NotNull
-  public Mica.DataAccessFeasibilityFormDto asDto(@NotNull DataAccessFeasibilityForm dataAccessFeasibilityForm, DataAccessForm dataAccessForm) {
-    return micaConfigDtos.asDto(dataAccessFeasibilityForm, dataAccessForm);
+  public Mica.DataAccessFeasibilityFormDto asDto(@NotNull DataAccessFeasibilityForm dataAccessFeasibilityForm, DataAccessConfig dataAccessConfig) {
+    return micaConfigDtos.asDto(dataAccessFeasibilityForm, dataAccessConfig);
   }
 
   @NotNull
@@ -534,8 +544,8 @@ public class Dtos {
   }
 
   @NotNull
-  public Mica.DataAccessAmendmentFormDto asDto(@NotNull DataAccessAmendmentForm dataAccessAmendmentForm, DataAccessForm dataAccessForm) {
-    return micaConfigDtos.asDto(dataAccessAmendmentForm, dataAccessForm);
+  public Mica.DataAccessAmendmentFormDto asDto(@NotNull DataAccessAmendmentForm dataAccessAmendmentForm, DataAccessConfig dataAccessConfig) {
+    return micaConfigDtos.asDto(dataAccessAmendmentForm, dataAccessConfig);
   }
 
   @NotNull

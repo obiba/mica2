@@ -21,7 +21,6 @@ import javax.validation.constraints.NotNull;
 import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.core.service.AgateServerConfigService;
 import org.obiba.mica.file.Attachment;
-import org.obiba.mica.micaConfig.AuthType;
 import org.obiba.mica.micaConfig.domain.HarmonizationStudyConfig;
 import org.obiba.mica.micaConfig.PdfDownloadType;
 import org.obiba.mica.micaConfig.domain.*;
@@ -291,14 +290,141 @@ class MicaConfigDtos {
   }
 
   @NotNull
+  Mica.DataAccessConfigDto asDto(@NotNull DataAccessConfig dataAccessConfig) {
+    Mica.DataAccessConfigDto.Builder builder = Mica.DataAccessConfigDto.newBuilder() //
+      .setDaoCanEdit(dataAccessConfig.isDaoCanEdit());
+
+    if(dataAccessConfig.hasIdPrefix()) {
+      builder.setIdPrefix(dataAccessConfig.getIdPrefix());
+    }
+
+    builder.setAllowIdWithLeadingZeros(dataAccessConfig.isAllowIdWithLeadingZeros());
+
+    builder.setIdLength(dataAccessConfig.getIdLength()) //
+      .setNotifyCreated(dataAccessConfig.isNotifyCreated()) //
+      .setNotifySubmitted(dataAccessConfig.isNotifySubmitted()) //
+      .setNotifyReviewed(dataAccessConfig.isNotifyReviewed()) //
+      .setNotifyApproved(dataAccessConfig.isNotifyApproved()) //
+      .setNotifyRejected(dataAccessConfig.isNotifyRejected()) //
+      .setNotifyReopened(dataAccessConfig.isNotifyReopened()) //
+      .setNotifyCommented(dataAccessConfig.isNotifyCommented()) //
+      .setNotifyAttachment(dataAccessConfig.isNotifyAttachment()) //
+      .setNotifyFinalReport(dataAccessConfig.isNotifyFinalReport())
+      .setNotifyIntermediateReport(dataAccessConfig.isNotifyIntermediateReport())
+      .setWithReview(dataAccessConfig.isWithReview()) //
+      .setApprovedFinal(dataAccessConfig.isApprovedFinal()) //
+      .setRejectedFinal(dataAccessConfig.isRejectedFinal())
+      .setWithConditionalApproval(dataAccessConfig.isWithConditionalApproval())
+      .setNotifyConditionallyApproved(dataAccessConfig.isNotifyConditionallyApproved());
+
+    if(dataAccessConfig.getCreatedSubject() != null) builder.setCreatedSubject(dataAccessConfig.getCreatedSubject());
+
+    if(dataAccessConfig.getSubmittedSubject() != null) builder.setSubmittedSubject(dataAccessConfig.getSubmittedSubject());
+
+    if(dataAccessConfig.getReviewedSubject() != null) builder.setReviewedSubject(dataAccessConfig.getReviewedSubject());
+
+    if(dataAccessConfig.getApprovedSubject() != null) builder.setApprovedSubject(dataAccessConfig.getApprovedSubject());
+
+    if(dataAccessConfig.getRejectedSubject() != null) builder.setRejectedSubject(dataAccessConfig.getRejectedSubject());
+
+    if(dataAccessConfig.getReopenedSubject() != null) builder.setReopenedSubject(dataAccessConfig.getReopenedSubject());
+
+    if(dataAccessConfig.getCommentedSubject() != null) builder.setCommentedSubject(dataAccessConfig.getCommentedSubject());
+
+    if(dataAccessConfig.getAttachmentSubject() != null) builder.setAttachmentSubject(dataAccessConfig.getAttachmentSubject());
+
+    if(dataAccessConfig.getConditionallyApprovedSubject() != null) builder.setConditionallyApprovedSubject(dataAccessConfig.getConditionallyApprovedSubject());
+
+    if(dataAccessConfig.getFinalReportSubject() != null) builder.setFinalReportSubject(dataAccessConfig.getFinalReportSubject());
+
+    if(dataAccessConfig.getIntermediateReportSubject() != null) builder.setIntermediateReportSubject(dataAccessConfig.getIntermediateReportSubject());
+
+    builder.setNbOfDaysBeforeReport(dataAccessConfig.getNbOfDaysBeforeReport());
+
+    if(dataAccessConfig.getPredefinedActions() != null) builder.addAllPredefinedActions(dataAccessConfig.getPredefinedActions());
+
+    builder.setFeasibilityEnabled(dataAccessConfig.isFeasibilityEnabled());
+    builder.setAmendmentsEnabled(dataAccessConfig.isAmendmentsEnabled());
+
+    builder.setVariablesEnabled(dataAccessConfig.isVariablesEnabled());
+    builder.setFeasibilityVariablesEnabled(dataAccessConfig.isFeasibilityVariablesEnabled());
+    builder.setAmendmentVariablesEnabled(dataAccessConfig.isAmendmentVariablesEnabled());
+
+    return builder.build();
+  }
+
+  @NotNull
+  DataAccessConfig fromDto(@NotNull Mica.DataAccessConfigDto dto) {
+    DataAccessConfig dataAccessConfig = new DataAccessConfig();
+    dataAccessConfig.setDaoCanEdit(dto.getDaoCanEdit());
+
+    if(dto.hasIdPrefix()) {
+      dataAccessConfig.setIdPrefix(dto.getIdPrefix());
+    }
+
+    dataAccessConfig.setAllowIdWithLeadingZeros(dto.getAllowIdWithLeadingZeros());
+
+    dataAccessConfig.setIdLength(dto.getIdLength());
+
+    dataAccessConfig.setNotifyCreated(dto.getNotifyCreated());
+    dataAccessConfig.setCreatedSubject(dto.getCreatedSubject());
+
+    dataAccessConfig.setNotifySubmitted(dto.getNotifySubmitted());
+    dataAccessConfig.setSubmittedSubject(dto.getSubmittedSubject());
+
+    dataAccessConfig.setNotifyReviewed(dto.getNotifyReviewed());
+    dataAccessConfig.setReviewedSubject(dto.getReviewedSubject());
+
+    dataAccessConfig.setNotifyApproved(dto.getNotifyApproved());
+    dataAccessConfig.setApprovedSubject(dto.getApprovedSubject());
+
+    dataAccessConfig.setNotifyRejected(dto.getNotifyRejected());
+    dataAccessConfig.setRejectedSubject(dto.getRejectedSubject());
+
+    dataAccessConfig.setNotifyReopened(dto.getNotifyReopened());
+    dataAccessConfig.setReopenedSubject(dto.getReopenedSubject());
+
+    dataAccessConfig.setNotifyCommented(dto.getNotifyCommented());
+    dataAccessConfig.setCommentedSubject(dto.getCommentedSubject());
+
+    dataAccessConfig.setNotifyAttachment(dto.getNotifyAttachment());
+    dataAccessConfig.setAttachmentSubject(dto.getAttachmentSubject());
+
+    dataAccessConfig.setNotifyFinalReport(dto.getNotifyFinalReport());
+    dataAccessConfig.setFinalReportSubject(dto.getFinalReportSubject());
+
+    dataAccessConfig.setNotifyIntermediateReport(dto.getNotifyIntermediateReport());
+    dataAccessConfig.setIntermediateReportSubject(dto.getIntermediateReportSubject());
+
+    if (dto.hasNbOfDaysBeforeReport()) dataAccessConfig.setNbOfDaysBeforeReport(dto.getNbOfDaysBeforeReport());
+
+    dataAccessConfig.setWithReview(dto.getWithReview());
+    dataAccessConfig.setApprovedFinal(dto.getApprovedFinal());
+    dataAccessConfig.setRejectedFinal(dto.getRejectedFinal());
+
+    dataAccessConfig.setWithConditionalApproval(dto.getWithConditionalApproval());
+    dataAccessConfig.setNotifyConditionallyApproved(dto.getNotifyConditionallyApproved());
+    dataAccessConfig.setConditionallyApprovedSubject(dto.getConditionallyApprovedSubject());
+    dataAccessConfig.setPredefinedActions(dto.getPredefinedActionsList());
+    dataAccessConfig.setFeasibilityEnabled(dto.getFeasibilityEnabled());
+    dataAccessConfig.setAmendmentsEnabled(dto.getAmendmentsEnabled());
+
+    dataAccessConfig.setVariablesEnabled(dto.getVariablesEnabled());
+    dataAccessConfig.setFeasibilityVariablesEnabled(dto.getFeasibilityVariablesEnabled());
+    dataAccessConfig.setAmendmentVariablesEnabled(dto.getAmendmentVariablesEnabled());
+
+    return dataAccessConfig;
+  }
+
+
+  @NotNull
   Mica.DataAccessFormDto asDto(@NotNull DataAccessForm dataAccessForm) {
     Mica.DataAccessFormDto.Builder builder = Mica.DataAccessFormDto.newBuilder() //
       .setDefinition(dataAccessForm.getDefinition()) //
       .setSchema(dataAccessForm.getSchema()) //
       .addAllPdfTemplates(
         dataAccessForm.getPdfTemplates().values().stream().map(p -> attachmentDtos.asDto(p)).collect(toList())) //
-      .addAllProperties(asDtoList(dataAccessForm.getProperties()))
-      .setDaoCanEdit(dataAccessForm.isDaoCanEdit());
+      .addAllProperties(asDtoList(dataAccessForm.getProperties()));
 
     if(dataAccessForm.hasTitleFieldPath()) {
       builder.setTitleFieldPath(dataAccessForm.getTitleFieldPath());
@@ -312,64 +438,9 @@ class MicaConfigDtos {
       builder.setEndDateFieldPath(dataAccessForm.getEndDateFieldPath());
     }
 
-    if(dataAccessForm.hasIdPrefix()) {
-      builder.setIdPrefix(dataAccessForm.getIdPrefix());
-    }
-
-    builder.setAllowIdWithLeadingZeros(dataAccessForm.isAllowIdWithLeadingZeros());
-
-    builder.setIdLength(dataAccessForm.getIdLength()) //
-      .setNotifyCreated(dataAccessForm.isNotifyCreated()) //
-      .setNotifySubmitted(dataAccessForm.isNotifySubmitted()) //
-      .setNotifyReviewed(dataAccessForm.isNotifyReviewed()) //
-      .setNotifyApproved(dataAccessForm.isNotifyApproved()) //
-      .setNotifyRejected(dataAccessForm.isNotifyRejected()) //
-      .setNotifyReopened(dataAccessForm.isNotifyReopened()) //
-      .setNotifyCommented(dataAccessForm.isNotifyCommented()) //
-      .setNotifyAttachment(dataAccessForm.isNotifyAttachment()) //
-      .setNotifyFinalReport(dataAccessForm.isNotifyFinalReport())
-      .setNotifyIntermediateReport(dataAccessForm.isNotifyIntermediateReport())
-      .setWithReview(dataAccessForm.isWithReview()) //
-      .setApprovedFinal(dataAccessForm.isApprovedFinal()) //
-      .setRejectedFinal(dataAccessForm.isRejectedFinal())
-      .setWithConditionalApproval(dataAccessForm.isWithConditionalApproval())
-      .setNotifyConditionallyApproved(dataAccessForm.isNotifyConditionallyApproved())
-      .setCsvExportFormat(dataAccessForm.getCsvExportFormat());
-
-    if(dataAccessForm.getCreatedSubject() != null) builder.setCreatedSubject(dataAccessForm.getCreatedSubject());
-
-    if(dataAccessForm.getSubmittedSubject() != null) builder.setSubmittedSubject(dataAccessForm.getSubmittedSubject());
-
-    if(dataAccessForm.getReviewedSubject() != null) builder.setReviewedSubject(dataAccessForm.getReviewedSubject());
-
-    if(dataAccessForm.getApprovedSubject() != null) builder.setApprovedSubject(dataAccessForm.getApprovedSubject());
-
-    if(dataAccessForm.getRejectedSubject() != null) builder.setRejectedSubject(dataAccessForm.getRejectedSubject());
-
-    if(dataAccessForm.getReopenedSubject() != null) builder.setReopenedSubject(dataAccessForm.getReopenedSubject());
-
-    if(dataAccessForm.getCommentedSubject() != null) builder.setCommentedSubject(dataAccessForm.getCommentedSubject());
-
-    if(dataAccessForm.getAttachmentSubject() != null) builder.setAttachmentSubject(dataAccessForm.getAttachmentSubject());
-
-    if(dataAccessForm.getConditionallyApprovedSubject() != null) builder.setConditionallyApprovedSubject(dataAccessForm.getConditionallyApprovedSubject());
-
-    if(dataAccessForm.getFinalReportSubject() != null) builder.setFinalReportSubject(dataAccessForm.getFinalReportSubject());
-
-    if(dataAccessForm.getIntermediateReportSubject() != null) builder.setIntermediateReportSubject(dataAccessForm.getIntermediateReportSubject());
-
-    builder.setNbOfDaysBeforeReport(dataAccessForm.getNbOfDaysBeforeReport());
-
-    if(dataAccessForm.getPredefinedActions() != null) builder.addAllPredefinedActions(dataAccessForm.getPredefinedActions());
+    builder.setCsvExportFormat(dataAccessForm.getCsvExportFormat());
 
     builder.setPdfDownloadType(Mica.DataAccessFormDto.PdfDownloadType.valueOf(dataAccessForm.getPdfDownloadType().name()));
-
-    builder.setFeasibilityEnabled(dataAccessForm.isFeasibilityEnabled());
-    builder.setAmendmentsEnabled(dataAccessForm.isAmendmentsEnabled());
-
-    builder.setVariablesEnabled(dataAccessForm.isVariablesEnabled());
-    builder.setFeasibilityVariablesEnabled(dataAccessForm.isFeasibilityVariablesEnabled());
-    builder.setAmendmentVariablesEnabled(dataAccessForm.isAmendmentVariablesEnabled());
 
     return builder.build();
   }
@@ -380,7 +451,6 @@ class MicaConfigDtos {
     dataAccessForm.setSchema(dto.getSchema());
     dataAccessForm.setDefinition(dto.getDefinition());
     dataAccessForm.setCsvExportFormat(dto.getCsvExportFormat());
-    dataAccessForm.setDaoCanEdit(dto.getDaoCanEdit());
 
     dataAccessForm.setProperties(dto.getPropertiesList().stream()
       .collect(toMap(Mica.LocalizedPropertyDto::getName, e -> localizedStringDtos.fromDto(e.getValueList()))));
@@ -399,68 +469,13 @@ class MicaConfigDtos {
     if(dto.hasEndDateFieldPath()) {
       dataAccessForm.setEndDateFieldPath(dto.getEndDateFieldPath());
     }
-
-    if(dto.hasIdPrefix()) {
-      dataAccessForm.setIdPrefix(dto.getIdPrefix());
-    }
-
-    dataAccessForm.setAllowIdWithLeadingZeros(dto.getAllowIdWithLeadingZeros());
-
-    dataAccessForm.setIdLength(dto.getIdLength());
-
-    dataAccessForm.setNotifyCreated(dto.getNotifyCreated());
-    dataAccessForm.setCreatedSubject(dto.getCreatedSubject());
-
-    dataAccessForm.setNotifySubmitted(dto.getNotifySubmitted());
-    dataAccessForm.setSubmittedSubject(dto.getSubmittedSubject());
-
-    dataAccessForm.setNotifyReviewed(dto.getNotifyReviewed());
-    dataAccessForm.setReviewedSubject(dto.getReviewedSubject());
-
-    dataAccessForm.setNotifyApproved(dto.getNotifyApproved());
-    dataAccessForm.setApprovedSubject(dto.getApprovedSubject());
-
-    dataAccessForm.setNotifyRejected(dto.getNotifyRejected());
-    dataAccessForm.setRejectedSubject(dto.getRejectedSubject());
-
-    dataAccessForm.setNotifyReopened(dto.getNotifyReopened());
-    dataAccessForm.setReopenedSubject(dto.getReopenedSubject());
-
-    dataAccessForm.setNotifyCommented(dto.getNotifyCommented());
-    dataAccessForm.setCommentedSubject(dto.getCommentedSubject());
-
-    dataAccessForm.setNotifyAttachment(dto.getNotifyAttachment());
-    dataAccessForm.setAttachmentSubject(dto.getAttachmentSubject());
-
-    dataAccessForm.setNotifyFinalReport(dto.getNotifyFinalReport());
-    dataAccessForm.setFinalReportSubject(dto.getFinalReportSubject());
-
-    dataAccessForm.setNotifyIntermediateReport(dto.getNotifyIntermediateReport());
-    dataAccessForm.setIntermediateReportSubject(dto.getIntermediateReportSubject());
-
-    if (dto.hasNbOfDaysBeforeReport()) dataAccessForm.setNbOfDaysBeforeReport(dto.getNbOfDaysBeforeReport());
-
-    dataAccessForm.setWithReview(dto.getWithReview());
-    dataAccessForm.setApprovedFinal(dto.getApprovedFinal());
-    dataAccessForm.setRejectedFinal(dto.getRejectedFinal());
-
-    dataAccessForm.setWithConditionalApproval(dto.getWithConditionalApproval());
-    dataAccessForm.setNotifyConditionallyApproved(dto.getNotifyConditionallyApproved());
-    dataAccessForm.setConditionallyApprovedSubject(dto.getConditionallyApprovedSubject());
     dataAccessForm.setPdfDownloadType(PdfDownloadType.valueOf(dto.getPdfDownloadType().name()));
-    dataAccessForm.setPredefinedActions(dto.getPredefinedActionsList());
-    dataAccessForm.setFeasibilityEnabled(dto.getFeasibilityEnabled());
-    dataAccessForm.setAmendmentsEnabled(dto.getAmendmentsEnabled());
-
-    dataAccessForm.setVariablesEnabled(dto.getVariablesEnabled());
-    dataAccessForm.setFeasibilityVariablesEnabled(dto.getFeasibilityVariablesEnabled());
-    dataAccessForm.setAmendmentVariablesEnabled(dto.getAmendmentVariablesEnabled());
 
     return dataAccessForm;
   }
 
   Mica.DataAccessFeasibilityFormDto asDto(@NotNull DataAccessFeasibilityForm dataAccessFeasibilityForm,
-                                        @NotNull DataAccessForm dataAccessForm) {
+                                        @NotNull DataAccessConfig dataAccessConfig) {
     Mica.DataAccessFeasibilityFormDto.Builder builder = Mica.DataAccessFeasibilityFormDto.newBuilder()
       .setDefinition(dataAccessFeasibilityForm.getDefinition()).setSchema(dataAccessFeasibilityForm.getSchema())
       .setCsvExportFormat(dataAccessFeasibilityForm.getCsvExportFormat());
@@ -478,7 +493,7 @@ class MicaConfigDtos {
   }
 
   Mica.DataAccessAmendmentFormDto asDto(@NotNull DataAccessAmendmentForm dataAccessAmendmentForm,
-                                        @NotNull DataAccessForm dataAccessForm) {
+                                        @NotNull DataAccessConfig dataAccessConfig) {
     Mica.DataAccessAmendmentFormDto.Builder builder = Mica.DataAccessAmendmentFormDto.newBuilder()
       .setDefinition(dataAccessAmendmentForm.getDefinition()).setSchema(dataAccessAmendmentForm.getSchema())
       .addAllProperties(asDtoList(dataAccessAmendmentForm.getProperties()))
@@ -496,8 +511,8 @@ class MicaConfigDtos {
       builder.setEndDateFieldPath(dataAccessAmendmentForm.getEndDateFieldPath());
     }
 
-    builder.setWithReview(dataAccessForm.isWithReview());
-    builder.setApprovedFinal(dataAccessForm.isApprovedFinal());
+    builder.setWithReview(dataAccessConfig.isWithReview());
+    builder.setApprovedFinal(dataAccessConfig.isApprovedFinal());
 
     return builder.build();
   }

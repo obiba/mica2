@@ -12,6 +12,14 @@
 
 mica.dataAccessConfig
 
+  .factory('DataAccessConfigResource', ['$resource',
+    function ($resource) {
+      return $resource(contextPath + '/ws/config/data-access', {}, {
+        'get': {method: 'GET', errorHandler: true},
+        'save': {method: 'PUT', errorHandler: true}
+      });
+    }])
+
   .factory('DataAccessFormResource', ['$resource',
     function ($resource) {
       return $resource(contextPath + '/ws/config/data-access-form', {}, {

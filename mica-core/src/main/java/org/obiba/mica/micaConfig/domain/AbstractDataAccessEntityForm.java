@@ -9,8 +9,6 @@ import com.google.common.collect.Maps;
 
 public abstract class AbstractDataAccessEntityForm extends EntityConfig {
 
-  final static int DEFAULT_ID_LENGTH = 6;
-
   private String csvExportFormat;
 
   private Map<String, LocalizedString> properties;

@@ -40,6 +40,7 @@ import org.obiba.mica.file.TempFile;
 import org.obiba.mica.file.service.TempFileService;
 import org.obiba.mica.micaConfig.DataAccessAmendmentsNotEnabled;
 import org.obiba.mica.micaConfig.DataAccessFeasibilityNotEnabled;
+import org.obiba.mica.micaConfig.service.DataAccessConfigService;
 import org.obiba.mica.micaConfig.service.DataAccessFormService;
 import org.obiba.mica.security.Roles;
 import org.obiba.mica.security.event.ResourceDeletedEvent;
@@ -100,10 +101,10 @@ public class DataAccessRequestResource extends DataAccessEntityResource<DataAcce
     Dtos dtos,
     SubjectAclService subjectAclService,
     FileStoreService fileStoreService,
-    DataAccessFormService dataAccessFormService,
+    DataAccessConfigService dataAccessConfigService,
     TempFileService tempFileService,
     VariableSetService variableSetService) {
-    super(subjectAclService, fileStoreService, dataAccessFormService, variableSetService);
+    super(subjectAclService, fileStoreService, dataAccessConfigService, variableSetService);
     this.dataAccessRequestService = dataAccessRequestService;
     this.commentMailNotification = commentMailNotification;
     this.reportNotificationService = reportNotificationService;

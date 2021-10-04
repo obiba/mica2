@@ -875,17 +875,7 @@ message LocalizedPropertyDto {
   repeated LocalizedStringDto value = 2;
 }
 
-message DataAccessFormDto {
-  enum PdfDownloadType {
-    Template = 1;
-    Embedded = 2;
-  }
-
-  required string schema = 1;
-  required string definition = 2;
-  repeated AttachmentDto pdfTemplates = 3;
-  repeated LocalizedPropertyDto properties = 4;
-  optional string titleFieldPath = 5;
+message DataAccessConfigDto {
   optional string idPrefix = 6;
   required int32 idLength = 7;
   required bool notifySubmitted = 8;
@@ -906,18 +896,14 @@ message DataAccessFormDto {
   required bool notifyConditionallyApproved = 23;
   required bool withConditionalApproval = 24;
   optional string conditionallyApprovedSubject = 25;
-  optional string summaryFieldPath = 26;
   required bool notifyAttachment = 27;
   optional string attachmentSubject = 28;
-  optional string csvExportFormat = 29;
-  required PdfDownloadType pdfDownloadType = 30;
   repeated string predefinedActions = 31;
   required bool amendmentsEnabled = 32;
   required bool daoCanEdit = 33;
   optional bool allowIdWithLeadingZeros = 34;
   required bool notifyCreated = 35;
   optional string createdSubject = 36;
-  optional string endDateFieldPath = 37;
   required bool notifyFinalReport = 38;
   optional string finalReportSubject = 39;
   required bool notifyIntermediateReport = 40;
@@ -927,6 +913,23 @@ message DataAccessFormDto {
   required bool variablesEnabled = 44;
   required bool feasibilityVariablesEnabled = 45;
   required bool amendmentVariablesEnabled = 46;
+}
+
+message DataAccessFormDto {
+  enum PdfDownloadType {
+    Template = 1;
+    Embedded = 2;
+  }
+
+  required string schema = 1;
+  required string definition = 2;
+  repeated AttachmentDto pdfTemplates = 3;
+  repeated LocalizedPropertyDto properties = 4;
+  optional string titleFieldPath = 5;
+  optional string summaryFieldPath = 26;
+  optional string csvExportFormat = 29;
+  required PdfDownloadType pdfDownloadType = 30;
+  optional string endDateFieldPath = 37;
 }
 
 message DataAccessFeasibilityFormDto {

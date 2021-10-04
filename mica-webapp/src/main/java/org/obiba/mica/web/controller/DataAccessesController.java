@@ -8,12 +8,13 @@ import org.obiba.mica.access.service.DataAccessRequestService;
 import org.obiba.mica.access.service.DataAccessRequestUtilService;
 import org.obiba.mica.micaConfig.NoSuchDataAccessFormException;
 import org.obiba.mica.micaConfig.domain.DataAccessForm;
+import org.obiba.mica.micaConfig.service.DataAccessConfigService;
 import org.obiba.mica.micaConfig.service.DataAccessFormService;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.security.Roles;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.user.UserProfileService;
-import org.obiba.mica.web.controller.domain.DataAccessConfig;
+import org.obiba.mica.web.controller.domain.DataAccessConfigBundle;
 import org.obiba.mica.web.controller.domain.DataAccessRequestBundle;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -46,6 +47,9 @@ public class DataAccessesController extends BaseController {
 
   @Inject
   private UserProfileService userProfileService;
+
+  @Inject
+  DataAccessConfigService dataAccessConfigService;
 
   @Inject
   DataAccessFormService dataAccessFormService;
@@ -85,7 +89,7 @@ public class DataAccessesController extends BaseController {
     Optional<DataAccessForm> d = dataAccessFormService.find();
     if (!d.isPresent()) throw NoSuchDataAccessFormException.withDefaultMessage();
     DataAccessForm dataAccessForm = d.get();
-    params.put("accessConfig", new DataAccessConfig(dataAccessForm));
+    params.put("accessConfig", new DataAccessConfigBundle(dataAccessConfigService.getOrCreateConfig(), dataAccessForm));
   }
 
 

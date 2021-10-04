@@ -1,56 +1,58 @@
 package org.obiba.mica.web.controller.domain;
 
 import org.obiba.mica.micaConfig.PdfDownloadType;
+import org.obiba.mica.micaConfig.domain.DataAccessConfig;
 import org.obiba.mica.micaConfig.domain.DataAccessForm;
 
 /**
  * Workflow settings.
  */
-public class DataAccessConfig {
+public class DataAccessConfigBundle {
 
-  private final DataAccessForm form;
+  private final DataAccessConfig config;
   private final boolean downloadPdf;
 
-  public DataAccessConfig(DataAccessForm form) {
-    this.form = form;
+  public DataAccessConfigBundle(DataAccessConfig config, DataAccessForm form) {
+    this.config = config;
     this.downloadPdf = PdfDownloadType.Template.equals(form.getPdfDownloadType());
   }
 
   public boolean isWithReview() {
-    return form.isWithReview();
+    return config.isWithReview();
   }
 
   public boolean isWithConditionalApproval() {
-    return form.isWithConditionalApproval();
+    return config.isWithConditionalApproval();
   }
 
   public boolean isApprovedFinal() {
-    return form.isApprovedFinal();
+    return config.isApprovedFinal();
   }
 
   public boolean isRejectedFinal() {
-    return form.isRejectedFinal();
+    return config.isRejectedFinal();
   }
 
   public boolean isAmendmentsEnabled() {
-    return form.isAmendmentsEnabled();
+    return config.isAmendmentsEnabled();
   }
 
   public boolean isFeasibilityEnabled() {
-    return form.isFeasibilityEnabled();
+    return config.isFeasibilityEnabled();
   }
 
   public boolean isVariablesEnabled() {
-    return form.isVariablesEnabled();
+    return config.isVariablesEnabled();
   }
 
   public boolean isAmendmentVariablesEnabled() {
-    return form.isAmendmentVariablesEnabled();
+    return config.isAmendmentVariablesEnabled();
   }
 
   public boolean isFeasibilityVariablesEnabled() {
-    return form.isFeasibilityVariablesEnabled();
+    return config.isFeasibilityVariablesEnabled();
   }
+
   public boolean isDownloadPdf() {
     return downloadPdf;
   }
