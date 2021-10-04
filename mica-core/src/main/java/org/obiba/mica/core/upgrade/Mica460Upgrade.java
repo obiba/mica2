@@ -61,6 +61,7 @@ public class Mica460Upgrade implements UpgradeStep {
     dataAccessConfig.removeField("endDateFieldPath");
     dataAccessConfig.removeField("schema");
     dataAccessConfig.removeField("definition");
+    dataAccessConfig.removeField("_id");
     dataAccessConfig.put("version", 1);
     dataAccessConfig.put("_class", "org.obiba.mica.micaConfig.domain.DataAccessConfig");
 
