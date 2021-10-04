@@ -2,14 +2,6 @@ package org.obiba.mica.access.rest;
 
 import com.google.common.collect.Lists;
 import com.google.common.eventbus.Subscribe;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import javax.ws.rs.BadRequestException;
-import javax.ws.rs.ForbiddenException;
-import javax.ws.rs.core.Response;
-
 import org.apache.shiro.SecurityUtils;
 import org.obiba.mica.access.domain.DataAccessEntity;
 import org.obiba.mica.access.domain.DataAccessEntityStatus;
@@ -17,11 +9,18 @@ import org.obiba.mica.access.service.DataAccessEntityService;
 import org.obiba.mica.core.domain.DocumentSet;
 import org.obiba.mica.dataset.service.VariableSetService;
 import org.obiba.mica.file.FileStoreService;
-import org.obiba.mica.micaConfig.event.DataAccessFormUpdatedEvent;
-import org.obiba.mica.micaConfig.service.DataAccessFormService;
+import org.obiba.mica.micaConfig.event.DataAccessConfigUpdatedEvent;
+import org.obiba.mica.micaConfig.service.DataAccessConfigService;
 import org.obiba.mica.security.Roles;
-import org.obiba.mica.security.SubjectUtils;
 import org.obiba.mica.security.service.SubjectAclService;
+
+import javax.ws.rs.BadRequestException;
+import javax.ws.rs.ForbiddenException;
+import javax.ws.rs.core.Response;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public abstract class DataAccessEntityResource<T extends DataAccessEntity> {
 
@@ -29,7 +28,7 @@ public abstract class DataAccessEntityResource<T extends DataAccessEntity> {
 
   protected FileStoreService fileStoreService;
 
-  protected DataAccessFormService dataAccessFormService;
+  protected DataAccessConfigService dataAccessConfigService;
 
   protected VariableSetService variableSetService;
 
@@ -40,23 +39,23 @@ public abstract class DataAccessEntityResource<T extends DataAccessEntity> {
   public DataAccessEntityResource(
     SubjectAclService subjectAclService,
     FileStoreService fileStoreService,
-    DataAccessFormService dataAccessFormService,
+    DataAccessConfigService dataAccessConfigService,
     VariableSetService variableSetService) {
     this.subjectAclService = subjectAclService;
     this.fileStoreService = fileStoreService;
-    this.dataAccessFormService = dataAccessFormService;
+    this.dataAccessConfigService = dataAccessConfigService;
     this.variableSetService = variableSetService;
   }
 
   @Subscribe
-  public void onDataAccessFormUpdate(DataAccessFormUpdatedEvent event) {
+  public void onDataAccessFormUpdate(DataAccessConfigUpdatedEvent event) {
     List<String> statuses = Stream.of(
       DataAccessEntityStatus.SUBMITTED,
       DataAccessEntityStatus.REVIEWED,
       DataAccessEntityStatus.APPROVED,
       DataAccessEntityStatus.REJECTED).map(DataAccessEntityStatus::name).collect(Collectors.toList());
 
-    if (event.getForm().isDaoCanEdit()) {
+    if (event.getConfig().isDaoCanEdit()) {
       getService().findByStatus(statuses).forEach(darEntity -> subjectAclService.addGroupPermission(Roles.MICA_DAO, getResourcePath(), "EDIT", darEntity.getId()));
     } else {
       getService().findByStatus(statuses).forEach(darEntity -> subjectAclService.removeGroupPermission(Roles.MICA_DAO, getResourcePath(), "EDIT", darEntity.getId()));
@@ -96,7 +95,7 @@ public abstract class DataAccessEntityResource<T extends DataAccessEntity> {
     DataAccessEntity request = getService().findById(id);
     boolean fromOpened = request.getStatus() == DataAccessEntityStatus.OPENED;
     boolean fromConditionallyApproved = request.getStatus() == DataAccessEntityStatus.CONDITIONALLY_APPROVED;
-    if(fromOpened && !subjectAclService.isCurrentUser(request.getApplicant()) && !SecurityUtils.getSubject().hasRole(Roles.MICA_ADMIN)) {
+    if (fromOpened && !subjectAclService.isCurrentUser(request.getApplicant()) && !SecurityUtils.getSubject().hasRole(Roles.MICA_ADMIN)) {
       // only applicant can submit an opened request
       throw new ForbiddenException();
     }
@@ -148,7 +147,7 @@ public abstract class DataAccessEntityResource<T extends DataAccessEntity> {
   Response doUpdateStatus(String id, String status) {
     subjectAclService.checkPermission(getResourcePath() + "/" + id, "EDIT", "_status");
 
-    switch(DataAccessEntityStatus.valueOf(status.toUpperCase())) {
+    switch (DataAccessEntityStatus.valueOf(status.toUpperCase())) {
       case SUBMITTED:
         return submit(id);
       case OPENED:
@@ -168,11 +167,11 @@ public abstract class DataAccessEntityResource<T extends DataAccessEntity> {
   private void restoreApplicantActions(String id, String applicant) {
     // restore applicant permissions, i.e applicant cannot edit, nor delete request anymore + status cannot be changed
     subjectAclService.addUserPermission(applicant, getResourcePath(), "VIEW,EDIT,DELETE", id);
-    subjectAclService.addUserPermission(applicant, getResourcePath()+ "/" + id, "EDIT", "_status");
+    subjectAclService.addUserPermission(applicant, getResourcePath() + "/" + id, "EDIT", "_status");
     // data access officers cannot change the status of this request anymore
-    subjectAclService.removeGroupPermission(Roles.MICA_DAO, getResourcePath()+ "/" + id, "EDIT", "_status");
+    subjectAclService.removeGroupPermission(Roles.MICA_DAO, getResourcePath() + "/" + id, "EDIT", "_status");
 
-    if (dataAccessFormService.find().get().isDaoCanEdit()) {
+    if (dataAccessConfigService.getOrCreateConfig().isDaoCanEdit()) {
       subjectAclService.removeGroupPermission(Roles.MICA_DAO, getResourcePath(), "EDIT", id);
     }
   }
@@ -180,11 +179,11 @@ public abstract class DataAccessEntityResource<T extends DataAccessEntity> {
   private void restoreDaoActions(String id) {
     // remove applicant permissions
     subjectAclService.removePermission(getResourcePath(), "EDIT,DELETE", id);
-    subjectAclService.removePermission(getResourcePath()+ "/" + id, "EDIT", "_status");
+    subjectAclService.removePermission(getResourcePath() + "/" + id, "EDIT", "_status");
     // data access officers can change the status of this request
-    subjectAclService.addGroupPermission(Roles.MICA_DAO, getResourcePath()+ "/" + id, "EDIT", "_status");
+    subjectAclService.addGroupPermission(Roles.MICA_DAO, getResourcePath() + "/" + id, "EDIT", "_status");
 
-    if (dataAccessFormService.find().get().isDaoCanEdit()) {
+    if (dataAccessConfigService.getOrCreateConfig().isDaoCanEdit()) {
       subjectAclService.addGroupPermission(Roles.MICA_DAO, getResourcePath(), "EDIT", id);
     }
   }

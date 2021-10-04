@@ -24,13 +24,13 @@ import org.obiba.mica.access.domain.DataAccessEntityStatus;
 import org.obiba.mica.access.domain.DataAccessRequest;
 import org.obiba.mica.access.event.*;
 import org.obiba.mica.core.domain.Comment;
-import org.obiba.mica.core.domain.DocumentSet;
 import org.obiba.mica.core.event.CommentDeletedEvent;
 import org.obiba.mica.core.event.CommentUpdatedEvent;
 import org.obiba.mica.core.repository.AttachmentRepository;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.FileStoreService;
 import org.obiba.mica.micaConfig.domain.DataAccessForm;
+import org.obiba.mica.micaConfig.service.DataAccessFormService;
 import org.obiba.mica.security.Roles;
 import org.obiba.mica.security.domain.SubjectAcl;
 import org.obiba.mica.security.service.SubjectAclService;
@@ -62,6 +62,9 @@ public class DataAccessRequestService extends DataAccessEntityService<DataAccess
 
   @Inject
   private SubjectAclService subjectAclService;
+
+  @Inject
+  private DataAccessFormService dataAccessFormService;
 
   @Inject
   private DataAccessAmendmentService dataAccessAmendmentService;
@@ -162,11 +165,11 @@ public class DataAccessRequestService extends DataAccessEntityService<DataAccess
   }
 
   public boolean isFeasibilityEnabled() {
-    return dataAccessFormService.find().map(DataAccessForm::isFeasibilityEnabled).orElse(false);
+    return dataAccessConfigService.getOrCreateConfig().isFeasibilityEnabled();
   }
 
   public boolean isAmendmentsEnabled() {
-    return dataAccessFormService.find().map(DataAccessForm::isAmendmentsEnabled).orElse(false);
+    return dataAccessConfigService.getOrCreateConfig().isAmendmentsEnabled();
   }
 
   //

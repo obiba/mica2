@@ -3,11 +3,10 @@ package org.obiba.mica.micaConfig.rest;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.obiba.mica.micaConfig.NoSuchDataAccessFormException;
+import org.obiba.mica.micaConfig.domain.DataAccessConfig;
 import org.obiba.mica.micaConfig.domain.DataAccessFeasibilityForm;
-import org.obiba.mica.micaConfig.domain.DataAccessForm;
+import org.obiba.mica.micaConfig.service.DataAccessConfigService;
 import org.obiba.mica.micaConfig.service.DataAccessFeasibilityFormService;
-import org.obiba.mica.micaConfig.service.DataAccessFeasibilityFormService;
-import org.obiba.mica.micaConfig.service.DataAccessFormService;
 import org.obiba.mica.security.Roles;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
@@ -25,27 +24,27 @@ import java.util.Optional;
 @RequiresAuthentication
 public class DataAccessFeasibilityFormResource {
 
-  private DataAccessFormService dataAccessFormService;
+  private DataAccessConfigService dataAccessConfigService;
   private DataAccessFeasibilityFormService dataAccessFeasibilityFormService;
 
   private Dtos dtos;
 
   @Inject
   public DataAccessFeasibilityFormResource(DataAccessFeasibilityFormService dataAccessFeasibilityFormService,
-                                           DataAccessFormService dataAccessFormService,
+                                           DataAccessConfigService dataAccessConfigService,
                                            Dtos dtos) {
     this.dataAccessFeasibilityFormService = dataAccessFeasibilityFormService;
-    this.dataAccessFormService = dataAccessFormService;
+    this.dataAccessConfigService = dataAccessConfigService;
     this.dtos = dtos;
   }
 
   @GET
   public Mica.DataAccessFeasibilityFormDto get() {
     Optional<DataAccessFeasibilityForm> dataAccessFeasibilityForm = dataAccessFeasibilityFormService.find();
-    Optional<DataAccessForm> dataAccessForm = dataAccessFormService.find();
-    if(!dataAccessForm.isPresent()) throw NoSuchDataAccessFormException.withDefaultMessage();
-    if (!dataAccessFeasibilityForm.isPresent()) throw NoSuchDataAccessFormException.withMessage("DataAccessFeasibilityForm does not exist");
-    return dtos.asDto(dataAccessFeasibilityForm.get(), dataAccessForm.get());
+    DataAccessConfig dataAccessConfig = dataAccessConfigService.getOrCreateConfig();
+    if (!dataAccessFeasibilityForm.isPresent())
+      throw NoSuchDataAccessFormException.withMessage("DataAccessFeasibilityForm does not exist");
+    return dtos.asDto(dataAccessFeasibilityForm.get(), dataAccessConfig);
   }
 
   @PUT

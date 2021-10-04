@@ -17,8 +17,8 @@ import org.obiba.mica.core.service.SchemaFormContentFileService;
 import org.obiba.mica.core.support.IdentifierGenerator;
 import org.obiba.mica.core.support.YamlClassPathResourceReader;
 import org.obiba.mica.dataset.service.VariableSetService;
-import org.obiba.mica.micaConfig.domain.DataAccessForm;
-import org.obiba.mica.micaConfig.service.DataAccessFormService;
+import org.obiba.mica.micaConfig.domain.DataAccessConfig;
+import org.obiba.mica.micaConfig.service.DataAccessConfigService;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.security.Roles;
 import org.slf4j.Logger;
@@ -44,7 +44,7 @@ public abstract class DataAccessEntityService<T extends DataAccessEntity> {
   private static final Configuration conf = defaultConfiguration().addOptions(Option.ALWAYS_RETURN_LIST);
 
   @Inject
-  protected DataAccessFormService dataAccessFormService;
+  protected DataAccessConfigService dataAccessConfigService;
 
   @Inject
   protected DataAccessRequestUtilService dataAccessRequestUtilService;
@@ -223,11 +223,11 @@ public abstract class DataAccessEntityService<T extends DataAccessEntity> {
   }
 
   protected void sendCreatedNotificationEmail(T request) {
-    DataAccessForm dataAccessForm = dataAccessFormService.find().get();
-    if (dataAccessForm.isNotifyCreated()) {
+    DataAccessConfig dataAccessConfig = dataAccessConfigService.getOrCreateConfig();
+    if (dataAccessConfig.isNotifyCreated()) {
       Map<String, String> ctx = getNotificationEmailContext(request);
       if (ctx.get("parentId") == null) { // only original request, not amendments
-        mailService.sendEmailToGroups(mailService.getSubject(dataAccessForm.getCreatedSubject(), ctx,
+        mailService.sendEmailToGroups(mailService.getSubject(dataAccessConfig.getCreatedSubject(), ctx,
             DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), "dataAccessRequestCreatedDAOEmail", ctx,
           Roles.MICA_DAO);
       }
@@ -235,96 +235,96 @@ public abstract class DataAccessEntityService<T extends DataAccessEntity> {
   }
 
   protected void sendSubmittedNotificationEmail(T request) {
-    DataAccessForm dataAccessForm = dataAccessFormService.find().get();
-    if (dataAccessForm.isNotifySubmitted()) {
+    DataAccessConfig dataAccessConfig = dataAccessConfigService.getOrCreateConfig();
+    if (dataAccessConfig.isNotifySubmitted()) {
       Map<String, String> ctx = getNotificationEmailContext(request);
 
       String prefix = getTemplatePrefix(ctx);
 
-      mailService.sendEmailToUsers(mailService.getSubject(dataAccessForm.getSubmittedSubject(), ctx,
+      mailService.sendEmailToUsers(mailService.getSubject(dataAccessConfig.getSubmittedSubject(), ctx,
           DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), prefix + "SubmittedApplicantEmail", ctx,
         request.getApplicant());
-      mailService.sendEmailToGroups(mailService.getSubject(dataAccessForm.getSubmittedSubject(), ctx,
+      mailService.sendEmailToGroups(mailService.getSubject(dataAccessConfig.getSubmittedSubject(), ctx,
           DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), prefix + "SubmittedDAOEmail", ctx,
         Roles.MICA_DAO);
     }
   }
 
   protected void sendConditionallyApprovedEmail(T request) {
-    DataAccessForm dataAccessForm = dataAccessFormService.find().get();
-    if (dataAccessForm.isNotifyConditionallyApproved()) {
+    DataAccessConfig dataAccessConfig = dataAccessConfigService.getOrCreateConfig();
+    if (dataAccessConfig.isNotifyConditionallyApproved()) {
       Map<String, String> ctx = getNotificationEmailContext(request);
 
       String prefix = getTemplatePrefix(ctx);
 
-      mailService.sendEmailToUsers(mailService.getSubject(dataAccessForm.getConditionallyApprovedSubject(), ctx,
+      mailService.sendEmailToUsers(mailService.getSubject(dataAccessConfig.getConditionallyApprovedSubject(), ctx,
           DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), prefix + "ConditionallyApprovedApplicantEmail", ctx,
         request.getApplicant());
     }
   }
 
   protected void sendReviewedNotificationEmail(T request) {
-    DataAccessForm dataAccessForm = dataAccessFormService.find().get();
-    if (dataAccessForm.isNotifyReviewed() && dataAccessForm.isWithReview()) {
+    DataAccessConfig dataAccessConfig = dataAccessConfigService.getOrCreateConfig();
+    if (dataAccessConfig.isNotifyReviewed() && dataAccessConfig.isWithReview()) {
       Map<String, String> ctx = getNotificationEmailContext(request);
 
       String prefix = getTemplatePrefix(ctx);
 
-      mailService.sendEmailToUsers(mailService.getSubject(dataAccessForm.getReviewedSubject(), ctx,
+      mailService.sendEmailToUsers(mailService.getSubject(dataAccessConfig.getReviewedSubject(), ctx,
           DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), prefix + "ReviewedApplicantEmail", ctx,
         request.getApplicant());
     }
   }
 
   protected void sendOpenedNotificationEmail(T request) {
-    DataAccessForm dataAccessForm = dataAccessFormService.find().get();
-    if (dataAccessForm.isNotifyReopened()) {
+    DataAccessConfig dataAccessConfig = dataAccessConfigService.getOrCreateConfig();
+    if (dataAccessConfig.isNotifyReopened()) {
       Map<String, String> ctx = getNotificationEmailContext(request);
 
       String prefix = getTemplatePrefix(ctx);
 
-      mailService.sendEmailToUsers(mailService.getSubject(dataAccessForm.getReopenedSubject(), ctx,
+      mailService.sendEmailToUsers(mailService.getSubject(dataAccessConfig.getReopenedSubject(), ctx,
           DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), prefix + "ReopenedApplicantEmail", ctx,
         request.getApplicant());
     }
   }
 
   protected void sendApprovedNotificationEmail(T request) {
-    DataAccessForm dataAccessForm = dataAccessFormService.find().get();
-    if (dataAccessForm.isNotifyApproved()) {
+    DataAccessConfig dataAccessConfig = dataAccessConfigService.getOrCreateConfig();
+    if (dataAccessConfig.isNotifyApproved()) {
       Map<String, String> ctx = getNotificationEmailContext(request);
 
       String prefix = getTemplatePrefix(ctx);
 
-      mailService.sendEmailToUsers(mailService.getSubject(dataAccessForm.getApprovedSubject(), ctx,
+      mailService.sendEmailToUsers(mailService.getSubject(dataAccessConfig.getApprovedSubject(), ctx,
           DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), prefix + "ApprovedApplicantEmail", ctx,
         request.getApplicant());
     }
   }
 
   protected void sendRejectedNotificationEmail(T request) {
-    DataAccessForm dataAccessForm = dataAccessFormService.find().get();
-    if (dataAccessForm.isNotifyRejected()) {
+    DataAccessConfig dataAccessConfig = dataAccessConfigService.getOrCreateConfig();
+    if (dataAccessConfig.isNotifyRejected()) {
       Map<String, String> ctx = getNotificationEmailContext(request);
 
       String prefix = getTemplatePrefix(ctx);
 
-      mailService.sendEmailToUsers(mailService.getSubject(dataAccessForm.getRejectedSubject(), ctx,
+      mailService.sendEmailToUsers(mailService.getSubject(dataAccessConfig.getRejectedSubject(), ctx,
           DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), prefix + "RejectedApplicantEmail", ctx,
         request.getApplicant());
     }
   }
 
   protected void sendAttachmentsUpdatedNotificationEmail(T request) {
-    DataAccessForm dataAccessForm = dataAccessFormService.find().get();
-    if (dataAccessForm.isNotifyAttachment()) {
+    DataAccessConfig dataAccessConfig = dataAccessConfigService.getOrCreateConfig();
+    if (dataAccessConfig.isNotifyAttachment()) {
       Map<String, String> ctx = getNotificationEmailContext(request);
 
-      mailService.sendEmailToUsers(mailService.getSubject(dataAccessForm.getAttachmentSubject(), ctx,
+      mailService.sendEmailToUsers(mailService.getSubject(dataAccessConfig.getAttachmentSubject(), ctx,
           DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), "dataAccessRequestAttachmentsUpdated", ctx,
         request.getApplicant());
 
-      mailService.sendEmailToGroups(mailService.getSubject(dataAccessForm.getAttachmentSubject(), ctx,
+      mailService.sendEmailToGroups(mailService.getSubject(dataAccessConfig.getAttachmentSubject(), ctx,
           DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), "dataAccessRequestAttachmentsUpdated", ctx,
         Roles.MICA_DAO);
     }
@@ -368,14 +368,14 @@ public abstract class DataAccessEntityService<T extends DataAccessEntity> {
   }
 
   protected String generateId() {
-    DataAccessForm dataAccessForm = dataAccessFormService.find().get();
+    DataAccessConfig dataAccessConfig = dataAccessConfigService.getOrCreateConfig();
 
     Object exclusions = YamlClassPathResourceReader.read(EXCLUSION_IDS_YAML_RESOURCE_PATH, Map.class).get("exclusions");
 
-    IdentifierGenerator.Builder builder = IdentifierGenerator.newBuilder().prefix(dataAccessForm.getIdPrefix())
-      .size(dataAccessForm.getIdLength());
+    IdentifierGenerator.Builder builder = IdentifierGenerator.newBuilder().prefix(dataAccessConfig.getIdPrefix())
+      .size(dataAccessConfig.getIdLength());
 
-    if (dataAccessForm.isAllowIdWithLeadingZeros()) {
+    if (dataAccessConfig.isAllowIdWithLeadingZeros()) {
       builder.zeros();
     }
 

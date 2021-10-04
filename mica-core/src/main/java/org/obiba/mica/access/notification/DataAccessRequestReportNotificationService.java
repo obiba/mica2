@@ -13,14 +13,17 @@ package org.obiba.mica.access.notification;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import org.obiba.mica.access.domain.*;
+import org.obiba.mica.access.domain.DataAccessAmendment;
+import org.obiba.mica.access.domain.DataAccessEntityStatus;
+import org.obiba.mica.access.domain.DataAccessRequest;
+import org.obiba.mica.access.domain.DataAccessRequestTimeline;
 import org.obiba.mica.access.service.DataAccessAmendmentService;
 import org.obiba.mica.access.service.DataAccessRequestService;
 import org.obiba.mica.access.service.DataAccessRequestUtilService;
 import org.obiba.mica.core.domain.AbstractAuditableDocument;
 import org.obiba.mica.core.service.MailService;
-import org.obiba.mica.micaConfig.domain.DataAccessForm;
-import org.obiba.mica.micaConfig.service.DataAccessFormService;
+import org.obiba.mica.micaConfig.domain.DataAccessConfig;
+import org.obiba.mica.micaConfig.service.DataAccessConfigService;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.security.Roles;
 import org.slf4j.Logger;
@@ -63,16 +66,16 @@ public class DataAccessRequestReportNotificationService {
 
   private final MicaConfigService micaConfigService;
 
-  private final DataAccessFormService dataAccessFormService;
+  private final DataAccessConfigService dataAccessConfigService;
 
   @Inject
-  public DataAccessRequestReportNotificationService(DataAccessRequestService dataAccessRequestService, DataAccessAmendmentService dataAccessAmendmentService, DataAccessRequestUtilService dataAccessRequestUtilService, MailService mailService, MicaConfigService micaConfigService, DataAccessFormService dataAccessFormService) {
+  public DataAccessRequestReportNotificationService(DataAccessRequestService dataAccessRequestService, DataAccessConfigService dataAccessConfigService, DataAccessAmendmentService dataAccessAmendmentService, DataAccessRequestUtilService dataAccessRequestUtilService, MailService mailService, MicaConfigService micaConfigService) {
     this.dataAccessRequestService = dataAccessRequestService;
+    this.dataAccessConfigService = dataAccessConfigService;
     this.dataAccessAmendmentService = dataAccessAmendmentService;
     this.dataAccessRequestUtilService = dataAccessRequestUtilService;
     this.mailService = mailService;
     this.micaConfigService = micaConfigService;
-    this.dataAccessFormService = dataAccessFormService;
   }
 
   /**
@@ -102,9 +105,9 @@ public class DataAccessRequestReportNotificationService {
   @Async
   @Scheduled(cron = "${dar.reminder.cron:0 0 0 * * ?}")
   public void remindDataAccessReports() {
-    DataAccessForm dataAccessForm = dataAccessFormService.find().get();
-    if (!dataAccessForm.isNotifyFinalReport() && !dataAccessForm.isNotifyIntermediateReport()) return;
-    int nbOfDaysBeforeReport = dataAccessForm.getNbOfDaysBeforeReport();
+    DataAccessConfig dataAccessConfig = dataAccessConfigService.getOrCreateConfig();
+    if (!dataAccessConfig.isNotifyFinalReport() && !dataAccessConfig.isNotifyIntermediateReport()) return;
+    int nbOfDaysBeforeReport = dataAccessConfig.getNbOfDaysBeforeReport();
     if (nbOfDaysBeforeReport < 0) return;
 
     LocalDate dateNow = LocalDate.now().minusDays(nbOfDaysBeforeReport);
@@ -114,13 +117,13 @@ public class DataAccessRequestReportNotificationService {
 
       if (timeline.hasEndDate()) {
         LocalDate localEndDate = toLocalDate(timeline.getEndDate());
-        if (dataAccessForm.isNotifyFinalReport() && dateNow.plusDays(nbOfDaysBeforeReport).equals(localEndDate)) {
+        if (dataAccessConfig.isNotifyFinalReport() && dateNow.plusDays(nbOfDaysBeforeReport).equals(localEndDate)) {
           // today is the day to notify final report
-          remindDataAccessFinalReport(dataAccessForm, dar, timeline.getEndDate(), nbOfDaysBeforeReport);
-        } else if (dataAccessForm.isNotifyIntermediateReport() && timeline.hasIntermediateDates()) {
+          remindDataAccessFinalReport(dataAccessConfig, dar, timeline.getEndDate(), nbOfDaysBeforeReport);
+        } else if (dataAccessConfig.isNotifyIntermediateReport() && timeline.hasIntermediateDates()) {
           for (Date interDate : timeline.getIntermediateDates()) {
             if (dateNow.plusDays(nbOfDaysBeforeReport).equals(toLocalDate(interDate))) {
-              remindDataAccessIntermediateReport(dataAccessForm, dar, interDate, nbOfDaysBeforeReport);
+              remindDataAccessIntermediateReport(dataAccessConfig, dar, interDate, nbOfDaysBeforeReport);
               break;
             }
           }
@@ -131,27 +134,27 @@ public class DataAccessRequestReportNotificationService {
     }
   }
 
-  private void remindDataAccessFinalReport(DataAccessForm dataAccessForm, DataAccessRequest request, Date reportDate, int nbOfDaysBeforeReport) {
+  private void remindDataAccessFinalReport(DataAccessConfig dataAccessConfig, DataAccessRequest request, Date reportDate, int nbOfDaysBeforeReport) {
     Map<String, String> ctx = getContext(request, reportDate, nbOfDaysBeforeReport);
 
-    mailService.sendEmailToUsers(mailService.getSubject(dataAccessForm.getFinalReportSubject(), ctx,
-      DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), "dataAccessRequestFinalReportApplicantEmail", ctx,
+    mailService.sendEmailToUsers(mailService.getSubject(dataAccessConfig.getFinalReportSubject(), ctx,
+        DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), "dataAccessRequestFinalReportApplicantEmail", ctx,
       request.getApplicant());
 
-    mailService.sendEmailToGroups(mailService.getSubject(dataAccessForm.getFinalReportSubject(), ctx,
-      DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), "dataAccessRequestFinalReportDAOEmail", ctx,
+    mailService.sendEmailToGroups(mailService.getSubject(dataAccessConfig.getFinalReportSubject(), ctx,
+        DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), "dataAccessRequestFinalReportDAOEmail", ctx,
       Roles.MICA_DAO);
   }
 
-  private void remindDataAccessIntermediateReport(DataAccessForm dataAccessForm, DataAccessRequest request, Date reportDate, int nbOfDaysBeforeReport) {
+  private void remindDataAccessIntermediateReport(DataAccessConfig dataAccessConfig, DataAccessRequest request, Date reportDate, int nbOfDaysBeforeReport) {
     Map<String, String> ctx = getContext(request, reportDate, nbOfDaysBeforeReport);
 
-    mailService.sendEmailToUsers(mailService.getSubject(dataAccessForm.getIntermediateReportSubject(), ctx,
-      DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), "dataAccessRequestIntermediateReportApplicantEmail", ctx,
+    mailService.sendEmailToUsers(mailService.getSubject(dataAccessConfig.getIntermediateReportSubject(), ctx,
+        DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), "dataAccessRequestIntermediateReportApplicantEmail", ctx,
       request.getApplicant());
 
-    mailService.sendEmailToGroups(mailService.getSubject(dataAccessForm.getIntermediateReportSubject(), ctx,
-      DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), "dataAccessRequestIntermediateReportDAOEmail", ctx,
+    mailService.sendEmailToGroups(mailService.getSubject(dataAccessConfig.getIntermediateReportSubject(), ctx,
+        DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), "dataAccessRequestIntermediateReportDAOEmail", ctx,
       Roles.MICA_DAO);
   }
 

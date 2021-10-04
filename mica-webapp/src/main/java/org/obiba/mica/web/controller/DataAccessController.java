@@ -16,13 +16,10 @@ import org.obiba.mica.micaConfig.NoSuchDataAccessFormException;
 import org.obiba.mica.micaConfig.domain.DataAccessAmendmentForm;
 import org.obiba.mica.micaConfig.domain.DataAccessFeasibilityForm;
 import org.obiba.mica.micaConfig.domain.DataAccessForm;
-import org.obiba.mica.micaConfig.service.DataAccessAmendmentFormService;
-import org.obiba.mica.micaConfig.service.DataAccessFeasibilityFormService;
-import org.obiba.mica.micaConfig.service.DataAccessFormService;
-import org.obiba.mica.micaConfig.service.MicaConfigService;
+import org.obiba.mica.micaConfig.service.*;
 import org.obiba.mica.security.Roles;
 import org.obiba.mica.user.UserProfileService;
-import org.obiba.mica.web.controller.domain.DataAccessConfig;
+import org.obiba.mica.web.controller.domain.DataAccessConfigBundle;
 import org.obiba.mica.web.controller.domain.FormStatusChangeEvent;
 import org.obiba.mica.web.controller.domain.SchemaFormConfig;
 import org.springframework.stereotype.Controller;
@@ -45,6 +42,9 @@ public class DataAccessController extends BaseController {
 
   @Inject
   private DataAccessAmendmentService dataAccessAmendmentService;
+
+  @Inject
+  private DataAccessConfigService dataAccessConfigervice;
 
   @Inject
   private DataAccessFormService dataAccessFormService;
@@ -357,7 +357,7 @@ public class DataAccessController extends BaseController {
     Optional<DataAccessForm> d = dataAccessFormService.find();
     if (!d.isPresent()) throw NoSuchDataAccessFormException.withDefaultMessage();
     DataAccessForm dataAccessForm = d.get();
-    params.put("accessConfig", new DataAccessConfig(dataAccessForm));
+    params.put("accessConfig", new DataAccessConfigBundle(dataAccessConfigervice.getOrCreateConfig(), dataAccessForm));
   }
 
   private void addDataAccessFormConfiguration(Map<String, Object> params, DataAccessRequest request, boolean readOnly, String locale) {
@@ -365,7 +365,7 @@ public class DataAccessController extends BaseController {
     if (!d.isPresent()) throw NoSuchDataAccessFormException.withDefaultMessage();
     DataAccessForm dataAccessForm = getDataAccessForm();
     params.put("formConfig", new SchemaFormConfig(micaConfigService, dataAccessForm.getSchema(), dataAccessForm.getDefinition(), request.getContent(), locale, readOnly));
-    params.put("accessConfig", new DataAccessConfig(dataAccessForm));
+    params.put("accessConfig", new DataAccessConfigBundle(dataAccessConfigervice.getOrCreateConfig(), dataAccessForm));
   }
 
   private void addDataAccessAmendmentFormConfiguration(Map<String, Object> params, DataAccessAmendment amendment, boolean readOnly, String locale) {
@@ -373,7 +373,7 @@ public class DataAccessController extends BaseController {
     if (!ad.isPresent()) throw NoSuchDataAccessFormException.withDefaultMessage();
     DataAccessAmendmentForm dataAccessAmendmentForm = ad.get();
     params.put("formConfig", new SchemaFormConfig(micaConfigService, dataAccessAmendmentForm.getSchema(), dataAccessAmendmentForm.getDefinition(), amendment.getContent(), locale, readOnly));
-    params.put("accessConfig", new DataAccessConfig(getDataAccessForm()));
+    params.put("accessConfig", new DataAccessConfigBundle(dataAccessConfigervice.getOrCreateConfig(), getDataAccessForm()));
   }
 
   private void addDataAccessFeasibilityFormConfiguration(Map<String, Object> params, DataAccessFeasibility feasibility, boolean readOnly, String locale) {
@@ -381,7 +381,7 @@ public class DataAccessController extends BaseController {
     if (!fd.isPresent()) throw NoSuchDataAccessFormException.withDefaultMessage();
     DataAccessFeasibilityForm dataAccessFeasibilityForm = fd.get();
     params.put("formConfig", new SchemaFormConfig(micaConfigService, dataAccessFeasibilityForm.getSchema(), dataAccessFeasibilityForm.getDefinition(), feasibility.getContent(), locale, readOnly));
-    params.put("accessConfig", new DataAccessConfig(getDataAccessForm()));
+    params.put("accessConfig", new DataAccessConfigBundle(dataAccessConfigervice.getOrCreateConfig(), getDataAccessForm()));
   }
 
   private DataAccessForm getDataAccessForm() {
@@ -390,8 +390,8 @@ public class DataAccessController extends BaseController {
     return d.get();
   }
 
-  private DataAccessConfig getDataAccessConfig(Map<String, Object> params) {
-    return (DataAccessConfig) params.get("accessConfig");
+  private DataAccessConfigBundle getDataAccessConfig(Map<String, Object> params) {
+    return (DataAccessConfigBundle) params.get("accessConfig");
   }
 
 }

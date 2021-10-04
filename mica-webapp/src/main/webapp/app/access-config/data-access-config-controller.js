@@ -18,6 +18,7 @@ mica.dataAccessConfig
     '$scope',
     '$log',
     'MicaConfigResource',
+    'DataAccessConfigResource',
     'DataAccessFormResource',
     'EntitySchemaFormService',
     'DataAccessFormPermissionsResource',
@@ -31,6 +32,7 @@ mica.dataAccessConfig
               $scope,
               $log,
               MicaConfigResource,
+              DataAccessConfigResource,
               DataAccessFormResource,
               EntitySchemaFormService,
               DataAccessFormPermissionsResource,
@@ -83,7 +85,12 @@ mica.dataAccessConfig
             entitySchemaFormDelete('feasibilityForm');
             entitySchemaFormDelete('amendmentForm');
 
-            $q.all([DataAccessFormResource.save($scope.dataAccessForm).$promise, DataAccessFeasibilityFormResource.save($scope.feasibilityForm).$promise, DataAccessAmendmentFormResource.save($scope.amendmentForm).$promise]).then(function () {
+            $q.all([
+              DataAccessConfigResource.save($scope.config).$promise,
+              DataAccessFormResource.save($scope.dataAccessForm).$promise,
+              DataAccessFeasibilityFormResource.save($scope.feasibilityForm).$promise,
+              DataAccessAmendmentFormResource.save($scope.amendmentForm).$promise
+            ]).then(function () {
               $scope.state.setDirty(false);
               AlertBuilder.newBuilder().delay(3000).type('success').trMsg('entity-config.save-alert.success').build();
             }, function (reason) {
@@ -165,6 +172,8 @@ mica.dataAccessConfig
           delete $scope.dataAccessForm.predefinedActions;
         }
       }
+
+      $scope.config = DataAccessConfigResource.get();
 
       $scope.form = DataAccessFormResource.get(
         function(dataAccessForm){
