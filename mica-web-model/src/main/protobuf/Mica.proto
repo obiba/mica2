@@ -926,16 +926,20 @@ message DataAccessFormDto {
   repeated AttachmentDto pdfTemplates = 3;
   repeated LocalizedPropertyDto properties = 4;
   optional string titleFieldPath = 5;
-  optional string summaryFieldPath = 26;
-  optional string csvExportFormat = 29;
-  required PdfDownloadType pdfDownloadType = 30;
-  optional string endDateFieldPath = 37;
+  optional string summaryFieldPath = 6;
+  optional string csvExportFormat = 7;
+  required PdfDownloadType pdfDownloadType = 8;
+  optional string endDateFieldPath = 9;
+  optional int32 revision = 10;
+  optional string lastModifiedDate = 11;
 }
 
 message DataAccessFeasibilityFormDto {
   required string schema = 1;
   required string definition = 2;
-  optional string csvExportFormat = 6;
+  optional string csvExportFormat = 3;
+  optional int32 revision = 4;
+  optional string lastModifiedDate = 5;
 }
 
 message DataAccessAmendmentFormDto {
@@ -948,6 +952,8 @@ message DataAccessAmendmentFormDto {
   required bool withReview = 7;
   required bool approvedFinal = 8;
   optional string endDateFieldPath = 9;
+  optional int32 revision = 10;
+  optional string lastModifiedDate = 11;
 }
 
 message ProjectFormDto {

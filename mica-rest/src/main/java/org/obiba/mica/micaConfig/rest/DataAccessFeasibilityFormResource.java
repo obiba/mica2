@@ -1,10 +1,12 @@
 package org.obiba.mica.micaConfig.rest;
 
+import com.google.common.base.Strings;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.obiba.mica.micaConfig.NoSuchDataAccessFormException;
 import org.obiba.mica.micaConfig.domain.DataAccessConfig;
 import org.obiba.mica.micaConfig.domain.DataAccessFeasibilityForm;
+import org.obiba.mica.micaConfig.domain.DataAccessForm;
 import org.obiba.mica.micaConfig.service.DataAccessConfigService;
 import org.obiba.mica.micaConfig.service.DataAccessFeasibilityFormService;
 import org.obiba.mica.security.Roles;
@@ -16,6 +18,7 @@ import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 import java.util.Optional;
 
@@ -39,12 +42,18 @@ public class DataAccessFeasibilityFormResource {
   }
 
   @GET
-  public Mica.DataAccessFeasibilityFormDto get() {
-    Optional<DataAccessFeasibilityForm> dataAccessFeasibilityForm = dataAccessFeasibilityFormService.find();
-    DataAccessConfig dataAccessConfig = dataAccessConfigService.getOrCreateConfig();
-    if (!dataAccessFeasibilityForm.isPresent())
-      throw NoSuchDataAccessFormException.withMessage("DataAccessFeasibilityForm does not exist");
-    return dtos.asDto(dataAccessFeasibilityForm.get(), dataAccessConfig);
+  public Mica.DataAccessFeasibilityFormDto get(@QueryParam("revision") String revision) {
+    Optional<DataAccessFeasibilityForm> d = dataAccessFeasibilityFormService.findByRevision(revision);
+    if(!d.isPresent()) throw NoSuchDataAccessFormException.withDefaultMessage();
+    return dtos.asDto(d.get());
+  }
+
+  @PUT
+  @Path("/_publish")
+  @RequiresRoles(Roles.MICA_ADMIN)
+  public Response publish() {
+    dataAccessFeasibilityFormService.publish();
+    return Response.ok().build();
   }
 
   @PUT

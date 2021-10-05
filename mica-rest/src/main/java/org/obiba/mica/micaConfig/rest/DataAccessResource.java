@@ -78,7 +78,7 @@ public class DataAccessResource {
   @Path("/form")
   @Timed
   public Mica.DataAccessFormDto getDataAccessForm(@QueryParam("lang") String lang) {
-    Optional<DataAccessForm> d = dataAccessFormService.find();
+    Optional<DataAccessForm> d = dataAccessFormService.findDraft();
 
     if(!d.isPresent()) throw NoSuchDataAccessFormException.withDefaultMessage();
 
@@ -100,7 +100,7 @@ public class DataAccessResource {
   @GET
   @Path("/pdf")
   public FileResource getDataAccessPdf(@QueryParam("lang") String lang) {
-    Optional<DataAccessForm> d = dataAccessFormService.find();
+    Optional<DataAccessForm> d = dataAccessFormService.findDraft();
 
     if(!d.isPresent()) throw NoSuchDataAccessFormException.withDefaultMessage();
 

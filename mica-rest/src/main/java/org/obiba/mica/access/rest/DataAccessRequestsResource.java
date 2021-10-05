@@ -111,8 +111,8 @@ public class DataAccessRequestsResource {
   @Produces("text/csv")
   public Response exportCsv(@QueryParam("lang") String lang) {
 
-    DataAccessForm dataAccessForm = dataAccessFormService.find().get();
-    DataAccessAmendmentForm amendmentForm = dataAccessAmendmentFormService.find().get();
+    DataAccessForm dataAccessForm = dataAccessFormService.findDraft().get();
+    DataAccessAmendmentForm amendmentForm = dataAccessAmendmentFormService.findDraft().get();
     Map<DataAccessRequest, List<DataAccessAmendment>> dataAccessRequestListMap = listAllWithAmendments();
 
     ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();

@@ -17,7 +17,6 @@ import org.apache.shiro.SecurityUtils;
 import org.obiba.mica.access.domain.*;
 import org.obiba.mica.micaConfig.domain.AbstractDataAccessEntityForm;
 import org.obiba.mica.micaConfig.domain.DataAccessConfig;
-import org.obiba.mica.micaConfig.domain.DataAccessForm;
 import org.obiba.mica.micaConfig.service.DataAccessAmendmentFormService;
 import org.obiba.mica.micaConfig.service.DataAccessConfigService;
 import org.obiba.mica.micaConfig.service.DataAccessFormService;
@@ -60,7 +59,7 @@ public class DataAccessRequestUtilService {
   private UserProfileService userProfileService;
 
   public AbstractDataAccessEntityForm getDataAccessForm(boolean isDataAccessRequest) {
-    return isDataAccessRequest ? dataAccessFormService.find().get() : dataAccessAmendmentFormService.find().get();
+    return isDataAccessRequest ? dataAccessFormService.findDraft().get() : dataAccessAmendmentFormService.findDraft().get();
   }
 
   public String getRequestTitle(DataAccessEntity request) {

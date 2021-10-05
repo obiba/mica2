@@ -10,6 +10,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Component;
 
+import java.util.Date;
+
 @Component
 public class Mica460Upgrade implements UpgradeStep {
 
@@ -109,6 +111,7 @@ public class Mica460Upgrade implements UpgradeStep {
     dataAccessForm.removeField("amendmentVariablesEnabled");
     dataAccessForm.removeField("daoCanEdit");
     dataAccessForm.removeField("nbOfDaysBeforeReport");
+    dataAccessForm.put("lastModifiedDate", new Date());
 
     mongoTemplate.execute(db -> db.getCollection("dataAccessForm").save(dataAccessForm));
   }

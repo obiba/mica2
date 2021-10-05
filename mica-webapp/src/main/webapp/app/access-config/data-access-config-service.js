@@ -23,8 +23,15 @@ mica.dataAccessConfig
   .factory('DataAccessFormResource', ['$resource',
     function ($resource) {
       return $resource(contextPath + '/ws/config/data-access-form', {}, {
-        'get': {method: 'GET', errorHandler: true},
+        'get': {method: 'GET', params: { revision: '@revision' }, errorHandler: true},
         'save': {method: 'PUT', errorHandler: true}
+      });
+    }])
+
+  .factory('DataAccessFormPublicationResource', ['$resource',
+    function ($resource) {
+      return $resource(contextPath + '/ws/config/data-access-form/_publish', {}, {
+        'publish': {method: 'PUT', errorHandler: true}
       });
     }])
 
@@ -40,17 +47,33 @@ mica.dataAccessConfig
         'get': {method: 'GET', isArray: true}
       });
     }])
+
   .factory('DataAccessFeasibilityFormResource', ['$resource',
     function ($resource) {
       return $resource(contextPath + '/ws/config/data-access-feasibility-form', {}, {
-        'get': {method: 'GET', errorHandler: true},
+        'get': {method: 'GET', params: { revision: '@revision' }, errorHandler: true},
         'save': {method: 'PUT', errorHandler: true}
       });
     }])
+
+  .factory('DataAccessFeasibilityFormPublicationResource', ['$resource',
+    function ($resource) {
+      return $resource(contextPath + '/ws/config/data-access-feasibility-form/_publish', {}, {
+        'publish': {method: 'PUT', errorHandler: true}
+      });
+    }])
+
   .factory('DataAccessAmendmentFormResource', ['$resource',
     function ($resource) {
       return $resource(contextPath + '/ws/config/data-access-amendment-form', {}, {
-        'get': {method: 'GET', errorHandler: true},
+        'get': {method: 'GET', params: { revision: '@revision' }, errorHandler: true},
         'save': {method: 'PUT', errorHandler: true}
+      });
+    }])
+
+  .factory('DataAccessAmendmentFormPublicationResource', ['$resource',
+    function ($resource) {
+      return $resource(contextPath + '/ws/config/data-access-amendment-form/_publish', {}, {
+        'publish': {method: 'PUT', errorHandler: true}
       });
     }]);

@@ -296,7 +296,7 @@ public class DataAccessRequestService extends DataAccessEntityService<DataAccess
   }
 
   private byte[] getTemplate(Locale locale) throws IOException {
-    DataAccessForm dataAccessForm = dataAccessFormService.find().get();
+    DataAccessForm dataAccessForm = dataAccessFormService.findDraft().get();
     Attachment pdfTemplate = dataAccessForm.getPdfTemplates().get(locale);
 
     if (pdfTemplate == null) {

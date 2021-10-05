@@ -238,11 +238,38 @@
   </div>
 
   <div ng-show="tab.name !== 'permissions'" class="voffset4">
-      <a href="#/admin" class="btn btn-default">
+    <a href="#/admin" class="btn btn-default">
       <span translate>cancel</span>
     </a>
 
-    <button ng-click="saveForm()" class="btn btn-primary">
+    <span ng-show="tab.name === 'form'">
+      <button ng-click="saveForm()" class="btn btn-primary">
+        <span translate>save</span>
+      </button>
+      <button ng-disabled="dataAccessForm.lastModifiedDate === dataAccessFormLatestDate" ng-click="publishForm()" class="btn btn-info">
+        <span translate>publish.label</span>
+      </button>
+    </span>
+
+    <span ng-show="tab.name === 'feasibility'">
+      <button ng-click="saveFeasibilityForm()" class="btn btn-primary">
+        <span translate>save</span>
+      </button>
+      <button ng-disabled="feasibilityForm.lastModifiedDate === dataAccessFeasibilityFormLatestDate" ng-click="publishFeasibilityForm()" class="btn btn-info">
+        <span translate>publish.label</span>
+      </button>
+    </span>
+
+    <span ng-show="tab.name === 'amendment'">
+      <button ng-click="saveAmendmentForm()" class="btn btn-primary">
+        <span translate>save</span>
+      </button>
+      <button ng-disabled="formAmendment.lastModifiedDate === dataAccessAmendmentFormLatestDate" ng-click="publishAmendmentForm()" class="btn btn-info">
+        <span translate>publish.label</span>
+      </button>
+    </span>
+
+    <button ng-show="tab.name === 'notifications' || tab.name === 'settings'" ng-click="saveConfig()" class="btn btn-primary">
       <span translate>save</span>
     </button>
   </div>

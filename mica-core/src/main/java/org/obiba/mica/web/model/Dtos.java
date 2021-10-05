@@ -534,8 +534,8 @@ public class Dtos {
   }
 
   @NotNull
-  public Mica.DataAccessFeasibilityFormDto asDto(@NotNull DataAccessFeasibilityForm dataAccessFeasibilityForm, DataAccessConfig dataAccessConfig) {
-    return micaConfigDtos.asDto(dataAccessFeasibilityForm, dataAccessConfig);
+  public Mica.DataAccessFeasibilityFormDto asDto(@NotNull DataAccessFeasibilityForm dataAccessFeasibilityForm) {
+    return micaConfigDtos.asDto(dataAccessFeasibilityForm);
   }
 
   @NotNull

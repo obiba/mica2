@@ -11,9 +11,11 @@
 package org.obiba.mica.micaConfig.service;
 
 import com.google.common.eventbus.EventBus;
+import org.joda.time.DateTime;
 import org.obiba.mica.file.FileStoreService;
 import org.obiba.mica.micaConfig.domain.DataAccessForm;
 import org.obiba.mica.micaConfig.repository.DataAccessFormRepository;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -47,19 +49,19 @@ public class DataAccessFormService extends AbstractDataAccessEntityFormService<D
   @Override
   public DataAccessForm createOrUpdate(DataAccessForm dataAccessForm) {
     validateForm(dataAccessForm);
-
     dataAccessForm.getPdfTemplates().forEach((k, v) -> {
       if (v.isJustUploaded()) {
         fileStoreService.save(v.getId());
         v.setJustUploaded(false);
       }
     });
-
+    dataAccessForm.setRevision(0);
+    dataAccessForm.setLastModifiedDate(DateTime.now());
     return dataAccessFormRepository.save(dataAccessForm);
   }
 
   @Override
-  public Optional<DataAccessForm> find() {
+  public Optional<DataAccessForm> findDraft() {
     DataAccessForm form = dataAccessFormRepository.findOne(DataAccessForm.DEFAULT_ID);
     if (form == null) {
       createOrUpdate(createDefaultDataAccessForm());
@@ -73,6 +75,40 @@ public class DataAccessFormService extends AbstractDataAccessEntityFormService<D
     return Optional.ofNullable(form);
   }
 
+  @Override
+  DataAccessForm findLatest() {
+    Optional<DataAccessForm> latest = findFirstSortByRevisionDesc();
+    if (!latest.isPresent()) {
+      publish();
+      latest = findFirstSortByRevisionDesc();
+    }
+    return latest.get();
+  }
+
+  @Override
+  DataAccessForm findByRevision(int revision) {
+    return dataAccessFormRepository.findFirstByRevision(revision);
+  }
+
+  @Override
+  public void publish() {
+    DataAccessForm draft = findDraft().get();
+    draft.setId(null);
+    Optional<DataAccessForm> latest = findFirstSortByRevisionDesc();
+    draft.setRevision(latest.isPresent() ? latest.get().getRevision() + 1 : 1);
+    dataAccessFormRepository.save(draft);
+  }
+
+  //
+  // Private methods
+  //
+
+  private Optional<DataAccessForm> findFirstSortByRevisionDesc() {
+    return dataAccessFormRepository.findAll(new Sort(Sort.Direction.DESC, "revision")).stream()
+      .filter(form -> form.getRevision()>0)
+      .findFirst();
+  }
+
   private DataAccessForm createDefaultDataAccessForm() {
     DataAccessForm form = new DataAccessForm();
     form.setDefinition(getDefaultDataAccessFormResourceAsString("definition.json"));
@@ -81,6 +117,7 @@ public class DataAccessFormService extends AbstractDataAccessEntityFormService<D
     form.setTitleFieldPath("projectTitle");
     form.setSummaryFieldPath("summary");
     form.setEndDateFieldPath("endDate");
+    form.setRevision(0);
     return form;
   }
 }
