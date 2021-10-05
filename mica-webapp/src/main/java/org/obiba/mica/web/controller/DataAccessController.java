@@ -29,10 +29,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.inject.Inject;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -359,29 +356,40 @@ public class DataAccessController extends BaseController {
   }
 
   private void addDataAccessConfiguration(Map<String, Object> params) {
-    params.put("accessConfig", new DataAccessConfigBundle(dataAccessConfigervice.getOrCreateConfig(), getDataAccessForm()));
+    params.put("accessConfig", dataAccessConfigervice.getOrCreateConfig());
   }
 
   private void addDataAccessFormConfiguration(Map<String, Object> params, DataAccessRequest request, boolean readOnly, String locale) {
-    DataAccessForm dataAccessForm = getDataAccessForm();
+    DataAccessForm dataAccessForm = getDataAccessForm(request);
     params.put("formConfig", new SchemaFormConfig(micaConfigService, dataAccessForm.getSchema(), dataAccessForm.getDefinition(), request.getContent(), locale, readOnly));
     params.put("accessConfig", new DataAccessConfigBundle(dataAccessConfigervice.getOrCreateConfig(), dataAccessForm));
   }
 
   private void addDataAccessAmendmentFormConfiguration(Map<String, Object> params, DataAccessAmendment amendment, boolean readOnly, String locale) {
-    DataAccessAmendmentForm dataAccessAmendmentForm = dataAccessAmendmentFormService.findByRevision("latest").get();
+    DataAccessAmendmentForm dataAccessAmendmentForm = getDataAccessAmendmentForm(amendment);
     params.put("formConfig", new SchemaFormConfig(micaConfigService, dataAccessAmendmentForm.getSchema(), dataAccessAmendmentForm.getDefinition(), amendment.getContent(), locale, readOnly));
-    params.put("accessConfig", new DataAccessConfigBundle(dataAccessConfigervice.getOrCreateConfig(), getDataAccessForm()));
+    params.put("accessConfig", dataAccessConfigervice.getOrCreateConfig());
   }
 
   private void addDataAccessFeasibilityFormConfiguration(Map<String, Object> params, DataAccessFeasibility feasibility, boolean readOnly, String locale) {
     DataAccessFeasibilityForm dataAccessFeasibilityForm = dataAccessFeasibilityFormService.findByRevision("latest").get();
     params.put("formConfig", new SchemaFormConfig(micaConfigService, dataAccessFeasibilityForm.getSchema(), dataAccessFeasibilityForm.getDefinition(), feasibility.getContent(), locale, readOnly));
-    params.put("accessConfig", new DataAccessConfigBundle(dataAccessConfigervice.getOrCreateConfig(), getDataAccessForm()));
+    params.put("accessConfig", dataAccessConfigervice.getOrCreateConfig());
   }
 
-  private DataAccessForm getDataAccessForm() {
-    return dataAccessFormService.findByRevision("latest").get();
+  private DataAccessForm getDataAccessForm(DataAccessRequest request) {
+    Optional<DataAccessForm> form = dataAccessFormService.findByRevision(request.hasFormRevision() ? request.getFormRevision().toString() : "latest");
+    return form.orElseGet(() -> dataAccessFormService.findByRevision("latest").get());
+  }
+
+  private DataAccessAmendmentForm getDataAccessAmendmentForm(DataAccessAmendment amendment) {
+    Optional<DataAccessAmendmentForm> form = dataAccessAmendmentFormService.findByRevision(amendment.hasFormRevision() ? amendment.getFormRevision().toString() : "latest");
+    return form.orElseGet(() -> dataAccessAmendmentFormService.findByRevision("latest").get());
+  }
+
+  private DataAccessFeasibilityForm getDataAccessFeasibilityForm(DataAccessFeasibility feasibility) {
+    Optional<DataAccessFeasibilityForm> form = dataAccessFeasibilityFormService.findByRevision(feasibility.hasFormRevision() ? feasibility.getFormRevision().toString() : "latest");
+    return form.orElseGet(() -> dataAccessFeasibilityFormService.findByRevision("latest").get());
   }
 
   private DataAccessConfigBundle getDataAccessConfig(Map<String, Object> params) {

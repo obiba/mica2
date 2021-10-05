@@ -2,6 +2,7 @@ package org.obiba.mica.core.upgrade;
 
 import com.google.common.eventbus.EventBus;
 import com.mongodb.BasicDBObject;
+import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import org.obiba.runtime.Version;
 import org.obiba.runtime.upgrade.UpgradeStep;
@@ -45,7 +46,24 @@ public class Mica460Upgrade implements UpgradeStep {
       logger.info("Moving data access config out of data access form");
       DBObject dataAccessForm = mongoTemplate.execute(db -> db.getCollection("dataAccessForm").find().next());
       insertDataAccessConfig(dataAccessForm);
-      updateDataAccessForm(dataAccessForm);
+      logger.info("Updating and publishing data access form");
+      updateAndPublishDataAccessForm(dataAccessForm);
+      logger.info("Publishing data access feasibility form");
+      DBObject dataAccessFeasibilityForm = mongoTemplate.execute(db -> db.getCollection("dataAccessFeasibilityForm").find().next());
+      publishDataAccessFeasibilityForm(dataAccessFeasibilityForm);
+      logger.info("Publishing data access amendment form");
+      DBObject dataAccessAmendmentForm = mongoTemplate.execute(db -> db.getCollection("dataAccessAmendmentForm").find().next());
+      publishDataAccessAmendmentForm(dataAccessAmendmentForm);
+
+      logger.info("Applying form revision to submitted data access requests");
+      DBCursor dataAccessRequests = mongoTemplate.execute(db -> db.collectionExists("dataAccessRequest") ? db.getCollection("dataAccessRequest").find() : null);
+      applyDataAccessRequestFormRevision(dataAccessRequests);
+      logger.info("Applying form revision to submitted data access feasibilities");
+      DBCursor dataAccessFeasibilities = mongoTemplate.execute(db -> db.collectionExists("dataAccessFeasibility") ? db.getCollection("dataAccessFeasibility").find() : null);
+      applyDataAccessFeasibilityFormRevision(dataAccessFeasibilities);
+      logger.info("Applying form revision to submitted data access amendments");
+      DBCursor dataAccessAmendments = mongoTemplate.execute(db -> db.collectionExists("dataAccessAmendment") ? db.getCollection("dataAccessAmendment").find() : null);
+      applyDataAccessAmendmentFormRevision(dataAccessAmendments);
     } catch (RuntimeException e) {
       logger.error("Error occurred when trying to execute removeSetsVocabulariesTerms.", e);
     }
@@ -74,7 +92,8 @@ public class Mica460Upgrade implements UpgradeStep {
     });
   }
 
-  private void updateDataAccessForm(DBObject dataAccessForm) {
+  private void updateAndPublishDataAccessForm(DBObject dataAccessForm) {
+    // clean data access form from config info
     dataAccessForm.removeField("idLength");
     dataAccessForm.removeField("allowIdWithLeadingZeros");
     dataAccessForm.removeField("notifyCreated");
@@ -114,6 +133,59 @@ public class Mica460Upgrade implements UpgradeStep {
     dataAccessForm.put("lastModifiedDate", new Date());
 
     mongoTemplate.execute(db -> db.getCollection("dataAccessForm").save(dataAccessForm));
+
+    // publish
+    dataAccessForm.removeField("_id");
+    dataAccessForm.put("revision", 1);
+
+    mongoTemplate.execute(db -> db.getCollection("dataAccessForm").save(dataAccessForm));
+  }
+
+  private void publishDataAccessFeasibilityForm(DBObject dataAccessFeasibilityForm) {
+    dataAccessFeasibilityForm.removeField("_id");
+    dataAccessFeasibilityForm.put("revision", 1);
+
+    mongoTemplate.execute(db -> db.getCollection("dataAccessFeasibilityForm").save(dataAccessFeasibilityForm));
+  }
+
+  private void publishDataAccessAmendmentForm(DBObject dataAccessAmendmentForm) {
+    dataAccessAmendmentForm.removeField("_id");
+    dataAccessAmendmentForm.put("revision", 1);
+
+    mongoTemplate.execute(db -> db.getCollection("dataAccessAmendmentForm").save(dataAccessAmendmentForm));
+  }
+
+  private void applyDataAccessRequestFormRevision(DBCursor dataAccessRequests) {
+    if (dataAccessRequests == null) return;
+    while (dataAccessRequests.hasNext()) {
+      DBObject dataAccessRequest = dataAccessRequests.next();
+      if (!"OPENED".equals(dataAccessRequest.get("status").toString())) {
+        dataAccessRequest.put("formRevision", 1);
+        mongoTemplate.execute(db -> db.getCollection("dataAccessRequest").save(dataAccessRequest));
+      }
+    }
+  }
+
+  private void applyDataAccessFeasibilityFormRevision(DBCursor dataAccessFeasibilities) {
+    if (dataAccessFeasibilities == null) return;
+    while (dataAccessFeasibilities.hasNext()) {
+      DBObject dataAccessRequest = dataAccessFeasibilities.next();
+      if (!"OPENED".equals(dataAccessRequest.get("status").toString())) {
+        dataAccessRequest.put("formRevision", 1);
+        mongoTemplate.execute(db -> db.getCollection("dataAccessFeasibility").save(dataAccessRequest));
+      }
+    }
+  }
+
+  private void applyDataAccessAmendmentFormRevision(DBCursor dataAccessAmendments) {
+    if (dataAccessAmendments == null) return;
+    while (dataAccessAmendments.hasNext()) {
+      DBObject dataAccessRequest = dataAccessAmendments.next();
+      if (!"OPENED".equals(dataAccessRequest.get("status").toString())) {
+        dataAccessRequest.put("formRevision", 1);
+        mongoTemplate.execute(db -> db.getCollection("dataAccessAmendment").save(dataAccessRequest));
+      }
+    }
   }
 
 }

@@ -102,6 +102,9 @@ class DataAccessRequestDtos {
     // possible status transitions
     dataAccessRequestUtilService.nextStatus(request).forEach(status -> builder.addNextStatus(status.toString()));
 
+    if (request.hasFormRevision())
+      builder.setFormRevision(request.getFormRevision());
+
     return builder;
   }
 

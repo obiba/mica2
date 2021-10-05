@@ -287,7 +287,7 @@ mica.dataAccessConfig
             startWatchForDirty('pdfTemplates', watchState);
           }, entitySchemaFormaError);
 
-        $scope.form = DataAccessFormResource.get({revision: 'latest'},
+        DataAccessFormResource.get({revision: 'latest'},
           function(dataAccessForm) {
             $scope.dataAccessFormLatestDate = dataAccessForm.lastModifiedDate;
           }
@@ -312,7 +312,7 @@ mica.dataAccessConfig
 
           }, entitySchemaFormaError);
 
-        $scope.form = DataAccessFeasibilityFormResource.get({revision: 'latest'},
+        DataAccessFeasibilityFormResource.get({revision: 'latest'},
           function(feasibilityForm) {
             $scope.dataAccessFeasibilityFormLatestDate = feasibilityForm.lastModifiedDate;
           }
@@ -337,7 +337,7 @@ mica.dataAccessConfig
 
           }, entitySchemaFormaError);
 
-        $scope.form = DataAccessAmendmentFormResource.get({revision: 'latest'},
+        DataAccessAmendmentFormResource.get({revision: 'latest'},
           function(amendmentForm) {
             $scope.dataAccessAmendmentFormLatestDate = amendmentForm.lastModifiedDate;
           }

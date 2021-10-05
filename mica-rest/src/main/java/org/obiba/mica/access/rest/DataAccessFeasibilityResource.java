@@ -12,7 +12,11 @@ import org.obiba.mica.access.service.DataAccessFeasibilityService;
 import org.obiba.mica.access.service.DataAccessRequestService;
 import org.obiba.mica.dataset.service.VariableSetService;
 import org.obiba.mica.file.FileStoreService;
+import org.obiba.mica.micaConfig.domain.AbstractDataAccessEntityForm;
+import org.obiba.mica.micaConfig.domain.DataAccessFeasibilityForm;
+import org.obiba.mica.micaConfig.domain.DataAccessForm;
 import org.obiba.mica.micaConfig.service.DataAccessConfigService;
+import org.obiba.mica.micaConfig.service.DataAccessFeasibilityFormService;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
@@ -25,6 +29,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -41,6 +46,8 @@ public class DataAccessFeasibilityResource extends DataAccessEntityResource<Data
 
   private final DataAccessFeasibilityService dataAccessFeasibilityService;
 
+  private final DataAccessFeasibilityFormService dataAccessFeasibilityFormService;
+
   @Inject
   public DataAccessFeasibilityResource(
     SubjectAclService subjectAclService,
@@ -49,11 +56,13 @@ public class DataAccessFeasibilityResource extends DataAccessEntityResource<Data
     Dtos dtos,
     DataAccessRequestService dataAccessRequestService,
     DataAccessFeasibilityService dataAccessFeasibilityService,
+    DataAccessFeasibilityFormService dataAccessFeasibilityFormService,
     VariableSetService variableSetService) {
     super(subjectAclService, fileStoreService, dataAccessConfigService, variableSetService);
     this.dtos = dtos;
     this.dataAccessRequestService = dataAccessRequestService;
     this.dataAccessFeasibilityService = dataAccessFeasibilityService;
+    this.dataAccessFeasibilityFormService = dataAccessFeasibilityFormService;
   }
 
   private String parentId;
@@ -169,6 +178,12 @@ public class DataAccessFeasibilityResource extends DataAccessEntityResource<Data
   @Override
   protected DataAccessEntityService<DataAccessFeasibility> getService() {
     return dataAccessFeasibilityService;
+  }
+
+  @Override
+  protected int getFormLatestRevision() {
+    Optional<DataAccessFeasibilityForm> form = dataAccessFeasibilityFormService.findByRevision("latest");
+    return form.map(AbstractDataAccessEntityForm::getRevision).orElse(0);
   }
 
   private String getParentResourcePath() {

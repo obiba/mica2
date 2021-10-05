@@ -12,6 +12,10 @@ import org.obiba.mica.access.service.DataAccessEntityService;
 import org.obiba.mica.access.service.DataAccessRequestService;
 import org.obiba.mica.dataset.service.VariableSetService;
 import org.obiba.mica.file.FileStoreService;
+import org.obiba.mica.micaConfig.domain.AbstractDataAccessEntityForm;
+import org.obiba.mica.micaConfig.domain.DataAccessAmendmentForm;
+import org.obiba.mica.micaConfig.domain.DataAccessForm;
+import org.obiba.mica.micaConfig.service.DataAccessAmendmentFormService;
 import org.obiba.mica.micaConfig.service.DataAccessConfigService;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.web.model.Dtos;
@@ -25,6 +29,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -41,6 +46,8 @@ public class DataAccessAmendmentResource extends DataAccessEntityResource<DataAc
 
   private final DataAccessAmendmentService dataAccessAmendmentService;
 
+  private final DataAccessAmendmentFormService dataAccessAmendmentFormService;
+
   @Inject
   public DataAccessAmendmentResource(
     SubjectAclService subjectAclService,
@@ -49,11 +56,13 @@ public class DataAccessAmendmentResource extends DataAccessEntityResource<DataAc
     Dtos dtos,
     DataAccessRequestService dataAccessRequestService,
     DataAccessAmendmentService dataAccessAmendmentService,
+    DataAccessAmendmentFormService dataAccessAmendmentFormService,
     VariableSetService variableSetService) {
     super(subjectAclService, fileStoreService, dataAccessConfigService, variableSetService);
     this.dtos = dtos;
     this.dataAccessRequestService = dataAccessRequestService;
     this.dataAccessAmendmentService = dataAccessAmendmentService;
+    this.dataAccessAmendmentFormService = dataAccessAmendmentFormService;
   }
 
   private String parentId;
@@ -169,6 +178,12 @@ public class DataAccessAmendmentResource extends DataAccessEntityResource<DataAc
   @Override
   protected DataAccessEntityService<DataAccessAmendment> getService() {
     return dataAccessAmendmentService;
+  }
+
+  @Override
+  protected int getFormLatestRevision() {
+    Optional<DataAccessAmendmentForm> form = dataAccessAmendmentFormService.findByRevision("latest");
+    return form.map(AbstractDataAccessEntityForm::getRevision).orElse(0);
   }
 
   private String getParentResourcePath() {

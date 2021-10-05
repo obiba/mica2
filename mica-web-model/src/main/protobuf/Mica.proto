@@ -812,6 +812,7 @@ message DataAccessRequestDto {
   optional string startDate = 15;
   optional TimelineDto reportsTimeline = 16;
   optional bool archived = 17 [default = false];
+  optional int32 formRevision = 18;
 
   extensions 1000 to max;
 }

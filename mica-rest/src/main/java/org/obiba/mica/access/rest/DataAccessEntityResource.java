@@ -34,6 +34,8 @@ public abstract class DataAccessEntityResource<T extends DataAccessEntity> {
 
   protected abstract DataAccessEntityService<T> getService();
 
+  protected abstract int getFormLatestRevision();
+
   abstract String getResourcePath();
 
   public DataAccessEntityResource(
@@ -92,7 +94,7 @@ public abstract class DataAccessEntityResource<T extends DataAccessEntity> {
   }
 
   protected Response submit(String id) {
-    DataAccessEntity request = getService().findById(id);
+    T request = getService().findById(id);
     boolean fromOpened = request.getStatus() == DataAccessEntityStatus.OPENED;
     boolean fromConditionallyApproved = request.getStatus() == DataAccessEntityStatus.CONDITIONALLY_APPROVED;
     if (fromOpened && !subjectAclService.isCurrentUser(request.getApplicant()) && !SecurityUtils.getSubject().hasRole(Roles.MICA_ADMIN)) {
@@ -107,12 +109,20 @@ public abstract class DataAccessEntityResource<T extends DataAccessEntity> {
       DocumentSet set = request.getVariablesSet();
       variableSetService.setLock(set, true);
     }
+    // link to latest form revision
+    request = getService().findById(id);
+    request.setFormRevision(getFormLatestRevision());
+    getService().save(request);
     return Response.noContent().build();
   }
 
   protected Response open(String id) {
-    DataAccessEntity request = getService().updateStatus(id, DataAccessEntityStatus.OPENED);
+    T request = getService().updateStatus(id, DataAccessEntityStatus.OPENED);
     restoreApplicantActions(id, request.getApplicant());
+    // set draft version
+    request = getService().findById(id);
+    request.setFormRevision(null);
+    getService().save(request);
     return Response.noContent().build();
   }
 

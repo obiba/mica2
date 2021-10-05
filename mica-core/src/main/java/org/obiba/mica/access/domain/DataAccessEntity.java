@@ -33,6 +33,8 @@ public abstract class DataAccessEntity extends AbstractAuditableDocument impleme
   @DBRef
   private DocumentSet variablesSet;
 
+  private Integer formRevision;
+
   //
   // Accessors
   //
@@ -117,6 +119,18 @@ public abstract class DataAccessEntity extends AbstractAuditableDocument impleme
 
   public static Builder newBuilder() {
     return new Builder();
+  }
+
+  public void setFormRevision(Integer formRevision) {
+    this.formRevision = formRevision;
+  }
+
+  public Integer getFormRevision() {
+    return formRevision;
+  }
+
+  public boolean hasFormRevision() {
+    return formRevision != null;
   }
 
   public static class Builder {
