@@ -113,11 +113,6 @@
                 <span translate>research-projects</span>
               </a>
             </li>
-            <li ng-if="micaConfig.isDataAccessEnabled && hasRole(['mica-administrator', 'mica-data-access-officer', 'mica-user'])">
-              <a href="#/data-access-requests">
-                <span translate>data-access-requests</span>
-              </a>
-            </li>
           </ul>
         </li>
         <li ng-if="authenticated">

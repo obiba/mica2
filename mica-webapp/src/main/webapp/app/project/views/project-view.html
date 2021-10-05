@@ -47,7 +47,7 @@
     </p>
     <div ng-if="project.request" class="pull-right">
       <small class="help-block inline">{{'research-project.data-access-request' | translate}}:
-        <a ng-if="project.request.viewable" href ng-href="#/data-access-request/{{project.request.id}}">{{project.request.id}}</a>
+        <a ng-if="project.request.viewable" href ng-href="../data-access/{{project.request.id}}">{{project.request.id}}</a>
         <span ng-if="!project.request.viewable">{{project.request.id}}</span>
       </small>
       <span class="label label-success">{{project.request.status | translate}}</span>
