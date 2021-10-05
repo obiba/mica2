@@ -40,6 +40,8 @@ import org.obiba.mica.file.TempFile;
 import org.obiba.mica.file.service.TempFileService;
 import org.obiba.mica.micaConfig.DataAccessAmendmentsNotEnabled;
 import org.obiba.mica.micaConfig.DataAccessFeasibilityNotEnabled;
+import org.obiba.mica.micaConfig.domain.AbstractDataAccessEntityForm;
+import org.obiba.mica.micaConfig.domain.DataAccessForm;
 import org.obiba.mica.micaConfig.service.DataAccessConfigService;
 import org.obiba.mica.micaConfig.service.DataAccessFormService;
 import org.obiba.mica.security.Roles;
@@ -89,12 +91,14 @@ public class DataAccessRequestResource extends DataAccessEntityResource<DataAcce
 
   private EventBus eventBus;
 
+  private DataAccessFormService dataAccessFormService;
 
   @Inject
   public DataAccessRequestResource(
     DataAccessRequestService dataAccessRequestService,
     DataAccessRequestCommentMailNotification commentMailNotification,
     DataAccessRequestReportNotificationService reportNotificationService,
+    DataAccessFormService dataAccessFormService,
     CommentsService commentsService,
     ApplicationContext applicationContext,
     EventBus eventBus,
@@ -108,6 +112,7 @@ public class DataAccessRequestResource extends DataAccessEntityResource<DataAcce
     this.dataAccessRequestService = dataAccessRequestService;
     this.commentMailNotification = commentMailNotification;
     this.reportNotificationService = reportNotificationService;
+    this.dataAccessFormService = dataAccessFormService;
     this.commentsService = commentsService;
     this.tempFileService = tempFileService;
     this.applicationContext = applicationContext;
@@ -527,6 +532,12 @@ public class DataAccessRequestResource extends DataAccessEntityResource<DataAcce
   @Override
   protected DataAccessEntityService<DataAccessRequest> getService() {
     return dataAccessRequestService;
+  }
+
+  @Override
+  protected int getFormLatestRevision() {
+    Optional<DataAccessForm> form = dataAccessFormService.findByRevision("latest");
+    return form.map(AbstractDataAccessEntityForm::getRevision).orElse(0);
   }
 
   @Override

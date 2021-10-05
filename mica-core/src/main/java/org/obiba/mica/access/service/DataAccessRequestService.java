@@ -156,7 +156,7 @@ public class DataAccessRequestService extends DataAccessEntityService<DataAccess
     ByteArrayOutputStream ba = new ByteArrayOutputStream();
     Object content = defaultConfiguration().jsonProvider().parse(dataAccessRequest.getContent());
     try {
-      fillPdfTemplateFromRequest(getTemplate(Locale.forLanguageTag(lang)), ba, content);
+      fillPdfTemplateFromRequest(getTemplate(dataAccessRequest, Locale.forLanguageTag(lang)), ba, content);
     } catch (IOException | DocumentException e) {
       throw Throwables.propagate(e);
     }
@@ -295,8 +295,8 @@ public class DataAccessRequestService extends DataAccessEntityService<DataAccess
     dataAccessFeasibilityService.findByParentId(id).forEach(dataAccessFeasibilityService::delete);
   }
 
-  private byte[] getTemplate(Locale locale) throws IOException {
-    DataAccessForm dataAccessForm = dataAccessFormService.find().get();
+  private byte[] getTemplate(DataAccessRequest request, Locale locale) throws IOException {
+    DataAccessForm dataAccessForm = dataAccessFormService.findByRevision(request.hasFormRevision() ? request.getFormRevision().toString() : "latest").get();
     Attachment pdfTemplate = dataAccessForm.getPdfTemplates().get(locale);
 
     if (pdfTemplate == null) {

@@ -2112,7 +2112,16 @@
   },
   "entity-config": {
     "save-alert": {
+      "data-access-form-success": "Le formulaire a été sauvegardé. Assurez-vous de le publier pour le rendre visible dans les demandes d'accès aux données.",
+      "data-access-feasibility-form-success": "Le formulaire de faisabilité a été sauvegardé. Assurez-vous de le publier pour le rendre visible dans les demandes d'accès aux données.",
+      "data-access-amendment-form-success": "Le formulaire d'amendement a été sauvegardé. Assurez-vous de le publier pour le rendre visible dans les demandes d'accès aux données.",
+      "data-access-config-sucdess": "Les paramètres de la gestion des demandes d'accès aux données ont été sauvegardés.",
       "success": "Toutes vos modifications ont été enregistrées avec succès."
+    },
+    "publish-alert": {
+      "data-access-form-success": "Le formulaire a été publié.",
+      "data-access-feasibility-form-success": "Le formulaire de faisabilité a été publié.",
+      "data-access-amendment-form-success": "Le formulaire d'amendement a été publié."
     },
     "syntax-error": {
       "definition": "La définition du formulaire n'est pas un document valide, veuillez réviser et corriger les erreurs.",

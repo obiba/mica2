@@ -17,7 +17,6 @@ import org.apache.shiro.SecurityUtils;
 import org.obiba.mica.access.domain.*;
 import org.obiba.mica.micaConfig.domain.AbstractDataAccessEntityForm;
 import org.obiba.mica.micaConfig.domain.DataAccessConfig;
-import org.obiba.mica.micaConfig.domain.DataAccessForm;
 import org.obiba.mica.micaConfig.service.DataAccessAmendmentFormService;
 import org.obiba.mica.micaConfig.service.DataAccessConfigService;
 import org.obiba.mica.micaConfig.service.DataAccessFormService;
@@ -59,12 +58,15 @@ public class DataAccessRequestUtilService {
   @Inject
   private UserProfileService userProfileService;
 
-  public AbstractDataAccessEntityForm getDataAccessForm(boolean isDataAccessRequest) {
-    return isDataAccessRequest ? dataAccessFormService.find().get() : dataAccessAmendmentFormService.find().get();
+  public AbstractDataAccessEntityForm getDataAccessForm(DataAccessEntity dataAccessEntity) {
+    String formRevision = dataAccessEntity.hasFormRevision() ? dataAccessEntity.getFormRevision().toString() : "latest";
+    return dataAccessEntity instanceof DataAccessRequest ?
+      dataAccessFormService.findByRevision(formRevision).get() :
+      dataAccessAmendmentFormService.findByRevision(formRevision).get();
   }
 
   public String getRequestTitle(DataAccessEntity request) {
-    AbstractDataAccessEntityForm dataAccessForm = getDataAccessForm(request instanceof DataAccessRequest);
+    AbstractDataAccessEntityForm dataAccessForm = getDataAccessForm(request);
     return getRequestField(request, dataAccessForm.getTitleFieldPath());
   }
 
@@ -77,7 +79,7 @@ public class DataAccessRequestUtilService {
    * @param title
    */
   void setRequestTitle(DataAccessEntity request, String title) {
-    AbstractDataAccessEntityForm dataAccessForm = getDataAccessForm(request instanceof DataAccessRequest);
+    AbstractDataAccessEntityForm dataAccessForm = getDataAccessForm(request);
     String titleFieldPath = dataAccessForm.getTitleFieldPath();
     if (!Strings.isNullOrEmpty(titleFieldPath)) {
       String rawContent = request.getContent();
@@ -100,12 +102,12 @@ public class DataAccessRequestUtilService {
   }
 
   public String getRequestSummary(DataAccessEntity request) {
-    AbstractDataAccessEntityForm dataAccessForm = getDataAccessForm(request instanceof DataAccessRequest);
+    AbstractDataAccessEntityForm dataAccessForm = getDataAccessForm(request);
     return getRequestField(request, dataAccessForm.getSummaryFieldPath());
   }
 
   public Date getRequestEndDate(DataAccessEntity request) {
-    AbstractDataAccessEntityForm dataAccessForm = getDataAccessForm(request instanceof DataAccessRequest);
+    AbstractDataAccessEntityForm dataAccessForm = getDataAccessForm(request);
     if (!dataAccessForm.hasEndDateFieldPath()) return null;
     String value = getRequestField(request, dataAccessForm.getEndDateFieldPath());
     if (Strings.isNullOrEmpty(value)) return null;

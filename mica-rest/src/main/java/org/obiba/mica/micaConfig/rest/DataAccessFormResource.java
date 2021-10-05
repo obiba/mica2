@@ -10,6 +10,7 @@
 
 package org.obiba.mica.micaConfig.rest;
 
+import com.google.common.base.Strings;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.obiba.mica.micaConfig.NoSuchDataAccessFormException;
@@ -26,6 +27,7 @@ import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 import java.util.Optional;
 
@@ -44,20 +46,24 @@ public class DataAccessFormResource {
   Dtos dtos;
 
   @GET
-  public Mica.DataAccessFormDto get() {
-    Optional<DataAccessForm> d = dataAccessFormService.find();
-
+  public Mica.DataAccessFormDto get(@QueryParam("revision") String revision) {
+    Optional<DataAccessForm> d = dataAccessFormService.findByRevision(revision);
     if(!d.isPresent()) throw NoSuchDataAccessFormException.withDefaultMessage();
-
     return dtos.asDto(d.get());
+  }
+
+  @PUT
+  @Path("/_publish")
+  @RequiresRoles(Roles.MICA_ADMIN)
+  public Response publish() {
+    dataAccessFormService.publish();
+    return Response.ok().build();
   }
 
   @PUT
   @RequiresRoles(Roles.MICA_ADMIN)
   public Response update(Mica.DataAccessFormDto dto) {
-
     dataAccessFormService.createOrUpdate(dtos.fromDto(dto));
-
     return Response.ok().build();
   }
 

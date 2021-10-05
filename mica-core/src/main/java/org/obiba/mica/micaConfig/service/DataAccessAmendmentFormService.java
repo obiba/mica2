@@ -1,13 +1,14 @@
 package org.obiba.mica.micaConfig.service;
 
-import java.util.Optional;
-
-import javax.inject.Inject;
-
+import org.joda.time.DateTime;
 import org.obiba.mica.micaConfig.domain.DataAccessAmendmentForm;
 import org.obiba.mica.micaConfig.repository.DataAccessAmendmentFormRepository;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
+
+import javax.inject.Inject;
+import java.util.Optional;
 
 @Component
 public class DataAccessAmendmentFormService extends AbstractDataAccessEntityFormService<DataAccessAmendmentForm> {
@@ -22,29 +23,62 @@ public class DataAccessAmendmentFormService extends AbstractDataAccessEntityForm
   @Override
   public DataAccessAmendmentForm createOrUpdate(DataAccessAmendmentForm dataAccessForm) {
     validateForm(dataAccessForm);
+    dataAccessForm.setRevision(0);
+    dataAccessForm.setLastModifiedDate(DateTime.now());
     return dataAccessAmendmentFormRepository.save(dataAccessForm);
   }
 
   @Override
-  public Optional<DataAccessAmendmentForm> find() {
+  public Optional<DataAccessAmendmentForm> findDraft() {
     DataAccessAmendmentForm form = dataAccessAmendmentFormRepository.findOne(DataAccessAmendmentForm.DEFAULT_ID);
-
     if (form == null) {
       createOrUpdate(createDefaultDataAccessAmendmentForm());
       form = dataAccessAmendmentFormRepository.findOne(DataAccessAmendmentForm.DEFAULT_ID);
     }
-
     if (StringUtils.isEmpty(form.getCsvExportFormat())) {
       form.setCsvExportFormat(getDefaultDataAccessFormResourceAsString("export-csv-schema.json"));
       form = createOrUpdate(form);
     }
-
     return Optional.ofNullable(form);
+  }
+
+  @Override
+  DataAccessAmendmentForm findLatest() {
+    Optional<DataAccessAmendmentForm> latest = findFirstSortByRevisionDesc();
+    if (!latest.isPresent()) {
+      publish();
+      latest = findFirstSortByRevisionDesc();
+    }
+    return latest.get();
+  }
+
+  @Override
+  DataAccessAmendmentForm findByRevision(int revision) {
+    return dataAccessAmendmentFormRepository.findFirstByRevision(revision);
+  }
+
+  @Override
+  public void publish() {
+    DataAccessAmendmentForm draft = findDraft().get();
+    draft.setId(null);
+    Optional<DataAccessAmendmentForm> latest = findFirstSortByRevisionDesc();
+    draft.setRevision(latest.isPresent() ? latest.get().getRevision() + 1 : 1);
+    dataAccessAmendmentFormRepository.save(draft);
   }
 
   @Override
   String getDataAccessEntityFormResourceLocation() {
     return "classpath:config/data-access-amendment-form/";
+  }
+
+  //
+  // Private methods
+  //
+
+  private Optional<DataAccessAmendmentForm> findFirstSortByRevisionDesc() {
+    return dataAccessAmendmentFormRepository.findAll(new Sort(Sort.Direction.DESC, "revision")).stream()
+      .filter(form -> form.getRevision()>0)
+      .findFirst();
   }
 
   private DataAccessAmendmentForm createDefaultDataAccessAmendmentForm() {
@@ -55,6 +89,7 @@ public class DataAccessAmendmentFormService extends AbstractDataAccessEntityForm
     form.setTitleFieldPath("projectTitle");
     form.setSummaryFieldPath("summary");
     form.setEndDateFieldPath("endDate");
+    form.setRevision(0);
     return form;
   }
 }

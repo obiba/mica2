@@ -5,6 +5,7 @@ import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.obiba.mica.micaConfig.NoSuchDataAccessFormException;
 import org.obiba.mica.micaConfig.domain.DataAccessAmendmentForm;
 import org.obiba.mica.micaConfig.domain.DataAccessConfig;
+import org.obiba.mica.micaConfig.domain.DataAccessFeasibilityForm;
 import org.obiba.mica.micaConfig.service.DataAccessAmendmentFormService;
 import org.obiba.mica.micaConfig.service.DataAccessConfigService;
 import org.obiba.mica.security.Roles;
@@ -16,6 +17,7 @@ import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 import java.util.Optional;
 
@@ -39,12 +41,18 @@ public class DataAccessAmendmentFormResource {
   }
 
   @GET
-  public Mica.DataAccessAmendmentFormDto get() {
-    Optional<DataAccessAmendmentForm> dataAccessAmendmentForm = dataAccessAmendmentFormService.find();
-    DataAccessConfig dataAccessConfig = dataAccessConfigService.getOrCreateConfig();
-    if (!dataAccessAmendmentForm.isPresent())
-      throw NoSuchDataAccessFormException.withMessage("DataAccessAmendmentForm does not exist");
-    return dtos.asDto(dataAccessAmendmentForm.get(), dataAccessConfig);
+  public Mica.DataAccessAmendmentFormDto get(@QueryParam("revision") String revision) {
+    Optional<DataAccessAmendmentForm> d = dataAccessAmendmentFormService.findByRevision(revision);
+    if(!d.isPresent()) throw NoSuchDataAccessFormException.withDefaultMessage();
+    return dtos.asDto(d.get(), dataAccessConfigService.getOrCreateConfig());
+  }
+
+  @PUT
+  @Path("/_publish")
+  @RequiresRoles(Roles.MICA_ADMIN)
+  public Response publish() {
+    dataAccessAmendmentFormService.publish();
+    return Response.ok().build();
   }
 
   @PUT

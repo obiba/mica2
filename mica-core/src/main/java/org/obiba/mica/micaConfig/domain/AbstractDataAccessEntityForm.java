@@ -2,12 +2,17 @@ package org.obiba.mica.micaConfig.domain;
 
 import java.util.Map;
 
+import org.joda.time.DateTime;
 import org.obiba.mica.core.domain.LocalizedString;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 
 public abstract class AbstractDataAccessEntityForm extends EntityConfig {
+
+  private int revision = 0;
+
+  private DateTime lastModifiedDate;
 
   private String csvExportFormat;
 
@@ -21,6 +26,22 @@ public abstract class AbstractDataAccessEntityForm extends EntityConfig {
 
   AbstractDataAccessEntityForm() {
     super();
+  }
+
+  public int getRevision() {
+    return revision;
+  }
+
+  public void setRevision(int revision) {
+    this.revision = revision;
+  }
+
+  public DateTime getLastModifiedDate() {
+    return lastModifiedDate == null ? DateTime.now() : lastModifiedDate;
+  }
+
+  public void setLastModifiedDate(DateTime lastModifiedDate) {
+    this.lastModifiedDate = lastModifiedDate;
   }
 
   public String getCsvExportFormat() {

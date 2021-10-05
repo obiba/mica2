@@ -20,12 +20,15 @@ mica.dataAccessConfig
     'MicaConfigResource',
     'DataAccessConfigResource',
     'DataAccessFormResource',
+    'DataAccessFormPublicationResource',
     'EntitySchemaFormService',
     'DataAccessFormPermissionsResource',
     'LocalizedSchemaFormService',
     'AlertBuilder',
     'DataAccessFeasibilityFormResource',
+    'DataAccessFeasibilityFormPublicationResource',
     'DataAccessAmendmentFormResource',
+    'DataAccessAmendmentFormPublicationResource',
     function ($rootScope,
               $q,
               $location,
@@ -34,12 +37,15 @@ mica.dataAccessConfig
               MicaConfigResource,
               DataAccessConfigResource,
               DataAccessFormResource,
+              DataAccessFormPublicationResource,
               EntitySchemaFormService,
               DataAccessFormPermissionsResource,
               LocalizedSchemaFormService,
               AlertBuilder,
               DataAccessFeasibilityFormResource,
-              DataAccessAmendmentFormResource) {
+              DataAccessFeasibilityFormPublicationResource,
+              DataAccessAmendmentFormResource,
+              DataAccessAmendmentFormPublicationResource) {
 
       MicaConfigResource.get(function (micaConfig) {
         $scope.tabs = [];
@@ -63,11 +69,9 @@ mica.dataAccessConfig
       }
 
       var saveForm = function() {
-        switch (EntitySchemaFormService.isFormValid($scope.form) && EntitySchemaFormService.isFormValid($scope.formFeasibility) && EntitySchemaFormService.isFormValid($scope.formAmendment)) {
+        switch (EntitySchemaFormService.isFormValid($scope.form)) {
           case EntitySchemaFormService.ParseResult.VALID:
             entitySchemaFormSanitizeToSave('dataAccessForm', 'form');
-            entitySchemaFormSanitizeToSave('feasibilityForm', 'feasibilityForm');
-            entitySchemaFormSanitizeToSave('amendmentForm', 'amendmentForm');
 
             $scope.dataAccessForm.pdfTemplates = [];
 
@@ -82,20 +86,15 @@ mica.dataAccessConfig
             }
 
             entitySchemaFormDelete('dataAccessForm');
-            entitySchemaFormDelete('feasibilityForm');
-            entitySchemaFormDelete('amendmentForm');
 
-            $q.all([
-              DataAccessConfigResource.save($scope.config).$promise,
-              DataAccessFormResource.save($scope.dataAccessForm).$promise,
-              DataAccessFeasibilityFormResource.save($scope.feasibilityForm).$promise,
-              DataAccessAmendmentFormResource.save($scope.amendmentForm).$promise
-            ]).then(function () {
-              $scope.state.setDirty(false);
-              AlertBuilder.newBuilder().delay(3000).type('success').trMsg('entity-config.save-alert.success').build();
-            }, function (reason) {
-              AlertBuilder.newBuilder().response(reason).build();
-            });
+            DataAccessFormResource.save($scope.dataAccessForm).$promise
+              .then(function () {
+                $scope.state.setDirty(false);
+                AlertBuilder.newBuilder().delay(3000).type('success').trMsg('entity-config.save-alert.data-access-form-success').build();
+                refreshDataAccessForms();
+              }, function (reason) {
+                AlertBuilder.newBuilder().response(reason).build();
+              });
 
             break;
           case EntitySchemaFormService.ParseResult.SCHEMA:
@@ -104,7 +103,97 @@ mica.dataAccessConfig
           case EntitySchemaFormService.ParseResult.DEFINITION:
             AlertBuilder.newBuilder().trMsg('data-access-config.syntax-error.definition').build();
             break;
-          }
+        }
+      };
+
+      var publishForm = function() {
+        DataAccessFormPublicationResource.publish().$promise
+          .then(function () {
+            AlertBuilder.newBuilder().delay(3000).type('success').trMsg('entity-config.publish-alert.data-access-form-success').build();
+            refreshDataAccessForms();
+          }, function (reason) {
+            AlertBuilder.newBuilder().response(reason).build();
+          });
+      };
+
+      var saveFeasibilityForm = function() {
+        switch (EntitySchemaFormService.isFormValid($scope.formFeasibility)) {
+          case EntitySchemaFormService.ParseResult.VALID:
+            entitySchemaFormSanitizeToSave('feasibilityForm', 'feasibilityForm');
+            entitySchemaFormDelete('feasibilityForm');
+
+            DataAccessFeasibilityFormResource.save($scope.feasibilityForm).$promise
+              .then(function () {
+                $scope.state.setDirty(false);
+                AlertBuilder.newBuilder().delay(3000).type('success').trMsg('entity-config.save-alert.data-access-feasibility-form-success').build();
+                refreshDataAccessFeasibilityForms();
+              }, function (reason) {
+                AlertBuilder.newBuilder().response(reason).build();
+              });
+
+            break;
+          case EntitySchemaFormService.ParseResult.SCHEMA:
+            AlertBuilder.newBuilder().trMsg('data-access-config.syntax-error.schema').build();
+            break;
+          case EntitySchemaFormService.ParseResult.DEFINITION:
+            AlertBuilder.newBuilder().trMsg('data-access-config.syntax-error.definition').build();
+            break;
+        }
+      };
+
+      var publishFeasibilityForm = function() {
+        DataAccessFeasibilityFormPublicationResource.publish().$promise
+          .then(function () {
+            AlertBuilder.newBuilder().delay(3000).type('success').trMsg('entity-config.publish-alert.data-access-feasibility-form-success').build();
+            refreshDataAccessFeasibilityForms();
+          }, function (reason) {
+            AlertBuilder.newBuilder().response(reason).build();
+          });
+      };
+
+      var saveAmendmentForm = function() {
+        switch (EntitySchemaFormService.isFormValid($scope.formAmendment)) {
+          case EntitySchemaFormService.ParseResult.VALID:
+            entitySchemaFormSanitizeToSave('amendmentForm', 'amendmentForm');
+            entitySchemaFormDelete('amendmentForm');
+
+            DataAccessAmendmentFormResource.save($scope.amendmentForm).$promise
+              .then(function () {
+                $scope.state.setDirty(false);
+                AlertBuilder.newBuilder().delay(3000).type('success').trMsg('entity-config.save-alert.data-access-amendment-form-success').build();
+                refreshDataAccessAmendmentForms();
+              }, function (reason) {
+                AlertBuilder.newBuilder().response(reason).build();
+              });
+
+            break;
+          case EntitySchemaFormService.ParseResult.SCHEMA:
+            AlertBuilder.newBuilder().trMsg('data-access-config.syntax-error.schema').build();
+            break;
+          case EntitySchemaFormService.ParseResult.DEFINITION:
+            AlertBuilder.newBuilder().trMsg('data-access-config.syntax-error.definition').build();
+            break;
+        }
+      };
+
+      var publishAmendmentForm = function() {
+        DataAccessAmendmentFormPublicationResource.publish().$promise
+          .then(function () {
+            AlertBuilder.newBuilder().delay(3000).type('success').trMsg('entity-config.publish-alert.data-access-amendment-form-success').build();
+            refreshDataAccessAmendmentForms();
+          }, function (reason) {
+            AlertBuilder.newBuilder().response(reason).build();
+          });
+      };
+
+      var saveConfig = function() {
+        DataAccessConfigResource.save($scope.config).$promise
+          .then(function () {
+            $scope.state.setDirty(false);
+            AlertBuilder.newBuilder().delay(3000).type('success').trMsg('entity-config.save-alert.data-access-config-success').build();
+          }, function (reason) {
+            AlertBuilder.newBuilder().response(reason).build();
+          });
       };
 
       $scope.dataAccessForm = {schema: '', definition: '', pdfTemplates: []};
@@ -175,57 +264,86 @@ mica.dataAccessConfig
 
       $scope.config = DataAccessConfigResource.get();
 
-      $scope.form = DataAccessFormResource.get(
-        function(dataAccessForm){
-          var watchState = {firstTime: true};
-          $scope.dataAccessForm = entitySchemaFormSanitize(dataAccessForm);
-          $scope.dataAccessForm.pdfTemplates = $scope.dataAccessForm.pdfTemplates || [];
+      const refreshDataAccessForms = function() {
+        $scope.form = DataAccessFormResource.get({revision: 'draft'},
+          function(dataAccessForm){
+            var watchState = {firstTime: true};
+            $scope.dataAccessForm = entitySchemaFormSanitize(dataAccessForm);
+            $scope.dataAccessForm.pdfTemplates = $scope.dataAccessForm.pdfTemplates || [];
 
-          $scope.pdfTemplates = $scope.dataAccessForm.pdfTemplates.reduce(function(s, file) {
-            s[file.lang] = [file];
-            return s;
-          }, {});
+            $scope.pdfTemplates = $scope.dataAccessForm.pdfTemplates.reduce(function(s, file) {
+              s[file.lang] = [file];
+              return s;
+            }, {});
 
-          if (dataAccessForm.definitionJson.length === 0) {
-            AlertBuilder.newBuilder().trMsg('data-access-config.parse-error.schema').build();
+            if (dataAccessForm.definitionJson.length === 0) {
+              AlertBuilder.newBuilder().trMsg('data-access-config.parse-error.schema').build();
+            }
+            if (Object.getOwnPropertyNames(dataAccessForm.schemaJson).length === 0) {
+              AlertBuilder.newBuilder().trMsg('data-access-config.parse-error.definition').build();
+            }
+
+            startWatchForDirty('dataAccessForm', watchState);
+            startWatchForDirty('pdfTemplates', watchState);
+          }, entitySchemaFormaError);
+
+        DataAccessFormResource.get({revision: 'latest'},
+          function(dataAccessForm) {
+            $scope.dataAccessFormLatestDate = dataAccessForm.lastModifiedDate;
           }
-          if (Object.getOwnPropertyNames(dataAccessForm.schemaJson).length === 0) {
-            AlertBuilder.newBuilder().trMsg('data-access-config.parse-error.definition').build();
+        );
+      };
+      refreshDataAccessForms();
+
+      const refreshDataAccessFeasibilityForms = function() {
+        $scope.formFeasibility = DataAccessFeasibilityFormResource.get({revision: 'draft'},
+          function(feasibilityForm){
+            var watchState = {firstTime: true};
+            $scope.feasibilityForm = entitySchemaFormSanitize(feasibilityForm);
+
+            if (feasibilityForm.definitionJson.length === 0) {
+              AlertBuilder.newBuilder().trMsg('data-access-config-feasibility.parse-error.schema').build();
+            }
+            if (Object.getOwnPropertyNames(feasibilityForm.schemaJson).length === 0) {
+              AlertBuilder.newBuilder().trMsg('data-access-config-feasibility.parse-error.definition').build();
+            }
+
+            startWatchForDirty('feasibilityForm', watchState);
+
+          }, entitySchemaFormaError);
+
+        DataAccessFeasibilityFormResource.get({revision: 'latest'},
+          function(feasibilityForm) {
+            $scope.dataAccessFeasibilityFormLatestDate = feasibilityForm.lastModifiedDate;
           }
+        );
+      };
+      refreshDataAccessFeasibilityForms();
 
-          startWatchForDirty('dataAccessForm', watchState);
-          startWatchForDirty('pdfTemplates', watchState);
-        },entitySchemaFormaError);
+      const refreshDataAccessAmendmentForms = function() {
+        $scope.formAmendment = DataAccessAmendmentFormResource.get({revision: 'draft'},
+          function(amendmentForm){
+            var watchState = {firstTime: true};
+            $scope.amendmentForm = entitySchemaFormSanitize(amendmentForm);
 
-      $scope.formFeasibility = DataAccessFeasibilityFormResource.get(function(feasibilityForm){
-        var watchState = {firstTime: true};
-        $scope.feasibilityForm = entitySchemaFormSanitize(feasibilityForm);
+            if (amendmentForm.definitionJson.length === 0) {
+              AlertBuilder.newBuilder().trMsg('data-access-config-amendment.parse-error.schema').build();
+            }
+            if (Object.getOwnPropertyNames(amendmentForm.schemaJson).length === 0) {
+              AlertBuilder.newBuilder().trMsg('data-access-config-amendment.parse-error.definition').build();
+            }
 
-        if (feasibilityForm.definitionJson.length === 0) {
-          AlertBuilder.newBuilder().trMsg('data-access-config-feasibility.parse-error.schema').build();
-        }
-        if (Object.getOwnPropertyNames(feasibilityForm.schemaJson).length === 0) {
-          AlertBuilder.newBuilder().trMsg('data-access-config-feasibility.parse-error.definition').build();
-        }
+            startWatchForDirty('amendmentForm', watchState);
 
-        startWatchForDirty('feasibilityForm', watchState);
+          }, entitySchemaFormaError);
 
-      },entitySchemaFormaError);
-
-      $scope.formAmendment = DataAccessAmendmentFormResource.get(function(amendmentForm){
-        var watchState = {firstTime: true};
-        $scope.amendmentForm = entitySchemaFormSanitize(amendmentForm);
-
-        if (amendmentForm.definitionJson.length === 0) {
-          AlertBuilder.newBuilder().trMsg('data-access-config-amendment.parse-error.schema').build();
-        }
-        if (Object.getOwnPropertyNames(amendmentForm.schemaJson).length === 0) {
-          AlertBuilder.newBuilder().trMsg('data-access-config-amendment.parse-error.definition').build();
-        }
-
-        startWatchForDirty('amendmentForm', watchState);
-
-      },entitySchemaFormaError);
+        DataAccessAmendmentFormResource.get({revision: 'latest'},
+          function(amendmentForm) {
+            $scope.dataAccessAmendmentFormLatestDate = amendmentForm.lastModifiedDate;
+          }
+        );
+      };
+      refreshDataAccessAmendmentForms();
 
       $scope.onUpdateActionKeys = onUpdateActionKeys;
       $scope.loadPermissions = function() {
@@ -255,4 +373,10 @@ mica.dataAccessConfig
       $scope.loadPermissions();
       $scope.tab = {name: 'form'};
       $scope.saveForm = saveForm;
+      $scope.publishForm = publishForm;
+      $scope.saveFeasibilityForm = saveFeasibilityForm;
+      $scope.publishFeasibilityForm = publishFeasibilityForm;
+      $scope.saveAmendmentForm = saveAmendmentForm;
+      $scope.publishAmendmentForm = publishAmendmentForm;
+      $scope.saveConfig = saveConfig;
     }]);

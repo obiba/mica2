@@ -62,8 +62,8 @@ class MicaConfigDtos {
 
   @NotNull
   Mica.PublicMicaConfigDto asPublicDto(@NotNull MicaConfig config) {
-    Mica.PublicMicaConfigDto.Builder builder = Mica.PublicMicaConfigDto.newBuilder() //
-      .setName(config.getName()) //
+    Mica.PublicMicaConfigDto.Builder builder = Mica.PublicMicaConfigDto.newBuilder()
+      .setName(config.getName())
       .setOpenAccess(config.isOpenAccess())
       .setAgateUrl(agateServerConfigService.getAgateUrl());
 
@@ -89,8 +89,8 @@ class MicaConfigDtos {
 
   @NotNull
   Mica.MicaConfigDto asDto(@NotNull MicaConfig config, String language) {
-    Mica.MicaConfigDto.Builder builder = Mica.MicaConfigDto.newBuilder() //
-      .setName(config.getName()) //
+    Mica.MicaConfigDto.Builder builder = Mica.MicaConfigDto.newBuilder()
+      .setName(config.getName())
       .setDefaultCharSet(config.getDefaultCharacterSet())//
       .setOpenAccess(config.isOpenAccess());
     config.getLocales().forEach(locale -> builder.addLanguages(locale.getLanguage()));
@@ -291,7 +291,7 @@ class MicaConfigDtos {
 
   @NotNull
   Mica.DataAccessConfigDto asDto(@NotNull DataAccessConfig dataAccessConfig) {
-    Mica.DataAccessConfigDto.Builder builder = Mica.DataAccessConfigDto.newBuilder() //
+    Mica.DataAccessConfigDto.Builder builder = Mica.DataAccessConfigDto.newBuilder()
       .setDaoCanEdit(dataAccessConfig.isDaoCanEdit());
 
     if(dataAccessConfig.hasIdPrefix()) {
@@ -300,19 +300,19 @@ class MicaConfigDtos {
 
     builder.setAllowIdWithLeadingZeros(dataAccessConfig.isAllowIdWithLeadingZeros());
 
-    builder.setIdLength(dataAccessConfig.getIdLength()) //
-      .setNotifyCreated(dataAccessConfig.isNotifyCreated()) //
-      .setNotifySubmitted(dataAccessConfig.isNotifySubmitted()) //
-      .setNotifyReviewed(dataAccessConfig.isNotifyReviewed()) //
-      .setNotifyApproved(dataAccessConfig.isNotifyApproved()) //
-      .setNotifyRejected(dataAccessConfig.isNotifyRejected()) //
-      .setNotifyReopened(dataAccessConfig.isNotifyReopened()) //
-      .setNotifyCommented(dataAccessConfig.isNotifyCommented()) //
-      .setNotifyAttachment(dataAccessConfig.isNotifyAttachment()) //
+    builder.setIdLength(dataAccessConfig.getIdLength())
+      .setNotifyCreated(dataAccessConfig.isNotifyCreated())
+      .setNotifySubmitted(dataAccessConfig.isNotifySubmitted())
+      .setNotifyReviewed(dataAccessConfig.isNotifyReviewed())
+      .setNotifyApproved(dataAccessConfig.isNotifyApproved())
+      .setNotifyRejected(dataAccessConfig.isNotifyRejected())
+      .setNotifyReopened(dataAccessConfig.isNotifyReopened())
+      .setNotifyCommented(dataAccessConfig.isNotifyCommented())
+      .setNotifyAttachment(dataAccessConfig.isNotifyAttachment())
       .setNotifyFinalReport(dataAccessConfig.isNotifyFinalReport())
       .setNotifyIntermediateReport(dataAccessConfig.isNotifyIntermediateReport())
-      .setWithReview(dataAccessConfig.isWithReview()) //
-      .setApprovedFinal(dataAccessConfig.isApprovedFinal()) //
+      .setWithReview(dataAccessConfig.isWithReview())
+      .setApprovedFinal(dataAccessConfig.isApprovedFinal())
       .setRejectedFinal(dataAccessConfig.isRejectedFinal())
       .setWithConditionalApproval(dataAccessConfig.isWithConditionalApproval())
       .setNotifyConditionallyApproved(dataAccessConfig.isNotifyConditionallyApproved());
@@ -419,11 +419,13 @@ class MicaConfigDtos {
 
   @NotNull
   Mica.DataAccessFormDto asDto(@NotNull DataAccessForm dataAccessForm) {
-    Mica.DataAccessFormDto.Builder builder = Mica.DataAccessFormDto.newBuilder() //
-      .setDefinition(dataAccessForm.getDefinition()) //
-      .setSchema(dataAccessForm.getSchema()) //
+    Mica.DataAccessFormDto.Builder builder = Mica.DataAccessFormDto.newBuilder()
+      .setRevision(dataAccessForm.getRevision())
+      .setLastModifiedDate(dataAccessForm.getLastModifiedDate().toString())
+      .setDefinition(dataAccessForm.getDefinition())
+      .setSchema(dataAccessForm.getSchema())
       .addAllPdfTemplates(
-        dataAccessForm.getPdfTemplates().values().stream().map(p -> attachmentDtos.asDto(p)).collect(toList())) //
+        dataAccessForm.getPdfTemplates().values().stream().map(p -> attachmentDtos.asDto(p)).collect(toList()))
       .addAllProperties(asDtoList(dataAccessForm.getProperties()));
 
     if(dataAccessForm.hasTitleFieldPath()) {
@@ -474,10 +476,12 @@ class MicaConfigDtos {
     return dataAccessForm;
   }
 
-  Mica.DataAccessFeasibilityFormDto asDto(@NotNull DataAccessFeasibilityForm dataAccessFeasibilityForm,
-                                        @NotNull DataAccessConfig dataAccessConfig) {
+  Mica.DataAccessFeasibilityFormDto asDto(@NotNull DataAccessFeasibilityForm dataAccessFeasibilityForm) {
     Mica.DataAccessFeasibilityFormDto.Builder builder = Mica.DataAccessFeasibilityFormDto.newBuilder()
-      .setDefinition(dataAccessFeasibilityForm.getDefinition()).setSchema(dataAccessFeasibilityForm.getSchema())
+      .setRevision(dataAccessFeasibilityForm.getRevision())
+      .setLastModifiedDate(dataAccessFeasibilityForm.getLastModifiedDate().toString())
+      .setDefinition(dataAccessFeasibilityForm.getDefinition())
+      .setSchema(dataAccessFeasibilityForm.getSchema())
       .setCsvExportFormat(dataAccessFeasibilityForm.getCsvExportFormat());
     return builder.build();
   }
@@ -495,7 +499,10 @@ class MicaConfigDtos {
   Mica.DataAccessAmendmentFormDto asDto(@NotNull DataAccessAmendmentForm dataAccessAmendmentForm,
                                         @NotNull DataAccessConfig dataAccessConfig) {
     Mica.DataAccessAmendmentFormDto.Builder builder = Mica.DataAccessAmendmentFormDto.newBuilder()
-      .setDefinition(dataAccessAmendmentForm.getDefinition()).setSchema(dataAccessAmendmentForm.getSchema())
+      .setRevision(dataAccessAmendmentForm.getRevision())
+      .setLastModifiedDate(dataAccessAmendmentForm.getLastModifiedDate().toString())
+      .setDefinition(dataAccessAmendmentForm.getDefinition())
+      .setSchema(dataAccessAmendmentForm.getSchema())
       .addAllProperties(asDtoList(dataAccessAmendmentForm.getProperties()))
       .setCsvExportFormat(dataAccessAmendmentForm.getCsvExportFormat());
 
@@ -544,9 +551,9 @@ class MicaConfigDtos {
 
   @NotNull
   Mica.ProjectFormDto asDto(@NotNull ProjectConfig projectConfig) {
-    Mica.ProjectFormDto.Builder builder = Mica.ProjectFormDto.newBuilder() //
-      .setDefinition(projectConfig.getDefinition()) //
-      .setSchema(projectConfig.getSchema()) //
+    Mica.ProjectFormDto.Builder builder = Mica.ProjectFormDto.newBuilder()
+      .setDefinition(projectConfig.getDefinition())
+      .setSchema(projectConfig.getSchema())
       .addAllProperties(asDtoList(projectConfig.getProperties()));
 
     return builder.build();
@@ -626,7 +633,7 @@ class MicaConfigDtos {
   }
 
   private Mica.EntityFormDto asDto(EntityConfig config, Mica.EntityFormDto.Type type) {
-    Mica.EntityFormDto.Builder builder = Mica.EntityFormDto.newBuilder() //
+    Mica.EntityFormDto.Builder builder = Mica.EntityFormDto.newBuilder()
       .setType(type)
       .setSchema(config.getSchema())
       .setDefinition(config.getDefinition());

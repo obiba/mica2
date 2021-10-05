@@ -12,11 +12,13 @@ import org.obiba.mica.access.service.DataAccessRequestService;
 import org.obiba.mica.core.domain.AbstractAuditableDocument;
 import org.obiba.mica.core.domain.Comment;
 import org.obiba.mica.core.service.CommentsService;
-import org.obiba.mica.micaConfig.NoSuchDataAccessFormException;
 import org.obiba.mica.micaConfig.domain.DataAccessAmendmentForm;
 import org.obiba.mica.micaConfig.domain.DataAccessFeasibilityForm;
 import org.obiba.mica.micaConfig.domain.DataAccessForm;
-import org.obiba.mica.micaConfig.service.*;
+import org.obiba.mica.micaConfig.service.DataAccessAmendmentFormService;
+import org.obiba.mica.micaConfig.service.DataAccessConfigService;
+import org.obiba.mica.micaConfig.service.DataAccessFeasibilityFormService;
+import org.obiba.mica.micaConfig.service.DataAccessFormService;
 import org.obiba.mica.security.Roles;
 import org.obiba.mica.user.UserProfileService;
 import org.obiba.mica.web.controller.domain.DataAccessConfigBundle;
@@ -354,40 +356,40 @@ public class DataAccessController extends BaseController {
   }
 
   private void addDataAccessConfiguration(Map<String, Object> params) {
-    Optional<DataAccessForm> d = dataAccessFormService.find();
-    if (!d.isPresent()) throw NoSuchDataAccessFormException.withDefaultMessage();
-    DataAccessForm dataAccessForm = d.get();
-    params.put("accessConfig", new DataAccessConfigBundle(dataAccessConfigervice.getOrCreateConfig(), dataAccessForm));
+    params.put("accessConfig", dataAccessConfigervice.getOrCreateConfig());
   }
 
   private void addDataAccessFormConfiguration(Map<String, Object> params, DataAccessRequest request, boolean readOnly, String locale) {
-    Optional<DataAccessForm> d = dataAccessFormService.find();
-    if (!d.isPresent()) throw NoSuchDataAccessFormException.withDefaultMessage();
-    DataAccessForm dataAccessForm = getDataAccessForm();
+    DataAccessForm dataAccessForm = getDataAccessForm(request);
     params.put("formConfig", new SchemaFormConfig(micaConfigService, dataAccessForm.getSchema(), dataAccessForm.getDefinition(), request.getContent(), locale, readOnly));
     params.put("accessConfig", new DataAccessConfigBundle(dataAccessConfigervice.getOrCreateConfig(), dataAccessForm));
   }
 
   private void addDataAccessAmendmentFormConfiguration(Map<String, Object> params, DataAccessAmendment amendment, boolean readOnly, String locale) {
-    Optional<DataAccessAmendmentForm> ad = dataAccessAmendmentFormService.find();
-    if (!ad.isPresent()) throw NoSuchDataAccessFormException.withDefaultMessage();
-    DataAccessAmendmentForm dataAccessAmendmentForm = ad.get();
+    DataAccessAmendmentForm dataAccessAmendmentForm = getDataAccessAmendmentForm(amendment);
     params.put("formConfig", new SchemaFormConfig(micaConfigService, dataAccessAmendmentForm.getSchema(), dataAccessAmendmentForm.getDefinition(), amendment.getContent(), locale, readOnly));
-    params.put("accessConfig", new DataAccessConfigBundle(dataAccessConfigervice.getOrCreateConfig(), getDataAccessForm()));
+    params.put("accessConfig", dataAccessConfigervice.getOrCreateConfig());
   }
 
   private void addDataAccessFeasibilityFormConfiguration(Map<String, Object> params, DataAccessFeasibility feasibility, boolean readOnly, String locale) {
-    Optional<DataAccessFeasibilityForm> fd = dataAccessFeasibilityFormService.find();
-    if (!fd.isPresent()) throw NoSuchDataAccessFormException.withDefaultMessage();
-    DataAccessFeasibilityForm dataAccessFeasibilityForm = fd.get();
+    DataAccessFeasibilityForm dataAccessFeasibilityForm = dataAccessFeasibilityFormService.findByRevision("latest").get();
     params.put("formConfig", new SchemaFormConfig(micaConfigService, dataAccessFeasibilityForm.getSchema(), dataAccessFeasibilityForm.getDefinition(), feasibility.getContent(), locale, readOnly));
-    params.put("accessConfig", new DataAccessConfigBundle(dataAccessConfigervice.getOrCreateConfig(), getDataAccessForm()));
+    params.put("accessConfig", dataAccessConfigervice.getOrCreateConfig());
   }
 
-  private DataAccessForm getDataAccessForm() {
-    Optional<DataAccessForm> d = dataAccessFormService.find();
-    if (!d.isPresent()) throw NoSuchDataAccessFormException.withDefaultMessage();
-    return d.get();
+  private DataAccessForm getDataAccessForm(DataAccessRequest request) {
+    Optional<DataAccessForm> form = dataAccessFormService.findByRevision(request.hasFormRevision() ? request.getFormRevision().toString() : "latest");
+    return form.orElseGet(() -> dataAccessFormService.findByRevision("latest").get());
+  }
+
+  private DataAccessAmendmentForm getDataAccessAmendmentForm(DataAccessAmendment amendment) {
+    Optional<DataAccessAmendmentForm> form = dataAccessAmendmentFormService.findByRevision(amendment.hasFormRevision() ? amendment.getFormRevision().toString() : "latest");
+    return form.orElseGet(() -> dataAccessAmendmentFormService.findByRevision("latest").get());
+  }
+
+  private DataAccessFeasibilityForm getDataAccessFeasibilityForm(DataAccessFeasibility feasibility) {
+    Optional<DataAccessFeasibilityForm> form = dataAccessFeasibilityFormService.findByRevision(feasibility.hasFormRevision() ? feasibility.getFormRevision().toString() : "latest");
+    return form.orElseGet(() -> dataAccessFeasibilityFormService.findByRevision("latest").get());
   }
 
   private DataAccessConfigBundle getDataAccessConfig(Map<String, Object> params) {
