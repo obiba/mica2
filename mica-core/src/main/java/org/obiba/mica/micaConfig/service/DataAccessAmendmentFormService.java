@@ -29,17 +29,13 @@ public class DataAccessAmendmentFormService extends AbstractDataAccessEntityForm
   }
 
   @Override
-  public Optional<DataAccessAmendmentForm> findDraft() {
+  public DataAccessAmendmentForm findDraft() {
     DataAccessAmendmentForm form = dataAccessAmendmentFormRepository.findOne(DataAccessAmendmentForm.DEFAULT_ID);
     if (form == null) {
       createOrUpdate(createDefaultDataAccessAmendmentForm());
       form = dataAccessAmendmentFormRepository.findOne(DataAccessAmendmentForm.DEFAULT_ID);
     }
-    if (StringUtils.isEmpty(form.getCsvExportFormat())) {
-      form.setCsvExportFormat(getDefaultDataAccessFormResourceAsString("export-csv-schema.json"));
-      form = createOrUpdate(form);
-    }
-    return Optional.ofNullable(form);
+    return form;
   }
 
   @Override
@@ -59,7 +55,7 @@ public class DataAccessAmendmentFormService extends AbstractDataAccessEntityForm
 
   @Override
   public void publish() {
-    DataAccessAmendmentForm draft = findDraft().get();
+    DataAccessAmendmentForm draft = findDraft();
     draft.setId(null);
     Optional<DataAccessAmendmentForm> latest = findFirstSortByRevisionDesc();
     draft.setRevision(latest.isPresent() ? latest.get().getRevision() + 1 : 1);
@@ -85,7 +81,6 @@ public class DataAccessAmendmentFormService extends AbstractDataAccessEntityForm
     DataAccessAmendmentForm form = new DataAccessAmendmentForm();
     form.setDefinition(getDefaultDataAccessFormResourceAsString("definition.json"));
     form.setSchema(getDefaultDataAccessFormResourceAsString("schema.json"));
-    form.setCsvExportFormat(getDefaultDataAccessFormResourceAsString("export-csv-schema.json"));
     form.setTitleFieldPath("projectTitle");
     form.setSummaryFieldPath("summary");
     form.setEndDateFieldPath("endDate");

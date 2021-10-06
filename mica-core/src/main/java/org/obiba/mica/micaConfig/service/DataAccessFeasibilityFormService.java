@@ -29,20 +29,13 @@ public class DataAccessFeasibilityFormService extends AbstractDataAccessEntityFo
   }
 
   @Override
-  public Optional<DataAccessFeasibilityForm> findDraft() {
+  public DataAccessFeasibilityForm findDraft() {
     DataAccessFeasibilityForm form = dataAccessFeasibilityFormRepository.findOne(DataAccessFeasibilityForm.DEFAULT_ID);
-
     if (form == null) {
       createOrUpdate(createDefaultDataAccessFeasibilityForm());
       form = dataAccessFeasibilityFormRepository.findOne(DataAccessFeasibilityForm.DEFAULT_ID);
     }
-
-    if (StringUtils.isEmpty(form.getCsvExportFormat())) {
-      form.setCsvExportFormat(getDefaultDataAccessFormResourceAsString("export-csv-schema.json"));
-      form = createOrUpdate(form);
-    }
-
-    return Optional.ofNullable(form);
+    return form;
   }
 
   @Override
@@ -62,7 +55,7 @@ public class DataAccessFeasibilityFormService extends AbstractDataAccessEntityFo
 
   @Override
   public void publish() {
-    DataAccessFeasibilityForm draft = findDraft().get();
+    DataAccessFeasibilityForm draft = findDraft();
     draft.setId(null);
     Optional<DataAccessFeasibilityForm> latest = findFirstSortByRevisionDesc();
     draft.setRevision(latest.isPresent() ? latest.get().getRevision() + 1 : 1);
@@ -88,7 +81,6 @@ public class DataAccessFeasibilityFormService extends AbstractDataAccessEntityFo
     DataAccessFeasibilityForm form = new DataAccessFeasibilityForm();
     form.setDefinition(getDefaultDataAccessFormResourceAsString("definition.json"));
     form.setSchema(getDefaultDataAccessFormResourceAsString("schema.json"));
-    form.setCsvExportFormat(getDefaultDataAccessFormResourceAsString("export-csv-schema.json"));
     form.setTitleFieldPath("projectTitle");
     form.setSummaryFieldPath("summary");
     form.setEndDateFieldPath("endDate");

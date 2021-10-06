@@ -12,8 +12,6 @@ import java.io.IOException;
 import java.util.Optional;
 import java.util.Scanner;
 
-import static org.springframework.util.StringUtils.isEmpty;
-
 abstract class AbstractDataAccessEntityFormService<T extends AbstractDataAccessEntityForm> {
 
   /**
@@ -26,7 +24,6 @@ abstract class AbstractDataAccessEntityFormService<T extends AbstractDataAccessE
 
   /**
    * Copy the draft and save it with an incremented revision number.
-   *
    */
   public abstract void publish();
 
@@ -35,7 +32,7 @@ abstract class AbstractDataAccessEntityFormService<T extends AbstractDataAccessE
    *
    * @return
    */
-  public abstract Optional<T> findDraft();
+  public abstract T findDraft();
 
   /**
    * Get the form with the max revision number, and greater than 0 (means that it makes the first draft publication if necessary).
@@ -63,7 +60,7 @@ abstract class AbstractDataAccessEntityFormService<T extends AbstractDataAccessE
   public Optional<T> findByRevision(String revision) {
     Optional<T> d;
     if (Strings.isNullOrEmpty(revision) || "draft".equals(revision))
-      d = findDraft();
+      d = Optional.ofNullable(findDraft());
     else if ("latest".equals(revision))
       d = Optional.ofNullable(findLatest());
     else
@@ -106,8 +103,5 @@ abstract class AbstractDataAccessEntityFormService<T extends AbstractDataAccessE
   void validateForm(AbstractDataAccessEntityForm dataAccessForm) {
     validateJsonObject(dataAccessForm.getSchema());
     validateJsonArray(dataAccessForm.getDefinition());
-    if (!isEmpty(dataAccessForm.getCsvExportFormat())) {
-      validateJsonObject(dataAccessForm.getCsvExportFormat());
-    }
   }
 }

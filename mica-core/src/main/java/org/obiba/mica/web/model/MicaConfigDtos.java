@@ -315,7 +315,10 @@ class MicaConfigDtos {
       .setApprovedFinal(dataAccessConfig.isApprovedFinal())
       .setRejectedFinal(dataAccessConfig.isRejectedFinal())
       .setWithConditionalApproval(dataAccessConfig.isWithConditionalApproval())
-      .setNotifyConditionallyApproved(dataAccessConfig.isNotifyConditionallyApproved());
+      .setNotifyConditionallyApproved(dataAccessConfig.isNotifyConditionallyApproved())
+      .setCsvExportFormat(dataAccessConfig.getCsvExportFormat())
+      .setFeasibilityCsvExportFormat(dataAccessConfig.getFeasibilityCsvExportFormat())
+      .setAmendmentCsvExportFormat(dataAccessConfig.getAmendmentCsvExportFormat());
 
     if(dataAccessConfig.getCreatedSubject() != null) builder.setCreatedSubject(dataAccessConfig.getCreatedSubject());
 
@@ -413,6 +416,10 @@ class MicaConfigDtos {
     dataAccessConfig.setFeasibilityVariablesEnabled(dto.getFeasibilityVariablesEnabled());
     dataAccessConfig.setAmendmentVariablesEnabled(dto.getAmendmentVariablesEnabled());
 
+    if (dto.hasCsvExportFormat()) dataAccessConfig.setCsvExportFormat(dto.getCsvExportFormat());
+    if (dto.hasFeasibilityCsvExportFormat()) dataAccessConfig.setFeasibilityCsvExportFormat(dto.getFeasibilityCsvExportFormat());
+    if (dto.hasAmendmentCsvExportFormat()) dataAccessConfig.setAmendmentCsvExportFormat(dto.getAmendmentCsvExportFormat());
+
     return dataAccessConfig;
   }
 
@@ -440,8 +447,6 @@ class MicaConfigDtos {
       builder.setEndDateFieldPath(dataAccessForm.getEndDateFieldPath());
     }
 
-    builder.setCsvExportFormat(dataAccessForm.getCsvExportFormat());
-
     builder.setPdfDownloadType(Mica.DataAccessFormDto.PdfDownloadType.valueOf(dataAccessForm.getPdfDownloadType().name()));
 
     return builder.build();
@@ -452,7 +457,6 @@ class MicaConfigDtos {
     DataAccessForm dataAccessForm = new DataAccessForm();
     dataAccessForm.setSchema(dto.getSchema());
     dataAccessForm.setDefinition(dto.getDefinition());
-    dataAccessForm.setCsvExportFormat(dto.getCsvExportFormat());
 
     dataAccessForm.setProperties(dto.getPropertiesList().stream()
       .collect(toMap(Mica.LocalizedPropertyDto::getName, e -> localizedStringDtos.fromDto(e.getValueList()))));
@@ -481,8 +485,7 @@ class MicaConfigDtos {
       .setRevision(dataAccessFeasibilityForm.getRevision())
       .setLastModifiedDate(dataAccessFeasibilityForm.getLastModifiedDate().toString())
       .setDefinition(dataAccessFeasibilityForm.getDefinition())
-      .setSchema(dataAccessFeasibilityForm.getSchema())
-      .setCsvExportFormat(dataAccessFeasibilityForm.getCsvExportFormat());
+      .setSchema(dataAccessFeasibilityForm.getSchema());
     return builder.build();
   }
 
@@ -491,7 +494,6 @@ class MicaConfigDtos {
 
     dataAccessFeasibilityForm.setSchema(dto.getSchema());
     dataAccessFeasibilityForm.setDefinition(dto.getDefinition());
-    dataAccessFeasibilityForm.setCsvExportFormat(dto.getCsvExportFormat());
 
     return dataAccessFeasibilityForm;
   }
@@ -503,8 +505,7 @@ class MicaConfigDtos {
       .setLastModifiedDate(dataAccessAmendmentForm.getLastModifiedDate().toString())
       .setDefinition(dataAccessAmendmentForm.getDefinition())
       .setSchema(dataAccessAmendmentForm.getSchema())
-      .addAllProperties(asDtoList(dataAccessAmendmentForm.getProperties()))
-      .setCsvExportFormat(dataAccessAmendmentForm.getCsvExportFormat());
+      .addAllProperties(asDtoList(dataAccessAmendmentForm.getProperties()));
 
     if(dataAccessAmendmentForm.hasTitleFieldPath()) {
       builder.setTitleFieldPath(dataAccessAmendmentForm.getTitleFieldPath());
@@ -529,7 +530,6 @@ class MicaConfigDtos {
 
     dataAccessAmendmentForm.setSchema(dto.getSchema());
     dataAccessAmendmentForm.setDefinition(dto.getDefinition());
-    dataAccessAmendmentForm.setCsvExportFormat(dto.getCsvExportFormat());
 
     dataAccessAmendmentForm.setProperties(dto.getPropertiesList().stream()
       .collect(toMap(Mica.LocalizedPropertyDto::getName, e -> localizedStringDtos.fromDto(e.getValueList()))));

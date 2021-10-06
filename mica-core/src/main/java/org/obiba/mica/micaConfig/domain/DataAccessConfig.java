@@ -99,6 +99,12 @@ public class DataAccessConfig extends AbstractAuditableDocument {
 
   private int nbOfDaysBeforeReport = 7;
 
+  private String csvExportFormat;
+
+  private String feasibilityCsvExportFormat;
+
+  private String amendmentCsvExportFormat;
+
   public DataAccessConfig() {
     super();
   }
@@ -401,5 +407,29 @@ public class DataAccessConfig extends AbstractAuditableDocument {
 
   public String getIntermediateReportSubject() {
     return intermediateReportSubject;
+  }
+
+  public String getCsvExportFormat() {
+    return csvExportFormat;
+  }
+
+  public void setCsvExportFormat(String csvExportFormat) {
+    this.csvExportFormat = csvExportFormat;
+  }
+
+  public String getFeasibilityCsvExportFormat() {
+    return feasibilityCsvExportFormat;
+  }
+
+  public void setFeasibilityCsvExportFormat(String feasibilityCsvExportFormat) {
+    this.feasibilityCsvExportFormat = feasibilityCsvExportFormat;
+  }
+
+  public String getAmendmentCsvExportFormat() {
+    return amendmentCsvExportFormat;
+  }
+
+  public void setAmendmentCsvExportFormat(String amendmentCsvExportFormat) {
+    this.amendmentCsvExportFormat = amendmentCsvExportFormat;
   }
 }
