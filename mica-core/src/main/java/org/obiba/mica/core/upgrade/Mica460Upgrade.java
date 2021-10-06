@@ -138,7 +138,7 @@ public class Mica460Upgrade implements UpgradeStep {
     dataAccessForm.removeField("daoCanEdit");
     dataAccessForm.removeField("nbOfDaysBeforeReport");
     dataAccessForm.removeField("csvExportFormat");
-    dataAccessForm.put("lastModifiedDate", new Date());
+    dataAccessForm.put("lastUpdateDate", new Date());
     mongoTemplate.execute(db -> db.getCollection("dataAccessForm").save(dataAccessForm));
 
     // publish
@@ -150,7 +150,7 @@ public class Mica460Upgrade implements UpgradeStep {
   private void updateAndPublishDataAccessFeasibilityForm(DBObject dataAccessFeasibilityForm) {
     // update
     dataAccessFeasibilityForm.removeField("csvExportFormat");
-    dataAccessFeasibilityForm.put("lastModifiedDate", new Date());
+    dataAccessFeasibilityForm.put("lastUpdateDate", new Date());
     mongoTemplate.execute(db -> db.getCollection("dataAccessFeasibilityForm").save(dataAccessFeasibilityForm));
 
     // publish
@@ -162,7 +162,7 @@ public class Mica460Upgrade implements UpgradeStep {
   private void updateAndPublishDataAccessAmendmentForm(DBObject dataAccessAmendmentForm) {
     // update
     dataAccessAmendmentForm.removeField("csvExportFormat");
-    dataAccessAmendmentForm.put("lastModifiedDate", new Date());
+    dataAccessAmendmentForm.put("lastUpdateDate", new Date());
     mongoTemplate.execute(db -> db.getCollection("dataAccessAmendmentForm").save(dataAccessAmendmentForm));
 
     // publish

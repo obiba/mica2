@@ -934,14 +934,14 @@ message DataAccessFormDto {
   required PdfDownloadType pdfDownloadType = 7;
   optional string endDateFieldPath = 8;
   optional int32 revision = 9;
-  optional string lastModifiedDate = 10;
+  optional string lastUpdateDate = 10;
 }
 
 message DataAccessFeasibilityFormDto {
   required string schema = 1;
   required string definition = 2;
   optional int32 revision = 3;
-  optional string lastModifiedDate = 4;
+  optional string lastUpdateDate = 4;
 }
 
 message DataAccessAmendmentFormDto {
@@ -954,7 +954,7 @@ message DataAccessAmendmentFormDto {
   required bool approvedFinal = 7;
   optional string endDateFieldPath = 8;
   optional int32 revision = 9;
-  optional string lastModifiedDate = 10;
+  optional string lastUpdateDate = 10;
 }
 
 message ProjectFormDto {

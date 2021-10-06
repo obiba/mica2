@@ -5,7 +5,6 @@ import org.obiba.mica.micaConfig.domain.DataAccessFeasibilityForm;
 import org.obiba.mica.micaConfig.repository.DataAccessFeasibilityFormRepository;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import javax.inject.Inject;
 import java.util.Optional;
@@ -24,7 +23,7 @@ public class DataAccessFeasibilityFormService extends AbstractDataAccessEntityFo
   public DataAccessFeasibilityForm createOrUpdate(DataAccessFeasibilityForm dataAccessForm) {
     validateForm(dataAccessForm);
     dataAccessForm.setRevision(0);
-    dataAccessForm.setLastModifiedDate(DateTime.now());
+    dataAccessForm.setLastUpdateDate(DateTime.now());
     return dataAccessFeasibilityFormRepository.save(dataAccessForm);
   }
 

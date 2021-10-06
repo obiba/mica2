@@ -289,7 +289,7 @@ mica.dataAccessConfig
 
         DataAccessFormResource.get({revision: 'latest'},
           function(dataAccessForm) {
-            $scope.dataAccessFormLatestDate = dataAccessForm.lastModifiedDate;
+            $scope.dataAccessFormLatestDate = dataAccessForm.lastUpdateDate;
           }
         );
       };
@@ -314,7 +314,7 @@ mica.dataAccessConfig
 
         DataAccessFeasibilityFormResource.get({revision: 'latest'},
           function(feasibilityForm) {
-            $scope.dataAccessFeasibilityFormLatestDate = feasibilityForm.lastModifiedDate;
+            $scope.dataAccessFeasibilityFormLatestDate = feasibilityForm.lastUpdateDate;
           }
         );
       };
@@ -339,7 +339,7 @@ mica.dataAccessConfig
 
         DataAccessAmendmentFormResource.get({revision: 'latest'},
           function(amendmentForm) {
-            $scope.dataAccessAmendmentFormLatestDate = amendmentForm.lastModifiedDate;
+            $scope.dataAccessAmendmentFormLatestDate = amendmentForm.lastUpdateDate;
           }
         );
       };

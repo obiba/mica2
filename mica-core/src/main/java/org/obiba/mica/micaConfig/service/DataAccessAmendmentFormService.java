@@ -5,7 +5,6 @@ import org.obiba.mica.micaConfig.domain.DataAccessAmendmentForm;
 import org.obiba.mica.micaConfig.repository.DataAccessAmendmentFormRepository;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import javax.inject.Inject;
 import java.util.Optional;
@@ -24,7 +23,7 @@ public class DataAccessAmendmentFormService extends AbstractDataAccessEntityForm
   public DataAccessAmendmentForm createOrUpdate(DataAccessAmendmentForm dataAccessForm) {
     validateForm(dataAccessForm);
     dataAccessForm.setRevision(0);
-    dataAccessForm.setLastModifiedDate(DateTime.now());
+    dataAccessForm.setLastUpdateDate(DateTime.now());
     return dataAccessAmendmentFormRepository.save(dataAccessForm);
   }
 

@@ -12,7 +12,7 @@ public abstract class AbstractDataAccessEntityForm extends EntityConfig {
 
   private int revision = 0;
 
-  private DateTime lastModifiedDate;
+  private DateTime lastUpdateDate;
 
   private Map<String, LocalizedString> properties;
 
@@ -34,12 +34,12 @@ public abstract class AbstractDataAccessEntityForm extends EntityConfig {
     this.revision = revision;
   }
 
-  public DateTime getLastModifiedDate() {
-    return lastModifiedDate == null ? DateTime.now() : lastModifiedDate;
+  public DateTime getLastUpdateDate() {
+    return lastUpdateDate == null ? DateTime.now() : lastUpdateDate;
   }
 
-  public void setLastModifiedDate(DateTime lastModifiedDate) {
-    this.lastModifiedDate = lastModifiedDate;
+  public void setLastUpdateDate(DateTime lastUpdateDate) {
+    this.lastUpdateDate = lastUpdateDate;
   }
 
   public Map<String, LocalizedString> getProperties() {

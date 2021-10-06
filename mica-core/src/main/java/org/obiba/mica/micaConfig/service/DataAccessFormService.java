@@ -17,7 +17,6 @@ import org.obiba.mica.micaConfig.domain.DataAccessForm;
 import org.obiba.mica.micaConfig.repository.DataAccessFormRepository;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import javax.inject.Inject;
 import java.util.Optional;
@@ -56,7 +55,7 @@ public class DataAccessFormService extends AbstractDataAccessEntityFormService<D
       }
     });
     dataAccessForm.setRevision(0);
-    dataAccessForm.setLastModifiedDate(DateTime.now());
+    dataAccessForm.setLastUpdateDate(DateTime.now());
     return dataAccessFormRepository.save(dataAccessForm);
   }
 
@@ -100,7 +99,7 @@ public class DataAccessFormService extends AbstractDataAccessEntityFormService<D
 
   private Optional<DataAccessForm> findFirstSortByRevisionDesc() {
     return dataAccessFormRepository.findAll(new Sort(Sort.Direction.DESC, "revision")).stream()
-      .filter(form -> form.getRevision()>0)
+      .filter(form -> form.getRevision() > 0)
       .findFirst();
   }
 

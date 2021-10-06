@@ -428,7 +428,7 @@ class MicaConfigDtos {
   Mica.DataAccessFormDto asDto(@NotNull DataAccessForm dataAccessForm) {
     Mica.DataAccessFormDto.Builder builder = Mica.DataAccessFormDto.newBuilder()
       .setRevision(dataAccessForm.getRevision())
-      .setLastModifiedDate(dataAccessForm.getLastModifiedDate().toString())
+      .setLastUpdateDate(dataAccessForm.getLastUpdateDate().toString())
       .setDefinition(dataAccessForm.getDefinition())
       .setSchema(dataAccessForm.getSchema())
       .addAllPdfTemplates(
@@ -483,7 +483,7 @@ class MicaConfigDtos {
   Mica.DataAccessFeasibilityFormDto asDto(@NotNull DataAccessFeasibilityForm dataAccessFeasibilityForm) {
     Mica.DataAccessFeasibilityFormDto.Builder builder = Mica.DataAccessFeasibilityFormDto.newBuilder()
       .setRevision(dataAccessFeasibilityForm.getRevision())
-      .setLastModifiedDate(dataAccessFeasibilityForm.getLastModifiedDate().toString())
+      .setLastUpdateDate(dataAccessFeasibilityForm.getLastUpdateDate().toString())
       .setDefinition(dataAccessFeasibilityForm.getDefinition())
       .setSchema(dataAccessFeasibilityForm.getSchema());
     return builder.build();
@@ -502,7 +502,7 @@ class MicaConfigDtos {
                                         @NotNull DataAccessConfig dataAccessConfig) {
     Mica.DataAccessAmendmentFormDto.Builder builder = Mica.DataAccessAmendmentFormDto.newBuilder()
       .setRevision(dataAccessAmendmentForm.getRevision())
-      .setLastModifiedDate(dataAccessAmendmentForm.getLastModifiedDate().toString())
+      .setLastUpdateDate(dataAccessAmendmentForm.getLastUpdateDate().toString())
       .setDefinition(dataAccessAmendmentForm.getDefinition())
       .setSchema(dataAccessAmendmentForm.getSchema())
       .addAllProperties(asDtoList(dataAccessAmendmentForm.getProperties()));
