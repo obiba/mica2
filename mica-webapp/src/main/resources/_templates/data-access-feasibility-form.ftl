@@ -70,7 +70,7 @@
                   </span>
                 </#if>
                 <#if feasibilityPermissions?seq_contains("EDIT_STATUS")>
-                  <span class="float-right">
+                  <span class="float-right border-left ml-2 pl-2">
                     <#if feasibility.status == "OPENED">
                       <button type="button" class="btn btn-info" ng-hide="!schema.readOnly" data-toggle="modal"
                               data-target="#modal-submit"><@message "submit"/></button>

@@ -101,7 +101,7 @@
                   </span>
                 </#if>
                 <#if amendmentPermissions?seq_contains("EDIT_STATUS")>
-                  <span class="float-right">
+                  <span class="float-right border-left ml-2 pl-2">
                     <#if amendment.status == "OPENED" || amendment.status == "CONDITIONALLY_APPROVED">
                       <button type="button" class="btn btn-info" ng-hide="!schema.readOnly" data-toggle="modal"
                               data-target="#modal-submit"><@message "submit"/></button>
