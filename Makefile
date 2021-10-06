@@ -7,7 +7,7 @@ search_plugin_version=
 ifdef MICA_HOME
 	mica_home = ${MICA_HOME}
 else
-	mica_home = ${current_dir}/mica-webapp/target/mica_home
+	mica_home = ${current_dir}/mica_home
 endif
 mica_log = ${mica_home}/logs
 
