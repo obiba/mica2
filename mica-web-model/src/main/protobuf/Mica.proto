@@ -134,6 +134,8 @@ message PopulationDto {
     repeated AttachmentDto attachments = 8;
     optional string content = 9;
     optional int32 weight = 10;
+    optional string startDay = 11;
+    optional string endDay = 12;
   }
 }
 

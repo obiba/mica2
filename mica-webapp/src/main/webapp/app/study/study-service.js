@@ -185,21 +185,25 @@ mica.study
         dce.description = LocalizedValues.objectToArray(dce.model._description);
         dce.startYear = dce.model._startYear;
         dce.startMonth = dce.model._startMonth;
+        dce.startDay = dce.model._startDay;
         dce.endYear = dce.model._endYear;
         dce.endMonth = dce.model._endMonth;
+        dce.endDay = dce.model._endDay;
         delete dce.model._id;
         delete dce.model._name;
         delete dce.model._description;
         delete dce.model._startYear;
         delete dce.model._startMonth;
+        delete dce.model._startDay;
         delete dce.model._endYear;
         delete dce.model._endMonth;
+        delete dce.model._endDay;
       } else {
         dce.name = LocalizedValues.objectToArray(dce.name);
         dce.description = LocalizedValues.objectToArray(dce.description);
 
-        const persistableStartYearMonthData = getPersistableYearMonth((dce.start || {}).yearMonth);
-        const persistableEndYearMonthData = getPersistableYearMonth((dce.end || {}).yearMonth);
+        const persistableStartYearMonthData = getPersistableYearMonth(dce.start);
+        const persistableEndYearMonthData = getPersistableYearMonth(dce.end);
 
         if (persistableStartYearMonthData) {
           dce.startYear = persistableStartYearMonthData.year;
@@ -277,8 +281,10 @@ mica.study
         dce.model._description = LocalizedValues.arrayToObject(dce.description);
         dce.model._startYear = dce.startYear;
         dce.model._startMonth = dce.startMonth;
+        dce.model._startDay = dce.startDay;
         dce.model._endYear = dce.endYear;
         dce.model._endMonth = dce.endMonth;
+        dce.model._endDay = dce.endDay;
       } else {
         dce.name = LocalizedValues.arrayToObject(dce.name);
         dce.description = LocalizedValues.arrayToObject(dce.description);
@@ -286,13 +292,20 @@ mica.study
 
     }
 
-    function getPersistableYearMonth(field) {
-      const found = PERSISTABLE_DATE_REGEXP.exec(field || '');
+    function getPersistableYearMonth(dceDate) {
+      const date = (dceDate || {});
+      const yearMonthField = date.yearMonth;
+      const dayField = (date.day || '').length > 0 ? date.day : null;
+      const found = PERSISTABLE_DATE_REGEXP.exec(yearMonthField || '') || dayField !== null;
       if (found) {
         const result = {};
         result.year = parseInt(found[1]);
         if (found[2]) {
           result.month = parseInt(found[2]);
+        }
+
+        if (dayField) {
+          result.day = dayField;
         }
 
         return result;

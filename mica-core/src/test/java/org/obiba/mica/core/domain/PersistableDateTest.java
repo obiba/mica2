@@ -20,6 +20,9 @@ import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -37,6 +40,13 @@ public class PersistableDateTest {
   public void test_year_month_creation_format() {
     assertThat(PersistableYearMonth.of(1989, 1).getYearMonth()).isEqualTo("1989-01");
     assertThat(PersistableYearMonth.of(1989, 11).getYearMonth()).isEqualTo("1989-11");
+  }
+
+  @Test
+  public void test_year_month_day_creation_format() {
+    PersistableYearMonth ym = PersistableYearMonth.of(2010, 2, LocalDate.parse("2010-02-22", DateTimeFormatter.ISO_DATE));
+    assertThat(ym.getYearMonth()).isEqualTo("2010-02");
+    assertThat(ym.getDay().getDayOfMonth()).isEqualTo(22);
   }
 
   @Test
