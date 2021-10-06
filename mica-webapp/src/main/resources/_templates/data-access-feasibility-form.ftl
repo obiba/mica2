@@ -92,7 +92,7 @@
                     </#if>
                   </span>
                 </#if>
-                <span class="float-right <#if feasibilityPermissions?seq_contains("EDIT")>border-right mr-2 pr-2</#if>" ng-if="schema.readOnly">
+                <span class="float-right" ng-if="schema.readOnly">
                   <a href="#" onclick="window.print()" class="btn btn-default">
                     <i class="fas fa-print"></i> <@message "global.print"/>
                   </a>
