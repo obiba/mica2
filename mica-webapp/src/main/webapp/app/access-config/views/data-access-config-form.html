@@ -247,7 +247,7 @@
         <span translate>save</span>
       </button>
       <button ng-disabled="dataAccessForm.lastModifiedDate === dataAccessFormLatestDate" ng-click="publishForm()" class="btn btn-info">
-        <span translate>publish.label</span>
+        <span title="{{dataAccessFormLatestDate | amDateFormat : 'lll'}}" translate>publish.label</span>
       </button>
     </span>
 
@@ -256,7 +256,7 @@
         <span translate>save</span>
       </button>
       <button ng-disabled="feasibilityForm.lastModifiedDate === dataAccessFeasibilityFormLatestDate" ng-click="publishFeasibilityForm()" class="btn btn-info">
-        <span translate>publish.label</span>
+        <span title="{{dataAccessFeasibilityFormLatestDate | amDateFormat : 'lll'}}" translate>publish.label</span>
       </button>
     </span>
 
@@ -265,7 +265,7 @@
         <span translate>save</span>
       </button>
       <button ng-disabled="formAmendment.lastModifiedDate === dataAccessAmendmentFormLatestDate" ng-click="publishAmendmentForm()" class="btn btn-info">
-        <span translate>publish.label</span>
+        <span title="{{dataAccessAmendmentFormLatestDate | amDateFormat : 'lll'}}" translate>publish.label</span>
       </button>
     </span>
 
