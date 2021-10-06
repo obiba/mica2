@@ -22,10 +22,8 @@ import org.obiba.mica.access.domain.DataAccessEntityStatus;
 import org.obiba.mica.access.domain.DataAccessRequest;
 import org.obiba.mica.access.service.DataAccessAmendmentService;
 import org.obiba.mica.access.service.DataAccessRequestService;
-import org.obiba.mica.micaConfig.domain.DataAccessAmendmentForm;
-import org.obiba.mica.micaConfig.domain.DataAccessForm;
-import org.obiba.mica.micaConfig.service.DataAccessAmendmentFormService;
-import org.obiba.mica.micaConfig.service.DataAccessFormService;
+import org.obiba.mica.micaConfig.domain.DataAccessConfig;
+import org.obiba.mica.micaConfig.service.DataAccessConfigService;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.security.Roles;
 import org.obiba.mica.security.service.SubjectAclService;
@@ -36,13 +34,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
@@ -70,10 +62,7 @@ public class DataAccessRequestsResource {
   private Dtos dtos;
 
   @Inject
-  private DataAccessFormService dataAccessFormService;
-
-  @Inject
-  private DataAccessAmendmentFormService dataAccessAmendmentFormService;
+  private DataAccessConfigService dataAccessConfigService;
 
   @Inject
   MicaConfigService micaConfigService;
@@ -110,15 +99,13 @@ public class DataAccessRequestsResource {
   @Path("/csv")
   @Produces("text/csv")
   public Response exportCsv(@QueryParam("lang") String lang) {
-
-    DataAccessForm dataAccessForm = dataAccessFormService.findDraft().get();
-    DataAccessAmendmentForm amendmentForm = dataAccessAmendmentFormService.findDraft().get();
+    DataAccessConfig dataAccessConfig = dataAccessConfigService.getOrCreateConfig();
     Map<DataAccessRequest, List<DataAccessAmendment>> dataAccessRequestListMap = listAllWithAmendments();
 
     ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
     new CsvReportGenerator(dataAccessRequestListMap,
-      dataAccessForm.getCsvExportFormat(),
-      amendmentForm.getCsvExportFormat(),
+      dataAccessConfig.getCsvExportFormat(),
+      dataAccessConfig.getAmendmentCsvExportFormat(),
       lang).write(byteArrayOutputStream);
 
     String date = new DateTime().toString("YYYY-MM-dd");

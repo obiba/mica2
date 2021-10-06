@@ -14,8 +14,6 @@ public abstract class AbstractDataAccessEntityForm extends EntityConfig {
 
   private DateTime lastModifiedDate;
 
-  private String csvExportFormat;
-
   private Map<String, LocalizedString> properties;
 
   private String titleFieldPath;
@@ -42,14 +40,6 @@ public abstract class AbstractDataAccessEntityForm extends EntityConfig {
 
   public void setLastModifiedDate(DateTime lastModifiedDate) {
     this.lastModifiedDate = lastModifiedDate;
-  }
-
-  public String getCsvExportFormat() {
-    return csvExportFormat;
-  }
-
-  public void setCsvExportFormat(String csvExportFormat) {
-    this.csvExportFormat = csvExportFormat;
   }
 
   public Map<String, LocalizedString> getProperties() {

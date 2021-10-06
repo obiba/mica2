@@ -43,17 +43,22 @@ public class Mica460Upgrade implements UpgradeStep {
   public void execute(Version currentVersion) {
     logger.info("Executing Mica upgrade to version 4.6.0");
     try {
-      logger.info("Moving data access config out of data access form");
       DBObject dataAccessForm = mongoTemplate.execute(db -> db.getCollection("dataAccessForm").find().next());
-      insertDataAccessConfig(dataAccessForm);
+      DBObject dataAccessFeasibilityForm = mongoTemplate.execute(db -> db.getCollection("dataAccessFeasibilityForm").find().next());
+      DBObject dataAccessAmendmentForm = mongoTemplate.execute(db -> db.getCollection("dataAccessAmendmentForm").find().next());
+
+      String csvExportFormat = dataAccessForm.get("csvExportFormat").toString();
+      String feasibilityCsvExportFormat = dataAccessFeasibilityForm.get("csvExportFormat").toString();
+      String amendmentCsvExportFormat = dataAccessAmendmentForm.get("csvExportFormat").toString();
+
+      logger.info("Moving data access config out of data access form");
+      insertDataAccessConfig(dataAccessForm, csvExportFormat, feasibilityCsvExportFormat, amendmentCsvExportFormat);
       logger.info("Updating and publishing data access form");
       updateAndPublishDataAccessForm(dataAccessForm);
-      logger.info("Publishing data access feasibility form");
-      DBObject dataAccessFeasibilityForm = mongoTemplate.execute(db -> db.getCollection("dataAccessFeasibilityForm").find().next());
-      publishDataAccessFeasibilityForm(dataAccessFeasibilityForm);
-      logger.info("Publishing data access amendment form");
-      DBObject dataAccessAmendmentForm = mongoTemplate.execute(db -> db.getCollection("dataAccessAmendmentForm").find().next());
-      publishDataAccessAmendmentForm(dataAccessAmendmentForm);
+      logger.info("Updating and publishing data access feasibility form");
+      updateAndPublishDataAccessFeasibilityForm(dataAccessFeasibilityForm);
+      logger.info("Updating and publishing data access amendment form");
+      updateAndPublishDataAccessAmendmentForm(dataAccessAmendmentForm);
 
       logger.info("Applying form revision to submitted data access requests");
       DBCursor dataAccessRequests = mongoTemplate.execute(db -> db.collectionExists("dataAccessRequest") ? db.getCollection("dataAccessRequest").find() : null);
@@ -69,12 +74,14 @@ public class Mica460Upgrade implements UpgradeStep {
     }
   }
 
-  private void insertDataAccessConfig(DBObject dataAccessForm) {
+  private void insertDataAccessConfig(DBObject dataAccessForm, String csvExportFormat, String feasibilityCsvExportFormat, String amendmentCsvExportFormat) {
     DBObject dataAccessConfig = new BasicDBObject();
     dataAccessConfig.putAll(dataAccessForm);
+    dataAccessConfig.put("csvExportFormat", csvExportFormat);
+    dataAccessConfig.put("feasibilityCsvExportFormat", feasibilityCsvExportFormat);
+    dataAccessConfig.put("amendmentCsvExportFormat", amendmentCsvExportFormat);
     dataAccessConfig.removeField("pdfTemplates");
     dataAccessConfig.removeField("pdfDownloadType");
-    dataAccessConfig.removeField("csvExportFormat");
     dataAccessConfig.removeField("properties");
     dataAccessConfig.removeField("titleFieldPath");
     dataAccessConfig.removeField("summaryFieldPath");
@@ -130,28 +137,37 @@ public class Mica460Upgrade implements UpgradeStep {
     dataAccessForm.removeField("amendmentVariablesEnabled");
     dataAccessForm.removeField("daoCanEdit");
     dataAccessForm.removeField("nbOfDaysBeforeReport");
+    dataAccessForm.removeField("csvExportFormat");
     dataAccessForm.put("lastModifiedDate", new Date());
-
     mongoTemplate.execute(db -> db.getCollection("dataAccessForm").save(dataAccessForm));
 
     // publish
     dataAccessForm.removeField("_id");
     dataAccessForm.put("revision", 1);
-
     mongoTemplate.execute(db -> db.getCollection("dataAccessForm").save(dataAccessForm));
   }
 
-  private void publishDataAccessFeasibilityForm(DBObject dataAccessFeasibilityForm) {
+  private void updateAndPublishDataAccessFeasibilityForm(DBObject dataAccessFeasibilityForm) {
+    // update
+    dataAccessFeasibilityForm.removeField("csvExportFormat");
+    dataAccessFeasibilityForm.put("lastModifiedDate", new Date());
+    mongoTemplate.execute(db -> db.getCollection("dataAccessFeasibilityForm").save(dataAccessFeasibilityForm));
+
+    // publish
     dataAccessFeasibilityForm.removeField("_id");
     dataAccessFeasibilityForm.put("revision", 1);
-
     mongoTemplate.execute(db -> db.getCollection("dataAccessFeasibilityForm").save(dataAccessFeasibilityForm));
   }
 
-  private void publishDataAccessAmendmentForm(DBObject dataAccessAmendmentForm) {
+  private void updateAndPublishDataAccessAmendmentForm(DBObject dataAccessAmendmentForm) {
+    // update
+    dataAccessAmendmentForm.removeField("csvExportFormat");
+    dataAccessAmendmentForm.put("lastModifiedDate", new Date());
+    mongoTemplate.execute(db -> db.getCollection("dataAccessAmendmentForm").save(dataAccessAmendmentForm));
+
+    // publish
     dataAccessAmendmentForm.removeField("_id");
     dataAccessAmendmentForm.put("revision", 1);
-
     mongoTemplate.execute(db -> db.getCollection("dataAccessAmendmentForm").save(dataAccessAmendmentForm));
   }
 

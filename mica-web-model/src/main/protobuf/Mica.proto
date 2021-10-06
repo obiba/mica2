@@ -914,6 +914,9 @@ message DataAccessConfigDto {
   required bool variablesEnabled = 44;
   required bool feasibilityVariablesEnabled = 45;
   required bool amendmentVariablesEnabled = 46;
+  optional string csvExportFormat = 47;
+  optional string feasibilityCsvExportFormat = 48;
+  optional string amendmentCsvExportFormat = 49;
 }
 
 message DataAccessFormDto {
@@ -928,19 +931,17 @@ message DataAccessFormDto {
   repeated LocalizedPropertyDto properties = 4;
   optional string titleFieldPath = 5;
   optional string summaryFieldPath = 6;
-  optional string csvExportFormat = 7;
-  required PdfDownloadType pdfDownloadType = 8;
-  optional string endDateFieldPath = 9;
-  optional int32 revision = 10;
-  optional string lastModifiedDate = 11;
+  required PdfDownloadType pdfDownloadType = 7;
+  optional string endDateFieldPath = 8;
+  optional int32 revision = 9;
+  optional string lastModifiedDate = 10;
 }
 
 message DataAccessFeasibilityFormDto {
   required string schema = 1;
   required string definition = 2;
-  optional string csvExportFormat = 3;
-  optional int32 revision = 4;
-  optional string lastModifiedDate = 5;
+  optional int32 revision = 3;
+  optional string lastModifiedDate = 4;
 }
 
 message DataAccessAmendmentFormDto {
@@ -949,12 +950,11 @@ message DataAccessAmendmentFormDto {
   repeated LocalizedPropertyDto properties = 3;
   optional string titleFieldPath = 4;
   optional string summaryFieldPath = 5;
-  optional string csvExportFormat = 6;
-  required bool withReview = 7;
-  required bool approvedFinal = 8;
-  optional string endDateFieldPath = 9;
-  optional int32 revision = 10;
-  optional string lastModifiedDate = 11;
+  required bool withReview = 6;
+  required bool approvedFinal = 7;
+  optional string endDateFieldPath = 8;
+  optional int32 revision = 9;
+  optional string lastModifiedDate = 10;
 }
 
 message ProjectFormDto {

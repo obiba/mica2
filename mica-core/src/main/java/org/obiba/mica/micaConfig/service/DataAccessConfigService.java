@@ -15,8 +15,8 @@ import org.obiba.mica.micaConfig.domain.DataAccessConfig;
 import org.obiba.mica.micaConfig.event.DataAccessConfigUpdatedEvent;
 import org.obiba.mica.micaConfig.repository.DataAccessConfigRepository;
 import org.springframework.beans.BeanUtils;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 
 import javax.inject.Inject;
@@ -27,15 +27,27 @@ import javax.validation.constraints.NotNull;
 @Validated
 public class DataAccessConfigService {
 
-  private DataAccessConfigRepository dataAccessConfigRepository;
+  private final DataAccessConfigRepository dataAccessConfigRepository;
 
-  private EventBus eventBus;
+  private final DataAccessFormService dataAccessFormService;
+
+  private final DataAccessFeasibilityFormService dataAccessFeasibilityFormService;
+
+  private final DataAccessAmendmentFormService dataAccessAmendmentFormService;
+
+  private final EventBus eventBus;
 
   @Inject
   public DataAccessConfigService(
     DataAccessConfigRepository dataAccessConfigRepository,
+    DataAccessFormService dataAccessFormService,
+    DataAccessFeasibilityFormService dataAccessFeasibilityFormService,
+    DataAccessAmendmentFormService dataAccessAmendmentFormService,
     EventBus eventBus) {
     this.dataAccessConfigRepository = dataAccessConfigRepository;
+    this.dataAccessFormService = dataAccessFormService;
+    this.dataAccessFeasibilityFormService = dataAccessFeasibilityFormService;
+    this.dataAccessAmendmentFormService = dataAccessAmendmentFormService;
     this.eventBus = eventBus;
   }
 
@@ -45,6 +57,22 @@ public class DataAccessConfigService {
       dataAccessConfigRepository.save(config);
     }
     DataAccessConfig config = dataAccessConfigRepository.findAll().get(0);
+    boolean modified = false;
+    if (StringUtils.isEmpty(config.getCsvExportFormat())) {
+      config.setCsvExportFormat(dataAccessFormService.getDefaultDataAccessFormResourceAsString("export-csv-schema.json"));
+      modified = true;
+    }
+    if (StringUtils.isEmpty(config.getFeasibilityCsvExportFormat())) {
+      config.setFeasibilityCsvExportFormat(dataAccessFeasibilityFormService.getDefaultDataAccessFormResourceAsString("export-csv-schema.json"));
+      modified = true;
+    }
+    if (StringUtils.isEmpty(config.getAmendmentCsvExportFormat())) {
+      config.setAmendmentCsvExportFormat(dataAccessAmendmentFormService.getDefaultDataAccessFormResourceAsString("export-csv-schema.json"));
+      modified = true;
+    }
+    if (modified) {
+      dataAccessConfigRepository.save(config);
+    }
     return config;
   }
 
