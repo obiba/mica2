@@ -2119,7 +2119,7 @@
       "data-access-form-success": "Data access form saved. Make sure to publish it to make it visible in data access requests.",
       "data-access-feasibility-form-success": "Data access feasibility form saved. Make sure to publish it to make it visible in data access requests.",
       "data-access-amendment-form-success": "Data access amendment form saved. Make sure to publish it to make it visible in data access requests.",
-      "data-access-config-sucdess": "Data access settings saved.",
+      "data-access-config-success": "Data access settings saved.",
       "success": "All your changes were successfully saved."
     },
     "publish-alert": {
