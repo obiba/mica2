@@ -44,11 +44,8 @@
 
   <div ng-show="tab.name === 'form'">
     <span class="config-navigation"><h3 class="config-navigation-item" ng-class="{'active': tab.name === 'form'}" translate>data-access-config.schema-form.title</h3></span>
-
     <p class="help-block" translate>data-access-config.schema-form.info</p>
-
-    <entity-sf-config form="form" alert-id="DataAccessConfigController" dirty-observable="state.getDirtyObservable()"></entity-sf-config>
-
+    <entity-sf-config form="form" alert-id="DataAccessConfigController" dirty-observable="formState.getDirtyObservable()"></entity-sf-config>
     <div class="row">
       <div class="col-md-6">
         <h3 translate>data-access-config.properties.title</h3>
@@ -97,13 +94,13 @@
   <div ng-show="tab.name === 'feasibility'">
     <span class="config-navigation"><h3 class="config-navigation-item" ng-class="{'active': tab.name === 'feasibility'}" translate>data-access-config.feasibility.schema-form.title</h3></span>
     <p class="help-block" translate>data-access-config.feasibility.schema-form.info</p>
-    <entity-sf-config form="formFeasibility" alert-id="DataAccessConfigController" dirty-observable="state.getDirtyObservable()"></entity-sf-config>
+    <entity-sf-config form="formFeasibility" alert-id="DataAccessConfigController" dirty-observable="feasibilityState.getDirtyObservable()"></entity-sf-config>
   </div>
 
   <div ng-show="tab.name === 'amendment'">
     <span class="config-navigation"><h3 class="config-navigation-item" ng-class="{'active': tab.name === 'amendment'}" translate>data-access-config.amendment.schema-form.title</h3></span>
     <p class="help-block" translate>data-access-config.amendment.schema-form.info</p>
-    <entity-sf-config form="formAmendment" alert-id="DataAccessConfigController" dirty-observable="state.getDirtyObservable()"></entity-sf-config>
+    <entity-sf-config form="formAmendment" alert-id="DataAccessConfigController" dirty-observable="amendmentState.getDirtyObservable()"></entity-sf-config>
 
     <h3 translate>data-access-config.amendment.properties.title</h3>
 
@@ -230,9 +227,7 @@
 
   <div ng-show="tab.name === 'permissions'">
     <h3 translate>permissions</h3>
-
     <p class="help-block" translate>data-access-config.permissions.info</p>
-
     <permission-config-table other-resources="otherResources" roles="darRoles" permissions="acls" on-load="loadPermissions" on-add="addPermission" on-delete="deletePermission" name="'data-access-requests'"></permission-config-table>
 
   </div>

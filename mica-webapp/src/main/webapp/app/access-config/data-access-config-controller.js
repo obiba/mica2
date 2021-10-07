@@ -54,7 +54,9 @@ mica.dataAccessConfig
         });
       });
 
-      $scope.state = new mica.commons.EntityState($q, $scope);
+      $scope.formState = new mica.commons.EntityState($q, $scope);
+      $scope.feasibilityState = new mica.commons.EntityState($q, $scope);
+      $scope.amendmentState = new mica.commons.EntityState($q, $scope);
       $scope.pdfTemplates = {};
 
       function entitySchemaFormSanitizeToSave(entitySchemaForm, form){
@@ -89,7 +91,7 @@ mica.dataAccessConfig
 
             DataAccessFormResource.save($scope.dataAccessForm).$promise
               .then(function () {
-                $scope.state.setDirty(false);
+                $scope.formState.setDirty(false);
                 AlertBuilder.newBuilder().delay(3000).type('success').trMsg('entity-config.save-alert.data-access-form-success').build();
                 refreshDataAccessForms();
               }, function (reason) {
@@ -124,7 +126,7 @@ mica.dataAccessConfig
 
             DataAccessFeasibilityFormResource.save($scope.feasibilityForm).$promise
               .then(function () {
-                $scope.state.setDirty(false);
+                $scope.feasibilityState.setDirty(false);
                 AlertBuilder.newBuilder().delay(3000).type('success').trMsg('entity-config.save-alert.data-access-feasibility-form-success').build();
                 refreshDataAccessFeasibilityForms();
               }, function (reason) {
@@ -159,7 +161,7 @@ mica.dataAccessConfig
 
             DataAccessAmendmentFormResource.save($scope.amendmentForm).$promise
               .then(function () {
-                $scope.state.setDirty(false);
+                $scope.amendmentState.setDirty(false);
                 AlertBuilder.newBuilder().delay(3000).type('success').trMsg('entity-config.save-alert.data-access-amendment-form-success').build();
                 refreshDataAccessAmendmentForms();
               }, function (reason) {
@@ -189,7 +191,6 @@ mica.dataAccessConfig
       var saveConfig = function() {
         DataAccessConfigResource.save($scope.config).$promise
           .then(function () {
-            $scope.state.setDirty(false);
             AlertBuilder.newBuilder().delay(3000).type('success').trMsg('entity-config.save-alert.data-access-config-success').build();
           }, function (reason) {
             AlertBuilder.newBuilder().response(reason).build();
@@ -230,15 +231,15 @@ mica.dataAccessConfig
         return check.length > 0;
       }
 
-      function startWatchForDirty(fieldName, watchState) {
-        var unwatch = $scope.$watch(fieldName, function(newValue, oldValue){
+      function startWatchForDirty(fieldName, formState) {
+        const watchState = {firstTime: true};
+        const unwatch = $scope.$watch(fieldName, function(newValue, oldValue){
           if (!watchState.firstTime && diff(newValue, oldValue)) {
-            $scope.state.setDirty(true);
+            formState.setDirty(true);
             unwatch();
           }
           watchState.firstTime = false;
         },true);
-
       }
 
       function entitySchemaFormSanitize(SchemaFormEntity){
@@ -250,7 +251,7 @@ mica.dataAccessConfig
         return  SchemaFormEntity;
       }
 
-      function entitySchemaFormaError(response){
+      function entitySchemaFormError(response){
         AlertBuilder.newBuilder().response(response).build();
       }
 
@@ -264,10 +265,9 @@ mica.dataAccessConfig
 
       $scope.config = DataAccessConfigResource.get();
 
-      const refreshDataAccessForms = function() {
+      const refreshDataAccessForms = function(setUpWatch) {
         $scope.form = DataAccessFormResource.get({revision: 'draft'},
           function(dataAccessForm){
-            var watchState = {firstTime: true};
             $scope.dataAccessForm = entitySchemaFormSanitize(dataAccessForm);
             $scope.dataAccessForm.pdfTemplates = $scope.dataAccessForm.pdfTemplates || [];
 
@@ -283,9 +283,10 @@ mica.dataAccessConfig
               AlertBuilder.newBuilder().trMsg('data-access-config.parse-error.definition').build();
             }
 
-            startWatchForDirty('dataAccessForm', watchState);
-            startWatchForDirty('pdfTemplates', watchState);
-          }, entitySchemaFormaError);
+            if (setUpWatch) {
+              startWatchForDirty('dataAccessForm', $scope.formState);
+            }
+          }, entitySchemaFormError);
 
         DataAccessFormResource.get({revision: 'latest'},
           function(dataAccessForm) {
@@ -293,12 +294,11 @@ mica.dataAccessConfig
           }
         );
       };
-      refreshDataAccessForms();
+      refreshDataAccessForms(true);
 
-      const refreshDataAccessFeasibilityForms = function() {
+      const refreshDataAccessFeasibilityForms = function(setUpWatch) {
         $scope.formFeasibility = DataAccessFeasibilityFormResource.get({revision: 'draft'},
           function(feasibilityForm){
-            var watchState = {firstTime: true};
             $scope.feasibilityForm = entitySchemaFormSanitize(feasibilityForm);
 
             if (feasibilityForm.definitionJson.length === 0) {
@@ -308,9 +308,10 @@ mica.dataAccessConfig
               AlertBuilder.newBuilder().trMsg('data-access-config-feasibility.parse-error.definition').build();
             }
 
-            startWatchForDirty('feasibilityForm', watchState);
-
-          }, entitySchemaFormaError);
+            if (setUpWatch) {
+              startWatchForDirty('feasibilityForm', $scope.feasibilityState);
+            }
+          }, entitySchemaFormError);
 
         DataAccessFeasibilityFormResource.get({revision: 'latest'},
           function(feasibilityForm) {
@@ -318,12 +319,11 @@ mica.dataAccessConfig
           }
         );
       };
-      refreshDataAccessFeasibilityForms();
+      refreshDataAccessFeasibilityForms(true);
 
-      const refreshDataAccessAmendmentForms = function() {
+      const refreshDataAccessAmendmentForms = function(setUpWatch) {
         $scope.formAmendment = DataAccessAmendmentFormResource.get({revision: 'draft'},
           function(amendmentForm){
-            var watchState = {firstTime: true};
             $scope.amendmentForm = entitySchemaFormSanitize(amendmentForm);
 
             if (amendmentForm.definitionJson.length === 0) {
@@ -333,9 +333,10 @@ mica.dataAccessConfig
               AlertBuilder.newBuilder().trMsg('data-access-config-amendment.parse-error.definition').build();
             }
 
-            startWatchForDirty('amendmentForm', watchState);
-
-          }, entitySchemaFormaError);
+            if (setUpWatch) {
+              startWatchForDirty('amendmentForm', $scope.amendmentState);
+            }
+          }, entitySchemaFormError);
 
         DataAccessAmendmentFormResource.get({revision: 'latest'},
           function(amendmentForm) {
@@ -343,7 +344,7 @@ mica.dataAccessConfig
           }
         );
       };
-      refreshDataAccessAmendmentForms();
+      refreshDataAccessAmendmentForms(true);
 
       $scope.onUpdateActionKeys = onUpdateActionKeys;
       $scope.loadPermissions = function() {

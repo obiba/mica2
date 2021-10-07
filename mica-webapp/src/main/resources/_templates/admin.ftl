@@ -341,7 +341,6 @@
 <script src="${contextPath}/app/entity-taxonomy-config/entity-taxonomy-config-controller.js"></script>
 <script src="${contextPath}/app/entity-taxonomy-config/entity-taxonomy-config-service.js"></script>
 <script src="${contextPath}/app/entity-taxonomy-config/entity-taxonomy-config-directive.js"></script>
-<script src="${contextPath}/app/access/data-access-request.js"></script>
 <script src="${contextPath}/app/file-system/file-system.js"></script>
 <script src="${contextPath}/app/file-system/file-system-router.js"></script>
 <script src="${contextPath}/app/file-system/file-system-controller.js"></script>
