@@ -25,6 +25,8 @@ import com.google.common.collect.Maps;
 import org.obiba.mica.core.domain.AbstractAttributeModelAware;
 import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.study.date.PersistableYearMonth;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Persistable;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -35,6 +37,7 @@ public class DataCollectionEvent extends AbstractAttributeModelAware
     implements Serializable, Persistable<String>, Comparable<DataCollectionEvent> {
 
   private static final long serialVersionUID = 6559914069652243954L;
+  private static final Logger log = LoggerFactory.getLogger(PersistableYearMonth.class);
 
   private String id;
 
@@ -117,7 +120,12 @@ public class DataCollectionEvent extends AbstractAttributeModelAware
     if (month == null || month == 0) {
       start = PersistableYearMonth.of(year);
     } else {
-      start = PersistableYearMonth.of(year, month, day == null
+      boolean useYearMonth = day == null || year != day.getYear() || month != day.getMonthValue();
+      if (useYearMonth) {
+        log.debug("Using input year/month as Day's year/month are different!");
+      }
+
+      start = PersistableYearMonth.of(year, month, useYearMonth
         ? LocalDate.of(year, month, 1)
         : day
       );
@@ -148,7 +156,11 @@ public class DataCollectionEvent extends AbstractAttributeModelAware
     if (month == null || month == 0) {
       end = PersistableYearMonth.of(year);
     } else {
-      end = PersistableYearMonth.of(year, month, day == null
+      boolean useYearMonth = day == null || year != day.getYear() || month != day.getMonthValue();
+      if (useYearMonth) {
+        log.debug("Using input year/month as Day's year/month are different!");
+      }
+      end = PersistableYearMonth.of(year, month, useYearMonth
         ? LocalDate.of(year, month, YearMonth.of(year, month).lengthOfMonth())
         : day
       );

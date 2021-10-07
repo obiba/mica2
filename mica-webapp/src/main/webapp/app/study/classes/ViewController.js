@@ -310,11 +310,11 @@ mica.study.ViewController = function (
 
   $scope.dayOfMonth = function (dateString) {
     if (dateString) {
-      return ' ' + new Date(`${dateString}T00:00:00`).getDate()
+      return ' ' + new Date(`${dateString}T00:00:00`).getDate();
     }
 
     return '';
-  }
+  };
 
   $scope.$watch('studySummary', function () {
     safeUpdateStudyTimeline($scope.study);
