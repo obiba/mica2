@@ -296,16 +296,25 @@ mica.study
       const date = (dceDate || {});
       const yearMonthField = date.yearMonth;
       const dayField = (date.day || '').length > 0 ? date.day : null;
-      const found = PERSISTABLE_DATE_REGEXP.exec(yearMonthField || '') || dayField !== null;
-      if (found) {
+      let found = PERSISTABLE_DATE_REGEXP.exec(yearMonthField || '');
+      if (found || dayField !== null) {
         const result = {};
-        result.year = parseInt(found[1]);
-        if (found[2]) {
-          result.month = parseInt(found[2]);
+
+        if (found) {
+          result.year = parseInt(found[1]);
+          if (found[2]) {
+            result.month = parseInt(found[2]);
+          }
         }
 
         if (dayField) {
           result.day = dayField;
+          // Validate year and month in case those fields were not restored
+          if (!result.year || !result.month) {
+            found = PERSISTABLE_DATE_REGEXP.exec(result.day);
+            result.year = parseInt(found[1]);
+            result.month = parseInt(found[2]);
+          }
         }
 
         return result;
