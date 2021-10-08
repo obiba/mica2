@@ -12,29 +12,11 @@
             "validationMessage": {
               "uniqueId": "t(global.messages.error.unique-id)"
             }
-          }
-        ]
-      },
-      {
-        "type": "section",
-        "htmlClass": "col-xs-6",
-        "items": [
+          },
           {
             "key": "_name",
             "type": "localizedstring"
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "type": "section",
-    "htmlClass": "row",
-    "items": [
-      {
-        "type": "section",
-        "htmlClass": "col-xs-12",
-        "items": [
+          },
           {
             "key": "_description",
             "type": "obibaSimpleMde",
@@ -42,16 +24,10 @@
             "marked": true
           }
         ]
-      }
-    ]
-  },
-  {
-    "type": "section",
-    "htmlClass": "row",
-    "items": [
+      },
       {
         "type": "section",
-        "htmlClass": "col-xs-4",
+        "htmlClass": "col-xs-3",
         "items": [
           {
             "key": "_startYear",
@@ -65,7 +41,7 @@
       },
       {
         "type": "section",
-        "htmlClass": "col-xs-4",
+        "htmlClass": "col-xs-3",
         "items": [
           {
             "key": "_startMonth",
@@ -74,29 +50,6 @@
           {
             "key": "_endMonth",
             "type": "number"
-          }
-        ]
-      },
-      {
-        "type": "section",
-        "htmlClass": "col-xs-4",
-        "items": [
-          {
-            "key": "_startDay",
-            "dateOptions": {
-              "dateFormat": "yyyy-MM-dd",
-              "yearRef": "_startYear",
-              "monthRef": "_startMonth"
-            }
-          },
-          {
-            "key": "_endDay",
-            "dateOptions": {
-              "dateFormat": "yyyy-MM-dd",
-              "yearRef": "_endYear",
-              "monthRef": "_endMonth",
-              "lastDay": true
-            }
           }
         ]
       }

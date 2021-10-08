@@ -22,11 +22,6 @@
       "minimum": 1,
       "maximum": 12
     },
-    "_startDay": {
-      "title": "t(data-collection-event.start-day)",
-      "type": "string",
-      "format": "ymdatepicker"
-    },
     "_endYear": {
       "title": "t(data-collection-event.end-year)",
       "type": "number",
@@ -38,11 +33,6 @@
       "type": "number",
       "minimum": 1,
       "maximum": 12
-    },
-    "_endDay": {
-      "title": "t(data-collection-event.end-day)",
-      "type": "string",
-      "format": "ymdatepicker"
     },
     "_description": {
       "type": "object",
