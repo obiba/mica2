@@ -245,7 +245,7 @@
 <script src="${contextPath}/bower_components/angular-schema-form-ui-ace/bootstrap-ui-ace.min.js"></script>
 <script src="${contextPath}/bower_components/angular-strap/dist/angular-strap.js"></script>
 <script src="${contextPath}/bower_components/angular-strap/dist/angular-strap.tpl.js"></script>
-<script src="${contextPath}/bower_components/angular-schema-form-datetimepicker/schema-form-date-time-picker.js"></script>
+<script src="${contextPath}/bower_components/angular-schema-form-datetimepicker/schema-form-date-time-picker.min.js"></script>
 <script src="${contextPath}/bower_components/angular-xeditable/dist/js/xeditable.js"></script>
 <script src="${contextPath}/bower_components/angular-media-queries/match-media.js"></script>
 <script src="${contextPath}/bower_components/sf-localized-string/dist/sf-localized-string.min.js"></script>
