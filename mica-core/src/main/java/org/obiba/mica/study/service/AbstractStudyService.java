@@ -234,14 +234,6 @@ public abstract class AbstractStudyService<S extends EntityState, T extends Base
     }
   }
 
-  @Async
-  @Subscribe
-  public void micaConfigUpdated(MicaConfigUpdatedEvent event) {
-    log.info("Mica config updated. Removing roles.");
-    if (!event.getRemovedRoles().isEmpty())
-      findAllDraftStudies().forEach(s -> removeRoles(s, event.getRemovedRoles()));
-  }
-
   protected void ensureAcronym(@NotNull T study) {
     if (study.getAcronym() == null || study.getAcronym().isEmpty()) {
       study.setAcronym(study.getName().asAcronym());

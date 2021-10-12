@@ -382,14 +382,6 @@ public class NetworkService extends AbstractGitPersistableService<NetworkState, 
     return findById(id);
   }
 
-  @Async
-  @Subscribe
-  public void micaConfigUpdated(MicaConfigUpdatedEvent event) {
-    log.info("Mica config updated. Removing deleted roles from networks.");
-    if(!event.getRemovedRoles().isEmpty())
-      findAllNetworks().forEach(s -> removeRoles(s, event.getRemovedRoles()));
-  }
-
   private void removeRoles(@NotNull Network network, Iterable<String> roles) {
     saveInternal(network, String.format("Removed roles: %s", Joiner.on(", ").join(roles)), false);
     NetworkState state = findStateById(network.getId());
