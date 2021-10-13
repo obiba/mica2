@@ -10,6 +10,8 @@
 
 package org.obiba.mica.web.model;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 
 import javax.inject.Inject;
@@ -96,6 +98,9 @@ class PopulationDtos {
       if (startData.getMonth() != 0) {
         builder.setStartMonth(startData.getMonth());
       }
+      if (startData.getDay() != null) {
+        builder.setStartDay(startData.getDay().format(DateTimeFormatter.ISO_DATE));
+      }
     }
 
     if(dce.getEnd() != null) {
@@ -103,6 +108,9 @@ class PopulationDtos {
       builder.setEndYear(endData.getYear());
       if (endData.getMonth() != 0) {
         builder.setEndMonth(endData.getMonth());
+      }
+      if (endData.getDay() != null) {
+        builder.setEndDay(endData.getDay().format(DateTimeFormatter.ISO_DATE));
       }
     }
 
@@ -117,8 +125,19 @@ class PopulationDtos {
     dce.setId(dto.getId());
     if(dto.getNameCount() > 0) dce.setName(localizedStringDtos.fromDto(dto.getNameList()));
     if(dto.getDescriptionCount() > 0) dce.setDescription(localizedStringDtos.fromDto(dto.getDescriptionList()));
-    if(dto.hasStartYear()) dce.setStart(dto.getStartYear(), dto.hasStartMonth() ? dto.getStartMonth() : null);
-    if(dto.hasEndYear()) dce.setEnd(dto.getEndYear(), dto.hasEndMonth() ? dto.getEndMonth() : null);
+    if(dto.hasStartYear()) {
+      dce.setStart(dto.getStartYear(),
+        dto.hasStartMonth() ? dto.getStartMonth() : null,
+        Strings.isNullOrEmpty(dto.getStartDay()) ? null : LocalDate.parse(dto.getStartDay(), DateTimeFormatter.ISO_DATE)
+      );
+    }
+
+    if(dto.hasEndYear()) {
+      dce.setEnd(dto.getEndYear(),
+        dto.hasEndMonth() ? dto.getEndMonth() : null,
+        Strings.isNullOrEmpty(dto.getEndDay()) ? null :  LocalDate.parse(dto.getEndDay(), DateTimeFormatter.ISO_DATE)
+      );
+    }
 
     if(dto.hasContent() && !Strings.isNullOrEmpty(dto.getContent()))
       dce.setModel(JSONUtils.toMap(dto.getContent()));

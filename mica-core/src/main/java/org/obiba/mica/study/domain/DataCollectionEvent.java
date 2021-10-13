@@ -11,7 +11,8 @@
 package org.obiba.mica.study.domain;
 
 import java.io.Serializable;
-import java.time.Month;
+import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -23,21 +24,20 @@ import javax.validation.constraints.NotNull;
 import com.google.common.collect.Maps;
 import org.obiba.mica.core.domain.AbstractAttributeModelAware;
 import org.obiba.mica.core.domain.LocalizedString;
-import org.obiba.mica.file.Attachment;
 import org.obiba.mica.study.date.PersistableYearMonth;
-import org.springframework.data.annotation.Transient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Persistable;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Strings;
 import com.google.common.collect.ComparisonChain;
-import com.google.common.collect.Lists;
 
 public class DataCollectionEvent extends AbstractAttributeModelAware
     implements Serializable, Persistable<String>, Comparable<DataCollectionEvent> {
 
   private static final long serialVersionUID = 6559914069652243954L;
+  private static final Logger log = LoggerFactory.getLogger(PersistableYearMonth.class);
 
   private String id;
 
@@ -109,7 +109,27 @@ public class DataCollectionEvent extends AbstractAttributeModelAware
   }
 
   public void setStart(int year, @Nullable Integer month) {
-    start = (month == null || month == 0) ? PersistableYearMonth.of(year) : PersistableYearMonth.of(year, month);
+    if (month == null || month == 0) {
+      start = PersistableYearMonth.of(year);
+    } else {
+      setStart(year, month, null);
+    }
+  }
+
+  public void setStart(int year, @Nullable Integer month, @Nullable LocalDate day) {
+    if (month == null || month == 0) {
+      start = PersistableYearMonth.of(year);
+    } else {
+      boolean useYearMonth = day == null || year != day.getYear() || month != day.getMonthValue();
+      if (useYearMonth) {
+        log.debug("Using input year/month as Day's year/month are different!");
+      }
+
+      start = PersistableYearMonth.of(year, month, useYearMonth
+        ? LocalDate.of(year, month, 1)
+        : day
+      );
+    }
   }
 
   public boolean hasEnd() {
@@ -125,7 +145,26 @@ public class DataCollectionEvent extends AbstractAttributeModelAware
   }
 
   public void setEnd(int year, @Nullable Integer month) {
-    end = month == null || month == 0 ? PersistableYearMonth.of(year) : PersistableYearMonth.of(year, month);
+    if (month == null || month == 0) {
+      end = PersistableYearMonth.of(year);
+    } else {
+      setEnd(year, month, null);
+    }
+  }
+
+  public void setEnd(int year, @Nullable Integer month, @Nullable LocalDate day) {
+    if (month == null || month == 0) {
+      end = PersistableYearMonth.of(year);
+    } else {
+      boolean useYearMonth = day == null || year != day.getYear() || month != day.getMonthValue();
+      if (useYearMonth) {
+        log.debug("Using input year/month as Day's year/month are different!");
+      }
+      end = PersistableYearMonth.of(year, month, useYearMonth
+        ? LocalDate.of(year, month, YearMonth.of(year, month).lengthOfMonth())
+        : day
+      );
+    }
   }
 
   public List<String> getDataSources() {

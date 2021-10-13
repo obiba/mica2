@@ -10,6 +10,7 @@
 
 package org.obiba.mica.web.model;
 
+import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -27,6 +28,7 @@ import javax.validation.constraints.NotNull;
 
 import org.obiba.mica.JSONUtils;
 import org.obiba.mica.core.domain.EntityState;
+import org.obiba.mica.study.date.PersistableYearMonth;
 import org.obiba.mica.study.domain.BaseStudy;
 import org.obiba.mica.study.domain.DataCollectionEvent;
 import org.obiba.mica.study.domain.HarmonizationStudy;
@@ -244,8 +246,15 @@ class StudySummaryDtos {
 
     if(dce.hasModel()) builder.setContent(JSONUtils.toJSON(dce.getModel()));
 
-    if (dce.hasStart()) builder.setStart(dce.getStart().getYearMonth());
-    if (dce.hasEnd()) builder.setEnd(dce.getEnd().getYearMonth());
+    if (dce.hasStart()) {
+      PersistableYearMonth start = dce.getStart();
+      builder.setStart(start.getDay() != null ? start.getDay().format(DateTimeFormatter.ISO_DATE) : dce.getStart().getYearMonth());
+    }
+
+    if (dce.hasEnd()) {
+      PersistableYearMonth end = dce.getEnd();
+      builder.setEnd(end.getDay() != null ? end.getDay().format(DateTimeFormatter.ISO_DATE) : end.getYearMonth());
+    }
 
     return builder.build();
   }

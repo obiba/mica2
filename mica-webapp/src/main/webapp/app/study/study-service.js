@@ -185,36 +185,47 @@ mica.study
         dce.description = LocalizedValues.objectToArray(dce.model._description);
         dce.startYear = dce.model._startYear;
         dce.startMonth = dce.model._startMonth;
+        dce.startDay = dce.model._startDay;
         dce.endYear = dce.model._endYear;
         dce.endMonth = dce.model._endMonth;
+        dce.endDay = dce.model._endDay;
         delete dce.model._id;
         delete dce.model._name;
         delete dce.model._description;
         delete dce.model._startYear;
         delete dce.model._startMonth;
+        delete dce.model._startDay;
         delete dce.model._endYear;
         delete dce.model._endMonth;
+        delete dce.model._endDay;
       } else {
         dce.name = LocalizedValues.objectToArray(dce.name);
         dce.description = LocalizedValues.objectToArray(dce.description);
-
-        const persistableStartYearMonthData = getPersistableYearMonth((dce.start || {}).yearMonth);
-        const persistableEndYearMonthData = getPersistableYearMonth((dce.end || {}).yearMonth);
+        const persistableStartYearMonthData = getPersistableYearMonth(dce.start);
+        const persistableEndYearMonthData = getPersistableYearMonth(dce.end);
 
         if (persistableStartYearMonthData) {
           dce.startYear = persistableStartYearMonthData.year;
-          if (typeof persistableStartYearMonthData.month === 'number') {
+          if (persistableStartYearMonthData.month && typeof persistableStartYearMonthData.month === 'number') {
             dce.startMonth = persistableStartYearMonthData.month;
+          } else {
+            delete dce.startMonth;
           }
+
+          dce.startDay = persistableStartYearMonthData.day;
 
           delete dce.start;
         }
 
         if (persistableEndYearMonthData) {
           dce.endYear = persistableEndYearMonthData.year;
-          if (typeof persistableStartYearMonthData.month === 'number') {
+          if (persistableEndYearMonthData.month && typeof persistableEndYearMonthData.month === 'number') {
             dce.endMonth = persistableEndYearMonthData.month;
+          } else {
+            delete dce.endMonth;
           }
+
+          dce.endDay = persistableEndYearMonthData.day;
 
           delete dce.end;
         }
@@ -277,8 +288,10 @@ mica.study
         dce.model._description = LocalizedValues.arrayToObject(dce.description);
         dce.model._startYear = dce.startYear;
         dce.model._startMonth = dce.startMonth;
+        dce.model._startDay = dce.startDay;
         dce.model._endYear = dce.endYear;
         dce.model._endMonth = dce.endMonth;
+        dce.model._endDay = dce.endDay;
       } else {
         dce.name = LocalizedValues.arrayToObject(dce.name);
         dce.description = LocalizedValues.arrayToObject(dce.description);
@@ -286,13 +299,29 @@ mica.study
 
     }
 
-    function getPersistableYearMonth(field) {
-      const found = PERSISTABLE_DATE_REGEXP.exec(field || '');
-      if (found) {
+    function getPersistableYearMonth(dceDate) {
+      const date = (dceDate || {});
+      const yearMonthField = date.yearMonth;
+      const dayField = (date.day || '').length > 0 ? date.day : null;
+      let found = PERSISTABLE_DATE_REGEXP.exec(yearMonthField || '');
+      if (found || dayField !== null) {
         const result = {};
-        result.year = parseInt(found[1]);
-        if (found[2]) {
-          result.month = parseInt(found[2]);
+
+        if (found) {
+          result.year = parseInt(found[1]);
+          if (found[2]) {
+            result.month = parseInt(found[2]);
+          }
+        }
+
+        if (dayField) {
+          result.day = dayField;
+          // Validate year and month in case those fields were not restored
+          if (!result.year && !result.month) {
+            found = PERSISTABLE_DATE_REGEXP.exec(result.day);
+            result.year = parseInt(found[1]);
+            result.month = parseInt(found[2]);
+          }
         }
 
         return result;

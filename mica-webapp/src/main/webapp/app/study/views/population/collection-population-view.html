@@ -67,11 +67,11 @@
         </ul>
       </td>
       <td>
-        {{dce.startYear}} <span ng-show="dce.startMonth">({{months[dce.startMonth - 1]}})</span>
+        {{dce.startYear}} <span ng-show="dce.startMonth">({{months[dce.startMonth - 1] + dayOfMonth(dce.startDay)}})</span>
       </td>
       <td>
         <span ng-if="dce.endYear">
-          {{dce.endYear}} <span ng-show="dce.endMonth">({{months[dce.endMonth - 1]}})</span>
+          {{dce.endYear}} <span ng-show="dce.endMonth">({{months[dce.endMonth - 1] + dayOfMonth(dce.endDay)}})</span>
         </span>
 
         <span ng-if="!dce.endYear">

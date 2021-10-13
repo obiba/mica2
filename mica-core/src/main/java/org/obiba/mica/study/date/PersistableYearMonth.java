@@ -10,11 +10,22 @@
 
 package org.obiba.mica.study.date;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+import com.fasterxml.jackson.databind.ser.std.StdSerializer;
+
+import java.io.IOException;
 import java.io.Serializable;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class PersistableYearMonth implements Serializable, Comparable<PersistableYearMonth> {
 
@@ -25,15 +36,24 @@ public class PersistableYearMonth implements Serializable, Comparable<Persistabl
 
   private String yearMonth;
 
+  @JsonDeserialize(using = LocalDateDeserializer.class)
+  @JsonSerialize(using = LocalDateSerializer.class)
+  private LocalDate day;
+
   public interface YearMonthData {
     int getYear();
     int getMonth();
+    LocalDate getDay();
   }
 
   public PersistableYearMonth() {}
 
   public String getYearMonth() {
     return yearMonth;
+  }
+
+  public LocalDate getDay() {
+    return day;
   }
 
   @JsonIgnore
@@ -56,6 +76,15 @@ public class PersistableYearMonth implements Serializable, Comparable<Persistabl
     return instance;
   }
 
+  public static PersistableYearMonth of(int y, int m, LocalDate day) {
+    PersistableYearMonth instance = new PersistableYearMonth();
+    YEAR_VALIDATOR.validate(y);
+    MONTH_VALIDATOR.validate(m);
+    instance.yearMonth = format(y, m);
+    instance.day = day;
+    return instance;
+  }
+
   public static String format(int year, int month) {
     return String.format("%4d-%02d", year, month);
   }
@@ -66,10 +95,10 @@ public class PersistableYearMonth implements Serializable, Comparable<Persistabl
 
   @JsonIgnore
   public YearMonthData getYearMonthData() {
-    return parse(yearMonth);
+    return parse(yearMonth, day);
   }
 
-  public static YearMonthData parse(String text) {
+  public static YearMonthData parse(String text, LocalDate day) {
     Pattern p = Pattern.compile("(\\d{4})-(\\d{1,2})");
     Matcher m = p.matcher(text);
     if (!m.matches()) {
@@ -98,11 +127,50 @@ public class PersistableYearMonth implements Serializable, Comparable<Persistabl
       public int getMonth() {
         return finalMonth;
       }
+
+      @Override
+      public LocalDate getDay() {
+        return day;
+      }
     };
   }
 
   @Override
   public int compareTo(PersistableYearMonth o) {
-    return yearMonth.compareTo(o.yearMonth);
+    int compareValue = yearMonth.compareTo(o.yearMonth);
+    if (compareValue != 0) return compareValue;
+
+    if (day != null && o.day != null) {
+      return day.compareTo(o.day);
+    } else if (day == null) {
+      return 1;
+    }
+
+    return -1;
   }
+
+  private static class LocalDateDeserializer extends StdDeserializer<LocalDate> {
+
+    protected LocalDateDeserializer() {
+      super(LocalDate.class);
+    }
+
+    @Override
+    public LocalDate deserialize(JsonParser parser, DeserializationContext context) throws IOException {
+      return LocalDate.parse(parser.readValueAs(String.class), DateTimeFormatter.ISO_DATE);
+    }
+  }
+
+  private static class LocalDateSerializer extends StdSerializer<LocalDate> {
+
+    public LocalDateSerializer() {
+      super(LocalDate.class);
+    }
+
+    @Override
+    public void serialize(LocalDate value, JsonGenerator generator, SerializerProvider provider) throws IOException {
+      generator.writeString(value.format(DateTimeFormatter.ISO_DATE));
+    }
+  }
+
 }

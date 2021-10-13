@@ -79,8 +79,8 @@
     "refresh": "Rafraîchir",
     "messages": {
       "error": {
-          "unique-id": "L'ID doit être unique.",
-          "invalid-id": "L'ID ne doit pas contenir de caractères spéciaux, utiliser des caractères alpha-numériques."
+        "unique-id": "L'ID doit être unique.",
+        "invalid-id": "L'ID ne doit pas contenir de caractères spéciaux, utiliser des caractères alpha-numériques."
       }
     }
   },
@@ -648,13 +648,13 @@
       "success": "Les études sélectionnées ont été soumises pour importation: ",
       "status-ok": "Etudes importées avec succès.",
       "problems" : {
-	      "problem-204": "L'image du logo ne peut pas être récupérée.",
-	      "problem-400": "L'adresse http pour récupérer le contenu n'est pas valide.",
-	      "problem-401": "L'utilisateur et / ou le mot de passe ne sont pas valides.",
-	      "problem-404": "L'hôte distant est introuvable.",
-	      "problem-408": "Le réseau est inaccessible.",
-	      "problem-500": "Erreur de serveur inattendue. Veuillez consulter le journal pour plus de détails.",
-	      "problem-503": "L'hôte distant n'est pas accessible."
+        "problem-204": "L'image du logo ne peut pas être récupérée.",
+        "problem-400": "L'adresse http pour récupérer le contenu n'est pas valide.",
+        "problem-401": "L'utilisateur et / ou le mot de passe ne sont pas valides.",
+        "problem-404": "L'hôte distant est introuvable.",
+        "problem-408": "Le réseau est inaccessible.",
+        "problem-500": "Erreur de serveur inattendue. Veuillez consulter le journal pour plus de détails.",
+        "problem-503": "L'hôte distant n'est pas accessible."
       }
     },
     "export": "Export CSV",
@@ -835,6 +835,10 @@
       "institution": "Trouver une institution existante",
       "institution-placeholder": "Recherche par nom d'institution..."
     },
+    "duplicate": {
+      "name-email": "Le nom '{{arg0}}' et l'email '{{arg1}}' sont déjà utilisés!",
+      "name": "Le nom '{{arg0}}' est déjà utilisé!"
+    },
     "identification": "Identification",
     "title": "Titre",
     "firstName": "Prénom",
@@ -996,8 +1000,10 @@
     "description": "Description",
     "start-year": "Année de début",
     "start-month": "Mois de début",
+    "start-day": "Jour de début",
     "end-year": "Année de fin",
     "end-month": "Mois de fin",
+    "end-day": "Jour de fin",
     "data-sources": "Sources de données",
     "other-data-sources": "Autres sources de données",
     "bio-samples": "Échantillons biologiques",
@@ -1533,13 +1539,13 @@
           "delete-conflict-message": "Conflits lors de suppression de réseau. Supprimez toutes les références vers les réseaux suivants: {{arg0}}."
         }
       },
+      "document-comment": "Un commentaire est requis lors de la sauvegarde du document.",
       "taxonomy": {
         "name-not-found": "La taxonomie ayant le nom '{{arg0}}' est introuvable.",
         "range-criterion-missing-terms": "Le critère '{{arg0}} doit avoir des termes pour définir ses intervalles de portée.",
         "range-criterion-missing-range-attribute": "Le critère '{{arg0}}' avec des termes doit être marqué comme ayant des intervalles de portée.",
         "duplicate-criterion-alias": "Le champ '{{arg0}}' a déjà un critère associé. Seul un champ numérique peut avoir deux critères, un critère discret et un critère de portée."
       },
-      "document-comment": "Un commentaire est requis lors de la sauvegarde du document.",
       "data-access-amendment": {
         "not-enabled": "Les opérations d'amendement d'accès aux données sont désactivées. Contactez votre administrateur pour activer cette fonctionnalité."
       }
