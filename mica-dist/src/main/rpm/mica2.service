@@ -2,6 +2,8 @@
 
 [Unit]
 Description=OBiBa Mica service
+# Wait for network
+After=network-online.target
 
 [Service]
 WorkingDirectory=/var/lib/mica2
@@ -13,4 +15,4 @@ StandardError=file:/var/log/mica2/stderr.log
 ExecStart=/usr/share/mica2/bin/start.sh
 
 [Install]
-WantedBy=network-online.target
+WantedBy=multi-user.target
