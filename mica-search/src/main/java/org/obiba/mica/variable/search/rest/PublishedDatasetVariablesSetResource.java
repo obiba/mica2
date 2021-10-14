@@ -61,6 +61,11 @@ public class PublishedDatasetVariablesSetResource extends AbstractPublishedDocum
     return variableSetService;
   }
 
+  @Override
+  protected boolean isCartEnabled(MicaConfig config) {
+    return config.isCartEnabled();
+  }
+
   @GET
   public Mica.DocumentSetDto get(@PathParam("id") String id) {
     return getDocumentSet(id);
@@ -149,20 +154,6 @@ public class PublishedDatasetVariablesSetResource extends AbstractPublishedDocum
   @Path("/document/{documentId}/_exists")
   public Response hasVariable(@PathParam("id") String id, @PathParam("documentId") String documentId) {
     return hasDocument(id, documentId) ? Response.ok().build() : Response.status(Response.Status.NOT_FOUND).build();
-  }
-
-  //
-  // Protected methods
-  //
-
-  protected DocumentSet getSecuredDocumentSet(String id) {
-    DocumentSet documentSet = super.getSecuredDocumentSet(id);
-    MicaConfig config = micaConfigService.getConfig();
-    if (!config.isCartEnabled() && !documentSet.hasName()) throw new AuthorizationException(); // cart
-    if (config.isCartEnabled() && !config.isAnonymousCanCreateCart() && !subjectAclService.hasMicaRole() && !documentSet.hasName())
-      throw new AuthorizationException(); // cart
-    if (documentSet.hasName() && !subjectAclService.hasMicaRole()) throw new AuthorizationException();
-    return documentSet;
   }
 
 }

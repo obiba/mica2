@@ -5,6 +5,7 @@ import com.google.common.collect.Lists;
 import org.apache.shiro.authz.AuthorizationException;
 import org.obiba.mica.core.domain.DocumentSet;
 import org.obiba.mica.core.service.DocumentSetService;
+import org.obiba.mica.micaConfig.domain.MicaConfig;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.search.JoinQueryExecutor;
 import org.obiba.mica.security.service.SubjectAclService;
@@ -41,6 +42,8 @@ public abstract class AbstractPublishedDocumentsSetResource<T extends DocumentSe
   }
 
   protected abstract T getDocumentSetService();
+
+  protected abstract boolean isCartEnabled(MicaConfig config);
 
   protected Mica.DocumentSetDto getDocumentSet(String id) {
     DocumentSet documentSet = getSecuredDocumentSet(id);
@@ -98,6 +101,11 @@ public abstract class AbstractPublishedDocumentsSetResource<T extends DocumentSe
     DocumentSet documentSet = getDocumentSetService().get(id);
     if (!subjectAclService.isCurrentUser(documentSet.getUsername()) && !subjectAclService.isAdministrator() && !subjectAclService.isDataAccessOfficer())
       throw new AuthorizationException();
+    boolean enabled = isCartEnabled(micaConfigService.getConfig());
+    if (!enabled && !documentSet.hasName()) throw new AuthorizationException(); // cart
+    if (enabled && !subjectAclService.hasMicaRole() && !documentSet.hasName())
+      throw new AuthorizationException(); // cart
+    if (documentSet.hasName() && !subjectAclService.hasMicaRole()) throw new AuthorizationException();
     return documentSet;
   }
 

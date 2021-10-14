@@ -149,6 +149,10 @@ public class MicaConfig extends AbstractAuditableDocument {
 
   private boolean cartEnabled = true;
 
+  private boolean studiesCartEnabled = false;
+
+  private boolean networksCartEnabled = false;
+
   private int cartTimeToLive = 30; // 1 month
 
   private int setTimeToLive = 365; // year
@@ -575,20 +579,28 @@ public class MicaConfig extends AbstractAuditableDocument {
     this.maxItemsPerSet = maxItemsPerSet;
   }
 
-  public boolean isAnonymousCanCreateCart() {
-    return anonymousCanCreateCart;
-  }
-
-  public void setAnonymousCanCreateCart(boolean anonymousCanCreateCart) {
-    this.anonymousCanCreateCart = anonymousCanCreateCart;
-  }
-
   public boolean isCartEnabled() {
     return cartEnabled;
   }
 
   public void setCartEnabled(boolean cartEnabled) {
     this.cartEnabled = cartEnabled;
+  }
+
+  public boolean isStudiesCartEnabled() {
+    return studiesCartEnabled;
+  }
+
+  public void setStudiesCartEnabled(boolean studiesCartEnabled) {
+    this.studiesCartEnabled = studiesCartEnabled;
+  }
+
+  public boolean isNetworksCartEnabled() {
+    return networksCartEnabled;
+  }
+
+  public void setNetworksCartEnabled(boolean networksCartEnabled) {
+    this.networksCartEnabled = networksCartEnabled;
   }
 
   public int getCartTimeToLive() {

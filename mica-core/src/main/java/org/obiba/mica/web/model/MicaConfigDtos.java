@@ -157,10 +157,11 @@ class MicaConfigDtos {
     builder.addAllAvailableLayoutOptions(Arrays.asList(MicaConfig.LAYOUT_OPTIONS));
     builder.setSearchLayout(config.getSearchLayout());
 
-    builder.setAnonymousCanCreateCart(config.isAnonymousCanCreateCart());
     builder.setMaxItemsPerSet(config.getMaxItemsPerSet());
     builder.setMaxNumberOfSets(config.getMaxNumberOfSets());
     builder.setIsCartEnabled(config.isCartEnabled());
+    builder.setIsStudiesCartEnabled(config.isStudiesCartEnabled());
+    builder.setIsNetworksCartEnabled(config.isNetworksCartEnabled());
     builder.setSetTimeToLive(config.getSetTimeToLive());
     builder.setCartTimeToLive(config.getCartTimeToLive());
     builder.setIsContingencyEnabled(config.isContingencyEnabled());
@@ -169,7 +170,7 @@ class MicaConfigDtos {
     builder.setOpalViewsGrouping(config.getOpalViewsGrouping().name());
 
     if (!subjectAclService.hasMicaRole()) {
-      builder.setCurrentUserCanCreateCart(config.isCartEnabled() && config.isAnonymousCanCreateCart());
+      builder.setCurrentUserCanCreateCart(false);
       builder.setCurrentUserCanCreateSets(false);
     } else {
       builder.setCurrentUserCanCreateCart(config.isCartEnabled());
@@ -244,9 +245,9 @@ class MicaConfigDtos {
     config.setSignupWithPassword(dto.getSignupWithPassword());
     config.setSignupGroups(dto.getSignupGroupsList());
 
-    boolean cartEnabled = dto.getIsCartEnabled();
-    config.setCartEnabled(cartEnabled);
-    config.setAnonymousCanCreateCart(cartEnabled && dto.getAnonymousCanCreateCart());
+    config.setCartEnabled(dto.getIsCartEnabled());
+    config.setStudiesCartEnabled(dto.getIsStudiesCartEnabled());
+    config.setNetworksCartEnabled(dto.getIsNetworksCartEnabled());
     config.setSetsAnalysisEnabled(dto.getIsSetsAnalysisEnabled());
     config.setContingencyEnabled(dto.getIsContingencyEnabled());
     config.setSetsSearchEnabled(dto.getIsSetsSearchEnabled());

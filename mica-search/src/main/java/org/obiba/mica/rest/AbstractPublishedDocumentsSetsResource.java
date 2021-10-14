@@ -44,9 +44,10 @@ public abstract class AbstractPublishedDocumentsSetsResource<T extends DocumentS
 
   protected abstract T getDocumentSetService();
 
+  protected abstract boolean isCartEnabled(MicaConfig config);
+
   protected List<Mica.DocumentSetDto> listDocumentsSets(List<String> ids) {
     if (!subjectAclService.hasMicaRole()) throw new AuthorizationException();
-
     if (ids.isEmpty())
       return getDocumentSetService().getAllCurrentUser().stream().map(dtos::asDto).collect(Collectors.toList());
     else
@@ -84,9 +85,10 @@ public abstract class AbstractPublishedDocumentsSetsResource<T extends DocumentS
   //
 
   private void ensureUserIsAuthorized(String name) {
-    MicaConfig config = micaConfigService.getConfig();
-    if (!config.isCartEnabled() && Strings.isNullOrEmpty(name)) throw new AuthorizationException(); // cart
-    if (config.isCartEnabled() && !config.isAnonymousCanCreateCart() && !subjectAclService.hasMicaRole() && Strings.isNullOrEmpty(name)) throw new AuthorizationException(); // cart
+    boolean enabled = isCartEnabled(micaConfigService.getConfig());
+    if (!enabled && Strings.isNullOrEmpty(name)) throw new AuthorizationException(); // cart
+    if (enabled && !subjectAclService.hasMicaRole() && Strings.isNullOrEmpty(name))
+      throw new AuthorizationException(); // cart
     if (!Strings.isNullOrEmpty(name) && !subjectAclService.hasMicaRole()) throw new AuthorizationException();
   }
 
@@ -96,7 +98,6 @@ public abstract class AbstractPublishedDocumentsSetsResource<T extends DocumentS
 
   private void checkSetsNumberLimit() {
     long maxNumberOfSets = micaConfigService.getConfig().getMaxNumberOfSets();
-
     if (numberOfNamedSets() >= maxNumberOfSets)
       throw MaximumDocumentSetCreationExceededException.because(maxNumberOfSets, getDocumentSetService().getType());
   }

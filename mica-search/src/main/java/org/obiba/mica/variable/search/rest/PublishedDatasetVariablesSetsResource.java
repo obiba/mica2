@@ -18,6 +18,7 @@ import org.obiba.mica.core.domain.DocumentSet;
 import org.obiba.mica.core.domain.SetOperation;
 import org.obiba.mica.dataset.service.VariableSetOperationService;
 import org.obiba.mica.dataset.service.VariableSetService;
+import org.obiba.mica.micaConfig.domain.MicaConfig;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.rest.AbstractPublishedDocumentsSetsResource;
 import org.obiba.mica.security.service.SubjectAclService;
@@ -59,6 +60,11 @@ public class PublishedDatasetVariablesSetsResource extends AbstractPublishedDocu
   @Override
   protected VariableSetService getDocumentSetService() {
     return variableSetService;
+  }
+
+  @Override
+  protected boolean isCartEnabled(MicaConfig config) {
+    return config.isCartEnabled();
   }
 
   @GET

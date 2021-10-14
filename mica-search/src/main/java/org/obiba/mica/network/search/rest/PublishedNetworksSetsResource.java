@@ -1,6 +1,7 @@
 package org.obiba.mica.network.search.rest;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
+import org.obiba.mica.micaConfig.domain.MicaConfig;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.network.service.NetworkSetService;
 import org.obiba.mica.rest.AbstractPublishedDocumentsSetsResource;
@@ -38,6 +39,11 @@ public class PublishedNetworksSetsResource extends AbstractPublishedDocumentsSet
   @Override
   protected NetworkSetService getDocumentSetService() {
     return networkSetService;
+  }
+
+  @Override
+  protected boolean isCartEnabled(MicaConfig config) {
+    return config.isNetworksCartEnabled();
   }
 
   @GET

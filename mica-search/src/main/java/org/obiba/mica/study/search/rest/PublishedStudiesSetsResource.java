@@ -1,6 +1,7 @@
 package org.obiba.mica.study.search.rest;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
+import org.obiba.mica.micaConfig.domain.MicaConfig;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.rest.AbstractPublishedDocumentsSetsResource;
 import org.obiba.mica.security.service.SubjectAclService;
@@ -38,6 +39,11 @@ public class PublishedStudiesSetsResource extends AbstractPublishedDocumentsSets
   @Override
   protected StudySetService getDocumentSetService() {
     return studySetService;
+  }
+
+  @Override
+  protected boolean isCartEnabled(MicaConfig config) {
+    return config.isStudiesCartEnabled();
   }
 
   @GET

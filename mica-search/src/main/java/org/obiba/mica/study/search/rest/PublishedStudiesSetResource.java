@@ -1,6 +1,5 @@
 package org.obiba.mica.study.search.rest;
 
-import org.apache.shiro.authz.AuthorizationException;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.core.domain.DocumentSet;
 import org.obiba.mica.micaConfig.domain.MicaConfig;
@@ -42,6 +41,11 @@ public class PublishedStudiesSetResource extends AbstractPublishedDocumentsSetRe
   @Override
   protected StudySetService getDocumentSetService() {
     return studySetService;
+  }
+
+  @Override
+  protected boolean isCartEnabled(MicaConfig config) {
+    return config.isStudiesCartEnabled();
   }
 
   @GET
@@ -107,22 +111,6 @@ public class PublishedStudiesSetResource extends AbstractPublishedDocumentsSetRe
   @Path("/document/{documentId}/_exists")
   public Response hasStudy(@PathParam("id") String id, @PathParam("documentId") String documentId) {
     return hasDocument(id, documentId) ? Response.ok().build() : Response.status(Response.Status.NOT_FOUND).build();
-  }
-
-  //
-  // Protected methods
-  //
-
-  // TODO check cart of studies is enabled
-  protected DocumentSet getSecuredDocumentSet(String id) {
-    DocumentSet documentSet = super.getSecuredDocumentSet(id);
-    MicaConfig config = micaConfigService.getConfig();
-    if (!config.isCartEnabled() && !documentSet.hasName()) throw new AuthorizationException(); // cart
-    if (config.isCartEnabled() && !config.isAnonymousCanCreateCart() && !subjectAclService.hasMicaRole() && !documentSet.hasName())
-      throw new AuthorizationException(); // cart
-    if (documentSet.hasName() && !subjectAclService.hasMicaRole()) throw new AuthorizationException();
-
-    return documentSet;
   }
 
 }
