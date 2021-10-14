@@ -1,20 +1,17 @@
 package org.obiba.mica.search.aggregations;
 
-import java.util.Map;
-import javax.inject.Inject;
 import org.obiba.mica.micaConfig.service.helper.AggregationMetaDataProvider;
 import org.obiba.mica.micaConfig.service.helper.SetsAggregationMetaDataHelper;
-import org.springframework.stereotype.Component;
 
-@Component
-public class SetsAggregationMetaDataProvider implements AggregationMetaDataProvider {
+import java.util.Map;
+
+abstract class SetsAggregationMetaDataProvider implements AggregationMetaDataProvider {
 
   private static final String AGGREGATION_NAME = "sets";
 
-  private SetsAggregationMetaDataHelper helper;
+  private final SetsAggregationMetaDataHelper helper;
 
-  @Inject
-  public SetsAggregationMetaDataProvider(SetsAggregationMetaDataHelper helper) {
+  protected SetsAggregationMetaDataProvider(SetsAggregationMetaDataHelper helper) {
     this.helper = helper;
   }
 

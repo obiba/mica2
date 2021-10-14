@@ -20,6 +20,7 @@ import java.util.Set;
 import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
 
+import com.google.common.collect.Sets;
 import org.hibernate.validator.constraints.URL;
 import org.obiba.mica.core.domain.AbstractModelAware;
 import org.obiba.mica.core.domain.Attribute;
@@ -88,6 +89,8 @@ public class Network extends AbstractModelAware implements AttributeAware, Perso
   @URL
   private String opal;
 
+  private Set<String> sets;
+
   //
   // Accessors
   //
@@ -106,6 +109,31 @@ public class Network extends AbstractModelAware implements AttributeAware, Perso
 
   public void setAcronym(LocalizedString acronym) {
     this.acronym = acronym;
+  }
+
+  public Set<String> getSets() {
+    return sets;
+  }
+
+  public void setSets(Set<String> sets) {
+    this.sets = sets;
+  }
+
+  public void addSet(String id) {
+    if (sets == null) {
+      sets = Sets.newLinkedHashSet();
+    }
+    sets.add(id);
+  }
+
+  public void removeSet(String id) {
+    if (sets == null) return;
+    sets.remove(id);
+  }
+
+  public boolean containsSet(String id) {
+    if (sets == null) return false;
+    return sets.contains(id);
   }
 
   public Map<String, List<String>> getMembershipSortOrder() {

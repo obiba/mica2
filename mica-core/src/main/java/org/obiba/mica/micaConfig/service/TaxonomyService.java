@@ -39,21 +39,25 @@ import com.google.common.eventbus.Subscribe;
 @Service
 public class TaxonomyService {
 
-  private OpalService opalService;
+  private final OpalService opalService;
 
-  private MicaConfigService micaConfigService;
+  private final MicaConfigService micaConfigService;
 
-  private StudyIdAggregationMetaDataHelper studyHelper;
+  private final StudyIdAggregationMetaDataHelper studyHelper;
 
-  private DatasetIdAggregationMetaDataHelper datasetHelper;
+  private final DatasetIdAggregationMetaDataHelper datasetHelper;
 
-  private NetworkIdAggregationMetaDataHelper networkHelper;
+  private final NetworkIdAggregationMetaDataHelper networkHelper;
 
-  private PopulationIdAggregationMetaDataHelper populationHelper;
+  private final PopulationIdAggregationMetaDataHelper populationHelper;
 
-  private DceIdAggregationMetaDataHelper dceHelper;
+  private final DceIdAggregationMetaDataHelper dceHelper;
 
-  private SetsAggregationMetaDataHelper setsHelper;
+  private final NetworksSetsAggregationMetaDataHelper networksSetsAggregationMetaDataHelper;
+
+  private final StudiesSetsAggregationMetaDataHelper studiesSetsHelper;
+
+  private final VariablesSetsAggregationMetaDataHelper variablesSetsHelper;
 
   private Taxonomy taxonomyTaxonomy;
 
@@ -74,7 +78,9 @@ public class TaxonomyService {
     NetworkIdAggregationMetaDataHelper networkHelper,
     PopulationIdAggregationMetaDataHelper populationHelper,
     DceIdAggregationMetaDataHelper dceHelper,
-    SetsAggregationMetaDataHelper setsHelper) {
+    NetworksSetsAggregationMetaDataHelper networksSetsAggregationMetaDataHelper,
+    StudiesSetsAggregationMetaDataHelper studiesSetsHelper,
+    VariablesSetsAggregationMetaDataHelper variablesSetsHelper) {
     this.opalService = opalService;
     this.micaConfigService = micaConfigService;
     this.studyHelper = studyHelper;
@@ -82,7 +88,9 @@ public class TaxonomyService {
     this.networkHelper = networkHelper;
     this.populationHelper = populationHelper;
     this.dceHelper = dceHelper;
-    this.setsHelper = setsHelper;
+    this.networksSetsAggregationMetaDataHelper = networksSetsAggregationMetaDataHelper;
+    this.studiesSetsHelper = studiesSetsHelper;
+    this.variablesSetsHelper = variablesSetsHelper;
   }
 
   @NotNull
@@ -180,6 +188,7 @@ public class TaxonomyService {
     if(networkTaxonomy != null) return;
     networkTaxonomy = copy(micaConfigService.getNetworkTaxonomy());
     networkHelper.applyIdTerms(networkTaxonomy, "id");
+    networkHelper.applyIdTerms(networkTaxonomy, "sets");
     studyHelper.applyIdTerms(networkTaxonomy, "studyIds");
   }
 
@@ -187,6 +196,7 @@ public class TaxonomyService {
     if(studyTaxonomy != null) return;
     studyTaxonomy = copy(micaConfigService.getStudyTaxonomy());
     studyHelper.applyIdTerms(studyTaxonomy, "id");
+    studiesSetsHelper.applyIdTerms(studyTaxonomy, "sets");
   }
 
   private void initializeDatasetTaxonomy() {
@@ -202,7 +212,7 @@ public class TaxonomyService {
     datasetHelper.applyIdTerms(variableTaxonomy, "datasetId");
     populationHelper.applyIdTerms(variableTaxonomy, "populationId");
     dceHelper.applyIdTerms(variableTaxonomy, "dceId");
-    setsHelper.applyIdTerms(variableTaxonomy, "sets");
+    variablesSetsHelper.applyIdTerms(variableTaxonomy, "sets");
   }
 
   private Taxonomy copy(Taxonomy source) {

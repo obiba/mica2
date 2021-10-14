@@ -11,23 +11,19 @@
 package org.obiba.mica.variable.search.rest;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import java.io.BufferedOutputStream;
-import java.util.Collection;
 import org.apache.shiro.authz.AuthorizationException;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.core.domain.DocumentSet;
 import org.obiba.mica.dataset.service.VariableSetService;
 import org.obiba.mica.micaConfig.domain.MicaConfig;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
+import org.obiba.mica.rest.AbstractPublishedDocumentsSetResource;
 import org.obiba.mica.search.JoinQueryExecutor;
 import org.obiba.mica.security.service.SubjectAclService;
-import org.obiba.mica.spi.search.QueryType;
 import org.obiba.mica.spi.search.Searcher;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
-import org.obiba.mica.web.model.MicaSearch;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -36,27 +32,17 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
+import java.io.BufferedOutputStream;
 import java.io.IOException;
-import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
 @Path("/variables/set/{id}")
 @Scope("request")
 @RequiresAuthentication
-public class PublishedDatasetVariablesSetResource {
+public class PublishedDatasetVariablesSetResource extends AbstractPublishedDocumentsSetResource<VariableSetService> {
 
   private final VariableSetService variableSetService;
-
-  private final JoinQueryExecutor joinQueryExecutor;
-
-  private final MicaConfigService micaConfigService;
-
-  private final SubjectAclService subjectAclService;
-
-  private final Searcher searcher;
-
-  private final Dtos dtos;
 
   @Inject
   public PublishedDatasetVariablesSetResource(
@@ -66,24 +52,23 @@ public class PublishedDatasetVariablesSetResource {
     Dtos dtos,
     MicaConfigService micaConfigService,
     SubjectAclService subjectAclService) {
+    super(joinQueryExecutor, micaConfigService, subjectAclService, searcher, dtos);
     this.variableSetService = variableSetService;
-    this.joinQueryExecutor = joinQueryExecutor;
-    this.micaConfigService = micaConfigService;
-    this.subjectAclService = subjectAclService;
-    this.searcher = searcher;
-    this.dtos = dtos;
+  }
+
+  @Override
+  protected VariableSetService getDocumentSetService() {
+    return variableSetService;
   }
 
   @GET
   public Mica.DocumentSetDto get(@PathParam("id") String id) {
-    DocumentSet documentSet = getSecuredDocumentSet(id);
-    variableSetService.touch(documentSet);
-    return dtos.asDto(documentSet);
+    return getDocumentSet(id);
   }
 
   @DELETE
   public Response delete(@PathParam("id") String id) {
-    variableSetService.delete(getSecuredDocumentSet(id));
+    deleteDocumentSet(id);
     return Response.ok().build();
   }
 
@@ -100,13 +85,24 @@ public class PublishedDatasetVariablesSetResource {
         .map(dtos::asDto).collect(Collectors.toList())).build();
   }
 
+  @POST
+  @Path("/documents/_import")
+  @Consumes(MediaType.TEXT_PLAIN)
+  public Response importVariables(@PathParam("id") String id, String body) {
+    return Response.ok().entity(importDocuments(id, body)).build();
+  }
+
+  @POST
+  @Path("/documents/_rql")
+  public Response importQueryVariables(@PathParam("id") String id, @FormParam("query") String query) throws IOException {
+    return Response.ok().entity(importQueryDocuments(id, query)).build();
+  }
+
   @GET
   @Path("/documents/_export")
   @Produces(MediaType.TEXT_PLAIN)
   public Response exportVariables(@PathParam("id") String id) {
-    DocumentSet documentSet = getSecuredDocumentSet(id);
-    variableSetService.touch(documentSet);
-    return Response.ok(toStream(documentSet.getIdentifiers()))
+    return Response.ok(exportDocuments(id))
       .header("Content-Disposition", String.format("attachment; filename=\"%s-variables.txt\"", id)).build();
   }
 
@@ -115,7 +111,8 @@ public class PublishedDatasetVariablesSetResource {
   @Produces(MediaType.APPLICATION_OCTET_STREAM)
   public Response createOpalViewsGet(@PathParam("id") String id, @QueryParam("ids") String identifiers) {
     DocumentSet set = getSecuredDocumentSet(id);
-    if (!subjectAclService.isAdministrator() && !subjectAclService.isDataAccessOfficer()) throw new AuthorizationException();
+    if (!subjectAclService.isAdministrator() && !subjectAclService.isDataAccessOfficer())
+      throw new AuthorizationException();
     StreamingOutput streamingOutput;
 
     if (!Strings.isNullOrEmpty(identifiers)) {
@@ -138,74 +135,34 @@ public class PublishedDatasetVariablesSetResource {
   @Path("/documents/_delete")
   @Consumes(MediaType.TEXT_PLAIN)
   public Response deleteVariables(@PathParam("id") String id, String body) {
-    DocumentSet set = getSecuredDocumentSet(id);
-    if (Strings.isNullOrEmpty(body)) return Response.ok().entity(dtos.asDto(set)).build();
-    variableSetService.removeIdentifiers(id, variableSetService.extractIdentifiers(body));
-    return Response.ok().entity(dtos.asDto(variableSetService.get(id))).build();
-  }
-
-  @POST
-  @Path("/documents/_import")
-  @Consumes(MediaType.TEXT_PLAIN)
-  public Response importVariables(@PathParam("id") String id, String body) {
-    DocumentSet set = getSecuredDocumentSet(id);
-    if (Strings.isNullOrEmpty(body)) return Response.ok().entity(dtos.asDto(set)).build();
-    variableSetService.addIdentifiers(id, variableSetService.extractIdentifiers(body));
-    return Response.ok().entity(dtos.asDto(variableSetService.get(id))).build();
-  }
-
-  @POST
-  @Path("/documents/_rql")
-  public Response importQueryVariables(@PathParam("id") String id, @FormParam("query") String query) throws IOException {
-    DocumentSet set = getSecuredDocumentSet(id);
-    if (Strings.isNullOrEmpty(query)) return Response.ok().entity(dtos.asDto(set)).build();
-    MicaSearch.JoinQueryResultDto result = joinQueryExecutor.query(QueryType.VARIABLE, searcher.makeJoinQuery(query));
-    if (result.hasVariableResultDto() && result.getVariableResultDto().getTotalHits() > 0) {
-      List<String> ids = result.getVariableResultDto().getExtension(MicaSearch.DatasetVariableResultDto.result).getSummariesList().stream()
-        .map(Mica.DatasetVariableResolverDto::getId).collect(Collectors.toList());
-      variableSetService.addIdentifiers(id, ids);
-      set = getSecuredDocumentSet(id);
-    }
-    return Response.ok().entity(dtos.asDto(set)).build();
+    return Response.ok().entity(deleteDocuments(id, body)).build();
   }
 
   @DELETE
   @Path("/documents")
   public Response deleteVariables(@PathParam("id") String id) {
-    variableSetService.setIdentifiers(id, Lists.newArrayList());
+    deleteDocuments(id);
     return Response.ok().build();
   }
 
   @GET
   @Path("/document/{documentId}/_exists")
   public Response hasVariable(@PathParam("id") String id, @PathParam("documentId") String documentId) {
-    DocumentSet set = getSecuredDocumentSet(id);
-    return set.getIdentifiers().contains(documentId) ? Response.ok().build() : Response.status(Response.Status.NOT_FOUND).build();
+    return hasDocument(id, documentId) ? Response.ok().build() : Response.status(Response.Status.NOT_FOUND).build();
   }
 
-  private DocumentSet getSecuredDocumentSet(String id) {
-    DocumentSet documentSet = variableSetService.get(id);
-    if (!subjectAclService.isCurrentUser(documentSet.getUsername()) && !subjectAclService.isAdministrator() && !subjectAclService.isDataAccessOfficer()) throw new AuthorizationException();
+  //
+  // Protected methods
+  //
 
+  protected DocumentSet getSecuredDocumentSet(String id) {
+    DocumentSet documentSet = super.getSecuredDocumentSet(id);
     MicaConfig config = micaConfigService.getConfig();
     if (!config.isCartEnabled() && !documentSet.hasName()) throw new AuthorizationException(); // cart
-    if (config.isCartEnabled() && !config.isAnonymousCanCreateCart() && !subjectAclService.hasMicaRole() && !documentSet.hasName()) throw new AuthorizationException(); // cart
+    if (config.isCartEnabled() && !config.isAnonymousCanCreateCart() && !subjectAclService.hasMicaRole() && !documentSet.hasName())
+      throw new AuthorizationException(); // cart
     if (documentSet.hasName() && !subjectAclService.hasMicaRole()) throw new AuthorizationException();
-
     return documentSet;
-  }
-
-  private StreamingOutput toStream(Collection<String> items) {
-    return os -> {
-      items.forEach(item -> {
-        try {
-          os.write((item + "\n").getBytes());
-        } catch (IOException e) {
-          //
-        }
-      });
-      os.flush();
-    };
   }
 
 }

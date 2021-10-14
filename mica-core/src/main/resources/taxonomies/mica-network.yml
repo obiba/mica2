@@ -104,3 +104,14 @@
     "alias": "memberships-contact-person-institution-name"
     "static": "true"
     "localized": "true"
+- "name": "sets"
+  "title":
+    "en": "Sets"
+    "fr": "Ensembles"
+  "description":
+    "en": "Sets in which the network appears."
+    "fr": "Ensembles dans lesquels est définie le réseau."
+  "attributes":
+    "static": "true"
+    "hidden": "true"
+    "type": "keyword"

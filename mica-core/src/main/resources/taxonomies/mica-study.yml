@@ -2361,3 +2361,14 @@
     "field": "model.harmonizationDesign"
     "alias": "model-harmonizationDesign"
     "localized": "true"
+- "name": "sets"
+  "title":
+    "en": "Sets"
+    "fr": "Ensembles"
+  "description":
+    "en": "Sets in which the study appears."
+    "fr": "Ensembles dans lesquels est définie l'étude."
+  "attributes":
+    "static": "true"
+    "hidden": "true"
+    "type": "keyword"

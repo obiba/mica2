@@ -12,13 +12,14 @@ package org.obiba.mica.search.queries;
 
 import com.google.common.collect.Lists;
 import org.obiba.mica.micaConfig.service.helper.AggregationMetaDataProvider;
+import org.obiba.mica.search.aggregations.StudiesSetsAggregationMetaDataProvider;
 import org.obiba.mica.search.aggregations.StudyTaxonomyMetaDataProvider;
 import org.obiba.mica.spi.search.*;
 import org.obiba.mica.study.domain.BaseStudy;
 import org.obiba.mica.study.domain.HarmonizationStudy;
 import org.obiba.mica.study.domain.Study;
-import org.obiba.mica.study.service.IndividualStudyService;
 import org.obiba.mica.study.service.HarmonizationStudyService;
+import org.obiba.mica.study.service.IndividualStudyService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.mica.web.model.MicaSearch;
@@ -29,7 +30,10 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.io.IOException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -41,19 +45,26 @@ import static org.obiba.mica.web.model.MicaSearch.StudyResultDto;
 @Scope("request")
 public class StudyQuery extends AbstractDocumentQuery {
 
-  @Inject
-  private IndividualStudyService individualStudyService;
+  private final IndividualStudyService individualStudyService;
 
-  @Inject
-  private HarmonizationStudyService harmonizationStudyService;
+  private final HarmonizationStudyService harmonizationStudyService;
 
-  @Inject
-  private Dtos dtos;
+  private final Dtos dtos;
 
-  @Inject
-  private StudyTaxonomyMetaDataProvider studyTaxonomyMetaDataProvider;
+  private final StudyTaxonomyMetaDataProvider studyTaxonomyMetaDataProvider;
+
+  private final StudiesSetsAggregationMetaDataProvider studiesSetsAggregationMetaDataProvider;
 
   private static final String JOIN_FIELD = "id";
+
+  @Inject
+  public StudyQuery(IndividualStudyService individualStudyService, HarmonizationStudyService harmonizationStudyService, Dtos dtos, StudyTaxonomyMetaDataProvider studyTaxonomyMetaDataProvider, StudiesSetsAggregationMetaDataProvider studiesSetsAggregationMetaDataProvider) {
+    this.individualStudyService = individualStudyService;
+    this.harmonizationStudyService = harmonizationStudyService;
+    this.dtos = dtos;
+    this.studyTaxonomyMetaDataProvider = studyTaxonomyMetaDataProvider;
+    this.studiesSetsAggregationMetaDataProvider = studiesSetsAggregationMetaDataProvider;
+  }
 
   @Override
   public String getSearchIndex() {
@@ -69,15 +80,12 @@ public class StudyQuery extends AbstractDocumentQuery {
   @Override
   protected Searcher.IdFilter getAccessibleIdFilter() {
     if (isOpenAccess()) return null;
-    return new Searcher.IdFilter() {
-      @Override
-      public Collection<String> getValues() {
-        List<String> ids = individualStudyService.findPublishedIds().stream()
-            .filter(s -> subjectAclService.isAccessible("/individual-study", s)).collect(Collectors.toList());
-        ids.addAll(harmonizationStudyService.findPublishedIds().stream()
-            .filter(s -> subjectAclService.isAccessible("/harmonization-study", s)).collect(Collectors.toList()));
-        return ids;
-      }
+    return () -> {
+      List<String> ids = individualStudyService.findPublishedIds().stream()
+        .filter(s -> subjectAclService.isAccessible("/individual-study", s)).collect(Collectors.toList());
+      ids.addAll(harmonizationStudyService.findPublishedIds().stream()
+        .filter(s -> subjectAclService.isAccessible("/harmonization-study", s)).collect(Collectors.toList()));
+      return ids;
     };
   }
 
@@ -88,22 +96,22 @@ public class StudyQuery extends AbstractDocumentQuery {
 
   @Override
   protected List<AggregationMetaDataProvider> getAggregationMetaDataProviders() {
-    return Arrays.asList(studyTaxonomyMetaDataProvider);
+    return Arrays.asList(studyTaxonomyMetaDataProvider, studiesSetsAggregationMetaDataProvider);
   }
 
   @Override
   protected List<String> getMandatorySourceFields() {
     return Lists.newArrayList(
-        "id",
-        "className",
-        "populations.id",
-        "populations.dataCollectionEvents.id"
+      "id",
+      "className",
+      "populations.id",
+      "populations.dataCollectionEvents.id"
     );
   }
 
   @Override
   public void processHits(QueryResultDto.Builder builder, Searcher.DocumentResults results, QueryScope scope, CountStatsData counts)
-      throws IOException {
+    throws IOException {
     StudyResultDto.Builder resBuilder = StudyResultDto.newBuilder();
     StudyCountStatsBuilder studyCountStatsBuilder = counts == null ? null : StudyCountStatsBuilder.newBuilder(counts);
     Consumer<BaseStudy> addDto = getStudyConsumer(scope, resBuilder, studyCountStatsBuilder);
@@ -122,7 +130,7 @@ public class StudyQuery extends AbstractDocumentQuery {
       }
       if (studyCountStatsBuilder != null) {
         summaryBuilder.setExtension(MicaSearch.CountStatsDto.studyCountStats, studyCountStatsBuilder.build(study))
-            .build();
+          .build();
       }
       resBuilder.addSummaries(summaryBuilder.build());
     } : (study) -> resBuilder.addDigests(dtos.asDigestDtoBuilder(study).build());

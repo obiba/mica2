@@ -51,6 +51,13 @@ message DataCollectionEventSummaryDto {
   optional string end = 6;
 }
 
+message StudiesDto {
+  required int32 total = 1;
+  required int32 from = 2;
+  required int32 limit = 3;
+  repeated StudyDto studies = 4;
+}
+
 message StudySummariesDto {
   required int32 total = 1;
   required int32 from = 2;

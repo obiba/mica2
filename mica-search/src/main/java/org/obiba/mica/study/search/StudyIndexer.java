@@ -10,14 +10,19 @@
 
 package org.obiba.mica.study.search;
 
+import com.google.common.collect.Lists;
 import com.google.common.eventbus.Subscribe;
+import org.obiba.mica.core.domain.DocumentSet;
 import org.obiba.mica.core.domain.Membership;
+import org.obiba.mica.core.event.DocumentSetDeletedEvent;
+import org.obiba.mica.core.event.DocumentSetUpdatedEvent;
 import org.obiba.mica.core.service.PersonService;
 import org.obiba.mica.spi.search.Indexable;
 import org.obiba.mica.spi.search.Indexer;
 import org.obiba.mica.study.domain.BaseStudy;
 import org.obiba.mica.study.event.*;
 import org.obiba.mica.study.service.StudyService;
+import org.obiba.mica.study.service.StudySetService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
@@ -33,27 +38,34 @@ public class StudyIndexer {
 
   private static final Logger log = LoggerFactory.getLogger(StudyIndexer.class);
 
-  @Inject
-  private Indexer indexer;
+  private final Indexer indexer;
+
+  private final StudyService studyService;
+
+  private final PersonService personService;
+
+  private final StudySetService studySetService;
 
   @Inject
-  private StudyService studyService;
-
-  @Inject
-  private PersonService personService;
+  public StudyIndexer(Indexer indexer, StudyService studyService, PersonService personService, StudySetService studySetService) {
+    this.indexer = indexer;
+    this.studyService = studyService;
+    this.personService = personService;
+    this.studySetService = studySetService;
+  }
 
   @Async
   @Subscribe
   public void studyUpdated(DraftStudyUpdatedEvent event) {
     log.info("Study {} was updated", event.getPersistable());
-    indexer.index(Indexer.DRAFT_STUDY_INDEX, (Indexable) addMemberships(event.getPersistable()));
+    indexer.index(Indexer.DRAFT_STUDY_INDEX, (Indexable) decorate(event.getPersistable()));
   }
 
   @Async
   @Subscribe
   public void studyPublished(StudyPublishedEvent event) {
     log.info("Study {} was published", event.getPersistable());
-    indexer.index(Indexer.PUBLISHED_STUDY_INDEX, (Indexable) addMemberships(event.getPersistable()));
+    indexer.index(Indexer.PUBLISHED_STUDY_INDEX, (Indexable) decorate(event.getPersistable()));
   }
 
   @Async
@@ -78,14 +90,53 @@ public class StudyIndexer {
     List<String> studyIds = event.getIds();
 
     if (studyIds.isEmpty()) {
-      reIndexAllPublished(addMemberships(studyService.findAllPublishedStudies()));
-      reIndexAllDraft(addMemberships(studyService.findAllDraftStudies()));
+      reIndexAllPublished(decorate(studyService.findAllPublishedStudies()));
+      reIndexAllDraft(decorate(studyService.findAllDraftStudies()));
     } else {
       // indexAll does not deletes the index before
-      indexer.indexAllIndexables(Indexer.PUBLISHED_STUDY_INDEX, addMemberships(studyService.findAllPublishedStudies(studyIds)));
-      indexer.indexAllIndexables(Indexer.DRAFT_STUDY_INDEX, addMemberships(studyService.findAllDraftStudies(studyIds)));
+      indexer.indexAllIndexables(Indexer.PUBLISHED_STUDY_INDEX, decorate(studyService.findAllPublishedStudies(studyIds)));
+      indexer.indexAllIndexables(Indexer.DRAFT_STUDY_INDEX, decorate(studyService.findAllDraftStudies(studyIds)));
     }
   }
+
+  @Async
+  @Subscribe
+  public synchronized void documentSetUpdated(DocumentSetUpdatedEvent event) {
+    if (!studySetService.isForType(event.getPersistable())) return;
+    List<BaseStudy> toIndex = Lists.newArrayList();
+    String id = event.getPersistable().getId();
+    if (event.hasRemovedIdentifiers()) {
+      List<BaseStudy> toRemove = studySetService.getPublishedStudies(event.getRemovedIdentifiers(), false);
+      toRemove.forEach(std -> std.removeSet(id));
+      toIndex.addAll(toRemove);
+    }
+    List<BaseStudy> studies = studySetService.getPublishedStudies(event.getPersistable(), false);
+    studies.stream()
+      .filter(std -> !std.containsSet(id))
+      .forEach(std -> {
+        std.addSet(id);
+        toIndex.add(std);
+      });
+    indexer.indexAllIndexables(Indexer.PUBLISHED_STUDY_INDEX, toIndex);
+  }
+
+  @Async
+  @Subscribe
+  public synchronized void documentSetDeleted(DocumentSetDeletedEvent event) {
+    if (!studySetService.isForType(event.getPersistable())) return;
+    DocumentSet documentSet = event.getPersistable();
+    List<BaseStudy> toIndex = Lists.newArrayList();
+    {
+      List<BaseStudy> toRemove = studySetService.getPublishedStudies(event.getPersistable(), false);
+      toRemove.forEach(std -> std.removeSet(documentSet.getId()));
+      toIndex.addAll(toRemove);
+    }
+    indexer.indexAllIndexables(Indexer.PUBLISHED_STUDY_INDEX, toIndex);
+  }
+
+  //
+  // Private methods
+  //
 
   private void reIndexAllDraft(Iterable<BaseStudy> studies) {
     reIndexAll(Indexer.DRAFT_STUDY_INDEX, studies);
@@ -99,6 +150,14 @@ public class StudyIndexer {
     indexer.reIndexAllIndexables(indexName, studies);
   }
 
+  private List<BaseStudy> decorate(List<BaseStudy> studies) {
+    return addMemberships(addSets(studies));
+  }
+
+  private BaseStudy decorate(BaseStudy study) {
+    return addMemberships(addSets(study));
+  }
+
   private List<BaseStudy> addMemberships(List<BaseStudy> studies) {
     return studies.stream().map(this::addMemberships).collect(Collectors.toList());
   }
@@ -109,5 +168,21 @@ public class StudyIndexer {
     study.setMemberships(membershipMap);
 
     return study;
+  }
+
+  private BaseStudy addSets(BaseStudy study) {
+    studySetService.getAll().forEach(ds -> {
+      if (ds.getIdentifiers().contains(study.getId())) study.addSet(ds.getId());
+    });
+    return study;
+  }
+
+  private List<BaseStudy> addSets(List<BaseStudy> studies) {
+    List<DocumentSet> documentSets = studySetService.getAll();
+    studies.forEach(study ->
+      documentSets.forEach(ds -> {
+        if (ds.getIdentifiers().contains(study.getId())) study.addSet(ds.getId());
+      }));
+    return studies;
   }
 }

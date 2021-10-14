@@ -17,6 +17,7 @@ import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.network.service.PublishedNetworkService;
 import org.obiba.mica.search.aggregations.NetworkAggregationMetaDataProvider;
 import org.obiba.mica.search.aggregations.NetworkTaxonomyMetaDataProvider;
+import org.obiba.mica.search.aggregations.NetworksSetsAggregationMetaDataProvider;
 import org.obiba.mica.spi.search.CountStatsData;
 import org.obiba.mica.spi.search.Indexer;
 import org.obiba.mica.spi.search.QueryMode;
@@ -61,11 +62,20 @@ public class NetworkQuery extends AbstractDocumentQuery {
   @Inject
   PublishedNetworkService publishedNetworkService;
 
-  @Inject
-  private NetworkAggregationMetaDataProvider networkAggregationMetaDataProvider;
+  private final NetworkAggregationMetaDataProvider networkAggregationMetaDataProvider;
+
+  private final NetworkTaxonomyMetaDataProvider networkTaxonomyMetaDataProvider;
+
+  private final NetworksSetsAggregationMetaDataProvider networksSetsAggregationMetaDataProvider;
 
   @Inject
-  private NetworkTaxonomyMetaDataProvider networkTaxonomyMetaDataProvider;
+  public NetworkQuery(NetworkAggregationMetaDataProvider networkAggregationMetaDataProvider,
+                      NetworkTaxonomyMetaDataProvider networkTaxonomyMetaDataProvider,
+                      NetworksSetsAggregationMetaDataProvider networksSetsAggregationMetaDataProvider) {
+    this.networkAggregationMetaDataProvider = networkAggregationMetaDataProvider;
+    this.networkTaxonomyMetaDataProvider = networkTaxonomyMetaDataProvider;
+    this.networksSetsAggregationMetaDataProvider = networksSetsAggregationMetaDataProvider;
+  }
 
   @Override
   public String getSearchIndex() {
@@ -159,7 +169,7 @@ public class NetworkQuery extends AbstractDocumentQuery {
 
   @Override
   protected List<AggregationMetaDataProvider> getAggregationMetaDataProviders() {
-    return Arrays.asList(networkAggregationMetaDataProvider, networkTaxonomyMetaDataProvider);
+    return Arrays.asList(networkAggregationMetaDataProvider, networkTaxonomyMetaDataProvider, networksSetsAggregationMetaDataProvider);
   }
 
   public Map<String, List<String>> getStudyCountsByNetwork() {

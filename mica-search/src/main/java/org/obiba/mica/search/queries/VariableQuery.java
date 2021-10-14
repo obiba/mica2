@@ -29,7 +29,6 @@ import org.obiba.mica.spi.search.support.AttributeKey;
 import org.obiba.mica.spi.search.support.Query;
 import org.obiba.mica.study.NoSuchStudyException;
 import org.obiba.mica.study.domain.BaseStudy;
-import org.obiba.mica.study.domain.DataCollectionEvent;
 import org.obiba.mica.study.domain.Population;
 import org.obiba.mica.study.service.PublishedStudyService;
 import org.obiba.mica.web.model.Dtos;
@@ -63,29 +62,29 @@ public class VariableQuery extends AbstractDocumentQuery {
 
   private static final String VARIABLE_TYPE = "variableType";
 
-  private OpalService opalService;
+  private final OpalService opalService;
 
-  private PublishedStudyService publishedStudyService;
+  private final PublishedStudyService publishedStudyService;
 
-  private Dtos dtos;
+  private final Dtos dtos;
 
-  private DatasetAggregationMetaDataProvider datasetAggregationMetaDataProvider;
+  private final DatasetAggregationMetaDataProvider datasetAggregationMetaDataProvider;
 
-  private TaxonomyAggregationMetaDataProvider taxonomyAggregationMetaDataProvider;
+  private final TaxonomyAggregationMetaDataProvider taxonomyAggregationMetaDataProvider;
 
-  private VariableTaxonomyMetaDataProvider variableTaxonomyMetaDataProvider;
+  private final VariableTaxonomyMetaDataProvider variableTaxonomyMetaDataProvider;
 
-  private DataCollectionEventAggregationMetaDataProvider dceAggregationMetaDataProvider;
+  private final DataCollectionEventAggregationMetaDataProvider dceAggregationMetaDataProvider;
 
-  private PopulationAggregationMetaDataProvider populationAggregationMetaDataProvider;
+  private final PopulationAggregationMetaDataProvider populationAggregationMetaDataProvider;
 
-  private StudyAggregationMetaDataProvider studyAggregationMetaDataProvider;
+  private final StudyAggregationMetaDataProvider studyAggregationMetaDataProvider;
 
-  private CollectedDatasetService collectedDatasetService;
+  private final CollectedDatasetService collectedDatasetService;
 
-  private HarmonizedDatasetService harmonizedDatasetService;
+  private final HarmonizedDatasetService harmonizedDatasetService;
 
-  private SetsAggregationMetaDataProvider setsAggregationMetaDataProvider;
+  private final VariablesSetsAggregationMetaDataProvider variablesSetsAggregationMetaDataProvider;
 
   private DocumentQueryIdProvider datasetIdProvider;
 
@@ -102,7 +101,7 @@ public class VariableQuery extends AbstractDocumentQuery {
     DataCollectionEventAggregationMetaDataProvider dceAggregationMetaDataProvider,
     PopulationAggregationMetaDataProvider populationAggregationMetaDataProvider,
     StudyAggregationMetaDataProvider studyAggregationMetaDataProvider,
-    SetsAggregationMetaDataProvider setsAggregationMetaDataProvider) {
+    VariablesSetsAggregationMetaDataProvider variablesSetsAggregationMetaDataProvider) {
     this.opalService = opalService;
     this.publishedStudyService = publishedStudyService;
     this.dtos = dtos;
@@ -114,7 +113,7 @@ public class VariableQuery extends AbstractDocumentQuery {
     this.studyAggregationMetaDataProvider = studyAggregationMetaDataProvider;
     this.collectedDatasetService = collectedDatasetService;
     this.harmonizedDatasetService = harmonizedDatasetService;
-    this.setsAggregationMetaDataProvider = setsAggregationMetaDataProvider;
+    this.variablesSetsAggregationMetaDataProvider = variablesSetsAggregationMetaDataProvider;
   }
 
   @Override
@@ -175,7 +174,7 @@ public class VariableQuery extends AbstractDocumentQuery {
   protected List<AggregationMetaDataProvider> getAggregationMetaDataProviders() {
     return Arrays
         .asList(taxonomyAggregationMetaDataProvider, variableTaxonomyMetaDataProvider, datasetAggregationMetaDataProvider,
-            dceAggregationMetaDataProvider, populationAggregationMetaDataProvider, studyAggregationMetaDataProvider, setsAggregationMetaDataProvider);
+            dceAggregationMetaDataProvider, populationAggregationMetaDataProvider, studyAggregationMetaDataProvider, variablesSetsAggregationMetaDataProvider);
   }
 
   @Override
