@@ -109,53 +109,84 @@
 </script>
 
 <script>
-    $(function () {
-      /**
-       * Uses browser to normalize input html (closing/removing tags)
-       * @param html
-       * @returns {*}
-       */
-      function tidy(html) {
-        var d = document.createElement('div');
-        d.innerHTML = html;
-        return d.innerHTML;
-      }
+  const Carts = [];
 
-      // bs tooltip
-      $('[data-toggle="tooltip"]').tooltip();
-      // apply markdown rendering
-      $('.marked').each(function () {
-        const template = $(this).find('template');
-        var msg = template && template.length > 0 ? $.trim($(template).html()) : $.trim($(this).html());
-        if (msg && msg.length > 0) {
-          $(this).html(marked(tidy(msg)));
-        }
-      });
-      $('.marked table').each(function () {
-        $(this).addClass('table table-striped');
-      });
-        // set moment's locale
-        moment.locale('${.lang}');
-        $('.moment-date').each(function () {
-          var msg = $.trim($(this).html());
-          if (msg && msg.length > 0) {
-            msg = moment(msg).format('LL');
-            $(this).html(msg);
-          }
-        });
-        $('.moment-datetime').each(function () {
-          var msg = $.trim($(this).html());
-          if (msg && msg.length > 0) {
-            msg = moment(msg).format('LLL');
-            $(this).html(msg);
-          }
-        });
-        <#if cartEnabled && user?? && user.variablesCart??>
-          const cart = { id: '${user.variablesCart.id}', count: ${user.variablesCart.count?c} };
-          VariablesSetService.showCount('#cart-count', cart, '${.lang}');
-          if (typeof onVariablesCartGet === 'function') {
-            onVariablesCartGet(cart);
-          }
-        </#if>
+  <#if variablesCartEnabled && user?? && user.variablesCart??>
+  Carts.push({
+    id: '${user.variablesCart.id}',
+    type: 'variables',
+    count: ${user.variablesCart.count?c}
+  });
+  </#if>
+
+  <#if studiesCartEnabled && user?? && user.studiesCart??>
+  Carts.push({
+    id: '${user.studiesCart.id}',
+    type: 'studies',
+    count: ${user.studiesCart.count?c}
+  });
+  </#if>
+
+  <#if networksCartEnabled && user?? && user.networksCart??>
+  Carts.push({
+    id: '${user.networksCart.id}',
+    type: 'networks',
+    count: ${user.networksCart.count?c}
+  });
+  </#if>
+
+  $(function () {
+    /**
+     * Uses browser to normalize input html (closing/removing tags)
+     * @param html
+     * @returns {*}
+     */
+    function tidy(html) {
+      var d = document.createElement('div');
+      d.innerHTML = html;
+      return d.innerHTML;
+    }
+
+    // bs tooltip
+    $('[data-toggle="tooltip"]').tooltip();
+    // apply markdown rendering
+    $('.marked').each(function () {
+      const template = $(this).find('template');
+      var msg = template && template.length > 0 ? $.trim($(template).html()) : $.trim($(this).html());
+      if (msg && msg.length > 0) {
+        $(this).html(marked(tidy(msg)));
+      }
     });
+    $('.marked table').each(function () {
+      $(this).addClass('table table-striped');
+    });
+    // set moment's locale
+    moment.locale('${.lang}');
+    $('.moment-date').each(function () {
+      var msg = $.trim($(this).html());
+      if (msg && msg.length > 0) {
+        msg = moment(msg).format('LL');
+        $(this).html(msg);
+      }
+    });
+    $('.moment-datetime').each(function () {
+      var msg = $.trim($(this).html());
+      if (msg && msg.length > 0) {
+        msg = moment(msg).format('LLL');
+        $(this).html(msg);
+      }
+    });
+    <#if cartEnabled>
+    if (typeof onVariablesCartGet === 'function') {
+      onVariablesCartGet(Carts.filter(c => c.type === 'variables').pop());
+    }
+    if (typeof onStudiesCartGet === 'function') {
+      onStudiesCartGet(Carts.filter(c => c.type === 'studies').pop());
+    }
+    if (typeof onNetworksCartGet === 'function') {
+      onNetworksCartGet(Carts.filter(c => c.type === 'networks').pop());
+    }
+    SetService.showCount('#cart-count', undefined, '${.lang}');
+    </#if>
+  });
 </script>

@@ -113,7 +113,7 @@
                   </dl>
                 </#if>
               </div>
-              <#if cartEnabled>
+              <#if cartEnabled && variablesCartEnabled>
                 <div class="card-footer">
                   <#if user??>
                     <a id="cart-add" href="javascript:void(0)" onclick="onVariablesCartAdd('${variableCartId}')" style="display: none;">

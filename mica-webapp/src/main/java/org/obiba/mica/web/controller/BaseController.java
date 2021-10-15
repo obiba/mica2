@@ -5,7 +5,9 @@ import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.UnauthorizedException;
 import org.obiba.mica.dataset.service.VariableSetService;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
+import org.obiba.mica.network.service.NetworkSetService;
 import org.obiba.mica.security.service.SubjectAclService;
+import org.obiba.mica.study.service.StudySetService;
 import org.obiba.mica.user.UserProfileService;
 import org.obiba.mica.web.interceptor.SessionInterceptor;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -30,6 +32,12 @@ public class BaseController {
 
   @Inject
   private VariableSetService variableSetService;
+
+  @Inject
+  private StudySetService studySetService;
+
+  @Inject
+  private NetworkSetService networkSetService;
 
   @ExceptionHandler(NoSuchElementException.class)
   public ModelAndView notFoundError(Exception ex) {
@@ -57,7 +65,7 @@ public class BaseController {
     mv.getModel().put("msg", message);
     mv.getModel().put("contextPath", micaConfigService.getContextPath());
     mv.getModel().put("config", micaConfigService.getConfig());
-    SessionInterceptor.populateUserEntries(mv, userProfileService, variableSetService);
+    SessionInterceptor.populateUserEntries(mv, userProfileService, variableSetService, studySetService, networkSetService);
     return mv;
   }
 

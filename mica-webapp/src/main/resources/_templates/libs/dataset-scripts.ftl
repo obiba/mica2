@@ -14,7 +14,7 @@
   const Mica = {};
 
   // cart
-  <#if cartEnabled>
+  <#if cartEnabled && variablesCartEnabled>
   const onVariablesCartAdd = function(id) {
     VariablesSetService.addQueryToCart('dataset(in(Mica_dataset.id,' + id + ')),variable(limit(0,10000),fields(variableType))', function(cart, oldCart) {
       VariablesSetService.showCount('#cart-count', cart, '${.lang}');

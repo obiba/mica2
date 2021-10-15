@@ -188,7 +188,7 @@ public class TaxonomyService {
     if(networkTaxonomy != null) return;
     networkTaxonomy = copy(micaConfigService.getNetworkTaxonomy());
     networkHelper.applyIdTerms(networkTaxonomy, "id");
-    networkHelper.applyIdTerms(networkTaxonomy, "sets");
+    networksSetsAggregationMetaDataHelper.applyIdTerms(networkTaxonomy, "sets");
     studyHelper.applyIdTerms(networkTaxonomy, "studyIds");
   }
 

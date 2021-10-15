@@ -117,6 +117,22 @@
                 <@studyDefinition study=study type=type/>
 
               </div>
+              <#if cartEnabled && studiesCartEnabled>
+                <div class="card-footer">
+                  <#if user??>
+                    <a id="cart-add" href="javascript:void(0)" onclick="onStudiesCartAdd('${study.id}')" style="display: none;">
+                        <@message "sets.cart.add-to-cart"/> <i class="fas fa-cart-plus"></i>
+                    </a>
+                    <a id="cart-remove" href="javascript:void(0)" onclick="onStudiesCartRemove('${study.id}')" style="display: none;">
+                        <@message "sets.cart.remove-from-cart"/> <i class="fas fa-cart-arrow-down"></i>
+                    </a>
+                  <#else>
+                    <a href="${contextPath}/signin?redirect=${contextPath}/study/${study.id}">
+                        <@message "sets.cart.add-to-cart"/> <i class="fas fa-cart-plus"></i>
+                    </a>
+                  </#if>
+                </div>
+              </#if>
             </div>
           </div>
         </div>
