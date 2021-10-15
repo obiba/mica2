@@ -500,12 +500,6 @@ mica.config
         'ENTITY_TYPE'
       ];
 
-      $scope.cartEnabledChanged = function() {
-        if (!$scope.micaConfig.isCartEnabled) {
-          $scope.micaConfig.anonymousCanCreateCart = false;
-        }
-      };
-
       $scope.projectEnabledChanged = function() {
         if (!$scope.micaConfig.isProjectEnabled) {
           $scope.micaConfig.isProjectsCountEnabled = false;

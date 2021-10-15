@@ -138,7 +138,7 @@ public class Dtos {
   }
 
   @NotNull
-  public StudyDto asDto(@NotNull Study study) {
+  public StudyDto asDto(@NotNull BaseStudy study) {
     return asDto(study, false);
   }
 
@@ -147,6 +147,11 @@ public class Dtos {
     return study instanceof Study
       ? studyDtos.asDto((Study)study, asDraft)
       : studyDtos.asDto((HarmonizationStudy)study, asDraft);
+  }
+
+  @NotNull
+  public StudyDto asDto(@NotNull Study study) {
+    return asDto(study, false);
   }
 
   @NotNull

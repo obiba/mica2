@@ -15,17 +15,15 @@ import com.google.common.collect.Lists;
 import org.apache.shiro.authz.AuthorizationException;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.core.domain.DocumentSet;
-import org.obiba.mica.core.domain.MaximumDocumentSetCreationExceededException;
 import org.obiba.mica.core.domain.SetOperation;
 import org.obiba.mica.dataset.service.VariableSetOperationService;
 import org.obiba.mica.dataset.service.VariableSetService;
 import org.obiba.mica.micaConfig.domain.MicaConfig;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
+import org.obiba.mica.rest.AbstractPublishedDocumentsSetsResource;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -36,26 +34,16 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Component
 @Path("/variables/sets")
 @Scope("request")
 @RequiresAuthentication
-public class PublishedDatasetVariablesSetsResource {
+public class PublishedDatasetVariablesSetsResource extends AbstractPublishedDocumentsSetsResource<VariableSetService> {
 
-  private VariableSetService variableSetService;
+  private final VariableSetService variableSetService;
 
-  private VariableSetOperationService variableSetOperationService;
-
-  private MicaConfigService micaConfigService;
-
-  private SubjectAclService subjectAclService;
-
-  private Dtos dtos;
-
-  private static final Logger log = LoggerFactory.getLogger(PublishedDatasetVariablesSetsResource.class);
+  private final VariableSetOperationService variableSetOperationService;
 
   @Inject
   public PublishedDatasetVariablesSetsResource(
@@ -64,55 +52,45 @@ public class PublishedDatasetVariablesSetsResource {
     MicaConfigService micaConfigService,
     SubjectAclService subjectAclService,
     Dtos dtos) {
+    super(micaConfigService, subjectAclService, dtos);
     this.variableSetService = variableSetService;
     this.variableSetOperationService = variableSetOperationService;
-    this.micaConfigService = micaConfigService;
-    this.subjectAclService = subjectAclService;
-    this.dtos = dtos;
+  }
+
+  @Override
+  protected VariableSetService getDocumentSetService() {
+    return variableSetService;
+  }
+
+  @Override
+  protected boolean isCartEnabled(MicaConfig config) {
+    return config.isCartEnabled();
   }
 
   @GET
   public List<Mica.DocumentSetDto> list(@QueryParam("id") List<String> ids) {
-    if (!subjectAclService.hasMicaRole()) throw new AuthorizationException();
-
-    if (ids.isEmpty())
-      return variableSetService.getAllCurrentUser().stream().map(s -> dtos.asDto(s)).collect(Collectors.toList());
-    else
-      return ids.stream().map(id -> dtos.asDto(variableSetService.get(id))).collect(Collectors.toList());
+    return listDocumentsSets(ids);
   }
 
   @POST
   public Response createEmpty(@Context UriInfo uriInfo, @QueryParam("name") String name) {
-    ensureUserIsAuthorized(name);
-    if (!Strings.isNullOrEmpty(name)) checkSetsNumberLimit();
-
-    DocumentSet created = variableSetService.create(name, Lists.newArrayList());
-    return Response.created(uriInfo.getBaseUriBuilder().segment("variables", "set", created.getId()).build()).entity(dtos.asDto(created)).build();
+    Mica.DocumentSetDto created = createEmptyDocumentSet(name);
+    return Response.created(uriInfo.getBaseUriBuilder().segment("studies", "set", created.getId()).build()).entity(created).build();
   }
 
-  /**
-   * A cart is a set without name, associated to a user.
-   *
-   * @return
-   */
   @GET
   @Path("_cart")
   public Mica.DocumentSetDto getOrCreateCart() {
-    if (!subjectAclService.hasMicaRole()) throw new AuthorizationException();
-    ensureUserIsAuthorized("");
-    return dtos.asDto(variableSetService.getCartCurrentUser());
+    return getOrCreateDocumentSetCart();
   }
 
   @POST
   @Path("_import")
   @Consumes(MediaType.TEXT_PLAIN)
   public Response importVariables(@Context UriInfo uriInfo, @QueryParam("name") String name, String body) {
-    ensureUserIsAuthorized(name);
-    if (!Strings.isNullOrEmpty(name)) checkSetsNumberLimit();
-
-    DocumentSet created = variableSetService.create(name, variableSetService.extractIdentifiers(body));
+    Mica.DocumentSetDto created = importDocuments(name, body);
     return Response.created(uriInfo.getBaseUriBuilder().segment("variables", "set", created.getId()).build())
-      .entity(dtos.asDto(created)).build();
+      .entity(created).build();
   }
 
   @POST
@@ -134,21 +112,4 @@ public class PublishedDatasetVariablesSetsResource {
     return dtos.asDto(variableSetOperationService.get(operationId));
   }
 
-  private void ensureUserIsAuthorized(String name) {
-    MicaConfig config = micaConfigService.getConfig();
-    if (!config.isCartEnabled() && Strings.isNullOrEmpty(name)) throw new AuthorizationException(); // cart
-    if (config.isCartEnabled() && !config.isAnonymousCanCreateCart() && !subjectAclService.hasMicaRole() && Strings.isNullOrEmpty(name)) throw new AuthorizationException(); // cart
-    if (!Strings.isNullOrEmpty(name) && !subjectAclService.hasMicaRole()) throw new AuthorizationException();
-  }
-
-  private long numberOfNamedSets() {
-    return variableSetService.getAllCurrentUser().stream().filter(DocumentSet::hasName).count();
-  }
-
-  private void checkSetsNumberLimit() {
-    long maxNumberOfSets = micaConfigService.getConfig().getMaxNumberOfSets();
-
-    if (numberOfNamedSets() >= maxNumberOfSets)
-      throw MaximumDocumentSetCreationExceededException.because(maxNumberOfSets, variableSetService.getType());
-  }
 }

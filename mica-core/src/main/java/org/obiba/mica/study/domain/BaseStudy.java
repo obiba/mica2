@@ -30,7 +30,7 @@ public abstract class BaseStudy extends AbstractModelAware implements PersonAwar
 
   private Attachment logo;
 
-  private final static String MAPPING_NAME = "Study";
+  public final static String MAPPING_NAME = "Study";
 
   @NotNull
   private LocalizedString name;
@@ -50,6 +50,8 @@ public abstract class BaseStudy extends AbstractModelAware implements PersonAwar
 
   @URL
   private String opal;
+
+  private Set<String> sets;
 
   private SortedSet<Population> populations = Sets.newTreeSet();
 
@@ -101,6 +103,31 @@ public abstract class BaseStudy extends AbstractModelAware implements PersonAwar
 
   public void setOpal(String opal) {
     this.opal = opal;
+  }
+
+  public Set<String> getSets() {
+    return sets;
+  }
+
+  public void setSets(Set<String> sets) {
+    this.sets = sets;
+  }
+
+  public void addSet(String id) {
+    if (sets == null) {
+      sets = Sets.newLinkedHashSet();
+    }
+    sets.add(id);
+  }
+
+  public void removeSet(String id) {
+    if (sets == null) return;
+    sets.remove(id);
+  }
+
+  public boolean containsSet(String id) {
+    if (sets == null) return false;
+    return sets.contains(id);
   }
 
   public Map<String, List<String>> getMembershipSortOrder() {

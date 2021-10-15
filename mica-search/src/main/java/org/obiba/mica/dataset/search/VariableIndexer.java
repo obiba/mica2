@@ -41,14 +41,18 @@ import java.util.Map;
 public class VariableIndexer {
   private static final Logger log = LoggerFactory.getLogger(VariableIndexer.class);
 
-  @Inject
-  private Indexer indexer;
+  private final Indexer indexer;
+
+  private final CollectedDatasetService collectedDatasetService;
+
+  private final VariableSetService variableSetService;
 
   @Inject
-  private CollectedDatasetService collectedDatasetService;
-
-  @Inject
-  private VariableSetService variableSetService;
+  public VariableIndexer(Indexer indexer, CollectedDatasetService collectedDatasetService, VariableSetService variableSetService) {
+    this.indexer = indexer;
+    this.collectedDatasetService = collectedDatasetService;
+    this.variableSetService = variableSetService;
+  }
 
   @Async
   @Subscribe

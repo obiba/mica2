@@ -193,12 +193,23 @@
 
         <tr>
           <td>
-            <span translate>config.anonymous-create-cart</span>
-            <span class="help-block" translate>config.anonymous-create-cart-help</span>
+            <span translate>config.studies-cart-enabled</span>
+            <span class="help-block" translate>config.studies-cart-enabled-help</span>
           </td>
           <td>
-            <i class="fa fa-check-square-o" ng-hide="!micaConfig.anonymousCanCreateCart"></i>
-            <i class="fa fa-square-o" ng-hide="micaConfig.anonymousCanCreateCart"></i>
+            <i class="fa fa-check-square-o" ng-hide="!micaConfig.isStudiesCartEnabled"></i>
+            <i class="fa fa-square-o" ng-hide="micaConfig.isStudiesCartEnabled"></i>
+          </td>
+        </tr>
+
+        <tr>
+          <td>
+            <span translate>config.networks-cart-enabled</span>
+            <span class="help-block" translate>config.networks-cart-enabled-help</span>
+          </td>
+          <td>
+            <i class="fa fa-check-square-o" ng-hide="!micaConfig.isNetworksCartEnabled"></i>
+            <i class="fa fa-square-o" ng-hide="micaConfig.isNetworksCartEnabled"></i>
           </td>
         </tr>
 

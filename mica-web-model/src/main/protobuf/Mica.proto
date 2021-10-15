@@ -51,6 +51,13 @@ message DataCollectionEventSummaryDto {
   optional string end = 6;
 }
 
+message StudiesDto {
+  required int32 total = 1;
+  required int32 from = 2;
+  required int32 limit = 3;
+  repeated StudyDto studies = 4;
+}
+
 message StudySummariesDto {
   required int32 total = 1;
   required int32 from = 2;
@@ -432,7 +439,7 @@ message MicaConfigDto {
   optional string searchLayout = 33;
   required int64 maxNumberOfSets = 34;
   required int64 maxItemsPerSet = 35;
-  required bool anonymousCanCreateCart = 36;
+  optional bool anonymousCanCreateCart = 36; // legacy
   required bool currentUserCanCreateCart = 37;
   required bool currentUserCanCreateSets = 38;
   required bool isCartEnabled = 39;
@@ -459,6 +466,8 @@ message MicaConfigDto {
   optional string contactNotificationsSubject = 60;
   repeated string contactGroups = 61;
   optional bool isCommentsRequiredOnDocumentSave = 62 [default = false];
+  required bool isStudiesCartEnabled = 63;
+  required bool isNetworksCartEnabled = 64;
 }
 
 message PublicMicaConfigDto {

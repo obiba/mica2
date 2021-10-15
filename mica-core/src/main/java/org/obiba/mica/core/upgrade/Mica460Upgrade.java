@@ -1,9 +1,11 @@
 package org.obiba.mica.core.upgrade;
 
 import com.google.common.eventbus.EventBus;
+import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
+import org.obiba.mica.micaConfig.event.TaxonomiesUpdatedEvent;
 import org.obiba.runtime.Version;
 import org.obiba.runtime.upgrade.UpgradeStep;
 import org.slf4j.Logger;
@@ -11,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.Date;
 
 @Component
@@ -70,7 +73,64 @@ public class Mica460Upgrade implements UpgradeStep {
       DBCursor dataAccessAmendments = mongoTemplate.execute(db -> db.collectionExists("dataAccessAmendment") ? db.getCollection("dataAccessAmendment").find() : null);
       applyDataAccessAmendmentFormRevision(dataAccessAmendments);
     } catch (RuntimeException e) {
-      logger.error("Error occurred when trying to execute removeSetsVocabulariesTerms.", e);
+      logger.error("Error occurred when trying to update data access forms or requests.", e);
+    }
+
+    try {
+      logger.info("Adding 'sets' vocabulary to the network taxonomy");
+      DBObject networkTaxonomy = mongoTemplate.execute(db -> db.getCollection("taxonomyEntityWrapper").findOne("network"));
+      if (networkTaxonomy != null) {
+        DBObject setsVocabulary = BasicDBObject.parse("{\n" +
+          "  \"name\" : \"sets\",\n" +
+          "  \"title\" : {\n" +
+          "      \"en\" : \"Sets\",\n" +
+          "      \"fr\" : \"Ensembles\"\n" +
+          "  },\n" +
+          "  \"description\" : {\n" +
+          "      \"en\" : \"Sets in which the network appears.\",\n" +
+          "      \"fr\" : \"Ensembles dans lesquels est définie le réseau.\"\n" +
+          "  },\n" +
+          "  \"repeatable\" : false,\n" +
+          "  \"keywords\" : {},\n" +
+          "  \"attributes\" : {\n" +
+          "      \"static\" : \"true\",\n" +
+          "      \"hidden\" : \"true\",\n" +
+          "      \"type\" : \"keyword\"\n" +
+          "  }\n" +
+          "}");
+        ((ArrayList<Object>)(((DBObject) networkTaxonomy.get("taxonomy")).get("vocabularies"))).add(setsVocabulary);
+        mongoTemplate.execute(db -> db.getCollection("taxonomyEntityWrapper").save(networkTaxonomy));
+      }
+
+      logger.info("Adding 'sets' vocabulary to the study taxonomy");
+      DBObject studyTaxonomy = mongoTemplate.execute(db -> db.getCollection("taxonomyEntityWrapper").findOne("study"));
+      if (studyTaxonomy != null) {
+        DBObject setsVocabulary = BasicDBObject.parse("{\n" +
+          "  \"name\" : \"sets\",\n" +
+          "  \"title\" : {\n" +
+          "      \"en\" : \"Sets\",\n" +
+          "      \"fr\" : \"Ensembles\"\n" +
+          "  },\n" +
+          "  \"description\" : {\n" +
+          "      \"en\" : \"Sets in which the study appears.\",\n" +
+          "      \"fr\" : \"Ensembles dans lesquels est définie l'étude.\"\n" +
+          "  },\n" +
+          "  \"repeatable\" : false,\n" +
+          "  \"keywords\" : {},\n" +
+          "  \"attributes\" : {\n" +
+          "      \"static\" : \"true\",\n" +
+          "      \"hidden\" : \"true\",\n" +
+          "      \"type\" : \"keyword\"\n" +
+          "  }\n" +
+          "}");
+        ((ArrayList<Object>)(((DBObject) studyTaxonomy.get("taxonomy")).get("vocabularies"))).add(setsVocabulary);
+        mongoTemplate.execute(db -> db.getCollection("taxonomyEntityWrapper").save(studyTaxonomy));
+      }
+
+      logger.info("Indexing Taxonomies");
+      eventBus.post(new TaxonomiesUpdatedEvent());
+    } catch(Exception e) {
+      logger.error("Failed to index Taxonomies", e);
     }
   }
 

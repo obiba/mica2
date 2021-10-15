@@ -266,7 +266,6 @@
 <script src="${contextPath}/app/admin/admin.js"></script>
 <script src="${contextPath}/app/admin/admin-router.js"></script>
 <script src="${contextPath}/app/admin/admin-controller.js"></script>
-<script src="${contextPath}/app/sets/sets.js"></script>
 <script src="${contextPath}/app/search/search.js"></script>
 <script src="${contextPath}/app/analysis/analysis.js"></script>
 <script src="${contextPath}/app/config/config.js"></script>

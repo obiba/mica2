@@ -21,7 +21,6 @@ var mica = angular.module('mica', [
   'mica.config',
   'ngObiba',
   'mica.admin',
-  'mica.sets',
   'mica.network',
   'mica.study',
   'mica.dataset',
