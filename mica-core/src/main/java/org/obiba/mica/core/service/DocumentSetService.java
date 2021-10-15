@@ -108,7 +108,7 @@ public abstract class DocumentSetService {
    * @return
    */
   public DocumentSet getCartCurrentUser() {
-    Optional<DocumentSet> cartOpt = getAllCurrentUser().stream().filter(set -> !set.hasName()).findFirst();
+    Optional<DocumentSet> cartOpt = getAllCurrentUser().stream().filter(set -> !set.hasName() && set.getType().equals(getType())).findFirst();
     if (cartOpt.isPresent()) return cartOpt.get();
     return create("", Lists.newArrayList());
   }
