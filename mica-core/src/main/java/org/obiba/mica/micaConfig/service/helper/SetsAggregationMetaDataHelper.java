@@ -6,7 +6,6 @@ import org.obiba.core.translator.Translator;
 import org.obiba.mica.core.domain.DocumentSet;
 import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.core.service.DocumentSetService;
-import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.micaConfig.service.helper.AggregationMetaDataProvider.LocalizedMetaData;
 
@@ -39,10 +38,7 @@ public abstract class SetsAggregationMetaDataHelper extends AbstractIdAggregatio
           LocalizedString title = new LocalizedString();
           locales.forEach(locale -> {
             String setName = Strings.isNullOrEmpty(set.getName()) ?
-              translators.get(locale).translate("sets.cart.title") :
-              (set.getName().startsWith("dar:") && DatasetVariable.MAPPING_NAME.equals(set.getType()) ?
-                set.getName().replace("dar:", "") :
-                set.getName());
+              translators.get(locale).translate("sets.cart.title") : getDocumentSetName(set);
             title.forLanguageTag(locale, setName);
           });
           return new LocalizedMetaData(title, new LocalizedString(), set.getType());
@@ -53,5 +49,9 @@ public abstract class SetsAggregationMetaDataHelper extends AbstractIdAggregatio
   @Override
   protected Map<String, LocalizedMetaData> getIdAggregationMap() {
     return getSetIds();
+  }
+
+  protected String getDocumentSetName(DocumentSet set) {
+    return set.getName();
   }
 }

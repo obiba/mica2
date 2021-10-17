@@ -268,7 +268,7 @@
             <div class="tab-pane <#if !variablesCartEnabled>active</#if>" id="tab_studies">
 
             <div id="cart-callout" class="callout callout-info">
-              <p><@message "sets.studies-cart.help"/></p>
+              <p><@message "sets.cart.studies-help"/></p>
             </div>
 
             <div class="card card-info card-outline">
@@ -321,7 +321,7 @@
             <div class="tab-pane <#if !variablesCartEnabled && !studiesCartEnabled>active</#if>" id="tab_networks">
 
             <div id="cart-callout" class="callout callout-info">
-              <p><@message "sets.networks-cart.help"/></p>
+              <p><@message "sets.cart.networks-help"/></p>
             </div>
 
             <div class="card card-info card-outline">
