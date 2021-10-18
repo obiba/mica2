@@ -6,7 +6,9 @@ import org.obiba.mica.micaConfig.domain.MicaConfig;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.rest.AbstractPublishedDocumentsSetResource;
 import org.obiba.mica.search.JoinQueryExecutor;
+import org.obiba.mica.search.csvexport.GenericReportGenerator;
 import org.obiba.mica.security.service.SubjectAclService;
+import org.obiba.mica.spi.search.QueryType;
 import org.obiba.mica.spi.search.Searcher;
 import org.obiba.mica.study.service.StudySetService;
 import org.obiba.mica.web.model.Dtos;
@@ -17,6 +19,7 @@ import org.springframework.stereotype.Component;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.StreamingOutput;
 import java.io.IOException;
 import java.util.stream.Collectors;
 
@@ -33,8 +36,9 @@ public class PublishedStudiesSetResource extends AbstractPublishedDocumentsSetRe
                                      MicaConfigService micaConfigService,
                                      SubjectAclService subjectAclService,
                                      Searcher searcher,
-                                     Dtos dtos) {
-    super(joinQueryExecutor, micaConfigService, subjectAclService, searcher, dtos);
+                                     Dtos dtos,
+                                     GenericReportGenerator genericReportGenerator) {
+    super(joinQueryExecutor, micaConfigService, subjectAclService, searcher, dtos, genericReportGenerator);
     this.studySetService = studySetService;
   }
 
@@ -65,11 +69,11 @@ public class PublishedStudiesSetResource extends AbstractPublishedDocumentsSetRe
     DocumentSet documentSet = getSecuredDocumentSet(id);
     studySetService.touch(documentSet);
     return Mica.StudiesDto.newBuilder()
-        .setTotal(documentSet.getIdentifiers().size())
-        .setFrom(from)
-        .setLimit(limit)
-        .addAllStudies(studySetService.getPublishedStudies(documentSet, from, limit).stream()
-            .map(dtos::asDto).collect(Collectors.toList())).build();
+      .setTotal(documentSet.getIdentifiers().size())
+      .setFrom(from)
+      .setLimit(limit)
+      .addAllStudies(studySetService.getPublishedStudies(documentSet, from, limit).stream()
+        .map(dtos::asDto).collect(Collectors.toList())).build();
   }
 
   @POST
@@ -90,7 +94,16 @@ public class PublishedStudiesSetResource extends AbstractPublishedDocumentsSetRe
   @Produces(MediaType.TEXT_PLAIN)
   public Response exportStudies(@PathParam("id") String id) {
     return Response.ok(exportDocuments(id))
-        .header("Content-Disposition", String.format("attachment; filename=\"%s-studies.txt\"", id)).build();
+      .header("Content-Disposition", String.format("attachment; filename=\"%s-studies.txt\"", id)).build();
+  }
+
+  @GET
+  @Path("/documents/_report")
+  @Produces("text/csv")
+  public Response reportStudies(@PathParam("id") String id, @QueryParam("locale") @DefaultValue("en") String locale) {
+    String query = String.format("study(in(Mica_study.sets,%s),limit(0,10000),fields(*)),locale(%s)", id, locale);
+    StreamingOutput stream = reportDocuments(id, QueryType.STUDY, query);
+    return Response.ok(stream).header("Content-Disposition", "attachment; filename=\"Studies.csv\"").build();
   }
 
   @POST

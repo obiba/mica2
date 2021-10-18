@@ -38,17 +38,20 @@
 <!--#assign datasetsLink = "${contextPath}/search#lists?type=datasets"/-->
 <#assign portalLink = "${config.portalUrl!contextPath}" + "/"/>
 
-<!-- Cart -->
-<#assign cartEnabled = (config?? && config.cartEnabled && (config.studyDatasetEnabled || config.harmonizationDatasetEnabled))/>
+<!-- Carts -->
+<#assign variablesCartEnabled = (config?? && config.cartEnabled && (config.studyDatasetEnabled || config.harmonizationDatasetEnabled))/>
+<#assign studiesCartEnabled = (config?? && config.studiesCartEnabled && !config.singleStudyEnabled)/>
+<#assign networksCartEnabled = (config?? && config.networksCartEnabled && config.networkEnabled && !config.singleNetworkEnabled)/>
+<#assign cartEnabled = variablesCartEnabled || studiesCartEnabled || networksCartEnabled/>
 <!-- Cart feature is only visible to advanced users -->
 <!--#assign cartEnabled = cartEnabled && (isAdministrator || isReviewer || isEditor || isDAO)/-->
 <!-- Cart feature is only visible to any authenticated users -->
 <!--#assign cartEnabled = cartEnabled && user??/-->
-<#assign listsEnabled = user?? && cartEnabled && true/>
+<#assign listsEnabled = user?? && cartEnabled && variablesCartEnabled/>
 <#assign maxNumberOfSets = config.maxNumberOfSets/>
-<!-- To download the list of variable IDs (and the Opal views, if enabled) -->
-<#assign showCartDownload = (isAdministrator || isReviewer || isEditor || isDAO)/>
-<!-- To reinstate the cart as views in Opal -->
+<!-- To allow download of the cart reports etc. -->
+<#assign showCartDownload = true/>
+<!-- To allow download the cart of variables as views in Opal -->
 <#assign showCartViewDownload = (isAdministrator || isReviewer || isEditor || isDAO)/>
 
 <!-- Contact -->

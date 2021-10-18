@@ -38,8 +38,7 @@ public abstract class SetsAggregationMetaDataHelper extends AbstractIdAggregatio
           LocalizedString title = new LocalizedString();
           locales.forEach(locale -> {
             String setName = Strings.isNullOrEmpty(set.getName()) ?
-              translators.get(locale).translate("sets.cart.title") :
-              set.getName();
+              translators.get(locale).translate("sets.cart.title") : getDocumentSetName(set);
             title.forLanguageTag(locale, setName);
           });
           return new LocalizedMetaData(title, new LocalizedString(), set.getType());
@@ -50,5 +49,9 @@ public abstract class SetsAggregationMetaDataHelper extends AbstractIdAggregatio
   @Override
   protected Map<String, LocalizedMetaData> getIdAggregationMap() {
     return getSetIds();
+  }
+
+  protected String getDocumentSetName(DocumentSet set) {
+    return set.getName();
   }
 }

@@ -201,12 +201,13 @@
                       <i class="fas fa-download"></i> <@message "download"/>
                     </button>
                     <div class="dropdown-menu">
+                      <a class="dropdown-item" href="${contextPath}/ws/variables/set/${set.id}/documents/_report?locale=${.locale}" download><@message "download-cart-report"/></a>
                       <a class="dropdown-item" href="${contextPath}/ws/variables/set/${set.id}/documents/_export" download><@message "download-cart-ids"/></a>
                       <a class="dropdown-item" href="${contextPath}/ws/variables/set/${set.id}/documents/_opal" download><@message "download-cart-views"/></a>
                     </div>
                   </div>
                 <#else>
-                  <a href="${contextPath}/ws/variables/set/${set.id}/documents/_export" download class="btn btn-primary ml-2">
+                  <a href="${contextPath}/ws/variables/set/${set.id}/documents/_report?locale=${.locale}" download class="btn btn-primary ml-2">
                     <i class="fas fa-download"></i> <@message "download"/>
                   </a>
                 </#if>

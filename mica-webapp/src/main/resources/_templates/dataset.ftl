@@ -104,7 +104,7 @@
                         <i class="fas fa-cog"></i> <@message "dataset.crosstab.title"/>
                       </a>
                     </#if>
-                    <#if cartEnabled>
+                    <#if cartEnabled && variablesCartEnabled>
                       <div id="cart-add" class="float-right">
                         <#if user??>
                           <button type="button" class="btn btn-link" onclick="onVariablesCartAdd('${dataset.id}')">

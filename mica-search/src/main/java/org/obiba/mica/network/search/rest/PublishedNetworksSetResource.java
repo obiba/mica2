@@ -7,16 +7,20 @@ import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.network.service.NetworkSetService;
 import org.obiba.mica.rest.AbstractPublishedDocumentsSetResource;
 import org.obiba.mica.search.JoinQueryExecutor;
+import org.obiba.mica.search.csvexport.GenericReportGenerator;
 import org.obiba.mica.security.service.SubjectAclService;
+import org.obiba.mica.spi.search.QueryType;
 import org.obiba.mica.spi.search.Searcher;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.StreamingOutput;
 import java.io.IOException;
 import java.util.stream.Collectors;
 
@@ -28,13 +32,15 @@ public class PublishedNetworksSetResource extends AbstractPublishedDocumentsSetR
 
   private final NetworkSetService networkSetService;
 
+  @Inject
   public PublishedNetworksSetResource(NetworkSetService networkSetService,
                                       JoinQueryExecutor joinQueryExecutor,
                                       MicaConfigService micaConfigService,
                                       SubjectAclService subjectAclService,
                                       Searcher searcher,
-                                      Dtos dtos) {
-    super(joinQueryExecutor, micaConfigService, subjectAclService, searcher, dtos);
+                                      Dtos dtos,
+                                      GenericReportGenerator genericReportGenerator) {
+    super(joinQueryExecutor, micaConfigService, subjectAclService, searcher, dtos, genericReportGenerator);
     this.networkSetService = networkSetService;
   }
 
@@ -91,6 +97,15 @@ public class PublishedNetworksSetResource extends AbstractPublishedDocumentsSetR
   public Response exportNetworks(@PathParam("id") String id) {
     return Response.ok(exportDocuments(id))
       .header("Content-Disposition", String.format("attachment; filename=\"%s-networks.txt\"", id)).build();
+  }
+
+  @GET
+  @Path("/documents/_report")
+  @Produces("text/csv")
+  public Response reportNetworks(@PathParam("id") String id, @QueryParam("locale") @DefaultValue("en") String locale) {
+    String query = String.format("network(in(Mica_network.sets,%s),limit(0,10000),fields(*)),locale(%s)", id, locale);
+    StreamingOutput stream = reportDocuments(id, QueryType.NETWORK, query);
+    return Response.ok(stream).header("Content-Disposition", "attachment; filename=\"Networks.csv\"").build();
   }
 
   @POST

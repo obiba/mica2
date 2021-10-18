@@ -2,7 +2,7 @@
   <#include "../models/navbar-menus-right.ftl"/>
   <#if cartEnabled>
     <li class="nav-item">
-      <a href="${contextPath}/cart" class="nav-link" title="<@message "sets.cart.title"/>">
+      <a href="${contextPath}/cart<#if defaultCartType??>?type=${defaultCartType}</#if>" class="nav-link" title="<@message "sets.cart.title"/>">
         <i class="fas fa-shopping-cart"></i>
         <span id="cart-count" class="badge badge-danger navbar-badge"></span>
       </a>

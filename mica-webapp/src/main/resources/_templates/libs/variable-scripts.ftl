@@ -59,7 +59,7 @@
   </#if>
 
   // cart
-  <#if cartEnabled>
+  <#if cartEnabled && variablesCartEnabled>
     const onVariablesCartGet = function(cart) {
       VariablesSetService.contains(cart, '${variableCartId}', function() {
         $('#cart-remove').show();

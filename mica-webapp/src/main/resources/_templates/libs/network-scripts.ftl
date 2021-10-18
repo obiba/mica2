@@ -22,6 +22,42 @@
 <script src="${assetsPath}/libs/node_modules/plotly.js-dist-min/plotly.min.js"></script>
 
 <script>
+  // cart
+  <#if cartEnabled && networksCartEnabled>
+  const onNetworksCartGet = function(cart) {
+    NetworksSetService.contains(cart, '${network.id}', function() {
+      $('#cart-remove').show();
+    }, function () {
+      $('#cart-add').show();
+    });
+  };
+  const onNetworksCartAdd = function(id) {
+    NetworksSetService.addToCart([id], function(cart, oldCart) {
+      NetworksSetService.showCount('#cart-count', cart, '${.lang}');
+      if (cart.count === oldCart.count) {
+        MicaService.toastInfo("<@message "sets.cart.no-network-added"/>");
+      } else {
+        MicaService.toastSuccess("<@message "network-added-to-cart"/>");
+      }
+      $('#cart-add').hide();
+      $('#cart-remove').show();
+    });
+  };
+  const onNetworksCartRemove = function(id) {
+    NetworksSetService.removeFromCart([id], function(cart, oldCart) {
+      NetworksSetService.showCount('#cart-count', cart, '${.lang}');
+      // TODO toast cart update
+      if (cart.count === oldCart.count) {
+        MicaService.toastInfo("<@message "sets.cart.no-network-removed"/>");
+      } else {
+        MicaService.toastSuccess("<@message "network-removed-from-cart"/>");
+      }
+      $('#cart-remove').hide();
+      $('#cart-add').show();
+    });
+  };
+  </#if>
+
   const Mica = {
     options: {},
     tr: {

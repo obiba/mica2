@@ -1,5 +1,7 @@
 package org.obiba.mica.micaConfig.service.helper;
 
+import org.obiba.mica.core.domain.DocumentSet;
+import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.service.VariableSetService;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.springframework.stereotype.Component;
@@ -22,5 +24,10 @@ public class VariablesSetsAggregationMetaDataHelper extends SetsAggregationMetaD
   @Override
   protected VariableSetService getDocumentSetService() {
     return variableSetService;
+  }
+
+  @Override
+  protected String getDocumentSetName(DocumentSet set) {
+    return set.getName().startsWith("dar:") ? set.getName().replace("dar:", "") : set.getName();
   }
 }

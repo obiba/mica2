@@ -111,6 +111,22 @@
                   </blockquote>
                 </#if>
               </div>
+              <#if cartEnabled && networksCartEnabled>
+                <div class="card-footer">
+                  <#if user??>
+                    <a id="cart-add" href="javascript:void(0)" onclick="onNetworksCartAdd('${network.id}')" style="display: none;">
+                        <@message "sets.cart.add-to-cart"/> <i class="fas fa-cart-plus"></i>
+                    </a>
+                    <a id="cart-remove" href="javascript:void(0)" onclick="onNetworksCartRemove('${network.id}')" style="display: none;">
+                        <@message "sets.cart.remove-from-cart"/> <i class="fas fa-cart-arrow-down"></i>
+                    </a>
+                  <#else>
+                    <a href="${contextPath}/signin?redirect=${contextPath}/network/${network.id}">
+                        <@message "sets.cart.add-to-cart"/> <i class="fas fa-cart-plus"></i>
+                    </a>
+                  </#if>
+                </div>
+              </#if>
             </div>
           </div>
         </div>

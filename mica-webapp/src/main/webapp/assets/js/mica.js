@@ -724,20 +724,19 @@ class UserService {
   }
 
 }
-
 /**
- * Variables set utils.
+ * Generic document set service.
  */
-class VariablesSetService {
+class SetService {
 
   /**
-   * Get all variables sets, including the cart (set without a name).
-   *
+   * Get all documents sets, including the cart (set without a name).
+   * @param type
    * @param onsuccess
    * @param onfailure
    */
-  static getSets(onsuccess, onfailure) {
-    let url = '/ws/variables/sets';
+  static getSets(type, onsuccess, onfailure) {
+    let url = '/ws/' + type + '/sets';
     axios.get(MicaService.normalizeUrl(url))
       .then(response => {
         if (onsuccess) {
@@ -753,44 +752,208 @@ class VariablesSetService {
   }
 
   /**
-   * List the variables of a set.
-   *
+   * Add document IDs to the cart (verifies that it exists and is valid).
+   * @param type
+   * @param ids
+   * @param onsuccess
+   * @param onfailure
+   */
+  static addToCart(type, ids, onsuccess, onfailure) {
+    this.getOrCreateCart(type,function(cart) {
+      let url = '/ws/' + type + '/set/' + cart.id + '/documents/_import';
+      axios({
+        method: 'POST',
+        headers: { 'content-type': 'text/plain' },
+        url: MicaService.normalizeUrl(url),
+        data: ids.join('\n')
+      })
+        .then(response => {
+          if (onsuccess) {
+            onsuccess(response.data, cart);
+          }
+        })
+        .catch(response => {
+          console.dir(response);
+          if (onfailure) {
+            onfailure(response);
+          }
+        });
+    }, onfailure);
+  };
+
+  static addToSet(type, setId, name, ids, onsuccess, onfailure) {
+    this.getOrCreateSet(type, setId, name, function(set) {
+      let url = '/ws/' + type + '/set/' + set.id + '/documents/_import';
+      axios({
+        method: 'POST',
+        headers: { 'content-type': 'text/plain' },
+        url: MicaService.normalizeUrl(url),
+        data: ids.join('\n')
+      })
+        .then(response => {
+          //cartStorage.set('variables', response.data);
+          if (onsuccess) {
+            onsuccess(response.data, set);
+          }
+        })
+        .catch(response => {
+          console.dir(response);
+          if (onfailure) {
+            onfailure(response);
+          }
+        });
+    }, onfailure);
+  }
+
+  static addQueryToCart(type, query, onsuccess, onfailure) {
+    this.getOrCreateCart(type,function(cart) {
+      let url = '/ws/' + type + '/set/' + cart.id + '/documents/_rql';
+      axios({
+        method: 'POST',
+        headers: {
+          'content-type': 'application/x-www-form-urlencoded'
+        },
+        url: MicaService.normalizeUrl(url),
+        data: 'query=' + query
+      })
+        .then(response => {
+          if (onsuccess) {
+            onsuccess(response.data, cart);
+          }
+        })
+        .catch(response => {
+          console.dir(response);
+          if (onfailure) {
+            onfailure(response);
+          }
+        });
+    }, onfailure);
+  }
+
+  static addQueryToSet(type, setId, name, query, onsuccess, onfailure) {
+    this.getOrCreateSet(type, setId, name, function(set) {
+      let url = '/ws/' + type + '/set/' + set.id + '/documents/_rql';
+      axios({
+        method: 'POST',
+        headers: {
+          'content-type': 'application/x-www-form-urlencoded'
+        },
+        url: MicaService.normalizeUrl(url),
+        data: 'query=' + query
+      })
+        .then(response => {
+          if (onsuccess) {
+            onsuccess(response.data, set);
+          }
+        })
+        .catch(response => {
+          console.dir(response);
+          if (onfailure) {
+            onfailure(response);
+          }
+        });
+    }, onfailure);
+  }
+
+  /**
+   * Remove document IDs from the cart (verifies that it exists and is valid).
+   * @param type
+   * @param ids
+   * @param onsuccess
+   * @param onfailure
+   */
+  static removeFromCart(type, ids, onsuccess, onfailure) {
+    this.getOrCreateCart(type,function(cart) {
+      let url = '/ws/' + type + '/set/' + cart.id + '/documents/_delete';
+      axios({
+        method: 'POST',
+        headers: { 'content-type': 'text/plain' },
+        url: MicaService.normalizeUrl(url),
+        data: ids.join('\n')
+      })
+        .then(response => {
+          if (onsuccess) {
+            onsuccess(response.data, cart);
+          }
+        })
+        .catch(response => {
+          console.dir(response);
+          if (onfailure) {
+            onfailure(response);
+          }
+        });
+    }, onfailure);
+  }
+
+  static deleteSet(type, id, onsuccess, onfailure) {
+    let url = '/ws/' + type + '/set/' + id;
+
+    axios({
+      method: 'DELETE',
+      headers: { 'content-type': 'text/plain' },
+      url: MicaService.normalizeUrl(url)
+    })
+      .then(response => {
+        if (onsuccess) {
+          onsuccess(response.data);
+        }
+      })
+      .catch(response => {
+        console.dir(response);
+        if (onfailure) {
+          onfailure(response);
+        }
+      });
+  }
+
+  /**
+   * Show the count of documents in the cart (or an estimate).
+   * @param elem
+   * @param set
+   * @param lang
+   */
+  static showCount(elem, set, lang) {
+    if (set) {
+      Carts.filter(c => c.id === set.id).forEach(c => c.count = set.count);
+    }
+    let count = Carts.map(c => c.count).reduce((prev, curr) => prev + curr);
+    $(elem).text(count > 0 ? (count > 50 ? '50+' : count) : '')
+      .attr('title', count > 50 ? count.toLocaleString(lang) : '');
+  }
+
+  /**
+   * Check whether a document is in the set.
+   * @param type
+   * @param set
    * @param id
-   * @param from
-   * @param limit
    * @param onsuccess
    * @param onfailure
    */
-  static search(id, from, limit, onsuccess, onfailure) {
-    let url = '/ws/variables/_rql?query=variable(' +
-      'in(Mica_variable.sets,' + id + '),' +
-      'limit(' + from + ',' + limit + '),' +
-      'fields(attributes.label.*,variableType,datasetId,datasetAcronym,attributes.Mlstr_area*),' +
-      'sort(variableType,containerId,populationWeight,dataCollectionEventWeight,datasetId,index,name))';
+  static contains(type, set, id, onsuccess, onfailure) {
+    let url = '/ws/' + type + '/set/' + set.id + '/document/' + id + '/_exists';
     axios.get(MicaService.normalizeUrl(url))
       .then(response => {
         if (onsuccess) {
-          onsuccess(response.data);
+          onsuccess(response.data, set);
         }
       })
       .catch(response => {
-        console.dir(response);
         if (onfailure) {
           onfailure(response);
         }
       });
-  }
+  };
 
   /**
    * Delete all (no selection) or selected documents from the set.
-   *
+   * @param type
    * @param id
    * @param selected
    * @param onsuccess
    * @param onfailure
    */
-  static deleteVariables(id, selected, onsuccess, onfailure) {
-    let url = '/ws/variables/set/' + id + '/documents';
+  static deleteDocuments(type, id, selected, onsuccess, onfailure) {
+    let url = '/ws/' + type + '/set/' + id + '/documents';
     if (selected && selected.length>0) {
       url = url + '/_delete';
       axios({
@@ -824,16 +987,16 @@ class VariablesSetService {
           }
         });
     }
-  }
+  };
 
   /**
-   * Get or create the variables cart.
-   *
+   * Get or create the documents cart.
+   * @param type
    * @param onsuccess
    * @param onfailure
    */
-  static getOrCreateCart(onsuccess, onfailure) {
-    let url = '/ws/variables/sets/_cart';
+  static getOrCreateCart(type, onsuccess, onfailure) {
+    let url = '/ws/' + type + '/sets/_cart';
     axios.get(MicaService.normalizeUrl(url))
       .then(response => {
         if (onsuccess) {
@@ -846,19 +1009,19 @@ class VariablesSetService {
           onfailure(response);
         }
       });
-  }
+  };
 
   /**
    * Get or create a variable set.
-   *
+   * @param type
    * @param setId
    * @param name
    * @param onsuccess
    * @param onfailure
    */
-  static getOrCreateSet(setId, name, onsuccess, onfailure) {
+  static getOrCreateSet(type, setId, name, onsuccess, onfailure) {
     if (!setId) {
-      let url = '/ws/variables/sets?name=' + name;
+      let url = '/ws/' + type + '/sets?name=' + name;
       axios({
         method: 'POST',
         url: MicaService.normalizeUrl(url),
@@ -875,7 +1038,7 @@ class VariablesSetService {
           }
         });
     } else {
-      let url = '/ws/variables/set/' + setId;
+      let url = '/ws/' + type + '/set/' + setId;
       axios.get(MicaService.normalizeUrl(url))
         .then(response => {
           if (onsuccess) {
@@ -889,151 +1052,93 @@ class VariablesSetService {
           }
         });
     }
-  }
+  };
+
+}
+/**
+ * Networks set utils.
+ */
+class NetworksSetService extends SetService {
 
   /**
-   * Add variable IDs to the cart (verifies that it exists and is valid).
+   * Get all networks sets, including the cart (set without a name).
+   *
+   * @param onsuccess
+   * @param onfailure
+   */
+  static getSets(onsuccess, onfailure) {
+    SetService.getSets('networks', onsuccess, onfailure);
+  };
+
+  /**
+   * Add networks IDs to the cart (verifies that it exists and is valid).
    * @param ids
    * @param onsuccess
    * @param onfailure
    */
   static addToCart(ids, onsuccess, onfailure) {
-    this.getOrCreateCart(function(cart) {
-      let url = '/ws/variables/set/' + cart.id + '/documents/_import';
-      axios({
-        method: 'POST',
-        headers: { 'content-type': 'text/plain' },
-        url: MicaService.normalizeUrl(url),
-        data: ids.join('\n')
-      })
-        .then(response => {
-          //cartStorage.set('variables', response.data);
-          if (onsuccess) {
-            onsuccess(response.data, cart);
-          }
-        })
-        .catch(response => {
-          console.dir(response);
-          if (onfailure) {
-            onfailure(response);
-          }
-        });
-    }, onfailure);
-  }
-
-  static addToSet(setId, name, ids, onsuccess, onfailure) {
-    this.getOrCreateSet(setId, name, function(set) {
-      let url = '/ws/variables/set/' + set.id + '/documents/_import';
-      axios({
-        method: 'POST',
-        headers: { 'content-type': 'text/plain' },
-        url: MicaService.normalizeUrl(url),
-        data: ids.join('\n')
-      })
-        .then(response => {
-          //cartStorage.set('variables', response.data);
-          if (onsuccess) {
-            onsuccess(response.data, set);
-          }
-        })
-        .catch(response => {
-          console.dir(response);
-          if (onfailure) {
-            onfailure(response);
-          }
-        });
-    }, onfailure);
-  }
-
-  static addQueryToCart(query, onsuccess, onfailure) {
-    this.getOrCreateCart(function(cart) {
-      let url = '/ws/variables/set/' + cart.id + '/documents/_rql';
-      axios({
-        method: 'POST',
-        headers: {
-          'content-type': 'application/x-www-form-urlencoded'
-        },
-        url: MicaService.normalizeUrl(url),
-        data: 'query=' + query
-      })
-        .then(response => {
-          //cartStorage.set('variables', response.data);
-          if (onsuccess) {
-            onsuccess(response.data, cart);
-          }
-        })
-        .catch(response => {
-          console.dir(response);
-          if (onfailure) {
-            onfailure(response);
-          }
-        });
-    }, onfailure);
-  }
-
-  static addQueryToSet(setId, name, query, onsuccess, onfailure) {
-    this.getOrCreateSet(setId, name, function(set) {
-      let url = '/ws/variables/set/' + set.id + '/documents/_rql';
-      axios({
-        method: 'POST',
-        headers: {
-          'content-type': 'application/x-www-form-urlencoded'
-        },
-        url: MicaService.normalizeUrl(url),
-        data: 'query=' + query
-      })
-        .then(response => {
-          if (onsuccess) {
-            onsuccess(response.data, set);
-          }
-        })
-        .catch(response => {
-          console.dir(response);
-          if (onfailure) {
-            onfailure(response);
-          }
-        });
-    }, onfailure);
+    SetService.addToCart('networks', ids, onsuccess, onfailure);
   }
 
   /**
-   * Remove variable IDs from the cart (verifies that it exists and is valid).
+   * Remove networks IDs from the cart (verifies that it exists and is valid).
    * @param ids
    * @param onsuccess
    * @param onfailure
    */
   static removeFromCart(ids, onsuccess, onfailure) {
-    this.getOrCreateCart(function(cart) {
-      let url = '/ws/variables/set/' + cart.id + '/documents/_delete';
-      axios({
-        method: 'POST',
-        headers: { 'content-type': 'text/plain' },
-        url: MicaService.normalizeUrl(url),
-        data: ids.join('\n')
-      })
-        .then(response => {
-          //cartStorage.set('variables', response.data);
-          if (onsuccess) {
-            onsuccess(response.data, cart);
-          }
-        })
-        .catch(response => {
-          console.dir(response);
-          if (onfailure) {
-            onfailure(response);
-          }
-        });
-    }, onfailure);
+    SetService.removeFromCart('networks', ids, onsuccess, onfailure);
   }
 
-  static deleteSet(id, onsuccess, onfailure) {
-    let url = '/ws/variables/set/' + id;
+  /**
+   * Check whether a network is in the set.
+   * @param set
+   * @param id
+   * @param onsuccess
+   * @param onfailure
+   */
+  static contains(set, id, onsuccess, onfailure) {
+    SetService.contains('networks', set, id, onsuccess, onfailure);
+  };
 
-    axios({
-      method: 'DELETE',
-      headers: { 'content-type': 'text/plain' },
-      url: MicaService.normalizeUrl(url)
-    })
+  /**
+   * Delete all (no selection) or selected documents from the set.
+   *
+   * @param id
+   * @param selected
+   * @param onsuccess
+   * @param onfailure
+   */
+  static deleteNetworks(id, selected, onsuccess, onfailure) {
+    SetService.deleteDocuments('networks', id, selected, onsuccess, onfailure);
+  };
+
+  /**
+   * Get or create the networks cart.
+   *
+   * @param onsuccess
+   * @param onfailure
+   */
+  static getOrCreateCart(onsuccess, onfailure) {
+    SetService.getOrCreateCart('networks', onsuccess, onfailure);
+  };
+
+  /**
+   * List the networks of a set.
+   *
+   * @param id
+   * @param from
+   * @param limit
+   * @param onsuccess
+   * @param onfailure
+   */
+  static search(id, from, limit, onsuccess, onfailure) {
+    let url = '/ws/networks/_rql?query=network(' +
+      'in(Mica_network.sets,' + id + '),' +
+      'limit(' + from + ',' + limit + '),' +
+      'fields(acronym.*,name.*),' +
+      'sort(acronym))';
+    axios.get(MicaService.normalizeUrl(url))
       .then(response => {
         if (onsuccess) {
           onsuccess(response.data);
@@ -1046,16 +1151,229 @@ class VariablesSetService {
         }
       });
   }
+}
+
+/**
+ * Studies set utils.
+ */
+class StudiesSetService extends SetService {
 
   /**
-   * Show the count of variables in the cart (or an estimate).
-   * @param elem
-   * @param set
-   * @param lang
+   * Get all studies sets, including the cart (set without a name).
+   *
+   * @param onsuccess
+   * @param onfailure
    */
-  static showCount(elem, set, lang) {
-    $(elem).text(set.count > 0 ? (set.count > 50 ? '50+' : set.count) : '')
-      .attr('title', set.count > 50 ? set.count.toLocaleString(lang) : '');
+  static getSets(onsuccess, onfailure) {
+    SetService.getSets('studies', onsuccess, onfailure);
+  };
+
+  /**
+   * Add study IDs to the cart (verifies that it exists and is valid).
+   * @param ids
+   * @param onsuccess
+   * @param onfailure
+   */
+  static addToCart(ids, onsuccess, onfailure) {
+    SetService.addToCart('studies', ids, onsuccess, onfailure);
+  }
+
+  /**
+   * Remove study IDs from the cart (verifies that it exists and is valid).
+   * @param ids
+   * @param onsuccess
+   * @param onfailure
+   */
+  static removeFromCart(ids, onsuccess, onfailure) {
+    SetService.removeFromCart('studies', ids, onsuccess, onfailure);
+  }
+
+  /**
+   * Check whether a study is in the set.
+   * @param set
+   * @param id
+   * @param onsuccess
+   * @param onfailure
+   */
+  static contains(set, id, onsuccess, onfailure) {
+    SetService.contains('studies', set, id, onsuccess, onfailure);
+  };
+
+  /**
+   * Delete all (no selection) or selected documents from the set.
+   *
+   * @param id
+   * @param selected
+   * @param onsuccess
+   * @param onfailure
+   */
+  static deleteStudies(id, selected, onsuccess, onfailure) {
+    SetService.deleteDocuments('studies', id, selected, onsuccess, onfailure);
+  };
+
+  /**
+   * Get or create the studies cart.
+   *
+   * @param onsuccess
+   * @param onfailure
+   */
+  static getOrCreateCart(onsuccess, onfailure) {
+    SetService.getOrCreateCart('studies', onsuccess, onfailure);
+  };
+
+  /**
+   * List the studies of a set.
+   *
+   * @param id
+   * @param from
+   * @param limit
+   * @param onsuccess
+   * @param onfailure
+   */
+  static search(id, from, limit, onsuccess, onfailure) {
+    let url = '/ws/studies/_rql?query=study(' +
+      'in(Mica_study.sets,' + id + '),' +
+      'limit(' + from + ',' + limit + '),' +
+      'fields(acronym.*,name.*,model.methods.design,populations.dataCollectionEvents.model.dataSources,model.numberOfParticipants.participant),' +
+      'sort(acronym))';
+    axios.get(MicaService.normalizeUrl(url))
+      .then(response => {
+        if (onsuccess) {
+          onsuccess(response.data);
+        }
+      })
+      .catch(response => {
+        console.dir(response);
+        if (onfailure) {
+          onfailure(response);
+        }
+      });
+  }
+}
+
+/**
+ * Variables set utils.
+ */
+class VariablesSetService extends SetService {
+
+  /**
+   * Get all variables sets, including the cart (set without a name).
+   *
+   * @param onsuccess
+   * @param onfailure
+   */
+  static getSets(onsuccess, onfailure) {
+    SetService.getSets('variables', onsuccess, onfailure);
+  };
+
+  /**
+   * Delete all (no selection) or selected documents from the set.
+   *
+   * @param id
+   * @param selected
+   * @param onsuccess
+   * @param onfailure
+   */
+  static deleteVariables(id, selected, onsuccess, onfailure) {
+    SetService.deleteDocuments('variables', id, selected, onsuccess, onfailure);
+  }
+
+  /**
+   * Get or create the variables cart.
+   *
+   * @param onsuccess
+   * @param onfailure
+   */
+  static getOrCreateCart(onsuccess, onfailure) {
+    SetService.getOrCreateCart('variables', onsuccess, onfailure);
+  }
+
+  /**
+   * Get or create a variable set.
+   *
+   * @param setId
+   * @param name
+   * @param onsuccess
+   * @param onfailure
+   */
+  static getOrCreateSet(setId, name, onsuccess, onfailure) {
+    SetService.getOrCreateSet('variables', setId, name, onsuccess, onfailure);
+  }
+
+  /**
+   * Add variable IDs to the cart (verifies that it exists and is valid).
+   * @param ids
+   * @param onsuccess
+   * @param onfailure
+   */
+  static addToCart(ids, onsuccess, onfailure) {
+    SetService.addToCart('variables', ids, onsuccess, onfailure);
+  }
+
+  static addToSet(setId, name, ids, onsuccess, onfailure) {
+    SetService.addToSet('variables', setId, name, ids, onsuccess, onfailure);
+  }
+
+  static addQueryToCart(query, onsuccess, onfailure) {
+    SetService.addQueryToCart('variables', query, onsuccess, onfailure);
+  }
+
+  static addQueryToSet(setId, name, query, onsuccess, onfailure) {
+    SetService.addQueryToSet('variables', setId, name, query, onsuccess, onfailure);
+  }
+
+  /**
+   * Remove variable IDs from the cart (verifies that it exists and is valid).
+   * @param ids
+   * @param onsuccess
+   * @param onfailure
+   */
+  static removeFromCart(ids, onsuccess, onfailure) {
+    SetService.removeFromCart('variables', ids, onsuccess, onfailure);
+  }
+
+  static deleteSet(id, onsuccess, onfailure) {
+    SetService.deleteSet('variables', id, onsuccess, onfailure);
+  }
+
+  /**
+   * Check whether a variable is in the set.
+   * @param set
+   * @param id
+   * @param onsuccess
+   * @param onfailure
+   */
+  static contains(set, id, onsuccess, onfailure) {
+    SetService.contains('variables', set, id, onsuccess, onfailure);
+  };
+
+  /**
+   * List the variables of a set.
+   *
+   * @param id
+   * @param from
+   * @param limit
+   * @param onsuccess
+   * @param onfailure
+   */
+  static search(id, from, limit, onsuccess, onfailure) {
+    let url = '/ws/variables/_rql?query=variable(' +
+      'in(Mica_variable.sets,' + id + '),' +
+      'limit(' + from + ',' + limit + '),' +
+      'fields(attributes.label.*,variableType,datasetId,datasetAcronym,attributes.Mlstr_area*),' +
+      'sort(variableType,containerId,populationWeight,dataCollectionEventWeight,datasetId,index,name))';
+    axios.get(MicaService.normalizeUrl(url))
+      .then(response => {
+        if (onsuccess) {
+          onsuccess(response.data);
+        }
+      })
+      .catch(response => {
+        console.dir(response);
+        if (onfailure) {
+          onfailure(response);
+        }
+      });
   }
 
   /**
@@ -1082,28 +1400,6 @@ class VariablesSetService {
 
     });
   }
-
-  /**
-   * Check whether a variable is in the set.
-   * @param set
-   * @param id
-   * @param onsuccess
-   * @param onfailure
-   */
-  static contains(set, id, onsuccess, onfailure) {
-    let url = '/ws/variables/set/' + set.id + '/document/' + id + '/_exists';
-    axios.get(MicaService.normalizeUrl(url))
-      .then(response => {
-        if (onsuccess) {
-          onsuccess(response.data, set);
-        }
-      })
-      .catch(response => {
-        if (onfailure) {
-          onfailure(response);
-        }
-      });
-  };
 
 }
 

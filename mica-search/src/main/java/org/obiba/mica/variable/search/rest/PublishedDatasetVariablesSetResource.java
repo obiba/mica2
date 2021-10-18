@@ -20,7 +20,9 @@ import org.obiba.mica.micaConfig.domain.MicaConfig;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.rest.AbstractPublishedDocumentsSetResource;
 import org.obiba.mica.search.JoinQueryExecutor;
+import org.obiba.mica.search.csvexport.GenericReportGenerator;
 import org.obiba.mica.security.service.SubjectAclService;
+import org.obiba.mica.spi.search.QueryType;
 import org.obiba.mica.spi.search.Searcher;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
@@ -51,8 +53,9 @@ public class PublishedDatasetVariablesSetResource extends AbstractPublishedDocum
     Searcher searcher,
     Dtos dtos,
     MicaConfigService micaConfigService,
-    SubjectAclService subjectAclService) {
-    super(joinQueryExecutor, micaConfigService, subjectAclService, searcher, dtos);
+    SubjectAclService subjectAclService,
+    GenericReportGenerator genericReportGenerator) {
+    super(joinQueryExecutor, micaConfigService, subjectAclService, searcher, dtos, genericReportGenerator);
     this.variableSetService = variableSetService;
   }
 
@@ -109,6 +112,15 @@ public class PublishedDatasetVariablesSetResource extends AbstractPublishedDocum
   public Response exportVariables(@PathParam("id") String id) {
     return Response.ok(exportDocuments(id))
       .header("Content-Disposition", String.format("attachment; filename=\"%s-variables.txt\"", id)).build();
+  }
+
+  @GET
+  @Path("/documents/_report")
+  @Produces("text/csv")
+  public Response reportStudies(@PathParam("id") String id, @QueryParam("locale") @DefaultValue("en") String locale) {
+    String query = String.format("variable(in(Mica_variable.sets,%s),limit(0,2000000),fields(*)),locale(%s)", id, locale);
+    StreamingOutput stream = reportDocuments(id, QueryType.VARIABLE, query);
+    return Response.ok(stream).header("Content-Disposition", "attachment; filename=\"Variables.csv\"").build();
   }
 
   @GET

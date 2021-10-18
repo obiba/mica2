@@ -18,6 +18,42 @@
 <script src="${assetsPath}/js/mica-repo.js"></script>
 
 <script>
+  // cart
+  <#if cartEnabled && studiesCartEnabled>
+  const onStudiesCartGet = function(cart) {
+    StudiesSetService.contains(cart, '${study.id}', function() {
+      $('#cart-remove').show();
+    }, function () {
+      $('#cart-add').show();
+    });
+  };
+  const onStudiesCartAdd = function(id) {
+    StudiesSetService.addToCart([id], function(cart, oldCart) {
+      StudiesSetService.showCount('#cart-count', cart, '${.lang}');
+      if (cart.count === oldCart.count) {
+        MicaService.toastInfo("<@message "sets.cart.no-study-added"/>");
+      } else {
+        MicaService.toastSuccess("<@message "study-added-to-cart"/>");
+      }
+      $('#cart-add').hide();
+      $('#cart-remove').show();
+    });
+  };
+  const onStudiesCartRemove = function(id) {
+    StudiesSetService.removeFromCart([id], function(cart, oldCart) {
+      StudiesSetService.showCount('#cart-count', cart, '${.lang}');
+      // TODO toast cart update
+      if (cart.count === oldCart.count) {
+        MicaService.toastInfo("<@message "sets.cart.no-study-removed"/>");
+      } else {
+        MicaService.toastSuccess("<@message "study-removed-from-cart"/>");
+      }
+      $('#cart-remove').hide();
+      $('#cart-add').show();
+    });
+  };
+  </#if>
+
   const Mica = { options: {} };
   <#if study.populations?? && study.populations?size != 0>
     <#list study.populationsSorted as population>
