@@ -8,7 +8,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.obiba.mica.search.csvexport;
+package org.obiba.mica.search.csvexport.generators;
 
 import au.com.bytecode.opencsv.CSVWriter;
 import org.obiba.core.translator.JsonTranslator;
@@ -17,7 +17,6 @@ import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.network.service.NetworkService;
 import org.obiba.mica.search.JoinQueryExecutor;
-import org.obiba.mica.search.csvexport.generators.CsvReportGeneratorImpl;
 import org.obiba.mica.spi.search.QueryType;
 import org.obiba.mica.spi.search.Searcher;
 import org.obiba.mica.spi.search.support.JoinQuery;
