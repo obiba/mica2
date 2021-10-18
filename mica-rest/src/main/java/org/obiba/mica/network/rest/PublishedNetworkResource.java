@@ -10,12 +10,7 @@
 
 package org.obiba.mica.network.rest;
 
-import javax.inject.Inject;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-
-import org.apache.shiro.authz.annotation.RequiresAuthentication;
+import com.codahale.metrics.annotation.Timed;
 import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.rest.FileResource;
@@ -29,7 +24,10 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import com.codahale.metrics.annotation.Timed;
+import javax.inject.Inject;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 
 /**
  * REST controller for managing Network.
@@ -64,7 +62,7 @@ public class PublishedNetworkResource {
     FileResource fileResource = applicationContext.getBean(FileResource.class);
     Network network = getNetwork(id);
 
-    if(network.getLogo() == null) throw NoSuchEntityException.withId(Attachment.class, fileId);
+    if (network.getLogo() == null) throw NoSuchEntityException.withId(Attachment.class, fileId);
 
     fileResource.setAttachment(network.getLogo());
 

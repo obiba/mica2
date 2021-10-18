@@ -49,9 +49,9 @@
 <!--#assign cartEnabled = cartEnabled && user??/-->
 <#assign listsEnabled = user?? && cartEnabled && variablesCartEnabled/>
 <#assign maxNumberOfSets = config.maxNumberOfSets/>
-<!-- To download the list of variable IDs (and the Opal views, if enabled) -->
-<#assign showCartDownload = (isAdministrator || isReviewer || isEditor || isDAO)/>
-<!-- To reinstate the cart as views in Opal -->
+<!-- To allow download of the cart reports etc. -->
+<#assign showCartDownload = true/>
+<!-- To allow download the cart of variables as views in Opal -->
 <#assign showCartViewDownload = (isAdministrator || isReviewer || isEditor || isDAO)/>
 
 <!-- Contact -->
