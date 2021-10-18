@@ -7,7 +7,7 @@ import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.network.service.NetworkSetService;
 import org.obiba.mica.rest.AbstractPublishedDocumentsSetResource;
 import org.obiba.mica.search.JoinQueryExecutor;
-import org.obiba.mica.search.csvexport.GenericReportGenerator;
+import org.obiba.mica.search.csvexport.JoinQueryReportGenerator;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.spi.search.QueryType;
 import org.obiba.mica.spi.search.Searcher;
@@ -39,8 +39,8 @@ public class PublishedNetworksSetResource extends AbstractPublishedDocumentsSetR
                                       SubjectAclService subjectAclService,
                                       Searcher searcher,
                                       Dtos dtos,
-                                      GenericReportGenerator genericReportGenerator) {
-    super(joinQueryExecutor, micaConfigService, subjectAclService, searcher, dtos, genericReportGenerator);
+                                      JoinQueryReportGenerator joinQueryReportGenerator) {
+    super(joinQueryExecutor, micaConfigService, subjectAclService, searcher, dtos, joinQueryReportGenerator);
     this.networkSetService = networkSetService;
   }
 

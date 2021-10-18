@@ -20,7 +20,7 @@ import org.obiba.mica.micaConfig.domain.MicaConfig;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.rest.AbstractPublishedDocumentsSetResource;
 import org.obiba.mica.search.JoinQueryExecutor;
-import org.obiba.mica.search.csvexport.GenericReportGenerator;
+import org.obiba.mica.search.csvexport.JoinQueryReportGenerator;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.spi.search.QueryType;
 import org.obiba.mica.spi.search.Searcher;
@@ -54,8 +54,8 @@ public class PublishedDatasetVariablesSetResource extends AbstractPublishedDocum
     Dtos dtos,
     MicaConfigService micaConfigService,
     SubjectAclService subjectAclService,
-    GenericReportGenerator genericReportGenerator) {
-    super(joinQueryExecutor, micaConfigService, subjectAclService, searcher, dtos, genericReportGenerator);
+    JoinQueryReportGenerator joinQueryReportGenerator) {
+    super(joinQueryExecutor, micaConfigService, subjectAclService, searcher, dtos, joinQueryReportGenerator);
     this.variableSetService = variableSetService;
   }
 

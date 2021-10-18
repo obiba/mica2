@@ -8,7 +8,7 @@ import org.obiba.mica.core.service.DocumentSetService;
 import org.obiba.mica.micaConfig.domain.MicaConfig;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.search.JoinQueryExecutor;
-import org.obiba.mica.search.csvexport.GenericReportGenerator;
+import org.obiba.mica.search.csvexport.JoinQueryReportGenerator;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.spi.search.QueryType;
 import org.obiba.mica.spi.search.Searcher;
@@ -34,20 +34,20 @@ public abstract class AbstractPublishedDocumentsSetResource<T extends DocumentSe
 
   protected final Dtos dtos;
 
-  private final GenericReportGenerator genericReportGenerator;
+  private final JoinQueryReportGenerator joinQueryReportGenerator;
 
   protected AbstractPublishedDocumentsSetResource(JoinQueryExecutor joinQueryExecutor,
                                                   MicaConfigService micaConfigService,
                                                   SubjectAclService subjectAclService,
                                                   Searcher searcher,
                                                   Dtos dtos,
-                                                  GenericReportGenerator genericReportGenerator) {
+                                                  JoinQueryReportGenerator joinQueryReportGenerator) {
     this.joinQueryExecutor = joinQueryExecutor;
     this.micaConfigService = micaConfigService;
     this.subjectAclService = subjectAclService;
     this.searcher = searcher;
     this.dtos = dtos;
-    this.genericReportGenerator = genericReportGenerator;
+    this.joinQueryReportGenerator = joinQueryReportGenerator;
   }
 
   protected abstract T getDocumentSetService();
@@ -93,7 +93,7 @@ public abstract class AbstractPublishedDocumentsSetResource<T extends DocumentSe
   protected StreamingOutput reportDocuments(String id, QueryType type, String query) {
     DocumentSet documentSet = getSecuredDocumentSet(id);
     getDocumentSetService().touch(documentSet);
-    return os -> genericReportGenerator.generateCsv(type, query, Lists.newArrayList(), os);
+    return os -> joinQueryReportGenerator.generateCsv(type, query, Lists.newArrayList(), os);
   }
 
   protected Mica.DocumentSetDto deleteDocuments(String id, String body) {

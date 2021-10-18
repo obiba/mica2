@@ -21,7 +21,7 @@ import com.google.common.base.Strings;
 
 import au.com.bytecode.opencsv.CSVWriter;
 
-public class StudiesCsvReportGenerator extends CsvReportGeneratorImpl {
+public class StudySummaryDtosCsvReportGenerator extends CsvReportGeneratorImpl {
 
   private static final String EXISTS = "X";
   private static final String NOT_EXISTS = "-";
@@ -30,7 +30,7 @@ public class StudiesCsvReportGenerator extends CsvReportGeneratorImpl {
   private List<Mica.StudySummaryDto> studySummaryDtos;
   private Translator translator;
 
-  public StudiesCsvReportGenerator(MicaSearch.JoinQueryResultDto queryResult, List<String> columnsToHide, Translator translator) {
+  public StudySummaryDtosCsvReportGenerator(MicaSearch.JoinQueryResultDto queryResult, List<String> columnsToHide, Translator translator) {
     this.columnsToHide = columnsToHide;
     this.studySummaryDtos = queryResult.getStudyResultDto().getExtension(MicaSearch.StudyResultDto.result).getSummariesList();
     this.translator = translator;

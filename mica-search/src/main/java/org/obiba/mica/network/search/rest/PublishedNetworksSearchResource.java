@@ -18,9 +18,8 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
 
-import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.search.JoinQueryExecutor;
-import org.obiba.mica.search.csvexport.GenericReportGenerator;
+import org.obiba.mica.search.csvexport.JoinQueryReportGenerator;
 import org.obiba.mica.search.queries.rql.RQLQueryBuilder;
 import org.obiba.mica.spi.search.QueryType;
 import org.obiba.mica.spi.search.Searcher;
@@ -47,7 +46,7 @@ public class  PublishedNetworksSearchResource {
   private Searcher searcher;
 
   @Inject
-  private GenericReportGenerator genericReportGenerator;
+  private JoinQueryReportGenerator joinQueryReportGenerator;
 
   @GET
   @Timed
@@ -89,7 +88,7 @@ public class  PublishedNetworksSearchResource {
   @Produces("text/csv")
   @Timed
   public Response rqlQueryAsCsv(@QueryParam("query") String query, @QueryParam("columnsToHide") List<String> columnsToHide) throws IOException {
-    StreamingOutput stream = os -> genericReportGenerator.generateCsv(QueryType.NETWORK, query, columnsToHide, os);
+    StreamingOutput stream = os -> joinQueryReportGenerator.generateCsv(QueryType.NETWORK, query, columnsToHide, os);
     return Response.ok(stream).header("Content-Disposition", "attachment; filename=\"Networks.csv\"").build();
   }
 

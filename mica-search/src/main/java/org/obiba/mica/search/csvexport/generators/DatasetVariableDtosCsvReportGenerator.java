@@ -21,7 +21,7 @@ import org.obiba.mica.web.model.MicaSearch;
 
 import au.com.bytecode.opencsv.CSVWriter;
 
-public class VariablesCsvReportGenerator extends CsvReportGeneratorImpl {
+public class DatasetVariableDtosCsvReportGenerator extends CsvReportGeneratorImpl {
 
   private static final String NOT_EXISTS = "-";
 
@@ -29,7 +29,7 @@ public class VariablesCsvReportGenerator extends CsvReportGeneratorImpl {
   private List<Mica.DatasetVariableResolverDto> datasetVariableDtos;
   private Translator translator;
 
-  public VariablesCsvReportGenerator(MicaSearch.JoinQueryResultDto queryResult, List<String> columnsToHide, Translator translator) {
+  public DatasetVariableDtosCsvReportGenerator(MicaSearch.JoinQueryResultDto queryResult, List<String> columnsToHide, Translator translator) {
     this.columnsToHide = columnsToHide;
     this.datasetVariableDtos = queryResult.getVariableResultDto().getExtension(MicaSearch.DatasetVariableResultDto.result).getSummariesList();
     this.translator = translator;

@@ -19,7 +19,7 @@ import org.obiba.mica.web.model.MicaSearch;
 
 import au.com.bytecode.opencsv.CSVWriter;
 
-public class NetworkCsvReportGenerator extends CsvReportGeneratorImpl {
+public class NetworkDtosCsvReportGenerator extends CsvReportGeneratorImpl {
 
   private static final String NOT_EXISTS = "-";
 
@@ -27,7 +27,7 @@ public class NetworkCsvReportGenerator extends CsvReportGeneratorImpl {
   private List<Mica.NetworkDto> networkDtos;
   private Translator translator;
 
-  public NetworkCsvReportGenerator(MicaSearch.JoinQueryResultDto queryResult, List<String> columnsToHide, Translator translator) {
+  public NetworkDtosCsvReportGenerator(MicaSearch.JoinQueryResultDto queryResult, List<String> columnsToHide, Translator translator) {
     this.columnsToHide = columnsToHide;
     this.networkDtos = queryResult.getNetworkResultDto().getExtension(MicaSearch.NetworkResultDto.result).getNetworksList();
     this.translator = translator;

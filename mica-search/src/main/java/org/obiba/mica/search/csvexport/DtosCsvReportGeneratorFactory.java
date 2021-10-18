@@ -13,10 +13,10 @@ package org.obiba.mica.search.csvexport;
 import org.obiba.core.translator.JsonTranslator;
 import org.obiba.core.translator.Translator;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
-import org.obiba.mica.search.csvexport.generators.DatasetsCsvReportGenerator;
-import org.obiba.mica.search.csvexport.generators.NetworkCsvReportGenerator;
-import org.obiba.mica.search.csvexport.generators.StudiesCsvReportGenerator;
-import org.obiba.mica.search.csvexport.generators.VariablesCsvReportGenerator;
+import org.obiba.mica.search.csvexport.generators.DatasetDtosCsvReportGenerator;
+import org.obiba.mica.search.csvexport.generators.NetworkDtosCsvReportGenerator;
+import org.obiba.mica.search.csvexport.generators.StudySummaryDtosCsvReportGenerator;
+import org.obiba.mica.search.csvexport.generators.DatasetVariableDtosCsvReportGenerator;
 import org.obiba.mica.spi.search.QueryType;
 import org.obiba.mica.web.model.MicaSearch;
 import org.springframework.stereotype.Component;
@@ -25,7 +25,7 @@ import javax.inject.Inject;
 import java.util.List;
 
 @Component
-public class CsvReportGeneratorFactory {
+public class DtosCsvReportGeneratorFactory {
 
   @Inject
   private MicaConfigService micaConfigService;
@@ -36,13 +36,13 @@ public class CsvReportGeneratorFactory {
 
     switch (type) {
       case STUDY:
-        return new StudiesCsvReportGenerator(queryResult, columnsToHide, translator);
+        return new StudySummaryDtosCsvReportGenerator(queryResult, columnsToHide, translator);
       case NETWORK:
-        return new NetworkCsvReportGenerator(queryResult, columnsToHide, translator);
+        return new NetworkDtosCsvReportGenerator(queryResult, columnsToHide, translator);
       case DATASET:
-        return new DatasetsCsvReportGenerator(queryResult, columnsToHide, translator);
+        return new DatasetDtosCsvReportGenerator(queryResult, columnsToHide, translator);
       case VARIABLE:
-        return new VariablesCsvReportGenerator(queryResult, columnsToHide, translator);
+        return new DatasetVariableDtosCsvReportGenerator(queryResult, columnsToHide, translator);
       default:
         throw new IllegalStateException("No CsvReportGenerator available for type " + type);
     }
