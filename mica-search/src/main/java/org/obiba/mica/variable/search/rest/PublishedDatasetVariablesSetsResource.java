@@ -75,7 +75,7 @@ public class PublishedDatasetVariablesSetsResource extends AbstractPublishedDocu
   @POST
   public Response createEmpty(@Context UriInfo uriInfo, @QueryParam("name") String name) {
     Mica.DocumentSetDto created = createEmptyDocumentSet(name);
-    return Response.created(uriInfo.getBaseUriBuilder().segment("studies", "set", created.getId()).build()).entity(created).build();
+    return Response.created(uriInfo.getBaseUriBuilder().segment("variables", "set", created.getId()).build()).entity(created).build();
   }
 
   @GET
