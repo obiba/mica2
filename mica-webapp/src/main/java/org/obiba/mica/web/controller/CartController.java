@@ -1,14 +1,17 @@
 package org.obiba.mica.web.controller;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import org.obiba.mica.core.domain.DocumentSet;
 import org.obiba.mica.dataset.service.VariableSetService;
+import org.obiba.mica.micaConfig.domain.MicaConfig;
 import org.obiba.mica.micaConfig.service.DataAccessConfigService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.inject.Inject;
@@ -26,7 +29,7 @@ public class CartController extends BaseController {
   private DataAccessConfigService dataAccessConfigService;
 
   @GetMapping("/cart")
-  public ModelAndView get() {
+  public ModelAndView get(@RequestParam(required = false) String type) {
     Subject subject = SecurityUtils.getSubject();
     if (subject.isAuthenticated()) {
       // make sure cart exists
@@ -35,10 +38,20 @@ public class CartController extends BaseController {
       // note: the cart will be populated by the SessionInterceptor
       Map<String, Object> params = newParameters();
       params.put("accessConfig", dataAccessConfigService.getOrCreateConfig());
+      MicaConfig config = micaConfigService.getConfig();
+      if (!Strings.isNullOrEmpty(type) &&
+        ((type.equalsIgnoreCase("variables") && config.isCartEnabled()) ||
+          (type.equalsIgnoreCase("studies") && config.isStudiesCartEnabled()) ||
+          (type.equalsIgnoreCase("networks") && config.isNetworksCartEnabled()))) {
+        params.put("showCartType", type.toLowerCase());
+      } else {
+        params.put("showCartType", config.isCartEnabled() ? "variables" : (config.isStudiesCartEnabled() ? "studies" : "networks"));
+      }
       return new ModelAndView("cart", params);
     } else {
       return new ModelAndView("redirect:signin?redirect=" + micaConfigService.getContextPath() + "/cart");
     }
+
   }
 
   @GetMapping("/lists")

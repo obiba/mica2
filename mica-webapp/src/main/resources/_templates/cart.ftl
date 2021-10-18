@@ -48,7 +48,7 @@
           <div class="modal-footer justify-content-between">
             <button type="button" class="btn btn-default" data-dismiss="modal"><@message "cancel"/></button>
             <button type="button" class="btn btn-primary" data-dismiss="modal"
-                    onclick="VariablesSetService.deleteVariables('${user.variablesCart.id}', variablesCartStorage.getSelections(), function() { window.location.reload(); })"><@message "confirm"/>
+                    onclick="VariablesSetService.deleteVariables('${user.variablesCart.id}', variablesCartStorage.getSelections(), function() { window.location.replace('${contextPath}/cart?type=variables'); })"><@message "confirm"/>
             </button>
           </div>
         </div>
@@ -75,7 +75,7 @@
           <div class="modal-footer justify-content-between">
             <button type="button" class="btn btn-default" data-dismiss="modal"><@message "cancel"/></button>
             <button type="button" class="btn btn-primary" data-dismiss="modal"
-                    onclick="StudiesSetService.deleteStudies('${user.studiesCart.id}', studiesCartStorage.getSelections(), function() { window.location.reload(); })"><@message "confirm"/>
+                    onclick="StudiesSetService.deleteStudies('${user.studiesCart.id}', studiesCartStorage.getSelections(), function() { window.location.replace('${contextPath}/cart?type=studies'); })"><@message "confirm"/>
             </button>
           </div>
         </div>
@@ -102,7 +102,7 @@
           <div class="modal-footer justify-content-between">
             <button type="button" class="btn btn-default" data-dismiss="modal"><@message "cancel"/></button>
             <button type="button" class="btn btn-primary" data-dismiss="modal"
-                    onclick="NetworksSetService.deleteNetworks('${user.networksCart.id}', networksCartStorage.getSelections(), function() { window.location.reload(); })"><@message "confirm"/>
+                    onclick="NetworksSetService.deleteNetworks('${user.networksCart.id}', networksCartStorage.getSelections(), function() { window.location.replace('${contextPath}/cart?type=networks'); })"><@message "confirm"/>
             </button>
           </div>
         </div>
@@ -121,7 +121,7 @@
             <ul id="cart-tabs" class="nav nav-pills mb-3">
               <#if variablesCartEnabled>
                 <li class="nav-item">
-                  <a id="variables-tab" class="nav-link active" href="#tab_variables" data-toggle="tab">
+                  <a id="variables-tab" class="nav-link <#if showCartType == "variables">active</#if>" href="#tab_variables" data-toggle="tab">
                       <@message "variables"/>
                     <span id="cart-count" class="badge badge-light">${user.variablesCart.count}</span>
                   </a>
@@ -129,7 +129,7 @@
               </#if>
               <#if studiesCartEnabled>
                 <li class="nav-item">
-                  <a id="studies-tab" class="nav-link <#if !variablesCartEnabled>active</#if>" href="#tab_studies" data-toggle="tab">
+                  <a id="studies-tab" class="nav-link <#if showCartType == "studies">active</#if>" href="#tab_studies" data-toggle="tab">
                       <@message "studies"/>
                     <span id="cart-count" class="badge badge-light">${user.studiesCart.count}</span>
                   </a>
@@ -137,7 +137,7 @@
               </#if>
               <#if networksCartEnabled>
                 <li class="nav-item">
-                  <a id="networks-tab" class="nav-link <#if !variablesCartEnabled && !studiesCartEnabled>active</#if>" href="#tab_networks" data-toggle="tab">
+                  <a id="networks-tab" class="nav-link <#if showCartType == "networks">active</#if>" href="#tab_networks" data-toggle="tab">
                       <@message "networks"/>
                     <span id="cart-count" class="badge badge-light">${user.networksCart.count}</span>
                   </a>
@@ -149,7 +149,7 @@
 
         <div class="tab-content">
           <#if variablesCartEnabled>
-            <div class="tab-pane active" id="tab_variables">
+            <div class="tab-pane <#if showCartType == "variables">active</#if>" id="tab_variables">
 
             <div id="cart-callout" class="callout callout-info">
               <p><@message "sets.cart.help"/></p>
@@ -265,7 +265,7 @@
           </div>
           </#if>
           <#if studiesCartEnabled>
-            <div class="tab-pane <#if !variablesCartEnabled>active</#if>" id="tab_studies">
+            <div class="tab-pane <#if showCartType == "studies">active</#if>" id="tab_studies">
 
             <div id="cart-callout" class="callout callout-info">
               <p><@message "sets.cart.studies-help"/></p>
@@ -303,7 +303,9 @@
                         <th></th>
                         <th><@message "acronym"/></th>
                         <th><@message "name"/></th>
-                        <th><@message "type"/></th>
+                        <#if config.studyDatasetEnabled && config.harmonizationDatasetEnabled>
+                          <th><@message "type"/></th>
+                        </#if>
                       </tr>
                       </thead>
                       <tbody></tbody>
@@ -318,7 +320,7 @@
           </div>
           </#if>
           <#if networksCartEnabled>
-            <div class="tab-pane <#if !variablesCartEnabled && !studiesCartEnabled>active</#if>" id="tab_networks">
+            <div class="tab-pane <#if showCartType == "networks">active</#if>" id="tab_networks">
 
             <div id="cart-callout" class="callout callout-info">
               <p><@message "sets.cart.networks-help"/></p>

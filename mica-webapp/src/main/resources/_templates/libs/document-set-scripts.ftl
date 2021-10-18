@@ -131,8 +131,8 @@
     <#if studiesSet??>
     // studies set
     const studyTypeLabels = {
-      'individual-study': "<@message "global.individual-study"/>",
-      'harmonization-study': "<@message "global.harmonization-study"/>"
+      'individual-study': "<@message "search.study.individual"/>",
+      'harmonization-study': "<@message "search.study.harmonization"/>"
     }
     const studiesDataTableOpts = {...dataTableOpts};
     studiesDataTableOpts.ajax = function(data, callback) {
