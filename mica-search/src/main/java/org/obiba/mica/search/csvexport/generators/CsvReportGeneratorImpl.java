@@ -30,6 +30,7 @@ public abstract class CsvReportGeneratorImpl implements CsvReportGenerator {
     try (CSVWriter writer = new CSVWriter(new PrintWriter(new OutputStreamWriter(outputStream, "UTF-8")))) {
       if (!omitHeader) writeHeader(writer);
       writeEachLine(writer);
+      writer.flush();
       outputStream.flush();
     } catch (IOException e) {
       log.error("CSV report extraction failed", e);

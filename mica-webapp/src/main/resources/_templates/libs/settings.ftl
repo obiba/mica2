@@ -50,7 +50,7 @@
 <#assign listsEnabled = user?? && cartEnabled && variablesCartEnabled/>
 <#assign maxNumberOfSets = config.maxNumberOfSets/>
 <!-- To allow download of the cart reports etc. -->
-<#assign showCartDownload = true/>
+<#assign showCartDownload = (isAdministrator || isReviewer || isEditor || isDAO)/>
 <!-- To allow download the cart of variables as views in Opal -->
 <#assign showCartViewDownload = (isAdministrator || isReviewer || isEditor || isDAO)/>
 

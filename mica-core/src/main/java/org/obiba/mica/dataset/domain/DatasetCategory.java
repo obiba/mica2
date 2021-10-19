@@ -45,6 +45,10 @@ public class DatasetCategory implements AttributeAware {
     return missing;
   }
 
+  public boolean hasAttributes() {
+    return attributes != null && !attributes.isEmpty();
+  }
+
   public Attributes getAttributes() {
     return attributes;
   }

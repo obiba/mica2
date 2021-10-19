@@ -35,6 +35,8 @@ public abstract class AbstractDocumentService<T> implements DocumentService<T> {
 
   protected static final int MAX_SIZE = 10000;
 
+  protected static final int MAX_PACKET_SIZE = 100;
+
   @Inject
   protected Searcher searcher;
 

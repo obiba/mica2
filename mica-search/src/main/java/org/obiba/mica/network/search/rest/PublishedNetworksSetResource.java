@@ -2,14 +2,15 @@ package org.obiba.mica.network.search.rest;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.core.domain.DocumentSet;
+import org.obiba.mica.core.service.PersonService;
 import org.obiba.mica.micaConfig.domain.MicaConfig;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.network.service.NetworkSetService;
 import org.obiba.mica.rest.AbstractPublishedDocumentsSetResource;
 import org.obiba.mica.search.JoinQueryExecutor;
-import org.obiba.mica.search.csvexport.JoinQueryReportGenerator;
+import org.obiba.mica.search.csvexport.CsvReportGenerator;
+import org.obiba.mica.search.csvexport.generators.NetworkCsvReportGenerator;
 import org.obiba.mica.security.service.SubjectAclService;
-import org.obiba.mica.spi.search.QueryType;
 import org.obiba.mica.spi.search.Searcher;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
@@ -39,8 +40,8 @@ public class PublishedNetworksSetResource extends AbstractPublishedDocumentsSetR
                                       SubjectAclService subjectAclService,
                                       Searcher searcher,
                                       Dtos dtos,
-                                      JoinQueryReportGenerator joinQueryReportGenerator) {
-    super(joinQueryExecutor, micaConfigService, subjectAclService, searcher, dtos, joinQueryReportGenerator);
+                                      PersonService personService) {
+    super(joinQueryExecutor, micaConfigService, subjectAclService, searcher, dtos, personService);
     this.networkSetService = networkSetService;
   }
 
@@ -69,7 +70,6 @@ public class PublishedNetworksSetResource extends AbstractPublishedDocumentsSetR
   @Path("/documents")
   public Mica.NetworksDto getNetworks(@PathParam("id") String id, @QueryParam("from") @DefaultValue("0") int from, @QueryParam("limit") @DefaultValue("10") int limit) {
     DocumentSet documentSet = getSecuredDocumentSet(id);
-    networkSetService.touch(documentSet);
     return Mica.NetworksDto.newBuilder()
       .setTotal(documentSet.getIdentifiers().size())
       .setFrom(from)
@@ -101,11 +101,12 @@ public class PublishedNetworksSetResource extends AbstractPublishedDocumentsSetR
 
   @GET
   @Path("/documents/_report")
-  @Produces("text/csv")
+  @Produces(MediaType.APPLICATION_OCTET_STREAM)
   public Response reportNetworks(@PathParam("id") String id, @QueryParam("locale") @DefaultValue("en") String locale) {
-    String query = String.format("network(in(Mica_network.sets,%s),limit(0,10000),fields(*)),locale(%s)", id, locale);
-    StreamingOutput stream = reportDocuments(id, QueryType.NETWORK, query);
-    return Response.ok(stream).header("Content-Disposition", "attachment; filename=\"Networks.csv\"").build();
+    DocumentSet documentSet = getSecuredDocumentSet(id);
+    CsvReportGenerator reporter = new NetworkCsvReportGenerator(networkSetService.getPublishedNetworks(documentSet, true), locale, personService);
+    StreamingOutput stream = reporter::write;
+    return Response.ok(stream).header("Content-Disposition", "attachment; filename=\"Networks.zip\"").build();
   }
 
   @POST

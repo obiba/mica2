@@ -213,7 +213,6 @@
                             </button>
                             <div class="dropdown-menu">
                               <a class="dropdown-item" href="${contextPath}/ws/variables/set/${user.variablesCart.id}/documents/_report?locale=${.locale}" download><@message "download-cart-report"/></a>
-                              <a class="dropdown-item" href="${contextPath}/ws/variables/set/${user.variablesCart.id}/documents/_export" download><@message "download-cart-ids"/></a>
                               <a class="dropdown-item" href="${contextPath}/ws/variables/set/${user.variablesCart.id}/documents/_opal" download><@message "download-cart-views"/></a>
                             </div>
                           </div>
@@ -277,17 +276,7 @@
                 <h3 class="card-title"><@message "studies"/></h3>
                   <#if user.studiesCart?? && user.studiesCart.count gt 0>
                     <div class="float-right">
-                      <#if showCartViewDownload>
-                        <div class="btn-group ml-2" role="group">
-                          <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <i class="fas fa-download"></i> <@message "download"/>
-                          </button>
-                          <div class="dropdown-menu">
-                            <a class="dropdown-item" href="${contextPath}/ws/studies/set/${user.studiesCart.id}/documents/_report?locale=${.locale}" download><@message "download-cart-report"/></a>
-                            <a class="dropdown-item" href="${contextPath}/ws/studies/set/${user.studiesCart.id}/documents/_export" download><@message "download-cart-ids"/></a>
-                          </div>
-                        </div>
-                      <#else>
+                      <#if showCartDownload>
                         <a href="${contextPath}/ws/studies/set/${user.studiesCart.id}/documents/_report?locale=${.locale}" download class="btn btn-primary ml-2">
                           <i class="fas fa-download"></i> <@message "download"/>
                         </a>
@@ -342,17 +331,7 @@
                 <h3 class="card-title"><@message "networks"/></h3>
                   <#if user.networksCart?? && user.networksCart.count gt 0>
                     <div class="float-right">
-                      <#if showCartViewDownload>
-                        <div class="btn-group ml-2" role="group">
-                          <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <i class="fas fa-download"></i> <@message "download"/>
-                          </button>
-                          <div class="dropdown-menu">
-                            <a class="dropdown-item" href="${contextPath}/ws/networks/set/${user.networksCart.id}/documents/_report?locale=${.locale}" download><@message "download-cart-report"/></a>
-                            <a class="dropdown-item" href="${contextPath}/ws/networks/set/${user.networksCart.id}/documents/_export" download><@message "download-cart-ids"/></a>
-                          </div>
-                        </div>
-                      <#else>
+                      <#if showCartDownload>
                         <a href="${contextPath}/ws/networks/set/${user.networksCart.id}/documents/_report?locale=${.locale}" download class="btn btn-primary ml-2">
                           <i class="fas fa-download"></i> <@message "download"/>
                         </a>
