@@ -5,6 +5,7 @@ import com.google.common.collect.Lists;
 import org.apache.shiro.authz.AuthorizationException;
 import org.obiba.mica.core.domain.DocumentSet;
 import org.obiba.mica.core.service.DocumentSetService;
+import org.obiba.mica.core.service.PersonService;
 import org.obiba.mica.micaConfig.domain.MicaConfig;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.search.JoinQueryExecutor;
@@ -34,20 +35,20 @@ public abstract class AbstractPublishedDocumentsSetResource<T extends DocumentSe
 
   protected final Dtos dtos;
 
-  private final JoinQueryReportGenerator joinQueryReportGenerator;
+  protected final PersonService personService;
 
   protected AbstractPublishedDocumentsSetResource(JoinQueryExecutor joinQueryExecutor,
                                                   MicaConfigService micaConfigService,
                                                   SubjectAclService subjectAclService,
                                                   Searcher searcher,
                                                   Dtos dtos,
-                                                  JoinQueryReportGenerator joinQueryReportGenerator) {
+                                                  PersonService personService) {
     this.joinQueryExecutor = joinQueryExecutor;
     this.micaConfigService = micaConfigService;
     this.subjectAclService = subjectAclService;
     this.searcher = searcher;
     this.dtos = dtos;
-    this.joinQueryReportGenerator = joinQueryReportGenerator;
+    this.personService = personService;
   }
 
   protected abstract T getDocumentSetService();
@@ -90,12 +91,6 @@ public abstract class AbstractPublishedDocumentsSetResource<T extends DocumentSe
     return toStream(documentSet.getIdentifiers());
   }
 
-  protected StreamingOutput reportDocuments(String id, QueryType type, String query) {
-    DocumentSet documentSet = getSecuredDocumentSet(id);
-    getDocumentSetService().touch(documentSet);
-    return os -> joinQueryReportGenerator.generateCsv(type, query, Lists.newArrayList(), os);
-  }
-
   protected Mica.DocumentSetDto deleteDocuments(String id, String body) {
     DocumentSet set = getSecuredDocumentSet(id);
     if (Strings.isNullOrEmpty(body)) return dtos.asDto(set);
@@ -121,6 +116,7 @@ public abstract class AbstractPublishedDocumentsSetResource<T extends DocumentSe
     if (enabled && !subjectAclService.hasMicaRole() && !documentSet.hasName())
       throw new AuthorizationException(); // cart
     if (documentSet.hasName() && !subjectAclService.hasMicaRole()) throw new AuthorizationException();
+    getDocumentSetService().touch(documentSet);
     return documentSet;
   }
 

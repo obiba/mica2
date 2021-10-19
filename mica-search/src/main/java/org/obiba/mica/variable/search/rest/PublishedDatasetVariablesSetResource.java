@@ -15,14 +15,15 @@ import com.google.common.collect.Sets;
 import org.apache.shiro.authz.AuthorizationException;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.core.domain.DocumentSet;
+import org.obiba.mica.core.service.PersonService;
 import org.obiba.mica.dataset.service.VariableSetService;
 import org.obiba.mica.micaConfig.domain.MicaConfig;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.rest.AbstractPublishedDocumentsSetResource;
 import org.obiba.mica.search.JoinQueryExecutor;
-import org.obiba.mica.search.csvexport.JoinQueryReportGenerator;
+import org.obiba.mica.search.csvexport.CsvReportGenerator;
+import org.obiba.mica.search.csvexport.generators.DatasetVariableCsvReportGenerator;
 import org.obiba.mica.security.service.SubjectAclService;
-import org.obiba.mica.spi.search.QueryType;
 import org.obiba.mica.spi.search.Searcher;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
@@ -54,8 +55,8 @@ public class PublishedDatasetVariablesSetResource extends AbstractPublishedDocum
     Dtos dtos,
     MicaConfigService micaConfigService,
     SubjectAclService subjectAclService,
-    JoinQueryReportGenerator joinQueryReportGenerator) {
-    super(joinQueryExecutor, micaConfigService, subjectAclService, searcher, dtos, joinQueryReportGenerator);
+    PersonService personService) {
+    super(joinQueryExecutor, micaConfigService, subjectAclService, searcher, dtos, personService);
     this.variableSetService = variableSetService;
   }
 
@@ -84,7 +85,6 @@ public class PublishedDatasetVariablesSetResource extends AbstractPublishedDocum
   @Path("/documents")
   public Mica.DatasetVariablesDto getVariables(@PathParam("id") String id, @QueryParam("from") @DefaultValue("0") int from, @QueryParam("limit") @DefaultValue("10") int limit) {
     DocumentSet documentSet = getSecuredDocumentSet(id);
-    variableSetService.touch(documentSet);
     return Mica.DatasetVariablesDto.newBuilder()
       .setTotal(documentSet.getIdentifiers().size())
       .setFrom(from)
@@ -116,11 +116,12 @@ public class PublishedDatasetVariablesSetResource extends AbstractPublishedDocum
 
   @GET
   @Path("/documents/_report")
-  @Produces("text/csv")
-  public Response reportStudies(@PathParam("id") String id, @QueryParam("locale") @DefaultValue("en") String locale) {
-    String query = String.format("variable(in(Mica_variable.sets,%s),limit(0,2000000),fields(*)),locale(%s)", id, locale);
-    StreamingOutput stream = reportDocuments(id, QueryType.VARIABLE, query);
-    return Response.ok(stream).header("Content-Disposition", "attachment; filename=\"Variables.csv\"").build();
+  @Produces(MediaType.APPLICATION_OCTET_STREAM)
+  public Response reportVariables(@PathParam("id") String id, @QueryParam("locale") @DefaultValue("en") String locale) {
+    DocumentSet documentSet = getSecuredDocumentSet(id);
+    CsvReportGenerator reporter = new DatasetVariableCsvReportGenerator(variableSetService.getVariables(documentSet, false), locale);
+    StreamingOutput stream = reporter::write;
+    return Response.ok(stream).header("Content-Disposition", "attachment; filename=\"Variables.zip\"").build();
   }
 
   @GET

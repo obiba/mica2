@@ -2,13 +2,14 @@ package org.obiba.mica.study.search.rest;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.core.domain.DocumentSet;
+import org.obiba.mica.core.service.PersonService;
 import org.obiba.mica.micaConfig.domain.MicaConfig;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.rest.AbstractPublishedDocumentsSetResource;
 import org.obiba.mica.search.JoinQueryExecutor;
-import org.obiba.mica.search.csvexport.JoinQueryReportGenerator;
+import org.obiba.mica.search.csvexport.CsvReportGenerator;
+import org.obiba.mica.search.csvexport.generators.StudyCsvReportGenerator;
 import org.obiba.mica.security.service.SubjectAclService;
-import org.obiba.mica.spi.search.QueryType;
 import org.obiba.mica.spi.search.Searcher;
 import org.obiba.mica.study.service.StudySetService;
 import org.obiba.mica.web.model.Dtos;
@@ -37,8 +38,8 @@ public class PublishedStudiesSetResource extends AbstractPublishedDocumentsSetRe
                                      SubjectAclService subjectAclService,
                                      Searcher searcher,
                                      Dtos dtos,
-                                     JoinQueryReportGenerator joinQueryReportGenerator) {
-    super(joinQueryExecutor, micaConfigService, subjectAclService, searcher, dtos, joinQueryReportGenerator);
+                                     PersonService personService) {
+    super(joinQueryExecutor, micaConfigService, subjectAclService, searcher, dtos, personService);
     this.studySetService = studySetService;
   }
 
@@ -67,7 +68,6 @@ public class PublishedStudiesSetResource extends AbstractPublishedDocumentsSetRe
   @Path("/documents")
   public Mica.StudiesDto getStudies(@PathParam("id") String id, @QueryParam("from") @DefaultValue("0") int from, @QueryParam("limit") @DefaultValue("10") int limit) {
     DocumentSet documentSet = getSecuredDocumentSet(id);
-    studySetService.touch(documentSet);
     return Mica.StudiesDto.newBuilder()
       .setTotal(documentSet.getIdentifiers().size())
       .setFrom(from)
@@ -99,11 +99,12 @@ public class PublishedStudiesSetResource extends AbstractPublishedDocumentsSetRe
 
   @GET
   @Path("/documents/_report")
-  @Produces("text/csv")
+  @Produces(MediaType.APPLICATION_OCTET_STREAM)
   public Response reportStudies(@PathParam("id") String id, @QueryParam("locale") @DefaultValue("en") String locale) {
-    String query = String.format("study(in(Mica_study.sets,%s),limit(0,10000),fields(*)),locale(%s)", id, locale);
-    StreamingOutput stream = reportDocuments(id, QueryType.STUDY, query);
-    return Response.ok(stream).header("Content-Disposition", "attachment; filename=\"Studies.csv\"").build();
+    DocumentSet documentSet = getSecuredDocumentSet(id);
+    CsvReportGenerator reporter = new StudyCsvReportGenerator(studySetService.getPublishedStudies(documentSet, true), locale, personService);
+    StreamingOutput stream = reporter::write;
+    return Response.ok(stream).header("Content-Disposition", "attachment; filename=\"Studies.zip\"").build();
   }
 
   @POST
