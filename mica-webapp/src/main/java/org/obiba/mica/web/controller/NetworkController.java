@@ -78,7 +78,7 @@ public class NetworkController extends BaseController {
     }
 
     Map<String, List<Membership>> membershipMap = personService.getNetworkMembershipMap(network.getId());
-    params.put("memberships", personService.setMembershipOrder(network.getMembershipSortOrder(), membershipMap));
+    network.setMemberships(personService.setMembershipOrder(network.getMembershipSortOrder(), membershipMap));
 
     return new ModelAndView("network", params);
   }
