@@ -66,8 +66,10 @@ public class StudyController extends BaseController {
       study = draftStudyService.findStudy(id);
       if (study == null) throw NoSuchStudyException.withId(id);
       checkPermission("/draft/" + ((study instanceof Study) ? "individual-study" : "harmonization-study"), "VIEW", id, shareKey);
-      study.setMemberships(personService.setMembershipOrder(study.getMembershipSortOrder(), personService.getStudyMembershipMap(id)));
     }
+
+    study.setMemberships(personService.setMembershipOrder(study.getMembershipSortOrder(), personService.getStudyMembershipMap(id)));
+
     return study;
   }
 
