@@ -132,7 +132,7 @@
         </div>
 
         <!-- Member list -->
-        <#if network.memberships?? && network.memberships?keys?size!=0>
+        <#if memberships?? && memberships?keys?size!=0>
           <div class="row">
             <div class="col-12">
               <div class="card card-primary card-outline">
@@ -161,13 +161,13 @@
                       <tbody>
                       <tr>
                         <td>
-                          <#if network.memberships.investigator??>
-                              <@memberList members=network.memberships.investigator role="investigator"/>
+                          <#if memberships.investigator??>
+                              <@memberList members=memberships.investigator role="investigator"/>
                           </#if>
                         </td>
                         <td>
-                          <#if network.memberships.contact??>
-                              <@memberList members=network.memberships.contact role="contact"/>
+                          <#if memberships.contact??>
+                              <@memberList members=memberships.contact role="contact"/>
                           </#if>
                         </td>
                       </tr>
