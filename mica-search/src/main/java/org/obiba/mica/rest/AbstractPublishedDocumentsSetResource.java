@@ -9,7 +9,6 @@ import org.obiba.mica.core.service.PersonService;
 import org.obiba.mica.micaConfig.domain.MicaConfig;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.search.JoinQueryExecutor;
-import org.obiba.mica.search.csvexport.JoinQueryReportGenerator;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.spi.search.QueryType;
 import org.obiba.mica.spi.search.Searcher;
@@ -20,8 +19,6 @@ import org.obiba.mica.web.model.MicaSearch;
 import javax.ws.rs.core.StreamingOutput;
 import java.io.IOException;
 import java.util.Collection;
-import java.util.List;
-import java.util.stream.Collectors;
 
 public abstract class AbstractPublishedDocumentsSetResource<T extends DocumentSetService> {
 
@@ -72,19 +69,6 @@ public abstract class AbstractPublishedDocumentsSetResource<T extends DocumentSe
     return dtos.asDto(getDocumentSetService().get(id));
   }
 
-  public Mica.DocumentSetDto importQueryDocuments(String id, String query) throws IOException {
-    DocumentSet set = getSecuredDocumentSet(id);
-    if (Strings.isNullOrEmpty(query)) return dtos.asDto(set);
-    MicaSearch.JoinQueryResultDto result = joinQueryExecutor.query(QueryType.VARIABLE, searcher.makeJoinQuery(query));
-    if (result.hasVariableResultDto() && result.getVariableResultDto().getTotalHits() > 0) {
-      List<String> ids = result.getVariableResultDto().getExtension(MicaSearch.DatasetVariableResultDto.result).getSummariesList().stream()
-        .map(Mica.DatasetVariableResolverDto::getId).collect(Collectors.toList());
-      getDocumentSetService().addIdentifiers(id, ids);
-      set = getSecuredDocumentSet(id);
-    }
-    return dtos.asDto(set);
-  }
-
   protected StreamingOutput exportDocuments(String id) {
     DocumentSet documentSet = getSecuredDocumentSet(id);
     getDocumentSetService().touch(documentSet);
@@ -118,6 +102,10 @@ public abstract class AbstractPublishedDocumentsSetResource<T extends DocumentSe
     if (documentSet.hasName() && !subjectAclService.hasMicaRole()) throw new AuthorizationException();
     getDocumentSetService().touch(documentSet);
     return documentSet;
+  }
+
+  protected MicaSearch.JoinQueryResultDto makeQuery(QueryType type, String query) {
+    return joinQueryExecutor.query(type, searcher.makeJoinQuery(query));
   }
 
   private StreamingOutput toStream(Collection<String> items) {

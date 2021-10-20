@@ -574,7 +574,7 @@ class MicaTreeQueryUrl {
     }
 
     if (query) {
-      return {string: `${url}?query=${query}`, url, query};
+      return {string: `${url}?query=${query}`, url, query, type: payload.type};
     } else {
       return null;
     }

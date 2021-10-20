@@ -916,7 +916,7 @@ class SetService {
     if (set) {
       Carts.filter(c => c.id === set.id).forEach(c => c.count = set.count);
     }
-    let count = Carts.map(c => c.count).reduce((prev, curr) => prev + curr);
+    let count = Carts.map(c => c.count).reduce((prev, curr) => prev + curr, 0);
     $(elem).text(count > 0 ? (count > 50 ? '50+' : count) : '')
       .attr('title', count > 50 ? count.toLocaleString(lang) : '');
   }
@@ -1080,6 +1080,10 @@ class NetworksSetService extends SetService {
     SetService.addToCart('networks', ids, onsuccess, onfailure);
   }
 
+  static addQueryToCart(query, onsuccess, onfailure) {
+    SetService.addQueryToCart('networks', query, onsuccess, onfailure);
+  }
+
   /**
    * Remove networks IDs from the cart (verifies that it exists and is valid).
    * @param ids
@@ -1176,6 +1180,10 @@ class StudiesSetService extends SetService {
    */
   static addToCart(ids, onsuccess, onfailure) {
     SetService.addToCart('studies', ids, onsuccess, onfailure);
+  }
+
+  static addQueryToCart(query, onsuccess, onfailure) {
+    SetService.addQueryToCart('studies', query, onsuccess, onfailure);
   }
 
   /**

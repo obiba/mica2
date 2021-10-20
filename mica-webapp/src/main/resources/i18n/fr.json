@@ -1202,8 +1202,12 @@
       "network-added": "<a href='{{arg0}}' target='_self'><u>Réseau ajouté au panier.</u></a>",
       "no-network-removed": "Aucun réseau n'a été supprimé du panier.",
       "network-removed": "<a href='{{arg0}}' target='_self'><u>Réseau supprimé du panier.</u></a>",
+      "signin-to-add-to-cart": "S'identifier pour ajouter au panier",
       "add-to-cart": "Ajouter au panier",
-      "remove-from-cart": "Retirer du panier"
+      "remove-from-cart": "Retirer du panier",
+      "add-variables-to-cart": "Ajouter au panier de variables",
+      "add-studies-to-cart": "Ajouter au panier d'études",
+      "add-networks-to-cart": "Ajouter au panier de réseaux"
     },
     "set": {
       "title": "Listes",
