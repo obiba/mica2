@@ -481,7 +481,7 @@ class TableFixedHeaderUtility {
 
   class MicaQueryChangeListener {
     constructor() {
-      this.loading = false;
+      this.loading = true;
 
       EventBus.register(EVENTS.QUERY_TYPE_SELECTION, this.__onQueryExecute.bind(this));
       EventBus.register(EVENTS.QUERY_TYPE_UPDATE, this.__onQueryExecute.bind(this));
@@ -724,20 +724,28 @@ class TableFixedHeaderUtility {
         tree.findAndDeleteQuery((name) => 'limit' === name);
         this.queryToCopy = tree.serialize();
 
-        // query string for adding variables to cart
-        let vQuery = tree.search((name) => name === TARGETS.VARIABLE);
-        if (!vQuery) {
-          vQuery = new RQL.Query(TARGETS.VARIABLE,[]);
-          tree.addQuery(null, vQuery);
+        // make query string for adding documents to cart
+        const makeQueryToCart = function(tree, target, fields) {
+          tree.findAndDeleteQuery((name) => 'fields' === name);
+          tree.findAndDeleteQuery((name) => 'limit' === name);
+          let vQuery = tree.search((name) => name === target);
+          if (!vQuery) {
+            vQuery = new RQL.Query(target,[]);
+            tree.addQuery(null, vQuery);
+          }
+          let limitQuery = tree.search((name, args, parent) => 'limit' === name && parent.name === target);
+          if (limitQuery) {
+            limitQuery.args = [0, 100000];
+          } else {
+            tree.addQuery(vQuery, new RQL.Query('limit', [0, 100000]));
+          }
+          tree.addQuery(vQuery, new RQL.Query('fields', fields));
+          return tree.serialize();
         }
-        const limitQuery = tree.search((name, args, parent) => 'limit' === name && parent.name === TARGETS.VARIABLE);
-        if (limitQuery) {
-          limitQuery.args = [0, 100000];
-        } else {
-          tree.addQuery(vQuery, new RQL.Query('limit', [0, 100000]));
-        }
-        tree.addQuery(vQuery, new RQL.Query('fields', ['variableType']));
-        this.queryToCart = tree.serialize();
+
+        this.queryToVariablesCart = makeQueryToCart(tree, TARGETS.VARIABLE, ['variableType']);
+        this.queryToStudiesCart = makeQueryToCart(tree, TARGETS.STUDY, ['acronym.*']);
+        this.queryToNetworksCart = makeQueryToCart(tree, TARGETS.NETWORK, ['acronym.*']);
 
         this.refreshQueries();
 
@@ -785,19 +793,30 @@ class TableFixedHeaderUtility {
         return set.name;
       },
       onAddToCart() {
-        const onsuccess = function(cart, oldCart) {
-          VariablesSetService.showCount('#cart-count', cart, Mica.locale);
-          if (cart.count === oldCart.count) {
-            MicaService.toastInfo(Mica.tr['no-variable-added']);
-          } else {
-            MicaService.toastSuccess(Mica.tr['variables-added-to-cart'].replace('{0}', (cart.count - oldCart.count).toLocaleString(Mica.locale)));
-          }
+        const makeOnSuccess = function(type) {
+          return function (cart, oldCart) {
+            SetService.showCount('#cart-count', cart, Mica.locale);
+            if (cart.count === oldCart.count) {
+              MicaService.toastInfo(Mica.tr[type === 'variables' ? 'no-variable-added' :
+                (type === 'studies' ? 'no-study-added' : 'no-network-added')]);
+            } else {
+              MicaService.toastSuccess(Mica.tr[type + '-added-to-cart'].replace('{0}', (cart.count - oldCart.count).toLocaleString(Mica.locale)));
+            }
+          };
         };
 
-        if (Array.isArray(this.variableSelections) && this.variableSelections.length > 0) {
-          VariablesSetService.addToCart(this.variableSelections, onsuccess);
-        } else {
-          VariablesSetService.addQueryToCart(this.queryToCart, onsuccess);
+        if (this.downloadUrlObject) {
+          if (this.isVariablesCartVisible) {
+            if (Array.isArray(this.variableSelections) && this.variableSelections.length > 0) {
+              VariablesSetService.addToCart(this.variableSelections, makeOnSuccess('variables'));
+            } else {
+              VariablesSetService.addQueryToCart(this.queryToVariablesCart, makeOnSuccess('variables'));
+            }
+          } else if (this.isStudiesCartVisible) {
+            StudiesSetService.addQueryToCart(this.queryToStudiesCart, makeOnSuccess('studies'));
+          } else if (this.isNetworksCartVisible) {
+            NetworksSetService.addQueryToCart(this.queryToNetworksCart, makeOnSuccess('networks'));
+          }
         }
       },
       onAddToSet(setId) {
@@ -818,7 +837,7 @@ class TableFixedHeaderUtility {
           if (Array.isArray(this.variableSelections) && this.variableSelections.length > 0) {
             VariablesSetService.addToSet(setId, this.newVariableSetName, this.variableSelections, onsuccess);
           } else {
-            VariablesSetService.addQueryToSet(setId, this.newVariableSetName, this.queryToCart, onsuccess);
+            VariablesSetService.addQueryToSet(setId, this.newVariableSetName, this.queryToVariablesCart, onsuccess);
           }
         }
       },
@@ -1052,6 +1071,15 @@ class TableFixedHeaderUtility {
       },
       numberOfSetsRemaining() {
         return Mica.maxNumberOfSets - (this.variableSets || []).length;
+      },
+      isVariablesCartVisible() {
+        return this.downloadUrlObject.type === 'variables' || this.downloadUrlObject.type === 'datasets';
+      },
+      isStudiesCartVisible() {
+        return this.downloadUrlObject.type === 'studies';
+      },
+      isNetworksCartVisible() {
+        return this.downloadUrlObject.type === 'networks';
       }
     },
     beforeMount() {

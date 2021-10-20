@@ -41,6 +41,47 @@
       "description":
         "en": "Variable properties as defined in the catalogue."
         "fr": "Propriétés des variables telles que définies dans le catalogue."
+  - "name": "Scales"
+    "title":
+      "en": "Scales/Measures"
+    "description":
+      "en": "Information about instruments."
+    "terms":
+    - "name": "recap_i_educ"
+      "title":
+        "en": "Education"
+      "description":
+        "en": "Education"
+    - "name": "recap_i_health_behav"
+      "title":
+        "en": "Health Behaviours"
+      "description":
+        "en": "Health Behaviours"
+    - "name": "recap_i_health"
+      "title":
+        "en": "Health"
+      "description":
+        "en": "Health"
+    - "name": "recap_i_ment_health"
+      "title":
+        "en": "Mental Health"
+      "description":
+        "en": "Mental Health"
+    - "name": "recap_i_neurodevel"
+      "title":
+        "en": "Neurodevelopment"
+      "description":
+        "en": "Neurodevelopment"
+    - "name": "recap_i_qol"
+      "title":
+        "en": "Quality of Life"
+      "description":
+        "en": "Quality of Life"
+    - "name": "recap_i_social"
+      "title":
+        "en": "Social"
+      "description":
+        "en": "Social"
 - "name": "dataset"
   "title":
     "en": "Datasets"

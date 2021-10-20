@@ -1202,8 +1202,12 @@
       "network-added": "<a href='{{arg0}}' target='_self'><u>Network added to the cart.</u></a>",
       "no-network-removed": "No network was removed from the cart.",
       "network-removed": "<a href='{{arg0}}' target='_self'><u>Network removed from the cart.</u></a>",
+      "signin-to-add-to-cart": "Sign in to add to cart",
       "add-to-cart": "Add to cart",
-      "remove-from-cart": "Remove from Cart"
+      "remove-from-cart": "Remove from Cart",
+      "add-variables-to-cart": "Add variables to cart",
+      "add-studies-to-cart": "Add studies to cart",
+      "add-networks-to-cart": "Add networks to cart"
     },
     "set": {
       "title": "Lists",

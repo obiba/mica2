@@ -1,5 +1,6 @@
 package org.obiba.mica.network.search.rest;
 
+import com.google.common.base.Strings;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.core.domain.DocumentSet;
 import org.obiba.mica.core.service.PersonService;
@@ -11,9 +12,11 @@ import org.obiba.mica.search.JoinQueryExecutor;
 import org.obiba.mica.search.csvexport.CsvReportGenerator;
 import org.obiba.mica.search.csvexport.generators.NetworkCsvReportGenerator;
 import org.obiba.mica.security.service.SubjectAclService;
+import org.obiba.mica.spi.search.QueryType;
 import org.obiba.mica.spi.search.Searcher;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
+import org.obiba.mica.web.model.MicaSearch;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -23,6 +26,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
 import java.io.IOException;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
@@ -127,6 +131,19 @@ public class PublishedNetworksSetResource extends AbstractPublishedDocumentsSetR
   @Path("/document/{documentId}/_exists")
   public Response hasNetwork(@PathParam("id") String id, @PathParam("documentId") String documentId) {
     return hasDocument(id, documentId) ? Response.ok().build() : Response.status(Response.Status.NOT_FOUND).build();
+  }
+
+  private Mica.DocumentSetDto importQueryDocuments(String id, String query) {
+    DocumentSet set = getSecuredDocumentSet(id);
+    if (Strings.isNullOrEmpty(query)) return dtos.asDto(set);
+    MicaSearch.JoinQueryResultDto result = makeQuery(QueryType.NETWORK, query);
+    if (result.hasNetworkResultDto() && result.getNetworkResultDto().getTotalHits() > 0) {
+      List<String> ids = result.getNetworkResultDto().getExtension(MicaSearch.NetworkResultDto.result).getNetworksList().stream()
+        .map(Mica.NetworkDto::getId).collect(Collectors.toList());
+      getDocumentSetService().addIdentifiers(id, ids);
+      set = getSecuredDocumentSet(id);
+    }
+    return dtos.asDto(set);
   }
 
 }

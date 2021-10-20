@@ -24,9 +24,11 @@ import org.obiba.mica.search.JoinQueryExecutor;
 import org.obiba.mica.search.csvexport.CsvReportGenerator;
 import org.obiba.mica.search.csvexport.generators.DatasetVariableCsvReportGenerator;
 import org.obiba.mica.security.service.SubjectAclService;
+import org.obiba.mica.spi.search.QueryType;
 import org.obiba.mica.spi.search.Searcher;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
+import org.obiba.mica.web.model.MicaSearch;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -37,6 +39,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
@@ -167,6 +170,19 @@ public class PublishedDatasetVariablesSetResource extends AbstractPublishedDocum
   @Path("/document/{documentId}/_exists")
   public Response hasVariable(@PathParam("id") String id, @PathParam("documentId") String documentId) {
     return hasDocument(id, documentId) ? Response.ok().build() : Response.status(Response.Status.NOT_FOUND).build();
+  }
+
+  private Mica.DocumentSetDto importQueryDocuments(String id, String query) {
+    DocumentSet set = getSecuredDocumentSet(id);
+    if (Strings.isNullOrEmpty(query)) return dtos.asDto(set);
+    MicaSearch.JoinQueryResultDto result = makeQuery(QueryType.VARIABLE, query);
+    if (result.hasVariableResultDto() && result.getVariableResultDto().getTotalHits() > 0) {
+      List<String> ids = result.getVariableResultDto().getExtension(MicaSearch.DatasetVariableResultDto.result).getSummariesList().stream()
+        .map(Mica.DatasetVariableResolverDto::getId).collect(Collectors.toList());
+      getDocumentSetService().addIdentifiers(id, ids);
+      set = getSecuredDocumentSet(id);
+    }
+    return dtos.asDto(set);
   }
 
 }
