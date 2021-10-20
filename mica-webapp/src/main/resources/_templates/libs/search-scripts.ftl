@@ -6,12 +6,7 @@
   const Mica = {
     config: ${configJson!"{}"},
     locale: "${.lang}",
-    defaultLocale: "${defaultLang}",
-    cartsEnabled: {
-      variables: ${variablesCartEnabled?c},
-      studies: ${studiesCartEnabled?c},
-      networks: ${networksCartEnabled?c}
-    }
+    defaultLocale: "${defaultLang}"
   };
 
   Mica.tr = {
