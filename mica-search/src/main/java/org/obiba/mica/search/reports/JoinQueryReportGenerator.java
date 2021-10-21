@@ -8,7 +8,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.obiba.mica.search.csvexport;
+package org.obiba.mica.search.reports;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -53,14 +53,14 @@ public class JoinQueryReportGenerator {
       for (int i = 0; i < numberOfSteps; i++) {
         JoinQuery joinQuery = searcher.makeJoinQuery(rqlQuery.replace(matcher.group(), "limit(" + (MAX_DOWNLOAD_STEP * i) + "," + MAX_DOWNLOAD_STEP + ")"));
         MicaSearch.JoinQueryResultDto queryResult = joinQueryExecutor.query(exportType, joinQuery);
-        CsvReportGenerator csvReportGenerator = dtosCsvReportGeneratorFactory.get(exportType, queryResult, columnsToHide, joinQuery.getLocale());
-        csvReportGenerator.write(outputStream, i > 0);
+        ReportGenerator reportGenerator = dtosCsvReportGeneratorFactory.get(exportType, queryResult, columnsToHide, joinQuery.getLocale());
+        reportGenerator.write(outputStream, i > 0);
       }
     } else {
       JoinQuery joinQuery = searcher.makeJoinQuery(rqlQuery);
       MicaSearch.JoinQueryResultDto queryResult = joinQueryExecutor.query(exportType, joinQuery);
-      CsvReportGenerator csvReportGenerator = dtosCsvReportGeneratorFactory.get(exportType, queryResult, columnsToHide, joinQuery.getLocale());
-      csvReportGenerator.write(outputStream);
+      ReportGenerator reportGenerator = dtosCsvReportGeneratorFactory.get(exportType, queryResult, columnsToHide, joinQuery.getLocale());
+      reportGenerator.write(outputStream);
     }
   }
 }

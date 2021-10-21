@@ -8,7 +8,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.obiba.mica.search.csvexport.generators;
+package org.obiba.mica.search.reports.generators;
 
 import au.com.bytecode.opencsv.CSVWriter;
 import org.obiba.core.translator.JsonTranslator;
@@ -45,7 +45,7 @@ import static java.util.stream.Collectors.toList;
 
 @Component
 @Scope("request")
-public class SpecificStudyReportGenerator extends CsvReportGeneratorImpl {
+public class SpecificStudyReportGenerator extends CsvReportGenerator {
 
   private static final Logger logger = LoggerFactory.getLogger(SpecificStudyReportGenerator.class);
 

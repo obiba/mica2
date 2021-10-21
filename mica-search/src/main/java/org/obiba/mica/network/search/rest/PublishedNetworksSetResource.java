@@ -9,8 +9,8 @@ import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.network.service.NetworkSetService;
 import org.obiba.mica.rest.AbstractPublishedDocumentsSetResource;
 import org.obiba.mica.search.JoinQueryExecutor;
-import org.obiba.mica.search.csvexport.CsvReportGenerator;
-import org.obiba.mica.search.csvexport.generators.NetworkCsvReportGenerator;
+import org.obiba.mica.search.reports.ReportGenerator;
+import org.obiba.mica.search.reports.generators.NetworkCsvReportGenerator;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.spi.search.QueryType;
 import org.obiba.mica.spi.search.Searcher;
@@ -108,7 +108,7 @@ public class PublishedNetworksSetResource extends AbstractPublishedDocumentsSetR
   @Produces(MediaType.APPLICATION_OCTET_STREAM)
   public Response reportNetworks(@PathParam("id") String id, @QueryParam("locale") @DefaultValue("en") String locale) {
     DocumentSet documentSet = getSecuredDocumentSet(id);
-    CsvReportGenerator reporter = new NetworkCsvReportGenerator(networkSetService.getPublishedNetworks(documentSet, true), locale, personService);
+    ReportGenerator reporter = new NetworkCsvReportGenerator(networkSetService.getPublishedNetworks(documentSet, true), locale, personService);
     StreamingOutput stream = reporter::write;
     return Response.ok(stream).header("Content-Disposition", "attachment; filename=\"Networks.zip\"").build();
   }

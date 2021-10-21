@@ -8,11 +8,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.obiba.mica.search.csvexport;
+package org.obiba.mica.search.reports;
 
 import java.io.OutputStream;
 
-public interface CsvReportGenerator {
+public interface ReportGenerator {
 
   void write(OutputStream outputStream, boolean omitHeader);
 

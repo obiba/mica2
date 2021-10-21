@@ -1,4 +1,4 @@
-package org.obiba.mica.search.csvexport.generators;
+package org.obiba.mica.search.reports.generators;
 
 import au.com.bytecode.opencsv.CSVWriter;
 import com.google.common.base.Joiner;
@@ -17,7 +17,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public abstract class DocumentCsvReportGenerator extends CsvReportGeneratorImpl {
+public abstract class DocumentCsvReportGenerator extends CsvReportGenerator {
 
   private static final Logger log = LoggerFactory.getLogger(DocumentCsvReportGenerator.class);
 

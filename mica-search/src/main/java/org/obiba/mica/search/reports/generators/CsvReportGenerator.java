@@ -8,23 +8,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.obiba.mica.search.csvexport.generators;
+package org.obiba.mica.search.reports.generators;
 
 import au.com.bytecode.opencsv.CSVWriter;
-import org.obiba.core.translator.Translator;
-import org.obiba.mica.search.csvexport.CsvReportGenerator;
-import org.obiba.mica.web.model.Mica;
-import org.obiba.mica.web.model.MicaSearch;
+import org.obiba.mica.search.reports.ReportGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
 
-public abstract class CsvReportGeneratorImpl implements CsvReportGenerator {
+/**
+ * Report is in CSV format.
+ */
+public abstract class CsvReportGenerator implements ReportGenerator {
 
-  private static final Logger log = LoggerFactory.getLogger(CsvReportGeneratorImpl.class);
+  private static final Logger log = LoggerFactory.getLogger(CsvReportGenerator.class);
 
   public void write(OutputStream outputStream, boolean omitHeader) {
     try (CSVWriter writer = new CSVWriter(new PrintWriter(new OutputStreamWriter(outputStream, "UTF-8")))) {

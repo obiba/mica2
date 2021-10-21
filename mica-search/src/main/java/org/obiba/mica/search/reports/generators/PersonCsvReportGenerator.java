@@ -1,14 +1,11 @@
-package org.obiba.mica.search.csvexport.generators;
+package org.obiba.mica.search.reports.generators;
 
 import au.com.bytecode.opencsv.CSVWriter;
-import jersey.repackaged.com.google.common.base.Joiner;
 import jersey.repackaged.com.google.common.collect.Lists;
 import org.obiba.mica.core.domain.Address;
-import org.obiba.mica.core.domain.Membership;
 import org.obiba.mica.core.domain.Person;
 
 import java.util.List;
-import java.util.Map;
 
 abstract class PersonCsvReportGenerator extends DocumentCsvReportGenerator {
 

@@ -1,10 +1,10 @@
-package org.obiba.mica.search.csvexport.generators;
+package org.obiba.mica.search.reports.generators;
 
 import au.com.bytecode.opencsv.CSVWriter;
 import jersey.repackaged.com.google.common.collect.Lists;
 import org.obiba.mica.core.domain.Person;
 import org.obiba.mica.core.service.PersonService;
-import org.obiba.mica.search.csvexport.CsvReportGenerator;
+import org.obiba.mica.search.reports.ReportGenerator;
 import org.obiba.mica.study.domain.BaseStudy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,7 +49,7 @@ public class StudyCsvReportGenerator extends DocumentCsvReportGenerator {
       zipOutputStream.putNextEntry(new ZipEntry("studies.csv"));
       super.write(zipOutputStream);
       zipOutputStream.putNextEntry(new ZipEntry("populations.csv"));
-      CsvReportGenerator reporter = new StudyPopulationCsvReportGenerator(studies, getLocale());
+      ReportGenerator reporter = new StudyPopulationCsvReportGenerator(studies, getLocale());
       reporter.write(zipOutputStream);
       zipOutputStream.putNextEntry(new ZipEntry("data-collection-events.csv"));
       reporter = new StudyPopulationDCECsvReportGenerator(studies, getLocale());

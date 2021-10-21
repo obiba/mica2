@@ -1,24 +1,18 @@
-package org.obiba.mica.search.csvexport.generators;
+package org.obiba.mica.search.reports.generators;
 
 import au.com.bytecode.opencsv.CSVWriter;
 import com.google.common.collect.Sets;
-import jersey.repackaged.com.google.common.base.Joiner;
 import jersey.repackaged.com.google.common.collect.Lists;
 import org.obiba.mica.core.domain.Attributes;
-import org.obiba.mica.core.domain.Person;
-import org.obiba.mica.core.service.PersonService;
 import org.obiba.mica.dataset.domain.DatasetVariable;
-import org.obiba.mica.network.domain.Network;
-import org.obiba.mica.search.csvexport.CsvReportGenerator;
+import org.obiba.mica.search.reports.ReportGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -67,7 +61,7 @@ public class DatasetVariableCsvReportGenerator extends DocumentCsvReportGenerato
       zipOutputStream.putNextEntry(new ZipEntry("variables.csv"));
       super.write(zipOutputStream);
       zipOutputStream.putNextEntry(new ZipEntry("categories.csv"));
-      CsvReportGenerator reporter = new DatasetCategoryCsvReportGenerator(variables, getLocale());
+      ReportGenerator reporter = new DatasetCategoryCsvReportGenerator(variables, getLocale());
       reporter.write(zipOutputStream);
     } catch (IOException e) {
       log.error("Error when reporting variables", e);

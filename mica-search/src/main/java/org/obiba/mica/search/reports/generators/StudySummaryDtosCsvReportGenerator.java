@@ -8,7 +8,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.obiba.mica.search.csvexport.generators;
+package org.obiba.mica.search.reports.generators;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +21,7 @@ import com.google.common.base.Strings;
 
 import au.com.bytecode.opencsv.CSVWriter;
 
-public class StudySummaryDtosCsvReportGenerator extends CsvReportGeneratorImpl {
+public class StudySummaryDtosCsvReportGenerator extends CsvReportGenerator {
 
   private static final String EXISTS = "X";
   private static final String NOT_EXISTS = "-";

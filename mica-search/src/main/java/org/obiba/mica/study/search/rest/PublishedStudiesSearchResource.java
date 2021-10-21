@@ -19,8 +19,8 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
 
 import org.obiba.mica.search.JoinQueryExecutor;
-import org.obiba.mica.search.csvexport.JoinQueryReportGenerator;
-import org.obiba.mica.search.csvexport.generators.SpecificStudyReportGenerator;
+import org.obiba.mica.search.reports.JoinQueryReportGenerator;
+import org.obiba.mica.search.reports.generators.SpecificStudyReportGenerator;
 import org.obiba.mica.search.queries.rql.RQLQueryBuilder;
 import org.obiba.mica.spi.search.QueryType;
 import org.obiba.mica.spi.search.Searcher;

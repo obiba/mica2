@@ -32,7 +32,7 @@ import static java.util.Arrays.asList;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
-public class CsvReportGeneratorTest {
+public class ReportGeneratorTest {
 
   @Test
   public void when_translation_exists__take_it() throws JSONException {

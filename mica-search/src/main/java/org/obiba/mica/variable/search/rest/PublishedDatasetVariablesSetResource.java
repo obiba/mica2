@@ -21,8 +21,8 @@ import org.obiba.mica.micaConfig.domain.MicaConfig;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.rest.AbstractPublishedDocumentsSetResource;
 import org.obiba.mica.search.JoinQueryExecutor;
-import org.obiba.mica.search.csvexport.CsvReportGenerator;
-import org.obiba.mica.search.csvexport.generators.DatasetVariableCsvReportGenerator;
+import org.obiba.mica.search.reports.ReportGenerator;
+import org.obiba.mica.search.reports.generators.DatasetVariableCsvReportGenerator;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.spi.search.QueryType;
 import org.obiba.mica.spi.search.Searcher;
@@ -122,7 +122,7 @@ public class PublishedDatasetVariablesSetResource extends AbstractPublishedDocum
   @Produces(MediaType.APPLICATION_OCTET_STREAM)
   public Response reportVariables(@PathParam("id") String id, @QueryParam("locale") @DefaultValue("en") String locale) {
     DocumentSet documentSet = getSecuredDocumentSet(id);
-    CsvReportGenerator reporter = new DatasetVariableCsvReportGenerator(variableSetService.getVariables(documentSet, false), locale);
+    ReportGenerator reporter = new DatasetVariableCsvReportGenerator(variableSetService.getVariables(documentSet, false), locale);
     StreamingOutput stream = reporter::write;
     return Response.ok(stream).header("Content-Disposition", "attachment; filename=\"Variables.zip\"").build();
   }

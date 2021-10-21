@@ -8,8 +8,8 @@ import org.obiba.mica.micaConfig.domain.MicaConfig;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.rest.AbstractPublishedDocumentsSetResource;
 import org.obiba.mica.search.JoinQueryExecutor;
-import org.obiba.mica.search.csvexport.CsvReportGenerator;
-import org.obiba.mica.search.csvexport.generators.StudyCsvReportGenerator;
+import org.obiba.mica.search.reports.ReportGenerator;
+import org.obiba.mica.search.reports.generators.StudyCsvReportGenerator;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.spi.search.QueryType;
 import org.obiba.mica.spi.search.Searcher;
@@ -106,7 +106,7 @@ public class PublishedStudiesSetResource extends AbstractPublishedDocumentsSetRe
   @Produces(MediaType.APPLICATION_OCTET_STREAM)
   public Response reportStudies(@PathParam("id") String id, @QueryParam("locale") @DefaultValue("en") String locale) {
     DocumentSet documentSet = getSecuredDocumentSet(id);
-    CsvReportGenerator reporter = new StudyCsvReportGenerator(studySetService.getPublishedStudies(documentSet, true), locale, personService);
+    ReportGenerator reporter = new StudyCsvReportGenerator(studySetService.getPublishedStudies(documentSet, true), locale, personService);
     StreamingOutput stream = reporter::write;
     return Response.ok(stream).header("Content-Disposition", "attachment; filename=\"Studies.zip\"").build();
   }

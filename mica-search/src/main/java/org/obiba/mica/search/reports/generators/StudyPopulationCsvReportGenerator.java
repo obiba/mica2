@@ -1,4 +1,4 @@
-package org.obiba.mica.search.csvexport.generators;
+package org.obiba.mica.search.reports.generators;
 
 import au.com.bytecode.opencsv.CSVWriter;
 import jersey.repackaged.com.google.common.collect.Lists;

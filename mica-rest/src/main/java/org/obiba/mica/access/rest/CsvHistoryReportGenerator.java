@@ -10,7 +10,7 @@ import org.obiba.mica.access.domain.ChangeLog;
 import org.obiba.mica.access.domain.DataAccessAmendment;
 import org.obiba.mica.access.domain.DataAccessRequest;
 import org.obiba.mica.access.domain.StatusChange;
-import org.obiba.mica.search.csvexport.CsvReportGenerator;
+import org.obiba.mica.search.reports.ReportGenerator;
 import org.obiba.mica.user.UserProfileService;
 import org.obiba.shiro.realm.ObibaRealm;
 
@@ -25,7 +25,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class CsvHistoryReportGenerator implements CsvReportGenerator {
+public class CsvHistoryReportGenerator implements ReportGenerator {
   private final Map<DataAccessRequest, List<DataAccessAmendment>> dataAccessRequestListMap;
   private final Translator translator;
   private final UserProfileService userProfileService;

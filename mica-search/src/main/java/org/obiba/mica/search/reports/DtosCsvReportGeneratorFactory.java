@@ -8,15 +8,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.obiba.mica.search.csvexport;
+package org.obiba.mica.search.reports;
 
 import org.obiba.core.translator.JsonTranslator;
 import org.obiba.core.translator.Translator;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
-import org.obiba.mica.search.csvexport.generators.DatasetDtosCsvReportGenerator;
-import org.obiba.mica.search.csvexport.generators.NetworkDtosCsvReportGenerator;
-import org.obiba.mica.search.csvexport.generators.StudySummaryDtosCsvReportGenerator;
-import org.obiba.mica.search.csvexport.generators.DatasetVariableDtosCsvReportGenerator;
+import org.obiba.mica.search.reports.generators.DatasetDtosCsvReportGenerator;
+import org.obiba.mica.search.reports.generators.NetworkDtosCsvReportGenerator;
+import org.obiba.mica.search.reports.generators.StudySummaryDtosCsvReportGenerator;
+import org.obiba.mica.search.reports.generators.DatasetVariableDtosCsvReportGenerator;
 import org.obiba.mica.spi.search.QueryType;
 import org.obiba.mica.web.model.MicaSearch;
 import org.springframework.stereotype.Component;
@@ -30,7 +30,7 @@ public class DtosCsvReportGeneratorFactory {
   @Inject
   private MicaConfigService micaConfigService;
 
-  public CsvReportGenerator get(QueryType type, MicaSearch.JoinQueryResultDto queryResult, List<String> columnsToHide, String locale) {
+  public ReportGenerator get(QueryType type, MicaSearch.JoinQueryResultDto queryResult, List<String> columnsToHide, String locale) {
 
     Translator translator = JsonTranslator.buildSafeTranslator(() -> micaConfigService.getTranslations(locale, false));
 
