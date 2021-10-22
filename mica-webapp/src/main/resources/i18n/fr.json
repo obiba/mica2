@@ -662,6 +662,8 @@
       }
     },
     "export": "Export CSV",
+    "publish-datasets": "Publier des ensembles de données",
+    "publish-datasets-help": "Publier des ensembles de données liés à cette étude.",
     "access": {
       "label": "Accès",
       "data": "Données",

@@ -1,0 +1,52 @@
+<span>
+
+  <button ng-if="$ctrl.canPublishAtLeastOneDataset" type="button" class="btn btn-primary" data-toggle="modal" data-target="#datasetsModal" data-backdrop="static" data-keyboard="false" translate>study.publish-datasets</button>
+
+  <div class="modal fade" id="datasetsModal">
+    <div class="modal-dialog">
+
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="{{'close' | translate}}" ng-click="$ctrl.onClose()"><span aria-hidden="true">&times;</span></button>
+          <h4 translate>study.publish-datasets</h4>
+        </div>
+
+        <div class="modal-body">
+          <div ng-if="$ctrl.requestsSent" class="alert alert-success" role="alert"><span translate>ok</span>!</div>
+
+          <p class="help-block" translate>study.publish-datasets-help</p>
+
+          <div class="table-responsive">
+            <table class="table table-bordered table-striped">
+              <thead>
+              <tr>
+                <th style="width: 5%"><input ng-checked="$ctrl.selection.length === $ctrl.datasets.length" ng-click="$ctrl.onToggleAllDatasetsSelection()" type="checkbox"></th>
+                <th translate>name</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr ng-repeat="dataset in $ctrl.datasets">
+                <td><input value="{{dataset.id}}" ng-checked="$ctrl.selection.indexOf(dataset.id) > -1" ng-click="$ctrl.toggleDatasetSelection(dataset.id)" type="checkbox"></td>
+                <td>
+                  <ul class="list-unstyled">
+                    <li ng-repeat="name in dataset.name">
+                      <span class="badge">{{name.lang}}</span> {{name.value}}
+                    </li>
+                  </ul>
+                </td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="$ctrl.onClose()" translate>cancel</button>
+          <button ng-disabled="$ctrl.selection.length === 0" ng-click="$ctrl.indexOrPublish()" class="btn btn-primary btn-sm" type="button">{{'apply' | translate}} <span class="badge">{{$ctrl.selection.length}}</span></button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</span>

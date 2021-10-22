@@ -18,6 +18,8 @@
         <i class="fa fa-pencil-square-o"></i> <span translate>edit</span>
       </a>
 
+      <datasets-list-by-study ng-if="studySummary['obiba.mica.EntityStateDto.studySummaryState'].publishedTag" study="study.id" type="'Collected'"></datasets-list-by-study>
+
       <a share-modal resource-type="'individual-study'" resource-id="study.id" permissions="permissions"/>
 
       <a obiba-file-download="" method="get" get-url="contextPath + '/ws/draft/individual-study/' + study.id + '/export_csv'" target="_self" download="" class="btn btn-info ng-binding ng-isolate-scope" href="">
@@ -36,8 +38,7 @@
   </div>
 
   <p>
-    <small class="help-block inline">{{'global.lastUpdate' | translate}}: {{studySummary.timestamps.lastUpdate |
-      amDateFormat : 'lll'}}
+    <small class="help-block inline">{{'global.lastUpdate' | translate}}: {{studySummary.timestamps.lastUpdate | amDateFormat : 'lll'}}
     </small>
     <publish-status class="inline" state="studySummary['obiba.mica.EntityStateDto.studySummaryState']"></publish-status>
   </p>

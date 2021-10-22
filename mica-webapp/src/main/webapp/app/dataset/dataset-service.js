@@ -17,6 +17,7 @@ mica.dataset
     function ($resource) {
       return $resource(contextPath + '/ws/draft/collected-datasets', {}, {
         'query': {method: 'GET', errorHandler: true, isArray: true},
+        'index': {method: 'PUT', url: contextPath + '/ws/draft/collected-datasets/_index', params: {id: '@id'}, errorHandler: true},
         'delete': {method: 'DELETE', url: contextPath + '/ws/draft/collected-dataset/:id', params: {id: '@id'}, errorHandler: true}
       });
     }])
@@ -56,8 +57,9 @@ mica.dataset
 
   .factory('HarmonizedDatasetsResource', ['$resource',
     function ($resource) {
-      return $resource(contextPath + '/ws/draft/harmonized-datasets?comment:comment', {}, {
+      return $resource(contextPath + '/ws/draft/harmonized-datasets', {}, {
         'query': {method: 'GET', errorHandler: true, isArray: true},
+        'index': {method: 'PUT', url: contextPath + '/ws/draft/harmonized-datasets/_index', params: {id: '@id'}, errorHandler: true},
         'delete': {method: 'DELETE', url: contextPath + '/ws/draft/harmonized-dataset/:id', params: {id: '@id'}, errorHandler: true}
       });
     }])

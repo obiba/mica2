@@ -662,6 +662,8 @@
       }
     },
     "export": "Export CSV",
+    "publish-datasets": "Publish Datasets",
+    "publish-datasets-help": "Publish datasets linked to this study.",
     "access": {
       "label": "Access",
       "data": "data",

@@ -20,6 +20,7 @@ mica.study = angular.module('mica.study', [
   'mica.status',
   'mica.contact',
   'mica.permission',
+  'mica.dataset',
   'ngResource',
   'ngRoute',
   'ui.bootstrap',
