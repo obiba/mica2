@@ -99,7 +99,6 @@ public class DraftCollectedDatasetsResource {
                                     @QueryParam("order") @DefaultValue("asc") String order,
                                     @QueryParam("filter") @DefaultValue("ALL") String filter,
                                     @Context HttpServletResponse response) {
-    Stream<Mica.DatasetDto> result;
     long totalCount;
 
     EntityStateFilter entityStateFilter = EntityStateFilter.valueOf(filter);
