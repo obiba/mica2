@@ -54,6 +54,10 @@
 <!-- To allow download the cart of variables as views in Opal -->
 <#assign showCartViewDownload = (isAdministrator || isReviewer || isEditor || isDAO)/>
 
+<!-- Compare -->
+<#assign studiesCompareEnabled = config.studiesCompareEnabled/>
+<#assign networksCompareEnabled = config.networksCompareEnabled/>
+
 <!-- Contact -->
 <#assign contactEnabled = config.contactNotificationsEnabled/>
 

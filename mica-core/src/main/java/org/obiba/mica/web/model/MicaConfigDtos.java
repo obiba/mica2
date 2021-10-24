@@ -164,6 +164,9 @@ class MicaConfigDtos {
     builder.setIsNetworksCartEnabled(config.isNetworksCartEnabled());
     builder.setSetTimeToLive(config.getSetTimeToLive());
     builder.setCartTimeToLive(config.getCartTimeToLive());
+    builder.setIsStudiesCompareEnabled(config.isStudiesCompareEnabled());
+    builder.setIsNetworksCompareEnabled(config.isNetworksCompareEnabled());
+    builder.setMaxItemsPerCompare(config.getMaxItemsPerCompare());
     builder.setIsContingencyEnabled(config.isContingencyEnabled());
     builder.setIsSetsAnalysisEnabled(config.isSetsAnalysisEnabled());
     builder.setIsSetsSearchEnabled(config.isSetsSearchEnabled());
@@ -248,6 +251,9 @@ class MicaConfigDtos {
     config.setCartEnabled(dto.getIsCartEnabled());
     config.setStudiesCartEnabled(dto.getIsStudiesCartEnabled());
     config.setNetworksCartEnabled(dto.getIsNetworksCartEnabled());
+    config.setStudiesCompareEnabled(dto.getIsStudiesCompareEnabled());
+    config.setNetworksCompareEnabled(dto.getIsNetworksCompareEnabled());
+    config.setMaxItemsPerCompare(dto.getMaxItemsPerCompare());
     config.setSetsAnalysisEnabled(dto.getIsSetsAnalysisEnabled());
     config.setContingencyEnabled(dto.getIsContingencyEnabled());
     config.setSetsSearchEnabled(dto.getIsSetsSearchEnabled());

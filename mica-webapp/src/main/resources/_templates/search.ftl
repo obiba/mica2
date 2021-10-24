@@ -199,11 +199,21 @@
                       </#if>
                     </ul>
                     <div class="float-right mt-1">
+                      <#if studiesCompareEnabled>
+                        <button id="compare-studies" type="button" class="btn btn-info btn-sm" v-if="isStudiesToolsVisible" @click="onCompare">
+                          <i class="fas fa-equals"></i> <@message "compare"/> <span class="badge badge-light studies-selection-count"></span>
+                        </button>
+                      </#if>
+                      <#if networksCompareEnabled>
+                        <button id="compare-networks" type="button" class="btn btn-info btn-sm" v-if="isNetworksToolsVisible" @click="onCompare">
+                          <i class="fas fa-equals"></i> <@message "compare"/> <span class="badge badge-light studies-selection-count"></span>
+                        </button>
+                      </#if>
                       <#if cartEnabled>
                         <#if user??>
                           <#if variablesCartEnabled>
                             <#if listsEnabled>
-                              <div class="btn-group" v-if="isVariablesCartVisible">
+                              <div class="btn-group" v-if="isVariablesToolsVisible">
                                 <button id="cart-add-variables" type="button" class="btn btn-sm btn-success" @click="onAddToCart" title="<@message "sets.cart.add-variables-to-cart"/>">
                                   <i class="fas fa-cart-plus"></i> <@message "sets.cart.add-to-cart"/></button>
                                 <button type="button" class="btn btn-sm btn-success dropdown-toggle dropdown-toggle-split" data-toggle="dropdown"></button>
@@ -228,16 +238,16 @@
                                 </div>
                               </div>
                             <#else>
-                              <button id="cart-add-variables" type="button" class="btn btn-sm btn-success" v-if="isVariablesCartVisible" @click="onAddToCart" title="<@message "sets.cart.add-variables-to-cart"/>">
+                              <button id="cart-add-variables" type="button" class="btn btn-sm btn-success" v-if="isVariablesToolsVisible" @click="onAddToCart" title="<@message "sets.cart.add-variables-to-cart"/>">
                                 <i class="fas fa-cart-plus"></i> <@message "sets.cart.add-to-cart"/></button>
                             </#if>
                           </#if>
                           <#if studiesCartEnabled>
-                            <button id="cart-add-studies" type="button" class="btn btn-sm btn-success" v-if="isStudiesCartVisible" @click="onAddToCart" title="<@message "sets.cart.add-studies-to-cart"/>">
+                            <button id="cart-add-studies" type="button" class="btn btn-sm btn-success ml-2" v-if="isStudiesToolsVisible" @click="onAddToCart" title="<@message "sets.cart.add-studies-to-cart"/>">
                               <i class="fas fa-cart-plus"></i> <@message "sets.cart.add-to-cart"/></button>
                           </#if>
                           <#if networksCartEnabled>
-                            <button id="cart-add-networks" type="button" class="btn btn-sm btn-success" v-if="isNetworksCartVisible" @click="onAddToCart" title="<@message "sets.cart.add-networks-to-cart"/>">
+                            <button id="cart-add-networks" type="button" class="btn btn-sm btn-success ml-2" v-if="isNetworksToolsVisible" @click="onAddToCart" title="<@message "sets.cart.add-networks-to-cart"/>">
                               <i class="fas fa-cart-plus"></i> <@message "sets.cart.add-to-cart"/></button>
                           </#if>
                         <#else>

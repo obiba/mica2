@@ -51,6 +51,8 @@ public class MicaConfig extends AbstractAuditableDocument {
 
   public static final long DEFAULT_MAX_SETS = 10;
 
+  public static final int DEFAULT_MAX_ITEMS_PER_COMPARE = 10;
+
   public static final boolean ANONYMOUS_CAN_CREATE_CART = true;
 
   @NotBlank
@@ -149,13 +151,19 @@ public class MicaConfig extends AbstractAuditableDocument {
 
   private boolean cartEnabled = true;
 
-  private boolean studiesCartEnabled = false;
+  private boolean studiesCartEnabled = true;
 
-  private boolean networksCartEnabled = false;
+  private boolean networksCartEnabled = true;
 
   private int cartTimeToLive = 30; // 1 month
 
   private int setTimeToLive = 365; // year
+
+  private boolean studiesCompareEnabled = true;
+
+  private boolean networksCompareEnabled = true;
+
+  private int maxItemsPerCompare = DEFAULT_MAX_ITEMS_PER_COMPARE;
 
   private boolean contingencyEnabled = true;
 
@@ -617,6 +625,30 @@ public class MicaConfig extends AbstractAuditableDocument {
 
   public void setSetTimeToLive(int setTimeToLive) {
     this.setTimeToLive = setTimeToLive;
+  }
+
+  public boolean isStudiesCompareEnabled() {
+    return studiesCompareEnabled;
+  }
+
+  public void setStudiesCompareEnabled(boolean studiesCompareEnabled) {
+    this.studiesCompareEnabled = studiesCompareEnabled;
+  }
+
+  public boolean isNetworksCompareEnabled() {
+    return networksCompareEnabled;
+  }
+
+  public void setNetworksCompareEnabled(boolean networksCompareEnabled) {
+    this.networksCompareEnabled = networksCompareEnabled;
+  }
+
+  public int getMaxItemsPerCompare() {
+    return maxItemsPerCompare;
+  }
+
+  public void setMaxItemsPerCompare(int maxItemsPerCompare) {
+    this.maxItemsPerCompare = maxItemsPerCompare;
   }
 
   public boolean isContingencyEnabled() {

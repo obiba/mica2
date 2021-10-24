@@ -258,6 +258,36 @@
 
         <tr>
           <td>
+            <span translate>config.studies-cart-enabled</span>
+            <span class="help-block" translate>config.studies-cart-enabled-help</span>
+          </td>
+          <td>
+            <i class="fa fa-check-square-o" ng-hide="!micaConfig.isStudiesCompareEnabled"></i>
+            <i class="fa fa-square-o" ng-hide="micaConfig.isStudiesCompareEnabled"></i>
+          </td>
+        </tr>
+
+        <tr>
+          <td>
+            <span translate>config.networks-cart-enabled</span>
+            <span class="help-block" translate>config.networks-cart-enabled-help</span>
+          </td>
+          <td>
+            <i class="fa fa-check-square-o" ng-hide="!micaConfig.isNetworksCompareEnabled"></i>
+            <i class="fa fa-square-o" ng-hide="micaConfig.isNetworksCompareEnabled"></i>
+          </td>
+        </tr>
+
+        <tr>
+          <td>
+            <span translate>config.max-items-per-compare</span>
+            <span class="help-block" translate>config.max-items-per-compare-help</span>
+          </td>
+          <td>{{micaConfig.maxItemsPerCompare}}</td>
+        </tr>
+
+        <tr>
+          <td>
             <span translate>config.opal-views-grouping</span>
             <span class="help-block">{{'config.opal-views-grouping-' + micaConfig.opalViewsGrouping + '-help' | translate}}</span>
           </td>

@@ -737,7 +737,7 @@ class TableFixedHeaderUtility {
           if (limitQuery) {
             limitQuery.args = [0, 100000];
           } else {
-            tree.addQuery(vQuery, new RQL.Query('limit', [0, 100000]));
+            tree.addQuery(vQuery, new RQL.Query('limit', [0, Mica.config.maxItemsPerSet]));
           }
           tree.addQuery(vQuery, new RQL.Query('fields', fields));
           return tree.serialize();
@@ -792,6 +792,13 @@ class TableFixedHeaderUtility {
         }
         return set.name;
       },
+      onCompare() {
+        if (this.isStudiesToolsVisible) {
+          window.location = contextPath + '/compare?type=studies&query=' + this.queryToStudiesCart.replace('limit(0,' + Mica.config.maxItemsPerSet + ')', 'limit(0,' + Mica.config.maxItemsPerCompare + ')');
+        } else if (this.isNetworksToolsVisible) {
+          window.location = contextPath + '/compare?type=networks&query=' + this.queryToNetworksCart.replace('limit(0,' + Mica.config.maxItemsPerSet + ')', 'limit(0,' + Mica.config.maxItemsPerCompare + ')');
+        }
+      },
       onAddToCart() {
         const makeOnSuccess = function(type) {
           return function (cart, oldCart) {
@@ -806,15 +813,15 @@ class TableFixedHeaderUtility {
         };
 
         if (this.downloadUrlObject) {
-          if (this.isVariablesCartVisible) {
+          if (this.isVariablesToolsVisible) {
             if (Array.isArray(this.variableSelections) && this.variableSelections.length > 0) {
               VariablesSetService.addToCart(this.variableSelections, makeOnSuccess('variables'));
             } else {
               VariablesSetService.addQueryToCart(this.queryToVariablesCart, makeOnSuccess('variables'));
             }
-          } else if (this.isStudiesCartVisible) {
+          } else if (this.isStudiesToolsVisible) {
             StudiesSetService.addQueryToCart(this.queryToStudiesCart, makeOnSuccess('studies'));
-          } else if (this.isNetworksCartVisible) {
+          } else if (this.isNetworksToolsVisible) {
             NetworksSetService.addQueryToCart(this.queryToNetworksCart, makeOnSuccess('networks'));
           }
         }
@@ -1072,13 +1079,13 @@ class TableFixedHeaderUtility {
       numberOfSetsRemaining() {
         return Mica.maxNumberOfSets - (this.variableSets || []).length;
       },
-      isVariablesCartVisible() {
+      isVariablesToolsVisible() {
         return this.downloadUrlObject.type === 'variables' || this.downloadUrlObject.type === 'datasets';
       },
-      isStudiesCartVisible() {
+      isStudiesToolsVisible() {
         return this.downloadUrlObject.type === 'studies';
       },
-      isNetworksCartVisible() {
+      isNetworksToolsVisible() {
         return this.downloadUrlObject.type === 'networks';
       }
     },

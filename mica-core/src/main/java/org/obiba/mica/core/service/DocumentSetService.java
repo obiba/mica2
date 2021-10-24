@@ -109,8 +109,7 @@ public abstract class DocumentSetService {
    */
   public DocumentSet getCartCurrentUser() {
     Optional<DocumentSet> cartOpt = getAllCurrentUser().stream().filter(set -> !set.hasName() && set.getType().equals(getType())).findFirst();
-    if (cartOpt.isPresent()) return cartOpt.get();
-    return create("", Lists.newArrayList());
+    return cartOpt.orElseGet(() -> create("", Lists.newArrayList()));
   }
 
   /**
