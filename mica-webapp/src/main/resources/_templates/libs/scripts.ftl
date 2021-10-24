@@ -13,11 +13,15 @@
 <!-- Moment -->
 <script src="${adminLTEPath}/plugins/moment/moment-with-locales.min.js"></script>
 <!-- DataTables -->
-<script src="${adminLTEPath}/plugins/datatables/jquery.dataTables.js"></script>
-<script src="${adminLTEPath}/plugins/datatables-bs4/js/dataTables.bootstrap4.js"></script>
-<script src="${adminLTEPath}/plugins/datatables-fixedheader/js/dataTables.fixedHeader.js"></script>
-<script src="${adminLTEPath}/plugins/datatables-fixedheader/js/fixedHeader.bootstrap4.js"></script>
-<script src="${adminLTEPath}/plugins/datatables-select/js/dataTables.select.js"></script>
+<script src="${adminLTEPath}/plugins/datatables/jquery.dataTables.min.js"></script>
+<script src="${adminLTEPath}/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+<script src="${adminLTEPath}/plugins/datatables-fixedheader/js/dataTables.fixedHeader.min.js"></script>
+<script src="${adminLTEPath}/plugins/datatables-fixedheader/js/fixedHeader.bootstrap4.min.js"></script>
+<script src="${adminLTEPath}/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
+<script src="${adminLTEPath}/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
+<script src="${adminLTEPath}/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
+<script src="${adminLTEPath}/plugins/datatables-buttons/js/buttons.print.min.js"></script>
+<script src="${adminLTEPath}/plugins/datatables-select/js/dataTables.select.min.js"></script>
 <!-- Toastr -->
 <script src="${adminLTEPath}/plugins/toastr/toastr.min.js"></script>
 <!-- Axios -->
@@ -154,6 +158,12 @@
       const template = $(this).find('template');
       var msg = template && template.length > 0 ? $.trim($(template).html()) : $.trim($(this).html());
       if (msg && msg.length > 0) {
+        if ($(this).hasClass('truncate')) {
+          let length = 100;
+          if ($(this).hasClass('truncate-300'))
+            length = 300;
+          msg = msg.substring(0, length) + '...';
+        }
         $(this).html(marked(tidy(msg)));
       }
     });

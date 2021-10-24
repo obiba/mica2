@@ -276,6 +276,11 @@
                 <h3 class="card-title"><@message "studies"/></h3>
                   <#if user.studiesCart?? && user.studiesCart.count gt 0>
                     <div class="float-right">
+                      <#if studiesCompareEnabled>
+                        <button type="button" class="btn btn-info ml-2" onclick="onCompareStudies()">
+                          <i class="fas fa-equals"></i> <@message "compare"/> <span class="badge badge-light studies-selection-count"></span>
+                        </button>
+                      </#if>
                       <#if showCartDownload>
                         <a href="${contextPath}/ws/studies/set/${user.studiesCart.id}/documents/_report?locale=${.locale}" download class="btn btn-primary ml-2">
                           <i class="fas fa-download"></i> <@message "download"/>
@@ -331,6 +336,11 @@
                 <h3 class="card-title"><@message "networks"/></h3>
                   <#if user.networksCart?? && user.networksCart.count gt 0>
                     <div class="float-right">
+                      <#if networksCompareEnabled>
+                        <button type="button" class="btn btn-info ml-2" onclick="onCompareNetworks()">
+                          <i class="fas fa-equals"></i> <@message "compare"/> <span class="badge badge-light networks-selection-count"></span>
+                        </button>
+                      </#if>
                       <#if showCartDownload>
                         <a href="${contextPath}/ws/networks/set/${user.networksCart.id}/documents/_report?locale=${.locale}" download class="btn btn-primary ml-2">
                           <i class="fas fa-download"></i> <@message "download"/>

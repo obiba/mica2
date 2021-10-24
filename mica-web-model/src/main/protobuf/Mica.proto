@@ -468,6 +468,9 @@ message MicaConfigDto {
   optional bool isCommentsRequiredOnDocumentSave = 62 [default = false];
   required bool isStudiesCartEnabled = 63;
   required bool isNetworksCartEnabled = 64;
+  required bool isStudiesCompareEnabled = 65;
+  required bool isNetworksCompareEnabled = 66;
+  required int32 maxItemsPerCompare = 67;
 }
 
 message PublicMicaConfigDto {

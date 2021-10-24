@@ -14,6 +14,15 @@
     }
   };
 
+  function onCompareStudies() {
+    const selections = studiesCartStorage.getSelections();
+    window.location = '${contextPath}/compare?type=studies' + (selections.length === 0 ? '' : '&ids=' + selections.join(','));
+  }
+
+  function onCompareNetworks() {
+    const selections = networksCartStorage.getSelections();
+    window.location = '${contextPath}/compare?type=networks' + (selections.length === 0 ? '' : '&ids=' + selections.join(','));
+  }
 
   function onClickAddToSet(id, name) {
     addToSet(id, name);
