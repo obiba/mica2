@@ -15,6 +15,8 @@ import org.obiba.mica.search.JoinQueryExecutor;
 import org.obiba.mica.spi.search.QueryType;
 import org.obiba.mica.spi.search.Searcher;
 import org.obiba.mica.study.domain.BaseStudy;
+import org.obiba.mica.study.domain.HarmonizationStudy;
+import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.service.PublishedStudyService;
 import org.obiba.mica.study.service.StudySetService;
 import org.obiba.mica.web.model.Mica;
@@ -59,7 +61,8 @@ public class CompareController extends BaseController {
     MicaConfig config = micaConfigService.getConfig();
     String documentType = Strings.isNullOrEmpty(type) ? "studies" : type.toLowerCase();
     Set<String> documentIds = Sets.newTreeSet();
-    List<BaseStudy> studies = Lists.newArrayList();
+    List<Study> individualStudies = Lists.newArrayList();
+    List<HarmonizationStudy> harmonizationStudies = Lists.newArrayList();
     List<Network> networks = Lists.newArrayList();
     String searchQuery = "";
     Map<String, Object> params = newParameters();
@@ -87,14 +90,17 @@ public class CompareController extends BaseController {
 
     if (!documentIds.isEmpty()) {
       if ("studies".equals(documentType) && config.isStudiesCompareEnabled()) {
-        studies = publishedStudyService.findByIds(Lists.newArrayList(documentIds).subList(0, Math.min(documentIds.size(), config.getMaxItemsPerCompare())));
+        List<BaseStudy> studies = publishedStudyService.findByIds(Lists.newArrayList(documentIds).subList(0, Math.min(documentIds.size(), config.getMaxItemsPerCompare())));
+        individualStudies = studies.stream().filter(study -> study instanceof Study).map(study -> (Study)study).collect(Collectors.toList());
+        harmonizationStudies = studies.stream().filter(study -> study instanceof HarmonizationStudy).map(study -> (HarmonizationStudy)study).collect(Collectors.toList());
         searchQuery = String.format("study(in(Mica_study.id,(%s)))", Joiner.on(",").join(documentIds));
       } else if ("networks".equals(documentType) && config.isNetworksCompareEnabled()) {
         networks = publishedNetworkService.findByIds(Lists.newArrayList(documentIds).subList(0, Math.min(documentIds.size(), config.getMaxItemsPerCompare())));
         searchQuery = String.format("network(in(Mica_network.id,(%s)))", Joiner.on(",").join(documentIds));
       }
     }
-    params.put("studies", studies);
+    params.put("individualStudies", individualStudies);
+    params.put("harmonizationStudies", harmonizationStudies);
     params.put("networks", networks);
     params.put("query", searchQuery);
 

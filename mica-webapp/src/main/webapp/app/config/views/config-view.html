@@ -258,8 +258,23 @@
 
         <tr>
           <td>
-            <span translate>config.studies-cart-enabled</span>
-            <span class="help-block" translate>config.studies-cart-enabled-help</span>
+            <span translate>config.opal-views-grouping</span>
+            <span class="help-block">{{'config.opal-views-grouping-' + micaConfig.opalViewsGrouping + '-help' | translate}}</span>
+          </td>
+          <td>{{'config.opal-views-grouping-label.' + micaConfig.opalViewsGrouping | translate}}</td>
+        </tr>
+        </tbody>
+      </table>
+
+      <h5 translate>config.documents-compare</h5>
+
+      <table class="table table-bordered table-striped">
+        <tbody>
+
+        <tr>
+          <td>
+            <span translate>config.studies-compare-enabled</span>
+            <span class="help-block" translate>config.studies-compare-enabled-help</span>
           </td>
           <td>
             <i class="fa fa-check-square-o" ng-hide="!micaConfig.isStudiesCompareEnabled"></i>
@@ -269,8 +284,8 @@
 
         <tr>
           <td>
-            <span translate>config.networks-cart-enabled</span>
-            <span class="help-block" translate>config.networks-cart-enabled-help</span>
+            <span translate>config.networks-compare-enabled</span>
+            <span class="help-block" translate>config.networks-compare-enabled-help</span>
           </td>
           <td>
             <i class="fa fa-check-square-o" ng-hide="!micaConfig.isNetworksCompareEnabled"></i>
@@ -284,14 +299,6 @@
             <span class="help-block" translate>config.max-items-per-compare-help</span>
           </td>
           <td>{{micaConfig.maxItemsPerCompare}}</td>
-        </tr>
-
-        <tr>
-          <td>
-            <span translate>config.opal-views-grouping</span>
-            <span class="help-block">{{'config.opal-views-grouping-' + micaConfig.opalViewsGrouping + '-help' | translate}}</span>
-          </td>
-          <td>{{'config.opal-views-grouping-label.' + micaConfig.opalViewsGrouping | translate}}</td>
         </tr>
 
         </tbody>
@@ -427,22 +434,6 @@
           <td>
             <i class="fa fa-check-square-o" ng-hide="!micaConfig.isSetsAnalysisEnabled"></i>
             <i class="fa fa-square-o" ng-hide="micaConfig.isSetsAnalysisEnabled"></i>
-          </td>
-        </tr>
-        </tbody>
-      </table>
-
-
-      <h5 translate>config.searchLayout.title</h5>
-      <table class="table table-bordered table-striped">
-        <tbody>
-        <tr>
-          <td>
-            <span translate>config.searchLayout.title</span>
-            <span class="help-block" translate>config.searchLayout.help</span>
-          </td>
-          <td>
-            {{'config.searchLayout.' + micaConfig.searchLayout | translate}}
           </td>
         </tr>
         </tbody>
