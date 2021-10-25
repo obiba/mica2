@@ -1,7 +1,7 @@
 <!-- Compare page macros -->
 
-<!-- Studies compare model template -->
-<#macro studiesCompareModel studies>
+<!-- Individual studies compare model template -->
+<#macro individualStudiesCompareModel studies>
   <tr id="name">
     <td class="font-weight-bold">
         <@message "name"/>
@@ -460,39 +460,65 @@
         <@message "study.populations"/> - <@message "population.otherCriteria"/>
       <small><a href="javascript:void(0)" onclick="onRemoveRow('populations-otherCriteria')"><i class="fa fa-times"></i></a></small>
     </td>
-      <#list studies as study>
-        <td>
-          <small>
-              <#if study.populations??>
-                  <#assign first = true/>
-                  <#list study.populations as population>
-                      <#if !first> | </#if>
-                      <#if population.model.selectionCriteria?? && population.model.selectionCriteria.otherCriteria??>
-                          ${localize(population.model.selectionCriteria.otherCriteria)}
-                      <#elseif study.populations?size gt 1>
-                          <@message "global.not-applicable"/>
-                      </#if>
-                      <#assign first = false/>
-                  </#list>
-              </#if>
-          </small>
-        </td>
-      </#list>
-  </tr>
-
-  <!--
-  <tr id="xxx">
-    <td class="font-weight-bold">
-      <@message "xxx"/>
-      <small><a href="javascript:void(0)" onclick="onRemoveRow('xxx')"><i class="fa fa-times"></i></a></small>
-    </td>
     <#list studies as study>
       <td>
+        <small>
+          <#if study.populations??>
+            <#assign first = true/>
+            <#list study.populations as population>
+              <#if !first> | </#if>
+              <#if population.model.selectionCriteria?? && population.model.selectionCriteria.otherCriteria??>
+                ${localize(population.model.selectionCriteria.otherCriteria)}
+              <#elseif study.populations?size gt 1>
+                <@message "global.not-applicable"/>
+              </#if>
+              <#assign first = false/>
+            </#list>
+          </#if>
+        </small>
       </td>
     </#list>
   </tr>
-  -->
 </#macro>
+
+<!-- Individual studies compare model template -->
+<#macro harmonizationStudiesCompareModel studies>
+  <tr id="harmo-name">
+    <td class="font-weight-bold">
+      <@message "name"/>
+      <small><a href="javascript:void(0)" onclick="onRemoveRow('harmo-name')"><i class="fa fa-times"></i></a></small>
+    </td>
+      <#list studies as study>
+        <td>${localize(study.name)}</td>
+      </#list>
+  </tr>
+  <tr id="harmo-objectives">
+    <td class="font-weight-bold">
+      <@message "study.objectives"/>
+      <small><a href="javascript:void(0)" onclick="onRemoveRow('harmo-objectives')"><i class="fa fa-times"></i></a></small>
+    </td>
+      <#list studies as study>
+        <td>
+          <small class="marked truncate truncate-300">
+            <template>${localize(study.objectives)}</template></small>
+        </td>
+      </#list>
+  </tr>
+  <tr id="harmo-design">
+    <td class="font-weight-bold">
+      <@message "study_taxonomy.vocabulary.harmonizationDesign.title"/>
+      <small><a href="javascript:void(0)" onclick="onRemoveRow('harmo-design')"><i class="fa fa-times"></i></a></small>
+    </td>
+    <#list studies as study>
+      <td>
+        <#if study.model.harmonizationDesign??>
+          ${localize(study.model.harmonizationDesign)}
+        </#if>
+      </td>
+    </#list>
+  </tr>
+</#macro>
+
 
 <!-- Networks compare model template -->
 <#macro networksCompareModel networks>

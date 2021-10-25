@@ -60,7 +60,7 @@
           <div class="card card-info card-outline">
             <div class="card-header">
               <h3 class="card-title"><@message "studies"/></h3>
-              <#if studies?size gt 0>
+              <#if individualStudies?size gt 0 || harmonizationStudies?size gt 0>
                 <div class="float-right">
                   <a class="btn btn-info ml-2" href="${contextPath}/search#lists?type=${type}&query=${query}">
                     <i class="fas fa-search"></i>
@@ -69,28 +69,72 @@
               </#if>
             </div>
             <div class="card-body">
-              <#if ids?size gt studies?size>
+              <#if ids?size gt (individualStudies?size + harmonizationStudies?size)>
                 <div class="alert alert-warning alert-dismissible">
                   <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
                   <@messageArgs code="compare-max-items" args=["${config.maxItemsPerCompare}"]/>
                 </div>
               </#if>
-              <#if studies?size == 0>
+
+              <#if (individualStudies?size + harmonizationStudies?size) == 0>
                 <span class="text-muted"><@message "compare-studies-none"/></span>
               <#else>
-                <table id="compare-studies" class="table table-responsive table-striped">
-                <thead>
-                <tr>
-                  <th></th>
-                  <#list studies as study>
-                    <th><a href="${contextPath}/study/${study.id}" target="_blank">${localize(study.acronym)}</a></th>
-                  </#list>
-                </tr>
-                </thead>
-                <tbody>
-                  <@studiesCompareModel studies=studies/>
-                </tbody>
-              </table>
+                <#if individualStudies?size gt 0 && harmonizationStudies?size gt 0>
+                  <ul id="studies-tabs" class="nav nav-pills mb-3">
+                    <#if individualStudies?size gt 0>
+                      <li class="nav-item">
+                        <a id="individual-studies-tab" class="nav-link active" href="#tab_individual_studies" data-toggle="tab">
+                            <@message "individual"/>
+                          <span class="badge badge-light">${individualStudies?size}</span>
+                        </a>
+                      </li>
+                    </#if>
+                    <#if harmonizationStudies?size gt 0>
+                      <li class="nav-item">
+                        <a id="harmonization-studies-tab" class="nav-link" href="#tab_harmonization_studies" data-toggle="tab">
+                            <@message "harmonization"/>
+                          <span class="badge badge-light">${harmonizationStudies?size}</span>
+                        </a>
+                      </li>
+                    </#if>
+                  </ul>
+                </#if>
+                <div class="tab-content">
+                  <div class="tab-pane active" id="tab_individual_studies">
+                    <#if individualStudies?size gt 0>
+                      <table id="compare-individual-studies" class="table table-responsive table-striped">
+                        <thead>
+                        <tr>
+                          <th></th>
+                          <#list individualStudies as study>
+                            <th><a href="${contextPath}/study/${study.id}" target="_blank">${localize(study.acronym)}</a></th>
+                          </#list>
+                        </tr>
+                        </thead>
+                        <tbody>
+                          <@individualStudiesCompareModel studies=individualStudies/>
+                        </tbody>
+                      </table>
+                    </#if>
+                  </div>
+                  <div class="tab-pane <#if individualStudies?size == 0>active</#if>" id="tab_harmonization_studies">
+                    <#if harmonizationStudies?size gt 0>
+                      <table id="compare-harmonization-studies" class="table table-responsive table-striped">
+                        <thead>
+                        <tr>
+                          <th></th>
+                            <#list harmonizationStudies as study>
+                              <th><a href="${contextPath}/study/${study.id}" target="_blank">${localize(study.acronym)}</a></th>
+                            </#list>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <@harmonizationStudiesCompareModel studies=harmonizationStudies/>
+                        </tbody>
+                      </table>
+                    </#if>
+                  </div>
+                </div>
               </#if>
             </div>
           </div>
