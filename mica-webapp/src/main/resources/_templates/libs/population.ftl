@@ -21,7 +21,10 @@
                   <@message "population.gender"/>
                 </dt>
                 <dd class="col-sm-8">
-                  <div>${population.model.selectionCriteria.gender}</div>
+                  <div>
+                    <#assign text = "study.selection-criteria.gender." + population.model.selectionCriteria.gender/>
+                    <@message text/>
+                  </div>
                 </dd>
               </#if>
 

@@ -58,18 +58,9 @@
       <td>${localize(study.funding)}</td>
     </#list>
   </tr>
-  <tr id="suppl-info">
-    <td class="font-weight-bold">
-      <@message "suppl-info"/>
-      <small><a href="javascript:void(0)" onclick="onRemoveRow('suppl-info')"><i class="fa fa-times"></i></a></small>
-    </td>
-    <#list studies as study>
-      <td><small class="marked truncate truncate-100"><template>${localize(study.model.info)}</template></small></td>
-    </#list>
-  </tr>
   <tr id="website">
     <td class="font-weight-bold">
-        <@message "website"/>
+      <@message "website"/>
       <small><a href="javascript:void(0)" onclick="onRemoveRow('website')"><i class="fa fa-times"></i></a></small>
     </td>
     <#list studies as study>
@@ -80,6 +71,427 @@
       </td>
     </#list>
   </tr>
+  <tr id="methods-design">
+    <td class="font-weight-bold">
+      <@message "study_taxonomy.vocabulary.methods-design.title"/>
+      <small><a href="javascript:void(0)" onclick="onRemoveRow('methods-design')"><i class="fa fa-times"></i></a></small>
+    </td>
+    <#list studies as study>
+      <td>
+        <#if study.model.methods?? && study.model.methods.design??>
+          <#assign text = "study_taxonomy.vocabulary.methods-design.term." + study.model.methods.design + ".title"/>
+          <@message text/>
+          <#if study.model.methods.design == "other" && study.model.methods.otherDesign??>
+            : ${localize(study.model.methods.otherDesign)}
+          </#if>
+        </#if>
+      </td>
+    </#list>
+  </tr>
+  <tr id="methods-follow-up">
+    <td class="font-weight-bold">
+        <@message "study.follow-up"/>
+      <small><a href="javascript:void(0)" onclick="onRemoveRow('methods-follow-up')"><i class="fa fa-times"></i></a></small>
+    </td>
+    <#list studies as study>
+      <td>
+        <#if study.model.methods?? && study.model.methods.followUpInfo??>
+          <small>${localize(study.model.methods.followUpInfo)}</small>
+        </#if>
+      </td>
+    </#list>
+  </tr>
+  <tr id="marker-paper">
+    <td class="font-weight-bold">
+      <@message "study.marker-paper"/>
+      <small><a href="javascript:void(0)" onclick="onRemoveRow('marker-paper')"><i class="fa fa-times"></i></a></small>
+    </td>
+    <#list studies as study>
+      <td>
+        <#if study.model.markerPaper??>
+          <small>${study.model.markerPaper}</small>
+          <#if study.model.pubmedId??>
+            <div>
+              <a href="http://www.ncbi.nlm.nih.gov/pubmed/${study.model.pubmedId}" target="_blank">PUBMED ${study.model.pubmedId}</a>
+            </div>
+          </#if>
+        </#if>
+      </td>
+    </#list>
+  </tr>
+  <tr id="methods-recruitments">
+    <td class="font-weight-bold">
+      <@message "study.recruitment-sources.label"/>
+      <small><a href="javascript:void(0)" onclick="onRemoveRow('methods-recruitments')"><i class="fa fa-times"></i></a></small>
+    </td>
+    <#list studies as study>
+      <td>
+        <#if study.model.methods?? && study.model.methods.recruitments??>
+          <#assign first = true/>
+          <#list study.model.methods.recruitments as type>
+            <#assign text = "study_taxonomy.vocabulary.methods-recruitments.term." + type + ".title"/>
+            <#if !first> | </#if>
+            <@message text/>
+            <#if type == "other" && study.model.methods.otherRecruitment??>
+              : ${localize(study.model.methods.otherRecruitment)}
+            </#if>
+            <#assign first = false/>
+          </#list>
+        </#if>
+      </td>
+    </#list>
+  </tr>
+  <tr id="numberOfParticipants-participants">
+    <td class="font-weight-bold">
+        <@message "numberOfParticipants.participants"/>
+      <small><a href="javascript:void(0)" onclick="onRemoveRow('numberOfParticipants-participants')"><i class="fa fa-times"></i></a></small>
+    </td>
+    <#list studies as study>
+      <td>
+        <#if study.model.numberOfParticipants??>
+          <#if study.model.numberOfParticipants.participant.number??>
+            ${study.model.numberOfParticipants.participant.number}
+            <#if study.model.numberOfParticipants.participant.noLimit == true>
+              (<@message "numberOfParticipants.no-limit"/>)
+            </#if>
+          <#else>
+            <#if study.model.numberOfParticipants.participant.noLimit?? && study.model.numberOfParticipants.participant.noLimit == true>
+              <@message "numberOfParticipants.no-limit"/>
+            </#if>
+          </#if>
+        </#if>
+      </td>
+    </#list>
+  </tr>
+  <tr id="numberOfParticipants-sample">
+    <td class="font-weight-bold">
+      <@message "numberOfParticipants.sample"/>
+      <small><a href="javascript:void(0)" onclick="onRemoveRow('numberOfParticipants-sample')"><i class="fa fa-times"></i></a></small>
+    </td>
+    <#list studies as study>
+      <td>
+        <#if study.model.numberOfParticipants??>
+          <#if study.model.numberOfParticipants.sample.number??>
+            ${study.model.numberOfParticipants.sample.number}
+            <#if study.model.numberOfParticipants.sample.noLimit == true>
+              (<@message "numberOfParticipants.no-limit"/>)
+            </#if>
+          <#else>
+            <#if study.model.numberOfParticipants.sample.noLimit?? && study.model.numberOfParticipants.sample.noLimit == true>
+              <@message "numberOfParticipants.no-limit"/>
+            </#if>
+          </#if>
+        </#if>
+      </td>
+    </#list>
+  </tr>
+  <tr id="populations">
+    <td class="font-weight-bold">
+      <@message "study.populations"/>
+      <small><a href="javascript:void(0)" onclick="onRemoveRow('populations')"><i class="fa fa-times"></i></a></small>
+    </td>
+    <#list studies as study>
+      <td>
+        <#if study.populations??>
+          <#assign first = true/>
+          <#list study.populations as population>
+            <#if !first> | </#if>
+            ${localize(population.name)}
+            <#assign first = false/>
+          </#list>
+        </#if>
+      </td>
+    </#list>
+  </tr>
+  <tr id="populations-gender">
+    <td class="font-weight-bold">
+        <@message "study.populations"/> - <@message "population.gender"/>
+      <small><a href="javascript:void(0)" onclick="onRemoveRow('populations-gender')"><i class="fa fa-times"></i></a></small>
+    </td>
+      <#list studies as study>
+        <td>
+          <#if study.populations??>
+            <#assign first = true/>
+            <#list study.populations as population>
+              <#if !first> | </#if>
+              <#if population.model.selectionCriteria?? && population.model.selectionCriteria.gender??>
+                <#assign text = "study.selection-criteria.gender." + population.model.selectionCriteria.gender/>
+                <@message text/>
+              <#elseif study.populations?size gt 1>
+                <@message "global.not-applicable"/>
+              </#if>
+              <#assign first = false/>
+            </#list>
+          </#if>
+        </td>
+      </#list>
+  </tr>
+  <tr id="populations-ageMin">
+    <td class="font-weight-bold">
+        <@message "study.populations"/> - <@message "population.ageMin"/>
+      <small><a href="javascript:void(0)" onclick="onRemoveRow('populations-ageMin')"><i class="fa fa-times"></i></a></small>
+    </td>
+      <#list studies as study>
+        <td>
+          <#if study.populations??>
+            <#assign first = true/>
+            <#list study.populations as population>
+              <#if !first> | </#if>
+              <#if population.model.selectionCriteria?? && population.model.selectionCriteria.ageMin??>
+                ${population.model.selectionCriteria.ageMin}
+              <#elseif study.populations?size gt 1>
+                <@message "global.not-applicable"/>
+              </#if>
+              <#assign first = false/>
+            </#list>
+          </#if>
+        </td>
+      </#list>
+  </tr>
+  <tr id="populations-ageMax">
+    <td class="font-weight-bold">
+        <@message "study.populations"/> - <@message "population.ageMax"/>
+      <small><a href="javascript:void(0)" onclick="onRemoveRow('populations-ageMax')"><i class="fa fa-times"></i></a></small>
+    </td>
+    <#list studies as study>
+      <td>
+        <#if study.populations??>
+          <#assign first = true/>
+          <#list study.populations as population>
+            <#if !first> | </#if>
+            <#if population.model.selectionCriteria?? && population.model.selectionCriteria.ageMax??>
+              ${population.model.selectionCriteria.ageMax}
+            <#elseif study.populations?size gt 1>
+              <@message "global.not-applicable"/>
+            </#if>
+            <#assign first = false/>
+          </#list>
+        </#if>
+      </td>
+    </#list>
+  </tr>
+  <tr id="populations-pregnantWomen">
+    <td class="font-weight-bold">
+        <@message "study.populations"/> - <@message "study.selection-criteria.pregnant-women"/>
+      <small><a href="javascript:void(0)" onclick="onRemoveRow('populations-pregnantWomen')"><i class="fa fa-times"></i></a></small>
+    </td>
+    <#list studies as study>
+      <td>
+        <#if study.populations??>
+          <#assign first = true/>
+          <#list study.populations as population>
+            <#if !first> | </#if>
+            <#if population.model.selectionCriteria?? && population.model.selectionCriteria.pregnantWomen??>
+              <#assign firstItem = true/>
+              <#list population.model.selectionCriteria.pregnantWomen as item>
+                <#if !firstItem>, </#if>
+                  <#assign text = "study_taxonomy.vocabulary.populations-selectionCriteria-pregnantWomen.term." + item + ".title"/>
+                  <@message text/>
+                <#assign firstItem = false/>
+              </#list>
+            <#elseif study.populations?size gt 1>
+              <@message "global.not-applicable"/>
+            </#if>
+            <#assign first = false/>
+          </#list>
+        </#if>
+      </td>
+    </#list>
+  </tr>
+  <tr id="populations-newborn">
+    <td class="font-weight-bold">
+        <@message "study.populations"/> - <@message "study.selection-criteria.newborn"/>
+      <small><a href="javascript:void(0)" onclick="onRemoveRow('populations-newborn')"><i class="fa fa-times"></i></a></small>
+    </td>
+      <#list studies as study>
+        <td>
+          <#if study.populations??>
+            <#assign first = true/>
+            <#list study.populations as population>
+              <#if !first> | </#if>
+              <#if population.model.selectionCriteria?? && population.model.selectionCriteria.newborn??>
+                <#if population.model.selectionCriteria.newborn == true>
+                  <@message "global.yes"/>
+                <#else>
+                  <@message "global.no"/>
+                </#if>
+              <#elseif study.populations?size gt 1>
+                <@message "global.not-applicable"/>
+              </#if>
+              <#assign first = false/>
+            </#list>
+          </#if>
+        </td>
+      </#list>
+  </tr>
+  <tr id="populations-twins">
+    <td class="font-weight-bold">
+      <@message "study.populations"/> - <@message "study.selection-criteria.twins"/>
+      <small><a href="javascript:void(0)" onclick="onRemoveRow('populations-twins')"><i class="fa fa-times"></i></a></small>
+    </td>
+    <#list studies as study>
+      <td>
+        <#if study.populations??>
+          <#assign first = true/>
+          <#list study.populations as population>
+            <#if !first> | </#if>
+            <#if population.model.selectionCriteria?? && population.model.selectionCriteria.twins??>
+              <#if population.model.selectionCriteria.twins == true>
+                <@message "global.yes"/>
+              <#else>
+                <@message "global.no"/>
+              </#if>
+            <#elseif study.populations?size gt 1>
+              <@message "global.not-applicable"/>
+            </#if>
+            <#assign first = false/>
+          </#list>
+        </#if>
+      </td>
+    </#list>
+  </tr>
+  <tr id="populations-countriesIso">
+    <td class="font-weight-bold">
+        <@message "study.populations"/> - <@message "client.label.countries"/>
+      <small><a href="javascript:void(0)" onclick="onRemoveRow('populations-countriesIso')"><i class="fa fa-times"></i></a></small>
+    </td>
+    <#list studies as study>
+      <td>
+        <#if study.populations??>
+          <#assign first = true/>
+          <#list study.populations as population>
+            <#if !first> | </#if>
+            <#if population.model.selectionCriteria?? && population.model.selectionCriteria.countriesIso??>
+              <#assign firstItem = true/>
+              <#list population.model.selectionCriteria.countriesIso as item>
+                <#if !firstItem>, </#if>
+                <@message item/>
+                <#assign firstItem = false/>
+              </#list>
+            <#elseif study.populations?size gt 1>
+              <@message "global.not-applicable"/>
+            </#if>
+            <#assign first = false/>
+          </#list>
+        </#if>
+      </td>
+    </#list>
+  </tr>
+  <tr id="populations-territory">
+    <td class="font-weight-bold">
+        <@message "study.populations"/> - <@message "study.selection-criteria.territory"/>
+      <small><a href="javascript:void(0)" onclick="onRemoveRow('populations-territory')"><i class="fa fa-times"></i></a></small>
+    </td>
+    <#list studies as study>
+      <td>
+        <small>
+          <#if study.populations??>
+            <#assign first = true/>
+            <#list study.populations as population>
+              <#if !first> | </#if>
+              <#if population.model.selectionCriteria?? && population.model.selectionCriteria.territory??>
+                ${localize(population.model.selectionCriteria.territory)}
+              <#elseif study.populations?size gt 1>
+                <@message "global.not-applicable"/>
+              </#if>
+              <#assign first = false/>
+            </#list>
+          </#if>
+        </small>
+      </td>
+    </#list>
+  </tr>
+  <tr id="populations-ethnicOrigin">
+    <td class="font-weight-bold">
+        <@message "study.populations"/> - <@message "study.selection-criteria.ethnic-origin"/>
+      <small><a href="javascript:void(0)" onclick="onRemoveRow('populations-ethnicOrigin')"><i class="fa fa-times"></i></a></small>
+    </td>
+    <#list studies as study>
+      <td>
+        <#if study.populations??>
+          <#assign first = true/>
+          <#list study.populations as population>
+            <#if !first> | </#if>
+            <#if population.model.selectionCriteria?? && population.model.selectionCriteria.ethnicOrigin??>
+              <#assign firstItem = true/>
+              <#list population.model.selectionCriteria.ethnicOrigin as item>
+                <#if !firstItem>, </#if>
+                  ${localize(item, "N/A")}
+                <#assign firstItem = false/>
+              </#list>
+            <#elseif study.populations?size gt 1>
+              <@message "global.not-applicable"/>
+            </#if>
+            <#assign first = false/>
+          </#list>
+        </#if>
+      </td>
+    </#list>
+  </tr>
+  <tr id="populations-healthStatus">
+    <td class="font-weight-bold">
+        <@message "study.populations"/> - <@message "study.selection-criteria.health-status"/>
+      <small><a href="javascript:void(0)" onclick="onRemoveRow('populations-healthStatus')"><i class="fa fa-times"></i></a></small>
+    </td>
+    <#list studies as study>
+      <td>
+        <#if study.populations??>
+          <#assign first = true/>
+          <#list study.populations as population>
+            <#if !first> | </#if>
+            <#if population.model.selectionCriteria?? && population.model.selectionCriteria.healthStatus??>
+              <#assign firstItem = true/>
+              <#list population.model.selectionCriteria.healthStatus as item>
+                <#if !firstItem>, </#if>
+                ${localize(item, "N/A")}
+                <#assign firstItem = false/>
+              </#list>
+            <#elseif study.populations?size gt 1>
+              <@message "global.not-applicable"/>
+            </#if>
+            <#assign first = false/>
+          </#list>
+        </#if>
+      </td>
+    </#list>
+  </tr>
+  <tr id="populations-otherCriteria">
+    <td class="font-weight-bold">
+        <@message "study.populations"/> - <@message "population.otherCriteria"/>
+      <small><a href="javascript:void(0)" onclick="onRemoveRow('populations-otherCriteria')"><i class="fa fa-times"></i></a></small>
+    </td>
+      <#list studies as study>
+        <td>
+          <small>
+              <#if study.populations??>
+                  <#assign first = true/>
+                  <#list study.populations as population>
+                      <#if !first> | </#if>
+                      <#if population.model.selectionCriteria?? && population.model.selectionCriteria.otherCriteria??>
+                          ${localize(population.model.selectionCriteria.otherCriteria)}
+                      <#elseif study.populations?size gt 1>
+                          <@message "global.not-applicable"/>
+                      </#if>
+                      <#assign first = false/>
+                  </#list>
+              </#if>
+          </small>
+        </td>
+      </#list>
+  </tr>
+
+  <!--
+  <tr id="xxx">
+    <td class="font-weight-bold">
+      <@message "xxx"/>
+      <small><a href="javascript:void(0)" onclick="onRemoveRow('xxx')"><i class="fa fa-times"></i></a></small>
+    </td>
+    <#list studies as study>
+      <td>
+      </td>
+    </#list>
+  </tr>
+  -->
 </#macro>
 
 <!-- Networks compare model template -->
