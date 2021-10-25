@@ -55,8 +55,8 @@
 <#assign showCartViewDownload = (isAdministrator || isReviewer || isEditor || isDAO)/>
 
 <!-- Compare -->
-<#assign studiesCompareEnabled = config.studiesCompareEnabled/>
-<#assign networksCompareEnabled = config.networksCompareEnabled/>
+<#assign studiesCompareEnabled = config?? && config.studiesCompareEnabled && !config.singleStudyEnabled/>
+<#assign networksCompareEnabled = config?? && config.networksCompareEnabled && config.networkEnabled && !config.singleNetworkEnabled/>
 
 <!-- Contact -->
 <#assign contactEnabled = config.contactNotificationsEnabled/>
