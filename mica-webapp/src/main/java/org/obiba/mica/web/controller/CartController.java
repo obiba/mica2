@@ -30,6 +30,10 @@ public class CartController extends BaseController {
 
   @GetMapping("/cart")
   public ModelAndView get(@RequestParam(required = false) String type) {
+    MicaConfig config = micaConfigService.getConfig();
+    if (!config.isCartEnabled() && !config.isStudiesCartEnabled() && !config.isNetworksCartEnabled()) {
+      return new ModelAndView("redirect:/");
+    }
     Subject subject = SecurityUtils.getSubject();
     if (subject.isAuthenticated()) {
       // make sure cart exists
@@ -38,7 +42,6 @@ public class CartController extends BaseController {
       // note: the cart will be populated by the SessionInterceptor
       Map<String, Object> params = newParameters();
       params.put("accessConfig", dataAccessConfigService.getOrCreateConfig());
-      MicaConfig config = micaConfigService.getConfig();
       if (!Strings.isNullOrEmpty(type) &&
         ((type.equalsIgnoreCase("variables") && config.isCartEnabled()) ||
           (type.equalsIgnoreCase("studies") && config.isStudiesCartEnabled()) ||
@@ -56,6 +59,10 @@ public class CartController extends BaseController {
 
   @GetMapping("/lists")
   public ModelAndView lists() {
+    MicaConfig config = micaConfigService.getConfig();
+    if (!config.isCartEnabled()) {
+      return new ModelAndView("redirect:/");
+    }
     Subject subject = SecurityUtils.getSubject();
     if (subject.isAuthenticated()) {
       Optional<DocumentSet> tentative = variableSetService.getAllCurrentUser().stream().filter(DocumentSet::hasName).findFirst();
@@ -67,6 +74,10 @@ public class CartController extends BaseController {
 
   @GetMapping("/list/{id:.+}")
   public ModelAndView getNamed(@PathVariable String id) {
+    MicaConfig config = micaConfigService.getConfig();
+    if (!config.isCartEnabled()) {
+      return new ModelAndView("redirect:/");
+    }
     Subject subject = SecurityUtils.getSubject();
     if (subject.isAuthenticated()) {
       DocumentSet documentSet = variableSetService.get(id);
