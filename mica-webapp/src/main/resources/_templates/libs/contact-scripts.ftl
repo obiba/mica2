@@ -12,7 +12,10 @@
       { name: "g-recaptcha-response", title: "<@message "captcha"/>" }
     ];
     UserService.contact("#form", requiredFields, function() {
-      MicaService.toastInfo("<@message "contact-sent"/>");
+      let form = document.querySelector("#form");
+      if (form) {
+        window.location.href = window.location.origin + "/page/contact-success"
+      }
     }, function (messageItems) {
       var alertId = "#alertFailure";
       var msg = "";
