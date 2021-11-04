@@ -58,7 +58,6 @@ public class PersonsResource {
 
   @GET
   @Path("/network/{networkId}")
-  @RequiresPermissions({ "/draft/individual-study:VIEW", "/draft/harmonization-study:VIEW", "/draft/network:VIEW" })
   public Set<PersonDto> getNetworkMemberships(@PathParam("networkId") String networkId) {
     subjectAclService.checkPermission("/draft/network", "VIEW", networkId);
     return personService.getNetworkMemberships(networkId).stream().map(member -> dtos.asDto(member, true)).collect(Collectors.toSet());
