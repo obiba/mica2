@@ -1,3 +1,4 @@
+<#ftl output_format="HTML">
 <!-- Macros -->
 <#include "libs/header.ftl">
 <#include "models/data-access.ftl"/>
