@@ -13,11 +13,13 @@ package org.obiba.mica.person.search.rest;
 import javax.ws.rs.Path;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 @Path("/draft/persons/_search")
 @RequiresAuthentication
+@RequiresPermissions({ "/draft/individual-study:VIEW", "/draft/harmonization-study:VIEW", "/draft/network:VIEW" })
 @Scope("request")
 @Component
 public class DraftPersonsSearchResource extends AbstractPersonsSearchResource {

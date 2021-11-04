@@ -9,6 +9,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.obiba.mica.core.domain.Person;
 import org.obiba.mica.core.service.PersonService;
 import org.obiba.mica.web.model.Dtos;
@@ -32,6 +33,7 @@ public class PersonResource {
 
   @GET
   @Path("/{id}")
+  @RequiresPermissions({ "/draft/individual-study:VIEW", "/draft/harmonization-study:VIEW", "/draft/network:VIEW" })
   public PersonDto get(@PathParam("id") String id) {
     Person person = personService.findById(id);
 
@@ -44,6 +46,7 @@ public class PersonResource {
 
   @PUT
   @Path("/{id}")
+  @RequiresPermissions({ "/draft/individual-study:EDIT", "/draft/harmonization-study:EDIT", "/draft/network:EDIT" })
   public PersonDto update(@PathParam("id") String id, PersonDto personDto) {
     if (personDto == null) {
       return dtos.asDto(personService.findById(id), true);
@@ -54,6 +57,7 @@ public class PersonResource {
 
   @DELETE
   @Path("/{id}")
+  @RequiresPermissions({ "/draft/individual-study:EDIT", "/draft/harmonization-study:EDIT", "/draft/network:EDIT" })
   public Response delete(@PathParam("id") String id) {
     personService.delete(id);
     return Response.ok().build();
