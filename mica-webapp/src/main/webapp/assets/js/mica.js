@@ -557,6 +557,10 @@ class UserService {
           onFailure('server.error.password.too-short');
           return;
         }
+        if (password.length > 64) {
+          onFailure('server.error.password.too-long');
+          return;
+        }
       }
 
       const realmField = getField('realm');
