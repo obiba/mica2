@@ -11,6 +11,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.obiba.mica.contact.event.IndexContactsEvent;
 import org.obiba.mica.core.service.PersonService;
 import org.obiba.mica.web.model.Dtos;
@@ -37,24 +38,28 @@ public class PersonsResource {
 
   @GET
   @Path("/study/{studyId}")
+  @RequiresPermissions({ "/draft/individual-study:VIEW", "/draft/harmonization-study:VIEW", "/draft/network:VIEW" })
   public Set<PersonDto> getStudyMemberships(@PathParam("studyId") String studyId) {
     return personService.getStudyMemberships(studyId).stream().map(member -> dtos.asDto(member, true)).collect(Collectors.toSet());
   }
 
   @GET
   @Path("/network/{networkId}")
+  @RequiresPermissions({ "/draft/individual-study:VIEW", "/draft/harmonization-study:VIEW", "/draft/network:VIEW" })
   public Set<PersonDto> getNetworkMemberships(@PathParam("networkId") String networkId) {
     return personService.getNetworkMemberships(networkId).stream().map(member -> dtos.asDto(member, true)).collect(Collectors.toSet());
   }
 
   @PUT
   @Path("/_index")
+  @RequiresPermissions({ "/draft/individual-study:EDIT", "/draft/harmonization-study:EDIT", "/draft/network:EDIT" })
   public Response index() {
     eventBus.post(new IndexContactsEvent());
     return Response.noContent().build();
   }
 
   @POST
+  @RequiresPermissions({ "/draft/individual-study:EDIT", "/draft/harmonization-study:EDIT", "/draft/network:EDIT" })
   public PersonDto createPerson(PersonDto personDto) {
     if (personDto == null) {
       return null;
