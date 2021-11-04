@@ -43,7 +43,7 @@
               </#if>
             </h3>
             <p>
-              <@message "error-help"/>
+              <@messageArgs code="error-help" args=[contextPath + "/"]/>
             </p>
           </div>
           <!-- /.error-content -->
