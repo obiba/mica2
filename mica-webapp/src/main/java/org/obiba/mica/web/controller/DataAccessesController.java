@@ -13,6 +13,7 @@ import org.obiba.mica.security.Roles;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.user.UserProfileService;
 import org.obiba.mica.web.controller.domain.DataAccessRequestBundle;
+import org.owasp.esapi.ESAPI;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -75,7 +76,7 @@ public class DataAccessesController extends BaseController {
   private List<DataAccessRequestBundle> getDataAccessRequests(List<String> status) {
     return dataAccessRequestService.findByStatus(status).stream() //
       .filter(req -> isPermitted("/data-access-request", "VIEW", req.getId()))
-      .map(req -> new DataAccessRequestBundle(req, dataAccessRequestUtilService.getRequestTitle(req),
+      .map(req -> new DataAccessRequestBundle(req, ESAPI.encoder().encodeForHTML(dataAccessRequestUtilService.getRequestTitle(req)),
         dataAccessAmendmentService.countByParentId(req.getId()), dataAccessAmendmentService.countPendingByParentId(req.getId()),
         dataAccessFeasibilityService.countByParentId(req.getId()), dataAccessFeasibilityService.countPendingByParentId(req.getId())))
       .collect(Collectors.toList());

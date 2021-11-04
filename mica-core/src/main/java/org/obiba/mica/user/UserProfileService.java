@@ -24,6 +24,7 @@ import org.obiba.mica.micaConfig.domain.MicaConfig;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.shiro.realm.ObibaRealm;
 import org.obiba.shiro.realm.ObibaRealm.Subject;
+import org.owasp.esapi.ESAPI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
@@ -213,7 +214,7 @@ public class UserProfileService extends AgateRestService {
           }
         }
         else
-          attributes.put(key, attr.get("value"));
+          attributes.put(key, ESAPI.encoder().encodeForHTML(attr.get("value")));
       });
       fullName = attributes.getOrDefault("firstName", "") + (attributes.containsKey("firstName") ? " " : "") + attributes.getOrDefault("lastName", profile.getUsername());
     }
