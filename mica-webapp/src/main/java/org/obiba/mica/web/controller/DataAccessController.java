@@ -1,6 +1,8 @@
 package org.obiba.mica.web.controller;
 
 import com.google.common.collect.Lists;
+
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import org.obiba.mica.access.NoSuchDataAccessRequestException;
@@ -30,6 +32,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.inject.Inject;
 import java.util.*;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -359,21 +362,28 @@ public class DataAccessController extends BaseController {
     params.put("accessConfig", dataAccessConfigervice.getOrCreateConfig());
   }
 
+  private String sanitizeForJsTags(DataAccessEntity request) {
+    Pattern pattern = Pattern.compile( "<[\\/]*\\w+>", Pattern.DOTALL);
+    Matcher matcher = pattern.matcher(request.getContent());
+    String escapedRequestContent = matcher.replaceAll("");
+    return escapedRequestContent;
+  }
+
   private void addDataAccessFormConfiguration(Map<String, Object> params, DataAccessRequest request, boolean readOnly, String locale) {
     DataAccessForm dataAccessForm = getDataAccessForm(request);
-    params.put("formConfig", new SchemaFormConfig(micaConfigService, dataAccessForm.getSchema(), dataAccessForm.getDefinition(), request.getContent(), locale, readOnly));
+    params.put("formConfig", new SchemaFormConfig(micaConfigService, dataAccessForm.getSchema(), dataAccessForm.getDefinition(), sanitizeForJsTags(request), locale, readOnly));
     params.put("accessConfig", new DataAccessConfigBundle(dataAccessConfigervice.getOrCreateConfig(), dataAccessForm));
   }
 
   private void addDataAccessAmendmentFormConfiguration(Map<String, Object> params, DataAccessAmendment amendment, boolean readOnly, String locale) {
     DataAccessAmendmentForm dataAccessAmendmentForm = getDataAccessAmendmentForm(amendment);
-    params.put("formConfig", new SchemaFormConfig(micaConfigService, dataAccessAmendmentForm.getSchema(), dataAccessAmendmentForm.getDefinition(), amendment.getContent(), locale, readOnly));
+    params.put("formConfig", new SchemaFormConfig(micaConfigService, dataAccessAmendmentForm.getSchema(), sanitizeForJsTags(amendment), amendment.getContent(), locale, readOnly));
     params.put("accessConfig", dataAccessConfigervice.getOrCreateConfig());
   }
 
   private void addDataAccessFeasibilityFormConfiguration(Map<String, Object> params, DataAccessFeasibility feasibility, boolean readOnly, String locale) {
     DataAccessFeasibilityForm dataAccessFeasibilityForm = dataAccessFeasibilityFormService.findByRevision("latest").get();
-    params.put("formConfig", new SchemaFormConfig(micaConfigService, dataAccessFeasibilityForm.getSchema(), dataAccessFeasibilityForm.getDefinition(), feasibility.getContent(), locale, readOnly));
+    params.put("formConfig", new SchemaFormConfig(micaConfigService, dataAccessFeasibilityForm.getSchema(), sanitizeForJsTags(feasibility), feasibility.getContent(), locale, readOnly));
     params.put("accessConfig", dataAccessConfigervice.getOrCreateConfig());
   }
 
