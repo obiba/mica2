@@ -53,7 +53,7 @@ public class CurrentSessionResource {
         NewCookie cookie = NewCookie.valueOf(cookieValue.toString());
         if (OBIBA_ID_COOKIE_NAME.equals(cookie.getName())) {
           return Response.ok().header(HttpHeaders.SET_COOKIE,
-            new NewCookie(OBIBA_ID_COOKIE_NAME, null, micaConfigService.getContextPath() + "/", cookie.getDomain(), "Obiba session deleted", 0, cookie.isSecure())).build();
+            new NewCookie(OBIBA_ID_COOKIE_NAME, null, micaConfigService.getContextPath() + "/", cookie.getDomain(), "Obiba session deleted", 0, true, true)).build();
         }
       }
     } catch(InvalidSessionException e) {

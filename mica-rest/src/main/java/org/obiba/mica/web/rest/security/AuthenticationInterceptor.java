@@ -43,7 +43,7 @@ public class AuthenticationInterceptor implements ContainerResponseFilter {
       Session session = SecurityUtils.getSubject().getSession();
       session.touch();
       int timeout = (int) (session.getTimeout() / 1000);
-      NewCookie sidCookie = new NewCookie(MICA_SESSION_ID_COOKIE_NAME, session.getId().toString(), path, null, null, timeout, false);
+      NewCookie sidCookie = new NewCookie(MICA_SESSION_ID_COOKIE_NAME, session.getId().toString(), path, null, null, timeout, true, true);
       MultivaluedMap<String, Object> headers = responseContext.getHeaders();
       List<Object> cookies = headers.get(HttpHeaders.SET_COOKIE);
       if (cookies == null)
@@ -57,7 +57,7 @@ public class AuthenticationInterceptor implements ContainerResponseFilter {
     } else {
       if(responseContext.getHeaders().get(HttpHeaders.SET_COOKIE) == null) {
         responseContext.getHeaders().putSingle(HttpHeaders.SET_COOKIE,
-            new NewCookie(MICA_SESSION_ID_COOKIE_NAME, null, path, null, "Mica session deleted", 0, false));
+            new NewCookie(MICA_SESSION_ID_COOKIE_NAME, null, path, null, "Mica session deleted", 0, true, true));
       }
     }
   }
