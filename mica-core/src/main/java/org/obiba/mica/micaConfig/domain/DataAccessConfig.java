@@ -89,7 +89,7 @@ public class DataAccessConfig extends AbstractAuditableDocument {
 
   private boolean amendmentsEnabled = false;
 
-  private boolean variablesEnabled = false;
+  private boolean variablesEnabled = true;
 
   private boolean feasibilityVariablesEnabled = false;
 
