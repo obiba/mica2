@@ -20,6 +20,7 @@ import org.glassfish.jersey.server.spring.scope.RequestContextFilter;
 import org.obiba.mica.micaConfig.rest.ConfigurationInterceptor;
 import org.obiba.mica.web.rest.security.AuditInterceptor;
 import org.obiba.mica.web.rest.security.AuthenticationInterceptor;
+import org.obiba.mica.web.rest.security.CSRFInterceptor;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -35,6 +36,7 @@ public class JerseyConfiguration extends ResourceConfig {
     register(AuthenticationInterceptor.class);
     register(ConfigurationInterceptor.class);
     register(AuditInterceptor.class);
+    register(CSRFInterceptor.class);
     register(MultiPartFeature.class);
     // validation errors will be sent to the client
     property(ServerProperties.BV_SEND_ERROR_IN_RESPONSE, true);
