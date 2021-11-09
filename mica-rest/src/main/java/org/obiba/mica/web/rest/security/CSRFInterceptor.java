@@ -32,12 +32,7 @@ public class CSRFInterceptor implements ContainerRequestFilter {
     String host = requestContext.getHeaderString(HOST_HEADER);
     String referer = requestContext.getHeaderString(REFERER_HEADER);
     if (referer != null) {
-      boolean forbidden = false;
-      if ("localhost:8082".equals(host)) {
-        if (!referer.startsWith(String.format("http://%s/", host)))
-          forbidden = true;
-      } else if (!referer.startsWith(String.format("https://%s/", host)))
-        forbidden = true;
+      boolean forbidden = !referer.startsWith(String.format("http://%s/", host)) && !referer.startsWith(String.format("https://%s/", host));
       if (forbidden) {
         log.warn("CSRF detection: Host={}, Referer={}", host, referer);
         throw new ForbiddenException();
