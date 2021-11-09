@@ -72,10 +72,4 @@ if [ -f "/etc/mica2/log4j.properties" ]; then
   mv /etc/mica2/log4j.properties /etc/mica2/log4j.properties.old
 fi
 
-# for clean install
-if [ $1 -eq 1 ] ; then
-  # Initial installation
-  systemctl preset mica2.service >/dev/null 2>&1 || :
-fi
-
 exit 0
