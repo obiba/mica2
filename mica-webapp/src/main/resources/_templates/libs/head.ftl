@@ -36,6 +36,9 @@
 <#assign isEditor = (user?? && user.roles?? && user.roles?seq_contains("mica-editor"))/>
 <#assign isDAO = (user?? && user.roles?? && user.roles?seq_contains("mica-data-access-officer"))/>
 
+<!-- Current user can view at least one draft document -->
+<#assign hasPermissionOnAnyDraftDocument = (user?? && user.hasPermissionOnAnyDraftDocument)/>
+
 <!-- App settings -->
 <#include "settings.ftl"/>
 <#include "../models/settings.ftl"/>

@@ -7,6 +7,8 @@ import org.obiba.mica.core.domain.DocumentSet;
 import org.obiba.mica.dataset.service.VariableSetService;
 import org.obiba.mica.network.service.NetworkSetService;
 import org.obiba.mica.security.Roles;
+import org.obiba.mica.security.domain.SubjectAcl;
+import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.study.service.StudySetService;
 import org.obiba.mica.user.UserProfileService;
 import org.obiba.mica.web.controller.domain.Cart;
@@ -19,6 +21,8 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -36,21 +40,34 @@ public class SessionInterceptor extends HandlerInterceptorAdapter {
 
   private final NetworkSetService networkSetService;
 
+  private final SubjectAclService subjectAclService;
+
+  private static final String[] ALL_DRAFT_RESOURCES = {
+    "/draft/network",
+    "/draft/individual-study",
+    "/draft/harmonization-study",
+    "/draft/collected-dataset",
+    "/draft/harmonized-dataset",
+    "/draft/project"
+  };
+
   @Inject
-  public SessionInterceptor(UserProfileService userProfileService, VariableSetService variableSetService, StudySetService studySetService, NetworkSetService networkSetService) {
+  public SessionInterceptor(UserProfileService userProfileService, VariableSetService variableSetService,
+    StudySetService studySetService, NetworkSetService networkSetService, SubjectAclService subjectAclService) {
     this.userProfileService = userProfileService;
     this.variableSetService = variableSetService;
     this.studySetService = studySetService;
     this.networkSetService = networkSetService;
+    this.subjectAclService = subjectAclService;
   }
 
   @Override
   public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
-    populateUserEntries(modelAndView, userProfileService, variableSetService, studySetService, networkSetService);
+    populateUserEntries(modelAndView, userProfileService, variableSetService, studySetService, networkSetService, subjectAclService);
   }
 
   public static void populateUserEntries(ModelAndView modelAndView, UserProfileService userProfileService,
-                                         VariableSetService variableSetService, StudySetService studySetService, NetworkSetService networkSetService) {
+                                         VariableSetService variableSetService, StudySetService studySetService, NetworkSetService networkSetService, SubjectAclService subjectAclService) {
     Subject subject = SecurityUtils.getSubject();
     if (subject.isAuthenticated()) {
       String username = subject.getPrincipal().toString();
@@ -61,7 +78,9 @@ public class SessionInterceptor extends HandlerInterceptorAdapter {
         for (int i = result.length - 1; i >= 0; i--) {
           if (!result[i]) roles.remove(i);
         }
+        
         params.put("roles", roles);
+        params.put("hasPermissionOnAnyDraftDocument", subjectAclService.findBySubject(subject.getPrincipal().toString(), SubjectAcl.Type.USER).stream().anyMatch(acl -> Arrays.stream(ALL_DRAFT_RESOURCES).anyMatch(res -> res.equals(acl.getResource()))));
         params.put("variablesCart", new Cart(variableSetService.getCartCurrentUser()));
         params.put("variablesLists", variableSetService.getAllCurrentUser().stream().filter(DocumentSet::hasName).collect(Collectors.toList()));
         params.put("studiesCart", new Cart(studySetService.getCartCurrentUser()));
