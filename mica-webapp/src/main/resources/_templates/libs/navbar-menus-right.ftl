@@ -26,7 +26,7 @@
     </li>
   </#if>
   <#if user??>
-    <#if isAdministrator || isReviewer || isEditor>
+    <#if isAdministrator || isReviewer || isEditor || hasPermissionOnAnyDraftDocument>
       <li class="nav-item">
         <a href="${contextPath}/admin" class="nav-link">
           <@message "administration"/>
