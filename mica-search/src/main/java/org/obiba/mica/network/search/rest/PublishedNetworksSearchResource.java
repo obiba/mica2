@@ -15,14 +15,22 @@ import java.util.List;
 
 import javax.inject.Inject;
 import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
 
+import org.obiba.mica.core.service.PersonService;
+import org.obiba.mica.micaConfig.service.MicaConfigService;
+import org.obiba.mica.network.service.PublishedNetworkService;
 import org.obiba.mica.search.JoinQueryExecutor;
 import org.obiba.mica.search.reports.JoinQueryReportGenerator;
 import org.obiba.mica.search.queries.rql.RQLQueryBuilder;
+import org.obiba.mica.search.reports.ReportGenerator;
+import org.obiba.mica.search.reports.generators.NetworkCsvReportGenerator;
 import org.obiba.mica.spi.search.QueryType;
 import org.obiba.mica.spi.search.Searcher;
+import org.obiba.mica.spi.search.support.JoinQuery;
+import org.obiba.mica.web.model.Mica;
 import org.obiba.mica.web.model.MicaSearch;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -30,6 +38,7 @@ import org.springframework.stereotype.Component;
 import com.codahale.metrics.annotation.Timed;
 import com.google.common.base.Strings;
 
+import static java.util.stream.Collectors.toList;
 import static org.obiba.mica.web.model.MicaSearch.JoinQueryResultDto;
 
 @Path("/networks")
@@ -37,16 +46,27 @@ import static org.obiba.mica.web.model.MicaSearch.JoinQueryResultDto;
 @Component
 public class  PublishedNetworksSearchResource {
 
-  public static final String DEFAULT_SORT = "script";
+  private final MicaConfigService micaConfigService;
+
+  private final JoinQueryExecutor joinQueryExecutor;
+
+  private final Searcher searcher;
+
+  private final JoinQueryReportGenerator joinQueryReportGenerator;
+
+  private final PublishedNetworkService publishedNetworkService;
+
+  protected final PersonService personService;
 
   @Inject
-  JoinQueryExecutor joinQueryExecutor;
-
-  @Inject
-  private Searcher searcher;
-
-  @Inject
-  private JoinQueryReportGenerator joinQueryReportGenerator;
+  public PublishedNetworksSearchResource(MicaConfigService micaConfigService, JoinQueryExecutor joinQueryExecutor, Searcher searcher, JoinQueryReportGenerator joinQueryReportGenerator, PublishedNetworkService publishedNetworkService, PersonService personService) {
+    this.micaConfigService = micaConfigService;
+    this.joinQueryExecutor = joinQueryExecutor;
+    this.searcher = searcher;
+    this.joinQueryReportGenerator = joinQueryReportGenerator;
+    this.publishedNetworkService = publishedNetworkService;
+    this.personService = personService;
+  }
 
   @GET
   @Timed
@@ -98,5 +118,26 @@ public class  PublishedNetworksSearchResource {
   @Timed
   public Response rqlLargeQueryAsCsv(@FormParam("query") String query, @FormParam("columnsToHide") List<String> columnsToHide) throws IOException {
     return rqlQueryAsCsv(query, columnsToHide);
+  }
+
+  @POST
+  @Path("/_export")
+  @Produces(MediaType.APPLICATION_OCTET_STREAM)
+  public Response export(@FormParam("query") String query, @FormParam("locale") @DefaultValue("en") String locale) {
+    if (!micaConfigService.getConfig().isNetworksExportEnabled())
+      throw new BadRequestException("Networks export not enabled");
+    JoinQuery joinQuery = searcher.makeJoinQuery(query);
+    List<String> networkIds = joinQueryExecutor.query(QueryType.NETWORK, joinQuery)
+      .getNetworkResultDto()
+      .getExtension(MicaSearch.NetworkResultDto.result)
+      .getNetworksList()
+      .stream()
+      .map(Mica.NetworkDto::getId)
+      .collect(toList());
+
+    ReportGenerator reporter = new NetworkCsvReportGenerator(publishedNetworkService.findByIds(networkIds, true),
+      Strings.isNullOrEmpty(locale) ? joinQuery.getLocale() : locale, personService);
+    StreamingOutput stream = reporter::write;
+    return Response.ok(stream).header("Content-Disposition", "attachment; filename=\"Networks.zip\"").build();
   }
 }

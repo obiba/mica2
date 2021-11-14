@@ -266,7 +266,7 @@
         </tbody>
       </table>
 
-      <h5 translate>config.documents-compare</h5>
+      <h5 translate>config.documents-compare-export</h5>
 
       <table class="table table-bordered table-striped">
         <tbody>
@@ -299,6 +299,28 @@
             <span class="help-block" translate>config.max-items-per-compare-help</span>
           </td>
           <td>{{micaConfig.maxItemsPerCompare}}</td>
+        </tr>
+
+        <tr>
+          <td>
+            <span translate>config.studies-export-enabled</span>
+            <span class="help-block" translate>config.studies-export-enabled-help</span>
+          </td>
+          <td>
+            <i class="fa fa-check-square-o" ng-hide="!micaConfig.isStudiesExportEnabled"></i>
+            <i class="fa fa-square-o" ng-hide="micaConfig.isStudiesExportEnabled"></i>
+          </td>
+        </tr>
+
+        <tr>
+          <td>
+            <span translate>config.networks-export-enabled</span>
+            <span class="help-block" translate>config.networks-export-enabled-help</span>
+          </td>
+          <td>
+            <i class="fa fa-check-square-o" ng-hide="!micaConfig.isNetworksExportEnabled"></i>
+            <i class="fa fa-square-o" ng-hide="micaConfig.isNetworksExportEnabled"></i>
+          </td>
         </tr>
 
         </tbody>

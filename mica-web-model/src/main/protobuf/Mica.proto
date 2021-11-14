@@ -471,6 +471,8 @@ message MicaConfigDto {
   required bool isStudiesCompareEnabled = 65;
   required bool isNetworksCompareEnabled = 66;
   required int32 maxItemsPerCompare = 67;
+  required bool isStudiesExportEnabled = 68;
+  required bool isNetworksExportEnabled = 69;
 }
 
 message PublicMicaConfigDto {

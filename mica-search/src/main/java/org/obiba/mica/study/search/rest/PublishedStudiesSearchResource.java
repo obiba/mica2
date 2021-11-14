@@ -10,27 +10,34 @@
 
 package org.obiba.mica.study.search.rest;
 
-import java.io.IOException;
-import java.util.List;
-
-import javax.inject.Inject;
-import javax.ws.rs.*;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.StreamingOutput;
-
+import com.codahale.metrics.annotation.Timed;
+import com.google.common.base.Strings;
+import org.obiba.mica.core.service.PersonService;
+import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.search.JoinQueryExecutor;
-import org.obiba.mica.search.reports.JoinQueryReportGenerator;
-import org.obiba.mica.search.reports.generators.SpecificStudyReportGenerator;
 import org.obiba.mica.search.queries.rql.RQLQueryBuilder;
+import org.obiba.mica.search.reports.JoinQueryReportGenerator;
+import org.obiba.mica.search.reports.ReportGenerator;
+import org.obiba.mica.search.reports.generators.SpecificStudyReportGenerator;
+import org.obiba.mica.search.reports.generators.StudyCsvReportGenerator;
 import org.obiba.mica.spi.search.QueryType;
 import org.obiba.mica.spi.search.Searcher;
+import org.obiba.mica.spi.search.support.JoinQuery;
+import org.obiba.mica.study.service.PublishedStudyService;
+import org.obiba.mica.web.model.Mica;
 import org.obiba.mica.web.model.MicaSearch;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import com.codahale.metrics.annotation.Timed;
-import com.google.common.base.Strings;
+import javax.inject.Inject;
+import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.StreamingOutput;
+import java.io.IOException;
+import java.util.List;
 
+import static java.util.stream.Collectors.toList;
 import static org.obiba.mica.web.model.MicaSearch.JoinQueryResultDto;
 
 @Component
@@ -38,17 +45,30 @@ import static org.obiba.mica.web.model.MicaSearch.JoinQueryResultDto;
 @Scope("request")
 public class PublishedStudiesSearchResource {
 
-  @Inject
-  private JoinQueryExecutor joinQueryExecutor;
+  private final MicaConfigService micaConfigService;
+
+  private final JoinQueryExecutor joinQueryExecutor;
+
+  private final Searcher searcher;
+
+  private final JoinQueryReportGenerator joinQueryReportGenerator;
+
+  private final SpecificStudyReportGenerator specificStudyReportGenerator;
+
+  private final PublishedStudyService publishedStudyService;
+
+  protected final PersonService personService;
 
   @Inject
-  private Searcher searcher;
-
-  @Inject
-  private JoinQueryReportGenerator joinQueryReportGenerator;
-
-  @Inject
-  private SpecificStudyReportGenerator specificStudyReportGenerator;
+  public PublishedStudiesSearchResource(MicaConfigService micaConfigService, JoinQueryExecutor joinQueryExecutor, Searcher searcher, JoinQueryReportGenerator joinQueryReportGenerator, SpecificStudyReportGenerator specificStudyReportGenerator, PublishedStudyService publishedStudyService, PersonService personService) {
+    this.micaConfigService = micaConfigService;
+    this.joinQueryExecutor = joinQueryExecutor;
+    this.searcher = searcher;
+    this.joinQueryReportGenerator = joinQueryReportGenerator;
+    this.specificStudyReportGenerator = specificStudyReportGenerator;
+    this.publishedStudyService = publishedStudyService;
+    this.personService = personService;
+  }
 
   @GET
   @Timed
@@ -60,7 +80,7 @@ public class PublishedStudiesSearchResource {
 
     String rql = RQLQueryBuilder.newInstance().target(
         RQLQueryBuilder.TargetQueryBuilder.studyInstance().exists("id").limit(from, limit).sort(sort, order).build())
-        .locale(locale).buildArgsAsString();
+      .locale(locale).buildArgsAsString();
 
     return joinQueryExecutor.query(QueryType.STUDY, searcher.makeJoinQuery(rql));
   }
@@ -82,7 +102,7 @@ public class PublishedStudiesSearchResource {
   @Path("/_rql")
   @Timed
   public MicaSearch.JoinQueryResultDto rqlLargeQuery(@FormParam("query") String query,
-                                                     @FormParam("withoutCountStats") @DefaultValue("false")  boolean withoutCountStats) {
+                                                     @FormParam("withoutCountStats") @DefaultValue("false") boolean withoutCountStats) {
     return rqlQuery(query, withoutCountStats);
   }
 
@@ -101,6 +121,27 @@ public class PublishedStudiesSearchResource {
   @Timed
   public Response rqlLargeQueryAsCsv(@FormParam("query") String query, @FormParam("columnsToHide") List<String> columnsToHide) throws IOException {
     return rqlQueryAsCsv(query, columnsToHide);
+  }
+
+  @POST
+  @Path("/_export")
+  @Produces(MediaType.APPLICATION_OCTET_STREAM)
+  public Response export(@FormParam("query") String query, @FormParam("locale") @DefaultValue("en") String locale) {
+    if (!micaConfigService.getConfig().isStudiesExportEnabled())
+      throw new BadRequestException("Studies export not enabled");
+    JoinQuery joinQuery = searcher.makeJoinQuery(query);
+    List<String> studyIds = joinQueryExecutor.query(QueryType.STUDY, joinQuery)
+      .getStudyResultDto()
+      .getExtension(MicaSearch.StudyResultDto.result)
+      .getSummariesList()
+      .stream()
+      .map(Mica.StudySummaryDto::getId)
+      .collect(toList());
+
+    ReportGenerator reporter = new StudyCsvReportGenerator(publishedStudyService.findByIds(studyIds, true),
+      Strings.isNullOrEmpty(locale) ? joinQuery.getLocale() : locale, personService);
+    StreamingOutput stream = reporter::write;
+    return Response.ok(stream).header("Content-Disposition", "attachment; filename=\"Studies.zip\"").build();
   }
 
   @GET

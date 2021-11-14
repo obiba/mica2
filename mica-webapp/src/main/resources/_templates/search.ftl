@@ -148,7 +148,7 @@
               <h3 class="card-title p-3"><@message "results"/></h3>
               <#if downloadQueryEnabled>
                 <div class="mt-2 pt-1">
-                  <a id="download-query" href="javascript:void(0)" class="btn btn-sm btn-info ml-2" @click="onDownloadQueryResult" title="<@message "download"/>"><i class="fas fa-download"></i></a>
+                  <a id="download-query" href="javascript:void(0)" class="btn btn-sm btn-info ml-2" @click="onDownloadQueryResult"><i class="fas fa-download"></i> <@message "download"/></a>
                 </div>
               </#if>
               <ul id="search-tabs" class="nav nav-pills ml-auto p-2">
@@ -199,14 +199,24 @@
                       </#if>
                     </ul>
                     <div class="float-right mt-1">
+                      <#if exportStudiesQueryEnabled>
+                        <button id="export-studies" type="button" class="btn btn-info btn-sm" v-if="isStudiesToolsVisible" @click="onDownloadExportQueryResult">
+                          <i class="fas fa-download"></i> <@message "export"/></span>
+                        </button>
+                      </#if>
                       <#if studiesCompareEnabled>
-                        <button id="compare-studies" type="button" class="btn btn-info btn-sm" v-if="isStudiesToolsVisible" @click="onCompare">
-                          <i class="fas fa-equals"></i> <@message "compare"/> <span class="badge badge-light studies-selection-count"></span>
+                        <button id="compare-studies" type="button" class="btn btn-info btn-sm ml-2" v-if="isStudiesToolsVisible" @click="onCompare">
+                          <i class="fas fa-grip-lines-vertical"></i> <@message "compare"/></span>
+                        </button>
+                      </#if>
+                      <#if exportNetworksQueryEnabled>
+                        <button id="export-networks" type="button" class="btn btn-info btn-sm" v-if="isNetworksToolsVisible" @click="onDownloadExportQueryResult">
+                          <i class="fas fa-download"></i> <@message "export"/></span>
                         </button>
                       </#if>
                       <#if networksCompareEnabled>
-                        <button id="compare-networks" type="button" class="btn btn-info btn-sm" v-if="isNetworksToolsVisible" @click="onCompare">
-                          <i class="fas fa-equals"></i> <@message "compare"/> <span class="badge badge-light studies-selection-count"></span>
+                        <button id="compare-networks" type="button" class="btn btn-info btn-sm ml-2" v-if="isNetworksToolsVisible" @click="onCompare">
+                          <i class="fas fa-grip-lines-vertical"></i> <@message "compare"/> <span class="badge badge-light studies-selection-count"></span>
                         </button>
                       </#if>
                       <#if cartEnabled>

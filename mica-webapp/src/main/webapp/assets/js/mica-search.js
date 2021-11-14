@@ -879,6 +879,37 @@ class TableFixedHeaderUtility {
           MicaService.toastError(Mica.tr['no-coverage-available']);
         }
       },
+      onDownloadExportQueryResult() {
+        if (this.downloadUrlObject) {
+          const form = document.createElement('form');
+          form.setAttribute('class', 'hidden');
+          form.setAttribute('method', 'post');
+
+          form.action = this.downloadUrlObject.url.replace('_rql_csv', '_export');
+          form.accept = 'application/octet-stream';
+
+          const input = document.createElement('input');
+          input.name = 'query';
+
+          if (Array.isArray(this.variableSelections) && this.variableSelections.length > 0) {
+            const queryAsTree = new RQL.QueryTree(RQL.Parser.parseQuery(this.downloadUrlObject.query));
+            let variableQuery = queryAsTree.search((name) => name === "variable");
+            queryAsTree.addQuery(variableQuery, new RQL.Query('in', ['id', this.variableSelections]));
+
+            input.value = queryAsTree.serialize();
+          } else {
+            input.value = this.downloadUrlObject.query;
+          }
+
+          form.appendChild(input);
+
+          document.body.appendChild(form);
+          form.submit();
+          form.remove();
+        } else {
+          MicaService.toastError(Mica.tr['no-coverage-available']);
+        }
+      },
       onSearchModeToggle() {
         this.advanceQueryMode = !this.advanceQueryMode;
       },

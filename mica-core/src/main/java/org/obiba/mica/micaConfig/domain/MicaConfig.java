@@ -165,6 +165,10 @@ public class MicaConfig extends AbstractAuditableDocument {
 
   private int maxItemsPerCompare = DEFAULT_MAX_ITEMS_PER_COMPARE;
 
+  private boolean studiesExportEnabled = false;
+
+  private boolean networksExportEnabled = false;
+
   private boolean contingencyEnabled = true;
 
   private boolean setsAnalysisEnabled = true;
@@ -649,6 +653,22 @@ public class MicaConfig extends AbstractAuditableDocument {
 
   public void setMaxItemsPerCompare(int maxItemsPerCompare) {
     this.maxItemsPerCompare = maxItemsPerCompare;
+  }
+
+  public void setStudiesExportEnabled(boolean studiesExportEnabled) {
+    this.studiesExportEnabled = studiesExportEnabled;
+  }
+
+  public boolean isStudiesExportEnabled() {
+    return studiesExportEnabled;
+  }
+
+  public void setNetworksExportEnabled(boolean networksExportEnabled) {
+    this.networksExportEnabled = networksExportEnabled;
+  }
+
+  public boolean isNetworksExportEnabled() {
+    return networksExportEnabled;
   }
 
   public boolean isContingencyEnabled() {

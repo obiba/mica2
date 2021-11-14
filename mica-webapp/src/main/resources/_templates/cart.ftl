@@ -214,13 +214,13 @@
                             <i class="fas fa-download"></i> <@message "download"/>
                           </button>
                           <div class="dropdown-menu">
-                            <a class="dropdown-item" href="${contextPath}/ws/variables/set/${user.variablesCart.id}/documents/_report?locale=${.locale}" download><@message "download-cart-report"/></a>
+                            <a class="dropdown-item" href="${contextPath}/ws/variables/set/${user.variablesCart.id}/documents/_report?locale=${.locale}" download><@message "download-cart-export"/></a>
                             <a class="dropdown-item" href="${contextPath}/ws/variables/set/${user.variablesCart.id}/documents/_opal" download><@message "download-cart-views"/></a>
                           </div>
                         </div>
                       <#else>
                         <a href="${contextPath}/ws/variables/set/${user.variablesCart.id}/documents/_report?locale=${.locale}" download class="btn btn-primary ml-2">
-                          <i class="fas fa-download"></i> <@message "download"/>
+                          <i class="fas fa-download"></i> <@message "download-cart-export"/>
                         </a>
                       </#if>
                     </#if>
@@ -280,12 +280,12 @@
                   <div class="float-right">
                     <#if studiesCompareEnabled>
                       <button type="button" class="btn btn-info ml-2" onclick="onCompareStudies()">
-                        <i class="fas fa-equals"></i> <@message "compare"/> <span class="badge badge-light studies-selection-count"></span>
+                        <i class="fas fa-grip-lines-vertical"></i> <@message "compare"/> <span class="badge badge-light studies-selection-count"></span>
                       </button>
                     </#if>
                     <#if showCartDownload>
                       <a href="${contextPath}/ws/studies/set/${user.studiesCart.id}/documents/_report?locale=${.locale}" download class="btn btn-primary ml-2">
-                        <i class="fas fa-download"></i> <@message "download"/>
+                        <i class="fas fa-download"></i> <@message "download-cart-export"/>
                       </a>
                     </#if>
                     <button id="delete-all" type="button" class="btn btn-danger ml-2" data-toggle="modal" data-target="#modal-delete-studies">
@@ -340,12 +340,12 @@
                   <div class="float-right">
                     <#if networksCompareEnabled>
                       <button type="button" class="btn btn-info ml-2" onclick="onCompareNetworks()">
-                        <i class="fas fa-equals"></i> <@message "compare"/> <span class="badge badge-light networks-selection-count"></span>
+                        <i class="fas fa-grip-lines-vertical"></i> <@message "compare"/> <span class="badge badge-light networks-selection-count"></span>
                       </button>
                     </#if>
                     <#if showCartDownload>
                       <a href="${contextPath}/ws/networks/set/${user.networksCart.id}/documents/_report?locale=${.locale}" download class="btn btn-primary ml-2">
-                        <i class="fas fa-download"></i> <@message "download"/>
+                        <i class="fas fa-download"></i> <@message "download-cart-export"/>
                       </a>
                     </#if>
                     <button id="delete-all" type="button" class="btn btn-danger ml-2" data-toggle="modal" data-target="#modal-delete-networks">
