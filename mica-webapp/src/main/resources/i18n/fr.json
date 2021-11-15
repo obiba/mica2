@@ -1143,6 +1143,8 @@
   "website": "Site web",
   "funding": "Financement",
   "members": "Membres",
+  "memberships": "Adhésions",
+  "no-memberships": "Aucune adhésion",
   "unsaved-title": "Modifications non sauvegardées",
   "unsaved-prompt": "Êtes-vous sûr de vouloir quitter cette page? toute modification non sauvegardée sera perdue.",
   "analysis": {
