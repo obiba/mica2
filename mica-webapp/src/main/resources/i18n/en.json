@@ -1143,6 +1143,8 @@
   "website": "Website",
   "funding": "Funding",
   "members": "Members",
+  "memberships": "Memberships",
+  "no-memberships": "No Membership",
   "unsaved-title": "Unsaved Changes",
   "unsaved-prompt": "Are you sure you want to leave this page? Unsaved changes will be lost.",
   "analysis": {

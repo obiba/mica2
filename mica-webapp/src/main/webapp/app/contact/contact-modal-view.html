@@ -17,6 +17,37 @@
 
   <div class="modal-body">
     <div sf-model="contact" sf-form="sfForm.definition" sf-schema="sfForm.schema" sf-options="sfOptions"></div>
+
+    <div class="row">
+      <hr/>
+      <div class="col-xs-12">
+        <h3 translate>memberships</h3>
+      </div>
+
+      <div class="col-xs-12">
+        <h4 translate>studies</h4>
+        <span ng-repeat="membership in contact.studyMemberships">
+          <a target="_blank" ng-href="#/{{membership['obiba.mica.PersonDto.StudyMembershipDto.meta'].type}}/{{membership.parentId}}">
+            <localized value="membership.parentAcronym" lang="lang"></localized>
+          </a>
+          (<em>{{'contact.label.' + membership.role | translate}}</em>)<span ng-if="!$last">,</span>
+        </span>
+
+        <span ng-if="!contact.studyMemberships || contact.studyMemberships.length === 0" translate>no-memberships</span>
+      </div>
+
+      <div class="col-xs-12">
+        <h4 translate>networks</h4>
+        <span ng-repeat="membership in contact.networkMemberships">
+          <a target="_blank" ng-href="#/{{membership['obiba.mica.PersonDto.StudyMembershipDto.meta'].type}}/{{membership.parentId}}">
+            <localized value="membership.parentAcronym" lang="lang"></localized>
+          </a>
+          (<em>{{'contact.label.' + membership.role | translate}}</em>)<span ng-if="!$last">,</span>
+        </span>
+
+        <span ng-if="!contact.networkMemberships || contact.networkMemberships.length === 0" translate>no-memberships</span>
+      </div>
+    </div>
   </div>
 
   <div class="modal-footer">
