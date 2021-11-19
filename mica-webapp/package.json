@@ -14,7 +14,7 @@
     "rql": "github:epigeny/rql#1.1.0",
     "simplemde": "^1.11.2",
     "vue": "^2.6.11",
-    "vue-mica-search": "github:obiba/vue-mica-search#master"
+    "vue-mica-search": "github:obiba/vue-mica-search#1.1.2"
   },
   "devDependencies": {
     "grunt": "1.0.1",
