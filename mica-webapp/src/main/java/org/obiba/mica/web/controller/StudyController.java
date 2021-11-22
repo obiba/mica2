@@ -20,6 +20,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.inject.Inject;
+
+import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
 @Controller
@@ -104,6 +106,9 @@ public class StudyController extends BaseController {
       if (startData.getMonth() != 0) {
         builder.setStartMonth(startData.getMonth());
       }
+      if (startData.getDay() != null) {
+        builder.setStartDay(startData.getDay().format(DateTimeFormatter.ISO_DATE));
+      }
     }
 
     if (dce.getEnd() != null) {
@@ -111,6 +116,9 @@ public class StudyController extends BaseController {
       builder.setEndYear(endData.getYear());
       if (endData.getMonth() != 0) {
         builder.setEndMonth(endData.getMonth());
+      }
+      if (endData.getDay() != null) {
+        builder.setEndDay(endData.getDay().format(DateTimeFormatter.ISO_DATE));
       }
     }
 
