@@ -666,6 +666,7 @@
     },
     "export": "Export CSV",
     "publish-datasets": "Publier des ensembles de données",
+    "study-datasets-published": "Publication des jeux de données sélectionnés en cours.",
     "publish-datasets-help": "Publier des ensembles de données liés à cette étude.",
     "access": {
       "label": "Accès",
