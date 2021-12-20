@@ -13,13 +13,12 @@
 <script src="${assetsPath}/js/mica-repo.js"></script>
 
 <!-- ChartJS -->
-<script src="${adminLTEPath}/plugins/chart.js/Chart.min.js"></script>
-<script src="${assetsPath}/libs/node_modules/chartjs-chart-geo/build/Chart.Geo.min.js"></script>
+<script src="${assetsPath}/libs/node_modules/plotly.js-dist-min/plotly.min.js"></script>
 
 <!-- Mica Search and dependencies -->
 <script src="${assetsPath}/libs/node_modules/rql/dist/rql.js"></script>
-<script src="${assetsPath}/libs/node_modules/vue-mica-search/dist/VueMicaSearch.umd.js"></script>
-<script src="${assetsPath}/libs/node_modules/plotly.js-dist-min/plotly.min.js"></script>
+<script src="${assetsPath}/js/vue-mica-search/libs/result-parsers.js"></script>
+<script src="${assetsPath}/js/vue-mica-search/result.js"></script>
 
 <script>
   // cart
@@ -93,31 +92,6 @@
       name: '${mapName}',
       topo: data
     });
-
-  // an EventBus is a Vue app without element
-  // its data are callback functions, registered by event name
-  const EventBus = new Vue({
-    data: {
-      callbacks: {}
-    },
-    methods: {
-      register: function (eventName, callback) {
-        if (!this.callbacks[eventName]) {
-          this.callbacks[eventName] = [];
-          this.$on(eventName, function (payload) {
-            for (let callback of this.callbacks[eventName]) {
-              callback(payload);
-            }
-          });
-        }
-        this.callbacks[eventName].push(callback);
-        //console.dir(this.callbacks)
-      },
-      unregister: function (eventName) {
-        this.callbacks[eventName] = undefined;
-      }
-    }
-  });
 
   // global translate filter for use in imported components
   Vue.filter("translate", (key) => {
@@ -253,37 +227,6 @@
 
     let params = ['query=' + RQL.Query.serializeArgs(query, ','), 'type=' + payload.type];
     window.location.href = '${contextPath}/search#lists?' + params.join('&');
-  });
-
-  /**
-   * Registering plugins defined in VueMicaSearch
-   */
-  Vue.use(VueMicaSearch, {
-    mixin: {
-      methods: {
-        getEventBus: () => EventBus,
-        getMicaConfig: () => {},
-        getLocale: () => '${.lang}',
-        getDisplayOptions: () => {},
-        normalizePath: (path) => {
-          return contextPath + path;
-        },
-        localize: (entries) => StringLocalizer.localize(entries),
-        registerDataTable: (tableId, options) => {
-          const mergedOptions = Object.assign(options, DataTableDefaults);
-          mergedOptions.language = {
-            url: contextPath + '/assets/i18n/datatables.' + Mica.locale + '.json'
-          };
-          const dTable = $('#' + tableId).DataTable(mergedOptions);
-          dTable.on('draw', function() {
-            // bs tooltip
-            $('[data-toggle="tooltip"]').tooltip();
-          });
-
-          return dTable;
-        }
-      }
-    }
   });
 
   function callForSummaryStatistics() {

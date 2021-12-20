@@ -388,7 +388,6 @@ module.exports = function (grunt) {
           {expand: true, src: ['node_modules/simplemde/dist/**'], dest: 'src/main/webapp/assets/libs/'},
           {expand: true, src: ['node_modules/vue/dist/**'], dest: 'src/main/webapp/assets/libs/'},
           {expand: true, src: ['node_modules/rql/dist/**'], dest: 'src/main/webapp/assets/libs/'},
-          {expand: true, src: ['node_modules/vue-mica-search/dist/**'], dest: 'src/main/webapp/assets/libs/'},
           {expand: true, src: ['node_modules/plotly.js-dist-min/**'], dest: 'src/main/webapp/assets/libs/'},
           {expand: true, src: ['node_modules/axios/dist/**'], dest: 'src/main/webapp/assets/libs/'},
           {expand: true, src: ['node_modules/marked/lib/**'], dest: 'src/main/webapp/assets/libs/'},

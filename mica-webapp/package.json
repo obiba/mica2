@@ -13,8 +13,7 @@
     "plotly.js-dist-min": "^2.5.1",
     "rql": "github:epigeny/rql#1.1.0",
     "simplemde": "^1.11.2",
-    "vue": "^2.6.11",
-    "vue-mica-search": "github:obiba/vue-mica-search#master"
+    "vue": "^2.6.11"
   },
   "devDependencies": {
     "grunt": "1.0.1",

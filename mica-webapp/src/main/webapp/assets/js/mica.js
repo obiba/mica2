@@ -1106,7 +1106,7 @@ class NetworksSetService extends SetService {
    * @param onfailure
    */
   static contains(set, id, onsuccess, onfailure) {
-    SetService.contains('networks', set, id, onsuccess, onfailure);
+    SetService.contains('networks', set || {}, id, onsuccess, onfailure);
   };
 
   /**
@@ -1208,7 +1208,7 @@ class StudiesSetService extends SetService {
    * @param onfailure
    */
   static contains(set, id, onsuccess, onfailure) {
-    SetService.contains('studies', set, id, onsuccess, onfailure);
+    SetService.contains('studies', set || {}, id, onsuccess, onfailure);
   };
 
   /**
@@ -1356,7 +1356,7 @@ class VariablesSetService extends SetService {
    * @param onfailure
    */
   static contains(set, id, onsuccess, onfailure) {
-    SetService.contains('variables', set, id, onsuccess, onfailure);
+    SetService.contains('variables', set || {}, id, onsuccess, onfailure);
   };
 
   /**

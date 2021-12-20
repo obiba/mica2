@@ -1,30 +1,5 @@
 'use strict';
 
-// an EventBus is a Vue app without element
-// its data are callback functions, registered by event name
-const EventBus = new Vue({
-  data: {
-    callbacks: {}
-  },
-  methods: {
-    register: function (eventName, callback) {
-      if (!this.callbacks[eventName]) {
-        this.callbacks[eventName] = [];
-        this.$on(eventName, function (payload) {
-          for (let callback of this.callbacks[eventName]) {
-            callback(payload);
-          }
-        });
-      }
-      this.callbacks[eventName].push(callback);
-      //console.dir(this.callbacks)
-    },
-    unregister: function (eventName) {
-      this.callbacks[eventName] = undefined;
-    }
-  }
-});
-
 // global translate filter for use in imported components
 Vue.filter("translate", (key) => {
   let value = Mica.tr[key];
@@ -507,42 +482,6 @@ class TableFixedHeaderUtility {
       this.loading = false;
     }
   }
-
-  /**
-    * Registering plugins defined in VueMicaSearch
-    */
-  Vue.use(VueMicaSearch, {
-    mixin: {
-      methods: {
-        getEventBus: () => EventBus,
-        getMicaConfig: () => Mica.config,
-        getLocale: () => Mica.locale,
-        getDisplayOptions: () => Mica.display,
-        normalizePath: (path) => {
-          return contextPath + path;
-        },
-        localize: (entries) => StringLocalizer.localize(entries),
-        registerDataTable: (tableId, options) => {
-          const mergedOptions = Object.assign(options, DataTableDefaults);
-          mergedOptions.language = {
-            url: contextPath + '/assets/i18n/datatables.' + Mica.locale + '.json'
-          };
-          const dTable = $('#' + tableId).DataTable(mergedOptions);
-          dTable.on('draw', function() {
-            // bs tooltip
-            $('[data-toggle="tooltip"]').tooltip();
-          });
-
-          // checkboxes only for variables
-          if ('vosr-variables-result' === tableId) {
-            initSelectDataTable(dTable, options);
-          }
-
-          return dTable;
-        }
-      }
-    }
-  });
 
   const queryAlertListener  = new MicaQueryAlertListener();
 
