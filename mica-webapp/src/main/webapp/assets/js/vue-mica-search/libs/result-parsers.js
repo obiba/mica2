@@ -72,7 +72,7 @@ class GraphicsResultParser {
       },
       layoutObject: {
         margin: {
-          t: 0,
+          t: 50,
           b: 40
         }
       }
