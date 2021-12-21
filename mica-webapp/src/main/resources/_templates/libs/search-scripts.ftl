@@ -164,14 +164,16 @@
 </script>
 
 <!-- ChartJS -->
-<script src="${adminLTEPath}/plugins/chart.js/Chart.min.js"></script>
-<script src="${assetsPath}/libs/node_modules/chartjs-chart-geo/build/Chart.Geo.min.js"></script>
 <script src="${assetsPath}/libs/node_modules/plotly.js-dist-min/plotly.min.js"></script>
 
 <!-- Mica Search and dependencies -->
 <script src="${assetsPath}/libs/node_modules/vue/dist/vue.js"></script>
 <script src="${assetsPath}/libs/node_modules/rql/dist/rql.js"></script>
-<script src="${assetsPath}/libs/node_modules/vue-mica-search/dist/VueMicaSearch.umd.js"></script>
+<script src="${assetsPath}/js/vue-mica-search/libs/criterion.js"></script>
+<script src="${assetsPath}/js/vue-mica-search/libs/result-parsers.js"></script>
+<script src="${assetsPath}/js/vue-mica-search/builder.js"></script>
+<script src="${assetsPath}/js/vue-mica-search/panel.js"></script>
+<script src="${assetsPath}/js/vue-mica-search/result.js"></script>
 <script src="${assetsPath}/js/mica-tables.js"></script>
 <script src="${assetsPath}/js/mica-query.js"></script>
 <script src="${assetsPath}/js/mica-search.js"></script>
