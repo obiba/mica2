@@ -106,3 +106,24 @@
   content: none;
 }
 
+.coverage-row-popup {
+  position: fixed;
+  z-index: 9999;
+}
+.coverage-row-popup .coverage-row-popup-content {
+  white-space: normal;
+  word-break: normal;
+  word-spacing: normal;
+  word-wrap: normal;
+  background-color: #fff;
+  background-clip: padding-box;
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+}
+.coverage-row-popup table tbody th {
+  font-size: 12px !important;
+  width: auto !important;
+}
+.coverage-row-popup table tbody td {
+  font-size: 12px !important;
+  color: black !important;
+}
