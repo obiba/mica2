@@ -1,12 +1,12 @@
 <div>
   <div ng-if="targets">
     <div ng-if="targets.length === 1">
-      <entity-taxonomy-config-content target="targets[0]" schemas="schemas" state="state"></entity-taxonomy-config-content>
+      <entity-taxonomy-config-content target="targets[0]" schemas="schemas" state="state" for-class-name="forClassName"></entity-taxonomy-config-content>
     </div>
     <div ng-if="targets.length > 1">
       <uib-tabset active="activeTab">
         <uib-tab ng-repeat="target in targets" heading="{{'taxonomy.target.' + target.name | translate}}">
-          <entity-taxonomy-config-content target="target" schemas="schemas" state="state"></entity-taxonomy-config-content>
+          <entity-taxonomy-config-content target="target" schemas="schemas" state="state" for-class-name="forClassName"></entity-taxonomy-config-content>
         </uib-tab>
       </uib-tabset>
     </div>

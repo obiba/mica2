@@ -44,6 +44,13 @@ mica.entityConfig
         'harmonization-study': ['harmonization-study', 'harmonization-population']
       };
 
+      var CLASS_NAME_ATTRIBUTE = {
+        'individual-study': 'Study',
+        'harmonization-study': 'HarmonizationStudy',
+        'collected-dataset': 'CollectedDataset',
+        'harmonized-dataset': 'HarmonizedDataset'
+      };
+
       function mapTargetTypeToId(type) {
         switch (type) {
           case 'HarmonizationStudy':
@@ -77,6 +84,8 @@ mica.entityConfig
         $scope.taxonomyTargets = names.map(function(name){
           return {name: name, editable: true};
         });
+
+        $scope.forClassNameAttribute = CLASS_NAME_ATTRIBUTE[$scope.target];
       }
 
       initializeScopeTargets();

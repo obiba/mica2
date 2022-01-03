@@ -129,10 +129,6 @@ mica.entityTaxonomyConfig
         return getBoolAttribute(content, 'range');
       };
 
-      this.setAlias = function(attributes, content) {
-        setAttribute(attributes, 'alias', self.generateAlias(content.field, content.rangeAggregation));
-      };
-
       this.setLocalized = function(attributes, localized) {
         setAttribute(attributes, 'localized', localized+'');
       };
@@ -199,6 +195,10 @@ mica.entityTaxonomyConfig
         return getBoolAttribute(content, 'static');
       };
 
+      this.setAlias = function(attributes, content) {
+        setAttribute(attributes, 'alias', self.generateAlias(content.field, content.rangeAggregation));
+      };
+
       this.getAliases = function(vocabularies, excludeVocabulary) {
         var aliasList = [];
         (vocabularies || []).filter(function (vocabulary) {
@@ -211,6 +211,26 @@ mica.entityTaxonomyConfig
         });
 
         return aliasList;
+      };
+
+      this.setForClassNameAttribute = function (attributes, className) {
+        setAttribute(attributes, 'forClassName', className);
+      };
+
+      this.getForClassNameAttribute = function (content) {
+        if (content && content.attributes) {
+          return getAttribute(content.attributes, 'forClassName', null);
+        }
+
+        return null;
+      };
+
+      this.getVocabulariesForClassNameAttribute = function (vocabularies, className) {
+        console.log("WWWWWWWWW", className);
+        return (vocabularies || []).filter(vocabulary => {
+          var forClassNameAttributeValue = this.getForClassNameAttribute(vocabulary);
+          return !forClassNameAttributeValue || forClassNameAttributeValue === className;
+        });
       };
 
       return this;
