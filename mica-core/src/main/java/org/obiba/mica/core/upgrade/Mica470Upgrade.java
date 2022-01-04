@@ -36,7 +36,7 @@ public class Mica470Upgrade implements UpgradeStep {
 
   @Override
   public Version getAppliesTo() {
-    return new Version(4, 6, 0);
+    return new Version(4, 7, 0);
   }
 
   @Override
