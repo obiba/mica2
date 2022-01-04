@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.json.JSONArray;
+import org.obiba.mica.micaConfig.event.TaxonomiesUpdatedEvent;
 import org.obiba.runtime.Version;
 import org.obiba.runtime.upgrade.UpgradeStep;
 import org.slf4j.Logger;
@@ -11,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Component;
 
+import com.google.common.eventbus.EventBus;
 import com.mongodb.BasicDBObject;
 
 @Component
@@ -20,8 +22,11 @@ public class Mica470Upgrade implements UpgradeStep {
 
   private MongoTemplate mongoTemplate;
 
-  public Mica470Upgrade(MongoTemplate mongoTemplate) {
+  private EventBus eventBus;
+
+  public Mica470Upgrade(MongoTemplate mongoTemplate, EventBus eventBus) {
     this.mongoTemplate = mongoTemplate;
+    this.eventBus = eventBus;
   }
 
   @Override
@@ -31,7 +36,7 @@ public class Mica470Upgrade implements UpgradeStep {
 
   @Override
   public Version getAppliesTo() {
-    return new Version(4, 7, 0);
+    return new Version(4, 6, 0);
   }
 
   @Override
@@ -61,7 +66,9 @@ public class Mica470Upgrade implements UpgradeStep {
         .arrayFilters(Arrays.asList(arrayFilter))
         .update(BasicDBObject.parse("{ $set: { \"taxonomy.vocabularies.$[elem].attributes.forClassName\": \"Study\" } }"));
 
-        logger.info("Added forClassName attribute for exclusive Study vocabularies");
+      logger.info("Added forClassName attribute for exclusive Study vocabularies");
+
+      eventBus.post(new TaxonomiesUpdatedEvent());
     }
   }
 }
