@@ -226,7 +226,6 @@ mica.entityTaxonomyConfig
       };
 
       this.getVocabulariesForClassNameAttribute = function (vocabularies, className) {
-        console.log("WWWWWWWWW", className);
         return (vocabularies || []).filter(vocabulary => {
           var forClassNameAttributeValue = this.getForClassNameAttribute(vocabulary);
           return !forClassNameAttributeValue || forClassNameAttributeValue === className;
