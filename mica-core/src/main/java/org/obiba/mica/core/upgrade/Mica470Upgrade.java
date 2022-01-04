@@ -12,8 +12,6 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Component;
 
 import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
-import com.mongodb.WriteResult;
 
 @Component
 public class Mica470Upgrade implements UpgradeStep {
@@ -40,43 +38,30 @@ public class Mica470Upgrade implements UpgradeStep {
   public void execute(Version version) {
     logger.info("Executing Mica upgrade to version 4.7.0");
 
-    List<String> exclusiveHarmonizationStudyVocabularyNames = Arrays.asList("harmonizationDesign");
-
     if (mongoTemplate.collectionExists("taxonomyEntityWrapper")) {
-      BasicDBObject dbObject = BasicDBObject.parse(studyTaxonomyQueryForExclusiveStudyVocabularyNames());
+      BasicDBObject dbObject = BasicDBObject.parse("{_id: \"study\"}");
 
-      WriteResult writeResult = mongoTemplate.getCollection("taxonomyEntityWrapper")
-        .update(dbObject, BasicDBObject.parse(studyTaxonomyUpdateForExclusiveStudyVocabularyNames()));
+      List<String> exclusiveStudyVocabularyNames = Arrays.asList("objectives", "methods-design", "populations-selectionCriteria-countriesIso",
+        "populations-id", "populations-name", "populations-description", "populations-selectionCriteria-ageMin",
+        "populations-selectionCriteria-ageMax", "populations-selectionCriteria-gender",
+        "populations-selectionCriteria-pregnantWomen", "populations-selectionCriteria-newborn",
+        "populations-selectionCriteria-twins", "numberOfParticipants-participant-number",
+        "numberOfParticipants-participant-range", "numberOfParticipants-sample-number",
+        "numberOfParticipants-sample-range", "methods-recruitments", "populations-recruitment-dataSources",
+        "populations-dataCollectionEvents-dataSources", "populations-recruitment-generalPopulationSources",
+        "populations-recruitment-specificPopulationSources", "populations-dataCollectionEvents-bioSamples",
+        "populations-dataCollectionEvents-administrativeDatabases", "access_data", "access_bio_samples", "access_other",
+        "populations-dataCollectionEvents-id", "populations-dataCollectionEvents-name",
+        "populations-dataCollectionEvents-start", "populations-dataCollectionEvents-end");
 
-//      mongoTemplate.getCollection("").initializeOrderedBulkOperation().find(dbObject).arrayFilters(dbObject).update(dbObject);
-//      https://docs.mongodb.com/v4.2/reference/operator/update/positional-filtered/
-//      https://stackoverflow.com/questions/4669178/how-to-update-multiple-array-elements-in-mongodb/33193231#33193231
+      BasicDBObject arrayFilter = BasicDBObject.parse("{ \"elem.name\": { $in: " + new JSONArray(exclusiveStudyVocabularyNames) + " } }");
 
-      if (writeResult.isUpdateOfExisting()) {
+      mongoTemplate.getCollection("taxonomyEntityWrapper").initializeOrderedBulkOperation()
+        .find(dbObject)
+        .arrayFilters(Arrays.asList(arrayFilter))
+        .update(BasicDBObject.parse("{ $set: { \"taxonomy.vocabularies.$[elem].attributes.forClassName\": \"Study\" } }"));
+
         logger.info("Added forClassName attribute for exclusive Study vocabularies");
-      }
     }
-
-  }
-
-  private String studyTaxonomyQueryForExclusiveStudyVocabularyNames() {
-    List<String> exclusiveStudyVocabularyNames = Arrays.asList("objectives", "methods-design", "populations-selectionCriteria-countriesIso",
-      "populations-id", "populations-name", "populations-description", "populations-selectionCriteria-ageMin",
-      "populations-selectionCriteria-ageMax", "populations-selectionCriteria-gender",
-      "populations-selectionCriteria-pregnantWomen", "populations-selectionCriteria-newborn",
-      "populations-selectionCriteria-twins", "numberOfParticipants-participant-number",
-      "numberOfParticipants-participant-range", "numberOfParticipants-sample-number",
-      "numberOfParticipants-sample-range", "methods-recruitments", "populations-recruitment-dataSources",
-      "populations-dataCollectionEvents-dataSources", "populations-recruitment-generalPopulationSources",
-      "populations-recruitment-specificPopulationSources", "populations-dataCollectionEvents-bioSamples",
-      "populations-dataCollectionEvents-administrativeDatabases", "access_data", "access_bio_samples", "access_other",
-      "populations-dataCollectionEvents-id", "populations-dataCollectionEvents-name",
-      "populations-dataCollectionEvents-start", "populations-dataCollectionEvents-end");
-
-    return "{_id: \"study\", \"taxonomy.vocabularies.name\": { $in: " + new JSONArray(exclusiveStudyVocabularyNames) + " }}";
-  }
-
-  private String studyTaxonomyUpdateForExclusiveStudyVocabularyNames() {
-    return "{ $set: { \"taxonomy.vocabularies.$.attributes.forClassName\": \"Study\" } }";
   }
 }
