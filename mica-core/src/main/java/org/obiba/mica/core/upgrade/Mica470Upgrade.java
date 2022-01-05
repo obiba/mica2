@@ -14,6 +14,8 @@ import org.springframework.stereotype.Component;
 
 import com.google.common.eventbus.EventBus;
 import com.mongodb.BasicDBObject;
+import com.mongodb.WriteResult;
+import com.mongodb.client.model.DBCollectionUpdateOptions;
 
 @Component
 public class Mica470Upgrade implements UpgradeStep {
@@ -61,14 +63,18 @@ public class Mica470Upgrade implements UpgradeStep {
 
       BasicDBObject arrayFilter = BasicDBObject.parse("{ \"elem.name\": { $in: " + new JSONArray(exclusiveStudyVocabularyNames) + " } }");
 
-      mongoTemplate.getCollection("taxonomyEntityWrapper").initializeOrderedBulkOperation()
-        .find(dbObject)
-        .arrayFilters(Arrays.asList(arrayFilter))
-        .update(BasicDBObject.parse("{ $set: { \"taxonomy.vocabularies.$[elem].attributes.forClassName\": \"Study\" } }"));
+      DBCollectionUpdateOptions dbCollectionUpdateOptions = new DBCollectionUpdateOptions();
+      dbCollectionUpdateOptions.multi(true).arrayFilters(Arrays.asList(arrayFilter));
 
-      logger.info("Added forClassName attribute for exclusive Study vocabularies");
+      WriteResult updateResult = mongoTemplate.getCollection("taxonomyEntityWrapper").update(dbObject,
+        BasicDBObject.parse("{ $set: { \"taxonomy.vocabularies.$[elem].attributes.forClassName\": \"Study\" } }"),
+        dbCollectionUpdateOptions);
 
-      eventBus.post(new TaxonomiesUpdatedEvent());
+      if (updateResult.isUpdateOfExisting()) {
+        logger.info("Added forClassName attribute for exclusive Study vocabularies");
+
+        eventBus.post(new TaxonomiesUpdatedEvent());
+      }
     }
   }
 }
