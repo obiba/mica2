@@ -191,8 +191,15 @@ mica.entityTaxonomyConfig
         return getBoolAttribute(content, 'hidden');
       };
 
-      this.isStatic = function(content) {
-        return getBoolAttribute(content, 'static');
+      this.isStatic = function(content, forClassName) {
+        var isStatic = getBoolAttribute(content, 'static');
+        if (!isStatic && content) {
+          // If this vocabulary is common or belongs to another className, then it is static
+          var forClassNameAttribute = getAttribute(content.attributes, 'forClassName', null);
+          isStatic = forClassNameAttribute != forClassName;
+        }
+
+        return isStatic;
       };
 
       this.setAlias = function(attributes, content) {
@@ -213,23 +220,16 @@ mica.entityTaxonomyConfig
         return aliasList;
       };
 
-      this.setForClassNameAttribute = function (attributes, className) {
+      this.setForClassName = function (attributes, className) {
         setAttribute(attributes, 'forClassName', className);
       };
 
-      this.getForClassNameAttribute = function (content) {
+      this.getForClassName = function (content) {
         if (content && content.attributes) {
           return getAttribute(content.attributes, 'forClassName', null);
         }
 
         return null;
-      };
-
-      this.getVocabulariesForClassNameAttribute = function (vocabularies, className) {
-        return (vocabularies || []).filter(vocabulary => {
-          var forClassNameAttributeValue = this.getForClassNameAttribute(vocabulary);
-          return !forClassNameAttributeValue || forClassNameAttributeValue === className;
-        });
       };
 
       return this;
@@ -405,8 +405,8 @@ mica.entityTaxonomyConfig
         return data;
       }
 
-      function getVocabularyFormData(content, siblings, onRangeChange) {
-        var isStatic = VocabularyAttributeService.isStatic(content);
+      function getVocabularyFormData(forClassName, content, siblings, onRangeChange) {
+        var isStatic = VocabularyAttributeService.isStatic(content, forClassName);
 
         var data = {
           schema: {
@@ -737,6 +737,7 @@ mica.entityTaxonomyConfig
             convertFromLocalizedString(data.model, model.content, ['title', 'description']);
 
             model.content.attributes = model.content.attributes || [];
+            VocabularyAttributeService.setForClassName(model.content.attributes, model.forClassName);
 
             if (data.model.type) {
               VocabularyAttributeService.setType(model.content.attributes, data.model.type);
@@ -802,7 +803,7 @@ mica.entityTaxonomyConfig
           case 'taxonomy':
             return getTaxonomyFormData(model.content);
           case 'criterion':
-            return getVocabularyFormData(model.content, model.siblings, model.onRangeChange);
+            return getVocabularyFormData(model.forClassName, model.content, model.siblings, model.onRangeChange);
           case 'term':
             return getTermFormData(model.content, model.valueType || 'string', model.siblings, model.vocabulary);
         }

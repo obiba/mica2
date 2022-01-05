@@ -46,13 +46,13 @@ mica.entitySfConfig
         $scope.model.content = content;
         $scope.model.children = content.terms ? content.terms : [];
         $scope.model.type = 'criterion';
+        $scope.model.forClassName = $scope.forClassName;
         $scope.model.aliases = VocabularyAttributeService.getAliases($scope.taxonomy.vocabularies, content);
       };
 
       var navigateToTaxonomy = function() {
         $scope.model.content = $scope.taxonomy;
         $scope.model.children = $scope.taxonomy.vocabularies;
-        $scope.model.childrenForClassName = VocabularyAttributeService.getVocabulariesForClassNameAttribute($scope.model.children, $scope.forClassName);
         $scope.model.type = 'taxonomy';
       };
 
@@ -201,6 +201,7 @@ mica.entitySfConfig
           content: null,
           children: null,
           siblings: vocabularies,
+          forClassName: $scope.forClassName,
           type: 'criterion',
           aliases: VocabularyAttributeService.getAliases(vocabularies, null)
         };
@@ -297,8 +298,6 @@ mica.entitySfConfig
           }, {vocabulary: vocabulary, term: term}
         );
       };
-
-      console.log('AAAAAAAAAAAA', $scope.model);
 
       $scope.addTerm = addTerm;
       $scope.deleteTerm = deleteTerm;
