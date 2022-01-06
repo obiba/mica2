@@ -108,6 +108,11 @@ mica.study.BaseViewController = function (
     }
   };
 
+  self.setOrder = function(newOrder) {
+    $scope.study.membershipSortOrder = newOrder;
+    $scope.emitStudyUpdated();
+  };
+
   self.updateCollectionItemWeight = function (item, newWeight, collection) {
     function weightSortComparator(a, b) {
       var aWeight = a.weight || 0, bWeight = b.weight || 0;
@@ -301,11 +306,6 @@ mica.study.ViewController = function (
     }
 
     $scope.memberships = processMemberships(study);
-  };
-
-  self.setOrder = function(newOrder) {
-    $scope.study.membershipSortOrder = newOrder;
-    $scope.emitStudyUpdated();
   };
 
   $scope.dayOfMonth = function (dateString) {
@@ -725,8 +725,7 @@ mica.study.HarmonizationStudyViewController = function (
   self.initializeForm = function () {
     $q.all([
       MicaConfigResource.get().$promise,
-      EntityFormResource.get({target: 'harmonization-study', locale: $translate.use()}).$promise,
-      EntityFormResource.get({target: 'harmonization-population', locale: $translate.use()}).$promise
+      EntityFormResource.get({target: 'harmonization-study', locale: $translate.use()}).$promise
     ]).then(function (data) {
       var micaConfig = data[0];
       var formLanguages = {};
@@ -749,13 +748,6 @@ mica.study.HarmonizationStudyViewController = function (
   self.initializeStudy = function (study) {
     if (study.logo) {
       self.logoUrl = contextPath + '/ws/draft/harmonization-study/' + study.id + '/file/' + study.logo.id + '/_download';
-    }
-
-    study.populations = study.populations || [];
-    if (study.populations.length > 0) {
-      $scope.selectedPopulation = study.populations[0];
-    } else {
-      $scope.selectedPopulation = undefined;
     }
 
     $scope.memberships = processMemberships(study);

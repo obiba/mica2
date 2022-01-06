@@ -22,7 +22,6 @@ import org.obiba.mica.core.support.RegexHashMap;
 import org.obiba.mica.micaConfig.domain.DataCollectionEventConfig;
 import org.obiba.mica.micaConfig.domain.EntityConfig;
 import org.obiba.mica.micaConfig.domain.HarmonizationDatasetConfig;
-import org.obiba.mica.micaConfig.domain.HarmonizationPopulationConfig;
 import org.obiba.mica.micaConfig.domain.HarmonizationStudyConfig;
 import org.obiba.mica.micaConfig.domain.NetworkConfig;
 import org.obiba.mica.micaConfig.domain.PopulationConfig;
@@ -40,7 +39,6 @@ public class EntityConfigKeyTranslationService {
 
   private final DataCollectionEventConfigService dataCollectionEventConfigService;
   private final HarmonizationDatasetConfigService harmonizationDatasetConfigService;
-  private final HarmonizationPopulationConfigService harmonizationPopulationConfigService;
   private final HarmonizationStudyConfigService harmonizationStudyConfigService;
   private final IndividualStudyConfigService individualStudyConfigService;
   private final NetworkConfigService networkConfigService;
@@ -54,7 +52,6 @@ public class EntityConfigKeyTranslationService {
   public EntityConfigKeyTranslationService(MicaConfigService micaConfigService,
       DataCollectionEventConfigService dataCollectionEventConfigService,
       HarmonizationDatasetConfigService harmonizationDatasetConfigService,
-      HarmonizationPopulationConfigService harmonizationPopulationConfigService,
       HarmonizationStudyConfigService harmonizationStudyConfigService,
       IndividualStudyConfigService individualStudyConfigService,
       NetworkConfigService networkConfigService,
@@ -64,7 +61,6 @@ public class EntityConfigKeyTranslationService {
     this.micaConfigService = micaConfigService;
     this.dataCollectionEventConfigService = dataCollectionEventConfigService;
     this.harmonizationDatasetConfigService = harmonizationDatasetConfigService;
-    this.harmonizationPopulationConfigService = harmonizationPopulationConfigService;
     this.harmonizationStudyConfigService = harmonizationStudyConfigService;
     this.individualStudyConfigService = individualStudyConfigService;
     this.networkConfigService = networkConfigService;
@@ -153,20 +149,12 @@ public class EntityConfigKeyTranslationService {
       case "harmonization-study":
 
         Optional<HarmonizationStudyConfig> optionalHarmonizationStudySchemaForm = harmonizationStudyConfigService.findComplete();
-        Optional<HarmonizationPopulationConfig> optionalHarmonizationPopulationSchemaForm = harmonizationPopulationConfigService.findComplete();
 
         if (optionalHarmonizationStudySchemaForm.isPresent()) {
           HarmonizationStudyConfig harmonizationStudySchemaForm = optionalHarmonizationStudySchemaForm.get();
           translateSchemaForm(translator, harmonizationStudySchemaForm);
 
           translationMap.putAll(getTranslationMap(harmonizationStudySchemaForm, ""));
-        }
-
-        if (optionalHarmonizationPopulationSchemaForm.isPresent()) {
-          HarmonizationPopulationConfig harmonizationPopulationSchemaForm = optionalHarmonizationPopulationSchemaForm.get();
-          translateSchemaForm(translator, harmonizationPopulationSchemaForm);
-
-          translationMap.putAll(getTranslationMap(harmonizationPopulationSchemaForm, "^populations\\[\\d+\\]\\."));
         }
 
         break;

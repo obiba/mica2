@@ -33,13 +33,13 @@
 
     <!-- Harmonization study -->
     <#if type == "Harmonization">
-      <#if study.model.harmonizationDesign??>
+      <#if study.model.additionalInformation??>
         <div class="row">
           <div class="col-12">
             <div class="card card-info card-outline">
               <div class="card-header">
                 <h3 class="card-title">
-                  <@message "study_taxonomy.vocabulary.harmonizationDesign.title"/>
+                    <@message "study_taxonomy.vocabulary.additionalInformation.title"/>
                 </h3>
                 <div class="card-tools">
                   <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="<@message "collapse"/>">
@@ -47,8 +47,8 @@
                 </div>
               </div>
               <!-- /.card-header -->
-              <div class="card-body">
-                ${localize(study.model.harmonizationDesign)}
+              <div class="card-body marked">
+                  <template>${localize(study.model.additionalInformation)}</template>
               </div>
             </div>
           </div>

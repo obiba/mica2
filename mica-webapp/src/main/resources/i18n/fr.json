@@ -1892,8 +1892,7 @@
       "title": "Formulaire",
       "info": "Le formulaire d'étude harmonisée peut être spécifié à la fois en termes de structure de données (schéma) et d'affichage des données et validation (définition). Voir <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>documentation du schema form</a> pour plus de détails."
     },
-    "harmonization-study-form-title": "Étude harmonisée",
-    "harmonization-population-form-title": "Population harmonisée"
+    "harmonization-study-form-title": "Initiative d'harmonisation"
   },
   "individual-study-config" : {
     "title" : "Configuration des études individuelles",

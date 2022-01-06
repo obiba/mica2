@@ -188,9 +188,9 @@
         <!-- Study model -->
         <@studyModel study=study type=type/>
 
-        <#if study.populations?? && study.populations?size != 0>
+        <#if type == "Individual">
+          <#if study.populations?? && study.populations?size != 0>
           <!-- Timeline -->
-          <#if type == "Individual">
             <div class="row">
               <div class="col-lg-12">
                 <div class="card card-info card-outline">
@@ -203,47 +203,47 @@
                 </div>
               </div>
             </div>
-          </#if>
 
-          <!-- Populations -->
-          <div class="row">
-            <div class="col-lg-12">
-              <div id="populations" class="card card-info card-outline">
-                <div class="card-header">
-                  <h3 class="card-title">
+            <!-- Populations -->
+            <div class="row">
+              <div class="col-lg-12">
+                <div id="populations" class="card card-info card-outline">
+                  <div class="card-header">
+                    <h3 class="card-title">
+                      <#if study.populations?size == 1>
+                        ${localize(study.populations[0].name)}
+                      <#else>
+                        <@message "populations"/>
+                      </#if>
+                    </h3>
+                  </div>
+                  <div class="card-body">
                     <#if study.populations?size == 1>
-                      ${localize(study.populations[0].name)}
                     <#else>
-                      <@message "populations"/>
+                      <ul class="nav nav-pills mb-3">
+                        <#list study.populationsSorted as pop>
+                          <li class="nav-item"><a class="nav-link <#if pop?index == 0>active</#if>" href="#population-${pop.id}" data-toggle="tab">
+                            ${localize(pop.name)}</a>
+                          </li>
+                        </#list>
+                      </ul>
                     </#if>
-                  </h3>
-                </div>
-                <div class="card-body">
-                  <#if study.populations?size == 1>
-                  <#else>
-                    <ul class="nav nav-pills mb-3">
+                    <div class="tab-content">
                       <#list study.populationsSorted as pop>
-                        <li class="nav-item"><a class="nav-link <#if pop?index == 0>active</#if>" href="#population-${pop.id}" data-toggle="tab">
-                          ${localize(pop.name)}</a>
-                        </li>
-                      </#list>
-                    </ul>
-                  </#if>
-                  <div class="tab-content">
-                    <#list study.populationsSorted as pop>
-                      <div class="tab-pane <#if pop?index == 0>active</#if>" id="population-${pop.id}">
-                        <div class="mb-3 marked">
-                          <template>${localize(pop.description)}</template>
+                        <div class="tab-pane <#if pop?index == 0>active</#if>" id="population-${pop.id}">
+                          <div class="mb-3 marked">
+                            <template>${localize(pop.description)}</template>
+                          </div>
+                          <@populationModel population=pop/>
+                          <@dceList population=pop/>
                         </div>
-                        <@populationModel population=pop/>
-                        <@dceList population=pop/>
-                      </div>
-                    </#list>
+                      </#list>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
+          </#if>
         </#if>
 
         <!-- Files -->

@@ -41,7 +41,7 @@ mica.entityConfig
         'individual-study': ['individual-study', 'population', 'data-collection-event'],
         'collected-dataset': ['collected-dataset'],
         'harmonized-dataset': ['harmonized-dataset'],
-        'harmonization-study': ['harmonization-study', 'harmonization-population']
+        'harmonization-study': ['harmonization-study']
       };
 
       var CLASS_NAME_ATTRIBUTE = {
@@ -56,7 +56,6 @@ mica.entityConfig
           case 'HarmonizationStudy':
           case 'Study':
             return 'studies';
-          case 'HarmonizationPopulation':
           case 'Population':
             return 'populations';
           case 'DataCollectionEvent':

@@ -151,11 +151,6 @@ class StudySummaryDtos {
       .setVariables(isPublished ? variablesCount : 0);
 
     if(study.getLogo() != null) builder.setLogo(attachmentDtos.asDto(study.getLogo()));
-    SortedSet<Population> populations = study.getPopulations();
-
-    if(populations != null) {
-      populations.forEach(population -> builder.addPopulationSummaries(asDto(population)));
-    }
 
     builder.setPermissions(permissionsDtos.asDto(study));
 
@@ -347,32 +342,36 @@ class StudySummaryDtos {
     .addAllObjectives(localizedStringDtos.asDto(study.getObjectives()))
     .setStudyResourcePath(study.getResourcePath());
 
-    Optional<Population> optionalPopulation = study.getPopulations().stream().filter(population -> population.getId().equals(populationId)).findFirst();
-    if (optionalPopulation.isPresent()) {
-      Population population = optionalPopulation.get();
+    if (study instanceof Study) {
+      Optional<Population> optionalPopulation = ((Study)study).getPopulations().stream().filter(population -> population.getId().equals(populationId)).findFirst();
+      if (optionalPopulation.isPresent()) {
+        Population population = optionalPopulation.get();
 
-      Mica.PopulationSummaryDto.Builder populationBuilder = Mica.PopulationSummaryDto.newBuilder()
-      .setId(population.getId())
-      .addAllName(localizedStringDtos.asDto(population.getName()));
+        Mica.PopulationSummaryDto.Builder populationBuilder = Mica.PopulationSummaryDto.newBuilder()
+          .setId(population.getId())
+          .addAllName(localizedStringDtos.asDto(population.getName()));
 
-      if (population.getDescription() != null) populationBuilder.addAllDescription(localizedStringDtos.asDto(population.getDescription()));
+        if (population.getDescription() != null)
+          populationBuilder.addAllDescription(localizedStringDtos.asDto(population.getDescription()));
 
-      Optional<DataCollectionEvent> optionalDce = population.getDataCollectionEvents().stream().filter(dce -> dce.getId().equals(dceId)).findFirst();
-      if (optionalDce.isPresent()) {
-        DataCollectionEvent dce = optionalDce.get();
+        Optional<DataCollectionEvent> optionalDce = population.getDataCollectionEvents().stream().filter(dce -> dce.getId().equals(dceId)).findFirst();
+        if (optionalDce.isPresent()) {
+          DataCollectionEvent dce = optionalDce.get();
 
-        Mica.DataCollectionEventSummaryDto.Builder dceBuilder = Mica.DataCollectionEventSummaryDto.newBuilder()
-        .setId(dceUid)
-        .addAllName(localizedStringDtos.asDto(dce.getName()));
+          Mica.DataCollectionEventSummaryDto.Builder dceBuilder = Mica.DataCollectionEventSummaryDto.newBuilder()
+            .setId(dceUid)
+            .addAllName(localizedStringDtos.asDto(dce.getName()));
 
-        if (dce.getDescription() != null) dceBuilder.addAllDescription(localizedStringDtos.asDto(dce.getDescription()));
-        if (dce.hasStart()) dceBuilder.setStart(dce.getStart().getYearMonth());
-        if (dce.hasEnd()) dceBuilder.setEnd(dce.getEnd().getYearMonth());
+          if (dce.getDescription() != null)
+            dceBuilder.addAllDescription(localizedStringDtos.asDto(dce.getDescription()));
+          if (dce.hasStart()) dceBuilder.setStart(dce.getStart().getYearMonth());
+          if (dce.hasEnd()) dceBuilder.setEnd(dce.getEnd().getYearMonth());
 
-        populationBuilder.addDataCollectionEventSummaries(dceBuilder.build());
+          populationBuilder.addDataCollectionEventSummaries(dceBuilder.build());
+        }
+
+        builder.addPopulationSummaries(populationBuilder.build());
       }
-
-      builder.addPopulationSummaries(populationBuilder.build());
     }
 
     return builder.build();

@@ -1,10 +1,18 @@
 {
   "type": "object",
   "properties": {
-    "harmonizationDesign": {
+    "startYear": {
+      "type": "integer",
+      "title": "t(study.start-year)"
+    },
+    "endYear": {
+      "type": "integer",
+      "title": "t(study.end-year)"
+    },
+    "additionalInformation": {
       "type": "object",
-      "format": "localizedString",
-      "title": "t(study_taxonomy.vocabulary.harmonizationDesign.title)"
+      "format": "obibaSimpleMde",
+      "title": "t(global.additional-information)"
     }
   },
   "required": []

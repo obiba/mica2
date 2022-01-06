@@ -988,7 +988,6 @@ message EntityFormDto {
     CollectedDataset = 5;
     HarmonizedDataset = 6;
     HarmonizationStudy = 7;
-    HarmonizationPopulation = 8;
   }
 
   required Type type = 1;

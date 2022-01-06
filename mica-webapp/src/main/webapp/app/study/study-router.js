@@ -100,13 +100,5 @@ mica.study
         .when('/harmonization-study/:id/comments', {
           templateUrl: 'app/study/views/harmonization-study-view-comments.html',
           controller: 'HarmonizationStudyViewController'
-        })
-        .when('/harmonization-study/:id/population/add', {
-          templateUrl: 'app/study/views/population/harmonization-population-form.html',
-          controller: 'HarmonizationStudyPopulationController'
-        })
-        .when('/harmonization-study/:id/population/:pid/edit', {
-          templateUrl: 'app/study/views/population/harmonization-population-form.html',
-          controller: 'HarmonizationStudyPopulationController'
         });
     }]);

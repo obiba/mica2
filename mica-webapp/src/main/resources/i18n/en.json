@@ -77,6 +77,7 @@
     "display": "Display",
     "key": "Key",
     "refresh": "Refresh",
+    "additional-information": "Additional Information",
     "messages": {
       "error": {
         "unique-id": "ID must be unique.",
@@ -1537,7 +1538,7 @@
       "indexing": "Manage server indices.",
       "network-config": "Configure Network form, permissions and search.",
       "individual-study-config": "Configure Study form, permissions and search.",
-      "harmonization-study-config": "Configure Harmonization Study form, permissions and search.",
+      "harmonization-study-config": "Configure Harmonization Initiative form, permissions and search.",
       "collected-dataset-config": "Configure Collected Dataset form, permissions and search.",
       "harmonized-dataset-config": "Configure Harmonized Dataset form, permissions and search.",
       "data-access-config": "Configure Data Access Request form.",
@@ -1887,13 +1888,12 @@
     }
   },
   "harmonization-study-config" : {
-    "title" : "Harmonization Study Configuration",
+    "title" : "Harmonization Initiative Configuration",
     "schema-form": {
       "title": "Form",
-      "info": "The custom harmonization study form can be specified both in terms of data structure (schema) and data display and validation (definition). See <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>form schema documentation</a> for more details."
+      "info": "The custom harmonization initiative form can be specified both in terms of data structure (schema) and data display and validation (definition). See <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>form schema documentation</a> for more details."
     },
-    "harmonization-study-form-title": "Harmonization Study",
-    "harmonization-population-form-title": "Harmonization Population"
+    "harmonization-study-form-title": "Harmonization Initiative"
   },
   "individual-study-config" : {
     "title" : "Individual Study Configuration",
