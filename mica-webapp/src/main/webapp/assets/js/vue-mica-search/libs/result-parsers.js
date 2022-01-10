@@ -195,8 +195,8 @@ class GraphicsResultParser {
     const aggData = chartData[chartOptions.dataKey];
 
     let [data, layout] = typeof chartOptions.parseForChart === 'function'
-      ? chartOptions.parseForChart(aggData, chartOptions)
-      : GraphicsResultParser.#parseForChart(aggData, chartOptions);
+      ? chartOptions.parseForChart(aggData, chartOptions, totalHits)
+      : GraphicsResultParser.#parseForChart(aggData, chartOptions, totalHits);
 
     const tableCols = [chartOptions.title, labelStudies];
 
