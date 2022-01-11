@@ -80,8 +80,8 @@ public class DceIdAggregationMetaDataHelper extends AbstractStudyAggregationMeta
     study.getAcronym().entrySet().forEach(e -> description.put(e.getKey(
     ), md.getDescription(e.getKey())));
 
-    if (dce == null) {
-      String sortField = study.getId() + ":" + String.format("%04d", population.getWeight());
+    if (study instanceof HarmonizationStudy) {
+      String sortField = study.getId();
       map.put(StudyTable.getDataCollectionEventUId(study.getId(), population.getId()),
           new AggregationMetaDataProvider.LocalizedMetaData(title, description, "", null, null, sortField));
     } else {
@@ -110,8 +110,11 @@ public class DceIdAggregationMetaDataHelper extends AbstractStudyAggregationMeta
 
     MonikerData(LocalizedString studyAcronym, Population population, DataCollectionEvent dce) {
       this.studyAcronym = studyAcronym;
-      populationName = population.getName();
-      populationDescription = population.getDescription();
+      if (population != null) {
+        populationName = population.getName();
+        populationDescription = population.getDescription();
+      }
+
       if (dce != null) {
         dceName = dce.getName();
         dceDescription = dce.getDescription();
@@ -119,10 +122,8 @@ public class DceIdAggregationMetaDataHelper extends AbstractStudyAggregationMeta
     }
 
     public String getTitle(String locale) {
-      return dceName == null
-          ? String.format("%s:%s",
-          studyAcronym.getOrDefault(locale, ""),
-          populationName.getOrDefault(locale, ""))
+      return populationName == null
+          ? studyAcronym.getOrDefault(locale, "")
           : String.format("%s:%s:%s",
           studyAcronym.getOrDefault(locale, ""),
           populationName.getOrDefault(locale, ""),

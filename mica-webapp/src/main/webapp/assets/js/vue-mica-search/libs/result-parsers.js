@@ -291,9 +291,14 @@ class VariablesResultParser {
             }
             break;
           }
+
           case 'population': {
             path = this.normalizePath(`/study/${summary.studyId}`);
-            row.push(`<a href="${path}#population/${summary.populationId}">${localize(summary.populationName)}</a>`);
+            if (summary.populationName) {
+              row.push(`<a href="${path}#population/${summary.populationId}">${localize(summary.populationName)}</a>`);
+            } else {
+              row.push('-');
+            }
             break;
           }
           case 'dce':

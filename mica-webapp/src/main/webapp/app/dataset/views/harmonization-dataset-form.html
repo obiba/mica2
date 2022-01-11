@@ -88,24 +88,6 @@
 
             <p class="help-block" translate>dataset.harmonization-study.info</p>
           </div>
-
-          <div class="form-group"
-            ng-class="{'has-error': (form['harmonizationStudyPopulation'].$dirty || form.saveAttempted) && form['harmonizationStudyPopulation'].$invalid}">
-
-            <label class="control-label">
-              <span translate>study.population</span>
-              <span>*</span>
-            </label>
-
-            <ui-select theme="bootstrap" name="harmonizationStudyPopulation" ng-model="selected.study.selectedPopulation" reset-search-input="true" required="true">
-              <ui-select-match>{{$select.selected.id}}</ui-select-match>
-              <ui-select-choices repeat="population in selected.study.populationSummaries | filter: {id: $select.search}">
-                <span ng-bind-html="population.id | highlight: $select.search"></span>
-              </ui-select-choices>
-            </ui-select>
-
-            <p class="help-block" translate>dataset.harmonization-study-population.info</p>
-          </div>
         </div>
       </div>
     </div>

@@ -435,8 +435,7 @@ class DatasetDtos {
       .setProject(harmonizationTable.getProject())
       .setTable(harmonizationTable.getTable())
       .setWeight(harmonizationTable.getWeight())
-      .setStudyId(harmonizationTable.getStudyId())
-      .setPopulationId(harmonizationTable.getPopulationId());
+      .setStudyId(harmonizationTable.getStudyId());
 
     if(includeSummary) hBuilder.setStudySummary(studySummaryDtos.asDto(harmonizationTable.getStudyId()));
 
@@ -774,7 +773,6 @@ class DatasetDtos {
       harmonizationLink.setProject(dto.getHarmonizationTable().getProject());
       harmonizationLink.setTable(dto.getHarmonizationTable().getTable());
       harmonizationLink.setStudyId(dto.getHarmonizationTable().getStudyId());
-      harmonizationLink.setPopulationId(dto.getHarmonizationTable().getPopulationId());
       harmonizationDataset.setHarmonizationTable(harmonizationLink);
     }
     return harmonizationDataset;
@@ -805,8 +803,6 @@ class DatasetDtos {
   private HarmonizationStudyTable fromDto(Mica.DatasetDto.HarmonizationTableDto dto) {
     HarmonizationStudyTable table = new HarmonizationStudyTable();
     table.setStudyId(dto.getStudyId());
-    table.setPopulationId(dto.getPopulationId());
-    table.setPopulationId(dto.getPopulationId());
     table.setProject(dto.getProject());
     table.setTable(dto.getTable());
     table.setWeight(dto.getWeight());
@@ -832,13 +828,10 @@ class DatasetDtos {
 
     if(asDraft && studyId != null) {
       harmonizationLinkBuilder.setStudyId(harmonizationLink.getStudyId());
-      harmonizationLinkBuilder.setPopulationId(harmonizationLink.getPopulationId());
     } else if(!asDraft && studyId != null && publishedStudyService.findById(studyId) != null) {
       harmonizationLinkBuilder.setStudyId(harmonizationLink.getStudyId());
-      harmonizationLinkBuilder.setPopulationId(harmonizationLink.getPopulationId());
     } else {
       harmonizationLinkBuilder.setStudyId("-");
-      harmonizationLinkBuilder.setPopulationId("-");
     }
 
     if(studyId != null) harmonizationLinkBuilder.setStudySummary(studySummaryDtos.asHarmoStudyDto(studyId));

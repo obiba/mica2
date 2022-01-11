@@ -66,11 +66,11 @@
     "network": "Network",
     "individual-study": "Individual Study",
     "individual-studies": "Individual Studies",
-    "harmonization-study": "Harmonization Study",
-    "harmonization-studies": "Harmonization Studies",
+    "harmonization-study": "Harmonization Initiative",
+    "harmonization-studies": "Harmonization Initiatives",
     "harmonization-study-population": "Population",
-    "participant-harmonization-study": "Harmonization Study Included",
-    "participant-harmonization-studies": "Harmonization Studies Included",
+    "participant-harmonization-study": "Harmonization Initiative Included",
+    "participant-harmonization-studies": "Harmonization Initiatives Included",
     "included-individual-studies": "Individual Studies Included",
     "included-individual-study": "Individual Study Included",
     "definition": "Definition",
@@ -120,14 +120,14 @@
       "studies": "Individual Studies",
       "studies-with-variables": "Individual Studies with Variables",
       "study-with-variables": "Individual Study with Variables",
-      "harmonization-studies": "Harmonization Studies",
+      "harmonization-studies": "Harmonization Initiatives",
       "collected-datasets": "Collected Datasets",
       "harmonized-datasets": "Harmonized Datasets",
       "variables": "Variables",
       "study-variables": "Individual Study Variables",
       "study-variable": "Individual Study Variable",
-      "harmonization-study-variables": "Harmonization Study Variables",
-      "harmonization-study-variable": "Harmonization Study Variable"
+      "harmonization-study-variables": "Harmonization Initiative Variables",
+      "harmonization-study-variable": "Harmonization Initiative Variable"
     },
     "title": "Application Metrics",
     "refresh.button": "Refresh",
@@ -611,7 +611,7 @@
       "button": "Import Studies",
       "label": "Import",
       "individual-study-title": "Import Individual Studies",
-      "harmonization-study-title": "Import Harmonization Studies",
+      "harmonization-study-title": "Import Harmonization Initiatives",
       "sub-title": "Import studies from a remote Mica server.",
       "sub-title-summary": "Select studies to import.",
       "address": "Mica URL",
@@ -623,7 +623,7 @@
       "conflicts": "Conflicts (these studies will not be imported):",
       "conflict": "Conflict",
       "conflict-individual-study": "There is already an individual study with the same ID locally.",
-      "conflict-harmonization-study": "There is already a harmonization study with the same ID locally.",
+      "conflict-harmonization-study": "There is already a harmonization initiative with the same ID locally.",
       "create-operations": "Studies to create:",
       "update-operations": "Studies to replace:",
       "operation": "Operation",
@@ -904,8 +904,8 @@
       "info": "A network linked to this dataset."
     },
     "harmonization-study": {
-      "title": "Harmonization Study",
-      "info": "A harmonization study linked to this dataset."
+      "title": "Harmonization Initiative",
+      "info": "A harmonization initiative linked to this dataset."
     },
     "harmonization-study-population": {
       "title": "Harmonization Study Population",
@@ -916,8 +916,8 @@
       "info": "A study table defines which study data collection event it applies to and which Opal table the variables and data summaries are to be extracted from."
     },
     "harmonization-study-table": {
-      "title": "Harmonization Study Table",
-      "info": "A harmonization study table defines which harmonization study population it applies to and which Opal table the variables and data summaries are to be extracted from."
+      "title": "Harmonization Initiative Table",
+      "info": "A harmonization initiative table defines which harmonization study population it applies to and which Opal table the variables and data summaries are to be extracted from."
     },
     "study-tables": {
       "title": "Study Tables",
@@ -925,7 +925,7 @@
     },
     "harmonized-tables": {
       "title": "Harmonized Tables",
-      "info": "The study tables define implementations of the harmonized variables by an individual study in the context of a population's data collection event or a harmonization study based on previously harmonized data. The data summaries will be extracted from the corresponding Opal tables."
+      "info": "The study tables define implementations of the harmonized variables by an individual study in the context of a population's data collection event or a harmonization initiative based on previously harmonized data. The data summaries will be extracted from the corresponding Opal tables."
     },
     "restore-dialog": {
       "title": "Restoring Dataset from Revision",
@@ -959,7 +959,7 @@
     },
     "harmonization":{
       "missing-attributes":"In harmonization table, these attributes are mandatory : project, table, studyId, populationId",
-      "study-not-published":"Before publishing a harmonized dataset, its linked harmonization study must already be published",
+      "study-not-published":"Before publishing a harmonized dataset, its linked harmonization initiative must already be published",
       "population-not-published":"Before publishing a harmonized dataset, its linked population must already be published"
     },
     "collection":{
@@ -1313,7 +1313,7 @@
       "datasetNav": "Dataset",
       "study" : "Study",
       "study-individual": "Individual Study",
-      "study-harmonization": "Harmonization Study",
+      "study-harmonization": "Harmonization Initiative",
       "dce" : "Population/Data Collection Event (DCE)",
       "dce-individual" : "Data Collection Event (DCE)",
       "dce-harmonization" : "Population",
@@ -2440,7 +2440,7 @@
     "title": "Statistics Summary",
     "full-title": "Content Statistics Summary",
     "Study": "Individual Studies",
-    "HarmonizationStudy": "Harmonization Studies",
+    "HarmonizationStudy": "Harmonization Initiatives",
     "StudyDataset": "Collected Datasets",
     "HarmonizationDataset": "Harmonized Datasets",
     "DataAccessRequest": "Data Access Requests",

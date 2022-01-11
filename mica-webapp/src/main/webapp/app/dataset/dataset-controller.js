@@ -310,11 +310,6 @@ mica.dataset
                 s.id === dataset['obiba.mica.HarmonizedDatasetDto.type'].harmonizationTable.studyId;
             })[0];
 
-            if ($scope.selected.study) {
-              $scope.selected.study.selectedPopulation = $scope.selected.study.populationSummaries.filter(function (p) {
-                return p.id === dataset['obiba.mica.HarmonizedDatasetDto.type'].harmonizationTable.populationId;
-              })[0];
-            }
           });
 
           getOpalProjects().then(function() {
@@ -351,7 +346,6 @@ mica.dataset
         $scope.dataset['obiba.mica.HarmonizedDatasetDto.type'].harmonizationTable.project = $scope.selected.project.name;
         $scope.dataset['obiba.mica.HarmonizedDatasetDto.type'].harmonizationTable.table = $scope.selected.project.table;
         $scope.dataset['obiba.mica.HarmonizedDatasetDto.type'].harmonizationTable.studyId = $scope.selected.study ? $scope.selected.study.id : null;
-        $scope.dataset['obiba.mica.HarmonizedDatasetDto.type'].harmonizationTable.populationId = $scope.selected.study.selectedPopulation ? $scope.selected.study.selectedPopulation.id : null;
 
         if ($scope.dataset.id) {
           updateDataset();

@@ -66,17 +66,18 @@
     "network": "Réseau",
     "individual-study": "Étude individuelle",
     "individual-studies": "Étude individuelles",
-    "harmonization-study": "Étude harmonisée",
-    "harmonization-studies": "Études harmonisées",
+    "harmonization-study": "Initiative d'harmonisation",
+    "harmonization-studies": "Initiatives d'harmonisation",
     "harmonization-study-population": "Population",
-    "participant-harmonization-study": "Étude harmonisée incluse",
-    "participant-harmonization-studies": "Études harmonisées incluses",
+    "participant-harmonization-study": "Initiative d'harmonisation incluse",
+    "participant-harmonization-studies": "Initiatives d'harmonisation incluses",
     "included-individual-studies": "Études individuelles incluses",
     "included-individual-study": "Étude individuelle incluse",
     "definition": "Définition",
     "display": "Affichage",
     "key": "Clé",
     "refresh": "Rafraîchir",
+    "additional-information": "Information additionnelle",
     "messages": {
       "error": {
         "unique-id": "L'ID doit être unique.",
@@ -119,14 +120,14 @@
       "studies": "Études individuelles",
       "studies-with-variables": "Études individuelles avec des variables",
       "study-with-variables": "Étude individuelle avec des variables",
-      "harmonization-studies": "Études harmonisées",
+      "harmonization-studies": "Initiatives d'harmonisation",
       "collected-datasets": "Ensemble de données de collecte",
       "harmonized-datasets": "Ensemble de données harmonisées",
       "variables": "Variables",
       "study-variables": "Variables d'études individuelles",
       "study-variable": "Variable d'étude individuelle",
-      "harmonization-study-variables": "Variables d'études harmonisées",
-      "harmonization-study-variable": "Variable d'études harmonisées"
+      "harmonization-study-variables": "Variables d'Initiatives d'harmonisation",
+      "harmonization-study-variable": "Variable d'Initiatives d'harmonisation"
     },
     "title": "Métriques de l'application",
     "refresh.button": "Rafraichir",
@@ -610,7 +611,7 @@
       "button": "Importer des études",
       "label": "Importer",
       "individual-study-title": "Importer des études individuelles",
-      "harmonization-study-title": "Importer des études harmonisées",
+      "harmonization-study-title": "Importer des initiatives d'harmonisation",
       "sub-title": "Importer des études à partir d'un serveur Mica distant.",
       "sub-title-summary": "Sélectionnez les études à importer.",
       "address": "URL de Mica",
@@ -622,7 +623,7 @@
       "conflicts": "Conflits (ces études ne seront pas importées):",
       "conflict": "Conflict",
       "conflict-individual-study": "Il existe déjà une étude individuelle avec le même ID localement.",
-      "conflict-harmonization-study": "Il existe déjà une étude d'harmonisation avec le même ID localement.",
+      "conflict-harmonization-study": "Il existe déjà une initiative d'harmonisation avec le même ID localement.",
       "create-operations": "Études à créer:",
       "update-operations": "Études à remplacer:",
       "operation": "Opération",
@@ -903,8 +904,8 @@
       "info": "Un réseau lié a cet ensemble de données."
     },
     "harmonization-study": {
-      "title": "Étude harmonisée",
-      "info": "Une étude harmonisée liée a cet ensemble de données."
+      "title": "Initiative d'harmonisation",
+      "info": "Une initiative d'harmonisation liée a cet ensemble de données."
     },
     "harmonization-study-population": {
       "title": "Population d'une étude harmonisée",
@@ -915,8 +916,8 @@
       "info": "La table d'étude définie à quel événement de collecte elle s'applique et à partir de quelle table Opal il faut extraire les variables et les données sommaires."
     },
     "harmonization-study-table": {
-      "title": "Table d'étude harmonisée",
-      "info": "La table d'étude harmonisée définie à quel événement de collecte elle s'applique et à partir de quelle table Opal il faut extraire les variables et les données sommaires."
+      "title": "Table d'initiative d'harmonisation",
+      "info": "La table d'initiative d'harmonisation définie à quel événement de collecte elle s'applique et à partir de quelle table Opal il faut extraire les variables et les données sommaires."
     },
     "study-tables": {
       "title": "Tables d'étude",
@@ -958,7 +959,7 @@
     },
     "harmonization":{
       "missing-attributes":"Dans une table d'harmonization, ces attributes sont obligatoires : project, table, studyId, populationId",
-      "study-not-published":"Pour publier un ensemble de données harmonisées, l'étude harmonisée qui lui est liée doit aussi être publiée",
+      "study-not-published":"Pour publier un ensemble de données harmonisées, l'initiative d'harmonisation qui lui est liée doit aussi être publiée",
       "population-not-published":"Pour publier un ensemble de données harmonisées, la population qui lui est liée doit aussi être publiée"
     },
     "collection":{
@@ -1312,7 +1313,7 @@
       "datasetNav": "Ensemble de données",
       "study" : "Étude",
       "study-individual": "Étude individuelle",
-      "study-harmonization": "Étude d'harmonisation",
+      "study-harmonization": "Initiative d'harmonisation",
       "dce" : "Population/Événement de collecte de données (ECD)",
       "dce-individual" : "Événement de collecte de données (ECD)",
       "dce-harmonization" : "Population",
@@ -2439,7 +2440,7 @@
     "title": "Résumé des statistiques",
     "full-title": "Résumé des statistiques de contenu",
     "Study": "Étude individuelles",
-    "HarmonizationStudy": "Études harmonisées",
+    "HarmonizationStudy": "Initiatives d'harmonisation",
     "StudyDataset": "Ensemble de données de collecte",
     "HarmonizationDataset": "Ensemble de données harmonisées",
     "DataAccessRequest": "Demande d'accès aux données",

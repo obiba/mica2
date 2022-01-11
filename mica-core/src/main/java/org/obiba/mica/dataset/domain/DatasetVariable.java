@@ -136,11 +136,17 @@ public class DatasetVariable implements Indexable, AttributeAware {
     this(dataset, Type.Harmonized, variable);
 
     if (opalTable instanceof BaseStudyTable) {
-      studyId = ((BaseStudyTable) opalTable).getStudyId();
-      populationId = ((BaseStudyTable) opalTable).getPopulationUId();
-      dceId = ((BaseStudyTable) opalTable).getDataCollectionEventUId();
+      studyId = ((BaseStudyTable)opalTable).getStudyId();
       setContainerId(studyId);
       opalTableType = opalTable instanceof StudyTable ? OpalTableType.Study : OpalTableType.Harmonization;
+
+      if (opalTable instanceof HarmonizationStudyTable) {
+        populationId = ((HarmonizationStudyTable) opalTable).getPopulationUId();
+        dceId = ((HarmonizationStudyTable) opalTable).getDataCollectionEventUId();
+      } else {
+        populationId = ((BaseStudyTable) opalTable).getPopulationUId();
+        dceId = ((BaseStudyTable) opalTable).getDataCollectionEventUId();
+      }
     }
 
     project = opalTable.getProject();

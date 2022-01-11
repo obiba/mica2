@@ -125,11 +125,9 @@ public class DatasetController extends BaseController {
   private boolean addHarmonizationTableParameters(Map<String, Object> params, HarmonizationStudyTable studyTable, List<String> ids) {
     try {
       HarmonizationStudy study = (HarmonizationStudy) getStudy(studyTable.getStudyId());
-      Population population = study.findPopulation(studyTable.getPopulationId());
-      String id = study.getId() + ":" + population.getId();
+      String id = study.getId();
       if (!ids.contains(id)) { // could be different datasets from same population
         params.put("study", study);
-        params.put("population", population);
         ids.add(id);
       }
       return true;

@@ -561,7 +561,6 @@ message DatasetDto {
     repeated LocalizedStringDto description = 4;
 
     required string studyId = 5;
-    required string populationId = 6;
     optional StudySummaryDto studySummary = 7;
     optional int32 weight = 8;
   }
