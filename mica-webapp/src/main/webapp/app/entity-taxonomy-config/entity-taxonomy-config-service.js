@@ -598,7 +598,7 @@ mica.entityTaxonomyConfig
         return data;
       }
 
-      function getTermFormData(content, valueType, siblings, vocabulary) {
+      function getTermFormData(forClassName, content, valueType, siblings, vocabulary) {
         var isStatic = VocabularyAttributeService.isStatic(vocabulary);
         var data = {
           schema: {
@@ -805,7 +805,7 @@ mica.entityTaxonomyConfig
           case 'criterion':
             return getVocabularyFormData(model.forClassName, model.content, model.siblings, model.onRangeChange);
           case 'term':
-            return getTermFormData(model.content, model.valueType || 'string', model.siblings, model.vocabulary);
+            return getTermFormData(model.forClassName, model.content, model.valueType || 'string', model.siblings, model.vocabulary);
         }
 
         throw new Error('EntityTaxonomySchemaFormService - invalid type:' + model.type);
