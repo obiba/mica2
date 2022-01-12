@@ -324,6 +324,7 @@ const GraphicResult = {
     }
   },
   methods: {
+    getEventBus: () => EventBus,
     renderCanvas() {
       let layout = this.chartDataset.plotData.layout || {};
 
@@ -339,11 +340,11 @@ const GraphicResult = {
 
       const updates = [{
         target: 'study',
-        query: new Query('in', ['Mica_study.className', 'Study']),
+        query: new RQL.Query('in', ['Mica_study.className', 'Study']),
         operator: 'and'
       }];
 
-      updates.push({target:'study', query: (queryOverride ? queryOverride : new Query('in', [`Mica_study.${vocabulary}`, `${term}`]))});
+      updates.push({target:'study', query: (queryOverride ? queryOverride : new RQL.Query('in', [`Mica_study.${vocabulary}`, `${term}`]))});
 
       this.getEventBus().$emit('query-type-updates-selection', {display: 'lists', type: `studies`, updates});
     },
@@ -666,10 +667,10 @@ const StudiesResult = {
       const type = anchor.attr('data-type');
       const studyType = anchor.attr('data-study-type');
 
-      const updates = [{target, query: new Query('in', ['Mica_study.id',targetId])}];
+      const updates = [{target, query: new RQL.Query('in', ['Mica_study.id',targetId])}];
 
       if ("" !== studyType) {
-        updates.push({target: 'study', query: new Query('in', ['Mica_study.className', studyType])});
+        updates.push({target: 'study', query: new RQL.Query('in', ['Mica_study.className', studyType])});
       }
 
       this.getEventBus().$emit('query-type-updates-selection', {type: `${type}`, updates});
@@ -786,10 +787,10 @@ const NetworksResult = {
       const type = anchor.attr('data-type');
       const studyType = anchor.attr('data-study-type');
 
-      const updates = [{target, query: new Query('in', ['Mica_network.id',targetId])}];
+      const updates = [{target, query: new RQL.Query('in', ['Mica_network.id',targetId])}];
 
       if ("" !== studyType) {
-        updates.push({target: 'study', query: new Query('in', ['Mica_study.className', studyType])});
+        updates.push({target: 'study', query: new RQL.Query('in', ['Mica_study.className', studyType])});
       }
 
       this.getEventBus().$emit('query-type-updates-selection', {type: `${type}`, updates});
@@ -851,7 +852,7 @@ const DatasetsResult = {
      onAnchorClicked(event) {
       event.preventDefault();
       const anchor = $(event.target);
-      const query = new Query('in', ['Mica_dataset.id', `${anchor.attr('data-target-id')}`]);
+      const query = new RQL.Query('in', ['Mica_dataset.id', `${anchor.attr('data-target-id')}`]);
       this.getEventBus().$emit(
         'query-type-update',
         {
@@ -1186,7 +1187,7 @@ const CoverageResult = {
     removeVocabulary(event, vocabulary) {
       console.debug(`removeVocabulary ${vocabulary}`);
       event.preventDefault();
-      this.getEventBus().$emit('query-type-delete', {target: 'variable', query: new Query('exists', [`${vocabulary.taxonomyName}.${vocabulary.entity.name}`])});
+      this.getEventBus().$emit('query-type-delete', {target: 'variable', query: new RQL.Query('exists', [`${vocabulary.taxonomyName}.${vocabulary.entity.name}`])});
     },
     removeTerm(event, term) {
       console.debug(`removeVocabulary ${term}`);
@@ -1194,9 +1195,9 @@ const CoverageResult = {
 
       const argsToKeep = this.table.termHeaders.filter(t => t.vocabularyName === term.vocabularyName && t.entity.name !== term.entity.name).map(term => term.entity.name);
       if (argsToKeep.length === 0) {
-        this.getEventBus().$emit('query-type-delete', {target: 'variable', query: new Query('exists', [`${term.taxonomyName}.${term.vocabularyName}`])});
+        this.getEventBus().$emit('query-type-delete', {target: 'variable', query: new RQL.Query('exists', [`${term.taxonomyName}.${term.vocabularyName}`])});
       } else {
-        this.getEventBus().$emit('query-type-update', {target: 'variable', query: new Query('in', [`${term.taxonomyName}.${term.vocabularyName}`, argsToKeep])});
+        this.getEventBus().$emit('query-type-update', {target: 'variable', query: new RQL.Query('in', [`${term.taxonomyName}.${term.vocabularyName}`, argsToKeep])});
       }
     },
     onMouseOver(event, row) {
@@ -1232,7 +1233,7 @@ const CoverageResult = {
       event.preventDefault();
       const updates = [{
         target: 'variable',
-        query: new Query('in', [`${term.taxonomyName}.${term.vocabularyName}`, term.entity.name]),
+        query: new RQL.Query('in', [`${term.taxonomyName}.${term.vocabularyName}`, term.entity.name]),
         operator: 'or',
         reduceKey: `${term.taxonomyName}.${term.vocabularyName}`
       }];
@@ -1245,7 +1246,7 @@ const CoverageResult = {
         };
         const targetData = bucketTargetMap[this.bucket];
 
-        updates.push({target: targetData.target, query: new Query('in', [targetData.queryKey,id])});
+        updates.push({target: targetData.target, query: new RQL.Query('in', [targetData.queryKey,id])});
       }
 
       this.getEventBus().$emit('query-type-updates-selection', {display: 'lists', type: `${type}`, updates});
