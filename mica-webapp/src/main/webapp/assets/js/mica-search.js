@@ -485,6 +485,39 @@ class TableFixedHeaderUtility {
 
   const queryAlertListener  = new MicaQueryAlertListener();
 
+  function processTaxonomyForStudyTypeSelection(studyTypeSelection, taxonomy) {
+    function foundAttributeIsOk(foundAttr) {
+      let isOk = !foundAttr;
+
+      if (studyTypeSelection.study) {
+        isOk = isOk || foundAttr.value === 'Study' || foundAttr.value === 'StudyDataset';
+      } else if (studyTypeSelection.harmonization) {
+        isOk = isOk || foundAttr.value === 'HarmonizationStudy' || foundAttr.value === 'HarmonizationDataset';
+      } else {
+        isOk = true;
+      }
+
+      return isOk
+    }
+
+    if (studyTypeSelection.study || studyTypeSelection.harmonization) {
+      let clone = JSON.parse(JSON.stringify(taxonomy));
+      let clonedVocabularies = clone.vocabularies.filter(voc => { let foundAttr = voc.attributes.find(attr => attr.key === 'forClassName'); return foundAttributeIsOk(foundAttr); });
+
+      clonedVocabularies.forEach(voc => {
+        if (Array.isArray(voc.terms)) {
+          voc.terms = voc.terms.filter(term => { let foundAttr = (term.attributes || []).find(attr => attr.key === 'className'); return foundAttributeIsOk(foundAttr); });
+        }
+      });
+
+      clone.vocabularies = clonedVocabularies;
+
+      return clone;
+    }
+
+    return taxonomy;
+  }
+
   new Vue({
     el: '#search-application',
     data() {
@@ -565,6 +598,8 @@ class TableFixedHeaderUtility {
         }
       },
       getTaxonomyForTarget(target) {
+        let studyTypeSelection = MicaTreeQueryUrl.getStudyTypeSelection(MicaTreeQueryUrl.getTree());
+
         let result = [];
 
         if (TARGETS.VARIABLE === target) {
@@ -582,23 +617,38 @@ class TableFixedHeaderUtility {
           result.push(taxonomy);
         }
 
-        return result[0];
+        if (Array.isArray(result[0])) {
+          let finalResult = [];
+          result[0].forEach(res => { finalResult.push(processTaxonomyForStudyTypeSelection(studyTypeSelection, res)); });
+          return finalResult;
+        } else {
+          return processTaxonomyForStudyTypeSelection(studyTypeSelection, result[0]);
+        }
       },
       // show a modal with all the vocabularies/terms of the selected taxonomy
       // initialized by the query terms and update/trigger the query on close
       onTaxonomySelection(payload) {
-        this.selectedTaxonomy = this.taxonomies[payload.taxonomyName];
+        let studyTypeSelection = MicaTreeQueryUrl.getStudyTypeSelection(MicaTreeQueryUrl.getTree());
+
+        let selectedTaxonomy = this.taxonomies[payload.taxonomyName];
         this.selectedTarget = payload.target;
 
         let selectedTaxonomyVocabulariesTitle = '';
-        if (this.selectedTaxonomy) {
-          this.selectedTaxonomyTitle = this.selectedTaxonomy.title;
-          selectedTaxonomyVocabulariesTitle = this.selectedTaxonomy.vocabularies.map(voc => voc.title[0].text).join(', ');
+        if (selectedTaxonomy) {
+          this.selectedTaxonomyTitle = selectedTaxonomy.title;
+
+          if (selectedTaxonomy.name.startsWith('Mica_')) {
+            selectedTaxonomy = processTaxonomyForStudyTypeSelection(studyTypeSelection, selectedTaxonomy);
+          }
+
+          selectedTaxonomyVocabulariesTitle = selectedTaxonomy.vocabularies.map(voc => voc.title[0].text).join(', ');
         } else {
           const foundTaxonomyGroup = this.findTaxonomyGroup(payload.taxonomyName, payload.target);
-          this.selectedTaxonomy = foundTaxonomyGroup.taxonomies;
+          selectedTaxonomy = foundTaxonomyGroup.taxonomies;
           this.selectedTaxonomyTitle = foundTaxonomyGroup.title;
         }
+
+        this.selectedTaxonomy = selectedTaxonomy;
 
         this.message = '[' + payload.taxonomyName + '] ' + this.selectedTaxonomyTitle[0].text + ': ';
         this.message = this.message + selectedTaxonomyVocabulariesTitle;
