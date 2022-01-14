@@ -490,9 +490,9 @@ class TableFixedHeaderUtility {
       let isOk = !foundAttr;
 
       if (studyTypeSelection.study) {
-        isOk = isOk || foundAttr.value === 'Study' || foundAttr.value === 'StudyDataset';
+        isOk = isOk || foundAttr.value === 'Study' || foundAttr.value === 'StudyDataset' || foundAttr.value === 'Network';
       } else if (studyTypeSelection.harmonization) {
-        isOk = isOk || foundAttr.value === 'HarmonizationStudy' || foundAttr.value === 'HarmonizationDataset';
+        isOk = isOk || foundAttr.value === 'HarmonizationStudy' || foundAttr.value === 'HarmonizationDataset' || foundAttr.value === 'Network';
       } else {
         isOk = true;
       }
