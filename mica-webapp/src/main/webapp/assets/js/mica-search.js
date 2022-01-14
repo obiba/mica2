@@ -487,12 +487,12 @@ class TableFixedHeaderUtility {
 
   function processTaxonomyForStudyTypeSelection(studyTypeSelection, taxonomy) {
     function foundAttributeIsOk(foundAttr) {
-      let isOk = !foundAttr;
+      let isOk = !foundAttr || foundAttr.value === 'Network';
 
       if (studyTypeSelection.study) {
-        isOk = isOk || foundAttr.value === 'Study' || foundAttr.value === 'StudyDataset' || foundAttr.value === 'Network';
+        isOk = isOk || foundAttr.value === 'Study' || foundAttr.value === 'StudyDataset';
       } else if (studyTypeSelection.harmonization) {
-        isOk = isOk || foundAttr.value === 'HarmonizationStudy' || foundAttr.value === 'HarmonizationDataset' || foundAttr.value === 'Network';
+        isOk = isOk || foundAttr.value === 'HarmonizationStudy' || foundAttr.value === 'HarmonizationDataset';
       } else {
         isOk = true;
       }
@@ -516,6 +516,10 @@ class TableFixedHeaderUtility {
     }
 
     return taxonomy;
+  }
+
+  function processQueriesForStudyTypeSelection(studyTypeSelection, taxonomy, queries) {
+    console.log('processQueriesForStudyTypeSelection', studyTypeSelection, taxonomy, queries);
   }
 
   new Vue({
@@ -737,6 +741,17 @@ class TableFixedHeaderUtility {
         this.queryToNetworksCart = makeQueryToCart(tree, TARGETS.NETWORK, ['acronym.*']);
 
         this.refreshQueries();
+
+        // clean queries and args that shouldn't be there based on studyType query
+        let studyTypeSelection = MicaTreeQueryUrl.getStudyTypeSelection(tree);
+        if (studyTypeSelection.study || studyTypeSelection.harmonization) {
+          // ignore Mica_study.className query, everything else must be checked
+          // use eventBus to emit updates
+          for (const targetQuery in MicaTreeQueryUrl.getTreeQueries()) {
+            let workingQueries = MicaTreeQueryUrl.getTreeQueries()[targetQuery];
+            processQueriesForStudyTypeSelection(studyTypeSelection, this.taxonomies[`Mica_${targetQuery}`], Criterion.splitQuery(workingQueries));
+          }
+        }
 
         // result
         $(`.nav-pills #${payload.display}-tab`).tab('show');
