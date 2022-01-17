@@ -11,6 +11,7 @@
 'use strict';
 
 var ERRONEOUS_ID_CHARS = /[;,\\/?:@&%=+$.!`~*'( ){}\[\]<>^#]/g;
+/* global moment */
 
 /**
  * Basic study edit controller class
@@ -499,7 +500,8 @@ mica.study.DataCollectionEventEditController = function (
   FormServerValidation,
   FormDirtyStateObserver,
   StudyUpdateWarningService,
-  MicaUtil
+  MicaUtil,
+  LocaleStringUtils
 ) {
 
   mica.study.BaseEditController.call(this, $scope, $routeParams, $location, $log, FormServerValidation, FormDirtyStateObserver, StudyUpdateWarningService);
@@ -536,6 +538,9 @@ mica.study.DataCollectionEventEditController = function (
       self.sfOptions = data[1];
       self.sfOptions.formDefaults = { languages: sfLanguages, ngModelOptions: { allowInvalid: true } };
       self.sfOptions.validationMessage.validId = $filter('translate')('global.messages.error.invalid-id');
+      self.sfOptions.onError = function(minDate, maxDate) {
+        return LocaleStringUtils.translate('global.messages.error.invalid-ym-date', [minDate, maxDate]);
+      };
 
       self.dceSfForm = data[2];
       self.study = data[3];
@@ -573,9 +578,23 @@ mica.study.DataCollectionEventEditController = function (
       null;
   }
 
+  function isDayInvalid(year, month, day) {
+      if (day) {
+        const minDate = year + '-' + (month + '').padStart(2, 0) + '-01';
+        const maxDate = moment(new Date(year, month, 0)).format('YYYY-MM-DD'); // to include the last date in validation
+
+        return moment(day).isBefore(minDate) || moment(day).isAfter(maxDate);
+      }
+
+      return false;
+  }
+
+
   function validate(form) {
     $scope.$broadcast('schemaForm.error._id', 'uniqueId', true);
     $scope.$broadcast('schemaForm.error._id', 'validId', true);
+    $scope.$broadcast('schemaForm.error._startDay', 'invalid-ym-date', true);
+    $scope.$broadcast('schemaForm.error._endDay', 'invalid-ym-date', true);
     $scope.$broadcast('schemaFormValidate');
 
     if ($scope.population.dataCollectionEvents.filter(function (d) {
@@ -586,6 +605,14 @@ mica.study.DataCollectionEventEditController = function (
 
     if ($scope.dce.model._id.match(ERRONEOUS_ID_CHARS)) {
       $scope.$broadcast('schemaForm.error._id', 'validId', false);
+    }
+
+    if (isDayInvalid($scope.dce.model._startYear, $scope.dce.model._startMonth, $scope.dce.model._startDay)) {
+      $scope.$broadcast('schemaForm.error._startDay', 'invalid-ym-date', false);
+    }
+
+    if (isDayInvalid($scope.dce.model._endYear, $scope.dce.model._endMonth, $scope.dce.model._endDay)) {
+      $scope.$broadcast('schemaForm.error._endDay', 'invalid-ym-date', false);
     }
 
     return form.$valid;

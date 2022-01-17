@@ -40,7 +40,7 @@
     "angular-schema-form-ui-ace": "https://github.com/obiba/angular-schema-form-ui-ace.git#0.1.2",
     "angular-ui-ace": "0.2.3",
     "angular-moment": "1.2.0",
-    "angular-schema-form-datetimepicker": "https://github.com/obiba/angular-schema-form-datetimepicker.git#0.2.0",
+    "angular-schema-form-datetimepicker": "https://github.com/obiba/angular-schema-form-datetimepicker.git#0.2.1",
     "angular-xeditable": "0.8.1",
     "angular-media-queries": "0.6.1",
     "sf-localized-string": "https://github.com/obiba/sf-localized-string.git#1.3.3",
